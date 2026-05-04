@@ -29,7 +29,7 @@ If you're building agents that need to reason about Japanese institutional data 
 ```json
 {
   "mcpServers": {
-    "autonomath": {
+    "jpcite": {
       "command": "uvx",
       "args": ["autonomath-mcp"]
     }

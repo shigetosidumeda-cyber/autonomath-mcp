@@ -36,7 +36,7 @@ Three reasons:
 ```json
 {
   "mcpServers": {
-    "autonomath": {
+    "jpcite": {
       "command": "uvx",
       "args": ["autonomath-mcp"]
     }

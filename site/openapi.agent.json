@@ -1707,6 +1707,3396 @@
           "plain_en": "This endpoint is for cost preview or transparency checks and is not normally metered."
         }
       }
+    },
+    "/v1/laws/search": {
+      "get": {
+        "description": "Search the e-Gov 法令 catalog (9,484 records + still loading) across `law_title + law_short_title + law_number + summary`. Filter by `law_type` (constitution / act / cabinet_order / imperial_order / ministerial_ordinance / rule / notice / guideline), 所管府省 (`ministry`), revision_status, and promulgated / enforced date windows.\n\n**License:** e-Gov 法令データ is **CC-BY 4.0** (attribution required, redistribution permitted with attribution). The `source_url` on each record points to the canonical e-Gov 法令検索 permalink — relay it.\n\n**Search note:** Japanese legal phrases are normalized. For very short terms, structured filters or longer phrases are more reliable.\n\nPair with `GET /v1/laws/{unified_id}/related-programs` to trace which 補助金 cite a given statute as authority / eligibility / exclusion / penalty.",
+        "operationId": "search_laws_v1_laws_search_get",
+        "parameters": [
+          {
+            "description": "Free-text search across law_title + law_short_title + law_number + summary. Japanese phrases are normalized; very short terms use fallback matching.",
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Free-text search across law_title + law_short_title + law_number + summary. Japanese phrases are normalized; very short terms use fallback matching.",
+              "title": "Q"
+            }
+          },
+          {
+            "description": "Filter by law_type. One of: constitution | act | cabinet_order | imperial_order | ministerial_ordinance | rule | notice | guideline.",
+            "in": "query",
+            "name": "law_type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "constitution",
+                    "act",
+                    "cabinet_order",
+                    "imperial_order",
+                    "ministerial_ordinance",
+                    "rule",
+                    "notice",
+                    "guideline"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by law_type. One of: constitution | act | cabinet_order | imperial_order | ministerial_ordinance | rule | notice | guideline.",
+              "title": "Law Type"
+            }
+          },
+          {
+            "description": "Filter by 所管府省 (exact match).",
+            "in": "query",
+            "name": "ministry",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 120,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by 所管府省 (exact match).",
+              "title": "Ministry"
+            }
+          },
+          {
+            "description": "When true (default), only `revision_status='current'` records are returned. Flip to false to include 'superseded' records.",
+            "in": "query",
+            "name": "currently_effective_only",
+            "required": false,
+            "schema": {
+              "default": true,
+              "description": "When true (default), only `revision_status='current'` records are returned. Flip to false to include 'superseded' records.",
+              "title": "Currently Effective Only",
+              "type": "boolean"
+            }
+          },
+          {
+            "description": "When false (default), `revision_status='repealed'` records are excluded. Flip to true for historical research.",
+            "in": "query",
+            "name": "include_repealed",
+            "required": false,
+            "schema": {
+              "default": false,
+              "description": "When false (default), `revision_status='repealed'` records are excluded. Flip to true for historical research.",
+              "title": "Include Repealed",
+              "type": "boolean"
+            }
+          },
+          {
+            "description": "ISO date (YYYY-MM-DD) — inclusive lower bound on promulgated_date.",
+            "in": "query",
+            "name": "promulgated_from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "ISO date (YYYY-MM-DD) — inclusive lower bound on promulgated_date.",
+              "title": "Promulgated From"
+            }
+          },
+          {
+            "description": "ISO date (YYYY-MM-DD) — inclusive upper bound on promulgated_date.",
+            "in": "query",
+            "name": "promulgated_to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "ISO date (YYYY-MM-DD) — inclusive upper bound on promulgated_date.",
+              "title": "Promulgated To"
+            }
+          },
+          {
+            "description": "ISO date (YYYY-MM-DD) — inclusive lower bound on enforced_date.",
+            "in": "query",
+            "name": "enforced_from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "ISO date (YYYY-MM-DD) — inclusive lower bound on enforced_date.",
+              "title": "Enforced From"
+            }
+          },
+          {
+            "description": "ISO date (YYYY-MM-DD) — inclusive upper bound on enforced_date.",
+            "in": "query",
+            "name": "enforced_to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "ISO date (YYYY-MM-DD) — inclusive upper bound on enforced_date.",
+              "title": "Enforced To"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "limit": 20,
+                  "offset": 0,
+                  "results": [
+                    {
+                      "article_count": 245,
+                      "confidence": 1.0,
+                      "enforced_date": "1965-04-01",
+                      "fetched_at": "2026-04-20T05:14:33Z",
+                      "full_text_url": "https://laws.e-gov.go.jp/law/340AC0000000033",
+                      "last_amended_date": "2025-03-31",
+                      "law_number": "昭和四十年法律第三十三号",
+                      "law_short_title": "所得税法",
+                      "law_title": "所得税法",
+                      "law_type": "act",
+                      "ministry": "財務省",
+                      "promulgated_date": "1965-03-31",
+                      "revision_status": "current",
+                      "source_url": "https://laws.e-gov.go.jp/law/340AC0000000033",
+                      "subject_areas": [
+                        "税法",
+                        "所得税"
+                      ],
+                      "unified_id": "LAW-jp-shotokuzeiho"
+                    }
+                  ],
+                  "total": 1
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/LawSearchResponse"
+                }
+              }
+            },
+            "description": "Paginated laws (e-Gov 法令 catalog, CC-BY 4.0)."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable entity — Pydantic validation failure (`code='invalid_enum'`)."
+          }
+        },
+        "summary": "Search Japanese laws (法令): 憲法 / 法律 / 政令 / 省令 / 告示",
+        "tags": [
+          "laws"
+        ],
+        "x-jpcite-agent-safe": true,
+        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": true,
+          "billing_units_per_successful_call": 1,
+          "unit_price_jpy_ex_tax": 3,
+          "unit_price_jpy_tax_included": 3.3,
+          "plain_ja": "通常の有料利用では成功した1呼び出しあたり1 unit、税別3円・税込約3.30円です。失敗リクエストは課金対象外です。",
+          "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
+        },
+        "x-jpcite-agent-priority": 2,
+        "x-jpcite-route-purpose": "law_lookup",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {}
+        ]
+      }
+    },
+    "/v1/laws/{unified_id}": {
+      "get": {
+        "description": "Look up one 法令 by stable `unified_id` (`LAW-<10 hex>`). Returns 法令番号 (e.g. 昭和四十年法律第三十三号), 正式名称, 略称, 所管府省, 公布日 / 施行日 / 改正日, 条文数, 2-3 line abstract (`summary`), `subject_areas` tags (subsidy_clawback / tax_credit / etc.), and `full_text_url` (e-Gov 法令検索 permalink for humans).\n\n**License:** e-Gov 法令データ is CC-BY 4.0 (cc_by_4.0). Relay `source_url` + attribution.\n\nPair with `GET /v1/laws/{unified_id}/related-programs` to trace which programs cite this law.",
+        "operationId": "get_law_v1_laws__unified_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "unified_id",
+            "required": true,
+            "schema": {
+              "title": "Unified Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "article_count": 245,
+                  "confidence": 1.0,
+                  "enforced_date": "2026-04-01",
+                  "fetched_at": "2026-04-20T05:14:33Z",
+                  "full_text_url": "https://laws.e-gov.go.jp/law/340AC0000000033",
+                  "last_amended_date": "2026-03-31",
+                  "law_number": "昭和四十年法律第三十三号",
+                  "law_short_title": "所得税法",
+                  "law_title": "所得税法",
+                  "law_type": "act",
+                  "ministry": "財務省",
+                  "promulgated_date": "1965-03-31",
+                  "revision_status": "current",
+                  "source_url": "https://laws.e-gov.go.jp/law/340AC0000000033",
+                  "subject_areas": [
+                    "税法",
+                    "所得税"
+                  ],
+                  "summary": "所得に対する税の課税標準・税額等を定める。",
+                  "unified_id": "LAW-64c08d2649"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Law"
+                }
+              }
+            },
+            "description": "Single law record."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable entity — Pydantic validation failure (`code='invalid_enum'`)."
+          }
+        },
+        "summary": "Get a single law (法令) by unified_id (LAW-*)",
+        "tags": [
+          "laws"
+        ],
+        "x-jpcite-agent-safe": true,
+        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": true,
+          "billing_units_per_successful_call": 1,
+          "unit_price_jpy_ex_tax": 3,
+          "unit_price_jpy_tax_included": 3.3,
+          "plain_ja": "通常の有料利用では成功した1呼び出しあたり1 unit、税別3円・税込約3.30円です。失敗リクエストは課金対象外です。",
+          "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
+        },
+        "x-jpcite-agent-priority": 2,
+        "x-jpcite-route-purpose": "law_lookup",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {}
+        ]
+      }
+    },
+    "/v1/am/law_article": {
+      "get": {
+        "description": "Exact 条文 lookup: '租税特別措置法' + '41の19' → full article text + amendment history.",
+        "operationId": "rest_get_law_article_v1_am_law_article_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "law_name_or_canonical_id",
+            "required": true,
+            "schema": {
+              "maxLength": 200,
+              "minLength": 1,
+              "title": "Law Name Or Canonical Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "article_number",
+            "required": true,
+            "schema": {
+              "maxLength": 40,
+              "minLength": 1,
+              "title": "Article Number",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AMLawArticleResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Rest Get Law Article",
+        "tags": [
+          "jpcite"
+        ],
+        "x-jpcite-agent-safe": true,
+        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": true,
+          "billing_units_per_successful_call": 1,
+          "unit_price_jpy_ex_tax": 3,
+          "unit_price_jpy_tax_included": 3.3,
+          "plain_ja": "通常の有料利用では成功した1呼び出しあたり1 unit、税別3円・税込約3.30円です。失敗リクエストは課金対象外です。",
+          "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
+        },
+        "x-jpcite-agent-priority": 2,
+        "x-jpcite-route-purpose": "law_article_lookup",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {}
+        ]
+      }
+    },
+    "/v1/court-decisions/search": {
+      "get": {
+        "description": "Search 2,065 court decisions (判例) sourced from courts.go.jp 判例検索 across `case_name + subject_area + key_ruling + impact_on_business`. Filter by 裁判所名 / `court_level` (supreme / high / district / summary / family) / `decision_type` (判決 / 決定 / 命令) / `subject_area` (租税 / 行政 / 補助金適正化法 / etc.) / decided_from/to date window / `references_law_id` (cites this LAW-* unified_id).\n\n**Precedent weight:** each record carries `precedent_weight` in `{binding, persuasive, informational}`. binding = 最高裁 or 大法廷; persuasive = 高裁 / 地裁 leading case; informational = case reference. LLM agents should surface `precedent_weight` when relaying — a 地裁 ruling is not the same as 最高裁 binding precedent.\n\nFor statute-citation crawls (which decisions cite this law?), prefer `POST /v1/court-decisions/by-statute`.",
+        "operationId": "search_court_decisions_v1_court_decisions_search_get",
+        "parameters": [
+          {
+            "description": "Free-text search across case_name + subject_area + key_ruling + impact_on_business with Japanese phrase normalization.",
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Free-text search across case_name + subject_area + key_ruling + impact_on_business with Japanese phrase normalization.",
+              "title": "Q"
+            }
+          },
+          {
+            "description": "Filter by 裁判所名 (exact match, e.g. '最高裁判所第三小法廷').",
+            "in": "query",
+            "name": "court",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 160,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by 裁判所名 (exact match, e.g. '最高裁判所第三小法廷').",
+              "title": "Court"
+            }
+          },
+          {
+            "description": "Filter by court tier. One of: supreme | high | district | summary | family.",
+            "in": "query",
+            "name": "court_level",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "supreme",
+                    "high",
+                    "district",
+                    "summary",
+                    "family"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by court tier. One of: supreme | high | district | summary | family.",
+              "title": "Court Level"
+            }
+          },
+          {
+            "description": "Filter by decision shape. One of: 判決 | 決定 | 命令.",
+            "in": "query",
+            "name": "decision_type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "判決",
+                    "決定",
+                    "命令"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by decision shape. One of: 判決 | 決定 | 命令.",
+              "title": "Decision Type"
+            }
+          },
+          {
+            "description": "Filter by 分野 (substring match; source vocabulary varies by 判例集).",
+            "in": "query",
+            "name": "subject_area",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 120,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by 分野 (substring match; source vocabulary varies by 判例集).",
+              "title": "Subject Area"
+            }
+          },
+          {
+            "description": "Filter records whose related-law identifier list contains this LAW identifier.",
+            "in": "query",
+            "name": "references_law_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^LAW-[0-9a-f]{10}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter records whose related-law identifier list contains this LAW identifier.",
+              "title": "References Law Id"
+            }
+          },
+          {
+            "description": "ISO date (YYYY-MM-DD) — inclusive lower bound on decision_date.",
+            "in": "query",
+            "name": "decided_from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "ISO date (YYYY-MM-DD) — inclusive lower bound on decision_date.",
+              "title": "Decided From"
+            }
+          },
+          {
+            "description": "ISO date (YYYY-MM-DD) — inclusive upper bound on decision_date.",
+            "in": "query",
+            "name": "decided_to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "ISO date (YYYY-MM-DD) — inclusive upper bound on decision_date.",
+              "title": "Decided To"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "limit": 20,
+                  "offset": 0,
+                  "results": [
+                    {
+                      "case_name": "所得税更正処分取消等請求事件",
+                      "case_number": "平成30(行ヒ)422",
+                      "court": "最高裁判所第三小法廷",
+                      "court_level": "supreme",
+                      "decision_date": "2020-03-24",
+                      "decision_type": "判決",
+                      "fetched_at": "2026-04-20T05:14:33Z",
+                      "full_text_url": "https://www.courts.go.jp/app/hanrei_jp/detail2?id=89311",
+                      "key_ruling": "国税通則法24条所定の更正処分の取消…",
+                      "precedent_weight": "binding",
+                      "source_url": "https://www.courts.go.jp/...",
+                      "subject_area": "租税",
+                      "unified_id": "HAN-5954003266"
+                    }
+                  ],
+                  "total": 1
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/CourtDecisionSearchResponse"
+                }
+              }
+            },
+            "description": "Paginated court decisions."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Search Japanese court decisions (判決 / 決定 / 命令)",
+        "tags": [
+          "court-decisions"
+        ],
+        "x-jpcite-agent-safe": true,
+        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": true,
+          "billing_units_per_successful_call": 1,
+          "unit_price_jpy_ex_tax": 3,
+          "unit_price_jpy_tax_included": 3.3,
+          "plain_ja": "通常の有料利用では成功した1呼び出しあたり1 unit、税別3円・税込約3.30円です。失敗リクエストは課金対象外です。",
+          "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
+        },
+        "x-jpcite-agent-priority": 2,
+        "x-jpcite-route-purpose": "court_decision_lookup",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {}
+        ]
+      }
+    },
+    "/v1/enforcement-cases/search": {
+      "get": {
+        "description": "Search enforcement cases for compliance / DD lookup.",
+        "operationId": "search_enforcement_cases_v1_enforcement_cases_search_get",
+        "parameters": [
+          {
+            "description": "Free-text search over program_name_hint + reason_excerpt + source_title (case-insensitive text match).",
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Free-text search over program_name_hint + reason_excerpt + source_title (case-insensitive text match).",
+              "title": "Q"
+            }
+          },
+          {
+            "in": "query",
+            "name": "event_type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 80,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Event Type"
+            }
+          },
+          {
+            "in": "query",
+            "name": "ministry",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 120,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ministry"
+            }
+          },
+          {
+            "in": "query",
+            "name": "prefecture",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 80,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Prefecture"
+            }
+          },
+          {
+            "in": "query",
+            "name": "legal_basis",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Legal Basis"
+            }
+          },
+          {
+            "in": "query",
+            "name": "program_name_hint",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Program Name Hint"
+            }
+          },
+          {
+            "description": "13-digit 法人番号 filter. NOTE: this column is 100% NULL across all 1,185 enforcement cases because 会計検査院 does not publish 法人番号. Filtering by this parameter will always return 0 records. Use `q=<company_name>` or `q=<houjin_bangou_digits>` for substring search over source_title / reason_excerpt / program_name_hint instead.",
+            "in": "query",
+            "name": "recipient_houjin_bangou",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 13,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "13-digit 法人番号 filter. NOTE: this column is 100% NULL across all 1,185 enforcement cases because 会計検査院 does not publish 法人番号. Filtering by this parameter will always return 0 records. Use `q=<company_name>` or `q=<houjin_bangou_digits>` for substring search over source_title / reason_excerpt / program_name_hint instead.",
+              "title": "Recipient Houjin Bangou"
+            }
+          },
+          {
+            "in": "query",
+            "name": "min_improper_grant_yen",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Min Improper Grant Yen"
+            }
+          },
+          {
+            "in": "query",
+            "name": "max_improper_grant_yen",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Max Improper Grant Yen"
+            }
+          },
+          {
+            "description": "ISO date (YYYY-MM-DD) — inclusive lower bound on disclosed_date.",
+            "in": "query",
+            "name": "disclosed_from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "ISO date (YYYY-MM-DD) — inclusive lower bound on disclosed_date.",
+              "title": "Disclosed From"
+            }
+          },
+          {
+            "description": "ISO date (YYYY-MM-DD) — inclusive upper bound on disclosed_date.",
+            "in": "query",
+            "name": "disclosed_until",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "ISO date (YYYY-MM-DD) — inclusive upper bound on disclosed_date.",
+              "title": "Disclosed Until"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "limit": 20,
+                  "offset": 0,
+                  "results": [
+                    {
+                      "amount_yen": 12500000,
+                      "case_id": "ENF-jftc-2024-00045",
+                      "confidence": 0.98,
+                      "disclosed_date": "2024-02-15",
+                      "event_type": "排除措置命令",
+                      "fetched_at": "2026-04-22T08:11:00Z",
+                      "ministry": "公正取引委員会",
+                      "prefecture": "大阪府",
+                      "reason_excerpt": "公共工事入札談合の事実を認定。",
+                      "recipient_houjin_bangou": "9876543210987",
+                      "recipient_kind": "houjin",
+                      "recipient_name": "株式会社サンプル建設",
+                      "source_title": "排除措置命令及び課徴金納付命令について",
+                      "source_url": "https://www.jftc.go.jp/houdou/pressrelease/2024/feb/..."
+                    }
+                  ],
+                  "total": 1
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/EnforcementCaseSearchResponse"
+                }
+              }
+            },
+            "description": "Paginated 行政処分 / 会計検査院 indications. Use this for compliance / due-diligence on a recipient or program."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable entity — Pydantic validation failure (`code='invalid_enum'`)."
+          }
+        },
+        "summary": "Search Enforcement Cases",
+        "tags": [
+          "enforcement-cases"
+        ],
+        "x-jpcite-agent-safe": true,
+        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": true,
+          "billing_units_per_successful_call": 1,
+          "unit_price_jpy_ex_tax": 3,
+          "unit_price_jpy_tax_included": 3.3,
+          "plain_ja": "通常の有料利用では成功した1呼び出しあたり1 unit、税別3円・税込約3.30円です。失敗リクエストは課金対象外です。",
+          "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
+        },
+        "x-jpcite-agent-priority": 2,
+        "x-jpcite-route-purpose": "enforcement_lookup",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {}
+        ]
+      }
+    },
+    "/v1/tax_rulesets/search": {
+      "get": {
+        "description": "Search 50 税務判定ルールセット — structured, machine-evaluable tax rules covering インボイス制度 (2割特例, 80%/50% 経過措置, 少額特例), 適格請求書発行事業者登録, 住宅ローン控除, 中小企業 投資促進税制, etc. Each record has `eligibility_conditions_json` (predicate tree), `rate_or_amount`, `calculation_formula`, `filing_requirements`, and `effective_from` / `effective_until`.\n\n**Cliff dates to flag:**\n- 2026-09-30: 2割特例 / 80%経過措置 終了\n- 2027-09-30: 80% 経過措置 終了 (50% 経過措置 開始)\n- 2029-09-30: 50% 経過措置 / 少額特例 終了\n\nUse `effective_on=YYYY-MM-DD` to filter to rules that applied on a specific date — critical around cliff dates. To *evaluate* rules against a caller business profile, use `POST /v1/tax_rulesets/evaluate` (mechanical predicate matching, NOT 税務助言).\n\n**税理士法 §52 fence:** every response carries a `_disclaimer` envelope key. LLM agents MUST relay verbatim to end users.",
+        "operationId": "search_tax_rulesets_v1_tax_rulesets_search_get",
+        "parameters": [
+          {
+            "description": "Free-text search across ruleset_name + eligibility_conditions + calculation_formula. Japanese phrases are normalized; very short terms use fallback matching.",
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Free-text search across ruleset_name + eligibility_conditions + calculation_formula. Japanese phrases are normalized; very short terms use fallback matching.",
+              "title": "Q"
+            }
+          },
+          {
+            "description": "Filter by tax_category. One of: consumption | corporate | income | property | local | inheritance.",
+            "in": "query",
+            "name": "tax_category",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 20,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by tax_category. One of: consumption | corporate | income | property | local | inheritance.",
+              "title": "Tax Category"
+            }
+          },
+          {
+            "description": "Filter by ruleset_kind. One of: registration | credit | deduction | special_depreciation | exemption | preservation | other.",
+            "in": "query",
+            "name": "ruleset_kind",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 30,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by ruleset_kind. One of: registration | credit | deduction | special_depreciation | exemption | preservation | other.",
+              "title": "Ruleset Kind"
+            }
+          },
+          {
+            "description": "ISO 8601 date (YYYY-MM-DD). Returns only rulesets whose effective_from <= date AND (effective_until IS NULL OR effective_until >= date). Use this to ask 'which rules applied on date X?' — critical around cliff dates (2026-09-30 / 2027-09-30 / 2029-09-30).",
+            "in": "query",
+            "name": "effective_on",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 10,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "ISO 8601 date (YYYY-MM-DD). Returns only rulesets whose effective_from <= date AND (effective_until IS NULL OR effective_until >= date). Use this to ask 'which rules applied on date X?' — critical around cliff dates (2026-09-30 / 2027-09-30 / 2029-09-30).",
+              "title": "Effective On"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "_disclaimer": "本情報は税務助言ではありません。jpcite は公的機関が公表する税制・補助金・法令情報を検索・整理して提供するサービスで、税理士法 §52 に基づき個別具体的な税務判断・申告書作成代行は行いません。",
+                  "limit": 20,
+                  "offset": 0,
+                  "results": [
+                    {
+                      "authority": "国税庁",
+                      "authority_url": "https://www.nta.go.jp/",
+                      "calculation_formula": "納付消費税額 = 課税売上に係る消費税額 × 0.2",
+                      "confidence": 0.95,
+                      "effective_from": "2023-10-01",
+                      "effective_until": "2026-09-30",
+                      "eligibility_conditions": "インボイス制度を機に免税事業者から課税事業者となった小規模事業者は、2023-10-01 から 2026-09-30 までの属する課税期間について、売上税額の 2 割を納税額とできる。基準期間の課税売上高が1,000 万円以下であることが前提。",
+                      "eligibility_conditions_json": {
+                        "of": [
+                          {
+                            "field": "newly_registered_invoice_issuer",
+                            "op": "eq",
+                            "value": true
+                          },
+                          {
+                            "field": "was_exempt_business_before_registration",
+                            "op": "eq",
+                            "value": true
+                          },
+                          {
+                            "field": "taxable_sales_jpy_base_period",
+                            "op": "lte",
+                            "value": 10000000
+                          }
+                        ],
+                        "op": "all"
+                      },
+                      "fetched_at": "2026-04-24T06:08:43Z",
+                      "filing_requirements": "事前届出不要。消費税確定申告書に2割特例適用の旨を記載。",
+                      "rate_or_amount": "納税額 = 売上税額 × 20%",
+                      "related_law_ids": [
+                        "所得税法等の一部を改正する法律(令和五年法律第三号)附則第51条の2",
+                        "消費税法第37条"
+                      ],
+                      "ruleset_kind": "exemption",
+                      "ruleset_name": "2割特例 (小規模事業者の消費税納税額軽減)",
+                      "source_checksum": "9a1c4f0d6e3b2a7c8d5f1e4b9a2c7d6e",
+                      "source_excerpt": "適格請求書発行事業者となる小規模事業者の負担軽減措置 (2割特例)",
+                      "source_url": "https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice_tokurei.htm",
+                      "tax_category": "consumption",
+                      "unified_id": "TAX-b886afca81",
+                      "updated_at": "2026-04-24T06:08:43Z"
+                    }
+                  ],
+                  "total": 1
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/TaxRulesetSearchResponse"
+                }
+              }
+            },
+            "description": "Paginated tax rulesets + `_disclaimer` (税理士法 §52 fence)."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Search 税務判定ルールセット (e.g. 2割特例, 適格請求書発行事業者登録, 経過措置)",
+        "tags": [
+          "tax_rulesets"
+        ],
+        "x-jpcite-agent-safe": true,
+        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": true,
+          "billing_units_per_successful_call": 1,
+          "unit_price_jpy_ex_tax": 3,
+          "unit_price_jpy_tax_included": 3.3,
+          "plain_ja": "通常の有料利用では成功した1呼び出しあたり1 unit、税別3円・税込約3.30円です。失敗リクエストは課金対象外です。",
+          "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
+        },
+        "x-jpcite-agent-priority": 2,
+        "x-jpcite-route-purpose": "tax_ruleset_lookup",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {}
+        ]
+      }
+    },
+    "/v1/tax_rulesets/{unified_id}": {
+      "get": {
+        "description": "Look up one 税務判定ルールセット by stable `unified_id` (`TAX-<10 hex>`). Returns full eligibility conditions (narrative + structured JSON predicates), rate/amount cap, calculation formula, filing requirements, effective window, related law ids, and source lineage.\n\n**税理士法 §52 fence:** response carries `_disclaimer`. Eligibility predicates are derived from public 国税庁 / 財務省 sources and require qualified 税理士 confirmation before any filing decision.",
+        "operationId": "get_tax_ruleset_v1_tax_rulesets__unified_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "unified_id",
+            "required": true,
+            "schema": {
+              "title": "Unified Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "_disclaimer": "本情報は公開情報の検索結果であり、税務助言ではありません。申告・適用判断は税理士にご確認ください。",
+                  "authority": "国税庁",
+                  "calculation_formula": "納付税額 = 課税売上消費税 × 20%",
+                  "effective_from": "2023-10-01",
+                  "effective_until": "2026-09-30",
+                  "eligibility_conditions": "免税事業者から登録した小規模事業者…",
+                  "filing_requirements": "確定申告書「2割特例適用」欄に記入。届出書 不要。",
+                  "rate_or_amount": "課税売上にかかる消費税額の20%",
+                  "related_law_ids": [
+                    "LAW-4e95177b82"
+                  ],
+                  "ruleset_kind": "exemption",
+                  "ruleset_name": "2割特例 (小規模事業者の消費税納税額軽減)",
+                  "source_url": "https://www.nta.go.jp/...",
+                  "tax_category": "consumption",
+                  "unified_id": "TAX-b886afca81"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/TaxRulesetOut"
+                }
+              }
+            },
+            "description": "Single ruleset record + `_disclaimer`."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get a single 税務判定ルールセット by TAX-* id",
+        "tags": [
+          "tax_rulesets"
+        ],
+        "x-jpcite-agent-safe": true,
+        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": true,
+          "billing_units_per_successful_call": 1,
+          "unit_price_jpy_ex_tax": 3,
+          "unit_price_jpy_tax_included": 3.3,
+          "plain_ja": "通常の有料利用では成功した1呼び出しあたり1 unit、税別3円・税込約3.30円です。失敗リクエストは課金対象外です。",
+          "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
+        },
+        "x-jpcite-agent-priority": 2,
+        "x-jpcite-route-purpose": "tax_ruleset_lookup",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {}
+        ]
+      }
+    },
+    "/v1/houjin/{bangou}": {
+      "get": {
+        "description": "Returns corporate facts, adoption history, enforcement details, and registration status from public datasets for a given 13-digit 法人番号.\n\n**Pricing:** ¥3/call (1 unit). Anonymous callers share the 3/日 per-IP cap (JST 翌日 00:00 リセット).\n\n**§52 envelope:** every 2xx body carries `_disclaimer` (税理士法 §52 fence) + `_namayoke_caveat` (商号変更・合併 周辺の 名寄せ caveat). LLM relays must surface both verbatim.\n\n**Coverage:** unavailable records return official lookup guidance.",
+        "operationId": "get_houjin_360_v1_houjin__bangou__get",
+        "parameters": [
+          {
+            "description": "13-digit 法人番号 (half-width digits, no T-prefix).",
+            "in": "path",
+            "name": "bangou",
+            "required": true,
+            "schema": {
+              "description": "13-digit 法人番号 (half-width digits, no T-prefix).",
+              "examples": [
+                "4120101047866"
+              ],
+              "maxLength": 13,
+              "minLength": 13,
+              "pattern": "^\\d{13}$",
+              "title": "Bangou",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Corporate 360 envelope. `corp_facts` is a name → {value, unit, kind} map covering the 21 corp.* field_names; `basic` distills the top-level identity fields; auxiliaries (`invoice_registration`, `adoptions`, `enforcement`) carry the joined rollups."
+          },
+          "422": {
+            "description": "bangou must match '^\\d{13}$' (13 digits, half-width)"
+          }
+        },
+        "summary": "Corporate 360 lookup by 法人番号",
+        "tags": [
+          "houjin"
+        ],
+        "x-jpcite-agent-safe": true,
+        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": true,
+          "billing_units_per_successful_call": 1,
+          "unit_price_jpy_ex_tax": 3,
+          "unit_price_jpy_tax_included": 3.3,
+          "plain_ja": "通常の有料利用では成功した1呼び出しあたり1 unit、税別3円・税込約3.30円です。失敗リクエストは課金対象外です。",
+          "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
+        },
+        "x-jpcite-agent-priority": 2,
+        "x-jpcite-route-purpose": "corporate_360_lookup",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {}
+        ]
+      }
+    },
+    "/v1/invoice_registrants/search": {
+      "get": {
+        "description": "Look up registered Japanese 適格請求書発行事業者 (qualified invoice issuers under the インボイス制度 / 消費税仕入税額控除 regime) by name prefix, 法人番号, prefecture, or registration date window. Mirror of NTA's official 適格請求書発行事業者公表サイト bulk (13,801 delta records live; full 4M-record monthly bulk lands post-launch).\n\n**When to use:** verify whether a counterparty has issued a valid T-prefixed invoice number before claiming 仕入税額控除. For exact T-number lookup (T + 13 digits), prefer `GET /v1/invoice registrant records/{invoice_registration_number}`.\n\n**Limits:** `q` requires 2+ chars and uses prefix name matching. Bulk dump is intentionally not supported; for full snapshots use NTA's official download URL in the `attribution.source_url`.\n\n**License:** every 2xx body carries a PDL v1.0 `attribution` block — 公共データ利用規約 第1.0版 (出典明記 + 編集・加工注記). Do NOT strip on relay.",
+        "operationId": "search_invoice registrant records_v1_invoice registrant records_search_get",
+        "parameters": [
+          {
+            "description": "Prefix match on 事業者名 (normalized_name). Short queries (< 2 chars) are rejected to keep the match selective.",
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Prefix match on 事業者名 (normalized_name). Short queries (< 2 chars) are rejected to keep the match selective.",
+              "title": "Q"
+            }
+          },
+          {
+            "description": "Exact 13-digit 法人番号 filter. Returns only records where houjin_bangou matches (sole-proprietor records excluded).",
+            "in": "query",
+            "name": "houjin_bangou",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^\\d{13}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Exact 13-digit 法人番号 filter. Returns only records where houjin_bangou matches (sole-proprietor records excluded).",
+              "title": "Houjin Bangou"
+            }
+          },
+          {
+            "description": "corporate = 法人 (registrant_kind='corporation'); individual = 個人事業主 (registrant_kind='sole_proprietor'). Omit to include both plus 'other'.",
+            "in": "query",
+            "name": "kind",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "corporate",
+                    "individual"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "corporate = 法人 (registrant_kind='corporation'); individual = 個人事業主 (registrant_kind='sole_proprietor'). Omit to include both plus 'other'.",
+              "title": "Kind"
+            }
+          },
+          {
+            "description": "Prefecture name. Canonical = full-suffix kanji ('東京都'); short form ('東京') and romaji also accepted.",
+            "in": "query",
+            "name": "prefecture",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 20,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Prefecture name. Canonical = full-suffix kanji ('東京都'); short form ('東京') and romaji also accepted.",
+              "title": "Prefecture"
+            }
+          },
+          {
+            "description": "ISO date (YYYY-MM-DD) — inclusive lower bound on registered_date.",
+            "in": "query",
+            "name": "registered_after",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "ISO date (YYYY-MM-DD) — inclusive lower bound on registered_date.",
+              "title": "Registered After"
+            }
+          },
+          {
+            "description": "ISO date (YYYY-MM-DD) — inclusive upper bound on registered_date.",
+            "in": "query",
+            "name": "registered_before",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "ISO date (YYYY-MM-DD) — inclusive upper bound on registered_date.",
+              "title": "Registered Before"
+            }
+          },
+          {
+            "description": "When true (default), excludes revoked (revoked_date IS NOT NULL) and expired (expired_date IS NOT NULL) records. Flip to false for historical/audit research.",
+            "in": "query",
+            "name": "active_only",
+            "required": false,
+            "schema": {
+              "default": true,
+              "description": "When true (default), excludes revoked (revoked_date IS NOT NULL) and expired (expired_date IS NOT NULL) records. Flip to false for historical/audit research.",
+              "title": "Active Only",
+              "type": "boolean"
+            }
+          },
+          {
+            "description": "Page size. Default 50, hard cap 100. No wildcard bulk export — point consumers at NTA's own download URL for full snapshots.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "description": "Page size. Default 50, hard cap 100. No wildcard bulk export — point consumers at NTA's own download URL for full snapshots.",
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "attribution": {
+                    "edited": true,
+                    "license": "公共データ利用規約 第1.0版 (PDL v1.0)",
+                    "notice": "本データは国税庁公表データを編集加工したものであり、原データと完全には一致しません。公表データは本API経由ではなく、発行元サイトで最新のものを確認してください。",
+                    "source": "国税庁適格請求書発行事業者公表サイト（国税庁）",
+                    "source_url": "https://www.invoice-kohyo.nta.go.jp/"
+                  },
+                  "limit": 50,
+                  "offset": 0,
+                  "results": [
+                    {
+                      "address_normalized": "東京都千代田区丸の内1-1-1",
+                      "confidence": 0.98,
+                      "fetched_at": "2026-04-25T03:30:00Z",
+                      "houjin_bangou": "1234567890123",
+                      "invoice_registration_number": "T1234567890123",
+                      "last_updated_nta": "2025-05-13",
+                      "normalized_name": "株式会社サンプル",
+                      "prefecture": "東京都",
+                      "registered_date": "2024-04-01",
+                      "registrant_kind": "corporation",
+                      "source_checksum": "0e5e54184ed778eb2fd797dc7f100b80cb7e892b15134de629d860ae76546398",
+                      "source_url": "https://www.invoice-kohyo.nta.go.jp/regno-search/download",
+                      "updated_at": "2026-04-25T03:30:00Z"
+                    }
+                  ],
+                  "total": 1
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceRegistrantSearchResponse"
+                }
+              }
+            },
+            "description": "SearchResponse. Every 2xx body carries a PDL v1.0 `attribution` block — required by 公共データ利用規約 第1.0版."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Search 適格請求書発行事業者 (NTA invoice registrants)",
+        "tags": [
+          "invoice_registrants"
+        ],
+        "x-jpcite-agent-safe": true,
+        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": true,
+          "billing_units_per_successful_call": 1,
+          "unit_price_jpy_ex_tax": 3,
+          "unit_price_jpy_tax_included": 3.3,
+          "plain_ja": "通常の有料利用では成功した1呼び出しあたり1 unit、税別3円・税込約3.30円です。失敗リクエストは課金対象外です。",
+          "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
+        },
+        "x-jpcite-agent-priority": 2,
+        "x-jpcite-route-purpose": "invoice_registrant_lookup",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {}
+        ]
+      }
+    },
+    "/v1/bids/search": {
+      "get": {
+        "description": "Search 362 入札案件 (government procurement bids) sourced from GEPS (政府電子調達) + ministry / 自治体 procurement portals. Filter by `bid_kind` (open / selective / negotiated / kobo_subsidy), 発注機関 法人番号, 落札者 法人番号, linked program hint, awarded_amount band, deadline window.\n\n**When to use:** caller asks 'who won the 国土交通省 2025 IT procurement?' or 'are there still-open 物品調達 in 関東 with award ceiling > 1億?'. Pair with `/v1/am/enforcement` to screen winners for 入札参加資格停止.\n\n**Search note:** very short terms may not match; use the structured filters instead or longer phrases. When `q` is omitted, results sort by most recently published first.",
+        "operationId": "search_bids_v1_bids_search_get",
+        "parameters": [
+          {
+            "description": "Free-text search across bid_title + bid_description + procuring_entity + winner_name. Japanese phrases are normalized. Very short terms may not match; use a longer phrase or the structured filters instead.",
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Free-text search across bid_title + bid_description + procuring_entity + winner_name. Japanese phrases are normalized. Very short terms may not match; use a longer phrase or the structured filters instead.",
+              "title": "Q"
+            }
+          },
+          {
+            "description": "Filter by bid_kind. One of: open | selective | negotiated | kobo_subsidy.",
+            "in": "query",
+            "name": "bid_kind",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "open",
+                    "selective",
+                    "negotiated",
+                    "kobo_subsidy"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by bid_kind. One of: open | selective | negotiated | kobo_subsidy.",
+              "title": "Bid Kind"
+            }
+          },
+          {
+            "description": "Exact 13-digit 法人番号 of the procuring entity.",
+            "in": "query",
+            "name": "procuring_houjin_bangou",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^\\d{13}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Exact 13-digit 法人番号 of the procuring entity.",
+              "title": "Procuring Houjin Bangou"
+            }
+          },
+          {
+            "description": "Exact 13-digit 法人番号 of the落札者.",
+            "in": "query",
+            "name": "winner_houjin_bangou",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^\\d{13}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Exact 13-digit 法人番号 of the落札者.",
+              "title": "Winner Houjin Bangou"
+            }
+          },
+          {
+            "description": "Exact linked program identifier; returns bids associated with that program.",
+            "in": "query",
+            "name": "program_id_hint",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 64,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Exact linked program identifier; returns bids associated with that program.",
+              "title": "Program Id Hint"
+            }
+          },
+          {
+            "description": "Inclusive lower bound on awarded_amount_yen (JPY). Rows with NULL awarded_amount_yen are excluded from the filtered set when this is set.",
+            "in": "query",
+            "name": "min_amount",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Inclusive lower bound on awarded_amount_yen (JPY). Rows with NULL awarded_amount_yen are excluded from the filtered set when this is set.",
+              "title": "Min Amount"
+            }
+          },
+          {
+            "description": "Inclusive upper bound on awarded_amount_yen (JPY). Rows with NULL awarded_amount_yen are excluded from the filtered set when this is set.",
+            "in": "query",
+            "name": "max_amount",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Inclusive upper bound on awarded_amount_yen (JPY). Rows with NULL awarded_amount_yen are excluded from the filtered set when this is set.",
+              "title": "Max Amount"
+            }
+          },
+          {
+            "description": "ISO date (YYYY-MM-DD) — inclusive lower bound on bid_deadline. Useful for 'still-open' queries.",
+            "in": "query",
+            "name": "deadline_after",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "ISO date (YYYY-MM-DD) — inclusive lower bound on bid_deadline. Useful for 'still-open' queries.",
+              "title": "Deadline After"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "limit": 20,
+                  "offset": 0,
+                  "results": [
+                    {
+                      "announcement_date": "2026-04-14",
+                      "bid_deadline": "2026-04-27",
+                      "bid_kind": "open",
+                      "bid_title": "農林水産省永年勤続者表彰用銀杯等の製造（単価契約）",
+                      "classification_code": "物品の製造",
+                      "confidence": 0.92,
+                      "fetched_at": "2026-04-25T04:06:20Z",
+                      "ministry": "農林水産省",
+                      "procuring_entity": "農林水産省",
+                      "source_url": "https://www.maff.go.jp/j/supply/nyusatu/buppin_ekimu/sonota1/index.html",
+                      "unified_id": "BID-cf1aff5eb7",
+                      "updated_at": "2026-04-25T04:06:20Z"
+                    }
+                  ],
+                  "total": 1
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/BidsSearchResponse"
+                }
+              }
+            },
+            "description": "Paginated bids."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Search Japanese government bids (入札案件)",
+        "tags": [
+          "bids"
+        ],
+        "x-jpcite-agent-safe": true,
+        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": true,
+          "billing_units_per_successful_call": 1,
+          "unit_price_jpy_ex_tax": 3,
+          "unit_price_jpy_tax_included": 3.3,
+          "plain_ja": "通常の有料利用では成功した1呼び出しあたり1 unit、税別3円・税込約3.30円です。失敗リクエストは課金対象外です。",
+          "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
+        },
+        "x-jpcite-agent-priority": 2,
+        "x-jpcite-route-purpose": "public_bid_lookup",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {}
+        ]
+      }
+    },
+    "/v1/funding_stack/check": {
+      "post": {
+        "description": "複数の制度 (program_ids) を併用できるかを am_compat_matrix と exclusion_rules で判定し、pair 毎の verdict と全体集計を返す。\n\n* 1 unit = 1 pair なので、3 件 = 3 pair = 3 unit (¥9 / 税込 ¥9.90)\n* `incompatible` / `requires_review` の pair が 1 件でもあれば、all_pairs_status はその strictness にエスカレーションする\n* `_disclaimer` フィールドは必須 — 非 LLM rule engine は curate された コーパスに 100% 依拠するため、収録漏れや公募回ごとの細則差を取りこぼし得る。最終判断は必ず一次資料 + 専門家確認を経ること。",
+        "operationId": "check_funding_stack_v1_funding_stack_check_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FundingStackCheckRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Check Funding Stack V1 Funding Stack Check Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "制度併用可否判定 (Funding Stack Checker — no LLM)",
+        "tags": [
+          "funding-stack"
+        ],
+        "x-jpcite-agent-safe": true,
+        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": true,
+          "billing_units_per_successful_call": 1,
+          "unit_price_jpy_ex_tax": 3,
+          "unit_price_jpy_tax_included": 3.3,
+          "plain_ja": "通常の有料利用では成功した1呼び出しあたり1 unit、税別3円・税込約3.30円です。失敗リクエストは課金対象外です。",
+          "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
+        },
+        "x-jpcite-agent-priority": 2,
+        "x-jpcite-route-purpose": "funding_stack_check",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {}
+        ]
+      }
+    },
+    "/v1/court-decisions/{unified_id}": {
+      "get": {
+        "description": "Look up one 判例 by stable `unified_id` (`HAN-<10 hex>`). Returns 事件名, 事件番号, 裁判所, 言渡日, 判決種別, 分野, 主要判示事項 (`key_ruling`), 実務影響 (`impact_on_business`), `precedent_weight`, courts.go.jp permalink, and `pdf_url` (全文 PDF mirror).\n\nDiscovery flow: call `GET /v1/court-decisions/search` first, then follow up on each `unified_id` here for the full key ruling text + practical impact summary.",
+        "operationId": "get_court_decision_v1_court_decisions__unified_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "unified_id",
+            "required": true,
+            "schema": {
+              "title": "Unified Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "case_name": "所得税更正処分取消等請求事件",
+                  "case_number": "平成30(行ヒ)422",
+                  "confidence": 0.9,
+                  "court": "最高裁判所第三小法廷",
+                  "court_level": "supreme",
+                  "decision_date": "2020-03-24",
+                  "decision_type": "判決",
+                  "fetched_at": "2026-04-20T05:14:33Z",
+                  "full_text_url": "https://www.courts.go.jp/app/hanrei_jp/detail2?id=89311",
+                  "impact_on_business": "国税不服審判の段階で…",
+                  "key_ruling": "更正処分の理由付記の…",
+                  "pdf_url": "https://www.courts.go.jp/app/files/hanrei_jp/311/089311_hanrei.pdf",
+                  "precedent_weight": "binding",
+                  "source_excerpt": "…(裁判所サイトより抜粋)",
+                  "source_url": "https://www.courts.go.jp/app/hanrei_jp/detail2?id=89311",
+                  "subject_area": "租税",
+                  "unified_id": "HAN-5954003266"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/CourtDecision"
+                }
+              }
+            },
+            "description": "Single court decision record."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get a single court decision by unified_id (HAN-*)",
+        "tags": [
+          "court-decisions"
+        ],
+        "x-jpcite-agent-safe": true,
+        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": true,
+          "billing_units_per_successful_call": 1,
+          "unit_price_jpy_ex_tax": 3,
+          "unit_price_jpy_tax_included": 3.3,
+          "plain_ja": "通常の有料利用では成功した1呼び出しあたり1 unit、税別3円・税込約3.30円です。失敗リクエストは課金対象外です。",
+          "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
+        },
+        "x-jpcite-agent-priority": 2,
+        "x-jpcite-route-purpose": "court_decision_lookup",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {}
+        ]
+      }
+    },
+    "/v1/enforcement-cases/{case_id}": {
+      "get": {
+        "description": "Return one enforcement case with audit-trail snapshot fields.\n\nThe response includes `corpus_snapshot_id` + `corpus_checksum` so callers\ncan reproduce the lookup later and detect whether the corpus changed.",
+        "operationId": "get_enforcement_case_v1_enforcement_cases__case_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "case_id",
+            "required": true,
+            "schema": {
+              "title": "Case Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnforcementCase"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable entity — Pydantic validation failure (`code='invalid_enum'`)."
+          }
+        },
+        "summary": "Get Enforcement Case",
+        "tags": [
+          "enforcement-cases"
+        ],
+        "x-jpcite-agent-safe": true,
+        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": true,
+          "billing_units_per_successful_call": 1,
+          "unit_price_jpy_ex_tax": 3,
+          "unit_price_jpy_tax_included": 3.3,
+          "plain_ja": "通常の有料利用では成功した1呼び出しあたり1 unit、税別3円・税込約3.30円です。失敗リクエストは課金対象外です。",
+          "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
+        },
+        "x-jpcite-agent-priority": 2,
+        "x-jpcite-route-purpose": "enforcement_lookup",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {}
+        ]
+      }
+    },
+    "/v1/invoice_registrants/{invoice_registration_number}": {
+      "get": {
+        "description": "Exact lookup by 適格請求書発行事業者登録番号 (`^T\\d{13}$`). Returns the registrant's name, address, prefecture, registered_date, and revocation/expiry status (NULL = active).\n\n**404 semantics:** A miss means the record is not available in jpcite's current snapshot. The response includes official lookup guidance when available.\n\n**License:** PDL v1.0 attribution block on every 2xx + 404 response (公共データ利用規約 第1.0版 / 出典明記 + 編集・加工注記).",
+        "operationId": "get_invoice_registrant_v1_invoice registrant records__invoice_registration_number__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "invoice_registration_number",
+            "required": true,
+            "schema": {
+              "title": "Invoice Registration Number",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "attribution": {
+                    "edited": true,
+                    "license": "公共データ利用規約 第1.0版 (PDL v1.0)",
+                    "notice": "本データは国税庁公表データを編集加工したものであり、原データと完全には一致しません。公表データは本API経由ではなく、発行元サイトで最新のものを確認してください。",
+                    "source": "国税庁適格請求書発行事業者公表サイト（国税庁）",
+                    "source_url": "https://www.invoice-kohyo.nta.go.jp/"
+                  },
+                  "result": {
+                    "address_normalized": "東京都千代田区丸の内1-1-1",
+                    "confidence": 0.98,
+                    "fetched_at": "2026-04-25T03:30:00Z",
+                    "houjin_bangou": "1234567890123",
+                    "invoice_registration_number": "T1234567890123",
+                    "last_updated_nta": "2025-05-13",
+                    "normalized_name": "株式会社サンプル",
+                    "prefecture": "東京都",
+                    "registered_date": "2024-04-01",
+                    "registrant_kind": "corporation",
+                    "source_url": "https://www.invoice-kohyo.nta.go.jp/regno-search/download",
+                    "updated_at": "2026-04-25T03:30:00Z"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/GetResponse"
+                }
+              }
+            },
+            "description": "GetResponse. Every 2xx body carries a PDL v1.0 `attribution` block — required by 公共データ利用規約 第1.0版."
+          },
+          "422": {
+            "description": "invoice_registration_number malformed (must match '^T\\d{13}$')"
+          }
+        },
+        "summary": "Lookup adequate-invoice (適格請求書) registrant by T-number",
+        "tags": [
+          "invoice_registrants"
+        ],
+        "x-jpcite-agent-safe": true,
+        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": true,
+          "billing_units_per_successful_call": 1,
+          "unit_price_jpy_ex_tax": 3,
+          "unit_price_jpy_tax_included": 3.3,
+          "plain_ja": "通常の有料利用では成功した1呼び出しあたり1 unit、税別3円・税込約3.30円です。失敗リクエストは課金対象外です。",
+          "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
+        },
+        "x-jpcite-agent-priority": 2,
+        "x-jpcite-route-purpose": "invoice_registrant_lookup",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {}
+        ]
+      }
+    },
+    "/v1/bids/{unified_id}": {
+      "get": {
+        "description": "Return a single 入札案件 by BID-<10 hex> unified_id.\n\nThe response includes `corpus_snapshot_id` + `corpus_checksum` so callers\ncan reproduce the lookup later and detect whether the corpus changed.",
+        "operationId": "get_bid_v1_bids__unified_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "unified_id",
+            "required": true,
+            "schema": {
+              "title": "Unified Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BidOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Bid",
+        "tags": [
+          "bids"
+        ],
+        "x-jpcite-agent-safe": true,
+        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": true,
+          "billing_units_per_successful_call": 1,
+          "unit_price_jpy_ex_tax": 3,
+          "unit_price_jpy_tax_included": 3.3,
+          "plain_ja": "通常の有料利用では成功した1呼び出しあたり1 unit、税別3円・税込約3.30円です。失敗リクエストは課金対象外です。",
+          "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
+        },
+        "x-jpcite-agent-priority": 2,
+        "x-jpcite-route-purpose": "public_bid_lookup",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {}
+        ]
+      }
+    },
+    "/v1/case-studies/search": {
+      "get": {
+        "description": "Browse 2,286 採択事例 (real awarded grants) — searchable across `company_name + case_title + case_summary + source_excerpt` and filterable by 都道府県 / industry_jsic / 法人番号 / `program_used` / 補助金額 band / 従業員数 band.\n\n**Use cases:** prior-art research ('which companies received ものづくり補助金 in 群馬?'), benchmark sizing ('what's the typical amount for 製造業 + 100 employees?'), or co-applicant discovery.\n\n**Sparsity caveats:**\n- only ~19% of records carry 法人番号 (427 / 2,286) — most 採択 announcements publish 社名 only. Prefer `q=<company_name>` for substring search when 法人番号 is unknown.\n- only <1% (4 / 2,286) carry an `amount_received_man_yen` value — ministries publish 採択 without 交付額. Filtering on `min_subsidy_yen` / `max_subsidy_yen` silently drops ~99% of matches; avoid unless the user explicitly asked for an amount band.",
+        "operationId": "search_case_studies_v1_case_studies_search_get",
+        "parameters": [
+          {
+            "description": "Free-text search over company_name + case_title + case_summary + source_excerpt. Multi-character queries use text search; short queries use fallback matching.",
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Free-text search over company_name + case_title + case_summary + source_excerpt. Multi-character queries use text search; short queries use fallback matching.",
+              "title": "Q"
+            }
+          },
+          {
+            "in": "query",
+            "name": "prefecture",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 80,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Prefecture"
+            }
+          },
+          {
+            "description": "JSIC industry code prefix (e.g. 'A' for 農林水産業, '05' for 食料品製造業).",
+            "in": "query",
+            "name": "industry_jsic",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 10,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "JSIC industry code prefix (e.g. 'A' for 農林水産業, '05' for 食料品製造業).",
+              "title": "Industry Jsic"
+            }
+          },
+          {
+            "description": "13-digit 法人番号 exact match. NOTE: only ~19% of case studies carry 法人番号 (427 / 2,286 records) — most 採択 announcements publish 社名 only. Prefer `q=<company_name>` for substring search when the 法人番号 is unknown.",
+            "in": "query",
+            "name": "houjin_bangou",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 13,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "13-digit 法人番号 exact match. NOTE: only ~19% of case studies carry 法人番号 (427 / 2,286 records) — most 採択 announcements publish 社名 only. Prefer `q=<company_name>` for substring search when the 法人番号 is unknown.",
+              "title": "Houjin Bangou"
+            }
+          },
+          {
+            "description": "Match records whose programs_used_json list contains this program name or unified_id substring.",
+            "in": "query",
+            "name": "program_used",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Match records whose programs_used_json list contains this program name or unified_id substring.",
+              "title": "Program Used"
+            }
+          },
+          {
+            "description": "Lower bound on total_subsidy_received_yen (JPY). WARNING: only 4 / 2,286 records (<1%) carry an amount — ministries publish 採択 without 交付額. Filtering here silently drops ~99% of matches.",
+            "in": "query",
+            "name": "min_subsidy_yen",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Lower bound on total_subsidy_received_yen (JPY). WARNING: only 4 / 2,286 records (<1%) carry an amount — ministries publish 採択 without 交付額. Filtering here silently drops ~99% of matches.",
+              "title": "Min Subsidy Yen"
+            }
+          },
+          {
+            "description": "Upper bound on total_subsidy_received_yen (JPY). Same <1% sparsity as min_subsidy_yen — avoid unless the user explicitly asked for a ceiling.",
+            "in": "query",
+            "name": "max_subsidy_yen",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Upper bound on total_subsidy_received_yen (JPY). Same <1% sparsity as min_subsidy_yen — avoid unless the user explicitly asked for a ceiling.",
+              "title": "Max Subsidy Yen"
+            }
+          },
+          {
+            "in": "query",
+            "name": "min_employees",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Min Employees"
+            }
+          },
+          {
+            "in": "query",
+            "name": "max_employees",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Max Employees"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "limit": 20,
+                  "offset": 0,
+                  "results": [
+                    {
+                      "amount_received_man_yen": 150,
+                      "case_id": "CS-meti-jizokuka-2024-00123",
+                      "case_summary": "EC サイト構築費 200 万円補助で売上 1.4 倍。",
+                      "case_title": "持続化補助金で新規販路開拓に成功",
+                      "company_name": "株式会社ヤマダ製作所",
+                      "confidence": 0.92,
+                      "fetched_at": "2026-04-20T05:14:33Z",
+                      "fiscal_year": 2024,
+                      "houjin_bangou": "1234567890123",
+                      "industry_jsic": "29",
+                      "prefecture": "群馬県",
+                      "program_used": "小規模事業者持続化補助金",
+                      "source_url": "https://www.jizokukahojokin.info/case/123"
+                    }
+                  ],
+                  "total": 1
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/CaseStudySearchResponse"
+                }
+              }
+            },
+            "description": "Paginated case studies with text search over company_name + case_title + summary."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable entity — Pydantic validation failure (`code='invalid_enum'`)."
+          }
+        },
+        "summary": "Search 採択事例 (awarded grant case studies)",
+        "tags": [
+          "case-studies"
+        ],
+        "x-jpcite-agent-safe": true,
+        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": true,
+          "billing_units_per_successful_call": 1,
+          "unit_price_jpy_ex_tax": 3,
+          "unit_price_jpy_tax_included": 3.3,
+          "plain_ja": "通常の有料利用では成功した1呼び出しあたり1 unit、税別3円・税込約3.30円です。失敗リクエストは課金対象外です。",
+          "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
+        },
+        "x-jpcite-agent-priority": 2,
+        "x-jpcite-route-purpose": "adoption_case_lookup",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {}
+        ]
+      }
+    },
+    "/v1/laws/{unified_id}/related-programs": {
+      "get": {
+        "description": "Reverse lookup: which programs cite this law via program_law_refs.",
+        "operationId": "get_related_programs_v1_laws__unified_id__related_programs_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "unified_id",
+            "required": true,
+            "schema": {
+              "title": "Unified Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Filter by citation kind. One of: authority | eligibility | exclusion | reference | penalty. Omit to return all kinds.",
+            "in": "query",
+            "name": "ref_kind",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 20,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by citation kind. One of: authority | eligibility | exclusion | reference | penalty. Omit to return all kinds.",
+              "title": "Ref Kind"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RelatedProgramsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable entity — Pydantic validation failure (`code='invalid_enum'`)."
+          }
+        },
+        "summary": "Get Related Programs",
+        "tags": [
+          "laws"
+        ],
+        "x-jpcite-agent-safe": true,
+        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": true,
+          "billing_units_per_successful_call": 1,
+          "unit_price_jpy_ex_tax": 3,
+          "unit_price_jpy_tax_included": 3.3,
+          "plain_ja": "通常の有料利用では成功した1呼び出しあたり1 unit、税別3円・税込約3.30円です。失敗リクエストは課金対象外です。",
+          "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
+        },
+        "x-jpcite-agent-priority": 2,
+        "x-jpcite-route-purpose": "law_lookup",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {}
+        ]
+      }
+    },
+    "/v1/evidence/packets/{subject_kind}/{subject_id}": {
+      "get": {
+        "description": "Source-linked evidence prefetch for GPT, Claude, Cursor, or RAG answer generation. 1 packet = 1 billable unit; see the pricing page for current public price and anonymous limits. NO LLM call. Bundles primary metadata + per-fact provenance + compat-matrix rule verdicts (program only) into a compact envelope.\n\n**subject_kind** ∈ `program` / `houjin`. For multi-record query packets, POST /v1/evidence/packets/query.\n\nResponse is fail-open: any upstream failure surfaces as a code in `quality.known_gaps[]`; the packet still renders. Optional compression fields are input-context estimates, not external provider billing guarantees.",
+        "operationId": "get_evidence_packet_v1_evidence_packets__subject_kind___subject_id__get",
+        "parameters": [
+          {
+            "description": "Subject kind. `query` uses the POST endpoint.",
+            "in": "path",
+            "name": "subject_kind",
+            "required": true,
+            "schema": {
+              "description": "Subject kind. `query` uses the POST endpoint.",
+              "enum": [
+                "program",
+                "houjin"
+              ],
+              "title": "Subject Kind",
+              "type": "string"
+            }
+          },
+          {
+            "description": "For `program`: a unified_id (UNI-...) or canonical_id (program:...). For `houjin`: a 13-digit 法人番号.",
+            "in": "path",
+            "name": "subject_id",
+            "required": true,
+            "schema": {
+              "description": "For `program`: a unified_id (UNI-...) or canonical_id (program:...). For `houjin`: a 13-digit 法人番号.",
+              "maxLength": 200,
+              "minLength": 1,
+              "title": "Subject Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Include records[].facts[]. Default True.",
+            "in": "query",
+            "name": "include_facts",
+            "required": false,
+            "schema": {
+              "default": true,
+              "description": "Include records[].facts[]. Default True.",
+              "title": "Include Facts",
+              "type": "boolean"
+            }
+          },
+          {
+            "description": "Include records[].rules[]. Default True.",
+            "in": "query",
+            "name": "include_rules",
+            "required": false,
+            "schema": {
+              "default": true,
+              "description": "Include records[].rules[]. Default True.",
+              "title": "Include Rules",
+              "type": "boolean"
+            }
+          },
+          {
+            "description": "Surface compression hints. Default False.",
+            "in": "query",
+            "name": "include_compression",
+            "required": false,
+            "schema": {
+              "default": false,
+              "description": "Surface compression hints. Default False.",
+              "title": "Include Compression",
+              "type": "boolean"
+            }
+          },
+          {
+            "description": "Field projection level. `default` / `full`.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "default": "default",
+              "description": "Field projection level. `default` / `full`.",
+              "title": "Fields",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional caller's input-token price (JPY per 1M tokens). Echoed back only as an optional reference comparison hint; no token, cost, or savings reduction is guaranteed.",
+            "in": "query",
+            "name": "input_token_price_jpy_per_1m",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional caller's input-token price (JPY per 1M tokens). Echoed back only as an optional reference comparison hint; no token, cost, or savings reduction is guaranteed.",
+              "title": "Input Token Price Jpy Per 1M"
+            }
+          },
+          {
+            "description": "Optional caller-supplied baseline for context comparison. `unknown` (default) returns packet size only. `pdf_pages` uses source_pdf_pages * 700 tokens/page as an estimate. `token_count` uses source_token_count exactly as supplied. This is input-context estimation only, not a savings guarantee.",
+            "in": "query",
+            "name": "source_tokens_basis",
+            "required": false,
+            "schema": {
+              "default": "unknown",
+              "description": "Optional caller-supplied baseline for context comparison. `unknown` (default) returns packet size only. `pdf_pages` uses source_pdf_pages * 700 tokens/page as an estimate. `token_count` uses source_token_count exactly as supplied. This is input-context estimation only, not a savings guarantee.",
+              "enum": [
+                "unknown",
+                "pdf_pages",
+                "token_count"
+              ],
+              "title": "Source Tokens Basis",
+              "type": "string"
+            }
+          },
+          {
+            "description": "PDF page count the caller would otherwise paste/fetch into the LLM. Used only when source_tokens_basis=pdf_pages.",
+            "in": "query",
+            "name": "source_pdf_pages",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 1000,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "PDF page count the caller would otherwise paste/fetch into the LLM. Used only when source_tokens_basis=pdf_pages.",
+              "title": "Source Pdf Pages"
+            }
+          },
+          {
+            "description": "Caller-measured token count for the source context the LLM would otherwise read. Used only when source_tokens_basis=token_count.",
+            "in": "query",
+            "name": "source_token_count",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 50000000,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Caller-measured token count for the source context the LLM would otherwise read. Used only when source_tokens_basis=token_count.",
+              "title": "Source Token Count"
+            }
+          },
+          {
+            "description": "Output format. `json` (default) / `csv` / `md`. Sent as `?output_format=csv` (Python builtin name `format` is avoided so the StrictQueryMiddleware sees the declared alias).",
+            "in": "query",
+            "name": "output_format",
+            "required": false,
+            "schema": {
+              "default": "json",
+              "description": "Output format. `json` (default) / `csv` / `md`. Sent as `?output_format=csv` (Python builtin name `format` is avoided so the StrictQueryMiddleware sees the declared alias).",
+              "enum": [
+                "json",
+                "csv",
+                "md"
+              ],
+              "title": "Output Format",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "answer_not_included": true,
+                  "api_version": "v1",
+                  "compression": {
+                    "avoided_tokens_estimate": 13434,
+                    "compression_ratio": 0.0404,
+                    "cost_savings_estimate": {
+                      "billing_savings_claim": "estimate_not_guarantee",
+                      "break_even_avoided_tokens": 10000,
+                      "break_even_met": true,
+                      "break_even_source_tokens_estimate": 10566,
+                      "currency": "JPY",
+                      "gross_input_savings_jpy": 4.0,
+                      "input_context_only": true,
+                      "input_token_price_jpy_per_1m": 300,
+                      "jpcite_billable_units": 1,
+                      "jpcite_cost_jpy_ex_tax": 3,
+                      "net_savings_jpy_ex_tax": 1.0,
+                      "price_input_source": "caller_supplied",
+                      "provider_billing_not_guaranteed": true
+                    },
+                    "estimate_scope": "input_context_only",
+                    "input_context_reduction_rate": 0.9596,
+                    "packet_tokens_estimate": 566,
+                    "provider_billing_not_guaranteed": true,
+                    "savings_claim": "estimate_not_guarantee",
+                    "source_pdf_pages": 20,
+                    "source_tokens_basis": "pdf_pages",
+                    "source_tokens_estimate": 14000
+                  },
+                  "corpus_snapshot_id": "snap_20260502",
+                  "evidence_value": {
+                    "fact_provenance_coverage_pct_avg": 0.86,
+                    "known_gap_count": 0,
+                    "pdf_fact_refs": 0,
+                    "precomputed_records": 1,
+                    "records_returned": 1,
+                    "request_time_llm_call_performed": false,
+                    "source_linked_records": 1,
+                    "web_search_performed_by_jpcite": false
+                  },
+                  "generated_at": "2026-05-02T12:00:00+09:00",
+                  "packet_id": "evp_example",
+                  "quality": {
+                    "coverage_score": 0.86,
+                    "freshness_bucket": "current",
+                    "human_review_required": false,
+                    "known_gaps": []
+                  },
+                  "query": {
+                    "normalized_filters": {
+                      "prefecture": "Tokyo"
+                    },
+                    "user_intent": "Tokyo manufacturer subsidy evidence"
+                  },
+                  "records": [
+                    {
+                      "authority_name": "Example authority",
+                      "entity_id": "program:example",
+                      "license": "gov_standard_v2.0",
+                      "precomputed": {
+                        "basis": "am_program_summary",
+                        "summaries": {
+                          "200": "Short source-linked evidence summary."
+                        }
+                      },
+                      "primary_name": "Example public program",
+                      "record_kind": "program",
+                      "source_checksum": "sha256:example",
+                      "source_fetched_at": "2026-05-01T00:00:00+09:00",
+                      "source_url": "https://example.go.jp/program"
+                    }
+                  ],
+                  "verification": {
+                    "freshness_endpoint": "/v1/meta/freshness",
+                    "replay_endpoint": "/v1/programs/search?q=..."
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/EvidencePacketEnvelope"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Evidence Packet — single-subject composer (program / houjin)",
+        "tags": [
+          "evidence"
+        ],
+        "x-jpcite-agent-safe": true,
+        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": true,
+          "billing_units_per_successful_call": 1,
+          "unit_price_jpy_ex_tax": 3,
+          "unit_price_jpy_tax_included": 3.3,
+          "plain_ja": "通常の有料利用では成功した1呼び出しあたり1 unit、税別3円・税込約3.30円です。失敗リクエストは課金対象外です。",
+          "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
+        },
+        "x-jpcite-agent-priority": 2,
+        "x-jpcite-route-purpose": "evidence_packet_lookup",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {}
+        ]
+      }
     }
   },
   "components": {
@@ -4744,6 +8134,2105 @@
           "unknown_count"
         ],
         "title": "VerifyResponse"
+      },
+      "AMLawArticleResponse": {
+        "additionalProperties": true,
+        "description": "``GET /v1/am/law_article`` — 条文 lookup.",
+        "properties": {
+          "article_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Article Id"
+          },
+          "article_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Article Number"
+          },
+          "article_number_sort": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Article Number Sort"
+          },
+          "effective_from": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective From"
+          },
+          "effective_until": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective Until"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "found": {
+            "default": false,
+            "title": "Found",
+            "type": "boolean"
+          },
+          "last_amended": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Amended"
+          },
+          "law": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Law"
+          },
+          "source_fetched_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Fetched At"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "text_full": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text Full"
+          },
+          "text_summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text Summary"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          }
+        },
+        "title": "AMLawArticleResponse",
+        "type": "object"
+      },
+      "AttributionBlock": {
+        "additionalProperties": false,
+        "description": "PDL v1.0 attribution (出典明記 + 編集・加工注記).",
+        "properties": {
+          "edited": {
+            "title": "Edited",
+            "type": "boolean"
+          },
+          "license": {
+            "title": "License",
+            "type": "string"
+          },
+          "notice": {
+            "title": "Notice",
+            "type": "string"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "source_url": {
+            "title": "Source Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source",
+          "source_url",
+          "license",
+          "edited",
+          "notice"
+        ],
+        "title": "AttributionBlock",
+        "type": "object"
+      },
+      "BidOut": {
+        "additionalProperties": false,
+        "description": "Single 入札 record. Columns map 1:1 onto 017_bids's `bids` dataset.",
+        "properties": {
+          "announcement_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Announcement date / 公告日 (ISO 8601 YYYY-MM-DD).",
+            "title": "Announcement Date"
+          },
+          "awarded_amount_yen": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Awarded amount (落札金額) in JPY, tax-inclusive when disclosed.",
+            "title": "Awarded Amount Yen"
+          },
+          "bid_deadline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Bid-submission deadline / 入札書提出期限 (ISO 8601 YYYY-MM-DD).",
+            "title": "Bid Deadline"
+          },
+          "bid_description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Procurement scope / specification summary (調達概要 / 仕様要旨).",
+            "title": "Bid Description"
+          },
+          "bid_kind": {
+            "description": "Bid procedure kind. open = 一般競争 (open competitive); selective = 指名競争 (selective tender); negotiated = 随意契約 (negotiated contract); kobo_subsidy = 公募型補助 (subsidy-style open call).",
+            "enum": [
+              "open",
+              "selective",
+              "negotiated",
+              "kobo_subsidy"
+            ],
+            "title": "Bid Kind",
+            "type": "string"
+          },
+          "bid_title": {
+            "description": "Bid title (案件名) — short headline as published by the procuring entity.",
+            "title": "Bid Title",
+            "type": "string"
+          },
+          "budget_ceiling_yen": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Budget ceiling / contract cap (予定価格 / 契約限度額) in JPY, tax-inclusive when disclosed by the procuring entity.",
+            "title": "Budget Ceiling Yen"
+          },
+          "classification_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "'役務' | '物品' | '工事' (or finer JGS code)",
+            "title": "Classification Code"
+          },
+          "confidence": {
+            "description": "0..1 lineage confidence",
+            "title": "Confidence",
+            "type": "number"
+          },
+          "decision_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Award-decision date / 落札決定日 (ISO 8601 YYYY-MM-DD).",
+            "title": "Decision Date"
+          },
+          "eligibility_conditions": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Participation eligibility conditions (参加資格要件) — grade rating / location / past-performance requirements.",
+            "title": "Eligibility Conditions"
+          },
+          "fetched_at": {
+            "description": "ISO 8601 UTC of last successful fetch",
+            "title": "Fetched At",
+            "type": "string"
+          },
+          "ministry": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Ministry / agency in charge (所管府省) — e.g. 農林水産省, 経済産業省.",
+            "title": "Ministry"
+          },
+          "participant_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Number of participating bidders (入札参加者数).",
+            "title": "Participant Count"
+          },
+          "prefecture": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Prefecture (都道府県) — full-suffix kanji form, e.g. 東京都. NULL for nationwide bids.",
+            "title": "Prefecture"
+          },
+          "procuring_entity": {
+            "description": "Procuring entity name (発注機関名) — ministry / agency / 自治体 issuing the tender.",
+            "title": "Procuring Entity",
+            "type": "string"
+          },
+          "procuring_houjin_bangou": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "13-digit 法人番号 of the procuring entity (soft ref to houjin_master).",
+            "title": "Procuring Houjin Bangou"
+          },
+          "program_id_hint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Soft reference to linked program identifier when this bid is the procurement arm of a funded 補助事業.",
+            "title": "Program Id Hint"
+          },
+          "question_deadline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Question-submission deadline / 質問受付期限 (ISO 8601 YYYY-MM-DD).",
+            "title": "Question Deadline"
+          },
+          "source_checksum": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "optional SHA-256 of raw fetch body",
+            "title": "Source Checksum"
+          },
+          "source_excerpt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "relevant passage for audit",
+            "title": "Source Excerpt"
+          },
+          "source_url": {
+            "description": "primary source (GEPS / ministry / *.lg.jp)",
+            "title": "Source Url",
+            "type": "string"
+          },
+          "unified_id": {
+            "description": "BID-<10 lowercase hex>",
+            "title": "Unified Id",
+            "type": "string"
+          },
+          "updated_at": {
+            "description": "ISO 8601 UTC of last record write",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "winner_houjin_bangou": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "13-digit 法人番号 of the winning bidder (soft ref to houjin_master).",
+            "title": "Winner Houjin Bangou"
+          },
+          "winner_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Winning bidder name (落札者名) — as published by the procuring entity.",
+            "title": "Winner Name"
+          }
+        },
+        "required": [
+          "unified_id",
+          "bid_title",
+          "bid_kind",
+          "procuring_entity",
+          "source_url",
+          "confidence",
+          "fetched_at",
+          "updated_at"
+        ],
+        "title": "BidOut",
+        "type": "object"
+      },
+      "BidsSearchResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/BidOut"
+            },
+            "title": "Results",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total",
+          "limit",
+          "offset",
+          "results"
+        ],
+        "title": "BidsSearchResponse",
+        "type": "object"
+      },
+      "CourtDecision": {
+        "additionalProperties": true,
+        "properties": {
+          "case_name": {
+            "title": "Case Name",
+            "type": "string"
+          },
+          "case_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Case Number"
+          },
+          "confidence": {
+            "default": 0.9,
+            "title": "Confidence",
+            "type": "number"
+          },
+          "court": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Court"
+          },
+          "court_level": {
+            "enum": [
+              "supreme",
+              "high",
+              "district",
+              "summary",
+              "family"
+            ],
+            "title": "Court Level",
+            "type": "string"
+          },
+          "decision_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision Date"
+          },
+          "decision_type": {
+            "enum": [
+              "判決",
+              "決定",
+              "命令"
+            ],
+            "title": "Decision Type",
+            "type": "string"
+          },
+          "fetched_at": {
+            "title": "Fetched At",
+            "type": "string"
+          },
+          "full_text_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Full Text Url"
+          },
+          "impact_on_business": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Impact On Business"
+          },
+          "key_ruling": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Key Ruling"
+          },
+          "parties_involved": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parties Involved"
+          },
+          "pdf_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pdf Url"
+          },
+          "precedent_weight": {
+            "default": "informational",
+            "enum": [
+              "binding",
+              "persuasive",
+              "informational"
+            ],
+            "title": "Precedent Weight",
+            "type": "string"
+          },
+          "related_law_ids": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Related Law Ids",
+            "type": "array"
+          },
+          "source_checksum": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Checksum"
+          },
+          "source_excerpt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Excerpt"
+          },
+          "source_url": {
+            "title": "Source Url",
+            "type": "string"
+          },
+          "subject_area": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject Area"
+          },
+          "unified_id": {
+            "description": "HAN-<10 lowercase hex>",
+            "title": "Unified Id",
+            "type": "string"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          }
+        },
+        "required": [
+          "unified_id",
+          "case_name",
+          "court_level",
+          "decision_type",
+          "source_url",
+          "fetched_at"
+        ],
+        "title": "CourtDecision",
+        "type": "object"
+      },
+      "CourtDecisionSearchResponse": {
+        "properties": {
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/CourtDecision"
+            },
+            "title": "Results",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total",
+          "limit",
+          "offset",
+          "results"
+        ],
+        "title": "CourtDecisionSearchResponse",
+        "type": "object"
+      },
+      "EnforcementCase": {
+        "description": "A single 会計検査院 (Board of Audit) finding.\n\nBacks /v1/enforcement-cases/*. These are historical records of improper\nsubsidy handling (over-payment, diversion, documentation failure, etc.)\nused for compliance / due-diligence checks before advising a client on a\nprogram with prior clawback history.",
+        "properties": {
+          "amount_grant_paid_yen": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount Grant Paid Yen"
+          },
+          "amount_improper_grant_yen": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount Improper Grant Yen"
+          },
+          "amount_improper_project_cost_yen": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount Improper Project Cost Yen"
+          },
+          "amount_project_cost_yen": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount Project Cost Yen"
+          },
+          "amount_yen": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount Yen"
+          },
+          "bureau": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bureau"
+          },
+          "case_id": {
+            "title": "Case Id",
+            "type": "string"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "disclosed_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Disclosed Date"
+          },
+          "disclosed_until": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Disclosed Until"
+          },
+          "event_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Event Type"
+          },
+          "fetched_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fetched At"
+          },
+          "intermediate_recipient": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Intermediate Recipient"
+          },
+          "is_sole_proprietor": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Sole Proprietor"
+          },
+          "legal_basis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Legal Basis"
+          },
+          "ministry": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ministry"
+          },
+          "occurred_fiscal_years": {
+            "default": [],
+            "items": {
+              "type": "integer"
+            },
+            "title": "Occurred Fiscal Years",
+            "type": "array"
+          },
+          "prefecture": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prefecture"
+          },
+          "program_name_hint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Program Name Hint"
+          },
+          "reason_excerpt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason Excerpt"
+          },
+          "recipient_houjin_bangou": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recipient Houjin Bangou"
+          },
+          "recipient_kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recipient Kind"
+          },
+          "recipient_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recipient Name"
+          },
+          "source_section": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Section"
+          },
+          "source_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Title"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          }
+        },
+        "required": [
+          "case_id"
+        ],
+        "title": "EnforcementCase",
+        "type": "object"
+      },
+      "EnforcementCaseSearchResponse": {
+        "properties": {
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/EnforcementCase"
+            },
+            "title": "Results",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total",
+          "limit",
+          "offset",
+          "results"
+        ],
+        "title": "EnforcementCaseSearchResponse",
+        "type": "object"
+      },
+      "FundingStackCheckRequest": {
+        "description": "POST body for ``/v1/funding_stack/check``.\n\n``program_ids`` is a 2..5 item list. Each id should be a\njpcite ``unified_id`` or a primary program name; the matcher also\naccepts legacy curated rule keys for backwards compatibility.",
+        "properties": {
+          "program_ids": {
+            "description": "List of program identifiers to evaluate as a stack. C(N, 2) pairs are evaluated (N=5 → 10 pairs). 1 billed unit per pair. At least two programs are required.",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 5,
+            "minItems": 2,
+            "title": "Program Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "program_ids"
+        ],
+        "title": "FundingStackCheckRequest",
+        "type": "object"
+      },
+      "InvoiceRegistrantOut": {
+        "additionalProperties": false,
+        "description": "Single 適格請求書発行事業者 record. Columns map 1:1 onto\n019_invoice registrant records's `invoice registrant records` dataset.",
+        "properties": {
+          "address_normalized": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Normalized registered address (所在地). May be NULL when NTA withholds it (sole proprietors who declined disclosure).",
+            "title": "Address Normalized"
+          },
+          "confidence": {
+            "description": "0..1 lineage confidence",
+            "title": "Confidence",
+            "type": "number"
+          },
+          "expired_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Expiration date / 失効日 (ISO 8601). NULL = not expired (未失効).",
+            "title": "Expired Date"
+          },
+          "fetched_at": {
+            "description": "ISO 8601 UTC when we last successfully fetched this record. Rendered as '出典取得' on public surfaces (not '最終更新').",
+            "title": "Fetched At",
+            "type": "string"
+          },
+          "houjin_bangou": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "13-digit 法人番号. NULL for sole proprietors / 'other'. Soft reference to houjin_master (no hard FK).",
+            "title": "Houjin Bangou"
+          },
+          "invoice_registration_number": {
+            "description": "'T' + 13 digits (14 chars total). Primary key.",
+            "title": "Invoice Registration Number",
+            "type": "string"
+          },
+          "last_updated_nta": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "NTA's timestamp on this record",
+            "title": "Last Updated Nta"
+          },
+          "normalized_name": {
+            "description": "Registered business name (事業者名 / 公表名称) — as published by NTA.",
+            "title": "Normalized Name",
+            "type": "string"
+          },
+          "prefecture": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Prefecture (都道府県) — full-suffix kanji form, e.g. 東京都.",
+            "title": "Prefecture"
+          },
+          "registered_date": {
+            "description": "Registration date / 登録日 (ISO 8601 YYYY-MM-DD).",
+            "title": "Registered Date",
+            "type": "string"
+          },
+          "registrant_kind": {
+            "description": "corporation (法人) | sole_proprietor (個人事業主) | other",
+            "enum": [
+              "corporation",
+              "sole_proprietor",
+              "other"
+            ],
+            "title": "Registrant Kind",
+            "type": "string"
+          },
+          "revoked_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Revocation date / 取消日 (ISO 8601). NULL = not revoked (未取消).",
+            "title": "Revoked Date"
+          },
+          "source_checksum": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "optional SHA-256 of raw bulk file",
+            "title": "Source Checksum"
+          },
+          "source_url": {
+            "description": "primary source URL (https://www.invoice-kohyo.nta.go.jp/download/...)",
+            "title": "Source Url",
+            "type": "string"
+          },
+          "trade_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "屋号等 (may be NULL)",
+            "title": "Trade Name"
+          },
+          "updated_at": {
+            "description": "ISO 8601 UTC of last record write in our DB",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "invoice_registration_number",
+          "normalized_name",
+          "registered_date",
+          "registrant_kind",
+          "source_url",
+          "confidence",
+          "fetched_at",
+          "updated_at"
+        ],
+        "title": "InvoiceRegistrantOut",
+        "type": "object"
+      },
+      "InvoiceRegistrantSearchResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "attribution": {
+            "$ref": "#/components/schemas/AttributionBlock"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/InvoiceRegistrantOut"
+            },
+            "title": "Results",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total",
+          "limit",
+          "offset",
+          "results",
+          "attribution"
+        ],
+        "title": "SearchResponse",
+        "type": "object"
+      },
+      "Law": {
+        "additionalProperties": true,
+        "properties": {
+          "article_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Article Count"
+          },
+          "confidence": {
+            "default": 0.95,
+            "title": "Confidence",
+            "type": "number"
+          },
+          "enforced_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enforced Date"
+          },
+          "fetched_at": {
+            "title": "Fetched At",
+            "type": "string"
+          },
+          "full_text_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Full Text Url"
+          },
+          "last_amended_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Amended Date"
+          },
+          "law_number": {
+            "title": "Law Number",
+            "type": "string"
+          },
+          "law_short_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Law Short Title"
+          },
+          "law_title": {
+            "title": "Law Title",
+            "type": "string"
+          },
+          "law_type": {
+            "enum": [
+              "constitution",
+              "act",
+              "cabinet_order",
+              "imperial_order",
+              "ministerial_ordinance",
+              "rule",
+              "notice",
+              "guideline"
+            ],
+            "title": "Law Type",
+            "type": "string"
+          },
+          "ministry": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ministry"
+          },
+          "promulgated_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Promulgated Date"
+          },
+          "revision_status": {
+            "default": "current",
+            "enum": [
+              "current",
+              "superseded",
+              "repealed"
+            ],
+            "title": "Revision Status",
+            "type": "string"
+          },
+          "source_checksum": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Checksum"
+          },
+          "source_url": {
+            "title": "Source Url",
+            "type": "string"
+          },
+          "subject_areas": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Subject Areas",
+            "type": "array"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "superseded_by_law_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Superseded By Law Id"
+          },
+          "unified_id": {
+            "description": "LAW-<10 lowercase hex>",
+            "title": "Unified Id",
+            "type": "string"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          }
+        },
+        "required": [
+          "unified_id",
+          "law_number",
+          "law_title",
+          "law_type",
+          "source_url",
+          "fetched_at"
+        ],
+        "title": "Law",
+        "type": "object"
+      },
+      "LawSearchResponse": {
+        "properties": {
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/Law"
+            },
+            "title": "Results",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total",
+          "limit",
+          "offset",
+          "results"
+        ],
+        "title": "LawSearchResponse",
+        "type": "object"
+      },
+      "TaxRulesetOut": {
+        "additionalProperties": true,
+        "properties": {
+          "authority": {
+            "title": "Authority",
+            "type": "string"
+          },
+          "authority_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Authority Url"
+          },
+          "calculation_formula": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Calculation Formula"
+          },
+          "confidence": {
+            "title": "Confidence",
+            "type": "number"
+          },
+          "effective_from": {
+            "title": "Effective From",
+            "type": "string"
+          },
+          "effective_until": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective Until"
+          },
+          "eligibility_conditions": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eligibility Conditions"
+          },
+          "eligibility_conditions_json": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Parsed predicate tree (list / dict of {op, field, value, ...}). None if the record has no machine-readable predicates or if the stored JSON is malformed (never 500s — see evaluator).",
+            "title": "Eligibility Conditions Json"
+          },
+          "fetched_at": {
+            "title": "Fetched At",
+            "type": "string"
+          },
+          "filing_requirements": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Filing Requirements"
+          },
+          "rate_or_amount": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rate Or Amount"
+          },
+          "related_law_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Related Law Ids",
+            "type": "array"
+          },
+          "ruleset_kind": {
+            "title": "Ruleset Kind",
+            "type": "string"
+          },
+          "ruleset_name": {
+            "title": "Ruleset Name",
+            "type": "string"
+          },
+          "source_checksum": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Checksum"
+          },
+          "source_excerpt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Excerpt"
+          },
+          "source_url": {
+            "title": "Source Url",
+            "type": "string"
+          },
+          "tax_category": {
+            "title": "Tax Category",
+            "type": "string"
+          },
+          "unified_id": {
+            "title": "Unified Id",
+            "type": "string"
+          },
+          "updated_at": {
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "unified_id",
+          "ruleset_name",
+          "tax_category",
+          "ruleset_kind",
+          "effective_from",
+          "effective_until",
+          "related_law_ids",
+          "eligibility_conditions",
+          "eligibility_conditions_json",
+          "rate_or_amount",
+          "calculation_formula",
+          "filing_requirements",
+          "authority",
+          "authority_url",
+          "source_url",
+          "source_excerpt",
+          "source_checksum",
+          "confidence",
+          "fetched_at",
+          "updated_at"
+        ],
+        "title": "TaxRulesetOut",
+        "type": "object"
+      },
+      "TaxRulesetSearchResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/TaxRulesetOut"
+            },
+            "title": "Results",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total",
+          "limit",
+          "offset",
+          "results"
+        ],
+        "title": "TaxRulesetSearchResponse",
+        "type": "object"
+      },
+      "CaseStudy": {
+        "description": "A 採択事例 / success-story record.\n\nBacks /v1/case-studies/*. Collected from Jグランツ 採択結果 pages,\nmirasapo 事業事例, local prefectural 事例集, etc. Used as evidence\n(\"program X has actually paid out to a similar business\") and as a\nlookup for due-diligence on named recipients.",
+        "properties": {
+          "capital_yen": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capital Yen"
+          },
+          "case_id": {
+            "title": "Case Id",
+            "type": "string"
+          },
+          "case_summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Case Summary"
+          },
+          "case_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Case Title"
+          },
+          "company_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Company Name"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "employees": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Employees"
+          },
+          "fetched_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fetched At"
+          },
+          "founded_year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Founded Year"
+          },
+          "houjin_bangou": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Houjin Bangou"
+          },
+          "industry_jsic": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Industry Jsic"
+          },
+          "industry_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Industry Name"
+          },
+          "is_sole_proprietor": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Sole Proprietor"
+          },
+          "municipality": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Municipality"
+          },
+          "outcomes": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcomes"
+          },
+          "patterns": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Patterns"
+          },
+          "prefecture": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prefecture"
+          },
+          "programs_used": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Programs Used",
+            "type": "array"
+          },
+          "publication_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publication Date"
+          },
+          "source_excerpt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Excerpt"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "total_subsidy_received_yen": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Subsidy Received Yen"
+          }
+        },
+        "required": [
+          "case_id"
+        ],
+        "title": "CaseStudy",
+        "type": "object"
+      },
+      "CaseStudySearchResponse": {
+        "properties": {
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/CaseStudy"
+            },
+            "title": "Results",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total",
+          "limit",
+          "offset",
+          "results"
+        ],
+        "title": "CaseStudySearchResponse",
+        "type": "object"
+      },
+      "GetResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "attribution": {
+            "$ref": "#/components/schemas/AttributionBlock"
+          },
+          "result": {
+            "$ref": "#/components/schemas/InvoiceRegistrantOut"
+          }
+        },
+        "required": [
+          "result",
+          "attribution"
+        ],
+        "title": "GetResponse",
+        "type": "object"
+      },
+      "RelatedProgramRef": {
+        "description": "A program citing a given law (reverse lookup via program_law_refs).",
+        "properties": {
+          "article_citation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Article Citation"
+          },
+          "confidence": {
+            "default": 0.9,
+            "title": "Confidence",
+            "type": "number"
+          },
+          "fetched_at": {
+            "title": "Fetched At",
+            "type": "string"
+          },
+          "program_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Program Name"
+          },
+          "program_unified_id": {
+            "title": "Program Unified Id",
+            "type": "string"
+          },
+          "ref_kind": {
+            "description": "One of: authority | eligibility | exclusion | reference | penalty",
+            "title": "Ref Kind",
+            "type": "string"
+          },
+          "source_url": {
+            "title": "Source Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "program_unified_id",
+          "ref_kind",
+          "source_url",
+          "fetched_at"
+        ],
+        "title": "RelatedProgramRef",
+        "type": "object"
+      },
+      "RelatedProgramsResponse": {
+        "properties": {
+          "law_unified_id": {
+            "title": "Law Unified Id",
+            "type": "string"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/RelatedProgramRef"
+            },
+            "title": "Results",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "law_unified_id",
+          "total",
+          "limit",
+          "offset",
+          "results"
+        ],
+        "title": "RelatedProgramsResponse",
+        "type": "object"
       }
     },
     "securitySchemes": {

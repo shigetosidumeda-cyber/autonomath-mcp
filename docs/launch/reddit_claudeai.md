@@ -17,7 +17,7 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "autonomath": {
+    "jpcite": {
       "command": "uvx",
       "args": ["autonomath-mcp"]
     }
@@ -38,7 +38,7 @@ Add to `.claude/mcp.json` in your project root:
 ```json
 {
   "mcpServers": {
-    "autonomath": {
+    "jpcite": {
       "command": "uvx",
       "args": ["autonomath-mcp"]
     }

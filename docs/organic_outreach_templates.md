@@ -283,7 +283,7 @@ REST + MCP API。
 // Claude Desktop の claude_desktop_config.json
 {
   "mcpServers": {
-    "autonomath": {
+    "jpcite": {
       "command": "uvx",
       "args": ["autonomath-mcp"]
     }

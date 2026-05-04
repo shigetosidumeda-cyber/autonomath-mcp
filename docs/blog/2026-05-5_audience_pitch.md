@@ -130,7 +130,7 @@ M&A 1 件あたりのデュー期間が短縮できる想定。
 ```json
 {
   "mcpServers": {
-    "autonomath": {
+    "jpcite": {
       "command": "uvx",
       "args": ["autonomath-mcp"]
     }

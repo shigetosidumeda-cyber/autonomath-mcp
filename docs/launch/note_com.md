@@ -46,7 +46,7 @@ curl "https://api.jpcite.com/v1/programs/search?q=農業&prefecture=東京都"
 ```json
 {
   "mcpServers": {
-    "autonomath": {
+    "jpcite": {
       "command": "uvx",
       "args": ["autonomath-mcp"]
     }

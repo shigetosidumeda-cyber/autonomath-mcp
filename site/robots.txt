@@ -93,6 +93,8 @@ Disallow: /
 
 # ------------------------------------------------------------------
 # Default policy — allow public pages and block operational paths.
+# AI / search crawlers must be able to fetch llms*, openapi*, mcp-server*,
+# and .well-known/* — these are the canonical AI-discovery surfaces.
 # ------------------------------------------------------------------
 User-agent: *
 Allow: /
@@ -104,6 +106,8 @@ Allow: /llms-full.txt
 Allow: /llms-full.en.txt
 Allow: /facts.html
 Allow: /en/facts.html
+Allow: /openapi.json
+Allow: /openapi.agent.json
 Allow: /docs/openapi/v1.json
 Allow: /docs/openapi/agent.json
 # API host canonical:
@@ -112,16 +116,15 @@ Allow: /docs/openapi/agent.json
 Allow: /mcp-server.json
 Allow: /server.json
 Allow: /v1/healthz
-Allow: /.well-known/security.txt
-Allow: /.well-known/mcp.json
+Allow: /.well-known/
 Disallow: /admin/
 Disallow: /_internal/
 Disallow: /dashboard.html
 Disallow: /dashboard
 Disallow: /success.html
 Disallow: /success
-Disallow: /v1/
-Disallow: /.well-known/
+Disallow: /v1/admin/
+Disallow: /v1/billing/webhook
 Crawl-delay: 1
 
 # ------------------------------------------------------------------

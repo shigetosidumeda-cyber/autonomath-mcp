@@ -96,7 +96,7 @@ OpenAPI lives at `https://api.jpcite.com/v1/openapi.json`.
 ```json
 {
   "mcpServers": {
-    "autonomath": {
+    "jpcite": {
       "command": "uvx",
       "args": ["autonomath-mcp"]
     }

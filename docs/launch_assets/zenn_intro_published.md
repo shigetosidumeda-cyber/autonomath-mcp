@@ -64,7 +64,7 @@ curl -sS https://api.jpcite.com/v1/programs/search \
 ```json
 {
   "mcpServers": {
-    "autonomath": {
+    "jpcite": {
       "command": "uvx",
       "args": ["autonomath-mcp"]
     }
