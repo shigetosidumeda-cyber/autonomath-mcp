@@ -8,7 +8,88 @@ See [`docs/versioning.md`](docs/versioning.md) for what counts as breaking.
 
 ## [Unreleased]
 
+## [v0.3.3] — 2026-05-04 — Release wave (DYM middleware + child API keys + 政令市 hubs + manifest shortform)
+
+### Added
+
+- **`did_you_mean` middleware on 422 unknown_query_parameter** — the FastAPI
+  validation pipeline now wires a one-shot suggester that catches `unknown
+  query parameter` 422 responses and inserts a `did_you_mean` array of the
+  3 closest known field names (Levenshtein-trimmed, score>=0.7) into the
+  error envelope. Eliminates silent typos like `?pref=...` (correct: `prefecture`)
+  / `?industry=...` (correct: `target_industry`).
+- **`/v1/me/keys/children` REST endpoint** (POST/GET/DELETE) — sub-API-key
+  fan-out surface for the 税理士 顧問先 cohort. Parent key holders can
+  mint child keys (1 parent → N children, mig 086) with per-child
+  `monthly_cap_yen`, suspend/revoke independently. Each child carries its
+  own usage quota counter so 顧問先 attribution is clean. Companion test:
+  `tests/test_child_api_keys.py`.
+- **政令市 20 hub pages + 5 trust pages + 12 cookbook recipes** —
+  `site/cities/{city}.html` x 20 (Sapporo / Sendai / Saitama / Chiba /
+  Yokohama / Kawasaki / Sagamihara / Niigata / Shizuoka / Hamamatsu /
+  Nagoya / Kyoto / Osaka / Sakai / Kobe / Okayama / Hiroshima / Kitakyushu /
+  Fukuoka / Kumamoto), `site/trust/*.html` x 5 (corporate procurement
+  reviewer surface), `site/cookbook/*.html` x 12 (W2-6 outline of runnable
+  dev-first recipes). Sitemap regenerated, canonical URLs aligned.
+- **Saved-search digests fanned out per `client_profiles.profile_ids`** —
+  `scripts/cron/run_saved_searches.py` now reads `saved_searches.profile_ids`
+  (mig 097) and emits one digest per linked client profile instead of one
+  digest per saved_search. The 税理士 / 補助金 consultant cohorts can now
+  run N顧問先 saved searches as one cron with per-顧問先 envelope splits.
+- **`dispatch_webhooks` filtered by `houjin_watch.watch_kind`** — the M&A
+  cohort cron `scripts/cron/dispatch_webhooks.py` (mig 088) now respects
+  `watch_kind` (e.g. `amendment` / `enforcement` / `adoption`) so subscribers
+  receive only the event categories they actually opted into. Eliminates
+  noisy fan-out where a watcher subscribed for `amendment` was also
+  receiving `adoption` events.
+
 ### Changed
+
+- **MCP manifest descriptions front-load generic keywords** —
+  `server.json::description` compressed 287 → **94 chars** to satisfy the
+  MCP registry's 100-char hard cap (variant D from the A1-RETRY audit:
+  `Japan public-program MCP — subsidies, loans, tax, law, invoice, corp.
+  93 tools, ¥3/req metered`). `mcp-server.json` / `dxt/manifest.json` /
+  `smithery.yaml` / `site/mcp-server.json` retain the longer marketing copy
+  (no 100-char cap on those surfaces). `_meta.publisher-provided` trimmed
+  4654 → 1707 bytes (well under the 4 KB registry cap) by dropping
+  resources arrays that are runtime-discoverable via `resources/list`.
+- **Stripe Checkout display name** — `client_reference_id` now sets the
+  jpcite display name (was AutonoMath); aligns checkout UI with the
+  2026-04-30 brand rename.
+- **`site/structured/` JSON-LD shards retired** — replaced by inline
+  JSON-LD on the parent HTML pages. Surface size dropped 22,896 → **12,016
+  site files** (-47%) and the canonical .html drift from the dual surfaces
+  (shard vs. inline) is gone. Sitemap regenerated.
+
+### Fixed
+
+- **Skip PRAGMA quick_check on autonomath profile** — the schema_guard
+  boot-sequence was running a full `PRAGMA quick_check` against the 9.4 GB
+  `autonomath.db` on every container start, which exceeded the Fly release
+  machine grace period (3 min hard ceiling) and hung deploys. Now skipped
+  for the autonomath profile (the integrity check still runs nightly via
+  `weekly-backup-autonomath.yml`). Boot grace period restored.
+- **`distribution_manifest` route_count drift 212 → 215** — bumped to match
+  the runtime probe after the new `/v1/me/keys/children` endpoint group
+  added 3 routes.
+
+### Notes
+
+- semver bump to **v0.3.3** applied across `pyproject.toml` /
+  `src/jpintel_mcp/__init__.py` / `server.json` / `mcp-server.json` /
+  `dxt/manifest.json` / `smithery.yaml` / `site/mcp-server.json` /
+  `scripts/distribution_manifest.yml::pyproject_version` /
+  `scripts/mcp_registries_submission.json`. `@autonomath/sdk` (npm)
+  remains on its independent version track per `feedback_no_priority_question`
+  memory note.
+- PyPI publish + MCP registry republish happen automatically on tag push:
+  `release.yml` triggers on `v*` tags → test → build → PyPI publish via
+  `secrets.PYPI_API_TOKEN`. After PyPI 0.3.3 is live (~2-5 min), the
+  `mcp-registry-publish.yml` workflow_dispatch fires (OIDC auth, no PAT
+  needed) and the registry mirrors the new 94-char description.
+
+### Changed (carryover from Unreleased)
 
 - **Brand rename — `税務会計AI` → `jpcite` (2026-04-30)** — primary
   user-facing brand renamed to **jpcite**; `税務会計AI` is retained as
@@ -578,7 +659,8 @@ Dual ESM + CJS output with bundled `.d.ts`. Exponential backoff on
 
 ---
 
-[Unreleased]: {{REPO_URL}}/compare/v0.3.2...HEAD
+[Unreleased]: {{REPO_URL}}/compare/v0.3.3...HEAD
+[v0.3.3]: {{REPO_URL}}/compare/v0.3.2...v0.3.3
 [v0.3.2]: {{REPO_URL}}/compare/v0.3.1...v0.3.2
 [0.3.1]: {{REPO_URL}}/compare/v0.3.0...v0.3.1
 [0.3.0]: {{REPO_URL}}/compare/v0.2.0...v0.3.0
