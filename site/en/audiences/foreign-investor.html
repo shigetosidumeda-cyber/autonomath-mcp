@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light dark">
+<title>jpcite for foreign investors — Japan tax treaty (33 countries), WHT rates, FDI subsidy lookup API</title>
+<meta name="description" content="Foreign-investor (FDI) playbook for jpcite. Look up Japan tax-treaty WHT rates for 33 partner countries, surface FDI-relevant subsidies (METI 対日直接投資, JETRO IBSC), check 外為法 prior-notification sectors, and access English law full text. ¥3/req metered, anonymous 3/day free, primary-source citations only.">
+
+<meta property="og:title" content="jpcite for foreign investors — Japan tax treaty + FDI subsidy + WHT lookup API">
+<meta property="og:description" content="33-country tax-treaty matrix (MoF primary source), FDI-relevant Japanese subsidies, English law full text. ¥3/req metered.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jpcite.com/en/audiences/foreign-investor.html">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="jpcite for foreign investors">
+<meta name="twitter:description" content="Japan tax treaty (33 countries) + FDI subsidies + 外為法 prior-notification + English law full text in one API.">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
+
+<link rel="canonical" href="https://jpcite.com/en/audiences/foreign-investor.html">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/audiences/foreign-investor.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/en/audiences/foreign-investor.html">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../../styles.css">
+
+<script defer src="../../analytics.js?v=20260503a"></script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://jpcite.com/en/"},
+    {"@type": "ListItem", "position": 2, "name": "Audiences", "item": "https://jpcite.com/en/audiences/"},
+    {"@type": "ListItem", "position": 3, "name": "Foreign investors", "item": "https://jpcite.com/en/audiences/foreign-investor.html"}
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "serviceType": "Foreign Direct Investment (FDI) reference API for Japan",
+  "name": "jpcite for Foreign Investors",
+  "description": "Japan tax-treaty matrix (33 partner countries, primary source MoF), FDI-relevant subsidies (METI 対日直接投資, JETRO IBSC), 外為法 prior-notification sector list, and English law full text — accessed via REST + MCP.",
+  "provider": {
+    "@type": "Organization",
+    "name": "Bookyou Inc.",
+    "url": "https://jpcite.com/en/"},
+  "audience": {
+    "@type": "Audience",
+    "audienceType": "Foreign corporate development teams, in-house counsel, JETRO consultants, cross-border tax advisors"
+  },
+  "areaServed": {
+    "@type": "Country",
+    "name": "Japan"
+  },
+  "inLanguage": "en",
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "API + MCP metered",
+      "price": "3",
+      "priceCurrency": "JPY"
+    }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "inLanguage": "en",
+  "mainEntity": [
+    {"@type": "Question", "name": "Which countries are covered in the tax-treaty matrix?", "acceptedAnswer": {"@type": "Answer", "text": "33 partner countries are live as of 2026-05-04, covering the top inbound-FDI corridors: US, UK, Singapore, Hong Kong, Germany, France, Netherlands, Switzerland, Australia, Canada, Korea, China, Taiwan, India, Indonesia, Thailand, Vietnam, Malaysia, Philippines, plus Italy, Spain, Belgium, Sweden, Norway, Denmark, Finland, Ireland, Russia, Mexico, Brazil, South Africa, UAE, and New Zealand. The full MoF list contains ~80 jurisdictions; the next 47 land via the same `am_tax_treaty` table without schema change."}},
+    {"@type": "Question", "name": "What is the primary source?", "acceptedAnswer": {"@type": "Answer", "text": "Every row points to the canonical 財務省 (Ministry of Finance) tax-treaty list page at https://www.mof.go.jp/tax_policy/summary/international/tax_convention/tax_convetion_list_jp.html. Each treaty's withholding-tax rates are taken from the MoF first-party matrix — no aggregator, no second-hand source. License: 政府標準利用規約 v2.0 (gov_standard)."}},
+    {"@type": "Question", "name": "Are the WHT rates statutory or treaty rates?", "acceptedAnswer": {"@type": "Answer", "text": "Treaty rates (the in-force rate after the most recent protocol). Statutory rates can be higher; the treaty rate is the one that applies once Form 17 (Application Form for Income Tax Convention) is filed. NULL in any wht_*_pct column means 'see treaty article' (distinct from 0.0 = exempt under treaty)."}},
+    {"@type": "Question", "name": "Which Japanese subsidies are open to foreign-owned KKs?", "acceptedAnswer": {"@type": "Answer", "text": "Japan's subsidy permissive default is 'silent' on foreign capital — most national programs are open unless explicitly restricted. The high-priority FDI-targeted programs include METI 対日直接投資促進事業費補助金, JETRO Invest Japan Business Support Center (IBSC) services, J-Bridge (cross-border M&A), and Global Acceleration Hub. Lookup via search_programs() with foreign-capital-eligibility filter."}},
+    {"@type": "Question", "name": "How does this differ from JETRO's own materials?", "acceptedAnswer": {"@type": "Answer", "text": "JETRO publishes excellent narrative guides; jpcite returns machine-queryable rows. Use JETRO IBSC (https://www.jetro.go.jp/en/invest/ibsc/) for handholding and policy context; use jpcite when an LLM agent or DD pipeline needs structured tax-treaty / subsidy / law data with primary-source URLs attached. Both surfaces are first-party government data — they should agree."}},
+    {"@type": "Question", "name": "Is there an English-language API spec?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The OpenAPI spec at /docs/openapi/v1.json carries English descriptions on every route. The MCP manifest (server.json) is English-first. Anonymous trial: 3 req/day per IP, no signup. Commercial: ¥3/req metered (¥3.30 incl. tax), Stripe-backed."}},
+    {"@type": "Question", "name": "What about 外為法 prior notification?", "acceptedAnswer": {"@type": "Answer", "text": "Foreign-Exchange-and-Foreign-Trade Act (Gaitamehou) prior-notification sectors are tracked in am_industry_jsic with FDI flags. The 155-sector designated list (2024 revision, MoF source) is mapped to JSIC codes so a foreign acquirer can check sector eligibility before the 30-day filing window. See the 外為法 section below for direct URLs."}}
+  ]
+}
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header" role="banner">
+ <div class="container header-inner">
+ <a class="brand" href="../index.html" aria-label="jpcite home">
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+ </a>
+ <nav class="site-nav" aria-label="Primary navigation">
+ <a href="../getting-started.html">Docs</a>
+ <a href="../pricing.html">Pricing</a>
+ <a href="index.html">Audiences</a>
+ <span class="lang-switch" role="group" aria-label="Language">
+ <a href="foreign-investor.html" lang="en" hreflang="en" aria-current="page">EN</a>
+ </span>
+ </nav>
+ </div>
+</header>
+
+<main id="main">
+
+ <section class="hero" aria-labelledby="hero-title">
+ <div class="container">
+ <nav aria-label="Breadcrumb" style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">
+ <a href="../index.html">Home</a> &raquo; <a href="index.html">Audiences</a> &raquo; <span aria-current="page">Foreign investors</span>
+ </nav>
+ <h1 id="hero-title">jpcite for foreign investors (FDI)</h1>
+ <p class="hero-sub">Japan tax-treaty matrix (33 countries) + FDI-relevant subsidies + 外為法 prior notification + English law full text — primary-source citations on every row, ¥3/req metered.</p>
+ <p class="hero-tag">Built for foreign corporate development teams, in-house counsel, JETRO consultants, and cross-border tax advisors. When your LLM agent or DD pipeline needs Japan-side withholding-tax rates, sector-based 外為法 filing thresholds, or which METI / JETRO subsidies a foreign-owned KK can apply for — jpcite returns structured rows with the MoF / NTA / METI / JETRO source URL attached. Anonymous 3 req/day free per IP, no signup.</p>
+ <div class="cta-row">
+ <a class="btn btn-primary" href="#quickstart">Start in 5 minutes &rarr;</a>
+ <a class="btn btn-secondary" href="../pricing.html">See pricing</a>
+ <a class="btn btn-secondary" href="index.html">Compare audiences</a>
+ </div>
+ </div>
+ </section>
+
+ <section aria-labelledby="legal-disclaimer-title">
+ <div class="container">
+ <div role="note" style="background:#fff8e1;border:2px solid #f59e0b;padding:18px 20px;border-radius:8px;margin:24px 0;color:#0a0a0a;">
+ <h2 id="legal-disclaimer-title" style="font-size:18px;margin:0 0 10px;color:#7c2d12;">Reference data only — not tax or legal advice</h2>
+ <p style="margin:0 0 6px;">jpcite does not perform tax representation, tax document preparation, legal advice, or investment advice.</p>
+ <p style="margin:0 0 6px;">Treaty rates and FDI program eligibility shown here are taken verbatim from the cited primary government sources, but are reference data only — every actual filing decision must be confirmed with a Japan-licensed 税理士 (Certified Public Tax Accountant) and 弁護士 (Attorney-at-Law) in light of the specific facts.</p>
+ <p style="margin:0;">English law translations referenced via this service follow the standard Japanese-Law-Translation disclaimer: the Japanese original prevails; the English text is unofficial reference.</p>
+ </div>
+ </div>
+ </section>
+
+ <section class="features" aria-labelledby="why-title">
+ <div class="container">
+ <h2 id="why-title" class="section-title">Why jpcite for FDI</h2>
+ <div class="cards" style="grid-template-columns:repeat(3,1fr);">
+
+ <article class="card">
+ <h3>33-country treaty matrix</h3>
+ <p class="card-lead">MoF primary source, 2026-05-04</p>
+ <p>The top inbound-FDI corridors (US, UK, SG, HK, DE, FR, NL, CH, AU, CA, KR, CN, TW, IN, ID, TH, VN, MY, PH, IT, ES, BE, SE, NO, DK, FI, IE, RU, MX, BR, ZA, AE, NZ) covered with WHT-dividend / parent-dividend / interest / royalty rates, MLI / arbitration status, and signed / in-force dates. Lookup by ISO 3166-1 alpha-2 in one call.</p>
+ </article>
+
+ <article class="card">
+ <h3>FDI-relevant subsidies</h3>
+ <p class="card-lead">METI, JETRO, prefecture</p>
+ <p>156 foreign-relevant programs in the corpus, including METI 対日直接投資促進事業費補助金, JETRO Invest Japan Business Support Center (IBSC), J-Bridge cross-border M&amp;A support, Global Acceleration Hub (JETRO 9 cities), and J-Startup. Filtered by foreign-capital eligibility flag — not buried in a 14,472-row haystack.</p>
+ </article>
+
+ <article class="card">
+ <h3>External-Audit data lineage</h3>
+ <p class="card-lead">11,684 programs, primary-source only</p>
+ <p>Every row in the corpus carries a primary-source URL (ministry / prefecture / NTA / e-Gov). Aggregators like noukaweb / hojyokin-portal are blacklisted. When your DD pipeline cites jpcite, you can show the regulator URL — not a third-party rewrite.</p>
+ </article>
+
+ </div>
+ </div>
+ </section>
+
+ <section class="code-demo" aria-labelledby="treaty-table-title">
+ <div class="container">
+ <h2 id="treaty-table-title" class="section-title">Tax-treaty matrix (33 countries, live)</h2>
+ <p class="demo-lead" style="margin:-16px 0 24px;">Treaty rates (the in-force rate after the most recent protocol). Source: <a href="https://www.mof.go.jp/tax_policy/summary/international/tax_convention/tax_convetion_list_jp.html" rel="noopener noreferrer" target="_blank">財務省 我が国の租税条約等の一覧</a> (MoF primary). License: 政府標準利用規約 v2.0.</p>
+ <div class="table-wrap">
+ <table class="pricing-table">
+ <caption class="visually-hidden">Japan tax-treaty matrix: dividend / parent dividend / interest / royalty WHT rates, MLI arbitration, in-force date.</caption>
+ <thead>
+ <tr>
+ <th scope="col">ISO</th>
+ <th scope="col">Country</th>
+ <th scope="col">In force</th>
+ <th scope="col">Dividend %</th>
+ <th scope="col">Parent dividend %</th>
+ <th scope="col">Interest %</th>
+ <th scope="col">Royalty %</th>
+ <th scope="col">MLI arb.</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr><th scope="row">AE</th><td>United Arab Emirates</td><td>2014-12-24</td><td>10.0</td><td>5.0</td><td>10.0</td><td>10.0</td><td>—</td></tr>
+ <tr><th scope="row">AU</th><td>Australia</td><td>2008-12-03</td><td>10.0</td><td>0.0</td><td>10.0</td><td>5.0</td><td>Yes</td></tr>
+ <tr><th scope="row">BE</th><td>Belgium</td><td>2019-01-19</td><td>10.0</td><td>0.0</td><td>10.0</td><td>0.0</td><td>Yes</td></tr>
+ <tr><th scope="row">BR</th><td>Brazil</td><td>1967-12-31</td><td>12.5</td><td>12.5</td><td>12.5</td><td>12.5</td><td>—</td></tr>
+ <tr><th scope="row">CA</th><td>Canada</td><td>1987-11-14</td><td>15.0</td><td>5.0</td><td>10.0</td><td>10.0</td><td>—</td></tr>
+ <tr><th scope="row">CH</th><td>Switzerland</td><td>1971-12-26</td><td>10.0</td><td>0.0</td><td>10.0</td><td>0.0</td><td>Yes</td></tr>
+ <tr><th scope="row">CN</th><td>China</td><td>1984-06-26</td><td>10.0</td><td>10.0</td><td>10.0</td><td>10.0</td><td>—</td></tr>
+ <tr><th scope="row">DE</th><td>Germany</td><td>2016-10-28</td><td>15.0</td><td>5.0</td><td>0.0</td><td>0.0</td><td>Yes</td></tr>
+ <tr><th scope="row">DK</th><td>Denmark</td><td>2018-12-27</td><td>15.0</td><td>0.0</td><td>0.0</td><td>0.0</td><td>Yes</td></tr>
+ <tr><th scope="row">ES</th><td>Spain</td><td>2021-05-01</td><td>15.0</td><td>0.0</td><td>10.0</td><td>0.0</td><td>Yes</td></tr>
+ <tr><th scope="row">FI</th><td>Finland</td><td>1972-12-30</td><td>15.0</td><td>10.0</td><td>10.0</td><td>10.0</td><td>—</td></tr>
+ <tr><th scope="row">FR</th><td>France</td><td>1996-03-24</td><td>10.0</td><td>0.0</td><td>10.0</td><td>0.0</td><td>Yes</td></tr>
+ <tr><th scope="row">GB</th><td>United Kingdom</td><td>2006-10-12</td><td>10.0</td><td>0.0</td><td>10.0</td><td>0.0</td><td>Yes</td></tr>
+ <tr><th scope="row">HK</th><td>Hong Kong</td><td>2011-08-14</td><td>10.0</td><td>5.0</td><td>10.0</td><td>5.0</td><td>—</td></tr>
+ <tr><th scope="row">ID</th><td>Indonesia</td><td>1982-12-31</td><td>15.0</td><td>10.0</td><td>10.0</td><td>10.0</td><td>—</td></tr>
+ <tr><th scope="row">IE</th><td>Ireland</td><td>1974-12-04</td><td>15.0</td><td>10.0</td><td>10.0</td><td>10.0</td><td>—</td></tr>
+ <tr><th scope="row">IN</th><td>India</td><td>1989-12-29</td><td>10.0</td><td>10.0</td><td>10.0</td><td>10.0</td><td>—</td></tr>
+ <tr><th scope="row">IT</th><td>Italy</td><td>1973-03-17</td><td>15.0</td><td>10.0</td><td>10.0</td><td>10.0</td><td>—</td></tr>
+ <tr><th scope="row">KR</th><td>Republic of Korea</td><td>1999-11-22</td><td>15.0</td><td>5.0</td><td>10.0</td><td>10.0</td><td>—</td></tr>
+ <tr><th scope="row">MX</th><td>Mexico</td><td>1996-11-06</td><td>15.0</td><td>5.0</td><td>15.0</td><td>10.0</td><td>—</td></tr>
+ <tr><th scope="row">MY</th><td>Malaysia</td><td>1999-12-31</td><td>15.0</td><td>5.0</td><td>10.0</td><td>10.0</td><td>—</td></tr>
+ <tr><th scope="row">NL</th><td>Netherlands</td><td>2011-12-29</td><td>10.0</td><td>0.0</td><td>10.0</td><td>0.0</td><td>Yes</td></tr>
+ <tr><th scope="row">NO</th><td>Norway</td><td>1992-12-16</td><td>15.0</td><td>5.0</td><td>10.0</td><td>10.0</td><td>—</td></tr>
+ <tr><th scope="row">NZ</th><td>New Zealand</td><td>2013-10-25</td><td>15.0</td><td>0.0</td><td>10.0</td><td>5.0</td><td>Yes</td></tr>
+ <tr><th scope="row">PH</th><td>Philippines</td><td>1980-07-20</td><td>15.0</td><td>10.0</td><td>10.0</td><td>15.0</td><td>—</td></tr>
+ <tr><th scope="row">RU</th><td>Russia</td><td>2018-10-10</td><td>15.0</td><td>5.0</td><td>0.0</td><td>0.0</td><td>Yes</td></tr>
+ <tr><th scope="row">SE</th><td>Sweden</td><td>1983-09-18</td><td>15.0</td><td>0.0</td><td>10.0</td><td>10.0</td><td>Yes</td></tr>
+ <tr><th scope="row">SG</th><td>Singapore</td><td>1995-04-28</td><td>15.0</td><td>5.0</td><td>10.0</td><td>10.0</td><td>—</td></tr>
+ <tr><th scope="row">TH</th><td>Thailand</td><td>1990-08-31</td><td>20.0</td><td>15.0</td><td>10.0</td><td>15.0</td><td>—</td></tr>
+ <tr><th scope="row">TW</th><td>Taiwan</td><td>2017-01-01</td><td>10.0</td><td>10.0</td><td>10.0</td><td>10.0</td><td>—</td></tr>
+ <tr><th scope="row">US</th><td>United States</td><td>2004-03-30</td><td>10.0</td><td>5.0</td><td>10.0</td><td>0.0</td><td>Yes</td></tr>
+ <tr><th scope="row">VN</th><td>Vietnam</td><td>1995-12-31</td><td>10.0</td><td>10.0</td><td>10.0</td><td>10.0</td><td>—</td></tr>
+ <tr><th scope="row">ZA</th><td>South Africa</td><td>1997-11-05</td><td>15.0</td><td>5.0</td><td>10.0</td><td>10.0</td><td>—</td></tr>
+ </tbody>
+ </table>
+ </div>
+ <p class="pricing-note" style="margin-top:14px;">Parent dividend % applies when the recipient holds the qualifying threshold under the treaty (typically 10–25%, holding period 6–18 months — see treaty article for the exact condition). MLI = Multilateral Convention to Implement Tax Treaty Related Measures (BEPS Action 14 arbitration).</p>
+ </div>
+ </section>
+
+ <section class="code-demo" aria-labelledby="usecase-title">
+ <div class="container">
+ <h2 id="usecase-title" class="section-title">Primary FDI use cases</h2>
+ <div class="cards" style="grid-template-columns:repeat(2,1fr);">
+
+ <article class="card">
+ <h3>1. "What's the WHT on intercompany dividends from Japan to my US parent?"</h3>
+ <p>Call <code>get_tax_treaty(country_iso="US")</code> via MCP and get the parent-dividend rate (5% under the 10%-or-more / 12-month rule, 0% under the 50%+ rule per the 2019 protocol) plus the article reference. Audited against the MoF treaty list — not a blog post.</p>
+ </article>
+
+ <article class="card">
+ <h3>2. "Which Japanese subsidies can a foreign-owned KK apply for?"</h3>
+ <p>The Japanese permissive default is 'silent on foreign capital' — most national programs are open. Use <code>search_programs(foreign_capital_eligibility="eligible")</code> to surface the explicitly-FDI-targeted set: METI 対日直接投資, JETRO IBSC, J-Bridge, Global Acceleration Hub, J-Startup.</p>
+ </article>
+
+ <article class="card">
+ <h3>3. "Is this 外為法 prior-notification sector?"</h3>
+ <p>Look up by JSIC industry code via the foreign-direct-investment endpoint to see whether the target Japanese company sits in one of the ~155 designated 事前届出 sectors (national security, dual-use tech, critical infrastructure, weapons, nuclear, aerospace, cyber, semiconductors, mineral extraction, etc.). Check before the 30-day filing window.</p>
+ </article>
+
+ <article class="card">
+ <h3>4. "Show me the English text of the 外為法 article on prior notification"</h3>
+ <p>The 154 full-text-indexed laws include 会社法, 法人税法, 所得税法, 外為法, 独占禁止法, 個人情報保護法, 金融商品取引法 — call <code>get_law_article(law_id, lang="en")</code> when an EN translation is available (CC-BY 4.0, Japanese-Law-Translation primary). The Japanese original prevails on conflict.</p>
+ </article>
+
+ <article class="card">
+ <h3>5. "Is &lt;houjin_bangou&gt; a registered qualified-invoice issuer?"</h3>
+ <p>Call <code>search_invoice_registrants(houjin_bangou="...")</code> against the 13,801-row delta + monthly 4M-row NTA bulk corpus. Critical for foreign-supplier compliance: invoices from non-registered issuers are not deductible for input-tax credit under the qualified-invoice system.</p>
+ </article>
+
+ <article class="card">
+ <h3>6. "What's the enforcement / adoption track record on this acquisition target?"</h3>
+ <p>By 13-digit corporate number (法人番号), join 1,185 enforcement cases + 2,286 subsidy adoption rows + 13,801 invoice-registrant rows + the houjin master in one call (<code>get_houjin_360</code>). Drop into your DD pipeline.</p>
+ </article>
+
+ </div>
+ </div>
+ </section>
+
+ <section class="code-demo" aria-labelledby="quickstart-title" id="quickstart">
+ <div class="container">
+ <h2 id="quickstart-title" class="section-title">Start in 5 minutes</h2>
+ <div class="cards" style="grid-template-columns:repeat(3,1fr);">
+
+ <article class="card">
+ <h3>curl (anonymous, 3/day)</h3>
+ <pre class="code-block"><code>curl 'https://api.jpcite.com/v1/am/tax_treaty?country_iso=US'
+curl 'https://api.jpcite.com/v1/programs/search?q=対日直接投資&amp;limit=5'</code></pre>
+ <p class="demo-note">No signup, JST daily reset. Check remaining quota via <code>X-RateLimit-Remaining</code>.</p>
+ </article>
+
+ <article class="card">
+ <h3>Python (commercial, ¥3/req)</h3>
+ <pre class="code-block"><code>import httpx
+H = {"X-API-Key": "am_..."}
+
+# 1. WHT dividend rate Japan -> US parent
+r = httpx.get(
+ "https://api.jpcite.com/v1/am/tax_treaty",
+ params={"country_iso": "US"},
+ headers=H)
+print(r.json["wht_dividend_parent_pct"], r.json["source_url"])
+
+# 2. FDI-relevant Japanese subsidies
+r2 = httpx.get(
+ "https://api.jpcite.com/v1/programs/search",
+ params={"q": "対日直接投資 OR JETRO OR 外資", "limit": 10},
+ headers=H)
+for row in r2.json["items"]:
+ print(row["name"], row["source_url"])</code></pre>
+ <p class="demo-note">Issue API keys from your dashboard. Stripe-backed metered billing.</p>
+ </article>
+
+ <article class="card">
+ <h3>Claude Desktop (MCP)</h3>
+ <pre class="code-block"><code>// ~/Library/Application Support/
+// Claude/claude_desktop_config.json
+{
+ "mcpServers": {
+ "jpcite": {
+ "command": "uvx",
+ "args": ["autonomath-mcp"],
+ "env": {"JPCITE_API_KEY": "am_..."}
+ }
+ }
+}</code></pre>
+ <p class="demo-note">All 93 tools callable from Claude. Treaty + subsidy + law + invoice + enforcement, one server.</p>
+ </article>
+
+ </div>
+ </div>
+ </section>
+
+ <section class="features" aria-labelledby="primary-sources-title">
+ <div class="container">
+ <h2 id="primary-sources-title" class="section-title">Primary-source URLs (audit trail)</h2>
+ <p class="demo-lead" style="margin:-16px 0 24px;">Every row in jpcite cites a regulator URL. The FDI cohort's canonical sources:</p>
+ <div class="cards" style="grid-template-columns:repeat(2,1fr);">
+
+ <article class="card">
+ <h3>Tax treaty (MoF)</h3>
+ <p>Canonical list of all 81+ jurisdictions: <a href="https://www.mof.go.jp/tax_policy/summary/international/tax_convention/tax_convetion_list_jp.html" rel="noopener noreferrer" target="_blank">財務省 我が国の租税条約等の一覧</a></p>
+ <p>NTA companion: <a href="https://www.nta.go.jp/taxes/shiraberu/kokusai/sozei_jouyaku/index.htm" rel="noopener noreferrer" target="_blank">国税庁 租税条約等</a></p>
+ </article>
+
+ <article class="card">
+ <h3>外為法 (FEFTA) prior notification</h3>
+ <p>MoF 対内直接投資: <a href="https://www.mof.go.jp/policy/international_policy/gaitame_kawase/fdi/index.htm" rel="noopener noreferrer" target="_blank">財務省 対内直接投資</a></p>
+ <p>2024 sector revision (155 designated sectors): linked from the MoF page above.</p>
+ </article>
+
+ <article class="card">
+ <h3>FDI subsidy programs (METI / JETRO)</h3>
+ <p>METI 対日直接投資: <a href="https://www.meti.go.jp/policy/external_economy/toshi/inward.html" rel="noopener noreferrer" target="_blank">METI Inward Investment</a></p>
+ <p>JETRO Invest Japan: <a href="https://www.jetro.go.jp/en/invest/" rel="noopener noreferrer" target="_blank">JETRO Invest Japan (EN)</a></p>
+ <p>JETRO IBSC: <a href="https://www.jetro.go.jp/en/invest/ibsc/" rel="noopener noreferrer" target="_blank">Invest Japan Business Support Center</a></p>
+ </article>
+
+ <article class="card">
+ <h3>English law full text (JLT, CC-BY 4.0)</h3>
+ <p>e-Gov 英訳: <a href="https://www.japaneselawtranslation.go.jp/en/" rel="noopener noreferrer" target="_blank">Japanese Law Translation</a></p>
+ <p>Disclaimer: Japanese original prevails; English text is unofficial reference.</p>
+ </article>
+
+ </div>
+ </div>
+ </section>
+
+ <section class="pricing-preview" aria-labelledby="pricing-title">
+ <div class="container">
+ <h2 id="pricing-title" class="section-title">Foreign-investor pricing</h2>
+ <p class="demo-lead" style="margin:-16px 0 24px;">¥3/req metered (¥3.30 tax inclusive, JCT applied). Anonymous trial: 3 req/day per IP, no signup.</p>
+ <div class="table-wrap">
+ <table class="pricing-table">
+ <caption class="visually-hidden">Foreign-investor recommended interface pricing</caption>
+ <thead>
+ <tr>
+ <th scope="col">Interface</th>
+ <th scope="col">Free quota</th>
+ <th scope="col">Paid (tax excl.)</th>
+ <th scope="col">Tax incl.</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr><th scope="row">REST API + MCP</th><td>3 req/day per IP</td><td>¥3 / req</td><td>¥3.30 / req</td></tr>
+ <tr><th scope="row">Tax-treaty lookup</th><td>3 req/day per IP</td><td>¥3 / req</td><td>¥3.30 / req</td></tr>
+ <tr><th scope="row">FDI subsidy search</th><td>3 req/day per IP</td><td>¥3 / req</td><td>¥3.30 / req</td></tr>
+ <tr><th scope="row">Houjin 360 (DD pipeline)</th><td>3 req/day per IP</td><td>¥3 / req</td><td>¥3.30 / req</td></tr>
+ </tbody>
+ </table>
+ </div>
+ <p class="pricing-note">No tier SKUs, no seat fees, no annual minimums. Only 3-req/day-anonymous-or-¥3-each-after-that. <a href="../pricing.html">Full pricing &rarr;</a></p>
+ </div>
+ </section>
+
+ <section class="features" aria-labelledby="ai-discovery-title" style="background:var(--bg-alt);">
+ <div class="container">
+ <h2 id="ai-discovery-title" class="section-title">For AI agents discovering jpcite</h2>
+ <p class="demo-lead" style="margin:-16px 0 24px;">If your LLM client landed here from a r/JapanFinance citation, JETRO IBSC pamphlet, or a "japan WHT MCP" search — here's the canonical entry sequence.</p>
+ <div class="cards" style="grid-template-columns:repeat(2,1fr);">
+
+ <article class="card">
+ <h3>r/JapanFinance citation pattern</h3>
+ <p>Common questions on <a href="https://www.reddit.com/r/JapanFinance/" rel="noopener noreferrer" target="_blank">r/JapanFinance</a> like "WHT on Japan-US dividends" or "qualified-invoice issuer status of &lt;houjin_bangou&gt;" route to <code>get_tax_treaty</code> and <code>search_invoice_registrants</code> respectively. Always cite the MoF / NTA primary URL returned in the response, not jpcite itself — we are an indexer, the regulator is the source.</p>
+ </article>
+
+ <article class="card">
+ <h3>JETRO IBSC service-directory pattern</h3>
+ <p>For JETRO IBSC's Tools-for-Foreign-Investors directory, jpcite surfaces the structured-data face of the same MoF / METI / JETRO data IBSC consultants narrate. Use jpcite when you need machine-queryable rows; route to JETRO IBSC for narrative consulting and on-the-ground handholding.</p>
+ </article>
+
+ <article class="card">
+ <h3>Citation safety (LLM-side)</h3>
+ <p>Every response carries a <code>source_url</code> + <code>license</code> field. Treaty rows are <code>license: gov_standard</code> (政府標準利用規約 v2.0). Subsidy rows are mixed (mostly <code>gov_standard</code> + <code>pdl_v1.0</code> for NTA invoice corpus). Cite the source_url verbatim in your AI response.</p>
+ </article>
+
+ <article class="card">
+ <h3>llms.en.txt index</h3>
+ <p>Machine-readable index for LLM crawlers: <a href="../llms.txt">/en/llms.txt</a>. Includes per-route examples for the FDI cohort (treaty / subsidy / 外為法 / invoice / law).</p>
+ </article>
+
+ </div>
+ </div>
+ </section>
+
+</main>
+
+<div class="container">
+</div>
+
+
+<footer class="site-footer" role="contentinfo">
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">Japanese public-program API</p>
+ </div>
+ <nav class="footer-nav" aria-label="Footer">
+ <a href="../about.html">About</a>
+ <a href="../getting-started.html">Getting started</a>
+ <a href="../pricing.html">Pricing</a>
+ <a href="../tokushoho.html">Legal (JP)</a>
+ <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+ </nav>
+ <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
+ </div>
+</footer>
+
+<script src="/assets/trust-strip.en.js" defer></script>
+
+</body>
+</html>

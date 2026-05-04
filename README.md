@@ -14,13 +14,21 @@ Current public docs and release tags are the source of truth for version and pri
 [![MCP 2025-06-18](https://img.shields.io/badge/MCP-2025--06--18-6E56CF.svg)](https://modelcontextprotocol.io/)
 [![Made in Japan](https://img.shields.io/badge/made%20in-%F0%9F%87%AF%F0%9F%87%B5-red.svg)](https://jpcite.com)
 
-LLM agent / RAG パイプラインに渡す前の compact context を REST + MCP で返します。公開行には 出典 URL + content_hash + 取得日時 が付き、官公庁・自治体・公庫・公式事業者ページなど確認可能な出典を優先します。**11,684 programs / 9,484 laws / 1,185 enforcement cases + 22,258 enforcement-detail records / 93 MCP tools / median 7 day freshness**。LLM は呼び出さず、民間まとめサイトにも依存しません。通常の検索・取得は ¥3/billable unit、anon 3/日 free。
+LLM agent / RAG パイプラインに渡す前の compact context を REST + MCP で返します。公開行には 出典 URL + content_hash + 取得日時 が付き、官公庁・自治体・公庫・公式事業者ページなど確認可能な出典を優先します。**11,684 programs / 9,484 laws / 1,185 enforcement cases + 22,258 enforcement-detail records / 98 MCP tools / median 7 day freshness**。LLM は呼び出さず、民間まとめサイトにも依存しません。通常の検索・取得は ¥3/billable unit、anon 3/日 free。
 
-*English: Evidence-first context layer for Japanese public-program data, exposed as REST + MCP. Published rows return source URL + content_hash + fetched_at so an LLM agent or RAG pipeline can ground answers on verifiable official sources — no LLM calls inside the service, no aggregator scraping. **11,684 programs / 9,484 laws / 1,185 enforcement cases + 22,258 enforcement-detail records / 93 MCP tools / median 7 day freshness.** ¥3/billable unit for normal search/detail calls, 3/day free anonymous.*
+*English: Evidence-first context layer for Japanese public-program data, exposed as REST + MCP. Published rows return source URL + content_hash + fetched_at so an LLM agent or RAG pipeline can ground answers on verifiable official sources — no LLM calls inside the service, no aggregator scraping. **11,684 programs / 9,484 laws / 1,185 enforcement cases + 22,258 enforcement-detail records / 98 MCP tools / median 7 day freshness.** ¥3/billable unit for normal search/detail calls, 3/day free anonymous.*
 
 Use jpcite when an AI answer needs Japanese public-program evidence, source URLs, fetched_at metadata, compatibility rules, enforcement checks, or known gaps before drafting prose. Skip it for short general questions, translation, brainstorming, or topics that do not need source-linked Japanese institutional data.
 
 Token and cost impact is workload-dependent. jpcite can reduce the input context a caller sends to GPT/Claude by returning compact source-linked facts first, but it is not a provider billing guarantee; output tokens, reasoning tokens, tool calls, search, cache behavior, and model choice remain controlled by the caller.
+
+## How jpcite compares to single-source MCP servers
+
+jpcite is the **横断 + Evidence Packet** layer. The 3 active single-source Japanese MCP servers each handle one slice — they are **complementary**, not competitive:
+
+- **vs jgrants-mcp** ([`digital-go-jp/jgrants-mcp-server`](https://github.com/digital-go-jp/jgrants-mcp-server), 5 tools, jGrants 補助金 only): jpcite adds 法令 / 判例 / 行政処分 / 適格事業者 / 法人 360° / 排他併用判定. Use jgrants-mcp for the grant application path; use jpcite for cross-source compliance check. → [/compare/jgrants-mcp/](https://jpcite.com/compare/jgrants-mcp/)
+- **vs tax-law-mcp** ([`kentaroajisaka/tax-law-mcp`](https://github.com/kentaroajisaka/tax-law-mcp), 7 tools, e-Gov + NTA + KFS live scrape): jpcite adds 50 structured tax_rulesets + 9,484 e-Gov laws + 28,201 article rows pre-indexed (median <100ms, no live-scrape latency) + 通達 cross-ref to 制度 / 採択 / 行政処分. Use jpcite for pre-indexed answers + 通達 cross-ref; use tax-law-mcp for ad-hoc lookups. → [/compare/tax-law-mcp/](https://jpcite.com/compare/tax-law-mcp/)
+- **vs japan-corporate-mcp** ([`yamariki-hub/japan-corporate-mcp`](https://github.com/yamariki-hub/japan-corporate-mcp), 8 tools, gBizINFO + EDINET + e-Stat live API, 3 user keys required): jpcite ships pre-indexed 166,969 法人 + 13,801 適格事業者 + 1,185 行政処分 + 22,258 enforcement detail with anonymous trial (no user API key required). Use jpcite for analyst pre-screening; use japan-corporate-mcp for live regulator pulls when keys are already provisioned. → [/compare/japan-corporate-mcp/](https://jpcite.com/compare/japan-corporate-mcp/)
 
 ## What this is
 
@@ -41,7 +49,7 @@ An evidence-first context layer over Japanese institutional public data, exposed
 - **2,286 採択事例 + 108 融資 (担保・個人保証人・第三者保証人 三軸分解) + 1,185 行政処分 + 22,258 enforcement-detail records + 2,065 court decisions + 362 bids**
 - **154 laws full-text indexed + 9,484 law metadata records** (e-Gov CC-BY; full-text coverage is incremental — name resolver covers all 9,484, body text 154) **+ 50 tax rulesets + 13,801 invoice registrants (PDL v1.0 delta)**
 - **181 exclusion / prerequisite rules** (125 exclude + 17 prerequisite + 15 absolute + 24 other) — surfaced as structured eligibility predicates, not free-text
-- **93 MCP tools** in the standard public configuration (39 core + 3 audit/composition + 25 jpcite generic + 4 universal + 5 static-resource tools + 4 NTA corpus + 10 composition tools + 3 industry-pack tools), protocol 2025-06-18, stdio. Optional labor-agreement tools are disabled unless explicitly enabled.
+- **98 MCP tools** in the standard public configuration (39 core + 3 audit/composition + 25 jpcite generic + 4 universal + 5 static-resource tools + 4 NTA corpus + 10 composition tools + 8 industry-pack tools), protocol 2025-06-18, stdio. Optional labor-agreement tools are disabled unless explicitly enabled.
 - **REST API** — endpoints under `/v1/programs/*`, `/v1/laws/*`, `/v1/tax_rulesets/*`, `/v1/case-studies/*`, `/v1/loan-programs/*`, `/v1/enforcement-cases/*`, `/v1/exclusions/*`, `/v1/am/*`. OpenAPI: [`docs/openapi/v1.json`](./docs/openapi/v1.json)
 - **No LLM inside the service** — no external LLM calls in the data/evidence path. Content endpoints are generated from the corpus and deterministic application code; reasoning lives in the caller's agent.
 - **Median 7-day freshness** on tier S/A program rows; per-source `source_fetched_at` distribution exposed at `GET /v1/stats/freshness`
@@ -136,7 +144,7 @@ Get an API key at <https://jpcite.com/dashboard>.
 
 ## MCP tools
 
-93 tools at default gates, MCP protocol `2025-06-18`, FastMCP over stdio. 完全なリストと引数は [docs/mcp-tools.md](./docs/mcp-tools.md) を参照 (Single source of truth)。
+98 tools at default gates, MCP protocol `2025-06-18`, FastMCP over stdio. 完全なリストと引数は [docs/mcp-tools.md](./docs/mcp-tools.md) を参照 (Single source of truth)。
 
 | Group | Coverage |
 |-------|----------|
@@ -207,7 +215,7 @@ Tool quality is publicly verifiable: see [`evals/`](./evals/) for a 79-query gol
 
 ## Optional disabled domains
 
-The standard distribution exposes 93 tools for Japanese public-program
+The standard distribution exposes 98 tools for Japanese public-program
 search, evidence, provenance, tax rulesets, laws, court decisions, bids,
 invoice registrants, and related entity facts. Additional domain-specific
 surfaces are intentionally disabled unless enabled through support-managed

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>jpcite vs tax-law-mcp (kentaroajisaka): 機能・データ範囲・併用パターン (2026) — jpcite</title>
+<meta name="description" content="jpcite と kentaroajisaka/tax-law-mcp の中立比較 (2026)。tax-law-mcp は e-Gov + NTA + KFS の live scrape MCP wrapper (7 tools, 30-60s 初回 cache)、jpcite は 50 税制 + 9,484 法令 + 28,201 article rows を pre-indexed で返す 93 tool MCP。両者は ad-hoc lookup と pre-indexed answer で住み分け。">
+<meta name="robots" content="index,follow">
+
+<meta property="og:title" content="jpcite vs tax-law-mcp (kentaroajisaka): 機能・データ範囲・併用パターン (2026)">
+<meta property="og:description" content="jpcite と kentaroajisaka/tax-law-mcp の中立比較 (2026)。tax-law-mcp は e-Gov + NTA + KFS の live scrape MCP wrapper (7 tools, 30-60s 初回 cache)、jpcite は 50 税制 + 9,484 法令 + 28,201 article rows を pre-indexed で返す 93 tool MCP。両者は ad-hoc lookup と pre-indexed answer で住み分け。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://jpcite.com/compare/tax-law-mcp/">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="jpcite vs tax-law-mcp (kentaroajisaka): 機能・データ範囲・併用パターン (2026)">
+<meta name="twitter:description" content="jpcite と kentaroajisaka/tax-law-mcp の中立比較 (2026)。tax-law-mcp は e-Gov + NTA + KFS の live scrape MCP wrapper (7 tools, 30-60s 初回 cache)、jpcite は 50 税制 + 9,484 法令 + 28,201 article rows を pre-indexed で返す 93 tool MCP。両者は ad-hoc lookup と pre-indexed answer で住み分け。">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
+
+<link rel="canonical" href="https://jpcite.com/compare/tax-law-mcp/">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/compare/tax-law-mcp/">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/compare/tax-law-mcp/">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="/styles.css?v=20260429a">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "jpcite vs tax-law-mcp (kentaroajisaka): 機能・データ範囲・併用パターン (2026)",
+  "description": "jpcite と kentaroajisaka/tax-law-mcp の中立比較 (2026)。tax-law-mcp は e-Gov + NTA + KFS の live scrape MCP wrapper (7 tools, 30-60s 初回 cache)、jpcite は 50 税制 + 9,484 法令 + 28,201 article rows を pre-indexed で返す 93 tool MCP。両者は ad-hoc lookup と pre-indexed answer で住み分け。",
+  "url": "https://jpcite.com/compare/tax-law-mcp/",
+  "datePublished": "2026-05-04",
+  "dateModified": "2026-05-04",
+  "inLanguage": "ja",
+  "author": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "url": "https://jpcite.com/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "url": "https://jpcite.com/"
+  },
+  "mainEntityOfPage": "https://jpcite.com/compare/tax-law-mcp/"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Bookyou株式会社",
+  "alternateName": [
+    "jpcite"
+  ],
+  "url": "https://jpcite.com/",
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "JP",
+    "addressLocality": "文京区",
+    "addressRegion": "東京都"
+  },
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "email": "info@bookyou.net",
+    "contactType": "customer support"
+  }
+}
+</script>
+
+<style>
+  .compare-page { padding: 48px 0 64px; }
+  .compare-page h1 { font-size: 30px; margin: 0 0 8px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.3; }
+  .compare-page .lead { font-size: 16px; color: var(--text-muted); margin: 0 0 22px; max-width: 760px; line-height: 1.75; }
+  .compare-page h2 { font-size: 22px; margin: 40px 0 12px; font-weight: 700; }
+  .compare-page h3 { font-size: 17px; margin: 22px 0 8px; font-weight: 700; }
+  .compare-page p, .compare-page ul { max-width: 820px; line-height: 1.75; }
+  .compare-page strong { font-weight: 700; }
+  .compare-page code { background: var(--bg-alt); padding: 1px 6px; border-radius: 4px; font-size: 0.92em; }
+  .compare-disclaimer {
+    background: var(--bg-alt); border-left: 3px solid var(--accent);
+    padding: 14px 18px; border-radius: 8px; font-size: 14px;
+    color: var(--text-muted); margin: 0 0 28px; max-width: 820px; line-height: 1.7;
+  }
+  .compare-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; margin: 16px 0 8px; }
+  .compare-table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 760px; background: var(--bg); }
+  .compare-table th, .compare-table td { border-bottom: 1px solid var(--border); padding: 10px 12px; text-align: left; vertical-align: top; }
+  .compare-table thead th { background: var(--bg-alt); font-size: 12px; letter-spacing: 0.03em; text-transform: uppercase; color: var(--text-muted); white-space: nowrap; position: sticky; top: 0; }
+  .compare-table tbody th { font-weight: 600; color: var(--text); width: 18%; background: var(--bg-alt); }
+  .compare-table .col-us { background: rgba(30,58,138,0.03); }
+  .compare-table .compare-note-cell { font-size: 12.5px; color: var(--text-muted); width: 22%; }
+  .compare-table tbody tr:hover td, .compare-table tbody tr:hover th { background: rgba(30,58,138,0.04); }
+  .compare-table tbody tr:last-child th, .compare-table tbody tr:last-child td { border-bottom: 0; }
+  .pick-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 16px 0 0; }
+  .pick-card { border: 1px solid var(--border); border-radius: 10px; padding: 20px; background: var(--bg); }
+  .pick-card h3 { margin: 0 0 8px; font-size: 16px; font-weight: 700; }
+  .pick-card .pick-tag { font-size: 12px; color: var(--accent); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; margin: 0 0 10px; }
+  .pick-card ul { font-size: 14px; color: var(--text); margin: 0; padding-left: 20px; line-height: 1.7; }
+  .pick-card.us { border-color: var(--accent); }
+  .compare-migration { border: 1px solid var(--border); border-radius: 10px; padding: 22px 24px; background: var(--bg-alt); margin: 16px 0 0; }
+  .compare-migration p { margin: 0 0 12px; font-size: 14.5px; }
+  .compare-migration p:last-child { margin-bottom: 0; }
+  .related-list { list-style: none; padding: 0; margin: 12px 0 0; display: flex; flex-wrap: wrap; gap: 12px; }
+  .related-list li { background: var(--bg-alt); border-radius: 6px; padding: 6px 12px; font-size: 13.5px; }
+  .related-list a { text-decoration: none; }
+  .footnote { font-size: 13px; color: var(--text-muted); margin: 32px 0 0; max-width: 820px; line-height: 1.7; }
+  @media (max-width: 768px) {
+    .pick-grid { grid-template-columns: 1fr; }
+    .compare-table .compare-note-cell { display: none; }
+  }
+</style>
+
+<script defer src="/analytics.js?v=20260503a"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="jpcite ホーム">
+      <span class="brand-name">jpcite</span>
+    </a>
+    <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="/about.html">About</a>
+      <a href="/products.html">Products</a>
+      <a href="/docs/">Docs</a>
+      <a href="/pricing.html">Pricing</a>
+      <a href="/audiences/">Audiences</a>
+      <a href="/compare.html">Compare</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="compare-page">
+  <div class="container">
+
+    <nav aria-label="ぱんくず" style="font-size:13px;color:var(--text-muted);margin:0 0 16px;">
+      <a href="/">ホーム</a>
+      <span aria-hidden="true">/</span>
+      <a href="/compare.html">比較</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">tax-law-mcp (kentaroajisaka)</span>
+    </nav>
+
+    <h1>jpcite vs tax-law-mcp (kentaroajisaka): 機能・データ範囲・併用パターン (2026)</h1>
+    <p class="lead"><a href="https://github.com/kentaroajisaka/tax-law-mcp" rel="noopener nofollow" target="_blank">kentaroajisaka/tax-law-mcp</a> は e-Gov 法令 API + NTA 通達 + KFS 裁決事例 を live scrape する OSS MCP wrapper です。jpcite は 50 tax_rulesets + 9,484 e-Gov 法令 + 28,201 law article rows + 137 saiketsu を pre-indexed で返す 93 tool MCP。<strong>jpcite は pre-indexed answer + 通達 cross-ref、tax-law-mcp は ad-hoc lookup</strong> で住み分け。</p>
+
+    <div class="compare-disclaimer">
+      <strong>本ページは公開情報をもとに当社が作成しています。</strong>
+      数値は <time datetime="2026-05-04">2026-05-04</time> 時点で <a href="https://github.com/kentaroajisaka/tax-law-mcp" rel="noopener nofollow" target="_blank">tax-law-mcp GitHub</a> README + <code>src/tools/</code> および <a href="https://www.npmjs.com/package/tax-law-mcp" rel="noopener nofollow" target="_blank">npm registry</a> から取得しました。最新情報は各 OSS リポジトリと当社 <a href="/pricing.html">料金ページ</a> をご確認ください。
+      誤りに気づいた場合は <a href="mailto:info@bookyou.net?subject=compare/tax-law-mcp%20correction">info@bookyou.net</a> までご連絡いただければ 48 時間以内に修正します。
+    </div>
+
+    <h2>機能・データ範囲・配布の比較表</h2>
+    <p>「対象外」と書いた行は<strong>「機能が無い」と断定するものではありません</strong> — 各社公式 README に記載が無い、または当社が確認できなかった項目です。</p>
+
+    <div class="compare-wrap">
+<table class="compare-table">
+<thead>
+<tr>
+<th scope="col">比較軸</th>
+<th scope="col" class="col-us">jpcite</th>
+<th scope="col">tax-law-mcp (OSS)</th>
+<th scope="col">補足</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">1. Distribution</th>
+<td class="col-us">PyPI <code>autonomath-mcp</code> v0.3.2 + 公式 MCP registry 登録済 + DXT bundle。</td>
+<td>npm <code>tax-law-mcp</code> v0.5.4 (one-liner <code>npx -y tax-law-mcp</code>) + Vercel REST + 公式 MCP registry 未登録。</td>
+<td class="compare-note-cell">tax-law-mcp の install は最も簡単 (npx 1 行)。</td>
+</tr>
+<tr>
+<th scope="row">2. Tool count</th>
+<td class="col-us"><strong>93 tools</strong> (うち 税制関連: <code>search_tax_incentives</code> / <code>get_am_tax_rule</code> / <code>get_law_article_am</code> / <code>cite_tsutatsu</code> / <code>find_saiketsu</code> / <code>find_shitsugi</code> / <code>find_bunsho_kaitou</code> + 横断 composition tools)。</td>
+<td><strong>7 tools</strong>: <code>get_law</code> / <code>search_law</code> / <code>get_tsutatsu</code> / <code>list_tsutatsu</code> / <code>list_saiketsu</code> / <code>search_saiketsu</code> / <code>get_saiketsu</code>。</td>
+<td></td>
+</tr>
+<tr>
+<th scope="row">3. Data sources</th>
+<td class="col-us"><strong>11+ 一次資料</strong> 横断 (e-Gov / NTA / KFS / METI / 中企庁 / JFC / EDINET / gBizINFO / 裁判所 / 各府省 / 各都道府県)。</td>
+<td><strong>3 sources</strong>: e-Gov 法令 API v2 (CC-BY) + NTA 通達 scrape + KFS 裁決事例 scrape。</td>
+<td></td>
+</tr>
+<tr>
+<th scope="row">4. Programs DB</th>
+<td class="col-us">11,684 件 pre-indexed (補助金 + 融資 + 税制 + 認定)。</td>
+<td>対象外 (法令・通達・裁決のみ)。</td>
+<td></td>
+</tr>
+<tr>
+<th scope="row">5. Laws / 法令</th>
+<td class="col-us">9,484 catalog stub + 154 全文索引 + <strong>28,201 law article rows</strong> (pre-indexed, クエリ即時応答)。</td>
+<td>e-Gov API live fetch + 24 主要税法 hardcoded 略称 (「所法」「措法」 等)。</td>
+<td class="compare-note-cell">jpcite は事前索引、tax-law-mcp は live API。</td>
+</tr>
+<tr>
+<th scope="row">6. Tax rulesets / 税制</th>
+<td class="col-us"><strong>50 件 structured</strong> 適用要件 + 措置法42-4 + IT導入会計処理 backfill 済 (2026-04-29)。</td>
+<td>条文 retrieval のみ。<strong>適用要件 structured データなし</strong>。</td>
+<td></td>
+</tr>
+<tr>
+<th scope="row">7. 通達</th>
+<td class="col-us">3,221 通達 index (NTA <code>tsutatsu_index</code>) + <code>cite_tsutatsu</code> tool で 制度 / 採択 / 法令 と cross-ref。</td>
+<td>17 通達 hardcoded (法基通 / 所基通 / 消基通 等) + live NTA scrape。</td>
+<td></td>
+</tr>
+<tr>
+<th scope="row">8. 裁決事例</th>
+<td class="col-us">137 saiketsu (pre-indexed, 国税不服審判所) + 2,065 court decisions。</td>
+<td>1,950 saiketsu (KFS live scrape, 30-60s 初回 cache)。</td>
+<td class="compare-note-cell">tax-law-mcp は full corpus、jpcite は subset + court cross-ref。</td>
+</tr>
+<tr>
+<th scope="row">9. Latency / 応答性</th>
+<td class="col-us">SQLite FTS5 + sqlite-vec で 即時応答 (median <100ms)。</td>
+<td>Live scrape のため <strong>初回 30-60s</strong> (NTA / KFS Shift_JIS scrape)、cache hit 後は速い。</td>
+<td></td>
+</tr>
+<tr>
+<th scope="row">10. 採択事例 / 行政処分 cross-ref</th>
+<td class="col-us">2,286 採択 + 1,185 行政処分 + 22,258 detail を税制と join 可能。</td>
+<td>対象外。</td>
+<td></td>
+</tr>
+<tr>
+<th scope="row">11. 適格請求書 / 法人</th>
+<td class="col-us">13,801 適格 + 166,969 法人 (税制と join 可能)。</td>
+<td>対象外。</td>
+<td></td>
+</tr>
+<tr>
+<th scope="row">12. Evidence Packet</th>
+<td class="col-us"><code>source_url</code> + <code>source_fetched_at</code> + <code>corpus_snapshot_id</code> + <code>corpus_checksum</code> + <code>_disclaimer</code> envelope。</td>
+<td>NTA URL / e-Gov URL を レスポンスに含む (出典明記あり、<code>_disclaimer</code> envelope は明示なし)。</td>
+<td></td>
+</tr>
+<tr>
+<th scope="row">13. License</th>
+<td class="col-us">MIT (Bookyou株式会社, T8010001213708)。</td>
+<td>MIT (kentaroajisaka)。通達は 国税庁コンテンツ利用規約 に従う旨 README 明記。</td>
+<td></td>
+</tr>
+<tr>
+<th scope="row">14. Pricing</th>
+<td class="col-us">¥3/billable unit 完全従量、匿名 3 req/日/IP free。</td>
+<td>完全無料 (OSS、自前ホスト or Vercel)。</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+    <h2>当社を選ぶケース / tax-law-mcp を選ぶケース</h2>
+    <div class="pick-grid">
+      <div class="pick-card us">
+        <p class="pick-tag">jpcite が向いている</p>
+        <ul>
+          <li><strong>pre-indexed answers + 通達 cross-ref</strong>: 50 tax_rulesets (適用要件 structured) + 28,201 law article + 3,221 通達 index を即時応答で返したい。tax-law-mcp は live scrape で 30-60s 初回 cache。</li>
+          <li><strong>税制 + 補助金 + 採択事例 + 行政処分 を 1 envelope</strong> で取得し、措置法42-4 (研究開発税制) や IT導入補助金 会計処理を制度・採択と cross-ref したい。</li>
+          <li><strong>audit-grade Evidence Packet</strong> (<code>corpus_snapshot_id</code> + <code>_disclaimer</code> envelope) を 監査人 / 税務調査対応で auditor に渡したい。</li>
+        </ul>
+      </div>
+      <div class="pick-card">
+        <p class="pick-tag">tax-law-mcp が向いている</p>
+        <ul>
+          <li><strong>ad-hoc lookups</strong>: 「所法 22 条」「措法 42 条の 4」のような<strong>略称ベースの単発問い合わせ</strong>を ergonomic prompt で即返したい (jpcite は法令 ID 起点)。</li>
+          <li><strong>npx 1 行 install</strong> でゼロ env-var ゼロ API key で即起動 (<code>npx -y tax-law-mcp</code>)。</li>
+          <li><strong>KFS 裁決事例 1,950 件 full corpus</strong> を keyword 検索したい (jpcite は 137 件 subset)。</li>
+          <li>Custom GPT Actions 用の <code>openapi.yaml</code> drop-in 配布あり。</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>推奨併用パターン</h2>
+    <div class="compare-migration">
+      <p><strong>役割が違う</strong>: tax-law-mcp は 法令・通達・裁決の ad-hoc 単発引用、jpcite は 税制 + 制度 + 採択 + 法令 横断の structured 適用要件。<strong>競合ではなく complement</strong>。</p>
+      <p><strong>1.</strong> 一般的な「所法 X 条の解釈」「措通 Y 項の適用範囲」は tax-law-mcp の <code>get_law</code> / <code>get_tsutatsu</code> で即時引用 (略称が prompt 上 ergonomic)。</p>
+      <p><strong>2.</strong> 「研究開発税制 (措置法42-4) を IT導入補助金と併用できるか」「過去の採択事例で 措置法 X 条を invoke した案件は何件か」のような<strong>制度・採択 cross-ref が必要な問い</strong>は jpcite の <code>get_am_tax_rule</code> + <code>search_acceptance_stats_am</code> + <code>cite_tsutatsu</code> を組み合わせて使う。</p>
+      <p><strong>3.</strong> 監査人 / 税務調査エビデンス出力時は jpcite の <code>corpus_snapshot_id</code> + <code>_disclaimer</code> envelope で再現性を担保し、必要に応じて tax-law-mcp の KFS 裁決 1,950 件 corpus で補強。</p>
+    </div>
+
+    <h2>注意点</h2>
+    <ul>
+      <li>tax-law-mcp の通達 retrieval は 国税庁コンテンツ利用規約 に従う (README 明記)。</li>
+      <li>KFS 裁決事例 scrape は Shift_JIS source のため初回 cache 構築に 30-60s。Vercel REST 経由は cache 共有あり。</li>
+      <li>公式 MCP registry には未登録 (jpcite は <code>io.github.shigetosidumeda-cyber/autonomath-mcp</code> として登録済)。</li>
+    </ul>
+
+    <h2>関連ページ</h2>
+    <ul class="related-list">
+      <li><a href="/compare.html">全比較表</a></li>
+      <li><a href="/compare/jgrants-mcp/">vs jgrants-mcp-server</a></li>
+      <li><a href="/compare/japan-corporate-mcp/">vs japan-corporate-mcp</a></li>
+      <li><a href="/pricing.html">料金 (¥3/billable unit 完全従量)</a></li>
+      <li><a href="/docs/mcp-tools/">MCP tools (93)</a></li>
+      <li><a href="/sources.html">出典・ライセンス</a></li>
+    </ul>
+
+    <h2>出典</h2>
+    <ul>
+      <li><a href="https://github.com/kentaroajisaka/tax-law-mcp" rel="noopener nofollow" target="_blank">https://github.com/kentaroajisaka/tax-law-mcp</a> (README / LICENSE / <code>src/tools/</code>)</li>
+      <li><a href="https://www.npmjs.com/package/tax-law-mcp" rel="noopener nofollow" target="_blank">https://www.npmjs.com/package/tax-law-mcp</a> (npm v0.5.4)</li>
+      <li><a href="https://laws.e-gov.go.jp/api/2/" rel="noopener nofollow" target="_blank">https://laws.e-gov.go.jp/api/2/</a> (デジタル庁 e-Gov 法令 API v2, CC-BY)</li>
+      <li><a href="https://registry.modelcontextprotocol.io/v0/servers" rel="noopener nofollow" target="_blank">https://registry.modelcontextprotocol.io/v0/servers</a> (公式 MCP registry)</li>
+    </ul>
+
+    <p class="footnote">
+      凡例: 「対象外」は、各社公式 README / source に当該機能の記載が確認できなかった項目を指します。
+      機能の不在を断定するものではありません。各社 ToS や新規機能追加によって変わります。
+      本ページは公開情報に基づき、誇張を避け、訂正依頼を受け付けます。
+      訂正が必要な場合は <a href="mailto:info@bookyou.net?subject=compare/tax-law-mcp%20correction">info@bookyou.net</a> 宛にご連絡ください。
+    </p>
+
+  </div>
+</main>
+
+<div class="container">
+  <p class="trust-strip" style="margin:24px 0 8px;font-size:13px;color:var(--text-muted);line-height:1.7;">
+    比較は <time datetime="2026-05-04">2026-05-04</time> 時点の各社公開情報に基づきます。
+    tax-law-mcp は kentaroajisaka 氏の OSS、各サービス名は運営者の登録商標または商標です。
+    · 運営 <a href="/about.html">Bookyou株式会社</a>
+    · <a href="/tokushoho.html">特商法表記</a> / <a href="/tos.html">利用規約</a> / <a href="/privacy.html">プライバシー</a>
+    · 修正提案 <a href="mailto:info@bookyou.net?subject=compare/tax-law-mcp%20correction">info@bookyou.net</a>
+  </p>
+</div>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">jpcite</p>
+      <p class="footer-tag">日本の制度 API</p>
+    </div>
+    <nav class="footer-nav" aria-label="フッター">
+      <a href="/tos.html">利用規約</a>
+      <a href="/privacy.html">プライバシー</a>
+      <a href="/tokushoho.html">特定商取引法</a>
+      <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
+      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+    </nav>
+    <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+  </div>
+</footer>
+
+<script src="/assets/trust-strip.js" defer></script>
+
+</body>
+</html>
