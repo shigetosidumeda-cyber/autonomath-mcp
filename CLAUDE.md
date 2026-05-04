@@ -41,10 +41,10 @@ jpcite is a Japanese public-program database exposed as both a REST API and an M
 - **090** `law_articles.body_en` — 英訳 e-Gov column (foreign FDI cohort enabler).
 - **091** `am_tax_treaty` — international tax treaty table (国際課税 cohort); schema seeds ~80 countries, 8 rows hand-curated as of 2026-04-29.
 - **092** `foreign_capital_eligibility` — flag column for 外資系 eligibility filtering.
-- **096** `client_profiles` — 税理士 顧問先 master table; router file `api/client_profiles.py` exists, **NOT yet wired in `main.py`** (no `include_router` line).
+- **096** `client_profiles` — 税理士 顧問先 master table; router file `api/client_profiles.py` wired in `main.py:1649` under `/v1/me/client_profiles` (4 paths live in production openapi, verified 2026-05-04).
 - **097** `saved_searches.profile_ids` — per-client fan-out column on saved_searches.
 - **098** `program_post_award_calendar` — 採択後 monitoring calendar (post-award engagement).
-- **099** `recurring_engagement` — Slack digest + email course + quarterly PDF substrate; route surface in `api/courses.py` (also exists, **NOT yet wired in `main.py`**).
+- **099** `recurring_engagement` — Slack digest + email course + quarterly PDF substrate; route surface in `api/courses.py` wired in `main.py:1657` under `/v1/me/courses` (2 paths live in production openapi, verified 2026-05-04). Quarterly PDF + Slack webhook live via `recurring_quarterly` router at `main.py:1664`.
 - **101** `trust_infrastructure` (target_db: autonomath) — SLA, corrections, cross-source agreement, stale-data tracking.
 
 **New cron scripts** (`scripts/cron/`): `backup_autonomath.py`, `backup_jpintel.py`, `dispatch_webhooks.py`, `expire_trials.py`, `run_saved_searches.py`, `send_daily_kpi_digest.py`, `ingest_nta_invoice_bulk.py`, `incremental_law_fulltext.py`, `index_now_ping.py`, `predictive_billing_alert.py`, `regenerate_audit_log_rss.py`, `r2_backup.sh`.
