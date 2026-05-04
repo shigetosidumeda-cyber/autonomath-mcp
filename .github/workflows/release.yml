@@ -100,10 +100,18 @@ jobs:
           name: dist
           path: dist/
 
-      - name: Publish to PyPI
+      - name: Publish to PyPI (Trusted Publishing via OIDC)
+        # PYPI_API_TOKEN secret has never been set on this repo, so the
+        # legacy password mode failed silently across every prior tag
+        # (v0.3.1 / v0.3.2 hand-published with twine).
+        # Switch to PyPI Trusted Publishing — id-token: write at the
+        # workflow level already provides the OIDC token; the action
+        # exchanges it with PyPI when no password/api-token is supplied.
+        # Pre-req: register this repo + workflow + environment as a
+        # Trusted Publisher at https://pypi.org/manage/project/autonomath-mcp/settings/publishing/
+        # (one-time owner action; no token needs to leave PyPI).
         uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # release/v1
         with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
           skip-existing: true
 
   github-release:
