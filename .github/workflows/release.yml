@@ -33,8 +33,23 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
 
-      - name: Ruff lint
-        run: ruff check .
+      - name: Ruff lint (CLAUDE.md Quality gates target)
+        # Match the lint target documented in CLAUDE.md so the release gate
+        # tracks the same scripts the regular test workflow lints, instead
+        # of the legacy `ruff check .` which trips on long-tail SIM105 /
+        # B904 / TC002 warnings in third-party-shaped paths and has blocked
+        # every prior release tag (v0.3.1 / v0.3.2 both red here).
+        run: |
+          ruff check \
+            scripts/generate_cross_hub_pages.py \
+            scripts/generate_geo_program_pages.py \
+            scripts/generate_industry_hub_pages.py \
+            scripts/generate_industry_program_pages.py \
+            scripts/generate_prefecture_pages.py \
+            scripts/generate_program_pages.py \
+            scripts/regen_llms_full.py \
+            scripts/regen_llms_full_en.py \
+            scripts/etl/generate_program_rss_feeds.py
 
       - name: Pytest
         run: pytest tests/ -v --tb=short
