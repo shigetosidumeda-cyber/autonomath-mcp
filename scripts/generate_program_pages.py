@@ -2290,9 +2290,7 @@ def _parse_args() -> argparse.Namespace:
         "--sitemap-structured",
         type=Path,
         default=None,
-        help=(
-            "DEPRECATED 2026-05-03: sitemap-structured.xml path. See --structured-dir."
-        ),
+        help=("DEPRECATED 2026-05-03: sitemap-structured.xml path. See --structured-dir."),
     )
     p.add_argument(
         "--no-structured",
@@ -2325,9 +2323,7 @@ def main() -> int:
     # flags are retained as opt-in escape hatches for local inspection only;
     # passing an explicit path resurrects the legacy behavior for that one run.
     structured_dir = (
-        args.structured_dir
-        if (args.structured_dir and str(args.structured_dir) != "")
-        else None
+        args.structured_dir if (args.structured_dir and str(args.structured_dir) != "") else None
     )
     sitemap_structured_path = (
         args.sitemap_structured
