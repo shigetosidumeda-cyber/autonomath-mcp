@@ -4,7 +4,7 @@
 // `autonomath-mcp` for compatibility.
 // This module spawns it as a child process so Node-based MCP hosts (Claude Desktop
 // custom configs, Continue, Cline, custom agents) can use it without re-implementing
-// the 93-tool surface in TypeScript.
+// the 96-tool surface in TypeScript.
 //
 // Prerequisite:
 //   pip install autonomath-mcp

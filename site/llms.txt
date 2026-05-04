@@ -47,7 +47,7 @@ jpcite は出典付きの小さな Evidence Packet を返します。caller が�
 - 詳細: https://jpcite.com/pricing.html?src=llmstxt
 
 ## Coverage
-**11,684 searchable programs** (tier S=114 / A=1,340 / B=4,186 / C=6,044) + 2,286 採択事例 + 108 融資 + 1,185 行政処分 + 法令本文 154 + 法令メタデータ 9,484 + 50 tax_rulesets + 2,065 court_decisions + 362 bids + 13,801 invoice_registrants + 503,930 entities / 6.12M facts / 378,342 relations / 335,605 aliases、181 排他/前提ルール。主要な公開行は source URL と fetched_at を含みます。MCP **93 tools** (protocol 2025-06-18)。
+**11,684 searchable programs** (tier S=114 / A=1,340 / B=4,186 / C=6,044) + 2,286 採択事例 + 108 融資 + 1,185 行政処分 + 法令本文 154 + 法令メタデータ 9,484 + 50 tax_rulesets + 2,065 court_decisions + 362 bids + 13,801 invoice_registrants + 503,930 entities / 6.12M facts / 378,342 relations / 335,605 aliases、181 排他/前提ルール。主要な公開行は source URL と fetched_at を含みます。MCP **96 tools** (protocol 2025-06-18)。
 
 ---
 
@@ -64,7 +64,7 @@ Concatenated full docs: https://jpcite.com/llms-full.txt
 - [API reference (REST)](https://jpcite.com/docs/api-reference/): all REST endpoints, parameters, response shapes
 - [Agent-safe OpenAPI spec](https://api.jpcite.com/v1/openapi.agent.json): evidence/search subset for ChatGPT Custom GPTs and Claude tools. Excludes billing, webhook, OAuth, account-management, and operator endpoints.
 - [Full OpenAPI 3.x machine-readable spec](https://api.jpcite.com/v1/openapi.json): full developer reference (171 public paths in the stable export) for Stainless / Mintlify / Postman SDK generators.
-- [MCP tools (93)](https://jpcite.com/docs/mcp-tools/): stdio MCP tools, protocol 2025-06-18
+- [MCP tools (96)](https://jpcite.com/docs/mcp-tools/): stdio MCP tools, protocol 2025-06-18
 - [Examples (Python + curl)](https://jpcite.com/docs/examples/): copy-paste recipes
 - [Error handling](https://jpcite.com/docs/error_handling/): error codes, retry semantics
 - [Exclusion rules](https://jpcite.com/docs/exclusions/): how subsidy compatibility / exclusivity is modeled
@@ -151,7 +151,7 @@ The most common 0-hit cause is hallucinated filter values. Always probe the live
 
 ### MCP tool index (when to use which — 1 line each)
 
-A curated subset of the 93 tools — pick the right entry point on the first call. Full reference at https://jpcite.com/docs/mcp-tools/.
+A curated subset of the 96 tools — pick the right entry point on the first call. Full reference at https://jpcite.com/docs/mcp-tools/.
 
 - `search_programs` — discover by keyword + region + amount across 11,684 制度 (tier S/A/B/C). 一次資料 URL 付き. 広い回答生成では先に `/v1/intelligence/precomputed/query`、実在する `unified_id` が必要な時に使う。
 - `get_program` — full A-J detail by `unified_id` (eligibility, amount, window, exclusions, lineage). Hydrate after `search_programs`.
@@ -193,9 +193,9 @@ A curated subset of the 93 tools — pick the right entry point on the first cal
 Hand-written tutorials for the 5 most-used MCP / Custom-GPT / GPTs / Gemini clients. They are designed for a quick first call, with copy-paste config snippets, first prompts, expected output, and troubleshooting items. Setup time varies by client.
 
 - [Integrations index](https://jpcite.com/integrations/): all client guides + 5-language SDK samples + official Python / TypeScript SDK
-- [Claude Desktop](https://jpcite.com/integrations/claude-desktop.html): install + claude_desktop_config.json. macOS / Windows / Linux paths covered. ~3 min to first tool call (93 tools live).
-- [Cursor](https://jpcite.com/integrations/cursor.html): Cursor Settings → MCP Servers → JSON. Three install options (pip, uvx, .mcpb URL). ~4 min to first tool call (93 tools live).
-- [Cline (VS Code)](https://jpcite.com/integrations/cline.html): VS Code extension `saoudrizwan.claude-dev` (or Roo Code). cline_mcp_settings.json + autoApprove guidance for read-only tools. ~5 min to first tool call (93 tools live).
+- [Claude Desktop](https://jpcite.com/integrations/claude-desktop.html): install + claude_desktop_config.json. macOS / Windows / Linux paths covered. ~3 min to first tool call (96 tools live).
+- [Cursor](https://jpcite.com/integrations/cursor.html): Cursor Settings → MCP Servers → JSON. Three install options (pip, uvx, .mcpb URL). ~4 min to first tool call (96 tools live).
+- [Cline (VS Code)](https://jpcite.com/integrations/cline.html): VS Code extension `saoudrizwan.claude-dev` (or Roo Code). cline_mcp_settings.json + autoApprove guidance for read-only tools. ~5 min to first tool call (96 tools live).
 - [ChatGPT Custom GPT](https://jpcite.com/integrations/openai-custom-gpt.html): ChatGPT Custom GPT Actions → Import OpenAPI from `https://api.jpcite.com/v1/openapi.agent.json`. Anonymous (3/day per shared OpenAI IP) or X-API-Key. ~5 min to first action call.
 
 ## Data licenses

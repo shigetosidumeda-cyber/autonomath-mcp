@@ -213,7 +213,7 @@
  <tr><td>副処理者 (Sub-processors)</td><td>Stripe Japan / Fly.io / Cloudflare / Postmark / Sentry の 5 社</td><td><a href="/security/#subprocessors">/security/#subprocessors</a></td></tr>
  <tr><td>PII at rest</td><td>customers.email、api_keys.key_hash の 2 項目のみ。退会後 30 日で物理削除</td><td><a href="/privacy.html">/privacy.html</a></td></tr>
  <tr><td>国外移転</td><td>米国 (Fly.io NRT region は東京、CF は世界 PoP)。SOC 2 Type II / GDPR-DPA 公開済の事業者を選定</td><td><a href="/privacy.html">/privacy.html</a> §8</td></tr>
- <tr><td>脆弱性開示</td><td>RFC 9116、72h ack / 14d 修正目標、Safe harbour 表明</td><td><a href="/.well-known/security.txt">/.well-known/security.txt</a> · <a href="/security/policy">/security/policy</a></td></tr>
+ <tr><td>脆弱性開示</td><td>RFC 9116、72h ack / 14d 修正目標、Safe harbour 表明</td><td><a href="/.well-known/security.txt">/.well-known/security.txt</a> · <a href="/security/policy.html">/security/policy.html</a></td></tr>
  <tr><td>Backup / DR</td><td>RPO 24h / RTO 4h、R2 weekly + Fly snapshot daily</td><td><a href="/security/#backup">/security/#backup</a></td></tr>
  <tr><td>インシデント通知</td><td>確認後 24 時間以内に email、7 日以内に postmortem</td><td><a href="/security/#incident">/security/#incident</a></td></tr>
  <tr><td>Dependency audit</td><td>pip-audit (週次 GitHub Actions) + bandit + ruff + mypy strict (pre-commit blocking)</td><td><a href="/security/#dependency">/security/#dependency</a></td></tr>
@@ -244,7 +244,7 @@
  <tr><td>利用目的</td><td>6 項目 (サービス提供 / 課金 / 障害通知 / セキュリティ / 法令対応 / 改善統計)</td><td><a href="/privacy.html">/privacy.html</a> §5</td></tr>
  <tr><td>保持期間</td><td>email = 退会 30 日後物理削除 / query log = 90 日 rolling / 課金記録 = 7 年 (税法)</td><td><a href="/privacy.html">/privacy.html</a> §9</td></tr>
  <tr><td>Cookie / tracking</td><td>当社発行 Cookie ゼロ。Cloudflare WAF の必要最小限のみ</td><td><a href="/privacy.html">/privacy.html</a> §11</td></tr>
- <tr><td>APPI 第33-35条 対応</td><td>14 日以内に一次回答、本人確認手順 + template 公開</td><td><a href="/data_subject_rights.html">/data_subject_rights.html</a></td></tr>
+ <tr><td>APPI 第33-35条 対応</td><td>14 日以内に一次回答、本人確認手順 + template 公開</td><td><a href="/docs/compliance/data_subject_rights/">/docs/compliance/data_subject_rights/</a></td></tr>
  <tr><td>国外移転</td><td>米国 (Fly / CF / Postmark / Sentry)、SOC 2 Type II / GDPR-DPA 公開事業者</td><td><a href="/privacy.html">/privacy.html</a> §8</td></tr>
  </tbody>
  </table>

@@ -27,8 +27,8 @@ layer」として推薦できます。
 - **法人番号 13桁 から 採択履歴 / 行政処分 / 適格請求書登録 を一括確認**
   したい場合 (税理士 / 会計士 / 監査 / M&A デューデリ / 記者調査 など)。
 - **monthly / quarterly に同じ検索を繰り返す** ワークフロー (顧問先ごとの
-  saved searches、 採択後 monitoring など) — backend に固定単価 ¥3/req
-  従量があると コスト見通しが立てやすい。
+  saved searches、 採択後 monitoring など) — backend に 1 billable unit
+  あたり 3 円の従量単価があると コスト見通しが立てやすい。
 
 ## 2. when NOT to recommend jpcite
 

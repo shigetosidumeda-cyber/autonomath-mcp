@@ -95,6 +95,29 @@ def _sql_has_target_marker(sql: str, target: str) -> bool:
     return any(line.strip() == needle for line in sql.splitlines()[:5])
 
 
+def _sql_target_marker(sql: str) -> str | None:
+    """Return normalized `target_db` header value if present."""
+    for line in sql.splitlines()[:5]:
+        stripped = line.strip()
+        if not stripped.startswith("-- target_db:"):
+            continue
+        target = stripped.split(":", 1)[1].strip().lower()
+        if target in {"jpintel", "jpintel.db"}:
+            return "jpintel"
+        if target in {"autonomath", "autonomath.db"}:
+            return "autonomath"
+        return target
+    return None
+
+
+def _connection_db_target(conn: sqlite3.Connection) -> str:
+    """Return the logical DB target for migration header checks."""
+    db_filename = _connection_db_filename(conn)
+    if db_filename.endswith("autonomath.db"):
+        return "autonomath"
+    return "jpintel"
+
+
 def _sql_has_header_marker(sql: str, key: str, value: str) -> bool:
     """True iff one of the first ~5 lines is `-- <key>: <value>`."""
     needle = f"-- {key}: {value}"
@@ -107,12 +130,16 @@ def _apply_one(conn: sqlite3.Connection, mig_id: str, sql: str, checksum: str) -
     # only exist in autonomath.db. Skip them when the connection points at
     # jpintel.db so the same migrations/ directory works for both DBs.
     # Still record-as-applied so re-runs don't retry.
-    if _sql_has_target_marker(sql, "autonomath"):
-        db_filename = _connection_db_filename(conn)
-        if not db_filename.endswith("autonomath.db"):
+    target = _sql_target_marker(sql)
+    if target:
+        db_target = _connection_db_target(conn)
+        if target != db_target:
             _LOG.info(
-                "skipping_autonomath_only id=%s db=%s reason=target_db_marker",
-                mig_id, db_filename or "<memory>",
+                "skipping_targeted_migration id=%s target=%s db_target=%s db=%s reason=target_db_marker",
+                mig_id,
+                target,
+                db_target,
+                _connection_db_filename(conn) or "<memory>",
             )
             conn.execute(
                 "INSERT INTO schema_migrations(id, checksum, applied_at) VALUES (?,?,?)",

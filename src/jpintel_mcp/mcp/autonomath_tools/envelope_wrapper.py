@@ -38,6 +38,7 @@ No API key usage: this wrapper never calls Anthropic or any LLM.
 """
 from __future__ import annotations
 
+import contextlib
 import functools
 import logging
 import sqlite3
@@ -47,9 +48,9 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+from .._error_helpers import safe_internal_error_payload
 from .cs_features import build_meta, enhance_error_with_retry
 from .error_envelope import ERROR_CODES, is_error, make_error  # noqa: F401
-from .._error_helpers import safe_internal_error_payload
 
 # O8 — Bayesian per-fact uncertainty. Soft-imported so a sandbox without
 # the autonomath.db view (or scipy) still produces an envelope; the
@@ -231,6 +232,11 @@ SENSITIVE_TOOLS: frozenset[str] = frozenset({
     "pack_construction",
     "pack_manufacturing",
     "pack_real_estate",
+    # Corporate layer — 法人番号 / 適格請求書 surfaces can be used in
+    # regulated tax, credit, and DD workflows. EDINET pointer-only tool is
+    # intentionally excluded.
+    "get_houjin_360_am",
+    "search_invoice_by_houjin_partial",
 })
 
 _DISCLAIMER_STANDARD: dict[str, str] = {
@@ -346,6 +352,17 @@ _DISCLAIMER_STANDARD: dict[str, str] = {
         "監査調書 (公認会計士法 §47条の2) ・申請代理 (行政書士法 §1) の代替では "
         "ありません。業種マッピングは JSIC K + 名称キーワード fence による "
         "heuristic で、各 program の適合可否は申請要領を一次資料で必ずご確認ください。"
+    ),
+    "get_houjin_360_am": (
+        "本 response は公開法人情報・適格請求書登録・行政処分・採択履歴の機械的 "
+        "join による法人 360 view で、信用調査・反社チェック・税務助言 "
+        "(税理士法 §52) ・法律判断 (弁護士法 §72) の代替ではありません。"
+        "業務判断では法務局・国税庁・各一次資料を必ず確認してください。"
+    ),
+    "search_invoice_by_houjin_partial": (
+        "本 response は国税庁 適格請求書発行事業者公表データの機械的検索で、"
+        "仕入税額控除の確定判断・税務助言 (税理士法 §52) は提供しません。"
+        "最新の登録状況は国税庁公表サイトで必ず確認してください。"
     ),
     # --- Wave 21 composition tools (canonical disclaimer copies; the tool ----
     # bodies emit their own inline disclaimer string today, but registering
@@ -464,6 +481,14 @@ _DISCLAIMER_MINIMAL: dict[str, str] = {
     "pack_real_estate": (
         "不動産業 (JSIC K) cohort 検索 aggregation のみ。税務助言 (税理士法 §52) ・"
         "監査調書 (公認会計士法 §47条の2) の代替不可。一次資料確認必須。"
+    ),
+    "get_houjin_360_am": (
+        "公開法人情報の機械的 join のみ。与信・反社・税務/法律判断の代替不可。"
+        "一次資料確認必須。"
+    ),
+    "search_invoice_by_houjin_partial": (
+        "国税庁公表データの検索のみ。仕入税額控除の確定判断・税務助言ではない。"
+        "国税庁原典確認必須。"
     ),
     # --- Wave 21 composition tools ---------------------------------------
     "apply_eligibility_chain_am": (
@@ -837,10 +862,8 @@ def _maybe_attach_uncertainty(results: list) -> dict[str, Any] | None:
     # Close the lazy connection if we opened one.
     conn = _conn_holder["conn"]
     if conn is not None:
-        try:
+        with contextlib.suppress(Exception):
             conn.close()
-        except Exception:
-            pass
 
     if score_count == 0:
         return None

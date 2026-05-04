@@ -26,6 +26,7 @@ from . import (
     autonomath_wrappers,  # noqa: F401  — decorator side-effect (5 wrappers; sib_tool intentionally skipped — am_sib_contract has 35 rows from Wave 19 backfill but tool not yet stabilized)
     citations_tools,  # noqa: F401  — 2026-04-30: verify_citations (api/citations.py companion). LR plan §28.2 verification path.
     composition_tools,  # noqa: F401  — Wave 21: 5 composition tools (apply_eligibility_chain_am / find_complementary_programs_am / simulate_application_am / track_amendment_lineage_am / program_active_periods_am, AUTONOMATH_COMPOSITION_ENABLED gate)
+    corporate_layer_tools,  # noqa: F401  — P12 §4.8 (2026-05-04): 3 corporate-layer tools (get_houjin_360_am / list_edinet_disclosures / search_invoice_by_houjin_partial). Direct competitor coverage vs japan-corporate-mcp. AUTONOMATH_CORPORATE_LAYER_ENABLED gate (default ON), §52 envelope on the 2 sensitive tools, EDINET pointer surface (no live HTTP).
     evidence_packet_tools,  # noqa: F401  — 2026-04-30: get_evidence_packet (api/evidence.py companion). LR plan §6 Evidence Packet composer.
     funding_stack_tools,  # noqa: F401  — 2026-04-30: check_funding_stack_am (api/funding_stack.py companion). Pure rule engine.
     graph_traverse_tool,  # noqa: F401  — O7 Wave 18: graph_traverse (heterogeneous 1-3 hop KG walk over v_am_relation_all, AUTONOMATH_GRAPH_TRAVERSE_ENABLED gate)

@@ -59,7 +59,7 @@ PAGES["tdb"] = {
         "「どちらか」ではなく「目的別に併用」が一般的な落としどころです。"
     ),
     "us_strengths": [
-        "<strong>機械可読 API + MCP</strong>を必須とする LLM Agent / 自社プロダクトでの自動化用途。93 tools (protocol 2025-06-18) と OpenAPI 3.1 で Claude Desktop / Cursor は MCP、ChatGPT は OpenAPI Actions から呼べます。",
+        "<strong>機械可読 API + MCP</strong>を必須とする LLM Agent / 自社プロダクトでの自動化用途。96 tools (protocol 2025-06-18) と OpenAPI 3.1 で Claude Desktop / Cursor は MCP、ChatGPT は OpenAPI Actions から呼べます。",
         "<strong>補助金・融資・税制・認定の横断検索</strong>と<strong>行政処分 1,185 件</strong>の取引相手調査が必要なとき。TDB は信用調査専業のため、制度 DB 用途では当社が補完。",
         "<strong>完全従量 ¥3/billable unit</strong>(税込目安 ¥3.30) で最低料金/契約期間なし。匿名 3 requests/日/IP が無料、評価開始の摩擦が低い。",
     ],
@@ -94,7 +94,7 @@ PAGES["tsr"] = {
         "目的が「与信判断」なら TSR、「補助金・税制・法令の自動探索」なら当社、両方なら併用、が素直な選び方になります。"
     ),
     "us_strengths": [
-        "<strong>API/MCP 必須の自動化用途</strong>。93 tools + OpenAPI 3.1 で LLM Agent から直接呼べます。"
+        "<strong>API/MCP 必須の自動化用途</strong>。96 tools + OpenAPI 3.1 で LLM Agent から直接呼べます。"
         "TSR の API/MCP の公開仕様は 2026-04 時点で公開情報なし。",
         "<strong>11,684 制度 + 2,065 判例 + 9,484 法令 + 1,185 行政処分</strong>の横断検索。TSR の対象外領域。",
         "<strong>¥3/billable unit 完全従量</strong>。年間契約・代理店経由不要、匿名 3 requests/日/IP 無料で評価可能。",
@@ -132,7 +132,7 @@ PAGES["gbizinfo"] = {
     "us_strengths": [
         "<strong>制度 DB との連結</strong>: 法人番号 → 適用可能な補助金 / 融資 / 税制 / 認定 を 1 リクエストで取得。"
         "gBizINFO は補助金採択企業のリンクはあるが、未受給の制度を逆引きする検索は提供せず。",
-        "<strong>MCP プロトコル対応</strong>。Claude Desktop / Cursor は MCP、ChatGPT は OpenAPI Actions から呼べる 93 tools。"
+        "<strong>MCP プロトコル対応</strong>。Claude Desktop / Cursor は MCP、ChatGPT は OpenAPI Actions から呼べる 96 tools。"
         "gBizINFO は REST のみ (MCP は公開情報なし)。",
         "<strong>判例 2,065 件 + 行政処分 1,185 件 + 法令 9,484 件 + 適格請求書 13,801 件</strong>を横断"
         "(法人 × 制度 × 法令 × 処分 を 1 query)。",
@@ -207,7 +207,7 @@ PAGES["mirasapo"] = {
         "両者の競合関係は実は薄く、用途が違います。"
     ),
     "us_strengths": [
-        "<strong>API + MCP</strong> による自動化。93 tools で AI Agent から直接呼べる。"
+        "<strong>API + MCP</strong> による自動化。96 tools で AI Agent から直接呼べる。"
         "ミラサポは 2026-04 時点で公開 API なし。",
         "<strong>適用可能な制度の機械的フィルタ</strong>(業種 / 都道府県 / 売上規模 等の structured query)。",
         "<strong>判例 / 行政処分 / 法令 / 適格請求書発行事業者</strong>の横断検索。"
@@ -281,7 +281,7 @@ PAGES["freee"] = {
     ),
     "us_strengths": [
         "<strong>顧客制約なし</strong>。freee アカウント不要、誰でも匿名 3 req/日/IP で評価可能。",
-        "<strong>API + MCP</strong>。LLM Agent / 自社プロダクトに直接組み込める 93 tools。"
+        "<strong>API + MCP</strong>。LLM Agent / 自社プロダクトに直接組み込める 96 tools。"
         "freee 助成金 AI の外部 API は 2026-04 時点で公開情報なし。",
         "<strong>判例 + 行政処分 + 法令 + 適格請求書</strong>の横断検索。"
         "freee 助成金 AI は助成金中心で、これらは対象外。",
@@ -318,7 +318,7 @@ PAGES["navit"] = {
         "「人が UI で検索する」ならナビット、「AI Agent / 自社システムから API 呼出」なら当社、が素直な切り分けです。"
     ),
     "us_strengths": [
-        "<strong>API + MCP</strong>提供。93 tools で LLM Agent から直接呼べる。"
+        "<strong>API + MCP</strong>提供。96 tools で LLM Agent から直接呼べる。"
         "ナビットは Web UI 中心で、API/MCP の公開仕様は 2026-04 時点で公開情報なし。",
         "<strong>従量 ¥3/billable unit</strong>。Seat 不要、必要な分だけ。"
         "ナビットは Seat 課金モデル (公開価格情報なし、要問合せ)。",
@@ -359,7 +359,7 @@ PAGES["nta-invoice"] = {
     "us_strengths": [
         "<strong>登録番号 × 制度の横断検索</strong>。同事業者が受給できる補助金 / 適用税制 / 該当判例 を 1 リクエストで取得。"
         "国税庁公表サイトは登録番号と公示情報のみで、他データとの結合は提供せず。",
-        "<strong>MCP プロトコル対応</strong>。Claude Desktop / Cursor は MCP、ChatGPT は OpenAPI Actions から呼べる 93 tools。"
+        "<strong>MCP プロトコル対応</strong>。Claude Desktop / Cursor は MCP、ChatGPT は OpenAPI Actions から呼べる 96 tools。"
         "国税庁公表サイトは Web API のみで、MCP は対象外。",
         "<strong>判例 / 行政処分 / 法令</strong>を含む横断検索。「取引相手の登録番号 → 行政処分の有無」を 1 query で確認可能。",
     ],
@@ -400,7 +400,7 @@ PAGES["diy-scraping"] = {
         "<strong>失効監視 + dedup + license 管理</strong>を当社が運用。"
         "URL 死活と出典鮮度を定期的に監視し、問題のある行は確認対象に回します。"
         "重複除去ロジック (公募回 / 都道府県差し替え) も内製済。",
-        "<strong>93 MCP tools</strong>を Claude Desktop / Cursor は MCP、ChatGPT は OpenAPI Actions から呼び出し。"
+        "<strong>96 MCP tools</strong>を Claude Desktop / Cursor は MCP、ChatGPT は OpenAPI Actions から呼び出し。"
         "自前で MCP サーバーを書く工数も不要。",
     ],
     "them_strengths": [
@@ -687,7 +687,7 @@ def render_page(slug: str, page: dict, rows: list[dict]) -> str:
       <li><a href="/compare.html">全比較表 (6 サービス × 13 軸)</a></li>
       <li><a href="/pricing.html">料金 (¥3/billable unit 完全従量)</a></li>
       <li><a href="/docs/api-reference/">API リファレンス</a></li>
-      <li><a href="/docs/mcp-tools/">MCP tools (93)</a></li>
+      <li><a href="/docs/mcp-tools/">MCP tools (96)</a></li>
       <li><a href="/sources.html">出典・ライセンス</a></li>
       <li><a href="/facts.html">数字の検証 SQL</a></li>
     </ul>

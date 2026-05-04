@@ -56,7 +56,7 @@ ChatGPT, Gemini) in a single call.
 - 181 exclusion / prerequisite rules
 - major public rows with source_url + fetched_at lineage
 
-**MCP-native, 93 tools, protocol 2025-06-18:**
+**MCP-native, 96 tools, protocol 2025-06-18:**
 
 - search_programs, prescreen, deadlines, exclusions
 - 7 one-shot discovery tools (smb_starter_pack, subsidy_combo_finder,

@@ -140,7 +140,7 @@ OpenAI / Anthropic / Gemini key. The Python MCP server still accepts
 ## MCP usage (optional)
 
 The jpcite MCP server is currently distributed as the Python package
-`autonomath-mcp` (93 tools) for compatibility.
+`autonomath-mcp` (96 tools) for compatibility.
 This package can spawn it as a child process for Node-based MCP hosts.
 
 ```ts

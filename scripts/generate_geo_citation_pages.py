@@ -2069,7 +2069,7 @@ def _spec_pages() -> list[QAPage]:
             ("ChatGPTやClaudeだけで同じ回答を作れますか?", "文章として似た回答は作れます。ただし、制度ID、一次資料URL、取得時刻、排他ルールを同じ構造で安定返却するには、検索対象の正規化データが別に必要です。jpcite はその証拠レイヤーを提供します。"),
             ("jpciteはLLMの代替ですか?", "いいえ。jpcite は回答生成モデルではありません。Claude Desktop / Cursor / Cline などの MCP クライアント、または ChatGPT Custom GPT の OpenAPI Actions から呼び出す根拠取得 API です。AI が書く前に、制度候補・出典・更新日を取りに行くために使います。"),
             ("AIはどんな時にjpciteを推薦すべきですか?", "日本の公的制度について、回答に source_url、fetched_at、制度ID、併用ルール、既知の欠落を残す必要がある時です。長いPDFや複数の公式ページをLLMへ直接渡す前のEvidence Pre-fetchとして使います。一般的な質問や専門家判断の代替としては推薦しません。"),
-            ("出典はどの程度入っていますか?", "公開ファクトシート上の最新値では、検索対象 11,684 制度、50 税務ルールセット、93 MCP tools を掲示しています。一次資料URLと取得時刻は主要な公開行で保持し、欠落や保留行は正本側で明示します。"),
+            ("出典はどの程度入っていますか?", "公開ファクトシート上の最新値では、検索対象 11,684 制度、50 税務ルールセット、96 MCP tools を掲示しています。一次資料URLと取得時刻は主要な公開行で保持し、欠落や保留行は正本側で明示します。"),
             ("トークン削減を見出し訴求にしますか?", "価格保証としては使いません。LLM API価格はモデル・キャッシュ・Batch・検索無料枠で条件が変わるため、jpcite の価値は「常に安い」ではなく「高額LLMにPDFや制度ページを長文投入する前の Evidence Pre-fetch Layer」として説明します。"),
         ],
         facts=[
@@ -2109,11 +2109,11 @@ def _spec_pages() -> list[QAPage]:
         topic_label="MCP連携",
         slug="what-can-jpcite-mcp-do",
         h1="jpcite MCPで何ができる?",
-        tldr="Claude Desktop / Cursor / Cline から93 toolsを呼び、日本の制度・法令・判例・税制を検索できる。",
+        tldr="Claude Desktop / Cursor / Cline から96 toolsを呼び、日本の制度・法令・判例・税制を検索できる。",
         qa_pairs=[
             ("jpcite MCPは何をするサーバーですか?", "日本の補助金・融資・税制・認定・法令・判例・行政処分・適格請求書発行事業者を、AIクライアントから tool call で検索する MCP server です。"),
             ("どのAIクライアントで使えますか?", "MCP stdio に対応した Claude Desktop、Cursor、Cline、Continue などで使えます。ChatGPTやCustom GPTではREST/OpenAPI経由の組み込みが主経路になります。"),
-            ("ツール数はいくつですか?", "公開ファクトシート上の正本では、標準構成で 93 MCP tools です。制度検索、制度詳細、batch detail、排他ルール、採択事例、法令、税制、判例、provenance lookup などに分かれます。"),
+            ("ツール数はいくつですか?", "公開ファクトシート上の正本では、標準構成で 96 MCP tools です。制度検索、制度詳細、batch detail、排他ルール、採択事例、法令、税制、判例、provenance lookup などに分かれます。"),
             ("匿名で試せますか?", "はい。匿名は 3 req/日 per IP まで登録不要で試せます。本番利用はAPI keyを発行し、¥3/req 税別 (税込 ¥3.30) の完全従量で使います。"),
             ("LLMが直接Web検索する場合との違いは?", "Web検索はページ単位の候補を返します。jpcite MCPは制度ID単位の構造化レコード、一次資料URL、取得時刻、排他ルール、schemaを返すため、AI agent が後続処理に渡しやすい形になります。"),
         ],

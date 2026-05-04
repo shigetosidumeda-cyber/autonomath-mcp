@@ -77,6 +77,7 @@ def _impl_get_evidence_packet(
     include_compression: bool = False,
     fields: str = "default",
     input_token_price_jpy_per_1m: float | None = None,
+    packet_profile: str = "full",
 ) -> dict[str, Any]:
     """Pure-Python core. Split out so tests bypass the @mcp.tool wrapper."""
     sk = (subject_kind or "").strip().lower()
@@ -115,6 +116,7 @@ def _impl_get_evidence_packet(
             include_compression=include_compression,
             fields=fields,
             input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
+            profile=packet_profile,
         )
     else:
         envelope = composer.compose_for_houjin(
@@ -124,6 +126,7 @@ def _impl_get_evidence_packet(
             include_compression=include_compression,
             fields=fields,
             input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
+            profile=packet_profile,
         )
     if envelope is None:
         return make_error(
@@ -197,6 +200,15 @@ if _ENABLED and settings.autonomath_enabled:
                 ),
             ),
         ] = None,
+        packet_profile: Annotated[
+            str,
+            Field(
+                description=(
+                    "Packet projection: full / brief / verified_only / changes_only. "
+                    "Unknown values fall back to full."
+                ),
+            ),
+        ] = "full",
     ) -> dict[str, Any]:
         """[EVIDENCE-PACKET] Returns a single Evidence Packet envelope: primary metadata + per-fact provenance + compat-matrix rule verdicts (program only). NO LLM. 1 ¥3 unit per call. SAME composer as REST /v1/evidence/packets/{subject_kind}/{subject_id}.
 
@@ -266,6 +278,7 @@ if _ENABLED and settings.autonomath_enabled:
             include_compression=include_compression,
             fields=fields,
             input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
+            packet_profile=packet_profile,
         )
 
 

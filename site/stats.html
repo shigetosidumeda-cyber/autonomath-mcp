@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>Stats — jpcite</title>
-<meta name="description" content="jpcite の透明性ダッシュボード。データセット件数 (programs / 採択事例 / 融資 / 行政処分 / 法令 / 税制 / 適格事業者) と source freshness、月間 API 利用量を一次資料件数ベースで公開。">
+<title>公開件数 | jpcite Stats</title>
+<meta name="description" content="jpcite が公開しているデータセット件数 (補助金・法令・税制・適格事業者・行政処分・出典) と最終更新日。サイト内の数字はすべてこのページの値を引用しています。">
 <meta name="robots" content="index, follow">
 
-<meta property="og:title" content="Stats — jpcite">
-<meta property="og:description" content="データセット件数・freshness・月間利用量。一次資料 99% 以上を数字で開示。">
+<meta property="og:title" content="公開件数 | jpcite Stats">
+<meta property="og:description" content="補助金・法令・税制・適格事業者・行政処分・出典の公開件数と最終更新日。サイト内の数字はこのページが基準。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/stats.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -19,8 +19,8 @@
 <meta property="og:locale:alternate" content="en_US">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Stats — jpcite">
-<meta name="twitter:description" content="データセット件数・freshness・月間利用量。一次資料 99% 以上を数字で開示。">
+<meta name="twitter:title" content="公開件数 | jpcite Stats">
+<meta name="twitter:description" content="補助金・法令・税制・適格事業者・行政処分・出典の公開件数と最終更新日。サイト内の数字はこのページが基準。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/stats.html">
@@ -39,13 +39,12 @@
 {
   "@context": "https://schema.org",
   "@type": "WebPage",
-  "name": "Stats — jpcite",
+  "name": "公開件数 | jpcite Stats",
   "url": "https://jpcite.com/stats.html",
-  "description": "jpcite の透明性ダッシュボード。データセット件数と source freshness、月間 API 利用量。",
+  "description": "jpcite の公開件数ダッシュボード。データセット件数と最終更新日。",
   "isPartOf": {
     "@type": "WebSite",
     "name": "jpcite",
-    "alternateName": "jpcite",
     "url": "https://jpcite.com/"
   },
   "publisher": {
@@ -55,6 +54,147 @@
   }
 }
 </script>
+<script type="application/ld+json" id="public-counts-jsonld">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "jpcite public counts",
+  "url": "https://jpcite.com/stats.html",
+  "dateModified": "2026-05-04T03:25:53Z",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "item": {
+        "@type": "QuantitativeValue",
+        "name": "公開検索できる制度",
+        "unitText": "searchable_programs_total",
+        "value": 11684
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "item": {
+        "@type": "QuantitativeValue",
+        "name": "厳選 (S 品質ラベル)",
+        "unitText": "tier_s_count",
+        "value": 114
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "item": {
+        "@type": "QuantitativeValue",
+        "name": "高品質 (A 品質ラベル)",
+        "unitText": "tier_a_count",
+        "value": 1340
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "item": {
+        "@type": "QuantitativeValue",
+        "name": "採択事例",
+        "unitText": "case_studies_total",
+        "value": 2286
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 5,
+      "item": {
+        "@type": "QuantitativeValue",
+        "name": "融資プログラム",
+        "unitText": "loan_programs_total",
+        "value": 108
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 6,
+      "item": {
+        "@type": "QuantitativeValue",
+        "name": "行政処分",
+        "unitText": "enforcement_cases_total",
+        "value": 1185
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 7,
+      "item": {
+        "@type": "QuantitativeValue",
+        "name": "法令 (e-Gov 連携)",
+        "unitText": "laws_total",
+        "value": 9484
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 8,
+      "item": {
+        "@type": "QuantitativeValue",
+        "name": "税制ルール",
+        "unitText": "tax_rulesets_total",
+        "value": 50
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 9,
+      "item": {
+        "@type": "QuantitativeValue",
+        "name": "判例",
+        "unitText": "court_decisions_total",
+        "value": 2065
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 10,
+      "item": {
+        "@type": "QuantitativeValue",
+        "name": "入札",
+        "unitText": "bids_total",
+        "value": 362
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 11,
+      "item": {
+        "@type": "QuantitativeValue",
+        "name": "適格請求書発行事業者",
+        "unitText": "invoice_registrants_total",
+        "value": 13801
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 12,
+      "item": {
+        "@type": "QuantitativeValue",
+        "name": "法人レコード",
+        "unitText": "corporate_records_total",
+        "value": 166969
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 13,
+      "item": {
+        "@type": "QuantitativeValue",
+        "name": "出典 (一次資料)",
+        "unitText": "sources_total",
+        "value": 97272
+      }
+    }
+  ]
+}
+</script>
 <style>
   .stats-page { padding: 48px 0 64px; }
   .stats-page h1 { font-size: 28px; margin: 0 0 4px; font-weight: 800; letter-spacing: -0.01em; }
@@ -62,6 +202,37 @@
   .stats-section { margin: 0 0 40px; }
   .stats-section h2 { font-size: 18px; margin: 0 0 14px; font-weight: 700; }
   .stats-section .desc { color: var(--text-muted); margin: 0 0 18px; font-size: 14px; }
+  ul.public-count-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  li.public-count {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .public-count-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
+  .public-count-value {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
   .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -161,13 +332,35 @@
 <section class="stats-page">
  <div class="container">
 
- <h1>Stats</h1>
- <p class="sub">jpcite の透明性ダッシュボード。データセット件数 / freshness / 月間 API 利用量。1 日 1 回 ライブ集計を更新。</p>
+ <h1>公開件数</h1>
+ <p class="sub">jpcite が公開しているデータセットの件数と、各データセットの最終更新日。サイト内の数字はすべてこのページの値を出典とします。生成 1 日 1 回。</p>
 
- <!-- Coverage ------------------------------------------------------------ -->
+ <!-- Public Counts ------------------------------------------------------- -->
+ <section class="stats-section" aria-labelledby="public-counts-h">
+ <h2 id="public-counts-h">公開件数</h2>
+ <p class="desc">公的機関 (省庁・自治体・公庫など) の一次資料から取り込んだ件数。集約サイトは出典として採用していません。</p>
+ <ul class="public-count-list" id="public-count-list">
+    <li class="public-count" data-stat-key="searchable_programs_total"><span class="public-count-label">公開検索できる制度</span><span class="public-count-value">11,684</span></li>
+    <li class="public-count" data-stat-key="tier_s_count"><span class="public-count-label">厳選 (S 品質ラベル)</span><span class="public-count-value">114</span></li>
+    <li class="public-count" data-stat-key="tier_a_count"><span class="public-count-label">高品質 (A 品質ラベル)</span><span class="public-count-value">1,340</span></li>
+    <li class="public-count" data-stat-key="case_studies_total"><span class="public-count-label">採択事例</span><span class="public-count-value">2,286</span></li>
+    <li class="public-count" data-stat-key="loan_programs_total"><span class="public-count-label">融資プログラム</span><span class="public-count-value">108</span></li>
+    <li class="public-count" data-stat-key="enforcement_cases_total"><span class="public-count-label">行政処分</span><span class="public-count-value">1,185</span></li>
+    <li class="public-count" data-stat-key="laws_total"><span class="public-count-label">法令 (e-Gov 連携)</span><span class="public-count-value">9,484</span></li>
+    <li class="public-count" data-stat-key="tax_rulesets_total"><span class="public-count-label">税制ルール</span><span class="public-count-value">50</span></li>
+    <li class="public-count" data-stat-key="court_decisions_total"><span class="public-count-label">判例</span><span class="public-count-value">2,065</span></li>
+    <li class="public-count" data-stat-key="bids_total"><span class="public-count-label">入札</span><span class="public-count-value">362</span></li>
+    <li class="public-count" data-stat-key="invoice_registrants_total"><span class="public-count-label">適格請求書発行事業者</span><span class="public-count-value">13,801</span></li>
+    <li class="public-count" data-stat-key="corporate_records_total"><span class="public-count-label">法人レコード</span><span class="public-count-value">166,969</span></li>
+    <li class="public-count" data-stat-key="sources_total"><span class="public-count-label">出典 (一次資料)</span><span class="public-count-value">97,272</span></li>
+ </ul>
+ <p class="footer-note">最終データ更新: <code>2026-04-29T09:15:04.894483+00:00</code></p>
+ </section>
+
+ <!-- Coverage (live) ---------------------------------------------------- -->
  <section class="stats-section" aria-labelledby="coverage-h">
- <h2 id="coverage-h">カバレッジ — データセット件数</h2>
- <p class="desc">公開データセットの行数。集約サイト (二次情報源) は <strong>0 件</strong>、すべて一次資料に紐づいています。</p>
+ <h2 id="coverage-h">ライブ件数 (5 分キャッシュ)</h2>
+ <p class="desc">API 経由で取得したライブ件数。上の「公開件数」が日次スナップショット、こちらは API のリアルタイム値です。</p>
  <div class="grid" id="coverage-grid">
  <div class="card"><p class="label">programs (補助金等)</p><p class="value pending">…</p></div>
  <div class="card"><p class="label">case_studies (採択事例)</p><p class="value pending">…</p></div>
@@ -186,7 +379,7 @@
  <!-- Freshness ----------------------------------------------------------- -->
  <section class="stats-section" aria-labelledby="freshness-h">
  <h2 id="freshness-h">鮮度 — 出典の取得時期</h2>
- <p class="desc">各データセットの更新日の最古・ 最新・ 行間平均インターバル。 古いほど鮮度が下がり、 平均インターバルが大きいほど更新頻度が低いことを示します。</p>
+ <p class="desc">各データセットの更新日の最古・最新・行間平均インターバル。古いほど鮮度が下がり、平均インターバルが大きいほど更新頻度が低いことを示します。</p>
  <table class="fresh" aria-describedby="freshness-h">
  <thead>
  <tr><th scope="col">出典</th><th scope="col" class="num">件数</th><th scope="col">最古更新日</th><th scope="col">最新更新日</th><th scope="col" class="num">平均間隔 (日)</th></tr>
@@ -201,7 +394,7 @@
  <!-- Usage --------------------------------------------------------------- -->
  <section class="stats-section" aria-labelledby="usage-h">
  <h2 id="usage-h">Usage — 過去 30 日の API 利用量</h2>
- <p class="desc">認証済み APIキー 経由の累積リクエスト数。匿名 (X-API-Key 無し) は集計対象外。グラフは日次、ラインは累積。</p>
+ <p class="desc">認証済み API キー経由の累積リクエスト数。匿名 (X-API-Key 無し) は集計対象外。グラフは日次、ラインは累積。</p>
  <div class="usage-chart-wrap">
  <svg id="usage-svg" viewBox="0 0 600 120" preserveAspectRatio="none" role="img" aria-label="過去 30 日の日別 API 利用量">
  <text x="300" y="60" text-anchor="middle" font-size="12" fill="#555">読み込み中…</text>
@@ -213,9 +406,10 @@
  </section>
 
  <p class="updated-at">
- Cadence: 1 日 1 回 ライブ集計 (5 分間メモリキャッシュ経由)。
+ Cadence: 1 日 1 回ライブ集計 (5 分メモリキャッシュ経由)。
  Source: <code>GET /v1/stats/coverage</code> · <code>GET /v1/stats/freshness</code> · <code>GET /v1/stats/usage</code>。
- 最終生成: <code id="generated-at">—</code>
+ 公開件数 JSON: <code>/_data/public_counts.json</code>。
+ 最終生成: <code id="generated-at">2026-05-04T03:25:53Z</code>
  </p>
 
  </div>
@@ -282,7 +476,7 @@
       btn.type = "button";
       btn.textContent = "再試行";
       btn.style.cssText = "margin:0 8px 0 0;padding:2px 10px;font-size:12px;border:1px solid var(--border);border-radius:4px;background:var(--bg-alt);cursor:pointer;";
-      btn.addEventListener("click", function() { el.hidden = true; retry; });
+      btn.addEventListener("click", function() { el.hidden = true; retry(); });
       el.appendChild(btn);
     }
     var link = document.createElement("a");
@@ -422,12 +616,32 @@
       .then(function() { clearTimeout(timer); });
   }
 
+  // Hydrate any [data-stat-key] hooks (on this page + parents that include
+  // shared.js), preferring values from /_data/public_counts.json.
+  function hydratePublicCounts() {
+    var nodes = document.querySelectorAll("[data-stat-key]");
+    if (!nodes.length) return;
+    fetch("/_data/public_counts.json", { cache: "no-cache" })
+      .then(function (r) { if (!r.ok) throw new Error("public_counts fetch failed: " + r.status); return r.json(); })
+      .then(function (data) {
+        nodes.forEach(function (el) {
+          var key = el.getAttribute("data-stat-key");
+          if (!key || !(key in data) || data[key] === null || data[key] === undefined) return;
+          var v = data[key];
+          var target = el.querySelector(".public-count-value") || el;
+          target.textContent = (typeof v === "number") ? v.toLocaleString("ja-JP") : String(v);
+        });
+      })
+      .catch(function () { /* leave fallback values intact */ });
+  }
+
   document.addEventListener("DOMContentLoaded", function() {
-    loadCoverage;
-    loadFreshness;
-    loadUsage;
+    loadCoverage();
+    loadFreshness();
+    loadUsage();
+    hydratePublicCounts();
   });
-});
+})();
 </script>
 
 </body>

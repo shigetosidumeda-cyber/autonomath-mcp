@@ -14,7 +14,7 @@ Each generic predicate is therefore re-implemented in
 ``jpintel_mcp.api._validation_predicates`` as a tiny pure function. When a
 rule's predicate_ref does NOT resolve in that registry the result row
 carries ``passed=None`` and a ``message_ja`` flag pointing the agent at
-the Autonomath operator console.
+the jpcite operator workflow.
 
 Idempotency
 -----------
@@ -44,7 +44,7 @@ from .error_envelope import make_error
 
 logger = logging.getLogger("jpintel.mcp.validation")
 
-_DEFERRED_MESSAGE_JA = "external dispatch deferred — use Autonomath operator"
+_DEFERRED_MESSAGE_JA = "external dispatch deferred — use jpcite operator workflow"
 
 
 def _canonical_applicant_hash(applicant_data: dict[str, Any]) -> str:
@@ -129,7 +129,7 @@ def _evaluate_one(
       * ``True``  — predicate evaluated and reported no violation
       * ``False`` — predicate evaluated and reported a violation
       * ``None``  — predicate could not be evaluated locally (deferred to
-                    Autonomath operator) or kind is non-python
+                    jpcite operator workflow) or kind is non-python
     """
     kind = rule["predicate_kind"]
     ref = rule["predicate_ref"]
@@ -327,7 +327,7 @@ def validate(
       - 制度個別の eligibility 判定 → check_exclusions / search_programs
       - 文書粒度の fact-check → 別 tool
       - sql_expr / json_logic 述語が登録されたら本 tool では deferred 返却なので
-        Autonomath operator 経由が必要
+        jpcite operator workflow 経由が必要
 
     RETURNS (envelope):
       {

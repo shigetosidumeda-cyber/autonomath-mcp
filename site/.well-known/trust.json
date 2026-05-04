@@ -132,19 +132,22 @@
       "render_36_kyotei_am",
       "pack_construction",
       "pack_manufacturing",
-      "pack_real_estate"
+      "pack_real_estate",
+      "get_houjin_360_am",
+      "search_invoice_by_houjin_partial"
     ]
   },
   "privacy": {
     "framework": "APPI (Act on the Protection of Personal Information)",
     "policy_url": "https://jpcite.com/privacy.html",
-    "data_subject_rights_url": "https://jpcite.com/data_subject_rights.html",
+    "data_subject_rights_url": "https://jpcite.com/docs/compliance/data_subject_rights/",
     "data_subject_rights_response_window_days": 14,
     "pii_at_rest_fields": ["customers.email", "api_keys.key_hash"],
     "retention_days_email_after_termination": 30,
     "retention_days_query_log": 90,
     "retention_years_billing_records": 7,
-    "cookie_count": 0,
+    "cookie_count": 2,
+    "cookie_purposes": ["checkout_state", "csrf"],
     "cross_border_transfer": {
       "regions": ["Japan", "United States"],
       "subprocessor_safeguards": "SOC 2 Type II / GDPR-DPA published by all overseas subprocessors"
@@ -160,7 +163,7 @@
   "security": {
     "overview_url": "https://jpcite.com/security/",
     "vuln_disclosure_rfc9116": "https://jpcite.com/.well-known/security.txt",
-    "vuln_disclosure_policy": "https://jpcite.com/security/policy",
+    "vuln_disclosure_policy": "https://jpcite.com/security/policy.html",
     "vuln_ack_window_hours": 72,
     "vuln_fix_target_days": 14,
     "responsible_disclosure_window_days": 90,
@@ -189,7 +192,7 @@
     "training_data_use": "prohibited",
     "ai_response_disclaimer_recommended": true,
     "ai_response_disclaimer_reference": "https://jpcite.com/legal-fence.html",
-    "tool_count_default_gates": 93,
+    "tool_count_default_gates": 96,
     "mcp_protocol_version": "2025-06-18"
   },
   "related_laws_compliance": {

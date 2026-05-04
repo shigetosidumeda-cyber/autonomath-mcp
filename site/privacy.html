@@ -144,7 +144,7 @@
  <li>IPアドレス</li>
  <li>本サービスAPIのアクセスログ (リクエスト日時、エンドポイント、レスポンスステータス、消費クレジット等)</li>
  <li>User-Agent 情報</li>
- <li>Cookie その他の識別子</li>
+ <li>Cookie その他の識別子 (決済状態確認、CSRF 防止、ダッシュボード表示、任意のメール保存に限定)</li>
  <li>お問い合わせフォームまたは電子メールによりご提供いただいた内容</li>
  </ul>
  </section>
@@ -263,8 +263,8 @@
 
  <section aria-labelledby="sec10-title">
  <h2 id="sec10-title" class="section-title">10. Cookie およびアクセス解析</h2>
- <p>当社は、本サービスおよび当社ウェブサイトにおけるアクセス解析ツールとして、<strong>Cloudflare Web Analytics のみ</strong>を使用しております。Cloudflare Web Analytics は Cookie を使用せず、個人を特定し得る情報 (PII) との紐付けも行いません。</p>
- <p>当社は、Google Analytics その他の Cookie ベースの第三者解析ツールを使用しておりません。</p>
+ <p>当社は、本サービスおよび当社ウェブサイトにおけるアクセス解析として、Cookie を使わない Cloudflare Web Analytics と、当社 API への first-party funnel event 送信を使用する場合があります。funnel event はページ改善・エラー把握・不正対策のための最小限のイベントであり、広告配信や第三者広告ネットワークには使用しません。</p>
+ <p>決済状態確認や CSRF 防止のための Cookie、API キーの一時表示・任意保存のための sessionStorage / localStorage を使用する場合があります。当社は、Google Analytics その他の Cookie ベースの第三者解析ツールを使用しておりません。</p>
  </section>
 
  <section aria-labelledby="sec11-title">

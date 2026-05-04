@@ -91,6 +91,9 @@ class _FakeCheckoutSession:
         customer_email: str | None = None,
         cd_email: str | None = "buyer@example.com",
         metadata: dict | None = None,
+        status: str = "complete",
+        mode: str = "subscription",
+        livemode: bool = False,
     ) -> None:
         # Metered subs default to "no_payment_required" (Stripe doesn't
         # charge upfront — first invoice comes from usage_records).
@@ -100,16 +103,24 @@ class _FakeCheckoutSession:
         self.customer_email = customer_email
         self.customer_details = _FakeCustomerDetails(cd_email) if cd_email else None
         self.metadata = metadata or {}
+        self.status = status
+        self.mode = mode
+        self.livemode = livemode
 
 
 class _FakeSubscription(dict):
     """Stripe SDK Subscription is dict-like. The code indexes sub['items']['data']..."""
 
 
-def _fake_sub(price_id: str, sub_id: str = "sub_checkout_1") -> _FakeSubscription:
+def _fake_sub(
+    price_id: str,
+    sub_id: str = "sub_checkout_1",
+    status: str = "active",
+) -> _FakeSubscription:
     return _FakeSubscription(
         {
             "id": sub_id,
+            "status": status,
             "items": {"data": [{"price": {"id": price_id}}]},
         }
     )
@@ -497,6 +508,34 @@ def test_issue_from_checkout_402_when_session_not_paid(client, stripe_env, monke
     r = client.post("/v1/billing/keys/from-checkout", json={"session_id": "cs_abandoned"})
     assert r.status_code == 402
     assert "not paid" in r.json()["detail"].lower()
+
+
+def test_issue_from_checkout_rejects_inactive_subscription(client, stripe_env, monkeypatch):
+    """A completed Checkout cannot mint a paid key after the subscription is inactive."""
+    from jpintel_mcp.api import billing as billing_mod
+
+    metadata = _checkout_state_metadata(client, billing_mod)
+
+    def _retrieve_session(_sid, **_):
+        return _FakeCheckoutSession(
+            payment_status="no_payment_required",
+            subscription="sub_canceled",
+            metadata=metadata,
+        )
+
+    def _retrieve_sub(_sub_id, **_):
+        return _fake_sub(
+            price_id="price_metered_test",
+            sub_id="sub_canceled",
+            status="canceled",
+        )
+
+    monkeypatch.setattr(billing_mod.stripe.checkout.Session, "retrieve", _retrieve_session)
+    monkeypatch.setattr(billing_mod.stripe.Subscription, "retrieve", _retrieve_sub)
+
+    r = client.post("/v1/billing/keys/from-checkout", json={"session_id": "cs_canceled"})
+    assert r.status_code == 402
+    assert "subscription is not active" in r.json()["detail"].lower()
 
 
 def test_issue_from_checkout_requires_browser_checkout_state(client, stripe_env, monkeypatch):

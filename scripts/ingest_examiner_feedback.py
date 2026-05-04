@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Ingest AutonoMath operator examiner feedback into ``am_entity_annotation``.
+"""Ingest jpcite operator examiner feedback into ``am_entity_annotation``.
 
-The Autonomath operator (frontend) emits one JSONL record per申請フォーム審査:
+The jpcite operator workflow emits one JSONL record per申請フォーム審査:
 
     {
       "program_name": "就農準備資金",
@@ -80,7 +80,10 @@ import sqlite3
 import sys
 from collections import Counter
 from pathlib import Path
-from typing import Iterable, Iterator
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Iterator
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]

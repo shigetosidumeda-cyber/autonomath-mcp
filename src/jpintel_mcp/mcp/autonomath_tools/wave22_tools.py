@@ -143,9 +143,7 @@ def _compute_corpus_snapshot(conn: sqlite3.Connection) -> tuple[str, str]:
 
     snapshot_id: str | None = None
     try:
-        row = conn.execute(
-            "SELECT MAX(detected_at) FROM am_amendment_diff"
-        ).fetchone()
+        row = conn.execute("SELECT MAX(detected_at) FROM am_amendment_diff").fetchone()
         if row and row[0]:
             snapshot_id = str(row[0])
     except sqlite3.Error:
@@ -185,9 +183,7 @@ def _compute_corpus_snapshot(conn: sqlite3.Connection) -> tuple[str, str]:
             counts.append(0)
 
     api_version = "v0.3.1"
-    digest_input = (
-        f"{snapshot_id}|{api_version}|{','.join(str(c) for c in counts)}"
-    ).encode()
+    digest_input = (f"{snapshot_id}|{api_version}|{','.join(str(c) for c in counts)}").encode()
     checksum = "sha256:" + hashlib.sha256(digest_input).hexdigest()[:16]
 
     _SNAPSHOT_CACHE[cache_key] = (
@@ -213,9 +209,7 @@ def _attach_snapshot(conn: sqlite3.Connection, body: dict[str, Any]) -> dict[str
 
 def _today_iso() -> str:
     """Today JST as YYYY-MM-DD."""
-    return datetime.datetime.now(
-        datetime.timezone(datetime.timedelta(hours=9))
-    ).date().isoformat()
+    return datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).date().isoformat()
 
 
 def _open_db() -> sqlite3.Connection | dict[str, Any]:
@@ -386,17 +380,19 @@ def _match_dd_questions_impl(
             cat = r["question_category"]
             if cat_counts.get(cat, 0) >= per_cat_cap:
                 continue
-            selected.append({
-                "question_id": qid,
-                "question_ja": r["question_ja"],
-                "category": cat,
-                "industry_jsic_major": r["industry_jsic_major"],
-                "risk_dimension": r["risk_dimension"],
-                "severity_weight": r["severity_weight"],
-                "rationale_short": r["rationale_short"],
-                "primary_source_hint": r["primary_source_hint"],
-                "citation_hint": r["citation_hint"],
-            })
+            selected.append(
+                {
+                    "question_id": qid,
+                    "question_ja": r["question_ja"],
+                    "category": cat,
+                    "industry_jsic_major": r["industry_jsic_major"],
+                    "risk_dimension": r["risk_dimension"],
+                    "severity_weight": r["severity_weight"],
+                    "rationale_short": r["rationale_short"],
+                    "primary_source_hint": r["primary_source_hint"],
+                    "citation_hint": r["citation_hint"],
+                }
+            )
             seen_qids.add(qid)
             cat_counts[cat] = cat_counts.get(cat, 0) + 1
             if len(selected) >= deck_size:
@@ -462,12 +458,8 @@ def _match_dd_questions_impl(
     # --- Targeting context (surfaced for the LLM) -------------------------
     target_context = {
         "houjin_bangou": hb,
-        "normalized_name": (
-            houjin_row["normalized_name"] if houjin_row else None
-        ),
-        "prefecture": (
-            houjin_row["prefecture"] if houjin_row else None
-        ),
+        "normalized_name": (houjin_row["normalized_name"] if houjin_row else None),
+        "prefecture": (houjin_row["prefecture"] if houjin_row else None),
         "industry_jsic_majors_seen": sorted(jsic_majors_seen),
         "adoption_count": len(ad_rows),
         "program_kinds_seen": sorted(program_kinds_seen),
@@ -595,8 +587,7 @@ def _kessan_briefing_impl(
              ORDER BY detected_at ASC
              LIMIT 500
             """,
-            (fy_start.isoformat() + "T00:00:00",
-             cutoff.isoformat() + "T23:59:59"),
+            (fy_start.isoformat() + "T00:00:00", cutoff.isoformat() + "T23:59:59"),
         ).fetchall()
     except sqlite3.Error:
         diff_rows = []
@@ -613,8 +604,7 @@ def _kessan_briefing_impl(
              ORDER BY COALESCE(effective_from, effective_until) ASC
              LIMIT 50
             """,
-            (fy_start.isoformat(), fy_end.isoformat(),
-             fy_start.isoformat(), fy_end.isoformat()),
+            (fy_start.isoformat(), fy_end.isoformat(), fy_start.isoformat(), fy_end.isoformat()),
         ).fetchall()
     except sqlite3.Error:
         tax_rows = []
@@ -667,9 +657,7 @@ def _kessan_briefing_impl(
     # (table absent in autonomath.db → empty list, no error).
     saved_searches_tracked = 0
     try:
-        ss_row = conn.execute(
-            "SELECT COUNT(*) AS n FROM saved_searches"
-        ).fetchone()
+        ss_row = conn.execute("SELECT COUNT(*) AS n FROM saved_searches").fetchone()
         saved_searches_tracked = ss_row["n"] if ss_row else 0
     except sqlite3.Error:
         saved_searches_tracked = 0  # table not on autonomath.db is normal
@@ -853,9 +841,7 @@ def _forecast_renewal_impl(
     for r in rounds:
         if r["application_open_date"]:
             try:
-                d = datetime.date.fromisoformat(
-                    r["application_open_date"][:10]
-                )
+                d = datetime.date.fromisoformat(r["application_open_date"][:10])
                 open_dates.append(d)
             except (ValueError, TypeError):
                 continue
@@ -933,20 +919,17 @@ def _forecast_renewal_impl(
 
     rationale_lines: list[str] = []
     rationale_lines.append(
-        f"frequency_signal={frequency_signal:.2f} "
-        f"({n_intervals} interval samples)"
+        f"frequency_signal={frequency_signal:.2f} " f"({n_intervals} interval samples)"
     )
     rationale_lines.append(
         f"recency_signal={recency_signal:.2f} "
         f"(last open {open_dates[-1].isoformat() if open_dates else 'n/a'})"
     )
     rationale_lines.append(
-        f"pipeline_signal={pipeline_signal:.2f} "
-        f"({n_open} open + {n_upcoming} upcoming)"
+        f"pipeline_signal={pipeline_signal:.2f} " f"({n_open} open + {n_upcoming} upcoming)"
     )
     rationale_lines.append(
-        f"snapshot_signal={snapshot_signal:.2f} "
-        f"({snapshot_count} amendment snapshots)"
+        f"snapshot_signal={snapshot_signal:.2f} " f"({snapshot_count} amendment snapshots)"
     )
 
     out2: dict[str, Any] = {
@@ -1148,15 +1131,11 @@ def _cross_check_jurisdiction_impl(
         for r in op_rows:
             pref = r["prefecture"]
             if pref:
-                operational_prefectures[pref] = (
-                    operational_prefectures.get(pref, 0) + r["n"]
-                )
+                operational_prefectures[pref] = operational_prefectures.get(pref, 0) + r["n"]
     except sqlite3.Error:
         op_rows = []
 
-    operational_top = sorted(
-        operational_prefectures.items(), key=lambda kv: -kv[1]
-    )[:5]
+    operational_top = sorted(operational_prefectures.items(), key=lambda kv: -kv[1])[:5]
 
     # --- Mismatch detection -----------------------------------------------
     mismatches: list[dict[str, Any]] = []
@@ -1166,7 +1145,8 @@ def _cross_check_jurisdiction_impl(
         and invoice_jurisdiction.get("prefecture")
         and registered["prefecture"] != invoice_jurisdiction["prefecture"]
     ):
-        mismatches.append({
+        mismatches.append(
+            {
                 "kind": "registered_vs_invoice_prefecture",
                 "registered": registered["prefecture"],
                 "invoice": invoice_jurisdiction["prefecture"],
@@ -1175,14 +1155,16 @@ def _cross_check_jurisdiction_impl(
                     "T番号公表所在地と法人番号公表所在地が異なります。"
                     "本店移転後 NTA への変更届出漏れの可能性 — 確認推奨。"
                 ),
-            })
+            }
+        )
     if (
         registered["prefecture"]
         and operational_top
         and operational_top[0][0] != registered["prefecture"]
     ):
         op_top_pref = operational_top[0][0]
-        mismatches.append({
+        mismatches.append(
+            {
                 "kind": "registered_vs_operational_prefecture",
                 "registered": registered["prefecture"],
                 "operational_top": op_top_pref,
@@ -1192,7 +1174,8 @@ def _cross_check_jurisdiction_impl(
                     "登記簿上の本店所在地と実際の補助金交付先所在地が "
                     "異なります。事業所税の課税地・申告先確認を推奨。"
                 ),
-            })
+            }
+        )
 
     out: dict[str, Any] = {
         "houjin_bangou": hb,
@@ -1201,8 +1184,7 @@ def _cross_check_jurisdiction_impl(
         "invoice_jurisdiction": invoice_jurisdiction,
         "operational": {
             "by_prefecture_top5": [
-                {"prefecture": p, "adoption_count": c}
-                for p, c in operational_top
+                {"prefecture": p, "adoption_count": c} for p, c in operational_top
             ],
             "total_adoptions": sum(operational_prefectures.values()),
         },
@@ -1337,14 +1319,16 @@ def _bundle_application_kit_impl(
             (pid,),
         ).fetchall()
         for sr in step_rows:
-            application_steps.append({
-                "step_no": sr["step_no"],
-                "step_title": sr["step_title"],
-                "step_description": sr["step_description"],
-                "expected_days": sr["expected_days"],
-                "online_or_offline": sr["online_or_offline"],
-                "responsible_party": sr["responsible_party"],
-            })
+            application_steps.append(
+                {
+                    "step_no": sr["step_no"],
+                    "step_title": sr["step_title"],
+                    "step_description": sr["step_description"],
+                    "expected_days": sr["expected_days"],
+                    "online_or_offline": sr["online_or_offline"],
+                    "responsible_party": sr["responsible_party"],
+                }
+            )
             try:
                 docs = json.loads(sr["prerequisites_json"] or "[]")
                 if isinstance(docs, list):
@@ -1395,24 +1379,22 @@ def _bundle_application_kit_impl(
             (pid, f"%{primary_name[:20]}%" if primary_name else "%"),
         ).fetchall()
         for r in case_rows:
-            similar_cases.append({
-                "adoption_id": r["id"],
-                "houjin_bangou": r["houjin_bangou"],
-                "company_name": r["company_name_raw"],
-                "project_title": r["project_title"],
-                "prefecture": r["prefecture"],
-                "amount_granted_yen": r["amount_granted_yen"],
-                "source_url": r["source_url"],
-            })
+            similar_cases.append(
+                {
+                    "adoption_id": r["id"],
+                    "houjin_bangou": r["houjin_bangou"],
+                    "company_name": r["company_name_raw"],
+                    "project_title": r["project_title"],
+                    "prefecture": r["prefecture"],
+                    "amount_granted_yen": r["amount_granted_yen"],
+                    "source_url": r["source_url"],
+                }
+            )
     except sqlite3.Error:
         case_rows = []
 
     # --- Cover letter scaffold (information-only — NOT 申請書面) ---------
-    profile_name = (
-        profile.get("company_name")
-        or profile.get("normalized_name")
-        or "（申請者名）"
-    )
+    profile_name = profile.get("company_name") or profile.get("normalized_name") or "（申請者名）"
     cover_letter_lines = [
         f"件名: {primary_name} 申請にあたって",
         "",
@@ -1421,14 +1403,16 @@ def _bundle_application_kit_impl(
     ]
     if source_url:
         cover_letter_lines.append(f"公募要領 URL: {source_url}")
-    cover_letter_lines.extend([
-        "",
-        "本資料は AutonoMath が公開公募要領 + 過去採択事例を assemble した "
-        "scaffold であり、申請書面そのものではありません。書面作成は "
-        "行政書士法 §1 の独占業務であり、当社は提供しません。",
-        "",
-        "確認事項 (添付チェックリスト参照):",
-    ])
+    cover_letter_lines.extend(
+        [
+            "",
+            "本資料は AutonoMath が公開公募要領 + 過去採択事例を assemble した "
+            "scaffold であり、申請書面そのものではありません。書面作成は "
+            "行政書士法 §1 の独占業務であり、当社は提供しません。",
+            "",
+            "確認事項 (添付チェックリスト参照):",
+        ]
+    )
     for d in document_checklist[:10]:
         cover_letter_lines.append(f"  - {d}")
     cover_letter_text = "\n".join(cover_letter_lines)
@@ -1523,9 +1507,7 @@ if _ENABLED and settings.autonomath_enabled:
         houjin_bangou: Annotated[
             str,
             Field(
-                description=(
-                    "13-digit 法人番号 (with or without 'T' prefix)."
-                ),
+                description=("13-digit 法人番号 (with or without 'T' prefix)."),
             ),
         ],
         deck_size: Annotated[
@@ -1533,14 +1515,11 @@ if _ENABLED and settings.autonomath_enabled:
             Field(
                 ge=20,
                 le=60,
-                description=(
-                    "Number of DD questions to return (20-60). Default 40."
-                ),
+                description=("Number of DD questions to return (20-60). Default 40."),
             ),
         ] = 40,
     ) -> dict[str, Any]:
-        """[WAVE22-COMPOSE] DD question deck (30-60 items) tailored to industry × program portfolio × 与信 risk by joining dd_question_templates (60 rows, migration 102) with houjin / adoption / enforcement / invoice corpora. Pure pattern-match, NO LLM. §52/§72 sensitive — checklist, not advice.
-        """
+        """[WAVE22-COMPOSE] DD question deck (30-60 items) tailored to industry × program portfolio × 与信 risk by joining dd_question_templates (60 rows, migration 102) with houjin / adoption / enforcement / invoice corpora. Pure pattern-match, NO LLM. §52/§72 sensitive — checklist, not advice."""
         return _match_dd_questions_impl(
             houjin_bangou=houjin_bangou,
             deck_size=deck_size,
@@ -1551,30 +1530,23 @@ if _ENABLED and settings.autonomath_enabled:
         houjin_bangou: Annotated[
             str,
             Field(
-                description=(
-                    "13-digit 法人番号 (with or without 'T' prefix)."
-                ),
+                description=("13-digit 法人番号 (with or without 'T' prefix)."),
             ),
         ],
         fiscal_year: Annotated[
             int | None,
             Field(
-                description=(
-                    "Fiscal year (April-March). Default = current FY."
-                ),
+                description=("Fiscal year (April-March). Default = current FY."),
             ),
         ] = None,
         cadence: Annotated[
             str,
             Field(
-                description=(
-                    "Bin cadence: 'monthly' (default) or 'quarterly'."
-                ),
+                description=("Bin cadence: 'monthly' (default) or 'quarterly'."),
             ),
         ] = "monthly",
     ) -> dict[str, Any]:
-        """[WAVE22-COMPOSE] 月次 / 四半期 summary of program-eligibility changes since last 決算 by joining am_amendment_diff + jpi_tax_rulesets within the FY window. Compounds saved_searches digest cadence. §52 sensitive — 決算 territory, briefing only, not 税務代理.
-        """
+        """[WAVE22-COMPOSE] 月次 / 四半期 summary of program-eligibility changes since last 決算 by joining am_amendment_diff + jpi_tax_rulesets within the FY window. Compounds saved_searches digest cadence. §52 sensitive — 決算 territory, briefing only, not 税務代理."""
         return _kessan_briefing_impl(
             houjin_bangou=houjin_bangou,
             fiscal_year=fiscal_year,
@@ -1590,14 +1562,11 @@ if _ENABLED and settings.autonomath_enabled:
         horizon_fy: Annotated[
             int | None,
             Field(
-                description=(
-                    "Target fiscal year for the forecast. Default = next FY."
-                ),
+                description=("Target fiscal year for the forecast. Default = next FY."),
             ),
         ] = None,
     ) -> dict[str, Any]:
-        """[WAVE22-COMPOSE] Probability + window of program renewal in next FY based on historical am_application_round cadence + am_amendment_snapshot density. 4-signal weighted average (frequency / recency / pipeline / snapshot). NOT sensitive — statistical, not advice.
-        """
+        """[WAVE22-COMPOSE] Probability + window of program renewal in next FY based on historical am_application_round cadence + am_amendment_snapshot density. 4-signal weighted average (frequency / recency / pipeline / snapshot). NOT sensitive — statistical, not advice."""
         return _forecast_renewal_impl(
             program_id=program_id,
             horizon_fy=horizon_fy,
@@ -1609,22 +1578,18 @@ if _ENABLED and settings.autonomath_enabled:
             str | None,
             Field(
                 description=(
-                    "13-digit 法人番号 (preferred). One of houjin_bangou "
-                    "/ shogo required."
+                    "13-digit 法人番号 (preferred). One of houjin_bangou " "/ shogo required."
                 ),
             ),
         ] = None,
         shogo: Annotated[
             str | None,
             Field(
-                description=(
-                    "商号 (legal name). Used only if houjin_bangou is None."
-                ),
+                description=("商号 (legal name). Used only if houjin_bangou is None."),
             ),
         ] = None,
     ) -> dict[str, Any]:
-        """[WAVE22-COMPOSE] Registered (法務局) vs invoice (NTA) vs operational (交付) jurisdiction breakdown. Detects 不一致 for 税理士 onboarding — flags prefecture mismatches between houjin_master / invoice_registrants / adoption_records. §52/§72 sensitive — heuristic detection, not 税務代理.
-        """
+        """[WAVE22-COMPOSE] Registered (法務局) vs invoice (NTA) vs operational (交付) jurisdiction breakdown. Detects 不一致 for 税理士 onboarding — flags prefecture mismatches between houjin_master / invoice_registrants / adoption_records. §52/§72 sensitive — heuristic detection, not 税務代理."""
         return _cross_check_jurisdiction_impl(
             houjin_bangou=houjin_bangou,
             shogo=shogo,
@@ -1640,14 +1605,12 @@ if _ENABLED and settings.autonomath_enabled:
             dict[str, Any],
             Field(
                 description=(
-                    "Applicant profile dict — populates cover letter "
-                    "header. Empty {} OK."
+                    "Applicant profile dict — populates cover letter " "header. Empty {} OK."
                 ),
             ),
         ] = {},  # noqa: B006 — pydantic Field tolerates the empty default
     ) -> dict[str, Any]:
-        """[WAVE22-COMPOSE] Complete downloadable kit assembly: program metadata + cover letter scaffold + 必要書類 checklist + similar 採択例 list. Pure file assembly, NO LLM, NO DOCX generation. §1 sensitive — 申請書面作成は行政書士の独占業務、当社は scaffold + 一次 URL のみ提供.
-        """
+        """[WAVE22-COMPOSE] Complete downloadable kit assembly: program metadata + cover letter scaffold + 必要書類 checklist + similar 採択例 list. Pure file assembly, NO LLM, NO DOCX generation. §1 sensitive — 申請書面作成は行政書士の独占業務、当社は scaffold + 一次 URL のみ提供."""
         return _bundle_application_kit_impl(
             program_id=program_id,
             profile=profile,
@@ -1667,58 +1630,68 @@ if __name__ == "__main__":  # pragma: no cover
         houjin_bangou="3450001000777",
         deck_size=30,
     )
-    pprint.pprint({
-        "total": res.get("total"),
-        "by_category": res.get("by_category"),
-        "industries_inferred": res.get("data_quality", {}).get("industries_inferred"),
-        "next_calls_count": len(res.get("_next_calls", [])),
-        "snapshot_id": res.get("corpus_snapshot_id"),
-        "checksum": res.get("corpus_checksum"),
-    })
+    pprint.pprint(
+        {
+            "total": res.get("total"),
+            "by_category": res.get("by_category"),
+            "industries_inferred": res.get("data_quality", {}).get("industries_inferred"),
+            "next_calls_count": len(res.get("_next_calls", [])),
+            "snapshot_id": res.get("corpus_snapshot_id"),
+            "checksum": res.get("corpus_checksum"),
+        }
+    )
 
     print("\n=== prepare_kessan_briefing ===")
     res = _kessan_briefing_impl(
         houjin_bangou="3450001000777",
         cadence="quarterly",
     )
-    pprint.pprint({
-        "fiscal_year": res.get("fiscal_year"),
-        "total": res.get("total"),
-        "amendment_diffs_count": res.get("amendment_diffs_count"),
-        "tax_changes": len(res.get("tax_changes_in_window", [])),
-        "next_calls_count": len(res.get("_next_calls", [])),
-    })
+    pprint.pprint(
+        {
+            "fiscal_year": res.get("fiscal_year"),
+            "total": res.get("total"),
+            "amendment_diffs_count": res.get("amendment_diffs_count"),
+            "tax_changes": len(res.get("tax_changes_in_window", [])),
+            "next_calls_count": len(res.get("_next_calls", [])),
+        }
+    )
 
     print("\n=== forecast_program_renewal ===")
     res = _forecast_renewal_impl(
         program_id="program:base:71f6029070",
     )
-    pprint.pprint({
-        "renewal_probability": res.get("renewal_probability"),
-        "predicted_window": res.get("predicted_window"),
-        "signals": res.get("signals"),
-        "next_calls_count": len(res.get("_next_calls", [])),
-    })
+    pprint.pprint(
+        {
+            "renewal_probability": res.get("renewal_probability"),
+            "predicted_window": res.get("predicted_window"),
+            "signals": res.get("signals"),
+            "next_calls_count": len(res.get("_next_calls", [])),
+        }
+    )
 
     print("\n=== cross_check_jurisdiction ===")
     res = _cross_check_jurisdiction_impl(
         houjin_bangou="3450001000777",
     )
-    pprint.pprint({
-        "shogo": res.get("shogo"),
-        "registered_pref": res.get("registered", {}).get("prefecture"),
-        "mismatch_count": res.get("mismatch_count"),
-        "next_calls_count": len(res.get("_next_calls", [])),
-    })
+    pprint.pprint(
+        {
+            "shogo": res.get("shogo"),
+            "registered_pref": res.get("registered", {}).get("prefecture"),
+            "mismatch_count": res.get("mismatch_count"),
+            "next_calls_count": len(res.get("_next_calls", [])),
+        }
+    )
 
     print("\n=== bundle_application_kit ===")
     res = _bundle_application_kit_impl(
         program_id="program:base:71f6029070",
         profile={"company_name": "株式会社サンプル"},
     )
-    pprint.pprint({
-        "program_name": res.get("program", {}).get("primary_name"),
-        "checklist_size": res.get("data_quality", {}).get("checklist_size"),
-        "similar_cases_count": res.get("data_quality", {}).get("similar_cases_count"),
-        "next_calls_count": len(res.get("_next_calls", [])),
-    })
+    pprint.pprint(
+        {
+            "program_name": res.get("program", {}).get("primary_name"),
+            "checklist_size": res.get("data_quality", {}).get("checklist_size"),
+            "similar_cases_count": res.get("data_quality", {}).get("similar_cases_count"),
+            "next_calls_count": len(res.get("_next_calls", [])),
+        }
+    )

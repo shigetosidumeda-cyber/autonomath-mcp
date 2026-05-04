@@ -178,8 +178,8 @@ def test_synthetic_drift_detected(tmp_path: Path) -> None:
                     "name": "autonomath-mcp",
                     "version": "0.3.3",
                     "websiteUrl": "https://jpcite.com",
-                    "description": "93 MCP tools at default gates — autonomath-mcp",
-                    "tool_count": 93,
+                    "description": "96 MCP tools at default gates — autonomath-mcp",
+                    "tool_count": 96,
                     "repository": {"url": "https://github.com/shigetosidumeda-cyber/autonomath-mcp"},
                 }
         )
@@ -191,20 +191,20 @@ def test_synthetic_drift_detected(tmp_path: Path) -> None:
             'env: JPCITE_API_KEY="" JPCITE_API_BASE=""\n'
             "package: autonomath-mcp\n"
             "repo: https://github.com/shigetosidumeda-cyber/autonomath-mcp\n"
-            "description: 93 MCP tools at default gates\n"
+            "description: 96 MCP tools at default gates\n"
         ),
         "scripts/mcp_registries_submission.json": canonical_blob,
         "pyproject.toml": (
             'version = "0.3.3"\nname = "autonomath-mcp"\n'
-            'description = "93 MCP tools — see https://jpcite.com"\n'
+            'description = "96 MCP tools — see https://jpcite.com"\n'
             'Repository = "https://github.com/shigetosidumeda-cyber/autonomath-mcp"\n'
         ),
         "README.md": (
-            "# autonomath-mcp\n\nhttps://jpcite.com — 93 MCP tools at default gates. "
+            "# autonomath-mcp\n\nhttps://jpcite.com — 96 MCP tools at default gates. "
             "github.com/shigetosidumeda-cyber/autonomath-mcp\n"
         ),
-        "site/llms.txt": "# jpcite\nhttps://jpcite.com — 93 MCP tools at default gates.\n",
-        "CLAUDE.md": "# autonomath-mcp\nhttps://jpcite.com — 93 MCP tools at default gates.\n",
+        "site/llms.txt": "# jpcite\nhttps://jpcite.com — 96 MCP tools at default gates.\n",
+        "CLAUDE.md": "# autonomath-mcp\nhttps://jpcite.com — 96 MCP tools at default gates.\n",
         "sdk/python/autonomath/_shared.py": (
             'DEFAULT_BASE_URL = "https://api.jpcite.com"\n'
             "JPCITE_API_KEY_HINT = 'use env JPCITE_API_KEY'\n"

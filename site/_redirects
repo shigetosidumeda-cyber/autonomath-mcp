@@ -68,7 +68,7 @@
 # people who got there with a code. Query string is preserved by CF for
 # funnel attribution.
 /go/upgrade /upgrade.html  302
-/go/:code /go  302
+/go/:code /go.html?code=:code  302
 
 # ─────────────────────────────────────────────────────────────────────────
 # Common-broken inbound paths — catch-all redirects so external links from
@@ -95,10 +95,16 @@
 /sign-up     /dashboard.html  302
 /register    /dashboard.html  302
 
-# Contact aliases route users to the account/support entry point.
-/contact     /go.html  302
-/contact-us  /go.html  302
-/support     /go.html  302
+# Contact aliases route users to the public support page. Do not send
+# plain contact/support traffic to the MCP device-flow page; it requires a
+# user_code and reads as broken for normal visitors and crawlers.
+/contact     /support.html  302
+/contact-us  /support.html  302
+/support     /support.html  302
+
+# Human-rights / security aliases used by trust.json and purchasing pages.
+/data_subject_rights.html  /docs/compliance/data_subject_rights/  301
+/data_subject_rights       /docs/compliance/data_subject_rights/  301
 
 # Legacy public-brand aliases. Anything pointing at the old public name should
 # land on the jpcite homepage. Internal Python package paths are unaffected.

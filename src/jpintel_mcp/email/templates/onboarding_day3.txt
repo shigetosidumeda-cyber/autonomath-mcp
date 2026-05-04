@@ -56,10 +56,10 @@
 
 MCP クライアント経由:
 
-Claude / Cursor / Cline からは、上の 5 つも含めて 93 ツールがそのまま自然言語で呼べます。
+Claude / Cursor / Cline からは、上の 5 つも含めて 96 ツールがそのまま自然言語で呼べます。
 設定: https://jpcite.com/integrations/
 
-他にも使い方を集めた examples 集 (全 93 ツール一覧 + 用途別レシピ):
+他にも使い方を集めた examples 集 (全 96 ツール一覧 + 用途別レシピ):
 https://jpcite.com/examples/
 
 詰まったら、このメールにそのまま返信してください。人間が読みます。

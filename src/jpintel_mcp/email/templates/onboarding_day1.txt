@@ -7,7 +7,7 @@
 使うクライアントを1つ選んでください:
 
 A. Claude Desktop / Claude Code
-   MCP 対応 LLM クライアント。claude_desktop_config.json に追記するだけで 93 ツール
+   MCP 対応 LLM クライアント。claude_desktop_config.json に追記するだけで 96 ツール
    (programs.search / search_tax_incentives / check_invoice_registrant ほか) が
    自然言語から呼べます。
 

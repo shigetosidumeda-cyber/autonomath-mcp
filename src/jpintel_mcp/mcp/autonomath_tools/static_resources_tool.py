@@ -35,7 +35,7 @@ logger = logging.getLogger("jpintel.mcp.am.static")
 
 @mcp.tool(annotations=_READ_ONLY)
 def list_static_resources_am() -> dict[str, object]:
-    """Manifest of curated AutonoMath taxonomies (制度 / 用語 / 助成区分 / 義務 etc.).
+    """Manifest of curated jpcite taxonomies (制度 / 用語 / 助成区分 / 義務 etc.).
 
     Returns 8 entries (seido / glossary / money_types / obligations /
     dealbreakers / sector_combos / crop_library / exclusion_rules). Each

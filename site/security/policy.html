@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>脆弱性開示ポリシー — jpcite</title>
+<meta name="description" content="jpcite の脆弱性報告窓口、対応目標、Safe harbour、対象範囲。">
+<link rel="canonical" href="https://jpcite.com/security/policy.html">
+<link rel="stylesheet" href="/styles.css?v=20260428a">
+</head>
+<body>
+<main class="container" style="max-width:860px;padding:48px 20px 64px;">
+<p><a href="/security/">← セキュリティ概要へ戻る</a></p>
+<h1>脆弱性開示ポリシー</h1>
+<p>jpcite はセキュリティ報告を歓迎します。問題を確認した場合は、公開 Issue ではなく <a href="mailto:info@bookyou.net?subject=%5Bsecurity%5D%20jpcite%20vulnerability%20report">info@bookyou.net</a> へご連絡ください。</p>
+
+<h2>報告に含めてほしい情報</h2>
+<ul>
+<li>問題の概要</li>
+<li>再現手順または PoC</li>
+<li>確認した URL、バージョン、commit など</li>
+<li>掲載希望の名前またはハンドル名 (任意)</li>
+</ul>
+
+<h2>対応目標</h2>
+<ul>
+<li>受領確認: 72 時間以内</li>
+<li>修正目標: サーバー側の問題は 14 日以内、クライアント側は次回 PyPI / DXT リリース</li>
+<li>公開猶予: 受領確認から 90 日</li>
+</ul>
+
+<h2>Safe harbour</h2>
+<p>善意で、最小限のアクセスに留め、個人情報の閲覧・保存・破壊・公開を避け、修正まで合理的な猶予をいただける報告者に対して、当社は法的措置を取りません。</p>
+
+<h2>対象範囲</h2>
+<ul>
+<li><code>https://api.jpcite.com</code> の REST API</li>
+<li><code>https://jpcite.com</code> の静的サイト</li>
+<li>公式 jpcite MCP Python package</li>
+<li>公開 API 出力に影響するデータ取り込み処理</li>
+</ul>
+
+<h2>対象外</h2>
+<ul>
+<li>第三者サービス側の脆弱性</li>
+<li>政府・自治体など一次情報源サイト側の問題</li>
+<li>現実的でない量のトラフィックを必要とする DoS</li>
+<li>権限昇格を伴わない self-XSS</li>
+<li>ソーシャルエンジニアリング、物理攻撃</li>
+</ul>
+
+<h2>報奨金</h2>
+<p>現在、金銭的な bug bounty は提供していません。希望がある場合は、修正後のリリースノート等で謝辞を掲載します。</p>
+</main>
+</body>
+</html>

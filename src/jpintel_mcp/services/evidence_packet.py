@@ -45,6 +45,7 @@ import sqlite3
 import time
 import unicodedata
 import uuid
+from copy import deepcopy
 from datetime import UTC, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Literal
@@ -76,6 +77,36 @@ SubjectKind = Literal["program", "houjin", "query"]
 
 #: Caller-supplied baselines accepted by the compression estimator.
 CompressionSourceBasis = Literal["unknown", "pdf_pages", "token_count"]
+
+#: Packet projection profiles (§4.3 deliverable). The 4 profiles ship one
+#: stable wire shape; the difference is which optional sub-blocks survive
+#: the projection. Default ``full`` is the unfiltered envelope.
+#:
+#:   full           — every block the composer produced (no projection).
+#:   brief          — drops facts/rules/precomputed/aliases to give callers
+#:                    the smallest envelope that still cites primary URLs.
+#:   verified_only  — keeps only the citations whose latest
+#:                    verification_status == 'verified', and drops facts/
+#:                    rules whose source_url is not in that allow-list.
+#:                    Use when the caller cannot tolerate inferred/stale
+#:                    citations.
+#:   changes_only   — keeps records[].recent_changes + their citations,
+#:                    drops facts/rules/precomputed/short_summary. Used by
+#:                    M&A / 顧問先 watch-list flows.
+PacketProfile = Literal["full", "brief", "verified_only", "changes_only"]
+
+#: Closed enum. The 4 valid `verification_status` values mirror
+#: ``services.citation_verifier.VerificationResult`` and the
+#: ``citation_verification.verification_status`` CHECK constraint
+#: (migration 126_citation_verification). Anything else is rewritten
+#: to ``'unknown'`` by the composer to preserve the wire contract.
+VALID_CITATION_STATUSES: frozenset[str] = frozenset(
+    {"verified", "inferred", "unknown", "stale"}
+)
+
+#: Default verdict when the citation_verification join returns no row.
+#: Matches §28.9 No-Go #1: never default to ``'verified'`` without proof.
+_DEFAULT_CITATION_STATUS: str = "unknown"
 
 #: User-facing amendment fields that are safe to expose as compact recent
 #: changes. Internal audit/projection fields stay hidden from Evidence Packet
@@ -279,11 +310,11 @@ def _cache_get(key: str) -> dict[str, Any] | None:
     if expiry < time.monotonic():
         _CACHE.pop(key, None)
         return None
-    return body
+    return deepcopy(body)
 
 
 def _cache_put(key: str, body: dict[str, Any]) -> None:
-    _CACHE[key] = (time.monotonic() + _CACHE_TTL_SEC, body)
+    _CACHE[key] = (time.monotonic() + _CACHE_TTL_SEC, deepcopy(body))
 
 
 def _reset_cache_for_tests() -> None:
@@ -652,6 +683,87 @@ class EvidencePacketComposer:
                 precomputed["source_quality"] = float(source_quality)
 
         return precomputed if len(precomputed) > 1 else None
+
+    def _fetch_citation_verifications(
+        self,
+        entity_ids: list[str],
+    ) -> dict[tuple[str, str], dict[str, Any]]:
+        """Return latest citation_verification verdict per (entity_id, source_url).
+
+        Reads from jpintel.db (migration 126_citation_verification — table is
+        addressed there because it is request-side state, NOT corpus state on
+        autonomath.db). The composer joins by ``entity_id`` so the same value
+        the Evidence Packet records carry can look itself up here.
+
+        Selection rule: most recent ``verified_at`` per (entity_id, source_url)
+        wins; older rows are ignored. The composite
+        (entity_id, source_url, verified_at DESC, id DESC) index added by the
+        migration carries the read in one BTree walk.
+
+        Returns ``{}`` on any error so the composer falls open to the default
+        ``unknown`` status. The composer must NEVER raise from a missing
+        verification join — request-side absence is the expected steady state
+        until the §4.3 backfill task has populated the table.
+
+        ``entity_ids`` of length 0 short-circuits to ``{}`` (saves a query
+        round-trip on empty record sets).
+        """
+        if not entity_ids:
+            return {}
+        clean_ids = [eid for eid in entity_ids if isinstance(eid, str) and eid]
+        if not clean_ids:
+            return {}
+        try:
+            conn = self._open_ro(self.jpintel_db)
+        except FileNotFoundError:
+            logger.info(
+                "evidence_packet: jpintel.db missing at %s — defaulting citations to unknown",
+                self.jpintel_db,
+            )
+            return {}
+        try:
+            placeholders = ",".join("?" for _ in clean_ids)
+            # Window function picks the latest verdict per
+            # (entity_id, source_url) without a self-join. The composite
+            # entity/source/verified_at index drives the partition scan.
+            sql = (
+                "SELECT entity_id, source_url, verification_status, "
+                "matched_form, source_checksum, verified_at, "
+                "verification_basis FROM ( "
+                "    SELECT *, ROW_NUMBER() OVER ( "
+                "        PARTITION BY entity_id, source_url "
+                "        ORDER BY verified_at DESC, id DESC "
+                "    ) AS rn "
+                "    FROM citation_verification "
+                f"    WHERE entity_id IN ({placeholders}) "
+                ") WHERE rn = 1"
+            )
+            try:
+                rows = conn.execute(sql, clean_ids).fetchall()
+            except sqlite3.OperationalError:
+                # Table missing (migration 126 not applied) — fail open.
+                return {}
+        finally:
+            conn.close()
+
+        out: dict[tuple[str, str], dict[str, Any]] = {}
+        for row in rows:
+            entity_id = str(row["entity_id"])
+            source_url = str(row["source_url"])
+            status = row["verification_status"]
+            if status not in VALID_CITATION_STATUSES:
+                # Defensive — the CHECK constraint should already prevent
+                # this, but a manual INSERT could bypass it. Coerce to
+                # the safe default rather than emit an unrecognised string.
+                status = _DEFAULT_CITATION_STATUS
+            out[(entity_id, source_url)] = {
+                "verification_status": status,
+                "matched_form": row["matched_form"],
+                "source_checksum": row["source_checksum"],
+                "verified_at": row["verified_at"],
+                "verification_basis": row["verification_basis"],
+            }
+        return out
 
     def _fetch_recent_changes(
         self,
@@ -1216,14 +1328,114 @@ class EvidencePacketComposer:
         return count
 
     @staticmethod
+    def _collect_record_citations(
+        records: list[dict[str, Any]],
+    ) -> list[tuple[str, str]]:
+        """Return de-duplicated (entity_id, source_url) pairs from records[].
+
+        Sources scanned, in priority order:
+          1. record.source_url
+          2. record.facts[*].source.url
+          3. record.recent_changes[*].source_url
+          4. record.pdf_fact_refs[*].source_url
+          5. record.rules[*].evidence_url
+
+        Pairs are emitted in first-seen order (dict-preserving) so the
+        downstream citations[] array is deterministic per packet.
+        """
+        seen: dict[tuple[str, str], None] = {}
+        for rec in records:
+            entity_id = rec.get("entity_id")
+            if not isinstance(entity_id, str) or not entity_id:
+                continue
+            primary = rec.get("source_url")
+            if isinstance(primary, str) and primary:
+                seen.setdefault((entity_id, primary), None)
+            for fact in rec.get("facts") or []:
+                src = fact.get("source") if isinstance(fact, dict) else None
+                if isinstance(src, dict):
+                    url = src.get("url")
+                    if isinstance(url, str) and url:
+                        seen.setdefault((entity_id, url), None)
+            for chg in rec.get("recent_changes") or []:
+                if isinstance(chg, dict):
+                    url = chg.get("source_url")
+                    if isinstance(url, str) and url:
+                        seen.setdefault((entity_id, url), None)
+            for ref in rec.get("pdf_fact_refs") or []:
+                if isinstance(ref, dict):
+                    url = ref.get("source_url")
+                    if isinstance(url, str) and url:
+                        seen.setdefault((entity_id, url), None)
+            for rule in rec.get("rules") or []:
+                if isinstance(rule, dict):
+                    url = rule.get("evidence_url")
+                    if isinstance(url, str) and url:
+                        seen.setdefault((entity_id, url), None)
+        return list(seen.keys())
+
+    @staticmethod
+    def _build_citations_block(
+        records: list[dict[str, Any]],
+        verifications: dict[tuple[str, str], dict[str, Any]],
+    ) -> list[dict[str, Any]]:
+        """Project per-record citations into ``evidence_value.citations[]``.
+
+        Each entry surfaces the latest known verdict for the (entity_id,
+        source_url) pair. When the citation_verification join returns no row,
+        the entry defaults to ``verification_status='unknown'`` with all
+        verdict-derived fields ``None`` — never silently emit ``'verified'``
+        without a stored proof.
+        """
+        out: list[dict[str, Any]] = []
+        pairs = EvidencePacketComposer._collect_record_citations(records)
+        for entity_id, source_url in pairs:
+            verdict = verifications.get((entity_id, source_url))
+            if verdict is None:
+                out.append(
+                    {
+                        "entity_id": entity_id,
+                        "source_url": source_url,
+                        "verification_status": _DEFAULT_CITATION_STATUS,
+                        "matched_form": None,
+                        "source_checksum": None,
+                        "verified_at": None,
+                        "verification_basis": None,
+                    }
+                )
+                continue
+            status = verdict.get("verification_status", _DEFAULT_CITATION_STATUS)
+            if status not in VALID_CITATION_STATUSES:
+                status = _DEFAULT_CITATION_STATUS
+            out.append(
+                {
+                    "entity_id": entity_id,
+                    "source_url": source_url,
+                    "verification_status": status,
+                    "matched_form": verdict.get("matched_form"),
+                    "source_checksum": verdict.get("source_checksum"),
+                    "verified_at": verdict.get("verified_at"),
+                    "verification_basis": verdict.get("verification_basis"),
+                }
+            )
+        return out
+
+    @staticmethod
     def _build_evidence_value(
-        envelope: dict[str, Any], records: list[dict[str, Any]]
+        envelope: dict[str, Any],
+        records: list[dict[str, Any]],
+        citations: list[dict[str, Any]] | None = None,
     ) -> dict[str, Any]:
-        """Plan §4-A `evidence_value` block.
+        """Plan §4-A + §4.3 `evidence_value` block.
 
         AI-side counters that explain *why* this packet may be worth
         recommending — independent of any caller-supplied price baseline.
         Pure record/quality-derived; no LLM call, no live web fetch.
+
+        ``citations`` (§4.3 deliverable): per-citation verification verdict
+        joined from ``citation_verification`` (migration 126). When omitted,
+        defaults to an empty list rather than ``None`` so the wire shape is
+        stable for AI agents that read ``evidence_value.citations[]``.
         """
         records_returned = len(records)
         source_linked = EvidencePacketComposer._source_linked_record_count(records)
@@ -1246,6 +1458,20 @@ class EvidencePacketComposer:
         gaps = quality.get("known_gaps") or []
         known_gap_count = len(gaps) if isinstance(gaps, list) else 0
 
+        cits = citations or []
+        verified_count = sum(
+            1 for c in cits if c.get("verification_status") == "verified"
+        )
+        inferred_count = sum(
+            1 for c in cits if c.get("verification_status") == "inferred"
+        )
+        stale_count = sum(
+            1 for c in cits if c.get("verification_status") == "stale"
+        )
+        unknown_count = sum(
+            1 for c in cits if c.get("verification_status") == "unknown"
+        )
+
         return {
             "records_returned": records_returned,
             "source_linked_records": source_linked,
@@ -1253,6 +1479,12 @@ class EvidencePacketComposer:
             "pdf_fact_refs": pdf_fact_refs,
             "known_gap_count": known_gap_count,
             "fact_provenance_coverage_pct_avg": coverage_avg,
+            "citations": cits,
+            "citation_count": len(cits),
+            "citation_verified_count": verified_count,
+            "citation_inferred_count": inferred_count,
+            "citation_stale_count": stale_count,
+            "citation_unknown_count": unknown_count,
             # NO live web search — composer is read-only against local SQLite.
             "web_search_performed_by_jpcite": False,
             # NO request-time LLM — plan §4-A safety contract.
@@ -1432,13 +1664,223 @@ class EvidencePacketComposer:
             if isinstance(gaps, list) and "no_records_returned" not in gaps:
                 gaps.append("no_records_returned")
 
+    @staticmethod
+    def _apply_profile(
+        envelope: dict[str, Any],
+        profile: str,
+    ) -> dict[str, Any]:
+        """Project ``envelope`` through the requested ``profile`` filter.
+
+        Default ``full`` is the identity projection. Other profiles drop
+        record-level sub-blocks per the §4.3 contract:
+
+          * ``brief``         drops facts / rules / precomputed / pdf_fact_refs
+                              / aliases / short_summary on every record. The
+                              envelope keeps verification + quality + citations.
+          * ``verified_only`` drops facts whose ``source.url`` is not in the
+                              ``verification_status='verified'`` allow-list,
+                              and drops records that end up with no facts AND
+                              no verified primary ``source_url``.
+          * ``changes_only``  drops facts / rules / precomputed / pdf_fact_refs
+                              / aliases / short_summary on every record;
+                              records without ``recent_changes`` are dropped.
+
+        ``evidence_value.citations[]`` is NEVER dropped — it is the §4.3
+        deliverable and AI agents read it to decide trust.
+
+        Mutates ``envelope`` in place AND returns it (caller can chain).
+        Unknown ``profile`` values fall through to ``full`` to keep the
+        wire stable when a stale client passes a future-tense value.
+        """
+        if profile not in {"brief", "verified_only", "changes_only"}:
+            envelope.setdefault("packet_profile", profile if profile == "full" else "full")
+            return envelope
+
+        envelope["packet_profile"] = profile
+        records = envelope.get("records") or []
+
+        if profile == "brief":
+            for rec in records:
+                for key in (
+                    "facts",
+                    "rules",
+                    "precomputed",
+                    "pdf_fact_refs",
+                    "aliases",
+                    "short_summary",
+                    "fact_provenance_coverage_pct",
+                ):
+                    rec.pop(key, None)
+            return envelope
+
+        if profile == "changes_only":
+            kept: list[dict[str, Any]] = []
+            for rec in records:
+                if not rec.get("recent_changes"):
+                    continue
+                for key in (
+                    "facts",
+                    "rules",
+                    "precomputed",
+                    "pdf_fact_refs",
+                    "aliases",
+                    "short_summary",
+                    "fact_provenance_coverage_pct",
+                ):
+                    rec.pop(key, None)
+                kept.append(rec)
+            envelope["records"] = kept
+            return envelope
+
+        # verified_only. Use the full (entity_id, source_url) pair, not URL
+        # alone: two different entities can cite the same government page but
+        # only one pair may have been explicitly verified.
+        cits = envelope.get("evidence_value", {}).get("citations") or []
+        verified_pairs: set[tuple[str, str]] = {
+            (str(c.get("entity_id")), str(c.get("source_url")))
+            for c in cits
+            if c.get("verification_status") == "verified"
+            and isinstance(c.get("entity_id"), str)
+            and isinstance(c.get("source_url"), str)
+        }
+        kept = []
+        for rec in records:
+            entity_id = rec.get("entity_id")
+            primary_verified = (
+                isinstance(entity_id, str)
+                and isinstance(rec.get("source_url"), str)
+                and (entity_id, rec["source_url"]) in verified_pairs
+            )
+            facts = rec.get("facts") or []
+            kept_facts = []
+            for f in facts:
+                src = f.get("source") if isinstance(f, dict) else None
+                url = src.get("url") if isinstance(src, dict) else None
+                if isinstance(entity_id, str) and isinstance(url, str) and (
+                    entity_id,
+                    url,
+                ) in verified_pairs:
+                    kept_facts.append(f)
+            if facts:
+                rec["facts"] = kept_facts
+                # Recompute coverage on the verified-only fact subset so the
+                # downstream `fact_provenance_coverage_pct_avg` stays honest.
+                with_source = sum(
+                    1 for f in kept_facts if isinstance(f, dict) and f.get("source")
+                )
+                rec["fact_provenance_coverage_pct"] = (
+                    round(with_source / len(kept_facts), 4) if kept_facts else 0.0
+                )
+            # Drop rules whose evidence_url is not verified.
+            rules = rec.get("rules") or []
+            kept_rules = [
+                r
+                for r in rules
+                if isinstance(r, dict)
+                and isinstance(r.get("evidence_url"), str)
+                and isinstance(entity_id, str)
+                and (entity_id, r["evidence_url"]) in verified_pairs
+            ]
+            if rules:
+                rec["rules"] = kept_rules
+            # Drop pdf_fact_refs whose source_url is not verified.
+            pdf_refs = rec.get("pdf_fact_refs") or []
+            kept_pdf = [
+                p
+                for p in pdf_refs
+                if isinstance(p, dict)
+                and isinstance(p.get("source_url"), str)
+                and isinstance(entity_id, str)
+                and (entity_id, p["source_url"]) in verified_pairs
+            ]
+            if pdf_refs:
+                rec["pdf_fact_refs"] = kept_pdf
+            # Drop recent change source URLs that do not have a verified
+            # citation verdict for this entity. Otherwise verified_only can
+            # reintroduce unknown citations when evidence_value is rebuilt.
+            changes = rec.get("recent_changes") or []
+            kept_changes = [
+                c
+                for c in changes
+                if isinstance(c, dict)
+                and isinstance(c.get("source_url"), str)
+                and isinstance(entity_id, str)
+                and (entity_id, c["source_url"]) in verified_pairs
+            ]
+            if changes:
+                rec["recent_changes"] = kept_changes
+            # Keep the record if anything verified survives, OR if the
+            # primary source_url was verified.
+            if primary_verified or kept_facts or kept_rules or kept_pdf or kept_changes:
+                kept.append(rec)
+        envelope["records"] = kept
+        return envelope
+
     @classmethod
-    def _attach_evidence_value(cls, envelope: dict[str, Any]) -> None:
-        """Plan §4-A: surface AI-readable evidence value counters."""
+    def _attach_evidence_value(
+        cls,
+        envelope: dict[str, Any],
+        composer: EvidencePacketComposer | None = None,
+    ) -> None:
+        """Plan §4-A + §4.3: surface AI-readable evidence value counters.
+
+        When ``composer`` is supplied, the citation_verification join is
+        executed against jpintel.db so each citation in
+        ``evidence_value.citations[]`` carries its latest verdict. With
+        ``composer=None``, existing citation verdicts already attached to the
+        envelope are preserved; new/unseen pairs default to
+        ``verification_status='unknown'``.
+        """
         records = [
             rec for rec in (envelope.get("records") or []) if isinstance(rec, dict)
         ]
-        envelope["evidence_value"] = cls._build_evidence_value(envelope, records)
+        if composer is not None:
+            entity_ids = [
+                rec.get("entity_id")
+                for rec in records
+                if isinstance(rec.get("entity_id"), str)
+            ]
+            verifications = composer._fetch_citation_verifications(entity_ids)
+        else:
+            existing = envelope.get("evidence_value", {}).get("citations") or []
+            verifications = {}
+            for cit in existing:
+                if not isinstance(cit, dict):
+                    continue
+                entity_id = cit.get("entity_id")
+                source_url = cit.get("source_url")
+                status = cit.get("verification_status")
+                if (
+                    isinstance(entity_id, str)
+                    and isinstance(source_url, str)
+                    and status in VALID_CITATION_STATUSES
+                ):
+                    verifications[(entity_id, source_url)] = dict(cit)
+        citations = cls._build_citations_block(records, verifications)
+        envelope["evidence_value"] = cls._build_evidence_value(
+            envelope, records, citations
+        )
+
+    @classmethod
+    def _refresh_projection_metadata(
+        cls,
+        envelope: dict[str, Any],
+        composer: EvidencePacketComposer | None = None,
+    ) -> None:
+        """Recompute quality, recommendation, and citations after projection."""
+        records = [
+            rec for rec in (envelope.get("records") or []) if isinstance(rec, dict)
+        ]
+        quality = envelope.get("quality")
+        if isinstance(quality, dict):
+            coverage_score = cls._coverage_score(records)
+            quality["coverage_score"] = coverage_score
+            quality["human_review_required"] = cls._human_review_required(
+                records,
+                coverage_score,
+            )
+        cls._attach_agent_recommendation(envelope)
+        cls._attach_evidence_value(envelope, composer=composer)
 
     # ------------------------------------------------------------------
     # Quality scoring.
@@ -1506,6 +1948,7 @@ class EvidencePacketComposer:
         source_pdf_pages: int | None,
         source_token_count: int | None,
         corpus_snapshot_id: str,
+        profile: str = "full",
     ) -> str:
         return "|".join(
             [
@@ -1522,6 +1965,7 @@ class EvidencePacketComposer:
                 str(source_pdf_pages or ""),
                 str(source_token_count or ""),
                 corpus_snapshot_id,
+                profile,
             ]
         )
 
@@ -2093,11 +2537,16 @@ class EvidencePacketComposer:
         source_tokens_basis: CompressionSourceBasis = "unknown",
         source_pdf_pages: int | None = None,
         source_token_count: int | None = None,
+        profile: str = "full",
     ) -> dict[str, Any] | None:
         """Compose a single-record packet for one program.
 
         Returns ``None`` when the program_id resolves to nothing
         (callers translate to 404).
+
+        ``profile`` (§4.3): one of ``full`` / ``brief`` / ``verified_only`` /
+        ``changes_only``. Applied AFTER citation_verification join so the
+        ``verified_only`` filter has access to the latest verdicts.
         """
         return self._compose_single_subject(
             subject_kind="program",
@@ -2110,6 +2559,7 @@ class EvidencePacketComposer:
             source_tokens_basis=source_tokens_basis,
             source_pdf_pages=source_pdf_pages,
             source_token_count=source_token_count,
+            profile=profile,
         )
 
     def compose_for_houjin(
@@ -2124,6 +2574,7 @@ class EvidencePacketComposer:
         source_tokens_basis: CompressionSourceBasis = "unknown",
         source_pdf_pages: int | None = None,
         source_token_count: int | None = None,
+        profile: str = "full",
     ) -> dict[str, Any] | None:
         """Compose a single-record packet for one 法人番号.
 
@@ -2141,6 +2592,7 @@ class EvidencePacketComposer:
             source_tokens_basis=source_tokens_basis,
             source_pdf_pages=source_pdf_pages,
             source_token_count=source_token_count,
+            profile=profile,
         )
 
     def compose_for_query(
@@ -2157,6 +2609,7 @@ class EvidencePacketComposer:
         source_tokens_basis: CompressionSourceBasis = "unknown",
         source_pdf_pages: int | None = None,
         source_token_count: int | None = None,
+        profile: str = "full",
     ) -> dict[str, Any]:
         """Compose a multi-record packet for a search query.
 
@@ -2177,6 +2630,7 @@ class EvidencePacketComposer:
             source_pdf_pages=source_pdf_pages,
             source_token_count=source_token_count,
             corpus_snapshot_id=snapshot_id,
+            profile=profile,
         )
         cached = _cache_get(cache_key)
         if cached is not None:
@@ -2221,7 +2675,7 @@ class EvidencePacketComposer:
                 continue
             # Lift inner.records[0] up.
             for rec in inner.get("records", []):
-                records.append(rec)
+                records.append(deepcopy(rec))
             for g in inner.get("quality", {}).get("known_gaps", []):
                 if g not in gaps:
                     gaps.append(g)
@@ -2309,8 +2763,12 @@ class EvidencePacketComposer:
             )
 
         self._attach_agent_recommendation(envelope)
-        self._attach_evidence_value(envelope)
+        self._attach_evidence_value(envelope, composer=self)
         _attach_known_gaps_inventory(envelope)
+        # Apply the §4.3 profile projection AFTER evidence_value attaches
+        # citations[] so verified_only can read the latest verdicts.
+        self._apply_profile(envelope, profile)
+        self._refresh_projection_metadata(envelope, composer=self)
         _cache_put(cache_key, envelope)
         return envelope
 
@@ -2342,6 +2800,7 @@ class EvidencePacketComposer:
         source_tokens_basis: CompressionSourceBasis,
         source_pdf_pages: int | None,
         source_token_count: int | None,
+        profile: str = "full",
     ) -> dict[str, Any] | None:
         # 1. Cache check (snapshot_id is part of the key — re-derived per
         #    call, cheap because _corpus_snapshot has its own 5min cache).
@@ -2358,6 +2817,7 @@ class EvidencePacketComposer:
             source_pdf_pages=source_pdf_pages,
             source_token_count=source_token_count,
             corpus_snapshot_id=snapshot_id,
+            profile=profile,
         )
         cached = _cache_get(cache_key)
         if cached is not None:
@@ -2533,8 +2993,12 @@ class EvidencePacketComposer:
             )
 
         self._attach_agent_recommendation(envelope)
-        self._attach_evidence_value(envelope)
+        self._attach_evidence_value(envelope, composer=self)
         _attach_known_gaps_inventory(envelope)
+        # Apply the §4.3 profile projection AFTER evidence_value attaches
+        # citations[] so verified_only can read the latest verdicts.
+        self._apply_profile(envelope, profile)
+        self._refresh_projection_metadata(envelope, composer=self)
         _cache_put(cache_key, envelope)
         return envelope
 

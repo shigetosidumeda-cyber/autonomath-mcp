@@ -62,6 +62,7 @@ from jpintel_mcp.services.evidence_packet import (
 logger = logging.getLogger("jpintel.api.evidence")
 
 router = APIRouter(prefix="/v1/evidence", tags=["evidence"])
+PacketProfile = Literal["full", "brief", "verified_only", "changes_only"]
 
 
 _composer: EvidencePacketComposer | None = None
@@ -595,6 +596,17 @@ def get_evidence_packet(
         str,
         Query(description="Field projection level. `default` / `full`."),
     ] = "default",
+    packet_profile: Annotated[
+        PacketProfile,
+        Query(
+            description=(
+                "Packet projection. `full` keeps every block; `brief` returns "
+                "compact metadata + citations; `verified_only` keeps only "
+                "verified citation pairs; `changes_only` keeps records with "
+                "recent_changes."
+            ),
+        ),
+    ] = "full",
     input_token_price_jpy_per_1m: Annotated[
         float | None,
         Query(
@@ -671,6 +683,7 @@ def get_evidence_packet(
             source_tokens_basis=source_tokens_basis,
             source_pdf_pages=source_pdf_pages,
             source_token_count=source_token_count,
+            profile=packet_profile,
         )
     else:
         envelope = composer.compose_for_houjin(
@@ -683,6 +696,7 @@ def get_evidence_packet(
             source_tokens_basis=source_tokens_basis,
             source_pdf_pages=source_pdf_pages,
             source_token_count=source_token_count,
+            profile=packet_profile,
         )
 
     if envelope is None:
@@ -723,6 +737,7 @@ def get_evidence_packet(
                 "source_tokens_basis": source_tokens_basis,
                 "source_pdf_pages": source_pdf_pages,
                 "source_token_count": source_token_count,
+                "packet_profile": packet_profile,
             },
             api_key_hash=ctx.key_hash,
             conn=conn,
@@ -743,6 +758,7 @@ def get_evidence_packet(
             "source_tokens_basis": source_tokens_basis,
             "source_pdf_pages": source_pdf_pages,
             "source_token_count": source_token_count,
+            "packet_profile": packet_profile,
         },
     )
     return response
@@ -802,6 +818,17 @@ class EvidencePacketQueryBody(BaseModel):
         str,
         Field(description="Field projection level. `default` / `full`."),
     ] = "default"
+    packet_profile: Annotated[
+        PacketProfile,
+        Field(
+            description=(
+                "Packet projection. `full` keeps every block; `brief` returns "
+                "compact metadata + citations; `verified_only` keeps only "
+                "verified citation pairs; `changes_only` keeps records with "
+                "recent_changes."
+            ),
+        ),
+    ] = "full"
     input_token_price_jpy_per_1m: Annotated[
         float | None,
         Field(
@@ -897,6 +924,7 @@ def post_evidence_packet_query(
         source_tokens_basis=payload.source_tokens_basis,
         source_pdf_pages=payload.source_pdf_pages,
         source_token_count=payload.source_token_count,
+        profile=payload.packet_profile,
     )
     gated_envelope, gate_summary = _gate_evidence_envelope(envelope)
 
@@ -912,6 +940,7 @@ def post_evidence_packet_query(
                 "source_tokens_basis": payload.source_tokens_basis,
                 "source_pdf_pages": payload.source_pdf_pages,
                 "source_token_count": payload.source_token_count,
+                "packet_profile": payload.packet_profile,
             },
             api_key_hash=ctx.key_hash,
             conn=conn,
@@ -930,6 +959,7 @@ def post_evidence_packet_query(
             "source_tokens_basis": payload.source_tokens_basis,
             "source_pdf_pages": payload.source_pdf_pages,
             "source_token_count": payload.source_token_count,
+            "packet_profile": payload.packet_profile,
         },
     )
     return response

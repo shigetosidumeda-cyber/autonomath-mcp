@@ -38,6 +38,7 @@ Migration dependency: none. `am_industry_jsic` (35 rows) is the JSIC
 mapping; `programs` (jpintel.db) is the search corpus; `nta_saiketsu` /
 `nta_tsutatsu_index` (autonomath.db) are the citation corpora.
 """
+
 from __future__ import annotations
 
 import datetime
@@ -72,9 +73,21 @@ _PACK_DEFINITIONS: dict[str, dict[str, Any]] = {
         "jsic_major": "D",
         "jsic_name_ja": "建設業",
         "name_keywords": (
-            "建設", "建築", "住宅", "空き家", "耐震", "改修",
-            "リフォーム", "塗装", "工務", "土木", "解体", "リノベーション",
-            "工事", "下請", "請負",
+            "建設",
+            "建築",
+            "住宅",
+            "空き家",
+            "耐震",
+            "改修",
+            "リフォーム",
+            "塗装",
+            "工務",
+            "土木",
+            "解体",
+            "リノベーション",
+            "工事",
+            "下請",
+            "請負",
         ),
         "tax_types": ("法人税", "消費税"),
         "tsutatsu_prefixes": ("法基通", "消基通"),
@@ -84,8 +97,18 @@ _PACK_DEFINITIONS: dict[str, dict[str, Any]] = {
         "jsic_major": "E",
         "jsic_name_ja": "製造業",
         "name_keywords": (
-            "ものづくり", "製造", "設備投資", "省エネ", "GX", "脱炭素",
-            "事業再構築", "IT導入", "DX", "工場", "生産", "技術開発",
+            "ものづくり",
+            "製造",
+            "設備投資",
+            "省エネ",
+            "GX",
+            "脱炭素",
+            "事業再構築",
+            "IT導入",
+            "DX",
+            "工場",
+            "生産",
+            "技術開発",
         ),
         "tax_types": ("法人税", "所得税"),
         "tsutatsu_prefixes": ("法基通",),
@@ -95,8 +118,17 @@ _PACK_DEFINITIONS: dict[str, dict[str, Any]] = {
         "jsic_major": "K",
         "jsic_name_ja": "不動産業、物品賃貸業",
         "name_keywords": (
-            "不動産", "空き家", "住宅", "賃貸", "改修", "流通",
-            "リフォーム", "リノベーション", "耐震", "省エネ住宅", "既存住宅",
+            "不動産",
+            "空き家",
+            "住宅",
+            "賃貸",
+            "改修",
+            "流通",
+            "リフォーム",
+            "リノベーション",
+            "耐震",
+            "省エネ住宅",
+            "既存住宅",
         ),
         "tax_types": ("所得税", "相続税", "法人税"),
         "tsutatsu_prefixes": ("所基通", "相基通"),
@@ -160,9 +192,7 @@ def _open_jpintel_ro() -> sqlite3.Connection | dict[str, Any]:
 
 
 def _today_iso() -> str:
-    return datetime.datetime.now(
-        datetime.timezone(datetime.timedelta(hours=9))
-    ).date().isoformat()
+    return datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).date().isoformat()
 
 
 # ---------------------------------------------------------------------------
@@ -200,9 +230,7 @@ def _fetch_industry_programs(
     keyword_clauses: list[str] = []
     params: list[Any] = []
     for kw in keywords:
-        keyword_clauses.append(
-            "(primary_name LIKE ? OR COALESCE(target_types_json,'') LIKE ?)"
-        )
+        keyword_clauses.append("(primary_name LIKE ? OR COALESCE(target_types_json,'') LIKE ?)")
         params.append(f"%{kw}%")
         params.append(f"%{kw}%")
 
@@ -211,19 +239,22 @@ def _fetch_industry_programs(
         pref_clause = " AND (prefecture = ? OR prefecture IS NULL OR prefecture = '')"
         params.append(prefecture)
 
-    sql = f"""
-        SELECT unified_id, primary_name, prefecture, authority_level, authority_name,
-               program_kind, official_url, source_url, amount_max_man_yen,
-               amount_min_man_yen, subsidy_rate, tier, application_window_json
-          FROM programs
-         WHERE tier IN ('S','A','B','C')
-           AND excluded = 0
-           AND ({' OR '.join(keyword_clauses)})
-           {pref_clause}
-         ORDER BY CASE tier WHEN 'S' THEN 0 WHEN 'A' THEN 1 WHEN 'B' THEN 2 ELSE 3 END,
-                  primary_name
-         LIMIT ?
-    """
+    # `keyword_clauses` is built from a hardcoded `_PACK_DEFINITIONS` dict (no
+    # user input). The f-string interpolation is bandit-safe.
+    keyword_or = " OR ".join(keyword_clauses)
+    sql = (  # nosec B608
+        "SELECT unified_id, primary_name, prefecture, authority_level, authority_name, "
+        "       program_kind, official_url, source_url, amount_max_man_yen, "
+        "       amount_min_man_yen, subsidy_rate, tier, application_window_json "
+        "  FROM programs "
+        " WHERE tier IN ('S','A','B','C') "
+        "   AND excluded = 0 "
+        f"  AND ({keyword_or}) "
+        f"  {pref_clause} "
+        " ORDER BY CASE tier WHEN 'S' THEN 0 WHEN 'A' THEN 1 WHEN 'B' THEN 2 ELSE 3 END, "
+        "          primary_name "
+        " LIMIT ? "
+    )
     params.append(int(limit))
 
     try:
@@ -236,20 +267,22 @@ def _fetch_industry_programs(
 
     out: list[dict[str, Any]] = []
     for r in rows:
-        out.append({
-            "unified_id": r["unified_id"],
-            "primary_name": r["primary_name"],
-            "prefecture": r["prefecture"],
-            "authority_level": r["authority_level"],
-            "authority_name": r["authority_name"],
-            "program_kind": r["program_kind"],
-            "official_url": r["official_url"],
-            "source_url": r["source_url"],
-            "amount_max_man_yen": r["amount_max_man_yen"],
-            "amount_min_man_yen": r["amount_min_man_yen"],
-            "subsidy_rate": r["subsidy_rate"],
-            "tier": r["tier"],
-        })
+        out.append(
+            {
+                "unified_id": r["unified_id"],
+                "primary_name": r["primary_name"],
+                "prefecture": r["prefecture"],
+                "authority_level": r["authority_level"],
+                "authority_name": r["authority_name"],
+                "program_kind": r["program_kind"],
+                "official_url": r["official_url"],
+                "source_url": r["source_url"],
+                "amount_max_man_yen": r["amount_max_man_yen"],
+                "amount_min_man_yen": r["amount_min_man_yen"],
+                "subsidy_rate": r["subsidy_rate"],
+                "tier": r["tier"],
+            }
+        )
     return out
 
 
@@ -290,15 +323,18 @@ def _fetch_industry_saiketsu(
     params.extend(tax_types)
     params.append(int(limit))
 
-    sql = f"""
-        SELECT volume_no, case_no, decision_date, tax_type,
-               title, decision_summary, source_url, license
-          FROM nta_saiketsu
-         WHERE ({' OR '.join(keyword_clauses)})
-           AND tax_type IN ({tax_placeholders})
-         ORDER BY decision_date DESC NULLS LAST, volume_no DESC, case_no
-         LIMIT ?
-    """
+    # `keyword_clauses` + `tax_placeholders` are built from hardcoded
+    # `_PACK_DEFINITIONS` values (no user input). The f-string is bandit-safe.
+    keyword_or = " OR ".join(keyword_clauses)
+    sql = (  # nosec B608
+        "SELECT volume_no, case_no, decision_date, tax_type, "
+        "       title, decision_summary, source_url, license "
+        "  FROM nta_saiketsu "
+        f" WHERE ({keyword_or}) "
+        f"   AND tax_type IN ({tax_placeholders}) "
+        " ORDER BY decision_date DESC NULLS LAST, volume_no DESC, case_no "
+        " LIMIT ? "
+    )
     try:
         rows = conn.execute(sql, params).fetchall()
     except sqlite3.Error as exc:
@@ -313,16 +349,18 @@ def _fetch_industry_saiketsu(
 
     out: list[dict[str, Any]] = []
     for r in rows:
-        out.append({
-            "volume_no": r["volume_no"],
-            "case_no": r["case_no"],
-            "decision_date": r["decision_date"],
-            "tax_type": r["tax_type"],
-            "title": r["title"],
-            "decision_summary": (r["decision_summary"] or "")[:300],
-            "source_url": r["source_url"],
-            "license": r["license"],
-        })
+        out.append(
+            {
+                "volume_no": r["volume_no"],
+                "case_no": r["case_no"],
+                "decision_date": r["decision_date"],
+                "tax_type": r["tax_type"],
+                "title": r["title"],
+                "decision_summary": (r["decision_summary"] or "")[:300],
+                "source_url": r["source_url"],
+                "license": r["license"],
+            }
+        )
     return out
 
 
@@ -356,23 +394,25 @@ def _fetch_industry_tsutatsu(
     # Keyword OR clause on title / body_excerpt
     keyword_clauses: list[str] = []
     for kw in keywords:
-        keyword_clauses.append(
-            "(COALESCE(title,'') LIKE ? OR COALESCE(body_excerpt,'') LIKE ?)"
-        )
+        keyword_clauses.append("(COALESCE(title,'') LIKE ? OR COALESCE(body_excerpt,'') LIKE ?)")
         params.append(f"%{kw}%")
         params.append(f"%{kw}%")
 
     params.append(int(limit))
 
-    sql = f"""
-        SELECT code, law_canonical_id, article_number, title, body_excerpt,
-               source_url, last_amended
-          FROM nta_tsutatsu_index
-         WHERE ({' OR '.join(prefix_clauses)})
-           AND ({' OR '.join(keyword_clauses)})
-         ORDER BY code
-         LIMIT ?
-    """
+    # `prefix_clauses` + `keyword_clauses` are built from hardcoded
+    # `_PACK_DEFINITIONS` values (no user input). The f-string is bandit-safe.
+    prefix_or = " OR ".join(prefix_clauses)
+    keyword_or = " OR ".join(keyword_clauses)
+    sql = (  # nosec B608
+        "SELECT code, law_canonical_id, article_number, title, body_excerpt, "
+        "       source_url, last_amended "
+        "  FROM nta_tsutatsu_index "
+        f" WHERE ({prefix_or}) "
+        f"   AND ({keyword_or}) "
+        " ORDER BY code "
+        " LIMIT ? "
+    )
     try:
         rows = conn.execute(sql, params).fetchall()
     except sqlite3.Error as exc:
@@ -381,15 +421,17 @@ def _fetch_industry_tsutatsu(
 
     out: list[dict[str, Any]] = []
     for r in rows:
-        out.append({
-            "code": r["code"],
-            "law_canonical_id": r["law_canonical_id"],
-            "article_number": r["article_number"],
-            "title": r["title"],
-            "body_excerpt": (r["body_excerpt"] or "")[:300],
-            "source_url": r["source_url"],
-            "last_amended": r["last_amended"],
-        })
+        out.append(
+            {
+                "code": r["code"],
+                "law_canonical_id": r["law_canonical_id"],
+                "article_number": r["article_number"],
+                "title": r["title"],
+                "body_excerpt": (r["body_excerpt"] or "")[:300],
+                "source_url": r["source_url"],
+                "last_amended": r["last_amended"],
+            }
+        )
     return out
 
 
@@ -562,8 +604,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ] = None,
     ) -> dict[str, Any]:
-        """[INDUSTRY-PACK] 建設業 (JSIC D) cohort pack: top 10 programs (建設・住宅・耐震・改修 fence) + up to 5 国税不服審判所 裁決事例 (法人税・消費税) + up to 3 通達 references (法基通・消基通). Single ¥3/req. NO LLM. §52/§47条の2 sensitive — information retrieval, not 税務助言. Compounds via _next_calls.
-        """
+        """[INDUSTRY-PACK] 建設業 (JSIC D) cohort pack: top 10 programs (建設・住宅・耐震・改修 fence) + up to 5 国税不服審判所 裁決事例 (法人税・消費税) + up to 3 通達 references (法基通・消基通). Single ¥3/req. NO LLM. §52/§47条の2 sensitive — information retrieval, not 税務助言. Compounds via _next_calls."""
         return _pack_construction_impl(
             prefecture=prefecture,
             employee_count=employee_count,
@@ -596,8 +637,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ] = None,
     ) -> dict[str, Any]:
-        """[INDUSTRY-PACK] 製造業 (JSIC E) cohort pack: top 10 programs (ものづくり・設備投資・省エネ・GX・事業再構築 fence) + up to 5 国税不服審判所 裁決事例 (法人税・所得税) + up to 3 通達 references (法基通). Single ¥3/req. NO LLM. §52/§47条の2 sensitive — information retrieval, not 税務助言.
-        """
+        """[INDUSTRY-PACK] 製造業 (JSIC E) cohort pack: top 10 programs (ものづくり・設備投資・省エネ・GX・事業再構築 fence) + up to 5 国税不服審判所 裁決事例 (法人税・所得税) + up to 3 通達 references (法基通). Single ¥3/req. NO LLM. §52/§47条の2 sensitive — information retrieval, not 税務助言."""
         return _pack_manufacturing_impl(
             prefecture=prefecture,
             employee_count=employee_count,
@@ -630,8 +670,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ] = None,
     ) -> dict[str, Any]:
-        """[INDUSTRY-PACK] 不動産業 (JSIC K) cohort pack: top 10 programs (不動産・空き家・住宅・賃貸 fence) + up to 5 国税不服審判所 裁決事例 (所得税・相続税・法人税) + up to 3 通達 references (所基通・相基通). Single ¥3/req. NO LLM. §52/§47条の2 sensitive — information retrieval, not 税務助言.
-        """
+        """[INDUSTRY-PACK] 不動産業 (JSIC K) cohort pack: top 10 programs (不動産・空き家・住宅・賃貸 fence) + up to 5 国税不服審判所 裁決事例 (所得税・相続税・法人税) + up to 3 通達 references (所基通・相基通). Single ¥3/req. NO LLM. §52/§47条の2 sensitive — information retrieval, not 税務助言."""
         return _pack_real_estate_impl(
             prefecture=prefecture,
             employee_count=employee_count,
@@ -654,11 +693,13 @@ if __name__ == "__main__":  # pragma: no cover
     ):
         print(f"\n=== pack_{label} ===")
         res = fn(prefecture="東京都", employee_count=30, revenue_yen=100_000_000)
-        pprint.pprint({
-            "pack_key": res.get("pack_key"),
-            "totals": res.get("totals"),
-            "first_program": (res.get("programs") or [{}])[0].get("primary_name"),
-            "first_saiketsu": (res.get("saiketsu_citations") or [{}])[0].get("title"),
-            "first_tsutatsu": (res.get("tsutatsu_references") or [{}])[0].get("code"),
-            "next_calls": len(res.get("_next_calls") or []),
-        })
+        pprint.pprint(
+            {
+                "pack_key": res.get("pack_key"),
+                "totals": res.get("totals"),
+                "first_program": (res.get("programs") or [{}])[0].get("primary_name"),
+                "first_saiketsu": (res.get("saiketsu_citations") or [{}])[0].get("title"),
+                "first_tsutatsu": (res.get("tsutatsu_references") or [{}])[0].get("code"),
+                "next_calls": len(res.get("_next_calls") or []),
+            }
+        )

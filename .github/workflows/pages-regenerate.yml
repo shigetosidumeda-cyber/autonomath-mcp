@@ -43,6 +43,7 @@ on:
       - "scripts/generate_industry_hub_pages.py"
       - "scripts/generate_industry_program_pages.py"
       - "scripts/generate_compare_pages.py"
+      - "scripts/generate_public_counts.py"
       - "scripts/generate_og_images.py"
       - "scripts/regen_llms_full.py"
       - "scripts/regen_llms_full_en.py"
@@ -160,6 +161,7 @@ jobs:
             --sitemap-index site/sitemap-index.xml
           python scripts/generate_compare_pages.py
           python scripts/generate_og_images.py --out-dir site/assets
+          python scripts/generate_public_counts.py
           python scripts/regen_llms_full.py --db data/jpintel.db --out site/llms-full.txt
           python scripts/regen_llms_full_en.py --db data/jpintel.db --out site/llms-full.en.txt
 
@@ -181,7 +183,6 @@ jobs:
           # The CF Pages 20k-file limit no longer requires the --exclude trick.
           rsync -a --delete \
             --exclude '_templates/' \
-            --exclude '_data/' \
             --exclude '*.src.js' \
             --exclude '*.src.css' \
             --exclude '*.map' \

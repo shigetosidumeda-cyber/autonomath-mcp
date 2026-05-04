@@ -46,9 +46,16 @@ INCLUDE_ROOTS = [
     REPO_ROOT / "site",
     REPO_ROOT / "docs",
     REPO_ROOT / "README.md",
+    REPO_ROOT / "CLAUDE.md",
+    REPO_ROOT / "pyproject.toml",
     REPO_ROOT / "server.json",
     REPO_ROOT / "mcp-server.json",
     REPO_ROOT / "dxt" / "manifest.json",
+    REPO_ROOT / "smithery.yaml",
+    REPO_ROOT / "scripts" / "distribution_manifest.yml",
+    REPO_ROOT / "scripts" / "mcp_registries_submission.json",
+    REPO_ROOT / "scripts" / "registry_submissions",
+    REPO_ROOT / "src" / "jpintel_mcp" / "email" / "templates",
 ]
 
 # Surfaces we deliberately do NOT verify.
@@ -71,11 +78,20 @@ EXCLUDE_PATH_FRAGMENTS = (
 # Patterns that look like a top-line tool count statement.
 TOOL_COUNT_PATTERNS = [
     re.compile(r"\b(\d{1,3}) MCP tools\b"),
+    re.compile(r"\bMCP tools \((\d{1,3})\)\b"),
     re.compile(r"\b(\d{1,3}) tools at default gates\b"),
+    re.compile(r"\b(\d{1,3}) at default gates\b"),
+    re.compile(r"\b(\d{1,3}) at standard configuration\b"),
     re.compile(r"\b(\d{1,3}) tools \(protocol "),
     re.compile(r"\b(\d{1,3}) tools, protocol "),
+    re.compile(r"\b(\d{1,3}) tool MCP\b"),
     re.compile(r"\b(\d{1,3})-tool MCP surface\b"),
     re.compile(r"\b(\d{1,3})-tool surface\b"),
+    re.compile(r"\b(\d{1,3})\s*個の\s*MCP\s*ツール\b"),
+    re.compile(r"\b(\d{1,3})\s*ツール\b"),
+    re.compile(r"MCP\s*ツール総数[^0-9]{0,80}(\d{1,3})"),
+    re.compile(r'data-fact=["\']mcp_tools_total["\'][^>]*>\s*(\d{1,3})'),
+    re.compile(r'"tool_count_default_gates":\s*(\d{1,3})'),
     re.compile(r'"tool_count":\s*(\d{1,3})'),
 ]
 
@@ -83,7 +99,7 @@ TOOL_COUNT_PATTERNS = [
 # considered a candidate. Sub-counts like "7 tools" describing a
 # subgroup are excluded by being out of this range; if you add a tool
 # group with 25-50 tools, refine this further.
-SUSPECT_RANGE = range(50, 100)
+SUSPECT_RANGE = range(50, 151)
 
 
 def runtime_tool_count() -> int:

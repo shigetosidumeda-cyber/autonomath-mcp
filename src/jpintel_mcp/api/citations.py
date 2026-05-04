@@ -25,7 +25,9 @@ glue — request validation, fan-out to the verifier, response assembly.
 from __future__ import annotations
 
 import logging
+import sqlite3
 import time
+from datetime import UTC, datetime
 from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, status
@@ -86,6 +88,19 @@ class CitationInput(BaseModel):
                 "Primary source URL. Fetched live (5s cap each, cached "
                 "1h). NULL = caller wants to verify against a body they "
                 "supply via source_text instead."
+            ),
+        ),
+    ] = None
+    entity_id: Annotated[
+        str | None,
+        Field(
+            default=None,
+            max_length=256,
+            description=(
+                "Optional jpcite entity_id this citation belongs to. When "
+                "entity_id and source_url are both present, the verdict is "
+                "best-effort persisted for future Evidence Packet citation "
+                "status joins."
             ),
         ),
     ] = None
@@ -247,6 +262,7 @@ def verify_citations(
     started = time.monotonic()
     verifier = CitationVerifier()
     outputs: list[VerificationOutput] = []
+    persist_rows: list[tuple[str, str, str, str | None, str | None, str, str]] = []
 
     for idx, c in enumerate(payload.citations):
         elapsed = time.monotonic() - started
@@ -307,18 +323,29 @@ def verify_citations(
             },
             source_text=body,
         )
-        outputs.append(
-            VerificationOutput(
-                citation_index=idx,
-                verification_status=verdict["verification_status"],
-                matched_form=verdict.get("matched_form"),
-                source_checksum=verdict.get("source_checksum"),
-                normalized_source_length=verdict.get("normalized_source_length", 0),
-                verification_basis=verification_basis,
-                source_url_fetched=source_url_fetched,
-                error=verdict.get("error"),
-            )
+        output = VerificationOutput(
+            citation_index=idx,
+            verification_status=verdict["verification_status"],
+            matched_form=verdict.get("matched_form"),
+            source_checksum=verdict.get("source_checksum"),
+            normalized_source_length=verdict.get("normalized_source_length", 0),
+            verification_basis=verification_basis,
+            source_url_fetched=source_url_fetched,
+            error=verdict.get("error"),
         )
+        outputs.append(output)
+        if c.entity_id and c.source_url:
+            persist_rows.append(
+                (
+                    c.entity_id,
+                    c.source_url,
+                    output.verification_status,
+                    output.matched_form,
+                    output.source_checksum,
+                    datetime.now(UTC).isoformat(timespec="seconds"),
+                    output.verification_basis,
+                )
+            )
 
     verified = sum(1 for o in outputs if o.verification_status == "verified")
     inferred = sum(1 for o in outputs if o.verification_status == "inferred")
@@ -330,6 +357,22 @@ def verify_citations(
         and o.verification_status in {"verified", "inferred"}
     )
     unknown = sum(1 for o in outputs if o.verification_status == "unknown")
+
+    if persist_rows:
+        try:
+            conn.executemany(
+                """
+                INSERT INTO citation_verification(
+                    entity_id, source_url, verification_status, matched_form,
+                    source_checksum, verified_at, verification_basis
+                )
+                VALUES (?,?,?,?,?,?,?)
+                """,
+                persist_rows,
+            )
+            conn.commit()
+        except sqlite3.Error:
+            logger.warning("citation verification persistence skipped", exc_info=True)
 
     # Bill ONE unit per call (the verifier work, not per citation). Mirrors
     # the §28.2 ``billable_units`` envelope. Deferred via BackgroundTasks

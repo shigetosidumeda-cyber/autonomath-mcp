@@ -9,7 +9,7 @@ jpcite のトライアルにご登録ありがとうございます。API キー
 - 有効期間: {{duration_days}} 日間 (失効: {{expires_at}})
 - リクエスト上限: {{request_cap}} 件
 - カード未登録 — 想定外の請求は発生しません
-- 93 MCP tools / REST API すべて利用可能
+- 96 MCP tools / REST API すべて利用可能
 
 ---
 

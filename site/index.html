@@ -71,7 +71,7 @@
     "申請可否を機械判定する排他・前提ルール 181 本",
     "Evidence Packet: 出典 URL、取得時刻、データスナップショット ID、ライセンス、未取得領域 (known gaps) を LLM 入力向けにまとめたパケット",
     "呼び出し元が比較基準トークン数を指定すると、返却パケットとの差分から入力文脈の削減率を返します (外部 LLM の請求額削減は保証しません)",
-    "MCP プロトコル 2025-06-18 対応、 93 ツールを Claude Desktop / Cursor から直接呼び出し可能",
+    "MCP プロトコル 2025-06-18 対応、 96 ツールを Claude Desktop / Cursor から直接呼び出し可能",
     "日本語の高速全文検索",
     "主要公開レコードの多くに一次資料 URL と取得時刻を付与し、省庁・自治体・公庫の公式ページに直リンク"
   ]
@@ -209,7 +209,7 @@
     {
       "@type": "Product",
       "name": "jpcite API + MCP",
-      "description": "93 MCP ツール + REST API。AI 開発者向け。stdio 接続、SDK 不要。",
+      "description": "96 MCP ツール + REST API。AI 開発者向け。stdio 接続、SDK 不要。",
       "brand": {"@type": "Brand", "name": "jpcite"},
       "url": "https://jpcite.com/docs/getting-started/",
       "offers": {"@type": "Offer", "url": "https://jpcite.com/pricing.html", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"}
@@ -466,7 +466,7 @@
  <article class="card" aria-labelledby="pillar-api">
  <h3 id="pillar-api">API + MCP</h3>
  <p class="card-lead">AI 開発者 / 大規模 RAG 用途</p>
- <p><span data-fact="mcp_tools_total" data-stat-key="mcp_tools_total">93</span> MCP ツール を AI から直接呼び出し。回答生成前に一次資料 URL 付き Evidence Packet を先読みできます。</p>
+ <p><span data-fact="mcp_tools_total" data-stat-key="mcp_tools_total">96</span> MCP ツール を AI から直接呼び出し。回答生成前に一次資料 URL 付き Evidence Packet を先読みできます。</p>
  <ul class="card-list">
  <li>¥<span data-fact="price_per_req" data-stat-key="price_per_req">3</span>/リクエスト 税別 (税込 ¥<span data-fact="price_per_req_inc_tax" data-stat-key="price_per_req_inc_tax">3.30</span>)</li>
  <li>匿名 <span data-fact="anonymous_quota_per_day" data-stat-key="anonymous_quota_per_day">3</span> リクエスト/日 (IP 単位) 無料</li>
@@ -643,10 +643,10 @@
 
  <article class="card audience-card" aria-labelledby="aud-dev" style="background:var(--bg-alt);border-color:var(--accent);">
  <h3 id="aud-dev">AI 開発者 (横断利用)</h3>
- <p class="card-lead audience-context">REST + MCP、 93 機能、 SDK 不要</p>
+ <p class="card-lead audience-context">REST + MCP、 96 機能、 SDK 不要</p>
  <p class="audience-pitch">上記すべての利用者層を、 1 つのサーバーから呼べます。 MCP プロトコル準拠、 uvx 1 行で起動。 Evidence Packet で事前に根拠を渡し、ヒット率・追加検索回数・トークン量への影響を自社ベンチマークで測定できます。</p>
  <ul class="card-list">
- <li>AI から呼べる機能 <span data-fact="mcp_tools_total" data-stat-key="mcp_tools_total">93</span> 個 / REST 経路 194 本</li>
+ <li>AI から呼べる機能 <span data-fact="mcp_tools_total" data-stat-key="mcp_tools_total">96</span> 個 / REST 経路 194 本</li>
  <li>uvx 1 行で起動 (SDK 不要)</li>
  <li>無料 3 リクエスト/日で動作確認 → 商用は ¥3/リクエスト 完全従量</li>
  </ul>
@@ -834,7 +834,7 @@
  <article class="card">
  <h3>(a) 複数 DB を 1 コール で統合</h3>
  <p class="card-lead">補助金 11,684 + 法令 9,484 + 税制 50 + 法人 167K + 行政処分 1,185</p>
- <p>補助金 11,684 件・法令メタデータ 9,484 件 (本文 154 件)・税制ルールセット 50 件・国税庁適格事業者 13,801 件 (PDL v1.0 差分、月次フル取り込みは順次)・行政処分 1,185 件・判例 2,065 件・採択事例 2,286 件・融資 108 件 (担保 / 個人保証人 / 第三者保証人 三軸分解) を一つの API で横断検索。 関係抽出データベース 50 万件超エンティティ / 600 万件超ファクト / 17 万件超リレーションも 93 MCP ツールから呼び出せます。</p>
+ <p>補助金 11,684 件・法令メタデータ 9,484 件 (本文 154 件)・税制ルールセット 50 件・国税庁適格事業者 13,801 件 (PDL v1.0 差分、月次フル取り込みは順次)・行政処分 1,185 件・判例 2,065 件・採択事例 2,286 件・融資 108 件 (担保 / 個人保証人 / 第三者保証人 三軸分解) を一つの API で横断検索。 関係抽出データベース 50 万件超エンティティ / 600 万件超ファクト / 17 万件超リレーションも 96 MCP ツールから呼び出せます。</p>
  </article>
 
  <article class="card">
@@ -858,7 +858,7 @@
  <article class="card">
  <h3>横断連結を 1 リクエストで</h3>
  <p class="card-lead">制度 → 法令 → 判例 → 行政処分 → 適格事業者</p>
- <p><code>trace_program_to_law</code>・<code>combined_compliance_check</code>・<code>search_tax_incentives</code>・<code>related_programs</code> など 93 MCP ツールで横断解決。 補助金から関連法令・通達・裁決事例・処分歴・登録番号を 1 コールで連結します。</p>
+ <p><code>trace_program_to_law</code>・<code>combined_compliance_check</code>・<code>search_tax_incentives</code>・<code>related_programs</code> など 96 MCP ツールで横断解決。 補助金から関連法令・通達・裁決事例・処分歴・登録番号を 1 コールで連結します。</p>
  </article>
 
  <article class="card">

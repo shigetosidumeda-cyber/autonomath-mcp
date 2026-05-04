@@ -156,7 +156,7 @@
  </nav>
 
  <h1>Security Overview — Bookyou株式会社 (jpcite)</h1>
- <p class="lead">jpcite (運営: Bookyou株式会社、適格請求書発行事業者番号 <code>T8010001213708</code>) の情報セキュリティ posture を外部公開向けに集約しました。 6 層 defense / 暗号化 / アクセス制御 / 副処理者 5 社 / DR / dependency audit / 脆弱性開示プロセス / SOC 2 alternative の自己宣言を含みます。 詳細な脆弱性開示は <a href="/security/policy">/security/policy</a> + <a href="/.well-known/security.txt">/.well-known/security.txt</a> (RFC 9116) を参照してください。</p>
+ <p class="lead">jpcite (運営: Bookyou株式会社、適格請求書発行事業者番号 <code>T8010001213708</code>) の情報セキュリティ posture を外部公開向けに集約しました。 6 層 defense / 暗号化 / アクセス制御 / 副処理者 5 社 / DR / dependency audit / 脆弱性開示プロセス / SOC 2 alternative の自己宣言を含みます。 詳細な脆弱性開示は <a href="/security/policy.html">/security/policy.html</a> + <a href="/.well-known/security.txt">/.well-known/security.txt</a> (RFC 9116) を参照してください。</p>
 
  <h2 id="layers">1. Defense layers (6 層)</h2>
  <p>jpcite は外側の Cloudflare WAF から内側の Stripe metered billing まで、6 層の独立した防御層を持ちます。 上位層が突破されても下位層で被害を限定する設計です。</p>
@@ -219,7 +219,7 @@
  <li><strong>Ack window</strong>: 報告から 72 時間以内に一次返信 (JST 営業日)</li>
  <li><strong>Fix target</strong>: server-side は 14 日以内、client-side は次回 PyPI release で対応</li>
  <li><strong>Disclosure window</strong>: ack 後 90 日。 90 日経過時点で未修正かつ延長要請なしの場合、公開可</li>
- <li><strong>Safe harbour</strong>: 善意・最小データ・無破壊・非公開維持の条件下で法的措置を取らない (詳細: <a href="/security/policy">/security/policy</a>)</li>
+ <li><strong>Safe harbour</strong>: 善意・最小データ・無破壊・非公開維持の条件下で法的措置を取らない (詳細: <a href="/security/policy.html">/security/policy.html</a>)</li>
  <li><strong>Bug bounty</strong>: 金銭報酬は提供しない (Solo ops)。 release notes + 本 page で credit (本人同意あり)</li>
  </ul>
 
@@ -263,7 +263,7 @@
  <li><strong>連絡先</strong>: <a href="mailto:info@bookyou.net">info@bookyou.net</a> (件名先頭に <code>[security]</code> を付すとセキュリティ報告として優先処理)</li>
  </ul>
 
- <p class="sec-foot">本 page は外部公開向けの security overview です。 内部 operator 専用の詳細 (具体的 secret 管理 procedure、incident war room 手順、boot invariant 完全リスト) は <code>docs/security_posture.md</code> (operator-only) を別途管理しています。 関連 page: <a href="/trust/purchasing.html">法人購買 1-screen</a> · <a href="/security/policy">脆弱性開示ポリシー</a> · <a href="/.well-known/security.txt">security.txt (RFC 9116)</a> · <a href="/.well-known/trust.json">trust.json (machine-readable)</a> · <a href="/legal-fence.html">法令フェンス</a></p>
+ <p class="sec-foot">本 page は外部公開向けの security overview です。 内部 operator 専用の詳細 (具体的 secret 管理 procedure、incident war room 手順、boot invariant 完全リスト) は <code>docs/security_posture.md</code> (operator-only) を別途管理しています。 関連 page: <a href="/trust/purchasing.html">法人購買 1-screen</a> · <a href="/security/policy.html">脆弱性開示ポリシー</a> · <a href="/.well-known/security.txt">security.txt (RFC 9116)</a> · <a href="/.well-known/trust.json">trust.json (machine-readable)</a> · <a href="/legal-fence.html">法令フェンス</a></p>
 
  </div>
 </main>

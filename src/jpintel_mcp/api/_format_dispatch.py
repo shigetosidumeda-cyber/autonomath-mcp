@@ -41,6 +41,12 @@ from typing import TYPE_CHECKING, Any, Literal
 from fastapi import HTTPException, status
 from fastapi.responses import JSONResponse
 
+from jpintel_mcp.api._license_gate import (
+    LicenseGateError,
+    annotate_attribution,
+    assert_no_blocked,
+)
+
 if TYPE_CHECKING:
     from starlette.responses import Response
 
@@ -180,10 +186,10 @@ def _default_meta(meta: dict[str, Any] | None) -> dict[str, Any]:
 
 def render(
     results: list[Any] | dict[str, Any],
-    format: str | None,
+    format_: str | None,
     meta: dict[str, Any] | None = None,
 ) -> Response:
-    """Render ``results`` in the chosen ``format`` and return a Response.
+    """Render ``results`` in the chosen ``format_`` and return a Response.
 
     ``results`` accepts either:
       - a flat ``list[Row]`` (Row = dict | pydantic model), OR
@@ -191,19 +197,19 @@ def render(
         we lift ``results`` and merge the remaining envelope into ``meta``
         so the renderer still sees the count / pagination fields.
 
-    ``format`` of ``None`` or ``"json"`` returns the original JSON envelope
+    ``format_`` of ``None`` or ``"json"`` returns the original JSON envelope
     unchanged so existing JSON consumers are untouched.
 
     Unknown formats raise 400 — silent fallthrough to JSON would mask the
     typo and the user would never get the expected file.
     """
-    fmt = (format or "json").lower()
+    fmt = (format_ or "json").lower()
 
     if fmt not in SUPPORTED_FORMATS:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=(
-                f"unknown format '{format}'. Supported: "
+                f"unknown format '{format_}'. Supported: "
                 f"{', '.join(SUPPORTED_FORMATS)}"
             ),
         )
@@ -248,6 +254,15 @@ def render(
                 meta_out["corpus_checksum"]
             )
         return JSONResponse(content=body, headers=json_headers)
+
+    try:
+        assert_no_blocked(rows)
+    except LicenseGateError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=str(exc),
+        ) from exc
+    rows = [annotate_attribution(row) for row in rows]
 
     # Lazy imports — keeps the cold path light when a request stays JSON
     # (the openpyxl / python-docx / jinja2 stacks are non-trivial).

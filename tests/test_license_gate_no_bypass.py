@@ -325,3 +325,40 @@ def test_scanner_self_check_known_export_path_is_wired():
         "self-check: ma_dd._build_audit_bundle_zip was renamed; update "
         "this scanner self-check or restore the function name."
     )
+
+
+def test_format_dispatch_blocks_nonredistributable_rows():
+    """Shared CSV/XLSX/MD/etc dispatcher must fail closed on unknown licenses."""
+    from fastapi import HTTPException
+
+    from jpintel_mcp.api._format_dispatch import render
+
+    with pytest.raises(HTTPException) as excinfo:
+        render(
+            [{"name": "blocked", "license": "unknown", "source_url": "https://example.com"}],
+            "csv",
+        )
+
+    assert excinfo.value.status_code == 403
+    assert "license_gate" in str(excinfo.value.detail)
+
+
+def test_format_dispatch_allows_redistributable_rows():
+    """Allowed licenses pass through and receive attribution before rendering."""
+    from jpintel_mcp.api._format_dispatch import render
+
+    resp = render(
+        [
+            {
+                "name": "allowed",
+                "license": "gov_standard_v2.0",
+                "source_url": "https://www.meti.go.jp/example",
+                "fetched_at": "2026-05-04T00:00:00",
+            }
+        ],
+        "csv",
+    )
+
+    body = resp.body.decode("utf-8-sig")
+    assert "allowed" in body
+    assert "_attribution" in body

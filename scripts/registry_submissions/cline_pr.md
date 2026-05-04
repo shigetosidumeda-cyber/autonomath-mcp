@@ -34,7 +34,7 @@ Locate the marketplace index file (typically `mcps.json`, `servers.json`, or `in
 {
   "name": "autonomath-mcp",
   "displayName": "AutonoMath — 日本の制度 MCP",
-  "description": "Search Japanese institutional data: 11,684 subsidies + 154 laws full-text + 9,484 law catalog stubs + 2,065 court decisions + 50 tax rulesets + 13,801 invoice registrants + 2,286 adoption cases + 1,185 enforcement records. 93 MCP tools at default gates (4 additional tools gated off pending fix). Primary-source URLs on major public rows.",
+  "description": "Search Japanese institutional data: 11,684 subsidies + 154 laws full-text + 9,484 law catalog stubs + 2,065 court decisions + 50 tax rulesets + 13,801 invoice registrants + 2,286 adoption cases + 1,185 enforcement records. 96 MCP tools at default gates (4 additional tools gated off pending fix). Primary-source URLs on major public rows.",
   "repository": "https://github.com/shigetosidumeda-cyber/autonomath-mcp",
   "homepage": "https://jpcite.com",
   "license": "MIT",
@@ -95,7 +95,7 @@ npx ajv-cli validate -s schema.json -d <index-file>
 
 ```bash
 git add <index-file>
-git commit -m "Add AutonoMath: 93-tool MCP for Japanese institutional data"
+git commit -m "Add AutonoMath: 96-tool MCP for Japanese institutional data"
 git push -u origin add/autonomath-mcp
 ```
 
@@ -104,7 +104,7 @@ git push -u origin add/autonomath-mcp
 ### PR title
 
 ```
-Add AutonoMath: 93-tool MCP for Japanese institutional data (subsidies / laws / tax / court / invoice)
+Add AutonoMath: 96-tool MCP for Japanese institutional data (subsidies / laws / tax / court / invoice)
 ```
 
 ### PR body
@@ -133,7 +133,7 @@ A single-server entry for **AutonoMath** (`autonomath-mcp` on PyPI), an MCP serv
 
 ## Tools
 
-- **93 tools at default gates** (`tools/list` runtime count, AUTONOMATH_ENABLED=1)
+- **96 tools at default gates** (`tools/list` runtime count, AUTONOMATH_ENABLED=1)
   - 39 core tools (programs / case studies / loans / enforcement / laws / court / bids / tax / invoice + 7 one-shot discovery + cross-dataset glue)
   - 50 autonomath tools at runtime (V1 + 4 V4 universal annotation/validation/provenance + Phase A static/example/health + lifecycle/abstract/prerequisite/graph_traverse/rule_engine)
 - **4 additional tools are intentionally gated OFF** pending fix (smoke test 2026-04-29 found them broken):

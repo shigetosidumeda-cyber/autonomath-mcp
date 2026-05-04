@@ -46,7 +46,7 @@ add(SLUG, NAME_JA, NAME_EN, URL, "API access",
     "API は法人向け契約で別途提供 (公開価格なし) — 2026-04 月時点で公開ページに API/MCP 仕様の記載なし。",
     "")
 add(SLUG, NAME_JA, NAME_EN, URL, "MCP support",
-    "MCP サーバー (autonomath-mcp PyPI 互換) + 手動設定 / DXT bundle。93 tools。",
+    "MCP サーバー (autonomath-mcp PyPI 互換) + 手動設定 / DXT bundle。96 tools。",
     "公開情報なし。", "")
 add(SLUG, NAME_JA, NAME_EN, URL, "Pricing model",
     "完全従量 ¥3/req 税別 (税込 ¥3.30)、最低料金/契約期間/Seat 課金なし。匿名 3 req/日/IP 無料。",
@@ -102,7 +102,7 @@ add(SLUG, NAME_JA, NAME_EN, URL, "API access",
     "REST + MCP (OpenAPI 3.1)。匿名 3 req/日/IP 無料。",
     "tsr-van2 等の法人向け情報サービスを提供 — Web/専用回線。API/MCP の公開仕様は公開情報なし。", "")
 add(SLUG, NAME_JA, NAME_EN, URL, "MCP support",
-    "MCP サーバー、93 tools。", "公開情報なし。", "")
+    "MCP サーバー、96 tools。", "公開情報なし。", "")
 add(SLUG, NAME_JA, NAME_EN, URL, "Pricing model",
     "¥3/req 完全従量 (税込 ¥3.30)。",
     "個別見積 (代理店経由が中心、公開価格表は無し)。", "")
@@ -151,7 +151,7 @@ add(SLUG, NAME_JA, NAME_EN, URL, "API access",
     "<strong>REST API あり</strong> (申請ベース、無料、利用規約あり) — 当社も内部で取込。当社の独自性は MCP / 制度 DB / 一次資料連結で、法人台帳機能は概ね同等。",
     "gBizINFO は METI 公式の良質な公開 API。当社の corporate_entity の主要源。")
 add(SLUG, NAME_JA, NAME_EN, URL, "MCP support",
-    "93 tools (protocol 2025-06-18)。", "公開情報なし。", "")
+    "96 tools (protocol 2025-06-18)。", "公開情報なし。", "")
 add(SLUG, NAME_JA, NAME_EN, URL, "Pricing model",
     "¥3/req 完全従量 (税込 ¥3.30)。",
     "<strong>完全無料</strong> (政府公式)。", "")
@@ -199,7 +199,7 @@ add(SLUG, NAME_JA, NAME_EN, URL, "API access",
     "REST + MCP。11,684 制度を横断検索。",
     "検索 UI のみ。<strong>API 公開なし</strong> (2026-04 時点公開情報)。", "")
 add(SLUG, NAME_JA, NAME_EN, URL, "MCP support",
-    "93 tools。", "公開情報なし。", "")
+    "96 tools。", "公開情報なし。", "")
 add(SLUG, NAME_JA, NAME_EN, URL, "Pricing model",
     "¥3/req 完全従量。", "<strong>完全無料</strong> (政府公式)。", "")
 add(SLUG, NAME_JA, NAME_EN, URL, "JP corporate count",
@@ -244,7 +244,7 @@ add(SLUG, NAME_JA, NAME_EN, URL, "API access",
     "REST + MCP。",
     "検索 UI のみ。<strong>API 公開なし</strong> (2026-04 時点公開情報)。", "")
 add(SLUG, NAME_JA, NAME_EN, URL, "MCP support",
-    "93 tools。", "公開情報なし。", "")
+    "96 tools。", "公開情報なし。", "")
 add(SLUG, NAME_JA, NAME_EN, URL, "Pricing model",
     "¥3/req 完全従量。", "<strong>完全無料</strong> (政府公式)。", "")
 add(SLUG, NAME_JA, NAME_EN, URL, "JP corporate count",
@@ -293,7 +293,7 @@ add(SLUG, NAME_JA, NAME_EN, URL, "API access",
     "会計・経費・人事 SaaS の API (顧客向け、公開仕様は限定的)。fintech aggregator として銀行 / カード / 決済の連携 API はあるが、制度 DB API は提供せず。",
     "スコープが異なる (fintech 連携 vs 制度 DB)。")
 add(SLUG, NAME_JA, NAME_EN, URL, "MCP support",
-    "93 tools。", "公開情報なし。", "")
+    "96 tools。", "公開情報なし。", "")
 add(SLUG, NAME_JA, NAME_EN, URL, "Pricing model",
     "¥3/req 完全従量。",
     "SaaS Seat 課金 (会計プラン月額数千円〜)。", "")
@@ -343,7 +343,7 @@ add(SLUG, NAME_JA, NAME_EN, URL, "API access",
     "REST + MCP。",
     "公開情報なし (freee アカウント連携前提、外部 API は提供せず)。", "")
 add(SLUG, NAME_JA, NAME_EN, URL, "MCP support",
-    "93 tools。", "公開情報なし。", "")
+    "96 tools。", "公開情報なし。", "")
 add(SLUG, NAME_JA, NAME_EN, URL, "Pricing model",
     "¥3/req 完全従量。",
     "freee 顧客向けの追加機能 (公開価格情報非公表)。", "")
@@ -392,7 +392,7 @@ add(SLUG, NAME_JA, NAME_EN, URL, "API access",
     "REST + MCP。",
     "有料 SaaS の Web UI。<strong>API/MCP の公開仕様は公開情報なし</strong> (2026-04 時点)。", "")
 add(SLUG, NAME_JA, NAME_EN, URL, "MCP support",
-    "93 tools。", "公開情報なし。", "")
+    "96 tools。", "公開情報なし。", "")
 add(SLUG, NAME_JA, NAME_EN, URL, "Pricing model",
     "¥3/req 完全従量 (税込 ¥3.30)。",
     "Seat 課金 (公開価格情報なし、要問合せ)。", "")
@@ -435,7 +435,7 @@ add(SLUG, NAME_JA, NAME_EN, URL, "API access",
     "REST + MCP (制度 + 法人 + 適格請求書 + 法令 + 判例 横断)。",
     "<strong>Web API + bulk download</strong> (公式 Web-API、月次 bulk CSV)。当社も内部で取込。", "")
 add(SLUG, NAME_JA, NAME_EN, URL, "MCP support",
-    "93 tools。", "公開情報なし。", "")
+    "96 tools。", "公開情報なし。", "")
 add(SLUG, NAME_JA, NAME_EN, URL, "Pricing model",
     "¥3/req 完全従量。",
     "<strong>完全無料</strong> (国税庁公式)。", "")
@@ -481,7 +481,7 @@ add(SLUG, NAME_JA, NAME_EN, URL, "API access",
     "<strong>REST + MCP を統一インターフェースで提供</strong>。OpenAPI 3.1。",
     "自分で Web スクレイピング + 正規化 + 重複排除 + 失効監視を実装。", "")
 add(SLUG, NAME_JA, NAME_EN, URL, "MCP support",
-    "93 tools。",
+    "96 tools。",
     "自分で実装する場合は MCP サーバーも自作。", "")
 add(SLUG, NAME_JA, NAME_EN, URL, "Pricing model",
     "¥3/req 完全従量 (税込 ¥3.30)。",

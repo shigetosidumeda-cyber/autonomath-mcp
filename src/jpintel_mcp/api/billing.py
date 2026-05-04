@@ -860,6 +860,14 @@ def issue_from_checkout(
     if not secrets.compare_digest(expected_state_hash, _checkout_state_hash(submitted_state)):
         raise HTTPException(status.HTTP_403_FORBIDDEN, "checkout state mismatch")
 
+    if getattr(session, "status", None) != "complete":
+        raise HTTPException(status.HTTP_402_PAYMENT_REQUIRED, "checkout session incomplete")
+    if getattr(session, "mode", None) != "subscription":
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "checkout session is not a subscription")
+    session_livemode = bool(getattr(session, "livemode", False))
+    if session_livemode != (settings.env == "prod"):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "checkout livemode mismatch")
+
     # Metered subs have no upfront charge → `no_payment_required`.
     # Non-metered flows would return "paid". Reject anything else so an
     # abandoned checkout cannot mint a key.
@@ -869,6 +877,13 @@ def issue_from_checkout(
     customer_id = session.customer
     sub_id = session.subscription
     sub = s.Subscription.retrieve(sub_id)
+    sub_dict = dict(sub) if not isinstance(sub, dict) else sub
+    sub_status = sub_dict.get("status")
+    if sub_status not in {"active", "trialing"}:
+        raise HTTPException(
+            status.HTTP_402_PAYMENT_REQUIRED,
+            f"subscription is not active (status={sub_status or 'unknown'})",
+        )
     price_id = sub["items"]["data"][0]["price"]["id"]
     tier = resolve_tier_from_price(price_id)
 

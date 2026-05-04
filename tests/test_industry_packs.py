@@ -93,6 +93,7 @@ def _restore_jpintel_db_path_after_module():
     # `settings` instance — they'd patch a stale binding.
     try:
         from jpintel_mcp.config import settings as _live_settings
+
         if _PRIOR_JPINTEL_DB_PATH is not None:
             _live_settings.db_path = Path(_PRIOR_JPINTEL_DB_PATH)
         else:
@@ -135,9 +136,17 @@ def _assert_envelope_shape(res: dict, expected_pack_key: str, expected_jsic: str
     assert isinstance(res, dict), f"{expected_pack_key}: result is not dict"
     # Top-level keys
     for key in (
-        "pack_key", "industry_label", "jsic_major", "input",
-        "programs", "saiketsu_citations", "tsutatsu_references",
-        "totals", "as_of_jst", "_disclaimer", "_next_calls",
+        "pack_key",
+        "industry_label",
+        "jsic_major",
+        "input",
+        "programs",
+        "saiketsu_citations",
+        "tsutatsu_references",
+        "totals",
+        "as_of_jst",
+        "_disclaimer",
+        "_next_calls",
     ):
         assert key in res, f"{expected_pack_key}: missing top-level key {key!r}"
 
@@ -201,13 +210,13 @@ def test_pack_construction_happy_path() -> None:
     _assert_envelope_shape(res, expected_pack_key="construction", expected_jsic="D")
 
     # Programs ≥ 5 (corpus has 36 construction programs per industries/D/index.html)
-    assert len(res["programs"]) >= 5, (
-        f"construction pack returned only {len(res['programs'])} programs, expected ≥5"
-    )
+    assert (
+        len(res["programs"]) >= 5
+    ), f"construction pack returned only {len(res['programs'])} programs, expected ≥5"
     # 通達 ≥ 1 (法基通 / 消基通 corpus is rich enough for this)
-    assert len(res["tsutatsu_references"]) >= 1, (
-        "construction pack returned 0 tsutatsu — corpus too thin or filter mis-configured"
-    )
+    assert (
+        len(res["tsutatsu_references"]) >= 1
+    ), "construction pack returned 0 tsutatsu — corpus too thin or filter mis-configured"
     # saiketsu_citations: thin construction corpus (~21 法人税/消費税 saiketsu),
     # so we cannot gate on count. Instead assert the field is a list (shape only).
     assert isinstance(res["saiketsu_citations"], list)
@@ -222,18 +231,16 @@ def test_pack_manufacturing_happy_path() -> None:
     _assert_envelope_shape(res, expected_pack_key="manufacturing", expected_jsic="E")
 
     # Programs ≥ 5 (corpus has 71 manufacturing programs per industries/E/)
-    assert len(res["programs"]) >= 5, (
-        f"manufacturing pack returned only {len(res['programs'])} programs, expected ≥5"
-    )
+    assert (
+        len(res["programs"]) >= 5
+    ), f"manufacturing pack returned only {len(res['programs'])} programs, expected ≥5"
     # 通達 ≥ 1
-    assert len(res["tsutatsu_references"]) >= 1, (
-        "manufacturing pack returned 0 tsutatsu"
-    )
+    assert len(res["tsutatsu_references"]) >= 1, "manufacturing pack returned 0 tsutatsu"
     # saiketsu ≥ 1 — manufacturing keywords (省エネ/事業再構築/設備) consistently
     # match the 法人税 saiketsu corpus.
-    assert len(res["saiketsu_citations"]) >= 1, (
-        "manufacturing pack returned 0 saiketsu — investigate keyword fence"
-    )
+    assert (
+        len(res["saiketsu_citations"]) >= 1
+    ), "manufacturing pack returned 0 saiketsu — investigate keyword fence"
 
 
 def test_pack_real_estate_happy_path() -> None:
@@ -247,17 +254,13 @@ def test_pack_real_estate_happy_path() -> None:
     # Programs ≥ 5 — note JSIC K corpus shows 9 in industries/K/, but the
     # name-keyword fence (住宅 / 空き家 / 不動産) overlaps with JSIC D corpus
     # (housing-related), giving ≥10 hits in practice.
-    assert len(res["programs"]) >= 5, (
-        f"real_estate pack returned only {len(res['programs'])} programs, expected ≥5"
-    )
+    assert (
+        len(res["programs"]) >= 5
+    ), f"real_estate pack returned only {len(res['programs'])} programs, expected ≥5"
     # 通達 ≥ 1 (所基通 + 相基通 corpus has 住宅借入金特別控除・不動産関連)
-    assert len(res["tsutatsu_references"]) >= 1, (
-        "real_estate pack returned 0 tsutatsu"
-    )
+    assert len(res["tsutatsu_references"]) >= 1, "real_estate pack returned 0 tsutatsu"
     # saiketsu ≥ 1 — 所得税・相続税 corpus is rich (54 rows combined).
-    assert len(res["saiketsu_citations"]) >= 1, (
-        "real_estate pack returned 0 saiketsu"
-    )
+    assert len(res["saiketsu_citations"]) >= 1, "real_estate pack returned 0 saiketsu"
 
 
 # ---------------------------------------------------------------------------
@@ -294,8 +297,12 @@ def test_program_rows_have_primary_fields() -> None:
     assert res["programs"], "no programs for 東京都 + manufacturing — corpus regression?"
     first = res["programs"][0]
     for key in (
-        "unified_id", "primary_name", "tier",
-        "authority_level", "program_kind", "source_url",
+        "unified_id",
+        "primary_name",
+        "tier",
+        "authority_level",
+        "program_kind",
+        "source_url",
     ):
         assert key in first, f"program row missing {key!r}: {first}"
 

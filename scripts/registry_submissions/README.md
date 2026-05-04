@@ -10,7 +10,7 @@ Drafted submission packets for the 7 MCP registries that require manual action (
 
 | Field | Value |
 |---|---|
-| Product | AutonoMath |
+| Product | jpcite |
 | Version | 0.3.2 |
 | PyPI package | `autonomath-mcp` |
 | Repo (pending creation) | https://github.com/shigetosidumeda-cyber/autonomath-mcp |
@@ -21,7 +21,7 @@ Drafted submission packets for the 7 MCP registries that require manual action (
 | MCP protocol | 2025-06-18 |
 | Transport | stdio |
 | Install | `uvx autonomath-mcp` (or `pip install autonomath-mcp`) |
-| Tool count | **93 at default gates** (4 additional gated off pending fix; 2 further behind `AUTONOMATH_36_KYOTEI_ENABLED`) |
+| Tool count | **96 at default gates** (3 additional gated off pending fix; 2 further behind `AUTONOMATH_36_KYOTEI_ENABLED`) |
 | Pricing | ¥3/req tax-exclusive (¥3.30 tax-inclusive, fully metered) · 3 req/day per IP free (anonymous, JST next-day reset) · no tier SKUs |
 | Operator | Bookyou株式会社 (T8010001213708) — 代表 梅田茂利 — info@bookyou.net |
 
@@ -85,7 +85,7 @@ After submit, watch wall-clock for review responses runs from 1 day (MCP Hunt) t
 1. **Repo public**: `gh repo view shigetosidumeda-cyber/autonomath-mcp --json visibility -q .visibility` returns `PUBLIC`. (Per launch readiness, repo creation is currently pending — every entry points at this URL.)
 2. **PyPI package live**: `pip install autonomath-mcp==0.3.2` succeeds.
 3. **MCP Official Registry entry live**: `mcp publish server.json` completed; PulseMCP / Glama auto-ingest will start propagating within ~24 h.
-4. **README.md authoritative numbers**: matches the canonical facts above (93 tools, 154 laws full-text, 9,484 stubs, 4,300 sourced compat pairs, ¥3/req tax-exclusive (¥3.30 tax-inclusive) metered).
+4. **README.md authoritative numbers**: matches the canonical facts above (96 tools, 154 laws full-text, 9,484 stubs, 4,300 sourced compat pairs, ¥3/req tax-exclusive (¥3.30 tax-inclusive) metered).
 5. **Disclaimer text matches the fence above** in README, /tos, /privacy, /tokushoho, /legal.
 6. **DXT bundle live**: `https://jpcite.com/downloads/autonomath-mcp.mcpb` returns 200.
 7. **Logos exist**:

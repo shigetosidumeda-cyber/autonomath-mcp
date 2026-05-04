@@ -2,72 +2,55 @@
 # Policy: allow public discovery crawlers and keep non-public paths out of indexes.
 
 # ------------------------------------------------------------------
-# Search engines (primary) — full allow
+# Search engines / AI crawlers / answer engines — explicit allow for
+# public discovery, with operational paths blocked in the same group.
+# Specific user-agent groups do not inherit the default group below, so
+# repeat the private-path rules here.
 # ------------------------------------------------------------------
 User-agent: Googlebot
-Allow: /
-Crawl-delay: 0
-
 User-agent: Googlebot-Image
-Allow: /
-
 User-agent: Bingbot
-Allow: /
-Crawl-delay: 0
-
 User-agent: DuckDuckBot
-Allow: /
-
-# ------------------------------------------------------------------
-# AI crawlers / answer engines — explicit allow for public pages.
-# ------------------------------------------------------------------
 User-agent: Google-Extended
-Allow: /
-
 User-agent: GPTBot
-Allow: /
-
 User-agent: ChatGPT-User
-Allow: /
-
 User-agent: OAI-SearchBot
-Allow: /
-
 User-agent: ClaudeBot
-Allow: /
-
 User-agent: Claude-User
-Allow: /
-
 User-agent: Claude-SearchBot
-Allow: /
-
 User-agent: anthropic-ai
-Allow: /
-
 User-agent: PerplexityBot
-Allow: /
-
 User-agent: CCBot
-Allow: /
-
 User-agent: Applebot
-Allow: /
-
 User-agent: Applebot-Extended
-Allow: /
-
 User-agent: Meta-ExternalAgent
-Allow: /
-
 User-agent: Amazonbot
-Allow: /
-
-# ------------------------------------------------------------------
-# AI crawlers / answer engines (continued).
-# ------------------------------------------------------------------
 User-agent: Bytespider
 Allow: /
+Allow: /en/
+Allow: /status/
+Allow: /llms.txt
+Allow: /llms.en.txt
+Allow: /llms-full.txt
+Allow: /llms-full.en.txt
+Allow: /facts.html
+Allow: /en/facts.html
+Allow: /openapi.json
+Allow: /openapi.agent.json
+Allow: /docs/openapi/v1.json
+Allow: /docs/openapi/agent.json
+Allow: /mcp-server.json
+Allow: /server.json
+Allow: /.well-known/
+Disallow: /admin/
+Disallow: /_internal/
+Disallow: /dashboard.html
+Disallow: /dashboard
+Disallow: /success.html
+Disallow: /success
+Disallow: /v1/admin/
+Disallow: /v1/billing/webhook
+Crawl-delay: 1
 
 # ------------------------------------------------------------------
 # Aggressive / low-value crawlers — block

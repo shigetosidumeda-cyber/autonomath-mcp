@@ -147,6 +147,53 @@ def test_migrate_is_idempotent(tmp_path: Path) -> None:
     assert n == first_count
 
 
+def test_target_db_jpintel_migration_skips_autonomath_db(tmp_path: Path) -> None:
+    db = tmp_path / "autonomath.db"
+    conn = sqlite3.connect(str(db))
+    try:
+        migrate._ensure_migrations_table(conn)
+        migrate._apply_one(
+            conn,
+            "999_target_jpintel.sql",
+            "-- target_db: jpintel\nCREATE TABLE jpintel_only_marker(id INTEGER);",
+            "test-checksum",
+        )
+        tables = {
+            r[0]
+            for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")
+        }
+        applied = {
+            r[0]
+            for r in conn.execute("SELECT id FROM schema_migrations")
+        }
+    finally:
+        conn.close()
+
+    assert "jpintel_only_marker" not in tables
+    assert "999_target_jpintel.sql" in applied
+
+
+def test_target_db_jpintel_migration_applies_to_jpintel_db(tmp_path: Path) -> None:
+    db = tmp_path / "jpintel.db"
+    conn = sqlite3.connect(str(db))
+    try:
+        migrate._ensure_migrations_table(conn)
+        migrate._apply_one(
+            conn,
+            "999_target_jpintel.sql",
+            "-- target_db: jpintel\nCREATE TABLE jpintel_only_marker(id INTEGER);",
+            "test-checksum",
+        )
+        tables = {
+            r[0]
+            for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")
+        }
+    finally:
+        conn.close()
+
+    assert "jpintel_only_marker" in tables
+
+
 def test_ingest_populates_lineage_fields(tmp_path: Path, monkeypatch) -> None:
     # Build a minimal Autonomath-shaped tree in tmp so the canonical ingest
     # has something to read without touching the real /Users/shigetoumeda/Autonomath.
