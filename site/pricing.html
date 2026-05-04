@@ -336,6 +336,136 @@
  </p>
  </section>
 
+ <section aria-labelledby="break-even-title" style="margin-top:56px;">
+ <h2 id="break-even-title" class="section-title">入力文脈 break-even calculator (参考値)</h2>
+ <p style="font-size:15px;line-height:1.7;margin:0 0 16px;color:var(--text-muted);max-width:780px;">
+ ソース PDF / トークン量 と 外部 LLM の 入力 token 単価 (¥/1M) を入力すると、
+ jpcite Evidence Packet で 削減見込みのある 入力 tokens、 jpcite 1 req コスト、
+ 入力文脈 break-even を ブラウザ内で 算定します。 fetch なし、 LLM 呼び出しなし。
+ <strong>外部 LLM の 出力 tokens / reasoning tokens / cache / provider tool / search / 為替</strong>
+ は本計算に含まれません — 入力文脈の参考比較のみです。
+ </p>
+ <form id="be-form" autocomplete="off" novalidate
+       style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;border:1px solid var(--border,#e5e7eb);border-radius:12px;padding:20px 22px;background:var(--bg,#fff);max-width:880px;margin:0 0 18px;">
+ <div>
+ <label for="be-pages" style="display:block;font-size:13px;font-weight:600;margin:0 0 6px;">ソース PDF ページ数</label>
+ <span style="display:block;font-size:12px;color:var(--text-muted);margin:0 0 6px;line-height:1.5;">片方だけ入力。 両方入れた場合 token 数を優先。</span>
+ <input id="be-pages" name="be-pages" type="number" min="0" step="1" value="30" inputmode="numeric"
+        style="width:100%;padding:10px 12px;font-size:16px;font-variant-numeric:tabular-nums;border:1px solid var(--border-strong,#d4d4d8);border-radius:6px;">
+ </div>
+ <div>
+ <label for="be-tokens" style="display:block;font-size:13px;font-weight:600;margin:0 0 6px;">またはソース token 数</label>
+ <span style="display:block;font-size:12px;color:var(--text-muted);margin:0 0 6px;line-height:1.5;">直接 token 数 (1 ページ ≒ 700 token 換算)</span>
+ <input id="be-tokens" name="be-tokens" type="number" min="0" step="100" value="" inputmode="numeric"
+        style="width:100%;padding:10px 12px;font-size:16px;font-variant-numeric:tabular-nums;border:1px solid var(--border-strong,#d4d4d8);border-radius:6px;">
+ </div>
+ <div>
+ <label for="be-input-price" style="display:block;font-size:13px;font-weight:600;margin:0 0 6px;">入力 token 単価 (¥/1M)</label>
+ <span style="display:block;font-size:12px;color:var(--text-muted);margin:0 0 6px;line-height:1.5;">外部 LLM の 入力 token 価格 (例 Claude Opus ≒ ¥2,250)</span>
+ <input id="be-input-price" name="be-input-price" type="number" min="0" step="1" value="300" inputmode="numeric"
+        style="width:100%;padding:10px 12px;font-size:16px;font-variant-numeric:tabular-nums;border:1px solid var(--border-strong,#d4d4d8);border-radius:6px;">
+ </div>
+ <div>
+ <label for="be-packet" style="display:block;font-size:13px;font-weight:600;margin:0 0 6px;">jpcite packet token (推定)</label>
+ <span style="display:block;font-size:12px;color:var(--text-muted);margin:0 0 6px;line-height:1.5;">precomputed query 中央値 ≒ 1,500 token</span>
+ <input id="be-packet" name="be-packet" type="number" min="0" step="100" value="1500" inputmode="numeric"
+        style="width:100%;padding:10px 12px;font-size:16px;font-variant-numeric:tabular-nums;border:1px solid var(--border-strong,#d4d4d8);border-radius:6px;">
+ </div>
+ </form>
+ <div id="be-output" aria-live="polite" aria-atomic="true"
+      style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;max-width:880px;margin:0 0 16px;">
+ <div style="border:1px solid var(--border,#e5e7eb);border-radius:12px;padding:16px 18px;background:var(--bg-alt,#fafaf9);">
+ <p style="font-size:12px;color:var(--text-muted);margin:0 0 4px;text-transform:uppercase;letter-spacing:0.05em;font-weight:600;">ソース token 推定</p>
+ <p id="be-source-tokens" style="font-size:22px;font-weight:700;margin:0;font-variant-numeric:tabular-nums;">—</p>
+ </div>
+ <div style="border:1px solid var(--border,#e5e7eb);border-radius:12px;padding:16px 18px;background:var(--bg-alt,#fafaf9);">
+ <p style="font-size:12px;color:var(--text-muted);margin:0 0 4px;text-transform:uppercase;letter-spacing:0.05em;font-weight:600;">削減見込み 入力 tokens</p>
+ <p id="be-avoided" style="font-size:22px;font-weight:700;margin:0;font-variant-numeric:tabular-nums;">—</p>
+ </div>
+ <div style="border:1px solid var(--border,#e5e7eb);border-radius:12px;padding:16px 18px;background:var(--bg-alt,#fafaf9);">
+ <p style="font-size:12px;color:var(--text-muted);margin:0 0 4px;text-transform:uppercase;letter-spacing:0.05em;font-weight:600;">jpcite 1 req コスト (税別)</p>
+ <p id="be-jpcite-cost" style="font-size:22px;font-weight:700;margin:0;font-variant-numeric:tabular-nums;">¥3.00</p>
+ </div>
+ <div style="border:1px solid var(--border,#e5e7eb);border-radius:12px;padding:16px 18px;background:var(--bg-alt,#fafaf9);">
+ <p style="font-size:12px;color:var(--text-muted);margin:0 0 4px;text-transform:uppercase;letter-spacing:0.05em;font-weight:600;">入力文脈 break-even</p>
+ <p id="be-status" style="font-size:18px;font-weight:700;margin:0;color:var(--text-muted);">—</p>
+ <p id="be-detail" style="font-size:12px;color:var(--text-muted);margin:6px 0 0;line-height:1.5;">入力に応じて更新</p>
+ </div>
+ </div>
+ <p style="font-size:12px;color:var(--text-muted);margin:0;line-height:1.7;max-width:880px;">
+ <strong>免責:</strong> 本計算は 入力文脈 (input tokens) のみの参考比較です。
+ 外部 LLM の token / search / cache / tool 料金、 出力 tokens、 reasoning tokens、 為替、
+ prompt scaffold、 cache hit rate、 provider 側 web search 課金は含まれません。
+ 削減効果はワークロード・モデル・プロンプト・キャッシュ状態で大きく変動します。
+ ベンチ手順は <a href="/docs/bench_methodology.md">bench methodology</a> をご参照ください。
+ </p>
+ <script>
+   (function() {
+     "use strict";
+     // Pure client-side break-even. NO fetch, NO LLM, NO network.
+     var TOKENS_PER_PAGE = 700; // industry rough median for 日本語 PDF text
+     var JPCITE_UNIT_PRICE_NET = 3; // ¥ tax-excluded (固定不変)
+     function $(id) { return document.getElementById(id); }
+     function num(el) {
+       var v = parseFloat((el && el.value) || "0");
+       if (!isFinite(v) || v < 0) return 0;
+       return v;
+     }
+     function fmtNum(n) {
+       return Math.round(n).toLocaleString("ja-JP");
+     }
+     function fmtYen(n) {
+       return "¥" + (Math.round(n * 100) / 100).toLocaleString("ja-JP",
+         {minimumFractionDigits: 2, maximumFractionDigits: 2});
+     }
+     function recompute() {
+       var pages       = num($("be-pages"));
+       var tokensInput = num($("be-tokens"));
+       var inputPrice  = num($("be-input-price")); // ¥/1M tokens
+       var packetTok   = num($("be-packet"));
+       var sourceTok   = tokensInput > 0 ? tokensInput : pages * TOKENS_PER_PAGE;
+       var avoided     = Math.max(0, sourceTok - packetTok);
+       var savings     = (avoided / 1000000) * inputPrice; // ¥
+       var jpciteCost  = JPCITE_UNIT_PRICE_NET; // 1 req
+       var net         = savings - jpciteCost;
+       $("be-source-tokens").textContent = fmtNum(sourceTok) + " token";
+       $("be-avoided").textContent       = fmtNum(avoided) + " token";
+       $("be-jpcite-cost").textContent   = "¥" + JPCITE_UNIT_PRICE_NET.toFixed(2);
+       var statusEl = $("be-status");
+       var detailEl = $("be-detail");
+       if (sourceTok <= 0 || inputPrice <= 0) {
+         statusEl.textContent = "入力待ち";
+         statusEl.style.color = "var(--text-muted)";
+         detailEl.textContent = "ソース量 + 入力 token 単価 を入力してください。";
+         return;
+       }
+       if (net >= 0) {
+         statusEl.textContent = "達成見込み";
+         statusEl.style.color = "var(--accent, #166534)";
+         detailEl.innerHTML =
+           "入力文脈 削減見込み <strong>" + fmtYen(savings) + "</strong> / req &gt; jpcite ¥3.00 (税別)。 " +
+           "差分 <strong>" + fmtYen(net) + "</strong> は 入力 tokens のみの参考比較です。";
+       } else {
+         statusEl.textContent = "未達 (参考)";
+         statusEl.style.color = "var(--text)";
+         detailEl.innerHTML =
+           "入力文脈 削減見込み <strong>" + fmtYen(savings) + "</strong> / req &lt; jpcite ¥3.00 (税別)。 " +
+           "差分 <strong>" + fmtYen(net) + "</strong>。 出典 / 監査 / 鮮度 等の 非トークン価値は別途。";
+       }
+     }
+     document.addEventListener("DOMContentLoaded", function() {
+       ["be-pages","be-tokens","be-input-price","be-packet"].forEach(function(id) {
+         var el = $(id);
+         if (!el) return;
+         el.addEventListener("input", recompute);
+         el.addEventListener("change", recompute);
+       });
+       recompute();
+     });
+   })();
+ </script>
+ </section>
+
  <section style="margin-top:56px;">
  <div class="pricing-grid" style="grid-template-columns:repeat(2,1fr);">
 

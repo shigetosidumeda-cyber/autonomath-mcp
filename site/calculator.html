@@ -394,9 +394,9 @@
  <td>国税庁 消費税法 §29 標準税率</td>
  </tr>
  <tr>
- <th scope="row">無料枠</th>
- <td class="num">3 リクエスト/日/IP</td>
- <td>匿名利用 (JST 翌日 00:00 リセット) — 認証ユーザーは控除しない既定</td>
+ <th scope="row">匿名 無料枠 (paid 見積りからは subtract しません)</th>
+ <td class="num">3 リクエスト/日/IP (≒ 90 req/月)</td>
+ <td>匿名利用専用 (JST 翌日 00:00 リセット)。 認証 API キー利用時は別 surface のため、 paid monthly estimate からは差し引きません — backend <a href="/docs/api-reference.md">/v1/cost/preview</a> も同一挙動</td>
  </tr>
  <tr>
  <th scope="row">請求単位</th>
@@ -475,7 +475,13 @@
   // 撤去し、 月次 API コスト + カバレッジ (DB / 出典 / 鮮度) のみを提示。
   var TAX_RATE = 0.10;
   var PRICE_NET = 3; // ¥/req 税別
-  var FREE_QUOTA = 90; // approximate 30-day value for 3 req/day anonymous tier
+  // Anonymous allowance is 3 req/日 per IP (JST 翌日 00:00 リセット).
+  // 月次換算で ~90 req. 認証ユーザー (API キー) には適用されない別 surface
+  // のため、 paid monthly estimate からは subtract しない (backend
+  // /v1/cost/preview と一致)。 calc は別行で参考表示する。
+  var ANON_FREE_PER_DAY = 3;
+  var ANON_FREE_DAYS_PER_MONTH = 30;
+  var ANON_FREE_PER_MONTH = ANON_FREE_PER_DAY * ANON_FREE_DAYS_PER_MONTH; // 90
 
   // Coverage catalog values — keep in sync with sources.html.
   // Joining means: a single API request fan-outs across these tables on
@@ -508,7 +514,11 @@
     // Request volume — 1 confirmation = 1 API request (conservative;
     // some workflows may chain calls, others may cache).
     var totalReviews = clients * reviews;
-    var billable = Math.max(0, totalReviews - FREE_QUOTA);
+    // PAID 月次見積りは ¥3 × 全リクエスト数。匿名 3 req/日/IP の無料枠は
+    // 認証ユーザーには適用されないため subtract しない。 backend
+    // /v1/cost/preview の billing_units と一致する。匿名見積りは別途
+    // anonymous 月 ~90 req/IP として 3 req/日 × 30 日 で参考表示する。
+    var billable = totalReviews;
     var costNet  = billable * PRICE_NET;
     var costTax  = costNet * TAX_RATE;
     var costInc  = costNet + costTax;
@@ -521,13 +531,14 @@
     if (reqsSecondary) {
       reqsSecondary.textContent =
         "顧問先 " + fmtNum(clients) + " × 確認 " + fmtNum(reviews) +
-        " 件 (うち無料枠 " + fmtNum(Math.min(totalReviews, FREE_QUOTA)) + " req)";
+        " 件 (認証ユーザーは全件 ¥3 課金、 匿名 " + fmtNum(ANON_FREE_PER_DAY) +
+        " req/日 は別 IP 単位)";
     }
 
     $("out-cost").firstChild.nodeValue = fmtYen(costInc);
     $("out-cost-net").textContent =
       "税別 " + fmtYen(costNet) + " + 消費税 " + fmtYen(costTax) +
-      " (請求 " + fmtNum(billable) + " req × ¥3.00)";
+      " (請求 " + fmtNum(billable) + " req × ¥3.00、 backend /v1/cost/preview と一致)";
 
     // Coverage outputs — these are catalog values, not estimates.
     $("out-dbs").firstChild.nodeValue = fmtNum(DB_JOIN_COUNT) + " DB";
