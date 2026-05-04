@@ -246,6 +246,7 @@ def test_checkout_allows_english_redirect_paths(client, stripe_env, monkeypatch)
     assert captured[0]["success_url"].startswith("https://jpcite.com/en/success.html")
     assert captured[0]["cancel_url"].startswith("https://jpcite.com/en/pricing.html")
     assert captured[0]["locale"] == "en"
+    assert captured[0]["branding_settings"] == {"display_name": "jpcite"}
 
 
 def test_checkout_attaches_pending_device_user_code_metadata(

@@ -750,6 +750,7 @@ def create_checkout(
         metadata=metadata,
         allow_promotion_codes=True,
         locale=checkout_locale,
+        branding_settings={"display_name": "jpcite"},
         custom_text={
             "submit": {
                 "message": (

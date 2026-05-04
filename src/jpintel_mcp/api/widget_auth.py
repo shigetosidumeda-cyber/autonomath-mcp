@@ -781,6 +781,7 @@ def widget_signup(payload: WidgetSignupRequest) -> WidgetSignupResponse:
         customer_email=str(payload.email),
         allow_promotion_codes=True,
         locale="ja",
+        branding_settings={"display_name": "jpcite"},
         subscription_data={"metadata": metadata},
         metadata=metadata,
         custom_text={

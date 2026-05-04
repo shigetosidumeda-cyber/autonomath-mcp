@@ -591,6 +591,7 @@ def stripe_checkout(payload: CheckoutRequest, conn: DbDep) -> CheckoutResponse:
         client_reference_id=str(int(row["id"])),
         allow_promotion_codes=True,
         locale="ja",
+        branding_settings={"display_name": "jpcite"},
         custom_text={
             "submit": {
                 "message": (
