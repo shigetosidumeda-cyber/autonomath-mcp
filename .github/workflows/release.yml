@@ -14,6 +14,32 @@ permissions:
   # id-token is required for PyPI trusted publishing; safe to keep even with API token auth.
   id-token: write
 
+# Match test.yml's PYTEST_TARGETS so the release gate runs the same set
+# of tests the regular CI proves green. Anything outside this list (HF
+# exporters, e2e, sdk, eval seed-DB tests, bs4-dependent PDF extraction)
+# requires extras / fixture data that the release runner intentionally
+# does not install.
+env:
+  PYTEST_TARGETS: >-
+    tests/test_program_rss_feeds.py
+    tests/test_distribution_manifest.py
+    tests/test_static_public_reachability.py
+    tests/test_enforcement.py
+    tests/test_rate_limit.py
+    tests/test_source_manifest.py
+    tests/test_extract_prefecture.py
+    tests/test_no_llm_in_production.py
+    tests/test_openapi_export.py
+    tests/test_openapi_agent.py
+    tests/test_billing.py
+    tests/test_billing_webhook_signature.py
+    tests/test_programs_batch.py
+    tests/test_usage_billing_idempotency.py
+    tests/test_self_cap.py
+    tests/test_cost_preview.py
+    tests/test_trial_signup.py
+    tests/test_device_flow.py
+
 jobs:
   test:
     name: Test suite (release gate)
@@ -60,21 +86,8 @@ jobs:
             scripts/regen_llms_full_en.py \
             scripts/etl/generate_program_rss_feeds.py
 
-      - name: Pytest (skip HF / e2e / sdk modules without their extras)
-        # release-gate runs the full tests/ tree minus the modules that
-        # depend on extras outside [dev,site] (pandas / playwright /
-        # huggingface_hub). The regular test workflow already covers them
-        # under their own extras matrix.
-        run: |
-          pytest tests/ -v --tb=short \
-            --ignore=tests/e2e \
-            --ignore=tests/sdk \
-            --ignore=tests/test_enrich_court_decisions.py \
-            --ignore=tests/test_hf_estat_statistics_export.py \
-            --ignore=tests/test_hf_export_safety_gate.py \
-            --ignore=tests/test_hf_laws_jp_export.py \
-            --ignore=tests/test_hf_safe_aggregate_exports.py \
-            --ignore=tests/test_publish_hf_datasets.py
+      - name: Pytest (PYTEST_TARGETS — matches test.yml)
+        run: pytest $PYTEST_TARGETS -q --tb=short
 
   build:
     name: Build sdist + wheel
