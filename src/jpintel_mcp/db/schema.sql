@@ -315,7 +315,10 @@ CREATE TABLE IF NOT EXISTS analytics_events (
     -- §4-E (migration 123): bot/UA discrimination so paid-conversion
     -- denominators can `WHERE is_bot=0` without re-classifying every row.
     user_agent_class TEXT,
-    is_bot          INTEGER NOT NULL DEFAULT 0
+    is_bot          INTEGER NOT NULL DEFAULT 0,
+    -- §4.6 (migration 124): distribution-channel attribution token.
+    -- Closed allowlist enforced in api/middleware/analytics_recorder._classify_src.
+    src             TEXT
 );
 
 CREATE INDEX IF NOT EXISTS idx_analytics_events_ts
@@ -334,6 +337,10 @@ CREATE INDEX IF NOT EXISTS idx_analytics_events_human_path_ts
 CREATE INDEX IF NOT EXISTS idx_analytics_events_ua_class_ts
     ON analytics_events(user_agent_class, ts DESC)
     WHERE user_agent_class IS NOT NULL;
+-- §4.6 (migration 124): per-src rollup hot path.
+CREATE INDEX IF NOT EXISTS idx_analytics_events_src_ts
+    ON analytics_events(src, ts DESC)
+    WHERE src IS NOT NULL;
 
 -- ----- funnel_events ---------------------------------------------------------
 -- §4-E (migration 123): client-side breadcrumb table for the static-site
@@ -354,7 +361,9 @@ CREATE TABLE IF NOT EXISTS funnel_events (
     user_agent_class TEXT,
     is_bot          INTEGER NOT NULL DEFAULT 0,
     is_anonymous    INTEGER NOT NULL DEFAULT 1,
-    referer_host    TEXT
+    referer_host    TEXT,
+    -- §4.6 (migration 124): distribution-channel attribution token.
+    src             TEXT
 );
 
 CREATE INDEX IF NOT EXISTS idx_funnel_events_ts
@@ -370,6 +379,13 @@ CREATE INDEX IF NOT EXISTS idx_funnel_events_key_ts
 CREATE INDEX IF NOT EXISTS idx_funnel_events_human_event_ts
     ON funnel_events(event_name, ts DESC)
     WHERE is_bot = 0;
+-- §4.6 (migration 124): per-src rollup hot paths.
+CREATE INDEX IF NOT EXISTS idx_funnel_events_src_ts
+    ON funnel_events(src, ts DESC)
+    WHERE src IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_funnel_events_src_event_ts
+    ON funnel_events(src, event_name, ts DESC)
+    WHERE src IS NOT NULL AND is_bot = 0;
 
 -- ----- l4_query_cache -------------------------------------------------------
 -- Migration 043 is also embedded here so fresh DBs created via init_db()

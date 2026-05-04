@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "autonomath-mcp",
   "version": "0.3.3",
-  "description": "Japan public-program MCP — subsidies, loans, tax, law, invoice & corporate data. 11,684 補助金 + 9,484 e-Gov laws + 22,258 行政処分 + 13,801 適格事業者 + 166K corporate entities. ¥3/request, 3 free/day per IP. Evidence Packet with source_url + source_fetched_at + known gaps + 互換/排他 rules. 93 tools.",
+  "description": "Japan public-program MCP — subsidies, loans, tax, law, invoice & corporate data. 11,684 補助金 + 9,484 e-Gov laws + 22,258 行政処分 + 13,801 適格事業者 + 166K corporate entities. ¥3/request, 3 free/day per IP. Evidence Packet with source_url + source_fetched_at + known gaps + 互換/排他 rules. 101 tools.",
   "author": {
     "name": "Bookyou株式会社",
     "url": "https://jpcite.com"
@@ -18,12 +18,13 @@
   "runtime": "python-3.11+",
   "install": {
     "command": "uvx autonomath-mcp",
+    "install_url": "https://jpcite.com/integrations/?src=mcp_registry",
     "alt": {
       "pip": "pip install autonomath-mcp && autonomath-mcp",
-      "claude_desktop": "Install the jpcite desktop extension (.mcpb bundle) from https://jpcite.com/downloads/autonomath-mcp.mcpb"
+      "claude_desktop": "Install the jpcite desktop extension (.mcpb bundle) from https://jpcite.com/downloads/autonomath-mcp.mcpb?src=mcp_registry"
     }
   },
-  "manifest_url": "https://jpcite.com/mcp-server.json",
+  "manifest_url": "https://jpcite.com/mcp-server.json?src=mcp_registry",
   "packages": [
     {
       "registryType": "pypi",
@@ -497,7 +498,7 @@
       "loan_program_count": 108,
       "enforcement_case_count": 1185,
       "exclusion_rule_count": 181,
-      "tool_count": 93,
+      "tool_count": 101,
       "tier_labels": [
         "S",
         "A",

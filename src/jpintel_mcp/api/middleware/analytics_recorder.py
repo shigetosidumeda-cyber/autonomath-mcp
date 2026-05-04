@@ -79,6 +79,82 @@ _EXCLUDED_PATHS: frozenset[str] = frozenset({
     "/favicon.ico",
 })
 
+# §4.6 (jpcite_ai_discovery_paid_adoption_plan_2026-05-04.md) — closed
+# allowlist of distribution-channel `src=` query-param values. Any other
+# string is silently dropped (NULL written to analytics_events.src) so
+# typos / spam / scraper-injected `?src=evil` rows don't pollute the
+# rollup. Adding a new channel requires landing the corresponding `?src=`
+# token on the distribution surface AND adding it here.
+_ALLOWED_SRC_PREFIXES: tuple[str, ...] = (
+    "cookbook_",       # cookbook_<recipe-slug>
+    "outreach_",       # outreach_<firm>
+)
+_ALLOWED_SRC_LITERALS: frozenset[str] = frozenset({
+    "llmstxt",
+    "chatgpt_actions",
+    "gpt_custom",
+    "mcp_registry",
+    "claude_mcp",
+    "cursor_mcp",
+    "cline_mcp",
+    "windsurf_mcp",
+    "continue_mcp",
+    "gemini_extension",
+    "hn_launch",
+    "zenn_intro",
+    "qiita_intro",
+    "github_readme",
+    "smithery",
+    "glama",
+    "pulsemcp",
+    "mcp_marketplace",
+    "awesome_mcp",
+    "audiences",
+    "audiences_dev",
+    "audiences_smb",
+    "audiences_zeirishi",
+    "audiences_kaikeishi",
+    "audiences_subsidy_consultant",
+    "audiences_vc",
+    "audiences_journalist",
+    "audiences_admin_scrivener",
+    "audiences_construction",
+    "audiences_manufacturing",
+    "audiences_real_estate",
+    "audiences_shinkin",
+    "audiences_shokokai",
+    "integrations_index",
+    "integrations_claude_desktop",
+    "integrations_cursor",
+    "integrations_cline",
+    "integrations_continue",
+    "integrations_windsurf",
+    "integrations_gemini",
+})
+# Cap to keep a malicious caller from inserting megabyte-sized strings.
+_MAX_SRC_LEN = 64
+
+
+def _classify_src(raw: str | None) -> str | None:
+    """Validate the `src` query-param value against the closed allowlist.
+
+    Returns the canonical lowercase token, or None if the value is missing,
+    malformed, too long, or not in the allowlist. Never raises.
+    """
+    if not raw:
+        return None
+    candidate = raw.strip().lower()
+    if not candidate or len(candidate) > _MAX_SRC_LEN:
+        return None
+    # Defensive: only [a-z0-9_-] tokens are accepted; reject anything else.
+    if not all(ch.isalnum() or ch in {"_", "-"} for ch in candidate):
+        return None
+    if candidate in _ALLOWED_SRC_LITERALS:
+        return candidate
+    if any(candidate.startswith(prefix) for prefix in _ALLOWED_SRC_PREFIXES):
+        return candidate
+    return None
+
 
 def _extract_key_hash(request: Request) -> str | None:
     """Return the HMAC key_hash for the caller, or None for anonymous.
@@ -116,25 +192,27 @@ def _record_one(
     client_tag: str | None,
     user_agent_class: str | None,
     is_bot: bool,
+    src: str | None,
 ) -> None:
     """Open a short-lived SQLite connection and insert one row.
 
     All exceptions are swallowed — the middleware contract is
-    "never block, never raise". A missing column (migration 123 not yet
+    "never block, never raise". A missing column (migration 123/124 not yet
     applied) surfaces as ``sqlite3.OperationalError`` and triggers a
-    fall-back to the legacy 9-column INSERT so the row is still recorded
-    (just without the bot/UA discriminator).
+    fall-back to the legacy column list so the row is still recorded
+    (just without the bot/UA/src discriminator).
     """
     conn: sqlite3.Connection | None = None
     try:
         conn = connect()
         try:
+            # Migration 124 column list (src + all 123 columns).
             conn.execute(
                 "INSERT INTO analytics_events("
                 "  ts, method, path, status, latency_ms,"
                 "  key_hash, anon_ip_hash, client_tag, is_anonymous,"
-                "  user_agent_class, is_bot"
-                ") VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                "  user_agent_class, is_bot, src"
+                ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
                 (
                     ts,
                     method,
@@ -147,15 +225,40 @@ def _record_one(
                     1 if key_hash is None else 0,
                     user_agent_class,
                     1 if is_bot else 0,
+                    src,
                 ),
             )
         except sqlite3.OperationalError as exc:
-            # Migration 123 columns not yet present — fall back to the
-            # pre-123 column list so the row is still captured. Once 123
-            # has rolled to all envs this branch becomes unreachable, but
-            # keeping it ensures an old DB cannot drop analytics on the
-            # floor (silent under-counting was the original §4-E bug).
-            if "no column named" in str(exc).lower():
+            msg = str(exc).lower()
+            if "no column named src" in msg:
+                # Migration 124 not yet applied — try the migration 123
+                # column list (drops src, keeps bot/UA discriminator).
+                conn.execute(
+                    "INSERT INTO analytics_events("
+                    "  ts, method, path, status, latency_ms,"
+                    "  key_hash, anon_ip_hash, client_tag, is_anonymous,"
+                    "  user_agent_class, is_bot"
+                    ") VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                    (
+                        ts,
+                        method,
+                        path,
+                        status,
+                        latency_ms,
+                        key_hash,
+                        anon_ip_hash,
+                        client_tag,
+                        1 if key_hash is None else 0,
+                        user_agent_class,
+                        1 if is_bot else 0,
+                    ),
+                )
+            elif "no column named" in msg:
+                # Migration 123 columns not yet present — fall back to the
+                # pre-123 column list so the row is still captured. Once 124
+                # has rolled to all envs this branch becomes unreachable, but
+                # keeping it ensures an old DB cannot drop analytics on the
+                # floor (silent under-counting was the original §4-E bug).
                 conn.execute(
                     "INSERT INTO analytics_events("
                     "  ts, method, path, status, latency_ms,"
@@ -226,6 +329,12 @@ class AnalyticsRecorderMiddleware(BaseHTTPMiddleware):
                     request.headers.get("user-agent")
                 )
                 is_bot = ua_class.startswith("bot:")
+                # §4.6: distribution-channel attribution. Closed allowlist
+                # validation lives in `_classify_src` so a stray ?src=...
+                # from a scraper / typo never lands in the rollup column.
+                src = _classify_src(
+                    request.query_params.get("src")
+                )
                 _record_one(
                     ts=datetime.now(UTC).isoformat(),
                     method=request.method,
@@ -237,9 +346,10 @@ class AnalyticsRecorderMiddleware(BaseHTTPMiddleware):
                     client_tag=client_tag,
                     user_agent_class=ua_class,
                     is_bot=is_bot,
+                    src=src,
                 )
             except Exception as exc:  # noqa: BLE001 — never block
                 _log.debug("analytics_recorder dispatch swallowed exc: %s", exc)
 
 
-__all__ = ["AnalyticsRecorderMiddleware"]
+__all__ = ["AnalyticsRecorderMiddleware", "_classify_src"]

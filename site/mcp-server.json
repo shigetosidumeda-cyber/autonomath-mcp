@@ -18,12 +18,13 @@
   "runtime": "python-3.11+",
   "install": {
     "command": "uvx autonomath-mcp",
+    "install_url": "https://jpcite.com/integrations/?src=mcp_registry",
     "alt": {
       "pip": "pip install autonomath-mcp && autonomath-mcp",
-      "claude_desktop": "Install the jpcite desktop extension (.mcpb bundle) from https://jpcite.com/downloads/autonomath-mcp.mcpb"
+      "claude_desktop": "Install the jpcite desktop extension (.mcpb bundle) from https://jpcite.com/downloads/autonomath-mcp.mcpb?src=mcp_registry"
     }
   },
-  "manifest_url": "https://jpcite.com/mcp-server.json",
+  "manifest_url": "https://jpcite.com/mcp-server.json?src=mcp_registry",
   "packages": [
     {
       "registryType": "pypi",

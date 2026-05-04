@@ -626,13 +626,37 @@ class FunnelEventCount(BaseModel):
     distinct_sessions: int
 
 
+class SrcAttributionBucket(BaseModel):
+    """§4.6 distribution-channel attribution row.
+
+    One row per `src=` token (closed allowlist enforced in
+    `analytics_recorder._classify_src`). NULL src ("direct/unknown") is
+    rolled into the explicit `direct` bucket so the rollup is exhaustive.
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    src: str
+    human_request_count: int
+    paid_conversion_count: int
+    first_paid_within_7d_count: int
+    distinct_sessions: int
+    distinct_anon_ips: int
+
+
 class AnalyticsSplitResponse(BaseModel):
-    """§4-E bot-vs-human view.
+    """§4-E bot-vs-human view + §4.6 distribution-attribution view.
 
     Numerator candidates (`paid_conversions`, etc.) live in `usage_events` /
     `api_keys`; this endpoint surfaces the *denominator* candidates so the
     operator can pick a defensible "human-ish" baseline (Cloudflare raw PV
     is dominated by bots and is the wrong denominator).
+
+    §4.6 (jpcite_ai_discovery_paid_adoption_plan_2026-05-04.md) adds
+    per-`src` aggregation so the operator can see which distribution
+    channel (llmstxt / cookbook_<recipe> / chatgpt_actions / gpt_custom /
+    mcp_registry / claude_mcp / cursor_mcp / cline_mcp / hn_launch /
+    zenn_intro) is producing first-paid customers organically.
     """
 
     model_config = ConfigDict(frozen=True)
@@ -644,6 +668,7 @@ class AnalyticsSplitResponse(BaseModel):
     paid_conversion_denominator_human_request: int
     by_ua_class: list[AnalyticsSplitBucket]
     funnel_events: list[FunnelEventCount]
+    by_src: list[SrcAttributionBucket]
     note: str | None = None
 
 
@@ -759,6 +784,146 @@ def get_analytics_split(
             for r in rows
         ]
 
+    # ---- §4.6 per-src attribution ------------------------------------------
+    # Three signals per src bucket:
+    #   1. human_request_per_src — analytics_events rows with is_bot=0,
+    #      grouped by src (NULL bucketed as 'direct').
+    #   2. paid_conversion_per_src — usage_events rows whose key_hash was
+    #      first seen on an analytics_events row carrying that src.
+    #   3. first_paid_within_7d_per_src — subset of (2) where the first
+    #      billable usage event landed within 7 days of the src-attributed
+    #      analytics_events row (= "fast organic conversion" signal).
+    #
+    # All three are implemented as a single CTE walk so we don't pay 3x
+    # full-table-scan cost.
+    by_src: list[SrcAttributionBucket] = []
+    has_src_col = _column_exists(conn, "analytics_events", "src")
+    if not has_src_col:
+        notes.append(
+            "analytics_events.src column missing — apply migration 124"
+        )
+    elif not _table_exists(conn, "usage_events"):
+        # Without usage_events we can still emit the human_request half.
+        rows = conn.execute(
+            """SELECT
+                 COALESCE(src, 'direct')               AS src,
+                 SUM(CASE WHEN is_bot = 0 THEN 1 ELSE 0 END) AS humans,
+                 COUNT(DISTINCT anon_ip_hash)          AS d_anon
+               FROM analytics_events
+              WHERE ts >= ?
+                AND path != ?
+           GROUP BY COALESCE(src, 'direct')
+           ORDER BY humans DESC
+              LIMIT 50""",
+            (since, _FUNNEL_EVENT_PATH),
+        ).fetchall()
+        by_src = [
+            SrcAttributionBucket(
+                src=r["src"],
+                human_request_count=int(r["humans"] or 0),
+                paid_conversion_count=0,
+                first_paid_within_7d_count=0,
+                distinct_sessions=0,
+                distinct_anon_ips=int(r["d_anon"] or 0),
+            )
+            for r in rows
+        ]
+    else:
+        # Full join: pair every distinct (key_hash, src) seen in
+        # analytics_events with the earliest usage_events row for that
+        # key_hash. NULL src is rolled into 'direct' so the rollup is
+        # exhaustive.
+        rows = conn.execute(
+            """WITH src_attr AS (
+                  -- Earliest src-attributed visit per key_hash within window.
+                  SELECT
+                    key_hash,
+                    COALESCE(src, 'direct') AS src,
+                    MIN(ts)                 AS first_attr_ts
+                  FROM analytics_events
+                  WHERE ts >= ?
+                    AND path != ?
+                    AND is_bot = 0
+                    AND key_hash IS NOT NULL
+                  GROUP BY key_hash, COALESCE(src, 'direct')
+              ),
+              first_paid AS (
+                  -- First billable usage_event per key_hash (any time).
+                  SELECT key_hash, MIN(ts) AS first_paid_ts
+                  FROM usage_events
+                  WHERE key_hash IS NOT NULL
+                  GROUP BY key_hash
+              ),
+              human_per_src AS (
+                  SELECT
+                    COALESCE(src, 'direct') AS src,
+                    COUNT(*)                AS humans,
+                    COUNT(DISTINCT anon_ip_hash) AS d_anon
+                  FROM analytics_events
+                  WHERE ts >= ?
+                    AND path != ?
+                    AND is_bot = 0
+                  GROUP BY COALESCE(src, 'direct')
+              ),
+              paid_per_src AS (
+                  SELECT
+                    s.src,
+                    COUNT(DISTINCT s.key_hash) AS paid_keys,
+                    SUM(CASE
+                          WHEN fp.first_paid_ts IS NOT NULL
+                           AND julianday(fp.first_paid_ts)
+                             - julianday(s.first_attr_ts) <= 7
+                          THEN 1 ELSE 0 END) AS paid_within_7d
+                  FROM src_attr s
+                  LEFT JOIN first_paid fp ON fp.key_hash = s.key_hash
+                  WHERE fp.first_paid_ts IS NOT NULL
+                  GROUP BY s.src
+              )
+              SELECT
+                h.src                                     AS src,
+                h.humans                                  AS humans,
+                h.d_anon                                  AS d_anon,
+                COALESCE(p.paid_keys, 0)                  AS paid_keys,
+                COALESCE(p.paid_within_7d, 0)             AS paid_within_7d
+              FROM human_per_src h
+              LEFT JOIN paid_per_src p ON p.src = h.src
+              ORDER BY h.humans DESC
+              LIMIT 50""",
+            (since, _FUNNEL_EVENT_PATH, since, _FUNNEL_EVENT_PATH),
+        ).fetchall()
+
+        # Per-src distinct_session count from funnel_events (best-effort —
+        # tolerated-missing if 124 hasn't applied to funnel_events yet).
+        sessions_per_src: dict[str, int] = {}
+        if _table_exists(conn, "funnel_events") and _column_exists(
+            conn, "funnel_events", "src"
+        ):
+            sess_rows = conn.execute(
+                """SELECT
+                     COALESCE(src, 'direct')        AS src,
+                     COUNT(DISTINCT session_id)     AS sessions
+                   FROM funnel_events
+                  WHERE ts >= ?
+                    AND is_bot = 0
+               GROUP BY COALESCE(src, 'direct')""",
+                (since,),
+            ).fetchall()
+            sessions_per_src = {
+                r["src"]: int(r["sessions"] or 0) for r in sess_rows
+            }
+
+        by_src = [
+            SrcAttributionBucket(
+                src=r["src"],
+                human_request_count=int(r["humans"] or 0),
+                paid_conversion_count=int(r["paid_keys"] or 0),
+                first_paid_within_7d_count=int(r["paid_within_7d"] or 0),
+                distinct_sessions=sessions_per_src.get(r["src"], 0),
+                distinct_anon_ips=int(r["d_anon"] or 0),
+            )
+            for r in rows
+        ]
+
     return AnalyticsSplitResponse(
         hours=hours,
         total_requests=total_requests,
@@ -767,6 +932,7 @@ def get_analytics_split(
         paid_conversion_denominator_human_request=human_requests,
         by_ua_class=by_ua_class,
         funnel_events=funnel_rows,
+        by_src=by_src,
         note="; ".join(notes) if notes else None,
     )
 

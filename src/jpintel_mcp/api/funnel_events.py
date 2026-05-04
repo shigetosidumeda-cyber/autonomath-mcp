@@ -49,6 +49,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from jpintel_mcp.api.anon_limit import _classify_user_agent, _client_ip
 from jpintel_mcp.api.deps import DbDep, hash_api_key, hash_ip_for_telemetry
+from jpintel_mcp.api.middleware.analytics_recorder import _classify_src
 from jpintel_mcp.security.pii_redact import redact_pii
 
 _log = logging.getLogger("jpintel.funnel_events")
@@ -56,9 +57,11 @@ _log = logging.getLogger("jpintel.funnel_events")
 router = APIRouter(prefix="/v1/funnel", tags=["funnel"], include_in_schema=False)
 
 
-# Closed enum of accepted event names. Mirrors §4-E item 3 exactly. Adding
-# a new event requires editing this set AND landing the corresponding
-# client-side fire site (Playground / pricing / MCP install / etc.).
+# Closed enum of accepted event names. Mirrors §4-E item 3 exactly +
+# §4.6 (jpcite_ai_discovery_paid_adoption_plan_2026-05-04.md) AI-mediated
+# detection events. Adding a new event requires editing this set AND
+# landing the corresponding client-side fire site (Playground / pricing /
+# MCP install / etc.).
 _ALLOWED_EVENTS: frozenset[str] = frozenset(
     {
         "pricing_view",
@@ -71,6 +74,22 @@ _ALLOWED_EVENTS: frozenset[str] = frozenset(
         "mcp_install_copy",
         "checkout_start",
         "dashboard_signin_success",
+        # §4.6 — AI-mediated detection events. Server-side fire sites:
+        #   * `ai_client_install_detected` — analytics_recorder /
+        #     anon_limit observe a known LLM-client UA pattern
+        #     (Claude / Cursor / Cline / Continue / Windsurf) and POST
+        #     this event with properties.client_kind = the bucket label.
+        #   * `mcp_device_flow_completed` — `/v1/mcp/device/poll` returns
+        #     200 with a freshly-issued key (i.e. the flow finished).
+        #     Carries properties.flow_kind = "mcp_device".
+        #   * `openapi_actions_setup_completed` — the first authenticated
+        #     request from a User-Agent matching ChatGPT Actions /
+        #     Custom GPT / OpenAI Agents SDK after a key was just issued.
+        #     Carries properties.client_kind = "chatgpt_actions" |
+        #     "gpt_custom" | "openai_agents".
+        "ai_client_install_detected",
+        "mcp_device_flow_completed",
+        "openapi_actions_setup_completed",
     }
 )
 
@@ -97,7 +116,13 @@ _LOCAL_PAGE_HOSTS: frozenset[str] = frozenset(
 class FunnelEventIn(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
-    event: str = Field(..., description="One of the 10 accepted event names.")
+    event: str = Field(
+        ...,
+        description=(
+            "One of the 13 accepted event names (10 §4-E web funnel + 3 "
+            "§4.6 AI-mediated detection events)."
+        ),
+    )
     page: str | None = Field(
         default=None,
         description=(
@@ -115,6 +140,14 @@ class FunnelEventIn(BaseModel):
     properties: dict | None = Field(
         default=None,
         description="Optional discriminator object. JSON-encoded cap 512 chars.",
+    )
+    src: str | None = Field(
+        default=None,
+        description=(
+            "§4.6 distribution-channel attribution token. Validated "
+            "against the closed allowlist in analytics_recorder. "
+            "Unrecognised values are silently dropped (NULL stored)."
+        ),
     )
 
 
@@ -253,27 +286,57 @@ def _record(
     is_bot: bool,
     is_anonymous: bool,
     referer_host: str | None,
+    src: str | None,
 ) -> None:
-    conn.execute(
-        "INSERT INTO funnel_events("
-        "  ts, event_name, page, properties_json, anon_ip_hash,"
-        "  session_id, key_hash, user_agent_class, is_bot,"
-        "  is_anonymous, referer_host"
-        ") VALUES (?,?,?,?,?,?,?,?,?,?,?)",
-        (
-            ts,
-            event_name,
-            page,
-            properties_json,
-            anon_ip_hash,
-            session_id,
-            key_hash,
-            user_agent_class,
-            1 if is_bot else 0,
-            1 if is_anonymous else 0,
-            referer_host,
-        ),
-    )
+    try:
+        # Migration 124 column list (12 columns including src).
+        conn.execute(
+            "INSERT INTO funnel_events("
+            "  ts, event_name, page, properties_json, anon_ip_hash,"
+            "  session_id, key_hash, user_agent_class, is_bot,"
+            "  is_anonymous, referer_host, src"
+            ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+            (
+                ts,
+                event_name,
+                page,
+                properties_json,
+                anon_ip_hash,
+                session_id,
+                key_hash,
+                user_agent_class,
+                1 if is_bot else 0,
+                1 if is_anonymous else 0,
+                referer_host,
+                src,
+            ),
+        )
+    except sqlite3.OperationalError as exc:
+        # Migration 124 not yet applied — fall back to the 11-column INSERT
+        # (drops src). Once 124 ships everywhere this branch is unreachable.
+        if "no column named src" in str(exc).lower():
+            conn.execute(
+                "INSERT INTO funnel_events("
+                "  ts, event_name, page, properties_json, anon_ip_hash,"
+                "  session_id, key_hash, user_agent_class, is_bot,"
+                "  is_anonymous, referer_host"
+                ") VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                (
+                    ts,
+                    event_name,
+                    page,
+                    properties_json,
+                    anon_ip_hash,
+                    session_id,
+                    key_hash,
+                    user_agent_class,
+                    1 if is_bot else 0,
+                    1 if is_anonymous else 0,
+                    referer_host,
+                ),
+            )
+        else:
+            raise
     conn.commit()
 
 
@@ -315,6 +378,21 @@ async def post_event(
     properties_json = _normalise_properties(body.properties)
     session_id = _normalise_session_id(body.session_id)
     referer_host = _normalise_referer(referer)
+    # §4.6: prefer body.src; fall back to the ?src= carried in body.page so
+    # the static-site beacon can simply forward `location.href` and have
+    # the server pull the channel attribution out of the page URL.
+    raw_src = body.src
+    if raw_src is None and body.page:
+        try:
+            parsed = urlsplit(body.page)
+            from urllib.parse import parse_qs as _parse_qs
+
+            qs = _parse_qs(parsed.query)
+            if "src" in qs and qs["src"]:
+                raw_src = qs["src"][0]
+        except (ValueError, KeyError, IndexError):
+            raw_src = None
+    src = _classify_src(raw_src)
     ts = datetime.now(UTC).isoformat()
 
     try:
@@ -331,6 +409,7 @@ async def post_event(
             is_bot=is_bot,
             is_anonymous=is_anonymous,
             referer_host=referer_host,
+            src=src,
         )
     except sqlite3.OperationalError as exc:
         # Migration 123 not yet applied — log + return 503 with a hint so
