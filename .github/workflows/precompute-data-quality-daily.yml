@@ -1,0 +1,57 @@
+name: precompute-data-quality-daily
+
+# Daily precompute of /v1/stats/data_quality snapshot (W14-4 latent
+# concern fix). Refreshes one row in `am_data_quality_snapshot`
+# (migration wave24_145) so the request handler reads the rollup via a
+# single-row SELECT (~1 ms) instead of walking am_uncertainty_view +
+# 97k+ am_source rows inline (which can blow past Fly's 60 s grace
+# window on the 9.4 GB autonomath.db volume — same failure shape as
+# the 2026-05-03 SQLite quick_check incident).
+#
+# Pure SQLite + standard library. NO LLM SDK calls (CLAUDE.md +
+# `feedback_autonomath_no_api_use`).
+#
+# Required GitHub repository secret:
+#   FLY_API_TOKEN   Fly.io deploy token with ssh access to autonomath-api.
+
+on:
+  schedule:
+    # 20:05 UTC == 05:05 JST. Offset +5 min from analytics-cron's
+    # 20:00 UTC slot so we don't compete for the SQLite write lock.
+    - cron: "5 20 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run with --dry-run (compute but do not persist)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+concurrency:
+  group: precompute-data-quality-daily
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  precompute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Precompute data_quality snapshot
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          FLAGS=""
+          if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
+          flyctl ssh console -a autonomath-api -C \
+            "/opt/venv/bin/python /app/scripts/cron/precompute_data_quality.py ${FLAGS}"

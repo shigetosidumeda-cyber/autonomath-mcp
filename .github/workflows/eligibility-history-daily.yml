@@ -1,0 +1,120 @@
+name: eligibility-history-daily
+
+# Daily rolling rebuild of am_program_eligibility_history for tier S/A
+# programs. MASTER_PLAN_v1 章 3 §D1 (c).
+#
+# What it does:
+#   Runs `scripts/etl/rebuild_amendment_snapshot.py --tier S,A --window 30d`
+#   on the Fly production machine via flyctl ssh — same pattern as
+#   incremental-law-load.yml, so the DB write lands on the Fly volume
+#   (the canonical autonomath.db). The repo's local autonomath.db is a
+#   dev mirror only; CI does not write to it.
+#
+# Why a daily cadence:
+#   The migration's UNIQUE(program_id, content_hash) constraint makes
+#   the rebuild idempotent within a content-stable window — re-running
+#   on the same day with no upstream drift is a no-op for unchanged
+#   programs. Daily cadence catches eligibility drift within ~24h of
+#   the upstream cron (refresh_sources.py, incremental_law_fulltext.py,
+#   amendment_alert.py) updating their respective surfaces.
+#
+# Why JST 04:00:
+#   * Upstream refresh_sources.py runs 03:00 JST (D3 cron, plan §D3) —
+#     our 04:00 window catches the freshest source_url + source_checksum
+#     drift detected in that pass.
+#   * 19:00 UTC == 04:00 JST.
+#   * Workflow staggered after incremental-law-load (Sundays only,
+#     19:50 UTC) and refresh_sources (which is part of Fly's nightly).
+#
+# Required secrets:
+#   FLY_API_TOKEN
+#
+# Operator-LLM ban:
+#   The ETL script contains NO LLM imports — confirmed by
+#   `tests/test_no_llm_in_production.py` (scripts/etl/ is in
+#   PRODUCTION_DIRS). Memory `feedback_no_operator_llm_api`.
+
+on:
+  schedule:
+    # 19:00 UTC daily == 04:00 JST. Catches D3's 03:00 JST source refresh.
+    - cron: "0 19 * * *"
+  workflow_dispatch:
+    inputs:
+      tier:
+        description: "Tier filter CSV (default: S,A)"
+        required: false
+        default: "S,A"
+      window:
+        description: "Rolling diff window (default: 30d)"
+        required: false
+        default: "30d"
+      dry_run:
+        description: "If true, compute hashes but do NOT INSERT"
+        required: false
+        default: "false"
+
+concurrency:
+  group: eligibility-history-daily
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30   # 1,554 programs × ~10ms / program ≈ 16s + overhead.
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run eligibility-history rebuild on Fly machine
+        id: run
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          INPUT_TIER: ${{ github.event.inputs.tier }}
+          INPUT_WINDOW: ${{ github.event.inputs.window }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          TIER="${INPUT_TIER:-S,A}"
+          WINDOW="${INPUT_WINDOW:-30d}"
+          DRY_FLAG=""
+          if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then
+            DRY_FLAG="--dry-run"
+          fi
+
+          set +e
+          flyctl ssh console -a autonomath-api -C \
+            "/opt/venv/bin/python /app/scripts/etl/rebuild_amendment_snapshot.py \
+              --db /data/autonomath.db \
+              --tier ${TIER} \
+              --window ${WINDOW} \
+              ${DRY_FLAG}" \
+            | tee rebuild.out
+          rc=$?
+          set -e
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          # rc == 2 means "no candidate programs" — log + green (the
+          # tier filter could be empty during a maintenance window).
+          if [ "$rc" -ne 0 ] && [ "$rc" -ne 2 ]; then
+            echo "::error::rebuild_amendment_snapshot.py exited $rc"
+            exit 1
+          fi
+
+      - name: Open issue on driver failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          BODY="ETL: \`scripts/etl/rebuild_amendment_snapshot.py\`\nRun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\nSHA: \`${{ github.sha }}\`\n\nLikely causes: migration wave24_106 not applied on the Fly volume's \`autonomath.db\`, schema drift in jpi_programs / am_subsidy_rule, or sqlite WAL contention. Verify with:\n  flyctl ssh console -a autonomath-api -C 'sqlite3 /data/autonomath.db \"SELECT 1 FROM sqlite_master WHERE name=\\\"am_program_eligibility_history\\\";\"'\n"
+          gh issue create \
+            --title "eligibility-history-daily failed on $(date -u +%Y-%m-%d)" \
+            --label etl-failure \
+            --label automation \
+            --body "$BODY"

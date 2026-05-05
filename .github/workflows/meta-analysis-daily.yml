@@ -1,0 +1,94 @@
+name: meta-analysis-daily
+
+# Daily meta-analysis rollup over the Wave 22 + Wave 23 materialized
+# views (10+ tables on autonomath.db). Walks each mat view for
+# (row_count, last_updated), diffs against yesterday's snapshot, and
+# writes a single-page markdown health report under
+# `tools/offline/_inbox/_meta_analysis/{YYYY-MM-DD}.md`.
+#
+# Pure SQLite + standard library — NO LLM SDK calls (CLAUDE.md +
+# `feedback_autonomath_no_api_use`). Mirrors the posture of the other
+# precompute crons (precompute-data-quality-daily, precompute-refresh,
+# etc.).
+#
+# Required GitHub repository secret:
+#   FLY_API_TOKEN        Fly.io deploy token with ssh access to
+#                        autonomath-api (so the script can read
+#                        /data/autonomath.db on the live volume).
+#
+# Optional GitHub repository secret:
+#   SLACK_WEBHOOK_OPS    If set, a 1-block summary (totals + top
+#                        movers) is posted to this Slack incoming
+#                        webhook. Absent → silent skip, the script
+#                        still writes the markdown + json.
+#
+# Failure routing: the meta-analysis itself is read-only, so a hard
+# failure is almost always an auth / DB-locked / disk-full event.
+# Sentry alert step (if SENTRY_DSN set) flags these.
+
+on:
+  schedule:
+    # 21:00 UTC == 06:00 JST. Sits 30 min before the precompute-refresh
+    # cron (21:30 UTC / 06:30 JST) so we capture an end-of-day snapshot
+    # before the new mat-view rebuild lands.
+    - cron: "0 21 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run with --dry-run (compute + render to stdout, do not persist)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+concurrency:
+  group: meta-analysis-daily
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  rollup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Generate meta_analysis daily rollup
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          SLACK_WEBHOOK_OPS: ${{ secrets.SLACK_WEBHOOK_OPS }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          FLAGS=""
+          if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
+          # SLACK_WEBHOOK_OPS is forwarded into the SSH session so the
+          # script's default `os.environ.get("SLACK_WEBHOOK_OPS", "")`
+          # picks it up. Empty value → silent skip inside the script.
+          flyctl ssh console -a autonomath-api -C \
+            "/bin/sh -c 'SLACK_WEBHOOK_OPS=\"${SLACK_WEBHOOK_OPS:-}\" /opt/venv/bin/python /app/scripts/cron/meta_analysis_daily.py ${FLAGS}'"
+
+      - name: Sentry alert on cron failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=meta-analysis-daily/1.0" \
+            -d "{\"level\":\"error\",\"logger\":\"github.actions.meta-analysis-daily\",\"platform\":\"other\",\"message\":\"meta-analysis-daily failed: flyctl ssh exited non-zero. Run ${GITHUB_RUN_ID}.\",\"tags\":{\"workflow\":\"meta-analysis-daily\",\"run_id\":\"${GITHUB_RUN_ID}\"}}" \
+            || echo "::warning::Sentry alert POST failed; continuing."

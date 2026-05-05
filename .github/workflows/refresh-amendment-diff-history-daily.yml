@@ -1,0 +1,105 @@
+name: refresh-amendment-diff-history-daily
+
+# History-based amendment diff refresher (W3-12 / W3-13).
+#
+# What it does:
+#   Runs `scripts/cron/refresh_amendment_diff_history.py` on the Fly
+#   production machine via flyctl ssh. The script walks
+#   `am_program_eligibility_history` (populated by the D1 cron at JST
+#   04:00) and INSERTs predicate-level diff rows into
+#   `am_amendment_diff` whenever consecutive history rows for the same
+#   program show eligibility_hash drift.
+#
+# Why JST 04:30 (30 min after D1 cron):
+#   * Upstream `eligibility-history-daily.yml` runs at 19:00 UTC ==
+#     04:00 JST and writes today's history rows.
+#   * 19:30 UTC == 04:30 JST gives the D1 ETL a 30-minute window to
+#     finish (1,554 programs × ~10ms ≈ 16s plus overhead — 30 min is a
+#     generous ceiling that survives Fly machine cold-start latency).
+#   * Running before D1 finishes would diff yesterday's tail only;
+#     running ~30 min after captures the freshest hash drift.
+#
+# Required secrets:
+#   FLY_API_TOKEN
+#
+# Operator-LLM ban:
+#   The cron script contains NO LLM imports — confirmed by
+#   `tests/test_no_llm_in_production.py` (scripts/cron/ is in
+#   PRODUCTION_DIRS). Memory `feedback_no_operator_llm_api`.
+
+on:
+  schedule:
+    # 19:40 UTC daily == 04:40 JST. Offset +10 min from data-integrity
+    # (19:30 UTC) to avoid 3-way runner contention in the 19:30 cluster
+    # (W14-12 audit). Still ~40 min after eligibility-history-daily so the
+    # D1 ETL has comfortably finished before diff harvest starts.
+    - cron: "40 19 * * *"
+  workflow_dispatch:
+    inputs:
+      max_programs:
+        description: "Process only the first N programs (default: all)"
+        required: false
+        default: ""
+      dry_run:
+        description: "If true, log diffs but do NOT INSERT"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+concurrency:
+  group: refresh-amendment-diff-history-daily
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run history-based amendment diff refresher on Fly machine
+        id: run
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          INPUT_MAX_PROGRAMS: ${{ github.event.inputs.max_programs }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          MAX_FLAG=""
+          if [ -n "${INPUT_MAX_PROGRAMS:-}" ]; then
+            MAX_FLAG="--max-programs ${INPUT_MAX_PROGRAMS}"
+          fi
+          DRY_FLAG=""
+          if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then
+            DRY_FLAG="--dry-run"
+          fi
+
+          flyctl ssh console -a autonomath-api -C \
+            "/opt/venv/bin/python /app/scripts/cron/refresh_amendment_diff_history.py \
+              --am-db /data/autonomath.db \
+              ${MAX_FLAG} \
+              ${DRY_FLAG}"
+
+      - name: Open issue on driver failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          BODY="Cron: \`scripts/cron/refresh_amendment_diff_history.py\`\nRun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\nSHA: \`${{ github.sha }}\`\n\nLikely causes: migration wave24_106 (am_program_eligibility_history) or migration 075 (am_amendment_diff) not applied on the Fly volume's autonomath.db. Verify with:\n  flyctl ssh console -a autonomath-api -C 'sqlite3 /data/autonomath.db \"SELECT name FROM sqlite_master WHERE name IN (\\\"am_program_eligibility_history\\\",\\\"am_amendment_diff\\\");\"'\n"
+          gh issue create \
+            --title "refresh-amendment-diff-history-daily failed on $(date -u +%Y-%m-%d)" \
+            --label cron-failure \
+            --label automation \
+            --body "$BODY"
