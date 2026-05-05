@@ -18,7 +18,8 @@
 
 import { JpciteClient, type EvidencePacket } from "../lib/jpcite_client.js";
 import type { LawAmendmentDiff } from "../lib/jpcite_client.js";
-import type { TaxRule } from "@jpcite/sdk";
+// TaxRule type inlined (no external @jpcite/sdk dep)
+interface TaxRule { rule_id?: string; effective_from?: string; sunset_date?: string; [k: string]: any; }
 import type { LlmQuery } from "../index.js";
 
 export interface KessanBriefInput {
