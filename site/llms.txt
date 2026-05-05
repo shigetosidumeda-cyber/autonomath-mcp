@@ -249,7 +249,7 @@ to the cited 官公庁 一次資料. Designed for LLM citation (Perplexity / Cha
 
 ## Product releases / changelog
 
-製品 (API / MCP / SDK) の semver リリース履歴。Keep a Changelog 1.1.0 + Semantic Versioning 2.0.0 準拠。料金は全リリースを通じて ¥3/req (税込 ¥3.30)、tier なし、匿名 3 req/日 無料。
+製品 (API / MCP / SDK) の semver リリース履歴。Keep a Changelog 1.1.0 + Semantic Versioning 2.0.0 準拠。料金は全リリースを通じて ¥3/billable unit (税込 ¥3.30)、tier なし、匿名 3 req/日 無料。
 
 - [Changelog index / リリース履歴一覧](https://jpcite.com/changelog/) — 最新リリースの索引、JSON-LD `CollectionPage` 付き。
 - [v0.3.4 リリース (2026-05-05)](https://jpcite.com/blog/v0.3.4-release.html) — 5 つの新機能: (1) `POST /v1/evidence/packets/batch` 1 req で 100 lookup の Bulk endpoint、(2) `POST /v1/billing/credit/purchase` Stripe ¥30万/¥100万/¥300万 一括前払、(3) `GET /v1/audit/proof/{evidence_packet_id}` Merkle 監査チェーン (税理士・監査法人向け)、(4) `/v1/en/*` 5 endpoint の英訳法令 + 租税条約 (FDI / 在日米英資 SaaS)、(5) `@jpcite/agents` npm 参考エージェント 5 種 (fork-and-customize)。その他 1,034 都道府県×業種 LP、Browser/VS Code 拡張、JCRB-v1 公開ベンチマーク。料金不変。
