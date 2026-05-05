@@ -9,20 +9,91 @@
 // `ClaudeAgent` instance the agent constructor receives, which is paid for
 // by the customer directly with their Anthropic key.
 
-import { Jpcite } from "@jpcite/sdk";
-import type {
-  Enforcement,
-  EnforcementSearchParams,
-  EnforcementSearchResponse,
-  ExclusionCheckResponse,
-  Law,
-  LawArticle,
-  ProgramDetail,
-  SearchParams,
-  SearchResponse,
-  TaxIncentiveSearchParams,
-  TaxIncentiveSearchResponse,
-} from "@jpcite/sdk";
+// Inline types (no external @jpcite/sdk dep — uses raw fetch to api.jpcite.com).
+// Schema follows OpenAPI spec at https://api.jpcite.com/v1/openapi.json.
+// All types are intentionally permissive ([k: string]: any) so the SDK
+// surface evolves with the API without forcing bumps here.
+export interface SearchParams { q?: string; limit?: number; offset?: number; tier?: string; prefecture?: string; [k: string]: any; }
+export interface SearchResponse { results: any[]; total: number; corpus_snapshot_id?: string; _disclaimer?: any; [k: string]: any; }
+export interface ProgramDetail { id: string; primary_name: string; [k: string]: any; }
+export interface Law { law_id: string; title: string; [k: string]: any; }
+export interface LawArticle { law_id: string; article_number: string; body: string; [k: string]: any; }
+export interface Enforcement { case_id: string; [k: string]: any; }
+export interface EnforcementSearchParams { q?: string; limit?: number; offset?: number; [k: string]: any; }
+export interface EnforcementSearchResponse { results: Enforcement[]; total: number; [k: string]: any; }
+export interface ExclusionCheckResponse { excluded: boolean; reasons: any[]; hits?: any[]; [k: string]: any; }
+export interface TaxIncentiveSearchParams { q?: string; limit?: number; effective_on?: string; [k: string]: any; }
+export interface TaxIncentiveSearchResponse { results: any[]; total: number; [k: string]: any; }
+
+interface JpciteOpts {
+  apiKey?: string;
+  baseUrl?: string;
+  timeoutMs?: number;
+  maxRetries?: number;
+  userAgentSuffix?: string;
+}
+
+class Jpcite {
+  constructor(private opts: JpciteOpts = {}) {}
+  private get baseUrl() { return this.opts.baseUrl || "https://api.jpcite.com"; }
+  async fetch<T = any>(methodOrPath: string, path?: string, body?: any): Promise<T> {
+    // Overload: fetch(path) defaults to GET; fetch(method, path, body?)
+    let method: string;
+    let realPath: string;
+    if (path === undefined) {
+      method = "GET";
+      realPath = methodOrPath;
+    } else {
+      method = methodOrPath;
+      realPath = path;
+    }
+    const headers: Record<string, string> = {
+      "Accept": "application/json",
+      "User-Agent": `jpcite-agents-sdk/0.1.1 ${this.opts.userAgentSuffix ?? ""}`.trim(),
+    };
+    if (this.opts.apiKey) headers["Authorization"] = `Bearer ${this.opts.apiKey}`;
+    if (body != null) headers["Content-Type"] = "application/json";
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), this.opts.timeoutMs ?? 30000);
+    try {
+      const r = await fetch(`${this.baseUrl}${realPath}`, {
+        method,
+        headers,
+        body: body == null ? undefined : JSON.stringify(body),
+        signal: ctrl.signal,
+      });
+      if (!r.ok) throw new Error(`jpcite ${r.status} ${method} ${realPath}: ${await r.text()}`);
+      return await r.json() as T;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  searchPrograms(p: SearchParams = {}): Promise<SearchResponse> {
+    return this.fetch<SearchResponse>("GET", `/v1/programs/search?${new URLSearchParams(p as any).toString()}`);
+  }
+  getProgram(id: string): Promise<ProgramDetail> {
+    return this.fetch<ProgramDetail>("GET", `/v1/programs/${encodeURIComponent(id)}`);
+  }
+  getLaw(id: string): Promise<Law> {
+    return this.fetch<Law>("GET", `/v1/laws/${encodeURIComponent(id)}`);
+  }
+  getLawArticle(lawId: string, art: string): Promise<LawArticle> {
+    return this.fetch<LawArticle>("GET", `/v1/laws/${encodeURIComponent(lawId)}/articles/${encodeURIComponent(art)}`);
+  }
+  searchEnforcement(p: EnforcementSearchParams = {}): Promise<EnforcementSearchResponse> {
+    return this.fetch<EnforcementSearchResponse>("GET", `/v1/enforcements/search?${new URLSearchParams(p as any).toString()}`);
+  }
+  getEnforcement(id: string): Promise<Enforcement> {
+    return this.fetch<Enforcement>("GET", `/v1/enforcements/${encodeURIComponent(id)}`);
+  }
+  checkExclusions(houjinBangou: string, programId: string): Promise<ExclusionCheckResponse> {
+    return this.fetch<ExclusionCheckResponse>("GET", `/v1/exclusion/check?houjin_bangou=${encodeURIComponent(houjinBangou)}&program_id=${encodeURIComponent(programId)}`);
+  }
+  searchTaxIncentives(p: TaxIncentiveSearchParams = {}): Promise<TaxIncentiveSearchResponse> {
+    return this.fetch<TaxIncentiveSearchResponse>("GET", `/v1/tax-incentives/search?${new URLSearchParams(p as any).toString()}`);
+  }
+}
+export { Jpcite };
 
 export interface JpciteClientOptions {
   /** jpcite API key. Optional — anonymous gets 3 req/日 per IP (JST 翌日 00:00 リセット). */
@@ -199,8 +270,13 @@ export class JpciteClient {
     return this.rest.getLawArticle(lawNameOrCanonicalId, articleNumber);
   }
 
-  checkExclusions(programIds: string[]): Promise<ExclusionCheckResponse> {
-    return this.rest.checkExclusions(programIds);
+  checkExclusions(programIdsOrHoujin: string[] | string, programId?: string): Promise<ExclusionCheckResponse> {
+    if (Array.isArray(programIdsOrHoujin)) {
+      // Compat shim: SDK old signature took an id list. Map to first id check.
+      const id = programIdsOrHoujin[0] ?? "";
+      return this.rest.checkExclusions("", id);
+    }
+    return this.rest.checkExclusions(programIdsOrHoujin, programId ?? "");
   }
 
   // ─── Composition surfaces (autonomath.db unified primary DB) ───

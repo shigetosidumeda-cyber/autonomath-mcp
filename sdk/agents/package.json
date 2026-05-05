@@ -1,6 +1,6 @@
 {
   "name": "@jpcite/agents",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Reference Claude Agent SDK agents for jpcite. Fork-and-customize starter agents for subsidy match, invoice check, law amendment watch, kessan briefing, and DD question generation. Customer-side LLM calls (operator pays ¥0 LLM cost).",
   "license": "MIT",
   "type": "module",
@@ -83,8 +83,7 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@anthropic-ai/claude-agent-sdk": ">=0.2.0",
-    "@jpcite/sdk": ">=0.3.0"
+    "@anthropic-ai/claude-agent-sdk": ">=0.2.0"
   },
   "peerDependenciesMeta": {
     "@anthropic-ai/claude-agent-sdk": {

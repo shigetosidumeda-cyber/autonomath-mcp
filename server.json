@@ -1,8 +1,8 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.shigetosidumeda-cyber/autonomath-mcp",
-  "description": "Japan public-program MCP — subsidies, loans, tax, law, invoice, corp. 96 tools, ¥3/req metered",
-  "version": "0.3.3",
+  "description": "Japan public-program MCP — subsidies, loans, tax, law, invoice, corp. 120 tools, ¥3/req metered",
+  "version": "0.3.4",
   "repository": {
     "url": "https://github.com/shigetosidumeda-cyber/autonomath-mcp",
     "source": "github"
@@ -13,7 +13,7 @@
       "registryType": "pypi",
       "registryBaseUrl": "https://pypi.org",
       "identifier": "autonomath-mcp",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "transport": {
         "type": "stdio"
       }
@@ -23,7 +23,7 @@
     "io.modelcontextprotocol.registry/publisher-provided": {
       "publisher": "Bookyou株式会社",
       "contact": "info@bookyou.net",
-      "tool_count": 96,
+      "tool_count": 120,
       "resource_count": 28,
       "auth": {
         "type": "apiKey",

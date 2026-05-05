@@ -109,7 +109,7 @@ export class SubsidyMatchAgent {
       const ids = programs.map((p) => p.unified_id);
       const ex = await this.jpcite.checkExclusions(ids);
       const dropped = new Set<string>();
-      for (const hit of ex.hits) {
+      for (const hit of (ex.hits ?? [])) {
         for (const url of hit.source_urls) sourceUrls.push(url);
         if ((hit.severity ?? "").toLowerCase() === "absolute") {
           for (const id of hit.programs_involved) dropped.add(id);
