@@ -1,0 +1,145 @@
+name: rebrand-notify-once
+
+# One-shot bulk send announcing the AutonoMath / 税務会計AI -> jpcite
+# rename (memory: project_jpcite_rename) to every active newsletter
+# subscriber. NOT scheduled; workflow_dispatch only.
+#
+# Runs scripts/notify_existing_users.py against the production
+# jpintel.db (via the Fly volume snapshot path baked into the runner
+# image) and writes analytics/rebrand_notify_log.jsonl as the
+# idempotency record.
+#
+# Why workflow_dispatch only:
+#   The send is a one-time event tied to the rebrand calendar entry.
+#   A `schedule:` trigger would re-run weekly forever; a `push:`
+#   trigger would re-fire on every README edit. Manual dispatch
+#   keeps the human (operator) in the loop and lets us pass `dry_run`
+#   for the smoke tests before the real send.
+#
+# Required GitHub secrets:
+#   POSTMARK_API_TOKEN       Postmark server token (broadcast stream).
+#   POSTMARK_FROM_TX         "From" address for transactional mails
+#                            (we reuse this for the rebrand notice so
+#                            DKIM / SPF are already aligned).
+#   POSTMARK_FROM_REPLY      Reply-to (info@bookyou.net).
+#   JPINTEL_DB_R2_URL        Cloudflare R2 presigned URL of the latest
+#                            jpintel.db nightly backup. The runner
+#                            downloads this rather than mounting Fly's
+#                            primary volume — keeps a misfire from
+#                            corrupting prod.
+#
+# Idempotency: re-running this workflow is safe. The script reads
+# analytics/rebrand_notify_log.jsonl (committed back to the repo at
+# the end of every run) and skips addresses already covered.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry-run (no Postmark sends, log only)"
+        type: boolean
+        required: true
+        default: true
+      limit:
+        description: "Cap recipients (blank = no cap)"
+        type: string
+        required: false
+        default: "5"
+      since:
+        description: "Only notify subscribers created on/after this ISO date (blank = all)"
+        type: string
+        required: false
+        default: ""
+      force:
+        description: "Re-send to addresses already in rebrand_notify_log.jsonl"
+        type: boolean
+        required: true
+        default: false
+
+concurrency:
+  # Hard-serialize: never run two rebrand sweeps in parallel. The
+  # idempotency log handles re-runs but parallel runs could race the
+  # same recipient.
+  group: rebrand-notify-once
+  cancel-in-progress: false
+
+permissions:
+  contents: write   # for committing the updated log file
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install minimal deps
+        # Only the Postmark + DB layer the script touches; we deliberately
+        # do NOT install the full `[dev]` extras — keeps the runner lean
+        # and surfaces import errors that would also break production.
+        run: |
+          pip install -e ".[email]" || pip install -e .
+          pip install httpx
+
+      - name: Download jpintel.db backup from R2
+        env:
+          JPINTEL_DB_R2_URL: ${{ secrets.JPINTEL_DB_R2_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${JPINTEL_DB_R2_URL}" ]; then
+            echo "JPINTEL_DB_R2_URL secret is unset; cannot fetch DB."
+            exit 1
+          fi
+          mkdir -p data
+          curl --fail --silent --show-error --location \
+               --max-time 120 \
+               -o data/jpintel.db \
+               "${JPINTEL_DB_R2_URL}"
+          ls -lh data/jpintel.db
+
+      - name: Run rebrand notify
+        env:
+          JPINTEL_DB_PATH: data/jpintel.db
+          POSTMARK_API_TOKEN: ${{ secrets.POSTMARK_API_TOKEN }}
+          POSTMARK_FROM_TRANSACTIONAL: ${{ secrets.POSTMARK_FROM_TX }}
+          POSTMARK_FROM_REPLY: ${{ secrets.POSTMARK_FROM_REPLY }}
+          # JPINTEL_ENV defaults to test; flip to prod only when actually sending.
+          JPINTEL_ENV: ${{ inputs.dry_run && 'test' || 'production' }}
+        run: |
+          set -euo pipefail
+          ARGS=""
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            ARGS="$ARGS --dry-run"
+          fi
+          if [ "${{ inputs.force }}" = "true" ]; then
+            ARGS="$ARGS --force"
+          fi
+          if [ -n "${{ inputs.limit }}" ]; then
+            ARGS="$ARGS --limit ${{ inputs.limit }}"
+          fi
+          if [ -n "${{ inputs.since }}" ]; then
+            ARGS="$ARGS --since ${{ inputs.since }}"
+          fi
+          python scripts/notify_existing_users.py $ARGS
+
+      - name: Commit updated rebrand_notify_log.jsonl
+        # We commit the log so re-runs are idempotent across runners.
+        # Skipped when the log file did not change (--quiet).
+        run: |
+          set -euo pipefail
+          git config user.name "rebrand-notify-bot"
+          git config user.email "info@bookyou.net"
+          git add -f analytics/rebrand_notify_log.jsonl 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No log delta to commit."
+            exit 0
+          fi
+          DATE=$(date -u +"%Y-%m-%d")
+          git commit -m "chore(rebrand): notify sweep ${DATE} (dry_run=${{ inputs.dry_run }})"
+          git push origin HEAD:main

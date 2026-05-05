@@ -53,19 +53,17 @@ jobs:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
         run: |
           set -euo pipefail
-          # Distinct --out directory from /data/backups (which the nightly
-          # jpintel.db backup uses with --keep 14). backup.py:_prune_old
-          # deletes any `jpintel-*` file in --out older than --keep days,
-          # and the artifact prefix is hard-coded to "jpintel-" regardless
-          # of source DB. Sharing /data/backups would let the nightly job
-          # delete week-old autonomath snapshots before this weekly job
-          # has a chance to capture the next one. Keep them isolated.
+          # M9 (Billing/Infra Block, MASTER_PLAN_v1.md ch. 8): switched
+          # from the legacy scripts/backup.py (hard-coded jpintel- prefix
+          # regardless of source DB) to scripts/cron/backup_autonomath.py
+          # which emits autonomath-{stamp}.db.gz. Distinct --out directory
+          # is enforced by the cron script's AUTONOMATH_BACKUP_LOCAL_DIR
+          # default (/data/backups-autonomath); R2 upload is also handled
+          # inside the cron script using AUTONOMATH_BACKUP_PREFIX. The
+          # SFTP-pull-to-runner step below remains as a backup-of-backup
+          # so the GHA runner verifies sha256 from a fresh download.
           flyctl ssh console -a autonomath-api -C \
-            "/opt/venv/bin/python /app/scripts/backup.py \
-              --db /data/autonomath.db \
-              --out /data/backups-autonomath \
-              --keep 28 \
-              --gzip"
+            "/opt/venv/bin/python /app/scripts/cron/backup_autonomath.py"
 
       - name: Locate latest backup path on Fly machine
         id: locate
@@ -73,15 +71,11 @@ jobs:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
         run: |
           set -euo pipefail
-          # NOTE: backup.py emits files prefixed `jpintel-` regardless of
-          # source DB (the prefix is hard-coded in run_backup() / _prune_old()).
-          # We disambiguate the autonomath snapshot by living in a separate
-          # /data/backups-autonomath directory; the R2 prefix below also
-          # differs from the nightly job's prefix.
-          # If backup.py is later updated to emit `autonomath-*.db.gz`
-          # filenames, switch this glob and the SFTP get / R2 prefix below.
+          # M9: backup_autonomath.py emits autonomath-{stamp}.db.gz into
+          # /data/backups-autonomath. We pick the newest match for the
+          # SFTP pull + sha256 verify below.
           LATEST=$(flyctl ssh console -a autonomath-api -C \
-              "ls -1t /data/backups-autonomath/jpintel-*.db.gz | head -1" | tr -d '\r\n')
+              "ls -1t /data/backups-autonomath/autonomath-*.db.gz | head -1" | tr -d '\r\n')
           if [ -z "$LATEST" ]; then
             echo "ERROR: could not locate latest backup on machine" >&2
             exit 1
@@ -101,12 +95,12 @@ jobs:
           # so allow up to 60 minutes for the pull.
           flyctl ssh sftp get "$LATEST_REMOTE"         -a autonomath-api
           flyctl ssh sftp get "${LATEST_REMOTE}.sha256" -a autonomath-api
-          ls -la jpintel-*.db.gz jpintel-*.db.gz.sha256
+          ls -la autonomath-*.db.gz autonomath-*.db.gz.sha256
 
       - name: Verify sha256
         run: |
           set -euo pipefail
-          shasum -a 256 -c jpintel-*.db.gz.sha256
+          shasum -a 256 -c autonomath-*.db.gz.sha256
 
       - name: Upload to Cloudflare R2 and rotate (fail-open if secrets missing)
         env:

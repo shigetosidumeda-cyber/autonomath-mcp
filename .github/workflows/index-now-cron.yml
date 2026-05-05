@@ -9,10 +9,10 @@ name: index-now-cron
 #
 # Required GitHub repository secrets:
 #   INDEXNOW_KEY    Pre-shared 32+ char URL-safe token. Must match the key
-#                   file uploaded to https://zeimu-kaikei.ai/<KEY>.txt.
+#                   file uploaded to https://jpcite.com/<KEY>.txt.
 #                   Generate with:
 #                     python -c "import secrets; print(secrets.token_urlsafe(32))"
-#   INDEXNOW_HOST   Domain without scheme. Default: zeimu-kaikei.ai.
+#   INDEXNOW_HOST   Domain without scheme. Default: jpcite.com.
 #
 # The commit step uses the default GITHUB_TOKEN (no separate PAT) — that's
 # enough write access for `actions/checkout` + `git push origin HEAD:main`

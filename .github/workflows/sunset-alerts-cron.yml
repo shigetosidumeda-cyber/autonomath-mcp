@@ -13,10 +13,11 @@ name: sunset-alerts-cron
 
 on:
   schedule:
-    # 15 past every hour. Picks up the most recent ingest-pipeline output
-    # (typical ingest cadence: hourly :00) with a 15-min buffer for the
-    # diff writer to flush.
-    - cron: "15 * * * *"
+    # 20 past every hour. Originally :15 but offset +5 min from
+    # idempotency-sweep-hourly (also :15) to avoid runner contention
+    # (W14-12 audit follow-up; eval-judgment). Still a comfortable buffer
+    # past the typical ingest-pipeline :00 boundary.
+    - cron: "20 * * * *"
   workflow_dispatch:
     inputs:
       dry_run:

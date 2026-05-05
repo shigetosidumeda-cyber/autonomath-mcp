@@ -24,7 +24,10 @@ on:
       - "scripts/bootstrap_eval_db.sh"
       - ".github/workflows/eval.yml"
   schedule:
-    - cron: "30 19 * * *"   # 04:30 JST nightly
+    - cron: "45 19 * * *"   # 04:45 JST nightly. Offset +15 min from
+                            # data-integrity (19:30 UTC) and +5 min from
+                            # refresh-amendment-diff-history (19:40 UTC) to
+                            # break the 3-way 19:30 cluster (W14-12 audit).
   workflow_dispatch: {}
 
 concurrency:

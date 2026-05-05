@@ -1,0 +1,61 @@
+name: stripe-version-check-weekly
+
+# Weekly probe of Stripe API version sunset signals (P1 — Billing/Infra Block).
+#
+# What this does
+# --------------
+# Runs scripts/cron/stripe_version_check.py every Monday at 09:00 JST. The
+# script independently checks three sources for sunset markers against our
+# pinned API version (2024-11-20.acacia):
+#   1. https://docs.stripe.com/upgrades       (HTML scrape)
+#   2. https://stripe.com/docs/upgrades/feed.atom (RSS)
+#   3. Stripe response headers (Stripe-Sunset-At / Stripe-Should-Retry)
+#      via a minimal stripe.SubscriptionItem.list(limit=1) call.
+# Hits emit Sentry capture_message at level=error. NO LLM API calls.
+#
+# Why weekly Monday 09:00 JST
+# ---------------------------
+# Stripe sunset windows are months-long. Daily would add Sentry noise
+# without reducing detection latency in a meaningful way; monthly would
+# risk missing a fast-tracked retirement (rare but possible). Monday
+# morning lands in the operator's working hours so the alert (if any)
+# is triaged the same day.
+#
+# Required GitHub repository secrets
+# ----------------------------------
+#   FLY_API_TOKEN       Fly.io deploy token (ssh access to autonomath-api)
+#   SENTRY_DSN          (optional) - the script no-ops Sentry if unset
+
+on:
+  schedule:
+    # 09:00 JST Monday == 00:00 UTC Monday.
+    - cron: "0 0 * * 1"
+  workflow_dispatch: {}
+
+concurrency:
+  group: stripe-version-check-weekly
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run stripe version check on Fly machine
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${FLY_API_TOKEN:-}" ]; then
+            echo "::notice::FLY_API_TOKEN unset; skipping stripe-version-check."
+            exit 0
+          fi
+          # The script inherits STRIPE_SECRET_KEY + SENTRY_DSN from the
+          # Fly secret store. Fail-open: a non-zero exit here would block
+          # the whole workflow file's future runs in some org policies;
+          # the script itself returns 0 even on a hit (Sentry paged).
+          flyctl ssh console -a autonomath-api -C \
+            "/opt/venv/bin/python /app/scripts/cron/stripe_version_check.py"

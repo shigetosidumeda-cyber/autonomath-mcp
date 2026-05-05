@@ -14,8 +14,10 @@ name: Refresh source URLs
 
 on:
   schedule:
-    # Tier S/A: daily at 03:17 JST (18:17 UTC previous day).
-    - cron: '17 18 * * *'
+    # Tier S/A: daily at 03:22 JST (18:22 UTC previous day). Offset +5 min
+    # from nightly-backup (18:17 UTC) to avoid runner contention
+    # (W14-12 audit follow-up; eval-judgment).
+    - cron: '22 18 * * *'
     # Tier B: weekly, Sunday 03:17 JST (Saturday 18:17 UTC).
     - cron: '17 18 * * 6'
     # Tier C: monthly, day-1 03:17 JST (last-day 18:17 UTC of prior month).

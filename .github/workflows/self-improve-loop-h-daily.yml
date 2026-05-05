@@ -23,8 +23,10 @@ name: Self-improve Loop H (daily, cache warming)
 
 on:
   schedule:
-    # 18:30 UTC = 03:30 JST. Off-peak warming window.
-    - cron: "30 18 * * *"
+    # 18:35 UTC = 03:35 JST. Off-peak warming window. Offset +5 min from
+    # index-now-cron (18:30 UTC) to avoid runner contention (W14-12 audit
+    # follow-up; eval-judgment).
+    - cron: "35 18 * * *"
   workflow_dispatch:
     inputs:
       mode:

@@ -16,9 +16,10 @@ name: ingest-daily
 
 on:
   schedule:
-    # 19:00 UTC == 04:00 JST. After nightly-backup (03:17 JST) finishes,
-    # before pricing/webhook business hours (09:00 JST).
-    - cron: "0 19 * * *"
+    # 19:15 UTC == 04:15 JST. Offset +15 min from eligibility-history-daily
+    # (19:00 UTC) to avoid runner contention (W14-12 audit). Still after
+    # nightly-backup (03:17 JST) and before pricing/webhook hours (09:00 JST).
+    - cron: "15 19 * * *"
   workflow_dispatch:
     inputs:
       authority:
