@@ -12428,7 +12428,7 @@
     },
     "termsOfService": "https://jpcite.com/tos.html",
     "title": "jpcite",
-    "version": "0.3.3"
+    "version": "0.3.4"
   },
   "openapi": "3.1.0",
   "paths": {
@@ -20083,6 +20083,105 @@
         "summary": "Token",
         "tags": [
           "device"
+        ]
+      }
+    },
+    "/v1/discover/related/{entity_id}": {
+      "get": {
+        "description": "Return up to 5 axes \u00d7 5 records of related entities for the given entity in one call.\n\n**Pricing:** \u00a53/call (1 unit total). Anonymous callers share the 3/\u65e5 per-IP cap (JST \u7fcc\u65e5 00:00 \u30ea\u30bb\u30c3\u30c8).\n\n**entity_id** accepts a unified_id (`UNI-...`) or an autonomath canonical id (`program:...`, `law:...`, etc.).\n\n**Axes returned:**\n* `via_law_ref` \u2014 programs sharing \u6839\u62e0\u6cd5 (program_law_refs).\n* `via_vector` \u2014 k-NN over sqlite-vec embeddings (per-tier).\n* `via_co_adoption` \u2014 empirical co-adoption pairs from   am_funding_stack_empirical.\n* `via_density_neighbors` \u2014 same record_kind neighbours by   density_rank.\n* `via_5hop` \u2014 pre-computed 5-hop graph destinations.\n\nEach axis is fail-open: missing datasets / empty corpora yield an empty axis list rather than a 5xx.",
+        "operationId": "discover_related_v1_discover_related__entity_id__get",
+        "parameters": [
+          {
+            "description": "Entity identifier \u2014 a unified_id (UNI-...) or a canonical_id (program:..., law:..., etc.).",
+            "in": "path",
+            "name": "entity_id",
+            "required": true,
+            "schema": {
+              "description": "Entity identifier \u2014 a unified_id (UNI-...) or a canonical_id (program:..., law:..., etc.).",
+              "examples": [
+                "UNI-00d62c90c3",
+                "program:test:p1"
+              ],
+              "maxLength": 200,
+              "minLength": 1,
+              "title": "Entity Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Total target record budget (also a soft hint to vec k-NN candidate set). Per-axis cap is fixed at 5 \u2014 increasing k does not raise the per-axis output.",
+            "in": "query",
+            "name": "k",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "description": "Total target record budget (also a soft hint to vec k-NN candidate set). Per-axis cap is fixed at 5 \u2014 increasing k does not raise the per-axis output.",
+              "maximum": 100,
+              "minimum": 1,
+              "title": "K",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Discover Related V1 Discover Related  Entity Id  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Multi-axis related entities (5 axes, NO LLM)",
+        "tags": [
+          "discover"
         ]
       }
     },
