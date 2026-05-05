@@ -9,24 +9,28 @@ name: Publish @jpcite/agents
 #   - tag push  agents-v*    -> publish (tag is canonical release event)
 #   - manual workflow_dispatch (operator can re-run on demand)
 #
-# Auth:
-#   - Preferred: npm OIDC trusted publishing (no token).
-#     Required `id-token: write` is set on this job. Configure trust on
-#     https://www.npmjs.com/package/@jpcite/agents/access (after first publish):
-#       Repository: bookyou-net/jpcite (replace with actual GH org/repo)
-#       Workflow:   .github/workflows/sdk-publish-agents.yml
-#       Environment: (none) — leave blank
-#   - Fallback: secrets.NPM_TOKEN (granular access token, "Publish" scope on
-#     @jpcite scope). If set, NODE_AUTH_TOKEN below is consumed; otherwise the
-#     OIDC path takes over (npm CLI 10.2+ auto-detects OIDC env).
+# CHICKEN-AND-EGG (read first if you see ENEEDAUTH on tag push):
+#   npm OIDC "trusted publishing" requires the package to already exist on npm
+#   so the operator can configure the trusted-publisher row at
+#   https://www.npmjs.com/package/@jpcite/agents/access — but that row cannot
+#   be created until at least one version is published. So either:
+#     (1) Operator does a one-shot `npm publish` from a local checkout to
+#         seed v0.1.x (5 min), then configures trust; subsequent tag pushes
+#         publish via OIDC with no token.  ← recommended path
+#     (2) Operator adds an `NPM_TOKEN` granular access token (Publish scope
+#         on @jpcite) as a repo secret; tag push uses token forever.
+#   Full bootstrap steps live in `docs/_internal/W29_NPM_BOOTSTRAP.md`.
+#
+# Auth resolution order in this workflow:
+#   - If secrets.NPM_TOKEN is set, the npm CLI consumes NODE_AUTH_TOKEN and
+#     publishes via classic token auth (path 2).
+#   - Otherwise, the npm CLI 10.2+ tries OIDC trusted publishing (path 1).
+#     If trust has not been configured on the package page, npm returns
+#     ENEEDAUTH; the preflight step below detects this and fails fast with
+#     a pointer to the bootstrap doc instead of running the full pipeline.
 #
 # `--provenance` always emits a SLSA supply-chain attestation regardless of
 # auth path, as long as `id-token: write` is present.
-#
-# First-time scope creation:
-#   The @jpcite npm scope is created automatically on first publish of any
-#   @jpcite/* package — no manual `npm org create` needed for an org scope
-#   tied to a personal/org account that already exists.
 # =============================================================================
 
 on:
@@ -62,6 +66,54 @@ jobs:
           cache: npm
           cache-dependency-path: sdk/agents/package-lock.json
 
+      - name: Auth preflight (detect chicken-and-egg before building)
+        # Decides up front which auth path is viable so we don't burn 2-3 min
+        # building only to fail at `npm publish` with ENEEDAUTH.
+        # Sets job output `auth_mode` = token | oidc-trusted | none.
+        id: auth
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          PKG_NAME: "@jpcite/agents"
+        run: |
+          set -euo pipefail
+          if [ -n "${NPM_TOKEN:-}" ]; then
+            echo "auth_mode=token" >> "$GITHUB_OUTPUT"
+            echo "Using NPM_TOKEN (classic token auth)."
+            exit 0
+          fi
+
+          # No token. OIDC trusted publishing only works AFTER the package
+          # exists on npm AND a trusted-publisher row is configured. Probe.
+          status="$(curl -s -o /dev/null -w "%{http_code}" \
+            "https://registry.npmjs.org/${PKG_NAME}")"
+          if [ "$status" = "200" ]; then
+            # Package exists; OIDC may or may not be configured. Let publish try.
+            echo "auth_mode=oidc-trusted" >> "$GITHUB_OUTPUT"
+            echo "Package ${PKG_NAME} exists on registry. Will attempt OIDC publish."
+            echo "If this fails with ENEEDAUTH, configure trusted publisher at"
+            echo "  https://www.npmjs.com/package/${PKG_NAME}/access"
+            exit 0
+          fi
+
+          # 404 = package never published. OIDC trusted publishing CANNOT work
+          # because there is no package page on which to configure trust.
+          echo "auth_mode=none" >> "$GITHUB_OUTPUT"
+          {
+            echo "::error title=npm publish bootstrap required::"
+            echo "Package ${PKG_NAME} has never been published (registry returned ${status})."
+            echo "npm OIDC 'trusted publishing' cannot bootstrap a package that does not exist yet."
+            echo ""
+            echo "Resolve via ONE of the following (operator one-shot, ~5 min):"
+            echo "  (A) Local seed publish from sdk/agents/, then configure"
+            echo "      trusted publisher on https://www.npmjs.com/package/${PKG_NAME}/access"
+            echo "      and re-run this workflow."
+            echo "  (B) Add NPM_TOKEN repo secret (granular access token,"
+            echo "      Publish scope on @jpcite) and re-run."
+            echo ""
+            echo "See docs/_internal/W29_NPM_BOOTSTRAP.md for exact commands."
+          } >&2
+          exit 1
+
       - name: Install dependencies
         run: npm ci
 
@@ -74,11 +126,12 @@ jobs:
       - name: Verify tarball contents (dry-run)
         run: npm pack --dry-run
 
-      - name: Publish to npm (OIDC + provenance)
+      - name: Publish to npm (token or OIDC + provenance)
         # --access public is required for scoped @jpcite/* packages.
         # --provenance emits the SLSA attestation (requires id-token: write).
         # NODE_AUTH_TOKEN is only used if NPM_TOKEN secret exists; otherwise
         # npm CLI uses the OIDC trusted-publisher path (no token in env).
+        # Preflight above guarantees one of these paths is viable.
         run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
