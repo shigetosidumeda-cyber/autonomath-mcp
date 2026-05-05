@@ -1,0 +1,102 @@
+{
+  "name": "@jpcite/agents",
+  "version": "0.1.0",
+  "description": "Reference Claude Agent SDK agents for jpcite. Fork-and-customize starter agents for subsidy match, invoice check, law amendment watch, kessan briefing, and DD question generation. Customer-side LLM calls (operator pays ¥0 LLM cost).",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./subsidy-match": {
+      "types": "./dist/agents/subsidy_match.d.ts",
+      "import": "./dist/agents/subsidy_match.js"
+    },
+    "./invoice-check": {
+      "types": "./dist/agents/invoice_check.d.ts",
+      "import": "./dist/agents/invoice_check.js"
+    },
+    "./law-amendment-watch": {
+      "types": "./dist/agents/law_amendment_watch.d.ts",
+      "import": "./dist/agents/law_amendment_watch.js"
+    },
+    "./kessan-brief": {
+      "types": "./dist/agents/kessan_brief.d.ts",
+      "import": "./dist/agents/kessan_brief.js"
+    },
+    "./due-diligence": {
+      "types": "./dist/agents/due_diligence.d.ts",
+      "import": "./dist/agents/due_diligence.js"
+    },
+    "./client": {
+      "types": "./dist/lib/jpcite_client.d.ts",
+      "import": "./dist/lib/jpcite_client.js"
+    }
+  },
+  "files": [
+    "dist",
+    "examples",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "prepack": "npm run build"
+  },
+  "keywords": [
+    "jpcite",
+    "claude",
+    "claude-agent-sdk",
+    "agent",
+    "agents",
+    "japan",
+    "subsidy",
+    "subsidies",
+    "compliance",
+    "invoice",
+    "適格事業者",
+    "due-diligence",
+    "kessan",
+    "決算",
+    "法令",
+    "mcp"
+  ],
+  "homepage": "https://jpcite.com",
+  "bugs": {
+    "url": "https://jpcite.com/docs/",
+    "email": "info@bookyou.net"
+  },
+  "author": {
+    "name": "jpcite",
+    "email": "info@bookyou.net",
+    "url": "https://jpcite.com"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@anthropic-ai/claude-agent-sdk": ">=0.2.0",
+    "@jpcite/sdk": ">=0.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@anthropic-ai/claude-agent-sdk": {
+      "optional": true
+    },
+    "@jpcite/sdk": {
+      "optional": false
+    }
+  },
+  "devDependencies": {
+    "@jpcite/sdk": "file:../typescript",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.4.0"
+  }
+}
