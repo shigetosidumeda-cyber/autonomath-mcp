@@ -237,6 +237,12 @@ SENSITIVE_TOOLS: frozenset[str] = frozenset({
     # intentionally excluded.
     "get_houjin_360_am",
     "search_invoice_by_houjin_partial",
+    # Vector kNN recommendation tools (recommend_similar.py, 2026-05-05).
+    # 行政書士法 §1 + 弁護士法 §72 + 税理士法 §52 fence — vector
+    # similarity is a retrieval signal, not an 採択/法解釈/税務判断.
+    "recommend_similar_program",
+    "recommend_similar_case",
+    "recommend_similar_court_decision",
 })
 
 _DISCLAIMER_STANDARD: dict[str, str] = {
@@ -408,6 +414,27 @@ _DISCLAIMER_STANDARD: dict[str, str] = {
         "(公認会計士法 §47条の2 / 税理士法 §52)。各引用 row の source_url で "
         "原典を確認し、確定判断は資格を有する公認会計士・税理士へ。"
     ),
+    # --- Vector kNN recommendation tools (recommend_similar.py) -----------
+    "recommend_similar_program": (
+        "本 response は sqlite-vec (am_entities_vec_S) 上の k-NN 検索結果で、"
+        "採択を担保するものではありません。類似度は意味類似性の近似で、"
+        "申請可否判断 (行政書士法 §1) ・税務助言 (税理士法 §52) の代替では "
+        "ありません。verification_count + density_score (W22-9) で再ランクして "
+        "いますが、これは検索品質シグナルであって採択スコアではありません。"
+        "確定判断は資格を有する士業に必ずご相談ください。"
+    ),
+    "recommend_similar_case": (
+        "本 response は sqlite-vec (am_entities_vec_C) 上の k-NN 検索結果で、"
+        "採択事例間の意味類似性を返すだけです。類似 case があるからといって "
+        "申請可否や採択を担保しません (行政書士法 §1)。各 case の source_url で "
+        "原典を確認し、確定判断は資格を有する士業に必ずご相談ください。"
+    ),
+    "recommend_similar_court_decision": (
+        "本 response は sqlite-vec (am_entities_vec_J) 上の k-NN 検索結果で、"
+        "判例間の意味類似性を返すだけです。法解釈・法律判断 (弁護士法 §72) ・"
+        "申請判断 (行政書士法 §1) の代替ではありません。各判例の source_url で "
+        "原典を確認し、法解釈は資格を有する弁護士に必ずご相談ください。"
+    ),
 }
 
 _DISCLAIMER_MINIMAL: dict[str, str] = {
@@ -515,6 +542,19 @@ _DISCLAIMER_MINIMAL: dict[str, str] = {
     "resolve_citation_chain": (
         "引用 chain 解決のみ。監査意見・税務判断 "
         "(公認会計士法 §47条の2 / 税理士法 §52) の代替不可。"
+    ),
+    # --- Vector kNN recommendation tools ----------------------------------
+    "recommend_similar_program": (
+        "vec k-NN 検索結果のみ。採択を担保せず、申請可否判断 (行政書士法 §1) ・"
+        "税務助言 (税理士法 §52) の代替不可。"
+    ),
+    "recommend_similar_case": (
+        "vec k-NN 検索結果のみ。採択事例の意味類似のみ、申請可否担保なし "
+        "(行政書士法 §1)。"
+    ),
+    "recommend_similar_court_decision": (
+        "vec k-NN 検索結果のみ。判例の意味類似のみ、法解釈 (弁護士法 §72) ・"
+        "申請判断 (行政書士法 §1) の代替不可。"
     ),
 }
 

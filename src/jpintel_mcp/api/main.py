@@ -62,6 +62,7 @@ from jpintel_mcp.api.court_decisions import router as court_decisions_router
 from jpintel_mcp.api.customer_webhooks import router as customer_webhooks_router
 from jpintel_mcp.api.dashboard import router as dashboard_router
 from jpintel_mcp.api.device_flow import router as device_router
+from jpintel_mcp.api.discover import router as discover_router
 from jpintel_mcp.api.email_unsubscribe import router as email_unsubscribe_router
 from jpintel_mcp.api.email_webhook import router as email_webhook_router
 from jpintel_mcp.api.enforcement import router as enforcement_router
@@ -1551,6 +1552,11 @@ def create_app() -> FastAPI:
     app.include_router(intelligence_router, dependencies=[AnonIpLimitDep])
     # /v1/funding_stack/check — pure rule engine over compat_matrix + exclusion_rules.
     app.include_router(funding_stack_router, dependencies=[AnonIpLimitDep])
+    # /v1/discover/related/{entity_id} — multi-axis (5) related entity composer.
+    # Pure SQL + sqlite-vec over am_5hop_graph / am_funding_stack_empirical /
+    # am_entity_density_score / am_entities_vec_* + program_law_refs. Same
+    # anon 3/日 IP cap as the other discovery surfaces.
+    app.include_router(discover_router, dependencies=[AnonIpLimitDep])
     # /v1/houjin/{bangou} — corporate 360 lookup surfacing 1.12M gBizINFO
     # facts already in autonomath.db (am_entities corporate_entity +
     # am_entity_facts corp.*). Same anon-quota posture as the other

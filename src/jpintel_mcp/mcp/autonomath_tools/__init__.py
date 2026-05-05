@@ -27,6 +27,7 @@ from . import (
     citations_tools,  # noqa: F401  — 2026-04-30: verify_citations (api/citations.py companion). LR plan §28.2 verification path.
     composition_tools,  # noqa: F401  — Wave 21: 5 composition tools (apply_eligibility_chain_am / find_complementary_programs_am / simulate_application_am / track_amendment_lineage_am / program_active_periods_am, AUTONOMATH_COMPOSITION_ENABLED gate)
     corporate_layer_tools,  # noqa: F401  — P12 §4.8 (2026-05-04): 3 corporate-layer tools (get_houjin_360_am / list_edinet_disclosures / search_invoice_by_houjin_partial). Direct competitor coverage vs japan-corporate-mcp. AUTONOMATH_CORPORATE_LAYER_ENABLED gate (default ON), §52 envelope on the 2 sensitive tools, EDINET pointer surface (no live HTTP).
+    discover,  # noqa: F401  — Multi-axis Discover Related (5 axes: via_law_ref / via_vector / via_co_adoption / via_density_neighbors / via_5hop). REST companion at GET /v1/discover/related/{entity_id}. AUTONOMATH_DISCOVER_ENABLED gate (default ON).
     evidence_packet_tools,  # noqa: F401  — 2026-04-30: get_evidence_packet (api/evidence.py companion). LR plan §6 Evidence Packet composer.
     funding_stack_tools,  # noqa: F401  — 2026-04-30: check_funding_stack_am (api/funding_stack.py companion). Pure rule engine.
     graph_traverse_tool,  # noqa: F401  — O7 Wave 18: graph_traverse (heterogeneous 1-3 hop KG walk over v_am_relation_all, AUTONOMATH_GRAPH_TRAVERSE_ENABLED gate)
@@ -38,6 +39,7 @@ from . import (
     nta_corpus_tools,  # noqa: F401  — migration 103: 4 tools (find_saiketsu / cite_tsutatsu / find_shitsugi / find_bunsho_kaitou) over nta_saiketsu / nta_tsutatsu_index / nta_shitsugi / nta_bunsho_kaitou; AUTONOMATH_NTA_CORPUS_ENABLED gate (default ON), §52 envelope on every result.
     prerequisite_chain_tool,  # noqa: F401  — R5: prerequisite_chain (am_prerequisite_bundle, 1.6% coverage surfaced honestly, AUTONOMATH_PREREQUISITE_CHAIN_ENABLED gate)
     provenance_tools,  # noqa: F401  — V4 Phase 4: get_provenance + get_provenance_for_fact (am_source.license, migration 049)
+    recommend_similar,  # noqa: F401  — 2026-05-05: 3 vector k-NN recommend tools (recommend_similar_program / _case / _court_decision) over am_entities_vec_S/C/J post 91% embedding backfill. AUTONOMATH_RECOMMEND_SIMILAR_ENABLED gate (default ON). 行政書士法 §1 / 弁護士法 §72 / 税理士法 §52 envelope on all 3.
     rule_engine_tool,  # noqa: F401  — R9 unified rule_engine_check (am_unified_rule view, migration 064)
     snapshot_tool,  # noqa: F401  — R8: query_at_snapshot (dataset versioning, migration 067)
     source_manifest_tools,  # noqa: F401  — 2026-04-30: get_source_manifest (api/source_manifest.py companion). Per-program provenance rollup.
