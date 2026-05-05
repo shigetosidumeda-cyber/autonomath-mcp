@@ -1,0 +1,84 @@
+name: Publish @jpcite/agents
+
+# =============================================================================
+# OPERATOR RUNBOOK — npm publish of @jpcite/agents (reference Agent SDK starters)
+# =============================================================================
+# Publishes the @jpcite/agents npm package built from sdk/agents/.
+#
+# Triggers:
+#   - tag push  agents-v*    -> publish (tag is canonical release event)
+#   - manual workflow_dispatch (operator can re-run on demand)
+#
+# Auth:
+#   - Preferred: npm OIDC trusted publishing (no token).
+#     Required `id-token: write` is set on this job. Configure trust on
+#     https://www.npmjs.com/package/@jpcite/agents/access (after first publish):
+#       Repository: bookyou-net/jpcite (replace with actual GH org/repo)
+#       Workflow:   .github/workflows/sdk-publish-agents.yml
+#       Environment: (none) — leave blank
+#   - Fallback: secrets.NPM_TOKEN (granular access token, "Publish" scope on
+#     @jpcite scope). If set, NODE_AUTH_TOKEN below is consumed; otherwise the
+#     OIDC path takes over (npm CLI 10.2+ auto-detects OIDC env).
+#
+# `--provenance` always emits a SLSA supply-chain attestation regardless of
+# auth path, as long as `id-token: write` is present.
+#
+# First-time scope creation:
+#   The @jpcite npm scope is created automatically on first publish of any
+#   @jpcite/* package — no manual `npm org create` needed for an org scope
+#   tied to a personal/org account that already exists.
+# =============================================================================
+
+on:
+  push:
+    tags:
+      - "agents-v*"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  id-token: write   # OIDC trusted publishing + provenance attestation
+
+jobs:
+  publish:
+    name: Publish @jpcite/agents to npm
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: npm
+    defaults:
+      run:
+        working-directory: sdk/agents
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+          cache: npm
+          cache-dependency-path: sdk/agents/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Build
+        run: npm run build
+
+      - name: Verify tarball contents (dry-run)
+        run: npm pack --dry-run
+
+      - name: Publish to npm (OIDC + provenance)
+        # --access public is required for scoped @jpcite/* packages.
+        # --provenance emits the SLSA attestation (requires id-token: write).
+        # NODE_AUTH_TOKEN is only used if NPM_TOKEN secret exists; otherwise
+        # npm CLI uses the OIDC trusted-publisher path (no token in env).
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
