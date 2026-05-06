@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>jpcite for AI agent developers — MCP / REST + Claude Desktop + 96 tools</title>
-<meta name="description" content="jpcite for AI agent developers. An MCP server for Japanese subsidy / tax / loan / law data. stdio transport for Claude Desktop / Cursor / Cline, OpenAPI Actions for ChatGPT. 96 MCP tools at standard configuration, protocol 2025-06-18. 3 req/day free to evaluate, then ¥3/req metered.">
+<title>jpcite for AI agent developers — MCP / REST + Claude Desktop + 139 tools</title>
+<meta name="description" content="jpcite for AI agent developers. An MCP server for Japanese subsidy / tax / loan / law data. stdio transport for Claude Desktop / Cursor / Cline, OpenAPI Actions for ChatGPT. 139 MCP tools at standard configuration, protocol 2025-06-18. 3 req/day free to evaluate, then ¥3/req metered.">
 
 <meta property="og:title" content="jpcite for AI agent developers">
-<meta property="og:description" content="MCP / REST + Claude Desktop ready + 96 tools.">
+<meta property="og:description" content="MCP / REST + Claude Desktop ready + 139 tools.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/en/audiences/dev.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -19,7 +19,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="jpcite for AI agent developers">
-<meta name="twitter:description" content="MCP server (96 tools) + REST API. Drop into Claude Desktop.">
+<meta name="twitter:description" content="MCP server (139 tools) + REST API. Drop into Claude Desktop.">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/en/audiences/dev.html">
@@ -52,7 +52,7 @@
   "@type": "Service",
   "serviceType": "MCP / REST API for AI agent developers",
   "name": "jpcite for AI agent developers",
-  "description": "jpcite for AI agent developers. An MCP server over Japanese subsidy / tax / loan / law data. 96 tools, stdio transport, protocol 2025-06-18. Claude Desktop / Cursor / Cline use MCP; ChatGPT Custom GPTs call the REST API through OpenAPI Actions.",
+  "description": "jpcite for AI agent developers. An MCP server over Japanese subsidy / tax / loan / law data. 139 tools, stdio transport, protocol 2025-06-18. Claude Desktop / Cursor / Cline use MCP; ChatGPT Custom GPTs call the REST API through OpenAPI Actions.",
   "provider": {
     "@type": "Organization",
     "name": "Bookyou Inc.",
@@ -84,7 +84,7 @@
   "inLanguage": "en",
   "mainEntity": [
     {"@type": "Question", "name": "Is stdio the only MCP transport?", "acceptedAnswer": {"@type": "Answer", "text": "stdio is the primary transport (the default for Claude Desktop and Cursor). SSE / WebSocket support is planned for late 2026. The REST API exposes equivalent functionality, so use that if your environment is HTTP-only."}},
-    {"@type": "Question", "name": "What's the breakdown of the 96 tools?", "acceptedAnswer": {"@type": "Answer", "text": "Programs / case-studies / loans / enforcement search and helpers; an expansion layer (laws, tax rulesets, court decisions, bids, invoice registrants, plus cross-dataset evidence); the structured entity facts; metadata tools (annotations, validation, provenance); static dataset tools (resources, profiles, deep health); and DD-support tools (lifecycle, abstract, prerequisite, graph traversal, rule engine, related programs). Two 36協定 tools are currently in preparation. Full schemas are at /docs/mcp-tools/."}},
+    {"@type": "Question", "name": "Where can I see the full list of the 139 tools?", "acceptedAnswer": {"@type": "Answer", "text": "The authoritative full list and tool schemas are published at /docs/mcp-tools/. Use that index as the source of truth instead of a static breakdown on this page."}},
     {"@type": "Question", "name": "Does this work with Claude Desktop, Cursor, and ChatGPT?", "acceptedAnswer": {"@type": "Answer", "text": "Claude Desktop has native MCP support — drop-in. Cursor accepts MCP config. ChatGPT calls the REST API via GPTs Actions. Sample configs are in the quickstart section."}},
     {"@type": "Question", "name": "What are the rate limits?", "acceptedAnswer": {"@type": "Answer", "text": "Anonymous traffic is 3 req/day per IP, reset at JST next-day 00:00. Authenticated API keys are metered at ¥3/request and can set a monthly budget cap from the dashboard."}},
     {"@type": "Question", "name": "Where's the OpenAPI spec?", "acceptedAnswer": {"@type": "Answer", "text": "/docs/openapi/v1.json publishes an OpenAPI 3.1-compliant spec, auto-generated from FastAPI. Imports cleanly into Stoplight, Postman, Insomnia, etc."}},
@@ -124,10 +124,10 @@
  </nav>
  <h1 id="hero-title">jpcite for AI agent developers</h1>
  <p class="hero-sub">An MCP server for Japanese subsidy / tax / loan / law data. ChatGPT and Claude write the answer; jpcite supplies the evidence layer before generation.</p>
- <p class="hero-tag">96 MCP tools at standard configuration (protocol 2025-06-18). 14,472 programs + 2,286 case studies + 108 loans + 1,185 enforcement + 154 laws full-text + 9,484 law metadata records + 50 tax rulesets + 13,801 invoice registrants + structured entity facts (503,930 entities / 6.12M facts / 23,805 relations / 335,605 aliases). 3 req/day free to evaluate, ¥3/req commercial.</p>
+ <p class="hero-tag">139 MCP tools at standard configuration (protocol 2025-06-18). 14,472 programs + 2,286 case studies + 108 loans + 1,185 enforcement + 154 laws full-text + 9,484 law metadata records + 50 tax rulesets + 13,801 invoice registrants + structured entity facts (503,930 entities / 6.12M facts / 378,342 relations / 335,605 aliases). 3 req/day free to evaluate, ¥3/req commercial.</p>
  <div class="cta-row">
  <a class="btn btn-primary" href="#quickstart">Start in 5 minutes &rarr;</a>
- <a class="btn btn-secondary" href="/docs/mcp-tools/">All 96 tools</a>
+ <a class="btn btn-secondary" href="/docs/mcp-tools/">All 139 tools</a>
  <a class="btn btn-secondary" href="https://pypi.org/project/autonomath-mcp/" rel="noopener">PyPI</a>
  </div>
  </div>
@@ -248,7 +248,7 @@ for p in r.json["items"]:
 
  <section class="code-demo" aria-labelledby="tools-title">
  <div class="container">
- <h2 id="tools-title" class="section-title">A sample of the 96 tools</h2>
+ <h2 id="tools-title" class="section-title">A sample of the 139 tools</h2>
  <div class="cards" style="grid-template-columns:repeat(3,1fr);">
 
  <article class="card">
@@ -290,7 +290,7 @@ for p in r.json["items"]:
  <li><code>prerequisite_chain</code></li>
  <li><code>query_at_snapshot</code></li>
  </ul>
- <p style="margin-top:12px;font-size:13px;"><a href="/docs/mcp-tools/">See all 93 tool schemas &rarr;</a></p>
+ <p style="margin-top:12px;font-size:13px;"><a href="/docs/mcp-tools/">See all 139 tool schemas &rarr;</a></p>
  </article>
 
  </div>
@@ -328,8 +328,8 @@ for p in r.json["items"]:
  <h2 id="faq-title" class="section-title">FAQ (developer)</h2>
  <h3 style="font-size:16px;margin:18px 0 6px;">Is stdio the only MCP transport?</h3>
  <p>stdio is the primary transport (the default for Claude Desktop and Cursor). SSE / WebSocket support is planned for late 2026. The REST API has the same coverage, so use that if your environment is HTTP-only.</p>
- <h3 style="font-size:16px;margin:18px 0 6px;">What's the breakdown of the 96 tools?</h3>
- <p>Programs / case-studies / loans / enforcement search and helpers; an expansion layer (laws, tax rulesets, court decisions, bids, invoice registrants, plus cross-dataset evidence); the structured entity facts; metadata tools (annotations, validation, provenance); static dataset tools (resources, profiles, deep health); and DD-support tools (lifecycle, abstract, prerequisite, graph traversal, rule engine, related programs). Two 36協定 tools are currently in preparation. Full schemas at /docs/mcp-tools/.</p>
+ <h3 style="font-size:16px;margin:18px 0 6px;">Where can I see the full list of the 139 tools?</h3>
+ <p>The authoritative full list and tool schemas are published at <a href="/docs/mcp-tools/">/docs/mcp-tools/</a>. Use that index as the source of truth instead of a static breakdown on this page.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">Does this work with Claude Desktop, Cursor, and ChatGPT?</h3>
  <p>Claude Desktop has native MCP support — drop-in. Cursor accepts MCP config. ChatGPT calls the REST API through GPTs Actions. Sample configs are in the quickstart.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">What are the rate limits?</h3>
@@ -350,7 +350,7 @@ for p in r.json["items"]:
  <h2 id="resources-title" class="section-title">Developer resources</h2>
  <ul class="resource-list" style="list-style:none;padding:0;margin:0;">
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/"><strong>REST API reference</strong></a> &mdash; Public endpoint specs, authentication, rate limits, response schemas. Auto-generated from FastAPI.</li>
- <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/mcp-tools/"><strong>MCP tools index (96 tools)</strong></a> &mdash; Functions callable directly from Claude Desktop / Cursor / Continue. Full schemas published, stdio transport.</li>
+ <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/mcp-tools/"><strong>MCP tools index (139 tools)</strong></a> &mdash; Functions callable directly from Claude Desktop / Cursor / Continue. Full schemas published, stdio transport.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/examples/"><strong>Implementation examples (Python + curl + TypeScript)</strong></a> &mdash; Copy-paste samples. Both MCP and REST, error handling included.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/getting-started/"><strong>5-minute quickstart</strong></a> &mdash; Shortest path from API key issuance to first search. Stripe metered billing setup included.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/openapi/v1.json"><strong>OpenAPI 3.1 spec (JSON)</strong></a> &mdash; Direct import into Stoplight, Postman, Insomnia. Source for client SDK auto-generation.</li>
@@ -365,7 +365,7 @@ for p in r.json["items"]:
  <div class="cta-row">
  <a class="btn btn-primary" href="https://pypi.org/project/autonomath-mcp/" rel="noopener">PyPI: <code>autonomath-mcp</code></a>
  <a class="btn btn-secondary" href="mailto:info@bookyou.net?subject=AI%20agent%20developer%20inquiry">info@bookyou.net</a>
- <a class="btn btn-secondary" href="/docs/mcp-tools/">All 96 tools</a>
+ <a class="btn btn-secondary" href="/docs/mcp-tools/">All 139 tools</a>
  </div>
  <p class="hero-note" style="margin-top:14px;">Operator: Bookyou Inc. Cancel anytime, no minimums or termination fees &middot; <a href="../tokushoho.html">Legal disclosures (JP)</a></p>
  </div>

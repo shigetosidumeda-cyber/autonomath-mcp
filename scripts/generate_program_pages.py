@@ -2255,7 +2255,7 @@ def _parse_args() -> argparse.Namespace:
     p.add_argument("--limit", type=int, default=None, help="cap rows (debug)")
     p.add_argument(
         "--tiers",
-        default="S,A",
+        default="S,A,B,C",
         help=(
             "comma-separated tier filter (default: S,A — the 2026-04-29 SEO "
             "AI-feel reduction). Pass 'S,A,B,C' to render the legacy 10k+ pages."

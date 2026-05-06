@@ -1,6 +1,6 @@
-# AutonoMath Launch Screencast — Storyboard
+# jpcite Launch Screencast — Storyboard
 
-**Product**: AutonoMath (Bookyou株式会社)
+**Product**: jpcite (Bookyou株式会社)
 **Launch date**: 2026-05-06
 **Target duration**: 45–60 seconds
 **Format**: `.mov` (H.264 baseline), 2560×1440 preferred / 1920×1080 minimum, 30 fps
@@ -29,8 +29,8 @@ All windows maximised to full screen unless noted otherwise.
 | Beat 2 | iTerm2, single pane | Full screen |
 | Beat 3 | Claude Desktop — MCP sidebar visible | Full screen |
 | Beat 4 | Claude Desktop — response area | Full screen |
-| Beat 5 | Safari on `autonomath.ai` pricing section | Full screen |
-| Beat 6 | Split: iTerm2 left (900px wide) + `autonomath.ai` right | Left 900px / Right 1020px |
+| Beat 5 | Safari on `jpcite.com` pricing section | Full screen |
+| Beat 6 | Split: iTerm2 left (900px wide) + `jpcite.com` right | Left 900px / Right 1020px |
 
 ### Mouse cursor
 Set to **Large Black** before recording:
@@ -76,7 +76,7 @@ Slowly scroll the PDF downward. Do not click anything. Let the visual density sp
 iTerm2, full screen. Menlo 18pt, dark background (Tomorrow Night or Dracula). Run:
 
 ```
-curl "https://api.autonomath.ai/v1/programs/search?q=スマート農業&tier=S&tier=A&limit=5" \
+curl "https://api.jpcite.com/v1/programs/search?q=スマート農業&tier=S&tier=A&limit=5" \
   -H "Authorization: Bearer $AUTONOMATH_KEY"
 ```
 
@@ -91,7 +91,7 @@ Pause on the output for 2 seconds so viewers can read tier S/A results and the `
 
 **Caption**
 ```
-JP: 9,998件の制度から curl 1本で即答
+JP: 11,684件の制度から curl 1本で即答
 EN: 9,998 programs — one curl, instant
 ```
 Character counts — JP: 22 chars (OK). EN: 30 chars (OK).
@@ -106,9 +106,9 @@ Type the command (or paste it — keep key actions at a readable pace). Hit Ente
 ### Beat 3 — MCP in Claude Desktop (0:14–0:24) — 10 sec
 
 **Visual**
-Claude Desktop, full screen. The left sidebar shows the "autonomath" MCP server with a green connected indicator. The tool count shows "47 tools available" (visible in the MCP server detail panel; 31 core + 16 autonomath). Compose the following prompt in the chat input field — type it slowly enough that it can be read on screen:
+Claude Desktop, full screen. The left sidebar shows the "autonomath" MCP server with a green connected indicator. The tool count shows "139 tools available" (visible in the MCP server detail panel; 31 core + 16 autonomath). Compose the following prompt in the chat input field — type it slowly enough that it can be read on screen:
 
-> ⚠️ 動画の再録が必要: Claude Desktop UI 内の "31 tools" 表示を 47 tools に更新するには screencast を撮り直す必要があります。copy 更新だけでは UI と narration がズレます。
+> ⚠️ 動画の再録が必要: Claude Desktop UI 内の "31 tools" 表示を 139 tools に更新するには screencast を撮り直す必要があります。copy 更新だけでは UI と narration がズレます。
 
 ```
 東京都の中小企業が使える IT 補助金を、
@@ -119,8 +119,8 @@ Do not hit Enter yet. Hold for 1.5 seconds so the caption can be read, then hit 
 
 **Caption**
 ```
-JP: Claude Desktop に MCP 接続・47 ツール
-EN: Claude Desktop MCP · 47 tools
+JP: Claude Desktop に MCP 接続・139 ツール
+EN: Claude Desktop MCP · 139 tools
 ```
 Character counts — JP: 22 chars (OK). EN: 30 chars (OK).
 
@@ -164,7 +164,7 @@ Let Claude run. Do not touch the mouse during tool-call phase. After the respons
 ### Beat 5 — Pricing (0:42–0:52) — 10 sec
 
 **Visual**
-Safari, `https://autonomath.ai` pricing section. The section shows:
+Safari, `https://jpcite.com` pricing section. The section shows:
 - "¥3 / リクエスト (税込 ¥3.30)" as the primary figure
 - "匿名 50 req/月 無料 (JST 月初リセット)" as the free path
 - No plan tiers, no seat counts, no "Pro" badge.
@@ -179,14 +179,14 @@ EN: ¥3/req metered — 50 free/month anon
 Character counts — JP: 20 chars (OK). EN: 32 chars (OK).
 
 **Action**
-Navigate to `autonomath.ai` in Safari (already open, pre-loaded). Scroll to pricing. Pause. No click needed.
+Navigate to `jpcite.com` in Safari (already open, pre-loaded). Scroll to pricing. Pause. No click needed.
 
 ---
 
 ### Beat 6 — CTA (0:52–0:58) — 6 sec
 
 **Visual**
-Split screen: iTerm2 left (900px), browser right (1020px showing `autonomath.ai` home, logo visible).
+Split screen: iTerm2 left (900px), browser right (1020px showing `jpcite.com` home, logo visible).
 
 In iTerm2, type:
 ```
@@ -195,14 +195,14 @@ uvx autonomath-mcp
 
 The MCP server starts clean — no error output. The startup line reads:
 ```
-AutonoMath MCP server ready (47 tools: 31 core + 16 autonomath, protocol 2025-06-18)
+jpcite MCP server ready (139 tools: 31 core + 16 autonomath, protocol 2025-06-18)
 ```
 
 > ⚠️ 動画の再録が必要: Beat 6 の terminal に映る `autonomath-mcp` 起動ログは server 側の実行時文字列なので、screencast を撮り直さないと古い "31 tools" 表示のまま残ります。
 
 Hold for 2 seconds.
 
-Then the landing page URL `autonomath.ai` is centred on screen for a final 1.5-second hold. No animation needed.
+Then the landing page URL `jpcite.com` is centred on screen for a final 1.5-second hold. No animation needed.
 
 **Caption**
 ```
@@ -244,7 +244,7 @@ Type `uvx autonomath-mcp` at a readable pace. Watch it boot. Hold. No further in
 ### Apps to close
 - [ ] All apps except iTerm2, Safari, Claude Desktop
 - [ ] Quit Finder sidebar cloud sync indicators
-- [ ] Close all browser tabs except the two needed (MAFF page + `autonomath.ai`)
+- [ ] Close all browser tabs except the two needed (MAFF page + `jpcite.com`)
 
 ### Terminal setup
 - [ ] iTerm2 (or Warp) with **Menlo 18pt** or larger
@@ -255,16 +255,16 @@ Type `uvx autonomath-mcp` at a readable pace. Watch it boot. Hold. No further in
 - [ ] Test full curl + jq command end-to-end before recording; save the exact command in a scratch buffer to paste during recording
 
 ### Claude Desktop
-- [ ] AutonoMath MCP server configured and connected (green dot)
+- [ ] jpcite MCP server configured and connected (green dot)
 - [ ] No other MCP servers connected (minimise visual noise)
-- [ ] MCP tool list visible: confirm "47 tools available" appears before recording (31 core + 16 autonomath; requires v0.2.0 server with `AUTONOMATH_ENABLED=true`)
+- [ ] MCP tool list visible: confirm "139 tools available" appears before recording (31 core + 16 autonomath; requires v0.2.0 server with `AUTONOMATH_ENABLED=true`)
 
 ### API readiness
 - [ ] Pre-run the Beat 4 query once and save the response to `~/.cache/autonomath-screencast-takes/beat4-cached.json` as a fallback
 - [ ] Confirm live API response time < 2 seconds for Beat 2 query (run 3× to verify)
 
 ### Browser
-- [ ] `autonomath.ai` pre-loaded in Safari, scroll position at hero top
+- [ ] `jpcite.com` pre-loaded in Safari, scroll position at hero top
 - [ ] MAFF subsidy index page pre-loaded in a second tab (no login required)
 - [ ] Zoom level 100%
 
@@ -296,10 +296,10 @@ Type `uvx autonomath-mcp` at a readable pace. Watch it boot. Hold. No further in
     -vf "fps=15,scale=640:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" \
     -loop 0 autonomath-demo-preview.gif
   ```
-- [ ] **Thumbnail frame** — capture the Beat 3 frame (Claude Desktop with green MCP dot + "47 tools available") as a 1280×720 PNG for Product Hunt gallery cover.
+- [ ] **Thumbnail frame** — capture the Beat 3 frame (Claude Desktop with green MCP dot + "139 tools available") as a 1280×720 PNG for Product Hunt gallery cover.
 
 ### Hosting
-- [ ] Upload `autonomath-demo.mp4` and `autonomath-demo.mov` to `autonomath.ai/assets/` (Cloudflare Pages CDN, no YouTube dependency)
+- [ ] Upload `autonomath-demo.mp4` and `autonomath-demo.mov` to `jpcite.com/assets/` (Cloudflare Pages CDN, no YouTube dependency)
 - [ ] Upload `autonomath-demo-preview.gif` alongside for HN linking
 - [ ] Verify `Content-Type: video/mp4` header is returned for the MP4 (Cloudflare Pages serves this correctly by default)
 - [ ] Test autoplay muted in a Chrome incognito window on mobile viewport (375px) before publishing

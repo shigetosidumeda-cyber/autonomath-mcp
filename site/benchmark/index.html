@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>JCRB-v1 — Japan Compliance Reasoning Benchmark</title>
+<meta name="description" content="JCRB-v1 は、日本の補助金・税制・法令・採択統計・行政処分に関する LLM の推論精度を測るベンチマーク。100 設問 × 5 ドメイン、各モデルを jpcite なし / あり 両条件で評価し、一次資料引用率を含めて公開。">
+
+<meta property="og:title" content="JCRB-v1 — Japan Compliance Reasoning Benchmark">
+<meta property="og:description" content="GPT-5 / Claude Opus 4.7 / Gemini 2.5 を 100 設問で測定 — jpcite なし / あり の差を公開。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://jpcite.com/benchmark/">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="JCRB-v1 — Japan Compliance Reasoning Benchmark">
+<meta name="twitter:description" content="100 設問 × 5 ドメイン × jpcite なし/あり、再現可能な日本コンプラ推論ベンチマーク。">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
+
+<link rel="canonical" href="https://jpcite.com/benchmark/">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/benchmark/">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/benchmark/">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="/styles.css?v=20260504a">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "Japan Compliance Reasoning Benchmark v1 (JCRB-v1)",
+  "description": "100 質問 × 5 ドメイン (補助金 eligibility / 税制適用 / 法令引用 / 採択統計 / 行政処分予測) で LLM の日本コンプライアンス推論を測定。各設問は一次資料 (e-Gov / NTA / 各省庁) URL に紐付く。",
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "creator": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "url": "https://jpcite.com/"
+  },
+  "url": "https://jpcite.com/benchmark/",
+  "isAccessibleForFree": true,
+  "version": "1.0.0",
+  "encodingFormat": ["application/jsonl", "application/json"],
+  "distribution": [
+    {"@type": "DataDownload", "encodingFormat": "application/jsonl",
+     "contentUrl": "https://github.com/shigetosidumeda-cyber/autonomath-mcp/blob/main/benchmarks/jcrb_v1/questions.jsonl"}
+  ]
+}
+</script>
+
+<style>
+  body { font-family: 'Noto Sans JP', sans-serif; max-width: 1080px; margin: 0 auto; padding: 24px 20px 80px; color: #1a1a1a; }
+  h1 { font-size: 28px; margin: 0 0 8px; letter-spacing: -0.01em; }
+  h2 { font-size: 20px; margin: 40px 0 12px; border-bottom: 2px solid #111; padding-bottom: 6px; }
+  h3 { font-size: 16px; margin: 24px 0 8px; color: #333; }
+  p, li { font-size: 15px; line-height: 1.7; }
+  .lede { font-size: 16px; color: #444; max-width: 760px; }
+  .pill { display: inline-block; padding: 2px 8px; background: #f0f0f0; border-radius: 999px; font-size: 12px; color: #555; margin-right: 6px; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0 20px; font-size: 14px; }
+  th, td { border: 1px solid #ddd; padding: 8px 10px; text-align: right; }
+  th:first-child, td:first-child { text-align: left; }
+  thead { background: #fafafa; }
+  tr.highlight { background: #fffbe5; }
+  .lift-pos { color: #0a7d3a; font-weight: 600; }
+  .lift-neg { color: #b00020; font-weight: 600; }
+  code, pre { font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+  pre { background: #f7f7f7; padding: 12px 14px; border-radius: 6px; overflow-x: auto; }
+  .small { font-size: 12px; color: #666; }
+  .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 12px 0; }
+  .grid-5 .card { border: 1px solid #ddd; border-radius: 6px; padding: 10px 12px; }
+  .grid-5 .card h4 { margin: 0 0 4px; font-size: 13px; color: #333; }
+  .grid-5 .card .num { font-size: 22px; font-weight: 700; color: #111; }
+  nav.crumbs { font-size: 12px; color: #666; margin-bottom: 16px; }
+  nav.crumbs a { color: #555; text-decoration: none; }
+  .updated { font-size: 12px; color: #888; margin-bottom: 12px; }
+  details { margin: 14px 0; }
+  details summary { cursor: pointer; font-weight: 600; }
+  .cta { display: inline-block; padding: 8px 14px; background: #111; color: #fff; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 14px; }
+  .cta:hover { background: #333; }
+  .cta.secondary { background: #f0f0f0; color: #111; border: 1px solid #ddd; }
+</style>
+</head>
+<body>
+
+<nav class="crumbs"><a href="/">jpcite</a> &raquo; <a href="/benchmark/">Benchmark</a></nav>
+
+<h1>JCRB-v1 — Japan Compliance Reasoning Benchmark</h1>
+<p class="lede">日本の <strong>補助金 eligibility</strong> / <strong>税制適用</strong> / <strong>法令引用</strong> / <strong>採択統計</strong> / <strong>行政処分予測</strong> の 5 ドメイン × 100 設問。各 LLM を <em>jpcite なし</em> と <em>jpcite あり</em> 両条件で測定し、<strong>exact_match</strong> (上限額 / 条文 / 日付の文字列一致) と <strong>citation_ok</strong> (一次資料 host 引用) の差を公開します。</p>
+
+<p>
+  <span class="pill">v1.0.0</span>
+  <span class="pill">100 設問 / 5 ドメイン</span>
+  <span class="pill">CC-BY 4.0</span>
+  <span class="pill">100% 再現可能 (顧客 CLI)</span>
+  <span class="pill">採点無料 (Pure Python)</span>
+</p>
+
+<p class="updated" id="updated">最終更新: <span id="generated_at">—</span></p>
+
+<h2>Leaderboard</h2>
+<p class="small">
+  Leaderboard は <strong>検証済み提出のみ</strong>を表示します。seed estimates は表示確認用の例であり、検証済みランキングの証拠ではありません。
+</p>
+
+<table id="leaderboard">
+  <thead>
+    <tr>
+      <th>Model</th>
+      <th>without jpcite<br><span class="small">exact_match</span></th>
+      <th>with jpcite<br><span class="small">exact_match</span></th>
+      <th>Lift<br><span class="small">(差分)</span></th>
+      <th>without<br><span class="small">citation_ok</span></th>
+      <th>with<br><span class="small">citation_ok</span></th>
+      <th>Lift<br><span class="small">citation</span></th>
+    </tr>
+  </thead>
+  <tbody id="leaderboard_body">
+    <tr><td colspan="7" class="small">loading…</td></tr>
+  </tbody>
+</table>
+
+<p class="small">
+  提出ごとに <code>(model, mode)</code> 単位で最新が反映されます。生データ:
+  <a href="results.json">results.json</a> /
+  <a href="results.csv">results.csv</a>
+</p>
+
+<h2>5 ドメイン × 各 20 問</h2>
+<div class="grid-5">
+  <div class="card"><h4>補助金 eligibility</h4><div class="num">20</div><p class="small">業種 × 地域 × 規模 で対象判定。事業再構築 / ものづくり / IT 導入 / 雇用就農資金 等。</p></div>
+  <div class="card"><h4>税制適用</h4><div class="num">20</div><p class="small">研究開発税制 / 賃上げ促進 / 中小企業経営強化 / インボイス経過措置 等の控除率・条文・終了日。</p></div>
+  <div class="card"><h4>法令引用</h4><div class="num">20</div><p class="small">e-Gov 上の根拠条文番号 (中小企業基本法 / 労基法 / 下請法 / 独禁法 等)。</p></div>
+  <div class="card"><h4>採択統計</h4><div class="num">20</div><p class="small">過去公募の申請数 / 採択数 / 採択率 (事業再構築 / ものづくり / 持続化 等)。</p></div>
+  <div class="card"><h4>行政処分予測</h4><div class="num">20</div><p class="small">補助金返還命令額 / 業務停止 / 検察告発件数 / 加算金率 等の数値・期間。</p></div>
+</div>
+
+<h2>方法論 (Methodology)</h2>
+
+<h3>1. 設問構築</h3>
+<p>各設問は jpcite の 一次資料コーパス (programs S/A tier・laws・tax_rulesets・enforcement_cases) を起点にバックワードに生成されました。回答候補の <code>expected_value</code> は <code>e-gov.go.jp</code> / <code>nta.go.jp</code> / <code>maff.go.jp</code> / <code>chusho.meti.go.jp</code> / 公式事務局サイト等 <strong>政府・公式事務局一次資料 URL に紐付く事実</strong>のみ採用。アグリゲータ (noukaweb / hojyokin-portal 等) は <strong>除外</strong>。</p>
+
+<h3>2. スコアリング (deterministic)</h3>
+<ul>
+  <li><strong>exact_match</strong> = (期待値の正規化部分文字列が出力に含まれる) AND (期待ホストの URL が出力に含まれる)。和暦↔ISO・万円↔円・全角↔半角を吸収。</li>
+  <li><strong>citation_ok</strong> = 期待ホスト (<code>registrable-domain</code> 一致) の URL が出力に含まれる。</li>
+  <li><strong>factual_correctness</strong> (オプション) = 提出者が任意に LLM judge を実装可。reference scorer は <em>呼ばない</em> (再現性確保)。</li>
+</ul>
+
+<h3>3. jpcite なし / あり の比較</h3>
+<p><em>without_jpcite</em> 条件は素の質問文のみを LLM に投げる closed-book 評価。<em>with_jpcite</em> 条件は同じ質問の前に、jpcite REST API <code>/v1/search</code> から取得した上位 5 件の <code>(primary_name, source_url)</code> をコンテキストとして付与してから投げます。プロンプト本体は両条件で同一。</p>
+
+<h3>4. オペレータは LLM を呼ばない</h3>
+<p>jpcite 運営 (Bookyou株式会社) は <strong>顧客の代わりに LLM API を呼びません</strong>。顧客が <code>benchmarks/jcrb_v1/run.py</code> を自分のハードウェアで実行し、結果サマリ JSON を <code>benchmarks/jcrb_v1/submissions/</code> に PR / POST で送る — 運営 cron <code>scripts/cron/jcrb_publish_results.py</code> はそれを集約してこのページに publish するだけです。これは <em>jpcite の本業務 (¥3/req メータリング) と同じ no-LLM-on-operator-side 原則</em>に従います。</p>
+
+<h2>再現手順 (Reproduce)</h2>
+
+<pre><code># 1. dataset 取得
+git clone https://github.com/shigetosidumeda-cyber/autonomath-mcp.git
+cd autonomath-mcp
+
+# 2. 自分のモデルで実行 (例: Claude Opus 4.7、jpcite なし)
+python benchmarks/jcrb_v1/run.py \
+    --provider claude --model claude-opus-4-7 \
+    --mode without_jpcite \
+    --out predictions/claude_without.jsonl
+
+# 3. jpcite ありでも実行 (¥3/req のメータリングが顧客側で発生)
+JPCITE_API_KEY=sk_... python benchmarks/jcrb_v1/run.py \
+    --provider claude --model claude-opus-4-7 \
+    --mode with_jpcite \
+    --out predictions/claude_with.jsonl
+
+# 4. 採点 (LLM 不使用、Pure Python、無料)
+python benchmarks/jcrb_v1/scoring.py \
+    --predictions predictions/claude_without.jsonl \
+    --out reports/claude_without
+
+# 5. 結果サマリ JSON を leaderboard に追加 (PR or POST)
+#    benchmarks/jcrb_v1/submissions/&lt;model&gt;__&lt;mode&gt;.json
+</code></pre>
+
+<p>
+  <a class="cta" href="https://github.com/shigetosidumeda-cyber/autonomath-mcp/tree/main/benchmarks/jcrb_v1">benchmarks/jcrb_v1/ を見る</a>
+  <a class="cta secondary" href="results.json">results.json</a>
+  <a class="cta secondary" href="https://github.com/shigetosidumeda-cyber/autonomath-mcp/blob/main/benchmarks/jcrb_v1/expected_baseline.md">期待ベースライン</a>
+</p>
+
+<h2>提出 (Submit)</h2>
+<p>2 通りの submission チャネルがあります:</p>
+<ol>
+  <li><strong>GitHub PR</strong>: <code>benchmarks/jcrb_v1/submissions/&lt;model&gt;__&lt;mode&gt;__&lt;yyyymmdd&gt;.json</code> を新規追加した PR を送る。</li>
+  <li><strong>HTTP POST</strong>: API submission channel は準備中。公開されるまでは GitHub PR を使う。</li>
+</ol>
+<p class="small">submission envelope schema: <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp/blob/main/benchmarks/jcrb_v1/submissions/SAMPLE_README.md">SAMPLE_README.md</a></p>
+
+<details>
+  <summary>FAQ</summary>
+  <p><strong>Q. なぜ closed-book LLM は低スコアになるのですか?</strong><br>
+  日本の補助金・税制は <strong>(a) 一次資料が省庁ごとに分散</strong>、<strong>(b) アグリゲータの誤転載が学習データに混入</strong>、<strong>(c) 経過措置 / 改正で日付が頻繁に変わる</strong> — 3 点が重なるため、frontier LLM でも素の prompt では exact_match 0.15-0.25 程度に留まります。jpcite はこの 3 点を <strong>一次資料 URL に必ず紐付ける</strong>ことで解消します。</p>
+
+  <p><strong>Q. jpcite が自分の corpus で測ったら有利では?</strong><br>
+  全設問の <code>expected_value</code> は <strong>政府サイト (e-gov / nta / maff / meti / mhlw 等) の公開ページから誰でも検証できる</strong>事実のみで構成されています。jpcite に独自の真値はありません。questions.jsonl の各行に <code>expected_source_host</code> が記載されており、そのホストにアクセスして手動検証可能です。</p>
+
+  <p><strong>Q. LLM judge は使わないのですか?</strong><br>
+  reference scorer では使いません (再現性とコスト ¥0 を優先)。提出者は <code>scoring.py</code> の <code>factual_judge</code> パラメータに自前 judge を渡すことで補助スコアを記録できますが、leaderboard には反映しません。</p>
+
+  <p><strong>Q. データ汚染対策は?</strong><br>
+  <code>questions.jsonl</code> の各行は jpcite v0.3.x コーパス (2026-04 snapshot) から生成された新規設問で、既存ベンチマーク (JGLUE / JMMLU / JCommonsenseQA) との重複はありません。canary 文字列 <code>BENCHMARK_DATA_SHOULD_NOT_BE_INCLUDED_IN_TRAINING_DATA_jcrb_v1</code> を README に同梱し、訓練コーパスへの混入を検知可能にしています。</p>
+</details>
+
+<p class="small" style="margin-top: 60px;">
+  © Bookyou株式会社 (T8010001213708) /
+  jpcite — 日本の公的制度の出典付き検証 API + MCP /
+  <a href="/about.html">About</a> ·
+  <a href="/data-licensing.html">Data licensing</a>
+</p>
+
+<script>
+  (async () => {
+    try {
+      const r = await fetch('results.json', {cache: 'no-store'});
+      if (!r.ok) throw new Error('fetch failed');
+      const d = await r.json();
+      document.getElementById('generated_at').textContent = d.generated_at || '—';
+      const tbody = document.getElementById('leaderboard_body');
+      tbody.innerHTML = '';
+      const fmt = v => (v === undefined || v === null) ? '—' : (Math.round(v * 1000) / 10).toFixed(1) + '%';
+      const fmtLift = v => {
+        if (v === undefined || v === null) return '—';
+        const p = (Math.round(v * 1000) / 10).toFixed(1);
+        const cls = v >= 0 ? 'lift-pos' : 'lift-neg';
+        return '<span class="' + cls + '">' + (v >= 0 ? '+' : '') + p + 'pp</span>';
+      };
+      const leaderboard = d.leaderboard_verified || d.leaderboard || [];
+      for (const row of leaderboard) {
+        const tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td><strong>' + row.model + '</strong></td>' +
+          '<td>' + fmt(row.without_exact_match) + '</td>' +
+          '<td>' + fmt(row.with_exact_match) + '</td>' +
+          '<td>' + fmtLift(row.lift_exact_match) + '</td>' +
+          '<td>' + fmt(row.without_citation_ok) + '</td>' +
+          '<td>' + fmt(row.with_citation_ok) + '</td>' +
+          '<td>' + fmtLift(row.lift_citation_ok) + '</td>';
+        tbody.appendChild(tr);
+      }
+      if (!leaderboard.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="small">検証済み提出はまだありません。seed examples は results.json に分離しています。</td></tr>';
+      }
+    } catch (e) {
+      document.getElementById('leaderboard_body').innerHTML =
+        '<tr><td colspan="7" class="small">results.json を読めませんでした (' + e.message + ')。リポジトリ直下を参照してください。</td></tr>';
+    }
+  })();
+</script>
+
+</body>
+</html>
