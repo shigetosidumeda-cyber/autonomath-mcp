@@ -2,10 +2,10 @@
   "dxt_version": "0.1",
   "name": "autonomath-mcp",
   "display_name": "jpcite — 日本の制度 API",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "icon": "icon.png",
-  "description": "Japan public-program MCP — subsidies, loans, tax, law, invoice & corporate data. 11,684 補助金 + 9,484 e-Gov laws + 1,185 行政処分 + 22,258 detail records + 13,801 適格事業者 + 166K corporate entities. ¥3/request, 3 free/day per IP. Evidence Packet with source_url + source_fetched_at + known gaps + 互換/排他 rules. 96 tools.",
-  "long_description": "jpciteは、日本の公的制度・法令・判例・税務・入札・行政処分などの公開情報を、LLM入力用の短い根拠パケットとして取得するためのMCP拡張です。長いPDF、府省庁ページ、検索結果をそのままモデルに渡す前に、source_url、fetched_at、provenance、known_gaps、併用ルールをまとめて取得できます。文脈サイズの見積もりは質問内容、モデル、プロンプト、キャッシュ状態に依存し、請求額削減を保証するものではありません。料金は1リクエスト税別3円（税込3.30円）の従量課金です。匿名利用は登録不要で1 IPあたり1日3回まで無料、翌日JSTにリセットされます。法務・税務・行政書士業務の助言ではありません。重要な判断の前には必ず一次資料を確認してください。",
+  "description": "Japan public-program MCP — subsidies, loans, tax, law, invoice & corporate data. 11,684 補助金 + 9,484 e-Gov laws + 1,185 行政処分 + 22,258 detail records + 13,801 適格事業者 + 166K corporate entities. ¥3/request, 3 free/day per IP. Evidence Packet with source_url + source_fetched_at + known gaps + 互換/排他 rules. 139 tools.",
+  "long_description": "jpciteは、日本の公的制度・法令・判例・税務・入札・行政処分などの公開情報を、LLM入力用の短い根拠パケットとして取得するためのMCP拡張です。長いPDF、府省庁ページ、検索結果をそのままモデルに渡す前に、source_url、fetched_at、provenance、known_gaps、併用ルールをまとめて取得できます。入力文脈の圧縮見積もりを添え、source_url/fetched_at/known_gapsをAI回答へ載せやすい形で返すことで、一次資料にたどれる短い回答づくりを支援します。料金は1リクエスト税別3円（税込3.30円）の従量課金です。匿名利用は登録不要で1 IPあたり1日3回まで無料、翌日JSTにリセットされます。法務・税務・行政書士業務の助言ではありません。重要な判断の前には必ず一次資料を確認してください。",
   "author": {
     "name": "Bookyou株式会社",
     "email": "info@bookyou.net",
@@ -323,6 +323,10 @@
       "description": "[CORPORATE-LAYER] Partial 法人名 search across NTA 適格請求書発行事業者 (PDL v1.0 bulk). Substring LIKE on normalized_name with 出典明記 + 編集・加工注記 attribution baked into every response. Returns top-N matches with houjin_bangou + status + last_update. §52 sensitive — 仕入税額控除 確定判断 territory."
     },
     {
+      "name": "discover_related",
+      "description": "[DISCOVER-RELATED] Returns up to 5 axes × 5 rows of related entities for the given entity in one call. Pure SQL + sqlite-vec, NO LLM. 1 ¥3 unit per call. SAME composer as REST GET /v1/discover/related/{entity_id}.\n\nWHAT: Joins 5 already-shipped substrates into one envelope —\n``program_law_refs`` (jpintel.db), ``am_entities_vec_*``\n(sqlite-vec k-NN), ``am_funding_stack_empirical`` (co-adoption),\n``am_entity_density_score`` (graph-density neighbours), and\n``am_5hop_graph`` (Wave 24 §152 mat-view). Each axis is fail-open:\na missing/empty table yields an empty list, never a 5xx.\n\nWHEN:\n  - \"この補助金 / 制度の関連を一発で全部見たい\" (LLM への入力前処理)\n  - 5 つの per-axis tool を順番に叩く前の starter set\n  - 監査再現用の corpus_snapshot_id 付き snapshot (audit_seal 同梱)\n\nWHEN NOT:\n  - 単発の制度詳細 → get_program / search_programs\n  - 単発の併用可否 → check_funding_stack_am\n  - 深い graph walk (depth>=3 / 異種 entity) → graph_traverse\n  - 1 軸のみで十分 → related_programs (depth ≤ 2、6 軸固定)\n\nRETURNS (envelope):\n  {\n    entity_id, resolved: { uni_id, canonical_id },\n    related: {\n      via_law_ref: [...],         // program_law_refs 経由\n      via_vector:  [...],          // sqlite-vec k-NN\n      via_co_adoption: [...],      // funding_stack_empirical\n      via_density_neighbors: [...],// density_score の近傍\n      via_5hop: [...]              // am_5hop_graph\n    },\n    total, k, per_axis_cap,\n    corpus_snapshot_id,\n    _disclaimer, _billing_unit\n  }\n\nDATA QUALITY HONESTY: discover/related は starter set です。\n各 axis 上位 5 件、合計最大 25 件。深掘りは per-axis tool に委ねる\nこと。``_disclaimer`` は必須 — 最終判断は一次資料 (source_url) と\n専門家確認を必ず経てください。\n"
+    },
+    {
       "name": "get_evidence_packet",
       "description": "[EVIDENCE-PACKET] Returns a single Evidence Packet envelope: primary metadata + per-fact provenance + compat-matrix rule verdicts (program only). NO LLM. 1 ¥3 unit per call. SAME composer as REST /v1/evidence/packets/{subject_kind}/{subject_id}.\n\nWHAT: Bundles four already-shipped substrates into one envelope —\n``api.source_manifest._resolve_program`` (resolution + primary\nmetadata), ``api.source_manifest._build_manifest`` (per-fact\nprovenance), ``services.funding_stack_checker`` (rule verdicts via\nam_compat_matrix + exclusion_rules), and ``am_amendment_diff``\n(corpus_snapshot_id derivation). Fail-open: any upstream failure\nappends a code to ``quality.known_gaps[]`` and the packet still\nrenders.\n\nWHEN:\n  - 「この補助金 / 法人について jpcite が知っている全部を一発で\n     一次資料 URL 付きで返してほしい」 (LLM への入力前処理)\n  - Customer LLM が「答え + 出典」を出すための context bundle\n  - 監査再現用の corpus_snapshot_id 付きスナップショット\n\nWHEN NOT:\n  - 単発の制度検索 / 制度詳細 → search_programs / get_program\n  - 単発の per-fact provenance → get_provenance_for_fact\n  - 単発の併用可否 → check_funding_stack_am\n  - 法人 360 だけ欲しい → houjin 360 endpoint\n\nRETURNS (envelope, spec §6):\n  {\n    packet_id: \"evp_...\",\n    generated_at: \"2026-04-30T00:00:00+09:00\",\n    api_version: \"v1\",\n    corpus_snapshot_id: \"corpus-2026-04-29\",\n    query: { user_intent, normalized_filters },\n    answer_not_included: True,\n    records: [\n      {\n        entity_id, primary_name, record_kind,\n        source_url, tier?, prefecture?,\n        facts: [ { fact_id, field, value, confidence,\n                   source: { url, publisher, fetched_at,\n                             checksum, license } } ],\n        rules: [ { rule_id, verdict, evidence_url, note } ],\n        fact_provenance_coverage_pct: 0.0..1.0\n      }\n    ],\n    quality: {\n      freshness_bucket, coverage_score,\n      known_gaps: [...], human_review_required\n    },\n    verification: {\n      replay_endpoint, provenance_endpoint, freshness_endpoint\n    },\n    _disclaimer: { type, not_legal_or_tax_advice, note }\n  }\n\nDATA QUALITY HONESTY: This composer never invents data. When\nupstream services are unavailable, codes appear in\n``quality.known_gaps[]`` (`provenance_unavailable`,\n`compat_matrix_unavailable`, `amendment_diff_unavailable`,\n`compat_matrix_no_partner`, `funding_stack_unavailable`). The\n``_disclaimer`` envelope is mandatory — verify primary source\nbefore any decision; this is not legal or tax advice.\n"
     },
@@ -349,6 +353,66 @@
     {
       "name": "pack_real_estate",
       "description": "[INDUSTRY-PACK] 不動産業 (JSIC K) cohort pack: top 10 programs (不動産・空き家・住宅・賃貸 fence) + up to 5 国税不服審判所 裁決事例 (所得税・相続税・法人税) + up to 3 通達 references (所基通・相基通). Single ¥3/req. NO LLM. §52/§47条の2 sensitive — information retrieval, not 税務助言."
+    },
+    {
+      "name": "intel_probability_radar",
+      "description": "[INTEL-COMPOSITE W30-8] probability_estimate (NOT forecast) + same-industry adoption rate + mean award + ROI for (program × houjin) in 1 call. Pure SQLite, NO LLM. §52/§1 行政書士法 fence — output is statistical estimate, NOT 採択保証. Replaces 5+ legacy fan-out calls."
+    },
+    {
+      "name": "intel_audit_chain",
+      "description": "[INTEL-COMPOSITE W30-9] Composite Merkle proof + sources + 5-step verify chain in 1 call. Replaces 3-call audit fan-out (/v1/audit/proof + /v1/audit/seals + /v1/am/provenance). Auditor pastes booleans directly into 監査調書. ¥3/req. §47条の2 / §52 fence — cryptographic provenance only, NOT 監査意見."
+    },
+    {
+      "name": "intel_match",
+      "description": "[INTEL-COMPOSITE W30-4] Smart matchmaking: ranked programs with documents, similar adopters, laws, tsutatsu, audit proof, plus next_questions, eligibility_gaps, and document_readiness for follow-up and application prep."
+    },
+    {
+      "name": "intel_program_full",
+      "description": "[INTEL-COMPOSITE W30-2] Composite per-program bundle in 1 call: program_meta + eligibility_predicate + amendments_recent + adoptions_top + similar_programs + citations + audit_proof. Replaces 8+ naive single-program calls. ¥3/req. §52/§1/§72 fence."
+    },
+    {
+      "name": "intel_houjin_full",
+      "description": "[INTEL-COMPOSITE W30-3] Houjin 360 bundle with metadata, adoption history, enforcement, invoice status, peers, jurisdiction, watch status, and decision_support.{risk_summary,decision_insights,next_actions,known_gaps}."
+    },
+    {
+      "name": "intel_diff",
+      "description": "[INTEL-COMPOSITE W31-1] Composite entity diff (M&A DD): shared_attrs + unique_to_a + unique_to_b + conflict_points across primary table + am_5hop_graph + am_program_eligibility_predicate + am_id_bridge. Pure SQLite + Python set arithmetic, NO LLM. ¥3/req. §52/§72/§1/§3/§47条の2 fence — descriptive, NOT prescriptive."
+    },
+    {
+      "name": "intel_path",
+      "description": "[INTEL-COMPOSITE W31-2] 5-hop bidirectional BFS reasoning chain between 2 entities in 1 call. Returns shortest_path + up to 3 alternates so customer LLM can visualise the citation chain. Walks am_5hop_graph + am_citation_network + am_id_bridge. ¥3/req. §52/§72/§1 fence."
+    },
+    {
+      "name": "intel_timeline",
+      "description": "[INTEL-COMPOSITE W31-3] Annual cross-substrate event timeline for 1 program in 1 call. Cross-joins am_amendment_diff + am_adoption_trend_monthly + am_enforcement_anomaly + am_adopted_company_features + am_program_narrative_full. NO LLM. §52/§1/§72 fence."
+    },
+    {
+      "name": "intel_conflict",
+      "description": "[INTEL-COMPOSITE W31-4] Combo conflict detector: pairwise check across am_compat_matrix + jpi_exclusion_rules + 適正化法 17 conditions, returns conflict_pairs + alternative_bundles. ¥3/req. §52/§1 fence — flagging compatibility, NOT 申請可否判定."
+    },
+    {
+      "name": "intel_why_excluded",
+      "description": "[INTEL-COMPOSITE W31-5] Eligibility-failure reasoning: returns predicate_violations + remediation_steps + suggested_alternative_programs in 1 call. Walks am_program_eligibility_predicate + am_relation. NO LLM. §52/§1 fence — heuristic remediation, NOT 申請代理."
+    },
+    {
+      "name": "intel_peer_group",
+      "description": "[INTEL-COMPOSITE W31-6] 同業他社 N peers in 1 call: Jaccard similarity on (jsic × prefecture × capital × employee bucket) + per-axis comparison envelope. NO LLM. §52/§72 fence — peer benchmarking, NOT 信用調査."
+    },
+    {
+      "name": "intel_regulatory_context",
+      "description": "[INTEL-COMPOSITE W31-7] Full regulatory bundle for 1 program in 1 call: 法令 + 通達 + 裁決 + 判例 + 行政処分. Replaces 5+ axis-specific fan-out calls. ¥3/req. §72/§52/§1 fence — primary-source pointers, NOT 法解釈."
+    },
+    {
+      "name": "intel_bundle_optimal",
+      "description": "[INTEL-COMPOSITE W31-8] Houjin-to-program bundle optimizer over recommendations, compatibility matrix, and exclusion rules, with decision_support.{why_this_matters,decision_insights,next_actions}."
+    },
+    {
+      "name": "intel_citation_pack",
+      "description": "[INTEL-COMPOSITE W31-9] Citation pack — every primary-source citation surface (法令+通達+裁決+判例+行政処分+採択) bundled as markdown (default) or JSON in 1 call. ¥3/req. §52/§47条の2/§1/§72 fence — citation pack can be re-quoted into 申請書面/提案書 territory."
+    },
+    {
+      "name": "intel_risk_score",
+      "description": "[INTEL-COMPOSITE W32-3] Multi-axis houjin risk score: enforcement + refund + invoice + adoption revocation + jurisdiction drift in 1 call. Rules-based public-data score, NO LLM. ¥3/req. NOT a credit rating; §72/§52/§1 fence."
     },
     {
       "name": "unified_lifecycle_calendar",
@@ -391,6 +455,18 @@
       "description": "[PROVENANCE-FACT] Returns source attribution for a single fact_id at point-in-time of last fetch. Resolves am_entity_facts.source_id → am_source. When source_id is NULL (legacy fact pre-2026-04-25), falls back to entity-level am_entity_source candidate list.\n\nWHAT: am_entity_facts row → source_id → am_source 1 件返却.\nsource_id が NULL の legacy fact は entity-level am_entity_source から\n候補 list を返す (``fallback=True``).\n\nExample:\n    get_provenance_for_fact(fact_id=12345)\n    → {\"fact_id\": 12345, \"entity_id\": \"...\", \"field_name\": \"amount_max_yen\",\n       \"field_value_text\": \"5000000\", \"source\": {\"source_id\": 42,\n       \"source_url\": \"...\", \"license\": \"pdl_v1.0\"}, \"fallback\": false}\n\nWhen NOT to call:\n    - For entity-level provenance (all sources for an entity) → use get_provenance(entity_id).\n    - For 補助金 program lineage (jpintel.db) → use get_program (carries source_url inline).\n    - For 法令 / tax / 判例 detail → those tools embed source_url in their own response.\n    - For bulk fact discovery → use search_* tools and read each row's source_url.\n\nRETURN:\n  {fact_id, entity_id, field_name, field_value_text, source? (when source_id is set),\n   fallback_sources?[…] (when source_id NULL — candidates from am_entity_source),\n   fallback: bool, license_summary{}}\n"
     },
     {
+      "name": "recommend_similar_program",
+      "description": "Vector k-NN over am_entities_vec_S (programs). Re-ranked by cosine + verification_count + density_score (W22-9). NOT an 採択 forecast — 行政書士法 §1 / 税理士法 §52 fence; the LLM must surface the disclaimer envelope."
+    },
+    {
+      "name": "recommend_similar_case",
+      "description": "Vector k-NN over am_entities_vec_C (case_studies). Cosine distance with optional density boost. NOT an 採択 forecast — 行政書士法 §1 / 税理士法 §52 fence; the LLM must surface the disclaimer envelope."
+    },
+    {
+      "name": "recommend_similar_court_decision",
+      "description": "Vector k-NN over am_entities_vec_J (court_decisions). Cosine distance with optional density boost. NOT a legal opinion — 弁護士法 §72 / 行政書士法 §1 fence; the LLM must surface the disclaimer envelope."
+    },
+    {
       "name": "rule_engine_check",
       "description": "[R9-UNIFIED-RULE-ENGINE] Returns rule evaluation result + applicable law citations across 6 corpora (49,247 rows): exclusion + compat_matrix (48,815 rows, of which 4,849 are 'unknown' status) + combo + subsidy + tax + validation. Output is search-derived; verify primary source for business decisions.\n\nWHAT: Runs the precedence ladder (absolute → exclude → prerequisite →\ncompat:incompatible → compat:case_by_case → compat:compatible → combo →\nsubsidy/tax → validation) over the unified view ``am_unified_rule`` and\nreturns a single verdict + per-rule trace. First DENY wins, BUT\ncontradictions between corpora surface as ``error.code='rules_conflict'``\nwith both rule_ids — never silently merged.\n\nWHEN:\n  - 「program A と program B を併給できる?」(pairwise compat)\n  - 「この補助金、申請して大丈夫?(他制度との衝突は?)」\n  - Pairwise compat lookup against the compat_matrix corpus.\n  - Replace the 5 disjoint legacy tools (check_exclusions /\n    combined_compliance_check / get_am_tax_rule / search_certifications /\n    list_open_programs) with one call.\n\nWHEN NOT:\n  - Free-text discovery → use search_programs first, then pass the\n    resulting program_id here.\n  - The full ruleset list of all 49,247 rows (no program filter) →\n    this tool requires a program_id.\n\nRETURNS:\n  {\n    judgment: \"allow\" | \"deny\" | \"review\" | \"unknown\" | \"conflict\",\n    program_id: str,\n    alongside_programs: list[str],\n    evidence: [\n      {\n        rule_id, rule_kind, source ∈ {jpi_exclusion_rules,\n        am_compat_matrix, am_combo_calculator, am_subsidy_rule,\n        am_tax_rule, am_validation_rule},\n        scope_program_id, pair_program_id, severity, message_ja,\n        source_url, effect ∈ {deny, allow, review, unknown, info}\n      }, ...\n    ],\n    confidence: 0.0-1.0,\n    data_quality: {\n      exclusion_join_coverage_pct: float (0-100, currently 0% pending\n                                           P0.2 manual mapping),\n      rules_evaluated: int,\n      rules_total_corpus: 49247\n    },\n    reason?: str (when judgment=unknown — explains why),\n    _disclaimer: str (景表法 fence + 社労士/税理士/弁護士 advisory),\n    error?: { code: \"rules_conflict\", evidence: [both rules] }\n  }\n\nDATA QUALITY HONESTY: jpi_exclusion_rules.program_a uses Japanese\nhuman names while am_compat_matrix uses canonical IDs. Cross-corpus\njoin coverage is currently ~0% (60 distinct human names, 0 mapped).\nThe response surfaces ``data_quality.exclusion_join_coverage_pct`` so\ncallers see partial recall transparently rather than receiving silent\nmisses (景表法 / fraud-risk fence).\n\nCHAIN:\n  ← `search_programs` / `search_certifications` supply program_id.\n  → `get_program(unified_id)` for the program detail view.\n  → `get_am_tax_rule(measure)` for tax_rule depth.\n  → Use `check_exclusions` (legacy) only when this tool returns\n    error.code='subsystem_unavailable' or for backward compatibility.\n"
     },
@@ -425,6 +501,102 @@
     {
       "name": "validate",
       "description": "[VALIDATE] applicant_data を am_validation_rule の active 述語で評価し、\nrule 単位の passed/failed/deferred を返す (deferred = jpintel 内で評価できない外部依存述語).\n\nWHAT:\n  ``am_validation_rule`` の active=1 / effective window 有効 / scope 適合 rule を選び、\n  python_dispatch 述語のうち ``autonomath.intake.<known>`` のものはローカル再実装で評価、\n  それ以外 (sql_expr / json_logic / 未登録 dispatch) は ``passed=null`` で deferred 返却。\n  評価結果は ``am_validation_result`` に ``INSERT OR IGNORE``、同 (rule, entity, applicant_hash)\n  は SELECT-first で cache 返却。\n\nWHEN:\n  - LLM が \"この applicant_data に sanity 違反がないか\" 一括 check したい\n  - operator console に出す前段で training_hours/work_days/weekly_hours の桁ミス除去\n  - 申請額 50 億超 / 開始年 ±20/+10 範囲外 / 生年-自己申告年齢 1y 以上ずれ の検出\n\nWHEN NOT:\n  - 制度個別の eligibility 判定 → check_exclusions / search_programs\n  - 文書粒度の fact-check → 別 tool\n  - sql_expr / json_logic 述語が登録されたら本 tool では deferred 返却なので\n    jpcite operator workflow 経由が必要\n\nRETURNS (envelope):\n  {\n    total: int,\n    applicant_hash: str,\n    scope: str,\n    entity_id: str | null,\n    summary: { passed: int, failed: int, deferred: int },\n    results: [\n      {\n        rule_id: int,\n        predicate_ref: str,\n        predicate_kind: 'python_dispatch' | 'sql_expr' | 'json_logic',\n        passed: true | false | null,\n        severity: 'info' | 'warning' | 'critical',\n        message_ja: str,\n        evaluated_at: str | null,\n        cached: bool,\n      }, ...\n    ]\n  }\n"
+    },
+    {
+      "name": "recommend_programs_for_houjin",
+      "description": "[WAVE24-#97] TOP-N recommended programs for a 法人 from am_recommended_programs (pre-computed via §10.3 ETL). Returns score + rank + decoded reason JSON. SENSITIVE — §52 / §72 fence; the LLM should treat the score as guidance, not a 採択 forecast."
+    },
+    {
+      "name": "find_combinable_programs",
+      "description": "[WAVE24-#98] Combinable-program list from am_program_combinations. Both directions UNIONed under the (program_a < program_b) CHECK. visibility='public' (default) surfaces only sourced rows; 'internal' adds heuristic. SENSITIVE — §52/§1 fence — combinability is heuristic, not a promise."
+    },
+    {
+      "name": "get_program_calendar_12mo",
+      "description": "[WAVE24-#99] 12-month per-program calendar from am_program_calendar_12mo (pre-computed). Returns is_open + deadline + round_label per month. NOT sensitive — calendar facts. Use after recommend_programs_for_houjin or search_programs to time the application."
+    },
+    {
+      "name": "forecast_enforcement_risk",
+      "description": "[WAVE24-#100] enforcement × JSIC × region 横展開 risk from am_enforcement_industry_risk. propagation_probability is a 5-year statistical forecast, not a legal opinion. SENSITIVE — 弁護士法 §72 / 社労士法 §27. The customer LLM must surface the disclaimer envelope."
+    },
+    {
+      "name": "find_similar_case_studies",
+      "description": "[WAVE24-#101] Top-N similar 採択事例 from am_case_study_similarity (pre-computed pairwise feature similarity, PK case_a < case_b — UNIONed both directions). NOT sensitive — facts about past adoptions, not advice. Use to find 'companies like mine' before drafting an application."
+    },
+    {
+      "name": "get_houjin_360_snapshot_history",
+      "description": "[WAVE24-#102] Past N monthly snapshots (latest first) from am_houjin_360_snapshot, with per-row delta_from_prev computed by JSON diff in Python. SENSITIVE — 信用情報法 / 個人情報保護法 fence. NOT a credit / 反社 substitute; the LLM must surface the disclaimer envelope."
+    },
+    {
+      "name": "get_tax_amendment_cycle",
+      "description": "[WAVE24-#103] Per-ruleset amendment history from am_tax_amendment_history + cycle_stats (min/max/mean/median gap days, computed in Python). SENSITIVE — 税理士法 §52. The cycle is a past-tense pattern; future amendments are not guaranteed. Disclaimer auto-injected."
+    },
+    {
+      "name": "infer_invoice_buyer_seller",
+      "description": "[WAVE24-#104] Inferred trading partners from am_invoice_buyer_seller_graph. CHECK seller != buyer. direction filters which side the input plays. SENSITIVE — 信用情報法 / 個人情報保護法. Inferences are heuristic; not a substitute for credit checks."
+    },
+    {
+      "name": "match_programs_by_capital",
+      "description": "[WAVE24-#105] capital_yen → canonical band (lt_1m / 1m_10m / ... / gte_5b) → SELECT from am_capital_band_program_match. Optional jsic_major narrows. NOT sensitive — adoption stats by band are facts. Pair with score_application_probability for full read."
+    },
+    {
+      "name": "get_program_adoption_stats",
+      "description": "[WAVE24-#106] Per-FY adoption stats (count / rate / avg amount / industry & region distribution JSON-decoded) from am_program_adoption_stats. NOT sensitive — facts. Pair with find_adopted_companies_by_program for the underlying corpus."
+    },
+    {
+      "name": "get_program_narrative",
+      "description": "[WAVE24-#107] Pre-computed program narrative from am_program_narrative (operator-side Claude Code subagent batch §10.6 — NOT generated here). section='all' returns up to 4 rows; specific section returns 1. reading_level='plain' post-processes body_text via rule-based dict (jpcite LLM call禁止). SENSITIVE — 行政書士法 §1 + LLM 由来明示 — not 申請代理."
+    },
+    {
+      "name": "predict_rd_tax_credit",
+      "description": "[WAVE24-#108] 措置法 §42-4 R&D tax credit estimate from am_houjin_360_snapshot (rd_expense_yen) × am_tax_amendment_history (headline_rate). Pure Python multiplication. billing_unit=2 (compound). SENSITIVE — 税理士法 §52. Heuristic — does NOT model incremental / volume split / 14% cap."
+    },
+    {
+      "name": "find_programs_by_jsic",
+      "description": "[WAVE24-SECOND-HALF #109] Filter jpi_programs by JSIC code (major/middle/minor) + tier (S/A/B/C). Pure SELECT, NO LLM. Graceful empty when wave24_113b jsic columns absent."
+    },
+    {
+      "name": "get_program_application_documents",
+      "description": "[WAVE24-SECOND-HALF #110] Application document list for a program. Primary: am_program_documents (wave24_138). Fallback: jpi_program_documents. §1 行政書士法 sensitive — list 提供のみ、書面作成は対象外。"
+    },
+    {
+      "name": "find_adopted_companies_by_program",
+      "description": "[WAVE24-SECOND-HALF #111] Adopted-company list for a program (jpi_adoption_records, 201,845 rows). 個人情報保護法 / 信用情報法 sensitive — public 採択 list のみ、与信判断には流用しない。"
+    },
+    {
+      "name": "score_application_probability",
+      "description": "[WAVE24-SECOND-HALF #112] 採択者プロファイル類似度 score (similarity)。本 score は採択確率 (probability) の予測ではない。output field 名は `score`。景表法違反リスクのため広告・営業利用禁止。3 軸 join: am_recommended_programs + am_capital_band_program_match + am_program_adoption_stats。billing=2 単位、行政書士法 §1 sensitive。"
+    },
+    {
+      "name": "get_compliance_risk_score",
+      "description": "[WAVE24-SECOND-HALF #113] Compliance score derived from am_houjin_360_snapshot.derived_attrs_json.compliance_score. 信用情報法 / 弁護士法 §72 / 名誉毀損 sensitive — heuristic, 与信代替不可。"
+    },
+    {
+      "name": "simulate_tax_change_impact",
+      "description": "[WAVE24-SECOND-HALF #114] Tax-amendment impact simulation: am_houjin_360_snapshot.applicable_tax_rulesets × am_tax_amendment_history within FY window. billing=2 単位、税理士法 §52 sensitive — 試算のみ、税務代理は対象外。"
+    },
+    {
+      "name": "find_complementary_subsidies",
+      "description": "[WAVE24-SECOND-HALF #115] Complementary subsidies via 2-step join: am_program_combinations × am_program_calendar_12mo + 時系列 overlap calc. 行政書士法 §1 sensitive."
+    },
+    {
+      "name": "get_program_keyword_analysis",
+      "description": "[WAVE24-SECOND-HALF #116] Per-program keyword cloud. Source: am_program_keyword_cache (TF-IDF pre-computed) preferred, MeCab live tokenize over am_program_narrative as fallback (naive 2-char window when MeCab absent). NOT sensitive."
+    },
+    {
+      "name": "get_industry_program_density",
+      "description": "[WAVE24-SECOND-HALF #117] Per-industry × region program density (am_region_program_density, wave24_139). Fallback: industry_program_density / jpi_industry_program_density. NOT sensitive."
+    },
+    {
+      "name": "find_emerging_programs",
+      "description": "[WAVE24-SECOND-HALF #118] Programs newly observed in the past N days (jpi_programs.first_seen_at, fallback source_fetched_at). NOT sensitive."
+    },
+    {
+      "name": "get_program_renewal_probability",
+      "description": "[WAVE24-SECOND-HALF #119] 更新後の制度内容変化予測 (eligibility predicate diff 系列予測)。Wave22 既存 forecast_program_renewal (更新確率) とは異軸。重複ではない。output field 名は `predicate_diff_forecast`。am_amendment_diff の eligibility predicate field のみを集計、horizon_months に scale。NOT sensitive (statistical)."
+    },
+    {
+      "name": "get_houjin_subsidy_history",
+      "description": "[WAVE24-SECOND-HALF #120] 法人別補助金交付履歴 (jpi_adoption_records, houjin_bangou + since_year filter, total_amount_granted_yen 含む). 個人情報保護法 / 信用情報法 sensitive — 公表交付決定 list 由来、与信判断には流用しない。"
     },
     {
       "name": "match_due_diligence_questions",

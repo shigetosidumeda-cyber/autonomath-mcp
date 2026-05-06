@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "autonomath-mcp",
   "version": "0.3.4",
-  "description": "Japan public-program MCP — subsidies, loans, tax, law, invoice & corporate data. 11,684 補助金 + 9,484 e-Gov laws + 1,185 行政処分 + 22,258 detail records + 13,801 適格事業者 + 166K corporate entities. ¥3/request, 3 free/day per IP. Evidence Packet with source_url + source_fetched_at + known gaps + 互換/排他 rules. 120 tools.",
+  "description": "Japan public-program MCP — subsidies, loans, tax, law, invoice & corporate data. 11,684 補助金 + 9,484 e-Gov laws + 1,185 行政処分 + 22,258 detail records + 13,801 適格事業者 + 166K corporate entities. ¥3/request, 3 free/day per IP. Evidence Packet with source_url + source_fetched_at + known gaps + 互換/排他 rules. 139 tools.",
   "author": {
     "name": "Bookyou株式会社",
     "url": "https://jpcite.com"
@@ -423,6 +423,78 @@
       "description": "[WAVE22-COMPOSE] Complete downloadable kit assembly: program metadata + cover letter scaffold + 必要書類 checklist + similar 採択例 list. Pure file assembly, NO LLM, NO DOCX generation. §1 sensitive — 申請書面作成は行政書士の独占業務、当社は scaffold + 一次 URL のみ提供."
     },
     {
+      "name": "discover_related",
+      "description": "[DISCOVER-RELATED] Multi-axis related entities across law refs, vectors, co-adoption, density neighbours, and 5-hop graph. Pure SQL + sqlite-vec, NO LLM."
+    },
+    {
+      "name": "recommend_similar_program",
+      "description": "[RECOMMEND-SIMILAR] Vector k-NN over program embeddings, re-ranked by verification and density. SENSITIVE: §1/§52; not an adoption forecast."
+    },
+    {
+      "name": "recommend_similar_case",
+      "description": "[RECOMMEND-SIMILAR] Vector k-NN over adoption case-study embeddings. SENSITIVE: §1/§52; similarity evidence only, not application advice."
+    },
+    {
+      "name": "recommend_similar_court_decision",
+      "description": "[RECOMMEND-SIMILAR] Vector k-NN over court-decision embeddings. SENSITIVE: §72; not a legal opinion."
+    },
+    {
+      "name": "intel_probability_radar",
+      "description": "[INTEL-COMPOSITE W30-8] Program x houjin probability estimate, same-industry adoption rate, mean award, and ROI in one call. Statistical estimate, not a guarantee."
+    },
+    {
+      "name": "intel_audit_chain",
+      "description": "[INTEL-COMPOSITE W30-9] Composite Merkle proof, sources, and verification chain in one call. Cryptographic provenance only, not an audit opinion."
+    },
+    {
+      "name": "intel_match",
+      "description": "[INTEL-COMPOSITE W30-4] Smart matchmaking: ranked programs with documents, similar adopters, laws, tsutatsu, audit proof, plus next_questions, eligibility_gaps, and document_readiness for follow-up and application prep."
+    },
+    {
+      "name": "intel_program_full",
+      "description": "[INTEL-COMPOSITE W30-2] Per-program bundle with metadata, eligibility predicate, amendments, adoptions, similar programs, citations, and audit proof."
+    },
+    {
+      "name": "intel_houjin_full",
+      "description": "[INTEL-COMPOSITE W30-3] Houjin 360 bundle with metadata, adoption history, enforcement, invoice status, peers, jurisdiction, watch status, and decision_support.{risk_summary,decision_insights,next_actions,known_gaps}."
+    },
+    {
+      "name": "intel_diff",
+      "description": "[INTEL-COMPOSITE W31-1] Entity diff for DD: shared attributes, unique attributes, and conflict points across graph and predicate substrates."
+    },
+    {
+      "name": "intel_path",
+      "description": "[INTEL-COMPOSITE W31-2] Bidirectional 5-hop reasoning path between two entities with shortest path and alternates."
+    },
+    {
+      "name": "intel_timeline",
+      "description": "[INTEL-COMPOSITE W31-3] Annual cross-substrate timeline for one program across amendments, adoption trends, enforcement anomalies, and narratives."
+    },
+    {
+      "name": "intel_conflict",
+      "description": "[INTEL-COMPOSITE W31-4] Program-combination conflict detector over compatibility matrix and exclusion rules. Flagging only, not application judgment."
+    },
+    {
+      "name": "intel_why_excluded",
+      "description": "[INTEL-COMPOSITE W31-5] Eligibility-failure explanation with predicate violations, remediation steps, and alternative programs. Heuristic only."
+    },
+    {
+      "name": "intel_peer_group",
+      "description": "[INTEL-COMPOSITE W31-6] Same-industry peer group using JSIC, prefecture, capital, and employee buckets. Benchmarking only, not credit research."
+    },
+    {
+      "name": "intel_regulatory_context",
+      "description": "[INTEL-COMPOSITE W31-7] Regulatory bundle for one program: laws, tsutatsu, saiketsu, cases, and enforcement pointers."
+    },
+    {
+      "name": "intel_bundle_optimal",
+      "description": "[INTEL-COMPOSITE W31-8] Houjin-to-program bundle optimizer over recommendations, compatibility matrix, and exclusion rules, with decision_support.{why_this_matters,decision_insights,next_actions}."
+    },
+    {
+      "name": "intel_citation_pack",
+      "description": "[INTEL-COMPOSITE W31-9] Citation pack bundling primary-source citation surfaces as markdown or JSON in one call."
+    },
+    {
       "name": "recommend_programs_for_houjin",
       "description": "[WAVE24-#97] TOP-N recommended programs for a 法人 from am_recommended_programs. Returns score, rank, decoded reason JSON, and source-backed caveats. SENSITIVE: §52 / §72; not an adoption forecast."
     },
@@ -489,6 +561,10 @@
     {
       "name": "get_compliance_risk_score",
       "description": "[WAVE24-#113] Retrieve compliance_score from am_houjin_360_snapshot derived attributes. SENSITIVE: heuristic risk signal, not credit, legal, or reputation judgment."
+    },
+    {
+      "name": "intel_risk_score",
+      "description": "[INTEL-COMPOSITE W32-3] Multi-axis houjin risk score across enforcement, refunds, invoice compliance, adoption revocation, and jurisdiction drift. Rules-based public-data score; NOT a credit rating."
     },
     {
       "name": "simulate_tax_change_impact",
@@ -606,7 +682,7 @@
       "loan_program_count": 108,
       "enforcement_case_count": 1185,
       "exclusion_rule_count": 181,
-      "tool_count": 120,
+      "tool_count": 139,
       "tier_labels": [
         "S",
         "A",
@@ -627,6 +703,6 @@
       "primary_source_coverage_note": "Most public searchable rows include source_url and fetched_at; current counts vary by dataset.",
       "mcp_protocol_version": "2025-06-18"
     },
-    "tool_count": 120
+    "tool_count": 139
   }
 }

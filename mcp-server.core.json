@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "autonomath-mcp-core",
   "version": "0.3.4",
-  "description": "Japan public-program MCP — CORE 39 tools subset (subsidies / loans / tax / law / court / bids / invoice / enforcement / case studies + 7 one-shot discovery packs). Lighter manifest for context-budget-tight agents. ¥3/request, 3 free/day per IP. For full 120-tool surface (composition + audit + Wave24) use mcp-server.full.json.",
+  "description": "Japan public-program MCP — CORE 39 tools subset (subsidies / loans / tax / law / court / bids / invoice / enforcement / case studies + 7 one-shot discovery packs). Lighter manifest for context-budget-tight agents. ¥3/request, 3 free/day per IP. For the current full 139-tool MCP distribution surface, use mcp-server.full.json.",
   "author": {
     "name": "Bookyou株式会社",
     "url": "https://jpcite.com"

@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "autonomath-mcp-composition",
   "version": "0.3.4",
-  "description": "Japan public-program MCP — COMPOSITION layer (composition layer + audit/wave21-22 + recent tools). Adds compose_audit_workpaper, apply_eligibility_chain_am, match_due_diligence_questions, pack_construction/manufacturing/real_estate, graph_traverse, NTA saiketsu/tsutatsu corpus 4 tools, and 24 new Wave 24 tools. Pair with mcp-server.core.json for full 120-tool surface, or load standalone if the consuming agent already integrates the core 39 elsewhere.",
+  "description": "Japan public-program MCP — COMPOSITION layer subset (composition layer + audit/wave21-22 + recent tools). Adds compose_audit_workpaper, apply_eligibility_chain_am, match_due_diligence_questions, pack_construction/manufacturing/real_estate, graph_traverse, NTA saiketsu/tsutatsu corpus 4 tools, and 24 new Wave 24 tools. Pair with mcp-server.core.json only when using split subset manifests; for the current full 139-tool MCP distribution surface, use mcp-server.full.json.",
   "author": {
     "name": "Bookyou株式会社",
     "url": "https://jpcite.com"
@@ -265,6 +265,10 @@
     {
       "name": "bundle_application_kit",
       "description": "[WAVE22-COMPOSE] Complete downloadable kit assembly: program metadata + cover letter scaffold + 必要書類 checklist + similar 採択例 list. Pure file assembly, NO LLM, NO DOCX generation. §1 sensitive — 申請書面作成は行政書士の独占業務、当社は scaffold + 一次 URL のみ提供."
+    },
+    {
+      "name": "intel_risk_score",
+      "description": "[INTEL-COMPOSITE W32-3] Multi-axis houjin risk score across enforcement, refunds, invoice compliance, adoption revocation, and jurisdiction drift. Rules-based public-data score; NOT a credit rating."
     }
   ],
   "requirements": {
@@ -354,7 +358,7 @@
       "loan_program_count": 108,
       "enforcement_case_count": 1185,
       "exclusion_rule_count": 181,
-      "tool_count": 57,
+      "tool_count": 58,
       "tier_labels": [
         "S",
         "A",
@@ -375,6 +379,6 @@
       "primary_source_coverage_note": "Most public searchable rows include source_url and fetched_at; current counts vary by dataset.",
       "mcp_protocol_version": "2025-06-18"
     },
-    "tool_count": 57
+    "tool_count": 58
   }
 }

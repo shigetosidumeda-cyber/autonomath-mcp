@@ -1,7 +1,7 @@
 [project]
 name = "autonomath-mcp"
 version = "0.3.4"
-description = "REST + MCP search over Japanese institutional data: 11,684 searchable subsidies (14,472 total), 154 laws full-text + 9,484 law catalog stubs, 2,065 court decisions, 50 tax rulesets, 13,801 invoice registrants, 2,286 adoptions, 1,185 enforcements, 108 loans, 362 bids. 96 MCP tools (protocol 2025-06-18). 3 yen/req metered (3.30 tax-incl), anonymous 3/day per IP free."
+description = "REST + MCP search over Japanese institutional data: 11,684 searchable subsidies (14,472 total), 154 laws full-text + 9,484 law catalog stubs, 2,065 court decisions, 50 tax rulesets, 13,801 invoice registrants, 2,286 adoptions, 1,185 enforcements, 108 loans, 362 bids. 139 MCP tools (protocol 2025-06-18). 3 yen/req metered (3.30 tax-incl), anonymous 3/day per IP free."
 license = { text = "MIT" }
 authors = [
     { name = "Bookyou株式会社", email = "info@bookyou.net" },
@@ -202,3 +202,6 @@ ignore = ["E501"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+markers = [
+    "slow: runtime/import-heavy checks that are not part of the fastest local loop",
+]
