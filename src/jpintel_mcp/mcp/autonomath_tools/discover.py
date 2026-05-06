@@ -97,9 +97,7 @@ def _impl_discover_related(entity_id: str, k: int = 20) -> dict[str, Any]:
         # autonomath_tools indirectly via cs_features).
         from jpintel_mcp.api.discover import _compose_discover_related
 
-        body = _compose_discover_related(
-            entity_id=eid, k=k_int, jpintel_conn=jpintel_conn
-        )
+        body = _compose_discover_related(entity_id=eid, k=k_int, jpintel_conn=jpintel_conn)
     finally:
         try:
             jpintel_conn.close()

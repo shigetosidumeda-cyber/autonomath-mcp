@@ -31,6 +31,7 @@ Design notes
    DB setup orthogonal to query logic so the file is reusable beyond
    the 8 new tools (e.g. future benchmark scripts).
 """
+
 from __future__ import annotations
 
 import logging
@@ -51,14 +52,18 @@ logger = logging.getLogger("jpintel.mcp.new.db")
 # -> mcp/ -> jpintel_mcp/ -> src/ -> repo root).
 _REPO_ROOT = Path(__file__).resolve().parents[4]
 
-AUTONOMATH_DB_PATH = Path(os.environ.get(
-    "AUTONOMATH_DB_PATH",
-    str(_REPO_ROOT / "autonomath.db"),
-))
-GRAPH_DB_PATH = Path(os.environ.get(
-    "AUTONOMATH_GRAPH_DB_PATH",
-    str(_REPO_ROOT / "graph.sqlite"),
-))
+AUTONOMATH_DB_PATH = Path(
+    os.environ.get(
+        "AUTONOMATH_DB_PATH",
+        str(_REPO_ROOT / "autonomath.db"),
+    )
+)
+GRAPH_DB_PATH = Path(
+    os.environ.get(
+        "AUTONOMATH_GRAPH_DB_PATH",
+        str(_REPO_ROOT / "graph.sqlite"),
+    )
+)
 
 # ---------------------------------------------------------------------------
 # Retry policy (for rare WAL checkpoint races).
@@ -89,7 +94,7 @@ _local = threading.local()
 # FTS5 postings, idx_am_entities_*, am_entities header — fits well under 2GB).
 # Larger mappings risk address-space pressure on 32-bit ARM CI runners.
 # ---------------------------------------------------------------------------
-_CACHE_KB = 262144   # 256 MB page cache per connection
+_CACHE_KB = 262144  # 256 MB page cache per connection
 _MMAP_BYTES = 2 * 1024 * 1024 * 1024  # 2 GB mmap window
 _BUSY_TIMEOUT_MS = 300000  # 300s; ingest CLI can hold writer lock for tens of s
 
@@ -195,8 +200,9 @@ def connect_autonomath(
         conn = _open_ro(path)
         _local.autonomath = conn
         _local.autonomath_path = path
-        logger.debug("opened autonomath.db RO connection on thread %s",
-                     threading.current_thread().name)
+        logger.debug(
+            "opened autonomath.db RO connection on thread %s", threading.current_thread().name
+        )
     return conn
 
 
@@ -205,9 +211,7 @@ def connect_graph(
 ) -> sqlite3.Connection:
     """Return a read-only connection to ``graph.sqlite`` for the current thread."""
     if mode != "ro":
-        raise ValueError(
-            f"connect_graph: only mode='ro' supported in Wave 3 (got {mode!r})."
-        )
+        raise ValueError(f"connect_graph: only mode='ro' supported in Wave 3 (got {mode!r}).")
     path = Path(os.environ.get("AUTONOMATH_GRAPH_DB_PATH", str(GRAPH_DB_PATH)))
     conn = getattr(_local, "graph", None)
     conn_path = getattr(_local, "graph_path", None)
@@ -220,8 +224,9 @@ def connect_graph(
         conn = _open_ro(path)
         _local.graph = conn
         _local.graph_path = path
-        logger.debug("opened graph.sqlite RO connection on thread %s",
-                     threading.current_thread().name)
+        logger.debug(
+            "opened graph.sqlite RO connection on thread %s", threading.current_thread().name
+        )
     return conn
 
 

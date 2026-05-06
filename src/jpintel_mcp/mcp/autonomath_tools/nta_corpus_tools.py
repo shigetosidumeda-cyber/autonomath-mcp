@@ -16,6 +16,7 @@ Gate: AUTONOMATH_NTA_CORPUS_ENABLED (default True). The tools are read-only.
 License: All rows are PUBLIC government documents (NTA / 国税不服審判所 利用規約;
 PDL v1.0 / ministry standard). source_url + license columns are mandatory.
 """
+
 from __future__ import annotations
 
 import logging
@@ -52,18 +53,42 @@ _DISCLAIMER_NTA = (
 
 
 _TAX_TYPE_LITERAL = Literal[
-    "所得税", "法人税", "消費税", "相続税", "贈与税", "国税通則", "印紙税",
-    "源泉所得税", "評価", "国際課税", "その他",
+    "所得税",
+    "法人税",
+    "消費税",
+    "相続税",
+    "贈与税",
+    "国税通則",
+    "印紙税",
+    "源泉所得税",
+    "評価",
+    "国際課税",
+    "その他",
 ]
 
 _SHITSUGI_CATEGORY_LITERAL = Literal[
-    "shotoku", "gensen", "joto", "sozoku", "hyoka",
-    "hojin", "shohi", "inshi", "hotei",
+    "shotoku",
+    "gensen",
+    "joto",
+    "sozoku",
+    "hyoka",
+    "hojin",
+    "shohi",
+    "inshi",
+    "hotei",
 ]
 
 _BUNSHO_CATEGORY_LITERAL = Literal[
-    "shotoku", "gensen", "joto-sanrin", "sozoku", "zoyo",
-    "hyoka", "hojin", "shohi", "shozei", "sonota",
+    "shotoku",
+    "gensen",
+    "joto-sanrin",
+    "sozoku",
+    "zoyo",
+    "hyoka",
+    "hojin",
+    "shohi",
+    "shozei",
+    "sonota",
 ]
 
 
@@ -71,7 +96,9 @@ def _is_enabled() -> bool:
     return getattr(settings, "autonomath_nta_corpus_enabled", True)
 
 
-def _envelope(results: list[dict[str, Any]], *, total: int, limit: int, offset: int) -> dict[str, Any]:
+def _envelope(
+    results: list[dict[str, Any]], *, total: int, limit: int, offset: int
+) -> dict[str, Any]:
     return {
         "total": total,
         "limit": limit,
@@ -87,6 +114,7 @@ def _envelope(results: list[dict[str, Any]], *, total: int, limit: int, offset: 
 
 
 if _is_enabled():
+
     @mcp.tool(annotations=_READ_ONLY)
     @_safe_tool
     def find_saiketsu(
@@ -108,7 +136,9 @@ if _is_enabled():
         ] = None,
         year_from: Annotated[
             int | None,
-            Field(description="Optional minimum decision year (西暦, e.g. 2020).", ge=1985, le=2100),
+            Field(
+                description="Optional minimum decision year (西暦, e.g. 2020).", ge=1985, le=2100
+            ),
         ] = None,
         limit: Annotated[
             int,
@@ -194,9 +224,7 @@ if _is_enabled():
 
         try:
             total = execute_with_retry(conn, sql_count, tuple(params))[0][0]
-            rows = execute_with_retry(
-                conn, sql_data, tuple(params + [limit, offset])
-            )
+            rows = execute_with_retry(conn, sql_data, tuple(params + [limit, offset]))
         except sqlite3.Error as exc:
             return _db_error(exc, "find_saiketsu", limit=limit, offset=offset)
 
@@ -223,6 +251,7 @@ if _is_enabled():
 
 
 if _is_enabled():
+
     @mcp.tool(annotations=_READ_ONLY)
     @_safe_tool
     def cite_tsutatsu(
@@ -306,6 +335,7 @@ if _is_enabled():
 
 
 if _is_enabled():
+
     @mcp.tool(annotations=_READ_ONLY)
     @_safe_tool
     def find_shitsugi(
@@ -416,6 +446,7 @@ if _is_enabled():
 
 
 if _is_enabled():
+
     @mcp.tool(annotations=_READ_ONLY)
     @_safe_tool
     def find_bunsho_kaitou(
@@ -507,9 +538,7 @@ if _is_enabled():
             where_extras.append("b.category = ?")
             params.append(category)
         if date_from:
-            where_extras.append(
-                "(b.response_date IS NOT NULL AND b.response_date >= ?)"
-            )
+            where_extras.append("(b.response_date IS NOT NULL AND b.response_date >= ?)")
             params.append(date_from)
 
         where_sql = ""

@@ -26,6 +26,7 @@ All injection paths are best-effort: any sqlite error collapses to the
 fallback pair so the envelope contract holds even on a brand-new
 fresh-clone DB.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -73,9 +74,7 @@ def _compute_with_conn(conn: sqlite3.Connection) -> tuple[str, str]:
 
     # Best signal: latest am_amendment_diff.detected_at (cron output).
     try:
-        row = conn.execute(
-            "SELECT MAX(detected_at) FROM am_amendment_diff"
-        ).fetchone()
+        row = conn.execute("SELECT MAX(detected_at) FROM am_amendment_diff").fetchone()
         if row and row[0]:
             snapshot_id = str(row[0])
     except sqlite3.Error:
@@ -117,9 +116,9 @@ def _compute_with_conn(conn: sqlite3.Connection) -> tuple[str, str]:
         except sqlite3.Error:
             counts.append(0)
 
-    digest_input = (
-        f"{snapshot_id}|{_API_VERSION}|{','.join(str(c) for c in counts)}"
-    ).encode("utf-8")
+    digest_input = (f"{snapshot_id}|{_API_VERSION}|{','.join(str(c) for c in counts)}").encode(
+        "utf-8"
+    )
     checksum = "sha256:" + hashlib.sha256(digest_input).hexdigest()[:16]
     return snapshot_id, checksum
 
@@ -148,6 +147,7 @@ def current_corpus_snapshot(
             # same thread share the handle).
             try:
                 from .db import connect_autonomath
+
                 conn = connect_autonomath()
             except Exception:  # pragma: no cover - DB absent
                 conn = None

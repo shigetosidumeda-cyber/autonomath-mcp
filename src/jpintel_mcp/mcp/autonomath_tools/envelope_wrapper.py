@@ -36,6 +36,7 @@ wrap it with status="error".
 
 No API key usage: this wrapper never calls Anthropic or any LLM.
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -79,7 +80,7 @@ ENVELOPE_API_VERSION = "1.1"
 # ---------------------------------------------------------------------------
 
 RICH_THRESHOLD = 3  # >= 3 results => rich
-SPARSE_MIN = 1      # 1..RICH_THRESHOLD-1 => sparse
+SPARSE_MIN = 1  # 1..RICH_THRESHOLD-1 => sparse
 
 
 def classify_bucket(result_count: int) -> str:
@@ -188,62 +189,73 @@ _FALLBACK_EXPLAIN = {
 # unimplemented tools (`predict_subsidy_outcome` / `score_dd_risk`) are
 # pre-registered so that when their bodies land they pick up the
 # disclaimer automatically without a second envelope pass.
-SENSITIVE_TOOLS: frozenset[str] = frozenset({
-    "dd_profile_am",
-    "regulatory_prep_pack",
-    "combined_compliance_check",
-    "rule_engine_check",
-    "predict_subsidy_outcome",
-    "score_dd_risk",
-    "intent_of",
-    "reason_answer",
-    # Tax surfaces — 税理士法 §52 fence. jpcite.com brand sits in
-    # 税務会計 territory, so every tax-data tool must declare the output
-    # information retrieval, NOT 税務助言.
-    "search_tax_incentives",
-    "get_am_tax_rule",
-    "list_tax_sunset_alerts",
-    # Wave 21 composition tools — eligibility / portfolio / mock walkthrough
-    # all sit in 税理士法 §52 + 行政書士法 §1 + 弁護士法 §72 territory.
-    "apply_eligibility_chain_am",
-    "find_complementary_programs_am",
-    "simulate_application_am",
-    # Wave 22 composition tools — DD checklist / kessan briefing /
-    # jurisdiction onboarding / application kit. Four of five sit in
-    # 税理士法 §52 / 行政書士法 §1 / 弁護士法 §72 territory.
-    # forecast_program_renewal is intentionally NOT in this set — it is
-    # a statistical forecast about program lifecycle, not regulated.
-    "match_due_diligence_questions",
-    "prepare_kessan_briefing",
-    "cross_check_jurisdiction",
-    "bundle_application_kit",
-    # 会計士 work-paper bundle tools — 公認会計士法 §47条の2 監査調書保存 +
-    # 税理士法 §52 fence. Citation chain auto-resolution sits in the
-    # same sensitive territory because the response cites tax
-    # authorities verbatim.
-    "compose_audit_workpaper",
-    "audit_batch_evaluate",
-    "resolve_citation_chain",
-    # Wave 23 industry pack wrappers (2026-04-29) — bundle programs +
-    # saiketsu citations + 通達 references for 建設 / 製造 / 不動産 cohorts.
-    # 税理士法 §52 + 公認会計士法 §47条の2 fence — the response cites
-    # tax authority decisions and references applicable to business
-    # planning, all of which live in regulated advice territory.
-    "pack_construction",
-    "pack_manufacturing",
-    "pack_real_estate",
-    # Corporate layer — 法人番号 / 適格請求書 surfaces can be used in
-    # regulated tax, credit, and DD workflows. EDINET pointer-only tool is
-    # intentionally excluded.
-    "get_houjin_360_am",
-    "search_invoice_by_houjin_partial",
-    # Vector kNN recommendation tools (recommend_similar.py, 2026-05-05).
-    # 行政書士法 §1 + 弁護士法 §72 + 税理士法 §52 fence — vector
-    # similarity is a retrieval signal, not an 採択/法解釈/税務判断.
-    "recommend_similar_program",
-    "recommend_similar_case",
-    "recommend_similar_court_decision",
-})
+SENSITIVE_TOOLS: frozenset[str] = frozenset(
+    {
+        "dd_profile_am",
+        "regulatory_prep_pack",
+        "combined_compliance_check",
+        "rule_engine_check",
+        "predict_subsidy_outcome",
+        "score_dd_risk",
+        "intent_of",
+        "reason_answer",
+        # Tax surfaces — 税理士法 §52 fence. jpcite.com brand sits in
+        # 税務会計 territory, so every tax-data tool must declare the output
+        # information retrieval, NOT 税務助言.
+        "search_tax_incentives",
+        "get_am_tax_rule",
+        "list_tax_sunset_alerts",
+        # Wave 21 composition tools — eligibility / portfolio / mock walkthrough
+        # all sit in 税理士法 §52 + 行政書士法 §1 + 弁護士法 §72 territory.
+        "apply_eligibility_chain_am",
+        "find_complementary_programs_am",
+        "simulate_application_am",
+        # Wave 22 composition tools — DD checklist / kessan briefing /
+        # jurisdiction onboarding / application kit. Four of five sit in
+        # 税理士法 §52 / 行政書士法 §1 / 弁護士法 §72 territory.
+        # forecast_program_renewal is intentionally NOT in this set — it is
+        # a statistical forecast about program lifecycle, not regulated.
+        "match_due_diligence_questions",
+        "prepare_kessan_briefing",
+        "cross_check_jurisdiction",
+        "bundle_application_kit",
+        # 会計士 work-paper bundle tools — 公認会計士法 §47条の2 監査調書保存 +
+        # 税理士法 §52 fence. Citation chain auto-resolution sits in the
+        # same sensitive territory because the response cites tax
+        # authorities verbatim.
+        "compose_audit_workpaper",
+        "audit_batch_evaluate",
+        "resolve_citation_chain",
+        # Wave 23 industry pack wrappers (2026-04-29) — bundle programs +
+        # saiketsu citations + 通達 references for 建設 / 製造 / 不動産 cohorts.
+        # 税理士法 §52 + 公認会計士法 §47条の2 fence — the response cites
+        # tax authority decisions and references applicable to business
+        # planning, all of which live in regulated advice territory.
+        "pack_construction",
+        "pack_manufacturing",
+        "pack_real_estate",
+        # Corporate layer — 法人番号 / 適格請求書 surfaces can be used in
+        # regulated tax, credit, and DD workflows. EDINET pointer-only tool is
+        # intentionally excluded.
+        "get_houjin_360_am",
+        "search_invoice_by_houjin_partial",
+        # Vector kNN recommendation tools (recommend_similar.py, 2026-05-05).
+        # 行政書士法 §1 + 弁護士法 §72 + 税理士法 §52 fence — vector
+        # similarity is a retrieval signal, not an 採択/法解釈/税務判断.
+        "recommend_similar_program",
+        "recommend_similar_case",
+        "recommend_similar_court_decision",
+        # Wave 31-9 GET /v1/intel/citation_pack/{program_id} — REST surface, but
+        # registered here so a downstream MCP wrapper of the same name picks up
+        # the same disclaimer. §52 / §47条の2 / §1 / §72 fence — citation pack
+        # markdown can be re-quoted directly into 申請書面 / 提案書 territory.
+        "intel.citation_pack",
+        # Wave 32-3 risk score — adjacent to credit / DD territory. Register
+        # both REST and MCP names so wrapper/telemetry paths resolve the fence.
+        "intel.risk_score",
+        "intel_risk_score",
+    }
+)
 
 _DISCLAIMER_STANDARD: dict[str, str] = {
     "dd_profile_am": (
@@ -461,19 +473,14 @@ _DISCLAIMER_MINIMAL: dict[str, str] = {
         "公開処分ベース検索 score。与信・反社 (弁護士法 §72) ・労務 DD (社労士法) "
         "の代替不可。一次資料確認必須。"
     ),
-    "intent_of": (
-        "intent 分類のみ。業法 4 法 (弁護士・税理士・行政書士・社労士) の判断は対象外。"
-    ),
-    "reason_answer": (
-        "決定論 pipeline 検索出力のみ。業法 4 法の判断は対象外、確定判断は士業へ。"
-    ),
+    "intent_of": ("intent 分類のみ。業法 4 法 (弁護士・税理士・行政書士・社労士) の判断は対象外。"),
+    "reason_answer": ("決定論 pipeline 検索出力のみ。業法 4 法の判断は対象外、確定判断は士業へ。"),
     "search_tax_incentives": (
         "国税庁・財務省 由来の税制措置検索のみ。税務助言ではない (税理士法 §52)。"
         "rate/sunset 改正可能。個別判断は税理士へ。"
     ),
     "get_am_tax_rule": (
-        "単一税制措置 lookup のみ。税務助言ではない (税理士法 §52)。"
-        "個別判断は税理士へ。"
+        "単一税制措置 lookup のみ。税務助言ではない (税理士法 §52)。個別判断は税理士へ。"
     ),
     "list_tax_sunset_alerts": (
         "措置法廃止予定日の集計のみ。税務助言ではない (税理士法 §52)。"
@@ -510,12 +517,10 @@ _DISCLAIMER_MINIMAL: dict[str, str] = {
         "監査調書 (公認会計士法 §47条の2) の代替不可。一次資料確認必須。"
     ),
     "get_houjin_360_am": (
-        "公開法人情報の機械的 join のみ。与信・反社・税務/法律判断の代替不可。"
-        "一次資料確認必須。"
+        "公開法人情報の機械的 join のみ。与信・反社・税務/法律判断の代替不可。一次資料確認必須。"
     ),
     "search_invoice_by_houjin_partial": (
-        "国税庁公表データの検索のみ。仕入税額控除の確定判断・税務助言ではない。"
-        "国税庁原典確認必須。"
+        "国税庁公表データの検索のみ。仕入税額控除の確定判断・税務助言ではない。国税庁原典確認必須。"
     ),
     # --- Wave 21 composition tools ---------------------------------------
     "apply_eligibility_chain_am": (
@@ -549,8 +554,7 @@ _DISCLAIMER_MINIMAL: dict[str, str] = {
         "税務助言 (税理士法 §52) の代替不可。"
     ),
     "recommend_similar_case": (
-        "vec k-NN 検索結果のみ。採択事例の意味類似のみ、申請可否担保なし "
-        "(行政書士法 §1)。"
+        "vec k-NN 検索結果のみ。採択事例の意味類似のみ、申請可否担保なし (行政書士法 §1)。"
     ),
     "recommend_similar_court_decision": (
         "vec k-NN 検索結果のみ。判例の意味類似のみ、法解釈 (弁護士法 §72) ・"
@@ -635,48 +639,64 @@ def _default_suggested_actions(
         return actions
 
     if status == "sparse":
-        actions.append({
-            "action": "broaden_query",
-            "details": "都道府県・業種などフィルタを 1 つ外して再検索すると候補が増えます。",
-        })
+        actions.append(
+            {
+                "action": "broaden_query",
+                "details": "都道府県・業種などフィルタを 1 つ外して再検索すると候補が増えます。",
+            }
+        )
         if legacy_retry_with:
-            actions.append({
-                "action": "try_alternative_tool",
-                "details": f"代替ツール候補: {', '.join(legacy_retry_with[:3])}",
-            })
+            actions.append(
+                {
+                    "action": "try_alternative_tool",
+                    "details": f"代替ツール候補: {', '.join(legacy_retry_with[:3])}",
+                }
+            )
         return actions
 
     if status == "empty":
-        actions.append({
-            "action": "broaden_query",
-            "details": "地域・期間・金額条件のいずれかを外すと該当件数が増える可能性があります。",
-        })
+        actions.append(
+            {
+                "action": "broaden_query",
+                "details": "地域・期間・金額条件のいずれかを外すと該当件数が増える可能性があります。",
+            }
+        )
         if legacy_retry_with:
-            actions.append({
-                "action": "try_alternative_tool",
-                "details": f"代替ツール候補: {', '.join(legacy_retry_with[:3])}",
-            })
+            actions.append(
+                {
+                    "action": "try_alternative_tool",
+                    "details": f"代替ツール候補: {', '.join(legacy_retry_with[:3])}",
+                }
+            )
         else:
             # Provide sensible defaults per tool family
-            actions.append({
-                "action": "try_alternative_tool",
-                "details": "search_programs_fts で自由語検索を試してください。",
-            })
-        actions.append({
-            "action": "consult_primary_source",
-            "details": "DB 未収録の可能性があります。該当官庁の一次資料 URL をご確認ください。",
-        })
-        actions.append({
-            "action": "ask_user_for_clarification",
-            "details": "業種・地域・時期の指定を具体化すると精度が上がります。",
-        })
+            actions.append(
+                {
+                    "action": "try_alternative_tool",
+                    "details": "search_programs_fts で自由語検索を試してください。",
+                }
+            )
+        actions.append(
+            {
+                "action": "consult_primary_source",
+                "details": "DB 未収録の可能性があります。該当官庁の一次資料 URL をご確認ください。",
+            }
+        )
+        actions.append(
+            {
+                "action": "ask_user_for_clarification",
+                "details": "業種・地域・時期の指定を具体化すると精度が上がります。",
+            }
+        )
         return actions
 
     # status == "error"
-    actions.append({
-        "action": "retry_with_backoff",
-        "details": "数秒待って再試行してください。継続する場合は管理者へ連絡を。",
-    })
+    actions.append(
+        {
+            "action": "retry_with_backoff",
+            "details": "数秒待って再試行してください。継続する場合は管理者へ連絡を。",
+        }
+    )
     return actions
 
 
@@ -747,8 +767,7 @@ def _coerce_results(payload: Any) -> tuple[list, dict[str, Any]]:
             # Pull through any additional tool-specific fields so they are
             # preserved on the final envelope (e.g. seed_name).
             for k, v in payload.items():
-                if k not in {"results", "total", "limit", "offset",
-                             "hint", "retry_with", "error"}:
+                if k not in {"results", "total", "limit", "offset", "hint", "retry_with", "error"}:
                     extras.setdefault(k, v)
             return list(results), extras
         # No `results` key -> treat the whole dict as a single record.
@@ -769,18 +788,27 @@ def _count_evidence_sources(results: list) -> int:
     """
     count = 0
     primary_hosts = (
-        "maff.go.jp", "meti.go.jp", "mof.go.jp", "jfc.go.jp",
-        "nta.go.jp", "chusho.meti.go.jp", "env.go.jp", "mlit.go.jp",
-        "mhlw.go.jp", "e-gov.go.jp", "j-net21.smrj.go.jp",
-        ".lg.jp", ".pref.", ".city.",
+        "maff.go.jp",
+        "meti.go.jp",
+        "mof.go.jp",
+        "jfc.go.jp",
+        "nta.go.jp",
+        "chusho.meti.go.jp",
+        "env.go.jp",
+        "mlit.go.jp",
+        "mhlw.go.jp",
+        "e-gov.go.jp",
+        "j-net21.smrj.go.jp",
+        ".lg.jp",
+        ".pref.",
+        ".city.",
     )
     for r in results:
         if not isinstance(r, dict):
             continue
         # Try several common field names.
         urls: list[str] = []
-        for k in ("source_url", "primary_source", "evidence_url",
-                  "url", "authority_url"):
+        for k in ("source_url", "primary_source", "evidence_url", "url", "authority_url"):
             v = r.get(k)
             if isinstance(v, str) and v:
                 urls.append(v)
@@ -823,6 +851,7 @@ def _maybe_attach_uncertainty(results: list) -> dict[str, Any] | None:
     # not be initialised in pure unit tests.
     try:
         from jpintel_mcp.config import settings  # local import on purpose
+
         if not getattr(settings, "uncertainty_enabled", True):
             return None
     except Exception:
@@ -834,7 +863,10 @@ def _maybe_attach_uncertainty(results: list) -> dict[str, Any] | None:
         return None
 
     label_hist: dict[str, int] = {
-        "high": 0, "medium": 0, "low": 0, "unknown": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0,
+        "unknown": 0,
     }
     score_sum = 0.0
     score_count = 0
@@ -851,6 +883,7 @@ def _maybe_attach_uncertainty(results: list) -> dict[str, Any] | None:
             import sqlite3 as _sqlite3
 
             from jpintel_mcp.config import settings as _s
+
             conn = _sqlite3.connect(str(_s.autonomath_db_path))
             conn.row_factory = _sqlite3.Row
             _conn_holder["conn"] = conn
@@ -887,7 +920,8 @@ def _maybe_attach_uncertainty(results: list) -> dict[str, Any] | None:
                 conn = _conn()
                 if conn is not None and _o8_get_uncertainty_for_fact:
                     unc = _o8_get_uncertainty_for_fact(
-                        int(row["fact_id"]), conn,
+                        int(row["fact_id"]),
+                        conn,
                     )
             if unc:
                 row["_uncertainty"] = unc
@@ -955,14 +989,16 @@ def build_envelope(
 
     router_explain = _router_explain(router_query) if status == "empty" else None
     explanation = _explanation_for(
-        tool_name, status,
+        tool_name,
+        status,
         result_count=result_count,
         router_explain=router_explain,
     )
 
     legacy_retry = legacy_extras.get("retry_with")
     suggested = _default_suggested_actions(
-        tool_name, status,
+        tool_name,
+        status,
         legacy_retry_with=legacy_retry if isinstance(legacy_retry, list) else None,
     )
 
@@ -983,6 +1019,26 @@ def build_envelope(
         "offset": int(legacy_extras.get("offset", 0)),
         "hint": legacy_extras.get("hint"),
     }
+    # Billing pipeline (Wave22/24) greps the envelope for `_billing_unit`
+    # to compute metered request count. Preserve it from the wrapped tool
+    # if present; only error envelopes lack the field (the error structure
+    # itself is the billing-pipeline cue).
+    if error is None and "_billing_unit" in legacy_extras:
+        envelope["_billing_unit"] = legacy_extras["_billing_unit"]
+
+    # W3-13 audit: every with_envelope-wrapped envelope (happy-path AND
+    # error path) MUST carry the corpus_snapshot_id + corpus_checksum
+    # auditor reproducibility pair. The attach helper degrades to a
+    # deterministic fallback when autonomath.db is unreachable, so the
+    # field is always present even on a brand-new fresh-clone DB.
+    try:
+        from jpintel_mcp.mcp.autonomath_tools.snapshot_helper import (
+            attach_corpus_snapshot,
+        )
+
+        attach_corpus_snapshot(envelope)
+    except Exception:  # pragma: no cover — defensive
+        pass
     # retry_with is kept as a structured dict; legacy list form is surfaced
     # via suggested_actions only.
     if status in ("sparse", "empty") and not legacy_retry:
@@ -993,7 +1049,8 @@ def build_envelope(
         # Enrich with retry_after / alternate_endpoint / user_message
         # (Feature E + J). Pure additive — never overwrites existing keys.
         envelope["error"] = enhance_error_with_retry(
-            error, http_status=http_status,
+            error,
+            http_status=http_status,
         )
     # Feature A/B/F: meta block (opt-out via fields="minimal").
     meta = build_meta(
@@ -1058,6 +1115,7 @@ def with_envelope(
 
     On exception, we emit an envelope with status="error".
     """
+
     def decorator(fn: Callable[..., Any]) -> Callable[..., dict[str, Any]]:
         @functools.wraps(fn)
         def wrapped(*args: Any, **kwargs: Any) -> dict[str, Any]:

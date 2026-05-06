@@ -63,6 +63,7 @@ indexes as a breadcrumb-class event with logger tag set to
 ``autonomath.api.deprecation`` (configured via the message's
 ``with sentry_sdk.push_scope`` block in the helper).
 """
+
 from __future__ import annotations
 
 import logging
@@ -159,9 +160,7 @@ class DeprecationWarningMiddleware(BaseHTTPMiddleware):
     in non-prod environments aside from the structured log line.
     """
 
-    async def dispatch(
-        self, request: Request, call_next: Callable
-    ) -> Response:
+    async def dispatch(self, request: Request, call_next: Callable) -> Response:
         # Bypass: liveness probes + preflight. These are not "real" hits
         # for the purposes of the deprecation budget.
         if request.method == "OPTIONS":
@@ -185,8 +184,7 @@ class DeprecationWarningMiddleware(BaseHTTPMiddleware):
 
             # Structured log — always (cheap, dashboard-tailable).
             _log.warning(
-                "deprecated_endpoint_hit route=%s method=%s status=%s "
-                "trigger=%s",
+                "deprecated_endpoint_hit route=%s method=%s status=%s trigger=%s",
                 tag_route,
                 request.method,
                 response.status_code,

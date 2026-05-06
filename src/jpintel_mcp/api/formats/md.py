@@ -87,12 +87,10 @@ def render_md(rows: list[dict[str, Any]], meta: dict[str, Any]) -> Response:
     _disclaimer_body = DISCLAIMER_JA
     _LEAD = "税理士法 §52: "
     if _disclaimer_body.startswith(_LEAD):
-        _disclaimer_body = _disclaimer_body[len(_LEAD):]
+        _disclaimer_body = _disclaimer_body[len(_LEAD) :]
     lines.append(f"> **税理士法 §52**: {_disclaimer_body}")
     lines.append(">")
-    lines.append(
-        f"> _出典: {meta.get('license_summary', '')} / {BRAND_FOOTER}_"
-    )
+    lines.append(f"> _出典: {meta.get('license_summary', '')} / {BRAND_FOOTER}_")
     if meta.get("endpoint"):
         lines.append(f"> _endpoint: `{meta['endpoint']}` / rows: {len(rows)}_")
     lines.append("")
@@ -101,9 +99,7 @@ def render_md(rows: list[dict[str, Any]], meta: dict[str, Any]) -> Response:
     lines.append("| " + " | ".join(_md_cell(c) for c in columns) + " |")
     lines.append("| " + " | ".join("---" for _ in columns) + " |")
     for row in rows:
-        lines.append(
-            "| " + " | ".join(_md_cell(row.get(c)) for c in columns) + " |"
-        )
+        lines.append("| " + " | ".join(_md_cell(row.get(c)) for c in columns) + " |")
 
     body = "\n".join(lines) + "\n"
     filename = f"{meta.get('filename_stem', 'autonomath_export')}.md"

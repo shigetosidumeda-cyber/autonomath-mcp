@@ -21,6 +21,7 @@ content block themselves before / after `wrap_for_mcp`.
 
 Pure-Python; no LLM imports.
 """
+
 from __future__ import annotations
 
 from typing import Any

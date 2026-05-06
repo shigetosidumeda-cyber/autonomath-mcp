@@ -40,6 +40,7 @@ This module is transport-agnostic: it exposes a pure Python registry. The
 FastMCP wiring (``@mcp.resource(...)``) happens in ``register_resources()``
 so it can be called at merge time with the jpintel-mcp server singleton.
 """
+
 from __future__ import annotations
 
 import json
@@ -58,10 +59,12 @@ if TYPE_CHECKING:
 # ---------------------------------------------------------------------------
 
 _REPO_ROOT = Path(__file__).resolve().parents[4]
-_DB_PATH = Path(_os.environ.get(
-    "AUTONOMATH_DB_PATH",
-    str(_REPO_ROOT / "autonomath.db"),
-))
+_DB_PATH = Path(
+    _os.environ.get(
+        "AUTONOMATH_DB_PATH",
+        str(_REPO_ROOT / "autonomath.db"),
+    )
+)
 
 # Static-file roots (8 taxonomies + 5 example profiles + optional templates).
 _STATIC_DIR = Path(
@@ -408,18 +411,53 @@ def _authority_list_md() -> str:
 
 def _prefecture_list_md() -> str:
     jis = [
-        ("01", "北海道"), ("02", "青森県"), ("03", "岩手県"), ("04", "宮城県"),
-        ("05", "秋田県"), ("06", "山形県"), ("07", "福島県"), ("08", "茨城県"),
-        ("09", "栃木県"), ("10", "群馬県"), ("11", "埼玉県"), ("12", "千葉県"),
-        ("13", "東京都"), ("14", "神奈川県"), ("15", "新潟県"), ("16", "富山県"),
-        ("17", "石川県"), ("18", "福井県"), ("19", "山梨県"), ("20", "長野県"),
-        ("21", "岐阜県"), ("22", "静岡県"), ("23", "愛知県"), ("24", "三重県"),
-        ("25", "滋賀県"), ("26", "京都府"), ("27", "大阪府"), ("28", "兵庫県"),
-        ("29", "奈良県"), ("30", "和歌山県"), ("31", "鳥取県"), ("32", "島根県"),
-        ("33", "岡山県"), ("34", "広島県"), ("35", "山口県"), ("36", "徳島県"),
-        ("37", "香川県"), ("38", "愛媛県"), ("39", "高知県"), ("40", "福岡県"),
-        ("41", "佐賀県"), ("42", "長崎県"), ("43", "熊本県"), ("44", "大分県"),
-        ("45", "宮崎県"), ("46", "鹿児島県"), ("47", "沖縄県"),
+        ("01", "北海道"),
+        ("02", "青森県"),
+        ("03", "岩手県"),
+        ("04", "宮城県"),
+        ("05", "秋田県"),
+        ("06", "山形県"),
+        ("07", "福島県"),
+        ("08", "茨城県"),
+        ("09", "栃木県"),
+        ("10", "群馬県"),
+        ("11", "埼玉県"),
+        ("12", "千葉県"),
+        ("13", "東京都"),
+        ("14", "神奈川県"),
+        ("15", "新潟県"),
+        ("16", "富山県"),
+        ("17", "石川県"),
+        ("18", "福井県"),
+        ("19", "山梨県"),
+        ("20", "長野県"),
+        ("21", "岐阜県"),
+        ("22", "静岡県"),
+        ("23", "愛知県"),
+        ("24", "三重県"),
+        ("25", "滋賀県"),
+        ("26", "京都府"),
+        ("27", "大阪府"),
+        ("28", "兵庫県"),
+        ("29", "奈良県"),
+        ("30", "和歌山県"),
+        ("31", "鳥取県"),
+        ("32", "島根県"),
+        ("33", "岡山県"),
+        ("34", "広島県"),
+        ("35", "山口県"),
+        ("36", "徳島県"),
+        ("37", "香川県"),
+        ("38", "愛媛県"),
+        ("39", "高知県"),
+        ("40", "福岡県"),
+        ("41", "佐賀県"),
+        ("42", "長崎県"),
+        ("43", "熊本県"),
+        ("44", "大分県"),
+        ("45", "宮崎県"),
+        ("46", "鹿児島県"),
+        ("47", "沖縄県"),
     ]
     lines = [
         "# 47 都道府県 (JIS X 0401 prefecture codes)",
@@ -442,8 +480,10 @@ def _freshness_stats_md() -> str:
     ):
         counts[kind_row[0]] = kind_row[1]
     (last_update,) = (
-        _safe_query("SELECT MAX(updated_at) FROM am_entities")[:1] or [(None,)]
-    )[0] if _safe_query("SELECT MAX(updated_at) FROM am_entities") else (None,)
+        (_safe_query("SELECT MAX(updated_at) FROM am_entities")[:1] or [(None,)])[0]
+        if _safe_query("SELECT MAX(updated_at) FROM am_entities")
+        else (None,)
+    )
     now = datetime.now(UTC).isoformat()
     lines = [
         "# Freshness snapshot",
@@ -662,7 +702,7 @@ def _envelope_schema_md() -> str:
         "}\n"
         "```\n\n"
         "## Error envelope\n\n"
-        "`{ \"error\": { \"code\": \"...\", \"message\": \"...\", \"retry_with\": {...} } }`\n"
+        '`{ "error": { "code": "...", "message": "...", "retry_with": {...} } }`\n'
     )
 
 
@@ -699,10 +739,7 @@ _RESOURCES: list[ResourceMeta] = [
     ResourceMeta(
         uri="autonomath://policy/no_hallucination",
         name="Evidence Grounding Policy",
-        description=(
-            "Hard rules the client LLM must follow when speaking on top of "
-            "jpcite data."
-        ),
+        description=("Hard rules the client LLM must follow when speaking on top of jpcite data."),
         content=_NO_HALLUCINATION_POLICY_MD,
     ),
     ResourceMeta(
@@ -810,7 +847,8 @@ for _slug, (_rel_filename, _desc) in _EXAMPLE_PROFILE_FILES.items():
         ResourceMeta(
             uri=f"autonomath://example_profiles/{_slug}",
             name=f"Example profile: {_slug}",
-            description=_desc + " PII-clean reference payload — copy-paste seed for prescreen / DD / eligibility tools.",
+            description=_desc
+            + " PII-clean reference payload — copy-paste seed for prescreen / DD / eligibility tools.",
             mime_type="application/json",
             update_frequency="static",
             provider=_make_example_profile_provider(_slug),

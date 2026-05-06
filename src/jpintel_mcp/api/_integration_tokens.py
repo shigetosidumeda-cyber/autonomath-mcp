@@ -57,8 +57,7 @@ def _fernet():
     if not raw:
         raise HTTPException(
             status.HTTP_503_SERVICE_UNAVAILABLE,
-            "integration token storage not configured "
-            "(operator must set INTEGRATION_TOKEN_SECRET)",
+            "integration token storage not configured (operator must set INTEGRATION_TOKEN_SECRET)",
         )
     try:
         from cryptography.fernet import Fernet, MultiFernet
@@ -137,8 +136,7 @@ def upsert_account(
     )
     db.commit()
     row = db.execute(
-        "SELECT id FROM integration_accounts "
-        "WHERE api_key_hash = ? AND provider = ?",
+        "SELECT id FROM integration_accounts WHERE api_key_hash = ? AND provider = ?",
         (api_key_hash, provider),
     ).fetchone()
     return int(row["id"]) if row else 0
@@ -164,9 +162,7 @@ def load_account(
     return payload
 
 
-def revoke_account(
-    db: sqlite3.Connection, *, api_key_hash: str, provider: str
-) -> bool:
+def revoke_account(db: sqlite3.Connection, *, api_key_hash: str, provider: str) -> bool:
     """Mark a credential row revoked. Returns True if a row was updated."""
     now = datetime.now(UTC).isoformat().replace("+00:00", "Z")
     cur = db.execute(
@@ -217,8 +213,7 @@ def record_sync(
         # UNIQUE (provider, idempotency_key) — already delivered. Return
         # the existing row id and signal "not new".
         row = db.execute(
-            "SELECT id FROM integration_sync_log "
-            "WHERE provider = ? AND idempotency_key = ?",
+            "SELECT id FROM integration_sync_log WHERE provider = ? AND idempotency_key = ?",
             (provider, idempotency_key),
         ).fetchone()
         return False, int(row["id"]) if row else 0

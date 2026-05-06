@@ -100,9 +100,7 @@ PacketProfile = Literal["full", "brief", "verified_only", "changes_only"]
 #: ``citation_verification.verification_status`` CHECK constraint
 #: (migration 126_citation_verification). Anything else is rewritten
 #: to ``'unknown'`` by the composer to preserve the wire contract.
-VALID_CITATION_STATUSES: frozenset[str] = frozenset(
-    {"verified", "inferred", "unknown", "stale"}
-)
+VALID_CITATION_STATUSES: frozenset[str] = frozenset({"verified", "inferred", "unknown", "stale"})
 
 #: Default verdict when the citation_verification join returns no row.
 #: Matches §28.9 No-Go #1: never default to ``'verified'`` without proof.
@@ -1116,9 +1114,7 @@ class EvidencePacketComposer:
                     break
                 # Map verdict → spec vocab.
                 verdict_label = self._map_verdict(verdict.verdict)
-                evidence_url, license_name, allowed_urls = self._rule_evidence_source(
-                    chain_entry
-                )
+                evidence_url, license_name, allowed_urls = self._rule_evidence_source(chain_entry)
                 rule = {
                     "rule_id": (
                         chain_entry.get("rule_id")
@@ -1134,9 +1130,7 @@ class EvidencePacketComposer:
                     rule["license"] = license_name
                 if len(allowed_urls) > 1:
                     rule["source_urls"] = allowed_urls
-                rules.append(
-                    rule
-                )
+                rules.append(rule)
             if len(rules) >= cap:
                 break
         return rules, gaps
@@ -1316,6 +1310,22 @@ class EvidencePacketComposer:
         }
 
     @staticmethod
+    def _suppress_cost_savings_without_evidence(
+        decision: dict[str, Any],
+        *,
+        reason: str,
+    ) -> dict[str, Any]:
+        """Prevent compression-only value claims when no usable evidence returned."""
+        if decision.get("recommend_for_cost_savings") is not True:
+            return decision
+        out = dict(decision)
+        out["recommend_for_cost_savings"] = False
+        out["suppressed_cost_savings_decision"] = out.get("cost_savings_decision")
+        out["cost_savings_decision"] = reason
+        out["missing_for_cost_claim"] = ["source_linked_records_returned"]
+        return out
+
+    @staticmethod
     def _source_linked_record_count(records: list[dict[str, Any]]) -> int:
         count = 0
         for rec in records:
@@ -1448,9 +1458,7 @@ class EvidencePacketComposer:
             if isinstance(cov, (int, float)):
                 coverage_values.append(float(cov))
         if coverage_values:
-            coverage_avg: float | None = round(
-                sum(coverage_values) / len(coverage_values), 4
-            )
+            coverage_avg: float | None = round(sum(coverage_values) / len(coverage_values), 4)
         else:
             coverage_avg = None
 
@@ -1459,18 +1467,10 @@ class EvidencePacketComposer:
         known_gap_count = len(gaps) if isinstance(gaps, list) else 0
 
         cits = citations or []
-        verified_count = sum(
-            1 for c in cits if c.get("verification_status") == "verified"
-        )
-        inferred_count = sum(
-            1 for c in cits if c.get("verification_status") == "inferred"
-        )
-        stale_count = sum(
-            1 for c in cits if c.get("verification_status") == "stale"
-        )
-        unknown_count = sum(
-            1 for c in cits if c.get("verification_status") == "unknown"
-        )
+        verified_count = sum(1 for c in cits if c.get("verification_status") == "verified")
+        inferred_count = sum(1 for c in cits if c.get("verification_status") == "inferred")
+        stale_count = sum(1 for c in cits if c.get("verification_status") == "stale")
+        unknown_count = sum(1 for c in cits if c.get("verification_status") == "unknown")
 
         return {
             "records_returned": records_returned,
@@ -1533,6 +1533,10 @@ class EvidencePacketComposer:
             route = "/v1/evidence/packets/query"
 
         if records_returned <= 0:
+            cost_decision = cls._suppress_cost_savings_without_evidence(
+                cls._cost_savings_decision(context_savings),
+                reason="not_applicable_no_evidence",
+            )
             base = {
                 "recommendation": "broaden_query_or_skip",
                 "recommend_to_user": False,
@@ -1551,7 +1555,7 @@ class EvidencePacketComposer:
                     "the query or use a more specific endpoint."
                 ),
                 "context_savings": context_savings,
-                **cls._cost_savings_decision(context_savings),
+                **cost_decision,
             }
             return base
 
@@ -1596,6 +1600,10 @@ class EvidencePacketComposer:
             value_reasons.append("caller_baseline_break_even_met")
 
         if source_linked_records <= 0:
+            cost_decision = cls._suppress_cost_savings_without_evidence(
+                cls._cost_savings_decision(context_savings),
+                reason="not_applicable_without_source_links",
+            )
             return {
                 "recommendation": "broaden_query_or_skip",
                 "recommend_to_user": False,
@@ -1614,7 +1622,7 @@ class EvidencePacketComposer:
                     "packet lacks source-linked evidence."
                 ),
                 "context_savings": context_savings,
-                **cls._cost_savings_decision(context_savings),
+                **cost_decision,
             }
 
         if precomputed_count > 0:
@@ -1756,18 +1764,21 @@ class EvidencePacketComposer:
             for f in facts:
                 src = f.get("source") if isinstance(f, dict) else None
                 url = src.get("url") if isinstance(src, dict) else None
-                if isinstance(entity_id, str) and isinstance(url, str) and (
-                    entity_id,
-                    url,
-                ) in verified_pairs:
+                if (
+                    isinstance(entity_id, str)
+                    and isinstance(url, str)
+                    and (
+                        entity_id,
+                        url,
+                    )
+                    in verified_pairs
+                ):
                     kept_facts.append(f)
             if facts:
                 rec["facts"] = kept_facts
                 # Recompute coverage on the verified-only fact subset so the
                 # downstream `fact_provenance_coverage_pct_avg` stays honest.
-                with_source = sum(
-                    1 for f in kept_facts if isinstance(f, dict) and f.get("source")
-                )
+                with_source = sum(1 for f in kept_facts if isinstance(f, dict) and f.get("source"))
                 rec["fact_provenance_coverage_pct"] = (
                     round(with_source / len(kept_facts), 4) if kept_facts else 0.0
                 )
@@ -1831,14 +1842,10 @@ class EvidencePacketComposer:
         envelope are preserved; new/unseen pairs default to
         ``verification_status='unknown'``.
         """
-        records = [
-            rec for rec in (envelope.get("records") or []) if isinstance(rec, dict)
-        ]
+        records = [rec for rec in (envelope.get("records") or []) if isinstance(rec, dict)]
         if composer is not None:
             entity_ids = [
-                rec.get("entity_id")
-                for rec in records
-                if isinstance(rec.get("entity_id"), str)
+                rec.get("entity_id") for rec in records if isinstance(rec.get("entity_id"), str)
             ]
             verifications = composer._fetch_citation_verifications(entity_ids)
         else:
@@ -1857,9 +1864,7 @@ class EvidencePacketComposer:
                 ):
                     verifications[(entity_id, source_url)] = dict(cit)
         citations = cls._build_citations_block(records, verifications)
-        envelope["evidence_value"] = cls._build_evidence_value(
-            envelope, records, citations
-        )
+        envelope["evidence_value"] = cls._build_evidence_value(envelope, records, citations)
 
     @classmethod
     def _refresh_projection_metadata(
@@ -1868,9 +1873,7 @@ class EvidencePacketComposer:
         composer: EvidencePacketComposer | None = None,
     ) -> None:
         """Recompute quality, recommendation, and citations after projection."""
-        records = [
-            rec for rec in (envelope.get("records") or []) if isinstance(rec, dict)
-        ]
+        records = [rec for rec in (envelope.get("records") or []) if isinstance(rec, dict)]
         quality = envelope.get("quality")
         if isinstance(quality, dict):
             coverage_score = cls._coverage_score(records)

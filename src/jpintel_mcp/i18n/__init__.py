@@ -37,6 +37,7 @@ Style anchors (mirror i18n_style_guide.md):
     (METI / MHLW / FSA / NTA / JFC / SMRJ).
   - URL hostnames stay verbatim (e.g. e-Gov, j-net21, mirasapo-plus).
 """
+
 from __future__ import annotations
 
 from typing import Final, Literal
@@ -73,7 +74,6 @@ MESSAGES: Final[dict[str, dict[LangCode, str]]] = {
         "ja": "取得が一時的に失敗しました。時間をおいて再度お試しください。",
         "en": "Lookup temporarily failed. Please retry after a short interval.",
     },
-
     # -- search_tax_incentives ----------------------------------------
     "envelope.rich.search_tax_incentives": {
         "ja": "税制特例が十分件数見つかりました。適用期限と対象を確認して引用してください。",
@@ -91,7 +91,6 @@ MESSAGES: Final[dict[str, dict[LangCode, str]]] = {
         "ja": "税制検索が一時的に失敗しました。時間をおいて再度お試しください。",
         "en": "Tax incentive search temporarily failed. Please retry after a short interval.",
     },
-
     # -- search_certifications ----------------------------------------
     "envelope.rich.search_certifications": {
         "ja": "該当する認定制度が複数見つかりました。取得手続きの一次資料リンクを確認してください。",
@@ -109,7 +108,6 @@ MESSAGES: Final[dict[str, dict[LangCode, str]]] = {
         "ja": "認定検索が一時的に失敗しました。時間をおいて再度お試しください。",
         "en": "Certification search temporarily failed. Please retry after a short interval.",
     },
-
     # -- list_open_programs -------------------------------------------
     "envelope.rich.list_open_programs": {
         "ja": "現在公募中の制度が複数あります。締切順に並べて提示してください。",
@@ -127,7 +125,6 @@ MESSAGES: Final[dict[str, dict[LangCode, str]]] = {
         "ja": "公募情報の取得が一時的に失敗しました。時間をおいて再度お試しください。",
         "en": "Open-call lookup temporarily failed. Please retry after a short interval.",
     },
-
     # -- search_by_law -------------------------------------------------
     "envelope.rich.search_by_law": {
         "ja": "指定法令に紐づく制度が複数見つかりました。法改正履歴の有無も合わせて確認してください。",
@@ -145,7 +142,6 @@ MESSAGES: Final[dict[str, dict[LangCode, str]]] = {
         "ja": "法令検索が一時的に失敗しました。時間をおいて再度お試しください。",
         "en": "Law-linkage search temporarily failed. Please retry after a short interval.",
     },
-
     # -- active_programs_at -------------------------------------------
     "envelope.rich.active_programs_at": {
         "ja": "指定日に施行中の制度が十分件数見つかりました。適用期限を確認の上ご案内ください。",
@@ -163,7 +159,6 @@ MESSAGES: Final[dict[str, dict[LangCode, str]]] = {
         "ja": "施行期間検索が一時的に失敗しました。時間をおいて再度お試しください。",
         "en": "Effective-date search temporarily failed. Please retry after a short interval.",
     },
-
     # -- related_programs ---------------------------------------------
     "envelope.rich.related_programs": {
         "ja": "指定制度に関連する制度が複数見つかりました。関係種別 (前提/競合/後継) を明示してください。",
@@ -181,7 +176,6 @@ MESSAGES: Final[dict[str, dict[LangCode, str]]] = {
         "ja": "関連制度検索が一時的に失敗しました。時間をおいて再度お試しください。",
         "en": "Relation-graph search temporarily failed. Please retry after a short interval.",
     },
-
     # -- search_acceptance_stats --------------------------------------
     "envelope.rich.search_acceptance_stats": {
         "ja": "採択統計が複数回次で見つかりました。採択率の推移で提示してください。",
@@ -199,7 +193,6 @@ MESSAGES: Final[dict[str, dict[LangCode, str]]] = {
         "ja": "採択統計の取得が一時的に失敗しました。時間をおいて再度お試しください。",
         "en": "Acceptance-stat lookup temporarily failed. Please retry after a short interval.",
     },
-
     # -- enum_values --------------------------------------------------
     "envelope.rich.enum_values": {
         "ja": "指定 enum の候補値を取得しました。この enum から値を選んで再検索してください。",
@@ -213,7 +206,6 @@ MESSAGES: Final[dict[str, dict[LangCode, str]]] = {
         "ja": "enum 値の取得が一時的に失敗しました。時間をおいて再度お試しください。",
         "en": "Enum-value lookup temporarily failed. Please retry after a short interval.",
     },
-
     # -- intent_of ----------------------------------------------------
     "envelope.rich.intent_of": {
         "ja": "質問の意図を複数候補で推定しました。confidence 最上位を採用するのが安全です。",
@@ -231,7 +223,6 @@ MESSAGES: Final[dict[str, dict[LangCode, str]]] = {
         "ja": "意図推定が一時的に失敗しました。時間をおいて再度お試しください。",
         "en": "Intent inference temporarily failed. Please retry after a short interval.",
     },
-
     # -- reason_answer ------------------------------------------------
     "envelope.rich.reason_answer": {
         "ja": "推論根拠を複数件取得しました。引用元 URL を必ず提示してから結論を述べてください。",
@@ -249,7 +240,6 @@ MESSAGES: Final[dict[str, dict[LangCode, str]]] = {
         "ja": "推論エンジンが一時的に失敗しました。時間をおいて再度お試しください。",
         "en": "Reasoning engine temporarily failed. Please retry after a short interval.",
     },
-
     # -- common error.user_message ------------------------------------
     "error.rate_limit": {
         "ja": "リクエスト上限を超えました。匿名は 3 req/日、API キーは契約上限までご利用いただけます。",
@@ -271,7 +261,6 @@ MESSAGES: Final[dict[str, dict[LangCode, str]]] = {
         "ja": "DB が一時的に利用できません。Fly.io Tokyo region の status をご確認ください。",
         "en": "Database is temporarily unavailable. Please check the Fly.io Tokyo-region status.",
     },
-
     # -- onboarding tips (subset) -------------------------------------
     "tips.first_call": {
         "ja": "初回呼び出しありがとうございます。/v1/programs/search から始めると主要 11,211 件を横断検索できます。",
@@ -282,8 +271,8 @@ MESSAGES: Final[dict[str, dict[LangCode, str]]] = {
         "en": "Always cite source_url in answers. Aggregator re-posts carry a misinformation risk.",
     },
     "tips.use_phrase_query": {
-        "ja": "FTS5 trigram のため、2 文字以上の漢字熟語は \"税額控除\" のように引用符で句検索してください。",
-        "en": "Because FTS5 uses trigram tokenization, wrap multi-kanji terms in quotes (e.g. \"税額控除\") for phrase queries.",
+        "ja": 'FTS5 trigram のため、2 文字以上の漢字熟語は "税額控除" のように引用符で句検索してください。',
+        "en": 'Because FTS5 uses trigram tokenization, wrap multi-kanji terms in quotes (e.g. "税額控除") for phrase queries.',
     },
     "tips.tier_hint": {
         "ja": "tier='X' は隔離行です。検索パスでは必ず tier IN ('S','A','B','C') で絞り込んでください。",

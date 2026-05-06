@@ -69,9 +69,7 @@ def list_static_resources_am() -> dict[str, object]:
             }
         return {"total": len(results), "results": results}
     except Exception as exc:
-        msg, _ = safe_internal_message(
-            exc, logger=logger, tool_name="list_static_resources_am"
-        )
+        msg, _ = safe_internal_message(exc, logger=logger, tool_name="list_static_resources_am")
         return make_error("internal", msg)
 
 
@@ -167,9 +165,7 @@ def list_example_profiles_am() -> dict[str, object]:
             }
         return {"total": len(results), "results": results}
     except Exception as exc:
-        msg, _ = safe_internal_message(
-            exc, logger=logger, tool_name="list_example_profiles_am"
-        )
+        msg, _ = safe_internal_message(exc, logger=logger, tool_name="list_example_profiles_am")
         return make_error("internal", msg)
 
 

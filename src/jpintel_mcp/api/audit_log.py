@@ -40,6 +40,7 @@ NOT a tax-advice surface:
     on date D against source-url S". Every row points back to a
     primary-source URL the customer can verify themselves.
 """
+
 from __future__ import annotations
 
 import base64
@@ -280,8 +281,7 @@ def rest_audit_log(
         },
         "_meta": {
             "honest_note": (
-                "公的機関データの差分を毎日 cron で検出。"
-                "検出のみで個別判断は行いません。"
+                "公的機関データの差分を毎日 cron で検出。検出のみで個別判断は行いません。"
             ),
             "rss": "https://jpcite.com/audit-log.rss",
             "license_metadata": "CC-BY-4.0 (差分メタデータ)",
@@ -299,5 +299,6 @@ def rest_audit_log(
             "cursor_present": cursor is not None,
         },
         result_count=len(out),
+        strict_metering=True,
     )
     return JSONResponse(content=body)

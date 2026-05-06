@@ -39,7 +39,5 @@ def deep_health_am() -> dict[str, object]:
     try:
         return get_deep_health()
     except Exception as exc:
-        msg, _ = safe_internal_message(
-            exc, logger=logger, tool_name="deep_health_am"
-        )
+        msg, _ = safe_internal_message(exc, logger=logger, tool_name="deep_health_am")
         return make_error("internal", msg)

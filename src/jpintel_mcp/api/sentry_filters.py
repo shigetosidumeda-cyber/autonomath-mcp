@@ -3,6 +3,7 @@
 Goal: never ship raw API keys, billing bodies, Stripe customer IDs, or
 authorization headers to Sentry.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, cast
@@ -79,9 +80,7 @@ def sentry_before_send(event: Event, hint: dict[str, Any]) -> Event | None:
     return event
 
 
-def sentry_before_send_transaction(
-    event: Event, hint: dict[str, Any]
-) -> Event | None:
+def sentry_before_send_transaction(event: Event, hint: dict[str, Any]) -> Event | None:
     _scrub_request(event.get("request"))
     txn = event.get("transaction") or ""
     if txn.startswith("/billing"):

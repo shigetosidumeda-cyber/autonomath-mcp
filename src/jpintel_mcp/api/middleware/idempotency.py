@@ -46,6 +46,7 @@ Sensitive POSTs are intentionally excluded so raw API keys, session cookies,
 Stripe redirects, webhooks, and user comments are never replayed from this
 generic cache.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -119,6 +120,7 @@ _CACHEABLE_EXACT: frozenset[str] = frozenset(
         "/v1/tax_rulesets/evaluate",
         "/v1/court-decisions/by-statute",
         "/v1/evidence/packets/query",
+        "/v1/evidence/packets/batch",
         "/v1/am/validate",
         "/v1/audit/batch_evaluate",
         "/v1/audit/workpaper",
@@ -130,6 +132,7 @@ _CACHEABLE_EXACT: frozenset[str] = frozenset(
 _REQUIRE_IDEMPOTENCY_EXACT: frozenset[str] = frozenset(
     {
         "/v1/programs/batch",
+        "/v1/evidence/packets/batch",
         "/v1/audit/batch_evaluate",
         "/v1/audit/workpaper",
         "/v1/am/dd_batch",
@@ -188,9 +191,7 @@ def _api_key_hash_for(request: Request) -> str:
         if first:
             return "ip:" + hashlib.sha256(first.encode("utf-8")).hexdigest()[:32]
     if request.client:
-        return "ip:" + hashlib.sha256(
-            request.client.host.encode("utf-8")
-        ).hexdigest()[:32]
+        return "ip:" + hashlib.sha256(request.client.host.encode("utf-8")).hexdigest()[:32]
     return "ip:unknown"
 
 
@@ -229,9 +230,7 @@ def _iso_is_past(value: object, *, now: datetime | None = None) -> bool:
     return parsed.astimezone(UTC) <= (now or datetime.now(UTC))
 
 
-def _cached_replay_auth_still_valid(
-    conn: sqlite3.Connection, request: Request
-) -> bool:
+def _cached_replay_auth_still_valid(conn: sqlite3.Connection, request: Request) -> bool:
     """Re-check auth before serving a cached response.
 
     Replays skip the router, so they must not skip revocation / trial-expiry
@@ -247,8 +246,7 @@ def _cached_replay_auth_still_valid(
         key_hash = hash_api_key(raw)
         try:
             row = conn.execute(
-                "SELECT tier, revoked_at, trial_expires_at "
-                "FROM api_keys WHERE key_hash = ?",
+                "SELECT tier, revoked_at, trial_expires_at FROM api_keys WHERE key_hash = ?",
                 (key_hash,),
             ).fetchone()
         except sqlite3.OperationalError:
@@ -270,8 +268,7 @@ def _cached_replay_auth_still_valid(
             now_iso = datetime.now(UTC).isoformat()
             with contextlib.suppress(sqlite3.Error):
                 conn.execute(
-                    "UPDATE api_keys SET revoked_at = ? "
-                    "WHERE key_hash = ? AND revoked_at IS NULL",
+                    "UPDATE api_keys SET revoked_at = ? WHERE key_hash = ? AND revoked_at IS NULL",
                     (now_iso, key_hash),
                 )
             return False
@@ -316,9 +313,7 @@ def _idempotency_error_response(
     )
 
 
-def _compute_cache_key(
-    api_key_hash: str, endpoint: str, body: bytes, key: str
-) -> str:
+def _compute_cache_key(api_key_hash: str, endpoint: str, body: bytes, key: str) -> str:
     h = hashlib.sha256()
     h.update(api_key_hash.encode("utf-8"))
     h.update(b":")
@@ -330,9 +325,7 @@ def _compute_cache_key(
     return h.hexdigest()
 
 
-def _compute_collision_key(
-    api_key_hash: str, endpoint: str, key: str
-) -> str:
+def _compute_collision_key(api_key_hash: str, endpoint: str, key: str) -> str:
     """Cache slot keyed only on (api_key_hash, endpoint, idempotency-key).
 
     The full cache_key is keyed on the BODY too (so a buggy retry with a
@@ -372,8 +365,7 @@ def _check_or_record_body_fingerprint(
     try:
         conn.execute("BEGIN IMMEDIATE")
         row = conn.execute(
-            "SELECT response_blob, expires_at FROM am_idempotency_cache "
-            "WHERE cache_key = ?",
+            "SELECT response_blob, expires_at FROM am_idempotency_cache WHERE cache_key = ?",
             (collision_key,),
         ).fetchone()
         if row is not None:
@@ -385,10 +377,9 @@ def _check_or_record_body_fingerprint(
                 row_expires_at = row[1]
             expired = False
             try:
-                expired = (
-                    datetime.fromisoformat(str(row_expires_at).replace("Z", "+00:00"))
-                    <= datetime.now(UTC)
-                )
+                expired = datetime.fromisoformat(
+                    str(row_expires_at).replace("Z", "+00:00")
+                ) <= datetime.now(UTC)
             except ValueError:
                 expired = True
             existing = str(existing or "")
@@ -424,16 +415,10 @@ def _check_or_record_body_fingerprint(
         raise
 
 
-def _serialise_response(
-    status_code: int, headers: dict[str, str], body: bytes
-) -> str:
+def _serialise_response(status_code: int, headers: dict[str, str], body: bytes) -> str:
     payload = {
         "status": status_code,
-        "headers": {
-            k: v
-            for k, v in headers.items()
-            if k.lower() not in _SKIP_RESPONSE_HEADERS
-        },
+        "headers": {k: v for k, v in headers.items() if k.lower() not in _SKIP_RESPONSE_HEADERS},
         "body_b64": base64.b64encode(body).decode("ascii"),
     }
     return json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
@@ -452,8 +437,7 @@ def _read_cached(conn: sqlite3.Connection, cache_key: str) -> str | None:
     """Return the cached blob, or None on miss / expired / table absent."""
     try:
         row = conn.execute(
-            "SELECT response_blob, expires_at FROM am_idempotency_cache "
-            "WHERE cache_key = ?",
+            "SELECT response_blob, expires_at FROM am_idempotency_cache WHERE cache_key = ?",
             (cache_key,),
         ).fetchone()
     except sqlite3.OperationalError:
@@ -493,12 +477,8 @@ def _delete_cached(conn: sqlite3.Connection, cache_key: str) -> None:
         return
 
 
-def _write_cached(
-    conn: sqlite3.Connection, cache_key: str, blob: str, *, ttl_hours: int
-) -> None:
-    expires_at = (
-        datetime.now(UTC) + timedelta(hours=ttl_hours)
-    ).isoformat()
+def _write_cached(conn: sqlite3.Connection, cache_key: str, blob: str, *, ttl_hours: int) -> None:
+    expires_at = (datetime.now(UTC) + timedelta(hours=ttl_hours)).isoformat()
     try:
         conn.execute(
             "INSERT OR REPLACE INTO am_idempotency_cache("
@@ -512,9 +492,7 @@ def _write_cached(
         logger.warning("idempotency_cache_write_skipped_table_missing")
 
 
-def _claim_or_read_cached(
-    conn: sqlite3.Connection, cache_key: str
-) -> tuple[str, str | None]:
+def _claim_or_read_cached(conn: sqlite3.Connection, cache_key: str) -> tuple[str, str | None]:
     """Return hit, pending, busy, unavailable, or owner.
 
     The pending sentinel closes the concurrent double-billing gap: one
@@ -540,10 +518,7 @@ def _claim_or_read_cached(
                 expires_at = row[1]
             expired = False
             try:
-                expired = (
-                    datetime.fromisoformat(str(expires_at).replace("Z", "+00:00"))
-                    <= now
-                )
+                expired = datetime.fromisoformat(str(expires_at).replace("Z", "+00:00")) <= now
             except ValueError:
                 expired = True
             if expired and str(blob).startswith(_PENDING_PREFIX):
@@ -679,9 +654,7 @@ class IdempotencyMiddleware(BaseHTTPMiddleware):
         request._receive = _receive  # type: ignore[attr-defined]
 
         api_key_hash = _api_key_hash_for(request)
-        cache_key = _compute_cache_key(
-            api_key_hash, path, body, idempotency_key
-        )
+        cache_key = _compute_cache_key(api_key_hash, path, body, idempotency_key)
         collision_key = _compute_collision_key(api_key_hash, path, idempotency_key)
         billing_key = "idem_" + hashlib.sha256(cache_key.encode("utf-8")).hexdigest()
 
@@ -764,9 +737,7 @@ class IdempotencyMiddleware(BaseHTTPMiddleware):
                     conn.close()
                 return _auth_failed_response()
             try:
-                status_code, hdrs, body_bytes = _deserialise_response(
-                    cached_blob
-                )
+                status_code, hdrs, body_bytes = _deserialise_response(cached_blob)
             except Exception:  # pragma: no cover — defensive
                 logger.exception("idempotency_deserialise_failed")
                 with contextlib.suppress(Exception):
@@ -827,9 +798,7 @@ class IdempotencyMiddleware(BaseHTTPMiddleware):
 
             if cached_blob is not None:
                 try:
-                    status_code, hdrs, body_bytes = _deserialise_response(
-                        cached_blob
-                    )
+                    status_code, hdrs, body_bytes = _deserialise_response(cached_blob)
                 except Exception:  # pragma: no cover — defensive
                     logger.exception("idempotency_pending_deserialise_failed")
                     with contextlib.suppress(Exception):
@@ -898,9 +867,7 @@ class IdempotencyMiddleware(BaseHTTPMiddleware):
                     dict(response.headers.items()),
                     resp_body,
                 )
-                _write_cached(
-                    conn, cache_key, blob, ttl_hours=_CACHE_TTL_HOURS
-                )
+                _write_cached(conn, cache_key, blob, ttl_hours=_CACHE_TTL_HOURS)
                 # Rebuild a Response so downstream gets a usable body.
                 new_resp = Response(
                     content=resp_body,

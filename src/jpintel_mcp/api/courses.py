@@ -413,9 +413,12 @@ def subscribe_course(
             conn.execute("COMMIT")
             charge_txn_started = False
     except Exception as exc:
-        if charge_txn_started and conn.in_transaction:
+        if conn.in_transaction:
             with contextlib.suppress(Exception):
                 conn.execute("ROLLBACK")
+        with contextlib.suppress(Exception):
+            conn.execute("DELETE FROM course_subscriptions WHERE id = ?", (sub_id,))
+            conn.commit()
         logger.warning(
             "courses.delivery_charge_failed_pre_send endpoint=%s sub_id=%s",
             "courses.delivery",

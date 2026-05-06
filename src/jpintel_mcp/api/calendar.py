@@ -279,6 +279,7 @@ def get_deadlines(
         conn,
         ctx,
         "calendar.deadlines",
+        strict_metering=True,
         params={
             "within_days": within_days,
             "prefecture": normalized_prefecture,
@@ -673,6 +674,7 @@ def get_deadlines_ics(
         ctx,
         "calendar.deadlines.ics",
         quantity=1,
+        strict_metering=True,
         params={
             "within_days": within_days,
             "tier": sorted(tier_list) if tier_list else None,

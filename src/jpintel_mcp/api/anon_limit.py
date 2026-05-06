@@ -21,6 +21,7 @@ Fail-open posture: if the DB write fails we log and let the request through.
 A broken rate limiter must not become a self-DoS vector; over-serving is
 strictly better than 500s on every anon call.
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -96,15 +97,14 @@ class _AnonRateLimitExceeded(HTTPException):
         self.body_dict = body
 
 
-def anon_rate_limit_exception_handler(
-    _request: Request, exc: Exception
-) -> JSONResponse:
+def anon_rate_limit_exception_handler(_request: Request, exc: Exception) -> JSONResponse:
     assert isinstance(exc, _AnonRateLimitExceeded)  # guaranteed by add_exception_handler
     return JSONResponse(
         status_code=exc.status_code,
         content=exc.body_dict,
         headers=exc.headers or {},
     )
+
 
 _log = logging.getLogger("jpintel.anon_limit")
 
@@ -183,12 +183,21 @@ def _next_jst_month_start(now_jst: datetime) -> datetime:
     """First instant (00:00 JST) of the next calendar month."""
     if now_jst.month == 12:
         return now_jst.replace(
-            year=now_jst.year + 1, month=1, day=1,
-            hour=0, minute=0, second=0, microsecond=0,
+            year=now_jst.year + 1,
+            month=1,
+            day=1,
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0,
         )
     return now_jst.replace(
-        month=now_jst.month + 1, day=1,
-        hour=0, minute=0, second=0, microsecond=0,
+        month=now_jst.month + 1,
+        day=1,
+        hour=0,
+        minute=0,
+        second=0,
+        microsecond=0,
     )
 
 
@@ -454,11 +463,7 @@ def hash_ip(ip: str, request: Request | None = None) -> str:
     No migration needed.
     """
     normalized = _normalize_ip_to_prefix(ip)
-    composed = (
-        f"{normalized}#{_fingerprint_string(request)}"
-        if request is not None
-        else normalized
-    )
+    composed = f"{normalized}#{_fingerprint_string(request)}" if request is not None else normalized
     return hmac.new(
         settings.api_key_salt.encode("utf-8"),
         composed.encode("utf-8"),
@@ -466,9 +471,7 @@ def hash_ip(ip: str, request: Request | None = None) -> str:
     ).hexdigest()
 
 
-def _try_increment(
-    conn: sqlite3.Connection, ip_hash: str, day_bucket: str, now_iso: str
-) -> int:
+def _try_increment(conn: sqlite3.Connection, ip_hash: str, day_bucket: str, now_iso: str) -> int:
     """Atomically increment (or insert) the JST-day row, return the NEW count.
 
     `day_bucket` is YYYY-MM-DD (JST) — stored in the legacy `date` column.
@@ -531,8 +534,7 @@ async def enforce_anon_ip_limit(request: Request) -> None:
         ).hexdigest()
         try:
             row = anon_conn.execute(
-                "SELECT 1 FROM api_keys WHERE key_hash = ? "
-                "AND revoked_at IS NULL LIMIT 1",
+                "SELECT 1 FROM api_keys WHERE key_hash = ? AND revoked_at IS NULL LIMIT 1",
                 (key_hash,),
             ).fetchone()
         except sqlite3.Error:
@@ -555,11 +557,18 @@ async def enforce_anon_ip_limit(request: Request) -> None:
     now_iso = datetime.now(UTC).isoformat()
 
     new_count: int | None = None
+    db_error: sqlite3.Error | None = None
     try:
         new_count = _try_increment(anon_conn, ip_h, day_bucket, now_iso)
-    except sqlite3.Error:
+    except sqlite3.Error as exc:
+        # 2026-05-04 fail-CLOSED flip (W28): a DB lock / I/O error on the
+        # bucket increment used to log + fail-open; that over-served the
+        # 3 req/日 anon quota indefinitely whenever any caller could hold a
+        # write lock. We now raise a 429 with `reason="rate_limit_unavailable"`
+        # so dashboards can distinguish backend outage from real over-quota.
+        db_error = exc
         _log.exception(
-            "anon_rate_limit: DB error on increment; failing open ip_hash=%s day=%s",
+            "anon_rate_limit: DB error on increment; failing CLOSED ip_hash=%s day=%s",
             ip_h[:12],
             day_bucket,
         )
@@ -567,7 +576,60 @@ async def enforce_anon_ip_limit(request: Request) -> None:
         with contextlib.suppress(Exception):
             anon_conn.close()
 
-    # Fail-open: if the write blew up, let the request through.
+    if db_error is not None:
+        # Fail-CLOSED: surface the same upgrade / Retry-After / bilingual
+        # contract as a real over-quota event so existing client retry
+        # logic keeps working — only the `reason` is different.
+        resets_at = _jst_next_day_iso()
+        retry_after = _seconds_until_jst_day_start()
+        with contextlib.suppress(Exception):
+            request.state.anon_quota = {
+                "remaining": 0,
+                "limit": limit,
+                "reset_at_jst": resets_at,
+            }
+        raise _AnonRateLimitExceeded(
+            body={
+                "code": "rate_limit_unavailable",
+                "reason": "rate_limit_unavailable",
+                "detail": (
+                    "レート制限のバックエンドが一時的に利用できません。"
+                    "数分後に再試行してください。X-API-Key を設定すれば即解除されます。"
+                ),
+                "detail_en": (
+                    "Anonymous rate-limit backend is temporarily unavailable. "
+                    "Retry in a few minutes. Provide X-API-Key for immediate uncapping."
+                ),
+                "retry_after": retry_after,
+                "reset_at_jst": resets_at,
+                "limit": limit,
+                "resets_at": resets_at,
+                "upgrade_url": UPGRADE_URL_FROM_429,
+                "direct_checkout_url": PRICING_DIRECT_URL_FROM_429,
+                "cta_text_ja": CTA_TEXT_JA,
+                "cta_text_en": CTA_TEXT_EN,
+                "trial_signup_url": TRIAL_SIGNUP_URL_FROM_429,
+                "trial_cta_text_ja": TRIAL_CTA_TEXT_JA,
+                "trial_cta_text_en": TRIAL_CTA_TEXT_EN,
+                "trial_terms": {
+                    "duration_days": 14,
+                    "request_cap": 200,
+                    "card_required": False,
+                },
+            },
+            headers={
+                "Retry-After": str(retry_after),
+                "X-Anon-Quota-Remaining": "0",
+                "X-Anon-Quota-Reset": resets_at,
+                "X-Anon-Upgrade-Url": UPGRADE_URL_FROM_429,
+                "X-Anon-Direct-Checkout-Url": PRICING_DIRECT_URL_FROM_429,
+                "X-Anon-Trial-Url": TRIAL_SIGNUP_URL_FROM_429,
+            },
+        )
+
+    # Defensive — only reached when the DB error path returned cleanly,
+    # which the explicit raise above prevents. Kept so a future refactor
+    # that drops the raise still surfaces a typed signal.
     if new_count is None:
         return
 
@@ -586,6 +648,8 @@ async def enforce_anon_ip_limit(request: Request) -> None:
             }
         raise _AnonRateLimitExceeded(
             body={
+                "code": "rate_limit_exceeded",
+                "reason": "rate_limit_exceeded",
                 "detail": (
                     f"匿名リクエスト上限 ({limit}/日) に達しました。"
                     "明日また 3 回お試しいただけます (JST 翌日 00:00 リセット)。"

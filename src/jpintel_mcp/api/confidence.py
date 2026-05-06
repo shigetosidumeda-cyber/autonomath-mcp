@@ -21,6 +21,7 @@ Caching:
     Bayesian posterior over 30 days of rows on every dashboard load
     would be wasteful and noisy.
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -63,9 +64,7 @@ def _table_exists(conn: sqlite3.Connection, name: str) -> bool:
     return row is not None
 
 
-def _load_query_log_rows(
-    conn: sqlite3.Connection, since_unix: float
-) -> list[dict[str, Any]]:
+def _load_query_log_rows(conn: sqlite3.Connection, since_unix: float) -> list[dict[str, Any]]:
     if not _table_exists(conn, "query_log_v2"):
         return []
     try:
@@ -81,9 +80,7 @@ def _load_query_log_rows(
     return rows
 
 
-def _load_usage_event_rows(
-    conn: sqlite3.Connection, since_iso: str
-) -> list[dict[str, Any]]:
+def _load_usage_event_rows(conn: sqlite3.Connection, since_iso: str) -> list[dict[str, Any]]:
     if not _table_exists(conn, "usage_events"):
         return []
     try:
@@ -122,12 +119,8 @@ def stats_confidence(conn: DbDep) -> dict[str, Any]:
         until = datetime.now(UTC)
         since = until - timedelta(days=_CONFIDENCE_WINDOW_DAYS)
         since_unix = since.timestamp()
-        since_iso = since.replace(microsecond=0).isoformat().replace(
-            "+00:00", "Z"
-        )
-        until_iso = until.replace(microsecond=0).isoformat().replace(
-            "+00:00", "Z"
-        )
+        since_iso = since.replace(microsecond=0).isoformat().replace("+00:00", "Z")
+        until_iso = until.replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
         ql_rows = _load_query_log_rows(conn, since_unix)
         ue_rows = _load_usage_event_rows(conn, since_iso)
@@ -186,10 +179,7 @@ def stats_confidence(conn: DbDep) -> dict[str, Any]:
             "overall": overall,
             "per_tool": per_tool_array,
             "generated_at": (
-                datetime.now(UTC)
-                .replace(microsecond=0)
-                .isoformat()
-                .replace("+00:00", "Z")
+                datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
             ),
         }
 

@@ -58,6 +58,7 @@ no manual queue. Bounce/spam events route through the existing Postmark
 webhook in `api/email_webhook.py` and call `record_unsubscribe()` from
 there.
 """
+
 from __future__ import annotations
 
 import logging

@@ -72,6 +72,7 @@ Design choices
   (no_matching_records, seed_not_found) mean "the tool ran fine, the
   world just didn't have the answer — a different tool might".
 """
+
 from __future__ import annotations
 
 from typing import Any, Literal
@@ -245,16 +246,26 @@ def make_error(
     # environments where cs_features may not be on path.
     try:
         from .cs_features import user_message_for_error  # local import
+
         err.setdefault("user_message", user_message_for_error(code))
     except Exception:  # pragma: no cover - defensive
         pass
-    return {
+    payload: dict[str, Any] = {
         "error": err,
         "total": 0,
         "limit": max(1, min(100, int(limit))),
         "offset": max(0, int(offset)),
         "results": [],
+        "_billing_unit": 0,
+        "_next_calls": [],
     }
+    try:
+        from .snapshot_helper import attach_corpus_snapshot
+
+        attach_corpus_snapshot(payload)
+    except Exception:  # pragma: no cover - defensive
+        pass
+    return payload
 
 
 def is_error(payload: Any) -> bool:

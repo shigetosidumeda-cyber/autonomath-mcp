@@ -25,6 +25,7 @@ predicate call when the same (rule_id, entity_id, applicant_hash) tuple
 has already been evaluated — saves recomputing for repeated calls and keeps
 ``evaluated_at`` stable for audit.
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -54,7 +55,10 @@ def _canonical_applicant_hash(applicant_data: dict[str, Any]) -> str:
     for the UNIQUE-constraint-safe key into ``am_validation_result``.
     """
     payload = json.dumps(
-        applicant_data, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+        applicant_data,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
         default=str,
     )
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
@@ -69,7 +73,11 @@ def _open_writable_validation_conn() -> sqlite3.Connection:
     """
     uri = f"file:{AUTONOMATH_DB_PATH}?mode=rw"
     conn = sqlite3.connect(
-        uri, uri=True, timeout=10.0, check_same_thread=True, isolation_level=None,
+        uri,
+        uri=True,
+        timeout=10.0,
+        check_same_thread=True,
+        isolation_level=None,
     )
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA busy_timeout=15000")
@@ -144,7 +152,9 @@ def _evaluate_one(
         except Exception as exc:  # noqa: BLE001 — surface as deferred, not crash
             logger.warning(
                 "validation predicate %s raised %s: %s",
-                ref, type(exc).__name__, exc,
+                ref,
+                type(exc).__name__,
+                exc,
             )
             return None, f"predicate raised {type(exc).__name__}"
         return passed, ("" if passed else (rule_msg or ""))
@@ -232,30 +242,34 @@ def _validate_impl(
         cached = _lookup_cached_result(ro_conn, rule_id, entity_id, applicant_hash)
         if cached is not None:
             cached_passed = cached["passed"]
-            results.append({
-                "rule_id": rule_id,
-                "predicate_ref": rule["predicate_ref"],
-                "predicate_kind": rule["predicate_kind"],
-                "passed": bool(cached_passed) if cached_passed is not None else None,
-                "severity": rule["severity"],
-                "message_ja": cached["message_ja"] or "",
-                "evaluated_at": cached["evaluated_at"],
-                "cached": True,
-            })
+            results.append(
+                {
+                    "rule_id": rule_id,
+                    "predicate_ref": rule["predicate_ref"],
+                    "predicate_kind": rule["predicate_kind"],
+                    "passed": bool(cached_passed) if cached_passed is not None else None,
+                    "severity": rule["severity"],
+                    "message_ja": cached["message_ja"] or "",
+                    "evaluated_at": cached["evaluated_at"],
+                    "cached": True,
+                }
+            )
             continue
 
         passed, msg = _evaluate_one(rule, applicant_data)
         _persist_result(rule_id, entity_id, applicant_hash, passed, msg)
-        results.append({
-            "rule_id": rule_id,
-            "predicate_ref": rule["predicate_ref"],
-            "predicate_kind": rule["predicate_kind"],
-            "passed": passed,
-            "severity": rule["severity"],
-            "message_ja": msg,
-            "evaluated_at": None,
-            "cached": False,
-        })
+        results.append(
+            {
+                "rule_id": rule_id,
+                "predicate_ref": rule["predicate_ref"],
+                "predicate_kind": rule["predicate_kind"],
+                "passed": passed,
+                "severity": rule["severity"],
+                "message_ja": msg,
+                "evaluated_at": None,
+                "cached": False,
+            }
+        )
 
     # Summary counts let the LLM scan a single header instead of re-walking results.
     n_pass = sum(1 for r in results if r["passed"] is True)
@@ -281,10 +295,12 @@ def _validate_impl(
 def validate(
     applicant_data: Annotated[
         dict[str, Any],
-        Field(description=(
-            "Applicant intake dict. Nested object, e.g. {'plan': {...}, "
-            "'identity': {...}, 'behavioral': {...}}. Hashed for caching."
-        )),
+        Field(
+            description=(
+                "Applicant intake dict. Nested object, e.g. {'plan': {...}, "
+                "'identity': {...}, 'behavioral': {...}}. Hashed for caching."
+            )
+        ),
     ],
     entity_id: Annotated[
         str | None,

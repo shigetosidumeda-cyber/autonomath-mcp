@@ -373,9 +373,7 @@ def _score_row(
     for rule in prerequisite_rules.get(row["unified_id"], []):
         prereq = rule.get("prerequisite")
         if prereq and prereq not in declared:
-            caveats.append(
-                f"前提条件: {prereq} (未申告). 根拠: {rule['rule_id']}"
-            )
+            caveats.append(f"前提条件: {prereq} (未申告). 根拠: {rule['rule_id']}")
 
     return PrescreenMatch(
         unified_id=row["unified_id"],
@@ -513,7 +511,7 @@ def prescreen_programs(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"prescreen query failed: {exc}",
         ) from exc
-    log_usage(conn, ctx, "programs.prescreen")
+    log_usage(conn, ctx, "programs.prescreen", strict_metering=True)
     # Emit per-prescreen structured event. PII-free: only the normalized
     # profile shape (presence flags + aggregate tier dist + counts) is
     # captured. The middleware envelope already carries latency / status

@@ -7,6 +7,7 @@ Source of truth:
 
 Run: python -m jpintel_mcp.ingest.canonical
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -252,8 +253,15 @@ def _ingest_exclusion_rules(conn, rules_path: Path) -> int:
         if not isinstance(rule, dict):
             continue
         base_keys = {
-            "rule_id", "kind", "severity", "program_a", "program_b",
-            "program_b_group", "description", "source_notes", "source_urls",
+            "rule_id",
+            "kind",
+            "severity",
+            "program_a",
+            "program_b",
+            "program_b_group",
+            "description",
+            "source_notes",
+            "source_urls",
         }
         extra = {k: v for k, v in rule.items() if k not in base_keys}
 

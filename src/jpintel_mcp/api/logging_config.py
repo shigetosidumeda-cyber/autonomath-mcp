@@ -4,6 +4,7 @@ JSON lines on stdout (Fly.io ingests stdout). Dev mode (JPINTEL_LOG_FORMAT=conso
 gives pretty colored output. contextvars carry request_id + api_key_hash_prefix
 bound by middleware / deps.
 """
+
 from __future__ import annotations
 
 import logging

@@ -35,6 +35,7 @@ This is intentionally NOT part of the public OpenAPI export
 (`include_in_schema=False`): it is an internal collection sink, not a
 customer-facing API contract.
 """
+
 from __future__ import annotations
 
 import json
@@ -126,8 +127,7 @@ class FunnelEventIn(BaseModel):
     page: str | None = Field(
         default=None,
         description=(
-            "URL path where the event fired (query string stripped, PII "
-            "redacted). Cap 256 chars."
+            "URL path where the event fired (query string stripped, PII redacted). Cap 256 chars."
         ),
     )
     session_id: str | None = Field(
@@ -194,9 +194,7 @@ def _normalise_page(page: str | None) -> str | None:
 
 
 def _json_len(raw: object) -> int:
-    return len(
-        json.dumps(raw, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
-    )
+    return len(json.dumps(raw, ensure_ascii=False, separators=(",", ":")).encode("utf-8"))
 
 
 def _normalise_properties(props: dict | None) -> str | None:
@@ -414,9 +412,7 @@ async def post_event(
     except sqlite3.OperationalError as exc:
         # Migration 123 not yet applied — log + return 503 with a hint so
         # the static-site beacon doesn't retry forever.
-        _log.warning(
-            "funnel_events insert failed (likely missing migration 123): %s", exc
-        )
+        _log.warning("funnel_events insert failed (likely missing migration 123): %s", exc)
         raise HTTPException(
             status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="funnel_events table not provisioned",

@@ -73,6 +73,7 @@ The high-level surface is split into:
 Both functions are deliberately framework-free so the response envelope
 wrapper (server.json + MCP) and the FastAPI route can share them.
 """
+
 from __future__ import annotations
 
 import math
@@ -93,24 +94,24 @@ from jpintel_mcp.analytics.bayesian import (
 # License → evidence multiplier. NULL license falls back to "_NULL" → 0.30.
 LICENSE_W: dict[str, float] = {
     "gov_standard_v2.0": 1.00,
-    "cc_by_4.0":         0.95,
-    "pdl_v1.0":          0.90,
-    "public_domain":     0.85,
-    "proprietary":       0.60,
-    "unknown":           0.40,
+    "cc_by_4.0": 0.95,
+    "pdl_v1.0": 0.90,
+    "public_domain": 0.85,
+    "proprietary": 0.60,
+    "unknown": 0.40,
 }
 LICENSE_W_NULL: float = 0.30
 
 # field_kind → evidence multiplier. Structured > free text.
 KIND_W: dict[str, float] = {
-    "enum":   0.95,
-    "bool":   0.95,
-    "date":   0.90,
+    "enum": 0.95,
+    "bool": 0.95,
+    "date": 0.90,
     "amount": 0.90,
     "number": 0.90,
-    "url":    0.85,
-    "list":   0.80,
-    "text":   0.70,
+    "url": 0.85,
+    "list": 0.80,
+    "text": 0.70,
 }
 KIND_W_DEFAULT: float = 0.70  # unknown field_kind → treat as free text
 
@@ -200,11 +201,11 @@ def score_fact(
     ``beta`` so downstream code can run a Monte-Carlo joint Bayes when
     multiple facts compose a claim.
     """
-    w_lic   = _license_weight(license_value)
+    w_lic = _license_weight(license_value)
     w_fresh = _freshness_weight(days_since_fetch)
-    w_kind  = _kind_weight(field_kind)
+    w_kind = _kind_weight(field_kind)
     evidence_w = w_lic * w_fresh * w_kind
-    doubt_w    = max(0.0, 1.0 - evidence_w)
+    doubt_w = max(0.0, 1.0 - evidence_w)
 
     bonus_alpha = 0.0
     if agreement and n_sources and n_sources > 1:
@@ -222,18 +223,18 @@ def score_fact(
         "alpha": float(a),
         "beta": float(b),
         "evidence": [
-            {"axis": "license",
-             "value": license_value,
-             "weight": round(w_lic, 4)},
-            {"axis": "freshness",
-             "days_since_fetch": days_since_fetch,
-             "weight": round(w_fresh, 4)},
-            {"axis": "field_kind",
-             "value": field_kind,
-             "weight": round(w_kind, 4)},
-            {"axis": "cross_source_agreement",
-             "n_sources": int(n_sources or 0),
-             "bonus_alpha": round(bonus_alpha, 4)},
+            {"axis": "license", "value": license_value, "weight": round(w_lic, 4)},
+            {
+                "axis": "freshness",
+                "days_since_fetch": days_since_fetch,
+                "weight": round(w_fresh, 4),
+            },
+            {"axis": "field_kind", "value": field_kind, "weight": round(w_kind, 4)},
+            {
+                "axis": "cross_source_agreement",
+                "n_sources": int(n_sources or 0),
+                "bonus_alpha": round(bonus_alpha, 4),
+            },
         ],
         "model": MODEL_TAG,
     }
@@ -272,14 +273,16 @@ def get_uncertainty_for_fact(
         agreement = row["agreement"]
     except (TypeError, IndexError):
         field_kind, license_value, days_since_fetch, n_sources, agreement = (
-            row[0], row[1], row[2], row[3], row[4]
+            row[0],
+            row[1],
+            row[2],
+            row[3],
+            row[4],
         )
     return score_fact(
         field_kind=field_kind,
         license_value=license_value,
-        days_since_fetch=(
-            int(days_since_fetch) if days_since_fetch is not None else None
-        ),
+        days_since_fetch=(int(days_since_fetch) if days_since_fetch is not None else None),
         n_sources=int(n_sources or 0),
         agreement=int(agreement or 0),
     )

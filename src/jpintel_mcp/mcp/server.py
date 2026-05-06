@@ -76,7 +76,7 @@ mcp = FastMCP(
         "Primary-source URL + fetched_at on every row; no aggregators.\n\n"
         "Use before answer generation to fetch compact, source-linked evidence packets "
         "instead of pasting long PDFs, pages, or search results. Context-size estimates "
-        "require caller-supplied baselines and are not provider billing guarantees.\n\n"
+        "use caller-supplied baselines for input-context comparison.\n\n"
         "Coverage:\n"
         "- 11,684 searchable programs (国 + 47 都道府県 + 市区町村; non-public rows are not exposed)\n"
         "- 2,286 採択事例 (real recipient profiles paired with programs received)\n"
@@ -9271,6 +9271,19 @@ if settings.autonomath_enabled:
         mcp.tool = _orig_mcp_tool  # type: ignore[method-assign]
     # provenance_tools is auto-registered transitively via the package
     # __init__.py (V4 Phase 4: get_provenance + get_provenance_for_fact).
+
+    # === DEEP-34: 8 cohort persona kit MCP resources (CL-09 implementation) ===
+    # Adds 9 resources (8 cohort kits + 1 cohort_index) under the
+    # `autonomath://cohort/...` URI scheme. Pure yaml + dict assembly,
+    # no LLM calls — CI guard `tests/test_no_llm_in_production.py` enforces.
+    # See `cohort_resources.register_cohort_resources` for wiring details.
+    try:
+        from jpintel_mcp.mcp.cohort_resources import register_cohort_resources
+
+        register_cohort_resources(mcp)
+    except Exception as _cohort_exc:  # pragma: no cover — non-fatal at boot
+        logger.warning("cohort_resources registration skipped: %r", _cohort_exc)
+    # === END DEEP-34 cohort persona kit ====================================
 
     # Re-export the registered _am tool under its short name so callers
     # can `from jpintel_mcp.mcp.server import search_acceptance_stats`.

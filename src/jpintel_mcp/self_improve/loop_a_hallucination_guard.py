@@ -160,21 +160,25 @@ def _cli() -> int:
 
     if args.check is not None:
         hits = match(args.check)
-        print(json.dumps(
-            {
-                "input": args.check,
-                "match_count": len(hits),
-                "hits": hits,
-            },
-            ensure_ascii=False,
-            indent=2,
-        ))
+        print(
+            json.dumps(
+                {
+                    "input": args.check,
+                    "match_count": len(hits),
+                    "hits": hits,
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
         return 1 if any(h.get("severity") == "high" for h in hits) else 0
 
-    print(json.dumps(
-        {"run": run(dry_run=True), "summary": summarize()},
-        ensure_ascii=False,
-    ))
+    print(
+        json.dumps(
+            {"run": run(dry_run=True), "summary": summarize()},
+            ensure_ascii=False,
+        )
+    )
     return 0
 
 

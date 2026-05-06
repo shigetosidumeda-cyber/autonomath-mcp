@@ -28,8 +28,8 @@ This module never calls an LLM. The webhook synchronously:
   2. parses the (LINE-shaped) JSON event payload,
   3. for each event:
      a. resolves / creates the ``line_users`` row,
-     b. checks the monthly free quota (50 events / month / line_user
-        when no parent api_key is attached),
+     b. checks the configured monthly free quota for the line_user when no
+        parent api_key is attached,
      c. calls ``flow.advance(state, text)`` to compute the next reply,
      d. POSTs the reply to LINE's Reply API,
      e. logs the event in ``line_message_log`` (migration 106) with the
@@ -42,8 +42,8 @@ Billing
   column hook is reserved for the 顧問先 fan-out path under migration
   086), each round-trip is metered as one ``programs.search`` event
   against that key — ¥3 (税込 ¥3.30).
-* Otherwise, the round-trip counts against the line_user's monthly
-  free allowance (50 events / month, JST 月初 reset). When the counter
+* Otherwise, the round-trip counts against the line_user's configured monthly
+  free allowance (JST 月初 reset). When the counter
   is exhausted the reply is the rate-limit explainer text and the event
   is logged with ``billed=0, quota_exceeded=1``.
 
@@ -157,11 +157,13 @@ def _next_jst_month_reset(now_utc: datetime) -> str:
     # Translate to JST wall-clock by adding +9h.
     jst_now = now_utc + timedelta(hours=9)
     if jst_now.month == 12:
-        next_jst = jst_now.replace(year=jst_now.year + 1, month=1, day=1,
-                                   hour=0, minute=0, second=0, microsecond=0)
+        next_jst = jst_now.replace(
+            year=jst_now.year + 1, month=1, day=1, hour=0, minute=0, second=0, microsecond=0
+        )
     else:
-        next_jst = jst_now.replace(month=jst_now.month + 1, day=1,
-                                   hour=0, minute=0, second=0, microsecond=0)
+        next_jst = jst_now.replace(
+            month=jst_now.month + 1, day=1, hour=0, minute=0, second=0, microsecond=0
+        )
     # Translate back to UTC.
     return (next_jst - timedelta(hours=9)).replace(tzinfo=UTC).isoformat()
 
@@ -390,7 +392,7 @@ async def _post_line_reply(
         "then dispatch each event into the deterministic state machine "
         "(NO LLM call). Replies are sent via LINE Reply API; each "
         "round-trip bills ¥3 against the user's parent API key OR is "
-        "counted against the LINE user's 50-event/month free allowance."
+        "counted against the LINE user's configured monthly free allowance."
     ),
 )
 async def line_webhook(
@@ -535,8 +537,7 @@ async def _dispatch_event(conn: sqlite3.Connection, event: dict[str, Any]) -> No
         if user_row:
             now = datetime.now(UTC).isoformat()
             conn.execute(
-                "UPDATE line_users SET blocked_at = ?, updated_at = ? "
-                "WHERE line_user_id = ?",
+                "UPDATE line_users SET blocked_at = ?, updated_at = ? WHERE line_user_id = ?",
                 (now, now, line_user_id),
             )
         _log_event(
@@ -599,7 +600,7 @@ async def _dispatch_event(conn: sqlite3.Connection, event: dict[str, Any]) -> No
             await _post_line_reply(reply_token, messages)
         return
 
-    user_text = str(msg.get("text") or "")[:64]   # 64-char clamp; nobody types prefecture > 7
+    user_text = str(msg.get("text") or "")[:64]  # 64-char clamp; nobody types prefecture > 7
     reply_token = str(event.get("replyToken") or "")
 
     # Quota / billing decision — v1 has no parent_api_key wiring on
@@ -625,9 +626,7 @@ async def _dispatch_event(conn: sqlite3.Connection, event: dict[str, Any]) -> No
         )
         return
 
-    quota_ok = _check_and_decrement_quota(
-        conn, user_row, has_parent_key=has_parent_key
-    )
+    quota_ok = _check_and_decrement_quota(conn, user_row, has_parent_key=has_parent_key)
 
     # Reload the user row after the quota debit so we read the freshly-
     # written current_flow_state_json (the previous handler may not have
@@ -644,9 +643,7 @@ async def _dispatch_event(conn: sqlite3.Connection, event: dict[str, Any]) -> No
         state = None
 
     if not quota_ok:
-        messages = [
-            {"type": "text", "text": line_flow.QUOTA_EXCEEDED_TEXT}
-        ]
+        messages = [{"type": "text", "text": line_flow.QUOTA_EXCEEDED_TEXT}]
         _log_event(
             conn,
             event_id=event_id,

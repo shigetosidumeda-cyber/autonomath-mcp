@@ -1,9 +1,16 @@
 """36協定 template renderer — deterministic, no LLM."""
+
 from __future__ import annotations
 from pathlib import Path
 import re
 
-TEMPLATE_PATH = Path(__file__).resolve().parent.parent.parent.parent / "data" / "autonomath_static" / "templates" / "36_kyotei_template.txt"
+TEMPLATE_PATH = (
+    Path(__file__).resolve().parent.parent.parent.parent
+    / "data"
+    / "autonomath_static"
+    / "templates"
+    / "36_kyotei_template.txt"
+)
 
 FIELD_ALIASES: dict[str, tuple[str, ...]] = {
     "company_name": ("company_name", "会社名", "事業者名", "屋号", "法人名"),
@@ -20,8 +27,10 @@ FIELD_ALIASES: dict[str, tuple[str, ...]] = {
 
 REQUIRED_FIELDS = tuple(FIELD_ALIASES.keys())
 
+
 class TemplateError(ValueError):
     pass
+
 
 def render_36_kyotei(fields: dict[str, object]) -> str:
     """Return rendered 36協定 text. Raise TemplateError if any required field missing or any unknown field provided.
@@ -44,9 +53,11 @@ def render_36_kyotei(fields: dict[str, object]) -> str:
         raise TemplateError(f"unsubstituted placeholders: {set(leftover)}")
     return text
 
+
 def get_required_fields() -> dict[str, list[str]]:
     """Return {canonical_name: [aliases]} for client introspection."""
     return {k: list(v) for k, v in FIELD_ALIASES.items()}
+
 
 def get_template_metadata() -> dict[str, object]:
     return {

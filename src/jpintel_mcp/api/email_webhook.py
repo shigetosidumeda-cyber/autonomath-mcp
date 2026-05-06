@@ -48,6 +48,7 @@ router = APIRouter(prefix="/v1/email", tags=["email"])
 # SDK installed. See sibling `billing.py` for the same pattern.
 try:
     import sentry_sdk as _sentry_sdk  # noqa: TC003 (runtime guard)
+
     _SENTRY_AVAILABLE = True
 except ImportError:  # pragma: no cover
     _SENTRY_AVAILABLE = False
@@ -253,9 +254,7 @@ async def postmark_webhook(
             # Postmark retries. Better to retry into a duplicate than to
             # silently drop a hard-bounce.
             _capture(e)
-            logger.exception(
-                "postmark.dedup_insert_failed message_id=%s", message_id
-            )
+            logger.exception("postmark.dedup_insert_failed message_id=%s", message_id)
             raise
 
     response: dict[str, str]
@@ -307,8 +306,7 @@ async def postmark_webhook(
     if message_id:
         try:
             conn.execute(
-                "UPDATE postmark_webhook_events SET processed_at = ?"
-                " WHERE message_id = ?",
+                "UPDATE postmark_webhook_events SET processed_at = ? WHERE message_id = ?",
                 (datetime.now(UTC).isoformat(), str(message_id)),
             )
         except Exception:  # pragma: no cover

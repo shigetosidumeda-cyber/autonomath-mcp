@@ -551,7 +551,7 @@ def rest_search_tax_incentives(
     if isinstance(body, dict):
         body = dict(body)
         body["_disclaimer"] = _TAX_DISCLAIMER
-    log_usage(conn, ctx, "am.tax_incentives.search")
+    log_usage(conn, ctx, "am.tax_incentives.search", strict_metering=True)
     return JSONResponse(content=body)
 
 
@@ -623,7 +623,7 @@ def rest_search_certifications(
         limit=limit,
         offset=offset,
     )
-    log_usage(conn, ctx, "am.certifications.search")
+    log_usage(conn, ctx, "am.certifications.search", strict_metering=True)
     return JSONResponse(
         content=_apply_envelope(
             "search_certifications",
@@ -658,7 +658,7 @@ def rest_list_open_programs(
         natural_query=natural_query,
         limit=limit,
     )
-    log_usage(conn, ctx, "am.open_programs.list")
+    log_usage(conn, ctx, "am.open_programs.list", strict_metering=True)
     return JSONResponse(
         content=_apply_envelope(
             "list_open_programs",
@@ -679,7 +679,13 @@ def rest_enum_values(
 ) -> JSONResponse:
     """List canonical enum values + frequency for a given enum_name."""
     result = tools.enum_values_am(enum_name=enum_name)
-    log_usage(conn, ctx, "am.enum_values", params={"enum_name": enum_name})
+    log_usage(
+        conn,
+        ctx,
+        "am.enum_values",
+        params={"enum_name": enum_name},
+        strict_metering=True,
+    )
     return JSONResponse(
         content=_apply_envelope(
             "enum_values",
@@ -714,7 +720,7 @@ def rest_search_by_law(
     # `amendment_date` is omitted, downstream callers may still join against
     # am_amendment_snapshot rows shipped in the response.
     result = _attach_lifecycle_caveat(result)
-    log_usage(conn, ctx, "am.by_law.search")
+    log_usage(conn, ctx, "am.by_law.search", strict_metering=True)
     return JSONResponse(
         content=_apply_envelope(
             "search_by_law",
@@ -745,7 +751,7 @@ def rest_active_programs_at(
         size=size,
         limit=limit,
     )
-    log_usage(conn, ctx, "am.active_at")
+    log_usage(conn, ctx, "am.active_at", strict_metering=True)
     return JSONResponse(
         content=_apply_envelope(
             "active_programs_at",
@@ -906,7 +912,7 @@ def rest_programs_active_at_v2(
         "results": rows,
     }
     body = _attach_lifecycle_caveat(body)
-    log_usage(conn, ctx, "am.programs.active_v2")
+    log_usage(conn, ctx, "am.programs.active_v2", strict_metering=True)
     return JSONResponse(
         content=_apply_envelope(
             "programs_active_at_v2",
@@ -940,7 +946,13 @@ def rest_related_programs(
         depth=depth,
         max_edges=max_edges,
     )
-    log_usage(conn, ctx, "am.related_programs", params={"program_id": program_id})
+    log_usage(
+        conn,
+        ctx,
+        "am.related_programs",
+        params={"program_id": program_id},
+        strict_metering=True,
+    )
     return JSONResponse(
         content=_apply_envelope(
             "related_programs",
@@ -973,7 +985,7 @@ def rest_search_acceptance_stats(
         limit=limit,
         offset=offset,
     )
-    log_usage(conn, ctx, "am.acceptance_stats.search")
+    log_usage(conn, ctx, "am.acceptance_stats.search", strict_metering=True)
     return JSONResponse(
         content=_apply_envelope(
             "search_acceptance_stats",
@@ -1000,7 +1012,7 @@ def rest_intent_of(
     if not settings.autonomath_reasoning_enabled:
         raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "reasoning tools disabled")
     result = tools.intent_of(query=query)
-    log_usage(conn, ctx, "am.intent")
+    log_usage(conn, ctx, "am.intent", strict_metering=True)
     return JSONResponse(
         content=_apply_envelope(
             "intent_of",
@@ -1028,7 +1040,7 @@ def rest_reason_answer(
     if not settings.autonomath_reasoning_enabled:
         raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "reasoning tools disabled")
     result = tools.reason_answer(query=query, persona=persona)
-    log_usage(conn, ctx, "am.reason")
+    log_usage(conn, ctx, "am.reason", strict_metering=True)
     return JSONResponse(
         content=_apply_envelope(
             "reason_answer",
@@ -1072,7 +1084,7 @@ def rest_get_tax_rule(
     if isinstance(body, dict):
         body = dict(body)
         body["_disclaimer"] = _TAX_DISCLAIMER
-    log_usage(conn, ctx, "am.tax_rule.get")
+    log_usage(conn, ctx, "am.tax_rule.get", strict_metering=True)
     return JSONResponse(content=body)
 
 
@@ -1095,7 +1107,7 @@ def rest_search_gx_programs(
         region=region,
         limit=limit,
     )
-    log_usage(conn, ctx, "am.gx_programs.search")
+    log_usage(conn, ctx, "am.gx_programs.search", strict_metering=True)
     return JSONResponse(
         content=_apply_envelope(
             "search_gx_programs_am",
@@ -1182,7 +1194,7 @@ def rest_search_loans(
         name_query=name_query,
         limit=limit,
     )
-    log_usage(conn, ctx, "am.loans.search")
+    log_usage(conn, ctx, "am.loans.search", strict_metering=True)
     return JSONResponse(
         content=_apply_envelope(
             "search_loans_am",
@@ -1258,7 +1270,7 @@ def rest_check_enforcement(
         target_name=target_name,
         as_of_date=as_of_date,
     )
-    log_usage(conn, ctx, "am.enforcement.check")
+    log_usage(conn, ctx, "am.enforcement.check", strict_metering=True)
     return JSONResponse(
         content=_apply_envelope(
             "check_enforcement_am",
@@ -1314,7 +1326,7 @@ def rest_search_mutual_plans(
         name_query=name_query,
         limit=limit,
     )
-    log_usage(conn, ctx, "am.mutual_plans.search")
+    log_usage(conn, ctx, "am.mutual_plans.search", strict_metering=True)
     return JSONResponse(
         content=_apply_envelope(
             "search_mutual_plans_am",
@@ -1346,6 +1358,7 @@ def rest_get_law_article(
         ctx,
         "am.law_article.get",
         params={"law_name": law_name_or_canonical_id, "article": article_number},
+        strict_metering=True,
     )
     return JSONResponse(
         content=_apply_envelope(
@@ -1385,7 +1398,13 @@ def rest_get_annotations(
         include_superseded=include_superseded,
         limit=limit,
     )
-    log_usage(conn, ctx, "am.annotations.get", params={"entity_id": entity_id})
+    log_usage(
+        conn,
+        ctx,
+        "am.annotations.get",
+        params={"entity_id": entity_id},
+        strict_metering=True,
+    )
     return JSONResponse(
         content=_apply_envelope(
             "get_annotations",
@@ -1443,7 +1462,13 @@ def rest_validate(
         entity_id=entity_id,
         scope=scope,
     )
-    log_usage(conn, ctx, "am.validate", params={"scope": scope, "entity_id": entity_id})
+    log_usage(
+        conn,
+        ctx,
+        "am.validate",
+        params={"scope": scope, "entity_id": entity_id},
+        strict_metering=True,
+    )
     return JSONResponse(
         content=_apply_envelope(
             "validate",
@@ -1485,7 +1510,13 @@ def rest_get_provenance(
         include_facts=include_facts,
         fact_limit=fact_limit,
     )
-    log_usage(conn, ctx, "am.provenance.get", params={"entity_id": entity_id})
+    log_usage(
+        conn,
+        ctx,
+        "am.provenance.get",
+        params={"entity_id": entity_id},
+        strict_metering=True,
+    )
     return JSONResponse(
         content=_apply_envelope(
             "get_provenance",
@@ -1506,7 +1537,13 @@ def rest_get_provenance_for_fact(
 ) -> JSONResponse:
     """am_entity_facts.source_id → am_source 1 件 (NULL なら entity-level am_entity_source の候補 list に fallback)."""
     result = provenance_tools.get_provenance_for_fact(fact_id=fact_id)
-    log_usage(conn, ctx, "am.provenance.fact", params={"fact_id": fact_id})
+    log_usage(
+        conn,
+        ctx,
+        "am.provenance.fact",
+        params={"fact_id": fact_id},
+        strict_metering=True,
+    )
     return JSONResponse(
         content=_apply_envelope(
             "get_provenance_for_fact",
@@ -1526,7 +1563,7 @@ def rest_list_static_resources(
 ) -> JSONResponse:
     """List 8 curated jpcite taxonomies (seido / glossary / money_types / obligations / dealbreakers / sector_combos / crop_library / exclusion_rules)."""
     results = static_resources.list_static_resources()
-    log_usage(conn, ctx, "am.static.list", params={})
+    log_usage(conn, ctx, "am.static.list", params={}, strict_metering=True)
     return JSONResponse(
         content=_apply_envelope(
             "list_static_resources",
@@ -1557,6 +1594,7 @@ def rest_get_static_resource(
             ctx,
             "am.static.get",
             params={"resource_id": resource_id, "result": "no_matching_records"},
+            status_code=status.HTTP_404_NOT_FOUND,
         )
         return JSONResponse(
             status_code=404,
@@ -1566,7 +1604,13 @@ def rest_get_static_resource(
                 query=resource_id,
             ),
         )
-    log_usage(conn, ctx, "am.static.get", params={"resource_id": resource_id})
+    log_usage(
+        conn,
+        ctx,
+        "am.static.get",
+        params={"resource_id": resource_id},
+        strict_metering=True,
+    )
     return JSONResponse(
         content=_apply_envelope(
             "get_static_resource",
@@ -1583,7 +1627,7 @@ def rest_list_example_profiles(
 ) -> JSONResponse:
     """List 5 canonical client-intake example payloads (PII-clean)."""
     results = static_resources.list_example_profiles()
-    log_usage(conn, ctx, "am.example_profiles.list", params={})
+    log_usage(conn, ctx, "am.example_profiles.list", params={}, strict_metering=True)
     return JSONResponse(
         content=_apply_envelope(
             "list_example_profiles",
@@ -1610,6 +1654,7 @@ def rest_get_example_profile(
             ctx,
             "am.example_profiles.get",
             params={"profile_id": profile_id, "result": "no_matching_records"},
+            status_code=status.HTTP_404_NOT_FOUND,
         )
         return JSONResponse(
             status_code=404,
@@ -1619,7 +1664,13 @@ def rest_get_example_profile(
                 query=profile_id,
             ),
         )
-    log_usage(conn, ctx, "am.example_profiles.get", params={"profile_id": profile_id})
+    log_usage(
+        conn,
+        ctx,
+        "am.example_profiles.get",
+        params={"profile_id": profile_id},
+        strict_metering=True,
+    )
     return JSONResponse(
         content=_apply_envelope(
             "get_example_profile",
@@ -1662,13 +1713,20 @@ def rest_get_36_kyotei_metadata(
             ctx,
             "am.template.metadata",
             params={"template_id": "saburoku_kyotei", "result": "feature_disabled"},
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
         )
         return JSONResponse(
             status_code=503,
             content=_apply_envelope("get_36_kyotei_metadata_am", _SABUROKU_DISABLED_BODY),
         )
     meta = get_36_kyotei_metadata()
-    log_usage(conn, ctx, "am.template.metadata", params={"template_id": "saburoku_kyotei"})
+    log_usage(
+        conn,
+        ctx,
+        "am.template.metadata",
+        params={"template_id": "saburoku_kyotei"},
+        strict_metering=True,
+    )
     return JSONResponse(
         content=_apply_envelope(
             "get_36_kyotei_metadata_am",
@@ -1715,6 +1773,7 @@ def rest_render_36_kyotei(
             ctx,
             "am.template.render",
             params={"template_id": "saburoku_kyotei", "result": "feature_disabled"},
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
         )
         return JSONResponse(
             status_code=503,
@@ -1728,6 +1787,7 @@ def rest_render_36_kyotei(
             ctx,
             "am.template.render",
             params={"template_id": "saburoku_kyotei", "result": "missing_required_arg"},
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         )
         return JSONResponse(
             status_code=422,
@@ -1737,7 +1797,13 @@ def rest_render_36_kyotei(
             ),
         )
     meta = get_36_kyotei_metadata()
-    log_usage(conn, ctx, "am.template.render", params={"template_id": "saburoku_kyotei"})
+    log_usage(
+        conn,
+        ctx,
+        "am.template.render",
+        params={"template_id": "saburoku_kyotei"},
+        strict_metering=True,
+    )
     return JSONResponse(
         content=_apply_envelope(
             "render_36_kyotei_am",
@@ -1894,7 +1960,7 @@ def rest_pack_construction(
         employee_count=employee_count,
         revenue_yen=revenue_yen,
     )
-    log_usage(conn, ctx, "am.pack_construction")
+    log_usage(conn, ctx, "am.pack_construction", strict_metering=True)
     return JSONResponse(
         content=_apply_envelope(
             "pack_construction",
@@ -1918,7 +1984,7 @@ def rest_pack_manufacturing(
         employee_count=employee_count,
         revenue_yen=revenue_yen,
     )
-    log_usage(conn, ctx, "am.pack_manufacturing")
+    log_usage(conn, ctx, "am.pack_manufacturing", strict_metering=True)
     return JSONResponse(
         content=_apply_envelope(
             "pack_manufacturing",
@@ -1942,7 +2008,7 @@ def rest_pack_real_estate(
         employee_count=employee_count,
         revenue_yen=revenue_yen,
     )
-    log_usage(conn, ctx, "am.pack_real_estate")
+    log_usage(conn, ctx, "am.pack_real_estate", strict_metering=True)
     return JSONResponse(
         content=_apply_envelope(
             "pack_real_estate",

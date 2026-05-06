@@ -34,6 +34,7 @@ load" intent, and a broken env read should never accidentally let
 traffic through. In practice ``os.environ.get`` cannot raise — this is
 defensive-only.
 """
+
 from __future__ import annotations
 
 import logging
@@ -175,8 +176,7 @@ class KillSwitchMiddleware(BaseHTTPMiddleware):
                 "https://jpcite.com/status/ で復旧情報を確認してください。"
             ),
             user_message_en=(
-                "Service temporarily disabled. "
-                "See https://jpcite.com/status/ for updates."
+                "Service temporarily disabled. See https://jpcite.com/status/ for updates."
             ),
             request_id=rid,
             details={"retry_after": "see_status_page"},

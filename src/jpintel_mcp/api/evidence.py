@@ -42,7 +42,6 @@ from fastapi import Path as PathParam
 from fastapi.responses import JSONResponse, PlainTextResponse, Response
 from pydantic import BaseModel, Field
 
-from jpintel_mcp.api._audit_seal import attach_seal_to_body
 from jpintel_mcp.api._license_gate import (
     REDISTRIBUTABLE_LICENSES,
     annotate_attribution,
@@ -63,6 +62,16 @@ logger = logging.getLogger("jpintel.api.evidence")
 
 router = APIRouter(prefix="/v1/evidence", tags=["evidence"])
 PacketProfile = Literal["full", "brief", "verified_only", "changes_only"]
+
+_CONVERSION_CTA_URL = "https://jpcite.com/pricing.html?from=evidence_packet#api-paid"
+_CONVERSION_CTA_ARTIFACT_OPTIONS: tuple[dict[str, str], ...] = (
+    {"id": "advisor_memo", "label_ja": "顧問先メモ"},
+    {"id": "pre_application_check", "label_ja": "申請前チェック"},
+    {"id": "compatibility_exclusion_table", "label_ja": "併用排他表"},
+    {"id": "corporate_dd", "label_ja": "法人DD"},
+    {"id": "approval_sheet", "label_ja": "稟議シート"},
+    {"id": "monthly_monitoring", "label_ja": "月次監視"},
+)
 
 
 _composer: EvidencePacketComposer | None = None
@@ -120,6 +129,330 @@ def reset_composer() -> None:
     global _composer, _composer_paths
     _composer = None
     _composer_paths = None
+
+
+def _conversion_cta_payload() -> dict[str, Any]:
+    return {
+        "audience": "anonymous",
+        "headline_ja": "無料3回までは通常品質でEvidence Packetを確認できます",
+        "body_ja": (
+            "継続利用や、共有・提出しやすい完成物への変換が必要な場合はAPIキーをご利用ください。"
+        ),
+        "primary_action": {
+            "label_ja": "APIキーで継続利用する",
+            "url": _CONVERSION_CTA_URL,
+        },
+        "artifact_options": [dict(option) for option in _CONVERSION_CTA_ARTIFACT_OPTIONS],
+    }
+
+
+def _should_attach_conversion_cta(ctx: Any) -> bool:
+    # `ctx.tier == "free"` is shared by anonymous and authenticated free keys.
+    # Only the missing key_hash reliably identifies an anonymous caller.
+    return ctx is not None and getattr(ctx, "key_hash", None) is None
+
+
+def _apply_conversion_cta(
+    envelope: dict[str, Any],
+    output_format: Literal["json", "csv", "md"],
+    ctx: Any,
+) -> None:
+    envelope.pop("conversion_cta", None)
+    if output_format == "json" and _should_attach_conversion_cta(ctx):
+        envelope["conversion_cta"] = _conversion_cta_payload()
+
+
+def _insight(
+    signal: str,
+    message_ja: str,
+    basis: list[str],
+    **extra: Any,
+) -> dict[str, Any]:
+    source_fields = list(basis)
+    out: dict[str, Any] = {
+        "signal": signal,
+        "message_ja": message_ja,
+        "basis": list(source_fields),
+        "source_fields": source_fields,
+    }
+    out.update(extra)
+    return out
+
+
+def _record_has_source_link(record: dict[str, Any]) -> bool:
+    if isinstance(record.get("source_url"), str) and record["source_url"]:
+        return True
+
+    source_health = record.get("source_health")
+    if isinstance(source_health, dict) and source_health.get("source_url"):
+        return True
+
+    for fact in record.get("facts") or []:
+        if not isinstance(fact, dict):
+            continue
+        source = fact.get("source")
+        if isinstance(source, dict) and source.get("url"):
+            return True
+
+    for ref in record.get("pdf_fact_refs") or []:
+        if isinstance(ref, dict) and ref.get("source_url"):
+            return True
+
+    for rule in record.get("rules") or []:
+        if isinstance(rule, dict) and (rule.get("evidence_url") or rule.get("source_url")):
+            return True
+
+    return False
+
+
+def _record_has_source_timestamp(record: dict[str, Any]) -> bool:
+    if isinstance(record.get("source_fetched_at"), str) and record["source_fetched_at"]:
+        return True
+
+    source_health = record.get("source_health")
+    if isinstance(source_health, dict) and (
+        source_health.get("source_fetched_at") or source_health.get("last_verified")
+    ):
+        return True
+
+    for fact in record.get("facts") or []:
+        if not isinstance(fact, dict):
+            continue
+        source = fact.get("source")
+        if isinstance(source, dict) and source.get("fetched_at"):
+            return True
+
+    for ref in record.get("pdf_fact_refs") or []:
+        if isinstance(ref, dict) and ref.get("last_verified"):
+            return True
+
+    return False
+
+
+def _build_decision_insights(envelope: dict[str, Any]) -> dict[str, Any]:
+    """Build short AI-quotable guidance from the already-gated packet body."""
+    records = [rec for rec in (envelope.get("records") or []) if isinstance(rec, dict)]
+    quality = envelope.get("quality") if isinstance(envelope.get("quality"), dict) else {}
+    verification = (
+        envelope.get("verification") if isinstance(envelope.get("verification"), dict) else {}
+    )
+    evidence_value = (
+        envelope.get("evidence_value") if isinstance(envelope.get("evidence_value"), dict) else {}
+    )
+    raw_gaps = quality.get("known_gaps") if isinstance(quality, dict) else []
+    known_gaps = [str(g) for g in raw_gaps] if isinstance(raw_gaps, list) else []
+
+    source_linked_records = sum(1 for rec in records if _record_has_source_link(rec))
+    timestamped_records = sum(1 for rec in records if _record_has_source_timestamp(rec))
+    rule_count = sum(
+        len(rec.get("rules") or []) for rec in records if isinstance(rec.get("rules"), list)
+    )
+
+    why_review: list[dict[str, Any]] = []
+    next_checks: list[dict[str, Any]] = []
+    evidence_gaps: list[dict[str, Any]] = []
+
+    if not records:
+        license_gate = (
+            envelope.get("license_gate") if isinstance(envelope.get("license_gate"), dict) else {}
+        )
+        blocked_by_license = (
+            isinstance(license_gate, dict) and int(license_gate.get("blocked_count") or 0) > 0
+        )
+        if blocked_by_license:
+            evidence_gaps.append(
+                _insight(
+                    "records_blocked_by_license_gate",
+                    (
+                        "候補レコードは見つかりましたが、再配布ライセンスの都合で"
+                        "records[] には出せません。license_gate の件数と理由を確認し、"
+                        "一次資料またはより具体的なIDで再確認してください。"
+                    ),
+                    [
+                        "license_gate.blocked_count",
+                        "license_gate.blocked_reasons",
+                        "quality.known_gaps",
+                    ],
+                    blocked_count=license_gate.get("blocked_count"),
+                    blocked_reasons=license_gate.get("blocked_reasons"),
+                    severity="review",
+                )
+            )
+            next_checks.append(
+                _insight(
+                    "license_gate_follow_up",
+                    (
+                        "回答では「該当候補はあるが本文根拠は返却対象外」と明示し、"
+                        "制度名・所管・地域などの条件を変えて再検索してください。"
+                    ),
+                    ["license_gate", "query"],
+                    severity="review",
+                )
+            )
+        evidence_gaps.append(
+            _insight(
+                "no_records_returned",
+                "該当レコードがありません。回答を断定せず、検索語、対象地域、制度種別を広げて再確認してください。",
+                ["records[]", "quality.known_gaps"],
+            )
+        )
+        next_checks.append(
+            _insight(
+                "broaden_query",
+                "別名、所管省庁名、都道府県名、制度カテゴリを追加して再検索してください。",
+                ["query.user_intent", "query.normalized_filters"],
+            )
+        )
+
+    if source_linked_records > 0:
+        source_basis = ["records[].source_url"]
+        source_message = (
+            f"出典URL付きのレコードが{source_linked_records}件あります。"
+            "回答では制度名と出典URLを併記できます。"
+        )
+        if timestamped_records > 0:
+            source_basis.append("records[].source_fetched_at")
+            source_message = (
+                f"出典URLと取得・確認日時付きのレコードが{timestamped_records}件あります。"
+                "回答では制度名、出典URL、取得日を併記できます。"
+            )
+        why_review.append(
+            _insight(
+                "source_traceability",
+                source_message,
+                source_basis,
+                record_count=source_linked_records,
+            )
+        )
+        next_checks.append(
+            _insight(
+                "source_recheck",
+                "回答前に records[].source_url と取得・確認日時で最新の公式情報を確認してください。",
+                source_basis,
+                record_count=source_linked_records,
+            )
+        )
+
+    if rule_count > 0:
+        why_review.append(
+            _insight(
+                "compatibility_or_exclusion",
+                f"併用・排他ルールが{rule_count}件あります。申請可否の回答ではこの条件を優先して見てください。",
+                ["records[].rules"],
+                rule_count=rule_count,
+            )
+        )
+        next_checks.append(
+            _insight(
+                "rule_evidence_recheck",
+                "rules の verdict と evidence_url を確認し、併用不可または要確認の条件を申請前に検証してください。",
+                ["records[].rules[].verdict", "records[].rules[].evidence_url"],
+                rule_count=rule_count,
+            )
+        )
+
+    if len(records) > 1:
+        why_review.append(
+            _insight(
+                "multi_record_comparison",
+                f"{len(records)}件のレコードを同じパケットで比較できます。金額、締切、併用条件の差分確認に使えます。",
+                ["records[]"],
+                record_count=len(records),
+            )
+        )
+
+    freshness_basis: list[str] = []
+    if envelope.get("corpus_snapshot_id"):
+        freshness_basis.append("corpus_snapshot_id")
+    if quality.get("freshness_bucket"):
+        freshness_basis.append("quality.freshness_bucket")
+    if freshness_basis:
+        why_review.append(
+            _insight(
+                "corpus_freshness",
+                "corpus_snapshot_id と freshness_bucket があるため、回答時点のデータ版と鮮度を明示できます。",
+                freshness_basis,
+                freshness_bucket=quality.get("freshness_bucket"),
+            )
+        )
+        freshness_endpoint = verification.get("freshness_endpoint")
+        if freshness_endpoint:
+            next_checks.append(
+                _insight(
+                    "freshness_endpoint_recheck",
+                    "鮮度が重要な回答では freshness_endpoint でコーパス全体の更新状況も確認してください。",
+                    ["verification.freshness_endpoint"],
+                    freshness_endpoint=freshness_endpoint,
+                )
+            )
+
+    missing_source_records = max(0, len(records) - source_linked_records)
+    if missing_source_records > 0:
+        evidence_gaps.append(
+            _insight(
+                "missing_source_links",
+                f"出典URLが不足しているレコードが{missing_source_records}件あります。断定前に一次資料を追加確認してください。",
+                ["records[].source_url", "records[].facts[].source.url"],
+                record_count=missing_source_records,
+            )
+        )
+
+    coverage_avg = evidence_value.get("fact_provenance_coverage_pct_avg")
+    if isinstance(coverage_avg, (int, float)) and coverage_avg < 1.0:
+        evidence_gaps.append(
+            _insight(
+                "partial_fact_provenance",
+                "一部のファクト根拠が未完全です。数値条件や締切を回答に使う場合は個別の出典を確認してください。",
+                ["evidence_value.fact_provenance_coverage_pct_avg"],
+                fact_provenance_coverage_pct_avg=round(float(coverage_avg), 4),
+            )
+        )
+
+    if quality.get("human_review_required") is True:
+        evidence_gaps.append(
+            _insight(
+                "human_review_required",
+                "品質判定が人手確認を要求しています。回答では未確認事項を明示し、専門家確認の前提を置いてください。",
+                ["quality.human_review_required", "quality.coverage_score"],
+                coverage_score=quality.get("coverage_score"),
+            )
+        )
+
+    if known_gaps:
+        preview = ", ".join(known_gaps[:3])
+        if len(known_gaps) > 3:
+            preview = f"{preview}, ..."
+        evidence_gaps.append(
+            _insight(
+                "known_gaps",
+                f"known_gaps が{len(known_gaps)}件あります: {preview}。回答では根拠不足または未確認事項として扱ってください。",
+                ["quality.known_gaps"],
+                known_gap_count=len(known_gaps),
+            )
+        )
+
+    return {
+        "schema_version": "v1",
+        "generated_from": [
+            "records",
+            "quality",
+            "verification",
+            "evidence_value",
+            "corpus_snapshot_id",
+        ],
+        "why_review": why_review,
+        "next_checks": next_checks,
+        "evidence_gaps": evidence_gaps,
+    }
+
+
+def _apply_decision_insights(
+    envelope: dict[str, Any],
+    output_format: Literal["json", "csv", "md"],
+) -> None:
+    envelope.pop("decision_insights", None)
+    if output_format == "json":
+        envelope["decision_insights"] = _build_decision_insights(envelope)
 
 
 # ---------------------------------------------------------------------------
@@ -266,8 +599,7 @@ def _embedded_license_is_blocked(obj: Any) -> bool:
             return True
         license_set = obj.get("license_set")
         if isinstance(license_set, list) and any(
-            isinstance(v, str) and not _license_is_redistributable(v)
-            for v in license_set
+            isinstance(v, str) and not _license_is_redistributable(v) for v in license_set
         ):
             return True
         carries_source = any(k in obj for k in ("source_url", "evidence_url", "source_urls"))
@@ -384,6 +716,8 @@ def _apply_license_gate(envelope: dict[str, Any]) -> tuple[dict[str, Any], dict[
             original_facts = r.get("facts") or []
             out["facts"] = _redistributable_facts(r)
             if not out["facts"]:
+                reason = "no_redistributable_facts" if original_facts else "no_exportable_facts"
+                blocked_reasons[reason] = blocked_reasons.get(reason, 0) + 1
                 continue
             blocked_facts = len(original_facts) - len(out["facts"])
             if blocked_facts > 0:
@@ -483,6 +817,10 @@ def _gate_evidence_envelope(envelope: dict[str, Any]) -> tuple[dict[str, Any], d
             records,
             coverage_score,
         )
+        if not records and int(gate_summary.get("blocked_count") or 0) > 0:
+            gaps = quality.setdefault("known_gaps", [])
+            if isinstance(gaps, list) and "records_blocked_by_license_gate" not in gaps:
+                gaps.append("records_blocked_by_license_gate")
     EvidencePacketComposer._attach_agent_recommendation(gated)
     EvidencePacketComposer._attach_evidence_value(gated)
     return gated, gate_summary
@@ -544,16 +882,15 @@ def _dispatch_format(
     summary="Evidence Packet — single-subject composer (program / houjin)",
     description=(
         "Source-linked evidence prefetch for GPT, Claude, Cursor, or RAG "
-        "answer generation. 1 packet = 1 billable unit; see the pricing "
-        "page for current public price and anonymous limits. "
+        "answer generation. 1 packet = 1 billable unit (¥3 ex tax); "
+        "anonymous callers can use 3 requests/day per IP. "
         "NO LLM call. Bundles primary metadata + per-fact provenance + "
         "compat-matrix rule verdicts (program only) into a compact envelope.\n\n"
         "**subject_kind** ∈ `program` / `houjin`. For multi-record query "
         "packets, POST /v1/evidence/packets/query.\n\n"
         "Response is fail-open: any upstream failure surfaces as a code "
         "in `quality.known_gaps[]`; the packet still renders. Optional "
-        "compression fields are input-context estimates, not external "
-        "provider billing guarantees."
+        "compression fields compare caller-supplied input-context baselines."
     ),
     responses={
         200: {
@@ -724,43 +1061,50 @@ def get_evidence_packet(
         )
 
     gated_envelope, gate_summary = _gate_evidence_envelope(envelope)
+    _apply_decision_insights(gated_envelope, output_format)
 
-    # §17.D audit seal on paid JSON responses. CSV/MD outputs skip the
-    # seal (the wire shape has no place to embed JSON inside flat text).
+    usage_params = {
+        "subject_kind": subject_kind,
+        "subject_id": subject_id,
+        "format": output_format,
+        "include_facts": include_facts,
+        "include_rules": include_rules,
+        "source_tokens_basis": source_tokens_basis,
+        "source_pdf_pages": source_pdf_pages,
+        "source_token_count": source_token_count,
+        "packet_profile": packet_profile,
+    }
     if output_format == "json":
-        attach_seal_to_body(
-            gated_envelope,
-            endpoint="evidence.packet.get",
-            request_params={
-                "subject_kind": subject_kind,
-                "subject_id": subject_id,
-                "source_tokens_basis": source_tokens_basis,
-                "source_pdf_pages": source_pdf_pages,
-                "source_token_count": source_token_count,
-                "packet_profile": packet_profile,
-            },
-            api_key_hash=ctx.key_hash,
-            conn=conn,
+        latency_ms = int((time.perf_counter() - _t0) * 1000)
+        audit_seal = log_usage(
+            conn,
+            ctx,
+            "evidence.packet.get",
+            latency_ms=latency_ms,
+            params=usage_params,
+            response_body=gated_envelope,
+            issue_audit_seal=ctx.key_hash is not None,
+            strict_metering=True,
+            strict_audit_seal=True,
         )
-    response = _dispatch_format(gated_envelope, output_format, gate_summary)
-    latency_ms = int((time.perf_counter() - _t0) * 1000)
-    log_usage(
-        conn,
-        ctx,
-        "evidence.packet.get",
-        latency_ms=latency_ms,
-        params={
-            "subject_kind": subject_kind,
-            "subject_id": subject_id,
-            "format": output_format,
-            "include_facts": include_facts,
-            "include_rules": include_rules,
-            "source_tokens_basis": source_tokens_basis,
-            "source_pdf_pages": source_pdf_pages,
-            "source_token_count": source_token_count,
-            "packet_profile": packet_profile,
-        },
-    )
+        if audit_seal is not None:
+            gated_envelope["audit_seal"] = audit_seal
+        # The anonymous conversion CTA is marketing/navigation metadata, not
+        # evidence content, so keep it outside the audit seal hash surface.
+        _apply_conversion_cta(gated_envelope, output_format, ctx)
+        response = _dispatch_format(gated_envelope, output_format, gate_summary)
+    else:
+        _apply_conversion_cta(gated_envelope, output_format, ctx)
+        response = _dispatch_format(gated_envelope, output_format, gate_summary)
+        latency_ms = int((time.perf_counter() - _t0) * 1000)
+        log_usage(
+            conn,
+            ctx,
+            "evidence.packet.get",
+            latency_ms=latency_ms,
+            params=usage_params,
+            strict_metering=True,
+        )
     return response
 
 
@@ -809,8 +1153,7 @@ class EvidencePacketQueryBody(BaseModel):
         Field(
             description=(
                 "Include input-context size estimates. Estimates compare the "
-                "packet against a caller-supplied source baseline; they are "
-                "not provider billing guarantees."
+                "packet against a caller-supplied source baseline."
             ),
         ),
     ] = False
@@ -883,11 +1226,11 @@ class EvidencePacketQueryBody(BaseModel):
         "Claude, Cursor, or RAG answer generation. It returns a compact "
         "Evidence Packet instead of a final narrative answer, so callers can "
         "avoid pasting long PDFs, official pages, or search snippets into "
-        "the model. 1 packet = 1 billable unit; see the pricing page for "
-        "current public price and anonymous limits. The packet bundles up "
+        "the model. 1 packet = 1 billable unit (¥3 ex tax); anonymous callers "
+        "can use 3 requests/day per IP. The packet bundles up "
         "to `limit` records (hard cap 500). Truncation surfaces "
-        '`_warning="truncated"`. Optional compression fields are '
-        "input-context estimates, not external provider billing guarantees."
+        '`_warning="truncated"`. Optional compression fields compare '
+        "caller-supplied input-context baselines."
     ),
     responses={
         200: {
@@ -927,41 +1270,47 @@ def post_evidence_packet_query(
         profile=payload.packet_profile,
     )
     gated_envelope, gate_summary = _gate_evidence_envelope(envelope)
+    _apply_decision_insights(gated_envelope, output_format)
 
-    # §17.D audit seal — JSON only (see evidence.packet.get above).
+    usage_params = {
+        "limit": payload.limit,
+        "format": output_format,
+        "filter_keys": (sorted(payload.filters.keys()) if payload.filters else []),
+        "source_tokens_basis": payload.source_tokens_basis,
+        "source_pdf_pages": payload.source_pdf_pages,
+        "source_token_count": payload.source_token_count,
+        "packet_profile": payload.packet_profile,
+    }
     if output_format == "json":
-        attach_seal_to_body(
-            gated_envelope,
-            endpoint="evidence.packet.query",
-            request_params={
-                "query_text": payload.query_text,
-                "limit": payload.limit,
-                "filter_keys": (sorted(payload.filters.keys()) if payload.filters else []),
-                "source_tokens_basis": payload.source_tokens_basis,
-                "source_pdf_pages": payload.source_pdf_pages,
-                "source_token_count": payload.source_token_count,
-                "packet_profile": payload.packet_profile,
-            },
-            api_key_hash=ctx.key_hash,
-            conn=conn,
+        latency_ms = int((time.perf_counter() - _t0) * 1000)
+        audit_seal = log_usage(
+            conn,
+            ctx,
+            "evidence.packet.query",
+            latency_ms=latency_ms,
+            params=usage_params,
+            response_body=gated_envelope,
+            issue_audit_seal=ctx.key_hash is not None,
+            strict_metering=True,
+            strict_audit_seal=True,
         )
-    response = _dispatch_format(gated_envelope, output_format, gate_summary)
-    latency_ms = int((time.perf_counter() - _t0) * 1000)
-    log_usage(
-        conn,
-        ctx,
-        "evidence.packet.query",
-        latency_ms=latency_ms,
-        params={
-            "limit": payload.limit,
-            "format": output_format,
-            "filter_keys": (sorted(payload.filters.keys()) if payload.filters else []),
-            "source_tokens_basis": payload.source_tokens_basis,
-            "source_pdf_pages": payload.source_pdf_pages,
-            "source_token_count": payload.source_token_count,
-            "packet_profile": payload.packet_profile,
-        },
-    )
+        if audit_seal is not None:
+            gated_envelope["audit_seal"] = audit_seal
+        # Keep conversion guidance out of the audit seal; it is not evidence.
+        _apply_conversion_cta(gated_envelope, output_format, ctx)
+        response = _dispatch_format(gated_envelope, output_format, gate_summary)
+    else:
+        _apply_conversion_cta(gated_envelope, output_format, ctx)
+        response = _dispatch_format(gated_envelope, output_format, gate_summary)
+        latency_ms = int((time.perf_counter() - _t0) * 1000)
+        log_usage(
+            conn,
+            ctx,
+            "evidence.packet.query",
+            latency_ms=latency_ms,
+            params=usage_params,
+            strict_metering=True,
+        )
     return response
 
 

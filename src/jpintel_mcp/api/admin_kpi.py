@@ -30,6 +30,7 @@ without re-deriving the rules.
 We deliberately re-use the helpers from
 ``scripts/ops_quick_stats.py`` so the CLI and the API never drift.
 """
+
 from __future__ import annotations
 
 import importlib.util
@@ -67,9 +68,7 @@ def _load_ops_module() -> ModuleType:
     script_path = repo_root / "scripts" / "ops_quick_stats.py"
     if not script_path.is_file():
         raise FileNotFoundError(f"ops_quick_stats.py not found at {script_path}")
-    spec = importlib.util.spec_from_file_location(
-        "_ops_quick_stats_kpi", script_path
-    )
+    spec = importlib.util.spec_from_file_location("_ops_quick_stats_kpi", script_path)
     if spec is None or spec.loader is None:
         raise ImportError(f"could not load spec for {script_path}")
     module = importlib.util.module_from_spec(spec)

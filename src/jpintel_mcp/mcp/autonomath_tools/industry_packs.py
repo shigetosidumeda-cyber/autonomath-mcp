@@ -54,6 +54,7 @@ from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
 from .db import connect_autonomath
 from .error_envelope import make_error
+from .snapshot_helper import attach_corpus_snapshot
 
 logger = logging.getLogger("jpintel.mcp.autonomath.industry_packs")
 
@@ -505,7 +506,23 @@ def _assemble_pack(
         },
     ]
 
-    return {
+    # MASTER_PLAN_v1 §10.7/10.8 canonical envelope: every MCP tool MUST
+    # surface `total / limit / offset / results` so generic envelope walkers
+    # (paging, audit, billing) can iterate the rows without knowing the
+    # cohort-specific 3-list shape. Each row carries a `kind` discriminator
+    # so the legacy 3 lists are recoverable via filter.
+    flat_results: list[dict[str, Any]] = []
+    for p in programs:
+        row = {"kind": "program", **p}
+        flat_results.append(row)
+    for s in saiketsu:
+        row = {"kind": "saiketsu_citation", **s}
+        flat_results.append(row)
+    for t in tsutatsu:
+        row = {"kind": "tsutatsu_reference", **t}
+        flat_results.append(row)
+
+    body: dict[str, Any] = {
         "pack_key": pack_key,
         "industry_label": pack["industries_filter_label"],
         "jsic_major": pack["jsic_major"],
@@ -514,6 +531,12 @@ def _assemble_pack(
             "employee_count": employee_count,
             "revenue_yen": revenue_yen,
         },
+        # --- Canonical §10.7/10.8 envelope ---
+        "results": flat_results,
+        "total": len(flat_results),
+        "limit": len(flat_results),
+        "offset": 0,
+        # --- Legacy 3-list back-compat (test_industry_packs.py) ---
         "programs": programs,
         "saiketsu_citations": saiketsu,
         "tsutatsu_references": tsutatsu,
@@ -525,7 +548,14 @@ def _assemble_pack(
         "as_of_jst": _today_iso(),
         "_disclaimer": _DISCLAIMER_INDUSTRY_PACK,
         "_next_calls": next_calls,
+        # Billing pipeline (Wave22/24) greps the envelope for `_billing_unit`
+        # and counts the int as the metered request unit. Default 1 = 1 req/3¥.
+        "_billing_unit": 1,
     }
+    # W3-13: every customer-facing envelope MUST carry the corpus_snapshot_id
+    # + corpus_checksum auditor reproducibility pair (公認会計士法 §47条の2).
+    attach_corpus_snapshot(body)
+    return body
 
 
 # Public impl entry points (test-importable; do NOT remove the underscore

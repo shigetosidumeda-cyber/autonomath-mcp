@@ -95,9 +95,7 @@ N_MEDIUM = 10
 # Zenn posts" vs "publish more Qiita posts" is the same action under the
 # `blog` bucket). Operator can split later if a channel grows enough to
 # warrant its own row.
-SEARCH_HOSTS = frozenset(
-    {"google", "bing", "duckduckgo", "yahoo", "baidu", "ecosia", "brave"}
-)
+SEARCH_HOSTS = frozenset({"google", "bing", "duckduckgo", "yahoo", "baidu", "ecosia", "brave"})
 REGISTRY_HOSTS = frozenset({"mcp.so", "smithery", "dxt", "mcp-registry"})
 BLOG_HOSTS = frozenset({"zenn", "qiita", "note", "hatena", "medium"})
 PARTNERSHIP_SOURCES = frozenset({"partnership", "speakerdeck", "podcast"})
@@ -139,7 +137,7 @@ def bucket_channel(*, referer: str | None = None, utm_source: str | None = None)
         host = ref
         for prefix in ("https://", "http://"):
             if host.startswith(prefix):
-                host = host[len(prefix):]
+                host = host[len(prefix) :]
         host = host.split("/", 1)[0]
         # Keep tokens like "github.com" intact; substring scan against the
         # known hosts. We do NOT regex on TLDs — that overfits to .com.
@@ -337,11 +335,7 @@ def run(
     )
 
     # Actionable: any channel with paying customers and meaningful sample.
-    proposed = sum(
-        1
-        for c in report["channels"]
-        if c["paid_28d"] > 0 and c["confidence"] != "low"
-    )
+    proposed = sum(1 for c in report["channels"] if c["paid_28d"] > 0 and c["confidence"] != "low")
 
     actions_executed = 0
     if not dry_run and report["channels"]:

@@ -24,6 +24,7 @@ Environment:
     * ALIAS_REVIEW_REVIEWER — reviewer label written to queue row
                               (default: 'operator').
 """
+
 from __future__ import annotations
 
 import argparse
@@ -122,8 +123,10 @@ def _classify_canonical(canonical_term: str) -> tuple[str, str]:
         return ("am_industry_jsic", "partial")
     if canonical_term in {"national", "prefecture", "municipality", "financial"}:
         return ("am_authority", "partial")
-    if any(canonical_term.endswith(suffix) for suffix in ("都", "道", "府", "県")) \
-       or canonical_term == "全国":
+    if (
+        any(canonical_term.endswith(suffix) for suffix in ("都", "道", "府", "県"))
+        or canonical_term == "全国"
+    ):
         return ("am_region", "partial")
     if ":" in canonical_term:
         return ("am_entities", "partial")
@@ -170,8 +173,7 @@ def approve(
                     "  entity_table, canonical_id, alias, alias_kind, "
                     "  created_at, language"
                     ") VALUES (?, ?, ?, ?, ?, 'ja')",
-                    (entity_table, str(canonical), str(alias),
-                     alias_kind, _now_iso()),
+                    (entity_table, str(canonical), str(alias), alias_kind, _now_iso()),
                 )
                 am_op = "inserted"
             except sqlite3.IntegrityError:
@@ -257,14 +259,16 @@ def _format_table(rows: list[dict[str, Any]]) -> str:
     lines = ["\t".join(header)]
     for r in rows:
         lines.append(
-            "\t".join([
-                str(r["id"]),
-                str(r["candidate_alias"])[:40],
-                str(r["canonical_term"])[:30],
-                f"{r['match_score']:.2f}",
-                str(r["empty_query_count"]),
-                str(r["last_seen"])[:19],
-            ])
+            "\t".join(
+                [
+                    str(r["id"]),
+                    str(r["candidate_alias"])[:40],
+                    str(r["canonical_term"])[:30],
+                    f"{r['match_score']:.2f}",
+                    str(r["empty_query_count"]),
+                    str(r["last_seen"])[:19],
+                ]
+            )
         )
     return "\n".join(lines)
 
@@ -274,22 +278,24 @@ def main(argv: list[str] | None = None) -> int:
         description="Operator review CLI for alias_candidates_queue.",
     )
     g = p.add_mutually_exclusive_group(required=True)
-    g.add_argument("--list", action="store_true",
-                   help="List pending queue rows.")
-    g.add_argument("--approve", type=int, metavar="ID",
-                   help="Approve queue row -> INSERT into am_alias.")
-    g.add_argument("--reject", type=int, metavar="ID",
-                   help="Reject queue row.")
-    p.add_argument("--status", default="pending",
-                   choices=("pending", "approved", "rejected"),
-                   help="Filter for --list (default pending).")
-    p.add_argument("--limit", type=int, default=100,
-                   help="--list row cap (default 100).")
-    p.add_argument("--reviewer",
-                   default=os.environ.get("ALIAS_REVIEW_REVIEWER", "operator"),
-                   help="Reviewer label written to queue row.")
-    p.add_argument("--json", action="store_true",
-                   help="Emit JSON instead of tabular output.")
+    g.add_argument("--list", action="store_true", help="List pending queue rows.")
+    g.add_argument(
+        "--approve", type=int, metavar="ID", help="Approve queue row -> INSERT into am_alias."
+    )
+    g.add_argument("--reject", type=int, metavar="ID", help="Reject queue row.")
+    p.add_argument(
+        "--status",
+        default="pending",
+        choices=("pending", "approved", "rejected"),
+        help="Filter for --list (default pending).",
+    )
+    p.add_argument("--limit", type=int, default=100, help="--list row cap (default 100).")
+    p.add_argument(
+        "--reviewer",
+        default=os.environ.get("ALIAS_REVIEW_REVIEWER", "operator"),
+        help="Reviewer label written to queue row.",
+    )
+    p.add_argument("--json", action="store_true", help="Emit JSON instead of tabular output.")
     args = p.parse_args(argv)
 
     if args.list:

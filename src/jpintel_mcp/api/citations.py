@@ -22,6 +22,7 @@ Algorithm: see ``services/citation_verifier.py`` for the deterministic
 substring + Japanese-numeric-form match logic. This module is pure
 glue — request validation, fan-out to the verifier, response assembly.
 """
+
 from __future__ import annotations
 
 import logging
@@ -375,8 +376,8 @@ def verify_citations(
             logger.warning("citation verification persistence skipped", exc_info=True)
 
     # Bill ONE unit per call (the verifier work, not per citation). Mirrors
-    # the §28.2 ``billable_units`` envelope. Deferred via BackgroundTasks
-    # so usage_events writes don't block the response.
+    # the §28.2 ``billable_units`` envelope. Strict metering keeps the paid
+    # response fail-closed if the final cap check or usage row write fails.
     try:
         log_usage(
             conn=conn,
@@ -393,9 +394,23 @@ def verify_citations(
             quantity=1,
             result_count=len(outputs),
             background_tasks=bg,
+            strict_metering=True,
         )
-    except Exception:  # noqa: BLE001 — never block delivery on billing
+    except HTTPException:
+        raise
+    except Exception as exc:  # noqa: BLE001
         logger.warning("citation verify billing row failed", exc_info=True)
+        if ctx.metered:
+            raise HTTPException(
+                status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail={
+                    "code": "billing_metering_failed",
+                    "message": (
+                        "This paid response was not delivered because usage "
+                        "metering could not be confirmed."
+                    ),
+                },
+            ) from exc
 
     return VerifyResponse(
         verifications=outputs,

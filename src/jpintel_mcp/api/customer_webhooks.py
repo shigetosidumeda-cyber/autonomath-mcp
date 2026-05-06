@@ -45,6 +45,7 @@ Auto-disable (anti-runaway-billing):
 Solo + zero-touch: every action is self-serve via this router. No admin
 escalation, no support ticket flow.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -53,19 +54,22 @@ import ipaddress
 import json
 import logging
 import secrets
+import sqlite3
 import time
+from contextlib import suppress
 from datetime import UTC, datetime
 from typing import Annotated, Literal
 from urllib.parse import urlparse
 
 import httpx
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Request, status
 from pydantic import BaseModel, Field
 
 from jpintel_mcp.api._audit_log import log_event
 from jpintel_mcp.api.deps import (  # noqa: TC001 (runtime for FastAPI Depends resolution)
     ApiContextDep,
     DbDep,
+    require_metered_api_key,
 )
 
 logger = logging.getLogger("jpintel.customer_webhooks")
@@ -206,9 +210,7 @@ EventTypeLiteral = Literal[
 
 class RegisterRequest(BaseModel):
     url: Annotated[str, Field(max_length=2048)]
-    event_types: Annotated[
-        list[EventTypeLiteral], Field(min_length=1, max_length=len(EVENT_TYPES))
-    ]
+    event_types: Annotated[list[EventTypeLiteral], Field(min_length=1, max_length=len(EVENT_TYPES))]
 
 
 class WebhookResponse(BaseModel):
@@ -270,7 +272,7 @@ def _row_to_response(row: dict, *, include_secret: str | None = None) -> Webhook
     )
 
 
-def _check_test_rate(webhook_id: int) -> bool:
+def _check_test_rate_fallback(webhook_id: int) -> bool:
     """Return False when this webhook_id has hit 5 test deliveries / min."""
     now = time.monotonic()
     cutoff = now - _TEST_RATE_WINDOW_S
@@ -282,6 +284,54 @@ def _check_test_rate(webhook_id: int) -> bool:
         return False
     bucket.append(now)
     return True
+
+
+def _check_test_rate(
+    webhook_id: int,
+    conn: sqlite3.Connection | None = None,
+    *,
+    ip: str | None = None,
+) -> bool:
+    """Return False when this webhook_id has hit 5 test deliveries / min."""
+    if conn is None:
+        return _check_test_rate_fallback(webhook_id)
+
+    started_transaction = False
+    try:
+        conn.execute("BEGIN IMMEDIATE")
+        started_transaction = True
+        conn.execute(
+            "DELETE FROM customer_webhooks_test_hits "
+            "WHERE webhook_id = ? AND hit_at < datetime('now', ?)",
+            (webhook_id, f"-{_TEST_RATE_WINDOW_S} seconds"),
+        )
+        (count,) = conn.execute(
+            "SELECT COUNT(*) FROM customer_webhooks_test_hits "
+            "WHERE webhook_id = ? AND hit_at >= datetime('now', ?)",
+            (webhook_id, f"-{_TEST_RATE_WINDOW_S} seconds"),
+        ).fetchone()
+        if count >= _TEST_RATE_MAX:
+            conn.execute("COMMIT")
+            return False
+        conn.execute(
+            "INSERT INTO customer_webhooks_test_hits(webhook_id, hit_at, ip) "
+            "VALUES (?, datetime('now'), ?)",
+            (webhook_id, ip),
+        )
+        conn.execute("COMMIT")
+        return True
+    except sqlite3.OperationalError as exc:
+        if started_transaction:
+            with suppress(sqlite3.Error):
+                conn.execute("ROLLBACK")
+        if "customer_webhooks_test_hits" not in str(exc):
+            raise
+        return _check_test_rate_fallback(webhook_id)
+    except Exception:
+        if started_transaction:
+            with suppress(sqlite3.Error):
+                conn.execute("ROLLBACK")
+        raise
 
 
 # ---------------------------------------------------------------------------
@@ -311,6 +361,7 @@ def register_webhook(
             status.HTTP_401_UNAUTHORIZED,
             "webhooks require an authenticated API key",
         )
+    require_metered_api_key(ctx, "customer webhooks")
 
     _validate_webhook_url(payload.url)
 
@@ -318,8 +369,7 @@ def register_webhook(
     # customers and prevents a runaway test-loop from accumulating thousands
     # of disabled rows.
     (n_active,) = conn.execute(
-        "SELECT COUNT(*) FROM customer_webhooks "
-        "WHERE api_key_hash = ? AND status = 'active'",
+        "SELECT COUNT(*) FROM customer_webhooks WHERE api_key_hash = ? AND status = 'active'",
         (ctx.key_hash,),
     ).fetchone()
     if n_active >= MAX_WEBHOOKS_PER_KEY:
@@ -419,8 +469,7 @@ def delete_webhook(
             "webhooks require an authenticated API key",
         )
     row = conn.execute(
-        "SELECT id, status FROM customer_webhooks "
-        "WHERE id = ? AND api_key_hash = ?",
+        "SELECT id, status FROM customer_webhooks WHERE id = ? AND api_key_hash = ?",
         (webhook_id, ctx.key_hash),
     ).fetchone()
     if row is None:
@@ -453,6 +502,7 @@ def delete_webhook(
 @router.post("/{webhook_id}/test", response_model=TestDeliveryResponse)
 def test_delivery(
     webhook_id: int,
+    request: Request,
     ctx: ApiContextDep,
     conn: DbDep,
 ) -> TestDeliveryResponse:
@@ -486,7 +536,8 @@ def test_delivery(
             "webhook is disabled — re-register before testing",
         )
 
-    if not _check_test_rate(webhook_id):
+    client_ip = request.client.host if request.client else None
+    if not _check_test_rate(webhook_id, conn, ip=client_ip):
         raise HTTPException(
             status.HTTP_429_TOO_MANY_REQUESTS,
             f"test rate limit exceeded ({_TEST_RATE_MAX}/minute per webhook)",
@@ -532,7 +583,11 @@ def test_delivery(
                 # Capture a SHORT body excerpt for debugging (most webhook
                 # consumers return JSON < 1KB on errors). Truncate hard.
                 body_excerpt = (r.text or "")[:256]
-                error = f"http_{r.status_code}: {body_excerpt}" if body_excerpt else f"http_{r.status_code}"
+                error = (
+                    f"http_{r.status_code}: {body_excerpt}"
+                    if body_excerpt
+                    else f"http_{r.status_code}"
+                )
     except httpx.TimeoutException:
         error = "timeout"
     except httpx.HTTPError as exc:

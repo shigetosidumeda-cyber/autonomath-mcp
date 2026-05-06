@@ -35,6 +35,7 @@ Constraints:
     * Key MUST come from canonical_cache_key(); never hand-roll a sha256
       elsewhere — drift between callers means the cache silently misses.
 """
+
 from __future__ import annotations
 
 import hashlib

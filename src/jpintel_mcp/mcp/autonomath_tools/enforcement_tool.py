@@ -14,6 +14,7 @@ Returns: dict with
   - recent_history: [...]     # past 5 years regardless of active
   - all_count: int
 """
+
 import os
 import sqlite3
 import re
@@ -95,7 +96,7 @@ def _normalize_name(value):
         changed = False
         for suf in _HOUJIN_SUFFIXES:
             if s.startswith(suf):
-                s = s[len(suf):]
+                s = s[len(suf) :]
                 changed = True
                 break
             if s.endswith(suf):
@@ -109,6 +110,7 @@ def _normalize_name(value):
 def _as_date(value):
     if value in (None, "", "today"):
         from datetime import UTC, datetime, timedelta
+
         return (datetime.now(UTC) + timedelta(hours=9)).date().isoformat()
     return str(value)
 
@@ -197,7 +199,8 @@ def check_enforcement(houjin_bangou=None, target_name=None, as_of_date="today"):
         )
         all_rows = [dict(r) for r in cur.fetchall()]
         rows = [
-            r for r in all_rows
+            r
+            for r in all_rows
             if r.get("target_name") and _normalize_name(r["target_name"]) == name_norm
         ]
     conn.close()
@@ -251,8 +254,10 @@ def check_enforcement(houjin_bangou=None, target_name=None, as_of_date="today"):
 
     # active_exclusions: effective at as_of_date
     active = [
-        r for r in rows
-        if r.get("exclusion_start") and r.get("exclusion_end")
+        r
+        for r in rows
+        if r.get("exclusion_start")
+        and r.get("exclusion_end")
         and r["exclusion_start"] <= as_of <= r["exclusion_end"]
     ]
 
@@ -316,8 +321,14 @@ def _run_tests():
 
     # Test 7: top-level shape contract
     r = check_enforcement(target_name="株式会社 夢現")
-    for k in ("queried", "found", "currently_excluded", "active_exclusions",
-              "recent_history", "all_count"):
+    for k in (
+        "queried",
+        "found",
+        "currently_excluded",
+        "active_exclusions",
+        "recent_history",
+        "all_count",
+    ):
         assert k in r, f"test7 missing key {k}"
 
     print("[enforcement_tool] ALL TESTS PASS")

@@ -21,6 +21,7 @@ Tables probed but tolerated-missing:
 
 All SQL is hand-written and parameterised; no ORM.
 """
+
 from __future__ import annotations
 
 import hmac
@@ -61,9 +62,7 @@ def require_admin(
     """
     configured = settings.admin_api_key
     if not configured:
-        raise HTTPException(
-            status.HTTP_503_SERVICE_UNAVAILABLE, "admin endpoints disabled"
-        )
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "admin endpoints disabled")
     # Constant-time comparison: a naive `x_api_key != configured` leaks the
     # length of the matching prefix via response timing. hmac.compare_digest
     # short-circuits in O(min(len(a), len(b))) time only on length mismatch
@@ -223,9 +222,7 @@ def _parse_cohort_month(raw: str) -> str:
     try:
         datetime.strptime(raw, "%Y-%m")
     except ValueError as exc:
-        raise HTTPException(
-            status.HTTP_400_BAD_REQUEST, "cohort_month must be YYYY-MM"
-        ) from exc
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "cohort_month must be YYYY-MM") from exc
     return raw
 
 
@@ -245,9 +242,7 @@ def get_funnel(
     start_iso = _parse_date(start, "start")
     end_iso = _parse_date(end, "end")
     if start_iso > end_iso:
-        raise HTTPException(
-            status.HTTP_400_BAD_REQUEST, "start must be <= end"
-        )
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "start must be <= end")
 
     if not _table_exists(conn, "funnel_daily"):
         _log.warning(
@@ -701,13 +696,10 @@ def get_analytics_split(
     if not _table_exists(conn, "analytics_events"):
         notes.append("analytics_events table missing")
     elif not _column_exists(conn, "analytics_events", "is_bot"):
-        notes.append(
-            "analytics_events.is_bot column missing — apply migration 123"
-        )
+        notes.append("analytics_events.is_bot column missing — apply migration 123")
         # Fall back to a bot-blind row so the UI doesn't 500.
         row = conn.execute(
-            "SELECT COUNT(*) AS n FROM analytics_events "
-            "WHERE ts >= ? AND path != ?",
+            "SELECT COUNT(*) AS n FROM analytics_events WHERE ts >= ? AND path != ?",
             (since, _FUNNEL_EVENT_PATH),
         ).fetchone()
         total_requests = int(row["n"] or 0)
@@ -799,9 +791,7 @@ def get_analytics_split(
     by_src: list[SrcAttributionBucket] = []
     has_src_col = _column_exists(conn, "analytics_events", "src")
     if not has_src_col:
-        notes.append(
-            "analytics_events.src column missing — apply migration 124"
-        )
+        notes.append("analytics_events.src column missing — apply migration 124")
     elif not _table_exists(conn, "usage_events"):
         # Without usage_events we can still emit the human_request half.
         rows = conn.execute(
@@ -895,9 +885,7 @@ def get_analytics_split(
         # Per-src distinct_session count from funnel_events (best-effort —
         # tolerated-missing if 124 hasn't applied to funnel_events yet).
         sessions_per_src: dict[str, int] = {}
-        if _table_exists(conn, "funnel_events") and _column_exists(
-            conn, "funnel_events", "src"
-        ):
+        if _table_exists(conn, "funnel_events") and _column_exists(conn, "funnel_events", "src"):
             sess_rows = conn.execute(
                 """SELECT
                      COALESCE(src, 'direct')        AS src,
@@ -908,9 +896,7 @@ def get_analytics_split(
                GROUP BY COALESCE(src, 'direct')""",
                 (since,),
             ).fetchall()
-            sessions_per_src = {
-                r["src"]: int(r["sessions"] or 0) for r in sess_rows
-            }
+            sessions_per_src = {r["src"]: int(r["sessions"] or 0) for r in sess_rows}
 
         by_src = [
             SrcAttributionBucket(

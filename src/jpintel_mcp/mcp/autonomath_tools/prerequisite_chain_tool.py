@@ -123,7 +123,11 @@ def _prerequisite_chain_impl(
     going through the @mcp.tool wrapper.
     """
     # ---- arg validation ----
-    if not target_program_id or not isinstance(target_program_id, str) or not target_program_id.strip():
+    if (
+        not target_program_id
+        or not isinstance(target_program_id, str)
+        or not target_program_id.strip()
+    ):
         return make_error(
             code="missing_required_arg",
             message="target_program_id is required (non-empty canonical program ID).",
@@ -151,10 +155,7 @@ def _prerequisite_chain_impl(
     if not settings.prerequisite_chain_enabled:
         return make_error(
             code="subsystem_unavailable",
-            message=(
-                "prerequisite_chain disabled "
-                "(AUTONOMATH_PREREQUISITE_CHAIN_ENABLED=0)."
-            ),
+            message=("prerequisite_chain disabled (AUTONOMATH_PREREQUISITE_CHAIN_ENABLED=0)."),
             hint=(
                 "Operator has temporarily disabled prerequisite chain "
                 "evaluation. Use search_certifications to enumerate "
@@ -238,17 +239,19 @@ def _prerequisite_chain_impl(
             related = (r["related_canonical_id"] or "").strip() or None
             if related:
                 recursion_resolvable = True
-            chain.append({
-                "kind": r["prerequisite_kind"],
-                "name": r["prerequisite_name"],
-                "required_or_optional": r["required_or_optional"],
-                "preparation_time_days": r["preparation_time_days"],
-                "preparation_cost_yen": r["preparation_cost_yen"],
-                "obtain_url": r["obtain_url"],
-                "rationale": r["rationale_text"],
-                "related_canonical_id": related,
-                "depth": cur_depth,
-            })
+            chain.append(
+                {
+                    "kind": r["prerequisite_kind"],
+                    "name": r["prerequisite_name"],
+                    "required_or_optional": r["required_or_optional"],
+                    "preparation_time_days": r["preparation_time_days"],
+                    "preparation_cost_yen": r["preparation_cost_yen"],
+                    "obtain_url": r["obtain_url"],
+                    "rationale": r["rationale_text"],
+                    "related_canonical_id": related,
+                    "depth": cur_depth,
+                }
+            )
             if related and cur_depth < realistic_recursion_depth and related not in seen:
                 next_targets.append(related)
                 seen.add(related)
@@ -285,12 +288,8 @@ def _prerequisite_chain_impl(
                     queue.append((tid, cur_depth + 1, child_rows))
 
     # ---- aggregates + warnings ----
-    total_time_days = sum(
-        (e["preparation_time_days"] or 0) for e in chain
-    )
-    total_cost_yen = sum(
-        (e["preparation_cost_yen"] or 0) for e in chain
-    )
+    total_time_days = sum((e["preparation_time_days"] or 0) for e in chain)
+    total_cost_yen = sum((e["preparation_cost_yen"] or 0) for e in chain)
 
     warnings: list[str] = []
     if depth > _DEPTH_LIMIT:
@@ -467,11 +466,13 @@ if __name__ == "__main__":  # pragma: no cover
     for s in samples:
         print(f"\n=== {s} ===")
         res = _prerequisite_chain_impl(**s)
-        pprint.pprint({
-            "chain_len": len(res.get("prerequisite_chain", [])),
-            "total_time_days": res.get("total_preparation_time_days"),
-            "total_cost_yen": res.get("total_preparation_cost_yen"),
-            "realistic": res.get("realistic"),
-            "warnings": res.get("warnings"),
-            "coverage_pct": res.get("data_quality", {}).get("coverage_pct"),
-        })
+        pprint.pprint(
+            {
+                "chain_len": len(res.get("prerequisite_chain", [])),
+                "total_time_days": res.get("total_preparation_time_days"),
+                "total_cost_yen": res.get("total_preparation_cost_yen"),
+                "realistic": res.get("realistic"),
+                "warnings": res.get("warnings"),
+                "coverage_pct": res.get("data_quality", {}).get("coverage_pct"),
+            }
+        )

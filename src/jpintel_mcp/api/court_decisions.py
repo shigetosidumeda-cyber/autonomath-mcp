@@ -23,6 +23,7 @@ we reuse the `_build_fts_match` phrase-quote builder from api/programs.py
 so 2+ character kanji compounds (e.g. `税額控除`, `補助金適正化`) match
 contiguously, never as independent trigram hits.
 """
+
 import json
 import sqlite3
 from typing import Annotated, Any
@@ -160,8 +161,7 @@ def search_court_decisions(
         CourtLevel | None,
         Query(
             description=(
-                "Filter by court tier. One of: supreme | high | district | "
-                "summary | family."
+                "Filter by court tier. One of: supreme | high | district | summary | family."
             ),
         ),
     ] = None,
@@ -174,9 +174,7 @@ def search_court_decisions(
     subject_area: Annotated[
         str | None,
         Query(
-            description=(
-                "Filter by 分野 (substring match; source vocabulary varies by 判例集)."
-            ),
+            description=("Filter by 分野 (substring match; source vocabulary varies by 判例集)."),
             max_length=120,
         ),
     ] = None,
@@ -184,8 +182,7 @@ def search_court_decisions(
         str | None,
         Query(
             description=(
-                "Filter rows whose related-law identifier list contains "
-                "this LAW identifier."
+                "Filter rows whose related-law identifier list contains this LAW identifier."
             ),
             pattern=r"^LAW-[0-9a-f]{10}$",
         ),
@@ -317,6 +314,7 @@ def search_court_decisions(
             "decided_from": decided_from,
             "decided_to": decided_to,
         },
+        strict_metering=True,
     )
 
     return CourtDecisionSearchResponse(
@@ -391,7 +389,11 @@ def get_court_decision(
         )
 
     log_usage(
-        conn, ctx, "court_decisions.get", params={"unified_id": unified_id}
+        conn,
+        ctx,
+        "court_decisions.get",
+        params={"unified_id": unified_id},
+        strict_metering=True,
     )
     body = _row_to_decision(row).model_dump(mode="json")
     attach_corpus_snapshot(body, conn)
@@ -425,23 +427,16 @@ def decisions_by_statute(
     # Existence check — a missing law returns 404 rather than an empty
     # list, so callers notice malformed ids instead of treating "zero
     # hits" as "no jurisprudence".
-    law_row = conn.execute(
-        "SELECT unified_id FROM laws WHERE unified_id = ?", (law_id,)
-    ).fetchone()
+    law_row = conn.execute("SELECT unified_id FROM laws WHERE unified_id = ?", (law_id,)).fetchone()
     if law_row is None:
-        raise HTTPException(
-            status.HTTP_404_NOT_FOUND, f"law not found: {law_id}"
-        )
+        raise HTTPException(status.HTTP_404_NOT_FOUND, f"law not found: {law_id}")
 
-    where: list[str] = ['COALESCE(related_law_ids_json,\'\') LIKE ?']
+    where: list[str] = ["COALESCE(related_law_ids_json,'') LIKE ?"]
     params: list[Any] = [f'%"{law_id}"%']
 
     if payload.article_citation:
         article = payload.article_citation.strip()
-        where.append(
-            "(COALESCE(key_ruling,'') LIKE ? "
-            "OR COALESCE(source_excerpt,'') LIKE ?)"
-        )
+        where.append("(COALESCE(key_ruling,'') LIKE ? OR COALESCE(source_excerpt,'') LIKE ?)")
         like_article = f"%{article}%"
         params.extend([like_article, like_article])
 
@@ -482,6 +477,7 @@ def decisions_by_statute(
             "law_id": law_id,
             "article_citation": payload.article_citation,
         },
+        strict_metering=True,
     )
 
     return CourtDecisionSearchResponse(

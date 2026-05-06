@@ -27,6 +27,7 @@ Webhook security:
     172.16-31.*, 192.168.*, ::1, fc00::/7). The cron re-validates at fire-time
     in case DNS resolves to a private IP after the fact.
 """
+
 from __future__ import annotations
 
 import ipaddress
@@ -306,8 +307,7 @@ def deactivate_subscription(
             "alert subscriptions require an authenticated API key",
         )
     row = conn.execute(
-        "SELECT id FROM alert_subscriptions "
-        "WHERE id = ? AND api_key_hash = ? AND active = 1",
+        "SELECT id FROM alert_subscriptions WHERE id = ? AND api_key_hash = ? AND active = 1",
         (sub_id, ctx.key_hash),
     ).fetchone()
     if row is None:

@@ -89,9 +89,7 @@ def hash_api_key_bcrypt(raw_key: str) -> str:
     """
     import bcrypt
 
-    return bcrypt.hashpw(
-        raw_key.encode("utf-8"), bcrypt.gensalt(_BCRYPT_COST)
-    ).decode("ascii")
+    return bcrypt.hashpw(raw_key.encode("utf-8"), bcrypt.gensalt(_BCRYPT_COST)).decode("ascii")
 
 
 def verify_api_key_bcrypt(raw_key: str, stored_bcrypt_hash: str) -> bool:
@@ -106,9 +104,7 @@ def verify_api_key_bcrypt(raw_key: str, stored_bcrypt_hash: str) -> bool:
     try:
         import bcrypt
 
-        return bcrypt.checkpw(
-            raw_key.encode("utf-8"), stored_bcrypt_hash.encode("ascii")
-        )
+        return bcrypt.checkpw(raw_key.encode("utf-8"), stored_bcrypt_hash.encode("ascii"))
     except (ValueError, TypeError):
         return False
 
@@ -388,10 +384,7 @@ async def require_key(
             raise HTTPException(
                 status.HTTP_401_UNAUTHORIZED,
                 detail={
-                    "detail": (
-                        "トライアル期間または上限に達したため API キーは"
-                        "失効しています。"
-                    ),
+                    "detail": ("トライアル期間または上限に達したため API キーは失効しています。"),
                     "upgrade_url": TRIAL_UPGRADE_URL,
                     "cta_text_ja": "API キー発行で続行 (¥3.30/req)",
                     "trial_expired": True,
@@ -432,15 +425,11 @@ async def require_key(
 def _seconds_until_utc_midnight(now: datetime | None = None) -> int:
     """Seconds remaining until the next UTC 00:00 boundary (rate-limit reset)."""
     now = now or datetime.now(UTC)
-    tomorrow = (now + timedelta(days=1)).replace(
-        hour=0, minute=0, second=0, microsecond=0
-    )
+    tomorrow = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
     return max(1, int((tomorrow - now).total_seconds()))
 
 
-def _collect_tree_key_hashes(
-    conn: sqlite3.Connection, ctx: ApiContext
-) -> list[str]:
+def _collect_tree_key_hashes(conn: sqlite3.Connection, ctx: ApiContext) -> list[str]:
     """Return every key_hash in the parent/child tree containing ctx.
 
     Migration 086 semantics: a child key inherits the parent's tier,
@@ -469,8 +458,7 @@ def _collect_tree_key_hashes(
         # Legacy / not-yet-migrated row — single-key scope.
         return [ctx.key_hash]
     rows = conn.execute(
-        "SELECT key_hash FROM api_keys "
-        "WHERE id = ? OR parent_key_id = ?",
+        "SELECT key_hash FROM api_keys WHERE id = ? OR parent_key_id = ?",
         (root, root),
     ).fetchall()
     hashes = [r["key_hash"] if hasattr(r, "keys") else r[0] for r in rows]
@@ -499,24 +487,20 @@ def _enforce_quota(conn: sqlite3.Connection, ctx: ApiContext) -> None:
         expires_raw = row["trial_expires_at"] if row else None
         if expires_raw:
             try:
-                expires_at = datetime.fromisoformat(
-                    str(expires_raw).replace("Z", "+00:00")
-                )
+                expires_at = datetime.fromisoformat(str(expires_raw).replace("Z", "+00:00"))
             except ValueError:
                 expires_at = None
             if expires_at is not None and expires_at <= datetime.now(UTC):
                 now_iso = datetime.now(UTC).isoformat()
                 conn.execute(
-                    "UPDATE api_keys SET revoked_at = ? "
-                    "WHERE key_hash = ? AND revoked_at IS NULL",
+                    "UPDATE api_keys SET revoked_at = ? WHERE key_hash = ? AND revoked_at IS NULL",
                     (now_iso, ctx.key_hash),
                 )
                 raise HTTPException(
                     status.HTTP_401_UNAUTHORIZED,
                     detail={
                         "detail": (
-                            "トライアル期間または上限に達したため API キーは"
-                            "失効しています。"
+                            "トライアル期間または上限に達したため API キーは失効しています。"
                         ),
                         "upgrade_url": TRIAL_UPGRADE_URL,
                         "cta_text_ja": "API キー発行で続行 (¥3.30/req)",
@@ -555,8 +539,7 @@ def _enforce_quota(conn: sqlite3.Connection, ctx: ApiContext) -> None:
                     "trial_request_cap": TRIAL_REQUEST_CAP,
                     "trial_requests_used": used,
                     "trial_terms": (
-                        f"トライアルは 14 日間または {TRIAL_REQUEST_CAP} "
-                        "リクエストまで無料です。"
+                        f"トライアルは 14 日間または {TRIAL_REQUEST_CAP} リクエストまで無料です。"
                     ),
                     "upgrade_url": TRIAL_UPGRADE_URL,
                     "cta_text_ja": "API キー発行で続行 (¥3.30/req)",
@@ -595,8 +578,7 @@ def _enforce_quota(conn: sqlite3.Connection, ctx: ApiContext) -> None:
     else:
         placeholders = ",".join("?" * len(tree_hashes))
         (n,) = conn.execute(
-            f"SELECT COUNT(*) FROM usage_events "
-            f"WHERE key_hash IN ({placeholders}) AND ts >= ?",  # noqa: S608 — placeholders only
+            f"SELECT COUNT(*) FROM usage_events WHERE key_hash IN ({placeholders}) AND ts >= ?",  # noqa: S608 — placeholders only
             (*tree_hashes, bucket),
         ).fetchone()
     if n >= daily_limit:
@@ -631,9 +613,7 @@ def compute_params_digest(endpoint: str, params: dict[str, Any] | None) -> str |
     cleaned = {k: v for k, v in params.items() if v is not None}
     if not cleaned:
         return None
-    payload = json.dumps(
-        cleaned, sort_keys=True, separators=(",", ":"), ensure_ascii=False
-    )
+    payload = json.dumps(cleaned, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
 
 
@@ -850,12 +830,7 @@ def _record_usage_async(
             status_code=status_code,
             quantity=quantity,
         )
-    if (
-        metered
-        and status_code < 400
-        and stripe_subscription_id
-        and usage_event_id is not None
-    ):
+    if metered and status_code < 400 and stripe_subscription_id and usage_event_id is not None:
         try:
             from jpintel_mcp.billing.stripe_usage import report_usage_async
 
@@ -884,8 +859,11 @@ def _note_customer_cap_cache(
         from jpintel_mcp.api.middleware.customer_cap import note_cap_usage
 
         note_cap_usage(key_hash, quantity)
-    except Exception:  # noqa: BLE001
-        pass
+    except Exception:
+        logging.getLogger("jpintel.cap").warning(
+            "cap_cache_increment_failed",
+            exc_info=True,
+        )
 
 
 def log_usage(
@@ -903,6 +881,7 @@ def log_usage(
     response_body: Any = None,
     issue_audit_seal: bool = False,
     strict_metering: bool = False,
+    strict_audit_seal: bool = False,
 ) -> dict[str, Any] | None:
     """Insert one row into usage_events.
 
@@ -996,6 +975,17 @@ def log_usage(
             )
         except Exception:  # noqa: BLE001
             audit_seal = None
+            if strict_audit_seal and ctx.metered:
+                raise HTTPException(
+                    status.HTTP_503_SERVICE_UNAVAILABLE,
+                    detail={
+                        "code": "audit_seal_persist_failed",
+                        "message": (
+                            "This paid response was not delivered because the "
+                            "audit seal could not be created."
+                        ),
+                    },
+                ) from None
 
     if background_tasks is not None and billing_key is None and not strict_metering:
         # Hot path: defer all writes until after response flush. Requests
@@ -1077,7 +1067,18 @@ def log_usage(
 
                     persist_seal(conn, seal=audit_seal, api_key_hash=ctx.key_hash)
                 except Exception:  # noqa: BLE001
-                    pass
+                    audit_seal = None
+                    if strict_audit_seal and ctx.metered and status_code < 400:
+                        raise HTTPException(
+                            status.HTTP_503_SERVICE_UNAVAILABLE,
+                            detail={
+                                "code": "audit_seal_persist_failed",
+                                "message": (
+                                    "This paid response was not delivered because the "
+                                    "audit seal could not be persisted."
+                                ),
+                            },
+                        ) from None
             if usage_txn_started:
                 conn.execute("COMMIT")
                 usage_txn_started = False
@@ -1086,12 +1087,7 @@ def log_usage(
                 with contextlib.suppress(Exception):
                     conn.execute("ROLLBACK")
             raise
-    if (
-        strict_metering
-        and ctx.metered
-        and status_code < 400
-        and usage_event_id is None
-    ):
+    if strict_metering and ctx.metered and status_code < 400 and usage_event_id is None:
         raise HTTPException(
             status.HTTP_503_SERVICE_UNAVAILABLE,
             detail={

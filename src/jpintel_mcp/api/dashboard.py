@@ -20,6 +20,7 @@ The dashboard endpoints are read-only and do NOT log_usage(). Reading
 your own usage history must not itself burn metered budget; the existing
 control-plane endpoints in me.py follow the same posture.
 """
+
 from __future__ import annotations
 
 import logging
@@ -165,9 +166,7 @@ class ToolRecommendationResponse(BaseModel):
 # ---------------------------------------------------------------------------
 
 
-def _fetch_usage_series(
-    conn: Any, key_hash: str, days: int
-) -> list[UsageDay]:
+def _fetch_usage_series(conn: Any, key_hash: str, days: int) -> list[UsageDay]:
     """Return a contiguous oldest-first series of billed usage units."""
     today = datetime.now(UTC).date()
     start = today - timedelta(days=days - 1)
@@ -188,8 +187,10 @@ def _fetch_usage_series(
     ).fetchall()
     by_date: dict[str, int] = {r["d"]: r["n"] for r in rows}
     return [
-        UsageDay(date=(start + timedelta(days=i)).isoformat(),
-                 calls=by_date.get((start + timedelta(days=i)).isoformat(), 0))
+        UsageDay(
+            date=(start + timedelta(days=i)).isoformat(),
+            calls=by_date.get((start + timedelta(days=i)).isoformat(), 0),
+        )
         for i in range(days)
     ]
 
@@ -197,9 +198,7 @@ def _fetch_usage_series(
 def _month_start_iso_utc() -> str:
     """Beginning of the current UTC month (matches usage_events.ts comparisons)."""
     now = datetime.now(UTC)
-    return now.replace(
-        day=1, hour=0, minute=0, second=0, microsecond=0
-    ).isoformat()
+    return now.replace(day=1, hour=0, minute=0, second=0, microsecond=0).isoformat()
 
 
 def _fetch_mtd_usage(conn: Any, key_hash: str) -> int:
@@ -267,9 +266,8 @@ def get_dashboard(
         current_period_end_iso: str | None = None
     else:
         try:
-            current_period_end_iso = (
-                datetime.fromtimestamp(int(cpe_epoch), tz=UTC)
-                .strftime("%Y-%m-%dT%H:%M:%SZ")
+            current_period_end_iso = datetime.fromtimestamp(int(cpe_epoch), tz=UTC).strftime(
+                "%Y-%m-%dT%H:%M:%SZ"
             )
         except (ValueError, OverflowError, OSError):
             current_period_end_iso = None
@@ -406,11 +404,13 @@ def _list_stripe_invoices(customer_id: str) -> list[BillingInvoice]:
                 number=inv.get("number"),
                 period_start=(
                     datetime.fromtimestamp(period_start, UTC).date().isoformat()
-                    if period_start else None
+                    if period_start
+                    else None
                 ),
                 period_end=(
                     datetime.fromtimestamp(period_end, UTC).date().isoformat()
-                    if period_end else None
+                    if period_end
+                    else None
                 ),
                 amount_due_yen=_stripe_status_to_int_yen(inv.get("amount_due")),
                 amount_paid_yen=_stripe_status_to_int_yen(inv.get("amount_paid")),
@@ -420,7 +420,8 @@ def _list_stripe_invoices(customer_id: str) -> list[BillingInvoice]:
                 invoice_pdf=inv.get("invoice_pdf"),
                 created=(
                     datetime.fromtimestamp(created, UTC).isoformat()
-                    if created else datetime.now(UTC).isoformat()
+                    if created
+                    else datetime.now(UTC).isoformat()
                 ),
             )
         )
@@ -428,9 +429,7 @@ def _list_stripe_invoices(customer_id: str) -> list[BillingInvoice]:
 
 
 @router.get("/v1/me/billing_history", response_model=BillingHistoryResponse)
-def get_billing_history(
-    ctx: ApiContextDep, conn: DbDep
-) -> BillingHistoryResponse:
+def get_billing_history(ctx: ApiContextDep, conn: DbDep) -> BillingHistoryResponse:
     """Most-recent Stripe invoices for the calling key's customer.
 
     Uses a 5-minute in-process cache keyed by `customer_id`. Empty list when
@@ -461,9 +460,7 @@ def get_billing_history(
             if now - ts < _BILLING_CACHE_TTL_SECONDS:
                 return BillingHistoryResponse(
                     invoices=invoices,
-                    cached_at=datetime.fromtimestamp(
-                        _time.time() - (now - ts), UTC
-                    ).isoformat(),
+                    cached_at=datetime.fromtimestamp(_time.time() - (now - ts), UTC).isoformat(),
                     customer_id=customer_id,
                 )
 
@@ -584,9 +581,7 @@ def _score(tokens: set[str], keywords: list[str]) -> tuple[int, list[str]]:
     return len(matched), matched
 
 
-@router.get(
-    "/v1/me/tool_recommendation", response_model=ToolRecommendationResponse
-)
+@router.get("/v1/me/tool_recommendation", response_model=ToolRecommendationResponse)
 def get_tool_recommendation(
     ctx: ApiContextDep,
     intent: Annotated[str, Query(min_length=1, max_length=500)],
@@ -644,14 +639,7 @@ def get_tool_recommendation(
         else:
             confidence = 0.6
 
-        why = (
-            entry["purpose"]
-            + (
-                f" (一致: {', '.join(matched)})"
-                if matched
-                else " (汎用候補)"
-            )
-        )
+        why = entry["purpose"] + (f" (一致: {', '.join(matched)})" if matched else " (汎用候補)")
         out.append(
             ToolRecommendation(
                 endpoint=str(entry["endpoint"]),

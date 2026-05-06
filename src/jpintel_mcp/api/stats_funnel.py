@@ -30,6 +30,7 @@ Response shape (mirrors admin.FunnelResponse for cross-tool consistency):
     "note": null  # populated when a probed table is missing
   }
 """
+
 from __future__ import annotations
 
 import sqlite3  # noqa: TC003 (runtime annotation for _table_exists helper)

@@ -208,9 +208,7 @@ def _check_fact_source_id_coverage() -> dict[str, Any]:
             # Two-query form is ~2x faster than a single CASE-aggregate at 6M
             # rows: SQLite uses idx_am_efacts_source (partial / null-aware) for
             # the NULL count and table-stat for COUNT(*).
-            total = con.execute(
-                "SELECT COUNT(*) FROM am_entity_facts"
-            ).fetchone()[0]
+            total = con.execute("SELECT COUNT(*) FROM am_entity_facts").fetchone()[0]
             null_count = con.execute(
                 "SELECT COUNT(*) FROM am_entity_facts WHERE source_id IS NULL"
             ).fetchone()[0]
@@ -252,9 +250,7 @@ def _check_entity_id_map_coverage() -> dict[str, Any]:
                 f"mapped ratio={ratio:.4f} (< {_ENTITY_ID_MAP_RATIO_WARN})",
                 round(ratio, 6),
             )
-        return _check(
-            "ok", f"mapped ratio={ratio:.4f} ({mapped}/{total})", round(ratio, 6)
-        )
+        return _check("ok", f"mapped ratio={ratio:.4f} ({mapped}/{total})", round(ratio, 6))
     except Exception as e:  # noqa: BLE001
         return _check("fail", f"{type(e).__name__}: {e}", None)
 
@@ -265,9 +261,7 @@ def _check_annotation_volume() -> dict[str, Any]:
         with _open_ro(AUTONOMATH_DB) as con:
             n = con.execute("SELECT COUNT(*) FROM am_entity_annotation").fetchone()[0]
         if n == 0:
-            return _check(
-                "fail", "am_entity_annotation=0 (migration 046 not applied?)", 0
-            )
+            return _check("fail", "am_entity_annotation=0 (migration 046 not applied?)", 0)
         return _check("ok", f"am_entity_annotation={n}", n)
     except Exception as e:  # noqa: BLE001
         return _check("fail", f"{type(e).__name__}: {e}", None)
@@ -365,11 +359,7 @@ def get_deep_health(force: bool = False) -> dict[str, object]:
     Set ``force=True`` to bypass the 30-second response cache.
     """
     now_mono = time.monotonic()
-    if (
-        not force
-        and _CACHE["doc"] is not None
-        and now_mono - _CACHE["ts"] < _CACHE_TTL
-    ):
+    if not force and _CACHE["doc"] is not None and now_mono - _CACHE["ts"] < _CACHE_TTL:
         return _CACHE["doc"]
 
     checks: dict[str, dict[str, Any]] = {}
@@ -382,9 +372,7 @@ def get_deep_health(force: bool = False) -> dict[str, object]:
                 if not isinstance(result, dict) or "status" not in result:
                     result = _check("fail", f"malformed result: {result!r}", None)
             except Exception as e:  # noqa: BLE001 — fault tolerance
-                result = _check(
-                    "fail", f"unhandled {type(e).__name__}: {e}", None
-                )
+                result = _check("fail", f"unhandled {type(e).__name__}: {e}", None)
             checks[name] = result
 
     # Restore registration order so callers see a stable, predictable layout

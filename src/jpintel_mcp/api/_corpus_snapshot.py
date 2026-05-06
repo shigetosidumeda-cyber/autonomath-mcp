@@ -30,6 +30,7 @@ Failure mode: if the underlying connection cannot be queried we degrade to
 the current UTC time + a checksum prefix `unknown-` so the response still
 carries SOMETHING (auditors prefer "I don't know exactly" to "no field").
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -86,9 +87,7 @@ def _latest_amendment_detected_at(conn: sqlite3.Connection) -> str | None:
     later without touching call sites.
     """
     try:
-        row = conn.execute(
-            "SELECT MAX(detected_at) FROM am_amendment_diff"
-        ).fetchone()
+        row = conn.execute("SELECT MAX(detected_at) FROM am_amendment_diff").fetchone()
     except sqlite3.OperationalError:
         # Table absent on this connection (jpintel.db). Fall through.
         return None

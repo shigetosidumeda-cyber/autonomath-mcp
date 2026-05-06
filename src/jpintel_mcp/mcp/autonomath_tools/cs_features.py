@@ -38,6 +38,7 @@ No API key usage
 ----------------
 This module is pure deterministic logic. No Anthropic / OpenAI call.
 """
+
 from __future__ import annotations
 
 import math
@@ -205,13 +206,9 @@ def derive_input_warnings(
         v = kwargs.get(key)
         if isinstance(v, int):
             if v < coverage_min_year:
-                warnings.append(
-                    f"{key}={v} は提供データ範囲外 (収録は {coverage_min_year} 年以降)"
-                )
+                warnings.append(f"{key}={v} は提供データ範囲外 (収録は {coverage_min_year} 年以降)")
             elif v > coverage_max_year:
-                warnings.append(
-                    f"{key}={v} は提供データ範囲外 (収録は {coverage_max_year} 年まで)"
-                )
+                warnings.append(f"{key}={v} は提供データ範囲外 (収録は {coverage_max_year} 年まで)")
     # Date string sanity (cheap)
     for key in ("at", "as_of", "date"):
         v = kwargs.get(key)
@@ -486,7 +483,9 @@ def build_meta(
 
     suggestions = derive_suggestions(tool_name, status)
     alternative_intents = derive_alternative_intents(
-        tool_name, query_echo, status=status,
+        tool_name,
+        query_echo,
+        status=status,
     )
     input_warnings = derive_input_warnings(tool_name, kwargs)
     age_days = _age_days_from_created_at(api_key_created_at)
@@ -511,9 +510,6 @@ def build_meta(
         "wall_time_ms": round(float(latency_ms), 3),
     }
     # Drop empty arrays so the envelope is compact. Numeric fields stay.
-    cleaned = {
-        k: v for k, v in meta.items()
-        if not (isinstance(v, list) and len(v) == 0)
-    }
+    cleaned = {k: v for k, v in meta.items() if not (isinstance(v, list) and len(v) == 0)}
     # Preserve alphabetical order (dict retains insertion order in 3.7+).
     return dict(sorted(cleaned.items(), key=lambda kv: kv[0]))

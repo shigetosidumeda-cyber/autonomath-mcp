@@ -40,6 +40,7 @@ Usage::
 The context yields a mutable ``state`` dict the cron updates in place;
 the helper reads it after the ``with`` body exits and writes the row.
 """
+
 from __future__ import annotations
 
 import contextlib

@@ -57,6 +57,7 @@ Any exception (clock skew, hash failure, weird request shape) returns
 ``call_next`` immediately. A broken throttle MUST NOT become a self-DoS.
 Over-serving is strictly better than 500-on-every-call.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -258,12 +259,8 @@ def _build_throttled_body(retry_after_s: int, *, bucket: str) -> dict:
     return {
         "error": {
             "code": "rate_limited",
-            "message": (
-                "リクエストが多すぎます。少し待ってから再試行してください。"
-            ),
-            "message_en": (
-                "Too many requests. Please slow down and retry."
-            ),
+            "message": ("リクエストが多すぎます。少し待ってから再試行してください。"),
+            "message_en": ("Too many requests. Please slow down and retry."),
             "retry_after": retry_after_s,
             "bucket": bucket,
         }

@@ -1281,6 +1281,7 @@ def get_group_graph(
         endpoint="am.group_graph",
         params={"houjin_bangou": norm, "depth": depth},
         result_count=len(nodes),
+        strict_metering=True,
     )
     return JSONResponse(status_code=status.HTTP_200_OK, content=body)
 

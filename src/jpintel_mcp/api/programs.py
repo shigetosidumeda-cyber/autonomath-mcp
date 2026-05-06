@@ -1228,6 +1228,7 @@ def search_programs(
             },
             latency_ms=_latency_ms,
             result_count=total,
+            strict_metering=True,
         )
 
     def _log_empty_search_if_needed() -> None:
@@ -2292,7 +2293,13 @@ def get_program(
         attach_corpus_snapshot(body, conn)
 
     def _record_success_usage() -> None:
-        log_usage(conn, ctx, "programs.get", params={"unified_id": unified_id})
+        log_usage(
+            conn,
+            ctx,
+            "programs.get",
+            params={"unified_id": unified_id},
+            strict_metering=True,
+        )
 
     # Format dispatch — single-row payload routed through the 6-pack
     # renderer surface. DOCX is the natural unit of work here (one program

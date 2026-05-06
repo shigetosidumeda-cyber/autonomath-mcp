@@ -131,9 +131,7 @@ def _open_autonomath_ro() -> sqlite3.Connection | None:
 # ---------------------------------------------------------------------------
 
 
-def _resolve_entity(
-    am_conn: sqlite3.Connection | None, entity_id: str
-) -> dict[str, str | None]:
+def _resolve_entity(am_conn: sqlite3.Connection | None, entity_id: str) -> dict[str, str | None]:
     """Resolve ``entity_id`` to both its jpintel ``unified_id`` (when known)
     and its autonomath ``canonical_id`` (when known). Either may be None.
 
@@ -152,8 +150,7 @@ def _resolve_entity(
         if am_conn is not None:
             try:
                 row = am_conn.execute(
-                    "SELECT am_canonical_id FROM entity_id_map "
-                    "WHERE jpi_unified_id = ? LIMIT 1",
+                    "SELECT am_canonical_id FROM entity_id_map WHERE jpi_unified_id = ? LIMIT 1",
                     (eid,),
                 ).fetchone()
                 if row and row[0]:
@@ -165,8 +162,7 @@ def _resolve_entity(
         if am_conn is not None:
             try:
                 row = am_conn.execute(
-                    "SELECT jpi_unified_id FROM entity_id_map "
-                    "WHERE am_canonical_id = ? LIMIT 1",
+                    "SELECT jpi_unified_id FROM entity_id_map WHERE am_canonical_id = ? LIMIT 1",
                     (eid,),
                 ).fetchone()
                 if row and row[0]:
@@ -496,12 +492,8 @@ def _compose_discover_related(
 
         if am_conn is not None:
             via_vector = _axis_via_vector(am_conn, canonical_id, per_axis)
-            via_co_adoption = _axis_via_co_adoption(
-                am_conn, canonical_id, uni_id, per_axis
-            )
-            via_density_neighbors = _axis_via_density_neighbors(
-                am_conn, canonical_id, per_axis
-            )
+            via_co_adoption = _axis_via_co_adoption(am_conn, canonical_id, uni_id, per_axis)
+            via_density_neighbors = _axis_via_density_neighbors(am_conn, canonical_id, per_axis)
             via_5hop = _axis_via_5hop(am_conn, canonical_id, per_axis)
         else:
             via_vector = []
@@ -614,6 +606,7 @@ def discover_related(
         latency_ms=latency_ms,
         result_count=int(body["total"]),
         quantity=1,
+        strict_metering=True,
     )
 
     # §17.D audit seal on paid responses (no-op for anon callers).

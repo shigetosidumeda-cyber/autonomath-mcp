@@ -89,9 +89,7 @@ def _programs_search_factory(params: dict[str, Any]) -> dict[str, Any] | None:
     except ImportError:
         return None
 
-    kwargs: dict[str, Any] = {
-        k: params.get(k) for k in _SEARCH_PASSTHROUGH_KEYS
-    }
+    kwargs: dict[str, Any] = {k: params.get(k) for k in _SEARCH_PASSTHROUGH_KEYS}
     # Defaults — params_json ALWAYS carries these because the route always
     # populated them, but be defensive against schema drift.
     kwargs.setdefault("include_excluded", False)
@@ -131,7 +129,8 @@ def _programs_get_factory(params: dict[str, Any]) -> dict[str, Any] | None:
     conn = connect()
     try:
         row = conn.execute(
-            "SELECT * FROM programs WHERE unified_id = ?", (unified_id,),
+            "SELECT * FROM programs WHERE unified_id = ?",
+            (unified_id,),
         ).fetchone()
         if row is None:
             return None
@@ -177,9 +176,7 @@ def _am_tax_incentives_factory(params: dict[str, Any]) -> dict[str, Any] | None:
     except ImportError:
         return None
 
-    kwargs: dict[str, Any] = {
-        k: params.get(k) for k in _TAX_INCENTIVES_PASSTHROUGH_KEYS
-    }
+    kwargs: dict[str, Any] = {k: params.get(k) for k in _TAX_INCENTIVES_PASSTHROUGH_KEYS}
     kwargs.setdefault("limit", 20)
     kwargs.setdefault("offset", 0)
 

@@ -30,6 +30,7 @@ Posture
 - No §52 sensitive surface here: every payload is descriptive metadata
   about data quality / corrections / cross-source agreement. No 助言.
 """
+
 from __future__ import annotations
 
 import datetime as _dt
@@ -120,6 +121,7 @@ def _open_autonomath_rw() -> sqlite3.Connection:
 # derive uptime + latency from `usage_events` rows in jpintel.db (the same
 # table billing reads from). The 7-day rolling window matches the SLO doc
 # in monitoring/sla_targets.md.
+
 
 class SlaResponse(BaseModel):
     window: str = Field(..., description='"24h" or "7d"')
@@ -216,6 +218,7 @@ async def sla_metrics(
 # 2. Corrections list  /  GET /v1/corrections
 # ---------------------------------------------------------------------------
 
+
 @router.get("/corrections", tags=["trust", "corrections"])
 async def list_corrections(
     limit: Annotated[int, Query(ge=1, le=100)] = 50,
@@ -269,6 +272,7 @@ async def list_corrections(
 # ---------------------------------------------------------------------------
 # 3. Correction submit  /  POST /v1/corrections
 # ---------------------------------------------------------------------------
+
 
 class CorrectionSubmit(BaseModel):
     entity_id: str = Field(..., min_length=1, max_length=200)
@@ -337,9 +341,13 @@ async def submit_correction(
             "  evidence_url, reporter_email_hmac, reporter_ip_hash, status"
             ") VALUES (?,?,?,?,?,?,?, 'pending')",
             (
-                submitted_at, payload.entity_id, payload.field,
-                payload.claimed_correct_value, payload.evidence_url,
-                email_hmac, ip_hash,
+                submitted_at,
+                payload.entity_id,
+                payload.field,
+                payload.claimed_correct_value,
+                payload.evidence_url,
+                email_hmac,
+                ip_hash,
             ),
         )
         new_id = int(cur.lastrowid or 0)
@@ -400,16 +408,14 @@ async def corrections_rss_feed() -> Response:
             f" ({_xml_escape(r['root_cause'])})"
         )
         link_url = (
-            r["correction_post_url"]
-            or f"https://{_RSS_DOMAIN}/news/correction-{r['id']}.html"
+            r["correction_post_url"] or f"https://{_RSS_DOMAIN}/news/correction-{r['id']}.html"
         )
         guid = f"correction-{r['id']}"
         # detected_at is ISO 8601; convert to RFC 822-ish for RSS pubDate.
         try:
-            pub_dt = _dt.datetime.fromisoformat(
-                r["detected_at"].replace("Z", "+00:00")
-            )
+            pub_dt = _dt.datetime.fromisoformat(r["detected_at"].replace("Z", "+00:00"))
             from email.utils import format_datetime
+
             pub_date = format_datetime(pub_dt)
         except Exception:  # noqa: BLE001
             pub_date = r["detected_at"]
@@ -421,7 +427,7 @@ async def corrections_rss_feed() -> Response:
             f"  <item>\n"
             f"    <title>{title}</title>\n"
             f"    <link>{_xml_escape(link_url)}</link>\n"
-            f"    <guid isPermaLink=\"false\">{guid}</guid>\n"
+            f'    <guid isPermaLink="false">{guid}</guid>\n'
             f"    <pubDate>{pub_date}</pubDate>\n"
             f"    <description>{desc}</description>\n"
             f"  </item>"
@@ -441,9 +447,7 @@ async def corrections_rss_feed() -> Response:
         "  <language>ja</language>\n"
         f"  <lastBuildDate>{last_build}</lastBuildDate>\n"
         "  <copyright>(C) 2026 Bookyou株式会社</copyright>\n"
-        '  <dc:rights>CC-BY-4.0</dc:rights>\n'
-        + "\n".join(items)
-        + "\n</channel>\n</rss>\n"
+        "  <dc:rights>CC-BY-4.0</dc:rights>\n" + "\n".join(items) + "\n</channel>\n</rss>\n"
     )
     return Response(
         content=rss,
@@ -454,6 +458,7 @@ async def corrections_rss_feed() -> Response:
 # ---------------------------------------------------------------------------
 # 5. §52 audit log rollup  /  GET /v1/audit/section52
 # ---------------------------------------------------------------------------
+
 
 @router.get("/trust/section52", tags=["trust", "audit"])
 async def audit_section52(
@@ -506,9 +511,7 @@ async def audit_section52(
             "summary": {
                 "samples": total_s,
                 "violations": total_v,
-                "violation_rate": (
-                    round(total_v / total_s, 4) if total_s > 0 else 0.0
-                ),
+                "violation_rate": (round(total_v / total_s, 4) if total_s > 0 else 0.0),
             },
             "_meta": {
                 "fence": "§52 disclaimer envelope; details in CONSTITUTION 13.2 + docs/_internal/section52_audit.md",
@@ -521,6 +524,7 @@ async def audit_section52(
 # ---------------------------------------------------------------------------
 # 6. Cross-source agreement  /  GET /v1/cross_source/{entity_id}
 # ---------------------------------------------------------------------------
+
 
 @router.get("/cross_source/{entity_id}", tags=["trust", "cross_source"])
 async def cross_source_check(
@@ -545,6 +549,7 @@ async def cross_source_check(
 # ---------------------------------------------------------------------------
 # 7. Stale-data rollup  /  GET /v1/staleness
 # ---------------------------------------------------------------------------
+
 
 @router.get("/staleness", tags=["trust", "staleness"])
 async def staleness_summary(
@@ -581,22 +586,26 @@ async def staleness_summary(
             except sqlite3.OperationalError:
                 # Table absent in this fixture — return placeholders so the
                 # response shape stays stable across deployments.
-                datasets.append({
-                    "name": name,
-                    "total": 0,
-                    "stale": 0,
-                    "stale_pct": 0.0,
-                    "_note": f"table {table} absent",
-                })
+                datasets.append(
+                    {
+                        "name": name,
+                        "total": 0,
+                        "stale": 0,
+                        "stale_pct": 0.0,
+                        "_note": f"table {table} absent",
+                    }
+                )
                 continue
             total = int(row["total"] or 0)
             stale = int(row["stale"] or 0)
-            datasets.append({
-                "name": name,
-                "total": total,
-                "stale": stale,
-                "stale_pct": round(100.0 * stale / total, 2) if total > 0 else 0.0,
-            })
+            datasets.append(
+                {
+                    "name": name,
+                    "total": total,
+                    "stale": stale,
+                    "stale_pct": round(100.0 * stale / total, 2) if total > 0 else 0.0,
+                }
+            )
     finally:
         conn.close()
 

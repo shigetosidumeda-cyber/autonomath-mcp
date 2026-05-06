@@ -12,6 +12,7 @@ not_required` → 無担保・無保証人 の抽出)。
 
 Scope: read-only.
 """
+
 import sqlite3
 import time
 from typing import Annotated, Any
@@ -127,9 +128,7 @@ def search_loan_programs(
     q: Annotated[
         str | None,
         Query(
-            description=(
-                "Free-text search over program_name + provider + target_conditions."
-            ),
+            description=("Free-text search over program_name + provider + target_conditions."),
             max_length=200,
         ),
     ] = None,
@@ -139,8 +138,7 @@ def search_loan_programs(
         str | None,
         Query(
             description=(
-                "Risk axis 1 (物的担保). One of: required | not_required | "
-                "negotiable | unknown."
+                "Risk axis 1 (物的担保). One of: required | not_required | negotiable | unknown."
             ),
             max_length=20,
         ),
@@ -159,8 +157,7 @@ def search_loan_programs(
         str | None,
         Query(
             description=(
-                "Risk axis 3 (第三者保証). One of: required | not_required | "
-                "negotiable | unknown."
+                "Risk axis 3 (第三者保証). One of: required | not_required | negotiable | unknown."
             ),
             max_length=20,
         ),
@@ -171,9 +168,7 @@ def search_loan_programs(
         float | None,
         Query(
             ge=0.0,
-            description=(
-                "Upper bound on interest_rate_base_annual (e.g. 0.015 for 1.5%)."
-            ),
+            description=("Upper bound on interest_rate_base_annual (e.g. 0.015 for 1.5%)."),
         ),
     ] = None,
     min_loan_period_years: Annotated[int | None, Query(ge=0)] = None,
@@ -250,6 +245,7 @@ def search_loan_programs(
         "loan_programs.search",
         latency_ms=_latency_ms,
         result_count=total,
+        strict_metering=True,
     )
 
     if total == 0 and q is not None:
@@ -337,15 +333,11 @@ def get_loan_program(
     The response includes `corpus_snapshot_id` + `corpus_checksum` so callers
     can reproduce the lookup later and detect whether the corpus changed.
     """
-    row = conn.execute(
-        "SELECT * FROM loan_programs WHERE id = ?", (loan_id,)
-    ).fetchone()
+    row = conn.execute("SELECT * FROM loan_programs WHERE id = ?", (loan_id,)).fetchone()
     if row is None:
-        raise HTTPException(
-            status.HTTP_404_NOT_FOUND, f"loan program not found: {loan_id}"
-        )
+        raise HTTPException(status.HTTP_404_NOT_FOUND, f"loan program not found: {loan_id}")
 
-    log_usage(conn, ctx, "loan_programs.get")
+    log_usage(conn, ctx, "loan_programs.get", strict_metering=True)
     body = _row_to_loan(row).model_dump(mode="json")
     attach_corpus_snapshot(body, conn)
     return JSONResponse(content=body, headers=snapshot_headers(conn))

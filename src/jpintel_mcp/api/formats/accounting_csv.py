@@ -57,10 +57,7 @@ _VENDORS: dict[str, dict[str, Any]] = {
     "csv-freee": {
         "encoding": "utf-8",  # freee accepts no-BOM UTF-8 in 2024+
         "bom": "",
-        "template_url": (
-            "https://support.freee.co.jp/hc/ja/articles/"
-            "202910580"
-        ),
+        "template_url": ("https://support.freee.co.jp/hc/ja/articles/202910580"),
         "columns": (
             "取引日",
             "借方勘定科目",
@@ -78,10 +75,7 @@ _VENDORS: dict[str, dict[str, Any]] = {
     "csv-mf": {
         "encoding": "utf-8",
         "bom": "﻿",
-        "template_url": (
-            "https://biz.moneyforward.com/support/account/guide/"
-            "import/import01.html"
-        ),
+        "template_url": ("https://biz.moneyforward.com/support/account/guide/import/import01.html"),
         "columns": (
             "取引No",
             "取引日",
@@ -105,8 +99,7 @@ _VENDORS: dict[str, dict[str, Any]] = {
         "encoding": "shift_jis",
         "bom": "",
         "template_url": (
-            "https://support.yayoi-kk.co.jp/subcontents/faq/d_faq/onyu/"
-            "sw_aio_ip.html"
+            "https://support.yayoi-kk.co.jp/subcontents/faq/d_faq/onyu/sw_aio_ip.html"
         ),
         "columns": (
             "識別フラグ",
@@ -165,21 +158,13 @@ def _amount_yen(row: dict[str, Any]) -> int:
 
 
 def _summary(row: dict[str, Any]) -> str:
-    name = (
-        row.get("primary_name")
-        or row.get("name")
-        or row.get("title")
-        or ""
-    )
+    name = row.get("primary_name") or row.get("name") or row.get("title") or ""
     uid = row.get("unified_id") or ""
     return f"{name} / unified_id={uid}".strip(" /")
 
 
 def _bikou(row: dict[str, Any]) -> str:
-    return (
-        f"{row.get('source_url', '') or ''} | "
-        f"license={row.get('license', '') or ''}"
-    )
+    return f"{row.get('source_url', '') or ''} | license={row.get('license', '') or ''}"
 
 
 def _stub_freee_row(row: dict[str, Any]) -> dict[str, Any]:
@@ -287,11 +272,13 @@ def render_accounting_csv(
     writer.writerow([f"# Source format: {cfg['template_url']}"])
     writer.writerow([f"# Vendor: {cfg['vendor_label']}"])
     writer.writerow([f"# {DISCLAIMER_JA}"])
-    writer.writerow([
-        f"# {BRAND_FOOTER} | "
-        f"借方/貸方は '未決 (要確認)' のまま — "
-        f"勘定科目は経理担当が手動でマップしてください。"
-    ])
+    writer.writerow(
+        [
+            f"# {BRAND_FOOTER} | "
+            f"借方/貸方は '未決 (要確認)' のまま — "
+            f"勘定科目は経理担当が手動でマップしてください。"
+        ]
+    )
 
     # Header row.
     writer.writerow(list(cfg["columns"]))

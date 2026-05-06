@@ -39,6 +39,7 @@ Posture
   is the explicit "everything" sentinel; if a requester wants partial
   deletion they enumerate the columns instead.
 """
+
 from __future__ import annotations
 
 import json
@@ -48,10 +49,10 @@ import secrets
 from datetime import UTC, datetime
 from typing import Annotated, Literal
 
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Header, HTTPException, status
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
-from jpintel_mcp.api.deps import DbDep
+from jpintel_mcp.api.deps import DbDep  # noqa: TC001 - FastAPI dependency alias.
 from jpintel_mcp.config import settings
 
 logger = logging.getLogger("jpintel.appi_deletion")
@@ -68,12 +69,12 @@ router = APIRouter(prefix="/v1/privacy", tags=["privacy"])
 # document during manual review; this field is just the requester's stated
 # method.
 IdentityVerificationMethod = Literal[
-    "drivers_license",       # 運転免許証
-    "my_number_card",        # マイナンバーカード (表面のみ)
-    "passport",              # 旅券
-    "residence_card",        # 在留カード
-    "health_insurance_card", # 健康保険証
-    "other",                 # 自由記述 (operator manual review)
+    "drivers_license",  # 運転免許証
+    "my_number_card",  # マイナンバーカード (表面のみ)
+    "passport",  # 旅券
+    "residence_card",  # 在留カード
+    "health_insurance_card",  # 健康保険証
+    "other",  # 自由記述 (operator manual review)
 ]
 
 
@@ -112,8 +113,12 @@ class DeletionRequest(BaseModel):
     # Optional — a data subject may not know the exact 法人番号 of the row
     # they're concerned about (e.g. sole proprietor). Operator searches by
     # name + email when blank.
-    target_houjin_bangou: Annotated[str | None, Field(default=None, min_length=13, max_length=13)] = None
-    target_data_categories: Annotated[list[DataCategory], Field(min_length=1, max_length=len(_VALID_CATEGORIES))]
+    target_houjin_bangou: Annotated[
+        str | None, Field(default=None, min_length=13, max_length=13)
+    ] = None
+    target_data_categories: Annotated[
+        list[DataCategory], Field(min_length=1, max_length=len(_VALID_CATEGORIES))
+    ]
     identity_verification_method: IdentityVerificationMethod
     deletion_reason: Annotated[str | None, Field(default=None, max_length=2000)] = None
 
@@ -306,6 +311,38 @@ def _appi_enabled() -> bool:
     return os.getenv("AUTONOMATH_APPI_ENABLED", "1") not in ("0", "false", "False")
 
 
+def _verify_turnstile_token(token: str | None) -> None:
+    """Require Cloudflare Turnstile when the deployment secret is configured."""
+    secret = os.getenv("CLOUDFLARE_TURNSTILE_SECRET", "").strip()
+    if not secret:
+        return
+    if not token:
+        raise HTTPException(
+            status.HTTP_401_UNAUTHORIZED,
+            "Cloudflare Turnstile token required",
+        )
+
+    import httpx
+
+    try:
+        with httpx.Client(timeout=httpx.Timeout(5.0, connect=2.0)) as client:
+            response = client.post(
+                "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+                data={"secret": secret, "response": token},
+            )
+    except httpx.HTTPError as exc:
+        raise HTTPException(
+            status.HTTP_401_UNAUTHORIZED,
+            "Cloudflare Turnstile verification failed",
+        ) from exc
+
+    if response.status_code >= 400 or not response.json().get("success"):
+        raise HTTPException(
+            status.HTTP_401_UNAUTHORIZED,
+            "Cloudflare Turnstile verification failed",
+        )
+
+
 @router.post(
     "/deletion_request",
     response_model=DeletionResponse,
@@ -335,6 +372,10 @@ def _appi_enabled() -> bool:
 def submit_deletion_request(
     payload: DeletionRequest,
     conn: DbDep,
+    cf_turnstile_token: Annotated[
+        str | None,
+        Header(alias="CF-Turnstile-Token"),
+    ] = None,
 ) -> DeletionResponse:
     if not _appi_enabled():
         from fastapi import HTTPException
@@ -343,6 +384,8 @@ def submit_deletion_request(
             status.HTTP_503_SERVICE_UNAVAILABLE,
             "APPI deletion intake disabled",
         )
+
+    _verify_turnstile_token(cf_turnstile_token)
 
     request_id = _gen_request_id()
     received_at = datetime.now(UTC).isoformat()

@@ -25,6 +25,7 @@ the ``StackResult.to_dict()`` shape so callers always see the disclaimer
 at the top level — non-LLM rule engines often miss exception cases that
 humans must catch (景表法 / 消費者契約法 fence).
 """
+
 from __future__ import annotations
 
 import logging
@@ -107,8 +108,7 @@ def _check_funding_stack_impl(
         return make_error(
             code="out_of_range",
             message=(
-                f"program_ids は最大 {_MAX_PROGRAMS} 件までです "
-                f"(received {len(program_ids)})。"
+                f"program_ids は最大 {_MAX_PROGRAMS} 件までです (received {len(program_ids)})。"
             ),
             hint=(
                 f"C({_MAX_PROGRAMS}, 2) = {_MAX_PAIRS_HARD_CAP} pairs is the "

@@ -43,6 +43,7 @@ in-depth so even pre-envelope-merge consumers see the warning.
 
 NO LLM call inside any tool — pure SQLite + Python.
 """
+
 from __future__ import annotations
 
 import logging
@@ -83,6 +84,7 @@ _DISCLAIMER_RECOMMEND_SIMILAR = (
 # ---------------------------------------------------------------------------
 # Vec / source table dispatch
 # ---------------------------------------------------------------------------
+
 
 class _CorpusSpec:
     """Per-corpus wiring for the three vector recommendation tools."""
@@ -136,8 +138,7 @@ _J_SPEC = _CorpusSpec(
     source_table="court_decisions",
     source_pk_col="rowid",
     select_cols=(
-        "rowid AS rowid_int, unified_id, case_name, court, "
-        "decision_date, key_ruling, source_url"
+        "rowid AS rowid_int, unified_id, case_name, court, decision_date, key_ruling, source_url"
     ),
     density_kind="court_decision",
 )
@@ -146,6 +147,7 @@ _J_SPEC = _CorpusSpec(
 # ---------------------------------------------------------------------------
 # DB helpers
 # ---------------------------------------------------------------------------
+
 
 def _ensure_vec_loaded(conn: sqlite3.Connection) -> bool:
     """Best-effort load sqlite-vec extension on `conn`.
@@ -162,7 +164,9 @@ def _ensure_vec_loaded(conn: sqlite3.Connection) -> bool:
     """
     try:
         # Probe for vec0 module.
-        conn.execute("SELECT 1 FROM sqlite_master WHERE name = 'am_entities_vec_S' LIMIT 1").fetchone()
+        conn.execute(
+            "SELECT 1 FROM sqlite_master WHERE name = 'am_entities_vec_S' LIMIT 1"
+        ).fetchone()
         # Trivial vec0-using SELECT to detect "no such module: vec0".
         conn.execute("SELECT entity_id FROM am_entities_vec_S LIMIT 0").fetchone()
         return True
@@ -173,6 +177,7 @@ def _ensure_vec_loaded(conn: sqlite3.Connection) -> bool:
     # /opt/vec0.so baked in).
     try:
         import sqlite_vec  # type: ignore
+
         conn.enable_load_extension(True)
         sqlite_vec.load(conn)
         conn.enable_load_extension(False)
@@ -247,6 +252,7 @@ def _serialize_f32(blob: bytes) -> bytes:
 # ---------------------------------------------------------------------------
 # Seed resolution
 # ---------------------------------------------------------------------------
+
 
 def _resolve_program_seed(seed: str | int) -> int | None:
     """Resolve a program identifier (UNI-... / canonical_id / rowid) to rowid.
@@ -336,8 +342,11 @@ def _resolve_court_seed(seed: str | int) -> int | None:
 # kNN core
 # ---------------------------------------------------------------------------
 
+
 def _fetch_seed_embedding(
-    conn: sqlite3.Connection, vec_table: str, entity_id: int,
+    conn: sqlite3.Connection,
+    vec_table: str,
+    entity_id: int,
 ) -> bytes | None:
     """Read the seed embedding from vec_<tier> by entity_id (= jpintel rowid)."""
     try:
@@ -386,8 +395,10 @@ def _knn(
 # Density-score lookup (W22-9)
 # ---------------------------------------------------------------------------
 
+
 def _density_for_program_unified_ids(
-    am_conn: sqlite3.Connection, unified_ids: list[str],
+    am_conn: sqlite3.Connection,
+    unified_ids: list[str],
 ) -> dict[str, float]:
     """Return {unified_id: density_score} from am_entity_density_score.
 
@@ -427,6 +438,7 @@ def _density_for_program_unified_ids(
 # Source-row resolution
 # ---------------------------------------------------------------------------
 
+
 def _resolve_rows(
     jp_conn: sqlite3.Connection,
     spec: _CorpusSpec,
@@ -436,10 +448,7 @@ def _resolve_rows(
     if not rowids:
         return {}
     placeholders = ",".join("?" * len(rowids))
-    sql = (
-        f"SELECT {spec.select_cols} FROM {spec.source_table} "
-        f"WHERE rowid IN ({placeholders})"
-    )
+    sql = f"SELECT {spec.select_cols} FROM {spec.source_table} WHERE rowid IN ({placeholders})"
     try:
         cur = jp_conn.execute(sql, tuple(rowids))
         return {int(r["rowid_int"]): dict(r) for r in cur.fetchall()}
@@ -451,6 +460,7 @@ def _resolve_rows(
 # ---------------------------------------------------------------------------
 # Composite ranking
 # ---------------------------------------------------------------------------
+
 
 def _compose_score(distance: float, verification_count: int, density_score: float) -> float:
     """Composite re-rank score (higher = better).
@@ -476,8 +486,10 @@ def _compose_score(distance: float, verification_count: int, density_score: floa
 # Impl: recommend_similar_program
 # ---------------------------------------------------------------------------
 
+
 def _recommend_similar_program_impl(
-    program_id: str | int, k: int = 10,
+    program_id: str | int,
+    k: int = 10,
 ) -> dict[str, Any]:
     """k-NN over vec_S, rerank by verification_count + density_score."""
     if program_id is None or program_id == "":
@@ -491,7 +503,9 @@ def _recommend_similar_program_impl(
     rowid = _resolve_program_seed(program_id)
     if rowid is None:
         return _empty_envelope(
-            seed_id=program_id, k=k, reason="seed_program_not_found",
+            seed_id=program_id,
+            k=k,
+            reason="seed_program_not_found",
         )
 
     am = _open_autonomath()
@@ -500,7 +514,8 @@ def _recommend_similar_program_impl(
 
     if not _table_exists(am, _S_SPEC.vec_table):
         return _empty_envelope(
-            seed_id=program_id, k=k,
+            seed_id=program_id,
+            k=k,
             reason="vec_table_missing",
             extra={"vec_table": _S_SPEC.vec_table},
         )
@@ -508,7 +523,9 @@ def _recommend_similar_program_impl(
     seed_emb = _fetch_seed_embedding(am, _S_SPEC.vec_table, rowid)
     if seed_emb is None:
         return _empty_envelope(
-            seed_id=program_id, k=k, reason="seed_embedding_missing",
+            seed_id=program_id,
+            k=k,
+            reason="seed_embedding_missing",
             extra={"rowid": rowid},
         )
 
@@ -535,8 +552,7 @@ def _recommend_similar_program_impl(
             pass
 
     unified_ids = [
-        rows[eid]["unified_id"] for eid in rowids
-        if eid in rows and rows[eid].get("unified_id")
+        rows[eid]["unified_id"] for eid in rowids if eid in rows and rows[eid].get("unified_id")
     ]
     density = _density_for_program_unified_ids(am, unified_ids)
 
@@ -549,42 +565,48 @@ def _recommend_similar_program_impl(
         ds = density.get(uni, 0.0) if uni else 0.0
         vc = int(row.get("verification_count") or 0)
         score = _compose_score(dist, vc, ds)
-        ranked.append({
-            "program_id": uni,
-            "primary_name": row.get("primary_name"),
-            "tier": row.get("tier"),
-            "prefecture": row.get("prefecture"),
-            "authority_name": row.get("authority_name"),
-            "program_kind": row.get("program_kind"),
-            "source_url": row.get("source_url"),
-            "distance": round(dist, 6),
-            "similarity": round(1.0 - dist, 6),
-            "verification_count": vc,
-            "density_score": round(ds, 6),
-            "score": round(score, 6),
-        })
+        ranked.append(
+            {
+                "program_id": uni,
+                "primary_name": row.get("primary_name"),
+                "tier": row.get("tier"),
+                "prefecture": row.get("prefecture"),
+                "authority_name": row.get("authority_name"),
+                "program_kind": row.get("program_kind"),
+                "source_url": row.get("source_url"),
+                "distance": round(dist, 6),
+                "similarity": round(1.0 - dist, 6),
+                "verification_count": vc,
+                "density_score": round(ds, 6),
+                "score": round(score, 6),
+            }
+        )
     # Final ordering: composite score descending.
     ranked.sort(key=lambda r: r["score"], reverse=True)
 
-    return _finalize({
-        "seed_program_id": program_id,
-        "seed_rowid": rowid,
-        "k": k,
-        "results": ranked,
-        "total": len(ranked),
-        "limit": k,
-        "offset": 0,
-        "_billing_unit": 1,
-        "_disclaimer": _DISCLAIMER_RECOMMEND_SIMILAR,
-    })
+    return _finalize(
+        {
+            "seed_program_id": program_id,
+            "seed_rowid": rowid,
+            "k": k,
+            "results": ranked,
+            "total": len(ranked),
+            "limit": k,
+            "offset": 0,
+            "_billing_unit": 1,
+            "_disclaimer": _DISCLAIMER_RECOMMEND_SIMILAR,
+        }
+    )
 
 
 # ---------------------------------------------------------------------------
 # Impl: recommend_similar_case
 # ---------------------------------------------------------------------------
 
+
 def _recommend_similar_case_impl(
-    case_id: str | int, k: int = 10,
+    case_id: str | int,
+    k: int = 10,
 ) -> dict[str, Any]:
     """k-NN over vec_C (case_studies). No verification_count column —
     case_studies don't carry one — density_score still applied via
@@ -609,7 +631,8 @@ def _recommend_similar_case_impl(
 
     if not _table_exists(am, _C_SPEC.vec_table):
         return _empty_envelope(
-            seed_id=case_id, k=k,
+            seed_id=case_id,
+            k=k,
             reason="vec_table_missing",
             extra={"vec_table": _C_SPEC.vec_table},
         )
@@ -617,7 +640,9 @@ def _recommend_similar_case_impl(
     seed_emb = _fetch_seed_embedding(am, _C_SPEC.vec_table, rowid)
     if seed_emb is None:
         return _empty_envelope(
-            seed_id=case_id, k=k, reason="seed_embedding_missing",
+            seed_id=case_id,
+            k=k,
+            reason="seed_embedding_missing",
             extra={"rowid": rowid},
         )
 
@@ -649,41 +674,47 @@ def _recommend_similar_case_impl(
             continue
         # Density not currently keyed for case_study record_kind; default 0.
         score = _compose_score(dist, 0, 0.0)
-        ranked.append({
-            "case_id": row.get("case_id"),
-            "case_title": row.get("case_title"),
-            "case_summary": row.get("case_summary"),
-            "company_name": row.get("company_name"),
-            "prefecture": row.get("prefecture"),
-            "industry_jsic": row.get("industry_jsic"),
-            "source_url": row.get("source_url"),
-            "distance": round(dist, 6),
-            "similarity": round(1.0 - dist, 6),
-            "verification_count": 0,
-            "density_score": 0.0,
-            "score": round(score, 6),
-        })
+        ranked.append(
+            {
+                "case_id": row.get("case_id"),
+                "case_title": row.get("case_title"),
+                "case_summary": row.get("case_summary"),
+                "company_name": row.get("company_name"),
+                "prefecture": row.get("prefecture"),
+                "industry_jsic": row.get("industry_jsic"),
+                "source_url": row.get("source_url"),
+                "distance": round(dist, 6),
+                "similarity": round(1.0 - dist, 6),
+                "verification_count": 0,
+                "density_score": 0.0,
+                "score": round(score, 6),
+            }
+        )
     ranked.sort(key=lambda r: r["score"], reverse=True)
 
-    return _finalize({
-        "seed_case_id": case_id,
-        "seed_rowid": rowid,
-        "k": k,
-        "results": ranked,
-        "total": len(ranked),
-        "limit": k,
-        "offset": 0,
-        "_billing_unit": 1,
-        "_disclaimer": _DISCLAIMER_RECOMMEND_SIMILAR,
-    })
+    return _finalize(
+        {
+            "seed_case_id": case_id,
+            "seed_rowid": rowid,
+            "k": k,
+            "results": ranked,
+            "total": len(ranked),
+            "limit": k,
+            "offset": 0,
+            "_billing_unit": 1,
+            "_disclaimer": _DISCLAIMER_RECOMMEND_SIMILAR,
+        }
+    )
 
 
 # ---------------------------------------------------------------------------
 # Impl: recommend_similar_court_decision
 # ---------------------------------------------------------------------------
 
+
 def _recommend_similar_court_decision_impl(
-    case_id: str | int, k: int = 10,
+    case_id: str | int,
+    k: int = 10,
 ) -> dict[str, Any]:
     """k-NN over vec_J (court_decisions)."""
     if case_id is None or case_id == "":
@@ -704,7 +735,8 @@ def _recommend_similar_court_decision_impl(
 
     if not _table_exists(am, _J_SPEC.vec_table):
         return _empty_envelope(
-            seed_id=case_id, k=k,
+            seed_id=case_id,
+            k=k,
             reason="vec_table_missing",
             extra={"vec_table": _J_SPEC.vec_table},
         )
@@ -712,7 +744,9 @@ def _recommend_similar_court_decision_impl(
     seed_emb = _fetch_seed_embedding(am, _J_SPEC.vec_table, rowid)
     if seed_emb is None:
         return _empty_envelope(
-            seed_id=case_id, k=k, reason="seed_embedding_missing",
+            seed_id=case_id,
+            k=k,
+            reason="seed_embedding_missing",
             extra={"rowid": rowid},
         )
 
@@ -743,40 +777,48 @@ def _recommend_similar_court_decision_impl(
         if not row:
             continue
         score = _compose_score(dist, 0, 0.0)
-        ranked.append({
-            "case_id": row.get("unified_id"),
-            "case_name": row.get("case_name"),
-            "court_name": row.get("court"),
-            "decision_date": row.get("decision_date"),
-            "key_ruling": row.get("key_ruling"),
-            "source_url": row.get("source_url"),
-            "distance": round(dist, 6),
-            "similarity": round(1.0 - dist, 6),
-            "verification_count": 0,
-            "density_score": 0.0,
-            "score": round(score, 6),
-        })
+        ranked.append(
+            {
+                "case_id": row.get("unified_id"),
+                "case_name": row.get("case_name"),
+                "court_name": row.get("court"),
+                "decision_date": row.get("decision_date"),
+                "key_ruling": row.get("key_ruling"),
+                "source_url": row.get("source_url"),
+                "distance": round(dist, 6),
+                "similarity": round(1.0 - dist, 6),
+                "verification_count": 0,
+                "density_score": 0.0,
+                "score": round(score, 6),
+            }
+        )
     ranked.sort(key=lambda r: r["score"], reverse=True)
 
-    return _finalize({
-        "seed_case_id": case_id,
-        "seed_rowid": rowid,
-        "k": k,
-        "results": ranked,
-        "total": len(ranked),
-        "limit": k,
-        "offset": 0,
-        "_billing_unit": 1,
-        "_disclaimer": _DISCLAIMER_RECOMMEND_SIMILAR,
-    })
+    return _finalize(
+        {
+            "seed_case_id": case_id,
+            "seed_rowid": rowid,
+            "k": k,
+            "results": ranked,
+            "total": len(ranked),
+            "limit": k,
+            "offset": 0,
+            "_billing_unit": 1,
+            "_disclaimer": _DISCLAIMER_RECOMMEND_SIMILAR,
+        }
+    )
 
 
 # ---------------------------------------------------------------------------
 # Empty / finalize helpers
 # ---------------------------------------------------------------------------
 
+
 def _empty_envelope(
-    *, seed_id: Any, k: int, reason: str,
+    *,
+    seed_id: Any,
+    k: int,
+    reason: str,
     extra: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     body: dict[str, Any] = {
@@ -811,7 +853,9 @@ if _ENABLED and settings.autonomath_enabled:
     def recommend_similar_program(
         program_id: Annotated[
             str,
-            Field(description="Seed program id — accepts UNI-... unified_id, program:... canonical_id, or rowid."),
+            Field(
+                description="Seed program id — accepts UNI-... unified_id, program:... canonical_id, or rowid."
+            ),
         ],
         k: Annotated[
             int,

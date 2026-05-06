@@ -42,6 +42,7 @@ The 5 cohort labels match the AutonoMath audience pillars:
   - developer
 Anything else falls into "other".
 """
+
 from __future__ import annotations
 
 from functools import lru_cache
@@ -58,7 +59,9 @@ def _beta_dist():
     subsequent calls hit the lru_cache and are free.
     """
     from scipy.stats import beta as beta_dist
+
     return beta_dist
+
 
 # Flat prior — see module docstring.
 PRIOR_ALPHA: float = 1.0
@@ -191,18 +194,14 @@ def discovery_confidence(query_log: list[dict[str, Any]]) -> dict[str, Any]:
     per_tool: list[dict[str, Any]] = []
     for tool in sorted(by_tool):
         agg = by_tool[tool]
-        a, b = beta_posterior(
-            PRIOR_ALPHA, PRIOR_BETA, agg["hits"], agg["trials"]
-        )
+        a, b = beta_posterior(PRIOR_ALPHA, PRIOR_BETA, agg["hits"], agg["trials"])
         lo, hi = confidence_interval_95(a, b)
         cohorts: dict[str, dict[str, Any]] = {}
         for cohort in KNOWN_COHORTS:
             cagg = by_tool_cohort.get((tool, cohort))
             if not cagg or cagg["trials"] == 0:
                 continue
-            ca, cb = beta_posterior(
-                PRIOR_ALPHA, PRIOR_BETA, cagg["hits"], cagg["trials"]
-            )
+            ca, cb = beta_posterior(PRIOR_ALPHA, PRIOR_BETA, cagg["hits"], cagg["trials"])
             clo, chi = confidence_interval_95(ca, cb)
             cohorts[cohort] = {
                 "hits": cagg["hits"],
@@ -224,9 +223,7 @@ def discovery_confidence(query_log: list[dict[str, Any]]) -> dict[str, Any]:
         )
 
     if total_trials > 0:
-        oa, ob = beta_posterior(
-            PRIOR_ALPHA, PRIOR_BETA, total_hits, total_trials
-        )
+        oa, ob = beta_posterior(PRIOR_ALPHA, PRIOR_BETA, total_hits, total_trials)
         ovr_lo, ovr_hi = confidence_interval_95(oa, ob)
         overall = {
             "hits": total_hits,
@@ -293,14 +290,10 @@ def use_confidence(usage_events: list[dict[str, Any]]) -> dict[str, Any]:
         bag = by_tool.setdefault(tool, {"hits": 0, "trials": 0})
         bag["trials"] += 1
         cohort = cohort_of[(_kh, tool)]
-        cbag = by_tool_cohort.setdefault(
-            (tool, cohort), {"hits": 0, "trials": 0}
-        )
+        cbag = by_tool_cohort.setdefault((tool, cohort), {"hits": 0, "trials": 0})
         cbag["trials"] += 1
         # "Returned within window" = any subsequent event whose dt fits.
-        returned = any(
-            0 < (t - t0) <= USE_RETURN_WINDOW_SECONDS for t in times[1:]
-        )
+        returned = any(0 < (t - t0) <= USE_RETURN_WINDOW_SECONDS for t in times[1:])
         if returned:
             bag["hits"] += 1
             cbag["hits"] += 1
@@ -310,18 +303,14 @@ def use_confidence(usage_events: list[dict[str, Any]]) -> dict[str, Any]:
     per_tool: list[dict[str, Any]] = []
     for tool in sorted(by_tool):
         agg = by_tool[tool]
-        a, b = beta_posterior(
-            PRIOR_ALPHA, PRIOR_BETA, agg["hits"], agg["trials"]
-        )
+        a, b = beta_posterior(PRIOR_ALPHA, PRIOR_BETA, agg["hits"], agg["trials"])
         lo, hi = confidence_interval_95(a, b)
         cohorts: dict[str, dict[str, Any]] = {}
         for cohort in KNOWN_COHORTS:
             cagg = by_tool_cohort.get((tool, cohort))
             if not cagg or cagg["trials"] == 0:
                 continue
-            ca, cb = beta_posterior(
-                PRIOR_ALPHA, PRIOR_BETA, cagg["hits"], cagg["trials"]
-            )
+            ca, cb = beta_posterior(PRIOR_ALPHA, PRIOR_BETA, cagg["hits"], cagg["trials"])
             clo, chi = confidence_interval_95(ca, cb)
             cohorts[cohort] = {
                 "hits": cagg["hits"],
@@ -343,9 +332,7 @@ def use_confidence(usage_events: list[dict[str, Any]]) -> dict[str, Any]:
         )
 
     if total_trials > 0:
-        oa, ob = beta_posterior(
-            PRIOR_ALPHA, PRIOR_BETA, total_hits, total_trials
-        )
+        oa, ob = beta_posterior(PRIOR_ALPHA, PRIOR_BETA, total_hits, total_trials)
         ovr_lo, ovr_hi = confidence_interval_95(oa, ob)
         overall = {
             "hits": total_hits,
@@ -364,15 +351,14 @@ def use_confidence(usage_events: list[dict[str, Any]]) -> dict[str, Any]:
     return {"per_tool": per_tool, "overall": overall}
 
 
-def overall_confidence(
-    discovery: dict[str, Any], use: dict[str, Any]
-) -> dict[str, Any]:
+def overall_confidence(discovery: dict[str, Any], use: dict[str, Any]) -> dict[str, Any]:
     """Collapse per-tool Discovery + Use to a single weighted scalar each.
 
     Weight = trial count of that tool (so chatty tools dominate the
     headline number, which is what we want — a 100% Discovery on a tool
     that's been called twice should not pull the headline into >90%).
     """
+
     def _weighted(rows: list[dict[str, Any]], key: str) -> float:
         if not rows:
             return _posterior_mean(PRIOR_ALPHA, PRIOR_BETA)
@@ -393,8 +379,6 @@ def overall_confidence(
     return {
         "discovery_weighted": _weighted(disc_rows, "discovery"),
         "use_weighted": _weighted(use_rows, "use"),
-        "discovery_overall": (discovery.get("overall") or {}).get(
-            "discovery"
-        ),
+        "discovery_overall": (discovery.get("overall") or {}).get("discovery"),
         "use_overall": (use.get("overall") or {}).get("use"),
     }

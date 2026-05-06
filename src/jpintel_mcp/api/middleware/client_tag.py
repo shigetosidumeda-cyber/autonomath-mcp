@@ -32,6 +32,7 @@ Failure posture:
   header is silently treated as absent. The middleware is the world's
   cheapest 22-line wrapper — its failure budget is "never block".
 """
+
 from __future__ import annotations
 
 import logging

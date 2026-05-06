@@ -81,14 +81,14 @@ _DISCLAIMER = (
 
 # Status labels (Japanese) for the 8 deterministic states.
 _STATUS_LABEL_JA: dict[str, str] = {
-    "abolished":        "廃止",
-    "superseded":       "後継制度へ移行",
-    "sunset_imminent":  "終了直前 (90日以内)",
+    "abolished": "廃止",
+    "superseded": "後継制度へ移行",
+    "sunset_imminent": "終了直前 (90日以内)",
     "sunset_scheduled": "終了予定",
-    "amended":          "改正済み",
-    "active":           "稼働中",
-    "not_yet":          "開始前",
-    "unknown":          "不明 (metadata 不足)",
+    "amended": "改正済み",
+    "active": "稼働中",
+    "not_yet": "開始前",
+    "unknown": "不明 (metadata 不足)",
 }
 
 # Threshold in days that separates `sunset_imminent` from `sunset_scheduled`.
@@ -300,11 +300,7 @@ def _program_lifecycle_impl(
         )
 
     # 6. active
-    elif (
-        eff_from is not None
-        and eff_from <= as_of
-        and (eff_until is None or eff_until > as_of)
-    ):
+    elif eff_from is not None and eff_from <= as_of and (eff_until is None or eff_until > as_of):
         status = "active"
         confidence = "medium"
         reason = (
@@ -477,12 +473,9 @@ if _ENABLED:
             if target_date is None:
                 return make_error(
                     code="invalid_date_format",
-                    message=(
-                        f"as_of={as_of!r} did not parse as ISO YYYY-MM-DD."
-                    ),
+                    message=(f"as_of={as_of!r} did not parse as ISO YYYY-MM-DD."),
                     hint=(
-                        "Pass YYYY-MM-DD (e.g. '2026-04-25') or omit "
-                        "as_of to default to today JST."
+                        "Pass YYYY-MM-DD (e.g. '2026-04-25') or omit as_of to default to today JST."
                     ),
                     field="as_of",
                 )

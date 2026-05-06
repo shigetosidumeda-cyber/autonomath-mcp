@@ -40,6 +40,7 @@ Solo + zero-touch
 The endpoint is the only operator-free path; manual ops use direct DB
 write through `record_unsubscribe(conn, email, reason='manual-ops')`.
 """
+
 from __future__ import annotations
 
 import contextlib

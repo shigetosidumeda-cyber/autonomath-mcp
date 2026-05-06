@@ -68,7 +68,7 @@ def list_rules(
         "SELECT * FROM exclusion_rules ORDER BY rule_id LIMIT ? OFFSET ?",
         (limit, offset),
     ).fetchall()
-    log_usage(conn, ctx, "exclusions.rules")
+    log_usage(conn, ctx, "exclusions.rules", strict_metering=True)
     return [_row_to_rule(r) for r in rows]
 
 
@@ -161,6 +161,7 @@ def check_exclusions(
         ctx,
         "exclusions.check",
         params={"program_ids": sorted(program_ids)},
+        strict_metering=True,
     )
     return ExclusionCheckResponse(
         program_ids=program_ids,

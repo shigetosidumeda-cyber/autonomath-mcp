@@ -77,10 +77,7 @@ def get_source_manifest(
         return make_error(
             code="missing_required_arg",
             message="program_id is required.",
-            hint=(
-                "Pass either a unified_id (UNI-...) or an "
-                "am_canonical_id (program:...)."
-            ),
+            hint=("Pass either a unified_id (UNI-...) or an am_canonical_id (program:...)."),
             field="program_id",
         )
 
@@ -139,18 +136,18 @@ if __name__ == "__main__":  # pragma: no cover
     sample_canonical = "program:04_program_documents:000000:23_25d25bdfe8"
     print(f"=== get_source_manifest({sample_canonical!r}) ===")
     res = get_source_manifest(program_id=sample_canonical)
-    print(json.dumps(
-        {
-            "program_id": res.get("program_id"),
-            "primary_name": res.get("primary_name"),
-            "primary_source_url": res.get("primary_source_url"),
-            "primary_license": res.get("primary_license"),
-            "fact_provenance_coverage_pct": res.get(
-                "fact_provenance_coverage_pct"
-            ),
-            "summary": res.get("summary"),
-            "fact_provenance_count": len(res.get("fact_provenance", [])),
-        },
-        ensure_ascii=False,
-        indent=2,
-    ))
+    print(
+        json.dumps(
+            {
+                "program_id": res.get("program_id"),
+                "primary_name": res.get("primary_name"),
+                "primary_source_url": res.get("primary_source_url"),
+                "primary_license": res.get("primary_license"),
+                "fact_provenance_coverage_pct": res.get("fact_provenance_coverage_pct"),
+                "summary": res.get("summary"),
+                "fact_provenance_count": len(res.get("fact_provenance", [])),
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )

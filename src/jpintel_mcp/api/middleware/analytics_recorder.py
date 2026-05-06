@@ -38,6 +38,7 @@ Deployment notes:
 * Wired in ``api/main.py`` near ``_QueryTelemetryMiddleware`` so it
   captures the same outermost latency.
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -65,19 +66,21 @@ _log = logging.getLogger("jpintel.analytics_recorder")
 # Paths excluded from analytics recording. Health checks, OpenAPI docs,
 # robots.txt, etc. would dominate the table without adding signal. Mirrors
 # the same exclusion list used by `RateLimitMiddleware`.
-_EXCLUDED_PATHS: frozenset[str] = frozenset({
-    "/healthz",
-    "/readyz",
-    "/status",
-    "/robots.txt",
-    "/openapi.json",
-    "/v1/openapi.json",
-    "/v1/openapi.agent.json",
-    "/v1/funnel/event",
-    "/docs",
-    "/redoc",
-    "/favicon.ico",
-})
+_EXCLUDED_PATHS: frozenset[str] = frozenset(
+    {
+        "/healthz",
+        "/readyz",
+        "/status",
+        "/robots.txt",
+        "/openapi.json",
+        "/v1/openapi.json",
+        "/v1/openapi.agent.json",
+        "/v1/funnel/event",
+        "/docs",
+        "/redoc",
+        "/favicon.ico",
+    }
+)
 
 # §4.6 (jpcite_ai_discovery_paid_adoption_plan_2026-05-04.md) — closed
 # allowlist of distribution-channel `src=` query-param values. Any other
@@ -86,51 +89,53 @@ _EXCLUDED_PATHS: frozenset[str] = frozenset({
 # rollup. Adding a new channel requires landing the corresponding `?src=`
 # token on the distribution surface AND adding it here.
 _ALLOWED_SRC_PREFIXES: tuple[str, ...] = (
-    "cookbook_",       # cookbook_<recipe-slug>
-    "outreach_",       # outreach_<firm>
+    "cookbook_",  # cookbook_<recipe-slug>
+    "outreach_",  # outreach_<firm>
 )
-_ALLOWED_SRC_LITERALS: frozenset[str] = frozenset({
-    "llmstxt",
-    "chatgpt_actions",
-    "gpt_custom",
-    "mcp_registry",
-    "claude_mcp",
-    "cursor_mcp",
-    "cline_mcp",
-    "windsurf_mcp",
-    "continue_mcp",
-    "gemini_extension",
-    "hn_launch",
-    "zenn_intro",
-    "qiita_intro",
-    "github_readme",
-    "smithery",
-    "glama",
-    "pulsemcp",
-    "mcp_marketplace",
-    "awesome_mcp",
-    "audiences",
-    "audiences_dev",
-    "audiences_smb",
-    "audiences_zeirishi",
-    "audiences_kaikeishi",
-    "audiences_subsidy_consultant",
-    "audiences_vc",
-    "audiences_journalist",
-    "audiences_admin_scrivener",
-    "audiences_construction",
-    "audiences_manufacturing",
-    "audiences_real_estate",
-    "audiences_shinkin",
-    "audiences_shokokai",
-    "integrations_index",
-    "integrations_claude_desktop",
-    "integrations_cursor",
-    "integrations_cline",
-    "integrations_continue",
-    "integrations_windsurf",
-    "integrations_gemini",
-})
+_ALLOWED_SRC_LITERALS: frozenset[str] = frozenset(
+    {
+        "llmstxt",
+        "chatgpt_actions",
+        "gpt_custom",
+        "mcp_registry",
+        "claude_mcp",
+        "cursor_mcp",
+        "cline_mcp",
+        "windsurf_mcp",
+        "continue_mcp",
+        "gemini_extension",
+        "hn_launch",
+        "zenn_intro",
+        "qiita_intro",
+        "github_readme",
+        "smithery",
+        "glama",
+        "pulsemcp",
+        "mcp_marketplace",
+        "awesome_mcp",
+        "audiences",
+        "audiences_dev",
+        "audiences_smb",
+        "audiences_zeirishi",
+        "audiences_kaikeishi",
+        "audiences_subsidy_consultant",
+        "audiences_vc",
+        "audiences_journalist",
+        "audiences_admin_scrivener",
+        "audiences_construction",
+        "audiences_manufacturing",
+        "audiences_real_estate",
+        "audiences_shinkin",
+        "audiences_shokokai",
+        "integrations_index",
+        "integrations_claude_desktop",
+        "integrations_cursor",
+        "integrations_cline",
+        "integrations_continue",
+        "integrations_windsurf",
+        "integrations_gemini",
+    }
+)
 # Cap to keep a malicious caller from inserting megabyte-sized strings.
 _MAX_SRC_LEN = 64
 
@@ -325,16 +330,12 @@ class AnalyticsRecorderMiddleware(BaseHTTPMiddleware):
                 # SELECT. `_classify_user_agent` returns labels like
                 # "bot:googlebot", "claude-code", "browser:chrome" — bot
                 # labels are the ones prefixed with "bot:".
-                ua_class = _classify_user_agent(
-                    request.headers.get("user-agent")
-                )
+                ua_class = _classify_user_agent(request.headers.get("user-agent"))
                 is_bot = ua_class.startswith("bot:")
                 # §4.6: distribution-channel attribution. Closed allowlist
                 # validation lives in `_classify_src` so a stray ?src=...
                 # from a scraper / typo never lands in the rollup column.
-                src = _classify_src(
-                    request.query_params.get("src")
-                )
+                src = _classify_src(request.query_params.get("src"))
                 _record_one(
                     ts=datetime.now(UTC).isoformat(),
                     method=request.method,

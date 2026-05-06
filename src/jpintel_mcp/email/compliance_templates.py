@@ -77,6 +77,7 @@ class Change(TypedDict, total=False):
     from AREA_LABELS_JA (the cron assigns this based on which table the
     row came from).
     """
+
     unified_id: str
     table: str
     area: str
@@ -167,7 +168,8 @@ _FOOTER_HTML = """\
 """
 
 
-_ALERT_HTML_TMPL = """\
+_ALERT_HTML_TMPL = (
+    """\
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -207,12 +209,16 @@ _ALERT_HTML_TMPL = """\
     {{ closing }}
   </p>
 
-""" + _FOOTER_HTML + """\
+"""
+    + _FOOTER_HTML
+    + """\
 </body>
 </html>
 """
+)
 
-_ALERT_TEXT_TMPL = """\
+_ALERT_TEXT_TMPL = (
+    """\
 {{ heading }}
 
 {{ lead }}
@@ -232,10 +238,13 @@ _ALERT_TEXT_TMPL = """\
 
 {{ closing }}
 
-""" + _FOOTER_TXT
+"""
+    + _FOOTER_TXT
+)
 
 
-_VERIFY_HTML_TMPL = """\
+_VERIFY_HTML_TMPL = (
+    """\
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -259,12 +268,16 @@ _VERIFY_HTML_TMPL = """\
   <p style="font-size:13px; color:#555; margin:0 0 0;">
     心当たりのない場合はこのメールを破棄してください (何もしなければ登録は完了しません)。
   </p>
-""" + _FOOTER_HTML + """\
+"""
+    + _FOOTER_HTML
+    + """\
 </body>
 </html>
 """
+)
 
-_VERIFY_TEXT_TMPL = """\
+_VERIFY_TEXT_TMPL = (
+    """\
 ご登録ありがとうございます。
 
 AutonoMath 法令改正アラートへのご登録を確認するため、下記 URL を開いてください:
@@ -273,7 +286,9 @@ AutonoMath 法令改正アラートへのご登録を確認するため、下記
 
 心当たりのない場合はこのメールを破棄してください (何もしなければ登録は完了しません)。
 
-""" + _FOOTER_TXT
+"""
+    + _FOOTER_TXT
+)
 
 
 # ---------------------------------------------------------------------------

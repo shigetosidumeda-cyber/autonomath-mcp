@@ -52,8 +52,7 @@ def _get_composer() -> EvidencePacketComposer | None:
             )
         except FileNotFoundError as exc:
             logger.warning(
-                "evidence_packet composer init failed: %s "
-                "(jpintel=%s, autonomath=%s)",
+                "evidence_packet composer init failed: %s (jpintel=%s, autonomath=%s)",
                 exc,
                 settings.db_path,
                 settings.autonomath_db_path,
@@ -195,9 +194,7 @@ if _ENABLED and settings.autonomath_enabled:
         input_token_price_jpy_per_1m: Annotated[
             float | None,
             Field(
-                description=(
-                    "Optional caller's input-token price (JPY per 1M tokens)."
-                ),
+                description=("Optional caller's input-token price (JPY per 1M tokens)."),
             ),
         ] = None,
         packet_profile: Annotated[

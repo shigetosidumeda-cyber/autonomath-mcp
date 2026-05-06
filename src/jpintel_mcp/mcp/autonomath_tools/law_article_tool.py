@@ -14,6 +14,7 @@ Exposes two functions to AutonoMath customer LLMs:
       Keyword search against title || text_summary for articles under the
       given law.  Returns list of envelopes.
 """
+
 from __future__ import annotations
 
 import os
@@ -211,11 +212,15 @@ def get_law_article(law_name_or_canonical_id: str, article_number: str) -> dict:
     """Exact article lookup."""
     if not law_name_or_canonical_id:
         return _missing_arg_envelope(
-            "law_name_or_canonical_id", "", article_number,
+            "law_name_or_canonical_id",
+            "",
+            article_number,
         )
     if not article_number:
         return _missing_arg_envelope(
-            "article_number", law_name_or_canonical_id, None,
+            "article_number",
+            law_name_or_canonical_id,
+            None,
         )
 
     con = sqlite3.connect(DB_PATH)
@@ -330,11 +335,17 @@ if __name__ == "__main__":
     import json
 
     # Quick smoke test when invoked directly.
-    print(json.dumps(
-        get_law_article("租税特別措置法", "第41条の19"),
-        ensure_ascii=False, indent=2,
-    ))
-    print(json.dumps(
-        search_law_articles("中小企業等経営強化法", "経営力向上"),
-        ensure_ascii=False, indent=2,
-    ))
+    print(
+        json.dumps(
+            get_law_article("租税特別措置法", "第41条の19"),
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
+    print(
+        json.dumps(
+            search_law_articles("中小企業等経営強化法", "経営力向上"),
+            ensure_ascii=False,
+            indent=2,
+        )
+    )

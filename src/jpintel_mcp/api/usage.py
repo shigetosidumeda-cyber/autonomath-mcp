@@ -22,6 +22,7 @@ Posture:
     ``settings.rate_limit_free_per_day`` as ``limit`` and reset_at
     next UTC midnight.
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -73,35 +74,38 @@ def _utc_next_month_iso(now: datetime | None = None) -> str:
     now = (now or datetime.now(UTC)).astimezone(UTC)
     if now.month == 12:
         nxt = now.replace(
-            year=now.year + 1, month=1, day=1,
-            hour=0, minute=0, second=0, microsecond=0,
+            year=now.year + 1,
+            month=1,
+            day=1,
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0,
         )
     else:
         nxt = now.replace(
-            month=now.month + 1, day=1,
-            hour=0, minute=0, second=0, microsecond=0,
+            month=now.month + 1,
+            day=1,
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0,
         )
     return nxt.isoformat()
 
 
 def _utc_next_midnight_iso(now: datetime | None = None) -> str:
     now = (now or datetime.now(UTC)).astimezone(UTC)
-    tomorrow = (now + timedelta(days=1)).replace(
-        hour=0, minute=0, second=0, microsecond=0
-    )
+    tomorrow = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
     return tomorrow.isoformat()
 
 
 def _utc_month_start_iso() -> str:
     now = datetime.now(UTC)
-    return now.replace(
-        day=1, hour=0, minute=0, second=0, microsecond=0
-    ).isoformat()
+    return now.replace(day=1, hour=0, minute=0, second=0, microsecond=0).isoformat()
 
 
-def _anonymous_status(
-    request: Request, conn: sqlite3.Connection
-) -> dict[str, Any]:
+def _anonymous_status(request: Request, conn: sqlite3.Connection) -> dict[str, Any]:
     """READ-ONLY anon quota lookup — never increments the counter.
 
     Same hashing logic (`hash_ip` with request) as the live enforce path,
@@ -116,8 +120,7 @@ def _anonymous_status(
     used = 0
     try:
         row = conn.execute(
-            "SELECT call_count FROM anon_rate_limit "
-            "WHERE ip_hash = ? AND date = ?",
+            "SELECT call_count FROM anon_rate_limit WHERE ip_hash = ? AND date = ?",
             (ip_h, day_bucket),
         ).fetchone()
     except sqlite3.OperationalError:
@@ -144,9 +147,7 @@ def _anonymous_status(
     }
 
 
-def _paid_status(
-    conn: sqlite3.Connection, key_hash: str
-) -> dict[str, Any]:
+def _paid_status(conn: sqlite3.Connection, key_hash: str) -> dict[str, Any]:
     """Metered ("paid") tier — month-to-date billed units, no upper cap."""
     (used,) = conn.execute(
         "SELECT COALESCE(SUM(COALESCE(quantity, 1)), 0) FROM usage_events "
@@ -170,9 +171,7 @@ def _paid_status(
     }
 
 
-def _free_authed_status(
-    conn: sqlite3.Connection, key_hash: str
-) -> dict[str, Any]:
+def _free_authed_status(conn: sqlite3.Connection, key_hash: str) -> dict[str, Any]:
     """Dunning-demote tier — daily cap, UTC midnight reset."""
     daily_limit = settings.rate_limit_free_per_day
     bucket = datetime.now(UTC).strftime("%Y-%m-%d")

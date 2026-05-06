@@ -49,12 +49,9 @@ def _validate_era_year(era: _Era, era_year: int) -> int:
     if era_year < 1:
         raise ValueError(f"era year must be >= 1, got {era_year}")
     gregorian = era.start.year + era_year - 1
-    last_year = (era.end.year if era.end else datetime.date.today().year + 50)
+    last_year = era.end.year if era.end else datetime.date.today().year + 50
     if gregorian > last_year:
-        raise ValueError(
-            f"{era.kanji}{era_year}年 is out of range "
-            f"({era.kanji} ended {era.end})"
-        )
+        raise ValueError(f"{era.kanji}{era_year}年 is out of range ({era.kanji} ended {era.end})")
     return gregorian
 
 
@@ -92,8 +89,7 @@ def parse_wareki_date(s: str) -> datetime.date:
         raise ValueError(f"invalid date {s!r}: {exc}") from exc
     if d < era.start or (era.end is not None and d > era.end):
         raise ValueError(
-            f"{s!r} resolves to {d} which is outside {era.kanji} "
-            f"({era.start}..{era.end})"
+            f"{s!r} resolves to {d} which is outside {era.kanji} ({era.start}..{era.end})"
         )
     return d
 

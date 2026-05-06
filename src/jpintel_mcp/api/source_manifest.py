@@ -785,5 +785,6 @@ def get_source_manifest(
         "source_manifest.get",
         latency_ms=_latency_ms,
         params={"program_id": program_id},
+        strict_metering=True,
     )
     return JSONResponse(content=body)

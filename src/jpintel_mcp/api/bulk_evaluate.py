@@ -43,6 +43,7 @@ Constraints:
     * Returns ZIP containing N CSVs + a manifest.json so the consultant
       can post-process programmatically.
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -154,9 +155,7 @@ def _parse_csv_rows(raw_bytes: bytes) -> list[dict[str, Any]]:
     text = _decode_csv(raw_bytes)
     reader = csv.DictReader(io.StringIO(text))
     if reader.fieldnames is None:
-        raise HTTPException(
-            status.HTTP_400_BAD_REQUEST, "csv has no header row"
-        )
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "csv has no header row")
     headers = {h.strip() for h in reader.fieldnames if h}
     missing = [h for h in _CSV_REQUIRED if h not in headers]
     if missing:
@@ -265,16 +264,18 @@ def _evaluate_one_client(
             reasons.append("curated_tier")
         if score <= 0:
             continue
-        scored.append({
-            "program_id": r["unified_id"],
-            "primary_name": r["primary_name"],
-            "tier": r["tier"],
-            "prefecture": program_pref,
-            "program_kind": r["program_kind"],
-            "fit_score": round(score, 2),
-            "reasons": ";".join(reasons),
-            "amount_max_man_yen": r["amount_max_man_yen"],
-        })
+        scored.append(
+            {
+                "program_id": r["unified_id"],
+                "primary_name": r["primary_name"],
+                "tier": r["tier"],
+                "prefecture": program_pref,
+                "program_kind": r["program_kind"],
+                "fit_score": round(score, 2),
+                "reasons": ";".join(reasons),
+                "amount_max_man_yen": r["amount_max_man_yen"],
+            }
+        )
     scored.sort(key=lambda m: m["fit_score"], reverse=True)
     return scored[:_PER_CLIENT_RESULT_CAP]
 
@@ -307,23 +308,39 @@ def _build_zip(
                 csv_name = f"{safe_label}_{len(existing)}.csv"
             buf_csv = io.StringIO()
             writer = csv.writer(buf_csv)
-            writer.writerow([
-                "program_id", "primary_name", "tier", "prefecture",
-                "program_kind", "fit_score", "reasons", "amount_max_man_yen",
-            ])
+            writer.writerow(
+                [
+                    "program_id",
+                    "primary_name",
+                    "tier",
+                    "prefecture",
+                    "program_kind",
+                    "fit_score",
+                    "reasons",
+                    "amount_max_man_yen",
+                ]
+            )
             for m in matches:
-                writer.writerow([
-                    m["program_id"], m["primary_name"], m["tier"],
-                    m["prefecture"] or "", m["program_kind"] or "",
-                    m["fit_score"], m["reasons"],
-                    m["amount_max_man_yen"] or "",
-                ])
+                writer.writerow(
+                    [
+                        m["program_id"],
+                        m["primary_name"],
+                        m["tier"],
+                        m["prefecture"] or "",
+                        m["program_kind"] or "",
+                        m["fit_score"],
+                        m["reasons"],
+                        m["amount_max_man_yen"] or "",
+                    ]
+                )
             zf.writestr(csv_name, buf_csv.getvalue())
-            manifest["files"].append({
-                "filename": csv_name,
-                "name_label": label,
-                "match_count": len(matches),
-            })
+            manifest["files"].append(
+                {
+                    "filename": csv_name,
+                    "name_label": label,
+                    "match_count": len(matches),
+                }
+            )
         zf.writestr(
             "manifest.json",
             json.dumps(manifest, ensure_ascii=False, indent=2),
@@ -341,9 +358,7 @@ def _zip_stream_response(
 ) -> StreamingResponse:
     filename_hash = hashlib.sha256(idem_key.encode("utf-8")).hexdigest()[:16]
     headers = {
-        "Content-Disposition": (
-            f"attachment; filename=bulk_evaluate_{filename_hash}.zip"
-        ),
+        "Content-Disposition": (f"attachment; filename=bulk_evaluate_{filename_hash}.zip"),
     }
     if replay:
         headers["X-Idempotent-Replay"] = "1"
@@ -429,10 +444,7 @@ def _check_commit_cost_cap(raw_header: str | None, predicted_yen: int) -> None:
             status.HTTP_402_PAYMENT_REQUIRED,
             {
                 "code": "cost_cap_exceeded",
-                "message": (
-                    f"Predicted cost ¥{predicted_yen} exceeds "
-                    f"X-Cost-Cap-JPY ¥{cap_yen}."
-                ),
+                "message": (f"Predicted cost ¥{predicted_yen} exceeds X-Cost-Cap-JPY ¥{cap_yen}."),
                 "predicted_yen": predicted_yen,
                 "cost_cap_yen": cap_yen,
                 "unit_price_yen": PRICE_PER_ROW_YEN,
@@ -440,9 +452,7 @@ def _check_commit_cost_cap(raw_header: str | None, predicted_yen: int) -> None:
         )
 
 
-def _idem_lookup(
-    conn: Any, key_hash: str, idem_key: str
-) -> dict[str, Any] | None:
+def _idem_lookup(conn: Any, key_hash: str, idem_key: str) -> dict[str, Any] | None:
     """Return the cached payload for (key_hash, idem_key), or None.
 
     Uses the migration-087 schema (cache_key, response_blob, expires_at).
@@ -452,8 +462,7 @@ def _idem_lookup(
     cache_key = _idem_cache_key(key_hash, idem_key)
     try:
         row = conn.execute(
-            "SELECT response_blob, expires_at FROM am_idempotency_cache "
-            "WHERE cache_key = ?",
+            "SELECT response_blob, expires_at FROM am_idempotency_cache WHERE cache_key = ?",
             (cache_key,),
         ).fetchone()
     except Exception:  # noqa: BLE001 — table may not exist in old test DBs
@@ -469,9 +478,7 @@ def _idem_lookup(
     if not blob or not expires_at:
         return None
     try:
-        if datetime.fromisoformat(
-            str(expires_at).replace("Z", "+00:00")
-        ) <= datetime.now(UTC):
+        if datetime.fromisoformat(str(expires_at).replace("Z", "+00:00")) <= datetime.now(UTC):
             with contextlib.suppress(Exception):
                 conn.execute(
                     "DELETE FROM am_idempotency_cache WHERE cache_key = ?",
@@ -521,9 +528,7 @@ def _idem_reserve_payload(
 ) -> bool:
     """Durably bind an idempotency key to one payload before billing."""
     cache_key = _idem_cache_key(key_hash, idem_key)
-    expires_at = (
-        datetime.now(UTC) + timedelta(hours=_BULK_EVAL_CACHE_TTL_HOURS)
-    ).isoformat()
+    expires_at = (datetime.now(UTC) + timedelta(hours=_BULK_EVAL_CACHE_TTL_HOURS)).isoformat()
     created_at = datetime.now(UTC).isoformat()
     payload = {
         "payload_signature": payload_signature,
@@ -552,7 +557,8 @@ def _idem_reserve_payload(
     except Exception as exc:  # noqa: BLE001
         logger.warning(
             "idem cache reserve failed key_hash=%s idem=%s",
-            key_hash[:8] if key_hash else None, idem_key,
+            key_hash[:8] if key_hash else None,
+            idem_key,
         )
         raise HTTPException(
             status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -566,9 +572,7 @@ def _idem_reserve_payload(
         ) from exc
 
 
-def _idem_store(
-    conn: Any, key_hash: str, idem_key: str, payload: dict[str, Any]
-) -> None:
+def _idem_store(conn: Any, key_hash: str, idem_key: str, payload: dict[str, Any]) -> None:
     """Persist the response payload under the migration-087 schema.
 
     Failure is non-fatal: when the table does not yet exist (old test DB)
@@ -576,9 +580,7 @@ def _idem_store(
     and re-runs the evaluation.
     """
     cache_key = _idem_cache_key(key_hash, idem_key)
-    expires_at = (
-        datetime.now(UTC) + timedelta(hours=_BULK_EVAL_CACHE_TTL_HOURS)
-    ).isoformat()
+    expires_at = (datetime.now(UTC) + timedelta(hours=_BULK_EVAL_CACHE_TTL_HOURS)).isoformat()
     created_at = datetime.now(UTC).isoformat()
     try:
         conn.execute(
@@ -595,7 +597,8 @@ def _idem_store(
     except Exception:  # noqa: BLE001 — non-fatal
         logger.warning(
             "idem cache store failed key_hash=%s idem=%s",
-            key_hash[:8] if key_hash else None, idem_key,
+            key_hash[:8] if key_hash else None,
+            idem_key,
         )
 
 
@@ -613,9 +616,7 @@ async def bulk_evaluate_clients(
     program_filter: Annotated[str, Form()] = "all",
     idempotency_key: Annotated[str | None, Form()] = None,
     x_cost_cap_jpy: Annotated[str | None, Header(alias="X-Cost-Cap-JPY")] = None,
-    idempotency_key_header: Annotated[
-        str | None, Header(alias="Idempotency-Key")
-    ] = None,
+    idempotency_key_header: Annotated[str | None, Header(alias="Idempotency-Key")] = None,
 ) -> Any:
     """Pre-evaluate program eligibility for ALL clients in a CSV batch.
 
@@ -656,17 +657,19 @@ async def bulk_evaluate_clients(
 
     if not commit:
         # Cost preview path. FREE — no usage_event, no Stripe report.
-        return JSONResponse({
-            "preview": True,
-            "row_count": n,
-            "estimated_yen": PRICE_PER_ROW_YEN * n,
-            "program_filter": program_filter,
-            "next_step": (
-                "POST again with commit=true and idempotency_key=<uuid> "
-                "and X-Cost-Cap-JPY>=estimated_yen to actually evaluate "
-                "and bill."
-            ),
-        })
+        return JSONResponse(
+            {
+                "preview": True,
+                "row_count": n,
+                "estimated_yen": PRICE_PER_ROW_YEN * n,
+                "program_filter": program_filter,
+                "next_step": (
+                    "POST again with commit=true and idempotency_key=<uuid> "
+                    "and X-Cost-Cap-JPY>=estimated_yen to actually evaluate "
+                    "and bill."
+                ),
+            }
+        )
 
     require_metered_api_key(ctx, "bulk_evaluate commit")
 
@@ -688,8 +691,7 @@ async def bulk_evaluate_clients(
     if not idem_key:
         raise HTTPException(
             status.HTTP_400_BAD_REQUEST,
-            "idempotency_key form field or Idempotency-Key header is "
-            "required when commit=true",
+            "idempotency_key form field or Idempotency-Key header is required when commit=true",
         )
     billing_key = f"{ENDPOINT_LABEL}:{ctx.key_hash}:{idem_key}"
     already_billed_retry = False
@@ -715,16 +717,12 @@ async def bulk_evaluate_clients(
             try:
                 cached_rows = cached.get("rows", [])
                 cached_results = cached.get("results", [])
-                cached_ts = cached.get(
-                    "generated_at", datetime.now(UTC).isoformat()
-                )
+                cached_ts = cached.get("generated_at", datetime.now(UTC).isoformat())
                 zip_bytes = _build_zip(cached_rows, cached_results, cached_ts)
                 return _zip_stream_response(zip_bytes, idem_key, replay=True)
             except Exception:  # noqa: BLE001
                 logger.warning("idem replay failed; falling through to live eval")
-        already_billed_retry = _billing_idempotency_key_was_used(
-            conn, ctx.key_hash, billing_key
-        )
+        already_billed_retry = _billing_idempotency_key_was_used(conn, ctx.key_hash, billing_key)
     else:
         if _billing_idempotency_key_was_used(conn, ctx.key_hash, billing_key):
             raise HTTPException(
@@ -773,9 +771,7 @@ async def bulk_evaluate_clients(
             if "rows" in cached and "results" in cached:
                 cached_rows = cached.get("rows", [])
                 cached_results = cached.get("results", [])
-                cached_ts = cached.get(
-                    "generated_at", datetime.now(UTC).isoformat()
-                )
+                cached_ts = cached.get("generated_at", datetime.now(UTC).isoformat())
                 zip_bytes = _build_zip(cached_rows, cached_results, cached_ts)
                 return _zip_stream_response(zip_bytes, idem_key, replay=True)
 
@@ -836,9 +832,7 @@ async def bulk_evaluate_clients(
             billing_event_index.reset(billing_event_token)
             billing_idempotency_key.reset(billing_key_token)
         if not _billing_idempotency_key_was_used(conn, ctx.key_hash, billing_key):
-            logger.warning(
-                "bulk_evaluate billing row not recorded after log_usage"
-            )
+            logger.warning("bulk_evaluate billing row not recorded after log_usage")
             raise HTTPException(
                 status.HTTP_503_SERVICE_UNAVAILABLE,
                 {
@@ -855,7 +849,9 @@ async def bulk_evaluate_clients(
 
     # Stash idempotency so retries reuse the same evaluation.
     _idem_store(
-        conn, ctx.key_hash, idem_key,
+        conn,
+        ctx.key_hash,
+        idem_key,
         {
             "rows": rows,
             "results": results,

@@ -6,6 +6,7 @@ into HTTP or MCP handlers. It groups facts by ``(entity_id, field_name)`` using
 canonicalized EAV values and source attribution from ``source_id`` with a
 ``source_url`` fallback.
 """
+
 from __future__ import annotations
 
 import json
@@ -139,9 +140,7 @@ def compute_entity_conflict_metadata(
     )
 
     conflict_count = sum(1 for field in fields_out if field["status"] == "conflict")
-    multiple_values_count = sum(
-        1 for field in fields_out if field["status"] == "multiple_values"
-    )
+    multiple_values_count = sum(1 for field in fields_out if field["status"] == "multiple_values")
     return {
         "entity_id": entity_id,
         "summary": {

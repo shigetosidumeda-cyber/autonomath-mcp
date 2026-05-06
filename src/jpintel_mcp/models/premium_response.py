@@ -1,5 +1,6 @@
 """Premium response shapes for jpintel-mcp /v1/am/* endpoints.
 Inspired by Autonomath's models/{adoption,client}.py + knowledge_base/provenance.py."""
+
 from __future__ import annotations
 
 from datetime import datetime

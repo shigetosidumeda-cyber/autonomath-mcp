@@ -32,6 +32,7 @@ Returned keys:
     target_types[], eligibility_quick_summary,
     source_url
 """
+
 from __future__ import annotations
 
 import json
@@ -41,10 +42,12 @@ from pathlib import Path
 from typing import Any
 
 _REPO_ROOT = Path(__file__).resolve().parents[4]
-DB_PATH = Path(os.environ.get(
-    "AUTONOMATH_DB_PATH",
-    str(_REPO_ROOT / "autonomath.db"),
-))
+DB_PATH = Path(
+    os.environ.get(
+        "AUTONOMATH_DB_PATH",
+        str(_REPO_ROOT / "autonomath.db"),
+    )
+)
 
 VALID_THEMES = {"ghg_reduction", "ev", "renewable", "zeb_zeh", "carbon_credit"}
 VALID_COMPANY_SIZES = {"sme", "large", "midsize", "individual", "municipality", "farmer"}
@@ -76,7 +79,7 @@ def _classify_eligibility(raw: dict[str, Any]) -> str:
     if target:
         parts.append(f"対象: {'・'.join(target)}")
     if rate is not None:
-        parts.append(f"補助率 {rate*100:.1f}%")
+        parts.append(f"補助率 {rate * 100:.1f}%")
     if amax is not None:
         parts.append(f"上限 {int(amax):,}円")
     if desc:
@@ -200,6 +203,7 @@ def list_themes(db_path: Path | str = DB_PATH) -> dict[str, int]:
 
 if __name__ == "__main__":
     import sys
+
     theme = sys.argv[1] if len(sys.argv) > 1 else "ev"
     for row in search_gx_programs(theme=theme, limit=5):
         print(row["canonical_id"], "|", row["program_name"])

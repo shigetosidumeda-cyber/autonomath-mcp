@@ -17,6 +17,7 @@ Design constraints:
     cron host can read both env vars from the same Fly secrets file as
     the API; init is a no-op everywhere else.
 """
+
 from __future__ import annotations
 
 import logging
@@ -64,9 +65,7 @@ def _ensure_init() -> bool:
             # Cron entry points: lower sample rate than the API path
             # (these scripts run daily, not per-request, so volume is tiny
             # and we mainly want errors not traces).
-            traces_sample_rate=float(
-                os.getenv("SENTRY_CRON_TRACES_SAMPLE_RATE", "0.0")
-            ),
+            traces_sample_rate=float(os.getenv("SENTRY_CRON_TRACES_SAMPLE_RATE", "0.0")),
             send_default_pii=False,
             include_local_variables=False,
             max_breadcrumbs=20,

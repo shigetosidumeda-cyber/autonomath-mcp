@@ -41,6 +41,7 @@ Pure Pydantic v2. Never imports anthropic / openai / google.generativeai
 (launch CI guard `tests/test_no_llm_in_production.py`). Never raises on
 untyped input — helpers coerce or short-circuit, mirroring `make_error`.
 """
+
 from __future__ import annotations
 
 from typing import Any, Literal
@@ -127,9 +128,7 @@ _DEFAULT_USER_MESSAGE: dict[ErrorCode, str] = {
     "FORBIDDEN": (
         "このリソースには現在のキーではアクセスできません。料金プランまたは権限を確認してください。"
     ),
-    "NOT_FOUND": (
-        "該当データが見つかりませんでした。条件を緩めるか、別表記を試してください。"
-    ),
+    "NOT_FOUND": ("該当データが見つかりませんでした。条件を緩めるか、別表記を試してください。"),
     "VALIDATION_ERROR": (
         "リクエストパラメータが不正です。details を確認し、許可値で再送してください。"
     ),
@@ -220,9 +219,13 @@ class Citation(BaseModel):
 
     model_config = ConfigDict(extra="allow")
 
-    source_id: str | None = Field(default=None, description="Join key into am_source / source-of-truth tables.")
+    source_id: str | None = Field(
+        default=None, description="Join key into am_source / source-of-truth tables."
+    )
     source_url: str | None = Field(default=None, description="Direct URL to the primary source.")
-    publisher: str | None = Field(default=None, description="Issuing body (METI, NTA, prefecture, etc).")
+    publisher: str | None = Field(
+        default=None, description="Issuing body (METI, NTA, prefecture, etc)."
+    )
     title: str | None = Field(default=None, description="Document title.")
     fetched_at: str | None = Field(default=None, description="ISO-8601 fetch timestamp.")
     checksum: str | None = Field(default=None, description="sha256 hex of the fetched body.")
@@ -235,7 +238,9 @@ class Citation(BaseModel):
         description="JSON pointer paths into `results[]` that this citation justifies.",
     )
     excerpt: str | None = Field(default=None, description="Short verbatim excerpt for spot-check.")
-    page_ref: str | None = Field(default=None, description="Page / section reference within the source.")
+    page_ref: str | None = Field(
+        default=None, description="Page / section reference within the source."
+    )
     verification_status: Literal["verified", "inferred", "stale", "unknown"] | None = Field(
         default=None, description="Operator verification state of this citation."
     )
@@ -258,11 +263,16 @@ class ResponseMeta(BaseModel):
 
     model_config = ConfigDict(extra="allow")
 
-    request_id: str = Field(..., description="Echoed `x-request-id`. ULID-style 26-char or hex 16-char.")
-    api_version: str = Field(default=ENVELOPE_API_VERSION, description="Envelope schema version (currently `v2`).")
+    request_id: str = Field(
+        ..., description="Echoed `x-request-id`. ULID-style 26-char or hex 16-char."
+    )
+    api_version: str = Field(
+        default=ENVELOPE_API_VERSION, description="Envelope schema version (currently `v2`)."
+    )
     latency_ms: int = Field(default=0, ge=0, description="Server-measured wall time, milliseconds.")
     billable_units: int = Field(
-        default=1, ge=0,
+        default=1,
+        ge=0,
         description="Units charged for this call. Anonymous tier deducts from the 3/日 IP quota.",
     )
     client_tag: str | None = Field(
@@ -301,11 +311,17 @@ class StandardError(BaseModel):
         default=None,
         description="English/structured detail for the integrating developer (stack hints, trace-id pointers).",
     )
-    retryable: bool = Field(..., description="Whether a naive client should retry this exact request.")
-    retry_after: int | None = Field(
-        default=None, ge=0, description="Seconds to wait before retrying. Mirrors the Retry-After header."
+    retryable: bool = Field(
+        ..., description="Whether a naive client should retry this exact request."
     )
-    documentation: str = Field(default=DOC_URL, description="Public docs anchor for this error code.")
+    retry_after: int | None = Field(
+        default=None,
+        ge=0,
+        description="Seconds to wait before retrying. Mirrors the Retry-After header.",
+    )
+    documentation: str = Field(
+        default=DOC_URL, description="Public docs anchor for this error code."
+    )
 
     # ----- Class-method constructors (one per common 4xx/5xx) ---------------
 
@@ -370,9 +386,8 @@ class StandardError(BaseModel):
     ) -> StandardError:
         """404 — resource lookup miss. `resource` is the table/route family."""
         if developer_message is None:
-            developer_message = (
-                f"{resource} not found"
-                + (f" for id={identifier!r}" if identifier is not None else "")
+            developer_message = f"{resource} not found" + (
+                f" for id={identifier!r}" if identifier is not None else ""
             )
         return cls(
             code="NOT_FOUND",
@@ -501,8 +516,12 @@ class StandardResponse(BaseModel):
     model_config = ConfigDict(extra="allow")
 
     status: StatusType = Field(..., description="One of rich / sparse / empty / partial / error.")
-    query_echo: QueryEcho = Field(default_factory=QueryEcho, description="Server-side echo of caller input.")
-    results: list[Any] = Field(default_factory=list, description="Result rows. Empty for status='empty' / 'error'.")
+    query_echo: QueryEcho = Field(
+        default_factory=QueryEcho, description="Server-side echo of caller input."
+    )
+    results: list[Any] = Field(
+        default_factory=list, description="Result rows. Empty for status='empty' / 'error'."
+    )
     citations: list[Citation] = Field(
         default_factory=list,
         description="Primary-source citations backing `results`. May be empty when sources are inline on each row.",
@@ -515,11 +534,15 @@ class StandardResponse(BaseModel):
         default_factory=list,
         description="Deterministic follow-up calls. Each item: {tool|endpoint, args, reason?}.",
     )
-    meta: ResponseMeta = Field(..., description="Per-response metadata (request_id, latency, billable_units).")
+    meta: ResponseMeta = Field(
+        ..., description="Per-response metadata (request_id, latency, billable_units)."
+    )
 
     # Status-specific optional fields ---------------------------------------
 
-    empty_reason: Literal["no_match", "filters_too_narrow", "source_unavailable", "license_blocked"] | None = Field(
+    empty_reason: (
+        Literal["no_match", "filters_too_narrow", "source_unavailable", "license_blocked"] | None
+    ) = Field(
         default=None,
         description="When status='empty': which of the four cases applies.",
     )
@@ -731,8 +754,8 @@ class StandardResponse(BaseModel):
 
         # Auto-classify when caller didn't override.
         if status_override is None:
-            status: StatusType = "rich" if len(results) >= _RICH_THRESHOLD else (
-                "sparse" if results else "empty"
+            status: StatusType = (
+                "rich" if len(results) >= _RICH_THRESHOLD else ("sparse" if results else "empty")
             )
         else:
             status = status_override

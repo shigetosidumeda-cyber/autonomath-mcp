@@ -38,6 +38,7 @@ requires at least a paging window (returns `total` + first page, just
 like other routers) but the 100-row hard cap plus the PDL attribution
 in every response is what keeps this a lookup tool, not a scrape target.
 """
+
 import re
 import sqlite3
 import time
@@ -158,9 +159,7 @@ class InvoiceRegistrantOut(BaseModel):
     )
     normalized_name: str = Field(
         ...,
-        description=(
-            "Registered business name (事業者名 / 公表名称) — as published by NTA."
-        ),
+        description=("Registered business name (事業者名 / 公表名称) — as published by NTA."),
     )
     address_normalized: str | None = Field(
         default=None,
@@ -178,34 +177,21 @@ class InvoiceRegistrantOut(BaseModel):
     )
     revoked_date: str | None = Field(
         default=None,
-        description=(
-            "Revocation date / 取消日 (ISO 8601). NULL = not revoked (未取消)."
-        ),
+        description=("Revocation date / 取消日 (ISO 8601). NULL = not revoked (未取消)."),
     )
     expired_date: str | None = Field(
         default=None,
-        description=(
-            "Expiration date / 失効日 (ISO 8601). NULL = not expired (未失効)."
-        ),
+        description=("Expiration date / 失効日 (ISO 8601). NULL = not expired (未失効)."),
     )
     registrant_kind: RegistrantKind = Field(
         ...,
-        description=(
-            "corporation (法人) | sole_proprietor (個人事業主) | other"
-        ),
+        description=("corporation (法人) | sole_proprietor (個人事業主) | other"),
     )
-    trade_name: str | None = Field(
-        default=None, description="屋号等 (may be NULL)"
-    )
-    last_updated_nta: str | None = Field(
-        default=None, description="NTA's timestamp on this record"
-    )
+    trade_name: str | None = Field(default=None, description="屋号等 (may be NULL)")
+    last_updated_nta: str | None = Field(default=None, description="NTA's timestamp on this record")
     source_url: str = Field(
         ...,
-        description=(
-            "primary source URL "
-            "(https://www.invoice-kohyo.nta.go.jp/download/...)"
-        ),
+        description=("primary source URL (https://www.invoice-kohyo.nta.go.jp/download/...)"),
     )
     source_checksum: str | None = Field(
         default=None, description="optional SHA-256 of raw bulk file"
@@ -218,9 +204,7 @@ class InvoiceRegistrantOut(BaseModel):
             "Rendered as '出典取得' on public surfaces (not '最終更新')."
         ),
     )
-    updated_at: str = Field(
-        ..., description="ISO 8601 UTC of last row write in our DB"
-    )
+    updated_at: str = Field(..., description="ISO 8601 UTC of last row write in our DB")
 
 
 class SearchResponse(BaseModel):
@@ -503,6 +487,7 @@ def search_invoice_registrants(
         },
         latency_ms=_latency_ms,
         result_count=total,
+        strict_metering=True,
     )
 
     if total == 0 and q is not None:
@@ -639,9 +624,7 @@ def get_invoice_registrant(
         # Compute snapshot_size live so the 404 body stays honest as the
         # mirror grows (delta-only today, full bulk at T+30d). COUNT(*) on
         # a 14k-row table with PK is sub-millisecond; no need to cache.
-        (snapshot_size,) = conn.execute(
-            "SELECT COUNT(*) FROM invoice_registrants"
-        ).fetchone()
+        (snapshot_size,) = conn.execute("SELECT COUNT(*) FROM invoice_registrants").fetchone()
 
         log_usage(
             conn,
@@ -661,13 +644,9 @@ def get_invoice_registrant(
                 "registration_number": invoice_registration_number,
                 "snapshot_size": snapshot_size,
                 "full_population_estimate": _FULL_POPULATION_ESTIMATE,
-                "snapshot_attribution": (
-                    f"{_ATTRIBUTION['source']} ({_ATTRIBUTION['license']})"
-                ),
+                "snapshot_attribution": (f"{_ATTRIBUTION['source']} ({_ATTRIBUTION['license']})"),
                 "next_bulk_refresh": _NEXT_BULK_REFRESH_HINT,
-                "alternative": (
-                    f"公式 lookup: {_NTA_OFFICIAL_LOOKUP}"
-                ),
+                "alternative": (f"公式 lookup: {_NTA_OFFICIAL_LOOKUP}"),
                 # Repeat the full attribution block so the PDL v1.0
                 # 出典明記 + 編集・加工注記 requirement holds on miss too.
                 # Migration 019's contract is "every surface that renders
@@ -681,6 +660,7 @@ def get_invoice_registrant(
         ctx,
         "invoice_registrants.get",
         params={"invoice_registration_number": invoice_registration_number},
+        strict_metering=True,
     )
 
     body: dict[str, Any] = {

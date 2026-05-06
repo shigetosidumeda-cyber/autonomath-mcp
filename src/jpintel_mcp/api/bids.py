@@ -24,6 +24,7 @@ from api/programs.py so 2+ character kanji compounds (e.g. `道路工事`,
 Handlers must pass raw user queries through `_build_fts_match` — do not
 concatenate them into the MATCH expression by hand.
 """
+
 import sqlite3
 from typing import Annotated, Literal
 
@@ -60,13 +61,12 @@ class BidOut(BaseModel):
         ),
     )
     procuring_entity: str = Field(
-        ..., description="Procuring entity name (発注機関名) — ministry / agency / 自治体 issuing the tender."
+        ...,
+        description="Procuring entity name (発注機関名) — ministry / agency / 自治体 issuing the tender.",
     )
     procuring_houjin_bangou: str | None = Field(
         default=None,
-        description=(
-            "13-digit 法人番号 of the procuring entity (soft ref to houjin_master)."
-        ),
+        description=("13-digit 法人番号 of the procuring entity (soft ref to houjin_master)."),
     )
     ministry: str | None = Field(
         default=None,
@@ -108,9 +108,7 @@ class BidOut(BaseModel):
     )
     awarded_amount_yen: int | None = Field(
         default=None,
-        description=(
-            "Awarded amount (落札金額) in JPY, tax-inclusive when disclosed."
-        ),
+        description=("Awarded amount (落札金額) in JPY, tax-inclusive when disclosed."),
     )
     winner_name: str | None = Field(
         default=None,
@@ -139,9 +137,7 @@ class BidOut(BaseModel):
         default=None, description="'役務' | '物品' | '工事' (or finer JGS code)"
     )
     source_url: str = Field(..., description="primary source (GEPS / ministry / *.lg.jp)")
-    source_excerpt: str | None = Field(
-        default=None, description="relevant passage for audit"
-    )
+    source_excerpt: str | None = Field(default=None, description="relevant passage for audit")
     source_checksum: str | None = Field(
         default=None, description="optional SHA-256 of raw fetch body"
     )
@@ -275,8 +271,7 @@ def search_bids(
         BidKind | None,
         Query(
             description=(
-                "Filter by bid_kind. One of: open | selective | "
-                "negotiated | kobo_subsidy."
+                "Filter by bid_kind. One of: open | selective | negotiated | kobo_subsidy."
             ),
         ),
     ] = None,
@@ -298,8 +293,7 @@ def search_bids(
         str | None,
         Query(
             description=(
-                "Exact linked program identifier; returns bids associated "
-                "with that program."
+                "Exact linked program identifier; returns bids associated with that program."
             ),
             max_length=64,
         ),
@@ -419,10 +413,7 @@ def search_bids(
             "bids.unified_id"
         )
 
-    select_sql = (
-        f"SELECT bids.* FROM {base_from} WHERE {where_clause} "
-        f"{order_sql} LIMIT ? OFFSET ?"
-    )
+    select_sql = f"SELECT bids.* FROM {base_from} WHERE {where_clause} {order_sql} LIMIT ? OFFSET ?"
     rows = conn.execute(select_sql, [*params, limit, offset]).fetchall()
 
     log_usage(
@@ -439,6 +430,7 @@ def search_bids(
             "max_amount": max_amount,
             "deadline_after": deadline_after,
         },
+        strict_metering=True,
     )
 
     return BidsSearchResponse(
@@ -460,15 +452,17 @@ def get_bid(
     The response includes `corpus_snapshot_id` + `corpus_checksum` so callers
     can reproduce the lookup later and detect whether the corpus changed.
     """
-    row = conn.execute(
-        "SELECT * FROM bids WHERE unified_id = ?", (unified_id,)
-    ).fetchone()
+    row = conn.execute("SELECT * FROM bids WHERE unified_id = ?", (unified_id,)).fetchone()
     if row is None:
-        raise HTTPException(
-            status.HTTP_404_NOT_FOUND, f"bid not found: {unified_id}"
-        )
+        raise HTTPException(status.HTTP_404_NOT_FOUND, f"bid not found: {unified_id}")
 
-    log_usage(conn, ctx, "bids.get", params={"unified_id": unified_id})
+    log_usage(
+        conn,
+        ctx,
+        "bids.get",
+        params={"unified_id": unified_id},
+        strict_metering=True,
+    )
     body = _row_to_bid(row).model_dump(mode="json")
     attach_corpus_snapshot(body, conn)
     return JSONResponse(content=body, headers=snapshot_headers(conn))

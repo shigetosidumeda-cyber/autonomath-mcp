@@ -72,6 +72,7 @@ from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
 from .db import connect_autonomath
 from .error_envelope import make_error
+from .snapshot_helper import attach_corpus_snapshot_with_conn
 
 logger = logging.getLogger("jpintel.mcp.autonomath.composition")
 
@@ -132,33 +133,39 @@ def _next_calls_for_eligibility(
     """
     calls: list[dict[str, Any]] = []
     if program_ids:
-        calls.append({
-            "tool": "find_complementary_programs_am",
-            "args": {"seed_program_id": program_ids[0], "top_n": 10},
-            "rationale": (
-                "Eligible programs may have compatible co-applicable "
-                "programs (am_compat_matrix). Build a portfolio."
-            ),
-            "compound_mult": 2.0,
-        })
-        calls.append({
-            "tool": "simulate_application_am",
-            "args": {"program_id": program_ids[0], "profile": profile or {}},
-            "rationale": (
-                "Mock walkthrough surfaces document_checklist + "
-                "est_review_days BEFORE the customer commits resources."
-            ),
-            "compound_mult": 1.5,
-        })
-        calls.append({
-            "tool": "program_active_periods_am",
-            "args": {"program_id": program_ids[0], "future_only": True},
-            "rationale": (
-                "Eligibility is moot if no upcoming application round. "
-                "Confirm at least one open / upcoming round."
-            ),
-            "compound_mult": 1.3,
-        })
+        calls.append(
+            {
+                "tool": "find_complementary_programs_am",
+                "args": {"seed_program_id": program_ids[0], "top_n": 10},
+                "rationale": (
+                    "Eligible programs may have compatible co-applicable "
+                    "programs (am_compat_matrix). Build a portfolio."
+                ),
+                "compound_mult": 2.0,
+            }
+        )
+        calls.append(
+            {
+                "tool": "simulate_application_am",
+                "args": {"program_id": program_ids[0], "profile": profile or {}},
+                "rationale": (
+                    "Mock walkthrough surfaces document_checklist + "
+                    "est_review_days BEFORE the customer commits resources."
+                ),
+                "compound_mult": 1.5,
+            }
+        )
+        calls.append(
+            {
+                "tool": "program_active_periods_am",
+                "args": {"program_id": program_ids[0], "future_only": True},
+                "rationale": (
+                    "Eligibility is moot if no upcoming application round. "
+                    "Confirm at least one open / upcoming round."
+                ),
+                "compound_mult": 1.3,
+            }
+        )
     return calls
 
 
@@ -227,8 +234,7 @@ def _next_calls_for_lineage(target_kind: str, target_id: str) -> list[dict[str, 
                 "tool": "program_active_periods_am",
                 "args": {"program_id": target_id, "future_only": True},
                 "rationale": (
-                    "Check if the amended program still has an upcoming "
-                    "application round."
+                    "Check if the amended program still has an upcoming application round."
                 ),
                 "compound_mult": 1.3,
             },
@@ -238,9 +244,7 @@ def _next_calls_for_lineage(target_kind: str, target_id: str) -> list[dict[str, 
         {
             "tool": "get_law_article_am",
             "args": {"law_canonical_id": target_id, "limit": 3},
-            "rationale": (
-                "Inspect the latest law text to understand what changed."
-            ),
+            "rationale": ("Inspect the latest law text to understand what changed."),
             "compound_mult": 1.4,
         },
     ]
@@ -350,9 +354,7 @@ def _apply_eligibility_chain_impl(
 
     # Pre-fetch coverage caveats so honesty fence fires regardless of input.
     try:
-        coverage_row = conn.execute(
-            "SELECT COUNT(*) AS n FROM am_prerequisite_bundle"
-        ).fetchone()
+        coverage_row = conn.execute("SELECT COUNT(*) AS n FROM am_prerequisite_bundle").fetchone()
         prereq_rows_total = coverage_row["n"] if coverage_row else 0
     except sqlite3.Error:
         prereq_rows_total = 0
@@ -360,17 +362,21 @@ def _apply_eligibility_chain_impl(
     per_program: list[dict[str, Any]] = []
     for raw_pid in program_ids:
         if not isinstance(raw_pid, str) or not raw_pid.strip():
-            per_program.append({
-                "program_id": raw_pid,
-                "verdict": "ineligible",
-                "reasoning_steps": [{
-                    "step": 0,
-                    "kind": "input_validation",
-                    "verdict": "deny",
-                    "detail": "program_id is empty / not a string.",
-                }],
-                "citations": [],
-            })
+            per_program.append(
+                {
+                    "program_id": raw_pid,
+                    "verdict": "ineligible",
+                    "reasoning_steps": [
+                        {
+                            "step": 0,
+                            "kind": "input_validation",
+                            "verdict": "deny",
+                            "detail": "program_id is empty / not a string.",
+                        }
+                    ],
+                    "citations": [],
+                }
+            )
             continue
         pid = raw_pid.strip()
         steps: list[dict[str, Any]] = []
@@ -396,30 +402,33 @@ def _apply_eligibility_chain_impl(
             except sqlite3.Error:
                 prereq_rows = []
             required_count = sum(
-                1 for r in prereq_rows
-                if (r["required_or_optional"] or "").lower() == "required"
+                1 for r in prereq_rows if (r["required_or_optional"] or "").lower() == "required"
             )
-            steps.append({
-                "step": 1,
-                "kind": "prerequisite_chain",
-                "verdict": "info" if not prereq_rows else (
-                    "warn" if required_count else "info"
-                ),
-                "detail": (
-                    f"{len(prereq_rows)} prerequisites "
-                    f"({required_count} required). Coverage 1.6% — "
-                    f"empty list ≠ no prerequisites."
-                ),
-                "rows_count": len(prereq_rows),
-                "required_count": required_count,
-            })
+            steps.append(
+                {
+                    "step": 1,
+                    "kind": "prerequisite_chain",
+                    "verdict": "info"
+                    if not prereq_rows
+                    else ("warn" if required_count else "info"),
+                    "detail": (
+                        f"{len(prereq_rows)} prerequisites "
+                        f"({required_count} required). Coverage 1.6% — "
+                        f"empty list ≠ no prerequisites."
+                    ),
+                    "rows_count": len(prereq_rows),
+                    "required_count": required_count,
+                }
+            )
             for r in prereq_rows[:5]:
                 if r["obtain_url"]:
-                    citations.append({
-                        "step": 1,
-                        "label": r["prerequisite_name"],
-                        "url": r["obtain_url"],
-                    })
+                    citations.append(
+                        {
+                            "step": 1,
+                            "label": r["prerequisite_name"],
+                            "url": r["obtain_url"],
+                        }
+                    )
 
         # --- Step 2: rule_engine_check (unified) -------------------------
         if not denied and chain_depth >= 2:
@@ -437,30 +446,33 @@ def _apply_eligibility_chain_impl(
             except sqlite3.Error:
                 rule_rows = []
             deny_rules = [
-                r for r in rule_rows
+                r
+                for r in rule_rows
                 if (r["kind"] or "") in ("absolute", "exclude")
                 or (r["kind"] or "").startswith("exclude:")
             ]
-            steps.append({
-                "step": 2,
-                "kind": "rule_engine",
-                "verdict": "deny" if deny_rules else (
-                    "info" if rule_rows else "info"
-                ),
-                "detail": (
-                    f"{len(rule_rows)} unified-rule rows for program "
-                    f"({len(deny_rules)} deny verdicts)."
-                ),
-                "rows_count": len(rule_rows),
-                "deny_count": len(deny_rules),
-            })
+            steps.append(
+                {
+                    "step": 2,
+                    "kind": "rule_engine",
+                    "verdict": "deny" if deny_rules else ("info" if rule_rows else "info"),
+                    "detail": (
+                        f"{len(rule_rows)} unified-rule rows for program "
+                        f"({len(deny_rules)} deny verdicts)."
+                    ),
+                    "rows_count": len(rule_rows),
+                    "deny_count": len(deny_rules),
+                }
+            )
             for r in rule_rows[:5]:
                 if r["source_url"]:
-                    citations.append({
-                        "step": 2,
-                        "label": r["message_ja"][:80] if r["message_ja"] else r["kind"],
-                        "url": r["source_url"],
-                    })
+                    citations.append(
+                        {
+                            "step": 2,
+                            "label": r["message_ja"][:80] if r["message_ja"] else r["kind"],
+                            "url": r["source_url"],
+                        }
+                    )
             if deny_rules:
                 denied = True
                 verdict = "ineligible"
@@ -479,21 +491,18 @@ def _apply_eligibility_chain_impl(
                 ).fetchall()
             except sqlite3.Error:
                 excl_rows = []
-            absolute_rows = [
-                r for r in excl_rows if (r["kind"] or "") == "absolute"
-            ]
-            steps.append({
-                "step": 3,
-                "kind": "exclusion_rules",
-                "verdict": "deny" if absolute_rows else (
-                    "info" if excl_rows else "info"
-                ),
-                "detail": (
-                    f"{len(excl_rows)} legacy exclusion rules "
-                    f"({len(absolute_rows)} absolute)."
-                ),
-                "rows_count": len(excl_rows),
-            })
+            absolute_rows = [r for r in excl_rows if (r["kind"] or "") == "absolute"]
+            steps.append(
+                {
+                    "step": 3,
+                    "kind": "exclusion_rules",
+                    "verdict": "deny" if absolute_rows else ("info" if excl_rows else "info"),
+                    "detail": (
+                        f"{len(excl_rows)} legacy exclusion rules ({len(absolute_rows)} absolute)."
+                    ),
+                    "rows_count": len(excl_rows),
+                }
+            )
             if absolute_rows:
                 denied = True
                 verdict = "ineligible"
@@ -515,41 +524,45 @@ def _apply_eligibility_chain_impl(
             except sqlite3.Error:
                 compat_rows = []
             authoritative = [r for r in compat_rows if not r["inferred_only"]]
-            steps.append({
-                "step": 4,
-                "kind": "compat_matrix",
-                "verdict": "info",  # never sole driver of denial
-                "detail": (
-                    f"{len(compat_rows)} incompatible peers "
-                    f"({len(authoritative)} authoritative). "
-                    "These are pairwise — only triggered if combined."
-                ),
-                "rows_count": len(compat_rows),
-                "authoritative_count": len(authoritative),
-            })
+            steps.append(
+                {
+                    "step": 4,
+                    "kind": "compat_matrix",
+                    "verdict": "info",  # never sole driver of denial
+                    "detail": (
+                        f"{len(compat_rows)} incompatible peers "
+                        f"({len(authoritative)} authoritative). "
+                        "These are pairwise — only triggered if combined."
+                    ),
+                    "rows_count": len(compat_rows),
+                    "authoritative_count": len(authoritative),
+                }
+            )
 
         # --- partial verdict synthesis -----------------------------------
         # `partial` if there are warnings (prereq required > 0) but no deny.
         if not denied:
             warn_step = next(
-                (s for s in steps
-                 if s["kind"] == "prerequisite_chain"
-                 and s.get("required_count", 0) > 0),
+                (
+                    s
+                    for s in steps
+                    if s["kind"] == "prerequisite_chain" and s.get("required_count", 0) > 0
+                ),
                 None,
             )
             if warn_step:
                 verdict = "partial"
 
-        per_program.append({
-            "program_id": pid,
-            "verdict": verdict,
-            "reasoning_steps": steps,
-            "citations": citations[:10],
-        })
+        per_program.append(
+            {
+                "program_id": pid,
+                "verdict": verdict,
+                "reasoning_steps": steps,
+                "citations": citations[:10],
+            }
+        )
 
-    eligible_ids = [
-        p["program_id"] for p in per_program if p["verdict"] in ("eligible", "partial")
-    ]
+    eligible_ids = [p["program_id"] for p in per_program if p["verdict"] in ("eligible", "partial")]
 
     out: dict[str, Any] = {
         "results": per_program,
@@ -673,17 +686,19 @@ def _find_complementary_impl(
     for r in edges:
         peer = r["peer_id"]
         ceiling = r["combined_max_yen"]
-        portfolio.append({
-            "peer_program_id": peer,
-            "peer_name": peer_names.get(peer),
-            "compat_status": r["compat_status"],
-            "combined_max_yen": ceiling,
-            "conditions_text": r["conditions_text"],
-            "rationale_short": r["rationale_short"],
-            "source_url": r["source_url"],
-            "confidence": r["confidence"],
-            "inferred_only": bool(r["inferred_only"]),
-        })
+        portfolio.append(
+            {
+                "peer_program_id": peer,
+                "peer_name": peer_names.get(peer),
+                "compat_status": r["compat_status"],
+                "combined_max_yen": ceiling,
+                "conditions_text": r["conditions_text"],
+                "rationale_short": r["rationale_short"],
+                "source_url": r["source_url"],
+                "confidence": r["confidence"],
+                "inferred_only": bool(r["inferred_only"]),
+            }
+        )
         if isinstance(ceiling, int):
             combined_ceiling_total += ceiling
 
@@ -861,16 +876,20 @@ def _simulate_application_impl(
 
     # --- completeness_score (heuristic over profile coverage of checklist) -
     # Score in [0.0, 1.0]: rough overlap between profile keys and required docs.
-    profile_text = " ".join(
-        str(v) for v in profile.values() if isinstance(v, (str, int, float))
-    ).lower() if profile else ""
+    profile_text = (
+        " ".join(str(v) for v in profile.values() if isinstance(v, (str, int, float))).lower()
+        if profile
+        else ""
+    )
     if not document_checklist:
         completeness_score = 0.0
     else:
         hit = 0
         for doc in document_checklist:
-            if isinstance(doc, str) and doc and any(
-                tok in profile_text for tok in [doc[:4].lower(), doc[-4:].lower()]
+            if (
+                isinstance(doc, str)
+                and doc
+                and any(tok in profile_text for tok in [doc[:4].lower(), doc[-4:].lower()])
             ):
                 hit += 1
         completeness_score = round(hit / len(document_checklist), 2)
@@ -921,14 +940,17 @@ def _simulate_application_impl(
                 "status": round_row["status"],
                 "source_url": round_row["source_url"],
                 "days_to_close": (
-                    (datetime.date.fromisoformat(round_row["application_close_date"][:10])
-                     - datetime.date.fromisoformat(today_iso)).days
+                    (
+                        datetime.date.fromisoformat(round_row["application_close_date"][:10])
+                        - datetime.date.fromisoformat(today_iso)
+                    ).days
                     if round_row["application_close_date"]
                     and len(round_row["application_close_date"]) >= 10
                     else None
                 ),
             }
-            if round_row else None
+            if round_row
+            else None
         ),
         "steps": [
             {
@@ -1027,15 +1049,30 @@ def _track_amendment_lineage_impl(
         kind_row = None
 
     if kind_row is None:
-        # Soft path: surface as no_matching_records (the entity may simply
-        # not be in am_entities — happens for orphan canonical_ids).
-        return make_error(
-            code="seed_not_found",
-            message=f"target_id {tid!r} not found in am_entities.",
-            hint="Use search_programs / get_law_article_am to resolve canonical_id first.",
-            field="target_id",
-            retry_with=["search_programs", "get_law_article_am"],
-        )
+        out_empty: dict[str, Any] = {
+            "target_kind": target_kind,
+            "target_id": tid,
+            "results": [],
+            "total": 0,
+            "limit": 1,
+            "offset": 0,
+            "strict_count": 0,
+            "hash_only_count": 0,
+            "warnings": [],
+            "data_quality": {
+                "target_resolved": False,
+                "snapshot_corpus_total": 14596,
+                "rows_with_effective_from_corpus_total": 140,
+                "uniform_empty_hash_share_pct": 82.3,
+                "caveat": (
+                    f"target_id {tid!r} was not found in am_entities; "
+                    "returned a graceful empty lineage envelope."
+                ),
+            },
+            "_billing_unit": 1,
+            "_next_calls": [],
+        }
+        return attach_corpus_snapshot_with_conn(conn, out_empty)
 
     actual_kind = kind_row["record_kind"]
     if target_kind == "law" and actual_kind != "law":
@@ -1094,26 +1131,24 @@ def _track_amendment_lineage_impl(
             strict_count += 1
         if r["eligibility_hash"] or r["summary_hash"]:
             hash_only_count += 1
-        timeline.append({
-            "snapshot_id": r["snapshot_id"],
-            "version_seq": r["version_seq"],
-            "observed_at": r["observed_at"],
-            "effective_from": ef_raw,
-            "effective_from_parsed": (
-                ef_parsed.isoformat() if ef_parsed else None
-            ),
-            "effective_until": r["effective_until"],
-            "amount_max_yen": r["amount_max_yen"],
-            "subsidy_rate_max": r["subsidy_rate_max"],
-            "eligibility_hash": (
-                r["eligibility_hash"][:16] + "..." if r["eligibility_hash"] else None
-            ),
-            "summary_hash": (
-                r["summary_hash"][:16] + "..." if r["summary_hash"] else None
-            ),
-            "source_url": r["source_url"],
-            "source_fetched_at": r["source_fetched_at"],
-        })
+        timeline.append(
+            {
+                "snapshot_id": r["snapshot_id"],
+                "version_seq": r["version_seq"],
+                "observed_at": r["observed_at"],
+                "effective_from": ef_raw,
+                "effective_from_parsed": (ef_parsed.isoformat() if ef_parsed else None),
+                "effective_until": r["effective_until"],
+                "amount_max_yen": r["amount_max_yen"],
+                "subsidy_rate_max": r["subsidy_rate_max"],
+                "eligibility_hash": (
+                    r["eligibility_hash"][:16] + "..." if r["eligibility_hash"] else None
+                ),
+                "summary_hash": (r["summary_hash"][:16] + "..." if r["summary_hash"] else None),
+                "source_url": r["source_url"],
+                "source_fetched_at": r["source_fetched_at"],
+            }
+        )
 
     warnings: list[str] = []
     # CLAUDE.md gotcha + memory `feedback_no_fake_data`:
@@ -1193,10 +1228,7 @@ def _program_active_periods_impl(
     """
     params: list[Any] = [pid]
     if future_only:
-        sql += (
-            " AND (application_close_date IS NULL "
-            " OR application_close_date >= ?)"
-        )
+        sql += " AND (application_close_date IS NULL  OR application_close_date >= ?)"
         params.append(today_iso)
     sql += " ORDER BY round_seq ASC, application_close_date ASC"
 
@@ -1220,9 +1252,7 @@ def _program_active_periods_impl(
         days_to_close: int | None = None
         if close_date is not None:
             days_to_close = (close_date - today_date).days
-            if days_to_close >= 0 and (
-                soonest_close is None or close_date < soonest_close
-            ):
+            if days_to_close >= 0 and (soonest_close is None or close_date < soonest_close):
                 soonest_close = close_date
 
         status = (r["status"] or "").lower()
@@ -1233,20 +1263,22 @@ def _program_active_periods_impl(
         elif status == "closed":
             closed_count += 1
 
-        rounds.append({
-            "round_id": r["round_id"],
-            "round_label": r["round_label"],
-            "round_seq": r["round_seq"],
-            "application_open_date": r["application_open_date"],
-            "application_close_date": close_raw,
-            "days_to_close": days_to_close,
-            "announced_date": r["announced_date"],
-            "disbursement_start_date": r["disbursement_start_date"],
-            "budget_yen": r["budget_yen"],
-            "status": r["status"],
-            "source_url": r["source_url"],
-            "source_fetched_at": r["source_fetched_at"],
-        })
+        rounds.append(
+            {
+                "round_id": r["round_id"],
+                "round_label": r["round_label"],
+                "round_seq": r["round_seq"],
+                "application_open_date": r["application_open_date"],
+                "application_close_date": close_raw,
+                "days_to_close": days_to_close,
+                "announced_date": r["announced_date"],
+                "disbursement_start_date": r["disbursement_start_date"],
+                "budget_yen": r["budget_yen"],
+                "status": r["status"],
+                "source_url": r["source_url"],
+                "source_fetched_at": r["source_fetched_at"],
+            }
+        )
 
     sunset_warning: str | None = None
     if open_count == 0 and upcoming_count == 0 and closed_count > 0:
@@ -1254,11 +1286,7 @@ def _program_active_periods_impl(
             "No open or upcoming rounds — only closed ones. Program may "
             "have sunset. Verify on source_url + check program_lifecycle."
         )
-    elif (
-        soonest_close is not None
-        and (soonest_close - today_date).days <= 14
-        and open_count > 0
-    ):
+    elif soonest_close is not None and (soonest_close - today_date).days <= 14 and open_count > 0:
         sunset_warning = (
             f"Soonest close in {(soonest_close - today_date).days} days "
             f"({soonest_close.isoformat()}). Urgent — confirm "
@@ -1274,9 +1302,7 @@ def _program_active_periods_impl(
         "open_count": open_count,
         "upcoming_count": upcoming_count,
         "closed_count": closed_count,
-        "soonest_close_date": (
-            soonest_close.isoformat() if soonest_close else None
-        ),
+        "soonest_close_date": (soonest_close.isoformat() if soonest_close else None),
         "sunset_warning": sunset_warning,
         "data_quality": {
             "rounds_corpus_total": 1256,
@@ -1314,8 +1340,7 @@ if _ENABLED and settings.autonomath_enabled:
             list[str],
             Field(
                 description=(
-                    "Canonical program IDs to evaluate "
-                    "(e.g. ['program:base:71f6029070', ...])."
+                    "Canonical program IDs to evaluate (e.g. ['program:base:71f6029070', ...])."
                 ),
                 min_length=1,
                 max_length=20,
@@ -1333,8 +1358,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ] = 4,
     ) -> dict[str, Any]:
-        """[WAVE21-COMPOSE] Multi-step eligibility orchestration over prerequisite_chain → rule_engine_check → exclusion_rules → am_compat_matrix per program. Returns per-program verdict (eligible / partial / ineligible) + reasoning_steps + cite chain. Heuristic; verify primary source. §52 sensitive.
-        """
+        """[WAVE21-COMPOSE] Multi-step eligibility orchestration over prerequisite_chain → rule_engine_check → exclusion_rules → am_compat_matrix per program. Returns per-program verdict (eligible / partial / ineligible) + reasoning_steps + cite chain. Heuristic; verify primary source. §52 sensitive."""
         return _apply_eligibility_chain_impl(
             profile=profile,
             program_ids=program_ids,
@@ -1346,9 +1370,7 @@ if _ENABLED and settings.autonomath_enabled:
         seed_program_id: Annotated[
             str,
             Field(
-                description=(
-                    "Seed program canonical_id. Use search_programs first."
-                ),
+                description=("Seed program canonical_id. Use search_programs first."),
             ),
         ],
         top_n: Annotated[
@@ -1369,8 +1391,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ] = True,
     ) -> dict[str, Any]:
-        """[WAVE21-COMPOSE] Seed program → am_compat_matrix compatible edges → portfolio with combined_ceiling_yen + conflicts. authoritative_share_pct surfaced. inferred_only=true edges are heuristic. §52 sensitive — verify 経費重複 + 適正化法 17 条 before stacking.
-        """
+        """[WAVE21-COMPOSE] Seed program → am_compat_matrix compatible edges → portfolio with combined_ceiling_yen + conflicts. authoritative_share_pct surfaced. inferred_only=true edges are heuristic. §52 sensitive — verify 経費重複 + 適正化法 17 条 before stacking."""
         return _find_complementary_impl(
             seed_program_id=seed_program_id,
             top_n=top_n,
@@ -1386,9 +1407,7 @@ if _ENABLED and settings.autonomath_enabled:
         profile: Annotated[
             dict[str, Any],
             Field(
-                description=(
-                    "Applicant profile dict — used for completeness_score."
-                ),
+                description=("Applicant profile dict — used for completeness_score."),
             ),
         ],
         target_round: Annotated[
@@ -1403,8 +1422,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ] = "next",
     ) -> dict[str, Any]:
-        """[WAVE21-COMPOSE] Pure-SQL mock walkthrough: am_application_steps + am_prerequisite_bundle + am_application_round + am_law_article. Returns document_checklist + certifications + est_review_days + completeness_score. NO LLM. §52 sensitive — not a substitute for 行政書士 §1 申請代理.
-        """
+        """[WAVE21-COMPOSE] Pure-SQL mock walkthrough: am_application_steps + am_prerequisite_bundle + am_application_round + am_law_article. Returns document_checklist + certifications + est_review_days + completeness_score. NO LLM. §52 sensitive — not a substitute for 行政書士 §1 申請代理."""
         return _simulate_application_impl(
             program_id=program_id,
             profile=profile,
@@ -1433,8 +1451,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ] = None,
     ) -> dict[str, Any]:
-        """[WAVE21-COMPOSE] am_amendment_snapshot time-series for a target (14,596 rows; only 140 carry effective_from). Returns timeline + strict_count (with effective_from) + hash_only_count + warnings. eligibility_hash is uniform sha256-of-empty on 82.3% — time-series fence surfaced.
-        """
+        """[WAVE21-COMPOSE] am_amendment_snapshot time-series for a target (14,596 rows; only 140 carry effective_from). Returns timeline + strict_count (with effective_from) + hash_only_count + warnings. eligibility_hash is uniform sha256-of-empty on 82.3% — time-series fence surfaced."""
         return _track_amendment_lineage_impl(
             target_kind=target_kind,
             target_id=target_id,
@@ -1457,8 +1474,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ] = False,
     ) -> dict[str, Any]:
-        """[WAVE21-COMPOSE] am_application_round (1,256 rows) per-program rounds + days_to_close + sunset_warning. Returns open_count / upcoming_count / closed_count + soonest_close_date. sunset_warning fires when only closed rounds exist OR close < 14 days away.
-        """
+        """[WAVE21-COMPOSE] am_application_round (1,256 rows) per-program rounds + days_to_close + sunset_warning. Returns open_count / upcoming_count / closed_count + soonest_close_date. sunset_warning fires when only closed rounds exist OR close < 14 days away."""
         return _program_active_periods_impl(
             program_id=program_id,
             future_only=future_only,
@@ -1481,23 +1497,27 @@ if __name__ == "__main__":  # pragma: no cover
             "program:base:3b5ec4f12e",
         ],
     )
-    pprint.pprint({
-        "summary": res.get("summary"),
-        "verdicts": [(p["program_id"], p["verdict"]) for p in res.get("results", [])],
-        "next_calls_count": len(res.get("_next_calls", [])),
-    })
+    pprint.pprint(
+        {
+            "summary": res.get("summary"),
+            "verdicts": [(p["program_id"], p["verdict"]) for p in res.get("results", [])],
+            "next_calls_count": len(res.get("_next_calls", [])),
+        }
+    )
 
     print("\n=== find_complementary_programs_am ===")
     res = _find_complementary_impl(
         seed_program_id="program:04_program_documents:000000:23_25d25bdfe8",
         top_n=5,
     )
-    pprint.pprint({
-        "total": res.get("total"),
-        "combined_ceiling_yen": res.get("combined_ceiling_yen"),
-        "conflicts_count": len(res.get("conflicts", [])),
-        "next_calls_count": len(res.get("_next_calls", [])),
-    })
+    pprint.pprint(
+        {
+            "total": res.get("total"),
+            "combined_ceiling_yen": res.get("combined_ceiling_yen"),
+            "conflicts_count": len(res.get("conflicts", [])),
+            "next_calls_count": len(res.get("_next_calls", [])),
+        }
+    )
 
     print("\n=== simulate_application_am ===")
     res = _simulate_application_impl(
@@ -1505,35 +1525,41 @@ if __name__ == "__main__":  # pragma: no cover
         profile={"prefecture": "東京", "登記簿謄本": "ok"},
         target_round="next",
     )
-    pprint.pprint({
-        "round_resolved": res.get("data_quality", {}).get("round_resolved"),
-        "checklist_size": len(res.get("document_checklist", [])),
-        "completeness_score": res.get("completeness_score"),
-        "est_review_days": res.get("est_review_days"),
-        "next_calls_count": len(res.get("_next_calls", [])),
-    })
+    pprint.pprint(
+        {
+            "round_resolved": res.get("data_quality", {}).get("round_resolved"),
+            "checklist_size": len(res.get("document_checklist", [])),
+            "completeness_score": res.get("completeness_score"),
+            "est_review_days": res.get("est_review_days"),
+            "next_calls_count": len(res.get("_next_calls", [])),
+        }
+    )
 
     print("\n=== track_amendment_lineage_am ===")
     res = _track_amendment_lineage_impl(
         target_kind="program",
         target_id="program:107_robotics_automation_industry:000010:RDAI_c0b043fca5",
     )
-    pprint.pprint({
-        "total": res.get("total"),
-        "strict_count": res.get("strict_count"),
-        "warnings": res.get("warnings"),
-        "next_calls_count": len(res.get("_next_calls", [])),
-    })
+    pprint.pprint(
+        {
+            "total": res.get("total"),
+            "strict_count": res.get("strict_count"),
+            "warnings": res.get("warnings"),
+            "next_calls_count": len(res.get("_next_calls", [])),
+        }
+    )
 
     print("\n=== program_active_periods_am ===")
     res = _program_active_periods_impl(
         program_id="program:base:71f6029070",
         future_only=True,
     )
-    pprint.pprint({
-        "open_count": res.get("open_count"),
-        "upcoming_count": res.get("upcoming_count"),
-        "soonest_close_date": res.get("soonest_close_date"),
-        "sunset_warning": res.get("sunset_warning"),
-        "next_calls_count": len(res.get("_next_calls", [])),
-    })
+    pprint.pprint(
+        {
+            "open_count": res.get("open_count"),
+            "upcoming_count": res.get("upcoming_count"),
+            "soonest_close_date": res.get("soonest_close_date"),
+            "sunset_warning": res.get("sunset_warning"),
+            "next_calls_count": len(res.get("_next_calls", [])),
+        }
+    )

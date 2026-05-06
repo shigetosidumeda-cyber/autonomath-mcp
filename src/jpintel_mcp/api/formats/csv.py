@@ -71,10 +71,7 @@ def render_csv(rows: list[dict[str, Any]], meta: dict[str, Any]) -> Response:
     writer.writerow([f"# {DISCLAIMER_JA}"])
     # Comment row 1 — brand + license summary so an offline copy is still
     # source-attributable.
-    writer.writerow([
-        f"# {BRAND_FOOTER} | "
-        f"{meta.get('license_summary', '')}"
-    ])
+    writer.writerow([f"# {BRAND_FOOTER} | {meta.get('license_summary', '')}"])
     writer.writerow(columns)
     for row in rows:
         writer.writerow([_csv_cell(row.get(c)) for c in columns])

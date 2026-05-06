@@ -108,6 +108,7 @@ def _normalize_plan(plan: str | None) -> str:
         raise ValueError("widget whitelabel plan is no longer offered")
     raise ValueError("plan must be 'metered'")
 
+
 # Per-key per-minute rate limit (abuse gate, NOT quota). Kept in-process
 # because the widget path must stay cheap — a dropping window over the last
 # 60 s of timestamps is a handful of bytes per key and needs no DB roundtrip.
@@ -162,9 +163,7 @@ def _check_rate_limit(key_id: str) -> None:
 # scheme required.
 # ---------------------------------------------------------------------------
 
-_ORIGIN_RE = re.compile(
-    r"^https?://[A-Za-z0-9\-._~:/?#\[\]@!$&'()*+,;=%]+$"
-)
+_ORIGIN_RE = re.compile(r"^https?://[A-Za-z0-9\-._~:/?#\[\]@!$&'()*+,;=%]+$")
 _WILDCARD_ALLOWED_RE = re.compile(
     r"^(?P<scheme>https?)://\*\.(?P<host>[A-Za-z0-9\-]+(?:\.[A-Za-z0-9\-]+)+)$"
 )
@@ -195,7 +194,7 @@ def _origin_allowed(origin: str | None, allowed_json: str) -> bool:
         needle = f"{scheme}://"
         if not origin.startswith(needle):
             continue
-        host_and_rest = origin[len(needle):]
+        host_and_rest = origin[len(needle) :]
         # Strip any :port so "https://sub.example.com:8443" still matches
         # "https://*.example.com" — the widget is used from prod sites
         # but we can't refuse non-standard ports outright.
@@ -314,9 +313,7 @@ def _load_key(conn: sqlite3.Connection, key_id: str) -> WidgetKeyRow:
             status.HTTP_401_UNAUTHORIZED,
             {"error": "invalid_key", "detail": "widget key format invalid"},
         )
-    row = conn.execute(
-        "SELECT * FROM widget_keys WHERE key_id = ?", (key_id,)
-    ).fetchone()
+    row = conn.execute("SELECT * FROM widget_keys WHERE key_id = ?", (key_id,)).fetchone()
     if row is None:
         raise HTTPException(
             status.HTTP_401_UNAUTHORIZED,
@@ -348,9 +345,7 @@ def _roll_month_if_needed(
     return _refresh_widget_key(conn, wk)
 
 
-def _enforce_quota_and_increment(
-    conn: sqlite3.Connection, wk: WidgetKeyRow
-) -> None:
+def _enforce_quota_and_increment(conn: sqlite3.Connection, wk: WidgetKeyRow) -> None:
     """Bump counters and atomically queue one metered usage unit when needed."""
     savepoint = f"widget_quota_{secrets.token_hex(4)}"
     conn.execute(f"SAVEPOINT {savepoint}")
@@ -768,9 +763,7 @@ def widget_signup(payload: WidgetSignupRequest) -> WidgetSignupResponse:
         "autonomath_label": payload.label or "",
     }
 
-    success_url = validate_jpcite_service_redirect_url(
-        payload.success_url, kind="success"
-    )
+    success_url = validate_jpcite_service_redirect_url(payload.success_url, kind="success")
     cancel_url = validate_jpcite_service_redirect_url(payload.cancel_url, kind="cancel")
 
     session = stripe.checkout.Session.create(
@@ -810,9 +803,7 @@ async def widget_stripe_webhook(
     or payment failure disables widget access until billing is resolved.
     """
     if not settings.stripe_webhook_secret:
-        raise HTTPException(
-            status.HTTP_503_SERVICE_UNAVAILABLE, "webhook secret unset"
-        )
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "webhook secret unset")
 
     import stripe
 
@@ -820,7 +811,10 @@ async def widget_stripe_webhook(
     body = await request.body()
     try:
         event = stripe.Webhook.construct_event(
-            body, stripe_signature or "", settings.stripe_webhook_secret
+            body,
+            stripe_signature or "",
+            settings.stripe_webhook_secret,
+            tolerance=300,
         )
     except stripe.SignatureVerificationError:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "bad signature") from None
@@ -832,8 +826,7 @@ async def widget_stripe_webhook(
     is_production = settings.env == "prod"
     if event_livemode != is_production:
         logger.error(
-            "widget.webhook.livemode_mismatch event_id=%s event_livemode=%s "
-            "is_production=%s",
+            "widget.webhook.livemode_mismatch event_id=%s event_livemode=%s is_production=%s",
             event_id,
             event_livemode,
             is_production,
@@ -1085,9 +1078,7 @@ def widget_usage(
             status.HTTP_401_UNAUTHORIZED,
             {"error": "admin_auth_failed"},
         )
-    row = conn.execute(
-        "SELECT * FROM widget_keys WHERE key_id = ?", (key_id,)
-    ).fetchone()
+    row = conn.execute("SELECT * FROM widget_keys WHERE key_id = ?", (key_id,)).fetchone()
     if row is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "widget key not found")
     wk = WidgetKeyRow(row)

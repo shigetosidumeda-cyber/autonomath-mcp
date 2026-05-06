@@ -106,7 +106,7 @@ _DISCLAIMER = (
 
 class PeriodBounds(BaseModel):
     start: str  # ISO date YYYY-MM-DD (JST calendar)
-    end: str    # ISO date YYYY-MM-DD (JST calendar, inclusive)
+    end: str  # ISO date YYYY-MM-DD (JST calendar, inclusive)
 
 
 class ClientTagRow(BaseModel):
@@ -119,11 +119,11 @@ class ClientTagRow(BaseModel):
     """
 
     client_tag: str | None
-    requests: int          # COUNT(*) — wall-clock # of API calls
-    billable_units: int    # SUM(quantity) — Stripe metered units (per migr 085's batch path)
-    yen_excl_tax: int      # billable_units * _UNIT_PRICE_YEN
+    requests: int  # COUNT(*) — wall-clock # of API calls
+    billable_units: int  # SUM(quantity) — Stripe metered units (per migr 085's batch path)
+    yen_excl_tax: int  # billable_units * _UNIT_PRICE_YEN
     first_seen: str | None  # ISO date of first event in window (NULL when no rows)
-    last_seen: str | None   # ISO date of last event in window
+    last_seen: str | None  # ISO date of last event in window
 
 
 class ClientTagBreakdownResponse(BaseModel):
@@ -267,13 +267,17 @@ def _aggregate(
     # Bounds: [start_jst_midnight, end_jst_midnight + 1d) — half-open so a
     # request landing at 2026-04-30T23:59:59+09:00 is included in an
     # April invoice, but 2026-05-01T00:00:00+09:00 is NOT.
-    start_iso = datetime(
-        period_start.year, period_start.month, period_start.day, tzinfo=_JST
-    ).astimezone(UTC).isoformat()
+    start_iso = (
+        datetime(period_start.year, period_start.month, period_start.day, tzinfo=_JST)
+        .astimezone(UTC)
+        .isoformat()
+    )
     end_exclusive = period_end + timedelta(days=1)
-    end_iso = datetime(
-        end_exclusive.year, end_exclusive.month, end_exclusive.day, tzinfo=_JST
-    ).astimezone(UTC).isoformat()
+    end_iso = (
+        datetime(end_exclusive.year, end_exclusive.month, end_exclusive.day, tzinfo=_JST)
+        .astimezone(UTC)
+        .isoformat()
+    )
     totals = conn.execute(
         f"""SELECT
                 COUNT(*) AS req_count,
@@ -296,9 +300,7 @@ def _aggregate(
 
     total_requests = int(totals["req_count"] or 0) if totals is not None else 0
     total_units = int(totals["units"] or 0) if totals is not None else 0
-    untagged_requests = (
-        int(totals["untagged_requests"] or 0) if totals is not None else 0
-    )
+    untagged_requests = int(totals["untagged_requests"] or 0) if totals is not None else 0
     untagged_units = int(totals["untagged_units"] or 0) if totals is not None else 0
 
     # Single GROUP BY with NULL preserved (SQLite GROUP BY treats NULL as
@@ -500,9 +502,7 @@ def get_client_tag_breakdown(
         body = "\r\n".join(lines) + "\r\n"
         # Excel-JP friendly: UTF-8 BOM so MS Excel auto-detects encoding.
         # text/csv; charset=utf-8 is the canonical media type per RFC 7111.
-        filename = (
-            f"autonomath_breakdown_{start_d.isoformat()}_{end_d.isoformat()}.csv"
-        )
+        filename = f"autonomath_breakdown_{start_d.isoformat()}_{end_d.isoformat()}.csv"
         return Response(
             content=("﻿" + body).encode("utf-8"),
             media_type="text/csv; charset=utf-8",

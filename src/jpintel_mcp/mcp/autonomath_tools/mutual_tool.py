@@ -6,6 +6,7 @@ serves structured rows.
 
 NO ANTHROPIC_API_KEY / SDK / Message Batches. Pure local SQLite.
 """
+
 from __future__ import annotations
 
 import json
@@ -15,10 +16,12 @@ from pathlib import Path
 from typing import Any, Iterable
 
 _REPO_ROOT = Path(__file__).resolve().parents[4]
-DB_PATH = Path(os.environ.get(
-    "AUTONOMATH_DB_PATH",
-    str(_REPO_ROOT / "autonomath.db"),
-))
+DB_PATH = Path(
+    os.environ.get(
+        "AUTONOMATH_DB_PATH",
+        str(_REPO_ROOT / "autonomath.db"),
+    )
+)
 
 PLAN_KINDS = {
     "retirement_mutual",
@@ -143,9 +146,7 @@ def search_mutual_plans(
         conn.close()
 
 
-def _lookup_linked_tax(
-    conn: sqlite3.Connection, plan: dict[str, Any]
-) -> list[dict[str, Any]]:
+def _lookup_linked_tax(conn: sqlite3.Connection, plan: dict[str, Any]) -> list[dict[str, Any]]:
     """Return am_tax_rule rows plausibly linked to the given mutual plan."""
     # Map mutual canonical_id / tax_deduction_type to the seed tax_measure ids.
     cid = plan["canonical_id"]
@@ -222,6 +223,13 @@ if __name__ == "__main__":
     rows = search_mutual_plans(plan_kind="dc_pension", limit=10)
     print(f"dc_pension count: {len(rows)}")
     for r in rows:
-        print(" -", r["canonical_id"], "|", r["primary_name"],
-              "| tax:", r["tax_deduction_type"],
-              "| tax_rules:", len(r["linked_tax_rules"]))
+        print(
+            " -",
+            r["canonical_id"],
+            "|",
+            r["primary_name"],
+            "| tax:",
+            r["tax_deduction_type"],
+            "| tax_rules:",
+            len(r["linked_tax_rules"]),
+        )

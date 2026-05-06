@@ -178,14 +178,16 @@ def _query_tax_sunsets(
         d = _parse_iso_date(row["effective_until"])
         if d is None:
             continue
-        out.append({
-            "kind": "tax_sunset",
-            "entity_id": row["entity_id"],
-            "title": row["primary_name"],
-            "date": d.isoformat(),
-            "rule_type": row["rule_type"],
-            "source_url": row["source_url"],
-        })
+        out.append(
+            {
+                "kind": "tax_sunset",
+                "entity_id": row["entity_id"],
+                "title": row["primary_name"],
+                "date": d.isoformat(),
+                "rule_type": row["rule_type"],
+                "source_url": row["source_url"],
+            }
+        )
     return out
 
 
@@ -220,13 +222,15 @@ def _query_program_sunsets(
             continue
         if not (start <= d <= end):
             continue
-        out.append({
-            "kind": "program_sunset",
-            "entity_id": row["entity_id"],
-            "title": row["primary_name"] or row["entity_id"],
-            "date": d.isoformat(),
-            "source_url": row["source_url"],
-        })
+        out.append(
+            {
+                "kind": "program_sunset",
+                "entity_id": row["entity_id"],
+                "title": row["primary_name"] or row["entity_id"],
+                "date": d.isoformat(),
+                "source_url": row["source_url"],
+            }
+        )
     return out
 
 
@@ -260,13 +264,15 @@ def _query_amendment_snapshots(
             continue
         if not (start <= d <= end):
             continue
-        out.append({
-            "kind": "amendment_snapshot",
-            "entity_id": row["entity_id"],
-            "title": row["primary_name"] or row["entity_id"],
-            "date": d.isoformat(),
-            "source_url": row["source_url"],
-        })
+        out.append(
+            {
+                "kind": "amendment_snapshot",
+                "entity_id": row["entity_id"],
+                "title": row["primary_name"] or row["entity_id"],
+                "date": d.isoformat(),
+                "source_url": row["source_url"],
+            }
+        )
     return out
 
 
@@ -305,15 +311,17 @@ def _query_application_closes(
         title = row["primary_name"] or row["entity_id"]
         if row["round_label"]:
             title = f"{title} ({row['round_label']})"
-        out.append({
-            "kind": "application_close",
-            "entity_id": row["entity_id"],
-            "title": title,
-            "date": d.isoformat(),
-            "round_id": row["round_id"],
-            "status": row["status"],
-            "source_url": row["source_url"],
-        })
+        out.append(
+            {
+                "kind": "application_close",
+                "entity_id": row["entity_id"],
+                "title": title,
+                "date": d.isoformat(),
+                "round_id": row["round_id"],
+                "status": row["status"],
+                "source_url": row["source_url"],
+            }
+        )
     return out
 
 
@@ -353,14 +361,16 @@ def _query_law_amendments(
             row["article_number"] or "",
         ]
         title = " ".join(p for p in title_parts if p).strip()
-        out.append({
-            "kind": "law_amendment",
-            "entity_id": row["law_canonical_id"] or f"law_article:{row['article_id']}",
-            "title": title,
-            "date": d.isoformat(),
-            "article_id": row["article_id"],
-            "source_url": row["source_url"],
-        })
+        out.append(
+            {
+                "kind": "law_amendment",
+                "entity_id": row["law_canonical_id"] or f"law_article:{row['article_id']}",
+                "title": title,
+                "date": d.isoformat(),
+                "article_id": row["article_id"],
+                "source_url": row["source_url"],
+            }
+        )
     return out
 
 
@@ -419,8 +429,7 @@ def _unified_lifecycle_calendar_impl(
         return make_error(
             code="out_of_range",
             message=(
-                f"window {window_days}d exceeds 1-year cap "
-                f"({_MAX_WINDOW_DAYS}d). Paginate by year."
+                f"window {window_days}d exceeds 1-year cap ({_MAX_WINDOW_DAYS}d). Paginate by year."
             ),
             field="end_date",
             hint=(
@@ -491,10 +500,7 @@ def _unified_lifecycle_calendar_impl(
         key = _bucket_key(d, granularity)
         buckets.setdefault(key, []).append(ev)
 
-    calendar = [
-        {"period": k, "events": buckets[k]}
-        for k in sorted(buckets.keys())
-    ]
+    calendar = [{"period": k, "events": buckets[k]} for k in sorted(buckets.keys())]
 
     severity_counts: dict[str, int] = {"critical": 0, "warning": 0, "info": 0}
     for ev in events:
@@ -536,10 +542,7 @@ def _unified_lifecycle_calendar_impl(
     if not events:
         err = make_error(
             code="no_matching_records",
-            message=(
-                f"no lifecycle events between {start.isoformat()} "
-                f"and {end.isoformat()}."
-            ),
+            message=(f"no lifecycle events between {start.isoformat()} and {end.isoformat()}."),
             hint=(
                 "Try widening the window (up to 1 year) or ensure today's "
                 "JST date falls before the cliff dates of interest."
@@ -563,8 +566,7 @@ if _ENABLED:
             str,
             Field(
                 description=(
-                    "ウィンドウ開始日 (ISO YYYY-MM-DD)。"
-                    "end_date - start_date <= 366 日。"
+                    "ウィンドウ開始日 (ISO YYYY-MM-DD)。end_date - start_date <= 366 日。"
                 ),
                 min_length=10,
                 max_length=10,
@@ -574,8 +576,7 @@ if _ENABLED:
             str,
             Field(
                 description=(
-                    "ウィンドウ終了日 (ISO YYYY-MM-DD)。"
-                    "1 年超は 422 (out_of_range) を返します。"
+                    "ウィンドウ終了日 (ISO YYYY-MM-DD)。1 年超は 422 (out_of_range) を返します。"
                 ),
                 min_length=10,
                 max_length=10,
@@ -676,8 +677,7 @@ if __name__ == "__main__":  # pragma: no cover
         end_date=end.isoformat(),
         granularity="month",
     )
-    print(f"total_events={res.get('total_events')}, "
-          f"severity={res.get('severity_counts')}")
+    print(f"total_events={res.get('total_events')}, severity={res.get('severity_counts')}")
     print(f"sources_used={res.get('sources_used')}")
     for bucket in res.get("calendar", [])[:3]:
         print(f"\n--- {bucket['period']} ({len(bucket['events'])} events) ---")

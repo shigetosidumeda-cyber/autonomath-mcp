@@ -83,8 +83,9 @@ _SOURCE_COLUMNS_SQL = (
 )
 
 
-def _row_to_source(row: sqlite3.Row, role: str | None = None,
-                   fetched_at: str | None = None) -> dict[str, Any]:
+def _row_to_source(
+    row: sqlite3.Row, role: str | None = None, fetched_at: str | None = None
+) -> dict[str, Any]:
     """Convert a JOINed (am_entity_source × am_source) row to the public dict.
 
     ``role`` and ``fetched_at`` come from the entity_source side and are
@@ -253,8 +254,7 @@ def get_provenance(
         )
 
     sources: list[dict[str, Any]] = [
-        _row_to_source(r, role=r["role"], fetched_at=r["fetched_at"])
-        for r in src_rows
+        _row_to_source(r, role=r["role"], fetched_at=r["fetched_at"]) for r in src_rows
     ]
     summary = _license_summary(sources)
 
@@ -299,16 +299,18 @@ def get_provenance(
 
         facts: list[dict[str, Any]] = []
         for r in fact_rows:
-            facts.append({
-                "fact_id": r["fact_id"],
-                "field_name": r["field_name"],
-                "field_value_text": r["field_value_text"],
-                "field_value_numeric": r["field_value_numeric"],
-                "field_kind": r["field_kind"],
-                "unit": r["unit"],
-                "fact_source_url": r["fact_source_url"],
-                "source": _row_to_source(r),
-            })
+            facts.append(
+                {
+                    "fact_id": r["fact_id"],
+                    "field_name": r["field_name"],
+                    "field_value_text": r["field_value_text"],
+                    "field_value_numeric": r["field_value_numeric"],
+                    "field_kind": r["field_kind"],
+                    "unit": r["unit"],
+                    "fact_source_url": r["fact_source_url"],
+                    "source": _row_to_source(r),
+                }
+            )
         out["facts"] = facts
         out["total_facts"] = len(facts)
         # Note: am_entity_facts.source_id is sparsely populated pre-2026-04-25
@@ -452,8 +454,7 @@ def get_provenance_for_fact(
         )
 
     fallback_sources = [
-        _row_to_source(r, role=r["role"], fetched_at=r["fetched_at"])
-        for r in fallback_rows
+        _row_to_source(r, role=r["role"], fetched_at=r["fetched_at"]) for r in fallback_rows
     ]
     base["fallback"] = True
     base["fallback_sources"] = fallback_sources
@@ -477,38 +478,44 @@ if __name__ == "__main__":  # pragma: no cover
     sample_entity = "program:04_program_documents:000000:23_25d25bdfe8"
     print(f"=== get_provenance({sample_entity!r}) ===")
     res = get_provenance(entity_id=sample_entity, include_facts=False)
-    print(json.dumps(
-        {
-            "entity_id": res.get("entity_id"),
-            "total_sources": res.get("total_sources"),
-            "license_summary": res.get("license_summary"),
-            "first_3_sources": res.get("sources", [])[:3],
-        },
-        ensure_ascii=False,
-        indent=2,
-    ))
+    print(
+        json.dumps(
+            {
+                "entity_id": res.get("entity_id"),
+                "total_sources": res.get("total_sources"),
+                "license_summary": res.get("license_summary"),
+                "first_3_sources": res.get("sources", [])[:3],
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
 
     print("\n=== get_provenance(include_facts=True) ===")
     res2 = get_provenance(entity_id=sample_entity, include_facts=True, fact_limit=5)
-    print(json.dumps(
-        {
-            "total_sources": res2.get("total_sources"),
-            "total_facts": res2.get("total_facts"),
-            "facts_hint": res2.get("facts_hint"),
-        },
-        ensure_ascii=False,
-        indent=2,
-    ))
+    print(
+        json.dumps(
+            {
+                "total_sources": res2.get("total_sources"),
+                "total_facts": res2.get("total_facts"),
+                "facts_hint": res2.get("facts_hint"),
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
 
     print("\n=== get_provenance_for_fact(1) ===")
     res3 = get_provenance_for_fact(fact_id=1)
-    print(json.dumps(
-        {
-            "fact_id": res3.get("fact_id"),
-            "fallback": res3.get("fallback"),
-            "fallback_count": len(res3.get("fallback_sources", []) or []),
-            "license_summary": res3.get("license_summary"),
-        },
-        ensure_ascii=False,
-        indent=2,
-    ))
+    print(
+        json.dumps(
+            {
+                "fact_id": res3.get("fact_id"),
+                "fallback": res3.get("fallback"),
+                "fallback_count": len(res3.get("fallback_sources", []) or []),
+                "license_summary": res3.get("license_summary"),
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )

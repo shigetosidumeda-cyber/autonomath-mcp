@@ -305,9 +305,7 @@ def _load_existing_gold_queries(gold_path: Path) -> set[str]:
     return out
 
 
-def write_proposals_yaml(
-    candidates: list[dict[str, Any]], path: Path
-) -> int:
+def write_proposals_yaml(candidates: list[dict[str, Any]], path: Path) -> int:
     """Write candidates as YAML. Returns bytes written.
 
     Falls back to a hand-rolled emitter if `yaml` is unavailable, same

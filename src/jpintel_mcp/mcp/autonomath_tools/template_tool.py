@@ -105,9 +105,7 @@ if settings.saburoku_kyotei_enabled:
                 retry_with=["get_36_kyotei_metadata_am"],
             )
         except Exception as exc:
-            msg, _ = safe_internal_message(
-                exc, logger=logger, tool_name="render_36_kyotei_am"
-            )
+            msg, _ = safe_internal_message(exc, logger=logger, tool_name="render_36_kyotei_am")
             return make_error("internal", msg)
 
     @mcp.tool(annotations=_READ_ONLY)

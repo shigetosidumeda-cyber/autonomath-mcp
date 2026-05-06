@@ -74,11 +74,7 @@ def _strip_yen_suffix(s: str) -> str:
 def _strip_paren_negative(s: str) -> tuple[str, bool]:
     """If wrapped in matching parens, strip them and report negative."""
     s = s.strip()
-    if (
-        len(s) >= 2
-        and s[0] in ("(", "（")
-        and s[-1] in (")", "）")
-    ):
+    if len(s) >= 2 and s[0] in ("(", "（") and s[-1] in (")", "）"):
         return s[1:-1].strip(), True
     return s, False
 
@@ -87,7 +83,7 @@ def _strip_neg_prefix(s: str) -> tuple[str, bool]:
     """Strip a single leading negative marker, if present."""
     for p in _NEG_PREFIXES:
         if s.startswith(p) and len(s) > len(p):
-            rest = s[len(p):]
+            rest = s[len(p) :]
             # Guard: don't treat lone '-' or '−' followed by non-numeric
             # as negation; require the next char to be digit, decimal,
             # or an opening paren (so "△(500)" peels too).
@@ -203,7 +199,7 @@ def _split_range(s: str) -> tuple[str, str] | None:
         # Skip "-" / "ー" if at position 0 (that's a sign, not a range).
         idx = s.find(sep, 1)
         if idx > 0:
-            return s[:idx], s[idx + len(sep):]
+            return s[:idx], s[idx + len(sep) :]
     return None
 
 

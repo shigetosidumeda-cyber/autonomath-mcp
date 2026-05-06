@@ -10,6 +10,7 @@ alone doesn't capture.
 Scope: read-only. Curation is done externally by
 scripts/ingest_external_data.py — this router is a thin query surface.
 """
+
 import json
 import re
 import sqlite3
@@ -389,6 +390,7 @@ def search_case_studies(
         "case_studies.search",
         latency_ms=_latency_ms,
         result_count=total,
+        strict_metering=True,
     )
 
     if total == 0 and q is not None:
@@ -478,13 +480,11 @@ def get_case_study(
     The response includes `corpus_snapshot_id` + `corpus_checksum` so callers
     can reproduce the lookup later and detect whether the corpus changed.
     """
-    row = conn.execute(
-        "SELECT * FROM case_studies WHERE case_id = ?", (case_id,)
-    ).fetchone()
+    row = conn.execute("SELECT * FROM case_studies WHERE case_id = ?", (case_id,)).fetchone()
     if row is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, f"case study not found: {case_id}")
 
-    log_usage(conn, ctx, "case_studies.get")
+    log_usage(conn, ctx, "case_studies.get", strict_metering=True)
     body = _row_to_case_study(row).model_dump(mode="json")
     attach_corpus_snapshot(body, conn)
     return JSONResponse(content=body, headers=snapshot_headers(conn))

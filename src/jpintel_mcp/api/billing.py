@@ -21,8 +21,10 @@ import contextlib
 import hashlib
 import json
 import logging
+import os
 import secrets
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import TYPE_CHECKING, Annotated, Literal
 from urllib.parse import urlparse
 
@@ -31,9 +33,22 @@ from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Request, 
 from pydantic import BaseModel
 
 from jpintel_mcp.api._advisory_lock import LockNotAcquired, advisory_lock
+from jpintel_mcp.api.admin import (
+    AdminAuthDep,  # noqa: TC001 (runtime for FastAPI Depends resolution)
+)
 from jpintel_mcp.api.deps import (  # noqa: TC001 (runtime for FastAPI Depends resolution)
     ApiContextDep,
     DbDep,
+)
+from jpintel_mcp.billing.credit_pack import (
+    CREDIT_PACK_METADATA_KIND,
+    CreditPackPurchaseRequest,
+    CreditPackPurchaseResponse,
+    create_credit_pack_invoice,
+    grant_credit_pack_idempotent,
+    hosted_invoice_url,
+    metadata_amount_jpy,
+    metadata_kind,
 )
 from jpintel_mcp.billing.keys import (
     issue_key,
@@ -55,12 +70,44 @@ logger = logging.getLogger("jpintel.billing")
 
 router = APIRouter(prefix="/v1/billing", tags=["billing"])
 
+
+def _credit_pack_db_path() -> Path:
+    return Path(os.environ.get("AUTONOMATH_DB_PATH", str(settings.autonomath_db_path)))
+
+
+def _ensure_credit_pack_table(conn) -> None:
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS am_credit_pack_purchase (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            customer_id TEXT NOT NULL,
+            amount_jpy INTEGER NOT NULL CHECK (amount_jpy IN (300000, 1000000, 3000000)),
+            stripe_invoice_id TEXT UNIQUE,
+            stripe_balance_txn_id TEXT,
+            status TEXT NOT NULL CHECK (status IN ('pending','paid','expired','refunded')),
+            created_at TEXT DEFAULT (datetime('now')),
+            paid_at TEXT
+        )
+        """
+    )
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS ix_credit_pack_customer ON am_credit_pack_purchase(customer_id)"
+    )
+
+
+def _stripe_obj_id(obj) -> str:
+    if isinstance(obj, dict):
+        return str(obj["id"])
+    return str(obj.id)
+
+
 # Sentry capture is best-effort: tests / CI without sentry_sdk installed
 # must still exercise the webhook path. Guarding the import here keeps
 # `_capture` callable even when the SDK is absent so handler bodies stay
 # linear instead of `if "sentry_sdk" in sys.modules` everywhere.
 try:
     import sentry_sdk as _sentry_sdk  # noqa: TC003 (runtime guard)
+
     _SENTRY_AVAILABLE = True
 except ImportError:  # pragma: no cover — exercised only on minimal installs
     _SENTRY_AVAILABLE = False
@@ -132,10 +179,11 @@ def _send_dunning_safe(
                 from datetime import datetime as _dt
                 from datetime import timedelta as _td
                 from datetime import timezone as _tz
+
                 _jst = _tz(_td(hours=9))
-                next_retry_at = _dt.fromtimestamp(
-                    int(next_retry_epoch), tz=_jst
-                ).strftime("%Y-%m-%d %H:%M JST")
+                next_retry_at = _dt.fromtimestamp(int(next_retry_epoch), tz=_jst).strftime(
+                    "%Y-%m-%d %H:%M JST"
+                )
             except Exception:
                 next_retry_at = ""
         portal_url = "https://jpcite.com/billing/portal"
@@ -256,17 +304,13 @@ def _extract_subscription_state(obj: dict) -> tuple[str | None, int | None, bool
     """
     status_val = obj.get("status") if isinstance(obj, dict) else None
     cpe = obj.get("current_period_end") if isinstance(obj, dict) else None
-    cancel_flag = (
-        obj.get("cancel_at_period_end") if isinstance(obj, dict) else None
-    )
+    cancel_flag = obj.get("cancel_at_period_end") if isinstance(obj, dict) else None
     cpe_int: int | None = int(cpe) if cpe is not None else None
     cancel_bool: bool | None = bool(cancel_flag) if cancel_flag is not None else None
     return status_val, cpe_int, cancel_bool
 
 
-def _refresh_subscription_status_from_stripe(
-    conn, sub_id: str
-) -> None:
+def _refresh_subscription_status_from_stripe(conn, sub_id: str) -> None:
     """Best-effort live-fetch of a Stripe Subscription to refresh the cache.
 
     Called from invoice.paid where the payload itself does not carry the
@@ -397,20 +441,24 @@ def _stripe() -> types.ModuleType:  # returns configured stripe module
 
 _CHECKOUT_ALLOWED_HOSTS = frozenset({"jpcite.com", "www.jpcite.com"})
 _CHECKOUT_SUCCESS_PATHS = frozenset({"/success.html", "/en/success.html"})
-_CHECKOUT_CANCEL_PATHS = frozenset({
-    "/pricing.html",
-    "/en/pricing.html",
-    "/widget.html",
-    "/en/widget.html",
-})
-_PORTAL_RETURN_PATHS = frozenset({
-    "/dashboard",
-    "/dashboard.html",
-    "/en/dashboard",
-    "/en/dashboard.html",
-    "/pricing.html",
-    "/en/pricing.html",
-})
+_CHECKOUT_CANCEL_PATHS = frozenset(
+    {
+        "/pricing.html",
+        "/en/pricing.html",
+        "/widget.html",
+        "/en/widget.html",
+    }
+)
+_PORTAL_RETURN_PATHS = frozenset(
+    {
+        "/dashboard",
+        "/dashboard.html",
+        "/en/dashboard",
+        "/en/dashboard.html",
+        "/pricing.html",
+        "/en/pricing.html",
+    }
+)
 _SERVICE_CHECKOUT_REDIRECT_PATHS = frozenset(
     {
         "/success.html",
@@ -479,15 +527,11 @@ def validate_jpcite_service_redirect_url(raw_url: str, *, kind: str) -> str:
 
 
 def _checkout_state_hash(state: str) -> str:
-    return hashlib.sha256(
-        f"checkout-state|{settings.api_key_salt}|{state}".encode()
-    ).hexdigest()
+    return hashlib.sha256(f"checkout-state|{settings.api_key_salt}|{state}".encode()).hexdigest()
 
 
 def _set_checkout_state_cookie(request: Request, response: Response, state: str) -> None:
-    is_https = request.url.scheme == "https" or request.headers.get(
-        "x-forwarded-proto"
-    ) == "https"
+    is_https = request.url.scheme == "https" or request.headers.get("x-forwarded-proto") == "https"
     response.set_cookie(
         key=_CHECKOUT_STATE_COOKIE,
         value=state,
@@ -543,9 +587,21 @@ def _check_b2b_tax_id_safe(customer_id: str | None) -> None:
 
     # B2B ヒューリスティック: 会社名に「株式会社」「有限会社」「合同会社」等が入る
     b2b_hints = (
-        "株式会社", "有限会社", "合同会社", "合資会社", "合名会社",
-        "社団法人", "財団法人", "医療法人", "学校法人",
-        "Inc.", "LLC", "Corp", "Co., Ltd", "K.K.", "Ltd.",
+        "株式会社",
+        "有限会社",
+        "合同会社",
+        "合資会社",
+        "合名会社",
+        "社団法人",
+        "財団法人",
+        "医療法人",
+        "学校法人",
+        "Inc.",
+        "LLC",
+        "Corp",
+        "Co., Ltd",
+        "K.K.",
+        "Ltd.",
     )
     is_b2b = any(h in name for h in b2b_hints)
     if not is_b2b:
@@ -672,6 +728,70 @@ class CheckoutResponse(BaseModel):
     session_id: str
 
 
+@router.post(
+    "/credit/purchase",
+    response_model=CreditPackPurchaseResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def purchase_credit_pack(
+    payload: CreditPackPurchaseRequest,
+    _admin: AdminAuthDep,
+) -> CreditPackPurchaseResponse:
+    s = _stripe()
+    try:
+        invoice = create_credit_pack_invoice(
+            s,
+            customer_id=payload.customer_id,
+            amount_jpy=payload.amount_jpy,
+        )
+    except ValueError as exc:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, str(exc)) from exc
+    except Exception as exc:
+        _capture(exc)
+        logger.warning(
+            "credit_pack_invoice_create_failed customer=%s amount=%s",
+            payload.customer_id,
+            payload.amount_jpy,
+            exc_info=True,
+        )
+        raise HTTPException(
+            status.HTTP_502_BAD_GATEWAY,
+            "Stripe invoice creation failed",
+        ) from exc
+
+    invoice_url = hosted_invoice_url(invoice)
+    if not invoice_url:
+        raise HTTPException(
+            status.HTTP_502_BAD_GATEWAY,
+            "Stripe invoice missing hosted_invoice_url",
+        )
+    invoice_id = _stripe_obj_id(invoice)
+
+    cp_conn = _db_connect(_credit_pack_db_path())
+    try:
+        _ensure_credit_pack_table(cp_conn)
+        cp_conn.execute(
+            "INSERT INTO am_credit_pack_purchase "
+            "(customer_id, amount_jpy, stripe_invoice_id, status) "
+            "VALUES (?, ?, ?, 'pending') "
+            "ON CONFLICT(stripe_invoice_id) DO UPDATE SET "
+            "customer_id = excluded.customer_id, "
+            "amount_jpy = excluded.amount_jpy, "
+            "status = CASE "
+            "WHEN am_credit_pack_purchase.status = 'paid' THEN 'paid' "
+            "ELSE 'pending' END",
+            (payload.customer_id, payload.amount_jpy, invoice_id),
+        )
+    finally:
+        cp_conn.close()
+
+    return CreditPackPurchaseResponse(
+        invoice_url=invoice_url,
+        balance_after=-payload.amount_jpy,
+        expires_at=None,
+    )
+
+
 @router.post("/checkout", response_model=CheckoutResponse)
 def create_checkout(
     payload: CheckoutRequest,
@@ -792,8 +912,7 @@ def create_portal(
             "api key required to open billing portal",
         )
     row = conn.execute(
-        "SELECT customer_id, tier, parent_key_id, revoked_at "
-        "FROM api_keys WHERE key_hash = ?",
+        "SELECT customer_id, tier, parent_key_id, revoked_at FROM api_keys WHERE key_hash = ?",
         (ctx.key_hash,),
     ).fetchone()
     if row and row["parent_key_id"] is not None:
@@ -1021,7 +1140,10 @@ async def webhook(
         raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "webhook secret unset")
     try:
         event = stripe.Webhook.construct_event(
-            body, stripe_signature or "", settings.stripe_webhook_secret
+            body,
+            stripe_signature or "",
+            settings.stripe_webhook_secret,
+            tolerance=300,
         )
     except stripe.SignatureVerificationError:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "bad signature") from None
@@ -1183,36 +1305,123 @@ async def webhook(
             # Do not mint API keys from webhooks. Raw keys are reveal-once
             # credentials, and the only safe reveal surface is the browser-bound
             # /keys/from-checkout path guarded by the Checkout state cookie.
-            sub_id = obj.get("subscription")
-            customer_id = obj.get("customer")
-            if sub_id and customer_id:
-                # Un-suspend: if a prior payment_failed demoted the key to free,
-                # restoring tier=paid here re-enables the ¥3/req metered path.
-                # No-op when the key is already paid.
-                n = update_tier_by_subscription(conn, sub_id, "paid")
-                if n:
-                    logger.info("key_unsuspended_on_paid sub=%s rows=%d", sub_id, n)
-                # Re-apply invoice metadata defensively (Stripe API call) +
-                # re-sync subscription_status from Stripe (Stripe API call) —
-                # both deferred to BackgroundTasks. The status refresh uses
-                # its own DB connection because the request-scoped conn is
-                # closed by the time background tasks fire.
-                background_tasks.add_task(_apply_invoice_metadata_safe, customer_id)
-                # Durable enqueue (migration 060). The Stripe Subscription
-                # retrieve is what actually populates the dashboard's dunning
-                # banner (`api_keys.stripe_subscription_*`); a SIGTERM between
-                # webhook commit and the retrieve would leave the cache stale
-                # for every paid customer until the next dunning event.
-                from jpintel_mcp.api._bg_task_queue import enqueue as _bg_enqueue
-
-                _bg_enqueue(
-                    conn,
-                    kind="stripe_status_refresh",
-                    payload={"sub_id": sub_id},
-                    # Per-event dedup so a redelivered invoice.paid does not
-                    # queue two refreshes; latest event_id wins.
-                    dedup_key=f"stripe_status_refresh:{event_id}:{sub_id}",
+            if metadata_kind(obj) == CREDIT_PACK_METADATA_KIND:
+                invoice_id = _stripe_obj_id(obj)
+                customer_id = (
+                    obj.get("customer") if isinstance(obj, dict) else getattr(obj, "customer", None)
                 )
+                payment_intent_id = (
+                    obj.get("payment_intent")
+                    if isinstance(obj, dict)
+                    else getattr(obj, "payment_intent", None)
+                )
+                amount_jpy = metadata_amount_jpy(obj)
+
+                cp_conn = _db_connect(_credit_pack_db_path())
+                try:
+                    _ensure_credit_pack_table(cp_conn)
+                    row = cp_conn.execute(
+                        "SELECT customer_id, amount_jpy, status "
+                        "FROM am_credit_pack_purchase "
+                        "WHERE stripe_invoice_id = ?",
+                        (invoice_id,),
+                    ).fetchone()
+                    if row and row["status"] == "paid":
+                        logger.info(
+                            "credit_pack_already_paid invoice=%s customer=%s",
+                            invoice_id,
+                            row["customer_id"],
+                        )
+                    else:
+                        if row:
+                            customer_id = row["customer_id"]
+                            amount_jpy = int(row["amount_jpy"])
+                        if not customer_id or amount_jpy is None:
+                            raise ValueError(
+                                f"credit pack invoice missing customer/amount invoice={invoice_id}"
+                            )
+                        grant_result = grant_credit_pack_idempotent(
+                            stripe,
+                            stripe_invoice_id=invoice_id,
+                            payment_intent_id=payment_intent_id,
+                            customer_id=customer_id,
+                            pack_size=amount_jpy,
+                            db_path=_credit_pack_db_path(),
+                        )
+                        if grant_result["status"] != "granted":
+                            logger.warning(
+                                "credit_pack_grant_not_acknowledged invoice=%s customer=%s "
+                                "status=%s retryable=%s manual_reconciliation_required=%s",
+                                invoice_id,
+                                customer_id,
+                                grant_result["status"],
+                                grant_result.get("retryable"),
+                                grant_result.get("manual_reconciliation_required"),
+                            )
+                            raise RuntimeError(
+                                "credit pack grant not completed "
+                                f"invoice={invoice_id} status={grant_result['status']}"
+                            )
+                        else:
+                            cp_conn.execute(
+                                "INSERT INTO am_credit_pack_purchase "
+                                "(customer_id, amount_jpy, stripe_invoice_id, "
+                                "stripe_balance_txn_id, status, paid_at) "
+                                "VALUES (?, ?, ?, ?, 'paid', datetime('now')) "
+                                "ON CONFLICT(stripe_invoice_id) DO UPDATE SET "
+                                "customer_id = excluded.customer_id, "
+                                "amount_jpy = excluded.amount_jpy, "
+                                "stripe_balance_txn_id = COALESCE("
+                                "excluded.stripe_balance_txn_id, "
+                                "am_credit_pack_purchase.stripe_balance_txn_id), "
+                                "status = 'paid', paid_at = datetime('now')",
+                                (
+                                    customer_id,
+                                    amount_jpy,
+                                    invoice_id,
+                                    grant_result.get("stripe_balance_txn_id"),
+                                ),
+                            )
+                            logger.info(
+                                "credit_pack_applied invoice=%s customer=%s amount=%s fresh=%s",
+                                invoice_id,
+                                customer_id,
+                                amount_jpy,
+                                grant_result.get("fresh"),
+                            )
+                finally:
+                    cp_conn.close()
+            else:
+                sub_id = obj.get("subscription")
+                customer_id = obj.get("customer")
+                if sub_id and customer_id:
+                    # Un-suspend: if a prior payment_failed demoted the key to free,
+                    # restoring tier=paid here re-enables the ¥3/req metered path.
+                    # No-op when the key is already paid.
+                    n = update_tier_by_subscription(conn, sub_id, "paid")
+                    if n:
+                        logger.info("key_unsuspended_on_paid sub=%s rows=%d", sub_id, n)
+                    # Re-apply invoice metadata defensively (Stripe API call) +
+                    # re-sync subscription_status from Stripe (Stripe API call) —
+                    # both deferred to BackgroundTasks. The status refresh uses
+                    # its own DB connection because the request-scoped conn is
+                    # closed by the time background tasks fire.
+                    background_tasks.add_task(_apply_invoice_metadata_safe, customer_id)
+                    # Durable enqueue (migration 060). The Stripe Subscription
+                    # retrieve is what actually populates the dashboard's dunning
+                    # banner (`api_keys.stripe_subscription_*`); a SIGTERM between
+                    # webhook commit and the retrieve would leave the cache stale
+                    # for every paid customer until the next dunning event.
+                    from jpintel_mcp.api._bg_task_queue import enqueue as _bg_enqueue
+
+                    _bg_enqueue(
+                        conn,
+                        kind="stripe_status_refresh",
+                        payload={"sub_id": sub_id},
+                        # Per-event dedup so a redelivered invoice.paid does not
+                        # queue two refreshes; latest event_id wins.
+                        dedup_key=f"stripe_status_refresh:{event_id}:{sub_id}",
+                    )
         elif etype == "customer.subscription.updated":
             sub_id = obj.get("id")
             # The outer `BEGIN IMMEDIATE` on `conn` (Fix 3 dedup
@@ -1418,9 +1627,7 @@ async def webhook(
                 handle_invoice_modification_event,
             )
 
-            handle_invoice_modification_event(
-                conn, etype, obj if isinstance(obj, dict) else {}
-            )
+            handle_invoice_modification_event(conn, etype, obj if isinstance(obj, dict) else {})
         elif etype == "customer.subscription.trial_will_end":
             # Stripe fires this 3 days before a free-trial expires. We do NOT
             # currently use trial periods on the metered ¥3/req plan, but Stripe
@@ -1463,8 +1670,7 @@ async def webhook(
         _handler_exc = handler_exc
         _capture(handler_exc)
         logger.exception(
-            "stripe.webhook.handler_failed event_id=%s type=%s — "
-            "rolling back so Stripe can retry",
+            "stripe.webhook.handler_failed event_id=%s type=%s — rolling back so Stripe can retry",
             event_id,
             etype,
         )

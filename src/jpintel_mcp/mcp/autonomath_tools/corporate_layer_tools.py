@@ -566,7 +566,7 @@ def _get_houjin_360_impl(houjin_bangou: str) -> dict[str, Any]:
                 "tool": "match_due_diligence_questions",
                 "args": {"houjin_bangou": hb, "deck_size": 40},
                 "rationale": (
-                    "360 view surfaces what we know; DD deck surfaces " "what to confirm next."
+                    "360 view surfaces what we know; DD deck surfaces what to confirm next."
                 ),
                 "compound_mult": 2.0,
             },

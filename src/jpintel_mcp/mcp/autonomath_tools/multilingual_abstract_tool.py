@@ -64,6 +64,7 @@ Response shape
       "_disclaimer": "<翻訳/法的責任は customer 側>"
     }
 """
+
 from __future__ import annotations
 
 import json
@@ -119,9 +120,7 @@ def _foreign_employer_signals(extraction: dict[str, Any]) -> dict[str, bool]:
     """
     blob = json.dumps(extraction, ensure_ascii=False)
     must_employ_foreign = bool(
-        "外国人労働者を雇用" in blob
-        or "外国人を雇用" in blob
-        or "外国人従業員" in blob
+        "外国人労働者を雇用" in blob or "外国人を雇用" in blob or "外国人従業員" in blob
     )
     must_employment_insurance = bool(
         "雇用保険" in blob and "未加入" not in blob[: blob.find("雇用保険") + 200]

@@ -134,9 +134,7 @@ def extract_hits(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return out
 
 
-def _attach_ratings(
-    tool: str, ratings: list[dict[str, Any]]
-) -> tuple[float | None, list[str]]:
+def _attach_ratings(tool: str, ratings: list[dict[str, Any]]) -> tuple[float | None, list[str]]:
     """Return (median_rating, redacted_sample_comments) for a single tool.
 
     Filters ratings to only those tagged for this tool, drops anything below
@@ -210,9 +208,7 @@ def extract_testimonials(
         # promotable threshold, _attach_ratings returns (None, []) and
         # we treat that as "rated but not promotable" — drop unless hits
         # alone meet the high-confidence floor.
-        has_rating_signal = any(
-            isinstance(r, dict) and r.get("tool") == tool for r in ratings
-        )
+        has_rating_signal = any(isinstance(r, dict) and r.get("tool") == tool for r in ratings)
         if has_rating_signal and median_rating is None and n < THRESHOLD_HIGH:
             continue
         if not has_rating_signal and n < THRESHOLD_HIGH:
@@ -248,9 +244,7 @@ def extract_testimonials(
     return proposals
 
 
-def write_testimonials_yaml(
-    proposals: list[dict[str, Any]], path: Path
-) -> int:
+def write_testimonials_yaml(proposals: list[dict[str, Any]], path: Path) -> int:
     """Write the testimonials proposals to YAML. Returns bytes written.
 
     Uses safe_dump so the file is plain YAML 1.1 (no Python-specific tags).
@@ -264,9 +258,7 @@ def write_testimonials_yaml(
             body_lines.append(f"    confidence: {p['confidence']}")
             body_lines.append(f"    hits: {p['hits']}")
             mr = p["median_rating"]
-            body_lines.append(
-                f"    median_rating: {('null' if mr is None else mr)}"
-            )
+            body_lines.append(f"    median_rating: {('null' if mr is None else mr)}")
             body_lines.append("    sample_comments:")
             for c in p["sample_comments"]:
                 body_lines.append(f"      - {c!r}")

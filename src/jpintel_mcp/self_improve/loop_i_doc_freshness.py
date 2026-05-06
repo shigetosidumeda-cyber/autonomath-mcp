@@ -73,7 +73,7 @@ DEFAULT_REPORT = REPO_ROOT / "data" / "source_freshness_report.json"
 STALE_THRESHOLD_DAYS = 60
 HIGH_PRIORITY_TIERS = ("S", "A")
 HEAD_PROBE_BUDGET = 500  # max rows to probe per run
-HEAD_PROBE_QPS = 5.0     # global throttle (matches refresh_sources default)
+HEAD_PROBE_QPS = 5.0  # global throttle (matches refresh_sources default)
 HEAD_PROBE_TIMEOUT = 15.0
 
 
@@ -413,9 +413,7 @@ def run(
     broken_map = {r["unified_id"]: r for r in broken_known}
     if probe and rows:
         try:
-            broken_probed = asyncio.run(
-                probe_unscanned_rows(rows, client_factory=client_factory)
-            )
+            broken_probed = asyncio.run(probe_unscanned_rows(rows, client_factory=client_factory))
         except RuntimeError:
             # Already inside an event loop (rare in cron, common in tests
             # that wrap us in asyncio). Fall back to a fresh task.

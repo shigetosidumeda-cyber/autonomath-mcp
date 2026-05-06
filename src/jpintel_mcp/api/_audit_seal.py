@@ -40,12 +40,14 @@ This module purposefully avoids the autonomath_disclaimer surface
 (SENSITIVE_TOOLS in envelope_wrapper.py) — the seal is a security
 primitive, not a customer-LLM prompt fragment.
 """
+
 from __future__ import annotations
 
 import contextlib
 import hashlib
 import hmac as _hmac
 import json
+import os
 import secrets
 import sqlite3
 import threading
@@ -99,7 +101,10 @@ def _canonical_json(payload: Any) -> str:
         return ""
     try:
         return json.dumps(
-            payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+            payload,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
             default=str,
         )
     except (TypeError, ValueError):
@@ -110,21 +115,162 @@ def _sha256_hex(data: str) -> str:
     return hashlib.sha256(data.encode("utf-8")).hexdigest()
 
 
-def compute_hmac(call_id: str, ts: str, query_hash: str, response_hash: str) -> str:
-    """Return the HMAC-SHA256 hex digest binding the seal fields.
+def _legacy_key() -> dict[str, Any]:
+    return {"v": 1, "s": settings.audit_seal_secret, "retired_at": None}
 
-    The signature surface is intentionally narrow (4 fields) so the
-    customer's verification routine is straightforward — they don't
-    need to sort source_urls or worry about unicode normalization
-    for the URL list. The URL list itself is verified by reading the
-    persisted row at /v1/me/audit_seal/{call_id} and comparing.
+
+def _load_keys() -> list[dict[str, Any]]:
+    """Return audit-seal HMAC keys from the live environment.
+
+    ``JPINTEL_AUDIT_SEAL_KEYS`` is intentionally read on every call so a
+    rotation secret update takes effect without a process restart. The
+    production boot gate validates the value strictly; this helper is lenient
+    and falls back to the legacy single-secret path in dev/test.
     """
+    raw = os.getenv("JPINTEL_AUDIT_SEAL_KEYS")
+    if not raw or not raw.strip():
+        return [_legacy_key()]
+
+    keys: list[dict[str, Any]] = []
+    try:
+        stripped = raw.strip()
+        if stripped[0] in "[{":
+            parsed = json.loads(stripped)
+            if isinstance(parsed, dict):
+                parsed = [parsed]
+            if not isinstance(parsed, list):
+                return [_legacy_key()]
+            items = parsed
+        else:
+            items = [part.strip() for part in stripped.split(",")]
+    except (json.JSONDecodeError, TypeError, ValueError, IndexError):
+        return [_legacy_key()]
+
+    for fallback_version, item in enumerate(items, start=1):
+        retired_at = None
+        if isinstance(item, dict):
+            secret = item.get("s")
+            version_raw = item.get("v", item.get("key_version", fallback_version))
+            retired_at = item.get("retired_at")
+        else:
+            secret = item
+            version_raw = fallback_version
+        if not isinstance(secret, str) or not secret:
+            continue
+        try:
+            version = int(version_raw)
+        except (TypeError, ValueError):
+            version = fallback_version
+        keys.append({"v": version, "s": secret, "retired_at": retired_at})
+
+    if not keys:
+        return [_legacy_key()]
+    return sorted(keys, key=lambda key: int(key["v"]))
+
+
+def _active_key() -> dict[str, Any]:
+    keys = _load_keys()
+    active = [key for key in keys if key.get("retired_at") in (None, "")]
+    candidates = active or keys
+    return max(candidates, key=lambda key: int(key["v"]))
+
+
+def _key_for_version(key_version: int) -> dict[str, Any]:
+    for key in _load_keys():
+        if int(key["v"]) == int(key_version):
+            return key
+    raise ValueError(f"unknown audit seal key_version: {key_version}")
+
+
+def _hmac_for_secret(
+    call_id: str,
+    ts: str,
+    query_hash: str,
+    response_hash: str,
+    secret: str,
+    *,
+    seal_id: str | None = None,
+    corpus_snapshot_id: str | None = None,
+) -> str:
     payload = f"{call_id}|{ts}|{query_hash}|{response_hash}"
+    if seal_id is not None or corpus_snapshot_id is not None:
+        payload = f"{payload}|{seal_id or ''}|{corpus_snapshot_id or ''}"
     return _hmac.new(
-        settings.audit_seal_secret.encode("utf-8"),
+        secret.encode("utf-8"),
         payload.encode("utf-8"),
         hashlib.sha256,
     ).hexdigest()
+
+
+def _payload_sig_for_secret(payload: bytes, secret: str) -> str:
+    return _hmac.new(secret.encode("utf-8"), payload, hashlib.sha256).hexdigest()
+
+
+def sign(payload: bytes) -> dict[str, Any]:
+    """Sign arbitrary canonical payload bytes with the active audit-seal key."""
+    key = _active_key()
+    return {
+        "alg": "HMAC-SHA256",
+        "key_version": int(key["v"]),
+        "sig": _payload_sig_for_secret(payload, str(key["s"])),
+    }
+
+
+def verify(payload: bytes, seal: dict[str, Any] | str) -> bool:
+    """Verify a ``sign`` envelope, trying all keys when no version is present."""
+    if isinstance(seal, str):
+        expected_sig = seal
+        key_version = None
+    elif isinstance(seal, dict):
+        expected_sig = seal.get("sig") or seal.get("hmac")
+        key_version = seal.get("key_version")
+    else:
+        return False
+    if not isinstance(expected_sig, str):
+        return False
+
+    if key_version is not None:
+        try:
+            key = _key_for_version(int(key_version))
+        except (TypeError, ValueError):
+            return False
+        actual = _payload_sig_for_secret(payload, str(key["s"]))
+        return _hmac.compare_digest(actual, expected_sig)
+
+    for key in _load_keys():
+        actual = _payload_sig_for_secret(payload, str(key["s"]))
+        if _hmac.compare_digest(actual, expected_sig):
+            return True
+    return False
+
+
+def compute_hmac(
+    call_id: str,
+    ts: str,
+    query_hash: str,
+    response_hash: str,
+    *,
+    key_version: int | None = None,
+    seal_id: str | None = None,
+    corpus_snapshot_id: str | None = None,
+) -> str:
+    """Return the HMAC-SHA256 hex digest binding the seal fields.
+
+    The legacy signature surface is the 4 core hash fields. New §17.D
+    public seals also bind ``seal_id`` and ``corpus_snapshot_id`` so a
+    persisted row cannot swap the public verify id or snapshot label
+    while keeping ``verified=true``.
+    """
+    key = _active_key() if key_version is None else _key_for_version(key_version)
+    return _hmac_for_secret(
+        call_id,
+        ts,
+        query_hash,
+        response_hash,
+        str(key["s"]),
+        seal_id=seal_id,
+        corpus_snapshot_id=corpus_snapshot_id,
+    )
 
 
 def verify_hmac(
@@ -133,10 +279,40 @@ def verify_hmac(
     query_hash: str,
     response_hash: str,
     expected_hmac: str,
+    *,
+    key_version: int | None = None,
+    seal_id: str | None = None,
+    corpus_snapshot_id: str | None = None,
 ) -> bool:
     """Constant-time HMAC verify. Returns False on any mismatch."""
-    actual = compute_hmac(call_id, ts, query_hash, response_hash)
-    return _hmac.compare_digest(actual, expected_hmac)
+    if key_version is not None:
+        try:
+            actual = compute_hmac(
+                call_id,
+                ts,
+                query_hash,
+                response_hash,
+                key_version=key_version,
+                seal_id=seal_id,
+                corpus_snapshot_id=corpus_snapshot_id,
+            )
+        except (TypeError, ValueError):
+            return False
+        return _hmac.compare_digest(actual, expected_hmac)
+
+    for key in _load_keys():
+        actual = _hmac_for_secret(
+            call_id,
+            ts,
+            query_hash,
+            response_hash,
+            str(key["s"]),
+            seal_id=seal_id,
+            corpus_snapshot_id=corpus_snapshot_id,
+        )
+        if _hmac.compare_digest(actual, expected_hmac):
+            return True
+    return False
 
 
 def extract_source_urls(response_body: Any, *, max_urls: int = 32) -> list[str]:
@@ -161,10 +337,13 @@ def extract_source_urls(response_body: Any, *, max_urls: int = 32) -> list[str]:
                         out.append(v)
                 elif isinstance(v, list):
                     for u in v:
-                        if isinstance(u, str) and u.startswith(("http://", "https://")):
-                            if u not in seen:
-                                seen.add(u)
-                                out.append(u)
+                        if (
+                            isinstance(u, str)
+                            and u.startswith(("http://", "https://"))
+                            and u not in seen
+                        ):
+                            seen.add(u)
+                            out.append(u)
             for v in node.values():
                 if len(out) >= max_urls:
                     return
@@ -190,8 +369,8 @@ _JST = timezone(timedelta(hours=9))
 #: read/refresh path under concurrent FastAPI workers; sqlite reads are short.
 _CORPUS_SNAPSHOT_TTL_SECONDS = 6 * 3600
 _corpus_snapshot_cache: dict[str, Any] = {
-    "value": None,         # str | None — ``corpus-YYYY-MM-DD`` once seeded
-    "computed_at": 0.0,    # monotonic seconds, 0 == never computed
+    "value": None,  # str | None — ``corpus-YYYY-MM-DD`` once seeded
+    "computed_at": 0.0,  # monotonic seconds, 0 == never computed
 }
 _corpus_snapshot_lock = threading.Lock()
 
@@ -218,9 +397,7 @@ def _derive_corpus_snapshot_id() -> str:
         uri = f"file:{db_path}?mode=ro"
         conn = sqlite3.connect(uri, uri=True, timeout=2.0)
         try:
-            row = conn.execute(
-                "SELECT MAX(last_verified) FROM am_source"
-            ).fetchone()
+            row = conn.execute("SELECT MAX(last_verified) FROM am_source").fetchone()
         finally:
             conn.close()
     except sqlite3.Error:
@@ -292,6 +469,81 @@ def _key_hash_prefix(api_key_hash: str | None) -> str:
     return str(api_key_hash)[:8]
 
 
+def _retention_until_for_seal(seal: dict[str, Any]) -> str:
+    try:
+        issued_at = datetime.fromisoformat(seal["ts"])
+    except (KeyError, TypeError, ValueError):
+        issued_at = datetime.now(UTC)
+    return (issued_at + timedelta(days=365 * _RETENTION_YEARS + 2)).isoformat()
+
+
+def _seal_key_version(seal: dict[str, Any]) -> int:
+    try:
+        return int(seal.get("key_version") or 1)
+    except (TypeError, ValueError):
+        return 1
+
+
+def _execute_seal_insert(
+    conn: sqlite3.Connection,
+    sql: str,
+    params: tuple[Any, ...],
+) -> None:
+    cur = conn.execute(sql, params)
+    if cur.rowcount != 1:
+        raise sqlite3.IntegrityError(f"audit_seals insert rowcount={cur.rowcount}; expected 1")
+
+
+def _ensure_unique_seal_id(conn: sqlite3.Connection, seal_id: str | None) -> None:
+    if not seal_id:
+        return
+    try:
+        row = conn.execute(
+            "SELECT 1 FROM audit_seals WHERE seal_id = ? LIMIT 1",
+            (seal_id,),
+        ).fetchone()
+    except sqlite3.OperationalError:
+        return
+    if row is not None:
+        raise sqlite3.IntegrityError(f"duplicate audit seal_id: {seal_id}")
+
+
+def _log_seal_persist_failure(
+    conn: sqlite3.Connection,
+    *,
+    endpoint: str,
+    api_key_hash: str | None,
+    seal: dict[str, Any],
+    reason: str,
+) -> None:
+    """Best-effort §52 telemetry for a paid response emitted without a seal."""
+    with contextlib.suppress(Exception):
+        conn.execute(
+            "INSERT INTO audit_log_section52("
+            "sampled_at, tool, request_hash, response_hash, "
+            "disclaimer_present, advisory_terms_in_response, violation"
+            ") VALUES (?,?,?,?,?,?,?)",
+            (
+                datetime.now(UTC).isoformat(),
+                f"audit_seal.persist:{endpoint}",
+                str(seal.get("query_hash") or ""),
+                str(seal.get("response_hash") or ""),
+                1,
+                json.dumps(
+                    [
+                        {
+                            "event_type": "seal_persist_fail",
+                            "api_key_hash_prefix": _key_hash_prefix(api_key_hash),
+                            "reason": reason[:200],
+                        }
+                    ],
+                    ensure_ascii=False,
+                ),
+                1,
+            ),
+        )
+
+
 def build_seal(
     *,
     endpoint: str,
@@ -322,9 +574,18 @@ def build_seal(
     query_hash = _sha256_hex(_canonical_json(request_params or {}))
     response_hash = _sha256_hex(_canonical_json(response_body))
     source_urls = extract_source_urls(response_body)
-    hmac_hex = compute_hmac(call_id, ts, query_hash, response_hash)
     snapshot_id = corpus_snapshot_id or get_corpus_snapshot_id()
     seal_id = "seal_" + uuid.uuid4().hex
+    key = _active_key()
+    hmac_hex = _hmac_for_secret(
+        call_id,
+        ts,
+        query_hash,
+        response_hash,
+        str(key["s"]),
+        seal_id=seal_id,
+        corpus_snapshot_id=snapshot_id,
+    )
     seal: dict[str, Any] = {
         # ----- §17.D customer-facing surface -----------------------------
         "seal_id": seal_id,
@@ -333,9 +594,7 @@ def build_seal(
         "key_hash_prefix": _key_hash_prefix(api_key_hash),
         "corpus_snapshot_id": snapshot_id,
         "verify_endpoint": f"/v1/audit/seals/{seal_id}",
-        "_disclaimer": (
-            "信頼できる出典として運用する場合は、verify_endpoint で seal の真正性を確認してください。"
-        ),
+        "_disclaimer": "verify_endpoint で seal の真正性を確認してください。",
         # ----- legacy fields (HMAC verification path) --------------------
         "call_id": call_id,
         "ts": ts,
@@ -343,6 +602,8 @@ def build_seal(
         "query_hash": query_hash,
         "response_hash": response_hash,
         "source_urls": source_urls,
+        "alg": "HMAC-SHA256",
+        "key_version": int(key["v"]),
         "hmac": hmac_hex,
     }
     if client_tag:
@@ -358,26 +619,44 @@ def persist_seal(
 ) -> None:
     """Insert the seal into audit_seals with 7-year retention.
 
-    Best-effort: if the table is missing (migration 089 not yet applied)
-    or the INSERT fails, we swallow the error so the customer-facing
-    response is never blocked. Operators see the failure via the usual
-    sqlite3 OperationalError path on the daily cron sweep.
+    The insert is strict: a duplicate key, missing table, or zero-row insert
+    raises so callers can avoid returning an unverifiable seal.
 
     Migration 119 added ``seal_id`` + ``corpus_snapshot_id`` columns. We
     INSERT them when present; on a pre-119 schema the second INSERT path
     falls back to the legacy column set so the row still lands.
     """
-    try:
-        retention_until = (
-            datetime.fromisoformat(seal["ts"]) + timedelta(days=365 * _RETENTION_YEARS + 2)
-        ).isoformat()
-    except (TypeError, ValueError):
-        retention_until = (datetime.now(UTC) + timedelta(days=365 * _RETENTION_YEARS + 2)).isoformat()
+    retention_until = _retention_until_for_seal(seal)
     seal_id = seal.get("seal_id")
     corpus_snapshot_id = seal.get("corpus_snapshot_id")
-    try:
-        conn.execute(
-            "INSERT OR IGNORE INTO audit_seals("
+    key_version = _seal_key_version(seal)
+    source_urls_json = json.dumps(seal.get("source_urls", []), ensure_ascii=False)
+    started_transaction = False
+    insert_attempts: tuple[tuple[str, tuple[Any, ...]], ...] = (
+        (
+            "INSERT INTO audit_seals("
+            "  call_id, api_key_hash, ts, endpoint, query_hash, response_hash,"
+            "  source_urls_json, client_tag, hmac, retention_until,"
+            "  seal_id, corpus_snapshot_id, key_version"
+            ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            (
+                seal["call_id"],
+                api_key_hash,
+                seal["ts"],
+                seal["endpoint"],
+                seal["query_hash"],
+                seal["response_hash"],
+                source_urls_json,
+                seal.get("client_tag"),
+                seal["hmac"],
+                retention_until,
+                seal_id,
+                corpus_snapshot_id,
+                key_version,
+            ),
+        ),
+        (
+            "INSERT INTO audit_seals("
             "  call_id, api_key_hash, ts, endpoint, query_hash, response_hash,"
             "  source_urls_json, client_tag, hmac, retention_until,"
             "  seal_id, corpus_snapshot_id"
@@ -389,38 +668,77 @@ def persist_seal(
                 seal["endpoint"],
                 seal["query_hash"],
                 seal["response_hash"],
-                json.dumps(seal.get("source_urls", []), ensure_ascii=False),
+                source_urls_json,
                 seal.get("client_tag"),
                 seal["hmac"],
                 retention_until,
                 seal_id,
                 corpus_snapshot_id,
             ),
-        )
-        return
-    except sqlite3.OperationalError:
-        # Either migration 089 missing OR migration 119 missing. Try the
-        # legacy 10-column schema (pre-119) before giving up. Migration
-        # 089 absence ultimately swallows in the inner try below.
-        with contextlib.suppress(sqlite3.OperationalError):
-            conn.execute(
-                "INSERT OR IGNORE INTO audit_seals("
-                "  call_id, api_key_hash, ts, endpoint, query_hash, response_hash,"
-                "  source_urls_json, client_tag, hmac, retention_until"
-                ") VALUES (?,?,?,?,?,?,?,?,?,?)",
-                (
-                    seal["call_id"],
-                    api_key_hash,
-                    seal["ts"],
-                    seal["endpoint"],
-                    seal["query_hash"],
-                    seal["response_hash"],
-                    json.dumps(seal.get("source_urls", []), ensure_ascii=False),
-                    seal.get("client_tag"),
-                    seal["hmac"],
-                    retention_until,
-                ),
-            )
+        ),
+        (
+            "INSERT INTO audit_seals("
+            "  call_id, api_key_hash, ts, endpoint, query_hash, response_hash,"
+            "  source_urls_json, client_tag, hmac, retention_until,"
+            "  key_version"
+            ") VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+            (
+                seal["call_id"],
+                api_key_hash,
+                seal["ts"],
+                seal["endpoint"],
+                seal["query_hash"],
+                seal["response_hash"],
+                source_urls_json,
+                seal.get("client_tag"),
+                seal["hmac"],
+                retention_until,
+                key_version,
+            ),
+        ),
+        (
+            "INSERT INTO audit_seals("
+            "  call_id, api_key_hash, ts, endpoint, query_hash, response_hash,"
+            "  source_urls_json, client_tag, hmac, retention_until"
+            ") VALUES (?,?,?,?,?,?,?,?,?,?)",
+            (
+                seal["call_id"],
+                api_key_hash,
+                seal["ts"],
+                seal["endpoint"],
+                seal["query_hash"],
+                seal["response_hash"],
+                source_urls_json,
+                seal.get("client_tag"),
+                seal["hmac"],
+                retention_until,
+            ),
+        ),
+    )
+
+    try:
+        if not conn.in_transaction:
+            conn.execute("BEGIN IMMEDIATE")
+            started_transaction = True
+        _ensure_unique_seal_id(conn, str(seal_id) if seal_id else None)
+        last_operational_error: sqlite3.OperationalError | None = None
+        for sql, params in insert_attempts:
+            try:
+                _execute_seal_insert(conn, sql, params)
+            except sqlite3.OperationalError as exc:
+                last_operational_error = exc
+                continue
+            if started_transaction:
+                conn.execute("COMMIT")
+            return
+        if last_operational_error is not None:
+            raise last_operational_error
+        raise sqlite3.OperationalError("audit_seals insert did not run")
+    except Exception:
+        if started_transaction:
+            with contextlib.suppress(Exception):
+                conn.execute("ROLLBACK")
+        raise
 
 
 def attach_seal_to_body(
@@ -434,9 +752,9 @@ def attach_seal_to_body(
 ) -> dict[str, Any]:
     """Build, attach, and persist an audit_seal for the given body.
 
-    Mutates ``body`` in place (adding the ``audit_seal`` key) and returns
-    it for chaining. Persistence is best-effort — a missing migration 089
-    or 119 swallows silently.
+    Mutates ``body`` in place (adding the ``audit_seal`` key) only after
+    persistence is confirmed. If persistence fails, the response remains
+    useful but carries ``_seal_unavailable`` instead of an unverifiable seal.
 
     No-op when ``api_key_hash`` is None (anon path — sealing requires a
     key for both customer-side ownership and statutory retention).
@@ -454,13 +772,23 @@ def attach_seal_to_body(
         client_tag=client_tag,
         api_key_hash=api_key_hash,
     )
+    if conn is None:
+        body["audit_seal"] = seal
+        return body
+    try:
+        persist_seal(conn, seal=seal, api_key_hash=api_key_hash)
+    except Exception as exc:
+        body["_seal_unavailable"] = True
+        _log_seal_persist_failure(
+            conn,
+            endpoint=endpoint,
+            api_key_hash=api_key_hash,
+            seal=seal,
+            reason=f"{exc.__class__.__name__}: {exc}",
+        )
+        return body
+
     body["audit_seal"] = seal
-    if conn is not None:
-        # Never block the response on a persist failure — persist_seal
-        # already swallows OperationalError; this catch is defence in
-        # depth for any other sqlite3.Error subclass.
-        with contextlib.suppress(sqlite3.Error):
-            persist_seal(conn, seal=seal, api_key_hash=api_key_hash)
     return body
 
 
@@ -520,5 +848,7 @@ __all__ = [
     "get_corpus_snapshot_id",
     "lookup_seal",
     "persist_seal",
+    "sign",
+    "verify",
     "verify_hmac",
 ]

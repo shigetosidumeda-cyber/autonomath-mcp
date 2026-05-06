@@ -181,9 +181,7 @@ def build_cache_proposals(
     for akh in sorted(by_customer.keys()):
         counter = by_customer[akh]
         # Drop sub-threshold patterns (one-off queries are not a pattern).
-        kept = [
-            (k, n) for k, n in counter.most_common() if n >= THRESHOLD_PER_CUSTOMER
-        ]
+        kept = [(k, n) for k, n in counter.most_common() if n >= THRESHOLD_PER_CUSTOMER]
         # Top-K per customer.
         kept = kept[:TOP_K_PER_CUSTOMER]
         trim = _trim_api_key_hash(akh)

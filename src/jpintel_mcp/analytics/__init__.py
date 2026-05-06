@@ -15,6 +15,7 @@ Numerical targets (v8 plan):
 
 The methodology document lives at docs/confidence_methodology.md.
 """
+
 from __future__ import annotations
 
 from jpintel_mcp.analytics.bayesian import (

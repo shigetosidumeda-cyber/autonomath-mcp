@@ -101,9 +101,7 @@ def _row_title(row: dict[str, Any]) -> str:
     return str(row.get("unified_id") or "(untitled)")
 
 
-def render_docx_application(
-    rows: list[dict[str, Any]], meta: dict[str, Any]
-) -> Response:
+def render_docx_application(rows: list[dict[str, Any]], meta: dict[str, Any]) -> Response:
     """Render a 申請書 scaffold DOCX from one or more program rows.
 
     One row -> one program section. Multi-row input is supported but
@@ -117,8 +115,7 @@ def render_docx_application(
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=(
-                "format=docx-application requires the 'python-docx' dep — "
-                "pip install python-docx"
+                "format=docx-application requires the 'python-docx' dep — pip install python-docx"
             ),
         ) from exc
 
@@ -195,9 +192,7 @@ def render_docx_application(
     filename = f"{meta.get('filename_stem', 'autonomath_export')}_scaffold.docx"
     return Response(
         content=buf.read(),
-        media_type=(
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        ),
+        media_type=("application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
         headers={
             "Content-Disposition": f'attachment; filename="{filename}"',
             "X-AutonoMath-Disclaimer": DISCLAIMER_HEADER_VALUE,

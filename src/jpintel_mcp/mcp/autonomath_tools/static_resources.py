@@ -1,4 +1,5 @@
 """Static resource access for curated jpcite taxonomies."""
+
 from __future__ import annotations
 
 import json
@@ -41,12 +42,15 @@ _EXAMPLE_PROFILES = {
     "minimal": "N_minimal.json",
 }
 
+
 class ResourceNotFoundError(KeyError):
     pass
+
 
 @lru_cache(maxsize=16)
 def _load_json(path: Path) -> object:
     return json.loads(path.read_text(encoding="utf-8"))
+
 
 def list_static_resources() -> list[dict[str, object]]:
     """Return manifest of all available static resources."""
@@ -61,10 +65,13 @@ def list_static_resources() -> list[dict[str, object]]:
         if (STATIC_DIR / fname).exists()
     ]
 
+
 def get_static_resource(resource_id: str) -> dict[str, object]:
     """Load a static taxonomy/lookup file by id. Returns full JSON content + metadata."""
     if resource_id not in _STATIC_RESOURCES:
-        raise ResourceNotFoundError(f"unknown resource: {resource_id}; available: {sorted(_STATIC_RESOURCES)}")
+        raise ResourceNotFoundError(
+            f"unknown resource: {resource_id}; available: {sorted(_STATIC_RESOURCES)}"
+        )
     path = STATIC_DIR / _STATIC_RESOURCES[resource_id]
     if not path.exists():
         raise ResourceNotFoundError(f"resource file missing on disk: {path}")
@@ -74,6 +81,7 @@ def get_static_resource(resource_id: str) -> dict[str, object]:
         "license": "Available as part of jpcite API responses; verify primary-source terms for downstream redistribution.",
         "source_origin": "jpcite reference data",
     }
+
 
 def list_example_profiles() -> list[dict[str, object]]:
     """Return list of canonical example client profiles for documentation purposes."""
@@ -87,10 +95,13 @@ def list_example_profiles() -> list[dict[str, object]]:
         if (EXAMPLE_DIR / fname).exists()
     ]
 
+
 def get_example_profile(profile_id: str) -> dict[str, object]:
     """Return one canonical client profile JSON as a complete-payload example."""
     if profile_id not in _EXAMPLE_PROFILES:
-        raise ResourceNotFoundError(f"unknown profile: {profile_id}; available: {sorted(_EXAMPLE_PROFILES)}")
+        raise ResourceNotFoundError(
+            f"unknown profile: {profile_id}; available: {sorted(_EXAMPLE_PROFILES)}"
+        )
     path = EXAMPLE_DIR / _EXAMPLE_PROFILES[profile_id]
     if not path.exists():
         raise ResourceNotFoundError(f"profile file missing: {path}")

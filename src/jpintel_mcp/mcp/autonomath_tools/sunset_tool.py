@@ -40,15 +40,17 @@ logger = logging.getLogger("jpintel.mcp.new.sunset")
 # (dd_v4_05). 2027-03-31 holds 29 rules; the other dates are smaller but
 # still policy-driven (年度末 / 年末) sunset clusters that historically
 # trigger 延長 / 廃止 decisions in the 12月大綱.
-_CRITICAL_CLIFF_DATES: frozenset[str] = frozenset({
-    "2025-03-31",
-    "2025-12-31",
-    "2026-03-31",
-    "2026-12-31",
-    "2027-03-31",
-    "2027-12-31",
-    "2028-03-31",
-})
+_CRITICAL_CLIFF_DATES: frozenset[str] = frozenset(
+    {
+        "2025-03-31",
+        "2025-12-31",
+        "2026-03-31",
+        "2026-12-31",
+        "2027-03-31",
+        "2027-12-31",
+        "2028-03-31",
+    }
+)
 
 
 @mcp.tool(annotations=_READ_ONLY)
@@ -197,23 +199,25 @@ def list_tax_sunset_alerts(
         except (TypeError, ValueError):
             days_rem = None
         cliff_buckets[eu] = cliff_buckets.get(eu, 0) + 1
-        results.append({
-            "measure": {
-                "canonical_id": row["tax_measure_entity_id"],
-                "name": row["primary_name"],
-                "canonical_status": row["canonical_status"],
-            },
-            "rule_type": row["rule_type"],
-            "base_rate_pct": row["base_rate_pct"],
-            "cap_yen": row["cap_yen"],
-            "effective_from": row["effective_from"],
-            "effective_until": eu,
-            "days_remaining": days_rem,
-            "article_ref": row["article_ref"],
-            "source_url": row["source_url"],
-            "note": row["note"],
-            "is_critical_cliff": is_critical,
-        })
+        results.append(
+            {
+                "measure": {
+                    "canonical_id": row["tax_measure_entity_id"],
+                    "name": row["primary_name"],
+                    "canonical_status": row["canonical_status"],
+                },
+                "rule_type": row["rule_type"],
+                "base_rate_pct": row["base_rate_pct"],
+                "cap_yen": row["cap_yen"],
+                "effective_from": row["effective_from"],
+                "effective_until": eu,
+                "days_remaining": days_rem,
+                "article_ref": row["article_ref"],
+                "source_url": row["source_url"],
+                "note": row["note"],
+                "is_critical_cliff": is_critical,
+            }
+        )
 
     out: dict[str, Any] = {
         "total": len(results),
@@ -264,11 +268,13 @@ if __name__ == "__main__":  # pragma: no cover
         res = list_tax_sunset_alerts(**kw)  # @mcp.tool returns the bare function
         print(f"total={res['total']}, cliff_dates={res['cliff_dates']}")
         for r in res["results"][:3]:
-            pprint.pprint({
-                "name": r["measure"]["name"],
-                "status": r["measure"]["canonical_status"],
-                "rule_type": r["rule_type"],
-                "until": r["effective_until"],
-                "days_remaining": r["days_remaining"],
-                "is_critical": r["is_critical_cliff"],
-            })
+            pprint.pprint(
+                {
+                    "name": r["measure"]["name"],
+                    "status": r["measure"]["canonical_status"],
+                    "rule_type": r["rule_type"],
+                    "until": r["effective_until"],
+                    "days_remaining": r["days_remaining"],
+                    "is_critical": r["is_critical_cliff"],
+                }
+            )

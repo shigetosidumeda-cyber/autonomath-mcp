@@ -103,9 +103,7 @@ if TYPE_CHECKING:
 # Repo layout: src/jpintel_mcp/self_improve/loop_h_cache_warming.py
 # climb four parents to reach the repo root.
 REPO_ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_DB_PATH = Path(
-    os.environ.get("JPINTEL_DB_PATH", str(REPO_ROOT / "data" / "jpintel.db"))
-)
+DEFAULT_DB_PATH = Path(os.environ.get("JPINTEL_DB_PATH", str(REPO_ROOT / "data" / "jpintel.db")))
 REPORT_PATH = REPO_ROOT / "data" / "cache_warming_report.json"
 
 # Default: scan 7d of usage_events, take top 100 (endpoint, digest) pairs.
@@ -129,9 +127,9 @@ _ENDPOINT_TO_L4_TOOL: dict[str, str] = {
 # duplicating them here is a deliberate trade-off (no cross-import) — they
 # are constants so drift is operator-visible (this module + the router).
 _WARM_TTL_BY_TOOL: dict[str, int] = {
-    "api.programs.search": 600,    # 2x 300s (live)
-    "api.programs.get": 7200,      # 2x 3600s (live)
-    "api.am.tax_incentives": 3600, # 2x 1800s (live)
+    "api.programs.search": 600,  # 2x 300s (live)
+    "api.programs.get": 7200,  # 2x 3600s (live)
+    "api.am.tax_incentives": 3600,  # 2x 1800s (live)
 }
 
 
@@ -191,9 +189,7 @@ def select_hot_queries(
             )
         else:
             ep, dg, n = r
-            out.append(
-                {"endpoint": ep, "params_digest": dg, "hit_count": int(n)}
-            )
+            out.append({"endpoint": ep, "params_digest": dg, "hit_count": int(n)})
     return out
 
 
@@ -219,9 +215,7 @@ def _params_digest_of(params_json: str) -> str | None:
     cleaned = {k: v for k, v in parsed.items() if v is not None}
     if not cleaned:
         return None
-    canonical = json.dumps(
-        cleaned, sort_keys=True, separators=(",", ":"), ensure_ascii=False
-    )
+    canonical = json.dumps(cleaned, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:16]
 
 
@@ -261,13 +255,10 @@ def find_l4_params_for_digest(
     return None
 
 
-def _is_fresh_in_db(
-    conn: sqlite3.Connection, *, cache_key: str
-) -> bool:
+def _is_fresh_in_db(conn: sqlite3.Connection, *, cache_key: str) -> bool:
     """True iff the L4 row for `cache_key` exists and isn't past its TTL."""
     row = conn.execute(
-        "SELECT created_at, ttl_seconds FROM l4_query_cache "
-        "WHERE cache_key = ?",
+        "SELECT created_at, ttl_seconds FROM l4_query_cache WHERE cache_key = ?",
         (cache_key,),
     ).fetchone()
     if row is None:
@@ -362,17 +353,13 @@ def warm_top_queries(
         if tool is None:
             skipped += 1
             continue
-        bag = by_tool.setdefault(
-            tool, {"warmed": 0, "already_fresh": 0, "skipped": 0}
-        )
+        bag = by_tool.setdefault(tool, {"warmed": 0, "already_fresh": 0, "skipped": 0})
         compute = compute_factories.get(tool)
         if compute is None:
             bag["skipped"] += 1
             skipped += 1
             continue
-        params = find_l4_params_for_digest(
-            conn, endpoint=endpoint, params_digest=digest
-        )
+        params = find_l4_params_for_digest(conn, endpoint=endpoint, params_digest=digest)
         if params is None:
             # Digest pre-dates L4 wiring or the cached row was evicted.
             # Nothing to reconstruct from — skip without crossing the PII
@@ -388,7 +375,11 @@ def warm_top_queries(
             continue
         ttl = ttls.get(tool, 86400)
         ok = _warm_one(
-            conn, tool=tool, params=params, compute=compute, ttl=ttl,
+            conn,
+            tool=tool,
+            params=params,
+            compute=compute,
+            ttl=ttl,
         )
         if ok:
             bag["warmed"] += 1
@@ -426,9 +417,7 @@ def _project_hit_rate(
     if warmed_digests is None:
         warmed_digests = set()
     hit_after = sum(
-        h["hit_count"]
-        for h in hot
-        if (h["endpoint"], h["params_digest"]) in warmed_digests
+        h["hit_count"] for h in hot if (h["endpoint"], h["params_digest"]) in warmed_digests
     )
     return (1.0, round(hit_after / total, 4))
 
@@ -479,7 +468,9 @@ def run(
     conn.row_factory = sqlite3.Row
     try:
         hot = select_hot_queries(
-            conn, window_days=window_days, top_n=top_n,
+            conn,
+            window_days=window_days,
+            top_n=top_n,
         )
         if not hot or not factories:
             # No traffic yet OR no compute callbacks injected.
@@ -519,7 +510,9 @@ def run(
 
         # Real run: warm + report.
         report = warm_top_queries(
-            conn, hot=hot, compute_factories=factories,
+            conn,
+            hot=hot,
+            compute_factories=factories,
         )
         conn.commit()
 
@@ -563,8 +556,7 @@ def run(
         return {
             "loop": "loop_h_cache_warming",
             "scanned": len(hot),
-            "actions_proposed": report["warmed_count"]
-            + report["already_fresh_count"],
+            "actions_proposed": report["warmed_count"] + report["already_fresh_count"],
             "actions_executed": report["warmed_count"],
         }
     finally:

@@ -12,6 +12,7 @@ Rate-limit posture:
     so there is no separate in-memory bucket to keep consistent across the
     usage limiter.
 """
+
 from __future__ import annotations
 
 import hashlib

@@ -31,6 +31,7 @@ unit-test fixtures, lock contention). We degrade to an empty mapping —
 all rows are then `unknown` and a `?license=` filter behaves like a
 pass-through. Never raises.
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -169,9 +170,7 @@ def filter_rows_by_license(
     return [r for r in rows if license_for_url(_src(r)) in license_set]
 
 
-def license_summary(
-    rows: Iterable[Any], *, url_attr: str = "source_url"
-) -> dict[str, int]:
+def license_summary(rows: Iterable[Any], *, url_attr: str = "source_url") -> dict[str, int]:
     """Build a `{license: count}` rollup over the returned rows.
 
     Always includes every license that actually appears (zero-count
@@ -251,9 +250,7 @@ def next_calls_for_program(row: Any) -> list[dict[str, Any]]:
     # may carry edges even without enriched populated". The MCP tool itself
     # returns an empty edge set when nothing matches (no quota burn), so the
     # suggestion is honest.
-    calls.append(
-        {"tool": "trace_program_to_law", "args": {"unified_id": uid}}
-    )
+    calls.append({"tool": "trace_program_to_law", "args": {"unified_id": uid}})
     # find_cases_by_program — only emit when we have any signal that case_studies
     # rows mention this program. The honest filter: presence of at least one
     # of (primary_name, aliases) on the row, which is universally true for
@@ -263,9 +260,7 @@ def next_calls_for_program(row: Any) -> list[dict[str, Any]]:
     # else (loan / tax / certification) skips the case-study suggestion.
     program_kind = _row_attr(row, "program_kind")
     if program_kind == "subsidy":
-        calls.append(
-            {"tool": "find_cases_by_program", "args": {"program_id": uid}}
-        )
+        calls.append({"tool": "find_cases_by_program", "args": {"program_id": uid}})
     return calls
 
 
@@ -332,9 +327,7 @@ def next_calls_for_bid(row: Any) -> list[dict[str, Any]]:
     ]
     program_id_hint = _row_attr(row, "program_id_hint")
     if isinstance(program_id_hint, str) and program_id_hint.startswith("UNI-"):
-        calls.append(
-            {"tool": "get_program", "args": {"unified_id": program_id_hint}}
-        )
+        calls.append({"tool": "get_program", "args": {"unified_id": program_id_hint}})
     winner_houjin = _row_attr(row, "winner_houjin_bangou")
     if isinstance(winner_houjin, str) and len(winner_houjin) == 13 and winner_houjin.isdigit():
         calls.append(

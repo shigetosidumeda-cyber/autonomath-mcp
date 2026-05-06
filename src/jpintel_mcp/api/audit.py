@@ -2146,6 +2146,7 @@ def cite_chain_resolve(
 ) -> JSONResponse:
     """GET /v1/audit/cite_chain/{ruleset_id}."""
     t0 = time.perf_counter()
+    require_metered_api_key(ctx, "audit cite chain")
 
     if not _TAX_UNIFIED_ID_RE.match(ruleset_id):
         raise HTTPException(
@@ -2164,24 +2165,6 @@ def cite_chain_resolve(
         )
 
     chain = _build_cite_chain(conn, row)
-    latency_ms = int((time.perf_counter() - t0) * 1000)
-
-    log_usage(
-        conn,
-        ctx,
-        "audit.cite_chain",
-        params={
-            "ruleset_id": ruleset_id,
-            "seed_count": chain["seed_count"],
-            "resolved_count": chain["resolved_count"],
-            "depth": chain["depth"],
-        },
-        latency_ms=latency_ms,
-        result_count=chain["seed_count"],
-        background_tasks=background_tasks,
-    )
-    # 1 unit / ¥3 — no fan-out fee. log_usage already recorded the unit.
-
     body: dict[str, Any] = {
         **chain,
         "billing": {
@@ -2195,13 +2178,26 @@ def cite_chain_resolve(
         "_disclaimer_en": _AUDIT_DISCLAIMER_EN,
     }
     attach_corpus_snapshot(body, conn)
-    attach_seal_to_body(
-        body,
-        endpoint="audit.cite_chain",
-        request_params={"ruleset_id": ruleset_id},
-        api_key_hash=ctx.key_hash,
-        conn=conn,
+    latency_ms = int((time.perf_counter() - t0) * 1000)
+    audit_seal = log_usage(
+        conn,
+        ctx,
+        "audit.cite_chain",
+        params={
+            "ruleset_id": ruleset_id,
+            "seed_count": chain["seed_count"],
+            "resolved_count": chain["resolved_count"],
+            "depth": chain["depth"],
+        },
+        latency_ms=latency_ms,
+        result_count=chain["seed_count"],
+        response_body=body,
+        issue_audit_seal=ctx.key_hash is not None,
+        strict_metering=True,
+        strict_audit_seal=True,
     )
+    if audit_seal is not None:
+        body["audit_seal"] = audit_seal
     return JSONResponse(content=body, headers=snapshot_headers(conn))
 
 
@@ -2449,12 +2445,25 @@ def verify_audit_seal(
         )
     # HMAC-validate the persisted tuple. We need the full row for that —
     # pull the binding fields from the existing audit_seals schema.
-    full_row = conn.execute(
-        "SELECT call_id, ts, query_hash, response_hash, hmac, "
-        "seal_id, corpus_snapshot_id "
-        "FROM audit_seals WHERE call_id = ? LIMIT 1",
-        (row.get("call_id"),),
-    ).fetchone()
+    try:
+        full_row = conn.execute(
+            "SELECT call_id, ts, query_hash, response_hash, hmac, "
+            "seal_id, corpus_snapshot_id "
+            "FROM audit_seals WHERE call_id = ? LIMIT 1",
+            (row.get("call_id"),),
+        ).fetchone()
+    except sqlite3.OperationalError:
+        # Pre-119 audit_seals has neither seal_id nor corpus_snapshot_id.
+        # Verify legacy call_id seals against the original 4-field HMAC surface.
+        try:
+            full_row = conn.execute(
+                "SELECT call_id, ts, query_hash, response_hash, hmac, "
+                "NULL AS seal_id, NULL AS corpus_snapshot_id "
+                "FROM audit_seals WHERE call_id = ? LIMIT 1",
+                (row.get("call_id"),),
+            ).fetchone()
+        except sqlite3.OperationalError:
+            full_row = None
     verified = False
     if full_row is not None:
         try:
@@ -2464,6 +2473,8 @@ def verify_audit_seal(
                 full_row["query_hash"],
                 full_row["response_hash"],
                 full_row["hmac"],
+                seal_id=full_row["seal_id"],
+                corpus_snapshot_id=full_row["corpus_snapshot_id"],
             )
         except (KeyError, TypeError):
             verified = False

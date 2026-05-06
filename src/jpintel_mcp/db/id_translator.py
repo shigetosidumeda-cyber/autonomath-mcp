@@ -68,6 +68,7 @@ The third helper is what wave24 ``_impl`` modules import — it returns
 both forms so the SQL can be written against whichever column the
 target table uses without further branching.
 """
+
 from __future__ import annotations
 
 import logging
@@ -152,8 +153,7 @@ def program_unified_to_canonical(unified_id: str) -> Optional[str]:
             (unified_id,),
         ).fetchone()
     except sqlite3.Error as exc:
-        logger.debug("id_translator: u→c lookup failed for %r: %s",
-                     unified_id, exc)
+        logger.debug("id_translator: u→c lookup failed for %r: %s", unified_id, exc)
         return None
     if row is None:
         return None
@@ -192,8 +192,7 @@ def program_canonical_to_unified(canonical_id: str) -> Optional[str]:
             (canonical_id,),
         ).fetchone()
     except sqlite3.Error as exc:
-        logger.debug("id_translator: c→u entity_id_map failed for %r: %s",
-                     canonical_id, exc)
+        logger.debug("id_translator: c→u entity_id_map failed for %r: %s", canonical_id, exc)
         row = None
     if row is not None:
         val = row[0] if not hasattr(row, "keys") else row["jpi_unified_id"]
@@ -212,8 +211,7 @@ def program_canonical_to_unified(canonical_id: str) -> Optional[str]:
             (canonical_id,),
         ).fetchone()
     except sqlite3.Error as exc:
-        logger.debug("id_translator: c→u am_alias failed for %r: %s",
-                     canonical_id, exc)
+        logger.debug("id_translator: c→u am_alias failed for %r: %s", canonical_id, exc)
         return None
     if row is None:
         return None

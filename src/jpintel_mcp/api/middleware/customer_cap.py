@@ -49,6 +49,7 @@ Final billing guard:
     SQLite's writer lock. If a burst races the request-time gate, the later
     request is served but not billed rather than exceeding the customer cap.
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -108,9 +109,7 @@ def invalidate_cap_cache(key_hash: str | None = None) -> None:
         _cap_cache.pop(key_hash, None)
 
 
-def _cap_cache_scope(
-    conn: sqlite3.Connection, key_hash: str
-) -> tuple[str, list[str]]:
+def _cap_cache_scope(conn: sqlite3.Connection, key_hash: str) -> tuple[str, list[str]]:
     """Return a stable cache group id and every key hash in that billing tree."""
     row = conn.execute(
         "SELECT id, parent_key_id FROM api_keys WHERE key_hash = ?",
@@ -134,9 +133,7 @@ def _cap_cache_scope(
     return f"tree:{root}", hashes
 
 
-def invalidate_cap_cache_for_tree(
-    conn: sqlite3.Connection, key_hash: str | None = None
-) -> None:
+def invalidate_cap_cache_for_tree(conn: sqlite3.Connection, key_hash: str | None = None) -> None:
     """Drop cached cap entries for every key sharing the caller's cap."""
     if key_hash is None:
         invalidate_cap_cache(None)
@@ -165,9 +162,7 @@ def _jst_month_start(now: datetime | None = None) -> datetime:
     if now.tzinfo is None:
         now = now.replace(tzinfo=UTC)
     now_jst = now.astimezone(_JST)
-    return now_jst.replace(
-        day=1, hour=0, minute=0, second=0, microsecond=0
-    )
+    return now_jst.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
 
 def _jst_next_month_start_iso(now: datetime | None = None) -> str:
@@ -257,13 +252,10 @@ def _read_cap_and_count(
     else:
         # Tree scope: parent + every child whose parent_key_id == root.
         tree_rows = conn.execute(
-            "SELECT key_hash FROM api_keys "
-            "WHERE id = ? OR parent_key_id = ?",
+            "SELECT key_hash FROM api_keys WHERE id = ? OR parent_key_id = ?",
             (root, root),
         ).fetchall()
-        tree_hashes = [
-            r["key_hash"] if hasattr(r, "keys") else r[0] for r in tree_rows
-        ]
+        tree_hashes = [r["key_hash"] if hasattr(r, "keys") else r[0] for r in tree_rows]
         if not tree_hashes:
             tree_hashes = [key_hash]
         placeholders = ",".join("?" * len(tree_hashes))
@@ -279,9 +271,7 @@ def _read_cap_and_count(
     return (cap, int(units or 0), tier)
 
 
-def _cap_status(
-    conn: sqlite3.Connection, key_hash: str
-) -> tuple[int | None, int, str | None]:
+def _cap_status(conn: sqlite3.Connection, key_hash: str) -> tuple[int | None, int, str | None]:
     """Cached version of _read_cap_and_count.
 
     Returns (cap_yen, count_metered_success, tier) — same shape, with a
@@ -339,9 +329,7 @@ def _build_cap_reached_body(
         error["projected_yen"] = projected_yen
     if projected_units is not None:
         error["projected_units"] = projected_units
-    return {
-        "error": error
-    }
+    return {"error": error}
 
 
 def _retry_after_seconds() -> int:
@@ -349,10 +337,22 @@ def _retry_after_seconds() -> int:
         1,
         int(
             (
-                datetime.fromisoformat(_jst_next_month_start_iso())
-                - datetime.now(_JST)
+                datetime.fromisoformat(_jst_next_month_start_iso()) - datetime.now(_JST)
             ).total_seconds()
         ),
+    )
+
+
+def _cap_unavailable_response() -> JSONResponse:
+    return JSONResponse(
+        status_code=503,
+        content={
+            "error": "cap_unavailable",
+            "cap_reached": True,
+            "message": "コスト上限の確認が一時的に利用できません。課金保護のため、このリクエストは処理されませんでした。",
+            "retry_after_seconds": 60,
+        },
+        headers={"Retry-After": "60"},
     )
 
 
@@ -464,9 +464,7 @@ class CustomerCapMiddleware(BaseHTTPMiddleware):
       * Sets Retry-After to seconds-until-JST-月初.
     """
 
-    async def dispatch(
-        self, request: Request, call_next: Callable
-    ) -> Response:
+    async def dispatch(self, request: Request, call_next: Callable) -> Response:
         # Always allow control-plane endpoints through, even at cap-reached:
         # the customer must be able to RAISE / REMOVE their cap, manage their
         # subscription, and rotate their key after hitting the cap. Without
@@ -496,20 +494,21 @@ class CustomerCapMiddleware(BaseHTTPMiddleware):
             key_hash = hash_api_key(raw)
         except Exception:  # pragma: no cover — defensive
             logger.exception("cap_middleware_hash_failed")
-            return await call_next(request)
+            return _cap_unavailable_response()
 
-        # Read cap + count; fail-open on any DB error so a broken cache or
-        # locked DB cannot self-DoS the API.
+        # Read cap + count. If this fails, fail closed: serving the request
+        # would bypass the customer's own monthly budget guard and can create
+        # a billable usage row.
         try:
             conn = connect()
         except Exception:
             logger.exception("cap_middleware_connect_failed")
-            return await call_next(request)
+            return _cap_unavailable_response()
         try:
             cap_yen, count, _tier = _cap_status(conn, key_hash)
         except Exception:
             logger.exception("cap_middleware_read_failed")
-            return await call_next(request)
+            return _cap_unavailable_response()
         finally:
             with contextlib.suppress(Exception):  # pragma: no cover
                 conn.close()

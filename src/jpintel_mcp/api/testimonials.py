@@ -22,6 +22,7 @@ Anti-fake posture:
     publication; every row stays pending until we approve it.
   * Owners can DELETE their own testimonials (matched by key_hash).
 """
+
 from __future__ import annotations
 
 import logging
@@ -51,9 +52,7 @@ from jpintel_mcp.api.deps import (  # noqa: TC001 (FastAPI Depends resolution)
 public_router = APIRouter(prefix="/v1/testimonials", tags=["testimonials"])
 
 # Authed write — POST/DELETE under /v1/me/testimonials. Requires X-API-Key.
-me_router = APIRouter(
-    prefix="/v1/me/testimonials", tags=["testimonials", "me"]
-)
+me_router = APIRouter(prefix="/v1/me/testimonials", tags=["testimonials", "me"])
 
 # Operator moderation — under /v1/admin so it inherits the admin-key gate
 # and stays out of the public OpenAPI spec.
@@ -208,9 +207,7 @@ def delete_my_testimonial(
     ctx: ApiContextDep,
 ) -> None:
     if ctx.key_hash is None:
-        raise HTTPException(
-            status.HTTP_401_UNAUTHORIZED, "X-API-Key required"
-        )
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "X-API-Key required")
     row = conn.execute(
         "SELECT api_key_hash FROM testimonials WHERE id = ?",
         (testimonial_id,),
@@ -331,6 +328,4 @@ def unapprove_testimonial(
             "timestamp": datetime.now(UTC).isoformat(),
         },
     )
-    return ModerationResponse(
-        id=testimonial_id, approved=False, approved_at=None
-    )
+    return ModerationResponse(id=testimonial_id, approved=False, approved_at=None)

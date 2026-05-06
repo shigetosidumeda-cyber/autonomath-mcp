@@ -39,6 +39,7 @@ def _build_evidence_value(envelope: dict[str, Any], records: list[Any]) -> dict[
     safe_records = [rec for rec in records if isinstance(rec, dict)]
     return EvidencePacketComposer._build_evidence_value(envelope, safe_records)
 
+
 router = APIRouter(prefix="/v1/intelligence", tags=["intelligence"])
 
 
@@ -148,6 +149,10 @@ def _build_agent_recommendation(
     )
 
     if records_returned <= 0:
+        cost_decision = _suppress_cost_savings_without_evidence(
+            _cost_savings_decision(context_savings),
+            reason="not_applicable_no_evidence",
+        )
         return {
             "recommendation": "broaden_query_or_skip",
             "recommend_to_user": False,
@@ -164,10 +169,14 @@ def _build_agent_recommendation(
                 "the query or use a more specific endpoint."
             ),
             "context_savings": context_savings,
-            **_cost_savings_decision(context_savings),
+            **cost_decision,
         }
 
     if not recommend_for_evidence:
+        cost_decision = _suppress_cost_savings_without_evidence(
+            _cost_savings_decision(context_savings),
+            reason="not_applicable_without_source_links",
+        )
         return {
             "recommendation": "broaden_query_or_skip",
             "recommend_to_user": False,
@@ -184,7 +193,7 @@ def _build_agent_recommendation(
                 "bundle lacks source-linked evidence."
             ),
             "context_savings": context_savings,
-            **_cost_savings_decision(context_savings),
+            **cost_decision,
         }
 
     if precomputed_count > 0:
@@ -267,9 +276,7 @@ def _context_savings_summary(compression: Any) -> dict[str, Any] | None:
         "avoided_tokens_estimate": compression.get("avoided_tokens_estimate"),
         "compression_ratio": compression.get("compression_ratio"),
         "input_context_reduction_rate": compression.get("input_context_reduction_rate"),
-        "provider_billing_not_guaranteed": compression.get(
-            "provider_billing_not_guaranteed", True
-        ),
+        "provider_billing_not_guaranteed": compression.get("provider_billing_not_guaranteed", True),
         "savings_claim": compression.get("savings_claim"),
     }
     if isinstance(savings, dict):
@@ -322,6 +329,22 @@ def _cost_savings_decision(context_savings: dict[str, Any] | None) -> dict[str, 
     }
 
 
+def _suppress_cost_savings_without_evidence(
+    decision: dict[str, Any],
+    *,
+    reason: str,
+) -> dict[str, Any]:
+    """Prevent compression-only value claims when no usable evidence returned."""
+    if decision.get("recommend_for_cost_savings") is not True:
+        return decision
+    out = dict(decision)
+    out["recommend_for_cost_savings"] = False
+    out["suppressed_cost_savings_decision"] = out.get("cost_savings_decision")
+    out["cost_savings_decision"] = reason
+    out["missing_for_cost_claim"] = ["source_linked_records_returned"]
+    return out
+
+
 @router.get(
     "/precomputed/query",
     summary="Precomputed Intelligence Bundle — query prefetch",
@@ -329,8 +352,8 @@ def _cost_savings_decision(context_savings: dict[str, Any] | None) -> dict[str, 
         "Returns a compact precomputed intelligence bundle for LLM context "
         "prefetch. Use when an agent needs short source-linked Japanese "
         "public-program evidence before answering, without live web search "
-        "or a request-time LLM call. Optional compression fields are "
-        "input-context estimates, not external provider billing guarantees."
+        "or a request-time LLM call. Optional compression fields compare "
+        "caller-supplied input-context baselines."
     ),
     responses={
         200: {
@@ -384,8 +407,7 @@ def get_precomputed_intelligence_query(
         Query(
             description=(
                 "Optional caller input-token price in JPY per 1M tokens. "
-                "Used only for an optional reference comparison; no savings "
-                "or cost reduction is guaranteed."
+                "Used only for input-context reference comparison."
             ),
         ),
     ] = None,
@@ -473,6 +495,7 @@ def get_precomputed_intelligence_query(
             "source_pdf_pages": source_pdf_pages,
             "source_token_count": source_token_count,
         },
+        strict_metering=True,
     )
     attach_seal_to_body(
         envelope,

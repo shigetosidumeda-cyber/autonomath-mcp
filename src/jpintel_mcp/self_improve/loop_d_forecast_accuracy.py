@@ -267,8 +267,7 @@ def summarize(
         by_tool[tool.strip()].append(r)
 
     tool_summaries = [
-        summarize_tool(t, rows, drift_delta=drift_delta)
-        for t, rows in sorted(by_tool.items())
+        summarize_tool(t, rows, drift_delta=drift_delta) for t, rows in sorted(by_tool.items())
     ]
     return {
         "computed_at": datetime.now(UTC).isoformat(timespec="seconds"),

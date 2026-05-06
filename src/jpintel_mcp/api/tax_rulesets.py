@@ -21,6 +21,7 @@ we reuse the `_build_fts_match` phrase-quote builder from api/programs.py
 so 2+ character kanji compounds (e.g. `税額控除`, `適格請求書`) match
 contiguously, never as independent trigram hits.
 """
+
 from __future__ import annotations
 
 import json
@@ -40,7 +41,6 @@ from jpintel_mcp.api.deps import (
     log_empty_search,
     log_usage,
 )
-
 from jpintel_mcp.api.programs import (
     KANA_EXPANSIONS,
     _build_fts_match,
@@ -291,7 +291,7 @@ class _EvaluatorError(Exception):
 
 
 def _is_numeric(v: Any) -> bool:
-    return isinstance(v, (int, float)) and not isinstance(v, bool)
+    return isinstance(v, int | float) and not isinstance(v, bool)
 
 
 def _eval_predicate(
@@ -329,9 +329,7 @@ def _eval_predicate(
             matched.append(pred)
             reasons.append(f"{field} == {value!r}")
             return True
-        unmatched.append(
-            {**pred, "reason": f"{field} is {profile[field]!r}, expected {value!r}"}
-        )
+        unmatched.append({**pred, "reason": f"{field} is {profile[field]!r}, expected {value!r}"})
         reasons.append(f"{field} is {profile[field]!r}, expected {value!r}")
         return False
 
@@ -359,9 +357,7 @@ def _eval_predicate(
             matched.append(pred)
             reasons.append(f"{field} {cmp} {value} (actual {pv})")
             return True
-        unmatched.append(
-            {**pred, "reason": f"{field} {cmp} {value} failed (actual {pv})"}
-        )
+        unmatched.append({**pred, "reason": f"{field} {cmp} {value} failed (actual {pv})"})
         reasons.append(f"{field} {cmp} {value} failed (actual {pv})")
         return False
 
@@ -381,9 +377,7 @@ def _eval_predicate(
             matched.append(pred)
             reasons.append(f"{field} in {values}")
             return True
-        unmatched.append(
-            {**pred, "reason": f"{field} ({profile[field]!r}) not in {values}"}
-        )
+        unmatched.append({**pred, "reason": f"{field} ({profile[field]!r}) not in {values}"})
         reasons.append(f"{field} ({profile[field]!r}) not in {values}")
         return False
 
@@ -431,9 +425,7 @@ def _eval_predicate(
         child_reasons: list[str] = []  # type: ignore[no-redef]  # separate branch, same scope
         child_matched: list[dict[str, Any]] = []  # type: ignore[no-redef]
         child_unmatched: list[dict[str, Any]] = []  # type: ignore[no-redef]
-        inner = _eval_predicate(
-            child, profile, child_matched, child_unmatched, child_reasons
-        )
+        inner = _eval_predicate(child, profile, child_matched, child_unmatched, child_reasons)
         result = not inner
         # `not`'s child-failure (inner=False -> outer=True) is a match; flip
         # the audit buckets so matched/unmatched reflect the NEGATED outcome.
@@ -649,9 +641,7 @@ def resolve_citation_tree(
     return out
 
 
-def _resolve_single_citation(
-    conn: sqlite3.Connection, cite_id: str
-) -> dict[str, Any]:
+def _resolve_single_citation(conn: sqlite3.Connection, cite_id: str) -> dict[str, Any]:
     """Single id → resolved dict. Same contract as audit._lookup_citation
     but co-located here so the evaluate endpoint stays self-contained.
     """
@@ -992,8 +982,7 @@ def search_tax_rulesets(
     order_sql = "ORDER BY " + ", ".join(order_parts)
 
     select_sql = (
-        f"SELECT tax_rulesets.* FROM {base_from} WHERE {where_clause} "
-        f"{order_sql} LIMIT ? OFFSET ?"
+        f"SELECT tax_rulesets.* FROM {base_from} WHERE {where_clause} {order_sql} LIMIT ? OFFSET ?"
     )
     rows = conn.execute(select_sql, [*params, limit, offset]).fetchall()
 
@@ -1010,6 +999,7 @@ def search_tax_rulesets(
         },
         latency_ms=_latency_ms,
         result_count=total,
+        strict_metering=True,
     )
 
     if total == 0 and q is not None:
@@ -1099,15 +1089,17 @@ def get_tax_ruleset(
             f"unified_id must match TAX-<10 lowercase hex>, got {unified_id!r}",
         )
 
-    row = conn.execute(
-        "SELECT * FROM tax_rulesets WHERE unified_id = ?", (unified_id,)
-    ).fetchone()
+    row = conn.execute("SELECT * FROM tax_rulesets WHERE unified_id = ?", (unified_id,)).fetchone()
     if row is None:
-        raise HTTPException(
-            status.HTTP_404_NOT_FOUND, f"tax_ruleset not found: {unified_id}"
-        )
+        raise HTTPException(status.HTTP_404_NOT_FOUND, f"tax_ruleset not found: {unified_id}")
 
-    log_usage(conn, ctx, "tax_rulesets.get", params={"unified_id": unified_id})
+    log_usage(
+        conn,
+        ctx,
+        "tax_rulesets.get",
+        params={"unified_id": unified_id},
+        strict_metering=True,
+    )
     body = _row_to_ruleset(row).model_dump(mode="json")
     body["_disclaimer"] = _TAX_DISCLAIMER
     attach_corpus_snapshot(body, conn)
@@ -1146,6 +1138,7 @@ def evaluate_tax_rulesets(
                             that the corpus changed. Per-row `fetched_at` is
                             too granular for this purpose.
     """
+
     def _wrap(results: list[EvaluateResult]) -> JSONResponse:
         body = EvaluateResponse(results=results).model_dump(mode="json")
         body["_disclaimer"] = _TAX_DISCLAIMER
@@ -1155,6 +1148,13 @@ def evaluate_tax_rulesets(
     if payload.target_ruleset_ids is not None:
         ids = list(dict.fromkeys(payload.target_ruleset_ids))
         if not ids:
+            log_usage(
+                conn,
+                ctx,
+                "tax_rulesets.evaluate",
+                params={"target_ruleset_count": 0},
+                strict_metering=True,
+            )
             return _wrap([])
         for uid in ids:
             if not _UNIFIED_ID_RE.match(uid):
@@ -1189,10 +1189,9 @@ def evaluate_tax_rulesets(
         "tax_rulesets.evaluate",
         params={
             "target_ruleset_count": (
-                len(payload.target_ruleset_ids)
-                if payload.target_ruleset_ids is not None
-                else None
+                len(payload.target_ruleset_ids) if payload.target_ruleset_ids is not None else None
             ),
         },
+        strict_metering=True,
     )
     return _wrap(results)

@@ -32,6 +32,7 @@ Jinja2 to keep dependencies minimal.
 Transport-agnostic wiring: this module exposes a pure Python registry
 (`list_prompts`, `get_prompt`). FastMCP glue is in `register_prompts()`.
 """
+
 from __future__ import annotations
 
 import re
@@ -87,16 +88,12 @@ class PromptMeta:
                     try:
                         v = int(v)
                     except (TypeError, ValueError) as e:
-                        raise ValueError(
-                            f"argument '{arg.name}' must be integer, got {v!r}"
-                        ) from e
+                        raise ValueError(f"argument '{arg.name}' must be integer, got {v!r}") from e
                 elif arg.type == "number":
                     try:
                         v = float(v)
                     except (TypeError, ValueError) as e:
-                        raise ValueError(
-                            f"argument '{arg.name}' must be number, got {v!r}"
-                        ) from e
+                        raise ValueError(f"argument '{arg.name}' must be number, got {v!r}") from e
                 elif arg.type == "boolean":
                     v = str(v).lower() in ("1", "true", "yes", "on")
                 else:
@@ -195,8 +192,13 @@ _PROMPTS: list[PromptMeta] = [
         ),
         arguments=(
             PromptArg("program_name", "Program canonical name or id"),
-            PromptArg("count", "Number of rounds to compare (default 3)",
-                      required=False, type="integer", default=3),
+            PromptArg(
+                "count",
+                "Number of rounds to compare (default 3)",
+                required=False,
+                type="integer",
+                default=3,
+            ),
         ),
         template=_wrap(
             "compare_rounds",
@@ -215,9 +217,7 @@ _PROMPTS: list[PromptMeta] = [
     PromptMeta(
         name="trace_program_history",
         description="Timeline of amendments to a program / underlying law.",
-        arguments=(
-            PromptArg("program_name", "Program canonical name or id"),
-        ),
+        arguments=(PromptArg("program_name", "Program canonical name or id"),),
         template=_wrap(
             "trace_program_history",
             "Program: {program_name}\n\n"
@@ -239,9 +239,7 @@ _PROMPTS: list[PromptMeta] = [
             "any enforcement / 返還 / 処分 history that would exclude them from "
             "future programs."
         ),
-        arguments=(
-            PromptArg("houjin_bangou", "13-digit 法人番号 (e.g., 8010001213708)"),
-        ),
+        arguments=(PromptArg("houjin_bangou", "13-digit 法人番号 (e.g., 8010001213708)"),),
         template=_wrap(
             "audit_exclusions",
             "法人番号: {houjin_bangou}\n\n"
@@ -257,15 +255,19 @@ _PROMPTS: list[PromptMeta] = [
     ),
     PromptMeta(
         name="deadline_brief",
-        description=(
-            "Programs open / deadlines within N days for a given prefecture + "
-            "industry."
-        ),
+        description=("Programs open / deadlines within N days for a given prefecture + industry."),
         arguments=(
-            PromptArg("prefecture", "JIS 2-digit prefecture code (see autonomath://list/prefectures)"),
+            PromptArg(
+                "prefecture", "JIS 2-digit prefecture code (see autonomath://list/prefectures)"
+            ),
             PromptArg("industry", "JSIC industry code or keyword"),
-            PromptArg("days", "Deadline horizon in days (default 30)",
-                      required=False, type="integer", default=30),
+            PromptArg(
+                "days",
+                "Deadline horizon in days (default 30)",
+                required=False,
+                type="integer",
+                default=30,
+            ),
         ),
         template=_wrap(
             "deadline_brief",
@@ -293,9 +295,11 @@ _PROMPTS: list[PromptMeta] = [
             "under current tax_measure records."
         ),
         arguments=(
-            PromptArg("company_profile",
-                      "Free-form: industry, annual_revenue_yen, planned_capex_yen, "
-                      "planned_rd_spend_yen, hiring_plan."),
+            PromptArg(
+                "company_profile",
+                "Free-form: industry, annual_revenue_yen, planned_capex_yen, "
+                "planned_rd_spend_yen, hiring_plan.",
+            ),
         ),
         template=_wrap(
             "tax_savings_analysis",
@@ -319,9 +323,7 @@ _PROMPTS: list[PromptMeta] = [
             "Compare the target municipality's program availability and uptake "
             "against 3 peer municipalities of similar population band."
         ),
-        arguments=(
-            PromptArg("municipality_code", "5-digit JIS municipality code"),
-        ),
+        arguments=(PromptArg("municipality_code", "5-digit JIS municipality code"),),
         template=_wrap(
             "peer_benchmark",
             "Municipality code: {municipality_code}\n\n"
@@ -343,9 +345,7 @@ _PROMPTS: list[PromptMeta] = [
             "(eligibility echo, required documents, common scoring criteria, "
             "deadline calendar)."
         ),
-        arguments=(
-            PromptArg("program_id", "canonical_id of the program"),
-        ),
+        arguments=(PromptArg("program_id", "canonical_id of the program"),),
         template=_wrap(
             "grant_application_advisor",
             "Program id: {program_id}\n\n"
@@ -374,8 +374,9 @@ _PROMPTS: list[PromptMeta] = [
             "business goal. Flags incompatibilities via graph edges."
         ),
         arguments=(
-            PromptArg("business_goal",
-                      "One sentence, e.g., '省エネ設備を2000万円導入して3名雇用したい'."),
+            PromptArg(
+                "business_goal", "One sentence, e.g., '省エネ設備を2000万円導入して3名雇用したい'."
+            ),
         ),
         template=_wrap(
             "combined_package_suggestion",
@@ -429,9 +430,7 @@ _PROMPTS: list[PromptMeta] = [
             "For a given e-Gov law id, list all programs that cite this law and "
             "summarize the citation context."
         ),
-        arguments=(
-            PromptArg("law_id", "e-Gov law id (e.g., 411AC0000000049 for 補助金適正化法)"),
-        ),
+        arguments=(PromptArg("law_id", "e-Gov law id (e.g., 411AC0000000049 for 補助金適正化法)"),),
         template=_wrap(
             "law_to_programs",
             "Law id: {law_id}\n\n"
@@ -519,6 +518,7 @@ def register_prompts(mcp: Any) -> None:
     """Wire prompts into a FastMCP server instance at merge time."""
     try:
         for p in _PROMPTS:
+
             def _make_cb(prompt: PromptMeta) -> Callable[..., dict[str, Any]]:
                 def _cb(**kwargs: Any) -> dict[str, Any]:
                     return get_prompt(prompt.name, kwargs)

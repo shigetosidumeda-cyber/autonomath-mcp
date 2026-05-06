@@ -673,7 +673,7 @@ def _resolve_tree_key_hashes(conn, key_hash: str) -> list[str]:
     if root is None:
         return [key_hash]
     rows = conn.execute(
-        "SELECT key_hash FROM api_keys " "WHERE id = ? OR parent_key_id = ?",
+        "SELECT key_hash FROM api_keys WHERE id = ? OR parent_key_id = ?",
         (root, root),
     ).fetchall()
     hashes = [r["key_hash"] if hasattr(r, "keys") else r[0] for r in rows]
@@ -814,7 +814,7 @@ def get_me_usage_csv(
                 "error": "invalid_group_by",
                 "allowed": ["client_tag"],
                 "got": group_by,
-                "message": ("/v1/me/usage.csv currently only supports " "group_by=client_tag"),
+                "message": ("/v1/me/usage.csv currently only supports group_by=client_tag"),
             },
         )
     if days < 1:
@@ -876,7 +876,7 @@ def _lookup_subscriber_email(conn, key_hash: str) -> str | None:
     """
     try:
         row = conn.execute(
-            "SELECT email FROM email_schedule WHERE api_key_id = ? " "ORDER BY id ASC LIMIT 1",
+            "SELECT email FROM email_schedule WHERE api_key_id = ? ORDER BY id ASC LIMIT 1",
             (key_hash,),
         ).fetchone()
     except Exception:  # pragma: no cover — defensive
@@ -989,7 +989,7 @@ def rotate_key(
         monthly_cap_yen = row["monthly_cap_yen"]
 
         conn.execute(
-            "UPDATE api_keys SET revoked_at = ? " "WHERE key_hash = ? AND revoked_at IS NULL",
+            "UPDATE api_keys SET revoked_at = ? WHERE key_hash = ? AND revoked_at IS NULL",
             (now, key_hash),
         )
 
@@ -1012,7 +1012,7 @@ def rotate_key(
         # build from schema.sql, which doesn't carry the alert table).
         try:
             conn.execute(
-                "UPDATE alert_subscriptions SET api_key_hash = ? " "WHERE api_key_hash = ?",
+                "UPDATE alert_subscriptions SET api_key_hash = ? WHERE api_key_hash = ?",
                 (new_hash, key_hash),
             )
         except sqlite3.OperationalError as e:  # pragma: no cover
@@ -1285,7 +1285,7 @@ def revoke_child_key_route(
             status_code=status.HTTP_404_NOT_FOUND,
             detail={
                 "error": "child_not_found",
-                "message": ("child key not found, already revoked, or not owned " "by this parent"),
+                "message": ("child key not found, already revoked, or not owned by this parent"),
             },
         )
     log_event(
@@ -1396,8 +1396,7 @@ def billing_portal(
             detail={
                 "status": "no_customer",
                 "message": (
-                    "Stripe カスタマーが未作成です。¥3/req の従量課金は使用後に"
-                    "自動作成されます。"
+                    "Stripe カスタマーが未作成です。¥3/req の従量課金は使用後に自動作成されます。"
                 ),
             },
         )

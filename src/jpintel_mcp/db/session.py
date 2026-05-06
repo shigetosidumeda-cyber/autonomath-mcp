@@ -21,12 +21,14 @@ SCHEMA_PATH = Path(__file__).parent / "schema.sql"
 # autonomath.db.programs IS intentionally an empty placeholder; the
 # authorizer below makes that intent enforceable instead of a footgun.
 # See P0-2 (DB正本不一致) audit, 2026-04-30.
-_JPINTEL_ONLY_TABLES: frozenset[str] = frozenset({
-    "programs",
-    "case_studies",
-    "loan_programs",
-    "enforcement_cases",
-})
+_JPINTEL_ONLY_TABLES: frozenset[str] = frozenset(
+    {
+        "programs",
+        "case_studies",
+        "loan_programs",
+        "enforcement_cases",
+    }
+)
 
 
 def _path_is_autonomath(path: Path) -> bool:
@@ -97,7 +99,8 @@ def connect(db_path: Path | None = None) -> sqlite3.Connection:
         _log.warning(
             "session.connect() opened against autonomath.db (%s); "
             "installing read-deny authorizer for jpintel-only tables %s",
-            path, sorted(_JPINTEL_ONLY_TABLES),
+            path,
+            sorted(_JPINTEL_ONLY_TABLES),
         )
         conn.set_authorizer(_autonomath_authorizer)
 

@@ -53,6 +53,7 @@ the DNS / Cloudflare dashboard layer (see
 ``docs/_internal/autonomath_com_dns_runbook.md``); this module only
 emits the in-band browser hints.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -71,9 +72,7 @@ if TYPE_CHECKING:
 _SECURITY_HEADERS: dict[str, str] = {
     # 1 year, includeSubDomains, preload — jpcite.com is HTTPS-only
     # and we want browsers to refuse plain HTTP on the very first hit.
-    "Strict-Transport-Security": (
-        "max-age=31536000; includeSubDomains; preload"
-    ),
+    "Strict-Transport-Security": ("max-age=31536000; includeSubDomains; preload"),
     # API-first product, no third-party CDN, no inline scripts. style-src
     # 'unsafe-inline' covers the /v1/subscribers/unsubscribe HTML page
     # which uses inline <style>. frame-ancestors 'none' blocks clickjacking.
@@ -102,9 +101,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     a one-off integration) is never silently overridden.
     """
 
-    async def dispatch(
-        self, request: Request, call_next: Callable
-    ) -> Response:
+    async def dispatch(self, request: Request, call_next: Callable) -> Response:
         response: Response = await call_next(request)
         for name, value in _SECURITY_HEADERS.items():
             response.headers.setdefault(name, value)

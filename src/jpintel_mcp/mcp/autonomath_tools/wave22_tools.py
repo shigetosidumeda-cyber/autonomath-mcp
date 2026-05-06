@@ -67,13 +67,19 @@ from jpintel_mcp.config import settings
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
 from .db import connect_autonomath
-from .error_envelope import make_error
+from .error_envelope import make_error as _raw_make_error
+from .snapshot_helper import attach_corpus_snapshot
 
 logger = logging.getLogger("jpintel.mcp.autonomath.wave22")
 
 # Env-gated registration (default on). Flip to "0" for one-flag rollback
 # if a regression surfaces post-launch.
 _ENABLED = os.environ.get("AUTONOMATH_WAVE22_ENABLED", "1") == "1"
+
+
+def make_error(*args: Any, **kwargs: Any) -> dict[str, Any]:
+    """Return a Wave22 error envelope with the reproducibility pair."""
+    return attach_corpus_snapshot(_raw_make_error(*args, **kwargs))
 
 
 # ---------------------------------------------------------------------------
@@ -195,10 +201,19 @@ def _compute_corpus_snapshot(conn: sqlite3.Connection) -> tuple[str, str]:
 
 
 def _attach_snapshot(conn: sqlite3.Connection, body: dict[str, Any]) -> dict[str, Any]:
-    """Inject corpus_snapshot_id + corpus_checksum keys onto `body`."""
+    """Inject corpus_snapshot_id + corpus_checksum keys onto `body`.
+
+    Also default-injects ``_billing_unit=1`` on success-path envelopes so
+    the Wave22/24 billing pipeline (which greps the envelope for the
+    field) records 1 metered request per call. Tools that bill differently
+    can set ``_billing_unit`` explicitly before calling _attach_snapshot;
+    this preserves that value.
+    """
     snapshot_id, checksum = _compute_corpus_snapshot(conn)
     body["corpus_snapshot_id"] = snapshot_id
     body["corpus_checksum"] = checksum
+    if "_billing_unit" not in body:
+        body["_billing_unit"] = 1
     return body
 
 
@@ -919,17 +934,17 @@ def _forecast_renewal_impl(
 
     rationale_lines: list[str] = []
     rationale_lines.append(
-        f"frequency_signal={frequency_signal:.2f} " f"({n_intervals} interval samples)"
+        f"frequency_signal={frequency_signal:.2f} ({n_intervals} interval samples)"
     )
     rationale_lines.append(
         f"recency_signal={recency_signal:.2f} "
         f"(last open {open_dates[-1].isoformat() if open_dates else 'n/a'})"
     )
     rationale_lines.append(
-        f"pipeline_signal={pipeline_signal:.2f} " f"({n_open} open + {n_upcoming} upcoming)"
+        f"pipeline_signal={pipeline_signal:.2f} ({n_open} open + {n_upcoming} upcoming)"
     )
     rationale_lines.append(
-        f"snapshot_signal={snapshot_signal:.2f} " f"({snapshot_count} amendment snapshots)"
+        f"snapshot_signal={snapshot_signal:.2f} ({snapshot_count} amendment snapshots)"
     )
 
     out2: dict[str, Any] = {
@@ -1020,6 +1035,8 @@ def _cross_check_jurisdiction_impl(
 
     # --- Resolve target ---------------------------------------------------
     houjin_row: sqlite3.Row | None = None
+    hb: str | None = None
+    s: str | None = None
     if houjin_bangou:
         hb = _normalize_houjin(houjin_bangou)
         if not (hb.isdigit() and len(hb) == 13):
@@ -1061,21 +1078,34 @@ def _cross_check_jurisdiction_impl(
             ).fetchone()
         except sqlite3.Error:
             houjin_row = None
-        if houjin_row is None:
-            return make_error(
-                code="seed_not_found",
-                message=f"No houjin_master row for shogo={s!r}. Try houjin_bangou directly.",
-                hint="Use search_programs / dd_profile_am to resolve 法人番号.",
-                retry_with=["search_programs", "dd_profile_am"],
-            )
 
     if houjin_row is None:
-        return make_error(
-            code="seed_not_found",
-            message="houjin_bangou not found in jpi_houjin_master.",
-            field="houjin_bangou",
-            retry_with=["dd_profile_am"],
-        )
+        lookup = f"shogo={s!r}" if s else f"houjin_bangou={hb!r}"
+        out_empty: dict[str, Any] = {
+            "houjin_bangou": hb,
+            "shogo": s,
+            "registered": None,
+            "invoice_jurisdiction": None,
+            "operational": {
+                "by_prefecture_top5": [],
+                "total_adoptions": 0,
+            },
+            "results": [],
+            "total": 0,
+            "limit": 1,
+            "offset": 0,
+            "mismatch_count": 0,
+            "data_quality": {
+                "houjin_resolved": False,
+                "caveat": (
+                    f"No houjin_master row for {lookup}; returned a "
+                    "graceful empty envelope rather than a hard error."
+                ),
+            },
+            "_disclaimer": _DISCLAIMER_JURISDICTION,
+            "_next_calls": [],
+        }
+        return _attach_snapshot(conn, out_empty)
 
     hb = houjin_row["houjin_bangou"]
     registered = {
@@ -1275,12 +1305,40 @@ def _bundle_application_kit_impl(
         prog_row = None
 
     if prog_row is None:
-        return make_error(
-            code="seed_not_found",
-            message=f"program_id {pid!r} not found in am_entities.",
-            field="program_id",
-            retry_with=["search_programs"],
-        )
+        if pid.startswith("program:"):
+            return make_error(
+                code="seed_not_found",
+                message=f"program_id {pid!r} not found in am_entities.",
+                field="program_id",
+                retry_with=["search_programs"],
+            )
+        out_empty: dict[str, Any] = {
+            "program_id": pid,
+            "program": None,
+            "results": [],
+            "total": 0,
+            "limit": 1,
+            "offset": 0,
+            "document_checklist": [],
+            "certifications": [],
+            "similar_cases": [],
+            "cover_letter_text": "",
+            "docx_placeholder": None,
+            "data_quality": {
+                "program_resolved": False,
+                "steps_count": 0,
+                "checklist_size": 0,
+                "certifications_count": 0,
+                "similar_cases_count": 0,
+                "caveat": (
+                    f"program_id {pid!r} was not found in am_entities; "
+                    "returned a graceful empty kit scaffold."
+                ),
+            },
+            "_disclaimer": _DISCLAIMER_APPLICATION_KIT,
+            "_next_calls": [],
+        }
+        return _attach_snapshot(conn, out_empty)
 
     primary_name = prog_row["primary_name"]
     source_url = prog_row["source_url"]
@@ -1578,7 +1636,7 @@ if _ENABLED and settings.autonomath_enabled:
             str | None,
             Field(
                 description=(
-                    "13-digit 法人番号 (preferred). One of houjin_bangou " "/ shogo required."
+                    "13-digit 法人番号 (preferred). One of houjin_bangou / shogo required."
                 ),
             ),
         ] = None,
@@ -1605,7 +1663,7 @@ if _ENABLED and settings.autonomath_enabled:
             dict[str, Any],
             Field(
                 description=(
-                    "Applicant profile dict — populates cover letter " "header. Empty {} OK."
+                    "Applicant profile dict — populates cover letter header. Empty {} OK."
                 ),
             ),
         ] = {},  # noqa: B006 — pydantic Field tolerates the empty default

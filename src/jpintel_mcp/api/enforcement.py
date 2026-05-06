@@ -10,6 +10,7 @@ under scrutiny?".
 Scope boundary — this router is read-only. Case records are curated
 externally (via ingest_external_data.py) and never mutated here.
 """
+
 import json
 import os
 import sqlite3
@@ -123,7 +124,11 @@ def _row_to_case(row: sqlite3.Row) -> EnforcementCase:
         try:
             parsed = json.loads(fy_raw)
             if isinstance(parsed, list):
-                fy = [int(x) for x in parsed if isinstance(x, (int, str)) and str(x).lstrip("-").isdigit()]
+                fy = [
+                    int(x)
+                    for x in parsed
+                    if isinstance(x, (int, str)) and str(x).lstrip("-").isdigit()
+                ]
         except (json.JSONDecodeError, ValueError):
             fy = []
 
@@ -160,9 +165,7 @@ def _row_to_case(row: sqlite3.Row) -> EnforcementCase:
     )
 
 
-def _row_to_enforcement_detail(
-    row: sqlite3.Row, *, active_on: str | None
-) -> EnforcementDetail:
+def _row_to_enforcement_detail(row: sqlite3.Row, *, active_on: str | None) -> EnforcementDetail:
     active_on_requested_date: bool | None = None
     if active_on is not None:
         active_start = row["exclusion_start"] or row["issuance_date"]
@@ -291,9 +294,7 @@ def search_enforcement_cases(
         # accept that limitation since the bulk of the corpus is JP and all
         # case-folding candidates (ministry names etc.) are already normalised.
         like = f"%{q}%"
-        where.append(
-            "(program_name_hint LIKE ? OR reason_excerpt LIKE ? OR source_title LIKE ?)"
-        )
+        where.append("(program_name_hint LIKE ? OR reason_excerpt LIKE ? OR source_title LIKE ?)")
         params.extend([like, like, like])
 
     if event_type:
@@ -351,6 +352,7 @@ def search_enforcement_cases(
         "enforcement.search",
         latency_ms=_latency_ms,
         result_count=total,
+        strict_metering=True,
     )
 
     if total == 0 and q is not None:
@@ -503,7 +505,11 @@ def search_enforcement_details(
 
     if issued_from and issued_until and issued_from > issued_until:
         raise HTTPException(422, "issued_from after issued_until")
-    if min_amount_yen is not None and max_amount_yen is not None and min_amount_yen > max_amount_yen:
+    if (
+        min_amount_yen is not None
+        and max_amount_yen is not None
+        and min_amount_yen > max_amount_yen
+    ):
         raise HTTPException(
             422,
             "min_amount_yen cannot exceed max_amount_yen",
@@ -558,12 +564,7 @@ def search_enforcement_details(
         )
         params.extend([active_on, active_on])
         filter_keys.append("active_on")
-    if (
-        not include_future
-        and issued_from is None
-        and issued_until is None
-        and active_on is None
-    ):
+    if not include_future and issued_from is None and issued_until is None and active_on is None:
         where.append("issuance_date <= date('now')")
         filter_keys.append("default_past_or_current")
     if min_amount_yen is not None:
@@ -637,6 +638,7 @@ def search_enforcement_details(
             "offset": offset,
         },
         request=request,
+        strict_metering=True,
     )
 
     return EnforcementDetailSearchResponse(
@@ -668,13 +670,11 @@ def get_enforcement_case(
     The response includes `corpus_snapshot_id` + `corpus_checksum` so callers
     can reproduce the lookup later and detect whether the corpus changed.
     """
-    row = conn.execute(
-        "SELECT * FROM enforcement_cases WHERE case_id = ?", (case_id,)
-    ).fetchone()
+    row = conn.execute("SELECT * FROM enforcement_cases WHERE case_id = ?", (case_id,)).fetchone()
     if row is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, f"case not found: {case_id}")
 
-    log_usage(conn, ctx, "enforcement.get")
+    log_usage(conn, ctx, "enforcement.get", strict_metering=True)
     body = _row_to_case(row).model_dump(mode="json")
     attach_corpus_snapshot(body, conn)
     return JSONResponse(content=body, headers=snapshot_headers(conn))

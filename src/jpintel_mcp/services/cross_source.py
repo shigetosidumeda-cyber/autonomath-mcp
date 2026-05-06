@@ -19,6 +19,7 @@ Schema dependencies
   Populated by the hourly cron; the endpoint also degrades to a live
   COUNT(DISTINCT source_id) when the column has not been backfilled yet.
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -107,9 +108,7 @@ def compute_cross_source_agreement(
                 "field": r["field_name"],
                 "distinct_sources": live_count,
                 "distinct_values": int(r["values_"] or 0),
-                "confirming_source_count": (
-                    int(col_csc) if col_csc is not None else live_count
-                ),
+                "confirming_source_count": (int(col_csc) if col_csc is not None else live_count),
                 "verdict": _verdict(live_count, int(r["values_"] or 0)),
             }
         )
@@ -127,21 +126,24 @@ def compute_cross_source_agreement(
             "max_distinct_sources": summary_sources,
             "any_disagreement": has_disagreement,
             "verdict": (
-                "disagreement" if has_disagreement
+                "disagreement"
+                if has_disagreement
                 else ("agreement" if summary_sources >= 2 else "single_source")
             ),
             "human_label": (
-                "⚠ disagreement detected" if has_disagreement
-                else (f"✓ {summary_sources} sources agree"
-                      if summary_sources >= 2 else "single source")
+                "⚠ disagreement detected"
+                if has_disagreement
+                else (
+                    f"✓ {summary_sources} sources agree"
+                    if summary_sources >= 2
+                    else "single source"
+                )
             ),
         },
     }
 
 
-def _jpi_programs_fallback(
-    conn: sqlite3.Connection, entity_id: str
-) -> dict[str, Any] | None:
+def _jpi_programs_fallback(conn: sqlite3.Connection, entity_id: str) -> dict[str, Any] | None:
     """Best-effort cross-source verdict using jpi_programs.
 
     autonomath EAV not present → fall back to the (program × source_url)
@@ -151,15 +153,13 @@ def _jpi_programs_fallback(
     """
     try:
         row = conn.execute(
-            "SELECT primary_name, source_url FROM jpi_programs "
-            "WHERE unified_id = ? LIMIT 1",
+            "SELECT primary_name, source_url FROM jpi_programs WHERE unified_id = ? LIMIT 1",
             (entity_id,),
         ).fetchone()
     except sqlite3.OperationalError:
         try:
             row = conn.execute(
-                "SELECT primary_name, source_url FROM programs "
-                "WHERE unified_id = ? LIMIT 1",
+                "SELECT primary_name, source_url FROM programs WHERE unified_id = ? LIMIT 1",
                 (entity_id,),
             ).fetchone()
         except sqlite3.OperationalError:
@@ -175,9 +175,7 @@ def _jpi_programs_fallback(
             "max_distinct_sources": sources,
             "any_disagreement": False,
             "verdict": "single_source" if sources == 1 else "no_data",
-            "human_label": (
-                "single source" if sources == 1 else "no source data"
-            ),
+            "human_label": ("single source" if sources == 1 else "no source data"),
         },
         "_meta": {
             "fallback": "jpi_programs (am_entity_facts not available on this DB)",

@@ -5,6 +5,7 @@ All inference is on the client side. The server ONLY serves structured rows.
 
 NO ANTHROPIC_API_KEY / SDK / Message Batches. Pure local SQLite.
 """
+
 from __future__ import annotations
 
 import json
@@ -14,14 +15,24 @@ from pathlib import Path
 from typing import Any, Iterable
 
 _REPO_ROOT = Path(__file__).resolve().parents[4]
-DB_PATH = Path(os.environ.get(
-    "AUTONOMATH_DB_PATH",
-    str(_REPO_ROOT / "autonomath.db"),
-))
+DB_PATH = Path(
+    os.environ.get(
+        "AUTONOMATH_DB_PATH",
+        str(_REPO_ROOT / "autonomath.db"),
+    )
+)
 
 LOAN_KINDS = {
-    "ippan", "trou", "seirei", "sanko", "sogyo",
-    "rinsei", "saigai", "shingiseikyu", "kiki", "other",
+    "ippan",
+    "trou",
+    "seirei",
+    "sanko",
+    "sogyo",
+    "rinsei",
+    "saigai",
+    "shingiseikyu",
+    "kiki",
+    "other",
 }
 
 GUARANTOR_ENUM = {"required", "not_required", "exception", "unknown"}
@@ -181,9 +192,9 @@ def handle_tool_call(args: dict[str, Any]) -> dict[str, Any]:
 
 if __name__ == "__main__":
     # smoke test
-    rows = search_loans(no_collateral=True, no_personal_guarantor=True,
-                        no_third_party_guarantor=True, limit=5)
+    rows = search_loans(
+        no_collateral=True, no_personal_guarantor=True, no_third_party_guarantor=True, limit=5
+    )
     print(f"unsecured loans (3-axis no): {len(rows)}")
     for r in rows:
-        print(" -", r["canonical_id"], "|", r["primary_name"],
-              "|", r["limit_yen"])
+        print(" -", r["canonical_id"], "|", r["primary_name"], "|", r["limit_yen"])

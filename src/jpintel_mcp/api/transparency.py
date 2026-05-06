@@ -29,6 +29,7 @@ Design notes:
 - Stale thresholds: > 30 days = stale_30d (yellow), > 90 days = stale_90d
   (red). These mirror docs/data_hygiene.md and the _health_deep thresholds.
 """
+
 from __future__ import annotations
 
 import datetime as _dt
@@ -53,24 +54,51 @@ router = APIRouter(prefix="/v1/am", tags=["transparency", "trust"])
 # `source_fetched_at`, case_studies / loan_programs use `fetched_at`,
 # enforcement_cases uses `fetched_at`. NULL-safe MAX() handles missing rows.
 _DATASETS: tuple[tuple[str, str, str, str, str], ...] = (
-    ("programs", "jpi_programs", "source_fetched_at", "gov_standard_v2.0",
-     "経済産業省 / 中小企業庁 / 各都道府県"),
-    ("case_studies", "jpi_case_studies", "fetched_at", "gov_standard_v2.0",
-     "農林水産省 / METI / JST"),
-    ("loan_programs", "jpi_loan_programs", "fetched_at", "proprietary",
-     "日本政策金融公庫 (公開ページのみ)"),
-    ("enforcement_cases", "jpi_enforcement_cases", "fetched_at",
-     "gov_standard_v2.0",
-     "国土交通省 / 厚生労働省 / 環境省 / 都道府県"),
+    (
+        "programs",
+        "jpi_programs",
+        "source_fetched_at",
+        "gov_standard_v2.0",
+        "経済産業省 / 中小企業庁 / 各都道府県",
+    ),
+    (
+        "case_studies",
+        "jpi_case_studies",
+        "fetched_at",
+        "gov_standard_v2.0",
+        "農林水産省 / METI / JST",
+    ),
+    (
+        "loan_programs",
+        "jpi_loan_programs",
+        "fetched_at",
+        "proprietary",
+        "日本政策金融公庫 (公開ページのみ)",
+    ),
+    (
+        "enforcement_cases",
+        "jpi_enforcement_cases",
+        "fetched_at",
+        "gov_standard_v2.0",
+        "国土交通省 / 厚生労働省 / 環境省 / 都道府県",
+    ),
     ("laws", "jpi_laws", "fetched_at", "cc_by_4.0", "デジタル庁 e-Gov 法令"),
-    ("court_decisions", "jpi_court_decisions", "fetched_at", "public_domain",
-     "知的財産高等裁判所 / 特許庁 / 公開判決"),
-    ("bids", "jpi_bids", "fetched_at", "proprietary",
-     "NEXCO / JR / UR / 各発注機関"),
-    ("invoice_registrants", "jpi_invoice_registrants", "fetched_at",
-     "pdl_v1.0", "国税庁 適格請求書発行事業者公表"),
-    ("tax_rulesets", "jpi_tax_rulesets", "fetched_at", "public_domain",
-     "国税庁 通達"),
+    (
+        "court_decisions",
+        "jpi_court_decisions",
+        "fetched_at",
+        "public_domain",
+        "知的財産高等裁判所 / 特許庁 / 公開判決",
+    ),
+    ("bids", "jpi_bids", "fetched_at", "proprietary", "NEXCO / JR / UR / 各発注機関"),
+    (
+        "invoice_registrants",
+        "jpi_invoice_registrants",
+        "fetched_at",
+        "pdl_v1.0",
+        "国税庁 適格請求書発行事業者公表",
+    ),
+    ("tax_rulesets", "jpi_tax_rulesets", "fetched_at", "public_domain", "国税庁 通達"),
 )
 
 
@@ -142,37 +170,37 @@ def _build_freshness_doc(now: _dt.datetime | None = None) -> dict[str, Any]:
     with _open_ro(db) as con:
         for name, table, fa_col, license_, source in _DATASETS:
             try:
-                count_row = con.execute(
-                    f"SELECT COUNT(*) AS n FROM {table}"
-                ).fetchone()
-                fetched_row = con.execute(
-                    f"SELECT MAX({fa_col}) AS fa FROM {table}"
-                ).fetchone()
+                count_row = con.execute(f"SELECT COUNT(*) AS n FROM {table}").fetchone()
+                fetched_row = con.execute(f"SELECT MAX({fa_col}) AS fa FROM {table}").fetchone()
                 count = int(count_row["n"]) if count_row else 0
                 fetched = (fetched_row["fa"] if fetched_row else None) or None
             except sqlite3.Error as e:
-                rows.append({
-                    "name": name,
-                    "row_count": 0,
-                    "last_fetched_at": None,
-                    "days_ago": None,
-                    "staleness": "unknown",
-                    "license": license_,
-                    "source": source,
-                    "error": str(e),
-                })
+                rows.append(
+                    {
+                        "name": name,
+                        "row_count": 0,
+                        "last_fetched_at": None,
+                        "days_ago": None,
+                        "staleness": "unknown",
+                        "license": license_,
+                        "source": source,
+                        "error": str(e),
+                    }
+                )
                 continue
             dt = _parse_iso(fetched)
             days_ago = max(0, int((now - dt).total_seconds() // 86400)) if dt else None
-            rows.append({
-                "name": name,
-                "row_count": count,
-                "last_fetched_at": dt.date().isoformat() if dt else None,
-                "days_ago": days_ago,
-                "staleness": _staleness(days_ago),
-                "license": license_,
-                "source": source,
-            })
+            rows.append(
+                {
+                    "name": name,
+                    "row_count": count,
+                    "last_fetched_at": dt.date().isoformat() if dt else None,
+                    "days_ago": days_ago,
+                    "staleness": _staleness(days_ago),
+                    "license": license_,
+                    "source": source,
+                }
+            )
     return {
         "datasets": rows,
         "generated_at": _utcnow_iso(),
@@ -200,10 +228,7 @@ async def data_freshness() -> dict[str, Any]:
         }
     """
     now_mono = time.monotonic()
-    if (
-        _CACHE["doc"] is not None
-        and now_mono - _CACHE["ts"] < _CACHE_TTL
-    ):
+    if _CACHE["doc"] is not None and now_mono - _CACHE["ts"] < _CACHE_TTL:
         return _CACHE["doc"]
     doc = _build_freshness_doc()
     _CACHE["ts"] = now_mono
@@ -262,8 +287,7 @@ async def program_sources(
         # return the row's source_url as a single entry so callers always
         # get something concrete back.
         ent = con.execute(
-            "SELECT am_canonical_id FROM entity_id_map "
-            "WHERE jpi_unified_id = ? LIMIT 1",
+            "SELECT am_canonical_id FROM entity_id_map WHERE jpi_unified_id = ? LIMIT 1",
             (program_id,),
         ).fetchone()
 
@@ -282,34 +306,38 @@ async def program_sources(
                 (entity_id,),
             )
             for r in cur:
-                sources.append({
-                    "source_url": r["source_url"],
-                    "source_type": r["source_type"],
-                    "domain": r["domain"],
-                    "license": r["license"] or "unknown",
-                    "is_pdf": bool(r["is_pdf"]),
-                    "first_seen": (r["first_seen"] or "")[:10] or None,
-                    "last_verified": (r["last_verified"] or "")[:10] or None,
-                    "role": r["role"],
-                    "source_field": r["source_field"],
-                })
+                sources.append(
+                    {
+                        "source_url": r["source_url"],
+                        "source_type": r["source_type"],
+                        "domain": r["domain"],
+                        "license": r["license"] or "unknown",
+                        "is_pdf": bool(r["is_pdf"]),
+                        "first_seen": (r["first_seen"] or "")[:10] or None,
+                        "last_verified": (r["last_verified"] or "")[:10] or None,
+                        "role": r["role"],
+                        "source_field": r["source_field"],
+                    }
+                )
 
         # Fallback: a program with no entity-mapped sources still has a
         # source_url on the row itself. Surfacing it preserves the
         # invariant that "every program has at least one citable URL"
         # (or honestly says we have none).
         if not sources and prog["source_url"]:
-            sources.append({
-                "source_url": prog["source_url"],
-                "source_type": "primary",
-                "domain": None,
-                "license": "unknown",
-                "is_pdf": False,
-                "first_seen": None,
-                "last_verified": None,
-                "role": "primary_source",
-                "source_field": "source_url",
-            })
+            sources.append(
+                {
+                    "source_url": prog["source_url"],
+                    "source_type": "primary",
+                    "domain": None,
+                    "license": "unknown",
+                    "is_pdf": False,
+                    "first_seen": None,
+                    "last_verified": None,
+                    "role": "primary_source",
+                    "source_field": "source_url",
+                }
+            )
 
     return {
         "program_id": program_id,

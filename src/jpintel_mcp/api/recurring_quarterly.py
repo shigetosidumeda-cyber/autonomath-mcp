@@ -37,6 +37,7 @@ from pydantic import BaseModel, EmailStr, Field
 from jpintel_mcp.api.deps import (
     ApiContextDep,  # noqa: TC001 (FastAPI dependency alias)
     DbDep,  # noqa: TC001 (FastAPI dependency alias)
+    require_metered_api_key,
 )
 
 logger = logging.getLogger("jpintel.recurring")
@@ -274,44 +275,29 @@ def _render_metered_pdf_to_cache(
     cache_path: Path,
     context: dict[str, Any],
 ) -> bool:
-    """Charge ¥3, then render the PDF, then promote it to cache.
+    """Render the PDF, bill ¥3, then promote it to cache.
 
-    DEEP-47 Pattern A — charge BEFORE PDF render. The previous order
-    (render → charge → promote) burned WeasyPrint CPU on a customer who was
-    over their monthly cap, then 503'd them after the spend. Charge-first
-    means the only failure path that costs us compute is "billed but the
-    customer's renderer / R2 went sideways", which is reconciled by
-    `cleanup_pdf_unpaid_cache.py` (status='r2_failed' / 'pdf_failed' rows
-    age out after 7 days) and refunded out-of-band by operator if needed.
-
-    The cache path is the customer-visible deliverable. Never write it
-    before the strict metered usage row exists; otherwise a billing 503
-    could leave an unbilled PDF cache hit behind.
+    The cache path is the customer-visible deliverable. Render into a temp
+    file first, then record billing, then atomically promote the file. This
+    keeps both bad states out of production: no billing when rendering fails,
+    and no reusable PDF cache when billing fails.
     """
-    # Step 1 (Pattern A): charge ¥3 BEFORE rendering. Cap-exceeded /
-    # webhook-collision keys never burn renderer CPU.
-    billed = _record_metered_pdf(conn, key_hash)
-    if not billed:
-        raise HTTPException(
-            status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail={
-                "code": "pdf_billing_unavailable",
-                "message": (
-                    "This paid PDF was not delivered because billing could not be recorded."
-                ),
-            },
-        )
-
-    # Step 2 (Pattern A): render the PDF. On render failure the charge
-    # row remains; reconcile cron flips status='pdf_failed' for refund.
     tmp_path = cache_path.with_name(f".{cache_path.name}.{uuid.uuid4().hex}.tmp")
     try:
         rendered = _render_pdf_to(out_path=tmp_path, context=context)
         if not rendered:
             return False
-        # Step 3 (Pattern A): promote temp file to cache. R2-equivalent
-        # in the recurring_quarterly surface (we serve from local disk via
-        # FileResponse — the actual R2 path is exercised by the test stub).
+        billed = _record_metered_pdf(conn, key_hash)
+        if not billed:
+            raise HTTPException(
+                status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail={
+                    "code": "pdf_billing_unavailable",
+                    "message": (
+                        "This paid PDF was not delivered because billing could not be recorded."
+                    ),
+                },
+            )
         tmp_path.replace(cache_path)
         return True
     finally:
@@ -335,6 +321,7 @@ def get_quarterly_pdf(
             status.HTTP_401_UNAUTHORIZED,
             "quarterly report requires an authenticated API key",
         )
+    require_metered_api_key(ctx, "quarterly PDF")
     if quarter < 1 or quarter > 4:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "quarter must be 1, 2, 3, or 4")
     if year < 2024 or year > 2100:

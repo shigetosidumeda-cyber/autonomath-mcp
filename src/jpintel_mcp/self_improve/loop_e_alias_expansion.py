@@ -80,9 +80,7 @@ from jpintel_mcp.security.pii_redact import redact_text
 # Repo layout: src/jpintel_mcp/self_improve/loop_e_alias_expansion.py
 # climb four parents to reach the repo root.
 REPO_ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_DB_PATH = Path(
-    os.environ.get("AUTONOMATH_DB_PATH", str(REPO_ROOT / "autonomath.db"))
-)
+DEFAULT_DB_PATH = Path(os.environ.get("AUTONOMATH_DB_PATH", str(REPO_ROOT / "autonomath.db")))
 PROPOSALS_PATH = REPO_ROOT / "data" / "alias_proposed.yaml"
 
 # Similarity thresholds — sniper-claim posture: high precision, low recall.
@@ -165,8 +163,7 @@ def _load_corpus_from_db(
         # am_alias surface forms keyed by canonical_id (am_entities scope)
         try:
             cur = conn.execute(
-                "SELECT canonical_id, alias FROM am_alias "
-                "WHERE entity_table='am_entities'"
+                "SELECT canonical_id, alias FROM am_alias WHERE entity_table='am_entities'"
             )
             for cid, alias in cur:
                 anchors.append((cid, alias))
@@ -223,9 +220,9 @@ def propose_aliases(
                     "form": best_form,
                 }
         # Rank canonical matches by score, take top N.
-        ranked = sorted(
-            per_canonical.items(), key=lambda kv: kv[1]["score"], reverse=True
-        )[:MAX_CANDIDATES_PER_QUERY]
+        ranked = sorted(per_canonical.items(), key=lambda kv: kv[1]["score"], reverse=True)[
+            :MAX_CANDIDATES_PER_QUERY
+        ]
         for cid, info in ranked:
             alias_text = forms["orig"]
             # Skip if alias already known for this canonical_id.

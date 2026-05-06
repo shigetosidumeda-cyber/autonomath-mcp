@@ -47,6 +47,7 @@ hosting NAT.
 Fail-open posture: any internal error returns ``call_next`` immediately.
 A broken throttle MUST NOT become self-DoS.
 """
+
 from __future__ import annotations
 
 import logging
@@ -266,8 +267,7 @@ class PerIpEndpointLimitMiddleware(BaseHTTPMiddleware):
                         f"{retry_after} 秒後に再試行してください。"
                     ),
                     "message_en": (
-                        "Too many requests for this endpoint. "
-                        f"Retry after {retry_after}s."
+                        f"Too many requests for this endpoint. Retry after {retry_after}s."
                     ),
                     "retry_after": retry_after,
                     "bucket": f"per-ip:{rule.label}",

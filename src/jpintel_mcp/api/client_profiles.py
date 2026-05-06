@@ -33,6 +33,7 @@ Cost posture:
     advice anywhere here. Disclaimer is rendered by the digest template
     (saved_search_digest) — the CRUD endpoint surface stays clean.
 """
+
 from __future__ import annotations
 
 import csv
@@ -208,24 +209,21 @@ def _validate_one_row(
         return None, {"row_index": idx, "error": "missing_name_label"}
     name_label = name_label_raw.strip()
     if len(name_label) > _NAME_MAX_LEN:
-        return None, {"row_index": idx, "error": "name_label_too_long",
-                      "max": _NAME_MAX_LEN}
+        return None, {"row_index": idx, "error": "name_label_too_long", "max": _NAME_MAX_LEN}
 
     jsic_raw = raw.get("jsic_major")
     jsic = jsic_raw.strip() if isinstance(jsic_raw, str) else None
     if jsic is not None and not jsic:
         jsic = None
     if jsic is not None and len(jsic) > _JSIC_MAX_LEN:
-        return None, {"row_index": idx, "error": "jsic_major_too_long",
-                      "max": _JSIC_MAX_LEN}
+        return None, {"row_index": idx, "error": "jsic_major_too_long", "max": _JSIC_MAX_LEN}
 
     pref_raw = raw.get("prefecture")
     prefecture = pref_raw.strip() if isinstance(pref_raw, str) else None
     if prefecture is not None and not prefecture:
         prefecture = None
     if prefecture is not None and len(prefecture) > _PREFECTURE_MAX_LEN:
-        return None, {"row_index": idx, "error": "prefecture_too_long",
-                      "max": _PREFECTURE_MAX_LEN}
+        return None, {"row_index": idx, "error": "prefecture_too_long", "max": _PREFECTURE_MAX_LEN}
 
     employee_count = _coerce_int(raw.get("employee_count"))
     if employee_count is not None and employee_count < 0:
@@ -306,9 +304,7 @@ async def bulk_import_client_profiles(
 
     reader = csv.DictReader(io.StringIO(text))
     if reader.fieldnames is None:
-        raise HTTPException(
-            status.HTTP_400_BAD_REQUEST, "csv has no header row"
-        )
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "csv has no header row")
     headers = {h.strip() for h in reader.fieldnames if h}
     missing_required = [h for h in _CSV_REQUIRED if h not in headers]
     if missing_required:
@@ -321,8 +317,9 @@ async def bulk_import_client_profiles(
     errors: list[dict[str, Any]] = []
     for idx, raw in enumerate(reader, start=1):
         if idx > MAX_BULK_IMPORT_ROWS:
-            errors.append({"row_index": idx, "error": "exceeded_row_cap",
-                           "cap": MAX_BULK_IMPORT_ROWS})
+            errors.append(
+                {"row_index": idx, "error": "exceeded_row_cap", "cap": MAX_BULK_IMPORT_ROWS}
+            )
             break
         cleaned, err = _validate_one_row(raw, idx)
         if err:
@@ -348,9 +345,7 @@ async def bulk_import_client_profiles(
             existing_labels = {r["name_label"] for r in new_label_check}
         else:
             existing_labels = set()
-        net_new = sum(
-            1 for r in cleaned_rows if r["name_label"] not in existing_labels
-        )
+        net_new = sum(1 for r in cleaned_rows if r["name_label"] not in existing_labels)
     else:
         existing_labels = set()
         net_new = len(cleaned_rows)
@@ -382,11 +377,15 @@ async def bulk_import_client_profiles(
                           updated_at = ?
                     WHERE api_key_hash = ? AND name_label = ?""",
                 (
-                    r["jsic_major"], r["prefecture"],
-                    r["employee_count"], r["capital_yen"],
-                    r["target_types_json"], r["last_active_program_ids_json"],
+                    r["jsic_major"],
+                    r["prefecture"],
+                    r["employee_count"],
+                    r["capital_yen"],
+                    r["target_types_json"],
+                    r["last_active_program_ids_json"],
                     now,
-                    ctx.key_hash, r["name_label"],
+                    ctx.key_hash,
+                    r["name_label"],
                 ),
             )
             updated += 1
@@ -399,21 +398,28 @@ async def bulk_import_client_profiles(
                         last_active_program_ids_json, created_at, updated_at
                    ) VALUES (?,?,?,?,?,?,?,?,?,?)""",
                 (
-                    ctx.key_hash, r["name_label"], r["jsic_major"],
-                    r["prefecture"], r["employee_count"], r["capital_yen"],
+                    ctx.key_hash,
+                    r["name_label"],
+                    r["jsic_major"],
+                    r["prefecture"],
+                    r["employee_count"],
+                    r["capital_yen"],
                     r["target_types_json"],
                     r["last_active_program_ids_json"],
-                    now, now,
+                    now,
+                    now,
                 ),
             )
             imported += 1
         except Exception as exc:  # noqa: BLE001 — capture per-row, do not halt
             logger.warning(
                 "client_profile.import_row_failed name=%s err=%s",
-                r["name_label"], exc,
+                r["name_label"],
+                exc,
             )
-            errors.append({"name_label": r["name_label"],
-                           "error": "insert_failed", "detail": str(exc)})
+            errors.append(
+                {"name_label": r["name_label"], "error": "insert_failed", "detail": str(exc)}
+            )
             skipped += 1
 
     (total_after,) = conn.execute(
@@ -475,17 +481,13 @@ def delete_client_profile(
             "client_profiles require an authenticated API key",
         )
     row = conn.execute(
-        "SELECT profile_id FROM client_profiles "
-        "WHERE profile_id = ? AND api_key_hash = ?",
+        "SELECT profile_id FROM client_profiles WHERE profile_id = ? AND api_key_hash = ?",
         (profile_id, ctx.key_hash),
     ).fetchone()
     if row is None:
-        raise HTTPException(
-            status.HTTP_404_NOT_FOUND, "client_profile not found"
-        )
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "client_profile not found")
     conn.execute(
-        "DELETE FROM client_profiles "
-        "WHERE profile_id = ? AND api_key_hash = ?",
+        "DELETE FROM client_profiles WHERE profile_id = ? AND api_key_hash = ?",
         (profile_id, ctx.key_hash),
     )
     return DeleteResponse(ok=True, profile_id=profile_id)

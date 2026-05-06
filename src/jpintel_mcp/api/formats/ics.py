@@ -115,16 +115,12 @@ def _coerce_deadline(v: Any) -> _dt.datetime | None:
         # `2026-04-29T17:00:00+09:00` (3.11+).
         d = _dt.datetime.fromisoformat(s.replace("Z", "+00:00"))
         if d.tzinfo is not None:
-            d = d.astimezone(_dt.timezone(_dt.timedelta(hours=9))).replace(
-                tzinfo=None
-            )
+            d = d.astimezone(_dt.timezone(_dt.timedelta(hours=9))).replace(tzinfo=None)
         return d
     except ValueError:
         pass
     try:
-        return _dt.datetime.combine(
-            _dt.date.fromisoformat(s), _dt.time(23, 59, 0)
-        )
+        return _dt.datetime.combine(_dt.date.fromisoformat(s), _dt.time(23, 59, 0))
     except ValueError:
         return None
 
@@ -177,10 +173,7 @@ def render_ics(rows: list[dict[str, Any]], meta: dict[str, Any]) -> Response:
     except ImportError as exc:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=(
-                "format=ics requires the 'icalendar' dep — "
-                "pip install icalendar"
-            ),
+            detail=("format=ics requires the 'icalendar' dep — pip install icalendar"),
         ) from exc
 
     cal = Calendar()

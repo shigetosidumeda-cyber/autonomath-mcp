@@ -52,26 +52,28 @@ _ENABLED = os.environ.get("AUTONOMATH_GRAPH_TRAVERSE_ENABLED", "1") == "1"
 # All 15 canonical relation_type values present in v_am_relation_all
 # (verified 2026-04-25 via SELECT DISTINCT relation_type). Used to
 # validate edge_types arg and as the default whitelist.
-_ALL_RELATION_TYPES: frozenset[str] = frozenset({
-    "has_authority",
-    "applies_to_region",
-    "applies_to_industry",
-    "related",
-    "references_law",
-    "compatible",
-    "compatible_with",
-    "applies_to_size",
-    "prerequisite",
-    "requires_prerequisite",
-    "part_of",
-    "successor_of",
-    "bonus_points",
-    "implemented_by",
-    "incompatible",
-    "incompatible_with",
-    "applies_to",
-    "replaces",
-})
+_ALL_RELATION_TYPES: frozenset[str] = frozenset(
+    {
+        "has_authority",
+        "applies_to_region",
+        "applies_to_industry",
+        "related",
+        "references_law",
+        "compatible",
+        "compatible_with",
+        "applies_to_size",
+        "prerequisite",
+        "requires_prerequisite",
+        "part_of",
+        "successor_of",
+        "bonus_points",
+        "implemented_by",
+        "incompatible",
+        "incompatible_with",
+        "applies_to",
+        "replaces",
+    }
+)
 
 # Default whitelist when the caller passes edge_types=None. Excludes
 # ``related`` (3,892 rows, avg conf 0.53) — too low-confidence + fan-out
@@ -409,18 +411,22 @@ if _ENABLED:
 
         paths: list[dict[str, Any]] = []
         for r in rows:
-            paths.append({
-                "nodes": [r["src"], r["tgt"]],
-                "edges": [{
-                    "src": r["src"],
-                    "tgt": r["tgt"],
-                    "relation_type": r["relation_type"],
-                    "confidence": r["confidence"],
-                    "depth": r["depth"],
-                    "origin": r["origin"],
-                }],
-                "total_distance": r["depth"],
-            })
+            paths.append(
+                {
+                    "nodes": [r["src"], r["tgt"]],
+                    "edges": [
+                        {
+                            "src": r["src"],
+                            "tgt": r["tgt"],
+                            "relation_type": r["relation_type"],
+                            "confidence": r["confidence"],
+                            "depth": r["depth"],
+                            "origin": r["origin"],
+                        }
+                    ],
+                    "total_distance": r["depth"],
+                }
+            )
 
         elapsed = (time.perf_counter() - t_start) * 1000.0
 

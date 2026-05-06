@@ -112,7 +112,9 @@ _AFFIRMATIVE_RULES: tuple[tuple[re.Pattern[str], str, str], ...] = (
 
 # Negation markers in the 30-char window AFTER a hit. If any appears we
 # treat the hit as a negation context and do not sanitize.
-_NEGATION_AFTER = re.compile(r"(ではない|ではありません|とは限らない|わけではない|わけではありません|保証はない|保証はありません|無保証|必ずしも)")
+_NEGATION_AFTER = re.compile(
+    r"(ではない|ではありません|とは限らない|わけではない|わけではありません|保証はない|保証はありません|無保証|必ずしも)"
+)
 
 # Negation markers in the 30-char window BEFORE a hit (rarer but possible:
 # 「○○とは異なり、必ずしも〜」).
@@ -272,9 +274,7 @@ def _rebuild_response(
     response passes through this middleware (i.e. every JSON response).
     Manipulating ``raw_headers`` directly preserves duplicate keys.
     """
-    resp = Response(
-        content=body, status_code=status_code, media_type=media_type
-    )
+    resp = Response(content=body, status_code=status_code, media_type=media_type)
     # Replace the auto-built raw_headers (which carry only the
     # content-length + content-type Starlette wrote) with the upstream
     # set, then re-append the recomputed content-length / media-type.
@@ -289,7 +289,8 @@ def _rebuild_response(
     # values (preserved) and let Starlette re-stamp content-length on
     # the body we just wrote when drop_content_length is True.
     resp.raw_headers = [
-        (k, v) for (k, v) in resp.raw_headers
+        (k, v)
+        for (k, v) in resp.raw_headers
         if k.lower() not in (b"content-length", b"content-type")
     ] + preserved
     if extra_headers:

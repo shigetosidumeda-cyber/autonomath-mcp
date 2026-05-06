@@ -67,9 +67,7 @@ class LineSettings(BaseSettings):
     # normally import `run_prescreen` directly, but the LINE webhook runs
     # in the same FastAPI process so we do that too. This field is a safety
     # net for a future out-of-process worker.
-    internal_api_base: str = Field(
-        default="http://127.0.0.1:8080", alias="LINE_INTERNAL_API_BASE"
-    )
+    internal_api_base: str = Field(default="http://127.0.0.1:8080", alias="LINE_INTERNAL_API_BASE")
 
     # Monthly free query quota per LINE user. 10 is the product decision;
     # do not raise without revisiting the ¥500 price (at 10 free + ¥500

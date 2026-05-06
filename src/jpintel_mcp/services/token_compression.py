@@ -37,6 +37,7 @@ batch averages. This is fit-for-purpose for compression-ratio reporting in
 an Evidence Packet, but is **NOT** fit for billing — billing must use the
 provider's own tokenizer count.
 """
+
 from __future__ import annotations
 
 import json
@@ -212,9 +213,7 @@ class TokenCompressionEstimator:
         avoided_tokens = max(0, source_tokens - packet_tokens)
         gross_input_savings_jpy = avoided_tokens * (input_price_jpy_per_1m / 1_000_000)
         net_savings_jpy_ex_tax = gross_input_savings_jpy - jpcite_cost_jpy
-        break_even_tokens = math.ceil(
-            jpcite_cost_jpy / (input_price_jpy_per_1m / 1_000_000)
-        )
+        break_even_tokens = math.ceil(jpcite_cost_jpy / (input_price_jpy_per_1m / 1_000_000))
 
         # plan §5: break_even_source_tokens_estimate = packet_tokens + break_even_avoided
         # i.e. how big does the source need to be before jpcite's ¥3 is recovered
@@ -263,9 +262,7 @@ class TokenCompressionEstimator:
         source_tokens: int | None = None
         has_caller_pdf_baseline = basis == "pdf_pages" and pdf_pages is not None
         has_caller_token_baseline = (
-            basis == "token_count"
-            and source_token_count is not None
-            and source_token_count > 0
+            basis == "token_count" and source_token_count is not None and source_token_count > 0
         )
         if (
             source_url is not None
@@ -310,9 +307,7 @@ class TokenCompressionEstimator:
                 "caller_supplied"
                 if source_tokens is not None
                 and (
-                    source_text is not None
-                    or has_caller_pdf_baseline
-                    or has_caller_token_baseline
+                    source_text is not None or has_caller_pdf_baseline or has_caller_token_baseline
                 )
                 else "unknown"
             ),

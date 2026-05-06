@@ -304,22 +304,16 @@ _KIND_MESSAGES: dict[str, str] = {
         "公式の不在を意味するものではありません。"
     ),
     "lookup_status_unknown": (
-        "lookup.status が unknown / mirror_unavailable で、"
-        "ローカル確認が完了していません。"
+        "lookup.status が unknown / mirror_unavailable で、ローカル確認が完了していません。"
     ),
     "houjin_bangou_unverified": (
         "法人番号が記録上に存在しますが、ローカルの登録"
         "(インボイス・行政処分・採択) で実在検証されていません。"
     ),
-    "source_url_quality": (
-        "source_url が NULL、または HTTPS 化されていません。"
-    ),
-    "source_stale": (
-        f"last_verified が {STALE_THRESHOLD_DAYS} 日以上前です。"
-    ),
+    "source_url_quality": ("source_url が NULL、または HTTPS 化されていません。"),
+    "source_stale": (f"last_verified が {STALE_THRESHOLD_DAYS} 日以上前です。"),
     "low_confidence": (
-        f"confidence が {LOW_CONFIDENCE_THRESHOLD} を下回るレコードまたは"
-        "fact が存在します。"
+        f"confidence が {LOW_CONFIDENCE_THRESHOLD} を下回るレコードまたはfact が存在します。"
     ),
 }
 

@@ -23,8 +23,8 @@ symbols are re-exported.
 
 Gated by ``settings.real_estate_enabled`` (env
 ``AUTONOMATH_REAL_ESTATE_ENABLED``, default False). With the flag
-False the launch surface stays at 66 tools; flip True to expose the
-5 stubs (71 tools) for partner contract preview.
+False the preview stubs stay out of the public surface; flip True to expose
+the real-estate stubs for partner contract preview.
 """
 
 from . import tools  # noqa: F401  — decorator side-effect (5 stubs)

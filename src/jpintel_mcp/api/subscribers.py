@@ -15,6 +15,7 @@ Privacy posture:
   - Unsubscribe token is HMAC-SHA256(email, api_key_salt) so no DB lookup is
     needed to verify and nobody can forge one without the salt.
 """
+
 from __future__ import annotations
 
 import contextlib

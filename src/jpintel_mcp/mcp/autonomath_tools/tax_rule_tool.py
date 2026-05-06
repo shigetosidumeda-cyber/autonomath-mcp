@@ -105,8 +105,7 @@ def _resolve_measure(conn: sqlite3.Connection, token: str) -> list[str]:
 
     # exact primary_name
     cur = conn.execute(
-        "SELECT canonical_id FROM am_entities "
-        "WHERE primary_name = ? AND record_kind='tax_measure'",
+        "SELECT canonical_id FROM am_entities WHERE primary_name = ? AND record_kind='tax_measure'",
         (token,),
     )
     ids = [r["canonical_id"] for r in cur.fetchall()]

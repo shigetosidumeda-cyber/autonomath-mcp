@@ -33,6 +33,7 @@ This module is intentionally framework-free — it takes a sqlite3.Connection
 explicitly so tests can inject a temp-DB connection without spinning up
 the FastAPI app.
 """
+
 from __future__ import annotations
 
 import json
@@ -86,9 +87,10 @@ def enqueue(
     else:
         if run_at.tzinfo is None:
             run_at = run_at.replace(tzinfo=UTC)
-        next_at = run_at.astimezone(UTC).strftime(
-            "%Y-%m-%dT%H:%M:%S."
-        ) + f"{run_at.astimezone(UTC).microsecond // 1000:03d}Z"
+        next_at = (
+            run_at.astimezone(UTC).strftime("%Y-%m-%dT%H:%M:%S.")
+            + f"{run_at.astimezone(UTC).microsecond // 1000:03d}Z"
+        )
 
     payload_str = json.dumps(payload, ensure_ascii=False, default=str)
 
@@ -132,8 +134,7 @@ def enqueue(
             # an existing row. Surface as RuntimeError so a regression in
             # the conflict path is loud.
             raise RuntimeError(
-                f"bg_task_queue.enqueue: dedup row vanished kind={kind} "
-                f"dedup_key={dedup_key!r}"
+                f"bg_task_queue.enqueue: dedup row vanished kind={kind} dedup_key={dedup_key!r}"
             )
         return int(existing[0])
 
@@ -253,12 +254,10 @@ def mark_failed(
     if retry_after_s is None:
         # Exponential backoff. attempts is 1-based here (we just incremented).
         # 1st failure -> 60s, 2nd -> 120s, 3rd -> 240s, ..., cap 1h.
-        retry_after_s = min(
-            _BACKOFF_BASE_S * (2 ** (attempts - 1)), _BACKOFF_CAP_S
-        )
-    next_at = (
-        datetime.now(UTC) + timedelta(seconds=int(retry_after_s))
-    ).strftime("%Y-%m-%dT%H:%M:%S.") + f"{datetime.now(UTC).microsecond // 1000:03d}Z"
+        retry_after_s = min(_BACKOFF_BASE_S * (2 ** (attempts - 1)), _BACKOFF_CAP_S)
+    next_at = (datetime.now(UTC) + timedelta(seconds=int(retry_after_s))).strftime(
+        "%Y-%m-%dT%H:%M:%S."
+    ) + f"{datetime.now(UTC).microsecond // 1000:03d}Z"
     conn.execute(
         "UPDATE bg_task_queue SET status='pending', attempts=?, "
         "updated_at=?, next_attempt_at=?, last_error=? WHERE id=?",

@@ -92,8 +92,7 @@ DISCLAIMER_JA = (
 # ``X-AutonoMath-Disclaimer-Ja*`` using RFC 8187 ``filename*`` style so an
 # auditor can recover the kanji disclaimer from the header trace too.
 DISCLAIMER_HEADER_VALUE = (
-    "Tax-Advisor-Act-S52 (no-tax-advice) / "
-    "Lawyer-Act-S72 / consult-licensed-professional"
+    "Tax-Advisor-Act-S52 (no-tax-advice) / Lawyer-Act-S72 / consult-licensed-professional"
 )
 DISCLAIMER_HEADER_VALUE_JA_RFC8187 = (
     "utf-8''"
@@ -208,10 +207,7 @@ def render(
     if fmt not in SUPPORTED_FORMATS:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=(
-                f"unknown format '{format_}'. Supported: "
-                f"{', '.join(SUPPORTED_FORMATS)}"
-            ),
+            detail=(f"unknown format '{format_}'. Supported: {', '.join(SUPPORTED_FORMATS)}"),
         )
 
     # Lift wrapped envelope.
@@ -246,13 +242,9 @@ def render(
             "X-AutonoMath-Format": "json",
         }
         if meta_out.get("corpus_snapshot_id"):
-            json_headers["X-Corpus-Snapshot-Id"] = str(
-                meta_out["corpus_snapshot_id"]
-            )
+            json_headers["X-Corpus-Snapshot-Id"] = str(meta_out["corpus_snapshot_id"])
         if meta_out.get("corpus_checksum"):
-            json_headers["X-Corpus-Checksum"] = str(
-                meta_out["corpus_checksum"]
-            )
+            json_headers["X-Corpus-Checksum"] = str(meta_out["corpus_checksum"])
         return JSONResponse(content=body, headers=json_headers)
 
     try:
@@ -296,10 +288,7 @@ def render(
         # branch fails loudly.
         raise HTTPException(  # pragma: no cover
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=(
-                f"format '{fmt}' is in SUPPORTED_FORMATS but no "
-                "renderer is wired"
-            ),
+            detail=(f"format '{fmt}' is in SUPPORTED_FORMATS but no renderer is wired"),
         )
 
     # Defense-in-depth: mirror corpus snapshot identity to response headers

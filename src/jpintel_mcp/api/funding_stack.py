@@ -33,6 +33,10 @@ from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
 
 from jpintel_mcp.api._audit_seal import attach_seal_to_body
+from jpintel_mcp.api._response_models import (
+    FUNDING_STACK_CHECK_EXAMPLE,
+    FundingStackCheckResponse,
+)
 from jpintel_mcp.api.deps import ApiContextDep, DbDep, log_usage
 from jpintel_mcp.config import settings
 from jpintel_mcp.services.funding_stack_checker import FundingStackChecker
@@ -107,6 +111,16 @@ def reset_checker() -> None:
 
 @router.post(
     "/check",
+    response_model=FundingStackCheckResponse,
+    responses={
+        status.HTTP_200_OK: {
+            "content": {
+                "application/json": {
+                    "example": FUNDING_STACK_CHECK_EXAMPLE,
+                }
+            }
+        }
+    },
     summary="制度併用可否判定 (Funding Stack Checker — no LLM)",
     description=(
         "複数の制度 (program_ids) を併用できるかを am_compat_matrix と "
@@ -114,6 +128,8 @@ def reset_checker() -> None:
         "* 1 unit = 1 pair なので、3 件 = 3 pair = 3 unit (¥9 / 税込 ¥9.90)\n"
         "* `incompatible` / `requires_review` の pair が 1 件でもあれば、"
         "all_pairs_status はその strictness にエスカレーションする\n"
+        "* `next_actions` は pair と top-level の追加フィールドとして返す "
+        "(課金 pair 数 / usage quantity には影響しない)\n"
         "* `_disclaimer` フィールドは必須 — 非 LLM rule engine は curate された "
         "コーパスに 100% 依拠するため、収録漏れや公募回ごとの細則差を取りこぼし得る。"
         "最終判断は必ず一次資料 + 専門家確認を経ること。"

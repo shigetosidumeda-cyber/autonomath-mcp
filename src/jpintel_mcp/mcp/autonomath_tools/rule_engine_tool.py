@@ -69,17 +69,17 @@ logger = logging.getLogger("jpintel.mcp.rule_engine")
 # (then we have a conflict).
 # ---------------------------------------------------------------------------
 _PRECEDENCE: tuple[tuple[str, str], ...] = (
-    ("absolute",            "deny"),     # rung 1
-    ("exclude",             "deny"),     # rung 2 (covers all exclude:* sub-kinds)
-    ("prerequisite",        "deny"),     # rung 3 — prerequisite NOT met = deny
-    ("compat:incompatible", "deny"),     # rung 4
-    ("compat:case_by_case", "review"),   # rung 5
-    ("compat:compatible",   "allow"),    # rung 6
-    ("compat:unknown",      "unknown"),  # rung 6.5 (the 4,849-row untriaged bucket)
-    ("combo",               "allow"),    # rung 7 — combo presence = legal stacking
-    ("subsidy",             "info"),     # rung 8
-    ("tax",                 "info"),     # rung 8
-    ("validation",          "info"),     # rung 9
+    ("absolute", "deny"),  # rung 1
+    ("exclude", "deny"),  # rung 2 (covers all exclude:* sub-kinds)
+    ("prerequisite", "deny"),  # rung 3 — prerequisite NOT met = deny
+    ("compat:incompatible", "deny"),  # rung 4
+    ("compat:case_by_case", "review"),  # rung 5
+    ("compat:compatible", "allow"),  # rung 6
+    ("compat:unknown", "unknown"),  # rung 6.5 (the 4,849-row untriaged bucket)
+    ("combo", "allow"),  # rung 7 — combo presence = legal stacking
+    ("subsidy", "info"),  # rung 8
+    ("tax", "info"),  # rung 8
+    ("validation", "info"),  # rung 9
 )
 
 
@@ -144,9 +144,7 @@ def _fetch_rules_for_pair(
             OR (scope_program_id = ? AND (pair_program_id = ? OR pair_program_id IS NULL))
             OR scope_program_id IS NULL
         """
-    return conn.execute(
-        sql, (program_id, pair_id, pair_id, program_id)
-    ).fetchall()
+    return conn.execute(sql, (program_id, pair_id, pair_id, program_id)).fetchall()
 
 
 def _verdict_for_rule(kind: str) -> str | None:
@@ -174,10 +172,7 @@ def _is_pair_specific(
     if pair_id is None:
         # caller asked about a single program; pair-specific = scope matches and pair is NULL
         return sp == program_id and pp is None
-    return (
-        (sp == program_id and pp == pair_id)
-        or (sp == pair_id and pp == program_id)
-    )
+    return (sp == program_id and pp == pair_id) or (sp == pair_id and pp == program_id)
 
 
 def _evidence_row(
@@ -303,6 +298,7 @@ def _rule_engine_check_impl(
     # ordered pair (program_id, pair_id), return rules_conflict — never
     # silently merge. We compare the pair tuple from each evidence entry.
     if deny_rules and allow_rules and along:
+
         def _pair_key(ev: dict[str, Any]) -> tuple[str, str] | None:
             sp = ev.get("scope_program_id")
             pp = ev.get("pair_program_id")
@@ -571,10 +567,12 @@ if __name__ == "__main__":  # pragma: no cover
     for s in samples:
         print(f"\n=== {s} ===")
         res = _rule_engine_check_impl(**s)  # type: ignore[arg-type]
-        pprint.pprint({
-            "judgment": res.get("judgment"),
-            "confidence": res.get("confidence"),
-            "evidence_count": len(res.get("evidence", [])),
-            "reason": res.get("reason"),
-            "data_quality": res.get("data_quality"),
-        })
+        pprint.pprint(
+            {
+                "judgment": res.get("judgment"),
+                "confidence": res.get("confidence"),
+                "evidence_count": len(res.get("evidence", [])),
+                "reason": res.get("reason"),
+                "data_quality": res.get("data_quality"),
+            }
+        )

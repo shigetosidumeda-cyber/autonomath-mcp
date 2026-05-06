@@ -23,6 +23,7 @@ Read-only. The autonomath connection is opened in `mode=ro` so a
 misconfigured deploy can never write to the 9.4 GB primary DB through
 this surface.
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -42,6 +43,22 @@ from jpintel_mcp.api._audit_seal import attach_seal_to_body
 from jpintel_mcp.api._envelope import StandardError, StandardResponse, wants_envelope_v2
 from jpintel_mcp.api._error_envelope import safe_request_id
 from jpintel_mcp.api.deps import ApiContextDep, DbDep, log_usage
+from jpintel_mcp.ingest._gbiz_attribution import (
+    LICENSE_NAME as GBIZ_LICENSE_NAME,
+)
+from jpintel_mcp.ingest._gbiz_attribution import (
+    LICENSE_URL as GBIZ_LICENSE_URL,
+)
+from jpintel_mcp.ingest._gbiz_attribution import (
+    PUBLISHER_NAME as GBIZ_PUBLISHER_NAME,
+)
+from jpintel_mcp.ingest._gbiz_attribution import (
+    SOURCE_NAME as GBIZ_SOURCE_NAME,
+)
+from jpintel_mcp.ingest._gbiz_attribution import (
+    attribution_disclaimer_short,
+    inject_attribution_into_response,
+)
 
 router = APIRouter(prefix="/v1/houjin", tags=["houjin"])
 
@@ -84,6 +101,8 @@ _NAMAYOKE_CAVEAT = (
     "事業譲渡 等のイベント前後では同一番号の下に異なる時点の情報が混在する場合"
     "があります。最新の登記情報は法務局・gBizINFO 一次サイトでご確認ください。"
 )
+
+_GBIZ_UPSTREAM_SOURCE = "NTA Houjin Bangou Web-API"
 
 
 def _mark_envelope_v2_served(request: Request) -> None:
@@ -139,6 +158,24 @@ def _normalize_bangou(raw: str) -> str | None:
     return s
 
 
+def _gbiz_lookup_url(bangou: str) -> str:
+    return f"https://info.gbiz.go.jp/hojin/ichiran?hojinBango={bangou}"
+
+
+def _attach_gbiz_attribution(body: dict[str, Any], bangou: str) -> dict[str, Any]:
+    """Attach mandatory gBizINFO attribution when corporate facts are present."""
+    provenance = body.get("provenance") or {}
+    if not body.get("fact_count") and not provenance.get("has_corporate_entity"):
+        return body
+    fetched_at = str(provenance.get("source_snapshot_at") or provenance.get("fetched_at") or "")
+    return inject_attribution_into_response(
+        body,
+        source_url=_gbiz_lookup_url(bangou),
+        fetched_at=fetched_at,
+        upstream_source=_GBIZ_UPSTREAM_SOURCE,
+    )
+
+
 # ---------------------------------------------------------------------------
 # Composer
 # ---------------------------------------------------------------------------
@@ -157,7 +194,8 @@ def _build_houjin_360(am_conn: sqlite3.Connection, bangou: str) -> dict[str, Any
 
     # 1. core entity row (am_entities)
     entity_row = am_conn.execute(
-        """SELECT canonical_id, primary_name, source_url, fetched_at, confidence
+        """SELECT canonical_id, primary_name, source_url, fetched_at, created_at,
+                  updated_at, confidence
              FROM am_entities
             WHERE canonical_id = ?
               AND record_kind = 'corporate_entity'""",
@@ -238,8 +276,13 @@ def _build_houjin_360(am_conn: sqlite3.Connection, bangou: str) -> dict[str, Any
         ]
 
     # If we have no entity row AND no auxiliary hits, treat as 404.
-    if entity_row is None and not fact_rows and invoice_row is None and \
-       not n_adoptions and not n_enforcements:
+    if (
+        entity_row is None
+        and not fact_rows
+        and invoice_row is None
+        and not n_adoptions
+        and not n_enforcements
+    ):
         return None
 
     # Distill the 21 corp.* facts into a single map (text|numeric, whichever
@@ -274,9 +317,7 @@ def _build_houjin_360(am_conn: sqlite3.Connection, bangou: str) -> dict[str, Any
 
     basic = {
         "houjin_bangou": bangou,
-        "name": (
-            entity_row["primary_name"] if entity_row else _pluck("corp.legal_name")
-        ),
+        "name": (entity_row["primary_name"] if entity_row else _pluck("corp.legal_name")),
         "name_kana": _pluck("corp.legal_name_kana"),
         "name_en": _pluck("corp.legal_name_en"),
         "address": _pluck("corp.location"),
@@ -305,6 +346,12 @@ def _build_houjin_360(am_conn: sqlite3.Connection, bangou: str) -> dict[str, Any
             "registrant_kind": invoice_row["registrant_kind"],
         }
 
+    source_snapshot_at = None
+    if entity_row is not None:
+        source_snapshot_at = (
+            entity_row["fetched_at"] or entity_row["updated_at"] or entity_row["created_at"]
+        )
+
     body: dict[str, Any] = {
         "basic": basic,
         "corp_facts": corp_facts,
@@ -320,15 +367,15 @@ def _build_houjin_360(am_conn: sqlite3.Connection, bangou: str) -> dict[str, Any
         },
         "provenance": {
             "canonical_id": canonical_id,
-            "primary_source": (
-                entity_row["source_url"] if entity_row else None
-            ),
-            "fetched_at": (
-                entity_row["fetched_at"] if entity_row else None
-            ),
-            "confidence": (
-                entity_row["confidence"] if entity_row else None
-            ),
+            "has_corporate_entity": entity_row is not None,
+            "primary_source": (entity_row["source_url"] if entity_row else None),
+            "fetched_at": (entity_row["fetched_at"] if entity_row else None),
+            "source_snapshot_at": source_snapshot_at,
+            "confidence": (entity_row["confidence"] if entity_row else None),
+            "gbizinfo_source_url": _gbiz_lookup_url(bangou),
+            "gbizinfo_license": GBIZ_LICENSE_NAME,
+            "gbizinfo_license_url": GBIZ_LICENSE_URL,
+            "upstream_source": _GBIZ_UPSTREAM_SOURCE,
             "data_origin": "gBizINFO + 国税庁適格事業者公表サイト + 会計検査院",
         },
         "_disclaimer": _DISCLAIMER,
@@ -375,9 +422,7 @@ def _build_houjin_360(am_conn: sqlite3.Connection, bangou: str) -> dict[str, Any
         },
         422: {"description": "bangou must match '^\\d{13}$' (13 digits, half-width)"},
         503: {
-            "description": (
-                "autonomath.db unreachable (partial deploy / file missing)."
-            ),
+            "description": ("autonomath.db unreachable (partial deploy / file missing)."),
         },
     },
 )
@@ -468,14 +513,14 @@ def get_houjin_360(
                 ),
                 "houjin_bangou": norm,
                 "alternative": (
-                    "公式 gBizINFO lookup: "
-                    "https://info.gbiz.go.jp/hojin/ichiran?hojinBango=" + norm
+                    "公式 gBizINFO lookup: https://info.gbiz.go.jp/hojin/ichiran?hojinBango=" + norm
                 ),
                 "_disclaimer": _DISCLAIMER,
                 "_namayoke_caveat": _NAMAYOKE_CAVEAT,
             },
         )
 
+    _attach_gbiz_attribution(body, norm)
     _latency_ms = int((time.perf_counter() - _t0) * 1000)
     log_usage(
         conn,
@@ -486,6 +531,7 @@ def get_houjin_360(
         # keep it OUT of params_digest. The endpoint name + status are what
         # the SLA / freshness dashboard needs.
         params={"hit": True},
+        strict_metering=True,
     )
     # §17.D audit seal on paid responses (no-op for anon).
     attach_seal_to_body(
@@ -498,8 +544,26 @@ def get_houjin_360(
     if wants_envelope_v2(request):
         _mark_envelope_v2_served(request)
         provenance = body.get("provenance") or {}
+        attribution = body.get("_attribution") or {}
         citations = []
-        if provenance.get("primary_source"):
+        if attribution.get("source_url"):
+            citations.append(
+                {
+                    "source_url": attribution.get("source_url"),
+                    "publisher": attribution.get("publisher") or GBIZ_PUBLISHER_NAME,
+                    "title": f"{GBIZ_SOURCE_NAME} 法人情報",
+                    "fetched_at": attribution.get("fetched_at"),
+                    "license": attribution.get("license") or GBIZ_LICENSE_NAME,
+                    "license_url": attribution.get("license_url") or GBIZ_LICENSE_URL,
+                    "upstream_source": attribution.get("upstream_source"),
+                    "citation_text_ja": attribution_disclaimer_short(),
+                    "field_paths": ["/results/0/basic", "/results/0/corp_facts"],
+                    "verification_status": "unknown",
+                    "verification_basis": "local_catalog",
+                    "live_verified_at_request": False,
+                }
+            )
+        elif provenance.get("primary_source"):
             citations.append(
                 {
                     "source_url": provenance.get("primary_source"),

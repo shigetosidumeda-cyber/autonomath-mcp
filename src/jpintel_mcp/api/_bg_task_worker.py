@@ -24,6 +24,7 @@ Design contract:
   * Each handler invocation gets its OWN short-lived DB connection so a
     worker exception cannot leak a half-open transaction across iterations.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -49,6 +50,7 @@ POLL_INTERVAL_S = 2.0
 # ---------------------------------------------------------------------------
 try:
     import sentry_sdk as _sentry_sdk  # noqa: TC003
+
     _SENTRY_AVAILABLE = True
 except ImportError:  # pragma: no cover
     _SENTRY_AVAILABLE = False
@@ -94,6 +96,7 @@ def _handle_welcome_email(payload: dict[str, Any]) -> None:
         key_last4 = legacy_raw[-4:] if legacy_raw else "????"
 
     from jpintel_mcp.email import get_client as _get_email_client
+
     _get_email_client().send_welcome(
         to=to,
         key_last4=key_last4,
@@ -110,6 +113,7 @@ def _handle_key_rotated_email(payload: dict[str, Any]) -> None:
     if not to:
         return
     from jpintel_mcp.email import get_client as _get_email_client
+
     _get_email_client().send_key_rotated(
         to=to,
         old_suffix=payload.get("old_suffix") or "????",
@@ -131,6 +135,7 @@ def _handle_stripe_status_refresh(payload: dict[str, Any]) -> None:
     if not sub_id:
         return
     from jpintel_mcp.api.billing import _refresh_subscription_status_from_stripe
+
     conn = _db_connect()
     try:
         _refresh_subscription_status_from_stripe(conn, sub_id)
@@ -148,6 +153,7 @@ def _handle_dunning_email(payload: dict[str, Any]) -> None:
     if not to:
         return
     from jpintel_mcp.api.billing import _send_dunning_safe
+
     conn = _db_connect()
     try:
         _send_dunning_safe(
@@ -273,6 +279,7 @@ def _handle_stripe_usage_sync(payload: dict[str, Any]) -> None:
     if not sub_id:
         return
     from jpintel_mcp.billing.stripe_usage import _report_sync
+
     _report_sync(
         sub_id,
         quantity=int(payload.get("quantity") or 1),

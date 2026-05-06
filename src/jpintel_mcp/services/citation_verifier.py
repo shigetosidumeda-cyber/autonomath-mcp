@@ -33,6 +33,7 @@ is unreachable or paraphrased, we fall to ``unknown`` / ``inferred`` rather
 than emitting ``verified``. Code paths that DEFAULT to ``verified`` without
 calling this module are bugs.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -406,7 +407,13 @@ class CitationVerifier:
                     return None
                 raw = resp.read(5 * 1024 * 1024)  # 5 MiB cap
                 charset = resp.headers.get_content_charset() or "utf-8"
-        except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, ValueError, OSError) as exc:
+        except (
+            urllib.error.URLError,
+            urllib.error.HTTPError,
+            TimeoutError,
+            ValueError,
+            OSError,
+        ) as exc:
             logger.info("fetch_source failed url=%s err=%r", url, exc)
             return None
 

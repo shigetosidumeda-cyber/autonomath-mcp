@@ -45,6 +45,7 @@ Why a separate router (not a method on me_router):
     weird "anonymous me" path. A dedicated router with its own router-level
     deps is cleaner and matches the appi_disclosure pattern.
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -159,9 +160,7 @@ def _make_token(email_normalized: str, created_at_iso: str) -> str:
           token itself), so a DB exfil can't replay magic links.
     """
     msg = f"{email_normalized}|{created_at_iso}".encode()
-    return hmac.new(
-        settings.api_key_salt.encode(), msg, hashlib.sha256
-    ).hexdigest()
+    return hmac.new(settings.api_key_salt.encode(), msg, hashlib.sha256).hexdigest()
 
 
 def _hash_token(token: str) -> str:
@@ -345,8 +344,7 @@ def _per_ip_recent_count(
     """
     cutoff = (datetime.now(UTC) - timedelta(hours=window_hours)).isoformat()
     row = conn.execute(
-        "SELECT COUNT(*) FROM trial_signups "
-        "WHERE created_ip_hash = ? AND created_at >= ?",
+        "SELECT COUNT(*) FROM trial_signups WHERE created_ip_hash = ? AND created_at >= ?",
         (ip_hash, cutoff),
     ).fetchone()
     if row is None:
@@ -455,9 +453,7 @@ def submit_signup(
 
     qs = urlencode({"email": email, "token": token})
     magic_link_url = f"{api_origin}/v1/signup/verify?{qs}"
-    expires_at_iso = (
-        datetime.now(UTC) + timedelta(hours=MAGIC_LINK_TTL_HOURS)
-    ).isoformat()
+    expires_at_iso = (datetime.now(UTC) + timedelta(hours=MAGIC_LINK_TTL_HOURS)).isoformat()
 
     # Schedule email AFTER response flush via BackgroundTasks. Postmark is
     # ~200ms latency; doing it inline doubles the perceived signup time.

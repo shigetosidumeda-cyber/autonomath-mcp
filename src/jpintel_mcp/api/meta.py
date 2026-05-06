@@ -46,7 +46,7 @@ def get_meta(conn: DbDep, ctx: ApiContextDep) -> Meta:
     global _meta_cache
     now = time.monotonic()
     if _meta_cache is not None and now - _meta_cache[0] < _META_CACHE_TTL_SEC:
-        log_usage(conn, ctx, "meta")
+        log_usage(conn, ctx, "meta", strict_metering=True)
         return _meta_cache[1]
 
     tier_counts: dict[str, int] = {}
@@ -102,7 +102,7 @@ def get_meta(conn: DbDep, ctx: ApiContextDep) -> Meta:
         data_lineage=lineage,
     )
     _meta_cache = (now, result)
-    log_usage(conn, ctx, "meta")
+    log_usage(conn, ctx, "meta", strict_metering=True)
     return result
 
 
@@ -194,7 +194,7 @@ def ping(conn: DbDep, ctx: ApiContextDep) -> PingResponse:
     # Record the probe as a usage_event for authed keys only — discourages
     # burning it as a free heartbeat. Anonymous probes aren't counted (no
     # per-IP usage log exists).
-    log_usage(conn, ctx, "ping")
+    log_usage(conn, ctx, "ping", strict_metering=True)
 
     return PingResponse(
         ok=True,

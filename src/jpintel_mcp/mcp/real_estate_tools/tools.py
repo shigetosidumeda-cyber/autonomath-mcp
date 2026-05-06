@@ -73,15 +73,21 @@ def _stub_envelope(
 def search_real_estate_programs(
     q: Annotated[
         str | None,
-        Field(description="自由文検索 (FTS5)。建築基準法 / 都市計画法 / 借地借家法 関連 program に絞る前段。"),
+        Field(
+            description="自由文検索 (FTS5)。建築基準法 / 都市計画法 / 借地借家法 関連 program に絞る前段。"
+        ),
     ] = None,
     program_kind: Annotated[
         str | None,
-        Field(description="program_kind enum: subsidy / tax_incentive / loan / certification / zoning。"),
+        Field(
+            description="program_kind enum: subsidy / tax_incentive / loan / certification / zoning。"
+        ),
     ] = None,
     law_basis: Annotated[
         str | None,
-        Field(description="根拠法名 (例: 建築基準法 / 都市計画法 / 不動産登記法 / 借地借家法 / 建物区分所有法)。"),
+        Field(
+            description="根拠法名 (例: 建築基準法 / 都市計画法 / 不動産登記法 / 借地借家法 / 建物区分所有法)。"
+        ),
     ] = None,
     prefecture: Annotated[
         str | None,
@@ -93,7 +99,9 @@ def search_real_estate_programs(
     ] = None,
     tier: Annotated[
         str | None,
-        Field(description="tier enum: S / A / B / C (X excluded)。default 全 tier (excluded=0 のみ)。"),
+        Field(
+            description="tier enum: S / A / B / C (X excluded)。default 全 tier (excluded=0 のみ)。"
+        ),
     ] = None,
     limit: Annotated[int, Field(ge=1, le=100, description="最大返却件数 (default 20)。")] = 20,
     offset: Annotated[int, Field(ge=0, description="ページング offset (default 0)。")] = 0,

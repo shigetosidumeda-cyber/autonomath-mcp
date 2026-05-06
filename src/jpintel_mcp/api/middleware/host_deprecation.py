@@ -58,6 +58,7 @@ Header reference
   ``successor-version`` is the registered relation type for
   "this resource has been superseded by the linked one".
 """
+
 from __future__ import annotations
 
 import logging
@@ -134,9 +135,7 @@ class HostDeprecationMiddleware(BaseHTTPMiddleware):
     ``DeprecationWarningMiddleware`` flow) is never silently overridden.
     """
 
-    async def dispatch(
-        self, request: Request, call_next: Callable
-    ) -> Response:
+    async def dispatch(self, request: Request, call_next: Callable) -> Response:
         legacy = _is_legacy_host(request)
         response: Response = await call_next(request)
         if not legacy:

@@ -128,9 +128,7 @@ def render_xlsx(rows: list[dict[str, Any]], meta: dict[str, Any]) -> Response:
     filename = f"{meta.get('filename_stem', 'autonomath_export')}.xlsx"
     return Response(
         content=buf.read(),
-        media_type=(
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        ),
+        media_type=("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
         headers={
             "Content-Disposition": f'attachment; filename="{filename}"',
             "X-AutonoMath-Disclaimer": DISCLAIMER_HEADER_VALUE,

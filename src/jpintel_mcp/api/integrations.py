@@ -38,6 +38,7 @@ inherited from ``PerIpEndpointLimitMiddleware`` plus
 ``RateLimitMiddleware``; Excel additionally gets a stricter cap because
 ``?key=`` is logged in proxy access logs and easier to leak.
 """
+
 from __future__ import annotations
 
 import logging
@@ -235,6 +236,7 @@ def _bill_one_call(
         result_count=result_count,
         background_tasks=background_tasks,
         request=request,
+        strict_metering=True,
     )
 
 
@@ -314,14 +316,11 @@ async def slack_slash_command(
     for r in rows:
         s = _row_summary(r)
         line = (
-            f"*<{s['url']}|{s['name']}>* — {s['prefecture']}\n"
-            f"_{s['authority']}_ — {s['amount']}"
+            f"*<{s['url']}|{s['name']}>* — {s['prefecture']}\n_{s['authority']}_ — {s['amount']}"
             if s["url"]
             else f"*{s['name']}* — {s['prefecture']}\n_{s['authority']}_ — {s['amount']}"
         )
-        blocks.append(
-            {"type": "section", "text": {"type": "mrkdwn", "text": line}}
-        )
+        blocks.append({"type": "section", "text": {"type": "mrkdwn", "text": line}})
     blocks.append(
         {
             "type": "context",
@@ -383,10 +382,7 @@ async def slack_incoming_webhook(
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": (
-                            f"`{query}`: {body.get('total', 0)} 件 "
-                            f"(上位 {len(rows)} 件)"
-                        ),
+                        "text": (f"`{query}`: {body.get('total', 0)} 件 (上位 {len(rows)} 件)"),
                     },
                 },
                 *[
@@ -395,8 +391,7 @@ async def slack_incoming_webhook(
                         "text": {
                             "type": "mrkdwn",
                             "text": (
-                                f"*<{_row_summary(r)['url']}|"
-                                f"{_row_summary(r)['name']}>*"
+                                f"*<{_row_summary(r)['url']}|{_row_summary(r)['name']}>*"
                                 if _row_summary(r)["url"]
                                 else f"*{_row_summary(r)['name']}*"
                             ),
@@ -406,9 +401,7 @@ async def slack_incoming_webhook(
                 ],
                 {
                     "type": "context",
-                    "elements": [
-                        {"type": "mrkdwn", "text": SECTION_52_FOOTER_SHORT}
-                    ],
+                    "elements": [{"type": "mrkdwn", "text": SECTION_52_FOOTER_SHORT}],
                 },
             ],
         }
@@ -543,9 +536,7 @@ async def email_inbound(
             )
             # 401 (not 403) so a misconfigured Postmark sees the same code
             # as an unauthenticated caller — see api/email_webhook.py.
-            raise HTTPException(
-                status.HTTP_401_UNAUTHORIZED, "invalid postmark webhook token"
-            )
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED, "invalid postmark webhook token")
     # Postmark inbound JSON: documented at
     # https://postmarkapp.com/developer/user-guide/inbound/parse-an-email
     to_full = (
@@ -554,9 +545,8 @@ async def email_inbound(
         or payload.get("To", "")
     )
     from_email = (
-        payload.get("FromFull", {}).get("Email")
-        or payload.get("From", "")
-    ).strip().lower()
+        (payload.get("FromFull", {}).get("Email") or payload.get("From", "")).strip().lower()
+    )
     subject = (payload.get("Subject") or "").strip()
     msg_id = payload.get("MessageID") or ""
 
@@ -581,9 +571,7 @@ async def email_inbound(
             from_email,
             ctx.key_hash[:8],
         )
-        return JSONResponse(
-            content={"status": "ignored", "reason": "from_not_whitelisted"}
-        )
+        return JSONResponse(content={"status": "ignored", "reason": "from_not_whitelisted"})
 
     query = subject or "補助金"
     body_resp = _run_search(db=db, q=query)
@@ -642,9 +630,7 @@ def _email_whitelist_for_key(db, key_hash: str) -> set[str]:
     return {(r["from_email"] or "").strip().lower() for r in rows if r["from_email"]}
 
 
-def _email_reply_bodies(
-    query: str, rows: list[dict[str, Any]], total: int
-) -> tuple[str, str]:
+def _email_reply_bodies(query: str, rows: list[dict[str, Any]], total: int) -> tuple[str, str]:
     """Render HTML + plaintext email bodies for the auto-reply."""
     summaries = [_row_summary(r) for r in rows]
     if summaries:
@@ -662,7 +648,7 @@ def _email_reply_bodies(
                 text_lines.append(f"  {s['url']}")
             html_items.append(
                 "<li>"
-                f"<a href=\"{s['url']}\"><b>{s['name']}</b></a> "
+                f'<a href="{s["url"]}"><b>{s["name"]}</b></a> '
                 f"({s['prefecture']}) — {s['authority']} — {s['amount']}"
                 "</li>"
             )
@@ -676,8 +662,7 @@ def _email_reply_bodies(
         )
     else:
         text_body = (
-            f"検索: {query}\n0 件ヒットしませんでした。\n\n"
-            f"{SECTION_52_FOOTER}\n{BRAND_LINE}"
+            f"検索: {query}\n0 件ヒットしませんでした。\n\n{SECTION_52_FOOTER}\n{BRAND_LINE}"
         )
         html_body = (
             f"<p><b>検索: </b>{query}</p>"
@@ -832,15 +817,12 @@ async def kintone_callback(
 _GOOGLE_AUTHORIZE = "https://accounts.google.com/o/oauth2/v2/auth"
 _GOOGLE_TOKEN = "https://oauth2.googleapis.com/token"
 _GOOGLE_SCOPES = (
-    "https://www.googleapis.com/auth/spreadsheets "
-    "https://www.googleapis.com/auth/userinfo.email"
+    "https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/userinfo.email"
 )
 
 
 def _google_oauth_redirect_uri() -> str:
-    base = os.environ.get(
-        "JPINTEL_API_BASE_URL", "https://api.jpcite.com"
-    ).rstrip("/")
+    base = os.environ.get("JPINTEL_API_BASE_URL", "https://api.jpcite.com").rstrip("/")
     return f"{base}/v1/integrations/google/callback"
 
 
@@ -860,15 +842,12 @@ async def google_oauth_start(
     db: DbDep,
 ) -> JSONResponse:
     if ctx.key_hash is None:
-        raise HTTPException(
-            status.HTTP_401_UNAUTHORIZED, "API key required to start OAuth"
-        )
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "API key required to start OAuth")
     client_id = os.environ.get("GOOGLE_OAUTH_CLIENT_ID")
     if not client_id:
         raise HTTPException(
             status.HTTP_503_SERVICE_UNAVAILABLE,
-            "Google Sheets integration not configured "
-            "(operator must set GOOGLE_OAUTH_CLIENT_ID)",
+            "Google Sheets integration not configured (operator must set GOOGLE_OAUTH_CLIENT_ID)",
         )
     nonce = secrets.token_urlsafe(16)
     # Store nonce keyed by api_key_hash so the callback can validate.
@@ -931,9 +910,7 @@ async def google_oauth_callback(
         (nonce,),
     ).fetchone()
     if state_row is None:
-        raise HTTPException(
-            status.HTTP_400_BAD_REQUEST, "invalid or expired oauth state"
-        )
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "invalid or expired oauth state")
     api_key_hash = state_row["api_key_hash"]
     if not api_key_hash.startswith(key_prefix):
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "state/api_key mismatch")
@@ -994,12 +971,8 @@ async def google_oauth_callback(
     )
     db.commit()
     # Redirect into the dashboard's connectors panel.
-    dashboard = os.environ.get(
-        "JPINTEL_DASHBOARD_URL", "https://jpcite.com/dashboard.html"
-    )
-    return RedirectResponse(
-        url=f"{dashboard}#integrations=google_sheets_ok", status_code=302
-    )
+    dashboard = os.environ.get("JPINTEL_DASHBOARD_URL", "https://jpcite.com/dashboard.html")
+    return RedirectResponse(url=f"{dashboard}#integrations=google_sheets_ok", status_code=302)
 
 
 @router.get(
@@ -1009,9 +982,7 @@ async def google_oauth_callback(
 async def google_status(ctx: ApiContextDep, db: DbDep) -> JSONResponse:
     if ctx.key_hash is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED)
-    payload = load_account(
-        db, api_key_hash=ctx.key_hash, provider="google_sheets"
-    )
+    payload = load_account(db, api_key_hash=ctx.key_hash, provider="google_sheets")
     return JSONResponse(
         content={
             "connected": payload is not None,
@@ -1048,9 +1019,7 @@ async def google_revoke(ctx: ApiContextDep, db: DbDep) -> JSONResponse:
 # dash), alphanumeric or hyphen in the middle, single subdomain, then the
 # Cybozu/kintone parent domain. Allowing a trailing-dash label slipped past
 # the previous regex (re-tightened 2026-04-29 audit).
-_KINTONE_DOMAIN_RE = re.compile(
-    r"^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.(cybozu|kintone)\.com$", re.I
-)
+_KINTONE_DOMAIN_RE = re.compile(r"^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.(cybozu|kintone)\.com$", re.I)
 
 
 class KintoneConnectRequest(BaseModel):
@@ -1135,8 +1104,7 @@ async def kintone_sync(
         )
 
     saved = db.execute(
-        "SELECT id, query_json FROM saved_searches "
-        "WHERE id = ? AND api_key_hash = ?",
+        "SELECT id, query_json FROM saved_searches WHERE id = ? AND api_key_hash = ?",
         (payload.saved_search_id, ctx.key_hash),
     ).fetchone()
     if saved is None:
@@ -1201,6 +1169,29 @@ async def kintone_sync(
             }
         )
 
+    # Bill before pushing rows into the external kintone app. If the final
+    # cap check rejects the paid call, remove the optimistic idempotency row
+    # so the customer can retry after resolving billing/cap state.
+    try:
+        log_usage(
+            db,
+            ctx,
+            "programs.search",
+            params={"integration": "kintone_sync", "rows": len(records)},
+            latency_ms=None,
+            result_count=len(records),
+            background_tasks=background_tasks,
+            request=request,
+            strict_metering=True,
+        )
+    except HTTPException:
+        db.execute(
+            "DELETE FROM integration_sync_log WHERE id = ? AND provider = ?",
+            (_log_id, "kintone"),
+        )
+        db.commit()
+        raise
+
     domain = creds["domain"]
     app_id = creds["app_id"]
     api_token = creds["api_token"]
@@ -1211,9 +1202,9 @@ async def kintone_sync(
             req = urllib.request.Request(
                 f"https://{domain}/k/v1/records.json",
                 method="POST",
-                data=_json.dumps(
-                    {"app": app_id, "records": records}, ensure_ascii=False
-                ).encode("utf-8"),
+                data=_json.dumps({"app": app_id, "records": records}, ensure_ascii=False).encode(
+                    "utf-8"
+                ),
                 headers={
                     "Content-Type": "application/json",
                     "X-Cybozu-API-Token": api_token,
@@ -1238,18 +1229,6 @@ async def kintone_sync(
             (error_class, idem_key),
         )
         db.commit()
-
-    # ¥3 billing: one row per integration call (not per kintone record).
-    log_usage(
-        db,
-        ctx,
-        "programs.search",
-        params={"integration": "kintone_sync", "rows": posted},
-        latency_ms=None,
-        result_count=posted,
-        background_tasks=background_tasks,
-        request=request,
-    )
 
     return JSONResponse(
         content={
@@ -1278,9 +1257,7 @@ async def kintone_sync(
 class EmailConnectRequest(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
-    reply_from: str = Field(
-        default="query@parse.jpcite.com", min_length=4, max_length=128
-    )
+    reply_from: str = Field(default="query@parse.jpcite.com", min_length=4, max_length=128)
 
 
 @router.post(
@@ -1306,9 +1283,7 @@ async def email_connect(
         payload={"reply_from": payload.reply_from},
         display_handle=payload.reply_from,
     )
-    return JSONResponse(
-        content={"ok": True, "reply_from": payload.reply_from}
-    )
+    return JSONResponse(content={"ok": True, "reply_from": payload.reply_from})
 
 
 __all__ = ["router"]

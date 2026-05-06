@@ -77,13 +77,53 @@ STRIPE_PRODUCT_METADATA_TAG = {"autonomath_product": "compliance_alerts"}
 # 47 都道府県 — canonical Japanese names. The landing form constrains the
 # dropdown to this list so we never see "Tokyo"/"TOKYO"/"東京".
 PREFECTURES: tuple[str, ...] = (
-    "北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県",
-    "茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県",
-    "新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県", "岐阜県",
-    "静岡県", "愛知県", "三重県", "滋賀県", "京都府", "大阪府", "兵庫県",
-    "奈良県", "和歌山県", "鳥取県", "島根県", "岡山県", "広島県", "山口県",
-    "徳島県", "香川県", "愛媛県", "高知県", "福岡県", "佐賀県", "長崎県",
-    "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県",
+    "北海道",
+    "青森県",
+    "岩手県",
+    "宮城県",
+    "秋田県",
+    "山形県",
+    "福島県",
+    "茨城県",
+    "栃木県",
+    "群馬県",
+    "埼玉県",
+    "千葉県",
+    "東京都",
+    "神奈川県",
+    "新潟県",
+    "富山県",
+    "石川県",
+    "福井県",
+    "山梨県",
+    "長野県",
+    "岐阜県",
+    "静岡県",
+    "愛知県",
+    "三重県",
+    "滋賀県",
+    "京都府",
+    "大阪府",
+    "兵庫県",
+    "奈良県",
+    "和歌山県",
+    "鳥取県",
+    "島根県",
+    "岡山県",
+    "広島県",
+    "山口県",
+    "徳島県",
+    "香川県",
+    "愛媛県",
+    "高知県",
+    "福岡県",
+    "佐賀県",
+    "長崎県",
+    "熊本県",
+    "大分県",
+    "宮崎県",
+    "鹿児島県",
+    "沖縄県",
 )
 
 _HOUJIN_BANGOU_RE = re.compile(r"^\d{13}$")
@@ -115,9 +155,7 @@ def _configure_stripe() -> None:
     AttributeError at first call.
     """
     if not settings.stripe_secret_key:
-        raise HTTPException(
-            status.HTTP_503_SERVICE_UNAVAILABLE, "Stripe not configured"
-        )
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "Stripe not configured")
     stripe.api_key = settings.stripe_secret_key
     if settings.stripe_api_version:
         stripe.api_version = settings.stripe_api_version
@@ -268,9 +306,7 @@ class SubscribeRequest(BaseModel):
     def _check_areas(cls, v: list[str]) -> list[str]:
         unknown = [a for a in v if a not in AREAS_SUPPORTED]
         if unknown:
-            raise ValueError(
-                f"unsupported areas: {unknown!r}. allowed: {list(AREAS_SUPPORTED)}"
-            )
+            raise ValueError(f"unsupported areas: {unknown!r}. allowed: {list(AREAS_SUPPORTED)}")
         # De-dupe while preserving order.
         seen: set[str] = set()
         out: list[str] = []
@@ -526,8 +562,7 @@ def unsubscribe(unsubscribe_token: str, conn: DbDep) -> HTMLResponse:
                     "compliance.unsubscribe.stripe_cancel_failed sub=%s", sub_id, exc_info=True
                 )
         conn.execute(
-            "UPDATE compliance_subscribers SET canceled_at = ?, updated_at = ? "
-            "WHERE id = ?",
+            "UPDATE compliance_subscribers SET canceled_at = ?, updated_at = ? WHERE id = ?",
             (now, now, int(row["id"])),
         )
 
@@ -577,9 +612,7 @@ def stripe_checkout(payload: CheckoutRequest, conn: DbDep) -> CheckoutResponse:
         extra["tax_id_collection"] = {"enabled": True}
         extra["billing_address_collection"] = "required"
 
-    success_url = validate_jpcite_service_redirect_url(
-        payload.success_url, kind="success"
-    )
+    success_url = validate_jpcite_service_redirect_url(payload.success_url, kind="success")
     cancel_url = validate_jpcite_service_redirect_url(payload.cancel_url, kind="cancel")
 
     session = stripe.checkout.Session.create(
@@ -621,18 +654,17 @@ async def stripe_webhook(
     """
     _configure_stripe()
     if not settings.stripe_webhook_secret:
-        raise HTTPException(
-            status.HTTP_503_SERVICE_UNAVAILABLE, "webhook secret unset"
-        )
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "webhook secret unset")
     body = await request.body()
     try:
         event = stripe.Webhook.construct_event(
-            body, stripe_signature or "", settings.stripe_webhook_secret
+            body,
+            stripe_signature or "",
+            settings.stripe_webhook_secret,
+            tolerance=300,
         )
     except stripe.SignatureVerificationError:
-        raise HTTPException(
-            status.HTTP_400_BAD_REQUEST, "bad signature"
-        ) from None
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "bad signature") from None
 
     etype = event["type"]
     obj = event["data"]["object"]

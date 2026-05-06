@@ -22,6 +22,7 @@ builder from api/programs.py (`_build_fts_match`) so e.g. `税額控除`
 matches only rows where those tokens appear contiguously, never rows
 that merely mention 税 + 控除 independently.
 """
+
 import json
 import sqlite3
 import time
@@ -312,10 +313,7 @@ def search_laws(
     )
     order_sql = "ORDER BY " + ", ".join(order_parts)
 
-    select_sql = (
-        f"SELECT laws.* FROM {base_from} WHERE {where_clause} "
-        f"{order_sql} LIMIT ? OFFSET ?"
-    )
+    select_sql = f"SELECT laws.* FROM {base_from} WHERE {where_clause} {order_sql} LIMIT ? OFFSET ?"
     rows = conn.execute(select_sql, [*params, limit, offset]).fetchall()
 
     _latency_ms = int((time.perf_counter() - _t0) * 1000)
@@ -336,6 +334,7 @@ def search_laws(
         },
         latency_ms=_latency_ms,
         result_count=total,
+        strict_metering=True,
     )
 
     if total == 0 and q is not None:
@@ -426,15 +425,17 @@ def get_law(
     The response includes `corpus_snapshot_id` + `corpus_checksum` so callers
     can reproduce the lookup later and detect whether the corpus changed.
     """
-    row = conn.execute(
-        "SELECT * FROM laws WHERE unified_id = ?", (unified_id,)
-    ).fetchone()
+    row = conn.execute("SELECT * FROM laws WHERE unified_id = ?", (unified_id,)).fetchone()
     if row is None:
-        raise HTTPException(
-            status.HTTP_404_NOT_FOUND, f"law not found: {unified_id}"
-        )
+        raise HTTPException(status.HTTP_404_NOT_FOUND, f"law not found: {unified_id}")
 
-    log_usage(conn, ctx, "laws.get", params={"unified_id": unified_id})
+    log_usage(
+        conn,
+        ctx,
+        "laws.get",
+        params={"unified_id": unified_id},
+        strict_metering=True,
+    )
     body = _row_to_law(row).model_dump(mode="json")
     attach_corpus_snapshot(body, conn)
     return JSONResponse(content=body, headers=snapshot_headers(conn))
@@ -476,9 +477,7 @@ def get_related_programs(
         "SELECT unified_id FROM laws WHERE unified_id = ?", (unified_id,)
     ).fetchone()
     if law_row is None:
-        raise HTTPException(
-            status.HTTP_404_NOT_FOUND, f"law not found: {unified_id}"
-        )
+        raise HTTPException(status.HTTP_404_NOT_FOUND, f"law not found: {unified_id}")
 
     allowed_kinds = {
         "authority",
@@ -547,6 +546,7 @@ def get_related_programs(
         ctx,
         "laws.related_programs",
         params={"unified_id": unified_id, "ref_kind": ref_kind},
+        strict_metering=True,
     )
 
     return RelatedProgramsResponse(

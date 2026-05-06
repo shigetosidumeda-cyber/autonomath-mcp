@@ -19,6 +19,7 @@ Callers pass the FastAPI ``Request`` so we can capture the originating IP
 and User-Agent (truncated to 500 chars to keep row size bounded). Anything
 event-specific lands in ``metadata`` as JSON.
 """
+
 from __future__ import annotations
 
 import json

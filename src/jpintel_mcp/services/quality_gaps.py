@@ -4,6 +4,7 @@ This module deliberately has no API/MCP wiring and no network or LLM calls. It
 turns already-collected evidence/source/fact metadata into a deterministic
 ``known_gaps`` list that callers can attach to richer response payloads later.
 """
+
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
@@ -181,9 +182,7 @@ def _append_verification_gap(
     stale_after_days: int,
 ) -> None:
     status = _clean_text(
-        source.get("verification_status")
-        or source.get("source_status")
-        or source.get("status")
+        source.get("verification_status") or source.get("source_status") or source.get("status")
     )
     normalized_status = (status or "").lower()
     verified_at = _coerce_date(
@@ -275,7 +274,9 @@ def _append_missing_required_fact_gaps(
         _append_once(gaps, seen, key, gap)
 
 
-def _as_records(records: Iterable[Mapping[str, Any]] | Mapping[str, Any] | None) -> list[Mapping[str, Any]]:
+def _as_records(
+    records: Iterable[Mapping[str, Any]] | Mapping[str, Any] | None,
+) -> list[Mapping[str, Any]]:
     if records is None:
         return []
     if isinstance(records, Mapping):
@@ -289,7 +290,9 @@ def _as_records(records: Iterable[Mapping[str, Any]] | Mapping[str, Any] | None)
     return [record for record in records if isinstance(record, Mapping)]
 
 
-def _as_fact_records(facts: Iterable[Mapping[str, Any]] | Mapping[str, Any] | None) -> list[Mapping[str, Any]]:
+def _as_fact_records(
+    facts: Iterable[Mapping[str, Any]] | Mapping[str, Any] | None,
+) -> list[Mapping[str, Any]]:
     if facts is None:
         return []
     if isinstance(facts, Mapping) and not _looks_like_single_record(facts):

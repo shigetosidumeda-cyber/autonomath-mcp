@@ -8,6 +8,7 @@ by sha256(tool_name + canonical_json(params)). Sits ABOVE the L3 reasoner
 layer and serves the Zipf-shaped tail of identical-param queries directly
 from a serialized blob.
 """
+
 from jpintel_mcp.cache.l4 import (
     canonical_cache_key,
     canonical_params,

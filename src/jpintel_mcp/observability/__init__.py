@@ -9,6 +9,7 @@ FastAPI app graph along.
 See `docs/observability.md` (operator-only, excluded from public docs)
 for the full alert / SLO matrix.
 """
+
 from __future__ import annotations
 
 from jpintel_mcp.observability.cron_heartbeat import heartbeat

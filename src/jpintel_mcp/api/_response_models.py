@@ -122,6 +122,33 @@ EVIDENCE_PACKET_EXAMPLE: dict[str, Any] = {
         "web_search_performed_by_jpcite": False,
         "request_time_llm_call_performed": False,
     },
+    "decision_insights": {
+        "schema_version": "v1",
+        "generated_from": [
+            "records",
+            "quality",
+            "verification",
+            "evidence_value",
+            "corpus_snapshot_id",
+        ],
+        "why_review": [
+            {
+                "signal": "source_traceability",
+                "message_ja": "一次資料URLと取得時点を確認できます。",
+                "source_fields": ["records.source_url", "records.source_fetched_at"],
+                "severity": "info",
+            }
+        ],
+        "next_checks": [
+            {
+                "signal": "source_recheck",
+                "message_ja": "最終判断前に一次資料を再確認してください。",
+                "source_fields": ["records.source_url"],
+                "severity": "review",
+            }
+        ],
+        "evidence_gaps": [],
+    },
 }
 
 
@@ -224,8 +251,7 @@ class EvidencePacketCompression(BaseModel):
     input_context_reduction_rate: float | None = Field(
         default=None,
         description=(
-            "max(0, source - packet) / source. Caller-supplied input-context "
-            "estimate only; not a provider-billing guarantee."
+            "max(0, source - packet) / source. Caller-supplied input-context estimate only."
         ),
     )
     estimate_method: str | None = None
@@ -240,8 +266,7 @@ class EvidencePacketCompression(BaseModel):
     estimate_scope: str = Field(
         default="input_context_only",
         description=(
-            "The estimate compares input context size only; it is not an "
-            "external provider billing guarantee."
+            "The estimate compares input context size only from caller-supplied baselines."
         ),
     )
     savings_claim: str = Field(
@@ -387,6 +412,47 @@ class EvidencePacketEvidenceValue(BaseModel):
     )
 
 
+class EvidencePacketInsightItem(BaseModel):
+    """One AI-facing decision insight derived from packet evidence."""
+
+    model_config = _ALLOW_EXTRA
+
+    signal: str = Field(..., description="Stable machine-readable insight id.")
+    message_ja: str = Field(..., description="Short Japanese guidance for agents to quote.")
+    source_fields: list[str] = Field(
+        default_factory=list,
+        description="Envelope fields used to derive this insight.",
+    )
+    severity: str | None = Field(
+        default=None,
+        description="Permissive severity label such as info, review, or warning.",
+    )
+
+
+class EvidencePacketDecisionInsights(BaseModel):
+    """AI-facing guidance emitted on JSON Evidence Packet responses."""
+
+    model_config = _ALLOW_EXTRA
+
+    schema_version: str = Field(default="v1")
+    generated_from: list[str] = Field(
+        default_factory=list,
+        description="Envelope sections used to derive the insight block.",
+    )
+    why_review: list[EvidencePacketInsightItem] = Field(
+        default_factory=list,
+        description="Reasons this packet is useful or needs review before answering.",
+    )
+    next_checks: list[EvidencePacketInsightItem] = Field(
+        default_factory=list,
+        description="Human or agent follow-up checks before relying on the packet.",
+    )
+    evidence_gaps: list[EvidencePacketInsightItem] = Field(
+        default_factory=list,
+        description="Known evidence gaps that should be surfaced to the user.",
+    )
+
+
 class EvidencePacketEnvelope(BaseModel):
     """Compact source-linked packet for LLM evidence prefetch."""
 
@@ -419,6 +485,362 @@ class EvidencePacketEnvelope(BaseModel):
             "to recommend or skip this jpcite route."
         ),
     )
+    decision_insights: EvidencePacketDecisionInsights | None = Field(
+        default=None,
+        description=(
+            "JSON-only AI-facing guidance derived from records, quality, "
+            "verification, evidence_value, and corpus_snapshot_id."
+        ),
+    )
+
+
+FUNDING_STACK_CHECK_EXAMPLE: dict[str, Any] = {
+    "program_ids": [
+        "program:it-introduction-subsidy",
+        "program:business-restructuring-subsidy",
+    ],
+    "all_pairs_status": "requires_review",
+    "pairs": [
+        {
+            "program_a": "program:it-introduction-subsidy",
+            "program_b": "program:business-restructuring-subsidy",
+            "verdict": "requires_review",
+            "confidence": 0.72,
+            "rule_chain": [
+                {
+                    "source": "am_compat_matrix",
+                    "rule_id": "compat_requires_cost_separation",
+                    "reason": "Cost items and project scopes must be separated before stacking.",
+                }
+            ],
+            "next_actions": [
+                {
+                    "action_id": "contact_program_office",
+                    "label_ja": "制度事務局へ併用条件を照会する",
+                    "detail_ja": (
+                        "対象経費、申請年度、採択・交付決定の順序、他制度併用の有無を"
+                        "具体的に示して、事務局へ確認してください。"
+                    ),
+                    "reason": (
+                        "requires_review 判定は条件付き併用や前提認定の解釈が残っており、"
+                        "機械判定だけで許可扱いにできないためです。"
+                    ),
+                    "source_fields": [
+                        "verdict",
+                        "confidence",
+                        "warnings[].rule_chain",
+                        "rule_chain[].note",
+                    ],
+                },
+                {
+                    "action_id": "separate_expense_categories",
+                    "label_ja": "対象経費区分と事業範囲を分ける",
+                    "detail_ja": (
+                        "設備費、外注費、ソフトウェア費などの区分ごとに、どちらの制度で"
+                        "申請するかを明確化してください。"
+                    ),
+                    "reason": (
+                        "条件付き併用では、経費区分と事業範囲が分離できるかが"
+                        "事務局確認の中心になるためです。"
+                    ),
+                    "source_fields": [
+                        "program_a",
+                        "program_b",
+                        "rule_chain[].rule_text",
+                    ],
+                },
+            ],
+            "_disclaimer": "Verify current public guidelines and application-round rules.",
+        }
+    ],
+    "blockers": [],
+    "warnings": [
+        {
+            "code": "round_specific_rules",
+            "message": "Application-round details may change the stackability decision.",
+        }
+    ],
+    "next_actions": [
+        {
+            "action_id": "contact_program_office",
+            "label_ja": "制度事務局へ併用条件を照会する",
+            "detail_ja": (
+                "対象経費、申請年度、採択・交付決定の順序、他制度併用の有無を"
+                "具体的に示して、事務局へ確認してください。"
+            ),
+            "reason": (
+                "requires_review 判定は条件付き併用や前提認定の解釈が残っており、"
+                "機械判定だけで許可扱いにできないためです。"
+            ),
+            "source_fields": [
+                "verdict",
+                "confidence",
+                "warnings[].rule_chain",
+                "rule_chain[].note",
+            ],
+        },
+        {
+            "action_id": "separate_expense_categories",
+            "label_ja": "対象経費区分と事業範囲を分ける",
+            "detail_ja": (
+                "設備費、外注費、ソフトウェア費などの区分ごとに、どちらの制度で"
+                "申請するかを明確化してください。"
+            ),
+            "reason": (
+                "条件付き併用では、経費区分と事業範囲が分離できるかが"
+                "事務局確認の中心になるためです。"
+            ),
+            "source_fields": [
+                "program_a",
+                "program_b",
+                "rule_chain[].rule_text",
+            ],
+        },
+    ],
+    "_disclaimer": "Rule-engine result only; final decisions require primary-source review.",
+    "total_pairs": 1,
+}
+
+
+class FundingStackNextAction(BaseModel):
+    """Human-readable follow-up action emitted by funding-stack verdicts."""
+
+    model_config = _ALLOW_EXTRA
+
+    action_id: str = Field(..., description="Stable machine-readable action id.")
+    label_ja: str = Field(..., description="Short Japanese action label.")
+    detail_ja: str = Field(..., description="Concrete human-readable instruction for the action.")
+    reason: str = Field(..., description="Why this action follows from the verdict.")
+    source_fields: list[str] = Field(
+        default_factory=list,
+        description="Response fields used to derive or verify this action.",
+    )
+
+
+class FundingStackPair(BaseModel):
+    """Per-pair funding-stack compatibility verdict."""
+
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    program_a: str
+    program_b: str
+    verdict: Literal["compatible", "incompatible", "requires_review", "unknown"]
+    confidence: float
+    rule_chain: list[dict[str, Any]] = Field(
+        default_factory=list,
+        description="Rules that contributed to the verdict, in evaluation order.",
+    )
+    next_actions: list[FundingStackNextAction] = Field(
+        default_factory=list,
+        description="Human-readable follow-up checklist items for this pair.",
+    )
+    disclaimer: str = Field(
+        default="",
+        alias="_disclaimer",
+        description="Pair-level disclaimer; verify primary sources before decisions.",
+    )
+
+
+class FundingStackCheckResponse(BaseModel):
+    """Response for POST /v1/funding_stack/check."""
+
+    model_config = ConfigDict(
+        extra="allow",
+        populate_by_name=True,
+        json_schema_extra={"example": FUNDING_STACK_CHECK_EXAMPLE},
+    )
+
+    program_ids: list[str]
+    all_pairs_status: Literal[
+        "compatible",
+        "incompatible",
+        "requires_review",
+        "unknown",
+    ]
+    pairs: list[FundingStackPair] = Field(default_factory=list)
+    blockers: list[dict[str, Any]] = Field(default_factory=list)
+    warnings: list[dict[str, Any]] = Field(default_factory=list)
+    next_actions: list[FundingStackNextAction] = Field(
+        default_factory=list,
+        description="Aggregated human-readable follow-up checklist items across pairs.",
+    )
+    disclaimer: str = Field(
+        default="",
+        alias="_disclaimer",
+        description="Stack-level disclaimer; not legal or tax advice.",
+    )
+    total_pairs: int = Field(..., description="Number of evaluated pairs.")
+
+
+class IntelQuestion(BaseModel):
+    """Customer question generated from eligibility or document gaps."""
+
+    model_config = _ALLOW_EXTRA
+
+    id: str | None = None
+    field: str | None = None
+    question: str | None = None
+    reason: str | None = None
+    kind: str | None = None
+    impact: str | None = None
+    blocking: bool | None = None
+
+
+class IntelEligibilityGap(BaseModel):
+    """Missing or uncertain applicant input for a matched program."""
+
+    model_config = _ALLOW_EXTRA
+
+    field: str | None = None
+    gap_type: str | None = None
+    reason: str | None = None
+    required_by: str | None = None
+    impact: str | None = None
+    blocking: bool | None = None
+    expected: Any | None = None
+
+
+class IntelDocumentReadiness(BaseModel):
+    """Document-preparation counters for one matched program."""
+
+    model_config = _ALLOW_EXTRA
+
+    required_document_count: int = 0
+    forms_with_url_count: int = 0
+    signature_required_count: int = 0
+    signature_unknown_count: int = 0
+    needs_user_confirmation: bool = False
+
+
+class IntelMatchedProgram(BaseModel):
+    """One program returned by POST /v1/intel/match."""
+
+    model_config = _ALLOW_EXTRA
+
+    program_id: str | None = None
+    primary_name: str | None = None
+    tier: str | None = None
+    match_score: float | None = None
+    score_components: dict[str, Any] = Field(default_factory=dict)
+    authority_name: str | None = None
+    prefecture: str | None = None
+    program_kind: str | None = None
+    source_url: str | None = None
+    eligibility_predicate: dict[str, Any] = Field(default_factory=dict)
+    required_documents: list[dict[str, Any]] = Field(default_factory=list)
+    next_questions: list[IntelQuestion] = Field(
+        default_factory=list,
+        description="AI-facing customer questions needed before application work.",
+    )
+    eligibility_gaps: list[IntelEligibilityGap] = Field(
+        default_factory=list,
+        description="Missing or uncertain eligibility inputs for this match.",
+    )
+    document_readiness: IntelDocumentReadiness = Field(
+        default_factory=IntelDocumentReadiness,
+        description=("Required-document readiness counters derived from program documents."),
+    )
+    similar_adopted_companies: list[dict[str, Any]] = Field(default_factory=list)
+    applicable_laws: list[dict[str, Any]] = Field(default_factory=list)
+    applicable_tsutatsu: list[dict[str, Any]] = Field(default_factory=list)
+    audit_proof: dict[str, Any] | None = None
+
+
+class IntelMatchResponse(BaseModel):
+    """Response for POST /v1/intel/match."""
+
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    matched_programs: list[IntelMatchedProgram] = Field(default_factory=list)
+    total_candidates: int = 0
+    applied_filters: list[str] = Field(default_factory=list)
+    disclaimer: str = Field(default="", alias="_disclaimer")
+    billing_unit: int = Field(default=1, alias="_billing_unit")
+
+
+class IntelDecisionSupportItem(BaseModel):
+    """One AI-facing decision-support item."""
+
+    model_config = _ALLOW_EXTRA
+
+    signal: str | None = None
+    insight_id: str | None = None
+    action: str | None = None
+    section: str | None = None
+    message: str | None = None
+    message_ja: str | None = None
+    basis: list[str] = Field(default_factory=list)
+    source_fields: list[str] = Field(default_factory=list)
+    metrics: dict[str, Any] = Field(default_factory=dict)
+    priority: str | None = None
+    reason: str | None = None
+
+
+class IntelBundleDecisionSupport(BaseModel):
+    """AI-facing support block for /v1/intel/bundle/optimal."""
+
+    model_config = _ALLOW_EXTRA
+
+    schema_version: str = "v1"
+    generated_from: list[str] = Field(default_factory=list)
+    why_this_matters: list[IntelDecisionSupportItem] = Field(default_factory=list)
+    decision_insights: list[IntelDecisionSupportItem] = Field(default_factory=list)
+    next_actions: list[IntelDecisionSupportItem] = Field(default_factory=list)
+
+
+class IntelBundleOptimalResponse(BaseModel):
+    """Response for POST /v1/intel/bundle/optimal."""
+
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    houjin_id: str | None = None
+    bundle: list[dict[str, Any]] = Field(default_factory=list)
+    bundle_total: dict[str, Any] = Field(default_factory=dict)
+    conflict_avoidance: dict[str, Any] = Field(default_factory=dict)
+    optimization_log: dict[str, Any] = Field(default_factory=dict)
+    runner_up_bundles: list[dict[str, Any]] = Field(default_factory=list)
+    data_quality: dict[str, Any] = Field(default_factory=dict)
+    decision_support: IntelBundleDecisionSupport = Field(
+        default_factory=IntelBundleDecisionSupport,
+        description="AI-facing rationale, tradeoffs, and follow-up actions.",
+    )
+    disclaimer: str = Field(default="", alias="_disclaimer")
+    billing_unit: int = Field(default=1, alias="_billing_unit")
+
+
+class IntelHoujinDecisionSupport(BaseModel):
+    """AI-facing support block for /v1/intel/houjin/{houjin_id}/full."""
+
+    model_config = _ALLOW_EXTRA
+
+    risk_summary: dict[str, Any] = Field(default_factory=dict)
+    decision_insights: list[IntelDecisionSupportItem] = Field(default_factory=list)
+    next_actions: list[IntelDecisionSupportItem] = Field(default_factory=list)
+    known_gaps: list[dict[str, Any]] = Field(default_factory=list)
+
+
+class IntelHoujinFullResponse(BaseModel):
+    """Response for GET /v1/intel/houjin/{houjin_id}/full."""
+
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    houjin_bangou: str | None = None
+    sections_returned: list[str] = Field(default_factory=list)
+    max_per_section: int | None = None
+    houjin_meta: dict[str, Any] | None = None
+    adoption_history: list[dict[str, Any]] = Field(default_factory=list)
+    enforcement_records: list[dict[str, Any]] = Field(default_factory=list)
+    invoice_status: dict[str, Any] = Field(default_factory=dict)
+    peer_summary: dict[str, Any] = Field(default_factory=dict)
+    jurisdiction_breakdown: dict[str, Any] = Field(default_factory=dict)
+    watch_status: dict[str, Any] = Field(default_factory=dict)
+    data_quality: dict[str, Any] = Field(default_factory=dict)
+    decision_support: IntelHoujinDecisionSupport = Field(
+        default_factory=IntelHoujinDecisionSupport,
+        description=("Corporate DD risk summary, insights, next actions, and known gaps."),
+    )
+    disclaimer: str = Field(default="", alias="_disclaimer")
+    billing_unit: int = Field(default=1, alias="_billing_unit")
 
 
 class PrecomputedMetadata(BaseModel):
@@ -518,8 +940,8 @@ class PrecomputedAgentRecommendation(BaseModel):
         description=(
             "Break-even and avoided-token estimate when the caller supplied "
             "a comparable source-token baseline. Includes "
-            "`break_even_source_tokens_estimate` (packet + break-even avoided) "
-            "and `provider_billing_not_guaranteed=true`."
+            "`break_even_source_tokens_estimate` "
+            "(packet + break-even avoided)."
         ),
     )
 

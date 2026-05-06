@@ -36,6 +36,7 @@ Scope boundary: this router is NOT wired into api/main.py per the task
 spec. Importers can ``from jpintel_mcp.api.advisors import router`` and
 mount explicitly when the product is ready to launch.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -82,12 +83,12 @@ FirmType = Literal[
 # specialties_json), but keep it tight — matching ranks on exact equality
 # and a sprawling vocabulary weakens rank quality.
 Specialty = Literal[
-    "subsidy",            # 補助金
-    "loan",               # 融資
-    "tax",                # 税制
-    "enforcement_defense", # 行政処分 / 不利益処分対応
-    "invoice",            # インボイス制度
-    "ebook",              # 電帳法 / 電子帳簿保存法
+    "subsidy",  # 補助金
+    "loan",  # 融資
+    "tax",  # 税制
+    "enforcement_defense",  # 行政処分 / 不利益処分対応
+    "invoice",  # インボイス制度
+    "ebook",  # 電帳法 / 電子帳簿保存法
 ]
 
 Industry = Literal[
@@ -376,9 +377,7 @@ def query_matching_advisors(
         score_parts.append(f"(CASE WHEN {like_parts} THEN 20 ELSE 0 END)")
         params.extend(f'%"{slug}"%' for slug in industry_slugs)
     if specialty:
-        score_parts.append(
-            '(CASE WHEN specialties_json LIKE ? THEN 10 ELSE 0 END)'
-        )
+        score_parts.append("(CASE WHEN specialties_json LIKE ? THEN 10 ELSE 0 END)")
         params.append(f'%"{specialty}"%')
 
     score_sql = " + ".join(score_parts) if score_parts else "0"
@@ -449,15 +448,13 @@ def match_advisors(
         specialty=specialty,
         limit=limit,
     )
-    log_usage(conn, ctx, "advisors.match")
+    log_usage(conn, ctx, "advisors.match", strict_metering=True)
     return JSONResponse(
         content={
             "total": len(results),
             "results": results,
             "ranking": {
-                "method": (
-                    "practice area, industry/region fit, and prior completed introductions"
-                ),
+                "method": ("practice area, industry/region fit, and prior completed introductions"),
                 "disclosure": (
                     "本リストは広告ではありません。専門性と実績のマッチングで "
                     "並べ替えています。(景品表示法 対応)"
@@ -491,9 +488,7 @@ def track_click(
     if row is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "advisor not found")
     if row["verified_at"] is None or row["active"] != 1:
-        raise HTTPException(
-            status.HTTP_409_CONFLICT, "advisor not active or not verified"
-        )
+        raise HTTPException(status.HTTP_409_CONFLICT, "advisor not active or not verified")
 
     token = secrets.token_hex(16)  # 32 hex chars
     ip = request.client.host if request.client else None
@@ -516,13 +511,16 @@ def track_click(
     sep = "&" if "?" in base_url else "?"
     redirect_url = f"{base_url}{sep}ref={token}"
 
-    log_usage(conn, ctx, "advisors.track")
+    log_usage(conn, ctx, "advisors.track", strict_metering=True)
     return JSONResponse(content={"token": token, "redirect_url": redirect_url})
 
 
 @router.post(
     "/signup",
-    responses={200: {"model": SignupResponse}, 409: {"description": "houjin_bangou already registered"}},
+    responses={
+        200: {"model": SignupResponse},
+        409: {"description": "houjin_bangou already registered"},
+    },
 )
 def signup_advisor(
     payload: SignupRequest,
@@ -541,9 +539,7 @@ def signup_advisor(
     """
     pref_canon = _normalize_prefecture(payload.prefecture)
     if pref_canon is None:
-        raise HTTPException(
-            status.HTTP_422_UNPROCESSABLE_ENTITY, "prefecture unrecognized"
-        )
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "prefecture unrecognized")
 
     existing = conn.execute(
         "SELECT id FROM advisors WHERE houjin_bangou = ?",
@@ -569,9 +565,7 @@ def signup_advisor(
             payload.firm_name_kana,
             payload.firm_type,
             json.dumps(payload.specialties, ensure_ascii=False),
-            json.dumps(payload.industries, ensure_ascii=False)
-            if payload.industries
-            else None,
+            json.dumps(payload.industries, ensure_ascii=False) if payload.industries else None,
             pref_canon,
             payload.city,
             payload.address,
@@ -603,9 +597,7 @@ def signup_advisor(
     )
 
 
-def _create_stripe_connect_onboarding(
-    advisor_id: int, email: str
-) -> str | None:
+def _create_stripe_connect_onboarding(advisor_id: int, email: str) -> str | None:
     """Create a Stripe Connect Express account + AccountLink for onboarding.
 
     Returns the hosted onboarding URL, or None when Stripe is not configured
@@ -643,9 +635,7 @@ def _create_stripe_connect_onboarding(
         link = stripe.AccountLink.create(
             account=acct.id,
             refresh_url="https://jpcite.com/advisors-signup.html?stripe=refresh",
-            return_url=(
-                f"https://jpcite.com/advisors-dashboard.html?acct={acct.id}"
-            ),
+            return_url=(f"https://jpcite.com/advisors-dashboard.html?acct={acct.id}"),
             type="account_onboarding",
         )
         # Connection between advisor row and Stripe account is established
@@ -696,9 +686,7 @@ def verify_houjin(advisor_id: int, conn: DbDep) -> JSONResponse:
     # registration exists". Either is fine for verification intent.
     try:
         found = conn.execute(
-            "SELECT 1 FROM invoice_registrants"
-            " WHERE houjin_bangou = ?"
-            " LIMIT 1",
+            "SELECT 1 FROM invoice_registrants WHERE houjin_bangou = ? LIMIT 1",
             (row["houjin_bangou"],),
         ).fetchone()
     except sqlite3.OperationalError:
@@ -708,9 +696,7 @@ def verify_houjin(advisor_id: int, conn: DbDep) -> JSONResponse:
         # intentionally permissive: the Stripe Connect gate is the
         # real control for payout flow.
         found = None
-        _log.warning(
-            "invoice_registrants_missing advisor_id=%s fallback_verify", advisor_id
-        )
+        _log.warning("invoice_registrants_missing advisor_id=%s fallback_verify", advisor_id)
 
     if found is None:
         # No match — but for 認定支援機関 rows the 中小企業庁 list is the
@@ -718,8 +704,7 @@ def verify_houjin(advisor_id: int, conn: DbDep) -> JSONResponse:
         # useful error; seeded rows never hit this path.
         raise HTTPException(
             status.HTTP_422_UNPROCESSABLE_ENTITY,
-            "houjin_bangou not found in 適格請求書発行事業者 registry. "
-            "登録後に再試行してください.",
+            "houjin_bangou not found in 適格請求書発行事業者 registry. 登録後に再試行してください.",
         )
 
     now = _now_iso()
@@ -746,9 +731,7 @@ async def stripe_connect_webhook(request: Request, conn: DbDep) -> JSONResponse:
     Unconfigured Stripe = 503 so the webhook registrar knows to retry.
     """
     if not settings.stripe_secret_key:
-        raise HTTPException(
-            status.HTTP_503_SERVICE_UNAVAILABLE, "Stripe not configured"
-        )
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "Stripe not configured")
     try:
         import stripe
 
@@ -762,7 +745,7 @@ async def stripe_connect_webhook(request: Request, conn: DbDep) -> JSONResponse:
         # to config.py alongside the main signing secret when wiring live.
         secret = getattr(settings, "stripe_connect_webhook_secret", "") or ""
         if secret:
-            event = stripe.Webhook.construct_event(payload, sig, secret)
+            event = stripe.Webhook.construct_event(payload, sig, secret, tolerance=300)
         else:
             # Dev fallback — skip signature verification only when no secret
             # is configured (CI / offline). In prod the setting must be set.
@@ -779,7 +762,9 @@ async def stripe_connect_webhook(request: Request, conn: DbDep) -> JSONResponse:
     data = event["data"]["object"] if isinstance(event, dict) else event.data.object
     acct_id = data.get("id") if isinstance(data, dict) else data.id
     metadata = data.get("metadata", {}) if isinstance(data, dict) else (data.metadata or {})
-    advisor_id_raw = metadata.get("advisor_id") if isinstance(metadata, dict) else metadata.get("advisor_id")
+    advisor_id_raw = (
+        metadata.get("advisor_id") if isinstance(metadata, dict) else metadata.get("advisor_id")
+    )
     if advisor_id_raw is None:
         return JSONResponse(content={"ok": True, "ignored": "no advisor_id in metadata"})
     try:
@@ -787,12 +772,13 @@ async def stripe_connect_webhook(request: Request, conn: DbDep) -> JSONResponse:
     except (TypeError, ValueError):
         return JSONResponse(content={"ok": True, "ignored": "bad advisor_id"})
 
-    capabilities = data.get("capabilities", {}) if isinstance(data, dict) else dict(data.capabilities or {})
+    capabilities = (
+        data.get("capabilities", {}) if isinstance(data, dict) else dict(data.capabilities or {})
+    )
     transfers_active = capabilities.get("transfers") == "active"
 
     conn.execute(
-        "UPDATE advisors SET stripe_connect_account_id = ?, updated_at = ?"
-        " WHERE id = ?",
+        "UPDATE advisors SET stripe_connect_account_id = ?, updated_at = ? WHERE id = ?",
         (acct_id, _now_iso(), advisor_id),
     )
 
@@ -835,9 +821,7 @@ def report_conversion(
     if row is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "referral_token unknown")
     if row["converted_at"] is not None:
-        raise HTTPException(
-            status.HTTP_409_CONFLICT, "referral already marked as converted"
-        )
+        raise HTTPException(status.HTTP_409_CONFLICT, "referral already marked as converted")
 
     # Commission computation. Flat = fixed yen. Percent = rate_pct * value,
     # requires conversion_value_yen. The 30% cap is schema-enforced.
@@ -870,8 +854,7 @@ def report_conversion(
     # proof); incrementing here is a provisional signal that gets clawed
     # back by a reverse-transaction path if the transfer later fails.
     conn.execute(
-        "UPDATE advisors SET success_count = success_count + 1, updated_at = ?"
-        " WHERE id = ?",
+        "UPDATE advisors SET success_count = success_count + 1, updated_at = ? WHERE id = ?",
         (now, row["advisor_id"]),
     )
     return JSONResponse(

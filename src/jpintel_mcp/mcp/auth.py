@@ -93,9 +93,7 @@ _CLIENT_ID = "autonomath-mcp"
 
 
 def _home_token_path() -> str:
-    base = os.environ.get("XDG_CONFIG_HOME") or os.path.join(
-        os.path.expanduser("~"), ".config"
-    )
+    base = os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config")
     return os.path.join(base, "autonomath", "token")
 
 

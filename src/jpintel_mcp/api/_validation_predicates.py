@@ -20,6 +20,7 @@ returns ``None`` (= no violation) on missing input.
 Predicate suffixes correspond to the suffix of the dotted predicate_ref
 after stripping the ``autonomath.intake.`` prefix.
 """
+
 from __future__ import annotations
 
 import datetime
@@ -98,8 +99,10 @@ def _check_birth_vs_age(data: dict[str, Any]) -> bool:
     except (ValueError, AttributeError):
         return True
     today = datetime.date.today()
-    calc_age = today.year - birth_date.year - (
-        (today.month, today.day) < (birth_date.month, birth_date.day)
+    calc_age = (
+        today.year
+        - birth_date.year
+        - ((today.month, today.day) < (birth_date.month, birth_date.day))
     )
     return abs(calc_age - age) < 1
 
@@ -140,7 +143,7 @@ def resolve_predicate(predicate_ref: str) -> Callable[[dict[str, Any]], bool] | 
     """
     if not predicate_ref.startswith(PREDICATE_PREFIX):
         return None
-    suffix = predicate_ref[len(PREDICATE_PREFIX):]
+    suffix = predicate_ref[len(PREDICATE_PREFIX) :]
     return PREDICATES.get(suffix)
 
 

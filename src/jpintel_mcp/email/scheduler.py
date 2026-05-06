@@ -507,7 +507,10 @@ def main(argv: list[str] | None = None) -> int:
             for r in rows:
                 logger.info(
                     "due id=%s kind=%s email=%s send_at=%s",
-                    r[0], r[3], r[2], r[4],
+                    r[0],
+                    r[3],
+                    r[2],
+                    r[4],
                 )
             return 0
 

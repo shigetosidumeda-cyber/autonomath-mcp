@@ -21,6 +21,7 @@ Total contribution: 10 (tools.py) + 1 (tax_rule_tool) + 5 (here) = 16
 autonomath tools on top of the jpintel.db core tools (see CLAUDE.md for
 the live core+autonomath total).
 """
+
 from __future__ import annotations
 
 import functools
@@ -46,6 +47,7 @@ def _safe_envelope(retry_with: list[str]) -> Callable[[Callable[..., Any]], Call
     bare `raise` made LLMs give up on 1 error; envelopes let them retry with
     an alternative tool.
     """
+
     def deco(fn: Callable[..., Any]) -> Callable[..., Any]:
         @functools.wraps(fn)
         def _wrap(*args: Any, **kwargs: Any) -> Any:
@@ -56,9 +58,7 @@ def _safe_envelope(retry_with: list[str]) -> Callable[[Callable[..., Any]], Call
                 # names, SQL snippets, and file paths — all are internal
                 # implementation detail and must not leak to the client.
                 # Sanitize via incident id; ops can grep logs for details.
-                msg, _incident = safe_internal_message(
-                    e, logger=_logger, tool_name=fn.__name__
-                )
+                msg, _incident = safe_internal_message(e, logger=_logger, tool_name=fn.__name__)
                 return {
                     "total": 0,
                     "results": [],
@@ -91,7 +91,9 @@ def _safe_envelope(retry_with: list[str]) -> Callable[[Callable[..., Any]], Call
                         "retry_with": retry_with,
                     },
                 }
+
         return _wrap
+
     return deco
 
 
@@ -116,7 +118,8 @@ def _empty_state_hint(
             break
 
     non_query_filters = [
-        (k, v) for k, v in query_args.items()
+        (k, v)
+        for k, v in query_args.items()
         if v not in (None, "", False) and k not in query_keys + ("limit", "offset")
     ]
 
@@ -124,10 +127,7 @@ def _empty_state_hint(
         return "クエリが短すぎる可能性があります。3 文字以上で再試行してください。"
     if len(non_query_filters) >= 2:
         sample_key, sample_val = non_query_filters[0]
-        return (
-            f"フィルタを 1 つ削減してください。例: {sample_key}='{sample_val}' "
-            "を外して再検索。"
-        )
+        return f"フィルタを 1 つ削減してください。例: {sample_key}='{sample_val}' を外して再検索。"
     if not text_q and not non_query_filters:
         names = " / ".join(fallback_tools)
         return f"{names} で利用可能な値を確認してください。"
@@ -186,7 +186,10 @@ def search_gx_programs_am(
     0 件の場合は `hint` (再検索の提案) と `retry_with` (関連 tool 候補) を返します。
     """
     rows = gx_tool.search_gx_programs(
-        theme=theme, region=region, company_size=company_size, limit=limit,
+        theme=theme,
+        region=region,
+        company_size=company_size,
+        limit=limit,
     )
     if not rows:
         return {
@@ -210,8 +213,16 @@ def search_gx_programs_am(
 # 融資
 # ---------------------------------------------------------------------------
 _LoanKind = Literal[
-    "ippan", "trou", "seirei", "sanko", "sogyo",
-    "rinsei", "saigai", "shingiseikyu", "kiki", "other",
+    "ippan",
+    "trou",
+    "seirei",
+    "sanko",
+    "sogyo",
+    "rinsei",
+    "saigai",
+    "shingiseikyu",
+    "kiki",
+    "other",
 ]
 
 
@@ -221,7 +232,9 @@ _LoanKind = Literal[
 def search_loans_am(
     loan_kind: Annotated[
         _LoanKind | None,
-        Field(description="Loan kind: ippan/trou/seirei/sanko/sogyo/rinsei/saigai/shingiseikyu/kiki/other."),
+        Field(
+            description="Loan kind: ippan/trou/seirei/sanko/sogyo/rinsei/saigai/shingiseikyu/kiki/other."
+        ),
     ] = None,
     no_collateral: Annotated[
         bool,
@@ -366,11 +379,21 @@ def check_enforcement_am(
 # 共済 / 年金 / 労災
 # ---------------------------------------------------------------------------
 _PlanKind = Literal[
-    "retirement_mutual", "bankruptcy_mutual", "dc_pension", "db_pension",
-    "industry_pension", "welfare_insurance", "health_insurance", "other",
+    "retirement_mutual",
+    "bankruptcy_mutual",
+    "dc_pension",
+    "db_pension",
+    "industry_pension",
+    "welfare_insurance",
+    "health_insurance",
+    "other",
 ]
 _TaxDedType = Literal[
-    "small_enterprise_deduction", "idekodc", "group_retirement", "corp_expense", "none",
+    "small_enterprise_deduction",
+    "idekodc",
+    "group_retirement",
+    "corp_expense",
+    "none",
 ]
 
 
@@ -384,7 +407,9 @@ def search_mutual_plans_am(
     ] = None,
     premium_monthly_yen: Annotated[
         int | None,
-        Field(ge=0, description="Caller's intended monthly premium — rows accept if min<=budget<=max."),
+        Field(
+            ge=0, description="Caller's intended monthly premium — rows accept if min<=budget<=max."
+        ),
     ] = None,
     tax_deduction_type: Annotated[
         _TaxDedType | None,

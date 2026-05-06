@@ -30,6 +30,7 @@ Merge plan (jpintel-mcp is READ ONLY per user instruction):
   the 8 tools over. DB helpers import transparently because
   ``db.py`` has no jpintel-mcp coupling.
 """
+
 from __future__ import annotations
 
 import functools
@@ -105,12 +106,8 @@ def _resolve_as_of(
     if not _AS_OF_PATTERN.match(s):
         return None, make_error(
             code="invalid_date_format",
-            message=(
-                f"{field} must be 'today' or ISO YYYY-MM-DD, got {s!r}"
-            ),
-            hint=(
-                f"Pass {field}='today' (default) or {field}='2026-05-01'."
-            ),
+            message=(f"{field} must be 'today' or ISO YYYY-MM-DD, got {s!r}"),
+            hint=(f"Pass {field}='today' (default) or {field}='2026-05-01'."),
             field=field,
             suggested_tools=["enum_values"],
         )
@@ -142,7 +139,7 @@ def _fts_escape(q: str) -> str:
     (e.g. ``税額控除`` vs ``ふるさと納税``) leak through — see CLAUDE.md
     "Common gotchas" / api/programs.py header for the fix rationale.
     """
-    return (q or "").strip().replace('"', '')
+    return (q or "").strip().replace('"', "")
 
 
 # Canonical FTS5 query rewriter — defeats the trigram single-kanji
@@ -164,8 +161,15 @@ _REGION_CLUSTERS: dict[str, list[str]] = {
     "東北": ["青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県"],
     "関東": ["茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県"],
     "中部": [
-        "新潟県", "富山県", "石川県", "福井県",
-        "山梨県", "長野県", "岐阜県", "静岡県", "愛知県",
+        "新潟県",
+        "富山県",
+        "石川県",
+        "福井県",
+        "山梨県",
+        "長野県",
+        "岐阜県",
+        "静岡県",
+        "愛知県",
     ],
     "近畿": ["三重県", "滋賀県", "京都府", "大阪府", "兵庫県", "奈良県", "和歌山県"],
     "中国": ["鳥取県", "島根県", "岡山県", "広島県", "山口県"],
@@ -225,7 +229,9 @@ def _parse_iso_date(s: str | None) -> date | None:
     return None
 
 
-def _validate_iso_date(s: str | None, field: str = "date") -> tuple[str | None, dict[str, Any] | None]:
+def _validate_iso_date(
+    s: str | None, field: str = "date"
+) -> tuple[str | None, dict[str, Any] | None]:
     """Return (normalized_iso, None) or (None, error_envelope)."""
     if s is None:
         return None, None
@@ -300,6 +306,7 @@ def _safe_tool(func):
     tool's signature (name, docstring, annotations) so FastMCP's
     introspection keeps working.
     """
+
     @functools.wraps(func)
     def _wrapper(*args, **kwargs):
         try:
@@ -322,15 +329,10 @@ def _safe_tool(func):
             logger.exception("%s: unhandled", func.__name__)
             return make_error(
                 code="internal",
-                message=(
-                    f"Unhandled exception in {func.__name__}: "
-                    f"{type(exc).__name__}"
-                ),
-                hint=(
-                    "Retry once with backoff; if persistent, fall back to an "
-                    "alternative tool."
-                ),
+                message=(f"Unhandled exception in {func.__name__}: {type(exc).__name__}"),
+                hint=("Retry once with backoff; if persistent, fall back to an alternative tool."),
             )
+
     return _wrapper
 
 
@@ -340,13 +342,26 @@ def _safe_tool(func):
 
 
 _TAX_AUTHORITIES = Literal[
-    "国税庁", "財務省", "経済産業省", "中小企業庁", "農林水産省", "総務省",
-    "国土交通省", "厚生労働省", "自治体",
+    "国税庁",
+    "財務省",
+    "経済産業省",
+    "中小企業庁",
+    "農林水産省",
+    "総務省",
+    "国土交通省",
+    "厚生労働省",
+    "自治体",
 ]
 
 _TAX_ENTITY = Literal[
-    "中小企業", "小規模事業者", "個人事業主", "大企業", "認定事業者",
-    "青色申告者", "農業法人", "特定事業者等",
+    "中小企業",
+    "小規模事業者",
+    "個人事業主",
+    "大企業",
+    "認定事業者",
+    "青色申告者",
+    "農業法人",
+    "特定事業者等",
 ]
 
 
@@ -408,9 +423,7 @@ def _trim_tax_fields(record: dict[str, Any], fields: str) -> dict[str, Any]:
             "amount_or_rate": record.get("amount_or_rate"),
             "application_period_to": record.get("application_period_to"),
             "fetched_at": record.get("fetched_at"),
-            "summary": (
-                (record.get("source_excerpt") or record.get("name") or "")[:120]
-            ),
+            "summary": ((record.get("source_excerpt") or record.get("name") or "")[:120]),
         }
     return record  # full = existing complete shape
 
@@ -510,7 +523,10 @@ def search_tax_incentives(
     ] = 20,
     offset: Annotated[
         int,
-        Field(description="Pagination offset (0-based row count to skip). Default 0. Combine with `limit` for paging through `total`.", ge=0),
+        Field(
+            description="Pagination offset (0-based row count to skip). Default 0. Combine with `limit` for paging through `total`.",
+            ge=0,
+        ),
     ] = 0,
     fields: Annotated[
         Literal["minimal", "standard", "full"],
@@ -663,20 +679,14 @@ def search_tax_incentives(
             use_fts = True
         else:
             esc = _like_escape(q)
-            where.append(
-                "(e.primary_name LIKE ? ESCAPE '\\' "
-                "OR e.raw_json LIKE ? ESCAPE '\\')"
-            )
+            where.append("(e.primary_name LIKE ? ESCAPE '\\' OR e.raw_json LIKE ? ESCAPE '\\')")
             params.extend([f"%{esc}%", f"%{esc}%"])
 
     if authority:
         hints = _authority_domain_hints(authority)
         if hints:
             placeholders = ",".join("?" for _ in hints)
-            where.append(
-                f"(e.source_url_domain IN ({placeholders}) "
-                f"OR e.raw_json LIKE ?)"
-            )
+            where.append(f"(e.source_url_domain IN ({placeholders}) OR e.raw_json LIKE ?)")
             params.extend(hints)
             params.append(f'%"{authority}"%')
         else:
@@ -726,24 +736,17 @@ def search_tax_incentives(
         fts_query = _build_fts_match(q)
         if not fts_query:
             esc = _like_escape(q)
-            where.append(
-                "(e.primary_name LIKE ? ESCAPE '\\' "
-                "OR e.raw_json LIKE ? ESCAPE '\\')"
-            )
+            where.append("(e.primary_name LIKE ? ESCAPE '\\' OR e.raw_json LIKE ? ESCAPE '\\')")
             params.extend([f"%{esc}%", f"%{esc}%"])
             where_sql = " AND ".join(where)
             use_fts = False
 
     if use_fts:
-        base_from = (
-            "am_entities e "
-            "JOIN am_entities_fts f ON f.canonical_id = e.canonical_id"
-        )
+        base_from = "am_entities e JOIN am_entities_fts f ON f.canonical_id = e.canonical_id"
         params_fts = [fts_query, *params]
 
         total_sql = (
-            f"SELECT COUNT(*) FROM {base_from} "
-            f"WHERE f.am_entities_fts MATCH ? AND {where_sql}"
+            f"SELECT COUNT(*) FROM {base_from} WHERE f.am_entities_fts MATCH ? AND {where_sql}"
         )
         (total,) = conn.execute(total_sql, params_fts).fetchone()
 
@@ -814,8 +817,15 @@ def search_tax_incentives(
 
 
 _CERT_AUTHORITIES = Literal[
-    "経済産業省", "厚生労働省", "農林水産省", "内閣府", "環境省",
-    "都道府県", "市町村", "日本健康会議", "認証機関",
+    "経済産業省",
+    "厚生労働省",
+    "農林水産省",
+    "内閣府",
+    "環境省",
+    "都道府県",
+    "市町村",
+    "日本健康会議",
+    "認証機関",
 ]
 
 _SIZE_VALUES = Literal["sole", "small", "sme", "mid", "large"]
@@ -874,10 +884,7 @@ def _trim_cert_fields(record: dict[str, Any], fields: str) -> dict[str, Any]:
             "validity_years": record.get("validity_years"),
             "target_size": record.get("target_size"),
             "fetched_at": record.get("fetched_at"),
-            "summary": (
-                req_text[:120] if req_text
-                else (record.get("program_name") or "")[:120]
-            ),
+            "summary": (req_text[:120] if req_text else (record.get("program_name") or "")[:120]),
         }
     return record  # full = existing complete shape
 
@@ -906,11 +913,15 @@ def search_certifications(
     ] = None,
     size: Annotated[
         _SIZE_VALUES | None,
-        Field(description="Applicant size class (closed-set, 中小企業基本法準拠). 'sole' = 個人事業主, 'small' = 小規模事業者 (製造20人/商業5人 以下), 'sme' = 中小企業, 'mid' = 中堅, 'large' = 大企業. None = 全 size 横断 (filter なし)."),
+        Field(
+            description="Applicant size class (closed-set, 中小企業基本法準拠). 'sole' = 個人事業主, 'small' = 小規模事業者 (製造20人/商業5人 以下), 'sme' = 中小企業, 'mid' = 中堅, 'large' = 大企業. None = 全 size 横断 (filter なし)."
+        ),
     ] = None,
     industry: Annotated[
         str | None,
-        Field(description="Sector keyword (LIKE substring on target_industries). e.g. '製造業' / '建設業' / 'IT' / '医療'. Use enum_values_am('industry') for JSIC 大分類 list."),
+        Field(
+            description="Sector keyword (LIKE substring on target_industries). e.g. '製造業' / '建設業' / 'IT' / '医療'. Use enum_values_am('industry') for JSIC 大分類 list."
+        ),
     ] = None,
     as_of: Annotated[
         str,
@@ -938,7 +949,10 @@ def search_certifications(
     ] = 20,
     offset: Annotated[
         int,
-        Field(description="Pagination offset (0-based row count to skip). Default 0. Combine with `limit` for paging through `total`.", ge=0),
+        Field(
+            description="Pagination offset (0-based row count to skip). Default 0. Combine with `limit` for paging through `total`.",
+            ge=0,
+        ),
     ] = 0,
     fields: Annotated[
         Literal["minimal", "standard", "full"],
@@ -1094,24 +1108,17 @@ def search_certifications(
         fts_query = _build_fts_match(q)
         if not fts_query:
             esc = _like_escape(q)
-            where.append(
-                "(e.primary_name LIKE ? ESCAPE '\\' "
-                "OR e.raw_json LIKE ? ESCAPE '\\')"
-            )
+            where.append("(e.primary_name LIKE ? ESCAPE '\\' OR e.raw_json LIKE ? ESCAPE '\\')")
             params.extend([f"%{esc}%", f"%{esc}%"])
             where_sql = " AND ".join(where)
             use_fts = False
 
     if use_fts:
-        base_from = (
-            "am_entities e "
-            "JOIN am_entities_fts f ON f.canonical_id = e.canonical_id"
-        )
+        base_from = "am_entities e JOIN am_entities_fts f ON f.canonical_id = e.canonical_id"
         params_fts = [fts_query, *params]
 
         (total,) = conn.execute(
-            f"SELECT COUNT(*) FROM {base_from} "
-            f"WHERE f.am_entities_fts MATCH ? AND {where_sql}",
+            f"SELECT COUNT(*) FROM {base_from} WHERE f.am_entities_fts MATCH ? AND {where_sql}",
             params_fts,
         ).fetchone()
         rows = execute_with_retry(
@@ -1180,7 +1187,15 @@ def search_certifications(
 
 
 _REGION_VALUES = Literal[
-    "北海道", "東北", "関東", "中部", "近畿", "中国", "四国", "九州", "沖縄",
+    "北海道",
+    "東北",
+    "関東",
+    "中部",
+    "近畿",
+    "中国",
+    "四国",
+    "九州",
+    "沖縄",
     "national",
 ]
 
@@ -1428,9 +1443,7 @@ def list_open_programs(
             )
         else:
             placeholders = ",".join("?" for _ in prefectures)
-            where.append(
-                f"json_extract(e.raw_json,'$.prefecture') IN ({placeholders})"
-            )
+            where.append(f"json_extract(e.raw_json,'$.prefecture') IN ({placeholders})")
             params.extend(prefectures)
 
     if industry:
@@ -1644,7 +1657,9 @@ _ENUM_SPECS: dict[str, dict[str, Any]] = {
 def enum_values_am(
     enum_name: Annotated[
         _EnumName,
-        Field(description="Enum field to enumerate. Closed-set: 'authority', 'tier', 'industry' (JSIC 大分類), 'funding_purpose', 'target_type', 'region' (47 都道府県), 'tax_category', 'program_kind', 'loan_type', 'event_type', 'ministry', 'certification_authority'."),
+        Field(
+            description="Enum field to enumerate. Closed-set: 'authority', 'tier', 'industry' (JSIC 大分類), 'funding_purpose', 'target_type', 'region' (47 都道府県), 'tax_category', 'program_kind', 'loan_type', 'event_type', 'ministry', 'certification_authority'."
+        ),
     ],
 ) -> dict[str, Any]:
     """[UTILITY] Returns the canonical enum values + row counts for filter arguments used by other tools (target_type / authority_level / funding_purpose / prefecture / program_kind 等), so callers can avoid typos that cause 0-hit searches.
@@ -1802,11 +1817,15 @@ def search_by_law(
     ],
     article: Annotated[
         str | None,
-        Field(description="Optional 条項 filter (LIKE substring on raw_json). Format examples: '第22条' / '第42条の12の4' / '附則第3条'. Most rows lack 条項 metadata so a strict article filter often drops to 0 — `hint` will recommend retrying without."),
+        Field(
+            description="Optional 条項 filter (LIKE substring on raw_json). Format examples: '第22条' / '第42条の12の4' / '附則第3条'. Most rows lack 条項 metadata so a strict article filter often drops to 0 — `hint` will recommend retrying without."
+        ),
     ] = None,
     amendment_date: Annotated[
         str | None,
-        Field(description="Optional ISO date (YYYY-MM-DD) of law amendment. Rows with `amendment_date IS NULL` (恒久法) are still returned to avoid false-dropping."),
+        Field(
+            description="Optional ISO date (YYYY-MM-DD) of law amendment. Rows with `amendment_date IS NULL` (恒久法) are still returned to avoid false-dropping."
+        ),
     ] = None,
     limit: Annotated[
         int,
@@ -1814,7 +1833,10 @@ def search_by_law(
     ] = 20,
     offset: Annotated[
         int,
-        Field(description="Pagination offset (0-based row count to skip). Default 0. Combine with `limit` for paging through `total`.", ge=0),
+        Field(
+            description="Pagination offset (0-based row count to skip). Default 0. Combine with `limit` for paging through `total`.",
+            ge=0,
+        ),
     ] = 0,
 ) -> dict[str, Any]:
     """[DISCOVER-LAW] Returns programs / tax_measures / certifications / law rows linked to a given law name (canonical or colloquial). Uses `am_alias` + `am_law.short_name` for alias resolution. Output is search-derived; verify primary source (source_url) for legal interpretation.
@@ -1995,7 +2017,9 @@ def search_by_law(
         payload["error"] = err["error"]
     if article and not any("article" in r for r in results):
         existing = payload.get("hint", "") or ""
-        payload["hint"] = (existing + " (article filter: most rows lack 条項 metadata; try without article)").strip()
+        payload["hint"] = (
+            existing + " (article filter: most rows lack 条項 metadata; try without article)"
+        ).strip()
     return payload
 
 
@@ -2013,15 +2037,21 @@ def active_programs_at(
     ],
     region: Annotated[
         _REGION_VALUES | str | None,
-        Field(description="Geographic scope. Closed-set: '北海道'/'東北'/'関東'/'中部'/'近畿'/'中国'/'四国'/'九州'/'沖縄'/'national', or 47 都道府県名 (e.g. '東京都'). NULL = all regions."),
+        Field(
+            description="Geographic scope. Closed-set: '北海道'/'東北'/'関東'/'中部'/'近畿'/'中国'/'四国'/'九州'/'沖縄'/'national', or 47 都道府県名 (e.g. '東京都'). NULL = all regions."
+        ),
     ] = None,
     industry: Annotated[
         str | None,
-        Field(description="Sector keyword (LIKE substring on target_industries). e.g. '製造業' / '建設業' / '農業' / 'IT'. Use enum_values_am('industry') for JSIC 大分類 list."),
+        Field(
+            description="Sector keyword (LIKE substring on target_industries). e.g. '製造業' / '建設業' / '農業' / 'IT'. Use enum_values_am('industry') for JSIC 大分類 list."
+        ),
     ] = None,
     size: Annotated[
         _SIZE_VALUES | None,
-        Field(description="Applicant size class (closed-set, 中小企業基本法準拠). 'sole' = 個人事業主, 'small' = 小規模事業者 (製造20人/商業5人 以下), 'sme' = 中小企業, 'mid' = 中堅, 'large' = 大企業. None = 全 size 横断 (filter なし)."),
+        Field(
+            description="Applicant size class (closed-set, 中小企業基本法準拠). 'sole' = 個人事業主, 'small' = 小規模事業者 (製造20人/商業5人 以下), 'sme' = 中小企業, 'mid' = 中堅, 'large' = 大企業. None = 全 size 横断 (filter なし)."
+        ),
     ] = None,
     limit: Annotated[
         int,
@@ -2137,9 +2167,7 @@ def active_programs_at(
             )
         else:
             placeholders = ",".join("?" for _ in prefectures)
-            where.append(
-                f"json_extract(e.raw_json,'$.prefecture') IN ({placeholders})"
-            )
+            where.append(f"json_extract(e.raw_json,'$.prefecture') IN ({placeholders})")
             params.extend(prefectures)
 
     if industry:
@@ -2191,9 +2219,7 @@ def active_programs_at(
                 status = "just_started"
         results.append(
             {
-                "item_kind": (
-                    "tax_incentive" if r["record_kind"] == "tax_measure" else "program"
-                ),
+                "item_kind": ("tax_incentive" if r["record_kind"] == "tax_measure" else "program"),
                 "item_id": r["canonical_id"],
                 "item_name": r["primary_name"],
                 "effective_from": eff_from,
@@ -2319,11 +2345,15 @@ def _resolve_seed_in_graph(seed_id: str) -> str | None:
 def related_programs(
     program_id: Annotated[
         str,
-        Field(description="Seed node id (canonical_id from any search_* tool — e.g. 'UNI-xxxxxxxxxx' for programs, 'TAX-xxx', 'CERT-xxx', 'LAW-xxx'). Falls back to display-name LIKE match when exact lookup misses."),
+        Field(
+            description="Seed node id (canonical_id from any search_* tool — e.g. 'UNI-xxxxxxxxxx' for programs, 'TAX-xxx', 'CERT-xxx', 'LAW-xxx'). Falls back to display-name LIKE match when exact lookup misses."
+        ),
     ],
     relation_types: Annotated[
         list[_RelationType] | None,
-        Field(description="Relation axes to walk (OR). Closed-set values: 'prerequisite', 'compatible', 'incompatible', 'successor' (replaces, reverse), 'predecessor' (replaces, forward), 'similar' (related). NULL = all 6 axes."),
+        Field(
+            description="Relation axes to walk (OR). Closed-set values: 'prerequisite', 'compatible', 'incompatible', 'successor' (replaces, reverse), 'predecessor' (replaces, forward), 'similar' (related). NULL = all 6 axes."
+        ),
     ] = None,
     depth: Annotated[
         int,
@@ -2468,8 +2498,7 @@ def related_programs(
 
     aconn = connect_autonomath()
     seed_row = aconn.execute(
-        "SELECT canonical_id, record_kind, primary_name FROM am_entities "
-        "WHERE canonical_id=?",
+        "SELECT canonical_id, record_kind, primary_name FROM am_entities WHERE canonical_id=?",
         [node_id],
     ).fetchone()
     if seed_row:
@@ -2702,7 +2731,10 @@ def search_acceptance_stats_am(
     ] = 20,
     offset: Annotated[
         int,
-        Field(description="Pagination offset (0-based row count to skip). Default 0. Combine with `limit` for paging through `total`.", ge=0),
+        Field(
+            description="Pagination offset (0-based row count to skip). Default 0. Combine with `limit` for paging through `total`.",
+            ge=0,
+        ),
     ] = 0,
 ) -> dict[str, Any]:
     """[EVIDENCE] Returns adoption statistics (応募件数 / 採択件数 / 採択率 / 予算額) per (program × fiscal_year × round). Aggregated from METI / MAFF published sources. Output is search-derived; verify primary source for figures cited in business decisions.
@@ -2841,12 +2873,14 @@ def search_acceptance_stats_am(
         # ¥3/req on a near-miss retry. Coverage is METI/MAFF biased,
         # so dropping `year` or `region` is the most common fix.
         filters_applied = {
-            k: v for k, v in [
+            k: v
+            for k, v in [
                 ("program_name", program_name),
                 ("year", year),
                 ("region", region),
                 ("industry", industry),
-            ] if v
+            ]
+            if v
         }
         suggestions: list[str] = []
         if year is not None:
@@ -2855,13 +2889,9 @@ def search_acceptance_stats_am(
                 "skews toward 公表済み rounds, recent 公募 may be empty."
             )
         if region:
-            suggestions.append(
-                "Drop 'region' — many programs only publish 全国 stats."
-            )
+            suggestions.append("Drop 'region' — many programs only publish 全国 stats.")
         if industry:
-            suggestions.append(
-                "Drop 'industry' — sector tagging is sparse on the source PDFs."
-            )
+            suggestions.append("Drop 'industry' — sector tagging is sparse on the source PDFs.")
         if program_name:
             suggestions.append(
                 "search_programs(q=program_name) で正式名称を確認してから "
@@ -2886,8 +2916,7 @@ def search_acceptance_stats_am(
         )
         payload["hint"] = {
             "message": (
-                "No acceptance stats matched. 集計データが存在する "
-                "組合せか確認してください。"
+                "No acceptance stats matched. 集計データが存在する 組合せか確認してください。"
             ),
             "filters_applied": filters_applied,
             "suggestions": suggestions,
@@ -2909,13 +2938,13 @@ def search_acceptance_stats_am(
 
 
 _PERSONAS = Literal[
-    "sme_owner",       # P1: 小規模製造業 owner ("is there money for me?")
-    "tax_advisor",     # P2: 税務相談士
-    "agri_corp",       # P3: 農業法人 (Konosu-style)
-    "consultant",      # P4: コンサルタント mapping 制度 for a client
-    "ma_advisor",      # P5: M&A 相談士
-    "municipality",    # P6: 自治体 担当者 (intent08 peer-compare)
-    "generic",         # default — no persona-specific reweighting
+    "sme_owner",  # P1: 小規模製造業 owner ("is there money for me?")
+    "tax_advisor",  # P2: 税務相談士
+    "agri_corp",  # P3: 農業法人 (Konosu-style)
+    "consultant",  # P4: コンサルタント mapping 制度 for a client
+    "ma_advisor",  # P5: M&A 相談士
+    "municipality",  # P6: 自治体 担当者 (intent08 peer-compare)
+    "generic",  # default — no persona-specific reweighting
 ]
 
 
@@ -2925,11 +2954,13 @@ def _reasoning_import():
     # Ensure infra root is on sys.path (same pattern as query_rewrite).
     import sys as _sys
     from pathlib import Path as _Path
+
     root = str(_Path(__file__).resolve().parent.parent)
     if root not in _sys.path:
         _sys.path.insert(0, root)
     from reasoning import match as _match_mod  # noqa: F401
     from reasoning import query_types as _qt_mod  # noqa: F401
+
     return _match_mod, _qt_mod
 
 
@@ -3246,26 +3277,19 @@ def reason_answer(
     # Extract <<<missing:KEY>>> tokens — these are the placeholders the
     # binder could not fill. Customer LLMs MUST NOT fabricate values here.
     import re as _re
+
     raw_skeleton = result.answer_skeleton or ""
-    missing_data = sorted(set(
-        _re.findall(r"<<<missing:([a-z_0-9]+)>>>", raw_skeleton)
-    ))
+    missing_data = sorted(set(_re.findall(r"<<<missing:([a-z_0-9]+)>>>", raw_skeleton)))
     # Also include <<<precompute gap: ...>>> markers as a distinct class.
-    precompute_gaps = sorted(set(
-        _re.findall(r"<<<precompute gap: ([^>]+)>>>", raw_skeleton)
-    ))
+    precompute_gaps = sorted(set(_re.findall(r"<<<precompute gap: ([^>]+)>>>", raw_skeleton)))
     # P7 fix 2026-04-25: substitute raw tokens in the prose-facing skeleton so
     # downstream LLMs cannot paste `<<<missing:foo>>>` into customer answers.
     # Machine-readable signal stays in missing_data / precompute_gaps arrays.
     # Rollback gate: AUTONOMATH_STRIP_MISSING_TOKENS="0" returns the raw
     # skeleton verbatim (default "1" applies the strip).
     if os.environ.get("AUTONOMATH_STRIP_MISSING_TOKENS", "1") != "0":
-        safe_skeleton = _re.sub(
-            r"<<<missing:[a-z_0-9]+>>>", "(該当データなし)", raw_skeleton
-        )
-        safe_skeleton = _re.sub(
-            r"<<<precompute gap: [^>]+>>>", "(集計準備中)", safe_skeleton
-        )
+        safe_skeleton = _re.sub(r"<<<missing:[a-z_0-9]+>>>", "(該当データなし)", raw_skeleton)
+        safe_skeleton = _re.sub(r"<<<precompute gap: [^>]+>>>", "(集計準備中)", safe_skeleton)
     else:
         safe_skeleton = raw_skeleton
 

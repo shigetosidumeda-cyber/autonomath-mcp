@@ -29,6 +29,7 @@ These are complementary:
 * Anonymous IPs additionally hit ``AnonIpLimitDep`` (3 req/日 quota) at the
   router-dep level — the per-second throttle here is the upstream gate.
 """
+
 from __future__ import annotations
 
 from jpintel_mcp.api.middleware.analytics_recorder import (

@@ -26,6 +26,7 @@ Response shape:
       "generated_at": "<ISO8601>"
     }
 """
+
 from __future__ import annotations
 
 import datetime as _dt

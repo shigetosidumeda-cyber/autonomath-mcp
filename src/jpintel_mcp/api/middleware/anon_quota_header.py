@@ -65,6 +65,7 @@ anon-quota-gated" signal — silent skip. Any other exception is logged at
 WARN and swallowed; broken header injection must never become a 500
 amplifier.
 """
+
 from __future__ import annotations
 
 import json
@@ -99,9 +100,7 @@ _SOFT_UPGRADE_URL = "https://jpcite.com/upgrade"
 # stamp the X-Anon-Quota-* headers (header-level CRO surface) but skip
 # the body inject. Conversion callers that read JSON only still see the
 # upgrade signal via ``X-Anon-Upgrade-Url`` + ``X-Anon-Quota-Remaining``.
-_BODY_INJECT_DENYLIST_PREFIXES = (
-    "/v1/programs/",
-)
+_BODY_INJECT_DENYLIST_PREFIXES = ("/v1/programs/",)
 
 
 def _is_anonymous(request: Request) -> bool:
@@ -296,9 +295,7 @@ async def _maybe_inject_upgrade_hint(
             media_type=response.media_type,
         )
     except Exception:  # pragma: no cover — defensive, see module docstring
-        _log.warning(
-            "anon_quota_header: failed to inject upgrade_hint", exc_info=True
-        )
+        _log.warning("anon_quota_header: failed to inject upgrade_hint", exc_info=True)
         return response
 
 

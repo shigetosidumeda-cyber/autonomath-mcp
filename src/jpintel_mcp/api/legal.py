@@ -56,7 +56,9 @@ class LegalItemResponse(BaseModel):
 def get_legal_item(
     law: str = Query(..., description="法令名 (例: 労働基準法)", max_length=200),
     article: str = Query(..., description="条文番号 (例: 15, 15-1)", max_length=40),
-    subject: str | None = Query(default=None, description="任意の subject filter (例: 賃金)", max_length=200),
+    subject: str | None = Query(
+        default=None, description="任意の subject filter (例: 賃金)", max_length=200
+    ),
 ) -> LegalItemResponse:
     raise HTTPException(
         status_code=status.HTTP_501_NOT_IMPLEMENTED,

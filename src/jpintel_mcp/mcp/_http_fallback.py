@@ -4,8 +4,8 @@ Background
 ----------
 ``uvx autonomath-mcp`` (Path B install via Claude Desktop) installs the
 PyPI wheel, which **excludes** ``data/`` per ``pyproject.toml`` line 135.
-``db.session.connect()`` therefore opens an empty SQLite file and every
-one of the 66 tools returns 0 rows — silent broken.
+``db.session.connect()`` therefore opens an empty SQLite file and registered
+tools return 0 rows — silently broken.
 
 This module routes tool calls to ``api.jpcite.com`` whenever the
 local DB is missing data (row count of ``programs`` < 100). The MCP
@@ -35,6 +35,7 @@ Memory contract (project_autonomath_business_model.md):
 - No Anthropic API call here. Inference happens client-side (Claude
   Desktop).
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -116,6 +117,7 @@ def _is_api_server_context() -> bool:
     db_unavailable when DB missing).
     """
     import os
+
     return os.environ.get("JPINTEL_ENV", "").strip().lower() == "prod"
 
 
@@ -242,8 +244,47 @@ def _get_client() -> Any:
     return _client
 
 
+def _envelope_error(
+    code: str,
+    message: str,
+    *,
+    extra: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Build a §I canonical-envelope error response.
+
+    Every HTTP fallback error path goes through this helper so the
+    MASTER_PLAN §I 6-key contract is honoured uniformly:
+
+      - ``results`` = []
+      - ``total`` / ``limit`` / ``offset`` = 0
+      - ``_billing_unit`` = 0 (errors never bill)
+      - ``_next_calls`` = [] (no compound walk on error)
+      - ``error`` is a dict with ``code`` + ``message`` + any extras
+
+    ``extra`` is merged into the ``error`` block so caller-supplied keys
+    (status_code, path, upgrade_url, etc.) cannot accidentally clobber
+    the top-level envelope invariants. The W9-3 finding is that earlier
+    code wrote the extras at the top level which corrupted ``results`` /
+    ``_billing_unit`` checks downstream.
+    """
+    err: dict[str, Any] = {"code": code, "message": message}
+    if extra:
+        # Merge extras into the error block (NOT the envelope).
+        for k, v in extra.items():
+            err[k] = v
+    return {
+        "results": [],
+        "total": 0,
+        "limit": 0,
+        "offset": 0,
+        "_billing_unit": 0,
+        "_next_calls": [],
+        "error": err,
+    }
+
+
 def _quota_exceeded_payload(data: dict[str, Any], path: str) -> dict[str, Any]:
-    """Return an MCP-friendly 429 response with conversion instructions."""
+    """Return an MCP-friendly 429 envelope with conversion instructions."""
     message = ""
     with contextlib.suppress(Exception):
         from jpintel_mcp.mcp.auth import handle_quota_exceeded
@@ -255,16 +296,18 @@ def _quota_exceeded_payload(data: dict[str, Any], path: str) -> dict[str, Any]:
             "無料枠に到達しました。続けるには jpcite API キーを発行してください: "
             f"{upgrade_url or 'https://jpcite.com/pricing.html#api-paid'}"
         )
-    return {
-        "error": "quota_exceeded",
-        "status_code": 429,
-        "detail": data,
-        "path": path,
-        "message": message,
-        "upgrade_url": data.get("upgrade_url"),
-        "direct_checkout_url": data.get("direct_checkout_url"),
-        "trial_signup_url": data.get("trial_signup_url"),
-    }
+    return _envelope_error(
+        "quota_exceeded",
+        message,
+        extra={
+            "status_code": 429,
+            "detail": data,
+            "path": path,
+            "upgrade_url": data.get("upgrade_url"),
+            "direct_checkout_url": data.get("direct_checkout_url"),
+            "trial_signup_url": data.get("trial_signup_url"),
+        },
+    )
 
 
 def _close_client() -> None:
@@ -330,19 +373,25 @@ def http_call(
         if resp.status_code >= 400:
             if resp.status_code == 429 and isinstance(data, dict):
                 return _quota_exceeded_payload(data, path)
-            return {
-                "error": "remote_http_error",
-                "status_code": resp.status_code,
-                "detail": data,
-                "path": path,
-            }
+            return _envelope_error(
+                "remote_http_error",
+                f"upstream returned HTTP {resp.status_code}",
+                extra={
+                    "status_code": resp.status_code,
+                    "detail": data,
+                    "path": path,
+                },
+            )
         return data if isinstance(data, dict) else {"data": data}
 
-    return {
-        "error": "remote_unreachable",
-        "detail": f"{type(last_exc).__name__}: {last_exc}" if last_exc else "unknown",
-        "path": path,
-    }
+    return _envelope_error(
+        "remote_unreachable",
+        "all retries exhausted",
+        extra={
+            "detail": (f"{type(last_exc).__name__}: {last_exc}" if last_exc else "unknown"),
+            "path": path,
+        },
+    )
 
 
 # --------------------------------------------------------------------------- #
@@ -351,32 +400,38 @@ def http_call(
 
 
 def remote_only_error(tool_name: str, rest_path: str | None = None) -> dict[str, Any]:
-    """Return a structured error for tools that don't have a fallback path
-    implemented (yet). Surfaces the REST URL so the user can hit it
-    directly.
+    """§I-canonical envelope for tools that don't have a fallback path yet.
+
+    Surfaces the REST URL inside the ``error`` block so the user can hit
+    it directly. Re-uses the ``_envelope_error`` helper so the 6-key
+    contract (``results / total / limit / offset / _billing_unit /
+    _next_calls``) is honoured.
     """
     base = _api_base()
     rest_url = f"{base}{rest_path}" if rest_path else base
-    return {
-        "error": "remote_only_via_REST_API",
-        "tool": tool_name,
-        "message": (
-            f"Tool '{tool_name}' is not yet supported in MCP HTTP-fallback "
-            f"mode. Local DB is empty (likely uvx install). Use the REST "
-            f"API directly: {rest_url}"
-        ),
-        "rest_api_base": base,
-        "rest_url_hint": rest_url,
-        "remediation": (
-            "Either (a) install with full DB by cloning the repo, or "
-            "(b) call the REST endpoint directly. Search-style tools "
-            "(search_programs / get_program / search_case_studies / "
-            "search_loan_programs / search_enforcement_cases / "
-            "search_tax_incentives / search_certifications / "
-            "list_open_programs / dd_profile_am / rule_engine_check) "
-            "are wired and work transparently."
-        ),
-    }
+    msg = (
+        f"Tool '{tool_name}' is not yet supported in MCP HTTP-fallback "
+        f"mode. Local DB is empty (likely uvx install). Use the REST "
+        f"API directly: {rest_url}"
+    )
+    return _envelope_error(
+        "remote_only_via_REST_API",
+        msg,
+        extra={
+            "tool": tool_name,
+            "rest_api_base": base,
+            "rest_url_hint": rest_url,
+            "remediation": (
+                "Either (a) install with full DB by cloning the repo, or "
+                "(b) call the REST endpoint directly. Search-style tools "
+                "(search_programs / get_program / search_case_studies / "
+                "search_loan_programs / search_enforcement_cases / "
+                "search_tax_incentives / search_certifications / "
+                "list_open_programs / dd_profile_am / rule_engine_check) "
+                "are wired and work transparently."
+            ),
+        },
+    )
 
 
 __all__ = [
@@ -385,4 +440,5 @@ __all__ = [
     "reset_fallback_mode",
     "http_call",
     "remote_only_error",
+    "_envelope_error",
 ]

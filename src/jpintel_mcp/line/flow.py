@@ -101,17 +101,65 @@ INDUSTRY_CHOICES: tuple[tuple[str, str | None], ...] = (
 # bubbles. Region order: 北→南 to match the user's mental model.
 PREFECTURE_BATCHES: tuple[tuple[str, ...], ...] = (
     # Batch A: 北海道・東北・関東 (12)
-    ("全国", "北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県",
-     "福島県", "茨城県", "栃木県", "群馬県", "埼玉県"),
+    (
+        "全国",
+        "北海道",
+        "青森県",
+        "岩手県",
+        "宮城県",
+        "秋田県",
+        "山形県",
+        "福島県",
+        "茨城県",
+        "栃木県",
+        "群馬県",
+        "埼玉県",
+    ),
     # Batch B: 関東続き・中部 (12)
-    ("千葉県", "東京都", "神奈川県", "新潟県", "富山県", "石川県",
-     "福井県", "山梨県", "長野県", "岐阜県", "静岡県", "愛知県"),
+    (
+        "千葉県",
+        "東京都",
+        "神奈川県",
+        "新潟県",
+        "富山県",
+        "石川県",
+        "福井県",
+        "山梨県",
+        "長野県",
+        "岐阜県",
+        "静岡県",
+        "愛知県",
+    ),
     # Batch C: 近畿・中国 (12)
-    ("三重県", "滋賀県", "京都府", "大阪府", "兵庫県", "奈良県",
-     "和歌山県", "鳥取県", "島根県", "岡山県", "広島県", "山口県"),
+    (
+        "三重県",
+        "滋賀県",
+        "京都府",
+        "大阪府",
+        "兵庫県",
+        "奈良県",
+        "和歌山県",
+        "鳥取県",
+        "島根県",
+        "岡山県",
+        "広島県",
+        "山口県",
+    ),
     # Batch D: 四国・九州・沖縄 (12)
-    ("徳島県", "香川県", "愛媛県", "高知県", "福岡県", "佐賀県",
-     "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"),
+    (
+        "徳島県",
+        "香川県",
+        "愛媛県",
+        "高知県",
+        "福岡県",
+        "佐賀県",
+        "長崎県",
+        "熊本県",
+        "大分県",
+        "宮崎県",
+        "鹿児島県",
+        "沖縄県",
+    ),
 )
 ALL_PREFECTURES: tuple[str, ...] = tuple(p for batch in PREFECTURE_BATCHES for p in batch)
 
@@ -138,7 +186,7 @@ EMPLOYEE_CHOICES: tuple[tuple[str, int], ...] = (
 # 万円 unit because that matches programs.amount_max_man_yen and lets us
 # do "amount_max ≥ <revenue bucket lower bound>" without unit conversion.
 REVENUE_CHOICES: tuple[tuple[str, int], ...] = (
-    ("〜1億円", 10000),     # 1億円 = 10,000 万円
+    ("〜1億円", 10000),  # 1億円 = 10,000 万円
     ("〜3億円", 30000),
     ("〜10億円", 100000),
     ("〜30億円", 300000),
@@ -167,7 +215,7 @@ def _quickreply_action(label: str) -> dict[str, Any]:
         "type": "action",
         "action": {
             "type": "message",
-            "label": label[:20],   # LINE caps quickreply label at 20 chars
+            "label": label[:20],  # LINE caps quickreply label at 20 chars
             "text": label,
         },
     }
@@ -212,13 +260,10 @@ RESULTS_INTRO_TEMPLATE = (
     "本サービスは情報提供のみで、個別の適用判定は行いません。"
 )
 
-NO_RESULTS_TEXT = (
-    "条件に合致する制度が見つかりませんでした。"
-    "条件を変更して再度お試しください。"
-)
+NO_RESULTS_TEXT = "条件に合致する制度が見つかりませんでした。条件を変更して再度お試しください。"
 
 QUOTA_EXCEEDED_TEXT = (
-    "今月の無料利用枠 (50 件) を超過しました。"
+    "今月のLINE無料利用枠を超過しました。"
     "翌月初 (JST 0:00) にリセットされます。\n"
     "API 連携をご利用の方は親 API キーで課金されます。"
 )
@@ -446,8 +491,11 @@ def advance(
         # only on the LAST message in a reply batch — so 都道府県 batches
         # 0..2 carry no quickreply and only batch 3 does.
         msgs: list[dict[str, Any]] = [
-            {"type": "text", "text": "次に都道府県を選んでください (1/4)。",
-             "quickReply": {"items": prefecture_quickreply(0)}},
+            {
+                "type": "text",
+                "text": "次に都道府県を選んでください (1/4)。",
+                "quickReply": {"items": prefecture_quickreply(0)},
+            },
         ]
         return ({"step": "prefecture", "answers": answers}, msgs)
 

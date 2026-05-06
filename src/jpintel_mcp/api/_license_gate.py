@@ -60,6 +60,7 @@ The same string is emitted into the ZIP-side `attribution.txt` file by
 the export route. ASCII-safe header equivalents are NOT generated here;
 attribution stays in the body / file.
 """
+
 from __future__ import annotations
 
 from typing import Final
@@ -79,23 +80,27 @@ __all__ = [
 # ---------------------------------------------------------------------------
 
 #: Explicit allow list. Anything NOT in this set is blocked from export.
-REDISTRIBUTABLE_LICENSES: Final[frozenset[str]] = frozenset({
-    "pdl_v1.0",
-    "gov_standard",
-    "gov_standard_v2.0",
-    "cc_by_4.0",
-    "public_domain",
-})
+REDISTRIBUTABLE_LICENSES: Final[frozenset[str]] = frozenset(
+    {
+        "pdl_v1.0",
+        "gov_standard",
+        "gov_standard_v2.0",
+        "cc_by_4.0",
+        "public_domain",
+    }
+)
 
 #: Explicit deny list. Used by `assert_no_blocked` for a clear error
 #: surface; the actual gate logic in `filter_redistributable` does NOT
 #: consult this set — it consults `REDISTRIBUTABLE_LICENSES` only so
 #: anything outside the allow list (including future / unknown values)
 #: blocks. `BLOCKED_LICENSES` is for diagnostics + tests.
-BLOCKED_LICENSES: Final[frozenset[str]] = frozenset({
-    "proprietary",
-    "unknown",
-})
+BLOCKED_LICENSES: Final[frozenset[str]] = frozenset(
+    {
+        "proprietary",
+        "unknown",
+    }
+)
 
 
 class LicenseGateError(Exception):
@@ -182,8 +187,7 @@ def assert_no_blocked(
         counts[key] = counts.get(key, 0) + 1
 
     summary = ", ".join(
-        f"{k}={v}"
-        for k, v in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))[:10]
+        f"{k}={v}" for k, v in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))[:10]
     )
     raise LicenseGateError(
         f"license_gate: refusing to export {len(blocked)} blocked row(s): "
@@ -214,10 +218,7 @@ def annotate_attribution(row: dict) -> dict:
     source_url = row.get("source_url") or "unknown"
     fetched_at = row.get("fetched_at") or "unknown"
     license_value = row.get("license") or "unknown"
-    attribution = (
-        f"出典: {publisher} / {source_url} / "
-        f"取得 {fetched_at} / license={license_value}"
-    )
+    attribution = f"出典: {publisher} / {source_url} / 取得 {fetched_at} / license={license_value}"
     out = dict(row)
     out["_attribution"] = attribution
     return out

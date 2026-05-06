@@ -13,6 +13,7 @@ Spec source: ``docs/_internal/value_maximization_plan_no_llm_api.md`` §8.2
 
 NO LLM API call. Pure stdlib + the local CitationVerifier.
 """
+
 from __future__ import annotations
 
 import logging
@@ -85,16 +86,10 @@ def _verify_citations_impl(
                 field=f"citations[{idx}]",
             )
         excerpt = c.get("excerpt")
-        if (
-            isinstance(excerpt, str)
-            and len(excerpt) > MAX_EXCERPT_LEN
-        ):
+        if isinstance(excerpt, str) and len(excerpt) > MAX_EXCERPT_LEN:
             return make_error(
                 "out_of_range",
-                (
-                    f"citations[{idx}].excerpt is {len(excerpt)} chars; "
-                    f"cap = {MAX_EXCERPT_LEN}"
-                ),
+                (f"citations[{idx}].excerpt is {len(excerpt)} chars; cap = {MAX_EXCERPT_LEN}"),
                 field=f"citations[{idx}].excerpt",
                 extra={
                     "citation_index": idx,
@@ -110,14 +105,16 @@ def _verify_citations_impl(
     for idx, c in enumerate(citations):
         elapsed = time.monotonic() - started
         if elapsed >= _TOTAL_TIMEOUT_SEC:
-            outputs.append({
-                "citation_index": idx,
-                "verification_status": "unknown",
-                "matched_form": None,
-                "source_checksum": None,
-                "normalized_source_length": 0,
-                "error": "overall_timeout",
-            })
+            outputs.append(
+                {
+                    "citation_index": idx,
+                    "verification_status": "unknown",
+                    "matched_form": None,
+                    "source_checksum": None,
+                    "normalized_source_length": 0,
+                    "error": "overall_timeout",
+                }
+            )
             continue
 
         body: str | None
@@ -137,16 +134,18 @@ def _verify_citations_impl(
             source_url_fetched = False
 
         if body is None:
-            outputs.append({
-                "citation_index": idx,
-                "verification_status": "unknown",
-                "matched_form": None,
-                "source_checksum": None,
-                "normalized_source_length": 0,
-                "verification_basis": verification_basis,
-                "source_url_fetched": source_url_fetched,
-                "error": "source_unreachable",
-            })
+            outputs.append(
+                {
+                    "citation_index": idx,
+                    "verification_status": "unknown",
+                    "matched_form": None,
+                    "source_checksum": None,
+                    "normalized_source_length": 0,
+                    "verification_basis": verification_basis,
+                    "source_url_fetched": source_url_fetched,
+                    "error": "source_unreachable",
+                }
+            )
             continue
 
         verdict = verifier.verify(
@@ -156,16 +155,18 @@ def _verify_citations_impl(
             },
             source_text=body,
         )
-        outputs.append({
-            "citation_index": idx,
-            "verification_status": verdict["verification_status"],
-            "matched_form": verdict.get("matched_form"),
-            "source_checksum": verdict.get("source_checksum"),
-            "normalized_source_length": verdict.get("normalized_source_length", 0),
-            "verification_basis": verification_basis,
-            "source_url_fetched": source_url_fetched,
-            "error": verdict.get("error"),
-        })
+        outputs.append(
+            {
+                "citation_index": idx,
+                "verification_status": verdict["verification_status"],
+                "matched_form": verdict.get("matched_form"),
+                "source_checksum": verdict.get("source_checksum"),
+                "normalized_source_length": verdict.get("normalized_source_length", 0),
+                "verification_basis": verification_basis,
+                "source_url_fetched": source_url_fetched,
+                "error": verdict.get("error"),
+            }
+        )
 
     verified = sum(1 for o in outputs if o["verification_status"] == "verified")
     inferred = sum(1 for o in outputs if o["verification_status"] == "inferred")
@@ -209,8 +210,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ],
     ) -> dict[str, Any]:
-        """[CITATION-VERIFY] Substantiate verification_status="verified" by deterministic substring + Japanese numeric-form match against the cited primary source. Pure no-LLM. Per-citation verdict ∈ {verified, inferred, unknown}; SHA256 checksum returned for re-checks. Up to 10 citations / 30s wall clock.
-        """
+        """[CITATION-VERIFY] Substantiate verification_status="verified" by deterministic substring + Japanese numeric-form match against the cited primary source. Pure no-LLM. Per-citation verdict ∈ {verified, inferred, unknown}; SHA256 checksum returned for re-checks. Up to 10 citations / 30s wall clock."""
         return _verify_citations_impl(citations=citations)
 
 

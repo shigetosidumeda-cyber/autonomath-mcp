@@ -95,6 +95,7 @@ _HANDLER_LEVEL_COST_CAP_PATHS: frozenset[str] = frozenset(
         "/v1/am/dd_export",
         "/v1/audit/batch_evaluate",
         "/v1/audit/workpaper",
+        "/v1/evidence/packets/batch",
         # The route parses commit=false/true and only bills on commit=true.
         # Preview and idempotent replay paths must remain usable without a cap.
         "/v1/me/clients/bulk_evaluate",

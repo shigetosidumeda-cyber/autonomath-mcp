@@ -32,6 +32,7 @@ Posture
   Each gets a fresh request_id; the operator dedupes on review (one human
   may legitimately resubmit if they didn't get the first acknowledgement).
 """
+
 from __future__ import annotations
 
 import logging
@@ -40,10 +41,10 @@ import secrets
 from datetime import UTC, datetime
 from typing import Annotated, Literal
 
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Header, HTTPException, status
 from pydantic import BaseModel, EmailStr, Field
 
-from jpintel_mcp.api.deps import DbDep
+from jpintel_mcp.api.deps import DbDep  # noqa: TC001 - FastAPI dependency alias.
 from jpintel_mcp.config import settings
 
 logger = logging.getLogger("jpintel.appi_disclosure")
@@ -60,12 +61,12 @@ router = APIRouter(prefix="/v1/privacy", tags=["privacy"])
 # cannot land in the DB. Operator confirms the actual document during manual
 # review; this field is just the requester's stated method.
 IdentityVerificationMethod = Literal[
-    "drivers_license",       # 運転免許証
-    "my_number_card",        # マイナンバーカード (表面のみ)
-    "passport",              # 旅券
-    "residence_card",        # 在留カード
-    "health_insurance_card", # 健康保険証
-    "other",                 # 自由記述 (operator manual review)
+    "drivers_license",  # 運転免許証
+    "my_number_card",  # マイナンバーカード (表面のみ)
+    "passport",  # 旅券
+    "residence_card",  # 在留カード
+    "health_insurance_card",  # 健康保険証
+    "other",  # 自由記述 (operator manual review)
 ]
 
 
@@ -75,7 +76,9 @@ class DisclosureRequest(BaseModel):
     # Optional — a data subject may not know the exact 法人番号 of the row
     # they're concerned about (e.g. sole proprietor). Operator searches by
     # name + email when blank.
-    target_houjin_bangou: Annotated[str | None, Field(default=None, min_length=13, max_length=13)] = None
+    target_houjin_bangou: Annotated[
+        str | None, Field(default=None, min_length=13, max_length=13)
+    ] = None
     identity_verification_method: IdentityVerificationMethod
 
 
@@ -236,6 +239,38 @@ def _appi_enabled() -> bool:
     return os.getenv("AUTONOMATH_APPI_ENABLED", "1") not in ("0", "false", "False")
 
 
+def _verify_turnstile_token(token: str | None) -> None:
+    """Require Cloudflare Turnstile when the deployment secret is configured."""
+    secret = os.getenv("CLOUDFLARE_TURNSTILE_SECRET", "").strip()
+    if not secret:
+        return
+    if not token:
+        raise HTTPException(
+            status.HTTP_401_UNAUTHORIZED,
+            "Cloudflare Turnstile token required",
+        )
+
+    import httpx
+
+    try:
+        with httpx.Client(timeout=httpx.Timeout(5.0, connect=2.0)) as client:
+            response = client.post(
+                "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+                data={"secret": secret, "response": token},
+            )
+    except httpx.HTTPError as exc:
+        raise HTTPException(
+            status.HTTP_401_UNAUTHORIZED,
+            "Cloudflare Turnstile verification failed",
+        ) from exc
+
+    if response.status_code >= 400 or not response.json().get("success"):
+        raise HTTPException(
+            status.HTTP_401_UNAUTHORIZED,
+            "Cloudflare Turnstile verification failed",
+        )
+
+
 @router.post(
     "/disclosure_request",
     response_model=DisclosureResponse,
@@ -265,6 +300,10 @@ def _appi_enabled() -> bool:
 def submit_disclosure_request(
     payload: DisclosureRequest,
     conn: DbDep,
+    cf_turnstile_token: Annotated[
+        str | None,
+        Header(alias="CF-Turnstile-Token"),
+    ] = None,
 ) -> DisclosureResponse:
     if not _appi_enabled():
         # Match the shape the global StarletteHTTPException handler emits;
@@ -276,6 +315,8 @@ def submit_disclosure_request(
             status.HTTP_503_SERVICE_UNAVAILABLE,
             "APPI disclosure intake disabled",
         )
+
+    _verify_turnstile_token(cf_turnstile_token)
 
     request_id = _gen_request_id()
     received_at = datetime.now(UTC).isoformat()

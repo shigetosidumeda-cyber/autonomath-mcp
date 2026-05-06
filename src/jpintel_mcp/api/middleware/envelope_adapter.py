@@ -32,6 +32,7 @@ ensures the Accept header is consistently parsed and the response signals back
 to the caller which version it actually served. Unsupported routes that ignore
 the v2 flag still report ``v1``.
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -58,9 +59,7 @@ class EnvelopeAdapterMiddleware(BaseHTTPMiddleware):
     state stamp, not the response header which is added on the way out.
     """
 
-    async def dispatch(
-        self, request: Request, call_next: Callable
-    ) -> Response:
+    async def dispatch(self, request: Request, call_next: Callable) -> Response:
         # 1) Parse the opt-in once so individual routes don't re-parse
         #    the Accept header.
         try:
@@ -82,9 +81,7 @@ class EnvelopeAdapterMiddleware(BaseHTTPMiddleware):
             served = response.headers.get("X-Envelope-Version")
             if served not in {"v1", "v2"}:
                 served = (
-                    "v2"
-                    if v2 and getattr(request.state, "envelope_v2_served", False)
-                    else "v1"
+                    "v2" if v2 and getattr(request.state, "envelope_v2_served", False) else "v1"
                 )
             response.headers["X-Envelope-Version"] = served
             existing_vary = response.headers.get("Vary")
