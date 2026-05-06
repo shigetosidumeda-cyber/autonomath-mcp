@@ -1,0 +1,137 @@
+name: brand-signals-weekly
+
+# DEEP-41 brand mention dashboard cron.
+# Spec: tools/offline/_inbox/value_growth_dual/_deep_plan/DEEP_41_brand_mention_dashboard.md
+#
+# Pulls 10 organic signal sources (GitHub / PyPI / npm / Zenn / Qiita / X /
+# HN / Lobste.rs / 業界誌 / 業界団体 ICT) and persists to autonomath.db
+# brand_mention table. Mondays 06:00 JST = Mondays 21:00 UTC.
+#
+# NO LLM calls. NO paid intel SaaS. GITHUB_TOKEN secret optional (lifts
+# unauth 60 req/h ceiling). Failure-tolerant: 1 source down does NOT abort
+# the other 9; per-source results land in analytics/brand_signals_run.jsonl.
+
+on:
+  schedule:
+    - cron: "0 21 * * 1"   # Mondays 21:00 UTC = JST Mon 06:00
+  workflow_dispatch: {}
+
+concurrency:
+  group: brand-signals-weekly
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Python
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install httpx
+
+      - name: Restore autonomath.db cache
+        id: cache-db
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: autonomath.db
+          key: brand-signals-db-${{ github.run_id }}
+          restore-keys: |
+            brand-signals-db-
+
+      - name: Apply DEEP-41 migration if needed
+        run: |
+          python - <<'PY'
+          import sqlite3
+          import pathlib
+          db = pathlib.Path("autonomath.db")
+          mig = pathlib.Path("scripts/migrations/wave24_187_brand_mention.sql").read_text(encoding="utf-8")
+          conn = sqlite3.connect(str(db))
+          try:
+              conn.executescript(mig)
+              conn.commit()
+          finally:
+              conn.close()
+          PY
+
+      - name: Run brand-signals scrape
+        env:
+          GITHUB_TOKEN: ${{ secrets.JPCITE_BRAND_GITHUB_TOKEN }}
+        run: |
+          set +e
+          python scripts/cron/scrape_brand_signals.py --log-level INFO
+          rc=$?
+          # fail-open: even partial source failure must not red the job.
+          if [ "$rc" -ne 0 ]; then
+            echo "::warning::scrape_brand_signals.py exited $rc (fail-open)"
+          fi
+          exit 0
+
+      - name: Regenerate dashboard JSON
+        run: |
+          python - <<'PY'
+          import json, pathlib, sqlite3
+          from datetime import datetime, timezone
+          conn = sqlite3.connect("autonomath.db")
+          try:
+              src_counts = {r[0]: r[1] for r in conn.execute(
+                  "SELECT source, COUNT(*) FROM brand_mention GROUP BY source")}
+              for s in ("github","pypi","npm","zenn","qiita","x","hn","lobsters","industry_journal","industry_assoc"):
+                  src_counts.setdefault(s, 0)
+              kpi = conn.execute("SELECT self_count, other_count, ratio_other_per_self, organic_self_walking FROM v_brand_mention_root_kpi").fetchone()
+              monthly = [
+                  {"month": m, "self": s, "other": o}
+                  for (m, s, o) in conn.execute("SELECT month, self_count, other_count FROM v_brand_mention_monthly_trend")
+              ]
+          finally:
+              conn.close()
+          out = {
+              "generated_at": datetime.now(timezone.utc).isoformat(),
+              "source_counts": src_counts,
+              "self_vs_other_ratio": {
+                  "self_count": (kpi[0] if kpi else 0),
+                  "other_count": (kpi[1] if kpi else 0),
+                  "ratio_other_per_self": (kpi[2] if kpi else None),
+                  "organic_self_walking": bool(kpi[3]) if kpi else False,
+              },
+              "top_mentioner_monthly": [],
+              "sentiment_proxy": {
+                  "positive_kw_count": 0,
+                  "negative_kw_count": 0,
+                  "kw_lists": {
+                      "positive": ["便利","正確","推奨","useful","accurate"],
+                      "negative": ["誤情報","商標衝突","disclaimer不備","怪しい","wrong"],
+                  },
+              },
+              "monthly_trend": monthly,
+          }
+          path = pathlib.Path("analytics/brand_community_dashboard.json")
+          path.parent.mkdir(parents=True, exist_ok=True)
+          path.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
+          PY
+
+      - name: Save autonomath.db cache
+        if: always()
+        uses: actions/cache/save@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: autonomath.db
+          key: brand-signals-db-${{ github.run_id }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: brand-dashboard
+          path: |
+            analytics/brand_community_dashboard.json
+            analytics/brand_signals_run.jsonl

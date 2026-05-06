@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>jpcite - 採択観察 寄稿フォーム</title>
+<meta name="description" content="jpcite 採択観察 寄稿フォーム。税理士・公認会計士・司法書士・補助金 consultant の現場観察を community-verified corpus に追加。">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://jpcite.com/contribute/">
+<style>
+  body { font: 16px/1.65 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif; margin: 0; padding: 0; color:#1d1d1f; background:#f7f7f5; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 32px 24px 80px; }
+  h1 { font-size: 28px; margin: 0 0 8px; }
+  .lede { color: #555; margin: 0 0 24px; }
+  form { background:#fff; border:1px solid #e5e5e7; border-radius:12px; padding: 24px; }
+  fieldset { border:0; padding:0; margin: 0 0 16px; }
+  label { display:block; font-weight:600; margin: 12px 0 4px; }
+  .help { font-size: 13px; color: #555; margin: 4px 0 0; }
+  input[type=text], input[type=number], input[type=url], select, textarea {
+    width: 100%; box-sizing: border-box; padding: 8px 10px; font: inherit;
+    border: 1px solid #d1d1d6; border-radius: 6px; background:#fff;
+  }
+  textarea { min-height: 140px; resize: vertical; }
+  .counter { font-size: 12px; color:#666; text-align:right; }
+  .counter.over { color:#b30000; font-weight:600; }
+  .urls input { margin-bottom: 6px; }
+  .url-add { font-size:13px; padding: 4px 10px; cursor:pointer; }
+  .checkrow { display:flex; gap:8px; align-items:flex-start; margin: 12px 0; }
+  .checkrow input { margin-top: 4px; }
+  button[type=submit] {
+    margin-top: 16px; padding: 12px 24px; font: inherit; font-weight:600;
+    background:#0066cc; color:#fff; border:0; border-radius:8px; cursor:pointer;
+  }
+  button[type=submit]:disabled { background:#a3a3a8; cursor:not-allowed; }
+  .warn {
+    background:#fff7e6; border:1px solid #f5c87b; padding: 8px 12px;
+    border-radius: 6px; margin: 6px 0; font-size: 14px; color:#7a4a00;
+    display:none;
+  }
+  .warn.on { display:block; }
+  .err {
+    background:#fdecea; border:1px solid #f3a5a0; padding: 8px 12px;
+    border-radius: 6px; margin: 6px 0; font-size: 14px; color:#8b1e15;
+    display:none;
+  }
+  .err.on { display:block; }
+  .boundary { font-size: 13px; color:#444; margin: 8px 0 0; }
+  .boundary details summary { cursor:pointer; color:#0066cc; }
+  .lang-toggle { float: right; font-size: 13px; }
+  .lang-toggle a { color: #0066cc; text-decoration:none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="lang-toggle">
+    <a href="?lang=ja" data-lang="ja">日本語</a> /
+    <a href="?lang=en" data-lang="en">English</a>
+  </p>
+  <h1 data-i18n="h1">jpcite 採択観察 寄稿フォーム</h1>
+  <p class="lede" data-i18n="lede">
+    実際に観察された 補助金 / 税制 / 認定 / 融資 制度の 採択要件 を
+    community-verified corpus に追加します。観察事実のみ — 判断・助言は含めない。
+    寄稿は anonymous で 5 分以内、PII は client-side で auto strip。
+  </p>
+
+  <form id="contrib-form" autocomplete="off" novalidate>
+
+    <fieldset>
+      <label for="cohort" data-i18n="lbl_cohort">寄稿者カテゴリ</label>
+      <select id="cohort" name="cohort" required>
+        <option value="">- 選択 -</option>
+        <option value="税理士">税理士</option>
+        <option value="公認会計士">公認会計士</option>
+        <option value="司法書士">司法書士</option>
+        <option value="補助金_consultant">補助金 consultant</option>
+        <option value="anonymous">anonymous (個人)</option>
+      </select>
+      <p class="boundary" id="boundary-text"></p>
+    </fieldset>
+
+    <fieldset>
+      <label for="program_id" data-i18n="lbl_program">program_id (jpcite unified_id)</label>
+      <input type="text" id="program_id" name="program_id" required maxlength="128" placeholder="UNI-xxxxxxxxxx">
+      <p class="help">jpcite の unified_id を入力 (例: UNI-000780f85e)</p>
+    </fieldset>
+
+    <fieldset>
+      <label for="observed_year" data-i18n="lbl_year">観察年度</label>
+      <select id="observed_year" name="observed_year" required></select>
+    </fieldset>
+
+    <fieldset>
+      <label for="observed_eligibility_text" data-i18n="lbl_text">採択要件 観察文 (50-2000 文字)</label>
+      <textarea id="observed_eligibility_text" name="observed_eligibility_text" required minlength="50" maxlength="2000"
+        placeholder="観察された minimum 売上要件 = ¥30M / FY2024 等。判断 (採択される / 申請すべき) は記述しない。"></textarea>
+      <p class="counter" id="text-counter">0 / 2000</p>
+      <div class="warn" id="pii-warn"></div>
+      <div class="warn" id="phrase-warn"></div>
+    </fieldset>
+
+    <fieldset>
+      <label for="observed_amount_yen" data-i18n="lbl_amount">観察金額 (¥, 任意)</label>
+      <input type="number" id="observed_amount_yen" name="observed_amount_yen" min="0" step="1">
+    </fieldset>
+
+    <fieldset>
+      <label for="observed_outcome" data-i18n="lbl_outcome">観察結果</label>
+      <select id="observed_outcome" name="observed_outcome" required>
+        <option value="">- 選択 -</option>
+        <option value="採択">採択</option>
+        <option value="不採択">不採択</option>
+        <option value="継続中">継続中</option>
+      </select>
+    </fieldset>
+
+    <fieldset>
+      <label data-i18n="lbl_urls">一次資料 URL (1-5、aggregator 不可)</label>
+      <div class="urls" id="urls">
+        <input type="url" name="source_url" required placeholder="https://www.maff.go.jp/... または https://*.go.jp/...">
+      </div>
+      <button type="button" class="url-add" id="url-add">+ URL 追加</button>
+      <div class="err" id="url-err"></div>
+    </fieldset>
+
+    <fieldset>
+      <label for="houjin_bangou" data-i18n="lbl_houjin">対象法人 法人番号 (13 桁、client-side で hash 化)</label>
+      <input type="text" id="houjin_bangou" name="houjin_bangou" inputmode="numeric" pattern="\d{13}" maxlength="13"
+        placeholder="1010401030882">
+      <p class="help">送信前に SHA-256 でhash 化、raw 値は送信されません (APPI 配慮)</p>
+    </fieldset>
+
+    <fieldset>
+      <label for="tax_pro_credit_name" data-i18n="lbl_credit">寄稿者クレジット (任意、jpcite.com/contributors/ に公開)</label>
+      <input type="text" id="tax_pro_credit_name" name="tax_pro_credit_name" maxlength="128">
+      <div class="checkrow">
+        <input type="checkbox" id="public_credit_consent" name="public_credit_consent">
+        <label for="public_credit_consent" style="font-weight:normal" data-i18n="lbl_consent_credit">
+          上記クレジット名を公開し、organic SEO 逆 link を設置することに同意します
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <div class="checkrow">
+        <input type="checkbox" id="consent_acknowledged" name="consent_acknowledged" required>
+        <label for="consent_acknowledged" style="font-weight:normal" data-i18n="lbl_consent_ack">
+          私は観察された事実のみを記述し、判断 / 助言を含めないことに同意します。
+        </label>
+      </div>
+    </fieldset>
+
+    <button type="submit" id="submit-btn" disabled>送信</button>
+    <div class="err" id="submit-err"></div>
+  </form>
+</div>
+<script src="./scrubber.js"></script>
+</body>
+</html>

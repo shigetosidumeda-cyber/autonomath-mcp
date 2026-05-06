@@ -7,8 +7,10 @@ __pycache__/
 .coverage
 htmlcov/
 dist/
+dist.bak*/
 build/
 .venv/
+.venv*/
 venv/
 .env
 *.db
@@ -22,9 +24,13 @@ data/workpapers/
 graph.sqlite
 graph.sqlite-wal
 graph.sqlite-shm
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
 data/competitive_watch/
 # adoption PoC scrape output -- not committed until schema is approved
 data/adoption_*.jsonl
+data/*_ingest_log.jsonl
 # downloaded 採択 PDFs live in /tmp/jpintel_adoption_cache/ and must never be committed
 jpintel_adoption_cache/
 .DS_Store
@@ -60,11 +66,17 @@ site/sitemap-programs.xml
 site/sitemap-structured.xml
 site/sitemap-prefectures.xml
 site/sitemap-audiences.xml
+# Generated prefecture/industry audience landing pages. Keep root audience
+# HTML files such as site/audiences/dev.html tracked.
+site/audiences/*/
 
 # Wave-by-wave scratch directories — ephemeral analysis output, not source.
 analysis_wave18/
 analysis_value/
 autonomath_staging/
+tmp*/
+parts/
+pyproject.toml.bak
 
 # MkDocs build cache (rebuilt on every `mkdocs build`)
 .cache/
@@ -89,6 +101,7 @@ analytics/*
 !analytics/npm_daily.jsonl
 !analytics/indexnow_log.jsonl
 !analytics/indexnow_snapshot.json
+!analytics/brand_community_dashboard.json
 
 # Cloudflare Wrangler cache
 .wrangler/
@@ -115,6 +128,16 @@ analytics/*
 
 # Claude Code local state
 .claude/
+
+# Operator loop outputs and raw research captures. Keep scripts/prompts under
+# tools/offline versionable, but keep bulky run outputs outside reviews.
+tools/offline/_inbox/
+tools/offline/_outbox/
+tools/offline/_quarantine/
+tools/offline/_done/
+tools/offline/**/__pycache__/
+*.warc-equiv.tar.gz
+*.pdf.bin
 
 # Log files
 *.log

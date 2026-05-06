@@ -1,0 +1,7 @@
+sample_month,llm_provider,query_id,query_text,jpcite_cited,competitor_cited,citation_url,sampled_at,sampled_by
+2026-05,claude,Q001,行政書士が活用できる業務拡張系の補助金は何がありますか,0,0,,2026-05-01T09:00:00Z,operator
+2026-05,claude,Q002,行政書士事務所が小規模事業者持続化補助金の対象になりますか,0,0,,2026-05-01T09:00:30Z,operator
+2026-05,perplexity,Q001,行政書士が活用できる業務拡張系の補助金は何がありますか,1,0,https://jpcite.com/programs/...,2026-05-01T09:01:00Z,operator
+2026-05,perplexity,Q002,行政書士事務所が小規模事業者持続化補助金の対象になりますか,0,1,https://www.jgrants-portal.go.jp/...,2026-05-01T09:01:30Z,operator
+2026-05,chatgpt,Q001,行政書士が活用できる業務拡張系の補助金は何がありますか,0,0,,2026-05-01T09:02:00Z,operator
+2026-05,gemini,Q001,行政書士が活用できる業務拡張系の補助金は何がありますか,0,0,,2026-05-01T09:02:30Z,operator

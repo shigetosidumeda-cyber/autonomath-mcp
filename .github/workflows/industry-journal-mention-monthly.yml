@@ -1,0 +1,98 @@
+name: industry-journal-mention-monthly
+
+# DEEP-40 monthly industry journal mention ingest.
+# Spec: tools/offline/_inbox/value_growth_dual/_deep_plan/DEEP_40_industry_journal_mention.md
+#
+# What this does
+# --------------
+# Once a month, polls 8 業界誌 (税務通信 / 月刊税務事例 / TKC会報 / 会計人コース /
+# 月刊監査研究 / 登記研究 / 月報司法書士 / 月刊行政書士) via 3-layer fallback
+# (CiNii Articles API → J-STAGE API → publisher TOC HTML) and inserts any
+# 自然言及 of jpcite / Bookyou / AutonoMath into `industry_journal_mention`
+# (autonomath.db, mig wave24_186). LLM call: 0. Pure regex grep + 50-char
+# snippet (著作権法 §32 fence). Paid 購読 NG.
+#
+# Cadence
+# -------
+# 21:00 UTC on the 15th of each month == 06:00 JST on the 16th. Spec calls
+# for 月初 / 中旬 — 15日 06:00 JST gives the publishers their TOC update
+# window after the 月初 issue date.
+#
+# Idempotency
+# -----------
+# UNIQUE(journal_name, issue_date, article_title, mention_keyword) +
+# INSERT OR IGNORE. Re-running this month → 0 new rows.
+#
+# Required GitHub repository secret:
+#   FLY_API_TOKEN   Fly.io deploy token with ssh access to app
+#                   `autonomath-api`. Same secret used by other monthly
+#                   crons (populate-calendar / nta-bulk / saved-searches).
+
+on:
+  schedule:
+    # 21:00 UTC on the 15th == 06:00 JST on the 16th.
+    - cron: "0 21 15 * *"
+  workflow_dispatch:
+    inputs:
+      months_back:
+        description: "Lookback window in months (default 13)"
+        required: false
+        default: "13"
+      dry_run:
+        description: "Run with --dry-run (fetch + grep, no DB writes)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+concurrency:
+  group: industry-journal-mention-monthly
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    # 8 journals × (CiNii + J-STAGE + TOC) × 1.0s polite sleep ≈
+    # 5-10 min. 30 min is generous headroom for slow publisher TOC.
+    timeout-minutes: 30
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run industry journal mention ingest on Fly machine
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          INPUT_MONTHS_BACK: ${{ github.event.inputs.months_back }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          MONTHS_BACK="${INPUT_MONTHS_BACK:-13}"
+          DRY_FLAG=""
+          if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then
+            DRY_FLAG="--dry-run"
+          fi
+
+          flyctl ssh console -a autonomath-api -C \
+            "/opt/venv/bin/python /app/scripts/cron/ingest_industry_journal_mention.py \
+              --db /data/autonomath.db \
+              --months-back ${MONTHS_BACK} \
+              ${DRY_FLAG}"
+
+      - name: Open issue on driver failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          BODY="Loader: \`scripts/cron/ingest_industry_journal_mention.py\`\nRun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\nSHA: \`${{ github.sha }}\`\n\nLikely causes: CiNii / J-STAGE 5xx, publisher TOC HTML structure shift, or autonomath.db lock contention. See DEEP-40 spec at \`tools/offline/_inbox/value_growth_dual/_deep_plan/DEEP_40_industry_journal_mention.md\`.\n"
+          gh issue create \
+            --title "industry-journal-mention-monthly failed on $(date -u +%Y-%m-%d)" \
+            --label ingest-failure \
+            --label automation \
+            --body "$BODY"

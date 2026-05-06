@@ -1,0 +1,94 @@
+name: restore-drill-monthly
+# DEEP-62: monthly R2 backup restore drill.
+#
+# Fires once a month on the 15th at 03:00 JST (= 14th 18:00 UTC). Even months
+# sample autonomath/, odd months sample jpintel/ — the cron rotates by month
+# parity so we touch every retention generation across the year without
+# pulling 9.4 GB AND 352 MB in the same window. Read-only against R2: lists
+# keys, downloads ONE .db.gz to a tmp dir, runs PRAGMA integrity_check +
+# foreign_key_check, inserts one row into jpintel.db.restore_drill_log
+# (mig 190), and rmtrees the tmp dir before exit. NEVER deletes / uploads /
+# rewrites R2 objects.
+#
+# Required GitHub repository secrets:
+#   R2_ENDPOINT, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET
+#   FLY_API_TOKEN  (so we can scp jpintel.db off the Fly machine to the
+#                  GHA runner — the drill writes its audit row to the live
+#                  jpintel.db, but writes from a remote runner are not
+#                  feasible. See "Job model" below.)
+#
+# Job model
+# ---------
+# Two jobs:
+#   1. drill: runs scripts/cron/restore_drill_monthly.py *on the Fly machine*
+#      via flyctl ssh console — that's where /data/jpintel.db lives, where
+#      the rclone binary is preinstalled, and where the audit row must land.
+#      timeout-minutes=90 because autonomath even-month drill is the slow
+#      path (3 GB download + 9.4 GB gunzip + integrity_check across 6.12M
+#      facts can run 25-30 min on Fly's machine class).
+#   2. alert: runs only on drill failure; emits stderr sentinel
+#      RESTORE_DRILL_RED and triggers SES via the existing ops mailer.
+
+on:
+  schedule:
+    # 18:00 UTC on the 14th == 03:00 JST on the 15th. Off-peak; well clear of
+    # the 19:45 UTC weekly-backup-autonomath job and the 18:17 UTC
+    # nightly-backup. Pushing the drill 9 hours after the backup window
+    # means the freshest backup is already settled in cold tier.
+    - cron: "0 18 14 * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: restore-drill-monthly
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  drill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    outputs:
+      drill_status: ${{ steps.run_drill.outcome }}
+
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run restore drill on Fly machine
+        id: run_drill
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: |
+          set -euo pipefail
+          # The drill script writes its audit row into the live
+          # /data/jpintel.db on the Fly machine, so it must execute there
+          # (not on the GHA runner). flyctl ssh console -C runs a single
+          # command and returns the exit code, which we propagate.
+          flyctl ssh console -a autonomath-api -C \
+            "/opt/venv/bin/python /app/scripts/cron/restore_drill_monthly.py"
+
+  alert:
+    needs: drill
+    if: failure()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Emit RESTORE_DRILL_RED alert
+        run: |
+          # SES is wired via the ops mailer in scripts/cron/dispatch_webhooks.py;
+          # the simplest portable path here is `mail` if available, else stderr.
+          # Both feed the existing ops alerting pipeline.
+          echo "RESTORE_DRILL_RED: monthly restore drill FAILED — see Actions log" >&2
+          if command -v mail >/dev/null 2>&1; then
+            echo "DEEP-62 monthly restore drill FAILED. See GHA run." \
+              | mail -s "RESTORE_DRILL_RED" ops@bookyou.net || true
+          fi
+          # Always exit 1 so the alert job itself shows up red on the
+          # repository's Actions page (operator-visible signal).
+          exit 1

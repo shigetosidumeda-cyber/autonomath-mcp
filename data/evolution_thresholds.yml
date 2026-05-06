@@ -1,0 +1,58 @@
+# DEEP-42 evolution dashboard thresholds (jpcite v0.3.4).
+# Operator-curated. Quarterly review per DEEP-42 §9 risk table.
+# Override scheme:
+#   axis_thresholds:
+#     <IA-NN>:
+#       <signal_id>:
+#         healthy:    <num>   # value >= this  -> healthy (higher = better)
+#         degraded:   <num>   # value >= this  -> degraded (else broken)
+#         healthy_le: <num>   # value <= this  -> healthy (lower = better)
+#         degraded_le:<num>   # value <= this  -> degraded (else broken)
+#
+# Defaults are encoded in scripts/cron/aggregate_evolution_dashboard.py
+# (DEFAULT_THRESHOLDS). This file MERGES on top of those defaults so leaving
+# a section empty is safe.
+
+axis_thresholds:
+  IA-01:
+    am_law_article_count:
+      healthy: 10000
+      degraded: 1000
+    programs_count:
+      healthy: 8000
+      degraded: 1000
+
+  IA-06:
+    api_p95_ms:
+      healthy_le: 800
+      degraded_le: 2000
+    cold_start_rto_s:
+      healthy_le: 5
+      degraded_le: 30
+    cron_success_rate:
+      healthy: 0.95
+      degraded: 0.80
+
+  IA-09:
+    gsc_impression:
+      healthy: 1000
+      degraded: 100
+    gsc_avg_position:
+      healthy_le: 20
+      degraded_le: 50
+
+  IA-10:
+    v_cobb_douglas:
+      healthy: 1.0
+      degraded: 0.5
+    lambda_max:
+      healthy: 0.0
+      degraded: -0.05
+    cascade_q:
+      healthy: 0.05
+      degraded: 0.01
+
+  IA-12:
+    self_vs_other_ratio:
+      healthy_le: 0.7
+      degraded_le: 0.9

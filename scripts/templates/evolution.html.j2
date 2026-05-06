@@ -1,0 +1,142 @@
+{# DEEP-42 evolution dashboard jinja2 template (jpcite v0.3.4).
+   Rendered weekly to site/transparency/evolution.html by
+   scripts/cron/aggregate_evolution_dashboard.py. LLM API import = 0.
+   Sister template: production_gate.html.j2 (DEEP-58).
+   DEEP-26 axis B integration: transparency public surface = SEO uplift moat. #}
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>jpcite evolution dashboard (DEEP-42)</title>
+  <meta name="robots" content="index,follow">
+  <meta name="description" content="jpcite v0.3.4 evolution dashboard. 12 axis × 数十 signal の moat 健全性を毎週火 12:00 JST に更新します。">
+  <link rel="canonical" href="https://jpcite.com/transparency/evolution.html">
+  <style>
+    :root {
+      --c-bg:#0d1117;--c-card:#161b22;--c-fg:#e6edf3;--c-muted:#8b949e;
+      --c-border:#30363d;
+      --c-broken:#f85149;--c-degraded:#d29922;--c-healthy:#3fb950;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; padding:0; font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif; background:var(--c-bg); color:var(--c-fg); line-height:1.55; }
+    main { max-width:1080px; margin:0 auto; padding:32px 20px 96px; }
+    h1 { font-size:1.65rem; margin:0 0 6px; }
+    h2 { font-size:1.15rem; margin:32px 0 12px; border-bottom:1px solid var(--c-border); padding-bottom:6px; }
+    p.lead { color:var(--c-muted); margin:0 0 24px; }
+    .meta { font-size:0.85rem; color:var(--c-muted); }
+    .meta code { background:var(--c-card); padding:2px 6px; border-radius:4px; }
+    .axis-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
+    .card { background:var(--c-card); border:1px solid var(--c-border); border-radius:8px; padding:14px 16px; }
+    .badge { display:inline-block; padding:3px 10px; border-radius:12px; font-size:0.75rem; font-weight:600; letter-spacing:0.05em; }
+    .badge.broken   { background:var(--c-broken);   color:#fff; }
+    .badge.degraded { background:var(--c-degraded); color:#000; }
+    .badge.healthy  { background:var(--c-healthy);  color:#000; }
+    .signal-row { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:4px 0; border-bottom:1px dashed var(--c-border); font-size:0.85rem; }
+    .signal-row:last-child { border-bottom:none; }
+    .signal-row .sig-id { color:var(--c-muted); font-family:ui-monospace,Menlo,monospace; font-size:0.78rem; }
+    .signal-row .sig-val { font-family:ui-monospace,Menlo,monospace; }
+    table { width:100%; border-collapse:collapse; font-size:0.9rem; }
+    table th, table td { padding:8px 10px; border-bottom:1px solid var(--c-border); text-align:left; vertical-align:top; }
+    table th { color:var(--c-muted); font-weight:600; font-size:0.78rem; letter-spacing:0.04em; text-transform:uppercase; }
+    a { color:#58a6ff; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    footer { margin-top:48px; padding-top:18px; border-top:1px solid var(--c-border); font-size:0.8rem; color:var(--c-muted); }
+    code.sha { font-family:ui-monospace,Menlo,monospace; font-size:0.78rem; }
+    .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px; }
+    .kpi-card { background:var(--c-card); border:1px solid var(--c-border); border-radius:6px; padding:10px 12px; }
+    .kpi-card .kpi-val { font-size:1.4rem; font-weight:700; font-family:ui-monospace,Menlo,monospace; }
+    .kpi-card .kpi-meta { font-size:0.78rem; color:var(--c-muted); margin-top:4px; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>jpcite evolution dashboard</h1>
+  <p class="lead">jpcite v0.3.4 evolution moat ダッシュボード。12 axis (IA-01..12) × 数十 signal を毎週火 12:00 JST に更新します。DEEP-58 production gate ダッシュボードの sister 公開面。</p>
+  <p class="meta">
+    snapshot_date: <code>{{ snap.snapshot_date }}</code>
+    {% if snap.snapshot_iso_date %} (<code>{{ snap.snapshot_iso_date }}</code>){% endif %} /
+    last_update_utc: <code>{{ snap.last_update_utc }}</code> /
+    last_update_jst: <code>{{ snap.last_update_jst }}</code> /
+    git: <code class="sha">{{ snap.git_head_sha }}</code>
+  </p>
+
+  <h2>12 axis status</h2>
+  <div class="axis-grid">
+    {% for axis in snap.axes %}
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+        <strong>{{ axis.id }}</strong>
+        <span class="badge {{ axis.status }}">{{ axis.status }}</span>
+      </div>
+      <p class="meta" style="margin:6px 0 8px;">{{ axis.title }}</p>
+      <div>
+        {% for s in axis.signals %}
+        <div class="signal-row">
+          <span class="sig-id">{{ s.signal_id }}</span>
+          <span class="sig-val">
+            {% if s.signal_value is not none %}{{ '%.4g'|format(s.signal_value) }}{% else %}—{% endif %}
+            <span class="badge {{ s.status }}" style="margin-left:6px;">{{ s.status }}</span>
+          </span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <h2>5 KPI plot data</h2>
+  <p class="lead">主要 KPI 5 本の最新値。過去 12 週の svg plot は週次で再生成され、本ページに同梱されます (snapshot 履歴は <code>evolution_dashboard_snapshot</code> テーブルから自動補填)。</p>
+  <div class="kpi-grid">
+    {% for key, series in snap.kpi_plots.items() %}
+    {% set latest = series[-1] %}
+    <div class="kpi-card">
+      <div class="meta"><strong>{{ latest.axis_id }}</strong> &middot; {{ latest.signal_id }}</div>
+      <div class="kpi-val">
+        {% if latest.value is not none %}{{ '%.4g'|format(latest.value) }}{% else %}—{% endif %}
+      </div>
+      <div class="kpi-meta">
+        status: <span class="badge {{ latest.status }}">{{ latest.status }}</span>
+        &middot; week {{ latest.snapshot_date }}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <h2>methodology</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>axis</th>
+        <th>title</th>
+        <th>signals</th>
+        <th>status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for axis in snap.axes %}
+      <tr>
+        <td><strong>{{ axis.id }}</strong></td>
+        <td>{{ axis.title }}</td>
+        <td class="meta">{{ axis.signal_count }} signal</td>
+        <td><span class="badge {{ axis.status }}">{{ axis.status }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <footer>
+    <p>
+      DEEP-42 evolution dashboard / DEEP-26 axis B (transparency = SEO uplift) 整合。
+      生成元: <code>scripts/cron/aggregate_evolution_dashboard.py</code> (LLM API import 0、 paid analytics 0)。
+      schema: <code>{{ snap.schema_version }}</code>。
+      threshold: <code>data/evolution_thresholds.yml</code> (operator が四半期 1 回 review)。
+      公開そのものを moat とする方針です — 詳細は spec
+      <a href="/docs/_internal/DEEP_42_evolution_dashboard.html">DEEP-42</a>
+      / sister <a href="/transparency/production-gate.html">DEEP-58</a> を参照。
+    </p>
+    <p>operator: Bookyou株式会社 (T8010001213708) &middot; product: jpcite</p>
+  </footer>
+</main>
+</body>
+</html>

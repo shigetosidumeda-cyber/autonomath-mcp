@@ -1,0 +1,33 @@
+{
+  "_doc": "DEEP-41 brand mention dashboard - auto-regenerated weekly by .github/workflows/brand-signals-weekly.yml. Spec: tools/offline/_inbox/value_growth_dual/_deep_plan/DEEP_41_brand_mention_dashboard.md. Root KPI: self_vs_other_ratio.organic_self_walking == true (= other_count > self_count).",
+  "_schema_version": "1.0",
+  "generated_at": "2026-05-07T00:00:00+00:00",
+  "source_counts": {
+    "github": 0,
+    "pypi": 0,
+    "npm": 0,
+    "zenn": 0,
+    "qiita": 0,
+    "x": 0,
+    "hn": 0,
+    "lobsters": 0,
+    "industry_journal": 0,
+    "industry_assoc": 0
+  },
+  "self_vs_other_ratio": {
+    "self_count": 0,
+    "other_count": 0,
+    "ratio_other_per_self": null,
+    "organic_self_walking": false
+  },
+  "top_mentioner_monthly": [],
+  "sentiment_proxy": {
+    "positive_kw_count": 0,
+    "negative_kw_count": 0,
+    "kw_lists": {
+      "positive": ["便利", "正確", "推奨", "useful", "accurate"],
+      "negative": ["誤情報", "商標衝突", "disclaimer不備", "怪しい", "wrong"]
+    }
+  },
+  "monthly_trend": []
+}

@@ -1,0 +1,67 @@
+{
+  "_doc": "jpcite official self-account allowlist for DEEP-41 brand mention dashboard. Used by scripts/cron/scrape_brand_signals.py to auto-classify mention_kind = 'self' vs 'other'. ANY entry here is treated as self mention; rest is other. Add / remove via PR review only - never auto-edit. Operator: Bookyou株式会社 (T8010001213708).",
+  "_generated_at": "2026-05-07",
+  "_spec": "tools/offline/_inbox/value_growth_dual/_deep_plan/DEEP_41_brand_mention_dashboard.md",
+  "_root_kpi": "self_count < other_count → organic_self_walking = true",
+  "github": [
+    "bookyou",
+    "umeda-shigetoshi",
+    "umeda_shigetoshi",
+    "shigetoshi-umeda",
+    "jpcite",
+    "jpcite-bot"
+  ],
+  "pypi": [
+    "bookyou",
+    "umeda-shigetoshi",
+    "jpcite"
+  ],
+  "npm": [
+    "bookyou",
+    "@jpcite",
+    "jpcite"
+  ],
+  "zenn": [
+    "umeda_shigetoshi",
+    "shigetoshi_umeda",
+    "bookyou",
+    "jpcite"
+  ],
+  "qiita": [
+    "umeda_shigetoshi",
+    "shigetoshi_umeda",
+    "bookyou",
+    "jpcite"
+  ],
+  "x": [
+    "umeda_shigetoshi",
+    "shigetoshi_umeda",
+    "bookyou_official",
+    "jpcite",
+    "jpcite_official"
+  ],
+  "hn": [
+    "umeda_shigetoshi",
+    "shigetoshi_umeda",
+    "bookyou",
+    "jpcite"
+  ],
+  "lobsters": [
+    "umeda_shigetoshi",
+    "bookyou",
+    "jpcite"
+  ],
+  "industry_journal": [
+    "Bookyou株式会社",
+    "梅田茂利",
+    "info@bookyou.net"
+  ],
+  "industry_assoc": [
+    "Bookyou株式会社",
+    "梅田茂利"
+  ],
+  "email_domains": [
+    "bookyou.net",
+    "jpcite.com"
+  ]
+}

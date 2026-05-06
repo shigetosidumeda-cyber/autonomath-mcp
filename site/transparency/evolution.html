@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>jpcite evolution dashboard (DEEP-42)</title>
+  <meta name="robots" content="index,follow">
+  <meta name="description" content="jpcite v0.3.4 evolution dashboard. 12 axis × 数十 signal の moat 健全性を毎週火 12:00 JST に更新します。">
+  <link rel="canonical" href="https://jpcite.com/transparency/evolution.html">
+  <style>
+    :root {
+      --c-bg:#0d1117;--c-card:#161b22;--c-fg:#e6edf3;--c-muted:#8b949e;
+      --c-border:#30363d;
+      --c-broken:#f85149;--c-degraded:#d29922;--c-healthy:#3fb950;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; padding:0; font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif; background:var(--c-bg); color:var(--c-fg); line-height:1.55; }
+    main { max-width:1080px; margin:0 auto; padding:32px 20px 96px; }
+    h1 { font-size:1.65rem; margin:0 0 6px; }
+    h2 { font-size:1.15rem; margin:32px 0 12px; border-bottom:1px solid var(--c-border); padding-bottom:6px; }
+    p.lead { color:var(--c-muted); margin:0 0 24px; }
+    .meta { font-size:0.85rem; color:var(--c-muted); }
+    .meta code { background:var(--c-card); padding:2px 6px; border-radius:4px; }
+    .axis-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
+    .card { background:var(--c-card); border:1px solid var(--c-border); border-radius:8px; padding:14px 16px; }
+    .badge { display:inline-block; padding:3px 10px; border-radius:12px; font-size:0.75rem; font-weight:600; letter-spacing:0.05em; }
+    .badge.broken   { background:var(--c-broken);   color:#fff; }
+    .badge.degraded { background:var(--c-degraded); color:#000; }
+    .badge.healthy  { background:var(--c-healthy);  color:#000; }
+    a { color:#58a6ff; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    footer { margin-top:48px; padding-top:18px; border-top:1px solid var(--c-border); font-size:0.8rem; color:var(--c-muted); }
+  </style>
+</head>
+<body>
+<main>
+  <h1>jpcite evolution dashboard</h1>
+  <p class="lead">jpcite v0.3.4 evolution moat ダッシュボード。12 axis (IA-01..12) × 数十 signal を毎週火 12:00 JST に更新します。</p>
+  <p class="meta">本ページは weekly aggregator (DEEP-42) によって自動再生成されます。初期 deploy 時点の placeholder。</p>
+
+  <h2>12 axis status (placeholder)</h2>
+  <div class="axis-grid">
+    <div class="card"><strong>IA-01</strong> <span class="badge healthy">healthy</span><p class="meta">新 1 次資料 (primary corpus growth)</p></div>
+    <div class="card"><strong>IA-02</strong> <span class="badge degraded">degraded</span><p class="meta">customer feedback (usage envelope)</p></div>
+    <div class="card"><strong>IA-03</strong> <span class="badge degraded">degraded</span><p class="meta">competitor intel (claude.ai / Perplexity sample)</p></div>
+    <div class="card"><strong>IA-04</strong> <span class="badge degraded">degraded</span><p class="meta">regulatory early detect</p></div>
+    <div class="card"><strong>IA-05</strong> <span class="badge degraded">degraded</span><p class="meta">academic citation</p></div>
+    <div class="card"><strong>IA-06</strong> <span class="badge degraded">degraded</span><p class="meta">tech perf (p95 / cold-start / cron success)</p></div>
+    <div class="card"><strong>IA-07</strong> <span class="badge degraded">degraded</span><p class="meta">OSS ecosystem (PyPI / npm / MCP registry)</p></div>
+    <div class="card"><strong>IA-08</strong> <span class="badge degraded">degraded</span><p class="meta">cohort behavior (industry journal mention)</p></div>
+    <div class="card"><strong>IA-09</strong> <span class="badge degraded">degraded</span><p class="meta">SEO (GSC + AI crawler UA)</p></div>
+    <div class="card"><strong>IA-10</strong> <span class="badge degraded">degraded</span><p class="meta">moat verify (V_cobb_douglas / λ_max / cascade_q)</p></div>
+    <div class="card"><strong>IA-11</strong> <span class="badge degraded">degraded</span><p class="meta">financial (MAPC / ARPU / net margin)</p></div>
+    <div class="card"><strong>IA-12</strong> <span class="badge degraded">degraded</span><p class="meta">brand (自発 vs 他発 mention ratio)</p></div>
+  </div>
+
+  <footer>
+    <p>
+      DEEP-42 evolution dashboard / DEEP-26 axis B (transparency = SEO uplift) 整合。
+      生成元: <code>scripts/cron/aggregate_evolution_dashboard.py</code> (LLM API import 0、 paid analytics 0)。
+      jinja2 template: <code>scripts/templates/evolution.html.j2</code>。
+    </p>
+    <p>operator: Bookyou株式会社 (T8010001213708) &middot; product: jpcite</p>
+  </footer>
+</main>
+</body>
+</html>

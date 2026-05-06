@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brand health transparency | jpcite</title>
+<meta name="description" content="jpcite brand mention dashboard. 10 organic signal sources, self vs other mention ratio, monthly trend. NO LLM, NO paid intel SaaS. Updated weekly.">
+<link rel="canonical" href="https://jpcite.com/transparency/brand-health">
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;max-width:880px;margin:2em auto;padding:0 1em;color:#222;line-height:1.6}
+h1{border-bottom:2px solid #333;padding-bottom:.3em}
+h2{margin-top:2em;border-left:4px solid #555;padding-left:.5em}
+table{border-collapse:collapse;width:100%;margin:1em 0}
+th,td{border:1px solid #ccc;padding:.4em .8em;text-align:left}
+th{background:#f6f6f6}
+.kpi-walking-yes{color:#0a0;font-weight:bold}
+.kpi-walking-no{color:#a00;font-weight:bold}
+.bar-self{fill:#888}
+.bar-other{fill:#3a7}
+.note{color:#666;font-size:.9em;margin-top:2em;border-top:1px solid #ddd;padding-top:1em}
+.disclaimer{background:#fffbe6;border:1px solid #e6d27f;padding:.75em 1em;margin:1em 0;font-size:.95em}
+</style>
+</head>
+<body>
+
+<h1>Brand health transparency</h1>
+
+<p>このページは jpcite (Bookyou株式会社, T8010001213708) のブランド mention を 10 個の organic signal source から weekly に集約したダッシュボードである。<strong>「自発 mention &lt; 他発 mention」</strong> 1 本の root KPI で organic 自走を判定する。</p>
+
+<div class="disclaimer">
+<strong>方針:</strong> LLM 呼出 0 / paid intel SaaS (Crayon / Klue / Brandwatch) 不使用 / 商標出願 不使用 / 公開 API + organic only。 mentioner は anonymized hash を default 表示、 opt-in で実 handle 表示する。
+</div>
+
+<h2>1. Root KPI: self vs other</h2>
+
+<p>下表の <code>organic_self_walking</code> が <code>true</code> の週は organic に他者が言及している = brand 自走中の indicator。</p>
+
+<table>
+<thead><tr><th>indicator</th><th>value</th></tr></thead>
+<tbody>
+<tr><td>self_count (自発)</td><td id="self-count">-</td></tr>
+<tr><td>other_count (他発)</td><td id="other-count">-</td></tr>
+<tr><td>ratio_other_per_self</td><td id="ratio">-</td></tr>
+<tr><td>organic_self_walking</td><td id="walking">-</td></tr>
+</tbody>
+</table>
+
+<h2>2. 10 source 別 mention 数</h2>
+
+<svg id="source-bars" width="100%" height="280" viewBox="0 0 800 280" preserveAspectRatio="xMidYMid meet" role="img" aria-label="10 source 別 mention 数 bar chart"></svg>
+
+<table id="source-table">
+<thead><tr><th>source</th><th>self</th><th>other</th><th>合計</th><th>最新</th></tr></thead>
+<tbody></tbody>
+</table>
+
+<h2>3. 月次 trend</h2>
+
+<svg id="monthly-trend" width="100%" height="240" viewBox="0 0 800 240" preserveAspectRatio="xMidYMid meet" role="img" aria-label="月次 self vs other trend"></svg>
+
+<h2>4. Top mentioner (anonymized hash)</h2>
+
+<p>opt-in で実 handle を表示する仕組み。 default は handle の SHA-256 prefix 12 char。</p>
+
+<table id="top-table">
+<thead><tr><th>rank</th><th>anon_hash</th><th>count</th><th>sources</th></tr></thead>
+<tbody></tbody>
+</table>
+
+<h2>5. sentiment proxy (keyword count のみ)</h2>
+
+<p>主観 ranking しない。 positive / negative の keyword count のみを晒す。</p>
+
+<table id="sentiment-table">
+<thead><tr><th>type</th><th>count</th><th>keywords</th></tr></thead>
+<tbody></tbody>
+</table>
+
+<div class="note">
+<p>更新: 毎週月曜 06:00 JST (UTC 月曜 21:00) — <code>.github/workflows/brand-signals-weekly.yml</code><br>
+Schema: <code>analytics/brand_community_dashboard.json</code> v1.0<br>
+Spec: <code>tools/offline/_inbox/value_growth_dual/_deep_plan/DEEP_41_brand_mention_dashboard.md</code><br>
+Operator: Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708) — <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+</div>
+
+<script>
+(async () => {
+  const r = await fetch("/transparency/brand_community_dashboard.json", {cache: "no-cache"})
+                .catch(() => null);
+  if (!r || !r.ok) return;
+  const d = await r.json();
+  const k = d.self_vs_other_ratio || {};
+  document.getElementById("self-count").textContent = k.self_count ?? "-";
+  document.getElementById("other-count").textContent = k.other_count ?? "-";
+  document.getElementById("ratio").textContent = (k.ratio_other_per_self == null ? "-" : k.ratio_other_per_self.toFixed(2));
+  const w = document.getElementById("walking");
+  w.textContent = k.organic_self_walking ? "true (organic 自走)" : "false (まだ自発が多い)";
+  w.className = k.organic_self_walking ? "kpi-walking-yes" : "kpi-walking-no";
+  // Source bar chart inline svg
+  const sc = d.source_counts || {};
+  const srcs = Object.keys(sc);
+  const max = Math.max(1, ...Object.values(sc));
+  const svg = document.getElementById("source-bars");
+  const w0 = 800, barW = w0 / Math.max(1, srcs.length);
+  let html = "";
+  srcs.forEach((s, i) => {
+    const h = (sc[s] / max) * 220;
+    const x = i * barW + 4;
+    const y = 240 - h;
+    html += `<rect x="${x}" y="${y}" width="${barW - 8}" height="${h}" class="bar-self"/>`;
+    html += `<text x="${x + barW/2 - 4}" y="265" font-size="11" text-anchor="middle">${s}</text>`;
+    html += `<text x="${x + barW/2 - 4}" y="${y - 4}" font-size="11" text-anchor="middle">${sc[s]}</text>`;
+  });
+  svg.innerHTML = html;
+})();
+</script>
+
+</body>
+</html>

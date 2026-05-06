@@ -1,0 +1,137 @@
+name: evolution-dashboard-weekly
+
+# DEEP-42 12 axis evolution dashboard aggregator (jpcite v0.3.4).
+# Runs weekly on Tuesday 03:00 UTC (= JST Tue 12:00) so that Monday-night
+# axis cron (DEEP-36 ODE / DEEP-39 国会会議録 / DEEP-40 業界誌 / DEEP-41 brand
+# mention etc.) have completed before aggregation reads their tables/JSONs.
+# - Aggregates 12 axis × N signal status (healthy / degraded / broken)
+# - Emits analytics/evolution_dashboard_<YYYY-WW>.json
+# - Renders site/transparency/evolution.html (jinja2 template, 12 axis badge + 5 KPI plots)
+# - Auto-deploys static page to Cloudflare Pages
+# - On failure: SES email alert + GitHub issue auto-open
+# - LLM API import is FORBIDDEN; aggregator is stdlib + jinja2 + sqlite3 only.
+
+on:
+  schedule:
+    - cron: '0 3 * * 2'   # weekly Tue 03:00 UTC == 12:00 JST
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Manual run reason (audit trail)'
+        required: false
+        default: 'manual'
+      week:
+        description: 'ISO week YYYY-Www (default: current)'
+        required: false
+        default: 'current'
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: evolution-dashboard-weekly
+  cancel-in-progress: false
+
+jobs:
+  aggregate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      TZ: Asia/Tokyo
+      JPINTEL_DB_PATH: data/jpintel.db
+      AUTONOMATH_DB_PATH: autonomath.db
+      DEEP42_OUT_DIR: analytics
+    steps:
+      - name: Checkout (full history for git sha)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install runtime deps (jinja2 + pyyaml only)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install jinja2 pyyaml
+
+      - name: Verify no LLM API import in aggregator
+        run: |
+          ! grep -E "^[[:space:]]*(import|from)[[:space:]]+(anthropic|openai|google\.generativeai|claude_agent_sdk)" \
+            scripts/cron/aggregate_evolution_dashboard.py
+          ! grep -E "(ANTHROPIC_API_KEY|OPENAI_API_KEY|GEMINI_API_KEY|GOOGLE_API_KEY)" \
+            scripts/cron/aggregate_evolution_dashboard.py
+
+      - name: Aggregate evolution dashboard
+        id: aggregate
+        run: |
+          WEEK="${{ github.event.inputs.week || 'current' }}"
+          mkdir -p analytics site/transparency
+          python scripts/cron/aggregate_evolution_dashboard.py \
+            --week "$WEEK" \
+            --jpintel-db "$JPINTEL_DB_PATH" \
+            --autonomath-db "$AUTONOMATH_DB_PATH" \
+            --analytics-dir analytics \
+            --threshold-yml data/evolution_thresholds.yml \
+            --template-dir scripts/templates \
+            --html-out site/transparency/evolution.html \
+            --verbose
+          # capture week label for artifact name
+          LABEL=$(python -c "import datetime as d; iso=d.date.today().isocalendar(); print(f'{iso.year}-W{iso.week:02d}')")
+          echo "snapshot_week=${LABEL}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload snapshot artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: evolution-dashboard-${{ steps.aggregate.outputs.snapshot_week }}
+          path: |
+            analytics/evolution_dashboard_*.json
+            site/transparency/evolution.html
+          retention-days: 90
+
+      - name: Deploy to Cloudflare Pages
+        if: ${{ env.CLOUDFLARE_API_TOKEN != '' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: jpcite-site
+          directory: site
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
+
+  on-failure:
+    needs: aggregate
+    if: failure()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Configure AWS for SES
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-1
+      - name: SES email alert
+        run: |
+          aws ses send-email \
+            --from "ops@jpcite.com" \
+            --destination "ToAddresses=info@bookyou.net" \
+            --message "Subject={Data=DEEP-42 evolution dashboard aggregator FAILED},Body={Text={Data=run=${{ github.run_id }} sha=${{ github.sha }} - investigate logs.}}"
+      - name: Open follow-up GitHub issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `DEEP-42 evolution dashboard aggregator failed (${context.runId})`,
+              body: `Weekly aggregator run failed.\n\nrun: ${context.runId}\nsha: ${context.sha}\n\nSee \`scripts/cron/aggregate_evolution_dashboard.py\` and DEEP-42 spec.`,
+              labels: ['deep-42', 'cron-failure', 'evolution-dashboard'],
+            });

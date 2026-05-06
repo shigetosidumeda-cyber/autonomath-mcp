@@ -36,6 +36,7 @@ from . import (
     graph_traverse_tool,  # noqa: F401  — O7 Wave 18: graph_traverse (heterogeneous 1-3 hop KG walk over v_am_relation_all, AUTONOMATH_GRAPH_TRAVERSE_ENABLED gate)
     health_tool,  # noqa: F401  — Phase A: deep_health_am (10-check aggregate)
     industry_packs,  # noqa: F401  — Wave 23 (2026-04-29): 3 industry-specific cohort wrappers (pack_construction / pack_manufacturing / pack_real_estate). Top 10 programs + 5 saiketsu + 3 通達 per call. AUTONOMATH_INDUSTRY_PACKS_ENABLED gate (default ON). NO LLM, single ¥3/req billing event. §52/§47条の2 envelope.
+    kokkai_tools,  # noqa: F401  — DEEP-39 (2026-05-07): 2 kokkai/shingikai surface tools (search_kokkai_utterance / search_shingikai_minutes) over kokkai_utterance + shingikai_minutes (migration wave24_185). AUTONOMATH_KOKKAI_ENABLED gate (default ON). NO LLM, single ¥3/req billing. §52/§47条の2/§72/§3 envelope.
     lifecycle_calendar_tool,  # noqa: F401  — O4 Wave 18: unified_lifecycle_calendar (tax+program sunset + app close + law cliff merge, AUTONOMATH_LIFECYCLE_CALENDAR_ENABLED gate)
     lifecycle_tool,  # noqa: F401  — O4 Wave 18: program_lifecycle (8-step deterministic status over am_amendment_snapshot + am_relation, AUTONOMATH_LIFECYCLE_ENABLED gate)
     multilingual_abstract_tool,  # noqa: F401  — R7: program_abstract_structured (closed-vocab JA-only abstract; customer LLM translates)
@@ -44,6 +45,7 @@ from . import (
     provenance_tools,  # noqa: F401  — V4 Phase 4: get_provenance + get_provenance_for_fact (am_source.license, migration 049)
     recommend_similar,  # noqa: F401  — 2026-05-05: 3 vector k-NN recommend tools (recommend_similar_program / _case / _court_decision) over am_entities_vec_S/C/J post 91% embedding backfill. AUTONOMATH_RECOMMEND_SIMILAR_ENABLED gate (default ON). 行政書士法 §1 / 弁護士法 §72 / 税理士法 §52 envelope on all 3.
     rule_engine_tool,  # noqa: F401  — R9 unified rule_engine_check (am_unified_rule view, migration 064)
+    shihoshoshi_tools,  # noqa: F401  — DEEP-30 (2026-05-07): 司法書士 cohort dedicated DD pack (shihoshoshi_dd_pack_am). Compounds wave22 cross_check_jurisdiction + corporate_layer get_houjin_360_am + check_enforcement_am into 1 ¥3/req call. AUTONOMATH_SHIHOSHOSHI_PACK_ENABLED gate (default ON). §3 fence (司法書士独占業務) + §52/§72/§1 disclaimer envelope. NO LLM.
     snapshot_tool,  # noqa: F401  — R8: query_at_snapshot (dataset versioning, migration 067)
     source_manifest_tools,  # noqa: F401  — 2026-04-30: get_source_manifest (api/source_manifest.py companion). Per-program provenance rollup.
     static_resources_tool,  # noqa: F401  — Phase A: 4 tools (list/get static resources + example profiles)

@@ -130,6 +130,16 @@ class Settings(BaseSettings):
     autonomath_industry_packs_enabled: bool = Field(
         default=True, alias="AUTONOMATH_INDUSTRY_PACKS_ENABLED"
     )
+    # DEEP-30 司法書士 cohort dedicated DD pack (1 MCP surface):
+    # `shihoshoshi_dd_pack_am`. Compounds Wave 22 cross_check_jurisdiction +
+    # corporate_layer get_houjin_360_am + check_enforcement_am into a single
+    # ¥3/req call. Pure SQLite + Python, NO LLM, every response carries
+    # `_next_calls` + `corpus_snapshot_id` + `corpus_checksum` + `_disclaimer`
+    # carrying §3 (司法書士法) + §52 (税理士法) + §72 (弁護士法) + §1
+    # (行政書士法) fence text. Default True. Same rollback semantics as wave22.
+    autonomath_shihoshoshi_pack_enabled: bool = Field(
+        default=True, alias="AUTONOMATH_SHIHOSHOSHI_PACK_ENABLED"
+    )
     # Prompt-injection guard layered on top of INV-22 (景表法) sanitizer.
     # Strips override directives ("ignore previous instructions",
     # `<|im_start|>`, "DAN mode", etc.) from every JSON str leaf on the

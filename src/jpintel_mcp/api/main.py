@@ -58,6 +58,7 @@ from jpintel_mcp.api.citations import router as citations_router
 from jpintel_mcp.api.client_profiles import router as client_profiles_router
 from jpintel_mcp.api.compliance import router as compliance_router
 from jpintel_mcp.api.confidence import router as confidence_router
+from jpintel_mcp.api.contribute import router as contribute_router
 from jpintel_mcp.api.cost import router as cost_router
 from jpintel_mcp.api.courses import router as courses_router
 from jpintel_mcp.api.court_decisions import router as court_decisions_router
@@ -131,6 +132,7 @@ from jpintel_mcp.api.time_machine import router as time_machine_router
 from jpintel_mcp.api.transparency import router as transparency_router
 from jpintel_mcp.api.trust import router as trust_router
 from jpintel_mcp.api.usage import router as usage_router
+from jpintel_mcp.api.citation_badge import router as citation_badge_router
 from jpintel_mcp.api.verify import router as verify_router
 from jpintel_mcp.api.widget_auth import router as widget_router
 from jpintel_mcp.config import settings
@@ -333,7 +335,7 @@ def _assert_production_secrets() -> None:
       * CLOUDFLARE_TURNSTILE_SECRET empty while APPI intake is enabled →
         SystemExit("[BOOT FAIL] CLOUDFLARE_TURNSTILE_SECRET ...").
       * STRIPE_WEBHOOK_SECRET empty → SystemExit("[BOOT FAIL] STRIPE_WEBHOOK_SECRET ...").
-      * STRIPE_SECRET_KEY empty → SystemExit("[BOOT FAIL] STRIPE_SECRET_KEY ...").
+      * STRIPE_SECRET_KEY empty/test-mode → SystemExit("[BOOT FAIL] STRIPE_SECRET_KEY ...").
 
     The function reads from the live `settings` module so tests can
     reload+rebind it via `monkeypatch.setattr(main, "settings", ...)`.
@@ -387,8 +389,13 @@ def _assert_production_secrets() -> None:
     if not (getattr(settings, "stripe_webhook_secret", "") or "").strip():
         raise SystemExit("[BOOT FAIL] STRIPE_WEBHOOK_SECRET must be set in production.")
 
-    if not (getattr(settings, "stripe_secret_key", "") or "").strip():
+    stripe_secret_key = (getattr(settings, "stripe_secret_key", "") or "").strip()
+    if not stripe_secret_key:
         raise SystemExit("[BOOT FAIL] STRIPE_SECRET_KEY must be set in production.")
+    if not stripe_secret_key.startswith(("sk_live_", "rk_live_")):
+        raise SystemExit(
+            "[BOOT FAIL] STRIPE_SECRET_KEY must be a live-mode Stripe key in production."
+        )
 
 
 def _init_sentry() -> None:
@@ -1758,6 +1765,13 @@ def create_app() -> FastAPI:
     # 4-axis weighted score (sources_match + sources_alive + corpus_present
     # + boundary_clean), claim_count cap = 5, ¥3/req, LLM call 0.
     app.include_router(verify_router, dependencies=[AnonIpLimitDep])
+    # /widget/badge.svg + /citation/{request_id} — DEEP-27 jpcite verified
+    # badge widget (CL-08). 4 SVG states (verified / expired / invalid /
+    # boundary_warn) backed by `citation_log` (mig wave24_183) + static
+    # MD render. NO LLM call. NO AnonIpLimitDep — the badge MUST render
+    # on every customer-page hit, otherwise the trust signal breaks; the
+    # Cloudflare Worker layer handles per-IP rate limiting at 60 req/min.
+    app.include_router(citation_badge_router)
     # /v1/cost/preview — Evidence Pre-fetch Layer estimator (no LLM).
     # Free/non-metered estimator: it has its own short per-IP throttle and
     # must not burn the anonymous 3/day discovery allowance.
@@ -1988,6 +2002,13 @@ def create_app() -> FastAPI:
     # 3 req/日 IP quota.
     app.include_router(dashboard_router)
     app.include_router(feedback_router)
+    # DEEP-28 + DEEP-31 customer contribution. Anonymous-accepting (no
+    # API key required); rate-limited per-IP 5 / 24h inside the handler
+    # PLUS the AnonIpLimitDep daily 3 cap. Server-side scrubber rejects
+    # PII (マイナンバー / phone / email), aggregator URLs (INV-04 banlist),
+    # and program_id mismatches. Writes to autonomath.db
+    # contribution_queue (migration wave24_184).
+    app.include_router(contribute_router, dependencies=[AnonIpLimitDep])
     # APPI §31 個人情報開示請求 intake. Anonymous-accessible (a data subject
     # may not be a paid customer); the route itself never emits personal
     # data — it only mints a request_id and notifies the operator. Gated

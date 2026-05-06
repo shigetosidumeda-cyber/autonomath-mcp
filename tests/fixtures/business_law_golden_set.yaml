@@ -1,0 +1,151 @@
+# DEEP-63 業法 fence test corpus — 100 sample golden set.
+#
+# 50 violation + 50 clean, per-業法 7 軸 coverage (each law: 7 violation + 7 clean
+# samples for the 7 main laws + 1 spare violation slot for general filler).
+#
+# Schema per sample:
+#   id:                 unique slug
+#   text:               fence-touching or clean text (NFKC-canonical form)
+#   expected_violation: bool
+#   laws:               []  (empty when expected_violation=false)
+#   forbidden_phrases:  canonical phrases expected to match (when violation)
+#   cohort:             industry cohort hint (free text, optional)
+#
+# Phrases sourced from data/business_law_forbidden_phrases.json (DEEP-23
+# OSS spec). Clean samples reuse the SAME 業法 territory but render the
+# query as a routing-required disclaimer-first variant per
+# 09_B_PUBLIC_CLAIM_GUARD.md.
+#
+# Calibration target: TP > 95% (>= 48/50) / FP < 5% (<= 2/50). LLM 0.
+
+# ---------------------------------------------------------------------------
+# 税理士法 §52 — 7 violation + 7 clean
+# ---------------------------------------------------------------------------
+- {id: violation_zei_01, text: "確実な税額をお伝えします。", expected_violation: true, laws: ["税理士法"], forbidden_phrases: ["確実な税額"], cohort: "税理士事務所"}
+- {id: violation_zei_02, text: "当社が税務代理を行いますのでご安心を。", expected_violation: true, laws: ["税理士法"], forbidden_phrases: ["税務代理を行います"], cohort: "税理士事務所"}
+- {id: violation_zei_03, text: "申告代行しますのでお任せください。", expected_violation: true, laws: ["税理士法"], forbidden_phrases: ["申告代行します"], cohort: "税理士事務所"}
+- {id: violation_zei_04, text: "税務調査対応の専門家チームです。", expected_violation: true, laws: ["税理士法"], forbidden_phrases: ["税務調査対応"], cohort: "税理士事務所"}
+- {id: violation_zei_05, text: "あなたの税額は1,200,000円です。", expected_violation: true, laws: ["税理士法"], forbidden_phrases: ["あなたの税額は"], cohort: "税理士事務所"}
+- {id: violation_zei_06, text: "税理士業務を提供しております。", expected_violation: true, laws: ["税理士法"], forbidden_phrases: ["税理士業務を提供"], cohort: "税理士事務所"}
+- {id: violation_zei_07, text: "税務署対応しますのでお任せを。", expected_violation: true, laws: ["税理士法"], forbidden_phrases: ["税務署対応します"], cohort: "税理士事務所"}
+- {id: clean_zei_01, text: "税額計算の参考情報を提示します。最終的な税務判断は税理士へ相談してください。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "税理士事務所"}
+- {id: clean_zei_02, text: "研究開発税制 措置法42-4 の概要 (e-Gov 一次引用) をご案内します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "税理士事務所"}
+- {id: clean_zei_03, text: "過去3年の採択事例を件数のみで提示します。個別の判断は有資格者にご相談ください。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "税理士事務所"}
+- {id: clean_zei_04, text: "本制度の概要は中小企業庁の公募要領に記載されています。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "税理士事務所"}
+- {id: clean_zei_05, text: "税制適用の可否は、税理士へ相談のうえご判断ください。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "税理士事務所"}
+- {id: clean_zei_06, text: "対象経費の参考リストを生成します。実際の経費区分の最終判断は専門家へ。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "税理士事務所"}
+- {id: clean_zei_07, text: "措置法42-4の条文を一次資料からご案内します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "税理士事務所"}
+
+# ---------------------------------------------------------------------------
+# 弁護士法 §72 — 7 violation + 7 clean
+# ---------------------------------------------------------------------------
+- {id: violation_ben_01, text: "示談交渉しますのでご安心ください。", expected_violation: true, laws: ["弁護士法"], forbidden_phrases: ["示談交渉します"], cohort: "法律事務所"}
+- {id: violation_ben_02, text: "あなたは勝てますと断言します。", expected_violation: true, laws: ["弁護士法"], forbidden_phrases: ["あなたは勝てます"], cohort: "法律事務所"}
+- {id: violation_ben_03, text: "裁判所対応も当社にお任せください。", expected_violation: true, laws: ["弁護士法"], forbidden_phrases: ["裁判所対応"], cohort: "法律事務所"}
+- {id: violation_ben_04, text: "訴訟代理を承ります。", expected_violation: true, laws: ["弁護士法"], forbidden_phrases: ["訴訟代理"], cohort: "法律事務所"}
+- {id: violation_ben_05, text: "法律相談に応じております。", expected_violation: true, laws: ["弁護士法"], forbidden_phrases: ["法律相談"], cohort: "法律事務所"}
+- {id: violation_ben_06, text: "弁護士業務を当社で提供しています。", expected_violation: true, laws: ["弁護士法"], forbidden_phrases: ["弁護士業務"], cohort: "法律事務所"}
+- {id: violation_ben_07, text: "あなたの権利は十分主張できます。", expected_violation: true, laws: ["弁護士法"], forbidden_phrases: ["あなたの権利は"], cohort: "法律事務所"}
+- {id: clean_ben_01, text: "過去判例の検索結果を提示します。最終的なご判断は弁護士へご相談ください。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "法律事務所"}
+- {id: clean_ben_02, text: "判例データベースから関連事例を抽出します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "法律事務所"}
+- {id: clean_ben_03, text: "条文の参照リンクを提示します。最終判断は有資格者へ。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "法律事務所"}
+- {id: clean_ben_04, text: "本サービスは法律事務の代理を行いません。情報提供のみです。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "法律事務所"}
+- {id: clean_ben_05, text: "関連法令の概要を一次資料から案内します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "法律事務所"}
+- {id: clean_ben_06, text: "事例検索の結果は判例集の出典リンク付きで提示します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "法律事務所"}
+- {id: clean_ben_07, text: "本制度の対象範囲を客観的事実として提示します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "法律事務所"}
+
+# ---------------------------------------------------------------------------
+# 行政書士法 §1 — 7 violation + 7 clean
+# ---------------------------------------------------------------------------
+- {id: violation_gyo_01, text: "許認可申請代行を承ります。", expected_violation: true, laws: ["行政書士法"], forbidden_phrases: ["許認可申請代行"], cohort: "行政書士事務所"}
+- {id: violation_gyo_02, text: "補助金申請代行はお任せください。", expected_violation: true, laws: ["行政書士法"], forbidden_phrases: ["補助金申請代行"], cohort: "行政書士事務所"}
+- {id: violation_gyo_03, text: "官公署提出代行を行います。", expected_violation: true, laws: ["行政書士法"], forbidden_phrases: ["官公署提出代行"], cohort: "行政書士事務所"}
+- {id: violation_gyo_04, text: "申請書作成代行いたします。", expected_violation: true, laws: ["行政書士法"], forbidden_phrases: ["申請書作成代行"], cohort: "行政書士事務所"}
+- {id: violation_gyo_05, text: "建設業許可代行を承ります。", expected_violation: true, laws: ["行政書士法"], forbidden_phrases: ["建設業許可代行"], cohort: "行政書士事務所"}
+- {id: violation_gyo_06, text: "営業許可申請代行サービスを実施。", expected_violation: true, laws: ["行政書士法"], forbidden_phrases: ["営業許可申請代行"], cohort: "行政書士事務所"}
+- {id: violation_gyo_07, text: "行政書士業務を提供します。", expected_violation: true, laws: ["行政書士法"], forbidden_phrases: ["行政書士業務"], cohort: "行政書士事務所"}
+- {id: clean_gyo_01, text: "申請書類の必要項目チェックリストを生成します。提出代行は行政書士へ依頼してください。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "行政書士事務所"}
+- {id: clean_gyo_02, text: "公募要領の必要書類項目を整理してお見せします。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "行政書士事務所"}
+- {id: clean_gyo_03, text: "事業計画書のフォーマット入手先をご案内します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "行政書士事務所"}
+- {id: clean_gyo_04, text: "申請に必要な添付書類のリストを参考情報として提示します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "行政書士事務所"}
+- {id: clean_gyo_05, text: "本制度の応募要項を中小企業庁公式サイトからご案内します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "行政書士事務所"}
+- {id: clean_gyo_06, text: "添付書類の見本入手先をご案内します。実際の作成は有資格者へ。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "行政書士事務所"}
+- {id: clean_gyo_07, text: "公募要領のチェック項目を整理してご提供します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "行政書士事務所"}
+
+# ---------------------------------------------------------------------------
+# 司法書士法 §3 — 7 violation + 7 clean
+# ---------------------------------------------------------------------------
+- {id: violation_shi_01, text: "登記申請代行を行います。", expected_violation: true, laws: ["司法書士法"], forbidden_phrases: ["登記申請代行"], cohort: "司法書士事務所"}
+- {id: violation_shi_02, text: "商業登記代行を提供しています。", expected_violation: true, laws: ["司法書士法"], forbidden_phrases: ["商業登記代行"], cohort: "司法書士事務所"}
+- {id: violation_shi_03, text: "不動産登記代行サービスを実施。", expected_violation: true, laws: ["司法書士法"], forbidden_phrases: ["不動産登記代行"], cohort: "司法書士事務所"}
+- {id: violation_shi_04, text: "供託代行に対応いたします。", expected_violation: true, laws: ["司法書士法"], forbidden_phrases: ["供託代行"], cohort: "司法書士事務所"}
+- {id: violation_shi_05, text: "140万以下訴訟代理を承ります。", expected_violation: true, laws: ["司法書士法"], forbidden_phrases: ["140万以下訴訟代理"], cohort: "司法書士事務所"}
+- {id: violation_shi_06, text: "司法書士業務を提供しています。", expected_violation: true, laws: ["司法書士法"], forbidden_phrases: ["司法書士業務"], cohort: "司法書士事務所"}
+- {id: violation_shi_07, text: "登記書類作成代行を承ります。", expected_violation: true, laws: ["司法書士法"], forbidden_phrases: ["登記書類作成代行"], cohort: "司法書士事務所"}
+- {id: clean_shi_01, text: "登記簿謄本の取得手続概要を案内します。代行は司法書士へ。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "司法書士事務所"}
+- {id: clean_shi_02, text: "登記情報の確認方法を一次資料からご案内します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "司法書士事務所"}
+- {id: clean_shi_03, text: "供託制度の概要を法務省サイトからご案内します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "司法書士事務所"}
+- {id: clean_shi_04, text: "登記事項の概要を客観的事実として整理して提示します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "司法書士事務所"}
+- {id: clean_shi_05, text: "登記情報提供サービスの利用方法をご案内します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "司法書士事務所"}
+- {id: clean_shi_06, text: "登記原因に関する制度説明は法務省一次資料を参照ください。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "司法書士事務所"}
+- {id: clean_shi_07, text: "登記手続のフロー概要を客観的にご案内します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "司法書士事務所"}
+
+# ---------------------------------------------------------------------------
+# 弁理士法 §75 — 7 violation + 7 clean
+# ---------------------------------------------------------------------------
+- {id: violation_ben2_01, text: "特許出願代行を承ります。", expected_violation: true, laws: ["弁理士法"], forbidden_phrases: ["特許出願代行"], cohort: "特許事務所"}
+- {id: violation_ben2_02, text: "商標出願代行いたします。", expected_violation: true, laws: ["弁理士法"], forbidden_phrases: ["商標出願代行"], cohort: "特許事務所"}
+- {id: violation_ben2_03, text: "特許鑑定を引き受けます。", expected_violation: true, laws: ["弁理士法"], forbidden_phrases: ["特許鑑定"], cohort: "特許事務所"}
+- {id: violation_ben2_04, text: "意匠出願代行サービスを実施。", expected_violation: true, laws: ["弁理士法"], forbidden_phrases: ["意匠出願代行"], cohort: "特許事務所"}
+- {id: violation_ben2_05, text: "弁理士業務を提供します。", expected_violation: true, laws: ["弁理士法"], forbidden_phrases: ["弁理士業務"], cohort: "特許事務所"}
+- {id: violation_ben2_06, text: "実用新案出願代行を承ります。", expected_violation: true, laws: ["弁理士法"], forbidden_phrases: ["実用新案出願代行"], cohort: "特許事務所"}
+- {id: violation_ben2_07, text: "PCT出願代行を承ります。", expected_violation: true, laws: ["弁理士法"], forbidden_phrases: ["PCT出願代行"], cohort: "特許事務所"}
+- {id: clean_ben2_01, text: "J-PlatPat 公開公報の検索結果を提示します。出願は弁理士へ相談してください。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "特許事務所"}
+- {id: clean_ben2_02, text: "公開特許公報の取得方法をご案内します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "特許事務所"}
+- {id: clean_ben2_03, text: "商標公開情報の検索結果を一次資料リンク付きで提示します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "特許事務所"}
+- {id: clean_ben2_04, text: "知的財産制度の概要を特許庁サイトからご案内します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "特許事務所"}
+- {id: clean_ben2_05, text: "特許情報プラットフォームの利用方法をご紹介します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "特許事務所"}
+- {id: clean_ben2_06, text: "出願関連の制度概要を客観的事実として整理して提示します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "特許事務所"}
+- {id: clean_ben2_07, text: "PCT制度の概要を国際出願制度ガイドからご案内します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "特許事務所"}
+
+# ---------------------------------------------------------------------------
+# 社労士法 §27 — 7 violation + 7 clean
+# ---------------------------------------------------------------------------
+- {id: violation_sha_01, text: "36協定作成いたします。", expected_violation: true, laws: ["社労士法"], forbidden_phrases: ["36協定作成"], cohort: "社労士事務所"}
+- {id: violation_sha_02, text: "就業規則作成代行を承ります。", expected_violation: true, laws: ["社労士法"], forbidden_phrases: ["就業規則作成代行"], cohort: "社労士事務所"}
+- {id: violation_sha_03, text: "社会保険手続代行いたします。", expected_violation: true, laws: ["社労士法"], forbidden_phrases: ["社会保険手続代行"], cohort: "社労士事務所"}
+- {id: violation_sha_04, text: "労働基準法助言を提供しています。", expected_violation: true, laws: ["社労士法"], forbidden_phrases: ["労働基準法助言"], cohort: "社労士事務所"}
+- {id: violation_sha_05, text: "雇用保険申請代行を承ります。", expected_violation: true, laws: ["社労士法"], forbidden_phrases: ["雇用保険申請代行"], cohort: "社労士事務所"}
+- {id: violation_sha_06, text: "社労士業務を提供します。", expected_violation: true, laws: ["社労士法"], forbidden_phrases: ["社労士業務"], cohort: "社労士事務所"}
+- {id: violation_sha_07, text: "労働者名簿作成代行を提供します。", expected_violation: true, laws: ["社労士法"], forbidden_phrases: ["労働者名簿作成代行"], cohort: "社労士事務所"}
+- {id: clean_sha_01, text: "36協定の雛形メタデータを提示します。実際の作成は社労士確認後に行ってください。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "社労士事務所"}
+- {id: clean_sha_02, text: "労働関係法令の概要を厚生労働省サイトからご案内します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "社労士事務所"}
+- {id: clean_sha_03, text: "雇用保険制度の概要を一次資料からご案内します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "社労士事務所"}
+- {id: clean_sha_04, text: "労務管理に関する公的ガイドラインの参照先をご案内します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "社労士事務所"}
+- {id: clean_sha_05, text: "本サービスは申請手続の代理を行いません。情報提供のみです。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "社労士事務所"}
+- {id: clean_sha_06, text: "社会保険関連制度の概要を客観的事実として整理して提示します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "社労士事務所"}
+- {id: clean_sha_07, text: "就業規則関連の参考情報を厚生労働省モデル規程の参照付きでご案内します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "社労士事務所"}
+
+# ---------------------------------------------------------------------------
+# 公認会計士法 §47条の2 — 7 violation + 7 clean
+# ---------------------------------------------------------------------------
+- {id: violation_cpa_01, text: "監査証明しますのでお任せください。", expected_violation: true, laws: ["公認会計士法"], forbidden_phrases: ["監査証明します"], cohort: "監査法人"}
+- {id: violation_cpa_02, text: "会計監査しますのでご安心を。", expected_violation: true, laws: ["公認会計士法"], forbidden_phrases: ["会計監査します"], cohort: "監査法人"}
+- {id: violation_cpa_03, text: "内部統制監査を実施いたします。", expected_violation: true, laws: ["公認会計士法"], forbidden_phrases: ["内部統制監査"], cohort: "監査法人"}
+- {id: violation_cpa_04, text: "公認会計士業務を提供します。", expected_violation: true, laws: ["公認会計士法"], forbidden_phrases: ["公認会計士業務"], cohort: "監査法人"}
+- {id: violation_cpa_05, text: "監査意見表明を行います。", expected_violation: true, laws: ["公認会計士法"], forbidden_phrases: ["監査意見表明"], cohort: "監査法人"}
+- {id: violation_cpa_06, text: "財務諸表監査を承ります。", expected_violation: true, laws: ["公認会計士法"], forbidden_phrases: ["財務諸表監査"], cohort: "監査法人"}
+- {id: violation_cpa_07, text: "金商法監査を行います。", expected_violation: true, laws: ["公認会計士法"], forbidden_phrases: ["金商法監査"], cohort: "監査法人"}
+- {id: clean_cpa_01, text: "会計基準の概要をご案内します。実際の判断は有資格者へご相談ください。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "監査法人"}
+- {id: clean_cpa_02, text: "企業会計基準委員会公表資料へのリンクをご案内します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "監査法人"}
+- {id: clean_cpa_03, text: "会計処理の参考情報を整理して提示します。実際の判断は有資格者へ。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "監査法人"}
+- {id: clean_cpa_04, text: "本サービスは監査関連業務を行いません。情報提供のみです。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "監査法人"}
+- {id: clean_cpa_05, text: "会計基準の改訂概要を一次資料からご案内します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "監査法人"}
+- {id: clean_cpa_06, text: "決算開示制度の概要を金融庁公表資料からご案内します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "監査法人"}
+- {id: clean_cpa_07, text: "会計関連制度の概要を客観的事実として整理して提示します。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "監査法人"}
+
+# ---------------------------------------------------------------------------
+# 一般 (no-业法 specific) — 1 violation filler + 1 clean filler = 2 = 50 + 50
+# ---------------------------------------------------------------------------
+- {id: violation_misc_01, text: "採択保証付きで補助金申請を確実にお取りします。", expected_violation: true, laws: ["税理士法"], forbidden_phrases: ["採択保証"], cohort: "中小企業"}
+- {id: clean_misc_01, text: "本補助金は中小企業者が対象です。詳細は公募要領をご確認ください。", expected_violation: false, laws: [], forbidden_phrases: [], cohort: "中小企業"}

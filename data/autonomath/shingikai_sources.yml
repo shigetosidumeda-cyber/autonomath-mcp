@@ -1,0 +1,119 @@
+# DEEP-39 shingikai (審議会) sources config — 12 council 議事録 mirrors.
+#
+# Each council carries:
+#   ministry            display label (内閣府 / 経産省 / etc.)
+#   council             display label (規制改革推進会議 / etc.)
+#   index_url           council's minutes-index page (HTML; sitemap.xml fallback)
+#   pdf_url_pattern     regex (Python re) extracting PDF URLs from index_url
+#   robots_check        true if robots.txt should be honored prior to fetch
+#
+# Operator notes:
+#   * 12 entries below match the DEEP-39 spec §3 list verbatim.
+#   * Each council index_url is the directory page; the cron walks
+#     anchors via re.findall against pdf_url_pattern.
+#   * Per-council try/except in ingest_shingikai_weekly.py — one DOM
+#     change does NOT halt the other 11.
+#   * No LLM imports under any circumstance — cron uses lxml + pdfplumber.
+
+councils:
+  - id: cao_kisei_kaikaku
+    ministry: 内閣府
+    council: 規制改革推進会議
+    index_url: https://www8.cao.go.jp/kisei-kaikaku/kisei/meeting/meeting.html
+    pdf_url_pattern: 'href="([^"]+\.pdf)"'
+    robots_check: true
+
+  - id: meti_sangyo_kozo
+    ministry: 経産省
+    council: 産業構造審議会
+    index_url: https://www.meti.go.jp/shingikai/sankoshin/index.html
+    pdf_url_pattern: 'href="([^"]+\.pdf)"'
+    robots_check: true
+
+  - id: mhlw_rosei_seisaku
+    ministry: 厚労省
+    council: 労働政策審議会
+    index_url: https://www.mhlw.go.jp/stf/shingi/shingi-rousei.html
+    pdf_url_pattern: 'href="([^"]+\.pdf)"'
+    robots_check: true
+
+  - id: mlit_fudosan_toki
+    ministry: 国交省
+    council: 不動産登記部会
+    index_url: https://www.mlit.go.jp/totikensangyo/totikensangyo_tk5_000003.html
+    pdf_url_pattern: 'href="([^"]+\.pdf)"'
+    robots_check: true
+
+  - id: nta_zeisei_chosa
+    ministry: 国税庁
+    council: 税制調査会
+    index_url: https://www.cao.go.jp/zei-cho/gijiroku/zeicho/index.html
+    pdf_url_pattern: 'href="([^"]+\.pdf)"'
+    robots_check: true
+
+  - id: moj_hosei_shingikai
+    ministry: 法務省
+    council: 法制審議会
+    index_url: https://www.moj.go.jp/shingi1/housei_index.html
+    pdf_url_pattern: 'href="([^"]+\.pdf)"'
+    robots_check: true
+
+  - id: zeirishi_shingikai
+    ministry: 国税庁
+    council: 税理士審議会
+    index_url: https://www.nta.go.jp/about/council/zeirishi/index.htm
+    pdf_url_pattern: 'href="([^"]+\.pdf)"'
+    robots_check: true
+
+  - id: koninkaikei_shingikai
+    ministry: 金融庁
+    council: 公認会計士・監査審査会
+    index_url: https://www.fsa.go.jp/cpaaob/shinsakai/index.html
+    pdf_url_pattern: 'href="([^"]+\.pdf)"'
+    robots_check: true
+
+  - id: shihoshoshi_shingikai
+    ministry: 法務省
+    council: 司法書士審議会
+    index_url: https://www.moj.go.jp/MINJI/minji_shoshi.html
+    pdf_url_pattern: 'href="([^"]+\.pdf)"'
+    robots_check: true
+
+  - id: ppc_committee
+    ministry: 個人情報保護委員会
+    council: 個人情報保護委員会
+    index_url: https://www.ppc.go.jp/aboutus/minutes/
+    pdf_url_pattern: 'href="([^"]+\.pdf)"'
+    robots_check: true
+
+  - id: fsa_kinyu_shingikai
+    ministry: 金融庁
+    council: 金融審議会
+    index_url: https://www.fsa.go.jp/singi/singi_kinyu/index.html
+    pdf_url_pattern: 'href="([^"]+\.pdf)"'
+    robots_check: true
+
+  - id: jftc_digital_market
+    ministry: 公正取引委員会
+    council: デジタル市場競争会議
+    index_url: https://www.jftc.go.jp/houdou/pressrelease/index_files.html
+    pdf_url_pattern: 'href="([^"]+\.pdf)"'
+    robots_check: true
+
+# DEEP-39 keyword union, mirrored from ingest_kokkai_weekly.KEYWORDS so the
+# regulatory_signal layer is consistent across both crons.
+keyword_union:
+  - 税理士法
+  - 弁護士法
+  - 行政書士法
+  - 司法書士法
+  - 弁理士法
+  - 社労士法
+  - 公認会計士法
+  - 適格請求書
+  - インボイス
+  - 補助金等適正化法
+  - AI規制
+  - 個人情報保護法
+  - 外為法
+  - デジタル課税
