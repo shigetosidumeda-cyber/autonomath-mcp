@@ -1,0 +1,450 @@
+{
+  "audit_run_at": "2026-05-05T03:47:14.678806+00:00",
+  "scope": {
+    "inbox_root": "/Users/shigetoumeda/jpcite/tools/offline/_inbox",
+    "files_active": 22,
+    "files_archived": 212,
+    "files_done": 1,
+    "files_total": 235,
+    "rows_total": 2434
+  },
+  "audit_1_url_duplicates": {
+    "unique_urls": 2416,
+    "duplicate_urls_count": 11,
+    "duplicate_fetch_extra_rows": 11,
+    "top_dups": [
+      {
+        "url": "https://www.nta.go.jp/law/tsutatsu/kobetsu/kansetsu/040219/01.htm",
+        "count": 2
+      },
+      {
+        "url": "https://www.nta.go.jp/law/tsutatsu/kobetsu/kansetsu/110427/index.htm",
+        "count": 2
+      },
+      {
+        "url": "https://www.nta.go.jp/law/tsutatsu/kobetsu/kansetsu/141027/kaisei.htm",
+        "count": 2
+      },
+      {
+        "url": "https://www.nta.go.jp/law/tsutatsu/kobetsu/kansetsu/070622/01.htm",
+        "count": 2
+      },
+      {
+        "url": "https://www.nta.go.jp/law/tsutatsu/kobetsu/kansetsu/160425/index.htm",
+        "count": 2
+      },
+      {
+        "url": "https://www.nta.go.jp/law/tsutatsu/kobetsu/kansetsu/190222/index.htm",
+        "count": 2
+      },
+      {
+        "url": "https://www.nta.go.jp/law/tsutatsu/kobetsu/kansetsu/130325/index.htm",
+        "count": 2
+      },
+      {
+        "url": "https://www.nta.go.jp/law/tsutatsu/kobetsu/kansetsu/20180606/index.htm",
+        "count": 2
+      },
+      {
+        "url": "https://www.nta.go.jp/law/tsutatsu/kobetsu/kansetsu/160412/index.htm",
+        "count": 2
+      },
+      {
+        "url": "https://www.nta.go.jp/law/tsutatsu/kobetsu/kansetsu/1806xx_2/index.htm",
+        "count": 2
+      },
+      {
+        "url": "https://laws.e-gov.go.jp/api/2/law_data/325M50000002025?law_full_text_format=json",
+        "count": 2
+      }
+    ]
+  },
+  "audit_2_content_hash_uniqueness": {
+    "unique_hashes": 2417,
+    "duplicate_hashes_count": 10,
+    "duplicate_hash_extra_rows": 10,
+    "top_hash_dups": [
+      {
+        "content_hash": "sha256:6db40e1792d030ec8bbf42ec0f96780c4184e302a5ae4b7e122d9bb4abc6e7e4",
+        "count": 2
+      },
+      {
+        "content_hash": "sha256:6c3f06479177f37c1da49e7ff1a0b16f48bd8b90416e8ddea021761b3d5fd213",
+        "count": 2
+      },
+      {
+        "content_hash": "sha256:7b3d08e09bc2c0e72d5724c62b6ec3274f2066a039aa166e88949113d7ee5e2c",
+        "count": 2
+      },
+      {
+        "content_hash": "sha256:93f8c82d5c3e851154516d048ca68449bf89a39ccd673b02862675a8a2724db8",
+        "count": 2
+      },
+      {
+        "content_hash": "sha256:1a966e79d5d45b9b9af1370c1840373eb75e2ab8f13b77a83cd5dba3a50da8ab",
+        "count": 2
+      },
+      {
+        "content_hash": "sha256:1ba603c7cd04ec147fa9503daabb072bda4e770ec407fa57ab7119cfa96746d1",
+        "count": 2
+      },
+      {
+        "content_hash": "sha256:45cbc9cd3b63501d50b147c62db4a21ec663d5ec5593628991cc9b11d67881a4",
+        "count": 2
+      },
+      {
+        "content_hash": "sha256:fd9fb8f5058f4fd515847c81fdf936919938e74e7dc15d185497b420bf5e80d4",
+        "count": 2
+      },
+      {
+        "content_hash": "sha256:31b6ae78e5fd42b120f0d4a99bd1da86a326e457c8008ffbb8900c71259c437c",
+        "count": 2
+      },
+      {
+        "content_hash": "sha256:db5924196a172c36e842ca73168fe5f72596fd223849cd11a4162ec7fa486065",
+        "count": 2
+      }
+    ]
+  },
+  "audit_3_license_validity": {
+    "valid_set": [
+      "cc_by_4.0",
+      "gov_standard",
+      "pdl_v1.0",
+      "proprietary",
+      "public_domain",
+      "unknown"
+    ],
+    "license_distribution": {
+      "cc_by_4.0": 2227,
+      "gov_standard": 200,
+      "<missing>": 7
+    },
+    "invalid_license_row_count": 0,
+    "invalid_license_samples": []
+  },
+  "audit_4_empty_short_body": {
+    "empty_body_count": 8,
+    "short_body_count_lt_50chars": 0,
+    "empty_samples": [
+      {
+        "file": "jsic_classification/2026-05-04-trial.jsonl",
+        "line": 1,
+        "url": "",
+        "source_id": ""
+      },
+      {
+        "file": "jsic_classification/2026-05-04-trial.jsonl",
+        "line": 2,
+        "url": "",
+        "source_id": ""
+      },
+      {
+        "file": "_archived/egov_law_articles/2026-05-05_iter17_agent3.jsonl",
+        "line": 10,
+        "url": "https://laws.e-gov.go.jp/api/2/law_data/325M50000002025?law_full_text_format=json",
+        "source_id": "egov_law_articles"
+      },
+      {
+        "file": "program_narrative/_done/2026-05-04-trial.jsonl",
+        "line": 1,
+        "url": "",
+        "source_id": ""
+      },
+      {
+        "file": "program_narrative/_done/2026-05-04-trial.jsonl",
+        "line": 2,
+        "url": "",
+        "source_id": ""
+      },
+      {
+        "file": "program_narrative/_done/2026-05-04-trial.jsonl",
+        "line": 3,
+        "url": "",
+        "source_id": ""
+      },
+      {
+        "file": "program_narrative/_done/2026-05-04-trial.jsonl",
+        "line": 4,
+        "url": "",
+        "source_id": ""
+      },
+      {
+        "file": "program_narrative/_done/2026-05-04-trial.jsonl",
+        "line": 5,
+        "url": "",
+        "source_id": ""
+      }
+    ],
+    "short_samples": []
+  },
+  "audit_5_http_status_distribution": {
+    "distribution": {
+      "200": 2426,
+      "<missing>": 7,
+      "0": 1
+    },
+    "pct_200": 99.96
+  },
+  "audit_6_aggregator_risk": {
+    "blocklist_domains": [
+      "noukaweb",
+      "hojyokin-portal",
+      "biz.stayway",
+      "mirasapo-plus",
+      "j-net21"
+    ],
+    "matched_row_count": 0,
+    "samples": []
+  },
+  "audit_7_timestamp_validity": {
+    "invalid_iso_count": 7,
+    "stale_or_future_count": 0,
+    "now": "2026-05-05T03:47:14.678806+00:00",
+    "threshold_30d_ago": "2026-04-05T03:47:14.678806+00:00",
+    "invalid_samples": [
+      {
+        "file": "jsic_classification/2026-05-04-trial.jsonl",
+        "line": 1,
+        "fetched_at": ""
+      },
+      {
+        "file": "jsic_classification/2026-05-04-trial.jsonl",
+        "line": 2,
+        "fetched_at": ""
+      },
+      {
+        "file": "program_narrative/_done/2026-05-04-trial.jsonl",
+        "line": 1,
+        "fetched_at": ""
+      },
+      {
+        "file": "program_narrative/_done/2026-05-04-trial.jsonl",
+        "line": 2,
+        "fetched_at": ""
+      },
+      {
+        "file": "program_narrative/_done/2026-05-04-trial.jsonl",
+        "line": 3,
+        "fetched_at": ""
+      },
+      {
+        "file": "program_narrative/_done/2026-05-04-trial.jsonl",
+        "line": 4,
+        "fetched_at": ""
+      },
+      {
+        "file": "program_narrative/_done/2026-05-04-trial.jsonl",
+        "line": 5,
+        "fetched_at": ""
+      }
+    ],
+    "stale_samples": []
+  },
+  "audit_8_dir_progress_integrity": {
+    "per_dir_row_counts": [
+      {
+        "dir": "egov_law_articles",
+        "rows": 2227
+      },
+      {
+        "dir": "nta_tsutatsu_full",
+        "rows": 200
+      },
+      {
+        "dir": "_done",
+        "rows": 5
+      },
+      {
+        "dir": "jsic_classification",
+        "rows": 2
+      }
+    ],
+    "per_source_progress_vs_inbox": [
+      {
+        "source_id": "egov_law_articles",
+        "status": "in_progress",
+        "progress_completed_urls": 2226,
+        "progress_total_urls": 9484,
+        "progress_pct": 23.47,
+        "actual_inbox_rows_with_source_id": 2227,
+        "delta_rows_vs_progress": 1
+      },
+      {
+        "source_id": "nta_tsutatsu_full",
+        "status": "pending",
+        "progress_completed_urls": 0,
+        "progress_total_urls": 3000,
+        "progress_pct": 0.0,
+        "actual_inbox_rows_with_source_id": 200,
+        "delta_rows_vs_progress": 200
+      },
+      {
+        "source_id": "nta_kfs_saiketsu",
+        "status": "pending",
+        "progress_completed_urls": 0,
+        "progress_total_urls": 10000,
+        "progress_pct": 0.0,
+        "actual_inbox_rows_with_source_id": 0,
+        "delta_rows_vs_progress": 0
+      },
+      {
+        "source_id": "courts_hanrei",
+        "status": "pending",
+        "progress_completed_urls": 0,
+        "progress_total_urls": 50000,
+        "progress_pct": 0.0,
+        "actual_inbox_rows_with_source_id": 0,
+        "delta_rows_vs_progress": 0
+      },
+      {
+        "source_id": "jftc_dk",
+        "status": "pending",
+        "progress_completed_urls": 0,
+        "progress_total_urls": 500,
+        "progress_pct": 0.0,
+        "actual_inbox_rows_with_source_id": 0,
+        "delta_rows_vs_progress": 0
+      },
+      {
+        "source_id": "fsa_admin_disposal",
+        "status": "pending",
+        "progress_completed_urls": 0,
+        "progress_total_urls": 2000,
+        "progress_pct": 0.0,
+        "actual_inbox_rows_with_source_id": 0,
+        "delta_rows_vs_progress": 0
+      },
+      {
+        "source_id": "kokkai_minutes",
+        "status": "pending",
+        "progress_completed_urls": 0,
+        "progress_total_urls": 100000,
+        "progress_pct": 0.0,
+        "actual_inbox_rows_with_source_id": 0,
+        "delta_rows_vs_progress": 0
+      },
+      {
+        "source_id": "estat_api",
+        "status": "pending",
+        "progress_completed_urls": 0,
+        "progress_total_urls": 30000,
+        "progress_pct": 0.0,
+        "actual_inbox_rows_with_source_id": 0,
+        "delta_rows_vs_progress": 0
+      },
+      {
+        "source_id": "geps_bids",
+        "status": "pending",
+        "progress_completed_urls": 0,
+        "progress_total_urls": 50000,
+        "progress_pct": 0.0,
+        "actual_inbox_rows_with_source_id": 0,
+        "delta_rows_vs_progress": 0
+      },
+      {
+        "source_id": "egov_public_comment",
+        "status": "pending",
+        "progress_completed_urls": 0,
+        "progress_total_urls": 30000,
+        "progress_pct": 0.0,
+        "actual_inbox_rows_with_source_id": 0,
+        "delta_rows_vs_progress": 0
+      },
+      {
+        "source_id": "egov_law_translation",
+        "status": "pending",
+        "progress_completed_urls": 0,
+        "progress_total_urls": 700,
+        "progress_pct": 0.0,
+        "actual_inbox_rows_with_source_id": 0,
+        "delta_rows_vs_progress": 0
+      },
+      {
+        "source_id": "invoice_kohyo_zenken",
+        "status": "pending",
+        "progress_completed_urls": 0,
+        "progress_total_urls": 1,
+        "progress_pct": 0.0,
+        "actual_inbox_rows_with_source_id": 0,
+        "delta_rows_vs_progress": 0
+      },
+      {
+        "source_id": "erad_rd",
+        "status": "pending",
+        "progress_completed_urls": 0,
+        "progress_total_urls": 50000,
+        "progress_pct": 0.0,
+        "actual_inbox_rows_with_source_id": 0,
+        "delta_rows_vs_progress": 0
+      },
+      {
+        "source_id": "maff_excel",
+        "status": "pending",
+        "progress_completed_urls": 0,
+        "progress_total_urls": 100,
+        "progress_pct": 0.0,
+        "actual_inbox_rows_with_source_id": 0,
+        "delta_rows_vs_progress": 0
+      },
+      {
+        "source_id": "meti_subsidy",
+        "status": "pending",
+        "progress_completed_urls": 0,
+        "progress_total_urls": 3000,
+        "progress_pct": 0.0,
+        "actual_inbox_rows_with_source_id": 0,
+        "delta_rows_vs_progress": 0
+      },
+      {
+        "source_id": "pref_subsidy",
+        "status": "pending",
+        "progress_completed_urls": 0,
+        "progress_total_urls": 50000,
+        "progress_pct": 0.0,
+        "actual_inbox_rows_with_source_id": 0,
+        "delta_rows_vs_progress": 0
+      },
+      {
+        "source_id": "pref_giji",
+        "status": "pending",
+        "progress_completed_urls": 0,
+        "progress_total_urls": 100000,
+        "progress_pct": 0.0,
+        "actual_inbox_rows_with_source_id": 0,
+        "delta_rows_vs_progress": 0
+      },
+      {
+        "source_id": "city_giji",
+        "status": "pending",
+        "progress_completed_urls": 0,
+        "progress_total_urls": 500000,
+        "progress_pct": 0.0,
+        "actual_inbox_rows_with_source_id": 0,
+        "delta_rows_vs_progress": 0
+      },
+      {
+        "source_id": "mof_tax_treaty",
+        "status": "pending",
+        "progress_completed_urls": 0,
+        "progress_total_urls": 80,
+        "progress_pct": 0.0,
+        "actual_inbox_rows_with_source_id": 0,
+        "delta_rows_vs_progress": 0
+      },
+      {
+        "source_id": "industry_certification",
+        "status": "pending",
+        "progress_completed_urls": 0,
+        "progress_total_urls": 800,
+        "progress_pct": 0.0,
+        "actual_inbox_rows_with_source_id": 0,
+        "delta_rows_vs_progress": 0
+      }
+    ]
+  },
+  "parse_errors": {
+    "count": 0,
+    "samples": []
+  }
+}

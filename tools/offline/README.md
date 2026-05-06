@@ -32,15 +32,33 @@ as plain rows.
 
 ## Current contents
 
-- `batch_translate_corpus.py` — Offline JP→EN alias backfill into
-  `am_alias.language='en'`. Manual operator execution only.
+This directory now holds several kinds of operator-only material:
+
+- `INFO_COLLECTOR_*.md` — prompts and loop specifications for large external
+  information-collection runs. These are versionable because they define the
+  repeatable research protocol.
+- `run_*_batch.py`, `*_batch.py`, and `dispatch_*.sh` — local batch jobs that
+  precompute or ingest data under explicit operator control.
+- `ingest_*`, `extract_*`, `embed_*`, and `iter_*` scripts — one-off or
+  repeatable offline ETL helpers.
+- `_runner_common.py` — shared helper code for offline runners only.
+- `_inbox/`, `_outbox/`, `_quarantine/`, and `_done/` — run artifacts and
+  raw captures. These are ignored by git and should be summarized into source
+  tables, migration notes, or `docs/_internal/` reports instead of committed
+  wholesale.
 
 ## Adding a new offline script
 
-1. Drop it in `tools/offline/`.
-2. Add a top-of-file header:
+1. Put repeatable operator prompts or local-only runners in `tools/offline/`.
+2. Put deployable cron jobs in `scripts/cron/`, reusable ETL in `scripts/etl/`,
+   and operational checks in `scripts/ops/`.
+3. Add a top-of-file header to executable offline scripts:
    ```
    # OPERATOR ONLY: Run manually from tools/offline/. Never imported from src/, scripts/cron/, or scripts/etl/.
    ```
-3. Confirm `tests/test_no_llm_in_production.py` still passes.
-4. Do NOT add imports of this script anywhere under `src/` or `scripts/`.
+4. Confirm `tests/test_no_llm_in_production.py` still passes when the script
+   uses LLM or paid API dependencies.
+5. Do NOT add imports of this script anywhere under `src/` or deployable
+   `scripts/` modules.
+6. Keep bulky run output in the ignored artifact roots above. Commit only the
+   prompt/spec, compact rollup, migration, test, or deterministic source table.

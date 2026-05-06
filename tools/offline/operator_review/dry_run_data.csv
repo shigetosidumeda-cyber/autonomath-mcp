@@ -1,0 +1,11 @@
+contribution_id,contributor_id,cohort,program_id,observed_year,observed_eligibility_text,source_urls,trust_score,outlier_sigma,houjin_bangou_hash,created_at,status
+c0001,u_zeirishi_001,税理士,nta_invoice_2026_q2,2026,適格請求書発行事業者の登録通知到着まで通常 2-4 週間と観察、本 program_id の登録要件は法人事業者で売上 1000 万円超の課税事業者基準と整合,https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice.htm,0.97,0.4,abc123hash,2026-06-01T08:30:00,pending
+c0002,u_zeirishi_002,税理士,meti_jigyousaikouchiku_v12,2026,事業再構築補助金第12回採択結果は1次2次合計で約42%の採択率と観察、補助上限額は通常枠で1500万,https://www.meti.go.jp/policy/jigyou_saikouchiku/,0.96,0.6,def456hash,2026-06-02T10:15:00,pending
+c0003,u_zeirishi_003,税理士,maff_kibanseibichoutoku_2026,2026,農業経営基盤強化準備金は青色申告の認定農業者が対象、令和8年度の運用要綱を確認,https://www.maff.go.jp/j/keiei/koukai/kibanseibi.html,0.95,0.3,ghi789hash,2026-06-02T11:00:00,pending
+c0004,u_kaikei_001,公認会計士,nta_kabuka_kyokutei_2026,2026,非上場株式の評価で類似業種比準価額方式を選択した case が増加と観察、令和7年税制改正の影響と推察,https://www.nta.go.jp/law/zeiho-kaishaku/joho-zeikaishaku/hyoka/index.htm,0.91,0.5,jkl012hash,2026-06-03T09:00:00,pending
+c0005,u_kaikei_002,公認会計士,fsa_kansa_kijun_2026,2026,監査基準改訂で重要性の判断基準が変更、 採択保証 ではないが概ね 5% 基準が標準と観察,https://www.fsa.go.jp/news/r7/kaikei/,0.90,1.1,mno345hash,2026-06-04T14:30:00,pending
+c0006,u_shihoshoshi_001,司法書士,houmushou_shougyou_touki_2026,2026,商業登記の役員変更登記は通常 1-2 週間で完了と観察、 オンライン申請で更に短縮の case あり,https://www.moj.go.jp/MINJI/minji06_00078.html,0.86,0.7,pqr678hash,2026-06-05T08:45:00,pending
+c0007,u_shihoshoshi_002,司法書士,houmushou_fudosan_touki_2026,2026,担当者の電話番号は 03-1234-5678 までご連絡ください、 不動産登記の登録免許税は固定資産税評価額の 0.4-2.0%,https://www.moj.go.jp/MINJI/minji05_00219.html,0.84,0.4,stu901hash,2026-06-06T10:00:00,pending
+c0008,u_consultant_001,補助金consultant,meti_monozukuri_2026,2026,ものづくり補助金は採択保証で過去採択率 50% 程度と説明することが多いが観察上は 35-55% 程度,https://portal.monodukuri-hojo.jp/,0.68,1.4,vwx234hash,2026-06-07T13:20:00,pending
+c0009,u_consultant_002,補助金consultant,maff_chiikiteichakuengun_2026,2026,地域定着支援は令和 8 年度から要件変更、 詳細はnoukaweb.com にもまとめあり,https://noukaweb.com/programs/chiiki-teichaku,0.65,0.8,yza567hash,2026-06-08T15:30:00,pending
+c0010,u_consultant_003,補助金consultant,meti_shoukibo_jigyousha_2026,2026,小規模事業者持続化補助金の採択額は通常 50-200 万、 ただし観察上 cluster 平均から 5σ 離れた 1500 万案件あり,https://www.shokokai.or.jp/jizokuka_r3/,0.70,5.2,bcd890hash,2026-06-09T11:10:00,pending
