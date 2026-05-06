@@ -63,7 +63,7 @@ except Exception:  # pragma: no cover - environment-dependent
 # pathological backtracking under stdlib re either, so the fallback is safe.
 _regex_engine: Any
 try:  # pragma: no cover - import shape only
-    import re2 as _re2_module
+    import re2 as _re2_module  # type: ignore[import-not-found]
 
     _regex_engine = _re2_module
 except Exception:  # pragma: no cover - environment-dependent

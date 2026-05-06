@@ -465,7 +465,11 @@ if __name__ == "__main__":  # pragma: no cover
     ]
     for s in samples:
         print(f"\n=== {s} ===")
-        res = _prerequisite_chain_impl(**s)
+        depth_raw = s.get("depth")
+        res = _prerequisite_chain_impl(
+            target_program_id=str(s["target_program_id"]),
+            depth=int(depth_raw) if isinstance(depth_raw, int) else 3,
+        )
         pprint.pprint(
             {
                 "chain_len": len(res.get("prerequisite_chain", [])),

@@ -34,8 +34,7 @@ _HERE = Path(__file__).resolve().parent
 if str(_HERE) not in sys.path:
     sys.path.insert(0, str(_HERE))
 
-import tools as _raw  # noqa: E402  (legacy tools module)
-
+from . import tools as _raw  # noqa: E402  (legacy tools module)
 from .envelope_wrapper import with_envelope  # noqa: E402
 
 # ---------------------------------------------------------------------------
@@ -63,10 +62,10 @@ active_programs_at = with_envelope("active_programs_at", query_arg="query")(_raw
 related_programs = with_envelope("related_programs", query_arg="program_id")(_raw.related_programs)
 
 search_acceptance_stats = with_envelope("search_acceptance_stats", query_arg="program_name")(
-    _raw.search_acceptance_stats
+    _raw.search_acceptance_stats_am
 )
 
-enum_values = with_envelope("enum_values", query_arg="enum_name")(_raw.enum_values)
+enum_values = with_envelope("enum_values", query_arg="enum_name")(_raw.enum_values_am)
 
 intent_of = with_envelope("intent_of", query_arg="query")(_raw.intent_of)
 

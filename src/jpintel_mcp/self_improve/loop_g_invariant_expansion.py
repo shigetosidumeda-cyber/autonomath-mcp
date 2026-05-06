@@ -220,7 +220,7 @@ def run(
     dry_run: bool = True,
     log_path: Path | None = None,
     out_path: Path | None = None,
-) -> dict[str, int]:
+) -> dict[str, Any]:
     """Scan sanitizer-hit logs and propose invariant rule candidates.
 
     Args:

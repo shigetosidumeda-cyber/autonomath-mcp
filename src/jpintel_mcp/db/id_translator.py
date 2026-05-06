@@ -268,9 +268,21 @@ def cache_clear() -> None:
 
 def cache_info() -> dict[str, tuple[int, int, int, int]]:
     """Return ``(hits, misses, maxsize, currsize)`` per direction."""
+    u_info = program_unified_to_canonical.cache_info()
+    c_info = program_canonical_to_unified.cache_info()
     return {
-        "u_to_c": tuple(program_unified_to_canonical.cache_info()),
-        "c_to_u": tuple(program_canonical_to_unified.cache_info()),
+        "u_to_c": (
+            u_info.hits,
+            u_info.misses,
+            u_info.maxsize or 0,
+            u_info.currsize,
+        ),
+        "c_to_u": (
+            c_info.hits,
+            c_info.misses,
+            c_info.maxsize or 0,
+            c_info.currsize,
+        ),
     }
 
 

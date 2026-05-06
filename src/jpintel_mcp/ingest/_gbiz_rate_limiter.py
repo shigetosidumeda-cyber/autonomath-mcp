@@ -48,7 +48,7 @@ _HOUR_SECONDS = 3600.0
 # behaviour (1 rps + 24h cache) at slightly lower performance.
 # ---------------------------------------------------------------------------
 try:
-    from ratelimit import limits, sleep_and_retry  # type: ignore[import-not-found]
+    from ratelimit import limits, sleep_and_retry  # type: ignore[import-untyped,import-not-found]
 
     _HAS_RATELIMIT = True
 except ImportError:  # pragma: no cover — deps not yet installed

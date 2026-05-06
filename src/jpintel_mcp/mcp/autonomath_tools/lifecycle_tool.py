@@ -466,6 +466,7 @@ if _ENABLED:
                 field="unified_id",
             )
 
+        target_date: datetime.date | None
         if as_of is None or not as_of.strip():
             target_date = _today_jst()
         else:

@@ -193,7 +193,7 @@ def _append_verification_gap(
 
     if normalized_status in {"unverified", "never_verified"} or verified_at is None:
         key = ("source_unverified", _source_ref(source))
-        gap = {
+        gap: dict[str, Any] = {
             "code": "source_unverified",
             "severity": "medium",
             "subject": "source",

@@ -303,7 +303,7 @@ class CitationVerifier:
             )
 
         # 1. Excerpt path — substring presence in the normalized source.
-        if has_excerpt:
+        if has_excerpt and isinstance(excerpt, str):
             normalized_excerpt = _normalize_text(excerpt)
             if normalized_excerpt and normalized_excerpt in normalized_source:
                 return self._build_result(

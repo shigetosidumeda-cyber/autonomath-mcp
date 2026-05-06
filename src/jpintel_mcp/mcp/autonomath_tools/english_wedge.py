@@ -320,7 +320,6 @@ def _get_law_article_en_impl(law_id: str, article_no: str) -> dict[str, Any]:
     payload = get_law_article(
         law_name_or_canonical_id=law_id,
         article_number=article_no,
-        lang="en",
     )
 
     next_calls: list[dict[str, Any]] = [
@@ -355,7 +354,7 @@ def _get_tax_treaty_impl(country_a: str, country_b: str = "JPN") -> dict[str, An
             )
         )
 
-    a = _normalize_country(country_a)
+    a = _normalize_country(country_a) or ""
     b = _normalize_country(country_b) or "JP"
 
     # am_tax_treaty rows are always (counterparty, Japan). If either side is

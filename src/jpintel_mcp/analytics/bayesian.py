@@ -58,7 +58,7 @@ def _beta_dist():
     The first call to confidence_interval() pays the import cost (~200ms);
     subsequent calls hit the lru_cache and are free.
     """
-    from scipy.stats import beta as beta_dist
+    from scipy.stats import beta as beta_dist  # type: ignore[import-untyped]
 
     return beta_dist
 

@@ -54,7 +54,7 @@ import contextlib
 import logging
 import os
 import sqlite3
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any, Literal, cast
 
 from pydantic import Field
 
@@ -525,7 +525,11 @@ def _intel_diff_impl(
     )
 
     try:
-        payload = IntelDiffRequest(a=EntityRef(**a), b=EntityRef(**b), depth=int(depth or 2))
+        payload = IntelDiffRequest(
+            a=EntityRef.model_validate(a),
+            b=EntityRef.model_validate(b),
+            depth=int(depth or 2),
+        )
     except Exception as exc:  # noqa: BLE001
         return make_error(
             code="invalid_input",
@@ -730,7 +734,7 @@ def _intel_timeline_impl(
         )
     try:
         body = _build_timeline(
-            am_conn=am_conn,
+            am_conn,
             program_id=pid,
             year=yr,
             include_types=tuple(requested),
@@ -749,7 +753,7 @@ def _intel_conflict_impl(
     from jpintel_mcp.api.intel_conflict import (
         _DISCLAIMER as _CONFLICT_DISCLAIMER,
     )
-    from jpintel_mcp.api.intel_conflict import (
+    from jpintel_mcp.api.intel_conflict import (  # type: ignore[attr-defined]
         ConflictRequest,
         _build_conflict_envelope,
     )
@@ -787,7 +791,7 @@ def _intel_why_excluded_impl(
     from jpintel_mcp.api.intel_why_excluded import (
         _DISCLAIMER as _WHY_DISCLAIMER,
     )
-    from jpintel_mcp.api.intel_why_excluded import (
+    from jpintel_mcp.api.intel_why_excluded import (  # type: ignore[attr-defined]
         HoujinAttrs,
         WhyExcludedRequest,
         _build_why_excluded_envelope,
@@ -876,7 +880,7 @@ def _intel_regulatory_context_impl(
     from jpintel_mcp.api.intel_regulatory_context import (
         _DISCLAIMER as _REG_DISCLAIMER,
     )
-    from jpintel_mcp.api.intel_regulatory_context import (
+    from jpintel_mcp.api.intel_regulatory_context import (  # type: ignore[attr-defined]
         _build_regulatory_envelope,
         _normalize_since_date,
         _parse_include,
@@ -924,6 +928,8 @@ def _intel_bundle_optimal_impl(
     from jpintel_mcp.api.intel_bundle_optimal import (
         _BUNDLE_DISCLAIMER,
         BundleOptimalRequest,
+        _fetch_houjin_profile,
+        _resolve_houjin,
     )
     from jpintel_mcp.api.intel_bundle_optimal import (
         _build_envelope as _build_bundle_envelope,
@@ -947,7 +953,18 @@ def _intel_bundle_optimal_impl(
             message="autonomath.db unavailable for bundle/optimal.",
         )
     try:
-        body = _build_bundle_envelope(payload=payload, am_conn=am_conn)
+        bangou, profile = _resolve_houjin(payload)
+        if bangou:
+            corpus = _fetch_houjin_profile(am_conn, bangou)
+            for k, v in corpus.items():
+                if profile.get(k) is None:
+                    profile[k] = v
+        body = _build_bundle_envelope(
+            payload=payload,
+            am_conn=am_conn,
+            bangou=bangou,
+            profile=profile,
+        )
     finally:
         with contextlib.suppress(sqlite3.Error):
             am_conn.close()
@@ -964,7 +981,7 @@ def _intel_citation_pack_impl(
     citation_style: Literal["footnote", "inline"] = "footnote",
 ) -> dict[str, Any]:
     """W31-9 — 1-call markdown bundle of every primary-source citation."""
-    from jpintel_mcp.api.intel_citation_pack import (
+    from jpintel_mcp.api.intel_citation_pack import (  # type: ignore[attr-defined]
         _CITATION_PACK_DISCLAIMER,
         _build_citation_pack_envelope,
         _resolve_program,

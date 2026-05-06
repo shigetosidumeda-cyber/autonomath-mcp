@@ -60,7 +60,7 @@ def _impl_get_evidence_packet_batch(
         )
     if len(lookups) > MAX_BATCH_LOOKUPS:
         return make_error(
-            code="batch_too_large",
+            code="out_of_range",
             message=(
                 f"lookups must contain at most {MAX_BATCH_LOOKUPS} entries; got {len(lookups)}."
             ),
@@ -74,7 +74,7 @@ def _impl_get_evidence_packet_batch(
     for idx, raw in enumerate(lookups):
         if not isinstance(raw, dict):
             return make_error(
-                code="invalid_lookup",
+                code="invalid_input",
                 message=f"lookups[{idx}] must be an object with kind+id keys.",
                 field="lookups",
             )

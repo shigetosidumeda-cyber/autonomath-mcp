@@ -94,7 +94,7 @@ GLOBAL_FORBIDDEN_BASE: tuple[str, ...] = ("推測", "予測", "保証")
 
 def _load_yaml(path: Path) -> dict[str, Any]:
     """Load a yaml file. PyYAML is a transitive dep (already used in self_improve)."""
-    import yaml  # local import keeps top-level import safe under self_improve absences
+    import yaml  # type: ignore[import-untyped]  # local import keeps top-level import safe
 
     with path.open("r", encoding="utf-8") as fh:
         data = yaml.safe_load(fh) or {}

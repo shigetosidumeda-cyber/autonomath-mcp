@@ -50,8 +50,8 @@ logger = logging.getLogger("jpintel.api._verifier")
 _sudachi_tokenizer: Any | None = None
 _SUDACHI_AVAILABLE = False
 try:  # pragma: no cover — environment-dependent
-    from sudachipy import dictionary as _sudachi_dict
-    from sudachipy import tokenizer as _sudachi_tok_mod
+    from sudachipy import dictionary as _sudachi_dict  # type: ignore[import-not-found]
+    from sudachipy import tokenizer as _sudachi_tok_mod  # type: ignore[import-not-found]
 
     _sudachi_tokenizer = _sudachi_dict.Dictionary().create()
     _SUDACHI_MODE = _sudachi_tok_mod.Tokenizer.SplitMode.C
@@ -442,14 +442,14 @@ def tokenize_claims(answer_text: str, language: str = "ja") -> list[Claim]:
                 )
             )
 
-        m = _RE_LAW_ID.search(sent)
-        if m:
+        m_law = _RE_LAW_ID.search(sent)
+        if m_law:
             sentence_had_match = True
             claims.append(
                 Claim(
                     text=sent,
-                    law_id=m.group(0).strip(),
-                    span=(sent_start + m.start(), sent_start + m.end()),
+                    law_id=m_law.group(0).strip(),
+                    span=(sent_start + m_law.start(), sent_start + m_law.end()),
                 )
             )
 

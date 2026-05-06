@@ -430,7 +430,7 @@ def run(
     db_path: Path | None = None,
     out_path: Path | None = None,
     compute_factories: dict[str, Callable[[dict[str, Any]], Any]] | None = None,
-) -> dict[str, int]:
+) -> dict[str, Any]:
     """Pre-compute top-N global queries based on the last 7 days of usage.
 
     Args:

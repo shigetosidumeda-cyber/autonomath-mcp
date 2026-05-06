@@ -152,8 +152,11 @@ def _attach_ratings(tool: str, ratings: list[dict[str, Any]]) -> tuple[float | N
             continue
         if entry.get("tool") != tool:
             continue
+        raw_rating = entry.get("rating")
+        if raw_rating is None:
+            continue
         try:
-            score = float(entry.get("rating"))
+            score = float(raw_rating)
         except (TypeError, ValueError):
             continue
         if score < MIN_PROMOTABLE_RATING:
@@ -281,7 +284,7 @@ def run(
     query_log_rows: list[dict[str, Any]] | None = None,
     ratings: list[dict[str, Any]] | None = None,
     out_path: Path | None = None,
-) -> dict[str, int]:
+) -> dict[str, Any]:
     """Scan query_log_v2 hits and propose testimonial candidates.
 
     Args:

@@ -60,7 +60,7 @@ from .db import (
     connect_autonomath,
     execute_with_retry,
 )
-from .error_envelope import make_error
+from .error_envelope import ErrorCode, make_error
 
 logger = logging.getLogger("jpintel.mcp.new")
 
@@ -249,7 +249,7 @@ def _validate_iso_date(
     return s_stripped, None
 
 
-def _classify_sqlite_error(exc: sqlite3.Error) -> str:
+def _classify_sqlite_error(exc: sqlite3.Error) -> ErrorCode:
     """Map a sqlite3 error to one of our error codes."""
     msg = str(exc).lower()
     if "locked" in msg or "busy" in msg:

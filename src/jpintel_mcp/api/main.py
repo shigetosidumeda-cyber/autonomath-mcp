@@ -580,7 +580,7 @@ def _normalize_openapi_component_schema_names(schema: dict[str, Any]) -> None:
 
     normalized: dict[str, Any] = {}
     for name, component_schema in schemas.items():
-        public_name = renamed.get(name, name)
+        public_name = renamed.get(name, name) or name
         existing = normalized.get(public_name)
         if existing is not None and existing != component_schema:
             raise RuntimeError(f"OpenAPI component rename collision: {name} -> {public_name}")

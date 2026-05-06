@@ -107,7 +107,11 @@ def _run_awaitable(value: Any) -> Any:
     try:
         asyncio.get_running_loop()
     except RuntimeError:
-        return asyncio.run(value)
+        # value: Awaitable[Any] — coerce via wrapper coroutine for typing.
+        async def _await() -> Any:
+            return await value
+
+        return asyncio.run(_await())
     return make_error(
         code="internal",
         message=(

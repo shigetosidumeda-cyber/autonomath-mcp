@@ -387,7 +387,7 @@ def post_probability_radar(
     # Auditor reproducibility (corpus_snapshot_id + corpus_checksum) — same
     # pattern the Wave 22/24 composition tools use so a customer LLM can
     # cite the exact corpus snapshot the radar was computed against.
-    body = attach_corpus_snapshot(body)
+    body = attach_corpus_snapshot(body, conn)
 
     latency_ms = int((time.perf_counter() - _t0) * 1000)
     log_usage(
@@ -1530,11 +1530,13 @@ def _audit_proof_for(unified_id: str) -> dict[str, Any]:
         am_conn: sqlite3.Connection | None = _open_autonomath_rw()
     except Exception:
         return out
+    if am_conn is None:
+        return out
     try:
         leaf = _fetch_leaf(am_conn, unified_id)
         if not leaf:
             return out
-        anchor = _fetch_anchor(am_conn, leaf["daily_date"])
+        anchor = _fetch_anchor(am_conn, str(leaf[0]))
         if not anchor:
             return out
         out["merkle_root"] = anchor.get("merkle_root")

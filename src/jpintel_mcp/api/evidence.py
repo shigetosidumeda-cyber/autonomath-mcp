@@ -232,14 +232,17 @@ def _record_has_source_timestamp(record: dict[str, Any]) -> bool:
 def _build_decision_insights(envelope: dict[str, Any]) -> dict[str, Any]:
     """Build short AI-quotable guidance from the already-gated packet body."""
     records = [rec for rec in (envelope.get("records") or []) if isinstance(rec, dict)]
-    quality = envelope.get("quality") if isinstance(envelope.get("quality"), dict) else {}
-    verification = (
-        envelope.get("verification") if isinstance(envelope.get("verification"), dict) else {}
+    raw_quality = envelope.get("quality")
+    quality: dict[str, Any] = dict(raw_quality) if isinstance(raw_quality, dict) else {}
+    raw_verification = envelope.get("verification")
+    verification: dict[str, Any] = (
+        dict(raw_verification) if isinstance(raw_verification, dict) else {}
     )
-    evidence_value = (
-        envelope.get("evidence_value") if isinstance(envelope.get("evidence_value"), dict) else {}
+    raw_evidence_value = envelope.get("evidence_value")
+    evidence_value: dict[str, Any] = (
+        dict(raw_evidence_value) if isinstance(raw_evidence_value, dict) else {}
     )
-    raw_gaps = quality.get("known_gaps") if isinstance(quality, dict) else []
+    raw_gaps = quality.get("known_gaps")
     known_gaps = [str(g) for g in raw_gaps] if isinstance(raw_gaps, list) else []
 
     source_linked_records = sum(1 for rec in records if _record_has_source_link(rec))
@@ -253,12 +256,11 @@ def _build_decision_insights(envelope: dict[str, Any]) -> dict[str, Any]:
     evidence_gaps: list[dict[str, Any]] = []
 
     if not records:
-        license_gate = (
-            envelope.get("license_gate") if isinstance(envelope.get("license_gate"), dict) else {}
+        raw_license_gate = envelope.get("license_gate")
+        license_gate: dict[str, Any] = (
+            dict(raw_license_gate) if isinstance(raw_license_gate, dict) else {}
         )
-        blocked_by_license = (
-            isinstance(license_gate, dict) and int(license_gate.get("blocked_count") or 0) > 0
-        )
+        blocked_by_license = int(license_gate.get("blocked_count") or 0) > 0
         if blocked_by_license:
             evidence_gaps.append(
                 _insight(

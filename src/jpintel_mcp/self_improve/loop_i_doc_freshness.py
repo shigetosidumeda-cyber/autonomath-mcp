@@ -380,7 +380,7 @@ def run(
     probe: bool = False,
     notify: bool | None = None,
     client_factory: Any = None,
-) -> dict[str, int]:
+) -> dict[str, Any]:
     """Audit `programs.source_url` for stale + broken sources.
 
     Args:

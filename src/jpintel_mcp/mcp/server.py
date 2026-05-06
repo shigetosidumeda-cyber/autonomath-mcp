@@ -19,7 +19,7 @@ import sqlite3
 import time
 import unicodedata
 from datetime import UTC, datetime
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any, Literal, cast
 
 from mcp.server.fastmcp import FastMCP
 from mcp.types import ToolAnnotations
@@ -1314,7 +1314,12 @@ def search_programs(
                     break
             # Dedup while preserving order.
             seen: set[str] = set()
-            short_terms = [t for t in short_terms if not (t in seen or seen.add(t))]
+            deduped: list[str] = []
+            for t in short_terms:
+                if t not in seen:
+                    seen.add(t)
+                    deduped.append(t)
+            short_terms = deduped
             like_or: list[str] = []
             for t in short_terms:
                 like_or.append("(primary_name LIKE ? OR aliases_json LIKE ?)")
@@ -1326,7 +1331,9 @@ def search_programs(
         where.append(f"tier IN ({','.join('?' * len(tier))})")
         params.extend(tier)
     pref_raw = prefecture
-    prefecture = _normalize_prefecture(prefecture)
+    prefecture = cast(  # narrow: _normalize maps known PrefectureParam→same Literal | None
+        "PrefectureParam | None", _normalize_prefecture(prefecture)
+    )
     # BUG-2 fix: warn on unknown prefecture, drop filter so we don't silently
     # match 0 rows on a typo like 'Tokio' / '東京府' (¥3/req refund trap).
     input_warnings: list[dict[str, Any]] = []
@@ -2769,7 +2776,7 @@ def search_enforcement_cases(
         where.append("ministry = ?")
         params.append(ministry)
     pref_raw = prefecture
-    prefecture = _normalize_prefecture(prefecture)
+    prefecture = cast("PrefectureParam | None", _normalize_prefecture(prefecture))
     # BUG-2 fix: warn on unknown prefecture, drop filter so we don't silently
     # match 0 rows on a typo like 'Tokio' / '東京府' (¥3/req refund trap).
     input_warnings: list[dict[str, Any]] = []
@@ -3163,7 +3170,7 @@ def search_case_studies(
         )
         params.extend([like, like, like, like])
     pref_raw = prefecture
-    prefecture = _normalize_prefecture(prefecture)
+    prefecture = cast("PrefectureParam | None", _normalize_prefecture(prefecture))
     # BUG-2 fix: warn on unknown prefecture, drop filter so we don't silently
     # match 0 rows on a typo like 'Tokio' / '東京府' (¥3/req refund trap).
     input_warnings: list[dict[str, Any]] = []

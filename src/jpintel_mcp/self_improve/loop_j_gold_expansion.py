@@ -139,8 +139,11 @@ def _slug_from(query: str, top_id: str) -> str:
 
 def _passes_confidence_gate(row: dict[str, Any]) -> bool:
     """Apply the confidence + sentiment policy from step 1 of the brief."""
+    raw_conf = row.get("confidence")
+    if raw_conf is None:
+        return False
     try:
-        conf = float(row.get("confidence"))
+        conf = float(raw_conf)
     except (TypeError, ValueError):
         return False
     if conf < MIN_CONFIDENCE:
@@ -221,7 +224,9 @@ def extract_candidates(
         g = groups[key]
         g["sessions"].add(session.strip())
         try:
-            g["max_confidence"] = max(g["max_confidence"], float(r.get("confidence")))
+            raw_conf2 = r.get("confidence")
+            if raw_conf2 is not None:
+                g["max_confidence"] = max(g["max_confidence"], float(raw_conf2))
         except (TypeError, ValueError):
             pass
         # Keep the *first* observed args dict — query_log already
@@ -351,7 +356,7 @@ def run(
     existing_gold: set[str] | None = None,
     out_path: Path | None = None,
     gold_path: Path | None = None,
-) -> dict[str, int]:
+) -> dict[str, Any]:
     """Mine high-confidence stable queries as gold expansion candidates.
 
     Args:

@@ -1844,9 +1844,11 @@ class EvidencePacketComposer:
         """
         records = [rec for rec in (envelope.get("records") or []) if isinstance(rec, dict)]
         if composer is not None:
-            entity_ids = [
-                rec.get("entity_id") for rec in records if isinstance(rec.get("entity_id"), str)
-            ]
+            entity_ids: list[str] = []
+            for rec in records:
+                eid = rec.get("entity_id")
+                if isinstance(eid, str):
+                    entity_ids.append(eid)
             verifications = composer._fetch_citation_verifications(entity_ids)
         else:
             existing = envelope.get("evidence_value", {}).get("citations") or []
@@ -2355,7 +2357,7 @@ class EvidencePacketComposer:
                 )
 
         if bangou and "適格請求書" in text:
-            checked_tables: list[str] = []
+            checked_tables = []
             exact_match_found = False
             try:
                 if self._table_columns(am_conn, "jpi_invoice_registrants"):

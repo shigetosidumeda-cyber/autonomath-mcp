@@ -22,6 +22,7 @@ from __future__ import annotations
 import hashlib
 import re
 
+_KKS: object | None
 try:  # pragma: no cover — exercised via integration only
     import pykakasi  # type: ignore[import-untyped]
 

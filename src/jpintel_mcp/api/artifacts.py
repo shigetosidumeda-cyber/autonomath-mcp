@@ -532,7 +532,11 @@ def _source_receipt_quality_gaps(receipts: list[dict[str, Any]]) -> list[dict[st
     return gaps
 
 
-def _source_receipt_completion(receipts: list[dict[str, Any]]) -> dict[str, int]:
+def _source_receipt_completion(
+    receipts: list[dict[str, Any]] | None,
+) -> dict[str, int]:
+    if not receipts:
+        return {"total": 0, "complete": 0, "incomplete": 0}
     complete = 0
     for receipt in receipts:
         if all(
@@ -551,7 +555,10 @@ def _append_source_receipt_quality_gaps(
     body: dict[str, Any],
     receipts: list[dict[str, Any]],
 ) -> None:
-    existing_gaps = body.get("known_gaps") if isinstance(body.get("known_gaps"), list) else []
+    raw_existing_gaps = body.get("known_gaps")
+    existing_gaps: list[Any] = (
+        list(raw_existing_gaps) if isinstance(raw_existing_gaps, list) else []
+    )
     known_keys = {
         (
             gap.get("gap_id"),
@@ -576,10 +583,9 @@ def _append_source_receipt_quality_gaps(
     if new_gaps:
         body["known_gaps"] = [*existing_gaps, *new_gaps]
     if quality_gaps:
-        existing_review = (
-            body.get("human_review_required")
-            if isinstance(body.get("human_review_required"), list)
-            else []
+        raw_existing_review = body.get("human_review_required")
+        existing_review: list[Any] = (
+            list(raw_existing_review) if isinstance(raw_existing_review, list) else []
         )
         receipt_review = [
             f"source_receipt_gap:{gap.get('source_receipt_id') or gap.get('gap_id')}"
@@ -735,8 +741,12 @@ def _source_used_in_covers_row(sources: list[Any], section_id: str, row_ref: str
     return False
 
 
-def _existing_known_gap_keys(gaps: list[Any]) -> set[tuple[str, str | None, str | None]]:
+def _existing_known_gap_keys(
+    gaps: list[Any] | None,
+) -> set[tuple[str, str | None, str | None]]:
     keys: set[tuple[str, str | None, str | None]] = set()
+    if not gaps:
+        return keys
     for gap in gaps:
         if isinstance(gap, str):
             gap_id = _gap_id_from_text(gap)
@@ -796,7 +806,8 @@ def _claim_coverage(body: dict[str, Any]) -> dict[str, int]:
 
 
 def _append_source_claim_coverage_gaps(body: dict[str, Any]) -> None:
-    gaps = body.get("known_gaps") if isinstance(body.get("known_gaps"), list) else []
+    raw_gaps = body.get("known_gaps")
+    gaps: list[Any] = list(raw_gaps) if isinstance(raw_gaps, list) else []
     known_keys = _existing_known_gap_keys(gaps)
     new_gaps: list[dict[str, Any]] = []
     for section_idx, section in enumerate(body.get("sections") or []):
@@ -850,8 +861,14 @@ def _append_source_claim_coverage_gaps(body: dict[str, Any]) -> None:
 
 def _build_artifact_evidence(body: dict[str, Any]) -> dict[str, Any]:
     refs = _source_refs(body)
-    gaps = body.get("known_gaps") if isinstance(body.get("known_gaps"), list) else []
-    receipts = body.get("source_receipts") if isinstance(body.get("source_receipts"), list) else []
+    raw_gaps = body.get("known_gaps")
+    gaps: list[Any] = list(raw_gaps) if isinstance(raw_gaps, list) else []
+    raw_receipts = body.get("source_receipts")
+    receipts: list[dict[str, Any]] = (
+        [r for r in raw_receipts if isinstance(r, dict)]
+        if isinstance(raw_receipts, list)
+        else []
+    )
     receipt_completion = _source_receipt_completion(receipts)
     return {
         "source_count": len(refs),
@@ -1025,8 +1042,10 @@ def _short_scalar(value: Any) -> str:
     return text[:160]
 
 
-def _summary_markdown(summary: dict[str, Any]) -> list[str]:
+def _summary_markdown(summary: dict[str, Any] | None) -> list[str]:
     lines: list[str] = []
+    if not summary:
+        return lines
     for key, value in summary.items():
         if isinstance(value, dict | list):
             continue
@@ -1071,7 +1090,8 @@ def _build_copy_paste_parts(
     evidence: dict[str, Any],
 ) -> list[dict[str, Any]]:
     artifact_type = str(body.get("artifact_type") or "artifact")
-    summary = body.get("summary") if isinstance(body.get("summary"), dict) else {}
+    raw_summary = body.get("summary")
+    summary: dict[str, Any] = dict(raw_summary) if isinstance(raw_summary, dict) else {}
     headline_bits = [
         f"{key}={_short_scalar(value)}"
         for key, value in summary.items()
@@ -1358,8 +1378,9 @@ def _houjin_known_gaps(
 ) -> list[Any]:
     decision_support = _decision_support(houjin_body)
     known_gaps = list(decision_support.get("known_gaps") or [])
-    data_quality = (
-        houjin_body.get("data_quality") if isinstance(houjin_body.get("data_quality"), dict) else {}
+    raw_data_quality = houjin_body.get("data_quality")
+    data_quality: dict[str, Any] = (
+        dict(raw_data_quality) if isinstance(raw_data_quality, dict) else {}
     )
     for table in data_quality.get("missing_tables") or []:
         if isinstance(table, str):
