@@ -42,11 +42,7 @@ def _connect(path: Path) -> sqlite3.Connection:
 
 def is_safe_public_host(host: str | None) -> bool:
     host = (host or "").lower()
-    return (
-        host.endswith(".go.jp")
-        or host.endswith(".lg.jp")
-        or ".metro.tokyo." in host
-    )
+    return host.endswith(".go.jp") or host.endswith(".lg.jp") or ".metro.tokyo." in host
 
 
 def upgrade_url(url: str | None) -> tuple[str | None, str | None]:
@@ -109,7 +105,7 @@ def apply_url_upgrades(conn: sqlite3.Connection, upgrades: list[UrlUpgrade]) -> 
         params.extend([upgrade.unified_id, upgrade.old_url])
         cur = conn.execute(
             f"""UPDATE programs
-                   SET {', '.join(sets)}
+                   SET {", ".join(sets)}
                  WHERE unified_id = ?
                    AND {upgrade.column} = ?""",
             params,
@@ -122,9 +118,7 @@ def remaining_safe_http_urls(conn: sqlite3.Connection) -> dict[str, int]:
     out: dict[str, int] = {}
     for column in URL_COLUMNS:
         count = 0
-        rows = conn.execute(
-            f"SELECT {column} AS url FROM programs WHERE {column} LIKE 'http://%'"
-        )
+        rows = conn.execute(f"SELECT {column} AS url FROM programs WHERE {column} LIKE 'http://%'")
         for row in rows:
             _new_url, host = upgrade_url(row["url"])
             if host is not None:

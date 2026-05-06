@@ -6,6 +6,7 @@ poll Cloudflare Pages directly without burning the API's anonymous quota.
 
 Writes to ``site/corrections.xml.new`` and lets the next deploy swap.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -26,9 +27,7 @@ if _SRC.is_dir() and str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
 from jpintel_mcp.observability import heartbeat  # noqa: E402
 
-_DEFAULT_DB = Path(
-    os.environ.get("AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db"))
-)
+_DEFAULT_DB = Path(os.environ.get("AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db")))
 _DEFAULT_OUT = _REPO_ROOT / "site" / "corrections.xml.new"
 _DOMAIN = "jpcite.com"
 
@@ -59,14 +58,9 @@ def _build(db_path: Path) -> str:
             f"{xml_escape(r['field_name'] or 'row-level')} "
             f"({xml_escape(r['root_cause'])})"
         )
-        link = (
-            r["correction_post_url"]
-            or f"https://{_DOMAIN}/news/correction-{r['id']}.html"
-        )
+        link = r["correction_post_url"] or f"https://{_DOMAIN}/news/correction-{r['id']}.html"
         try:
-            pub_dt = datetime.fromisoformat(
-                r["detected_at"].replace("Z", "+00:00")
-            )
+            pub_dt = datetime.fromisoformat(r["detected_at"].replace("Z", "+00:00"))
             pub_date = format_datetime(pub_dt)
         except Exception:  # noqa: BLE001
             pub_date = r["detected_at"]
@@ -78,7 +72,7 @@ def _build(db_path: Path) -> str:
             "  <item>\n"
             f"    <title>{title}</title>\n"
             f"    <link>{xml_escape(link)}</link>\n"
-            f"    <guid isPermaLink=\"false\">correction-{r['id']}</guid>\n"
+            f'    <guid isPermaLink="false">correction-{r["id"]}</guid>\n'
             f"    <pubDate>{pub_date}</pubDate>\n"
             f"    <description>{desc}</description>\n"
             "  </item>"
@@ -99,9 +93,7 @@ def _build(db_path: Path) -> str:
         "  <language>ja</language>\n"
         f"  <lastBuildDate>{last_build}</lastBuildDate>\n"
         "  <copyright>(C) 2026 Bookyou株式会社</copyright>\n"
-        '  <dc:rights>CC-BY-4.0</dc:rights>\n'
-        + "\n".join(items)
-        + "\n</channel>\n</rss>\n"
+        "  <dc:rights>CC-BY-4.0</dc:rights>\n" + "\n".join(items) + "\n</channel>\n</rss>\n"
     )
 
 

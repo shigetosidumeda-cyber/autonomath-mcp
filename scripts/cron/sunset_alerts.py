@@ -24,6 +24,7 @@ CLI:
     python scripts/cron/sunset_alerts.py
     python scripts/cron/sunset_alerts.py --dry-run
 """
+
 from __future__ import annotations
 
 import argparse
@@ -92,9 +93,7 @@ def _recent_sunset_diffs(
     return [dict(r) for r in rows]
 
 
-def _customers_watching(
-    jp_conn: sqlite3.Connection, entity_id: str
-) -> list[dict[str, Any]]:
+def _customers_watching(jp_conn: sqlite3.Connection, entity_id: str) -> list[dict[str, Any]]:
     """Return distinct (api_key_hash, notify_email, channel_format,
     channel_url) for every customer with `entity_id` in their
     last_active_program_ids_json across any client_profile.
@@ -115,9 +114,7 @@ def _customers_watching(
     return [dict(r) for r in rows]
 
 
-def _preferred_channel(
-    jp_conn: sqlite3.Connection, key_hash: str
-) -> tuple[str, str | None]:
+def _preferred_channel(jp_conn: sqlite3.Connection, key_hash: str) -> tuple[str, str | None]:
     """Look up the customer's most-recently-created Slack channel binding.
 
     Returns ('slack', channel_url) when a Slack-format saved_search exists,
@@ -143,9 +140,7 @@ def _preferred_channel(
     return "email", None
 
 
-def _resolve_program_name(
-    jp_conn: sqlite3.Connection, entity_id: str
-) -> str:
+def _resolve_program_name(jp_conn: sqlite3.Connection, entity_id: str) -> str:
     """Best-effort lookup of a human-readable name for the affected program."""
     row = jp_conn.execute(
         "SELECT primary_name FROM programs WHERE unified_id = ? LIMIT 1",
@@ -170,9 +165,7 @@ def _send_slack_sunset(
         f"<{_PUBLIC_ORIGIN}/programs/{entity_id}|詳細を確認>"
     )
     if dry_run:
-        logger.info(
-            "sunset.slack.dry_run program=%s entity=%s", program_name, entity_id
-        )
+        logger.info("sunset.slack.dry_run program=%s entity=%s", program_name, entity_id)
         return True
     body = json.dumps({"text": text}).encode("utf-8")
     req = urllib.request.Request(
@@ -336,9 +329,7 @@ def main(argv: list[str] | None = None) -> int:
             )
             hb["rows_skipped"] = int(summary.get("skipped", 0) or 0)
             hb["metadata"] = {
-                k: summary.get(k)
-                for k in ("sunsets", "warned", "dry_run")
-                if k in summary
+                k: summary.get(k) for k in ("sunsets", "warned", "dry_run") if k in summary
             }
     print(json.dumps(summary, ensure_ascii=False))
     return 0

@@ -72,6 +72,7 @@ Storage growth (verified against 2026-04-26 partial-load measurement):
     4M rows = ~580 MB table + ~340 MB indexes ≈ 920 MB. The migration
     019 header estimate (900 MB-1.4 GB) is the conservative envelope.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -204,7 +205,10 @@ def _gate_disk(db_path: Path, mode: str) -> bool:
     if free < needed:
         _LOG.error(
             "disk_gate_tripped mode=%s free_bytes=%d need=%d path=%s",
-            mode, free, needed, db_path,
+            mode,
+            free,
+            needed,
+            db_path,
         )
         return False
     return True
@@ -219,8 +223,7 @@ def _gate_schema(db_path: Path) -> bool:
         c = sqlite3.connect(str(db_path), timeout=30)
         try:
             row = c.execute(
-                "SELECT name FROM sqlite_master "
-                "WHERE type='table' AND name='invoice_registrants'"
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='invoice_registrants'"
             ).fetchone()
         finally:
             c.close()
@@ -229,8 +232,7 @@ def _gate_schema(db_path: Path) -> bool:
         return False
     if row is None:
         _LOG.error(
-            "schema_gate table_missing — run "
-            "`python scripts/migrate.py --db %s` first",
+            "schema_gate table_missing — run `python scripts/migrate.py --db %s` first",
             db_path,
         )
         return False
@@ -255,12 +257,18 @@ def _build_ingest_argv(
     argv = [
         sys.executable,
         str(_INGEST_SCRIPT),
-        "--db", str(db_path),
-        "--mode", mode,
-        "--format", fmt,
-        "--date", date_str,
-        "--cache-dir", str(cache_dir),
-        "--batch-size", str(batch_size),
+        "--db",
+        str(db_path),
+        "--mode",
+        mode,
+        "--format",
+        fmt,
+        "--date",
+        date_str,
+        "--cache-dir",
+        str(cache_dir),
+        "--batch-size",
+        str(batch_size),
     ]
     if limit is not None:
         argv += ["--limit", str(limit)]
@@ -365,7 +373,9 @@ def run(
             _LOG.error(
                 "no_publishable_date mode=%s today=%s lookback=%d — "
                 "NTA index returned no dlFilKanriNo for the date window",
-                mode, today.isoformat(), _SABUN_LOOKBACK_DAYS,
+                mode,
+                today.isoformat(),
+                _SABUN_LOOKBACK_DAYS,
             )
             return 1
 
@@ -420,7 +430,12 @@ def run(
 
     _LOG.info(
         "run_done mode=%s rc=%d rows_before=%s rows_after=%s delta=%s elapsed=%.1fs",
-        mode, rc, rows_before, rows_after, delta_rows, elapsed,
+        mode,
+        rc,
+        rows_before,
+        rows_after,
+        delta_rows,
+        elapsed,
     )
     return rc
 

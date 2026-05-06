@@ -63,6 +63,7 @@ Exit codes
 1  fatal (db missing, robots verification failure, etc.)
 2  no candidate laws found
 """
+
 from __future__ import annotations
 
 import argparse
@@ -91,9 +92,7 @@ except ImportError as exc:  # pragma: no cover
 _LOG = logging.getLogger("jpcite.etl.fetch_egov_law_fulltext_batch")
 _REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 _DEFAULT_DB = _REPO_ROOT / "data" / "jpintel.db"
-_DEFAULT_OUT = (
-    _REPO_ROOT / "analysis_wave18" / "egov_law_fulltext_batch_2026-05-01.csv"
-)
+_DEFAULT_OUT = _REPO_ROOT / "analysis_wave18" / "egov_law_fulltext_batch_2026-05-01.csv"
 
 # Spec divergence (auditable): the task spec referenced
 #   ``https://elaws.e-gov.go.jp/api/2/lawdata/<id>``
@@ -110,8 +109,8 @@ _EGOV_ROBOTS_URL = "https://laws.e-gov.go.jp/robots.txt"
 _USER_AGENT = "jpcite-research/1.0 (+https://jpcite.com/about)"
 _HTTP_TIMEOUT = 30.0
 _PARALLEL = 5
-_RETRY_LIMIT = 1            # 1 retry on 5xx / network errors (= 2 attempts)
-_CRAWL_DELAY_SEC = 1.0      # per-domain Crawl-Delay (e-Gov polite budget)
+_RETRY_LIMIT = 1  # 1 retry on 5xx / network errors (= 2 attempts)
+_CRAWL_DELAY_SEC = 1.0  # per-domain Crawl-Delay (e-Gov polite budget)
 
 # CSV column order (stable contract for downstream merge).
 _CSV_FIELDS = ["law_id", "body_text", "fetched_at", "source_url", "content_hash"]
@@ -143,9 +142,7 @@ def _laws_has_column(con: sqlite3.Connection, col: str) -> bool:
     return any(r["name"] == col for r in rows)
 
 
-def select_candidates(
-    con: sqlite3.Connection, limit: int | None
-) -> list[dict[str, Any]]:
+def select_candidates(con: sqlite3.Connection, limit: int | None) -> list[dict[str, Any]]:
     """Return laws missing body text, capped at ``limit`` (None = all).
 
     The laws table in jpintel.db doesn't currently carry a ``body_text``
@@ -162,10 +159,7 @@ def select_candidates(
             "ORDER BY unified_id"
         )
     else:
-        sql = (
-            "SELECT unified_id, full_text_url, law_title "
-            "FROM laws ORDER BY unified_id"
-        )
+        sql = "SELECT unified_id, full_text_url, law_title FROM laws ORDER BY unified_id"
     if limit is not None:
         sql += f" LIMIT {int(limit)}"
     rows = con.execute(sql).fetchall()
@@ -458,17 +452,17 @@ async def fetch_batch(
         timeout=httpx.Timeout(timeout_sec, connect=10.0),
         follow_redirects=True,
     ) as client:
-        tasks = [
-            asyncio.create_task(_fetch_one(client, sem, gate, c))
-            for c in candidates
-        ]
+        tasks = [asyncio.create_task(_fetch_one(client, sem, gate, c)) for c in candidates]
         rows: list[dict[str, Any]] = []
         for fut in asyncio.as_completed(tasks):
             r = await fut
             rows.append(r)
             _LOG.info(
                 "fetch law_id=%s status=%s articles=%d host=%s",
-                r["law_id"], r["status"], r["article_count"], r["host"],
+                r["law_id"],
+                r["status"],
+                r["article_count"],
+                r["host"],
             )
     return rows
 
@@ -618,7 +612,10 @@ def main(argv: list[str] | None = None) -> int:
 
     _LOG.info(
         "candidates_selected n=%d limit=%s parallel=%d crawl_delay=%.1fs",
-        len(candidates), args.limit, args.parallel, args.crawl_delay,
+        len(candidates),
+        args.limit,
+        args.parallel,
+        args.crawl_delay,
     )
 
     # 3) Async fetch.
@@ -637,7 +634,9 @@ def main(argv: list[str] | None = None) -> int:
     stats = compute_stats(rows)
     _LOG.info(
         "run_done elapsed=%.1fs total=%d by_status=%s",
-        elapsed, stats["total"], stats["by_status"],
+        elapsed,
+        stats["total"],
+        stats["by_status"],
     )
     for host, host_stats in stats["by_host"].items():
         _LOG.info("by_host host=%s stats=%s", host, host_stats)
@@ -650,7 +649,7 @@ def main(argv: list[str] | None = None) -> int:
                 f"law_id={r['law_id']} status={r['status']} "
                 f"hash={r['content_hash'][:12]} body_preview={preview!r}"
             )
-        print(f"[dry-run] would write {sum(1 for r in rows if r['status']=='ok')} CSV rows")
+        print(f"[dry-run] would write {sum(1 for r in rows if r['status'] == 'ok')} CSV rows")
     else:
         n = write_csv(args.out, rows)
         _LOG.info("wrote_csv path=%s rows=%d", args.out, n)

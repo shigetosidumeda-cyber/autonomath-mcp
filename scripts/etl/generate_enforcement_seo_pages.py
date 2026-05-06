@@ -67,9 +67,7 @@ logger = logging.getLogger("jpcite.etl.generate_enforcement_seo_pages")
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_JPINTEL_DB = REPO_ROOT / "data" / "jpintel.db"
-DEFAULT_AUTONOMATH_DB = Path(
-    os.environ.get("AUTONOMATH_DB_PATH", str(REPO_ROOT / "autonomath.db"))
-)
+DEFAULT_AUTONOMATH_DB = Path(os.environ.get("AUTONOMATH_DB_PATH", str(REPO_ROOT / "autonomath.db")))
 DEFAULT_SITE_DIR = REPO_ROOT / "site"
 DEFAULT_DOMAIN = "jpcite.com"
 DEFAULT_DETAIL_LIMIT = 300  # 100-500 per spec; 300 = balanced index
@@ -84,20 +82,52 @@ DEFAULT_DETAIL_LIMIT = 300  # 100-500 per spec; 300 = balanced index
 # Otherwise the row is treated as potentially individual / sole-proprietor
 # and dropped from the SEO surface (still queryable via API).
 HOUJIN_SUFFIXES = (
-    "株式会社", "（株）", "(株)", "㈱",
-    "有限会社", "（有）", "(有)", "㈲",
-    "合同会社", "合資会社", "合名会社",
-    "医療法人", "（医）", "(医)",
+    "株式会社",
+    "（株）",
+    "(株)",
+    "㈱",
+    "有限会社",
+    "（有）",
+    "(有)",
+    "㈲",
+    "合同会社",
+    "合資会社",
+    "合名会社",
+    "医療法人",
+    "（医）",
+    "(医)",
     "社会福祉法人",
     "学校法人",
     "宗教法人",
-    "一般社団法人", "公益社団法人", "（一社）", "(一社)", "（公社）", "(公社)",
-    "一般財団法人", "公益財団法人", "（一財）", "(一財)", "（公財）", "(公財)",
-    "独立行政法人", "国立大学法人", "公立大学法人",
+    "一般社団法人",
+    "公益社団法人",
+    "（一社）",
+    "(一社)",
+    "（公社）",
+    "(公社)",
+    "一般財団法人",
+    "公益財団法人",
+    "（一財）",
+    "(一財)",
+    "（公財）",
+    "(公財)",
+    "独立行政法人",
+    "国立大学法人",
+    "公立大学法人",
     "地方独立行政法人",
-    "特定非営利活動法人", "ＮＰＯ法人", "NPO法人",
+    "特定非営利活動法人",
+    "ＮＰＯ法人",
+    "NPO法人",
     # 公的セクター (1xxxxxxxxxxx houjin_bangou):
-    "市", "町", "村", "県", "都", "府", "庁", "局", "省",
+    "市",
+    "町",
+    "村",
+    "県",
+    "都",
+    "府",
+    "庁",
+    "局",
+    "省",
 )
 
 ENFORCEMENT_KIND_JA = {
@@ -199,10 +229,20 @@ def _load_autonomath_rows(
     rows: list[EnforcementRow] = []
     for r in cur:
         (
-            enforcement_id, entity_id, houjin_bangou, target_name,
-            enforcement_kind, issuing_authority, issuance_date,
-            exclusion_start, exclusion_end, reason_summary, related_law_ref,
-            amount_yen, source_url, source_fetched_at,
+            enforcement_id,
+            entity_id,
+            houjin_bangou,
+            target_name,
+            enforcement_kind,
+            issuing_authority,
+            issuance_date,
+            exclusion_start,
+            exclusion_end,
+            reason_summary,
+            related_law_ref,
+            amount_yen,
+            source_url,
+            source_fetched_at,
         ) = r
         # Source-scheme guard.
         if not source_url or not source_url.startswith(ALLOWED_SOURCE_SCHEMES):
@@ -211,9 +251,7 @@ def _load_autonomath_rows(
             continue
         # Strip whitespace runs from target_name (ingest leaves multi-line junk).
         clean_name = re.sub(r"\s+", " ", target_name).strip()
-        clean_reason = (
-            re.sub(r"\s+", " ", reason_summary).strip() if reason_summary else None
-        )
+        clean_reason = re.sub(r"\s+", " ", reason_summary).strip() if reason_summary else None
         rows.append(
             EnforcementRow(
                 enforcement_id=int(enforcement_id),
@@ -523,7 +561,7 @@ def _render_index(
         "</nav>"
     )
     parts.append(
-        f'<article><header><h1>行政処分 公開記録 サマリー</h1>'
+        f"<article><header><h1>行政処分 公開記録 サマリー</h1>"
         f'<p class="byline"><span class="updated">生成日時: {generated_at}</span>'
         f' <span class="sep">/</span> <span class="author">jpcite</span></p>'
         f"</header>"
@@ -551,37 +589,42 @@ def _render_index(
     )
 
     # By authority
-    parts.append('<section><h2>官庁別 内訳 (上位 20)</h2>')
-    parts.append('<table class="enforcement-rollup"><thead>'
-                 '<tr><th>官庁</th><th>処分件数</th></tr></thead><tbody>')
+    parts.append("<section><h2>官庁別 内訳 (上位 20)</h2>")
+    parts.append(
+        '<table class="enforcement-rollup"><thead>'
+        "<tr><th>官庁</th><th>処分件数</th></tr></thead><tbody>"
+    )
     for auth, c in by_authority.items():
         parts.append(f"<tr><td>{_esc(auth)}</td><td>{c:,}</td></tr>")
     parts.append("</tbody></table></section>")
 
     # By kind
-    parts.append('<section><h2>処分種別 内訳</h2>')
-    parts.append('<table class="enforcement-rollup"><thead>'
-                 '<tr><th>処分種別</th><th>件数</th></tr></thead><tbody>')
+    parts.append("<section><h2>処分種別 内訳</h2>")
+    parts.append(
+        '<table class="enforcement-rollup"><thead>'
+        "<tr><th>処分種別</th><th>件数</th></tr></thead><tbody>"
+    )
     for kind, c in by_kind.items():
-        parts.append(
-            f"<tr><td>{_esc(ENFORCEMENT_KIND_JA.get(kind, kind))}</td>"
-            f"<td>{c:,}</td></tr>"
-        )
+        parts.append(f"<tr><td>{_esc(ENFORCEMENT_KIND_JA.get(kind, kind))}</td><td>{c:,}</td></tr>")
     parts.append("</tbody></table></section>")
 
     # By year
-    parts.append('<section><h2>年度別 内訳 (直近 12 年)</h2>')
-    parts.append('<table class="enforcement-rollup"><thead>'
-                 '<tr><th>処分年</th><th>件数</th></tr></thead><tbody>')
+    parts.append("<section><h2>年度別 内訳 (直近 12 年)</h2>")
+    parts.append(
+        '<table class="enforcement-rollup"><thead>'
+        "<tr><th>処分年</th><th>件数</th></tr></thead><tbody>"
+    )
     for y, c in by_year.items():
         parts.append(f"<tr><td>{_esc(y)}</td><td>{c:,}</td></tr>")
     parts.append("</tbody></table></section>")
 
     # Recent 100
-    parts.append('<section><h2>直近 100 件 一覧</h2>')
-    parts.append('<table class="enforcement-recent"><thead>'
-                 '<tr><th>処分日</th><th>事業者</th><th>処分種別</th><th>所管</th>'
-                 '<th>金額</th><th>出典</th></tr></thead><tbody>')
+    parts.append("<section><h2>直近 100 件 一覧</h2>")
+    parts.append(
+        '<table class="enforcement-recent"><thead>'
+        "<tr><th>処分日</th><th>事業者</th><th>処分種別</th><th>所管</th>"
+        "<th>金額</th><th>出典</th></tr></thead><tbody>"
+    )
     for r in recent:
         kind_ja = ENFORCEMENT_KIND_JA.get(r.enforcement_kind, r.enforcement_kind)
         parts.append(
@@ -604,7 +647,7 @@ def _render_index(
         '<pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \\\n'
         f' "https://api.{domain}/v1/am/enforcement?houjin_bangou=&lt;13桁&gt;"</code></pre>'
         "<p>MCP クライアントからは <code>check_enforcement_am(houjin_bangou=...)</code> "
-        "で呼べます。詳細は <a href=\"/docs/\">API reference</a> 参照。</p>"
+        'で呼べます。詳細は <a href="/docs/">API reference</a> 参照。</p>'
         '<p class="api-cta-line">無料 3 リクエスト/日。'
         '<a href="/pricing.html">料金体系</a> · '
         '<a href="/dashboard.html">API キー発行</a> · '
@@ -682,23 +725,15 @@ def _render_detail(
     parts.append(f"<dt>法人番号</dt><dd><code>{_esc(row.houjin_bangou)}</code></dd>")
     parts.append(f"<dt>処分種別</dt><dd>{_esc(kind_ja)}</dd>")
     parts.append(f"<dt>所管 (発出機関)</dt><dd>{_esc(row.issuing_authority)}</dd>")
-    parts.append(
-        f"<dt>処分日</dt><dd>{_esc(_format_iso(row.issuance_date))}</dd>"
-    )
+    parts.append(f"<dt>処分日</dt><dd>{_esc(_format_iso(row.issuance_date))}</dd>")
     if row.exclusion_start:
-        parts.append(
-            f"<dt>除外開始</dt><dd>{_esc(_format_iso(row.exclusion_start))}</dd>"
-        )
+        parts.append(f"<dt>除外開始</dt><dd>{_esc(_format_iso(row.exclusion_start))}</dd>")
     if row.exclusion_end:
-        parts.append(
-            f"<dt>除外終了</dt><dd>{_esc(_format_iso(row.exclusion_end))}</dd>"
-        )
+        parts.append(f"<dt>除外終了</dt><dd>{_esc(_format_iso(row.exclusion_end))}</dd>")
     if row.amount_yen:
         parts.append(f"<dt>金額</dt><dd>{_esc(_yen(row.amount_yen))}</dd>")
     if row.related_law_ref:
-        parts.append(
-            f"<dt>関連条文</dt><dd>{_esc(row.related_law_ref)}</dd>"
-        )
+        parts.append(f"<dt>関連条文</dt><dd>{_esc(row.related_law_ref)}</dd>")
     parts.append("</dl>")
     # Reason summary
     parts.append("<section><h2>処分理由 (公表記録より要約)</h2>")
@@ -709,8 +744,10 @@ def _render_detail(
             body = body[:797] + "…"
         parts.append(f"<p>{_esc(body)}</p>")
     else:
-        parts.append('<p class="muted">理由要約は公表されていません。'
-                     "原文の所管プレスリリース URL をご確認ください。</p>")
+        parts.append(
+            '<p class="muted">理由要約は公表されていません。'
+            "原文の所管プレスリリース URL をご確認ください。</p>"
+        )
     parts.append("</section>")
     # Source section
     parts.append(
@@ -728,7 +765,7 @@ def _render_detail(
         f'<pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \\\n'
         f' "https://api.{domain}/v1/am/enforcement?houjin_bangou={row.houjin_bangou}"</code></pre>'
         "<p>MCP クライアントから: "
-        f"<code>check_enforcement_am(houjin_bangou=\"{row.houjin_bangou}\")</code></p>"
+        f'<code>check_enforcement_am(houjin_bangou="{row.houjin_bangou}")</code></p>'
         '<p class="api-cta-line">無料 3 リクエスト/日。'
         '<a href="/pricing.html">料金体系</a> · '
         '<a href="/dashboard.html">API キー発行</a> · '
@@ -782,8 +819,7 @@ def _ensure_sitemap_index_includes_enforcement(
 ) -> None:
     """Inject the enforcement sitemap into the master index, idempotent."""
     if not sitemap_index_path.exists():
-        logger.warning("sitemap-index.xml missing at %s — skipping injection",
-                       sitemap_index_path)
+        logger.warning("sitemap-index.xml missing at %s — skipping injection", sitemap_index_path)
         return
     text = sitemap_index_path.read_text(encoding="utf-8")
     target_loc = f"https://{domain}/sitemap-enforcement.xml"
@@ -826,8 +862,11 @@ def _build(
     if not jpintel_db.exists():
         # Soft warning — generator only requires autonomath.db at the moment;
         # jpintel.db enforcement_cases is a future-extension hook.
-        logger.warning("data/jpintel.db not present at %s — proceeding without "
-                       "the legacy enforcement_cases corpus", jpintel_db)
+        logger.warning(
+            "data/jpintel.db not present at %s — proceeding without "
+            "the legacy enforcement_cases corpus",
+            jpintel_db,
+        )
     today_iso = today_iso or datetime.now(UTC).strftime("%Y-%m-%d")
     generated_at = generated_at or datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC")
 
@@ -863,9 +902,7 @@ def _build(
         page = _render_detail(domain=domain, row=r, generated_at=generated_at)
         (enf_dir / f"{r.slug}.html").write_text(page, encoding="utf-8")
 
-    sitemap_xml = _render_sitemap(
-        domain=domain, detail_rows=detail_rows, today_iso=today_iso
-    )
+    sitemap_xml = _render_sitemap(domain=domain, detail_rows=detail_rows, today_iso=today_iso)
     sitemap_path = site_dir / "sitemap-enforcement.xml"
     sitemap_path.write_text(sitemap_xml, encoding="utf-8")
 
@@ -882,15 +919,15 @@ def _build(
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(
-        description="Generate行政処分 SEO pages for jpcite.com"
-    )
+    parser = argparse.ArgumentParser(description="Generate行政処分 SEO pages for jpcite.com")
     parser.add_argument("--jpintel-db", type=Path, default=DEFAULT_JPINTEL_DB)
     parser.add_argument("--autonomath-db", type=Path, default=DEFAULT_AUTONOMATH_DB)
     parser.add_argument("--site-dir", type=Path, default=DEFAULT_SITE_DIR)
     parser.add_argument("--domain", default=DEFAULT_DOMAIN)
     parser.add_argument(
-        "--detail-limit", type=int, default=DEFAULT_DETAIL_LIMIT,
+        "--detail-limit",
+        type=int,
+        default=DEFAULT_DETAIL_LIMIT,
         help="Max number of static per-action detail pages (100-500 typical).",
     )
     parser.add_argument("--verbose", action="store_true")
@@ -919,7 +956,8 @@ def main(argv: list[str] | None = None) -> int:
     logger.info(
         "wrote enforcement SEO surface: index=1 detail=%d sitemap_urls=%d "
         "(publicly_attributable_rows=%d)",
-        report["detail_pages"], report["sitemap_urls"],
+        report["detail_pages"],
+        report["sitemap_urls"],
         report["publicly_attributable_rows"],
     )
     return 0

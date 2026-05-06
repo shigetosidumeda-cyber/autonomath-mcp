@@ -85,11 +85,7 @@ def build_law_prefix_index(rows: Iterable[dict[str, Any]]) -> dict[str, str]:
             key = normalize_law_prefix(str(value or ""))
             if key:
                 buckets.setdefault(key, set()).add(law_id)
-    return {
-        key: next(iter(values))
-        for key, values in buckets.items()
-        if len(values) == 1
-    }
+    return {key: next(iter(values)) for key, values in buckets.items() if len(values) == 1}
 
 
 def reconcile_law_prefixes(
@@ -111,9 +107,12 @@ def reconcile_law_prefixes(
 
 
 def _law_rows(conn: sqlite3.Connection, table: str) -> list[dict[str, Any]]:
-    return [dict(row) for row in conn.execute(
-        f"SELECT unified_id, law_title, law_short_title, source_url FROM {table}"
-    )]
+    return [
+        dict(row)
+        for row in conn.execute(
+            f"SELECT unified_id, law_title, law_short_title, source_url FROM {table}"
+        )
+    ]
 
 
 def _jpi_law_indexes(conn: sqlite3.Connection) -> tuple[dict[str, str], dict[str, str]]:
@@ -133,9 +132,7 @@ def _jpintel_law_indexes(
     source_url_by_id: dict[str, str] = {}
     by_lawid: dict[str, str] = {}
     rows: list[dict[str, Any]] = []
-    for row in conn.execute(
-        "SELECT unified_id, law_title, law_short_title, source_url FROM laws"
-    ):
+    for row in conn.execute("SELECT unified_id, law_title, law_short_title, source_url FROM laws"):
         data = dict(row)
         rows.append(data)
         law_ids.add(row["unified_id"])
@@ -195,12 +192,15 @@ def _law_to_am_law_mapping(am_conn: sqlite3.Connection) -> dict[str, str]:
         lawid = str(row["source_url"] or "").rstrip("/").split("/")[-1]
         if not by_lawid.get(lawid):
             continue
-        candidates = [dict(r) for r in am_conn.execute(
-            """SELECT canonical_id, status
+        candidates = [
+            dict(r)
+            for r in am_conn.execute(
+                """SELECT canonical_id, status
                  FROM am_law
                 WHERE e_gov_lawid = ?""",
-            (lawid,),
-        )]
+                (lawid,),
+            )
+        ]
         if not candidates:
             continue
         candidates.sort(
@@ -314,10 +314,7 @@ def build_program_law_refs(
     am_conn: sqlite3.Connection,
     jp_conn: sqlite3.Connection,
 ) -> list[ProgramLawRef]:
-    program_ids = {
-        row["unified_id"]
-        for row in jp_conn.execute("SELECT unified_id FROM programs")
-    }
+    program_ids = {row["unified_id"] for row in jp_conn.execute("SELECT unified_id FROM programs")}
     law_ids, lawid_to_law, title_to_law, law_source_urls = _jpintel_law_indexes(jp_conn)
     am_law_to_law = _am_law_to_law_index(
         am_conn,
@@ -406,9 +403,7 @@ def insert_program_law_refs(
                     ),
                 )
                 inserted += cur.rowcount
-            fk_errors = conn.execute(
-                "PRAGMA foreign_key_check(program_law_refs)"
-            ).fetchall()
+            fk_errors = conn.execute("PRAGMA foreign_key_check(program_law_refs)").fetchall()
             if fk_errors:
                 raise RuntimeError(f"foreign_key_check failed: {fk_errors[:3]}")
             conn.commit()

@@ -48,11 +48,7 @@ def collect_license_review_rows(conn: sqlite3.Connection) -> list[dict[str, Any]
     ).fetchall()
     out: list[dict[str, Any]] = []
     for row in rows:
-        linked = [
-            item
-            for item in str(row["linked_entity_ids"] or "").split(",")
-            if item
-        ]
+        linked = [item for item in str(row["linked_entity_ids"] or "").split(",") if item]
         out.append(
             {
                 "source_id": row["source_id"],

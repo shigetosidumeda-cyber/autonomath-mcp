@@ -24,12 +24,8 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_ADOPTION_DB = REPO_ROOT / "autonomath.db"
 DEFAULT_PROGRAM_DB = REPO_ROOT / "data" / "jpintel.db"
-DEFAULT_JSON_OUTPUT = (
-    REPO_ROOT / "analysis_wave18" / "adoption_program_join_gaps_2026-05-01.json"
-)
-DEFAULT_CSV_OUTPUT = (
-    REPO_ROOT / "analysis_wave18" / "adoption_program_join_gaps_2026-05-01.csv"
-)
+DEFAULT_JSON_OUTPUT = REPO_ROOT / "analysis_wave18" / "adoption_program_join_gaps_2026-05-01.json"
+DEFAULT_CSV_OUTPUT = REPO_ROOT / "analysis_wave18" / "adoption_program_join_gaps_2026-05-01.csv"
 
 DEFAULT_TIERS = ("S", "A", "B", "C")
 DEFAULT_MAX_GROUPS = 2_000
@@ -391,7 +387,10 @@ def generate_strategy_variants(raw_name: str) -> list[StrategyVariant]:
     seen: set[tuple[str, str, str]] = set()
     raw_exact_key = _key_exact(base)
     for variant in variants:
-        if variant.strategy != "exact_normalized" and _key_for(variant.variant, variant.key_mode) == raw_exact_key:
+        if (
+            variant.strategy != "exact_normalized"
+            and _key_for(variant.variant, variant.key_mode) == raw_exact_key
+        ):
             continue
         marker = (variant.strategy, variant.key_mode, _key_for(variant.variant, variant.key_mode))
         if marker in seen:
@@ -624,10 +623,7 @@ def _top_unmatched_names(groups: list[UnmatchedGroup], limit: int = 25) -> list[
     counts: Counter[str] = Counter()
     for group in groups:
         counts[group.raw_name] += group.rows
-    return [
-        {"program_name_raw": name, "rows": rows}
-        for name, rows in counts.most_common(limit)
-    ]
+    return [{"program_name_raw": name, "rows": rows} for name, rows in counts.most_common(limit)]
 
 
 def _sample_unmatched_rows(
@@ -661,13 +657,7 @@ def _sample_unmatched_rows(
             LIMIT ?""",
         (sample_limit,),
     ).fetchall()
-    return [
-        {
-            column: row[column]
-            for column in selected
-        }
-        for row in rows
-    ]
+    return [{column: row[column] for column in selected} for row in rows]
 
 
 def _tier_rank(tier: str | None) -> int:
@@ -812,8 +802,7 @@ def _analyze_groups(
                 "candidate_count": len(ranked),
                 "review_required": not clear_match,
                 "reason": (
-                    f"raw adoption name matches '{variant.variant}' after "
-                    f"{variant.strategy}"
+                    f"raw adoption name matches '{variant.variant}' after {variant.strategy}"
                 ),
             }
             if best_for_group is None or (
@@ -1080,10 +1069,7 @@ def main() -> int:
         print(f"current_unmatched_named_rows={totals['current_unmatched_named_rows']}")
         print(f"candidate_rows={totals['candidate_rows']}")
         print(f"recommended_alias_additions={totals['recommended_alias_additions']}")
-        print(
-            "recommended_alias_review_required="
-            f"{totals['recommended_alias_review_required']}"
-        )
+        print(f"recommended_alias_review_required={totals['recommended_alias_review_required']}")
         if args.write_report:
             print(f"json_output={args.json_output}")
         if args.write_csv:

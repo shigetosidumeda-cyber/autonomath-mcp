@@ -271,9 +271,7 @@ def _dominant_domains(
             "http_unverified_rows": remaining,
             "remaining_http_share_pct": row["remaining_http_share_pct"],
             "cumulative_http_unverified_rows": cumulative,
-            "lower_bound_duration_at_1_req_per_sec": row[
-                "lower_bound_duration_at_1_req_per_sec"
-            ],
+            "lower_bound_duration_at_1_req_per_sec": row["lower_bound_duration_at_1_req_per_sec"],
         }
         if "next_commands" in row:
             item["next_commands"] = row["next_commands"]
@@ -300,9 +298,7 @@ def _quick_parallel_domains(
         {
             "domain": row["domain"],
             "http_unverified_rows": row["http_unverified_rows"],
-            "lower_bound_duration_at_1_req_per_sec": row[
-                "lower_bound_duration_at_1_req_per_sec"
-            ],
+            "lower_bound_duration_at_1_req_per_sec": row["lower_bound_duration_at_1_req_per_sec"],
             "next_commands": row["next_commands"],
         }
         for row in eligible[:limit]

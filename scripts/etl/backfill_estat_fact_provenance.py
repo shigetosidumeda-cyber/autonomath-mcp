@@ -147,9 +147,7 @@ def _build_estat_source_maps(
         if normalized:
             normalized_buckets[normalized].add(source_id)
     normalized = {
-        key: next(iter(values))
-        for key, values in normalized_buckets.items()
-        if len(values) == 1
+        key: next(iter(values)) for key, values in normalized_buckets.items() if len(values) == 1
     }
     return exact, normalized
 
@@ -189,8 +187,7 @@ def collect_estat_fact_assignments(
     limit: int | None = None,
 ) -> list[SourceAssignment]:
     exact_sources, normalized_sources = _build_estat_source_maps(conn)
-    sql = (
-        """SELECT f.id AS fact_id,
+    sql = """SELECT f.id AS fact_id,
                   f.entity_id,
                   e.source_url AS entity_source_url,
                   e.source_url_domain AS entity_source_domain
@@ -200,7 +197,6 @@ def collect_estat_fact_assignments(
               AND e.source_topic = ?
               AND f.source_id IS NULL
          ORDER BY f.id"""
-    )
     params: list[object] = [ESTAT_INDUSTRY_TOPIC]
     if limit is not None and limit > 0:
         sql += " LIMIT ?"

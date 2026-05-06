@@ -107,26 +107,28 @@ logger = logging.getLogger("harvest_implicit_relations")
 # src/jpintel_mcp/mcp/autonomath_tools/graph_traverse_tool.py:_ALL_RELATION_TYPES).
 # Keep this set in sync — using a non-canonical relation_type would
 # silently disappear from graph_traverse output.
-_CANONICAL_RELATIONS = frozenset({
-    "has_authority",
-    "applies_to_region",
-    "applies_to_industry",
-    "related",
-    "references_law",
-    "compatible",
-    "compatible_with",
-    "applies_to_size",
-    "prerequisite",
-    "requires_prerequisite",
-    "part_of",
-    "successor_of",
-    "bonus_points",
-    "implemented_by",
-    "incompatible",
-    "incompatible_with",
-    "applies_to",
-    "replaces",
-})
+_CANONICAL_RELATIONS = frozenset(
+    {
+        "has_authority",
+        "applies_to_region",
+        "applies_to_industry",
+        "related",
+        "references_law",
+        "compatible",
+        "compatible_with",
+        "applies_to_size",
+        "prerequisite",
+        "requires_prerequisite",
+        "part_of",
+        "successor_of",
+        "bonus_points",
+        "implemented_by",
+        "incompatible",
+        "incompatible_with",
+        "applies_to",
+        "replaces",
+    }
+)
 
 # All strategies. Keep keys stable — they show up in source_field.
 _ALL_STRATEGIES = (
@@ -177,14 +179,16 @@ def harvest_authority(conn: sqlite3.Connection) -> list[Edge]:
     )
     edges: list[Edge] = []
     for source_id, target_id in cur:
-        edges.append(Edge(
-            source_entity_id=source_id,
-            target_entity_id=target_id,
-            target_raw=target_id,
-            relation_type="has_authority",
-            confidence=0.95,
-            source_field="harvest:authority_canonical",
-        ))
+        edges.append(
+            Edge(
+                source_entity_id=source_id,
+                target_entity_id=target_id,
+                target_raw=target_id,
+                relation_type="has_authority",
+                confidence=0.95,
+                source_field="harvest:authority_canonical",
+            )
+        )
     return edges
 
 
@@ -261,14 +265,16 @@ def harvest_enforcement_law(conn: sqlite3.Connection) -> list[Edge]:
         if not legal_basis or not isinstance(legal_basis, str):
             continue
         for law_id, matched_title in _match_law_in_text(legal_basis, law_lookup):
-            edges.append(Edge(
-                source_entity_id=canonical_id,
-                target_entity_id=law_id,
-                target_raw=matched_title,
-                relation_type="references_law",
-                confidence=0.85,
-                source_field="harvest:enforcement.legal_basis",
-            ))
+            edges.append(
+                Edge(
+                    source_entity_id=canonical_id,
+                    target_entity_id=law_id,
+                    target_raw=matched_title,
+                    relation_type="references_law",
+                    confidence=0.85,
+                    source_field="harvest:enforcement.legal_basis",
+                )
+            )
     return edges
 
 
@@ -320,14 +326,16 @@ def harvest_enforcement_program(conn: sqlite3.Connection) -> list[Edge]:
         # hint starts with a known program name.
         target_id = program_lookup.get(hint)
         if target_id:
-            edges.append(Edge(
-                source_entity_id=canonical_id,
-                target_entity_id=target_id,
-                target_raw=hint,
-                relation_type="related",
-                confidence=0.80,
-                source_field="harvest:enforcement.program_name_hint",
-            ))
+            edges.append(
+                Edge(
+                    source_entity_id=canonical_id,
+                    target_entity_id=target_id,
+                    target_raw=hint,
+                    relation_type="related",
+                    confidence=0.80,
+                    source_field="harvest:enforcement.program_name_hint",
+                )
+            )
     return edges
 
 
@@ -365,14 +373,16 @@ def harvest_case_study_program(conn: sqlite3.Connection) -> list[Edge]:
                 continue
             target_id = program_lookup.get(program_name)
             if target_id:
-                edges.append(Edge(
-                    source_entity_id=canonical_id,
-                    target_entity_id=target_id,
-                    target_raw=program_name,
-                    relation_type="related",
-                    confidence=0.85,
-                    source_field="harvest:case_study.programs_used",
-                ))
+                edges.append(
+                    Edge(
+                        source_entity_id=canonical_id,
+                        target_entity_id=target_id,
+                        target_raw=program_name,
+                        relation_type="related",
+                        confidence=0.85,
+                        source_field="harvest:case_study.programs_used",
+                    )
+                )
     return edges
 
 
@@ -426,16 +436,18 @@ def harvest_tax_ruleset_law(conn: sqlite3.Connection) -> list[Edge]:
             if not isinstance(entry, str):
                 continue
             # Strip 'PENDING:' prefix → free-text law name lookup.
-            text = entry[len("PENDING:"):] if entry.startswith("PENDING:") else entry
+            text = entry[len("PENDING:") :] if entry.startswith("PENDING:") else entry
             for law_id, matched_title in _match_law_in_text(text, law_lookup):
-                edges.append(Edge(
-                    source_entity_id=am_id,
-                    target_entity_id=law_id,
-                    target_raw=matched_title,
-                    relation_type="references_law",
-                    confidence=0.75,
-                    source_field="harvest:tax_ruleset.related_law_ids_json",
-                ))
+                edges.append(
+                    Edge(
+                        source_entity_id=am_id,
+                        target_entity_id=law_id,
+                        target_raw=matched_title,
+                        relation_type="references_law",
+                        confidence=0.75,
+                        source_field="harvest:tax_ruleset.related_law_ids_json",
+                    )
+                )
     return edges
 
 
@@ -475,25 +487,29 @@ def harvest_court_decision_law(conn: sqlite3.Connection) -> list[Edge]:
                 continue
             # Could be a LAW-id directly or PENDING:<text>.
             if entry.startswith("LAW-") and len(entry) == 14:
-                edges.append(Edge(
-                    source_entity_id=han_id,
-                    target_entity_id=entry,
-                    target_raw=entry,
-                    relation_type="references_law",
-                    confidence=0.90,
-                    source_field="harvest:court.related_law_ids_json",
-                ))
-            else:
-                text = entry[len("PENDING:"):] if entry.startswith("PENDING:") else entry
-                for law_id, matched_title in _match_law_in_text(text, law_lookup):
-                    edges.append(Edge(
+                edges.append(
+                    Edge(
                         source_entity_id=han_id,
-                        target_entity_id=law_id,
-                        target_raw=matched_title,
+                        target_entity_id=entry,
+                        target_raw=entry,
                         relation_type="references_law",
-                        confidence=0.80,
+                        confidence=0.90,
                         source_field="harvest:court.related_law_ids_json",
-                    ))
+                    )
+                )
+            else:
+                text = entry[len("PENDING:") :] if entry.startswith("PENDING:") else entry
+                for law_id, matched_title in _match_law_in_text(text, law_lookup):
+                    edges.append(
+                        Edge(
+                            source_entity_id=han_id,
+                            target_entity_id=law_id,
+                            target_raw=matched_title,
+                            relation_type="references_law",
+                            confidence=0.80,
+                            source_field="harvest:court.related_law_ids_json",
+                        )
+                    )
     return edges
 
 
@@ -551,28 +567,32 @@ def harvest_program_sibling(conn: sqlite3.Connection) -> list[Edge]:
             continue
         members = sorted(members, key=lambda x: x[1])[:30]
         for i, (a_id, a_name) in enumerate(members):
-            for b_id, b_name in members[i + 1:]:
+            for b_id, b_name in members[i + 1 :]:
                 if a_id == b_id:
                     continue
                 # Bidirectional: emit a→b, the reverse direction is added
                 # by a separate row (consistent with existing
                 # [bidir-added] convention in graph data).
-                edges.append(Edge(
-                    source_entity_id=a_id,
-                    target_entity_id=b_id,
-                    target_raw=b_name,
-                    relation_type="related",
-                    confidence=0.65,
-                    source_field=f"harvest:program_sibling[{prefix}]",
-                ))
-                edges.append(Edge(
-                    source_entity_id=b_id,
-                    target_entity_id=a_id,
-                    target_raw=a_name,
-                    relation_type="related",
-                    confidence=0.65,
-                    source_field=f"harvest:program_sibling[{prefix}]",
-                ))
+                edges.append(
+                    Edge(
+                        source_entity_id=a_id,
+                        target_entity_id=b_id,
+                        target_raw=b_name,
+                        relation_type="related",
+                        confidence=0.65,
+                        source_field=f"harvest:program_sibling[{prefix}]",
+                    )
+                )
+                edges.append(
+                    Edge(
+                        source_entity_id=b_id,
+                        target_entity_id=a_id,
+                        target_raw=a_name,
+                        relation_type="related",
+                        confidence=0.65,
+                        source_field=f"harvest:program_sibling[{prefix}]",
+                    )
+                )
     return edges
 
 
@@ -583,9 +603,7 @@ def harvest_program_industry(conn: sqlite3.Connection) -> list[Edge]:
     """Match raw_json.target_industries / target_industry / target_types
     against am_industry_jsic.jsic_name_ja for the 35 JSIC entries.
     """
-    cur = conn.execute(
-        "SELECT jsic_code, jsic_name_ja FROM am_industry_jsic"
-    )
+    cur = conn.execute("SELECT jsic_code, jsic_name_ja FROM am_industry_jsic")
     jsic_by_name = {name: code for code, name in cur}
     cur = conn.execute(
         """
@@ -622,14 +640,16 @@ def harvest_program_industry(conn: sqlite3.Connection) -> list[Edge]:
             # Substring match: industry token can be longer than JSIC.
             for jsic_name, jsic_code in jsic_by_name.items():
                 if jsic_name in cand_strip or cand_strip in jsic_name:
-                    edges.append(Edge(
-                        source_entity_id=canonical_id,
-                        target_entity_id=f"jsic:{jsic_code}",
-                        target_raw=jsic_name,
-                        relation_type="applies_to_industry",
-                        confidence=0.70,
-                        source_field=f"harvest:program.target_industries[{jsic_code}]",
-                    ))
+                    edges.append(
+                        Edge(
+                            source_entity_id=canonical_id,
+                            target_entity_id=f"jsic:{jsic_code}",
+                            target_raw=jsic_name,
+                            relation_type="applies_to_industry",
+                            confidence=0.70,
+                            source_field=f"harvest:program.target_industries[{jsic_code}]",
+                        )
+                    )
     return edges
 
 
@@ -774,19 +794,23 @@ def harvest_adoption_program(conn: sqlite3.Connection) -> list[Edge]:
                     confidence = 0.65
                     source_field = "harvest:adoption.program_name[base]"
         if target_id:
-            edges.append(Edge(
-                source_entity_id=canonical_id,
-                target_entity_id=target_id,
-                target_raw=program_name,
-                relation_type="part_of",
-                confidence=confidence,
-                source_field=source_field,
-            ))
+            edges.append(
+                Edge(
+                    source_entity_id=canonical_id,
+                    target_entity_id=target_id,
+                    target_raw=program_name,
+                    relation_type="part_of",
+                    confidence=confidence,
+                    source_field=source_field,
+                )
+            )
         else:
             misses[program_name] += 1
     if misses:
-        logger.info("adoption_program: unmatched program_names: %s",
-                    dict(sorted(misses.items(), key=lambda x: -x[1])))
+        logger.info(
+            "adoption_program: unmatched program_names: %s",
+            dict(sorted(misses.items(), key=lambda x: -x[1])),
+        )
     return edges
 
 
@@ -820,14 +844,16 @@ def harvest_tax_measure_law(conn: sqlite3.Connection) -> list[Edge]:
         if not root_law or not isinstance(root_law, str):
             continue
         for law_id, matched_title in _match_law_in_text(root_law, law_lookup):
-            edges.append(Edge(
-                source_entity_id=canonical_id,
-                target_entity_id=law_id,
-                target_raw=matched_title,
-                relation_type="references_law",
-                confidence=0.80,
-                source_field="harvest:tax_measure.root_law",
-            ))
+            edges.append(
+                Edge(
+                    source_entity_id=canonical_id,
+                    target_entity_id=law_id,
+                    target_raw=matched_title,
+                    relation_type="references_law",
+                    confidence=0.80,
+                    source_field="harvest:tax_measure.root_law",
+                )
+            )
     return edges
 
 
@@ -928,7 +954,8 @@ def main() -> int:
         help=f"Path to autonomath.db (default: {DB_PATH})",
     )
     parser.add_argument(
-        "-v", "--verbose",
+        "-v",
+        "--verbose",
         action="store_true",
     )
     args = parser.parse_args()
@@ -967,14 +994,18 @@ def main() -> int:
         if args.dry_run:
             print(f"  [{strat}] candidates={len(edges):,} unique={inserted:,}")
         else:
-            print(f"  [{strat}] inserted={inserted:,} skipped(dup)={skipped:,} (raw_matches={len(edges):,})")
+            print(
+                f"  [{strat}] inserted={inserted:,} skipped(dup)={skipped:,} (raw_matches={len(edges):,})"
+            )
 
     if not args.dry_run:
         conn.commit()
     conn.close()
 
     print()
-    print(f"=== TOTAL {'unique candidates' if args.dry_run else 'inserted'}: {total_inserted:,} ===")
+    print(
+        f"=== TOTAL {'unique candidates' if args.dry_run else 'inserted'}: {total_inserted:,} ==="
+    )
     if not args.dry_run:
         print(f"=== TOTAL skipped (idempotency): {total_skipped:,} ===")
     return 0

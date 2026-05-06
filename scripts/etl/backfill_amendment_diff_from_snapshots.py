@@ -211,9 +211,7 @@ def insert_snapshot_diffs(
                     ),
                 )
                 inserted += 1
-            fk_errors = conn.execute(
-                "PRAGMA foreign_key_check(am_amendment_diff)"
-            ).fetchall()
+            fk_errors = conn.execute("PRAGMA foreign_key_check(am_amendment_diff)").fetchall()
             if fk_errors:
                 raise RuntimeError(f"foreign_key_check failed: {fk_errors[:3]}")
             if started_tx:

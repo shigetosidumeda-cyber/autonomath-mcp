@@ -154,7 +154,11 @@ def run_verify(cmd: str, *, repo_root: Path, timeout_sec: int = 120) -> VerifyRe
 
     started = _dt.datetime.now(_dt.timezone.utc)
     parts = cmd.split()
-    full = [sys.executable, str(repo_root / parts[0]), *parts[1:]] if parts[0].endswith(".py") else parts
+    full = (
+        [sys.executable, str(repo_root / parts[0]), *parts[1:]]
+        if parts[0].endswith(".py")
+        else parts
+    )
     try:
         proc = subprocess.run(  # noqa: S603 - controlled command list
             full,
@@ -292,7 +296,9 @@ def collect_specs(repo_root: Path) -> list[dict[str, Any]]:
     for spec_id in SPEC_IDS:
         verify_sh = _spec_evidence_path(repo_root, spec_id)
         if verify_sh.is_file():
-            result = run_verify(str(verify_sh.relative_to(repo_root)), repo_root=repo_root, timeout_sec=60)
+            result = run_verify(
+                str(verify_sh.relative_to(repo_root)), repo_root=repo_root, timeout_sec=60
+            )
             status = result.status
             evidence = str(verify_sh.relative_to(repo_root))
             sha256 = result.sha256
@@ -412,7 +418,9 @@ def render_html(snap: GateSnapshot, template_dir: Path, out_path: Path) -> None:
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="DEEP-58 production gate aggregator")
-    parser.add_argument("--repo-root", type=Path, default=Path.cwd(), help="repo root for subprocess cwd")
+    parser.add_argument(
+        "--repo-root", type=Path, default=Path.cwd(), help="repo root for subprocess cwd"
+    )
     today = _dt.date.today().isoformat()
     parser.add_argument(
         "--out",

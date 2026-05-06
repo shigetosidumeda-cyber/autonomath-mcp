@@ -60,6 +60,7 @@ Usage:
     python3 scripts/etl/repromote_amount_conditions.py --dry-run
     python3 scripts/etl/repromote_amount_conditions.py --apply
 """
+
 from __future__ import annotations
 
 import argparse
@@ -91,16 +92,16 @@ BATCH_SIZE = 5_000
 # per-record amounts and those amounts diverge from ceilings).
 TEMPLATE_DEFAULT_BUCKETS: frozenset[int] = frozenset(
     {
-        500_000,    # jizokuka_ippan ceiling (26,008 quarantined v1 rows)
+        500_000,  # jizokuka_ippan ceiling (26,008 quarantined v1 rows)
         2_000_000,  # jizokuka_souzou ceiling (1,225 quarantined v1 rows)
         3_500_000,  # IT 補助金 デジタル化基盤 ceiling
         4_500_000,  # ものづくり 一般型 ceiling
-        12_500_000, # IT 補助金 通常枠 ceiling
-        15_000_000, # ものづくり 回復型 ceiling
-        30_000_000, # 事業承継引継ぎ ceiling
-        70_000_000, # ものづくり グローバル展開型 ceiling
-        90_000_000, # 事業再構築 ceiling
-        100_000_000, # 事業再構築 大規模賃金引上枠 ceiling
+        12_500_000,  # IT 補助金 通常枠 ceiling
+        15_000_000,  # ものづくり 回復型 ceiling
+        30_000_000,  # 事業承継引継ぎ ceiling
+        70_000_000,  # ものづくり グローバル展開型 ceiling
+        90_000_000,  # 事業再構築 ceiling
+        100_000_000,  # 事業再構築 大規模賃金引上枠 ceiling
         1_500_000,  # jizokuka_ippan 賃金引上枠 ceiling
     }
 )
@@ -220,9 +221,7 @@ def summarise_value_distribution(
 ) -> Counter:
     """Distribution of fixed_yen values across the source — proxy for
     detecting whether the source itself is bucket-defaulted."""
-    return Counter(
-        ("NULL" if value is None else int(value)) for _, value, _ in rows
-    )
+    return Counter(("NULL" if value is None else int(value)) for _, value, _ in rows)
 
 
 def main() -> int:
@@ -239,10 +238,7 @@ def main() -> int:
     conn = sqlite3.connect(str(db_path))
     try:
         # Verify migration 078 has landed (template_default column exists).
-        cols = {
-            r[1]
-            for r in conn.execute("PRAGMA table_info(am_amount_condition)").fetchall()
-        }
+        cols = {r[1] for r in conn.execute("PRAGMA table_info(am_amount_condition)").fetchall()}
         if "template_default" not in cols:
             print(
                 "FATAL: am_amount_condition.template_default missing — "
@@ -257,12 +253,10 @@ def main() -> int:
             [SOURCE_FIELD_NEW],
         ).fetchone()
         (quarantined,) = conn.execute(
-            "SELECT COUNT(*) FROM am_amount_condition "
-            "WHERE template_default = 1"
+            "SELECT COUNT(*) FROM am_amount_condition WHERE template_default = 1"
         ).fetchone()
         (honest_existing,) = conn.execute(
-            "SELECT COUNT(*) FROM am_amount_condition "
-            "WHERE template_default = 0"
+            "SELECT COUNT(*) FROM am_amount_condition WHERE template_default = 0"
         ).fetchone()
         print(
             f"[repromote] before: existing_repromoted_rows={existing_repromoted} "
@@ -288,9 +282,7 @@ def main() -> int:
                     [CONDITION_LABEL, SOURCE_FIELD_NEW],
                 ).fetchall()
             }
-            simulate_inserts = sum(
-                1 for entity_id, _, _ in rows if entity_id not in existing_keys
-            )
+            simulate_inserts = sum(1 for entity_id, _, _ in rows if entity_id not in existing_keys)
             # Project final flag distribution.
             simulate_template_default_1 = sum(
                 1
@@ -304,10 +296,7 @@ def main() -> int:
                 f"(existing={len(existing_keys):,}, "
                 f"skipped_by_unique={len(rows) - simulate_inserts:,})"
             )
-            print(
-                f"[repromote]   of which template_default=0: "
-                f"{simulate_template_default_0:,}"
-            )
+            print(f"[repromote]   of which template_default=0: {simulate_template_default_0:,}")
             print(
                 f"[repromote]   of which template_default=1: "
                 f"{simulate_template_default_1:,} "
@@ -333,9 +322,7 @@ def main() -> int:
         (final_honest,) = conn.execute(
             "SELECT COUNT(*) FROM am_amount_condition WHERE template_default = 0"
         ).fetchone()
-        (final_total,) = conn.execute(
-            "SELECT COUNT(*) FROM am_amount_condition"
-        ).fetchone()
+        (final_total,) = conn.execute("SELECT COUNT(*) FROM am_amount_condition").fetchone()
 
         print(f"[repromote] APPLIED inserted={inserted:,}")
         print(

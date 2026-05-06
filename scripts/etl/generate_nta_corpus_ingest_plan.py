@@ -23,9 +23,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 RUN_DATE = "2026-05-01"
 RUN_STAMP = RUN_DATE.replace("-", "")
 
-DEFAULT_COVERAGE_INPUT = (
-    REPO_ROOT / "analysis_wave18" / f"nta_corpus_coverage_{RUN_DATE}.json"
-)
+DEFAULT_COVERAGE_INPUT = REPO_ROOT / "analysis_wave18" / f"nta_corpus_coverage_{RUN_DATE}.json"
 DEFAULT_OUTPUT = REPO_ROOT / "analysis_wave18" / f"nta_corpus_ingest_plan_{RUN_DATE}.json"
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "research" / "loops" / "runs" / RUN_STAMP
 DEFAULT_LOG_DIR = Path("analysis_wave18")
@@ -192,9 +190,7 @@ def _validate_max_minutes(max_minutes: float) -> float:
     except (TypeError, ValueError) as exc:
         raise ValueError("max_minutes must be a number") from exc
     if parsed < MIN_MAX_MINUTES or parsed > MAX_MAX_MINUTES:
-        raise ValueError(
-            f"max_minutes must be between {MIN_MAX_MINUTES:g} and {MAX_MAX_MINUTES:g}"
-        )
+        raise ValueError(f"max_minutes must be between {MIN_MAX_MINUTES:g} and {MAX_MAX_MINUTES:g}")
     return parsed
 
 
@@ -328,9 +324,7 @@ def _build_shards(
                 max_minutes=max_minutes,
                 current_rows=_table_total_rows(report, table),
                 category_count=len(category_queue),
-                zero_row_category_count=sum(
-                    1 for item in category_queue if item.current_rows == 0
-                ),
+                zero_row_category_count=sum(1 for item in category_queue if item.current_rows == 0),
                 category_queue=category_queue,
                 dry_run_command=dry_run_command,
                 command=command,
@@ -618,9 +612,7 @@ def _render_script(
         ),
         "echo " + shlex.quote(f"category_queue={category_summary}"),
         "",
-        '"$PYTHON_BIN" '
-        + shlex.quote(CRON_SCRIPT)
-        + " \\",
+        '"$PYTHON_BIN" ' + shlex.quote(CRON_SCRIPT) + " \\",
         f"  --target {shlex.quote(shard.target)} \\",
         f"  --max-minutes {shlex.quote(_duration_minutes(shard.max_minutes))} \\",
         '  --autonomath-db "$AUTONOMATH_DB" \\',

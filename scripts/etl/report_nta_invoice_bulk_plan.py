@@ -385,20 +385,20 @@ def _command_strings(
         "local_read_only_counts": [
             (
                 f"sqlite3 'file:{_rel(jpintel_db)}?mode=ro' "
-                "\"SELECT COUNT(*) FROM invoice_registrants;\""
+                '"SELECT COUNT(*) FROM invoice_registrants;"'
             ),
             (
                 f"sqlite3 'file:{_rel(jpintel_db)}?mode=ro' "
-                "\"SELECT registrant_kind, COUNT(*) FROM invoice_registrants "
-                "GROUP BY registrant_kind ORDER BY COUNT(*) DESC;\""
+                '"SELECT registrant_kind, COUNT(*) FROM invoice_registrants '
+                'GROUP BY registrant_kind ORDER BY COUNT(*) DESC;"'
             ),
             (
                 f"sqlite3 'file:{_rel(autonomath_db)}?mode=ro' "
-                "\"SELECT COUNT(*) FROM jpi_invoice_registrants;\""
+                '"SELECT COUNT(*) FROM jpi_invoice_registrants;"'
             ),
         ],
         "operator_preflight_no_download": [
-            "flyctl ssh console -a autonomath-api -C \"df -h /data\"",
+            'flyctl ssh console -a autonomath-api -C "df -h /data"',
             (
                 "flyctl ssh console -a autonomath-api -C "
                 "\"sqlite3 'file:/data/jpintel.db?mode=ro' "
@@ -423,10 +423,10 @@ def _command_strings(
         "prod_full_acquisition_deferred": [
             (
                 "flyctl ssh console -a autonomath-api -C "
-                "\"/app/.venv/bin/python /app/scripts/cron/ingest_nta_invoice_bulk.py "
+                '"/app/.venv/bin/python /app/scripts/cron/ingest_nta_invoice_bulk.py '
                 "--db /data/jpintel.db --mode full --format csv "
                 "--cache-dir /data/_cache/nta_invoice "
-                "--log-file /data/invoice_load_log.jsonl --batch-size 10000\""
+                '--log-file /data/invoice_load_log.jsonl --batch-size 10000"'
             ),
         ],
         "post_load_reconcile_deferred": [
@@ -437,12 +437,12 @@ def _command_strings(
             ),
             (
                 f"sqlite3 'file:{_rel(jpintel_db)}?mode=ro' "
-                "\"SELECT registrant_kind, COUNT(*) FROM invoice_registrants "
-                "GROUP BY registrant_kind ORDER BY COUNT(*) DESC;\""
+                '"SELECT registrant_kind, COUNT(*) FROM invoice_registrants '
+                'GROUP BY registrant_kind ORDER BY COUNT(*) DESC;"'
             ),
             (
                 f"sqlite3 'file:{_rel(autonomath_db)}?mode=ro' "
-                "\"SELECT COUNT(*) FROM jpi_invoice_registrants;\""
+                '"SELECT COUNT(*) FROM jpi_invoice_registrants;"'
             ),
         ],
     }
@@ -682,11 +682,7 @@ def _reconcile_summary(jpintel: dict[str, Any], autonomath: dict[str, Any]) -> d
         "autonomath_invoice_entities": autonomath.get("counts", {}).get(
             "am_entities_invoice_registrant"
         ),
-        "count_match": (
-            isinstance(current, int)
-            and isinstance(mirror, int)
-            and current == mirror
-        ),
+        "count_match": (isinstance(current, int) and isinstance(mirror, int) and current == mirror),
         "mode": "aggregate_count_only_no_row_export",
         "post_load_policy": (
             "After full load, reconcile counts and kind distribution before any "
@@ -731,11 +727,7 @@ def build_report(
     )
     command_count = sum(len(group) for group in commands.values())
     current = jpintel.get("counts", {}).get("invoice_registrants")
-    remaining = (
-        max(FULL_POPULATION_ESTIMATE - current, 0)
-        if isinstance(current, int)
-        else None
-    )
+    remaining = max(FULL_POPULATION_ESTIMATE - current, 0) if isinstance(current, int) else None
     return {
         "ok": False,
         "generated_at": _utc_now(),

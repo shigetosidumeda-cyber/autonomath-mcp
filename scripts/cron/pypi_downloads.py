@@ -11,6 +11,7 @@ Output row shape:
   {"date":"2026-04-28","package":"autonomath-mcp","last_day":N,
    "last_week":N,"last_month":N,"fetched_at":"..."}
 """
+
 from __future__ import annotations
 
 import json

@@ -249,7 +249,9 @@ def build_domain_exclusive_shards(
         domains = sorted(str(item["domain"]) for item in bucket)
         with_robots_seconds = _estimate_seconds(rows + len(domains), per_domain_rps)
         candidate_only_seconds = _estimate_seconds(rows, per_domain_rps)
-        top_domains = sorted(bucket, key=lambda item: (-int(item["row_count"]), str(item["domain"])))[:10]
+        top_domains = sorted(
+            bucket, key=lambda item: (-int(item["row_count"]), str(item["domain"]))
+        )[:10]
         shards.append(
             {
                 "shard_id": f"tier-bc-liveness-{idx:02d}",
@@ -290,10 +292,11 @@ def summarize_bounded_scan_csv(path: Path | None, *, universe_rows: int) -> dict
         for row in rows
     )
     sample_rows = len(rows)
-    live_rows = sum(classification_counts[classification] for classification in LIVE_CLASSIFICATIONS)
+    live_rows = sum(
+        classification_counts[classification] for classification in LIVE_CLASSIFICATIONS
+    )
     confirmed_broken_rows = sum(
-        classification_counts[classification]
-        for classification in CONFIRMED_BROKEN_CLASSIFICATIONS
+        classification_counts[classification] for classification in CONFIRMED_BROKEN_CLASSIFICATIONS
     )
     non_live_or_uncertain_rows = sample_rows - live_rows
 
@@ -458,7 +461,9 @@ def main(argv: list[str] | None = None) -> int:
         estimate = report["scan_duration_estimate"]
         batching = report["safe_batching_plan"]
         print(f"output={args.output}")
-        print(f"tier_bc_unknown_source_url_status_rows={counts['tier_bc_unknown_source_url_status_rows']}")
+        print(
+            f"tier_bc_unknown_source_url_status_rows={counts['tier_bc_unknown_source_url_status_rows']}"
+        )
         print(f"http_candidate_rows={counts['http_candidate_rows']}")
         print(f"unique_domains={counts['unique_domains']}")
         print(f"sequential_with_robots={estimate['sequential_with_robots_human']}")

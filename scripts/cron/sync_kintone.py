@@ -22,6 +22,7 @@ Constraints:
 Cron cadence: invoked daily at 04:30 JST via .github/workflows/
 saved-searches-cron.yml (existing job — extends with --kintone flag).
 """
+
 from __future__ import annotations
 
 import json
@@ -49,12 +50,12 @@ from jpintel_mcp.observability import heartbeat  # noqa: E402
 logger = logging.getLogger("kintone.sync")
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
-DB_PATH = os.environ.get(
-    "JPINTEL_DB_PATH", str(_REPO / "data" / "jpintel.db")
-)
+DB_PATH = os.environ.get("JPINTEL_DB_PATH", str(_REPO / "data" / "jpintel.db"))
 
 
-def _push_records(domain: str, app_id: int, api_token: str, records: list[dict]) -> tuple[int, str | None]:
+def _push_records(
+    domain: str, app_id: int, api_token: str, records: list[dict]
+) -> tuple[int, str | None]:
     """Push records to kintone. Returns (posted_count, error_class)."""
     if not records:
         return 0, None
@@ -62,9 +63,9 @@ def _push_records(domain: str, app_id: int, api_token: str, records: list[dict])
         req = urllib.request.Request(
             f"https://{domain}/k/v1/records.json",
             method="POST",
-            data=json.dumps(
-                {"app": app_id, "records": records}, ensure_ascii=False
-            ).encode("utf-8"),
+            data=json.dumps({"app": app_id, "records": records}, ensure_ascii=False).encode(
+                "utf-8"
+            ),
             headers={
                 "Content-Type": "application/json",
                 "X-Cybozu-API-Token": api_token,
@@ -105,9 +106,7 @@ def _run() -> dict[str, int]:
 
     for row in rows:
         idem_key = f"ss{row['saved_search_id']}-{today}"
-        creds = load_account(
-            db, api_key_hash=row["api_key_hash"], provider="kintone"
-        )
+        creds = load_account(db, api_key_hash=row["api_key_hash"], provider="kintone")
         if creds is None:
             logger.warning(
                 "kintone.sync.creds_missing saved_search_id=%s",
@@ -195,9 +194,7 @@ def _run() -> dict[str, int]:
         # whichever cron orchestrator wraps this script. Here we ONLY emit
         # a structured INFO so downstream prometheus / sentry can count.
         delivered += 1
-        logger.info(
-            "kintone.sync.ok ss=%s rows=%d", row["saved_search_id"], posted
-        )
+        logger.info("kintone.sync.ok ss=%s rows=%d", row["saved_search_id"], posted)
 
     logger.info(
         "kintone.sync.done delivered=%d skipped_dup=%d errored=%d",

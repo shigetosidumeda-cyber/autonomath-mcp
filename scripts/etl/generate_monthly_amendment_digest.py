@@ -68,6 +68,7 @@ FIELD_LABEL_JA: dict[str, str] = {
     "projection_regression_candidate": "再投影候補(複数フィールド差分)",
 }
 
+
 # Tier mapping fallbacks. raw_json.tier is mostly empty in autonomath.db, so
 # we derive an effective tier from confidence as a stable rank proxy.
 # Confidence buckets are aligned with the distribution observed 2026-04-30:
@@ -491,18 +492,14 @@ def render_html(
             primary_url = e.source_url or (item.diffs[0].source_url if item.diffs else None)
             if primary_url:
                 esc = html.escape(primary_url)
-                parts.append(
-                    f"<p class='meta'>一次出典: <a href='{esc}'>{esc}</a></p>"
-                )
+                parts.append(f"<p class='meta'>一次出典: <a href='{esc}'>{esc}</a></p>")
             search_url = _search_url_for(e)
             parts.append(
                 f"<p class='meta'>jpcite で検索: "
                 f"<a href='{html.escape(search_url)}'>{html.escape(search_url)}</a></p>"
             )
 
-    full_url = (
-        f"https://api.jpcite.com/v1/am/amendment_diff?month={month_label}"
-    )
+    full_url = f"https://api.jpcite.com/v1/am/amendment_diff?month={month_label}"
     parts.append(
         f"<div class='cta'>全件 ({total_diff_count:,} 差分) を確認: "
         f"<a href='{html.escape(full_url)}'>{html.escape(full_url)}</a></div>"

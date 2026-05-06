@@ -198,9 +198,7 @@ def _target_counts(
         "total_rows": int(totals["total_rows"] or 0),
         "subsidy_rate_non_null_rows": int(totals["subsidy_rate_non_null_rows"] or 0),
         "subsidy_rate_text_type_rows": int(totals["subsidy_rate_text_type_rows"] or 0),
-        "contaminated_subsidy_rate_rows": int(
-            totals["contaminated_subsidy_rate_rows"] or 0
-        ),
+        "contaminated_subsidy_rate_rows": int(totals["contaminated_subsidy_rate_rows"] or 0),
         "subsidy_rate_type_counts": {
             str(row["value_type"]): int(row["rows"]) for row in type_counts
         },
@@ -487,8 +485,7 @@ def build_plan(targets: list[DbTarget], *, sample_limit: int = 20) -> dict[str, 
 
     total_rows = sum(plan.get("counts", {}).get("total_rows", 0) for plan in target_plans)
     contaminated_rows = sum(
-        plan.get("counts", {}).get("contaminated_subsidy_rate_rows", 0)
-        for plan in target_plans
+        plan.get("counts", {}).get("contaminated_subsidy_rate_rows", 0) for plan in target_plans
     )
     missing_text_targets = sum(
         1

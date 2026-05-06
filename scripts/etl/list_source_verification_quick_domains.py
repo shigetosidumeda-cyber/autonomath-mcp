@@ -301,14 +301,10 @@ def collect_quick_domain_plan(
 
     remaining_domains = select_remaining_http_domains(conn)
     quick_domains = [
-        candidate
-        for candidate in remaining_domains
-        if candidate.unverified_http_rows <= threshold
+        candidate for candidate in remaining_domains if candidate.unverified_http_rows <= threshold
     ]
     over_threshold_domains = [
-        candidate
-        for candidate in remaining_domains
-        if candidate.unverified_http_rows > threshold
+        candidate for candidate in remaining_domains if candidate.unverified_http_rows > threshold
     ]
     shards = assign_shards(quick_domains, shard_count=shard_count)
 

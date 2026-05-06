@@ -43,6 +43,7 @@ Usage:
     python scripts/cron/same_day_push.py --dry-run        # log only
     python scripts/cron/same_day_push.py --window-minutes 60
 """
+
 from __future__ import annotations
 
 import argparse
@@ -92,7 +93,9 @@ def _ensure_push_log(conn: sqlite3.Connection) -> None:
 
 
 def _already_pushed(
-    conn: sqlite3.Connection, program_id: str, api_key_hash: str,
+    conn: sqlite3.Connection,
+    program_id: str,
+    api_key_hash: str,
     profile_id: int | None,
 ) -> bool:
     if profile_id is None:
@@ -111,7 +114,9 @@ def _already_pushed(
 
 
 def _mark_pushed(
-    conn: sqlite3.Connection, program_id: str, api_key_hash: str,
+    conn: sqlite3.Connection,
+    program_id: str,
+    api_key_hash: str,
     profile_id: int | None,
 ) -> None:
     conn.execute(
@@ -128,12 +133,11 @@ def _mark_pushed(
 
 
 def _new_program_ids_from_jpintel(
-    conn: sqlite3.Connection, window_minutes: int,
+    conn: sqlite3.Connection,
+    window_minutes: int,
 ) -> list[str]:
     """Programs whose updated_at lands inside the window. Excludes Tier X."""
-    cutoff = (
-        datetime.now(UTC) - timedelta(minutes=window_minutes)
-    ).isoformat()
+    cutoff = (datetime.now(UTC) - timedelta(minutes=window_minutes)).isoformat()
     rows = conn.execute(
         "SELECT unified_id FROM programs "
         "WHERE excluded = 0 AND COALESCE(tier,'X') != 'X' "
@@ -144,7 +148,8 @@ def _new_program_ids_from_jpintel(
 
 
 def _new_program_ids_from_autonomath(
-    autonomath_path: Path, window_minutes: int,
+    autonomath_path: Path,
+    window_minutes: int,
 ) -> list[str]:
     """Best-effort read of am_amendment_diff. Returns [] on any error."""
     if not autonomath_path.exists():
@@ -152,13 +157,12 @@ def _new_program_ids_from_autonomath(
     try:
         ac = sqlite3.connect(str(autonomath_path))
         ac.row_factory = sqlite3.Row
-        cutoff = (
-            datetime.now(UTC) - timedelta(minutes=window_minutes)
-        ).strftime("%Y-%m-%d %H:%M:%S")
+        cutoff = (datetime.now(UTC) - timedelta(minutes=window_minutes)).strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
         try:
             rows = ac.execute(
-                "SELECT DISTINCT entity_id FROM am_amendment_diff "
-                "WHERE detected_at >= ?",
+                "SELECT DISTINCT entity_id FROM am_amendment_diff WHERE detected_at >= ?",
                 (cutoff,),
             ).fetchall()
         except sqlite3.OperationalError:
@@ -180,7 +184,8 @@ def _new_program_ids_from_autonomath(
 
 
 def _fetch_program_meta(
-    conn: sqlite3.Connection, program_id: str,
+    conn: sqlite3.Connection,
+    program_id: str,
 ) -> dict[str, Any] | None:
     row = conn.execute(
         "SELECT unified_id, primary_name, prefecture, tier, "
@@ -197,7 +202,8 @@ def _fetch_program_meta(
 
 
 def _matching_profiles(
-    conn: sqlite3.Connection, program: dict[str, Any],
+    conn: sqlite3.Connection,
+    program: dict[str, Any],
 ) -> list[dict[str, Any]]:
     """Return client_profiles + their owning api_key_hash that match the
     program's eligibility criteria."""
@@ -221,8 +227,11 @@ def _matching_profiles(
     matched: list[dict[str, Any]] = []
     for r in rows:
         # Prefecture: program-national OR exact match.
-        if program_pref is not None and r["prefecture"] is not None \
-                and r["prefecture"] != program_pref:
+        if (
+            program_pref is not None
+            and r["prefecture"] is not None
+            and r["prefecture"] != program_pref
+        ):
             continue
         try:
             profile_targets = json.loads(r["target_types_json"] or "[]")
@@ -245,12 +254,14 @@ def _matching_profiles(
                 if not any(r["jsic_major"] in str(x) for x in program_targets):
                     continue
 
-        matched.append({
-            "profile_id": r["profile_id"],
-            "api_key_hash": r["api_key_hash"],
-            "name_label": r["name_label"],
-            "to_email": None,
-        })
+        matched.append(
+            {
+                "profile_id": r["profile_id"],
+                "api_key_hash": r["api_key_hash"],
+                "name_label": r["name_label"],
+                "to_email": None,
+            }
+        )
     return matched
 
 
@@ -260,7 +271,8 @@ def _matching_profiles(
 
 
 def _render_payload(
-    program: dict[str, Any], profile: dict[str, Any],
+    program: dict[str, Any],
+    profile: dict[str, Any],
 ) -> dict[str, Any]:
     return {
         "to_email": profile.get("to_email"),
@@ -288,8 +300,8 @@ def _deliver(payload: dict[str, Any], dry_run: bool) -> bool:
         from jpintel_mcp.email.postmark import get_client
     except (ModuleNotFoundError, ImportError):
         logger.info(
-            "same_day_push: postmark module unavailable; "
-            "push logged only payload=%s", payload,
+            "same_day_push: postmark module unavailable; push logged only payload=%s",
+            payload,
         )
         return True
     try:
@@ -302,7 +314,9 @@ def _deliver(payload: dict[str, Any], dry_run: bool) -> bool:
         return True
     except Exception:  # noqa: BLE001
         logger.warning(
-            "same_day_push: delivery failed payload=%s", payload, exc_info=True,
+            "same_day_push: delivery failed payload=%s",
+            payload,
+            exc_info=True,
         )
         return False
 
@@ -345,6 +359,7 @@ def run(
     """
     if db_path is None:
         from jpintel_mcp.config import settings
+
         db_path = Path(settings.db_path)
     if autonomath_path is None:
         autonomath_path = _REPO / "autonomath.db"
@@ -358,7 +373,8 @@ def run(
         ids_jpi = _new_program_ids_from_jpintel(conn, window_minutes)
         # Source 2: am_amendment_diff (best effort).
         ids_am = _new_program_ids_from_autonomath(
-            autonomath_path, window_minutes,
+            autonomath_path,
+            window_minutes,
         )
         # Dedup. Order doesn't matter — fan-out is idempotent.
         all_ids = sorted(set(ids_jpi) | set(ids_am))
@@ -376,7 +392,10 @@ def run(
             for prof in profiles:
                 attempted += 1
                 if _already_pushed(
-                    conn, program_id, prof["api_key_hash"], prof["profile_id"],
+                    conn,
+                    program_id,
+                    prof["api_key_hash"],
+                    prof["profile_id"],
                 ):
                     skipped += 1
                     continue
@@ -385,7 +404,9 @@ def run(
                     if not dry_run:
                         _bill_one(conn, prof["api_key_hash"])
                         _mark_pushed(
-                            conn, program_id, prof["api_key_hash"],
+                            conn,
+                            program_id,
+                            prof["api_key_hash"],
                             prof["profile_id"],
                         )
                         conn.commit()
@@ -404,11 +425,15 @@ def run(
 
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--dry-run", action="store_true",
-                   help="Log pushes but do not deliver / bill / mark.")
-    p.add_argument("--window-minutes", type=int,
-                   default=_DEFAULT_WINDOW_MINUTES,
-                   help=f"Lookback window in minutes (default {_DEFAULT_WINDOW_MINUTES}).")
+    p.add_argument(
+        "--dry-run", action="store_true", help="Log pushes but do not deliver / bill / mark."
+    )
+    p.add_argument(
+        "--window-minutes",
+        type=int,
+        default=_DEFAULT_WINDOW_MINUTES,
+        help=f"Lookback window in minutes (default {_DEFAULT_WINDOW_MINUTES}).",
+    )
     p.add_argument("--db-path", type=Path, default=None)
     p.add_argument("--autonomath-path", type=Path, default=None)
     args = p.parse_args()
@@ -425,9 +450,7 @@ def main() -> int:
             window_minutes=args.window_minutes,
         )
         if isinstance(counters, dict):
-            hb["rows_processed"] = int(
-                counters.get("delivered", counters.get("pushed", 0)) or 0
-            )
+            hb["rows_processed"] = int(counters.get("delivered", counters.get("pushed", 0)) or 0)
             hb["rows_skipped"] = int(counters.get("skipped", 0) or 0)
             hb["metadata"] = {
                 k: counters.get(k)

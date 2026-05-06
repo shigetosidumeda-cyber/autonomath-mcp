@@ -22,9 +22,7 @@ from urllib.parse import urlparse
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_DB = REPO_ROOT / "autonomath.db"
-DEFAULT_OUTPUT = (
-    REPO_ROOT / "analysis_wave18" / "official_finance_procurement_gaps_2026-05-01.json"
-)
+DEFAULT_OUTPUT = REPO_ROOT / "analysis_wave18" / "official_finance_procurement_gaps_2026-05-01.json"
 
 PROCUREMENT = "b11_procurement"
 FINANCE_LOANS = "b12_finance_loans"
@@ -302,10 +300,7 @@ def _count_present(
     if not columns:
         return 0
     present_expr = " OR ".join(
-        (
-            f"{_quote_ident(column)} IS NOT NULL "
-            f"AND TRIM(CAST({_quote_ident(column)} AS TEXT)) != ''"
-        )
+        (f"{_quote_ident(column)} IS NOT NULL AND TRIM(CAST({_quote_ident(column)} AS TEXT)) != ''")
         for column in columns
     )
     row = conn.execute(
@@ -388,8 +383,7 @@ def _source_group_counts(
         path_counts[(domain, _path_prefix_from_url(first_url))] += 1
 
     domains = [
-        {"domain": domain, "rows": rows}
-        for domain, rows in domain_counts.most_common(limit)
+        {"domain": domain, "rows": rows} for domain, rows in domain_counts.most_common(limit)
     ]
     paths = [
         {"domain": domain, "path_prefix": path, "rows": rows}
@@ -512,7 +506,9 @@ def _collect_source_manifest(
     where_sql, where_params = _combined_where(where, params)
     row_count = _count_rows(conn, "am_source", where_sql, where_params)
     license_columns = _license_columns(columns)
-    freshness_columns = [column for column in _freshness_columns(columns) if column == "last_verified"]
+    freshness_columns = [
+        column for column in _freshness_columns(columns) if column == "last_verified"
+    ]
     hash_columns = [column for column in ("content_hash", "source_checksum") if column in names]
     source_domains, source_path_prefixes = _source_group_counts(
         conn,
@@ -523,7 +519,9 @@ def _collect_source_manifest(
         limit=sample_limit,
     )
     license_present = _count_present(conn, "am_source", license_columns, where_sql, where_params)
-    freshness_present = _count_present(conn, "am_source", freshness_columns, where_sql, where_params)
+    freshness_present = _count_present(
+        conn, "am_source", freshness_columns, where_sql, where_params
+    )
     hash_present = _count_present(conn, "am_source", hash_columns, where_sql, where_params)
     return {
         "database": str(database),
@@ -613,9 +611,13 @@ def _aggregate_source_paths(reports: list[dict[str, Any]], *, limit: int) -> lis
 
 def _metadata_gap_totals(reports: list[dict[str, Any]]) -> dict[str, int]:
     return {
-        "provenance_missing": sum(int(report["metadata"]["provenance_missing"]) for report in reports),
+        "provenance_missing": sum(
+            int(report["metadata"]["provenance_missing"]) for report in reports
+        ),
         "license_missing": sum(int(report["metadata"]["license_missing"]) for report in reports),
-        "freshness_missing": sum(int(report["metadata"]["freshness_missing"]) for report in reports),
+        "freshness_missing": sum(
+            int(report["metadata"]["freshness_missing"]) for report in reports
+        ),
     }
 
 
@@ -784,7 +786,9 @@ def _findings(procurement: dict[str, Any], finance: dict[str, Any]) -> list[str]
     if finance["counts"].get("jfc_like_rows", 0) == 0:
         findings.append("B12: no JFC-like finance rows detected in local candidate tables")
     if finance["counts"].get("credit_guarantee_like_rows", 0) == 0:
-        findings.append("B12: no credit-guarantee-like finance rows detected in local candidate tables")
+        findings.append(
+            "B12: no credit-guarantee-like finance rows detected in local candidate tables"
+        )
     if finance["metadata_gaps_physical"]["license_missing"]:
         findings.append("B12: finance rows are missing row-level license metadata")
     return findings

@@ -26,6 +26,7 @@ Usage:
     python scripts/cron/stripe_cost_alert.py --dry-run  # no Sentry, no email
     python scripts/cron/stripe_cost_alert.py --budget 5000  # override cap
 """
+
 from __future__ import annotations
 
 import argparse

@@ -192,8 +192,7 @@ def _table_exists(conn: sqlite3.Connection, table: str) -> bool:
 
 def _table_columns(conn: sqlite3.Connection, table: str) -> tuple[str, ...]:
     return tuple(
-        str(row["name"])
-        for row in conn.execute(f"PRAGMA table_info({_qident(table)})").fetchall()
+        str(row["name"]) for row in conn.execute(f"PRAGMA table_info({_qident(table)})").fetchall()
     )
 
 
@@ -221,9 +220,7 @@ def discover_source_schemas(conn: sqlite3.Connection) -> list[SourceSchema]:
                 id_column=_choose_column(column_set, tuple(spec["id"])),
                 name_column=_choose_column(column_set, tuple(spec["name"])),
                 url_columns=url_columns,
-                context_columns=tuple(
-                    column for column in spec["context"] if column in column_set
-                ),
+                context_columns=tuple(column for column in spec["context"] if column in column_set),
             )
         )
     return schemas
@@ -380,13 +377,9 @@ def _candidate_query(schema: SourceSchema) -> str:
     }
     select_clause = ", ".join(_qident(column) for column in sorted(selected))
     predicates = " OR ".join(
-        f"lower(coalesce({_qident(column)}, '')) LIKE '%.pdf%'"
-        for column in schema.url_columns
+        f"lower(coalesce({_qident(column)}, '')) LIKE '%.pdf%'" for column in schema.url_columns
     )
-    return (
-        f"SELECT {select_clause} FROM {_qident(schema.table)} "
-        f"WHERE {predicates} ORDER BY 1"
-    )
+    return f"SELECT {select_clause} FROM {_qident(schema.table)} WHERE {predicates} ORDER BY 1"
 
 
 def collect_pdf_candidates(
@@ -449,7 +442,9 @@ def discover_local_pdf_files(local_root: Path) -> list[Path]:
     files: list[Path] = []
     for dirpath, dirnames, filenames in os.walk(local_root):
         dirnames[:] = [
-            name for name in dirnames if name not in EXCLUDED_LOCAL_DIRS and not name.endswith(".egg-info")
+            name
+            for name in dirnames
+            if name not in EXCLUDED_LOCAL_DIRS and not name.endswith(".egg-info")
         ]
         for filename in filenames:
             if filename.lower().endswith(".pdf"):
@@ -573,9 +568,7 @@ def build_domain_exclusive_shards(
                 "candidate_rows": int(bucket["candidate_rows"]),
                 "unique_source_count": int(bucket["unique_source_count"]),
                 "batch_processable_rows": int(bucket["batch_processable_rows"]),
-                "serial_lower_bound_seconds_at_1_req_per_sec": int(
-                    bucket["unique_source_count"]
-                ),
+                "serial_lower_bound_seconds_at_1_req_per_sec": int(bucket["unique_source_count"]),
                 "serial_lower_bound_duration_at_1_req_per_sec": _duration(
                     int(bucket["unique_source_count"])
                 ),
@@ -589,9 +582,7 @@ def assign_candidate_shards(
     shards: list[dict[str, Any]],
 ) -> list[PdfCandidate]:
     domain_to_shard = {
-        domain: str(shard["shard_id"])
-        for shard in shards
-        for domain in shard["domains"]
+        domain: str(shard["shard_id"]) for shard in shards for domain in shard["domains"]
     }
     assigned: list[PdfCandidate] = []
     for candidate in candidates:
@@ -719,9 +710,7 @@ def collect_pdf_extraction_inventory(
     candidates = assign_candidate_shards(candidates, shards)
 
     by_profile = Counter(candidate.profile_hint for candidate in candidates)
-    by_field = Counter(
-        field for candidate in candidates for field in candidate.likely_fields
-    )
+    by_field = Counter(field for candidate in candidates for field in candidate.likely_fields)
     by_table = Counter(candidate.source_table for candidate in candidates)
     by_column = Counter(
         f"{candidate.source_table}.{candidate.source_column}" for candidate in candidates
@@ -789,9 +778,7 @@ def collect_pdf_extraction_inventory(
             "text_fact_parser": {
                 "path": TEXT_PARSER_SCRIPT,
                 "exists": (REPO_ROOT / TEXT_PARSER_SCRIPT).exists(),
-                "supported_profiles": [
-                    {"profile": PARSER_PROFILE, "fields": list(PARSER_FIELDS)}
-                ],
+                "supported_profiles": [{"profile": PARSER_PROFILE, "fields": list(PARSER_FIELDS)}],
             },
             "pdf_batch_runner": {
                 "path": batch_script,

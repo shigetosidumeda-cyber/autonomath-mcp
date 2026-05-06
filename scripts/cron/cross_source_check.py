@@ -43,6 +43,7 @@ genuine regression hidden by the baseline pass re-emits on the next tick
 The `--baseline` CLI flag forces baseline behaviour regardless of state
 (handy for re-baselining after a known data migration).
 """
+
 from __future__ import annotations
 
 import argparse
@@ -61,9 +62,7 @@ if _SRC.is_dir() and str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
 from jpintel_mcp.observability import heartbeat  # noqa: E402
 
-_DEFAULT_DB = Path(
-    os.environ.get("AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db"))
-)
+_DEFAULT_DB = Path(os.environ.get("AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db")))
 
 
 def _open_rw(path: Path) -> sqlite3.Connection:
@@ -84,8 +83,7 @@ def _baseline_pending(conn: sqlite3.Connection) -> bool:
     """
     try:
         row = conn.execute(
-            "SELECT baseline_completed FROM cross_source_baseline_state "
-            "WHERE id = 1"
+            "SELECT baseline_completed FROM cross_source_baseline_state WHERE id = 1"
         ).fetchone()
     except sqlite3.OperationalError as exc:
         # mig 107 not yet applied → fall through to legacy behaviour.
@@ -107,7 +105,8 @@ def _mark_baseline_complete(conn: sqlite3.Connection, *, now: str) -> None:
         )
     except sqlite3.OperationalError as exc:
         logger.warning(
-            "could not mark cross_source_baseline_state complete: %s", exc,
+            "could not mark cross_source_baseline_state complete: %s",
+            exc,
         )
 
 
@@ -185,7 +184,9 @@ def _run(
                             "  source_url, reproducer_sql"
                             ") VALUES (?,?,?,?,?,?,?,?,?)",
                             (
-                                now, "am_entity_facts", entity_id,
+                                now,
+                                "am_entity_facts",
+                                entity_id,
                                 field_name,
                                 f"sources:{int(prev)}",
                                 f"sources:{live}",
@@ -249,12 +250,11 @@ def main() -> int:
             "cross_source_check: checked=%(checked)d updated=%(updated)d "
             "regressions=%(regressions)d logged=%(logged)d "
             "baseline_mode=%(baseline_mode)d "
-            "baseline_marked_complete=%(baseline_marked_complete)d", res,
+            "baseline_marked_complete=%(baseline_marked_complete)d",
+            res,
         )
         hb["rows_processed"] = int(res.get("updated", 0) or 0)
-        hb["rows_skipped"] = int(res.get("checked", 0) or 0) - int(
-            res.get("updated", 0) or 0
-        )
+        hb["rows_skipped"] = int(res.get("checked", 0) or 0) - int(res.get("updated", 0) or 0)
         hb["metadata"] = {
             "checked": res.get("checked"),
             "regressions": res.get("regressions"),

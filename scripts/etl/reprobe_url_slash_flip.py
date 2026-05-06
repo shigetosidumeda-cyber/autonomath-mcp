@@ -27,9 +27,7 @@ if TYPE_CHECKING:
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 JPINTEL_DB = REPO_ROOT / "data" / "jpintel.db"
-DEFAULT_OUTPUT = (
-    REPO_ROOT / "analysis_wave18" / "url_slash_flip_recovery_2026-05-01.csv"
-)
+DEFAULT_OUTPUT = REPO_ROOT / "analysis_wave18" / "url_slash_flip_recovery_2026-05-01.csv"
 USER_AGENT = "AutonoMath-SlashFlipProbe/0.1 (+https://jpcite.com/bot)"
 TIMEOUT_SEC = 15.0
 PER_HOST_DELAY_SEC = 1.0
@@ -149,9 +147,7 @@ def load_liveness_json(path: Path) -> list[LivenessRow]:
 def load_liveness_csv(path: Path) -> list[LivenessRow]:
     with path.open(encoding="utf-8", newline="") as f:
         return [
-            row
-            for raw in csv.DictReader(f)
-            if (row := _row_from_mapping(dict(raw))) is not None
+            row for raw in csv.DictReader(f) if (row := _row_from_mapping(dict(raw))) is not None
         ]
 
 
@@ -401,8 +397,7 @@ def write_csv(
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     probe_by_key = {
-        (result.source_id, result.old_url, result.new_url): result
-        for result in probe_results or []
+        (result.source_id, result.old_url, result.new_url): result for result in probe_results or []
     }
     fieldnames = [
         "source_id",
@@ -425,9 +420,7 @@ def write_csv(
         writer.writeheader()
         for proposal in proposals:
             row = asdict(proposal)
-            result = probe_by_key.get(
-                (proposal.source_id, proposal.old_url, proposal.new_url)
-            )
+            result = probe_by_key.get((proposal.source_id, proposal.old_url, proposal.new_url))
             row.update(
                 {
                     "probe_status_code": result.status_code if result else "",
@@ -475,9 +468,7 @@ def main() -> int:
 
     rows = _load_inputs(args)
     proposals = collect_slash_flip_proposals(rows)
-    probe_results = (
-        probe_proposals(proposals, limit=args.probe_limit) if args.probe else []
-    )
+    probe_results = probe_proposals(proposals, limit=args.probe_limit) if args.probe else []
     if args.write_csv:
         write_csv(args.output, proposals, probe_results)
 

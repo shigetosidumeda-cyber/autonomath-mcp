@@ -279,7 +279,11 @@ def build_report(
         issues.extend(f"{label}:{item}" for item in db_report.get("missing_required", []))
     if not gbiz["exists"] or not gbiz["is_file"]:
         issues.append("gbiz_jsonl:missing")
-    if not invoice_cache["exists"] or not invoice_cache["is_dir"] or invoice_cache["file_count"] == 0:
+    if (
+        not invoice_cache["exists"]
+        or not invoice_cache["is_dir"]
+        or invoice_cache["file_count"] == 0
+    ):
         issues.append("invoice_cache:missing_or_empty")
     if not disk["ok"]:
         issues.append("disk:free_bytes_below_threshold")

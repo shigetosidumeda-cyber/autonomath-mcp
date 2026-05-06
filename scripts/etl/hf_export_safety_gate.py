@@ -136,7 +136,9 @@ def _sample_license_values(conn: sqlite3.Connection, query: str, column: str) ->
     return [f"{row[0]}={row[1]}" for row in rows]
 
 
-def _license_issues(conn: sqlite3.Connection, export: HfExport, columns: set[str]) -> list[HfSafetyIssue]:
+def _license_issues(
+    conn: sqlite3.Connection, export: HfExport, columns: set[str]
+) -> list[HfSafetyIssue]:
     if "license" in columns:
         blocked = _sample_license_values(conn, export.query, "license")
         if blocked:

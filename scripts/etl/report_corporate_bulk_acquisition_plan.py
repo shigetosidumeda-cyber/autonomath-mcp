@@ -23,9 +23,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_JPINTEL_DB = REPO_ROOT / "data" / "jpintel.db"
 DEFAULT_AUTONOMATH_DB = REPO_ROOT / "autonomath.db"
 DEFAULT_PREFLIGHT = REPO_ROOT / "analysis_wave18" / "corporate_bulk_preflight_2026-05-01.json"
-DEFAULT_OUTPUT = (
-    REPO_ROOT / "analysis_wave18" / "corporate_bulk_acquisition_plan_2026-05-01.json"
-)
+DEFAULT_OUTPUT = REPO_ROOT / "analysis_wave18" / "corporate_bulk_acquisition_plan_2026-05-01.json"
 DEFAULT_GBIZ_JSONL = Path("/Users/shigetoumeda/Autonomath/data/runtime/gbiz_enrichment.jsonl")
 DEFAULT_INVOICE_CACHE_DIR = Path("/tmp/jpintel_invoice_registrants_cache")
 DEFAULT_ARTIFACT_ROOT = REPO_ROOT / "data" / "bulk"
@@ -283,10 +281,7 @@ def _command_strings(
                 f"--db '{_rel(jpintel_db)}' --mode full --format csv "
                 f"--batch-size 10000 --cache-dir '{invoice_cache_dir}'"
             ),
-            (
-                f"sqlite3 '{_rel(jpintel_db)}' "
-                "\"SELECT COUNT(*) FROM invoice_registrants;\""
-            ),
+            (f"sqlite3 '{_rel(jpintel_db)}' \"SELECT COUNT(*) FROM invoice_registrants;\""),
         ],
     }
 
@@ -301,11 +296,7 @@ def _source_plans(
     local_counts: dict[str, Any],
     disk: dict[str, Any],
 ) -> list[dict[str, Any]]:
-    invoice_rows = (
-        local_counts.get("jpintel", {})
-        .get("counts", {})
-        .get("invoice_registrants")
-    )
+    invoice_rows = local_counts.get("jpintel", {}).get("counts", {}).get("invoice_registrants")
     invoice_remaining = None
     if isinstance(invoice_rows, int):
         invoice_remaining = max(INVOICE_FULL_TARGET_ROWS_ESTIMATE - invoice_rows, 0)

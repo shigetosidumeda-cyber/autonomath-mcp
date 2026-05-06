@@ -165,11 +165,12 @@ def load_shard_plan(plan_input: Path) -> list[ShardPlan]:
                 raise ValueError(f"duplicate domain {domain} within {plan_shard_id}")
             if domain in seen_domains:
                 raise ValueError(
-                    f"domain {domain} appears in both {seen_domains[domain]} and "
-                    f"{plan_shard_id}"
+                    f"domain {domain} appears in both {seen_domains[domain]} and {plan_shard_id}"
                 )
             if domain not in counts_by_domain:
-                raise ValueError(f"domain {domain} from {plan_shard_id} is missing from domain_counts")
+                raise ValueError(
+                    f"domain {domain} from {plan_shard_id} is missing from domain_counts"
+                )
 
             seen_within_shard.add(domain)
             seen_domains[domain] = plan_shard_id
@@ -249,7 +250,7 @@ def _render_script(
         f"DB_PATH=${{DB_PATH:-{shlex.quote(str(db_path))}}}",
         _shell_assign("LOG_PATH", script.log_path),
         _shell_assign("RESULT_DIR", result_dir),
-        f"SHARD_CSV=\"$RESULT_DIR/{output_filename}\"",
+        f'SHARD_CSV="$RESULT_DIR/{output_filename}"',
         'mkdir -p "$(dirname "$LOG_PATH")" "$RESULT_DIR"',
         'exec > >(tee "$LOG_PATH") 2>&1',
         "",
@@ -278,9 +279,7 @@ def _render_script(
         '  local tmp_name="$3"',
         '  local tmp_csv="$RESULT_DIR/$tmp_name"',
         '  echo "domain=${domain} limit=${limit} tmp_output=${tmp_csv}"',
-        '  "$PYTHON_BIN" '
-        + shlex.quote(SCANNER_SCRIPT)
-        + " \\",
+        '  "$PYTHON_BIN" ' + shlex.quote(SCANNER_SCRIPT) + " \\",
         '    --db "$DB_PATH" \\',
         '    --output "$tmp_csv" \\',
         '    --domain "$domain" \\',
@@ -300,10 +299,7 @@ def _render_script(
     for index, domain in enumerate(script.shard.domains, start=1):
         lines.append("")
         lines.append(
-            "run_domain "
-            f"{shlex.quote(domain.domain)} "
-            f"{domain.row_count} "
-            f"domain_{index:03d}.csv.tmp"
+            f"run_domain {shlex.quote(domain.domain)} {domain.row_count} domain_{index:03d}.csv.tmp"
         )
 
     lines.extend(
@@ -369,7 +365,9 @@ def generate_shard_scripts(
         _write_script(script.path, content)
         materialized_scripts.append(script)
 
-    all_domains = [domain.domain for script in materialized_scripts for domain in script.shard.domains]
+    all_domains = [
+        domain.domain for script in materialized_scripts for domain in script.shard.domains
+    ]
     return {
         "ok": True,
         "complete": False,

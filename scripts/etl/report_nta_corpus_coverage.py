@@ -88,8 +88,7 @@ def _metadata_completeness(
     license_present: int | None = None
     if "license" in columns:
         license_present = int(
-            conn.execute(f"SELECT {_present_expr('license')} FROM {table.name}").fetchone()[0]
-            or 0
+            conn.execute(f"SELECT {_present_expr('license')} FROM {table.name}").fetchone()[0] or 0
         )
 
     license_missing = None if license_present is None else total - license_present
@@ -224,11 +223,7 @@ def _suggest_next_target(report: dict[str, Any]) -> dict[str, Any]:
     lowest: tuple[int, str, str] | None = None
     for table, item in table_reports.items():
         for row in item["counts_by_dimension"]:
-            dimension_value = next(
-                str(value)
-                for key, value in row.items()
-                if key != "rows"
-            )
+            dimension_value = next(str(value) for key, value in row.items() if key != "rows")
             candidate = (int(row["rows"]), table, dimension_value)
             if lowest is None or candidate < lowest:
                 lowest = candidate

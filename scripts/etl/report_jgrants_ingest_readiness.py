@@ -106,7 +106,9 @@ def _all_tables(conn: sqlite3.Connection) -> list[str]:
 
 def _table_columns(conn: sqlite3.Connection, table: str) -> tuple[str, ...]:
     try:
-        return tuple(str(row["name"]) for row in conn.execute(f"PRAGMA table_info({_qident(table)})"))
+        return tuple(
+            str(row["name"]) for row in conn.execute(f"PRAGMA table_info({_qident(table)})")
+        )
     except sqlite3.OperationalError:
         return ()
 
@@ -128,7 +130,9 @@ def _choose_column(columns: set[str], candidates: tuple[str, ...]) -> str | None
 
 def _skip_internal_table(table: str) -> bool:
     return bool(
-        table.endswith(("_fts", "_fts_config", "_fts_content", "_fts_data", "_fts_docsize", "_fts_idx"))
+        table.endswith(
+            ("_fts", "_fts_config", "_fts_content", "_fts_data", "_fts_docsize", "_fts_idx")
+        )
         or table.startswith("_")
     )
 
@@ -406,7 +410,9 @@ def _json_has_subsidy_rate(value: Any) -> tuple[bool, str | None]:
 
 
 def _json_has_contact(value: Any) -> tuple[bool, str | None]:
-    return _json_has_path_value(value, r"(contacts_v3|contact|office_name|helpdesk|phone|email|問い合わせ)")
+    return _json_has_path_value(
+        value, r"(contacts_v3|contact|office_name|helpdesk|phone|email|問い合わせ)"
+    )
 
 
 def _json_has_documents(value: Any) -> tuple[bool, str | None]:
@@ -600,7 +606,9 @@ def _program_field_status(
     program_id = str(row[schema.id_column])
     program_name = str(row[schema.name_column])
     enriched = _json_load(row["enriched_json"]) if "enriched_json" in keys else None
-    window = _json_load(row["application_window_json"]) if "application_window_json" in keys else None
+    window = (
+        _json_load(row["application_window_json"]) if "application_window_json" in keys else None
+    )
 
     field_status: dict[str, dict[str, Any]] = {}
 
@@ -1001,7 +1009,9 @@ def build_schema_safe_upsert_plan(
     if has_fts:
         plan.append(
             {
-                "target": f"{program_schema.table}_fts" if program_schema.table != "jpi_programs" else "programs_fts",
+                "target": f"{program_schema.table}_fts"
+                if program_schema.table != "jpi_programs"
+                else "programs_fts",
                 "operation": "refresh one FTS row after a changed program upsert",
                 "sql_preview": "DELETE existing FTS row by program id, then INSERT primary_name / aliases / flattened enriched text",
             }
@@ -1112,7 +1122,9 @@ def collect_jgrants_ingest_readiness(
     if linked_count == 0:
         blockers.append("no local JGrants-linked programs detected")
     if source_schema is None or source_schema.license_column is None:
-        blockers.append("no source table with a license column; license readiness cannot be proven locally")
+        blockers.append(
+            "no source table with a license column; license readiness cannot be proven locally"
+        )
     elif missing_structured_fields["license"]["missing"]:
         blockers.append("JGrants-linked source URLs do not have complete local license rows")
     if document_schema is None:
@@ -1120,7 +1132,9 @@ def collect_jgrants_ingest_readiness(
     elif missing_structured_fields["required_docs"]["missing"]:
         blockers.append("required_docs are missing for at least one JGrants-linked program")
     if missing_structured_fields["deadline"]["missing"]:
-        blockers.append("deadline/application window is missing for at least one JGrants-linked program")
+        blockers.append(
+            "deadline/application window is missing for at least one JGrants-linked program"
+        )
     if missing_structured_fields["contact"]["missing"]:
         blockers.append("contact is missing for at least one JGrants-linked program")
     if inspect_local_jgrants_code().get("fetcher_status") == "stub_returns_no_rows":

@@ -40,6 +40,7 @@ Exit codes
 0 success (possibly with "no urls to submit" log)
 1 fatal (sitemap directory missing, malformed XML, etc)
 """
+
 from __future__ import annotations
 
 import argparse
@@ -279,9 +280,7 @@ def main() -> int:
         log_path = args.analytics / "indexnow_log.jsonl"
 
         current = collect_urls(site_dir)
-        LOG.info(
-            "collected %d total urls from %d shards", len(current), len(SHARD_BASENAMES)
-        )
+        LOG.info("collected %d total urls from %d shards", len(current), len(SHARD_BASENAMES))
 
         if args.force:
             new_urls = current

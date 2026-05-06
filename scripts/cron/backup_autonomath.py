@@ -106,7 +106,11 @@ def _init_sentry() -> None:
     try:
         import sentry_sdk
 
-        sentry_sdk.init(dsn=dsn, traces_sample_rate=0.0, environment=os.environ.get("SENTRY_ENVIRONMENT", "production"))
+        sentry_sdk.init(
+            dsn=dsn,
+            traces_sample_rate=0.0,
+            environment=os.environ.get("SENTRY_ENVIRONMENT", "production"),
+        )
     except Exception:  # pragma: no cover
         pass
 

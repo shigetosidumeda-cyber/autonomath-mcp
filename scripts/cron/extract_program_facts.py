@@ -205,7 +205,9 @@ def normalize_subsidy_rate(raw: str) -> dict[str, object] | None:
                 "percent": round(numerator / denominator * 100, 4),
             }
 
-    japanese_fraction = re.search(r"([一二三四五六七八九十\d]+)\s*分の\s*([一二三四五六七八九十\d]+)", text)
+    japanese_fraction = re.search(
+        r"([一二三四五六七八九十\d]+)\s*分の\s*([一二三四五六七八九十\d]+)", text
+    )
     if japanese_fraction:
         denominator = _parse_int(japanese_fraction.group(1))
         numerator = _parse_int(japanese_fraction.group(2))
@@ -251,7 +253,8 @@ def extract_max_amount(text: str) -> dict[str, object] | None:
     amount_lines = [
         line.strip()
         for line in text.splitlines()
-        if re.search(r"(上限|限度額|最大|補助額)", line) and re.search(r"[0-9０-９].*(円|万円|千円|億)", line)
+        if re.search(r"(上限|限度額|最大|補助額)", line)
+        and re.search(r"[0-9０-９].*(円|万円|千円|億)", line)
     ]
     candidates = [
         normalized
@@ -274,7 +277,9 @@ def extract_required_docs(text: str) -> list[str]:
             continue
         if re.search(r"(提出書類|必要書類|添付書類|申請書類)", line):
             collecting = True
-            remainder = re.sub(r"^.*?(提出書類|必要書類|添付書類|申請書類)\s*[:：]?", "", line).strip()
+            remainder = re.sub(
+                r"^.*?(提出書類|必要書類|添付書類|申請書類)\s*[:：]?", "", line
+            ).strip()
             if remainder:
                 docs.extend(_split_doc_items(remainder))
             continue
@@ -290,7 +295,9 @@ def _split_doc_items(line: str) -> list[str]:
     cleaned = re.sub(r"^[・\-\*●○◆◇□■\d]+[.)、\s]*", "", line).strip()
     if not cleaned:
         return []
-    parts = [part.strip(" ・、,") for part in re.split(r"[、,]\s*", cleaned) if part.strip(" ・、,")]
+    parts = [
+        part.strip(" ・、,") for part in re.split(r"[、,]\s*", cleaned) if part.strip(" ・、,")
+    ]
     return parts
 
 

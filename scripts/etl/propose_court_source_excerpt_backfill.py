@@ -25,9 +25,7 @@ DEFAULT_DB = REPO_ROOT / "data" / "jpintel.db"
 DEFAULT_JSON_OUTPUT = (
     REPO_ROOT / "analysis_wave18" / "court_source_excerpt_proposals_2026-05-01.json"
 )
-DEFAULT_CSV_OUTPUT = (
-    REPO_ROOT / "analysis_wave18" / "court_source_excerpt_proposals_2026-05-01.csv"
-)
+DEFAULT_CSV_OUTPUT = REPO_ROOT / "analysis_wave18" / "court_source_excerpt_proposals_2026-05-01.csv"
 
 PROPOSAL_COLUMNS = [
     "table",
@@ -144,9 +142,7 @@ SECTION_LABELS = (
     "参照法条",
 )
 SECTION_RE = re.compile(
-    r"(?:【)?("
-    + "|".join(re.escape(label) for label in SECTION_LABELS)
-    + r")(?:】)?\s*[:：]?\s*"
+    r"(?:【)?(" + "|".join(re.escape(label) for label in SECTION_LABELS) + r")(?:】)?\s*[:：]?\s*"
 )
 MAX_EXCERPT_CHARS = 400
 MIN_USABLE_CHARS = 20

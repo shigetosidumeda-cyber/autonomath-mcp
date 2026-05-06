@@ -96,6 +96,7 @@ Fly.io scheduled machine (alternative)::
 No Anthropic / OpenAI / SDK calls. Pure SQL + bg_task_queue enqueue. The
 existing async worker handles the Stripe POST.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -220,12 +221,14 @@ def _select_unsynced(
         )
     rows: list[dict[str, Any]] = []
     for row in cur.fetchall():
-        rows.append({
-            "usage_event_id": int(row[0]),
-            "subscription_id": str(row[1]),
-            "quantity": int(row[2]),
-            "billing_idempotency_key": row[3] if row[3] else None,
-        })
+        rows.append(
+            {
+                "usage_event_id": int(row[0]),
+                "subscription_id": str(row[1]),
+                "quantity": int(row[2]),
+                "billing_idempotency_key": row[3] if row[3] else None,
+            }
+        )
     return rows
 
 
@@ -274,10 +277,7 @@ def _enqueue_one(
         if (
             existing_status == "done"
             or existing_status == "failed"
-            or (
-            existing_status == "processing"
-            and _processing_is_stale(existing_updated_at)
-            )
+            or (existing_status == "processing" and _processing_is_stale(existing_updated_at))
         ):
             conn.execute(
                 "UPDATE bg_task_queue "
@@ -325,9 +325,7 @@ def _select_recoverable_widget_overage_tasks(
     for row in rows:
         status = str(_row_value(row, "status", 1))
         updated_at = _row_value(row, "updated_at", 2)
-        if status == "failed" or (
-            status == "processing" and _processing_is_stale(updated_at)
-        ):
+        if status == "failed" or (status == "processing" and _processing_is_stale(updated_at)):
             recoverable.append(
                 {
                     "id": int(_row_value(row, "id", 0)),
@@ -358,9 +356,7 @@ def _requeue_existing_task(conn: sqlite3.Connection, task: dict[str, Any]) -> No
     payload_json = _payload_with_widget_idempotency(task)
     task_id = int(task["id"])
     payload_clause = "payload_json = ?, " if payload_json is not None else ""
-    params: tuple[Any, ...] = (
-        (payload_json, task_id) if payload_json is not None else (task_id,)
-    )
+    params: tuple[Any, ...] = (payload_json, task_id) if payload_json is not None else (task_id,)
     conn.execute(
         "UPDATE bg_task_queue "
         "SET status = 'pending', attempts = 0, last_error = NULL, "
@@ -561,6 +557,7 @@ def main(argv: list[str] | None = None) -> int:
 
     # Emit JSON to stdout for grep / jq pipelines.
     import json
+
     print(json.dumps(report, indent=2, ensure_ascii=False))
 
     # Exit non-zero only on enqueue exceptions, so cron schedulers (GH

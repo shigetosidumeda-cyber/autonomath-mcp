@@ -62,6 +62,7 @@ Exit codes
 1  fatal (db missing, import error)
 2  no work done (all targets either complete or hit time cap with 0 rows)
 """
+
 from __future__ import annotations
 
 import argparse
@@ -102,7 +103,7 @@ _PER_TARGET_BUDGET_SEC = 20 * 60
 _DAILY_ROW_CAP = {
     "saiketsu": 100,
     "shitsugi": None,  # natural budget cap
-    "bunsho": None,    # natural budget cap
+    "bunsho": None,  # natural budget cap
 }
 
 _TARGETS = ("saiketsu", "shitsugi", "bunsho")
@@ -113,8 +114,9 @@ _TARGETS = ("saiketsu", "shitsugi", "bunsho")
 # ---------------------------------------------------------------------------
 
 
-def _heartbeat_start(jpintel_db: Path, *, workflow_run_id: str | None,
-                     git_sha: str | None) -> int | None:
+def _heartbeat_start(
+    jpintel_db: Path, *, workflow_run_id: str | None, git_sha: str | None
+) -> int | None:
     """Insert a cron_runs row with status='running'. Returns the row id."""
     if not jpintel_db.is_file():
         _LOG.warning("heartbeat_skipped jpintel_db_missing path=%s", jpintel_db)
@@ -138,10 +140,16 @@ def _heartbeat_start(jpintel_db: Path, *, workflow_run_id: str | None,
         return None
 
 
-def _heartbeat_finish(jpintel_db: Path, row_id: int | None, *,
-                      status: str, rows_processed: int, rows_skipped: int,
-                      error_message: str | None,
-                      metadata: dict) -> None:
+def _heartbeat_finish(
+    jpintel_db: Path,
+    row_id: int | None,
+    *,
+    status: str,
+    rows_processed: int,
+    rows_skipped: int,
+    error_message: str | None,
+    metadata: dict,
+) -> None:
     """Patch the cron_runs row with finished_at + final status + counters."""
     if row_id is None or not jpintel_db.is_file():
         return
@@ -154,10 +162,15 @@ def _heartbeat_finish(jpintel_db: Path, row_id: int | None, *,
                       SET finished_at=?, status=?, rows_processed=?,
                           rows_skipped=?, error_message=?, metadata_json=?
                     WHERE id=?""",
-                (finished_at, status, rows_processed, rows_skipped,
-                 error_message,
-                 json.dumps(metadata, ensure_ascii=False, sort_keys=True),
-                 row_id),
+                (
+                    finished_at,
+                    status,
+                    rows_processed,
+                    rows_skipped,
+                    error_message,
+                    json.dumps(metadata, ensure_ascii=False, sort_keys=True),
+                    row_id,
+                ),
             )
             con.commit()
         finally:
@@ -194,20 +207,24 @@ def _rotate_cursor_backward(target: str) -> bool:
             _nta.write_cursor(target, new_cur)
             _LOG.warning(
                 "cursor_rotated target=%s old=%s new=%s",
-                target, cur, new_cur,
+                target,
+                cur,
+                new_cur,
             )
             return True
         except (ValueError, IndexError):
             return False
     if target in ("shitsugi", "bunsho"):
         # "partial:cat:url" → "partial:cat:" forces re-discovery of the cat
-        if cur.startswith("partial:") and ":" in cur[len("partial:"):]:
+        if cur.startswith("partial:") and ":" in cur[len("partial:") :]:
             head, _, _ = cur.rpartition(":")
             new_cur = head + ":"
             _nta.write_cursor(target, new_cur)
             _LOG.warning(
                 "cursor_rotated target=%s old=%s new=%s",
-                target, cur, new_cur,
+                target,
+                cur,
+                new_cur,
             )
             return True
     return False
@@ -222,7 +239,7 @@ def _count_target_rows(con: sqlite3.Connection, target: str) -> int:
     table = {
         "saiketsu": "nta_saiketsu",
         "shitsugi": "nta_shitsugi",
-        "bunsho":   "nta_bunsho_kaitou",
+        "bunsho": "nta_bunsho_kaitou",
     }[target]
     try:
         return con.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
@@ -263,7 +280,9 @@ def _run_one_target(
     try:
         if target == "saiketsu":
             counts = _nta.ingest_saiketsu(
-                con, max_seconds=max_seconds, recent_only_years=5,
+                con,
+                max_seconds=max_seconds,
+                recent_only_years=5,
             )
         elif target == "shitsugi":
             counts = _nta.ingest_shitsugi(con, max_seconds=max_seconds)
@@ -280,7 +299,9 @@ def _run_one_target(
         summary["rows_after"] = _count_target_rows(con, target)
         _LOG.error(
             "target_failed target=%s err=%s rotated=%s",
-            target, summary["error"], summary["rotated"],
+            target,
+            summary["error"],
+            summary["rotated"],
         )
         return summary
 
@@ -289,7 +310,8 @@ def _run_one_target(
     summary["rows_after"] = _count_target_rows(con, target)
     summary["inserted"] = (
         summary["rows_after"] - summary["rows_before"]
-        if summary["rows_after"] >= 0 and summary["rows_before"] >= 0 else 0
+        if summary["rows_after"] >= 0 and summary["rows_before"] >= 0
+        else 0
     )
     summary["raw_counts"] = counts
 
@@ -333,7 +355,9 @@ def run(
         return out
 
     hb_id = _heartbeat_start(
-        jpintel_db, workflow_run_id=workflow_run_id, git_sha=git_sha,
+        jpintel_db,
+        workflow_run_id=workflow_run_id,
+        git_sha=git_sha,
     )
     overall_status = "ok"
     overall_error: str | None = None
@@ -347,11 +371,15 @@ def run(
             cap = _DAILY_ROW_CAP.get(target)
             _LOG.info(
                 "target_start target=%s budget_sec=%.0f cap=%s cursor=%s",
-                target, per_target_seconds, cap, _nta.read_cursor(target),
+                target,
+                per_target_seconds,
+                cap,
+                _nta.read_cursor(target),
             )
             t0 = time.time()
             res = _run_one_target(
-                con, target,
+                con,
+                target,
                 max_seconds=per_target_seconds,
                 daily_cap=cap,
                 dry_run=dry_run,
@@ -361,10 +389,13 @@ def run(
             out["total_inserted"] += int(res.get("inserted", 0) or 0)
             out["total_elapsed_sec"] += elapsed
             _LOG.info(
-                "target_done target=%s status=%s inserted=%d elapsed=%.1fs "
-                "cursor=%s→%s",
-                target, res["status"], res.get("inserted", 0), elapsed,
-                res["cursor_before"], res["cursor_after"],
+                "target_done target=%s status=%s inserted=%d elapsed=%.1fs cursor=%s→%s",
+                target,
+                res["status"],
+                res.get("inserted", 0),
+                elapsed,
+                res["cursor_before"],
+                res["cursor_after"],
             )
             if res["status"] == "error":
                 overall_status = "partial"
@@ -384,16 +415,14 @@ def run(
         _LOG.warning("log_append_failed path=%s err=%s", log_file, exc)
 
     _heartbeat_finish(
-        jpintel_db, hb_id,
+        jpintel_db,
+        hb_id,
         status=overall_status,
         rows_processed=int(out["total_inserted"]),
         rows_skipped=0,
         error_message=overall_error,
         metadata={
-            "targets": [
-                {k: v for k, v in t.items() if k != "raw_counts"}
-                for t in out["targets"]
-            ],
+            "targets": [{k: v for k, v in t.items() if k != "raw_counts"} for t in out["targets"]],
             "total_elapsed_sec": out["total_elapsed_sec"],
         },
     )
@@ -420,7 +449,8 @@ def _git_sha() -> str | None:
     try:
         out = subprocess.check_output(
             ["git", "rev-parse", "HEAD"],
-            cwd=_REPO_ROOT, stderr=subprocess.DEVNULL,
+            cwd=_REPO_ROOT,
+            stderr=subprocess.DEVNULL,
         )
         return out.decode("ascii").strip() or None
     except (subprocess.CalledProcessError, FileNotFoundError):
@@ -432,34 +462,43 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         description="Daily incremental NTA corpus ingest.",
     )
     p.add_argument(
-        "--autonomath-db", type=Path, default=_DEFAULT_AUTONOMATH_DB,
+        "--autonomath-db",
+        type=Path,
+        default=_DEFAULT_AUTONOMATH_DB,
         help=f"autonomath.db path (default: {_DEFAULT_AUTONOMATH_DB})",
     )
     p.add_argument(
-        "--jpintel-db", type=Path, default=_DEFAULT_JPINTEL_DB,
-        help=f"jpintel.db path for cron_runs heartbeat "
-             f"(default: {_DEFAULT_JPINTEL_DB})",
+        "--jpintel-db",
+        type=Path,
+        default=_DEFAULT_JPINTEL_DB,
+        help=f"jpintel.db path for cron_runs heartbeat (default: {_DEFAULT_JPINTEL_DB})",
     )
     p.add_argument(
-        "--target", default="all",
+        "--target",
+        default="all",
         choices=["all", *_TARGETS],
         help="Which target to run (default: all three).",
     )
     p.add_argument(
-        "--max-minutes", type=float, default=20.0,
+        "--max-minutes",
+        type=float,
+        default=20.0,
         help="Per-target wall-clock cap (default: 20).",
     )
     p.add_argument(
-        "--log-file", type=Path, default=_DEFAULT_LOG_FILE,
-        help=f"Append-only run log "
-             f"(default: {_DEFAULT_LOG_FILE.relative_to(_REPO_ROOT)})",
+        "--log-file",
+        type=Path,
+        default=_DEFAULT_LOG_FILE,
+        help=f"Append-only run log (default: {_DEFAULT_LOG_FILE.relative_to(_REPO_ROOT)})",
     )
     p.add_argument(
-        "--workflow-run-id", default=None,
+        "--workflow-run-id",
+        default=None,
         help="GitHub Actions run id (recorded in cron_runs).",
     )
     p.add_argument(
-        "--dry-run", action="store_true",
+        "--dry-run",
+        action="store_true",
         help="Heartbeat + cursor read; no fetches, no DB writes.",
     )
     p.add_argument("--verbose", action="store_true")

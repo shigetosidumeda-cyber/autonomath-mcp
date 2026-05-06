@@ -69,10 +69,7 @@ def _table_exists(conn: sqlite3.Connection, table: str) -> bool:
 def _column_names(conn: sqlite3.Connection, table: str) -> set[str]:
     if not _table_exists(conn, table):
         return set()
-    return {
-        str(row["name"])
-        for row in conn.execute(f"PRAGMA table_info({_quote_ident(table)})")
-    }
+    return {str(row["name"]) for row in conn.execute(f"PRAGMA table_info({_quote_ident(table)})")}
 
 
 def _count_rows(
@@ -218,11 +215,7 @@ def _is_egov_domain(domain: str) -> bool:
 
 
 def _official_domain_rows(domain_counts: list[dict[str, Any]]) -> int:
-    return sum(
-        int(row["rows"])
-        for row in domain_counts
-        if _is_egov_domain(str(row["domain"]))
-    )
+    return sum(int(row["rows"]) for row in domain_counts if _is_egov_domain(str(row["domain"])))
 
 
 def collect_law_coverage(db_path: Path) -> dict[str, Any]:
@@ -288,9 +281,7 @@ def collect_law_coverage(db_path: Path) -> dict[str, Any]:
             int(metadata["source_url"]["official_egov_rows"]),
             total,
         )
-        metadata["full_text_url"]["official_egov_rows"] = _official_domain_rows(
-            full_text_domains
-        )
+        metadata["full_text_url"]["official_egov_rows"] = _official_domain_rows(full_text_domains)
         metadata["full_text_url"]["official_egov_pct"] = _pct(
             int(metadata["full_text_url"]["official_egov_rows"]),
             total,
@@ -343,7 +334,7 @@ def inspect_incremental_loader(driver_path: Path, workflow_path: Path) -> dict[s
     rate_sleep = _ast_constant_from_assign(driver_path, "_RATE_SLEEP_SEC")
     workflow_text = workflow_path.read_text(encoding="utf-8") if workflow_path.exists() else ""
     workflow_default = _regex_int(r'default:\s*["\']?(\d+)["\']?', workflow_text)
-    shell_default = _regex_int(r'INPUT_LIMIT:-(\d+)', workflow_text)
+    shell_default = _regex_int(r"INPUT_LIMIT:-(\d+)", workflow_text)
     timeout_minutes = _regex_int(r"timeout-minutes:\s*(\d+)", workflow_text)
     effective_limit = next(
         (

@@ -207,8 +207,7 @@ def load_am_aliases_by_name(am_conn: sqlite3.Connection) -> dict[str, list[str]]
             continue
         aliases_by_name[primary_name].append(alias)
     return {
-        name: _dedupe_aliases(values, name)[:ALIAS_CAP]
-        for name, values in aliases_by_name.items()
+        name: _dedupe_aliases(values, name)[:ALIAS_CAP] for name, values in aliases_by_name.items()
     }
 
 

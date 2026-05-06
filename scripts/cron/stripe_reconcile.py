@@ -54,6 +54,7 @@ Usage::
     python scripts/cron/stripe_reconcile.py --window-hours 24
     python scripts/cron/stripe_reconcile.py --threshold 0.001
 """
+
 from __future__ import annotations
 
 import argparse
@@ -246,10 +247,14 @@ def reconcile(
     conn = connect(db_path) if db_path else connect()
     try:
         expected_total = _count_local_usage(
-            conn, since_iso=since_iso, until_iso=until_iso,
+            conn,
+            since_iso=since_iso,
+            until_iso=until_iso,
         )
         per_sub_local = _per_subscription_local(
-            conn, since_iso=since_iso, until_iso=until_iso,
+            conn,
+            since_iso=since_iso,
+            until_iso=until_iso,
         )
     finally:
         conn.close()
@@ -258,7 +263,9 @@ def reconcile(
     reported_total = 0
     for sub_id, local_n in sorted(per_sub_local.items()):
         stripe_n = _stripe_usage_for_sub(
-            sub_id, since_ts=since_ts, until_ts=until_ts,
+            sub_id,
+            since_ts=since_ts,
+            until_ts=until_ts,
         )
         # When Stripe is unreachable for a single sub, treat its reported
         # value as equal to local — we cannot diagnose, so we abstain
@@ -266,21 +273,25 @@ def reconcile(
         # catches systemic outages because a *real* outage trips the
         # global None path (settings.stripe_secret_key unset, etc.).
         if stripe_n is None:
-            per_sub_report.append({
-                "sub_id": sub_id,
-                "expected": local_n,
-                "reported": None,
-                "diff": None,
-                "note": "stripe_unreachable_or_no_key",
-            })
+            per_sub_report.append(
+                {
+                    "sub_id": sub_id,
+                    "expected": local_n,
+                    "reported": None,
+                    "diff": None,
+                    "note": "stripe_unreachable_or_no_key",
+                }
+            )
             reported_total += local_n
             continue
-        per_sub_report.append({
-            "sub_id": sub_id,
-            "expected": local_n,
-            "reported": stripe_n,
-            "diff": local_n - stripe_n,
-        })
+        per_sub_report.append(
+            {
+                "sub_id": sub_id,
+                "expected": local_n,
+                "reported": stripe_n,
+                "diff": local_n - stripe_n,
+            }
+        )
         reported_total += stripe_n
 
     diff_abs = abs(expected_total - reported_total)
@@ -315,23 +326,34 @@ def reconcile(
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / f"stripe_reconcile_{now.strftime('%Y-%m-%d')}.json"
     out_path.write_text(json.dumps(report, indent=2, ensure_ascii=False))
-    logger.info("reconcile done expected=%s reported=%s diff_pct=%.4f",
-                expected_total, reported_total, diff_pct)
+    logger.info(
+        "reconcile done expected=%s reported=%s diff_pct=%.4f",
+        expected_total,
+        reported_total,
+        diff_pct,
+    )
     return report
 
 
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--dry-run", action="store_true",
-                   help="Skip Sentry alert; still write JSON report.")
-    p.add_argument("--window-hours", type=int, default=_DEFAULT_WINDOW_HOURS,
-                   help=f"Reconcile window (default {_DEFAULT_WINDOW_HOURS}h).")
-    p.add_argument("--threshold", type=float, default=_DEFAULT_THRESHOLD,
-                   help=f"Diff fraction (default {_DEFAULT_THRESHOLD}).")
-    p.add_argument("--db", default=None,
-                   help="Override DB path (default: settings.db_path).")
-    p.add_argument("--out", default=None,
-                   help="Output dir (default analysis_wave18/).")
+    p.add_argument(
+        "--dry-run", action="store_true", help="Skip Sentry alert; still write JSON report."
+    )
+    p.add_argument(
+        "--window-hours",
+        type=int,
+        default=_DEFAULT_WINDOW_HOURS,
+        help=f"Reconcile window (default {_DEFAULT_WINDOW_HOURS}h).",
+    )
+    p.add_argument(
+        "--threshold",
+        type=float,
+        default=_DEFAULT_THRESHOLD,
+        help=f"Diff fraction (default {_DEFAULT_THRESHOLD}).",
+    )
+    p.add_argument("--db", default=None, help="Override DB path (default: settings.db_path).")
+    p.add_argument("--out", default=None, help="Output dir (default analysis_wave18/).")
     args = p.parse_args(argv)
 
     logging.basicConfig(

@@ -257,7 +257,9 @@ def backfill_missing_authorities(
     return {
         "mode": "apply" if apply else "dry_run",
         "known_orphan_authorities_before": len(missing),
-        "known_orphan_refs_before": sum(before_counts.get(seed.canonical_id, 0) for seed in missing),
+        "known_orphan_refs_before": sum(
+            before_counts.get(seed.canonical_id, 0) for seed in missing
+        ),
         "unknown_orphan_authorities_before": unknown_before,
         "inserted_rows": inserted_rows,
         "orphan_authorities_after": len(after_counts),

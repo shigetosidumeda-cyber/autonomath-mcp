@@ -394,11 +394,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args(argv)
 
-    with _connect(args.db) as conn, HttpHeadProber(
-        per_host_delay_sec=args.per_host_delay_sec,
-        timeout_sec=args.timeout_sec,
-        respect_robots=not args.ignore_robots,
-    ) as prober:
+    with (
+        _connect(args.db) as conn,
+        HttpHeadProber(
+            per_host_delay_sec=args.per_host_delay_sec,
+            timeout_sec=args.timeout_sec,
+            respect_robots=not args.ignore_robots,
+        ) as prober,
+    ):
         result = verify_am_sources(
             conn,
             prober=prober,

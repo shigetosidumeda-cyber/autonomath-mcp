@@ -21,6 +21,7 @@ Cost posture:
       is still rendered — the customer paid for the cadence, the
       quarterly review is the deliverable.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -31,6 +32,8 @@ import sys
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+
+from fastapi import HTTPException
 
 _REPO = Path(__file__).resolve().parent.parent.parent
 _SRC = _REPO / "src"
@@ -77,8 +80,9 @@ def _eligible_keys(conn: sqlite3.Connection) -> list[str]:
     return [r["api_key_hash"] for r in rows]
 
 
-def run(*, year: int | None = None, quarter: int | None = None,
-        dry_run: bool = False) -> dict[str, Any]:
+def run(
+    *, year: int | None = None, quarter: int | None = None, dry_run: bool = False
+) -> dict[str, Any]:
     """Render quarterly PDFs for every eligible customer.
 
     When `year`+`quarter` are not supplied, the cron auto-detects the
@@ -99,6 +103,8 @@ def run(*, year: int | None = None, quarter: int | None = None,
     conn = connect()
     rendered = 0
     billed = 0
+    billing_failed = 0
+    render_failed = 0
     skipped = 0
     try:
         from jpintel_mcp.api.recurring_quarterly import (
@@ -108,9 +114,8 @@ def run(*, year: int | None = None, quarter: int | None = None,
             _gather_usage_stats,
             _gather_watch_amendments,
             _quarter_period,
-            _record_metered_pdf,
             _redacted_key_id,
-            _render_pdf_to,
+            _render_metered_pdf_to_cache,
         )
 
         keys = _eligible_keys(conn)
@@ -123,17 +128,15 @@ def run(*, year: int | None = None, quarter: int | None = None,
                 continue
 
             usage_stats = _gather_usage_stats(conn, key_hash, period_start, period_end)
-            watch_amendments = _gather_watch_amendments(
-                conn, key_hash, period_start, period_end
-            )
+            watch_amendments = _gather_watch_amendments(conn, key_hash, period_start, period_end)
             eligible_unapplied = _gather_eligible_unapplied(conn, key_hash)
             amendment_summary = {
                 "ウォッチ対象改正": len(watch_amendments),
                 "新規申請可能制度": len(eligible_unapplied),
                 "対象期間 (日)": (
-                    datetime.fromisoformat(period_end)
-                    - datetime.fromisoformat(period_start)
-                ).days + 1,
+                    datetime.fromisoformat(period_end) - datetime.fromisoformat(period_start)
+                ).days
+                + 1,
             }
             context = {
                 "year": year,
@@ -150,22 +153,51 @@ def run(*, year: int | None = None, quarter: int | None = None,
             if dry_run:
                 logger.info(
                     "quarterly.dry_run key_token=%s year=%s quarter=%s",
-                    token, year, quarter,
+                    token,
+                    year,
+                    quarter,
                 )
                 rendered += 1
                 continue
-            ok = _render_pdf_to(out_path=cache_path, context=context)
+            try:
+                ok = _render_metered_pdf_to_cache(
+                    conn=conn,
+                    key_hash=key_hash,
+                    cache_path=cache_path,
+                    context=context,
+                )
+            except HTTPException as exc:
+                billing_failed += 1
+                logger.warning(
+                    "quarterly.billing_failed key_token=%s year=%s quarter=%s status=%s",
+                    token,
+                    year,
+                    quarter,
+                    exc.status_code,
+                )
+                continue
+            except sqlite3.Error:
+                billing_failed += 1
+                logger.exception(
+                    "quarterly.billing_usage_failed key_token=%s year=%s quarter=%s",
+                    token,
+                    year,
+                    quarter,
+                )
+                continue
             if not ok:
+                render_failed += 1
                 continue
             rendered += 1
-            if _record_metered_pdf(conn, key_hash):
-                billed += 1
+            billed += 1
         summary = {
             "ran_at": now.isoformat(),
             "year": year,
             "quarter": quarter,
             "rendered": rendered,
             "billed": billed,
+            "billing_failed": billing_failed,
+            "render_failed": render_failed,
             "skipped_cached": skipped,
             "dry_run": dry_run,
         }

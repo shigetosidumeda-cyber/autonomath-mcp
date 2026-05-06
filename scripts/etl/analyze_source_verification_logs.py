@@ -205,16 +205,10 @@ def parse_shard_log(path: Path) -> dict[str, Any]:
         for field in COUNT_FIELDS:
             count_totals[field] += _as_int(payload.get(field))
         outcomes.update(
-            {
-                str(key): _as_int(value)
-                for key, value in dict(payload.get("outcomes") or {}).items()
-            }
+            {str(key): _as_int(value) for key, value in dict(payload.get("outcomes") or {}).items()}
         )
         methods.update(
-            {
-                str(key): _as_int(value)
-                for key, value in dict(payload.get("methods") or {}).items()
-            }
+            {str(key): _as_int(value) for key, value in dict(payload.get("methods") or {}).items()}
         )
 
         before_non_null = payload.get("last_verified_non_null_before")
@@ -269,9 +263,7 @@ def parse_shard_log(path: Path) -> dict[str, Any]:
         else None
     )
     rows_remaining = (
-        max(0, planned_rows - count_totals["candidate_rows"])
-        if planned_rows is not None
-        else None
+        max(0, planned_rows - count_totals["candidate_rows"]) if planned_rows is not None else None
     )
     complete_marker_seen = _complete_marker_seen(text, shard_id)
     complete = (
@@ -537,9 +529,7 @@ def _aggregate_shards(shards: list[dict[str, Any]]) -> dict[str, Any]:
             if value is not None:
                 totals[field] += _as_int(value)
         if shard.get("domains_remaining_inferable") is not None:
-            totals["domains_remaining_inferable"] += _as_int(
-                shard["domains_remaining_inferable"]
-            )
+            totals["domains_remaining_inferable"] += _as_int(shard["domains_remaining_inferable"])
         if shard.get("candidate_rows_remaining_inferable") is not None:
             totals["candidate_rows_remaining_inferable"] += _as_int(
                 shard["candidate_rows_remaining_inferable"]

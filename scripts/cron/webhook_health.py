@@ -47,6 +47,7 @@ Usage
     python scripts/cron/webhook_health.py --window-hours 6  # tighter look-back
     python scripts/cron/webhook_health.py --gap-seconds 30  # stricter stall
 """
+
 from __future__ import annotations
 
 import argparse
@@ -158,8 +159,7 @@ class HealthReport:
 def _has_table(conn: sqlite3.Connection) -> bool:
     """Return True iff stripe_webhook_events exists in this DB."""
     row = conn.execute(
-        "SELECT name FROM sqlite_master "
-        "WHERE type='table' AND name='stripe_webhook_events'"
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='stripe_webhook_events'"
     ).fetchone()
     return bool(row)
 
@@ -291,11 +291,7 @@ def _detect_subscription_dropoff(report: HealthReport) -> None:
     with a ``warning`` informational finding instead of a page.
     """
     if report.invoice_paid >= _MIN_INVOICE_PAID_FOR_RATIO:
-        ratio = (
-            report.sub_created / report.invoice_paid
-            if report.invoice_paid
-            else 0.0
-        )
+        ratio = report.sub_created / report.invoice_paid if report.invoice_paid else 0.0
         if ratio < 0.5:
             report.findings.append(
                 {
@@ -316,9 +312,7 @@ def _detect_subscription_dropoff(report: HealthReport) -> None:
     # Scale baseline median (per-day) to the active window.
     window_factor = report.window_hours / 24.0
     expected = report.baseline_sub_created_median * window_factor
-    threshold = expected - report.sigma * (
-        report.baseline_sub_created_stdev * window_factor
-    )
+    threshold = expected - report.sigma * (report.baseline_sub_created_stdev * window_factor)
 
     if report.baseline_days_present < _MIN_BASELINE_DAYS:
         if report.sub_created == 0 and report.invoice_paid >= _MIN_INVOICE_PAID_FOR_RATIO:
@@ -348,12 +342,8 @@ def _detect_subscription_dropoff(report: HealthReport) -> None:
                 "expected": round(expected, 2),
                 "threshold": round(threshold, 2),
                 "sigma": report.sigma,
-                "baseline_median_per_day": round(
-                    report.baseline_sub_created_median, 2
-                ),
-                "baseline_stdev_per_day": round(
-                    report.baseline_sub_created_stdev, 2
-                ),
+                "baseline_median_per_day": round(report.baseline_sub_created_median, 2),
+                "baseline_stdev_per_day": round(report.baseline_sub_created_stdev, 2),
                 "baseline_days_present": report.baseline_days_present,
                 "message": (
                     f"customer.subscription.created count "
@@ -374,9 +364,7 @@ def _detect_invoice_paid_dropoff(report: HealthReport) -> None:
         return
     window_factor = report.window_hours / 24.0
     expected = report.baseline_invoice_paid_median * window_factor
-    threshold = expected - report.sigma * (
-        report.baseline_invoice_paid_stdev * window_factor
-    )
+    threshold = expected - report.sigma * (report.baseline_invoice_paid_stdev * window_factor)
     if report.invoice_paid < threshold and expected > 0:
         report.findings.append(
             {
@@ -386,9 +374,7 @@ def _detect_invoice_paid_dropoff(report: HealthReport) -> None:
                 "expected": round(expected, 2),
                 "threshold": round(threshold, 2),
                 "sigma": report.sigma,
-                "baseline_median_per_day": round(
-                    report.baseline_invoice_paid_median, 2
-                ),
+                "baseline_median_per_day": round(report.baseline_invoice_paid_median, 2),
                 "message": (
                     f"invoice.paid count ({report.invoice_paid}) below "
                     f"{report.sigma}σ threshold ({threshold:.1f}). Stripe "
@@ -425,15 +411,12 @@ def _run_once(
         if not _has_table(conn):
             # Pre-launch: no webhook events yet. Treat as "info" no-op.
             logger.info(
-                "stripe_webhook_events table absent (pre-launch DB?) — "
-                "no health checks to run."
+                "stripe_webhook_events table absent (pre-launch DB?) — no health checks to run."
             )
             return report
 
         # Window counts.
-        window_counts = _count_events_by_type(
-            conn, since_iso=window_start.isoformat()
-        )
+        window_counts = _count_events_by_type(conn, since_iso=window_start.isoformat())
         report.sub_created = window_counts.get("customer.subscription.created", 0)
         report.invoice_paid = window_counts.get("invoice.paid", 0)
         report.sub_updated = window_counts.get("customer.subscription.updated", 0)
@@ -646,10 +629,7 @@ def main(argv: list[str] | None = None) -> int:
         "--gap-seconds",
         type=int,
         default=_DEFAULT_GAP_SECONDS,
-        help=(
-            "Maximum allowed gap between received_at and processed_at "
-            "(default %(default)s)."
-        ),
+        help=("Maximum allowed gap between received_at and processed_at (default %(default)s)."),
     )
     parser.add_argument(
         "--json",

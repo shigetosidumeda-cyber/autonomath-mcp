@@ -39,6 +39,7 @@ Usage:
     python scripts/cron/post_award_monitor.py --dry-run  # log only, no email/billing
     python scripts/cron/post_award_monitor.py --as-of 2026-04-29
 """
+
 from __future__ import annotations
 
 import argparse
@@ -94,9 +95,7 @@ def _ensure_alert_log(conn: sqlite3.Connection) -> None:
 # ---------------------------------------------------------------------------
 
 
-def _fetch_pending_alerts(
-    conn: sqlite3.Connection, as_of: date
-) -> list[dict[str, Any]]:
+def _fetch_pending_alerts(conn: sqlite3.Connection, as_of: date) -> list[dict[str, Any]]:
     """Return one row per (intention × milestone × window) tuple that should
     fire today.
 
@@ -129,36 +128,37 @@ def _fetch_pending_alerts(
     pending: list[dict[str, Any]] = []
     for r in rows:
         try:
-            awarded_dt = datetime.fromisoformat(
-                str(r["awarded_at"]).replace("Z", "+00:00")
-            )
+            awarded_dt = datetime.fromisoformat(str(r["awarded_at"]).replace("Z", "+00:00"))
         except ValueError:
             try:
                 awarded_dt = datetime.fromisoformat(str(r["awarded_at"])[:10])
             except ValueError:
                 continue
-        deadline = (awarded_dt.date()
-                    + timedelta(days=int(r["days_after_award"])))
+        deadline = awarded_dt.date() + timedelta(days=int(r["days_after_award"]))
         distance = (deadline - as_of).days
         if distance not in ALERT_WINDOWS:
             continue
-        pending.append({
-            "intention_id": r["intention_id"],
-            "api_key_hash": r["api_key_hash"],
-            "profile_id": r["profile_id"],
-            "program_id": r["program_id"],
-            "milestone_kind": r["milestone_kind"],
-            "kind_label": r["kind_label"],
-            "milestone_source_url": r["milestone_source_url"],
-            "deadline": deadline.isoformat(),
-            "distance_days": distance,
-            "notify_email": r["notify_email"],
-        })
+        pending.append(
+            {
+                "intention_id": r["intention_id"],
+                "api_key_hash": r["api_key_hash"],
+                "profile_id": r["profile_id"],
+                "program_id": r["program_id"],
+                "milestone_kind": r["milestone_kind"],
+                "kind_label": r["kind_label"],
+                "milestone_source_url": r["milestone_source_url"],
+                "deadline": deadline.isoformat(),
+                "distance_days": distance,
+                "notify_email": r["notify_email"],
+            }
+        )
     return pending
 
 
 def _already_fired(
-    conn: sqlite3.Connection, intention_id: int, milestone_kind: str,
+    conn: sqlite3.Connection,
+    intention_id: int,
+    milestone_kind: str,
     window_days: int,
 ) -> bool:
     row = conn.execute(
@@ -170,7 +170,9 @@ def _already_fired(
 
 
 def _mark_fired(
-    conn: sqlite3.Connection, intention_id: int, milestone_kind: str,
+    conn: sqlite3.Connection,
+    intention_id: int,
+    milestone_kind: str,
     window_days: int,
 ) -> None:
     conn.execute(
@@ -219,8 +221,8 @@ def _deliver(payload: dict[str, Any], dry_run: bool) -> bool:
         from jpintel_mcp.email.postmark import get_client
     except (ModuleNotFoundError, ImportError):
         logger.info(
-            "post_award_monitor: postmark module unavailable; "
-            "alert logged only payload=%s", payload,
+            "post_award_monitor: postmark module unavailable; alert logged only payload=%s",
+            payload,
         )
         return True
     try:
@@ -236,7 +238,8 @@ def _deliver(payload: dict[str, Any], dry_run: bool) -> bool:
     except Exception:  # noqa: BLE001
         logger.warning(
             "post_award_monitor: delivery failed payload=%s",
-            payload, exc_info=True,
+            payload,
+            exc_info=True,
         )
         return False
 
@@ -284,6 +287,7 @@ def run(
     """
     if db_path is None:
         from jpintel_mcp.config import settings
+
         db_path = Path(settings.db_path)
     if as_of is None:
         as_of = datetime.now(JST).date()
@@ -297,8 +301,10 @@ def run(
         skipped = 0
         for alert in pending:
             if _already_fired(
-                conn, alert["intention_id"],
-                alert["milestone_kind"], alert["distance_days"],
+                conn,
+                alert["intention_id"],
+                alert["milestone_kind"],
+                alert["distance_days"],
             ):
                 skipped += 1
                 continue
@@ -307,8 +313,10 @@ def run(
                 if not dry_run:
                     _bill_one(conn, alert["api_key_hash"])
                     _mark_fired(
-                        conn, alert["intention_id"],
-                        alert["milestone_kind"], alert["distance_days"],
+                        conn,
+                        alert["intention_id"],
+                        alert["milestone_kind"],
+                        alert["distance_days"],
                     )
                     conn.commit()
                 fired += 1
@@ -329,12 +337,18 @@ def _parse_date(s: str) -> date:
 
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--dry-run", action="store_true",
-                   help="Log alerts but do not deliver / bill / mark.")
-    p.add_argument("--as-of", type=_parse_date, default=None,
-                   help="YYYY-MM-DD reference date (defaults to today UTC).")
-    p.add_argument("--db-path", type=Path, default=None,
-                   help="Override JPINTEL_DB_PATH for one run.")
+    p.add_argument(
+        "--dry-run", action="store_true", help="Log alerts but do not deliver / bill / mark."
+    )
+    p.add_argument(
+        "--as-of",
+        type=_parse_date,
+        default=None,
+        help="YYYY-MM-DD reference date (defaults to today UTC).",
+    )
+    p.add_argument(
+        "--db-path", type=Path, default=None, help="Override JPINTEL_DB_PATH for one run."
+    )
     args = p.parse_args()
 
     logging.basicConfig(
@@ -343,7 +357,9 @@ def main() -> int:
     )
     with heartbeat("post_award_monitor") as hb:
         counters = run(
-            db_path=args.db_path, dry_run=args.dry_run, as_of=args.as_of,
+            db_path=args.db_path,
+            dry_run=args.dry_run,
+            as_of=args.as_of,
         )
         if isinstance(counters, dict):
             hb["rows_processed"] = int(

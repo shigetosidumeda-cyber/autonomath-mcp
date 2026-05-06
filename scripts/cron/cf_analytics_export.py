@@ -27,6 +27,7 @@ by axis without re-parsing a stringly-typed bucket.
 Idempotency: scans existing file for date+metric pair before writing.
 Network failure: skip + log to stderr, exit 0 (cron must not crash).
 """
+
 from __future__ import annotations
 
 import json
@@ -425,9 +426,7 @@ def main() -> int:
                 sums = g.get("sum") or {}
                 raw_ua = dims.get("userAgent") or ""
                 cls = classify_user_agent(raw_ua)
-                bucket = buckets.setdefault(
-                    cls, {"requests": 0, "page_views": 0}
-                )
+                bucket = buckets.setdefault(cls, {"requests": 0, "page_views": 0})
                 bucket["requests"] += int(sums.get("requests", 0) or 0)
                 bucket["page_views"] += int(sums.get("pageViews", 0) or 0)
             items = sorted(
@@ -465,9 +464,7 @@ def main() -> int:
                 },
             )
             items = []
-            for g in _extract_groups(
-                top_countries_payload, "httpRequestsAdaptiveGroups"
-            ):
+            for g in _extract_groups(top_countries_payload, "httpRequestsAdaptiveGroups"):
                 dims = g.get("dimensions") or {}
                 sums = g.get("sum") or {}
                 country = dims.get("clientCountryName") or ""
@@ -501,9 +498,7 @@ def main() -> int:
                 },
             )
             items = []
-            for g in _extract_groups(
-                top_referers_payload, "httpRequestsAdaptiveGroups"
-            ):
+            for g in _extract_groups(top_referers_payload, "httpRequestsAdaptiveGroups"):
                 dims = g.get("dimensions") or {}
                 sums = g.get("sum") or {}
                 ref = dims.get("refererHost") or ""

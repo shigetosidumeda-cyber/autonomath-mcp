@@ -43,6 +43,7 @@ Usage:
     python scripts/cron/precompute_refresh.py --dry-run  # log only
     python scripts/cron/precompute_refresh.py --only pc_top_subsidies_by_industry,pc_combo_pairs
 """
+
 from __future__ import annotations
 
 import argparse
@@ -248,9 +249,11 @@ def _count_am_table(name: str, am_db_path: Path | None = None) -> int:
         ).fetchone()
         if exists is None:
             return 0
-        return int(conn.execute(
-            f"SELECT COUNT(*) FROM {name}"  # noqa: S608 — PC_TABLES_AM whitelist
-        ).fetchone()[0])
+        return int(
+            conn.execute(
+                f"SELECT COUNT(*) FROM {name}"  # noqa: S608 — PC_TABLES_AM whitelist
+            ).fetchone()[0]
+        )
     finally:
         conn.close()
 
@@ -291,22 +294,53 @@ def _refresh_pc_top_subsidies_by_prefecture(
     3166-2:JP).
     """
     iso = {
-        "北海道": "JP-01", "青森県": "JP-02", "岩手県": "JP-03",
-        "宮城県": "JP-04", "秋田県": "JP-05", "山形県": "JP-06",
-        "福島県": "JP-07", "茨城県": "JP-08", "栃木県": "JP-09",
-        "群馬県": "JP-10", "埼玉県": "JP-11", "千葉県": "JP-12",
-        "東京都": "JP-13", "神奈川県": "JP-14", "新潟県": "JP-15",
-        "富山県": "JP-16", "石川県": "JP-17", "福井県": "JP-18",
-        "山梨県": "JP-19", "長野県": "JP-20", "岐阜県": "JP-21",
-        "静岡県": "JP-22", "愛知県": "JP-23", "三重県": "JP-24",
-        "滋賀県": "JP-25", "京都府": "JP-26", "大阪府": "JP-27",
-        "兵庫県": "JP-28", "奈良県": "JP-29", "和歌山県": "JP-30",
-        "鳥取県": "JP-31", "島根県": "JP-32", "岡山県": "JP-33",
-        "広島県": "JP-34", "山口県": "JP-35", "徳島県": "JP-36",
-        "香川県": "JP-37", "愛媛県": "JP-38", "高知県": "JP-39",
-        "福岡県": "JP-40", "佐賀県": "JP-41", "長崎県": "JP-42",
-        "熊本県": "JP-43", "大分県": "JP-44", "宮崎県": "JP-45",
-        "鹿児島県": "JP-46", "沖縄県": "JP-47",
+        "北海道": "JP-01",
+        "青森県": "JP-02",
+        "岩手県": "JP-03",
+        "宮城県": "JP-04",
+        "秋田県": "JP-05",
+        "山形県": "JP-06",
+        "福島県": "JP-07",
+        "茨城県": "JP-08",
+        "栃木県": "JP-09",
+        "群馬県": "JP-10",
+        "埼玉県": "JP-11",
+        "千葉県": "JP-12",
+        "東京都": "JP-13",
+        "神奈川県": "JP-14",
+        "新潟県": "JP-15",
+        "富山県": "JP-16",
+        "石川県": "JP-17",
+        "福井県": "JP-18",
+        "山梨県": "JP-19",
+        "長野県": "JP-20",
+        "岐阜県": "JP-21",
+        "静岡県": "JP-22",
+        "愛知県": "JP-23",
+        "三重県": "JP-24",
+        "滋賀県": "JP-25",
+        "京都府": "JP-26",
+        "大阪府": "JP-27",
+        "兵庫県": "JP-28",
+        "奈良県": "JP-29",
+        "和歌山県": "JP-30",
+        "鳥取県": "JP-31",
+        "島根県": "JP-32",
+        "岡山県": "JP-33",
+        "広島県": "JP-34",
+        "山口県": "JP-35",
+        "徳島県": "JP-36",
+        "香川県": "JP-37",
+        "愛媛県": "JP-38",
+        "高知県": "JP-39",
+        "福岡県": "JP-40",
+        "佐賀県": "JP-41",
+        "長崎県": "JP-42",
+        "熊本県": "JP-43",
+        "大分県": "JP-44",
+        "宮崎県": "JP-45",
+        "鹿児島県": "JP-46",
+        "沖縄県": "JP-47",
     }
     rows = w.execute(
         """
@@ -332,15 +366,14 @@ def _refresh_pc_top_subsidies_by_prefecture(
     inserted = 0
     for code, items in by_pref.items():
         items.sort(key=lambda x: (x[0], x[1], x[2]))
-        for rank, (tr, _amt_sort, _nm, uid, _tier, amt) in enumerate(
-            items[:20], start=1
-        ):
+        for rank, (tr, _amt_sort, _nm, uid, _tier, amt) in enumerate(items[:20], start=1):
             # relevance_score: tier weight (S=1.0, A=0.7, B=0.4, C=0.2)
             # plus log10(amount) tiebreaker normalised to ≤ 0.2.
             tier_weight = {0: 1.0, 1: 0.7, 2: 0.4, 3: 0.2}.get(tr, 0.0)
             amt_bonus = 0.0
             if amt and amt > 0:
                 import math  # noqa: PLC0415
+
                 amt_bonus = min(0.2, math.log10(max(1.0, amt)) / 25.0)
             score = round(tier_weight + amt_bonus, 4)
             w.execute(
@@ -356,15 +389,11 @@ def _refresh_pc_top_subsidies_by_prefecture(
     return inserted
 
 
-def _refresh_pc_law_to_program_index(
-    w: sqlite3.Connection, r: sqlite3.Connection | None
-) -> int:
+def _refresh_pc_law_to_program_index(w: sqlite3.Connection, r: sqlite3.Connection | None) -> int:
     return 0
 
 
-def _refresh_pc_program_to_amendments(
-    w: sqlite3.Connection, r: sqlite3.Connection | None
-) -> int:
+def _refresh_pc_program_to_amendments(w: sqlite3.Connection, r: sqlite3.Connection | None) -> int:
     return 0
 
 
@@ -374,45 +403,31 @@ def _refresh_pc_acceptance_stats_by_program(
     return 0
 
 
-def _refresh_pc_combo_pairs(
-    w: sqlite3.Connection, r: sqlite3.Connection | None
-) -> int:
+def _refresh_pc_combo_pairs(w: sqlite3.Connection, r: sqlite3.Connection | None) -> int:
     return 0
 
 
-def _refresh_pc_seasonal_calendar(
-    w: sqlite3.Connection, r: sqlite3.Connection | None
-) -> int:
+def _refresh_pc_seasonal_calendar(w: sqlite3.Connection, r: sqlite3.Connection | None) -> int:
     return 0
 
 
-def _refresh_pc_industry_jsic_aliases(
-    w: sqlite3.Connection, r: sqlite3.Connection | None
-) -> int:
+def _refresh_pc_industry_jsic_aliases(w: sqlite3.Connection, r: sqlite3.Connection | None) -> int:
     return 0
 
 
-def _refresh_pc_authority_to_programs(
-    w: sqlite3.Connection, r: sqlite3.Connection | None
-) -> int:
+def _refresh_pc_authority_to_programs(w: sqlite3.Connection, r: sqlite3.Connection | None) -> int:
     return 0
 
 
-def _refresh_pc_law_amendments_recent(
-    w: sqlite3.Connection, r: sqlite3.Connection | None
-) -> int:
+def _refresh_pc_law_amendments_recent(w: sqlite3.Connection, r: sqlite3.Connection | None) -> int:
     return 0
 
 
-def _refresh_pc_enforcement_by_industry(
-    w: sqlite3.Connection, r: sqlite3.Connection | None
-) -> int:
+def _refresh_pc_enforcement_by_industry(w: sqlite3.Connection, r: sqlite3.Connection | None) -> int:
     return 0
 
 
-def _refresh_pc_loan_by_collateral_type(
-    w: sqlite3.Connection, r: sqlite3.Connection | None
-) -> int:
+def _refresh_pc_loan_by_collateral_type(w: sqlite3.Connection, r: sqlite3.Connection | None) -> int:
     return 0
 
 
@@ -438,9 +453,7 @@ def _refresh_pc_starter_packs_per_audience(
 # ---------------------------------------------------------------------------
 
 
-def _refresh_pc_amendment_recent_by_law(
-    w: sqlite3.Connection, r: sqlite3.Connection | None
-) -> int:
+def _refresh_pc_amendment_recent_by_law(w: sqlite3.Connection, r: sqlite3.Connection | None) -> int:
     return 0
 
 
@@ -455,22 +468,53 @@ def _refresh_pc_program_geographic_density(
     inserted (no zero-rows guarantee — the consumer must coalesce).
     """
     iso = {
-        "北海道": "JP-01", "青森県": "JP-02", "岩手県": "JP-03",
-        "宮城県": "JP-04", "秋田県": "JP-05", "山形県": "JP-06",
-        "福島県": "JP-07", "茨城県": "JP-08", "栃木県": "JP-09",
-        "群馬県": "JP-10", "埼玉県": "JP-11", "千葉県": "JP-12",
-        "東京都": "JP-13", "神奈川県": "JP-14", "新潟県": "JP-15",
-        "富山県": "JP-16", "石川県": "JP-17", "福井県": "JP-18",
-        "山梨県": "JP-19", "長野県": "JP-20", "岐阜県": "JP-21",
-        "静岡県": "JP-22", "愛知県": "JP-23", "三重県": "JP-24",
-        "滋賀県": "JP-25", "京都府": "JP-26", "大阪府": "JP-27",
-        "兵庫県": "JP-28", "奈良県": "JP-29", "和歌山県": "JP-30",
-        "鳥取県": "JP-31", "島根県": "JP-32", "岡山県": "JP-33",
-        "広島県": "JP-34", "山口県": "JP-35", "徳島県": "JP-36",
-        "香川県": "JP-37", "愛媛県": "JP-38", "高知県": "JP-39",
-        "福岡県": "JP-40", "佐賀県": "JP-41", "長崎県": "JP-42",
-        "熊本県": "JP-43", "大分県": "JP-44", "宮崎県": "JP-45",
-        "鹿児島県": "JP-46", "沖縄県": "JP-47",
+        "北海道": "JP-01",
+        "青森県": "JP-02",
+        "岩手県": "JP-03",
+        "宮城県": "JP-04",
+        "秋田県": "JP-05",
+        "山形県": "JP-06",
+        "福島県": "JP-07",
+        "茨城県": "JP-08",
+        "栃木県": "JP-09",
+        "群馬県": "JP-10",
+        "埼玉県": "JP-11",
+        "千葉県": "JP-12",
+        "東京都": "JP-13",
+        "神奈川県": "JP-14",
+        "新潟県": "JP-15",
+        "富山県": "JP-16",
+        "石川県": "JP-17",
+        "福井県": "JP-18",
+        "山梨県": "JP-19",
+        "長野県": "JP-20",
+        "岐阜県": "JP-21",
+        "静岡県": "JP-22",
+        "愛知県": "JP-23",
+        "三重県": "JP-24",
+        "滋賀県": "JP-25",
+        "京都府": "JP-26",
+        "大阪府": "JP-27",
+        "兵庫県": "JP-28",
+        "奈良県": "JP-29",
+        "和歌山県": "JP-30",
+        "鳥取県": "JP-31",
+        "島根県": "JP-32",
+        "岡山県": "JP-33",
+        "広島県": "JP-34",
+        "山口県": "JP-35",
+        "徳島県": "JP-36",
+        "香川県": "JP-37",
+        "愛媛県": "JP-38",
+        "高知県": "JP-39",
+        "福岡県": "JP-40",
+        "佐賀県": "JP-41",
+        "長崎県": "JP-42",
+        "熊本県": "JP-43",
+        "大分県": "JP-44",
+        "宮崎県": "JP-45",
+        "鹿児島県": "JP-46",
+        "沖縄県": "JP-47",
     }
     rows = w.execute(
         """
@@ -506,9 +550,7 @@ def _refresh_pc_authority_action_frequency(
     return 0
 
 
-def _refresh_pc_law_to_amendment_chain(
-    w: sqlite3.Connection, r: sqlite3.Connection | None
-) -> int:
+def _refresh_pc_law_to_amendment_chain(w: sqlite3.Connection, r: sqlite3.Connection | None) -> int:
     return 0
 
 
@@ -518,9 +560,7 @@ def _refresh_pc_industry_jsic_to_program(
     return 0
 
 
-def _refresh_pc_amount_max_distribution(
-    w: sqlite3.Connection, r: sqlite3.Connection | None
-) -> int:
+def _refresh_pc_amount_max_distribution(w: sqlite3.Connection, r: sqlite3.Connection | None) -> int:
     """Histogram of programs.amount_max_man_yen across schema's 9 buckets.
 
     Buckets are in JPY (not 万円), matching the schema CHECK constraint
@@ -574,9 +614,7 @@ def _refresh_pc_amount_max_distribution(
     return inserted
 
 
-def _refresh_pc_program_to_loan_combo(
-    w: sqlite3.Connection, r: sqlite3.Connection | None
-) -> int:
+def _refresh_pc_program_to_loan_combo(w: sqlite3.Connection, r: sqlite3.Connection | None) -> int:
     return 0
 
 
@@ -586,9 +624,7 @@ def _refresh_pc_program_to_certification_combo(
     return 0
 
 
-def _refresh_pc_program_to_tax_combo(
-    w: sqlite3.Connection, r: sqlite3.Connection | None
-) -> int:
+def _refresh_pc_program_to_tax_combo(w: sqlite3.Connection, r: sqlite3.Connection | None) -> int:
     return 0
 
 
@@ -761,8 +797,7 @@ def _refresh_pc_program_health(
         # didn't apply migration 048), there's nothing to refresh — bail
         # out cleanly with 0 rows rather than crashing the whole nightly.
         exists = conn.execute(
-            "SELECT name FROM sqlite_master "
-            "WHERE type='table' AND name='jpi_pc_program_health'"
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='jpi_pc_program_health'"
         ).fetchone()
         if exists is None:
             logger.warning("am_table_missing table=jpi_pc_program_health path=%s", am_path)
@@ -797,9 +832,7 @@ def _refresh_pc_program_health(
             GROUP BY program_id
             """
         )
-        rows = int(conn.execute(
-            "SELECT COUNT(*) FROM jpi_pc_program_health"
-        ).fetchone()[0])
+        rows = int(conn.execute("SELECT COUNT(*) FROM jpi_pc_program_health").fetchone()[0])
         conn.execute("COMMIT")
         return rows
     except Exception:

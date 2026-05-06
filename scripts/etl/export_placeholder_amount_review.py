@@ -167,9 +167,7 @@ def export_placeholder_amount_review(
         "review_rows": len(rows),
         "by_reason": _counts_by(rows, "reason"),
         "by_fixed_yen": _counts_by(rows, "fixed_yen"),
-        "amount_100_review_rows": sum(
-            1 for row in rows if str(row.get("fixed_yen")) == "100"
-        ),
+        "amount_100_review_rows": sum(1 for row in rows if str(row.get("fixed_yen")) == "100"),
         "sample_rows": rows[:10],
     }
 

@@ -48,6 +48,7 @@ Usage:
     python scripts/cron/refresh_amendment_diff.py --dry-run  # log only, no INSERT
     python scripts/cron/refresh_amendment_diff.py --limit 10 # first N programs (test mode)
 """
+
 from __future__ import annotations
 
 import argparse
@@ -150,9 +151,7 @@ def _canonical_value(rows: list[sqlite3.Row]) -> str | None:
     return "\x1e".join(parts)
 
 
-def _read_field_value(
-    conn: sqlite3.Connection, entity_id: str, field_name: str
-) -> str | None:
+def _read_field_value(conn: sqlite3.Connection, entity_id: str, field_name: str) -> str | None:
     """Pull all am_entity_facts rows for (entity_id, field_name) and canonicalize."""
     rows = conn.execute(
         """
@@ -187,9 +186,7 @@ def _read_eligibility_text(conn: sqlite3.Connection, entity_id: str) -> str | No
     return "\x1f".join(parts)
 
 
-def _last_recorded_hash(
-    conn: sqlite3.Connection, entity_id: str, field_name: str
-) -> str | None:
+def _last_recorded_hash(conn: sqlite3.Connection, entity_id: str, field_name: str) -> str | None:
     """Most recent new_hash for (entity_id, field_name) in am_amendment_diff.
 
     Returns None when the field has never been recorded — the cron treats
@@ -209,9 +206,7 @@ def _last_recorded_hash(
     return row["new_hash"] if row else None
 
 
-def _last_recorded_value(
-    conn: sqlite3.Connection, entity_id: str, field_name: str
-) -> str | None:
+def _last_recorded_value(conn: sqlite3.Connection, entity_id: str, field_name: str) -> str | None:
     """Most recent new_value alongside _last_recorded_hash. Used for prev_value."""
     row = conn.execute(
         """
@@ -226,9 +221,7 @@ def _last_recorded_value(
     return row["new_value"] if row else None
 
 
-def _select_active_programs(
-    conn: sqlite3.Connection, limit: int | None
-) -> list[sqlite3.Row]:
+def _select_active_programs(conn: sqlite3.Connection, limit: int | None) -> list[sqlite3.Row]:
     """Active programs in autonomath.db, with the source_url for provenance."""
     sql = """
         SELECT canonical_id, source_url
@@ -329,8 +322,7 @@ def run(
         # Confirm the diff table exists. If migration 075 hasn't been
         # applied yet, fail loudly rather than silently no-op.
         exists = conn.execute(
-            "SELECT name FROM sqlite_master "
-            "WHERE type='table' AND name='am_amendment_diff'"
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='am_amendment_diff'"
         ).fetchone()
         if exists is None:
             logger.error(

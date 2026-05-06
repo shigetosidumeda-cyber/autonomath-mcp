@@ -50,6 +50,7 @@ Manual extension:
 No Anthropic / OpenAI / SDK calls. Pure SQL + bg_task_queue enqueue. The
 existing async worker handles the post-revocation email send.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -78,8 +79,10 @@ from jpintel_mcp.observability import heartbeat  # noqa: E402
 try:  # observability is best-effort — never block cron on Sentry init
     from jpintel_mcp.observability import safe_capture_message  # noqa: E402
 except Exception:  # pragma: no cover — defensive
+
     def safe_capture_message(*_a: Any, **_kw: Any) -> None:  # type: ignore[override]
         return None
+
 
 logger = logging.getLogger("jpintel.cron.expire_trials")
 
@@ -173,9 +176,7 @@ def expire_due_trials(
             used = int(row["trial_requests_used"] or 0)
             cause = (
                 "cap"
-                if used >= request_cap and (
-                    not expires_at or expires_at > now_iso
-                )
+                if used >= request_cap and (not expires_at or expires_at > now_iso)
                 else "expired"
             )
 
@@ -245,10 +246,7 @@ def expire_due_trials(
                             # the 2026-04-29 funnel audit). The hash
                             # fragment positions the user at the paid
                             # API card directly.
-                            "checkout_url": (
-                                "https://jpcite.com/"
-                                "pricing.html?from=trial#api-paid"
-                            ),
+                            "checkout_url": ("https://jpcite.com/pricing.html?from=trial#api-paid"),
                         },
                         dedup_key=f"trial_followup:{key_hash}",
                     )
@@ -312,8 +310,7 @@ def main(argv: list[str] | None = None) -> int:
         type=int,
         default=DEFAULT_LIMIT,
         help=(
-            f"Cap rows revoked per run (default {DEFAULT_LIMIT}). "
-            "Excess rolls into the next run."
+            f"Cap rows revoked per run (default {DEFAULT_LIMIT}). Excess rolls into the next run."
         ),
     )
     args = p.parse_args(argv)
@@ -337,8 +334,7 @@ def main(argv: list[str] | None = None) -> int:
             bool(counts["dry_run"]),
         )
         hb["rows_processed"] = int(
-            (counts.get("revoked_expired", 0) or 0)
-            + (counts.get("revoked_cap", 0) or 0)
+            (counts.get("revoked_expired", 0) or 0) + (counts.get("revoked_cap", 0) or 0)
         )
         hb["rows_skipped"] = int(counts.get("skipped_already_revoked", 0) or 0)
         hb["metadata"] = {

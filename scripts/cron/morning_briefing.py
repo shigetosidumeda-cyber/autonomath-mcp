@@ -24,6 +24,7 @@ CLI:
 The Postmark template `morning_briefing` MUST exist before the cron
 will deliver content; see docs/email/templates.md for the create steps.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -50,9 +51,7 @@ logger = logging.getLogger("autonomath.cron.morning_briefing")
 _PUBLIC_ORIGIN = "https://jpcite.com"
 
 
-def _new_programs_24h(
-    conn: sqlite3.Connection, prefectures: set[str]
-) -> list[dict[str, Any]]:
+def _new_programs_24h(conn: sqlite3.Connection, prefectures: set[str]) -> list[dict[str, Any]]:
     """Programs whose `updated_at` lies in the last 24h, scoped to the
     customer's covered prefectures (or 全国 when unscoped).
     """
@@ -84,9 +83,7 @@ def _new_programs_24h(
     ]
 
 
-def _deadlines_this_week(
-    conn: sqlite3.Connection, prefectures: set[str]
-) -> list[dict[str, Any]]:
+def _deadlines_this_week(conn: sqlite3.Connection, prefectures: set[str]) -> list[dict[str, Any]]:
     """Programs whose deadline_date sits in the next 7 days."""
     today = datetime.now(UTC).date().isoformat()
     cutoff = (datetime.now(UTC).date() + timedelta(days=7)).isoformat()
@@ -100,7 +97,7 @@ def _deadlines_this_week(
             " WHERE deadline_date BETWEEN ? AND ? "
             "   AND (excluded = 0 OR excluded IS NULL) "
             "   AND tier IN ('S','A','B','C') "
-            f" {('AND prefecture IN (' + ','.join('?' for _ in prefectures) + ')' ) if prefectures else ''} "
+            f" {('AND prefecture IN (' + ','.join('?' for _ in prefectures) + ')') if prefectures else ''} "
             " ORDER BY deadline_date ASC LIMIT 5",
             [today, cutoff, *prefectures],
         ).fetchall()
@@ -150,9 +147,7 @@ def _recent_amendments(
     ]
 
 
-def _send_briefing(
-    *, to: str, payload: dict[str, Any], dry_run: bool
-) -> dict[str, Any]:
+def _send_briefing(*, to: str, payload: dict[str, Any], dry_run: bool) -> dict[str, Any]:
     if dry_run:
         logger.info(
             "morning_briefing.dry_run to_domain=%s programs=%d deadlines=%d amendments=%d",
@@ -180,9 +175,7 @@ def _send_briefing(
         return {"skipped": True, "reason": "send_failed", "error": str(exc)}
 
 
-def _record_metered_delivery(
-    *, jp_conn: sqlite3.Connection, key_hash: str, dry_run: bool
-) -> None:
+def _record_metered_delivery(*, jp_conn: sqlite3.Connection, key_hash: str, dry_run: bool) -> None:
     if dry_run:
         return
     ok = record_metered_delivery(
@@ -222,9 +215,7 @@ def run(*, dry_run: bool = False) -> dict[str, Any]:
         for r in rows:
             scanned += 1
             key_hash = r["api_key_hash"]
-            prefectures = {
-                p.strip() for p in (r["prefs"] or "").split(",") if p and p.strip()
-            }
+            prefectures = {p.strip() for p in (r["prefs"] or "").split(",") if p and p.strip()}
             watched: set[str] = set()
             for chunk in (r["pids"] or "").split("||"):
                 try:
@@ -262,15 +253,11 @@ def run(*, dry_run: bool = False) -> dict[str, Any]:
                     "資格者にご確認ください。"
                 ),
             }
-            outcome = _send_briefing(
-                to=ak["notify_email"], payload=payload, dry_run=dry_run
-            )
+            outcome = _send_briefing(to=ak["notify_email"], payload=payload, dry_run=dry_run)
             ok = outcome.get("skipped") is None or outcome.get("reason") == "dry_run"
             if ok:
                 sent += 1
-                _record_metered_delivery(
-                    jp_conn=jp_conn, key_hash=key_hash, dry_run=dry_run
-                )
+                _record_metered_delivery(jp_conn=jp_conn, key_hash=key_hash, dry_run=dry_run)
                 if not dry_run:
                     billed += 1
         summary = {
@@ -304,9 +291,7 @@ def main(argv: list[str] | None = None) -> int:
     with heartbeat("morning_briefing") as hb:
         summary = run(dry_run=args.dry_run)
         if isinstance(summary, dict):
-            hb["rows_processed"] = int(
-                summary.get("emails_sent", summary.get("delivered", 0)) or 0
-            )
+            hb["rows_processed"] = int(summary.get("emails_sent", summary.get("delivered", 0)) or 0)
             hb["rows_skipped"] = int(summary.get("skipped", 0) or 0)
             hb["metadata"] = {
                 k: summary.get(k)

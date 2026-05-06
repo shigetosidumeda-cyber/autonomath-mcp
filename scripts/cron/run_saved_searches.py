@@ -431,7 +431,7 @@ def _record_metered_delivery(
     saved_id: int,
     dry_run: bool,
     client_tag: str | None = None,
-) -> None:
+) -> bool:
     """Insert one usage_events row + fire report_usage_async.
 
     Matches the on-the-hot-path `log_usage` shape (api/deps.py) so the
@@ -446,7 +446,7 @@ def _record_metered_delivery(
     can attribute each ¥3 delivery back to a specific 顧問先.
     """
     if dry_run:
-        return
+        return False
 
     ok = record_metered_delivery(
         jp_conn,
@@ -456,6 +456,7 @@ def _record_metered_delivery(
     )
     if not ok:
         logger.warning("metered.delivery_skipped saved_id=%s", saved_id)
+    return ok
 
 
 # ---------------------------------------------------------------------------
@@ -688,6 +689,7 @@ def run(
                     dry_run=dry_run,
                 )
                 sent = outcome.get("skipped") is None or outcome.get("reason") == "dry_run"
+            billing_error: Exception | None = None
             if sent:
                 emails_sent += 1
                 # mig 097 fan-out: profile_ids_json non-empty → 1 metered
@@ -705,14 +707,22 @@ def run(
                 # Same ¥3 metering across both channels — the customer
                 # opted into a delivery, the system delivered, we bill.
                 for tag in profile_tags:
-                    _record_metered_delivery(
-                        jp_conn=jp_conn,
-                        key_hash=row["api_key_hash"],
-                        saved_id=row["id"],
-                        dry_run=dry_run,
-                        client_tag=tag,
-                    )
-                    if not dry_run:
+                    try:
+                        billed_ok = _record_metered_delivery(
+                            jp_conn=jp_conn,
+                            key_hash=row["api_key_hash"],
+                            saved_id=row["id"],
+                            dry_run=dry_run,
+                            client_tag=tag,
+                        )
+                    except Exception as exc:  # noqa: BLE001
+                        billing_error = exc
+                        logger.exception(
+                            "metered.delivery_failed_after_send saved_id=%s",
+                            row["id"],
+                        )
+                        break
+                    if billed_ok and not dry_run:
                         billed += 1
 
             if not dry_run:
@@ -720,6 +730,8 @@ def run(
                     "UPDATE saved_searches SET last_run_at = ? WHERE id = ?",
                     (now_iso, row["id"]),
                 )
+            if billing_error is not None:
+                raise billing_error
 
         summary = {
             "ran_at": datetime.now(UTC).isoformat(),

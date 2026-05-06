@@ -26,6 +26,7 @@ Usage
 No API key usage. No Anthropic / OpenAI / SDK calls. Pure SQL +
 deterministic compute.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -70,7 +71,11 @@ def _month_boundaries_iso(now: datetime) -> tuple[str, str, str]:
     # afterwards.
     rough_3mo_back = cur_start - timedelta(days=92)
     three_mo_start = rough_3mo_back.replace(
-        day=1, hour=0, minute=0, second=0, microsecond=0,
+        day=1,
+        hour=0,
+        minute=0,
+        second=0,
+        microsecond=0,
     )
     return cur_start.isoformat(), three_mo_start.isoformat(), cur_start.isoformat()
 
@@ -83,16 +88,10 @@ def _count_usage(
     until_iso: str | None = None,
 ) -> int:
     if until_iso is None:
-        sql = (
-            "SELECT COUNT(*) FROM usage_events "
-            "WHERE key_hash=? AND ts >= ?"
-        )
+        sql = "SELECT COUNT(*) FROM usage_events WHERE key_hash=? AND ts >= ?"
         cur = conn.execute(sql, (key_hash, since_iso))
     else:
-        sql = (
-            "SELECT COUNT(*) FROM usage_events "
-            "WHERE key_hash=? AND ts >= ? AND ts < ?"
-        )
+        sql = "SELECT COUNT(*) FROM usage_events WHERE key_hash=? AND ts >= ? AND ts < ?"
         cur = conn.execute(sql, (key_hash, since_iso, until_iso))
     row = cur.fetchone()
     return int(row[0]) if row and row[0] is not None else 0
@@ -130,7 +129,8 @@ def _send_alert_email(
     if dry_run:
         logger.info(
             "billing_alert.dry_run to=%s payload=%s",
-            to, json.dumps(template_model, ensure_ascii=False),
+            to,
+            json.dumps(template_model, ensure_ascii=False),
         )
         return {"skipped": True, "reason": "dry_run"}
     try:
@@ -174,8 +174,7 @@ def run(
 
     conn = connect()
     cur = conn.execute(
-        "SELECT key_hash, customer_id, tier, created_at FROM api_keys "
-        "WHERE revoked_at IS NULL"
+        "SELECT key_hash, customer_id, tier, created_at FROM api_keys WHERE revoked_at IS NULL"
     )
     keys = cur.fetchall()
 
@@ -206,13 +205,15 @@ def run(
         if alert is None:
             continue
 
-        alert.update({
-            "key_hash_prefix": key_hash[:8],
-            "customer_id": customer_id,
-            "tier": tier,
-            "key_created_at": created_at,
-            "month_start": cur_start_iso,
-        })
+        alert.update(
+            {
+                "key_hash_prefix": key_hash[:8],
+                "customer_id": customer_id,
+                "tier": tier,
+                "key_created_at": created_at,
+                "month_start": cur_start_iso,
+            }
+        )
         keys_with_alert.append(alert)
 
         email = _recent_email_for(conn, key_hash)

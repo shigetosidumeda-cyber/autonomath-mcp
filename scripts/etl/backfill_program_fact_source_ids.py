@@ -104,9 +104,7 @@ def _build_source_maps(
         if norm:
             normalized_buckets[norm].add(source_id)
     normalized = {
-        key: next(iter(values))
-        for key, values in normalized_buckets.items()
-        if len(values) == 1
+        key: next(iter(values)) for key, values in normalized_buckets.items() if len(values) == 1
     }
     return exact, normalized
 
@@ -154,9 +152,7 @@ def _unique_source_id(candidates: Iterable[EntitySourceCandidate]) -> int | None
 
 def _unique_primary_source_id(candidates: Iterable[EntitySourceCandidate]) -> int | None:
     primary_values = {
-        candidate.source_id
-        for candidate in candidates
-        if _role_priority(candidate)[0] == 0
+        candidate.source_id for candidate in candidates if _role_priority(candidate)[0] == 0
     }
     if len(primary_values) == 1:
         return next(iter(primary_values))
@@ -248,15 +244,13 @@ def collect_program_fact_assignments(
 ) -> list[SourceAssignment]:
     exact_sources, normalized_sources = _build_source_maps(conn)
     entity_sources = _load_entity_source_candidates(conn)
-    sql = (
-        """SELECT f.id AS fact_id, f.entity_id, f.source_url AS fact_source_url,
+    sql = """SELECT f.id AS fact_id, f.entity_id, f.source_url AS fact_source_url,
                   e.source_url AS entity_source_url
              FROM am_entity_facts f
              JOIN am_entities e ON e.canonical_id = f.entity_id
             WHERE e.record_kind = 'program'
               AND f.source_id IS NULL
          ORDER BY f.id"""
-    )
     params: list[object] = []
     if limit is not None and limit > 0:
         sql += " LIMIT ?"

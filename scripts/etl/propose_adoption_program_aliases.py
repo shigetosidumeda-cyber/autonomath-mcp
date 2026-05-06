@@ -18,16 +18,10 @@ from typing import Any
 import report_adoption_program_join_gaps as join_gaps
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_GAP_JSON = (
-    REPO_ROOT / "analysis_wave18" / "adoption_program_join_gaps_2026-05-01.json"
-)
+DEFAULT_GAP_JSON = REPO_ROOT / "analysis_wave18" / "adoption_program_join_gaps_2026-05-01.json"
 DEFAULT_GAP_CSV = REPO_ROOT / "analysis_wave18" / "adoption_program_join_gaps_2026-05-01.csv"
-DEFAULT_JSON_OUTPUT = (
-    REPO_ROOT / "analysis_wave18" / "adoption_alias_proposals_2026-05-01.json"
-)
-DEFAULT_CSV_OUTPUT = (
-    REPO_ROOT / "analysis_wave18" / "adoption_alias_proposals_2026-05-01.csv"
-)
+DEFAULT_JSON_OUTPUT = REPO_ROOT / "analysis_wave18" / "adoption_alias_proposals_2026-05-01.json"
+DEFAULT_CSV_OUTPUT = REPO_ROOT / "analysis_wave18" / "adoption_alias_proposals_2026-05-01.csv"
 
 DEFAULT_MIN_CONFIDENCE = 0.90
 PROPOSAL_COLUMNS = [

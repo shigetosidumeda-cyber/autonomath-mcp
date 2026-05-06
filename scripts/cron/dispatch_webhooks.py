@@ -44,9 +44,8 @@ Retry policy:
 
 Idempotency:
   webhook_deliveries has UNIQUE(webhook_id, event_type, event_id). The
-  dispatcher INSERTs the row BEFORE the POST attempt; on re-run, the conflict
-  short-circuits to the existing row, and the dispatcher inspects status_code
-  to decide whether to retry or skip. Same event is never delivered twice.
+  dispatcher records the latest attempt result and skips only prior 2xx
+  successes. Failed attempts remain retryable and are not billed.
 
 Constraints:
   * No Anthropic / claude / SDK calls. Pure SQLite + httpx + stdlib.
@@ -864,7 +863,7 @@ def _bill_one_delivery(
     jp_conn: sqlite3.Connection,
     webhook_id: int,
     api_key_hash: str,
-) -> None:
+) -> bool:
     """Emit a usage_event + Stripe usage_record for one successful delivery.
 
     Mirrors the inline path in `deps.log_usage` but with endpoint=
@@ -874,7 +873,7 @@ def _bill_one_delivery(
     customer endpoint already received the payload.
     """
     if not jp_conn:
-        return
+        return True
     ok = record_metered_delivery(
         jp_conn,
         key_hash=api_key_hash,
@@ -882,6 +881,33 @@ def _bill_one_delivery(
     )
     if not ok:
         logger.warning("webhook.delivery_billing_skipped webhook_id=%s", webhook_id)
+    return ok
+
+
+def _key_is_metered(jp_conn: sqlite3.Connection, api_key_hash: str) -> bool:
+    """Return True only for active paid keys.
+
+    Webhook delivery is a paid metered surface. A demoted/free/trial key may
+    still have active webhook rows from an earlier state; do not POST those
+    events because a later billing failure cannot undo an external delivery.
+    """
+    try:
+        row = jp_conn.execute(
+            "SELECT tier FROM api_keys WHERE key_hash = ? AND revoked_at IS NULL",
+            (api_key_hash,),
+        ).fetchone()
+    except sqlite3.OperationalError:
+        row = jp_conn.execute(
+            "SELECT tier FROM api_keys WHERE key_hash = ?",
+            (api_key_hash,),
+        ).fetchone()
+    if row is None:
+        return False
+    try:
+        tier = row["tier"]
+    except (TypeError, KeyError, IndexError):
+        tier = row[0]
+    return str(tier or "") == "paid"
 
 
 def _queue_disabled_email(
@@ -960,6 +986,7 @@ def run(
         "deliveries_succeeded": 0,
         "deliveries_failed": 0,
         "deliveries_skipped_dedup": 0,
+        "deliveries_skipped_unmetered": 0,
         "webhooks_disabled": 0,
         "billed_units": 0,
         "billing_failures": 0,
@@ -1036,6 +1063,14 @@ def run(
             now_iso = datetime.now(UTC).isoformat()
             for w in whs:
                 wid = w["id"]
+                if not _key_is_metered(jp_conn, w["api_key_hash"]):
+                    summary["deliveries_skipped_unmetered"] += 1
+                    summary["billing_failures"] += 1
+                    logger.warning(
+                        "webhook.delivery_skipped_unmetered webhook_id=%s",
+                        wid,
+                    )
+                    continue
                 try:
                     types = set(json.loads(w["event_types_json"] or "[]"))
                 except json.JSONDecodeError:
@@ -1066,34 +1101,6 @@ def run(
                         "timestamp": ev["timestamp"] or now_iso,
                         "data": ev["data"],
                     }
-
-                    # DEEP-48 Pattern A — charge-first fence.
-                    # Idempotency dedup is already done above via
-                    # `_already_delivered`. The charge happens BEFORE the
-                    # first POST attempt so a cap-exceeded customer never
-                    # gets a webhook fired they cannot pay for. On charge
-                    # failure we skip this (webhook, event) entirely; the
-                    # next cron sweep will re-attempt the charge once the
-                    # cap window resets.
-                    pre_charged = False
-                    if not dry_run:
-                        try:
-                            _bill_one_delivery(jp_conn, wid, w["api_key_hash"])
-                            pre_charged = True
-                            summary["billed_units"] += 1
-                        except Exception:  # noqa: BLE001
-                            summary["billing_failures"] += 1
-                            logger.exception(
-                                "webhook.delivery_pre_charge_failed "
-                                "webhook_id=%s event_type=%s event_id=%s",
-                                wid,
-                                ev["event_type"],
-                                ev["event_id"],
-                            )
-                            # Charge-first failed → skip the POST, do NOT
-                            # write a delivery row, let the next cron pass
-                            # retry. This is the DEEP-48 fail-closed branch.
-                            continue
 
                     # Per-event retry loop: initial + 3 retries.
                     status_code: int | None = None
@@ -1160,6 +1167,21 @@ def run(
                                     wid,
                                 ),
                             )
+                            try:
+                                billed_ok = _bill_one_delivery(jp_conn, wid, w["api_key_hash"])
+                                if billed_ok is False:
+                                    summary["billing_failures"] += 1
+                                else:
+                                    summary["billed_units"] += 1
+                            except Exception:  # noqa: BLE001
+                                summary["billing_failures"] += 1
+                                logger.exception(
+                                    "webhook.delivery_billing_failed "
+                                    "webhook_id=%s event_type=%s event_id=%s",
+                                    wid,
+                                    ev["event_type"],
+                                    ev["event_id"],
+                                )
                         # Bump customer_watches.last_event_at so the
                         # /v1/me/watches dashboard reflects the most recent
                         # fired event. Cheap (single UPDATE per delivery)
@@ -1174,10 +1196,6 @@ def run(
                                 api_key_hash=w["api_key_hash"],
                                 when_iso=now_iso,
                             )
-                        # DEEP-48 Pattern A: charge already happened
-                        # pre-send (see `pre_charged` above). No second
-                        # billing call here — that would double-charge.
-                        _ = pre_charged  # tag unused-var lint
                     else:
                         summary["deliveries_failed"] += 1
                         cur_failure_count += 1

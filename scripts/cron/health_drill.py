@@ -42,6 +42,7 @@ Usage
     python scripts/cron/health_drill.py --only 2   # only scenario 2
     python scripts/cron/health_drill.py --health-url http://...
 """
+
 from __future__ import annotations
 
 import argparse
@@ -293,12 +294,21 @@ def _append_markdown(
 
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--health-url", default=_DEFAULT_HEALTH_URL,
-                   help=f"Healthz URL (default {_DEFAULT_HEALTH_URL})")
-    p.add_argument("--db-path", default=_DEFAULT_DB_PATH,
-                   help=f"Local DB path (default {_DEFAULT_DB_PATH})")
-    p.add_argument("--only", type=int, choices=[1, 2, 3], default=None,
-                   help="Run only one scenario (1, 2, or 3)")
+    p.add_argument(
+        "--health-url",
+        default=_DEFAULT_HEALTH_URL,
+        help=f"Healthz URL (default {_DEFAULT_HEALTH_URL})",
+    )
+    p.add_argument(
+        "--db-path", default=_DEFAULT_DB_PATH, help=f"Local DB path (default {_DEFAULT_DB_PATH})"
+    )
+    p.add_argument(
+        "--only",
+        type=int,
+        choices=[1, 2, 3],
+        default=None,
+        help="Run only one scenario (1, 2, or 3)",
+    )
     p.add_argument("--out", default=None, help="Output dir (default analysis_wave18/)")
     args = p.parse_args(argv)
 

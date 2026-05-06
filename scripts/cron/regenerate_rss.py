@@ -33,6 +33,7 @@ Exit codes
 0 success
 1 fatal (news dir missing, etc)
 """
+
 from __future__ import annotations
 
 import argparse
@@ -73,9 +74,7 @@ _SECTION_RE = re.compile(
     r'<meta\s+property="article:section"\s+content="(.*?)"',
     re.DOTALL | re.IGNORECASE,
 )
-_CANONICAL_RE = re.compile(
-    r'<link\s+rel="canonical"\s+href="(.*?)"', re.DOTALL | re.IGNORECASE
-)
+_CANONICAL_RE = re.compile(r'<link\s+rel="canonical"\s+href="(.*?)"', re.DOTALL | re.IGNORECASE)
 
 
 def _configure_logging() -> None:
@@ -154,12 +153,7 @@ def _walk_news_dir(news_dir: Path) -> list[NewsItem]:
 
 
 def _xml_escape(s: str) -> str:
-    return (
-        s.replace("&", "&amp;")
-        .replace("<", "&lt;")
-        .replace(">", "&gt;")
-        .replace('"', "&quot;")
-    )
+    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
 
 
 def _render_rss(
@@ -217,9 +211,7 @@ def _render_rss(
         else:
             lines.append(f"    <description>{_xml_escape(it.description)}</description>")
         lines.append(f"    <category>{_xml_escape(it.category)}</category>")
-        lines.append(
-            f'    <guid isPermaLink="true">{_xml_escape(it.guid)}</guid>'
-        )
+        lines.append(f'    <guid isPermaLink="true">{_xml_escape(it.guid)}</guid>')
         lines.append(f"    <pubDate>{format_datetime(it.pub_date_utc)}</pubDate>")
         lines.append("  </item>")
         lines.append("")
@@ -232,9 +224,7 @@ def _write_if_changed(path: Path, content: str, dry_run: bool) -> bool:
     if dry_run:
         logger.info(
             "would_write path=%s bytes=%d",
-            path.relative_to(_REPO_ROOT)
-            if str(path).startswith(str(_REPO_ROOT))
-            else path,
+            path.relative_to(_REPO_ROOT) if str(path).startswith(str(_REPO_ROOT)) else path,
             len(content.encode("utf-8")),
         )
         return False

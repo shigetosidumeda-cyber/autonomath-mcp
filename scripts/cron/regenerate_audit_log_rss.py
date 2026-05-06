@@ -27,6 +27,7 @@ Exit codes
 0 success
 1 fatal (autonomath.db missing, migration 075 not yet applied, etc.)
 """
+
 from __future__ import annotations
 
 import argparse
@@ -47,9 +48,7 @@ if _SRC.is_dir() and str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
 from jpintel_mcp.observability import heartbeat  # noqa: E402
 
-_DEFAULT_DB = Path(
-    os.environ.get("AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db"))
-)
+_DEFAULT_DB = Path(os.environ.get("AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db")))
 _DEFAULT_OUT = _REPO_ROOT / "site" / "audit-log.rss.new"
 _DEFAULT_DOMAIN = "jpcite.com"
 _UTC = UTC
@@ -142,8 +141,7 @@ def _fetch_diff_rows(db_path: Path, limit: int) -> list[dict]:
     except sqlite3.OperationalError as exc:
         if "no such table" in str(exc).lower():
             logger.warning(
-                "am_amendment_diff missing — emitting empty feed (cron will "
-                "populate post-launch)."
+                "am_amendment_diff missing — emitting empty feed (cron will populate post-launch)."
             )
             return []
         logger.error("query_failed err=%s", exc)
@@ -191,10 +189,7 @@ def _render_rss(rows: list[dict], *, domain: str) -> str:
 
     for r in rows:
         field_ja = _TRACKED_FIELDS_JA.get(r["field_name"]) or r["field_name"]
-        title = (
-            f"{r['entity_id']} — {r['field_name']} ({field_ja}) "
-            f"が変更されました"
-        )
+        title = f"{r['entity_id']} — {r['field_name']} ({field_ja}) が変更されました"
         prev = _truncate(r["prev_value"], 200)
         new = _truncate(r["new_value"], 200)
         desc = (
@@ -215,13 +210,11 @@ def _render_rss(rows: list[dict], *, domain: str) -> str:
         lines.append("    <category>amendment</category>")
         lines.append(f'    <guid isPermaLink="false">{_xml_escape(guid)}</guid>')
         lines.append(
-            f"    <pubDate>"
-            f"{format_datetime(_parse_detected_at(r['detected_at']))}"
-            f"</pubDate>"
+            f"    <pubDate>{format_datetime(_parse_detected_at(r['detected_at']))}</pubDate>"
         )
         if r["source_url"]:
             lines.append(
-                f"    <source url=\"{_xml_escape(r['source_url'])}\">"
+                f'    <source url="{_xml_escape(r["source_url"])}">'
                 "primary government source"
                 "</source>"
             )
@@ -237,9 +230,7 @@ def _write_if_changed(path: Path, content: str, dry_run: bool) -> bool:
     if dry_run:
         logger.info(
             "would_write path=%s bytes=%d",
-            path.relative_to(_REPO_ROOT)
-            if str(path).startswith(str(_REPO_ROOT))
-            else path,
+            path.relative_to(_REPO_ROOT) if str(path).startswith(str(_REPO_ROOT)) else path,
             len(content.encode("utf-8")),
         )
         return False

@@ -43,6 +43,7 @@ Exit codes
 0 success (possibly with "no posts" log)
 1 fatal (db missing, template missing, jinja2 not installed, etc)
 """
+
 from __future__ import annotations
 
 import argparse
@@ -69,9 +70,7 @@ if _SRC.is_dir() and str(_SRC) not in sys.path:
 try:
     from jinja2 import Environment, FileSystemLoader, select_autoescape
 except ImportError:  # pragma: no cover
-    sys.stderr.write(
-        "ERROR: jinja2 is required. `uv pip install jinja2` or add to pyproject.\n"
-    )
+    sys.stderr.write("ERROR: jinja2 is required. `uv pip install jinja2` or add to pyproject.\n")
     raise
 
 try:
@@ -278,9 +277,7 @@ def _ensure_diff_table(conn: sqlite3.Connection) -> bool:
         "SELECT name FROM sqlite_master WHERE type='table' AND name='am_amendment_diff'"
     ).fetchone()
     if row is None:
-        logger.error(
-            "am_amendment_diff_missing did_you_apply_migration=075_am_amendment_diff.sql"
-        )
+        logger.error("am_amendment_diff_missing did_you_apply_migration=075_am_amendment_diff.sql")
         return False
     return True
 
@@ -332,9 +329,7 @@ def _fetch_diff_rows(
     return out
 
 
-def _fetch_entity_meta(
-    conn: sqlite3.Connection, entity_ids: list[str]
-) -> dict[str, EntityMeta]:
+def _fetch_entity_meta(conn: sqlite3.Connection, entity_ids: list[str]) -> dict[str, EntityMeta]:
     if not entity_ids:
         return {}
     qmarks = ",".join(["?"] * len(entity_ids))
@@ -399,9 +394,7 @@ def _build_news_post_context(
     detected_at_utc = min(d.detected_at_utc for d in diffs)
     detected_at_jst = _to_jst(detected_at_utc)
 
-    category_ja, category_slug = CATEGORY_FOR_KIND.get(
-        entity.record_kind, DEFAULT_CATEGORY
-    )
+    category_ja, category_slug = CATEGORY_FOR_KIND.get(entity.record_kind, DEFAULT_CATEGORY)
 
     # Distinct field labels for the summary line.
     distinct_fields_ja: list[str] = []
@@ -433,9 +426,7 @@ def _build_news_post_context(
                 "field_label_ja": FIELD_LABELS_JA.get(d.field_name, d.field_name),
                 "prev_value": d.prev_value,
                 "new_value": d.new_value,
-                "prev_value_display": _format_value_display(
-                    d.field_name, d.prev_value
-                ),
+                "prev_value_display": _format_value_display(d.field_name, d.prev_value),
                 "new_value_display": _format_value_display(d.field_name, d.new_value),
                 "source_url": d.source_url,
                 "source_domain": _domain_of(d.source_url),
@@ -505,9 +496,9 @@ def _build_news_post_context(
     year, month, day = jst_date_iso.split("-")
     # `since_iso` is what we feed the API curl example — start of the JST
     # day in UTC, the natural lower bound a customer would pass.
-    since_dt = datetime.fromisoformat(jst_date_iso + "T00:00:00").replace(
-        tzinfo=_JST
-    ).astimezone(_UTC)
+    since_dt = (
+        datetime.fromisoformat(jst_date_iso + "T00:00:00").replace(tzinfo=_JST).astimezone(_UTC)
+    )
     since_iso = since_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     return {
@@ -531,9 +522,7 @@ def _build_news_post_context(
         "source_url": entity.source_url or "",
         "source_domain": _domain_of(entity.source_url),
         "since_iso": since_iso,
-        "json_ld_pretty": json.dumps(
-            json_ld, ensure_ascii=False, sort_keys=True, indent=2
-        ),
+        "json_ld_pretty": json.dumps(json_ld, ensure_ascii=False, sort_keys=True, indent=2),
         "canonical_url": canonical_url,
     }
 
@@ -685,9 +674,7 @@ def _detect_law_loads(
                 "primary_name": str(r["canonical_name"] or ""),
                 "loaded_at": id_to_run_at.get(cid, ""),
                 "articles": int(r["arts"] or 0),
-                "egov_url": (
-                    f"https://laws.e-gov.go.jp/law/{egov}" if egov else ""
-                ),
+                "egov_url": (f"https://laws.e-gov.go.jp/law/{egov}" if egov else ""),
                 "license": "cc_by_4.0",
                 "attribution": "出典: e-Gov法令検索 (デジタル庁)",
             }
@@ -704,19 +691,20 @@ def _detect_law_loads(
     if dry_run:
         logger.info(
             "law_loads_would_stage laws=%d path=%s",
-            len(laws_pending), pending_path,
+            len(laws_pending),
+            pending_path,
         )
         return counters
 
     pending_path.parent.mkdir(parents=True, exist_ok=True)
     pending_path.write_text(
-        json.dumps(pending_payload, ensure_ascii=False,
-                   sort_keys=True, indent=2),
+        json.dumps(pending_payload, ensure_ascii=False, sort_keys=True, indent=2),
         encoding="utf-8",
     )
     logger.info(
         "law_loads_staged laws=%d path=%s",
-        len(laws_pending), pending_path,
+        len(laws_pending),
+        pending_path,
     )
     return counters
 
@@ -806,7 +794,7 @@ def run(
 
         # Process buckets in a stable order so logs / dry-run output are
         # deterministic across re-runs.
-        for (entity_id, jst_date_iso) in sorted(buckets.keys()):
+        for entity_id, jst_date_iso in sorted(buckets.keys()):
             bucket = buckets[(entity_id, jst_date_iso)]
             entity = meta.get(entity_id)
             if entity is None or not entity.primary_name:
@@ -827,8 +815,7 @@ def run(
                 logger.info(
                     "would_write path=%s changes=%d",
                     out_path.relative_to(_REPO_ROOT)
-                    if out_path.is_absolute()
-                    and str(out_path).startswith(str(_REPO_ROOT))
+                    if out_path.is_absolute() and str(out_path).startswith(str(_REPO_ROOT))
                     else out_path,
                     len(bucket),
                 )

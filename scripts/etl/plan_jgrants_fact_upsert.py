@@ -380,7 +380,9 @@ def mapped_detail_to_fact_rows(
 
     if source_url:
         template = _template("source_url")
-        source_url_fact = mapped.get("source_url") if isinstance(mapped.get("source_url"), dict) else {}
+        source_url_fact = (
+            mapped.get("source_url") if isinstance(mapped.get("source_url"), dict) else {}
+        )
         row = _base_fact_row(
             entity_id=entity_id,
             template=template,
@@ -553,7 +555,9 @@ def load_readiness_report(path: Path | None) -> dict[str, Any] | None:
     return _read_json_file(path)
 
 
-def collect_jgrants_programs(conn: sqlite3.Connection, *, sample_limit: int) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+def collect_jgrants_programs(
+    conn: sqlite3.Connection, *, sample_limit: int
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Collect local JGrants-linked programs using the readiness helper."""
     if readiness is None:
         raise RuntimeError("scripts/etl/report_jgrants_ingest_readiness.py is not importable")
@@ -698,7 +702,11 @@ def annotate_existing_fact_status(
             "schema_missing_columns": sorted(required - columns),
         }
 
-    select_cols = [col for col in ("id", "field_value_text", "field_value_json", "field_value_numeric") if col in columns]
+    select_cols = [
+        col
+        for col in ("id", "field_value_text", "field_value_json", "field_value_numeric")
+        if col in columns
+    ]
     if not select_cols:
         select_cols = ["entity_id", "field_name"]
     sql = (
@@ -746,9 +754,13 @@ def annotate_existing_fact_status(
 
 def _same_fact_value(existing: sqlite3.Row, proposed: dict[str, Any]) -> bool:
     keys = set(existing.keys())
-    if "field_value_text" in keys and existing["field_value_text"] == proposed.get("field_value_text"):
+    if "field_value_text" in keys and existing["field_value_text"] == proposed.get(
+        "field_value_text"
+    ):
         return True
-    if "field_value_json" in keys and existing["field_value_json"] == proposed.get("field_value_json"):
+    if "field_value_json" in keys and existing["field_value_json"] == proposed.get(
+        "field_value_json"
+    ):
         return True
     if "field_value_numeric" in keys:
         old = existing["field_value_numeric"]
@@ -849,7 +861,9 @@ def build_program_fact_plan(
     detail_payload: dict[str, Any] | None,
 ) -> dict[str, Any]:
     program_id = str(program.get("program_id") or program.get("unified_id") or "")
-    fallback_source_url = _clean_text(program.get("source_url")) or _clean_text(program.get("official_url"))
+    fallback_source_url = _clean_text(program.get("source_url")) or _clean_text(
+        program.get("official_url")
+    )
     blockers: list[str] = []
     proposed_rows: list[dict[str, Any]] = []
     mapped: dict[str, Any] | None = None
@@ -857,7 +871,9 @@ def build_program_fact_plan(
     if detail_payload is None:
         blockers.append("detail_json_missing")
     else:
-        mapped = normalize_detail_for_program(detail_payload, fallback_source_url=fallback_source_url)
+        mapped = normalize_detail_for_program(
+            detail_payload, fallback_source_url=fallback_source_url
+        )
         source_metadata = resolve_source_metadata(
             conn,
             source_url=_mapped_source_url(mapped),
@@ -918,9 +934,7 @@ def build_jgrants_fact_upsert_plan(
         for row in program["proposed_fact_rows"]
     )
     field_counts = Counter(
-        row["field_name"]
-        for program in program_plans
-        for row in program["proposed_fact_rows"]
+        row["field_name"] for program in program_plans for row in program["proposed_fact_rows"]
     )
     blockers = _global_blockers(schema, computed_readiness)
     blockers.extend(

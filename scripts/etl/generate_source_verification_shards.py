@@ -190,8 +190,7 @@ def _validated_apply_command(command: DomainCommand) -> str:
     command_domain = _option_value(args, "--domain", domain=command.domain).strip().lower()
     if command_domain != command.domain:
         raise ValueError(
-            f"apply command domain {command_domain} does not match CSV domain "
-            f"{command.domain}"
+            f"apply command domain {command_domain} does not match CSV domain {command.domain}"
         )
 
     limit = _positive_int(
@@ -219,7 +218,9 @@ def _build_shards(
 
     json_membership = _json_shard_membership(report)
     seen_domains: dict[str, int] = {}
-    grouped: dict[int, list[DomainCommand]] = {shard_id: [] for shard_id in range(1, shard_count + 1)}
+    grouped: dict[int, list[DomainCommand]] = {
+        shard_id: [] for shard_id in range(1, shard_count + 1)
+    }
     excluded_over_threshold = 0
 
     for row in rows:
@@ -245,9 +246,7 @@ def _build_shards(
             )
 
         seen_domains[row.domain] = row.shard_id
-        grouped[row.shard_id].append(
-            replace(row, apply_command=_validated_apply_command(row))
-        )
+        grouped[row.shard_id].append(replace(row, apply_command=_validated_apply_command(row)))
 
     scripts = [
         ShardScript(
@@ -307,8 +306,7 @@ def _render_script(
                 "",
                 "echo "
                 + shlex.quote(
-                    f"domain={domain.domain} "
-                    f"unverified_http_rows={domain.unverified_http_rows}"
+                    f"domain={domain.domain} unverified_http_rows={domain.unverified_http_rows}"
                 ),
                 domain.apply_command,
             ]
@@ -381,9 +379,7 @@ def generate_shard_scripts(
         "threshold_unverified_http_rows_per_domain": effective_threshold,
         "script_count": len(materialized_scripts),
         "domain_count": sum(len(script.domains) for script in materialized_scripts),
-        "unverified_http_rows": sum(
-            script.unverified_http_rows for script in materialized_scripts
-        ),
+        "unverified_http_rows": sum(script.unverified_http_rows for script in materialized_scripts),
         "excluded_over_threshold_domain_count": excluded_over_threshold,
         "shards": [
             {

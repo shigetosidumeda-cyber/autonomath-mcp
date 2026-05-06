@@ -40,18 +40,14 @@ from scripts.lib.http import (  # noqa: E402
 
 PARSER_PATH = REPO_ROOT / "scripts" / "cron" / "extract_program_facts.py"
 DEFAULT_DB = REPO_ROOT / "data" / "jpintel.db"
-DEFAULT_OUTPUT = (
-    REPO_ROOT / "analysis_wave18" / "pdf_extraction_batch_2026-05-01.csv"
-)
+DEFAULT_OUTPUT = REPO_ROOT / "analysis_wave18" / "pdf_extraction_batch_2026-05-01.csv"
 USER_AGENT = "jpcite-research/1.0 (+https://jpcite.com/about)"
 
 _LOG = logging.getLogger("jpcite.pdf_batch")
 
 
 def _load_parser() -> Any:
-    spec = importlib.util.spec_from_file_location(
-        "extract_program_facts_runtime", PARSER_PATH
-    )
+    spec = importlib.util.spec_from_file_location("extract_program_facts_runtime", PARSER_PATH)
     if spec is None or spec.loader is None:
         raise RuntimeError(f"failed to load parser spec at {PARSER_PATH}")
     mod = importlib.util.module_from_spec(spec)
@@ -69,9 +65,7 @@ def _connect_readonly(path: Path) -> sqlite3.Connection:
     return conn
 
 
-def _select_pdf_programs(
-    conn: sqlite3.Connection, limit: int | None
-) -> list[sqlite3.Row]:
+def _select_pdf_programs(conn: sqlite3.Connection, limit: int | None) -> list[sqlite3.Row]:
     sql = (
         "SELECT unified_id, source_url FROM programs "
         "WHERE source_url LIKE '%.pdf' "

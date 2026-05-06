@@ -52,12 +52,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 JPINTEL_DB = REPO_ROOT / "data" / "jpintel.db"
 AUTONOMATH_DB = REPO_ROOT / "autonomath.db"
 DEFAULT_OUTPUT = REPO_ROOT / "analysis_wave18" / "subsidy_rate_text_fix_review.csv"
-DEFAULT_APPLY_OUTPUT = (
-    REPO_ROOT / "analysis_wave18" / "subsidy_rate_apply_2026-05-01.csv"
-)
-LEGACY_REVIEW_CSV = (
-    REPO_ROOT / "analysis_wave18" / "subsidy_rate_text_fix_review.csv"
-)
+DEFAULT_APPLY_OUTPUT = REPO_ROOT / "analysis_wave18" / "subsidy_rate_apply_2026-05-01.csv"
+LEGACY_REVIEW_CSV = REPO_ROOT / "analysis_wave18" / "subsidy_rate_text_fix_review.csv"
 SUBSIDY_RATE_TEXT_COLUMN = "subsidy_rate_text"
 
 # Over-application guard: refuse any apply / backfill that would touch more
@@ -237,9 +233,7 @@ def collect_subsidy_rate_fixes(
     return fixes
 
 
-def _has_subsidy_rate_text_column(
-    conn: sqlite3.Connection, table_name: str
-) -> bool:
+def _has_subsidy_rate_text_column(conn: sqlite3.Connection, table_name: str) -> bool:
     rows = conn.execute(f"PRAGMA table_info({table_name})").fetchall()
     return any(row["name"] == SUBSIDY_RATE_TEXT_COLUMN for row in rows)
 
@@ -302,10 +296,7 @@ def _write_review_csv(path: Path, fixes: list[SubsidyRateFix]) -> None:
         writer.writeheader()
         for fix in fixes:
             writer.writerow(
-                {
-                    field: "" if value is None else value
-                    for field, value in asdict(fix).items()
-                }
+                {field: "" if value is None else value for field, value in asdict(fix).items()}
             )
 
 
@@ -340,9 +331,7 @@ def fix_subsidy_rate_text_values(
             fixes = collect_subsidy_rate_fixes(conn, target)
             all_fixes.extend(fixes)
             updated_rows_by_target[target.label] = (
-                apply_subsidy_rate_fixes(conn, fixes, max_updates=max_updates)
-                if apply
-                else 0
+                apply_subsidy_rate_fixes(conn, fixes, max_updates=max_updates) if apply else 0
             )
             after_text_rows[target.label] = _count_text_rows(conn, target.table_name)
 
@@ -374,9 +363,7 @@ def audit_subsidy_rate_text(
         with _connect(target.path, apply=False) as conn:
             _require_table(conn, target.table_name)
             text_rows[target.label] = _count_text_rows(conn, target.table_name)
-            text_col_present[target.label] = _has_subsidy_rate_text_column(
-                conn, target.table_name
-            )
+            text_col_present[target.label] = _has_subsidy_rate_text_column(conn, target.table_name)
     return {
         "mode": "audit",
         "text_rows": text_rows,
@@ -389,9 +376,7 @@ def _read_review_csv(path: Path) -> list[dict[str, str]]:
         return list(csv.DictReader(f))
 
 
-def _csv_rows_for_target(
-    rows: list[dict[str, str]], target: DbTarget
-) -> list[dict[str, str]]:
+def _csv_rows_for_target(rows: list[dict[str, str]], target: DbTarget) -> list[dict[str, str]]:
     return [
         row
         for row in rows
@@ -446,9 +431,7 @@ def backfill_text_from_csv(
                     unified_id = csv_row["unified_id"]
                     original_text = csv_row["original_subsidy_rate_text"]
                     parsed_str = csv_row.get("parsed_subsidy_rate", "")
-                    parsed_value: float | None = (
-                        float(parsed_str) if parsed_str else None
-                    )
+                    parsed_value: float | None = float(parsed_str) if parsed_str else None
 
                     live = conn.execute(
                         f"""SELECT subsidy_rate, typeof(subsidy_rate) AS rate_type,
@@ -476,13 +459,10 @@ def backfill_text_from_csv(
                     # Only safe to backfill if the live numeric matches what
                     # the prior --apply parsed; otherwise the row drifted
                     # post-cleanup and the CSV is no longer authoritative.
-                    safe_match = (
-                        (parsed_value is None and live_rate is None)
-                        or (
-                            parsed_value is not None
-                            and live_rate is not None
-                            and abs(float(live_rate) - parsed_value) < 1e-6
-                        )
+                    safe_match = (parsed_value is None and live_rate is None) or (
+                        parsed_value is not None
+                        and live_rate is not None
+                        and abs(float(live_rate) - parsed_value) < 1e-6
                     )
                     if not safe_match:
                         skipped += 1

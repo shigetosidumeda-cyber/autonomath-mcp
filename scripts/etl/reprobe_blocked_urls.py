@@ -144,9 +144,7 @@ def load_blocked_url_candidates(
         cols = _columns(conn, "programs")
         if {"unified_id", "source_url", "source_url_status"} <= cols:
             clauses = [
-                "LOWER(COALESCE(source_url_status, '')) IN ("
-                + _placeholders(statuses)
-                + ")",
+                "LOWER(COALESCE(source_url_status, '')) IN (" + _placeholders(statuses) + ")",
                 "(source_url LIKE 'http://%' OR source_url LIKE 'https://%')",
             ]
             params: list[Any] = list(statuses)
@@ -155,9 +153,7 @@ def load_blocked_url_candidates(
                 params.append(f"%://{domain.lower()}%")
             sql = (
                 "SELECT unified_id AS row_id, source_url, source_url_status AS previous_status "
-                "FROM programs WHERE "
-                + " AND ".join(clauses)
-                + " ORDER BY unified_id"
+                "FROM programs WHERE " + " AND ".join(clauses) + " ORDER BY unified_id"
             )
             if limit is not None:
                 sql += " LIMIT ?"
@@ -183,9 +179,7 @@ def load_blocked_url_candidates(
         if {"id", "source_url", "canonical_status"} <= cols:
             has_domain = "domain" in cols
             clauses = [
-                "LOWER(COALESCE(canonical_status, '')) IN ("
-                + _placeholders(statuses)
-                + ")",
+                "LOWER(COALESCE(canonical_status, '')) IN (" + _placeholders(statuses) + ")",
                 "(source_url LIKE 'http://%' OR source_url LIKE 'https://%')",
             ]
             params = list(statuses)
@@ -362,7 +356,9 @@ class TransparentUserAgentProber:
 
 def write_results_csv(path: Path, results: list[ReprobeResult]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    fieldnames = list(asdict(results[0]).keys()) if results else list(ReprobeResult.__dataclass_fields__)
+    fieldnames = (
+        list(asdict(results[0]).keys()) if results else list(ReprobeResult.__dataclass_fields__)
+    )
     with path.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
@@ -380,7 +376,9 @@ def reprobe_blocked_urls(
     if output is not None:
         write_results_csv(output, results)
     outcomes = Counter(result.outcome for result in results)
-    statuses = Counter(str(result.status_code) if result.status_code is not None else "none" for result in results)
+    statuses = Counter(
+        str(result.status_code) if result.status_code is not None else "none" for result in results
+    )
     return {
         "mode": "report_only",
         "generated_at": _utc_now(),
@@ -426,7 +424,9 @@ def main(argv: list[str] | None = None) -> int:
                 limit=args.limit,
                 domain=args.domain,
             )
-    output = args.output if args.output is not None else (DEFAULT_OUTPUT if args.write_csv else None)
+    output = (
+        args.output if args.output is not None else (DEFAULT_OUTPUT if args.write_csv else None)
+    )
     with TransparentUserAgentProber(
         per_host_delay_sec=args.per_host_delay_sec,
         timeout_sec=args.timeout_sec,

@@ -22,9 +22,7 @@ DEFAULT_DB = REPO_ROOT / "autonomath.db"
 DEFAULT_OUTPUT = REPO_ROOT / "analysis_wave18" / "axis_key_preflight_2026-05-01.json"
 
 DUPE_SUFFIX_RE = re.compile(r"^(?P<base>.+)__dup(?P<n>[1-9][0-9]*)$")
-PROPOSED_UNIQUE_KEY = (
-    "entity_id, field_name, axis_key, COALESCE(field_value_text, '')"
-)
+PROPOSED_UNIQUE_KEY = "entity_id, field_name, axis_key, COALESCE(field_value_text, '')"
 
 
 def _utc_now() -> str:
@@ -68,7 +66,9 @@ def _table_columns(conn: sqlite3.Connection, table: str) -> list[str]:
     return [str(row["name"]) for row in conn.execute(f"PRAGMA table_info({table})")]
 
 
-def _fetch_dicts(conn: sqlite3.Connection, sql: str, params: tuple[Any, ...] = ()) -> list[dict[str, Any]]:
+def _fetch_dicts(
+    conn: sqlite3.Connection, sql: str, params: tuple[Any, ...] = ()
+) -> list[dict[str, Any]]:
     return [dict(row) for row in conn.execute(sql, params).fetchall()]
 
 

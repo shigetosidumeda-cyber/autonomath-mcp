@@ -143,9 +143,7 @@ def main(argv: list[str] | None = None) -> int:
             bool(counts["dry_run"]),
         )
         hb["rows_processed"] = int(counts.get("deleted", 0) or 0)
-        hb["rows_skipped"] = int(
-            (counts.get("scanned", 0) or 0) - (counts.get("deleted", 0) or 0)
-        )
+        hb["rows_skipped"] = int((counts.get("scanned", 0) or 0) - (counts.get("deleted", 0) or 0))
         hb["metadata"] = {
             "scanned": counts.get("scanned"),
             "errors": counts.get("errors"),

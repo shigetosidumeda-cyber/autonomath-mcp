@@ -80,6 +80,7 @@ Exit codes
 1  fatal (db missing, requests missing)
 2  no candidate laws to load (registry saturated)
 """
+
 from __future__ import annotations
 
 import argparse
@@ -254,13 +255,14 @@ def _load_one(
     inserted = 0
     failed = 0
     for art in articles:
-        source_url = (
-            f"https://laws.e-gov.go.jp/law/{egov_id}"
-            f"#Mp-At_{art['article_number']}"
-        )
+        source_url = f"https://laws.e-gov.go.jp/law/{egov_id}#Mp-At_{art['article_number']}"
         try:
             _eg.upsert_article(
-                con, cid, art, source_url, fetched_at,
+                con,
+                cid,
+                art,
+                source_url,
+                fetched_at,
                 article_kind="main",
             )
             inserted += 1
@@ -268,7 +270,9 @@ def _load_one(
             failed += 1
             _LOG.warning(
                 "upsert_failed cid=%s art=%s err=%s",
-                cid, art.get("article_number"), exc,
+                cid,
+                art.get("article_number"),
+                exc,
             )
     summary["articles"] = inserted
     if failed:
@@ -317,8 +321,7 @@ def run(
             "SELECT COUNT(DISTINCT law_canonical_id) FROM am_law_article"
         ).fetchone()[0]
         total_with_egov = con.execute(
-            "SELECT COUNT(*) FROM am_law "
-            "WHERE e_gov_lawid IS NOT NULL AND e_gov_lawid <> ''"
+            "SELECT COUNT(*) FROM am_law WHERE e_gov_lawid IS NOT NULL AND e_gov_lawid <> ''"
         ).fetchone()[0]
         _LOG.info(
             "candidates n=%d coverage_before=%d/%d (%.1f%%) limit=%d dry_run=%s",
@@ -336,8 +339,11 @@ def run(
         for i, c in enumerate(candidates):
             _LOG.info(
                 "fetch idx=%d/%d cid=%s egov_id=%s score=%d",
-                i + 1, len(candidates), c["canonical_id"],
-                c["e_gov_lawid"], c["priority_score"],
+                i + 1,
+                len(candidates),
+                c["canonical_id"],
+                c["e_gov_lawid"],
+                c["priority_score"],
             )
             summary = _load_one(con, c, fetched_at, dry_run=dry_run)
             per_law.append(summary)
@@ -377,9 +383,7 @@ def run(
                 "coverage_after": loaded_count_after,
                 "coverage_total_eligible": total_with_egov,
                 "loaded_canonical_ids": sorted(
-                    s["canonical_id"]
-                    for s in per_law
-                    if s["status"] == "ok" and s["articles"] > 0
+                    s["canonical_id"] for s in per_law if s["status"] == "ok" and s["articles"] > 0
                 ),
             }
             with log_file.open("a", encoding="utf-8") as fh:
@@ -389,10 +393,15 @@ def run(
         _LOG.info(
             "run_done candidates=%d loaded=%d 404=%d errors=%d articles=%d "
             "elapsed=%.1fs coverage=%d→%d/%d",
-            counters["candidates"], counters["loaded_ok"],
-            counters["skipped_404"], counters["errors"],
-            counters["articles_total"], counters["elapsed_sec"],
-            loaded_count_before, loaded_count_after, total_with_egov,
+            counters["candidates"],
+            counters["loaded_ok"],
+            counters["skipped_404"],
+            counters["errors"],
+            counters["articles_total"],
+            counters["elapsed_sec"],
+            loaded_count_before,
+            loaded_count_after,
+            total_with_egov,
         )
         return counters
     finally:
@@ -416,9 +425,7 @@ def _configure_logging(verbose: bool) -> None:
 
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    p = argparse.ArgumentParser(
-        description="Incremental e-Gov full-text loader for am_law stubs."
-    )
+    p = argparse.ArgumentParser(description="Incremental e-Gov full-text loader for am_law stubs.")
     p.add_argument(
         "--db",
         type=Path,

@@ -53,7 +53,11 @@ def _require_env() -> dict[str, str]:
 
 
 def _bucket(name: str | None) -> str:
-    return name or os.environ.get("R2_BUCKET") or os.environ.get("JPINTEL_BACKUP_BUCKET", "autonomath-backup")
+    return (
+        name
+        or os.environ.get("R2_BUCKET")
+        or os.environ.get("JPINTEL_BACKUP_BUCKET", "autonomath-backup")
+    )
 
 
 def _rclone_args(env: dict[str, str]) -> list[str]:

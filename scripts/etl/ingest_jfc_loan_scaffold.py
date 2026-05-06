@@ -37,6 +37,7 @@ Run:
         [--no-net]                     # parse-only against fixtures (test mode)
         [--guarantor-out analysis_wave18/credit_guarantee_associations_2026-05-01.csv]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -81,13 +82,9 @@ ZENSHINHOREN_URL = "https://www.zenshinhoren.or.jp/"
 JFC_ALLOWED_HOSTS = {"www.jfc.go.jp", "jfc.go.jp"}
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-DEFAULT_CSV = (
-    REPO_ROOT / "analysis_wave18" / f"jfc_loan_scaffold_{date.today().isoformat()}.csv"
-)
+DEFAULT_CSV = REPO_ROOT / "analysis_wave18" / f"jfc_loan_scaffold_{date.today().isoformat()}.csv"
 DEFAULT_GUARANTOR_CSV = (
-    REPO_ROOT
-    / "analysis_wave18"
-    / f"credit_guarantee_associations_{date.today().isoformat()}.csv"
+    REPO_ROOT / "analysis_wave18" / f"credit_guarantee_associations_{date.today().isoformat()}.csv"
 )
 
 logging.basicConfig(
@@ -139,9 +136,7 @@ def http_get(url: str, throttle: HostThrottle) -> str:
 # Product-detail pages on JFC use names like 01_sinkikaigyou_m.html,
 # kanko_m.html, etc. We accept either the *_m.html suffix (国民事業 product
 # detail) OR specific allow-listed slugs that are known product pages.
-_PRODUCT_HREF_RE = re.compile(
-    r'href="(/n/finance/search/(?!index)[a-zA-Z0-9_]+(?:_m)?\.html)"'
-)
+_PRODUCT_HREF_RE = re.compile(r'href="(/n/finance/search/(?!index)[a-zA-Z0-9_]+(?:_m)?\.html)"')
 # Skip anchors / pdf / non-product navigation tabs.
 _PRODUCT_NEGATIVES = {
     "/n/finance/search/index.html",
@@ -322,13 +317,21 @@ class JfcLoanRecord:
 
 _AMOUNT_PATTERNS = [
     # 7,200万円 / 4億8,000万円 / 直接貸付 7億2千万円 / 7億円
-    (re.compile(r"(\d{1,3}(?:,\d{3})*|\d+)\s*億(\d{1,3}(?:,\d{3})*|\d+)\s*千?万円"),
-     lambda m: int(m.group(1).replace(",", "")) * 100_000_000
-               + int(m.group(2).replace(",", "")) * 10_000),
-    (re.compile(r"(\d{1,3}(?:,\d{3})*|\d+)\s*億円"),
-     lambda m: int(m.group(1).replace(",", "")) * 100_000_000),
-    (re.compile(r"(\d{1,3}(?:,\d{3})*|\d+)\s*万円"),
-     lambda m: int(m.group(1).replace(",", "")) * 10_000),
+    (
+        re.compile(r"(\d{1,3}(?:,\d{3})*|\d+)\s*億(\d{1,3}(?:,\d{3})*|\d+)\s*千?万円"),
+        lambda m: (
+            int(m.group(1).replace(",", "")) * 100_000_000
+            + int(m.group(2).replace(",", "")) * 10_000
+        ),
+    ),
+    (
+        re.compile(r"(\d{1,3}(?:,\d{3})*|\d+)\s*億円"),
+        lambda m: int(m.group(1).replace(",", "")) * 100_000_000,
+    ),
+    (
+        re.compile(r"(\d{1,3}(?:,\d{3})*|\d+)\s*万円"),
+        lambda m: int(m.group(1).replace(",", "")) * 10_000,
+    ),
 ]
 
 
@@ -383,23 +386,15 @@ def normalise_three_axis_security(security_text: str) -> tuple[str, str, str, st
     text = (security_text or "").strip()
     notes = text
 
-    has_mu_tampo = ("無担保" in text)
-    has_mu_hosho = ("無保証" in text)
-    has_yes_tampo = ("担保あり" in text or "担保が必要" in text or "担保は" in text)
-    has_yes_guarantor = (
-        "保証人あり" in text or "保証人が必要" in text or "連帯保証人" in text
-    )
+    has_mu_tampo = "無担保" in text
+    has_mu_hosho = "無保証" in text
+    has_yes_tampo = "担保あり" in text or "担保が必要" in text or "担保は" in text
+    has_yes_guarantor = "保証人あり" in text or "保証人が必要" in text or "連帯保証人" in text
     has_third_party_unmu = (
-        "第三者保証人を不要" in text
-        or "第三者保証人不要" in text
-        or "第三者保証人は不要" in text
+        "第三者保証人を不要" in text or "第三者保証人不要" in text or "第三者保証人は不要" in text
     )
-    has_consult = (
-        "ご相談" in text
-        or "ご希望を伺い" in text
-        or "ご希望をお伺い" in text
-    )
-    has_keieisha_only = ("経営者" in text and "保証" in text and "免除" in text)
+    has_consult = "ご相談" in text or "ご希望を伺い" in text or "ご希望をお伺い" in text
+    has_keieisha_only = "経営者" in text and "保証" in text and "免除" in text
 
     # default
     collateral = "unknown"
@@ -466,9 +461,7 @@ def parse_jfc_product_page(html: str, source_url: str) -> JfcLoanRecord | None:
         amount_max_text=by_key.get("amount_max_text", ""),
         amount_max_yen=parse_amount_max_yen(by_key.get("amount_max_text", "")),
         loan_period_text=by_key.get("loan_period_text", ""),
-        loan_period_years_max=parse_loan_period_years_max(
-            by_key.get("loan_period_text", "")
-        ),
+        loan_period_years_max=parse_loan_period_years_max(by_key.get("loan_period_text", "")),
         interest_rate_text=by_key.get("interest_rate_text", ""),
         security_text=by_key.get("security_text", "") or by_key.get("collateral_text", ""),
         source_url=source_url,
@@ -505,7 +498,7 @@ def _slug_to_label(url: str) -> str:
 # zenshinhoren homepage that look like a member association.
 _ASSOC_HREF_RE = re.compile(
     r'href="(https?://[^"]*'
-    r'(?:cgc-|cgc\.|hosyo|hosho|sinpo|shinpo|shinyo|kyosinpo|ysh\.or\.jp|icgc\.or\.jp)'
+    r"(?:cgc-|cgc\.|hosyo|hosho|sinpo|shinpo|shinyo|kyosinpo|ysh\.or\.jp|icgc\.or\.jp)"
     r'[^"]*)"'
 )
 
@@ -627,9 +620,7 @@ def smoke_one_association(
     """
     try:
         throttle.wait(assoc.homepage_url)
-        req = urllib.request.Request(
-            assoc.homepage_url, headers={"User-Agent": USER_AGENT}
-        )
+        req = urllib.request.Request(assoc.homepage_url, headers={"User-Agent": USER_AGENT})
         with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT_S, context=_SSL_CTX) as resp:
             assoc.smoke_status = "ok"
             assoc.smoke_http_code = str(resp.status)
@@ -686,9 +677,7 @@ def write_jfc_csv(records: Iterable[JfcLoanRecord], out_path: Path) -> int:
     return n
 
 
-def write_guarantor_csv(
-    associations: Iterable[GuaranteeAssociation], out_path: Path
-) -> int:
+def write_guarantor_csv(associations: Iterable[GuaranteeAssociation], out_path: Path) -> int:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     n = 0
     with out_path.open("w", encoding="utf-8", newline="") as f:

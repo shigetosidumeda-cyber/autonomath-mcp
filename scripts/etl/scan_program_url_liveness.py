@@ -135,9 +135,7 @@ def load_unknown_tier_bc_candidates(
     sql = (
         "SELECT unified_id, primary_name, tier, source_url, "
         "COALESCE(source_url_status, '') AS previous_status "
-        "FROM programs WHERE "
-        + " AND ".join(clauses)
-        + " ORDER BY tier, unified_id LIMIT ?"
+        "FROM programs WHERE " + " AND ".join(clauses) + " ORDER BY tier, unified_id LIMIT ?"
     )
     params.append(limit)
 
@@ -305,7 +303,9 @@ def scan_program_url_liveness(
     results = [prober.probe(row) for row in candidates]
     write_results_csv(output, results)
     classifications = Counter(result.classification for result in results)
-    statuses = Counter(str(result.status_code) if result.status_code is not None else "none" for result in results)
+    statuses = Counter(
+        str(result.status_code) if result.status_code is not None else "none" for result in results
+    )
     return {
         "mode": "report_only",
         "generated_at": _utc_now(),

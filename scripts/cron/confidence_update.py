@@ -25,6 +25,7 @@ Usage:
     python scripts/cron/confidence_update.py --window-days 30
     python scripts/cron/confidence_update.py --out /tmp/conf.json
 """
+
 from __future__ import annotations
 
 import argparse
@@ -77,9 +78,7 @@ def _column_names(conn: sqlite3.Connection, table: str) -> set[str]:
     return {r[1] for r in rows}
 
 
-def _load_query_log(
-    conn: sqlite3.Connection, since_unix: float
-) -> list[dict[str, Any]]:
+def _load_query_log(conn: sqlite3.Connection, since_unix: float) -> list[dict[str, Any]]:
     """Return query_log rows with the columns we need for Discovery.
 
     Falls back gracefully if `query_log_v2` is absent (fresh dev DBs):
@@ -109,9 +108,7 @@ def _load_query_log(
     return rows
 
 
-def _load_usage_events(
-    conn: sqlite3.Connection, since_iso: str
-) -> list[dict[str, Any]]:
+def _load_usage_events(conn: sqlite3.Connection, since_iso: str) -> list[dict[str, Any]]:
     """Return usage_events rows tagged with a synthetic `tool` field.
 
     `usage_events.endpoint` is the short endpoint name (programs.search,
@@ -188,9 +185,7 @@ def _build_snapshot(
     per_tool_array = sorted(by_tool.values(), key=lambda x: x["tool"])
     return {
         "generated_at": (
-            datetime.now(UTC).replace(microsecond=0).isoformat().replace(
-                "+00:00", "Z"
-            )
+            datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
         ),
         "window_days": window_days,
         "since": since_iso,
@@ -240,12 +235,8 @@ def run(
     until = datetime.now(UTC)
     since = until - timedelta(days=window_days)
     since_unix = since.timestamp()
-    since_iso = since.replace(microsecond=0).isoformat().replace(
-        "+00:00", "Z"
-    )
-    until_iso = until.replace(microsecond=0).isoformat().replace(
-        "+00:00", "Z"
-    )
+    since_iso = since.replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    until_iso = until.replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
     t0 = time.monotonic()
     with _open_db(db) as conn:
@@ -331,9 +322,7 @@ def main(argv: list[str] | None = None) -> int:
             dry_run=args.dry_run,
         )
         if isinstance(snapshot, dict):
-            hb["rows_processed"] = int(
-                snapshot.get("rows", snapshot.get("samples", 0)) or 0
-            )
+            hb["rows_processed"] = int(snapshot.get("rows", snapshot.get("samples", 0)) or 0)
             hb["metadata"] = {
                 "window_days": args.window_days,
                 "dry_run": bool(args.dry_run),

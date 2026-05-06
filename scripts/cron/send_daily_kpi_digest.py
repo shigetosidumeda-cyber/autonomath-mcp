@@ -48,6 +48,7 @@ Constraints honoured (memory):
 - Email-only outbound (``feedback_zero_touch_solo``).
 - Brand: ``jpcite``.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -72,9 +73,7 @@ if _SRC.is_dir() and str(_SRC) not in sys.path:
 from jpintel_mcp.observability import heartbeat  # noqa: E402
 
 _OPS_SCRIPT = _REPO / "scripts" / "ops_quick_stats.py"
-_TEMPLATE_DIR = (
-    _REPO / "src" / "jpintel_mcp" / "email" / "templates"
-)
+_TEMPLATE_DIR = _REPO / "src" / "jpintel_mcp" / "email" / "templates"
 _TEMPLATE_HTML = _TEMPLATE_DIR / "daily_kpi_digest.html"
 _TEMPLATE_TXT = _TEMPLATE_DIR / "daily_kpi_digest.txt"
 
@@ -155,13 +154,17 @@ def _sev_color(sev: str) -> str:
 def _sev_pill(sev: str) -> str:
     """Inline-style HTML pill — Postmark / Gmail safe."""
     if sev == "critical":
-        return ('<span style="display:inline-block;padding:1px 7px;border-radius:999px;'
-                'background:#fee2e2;color:#b91c1c;font-size:10px;font-weight:600;'
-                'letter-spacing:0.05em;text-transform:uppercase;">critical</span>')
+        return (
+            '<span style="display:inline-block;padding:1px 7px;border-radius:999px;'
+            "background:#fee2e2;color:#b91c1c;font-size:10px;font-weight:600;"
+            'letter-spacing:0.05em;text-transform:uppercase;">critical</span>'
+        )
     if sev == "warn":
-        return ('<span style="display:inline-block;padding:1px 7px;border-radius:999px;'
-                'background:#fef9c3;color:#a16207;font-size:10px;font-weight:600;'
-                'letter-spacing:0.05em;text-transform:uppercase;">warn</span>')
+        return (
+            '<span style="display:inline-block;padding:1px 7px;border-radius:999px;'
+            "background:#fef9c3;color:#a16207;font-size:10px;font-weight:600;"
+            'letter-spacing:0.05em;text-transform:uppercase;">warn</span>'
+        )
     return ""
 
 
@@ -181,14 +184,14 @@ def _banner_block_html(severity: dict[str, str]) -> str:
             '<div style="margin:0 0 18px;padding:12px 14px;border-radius:8px;'
             'background:#fee2e2;border:1px solid #fca5a5;color:#991b1b;font-size:13px;font-weight:600;">'
             f"!! CRITICAL: {', '.join(crits)}"
-            '</div>'
+            "</div>"
         )
     if warns:
         return (
             '<div style="margin:0 0 18px;padding:12px 14px;border-radius:8px;'
             'background:#fef9c3;border:1px solid #fde047;color:#854d0e;font-size:13px;font-weight:600;">'
             f"!  WARN: {', '.join(warns)}"
-            '</div>'
+            "</div>"
         )
     return ""
 
@@ -231,9 +234,7 @@ def _placeholders(payload: dict[str, Any]) -> dict[str, str]:
         "{{cap_reached}}": str(payload.get("cap_reached", 0)),
         # Trial
         "{{trial_signups_24h}}": str(payload.get("trial_signups_24h", 0)),
-        "{{trial_to_paid_30d_pct}}": _fmt_pct_unsigned(
-            payload.get("trial_to_paid_30d_pct", 0.0)
-        ),
+        "{{trial_to_paid_30d_pct}}": _fmt_pct_unsigned(payload.get("trial_to_paid_30d_pct", 0.0)),
         # Health
         "{{churn_7d}}": str(payload.get("churn_7d", 0)),
         "{{churn_pill}}": _sev_pill(sev.get("churn_7d", "ok")),
@@ -347,21 +348,26 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
         help="Render to stdout, do not send.",
     )
     p.add_argument(
-        "--to", default=OPERATOR_EMAIL,
+        "--to",
+        default=OPERATOR_EMAIL,
         help=f"Override recipient (default {OPERATOR_EMAIL}).",
     )
     p.add_argument(
-        "--mock", action="store_true",
+        "--mock",
+        action="store_true",
         help="Use a mock KPI payload instead of querying the DB. "
-             "Useful for previewing the email without local data.",
+        "Useful for previewing the email without local data.",
     )
     p.add_argument(
-        "--out-html", type=Path, default=None,
-        help="Write the rendered HTML body to this path "
-             "(in addition to stdout in dry-run).",
+        "--out-html",
+        type=Path,
+        default=None,
+        help="Write the rendered HTML body to this path (in addition to stdout in dry-run).",
     )
     p.add_argument(
-        "--out-txt", type=Path, default=None,
+        "--out-txt",
+        type=Path,
+        default=None,
         help="Write the rendered text body to this path.",
     )
     return p.parse_args(argv)

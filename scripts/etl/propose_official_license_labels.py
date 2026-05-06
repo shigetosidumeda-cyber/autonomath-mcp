@@ -23,12 +23,8 @@ from urllib.parse import urlparse
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_DB = REPO_ROOT / "autonomath.db"
-DEFAULT_CSV = (
-    REPO_ROOT / "analysis_wave18" / "official_license_label_proposals_2026-05-01.csv"
-)
-DEFAULT_JSON = (
-    REPO_ROOT / "analysis_wave18" / "official_license_label_proposals_2026-05-01.json"
-)
+DEFAULT_CSV = REPO_ROOT / "analysis_wave18" / "official_license_label_proposals_2026-05-01.csv"
+DEFAULT_JSON = REPO_ROOT / "analysis_wave18" / "official_license_label_proposals_2026-05-01.json"
 
 BLOCKED_OR_UNSET_LICENSES = {"", "unknown", "proprietary"}
 PUBLIC_LICENSES = {"pdl_v1.0", "cc_by_4.0", "gov_standard_v2.0", "public_domain"}
@@ -167,9 +163,7 @@ LICENSE_RULES: tuple[LicenseRule, ...] = (
         "government procurement portal is a .go.jp B11 official source",
     ),
     LicenseRule(
-        re.compile(
-            r"(^|\.)(maff|meti|mhlw|mlit|env|cao|kantei|mof|mext|soumu)\.go\.jp$"
-        ),
+        re.compile(r"(^|\.)(maff|meti|mhlw|mlit|env|cao|kantei|mof|mext|soumu)\.go\.jp$"),
         "gov_standard_v2.0",
         0.95,
         "ministry .go.jp domains are hardcoded as gov_standard_v2.0 in repo license rules",
@@ -679,7 +673,9 @@ def _write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
 
 def _write_json(path: Path, report: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
+    path.write_text(
+        json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8"
+    )
 
 
 def write_report_outputs(

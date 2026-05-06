@@ -20,9 +20,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 REPORT_DATE = "2026-05-01"
 DEFAULT_DB = REPO_ROOT / "autonomath.db"
 DEFAULT_PREFLIGHT = REPO_ROOT / "analysis_wave18" / f"axis_key_preflight_{REPORT_DATE}.json"
-DEFAULT_OUTPUT = (
-    REPO_ROOT / "analysis_wave18" / f"axis_key_migration_plan_{REPORT_DATE}.json"
-)
+DEFAULT_OUTPUT = REPO_ROOT / "analysis_wave18" / f"axis_key_migration_plan_{REPORT_DATE}.json"
 
 AXIS_INDEX_NAME = "uq_am_facts_entity_field_axis_text"
 LEGACY_INDEX_NAME = "uq_am_facts_entity_field_text"
@@ -125,9 +123,7 @@ def _index_details(conn: sqlite3.Connection, table: str) -> list[dict[str, Any]]
                 "origin": row["origin"],
                 "partial": bool(row["partial"]),
                 "columns": [
-                    xrow["name"]
-                    for xrow in xinfo
-                    if xrow["key"] and xrow["name"] is not None
+                    xrow["name"] for xrow in xinfo if xrow["key"] and xrow["name"] is not None
                 ],
                 "has_expression": any(xrow["key"] and xrow["name"] is None for xrow in xinfo),
                 "sql": sql_row["sql"] if sql_row else None,
@@ -422,9 +418,7 @@ def _rollback_notes(schema: dict[str, Any]) -> list[str]:
         ),
     ]
     if not has_axis_key:
-        notes.append(
-            "Do not rely on DROP COLUMN for hot rollback; SQLite version support varies."
-        )
+        notes.append("Do not rely on DROP COLUMN for hot rollback; SQLite version support varies.")
     return notes
 
 

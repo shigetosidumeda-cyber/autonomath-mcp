@@ -31,6 +31,7 @@ Exit codes:
     1  network failure on every probe (catastrophic — separate from "blocked")
     2  unexpected exception
 """
+
 from __future__ import annotations
 
 import argparse
@@ -56,12 +57,8 @@ except ImportError:  # pragma: no cover
 _LOG = logging.getLogger("jpcite.probe_geps_feasibility")
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_OUTPUT_MD = (
-    REPO_ROOT / "analysis_wave18" / "geps_feasibility_2026-05-01.md"
-)
-DEFAULT_OUTPUT_CSV = (
-    REPO_ROOT / "analysis_wave18" / "geps_bids_smoke_2026-05-01.csv"
-)
+DEFAULT_OUTPUT_MD = REPO_ROOT / "analysis_wave18" / "geps_feasibility_2026-05-01.md"
+DEFAULT_OUTPUT_CSV = REPO_ROOT / "analysis_wave18" / "geps_bids_smoke_2026-05-01.csv"
 
 USER_AGENT = "jpcite-research/1.0 (+https://jpcite.com/about)"
 RATE_LIMIT_SECONDS = 1.0
@@ -120,7 +117,9 @@ class FeasibilityReport:
     user_agent: str
     rate_limit_sec: float
     probes: list[ProbeResult] = field(default_factory=list)
-    classification: str = "unknown"  # "rss_public" / "search_public" / "oidc_only" / "blocked" / "unreachable"
+    classification: str = (
+        "unknown"  # "rss_public" / "search_public" / "oidc_only" / "blocked" / "unreachable"
+    )
     has_robots: bool = False
     robots_disallow_relevant: list[str] = field(default_factory=list)
     has_rss: bool = False
@@ -145,10 +144,7 @@ def _is_oidc_redirect(url: str) -> bool:
         * /pps-auth-biz/login-cert  — login form rendered to the user
     Any of these as a final URL means the resource is gated.
     """
-    return (
-        "/pps-auth-biz/" in url
-        or "redirect_uri=" in url
-    )
+    return "/pps-auth-biz/" in url or "redirect_uri=" in url
 
 
 def _hits_anti_bot(body: str) -> bool:
@@ -198,9 +194,11 @@ def probe_one(client: httpx.Client, name: str, url: str, kind: str) -> ProbeResu
         res.status = resp.status_code
         res.final_url = str(resp.url)
         res.body_len = len(resp.content)
-        body = resp.text if resp.headers.get("content-type", "").startswith(
-            ("text/", "application/")
-        ) else ""
+        body = (
+            resp.text
+            if resp.headers.get("content-type", "").startswith(("text/", "application/"))
+            else ""
+        )
         # Detect OIDC chain on the FINAL url (after redirects), not the request URL.
         res.redirected_to_oidc = _is_oidc_redirect(res.final_url)
         res.body_excerpt = _excerpt(body)
@@ -233,12 +231,9 @@ def classify(probes: list[ProbeResult]) -> FeasibilityReport:
     by_name = {p.name: p for p in probes}
 
     # Robots verdict: 404 / no body == "no rules" == permissive.
-    robots_probes = [
-        p for p in probes if p.kind == "robots" and p.status not in (None,)
-    ]
+    robots_probes = [p for p in probes if p.kind == "robots" and p.status not in (None,)]
     rep.has_robots = any(
-        (p.status == 200) and ("disallow" in (p.body_excerpt or "").lower())
-        for p in robots_probes
+        (p.status == 200) and ("disallow" in (p.body_excerpt or "").lower()) for p in robots_probes
     )
 
     # RSS / sitemap verdict — must be 200 AND not OIDC-redirected AND show a
@@ -248,10 +243,7 @@ def classify(probes: list[ProbeResult]) -> FeasibilityReport:
 
     def _feed_body_ok(p: ProbeResult) -> bool:
         body = (p.body_excerpt or "").lower()
-        return any(
-            tok in body
-            for tok in ("<rss", "<feed", "<urlset", "<sitemapindex", "<atom")
-        )
+        return any(tok in body for tok in ("<rss", "<feed", "<urlset", "<sitemapindex", "<atom"))
 
     rep.has_rss = any(
         p.status == 200
@@ -270,16 +262,12 @@ def classify(probes: list[ProbeResult]) -> FeasibilityReport:
 
     # Public search-form verdict.
     sf = by_name.get("p_portal_search_form")
-    rep.public_search_form_ok = bool(
-        sf and sf.status == 200 and not sf.redirected_to_oidc
-    )
+    rep.public_search_form_ok = bool(sf and sf.status == 200 and not sf.redirected_to_oidc)
 
     # Classification logic — picks the *highest* feasible tier.
     if rep.has_rss:
         rep.classification = "rss_public"
-        rep.summary = (
-            "RSS / Atom feed is publicly readable — preferred ingest path."
-        )
+        rep.summary = "RSS / Atom feed is publicly readable — preferred ingest path."
     elif rep.has_sitemap:
         rep.classification = "sitemap_public"
         rep.summary = (
@@ -298,9 +286,7 @@ def classify(probes: list[ProbeResult]) -> FeasibilityReport:
         )
     elif any(p.redirected_to_oidc for p in probes):
         rep.classification = "oidc_only"
-        rep.summary = (
-            "Every interesting surface 302s to /pps-auth-biz/CDCServlet OIDC."
-        )
+        rep.summary = "Every interesting surface 302s to /pps-auth-biz/CDCServlet OIDC."
     elif all(p.error or (p.status and p.status >= 500) for p in probes):
         rep.classification = "unreachable"
         rep.summary = "All probes errored or returned 5xx — host unreachable from this network."
@@ -340,10 +326,10 @@ def detect_submission_anti_bot(body: str) -> bool:
 # ---------------------------------------------------------------------------
 
 _ROW_FIELD_PATTERNS: dict[str, str] = {
-    "bid_title": r'tri_WAA0101FM01/procurementResultListBean/articleNm[^>]*>([^<]+)</td>',
-    "case_number": r'tri_WAA0101FM01/procurementResultListBean/procurementItemNo[^>]*>([^<]+)</td>',
-    "procuring_entity": r'tri_WAA0101FM01/procurementResultListBean/procurementOrgan[^>]*>([^<]+)</td>',
-    "receipt_address": r'tri_WAA0101FM01/procurementResultListBean/receiptAddress[^>]*>([^<]+)</td>',
+    "bid_title": r"tri_WAA0101FM01/procurementResultListBean/articleNm[^>]*>([^<]+)</td>",
+    "case_number": r"tri_WAA0101FM01/procurementResultListBean/procurementItemNo[^>]*>([^<]+)</td>",
+    "procuring_entity": r"tri_WAA0101FM01/procurementResultListBean/procurementOrgan[^>]*>([^<]+)</td>",
+    "receipt_address": r"tri_WAA0101FM01/procurementResultListBean/receiptAddress[^>]*>([^<]+)</td>",
 }
 
 
@@ -369,11 +355,7 @@ def parse_result_page_rows(
         # Source-url fallback per ingest_bids_geps.py SOURCE_URL_TODO comment:
         # the canonical detail-page URL pattern is unverified, so we cite the
         # result-page URL with a #case_no= fragment (additive, not a swap).
-        source_url = (
-            f"{request_url}#case_no={case_number}"
-            if case_number
-            else request_url
-        )
+        source_url = f"{request_url}#case_no={case_number}" if case_number else request_url
         rows.append(
             {
                 "case_number": case_number,
@@ -382,9 +364,7 @@ def parse_result_page_rows(
                 "announcement_date": "",  # not exposed on the list view
                 "source_url": source_url,
                 "fetched_at": fetched_at,
-                "note": (
-                    f"receipt_address={extracted['receipt_address'][i].strip()}"
-                ),
+                "note": (f"receipt_address={extracted['receipt_address'][i].strip()}"),
             }
         )
     return rows
@@ -450,9 +430,7 @@ def render_markdown(rep: FeasibilityReport) -> str:
     lines.append(f"- has_rss_or_atom: {rep.has_rss}")
     lines.append(f"- has_sitemap: {rep.has_sitemap}")
     lines.append(f"- public_search_form_reachable: {rep.public_search_form_ok}")
-    lines.append(
-        f"- submission_blocked_by_anti_bot: {rep.submission_blocked_by_anti_bot}"
-    )
+    lines.append(f"- submission_blocked_by_anti_bot: {rep.submission_blocked_by_anti_bot}")
     lines.append("")
 
     lines.append("## Probe table")
@@ -600,9 +578,7 @@ def run(
     submit_outcome: SubmitProbeOutcome | None = None
     if rep.public_search_form_ok and not no_network:
         submit_outcome = _attempt_polite_submit_probe(
-            client_factory=lambda: httpx.Client(
-                headers=headers, follow_redirects=True
-            ),
+            client_factory=lambda: httpx.Client(headers=headers, follow_redirects=True),
             search_form_url=f"{P_PORTAL_HOST}/pps-web-biz/UAA01/OAA0100?OAA0115",
             submit_url=f"{P_PORTAL_HOST}/pps-web-biz/UAA01/OAA0100",
         )
@@ -680,7 +656,9 @@ def run(
                 rep.sample_rows = parse_result_page_rows(
                     html=rp.text,
                     request_url=str(rp.url),
-                    fetched_at=datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z"),
+                    fetched_at=datetime.now(UTC)
+                    .isoformat(timespec="seconds")
+                    .replace("+00:00", "Z"),
                     limit=smoke_limit,
                 )
             else:
@@ -736,8 +714,12 @@ def _attempt_polite_submit_probe(
           ``OAA0107``-style permalinks). When true, smoke ingest IS feasible.
     """
     out = SubmitProbeOutcome(
-        blocked=False, final_url="", status=None,
-        body_len=0, has_result_table=False, body_excerpt="",
+        blocked=False,
+        final_url="",
+        status=None,
+        body_len=0,
+        has_result_table=False,
+        body_excerpt="",
     )
     try:
         with client_factory() as client:
@@ -816,8 +798,7 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument("--output-csv", type=Path, default=DEFAULT_OUTPUT_CSV)
     ap.add_argument("--smoke-limit", type=int, default=30)
     ap.add_argument("--no-network", action="store_true")
-    ap.add_argument("--log-level", default="INFO",
-                    choices=("DEBUG", "INFO", "WARNING", "ERROR"))
+    ap.add_argument("--log-level", default="INFO", choices=("DEBUG", "INFO", "WARNING", "ERROR"))
     return ap.parse_args()
 
 

@@ -216,7 +216,9 @@ def _is_court_like_table(table: str, columns: list[ColumnInfo]) -> bool:
     schema_hits = names & COURT_SCHEMA_TERMS
     has_url = bool(_url_columns(columns))
     has_case_signal = any("case" in name or "docket" in name for name in names)
-    has_court_signal = any(name == "court" or "court_" in name or name.endswith("_court") for name in names)
+    has_court_signal = any(
+        name == "court" or "court_" in name or name.endswith("_court") for name in names
+    )
     has_decision_signal = any(
         "decision" in name or "judgment" in name or "judgement" in name for name in names
     )
@@ -259,10 +261,7 @@ def _count_present(
     if not columns:
         return 0
     present_expr = " OR ".join(
-        (
-            f"{_quote_ident(column)} IS NOT NULL "
-            f"AND TRIM(CAST({_quote_ident(column)} AS TEXT)) != ''"
-        )
+        (f"{_quote_ident(column)} IS NOT NULL AND TRIM(CAST({_quote_ident(column)} AS TEXT)) != ''")
         for column in columns
     )
     row = conn.execute(
@@ -504,7 +503,9 @@ def _source_groups(
         domain_counts[domain] += 1
         path_counts[(domain, _path_prefix_from_url(first_url))] += 1
 
-    domains = [{"domain": domain, "rows": rows} for domain, rows in domain_counts.most_common(limit)]
+    domains = [
+        {"domain": domain, "rows": rows} for domain, rows in domain_counts.most_common(limit)
+    ]
     paths = [
         {"domain": domain, "path_prefix": path, "rows": rows}
         for (domain, path), rows in path_counts.most_common(limit)
@@ -807,9 +808,7 @@ def _official_backfill_plan(summary: dict[str, Any]) -> list[dict[str, Any]]:
             "step": "backfill_source_excerpt_from_detail_pages",
             "source_domain": "www.courts.go.jp",
             "source_paths": ["/app/hanrei_jp/detail*/", "/hanrei/*/detail*/index.html"],
-            "current_missing_source_excerpt_rows_if_column_exists": gaps[
-                "source_excerpt_missing"
-            ],
+            "current_missing_source_excerpt_rows_if_column_exists": gaps["source_excerpt_missing"],
             "tables_missing_source_excerpt_column": missing_columns["source_excerpt"],
             "action": (
                 "Populate source_excerpt from official detail-page labels such as 判示事項, "
@@ -878,7 +877,9 @@ def _findings(summary: dict[str, Any]) -> list[str]:
     if summary["candidate_table_count"] == 0:
         findings.append("B5: no court_decisions/courts-like tables detected in local SQLite")
     if summary["official_courts_go_jp_rows"] == 0 and summary["physical_row_count"] > 0:
-        findings.append("B5: court-like rows exist, but no courts.go.jp official URLs were detected")
+        findings.append(
+            "B5: court-like rows exist, but no courts.go.jp official URLs were detected"
+        )
     if gaps["source_url_missing"]:
         findings.append("B5: source_url gaps remain in court-like tables")
     if gaps["source_excerpt_missing"] or missing_columns["source_excerpt"]:

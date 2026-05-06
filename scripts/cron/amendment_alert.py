@@ -28,6 +28,7 @@ Usage:
     python scripts/cron/amendment_alert.py --dry-run  # no webhook / no email
     python scripts/cron/amendment_alert.py --since 2026-04-20T00:00:00+00:00
 """
+
 from __future__ import annotations
 
 import argparse
@@ -184,8 +185,11 @@ class _WebhookRateLimiter:
     events — these are real change notifications, not spam.
     """
 
-    def __init__(self, max_per_window: int = _WEBHOOK_RATE_MAX,
-                 window_seconds: int = _WEBHOOK_RATE_WINDOW_SECONDS) -> None:
+    def __init__(
+        self,
+        max_per_window: int = _WEBHOOK_RATE_MAX,
+        window_seconds: int = _WEBHOOK_RATE_WINDOW_SECONDS,
+    ) -> None:
         self._max = max_per_window
         self._window = window_seconds
         self._hits: dict[str, deque[float]] = defaultdict(deque)
@@ -201,7 +205,8 @@ class _WebhookRateLimiter:
             if sleep_for > 0:
                 logger.info(
                     "webhook_rate_limit_sleep url_host=%s sleep_s=%.2f",
-                    urlparse(url).hostname, sleep_for,
+                    urlparse(url).hostname,
+                    sleep_for,
                 )
                 time.sleep(sleep_for)
                 now = time.monotonic()
@@ -231,14 +236,14 @@ def _post_webhook(
     if dry_run:
         logger.info(
             "webhook.dry_run url_host=%s entity=%s",
-            urlparse(url).hostname, payload.get("entity_id"),
+            urlparse(url).hostname,
+            payload.get("entity_id"),
         )
         return {"ok": True, "skipped": "dry_run"}
 
     safe, reason = _is_safe_webhook(url)
     if not safe:
-        logger.warning("webhook.unsafe url_host=%s reason=%s",
-                       urlparse(url).hostname, reason)
+        logger.warning("webhook.unsafe url_host=%s reason=%s", urlparse(url).hostname, reason)
         return {"ok": False, "error": "unsafe_target", "reason": reason}
 
     last_exc: Exception | None = None
@@ -250,13 +255,17 @@ def _post_webhook(
             # 5xx — retry once.
             logger.info(
                 "webhook.5xx url_host=%s status=%d attempt=%d",
-                urlparse(url).hostname, r.status_code, attempt,
+                urlparse(url).hostname,
+                r.status_code,
+                attempt,
             )
         except httpx.HTTPError as exc:
             last_exc = exc
             logger.info(
                 "webhook.transport_error url_host=%s err=%s attempt=%d",
-                urlparse(url).hostname, exc, attempt,
+                urlparse(url).hostname,
+                exc,
+                attempt,
             )
         if attempt == 1:
             time.sleep(2.0)  # brief backoff before retry
@@ -316,9 +325,7 @@ def _amendment_matches(amendment: dict[str, Any], sub: sqlite3.Row) -> bool:
     if ftype == "program_id":
         return amendment.get("entity_id") == fvalue
     if ftype == "law_id":
-        return amendment.get("law_id") == fvalue or fvalue in (
-            amendment.get("law_refs") or []
-        )
+        return amendment.get("law_id") == fvalue or fvalue in (amendment.get("law_refs") or [])
     if ftype == "tool":
         return fvalue in (amendment.get("tools") or [])
     if ftype == "industry_jsic":
@@ -332,7 +339,8 @@ def _amendment_matches(amendment: dict[str, Any], sub: sqlite3.Row) -> bool:
 
 
 def _enrich_amendment(
-    am_conn: sqlite3.Connection, snapshot: sqlite3.Row,
+    am_conn: sqlite3.Connection,
+    snapshot: sqlite3.Row,
 ) -> dict[str, Any]:
     """Return a dict suitable for matcher + webhook payload.
 
@@ -380,7 +388,9 @@ def _enrich_amendment(
 
 
 def _previous_snapshot(
-    am_conn: sqlite3.Connection, entity_id: str, version_seq: int,
+    am_conn: sqlite3.Connection,
+    entity_id: str,
+    version_seq: int,
 ) -> sqlite3.Row | None:
     return am_conn.execute(
         """SELECT * FROM am_amendment_snapshot
@@ -443,7 +453,9 @@ def run(
             now_iso = datetime.now(UTC).isoformat()
             for snap in new_snapshots:
                 prev = _previous_snapshot(
-                    am_conn, snap["entity_id"], snap["version_seq"],
+                    am_conn,
+                    snap["entity_id"],
+                    snap["version_seq"],
                 )
                 severity = _infer_severity(snap, prev)
                 amendment = _enrich_amendment(am_conn, snap)
@@ -492,8 +504,7 @@ def run(
         if not dry_run and sub_fires:
             for sub_id, ts in sub_fires.items():
                 jp_conn.execute(
-                    "UPDATE alert_subscriptions SET last_triggered = ? "
-                    "WHERE id = ?",
+                    "UPDATE alert_subscriptions SET last_triggered = ? WHERE id = ?",
                     (ts, sub_id),
                 )
 
@@ -517,8 +528,7 @@ def run(
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Daily amendment alert cron")
     parser.add_argument("--dry-run", action="store_true")
-    parser.add_argument("--since", default=None,
-                        help="ISO datetime (default: now-24h)")
+    parser.add_argument("--since", default=None, help="ISO datetime (default: now-24h)")
     parser.add_argument("--log-level", default="INFO")
     args = parser.parse_args(argv)
 

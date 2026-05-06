@@ -26,6 +26,7 @@ Usage:
     python scripts/cron/l4_cache_warm.py --top 50 --since 2026-04-18
     python scripts/cron/l4_cache_warm.py --soft-cap 500
 """
+
 from __future__ import annotations
 
 import argparse
@@ -235,12 +236,8 @@ def main(argv: list[str] | None = None) -> int:
             logger.exception("l4_warm_failed err=%s", e)
             return 1
         if isinstance(counters, dict):
-            hb["rows_processed"] = int(
-                counters.get("warmed", counters.get("inserted", 0)) or 0
-            )
-            hb["rows_skipped"] = int(
-                counters.get("skipped", counters.get("evicted", 0)) or 0
-            )
+            hb["rows_processed"] = int(counters.get("warmed", counters.get("inserted", 0)) or 0)
+            hb["rows_skipped"] = int(counters.get("skipped", counters.get("evicted", 0)) or 0)
             hb["metadata"] = {
                 k: counters.get(k)
                 for k in ("candidates", "swept", "soft_cap", "dry_run")

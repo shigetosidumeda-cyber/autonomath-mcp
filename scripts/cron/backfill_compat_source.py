@@ -31,6 +31,7 @@ Usage:
     python scripts/cron/backfill_compat_source.py --dry-run  # log only
     python scripts/cron/backfill_compat_source.py --limit 10 # first N rows
 """
+
 from __future__ import annotations
 
 import argparse
@@ -80,9 +81,7 @@ def _configure_logging() -> None:
     root.addHandler(sh)
 
 
-def _candidate_pairs(
-    conn: sqlite3.Connection, limit: int | None
-) -> list[sqlite3.Row]:
+def _candidate_pairs(conn: sqlite3.Connection, limit: int | None) -> list[sqlite3.Row]:
     """Return (program_a_id, program_b_id, recovered_source_url) for every
     am_compat_matrix row that:
       * has no source_url today, AND
@@ -179,10 +178,7 @@ def run(
         # Confirm the inferred_only column exists. If migration 077
         # hasn't been applied yet, fail loudly rather than silently
         # do nothing.
-        cols = {
-            r["name"]
-            for r in conn.execute("PRAGMA table_info(am_compat_matrix)").fetchall()
-        }
+        cols = {r["name"] for r in conn.execute("PRAGMA table_info(am_compat_matrix)").fetchall()}
         if "inferred_only" not in cols:
             logger.error(
                 "inferred_only_missing path=%s "
@@ -243,8 +239,7 @@ def run(
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(
-        description="Source URL backfill for am_compat_matrix"
-        " (phantom-moat audit fix #2)"
+        description="Source URL backfill for am_compat_matrix (phantom-moat audit fix #2)"
     )
     p.add_argument(
         "--am-db",

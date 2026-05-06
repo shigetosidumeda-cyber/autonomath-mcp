@@ -13,6 +13,7 @@ Output row shape:
   {"date":"2026-04-28","package":"@autonomath/sdk","downloads":N,
    "start":"...","end":"...","fetched_at":"..."}
 """
+
 from __future__ import annotations
 
 import json

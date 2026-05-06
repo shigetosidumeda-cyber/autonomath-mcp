@@ -320,7 +320,7 @@ def extract_excerpt_from_pdf_bytes(pdf_bytes: bytes) -> str:
 
     parts: list[str] = []
     label = re.sub(r"\s+", "", m.group(1))
-    parts.append(f"【{label}】{body[len(m.group(0)):].strip()}")
+    parts.append(f"【{label}】{body[len(m.group(0)) :].strip()}")
     blob = "\n".join(parts)
     return _trim_for_excerpt(blob, max_chars=EXCERPT_MAX_CHARS)
 
@@ -434,8 +434,8 @@ class EnrichResult:
     excerpt: str
     fetched_at: str
     content_hash: str
-    status: str          # 'ok' | 'empty' | 'http_error' | 'unsafe_url' |
-                         # 'robots_disallow' | 'dryrun' | 'parse_error'
+    status: str  # 'ok' | 'empty' | 'http_error' | 'unsafe_url' |
+    # 'robots_disallow' | 'dryrun' | 'parse_error'
     error: str
 
     def as_csv_row(self) -> dict[str, str]:

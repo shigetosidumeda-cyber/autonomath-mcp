@@ -21,9 +21,7 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUTPUT = REPO_ROOT / "analysis_wave18" / "staging_separation_plan_2026-05-01.json"
-DEFAULT_MARKDOWN_OUTPUT = (
-    REPO_ROOT / "analysis_wave18" / "staging_separation_plan_2026-05-01.md"
-)
+DEFAULT_MARKDOWN_OUTPUT = REPO_ROOT / "analysis_wave18" / "staging_separation_plan_2026-05-01.md"
 
 REPORT_DATE = "2026-05-01"
 REPORT_ID = "G5_STAGING_SEPARATION"
@@ -454,7 +452,9 @@ def summarize_staging_root(root: Path, repo_root: Path) -> dict[str, Any]:
         "inventory_dir_count": inventory_dir_count,
         "inventory_symlink_count": inventory_symlink_count,
         "excluded_dependency_or_cache_file_count": max(raw_counts["file_count"] - total_files, 0),
-        "excluded_dependency_or_cache_dir_count": max(raw_counts["dir_count"] - inventory_dir_count, 0),
+        "excluded_dependency_or_cache_dir_count": max(
+            raw_counts["dir_count"] - inventory_dir_count, 0
+        ),
         "skipped_protected_path_count": skipped_protected_count,
         "raw_protected_path_count": raw_counts["protected_path_count"],
         "read_error_count": read_error_count,
@@ -481,7 +481,9 @@ def summarize_staging_root(root: Path, repo_root: Path) -> dict[str, Any]:
             }
             for summary in large_files
         ],
-        "large_file_count": sum(1 for summary in file_summaries if summary.bytes >= LARGE_FILE_BYTES),
+        "large_file_count": sum(
+            1 for summary in file_summaries if summary.bytes >= LARGE_FILE_BYTES
+        ),
         "db_like_file_count": len(db_like_files),
         "db_like_files_sample": [asdict(summary) for summary in db_like_files[:20]],
         "ownership_estimate": ownership,
@@ -726,9 +728,7 @@ def render_markdown(report: dict[str, Any]) -> str:
                 (
                     "| {top_level} | {owner_area} | {confidence} | {raw_files} | {files} | "
                     "{excluded_dependency_or_cache_files} | {loc} | {raw_bytes} |"
-                ).format(
-                    **owner
-                )
+                ).format(**owner)
             )
         lines.append("")
     lines.extend(["## Dry-Run Commands", ""])
@@ -753,7 +753,9 @@ def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     report = build_report(repo_root=args.repo_root)
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    args.output.write_text(
+        json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
     markdown_output = args.markdown_output
     if markdown_output is not None:
         markdown_output.parent.mkdir(parents=True, exist_ok=True)

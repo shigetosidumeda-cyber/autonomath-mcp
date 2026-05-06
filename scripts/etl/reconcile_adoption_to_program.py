@@ -26,6 +26,7 @@ The script is **read-only on the database**. It writes a CSV with
 signal). Apply manually after review — do not let this script touch
 `am_relation` directly.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -179,17 +180,17 @@ class AdoptionRow:
 # record_kind='program'` lookups against the actual repo state.
 HINT_TO_CANONICAL_PROGRAM: dict[str, str] = {
     # IT導入補助金 (root program node — there are also -2024 / -2025 枠s)
-    "it_dounyu":       "program:base:71f6029070",   # IT導入補助金
-    "it_hojo_2023":    "program:base:71f6029070",   # IT導入補助金 (2023 cohort flattens to the root)
-    "it_hojo_2025":    "program:base:71f6029070",   # IT導入補助金 (2025 cohort flattens to the root)
-    "monodukuri":      "program:base:3b5ec4f12e",   # ものづくり補助金
+    "it_dounyu": "program:base:71f6029070",  # IT導入補助金
+    "it_hojo_2023": "program:base:71f6029070",  # IT導入補助金 (2023 cohort flattens to the root)
+    "it_hojo_2025": "program:base:71f6029070",  # IT導入補助金 (2025 cohort flattens to the root)
+    "monodukuri": "program:base:3b5ec4f12e",  # ものづくり補助金
     "jigyou_saikouchiku": "program:base:a841db60bb",  # 事業再構築補助金 (alt hint name)
-    "saikouchiku":     "program:base:a841db60bb",   # 事業再構築補助金
-    "jizokuka_ippan":  "program:base:2611050f9a",  # 小規模事業者持続化補助金 (root)
+    "saikouchiku": "program:base:a841db60bb",  # 事業再構築補助金
+    "jizokuka_ippan": "program:base:2611050f9a",  # 小規模事業者持続化補助金 (root)
     "jizokuka_shokokai": "program:base:2611050f9a",  # 商工会地区 → flatten to root
-    "jizokuka_sogyo":  "program:base:2611050f9a",  # 創業 → flatten to root
+    "jizokuka_sogyo": "program:base:2611050f9a",  # 創業 → flatten to root
     "shoryokuka_ippan": "program:base:298ecae3d3",  # 中小企業省力化投資補助金（一般型）
-    "shinjigyou":      "program:04_program_documents:000103:0b5ac58740",  # 中小企業新事業進出補助金
+    "shinjigyou": "program:04_program_documents:000103:0b5ac58740",  # 中小企業新事業進出補助金
 }
 
 
@@ -222,10 +223,7 @@ def _load_programs(con: sqlite3.Connection) -> tuple[list[ProgramRow], dict[str,
         by_id[cid] = pr
 
     # Pull aliases for the entities we kept.
-    cur.execute(
-        "SELECT canonical_id, alias FROM am_alias "
-        " WHERE entity_table='am_entities'"
-    )
+    cur.execute("SELECT canonical_id, alias FROM am_alias  WHERE entity_table='am_entities'")
     alias_map: dict[str, list[ProgramRow]] = {}
     for cid, alias in cur:
         pr = by_id.get(cid)
@@ -294,13 +292,15 @@ def _load_unmatched_adoptions(con: sqlite3.Connection, limit: int) -> list[Adopt
             seen.add(canonical_id)  # cleanly matched — skip
             continue
         seen.add(canonical_id)
-        out.append(AdoptionRow(
-            canonical_id=canonical_id,
-            program_name_raw=pname,
-            program_id_hint=hint,
-            source_url_domain=dom,
-            raw_json=raw or "",
-        ))
+        out.append(
+            AdoptionRow(
+                canonical_id=canonical_id,
+                program_name_raw=pname,
+                program_id_hint=hint,
+                source_url_domain=dom,
+                raw_json=raw or "",
+            )
+        )
         if limit and limit > 0 and len(out) >= limit:
             break
     return out
@@ -456,7 +456,11 @@ def run(
         t1 = time.time()
         for ad in adoptions:
             matched_id, score, signal, stripped = _try_match(
-                ad, programs, program_norm_index, alias_index, scorer,
+                ad,
+                programs,
+                program_norm_index,
+                alias_index,
+                scorer,
             )
             band = _confidence_band(score)
             signal_counts[signal] += 1
@@ -473,13 +477,15 @@ def run(
             out_path.parent.mkdir(parents=True, exist_ok=True)
             with out_path.open("w", encoding="utf-8", newline="") as fh:
                 writer = csv.writer(fh)
-                writer.writerow([
-                    "adoption_id",
-                    "primary_name_stripped",
-                    "matched_program_id",
-                    "confidence",
-                    "signal",
-                ])
+                writer.writerow(
+                    [
+                        "adoption_id",
+                        "primary_name_stripped",
+                        "matched_program_id",
+                        "confidence",
+                        "signal",
+                    ]
+                )
                 writer.writerows(rows_out)
 
         # Print stats.
@@ -518,18 +524,24 @@ def run(
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument(
-        "--db", default=str(DB), help=f"SQLite DB path (default: {DB})",
+        "--db",
+        default=str(DB),
+        help=f"SQLite DB path (default: {DB})",
     )
     ap.add_argument(
-        "--out", default=str(DEFAULT_OUT),
+        "--out",
+        default=str(DEFAULT_OUT),
         help=f"CSV output path (default: {DEFAULT_OUT})",
     )
     ap.add_argument(
-        "--limit", type=int, default=0,
+        "--limit",
+        type=int,
+        default=0,
         help="Cap the number of unmatched adoptions to process. 0 = all.",
     )
     ap.add_argument(
-        "--dry-run", action="store_true",
+        "--dry-run",
+        action="store_true",
         help="Skip CSV write; print stats only.",
     )
     args = ap.parse_args()

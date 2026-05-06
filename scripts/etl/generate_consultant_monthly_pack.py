@@ -70,9 +70,7 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[2]
 AUTONOMATH_DB = REPO_ROOT / "autonomath.db"
 JPINTEL_DB = REPO_ROOT / "data" / "jpintel.db"
-TEMPLATE_PATH = (
-    REPO_ROOT / "src" / "jpintel_mcp" / "templates" / "consultant_monthly_pack.html"
-)
+TEMPLATE_PATH = REPO_ROOT / "src" / "jpintel_mcp" / "templates" / "consultant_monthly_pack.html"
 DEFAULT_OUT_DIR = REPO_ROOT / "dist" / "consultant_packs"
 DEFAULT_RATE_YEN = 3
 
@@ -448,7 +446,9 @@ def fetch_adoptions(
                 {
                     "section": "3",
                     "label": _truncate(
-                        (r["program_name_raw"] or "(制度名未掲載)") + " — " + (r["project_title"] or ""),
+                        (r["program_name_raw"] or "(制度名未掲載)")
+                        + " — "
+                        + (r["project_title"] or ""),
                         limit=80,
                     ),
                     "url": url,
@@ -537,9 +537,7 @@ def _jsic_label(jsic_medium: str) -> str:
 def _corpus_snapshot_id(am_conn: sqlite3.Connection) -> str:
     today_jst = datetime.now(_JST).strftime("corpus-%Y-%m-%d")
     try:
-        row = am_conn.execute(
-            "SELECT MAX(last_verified) FROM am_source"
-        ).fetchone()
+        row = am_conn.execute("SELECT MAX(last_verified) FROM am_source").fetchone()
     except sqlite3.Error:
         return today_jst
     if not row or not row[0]:
@@ -807,9 +805,7 @@ def run(
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=textwrap.dedent(__doc__))
-    parser.add_argument(
-        "--csv", type=Path, required=True, help="顧問先 CSV path"
-    )
+    parser.add_argument("--csv", type=Path, required=True, help="顧問先 CSV path")
     parser.add_argument("--month", type=str, default=None, help="YYYY-MM (default: 前月)")
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT_DIR)
     parser.add_argument("--autonomath-db", type=Path, default=AUTONOMATH_DB)

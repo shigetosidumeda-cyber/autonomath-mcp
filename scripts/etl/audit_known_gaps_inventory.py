@@ -23,6 +23,7 @@ the script gracefully reports the partial run and exits 0 — the gap
 inventory contract is exercised regardless because each empty packet
 still has its envelope-shape inspected.
 """
+
 from __future__ import annotations
 
 import argparse

@@ -72,6 +72,7 @@ Telemetry (stdout JSON):
 
 LLM use: NONE (per `feedback_autonomath_no_api_use`).
 """
+
 from __future__ import annotations
 
 import argparse
@@ -253,7 +254,9 @@ def _load_alias_dict(autonomath_db: Path) -> dict[str, str]:
     return out
 
 
-def _build_index(programs: list[dict[str, Any]]) -> tuple[
+def _build_index(
+    programs: list[dict[str, Any]],
+) -> tuple[
     dict[str, list[dict[str, Any]]],
     dict[str | None, list[dict[str, Any]]],
 ]:
@@ -482,7 +485,9 @@ def _resolve_one(
     exact_hits = exact_index.get(normalized, [])
     if not exact_hits:
         exact_hits = _resolve_alias_canonical(
-            alias_dict, exact_index, normalized,
+            alias_dict,
+            exact_index,
+            normalized,
         )
     if exact_hits:
         pick = _pick_best(
@@ -522,16 +527,12 @@ def run(
     j_path = jpintel_db
     if j_path is None:
         j_path = (
-            Path("./data/jpintel.db")
-            if settings is None
-            else settings.db_path  # type: ignore[union-attr]
+            Path("./data/jpintel.db") if settings is None else settings.db_path  # type: ignore[union-attr]
         )
     a_path = autonomath_db
     if a_path is None:
         a_path = (
-            Path("./autonomath.db")
-            if settings is None
-            else settings.autonomath_db_path  # type: ignore[union-attr]
+            Path("./autonomath.db") if settings is None else settings.autonomath_db_path  # type: ignore[union-attr]
         )
 
     started = time.monotonic()
@@ -573,7 +574,10 @@ def run(
         last_id = 0
         while True:
             rows = _scan_chunk(
-                conn, last_id=last_id, chunk_size=chunk_size, rematch=rematch,
+                conn,
+                last_id=last_id,
+                chunk_size=chunk_size,
+                rematch=rematch,
             )
             if not rows:
                 break
@@ -649,11 +653,14 @@ def main(argv: list[str] | None = None) -> int:
         description="Adoption -> program canonical join (one-shot + cron).",
     )
     p.add_argument(
-        "--rematch", action="store_true",
+        "--rematch",
+        action="store_true",
         help="Re-evaluate every row, including already-matched ones.",
     )
     p.add_argument(
-        "--chunk-size", type=int, default=CHUNK_SIZE,
+        "--chunk-size",
+        type=int,
+        default=CHUNK_SIZE,
         help=f"Rows per UPDATE batch (default {CHUNK_SIZE}).",
     )
     args = p.parse_args(argv)

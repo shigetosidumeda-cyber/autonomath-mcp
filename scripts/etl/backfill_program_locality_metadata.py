@@ -127,11 +127,7 @@ def load_prefecture_overrides(path: Path = PREF_OVERRIDES) -> dict[str, dict[str
     raw = _load_json(path)
     if not isinstance(raw, dict):
         return {}
-    return {
-        str(uid): value
-        for uid, value in raw.items()
-        if isinstance(value, dict)
-    }
+    return {str(uid): value for uid, value in raw.items() if isinstance(value, dict)}
 
 
 def extract_municipality_from_text(
@@ -391,8 +387,12 @@ def main() -> int:
     if args.json:
         print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
     else:
-        print(f"missing_prefecture: {result['before']['missing_prefecture']} -> {result['after']['missing_prefecture']}")
-        print(f"missing_municipality: {result['before']['missing_municipality']} -> {result['after']['missing_municipality']}")
+        print(
+            f"missing_prefecture: {result['before']['missing_prefecture']} -> {result['after']['missing_prefecture']}"
+        )
+        print(
+            f"missing_municipality: {result['before']['missing_municipality']} -> {result['after']['missing_municipality']}"
+        )
         print(f"candidate_updates={result['candidate_updates']}")
         print(f"updated_rows={result['updated_rows']}")
     return 0

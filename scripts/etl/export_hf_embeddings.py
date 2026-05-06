@@ -227,19 +227,21 @@ def build_arrow_table(rows: list[dict], snapshot_id: str) -> pa.Table:
     for r in rows:
         r["snapshot_id"] = snapshot_id
 
-    schema = pa.schema([
-        ("entity_id", pa.string()),
-        ("record_kind", pa.dictionary(pa.int32(), pa.string())),
-        ("primary_name", pa.string()),
-        ("summary", pa.string()),
-        ("embedding", pa.list_(pa.float32(), EMBED_DIM)),
-        ("source_url", pa.string()),
-        ("source_url_domain", pa.string()),
-        ("content_hash", pa.string()),
-        ("fetched_at", pa.string()),
-        ("license", pa.string()),
-        ("snapshot_id", pa.string()),
-    ])
+    schema = pa.schema(
+        [
+            ("entity_id", pa.string()),
+            ("record_kind", pa.dictionary(pa.int32(), pa.string())),
+            ("primary_name", pa.string()),
+            ("summary", pa.string()),
+            ("embedding", pa.list_(pa.float32(), EMBED_DIM)),
+            ("source_url", pa.string()),
+            ("source_url_domain", pa.string()),
+            ("content_hash", pa.string()),
+            ("fetched_at", pa.string()),
+            ("license", pa.string()),
+            ("snapshot_id", pa.string()),
+        ]
+    )
 
     columns = {name: [] for name in schema.names}
     for r in rows:
@@ -303,7 +305,9 @@ def fmt_bytes(n: int) -> str:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     ap.add_argument("--db", type=Path, default=DEFAULT_DB)
     ap.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     ap.add_argument(
@@ -317,9 +321,19 @@ def main() -> int:
         nargs="+",
         default=list(DEFAULT_RECORD_KINDS),
         choices=[
-            "program", "law", "authority", "adoption", "enforcement",
-            "tax_measure", "certification", "document", "case_study",
-            "statistic", "region", "industry", "corporate_entity",
+            "program",
+            "law",
+            "authority",
+            "adoption",
+            "enforcement",
+            "tax_measure",
+            "certification",
+            "document",
+            "case_study",
+            "statistic",
+            "region",
+            "industry",
+            "corporate_entity",
             "invoice_registrant",
         ],
     )
@@ -384,6 +398,7 @@ def main() -> int:
     if args.dry_run:
         # Estimate parquet size by writing to /tmp and reading size.
         import tempfile
+
         with tempfile.NamedTemporaryFile(suffix=".parquet", delete=False) as tmp:
             tmp_path = Path(tmp.name)
         size = write_parquet(table, tmp_path)
@@ -406,9 +421,12 @@ def main() -> int:
         try:
             from huggingface_hub import HfApi  # type: ignore
         except ImportError:
-            print("ERROR: huggingface_hub not installed; pip install huggingface_hub", file=sys.stderr)
+            print(
+                "ERROR: huggingface_hub not installed; pip install huggingface_hub", file=sys.stderr
+            )
             return 1
         import os
+
         token = os.environ.get("HF_TOKEN")
         if not token:
             print("ERROR: HF_TOKEN env var not set", file=sys.stderr)

@@ -33,6 +33,7 @@ Output:
     * stdout JSON: `{candidates_proposed, scanned, top_5_examples, ...}`
     * `alias_candidates_queue` rows (status='pending') for operator review
 """
+
 from __future__ import annotations
 
 import argparse
@@ -70,9 +71,11 @@ from jpintel_mcp.config import settings  # noqa: E402
 try:
     from jpintel_mcp.observability import heartbeat  # noqa: E402
 except Exception:  # pragma: no cover — defensive
+
     @contextlib.contextmanager
     def heartbeat(*_a: Any, **_kw: Any):  # type: ignore[override]
         yield {}
+
 
 logger = logging.getLogger("jpintel.cron.alias_dict_expansion")
 
@@ -272,8 +275,12 @@ def _phonetic_match(forms_a: dict[str, str], surface_b: str) -> bool:
     sb_min = 3 if sb_is_ascii else 2
     if len(sb) < sb_min:
         return False
-    for form_text in (forms_a.get("orig"), forms_a.get("hira"),
-                      forms_a.get("romaji"), forms_a.get("lower")):
+    for form_text in (
+        forms_a.get("orig"),
+        forms_a.get("hira"),
+        forms_a.get("romaji"),
+        forms_a.get("lower"),
+    ):
         if not form_text:
             continue
         ft = form_text.lower()
@@ -305,8 +312,12 @@ def _propose_for_query(
         else:
             # Check all four normalized forms; take the best.
             best = 0.0
-            for form_text in (forms.get("orig"), forms.get("hira"),
-                              forms.get("romaji"), forms.get("lower")):
+            for form_text in (
+                forms.get("orig"),
+                forms.get("hira"),
+                forms.get("romaji"),
+                forms.get("lower"),
+            ):
                 if not form_text:
                     continue
                 if not _length_bounded(form_text, surface):
@@ -410,7 +421,10 @@ def run(
     a_path = autonomath_db if autonomath_db is not None else settings.autonomath_db_path
 
     queries = _load_empty_queries(
-        j_path, days=days, min_count=min_count, now=now,
+        j_path,
+        days=days,
+        min_count=min_count,
+        now=now,
     )
     summary: dict[str, Any] = {
         "scanned_queries": len(queries),
@@ -473,13 +487,15 @@ def run(
                     else:
                         summary["candidates_skipped"] += 1
                 if len(examples) < TOP_EXAMPLES:
-                    examples.append({
-                        "query": query,
-                        "canonical_term": c["canonical_term"],
-                        "match_score": c["match_score"],
-                        "matched_surface": c["matched_surface"],
-                        "empty_query_count": qcount,
-                    })
+                    examples.append(
+                        {
+                            "query": query,
+                            "canonical_term": c["canonical_term"],
+                            "match_score": c["match_score"],
+                            "matched_surface": c["matched_surface"],
+                            "empty_query_count": qcount,
+                        }
+                    )
         summary["top_5_examples"] = examples
     finally:
         with contextlib.suppress(Exception):
@@ -492,12 +508,21 @@ def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(
         description="Weekly alias dictionary auto-extension cron.",
     )
-    p.add_argument("--dry-run", action="store_true",
-                   help="Score + report but never INSERT into the queue.")
-    p.add_argument("--days", type=int, default=LOOKBACK_DAYS,
-                   help=f"Lookback window (default {LOOKBACK_DAYS}).")
-    p.add_argument("--min-count", type=int, default=MIN_EMPTY_COUNT,
-                   help="Min empty-hit count to surface a query (default 2).")
+    p.add_argument(
+        "--dry-run", action="store_true", help="Score + report but never INSERT into the queue."
+    )
+    p.add_argument(
+        "--days",
+        type=int,
+        default=LOOKBACK_DAYS,
+        help=f"Lookback window (default {LOOKBACK_DAYS}).",
+    )
+    p.add_argument(
+        "--min-count",
+        type=int,
+        default=MIN_EMPTY_COUNT,
+        help="Min empty-hit count to surface a query (default 2).",
+    )
     args = p.parse_args(argv)
 
     logging.basicConfig(
@@ -506,11 +531,11 @@ def main(argv: list[str] | None = None) -> int:
         stream=sys.stderr,
     )
     with heartbeat("alias_dict_expansion") as hb:
-        out = run(dry_run=args.dry_run, days=args.days,
-                  min_count=args.min_count)
+        out = run(dry_run=args.dry_run, days=args.days, min_count=args.min_count)
         try:
-            hb["rows_processed"] = int(out.get("candidates_inserted", 0)) + \
-                int(out.get("candidates_bumped", 0))
+            hb["rows_processed"] = int(out.get("candidates_inserted", 0)) + int(
+                out.get("candidates_bumped", 0)
+            )
             hb["rows_skipped"] = int(out.get("candidates_skipped", 0))
             hb["metadata"] = {
                 "scanned_queries": out.get("scanned_queries"),

@@ -390,7 +390,12 @@ def _extract_contact(payload: Mapping[str, Any]) -> dict[str, Any]:
 def _extract_required_docs(payload: Mapping[str, Any]) -> dict[str, Any]:
     candidate = _find_first(payload, _DOC_KEYS)
     if candidate is None:
-        return {"items": [], "raw": None, "confidence": 0.0, "reason": "required_docs key not found"}
+        return {
+            "items": [],
+            "raw": None,
+            "confidence": 0.0,
+            "reason": "required_docs key not found",
+        }
 
     path, raw = candidate
     items = _normalize_required_docs(raw)
@@ -526,7 +531,9 @@ def _normalize_date(raw: Any) -> str | None:
     if _is_blank(text):
         return None
 
-    era_match = re.search(r"(令和|平成|昭和|大正|明治)\s*(元|\d+)年\s*(\d{1,2})月\s*(\d{1,2})日?", text)
+    era_match = re.search(
+        r"(令和|平成|昭和|大正|明治)\s*(元|\d+)年\s*(\d{1,2})月\s*(\d{1,2})日?", text
+    )
     if era_match:
         era, year_text, month_text, day_text = era_match.groups()
         era_year = 1 if year_text == "元" else int(year_text)
