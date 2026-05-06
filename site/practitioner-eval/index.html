@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Practitioner eval — jpcite Trust Center</title>
+<link rel="canonical" href="https://jpcite.com/practitioner-eval/">
+<meta name="description" content="jpcite が 15 業務 persona × 3 クエリ で実出力を採点した結果。must_include 一致率・must_not_claim 違反数・human_review_required 境界の維持率を毎週更新。LLM 推論ではなく substring/regex の決定的判定。">
+<style>
+ body { font-family: system-ui, sans-serif; max-width: 960px; margin: 2em auto; padding: 0 1em; line-height: 1.6; }
+ table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+ th, td { border: 1px solid #ccc; padding: 0.5em 0.75em; text-align: left; vertical-align: top; }
+ th { background: #f4f4f4; }
+ .pass { background: #e6f4ea; }
+ .fail { background: #fdecea; color: #b00; font-weight: 600; }
+ .warn { background: #fff8e0; }
+ .banner { padding: 1em; background: #f0f7ff; border-left: 4px solid #2266cc; margin: 1em 0; }
+ .footnote { font-size: 0.85em; color: #555; }
+ .nav { display: flex; flex-wrap: wrap; gap: 0.5em; margin: 1em 0; }
+ .nav a { padding: 0.4em 0.8em; background: #f0f0f0; border-radius: 4px; text-decoration: none; color: #333; }
+ dt { font-weight: 600; margin-top: 0.6em; }
+</style>
+</head>
+<body>
+<p class="nav">
+  <a href="/">jpcite</a>
+  <a href="/trust/">Trust Center</a>
+  <a href="/benchmark/">JCRB benchmark</a>
+</p>
+
+<h1>Practitioner eval v1</h1>
+
+<p>jpcite が、外部に出している業務 persona ごとに 3 つの実クエリを毎週流し、
+   実際の REST 応答エンベロープを <code>must_include</code> /
+   <code>must_not_claim</code> / <code>human_review_required</code> 観点で
+   機械的に採点した結果を公開する。 採点は substring / regex の
+   <strong>決定的判定</strong>であり、LLM 推論は含まない (memory
+   <code>feedback_no_operator_llm_api</code>)。</p>
+
+<div class="banner">
+  <strong>最終実行:</strong> <time id="generated-at">(loading)</time> ·
+  <strong>corpus_snapshot_id:</strong> <code id="snapshot-id">(loading)</code> ·
+  <strong>合格率 (45 行):</strong> <span id="pass-rate">(loading)</span>
+</div>
+
+<h2>15 persona × 3 query アグリゲート</h2>
+<table>
+  <thead><tr>
+    <th>persona</th>
+    <th>合格 / 全 3</th>
+    <th>must_include 100%</th>
+    <th>must_not_claim 0 件</th>
+    <th>boundary 維持</th>
+    <th>詳細</th>
+  </tr></thead>
+  <tbody id="persona-table"></tbody>
+</table>
+
+<h2>採点ルール</h2>
+<dl>
+  <dt>must_include</dt>
+  <dd>JSONL 行に列挙された substring / regex がすべて応答 body または envelope に
+      出現すること。1 つでも欠けたら 0 点。</dd>
+  <dt>must_not_claim</dt>
+  <dd>列挙された禁止句 (例: <code>税務判断完了</code>、<code>適用確定</code>、
+      <code>申告書作成済み</code>) が一つも出現しないこと。1 つでも出現したら fail。</dd>
+  <dt>human_review_required</dt>
+  <dd>該当 persona の境界文 (<code>顧問先確認境界</code> /
+      <code>professional confirmation boundary</code> /
+      <code>司法書士法 §3</code> 等) が応答に含まれていること。
+      境界該当なし persona (例: AI dev passthrough) は 1.0 固定。</dd>
+  <dt>row pass</dt>
+  <dd><code>must_include 100%</code> × <code>must_not_claim 0 件</code> ×
+      <code>boundary 維持</code> の 3 軸全勝で 1、それ以外は 0。</dd>
+  <dt>persona pass rate</dt>
+  <dd>3 query の平均 (0, 0.33, 0.67, 1.0 のいずれか)。</dd>
+</dl>
+
+<h2>免責</h2>
+<p class="footnote">この採点は <strong>jpcite が自社サービスを自分で採点した</strong>
+   もの。第三者監査ではない。各行の生応答 (artifact output, 4 kB 以内に切り詰め) を
+   全文公開し、reproducible にしている (再現は repo の
+   <code>scripts/eval/run_practitioner_eval.py</code>)。 採点は
+   <strong>substring/regex の決定的判定</strong>なので、合格 ≠ 顧客にとって有用、
+   ではない — must_include の網羅は最低契約 (envelope contract / disclaimer floor)
+   のみを担保する。 §52 / §72 / §1 / §3 / §47条の2 の境界文が応答に含まれていることは
+   毎回チェックしている。</p>
+
+<script>
+ fetch("/practitioner-eval/_data/results_latest.json").then(r => {
+   if (!r.ok) throw new Error("no results yet — first cron run pending");
+   return r.json();
+ }).then(j => {
+   document.getElementById("generated-at").textContent = j.generated_at;
+   document.getElementById("snapshot-id").textContent  = j.corpus_snapshot_id;
+   const totalRows  = j.persona_results.reduce((a,p)=>a + p.queries.length, 0);
+   const passedRows = j.persona_results.reduce(
+     (a,p)=>a + p.queries.filter(q=>q.row_pass).length, 0);
+   const rate = totalRows ? (passedRows/totalRows*100).toFixed(1) : "0.0";
+   document.getElementById("pass-rate").textContent =
+     `${passedRows}/${totalRows} (${rate}%)`;
+   const tbody = document.getElementById("persona-table");
+   for (const p of j.persona_results) {
+     const passN  = p.queries.filter(q=>q.row_pass).length;
+     const incl   = p.queries.every(q=>q.must_include_match);
+     const ngClm  = p.queries.every(q=>q.must_not_claim_violations === 0);
+     const bnd    = p.queries.every(q=>q.boundary_kept);
+     const tr = document.createElement("tr");
+     const klass = passN === p.queries.length ? "pass"
+                 : (passN === 0 ? "fail" : "warn");
+     tr.className = klass;
+     tr.innerHTML =
+       `<td>${escapeHtml(p.persona_label)}</td>
+        <td>${passN} / ${p.queries.length}</td>
+        <td>${incl ? "OK" : "FAIL"}</td>
+        <td>${ngClm ? "OK" : "FAIL"}</td>
+        <td>${bnd ? "OK" : "FAIL"}</td>
+        <td><a href="/practitioner-eval/${p.persona_slug}.html">詳細</a></td>`;
+     tbody.appendChild(tr);
+   }
+ }).catch(e => {
+   document.getElementById("pass-rate").textContent = "(no data)";
+   const tbody = document.getElementById("persona-table");
+   tbody.innerHTML = `<tr><td colspan="6">${escapeHtml(e.message || String(e))}</td></tr>`;
+ });
+ function escapeHtml(s){return (s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
+</script>
+</body>
+</html>

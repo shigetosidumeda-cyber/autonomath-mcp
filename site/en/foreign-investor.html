@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light dark">
+<title>jpcite for foreign-invested entities — Japan tax-treaty + FDI subsidy + English law API</title>
+<meta name="description" content="English MCP wedge for foreign-invested entities operating in Japan. 700+ e-Gov-translated laws, 80-country tax-treaty schema (33 live), foreign-capital eligibility checker, and FDI-friendly subsidy finder. ¥3/req metered, anonymous 3/day free, primary-source citations only.">
+
+<meta property="og:title" content="jpcite for foreign-invested entities — Japan FDI reference API">
+<meta property="og:description" content="700+ English-translated Japanese laws, 80-country tax-treaty schema, foreign-capital eligibility checker, FDI-friendly subsidy finder. ¥3/req metered.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jpcite.com/en/foreign-investor.html">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="jpcite for foreign-invested entities">
+<meta name="twitter:description" content="Japan tax-treaty + FDI subsidy + English law full text in one MCP / REST API. ¥3/req metered.">
+
+<link rel="canonical" href="https://jpcite.com/en/foreign-investor.html">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/foreign-investor.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/en/foreign-investor.html">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../styles.css">
+
+<script defer src="../analytics.js?v=20260503a"></script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "serviceType": "Foreign Direct Investment (FDI) reference API for Japan — English MCP wedge",
+  "name": "jpcite for foreign-invested entities",
+  "description": "5 English-first MCP tools (search_laws_en, get_law_article_en, get_tax_treaty, check_foreign_capital_eligibility, find_fdi_friendly_subsidies) over 700+ e-Gov 英訳 laws, 80-country tax-treaty schema (33 live), and per-program foreign-capital eligibility flags.",
+  "provider": {
+    "@type": "Organization",
+    "name": "Bookyou Inc.",
+    "url": "https://jpcite.com/en/"
+  },
+  "audience": {
+    "@type": "Audience",
+    "audienceType": "Foreign-invested SaaS startups entering Japan, cross-border M&A teams, FATCA-compliance SaaS vendors, in-house counsel, JETRO consultants, cross-border tax advisors"
+  },
+  "areaServed": { "@type": "Country", "name": "Japan" },
+  "inLanguage": "en",
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "API + MCP metered",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "description": "Per-request, no tier, no seat fees, no annual minimums. Anonymous trial: 3 req/day per IP."
+    }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "inLanguage": "en",
+  "mainEntity": [
+    {"@type": "Question", "name": "Why a separate English wedge?", "acceptedAnswer": {"@type": "Answer", "text": "Foreign-invested entities operating in Japan need the same primary-source data Japanese consultants use, but the source documents are Japanese-only. The wedge surfaces 700+ e-Gov 英訳 (Japanese Ministry of Justice, CC-BY 4.0) law translations + 33-country bilateral tax treaty matrix + per-program foreign-capital eligibility flags so an LLM agent or DD pipeline can answer cross-border questions without manual translation."}},
+    {"@type": "Question", "name": "Same price as the Japanese surface?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. ¥3/req (税込 ¥3.30) flat, no tier, no FX uplift, no seat fees. The US SaaS pricing instinct says ¥10/req or $0.10/req for an English surface — we explicitly reject that. Solo + zero-touch operations means no sales call, no DPA negotiation, no premium tier; just the same metered surface in English."}},
+    {"@type": "Question", "name": "What is the corpus license?", "acceptedAnswer": {"@type": "Answer", "text": "English law text comes from the e-Gov 日本法令外国語訳 corpus (japaneselawtranslation.go.jp) under CC-BY 4.0. Tax treaty rows are 政府標準利用規約 v2.0 (gov_standard) from the Ministry of Finance + National Tax Agency primary sources. The Japanese-language original of every law is the only legally authoritative version — the EN body is a courtesy translation."}},
+    {"@type": "Question", "name": "Is there an LLM doing the translation?", "acceptedAnswer": {"@type": "Answer", "text": "No. The English text is the e-Gov hand-curated translation column (am_law_article.body_en, migration 090). jpcite never calls an LLM API — your LLM is the consumer. Every tool is pure SQL + Python over autonomath.db."}},
+    {"@type": "Question", "name": "Which jurisdictions are covered in the tax-treaty matrix?", "acceptedAnswer": {"@type": "Answer", "text": "33 countries are hand-curated as of 2026-05-05 (US, UK, Singapore, Hong Kong, Germany, France, Netherlands, China, Korea, Taiwan, Australia, Canada, India, Indonesia, Thailand, Vietnam, Malaysia, Philippines, plus 15 more). The schema seeds ~80 jurisdictions; the next 47 land via the same am_tax_treaty table without schema change. NULL in any wht_*_pct column means 'see treaty article (n/a in standard rate)' — distinct from 0.0 = exempt under treaty."}},
+    {"@type": "Question", "name": "What does foreign_capital_eligibility return?", "acceptedAnswer": {"@type": "Answer", "text": "One of: eligible, eligible_with_caveat, excluded, silent (default), case_by_case. The default 'silent' means the program text does not address foreign capital — the Japanese statutory presumption is permissive, so most national programs do NOT exclude foreign-owned KKs unless they explicitly say so. The flag is per-program (am_subsidy_rule), not per-corp. Always verify with the program office before relying on this for a filing decision."}},
+    {"@type": "Question", "name": "Is this legal or tax advice?", "acceptedAnswer": {"@type": "Answer", "text": "No. Every response carries a _disclaimer envelope declaring 税理士法 §52 / 弁護士法 §72 / 行政書士法 §1 / FDI 規制 fence. The output is information retrieval, not legal advice. For binding interpretation, consult a Japanese qualified attorney / 税理士 / 行政書士."}}
+  ]
+}
+</script>
+
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; max-width: 920px; margin: 0 auto; padding: 24px; }
+h1 { font-size: 1.8rem; }
+h2 { margin-top: 2rem; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.4rem; }
+h3 { margin-top: 1.4rem; }
+table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+th, td { border: 1px solid #e5e7eb; padding: 0.6rem 0.8rem; text-align: left; }
+th { background: #f9fafb; }
+code { background: #f3f4f6; padding: 0.1rem 0.4rem; border-radius: 3px; font-size: 0.9em; }
+pre { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 0.8rem; overflow-x: auto; }
+.disclaimer { background: #fef3c7; border-left: 4px solid #d97706; padding: 0.8rem 1rem; margin: 1rem 0; }
+.skip-link { position: absolute; left: -9999px; }
+.skip-link:focus { left: 1rem; top: 1rem; }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header>
+<p><a href="/en/">jpcite (English)</a> &gt; foreign-invested entities</p>
+<h1>jpcite for foreign-invested entities</h1>
+<p><strong>Japan tax-treaty + FDI subsidy + English law full text in one API.</strong> Built for foreign-invested SaaS startups entering Japan, cross-border M&amp;A pipelines, and FATCA-compliance SaaS vendors that need machine-queryable Japanese public-program data with primary-source URLs.</p>
+</header>
+
+<main id="main">
+
+<section>
+<h2>Why this wedge exists</h2>
+<p>Japanese public-program data (subsidies, tax incentives, statutes, court decisions, regulatory enforcement) is overwhelmingly Japanese-only. JETRO publishes excellent narrative guides, but a foreign-invested entity that wants to wire Japanese eligibility checks into an LLM agent or DD pipeline still has to translate the source documents row by row. The English wedge solves that without involving an LLM in the translation loop: it surfaces the e-Gov 日本法令外国語訳 corpus (Japanese Ministry of Justice, CC-BY 4.0) plus the Ministry of Finance's bilateral tax-treaty matrix plus per-program foreign-capital eligibility flags, all keyed by the same primary-source URLs the Japanese surface uses.</p>
+<p><strong>Same operator constraints apply:</strong> ¥3/req metered (税込 ¥3.30), no tier, no seat fees, no annual minimums, anonymous trial 3/day/IP, primary-source citations only, no aggregator. Solo + zero-touch ops means no sales calls, no DPA negotiation, no Slack Connect.</p>
+</section>
+
+<section>
+<h2>5 English-wedge MCP tools</h2>
+<table>
+<thead><tr><th>Tool</th><th>What it returns</th><th>Backed by</th></tr></thead>
+<tbody>
+<tr><td><code>search_laws_en</code></td><td>Keyword search over English-translated Japanese law articles. Returns EN excerpt + title + e-Gov source URL.</td><td><code>am_law_article.body_en</code> (migration 090, e-Gov CC-BY 4.0; 700+ laws targeted)</td></tr>
+<tr><td><code>get_law_article_en</code></td><td>Exact (law_id, article_no) lookup. Returns EN body or graceful JP fallback with warning.</td><td><code>am_law_article</code> + <code>am_law</code> (canonical id resolver)</td></tr>
+<tr><td><code>get_tax_treaty</code></td><td>Bilateral DTA: WHT rates (dividend / interest / royalty / parent-sub), PE threshold, info-exchange status, MoAA arbitration flag.</td><td><code>am_tax_treaty</code> (migration 091, MoF + NTA primary source; 33 of ~80 countries live)</td></tr>
+<tr><td><code>check_foreign_capital_eligibility</code></td><td>Per-program flag (eligible / eligible_with_caveat / excluded / silent / case_by_case). Most-restrictive across rule_types.</td><td><code>am_subsidy_rule.foreign_capital_eligibility</code> (migration 092, heuristic + manual curation)</td></tr>
+<tr><td><code>find_fdi_friendly_subsidies</code></td><td>Programs filtered by industry JSIC + foreign_capital_eligibility != 'excluded'. Ranked eligible &gt; eligible_with_caveat &gt; case_by_case &gt; silent.</td><td><code>am_entities</code> + <code>am_subsidy_rule</code> + <code>am_industry_jsic</code></td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2>5 REST endpoints</h2>
+<p>Same five surfaces are mirrored at <code>/v1/en/*</code> for direct HTTP consumers. The MCP impl is the single source of truth — REST is a thin wrapper.</p>
+<pre>GET  /v1/en/laws/search?q=corporate+tax&amp;limit=10
+GET  /v1/en/laws/{law_id}/articles/{article_no}
+GET  /v1/en/tax_treaty/{country_a}?country_b=JPN
+GET  /v1/en/foreign_capital_eligibility?program_id=...&amp;houjin_bangou=...
+GET  /v1/en/fdi_subsidies?industry_jsic=E&amp;foreign_pct=100&amp;limit=20</pre>
+</section>
+
+<section>
+<h2>Pricing</h2>
+<p><strong>¥3 per billable unit (税込 ¥3.30).</strong> Metered, no tier, no seat fee. Anonymous trial without signup: 3 requests per day per IP, JST 翌日 00:00 reset. Paid keys (¥3/req) bypass the anonymous ceiling.</p>
+<p>This is the same price as every other surface on jpcite. The US SaaS instinct to charge $0.10/req or ¥10/req for an English-language API is explicitly rejected — solo + zero-touch ops means no premium tier and no FX uplift.</p>
+</section>
+
+<section>
+<h2>Sample call (search_laws_en)</h2>
+<pre>$ curl 'https://api.jpcite.com/v1/en/laws/search?q=withholding+tax&amp;limit=3'
+{
+  "query": "withholding tax",
+  "lang": "en",
+  "total": 3,
+  "results": [
+    {
+      "law_canonical_id": "law:income-tax-act",
+      "law_name_ja": "所得税法",
+      "article_number": "第212条",
+      "title": "Withholding Liability",
+      "body_en_excerpt": "A person who pays a non-resident or foreign corporation domestic-source income ...",
+      "body_en_source_url": "https://www.japaneselawtranslation.go.jp/...",
+      "body_en_license": "cc_by_4.0",
+      "lang": "en"
+    }
+  ],
+  "_disclaimer": "The English text returned here is a courtesy translation ...",
+  "_billing_unit": 1,
+  "_next_calls": [...]
+}</pre>
+</section>
+
+<section>
+<h2>Sample call (get_tax_treaty)</h2>
+<pre>$ curl 'https://api.jpcite.com/v1/en/tax_treaty/US?country_b=JPN'
+{
+  "found": true,
+  "treaty": {
+    "country_a": "US",
+    "country_b": "JP",
+    "country_iso": "US",
+    "country_name_en": "United States",
+    "treaty_kind": "comprehensive",
+    "dta_in_force_date": "2004-03-30",
+    "withholding_tax_pct": {
+      "dividend_general": 10.0,
+      "dividend_parent_subsidiary": 5.0,
+      "interest": 10.0,
+      "royalty": 0.0
+    },
+    "info_exchange": "standard",
+    "moaa_arbitration": true,
+    "source_url": "https://www.mof.go.jp/tax_policy/summary/international/tax_convention/usa.htm",
+    "license": "gov_standard"
+  },
+  "_disclaimer": "本 response は am_tax_treaty (国税庁・財務省 一次資料 ...) ..."
+}</pre>
+</section>
+
+<section>
+<h2>Disclaimer (important)</h2>
+<div class="disclaimer">
+<p><strong>This is not legal advice or tax advice.</strong> Every response carries a <code>_disclaimer</code> envelope declaring the surface 税理士法 §52 (tax advice fence) / 弁護士法 §72 (legal advice fence) / 行政書士法 §1 (FDI 申請 代理 fence) / 国際課税 / FDI 規制 fence. The output is information retrieval. Translation text is from the e-Gov 日本法令外国語訳 corpus under CC-BY 4.0; the Japanese-language original is the only legally authoritative version. For binding interpretation, consult a Japanese qualified attorney / 税理士 / 行政書士.</p>
+</div>
+</section>
+
+<section>
+<h2>Documentation</h2>
+<ul>
+<li><a href="/docs/en/foreign_investor.md">Full English wedge guide (docs/en/foreign_investor.md)</a></li>
+<li><a href="/en/audiences/foreign-investor.html">Foreign-investor audience page (deeper FAQ + 外為法 prior-notification context)</a></li>
+<li><a href="https://api.jpcite.com/v1/openapi.json">Full OpenAPI spec (English descriptions on every route)</a></li>
+<li><a href="/server.json">MCP server manifest</a></li>
+</ul>
+</section>
+
+</main>
+
+<footer>
+<p>© Bookyou Inc. (適格請求書発行事業者番号 T8010001213708). info@bookyou.net.</p>
+</footer>
+
+</body>
+</html>

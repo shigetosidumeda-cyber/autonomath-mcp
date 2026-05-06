@@ -101,7 +101,7 @@
 <span aria-current="page">ChatGPT Custom GPT</span>
 </nav>
 <h1 style="margin-bottom:0.2em;">ChatGPT Custom GPT と連携する</h1>
-<p>jpcite は Evidence prefetch layer です。長い PDF・複数の官公庁ページ・検索結果を LLM へ渡す前に、出典 URL・取得時刻・known gaps・互換 / 排他ルール付きの小さい Evidence Packet を返します。caller supplied baseline がある場合だけ、入力文脈量の削減見込みと break-even を返します。外部 LLM の請求額削減は保証しません。</p>
+<p>jpcite は Evidence prefetch layer です。長い PDF・複数の官公庁ページ・検索結果を LLM へ渡す前に、出典 URL・取得時刻・known gaps・互換 / 排他ルール付きの小さい Evidence Packet を返します。caller supplied baseline がある場合は、input-context estimates と break-even をあわせて返し、Custom GPT が根拠と文脈量の前提を説明しやすくします。</p>
 <p>Custom GPT は自然文の説明を作る場所、jpcite は根拠データを取りに行く場所として分けると安定します。制度 PDF や自治体ページを毎回 GPT に長文投入する代わりに、jpcite が制度 metadata、出典 URL、取得時点、注意点を短い JSON で返します。これにより、GPT の出力は引用可能な根拠に寄せやすくなります。トークン量や読み込み待ちへの効果は、モデル、プロンプト、検索設定、キャッシュ状態によって変わります。</p>
 
 <h2 id="action">Action 設定</h2>
@@ -126,7 +126,7 @@
 
 <h2 id="evidence-prompt">Evidence Packet 用の指示文</h2>
 <p>Custom GPT の Instructions には、次のように「回答前に根拠を取る」ルールを入れます。</p>
-<div class="code-block" data-code="日本の補助金・融資・税制・認定・入札・法令・行政処分・適格請求書など、日本の公的情報について答える前に、source_url や source_fetched_at が必要な場合は jpcite Actions を使ってください。一般的な文章作成、翻訳、雑談、日本の公的情報と関係ない質問、最終的な法務・税務・申請判断では jpcite を呼ばないでください。長いPDFや公式ページを読む代わりに使う場合、元の入力token数が分かれば source_tokens_basis=token_count と source_token_count を渡し、PDFページ数だけ分かる場合は source_tokens_basis=pdf_pages と source_pdf_pages を渡してください。回答では source_url、source_fetched_at、corpus_snapshot_id、known_gaps、recent_changes があれば併記してください。Evidence Packet の compression は入力文脈量の参考推定であり、providerの請求token数や費用削減を保証する表現は避けてください。">
+<div class="code-block" data-code="日本の補助金・融資・税制・認定・入札・法令・行政処分・適格請求書など、日本の公的情報について答える前に、source_url や source_fetched_at が必要な場合は jpcite Actions を使ってください。一般的な文章作成、翻訳、雑談、日本の公的情報と関係ない質問、最終的な法務・税務・申請判断では jpcite を呼ばないでください。長いPDFや公式ページを読む代わりに使う場合、元の入力token数が分かれば source_tokens_basis=token_count と source_token_count を渡し、PDFページ数だけ分かる場合は source_tokens_basis=pdf_pages と source_pdf_pages を渡してください。回答では source_url、source_fetched_at、corpus_snapshot_id、known_gaps、recent_changes があれば併記してください。Evidence Packet の compression は、caller baseline に基づく input-context estimates として、根拠取得前後の文脈量を説明するために使ってください。">
 <pre><code>日本の補助金・融資・税制・認定・入札・法令・行政処分・適格請求書など、
 日本の公的情報について答える前に、source_url や source_fetched_at が必要な場合は jpcite Actions を使ってください。
 一般的な文章作成、翻訳、雑談、日本の公的情報と関係ない質問、
@@ -135,8 +135,8 @@
 source_tokens_basis=token_count と source_token_count を渡し、
 PDFページ数だけ分かる場合は source_tokens_basis=pdf_pages と source_pdf_pages を渡してください。
 回答では source_url、source_fetched_at、corpus_snapshot_id、known_gaps、recent_changes があれば併記してください。
-Evidence Packet の compression は入力文脈量の参考推定であり、
-providerの請求token数や費用削減を保証する表現は避けてください。</code></pre>
+Evidence Packet の compression は、caller baseline に基づく input-context estimates として、
+根拠取得前後の文脈量を説明するために使ってください。</code></pre>
 <button class="copy-btn" type="button" aria-label="コピー">Copy</button>
 </div>
 

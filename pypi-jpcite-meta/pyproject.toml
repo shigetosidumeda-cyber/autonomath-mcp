@@ -1,0 +1,88 @@
+[project]
+# ====================================================================
+# jpcite — meta-package alias for `autonomath-mcp`
+# ====================================================================
+#
+# This is a thin meta-package whose only job is to make
+#   pip install jpcite
+# resolve to the real distribution `autonomath-mcp`. The user-facing
+# brand was renamed AutonoMath -> jpcite on 2026-04-30 (memory:
+# project_jpcite_rename). The PyPI distribution name autonomath-mcp is
+# retained for backward compatibility (renaming a published package
+# breaks every existing consumer's `pip install autonomath-mcp` line),
+# but new users land on jpcite.com and expect `pip install jpcite` to
+# work.
+#
+# Trademark posture (memory: feedback_no_trademark_registration):
+# we do NOT register "jpcite" as a trademark. If a third party
+# challenges the meta-package name we rename rather than litigate.
+#
+# Build & publish: see ../docs/runbook/pypi_jpcite_meta.md
+name = "jpcite"
+version = "0.3.2"
+description = "Brand alias for autonomath-mcp. `pip install jpcite` installs the autonomath-mcp distribution (96 MCP tools over Japanese public-program data, ¥3/req metered, anon 3 req/日 free)."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [
+    { name = "Bookyou株式会社", email = "info@bookyou.net" },
+]
+keywords = [
+    "mcp",
+    "claude",
+    "japan",
+    "subsidy",
+    "tax",
+    "law",
+    "evidence",
+    "citation",
+    "jpcite",
+    "autonomath",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+# The single dependency: pin to the autonomath-mcp release we ship
+# alongside (must match the source repo's pyproject.toml version).
+# `~=0.3.2` allows 0.3.x bug-fix releases but blocks accidental 0.4
+# breaking changes — meta-package owners can re-pin explicitly.
+dependencies = [
+    "autonomath-mcp~=0.3.2",
+]
+
+[project.urls]
+Homepage = "https://jpcite.com/"
+Documentation = "https://jpcite.com/docs/"
+Repository = "https://github.com/bookyou-net/jpcite-mcp"
+Issues = "https://github.com/bookyou-net/jpcite-mcp/issues"
+Changelog = "https://jpcite.com/changelog.html"
+"Brand history" = "https://jpcite.com/about.html"
+
+# No console_scripts, no project.scripts. Console entry points
+# (`autonomath-api`, `autonomath-mcp`) are owned by the real
+# autonomath-mcp distribution; declaring them here would race the
+# upstream package's entry-point registration on install.
+
+[build-system]
+requires = ["hatchling>=1.21"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+# Empty wheel — meta-packages ship no Python modules of their own.
+# `bypass-selection = true` tells hatch not to error on the missing
+# package source tree.
+bypass-selection = true
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "pyproject.toml",
+    "README.md",
+]

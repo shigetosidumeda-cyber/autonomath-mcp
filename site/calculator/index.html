@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<!--
+  ROI savings estimator (2026-05-05). This page calls /v1/calculator/savings
+  to show a token-spend ROI estimate for a given (model, queries_per_month,
+  domain_mix). It is INTENTIONALLY separate from /calculator.html (the
+  coverage explorer): that page deliberately avoids saving framing, this
+  page surfaces saving framing WITH the honest caveat that raw token math
+  does not amortise the ¥3/req metering.
+
+  Pure JS + fetch. No dependencies. Endpoint is unmetered (free).
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>ROI 試算 (β) — jpcite (verify time + citation lift first)</title>
+<meta name="description" content="jpcite ROI 試算ツール。verify 時間節約 (h/月) + 監査可能引用 lift + 月次 net 損益 の 3 軸を主指標として表示。token saving は raw figure 参考表示のみ。raw token math だけでは ¥3/req を償却できないケースあり (honest)。">
+<meta name="robots" content="index, follow">
+
+<meta property="og:title" content="ROI 試算 (β) — jpcite">
+<meta property="og:description" content="LLM モデル × 月次クエリ数 から token 節約 USD/JPY を試算。raw token math だけで jpcite 課金は償却できない (honest framing)。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jpcite.com/calculator/">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
+
+<link rel="canonical" href="https://jpcite.com/calculator/">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="/styles.css?v=20260505a">
+
+<style>
+  .roi-page { padding: 48px 0 64px; }
+  .roi-page h1 { font-size: 30px; margin: 0 0 6px; font-weight: 800; letter-spacing: -0.015em; }
+  .roi-page .lead { color: var(--text-muted); margin: 0 0 28px; font-size: 16px; line-height: 1.7; max-width: 720px; }
+  .roi-shell {
+    display: grid;
+    grid-template-columns: minmax(320px, 1fr) minmax(360px, 1.05fr);
+    gap: 28px;
+    margin: 0 0 32px;
+  }
+  @media (max-width: 880px) { .roi-shell { grid-template-columns: 1fr; } }
+  .roi-form, .roi-output {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--bg);
+    padding: 24px 26px;
+  }
+  .roi-form h2, .roi-output h2 {
+    font-size: 16px; margin: 0 0 18px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);
+  }
+  .field { margin: 0 0 18px; }
+  .field label {
+    display: block; font-size: 14px; margin: 0 0 6px; font-weight: 600; color: var(--text);
+  }
+  .field .hint { display: block; font-size: 12px; color: var(--text-muted); margin: 4px 0 6px; line-height: 1.5; }
+  .field input[type="number"], .field select {
+    width: 100%; padding: 10px 12px; font-size: 16px;
+    font-family: var(--font-sans); font-variant-numeric: tabular-nums;
+    border: 1px solid var(--border-strong); background: var(--bg);
+    color: var(--text); border-radius: var(--radius);
+  }
+  .field input[type="number"]:focus, .field select:focus {
+    outline: 2px solid var(--focus); outline-offset: 1px; border-color: var(--accent);
+  }
+
+  .roi-output dl { margin: 0; display: grid; gap: 14px; }
+  .roi-output dt {
+    font-size: 12px; color: var(--text-muted); text-transform: uppercase;
+    letter-spacing: 0.06em; margin: 0 0 2px; font-weight: 600;
+  }
+  .roi-output dd {
+    margin: 0; font-size: 24px; font-weight: 800;
+    letter-spacing: -0.02em; font-variant-numeric: tabular-nums; line-height: 1.15;
+  }
+  .roi-output dd .secondary {
+    display: block; font-size: 13px; font-weight: 500;
+    color: var(--text-muted); margin: 4px 0 0; letter-spacing: 0; line-height: 1.5;
+  }
+  .roi-output dd.savings  { color: var(--accent); }
+  .roi-output dd.cost     { color: var(--text); }
+  .roi-output dd.net.neg  { color: #c0392b; }
+  .roi-output dd.net.pos  { color: #1f7a3a; }
+  .roi-output dd.roi      { color: var(--accent); }
+
+  .caveat-box {
+    margin: 24px 0 0; padding: 16px 20px;
+    border: 1px solid var(--border); border-left: 4px solid #c0392b;
+    border-radius: var(--radius); background: var(--bg-alt);
+    color: var(--text); font-size: 13px; line-height: 1.7;
+  }
+  .caveat-box strong { color: #c0392b; }
+
+  .breakdown-table {
+    width: 100%; border-collapse: collapse; margin: 16px 0 0; font-size: 14px;
+  }
+  .breakdown-table th, .breakdown-table td {
+    padding: 8px 12px; border-bottom: 1px solid var(--border);
+    text-align: left; vertical-align: top;
+  }
+  .breakdown-table td.num { font-variant-numeric: tabular-nums; font-family: var(--font-mono); text-align: right; }
+
+  .api-call {
+    margin: 24px 0 0; font-family: var(--font-mono); font-size: 12px;
+    background: var(--bg-alt); padding: 12px 14px;
+    border: 1px solid var(--border); border-radius: var(--radius);
+    overflow-x: auto; word-break: break-all;
+  }
+  .err-box {
+    display: none; margin: 16px 0 0; padding: 12px 16px;
+    border: 1px solid #c0392b; border-radius: var(--radius);
+    background: #fff4f3; color: #8a1f17; font-size: 14px;
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="jpcite ホーム">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x">
+        <img src="/assets/brand/lockup-transparent-600-darklogo.png" alt="jpcite" height="32" style="height:32px;width:auto;display:block;">
+      </picture>
+    </a>
+    <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="/about.html">運営について</a>
+      <a href="/products.html">プロダクト</a>
+      <a href="/docs/">ドキュメント</a>
+      <a href="/pricing.html">料金</a>
+      <a href="/audiences/">利用者層</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<section class="roi-page">
+  <div class="container">
+
+    <nav class="breadcrumb" aria-label="パンくずリスト" style="margin:0 0 16px;font-size:14px;color:var(--text-muted);">
+      <a href="/">ホーム</a> <span aria-hidden="true">›</span>
+      <a href="/pricing.html">料金</a> <span aria-hidden="true">›</span>
+      <span aria-current="page">ROI 試算 (β)</span>
+    </nav>
+
+    <h1>ROI 試算 (β)</h1>
+    <p class="lead">
+      LLM モデル × 月次クエリ数 × ドメイン構成 から、 jpcite を使った場合の
+      <strong>(1) verify 時間節約 (h/月)</strong>、
+      <strong>(2) 監査可能引用の lift (citation_ok)</strong>、
+      <strong>(3) 月次 net 損益 (¥)</strong> の 3 軸を試算します。
+      token saving は raw figure として参考表示するのみ。
+      ベンチマークは <a href="/benchmark/">JCRB-v1 50 問</a>、 エンドポイントは <code>/v1/calculator/savings</code>。
+    </p>
+    <p class="lead" style="margin-top:-12px;font-size:14px;">
+      ※ <strong>真の価値は verify 時間 (1 件 ~30 分 → ~3 分) と citation_ok lift (~0.40 → ~0.95)</strong> です。
+      raw token math だけでは jpcite ¥3/req を償却できないケースがあるのが honest answer。
+      生 token spend 削減を目当てに使うサービスではありません。
+      詳細は <a href="/qa/llm-evidence/context-savings.html">context savings の説明</a> をご参照ください。
+    </p>
+
+    <div class="roi-shell">
+
+      <!-- Input form -->
+      <form class="roi-form" id="roi-form" autocomplete="off" novalidate
+            aria-label="ROI 試算 入力フォーム">
+        <h2>入力</h2>
+
+        <div class="field">
+          <label for="model">LLM モデル</label>
+          <span class="hint">JCRB-v1 で実測した 5 モデル。 sonnet / 4o は family fallback。</span>
+          <select id="model" name="model">
+            <option value="claude-opus-4-7" selected>claude-opus-4-7</option>
+            <option value="claude-sonnet-4-5">claude-sonnet-4-5</option>
+            <option value="gpt-5">gpt-5</option>
+            <option value="gpt-4o">gpt-4o</option>
+            <option value="gemini-2.5-pro">gemini-2.5-pro</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="queries_per_month">月次クエリ数</label>
+          <span class="hint">LLM への問い合わせ回数 / 月。 1 顧問先 × 月次 確認 件数 などで算出。</span>
+          <input id="queries_per_month" name="queries_per_month" type="number"
+                 min="0" max="10000000" step="100" value="6000" inputmode="numeric">
+        </div>
+
+        <div class="field">
+          <label for="domain_mix">ドメイン構成</label>
+          <span class="hint">補助金 / 税務 / 法令 のクエリ比率。 ±5% 程度の影響。</span>
+          <select id="domain_mix" name="domain_mix">
+            <option value="balanced" selected>balanced (均等)</option>
+            <option value="subsidy_heavy">subsidy_heavy (補助金 60%)</option>
+            <option value="tax_heavy">tax_heavy (税務 60%)</option>
+            <option value="law_heavy">law_heavy (法令 60%)</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="fx_rate">USD/JPY (FX レート)</label>
+          <span class="hint">JPY 換算用。 treasury レートに合わせて上書きしてください。</span>
+          <input id="fx_rate" name="fx_rate" type="number"
+                 min="50" max="500" step="0.5" value="150.0" inputmode="decimal">
+        </div>
+
+      </form>
+
+      <!-- Output -->
+      <aside class="roi-output" aria-live="polite" aria-atomic="true"
+             aria-label="ROI 試算 結果">
+        <h2>試算結果 (月次・time-first)</h2>
+        <div id="err-box" class="err-box" role="alert"></div>
+        <dl>
+          <div>
+            <dt>① verify 時間節約 (h / 月)</dt>
+            <dd id="out-time-saved" class="savings">— h<span class="secondary" id="out-time-saved-jpy">¥— 相当 (¥8,000/h × 0.45h/件 想定、 税理士 内部単価)</span></dd>
+          </div>
+          <div>
+            <dt>② 監査可能引用 (citation_ok lift)</dt>
+            <dd id="out-citation-lift" class="savings">~0.40 → ~0.95<span class="secondary">JCRB-v1 50Q seed (claude-opus-4-7)。 出典 URL + 取得時刻 + content_hash 機械可読</span></dd>
+          </div>
+          <div>
+            <dt>③ 月次 net 損益 (¥) ★ 主指標</dt>
+            <dd id="out-net" class="net">¥—<span class="secondary" id="out-net-detail">verify 時間節約 + token 節約 − jpcite コスト</span></dd>
+          </div>
+          <div>
+            <dt>jpcite 月額コスト (税込)</dt>
+            <dd id="out-jpcite-cost" class="cost">¥—<span class="secondary">¥3.30 × 月次クエリ数</span></dd>
+          </div>
+          <div>
+            <dt>(参考) token 節約 raw figure</dt>
+            <dd id="out-savings-usd" class="savings" style="font-size:18px;">$ —<span class="secondary" id="out-savings-jpy">¥— (FX 換算)。 raw token math だけでは ¥3/req を償却できないケースあり (honest)</span></dd>
+          </div>
+          <div>
+            <dt>(参考) ROI % (token 節約 / jpcite コスト)</dt>
+            <dd id="out-roi" class="roi" style="font-size:18px;">— %<span class="secondary">100% 未満 = token 単独では未回収 (verify 時間で回収するのが本筋)</span></dd>
+          </div>
+        </dl>
+
+        <h3 style="font-size:14px;margin:24px 0 8px;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);font-weight:700;">per-query 内訳 (参考)</h3>
+        <table class="breakdown-table" aria-label="per-query token 内訳">
+          <thead>
+            <tr><th>項目</th><th class="num">jpcite なし</th><th class="num">jpcite あり</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>input tokens</td><td class="num" id="bd-closed-in">—</td><td class="num" id="bd-with-in">—</td></tr>
+            <tr><td>output tokens</td><td class="num" id="bd-closed-out">—</td><td class="num" id="bd-with-out">—</td></tr>
+            <tr><td>USD / query</td><td class="num" id="bd-closed-usd">—</td><td class="num" id="bd-with-usd">—</td></tr>
+          </tbody>
+        </table>
+
+        <div class="api-call" id="api-call-line" aria-label="API 呼び出し例">GET /v1/calculator/savings?…</div>
+      </aside>
+    </div>
+
+    <!-- Honest caveat (always visible, populated from response) -->
+    <div class="caveat-box" role="note">
+      <strong>Honest framing:</strong>
+      <span id="caveat-text">
+        endpoint からの honest_caveat がここに表示されます。
+      </span>
+    </div>
+
+    <h2 style="font-size:18px;margin:32px 0 12px;">エンドポイント仕様</h2>
+    <ul style="line-height:1.8;font-size:14px;color:var(--text);">
+      <li><code>GET /v1/calculator/savings</code> — 公開・無料・LLM 呼び出しなし・DB 読み取りなし。 純算術。</li>
+      <li>パラメータ: <code>model</code>, <code>queries_per_month</code>, <code>domain_mix</code>, <code>fx_rate</code>.</li>
+      <li>422: 未知の model 名を渡すと返ります (silent fallback で誤った価格を提示しない)。</li>
+      <li>methodology: <code>benchmarks/jcrb_v1/token_savings_50q_report.md</code> の per-model 平均値を pin。</li>
+      <li>pricing: 2026-05-05 公開価格 (USD per 1M tokens). MODEL_PRICING 参照。</li>
+    </ul>
+
+  </div>
+</section>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand">jpcite</p>
+      <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+    </div>
+    <nav class="footer-nav" aria-label="フッター">
+      <a href="/about.html">運営について</a>
+      <a href="/products.html">プロダクト</a>
+      <a href="/pricing.html">料金</a>
+      <a href="/docs/">ドキュメント</a>
+      <a href="/trust.html">信頼</a>
+      <a href="/tos.html">利用規約</a>
+      <a href="/privacy.html">プライバシー</a>
+      <a href="mailto:info@bookyou.net">お問い合わせ</a>
+    </nav>
+    <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+  </div>
+</footer>
+
+<script>
+(function() {
+  "use strict";
+
+  // Resolve API base. Production = api.jpcite.com; preview / local fall
+  // back to relative ('/v1/...') so the page works under `python -m http.server`.
+  // Cloudflare Pages → api.jpcite.com is CORS-allowed (see CORS gotchas in CLAUDE.md).
+  var API_BASE =
+    (location.host.indexOf("jpcite.com") >= 0)
+      ? "https://api.jpcite.com"
+      : "";
+
+  function $(id) { return document.getElementById(id); }
+
+  function fmtUsd(n) {
+    return "$" + Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  function fmtYen(n) {
+    var sign = n < 0 ? "-" : "";
+    return sign + "¥" + Math.abs(Math.round(n)).toLocaleString("ja-JP");
+  }
+  function fmtNum(n) {
+    return Number(n).toLocaleString("ja-JP");
+  }
+  function fmtUsdQ(n) {
+    return "$" + Number(n).toFixed(5);
+  }
+
+  function showError(msg) {
+    var box = $("err-box");
+    box.style.display = "block";
+    box.textContent = msg;
+  }
+  function clearError() {
+    var box = $("err-box");
+    box.style.display = "none";
+    box.textContent = "";
+  }
+
+  // Debounced fetch — recompute on every input change but coalesce rapid
+  // typing into one network call.
+  var _timer = null;
+  function scheduleFetch() {
+    if (_timer) { clearTimeout(_timer); }
+    _timer = setTimeout(doFetch, 250);
+  }
+
+  function doFetch() {
+    clearError();
+    var model    = $("model").value;
+    var qpm      = parseInt($("queries_per_month").value, 10) || 0;
+    var mix      = $("domain_mix").value;
+    var fx       = parseFloat($("fx_rate").value) || 150.0;
+
+    var qs = "?model=" + encodeURIComponent(model)
+           + "&queries_per_month=" + qpm
+           + "&domain_mix=" + encodeURIComponent(mix)
+           + "&fx_rate=" + fx;
+    var url = API_BASE + "/v1/calculator/savings" + qs;
+    $("api-call-line").textContent = "GET " + url;
+
+    fetch(url, { headers: { "Accept": "application/json" } })
+      .then(function(r) {
+        if (r.status === 422) {
+          throw new Error("422: 未知の model または範囲外パラメータ。");
+        }
+        if (!r.ok) {
+          throw new Error("HTTP " + r.status);
+        }
+        return r.json();
+      })
+      .then(render)
+      .catch(function(e) { showError(String(e.message || e)); });
+  }
+
+  function render(data) {
+    $("out-savings-usd").firstChild.nodeValue = fmtUsd(data.estimated_monthly_savings_usd);
+    $("out-savings-jpy").textContent =
+      fmtYen(data.estimated_monthly_savings_jpy) + " (FX " + data.methodology.fx_rate_jpy_per_usd + ")。 raw token math だけでは ¥3/req を償却できないケースあり (honest)";
+
+    $("out-jpcite-cost").firstChild.nodeValue = fmtYen(data.jpcite_cost_jpy);
+
+    // ① verify time saved (client-side derivation; primary axis per W28-4 reframe).
+    // Assumption: ~27 min reduction per evidence-bound query (~30 min → ~3 min)
+    // at a 税理士 internal rate of ¥8,000/h. These are pinned to the 5-file
+    // reframe doc /docs/integrations/token-efficiency-proof.md §7.
+    var qpm = parseInt($("queries_per_month").value, 10) || 0;
+    var MIN_SAVED_PER_QUERY = 27;     // minutes
+    var YEN_PER_HOUR        = 8000;   // 税理士 internal cost
+    var hoursSaved = qpm * MIN_SAVED_PER_QUERY / 60;
+    var verifyYen  = hoursSaved * YEN_PER_HOUR;
+    $("out-time-saved").firstChild.nodeValue = hoursSaved.toFixed(1) + " h";
+    $("out-time-saved-jpy").textContent =
+      fmtYen(verifyYen) + " 相当 (¥" + YEN_PER_HOUR.toLocaleString("ja-JP") + "/h × " +
+      (MIN_SAVED_PER_QUERY/60).toFixed(2) + "h/件 想定、 税理士 内部単価)";
+
+    // ③ Net = verify time saved + token saved - jpcite cost (PRIMARY metric).
+    var netPrimary = verifyYen + data.estimated_monthly_savings_jpy - data.jpcite_cost_jpy;
+    var netEl = $("out-net");
+    netEl.firstChild.nodeValue = fmtYen(netPrimary);
+    netEl.classList.remove("neg", "pos");
+    netEl.classList.add(netPrimary < 0 ? "neg" : "pos");
+    $("out-net-detail").textContent =
+      "verify 時間節約 (" + fmtYen(verifyYen) + ") + token 節約 (" +
+      fmtYen(data.estimated_monthly_savings_jpy) + ") − jpcite コスト (" +
+      fmtYen(data.jpcite_cost_jpy) + ")";
+
+    $("out-roi").firstChild.nodeValue = data.roi_pct.toFixed(2) + " %";
+
+    var bd = data.breakdown;
+    $("bd-closed-in").textContent  = fmtNum(bd.closed_input_tokens);
+    $("bd-closed-out").textContent = fmtNum(bd.closed_output_tokens);
+    $("bd-with-in").textContent    = fmtNum(bd.with_jpcite_input_tokens);
+    $("bd-with-out").textContent   = fmtNum(bd.with_jpcite_output_tokens);
+    $("bd-closed-usd").textContent = fmtUsdQ(bd.closed_usd_per_query);
+    $("bd-with-usd").textContent   = fmtUsdQ(bd.with_jpcite_usd_per_query);
+
+    $("caveat-text").textContent = data.honest_caveat;
+  }
+
+  document.addEventListener("DOMContentLoaded", function() {
+    ["model", "queries_per_month", "domain_mix", "fx_rate"].forEach(function(id) {
+      var el = $(id);
+      if (!el) return;
+      el.addEventListener("input", scheduleFetch);
+      el.addEventListener("change", scheduleFetch);
+    });
+    doFetch();
+  });
+})();
+</script>
+
+</body>
+</html>

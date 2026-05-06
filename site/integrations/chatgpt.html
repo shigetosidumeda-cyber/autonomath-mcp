@@ -123,7 +123,7 @@
 回答には source_url と source_fetched_at を入れてください。</code></pre>
 <button class="copy-btn" type="button" aria-label="コピー">Copy</button>
 </div>
-<p>PDFや長い制度ページをGPTへ直接渡す前にEvidence Packetを使うと、必要な根拠だけを短いJSONにできます。効果はworkload-dependentで、外部 LLM の請求額削減は保証しません。</p>
+<p>PDFや長い制度ページをGPTへ直接渡す前にEvidence Packetを使うと、<code>source_url</code>、<code>source_fetched_at</code>、<code>known_gaps</code>、caller baseline に基づく input-context estimates を短いJSONとして渡せます。</p>
 
 <h2 id="next">次のステップ</h2>
 <ul>

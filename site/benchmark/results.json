@@ -1,0 +1,256 @@
+{
+  "schema_version": "jcrb-v1",
+  "generated_at": "2026-05-06T05:37:21Z",
+  "n_questions": 100,
+  "domains": [
+    "subsidy_eligibility",
+    "tax_application",
+    "law_citation",
+    "adoption_statistics",
+    "enforcement_risk"
+  ],
+  "questions_sha256": "ea16d39d6cccf97ba0eb141ab5263c8d99070b50641b962b628db8310b4f425b",
+  "leaderboard_verified": [],
+  "leaderboard": [],
+  "raw_submissions": [],
+  "seed_examples": [
+    {
+      "model": "claude-opus-4-7",
+      "provider": "claude",
+      "mode": "with_jpcite",
+      "submitted_at": "2026-05-04T00:00:00Z",
+      "submitter": "bookyou (seed estimate, not validated)",
+      "n": 100,
+      "exact_match": 0.62,
+      "citation_ok": 0.94,
+      "by_domain": {
+        "subsidy_eligibility": {
+          "n": 20,
+          "exact_match": 0.55,
+          "citation_ok": 0.9
+        },
+        "tax_application": {
+          "n": 20,
+          "exact_match": 0.75,
+          "citation_ok": 0.98
+        },
+        "law_citation": {
+          "n": 20,
+          "exact_match": 0.78,
+          "citation_ok": 0.98
+        },
+        "adoption_statistics": {
+          "n": 20,
+          "exact_match": 0.45,
+          "citation_ok": 0.92
+        },
+        "enforcement_risk": {
+          "n": 20,
+          "exact_match": 0.55,
+          "citation_ok": 0.92
+        }
+      },
+      "questions_sha256": "seed-not-validated",
+      "_source_file": "SEED_claude_opus_47__with.json"
+    },
+    {
+      "model": "claude-opus-4-7",
+      "provider": "claude",
+      "mode": "without_jpcite",
+      "submitted_at": "2026-05-04T00:00:00Z",
+      "submitter": "bookyou (seed estimate, not validated)",
+      "n": 100,
+      "exact_match": 0.18,
+      "citation_ok": 0.42,
+      "by_domain": {
+        "subsidy_eligibility": {
+          "n": 20,
+          "exact_match": 0.15,
+          "citation_ok": 0.3
+        },
+        "tax_application": {
+          "n": 20,
+          "exact_match": 0.25,
+          "citation_ok": 0.5
+        },
+        "law_citation": {
+          "n": 20,
+          "exact_match": 0.3,
+          "citation_ok": 0.55
+        },
+        "adoption_statistics": {
+          "n": 20,
+          "exact_match": 0.1,
+          "citation_ok": 0.35
+        },
+        "enforcement_risk": {
+          "n": 20,
+          "exact_match": 0.1,
+          "citation_ok": 0.4
+        }
+      },
+      "questions_sha256": "seed-not-validated",
+      "_source_file": "SEED_claude_opus_47__without.json"
+    },
+    {
+      "model": "gemini-2.5-pro",
+      "provider": "gemini",
+      "mode": "with_jpcite",
+      "submitted_at": "2026-05-04T00:00:00Z",
+      "submitter": "bookyou (seed estimate, not validated)",
+      "n": 100,
+      "exact_match": 0.59,
+      "citation_ok": 0.92,
+      "by_domain": {
+        "subsidy_eligibility": {
+          "n": 20,
+          "exact_match": 0.5,
+          "citation_ok": 0.88
+        },
+        "tax_application": {
+          "n": 20,
+          "exact_match": 0.72,
+          "citation_ok": 0.96
+        },
+        "law_citation": {
+          "n": 20,
+          "exact_match": 0.75,
+          "citation_ok": 0.96
+        },
+        "adoption_statistics": {
+          "n": 20,
+          "exact_match": 0.45,
+          "citation_ok": 0.9
+        },
+        "enforcement_risk": {
+          "n": 20,
+          "exact_match": 0.55,
+          "citation_ok": 0.92
+        }
+      },
+      "questions_sha256": "seed-not-validated",
+      "_source_file": "SEED_gemini_2_5__with.json"
+    },
+    {
+      "model": "gemini-2.5-pro",
+      "provider": "gemini",
+      "mode": "without_jpcite",
+      "submitted_at": "2026-05-04T00:00:00Z",
+      "submitter": "bookyou (seed estimate, not validated)",
+      "n": 100,
+      "exact_match": 0.16,
+      "citation_ok": 0.4,
+      "by_domain": {
+        "subsidy_eligibility": {
+          "n": 20,
+          "exact_match": 0.1,
+          "citation_ok": 0.3
+        },
+        "tax_application": {
+          "n": 20,
+          "exact_match": 0.2,
+          "citation_ok": 0.45
+        },
+        "law_citation": {
+          "n": 20,
+          "exact_match": 0.25,
+          "citation_ok": 0.5
+        },
+        "adoption_statistics": {
+          "n": 20,
+          "exact_match": 0.15,
+          "citation_ok": 0.4
+        },
+        "enforcement_risk": {
+          "n": 20,
+          "exact_match": 0.1,
+          "citation_ok": 0.35
+        }
+      },
+      "questions_sha256": "seed-not-validated",
+      "_source_file": "SEED_gemini_2_5__without.json"
+    },
+    {
+      "model": "gpt-5",
+      "provider": "openai",
+      "mode": "with_jpcite",
+      "submitted_at": "2026-05-04T00:00:00Z",
+      "submitter": "bookyou (seed estimate, not validated)",
+      "n": 100,
+      "exact_match": 0.64,
+      "citation_ok": 0.95,
+      "by_domain": {
+        "subsidy_eligibility": {
+          "n": 20,
+          "exact_match": 0.55,
+          "citation_ok": 0.92
+        },
+        "tax_application": {
+          "n": 20,
+          "exact_match": 0.78,
+          "citation_ok": 0.98
+        },
+        "law_citation": {
+          "n": 20,
+          "exact_match": 0.8,
+          "citation_ok": 0.98
+        },
+        "adoption_statistics": {
+          "n": 20,
+          "exact_match": 0.5,
+          "citation_ok": 0.93
+        },
+        "enforcement_risk": {
+          "n": 20,
+          "exact_match": 0.55,
+          "citation_ok": 0.93
+        }
+      },
+      "questions_sha256": "seed-not-validated",
+      "_source_file": "SEED_gpt_5__with.json"
+    },
+    {
+      "model": "gpt-5",
+      "provider": "openai",
+      "mode": "without_jpcite",
+      "submitted_at": "2026-05-04T00:00:00Z",
+      "submitter": "bookyou (seed estimate, not validated)",
+      "n": 100,
+      "exact_match": 0.2,
+      "citation_ok": 0.45,
+      "by_domain": {
+        "subsidy_eligibility": {
+          "n": 20,
+          "exact_match": 0.15,
+          "citation_ok": 0.35
+        },
+        "tax_application": {
+          "n": 20,
+          "exact_match": 0.3,
+          "citation_ok": 0.55
+        },
+        "law_citation": {
+          "n": 20,
+          "exact_match": 0.3,
+          "citation_ok": 0.55
+        },
+        "adoption_statistics": {
+          "n": 20,
+          "exact_match": 0.15,
+          "citation_ok": 0.4
+        },
+        "enforcement_risk": {
+          "n": 20,
+          "exact_match": 0.1,
+          "citation_ok": 0.4
+        }
+      },
+      "questions_sha256": "seed-not-validated",
+      "_source_file": "SEED_gpt_5__without.json"
+    }
+  ],
+  "notes": [
+    "leaderboard contains verified external/customer submissions only",
+    "seed_examples are illustrative estimates, not leaderboard evidence"
+  ]
+}

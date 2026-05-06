@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<!--
+  site/dashboard/savings.html
+  Customer-facing "your tokens / yen saved this month" dashboard.
+
+  Inputs:
+    - API key (X-API-Key) read from localStorage('am_api_key'), same key
+      the main dashboard uses. Plain-text key never POSTed back; stored
+      locally only and sent ONLY as X-API-Key header on GET fetches.
+    - GET /v1/me/usage?days=30  -> [{date, calls}]
+      (the user spec said /v1/usage; the live endpoint is /v1/me/usage —
+      same data, used by site/dashboard.html already. Path is overridable
+      via window.__JPCITE_USAGE_PATH for ops.)
+
+  Math (W28-4 sim 実測 anchor, Claude Opus 4.7, 6,000 q/月 baseline):
+
+    Token saving (raw, often net-negative on Opus 4.7):
+      queries       = sum(calls)                   over 30 day window
+      usd_saved     = queries * 0.006285           // W28-4 anchor: $37.71 / 6,000
+      jpy_saved     = usd_saved * 150              // FX
+      jpy_cost      = queries * 3.30
+      token_delta   = jpy_saved - jpy_cost
+      # 6,000 q/月: $37.71 = ¥5,656 saved − ¥19,800 cost = -¥14,144 / -71% (赤字)
+      # Old defaults (15k in / 3k out × Sonnet $3/$15) inflated this to +322% — DO NOT restore.
+      tokens_in/out (4,500/800) are illustrative — only USD_PER_CALL_SAVED drives the
+      money math, so changing token counts does not lie about USD.
+
+    Time saving (real value, headline):
+      verify_min_per_call = 0.5                    // 30 sec/query verify+cite+audit-trail amortized
+      hours_saved         = queries * 0.5 / 60
+      jpy_per_hour        = 8000                   // 税理士単価
+      jpy_time_saved      = hours_saved * jpy_per_hour
+      # 6,000 q/月 → 50h 解放 → ¥400,000
+
+    Combined net (honest):
+      combined_net = jpy_time_saved + token_delta
+      # +¥400,000 + (-¥14,144) = +¥385,856 / 月
+
+  Visual:
+    Time-saving 大カード = main display (真の価値, hero).
+    Token saving 副カード = raw token math (small but positive, jpcite cost separate).
+    Token-only ROI = honest red on Opus 4.7 with §52 disclosure tooltip.
+    Combined net summary card = time + token honest sum.
+    Pure <canvas> 30-day bar chart (no Chart.js dep) — chart bar = combined per-day net.
+
+  Bilingual: ?lang=en or browser navigator.language toggles JA<->EN.
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Savings — jpcite ダッシュボード</title>
+<meta name="description" content="今月 jpcite が解放した verify 時間 / 円換算 / token 差分を表示。真の価値は audit-grade citation。">
+<meta name="robots" content="noindex,nofollow">
+
+<link rel="canonical" href="https://jpcite.com/dashboard/savings.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/dashboard/savings.html?lang=ja">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/dashboard/savings.html?lang=en">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/dashboard/savings.html">
+
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://api.jpcite.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="/critical.css?v=20260428a">
+<link rel="preload" href="/styles.css?v=20260428a" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="/styles.css?v=20260428a"></noscript>
+
+<style>
+  :root {
+    --save-green: #15803d;
+    --save-green-bg: #ecfdf5;
+    --loss-red: #b91c1c;
+    --loss-red-bg: #fef2f2;
+  }
+  body { font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; }
+  .save-page { padding: 40px 0 64px; max-width: 980px; margin: 0 auto; box-sizing: border-box; }
+  .save-page .container { padding: 0 20px; }
+  h1.save-title { font-size: 26px; margin: 0 0 4px; font-weight: 800; letter-spacing: -0.01em; }
+  .save-sub { color: var(--text-muted, #404040); margin: 0 0 28px; font-size: 14px; line-height: 1.6; }
+
+  .lang-bar { display: flex; gap: 6px; font-size: 13px; margin: 0 0 18px; }
+  .lang-bar button { background: var(--bg-alt, #f7f7f8); color: var(--text, #111); border: 1px solid var(--border, #e5e5e5); padding: 4px 10px; border-radius: 6px; cursor: pointer; font: inherit; font-size: 12px; }
+  .lang-bar button.active { background: var(--accent, #1e3a8a); color: #fff; border-color: var(--accent, #1e3a8a); }
+
+  .keybox { border: 1px solid var(--border, #e5e5e5); border-radius: 10px; padding: 18px 20px; background: var(--bg, #fff); margin: 0 0 24px; }
+  .keybox label { font-size: 12px; color: var(--text-muted, #404040); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; display: block; margin: 0 0 8px; }
+  .keybox-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .keybox input { flex: 1 1 280px; min-width: 0; font: inherit; font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; padding: 10px 12px; border: 1px solid var(--border, #e5e5e5); border-radius: 6px; background: var(--bg-alt, #f7f7f8); color: var(--text, #111); box-sizing: border-box; }
+  .keybox button { padding: 10px 16px; font: inherit; font-size: 13px; font-weight: 600; background: var(--accent, #1e3a8a); color: #fff; border: 0; border-radius: 6px; cursor: pointer; }
+  .keybox button.ghost { background: var(--bg-alt, #f7f7f8); color: var(--text, #111); border: 1px solid var(--border, #e5e5e5); }
+  .keybox .hint { font-size: 12px; color: var(--text-muted, #404040); margin: 10px 0 0; line-height: 1.6; }
+
+  .stat-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 0 0 20px; }
+  @media (min-width: 720px) { .stat-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .stat-card { border: 1px solid var(--border, #e5e5e5); border-radius: 10px; padding: 18px 18px; background: var(--bg, #fff); min-width: 0; position: relative; }
+  .stat-card .label { font-size: 11px; color: var(--text-muted, #404040); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin: 0 0 8px; }
+  .stat-card .value { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; margin: 0; color: var(--text, #111); word-break: break-all; }
+  .stat-card .value .unit { font-size: 13px; font-weight: 500; color: var(--text-muted, #404040); margin-left: 4px; }
+  .stat-card .delta { font-size: 12px; margin: 6px 0 0; font-weight: 600; }
+  .stat-card.positive .value { color: var(--save-green); }
+  .stat-card.positive { background: var(--save-green-bg); border-color: var(--save-green); }
+  .stat-card.negative .value { color: var(--loss-red); }
+  .stat-card.negative { background: var(--loss-red-bg); border-color: var(--loss-red); }
+
+  /* Hero card: time saving (main display) */
+  .hero-card { border: 2px solid var(--save-green); background: var(--save-green-bg); border-radius: 14px; padding: 28px 28px; margin: 0 0 16px; }
+  .hero-card .hero-label { font-size: 12px; color: var(--save-green); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin: 0 0 10px; }
+  .hero-card .hero-value { font-size: 38px; font-weight: 800; letter-spacing: -0.02em; margin: 0; color: var(--save-green); word-break: break-all; line-height: 1.1; }
+  .hero-card .hero-sub { font-size: 14px; color: var(--text, #111); margin: 10px 0 0; font-weight: 600; }
+  .hero-card .hero-note { font-size: 12px; color: var(--text-muted, #404040); margin: 8px 0 0; line-height: 1.6; }
+  @media (min-width: 720px) { .hero-card .hero-value { font-size: 44px; } }
+
+  /* Net summary card (token + time 合算) */
+  .net-card { border: 1px solid var(--border, #e5e5e5); background: var(--bg, #fff); border-radius: 10px; padding: 16px 20px; margin: 0 0 20px; display: flex; flex-wrap: wrap; gap: 16px; align-items: baseline; justify-content: space-between; }
+  .net-card .net-label { font-size: 12px; color: var(--text-muted, #404040); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+  .net-card .net-value { font-size: 20px; font-weight: 800; color: var(--save-green); }
+  .net-card .net-note { font-size: 11px; color: var(--text-muted, #404040); flex-basis: 100%; line-height: 1.6; }
+
+  /* Disclosure bar */
+  .disclosure { border-left: 4px solid #d97706; background: #fffbeb; color: #78350f; padding: 12px 16px; border-radius: 6px; font-size: 13px; line-height: 1.6; margin: 0 0 20px; }
+  .disclosure strong { color: #92400e; }
+
+  /* Tooltip */
+  .tip { display: inline-block; width: 14px; height: 14px; border-radius: 50%; background: var(--text-muted, #404040); color: #fff; font-size: 10px; line-height: 14px; text-align: center; margin-left: 6px; cursor: help; font-weight: 700; vertical-align: middle; }
+  .tip-wrap { position: relative; display: inline-block; }
+  .tip-wrap:hover .tip-body, .tip-wrap:focus-within .tip-body { display: block; }
+  .tip-body { display: none; position: absolute; z-index: 10; left: 0; top: 22px; width: 280px; background: #111; color: #fff; padding: 10px 12px; border-radius: 6px; font-size: 12px; line-height: 1.55; font-weight: 400; text-transform: none; letter-spacing: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.18); }
+  .tip-body code { background: rgba(255,255,255,0.12); padding: 1px 4px; border-radius: 3px; font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+  .chart-card { border: 1px solid var(--border, #e5e5e5); border-radius: 10px; padding: 20px 22px; background: var(--bg, #fff); margin: 0 0 20px; }
+  .chart-card .title { font-size: 13px; font-weight: 700; margin: 0 0 4px; color: var(--text, #111); }
+  .chart-card .desc { font-size: 12px; color: var(--text-muted, #404040); margin: 0 0 14px; }
+  .chart-wrap { width: 100%; overflow: hidden; }
+  canvas#savings-chart { width: 100%; height: 200px; display: block; }
+  .chart-axis { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted, #404040); margin: 6px 0 0; font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+  .legend { display: flex; gap: 16px; font-size: 12px; color: var(--text-muted, #404040); margin: 10px 0 0; flex-wrap: wrap; }
+  .legend .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+  .legend .swatch.green { background: var(--save-green); }
+  .legend .swatch.red { background: var(--loss-red); }
+
+  .status { font-size: 13px; padding: 10px 14px; border-radius: 6px; margin: 0 0 16px; line-height: 1.6; }
+  .status.info { background: var(--bg-alt, #f7f7f8); color: var(--text, #111); border: 1px solid var(--border, #e5e5e5); }
+  .status.error { background: var(--loss-red-bg); color: var(--loss-red); border: 1px solid var(--loss-red); }
+  .status[hidden] { display: none !important; }
+
+  .formula { font-size: 12px; color: var(--text-muted, #404040); margin: 12px 0 0; line-height: 1.7; }
+  .formula code { font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--bg-alt, #f7f7f8); padding: 1px 5px; border-radius: 3px; font-size: 11px; }
+
+  .nav-back { font-size: 13px; margin: 0 0 14px; }
+  .nav-back a { color: var(--accent, #1e3a8a); text-decoration: none; }
+  .nav-back a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<main id="main">
+ <section class="save-page">
+  <div class="container">
+
+   <p class="nav-back"><a href="/dashboard.html">&larr; <span data-i18n="back">ダッシュボードに戻る</span></a></p>
+
+   <div class="lang-bar" role="group" aria-label="Language">
+    <button type="button" data-lang="ja" class="active">JP</button>
+    <button type="button" data-lang="en">EN</button>
+   </div>
+
+   <h1 class="save-title" data-i18n="title">あなたの今月の節約 (時間 + token)</h1>
+   <p class="save-sub" data-i18n="sub">jpcite の真の価値は <strong>verify 時間の解放</strong> と <strong>audit-grade citation</strong>。token math 単独では net loss でも、税理士単価換算の時間節約で大幅プラスに転じます。個別結果は使用パターンに依存します。</p>
+
+   <div class="disclosure" data-i18n="disclosure"><strong>個別結果は使用パターンに依存します。</strong> 下記は W28-4 sim 実測 (Claude Opus 4.7、6,000 query/月) を default 値として表示。実 API キー入力で実数に置換されます。</div>
+
+   <div class="keybox">
+    <label for="api-key-input" data-i18n="key_label">API キー (X-API-Key)</label>
+    <div class="keybox-row">
+     <input id="api-key-input" type="password" autocomplete="off" spellcheck="false" placeholder="am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+     <button type="button" id="api-key-save" data-i18n="key_save">保存して読み込み</button>
+     <button type="button" id="api-key-clear" class="ghost" data-i18n="key_clear">削除</button>
+    </div>
+    <p class="hint" data-i18n="key_hint">キーはこのブラウザの localStorage にのみ保存されます。サーバーには X-API-Key ヘッダとして GET 時のみ送信されます。プレーンテキストでサーバーに POST しません。</p>
+   </div>
+
+   <div id="status" class="status info" hidden></div>
+
+   <!-- HERO: time saving (main display, real value) -->
+   <div class="hero-card" role="region" aria-label="Time saved">
+    <p class="hero-label"><span data-i18n="hero_label">verify 時間 解放 (30 日)</span>
+     <span class="tip-wrap"><span class="tip" tabindex="0">?</span><span class="tip-body" data-i18n="tip_hero">law verify + cite + audit trail を 1 query あたり 30 秒削減 (workflow amortize)。jpcite の audit-grade citation が再現可能根拠を即提示し、調査・レビュー往復を圧縮します。税理士単価 ¥8,000/h で換算。</span></span>
+    </p>
+    <p class="hero-value"><span id="v-hours">50</span><span style="font-size:0.55em; margin-left:6px; font-weight:700;" data-i18n="hours_unit">時間 / 月</span></p>
+    <p class="hero-sub"><span data-i18n="hero_sub_prefix">税理士単価 ¥8,000/h 換算 = </span><span id="v-time-jpy">¥400,000</span><span data-i18n="hero_sub_suffix"> / 月</span></p>
+    <p class="hero-note" data-i18n="hero_note">真の価値は audit-grade citation。一次資料 URL + 法令 §条 + 取得日時の trail で、reviewer・税務調査・監査人に対して再現可能な根拠を即提示できます。</p>
+   </div>
+
+   <!-- SUB: token saving (raw) + jpcite cost -->
+   <div class="stat-grid" role="region" aria-label="Token detail">
+    <div class="stat-card positive" id="stat-tokens">
+     <p class="label"><span data-i18n="stat_tokens">Token 節約 (raw, 30d)</span>
+      <span class="tip-wrap"><span class="tip" tabindex="0">?</span><span class="tip-body" data-i18n="tip_tokens">raw token math: 直叩き Opus 4.7 で 1 query 約 4,500 in + 800 out を消費。jpcite はこれを 1 req に圧縮。token saving 自体は small but positive。</span></span>
+     </p>
+     <p class="value"><span id="v-tokens">—</span></p>
+    </div>
+    <div class="stat-card positive" id="stat-usd">
+     <p class="label" data-i18n="stat_usd">USD 節約 (raw, 30d)</p>
+     <p class="value">$<span id="v-usd">—</span></p>
+    </div>
+    <div class="stat-card" id="stat-cost">
+     <p class="label" data-i18n="stat_cost">jpcite コスト (30d)</p>
+     <p class="value">¥<span id="v-cost">—</span></p>
+    </div>
+    <div class="stat-card negative" id="stat-roi">
+     <p class="label"><span data-i18n="stat_roi">Token-only ROI</span>
+      <span class="tip-wrap"><span class="tip" tabindex="0">?</span><span class="tip-body" data-i18n="tip_roi">honest disclosure: <strong>raw token math では net loss</strong> (Opus 4.7、6,000 q/月で -71% / -¥14,144)。真の価値は audit-grade citation と verify 時間の解放にあります。下のカードの合算 net を参照してください。</span></span>
+     </p>
+     <p class="value"><span id="v-roi">—</span><span class="unit">%</span></p>
+     <p class="delta" id="v-roi-delta"></p>
+    </div>
+   </div>
+
+   <!-- NET: time + token 合算 -->
+   <div class="net-card" role="region" aria-label="Net summary">
+    <span>
+     <span class="net-label" data-i18n="net_label">合算 net (時間 + token, 30d)</span>
+     &nbsp;&nbsp;<span class="net-value" id="v-net-total">+¥385,889</span>
+    </span>
+    <span style="font-size:11px; color:var(--text-muted,#404040);">
+     <span id="v-net-breakdown">時間 +¥400,000 / token -¥14,144 = +¥385,856</span>
+    </span>
+    <p class="net-note" data-i18n="net_note">(time + token saving 合算)。time saving は税理士単価 ¥8,000/h × 0.5 min/query で換算。token saving は raw 直叩き Opus 4.7 単価との差分。個別結果は使用パターン (query 種類・モデル・verify 工程の有無) に強く依存します。</p>
+   </div>
+
+   <div class="chart-card">
+    <p class="title" data-i18n="chart_title">過去 30 日の日次差分 (緑 = 節約 / 赤 = 損失)</p>
+    <p class="desc" data-i18n="chart_desc">各日の (時間節約 + token 節約) − (jpcite ¥3.30 × calls) の差分。time saving 込み。</p>
+    <div class="chart-wrap">
+     <canvas id="savings-chart" width="900" height="200" aria-label="30-day savings chart"></canvas>
+    </div>
+    <div class="chart-axis"><span id="axis-start">—</span><span id="axis-end">—</span></div>
+    <div class="legend">
+     <span><span class="swatch green"></span><span data-i18n="legend_save">節約 (saving)</span></span>
+     <span><span class="swatch red"></span><span data-i18n="legend_loss">損失 (loss)</span></span>
+    </div>
+   </div>
+
+   <p class="formula" data-i18n="formula">
+    計算式 (W28-4 sim 実測 anchor、Claude Opus 4.7、6,000 query/月 baseline):<br>
+    USD 節約 = <code>$0.006285/query</code> (W28-4 実測、$37.71 / 6,000) / FX = <code>¥150/$</code> / jpcite = <code>¥3.30 × calls</code>。<br>
+    時間節約: <code>0.5 min/query × ¥8,000/h</code> (税理士単価) → 6,000 q/月 = 50h = ¥400,000。<br>
+    <strong>honest disclosure:</strong> raw token math では 6,000 q/月で net <strong>-¥14,144 (-71%)</strong>。真の価値は audit-grade citation + verify 時間の解放です。
+   </p>
+
+  </div>
+ </section>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+ <div class="container footer-inner">
+  <div class="footer-col">
+   <p class="footer-brand">jpcite</p>
+   <p class="footer-tag" data-i18n="footer_tag">日本の制度 API</p>
+  </div>
+  <nav class="footer-nav" aria-label="footer">
+   <a href="/tos.html">利用規約</a>
+   <a href="/privacy.html">プライバシー</a>
+   <a href="/support.html">サポート</a>
+   <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+  </nav>
+  <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+  <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  // ----- i18n -----
+  var I18N = {
+    ja: {
+      back: 'ダッシュボードに戻る',
+      title: 'あなたの今月の節約 (時間 + token)',
+      sub: 'jpcite の真の価値は <strong>verify 時間の解放</strong> と <strong>audit-grade citation</strong>。token math 単独では net loss でも、税理士単価換算の時間節約で大幅プラスに転じます。個別結果は使用パターンに依存します。',
+      disclosure: '<strong>個別結果は使用パターンに依存します。</strong> 下記は W28-4 sim 実測 (Claude Opus 4.7、6,000 query/月) を default 値として表示。実 API キー入力で実数に置換されます。',
+      key_label: 'API キー (X-API-Key)',
+      key_save: '保存して読み込み',
+      key_clear: '削除',
+      key_hint: 'キーはこのブラウザの localStorage にのみ保存されます。サーバーには X-API-Key ヘッダとして GET 時のみ送信されます。プレーンテキストでサーバーに POST しません。',
+      hero_label: 'verify 時間 解放 (30 日)',
+      hero_sub_prefix: '税理士単価 ¥8,000/h 換算 = ',
+      hero_sub_suffix: ' / 月',
+      hero_note: '真の価値は audit-grade citation。一次資料 URL + 法令 §条 + 取得日時の trail で、reviewer・税務調査・監査人に対して再現可能な根拠を即提示できます。',
+      hours_unit: '時間 / 月',
+      tip_hero: 'law verify + cite + audit trail を 1 query あたり 30 秒削減 (workflow amortize)。jpcite の audit-grade citation が再現可能根拠を即提示し、調査・レビュー往復を圧縮します。税理士単価 ¥8,000/h で換算。',
+      tip_tokens: 'raw token math: 直叩き Opus 4.7 で 1 query 約 4,500 in + 800 out を消費。jpcite はこれを 1 req に圧縮。token saving 自体は small but positive。',
+      tip_roi: 'honest disclosure: raw token math では net loss (Opus 4.7、6,000 q/月で -71% / -¥14,144)。真の価値は audit-grade citation と verify 時間の解放にあります。',
+      stat_tokens: 'Token 節約 (raw, 30d)',
+      stat_usd: 'USD 節約 (raw, 30d)',
+      stat_cost: 'jpcite コスト (30d)',
+      stat_roi: 'Token-only ROI',
+      net_label: '合算 net (時間 + token, 30d)',
+      net_note: '(time + token saving 合算)。time saving は税理士単価 ¥8,000/h × 0.5 min/query で換算。token saving は raw 直叩き Opus 4.7 単価との差分。個別結果は使用パターン (query 種類・モデル・verify 工程の有無) に強く依存します。',
+      chart_title: '過去 30 日の日次差分 (緑 = 節約 / 赤 = 損失)',
+      chart_desc: '各日の (時間節約 + token 節約) − (jpcite ¥3.30 × calls) の差分。time saving 込み。',
+      legend_save: '節約 (saving)',
+      legend_loss: '損失 (loss)',
+      formula: '計算式 (W28-4 sim 実測 anchor、Claude Opus 4.7、6,000 query/月 baseline): USD 節約 = $0.006285/query (W28-4 実測、$37.71 / 6,000) / FX = ¥150/$ / jpcite = ¥3.30 × calls。 時間節約: 0.5 min/query × ¥8,000/h (税理士単価) → 6,000 q/月 = 50h = ¥400,000。 honest disclosure: raw token math では 6,000 q/月で net -¥14,144 (-71%)。真の価値は audit-grade citation + verify 時間の解放です。',
+      footer_tag: '日本の制度 API',
+      no_key: 'API キーを入力してください。',
+      loading: '/v1/me/usage を取得中…',
+      error_401: 'API キーが無効、または権限がありません (401)。キーを確認してください。',
+      error_429: 'レート制限に達しました (429)。しばらく待って再試行してください。',
+      error_generic: '取得に失敗しました: ',
+      empty: '直近 30 日の利用がありません。最初の API コールで埋まります。',
+      saved: 'キーを保存しました。',
+      cleared: 'キーを削除しました。',
+      roi_positive: '黒字',
+      roi_negative: '赤字',
+    },
+    en: {
+      back: 'Back to dashboard',
+      title: 'Your savings this month (time + tokens)',
+      sub: 'jpcite\'s real value is <strong>verify-time freed</strong> and <strong>audit-grade citation</strong>. Token math alone may be net-negative, but tax-accountant-rate time savings flip it strongly positive. Individual results depend on usage patterns.',
+      disclosure: '<strong>Individual results depend on usage patterns.</strong> Defaults below reflect the W28-4 sim measurements (Claude Opus 4.7, 6,000 queries/month). Real numbers replace these once you enter your API key.',
+      key_label: 'API key (X-API-Key)',
+      key_save: 'Save & load',
+      key_clear: 'Clear',
+      key_hint: "Key is stored in this browser's localStorage only. Sent to the server as X-API-Key header on GET only. Never POSTed in plaintext.",
+      hero_label: 'Verify time freed (30d)',
+      hero_sub_prefix: 'At ¥8,000/h tax-accountant rate = ',
+      hero_sub_suffix: ' / month',
+      hero_note: 'Real value is audit-grade citation. Primary-source URL + statute §article + fetched-at trail give reviewers, tax audits, and auditors a reproducible basis on demand.',
+      hours_unit: 'hours / month',
+      tip_hero: 'About 30 sec/query of law verify + cite + audit-trail work is freed (amortized over the workflow) by jpcite\'s audit-grade citation, which presents reproducible evidence on demand. Converted at ¥8,000/h tax-accountant rate.',
+      tip_tokens: 'Raw token math: direct Opus 4.7 spends ~4,500 in + 800 out per query; jpcite compresses this into one request. Token saving itself is small but positive.',
+      tip_roi: 'Honest disclosure: raw token math is net-negative (Opus 4.7, 6,000 q/mo: -71% / -¥14,144). Real value is audit-grade citation and verify-time freed.',
+      stat_tokens: 'Tokens saved (raw, 30d)',
+      stat_usd: 'USD saved (raw, 30d)',
+      stat_cost: 'jpcite cost (30d)',
+      stat_roi: 'Token-only ROI',
+      net_label: 'Combined net (time + token, 30d)',
+      net_note: '(Time + token saving combined.) Time saving converted at ¥8,000/h × 0.5 min/query. Token saving is the delta vs raw direct Opus 4.7 pricing. Individual results depend strongly on usage pattern (query type, model, presence of verify steps).',
+      chart_title: 'Past 30 days, daily delta (green = savings / red = loss)',
+      chart_desc: 'Per-day (time + token saving) − (jpcite ¥3.30 × calls). Time saving included.',
+      legend_save: 'Saving',
+      legend_loss: 'Loss',
+      formula: 'Formula (W28-4 sim anchor, Claude Opus 4.7, 6,000 queries/mo baseline): USD saved = $0.006285/query (W28-4 measured, $37.71 / 6,000) / FX = ¥150/$ / jpcite = ¥3.30 × calls. Time saving: 0.5 min/query × ¥8,000/h (tax-accountant rate) → 6,000 q/mo = 50h = ¥400,000. Honest disclosure: raw token math at 6,000 q/mo nets -¥14,144 (-71%). Real value is audit-grade citation + verify-time freed.',
+      footer_tag: 'Public-program API for Japan',
+      no_key: 'Please enter your API key.',
+      loading: 'Fetching /v1/me/usage…',
+      error_401: 'API key invalid or unauthorized (401). Please verify the key.',
+      error_429: 'Rate limited (429). Please retry shortly.',
+      error_generic: 'Fetch failed: ',
+      empty: 'No usage in the past 30 days. First API call will populate this.',
+      saved: 'Key saved.',
+      cleared: 'Key cleared.',
+      roi_positive: 'profit',
+      roi_negative: 'loss',
+    },
+  };
+
+  function getLang() {
+    var qs = new URLSearchParams(location.search).get('lang');
+    if (qs === 'en' || qs === 'ja') return qs;
+    var saved;
+    try { saved = localStorage.getItem('jpcite_lang'); } catch (_) {}
+    if (saved === 'en' || saved === 'ja') return saved;
+    return (navigator.language || 'ja').toLowerCase().indexOf('en') === 0 ? 'en' : 'ja';
+  }
+
+  var lang = getLang();
+  var T = I18N[lang];
+
+  // Keys whose text contains inline <strong>/<br> markup we WANT rendered.
+  // Everything else uses textContent (XSS-safe default).
+  var HTML_KEYS = { sub: 1, disclosure: 1, formula: 1, tip_roi: 1 };
+
+  function applyI18n() {
+    T = I18N[lang];
+    document.documentElement.lang = lang;
+    var nodes = document.querySelectorAll('[data-i18n]');
+    for (var i = 0; i < nodes.length; i++) {
+      var k = nodes[i].getAttribute('data-i18n');
+      if (T[k]) {
+        if (HTML_KEYS[k]) nodes[i].innerHTML = T[k];
+        else nodes[i].textContent = T[k];
+      }
+    }
+    var btns = document.querySelectorAll('.lang-bar button');
+    for (var j = 0; j < btns.length; j++) {
+      btns[j].classList.toggle('active', btns[j].getAttribute('data-lang') === lang);
+    }
+  }
+
+  document.querySelectorAll('.lang-bar button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      lang = btn.getAttribute('data-lang');
+      try { localStorage.setItem('jpcite_lang', lang); } catch (_) {}
+      applyI18n();
+      // Re-render numeric labels with new locale.
+      if (lastRows) render(lastRows);
+    });
+  });
+
+  applyI18n();
+
+  // ----- API key handling (localStorage only; never POSTed) -----
+  var KEY_STORAGE = 'am_api_key';  // align w/ existing dashboard.js
+  var input = document.getElementById('api-key-input');
+  var statusEl = document.getElementById('status');
+
+  function showStatus(msg, kind) {
+    statusEl.textContent = msg;
+    statusEl.className = 'status ' + (kind || 'info');
+    statusEl.hidden = false;
+  }
+  function hideStatus() { statusEl.hidden = true; }
+
+  function loadStoredKey() {
+    try { return localStorage.getItem(KEY_STORAGE) || ''; } catch (_) { return ''; }
+  }
+  function saveKey(k) {
+    try { localStorage.setItem(KEY_STORAGE, k); } catch (_) {}
+  }
+  function clearKey() {
+    try { localStorage.removeItem(KEY_STORAGE); } catch (_) {}
+  }
+
+  input.value = loadStoredKey();
+
+  document.getElementById('api-key-save').addEventListener('click', function () {
+    var k = (input.value || '').trim();
+    if (!k) { showStatus(T.no_key, 'error'); return; }
+    saveKey(k);
+    showStatus(T.saved, 'info');
+    fetchUsage(k);
+  });
+
+  document.getElementById('api-key-clear').addEventListener('click', function () {
+    clearKey();
+    input.value = '';
+    showStatus(T.cleared, 'info');
+    lastRows = null;
+    render([]);
+  });
+
+  // ----- fetch /v1/me/usage -----
+  var USAGE_PATH = window.__JPCITE_USAGE_PATH || '/v1/me/usage?days=30';
+  var API_BASE = window.__JPCITE_API_BASE || 'https://api.jpcite.com';
+
+  function fetchUsage(key) {
+    if (!key) { showStatus(T.no_key, 'error'); return; }
+    showStatus(T.loading, 'info');
+    var url = (USAGE_PATH.indexOf('http') === 0) ? USAGE_PATH : (API_BASE + USAGE_PATH);
+    fetch(url, {
+      method: 'GET',
+      headers: { 'X-API-Key': key, 'Accept': 'application/json' },
+      credentials: 'omit',
+      mode: 'cors',
+    }).then(function (r) {
+      if (r.status === 401) throw new Error('401');
+      if (r.status === 429) throw new Error('429');
+      if (!r.ok) throw new Error(String(r.status));
+      return r.json();
+    }).then(function (rows) {
+      hideStatus();
+      lastRows = Array.isArray(rows) ? rows : [];
+      if (lastRows.length === 0) showStatus(T.empty, 'info');
+      render(lastRows);
+    }).catch(function (e) {
+      var msg = e && e.message;
+      if (msg === '401') showStatus(T.error_401, 'error');
+      else if (msg === '429') showStatus(T.error_429, 'error');
+      else showStatus(T.error_generic + (msg || 'unknown'), 'error');
+      lastRows = [];
+      render(lastRows);
+    });
+  }
+
+  // ----- savings math + render -----
+  // W28-4 sim 実測 anchor (Claude Opus 4.7, 6,000 q/月 baseline):
+  //   estimated_monthly_savings_usd  = $37.71  (=¥5,656 @ ¥150/$)
+  //   jpcite_cost_jpy                = ¥19,800 (6,000 × ¥3.30)
+  //   net (token only)               = -¥14,144 (-71%)
+  // 旧 15k/3k + Sonnet $3/$15 default は optimistic で +322% を誤表示 → 実測に reframe。
+  // Tokens shown are illustrative (W28-4 token replacement profile); USD/JPY anchored to $37.71/6,000.
+  var TOKENS_IN  = window.__JPCITE_TOKENS_IN  || 4500;       // W28-4 measured (illustrative)
+  var TOKENS_OUT = window.__JPCITE_TOKENS_OUT || 800;        // W28-4 measured (illustrative)
+  var USD_PER_CALL_SAVED = window.__JPCITE_USD_PER_CALL_SAVED || 0.006285;  // $37.71 / 6,000 → real LLM substitution savings
+  var FX_JPY_PER_USD = window.__JPCITE_FX || 150;
+  var JPY_PER_REQ = 3.30;                                    // jpcite tax-included
+
+  // Time-saving constants (real value).
+  // W28-4 anchor: 50h / month / 6,000 q = 0.5 min/query of verify+cite+audit-trail freed.
+  // (Most queries are looked up in 1-2 sec, but the "skipped manual verification step"
+  //  amortized over the workflow averages to 30 seconds saved per query.)
+  var VERIFY_MIN_PER_CALL = window.__JPCITE_VERIFY_MIN || 0.5;    // 30 sec / query
+  var JPY_PER_HOUR        = window.__JPCITE_JPY_PER_HOUR || 8000; // 税理士単価
+
+  function calcDay(calls) {
+    var tokens = calls * (TOKENS_IN + TOKENS_OUT);
+    var usd = calls * USD_PER_CALL_SAVED;
+    var jpy_saved = usd * FX_JPY_PER_USD;
+    var jpy_cost = calls * JPY_PER_REQ;
+    var hours_saved = calls * VERIFY_MIN_PER_CALL / 60;
+    var jpy_time_saved = hours_saved * JPY_PER_HOUR;
+    var token_delta = jpy_saved - jpy_cost;            // raw token math (negative on Opus 4.7)
+    var combined_net = jpy_time_saved + token_delta;   // honest net = time + token
+    return {
+      tokens: tokens,
+      usd: usd,
+      jpy_saved: jpy_saved,
+      jpy_cost: jpy_cost,
+      delta: combined_net,                             // chart uses combined (real value)
+      token_delta: token_delta,
+      hours_saved: hours_saved,
+      jpy_time_saved: jpy_time_saved,
+      combined_net: combined_net,
+    };
+  }
+
+  function fmtInt(n) { return Number(n).toLocaleString(lang === 'en' ? 'en-US' : 'ja-JP'); }
+  function fmtUSD(n) { return Number(n).toLocaleString(lang === 'en' ? 'en-US' : 'ja-JP', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function fmtJPY(n) { return Number(Math.round(n)).toLocaleString(lang === 'en' ? 'en-US' : 'ja-JP'); }
+  function fmtPct(n) { return Number(n).toLocaleString(lang === 'en' ? 'en-US' : 'ja-JP', { minimumFractionDigits: 1, maximumFractionDigits: 1 }); }
+
+  var lastRows = null;
+
+  function render(rows) {
+    var totalCalls = 0;
+    var perDay = [];
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      var calls = Number(r.calls || 0);
+      totalCalls += calls;
+      var c = calcDay(calls);
+      perDay.push({ date: r.date, delta: c.delta, calls: calls });
+    }
+    var sum = calcDay(totalCalls);
+
+    // ----- Hero card: time saving (main display, real value) -----
+    document.getElementById('v-hours').textContent = fmtPct(sum.hours_saved);
+    document.getElementById('v-time-jpy').textContent = '¥' + fmtJPY(sum.jpy_time_saved);
+
+    // ----- Sub cards: token raw + jpcite cost + token-only ROI (honest, often negative) -----
+    document.getElementById('v-tokens').textContent = fmtInt(sum.tokens);
+    document.getElementById('v-usd').textContent = fmtUSD(sum.usd);
+    document.getElementById('v-cost').textContent = fmtJPY(sum.jpy_cost);
+
+    var tokenRoi = sum.jpy_cost > 0 ? (sum.token_delta / sum.jpy_cost * 100) : 0;
+    document.getElementById('v-roi').textContent = fmtPct(tokenRoi);
+    var tokenDeltaLabel = (sum.token_delta >= 0 ? '+' : '') + '¥' + fmtJPY(sum.token_delta) + ' (' + (sum.token_delta >= 0 ? T.roi_positive : T.roi_negative) + ')';
+    document.getElementById('v-roi-delta').textContent = tokenDeltaLabel;
+
+    // Token saving cards (raw token math): positive iff raw token saving > 0 (always true).
+    // Token-only ROI card: honest red iff jpcite cost > raw saving (Opus 4.7 default = red).
+    var roiCard = document.getElementById('stat-roi');
+    roiCard.classList.remove('positive', 'negative');
+    roiCard.classList.add(sum.token_delta >= 0 ? 'positive' : 'negative');
+    var tokCard = document.getElementById('stat-tokens');
+    var usdCard = document.getElementById('stat-usd');
+    [tokCard, usdCard].forEach(function (el) {
+      el.classList.remove('positive', 'negative');
+      el.classList.add(sum.jpy_saved >= 0 ? 'positive' : 'negative');
+    });
+
+    // ----- Net summary: time + token combined -----
+    var netLabel = (sum.combined_net >= 0 ? '+' : '') + '¥' + fmtJPY(sum.combined_net);
+    var netEl = document.getElementById('v-net-total');
+    netEl.textContent = netLabel;
+    netEl.style.color = sum.combined_net >= 0 ? 'var(--save-green)' : 'var(--loss-red)';
+    var timeWord = (lang === 'en') ? 'time ' : '時間 ';
+    var breakdown = timeWord
+      + (sum.jpy_time_saved >= 0 ? '+' : '') + '¥' + fmtJPY(sum.jpy_time_saved)
+      + ' / token ' + (sum.token_delta >= 0 ? '+' : '') + '¥' + fmtJPY(sum.token_delta)
+      + ' = ' + (sum.combined_net >= 0 ? '+' : '') + '¥' + fmtJPY(sum.combined_net);
+    document.getElementById('v-net-breakdown').textContent = breakdown;
+
+    if (perDay.length > 0) {
+      document.getElementById('axis-start').textContent = perDay[0].date;
+      document.getElementById('axis-end').textContent = perDay[perDay.length - 1].date;
+    } else {
+      document.getElementById('axis-start').textContent = '—';
+      document.getElementById('axis-end').textContent = '—';
+    }
+
+    drawChart(perDay);
+  }
+
+  // ----- canvas chart (no Chart.js dep) -----
+  function drawChart(perDay) {
+    var canvas = document.getElementById('savings-chart');
+    if (!canvas || !canvas.getContext) return;
+    var ctx = canvas.getContext('2d');
+
+    // HiDPI
+    var cssW = canvas.clientWidth || 900;
+    var cssH = 200;
+    var dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(cssW * dpr);
+    canvas.height = Math.round(cssH * dpr);
+    canvas.style.height = cssH + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    ctx.clearRect(0, 0, cssW, cssH);
+
+    var n = perDay.length;
+    if (n === 0) {
+      ctx.fillStyle = '#9ca3af';
+      ctx.font = '12px "Noto Sans JP", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('—', cssW / 2, cssH / 2);
+      return;
+    }
+
+    var padL = 8, padR = 8, padT = 10, padB = 18;
+    var w = cssW - padL - padR;
+    var h = cssH - padT - padB;
+    var barW = Math.max(2, (w / n) - 2);
+    var maxAbs = 1;
+    for (var i = 0; i < n; i++) {
+      var v = Math.abs(perDay[i].delta);
+      if (v > maxAbs) maxAbs = v;
+    }
+
+    // baseline (zero line)
+    var midY = padT + h / 2;
+    ctx.strokeStyle = '#e5e5e5';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(padL, midY);
+    ctx.lineTo(padL + w, midY);
+    ctx.stroke();
+
+    // bars
+    for (var k = 0; k < n; k++) {
+      var d = perDay[k];
+      var x = padL + k * (w / n) + 1;
+      var barH = (Math.abs(d.delta) / maxAbs) * (h / 2);
+      if (d.delta >= 0) {
+        ctx.fillStyle = '#15803d';
+        ctx.fillRect(x, midY - barH, barW, barH);
+      } else {
+        ctx.fillStyle = '#b91c1c';
+        ctx.fillRect(x, midY, barW, barH);
+      }
+    }
+  }
+
+  // ----- boot -----
+  var bootKey = loadStoredKey();
+  if (bootKey) {
+    fetchUsage(bootKey);
+  } else {
+    // Sample render: W28-4 sim baseline = 6,000 q/月 = 200 q/day avg.
+    // Deterministic per-date jitter so screenshot/regression tests stay stable.
+    var sample = [];
+    var today = new Date();
+    for (var d = 29; d >= 0; d--) {
+      var dt = new Date(today.getTime() - d * 86400000);
+      var iso = dt.toISOString().slice(0, 10);
+      var seed = (dt.getDate() * 7 + dt.getMonth() * 13) % 100;
+      sample.push({ date: iso, calls: 160 + (seed % 80) });   // 160-240 calls/day → ~6,000/月
+    }
+    lastRows = sample;
+    render(sample);
+    showStatus(lang === 'en'
+      ? 'Sample data shown (W28-4 baseline: ~6,000 queries/month, Claude Opus 4.7). Enter your API key above to load real usage.'
+      : 'サンプルデータ表示中 (W28-4 baseline: 約 6,000 query/月、Claude Opus 4.7)。実利用を読み込むには上で API キーを入力してください。', 'info');
+  }
+
+  // expose for dev-console verify
+  window.__jpciteSavings = { calcDay: calcDay, render: render, fetchUsage: fetchUsage };
+})();
+</script>
+</body>
+</html>

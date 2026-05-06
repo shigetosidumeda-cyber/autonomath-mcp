@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Changelog — jpcite リリース履歴</title>
+<meta name="description" content="jpcite のリリース履歴。Keep a Changelog 1.1.0 + Semantic Versioning 2.0.0 準拠、BREAKING: で互換性破壊を明示。最新は v0.3.4 (2026-05-05)。">
+<meta name="author" content="jpcite">
+<meta name="publisher" content="jpcite">
+<meta name="robots" content="index, follow, max-image-preview:large">
+
+<meta property="og:title" content="Changelog — jpcite リリース履歴">
+<meta property="og:description" content="API / MCP / SDK の更新内容。最新は v0.3.4 (2026-05-05) — Bulk endpoint / クレジット前払 / Merkle 監査 / 英訳法令 / Reference agent npm。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jpcite.com/changelog/">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:site_name" content="jpcite">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Changelog — jpcite リリース履歴">
+<meta name="twitter:description" content="最新は v0.3.4 (2026-05-05)。¥3/req のまま、tier なし。">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
+
+<link rel="canonical" href="https://jpcite.com/changelog/">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/changelog/">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/changelog/">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="/styles.css?v=20260428a">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "jpcite Changelog",
+  "description": "jpcite のリリース履歴。Keep a Changelog 1.1.0 + Semantic Versioning 2.0.0 準拠。",
+  "url": "https://jpcite.com/changelog/",
+  "inLanguage": "ja",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "jpcite",
+    "url": "https://jpcite.com/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "alternateName": ["jpcite"],
+    "url": "https://jpcite.com/"
+  },
+  "hasPart": [
+    {
+      "@type": "TechArticle",
+      "headline": "jpcite v0.3.4 — 5 つの新機能",
+      "datePublished": "2026-05-05",
+      "url": "https://jpcite.com/blog/v0.3.4-release.html"
+    }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://jpcite.com/"},
+    {"@type": "ListItem", "position": 2, "name": "Changelog"}
+  ]
+}
+</script>
+
+<style>
+  .changelog-page { padding: 48px 0 64px; }
+  .changelog-page h1 { font-size: 32px; margin: 0 0 8px; font-weight: 800; letter-spacing: -.01em; }
+  .changelog-page .lead { font-size: 16px; color: var(--text-muted); margin: 0 0 28px; max-width: 720px; line-height: 1.7; }
+  .changelog-page h2 { font-size: 20px; margin: 32px 0 8px; font-weight: 700; }
+  .changelog-page p, .changelog-page li { max-width: 720px; line-height: 1.75; }
+  .release-list { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 14px; }
+  .release-list li { border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; background: var(--bg); }
+  .release-list .ver { display: inline-block; font-size: 12px; font-weight: 700; color: var(--accent); letter-spacing: .04em; margin: 0 10px 4px 0; }
+  .release-list .date { font-size: 12px; color: var(--text-muted); margin-left: 4px; }
+  .release-list h3 { font-size: 17px; margin: 0 0 6px; font-weight: 700; }
+  .release-list p { margin: 0 0 8px; color: var(--text); font-size: 14.5px; }
+  .release-list a.more { font-size: 14px; font-weight: 600; }
+</style>
+
+<script defer src="/analytics.js?v=20260503a"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+ <div class="container header-inner">
+ <a class="brand" href="/" aria-label="jpcite ホーム">
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="/about.html">運営について</a>
+ <a href="/products.html">プロダクト</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="/pricing.html">料金</a>
+ <a href="/audiences/">利用者層</a>
+ <details class="nav-trust">
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="/trust.html">信頼センター</a></li>
+ <li><a href="/status.html">稼働状況</a></li>
+ <li><a href="/data-freshness.html">データ鮮度</a></li>
+ <li><a href="/transparency.html">透明性</a></li>
+ <li><a href="/sources.html">出典</a></li>
+ </ul>
+ </details>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/changelog/" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/changelog/" lang="en" hreflang="en">EN</a>
+ </span>
+ </nav>
+ </div>
+</header>
+
+<main id="main" class="changelog-page">
+ <div class="container">
+
+ <nav class="breadcrumb" aria-label="パンくずリスト" style="margin:0 0 16px;font-size:14px;color:var(--text-muted);">
+ <a href="/">ホーム</a> <span aria-hidden="true">›</span>
+ <span aria-current="page">Changelog</span>
+ </nav>
+
+ <h1>Changelog — リリース履歴</h1>
+ <p class="lead">API / MCP / SDK のバージョン更新内容。Keep a Changelog 1.1.0 + Semantic Versioning 2.0.0 準拠、 <code>BREAKING:</code> 接頭辞で互換性破壊を明示します。料金は全リリースを通じて ¥3/req (税込 ¥3.30)、tier なし。</p>
+
+ <h2>最新リリース</h2>
+ <ul class="release-list">
+ <li>
+ <span class="ver">v0.3.4</span><span class="date">2026-05-05</span>
+ <h3>5 つの新機能 — Bulk endpoint / クレジット前払 / Merkle 監査 / 英訳法令 / Reference agent npm</h3>
+ <p>1 リクエストで 100 件まで取れる Bulk endpoint、Stripe 前払クレジット (¥30万・¥100万・¥300万)、Merkle 監査チェーン、e-Gov 英訳法令 + 租税条約、<code>@jpcite/agents</code> 参考エージェント npm を追加。料金は ¥3/req のまま。</p>
+ <p><a class="more" href="/blog/v0.3.4-release.html">詳細を見る →</a></p>
+ </li>
+ </ul>
+
+ <h2>過去のリリース</h2>
+ <p>v0.3.3 以前のエントリは GitHub のソース <code>CHANGELOG.md</code> をご参照ください。バージョンの互換性ルールは <a href="/docs/">ドキュメント</a> 内の versioning ポリシーに準拠します。</p>
+
+ <h2>購読</h2>
+ <p>制度改正検出 (補助金・税制・認定制度) の差分は別系統の <a href="/audit-log.html">制度変更検出フィード</a> (RSS / JSON, CC-BY-4.0) で配信しています。</p>
+
+ </div>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="/about.html">運営について</a>
+ <a href="/products.html">プロダクト</a>
+ <a href="/pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="/trust.html">信頼</a>
+ <a href="/changelog/">Changelog</a>
+ <a href="/tos.html">利用規約</a>
+ <a href="/privacy.html">プライバシー</a>
+ <a href="/tokushoho.html">特商法</a>
+ <a href="mailto:info@bookyou.net">お問い合わせ</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
+</footer>
+
+</body>
+</html>

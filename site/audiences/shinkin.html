@@ -213,7 +213,7 @@
 
  <h2 class="section-title" style="margin-top:32px;">サンプル query (curl)</h2>
  <pre class="code-block" style="margin:16px 0;font-size:13px;line-height:1.55;background:#f6f6f6;padding:14px;border-radius:6px;border:1px solid #e7e5e4;overflow-x:auto;"><code># 大阪府 製造業 取引先 1 社向けに 信金推薦が要件の融資 + 補助金候補を集約
-curl "https://api.jpcite.com/v1/search?prefecture=大阪府&keyword=設備投資&loan_collateral=not_required" \
+curl "https://api.jpcite.com/v1/loan-programs/search?q=設備投資&collateral_required=not_required" \
   -H "X-API-Key: $JPCITE_API_KEY" \
   -H "X-Client-Tag: client-osaka-mfg-001"</code></pre>
 
@@ -222,7 +222,7 @@ curl "https://api.jpcite.com/v1/search?prefecture=大阪府&keyword=設備投資
 uvx autonomath-mcp --src=audience_shinkin</code></pre>
 
  <p style="font-size:14px;color:var(--text-muted);margin:8px 0 0;">
- 詳細な設定例は <a href="/docs/integrations/claude-desktop.html">Claude Desktop integration guide</a> を参照。 stdio 経由で 93 tool が利用可能 (うち 39 が core program 検索、 50 が jpcite 拡張)。
+ 詳細な設定例は <a href="/docs/integrations/claude-desktop.html">Claude Desktop integration guide</a> を参照。 stdio 経由で 139 tool が利用可能 (うち 39 が core program 検索、 50 が jpcite 拡張)。
  </p>
 
  <h2 class="section-title" style="margin-top:32px;">一次資料 (信金 / 中央会)</h2>

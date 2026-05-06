@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Composite Intelligence — jpcite</title>
+<meta name="description" content="jpcite の Composite Intelligence landing。OpenAPI に掲載済みの composite endpoints と planned/private W32 surface を分けて整理します。">
+
+<meta property="og:title" content="Composite Intelligence — jpcite">
+<meta property="og:description" content="制度、法人、法令、採択、行政処分、出典監査を複数回の検索に分けず、composite endpoint でまとめて取得。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jpcite.com/intel/">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Composite Intelligence — jpcite">
+<meta name="twitter:description" content="制度・法人・根拠・リスク信号を 1 call にまとめる jpcite の intelligence layer。W32 surface は public REST path 未公開です。">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
+
+<link rel="canonical" href="https://jpcite.com/intel/">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="/styles.css?v=20260428a">
+
+<script defer src="/analytics.js?v=20260503a"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+ <div class="container header-inner">
+ <a class="brand" href="/" aria-label="jpcite ホーム">
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="/about.html">運営について</a>
+ <a href="/products.html">プロダクト</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="/pricing.html">料金</a>
+ <a href="/audiences/">利用者層</a>
+ <details class="nav-trust">
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="/trust.html">信頼センター</a></li>
+ <li><a href="/status.html">稼働状況</a></li>
+ <li><a href="/data-freshness.html">データ鮮度</a></li>
+ <li><a href="/transparency.html">透明性</a></li>
+ <li><a href="/sources.html">出典</a></li>
+ </ul>
+ </details>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/intel/" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ </span>
+ </nav>
+ </div>
+</header>
+
+<main id="main">
+ <section class="hero" aria-labelledby="hero-title">
+ <div class="container">
+ <nav class="breadcrumb" aria-label="パンくずリスト" style="margin:0 0 16px;font-size:14px;color:var(--text-muted);">
+ <a href="/">ホーム</a> <span aria-hidden="true">›</span>
+ <span aria-current="page">Composite Intelligence</span>
+ </nav>
+ <h1 id="hero-title">Composite Intelligence</h1>
+ <p class="hero-sub">複数の検索・根拠取得・照合を、AI が扱いやすい 1 call の evidence bundle にまとめる layer です。</p>
+ <p class="hero-example" style="margin:18px 0 14px;font-size:15px;line-height:1.7;color:var(--text-soft);">現在の公開 OpenAPI には、17 本の <code>/v1/intel/*</code> endpoint が掲載されています。W32 の scenario simulation、competitor landscape、portfolio heatmap、news brief、onboarding brief、refund risk、cross jurisdiction は planned/private surface で、public REST path は not yet public です。</p>
+ <div class="cta-row">
+ <a class="btn btn-primary" href="/playground.html?flow=evidence3">Playground で試す →</a>
+ <a class="btn btn-secondary" href="/pricing.html">料金を見る →</a>
+ </div>
+ </div>
+ </section>
+
+ <section class="features" aria-labelledby="use-title">
+ <div class="container">
+ <h2 id="use-title" class="section-title">何をまとめるか</h2>
+ <div class="cards">
+ <article class="card">
+ <h3>Program intelligence</h3>
+ <p class="card-lead">制度単位の根拠束ね</p>
+ <p>制度 metadata、適格性 predicate、改正履歴、採択事例、類似制度、引用根拠、監査 proof を 1 つの束として取得します。</p>
+ </article>
+ <article class="card">
+ <h3>Houjin intelligence</h3>
+ <p class="card-lead">法人単位の確認材料</p>
+ <p>法人番号を起点に、採択履歴、行政処分、invoice status、peer summary、管轄、watch status をまとめて確認します。</p>
+ </article>
+ <article class="card">
+ <h3>Risk and conflict signals</h3>
+ <p class="card-lead">判断ではなく機械信号</p>
+ <p>併用 conflict、why excluded、bundle optimal、peer group、risk_score を返します。信用格付け、申請可否判断、法務・税務助言ではありません。</p>
+ </article>
+ </div>
+ </div>
+ </section>
+
+ <section class="code-demo" aria-labelledby="endpoints-title">
+ <div class="container">
+ <h2 id="endpoints-title" class="section-title">Composite surface</h2>
+ <p class="demo-lead">現在の OpenAPI に存在する public REST surface のみを列挙します。</p>
+ <div class="code-block"><pre><code>POST /v1/intel/actionable/lookup
+GET  /v1/intel/actionable/{cache_key}
+POST /v1/intel/audit_chain
+POST /v1/intel/bundle/optimal
+GET  /v1/intel/citation_pack/{program_id}
+POST /v1/intel/conflict
+POST /v1/intel/diff
+GET  /v1/intel/houjin/{houjin_id}/full
+POST /v1/intel/match
+POST /v1/intel/path
+POST /v1/intel/peer_group
+POST /v1/intel/probability_radar
+GET  /v1/intel/program/{program_id}/full
+GET  /v1/intel/regulatory_context/{program_id}
+POST /v1/intel/risk_score
+GET  /v1/intel/timeline/{program_id}
+POST /v1/intel/why_excluded</code></pre></div>
+ <p class="demo-note">上記は公開 OpenAPI に掲載済みの endpoint です。W32 7 surface は planned/private であり、OpenAPI に掲載されるまで public REST URL として呼び出さないでください。</p>
+ </div>
+ </section>
+
+ <section class="features" aria-labelledby="guardrails-title">
+ <div class="container">
+ <h2 id="guardrails-title" class="section-title">ガードレール</h2>
+ <div class="cards">
+ <article class="card">
+ <h3>No LLM call</h3>
+ <p class="card-lead">生成ではなく構造化取得</p>
+ <p>composite endpoint はデータベースとルールを組み合わせた evidence prefetch layer です。文章化は利用者側の AI に任せます。</p>
+ </article>
+ <article class="card">
+ <h3>Known gaps</h3>
+ <p class="card-lead">未接続を隠さない</p>
+ <p>根拠が不足する領域は known gaps として扱います。W32 7 surface は OpenAPI 未掲載の planned/private surface として説明し、公開 endpoint と混ぜません。</p>
+ </article>
+ <article class="card">
+ <h3>Professional boundary</h3>
+ <p class="card-lead">助言・代行ではない</p>
+ <p>行政書士法、税理士法、弁護士法、与信判断に関わる領域では disclaimer を前提に、確認材料として利用します。</p>
+ </article>
+ </div>
+ </div>
+ </section>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="/about.html">運営について</a>
+ <a href="/products.html">プロダクト</a>
+ <a href="/pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="/trust.html">信頼</a>
+ <a href="/tos.html">利用規約</a>
+ <a href="/privacy.html">プライバシー</a>
+ <a href="/tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
+</footer>
+
+<script src="/assets/feedback-widget.js" defer></script>
+<script src="/assets/trust-strip.js" defer></script>
+<script defer>
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.jpciteFeedback) {
+    window.jpciteFeedback.mount('body', { position: 'bottom-right' });
+  }
+});
+</script>
+
+</body>
+</html>

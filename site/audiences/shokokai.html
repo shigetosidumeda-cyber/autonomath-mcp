@@ -216,7 +216,7 @@
 
  <h2 class="section-title" style="margin-top:32px;">サンプル query (curl)</h2>
  <pre class="code-block" style="margin:16px 0;font-size:13px;line-height:1.55;background:#f6f6f6;padding:14px;border-radius:6px;border:1px solid #e7e5e4;overflow-x:auto;"><code># 北海道の小規模事業者向けに 持続化補助金 + 商工会枠 制度を keyword 横断
-curl "https://api.jpcite.com/v1/search?prefecture=北海道&keyword=持続化補助金" \
+curl "https://api.jpcite.com/v1/programs/search?prefecture=北海道&q=持続化補助金" \
   -H "X-API-Key: $JPCITE_API_KEY" \
   -H "X-Client-Tag: client-hokkaido-smb-001"</code></pre>
 
@@ -225,7 +225,7 @@ curl "https://api.jpcite.com/v1/search?prefecture=北海道&keyword=持続化補
 uvx autonomath-mcp --src=audience_shokokai</code></pre>
 
  <p style="font-size:14px;color:var(--text-muted);margin:8px 0 0;">
- 詳細な設定例は <a href="/docs/integrations/claude-desktop.html">Claude Desktop integration guide</a> を参照。 stdio 経由で 93 tool が利用可能 (うち 39 が core program 検索、 50 が autonomath 拡張)。
+ 詳細な設定例は <a href="/docs/integrations/claude-desktop.html">Claude Desktop integration guide</a> を参照。 stdio 経由で 139 tool が利用可能 (うち 39 が core program 検索、 50 が autonomath 拡張)。
  </p>
 
  <h2 class="section-title" style="margin-top:32px;">一次資料 (商工会 / 商工会議所 / 中央会)</h2>

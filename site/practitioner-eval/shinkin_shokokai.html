@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>persona — Practitioner eval — jpcite</title>
+<link rel="canonical" href="https://jpcite.com/practitioner-eval/">
+<meta name="description" content="jpcite practitioner eval per-persona detail page. must_include / must_not_claim / boundary check の per-row breakdown.">
+<style>
+ body { font-family: system-ui, sans-serif; max-width: 1080px; margin: 2em auto; padding: 0 1em; line-height: 1.6; }
+ .row { border: 1px solid #ddd; border-radius: 6px; margin: 1em 0; padding: 1em; background: #fafafa; }
+ .row.pass { border-left: 6px solid #2c8c2c; }
+ .row.fail { border-left: 6px solid #c0392b; }
+ .row.warn { border-left: 6px solid #b56500; }
+ .meta { font-size: 0.9em; color: #555; }
+ details summary { cursor: pointer; font-weight: 600; padding: 0.4em 0; }
+ pre { background: #2b2b2b; color: #eee; padding: 0.8em; overflow-x: auto; border-radius: 4px; font-size: 0.85em; white-space: pre-wrap; word-break: break-word; }
+ code { background: #eee; padding: 0 0.3em; border-radius: 3px; }
+ .pass-line { color: #2c8c2c; font-weight: 600; }
+ .fail-line { color: #c0392b; font-weight: 600; }
+ .nav { margin: 1em 0; }
+ .nav a { padding: 0.4em 0.8em; background: #f0f0f0; border-radius: 4px; text-decoration: none; color: #333; margin-right: 0.4em; }
+</style>
+</head>
+<body>
+<p class="nav">
+  <a href="/practitioner-eval/">← practitioner eval index</a>
+  <a href="/trust/">Trust Center</a>
+  <a href="/benchmark/">JCRB</a>
+</p>
+
+<h1 id="title">(loading persona)</h1>
+<p class="meta">最終実行 <time id="generated-at">(loading)</time> ·
+   corpus_snapshot_id <code id="snapshot-id">(loading)</code></p>
+
+<div id="rows"></div>
+
+<h2>採点ルール</h2>
+<ul>
+  <li>must_include: substring / regex 全 hit で OK。</li>
+  <li>must_not_claim: 禁止句が 1 つでも出たら FAIL。</li>
+  <li>human_review_required: 境界文が応答に含まれていれば OK。境界該当なし persona は OK 固定。</li>
+  <li>row_pass = include OK × claim NG なし × boundary OK。</li>
+</ul>
+
+<script>
+ const slug = location.pathname.split("/").pop().replace(".html","");
+ fetch("/practitioner-eval/_data/results_latest.json").then(r => {
+   if (!r.ok) throw new Error("no results yet — first cron run pending");
+   return r.json();
+ }).then(j => {
+   const persona = j.persona_results.find(p => p.persona_slug === slug);
+   if (!persona) {
+     document.getElementById("rows").textContent =
+       `persona "${slug}" not found in latest run`;
+     return;
+   }
+   document.title = `${persona.persona_label} — Practitioner eval — jpcite`;
+   document.getElementById("title").textContent = persona.persona_label;
+   document.getElementById("generated-at").textContent = j.generated_at;
+   document.getElementById("snapshot-id").textContent  = j.corpus_snapshot_id;
+   const root = document.getElementById("rows");
+   for (const q of persona.queries) {
+     const klass = q.row_pass ? "pass"
+                 : (q.must_not_claim_violations > 0 ? "fail" : "warn");
+     const div = document.createElement("div");
+     div.className = `row ${klass}`;
+     div.innerHTML = `
+       <p><strong>query_id</strong>: <code>${esc(q.query_id)}</code> ·
+          <strong>artifact_id</strong>: <code>${esc(q.expected_artifact)}</code> ·
+          <strong>row_pass</strong>:
+          <span class="${q.row_pass ? "pass-line" : "fail-line"}">${q.row_pass}</span>
+          · <strong>HTTP</strong>: <code>${q.http_status}</code>
+          · <strong>${q.duration_ms}ms</strong></p>
+       <p><strong>query (verbatim, LLM 不経由):</strong></p>
+       <pre>${esc(q.query)}</pre>
+       <details><summary>must_include hits (${q.must_include_hits.length}/${q.must_include_total})</summary>
+         <ul>${q.must_include_hits.map(h =>
+           `<li><code>${esc(h.needle)}</code> — ${h.matched ? "OK" : "MISSING"}</li>`
+         ).join("")}</ul>
+       </details>
+       <details><summary>must_not_claim violations (${q.must_not_claim_violations})</summary>
+         <ul>${q.must_not_claim_findings.map(f =>
+           `<li><code>${esc(f.needle)}</code> — ${f.matched ? "VIOLATION" : "OK"}</li>`
+         ).join("")}</ul>
+       </details>
+       <details><summary>human_review boundary (${q.boundary_kept ? "OK" : "FAIL"})</summary>
+         <p>${esc(q.boundary_text || "境界該当なし persona — N/A")}</p>
+       </details>
+       <details><summary>actual artifact output (truncated to 4kB)</summary>
+         <pre>${esc(q.artifact_output_truncated || "(empty)")}</pre>
+       </details>
+     `;
+     root.appendChild(div);
+   }
+ }).catch(e => {
+   document.getElementById("rows").textContent = e.message || String(e);
+ });
+ function esc(s){return (s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
+</script>
+</body>
+</html>

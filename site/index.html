@@ -54,7 +54,7 @@
   "@type": "SoftwareApplication",
   "name": "jpcite",
   "alternateName": "jpcite",
-  "description": "GPT/Claude/Cursor が回答を書く前に、日本の公的制度・法令・判例・税務情報を一次資料 URL・取得時刻付き Evidence Packet として取得する REST + MCP API。文脈サイズ比較は条件依存で、請求額削減を保証するものではありません。",
+  "description": "GPT/Claude/Cursor が回答を書く前に、日本の公的制度・法令・判例・税務情報を一次資料 URL・取得時刻付き Evidence Packet として取得する REST + MCP API。source_url・source_fetched_at・known_gaps と条件付きの input-context estimates で、回答前の根拠確認と入力文脈設計を支援します。",
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "Cross-platform (REST API, MCP stdio, LINE, Web, Email)",
   "url": "https://jpcite.com/",
@@ -70,8 +70,8 @@
     "制度 14,472 件 + 採択事例 2,286 件 + 融資 108 件 + 行政処分 1,185 件を 1 つの API で横断検索",
     "申請可否を機械判定する排他・前提ルール 181 本",
     "Evidence Packet: 出典 URL、取得時刻、データスナップショット ID、ライセンス、未取得領域 (known gaps) を LLM 入力向けにまとめたパケット",
-    "呼び出し元が比較基準トークン数を指定すると、返却パケットとの差分から入力文脈の削減率を返します (外部 LLM の請求額削減は保証しません)",
-    "MCP プロトコル 2025-06-18 対応、 96 ツールを Claude Desktop / Cursor から直接呼び出し可能",
+    "比較基準トークン数を指定すると、Evidence Packet との差分から input-context estimates (入力文脈の削減率・break-even 判定) を返します",
+    "MCP プロトコル 2025-06-18 対応、 139 ツールを Claude Desktop / Cursor から直接呼び出し可能",
     "日本語の高速全文検索",
     "主要公開レコードの多くに一次資料 URL と取得時刻を付与し、省庁・自治体・公庫の公式ページに直リンク"
   ]
@@ -175,7 +175,7 @@
     {
       "@type": "PropertyValue",
       "name": "MCP tools",
-      "value": 93
+      "value": 139
     }
   ]
 }
@@ -209,7 +209,7 @@
     {
       "@type": "Product",
       "name": "jpcite API + MCP",
-      "description": "96 MCP ツール + REST API。AI 開発者向け。stdio 接続、SDK 不要。",
+      "description": "139 MCP ツール + REST API。AI 開発者向け。stdio 接続、SDK 不要。",
       "brand": {"@type": "Brand", "name": "jpcite"},
       "url": "https://jpcite.com/docs/getting-started/",
       "offers": {"@type": "Offer", "url": "https://jpcite.com/pricing.html", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"}
@@ -288,8 +288,8 @@
 
  <section class="hero" aria-labelledby="hero-title">
  <div class="container">
- <h1 id="hero-title">日本の公的制度を、Evidence Packet で AI に渡す。</h1>
- <p class="hero-sub">jpcite は Evidence prefetch layer です。 長い PDF ・複数の官公庁ページ・検索結果を LLM に渡す前に、 出典 URL ・取得時刻・未取得領域 (known gaps) ・互換 / 排他ルール付きの小さい Evidence Packet を返します。 呼び出し元が比較基準トークン数を指定したときだけ、入力文脈の削減見込みと採算ライン到達 (break-even) 判定を返します。 外部 LLM の請求額削減は保証しません。 匿名 3 リクエスト/日、 登録不要ですぐ検証できます。</p>
+ <h1 id="hero-title">あなたの AI に、出典付き根拠を。 verify 時間を月 50 時間取り戻す。</h1>
+ <p class="hero-sub">jpcite は Evidence prefetch layer です。 長い PDF ・複数の官公庁ページ・検索結果を LLM に渡す前に、 <code>source_url</code> ・ <code>source_fetched_at</code> ・ <code>known_gaps</code> ・互換 / 排他ルール付きの小さい Evidence Packet を返します。 主な価値は <strong>(a) verify 時間の短縮</strong> (1 件あたり ~30 分 → ~3 分の人手裏取りに圧縮、12,000 req/月 で月 ~50h ≈ ¥400,000 相当) と <strong>(b) 監査可能な引用</strong> (JCRB-v1 で citation_ok ~0.40 → ~0.95) です。 入力文脈の削減見込みと採算ライン到達 (break-even) 判定は、呼び出し元が比較基準トークン数を指定したときに <strong>input-context estimates</strong> として参考表示します。 匿名 3 リクエスト/日、 登録不要ですぐ検証できます。</p>
 
  <p class="hero-example" style="margin:18px 0 14px;font-size:15px;line-height:1.7;color:var(--text-soft);">補助金 11,684 + 法令 9,484 + 税制 50 + 法人関連データ 167K + 行政処分 1,185 を REST + MCP から横断。 出典 URL + 取得時刻 + content_hash を機械が引用しやすい形で返し、 優先度の高い出典の再取得中央値は約 7 日。 Claude Desktop / Cursor / Cline は MCP、ChatGPT Custom GPT は OpenAPI Actions から呼び出して、 Evidence Packet・併用ルール・known gaps をまとめて取得できます。</p>
 
@@ -466,13 +466,13 @@
  <article class="card" aria-labelledby="pillar-api">
  <h3 id="pillar-api">API + MCP</h3>
  <p class="card-lead">AI 開発者 / 大規模 RAG 用途</p>
- <p><span data-fact="mcp_tools_total" data-stat-key="mcp_tools_total">96</span> MCP ツール を AI から直接呼び出し。回答生成前に一次資料 URL 付き Evidence Packet を先読みできます。</p>
+ <p><span data-fact="mcp_tools_total" data-stat-key="mcp_tools_total">139</span> MCP ツール を AI から直接呼び出し。回答生成前に一次資料 URL 付き Evidence Packet を先読みできます。</p>
  <ul class="card-list">
  <li>¥<span data-fact="price_per_req" data-stat-key="price_per_req">3</span>/リクエスト 税別 (税込 ¥<span data-fact="price_per_req_inc_tax" data-stat-key="price_per_req_inc_tax">3.30</span>)</li>
  <li>匿名 <span data-fact="anonymous_quota_per_day" data-stat-key="anonymous_quota_per_day">3</span> リクエスト/日 (IP 単位) 無料</li>
  <li>Claude Desktop / Cursor は MCP、ChatGPT は Actions 対応</li>
  </ul>
- <p style="margin:14px 0 0;"><a href="/docs/getting-started/">ドキュメントを読む →</a></p>
+ <p style="margin:14px 0 0;"><a href="/docs/getting-started/">ドキュメントを読む →</a> · <a href="/intel/">Composite intelligence →</a></p>
  </article>
 
  <article class="card" aria-labelledby="pillar-line">
@@ -643,10 +643,10 @@
 
  <article class="card audience-card" aria-labelledby="aud-dev" style="background:var(--bg-alt);border-color:var(--accent);">
  <h3 id="aud-dev">AI 開発者 (横断利用)</h3>
- <p class="card-lead audience-context">REST + MCP、 96 機能、 SDK 不要</p>
+ <p class="card-lead audience-context">REST + MCP、 139 機能、 SDK 不要</p>
  <p class="audience-pitch">上記すべての利用者層を、 1 つのサーバーから呼べます。 MCP プロトコル準拠、 uvx 1 行で起動。 Evidence Packet で事前に根拠を渡し、ヒット率・追加検索回数・トークン量への影響を自社ベンチマークで測定できます。</p>
  <ul class="card-list">
- <li>AI から呼べる機能 <span data-fact="mcp_tools_total" data-stat-key="mcp_tools_total">96</span> 個 / REST 経路 194 本</li>
+ <li>AI から呼べる機能 <span data-fact="mcp_tools_total" data-stat-key="mcp_tools_total">139</span> 個 / REST 公開 OpenAPI paths 221 本</li>
  <li>uvx 1 行で起動 (SDK 不要)</li>
  <li>無料 3 リクエスト/日で動作確認 → 商用は ¥3/リクエスト 完全従量</li>
  </ul>
@@ -682,7 +682,7 @@
  <pre style="flex:1 1 auto;min-width:0;margin:0;padding:12px 14px;background:var(--bg);border:1px solid var(--border);border-radius:6px;overflow-x:auto;font-size:13px;line-height:1.5;"><code id="curl-snippet-compress">curl 'https://api.jpcite.com/v1/intelligence/precomputed/query?q=%E7%9C%81%E5%8A%9B%E5%8C%96&amp;limit=5&amp;source_tokens_basis=pdf_pages&amp;source_pdf_pages=30&amp;input_token_price_jpy_per_1m=300'</code></pre>
  <button id="curl-copy-btn-compress" type="button" class="btn-ghost" data-copy-target="curl-snippet-compress" style="flex:0 0 auto;">コピー</button>
  </div>
- <p style="margin:0 0 14px;font-size:13px;color:var(--text-muted);line-height:1.6;">入力文脈の削減率、 採算ライン到達 (break-even) 判定、 採算が立つ場合のみ AI 向け推奨フラグが返ります。 これは入力文脈量だけの参考推定で、 外部 LLM 請求額の削減を保証するものではありません (各レスポンスに「請求額の削減は保証しない」旨のフラグを同梱)。</p>
+ <p style="margin:0 0 14px;font-size:13px;color:var(--text-muted);line-height:1.6;"><code>source_url</code>・<code>source_fetched_at</code>・<code>known_gaps</code> は Evidence Packet に含まれ、比較基準を渡した場合だけ <code>input-context estimates</code> (入力文脈の削減率、 採算ライン到達 (break-even) 判定、 AI 向け推奨フラグ) を参考値として返します。</p>
 
  <p style="margin:14px 0 14px;font-size:15px;line-height:1.7;">ブラウザ完結なら <a href="/playground.html?flow=evidence3"><strong>Playground で3回検証を始める</strong></a> · 詳細手順は <a href="/docs/getting-started/">5 分クイックスタート</a>。 Claude Desktop / Cursor / Cline からも同じ endpoint を呼べます。</p>
  <p class="demo-note" style="font-size:14px;margin:0 0 14px;">AI ツール統合の例 → <a href="/integrations/claude-desktop.html">Claude Desktop</a> · <a href="/integrations/cursor.html">Cursor</a> · <a href="/integrations/cline.html">Cline</a></p>
@@ -834,7 +834,7 @@
  <article class="card">
  <h3>(a) 複数 DB を 1 コール で統合</h3>
  <p class="card-lead">補助金 11,684 + 法令 9,484 + 税制 50 + 法人 167K + 行政処分 1,185</p>
- <p>補助金 11,684 件・法令メタデータ 9,484 件 (本文 154 件)・税制ルールセット 50 件・国税庁適格事業者 13,801 件 (PDL v1.0 差分、月次フル取り込みは順次)・行政処分 1,185 件・判例 2,065 件・採択事例 2,286 件・融資 108 件 (担保 / 個人保証人 / 第三者保証人 三軸分解) を一つの API で横断検索。 関係抽出データベース 50 万件超エンティティ / 600 万件超ファクト / 17 万件超リレーションも 96 MCP ツールから呼び出せます。</p>
+ <p>補助金 11,684 件・法令メタデータ 9,484 件 (本文 154 件)・税制ルールセット 50 件・国税庁適格事業者 13,801 件 (PDL v1.0 差分、月次フル取り込みは順次)・行政処分 1,185 件・判例 2,065 件・採択事例 2,286 件・融資 108 件 (担保 / 個人保証人 / 第三者保証人 三軸分解) を一つの API で横断検索。 関係抽出データベース 50 万件超エンティティ / 600 万件超ファクト / 17 万件超リレーションも 139 MCP ツールから呼び出せます。</p>
  </article>
 
  <article class="card">
@@ -858,7 +858,7 @@
  <article class="card">
  <h3>横断連結を 1 リクエストで</h3>
  <p class="card-lead">制度 → 法令 → 判例 → 行政処分 → 適格事業者</p>
- <p><code>trace_program_to_law</code>・<code>combined_compliance_check</code>・<code>search_tax_incentives</code>・<code>related_programs</code> など 96 MCP ツールで横断解決。 補助金から関連法令・通達・裁決事例・処分歴・登録番号を 1 コールで連結します。</p>
+ <p><code>trace_program_to_law</code>・<code>combined_compliance_check</code>・<code>search_tax_incentives</code>・<code>related_programs</code> など 139 MCP ツールで横断解決。 補助金から関連法令・通達・裁決事例・処分歴・登録番号を 1 コールで連結します。</p>
  </article>
 
  <article class="card">

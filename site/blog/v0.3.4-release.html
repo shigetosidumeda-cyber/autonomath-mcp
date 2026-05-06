@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>jpcite v0.3.4 — 5 つの新機能 (2026-05-05)</title>
+<meta name="description" content="jpcite v0.3.4 リリース: 100 件まとめて引ける Bulk endpoint、Stripe クレジット前払、Merkle 監査チェーン、英訳法令、Reference agent npm の 5 機能を追加。料金は ¥3/req のまま (税込 ¥3.30)。">
+<meta name="author" content="jpcite">
+<meta name="publisher" content="jpcite">
+<meta name="robots" content="index, follow, max-image-preview:large">
+
+<meta property="og:title" content="jpcite v0.3.4 — 5 つの新機能 (2026-05-05)">
+<meta property="og:description" content="Bulk endpoint / Stripe クレジット前払 / Merkle 監査チェーン / 英訳法令 / Reference agent npm を追加。料金 ¥3/req のまま。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://jpcite.com/blog/v0.3.4-release.html">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:site_name" content="jpcite">
+<meta property="article:published_time" content="2026-05-05T00:00:00+09:00">
+<meta property="article:author" content="jpcite">
+<meta property="article:section" content="リリース">
+<meta property="article:tag" content="release">
+<meta property="article:tag" content="v0.3.4">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="jpcite v0.3.4 — 5 つの新機能">
+<meta name="twitter:description" content="Bulk endpoint / Stripe クレジット前払 / Merkle 監査 / 英訳法令 / Reference agent npm。料金は ¥3/req のまま。">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
+
+<link rel="canonical" href="https://jpcite.com/blog/v0.3.4-release.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/blog/v0.3.4-release.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/blog/v0.3.4-release.html">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="/styles.css?v=20260428a">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "jpcite v0.3.4 — 5 つの新機能",
+  "description": "Bulk endpoint / Stripe クレジット前払 / Merkle 監査チェーン / 英訳法令 / Reference agent npm の 5 機能を追加。料金は ¥3/req のまま (税込 ¥3.30)。",
+  "datePublished": "2026-05-05",
+  "dateModified": "2026-05-05",
+  "inLanguage": "ja",
+  "url": "https://jpcite.com/blog/v0.3.4-release.html",
+  "image": "https://jpcite.com/assets/og.png",
+  "author": {"@type": "Organization", "name": "jpcite", "url": "https://jpcite.com/"},
+  "publisher": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "alternateName": ["jpcite"],
+    "url": "https://jpcite.com/",
+    "logo": {"@type": "ImageObject", "url": "https://jpcite.com/assets/logo-v2.svg"}
+  },
+  "mainEntityOfPage": {"@type": "WebPage", "@id": "https://jpcite.com/blog/v0.3.4-release.html"},
+  "isPartOf": {
+    "@type": "Blog",
+    "name": "jpcite Changelog",
+    "url": "https://jpcite.com/changelog/"
+  },
+  "about": {
+    "@type": "SoftwareApplication",
+    "name": "jpcite",
+    "softwareVersion": "0.3.4",
+    "applicationCategory": "DeveloperApplication",
+    "offers": {
+      "@type": "Offer",
+      "price": "3.30",
+      "priceCurrency": "JPY",
+      "description": "¥3/request 純従量 (税込 ¥3.30)。匿名 3 req/日 無料、tier なし。"
+    }
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://jpcite.com/"},
+    {"@type": "ListItem", "position": 2, "name": "Changelog", "item": "https://jpcite.com/changelog/"},
+    {"@type": "ListItem", "position": 3, "name": "v0.3.4 リリース"}
+  ]
+}
+</script>
+
+<style>
+  .release-page { padding: 48px 0 64px; }
+  .release-page .release-meta { font-size: 13px; color: var(--text-muted); margin: 0 0 8px; letter-spacing: .04em; text-transform: uppercase; font-weight: 600; }
+  .release-page h1 { font-size: 34px; margin: 0 0 12px; font-weight: 800; letter-spacing: -.01em; }
+  .release-page .lead { font-size: 17px; color: var(--text-muted); margin: 0 0 28px; max-width: 720px; line-height: 1.7; }
+  .release-page h2 { font-size: 22px; margin: 40px 0 12px; font-weight: 700; letter-spacing: -.005em; }
+  .release-page h3 { font-size: 17px; margin: 0 0 6px; font-weight: 700; }
+  .release-page p { max-width: 720px; line-height: 1.75; }
+  .release-page ul { max-width: 720px; line-height: 1.8; }
+  .feature-list { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 14px; }
+  .feature-list li { border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; background: var(--bg); }
+  .feature-list .lbl { display: inline-block; font-size: 11px; font-weight: 700; color: var(--accent); letter-spacing: .04em; text-transform: uppercase; margin: 0 0 6px; }
+  .feature-list .desc { margin: 0 0 8px; color: var(--text); font-size: 15px; line-height: 1.7; }
+  .feature-list code { background: var(--bg-alt); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-size: 12.5px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+  .price-box { margin: 24px 0; padding: 16px 20px; background: var(--bg-alt); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 6px; font-size: 15px; }
+  .price-box strong { color: var(--text); }
+  .legal-note { font-size: 13px; color: var(--text-muted); margin: 32px 0 0; border-top: 1px solid var(--border); padding-top: 16px; max-width: 720px; line-height: 1.7; }
+  @media (max-width: 480px) {
+    .release-page h1 { font-size: clamp(22px, 7vw, 30px); }
+    .release-page h2 { font-size: 18px; }
+    .feature-list li { padding: 14px 16px; }
+  }
+</style>
+
+<script defer src="/analytics.js?v=20260503a"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+ <div class="container header-inner">
+ <a class="brand" href="/" aria-label="jpcite ホーム">
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="/about.html">運営について</a>
+ <a href="/products.html">プロダクト</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="/pricing.html">料金</a>
+ <a href="/audiences/">利用者層</a>
+ <details class="nav-trust">
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="/trust.html">信頼センター</a></li>
+ <li><a href="/status.html">稼働状況</a></li>
+ <li><a href="/data-freshness.html">データ鮮度</a></li>
+ <li><a href="/transparency.html">透明性</a></li>
+ <li><a href="/sources.html">出典</a></li>
+ </ul>
+ </details>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/blog/v0.3.4-release.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/blog/v0.3.4-release.html" lang="en" hreflang="en">EN</a>
+ </span>
+ </nav>
+ </div>
+</header>
+
+<main id="main" class="release-page">
+ <div class="container">
+
+ <nav class="breadcrumb" aria-label="パンくずリスト" style="margin:0 0 16px;font-size:14px;color:var(--text-muted);">
+ <a href="/">ホーム</a> <span aria-hidden="true">›</span>
+ <a href="/changelog/">Changelog</a> <span aria-hidden="true">›</span>
+ <span aria-current="page">v0.3.4 リリース</span>
+ </nav>
+
+ <article>
+ <p class="release-meta">リリース・2026-05-05</p>
+ <h1>jpcite v0.3.4 — 5 つの新機能</h1>
+ <p class="lead">エージェント運用・経理稟議・第三者監査・国際展開・OSS 拡張の 5 領域で機能追加。 全機能の主軸は <strong>verify 時間の解放</strong> (~30 分/件 → ~3 分/件) と <strong>監査可能引用の正確性</strong> (citation_ok ~0.40 → ~0.95、 JCRB-v1 seed) です。 token 削減は副次効果で、 raw token math だけでは ¥3/req を償却できないケースがあります (honest framing)。 料金は ¥3/req のまま据え置き、tier なし。</p>
+
+ <div class="cta-row" style="margin:0 0 16px;">
+ <a class="btn btn-primary" href="/docs/getting-started/">スタートガイド →</a>
+ <a class="btn btn-secondary" href="/changelog/">変更履歴一覧 →</a>
+ </div>
+
+ <h2>新機能 (5)</h2>
+ <ol class="feature-list">
+ <li>
+ <span class="lbl">1. Bulk endpoint</span>
+ <h3>1 リクエストで 100 件まで一括取得 — 100 件の手動 verify が 1 件の audit-trail に</h3>
+ <p class="desc">エージェントが複数の制度を並列照合する用途に最適化。1 回の API 呼び出しで最大 100 件の Evidence Packet を一括取得し、 出典 URL + 取得時刻 + content_hash を 1 つの監査ログに揃えられます (verify 時間が線形に削減)。新規エンドポイント: <code>POST /v1/evidence/packets/batch</code></p>
+ </li>
+ <li>
+ <span class="lbl">2. Stripe クレジット前払</span>
+ <h3>¥30万・¥100万・¥300万を一括前払</h3>
+ <p class="desc">経理稟議が通りやすい一括前払型のクレジット購入を追加。年度予算に組み込みやすく、月次請求書の発生を抑制できます。 verify 時間 (月 ~50h ≈ ¥400,000 相当の節約) が稟議の主論点であり、 jpcite 月額 ~¥40,000 はその対価。新規エンドポイント: <code>POST /v1/billing/credit/purchase</code></p>
+ </li>
+ <li>
+ <span class="lbl">3. Merkle 監査チェーン</span>
+ <h3>取得済み行が改ざんされていないことを第三者検証 — citation 正確性の決定打</h3>
+ <p class="desc">税理士・監査法人向けに、Evidence Packet 単位で Merkle 証明を発行。配信後にデータが書き換わっていないことを暗号学的に検証できるため、 監査時の人手 cross-check (~30 分/件) を不要にします。 citation 信頼性が jpcite の真の価値軸 (token 削減ではない)。新規エンドポイント: <code>GET /v1/audit/proof/{evidence_packet_id}</code></p>
+ </li>
+ <li>
+ <span class="lbl">4. English wedge</span>
+ <h3>在日米英資 SaaS / FDI 向け英訳サーフェス</h3>
+ <p class="desc">e-Gov 英訳法令と租税条約を含む 5 エンドポイントを <code>/v1/en/*</code> 配下に新設。外資系顧客のオンボーディング、外国親会社向けレポートなどで利用できます。</p>
+ </li>
+ <li>
+ <span class="lbl">5. Reference agent npm</span>
+ <h3><code>@jpcite/agents</code> — fork-and-customize 可能な 5 種の参考エージェント</h3>
+ <p class="desc">jpcite を呼び出すエージェントの最小構成サンプルを npm パッケージとして公開。fork して自社業務に合わせてカスタマイズすることを前提にした 5 種類のスターターエージェントを同梱しています。</p>
+ </li>
+ </ol>
+
+ <h2>その他</h2>
+ <ul>
+ <li><strong>1,034 都道府県 × 業種ランディングページ</strong> — 47 都道府県 × 22 業種でカバレッジを拡張。検索流入経路を強化。</li>
+ <li><strong>ブラウザ拡張</strong> — 表示中ページの法人番号・制度名から jpcite を直接呼び出すブラウザ拡張を公開。</li>
+ <li><strong>VS Code 拡張</strong> — エディタ内で制度・法令を直接引けるサイドバー型 VS Code 拡張を公開。</li>
+ <li><strong>JCRB-v1 公開ベンチマーク</strong> — Japanese Citation Retrieval Benchmark v1 を公開。日本語の制度・法令引用の精度比較に利用できます。</li>
+ </ul>
+
+ <h2>料金は不変</h2>
+ <div class="price-box">
+ <strong>¥3/request 純従量 (税込 ¥3.30)、tier なし、匿名 3 req/日 無料 (IP 単位、JST 翌日 00:00 リセット)。</strong> v0.3.4 でもこの料金体系は変更ありません。前払クレジット購入は同じ ¥3/req レートを前払で確保するもので、単価は同一です。
+ </div>
+
+ <p style="margin-top:24px;">
+ <a class="btn btn-primary" href="/pricing.html">料金詳細 →</a>
+ &nbsp;
+ <a href="/docs/getting-started/">スタートガイド →</a>
+ </p>
+
+ <p class="legal-note">本サービスは情報検索です。 個別具体的な税務・法律判断は資格を有する専門家にご相談ください (税理士法 §52 / 弁護士法 §72)。</p>
+
+ </article>
+
+ </div>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="/about.html">運営について</a>
+ <a href="/products.html">プロダクト</a>
+ <a href="/pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="/trust.html">信頼</a>
+ <a href="/changelog/">Changelog</a>
+ <a href="/tos.html">利用規約</a>
+ <a href="/privacy.html">プライバシー</a>
+ <a href="/tokushoho.html">特商法</a>
+ <a href="mailto:info@bookyou.net">お問い合わせ</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
+</footer>
+
+</body>
+</html>
