@@ -54,6 +54,7 @@ from jpintel_mcp.api.billing_breakdown import router as billing_breakdown_router
 from jpintel_mcp.api.bulk_evaluate import router as bulk_evaluate_router
 from jpintel_mcp.api.calendar import router as calendar_router
 from jpintel_mcp.api.case_studies import router as case_studies_router
+from jpintel_mcp.api.citation_badge import router as citation_badge_router
 from jpintel_mcp.api.citations import router as citations_router
 from jpintel_mcp.api.client_profiles import router as client_profiles_router
 from jpintel_mcp.api.compliance import router as compliance_router
@@ -132,7 +133,6 @@ from jpintel_mcp.api.time_machine import router as time_machine_router
 from jpintel_mcp.api.transparency import router as transparency_router
 from jpintel_mcp.api.trust import router as trust_router
 from jpintel_mcp.api.usage import router as usage_router
-from jpintel_mcp.api.citation_badge import router as citation_badge_router
 from jpintel_mcp.api.verify import router as verify_router
 from jpintel_mcp.api.widget_auth import router as widget_router
 from jpintel_mcp.config import settings
@@ -1937,6 +1937,16 @@ def create_app() -> FastAPI:
         "jpintel_mcp.api.artifacts",
         dependencies=[AnonIpLimitDep],
     )
+    # /v1/artifacts/company_public_baseline + company_folder_brief +
+    # company_public_audit_pack — public-source corporate diligence pack.
+    # Always-on (NOT gated behind AUTONOMATH_EXPERIMENTAL_API_ENABLED) so the
+    # 24 contract tests in tests/test_artifacts_company_public_packs.py and
+    # downstream MCP/SDK consumers can rely on the routes existing on every
+    # production boot. Pure SQLite + Python builders defined in
+    # jpintel_mcp.api.artifacts; NO LLM. §47条の2 + §52 + §72 + §3 fenced.
+    from jpintel_mcp.api.company_public_packs import router as company_public_packs_router
+
+    app.include_router(company_public_packs_router, dependencies=[AnonIpLimitDep])
     # /v1/discover/related/{entity_id} — multi-axis (5) related entity composer.
     # Pure SQL + sqlite-vec over am_5hop_graph / am_funding_stack_empirical /
     # am_entity_density_score / am_entities_vec_* + program_law_refs. Same

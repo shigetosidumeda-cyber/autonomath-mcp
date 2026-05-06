@@ -1,20 +1,720 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-05-06T22:38:22Z",
+  "generated_at": "2026-05-06T23:08:28Z",
   "summary": {
-    "total": 0,
+    "total": 61,
     "expected_total": 258,
-    "passed": 0,
+    "passed": 61,
     "failed": 0,
     "skipped": 0,
-    "automated": 0,
-    "semi_automated": 0,
+    "automated": 59,
+    "semi_automated": 2,
     "manual": 0,
-    "automation_ratio": 0.0,
+    "automation_ratio": 0.2287,
     "automation_target": 0.795,
     "automation_target_met": false
   },
-  "per_spec": {},
-  "per_check_kind": {},
-  "rows": []
+  "per_spec": {
+    "DEEP-22": {
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-23": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-24": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-25": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-26": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-27": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-28": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-29": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-30": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-31": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-32": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-33": {
+      "total": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-34": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-35": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-36": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-37": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-38": {
+      "total": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-39": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-40": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-41": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-42": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-43": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-44": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-45": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-46": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-47": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-48": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-49": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-50": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-51": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-52": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-53": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    "DEEP-54": {
+      "total": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "per_check_kind": {
+    "business_law_forbidden_phrases": {
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    "file_existence": {
+      "total": 21,
+      "passed": 21,
+      "failed": 0,
+      "skipped": 0
+    },
+    "gh_api": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    "gha_yaml_syntax": {
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    "html5_doctype_meta": {
+      "total": 5,
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    "jsonschema": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    "llm_api_import_zero": {
+      "total": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    "python_compile": {
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    "regex_pattern_count": {
+      "total": 15,
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0
+    },
+    "schema_org_jsonld": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    "sql_count": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    "sql_syntax": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "rows": [
+    {
+      "id": "DEEP-22-1",
+      "spec": "DEEP-22",
+      "check_kind": "file_existence",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-22-2",
+      "spec": "DEEP-22",
+      "check_kind": "sql_syntax",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-22-3",
+      "spec": "DEEP-22",
+      "check_kind": "regex_pattern_count",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-22-4",
+      "spec": "DEEP-22",
+      "check_kind": "sql_count",
+      "automation": "semi",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-23-1",
+      "spec": "DEEP-23",
+      "check_kind": "gh_api",
+      "automation": "semi",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-23-2",
+      "spec": "DEEP-23",
+      "check_kind": "file_existence",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-24-1",
+      "spec": "DEEP-24",
+      "check_kind": "file_existence",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-24-2",
+      "spec": "DEEP-24",
+      "check_kind": "jsonschema",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-25-1",
+      "spec": "DEEP-25",
+      "check_kind": "file_existence",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-25-2",
+      "spec": "DEEP-25",
+      "check_kind": "regex_pattern_count",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-26-1",
+      "spec": "DEEP-26",
+      "check_kind": "file_existence",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-26-2",
+      "spec": "DEEP-26",
+      "check_kind": "regex_pattern_count",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-27-1",
+      "spec": "DEEP-27",
+      "check_kind": "file_existence",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-27-2",
+      "spec": "DEEP-27",
+      "check_kind": "python_compile",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-28-1",
+      "spec": "DEEP-28",
+      "check_kind": "llm_api_import_zero",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-28-2",
+      "spec": "DEEP-28",
+      "check_kind": "llm_api_import_zero",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-29-1",
+      "spec": "DEEP-29",
+      "check_kind": "llm_api_import_zero",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-29-2",
+      "spec": "DEEP-29",
+      "check_kind": "python_compile",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-30-1",
+      "spec": "DEEP-30",
+      "check_kind": "file_existence",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-30-2",
+      "spec": "DEEP-30",
+      "check_kind": "regex_pattern_count",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-31-1",
+      "spec": "DEEP-31",
+      "check_kind": "gha_yaml_syntax",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-31-2",
+      "spec": "DEEP-31",
+      "check_kind": "regex_pattern_count",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-32-1",
+      "spec": "DEEP-32",
+      "check_kind": "gha_yaml_syntax",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-33-1",
+      "spec": "DEEP-33",
+      "check_kind": "regex_pattern_count",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-33-2",
+      "spec": "DEEP-33",
+      "check_kind": "html5_doctype_meta",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-33-3",
+      "spec": "DEEP-33",
+      "check_kind": "schema_org_jsonld",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-34-1",
+      "spec": "DEEP-34",
+      "check_kind": "regex_pattern_count",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-35-1",
+      "spec": "DEEP-35",
+      "check_kind": "file_existence",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-35-2",
+      "spec": "DEEP-35",
+      "check_kind": "regex_pattern_count",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-36-1",
+      "spec": "DEEP-36",
+      "check_kind": "file_existence",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-36-2",
+      "spec": "DEEP-36",
+      "check_kind": "regex_pattern_count",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-37-1",
+      "spec": "DEEP-37",
+      "check_kind": "html5_doctype_meta",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-38-1",
+      "spec": "DEEP-38",
+      "check_kind": "business_law_forbidden_phrases",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-38-2",
+      "spec": "DEEP-38",
+      "check_kind": "business_law_forbidden_phrases",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-38-3",
+      "spec": "DEEP-38",
+      "check_kind": "business_law_forbidden_phrases",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-39-1",
+      "spec": "DEEP-39",
+      "check_kind": "regex_pattern_count",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-40-1",
+      "spec": "DEEP-40",
+      "check_kind": "regex_pattern_count",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-40-2",
+      "spec": "DEEP-40",
+      "check_kind": "business_law_forbidden_phrases",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-41-1",
+      "spec": "DEEP-41",
+      "check_kind": "file_existence",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-41-2",
+      "spec": "DEEP-41",
+      "check_kind": "html5_doctype_meta",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-42-1",
+      "spec": "DEEP-42",
+      "check_kind": "file_existence",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-42-2",
+      "spec": "DEEP-42",
+      "check_kind": "html5_doctype_meta",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-43-1",
+      "spec": "DEEP-43",
+      "check_kind": "file_existence",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-43-2",
+      "spec": "DEEP-43",
+      "check_kind": "file_existence",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-44-1",
+      "spec": "DEEP-44",
+      "check_kind": "file_existence",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-44-2",
+      "spec": "DEEP-44",
+      "check_kind": "regex_pattern_count",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-45-1",
+      "spec": "DEEP-45",
+      "check_kind": "file_existence",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-45-2",
+      "spec": "DEEP-45",
+      "check_kind": "regex_pattern_count",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-46-1",
+      "spec": "DEEP-46",
+      "check_kind": "gha_yaml_syntax",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-47-1",
+      "spec": "DEEP-47",
+      "check_kind": "gha_yaml_syntax",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-48-1",
+      "spec": "DEEP-48",
+      "check_kind": "file_existence",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-49-1",
+      "spec": "DEEP-49",
+      "check_kind": "python_compile",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-50-1",
+      "spec": "DEEP-50",
+      "check_kind": "file_existence",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-50-2",
+      "spec": "DEEP-50",
+      "check_kind": "html5_doctype_meta",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-51-1",
+      "spec": "DEEP-51",
+      "check_kind": "python_compile",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-52-1",
+      "spec": "DEEP-52",
+      "check_kind": "file_existence",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-52-2",
+      "spec": "DEEP-52",
+      "check_kind": "regex_pattern_count",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-53-1",
+      "spec": "DEEP-53",
+      "check_kind": "file_existence",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-54-1",
+      "spec": "DEEP-54",
+      "check_kind": "file_existence",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-54-2",
+      "spec": "DEEP-54",
+      "check_kind": "file_existence",
+      "automation": "auto",
+      "outcome": "passed"
+    },
+    {
+      "id": "DEEP-54-3",
+      "spec": "DEEP-54",
+      "check_kind": "regex_pattern_count",
+      "automation": "auto",
+      "outcome": "passed"
+    }
+  ]
 }
