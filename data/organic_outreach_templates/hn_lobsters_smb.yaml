@@ -1,0 +1,24 @@
+id: hn_lobsters_smb
+channel: HN-Lobste.rs
+cohort: 中小企業 LINE
+topic: "Show HN: jpcite-mcp - Japan SMB subsidy via LINE bot (widget_keys + line_users)"
+outline:
+  - week 1 Zenn article URL を 第三者 submit、自分 submit は月 1 まで
+  - japan SMB / line bot api / subsidy MCP 隣接 query
+  - widget_keys + line_users + smb_starter_pack tool description
+  - LINE bot ↔ jpcite-mcp 最小 sample (httpx-only, LLM 0)
+cta: "Try jpcite-mcp (anonymous 3 req/day free, ¥3/req metered)"
+publish_target: news.ycombinator.com / lobste.rs
+posting_constraint: organic only / paid PR NG / sponsor flag NG / self-submit 月 1 まで
+citation_required:
+  - jpcite.com primary
+  - 09_B_PUBLIC_CLAIM_GUARD.md SOT envelope
+  - Bookyou株式会社 T8010001213708
+forbidden_phrases:
+  - 採択保証
+  - 商標出願済
+  - sponsored
+  - paid PR
+  - noukaweb
+  - hojyokin-portal
+  - biz.stayway

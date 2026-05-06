@@ -1,0 +1,103 @@
+{
+  "spec": "DEEP-65 organic outreach monthly playbook",
+  "spec_path": "tools/offline/_inbox/value_growth_dual/_deep_plan/DEEP_65_organic_outreach_playbook.md",
+  "generated_at": "2026-05-07",
+  "version": "v0.3.4",
+  "channels": [
+    "Zenn",
+    "GitHub issue",
+    "integration PR",
+    "HN-Lobste.rs"
+  ],
+  "channels_overflow": [
+    "業界誌 editorial pitch (年 1-2 件、月次 matrix 外)"
+  ],
+  "cohorts": [
+    {"id": "zei", "label": "税理士事務所", "sensitivity": "業法 sensitive (税理士法 §52)"},
+    {"id": "kaikei", "label": "公認会計士", "sensitivity": "業法 sensitive (公認会計士法 §47条の2)"},
+    {"id": "shihou", "label": "司法書士", "sensitivity": "業法 sensitive (司法書士法 §3)"},
+    {"id": "consul", "label": "補助金 consultant", "sensitivity": "業法 sensitive (詐欺リスク高)"},
+    {"id": "mna", "label": "M&A", "sensitivity": "non-sensitive"},
+    {"id": "fdi", "label": "Foreign FDI", "sensitivity": "non-sensitive"},
+    {"id": "smb", "label": "中小企業 LINE", "sensitivity": "non-sensitive"},
+    {"id": "ind", "label": "Industry packs (JSIC D/E/K)", "sensitivity": "non-sensitive"}
+  ],
+  "templates": [
+    {"id": "zenn_zei", "channel": "Zenn", "cohort_id": "zei", "file": "zenn_zei.yaml"},
+    {"id": "zenn_kaikei", "channel": "Zenn", "cohort_id": "kaikei", "file": "zenn_kaikei.yaml"},
+    {"id": "zenn_shihou", "channel": "Zenn", "cohort_id": "shihou", "file": "zenn_shihou.yaml"},
+    {"id": "zenn_consul", "channel": "Zenn", "cohort_id": "consul", "file": "zenn_consul.yaml"},
+    {"id": "zenn_mna", "channel": "Zenn", "cohort_id": "mna", "file": "zenn_mna.yaml"},
+    {"id": "zenn_fdi", "channel": "Zenn", "cohort_id": "fdi", "file": "zenn_fdi.yaml"},
+    {"id": "zenn_smb", "channel": "Zenn", "cohort_id": "smb", "file": "zenn_smb.yaml"},
+    {"id": "zenn_ind", "channel": "Zenn", "cohort_id": "ind", "file": "zenn_ind.yaml"},
+    {"id": "github_issue_zei", "channel": "GitHub issue", "cohort_id": "zei", "file": "github_issue_zei.yaml"},
+    {"id": "github_issue_kaikei", "channel": "GitHub issue", "cohort_id": "kaikei", "file": "github_issue_kaikei.yaml"},
+    {"id": "github_issue_shihou", "channel": "GitHub issue", "cohort_id": "shihou", "file": "github_issue_shihou.yaml"},
+    {"id": "github_issue_consul", "channel": "GitHub issue", "cohort_id": "consul", "file": "github_issue_consul.yaml"},
+    {"id": "github_issue_mna", "channel": "GitHub issue", "cohort_id": "mna", "file": "github_issue_mna.yaml"},
+    {"id": "github_issue_fdi", "channel": "GitHub issue", "cohort_id": "fdi", "file": "github_issue_fdi.yaml"},
+    {"id": "github_issue_smb", "channel": "GitHub issue", "cohort_id": "smb", "file": "github_issue_smb.yaml"},
+    {"id": "github_issue_ind", "channel": "GitHub issue", "cohort_id": "ind", "file": "github_issue_ind.yaml"},
+    {"id": "integration_pr_zei", "channel": "integration PR", "cohort_id": "zei", "file": "integration_pr_zei.yaml"},
+    {"id": "integration_pr_kaikei", "channel": "integration PR", "cohort_id": "kaikei", "file": "integration_pr_kaikei.yaml"},
+    {"id": "integration_pr_shihou", "channel": "integration PR", "cohort_id": "shihou", "file": "integration_pr_shihou.yaml"},
+    {"id": "integration_pr_consul", "channel": "integration PR", "cohort_id": "consul", "file": "integration_pr_consul.yaml"},
+    {"id": "integration_pr_mna", "channel": "integration PR", "cohort_id": "mna", "file": "integration_pr_mna.yaml"},
+    {"id": "integration_pr_fdi", "channel": "integration PR", "cohort_id": "fdi", "file": "integration_pr_fdi.yaml"},
+    {"id": "integration_pr_smb", "channel": "integration PR", "cohort_id": "smb", "file": "integration_pr_smb.yaml"},
+    {"id": "integration_pr_ind", "channel": "integration PR", "cohort_id": "ind", "file": "integration_pr_ind.yaml"},
+    {"id": "hn_lobsters_zei", "channel": "HN-Lobste.rs", "cohort_id": "zei", "file": "hn_lobsters_zei.yaml"},
+    {"id": "hn_lobsters_kaikei", "channel": "HN-Lobste.rs", "cohort_id": "kaikei", "file": "hn_lobsters_kaikei.yaml"},
+    {"id": "hn_lobsters_shihou", "channel": "HN-Lobste.rs", "cohort_id": "shihou", "file": "hn_lobsters_shihou.yaml"},
+    {"id": "hn_lobsters_consul", "channel": "HN-Lobste.rs", "cohort_id": "consul", "file": "hn_lobsters_consul.yaml"},
+    {"id": "hn_lobsters_mna", "channel": "HN-Lobste.rs", "cohort_id": "mna", "file": "hn_lobsters_mna.yaml"},
+    {"id": "hn_lobsters_fdi", "channel": "HN-Lobste.rs", "cohort_id": "fdi", "file": "hn_lobsters_fdi.yaml"},
+    {"id": "hn_lobsters_smb", "channel": "HN-Lobste.rs", "cohort_id": "smb", "file": "hn_lobsters_smb.yaml"},
+    {"id": "hn_lobsters_ind", "channel": "HN-Lobste.rs", "cohort_id": "ind", "file": "hn_lobsters_ind.yaml"}
+  ],
+  "kpi_targets": {
+    "monthly_publish_volume": {
+      "Zenn": 1,
+      "GitHub issue": 3,
+      "integration PR": 1,
+      "HN-Lobste.rs": 1,
+      "total_per_month": 6
+    },
+    "cohort_rotation": "1-2 cohort/month, 8-month full cycle (8/8 coverage gap 0)",
+    "self_vs_other_root_kpi": {
+      "target_window_months": 4,
+      "target_relation": "other_count >= self_count",
+      "ia12_signal_subset": ["per_channel_mention", "self_vs_other", "per_cohort_engagement", "per_pr_adoption"]
+    },
+    "per_pr_adoption_rate": {
+      "stale_close_threshold_pct": 50,
+      "review_template_phrasing_if_above": true
+    },
+    "violation_zero_targets": [
+      "paid_pr",
+      "trademark_application",
+      "aggregator_domain (noukaweb / hojyokin-portal / biz.stayway)",
+      "sponsored / sponsor flag"
+    ]
+  },
+  "constraints": {
+    "llm_api_imports": 0,
+    "paid_acquisition": "forbidden",
+    "trademark_application": "forbidden",
+    "aggregator_source_url": "forbidden",
+    "operator_role": "draft confirmation + 1-click publish only"
+  },
+  "dependencies": {
+    "DEEP-23": "disclaimer-spec OSS - npm install @jpcite/disclaimer-spec verbatim 引用",
+    "DEEP-26": "reverse proxy citation - JSON-LD output integrity",
+    "DEEP-32": "disclaimer-spec export - cross-repo PR template alignment",
+    "DEEP-41": "brand mention dashboard - monitoring/brand_reach.jsonl 出力先共有 + IA-12 root KPI",
+    "site/audiences/": "cohort 別 landing page (construction / manufacturing / real_estate / 税理士 / 会計士 / FDI 等)"
+  },
+  "output_paths": {
+    "monthly_artifacts": "artifacts/outreach_<YYYY-MM>/",
+    "analytics_jsonl": "analytics/organic_outreach_<YYYY-MM>.jsonl",
+    "brand_reach_jsonl": "monitoring/brand_reach.jsonl"
+  }
+}

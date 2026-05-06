@@ -1,0 +1,25 @@
+id: github_issue_mna
+channel: GitHub issue
+cohort: M&A
+topic: "Add jpcite-mcp to MCP catalog: M&A DD - houjin_watch + match_due_diligence_questions"
+outline:
+  - match_due_diligence_questions (Wave 22) で 30-60 DD 質問 industry × portfolio
+  - houjin_watch (mig 088) で 商業登記 amendment Webhook (deal-side ops)
+  - bundle_application_kit + cross_check_jurisdiction で 採択 / 不一致 panel
+  - 公開一次資料 (法務局 / NTA / e-Gov) のみ、aggregator NG ガード
+cta: "Try jpcite-mcp (anonymous 3 req/day free, ¥3/req metered)"
+publish_target: github.com/{catalog-repo}/issues
+posting_constraint: organic only / paid PR NG / sponsor flag NG
+citation_required:
+  - jpcite.com primary
+  - 09_B_PUBLIC_CLAIM_GUARD.md SOT envelope
+  - Bookyou株式会社 T8010001213708
+forbidden_phrases:
+  - 採択保証
+  - 投資助言
+  - 商標出願済
+  - sponsored
+  - paid PR
+  - noukaweb
+  - hojyokin-portal
+  - biz.stayway

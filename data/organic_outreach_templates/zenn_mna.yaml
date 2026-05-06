@@ -1,0 +1,25 @@
+id: zenn_mna
+channel: Zenn
+cohort: M&A
+topic: "M&A デューデリで AI agent を使う - jpcite で houjin_watch + DD question deck"
+outline:
+  - houjin_watch (mig 088) で deal-side ops に corp amendment Webhook 配信
+  - match_due_diligence_questions (Wave 22) で DD 30-60 質問を industry × portfolio 別に生成
+  - bundle_application_kit + cross_check_jurisdiction で 採択 / 不一致 panel
+  - 公開一次資料 (法務局 / NTA / e-Gov) のみ、aggregator NG
+cta: "jpcite-mcp で試す (anonymous 3 req/日 free, ¥3/req metered)"
+publish_target: zenn.dev/shigetoshi-umeda
+posting_constraint: organic only / paid PR NG / sponsor flag NG
+citation_required:
+  - jpcite.com primary
+  - 09_B_PUBLIC_CLAIM_GUARD.md SOT envelope
+  - Bookyou株式会社 T8010001213708
+forbidden_phrases:
+  - 採択保証
+  - 投資助言
+  - 商標出願済
+  - sponsored
+  - paid PR
+  - noukaweb
+  - hojyokin-portal
+  - biz.stayway

@@ -1,0 +1,66 @@
+name: organic-outreach-monthly
+
+# DEEP-65 organic outreach monthly playbook tracker.
+# Spec: tools/offline/_inbox/value_growth_dual/_deep_plan/DEEP_65_organic_outreach_playbook.md
+#
+# Monthly cron (1st of month 06:00 JST = 21:00 UTC of last day) that:
+#   - Loads 32 yaml templates from data/organic_outreach_templates/
+#   - Probes per-channel publish status (Zenn / GitHub / HN-Lobste.rs)
+#   - Aggregates KPI: per-channel mention + self-vs-other + per-cohort engagement
+#   - Appends jsonl to analytics/organic_outreach_<YYYY-MM>.jsonl AND
+#     monitoring/brand_reach.jsonl (DEEP-41 brand mention dashboard feed)
+#
+# NO LLM calls. NO paid intel SaaS. NO sponsored content. NO trademark filings.
+# Failure-tolerant: 1 channel down does NOT abort the others.
+
+on:
+  schedule:
+    # JST 1st of month 06:00 = UTC last day of previous month 21:00.
+    # GitHub Actions cron supports 1st-of-month at UTC 21:00 reliably.
+    - cron: "0 21 1 * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: organic-outreach-monthly
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  track:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Python
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install httpx
+
+      - name: Run organic outreach tracker
+        env:
+          GITHUB_TOKEN: ${{ secrets.JPCITE_BRAND_GITHUB_TOKEN }}
+        run: |
+          set +e
+          python scripts/cron/track_organic_outreach_monthly.py
+          rc=$?
+          if [ "$rc" -ne 0 ]; then
+            echo "::warning::track_organic_outreach_monthly.py exited $rc (fail-open)"
+          fi
+          exit 0
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: organic-outreach-monthly
+          path: |
+            analytics/organic_outreach_*.jsonl
+            monitoring/brand_reach.jsonl

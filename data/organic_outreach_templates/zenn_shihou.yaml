@@ -1,0 +1,26 @@
+id: zenn_shihou
+channel: Zenn
+cohort: 司法書士
+topic: "司法書士法 §3 業域内の AI agent 活用 - 不動産登記 + 商業登記の一次資料自動収集"
+outline:
+  - jpcite houjin_watch (mig 088) で 商業登記 amendment の Webhook 配信
+  - cross_check_jurisdiction tool で 法務局 / 法人番号 / 適格事業者番号 不一致検出
+  - 不動産パック (Wave 23 pack_real_estate, JSIC K) の登記関連 program 抽出
+  - 司法書士法 §3 の境界保持: 申請書面生成は禁止、scaffold + 一次 URL のみ
+cta: "jpcite-mcp で試す (anonymous 3 req/日 free, ¥3/req metered)"
+publish_target: zenn.dev/shigetoshi-umeda
+posting_constraint: organic only / paid PR NG / sponsor flag NG
+citation_required:
+  - jpcite.com primary
+  - 09_B_PUBLIC_CLAIM_GUARD.md SOT envelope
+  - Bookyou株式会社 T8010001213708
+forbidden_phrases:
+  - 登記申請を代行
+  - 司法書士業務を行います
+  - 採択保証
+  - 商標出願済
+  - sponsored
+  - paid PR
+  - noukaweb
+  - hojyokin-portal
+  - biz.stayway

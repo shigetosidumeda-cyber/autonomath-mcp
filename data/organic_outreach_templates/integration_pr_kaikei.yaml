@@ -1,0 +1,26 @@
+id: integration_pr_kaikei
+channel: integration PR
+cohort: 公認会計士
+topic: "Integration PR: jpcite-mcp for monitoring kessan_briefing - Cursor / Perplexity Spaces"
+outline:
+  - claude.ai docs / Perplexity Spaces / Cursor MCP marketplace に kessan_briefing tool 紹介
+  - tax_rulesets v2 (50 rows post mig 083) + 公認会計士法 §47条の2 fence
+  - cross_check_jurisdiction tool で 法務局 / NTA / 採択 不一致検出
+  - paid placement NG, organic 提案ベースのみ
+cta: "jpcite-mcp - Japan tax & subsidy MCP server (anonymous 3 req/day free, ¥3/req metered)"
+publish_target: github.com/{vendor}/{repo}/pull
+posting_constraint: organic only / paid PR NG / sponsor flag NG / paid placement NG
+citation_required:
+  - jpcite.com primary
+  - 09_B_PUBLIC_CLAIM_GUARD.md SOT envelope
+  - Bookyou株式会社 T8010001213708
+forbidden_phrases:
+  - 監査意見を表明
+  - 採択保証
+  - 商標出願済
+  - sponsored
+  - paid PR
+  - paid placement
+  - noukaweb
+  - hojyokin-portal
+  - biz.stayway

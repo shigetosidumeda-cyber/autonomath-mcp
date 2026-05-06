@@ -1,0 +1,25 @@
+id: integration_pr_ind
+channel: integration PR
+cohort: Industry packs (JSIC D/E/K)
+topic: "Integration PR: jpcite-mcp pack_construction / pack_manufacturing / pack_real_estate"
+outline:
+  - claude.ai docs / Cursor MCP marketplace に Industry packs (Wave 23) 紹介
+  - JSIC D/E/K pack tool description + nta_saiketsu / nta_tsutatsu_index 引用
+  - site/audiences/{construction,manufacturing,real_estate}.html link
+  - paid placement NG, organic 提案ベースのみ
+cta: "jpcite-mcp - Japan industry packs MCP server (anonymous 3 req/day free, ¥3/req metered)"
+publish_target: github.com/{vendor}/{repo}/pull
+posting_constraint: organic only / paid PR NG / sponsor flag NG / paid placement NG
+citation_required:
+  - jpcite.com primary
+  - 09_B_PUBLIC_CLAIM_GUARD.md SOT envelope
+  - Bookyou株式会社 T8010001213708
+forbidden_phrases:
+  - 採択保証
+  - 商標出願済
+  - sponsored
+  - paid PR
+  - paid placement
+  - noukaweb
+  - hojyokin-portal
+  - biz.stayway

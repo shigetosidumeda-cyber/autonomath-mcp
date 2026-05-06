@@ -1,0 +1,26 @@
+id: zenn_zei
+channel: Zenn
+cohort: 税理士事務所
+topic: "税理士業務に AI agent を組み込む 業法 §52 fence の機械化"
+outline:
+  - jpcite-disclaimer-spec OSS (DEEP-23) 紹介と税理士法 §52 fence の機械化
+  - claude.ai / Cursor / Cline での MCP 設定例 + jpcite-mcp tool list
+  - 顧問先 月次 audit_seal pack (mig 089) 自動化 + RSS regen
+  - 客単価 × 顧問先 数で ROI 概算 (¥3/req metered, anonymous 3 req/日 free)
+cta: "jpcite-mcp で試す (anonymous 3 req/日 free, ¥3/req metered)"
+publish_target: zenn.dev/shigetoshi-umeda
+posting_constraint: organic only / paid PR NG / sponsor flag NG
+citation_required:
+  - jpcite.com primary
+  - 09_B_PUBLIC_CLAIM_GUARD.md SOT envelope
+  - Bookyou株式会社 T8010001213708
+forbidden_phrases:
+  - 採択保証
+  - 税務代理を行います
+  - 商標出願済
+  - 第三者保証なし
+  - sponsored
+  - paid PR
+  - noukaweb
+  - hojyokin-portal
+  - biz.stayway

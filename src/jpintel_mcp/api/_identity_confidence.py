@@ -61,7 +61,9 @@ SENSITIVE_FLOORS: dict[str, float] = {
 }
 
 # Legal-form variants — used both for normalization in axis 3 and for the
-# generator producing the DEEP-64 fixture.
+# generator producing the DEEP-64 fixture. Kana variants are included so
+# axis 2 (kana_normalized) can fold legal-form prefixes when one side is
+# rendered in hiragana / katakana while the other is in kanji.
 LEGAL_FORM_TOKENS: tuple[str, ...] = (
     "株式会社",
     "(株)",
@@ -93,6 +95,27 @@ LEGAL_FORM_TOKENS: tuple[str, ...] = (
     "NPO法人",
 )
 
+# Kana renderings of the same legal forms — applied AFTER kana_fold (so
+# katakana form is canonical). Listed longest-first so substrings are
+# stripped predictably.
+LEGAL_FORM_TOKENS_KANA: tuple[str, ...] = (
+    "トクテイヒエイリカツドウホウジン",
+    "イッパンザイダンホウジン",
+    "イッパンシャダンホウジン",
+    "コウエキザイダンホウジン",
+    "コウエキシャダンホウジン",
+    "シャカイフクシホウジン",
+    "ガッコウホウジン",
+    "シュウキョウホウジン",
+    "イリョウホウジン",
+    "カブシキガイシャ",
+    "ゴウドウガイシャ",
+    "ユウゲンガイシャ",
+    "ゴウシガイシャ",
+    "ゴウメイガイシャ",
+    "NPOホウジン",
+)
+
 _HOUJIN_BANGOU_RE = re.compile(r"^\d{13}$")
 
 
@@ -109,9 +132,22 @@ def normalize_text(s: str) -> str:
 
 
 def strip_legal_form(s: str) -> str:
-    """Drop legal-form prefix/suffix tokens, return bare brand string."""
+    """Drop legal-form prefix/suffix tokens, return bare brand string.
+
+    Strips both kanji forms and kana renderings of the same forms so the
+    output is symmetric across hiragana / katakana / kanji inputs.
+    """
     out = s
     for token in LEGAL_FORM_TOKENS:
+        out = out.replace(token, "")
+    return out.strip()
+
+
+def strip_legal_form_kana(s: str) -> str:
+    """Strip kana legal-form tokens (apply AFTER kana_fold)."""
+    out = s
+    for token in LEGAL_FORM_TOKENS_KANA:
+        out = out.replace(token.lower(), "")
         out = out.replace(token, "")
     return out.strip()
 
@@ -181,9 +217,13 @@ def detect_axis(
     if not cand_name:
         return "alias_only"
 
-    # Compare bare brand (legal form stripped) under kana fold
-    q_bare = kana_fold(strip_legal_form(q))
-    c_bare = kana_fold(strip_legal_form(cand_name))
+    # Compare bare brand (legal form stripped) under kana fold.
+    # Two-pass strip: strip kanji legal forms BEFORE kana fold, kana legal
+    # forms AFTER kana fold. This catches mixed-script inputs like
+    # 「カブシキガイシャ + brand」 (axis 2 hiragana/halfwidth) and
+    # 「(株) + brand」 (axis 3) symmetrically.
+    q_bare = strip_legal_form_kana(kana_fold(strip_legal_form(q)))
+    c_bare = strip_legal_form_kana(kana_fold(strip_legal_form(cand_name)))
 
     if q_bare and c_bare and q_bare == c_bare:
         # whole-name equal modulo legal form + kana
@@ -212,8 +252,15 @@ def score(query: str, candidate: dict[str, Any]) -> tuple[float, str, dict[str, 
     cand_bangou = (candidate.get("houjin_bangou") or "").strip()
     cand_name = normalize_text(candidate.get("houjin_name") or "")
     q = normalize_text(query)
-    q_bare = kana_fold(strip_legal_form(q))
-    c_bare = kana_fold(strip_legal_form(cand_name))
+    q_bare = strip_legal_form_kana(kana_fold(strip_legal_form(q)))
+    c_bare = strip_legal_form_kana(kana_fold(strip_legal_form(cand_name)))
+
+    legal_form_active = (
+        strip_legal_form(q) != q
+        or strip_legal_form(cand_name) != cand_name
+        or strip_legal_form_kana(kana_fold(q)) != kana_fold(q)
+        or strip_legal_form_kana(kana_fold(cand_name)) != kana_fold(cand_name)
+    )
 
     axes_dict: dict[str, Any] = {
         "bangou_exact": is_valid_houjin_bangou(q)
@@ -221,7 +268,7 @@ def score(query: str, candidate: dict[str, Any]) -> tuple[float, str, dict[str, 
         and q == cand_bangou,
         "kana_eq": bool(q_bare and c_bare and q_bare == c_bare),
         "legal_form_variant": bool(q_bare and c_bare and q_bare == c_bare)
-        and (strip_legal_form(q) != q or strip_legal_form(cand_name) != cand_name),
+        and legal_form_active,
         "addr_eq": bool(candidate.get("address_match")),
         "alias_only": axis == "alias_only",
     }
@@ -258,8 +305,9 @@ def gate(
 __all__ = [
     "AXIS_SCORE",
     "DEFAULT_FLOOR",
-    "SENSITIVE_FLOORS",
     "LEGAL_FORM_TOKENS",
+    "LEGAL_FORM_TOKENS_KANA",
+    "SENSITIVE_FLOORS",
     "detect_axis",
     "gate",
     "is_valid_houjin_bangou",
@@ -267,4 +315,5 @@ __all__ = [
     "normalize_text",
     "score",
     "strip_legal_form",
+    "strip_legal_form_kana",
 ]

@@ -1,0 +1,26 @@
+id: integration_pr_fdi
+channel: integration PR
+cohort: Foreign FDI
+topic: "Integration PR: jpcite-mcp English-translated Japan public-program API for inbound FDI"
+outline:
+  - claude.ai docs / Perplexity Spaces / Cursor MCP marketplace に英訳 corpus 紹介
+  - law_articles.body_en (mig 090) + am_tax_treaty (mig 091) + foreign_capital_eligibility
+  - bilingual structured output sample link
+  - paid placement NG, organic 提案ベースのみ
+cta: "jpcite-mcp - Japan public-program API in English (anonymous 3 req/day free, ¥3/req metered)"
+publish_target: github.com/{vendor}/{repo}/pull
+posting_constraint: organic only / paid PR NG / sponsor flag NG / paid placement NG
+citation_required:
+  - jpcite.com primary
+  - 09_B_PUBLIC_CLAIM_GUARD.md SOT envelope
+  - Bookyou株式会社 T8010001213708
+forbidden_phrases:
+  - 採択保証
+  - 法律相談
+  - 商標出願済
+  - sponsored
+  - paid PR
+  - paid placement
+  - noukaweb
+  - hojyokin-portal
+  - biz.stayway

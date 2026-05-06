@@ -1,0 +1,24 @@
+id: zenn_ind
+channel: Zenn
+cohort: Industry packs (JSIC D/E/K)
+topic: "JSIC 業種別 公的支援パック - 建設 / 製造 / 不動産 を pack_* tool で一括化"
+outline:
+  - pack_construction (JSIC D) + pack_manufacturing (JSIC E) + pack_real_estate (JSIC K) tools
+  - am_industry_jsic (50 rows) + nta_saiketsu + nta_tsutatsu_index (mig 103) 引用
+  - site/audiences/{construction,manufacturing,real_estate}.html landing pages
+  - 各 cohort 8 sample programs + first-party source_url
+cta: "jpcite-mcp で試す (anonymous 3 req/日 free, ¥3/req metered)"
+publish_target: zenn.dev/shigetoshi-umeda
+posting_constraint: organic only / paid PR NG / sponsor flag NG
+citation_required:
+  - jpcite.com primary
+  - 09_B_PUBLIC_CLAIM_GUARD.md SOT envelope
+  - Bookyou株式会社 T8010001213708
+forbidden_phrases:
+  - 採択保証
+  - 商標出願済
+  - sponsored
+  - paid PR
+  - noukaweb
+  - hojyokin-portal
+  - biz.stayway

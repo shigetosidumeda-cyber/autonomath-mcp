@@ -1,0 +1,25 @@
+id: hn_lobsters_zei
+channel: HN-Lobste.rs
+cohort: 税理士事務所
+topic: "Show HN: jpcite-mcp - Japan tax-pro AI fence (税理士法 §52) MCP server"
+outline:
+  - week 1 Zenn article URL を 第三者 submit、自分 submit は月 1 まで
+  - regtech japan / ai legal japan / MCP server japan 隣接 query
+  - 過剰 self-promotion 禁止、X / Zenn コメント経由で organic 流す
+  - HN points / Lobste.rs upvote を per-cohort engagement に集計
+cta: "Try jpcite-mcp (anonymous 3 req/day free, ¥3/req metered)"
+publish_target: news.ycombinator.com / lobste.rs
+posting_constraint: organic only / paid PR NG / sponsor flag NG / self-submit 月 1 まで
+citation_required:
+  - jpcite.com primary
+  - 09_B_PUBLIC_CLAIM_GUARD.md SOT envelope
+  - Bookyou株式会社 T8010001213708
+forbidden_phrases:
+  - 採択保証
+  - 税務代理を行います
+  - 商標出願済
+  - sponsored
+  - paid PR
+  - noukaweb
+  - hojyokin-portal
+  - biz.stayway
