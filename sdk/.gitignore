@@ -9,3 +9,6 @@ python/jpintel.egg-info/
 typescript/node_modules/
 typescript/dist/
 typescript/.tsbuildinfo
+typescript/*.tgz
+npm-package/*.tgz
+agents/*.tgz

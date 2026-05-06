@@ -102,7 +102,7 @@ def fetch_all(query: str) -> list[dict]:
         if not results or len(all_rows) >= total:
             break
         offset += PAGE_SIZE
-        # polite pacing — anon free = 50/month per IP, paid = metered (no hard cap), keep it sane
+        # polite pacing for API-friendly pagination
         time.sleep(0.05)
 
     print(f"fetched: {len(all_rows)} rows in {page_num} pages\n")

@@ -209,4 +209,106 @@ describe("JpciteClient", () => {
     await expect(jp.checkCompliance([])).rejects.toThrow(TypeError);
     expect(fetchMock).not.toHaveBeenCalled();
   });
+
+  it("checkFundingStack posts program_ids and returns next_actions", async () => {
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse({
+        program_ids: ["PROG-A", "PROG-B"],
+        all_pairs_status: "requires_review",
+        pairs: [
+          {
+            program_a: "PROG-A",
+            program_b: "PROG-B",
+            verdict: "requires_review",
+            confidence: 0.7,
+            rule_chain: [],
+            next_actions: [
+              {
+                action_id: "contact_program_office",
+                label_ja: "制度事務局へ併用条件を照会する",
+                detail_ja: "対象経費と申請年度を示して事務局に確認する。",
+                reason: "requires_review 判定のため。",
+                source_fields: ["verdict"],
+              },
+            ],
+            _disclaimer: "review required",
+          },
+        ],
+        blockers: [],
+        warnings: [],
+        next_actions: [
+          {
+            action_id: "contact_program_office",
+            label_ja: "制度事務局へ併用条件を照会する",
+            detail_ja: "対象経費と申請年度を示して事務局に確認する。",
+            reason: "requires_review 判定のため。",
+            source_fields: ["verdict"],
+          },
+        ],
+        total_pairs: 1,
+        _disclaimer: "stack review required",
+        _billing_unit: 1,
+      }),
+    );
+
+    const jp = new JpciteClient("test-key");
+    const res = await jp.checkFundingStack(["PROG-A", "PROG-B"]);
+    expect(res.next_actions[0]?.action_id).toBe("contact_program_office");
+    expect(res.pairs[0]?.next_actions[0]?.label_ja).toContain("事務局");
+
+    const [url, init] = fetchMock.mock.calls[0]!;
+    expect(String(url)).toContain("/v1/funding_stack/check");
+    expect(init.method).toBe("POST");
+    expect(JSON.parse(init.body as string)).toEqual({
+      program_ids: ["PROG-A", "PROG-B"],
+    });
+
+    fetchMock.mockClear();
+    await expect(jp.checkFundingStack(["PROG-A"])).rejects.toThrow(TypeError);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("evidence packet methods call expected endpoints", async () => {
+    const packet = {
+      packet_id: "ep-test",
+      generated_at: "2026-05-06T00:00:00Z",
+      api_version: "v1",
+      corpus_snapshot_id: "snap-test",
+      query: { subject_kind: "program" },
+      answer_not_included: true,
+      records: [{ entity_id: "PROG-A" }],
+      quality: { known_gaps: [] },
+      verification: {},
+    };
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(packet))
+      .mockResolvedValueOnce(jsonResponse({ ...packet, packet_id: "ep-query" }));
+
+    const jp = new JpciteClient("test-key");
+    const direct = await jp.getEvidencePacket("program", "PROG-A", {
+      include_rules: true,
+      packet_profile: "brief",
+    });
+    const queried = await jp.queryEvidencePacket({
+      query_text: "省エネ 東京都",
+      filters: { prefecture: "東京都" },
+    });
+
+    expect(direct.packet_id).toBe("ep-test");
+    expect(queried.packet_id).toBe("ep-query");
+
+    const [directUrl, directInit] = fetchMock.mock.calls[0]!;
+    expect(String(directUrl)).toContain("/v1/evidence/packets/program/PROG-A");
+    expect(String(directUrl)).toContain("include_rules=true");
+    expect(String(directUrl)).toContain("packet_profile=brief");
+    expect(directInit.method).toBe("GET");
+
+    const [queryUrl, queryInit] = fetchMock.mock.calls[1]!;
+    expect(String(queryUrl)).toContain("/v1/evidence/packets/query");
+    expect(queryInit.method).toBe("POST");
+    expect(JSON.parse(queryInit.body as string)).toEqual({
+      query_text: "省エネ 東京都",
+      filters: { prefecture: "東京都" },
+    });
+  });
 });

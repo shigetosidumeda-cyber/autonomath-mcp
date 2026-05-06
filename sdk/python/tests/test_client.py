@@ -54,6 +54,33 @@ def _sample_program(unified_id: str = "UNI-1", tier: str = "S") -> dict[str, Any
     }
 
 
+def _sample_evidence_packet(entity_id: str = "UNI-1") -> dict[str, Any]:
+    return {
+        "packet_id": "ep_test",
+        "generated_at": "2026-05-06T00:00:00Z",
+        "api_version": "v1",
+        "corpus_snapshot_id": "snap_test",
+        "query": {"subject_kind": "program"},
+        "answer_not_included": True,
+        "records": [
+            {
+                "entity_id": entity_id,
+                "primary_name": "テスト補助金",
+                "source_url": "https://example.test/source",
+            }
+        ],
+        "quality": {"known_gaps": []},
+        "verification": {"replay_endpoint": "/v1/evidence/packets/program/UNI-1"},
+        "decision_insights": {
+            "schema_version": "v1",
+            "generated_from": ["records"],
+            "why_review": [],
+            "next_checks": [],
+            "evidence_gaps": [],
+        },
+    }
+
+
 def _make_client(
     handler,
     *,
@@ -268,6 +295,187 @@ def test_check_exclusions_rejects_empty() -> None:
         c.check_exclusions([])
 
 
+def test_get_evidence_packet_builds_query_params() -> None:
+    seen: dict[str, Any] = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen["method"] = request.method
+        seen["path"] = request.url.path
+        seen["query"] = parse_qsl(request.url.query.decode("utf-8"), keep_blank_values=True)
+        return httpx.Response(200, json=_sample_evidence_packet())
+
+    with _make_client(handler) as c:
+        packet = c.get_evidence_packet(
+            "program",
+            "UNI-1",
+            include_facts=False,
+            packet_profile="brief",
+            source_tokens_basis="pdf_pages",
+            source_pdf_pages=12,
+        )
+
+    assert seen["method"] == "GET"
+    assert seen["path"] == "/v1/evidence/packets/program/UNI-1"
+    assert ("include_facts", "false") in seen["query"]
+    assert ("packet_profile", "brief") in seen["query"]
+    assert ("source_tokens_basis", "pdf_pages") in seen["query"]
+    assert ("source_pdf_pages", "12") in seen["query"]
+    assert packet.records[0].entity_id == "UNI-1"
+    assert packet.decision_insights is not None
+
+
+def test_query_evidence_packet_posts_body() -> None:
+    seen: dict[str, Any] = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen["method"] = request.method
+        seen["path"] = request.url.path
+        seen["body"] = json.loads(request.content.decode("utf-8"))
+        return httpx.Response(200, json=_sample_evidence_packet("UNI-2"))
+
+    with _make_client(handler) as c:
+        packet = c.query_evidence_packet(
+            query_text="省エネ 東京都",
+            filters={"prefecture": "東京都"},
+            include_rules=True,
+        )
+
+    assert seen["method"] == "POST"
+    assert seen["path"] == "/v1/evidence/packets/query"
+    assert seen["body"]["query_text"] == "省エネ 東京都"
+    assert seen["body"]["filters"] == {"prefecture": "東京都"}
+    assert seen["body"]["include_rules"] is True
+    assert packet.records[0].entity_id == "UNI-2"
+
+
+def test_intel_and_funding_methods_call_expected_endpoints() -> None:
+    seen: list[dict[str, Any]] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        body = json.loads(request.content.decode("utf-8")) if request.content else None
+        seen.append(
+            {
+                "method": request.method,
+                "path": request.url.path,
+                "query": parse_qsl(request.url.query.decode("utf-8"), keep_blank_values=True),
+                "body": body,
+            }
+        )
+        if request.url.path == "/v1/intel/match":
+            return httpx.Response(
+                200,
+                json={
+                    "matched_programs": [{"program_id": "UNI-1", "primary_name": "補助金"}],
+                    "total_candidates": 1,
+                    "applied_filters": ["prefecture"],
+                    "_disclaimer": "verify",
+                    "_billing_unit": 1,
+                },
+            )
+        if request.url.path == "/v1/intel/bundle/optimal":
+            return httpx.Response(
+                200,
+                json={
+                    "houjin_id": "8010001213708",
+                    "bundle": [],
+                    "bundle_total": {},
+                    "conflict_avoidance": {},
+                    "optimization_log": {},
+                    "runner_up_bundles": [],
+                    "data_quality": {},
+                    "decision_support": {},
+                    "_billing_unit": 1,
+                },
+            )
+        if request.url.path == "/v1/intel/houjin/8010001213708/full":
+            return httpx.Response(
+                200,
+                json={
+                    "houjin_bangou": "8010001213708",
+                    "sections_returned": ["meta"],
+                    "max_per_section": 2,
+                    "decision_support": {},
+                    "_billing_unit": 1,
+                },
+            )
+        if request.url.path == "/v1/funding_stack/check":
+            return httpx.Response(
+                200,
+                json={
+                    "program_ids": ["UNI-a", "UNI-b"],
+                    "all_pairs_status": "compatible",
+                    "pairs": [
+                        {
+                            "program_a": "UNI-a",
+                            "program_b": "UNI-b",
+                            "verdict": "compatible",
+                            "confidence": 1.0,
+                            "rule_chain": [],
+                            "next_actions": [
+                                {
+                                    "action_id": "keep_evidence",
+                                    "label_ja": "併用可の根拠を保存する",
+                                    "detail_ja": "一次資料 URL と確認日を保存する。",
+                                    "reason": "後日の照会で根拠を提示するため。",
+                                    "source_fields": ["rule_chain"],
+                                }
+                            ],
+                            "_disclaimer": "verify",
+                        }
+                    ],
+                    "blockers": [],
+                    "warnings": [],
+                    "next_actions": [
+                        {
+                            "action_id": "keep_evidence",
+                            "label_ja": "併用可の根拠を保存する",
+                            "detail_ja": "一次資料 URL と確認日を保存する。",
+                            "reason": "後日の照会で根拠を提示するため。",
+                            "source_fields": ["rule_chain"],
+                        }
+                    ],
+                    "total_pairs": 1,
+                    "_billing_unit": 1,
+                },
+            )
+        raise AssertionError(f"unexpected path: {request.url.path}")
+
+    with _make_client(handler) as c:
+        match = c.intel_match(
+            industry_jsic_major="E",
+            prefecture_code="13",
+            capital_jpy=10_000_000,
+            keyword="DX",
+        )
+        bundle = c.intel_bundle_optimal(houjin_id="8010001213708", bundle_size=3)
+        houjin = c.get_intel_houjin_full(
+            "8010001213708",
+            include_sections=["meta"],
+            max_per_section=2,
+        )
+        funding = c.check_funding_stack(["UNI-a", "UNI-b"])
+
+    assert match.matched_programs[0].program_id == "UNI-1"
+    assert match.billing_unit == 1
+    assert bundle.houjin_id == "8010001213708"
+    assert houjin.sections_returned == ["meta"]
+    assert funding.total_pairs == 1
+    assert funding.next_actions[0].action_id == "keep_evidence"
+    assert funding.pairs[0].next_actions[0].label_ja
+    assert seen[0]["body"]["industry_jsic_major"] == "E"
+    assert seen[1]["body"]["bundle_size"] == 3
+    assert ("include_sections", "meta") in seen[2]["query"]
+    assert seen[3]["body"] == {"program_ids": ["UNI-a", "UNI-b"]}
+
+
+def test_check_funding_stack_rejects_single_program() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        raise AssertionError("client should not make a request for one program")
+
+    with _make_client(handler) as c, pytest.raises(ValueError):
+        c.check_funding_stack(["UNI-a"])
+
+
 def test_server_error_exhausts_retries(monkeypatch: pytest.MonkeyPatch) -> None:
     calls = {"n": 0}
     monkeypatch.setattr("autonomath.client.time.sleep", lambda s: None)
@@ -377,3 +585,28 @@ async def test_async_retries_5xx(monkeypatch: pytest.MonkeyPatch) -> None:
     assert meta.total_programs == 0
     assert calls["n"] == 2
     assert sleeps == [pytest.approx(0.5)]
+
+
+@pytest.mark.asyncio
+async def test_async_intel_match() -> None:
+    seen: dict[str, Any] = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen["path"] = request.url.path
+        seen["body"] = json.loads(request.content.decode("utf-8"))
+        return httpx.Response(
+            200,
+            json={
+                "matched_programs": [{"program_id": "UNI-async"}],
+                "total_candidates": 1,
+                "applied_filters": [],
+                "_billing_unit": 1,
+            },
+        )
+
+    async with _make_async_client(handler) as c:
+        resp = await c.intel_match(industry_jsic_major="E", prefecture_code="13")
+
+    assert seen["path"] == "/v1/intel/match"
+    assert seen["body"]["prefecture_code"] == "13"
+    assert resp.matched_programs[0].program_id == "UNI-async"

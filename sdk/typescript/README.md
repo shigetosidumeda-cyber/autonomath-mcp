@@ -69,6 +69,15 @@ const check = await am.checkExclusions(programs.results.map((p) => p.unified_id)
 for (const hit of check.hits) {
   console.log(hit.severity, hit.programs_involved, hit.description);
 }
+
+// 6. Pull AI-facing evidence/intel envelopes
+const packet = await am.getEvidencePacket("program", programs.results[0]!.unified_id);
+const match = await am.intelMatch({
+  industry_jsic_major: "E",
+  prefecture_code: "13",
+  keyword: "DX",
+});
+console.log(packet.quality.known_gaps, match.matched_programs.length);
 ```
 
 ## Endpoints
@@ -89,9 +98,18 @@ for (const hit of check.hits) {
 | `am.getLawArticle(name, art)`   | `GET /v1/am/law_article?...`           |
 | `am.listExclusionRules()`       | `GET /v1/exclusions/rules`             |
 | `am.checkExclusions(ids)`       | `POST /v1/exclusions/check`            |
+| `am.getEvidencePacket(kind,id)` | `GET /v1/evidence/packets/{kind}/{id}` |
+| `am.queryEvidencePacket(body)`  | `POST /v1/evidence/packets/query`      |
+| `am.intelMatch(body)`           | `POST /v1/intel/match`                 |
+| `am.intelBundleOptimal(body)`   | `POST /v1/intel/bundle/optimal`        |
+| `am.getIntelHoujinFull(id)`     | `GET /v1/intel/houjin/{id}/full`       |
+| `am.checkFundingStack(ids)`     | `POST /v1/funding_stack/check`         |
 | `am.me()`                       | `GET /v1/me`                           |
 | `am.dashboard()`                | `GET /v1/me/dashboard`                 |
 | `am.setCap(jpy)`                | `POST /v1/me/cap`                      |
+
+`checkFundingStack(...).next_actions` values are action objects with
+`action_id`, `label_ja`, `detail_ja`, `reason`, and `source_fields`.
 | `am.fetch(method, path, body)`  | (escape hatch for any endpoint)        |
 
 ## Errors
@@ -140,7 +158,7 @@ OpenAI / Anthropic / Gemini key. The Python MCP server still accepts
 ## MCP usage (optional)
 
 The jpcite MCP server is currently distributed as the Python package
-`autonomath-mcp` (96 tools) for compatibility.
+`autonomath-mcp` (139 tools) for compatibility.
 This package can spawn it as a child process for Node-based MCP hosts.
 
 ```ts

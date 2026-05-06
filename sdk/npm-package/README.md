@@ -6,7 +6,7 @@ Minimal TypeScript / JavaScript client for the **jpcite** REST API — Japanese 
 - **Pricing**: ¥3/req metered (税込 ¥3.30). Anonymous tier = 3 req/day per IP, JST midnight reset.
 - **Operator**: Bookyou株式会社 (適格請求書発行事業者番号 **T8010001213708**), info@bookyou.net
 - **Zero dependencies**: uses Node 18+ global `fetch`. Works in Node, Deno, Bun, browsers.
-- **API surface**: 4 methods. For broader coverage (loans, tax incentives, dashboard, billing) use the official [`@autonomath/sdk`](https://www.npmjs.com/package/@autonomath/sdk).
+- **API surface**: core search / 法人 / 法令 / 排他 helpers plus Evidence Packet, composite intel, and `funding_stack` helpers. For broader coverage (loans, tax incentives, dashboard, billing) use the official [`@autonomath/sdk`](https://www.npmjs.com/package/@autonomath/sdk).
 
 ## Install
 
@@ -78,6 +78,24 @@ for (const hit of result.hits) {
 console.log(`checked ${result.checked_rules} rules`);
 ```
 
+### 5. Evidence / intel / funding_stack
+
+```typescript
+const packet = await jp.getEvidencePacket("program", "PROG-jp-example");
+const match = await jp.intelMatch({
+  industry_jsic_major: "E",
+  prefecture_code: "13",
+  keyword: "DX",
+});
+const stack = await jp.checkFundingStack(["PROG-A", "PROG-B"]);
+
+console.log(packet.records.length, match.matched_programs.length);
+console.log(stack.next_actions[0]?.action_id);
+```
+
+`funding_stack.next_actions` values are action objects:
+`action_id`, `label_ja`, `detail_ja`, `reason`, `source_fields`.
+
 ## Errors
 
 ```typescript
@@ -112,7 +130,7 @@ try {
 
 |                          | `@bookyou/jpcite`         | `@autonomath/sdk`              |
 | ------------------------ | ------------------------- | ------------------------------ |
-| Methods                  | 4 (search / 法人 / 法令 / 排他) | 60+ (loans, tax, dashboard, …) |
+| Methods                  | Core + Evidence/intel/funding_stack | 60+ (loans, tax, dashboard, …) |
 | Brand surface            | jpcite (current)          | autonomath (legacy)            |
 | Bundle size              | ~3 KB gzip                | ~8 KB gzip                     |
 | Retry / backoff          | none (single attempt)     | exponential, 3 retries         |

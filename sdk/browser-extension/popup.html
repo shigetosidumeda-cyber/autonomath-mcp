@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>jpcite — 履歴と残量</title>
+<style>
+  :root { color-scheme: light; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Noto Sans JP", "Hiragino Sans", sans-serif;
+    margin: 0;
+    padding: 14px 16px;
+    width: 340px;
+    color: #1c1917;
+  }
+  h1 {
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+  }
+  p.tag {
+    font-size: 11px;
+    color: #6b7280;
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+  }
+  .quota {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 12px;
+    margin-bottom: 12px;
+  }
+  .quota .qlabel { color: #6b7280; }
+  .quota .qvalue { font-weight: 700; color: #1c1917; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .quota.anon { background: #fef9c3; border-color: #fde68a; color: #713f12; }
+  h2 {
+    font-size: 12px;
+    font-weight: 700;
+    color: #6b7280;
+    margin: 14px 0 6px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  ul.hist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 240px;
+    overflow-y: auto;
+  }
+  li.hi {
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    padding: 7px 9px;
+    font-size: 12px;
+    background: #ffffff;
+    cursor: pointer;
+  }
+  li.hi:hover { background: #f3f4f6; }
+  li.hi .label { font-weight: 600; }
+  li.hi .meta {
+    color: #6b7280;
+    font-size: 10px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    margin-top: 2px;
+  }
+  .empty {
+    text-align: center;
+    color: #9ca3af;
+    font-size: 12px;
+    padding: 16px 0;
+  }
+  .row {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  button {
+    flex: 1;
+    appearance: none;
+    border: 1px solid #d4d4d8;
+    background: #ffffff;
+    color: #1c1917;
+    border-radius: 4px;
+    padding: 7px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  button:hover { background: #f3f4f6; }
+  button.primary { background: #1c1917; color: #fff; border-color: #1c1917; }
+  button.primary:hover { background: #3B82F6; border-color: #3B82F6; }
+  .footer {
+    margin-top: 12px;
+    font-size: 10px;
+    color: #9ca3af;
+    text-align: right;
+  }
+  a { color: #3B82F6; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+  <h1>jpcite</h1>
+  <p class="tag">e-Gov / 国税庁 / 法務省 / 裁判所 で overlay ボタン。</p>
+
+  <div id="quota-box" class="quota">
+    <span class="qlabel">残量</span>
+    <span class="qvalue" id="quota-value">—</span>
+  </div>
+
+  <h2>最近の照会</h2>
+  <ul id="hist" class="hist"></ul>
+  <div id="empty" class="empty" style="display:none">まだ履歴がありません。</div>
+
+  <div class="row">
+    <button id="btn-options" type="button">設定</button>
+    <button id="btn-clear" type="button">履歴 clear</button>
+    <button id="btn-site" class="primary" type="button">jpcite.com</button>
+  </div>
+
+  <div class="footer">
+    powered by <a href="https://jpcite.com/" target="_blank" rel="noopener">jpcite</a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

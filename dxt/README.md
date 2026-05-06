@@ -35,7 +35,7 @@ shipping format). Key invariants:
   install time)
 - `server.mcp_config.command`: `uvx`
 - `server.mcp_config.args`: `["autonomath-mcp"]`
-- `tools[]`: list all 93 default-on MCP tools with short descriptions so
+- `tools[]`: list all 139 canonical MCP tools with short descriptions so
   the Claude Desktop Extension marketplace listing shows accurate
   capabilities before install.
 

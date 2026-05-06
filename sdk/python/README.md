@@ -32,7 +32,26 @@ print(detail.enriched)
 check = c.check_exclusions([p.unified_id for p in resp.results])
 for hit in check.hits:
     print(hit.rule_id, hit.severity, hit.programs_involved)
+
+packet = c.get_evidence_packet("program", resp.results[0].unified_id)
+print(packet.quality.known_gaps)
+
+match = c.intel_match(industry_jsic_major="E", prefecture_code="13", keyword="DX")
+print(match.total_candidates)
 ```
+
+## Evidence / intel helpers
+
+The SDK includes typed wrappers for:
+
+- `get_evidence_packet(kind, id)` / `query_evidence_packet(...)`
+- `intel_match(...)`
+- `intel_bundle_optimal(...)`
+- `get_intel_houjin_full(houjin_id, ...)`
+- `check_funding_stack(program_ids)`
+
+`check_funding_stack(...).next_actions` values are typed action objects with
+`action_id`, `label_ja`, `detail_ja`, `reason`, and `source_fields`.
 
 ## Async
 

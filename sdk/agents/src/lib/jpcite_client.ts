@@ -2,7 +2,7 @@
 //
 // Wraps `@jpcite/sdk` (REST) and exposes a thin facade for the few endpoints
 // the agents call. Also exposes optional MCP spawn helpers for hosts that
-// want the 120-tool MCP surface instead of REST.
+// want the 139-tool MCP surface instead of REST.
 //
 // Customer-side LLM cost: this client never invokes Anthropic; it only talks
 // to https://api.jpcite.com (¥3/req metered). LLM reasoning happens on the
@@ -192,6 +192,409 @@ export interface ProgramAdoptionStats {
   last_round_at: string | null;
 }
 
+export type EvidencePacketSubjectKind = "program" | "houjin";
+export type EvidencePacketProfile =
+  | "full"
+  | "brief"
+  | "verified_only"
+  | "changes_only";
+export type EvidencePacketSourceTokensBasis =
+  | "unknown"
+  | "pdf_pages"
+  | "token_count";
+
+export interface EvidencePacketOptions {
+  include_facts?: boolean;
+  include_rules?: boolean;
+  include_compression?: boolean;
+  fields?: string;
+  packet_profile?: EvidencePacketProfile;
+  input_token_price_jpy_per_1m?: number | null;
+  source_tokens_basis?: EvidencePacketSourceTokensBasis;
+  source_pdf_pages?: number | null;
+  source_token_count?: number | null;
+}
+
+export interface EvidencePacketQueryBody extends EvidencePacketOptions {
+  query_text: string;
+  filters?: Record<string, any> | null;
+  limit?: number;
+}
+
+export interface EvidencePacketEnvelope {
+  packet_id: string;
+  generated_at: string;
+  api_version: string;
+  corpus_snapshot_id: string;
+  query: Record<string, any>;
+  answer_not_included: boolean;
+  records: Array<Record<string, any> & { entity_id: string }>;
+  quality: Record<string, any> & { known_gaps?: string[] };
+  verification: Record<string, any>;
+  compression?: Record<string, any> | null;
+  evidence_value?: Record<string, any> | null;
+  agent_recommendation?: Record<string, any> | null;
+  decision_insights?: Record<string, any> | null;
+  [k: string]: any;
+}
+
+export interface IntelEnvelope {
+  _disclaimer?: string;
+  _billing_unit?: number;
+  [k: string]: any;
+}
+
+export interface IntelProbabilityRadarRequest {
+  program_id: string;
+  houjin_bangou: string;
+  effort_hours_override?: number | null;
+  hourly_rate_yen_override?: number | null;
+  [k: string]: any;
+}
+
+export interface IntelAuditChainRequest {
+  evidence_packet_id: string;
+  [k: string]: any;
+}
+
+export interface IntelMatchRequest {
+  industry_jsic_major: string;
+  prefecture_code: string;
+  capital_jpy?: number | null;
+  employee_count?: number | null;
+  keyword?: string | null;
+  limit?: number;
+  [k: string]: any;
+}
+
+export interface IntelEntityRef {
+  type: string;
+  id: string;
+  [k: string]: any;
+}
+
+export interface IntelDiffRequest {
+  a: IntelEntityRef;
+  b: IntelEntityRef;
+  depth?: number;
+  [k: string]: any;
+}
+
+export interface IntelPathRequest {
+  from_entity: IntelEntityRef;
+  to_entity: IntelEntityRef;
+  max_hops?: number;
+  relation_filter?: string[];
+  [k: string]: any;
+}
+
+export interface IntelConflictRequest {
+  program_ids: string[];
+  houjin_id: string;
+  [k: string]: any;
+}
+
+export interface IntelWhyExcludedRequest {
+  program_id: string;
+  houjin: Record<string, any>;
+  [k: string]: any;
+}
+
+export interface IntelPeerGroupRequest {
+  houjin_id?: string | null;
+  houjin_attributes?: Record<string, any> | null;
+  peer_count?: number;
+  comparison_axes?: string[];
+  [k: string]: any;
+}
+
+export interface IntelBundleOptimalRequest {
+  houjin_id: string | Record<string, any>;
+  bundle_size?: number;
+  objective?: "max_amount" | "max_count" | "min_overlap";
+  exclude_program_ids?: string[];
+  prefer_categories?: string[];
+  [k: string]: any;
+}
+
+export interface IntelRiskScoreRequest {
+  houjin_id: string;
+  include_axes?: string[] | null;
+  weight_overrides?: Record<string, number> | null;
+  [k: string]: any;
+}
+
+export interface IntelScenarioSimulateRequest {
+  scenario: string | Record<string, any>;
+  houjin_id?: string | null;
+  program_ids?: string[];
+  assumptions?: Record<string, any> | null;
+  horizon_days?: number | null;
+  [k: string]: any;
+}
+
+export interface IntelCompetitorLandscapeRequest {
+  houjin_id?: string | null;
+  industry_jsic_major?: string | null;
+  prefecture_code?: string | null;
+  program_id?: string | null;
+  peer_count?: number;
+  include_axes?: string[];
+  [k: string]: any;
+}
+
+export interface IntelPortfolioHeatmapRequest {
+  houjin_ids?: string[];
+  program_ids?: string[];
+  axes?: string[];
+  segment_by?: string | null;
+  [k: string]: any;
+}
+
+export interface IntelNewsBriefRequest {
+  subject_type?: "program" | "houjin" | "law" | "jurisdiction" | string;
+  subject_id?: string | null;
+  since_date?: string | null;
+  max_items?: number;
+  include_sources?: boolean;
+  [k: string]: any;
+}
+
+export interface IntelOnboardingBriefRequest {
+  houjin_id: string;
+  program_ids?: string[];
+  include_sections?: string[];
+  [k: string]: any;
+}
+
+export interface IntelRefundRiskRequest {
+  houjin_id: string;
+  program_id?: string | null;
+  amount_jpy?: number | null;
+  include_axes?: string[];
+  [k: string]: any;
+}
+
+export interface IntelCrossJurisdictionRequest {
+  topic?: string | null;
+  program_id?: string | null;
+  houjin_id?: string | null;
+  source_jurisdiction?: string | null;
+  target_jurisdictions?: string[];
+  [k: string]: any;
+}
+
+export interface IntelListQuery {
+  include_sections?: string[];
+  include_types?: string[];
+  include?: string[];
+  year?: number;
+  max_per_section?: number;
+  max_per_type?: number;
+  max_citations?: number;
+  since_date?: string | null;
+  format?: "markdown" | "json" | string;
+  include_adoptions?: boolean;
+  citation_style?: "footnote" | "inline" | string;
+  [k: string]: any;
+}
+
+export interface IntelDecisionSupportEntry {
+  signal?: string;
+  action?: string;
+  insight_id?: string;
+  section?: string;
+  priority?: string;
+  message?: string;
+  message_ja?: string;
+  reason?: string;
+  basis?: string[];
+  source_fields?: string[];
+  [k: string]: any;
+}
+
+export interface IntelMatchProgram {
+  program_id: string;
+  primary_name: string;
+  tier: string | null;
+  match_score: number;
+  score_components: Record<string, any>;
+  authority_name: string | null;
+  prefecture: string | null;
+  program_kind: string | null;
+  source_url: string | null;
+  eligibility_predicate: Record<string, any>;
+  required_documents: Array<Record<string, any>>;
+  next_questions: Array<Record<string, any>>;
+  eligibility_gaps: Array<Record<string, any>>;
+  document_readiness: Record<string, any>;
+  similar_adopted_companies: Array<Record<string, any>>;
+  applicable_laws: Array<Record<string, any>>;
+  applicable_tsutatsu: Array<Record<string, any>>;
+  audit_proof: Record<string, any>;
+  [k: string]: any;
+}
+
+export interface IntelMatchResponse extends IntelEnvelope {
+  matched_programs: IntelMatchProgram[];
+  total_candidates: number;
+  applied_filters: string[];
+  corpus_snapshot_id?: string;
+}
+
+export interface IntelBundleProgram {
+  program_id: string;
+  name: string | null;
+  eligibility_score: number;
+  expected_amount_min: number;
+  expected_amount_max: number;
+  conflict_with_others_in_bundle: string[];
+  [k: string]: any;
+}
+
+export interface IntelBundleTotal {
+  expected_amount_min: number;
+  expected_amount_max: number;
+  eligibility_avg: number;
+  [k: string]: any;
+}
+
+export interface IntelBundleDecisionSupport {
+  schema_version: string;
+  generated_from: string[];
+  why_this_matters: IntelDecisionSupportEntry[];
+  decision_insights: IntelDecisionSupportEntry[];
+  next_actions: IntelDecisionSupportEntry[];
+  [k: string]: any;
+}
+
+export interface IntelBundleOptimalResponse extends IntelEnvelope {
+  houjin_id: string | Record<string, any>;
+  bundle: IntelBundleProgram[];
+  bundle_total: IntelBundleTotal;
+  conflict_avoidance: {
+    conflict_pairs_avoided: number;
+    alternative_considered: number;
+    [k: string]: any;
+  };
+  optimization_log: {
+    algorithm: string;
+    iterations: number;
+    time_ms: number;
+    [k: string]: any;
+  };
+  runner_up_bundles: Array<{
+    bundle: string[];
+    total_amount: number;
+    why_not_chosen: string;
+    [k: string]: any;
+  }>;
+  data_quality: Record<string, any>;
+  decision_support: IntelBundleDecisionSupport;
+  corpus_snapshot_id?: string;
+}
+
+export interface IntelHoujinMeta {
+  houjin_bangou: string;
+  name: string | null;
+  capital: number | null;
+  employees: number | null;
+  founded: string | null;
+  jsic: string | null;
+  address: string | null;
+  corporation_type?: string | null;
+  total_adoptions?: number;
+  total_received_yen?: number;
+  [k: string]: any;
+}
+
+export interface IntelHoujinFullDecisionSupport {
+  risk_summary: Record<string, any>;
+  decision_insights: IntelDecisionSupportEntry[];
+  next_actions: IntelDecisionSupportEntry[];
+  known_gaps: IntelDecisionSupportEntry[];
+  [k: string]: any;
+}
+
+export interface IntelHoujinFullResponse extends IntelEnvelope {
+  houjin_bangou: string;
+  sections_returned: string[];
+  max_per_section: number;
+  houjin_meta?: IntelHoujinMeta | null;
+  adoption_history?: Array<Record<string, any>>;
+  enforcement_records?: Array<Record<string, any>>;
+  invoice_status?: Record<string, any>;
+  peer_summary?: Record<string, any>;
+  jurisdiction_breakdown?: Record<string, any>;
+  watch_status?: Record<string, any>;
+  data_quality?: Record<string, any>;
+  decision_support: IntelHoujinFullDecisionSupport;
+  corpus_snapshot_id?: string;
+}
+
+export type FundingStackVerdict =
+  | "compatible"
+  | "incompatible"
+  | "requires_review"
+  | "unknown";
+
+export interface FundingStackNextAction {
+  action_id: string;
+  label_ja: string;
+  detail_ja: string;
+  reason: string;
+  source_fields?: string[];
+  [k: string]: any;
+}
+
+export interface FundingStackRuleChainEntry {
+  source: string;
+  rule_text: string;
+  weight: number;
+  rule_id?: string;
+  kind?: string;
+  severity?: string | null;
+  compat_status?: string;
+  inferred_only?: number;
+  source_url?: string | null;
+  source_urls?: string[];
+  note?: string;
+  [k: string]: any;
+}
+
+export interface FundingStackPair {
+  program_a: string;
+  program_b: string;
+  verdict: FundingStackVerdict;
+  confidence: number;
+  rule_chain: FundingStackRuleChainEntry[];
+  next_actions: FundingStackNextAction[];
+  _disclaimer: string;
+  [k: string]: any;
+}
+
+export interface FundingStackCheckResponse extends IntelEnvelope {
+  program_ids: string[];
+  all_pairs_status: FundingStackVerdict;
+  pairs: FundingStackPair[];
+  blockers: Array<{
+    program_a: string;
+    program_b: string;
+    rule_chain: FundingStackRuleChainEntry[];
+    next_actions: FundingStackNextAction[];
+    [k: string]: any;
+  }>;
+  warnings: Array<{
+    program_a: string;
+    program_b: string;
+    rule_chain: FundingStackRuleChainEntry[];
+    next_actions: FundingStackNextAction[];
+    [k: string]: any;
+  }>;
+  next_actions: FundingStackNextAction[];
+  total_pairs: number;
+}
+
 /**
  * Evidence packet attached to every agent output. Agents are forbidden from
  * surfacing claims without a citation set; this struct enforces that
@@ -231,6 +634,10 @@ export class JpciteClient {
         userAgentSuffix: options.userAgentSuffix ?? "jpcite-agents",
       });
     }
+  }
+
+  fetch<T = any>(methodOrPath: string, path?: string, body?: any): Promise<T> {
+    return this.rest.fetch<T>(methodOrPath, path, body);
   }
 
   // ─── Programs / loans / tax / enforcement / law (delegates to @jpcite/sdk) ───
@@ -376,6 +783,185 @@ export class JpciteClient {
     return this.rest.fetch("GET", path);
   }
 
+  // ─── Evidence Packet REST surfaces ──────────────────────────────────
+
+  getEvidencePacket(
+    subjectKind: EvidencePacketSubjectKind,
+    subjectId: string,
+    options: EvidencePacketOptions = {},
+  ): Promise<EvidencePacketEnvelope> {
+    if (subjectKind !== "program" && subjectKind !== "houjin") {
+      throw new TypeError("subjectKind must be 'program' or 'houjin'");
+    }
+    if (!subjectId) throw new TypeError("subjectId is required");
+    return this.rest.fetch<EvidencePacketEnvelope>(
+      "GET",
+      withQuery(
+        `/v1/evidence/packets/${encodeURIComponent(subjectKind)}/${encodeURIComponent(subjectId)}`,
+        options,
+      ),
+    );
+  }
+
+  queryEvidencePacket(body: EvidencePacketQueryBody): Promise<EvidencePacketEnvelope> {
+    if (!body || !body.query_text) throw new TypeError("body.query_text is required");
+    return this.rest.fetch<EvidencePacketEnvelope>(
+      "POST",
+      "/v1/evidence/packets/query",
+      body,
+    );
+  }
+
+  // ─── Composite intel surfaces (Wave 30/31 + W32-3) ─────────────────────
+
+  intel<T extends IntelEnvelope = IntelEnvelope>(
+    method: "GET" | "POST",
+    path: string,
+    body?: any,
+  ): Promise<T> {
+    return this.rest.fetch<T>(method, path, body);
+  }
+
+  getIntelProgramFull<T extends IntelEnvelope = IntelEnvelope>(
+    programId: string,
+    options: Pick<IntelListQuery, "include_sections" | "max_per_section"> = {},
+  ): Promise<T> {
+    if (!programId) throw new TypeError("programId is required");
+    return this.intel<T>(
+      "GET",
+      withQuery(`/v1/intel/program/${encodeURIComponent(programId)}/full`, options),
+    );
+  }
+
+  getIntelHoujinFull<T extends IntelEnvelope = IntelHoujinFullResponse>(
+    houjinId: string,
+    options: Pick<IntelListQuery, "include_sections" | "max_per_section"> = {},
+  ): Promise<T> {
+    if (!houjinId) throw new TypeError("houjinId is required");
+    return this.intel<T>(
+      "GET",
+      withQuery(`/v1/intel/houjin/${encodeURIComponent(houjinId)}/full`, options),
+    );
+  }
+
+  getIntelTimeline<T extends IntelEnvelope = IntelEnvelope>(
+    programId: string,
+    options: Pick<IntelListQuery, "year" | "include_types"> = {},
+  ): Promise<T> {
+    if (!programId) throw new TypeError("programId is required");
+    return this.intel<T>(
+      "GET",
+      withQuery(`/v1/intel/timeline/${encodeURIComponent(programId)}`, options),
+    );
+  }
+
+  getIntelRegulatoryContext<T extends IntelEnvelope = IntelEnvelope>(
+    programId: string,
+    options: Pick<IntelListQuery, "include" | "max_per_type" | "since_date"> = {},
+  ): Promise<T> {
+    if (!programId) throw new TypeError("programId is required");
+    return this.intel<T>(
+      "GET",
+      withQuery(`/v1/intel/regulatory_context/${encodeURIComponent(programId)}`, options),
+    );
+  }
+
+  getIntelCitationPack<T extends IntelEnvelope = IntelEnvelope>(
+    programId: string,
+    options: Pick<IntelListQuery, "format" | "max_citations" | "include_adoptions" | "citation_style"> = {},
+  ): Promise<T> {
+    if (!programId) throw new TypeError("programId is required");
+    return this.intel<T>(
+      "GET",
+      withQuery(`/v1/intel/citation_pack/${encodeURIComponent(programId)}`, options),
+    );
+  }
+
+  intelProbabilityRadar<T extends IntelEnvelope = IntelEnvelope>(body: IntelProbabilityRadarRequest): Promise<T> {
+    return this.intel<T>("POST", "/v1/intel/probability_radar", body);
+  }
+
+  intelAuditChain<T extends IntelEnvelope = IntelEnvelope>(body: IntelAuditChainRequest): Promise<T> {
+    return this.intel<T>("POST", "/v1/intel/audit_chain", body);
+  }
+
+  intelMatch<T extends IntelEnvelope = IntelMatchResponse>(body: IntelMatchRequest): Promise<T> {
+    return this.intel<T>("POST", "/v1/intel/match", body);
+  }
+
+  intelDiff<T extends IntelEnvelope = IntelEnvelope>(body: IntelDiffRequest): Promise<T> {
+    return this.intel<T>("POST", "/v1/intel/diff", body);
+  }
+
+  intelPath<T extends IntelEnvelope = IntelEnvelope>(body: IntelPathRequest): Promise<T> {
+    return this.intel<T>("POST", "/v1/intel/path", body);
+  }
+
+  intelConflict<T extends IntelEnvelope = IntelEnvelope>(body: IntelConflictRequest): Promise<T> {
+    return this.intel<T>("POST", "/v1/intel/conflict", body);
+  }
+
+  intelWhyExcluded<T extends IntelEnvelope = IntelEnvelope>(body: IntelWhyExcludedRequest): Promise<T> {
+    return this.intel<T>("POST", "/v1/intel/why_excluded", body);
+  }
+
+  intelPeerGroup<T extends IntelEnvelope = IntelEnvelope>(body: IntelPeerGroupRequest): Promise<T> {
+    return this.intel<T>("POST", "/v1/intel/peer_group", body);
+  }
+
+  intelBundleOptimal<T extends IntelEnvelope = IntelBundleOptimalResponse>(body: IntelBundleOptimalRequest): Promise<T> {
+    return this.intel<T>("POST", "/v1/intel/bundle/optimal", body);
+  }
+
+  checkFundingStack(programIds: string[]): Promise<FundingStackCheckResponse> {
+    if (!Array.isArray(programIds) || programIds.length < 2) {
+      throw new TypeError("programIds must contain at least two program ids");
+    }
+    return this.rest.fetch<FundingStackCheckResponse>("POST", "/v1/funding_stack/check", {
+      program_ids: programIds,
+    });
+  }
+
+  intelRiskScore<T extends IntelEnvelope = IntelEnvelope>(body: IntelRiskScoreRequest): Promise<T> {
+    return this.intel<T>("POST", "/v1/intel/risk_score", body);
+  }
+
+  intelScenarioSimulate<T extends IntelEnvelope = IntelEnvelope>(body: IntelScenarioSimulateRequest): Promise<T> {
+    return this.intel<T>("POST", "/v1/intel/scenario/simulate", body);
+  }
+
+  intelCompetitorLandscape<T extends IntelEnvelope = IntelEnvelope>(
+    body: IntelCompetitorLandscapeRequest,
+  ): Promise<T> {
+    return this.intel<T>("POST", "/v1/intel/competitor_landscape", body);
+  }
+
+  intelPortfolioHeatmap<T extends IntelEnvelope = IntelEnvelope>(
+    body: IntelPortfolioHeatmapRequest,
+  ): Promise<T> {
+    return this.intel<T>("POST", "/v1/intel/portfolio_heatmap", body);
+  }
+
+  intelNewsBrief<T extends IntelEnvelope = IntelEnvelope>(body: IntelNewsBriefRequest): Promise<T> {
+    return this.intel<T>("POST", "/v1/intel/news_brief", body);
+  }
+
+  intelOnboardingBrief<T extends IntelEnvelope = IntelEnvelope>(
+    body: IntelOnboardingBriefRequest,
+  ): Promise<T> {
+    return this.intel<T>("POST", "/v1/intel/onboarding_brief", body);
+  }
+
+  intelRefundRisk<T extends IntelEnvelope = IntelEnvelope>(body: IntelRefundRiskRequest): Promise<T> {
+    return this.intel<T>("POST", "/v1/intel/refund_risk", body);
+  }
+
+  intelCrossJurisdiction<T extends IntelEnvelope = IntelEnvelope>(
+    body: IntelCrossJurisdictionRequest,
+  ): Promise<T> {
+    return this.intel<T>("POST", "/v1/intel/cross_jurisdiction", body);
+  }
+
   // ─── Evidence packet helpers ─────────────────────────────────────────
 
   /**
@@ -406,4 +992,18 @@ export class JpciteClient {
 
 function dedupe<T>(arr: T[]): T[] {
   return Array.from(new Set(arr));
+}
+
+function withQuery(path: string, params: Record<string, any>): string {
+  const qs = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value === undefined || value === null) continue;
+    if (Array.isArray(value)) {
+      for (const item of value) qs.append(key, String(item));
+    } else {
+      qs.append(key, String(value));
+    }
+  }
+  const suffix = qs.toString();
+  return suffix ? `${path}?${suffix}` : path;
 }

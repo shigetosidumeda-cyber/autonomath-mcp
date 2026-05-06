@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import time
 from typing import Any
+from urllib.parse import quote
 
 import httpx
 
@@ -13,14 +14,25 @@ from autonomath._shared import (
     MAX_RETRIES,
     backoff_seconds,
     build_headers,
+    build_query_params,
     build_search_params,
+    drop_none,
     raise_for_status,
     should_retry,
 )
 from autonomath.exceptions import AutonoMathError, RateLimitError
 from autonomath.types import (
+    EvidencePacketEnvelope,
+    EvidencePacketProfile,
+    EvidencePacketSourceTokensBasis,
+    EvidencePacketSubjectKind,
     ExclusionCheckResponse,
     ExclusionRule,
+    FundingStackCheckResponse,
+    IntelBundleObjective,
+    IntelBundleOptimalResponse,
+    IntelHoujinFullResponse,
+    IntelMatchResponse,
     Meta,
     ProgramDetail,
     SearchResponse,
@@ -128,6 +140,160 @@ class Client:
             json={"program_ids": list(program_ids)},
         )
         return ExclusionCheckResponse.model_validate(data)
+
+    def get_evidence_packet(
+        self,
+        subject_kind: EvidencePacketSubjectKind,
+        subject_id: str,
+        *,
+        include_facts: bool = True,
+        include_rules: bool = True,
+        include_compression: bool = False,
+        fields: str = "default",
+        packet_profile: EvidencePacketProfile = "full",
+        input_token_price_jpy_per_1m: float | None = None,
+        source_tokens_basis: EvidencePacketSourceTokensBasis = "unknown",
+        source_pdf_pages: int | None = None,
+        source_token_count: int | None = None,
+    ) -> EvidencePacketEnvelope:
+        if subject_kind not in ("program", "houjin"):
+            raise ValueError("subject_kind must be 'program' or 'houjin'")
+        if not subject_id:
+            raise ValueError("subject_id is required")
+        params = build_query_params(
+            include_facts=include_facts,
+            include_rules=include_rules,
+            include_compression=include_compression,
+            fields=fields,
+            packet_profile=packet_profile,
+            input_token_price_jpy_per_1m=input_token_price_jpy_per_1m,
+            source_tokens_basis=source_tokens_basis,
+            source_pdf_pages=source_pdf_pages,
+            source_token_count=source_token_count,
+        )
+        data = self._request(
+            "GET",
+            f"/v1/evidence/packets/{quote(subject_kind)}/{quote(subject_id, safe='')}",
+            params=params,
+        )
+        return EvidencePacketEnvelope.model_validate(data)
+
+    def query_evidence_packet(
+        self,
+        *,
+        query_text: str,
+        filters: dict[str, Any] | None = None,
+        limit: int = 10,
+        include_facts: bool = True,
+        include_rules: bool = False,
+        include_compression: bool = False,
+        fields: str = "default",
+        packet_profile: EvidencePacketProfile = "full",
+        input_token_price_jpy_per_1m: float | None = None,
+        source_tokens_basis: EvidencePacketSourceTokensBasis = "unknown",
+        source_pdf_pages: int | None = None,
+        source_token_count: int | None = None,
+        **extra: Any,
+    ) -> EvidencePacketEnvelope:
+        if not query_text:
+            raise ValueError("query_text is required")
+        body = drop_none(
+            {
+                "query_text": query_text,
+                "filters": filters,
+                "limit": limit,
+                "include_facts": include_facts,
+                "include_rules": include_rules,
+                "include_compression": include_compression,
+                "fields": fields,
+                "packet_profile": packet_profile,
+                "input_token_price_jpy_per_1m": input_token_price_jpy_per_1m,
+                "source_tokens_basis": source_tokens_basis,
+                "source_pdf_pages": source_pdf_pages,
+                "source_token_count": source_token_count,
+                **extra,
+            }
+        )
+        data = self._request("POST", "/v1/evidence/packets/query", json=body)
+        return EvidencePacketEnvelope.model_validate(data)
+
+    def intel_match(
+        self,
+        *,
+        industry_jsic_major: str,
+        prefecture_code: str,
+        capital_jpy: int | None = None,
+        employee_count: int | None = None,
+        keyword: str | None = None,
+        limit: int = 5,
+        **extra: Any,
+    ) -> IntelMatchResponse:
+        body = drop_none(
+            {
+                "industry_jsic_major": industry_jsic_major,
+                "prefecture_code": prefecture_code,
+                "capital_jpy": capital_jpy,
+                "employee_count": employee_count,
+                "keyword": keyword,
+                "limit": limit,
+                **extra,
+            }
+        )
+        data = self._request("POST", "/v1/intel/match", json=body)
+        return IntelMatchResponse.model_validate(data)
+
+    def intel_bundle_optimal(
+        self,
+        *,
+        houjin_id: str | dict[str, Any],
+        bundle_size: int = 5,
+        objective: IntelBundleObjective = "max_amount",
+        exclude_program_ids: list[str] | None = None,
+        prefer_categories: list[str] | None = None,
+        **extra: Any,
+    ) -> IntelBundleOptimalResponse:
+        body = drop_none(
+            {
+                "houjin_id": houjin_id,
+                "bundle_size": bundle_size,
+                "objective": objective,
+                "exclude_program_ids": exclude_program_ids or [],
+                "prefer_categories": prefer_categories or [],
+                **extra,
+            }
+        )
+        data = self._request("POST", "/v1/intel/bundle/optimal", json=body)
+        return IntelBundleOptimalResponse.model_validate(data)
+
+    def get_intel_houjin_full(
+        self,
+        houjin_id: str,
+        *,
+        include_sections: list[str] | None = None,
+        max_per_section: int | None = None,
+    ) -> IntelHoujinFullResponse:
+        if not houjin_id:
+            raise ValueError("houjin_id is required")
+        params = build_query_params(
+            include_sections=include_sections or [],
+            max_per_section=max_per_section,
+        )
+        data = self._request(
+            "GET",
+            f"/v1/intel/houjin/{quote(houjin_id, safe='')}/full",
+            params=params,
+        )
+        return IntelHoujinFullResponse.model_validate(data)
+
+    def check_funding_stack(self, program_ids: list[str]) -> FundingStackCheckResponse:
+        if len(program_ids) < 2:
+            raise ValueError("program_ids must contain at least two program ids")
+        data = self._request(
+            "POST",
+            "/v1/funding_stack/check",
+            json={"program_ids": list(program_ids)},
+        )
+        return FundingStackCheckResponse.model_validate(data)
 
     # -------- internals --------
 

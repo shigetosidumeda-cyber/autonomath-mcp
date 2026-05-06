@@ -67,6 +67,26 @@ def build_search_params(
     return params
 
 
+def build_query_params(**values: Any) -> list[tuple[str, Any]]:
+    """Build repeated query params while dropping only None values."""
+    params: list[tuple[str, Any]] = []
+    for key, value in values.items():
+        if value is None:
+            continue
+        if isinstance(value, list):
+            for item in value:
+                params.append((key, item))
+        elif isinstance(value, bool):
+            params.append((key, "true" if value else "false"))
+        else:
+            params.append((key, value))
+    return params
+
+
+def drop_none(data: dict[str, Any]) -> dict[str, Any]:
+    return {key: value for key, value in data.items() if value is not None}
+
+
 def raise_for_status(response: httpx.Response) -> None:
     if response.status_code < 400:
         return

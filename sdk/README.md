@@ -12,19 +12,31 @@ Official client SDKs for the jpcite REST API.
 Both SDKs are hand-written wrappers over `https://api.jpcite.com`. Python is
 currently installed from `sdk/python`; TypeScript is packaged as
 `@autonomath/sdk` and mirrors the REST + optional MCP helper surface. The
-minimal endpoint coverage is:
+shared Python/TypeScript endpoint coverage includes:
 
 - `GET /meta`, `GET /healthz`
 - `GET /v1/programs/search`
 - `GET /v1/programs/{unified_id}`
 - `GET /v1/exclusions/rules`
 - `POST /v1/exclusions/check`
+- `GET /v1/evidence/packets/{kind}/{id}`
+- `POST /v1/evidence/packets/query`
+- `POST /v1/intel/match`
+- `POST /v1/intel/bundle/optimal`
+- `GET /v1/intel/houjin/{houjin_id}/full`
+- `POST /v1/funding_stack/check`
+
+The TypeScript package additionally exposes typed helpers for loans, tax
+incentives, enforcement, law/article lookup, and authenticated account
+dashboard/cap endpoints.
 
 Shared behavior:
 
 - `X-API-Key` auth (Bearer also accepted server-side, but SDKs default to header).
 - Retries: `429` respects `Retry-After`, `5xx` exponential backoff (max 3 retries).
 - Typed models (Pydantic on Python, TypeScript interfaces on TS).
+- Funding Stack `next_actions` are typed as action objects
+  (`action_id`, `label_ja`, `detail_ja`, `reason`, `source_fields`).
 - Sync + async in Python; async-only in TS (fetch is async by nature).
 - User-Agent: `autonomath-python/{ver}` / `@autonomath/sdk/{ver}`.
 
@@ -55,9 +67,10 @@ model files (`types.py`, `types.ts`) become generated.
 - Field names in `Program` / `ExclusionRule` are locked.
 - Tier / enum strings are finalized in `docs/canonical/`.
 
-Target: end of **Week 4**. Until then we accept the hand-sync cost; the
-surface is small (6 endpoints, ~7 model types) and we would rather take fast
-breaking changes now than maintain a generator over a moving schema.
+Target: end of **Week 4**. Until then we accept the hand-sync cost across the
+current program, exclusion, Evidence Packet, intel, Funding Stack, and
+TypeScript-only REST helper surfaces rather than maintain a generator over a
+moving schema.
 
 ## API surface notes
 

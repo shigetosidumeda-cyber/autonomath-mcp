@@ -1,0 +1,24 @@
+# Source we don't ship; only dist/ + package.json + README + icon are required.
+src/**
+**/*.ts
+**/*.map
+tsconfig.json
+
+# Dev-only
+.vscode/**
+.vscode-test/**
+.github/**
+node_modules/**
+.gitignore
+.eslintrc*
+.prettierrc*
+.editorconfig
+
+# Build artifacts that are not the compiled extension
+**/*.tsbuildinfo
+*.vsix
+
+# Misc
+.DS_Store
+Thumbs.db
+**/*.log

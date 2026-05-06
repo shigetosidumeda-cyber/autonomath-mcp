@@ -251,6 +251,327 @@ export interface ExclusionCheckResponse {
 }
 
 // ────────────────────────────────────────────────────────────────────
+// Evidence Packet / composite intelligence
+// ────────────────────────────────────────────────────────────────────
+
+export type EvidencePacketSubjectKind = "program" | "houjin";
+export type EvidencePacketProfile =
+  | "full"
+  | "brief"
+  | "verified_only"
+  | "changes_only";
+export type EvidencePacketSourceTokensBasis =
+  | "unknown"
+  | "pdf_pages"
+  | "token_count";
+
+export interface EvidencePacketOptions {
+  include_facts?: boolean;
+  include_rules?: boolean;
+  include_compression?: boolean;
+  fields?: string;
+  packet_profile?: EvidencePacketProfile;
+  input_token_price_jpy_per_1m?: number | null;
+  source_tokens_basis?: EvidencePacketSourceTokensBasis;
+  source_pdf_pages?: number | null;
+  source_token_count?: number | null;
+}
+
+export interface EvidencePacketQueryBody extends EvidencePacketOptions {
+  query_text: string;
+  filters?: Record<string, unknown> | null;
+  limit?: number;
+}
+
+export interface EvidencePacketCompression {
+  packet_tokens_estimate: number;
+  source_tokens_estimate?: number | null;
+  avoided_tokens_estimate?: number | null;
+  compression_ratio?: number | null;
+  input_context_reduction_rate?: number | null;
+  estimate_method?: string | null;
+  estimate_disclaimer?: string | null;
+  source_tokens_basis: EvidencePacketSourceTokensBasis;
+  source_tokens_input_source?: string | null;
+  source_pdf_pages?: number | null;
+  source_token_count?: number | null;
+  estimate_scope?: string;
+  savings_claim?: string;
+  provider_billing_not_guaranteed?: boolean;
+  cost_savings_estimate?: Record<string, unknown> | null;
+  [k: string]: unknown;
+}
+
+export interface EvidencePacketRecord {
+  entity_id: string;
+  primary_name?: string | null;
+  record_kind?: string | null;
+  source_url?: string | null;
+  source_fetched_at?: string | null;
+  source_health?: Record<string, unknown> | null;
+  fact_provenance_coverage_pct?: number | null;
+  authority_name?: string | null;
+  prefecture?: string | null;
+  tier?: string | null;
+  aliases?: Array<Record<string, unknown>> | null;
+  pdf_fact_refs?: Array<Record<string, unknown>> | null;
+  facts?: Array<Record<string, unknown>> | null;
+  rules?: Array<Record<string, unknown>> | null;
+  short_summary?: Record<string, unknown> | null;
+  precomputed?: Record<string, unknown> | null;
+  recent_changes?: Array<Record<string, unknown>> | null;
+  [k: string]: unknown;
+}
+
+export interface EvidencePacketQuality {
+  freshness_bucket?: string | null;
+  coverage_score?: number | null;
+  known_gaps: string[];
+  human_review_required?: boolean | null;
+  [k: string]: unknown;
+}
+
+export interface EvidencePacketVerification {
+  replay_endpoint?: string | null;
+  provenance_endpoint?: string | null;
+  freshness_endpoint?: string | null;
+  [k: string]: unknown;
+}
+
+export interface EvidencePacketEvidenceValue {
+  records_returned: number;
+  source_linked_records: number;
+  precomputed_records: number;
+  pdf_fact_refs: number;
+  known_gap_count: number;
+  fact_provenance_coverage_pct_avg?: number | null;
+  web_search_performed_by_jpcite?: boolean;
+  request_time_llm_call_performed?: boolean;
+  [k: string]: unknown;
+}
+
+export interface EvidencePacketInsightItem {
+  signal: string;
+  message_ja: string;
+  source_fields: string[];
+  severity?: string | null;
+  [k: string]: unknown;
+}
+
+export interface EvidencePacketDecisionInsights {
+  schema_version: string;
+  generated_from: string[];
+  why_review: EvidencePacketInsightItem[];
+  next_checks: EvidencePacketInsightItem[];
+  evidence_gaps: EvidencePacketInsightItem[];
+  [k: string]: unknown;
+}
+
+export interface EvidencePacketEnvelope {
+  packet_id: string;
+  generated_at: string;
+  api_version: string;
+  corpus_snapshot_id: string;
+  query: Record<string, unknown>;
+  answer_not_included: boolean;
+  records: EvidencePacketRecord[];
+  quality: EvidencePacketQuality;
+  verification: EvidencePacketVerification;
+  compression?: EvidencePacketCompression | null;
+  evidence_value?: EvidencePacketEvidenceValue | null;
+  agent_recommendation?: Record<string, unknown> | null;
+  decision_insights?: EvidencePacketDecisionInsights | null;
+  [k: string]: unknown;
+}
+
+export interface IntelEnvelope {
+  _disclaimer?: string;
+  _billing_unit?: number;
+  corpus_snapshot_id?: string;
+  [k: string]: unknown;
+}
+
+export interface IntelMatchRequest {
+  industry_jsic_major: string;
+  prefecture_code: string;
+  capital_jpy?: number | null;
+  employee_count?: number | null;
+  keyword?: string | null;
+  limit?: number;
+  [k: string]: unknown;
+}
+
+export interface IntelQuestion {
+  id?: string | null;
+  field?: string | null;
+  question?: string | null;
+  reason?: string | null;
+  kind?: string | null;
+  impact?: string | null;
+  blocking?: boolean | null;
+  [k: string]: unknown;
+}
+
+export interface IntelEligibilityGap {
+  field?: string | null;
+  gap_type?: string | null;
+  reason?: string | null;
+  required_by?: string | null;
+  impact?: string | null;
+  blocking?: boolean | null;
+  expected?: unknown;
+  [k: string]: unknown;
+}
+
+export interface IntelDocumentReadiness {
+  required_document_count: number;
+  forms_with_url_count: number;
+  signature_required_count: number;
+  signature_unknown_count: number;
+  needs_user_confirmation: boolean;
+  [k: string]: unknown;
+}
+
+export interface IntelMatchedProgram {
+  program_id?: string | null;
+  primary_name?: string | null;
+  tier?: string | null;
+  match_score?: number | null;
+  score_components: Record<string, unknown>;
+  authority_name?: string | null;
+  prefecture?: string | null;
+  program_kind?: string | null;
+  source_url?: string | null;
+  eligibility_predicate: Record<string, unknown>;
+  required_documents: Array<Record<string, unknown>>;
+  next_questions: IntelQuestion[];
+  eligibility_gaps: IntelEligibilityGap[];
+  document_readiness: IntelDocumentReadiness;
+  similar_adopted_companies: Array<Record<string, unknown>>;
+  applicable_laws: Array<Record<string, unknown>>;
+  applicable_tsutatsu: Array<Record<string, unknown>>;
+  audit_proof?: Record<string, unknown> | null;
+  [k: string]: unknown;
+}
+
+export interface IntelMatchResponse extends IntelEnvelope {
+  matched_programs: IntelMatchedProgram[];
+  total_candidates: number;
+  applied_filters: string[];
+}
+
+export interface IntelDecisionSupportItem {
+  signal?: string | null;
+  insight_id?: string | null;
+  action?: string | null;
+  section?: string | null;
+  message?: string | null;
+  message_ja?: string | null;
+  basis?: string[];
+  source_fields?: string[];
+  metrics?: Record<string, unknown>;
+  priority?: string | null;
+  reason?: string | null;
+  [k: string]: unknown;
+}
+
+export interface IntelBundleOptimalRequest {
+  houjin_id: string | Record<string, unknown>;
+  bundle_size?: number;
+  objective?: "max_amount" | "max_count" | "min_overlap";
+  exclude_program_ids?: string[];
+  prefer_categories?: string[];
+  [k: string]: unknown;
+}
+
+export interface IntelBundleDecisionSupport {
+  schema_version: string;
+  generated_from: string[];
+  why_this_matters: IntelDecisionSupportItem[];
+  decision_insights: IntelDecisionSupportItem[];
+  next_actions: IntelDecisionSupportItem[];
+  [k: string]: unknown;
+}
+
+export interface IntelBundleOptimalResponse extends IntelEnvelope {
+  houjin_id?: string | null;
+  bundle: Array<Record<string, unknown>>;
+  bundle_total: Record<string, unknown>;
+  conflict_avoidance: Record<string, unknown>;
+  optimization_log: Record<string, unknown>;
+  runner_up_bundles: Array<Record<string, unknown>>;
+  data_quality: Record<string, unknown>;
+  decision_support: IntelBundleDecisionSupport;
+}
+
+export interface IntelHoujinDecisionSupport {
+  risk_summary: Record<string, unknown>;
+  decision_insights: IntelDecisionSupportItem[];
+  next_actions: IntelDecisionSupportItem[];
+  known_gaps: Array<Record<string, unknown>>;
+  [k: string]: unknown;
+}
+
+export interface IntelHoujinFullResponse extends IntelEnvelope {
+  houjin_bangou?: string | null;
+  sections_returned: string[];
+  max_per_section?: number | null;
+  houjin_meta?: Record<string, unknown> | null;
+  adoption_history: Array<Record<string, unknown>>;
+  enforcement_records: Array<Record<string, unknown>>;
+  invoice_status: Record<string, unknown>;
+  peer_summary: Record<string, unknown>;
+  jurisdiction_breakdown: Record<string, unknown>;
+  watch_status: Record<string, unknown>;
+  data_quality: Record<string, unknown>;
+  decision_support: IntelHoujinDecisionSupport;
+}
+
+export interface IntelListQuery {
+  include_sections?: string[];
+  max_per_section?: number;
+  [k: string]: unknown;
+}
+
+export type FundingStackVerdict =
+  | "compatible"
+  | "incompatible"
+  | "requires_review"
+  | "unknown";
+
+export interface FundingStackNextAction {
+  action_id: string;
+  label_ja: string;
+  detail_ja: string;
+  reason: string;
+  source_fields?: string[];
+  [k: string]: unknown;
+}
+
+export type FundingStackStructuredNextAction = FundingStackNextAction;
+
+export interface FundingStackPair {
+  program_a: string;
+  program_b: string;
+  verdict: FundingStackVerdict;
+  confidence: number;
+  rule_chain: Array<Record<string, unknown>>;
+  next_actions: FundingStackNextAction[];
+  _disclaimer?: string;
+  [k: string]: unknown;
+}
+
+export interface FundingStackCheckResponse extends IntelEnvelope {
+  program_ids: string[];
+  all_pairs_status: FundingStackVerdict;
+  pairs: FundingStackPair[];
+  blockers: Array<Record<string, unknown> & { next_actions?: FundingStackNextAction[] }>;
+  warnings: Array<Record<string, unknown> & { next_actions?: FundingStackNextAction[] }>;
+  next_actions: FundingStackNextAction[];
+  total_pairs: number;
+}
+
+// ────────────────────────────────────────────────────────────────────
 // Meta / dashboard / cap
 // ────────────────────────────────────────────────────────────────────
 

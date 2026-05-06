@@ -336,7 +336,7 @@ boolean 糖衣を提供。`max_interest_rate=0.015` で年利 1.5% 上限、
 
 ## See Also
 
-- [mcp-tools.md](./mcp-tools.md) — 全 96 ツールのスキーマ
+- [mcp-tools.md](./mcp-tools.md) — 全 139 ツールのスキーマ
 - [api-reference.md](./api-reference.md) — REST 全エンドポイント
 - [exclusions.md](./exclusions.md) — 排他ルールの kind / severity 分類
 - [prompt_cookbook.md](./prompt_cookbook.md) — agent flow のレシピ集

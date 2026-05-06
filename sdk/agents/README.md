@@ -115,6 +115,11 @@ in `src/lib/jpcite_client.ts`. Recommended fork pattern:
 4. Keep the `EvidencePacket` contract — it's load-bearing for §52 / 行政書士法
    §1 compliance and is consumed by audit-log dashboards downstream.
 
+`JpciteClient` also exposes the REST Evidence Packet, composite intel, and
+`funding_stack` helpers for custom agents. `funding_stack.next_actions` values
+are action objects (`action_id`, `label_ja`, `detail_ja`, `reason`,
+`source_fields`).
+
 ## Publishing (operator)
 
 `@jpcite/agents` is published to npm by the

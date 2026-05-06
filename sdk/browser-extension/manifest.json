@@ -1,0 +1,86 @@
+{
+  "manifest_version": 3,
+  "name": "jpcite — 日本の法令・判例を 1 click で",
+  "short_name": "jpcite",
+  "version": "0.1.0",
+  "description": "e-Gov / 国税庁 / 法務省 / 裁判所 / 国税不服審判所 のページに『jpcite で見る』ボタンを inject。法令番号・事件番号を検出してワンクリックで API.jpcite.com の正規 envelope を表示。¥3/req、匿名 3 req/日 無料。",
+  "homepage_url": "https://jpcite.com/",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "jpcite-overlay@bookyou.net",
+      "strict_min_version": "115.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "jpcite — 履歴・残量を見る",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "background": {
+    "service_worker": "background.js",
+    "scripts": ["background.js"],
+    "type": "module"
+  },
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting",
+    "contextMenus"
+  ],
+  "host_permissions": [
+    "https://laws.e-gov.go.jp/*",
+    "https://elaws.e-gov.go.jp/*",
+    "https://www.nta.go.jp/*",
+    "https://www.moj.go.jp/*",
+    "https://www.courts.go.jp/*",
+    "https://www.kfs.go.jp/*",
+    "https://api.jpcite.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://laws.e-gov.go.jp/*",
+        "https://elaws.e-gov.go.jp/*",
+        "https://www.nta.go.jp/*",
+        "https://www.moj.go.jp/*",
+        "https://www.courts.go.jp/*",
+        "https://www.kfs.go.jp/*"
+      ],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/icon48.png", "icons/icon128.png"],
+      "matches": [
+        "https://laws.e-gov.go.jp/*",
+        "https://elaws.e-gov.go.jp/*",
+        "https://www.nta.go.jp/*",
+        "https://www.moj.go.jp/*",
+        "https://www.courts.go.jp/*",
+        "https://www.kfs.go.jp/*"
+      ]
+    }
+  ]
+}

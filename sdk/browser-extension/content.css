@@ -1,0 +1,299 @@
+/* jpcite browser extension — overlay style.
+ *
+ * !important を多用するのは、ホストサイト (e-Gov / 国税庁 等) の reset CSS や
+ * global * セレクタに埋もれて見えなくなるのを防ぐため。拡張は他人のサイトに
+ * 乗るので、shadow DOM を使わない以上 !important は必須。
+ *
+ * カラー: jpcite ブランド #3B82F6 (blue-500), accent #1c1917 (stone-900).
+ */
+
+#jpcite-fab {
+  position: fixed !important;
+  right: 20px !important;
+  bottom: 20px !important;
+  z-index: 2147483646 !important; /* max z-index − 1 (modal が +1 で上に来る) */
+  display: none;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 10px 14px 10px 10px !important;
+  background: #1c1917 !important;
+  color: #ffffff !important;
+  border: 1px solid #1c1917 !important;
+  border-radius: 999px !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18) !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Noto Sans JP", "Hiragino Sans", sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  transition: background-color 120ms ease-in-out, transform 120ms ease-in-out !important;
+}
+
+#jpcite-fab:hover {
+  background: #3B82F6 !important;
+  border-color: #3B82F6 !important;
+  transform: translateY(-1px) !important;
+}
+
+#jpcite-fab .jpcite-fab-icon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 50% !important;
+  background: #3B82F6 !important;
+  color: #ffffff !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.5px !important;
+}
+
+#jpcite-fab:hover .jpcite-fab-icon {
+  background: #1c1917 !important;
+}
+
+#jpcite-fab .jpcite-fab-text {
+  white-space: nowrap !important;
+  max-width: 240px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* ===== modal ===== */
+
+#jpcite-modal-root {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2147483647 !important; /* 上限 */
+  font-family: -apple-system, BlinkMacSystemFont, "Noto Sans JP", "Hiragino Sans", sans-serif !important;
+  font-size: 13px !important;
+  color: #1c1917 !important;
+}
+
+#jpcite-modal-root .jpcite-modal-backdrop {
+  position: absolute !important;
+  inset: 0 !important;
+  background: rgba(15, 23, 42, 0.45) !important;
+}
+
+#jpcite-modal-root .jpcite-modal-card {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: min(720px, 92vw) !important;
+  max-height: 84vh !important;
+  background: #ffffff !important;
+  border-radius: 8px !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+#jpcite-modal-root .jpcite-modal-head {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 12px 14px !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  background: #f9fafb !important;
+}
+
+#jpcite-modal-root .jpcite-modal-title {
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  color: #1c1917 !important;
+}
+
+#jpcite-modal-root .jpcite-modal-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+#jpcite-modal-root .jpcite-modal-actions button {
+  appearance: none !important;
+  border: 1px solid #d4d4d8 !important;
+  background: #ffffff !important;
+  color: #1c1917 !important;
+  border-radius: 4px !important;
+  padding: 6px 10px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  font-family: inherit !important;
+}
+
+#jpcite-modal-root .jpcite-modal-actions button:hover {
+  background: #f3f4f6 !important;
+  border-color: #9ca3af !important;
+}
+
+#jpcite-modal-root .jpcite-btn-ep {
+  background: #3B82F6 !important;
+  color: #ffffff !important;
+  border-color: #3B82F6 !important;
+}
+
+#jpcite-modal-root .jpcite-btn-ep:hover {
+  background: #1d4ed8 !important;
+  border-color: #1d4ed8 !important;
+}
+
+#jpcite-modal-root .jpcite-btn-close {
+  font-size: 16px !important;
+  line-height: 1 !important;
+  padding: 4px 10px !important;
+}
+
+#jpcite-modal-root .jpcite-modal-body {
+  flex: 1 1 auto !important;
+  overflow-y: auto !important;
+  padding: 14px 16px !important;
+  background: #ffffff !important;
+}
+
+#jpcite-modal-root .jpcite-modal-foot {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 8px 14px !important;
+  border-top: 1px solid #e5e7eb !important;
+  background: #f9fafb !important;
+  font-size: 11px !important;
+  color: #6b7280 !important;
+}
+
+#jpcite-modal-root .jpcite-quota {
+  font-weight: 600 !important;
+  color: #1c1917 !important;
+}
+
+#jpcite-modal-root .jpcite-disclaimer {
+  text-align: right !important;
+  flex: 1 1 auto !important;
+}
+
+#jpcite-modal-root .jpcite-loading,
+#jpcite-modal-root .jpcite-info,
+#jpcite-modal-root .jpcite-error {
+  padding: 24px 0 !important;
+  text-align: center !important;
+  color: #6b7280 !important;
+  font-size: 13px !important;
+}
+
+#jpcite-modal-root .jpcite-error {
+  color: #b91c1c !important;
+}
+
+#jpcite-modal-root .jpcite-summary {
+  font-size: 12px !important;
+  color: #6b7280 !important;
+  margin: 0 0 10px 0 !important;
+}
+
+#jpcite-modal-root .jpcite-result-list {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+
+#jpcite-modal-root .jpcite-result-item {
+  border: 1px solid #e5e7eb !important;
+  border-radius: 6px !important;
+  padding: 10px 12px !important;
+  background: #ffffff !important;
+}
+
+#jpcite-modal-root .jpcite-result-title {
+  font-weight: 700 !important;
+  color: #1c1917 !important;
+  margin: 0 0 4px 0 !important;
+  font-size: 13px !important;
+  line-height: 1.4 !important;
+}
+
+#jpcite-modal-root .jpcite-result-meta {
+  font-size: 11px !important;
+  color: #6b7280 !important;
+  margin: 0 0 4px 0 !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace !important;
+}
+
+#jpcite-modal-root .jpcite-result-link {
+  color: #3B82F6 !important;
+  text-decoration: none !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+}
+
+#jpcite-modal-root .jpcite-result-link:hover {
+  text-decoration: underline !important;
+}
+
+#jpcite-modal-root .jpcite-record {
+  border: 1px solid #e5e7eb !important;
+  border-radius: 6px !important;
+  padding: 12px 14px !important;
+  background: #ffffff !important;
+}
+
+#jpcite-modal-root .jpcite-kv {
+  display: flex !important;
+  gap: 12px !important;
+  font-size: 12px !important;
+  margin: 4px 0 !important;
+}
+
+#jpcite-modal-root .jpcite-kv .jpcite-k {
+  width: 140px !important;
+  flex: 0 0 140px !important;
+  color: #6b7280 !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace !important;
+}
+
+#jpcite-modal-root .jpcite-kv .jpcite-v {
+  flex: 1 1 auto !important;
+  color: #1c1917 !important;
+  word-break: break-all !important;
+}
+
+#jpcite-modal-root .jpcite-raw {
+  margin-top: 14px !important;
+  border-top: 1px dashed #e5e7eb !important;
+  padding-top: 10px !important;
+}
+
+#jpcite-modal-root .jpcite-raw summary {
+  cursor: pointer !important;
+  color: #6b7280 !important;
+  font-size: 11px !important;
+}
+
+#jpcite-modal-root .jpcite-raw pre {
+  margin: 8px 0 0 0 !important;
+  padding: 10px 12px !important;
+  background: #f4f4f5 !important;
+  border-radius: 4px !important;
+  font-size: 11px !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace !important;
+  overflow-x: auto !important;
+  max-height: 320px !important;
+  color: #1c1917 !important;
+}
+
+#jpcite-modal-root code {
+  background: #f4f4f5 !important;
+  padding: 1px 4px !important;
+  border-radius: 2px !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace !important;
+  font-size: 12px !important;
+}

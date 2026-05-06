@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>jpcite — 設定</title>
+<style>
+  :root { color-scheme: light; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Noto Sans JP", "Hiragino Sans", sans-serif;
+    margin: 0;
+    padding: 24px 28px;
+    max-width: 640px;
+    color: #1c1917;
+    background: #f9fafb;
+  }
+  .card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 22px 24px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  }
+  h1 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+  }
+  p.tag {
+    font-size: 12px;
+    color: #6b7280;
+    margin: 0 0 18px 0;
+    line-height: 1.5;
+  }
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #1c1917;
+    margin: 14px 0 6px 0;
+  }
+  input[type="text"], input[type="password"] {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 9px 11px;
+    border: 1px solid #d4d4d8;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  input[type="text"]:focus, input[type="password"]:focus {
+    outline: none;
+    border-color: #3B82F6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  }
+  .hint {
+    font-size: 11px;
+    color: #6b7280;
+    line-height: 1.5;
+    margin-top: 6px;
+  }
+  .row {
+    display: flex;
+    gap: 8px;
+    margin-top: 18px;
+    align-items: center;
+  }
+  button {
+    appearance: none;
+    border: 1px solid #1c1917;
+    background: #1c1917;
+    color: #ffffff;
+    border-radius: 4px;
+    padding: 9px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  button:hover { background: #3B82F6; border-color: #3B82F6; }
+  button.secondary {
+    background: #ffffff;
+    color: #1c1917;
+  }
+  button.secondary:hover { background: #f3f4f6; color: #1c1917; }
+  .status {
+    font-size: 12px;
+    color: #6b7280;
+  }
+  .status.ok { color: #047857; }
+  .status.err { color: #b91c1c; }
+  .pricing {
+    margin-top: 22px;
+    padding: 12px 14px;
+    background: #fef9c3;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #713f12;
+    line-height: 1.6;
+  }
+  .pricing a { color: #3B82F6; text-decoration: none; }
+  .pricing a:hover { text-decoration: underline; }
+  code {
+    background: #f4f4f5;
+    padding: 1px 4px;
+    border-radius: 2px;
+    font-size: 12px;
+  }
+  .footer {
+    margin-top: 16px;
+    font-size: 11px;
+    color: #9ca3af;
+    text-align: right;
+  }
+  .footer a { color: #3B82F6; text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>jpcite — 設定</h1>
+    <p class="tag">API key を入力すると quota 上限が広がります。空のままなら匿名 3 req/日 (IP base、JST 翌日 00:00 リセット) で動作します。</p>
+
+    <label for="api_key">API key (任意)</label>
+    <input id="api_key" type="password" placeholder="jpc_… (jpcite.com から発行)" autocomplete="off">
+    <div class="hint">
+      入力欄は <code>chrome.storage.sync</code> に保存され、Chrome アカウント間で同期されます。
+      jpcite サーバ以外には送信しません。
+    </div>
+
+    <div class="row">
+      <button id="btn-save" type="button">保存</button>
+      <button id="btn-clear" class="secondary" type="button">クリア</button>
+      <span class="status" id="status"></span>
+    </div>
+
+    <div class="pricing">
+      <strong>料金:</strong> 全件 ¥3/req (税込 ¥3.30)。匿名 3 req/日 無料 (IP base、JST 翌日 00:00 リセット)。
+      <br>
+      API key 発行 / 残量 / 課金: <a href="https://jpcite.com/pricing.html" target="_blank" rel="noopener">jpcite.com/pricing.html</a>
+    </div>
+
+    <div class="footer">
+      powered by <a href="https://jpcite.com/" target="_blank" rel="noopener">jpcite</a> · v0.1.0
+    </div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+{
+  "name": "jpcite",
+  "displayName": "jpcite — Japan Compliance Reference",
+  "description": "Hover-preview Japanese laws / regulations / subsidies in any file",
+  "version": "0.1.0",
+  "publisher": "bookyou",
+  "license": "MIT",
+  "homepage": "https://jpcite.com",
+  "bugs": {
+    "url": "https://jpcite.com/docs/",
+    "email": "info@bookyou.net"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bookyou/jpcite.git",
+    "directory": "sdk/vscode-extension"
+  },
+  "author": {
+    "name": "Bookyou株式会社",
+    "email": "info@bookyou.net",
+    "url": "https://jpcite.com"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Linters"
+  ],
+  "keywords": [
+    "japan",
+    "law",
+    "compliance",
+    "e-gov",
+    "jpcite",
+    "subsidy",
+    "regulation",
+    "法令",
+    "補助金"
+  ],
+  "icon": "icon.png",
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onLanguage:python",
+    "onLanguage:typescript",
+    "onLanguage:javascript",
+    "onLanguage:typescriptreact",
+    "onLanguage:javascriptreact",
+    "onLanguage:markdown",
+    "onLanguage:plaintext",
+    "onLanguage:yaml",
+    "onLanguage:json",
+    "onLanguage:go",
+    "onLanguage:rust",
+    "onLanguage:java",
+    "onLanguage:ruby",
+    "onLanguage:php",
+    "onLanguage:csharp",
+    "onLanguage:html",
+    "onLanguage:sql"
+  ],
+  "contributes": {
+    "configuration": {
+      "title": "jpcite",
+      "properties": {
+        "jpcite.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Your jpcite API key. Leave empty to use the anonymous tier (3 req/day per IP, JST 翌日 00:00 リセット). Get one at https://jpcite.com/dashboard.",
+          "scope": "machine-overridable"
+        },
+        "jpcite.apiBaseUrl": {
+          "type": "string",
+          "default": "https://api.jpcite.com",
+          "description": "jpcite API base URL. Override only for local development."
+        },
+        "jpcite.enableHover": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show inline hover previews for detected Japanese law IDs."
+        },
+        "jpcite.enableCodeLens": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show '▶ jpcite で見る' CodeLens above lines that contain a law ID."
+        },
+        "jpcite.cacheTtlSeconds": {
+          "type": "number",
+          "default": 3600,
+          "description": "How long to cache law lookups in memory (seconds)."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "jpcite.openLaw",
+        "title": "jpcite: Open Law in Browser",
+        "category": "jpcite"
+      },
+      {
+        "command": "jpcite.clearCache",
+        "title": "jpcite: Clear Hover Cache",
+        "category": "jpcite"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "typecheck": "tsc --noEmit",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.0.0",
+    "typescript": "^5.4.0"
+  }
+}

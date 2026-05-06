@@ -31,8 +31,20 @@ import type {
   Enforcement,
   EnforcementSearchParams,
   EnforcementSearchResponse,
+  EvidencePacketEnvelope,
+  EvidencePacketOptions,
+  EvidencePacketQueryBody,
+  EvidencePacketSubjectKind,
   ExclusionCheckResponse,
   ExclusionRule,
+  FundingStackCheckResponse,
+  IntelBundleOptimalRequest,
+  IntelBundleOptimalResponse,
+  IntelEnvelope,
+  IntelHoujinFullResponse,
+  IntelListQuery,
+  IntelMatchRequest,
+  IntelMatchResponse,
   Law,
   LawArticle,
   Loan,
@@ -226,7 +238,85 @@ export class Jpcite {
     })) as ExclusionCheckResponse;
   }
 
-  // ─── 8. Account / dashboard / cap ───────────────────────────────────
+  // ─── 8. Evidence Packet / composite intelligence ───────────────────
+
+  /** Get a source-linked Evidence Packet for one program or houjin. */
+  async getEvidencePacket(
+    subjectKind: EvidencePacketSubjectKind,
+    subjectId: string,
+    options: EvidencePacketOptions = {},
+  ): Promise<EvidencePacketEnvelope> {
+    if (subjectKind !== "program" && subjectKind !== "houjin") {
+      throw new TypeError("subjectKind must be 'program' or 'houjin'");
+    }
+    if (!subjectId) throw new TypeError("subjectId is required");
+    return (await this.request(
+      "GET",
+      withQuery(
+        `/v1/evidence/packets/${encodeURIComponent(subjectKind)}/${encodeURIComponent(subjectId)}`,
+        options,
+      ),
+    )) as EvidencePacketEnvelope;
+  }
+
+  /** Build a multi-record Evidence Packet from a query and optional filters. */
+  async queryEvidencePacket(
+    body: EvidencePacketQueryBody,
+  ): Promise<EvidencePacketEnvelope> {
+    if (!body || !body.query_text) throw new TypeError("body.query_text is required");
+    return (await this.request(
+      "POST",
+      "/v1/evidence/packets/query",
+      body,
+    )) as EvidencePacketEnvelope;
+  }
+
+  /** Low-level typed helper for `/v1/intel/*` surfaces. */
+  async intel<T extends IntelEnvelope = IntelEnvelope>(
+    method: "GET" | "POST",
+    path: string,
+    body?: unknown,
+  ): Promise<T> {
+    return this.fetch<T>(method, path, body);
+  }
+
+  /** POST `/v1/intel/match` — deterministic top-N program matching. */
+  async intelMatch<T extends IntelEnvelope = IntelMatchResponse>(
+    body: IntelMatchRequest,
+  ): Promise<T> {
+    return this.intel<T>("POST", "/v1/intel/match", body);
+  }
+
+  /** POST `/v1/intel/bundle/optimal` — select a conflict-aware program bundle. */
+  async intelBundleOptimal<T extends IntelEnvelope = IntelBundleOptimalResponse>(
+    body: IntelBundleOptimalRequest,
+  ): Promise<T> {
+    return this.intel<T>("POST", "/v1/intel/bundle/optimal", body);
+  }
+
+  /** GET `/v1/intel/houjin/{houjin_id}/full` — composite houjin 360 bundle. */
+  async getIntelHoujinFull<T extends IntelEnvelope = IntelHoujinFullResponse>(
+    houjinId: string,
+    options: Pick<IntelListQuery, "include_sections" | "max_per_section"> = {},
+  ): Promise<T> {
+    if (!houjinId) throw new TypeError("houjinId is required");
+    return this.intel<T>(
+      "GET",
+      withQuery(`/v1/intel/houjin/${encodeURIComponent(houjinId)}/full`, options),
+    );
+  }
+
+  /** POST `/v1/funding_stack/check` — program stack compatibility check. */
+  async checkFundingStack(programIds: string[]): Promise<FundingStackCheckResponse> {
+    if (!Array.isArray(programIds) || programIds.length < 2) {
+      throw new TypeError("programIds must contain at least two program ids");
+    }
+    return this.fetch<FundingStackCheckResponse>("POST", "/v1/funding_stack/check", {
+      program_ids: programIds,
+    });
+  }
+
+  // ─── 9. Account / dashboard / cap ───────────────────────────────────
 
   /** Per-account info: api key prefix, email, plan, cap. Requires auth. */
   async me(): Promise<MeResponse> {
@@ -386,6 +476,20 @@ function buildEnforcementQuery(params: EnforcementSearchParams): string {
   return qs.toString();
 }
 
+function withQuery(path: string, params: object): string {
+  const qs = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value === undefined || value === null) continue;
+    if (Array.isArray(value)) {
+      for (const item of value) qs.append(key, String(item));
+    } else {
+      qs.append(key, String(value));
+    }
+  }
+  const suffix = qs.toString();
+  return suffix ? `${path}?${suffix}` : path;
+}
+
 // ────────────────────────────────────────────────────────────────────
 // Retry / error helpers
 // ────────────────────────────────────────────────────────────────────
@@ -490,9 +594,41 @@ export type {
   Enforcement,
   EnforcementSearchParams,
   EnforcementSearchResponse,
+  EvidencePacketCompression,
+  EvidencePacketDecisionInsights,
+  EvidencePacketEnvelope,
+  EvidencePacketEvidenceValue,
+  EvidencePacketInsightItem,
+  EvidencePacketOptions,
+  EvidencePacketProfile,
+  EvidencePacketQuality,
+  EvidencePacketQueryBody,
+  EvidencePacketRecord,
+  EvidencePacketSourceTokensBasis,
+  EvidencePacketSubjectKind,
+  EvidencePacketVerification,
   ExclusionCheckResponse,
   ExclusionHit,
   ExclusionRule,
+  FundingStackCheckResponse,
+  FundingStackNextAction,
+  FundingStackPair,
+  FundingStackStructuredNextAction,
+  FundingStackVerdict,
+  IntelBundleDecisionSupport,
+  IntelBundleOptimalRequest,
+  IntelBundleOptimalResponse,
+  IntelDecisionSupportItem,
+  IntelDocumentReadiness,
+  IntelEligibilityGap,
+  IntelEnvelope,
+  IntelHoujinDecisionSupport,
+  IntelHoujinFullResponse,
+  IntelListQuery,
+  IntelMatchRequest,
+  IntelMatchResponse,
+  IntelMatchedProgram,
+  IntelQuestion,
   Law,
   LawArticle,
   Loan,
@@ -511,4 +647,12 @@ export type {
 } from "./types.js";
 
 // Test-only helpers.
-export const __internals = { buildSearchQuery, buildLoanQuery, buildTaxQuery, buildEnforcementQuery, shouldRetry, backoffMs };
+export const __internals = {
+  buildSearchQuery,
+  buildLoanQuery,
+  buildTaxQuery,
+  buildEnforcementQuery,
+  withQuery,
+  shouldRetry,
+  backoffMs,
+};
