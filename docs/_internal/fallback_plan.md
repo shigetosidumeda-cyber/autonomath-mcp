@@ -9,7 +9,7 @@ Goal: if Fly.io (nrt) goes hard-down, visitors see landing + legal + `/status` i
 
 ## Fly outage (activate fallback)
 
-1. Confirm outage: `flyctl status -a jpintel-mcp` and `flyctl logs -a jpintel-mcp` — not a local DNS issue.
+1. Confirm outage: `flyctl status -a autonomath-api` and `flyctl logs -a autonomath-api` — not a local DNS issue.
 2. Flip apex A record to Pages:
    - Cloudflare dashboard → `jpcite.com` → **DNS → Records**.
    - Edit `@` → change to CNAME `jpintel-mcp-fallback.pages.dev` (proxied, TTL 300).
@@ -26,4 +26,4 @@ Goal: if Fly.io (nrt) goes hard-down, visitors see landing + legal + `/status` i
 ## Key paths
 
 - Cloudflare dashboard → Account → **Workers & Pages → jpintel-mcp-fallback → Deployments**.
-- Fly dashboard → https://fly.io/apps/jpintel-mcp/monitoring
+- Fly dashboard → https://fly.io/apps/autonomath-api/monitoring

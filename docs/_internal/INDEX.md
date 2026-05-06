@@ -5,7 +5,9 @@
 
 Operator-only runbook index. Excluded from mkdocs build (`exclude_docs: _internal/` in `mkdocs.yml`). Sole reader: 梅田茂利 (Bookyou株式会社).
 
-Authoritative ground truth (defer to CLAUDE.md if drift):
+> 2026-05-06 note: this file is a historical/navigation snapshot. Current execution SOT is `CURRENT_SOT_2026-05-06.md` plus `REPO_HYGIENE_TRIAGE_2026-05-06.md`; do not treat the counts below as current without re-probing manifests/runtime.
+
+Historical ground truth snapshot (defer to `CURRENT_SOT_2026-05-06.md` if drift):
 - **Tool count**: 72 (39 jpintel + 33 autonomath, default gates) — verify via `len(mcp._tool_manager.list_tools())`. Legacy literals `55 / 59 / 66 / 67` may appear and are stale.
 - **Manifest version**: v0.3.0 (`pyproject.toml` / `server.json` / `mcp-server.json` / `dxt/manifest.json` / `smithery.yaml`). v0.2.0 references in old logs are historical.
 - **Programs**: 11,547 searchable (tier S/A/B/C) / 13,578 total rows (incl. tier X quarantine).

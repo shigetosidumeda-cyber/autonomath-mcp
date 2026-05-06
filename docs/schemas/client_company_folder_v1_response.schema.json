@@ -1,0 +1,339 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://api.jpcite.com/v1/artifacts/client_company_folder_v1/response.schema.json",
+  "title": "ClientCompanyFolderV1Response",
+  "description": "client_company_folder_v1 paid artifact envelope。8 stage lifecycle (create + 7 markdown / json files) + 30 秒結論 + copy_paste_parts + envelope mandatory keys (_disclaimer, _source_receipts[], _known_gaps[], _identity_confidence, _corpus_snapshot_id, _fetched_at)。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "company_spine_id",
+    "company_match",
+    "summary",
+    "risk_or_benefit",
+    "next_action",
+    "files",
+    "copy_paste_parts",
+    "_disclaimer",
+    "_source_receipts",
+    "_known_gaps",
+    "_identity_confidence",
+    "_confidence_axes",
+    "_human_review_required",
+    "_recommended_followup",
+    "_corpus_snapshot_id",
+    "_fetched_at"
+  ],
+  "properties": {
+    "company_spine_id": {
+      "type": "string",
+      "pattern": "^cs_[0-9a-f]{16,32}$",
+      "description": "company_spine_id — entity_resolution_bridge_v2 由来の canonical hub key (W1_A10)。anchors_matched と corpus_snapshot_id で決定的に再現可能。"
+    },
+    "company_match": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["matched", "match_confidence", "anchors_matched", "alternative_candidates"],
+      "properties": {
+        "matched": {
+          "type": "boolean",
+          "description": "primary band (≥ identity_confidence_floor) で 1 法人に確定したか"
+        },
+        "match_confidence": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "選定された primary 法人の identity_confidence。floor を満たさない場合 matched=false"
+        },
+        "anchors_matched": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "houjin_bangou",
+              "T_invoice_number",
+              "EDINET_code",
+              "SEC_code",
+              "permit_number",
+              "procurement_vendor_id",
+              "award_id",
+              "name_normalized",
+              "address_normalized",
+              "industry_jsic",
+              "founder_name",
+              "trade_assoc_id"
+            ]
+          }
+        },
+        "alternative_candidates": {
+          "type": "array",
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "required": ["company_spine_id", "name", "houjin_bangou", "match_confidence", "reason"],
+            "properties": {
+              "company_spine_id": { "type": "string" },
+              "name": { "type": "string" },
+              "houjin_bangou": { "type": ["string", "null"], "pattern": "^[0-9]{13}$" },
+              "address_jis_x0402": { "type": ["string", "null"], "pattern": "^[0-9]{5}$" },
+              "match_confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+              "reason": {
+                "type": "string",
+                "description": "なぜ primary に選ばれなかったか (例: '同名異法人 in 別 都道府県, address mismatch')"
+              }
+            }
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 60,
+      "maxLength": 800,
+      "description": "30秒結論。日本語 3-5 文。法人同定 + 公的支援 / 処分の最大インパクト + 次に確認すべき軸を、断定形ではなく事実+gap で記述。"
+    },
+    "risk_or_benefit": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "required": ["kind", "title", "evidence_source_url", "axis"],
+        "properties": {
+          "kind": { "type": "string", "enum": ["risk", "benefit", "neutral_event"] },
+          "title": { "type": "string", "maxLength": 120 },
+          "axis": {
+            "type": "string",
+            "enum": ["enforcement", "subsidy", "loan", "permit", "procurement", "amendment", "invoice", "corporate_change", "tax", "labor"]
+          },
+          "evidence_source_url": { "type": "string", "format": "uri" },
+          "as_of_date": { "type": "string", "format": "date" },
+          "human_readable_detail": { "type": "string", "maxLength": 400 }
+        }
+      }
+    },
+    "next_action": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 12,
+      "description": "実務者が次に取るべき具体行動 ≥3 件 (paid artifact minimum quality contract §8.10)。AI agent には api_followup を、人間には 顧問先質問 / 内部レビュー を提案する。",
+      "items": {
+        "type": "object",
+        "required": ["actor", "action", "reason"],
+        "properties": {
+          "actor": {
+            "type": "string",
+            "enum": ["operator", "client_question", "internal_review", "ai_followup", "professional_handoff"]
+          },
+          "action": { "type": "string", "maxLength": 240 },
+          "reason": { "type": "string", "maxLength": 240 },
+          "blocked_by": {
+            "type": "string",
+            "enum": ["none", "missing_houjin_bangou", "low_identity_confidence", "stale_source", "license_blocked", "out_of_scope"],
+            "default": "none"
+          }
+        }
+      }
+    },
+    "files": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "8 stage lifecycle bundle。company_folder.json は当 envelope 自身が兼ねる。00..06 は markdown または json content (string)。bulk=true 時は ZIP delivery 経由で同名 file が降る。",
+      "required": [],
+      "properties": {
+        "00_public_baseline": {
+          "type": "string",
+          "description": "Markdown — 法人同定 / 適格事業者 / EDINET / gBiz / 主要 source receipts。verbatim 日本語見出し: '## 1. 法人同定' / '## 2. 公的支援履歴' / '## 3. 公的処分・指導' / '## 4. 関連法令と直近改正' / '## 5. known_gaps と次質問'"
+        },
+        "01_operator_brief": {
+          "type": "string",
+          "description": "Markdown — purpose 別の narrative 1 page brief (advisory / dd / sales / m_and_a / fdi / monitoring)。inline footnote citation。"
+        },
+        "02_questions_to_client": {
+          "type": "string",
+          "description": "Markdown — 顧問先 / 取引先 / DD 対象に投げる初回質問 ≥5 件 + 必要資料 list + 確認軸 (税務 / 法務 / 許認可 / 金融 / 労務)"
+        },
+        "03_watch_targets": {
+          "type": "string",
+          "description": "JSON (string-encoded) — houjin_watch (mig 088) に流し込める watch target 定義 (signal_filter, cadence, delivery)"
+        },
+        "04_monthly_public_digest": {
+          "type": "string",
+          "description": "Markdown — monthly cadence 公的 footprint 変化 digest。identity_confidence floor は 0.85 まで降格可 (event-driven 軽量出力で誤確定リスクを許容するため、ただし _identity_confidence_floor_relaxed=true を必ずペイロードに記録)"
+        },
+        "05_rebaseline_diff": {
+          "type": "string",
+          "description": "Markdown — 前回 corpus_snapshot との semantic diff (採択追加 / 処分追加 / 法令改正 / 適格状態変化 / 商号住所変更)"
+        },
+        "06_professional_review_handoff": {
+          "type": "string",
+          "description": "Markdown — 7 業法 boundary を踏まえた専門家 handoff 用根拠メモ。税理士 / 弁護士 / 行政書士 / 司法書士 / 弁理士 / 社労士 / 公認会計士 への明示 routing"
+        }
+      }
+    },
+    "copy_paste_parts": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "description": "そのまま貼れる成果物 ≥1 (paid artifact minimum §8.10)。client_email / internal_memo / ai_prompt の 3 種。",
+      "properties": {
+        "client_email_template": {
+          "type": "string",
+          "description": "顧問先 / 営業先 に送る初回 email 文面 (件名 + 本文)"
+        },
+        "internal_memo_template": {
+          "type": "string",
+          "description": "Notion / Slack / DD memo に貼る社内メモ (Markdown)"
+        },
+        "ai_prompt_template": {
+          "type": "string",
+          "description": "顧客側 AI agent (Claude Desktop / ChatGPT Actions / Cursor / Cline) に投げる next-step prompt。jpcite_followup_calls を含む。"
+        }
+      }
+    },
+    "_disclaimer": {
+      "type": "string",
+      "description": "7 業法 combined disclaimer envelope。verbatim 日本語固定文 (§5 of this spec)。"
+    },
+    "_source_receipts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["source_id", "source_url", "fetched_at", "license", "attribution_text"],
+        "properties": {
+          "source_id": { "type": "string", "description": "A_source_foundation 02_A_SOURCE_PROFILE.jsonl の verbatim source_id" },
+          "source_url": { "type": "string", "format": "uri" },
+          "fetched_at": { "type": "string", "format": "date-time" },
+          "content_hash": { "type": ["string", "null"] },
+          "license": {
+            "type": "string",
+            "enum": ["pdl_v1.0", "cc_by_4.0", "gov_standard", "ministry_standard", "public_domain", "proprietary"]
+          },
+          "attribution_text": { "type": "string", "maxLength": 200 },
+          "retrieval_method": {
+            "type": "string",
+            "enum": ["bulk_zip", "api", "web_scrape", "rss", "manual_curate"]
+          }
+        }
+      }
+    },
+    "_known_gaps": {
+      "type": "array",
+      "minItems": 0,
+      "description": "100% display rate 必須 (paid §8.10)。0 件は空 array でなく gap_kind='no_known_gap_at_this_layer' のテンプレ row を 1 件入れる。",
+      "items": {
+        "type": "object",
+        "required": ["gap_kind", "human_readable", "remediation_hint"],
+        "properties": {
+          "gap_kind": {
+            "type": "string",
+            "enum": [
+              "partial_corpus",
+              "blocked_source",
+              "stale_diff",
+              "thin_seed",
+              "private_db_excluded",
+              "pii_excluded",
+              "license_redistribution_blocked",
+              "no_known_gap_at_this_layer"
+            ]
+          },
+          "source_id": { "type": ["string", "null"] },
+          "human_readable": { "type": "string", "maxLength": 400 },
+          "remediation_hint": { "type": "string", "maxLength": 240 }
+        }
+      }
+    },
+    "_identity_confidence": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "company_match.match_confidence と一致 (envelope の最低 identity_confidence)。"
+    },
+    "_confidence_axes": {
+      "type": "object",
+      "required": ["entity_match", "source_freshness", "rule_quality"],
+      "additionalProperties": false,
+      "description": "総合 score を出さず必ず 3 軸分解 (paid §8.10)",
+      "properties": {
+        "entity_match": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "source_freshness": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "rule_quality": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+      }
+    },
+    "_human_review_required": {
+      "type": "array",
+      "uniqueItems": true,
+      "description": "税務 / 法務 / 許認可 / 金融 / 労務 boundary を artifact が踏んだ場合に true を入れる軸名 list。空 array 可 (踏んでいない場合)",
+      "items": {
+        "type": "string",
+        "enum": ["tax", "law", "permit", "finance", "labor", "audit", "shihou_shoshi"]
+      }
+    },
+    "_recommended_followup": {
+      "type": "object",
+      "required": ["jpcite_api_calls", "web_search_after"],
+      "additionalProperties": false,
+      "description": "次に呼ぶ jpcite API、または web search 移行条件 (paid §8.10)",
+      "properties": {
+        "jpcite_api_calls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["tool", "reason"],
+            "properties": {
+              "tool": {
+                "type": "string",
+                "examples": [
+                  "search_loans_am",
+                  "search_tax_incentives",
+                  "match_due_diligence_questions",
+                  "prepare_kessan_briefing",
+                  "cross_check_jurisdiction",
+                  "bundle_application_kit",
+                  "forecast_program_renewal",
+                  "search_acceptance_stats_am",
+                  "check_enforcement_am"
+                ]
+              },
+              "input_hint": { "type": "object", "additionalProperties": true },
+              "reason": { "type": "string", "maxLength": 200 }
+            }
+          }
+        },
+        "web_search_after": {
+          "type": "array",
+          "description": "jpcite で答えられない場合に web 検索へ移行する明示条件",
+          "items": {
+            "type": "object",
+            "required": ["condition", "search_target"],
+            "properties": {
+              "condition": { "type": "string", "maxLength": 200 },
+              "search_target": { "type": "string", "maxLength": 200 }
+            }
+          }
+        }
+      }
+    },
+    "_corpus_snapshot_id": {
+      "type": "string",
+      "description": "再現性キー (例: jpcite_corpus_2026-05-06_a1b2c3)"
+    },
+    "_corpus_checksum": {
+      "type": "string",
+      "description": "snapshot 内容 SHA-256 (オプション、auditor reproducibility)"
+    },
+    "_fetched_at": { "type": "string", "format": "date-time" },
+    "_billing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["units_charged", "rate_jpy_per_req", "files_generated"],
+      "properties": {
+        "units_charged": { "type": "integer", "minimum": 1 },
+        "rate_jpy_per_req": { "type": "integer", "const": 3 },
+        "files_generated": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

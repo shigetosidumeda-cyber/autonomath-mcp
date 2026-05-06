@@ -1,0 +1,2218 @@
+-- ============================================================
+-- FILE: scripts/migrations/wave24_110_am_entities_vec_v2.sql
+-- ============================================================
+-- target_db: autonomath
+-- migration wave24_110_am_entities_vec_v2 (MASTER_PLAN_v1 章 10.1.a — vector
+-- 拡張 v2: 全 11,684 program に embed)
+--
+-- Why this exists:
+--   Migration 120 (drop_dead_vec_unifts) GC'd the 1.25 GB legacy
+--   am_vec_tier_a / am_vec_tier_b_* sqlite-vec families that were
+--   never wired into production routes. The Wave 24 hybrid search
+--   path (BM25 + cosine) needs ONE clean, production-shaped vec
+--   table covering all 11,684 searchable programs (not just tier S/A
+--   like the previous experiment). This migration declares that
+--   table.
+--
+--   Backing the table with sqlite-vec virtual table (vec0 family)
+--   gives us native ANN over float[1024] vectors with no ATTACH /
+--   external service. The rebuild ETL is
+--   `scripts/etl/rebuild_am_entities_vec_v2.py` (subagent batch,
+--   intfloat/multilingual-e5-large embedding).
+--
+-- Schema:
+--   * `entity_id INTEGER PRIMARY KEY` — joins to am_entities.rowid
+--     (the canonical entity rowid is the SQLite ROWID; see
+--     `entity_id_map` view). Vec0 mandates an INTEGER PK.
+--   * `embedding float[1024]` — multilingual-e5-large hidden size.
+--     Stored as raw float32 little-endian blob managed by vec0.
+--
+--   The `dim=1024` choice matches the e5-large family (jpintel uses
+--   the same model elsewhere — see `tools/offline/embedding/`).
+--   Reducing dim later requires a re-embedding pass; raising dim
+--   requires a new table (sqlite-vec dim is immutable post-CREATE).
+--
+-- Idempotency:
+--   `CREATE VIRTUAL TABLE IF NOT EXISTS` — re-apply on a populated
+--   DB is a no-op. The sqlite-vec extension MUST be loaded before
+--   this migration runs; entrypoint.sh §3 loads it via
+--   `sqlite3 -cmd '.load /usr/lib/sqlite-vec/vec0.so'`. If the
+--   extension is absent at apply time, the CREATE fails with
+--   `no such module: vec0` and the migration is left unrecorded so
+--   the next boot retries after the operator installs the extension.
+--
+--   `am_vec_v2_metadata` is a thin sidecar that records when the
+--   ETL last refreshed the vectors and how many rows it covered.
+--   `INSERT OR IGNORE` makes the seed row idempotent.
+--
+-- DOWN:
+--   See companion `wave24_110_am_entities_vec_v2_rollback.sql`.
+
+PRAGMA foreign_keys = ON;
+
+-- 1. The vec0 virtual table itself. dim=1024 is fixed per
+--    intfloat/multilingual-e5-large.
+CREATE VIRTUAL TABLE IF NOT EXISTS am_entities_vec_v2 USING vec0(
+    entity_id INTEGER PRIMARY KEY,
+    embedding float[1024]
+);
+
+-- 2. ETL bookkeeping sidecar. The rebuild cron updates `last_full_rebuild_at`
+--    and `row_count` post-batch so a `/health/deep` probe can surface vector
+--    coverage without scanning the vec table.
+CREATE TABLE IF NOT EXISTS am_entities_vec_v2_metadata (
+    metadata_key       TEXT PRIMARY KEY,
+    last_full_rebuild_at TEXT,
+    last_delta_at      TEXT,
+    row_count          INTEGER,
+    embed_model        TEXT NOT NULL DEFAULT 'intfloat/multilingual-e5-large',
+    embed_dim          INTEGER NOT NULL DEFAULT 1024,
+    notes              TEXT
+);
+
+INSERT OR IGNORE INTO am_entities_vec_v2_metadata(metadata_key, embed_model, embed_dim)
+VALUES ('singleton', 'intfloat/multilingual-e5-large', 1024);
+
+-- Bookkeeping recorded by entrypoint.sh §4 into schema_migrations.
+-- Do NOT INSERT here.
+
+-- ============================================================
+-- FILE: scripts/migrations/wave24_110a_tier_c_cleanup.sql
+-- ============================================================
+-- target_db: jpintel
+-- migration wave24_110a_tier_c_cleanup
+--   (MASTER_PLAN_v1 章 3 §M6 — tier C 6,044 行のうち重複名 668 とゴミ名を
+--    一括 quarantine する)
+--
+-- Why this exists:
+--   tier='C' は long-tail の地方自治体 program が大半で、ETL ノイズが
+--   そのまま残存している。本マイグレーションは下記 2 種を tier='X'
+--   (quarantine) に降格し、検索パスから除外する:
+--
+--   (a) 重複名 668 件
+--       同一 primary_name で複数行ある tier='C' のうち、最古 unified_id
+--       (= MIN(unified_id)) 1 行だけを残し、残りを tier='X', excluded=1,
+--       exclusion_reason='dup_of_<keep_id>' でフラグする。
+--
+--   (b) ゴミ名 (PDF/HTML スクレイプ事故由来)
+--       「摘 要」「企画調整G」「奈良県公式ホームページ」など、program 名
+--       としては明らかに無意味な文字列 (テーブル見出し / 部署名 / サイト
+--       表題など) を tier='X', excluded=1, exclusion_reason='garbage_name'
+--       でフラグする。リストは MASTER_PLAN §M6(b) を出発点とし、運用
+--       追加分は本ファイルを版管理して継ぎ足す方針。
+--
+--   amount_max NULL や app_window NULL の補完は別 cron
+--   (`scripts/cron/refresh_sources.py --tier C --enrich`) の責務であり、
+--   本マイグレーションは触らない (MASTER_PLAN §M6(c) 参照)。
+--
+-- Idempotency:
+--   どちらの UPDATE も WHERE 句に「tier='C'」を含むので、再実行時には
+--   既に tier='X' に降格済みの行は対象外となり no-op。CTE 内で MIN(id)
+--   を再計算しても結果は決定的 (同 primary_name の中の最古 unified_id)。
+--
+--   primary_name の照合は完全一致 (LIKE ではなく =) なので、ゴミ名
+--   一覧に新ノイズが見つかった場合は IN (...) リストに追記して
+--   再 boot 適用する。
+--
+-- DOWN:
+--   既存の tier='C' に戻す general-purpose な rollback は提供しない。
+--   (a) は keep_id を残してその他を quarantine する設計上、戻す側は
+--   exclusion_reason='dup_of_*' をパースして tier='C' に書き戻す
+--   ad-hoc SQL を運用が手書きする。
+--   (b) のゴミ名はリスト管理されているので、リスト除去 + tier='C' 直書き
+--   で戻る。
+
+PRAGMA foreign_keys = ON;
+
+-- ---------------------------------------------------------------------
+-- (0) exclusion_reason enum 拡張
+--     `programs.exclusion_reason` は trigger
+--     `trg_programs_exclusion_reason_enum_x{,_ins}` で
+--     `exclusion_reason_codes` 表内の code に enum 制約されている。
+--     本マイグレーションが使う 'garbage_name' を追加する
+--     ('duplicate_of' は既存)。
+--
+--     INSERT OR IGNORE で冪等。
+-- ---------------------------------------------------------------------
+INSERT OR IGNORE INTO exclusion_reason_codes (code, description) VALUES
+    ('garbage_name',
+     'primary_name is a non-program string scraped from a table-header / department label / site title (e.g. tekiyo, 企画調整G, official homepage)');
+
+-- ---------------------------------------------------------------------
+-- (a) 重複名 dedup
+--     同 primary_name のうち unified_id 辞書順で最古を keep、それ以外を
+--     tier='X' に降格。CTE で keep_id を 1 回だけ計算し、UPDATE で
+--     join し直す形にすることで、UPDATE 進行中に行が tier='X' に flip
+--     して MIN が動くレースを避ける。
+--
+--     程度: 検出時点で tier='C' に約 668 重複セット。N 行重複 → N-1 行
+--     を quarantine するので、影響行数は 668 × (avg_dup-1) のオーダー。
+--
+--     exclusion_reason は enum 制約上 'duplicate_of' (既存 code) を採用。
+--     keep_unified_id への trace は merged_from 列に書き残す。
+-- ---------------------------------------------------------------------
+WITH dup_keep AS (
+    SELECT primary_name,
+           MIN(unified_id) AS keep_unified_id
+      FROM programs
+     WHERE tier = 'C'
+       AND primary_name IS NOT NULL
+       AND primary_name != ''
+     GROUP BY primary_name
+    HAVING COUNT(*) > 1
+)
+UPDATE programs
+   SET tier             = 'X',
+       excluded          = 1,
+       exclusion_reason  = 'duplicate_of',
+       merged_from       = COALESCE(merged_from, '') || (
+           SELECT keep_unified_id FROM dup_keep
+            WHERE dup_keep.primary_name = programs.primary_name
+       )
+ WHERE tier = 'C'
+   AND primary_name IN (SELECT primary_name FROM dup_keep)
+   AND unified_id NOT IN (SELECT keep_unified_id FROM dup_keep);
+
+-- ---------------------------------------------------------------------
+-- (b) ゴミ名 quarantine
+--     リストは MASTER_PLAN §M6(b) seed + 運用観察追加。新ノイズを
+--     見つけたら IN (...) に append して PR で版管理する。
+--
+--     完全一致のみを対象にする (ホワイトリスト方式)。LIKE / FTS で
+--     部分一致を取ると正常な program 名まで誤って巻き込む事故が
+--     起きるので採用しない。
+-- ---------------------------------------------------------------------
+UPDATE programs
+   SET tier             = 'X',
+       excluded          = 1,
+       exclusion_reason  = 'garbage_name'
+ WHERE tier = 'C'
+   AND primary_name IN (
+        '摘 要',
+        '摘要',
+        '企画調整G',
+        '企画調整課',
+        '奈良県公式ホームページ',
+        'ホームページ',
+        '公式ホームページ',
+        'お知らせ',
+        '新着情報',
+        'トップページ',
+        'サイトマップ',
+        '担当課',
+        '担当部署',
+        '◎',
+        '○',
+        '※',
+        '・',
+        '－',
+        '-',
+        '関連リンク',
+        '詳細はこちら',
+        '詳しくはこちら',
+        '【参考】',
+        '【補足】',
+        '備考',
+        '注記',
+        '注意事項'
+   );
+
+-- amount_max NULL 補完は本マイグレーションのスコープ外。
+-- 担当: scripts/cron/refresh_sources.py --tier C --enrich (nightly)
+--       補完不能と判定された行は同 cron が tier='X' に降格する。
+
+-- ============================================================
+-- FILE: scripts/migrations/wave24_111_am_entity_monthly_snapshot.sql
+-- ============================================================
+-- target_db: autonomath
+-- migration wave24_111_am_entity_monthly_snapshot (MASTER_PLAN_v1 章
+-- 10.1.b — am_entity 月次 snapshot for time-series KPI / 法人 360°
+-- trend / corpus drift detection)
+--
+-- Why this exists:
+--   `am_entities` (503,930 rows) is mutable — every ETL pass can flip
+--   facts. Without a periodic frozen snapshot we cannot answer
+--   "this entity's state at fiscal-month X" honestly. The Wave 24
+--   tools `get_houjin_360_snapshot_history` (#102) and the corpus
+--   drift detector under §10.10.5 both need point-in-time snapshots
+--   to show real time-series, not lossy "current state" only.
+--
+--   We snapshot ONLY the small set of columns that drive the 360°
+--   surface (record_kind, primary identifiers, capital_yen, employee
+--   count, status flags) plus a `payload_json` blob carrying the
+--   full row at snapshot time. The blob lets future tools rehydrate
+--   without us guessing today which columns matter tomorrow.
+--
+-- Schema:
+--   * `entity_id` — joins to am_entities.rowid.
+--   * `snapshot_month TEXT` — YYYY-MM, JST cron writes the 1st of
+--     each month at 03:00 JST. UNIQUE(entity_id, snapshot_month) so
+--     `INSERT OR IGNORE` makes the cron idempotent within a month.
+--   * `record_kind` — copied from am_entities at snapshot time
+--     (corporate_entity / program / case_study / ...). Lets KPI
+--     queries filter without an extra join.
+--   * `primary_label` — the source-of-truth display name at snapshot
+--     time. Captures rename events.
+--   * `capital_yen / employee_count / status_active` — denormalized
+--     hot fields for trend queries (we don't want to JSON-extract
+--     every row). NULLable.
+--   * `payload_json` — the full am_entities row + key am_entity_facts
+--     rollup serialized as JSON, so future readers can recover any
+--     column without us re-snapshotting.
+--   * `snapshot_source` — defaults to 'monthly_cron', leaves room
+--     for ad-hoc snapshots (e.g. 'pre_launch' / 'audit_request').
+--   * `created_at` — ISO 8601 UTC, when the row landed.
+--
+-- Indexes:
+--   * `idx_aems_month_kind` — KPI roll-up "all corporate_entity rows
+--     in 2026-05" hot path.
+--   * `idx_aems_entity_month` — single-entity time-series scan
+--     (already covered by the UNIQUE, but explicit index keeps
+--     descending scans cheap).
+--
+-- Idempotency:
+--   `CREATE TABLE IF NOT EXISTS` + UNIQUE(entity_id, snapshot_month)
+--   so the monthly cron's `INSERT OR IGNORE` is safe to retry.
+--
+-- DOWN:
+--   See companion `wave24_111_am_entity_monthly_snapshot_rollback.sql`.
+
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS am_entity_monthly_snapshot (
+    snapshot_id      INTEGER PRIMARY KEY AUTOINCREMENT,
+    entity_id        INTEGER NOT NULL,
+    snapshot_month   TEXT NOT NULL,                       -- YYYY-MM (JST)
+    record_kind      TEXT,
+    primary_label    TEXT,
+    capital_yen      INTEGER,
+    employee_count   INTEGER,
+    status_active    INTEGER,                             -- 0/1, NULL=unknown
+    payload_json     TEXT,                                -- full am_entities + facts rollup
+    snapshot_source  TEXT NOT NULL DEFAULT 'monthly_cron',
+    created_at       TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE (entity_id, snapshot_month)
+);
+
+-- KPI roll-up: which corporate_entity rows were captured in YYYY-MM.
+CREATE INDEX IF NOT EXISTS idx_aems_month_kind
+    ON am_entity_monthly_snapshot(snapshot_month, record_kind);
+
+-- Single-entity descending time-series scan for `get_houjin_360_snapshot_history`.
+CREATE INDEX IF NOT EXISTS idx_aems_entity_month
+    ON am_entity_monthly_snapshot(entity_id, snapshot_month DESC);
+
+-- Bookkeeping by entrypoint.sh §4. No DML beyond schema.
+
+-- ============================================================
+-- FILE: scripts/migrations/wave24_112_am_region_extension.sql
+-- ============================================================
+-- target_db: autonomath
+-- migration wave24_112_am_region_extension (MASTER_PLAN_v1 章 10.1.c —
+-- am_region 拡張 + 業種密度 KPI)
+--
+-- Why this exists:
+--   `am_region` (1,966 rows, all 5-digit JIS X 0401/0402 codes)
+--   today carries population_exact + household_count but lacks the
+--   socio-economic columns that `get_industry_program_density` (#117)
+--   needs to normalize "制度密度" against. We add:
+--
+--     * gdp_million_yen / business_count / business_count_as_of —
+--       drive industry-density normalization
+--     * climate_zone — surfaces in agri / GX programs (寒冷地 / 中間地)
+--     * latitude / longitude — geo proximity for "近隣地域 program"
+--     * land_area_km2 — secondary normalizer
+--
+--   We also create the dedicated lookup table
+--   `am_region_program_density` so that the hot path query
+--   "given (region_code, jsic_major) what is the program-per-capita
+--   metric" doesn't have to recompute aggregates at request time.
+--
+-- Schema additions to am_region (ALTER):
+--   * gdp_million_yen INTEGER         — most recent prefectural / municipal GDP
+--   * gdp_as_of TEXT                  — ISO date of the GDP figure
+--   * gdp_source_url TEXT             — primary citation
+--   * business_count INTEGER          — 経済センサス 事業所数
+--   * business_count_as_of TEXT       — ISO date
+--   * climate_zone TEXT               — 'temperate'|'cool'|'cold'|'subtropical'
+--   * latitude REAL                   — centroid
+--   * longitude REAL                  — centroid
+--   * land_area_km2 REAL              — 国土地理院
+--
+--   `am_region_program_density` table:
+--     * region_code TEXT NOT NULL
+--     * jsic_major TEXT NOT NULL                — 'A'..'T'
+--     * program_count INTEGER NOT NULL
+--     * programs_per_million_yen_gdp REAL
+--     * programs_per_business REAL
+--     * percentile_in_prefecture REAL           — 0..1
+--     * computed_at TEXT NOT NULL
+--     * source_snapshot_id TEXT
+--     * UNIQUE(region_code, jsic_major)
+--
+--   The aggregation cron is `scripts/cron/recompute_region_density.py`.
+--   `INSERT OR REPLACE` is the upsert surface, gated by the UNIQUE.
+--
+-- Idempotency:
+--   ALTER TABLE ADD COLUMN raises "duplicate column name" on re-run;
+--   entrypoint.sh §4 swallows that OperationalError when the message
+--   is exclusively "duplicate column" (lines 420-428). Same pattern
+--   used by 049/101/105/106/119.
+--
+--   CREATE TABLE / CREATE INDEX use IF NOT EXISTS.
+--
+-- DOWN:
+--   See companion `wave24_112_am_region_extension_rollback.sql`.
+
+PRAGMA foreign_keys = ON;
+
+-- am_region socio-economic columns. Each ALTER is an independent
+-- statement so a single duplicate-column failure on partial re-apply
+-- still lets the remaining ALTERs land.
+ALTER TABLE am_region ADD COLUMN gdp_million_yen INTEGER;
+ALTER TABLE am_region ADD COLUMN gdp_as_of TEXT;
+ALTER TABLE am_region ADD COLUMN gdp_source_url TEXT;
+ALTER TABLE am_region ADD COLUMN business_count INTEGER;
+ALTER TABLE am_region ADD COLUMN business_count_as_of TEXT;
+ALTER TABLE am_region ADD COLUMN climate_zone TEXT;
+ALTER TABLE am_region ADD COLUMN latitude REAL;
+ALTER TABLE am_region ADD COLUMN longitude REAL;
+ALTER TABLE am_region ADD COLUMN land_area_km2 REAL;
+
+-- Density rollup table. JSIC major is letters A-T per JIS standard.
+-- Note: a fuller `am_region_program_density` companion is also
+-- declared in wave24_139 for the #117 hot path; that file is the
+-- "logical" home per MASTER_PLAN §10.2.14, but the table is created
+-- here too so the column-extension migration can exercise it
+-- standalone in tests. Both CREATE TABLE statements are
+-- IF NOT EXISTS-guarded and use the same column shape, so apply
+-- order is irrelevant.
+CREATE TABLE IF NOT EXISTS am_region_program_density (
+    density_id                       INTEGER PRIMARY KEY AUTOINCREMENT,
+    region_code                      TEXT NOT NULL,
+    jsic_major                       TEXT NOT NULL,
+    program_count                    INTEGER NOT NULL DEFAULT 0,
+    programs_per_million_yen_gdp     REAL,
+    programs_per_business            REAL,
+    percentile_in_prefecture         REAL,
+    computed_at                      TEXT NOT NULL DEFAULT (datetime('now')),
+    source_snapshot_id               TEXT,
+    UNIQUE (region_code, jsic_major)
+);
+
+CREATE INDEX IF NOT EXISTS idx_arpd_region
+    ON am_region_program_density(region_code);
+
+CREATE INDEX IF NOT EXISTS idx_arpd_jsic
+    ON am_region_program_density(jsic_major);
+
+-- Bookkeeping by entrypoint.sh §4.
+
+-- ============================================================
+-- FILE: scripts/migrations/wave24_113a_programs_jsic.sql
+-- ============================================================
+-- target_db: jpintel
+-- migration wave24_113a_programs_jsic (MASTER_PLAN_v1 章 10.1.d —
+-- programs 表 + houjin_master 表に JSIC 業種コード列を追加)
+--
+-- Why this exists:
+--   `find_programs_by_jsic` (#109), `forecast_enforcement_risk` (#100),
+--   `get_industry_program_density` (#117), `pack_construction` /
+--   `pack_manufacturing` / `pack_real_estate` (Wave 23) all need
+--   programs filterable by JSIC major (A-T) / middle (2 桁) / minor
+--   (3 桁). Today the program-side filter is ad-hoc keyword union
+--   which is brittle (see Wave 23 industry packs file for the
+--   keyword fence). A first-class column lets us pre-join to
+--   `am_industry_jsic` (50 rows, autonomath) and skip keyword
+--   guesswork.
+--
+--   Same column shape on `houjin_master` so 法人 360° tools can
+--   filter / cross-reference by JSIC consistently.
+--
+-- Schema additions (ALTER):
+--   * programs.jsic_major  TEXT  CHECK (jsic_major IS NULL OR
+--                                       jsic_major IN ('A','B','C','D','E','F','G','H','I',
+--                                                      'J','K','L','M','N','O','P','Q','R','S','T'))
+--   * programs.jsic_middle TEXT  CHECK (jsic_middle IS NULL OR
+--                                       length(jsic_middle) = 2)
+--   * programs.jsic_minor  TEXT  CHECK (jsic_minor IS NULL OR
+--                                       length(jsic_minor) = 3)
+--   * programs.jsic_assigned_at TEXT
+--   * programs.jsic_assigned_method TEXT  ('manual'|'keyword'|'classifier')
+--
+--   Same 5 columns added to `houjin_master`.
+--
+-- Index posture:
+--   Hot path: filter by jsic_major. Composite index (jsic_major, tier)
+--   on programs makes "all tier S/A programs in JSIC E" cheap.
+--
+-- CHECK on ALTER ADD COLUMN is supported as of SQLite 3.37 (Fly is
+-- on 3.46+, verified 2026-04). The constraint applies to all
+-- existing rows lazily — INSERT / UPDATE will trip the check, but
+-- the existing NULLs satisfy it (CHECK includes the NULL clause
+-- explicitly).
+--
+-- Idempotency:
+--   ALTER TABLE ADD COLUMN raises "duplicate column name" on
+--   re-run; entrypoint.sh §4 swallows that case (lines 420-428)
+--   when the message is exclusively "duplicate column". The CHECK
+--   clause does NOT cause a re-add to succeed (SQLite enforces the
+--   column-name uniqueness first), so the swallow path lands
+--   correctly. CREATE INDEX uses IF NOT EXISTS.
+--
+-- DOWN:
+--   See companion `wave24_113a_programs_jsic_rollback.sql`.
+
+PRAGMA foreign_keys = ON;
+
+-- programs JSIC columns.
+ALTER TABLE programs ADD COLUMN jsic_major TEXT
+    CHECK (jsic_major IS NULL OR jsic_major IN (
+        'A','B','C','D','E','F','G','H','I','J',
+        'K','L','M','N','O','P','Q','R','S','T'
+    ));
+ALTER TABLE programs ADD COLUMN jsic_middle TEXT
+    CHECK (jsic_middle IS NULL OR length(jsic_middle) = 2);
+ALTER TABLE programs ADD COLUMN jsic_minor TEXT
+    CHECK (jsic_minor IS NULL OR length(jsic_minor) = 3);
+ALTER TABLE programs ADD COLUMN jsic_assigned_at TEXT;
+ALTER TABLE programs ADD COLUMN jsic_assigned_method TEXT
+    CHECK (jsic_assigned_method IS NULL OR jsic_assigned_method IN
+           ('manual','keyword','classifier'));
+
+-- programs hot-path indexes.
+CREATE INDEX IF NOT EXISTS idx_programs_jsic_major_tier
+    ON programs(jsic_major, tier) WHERE jsic_major IS NOT NULL;
+
+CREATE INDEX IF NOT EXISTS idx_programs_jsic_middle
+    ON programs(jsic_middle) WHERE jsic_middle IS NOT NULL;
+
+-- houjin_master JSIC columns. Same shape as programs.
+ALTER TABLE houjin_master ADD COLUMN jsic_major TEXT
+    CHECK (jsic_major IS NULL OR jsic_major IN (
+        'A','B','C','D','E','F','G','H','I','J',
+        'K','L','M','N','O','P','Q','R','S','T'
+    ));
+ALTER TABLE houjin_master ADD COLUMN jsic_middle TEXT
+    CHECK (jsic_middle IS NULL OR length(jsic_middle) = 2);
+ALTER TABLE houjin_master ADD COLUMN jsic_minor TEXT
+    CHECK (jsic_minor IS NULL OR length(jsic_minor) = 3);
+ALTER TABLE houjin_master ADD COLUMN jsic_assigned_at TEXT;
+ALTER TABLE houjin_master ADD COLUMN jsic_assigned_method TEXT
+    CHECK (jsic_assigned_method IS NULL OR jsic_assigned_method IN
+           ('manual','keyword','classifier'));
+
+CREATE INDEX IF NOT EXISTS idx_houjin_master_jsic_major
+    ON houjin_master(jsic_major) WHERE jsic_major IS NOT NULL;
+
+-- ============================================================
+-- FILE: scripts/migrations/wave24_113b_jpi_programs_jsic.sql
+-- ============================================================
+-- target_db: autonomath
+-- migration wave24_113b_jpi_programs_jsic (MASTER_PLAN_v1 章 10.1.d —
+-- jpi_programs (autonomath 側ミラー) に JSIC 業種コード列を追加)
+--
+-- Why this exists:
+--   `jpi_programs` is the autonomath-side mirror of `programs`
+--   (78 jpi_* mirror tables landed in migration 032). The mirror
+--   must carry the same jsic_* columns so the autonomath cross-DB
+--   tools can filter without an ATTACH.
+--
+--   Companion to wave24_113a_programs_jsic.sql which adds the
+--   identical columns on the jpintel side. The two files are
+--   intentionally split so each can declare a single
+--   `-- target_db:` marker.
+--
+-- Schema additions (ALTER, autonomath jpi_programs):
+--   * jpi_programs.jsic_major TEXT             — 'A'..'T'
+--   * jpi_programs.jsic_middle TEXT            — 2-char
+--   * jpi_programs.jsic_minor TEXT             — 3-char
+--   * jpi_programs.jsic_assigned_at TEXT
+--   * jpi_programs.jsic_assigned_method TEXT   — manual|keyword|classifier
+--
+-- CHECK on ALTER ADD COLUMN is SQLite 3.37+; Fly 3.46+ confirmed.
+--
+-- Sync:
+--   The jpi_programs mirror is rebuilt by `scripts/etl/mirror_jpi.py`
+--   (manual run as needed). After rolling out wave24_113a, the
+--   next mirror pass copies the new jsic_* columns into autonomath.
+--
+-- Idempotency:
+--   ALTER ADD COLUMN raises "duplicate column name" on re-run;
+--   entrypoint.sh §4 swallows that case when the message is
+--   exclusively "duplicate column" (lines 420-428).
+--
+-- DOWN:
+--   See companion `wave24_113b_jpi_programs_jsic_rollback.sql`.
+
+PRAGMA foreign_keys = ON;
+
+ALTER TABLE jpi_programs ADD COLUMN jsic_major TEXT
+    CHECK (jsic_major IS NULL OR jsic_major IN (
+        'A','B','C','D','E','F','G','H','I','J',
+        'K','L','M','N','O','P','Q','R','S','T'
+    ));
+ALTER TABLE jpi_programs ADD COLUMN jsic_middle TEXT
+    CHECK (jsic_middle IS NULL OR length(jsic_middle) = 2);
+ALTER TABLE jpi_programs ADD COLUMN jsic_minor TEXT
+    CHECK (jsic_minor IS NULL OR length(jsic_minor) = 3);
+ALTER TABLE jpi_programs ADD COLUMN jsic_assigned_at TEXT;
+ALTER TABLE jpi_programs ADD COLUMN jsic_assigned_method TEXT
+    CHECK (jsic_assigned_method IS NULL OR jsic_assigned_method IN
+           ('manual','keyword','classifier'));
+
+CREATE INDEX IF NOT EXISTS idx_jpi_programs_jsic_major_tier
+    ON jpi_programs(jsic_major, tier) WHERE jsic_major IS NOT NULL;
+
+CREATE INDEX IF NOT EXISTS idx_jpi_programs_jsic_middle
+    ON jpi_programs(jsic_middle) WHERE jsic_middle IS NOT NULL;
+
+-- ============================================================
+-- FILE: scripts/migrations/wave24_126_am_recommended_programs.sql
+-- ============================================================
+-- target_db: autonomath
+-- migration wave24_126_am_recommended_programs (MASTER_PLAN_v1 章 10.2.1 —
+-- 法人 → 推奨制度 TOP 10 事前計算テーブル)
+--
+-- Why this exists:
+--   `recommend_programs_for_houjin` (#97, billing=1, sensitive=YES)
+--   must NOT call any LLM at request time (memory
+--   `feedback_no_operator_llm_api`). The recommender's TOP 10
+--   per-houjin output is computed offline by
+--   `scripts/etl/precompute_recommended_programs.py` (subagent
+--   batch) and stored here for SELECT-only retrieval.
+--
+--   Recompute cadence: weekly Sun 03:00 JST, full rebuild for the
+--   100,000 cohort houjin.
+--
+-- Schema:
+--   * houjin_bangou TEXT NOT NULL  — 13-digit 法人番号 (NTA canonical)
+--   * program_unified_id TEXT NOT NULL  — joins to jpi_programs.unified_id
+--   * rank INTEGER NOT NULL  — 1..N (typically 1..10)
+--   * score REAL NOT NULL    — composite recommendation score 0..1
+--   * reason_json TEXT       — JSON per-tool: {match_factors:[...], evidence:[...]}
+--   * computed_at TEXT NOT NULL DEFAULT (datetime('now'))
+--   * source_snapshot_id TEXT  — corpus checksum at compute time, audit
+--
+--   PRIMARY KEY (houjin_bangou, program_unified_id) so the upsert
+--   surface uses `INSERT OR REPLACE`. CHECK (rank > 0) keeps
+--   pathological negatives out.
+--
+-- Indexes:
+--   * (houjin_bangou, rank) for "top N for this houjin" hot path.
+--   * (program_unified_id) for reverse lookup "which houjin was
+--     this program recommended to".
+--
+-- Idempotency:
+--   CREATE TABLE IF NOT EXISTS + CREATE INDEX IF NOT EXISTS, no
+--   DML. Cron uses INSERT OR REPLACE for upserts.
+--
+-- DOWN:
+--   See companion `wave24_126_am_recommended_programs_rollback.sql`.
+
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS am_recommended_programs (
+    houjin_bangou      TEXT NOT NULL,
+    program_unified_id TEXT NOT NULL,
+    rank               INTEGER NOT NULL CHECK (rank > 0),
+    score              REAL NOT NULL CHECK (score >= 0.0 AND score <= 1.0),
+    reason_json        TEXT,
+    computed_at        TEXT NOT NULL DEFAULT (datetime('now')),
+    source_snapshot_id TEXT,
+    PRIMARY KEY (houjin_bangou, program_unified_id)
+);
+
+-- "Top N for this houjin" — primary read pattern of #97.
+CREATE INDEX IF NOT EXISTS idx_arp_houjin_rank
+    ON am_recommended_programs(houjin_bangou, rank);
+
+-- Reverse lookup: "which 法人 has this program in their TOP 10".
+CREATE INDEX IF NOT EXISTS idx_arp_program
+    ON am_recommended_programs(program_unified_id);
+
+-- ============================================================
+-- FILE: scripts/migrations/wave24_127_am_program_combinations.sql
+-- ============================================================
+-- target_db: autonomath
+-- migration wave24_127_am_program_combinations (MASTER_PLAN_v1 章 10.2.2 —
+-- 制度ペア併給可否 事前計算テーブル)
+--
+-- Why this exists:
+--   `find_combinable_programs` (#98) and `find_complementary_subsidies`
+--   (#115) need to answer "given program A, can it be combined with
+--   program B" without scanning the full Cartesian (11,684 ^ 2 ≈
+--   136M pair) at request time. The classification is computed
+--   offline by `scripts/etl/precompute_program_combinations.py`
+--   from the existing `am_compat_matrix` (43,966 rows, sourced +
+--   heuristic) and `exclusion_rules` (181 rows).
+--
+--   We canonicalize ordering with the CHECK
+--   (program_a_unified_id < program_b_unified_id) so each unordered
+--   pair lives in exactly ONE row. INSERT OR IGNORE on UNIQUE then
+--   becomes a "first writer wins" upsert and the cron is safely
+--   idempotent.
+--
+-- Schema:
+--   * program_a_unified_id TEXT NOT NULL
+--   * program_b_unified_id TEXT NOT NULL
+--   * combinable INTEGER NOT NULL  — 0=incompatible, 1=combinable, 2=requires_review
+--   * confidence TEXT              — 'high'|'medium'|'low'
+--   * reason TEXT                  — short prose
+--   * source_url TEXT              — primary citation (when combinable=0
+--                                    is sourced from an explicit clause)
+--   * source_kind TEXT             — 'exclusion_rule'|'compat_matrix'|'heuristic'
+--   * computed_at TEXT NOT NULL DEFAULT (datetime('now'))
+--   * CHECK(program_a_unified_id < program_b_unified_id)
+--   * UNIQUE(program_a_unified_id, program_b_unified_id)
+--
+-- Indexes:
+--   * (program_a_unified_id) and (program_b_unified_id) so a query
+--     filtering by either side is cheap.
+--
+-- Idempotency:
+--   CREATE * IF NOT EXISTS. The canonical-ordering CHECK + UNIQUE
+--   guarantees `INSERT OR IGNORE` is the safe upsert primitive
+--   when the cron re-runs.
+--
+-- DOWN:
+--   See companion `wave24_127_am_program_combinations_rollback.sql`.
+
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS am_program_combinations (
+    pair_id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    program_a_unified_id TEXT NOT NULL,
+    program_b_unified_id TEXT NOT NULL,
+    combinable           INTEGER NOT NULL CHECK (combinable IN (0, 1, 2)),
+    confidence           TEXT CHECK (confidence IS NULL OR confidence IN
+                                     ('high','medium','low')),
+    reason               TEXT,
+    source_url           TEXT,
+    source_kind          TEXT CHECK (source_kind IS NULL OR source_kind IN
+                                     ('exclusion_rule','compat_matrix','heuristic')),
+    computed_at          TEXT NOT NULL DEFAULT (datetime('now')),
+    -- canonical ordering: each unordered pair lives in exactly one row.
+    CHECK (program_a_unified_id < program_b_unified_id),
+    UNIQUE (program_a_unified_id, program_b_unified_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_apc_a
+    ON am_program_combinations(program_a_unified_id);
+
+CREATE INDEX IF NOT EXISTS idx_apc_b
+    ON am_program_combinations(program_b_unified_id);
+
+-- ============================================================
+-- FILE: scripts/migrations/wave24_128_am_program_calendar_12mo.sql
+-- ============================================================
+-- target_db: autonomath
+-- migration wave24_128_am_program_calendar_12mo (MASTER_PLAN_v1 章
+-- 10.2.3 — 制度 × 月 12 ヶ月カレンダー事前計算)
+--
+-- Why this exists:
+--   `get_program_calendar_12mo` (#99) returns each program's
+--   monthly open/close state for the next 12 months. Computing
+--   this from `am_application_round` (1,256 rows) at request time
+--   requires JOINing rounds × month windows × public-holiday
+--   tables, which is expensive. We materialize one row per
+--   (program × month) and let the read path SELECT directly.
+--
+--   Recompute cadence: nightly 02:30 JST, full rebuild. With
+--   11,684 programs × 12 months = 140,208 rows, the table fits
+--   comfortably in memory.
+--
+-- Schema:
+--   * program_unified_id TEXT NOT NULL
+--   * month_start TEXT NOT NULL          — first day of month, ISO YYYY-MM-01
+--   * is_open INTEGER NOT NULL           — 0 / 1
+--   * deadline TEXT                      — applicable deadline within month, ISO date
+--   * round_id_json TEXT                 — JSON list of am_application_round ids
+--   * notes TEXT                         — short note (e.g. "公募中" / "次回 5月")
+--   * computed_at TEXT NOT NULL DEFAULT (datetime('now'))
+--   * UNIQUE(program_unified_id, month_start)
+--
+-- Indexes:
+--   * (program_unified_id, month_start) — composite hot path.
+--   * (month_start, is_open) — KPI roll-ups "open programs in 2026-06".
+--
+-- Idempotency:
+--   CREATE * IF NOT EXISTS. UNIQUE makes `INSERT OR REPLACE` safe.
+--
+-- DOWN:
+--   See companion `wave24_128_am_program_calendar_12mo_rollback.sql`.
+
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS am_program_calendar_12mo (
+    program_unified_id TEXT NOT NULL,
+    month_start        TEXT NOT NULL,
+    is_open            INTEGER NOT NULL CHECK (is_open IN (0, 1)),
+    deadline           TEXT,
+    round_id_json      TEXT,
+    notes              TEXT,
+    computed_at        TEXT NOT NULL DEFAULT (datetime('now')),
+    PRIMARY KEY (program_unified_id, month_start)
+);
+
+CREATE INDEX IF NOT EXISTS idx_apcal_month_open
+    ON am_program_calendar_12mo(month_start, is_open);
+
+-- ============================================================
+-- FILE: scripts/migrations/wave24_129_am_enforcement_industry_risk.sql
+-- ============================================================
+-- target_db: autonomath
+-- migration wave24_129_am_enforcement_industry_risk (MASTER_PLAN_v1
+-- 章 10.2.4 — enforcement × JSIC 業種リスク事前計算)
+--
+-- Why this exists:
+--   `forecast_enforcement_risk` (#100, sensitive=YES) returns
+--   "given JSIC × region, what is the横展開 (cross-industry) risk
+--   of regulatory enforcement". The score is computed by
+--   `scripts/etl/precompute_enforcement_industry_risk.py` from
+--   `am_enforcement_detail` (22,258 rows, 6,455 with houjin_bangou)
+--   joined against JSIC mapping and region rollups.
+--
+--   We materialize per (jsic_major, jsic_middle, region_code,
+--   risk_category) so the read path is one indexed lookup.
+--
+-- Schema:
+--   * jsic_major  TEXT NOT NULL  — 'A'..'T'
+--   * jsic_middle TEXT           — 2 桁 or NULL for major-only rows
+--   * region_code TEXT           — 5-digit JIS or 'JP-NATION' for nation-wide
+--   * risk_category TEXT NOT NULL  — 'fine' | 'subsidy_exclude' | 'grant_refund'
+--                                    | 'admin_order' | 'naming_publish'
+--   * incident_count INTEGER NOT NULL DEFAULT 0
+--   * total_amount_yen INTEGER             — sum of am_enforcement_detail.amount_yen
+--   * percentile_in_industry REAL          — 0..1, this region vs other regions
+--   * trend_3yr_json TEXT                  — {y2024:N, y2025:N, y2026:N}
+--   * source_snapshot_id TEXT
+--   * computed_at TEXT NOT NULL DEFAULT (datetime('now'))
+--   * UNIQUE(jsic_major, jsic_middle, region_code, risk_category)
+--
+-- Indexes:
+--   * (jsic_major, region_code) — primary lookup pattern.
+--   * (region_code, risk_category) — region-side rollup.
+--
+-- Idempotency:
+--   CREATE * IF NOT EXISTS. UNIQUE for `INSERT OR REPLACE`.
+--
+-- DOWN:
+--   See companion `wave24_129_am_enforcement_industry_risk_rollback.sql`.
+
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS am_enforcement_industry_risk (
+    risk_id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+    jsic_major              TEXT NOT NULL CHECK (jsic_major IN (
+                                'A','B','C','D','E','F','G','H','I','J',
+                                'K','L','M','N','O','P','Q','R','S','T'
+                            )),
+    jsic_middle             TEXT,
+    region_code             TEXT,
+    risk_category           TEXT NOT NULL CHECK (risk_category IN (
+                                'fine','subsidy_exclude','grant_refund',
+                                'admin_order','naming_publish'
+                            )),
+    incident_count          INTEGER NOT NULL DEFAULT 0,
+    total_amount_yen        INTEGER,
+    percentile_in_industry  REAL,
+    trend_3yr_json          TEXT,
+    source_snapshot_id      TEXT,
+    computed_at             TEXT NOT NULL DEFAULT (datetime('now')),
+    -- COALESCE the nullable columns to a literal sentinel so the
+    -- composite UNIQUE works (SQLite treats NULL as distinct in
+    -- UNIQUE without this canonicalization).
+    UNIQUE (jsic_major, jsic_middle, region_code, risk_category)
+);
+
+CREATE INDEX IF NOT EXISTS idx_aeir_jsic_region
+    ON am_enforcement_industry_risk(jsic_major, region_code);
+
+CREATE INDEX IF NOT EXISTS idx_aeir_region_cat
+    ON am_enforcement_industry_risk(region_code, risk_category);
+
+-- ============================================================
+-- FILE: scripts/migrations/wave24_130_am_case_study_similarity.sql
+-- ============================================================
+-- target_db: autonomath
+-- migration wave24_130_am_case_study_similarity (MASTER_PLAN_v1 章
+-- 10.2.5 — 採択事例間 類似度 事前計算)
+--
+-- Why this exists:
+--   `find_similar_case_studies` (#101) returns N nearest case_study
+--   neighbors per query case. We precompute the kNN top 5 per case
+--   from cosine over case-text embeddings (intfloat/multilingual-e5-large)
+--   so the read path is a single indexed lookup.
+--
+--   2,286 case_studies → 11,430 rows total (5 per case). Recompute
+--   weekly Sun 04:00 JST, full rebuild.
+--
+-- Schema (canonical-ordering):
+--   * case_a INTEGER NOT NULL  — joins to case_studies.case_id
+--   * case_b INTEGER NOT NULL  — joins to case_studies.case_id
+--   * similarity REAL NOT NULL — cosine, 0..1
+--   * shared_factors_json TEXT — JSON list e.g. ["jsic_E","amount_band_300_500","prefecture_match"]
+--   * rank_a INTEGER           — case_b's rank inside case_a's neighbors (1..N)
+--   * rank_b INTEGER           — case_a's rank inside case_b's neighbors (1..N)
+--   * computed_at TEXT NOT NULL DEFAULT (datetime('now'))
+--   * CHECK(case_a < case_b)   — canonical ordering, half the rows
+--   * PRIMARY KEY (case_a, case_b)
+--
+--   The CHECK + PK lets `INSERT OR IGNORE` be the safe upsert; we
+--   write each unordered pair exactly once. Both rank_a and rank_b
+--   are stored so the read path doesn't need to flip the join based
+--   on which case was queried.
+--
+-- Indexes:
+--   * (case_a, similarity DESC) — top-N from a side.
+--   * (case_b, similarity DESC) — top-N from b side.
+--
+-- Idempotency:
+--   CREATE * IF NOT EXISTS, INSERT OR IGNORE under the canonical
+--   ordering CHECK + PK gives full re-run safety.
+--
+-- DOWN:
+--   See companion `wave24_130_am_case_study_similarity_rollback.sql`.
+
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS am_case_study_similarity (
+    case_a               INTEGER NOT NULL,
+    case_b               INTEGER NOT NULL,
+    similarity           REAL NOT NULL CHECK (similarity >= 0.0 AND similarity <= 1.0),
+    shared_factors_json  TEXT,
+    rank_a               INTEGER,
+    rank_b               INTEGER,
+    computed_at          TEXT NOT NULL DEFAULT (datetime('now')),
+    CHECK (case_a < case_b),
+    PRIMARY KEY (case_a, case_b)
+);
+
+CREATE INDEX IF NOT EXISTS idx_acss_a_sim
+    ON am_case_study_similarity(case_a, similarity DESC);
+
+CREATE INDEX IF NOT EXISTS idx_acss_b_sim
+    ON am_case_study_similarity(case_b, similarity DESC);
+
+-- ============================================================
+-- FILE: scripts/migrations/wave24_131_am_houjin_360_snapshot.sql
+-- ============================================================
+-- target_db: autonomath
+-- migration wave24_131_am_houjin_360_snapshot (MASTER_PLAN_v1 章
+-- 10.2.6 — 法人 × 月 360° スナップショット事前計算)
+--
+-- Why this exists:
+--   `get_houjin_360_snapshot_history` (#102, sensitive=YES) and
+--   `get_compliance_risk_score` (#113, sensitive=YES) need a frozen
+--   monthly snapshot of every metric we expose for a houjin so that
+--   the time-series surface is honest. Without this, every read
+--   would be "current value" projected backwards — a hallucination
+--   under §10.10 fact-check.
+--
+--   100,000 cohort houjin × 12 months ≈ 1.2 M rows × ~5 KB JSON
+--   ≈ 6 GB / year (受容、master plan §10.x risk row).
+--
+-- Schema:
+--   * houjin_bangou TEXT NOT NULL
+--   * snapshot_month TEXT NOT NULL                  — YYYY-MM
+--   * adoption_count INTEGER                        — 累積採択数
+--   * adoption_total_man_yen REAL                   — 累積交付総額
+--   * enforcement_count INTEGER                     — 累積行政処分件数
+--   * enforcement_amount_yen INTEGER                — 累積罰金 / 課徴金
+--   * invoice_registered INTEGER                    — 0/1, 適格事業者登録
+--   * compliance_score REAL                         — 0..1 derived
+--   * risk_score REAL                               — 0..1 derived
+--   * subsidy_eligibility_count INTEGER             — 同月時点で適用可能な制度数
+--   * tax_credit_potential_man_yen REAL             — 同月時点で見込まれる税額控除合計
+--   * payload_json TEXT                             — JSON blob: full 360° snapshot
+--   * computed_at TEXT NOT NULL DEFAULT (datetime('now'))
+--   * UNIQUE (houjin_bangou, snapshot_month)
+--
+-- Indexes:
+--   * (houjin_bangou, snapshot_month DESC) — primary read pattern
+--     for #102 history.
+--   * (snapshot_month, risk_score DESC) — KPI roll-up "highest-risk
+--     houjin in 2026-05".
+--
+-- Idempotency:
+--   CREATE * IF NOT EXISTS, monthly cron uses INSERT OR REPLACE
+--   under UNIQUE.
+--
+-- DOWN:
+--   See companion `wave24_131_am_houjin_360_snapshot_rollback.sql`.
+
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS am_houjin_360_snapshot (
+    snapshot_id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+    houjin_bangou                TEXT NOT NULL,
+    snapshot_month               TEXT NOT NULL,
+    adoption_count               INTEGER,
+    adoption_total_man_yen       REAL,
+    enforcement_count            INTEGER,
+    enforcement_amount_yen       INTEGER,
+    invoice_registered           INTEGER CHECK (invoice_registered IS NULL OR
+                                                invoice_registered IN (0, 1)),
+    compliance_score             REAL CHECK (compliance_score IS NULL OR
+                                             (compliance_score >= 0.0 AND
+                                              compliance_score <= 1.0)),
+    risk_score                   REAL CHECK (risk_score IS NULL OR
+                                             (risk_score >= 0.0 AND risk_score <= 1.0)),
+    subsidy_eligibility_count    INTEGER,
+    tax_credit_potential_man_yen REAL,
+    payload_json                 TEXT,
+    computed_at                  TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE (houjin_bangou, snapshot_month)
+);
+
+CREATE INDEX IF NOT EXISTS idx_ah360s_houjin_month
+    ON am_houjin_360_snapshot(houjin_bangou, snapshot_month DESC);
+
+CREATE INDEX IF NOT EXISTS idx_ah360s_month_risk
+    ON am_houjin_360_snapshot(snapshot_month, risk_score DESC)
+    WHERE risk_score IS NOT NULL;
+
+-- ============================================================
+-- FILE: scripts/migrations/wave24_132_am_tax_amendment_history.sql
+-- ============================================================
+-- target_db: autonomath
+-- migration wave24_132_am_tax_amendment_history (MASTER_PLAN_v1 章
+-- 10.2.7 — 税制改正履歴 事前計算)
+--
+-- Why this exists:
+--   `get_tax_amendment_cycle` (#103, sensitive=YES),
+--   `predict_rd_tax_credit` (#108) and `simulate_tax_change_impact`
+--   (#114) all need a frozen amendment history per ruleset so the
+--   read path can answer "this ruleset was amended in 令和3, 令和5,
+--   令和7 — next amendment expected 令和9". Computing this from
+--   `am_amendment_diff` (currently 0 rows pending cron) joined
+--   against `tax_rulesets` (50 rows) at request time is doable
+--   but slow.
+--
+-- Schema:
+--   * tax_ruleset_id INTEGER NOT NULL  — joins to tax_rulesets.id
+--   * fiscal_year INTEGER NOT NULL     — 西暦 e.g. 2025
+--   * amendment_kind TEXT NOT NULL     — 'create'|'extend'|'modify'|'sunset'
+--   * effective_from TEXT              — ISO date the amendment took effect
+--   * sunset_at TEXT                   — ISO date if applicable
+--   * source_url TEXT                  — primary citation (NTA / METI)
+--   * source_fetched_at TEXT
+--   * diff_summary TEXT                — short prose
+--   * amount_change_yen INTEGER        — delta in maximum 控除額 if numeric
+--   * rate_change REAL                 — delta in % if numeric
+--   * predicted_next_amendment_year INTEGER  — derived, may be NULL
+--   * predicted_confidence REAL              — 0..1, NULL if not predicted
+--   * computed_at TEXT NOT NULL DEFAULT (datetime('now'))
+--   * UNIQUE(tax_ruleset_id, fiscal_year, amendment_kind)
+--
+-- Indexes:
+--   * (tax_ruleset_id, fiscal_year DESC) — single ruleset history.
+--   * (fiscal_year, amendment_kind) — "what changed in 令和7".
+--
+-- Idempotency:
+--   CREATE * IF NOT EXISTS, INSERT OR REPLACE under UNIQUE.
+--
+-- DOWN:
+--   See companion `wave24_132_am_tax_amendment_history_rollback.sql`.
+
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS am_tax_amendment_history (
+    history_id                   INTEGER PRIMARY KEY AUTOINCREMENT,
+    tax_ruleset_id               INTEGER NOT NULL,
+    fiscal_year                  INTEGER NOT NULL,
+    amendment_kind               TEXT NOT NULL CHECK (amendment_kind IN (
+                                     'create','extend','modify','sunset'
+                                 )),
+    effective_from               TEXT,
+    sunset_at                    TEXT,
+    source_url                   TEXT,
+    source_fetched_at            TEXT,
+    diff_summary                 TEXT,
+    amount_change_yen            INTEGER,
+    rate_change                  REAL,
+    predicted_next_amendment_year INTEGER,
+    predicted_confidence         REAL CHECK (predicted_confidence IS NULL OR
+                                             (predicted_confidence >= 0.0 AND
+                                              predicted_confidence <= 1.0)),
+    computed_at                  TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE (tax_ruleset_id, fiscal_year, amendment_kind)
+);
+
+CREATE INDEX IF NOT EXISTS idx_atah_ruleset_year
+    ON am_tax_amendment_history(tax_ruleset_id, fiscal_year DESC);
+
+CREATE INDEX IF NOT EXISTS idx_atah_year_kind
+    ON am_tax_amendment_history(fiscal_year, amendment_kind);
+
+-- ============================================================
+-- FILE: scripts/migrations/wave24_133_am_invoice_buyer_seller_graph.sql
+-- ============================================================
+-- target_db: autonomath
+-- migration wave24_133_am_invoice_buyer_seller_graph (MASTER_PLAN_v1
+-- 章 10.2.8 — 取引相手推論 graph)
+--
+-- Why this exists:
+--   `infer_invoice_buyer_seller` (#104, sensitive=YES) returns
+--   "given houjin X, who are X's likely sellers / buyers based on
+--   public-source signals". The graph is built offline by
+--   `scripts/etl/precompute_invoice_buyer_seller.py` from public
+--   adoption joint records, supplier disclosures, and 適格事業者
+--   list cross-references. Inference confidence is graded so
+--   downstream tools can filter low-confidence edges.
+--
+-- Schema:
+--   * seller_houjin_bangou TEXT NOT NULL
+--   * buyer_houjin_bangou  TEXT NOT NULL
+--   * confidence REAL NOT NULL              — 0..1
+--   * confidence_band TEXT NOT NULL         — 'high'|'medium'|'low'
+--   * inferred_industry TEXT                — buyer industry guess
+--   * evidence_kind TEXT NOT NULL           — 'public_disclosure'|'joint_adoption'|
+--                                             'supplier_list'|'co_filing'|'press_release'
+--   * evidence_count INTEGER NOT NULL DEFAULT 1
+--   * source_url_json TEXT                  — JSON list of citations
+--   * first_seen_at TEXT
+--   * last_seen_at TEXT
+--   * computed_at TEXT NOT NULL DEFAULT (datetime('now'))
+--   * CHECK(seller_houjin_bangou != buyer_houjin_bangou)
+--                                          -- no self-trade rows
+--   * UNIQUE(seller_houjin_bangou, buyer_houjin_bangou, evidence_kind)
+--
+--   The seller != buyer CHECK keeps the graph free of self-loops
+--   (a houjin trading with itself is uninteresting and would
+--   inflate counts).
+--
+-- Indexes:
+--   * (seller_houjin_bangou) — outgoing-edge scan ("who does X sell to").
+--   * (buyer_houjin_bangou)  — incoming-edge scan.
+--   * (confidence DESC)      — high-confidence-first global scan.
+--
+-- Idempotency:
+--   CREATE * IF NOT EXISTS, UNIQUE makes `INSERT OR REPLACE`
+--   the safe upsert for the cron.
+--
+-- DOWN:
+--   See companion `wave24_133_am_invoice_buyer_seller_graph_rollback.sql`.
+
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS am_invoice_buyer_seller_graph (
+    edge_id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    seller_houjin_bangou TEXT NOT NULL,
+    buyer_houjin_bangou  TEXT NOT NULL,
+    confidence           REAL NOT NULL CHECK (confidence >= 0.0 AND confidence <= 1.0),
+    confidence_band      TEXT NOT NULL CHECK (confidence_band IN ('high','medium','low')),
+    inferred_industry    TEXT,
+    evidence_kind        TEXT NOT NULL CHECK (evidence_kind IN (
+                            'public_disclosure','joint_adoption','supplier_list',
+                            'co_filing','press_release'
+                         )),
+    evidence_count       INTEGER NOT NULL DEFAULT 1,
+    source_url_json      TEXT,
+    first_seen_at        TEXT,
+    last_seen_at         TEXT,
+    computed_at          TEXT NOT NULL DEFAULT (datetime('now')),
+    -- No self-loops: a houjin trading with itself is uninteresting.
+    CHECK (seller_houjin_bangou != buyer_houjin_bangou),
+    UNIQUE (seller_houjin_bangou, buyer_houjin_bangou, evidence_kind)
+);
+
+CREATE INDEX IF NOT EXISTS idx_aibsg_seller
+    ON am_invoice_buyer_seller_graph(seller_houjin_bangou);
+
+CREATE INDEX IF NOT EXISTS idx_aibsg_buyer
+    ON am_invoice_buyer_seller_graph(buyer_houjin_bangou);
+
+CREATE INDEX IF NOT EXISTS idx_aibsg_confidence
+    ON am_invoice_buyer_seller_graph(confidence DESC);
+
+-- ============================================================
+-- FILE: scripts/migrations/wave24_134_am_capital_band_program_match.sql
+-- ============================================================
+-- target_db: autonomath
+-- migration wave24_134_am_capital_band_program_match (MASTER_PLAN_v1
+-- 章 10.2.9 — 資本金帯 × 採択統計マッチ)
+--
+-- Why this exists:
+--   `match_programs_by_capital` (#105) and
+--   `score_application_probability` (#112) both need a fast
+--   lookup of "given a capital_yen value, which programs have
+--   the strongest historical adoption signal at this capital
+--   band". We bucket capital into the 9 bands NTA standard uses
+--   and pre-aggregate per (capital_band × program).
+--
+-- Schema:
+--   * capital_band TEXT NOT NULL CHECK (capital_band IN (
+--          'under_1m','1m_to_3m','3m_to_5m','5m_to_10m',
+--          '10m_to_50m','50m_to_100m','100m_to_300m',
+--          '300m_to_1b','1b_plus'))
+--   * program_unified_id TEXT NOT NULL
+--   * adoption_count INTEGER NOT NULL DEFAULT 0
+--   * adoption_rate REAL                     — 0..1 (count / applicants)
+--   * avg_amount_man_yen REAL
+--   * percentile_in_band REAL                — 0..1, this program vs others in same band
+--   * sample_size INTEGER NOT NULL DEFAULT 0 — denominator for the rate
+--   * computed_at TEXT NOT NULL DEFAULT (datetime('now'))
+--   * UNIQUE (capital_band, program_unified_id)
+--
+--   The capital_band enum mirrors `am_target_profile` band labels
+--   for cross-table joinability.
+--
+-- Indexes:
+--   * (capital_band, percentile_in_band DESC) — top-N within a band.
+--   * (program_unified_id) — reverse "which bands favor program X".
+--
+-- Idempotency:
+--   CREATE * IF NOT EXISTS, INSERT OR REPLACE under UNIQUE.
+--
+-- DOWN:
+--   See companion `wave24_134_am_capital_band_program_match_rollback.sql`.
+
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS am_capital_band_program_match (
+    match_id             INTEGER PRIMARY KEY AUTOINCREMENT,
+    capital_band         TEXT NOT NULL CHECK (capital_band IN (
+                            'under_1m','1m_to_3m','3m_to_5m','5m_to_10m',
+                            '10m_to_50m','50m_to_100m','100m_to_300m',
+                            '300m_to_1b','1b_plus'
+                         )),
+    program_unified_id   TEXT NOT NULL,
+    adoption_count       INTEGER NOT NULL DEFAULT 0,
+    adoption_rate        REAL CHECK (adoption_rate IS NULL OR
+                                     (adoption_rate >= 0.0 AND adoption_rate <= 1.0)),
+    avg_amount_man_yen   REAL,
+    percentile_in_band   REAL CHECK (percentile_in_band IS NULL OR
+                                     (percentile_in_band >= 0.0 AND percentile_in_band <= 1.0)),
+    sample_size          INTEGER NOT NULL DEFAULT 0,
+    computed_at          TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE (capital_band, program_unified_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_acbpm_band_pct
+    ON am_capital_band_program_match(capital_band, percentile_in_band DESC);
+
+CREATE INDEX IF NOT EXISTS idx_acbpm_program
+    ON am_capital_band_program_match(program_unified_id);
+
+-- ============================================================
+-- FILE: scripts/migrations/wave24_135_am_program_adoption_stats.sql
+-- ============================================================
+-- target_db: autonomath
+-- migration wave24_135_am_program_adoption_stats (MASTER_PLAN_v1 章
+-- 10.2.10 — 採択統計事前計算)
+--
+-- Why this exists:
+--   `get_program_adoption_stats` (#106) returns
+--   "for program X in fiscal year Y, what was adoption_count,
+--   avg_amount, success_rate, industry_distribution,
+--   region_distribution". JSON columns let the read path return a
+--   single row that the API serializes verbatim.
+--
+-- Schema:
+--   * program_unified_id TEXT NOT NULL
+--   * fiscal_year INTEGER NOT NULL
+--   * adoption_count INTEGER NOT NULL DEFAULT 0
+--   * applicant_count INTEGER                — denominator for success_rate
+--   * success_rate REAL                      — 0..1
+--   * avg_amount_man_yen REAL
+--   * median_amount_man_yen REAL
+--   * total_amount_man_yen REAL
+--   * industry_distribution TEXT             — JSON {jsic_major: ratio_0..1}
+--   * region_distribution TEXT               — JSON {prefecture_code: ratio_0..1}
+--   * source_snapshot_id TEXT
+--   * computed_at TEXT NOT NULL DEFAULT (datetime('now'))
+--   * UNIQUE (program_unified_id, fiscal_year)
+--
+-- Indexes:
+--   * (program_unified_id, fiscal_year DESC) — single program time-series.
+--   * (fiscal_year, success_rate DESC) — KPI roll-up "highest success rate in FYY".
+--
+-- Idempotency:
+--   CREATE * IF NOT EXISTS, INSERT OR REPLACE under UNIQUE.
+--
+-- DOWN:
+--   See companion `wave24_135_am_program_adoption_stats_rollback.sql`.
+
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS am_program_adoption_stats (
+    stat_id                INTEGER PRIMARY KEY AUTOINCREMENT,
+    program_unified_id     TEXT NOT NULL,
+    fiscal_year            INTEGER NOT NULL,
+    adoption_count         INTEGER NOT NULL DEFAULT 0,
+    applicant_count        INTEGER,
+    success_rate           REAL CHECK (success_rate IS NULL OR
+                                       (success_rate >= 0.0 AND success_rate <= 1.0)),
+    avg_amount_man_yen     REAL,
+    median_amount_man_yen  REAL,
+    total_amount_man_yen   REAL,
+    industry_distribution  TEXT,    -- JSON {jsic_major: ratio}
+    region_distribution    TEXT,    -- JSON {prefecture_code: ratio}
+    source_snapshot_id     TEXT,
+    computed_at            TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE (program_unified_id, fiscal_year)
+);
+
+CREATE INDEX IF NOT EXISTS idx_apas_program_fy
+    ON am_program_adoption_stats(program_unified_id, fiscal_year DESC);
+
+CREATE INDEX IF NOT EXISTS idx_apas_fy_success
+    ON am_program_adoption_stats(fiscal_year, success_rate DESC)
+    WHERE success_rate IS NOT NULL;
+
+-- ============================================================
+-- FILE: scripts/migrations/wave24_136_am_program_narrative.sql
+-- ============================================================
+-- target_db: autonomath
+-- migration wave24_136_am_program_narrative (MASTER_PLAN_v1 章 10.2.11
+-- — 解説 narrative 4 section × 2 lang + FTS5 + 3 trigger)
+--
+-- Why this exists:
+--   `get_program_narrative` (#107, sensitive=YES) and
+--   `get_program_keyword_analysis` (#116) need a structured
+--   narrative table where each (program × language × section) is
+--   one row. Sections are the 4 standard panels of the §10.8 full
+--   envelope: overview, eligibility, application_flow, pitfalls.
+--
+--   Generation is offline by Claude Code subagent batch (memory
+--   `feedback_no_operator_llm_api`); jpcite service-side path is
+--   SELECT only.
+--
+--   FTS5 trigram lets `get_program_keyword_analysis` and
+--   freeform program search hit the narrative body without a
+--   LIKE scan over 93,472 rows.
+--
+-- Schema:
+--   am_program_narrative
+--     * narrative_id INTEGER PRIMARY KEY AUTOINCREMENT
+--     * program_id INTEGER NOT NULL  — joins to programs.id (jpintel-side)
+--                                     / jpi_programs.id (autonomath-side mirror)
+--     * lang TEXT NOT NULL CHECK (lang IN ('ja','en'))
+--     * section TEXT NOT NULL CHECK (section IN
+--          ('overview','eligibility','application_flow','pitfalls'))
+--     * body_text TEXT NOT NULL
+--     * source_url_json TEXT  — JSON list of citations from generation
+--     * model_id TEXT
+--     * generated_at TEXT NOT NULL DEFAULT (datetime('now'))
+--     * literal_quote_check_passed INTEGER NOT NULL DEFAULT 0
+--                                  -- 0 / 1, set by ingest_offline_inbox
+--     * UNIQUE (program_id, lang, section)
+--
+--   The is_active / quarantine_id / content_hash columns mandated
+--   by §10.10 are added by wave24_141 (intentionally split so this
+--   migration is a clean CREATE).
+--
+--   am_program_narrative_fts (FTS5 trigram contentless wrapper):
+--     * body_text — the column FTS5 indexes
+--     * narrative_id UNINDEXED — join key back to base table
+--
+-- Triggers (3 — INSERT / UPDATE / DELETE keep FTS in sync):
+--   am_program_narrative_ai (AFTER INSERT)
+--   am_program_narrative_au (AFTER UPDATE)
+--   am_program_narrative_ad (AFTER DELETE)
+--
+--   Pattern matches migration 057_case_studies_fts.sql for
+--   consistency.
+--
+-- Idempotency:
+--   CREATE * IF NOT EXISTS for table / virtual table / index /
+--   trigger. Re-apply on populated DB is a no-op.
+--
+-- DOWN:
+--   See companion `wave24_136_am_program_narrative_rollback.sql`.
+
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS am_program_narrative (
+    narrative_id                INTEGER PRIMARY KEY AUTOINCREMENT,
+    program_id                  INTEGER NOT NULL,
+    lang                        TEXT NOT NULL CHECK (lang IN ('ja','en')),
+    section                     TEXT NOT NULL CHECK (section IN (
+                                    'overview','eligibility','application_flow','pitfalls'
+                                )),
+    body_text                   TEXT NOT NULL,
+    source_url_json             TEXT,
+    model_id                    TEXT,
+    generated_at                TEXT NOT NULL DEFAULT (datetime('now')),
+    literal_quote_check_passed  INTEGER NOT NULL DEFAULT 0
+                                 CHECK (literal_quote_check_passed IN (0, 1)),
+    UNIQUE (program_id, lang, section)
+);
+
+CREATE INDEX IF NOT EXISTS idx_apn_program_lang
+    ON am_program_narrative(program_id, lang);
+
+-- FTS5 trigram for substring / phrase search across narrative bodies.
+CREATE VIRTUAL TABLE IF NOT EXISTS am_program_narrative_fts USING fts5(
+    body_text,
+    narrative_id UNINDEXED,
+    tokenize = 'trigram'
+);
+
+-- Trigger 1/3 — keep FTS in sync on INSERT.
+CREATE TRIGGER IF NOT EXISTS am_program_narrative_ai
+AFTER INSERT ON am_program_narrative
+BEGIN
+    INSERT INTO am_program_narrative_fts(rowid, body_text, narrative_id)
+    VALUES (NEW.narrative_id, COALESCE(NEW.body_text, ''), NEW.narrative_id);
+END;
+
+-- Trigger 2/3 — keep FTS in sync on UPDATE.
+CREATE TRIGGER IF NOT EXISTS am_program_narrative_au
+AFTER UPDATE ON am_program_narrative
+BEGIN
+    UPDATE am_program_narrative_fts
+       SET body_text = COALESCE(NEW.body_text, '')
+     WHERE rowid = NEW.narrative_id;
+END;
+
+-- Trigger 3/3 — keep FTS in sync on DELETE.
+CREATE TRIGGER IF NOT EXISTS am_program_narrative_ad
+AFTER DELETE ON am_program_narrative
+BEGIN
+    DELETE FROM am_program_narrative_fts WHERE rowid = OLD.narrative_id;
+END;
+
+-- ============================================================
+-- FILE: scripts/migrations/wave24_137_am_program_eligibility_predicate.sql
+-- ============================================================
+-- target_db: autonomath
+-- migration wave24_137_am_program_eligibility_predicate (MASTER_PLAN_v1
+-- 章 10.2.12 — eligibility predicate 結晶化テーブル + view)
+--
+-- Why this exists:
+--   The Wave 21 `apply_eligibility_chain_am` and the Wave 22
+--   `bundle_application_kit` tools both walk eligibility predicates
+--   per program. Today they reconstruct predicates from the
+--   eligibility_struct JSON in `am_amendment_snapshot`, which is
+--   slow and forces every reader to know the JSON shape.
+--
+--   This migration crystallizes one row per (program × predicate)
+--   so readers can SELECT WHERE predicate_kind = 'capital_max'
+--   without JSON parsing. The companion view
+--   `v_am_program_required_predicates` filters to predicates that
+--   are mandatory (is_required=1) for downstream filter UIs.
+--
+-- Schema:
+--   am_program_eligibility_predicate
+--     * predicate_id INTEGER PRIMARY KEY AUTOINCREMENT
+--     * program_unified_id TEXT NOT NULL
+--     * predicate_kind TEXT NOT NULL CHECK (...)
+--          'capital_max'|'capital_min'|'employee_max'|'employee_min'|
+--          'fy_revenue_max'|'fy_revenue_min'|'jsic_in'|'jsic_not_in'|
+--          'region_in'|'region_not_in'|'invoice_required'|
+--          'tax_compliance_required'|'no_enforcement_within_years'|
+--          'business_age_min_years'|'capital_band_in'|'other'
+--     * operator TEXT NOT NULL CHECK (operator IN
+--          ('=','!=','<','<=','>','>=','IN','NOT_IN','CONTAINS','EXISTS'))
+--     * value_text TEXT
+--     * value_num REAL
+--     * value_json TEXT  — for IN / NOT_IN array values
+--     * is_required INTEGER NOT NULL DEFAULT 1 CHECK (is_required IN (0, 1))
+--     * source_url TEXT
+--     * source_clause_quote TEXT  — literal substring from primary doc
+--     * extracted_at TEXT NOT NULL DEFAULT (datetime('now'))
+--     * UNIQUE (program_unified_id, predicate_kind, operator,
+--               COALESCE(value_text,''), COALESCE(value_num,0),
+--               COALESCE(value_json,''))
+--
+--   The composite UNIQUE allows multiple predicates of the same
+--   kind (e.g. region_in 'tokyo' and region_in 'osaka' as two rows)
+--   without forcing JSON arrays.
+--
+--   v_am_program_required_predicates (view):
+--     SELECT * FROM am_program_eligibility_predicate WHERE is_required = 1;
+--
+-- Indexes:
+--   * (program_unified_id, predicate_kind) — predicate-set lookup.
+--   * (predicate_kind, value_num) — "all programs requiring capital >= X".
+--
+-- Idempotency:
+--   CREATE * IF NOT EXISTS. CREATE VIEW IF NOT EXISTS.
+--
+-- DOWN:
+--   See companion `wave24_137_am_program_eligibility_predicate_rollback.sql`.
+
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS am_program_eligibility_predicate (
+    predicate_id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    program_unified_id    TEXT NOT NULL,
+    predicate_kind        TEXT NOT NULL CHECK (predicate_kind IN (
+                            'capital_max','capital_min','employee_max','employee_min',
+                            'fy_revenue_max','fy_revenue_min','jsic_in','jsic_not_in',
+                            'region_in','region_not_in','invoice_required',
+                            'tax_compliance_required','no_enforcement_within_years',
+                            'business_age_min_years','capital_band_in','other'
+                          )),
+    operator              TEXT NOT NULL CHECK (operator IN (
+                            '=','!=','<','<=','>','>=','IN','NOT_IN','CONTAINS','EXISTS'
+                          )),
+    value_text            TEXT,
+    value_num             REAL,
+    value_json            TEXT,
+    is_required           INTEGER NOT NULL DEFAULT 1 CHECK (is_required IN (0, 1)),
+    source_url            TEXT,
+    source_clause_quote   TEXT,
+    extracted_at          TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_apep_unique_predicate
+    ON am_program_eligibility_predicate(
+        program_unified_id,
+        predicate_kind,
+        operator,
+        COALESCE(value_text, ''),
+        COALESCE(value_num, 0),
+        COALESCE(value_json, '')
+    );
+
+CREATE INDEX IF NOT EXISTS idx_apep_program_kind
+    ON am_program_eligibility_predicate(program_unified_id, predicate_kind);
+
+CREATE INDEX IF NOT EXISTS idx_apep_kind_value
+    ON am_program_eligibility_predicate(predicate_kind, value_num)
+    WHERE value_num IS NOT NULL;
+
+-- View — required predicates only.
+CREATE VIEW IF NOT EXISTS v_am_program_required_predicates AS
+SELECT predicate_id,
+       program_unified_id,
+       predicate_kind,
+       operator,
+       value_text,
+       value_num,
+       value_json,
+       source_url,
+       source_clause_quote,
+       extracted_at
+  FROM am_program_eligibility_predicate
+ WHERE is_required = 1;
+
+-- ============================================================
+-- FILE: scripts/migrations/wave24_138_am_program_documents.sql
+-- ============================================================
+-- target_db: autonomath
+-- migration wave24_138_am_program_documents (MASTER_PLAN_v1 章 10.2.13
+-- — 申請書類 list, #110 用)
+--
+-- Why this exists:
+--   `get_program_application_documents` (#110, sensitive=YES) returns
+--   the list of 申請書類 a program requires. Today the data lives in
+--   loose JSON in `programs.enriched_json` which is hard to query.
+--   We materialize one row per (program × document) so readers can
+--   filter by required-vs-optional / 様式番号 / source URL availability.
+--
+-- Schema:
+--   * doc_id INTEGER PRIMARY KEY AUTOINCREMENT
+--   * program_unified_id TEXT NOT NULL
+--   * doc_name TEXT NOT NULL
+--   * doc_kind TEXT  — '申請書'|'計画書'|'見積書'|'登記簿'|'納税証明'|
+--                     '財務諸表'|'同意書'|'その他'
+--   * yoshiki_no TEXT  — 様式番号 (e.g. '様式第1号')
+--   * is_required INTEGER NOT NULL DEFAULT 1 CHECK (is_required IN (0, 1))
+--   * url TEXT  — direct download URL when available
+--   * source_clause_quote TEXT  — literal substring from primary 公募要領
+--   * notes TEXT
+--   * computed_at TEXT NOT NULL DEFAULT (datetime('now'))
+--   * UNIQUE (program_unified_id, doc_name, yoshiki_no)
+--
+--   The yoshiki_no in UNIQUE accommodates the case where two
+--   different yoshiki carry the same doc_name (rare but happens
+--   in sub-applications).
+--
+-- Indexes:
+--   * (program_unified_id, is_required) — primary read pattern.
+--
+-- Idempotency:
+--   CREATE * IF NOT EXISTS. UNIQUE allows `INSERT OR REPLACE`.
+--
+-- DOWN:
+--   See companion `wave24_138_am_program_documents_rollback.sql`.
+
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS am_program_documents (
+    doc_id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    program_unified_id   TEXT NOT NULL,
+    doc_name             TEXT NOT NULL,
+    doc_kind             TEXT CHECK (doc_kind IS NULL OR doc_kind IN (
+                            '申請書','計画書','見積書','登記簿','納税証明',
+                            '財務諸表','同意書','その他'
+                         )),
+    yoshiki_no           TEXT,
+    is_required          INTEGER NOT NULL DEFAULT 1 CHECK (is_required IN (0, 1)),
+    url                  TEXT,
+    source_clause_quote  TEXT,
+    notes                TEXT,
+    computed_at          TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_apd_unique_document
+    ON am_program_documents(program_unified_id, doc_name, COALESCE(yoshiki_no, ''));
+
+CREATE INDEX IF NOT EXISTS idx_apd_program_required
+    ON am_program_documents(program_unified_id, is_required);
+
+-- ============================================================
+-- FILE: scripts/migrations/wave24_139_am_region_program_density.sql
+-- ============================================================
+-- target_db: autonomath
+-- migration wave24_139_am_region_program_density (MASTER_PLAN_v1 章
+-- 10.2.14 — 地域 × JSIC density, #117 用)
+--
+-- Why this exists:
+--   `get_industry_program_density` (#117) needs a precomputed
+--   per-(region × jsic) density rollup. The base table
+--   `am_region_program_density` is created here; wave24_112 also
+--   declares it under IF NOT EXISTS as a defensive duplicate so
+--   either migration can land independently. Both shapes are
+--   identical — apply order is irrelevant.
+--
+--   This file ALSO adds the supporting cohort breakdown table
+--   `am_region_program_density_breakdown` (per program list,
+--   keeps the rollup readers small) which is unique to this
+--   migration.
+--
+-- Schema:
+--   am_region_program_density
+--     (created here OR by wave24_112; identical column shape under
+--      IF NOT EXISTS so re-apply collapses to no-op)
+--
+--   am_region_program_density_breakdown
+--     * breakdown_id INTEGER PRIMARY KEY AUTOINCREMENT
+--     * region_code TEXT NOT NULL
+--     * jsic_major TEXT NOT NULL
+--     * program_unified_id TEXT NOT NULL
+--     * tier TEXT
+--     * is_open INTEGER
+--     * computed_at TEXT NOT NULL DEFAULT (datetime('now'))
+--     * UNIQUE (region_code, jsic_major, program_unified_id)
+--
+-- Indexes:
+--   * (region_code, jsic_major) on breakdown for "list-the-programs".
+--   * (program_unified_id) reverse lookup.
+--
+-- Idempotency:
+--   CREATE * IF NOT EXISTS, INSERT OR REPLACE under UNIQUE.
+--
+-- DOWN:
+--   See companion `wave24_139_am_region_program_density_rollback.sql`.
+
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS am_region_program_density (
+    density_id                       INTEGER PRIMARY KEY AUTOINCREMENT,
+    region_code                      TEXT NOT NULL,
+    jsic_major                       TEXT NOT NULL,
+    program_count                    INTEGER NOT NULL DEFAULT 0,
+    programs_per_million_yen_gdp     REAL,
+    programs_per_business            REAL,
+    percentile_in_prefecture         REAL,
+    computed_at                      TEXT NOT NULL DEFAULT (datetime('now')),
+    source_snapshot_id               TEXT,
+    UNIQUE (region_code, jsic_major)
+);
+
+CREATE INDEX IF NOT EXISTS idx_arpd_region
+    ON am_region_program_density(region_code);
+
+CREATE INDEX IF NOT EXISTS idx_arpd_jsic
+    ON am_region_program_density(jsic_major);
+
+CREATE TABLE IF NOT EXISTS am_region_program_density_breakdown (
+    breakdown_id        INTEGER PRIMARY KEY AUTOINCREMENT,
+    region_code         TEXT NOT NULL,
+    jsic_major          TEXT NOT NULL,
+    program_unified_id  TEXT NOT NULL,
+    tier                TEXT,
+    is_open             INTEGER CHECK (is_open IS NULL OR is_open IN (0, 1)),
+    computed_at         TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE (region_code, jsic_major, program_unified_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_arpdb_region_jsic
+    ON am_region_program_density_breakdown(region_code, jsic_major);
+
+CREATE INDEX IF NOT EXISTS idx_arpdb_program
+    ON am_region_program_density_breakdown(program_unified_id);
+
+-- ============================================================
+-- FILE: scripts/migrations/wave24_140_am_narrative_extracted_entities.sql
+-- ============================================================
+-- target_db: autonomath
+-- migration wave24_140_am_narrative_extracted_entities (MASTER_PLAN_v1
+-- 章 10.10.1 — fact-check pipeline entity extraction store)
+--
+-- Why this exists:
+--   `tools/offline/extract_narrative_entities.py` (operator-side
+--   weekly cron, Sun 02:00 JST) parses every active narrative row,
+--   extracts entities (money / year / percent / count / url / law /
+--   program / houjin / jsic) via regex + spaCy GiNZA, and records
+--   each (narrative × entity × span) here. The match-rate scorer
+--   then joins this table to `am_entities` / `am_source` / `laws`
+--   etc. to flag corpus-not-found entities for quarantine.
+--
+--   jpcite service-side path is SELECT only (this entire pipeline
+--   is operator-side; no LLM imports under src/).
+--
+-- Schema:
+--   * extract_id INTEGER PRIMARY KEY AUTOINCREMENT
+--   * narrative_id INTEGER NOT NULL
+--   * narrative_table TEXT NOT NULL  — 'am_program_narrative' /
+--                                       'am_houjin_360_narrative' /
+--                                       'am_enforcement_summary' /
+--                                       'am_case_study_narrative' /
+--                                       'am_law_article_summary'
+--   * entity_kind TEXT NOT NULL  — 'money'|'year'|'percent'|'count'|'url'|
+--                                  'law'|'program'|'houjin'|'jsic'
+--   * entity_text TEXT NOT NULL  — raw substring extracted
+--   * entity_norm TEXT NOT NULL  — normalized form (e.g. yen-converted,
+--                                  ISO date, lowercased URL)
+--   * span_start INTEGER NOT NULL  — char offset in body_text
+--   * span_end INTEGER NOT NULL
+--   * corpus_match INTEGER NOT NULL DEFAULT 0  — 0/1, did we find this in corpus
+--   * corpus_table TEXT  — table the match landed in (NULL if no match)
+--   * corpus_pk TEXT     — PK of the matching row (NULL if no match)
+--   * extracted_at TEXT NOT NULL DEFAULT (datetime('now'))
+--   * UNIQUE (narrative_id, narrative_table, span_start, span_end)
+--
+--   The composite UNIQUE makes the extractor's `INSERT OR REPLACE`
+--   safe to re-run on the same narrative (offsets are stable until
+--   the body text changes, which then triggers regeneration anyway).
+--
+-- Indexes:
+--   * (narrative_table, narrative_id) — per-narrative scan.
+--   * (entity_kind, corpus_match) — KPI roll-up "money entities
+--     not found in corpus".
+--
+-- Idempotency:
+--   CREATE * IF NOT EXISTS, INSERT OR REPLACE under UNIQUE.
+--
+-- DOWN:
+--   See companion `wave24_140_am_narrative_extracted_entities_rollback.sql`.
+
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS am_narrative_extracted_entities (
+    extract_id       INTEGER PRIMARY KEY AUTOINCREMENT,
+    narrative_id     INTEGER NOT NULL,
+    narrative_table  TEXT NOT NULL CHECK (narrative_table IN (
+                        'am_program_narrative','am_houjin_360_narrative',
+                        'am_enforcement_summary','am_case_study_narrative',
+                        'am_law_article_summary'
+                     )),
+    entity_kind      TEXT NOT NULL CHECK (entity_kind IN (
+                        'money','year','percent','count','url',
+                        'law','program','houjin','jsic'
+                     )),
+    entity_text      TEXT NOT NULL,
+    entity_norm      TEXT NOT NULL,
+    span_start       INTEGER NOT NULL,
+    span_end         INTEGER NOT NULL CHECK (span_end > span_start),
+    corpus_match     INTEGER NOT NULL DEFAULT 0 CHECK (corpus_match IN (0, 1)),
+    corpus_table     TEXT,
+    corpus_pk        TEXT,
+    extracted_at     TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE (narrative_id, narrative_table, span_start, span_end)
+);
+
+CREATE INDEX IF NOT EXISTS idx_nee_narrative
+    ON am_narrative_extracted_entities(narrative_table, narrative_id);
+
+CREATE INDEX IF NOT EXISTS idx_nee_kind_match
+    ON am_narrative_extracted_entities(entity_kind, corpus_match);
+
+-- ============================================================
+-- FILE: scripts/migrations/wave24_141_am_narrative_quarantine.sql
+-- ============================================================
+-- target_db: autonomath
+-- migration wave24_141_am_narrative_quarantine (MASTER_PLAN_v1 章
+-- 10.10.1 — quarantine table + 5 narrative tables に
+-- is_active / quarantine_id / content_hash 列追加)
+--
+-- Why this exists:
+--   The fact-check pipeline (§10.10) needs a way to soft-delete
+--   ("quarantine") narrative rows that fail match-rate, customer
+--   report, corpus-drift, or operator review without hard-deleting
+--   them. The `is_active` column is the read-time gate (every
+--   serve query MUST `WHERE is_active = 1`). `quarantine_id`
+--   joins to `am_narrative_quarantine` for audit trail.
+--   `content_hash` is recorded on insert so corpus-drift detection
+--   can flag rows whose source body has changed since generation.
+--
+--   The 4 non-program narrative tables (am_houjin_360_narrative,
+--   am_enforcement_summary, am_case_study_narrative,
+--   am_law_article_summary) do NOT have their own dedicated
+--   migration in Wave 24 — generation is offline, ingest is the
+--   only schema-touching path. We CREATE IF NOT EXISTS minimal
+--   stubs here so the ALTER ADD COLUMN statements have a target
+--   even on a fresh DB. The cron's INSERT OR REPLACE owns the
+--   actual column population. Once a future migration declares
+--   any of the 4 with a richer shape, the IF NOT EXISTS here
+--   silently steps aside.
+--
+-- Schema:
+--   am_narrative_quarantine
+--     * quarantine_id INTEGER PRIMARY KEY AUTOINCREMENT
+--     * narrative_id INTEGER NOT NULL
+--     * narrative_table TEXT NOT NULL CHECK (narrative_table IN (
+--          'am_program_narrative','am_houjin_360_narrative',
+--          'am_enforcement_summary','am_case_study_narrative',
+--          'am_law_article_summary'))
+--     * reason TEXT NOT NULL CHECK (reason IN (
+--          'low_match_rate','customer_report','corpus_drift','operator_reject'))
+--     * match_rate REAL  — only when reason='low_match_rate'
+--     * detected_at TEXT NOT NULL DEFAULT (datetime('now'))
+--     * resolved_at TEXT
+--     * resolution TEXT CHECK (resolution IS NULL OR resolution IN (
+--          'regenerated','manual_fix','deleted','false_positive'))
+--     * UNIQUE (narrative_id, narrative_table, detected_at)
+--
+--   ALTER on 5 narrative tables (each table gets is_active /
+--   quarantine_id / content_hash):
+--     am_program_narrative      — created in wave24_136
+--     am_houjin_360_narrative   — stub created here
+--     am_enforcement_summary    — stub created here
+--     am_case_study_narrative   — stub created here
+--     am_law_article_summary    — stub created here
+--
+-- Indexes:
+--   * idx_anq_state — find unresolved quarantine entries.
+--   * is_active partial indexes per narrative table (next ingest
+--     queries serve only is_active=1 rows).
+--
+-- Idempotency:
+--   ALTER ADD COLUMN raises "duplicate column name" on re-run;
+--   entrypoint.sh §4 swallows that case (lines 420-428) when the
+--   message is exclusively "duplicate column" — same pattern as
+--   migrations 049/101/105/106. CREATE * IF NOT EXISTS for
+--   tables / indexes.
+--
+-- DOWN:
+--   See companion `wave24_141_am_narrative_quarantine_rollback.sql`.
+
+PRAGMA foreign_keys = ON;
+
+-- 1. quarantine table.
+CREATE TABLE IF NOT EXISTS am_narrative_quarantine (
+    quarantine_id    INTEGER PRIMARY KEY AUTOINCREMENT,
+    narrative_id     INTEGER NOT NULL,
+    narrative_table  TEXT NOT NULL CHECK (narrative_table IN (
+                        'am_program_narrative','am_houjin_360_narrative',
+                        'am_enforcement_summary','am_case_study_narrative',
+                        'am_law_article_summary'
+                     )),
+    reason           TEXT NOT NULL CHECK (reason IN (
+                        'low_match_rate','customer_report','corpus_drift','operator_reject'
+                     )),
+    match_rate       REAL,
+    detected_at      TEXT NOT NULL DEFAULT (datetime('now')),
+    resolved_at      TEXT,
+    resolution       TEXT CHECK (resolution IS NULL OR resolution IN (
+                        'regenerated','manual_fix','deleted','false_positive'
+                     )),
+    UNIQUE (narrative_id, narrative_table, detected_at)
+);
+
+CREATE INDEX IF NOT EXISTS idx_anq_state
+    ON am_narrative_quarantine(narrative_table, narrative_id, resolved_at);
+
+CREATE INDEX IF NOT EXISTS idx_anq_unresolved
+    ON am_narrative_quarantine(detected_at) WHERE resolved_at IS NULL;
+
+-- 2. Stub the 4 non-program narrative tables IF NOT EXISTS, so the
+--    ALTER below can run on a fresh DB. Each carries a minimal
+--    narrative_id / body_text / generated_at shell; the offline
+--    ETL owns the richer column set later via INSERT OR REPLACE
+--    (or a future migration enlarging the shape under IF NOT EXISTS).
+
+CREATE TABLE IF NOT EXISTS am_houjin_360_narrative (
+    narrative_id    INTEGER PRIMARY KEY AUTOINCREMENT,
+    houjin_bangou   TEXT NOT NULL,
+    lang            TEXT NOT NULL DEFAULT 'ja' CHECK (lang IN ('ja','en')),
+    body_text       TEXT NOT NULL,
+    source_url_json TEXT,
+    generated_at    TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE (houjin_bangou, lang)
+);
+
+CREATE TABLE IF NOT EXISTS am_enforcement_summary (
+    narrative_id    INTEGER PRIMARY KEY AUTOINCREMENT,
+    enforcement_id  INTEGER NOT NULL,
+    lang            TEXT NOT NULL DEFAULT 'ja' CHECK (lang IN ('ja','en')),
+    body_text       TEXT NOT NULL,
+    source_url_json TEXT,
+    generated_at    TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE (enforcement_id, lang)
+);
+
+CREATE TABLE IF NOT EXISTS am_case_study_narrative (
+    narrative_id    INTEGER PRIMARY KEY AUTOINCREMENT,
+    case_id         INTEGER NOT NULL,
+    lang            TEXT NOT NULL DEFAULT 'ja' CHECK (lang IN ('ja','en')),
+    body_text       TEXT NOT NULL,
+    source_url_json TEXT,
+    generated_at    TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE (case_id, lang)
+);
+
+CREATE TABLE IF NOT EXISTS am_law_article_summary (
+    narrative_id     INTEGER PRIMARY KEY AUTOINCREMENT,
+    law_canonical_id TEXT NOT NULL,
+    article_no       TEXT,
+    lang             TEXT NOT NULL DEFAULT 'ja' CHECK (lang IN ('ja','en')),
+    body_text        TEXT NOT NULL,
+    source_url_json  TEXT,
+    generated_at     TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_alas_unique_article_lang
+    ON am_law_article_summary(law_canonical_id, COALESCE(article_no, ''), lang);
+
+-- 3. ALTER each narrative table to add (is_active, quarantine_id,
+--    content_hash). is_active default 1 means existing rows
+--    materialize as active by default. SQLite's ALTER ADD COLUMN
+--    with DEFAULT applies lazily to existing rows; explicit values
+--    on subsequent UPDATE / INSERT are honored.
+
+-- am_program_narrative (declared in wave24_136).
+ALTER TABLE am_program_narrative ADD COLUMN is_active INTEGER NOT NULL DEFAULT 1
+    CHECK (is_active IN (0, 1));
+ALTER TABLE am_program_narrative ADD COLUMN quarantine_id INTEGER;
+ALTER TABLE am_program_narrative ADD COLUMN content_hash TEXT;
+
+ALTER TABLE am_houjin_360_narrative ADD COLUMN is_active INTEGER NOT NULL DEFAULT 1
+    CHECK (is_active IN (0, 1));
+ALTER TABLE am_houjin_360_narrative ADD COLUMN quarantine_id INTEGER;
+ALTER TABLE am_houjin_360_narrative ADD COLUMN content_hash TEXT;
+
+ALTER TABLE am_enforcement_summary ADD COLUMN is_active INTEGER NOT NULL DEFAULT 1
+    CHECK (is_active IN (0, 1));
+ALTER TABLE am_enforcement_summary ADD COLUMN quarantine_id INTEGER;
+ALTER TABLE am_enforcement_summary ADD COLUMN content_hash TEXT;
+
+ALTER TABLE am_case_study_narrative ADD COLUMN is_active INTEGER NOT NULL DEFAULT 1
+    CHECK (is_active IN (0, 1));
+ALTER TABLE am_case_study_narrative ADD COLUMN quarantine_id INTEGER;
+ALTER TABLE am_case_study_narrative ADD COLUMN content_hash TEXT;
+
+ALTER TABLE am_law_article_summary ADD COLUMN is_active INTEGER NOT NULL DEFAULT 1
+    CHECK (is_active IN (0, 1));
+ALTER TABLE am_law_article_summary ADD COLUMN quarantine_id INTEGER;
+ALTER TABLE am_law_article_summary ADD COLUMN content_hash TEXT;
+
+-- 4. Partial indexes on is_active for the serve-time `WHERE is_active = 1`
+--    hot path. Partial keeps the index size proportional to active rows,
+--    not the full quarantined population.
+CREATE INDEX IF NOT EXISTS idx_apn_active
+    ON am_program_narrative(program_id, lang, section)
+    WHERE is_active = 1;
+
+CREATE INDEX IF NOT EXISTS idx_ah360n_active
+    ON am_houjin_360_narrative(houjin_bangou, lang)
+    WHERE is_active = 1;
+
+CREATE INDEX IF NOT EXISTS idx_aes_active
+    ON am_enforcement_summary(enforcement_id, lang)
+    WHERE is_active = 1;
+
+CREATE INDEX IF NOT EXISTS idx_acsn_active
+    ON am_case_study_narrative(case_id, lang)
+    WHERE is_active = 1;
+
+CREATE INDEX IF NOT EXISTS idx_alas_active
+    ON am_law_article_summary(law_canonical_id, lang)
+    WHERE is_active = 1;
+
+-- ============================================================
+-- FILE: scripts/migrations/wave24_142_am_narrative_customer_reports.sql
+-- ============================================================
+-- target_db: autonomath
+-- migration wave24_142_am_narrative_customer_reports (MASTER_PLAN_v1
+-- 章 10.10.1 — customer-side narrative defect inbox + serve log)
+--
+-- Why this exists:
+--   §10.10.4 customer report channel: REST `POST /v1/narrative/{id}/report`
+--   inserts one row here per customer-flagged defect. Auto-severity
+--   (P0..P3) drives SLA: P0/P1 → 24h, P2/P3 → 72h. P0 also flips
+--   `is_active=0` on the reported narrative immediately.
+--
+--   §10.10.6 rollback: `am_narrative_serve_log` records every
+--   served narrative response (best-effort) so a rollback can
+--   identify the API keys that received the bad row in the past 30
+--   days and credit them ¥3 per affected serve.
+--
+-- Schema:
+--   am_narrative_customer_reports
+--     * report_id INTEGER PRIMARY KEY AUTOINCREMENT
+--     * narrative_id INTEGER NOT NULL
+--     * narrative_table TEXT NOT NULL CHECK (...)
+--     * api_key_id INTEGER  — NULL for anonymous reports
+--     * severity_auto TEXT NOT NULL CHECK (severity_auto IN
+--          ('P0','P1','P2','P3'))
+--     * field_path TEXT  — e.g. 'narrative.eligibility' or
+--                          'application_documents[2].url'
+--     * claimed_wrong TEXT NOT NULL
+--     * claimed_correct TEXT
+--     * evidence_url TEXT
+--     * state TEXT NOT NULL DEFAULT 'inbox' CHECK (state IN
+--          ('inbox','triaged','resolved','dismissed'))
+--     * operator_note TEXT
+--     * created_at TEXT NOT NULL DEFAULT (datetime('now'))
+--     * sla_due_at TEXT NOT NULL
+--
+--   am_narrative_serve_log
+--     * served_at TEXT NOT NULL
+--     * narrative_id INTEGER NOT NULL
+--     * narrative_table TEXT NOT NULL
+--     * api_key_id INTEGER  — NULL for anonymous serves (no credit possible)
+--     * request_id TEXT NOT NULL  — UUID from middleware, dedupes double-write
+--
+--   No UNIQUE on serve_log because the same (api_key_id, narrative_id)
+--   serving multiple times legitimately bills multiple times. The
+--   prune cron deletes rows older than 30 days.
+--
+-- Indexes:
+--   * idx_ncr_state_due — operator queue by SLA due ascending.
+--   * idx_nsl_narrative_time — rollback fan-out scan.
+--   * idx_nsl_recent — covering index for the past-30d retention scan.
+--
+-- Idempotency:
+--   CREATE * IF NOT EXISTS, no DML.
+--
+-- DOWN:
+--   See companion `wave24_142_am_narrative_customer_reports_rollback.sql`.
+
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS am_narrative_customer_reports (
+    report_id        INTEGER PRIMARY KEY AUTOINCREMENT,
+    narrative_id     INTEGER NOT NULL,
+    narrative_table  TEXT NOT NULL CHECK (narrative_table IN (
+                        'am_program_narrative','am_houjin_360_narrative',
+                        'am_enforcement_summary','am_case_study_narrative',
+                        'am_law_article_summary'
+                     )),
+    api_key_id       INTEGER,
+    severity_auto    TEXT NOT NULL CHECK (severity_auto IN
+                        ('P0','P1','P2','P3')),
+    field_path       TEXT,
+    claimed_wrong    TEXT NOT NULL,
+    claimed_correct  TEXT,
+    evidence_url     TEXT,
+    state            TEXT NOT NULL DEFAULT 'inbox' CHECK (state IN (
+                        'inbox','triaged','resolved','dismissed'
+                     )),
+    operator_note    TEXT,
+    created_at       TEXT NOT NULL DEFAULT (datetime('now')),
+    sla_due_at       TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_ncr_state_due
+    ON am_narrative_customer_reports(state, sla_due_at);
+
+CREATE INDEX IF NOT EXISTS idx_ncr_narrative
+    ON am_narrative_customer_reports(narrative_table, narrative_id);
+
+CREATE TABLE IF NOT EXISTS am_narrative_serve_log (
+    served_at        TEXT NOT NULL,
+    narrative_id     INTEGER NOT NULL,
+    narrative_table  TEXT NOT NULL,
+    api_key_id       INTEGER,
+    request_id       TEXT NOT NULL
+);
+
+-- Rollback fan-out scan: "every api_key that served this narrative
+-- in the past 30 days".
+CREATE INDEX IF NOT EXISTS idx_nsl_narrative_time
+    ON am_narrative_serve_log(narrative_id, narrative_table, served_at);
+
+-- Retention prune cron: covering scan for served_at < threshold.
+CREATE INDEX IF NOT EXISTS idx_nsl_recent
+    ON am_narrative_serve_log(served_at);
+
+-- ============================================================
+-- FILE: scripts/migrations/wave24_143_customer_webhooks_test_hits.sql
+-- ============================================================
+-- target_db: jpintel
+-- migration wave24_143_customer_webhooks_test_hits (M15: SQLite-persisted webhook test rate limit)
+--
+-- Why this exists:
+--   `customer_webhooks.py` previously enforced the 5 req/min/webhook test
+--   delivery rate limit via an in-process `_test_hits: dict[int, list[float]]`
+--   sliding window. That works for a single uvicorn worker but fails as
+--   soon as we run 2+ workers (uvicorn --workers N, gunicorn -w N, or any
+--   horizontal scale): each worker keeps its own dict and a customer can
+--   trivially exceed the 5/min cap by spreading test deliveries across
+--   workers. The cap exists to protect the customer's downstream from a
+--   "save → test → tweak → test" misconfigure-loop hammering their endpoint
+--   — bypassing it defeats that intent.
+--
+--   Persisting hits in SQLite gives worker-cross visibility. Every worker
+--   reads the same table, so `SELECT COUNT(*) WHERE webhook_id = ? AND
+--   hit_at >= datetime('now', '-1 minute')` correctly aggregates across
+--   the entire fleet.
+--
+-- Schema:
+--   webhook_id  INTEGER NOT NULL — FK-shape (no FK enforced) to
+--                                   customer_webhooks.id. Hits are
+--                                   intentionally *not* cascade-deleted on
+--                                   parent DELETE because the test endpoint
+--                                   already 404s on disabled rows; the
+--                                   stale rows here age out of the
+--                                   1-minute window almost immediately.
+--   hit_at      TIMESTAMP NOT NULL DEFAULT (datetime('now')) — UTC. The
+--                                   1-minute window check uses
+--                                   datetime('now', '-1 minute') which is
+--                                   also UTC, so the comparison is
+--                                   timezone-consistent.
+--   ip          TEXT — caller IP (best-effort; recorded for forensics if
+--                                   a single IP is abusing many webhook
+--                                   ids). May be NULL if the request did
+--                                   not surface a client.host (e.g. tests).
+--
+-- Index posture:
+--   The hot path lookup is `WHERE webhook_id = ? AND hit_at >=
+--   datetime('now', '-1 minute')`. A composite index on
+--   (webhook_id, hit_at DESC) carries that lookup in one BTree walk and
+--   also makes the prune query (`DELETE WHERE hit_at < datetime('now',
+--   '-5 minutes')`) cheap if we add a periodic vacuum task later.
+--
+-- Idempotency:
+--   `CREATE TABLE IF NOT EXISTS` + `CREATE INDEX IF NOT EXISTS` make
+--   re-apply a no-op. No DML.
+--
+-- DOWN:
+--   Additive only — drop the index then the table to roll back; the
+--   read path falls back to the in-process dict path only if explicitly
+--   reverted in `customer_webhooks.py`. With this migration applied and
+--   the new code path live, the in-process dict is ignored.
+
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS customer_webhooks_test_hits (
+    webhook_id  INTEGER NOT NULL,
+    hit_at      TIMESTAMP NOT NULL DEFAULT (datetime('now')),
+    ip          TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_customer_webhooks_test_hits_lookup
+    ON customer_webhooks_test_hits(webhook_id, hit_at DESC);
+
+-- Bookkeeping is recorded by scripts/migrate.py into schema_migrations(id, checksum, applied_at).
+-- Do NOT INSERT here.
+
+-- ============================================================
+-- FILE: scripts/migrations/wave24_144_narrative_quality_kpi_view.sql
+-- ============================================================
+-- target_db: autonomath
+-- §10.10 (7) Hallucination Guard — KPI rollup view.
+-- Idempotent. Safe to re-run on every Fly boot via entrypoint.sh §4.
+--
+-- Depends on the §10.10 base tables created by migrations 140 / 141 / 142
+-- (separate agent W1-14). scripts/migrate.py applies lexicographically,
+-- so those base tables should exist before this view is queried.
+
+DROP VIEW IF EXISTS am_narrative_quality_kpi;
+
+CREATE VIEW IF NOT EXISTS am_narrative_quality_kpi AS
+WITH per_week AS (
+    SELECT
+        strftime('%Y-W%W', extracted_at) AS iso_week,
+        narrative_table,
+        narrative_id,
+        SUM(CASE entity_kind WHEN 'money'   THEN 3
+                             WHEN 'law'     THEN 3
+                             WHEN 'url'     THEN 2
+                             WHEN 'houjin'  THEN 2
+                             WHEN 'program' THEN 2
+                             ELSE 1 END * corpus_match) AS num_w,
+        SUM(CASE entity_kind WHEN 'money'   THEN 3
+                             WHEN 'law'     THEN 3
+                             WHEN 'url'     THEN 2
+                             WHEN 'houjin'  THEN 2
+                             WHEN 'program' THEN 2
+                             ELSE 1 END)                AS den_w
+      FROM am_narrative_extracted_entities
+     GROUP BY iso_week, narrative_table, narrative_id
+),
+match_rates AS (
+    SELECT
+        iso_week,
+        CASE WHEN den_w > 0 THEN (num_w * 1.0) / den_w ELSE 1.0 END AS match_rate
+      FROM per_week
+),
+ranked_match_rates AS (
+    SELECT
+        iso_week,
+        match_rate,
+        ROW_NUMBER() OVER (PARTITION BY iso_week ORDER BY match_rate) AS rn,
+        COUNT(*) OVER (PARTITION BY iso_week) AS cnt
+      FROM match_rates
+),
+median_match_rates AS (
+    SELECT
+        iso_week,
+        AVG(match_rate) AS factcheck_match_rate_median
+      FROM ranked_match_rates
+     WHERE rn IN ((cnt + 1) / 2, (cnt + 2) / 2)
+     GROUP BY iso_week
+),
+quarantine_per_week AS (
+    SELECT
+        strftime('%Y-W%W', detected_at) AS iso_week,
+        COUNT(*) AS quarantine_rows,
+        SUM(CASE WHEN reason = 'low_match_rate' THEN 1 ELSE 0 END) AS low_match,
+        SUM(CASE WHEN reason = 'corpus_drift'   THEN 1 ELSE 0 END) AS drift,
+        SUM(CASE WHEN reason = 'customer_report' THEN 1 ELSE 0 END) AS customer,
+        SUM(CASE WHEN reason = 'operator_reject' THEN 1 ELSE 0 END) AS operator
+      FROM am_narrative_quarantine
+     GROUP BY iso_week
+),
+report_sla AS (
+    SELECT
+        strftime('%Y-W%W', created_at) AS iso_week,
+        COUNT(*) AS total_reports,
+        SUM(CASE WHEN state = 'inbox' AND sla_due_at < datetime('now')
+                 THEN 1 ELSE 0 END) AS sla_breach
+      FROM am_narrative_customer_reports
+     GROUP BY iso_week
+),
+rollback_per_week AS (
+    SELECT
+        strftime('%Y-W%W', resolved_at) AS iso_week,
+        COUNT(*) AS rollback_rows
+      FROM am_narrative_quarantine
+     WHERE resolution = 'rolled_back'
+     GROUP BY iso_week
+),
+all_weeks AS (
+    SELECT iso_week FROM median_match_rates WHERE iso_week IS NOT NULL
+    UNION
+    SELECT iso_week FROM quarantine_per_week WHERE iso_week IS NOT NULL
+    UNION
+    SELECT iso_week FROM report_sla WHERE iso_week IS NOT NULL
+    UNION
+    SELECT iso_week FROM rollback_per_week WHERE iso_week IS NOT NULL
+)
+SELECT
+    w.iso_week,
+    mmr.factcheck_match_rate_median,
+    COALESCE(qpw.quarantine_rows, 0) AS quarantine_rows_total,
+    COALESCE(qpw.low_match, 0)       AS quarantine_low_match,
+    COALESCE(qpw.drift, 0)           AS quarantine_corpus_drift,
+    COALESCE(qpw.customer, 0)        AS quarantine_customer_report,
+    COALESCE(qpw.operator, 0)        AS quarantine_operator_reject,
+    COALESCE(rs.total_reports, 0)    AS customer_reports_total,
+    COALESCE(rs.sla_breach, 0)       AS customer_reports_sla_breach,
+    COALESCE(rb.rollback_rows, 0)    AS rollback_rows
+  FROM all_weeks w
+  LEFT JOIN median_match_rates mmr USING (iso_week)
+  LEFT JOIN quarantine_per_week qpw USING (iso_week)
+  LEFT JOIN report_sla rs           USING (iso_week)
+  LEFT JOIN rollback_per_week rb    USING (iso_week)
+ ORDER BY w.iso_week DESC;
+

@@ -13,7 +13,7 @@ After about a year of nights and weekends, I launched jpcite today. It's a searc
 - Started as a personal tool to find Japanese subsidies for my own business (Bookyou株式会社). Realized the source data was a mess and aggregators were SEO-spam.
 - Pivoted from "tool for me" to "API for AI agents" once I started using Claude Code / Claude Desktop heavily and saw that LLMs needed clean institutional data way more than humans did.
 - Spent ~6 months on data ingest: e-Gov XML, NTA CSV bulk, prefecture HTML scraping, dedup, primary-source linking. Built a tier scoring system (S/A/B/C) based on data completeness.
-- Last 3 months: MCP server (96 tools, protocol 2025-06-18), Stripe metered billing, Cloudflare Pages static site, Fly.io Tokyo deploy.
+- Last 3 months: MCP server (139 tools, protocol 2025-06-18), Stripe metered billing, Cloudflare Pages static site, Fly.io Tokyo deploy.
 - Pricing went through 4 iterations. Landed on **¥3/request metered, 3/day free anonymously, no tiers, no minimums**. As a solo founder I literally cannot afford to negotiate annual contracts — has to be self-service.
 
 **Stack**: SQLite 全文検索 + ベクトル検索, FastAPI, FastMCP, Fly.io Tokyo, Cloudflare Pages, Stripe metered. 8.29 GB unified DB.

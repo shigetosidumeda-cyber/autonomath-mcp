@@ -1,6 +1,6 @@
 # Staging deploy playbook (Fly.io, nrt)
 
-Target: first staging deploy of `jpintel-mcp` on Fly.io Tokyo, ahead of
+Target: first staging deploy of `autonomath-api` on Fly.io Tokyo, ahead of
 public launch 2026-05-06. The user runs `flyctl` commands; this doc is the
 ordered checklist.
 
@@ -15,14 +15,14 @@ ordered checklist.
       `STRIPE_BILLING_PORTAL_CONFIG_ID`, `API_KEY_SALT`
       (from `openssl rand -hex 32`), `SENTRY_DSN`, `JPINTEL_CORS_ORIGINS`.
 - [ ] Stripe dashboard: create a STAGING webhook endpoint pointing at
-      `https://jpintel-mcp.fly.dev/v1/billing/webhook` and copy its
+      `https://api.jpcite.com/v1/billing/webhook` and copy its
       `whsec_*` — do NOT reuse prod's.
 
 ## 2. First-time launch (no-deploy, then wire infra)
 
 ```bash
 # From repo root. --no-deploy so we can attach a volume and set secrets first.
-flyctl launch --no-deploy --region nrt --name jpintel-mcp --org <org>
+flyctl launch --no-deploy --region nrt --name autonomath-api --org <org>
 
 # Keep the checked-in fly.toml (it already has mounts, health check,
 # release_command, rolling deploy, concurrency).
@@ -31,7 +31,7 @@ flyctl launch --no-deploy --region nrt --name jpintel-mcp --org <org>
 Create the volume (single region, single machine — SQLite is not replicated):
 
 ```bash
-flyctl volumes create jpintel_data --region nrt --size 1
+flyctl volumes create jpintel_data --region nrt --size 1 -a autonomath-api
 ```
 
 Set secrets (one `set` call batches all, triggering one restart later):
@@ -45,13 +45,14 @@ flyctl secrets set \
   STRIPE_BILLING_PORTAL_CONFIG_ID=bpc_... \
   API_KEY_SALT="$(openssl rand -hex 32)" \
   SENTRY_DSN=https://...@sentry.io/... \
-  JPINTEL_CORS_ORIGINS=https://staging.jpcite.com,http://localhost:3000
+  JPINTEL_CORS_ORIGINS=https://staging.jpcite.com,http://localhost:3000 \
+  -a autonomath-api
 ```
 
 Deploy:
 
 ```bash
-flyctl deploy --strategy rolling
+flyctl deploy --strategy rolling -a autonomath-api
 ```
 
 `release_command` (`python scripts/migrate.py`) runs before traffic shift —
@@ -59,23 +60,23 @@ it is idempotent and safe on a fresh `/data` volume.
 
 ## 3. Verify
 
-- [ ] `curl https://jpintel-mcp.fly.dev/healthz` returns `{"status":"ok"}`.
-- [ ] `curl -H "x-api-key: <seed-key>" https://jpintel-mcp.fly.dev/v1/programs/search?q=test`
+- [ ] `curl https://api.jpcite.com/healthz` returns `{"status":"ok"}`.
+- [ ] `curl -H "x-api-key: <seed-key>" https://api.jpcite.com/v1/programs/search?q=test`
       returns JSON with `items` array.
-- [ ] `flyctl logs -a jpintel-mcp` shows structlog JSON, one line per request,
+- [ ] `flyctl logs -a autonomath-api` shows structlog JSON, one line per request,
       with `request_id` and `path` keys.
 - [ ] Trigger dummy error (temporary `/v1/debug/boom` or malformed call) and
       confirm it appears in Sentry staging project within 60s.
-- [ ] `flyctl status` shows 1 machine running in nrt, health check `passing`.
-- [ ] Stripe CLI: `stripe listen --forward-to https://jpintel-mcp.fly.dev/v1/billing/webhook`
+- [ ] `flyctl status -a autonomath-api` shows 1 machine running in nrt, health check `passing`.
+- [ ] Stripe CLI: `stripe listen --forward-to https://api.jpcite.com/v1/billing/webhook`
       then `stripe trigger customer.subscription.created` — webhook must
       return 2xx.
 
 ## 4. Rollback
 
 ```bash
-flyctl releases -a jpintel-mcp            # list versions
-flyctl releases rollback <version> -a jpintel-mcp
+flyctl releases -a autonomath-api            # list versions
+flyctl releases rollback <version> -a autonomath-api
 ```
 
 Rolling deploy means the previous machine image is retained until the new one
@@ -114,8 +115,8 @@ see [docs/_internal/fallback_plan.md](./fallback_plan.md).
 (leaked logs, contractor offboarding, dependency compromise, vendor-side
 breach). Rotate in staging first, verify, then repeat in production.
 
-All commands assume the staging app `jpintel-mcp`; for production, swap in
-`-a jpintel-mcp-prod` (or the configured app name) and the live Stripe keys.
+All commands assume the current Fly app `autonomath-api` and the configured
+live Stripe keys.
 
 ### `API_KEY_SALT` — HIGH impact, emergency only
 
@@ -130,8 +131,8 @@ NEW_SALT="$(openssl rand -hex 32)"
 # 2. Pre-announce to customers (email + status page), give a rotation window.
 
 # 3. Set and deploy — triggers restart.
-flyctl secrets set API_KEY_SALT="$NEW_SALT" -a jpintel-mcp
-flyctl deploy --strategy rolling -a jpintel-mcp
+flyctl secrets set API_KEY_SALT="$NEW_SALT" -a autonomath-api
+flyctl deploy --strategy rolling -a autonomath-api
 
 # 4. Re-issue keys: for each active customer, regenerate via billing portal
 #    or `POST /v1/billing/api-keys/rotate` (admin-only endpoint).
@@ -148,8 +149,8 @@ so briefly queued.
 #    Copy the new whsec_... value.
 
 # 2. Set it in Fly and redeploy.
-flyctl secrets set STRIPE_WEBHOOK_SECRET=whsec_NEW... -a jpintel-mcp
-flyctl deploy --strategy rolling -a jpintel-mcp
+flyctl secrets set STRIPE_WEBHOOK_SECRET=whsec_NEW... -a autonomath-api
+flyctl deploy --strategy rolling -a autonomath-api
 
 # 3. Verify: stripe trigger customer.subscription.updated, confirm 2xx in logs.
 ```
@@ -167,12 +168,12 @@ lookup, meter-based usage record) will fail until the new key is live.
 
 ```bash
 # Staging
-flyctl secrets set STRIPE_SECRET_KEY=sk_test_NEW... -a jpintel-mcp
+flyctl secrets set STRIPE_SECRET_KEY=sk_test_NEW... -a autonomath-api
 
 # Production
-flyctl secrets set STRIPE_SECRET_KEY=sk_live_NEW... -a jpintel-mcp-prod
+flyctl secrets set STRIPE_SECRET_KEY=sk_live_NEW... -a autonomath-api
 
-flyctl deploy --strategy rolling -a <app>
+flyctl deploy --strategy rolling -a autonomath-api
 ```
 
 ### `SENTRY_DSN` — low risk
@@ -182,19 +183,19 @@ No customer-facing impact. DSN is per-project, not per-user.
 
 ```bash
 # Sentry → Settings → Projects → jpintel-mcp → Client Keys (DSN) → New DSN.
-flyctl secrets set SENTRY_DSN=https://NEW@sentry.io/PROJECT_ID -a jpintel-mcp
-flyctl deploy --strategy rolling -a jpintel-mcp
+flyctl secrets set SENTRY_DSN=https://NEW@sentry.io/PROJECT_ID -a autonomath-api
+flyctl deploy --strategy rolling -a autonomath-api
 # Old DSN can be disabled after a 24h overlap.
 ```
 
 ### Post-rotation verification (all cases)
 
 ```bash
-flyctl secrets list -a jpintel-mcp                         # confirm digest changed
-curl https://jpintel-mcp.fly.dev/healthz                   # service up
+flyctl secrets list -a autonomath-api                      # confirm digest changed
+curl https://api.jpcite.com/healthz                        # service up
 curl -H "x-api-key: <known-good-key>" \
-  https://jpintel-mcp.fly.dev/v1/programs/search?q=test    # auth still works
-flyctl logs -a jpintel-mcp | head -50                      # no startup errors
+  https://api.jpcite.com/v1/programs/search?q=test         # auth still works
+flyctl logs -a autonomath-api | head -50                   # no startup errors
 ```
 
 Record the rotation date, reason, and operator in the team's runbook log.

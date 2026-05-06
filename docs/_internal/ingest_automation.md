@@ -265,10 +265,10 @@ run ごとに 1 行、構造化ログで:
   aws s3 ls s3://$R2_BUCKET/jpintel-mcp/ --endpoint-url $R2_ENDPOINT | sort | tail -5
 
   # 2) 当該 .db.gz を Fly machine に流し込み
-  flyctl ssh console -a jpintel-mcp -C "python /app/scripts/restore.py --from /data/backups/jpintel-YYYYMMDD-HHMMSS.db.gz"
+  flyctl ssh console -a autonomath-api -C "python /app/scripts/restore.py --from /data/backups/jpintel-YYYYMMDD-HHMMSS.db.gz"
 
   # 3) smoke
-  BASE_URL=https://jpintel-mcp.fly.dev ./scripts/smoke_test.sh
+  BASE_URL=https://api.jpcite.com ./scripts/smoke_test.sh
   ```
 - 月次 monthly ingest は「直前の daily backup から直近 weekly/monthly の
   差分だけ巻き戻せる」ように `data/ingest_log.jsonl` の行に `started_at` /
@@ -482,4 +482,3 @@ math says we eat the latency.
 emit a `usage_events` row and does NOT count against the `¥3/req`
 metering. The cron is operator-side observability, not a billable
 customer surface.
-

@@ -1,4 +1,4 @@
-# Operators Playbook — AutonoMath
+# Operators Playbook — jpcite
 
 **Owner**: 梅田茂利 (info@bookyou.net)
 **Last reviewed**: 2026-04-26
@@ -63,7 +63,7 @@ SQL
 
 本番は Fly 上:
 ```bash
-flyctl ssh console -a jpintel-mcp -C \
+flyctl ssh console -a autonomath-api -C \
   'sqlite3 /data/jpintel.db "SELECT customer_id,tier,created_at,last_used_at,revoked_at FROM api_keys WHERE customer_id=\"cus_XXXX\";"'
 ```
 
@@ -175,7 +175,7 @@ SELECT key_hash, customer_id, tier, stripe_subscription_id, created_at, last_use
 SQL
 
 # 2. Revoke (single key)
-flyctl ssh console -a jpintel-mcp -C \
+flyctl ssh console -a autonomath-api -C \
   'sqlite3 /data/jpintel.db "UPDATE api_keys SET revoked_at = datetime(\"now\") WHERE key_hash = \"<HASH>\";"'
 
 # 3. Stripe subscription も止める (必要時)
@@ -219,7 +219,7 @@ Email 本体は `subscribers` のみ。`api_keys` に raw key は保存しない
 # target: email = "user@example.com"
 # target: customer_id = "cus_XXXX"  (Stripe Dashboard で確認)
 
-flyctl ssh console -a jpintel-mcp
+flyctl ssh console -a autonomath-api
 sqlite3 /data/jpintel.db <<SQL
 BEGIN;
 -- 1) subscribers の email 削除
@@ -261,7 +261,7 @@ APPI 35 条: 請求から 2 週間以内に要応答 (遅延時は理由開示)�
 
 ### 7.1 判定
 
-- `flyctl status -a jpintel-mcp` で machine が `stopped` / health check 連続 fail
+- `flyctl status -a autonomath-api` で machine が `stopped` / health check 連続 fail
 - `curl -sS -o /dev/null -w '%{http_code}\n' https://jpcite.com/healthz` が 5xx or timeout
 - UptimeRobot / Sentry spike
 
@@ -299,7 +299,7 @@ APPI 35 条: 請求から 2 週間以内に要応答 (遅延時は理由開示)�
 | 先 | 用途 | 連絡先 |
 |----|------|--------|
 | Fly Status | infra outage 確認 | https://status.fly.io/ |
-| Fly dashboard | app monitoring | https://fly.io/apps/jpintel-mcp/monitoring |
+| Fly dashboard | app monitoring | https://fly.io/apps/autonomath-api/monitoring |
 | Stripe Support (JP) | dispute / payout 問題 | +81-3-4530-9047 (2026 時点公開 / launch 前再確認) / `TODO owner-fills 最終電話番号` |
 | Stripe status | payment downstream | https://status.stripe.com/ |
 | Postmark status | mail delivery | https://status.postmarkapp.com/ |

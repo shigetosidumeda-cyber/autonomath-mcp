@@ -19,7 +19,7 @@
     - loan_programs      108  (三軸分解)
     - enforcement_cases  1,185
     - exclusion_rules    181  (125 exclude + 17 prerequisite + 15 absolute + 24 other)
-    - MCP tools          93 in the standard configuration (see docs/mcp-tools.md)
+    - MCP tools          139 in the standard configuration (see docs/mcp-tools.md)
     - price/unit         ¥3 税別 (¥3.30 税込)
 -#}
 <script type="application/ld+json">
@@ -44,7 +44,7 @@
       "featureList": [
         "11,684 programs + 2,286 採択事例 + 108 融資 + 1,185 行政処分 を横断検索",
         "181 排他・前提ルール (exclude 125 + prerequisite 17 + absolute 15 + その他 24)",
-        "MCP ネイティブ (標準構成で 96 tools)",
+        "MCP ネイティブ (標準構成で 139 tools)",
         "出典確認状況に基づく品質ラベル",
         "融資は 担保 / 個人保証人 / 第三者保証人 の三軸分解",
         "公開行は原則として source_url + fetched_at を付与"
@@ -108,7 +108,7 @@
         },
         {
           "@type": "DataDownload",
-          "name": "MCP server (stdio, standard configuration with 93 tools)",
+          "name": "MCP server (stdio, standard configuration with 139 tools)",
           "contentUrl": "https://pypi.org/project/autonomath-mcp/",
           "encodingFormat": "application/x-python"
         }
@@ -118,7 +118,7 @@
       "@type": "WebAPI",
       "@id": "{{ config.extra.domain }}/docs/#webapi",
       "name": "jpcite REST + MCP API",
-      "description": "日本の公的制度データを AI エージェント / 開発者向けに 1 API で提供。標準構成で 96 MCP tools を利用でき、制度検索、詳細取得、一括取得、併用チェック、法令・税務公開資料・判例・入札・適格請求書登録番号・出典情報を REST + MCP で返します。",
+      "description": "日本の公的制度データを AI エージェント / 開発者向けに 1 API で提供。標準構成で 139 MCP tools を利用でき、制度検索、詳細取得、一括取得、併用チェック、法令・税務公開資料・判例・入札・適格請求書登録番号・出典情報を REST + MCP で返します。",
       "documentation": "{{ config.extra.domain }}/docs/",
       "termsOfService": "{{ config.extra.domain }}/tos.html",
       "provider": {"@id": "{{ config.extra.domain }}/docs/#app"},

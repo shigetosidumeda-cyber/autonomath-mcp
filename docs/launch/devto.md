@@ -54,7 +54,7 @@ Single SQLite file. No microservices. No Kafka. No Snowflake.
 ```
 src/jpintel_mcp/
   api/      FastAPI REST, mounted at /v1/*
-  mcp/      FastMCP stdio server (96 tools, protocol 2025-06-18)
+  mcp/      FastMCP stdio server (139 tools, protocol 2025-06-18)
   ingest/   Data ingestion + canonical tier scoring
   db/       SQLite migrations + query helpers
   billing/  Stripe metered billing
@@ -91,7 +91,7 @@ OpenAPI lives at `https://api.jpcite.com/v1/openapi.json`.
 
 ### MCP surface
 
-96 tools at default gates, protocol `2025-06-18`, FastMCP over stdio. The tool inventory mirrors the REST surface: search, get-by-ID, lifecycle, prerequisite chain, rule-engine check, snapshot-time queries, provenance lookup. Drop into Claude Desktop config:
+139 tools at default gates, protocol `2025-06-18`, FastMCP over stdio. The tool inventory mirrors the REST surface: search, get-by-ID, lifecycle, prerequisite chain, rule-engine check, snapshot-time queries, provenance lookup. Drop into Claude Desktop config:
 
 ```json
 {

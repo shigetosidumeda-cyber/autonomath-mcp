@@ -147,7 +147,7 @@
 
 ### 4.1 Fly machine crash → DNS flip to Cloudflare Pages
 
-判定: `flyctl status -a AutonoMath` で machine が `stopped` / `crashed` 連続 5 min、もしくは `/healthz` が 3 min 以上 5xx。
+判定: `flyctl status -a autonomath-api` で machine が `stopped` / `crashed` 連続 5 min、もしくは `/healthz` が 3 min 以上 5xx。
 
 手順 (所要 4-7 min):
 

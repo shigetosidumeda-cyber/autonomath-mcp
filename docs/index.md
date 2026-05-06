@@ -2,9 +2,9 @@
 
 このドキュメントは、jpcite の **REST API** と **MCP server** を組み込む開発者・AI エージェント設定者向けの入口です。
 
-jpcite は回答文を生成するサービスではありません。制度候補、出典 URL、取得時刻、content hash、併用ルール、根拠パケットを返します。アプリや AI クライアントは、その返却値を使って最終回答を作ります。LLM 側のトークン量や検索回数への影響は使い方に依存します。現在の公開料金と匿名枠は [Pricing](./pricing.md) に掲載しています。
+jpcite は、日本の制度・法人・法令・税制・行政処分データを AI が使いやすい根拠パケットとして返す evidence prefetch layer です。制度候補、出典 URL、取得時刻、content hash、併用ルール、known gaps、decision insights を短い JSON で取得できます。アプリや AI クライアントは、その返却値を使って最終回答を作ります。
 
-GPT / Claude / Cursor に長い PDF や公式ページを直接渡す前に、Evidence Packet を取得すると、短い出典付き JSON を回答生成の入力にできます。元の入力トークン数を把握している場合は `source_tokens_basis=token_count&source_token_count=<tokens>` を渡すことで、返却パケットとの文脈サイズ比較も確認できます。これは入力文脈の見積もりであり、LLM 事業者の請求額削減を保証するものではありません。
+GPT / Claude / Cursor に長い PDF や公式ページを直接渡す前に、Evidence Packet を取得すると、出典付きの構造化 JSON を回答生成の入力にできます。元の入力トークン数を把握している場合は `source_tokens_basis=token_count&source_token_count=<tokens>` を渡すことで、返却パケットとの文脈サイズ比較も確認できます。現在の公開料金と匿名枠は [Pricing](./pricing.md) に掲載しています。
 
 ## 最初に読むもの
 

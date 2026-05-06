@@ -78,8 +78,8 @@ reported aggregate specified in `notes`. `zero_result_rate` is the share
 of precomputed-arm queries where `records_returned = 0`.
 `packet_tokens_estimate` is an estimate of context size, not a measured
 LLM billing token count. `median_context_reduction_rate` and
-`break_even_rate` are input-context estimates from the probe; they are
-not provider billing guarantees. `break_even_rate_by_price` is a
+`break_even_rate` are input-context estimates from the probe.
+`break_even_rate_by_price` is a
 sensitivity table only; keep measured token-count baselines separate
 from PDF-page estimates when writing the result narrative.
 

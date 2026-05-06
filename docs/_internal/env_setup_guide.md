@@ -70,7 +70,7 @@ mkdocs build からは exclude 済み。値は秘匿 (実値は 1Password に保
 | key | 用途 | 取得方法 |
 | --- | --- | --- |
 | `FLY_API_TOKEN` | deploy 用 token | `flyctl auth token` で取得後 1P 保存 |
-| `FLY_APP_NAME` | アプリ名 | `autonomath-api-tokyo` (固定) |
+| `FLY_APP_NAME` | Fly production app 名 | `autonomath-api` (固定) |
 | `CLOUDFLARE_API_TOKEN` | Pages deploy 用 | 1P: `op://Bookyou/AutonoMath/cloudflare_api_token` |
 
 ---
@@ -112,7 +112,7 @@ op run --env-file=.env.template -- bash -c '
     PEPPER="$PEPPER" \
     SENTRY_DSN="$SENTRY_DSN" \
     EMAIL_PROVIDER_API_KEY="$EMAIL_PROVIDER_API_KEY" \
-    --app autonomath-api-tokyo
+    --app autonomath-api
 '
 ```
 

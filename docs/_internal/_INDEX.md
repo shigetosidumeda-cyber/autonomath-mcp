@@ -6,6 +6,7 @@
 Lightweight curation layer over the comprehensive [`INDEX.md`](./INDEX.md). Use this file to quickly locate currently-active strategy docs vs point-in-time archives.
 
 > Audit date: 2026-04-30. 9 files moved to `_archive/2026-04/`. Re-audit cadence: monthly (first Monday).
+> 2026-05-06 note: current execution SOT is `CURRENT_SOT_2026-05-06.md`; the active-plan list below is a historical curation snapshot.
 
 ---
 

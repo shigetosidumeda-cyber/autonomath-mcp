@@ -63,7 +63,7 @@ To **update** gates after a real schema change (e.g. new tier policy, new tax_ru
 
 - **autonomath.db tools (16)** are NOT yet in gold.yaml — V1 launch ships shape-only checks. Adding gold queries for `search_tax_incentives` / `search_certifications` / `intent_of` / `reason_answer` is post-launch work (P5-P6).
 - **Cross-dataset glue** (`trace_program_to_law`, `find_cases_by_law`, `combined_compliance_check`) — only one cross_* query exists. Expanding to 5+ is P5.
-- **answer() 統合 tool** — not in 66-tool count yet, gold suite excludes it.
+- **answer() 統合 tool** — not in the canonical 139-tool count yet; gold suite excludes it.
 
 ## Honesty constraints
 

@@ -94,7 +94,7 @@ All public posts cite these numbers — verify any one of them on the live API m
 - [ ] `invoice_registrants` count ≈ 13,801
 - [ ] `case_studies` ≈ 2,286
 - [ ] `enforcement_cases` ≈ 1,185
-- [ ] MCP tool count = 96 at default gates (verify with `len(mcp._tool_manager.list_tools())`)
+- [ ] MCP tool count = 139 at default gates (verify with `len(mcp._tool_manager.list_tools())`)
 - [ ] DB size statement ≈ 8.29 GB matches actual `ls -lh autonomath.db`
 
 ### Operator readiness

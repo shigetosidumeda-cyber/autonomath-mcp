@@ -1,4 +1,4 @@
-# Capacity plan — AutonoMath on Fly.io
+# Capacity plan — jpcite on Fly.io
 
 _Baseline: 2026-04-23 ／ Launch target: 2026-05-06 (nrt single shared-cpu-1x)_
 
@@ -102,7 +102,7 @@ spike 吸収しろ (favicon / health-check / 調査 curl / JSON-LD crawler) を
 
 ```bash
 # 1. VM class 変更
-fly scale vm shared-cpu-2x -a AutonoMath
+fly scale vm shared-cpu-2x -a autonomath-api
 
 # 2. uvicorn worker 数を 2 へ
 # Dockerfile or start command 側で --workers 2 にする
@@ -229,7 +229,7 @@ Fly 直出しのほうが simple。
 
 ## 8. Operational notes for launch day
 
-- `fly logs -a AutonoMath --since 5m | grep -E "500|timeout|busy"` を
+- `fly logs -a autonomath-api --since 5m | grep -E "500|timeout|busy"` を
   常駐ウィンドウに。
 - Fly metrics dashboard で `vcpu_stolen_pct` と `fly_app_concurrency`
   を 1 分粒度で監視。

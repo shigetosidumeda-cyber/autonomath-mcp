@@ -164,6 +164,25 @@ plugins:
 # Public docs allowlist by exclusion: operational notes and draft materials
 # stay in-repo but are not rendered into the customer-facing documentation site.
 exclude_docs: |
+  SYSTEM_INDEX.md
+  en/foreign_investor.md
+  integrations/README.md
+  integrations/agent-routing-and-cta-spec.md
+  integrations/ai-agent-recommendation-plan.md
+  integrations/artifact-catalog.md
+  integrations/cache_hit_rates.md
+  integrations/compact_response.md
+  integrations/composite-bench-results.md
+  integrations/composite-vs-multicall.md
+  integrations/deep-paid-output-and-data-foundation-plan.md
+  integrations/derived-data-layer-spec.md
+  integrations/implementation-loop-log.md
+  integrations/output-satisfaction-spec.md
+  integrations/partial_response.md
+  integrations/token-efficiency-proof.md
+  integrations/use_predicate_for_certainty.md
+  integrations/use_predicate_for_savings.md
+  integrations/w32-composite-surfaces.md
   _internal/
   _internal/health_monitoring_runbook.md
   _internal/dr_backup_runbook.md

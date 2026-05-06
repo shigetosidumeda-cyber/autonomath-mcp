@@ -1,4 +1,4 @@
-# Incident runbook — AutonoMath
+# Incident runbook — jpcite
 
 **Owner**: 梅田茂利 (info@bookyou.net)
 **Last reviewed**: 2026-04-26
@@ -8,15 +8,15 @@ Solo on-call. Blunt on purpose. Skim, act, verify.
 Common prep (run first):
 
 ```bash
-flyctl status --app AutonoMath
-flyctl logs  --app AutonoMath | tail -200
-flyctl releases --app AutonoMath | head -5
+flyctl status --app autonomath-api
+flyctl logs  --app autonomath-api | tail -200
+flyctl releases --app autonomath-api | head -5
 ```
 
 Roll-back anywhere below:
 
 ```bash
-flyctl releases rollback <id> --app AutonoMath
+flyctl releases rollback <id> --app autonomath-api
 ```
 
 ---
@@ -28,15 +28,15 @@ flyctl releases rollback <id> --app AutonoMath
 **Diagnose:**
 1. Sentry: top frame. If `sqlite3.OperationalError: database is locked` → SQLite lock. If `TimeoutError` / `ReadTimeout` → Fly volume / disk stall.
 2. `flyctl logs | grep -E 'OperationalError|status=5' | tail -50`.
-3. `flyctl ssh console -a AutonoMath -C 'sqlite3 /data/jpintel.db "PRAGMA integrity_check;"'` — must print `ok`.
+3. `flyctl ssh console -a autonomath-api -C 'sqlite3 /data/jpintel.db "PRAGMA integrity_check;"'` — must print `ok`.
 
 **Fix:**
 ```bash
 # Restart the machine (drops long-held reader conns)
-flyctl apps restart AutonoMath
+flyctl apps restart autonomath-api
 
 # Re-smoke
-BASE_URL=https://AutonoMath.fly.dev ./scripts/smoke_test.sh
+BASE_URL=https://api.jpcite.com ./scripts/smoke_test.sh
 ```
 
 Still 5xx after restart → roll back to last-known-good release id (see top).
@@ -58,7 +58,7 @@ Still 5xx after restart → roll back to last-known-good release id (see top).
 **Fix (signature mismatch):**
 ```bash
 # Pull current secret from Stripe dashboard, then:
-flyctl secrets set STRIPE_WEBHOOK_SECRET=whsec_... --app AutonoMath
+flyctl secrets set STRIPE_WEBHOOK_SECRET=whsec_... --app autonomath-api
 # (Deploys a new release automatically.)
 
 # Replay the last hour of failed events from your dev box:
@@ -77,18 +77,18 @@ stripe trigger invoice.paid --live
 
 **Diagnose:**
 ```bash
-flyctl ssh console -a AutonoMath -C 'df -h /data'
-flyctl ssh console -a AutonoMath -C 'sqlite3 /data/jpintel.db "PRAGMA integrity_check;"'
+flyctl ssh console -a autonomath-api -C 'df -h /data'
+flyctl ssh console -a autonomath-api -C 'sqlite3 /data/jpintel.db "PRAGMA integrity_check;"'
 ```
 
 **Fix (restore from latest nightly — produced by `.github/workflows/nightly-backup.yml`):**
 
 ```bash
 # 1. Stop traffic (scale to 0 so no writes happen during restore)
-flyctl scale count 0 --app AutonoMath
+flyctl scale count 0 --app autonomath-api
 
 # 2. Identify the current volume
-flyctl volumes list --app AutonoMath
+flyctl volumes list --app autonomath-api
 
 # 3. Download latest backup from Cloudflare R2 (bucket jpintel-backups)
 aws s3 ls    s3://jpintel-backups/AutonoMath/ --endpoint-url $R2_ENDPOINT | sort | tail -3
@@ -98,19 +98,19 @@ shasum -a 256 -c <latest>.db.gz.sha256
 gunzip <latest>.db.gz
 
 # 4. Create a fresh volume (same region), upload the restored DB to it
-flyctl volumes create jpintel_data --region nrt --size 3 --app AutonoMath
-flyctl ssh sftp shell --app AutonoMath
+flyctl volumes create jpintel_data --region nrt --size 3 --app autonomath-api
+flyctl ssh sftp shell --app autonomath-api
 #   put <latest>.db /data/jpintel.db
 
 # 5. Detach old broken volume via fly.toml (mounts source stays jpintel_data — fly picks newest)
 #    Confirm by listing volumes; destroy old one only after §Verify passes.
-flyctl scale count 1 --app AutonoMath
+flyctl scale count 1 --app autonomath-api
 ```
 
 **Verify:**
 ```bash
-curl -s https://AutonoMath.fly.dev/meta | jq .total_programs  # must match pre-incident
-BASE_URL=https://AutonoMath.fly.dev ./scripts/smoke_test.sh
+curl -s https://api.jpcite.com/meta | jq .total_programs  # must match pre-incident
+BASE_URL=https://api.jpcite.com ./scripts/smoke_test.sh
 ```
 
 Then destroy the old volume (`flyctl volumes destroy <old-id>`).
@@ -125,7 +125,7 @@ Then destroy the old volume (`flyctl volumes destroy <old-id>`).
 
 **Fix:**
 ```bash
-flyctl ssh console --app AutonoMath
+flyctl ssh console --app autonomath-api
 sqlite3 /data/jpintel.db
 ```
 
@@ -144,7 +144,7 @@ Email the affected user (lookup via `customer_id` in same row → Stripe → ema
 
 **Verify:**
 ```bash
-curl -H "x-api-key: <leaked>" https://AutonoMath.fly.dev/v1/programs/search?q=a
+curl -H "x-api-key: <leaked>" https://api.jpcite.com/v1/programs/search?q=a
 # -> 401
 ```
 
@@ -156,7 +156,7 @@ curl -H "x-api-key: <leaked>" https://AutonoMath.fly.dev/v1/programs/search?q=a
 
 **Diagnose:**
 ```bash
-flyctl logs --app AutonoMath | awk '{print $NF}' | sort | uniq -c | sort -rn | head -20
+flyctl logs --app autonomath-api | awk '{print $NF}' | sort | uniq -c | sort -rn | head -20
 ```
 
 Identify: single IP / country / user-agent / ASN.
@@ -186,7 +186,7 @@ Tighten the per-process rate limit as a stop-gap:
 # Halve the free cap; paid tier は metered (hard cap なし) なので対象外
 flyctl secrets set \
   RATE_LIMIT_FREE_PER_DAY=50 \
-  --app AutonoMath
+  --app autonomath-api
 ```
 
 Paid tier は pure metered で `429` の選択肢がないため、ここでは絞れない。
@@ -198,9 +198,9 @@ switch off entirely when a Cloudflare WAF rule above takes over):
 
 ```bash
 # Tighten
-flyctl secrets set ANON_RATE_LIMIT_PER_DAY=25 --app AutonoMath
+flyctl secrets set ANON_RATE_LIMIT_PER_DAY=25 --app autonomath-api
 # Or disable (the WAF now owns rate-limiting)
-flyctl secrets set ANON_RATE_LIMIT_ENABLED=False --app AutonoMath
+flyctl secrets set ANON_RATE_LIMIT_ENABLED=False --app autonomath-api
 ```
 
 **Verify:** RPS drops to baseline within 2 min. Revert rate-limit secrets after storm.

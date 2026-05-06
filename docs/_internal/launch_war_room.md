@@ -1,4 +1,4 @@
-# Launch war room — AutonoMath
+# Launch war room — jpcite
 
 **Owner**: 梅田茂利 (info@bookyou.net)
 **Last reviewed**: 2026-04-26
@@ -15,7 +15,7 @@ Pin these five in a dedicated browser window and leave it on a second screen.
 
 | # | What | URL |
 |---|---|---|
-| 1 | Fly metrics (app `jpintel-mcp`) | `https://fly.io/apps/jpintel-mcp/metrics` |
+| 1 | Fly metrics (app `autonomath-api`) | `https://fly.io/apps/autonomath-api/metrics` |
 | 2 | Sentry issues (project `jpintel-mcp`) | `https://sentry.io/organizations/<org>/issues/?project=<id>` |
 | 3 | Stripe webhooks / events | `https://dashboard.stripe.com/webhooks` |
 | 4 | Cloudflare analytics (zone `<DOMAIN_PLACEHOLDER>`) | `https://dash.cloudflare.com/<account>/<DOMAIN_PLACEHOLDER>/analytics/traffic` |
@@ -29,14 +29,14 @@ Pin these five in a dedicated browser window and leave it on a second screen.
 
 ```bash
 # Local staging smoke (expect all green)
-BASE_URL=https://jpintel-mcp.fly.dev ./scripts/smoke_test.sh
+BASE_URL=https://api.jpcite.com ./scripts/smoke_test.sh
 
 # Confirm prod DB populated
-curl -s https://jpintel-mcp.fly.dev/meta | jq .total_programs
+curl -s https://api.jpcite.com/meta | jq .total_programs
 # Expect: 6771 (non-zero at minimum)
 
 # Latest release recorded
-flyctl releases --app jpintel-mcp | head -5
+flyctl releases --app autonomath-api | head -5
 ```
 
 If any smoke probe fails or `/meta.total_programs == 0`: **stop**. Do not announce. Fix or postpone.
@@ -75,7 +75,7 @@ Check, in order, and note values:
 - Newsletter signups (`/v1/subscribers`): record count. Expect 5-50 in first hour.
 
 ```bash
-flyctl logs --app jpintel-mcp | grep -E 'status=5|status=401' | tail -50
+flyctl logs --app autonomath-api | grep -E 'status=5|status=401' | tail -50
 ```
 
 ### T+6h (15:00) — Support triage
@@ -96,14 +96,14 @@ Staging smoke flagged an issue post-deploy, or prod 5xx rate > 2% for > 5 min:
 
 ```bash
 # List recent releases — find the last-known-good version id
-flyctl releases --app jpintel-mcp
+flyctl releases --app autonomath-api
 
 # Roll back to that id
-flyctl releases rollback <id> --app jpintel-mcp
+flyctl releases rollback <id> --app autonomath-api
 
 # Confirm
-flyctl status --app jpintel-mcp
-BASE_URL=https://jpintel-mcp.fly.dev ./scripts/smoke_test.sh
+flyctl status --app autonomath-api
+BASE_URL=https://api.jpcite.com ./scripts/smoke_test.sh
 ```
 
 If rollback itself fails, see `docs/incident_runbook.md` §(f) — DNS flip to Cloudflare Pages static mirror.

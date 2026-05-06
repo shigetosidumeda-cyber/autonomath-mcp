@@ -8,7 +8,7 @@ window so we can catch runaway burn or breakage on Fly machines.
 
 Repo is **public** on GitHub (`shigetosidumeda-cyber/autonomath-mcp`), so
 GHA minutes are unmetered. The deferral is about **operational risk** on the
-Fly target machines (autonomath-api / jpcite-api), not GHA cost.
+Fly target machines (`autonomath-api`), not GHA cost.
 
 ## Committed in this audit (10 files)
 
@@ -38,7 +38,7 @@ hard-coded `jpintel-` prefix in legacy `scripts/backup.py`).
 |---|---|---|
 | `rebrand-notify-once.yml` | `workflow_dispatch` only, `dry_run=true` default | One-shot Postmark blast for the AutonoMath → jpcite rename. Safe: no schedule. Dry-run default means a misfire just logs. |
 | `stripe-version-check-weekly.yml` | weekly Mon `0 0 * * 1` | Catches Stripe API version drift that would silently corrupt ¥3/req billing. Runs `scripts/cron/stripe_version_check.py` via flyctl ssh — secrets live on Fly. Weekly cadence = trivial burn. |
-| `stripe-backfill-30min.yml` | every 30 min `5,35 * * * *` | **Launch-blocking**: closes the gap between Stripe meter posts and billing reconciliation. ¥3/req metered model needs this for invoice accuracy. Runs via flyctl ssh — load lands on jpcite-api Fly machine. Watch hourly during launch +24h. |
+| `stripe-backfill-30min.yml` | every 30 min `5,35 * * * *` | **Launch-blocking**: closes the gap between Stripe meter posts and billing reconciliation. ¥3/req metered model needs this for invoice accuracy. Runs via flyctl ssh — load lands on `autonomath-api` Fly machine. Watch hourly during launch +24h. |
 
 ## Deferred to post-launch (12 files)
 

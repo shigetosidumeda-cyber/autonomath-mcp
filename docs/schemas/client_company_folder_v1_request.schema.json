@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://api.jpcite.com/v1/artifacts/client_company_folder_v1/request.schema.json",
+  "title": "ClientCompanyFolderV1Request",
+  "description": "POST /v1/artifacts/client_company_folder_v1 — 1法人を anchor 入力 1 つ以上で同定し、8 stage company-folder lifecycle を生成するための request envelope。bulk=true 時は houjin_bangou CSV を多重投入する。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["company_input"],
+  "properties": {
+    "company_input": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "法人同定入力。houjin_bangou / invoice_registration_number / edinet_code / company_name のうち 1 つ以上必須。複数指定で identity_confidence 上昇。",
+      "anyOf": [
+        { "required": ["houjin_bangou"] },
+        { "required": ["invoice_registration_number"] },
+        { "required": ["edinet_code"] },
+        { "required": ["company_name"] }
+      ],
+      "properties": {
+        "houjin_bangou": {
+          "type": "string",
+          "pattern": "^[0-9]{13}$",
+          "description": "国税庁 法人番号 13 桁 (Tier-1 anchor, weight 0.45)"
+        },
+        "invoice_registration_number": {
+          "type": "string",
+          "pattern": "^T[0-9]{13}$",
+          "description": "適格請求書発行事業者番号 (T + 13 桁, Tier-1 anchor, weight 0.45)"
+        },
+        "edinet_code": {
+          "type": "string",
+          "pattern": "^E[0-9A-Z]{6}$",
+          "description": "EDINET コード (Tier-1 anchor, weight 0.45) — 上場+大量保有+公開買付+任意 EDINET 開示者のみ収録"
+        },
+        "company_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "description": "商号 / 名称 (Tier-3 medium anchor, weight 0.10)"
+        },
+        "address": {
+          "type": "string",
+          "maxLength": 512,
+          "description": "所在地 (Tier-3 medium anchor, weight 0.10) — 商号 fallback の disambiguation 用"
+        },
+        "fuzzy_hint": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "曖昧 hint (旧称・関係者名・案件キーワード等)。Tier-4 weak で score 寄与は 0.05 上限"
+        }
+      }
+    },
+    "purpose": {
+      "type": "string",
+      "enum": ["advisory", "dd", "sales", "m_and_a", "fdi", "monitoring", "other"],
+      "default": "advisory",
+      "description": "顧問先 onboarding / DD / 営業 BD / M&A / Foreign FDI / 継続 monitoring 等の用途。01_operator_brief.md の narrative 切替に使用。"
+    },
+    "identity_confidence_floor": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "default": 0.95,
+      "description": "primary band 採用に必要な最低 identity_confidence。default 0.95。下回ると候補リストモードへ自動 fallback (alternative_candidates 返却)。04_monthly_public_digest のみ 0.85 まで個別降格可。"
+    },
+    "include_files": {
+      "type": "array",
+      "uniqueItems": true,
+      "default": [
+        "00_public_baseline",
+        "01_operator_brief",
+        "02_questions_to_client",
+        "03_watch_targets",
+        "04_monthly_public_digest",
+        "05_rebaseline_diff",
+        "06_professional_review_handoff"
+      ],
+      "items": {
+        "type": "string",
+        "enum": [
+          "00_public_baseline",
+          "01_operator_brief",
+          "02_questions_to_client",
+          "03_watch_targets",
+          "04_monthly_public_digest",
+          "05_rebaseline_diff",
+          "06_professional_review_handoff"
+        ]
+      },
+      "description": "生成する markdown / json 部品の選択。default は 7 ファイル全部 (company_folder.json は常時 0 番に同梱、課金は 1 + N)。"
+    },
+    "previous_corpus_snapshot_id": {
+      "type": ["string", "null"],
+      "maxLength": 64,
+      "description": "05_rebaseline_diff.md を生成する場合の比較対象 snapshot id。未指定なら直近 90 日前 snapshot。"
+    },
+    "as_of_date": {
+      "type": "string",
+      "format": "date",
+      "description": "ISO8601 (JST). 未指定時は最新 corpus_snapshot を使用。"
+    },
+    "bulk": {
+      "type": "boolean",
+      "default": false,
+      "description": "true の場合 application/json でなく multipart/form-data + houjin_bangou.csv を期待し、即時 job_id を返す。結果は DB-02 spec の ZIP delivery で取得。"
+    }
+  }
+}

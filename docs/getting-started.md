@@ -29,7 +29,7 @@
 
 # Getting Started
 
-jpcite は ChatGPT / Claude / Cursor が文章を生成する前に呼ぶ Evidence prefetch layer です。 長い PDF・複数の官公庁ページ・検索結果を LLM へ渡す前に、 出典 URL・取得時刻・known gaps・互換/排他ルール付きの小さい Evidence Packet を返します。 caller supplied baseline がある場合だけ、 入力文脈量の削減見込みと break-even を返します。 外部 LLM の請求額削減は保証しません。 LLM call はサーバ側で実行せず、 jpcite の課金は ¥3/billable unit (税込 ¥3.30) の単一従量、 LLM トークン量やモデル選択には連動しません。
+jpcite は ChatGPT / Claude / Cursor が文章を生成する前に呼ぶ Evidence prefetch layer です。長い PDF・複数の官公庁ページ・検索結果を LLM へ渡す前に、出典 URL・取得時刻・known gaps・互換/排他ルール付きの小さい Evidence Packet を返します。caller supplied baseline がある場合は、入力文脈量の削減見込みと break-even も返します。LLM call はサーバ側で実行せず、jpcite の課金は ¥3/billable unit (税込 ¥3.30) の単一従量です。
 
 評価は次の順で進めると、課金前に価値を判断できます: **匿名 curl → Playground → MCP / OpenAPI → API キー**。料金詳細は [pricing.md](./pricing.md)。
 
@@ -62,7 +62,7 @@ curl "https://api.jpcite.com/v1/programs/search?q=IT導入&limit=5"
 - `agent_recommendation.cost_savings_decision` (`supported_by_caller_baseline` / `not_supported_by_caller_baseline` / `needs_caller_baseline` / `needs_input_token_price`)
 - `quality.known_gaps[]` (空でないとき、 AI 側でも「未接続な根拠」 を明示する)
 
-`compression` は **入力文脈量だけの参考推定** で、 外部 LLM の請求額削減は保証しません (`provider_billing_not_guaranteed=true`)。
+`compression` は **入力文脈量の参考推定** です (`provider_billing_not_guaranteed=true`)。
 
 curl だけで 3 回検証する場合は、下の順に実行します。1 回目の匿名 smoke を既に実行した場合は、2.2 と 2.3 だけで残り 2 回を使います。
 
@@ -99,7 +99,7 @@ Protocol: `2025-06-18`。`~/Library/Application Support/Claude/claude_desktop_co
 - `uv` 未導入なら `brew install uv` か `pip install uv`
 - `pip install autonomath-mcp` 済みなら `"command": "autonomath-mcp"`
 - ワンクリック: [jpcite MCP bundle](/downloads/autonomath-mcp.mcpb) を Claude Desktop で開く
-- 再起動後、標準構成で 96 ツールが有効。Cursor / Cline などの MCP 対応クライアントも同じ server 設定を使えます。ChatGPT Custom GPT では次節の OpenAPI Actions を使います。
+- 再起動後、標準構成で 139 ツールが有効。Cursor / Cline などの MCP 対応クライアントも同じ server 設定を使えます。ChatGPT Custom GPT では次節の OpenAPI Actions を使います。
 
 ツール一覧: [mcp-tools.md](./mcp-tools.md)。 出典付きで回答させたい場合は、 検索後に `get_evidence_packet` を呼び、 一次資料 URL・取得時刻・provenance・ルール判定を先に AI クライアントへ渡します。 トークン量や追加検索回数への影響は、 モデル・プロンプト・質問内容・キャッシュ状態に依存します。
 

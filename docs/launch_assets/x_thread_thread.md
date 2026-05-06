@@ -68,7 +68,7 @@ AI が即答できる API が欲しかった、というだけです。
 ```
 4/ 想定 audience は 5 つ。
 
-- AI agent 開発者: 96 MCP ツール at default gates、Manifest 1 行
+- AI agent 開発者: 139 MCP ツール at default gates、Manifest 1 行
 - 税理士: 措置法を Claude で walkthrough
 - 行政書士: 補助金+融資+許認可を 1 call
 - SMB 経営者: ChatGPT で「うちの業種は?」

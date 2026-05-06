@@ -102,3 +102,23 @@ headroom is ~6x before resize is needed. Monitor with `flyctl ssh console
 `scripts/backup.md` Option 2 (GitHub Actions → Fly SSH → R2) is the
 intended path. Option 1 (on-machine systemd timer) is labeled as a
 stopgap for a reason.
+
+## Production seed gate must accept `programs` OR `jpi_programs`
+
+Do not gate production deploys on `programs > 10000` alone while the catalog is
+transitioning. The current observed production DB shape for the 2026-05-06 WAF
+/ deploy handoff is `programs=0` and `jpi_programs=13578`; a `programs`-only
+sentinel rejects a usable seed. The GitHub deploy gate should require:
+
+```text
+max(count(programs), count(jpi_programs)) >= 10000
+```
+
+Keep the post-deploy search smoke as a separate hard gate because it proves
+the served `/v1/programs/search` path still returns results.
+
+## Kill-switch smoke uses the API host
+
+Production kill-switch and hard-gate smoke must use
+`BASE_URL=https://api.jpcite.com`. The apex `https://jpcite.com` is the
+public/docs surface and can remain green even when the API origin is unhealthy.

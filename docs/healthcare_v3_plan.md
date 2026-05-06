@@ -92,10 +92,10 @@ Scaffolding が **本日着地** (`src/jpintel_mcp/mcp/healthcare_tools/`):
 
 - `__init__.py` + `tools.py` で 6 stub 全て `@mcp.tool` 登録 (合計 332 行).
 - 各 stub は sentinel 注記 `{"status": "not_implemented_until_T+90d", "results": []}` を返す。実 SQL は **W4 (T+90d, 2026-08-04)** で TODO コメントの位置に書き足し。
-- `AUTONOMATH_HEALTHCARE_ENABLED` env (default `False`) で gate。launch (2026-05-06) 時点では disabled、manifest は 96 tools のまま。
+- `AUTONOMATH_HEALTHCARE_ENABLED` env (default `False`) で gate。launch (2026-05-06) 時点では disabled、manifest は 139 tools のまま。
 - operator が `True` に flip すると healthcare stub 分が追加されるので W4 直前に契約面の事前確認が可能。
 - `tests/test_healthcare_tools.py` が
-  ① env-False で 96 tools / ② env-True で healthcare stub 追加 / ③ sentinel 注記 return / ④ 各 stub の signature shape を担保。
+  ① env-False で 139 tools / ② env-True で healthcare stub 追加 / ③ sentinel 注記 return / ④ 各 stub の signature shape を担保。
 
 これで W4 で触る範囲は **TODO コメント 6 箇所の SQL body 差し替えのみ** に縮小済み。signature / docstring / env gate / 登録順序は確定済みで再 deploy なしに query layer を埋められる。
 
