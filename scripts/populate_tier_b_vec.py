@@ -387,9 +387,7 @@ def existing_canonical_ids(conn: sqlite3.Connection, tier: str) -> set[str]:
     return {r[0] for r in rows}
 
 
-def stream_entities(
-    conn: sqlite3.Connection, limit: int | None
-) -> Iterable[tuple[str, str, str]]:
+def stream_entities(conn: sqlite3.Connection, limit: int | None) -> Iterable[tuple[str, str, str]]:
     """Yield (canonical_id, source_topic, raw_json) for non-skipped entities."""
     sql = (
         "SELECT canonical_id, source_topic, raw_json FROM am_entities "

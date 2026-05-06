@@ -257,7 +257,12 @@ def extract_body_tables(sql: str) -> list[str]:
                 AlterCls = getattr(sqlglot_exp, "AlterTable", None) or getattr(
                     sqlglot_exp, "Alter", None
                 )
-                if isinstance(target, sqlglot_exp.Create) or AlterCls is not None and isinstance(target, AlterCls) or isinstance(target, sqlglot_exp.Drop):
+                if (
+                    isinstance(target, sqlglot_exp.Create)
+                    or AlterCls is not None
+                    and isinstance(target, AlterCls)
+                    or isinstance(target, sqlglot_exp.Drop)
+                ):
                     this = target.this
                     name = _identifier_name(this)
                     if name:

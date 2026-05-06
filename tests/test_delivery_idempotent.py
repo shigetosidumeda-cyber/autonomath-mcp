@@ -18,20 +18,22 @@ Constraints:
 
 from __future__ import annotations
 
+import hashlib
+from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
+from typing import TYPE_CHECKING, Any
+
+import pytest
+
+if TYPE_CHECKING:
+    import sqlite3
+
 # Pull DEEP-46/47/48 shared fixtures (jpintel_conn, autonomath_conn,
 # mock_stripe_client, mock_postmark, mock_r2_storage, synthetic_event_factory,
 # assert_no_llm_imports, fake_clock, in_memory_sqlite) from the renamed
 # conftest_delivery_strict.py — pytest only auto-loads `conftest.py`, so the
 # delivery-strict fixtures must be opted in explicitly via pytest_plugins.
 pytest_plugins = ["tests.conftest_delivery_strict"]
-
-import hashlib
-import sqlite3
-from dataclasses import dataclass
-from datetime import UTC, datetime, timedelta
-from typing import Any
-
-import pytest
 
 # ---------------------------------------------------------------------------
 # Surrogate implementation
@@ -57,10 +59,7 @@ def _url_hash(url: str) -> str:
 
 
 def _is_aggregator(url: str) -> bool:
-    for banned in _AGGREGATOR_HOST_DENYLIST:
-        if banned in url:
-            return True
-    return False
+    return any(banned in url for banned in _AGGREGATOR_HOST_DENYLIST)
 
 
 @dataclass

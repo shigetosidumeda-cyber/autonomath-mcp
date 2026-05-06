@@ -407,7 +407,9 @@ def build_snapshot(repo_root: Path) -> GateSnapshot:
     )
     snap.blockers = collect_blockers(repo_root)
     # Operator ACK invocation drives the 8-ACK pane.
-    signoff_cmd = "tools/offline/operator_review/operator_ack_signoff.py --dry-run --json --yes --all"
+    signoff_cmd = (
+        "tools/offline/operator_review/operator_ack_signoff.py --dry-run --json --yes --all"
+    )
     signoff_result = run_verify(signoff_cmd, repo_root=repo_root)
     snap.acks = collect_acks(repo_root, signoff_result.stdout)
     snap.specs = collect_specs(repo_root)

@@ -47,6 +47,7 @@ CLI:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import io
 import json
 import logging
@@ -903,7 +904,6 @@ def _extract_extra_defendants(text: str) -> list[tuple[str, str | None]]:
         return n
 
     bodies = [(name, _body(name)) for name, _ in out]
-    long_bodies = [b for _, b in bodies if len(b) >= 8]
 
     def _is_chimera(body: str, long_set: list[str]) -> bool:
         """A name body is a chimera when it can be split into A+B such that
@@ -923,9 +923,9 @@ def _extract_extra_defendants(text: str) -> list[tuple[str, str | None]]:
         return False
 
     keep_idx: set[int] = set()
-    for i, (n_i, b_i) in enumerate(bodies):
+    for i, (_n_i, b_i) in enumerate(bodies):
         is_proper_substring = False
-        for j, (n_j, b_j) in enumerate(bodies):
+        for j, (_n_j, b_j) in enumerate(bodies):
             if i == j:
                 continue
             # If this body is a tail-substring of a longer one, it's a tail
@@ -1164,10 +1164,7 @@ def build_reason_summary(
                 break
         # Take first 600 chars after first 。
         first_period = body.find("。")
-        if 0 < first_period < 600:
-            snippet = body[: first_period + 1]
-        else:
-            snippet = body[:600]
+        snippet = body[: first_period + 1] if 0 < first_period < 600 else body[:600]
         parts.append(snippet.strip())
     parts.append(f"件名: {listing.title}")
     if detail.leak_count:
@@ -1271,10 +1268,8 @@ def run(
         con.commit()
     except sqlite3.Error as exc:
         _LOG.error("DB init failed: %s", exc)
-        try:
+        with contextlib.suppress(sqlite3.Error):
             con.close()
-        except sqlite3.Error:
-            pass
         return 2
 
     # 3. Walk listings, fetch detail+PDF, write per-row transaction.
@@ -1380,17 +1375,13 @@ def run(
                 con.commit()
             except sqlite3.IntegrityError as exc:
                 _LOG.warning("integrity error for %s: %s", row_canonical_id, exc)
-                try:
+                with contextlib.suppress(sqlite3.Error):
                     con.rollback()
-                except sqlite3.Error:
-                    pass
                 continue
             except sqlite3.Error as exc:
                 _LOG.error("DB error for %s: %s", row_canonical_id, exc)
-                try:
+                with contextlib.suppress(sqlite3.Error):
                     con.rollback()
-                except sqlite3.Error:
-                    pass
                 continue
 
             if ok:
@@ -1449,10 +1440,8 @@ def run(
     after_ppc = cur.fetchone()[0]
     cur.execute("SELECT COUNT(*) FROM am_enforcement_detail")
     after_total = cur.fetchone()[0]
-    try:
+    with contextlib.suppress(sqlite3.Error):
         con.close()
-    except sqlite3.Error:
-        pass
 
     _LOG.info(
         "done inserted=%d dup_db=%d dup_id=%d no_data=%d listings=%d",

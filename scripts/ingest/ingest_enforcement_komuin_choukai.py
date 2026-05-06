@@ -2260,7 +2260,7 @@ def parse_sapporo_edu_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
         # Clean subject for role label: keep school + role labels, drop names.
         # Strategy: tokenize by spaces, drop any token-pair that looks like a
         # kanji name (姓 + 名), drop age/gender (we already extracted them).
-        ROLE_KEYWORDS = (
+        ROLE_KEYWORDS = (  # noqa: N806 — uppercase mirrors module-level constant taxonomy
             "教諭",
             "教頭",
             "校長",
@@ -2277,7 +2277,7 @@ def parse_sapporo_edu_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
             "副園長",
             "保育士",
         )
-        SCHOOL_KEYWORDS = (
+        SCHOOL_KEYWORDS = (  # noqa: N806 — uppercase mirrors module-level constant taxonomy
             "小学校",
             "中学校",
             "高校",
@@ -2306,9 +2306,7 @@ def parse_sapporo_edu_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
             # 2-4 kanji + space + 1-3 kanji, not containing role/school words
             if re.fullmatch(r"[一-鿿]{1,4}\s+[一-鿿]{1,4}", s.strip()):
                 lower = s
-                if any(k in lower for k in _roles + _schools):
-                    return False
-                return True
+                return not any(k in lower for k in _roles + _schools)
             return False
 
         # Sapporo PDF subjects look like:
@@ -2423,7 +2421,7 @@ def parse_nagoya_table_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
     lines = text.splitlines()
     rows: list[tuple[str, str]] = []  # (position, kind_text)
     pending_pos: list[str] = []
-    KIND_RE = re.compile(
+    kind_re = re.compile(
         r"(懲戒免職|諭旨退職|免職|停職[^\n、,，。地]*|減給\s*[\d０-９/分の]+\s*[、,，]?\s*\d+\s*月?|減給[^\n、,，。地]*|戒告|訓告)"
     )
     # Header sentinel: skip everything until table header found, OR until we
@@ -2450,7 +2448,7 @@ def parse_nagoya_table_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
         if line.startswith("地方公務員法") or line.startswith("国家公務員法"):
             continue
         # Try to find a kind in this line
-        k_m = KIND_RE.search(line)
+        k_m = kind_re.search(line)
         if k_m:
             # The position is everything before the kind, plus any pending lines
             before = line[: k_m.start()].strip()
@@ -2472,15 +2470,13 @@ def parse_nagoya_table_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
                 # cap at 3 lines
                 if len(pending_pos) > 3:
                     pending_pos = pending_pos[-3:]
-    seq = 0
-    for position, kind_text in rows:
+    for seq, (position, kind_text) in enumerate(rows, start=1):
         kind_text_clean = re.sub(r"\s+", "", kind_text)
         kind = _classify_kind(kind_text_clean)
         category = _classify_summary(position)  # position has very limited info
         full_reason = (
             f"[{category}] 所属={position} {kind_text_clean}: 地方公務員法第29条第1項各号"
         )[:1500]
-        seq += 1
         target_name = _anonymize_target(authority, position, seq)
         out.append(
             EnfRow(
@@ -2529,10 +2525,7 @@ PARSERS = {
 
 def fetch_source(http: HttpClient, src: Source) -> list[EnfRow]:
     is_pdf = src.url.lower().endswith(".pdf") or src.parser.endswith("_pdf")
-    if is_pdf:
-        res = http.get(src.url, max_bytes=PDF_MAX_BYTES)
-    else:
-        res = http.get(src.url)
+    res = http.get(src.url, max_bytes=PDF_MAX_BYTES) if is_pdf else http.get(src.url)
     if not res.ok:
         _LOG.warning("[%s] fetch failed status=%s url=%s", src.parser, res.status, src.url)
         return []
@@ -2762,10 +2755,8 @@ def write_rows(
             conn.commit()
         except sqlite3.Error as exc:
             _LOG.error("BEGIN/commit failed chunk=%d: %s", chunk_idx, exc)
-            try:
+            with contextlib.suppress(sqlite3.Error):
                 conn.rollback()
-            except sqlite3.Error:
-                pass
     return inserted, dup_db, dup_batch
 
 
@@ -2855,10 +2846,8 @@ def main(argv: list[str] | None = None) -> int:
         org_counts[r.org_class] = org_counts.get(r.org_class, 0) + 1
         auth_counts[r.issuing_authority] = auth_counts.get(r.issuing_authority, 0) + 1
         kind_counts[r.enforcement_kind] = kind_counts.get(r.enforcement_kind, 0) + 1
-    try:
+    with contextlib.suppress(sqlite3.Error):
         conn.close()
-    except sqlite3.Error:
-        pass
     http.close()
 
     _LOG.info(

@@ -57,6 +57,7 @@ CLI:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import io
 import json
@@ -373,29 +374,29 @@ def _is_valid_target_name(name: str | None) -> bool:
         return False
     if s in _BAD_NAME_LITERALS:
         return False
-    # Single ASCII or single CJK char
-    if len(s) <= 2:
-        # Allow short names ONLY if they include ASCII letters (e.g. "AA")
-        # or the recognized business suffix patterns; otherwise reject.
-        if re.fullmatch(r"[一-龥ぁ-んァ-ヶ々]+", s):
-            return False
+    # Single ASCII or single CJK char — reject if all-CJK and ≤2 chars.
+    # Allow short names ONLY if they include ASCII letters (e.g. "AA")
+    # or the recognized business suffix patterns; otherwise reject.
+    if len(s) <= 2 and re.fullmatch(r"[一-龥ぁ-んァ-ヶ々]+", s):
+        return False
     # Pure date strings like "1999-10-01" or "令和2年4月1日"
     if re.fullmatch(r"\d{4}-\d{2}-\d{2}", s):
         return False
-    if re.search(r"年.*月.*日", s) and not any(
-        kw in s
-        for kw in ("株式会社", "有限会社", "合同会社", "合資会社", "合名会社", "(株)", "(有)")
+    if (
+        re.search(r"年.*月.*日", s)
+        and not any(
+            kw in s
+            for kw in ("株式会社", "有限会社", "合同会社", "合資会社", "合名会社", "(株)", "(有)")
+        )
+        and re.fullmatch(r"[\d０-９年月日\s\.\-/平成令和元昭和大正]+", s)
     ):
         # If the entire candidate is essentially a date sentence, reject.
-        if re.fullmatch(r"[\d０-９年月日\s\.\-/平成令和元昭和大正]+", s):
-            return False
+        return False
     # Fragments that start with characters indicating leftover label text
     if s.startswith(("及び", "並びに", "のとおり", "以下", "下記")):
         return False
     # Numeric-only or near-numeric-only
-    if re.fullmatch(r"[\d０-９\s\-/年月日]+", s):
-        return False
-    return True
+    return not re.fullmatch(r"[\d０-９\s\-/年月日]+", s)
 
 
 # ---------------------------------------------------------------------------
@@ -477,20 +478,11 @@ def parse_master_haken_pdf(pdf_bytes: bytes, source_url: str) -> list[EnfRow]:
     out: list[EnfRow] = []
     try:
         with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
-            full_text = "\n".join(p.extract_text() or "" for p in pdf.pages)
-            current_section = None  # "improvement" | "suspend" | "revoke"
-            for page_idx, page in enumerate(pdf.pages):
-                text = page.extract_text() or ""
-                if "１ 改善命令" in text or "1 改善命令" in text:
-                    current_section = "improvement"
-                if "２ 事業停止命令" in text or "2 事業停止命令" in text:
-                    current_section = "suspend"
-                if (
-                    "労働者派遣事業の許可の取消し" in text
-                    or "３ 労働者派遣事業の許可の取消し" in text
-                    or "3 労働者派遣事業の許可の取消し" in text
-                ):
-                    current_section = "revoke"
+            # Section markers are extracted into headers when scanning each
+            # table, so we don't need to track a per-page current_section
+            # state across pages — header inspection of the per-table
+            # extracted column names handles classification deterministically.
+            for page in pdf.pages:
                 tables = page.extract_tables() or []
                 for table in tables:
                     if not table or len(table) < 2:
@@ -503,7 +495,6 @@ def parse_master_haken_pdf(pdf_bytes: bytes, source_url: str) -> list[EnfRow]:
                         continue
                     is_revoke = any("許可の取消し" in h or "取消し日" in h for h in header)
                     is_suspend = any("事業停止期間" in h for h in header)
-                    section = current_section or ("revoke" if is_revoke else "improvement")
                     for raw in table[1:]:
                         cells = [_normalize((c or "").replace("\n", " ")) for c in raw]
                         if not cells or not any(cells):
@@ -617,21 +608,10 @@ def parse_master_shokai_pdf(pdf_bytes: bytes, source_url: str) -> list[EnfRow]:
     out: list[EnfRow] = []
     try:
         with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
-            current_section = None
+            # Per-table header inspection (is_revoke / is_suspend /
+            # is_shut_down) classifies rows deterministically — no need to
+            # track a per-page current_section state across pages.
             for page in pdf.pages:
-                text = page.extract_text() or ""
-                if "１ 改善命令" in text or "1 改善命令" in text:
-                    current_section = "improvement"
-                if "２ 事業停止命令" in text or "2 事業停止命令" in text:
-                    current_section = "suspend"
-                if (
-                    "３ 許可の取消し" in text
-                    or "3 許可の取消し" in text
-                    or "許可の取消し（職業安定法" in text
-                ):
-                    current_section = "revoke"
-                if "４ 事業廃止命令" in text or "4 事業廃止命令" in text:
-                    current_section = "shut_down"
                 tables = page.extract_tables() or []
                 for table in tables:
                     if not table or len(table) < 2:
@@ -911,7 +891,7 @@ def fetch_detail_pdfs(http: HttpClient, page_url: str) -> tuple[str, list[tuple[
 
     pdfs: list[tuple[str, bytes]] = []
     seen_hashes: set[str] = set()
-    for absurl, anchor, is_full, is_law_only in cand:
+    for absurl, _anchor, is_full, is_law_only in cand:
         if is_law_only:
             continue
         if is_full and has_body_only:
@@ -1485,10 +1465,8 @@ def run(args: argparse.Namespace) -> int:
         con.commit()
     except sqlite3.Error as exc:
         _LOG.error("DB init failed: %s", exc)
-        try:
+        with contextlib.suppress(sqlite3.Error):
             con.close()
-        except sqlite3.Error:
-            pass
         return 2
 
     inserted = 0
@@ -1515,10 +1493,8 @@ def run(args: argparse.Namespace) -> int:
         cur.execute("BEGIN IMMEDIATE")
     except sqlite3.Error as exc:
         _LOG.error("DB BEGIN failed: %s", exc)
-        try:
+        with contextlib.suppress(sqlite3.Error):
             con.close()
-        except sqlite3.Error:
-            pass
         return 2
 
     for r in all_rows:
@@ -1578,10 +1554,8 @@ def run(args: argparse.Namespace) -> int:
         "WHERE related_law_ref LIKE '%派遣%' OR related_law_ref LIKE '%職業安定%'"
     ).fetchone()[0]
     post_total = con.execute("SELECT COUNT(*) FROM am_enforcement_detail").fetchone()[0]
-    try:
+    with contextlib.suppress(sqlite3.Error):
         con.close()
-    except sqlite3.Error:
-        pass
 
     _LOG.info(
         "done parsed=%d inserted=%d dup_db=%d dup_id=%d dup_batch=%d invalid=%d",

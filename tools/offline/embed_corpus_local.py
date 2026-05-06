@@ -79,13 +79,17 @@ OUTPUT:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import logging
 import sqlite3
 import sys
 import time
-from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Iterator
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_AUTONOMATH_DB = REPO_ROOT / "autonomath.db"
@@ -348,7 +352,7 @@ def open_conn(
             "rebuild Python with --enable-loadable-sqlite-extensions "
             "or use a venv whose python links sqlite3 with extension "
             f"support. Original: {exc}"
-        )
+        ) from exc
     try:
         import sqlite_vec  # type: ignore
 
@@ -361,12 +365,10 @@ def open_conn(
                 f"sqlite-vec load failed (sqlite_vec={exc}; vec0={exc2}); "
                 "non-dry run cannot proceed. pip install sqlite-vec in "
                 "the active venv."
-            )
+            ) from exc2
     finally:
-        try:
+        with contextlib.suppress(AttributeError, sqlite3.OperationalError):
             vec_conn.enable_load_extension(False)
-        except (AttributeError, sqlite3.OperationalError):
-            pass
 
     if spec.source_db == "autonomath":
         return vec_conn, vec_conn
@@ -404,7 +406,7 @@ def load_existing_entity_ids(
         raise SystemExit(
             f"cannot read existing ids from {vec_table}: {exc}. "
             "Run migrations/create vec tables before non-dry embedding."
-        )
+        ) from exc
     return {int(row[0]) for row in rows if row and row[0] is not None}
 
 
@@ -461,7 +463,7 @@ def load_model(model_name: str):
             "Original error: %s",
             exc,
         )
-        raise SystemExit(2)
+        raise SystemExit(2) from exc
     LOG.info("loading model %s ... (first run downloads ~2.2 GB)", model_name)
     t0 = time.time()
     model = SentenceTransformer(model_name)
@@ -622,15 +624,11 @@ def run_corpus(
             "replace_existing": replace_existing,
         }
     finally:
-        try:
+        with contextlib.suppress(Exception):
             src_conn.close()
-        except Exception:  # noqa: BLE001
-            pass
         if vec_conn is not src_conn:
-            try:
+            with contextlib.suppress(Exception):
                 vec_conn.close()
-            except Exception:  # noqa: BLE001
-                pass
 
 
 # ---------------------------------------------------------------------------

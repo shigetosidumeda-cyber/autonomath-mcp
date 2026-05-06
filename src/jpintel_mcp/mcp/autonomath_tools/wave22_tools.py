@@ -664,9 +664,7 @@ def _kessan_briefing_impl(
     ]
 
     # --- Top-level highlights (top 5 by total_events) ---------------------
-    top_bins = sorted(
-        timeline, key=lambda b: int(b["total_events"] or 0), reverse=True
-    )[:5]
+    top_bins = sorted(timeline, key=lambda b: int(b["total_events"] or 0), reverse=True)[:5]
 
     # --- Saved-searches digest cadence (best-effort cross-DB hint) -------
     # saved_searches lives on jpintel.db. We do not cross-connect here —

@@ -60,6 +60,7 @@ CLI:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import json
 import logging
@@ -250,7 +251,7 @@ def parse_nta_240401(html: str, source_url: str) -> list[EnfRow]:
         law_refs = re.findall(
             r"第\s*(\d+)\s*条(?:の\s*\d+)?(?:第\s*[一二三四五六七八九十0-9]+\s*項)?", descr
         )
-        article_blob = "・".join(sorted(set(f"第{n}条" for n in law_refs)))
+        article_blob = "・".join(sorted({f"第{n}条" for n in law_refs}))
         related_law = ZEIRISHI_LAW + ((" " + article_blob) if article_blob else "")
         reason = (f"{descr[:1200]} / 登録番号: {license_no} / 事務所: {office}")[:1500]
         out.append(
@@ -300,10 +301,7 @@ def parse_nta_list(html: str, source_url: str) -> list[EnfRow]:
             continue
         # use earliest wareki date from descr as start; fallback to 官報 date
         start_m = WAREKI_RE.search(descr)
-        if start_m:
-            iso_date = parse_jpdate(start_m.group(0))
-        else:
-            iso_date = parse_jpdate(kanpou_date)
+        iso_date = parse_jpdate(start_m.group(0)) if start_m else parse_jpdate(kanpou_date)
         if not iso_date:
             continue
         href_m = re.search(r'href="([^"]+\.pdf)"', descr_html)
@@ -313,7 +311,7 @@ def parse_nta_list(html: str, source_url: str) -> list[EnfRow]:
             pdf_url = ("https://www.nta.go.jp" + h) if h.startswith("/") else h
         kind = classify_enforcement_kind(descr)
         law_refs = re.findall(r"第\s*(\d+)\s*条", descr)
-        article_blob = "・".join(sorted(set(f"第{n}条" for n in law_refs)))
+        article_blob = "・".join(sorted({f"第{n}条" for n in law_refs}))
         related_law = ZEIRISHI_LAW + ((" " + article_blob) if article_blob else "")
         reason = (
             f"{descr[:800]} / 登録番号: {license_no} / 事務所: {office} / 官報掲載: {kanpou_date}"
@@ -433,7 +431,7 @@ def parse_fsa_disciplinary(html: str, source_url: str) -> list[EnfRow]:
         kind = classify_enforcement_kind(ctx)
         # Find 公認会計士法第NN条
         law_refs = re.findall(r"法第\s*(\d+(?:の\s*\d+)?)\s*条", ctx)
-        article_blob = "・".join(sorted(set(f"第{a.replace(' ', '')}条" for a in law_refs)))
+        article_blob = "・".join(sorted({f"第{a.replace(' ', '')}条" for a in law_refs}))
         related_law = CPA_LAW + ((" " + article_blob) if article_blob else "")
         reason = (f"金融庁による公認会計士法に基づく懲戒処分。{ctx[:800]}")[:1500]
         firm_rows.append(
@@ -508,7 +506,7 @@ def parse_fsa_disciplinary(html: str, source_url: str) -> list[EnfRow]:
                 eff_iso = publish_iso
             kind = classify_enforcement_kind(sent or "業務停止")
             law_refs = re.findall(r"法第\s*(\d+(?:の\s*\d+)?)\s*条", sent or "")
-            article_blob = "・".join(sorted(set(f"第{a.replace(' ', '')}条" for a in law_refs)))
+            article_blob = "・".join(sorted({f"第{a.replace(' ', '')}条" for a in law_refs}))
             related_law = CPA_LAW + ((" " + article_blob) if article_blob else "")
             target = f"公認会計士{chr(ord('A') + i)} (匿名処分・{publish_iso})"
             reason = (
@@ -693,7 +691,7 @@ def parse_pref_gyosei(html: str, source_url: str, pref: str) -> list[EnfRow]:
         return out
     kind = classify_enforcement_kind(plain)
     law_refs = re.findall(r"行政書士法\s*第\s*(\d+)\s*条", plain)
-    article_blob = "・".join(sorted(set(f"第{n}条" for n in law_refs)))
+    article_blob = "・".join(sorted({f"第{n}条" for n in law_refs}))
     related_law = "行政書士法" + ((" " + article_blob) if article_blob else "")
     if not name_candidates:
         # Some pages publish only "行政書士に対する行政処分" without name.
@@ -766,7 +764,7 @@ def parse_hyogokai(html: str, source_url: str) -> list[EnfRow]:
         kind = classify_enforcement_kind(block)
         # Law refs
         law_refs = re.findall(r"行政書士法\s*第\s*(\d+)\s*条", block)
-        article_blob = "・".join(sorted(set(f"第{n}条" for n in law_refs)))
+        article_blob = "・".join(sorted({f"第{n}条" for n in law_refs}))
         related_law = "行政書士法" + ((" " + article_blob) if article_blob else "")
         # 登録番号
         reg_m = re.search(r"登録番号[\s　]*([0-9]{6,12})", block)
@@ -1117,7 +1115,7 @@ def parse_toben_chokai(html: str, source_url: str) -> list[EnfRow]:
         return out
     kind = classify_enforcement_kind(plain)
     law_refs = re.findall(r"弁護士法\s*第\s*(\d+)\s*条", plain)
-    article_blob = "・".join(sorted(set(f"第{n}条" for n in law_refs)))
+    article_blob = "・".join(sorted({f"第{n}条" for n in law_refs}))
     related_law = "弁護士法" + ((" " + article_blob) if article_blob else "")
     out.append(
         EnfRow(
@@ -1379,10 +1377,8 @@ def write_rows(
         conn.commit()
     except sqlite3.Error as exc:
         _LOG.error("BEGIN/commit failed: %s", exc)
-        try:
+        with contextlib.suppress(sqlite3.Error):
             conn.rollback()
-        except sqlite3.Error:
-            pass
     return inserted, dup_db, dup_batch
 
 
@@ -1474,10 +1470,8 @@ def main(argv: list[str] | None = None) -> int:
         now_iso=now_iso,
         max_rows=args.max_rows,
     )
-    try:
+    with contextlib.suppress(sqlite3.Error):
         conn.close()
-    except sqlite3.Error:
-        pass
     http.close()
 
     _LOG.info(

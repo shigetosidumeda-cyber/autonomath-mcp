@@ -865,9 +865,7 @@ def _build_artifact_evidence(body: dict[str, Any]) -> dict[str, Any]:
     gaps: list[Any] = list(raw_gaps) if isinstance(raw_gaps, list) else []
     raw_receipts = body.get("source_receipts")
     receipts: list[dict[str, Any]] = (
-        [r for r in raw_receipts if isinstance(r, dict)]
-        if isinstance(raw_receipts, list)
-        else []
+        [r for r in raw_receipts if isinstance(r, dict)] if isinstance(raw_receipts, list) else []
     )
     receipt_completion = _source_receipt_completion(receipts)
     return {

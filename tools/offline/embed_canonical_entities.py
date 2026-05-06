@@ -80,13 +80,17 @@ OUTPUT:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import logging
 import sqlite3
 import sys
 import time
-from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_AUTONOMATH_DB = REPO_ROOT / "autonomath.db"
@@ -226,7 +230,7 @@ def open_conn(autonomath_db: Path) -> sqlite3.Connection:
             "sqlite3 build does not support enable_load_extension; "
             "use a venv whose python links sqlite3 with extension support. "
             f"Original: {exc}"
-        )
+        ) from exc
     try:
         import sqlite_vec  # type: ignore
 
@@ -238,12 +242,10 @@ def open_conn(autonomath_db: Path) -> sqlite3.Connection:
             raise SystemExit(
                 f"sqlite-vec load failed (sqlite_vec={exc}; vec0={exc2}). "
                 "pip install sqlite-vec in the active venv."
-            )
+            ) from exc2
     finally:
-        try:
+        with contextlib.suppress(AttributeError, sqlite3.OperationalError):
             conn.enable_load_extension(False)
-        except (AttributeError, sqlite3.OperationalError):
-            pass
     # Speed up bulk INSERT path; safe for offline operator script.
     conn.execute("PRAGMA journal_mode=WAL")
     conn.execute("PRAGMA synchronous=NORMAL")
@@ -283,7 +285,7 @@ def load_existing_canonical_ids(
             f"cannot read existing canonical ids from {spec.vec_table}: {exc}. "
             "Run migration 166/create canonical vec tables before non-dry "
             "embedding."
-        )
+        ) from exc
     return {str(row[0]) for row in rows if row and row[0]}
 
 
@@ -325,10 +327,7 @@ def iter_entities(
     for cid, primary_name, facts_concat in cur:
         if not cid or not primary_name:
             continue
-        if facts_concat:
-            text = f"{primary_name} {facts_concat}"
-        else:
-            text = primary_name
+        text = f"{primary_name} {facts_concat}" if facts_concat else primary_name
         # Strip excess whitespace, cap final length to 2000 chars to
         # keep encode batches predictable.
         text = " ".join(text.split())[:2000]
@@ -393,7 +392,7 @@ def load_model(model_name: str):
             "Original: %s",
             exc,
         )
-        raise SystemExit(2)
+        raise SystemExit(2) from exc
     LOG.info("loading model %s ... (first run downloads ~2.2 GB weights)", model_name)
     t0 = time.time()
     model = SentenceTransformer(model_name)
@@ -539,10 +538,8 @@ def run_kind(
             "replace_existing": replace_existing,
         }
     finally:
-        try:
+        with contextlib.suppress(Exception):
             conn.close()
-        except Exception:  # noqa: BLE001
-            pass
 
 
 # ---------------------------------------------------------------------------
