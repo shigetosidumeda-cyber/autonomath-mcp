@@ -28,6 +28,7 @@ Exit codes:
     1  unrecoverable fetch failure
     2  parse failure on >20% of pages (column drift beyond this parser)
 """
+
 from __future__ import annotations
 
 import argparse
@@ -100,9 +101,7 @@ def polite_get(url: str, tries: int = MAX_RETRIES) -> bytes:
     headers = {"User-Agent": USER_AGENT}
     for attempt in range(1, tries + 1):
         try:
-            with httpx.Client(
-                http2=False, follow_redirects=True, timeout=HTTP_TIMEOUT
-            ) as client:
+            with httpx.Client(http2=False, follow_redirects=True, timeout=HTTP_TIMEOUT) as client:
                 resp = client.get(url, headers=headers)
                 resp.raise_for_status()
                 body = resp.content
@@ -242,17 +241,13 @@ def load_match_candidates(db_path: Path) -> list[tuple[str, str]]:
         return []
     conn = sqlite3.connect(db_path)
     try:
-        cur = conn.execute(
-            "SELECT unified_id, primary_name FROM programs WHERE excluded = 0"
-        )
+        cur = conn.execute("SELECT unified_id, primary_name FROM programs WHERE excluded = 0")
         return list(cur.fetchall())
     finally:
         conn.close()
 
 
-def match_program_for(
-    recipient_name: str, candidates: list[tuple[str, str]]
-) -> str | None:
+def match_program_for(recipient_name: str, candidates: list[tuple[str, str]]) -> str | None:
     """Best-effort: 事業再構築補助金 has no unified_id yet in the registry.
 
     Left as a stub that always returns None. Kept so the pipeline shape is

@@ -22,6 +22,7 @@ Usage:
 
     .venv/bin/python scripts/ingest/ingest_shohi_tsutatsu.py --dry-run
 """
+
 from __future__ import annotations
 
 import argparse
@@ -59,9 +60,7 @@ ATTRIBUTION = "出典: 国税庁 消費税法基本通達"
 #   _law_tsutatsu_kihon_shohi_02.htm.html           -> preface (skip, no tsutatsu number)
 #   _law_tsutatsu_kihon_shohi_01.htm.html           -> TOC (skip)
 #   _law_tsutatsu_kihon_shohi_20230930_01.htm.html  -> old version (EXCLUDE)
-FNAME_LEAF_RE = re.compile(
-    r"^_law_tsutatsu_kihon_shohi_(\d{2})_(\d{2})(?:_(\d{2}))?\.htm\.html$"
-)
+FNAME_LEAF_RE = re.compile(r"^_law_tsutatsu_kihon_shohi_(\d{2})_(\d{2})(?:_(\d{2}))?\.htm\.html$")
 FNAME_OLD_MARKER = "20230930"
 
 # Article number: "1-1-1", "5-7-14", "11-5-7の2". U+2212 or hyphen.
@@ -260,9 +259,7 @@ def ensure_am_law_row(conn: sqlite3.Connection) -> None:
         _LOG.info("am_law row inserted canonical_id=%s", LAW_CANONICAL_ID)
 
 
-def load(
-    conn: sqlite3.Connection, items: list[dict], dry_run: bool = False
-) -> tuple[int, int]:
+def load(conn: sqlite3.Connection, items: list[dict], dry_run: bool = False) -> tuple[int, int]:
     """Delete placeholders, UPSERT all items."""
     now = datetime.now(UTC).isoformat()
 
@@ -386,7 +383,11 @@ def main(argv: list[str] | None = None) -> int:
         items = parse_leaf(html, chapter, section, sub, src_url)
         _LOG.info(
             "parsed file=%s chapter=%d section=%d sub=%s items=%d",
-            path.name, chapter, section, sub, len(items),
+            path.name,
+            chapter,
+            section,
+            sub,
+            len(items),
         )
         all_items.extend(items)
 
@@ -413,7 +414,9 @@ def main(argv: list[str] | None = None) -> int:
         inserted, placeholder_del = load(conn, deduped, dry_run=args.dry_run)
         _LOG.info(
             "load inserted=%d placeholders_deleted=%d dry_run=%s",
-            inserted, placeholder_del, args.dry_run,
+            inserted,
+            placeholder_del,
+            args.dry_run,
         )
         if not args.dry_run:
             ic = integrity_check(conn)

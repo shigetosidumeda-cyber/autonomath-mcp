@@ -45,6 +45,7 @@ CLI:
     python scripts/ingest/ingest_enforcement_child_welfare.py
         [--db autonomath.db] [--limit N] [--dry-run] [--verbose]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -101,189 +102,401 @@ USER_AGENT = "AutonoMath/0.1.0 (+https://bookyou.net)"
 
 OSAKA_PRESS_PDFS: list[dict[str, str]] = [
     # 大阪府 障害児通所支援 個別 行政処分 PDF (~29 PDFs at /documents/4810/)
-    {"slug": "osaka-press-20250714", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/20250714gyouseisyobunn_1.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-250326", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/250326gyouseisyobun.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-doremifa", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/zi-doremifasoraizufcikeda.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-tenton", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/tenton1.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-wandafuru", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/031224wandafuru.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-ikiiki-suta", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/03927ikiikisutadexi.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-ikiiki-jr", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/03927ikiikijunia.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-aozora", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/03092420aozorasagyousyo.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-huziki", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/03910huzikikaku.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-rkea", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/030831rkeasabisu.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-yuuka", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/020930yuuka.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-furennzu", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/020531furennzu.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-undouhiroba", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/020529undouhiroba.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-tunagu", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/020529tunagu.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-gonse", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/020331gonse.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-ami", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/020131ami.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-kopan", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/020131kopan20.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-011129", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/011129kouryokuteisi20.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-r11108", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/r11108kouryokuteisi20.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-011031", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/011031siteitorikesi.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-010920", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/010920kouryokuteisi20.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-cyucyu", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/310315cyucyu.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-310308", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/310308siteitorikesi.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-310228", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/310228siteitorikesi.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-310222", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/310222kouryokuteisi20.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-301219", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/301219kouryokuteisi20.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-300910", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/300910kouryokuteisi20.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-300309", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/300309kouryokuteisi20.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "osaka-press-280318", "authority": "大阪府",
-     "url": "https://www.pref.osaka.lg.jp/documents/4810/280318houkagotoudeisa-bisu.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
+    {
+        "slug": "osaka-press-20250714",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/20250714gyouseisyobunn_1.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-250326",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/250326gyouseisyobun.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-doremifa",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/zi-doremifasoraizufcikeda.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-tenton",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/tenton1.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-wandafuru",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/031224wandafuru.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-ikiiki-suta",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/03927ikiikisutadexi.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-ikiiki-jr",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/03927ikiikijunia.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-aozora",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/03092420aozorasagyousyo.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-huziki",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/03910huzikikaku.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-rkea",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/030831rkeasabisu.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-yuuka",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/020930yuuka.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-furennzu",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/020531furennzu.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-undouhiroba",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/020529undouhiroba.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-tunagu",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/020529tunagu.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-gonse",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/020331gonse.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-ami",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/020131ami.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-kopan",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/020131kopan20.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-011129",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/011129kouryokuteisi20.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-r11108",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/r11108kouryokuteisi20.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-011031",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/011031siteitorikesi.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-010920",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/010920kouryokuteisi20.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-cyucyu",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/310315cyucyu.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-310308",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/310308siteitorikesi.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-310228",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/310228siteitorikesi.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-310222",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/310222kouryokuteisi20.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-301219",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/301219kouryokuteisi20.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-300910",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/300910kouryokuteisi20.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-300309",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/300309kouryokuteisi20.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "osaka-press-280318",
+        "authority": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/documents/4810/280318houkagotoudeisa-bisu.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
 ]
 
 CUMULATIVE_PDFS: list[dict[str, str]] = [
     # 福岡市 障害児通所支援 一覧 (multi-row table)
-    {"slug": "fukuoka-city-060827", "authority": "福岡市",
-     "url": "https://www.city.fukuoka.lg.jp/kodomo-mirai/shogaijishien/health/syogaij-sien/documents/060827shiteitorikeshi.pdf",
-     "format": "fukuoka_table_pdf", "default_law": "児童福祉法"},
+    {
+        "slug": "fukuoka-city-060827",
+        "authority": "福岡市",
+        "url": "https://www.city.fukuoka.lg.jp/kodomo-mirai/shogaijishien/health/syogaij-sien/documents/060827shiteitorikeshi.pdf",
+        "format": "fukuoka_table_pdf",
+        "default_law": "児童福祉法",
+    },
     # 福岡市 障害児通所支援 取消 (4siteisyougaiji241126.pdf)
-    {"slug": "fukuoka-city-241126", "authority": "福岡市",
-     "url": "https://www.city.fukuoka.lg.jp/shisei/kouhou-hodo/hodo-happyo/2024/documents/4siteisyougaiji241126.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
+    {
+        "slug": "fukuoka-city-241126",
+        "authority": "福岡市",
+        "url": "https://www.city.fukuoka.lg.jp/shisei/kouhou-hodo/hodo-happyo/2024/documents/4siteisyougaiji241126.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
     # 青森県 R6 障害福祉/障害児行政処分事例集 (multi-row PDF)
-    {"slug": "aomori-r6-sidou", "authority": "青森県",
-     "url": "https://www.pref.aomori.lg.jp/soshiki/kenko/syofuku/files/05_r6sidou.pdf",
-     "format": "aomori_slide_pdf", "default_law": "児童福祉法"},
+    {
+        "slug": "aomori-r6-sidou",
+        "authority": "青森県",
+        "url": "https://www.pref.aomori.lg.jp/soshiki/kenko/syofuku/files/05_r6sidou.pdf",
+        "format": "aomori_slide_pdf",
+        "default_law": "児童福祉法",
+    },
 ]
 
 # 個別 press release PDFs (1 row each)
 SINGLE_PRESS_PDFS: list[dict[str, str]] = [
     # 埼玉県 株式会社MOM (こどもプラス東松山教室 + 坂戸教室)
-    {"slug": "saitama-mom-258270", "authority": "埼玉県",
-     "url": "https://www.pref.saitama.lg.jp/documents/258270/news2024090601.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
+    {
+        "slug": "saitama-mom-258270",
+        "authority": "埼玉県",
+        "url": "https://www.pref.saitama.lg.jp/documents/258270/news2024090601.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
     # 東京都 ファミリエ つむぎ 取消
-    {"slug": "tokyo-press-04-01-528", "authority": "東京都",
-     "url": "https://www.metro.tokyo.lg.jp/documents/d/tosei/04_01_528",
-     "format": "press_pdf", "default_law": "児童福祉法"},
+    {
+        "slug": "tokyo-press-04-01-528",
+        "authority": "東京都",
+        "url": "https://www.metro.tokyo.lg.jp/documents/d/tosei/04_01_528",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
     # 横浜市 障害児通所支援 取消 (2025-03-28 PDF)
-    {"slug": "yokohama-0001-20250326", "authority": "横浜市",
-     "url": "https://www.city.yokohama.lg.jp/city-info/koho-kocho/press/kodomo/2024/0328syogaiji.files/0001_20250326.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
+    {
+        "slug": "yokohama-0001-20250326",
+        "authority": "横浜市",
+        "url": "https://www.city.yokohama.lg.jp/city-info/koho-kocho/press/kodomo/2024/0328syogaiji.files/0001_20250326.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
     # 横浜市 障害児通所支援 取消 (2024-10-28 PDF; href 推定)
-    {"slug": "yokohama-1028", "authority": "横浜市",
-     "url": "https://www.city.yokohama.lg.jp/city-info/koho-kocho/press/kodomo/2024/1028syogaiji.files/0001.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
+    {
+        "slug": "yokohama-1028",
+        "authority": "横浜市",
+        "url": "https://www.city.yokohama.lg.jp/city-info/koho-kocho/press/kodomo/2024/1028syogaiji.files/0001.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
     # 鹿児島市 ジョイキッズ
-    {"slug": "kagoshima-r6-jpk", "authority": "鹿児島市",
-     "url": "https://www.city.kagoshima.lg.jp/kenkofukushi/fukushi/syofuku/kenko/fukushi/shogai/r6_gyouseishobun.html",
-     "format": "html_press", "default_law": "児童福祉法"},
+    {
+        "slug": "kagoshima-r6-jpk",
+        "authority": "鹿児島市",
+        "url": "https://www.city.kagoshima.lg.jp/kenkofukushi/fukushi/syofuku/kenko/fukushi/shogai/r6_gyouseishobun.html",
+        "format": "html_press",
+        "default_law": "児童福祉法",
+    },
     # 柏市 障害児通所支援 行政処分
-    {"slug": "kashiwa-r06032502", "authority": "柏市",
-     "url": "https://www.city.kashiwa.lg.jp/koho/pressrelease/r5houdou/3gatsu/r06032502.html",
-     "format": "html_press", "default_law": "児童福祉法"},
+    {
+        "slug": "kashiwa-r06032502",
+        "authority": "柏市",
+        "url": "https://www.city.kashiwa.lg.jp/koho/pressrelease/r5houdou/3gatsu/r06032502.html",
+        "format": "html_press",
+        "default_law": "児童福祉法",
+    },
     # 新潟市 個別 PDFs
-    {"slug": "niigata-20220228", "authority": "新潟市",
-     "url": "https://www.city.niigata.lg.jp/iryo/shofuku/syogaiservice/gyoseishobun.files/20220228.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "niigata-torikeshi07", "authority": "新潟市",
-     "url": "https://www.city.niigata.lg.jp/iryo/shofuku/syogaiservice/gyoseishobun.files/torikeshi07.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "niigata-torikeshi04", "authority": "新潟市",
-     "url": "https://www.city.niigata.lg.jp/iryo/shofuku/syogaiservice/gyoseishobun.files/torikeshi04.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "niigata-torikeshi03", "authority": "新潟市",
-     "url": "https://www.city.niigata.lg.jp/iryo/shofuku/syogaiservice/gyoseishobun.files/torikeshi03.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
-    {"slug": "niigata-20171215", "authority": "新潟市",
-     "url": "https://www.city.niigata.lg.jp/iryo/shofuku/syogaiservice/gyoseishobun.files/20171215gyoseishobun.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
+    {
+        "slug": "niigata-20220228",
+        "authority": "新潟市",
+        "url": "https://www.city.niigata.lg.jp/iryo/shofuku/syogaiservice/gyoseishobun.files/20220228.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "niigata-torikeshi07",
+        "authority": "新潟市",
+        "url": "https://www.city.niigata.lg.jp/iryo/shofuku/syogaiservice/gyoseishobun.files/torikeshi07.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "niigata-torikeshi04",
+        "authority": "新潟市",
+        "url": "https://www.city.niigata.lg.jp/iryo/shofuku/syogaiservice/gyoseishobun.files/torikeshi04.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "niigata-torikeshi03",
+        "authority": "新潟市",
+        "url": "https://www.city.niigata.lg.jp/iryo/shofuku/syogaiservice/gyoseishobun.files/torikeshi03.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "niigata-20171215",
+        "authority": "新潟市",
+        "url": "https://www.city.niigata.lg.jp/iryo/shofuku/syogaiservice/gyoseishobun.files/20171215gyoseishobun.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
     # 横浜市 2021 障害児通所支援 指定取消
-    {"slug": "yokohama-0006-20210721", "authority": "横浜市",
-     "url": "https://www.city.yokohama.lg.jp/city-info/koho-kocho/press/kodomo/2021/gyouseisyobun.files/0006_20210721.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
+    {
+        "slug": "yokohama-0006-20210721",
+        "authority": "横浜市",
+        "url": "https://www.city.yokohama.lg.jp/city-info/koho-kocho/press/kodomo/2021/gyouseisyobun.files/0006_20210721.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
     # 千葉県 2020 わたぼうし (社福博和会)
-    {"slug": "chiba-watabousi-2020", "authority": "千葉県",
-     "url": "https://www.pref.chiba.lg.jp/shoji/press/2020/watabousi_jidou.html",
-     "format": "html_press", "default_law": "児童福祉法"},
+    {
+        "slug": "chiba-watabousi-2020",
+        "authority": "千葉県",
+        "url": "https://www.pref.chiba.lg.jp/shoji/press/2020/watabousi_jidou.html",
+        "format": "html_press",
+        "default_law": "児童福祉法",
+    },
     # 千葉県 2020 みつば (株式会社GoodDay)
-    {"slug": "chiba-mituba-2020", "authority": "千葉県",
-     "url": "https://www.pref.chiba.lg.jp/shoji/press/2020/mituba.html",
-     "format": "html_press", "default_law": "児童福祉法"},
+    {
+        "slug": "chiba-mituba-2020",
+        "authority": "千葉県",
+        "url": "https://www.pref.chiba.lg.jp/shoji/press/2020/mituba.html",
+        "format": "html_press",
+        "default_law": "児童福祉法",
+    },
     # 千葉県 2018 障害児通所支援 (HTML)
-    {"slug": "chiba-syobun2-2018", "authority": "千葉県",
-     "url": "https://www.pref.chiba.lg.jp/shoji/ryouiku/syobun2.html",
-     "format": "html_press", "default_law": "児童福祉法"},
+    {
+        "slug": "chiba-syobun2-2018",
+        "authority": "千葉県",
+        "url": "https://www.pref.chiba.lg.jp/shoji/ryouiku/syobun2.html",
+        "format": "html_press",
+        "default_law": "児童福祉法",
+    },
     # 千葉県 2019 障害児通所支援 (HTML)
-    {"slug": "chiba-syobun-2019", "authority": "千葉県",
-     "url": "https://www.pref.chiba.lg.jp/shoji/ryouiku/syobun.html",
-     "format": "html_press", "default_law": "児童福祉法"},
+    {
+        "slug": "chiba-syobun-2019",
+        "authority": "千葉県",
+        "url": "https://www.pref.chiba.lg.jp/shoji/ryouiku/syobun.html",
+        "format": "html_press",
+        "default_law": "児童福祉法",
+    },
     # 茨城県 認可外保育施設 事業停止命令 (キッズスペースnino, 古河の託児所ピコ)
-    {"slug": "ibaraki-nino-2021", "authority": "茨城県",
-     "url": "https://www.pref.ibaraki.jp/hokenfukushi/kodomo/hoiku/20210816press_release.html",
-     "format": "html_press", "default_law": "児童福祉法"},
-    {"slug": "ibaraki-pico-2022", "authority": "茨城県",
-     "url": "https://www.pref.ibaraki.jp/hokenfukushi/kodomo/hoiku/r3ninkagai_kouhyou2.html",
-     "format": "html_press", "default_law": "児童福祉法"},
-    {"slug": "ibaraki-yuyuu-2022", "authority": "茨城県",
-     "url": "https://www.pref.ibaraki.jp/hokenfukushi/kodomo/hoiku/r4ninkagai_jigyouteishi.html",
-     "format": "html_press", "default_law": "児童福祉法"},
-    {"slug": "ibaraki-nino-pubonly", "authority": "茨城県",
-     "url": "https://www.pref.ibaraki.jp/hokenfukushi/kodomo/hoiku/ninkagai_kouhyou.html",
-     "format": "html_press", "default_law": "児童福祉法"},
+    {
+        "slug": "ibaraki-nino-2021",
+        "authority": "茨城県",
+        "url": "https://www.pref.ibaraki.jp/hokenfukushi/kodomo/hoiku/20210816press_release.html",
+        "format": "html_press",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "ibaraki-pico-2022",
+        "authority": "茨城県",
+        "url": "https://www.pref.ibaraki.jp/hokenfukushi/kodomo/hoiku/r3ninkagai_kouhyou2.html",
+        "format": "html_press",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "ibaraki-yuyuu-2022",
+        "authority": "茨城県",
+        "url": "https://www.pref.ibaraki.jp/hokenfukushi/kodomo/hoiku/r4ninkagai_jigyouteishi.html",
+        "format": "html_press",
+        "default_law": "児童福祉法",
+    },
+    {
+        "slug": "ibaraki-nino-pubonly",
+        "authority": "茨城県",
+        "url": "https://www.pref.ibaraki.jp/hokenfukushi/kodomo/hoiku/ninkagai_kouhyou.html",
+        "format": "html_press",
+        "default_law": "児童福祉法",
+    },
     # 岐阜県 R1 合同会社日野 (このき羽島校)
-    {"slug": "gifu-hino-r1", "authority": "岐阜県",
-     "url": "https://www.pref.gifu.lg.jp/uploaded/attachment/151604.pdf",
-     "format": "press_pdf", "default_law": "児童福祉法"},
+    {
+        "slug": "gifu-hino-r1",
+        "authority": "岐阜県",
+        "url": "https://www.pref.gifu.lg.jp/uploaded/attachment/151604.pdf",
+        "format": "press_pdf",
+        "default_law": "児童福祉法",
+    },
 ]
 
 
@@ -371,9 +584,7 @@ def _extract_law_ref(text: str, default_law: str | None) -> str | None:
             art += m.group(2)
         parts.append(art)
     if not parts:
-        if default_law and (
-            "保育" in s or "児童" in s or "こども" in s or "子ども" in s
-        ):
+        if default_law and ("保育" in s or "児童" in s or "こども" in s or "子ども" in s):
             m = ARTICLE_NEAR_RE.search(s)
             if m:
                 art = f"{default_law} 第{m.group(1)}条"
@@ -395,17 +606,37 @@ def _classify_kind(text: str) -> str:
         return "other"
     s = _normalize(text)
     # 取消 系列
-    if any(k in s for k in (
-        "指定取消", "指定の取消", "指定取り消し", "認可取消", "認可の取消",
-        "確認取消", "確認の取消", "認定取消", "認定の取消"
-    )):
+    if any(
+        k in s
+        for k in (
+            "指定取消",
+            "指定の取消",
+            "指定取り消し",
+            "認可取消",
+            "認可の取消",
+            "確認取消",
+            "確認の取消",
+            "認定取消",
+            "認定の取消",
+        )
+    ):
         return "license_revoke"
     # 停止 / 閉鎖 / 改善 系列
-    if any(k in s for k in (
-        "効力の停止", "効力停止", "業務停止", "事業停止",
-        "施設閉鎖", "閉鎖命令", "業務改善命令", "改善命令",
-        "受入停止", "受入れ停止"
-    )):
+    if any(
+        k in s
+        for k in (
+            "効力の停止",
+            "効力停止",
+            "業務停止",
+            "事業停止",
+            "施設閉鎖",
+            "閉鎖命令",
+            "業務改善命令",
+            "改善命令",
+            "受入停止",
+            "受入れ停止",
+        )
+    ):
         return "business_improvement"
     if "改善勧告" in s or "公表" in s and "改善" in s:
         return "other"
@@ -576,7 +807,7 @@ def parse_press_pdf(
     for keyword in ("不正請求", "返還額", "不正受給", "過大請求", "加算返還"):
         idx = norm.find(keyword)
         if idx != -1:
-            amount = _extract_amount(norm[idx: idx + 400])
+            amount = _extract_amount(norm[idx : idx + 400])
             if amount is not None:
                 break
     if amount is None:
@@ -592,20 +823,22 @@ def parse_press_pdf(
         if facility_name not in target_name:
             final_name = f"{target_name} / {facility_name}"
 
-    return [EnfRow(
-        target_name=final_name[:200],
-        location=None,
-        issuance_date=issuance,
-        related_law_ref=law_ref,
-        reason_summary=reason_summary[:4000],
-        enforcement_kind=kind,
-        amount_yen=amount,
-        facility_name=facility_name,
-        extras={
-            "format": "press_pdf",
-            "source_url": source_url,
-        },
-    )]
+    return [
+        EnfRow(
+            target_name=final_name[:200],
+            location=None,
+            issuance_date=issuance,
+            related_law_ref=law_ref,
+            reason_summary=reason_summary[:4000],
+            enforcement_kind=kind,
+            amount_yen=amount,
+            facility_name=facility_name,
+            extras={
+                "format": "press_pdf",
+                "source_url": source_url,
+            },
+        )
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -662,27 +895,28 @@ def parse_fukuoka_table_pdf(
                             continue
                         seen_in_pdf.add(key)
                         reason_blob = (
-                            f"[{kind_text}] サービス={service} / "
-                            f"事業所={facility} / 所在地={loc}"
+                            f"[{kind_text}] サービス={service} / 事業所={facility} / 所在地={loc}"
                         )
-                        rows.append(EnfRow(
-                            target_name=tn,
-                            location=loc or provider_addr or None,
-                            issuance_date=date_iso,
-                            related_law_ref=_extract_law_ref(
-                                kind_text + " " + service, default_law
-                            ),
-                            reason_summary=reason_blob[:4000],
-                            enforcement_kind=_classify_kind(kind_text),
-                            amount_yen=None,
-                            facility_name=facility or None,
-                            extras={
-                                "format": "fukuoka_table_pdf",
-                                "service_type": service,
-                                "provider_addr": provider_addr,
-                                "kind_text": kind_text,
-                            },
-                        ))
+                        rows.append(
+                            EnfRow(
+                                target_name=tn,
+                                location=loc or provider_addr or None,
+                                issuance_date=date_iso,
+                                related_law_ref=_extract_law_ref(
+                                    kind_text + " " + service, default_law
+                                ),
+                                reason_summary=reason_blob[:4000],
+                                enforcement_kind=_classify_kind(kind_text),
+                                amount_yen=None,
+                                facility_name=facility or None,
+                                extras={
+                                    "format": "fukuoka_table_pdf",
+                                    "service_type": service,
+                                    "provider_addr": provider_addr,
+                                    "kind_text": kind_text,
+                                },
+                            )
+                        )
     except Exception as exc:  # noqa: BLE001
         _LOG.warning("fukuoka table pdf parse failed %s: %s", source_url, exc)
     return rows
@@ -714,11 +948,9 @@ def parse_aomori_slide_pdf(
     for idx, m in enumerate(matches):
         seg_start = m.start()
         seg_end = matches[idx + 1].start() if idx + 1 < len(matches) else len(full)
-        seg = full[seg_start: seg_end]
+        seg = full[seg_start:seg_end]
         # Date (era-based, just at the matched header) — use header date
-        head_date_m = re.search(
-            r"(平成|令和)\s*(\d+|元)\s*年\s*(\d+)\s*月", seg[:80]
-        )
+        head_date_m = re.search(r"(平成|令和)\s*(\d+|元)\s*年\s*(\d+)\s*月", seg[:80])
         if not head_date_m:
             continue
         era = head_date_m.group(1)
@@ -742,7 +974,7 @@ def parse_aomori_slide_pdf(
         for kw in ("不正請求額", "返還額", "過大請求", "不正受給"):
             i = seg.find(kw)
             if i != -1:
-                amount = _extract_amount(seg[i: i + 200])
+                amount = _extract_amount(seg[i : i + 200])
                 if amount is not None:
                     break
         # Skip cases that don't reference 児童福祉法 (本ingestのscope外).
@@ -752,9 +984,7 @@ def parse_aomori_slide_pdf(
         # Provider name attempt — Aomori slides 上記事例で法人名が匿名化されている
         # ことが多い。コロン後の値を厳密に取る (タイトル文字列が prefix なし
         # で混入するのを避ける)。
-        prov_m = re.search(
-            r"(?:事業者(?:名)?|法\s*人\s*名)\s*[:：][\s　]*([^\n（(]{2,80})", seg
-        )
+        prov_m = re.search(r"(?:事業者(?:名)?|法\s*人\s*名)\s*[:：][\s　]*([^\n（(]{2,80})", seg)
         target: str | None = None
         if prov_m:
             cand = prov_m.group(1).strip()
@@ -775,21 +1005,23 @@ def parse_aomori_slide_pdf(
         # If no 児童福祉法 article extracted, the segment talks about 児童福祉法
         # somewhere but the regex didn't fire — keep '児童福祉法' bare.
         reason = seg.replace("\n", " ")[:600]
-        rows.append(EnfRow(
-            target_name=target,
-            location=None,
-            issuance_date=issuance,
-            related_law_ref=law_ref,
-            reason_summary=reason[:4000],
-            enforcement_kind=_classify_kind(kind_text),
-            amount_yen=amount,
-            facility_name=None,
-            extras={
-                "format": "aomori_slide_pdf",
-                "service_type": service,
-                "kind_text": kind_text,
-            },
-        ))
+        rows.append(
+            EnfRow(
+                target_name=target,
+                location=None,
+                issuance_date=issuance,
+                related_law_ref=law_ref,
+                reason_summary=reason[:4000],
+                enforcement_kind=_classify_kind(kind_text),
+                amount_yen=amount,
+                facility_name=None,
+                extras={
+                    "format": "aomori_slide_pdf",
+                    "service_type": service,
+                    "kind_text": kind_text,
+                },
+            )
+        )
     return rows
 
 
@@ -882,7 +1114,7 @@ def parse_html_press(
     for keyword in ("不正請求", "返還額", "不正受給", "過大請求"):
         idx = text.find(keyword)
         if idx != -1:
-            amount = _extract_amount(text[idx: idx + 400])
+            amount = _extract_amount(text[idx : idx + 400])
             if amount is not None:
                 break
     if amount is None:
@@ -893,17 +1125,19 @@ def parse_html_press(
     if facility and facility not in target_name and len(target_name) + len(facility) <= 180:
         final_name = f"{target_name} / {facility}"
 
-    return [EnfRow(
-        target_name=final_name[:200],
-        location=None,
-        issuance_date=issuance,
-        related_law_ref=law_ref,
-        reason_summary=reason_summary[:4000],
-        enforcement_kind=kind,
-        amount_yen=amount,
-        facility_name=facility,
-        extras={"format": "html_press"},
-    )]
+    return [
+        EnfRow(
+            target_name=final_name[:200],
+            location=None,
+            issuance_date=issuance,
+            related_law_ref=law_ref,
+            reason_summary=reason_summary[:4000],
+            enforcement_kind=kind,
+            amount_yen=amount,
+            facility_name=facility,
+            extras={"format": "html_press"},
+        )
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -930,18 +1164,13 @@ def ensure_tables(conn: sqlite3.Connection) -> None:
             (tbl,),
         ).fetchone()
         if not row:
-            raise SystemExit(
-                f"missing table '{tbl}' — apply migrations first"
-            )
+            raise SystemExit(f"missing table '{tbl}' — apply migrations first")
 
 
-def existing_dedup_keys(
-    conn: sqlite3.Connection, authority: str
-) -> set[tuple[str, str]]:
+def existing_dedup_keys(conn: sqlite3.Connection, authority: str) -> set[tuple[str, str]]:
     out: set[tuple[str, str]] = set()
     for n, d in conn.execute(
-        "SELECT target_name, issuance_date FROM am_enforcement_detail "
-        "WHERE issuing_authority=?",
+        "SELECT target_name, issuance_date FROM am_enforcement_detail WHERE issuing_authority=?",
         (authority,),
     ).fetchall():
         if n and d:
@@ -1032,40 +1261,39 @@ def insert_enforcement(
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--db", type=Path, default=DEFAULT_DB)
-    ap.add_argument("--limit", type=int, default=None,
-                    help="cap total inserts (debugging)")
+    ap.add_argument("--limit", type=int, default=None, help="cap total inserts (debugging)")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--verbose", "-v", action="store_true")
-    ap.add_argument("--max-sources", type=int, default=None,
-                    help="cap number of sources walked (debugging)")
+    ap.add_argument(
+        "--max-sources", type=int, default=None, help="cap number of sources walked (debugging)"
+    )
     return ap.parse_args(argv)
 
 
-def fetch_and_parse(
-    http: HttpClient, src: dict[str, str]
-) -> list[EnfRow]:
+def fetch_and_parse(http: HttpClient, src: dict[str, str]) -> list[EnfRow]:
     url = src["url"]
     fmt = src["format"]
     res = http.get(url, max_bytes=15 * 1024 * 1024)
     if not res.ok:
-        _LOG.warning("[%s] fetch fail status=%s url=%s",
-                     src["slug"], res.status, url)
+        _LOG.warning("[%s] fetch fail status=%s url=%s", src["slug"], res.status, url)
         return []
     body = res.body
     default_law = src.get("default_law") or "児童福祉法"
     authority = src["authority"]
     if fmt == "press_pdf":
-        return parse_press_pdf(body, authority=authority,
-                               default_law=default_law, source_url=url)
+        return parse_press_pdf(body, authority=authority, default_law=default_law, source_url=url)
     if fmt == "fukuoka_table_pdf":
-        return parse_fukuoka_table_pdf(body, authority=authority,
-                                       default_law=default_law, source_url=url)
+        return parse_fukuoka_table_pdf(
+            body, authority=authority, default_law=default_law, source_url=url
+        )
     if fmt == "aomori_slide_pdf":
-        return parse_aomori_slide_pdf(body, authority=authority,
-                                      default_law=default_law, source_url=url)
+        return parse_aomori_slide_pdf(
+            body, authority=authority, default_law=default_law, source_url=url
+        )
     if fmt == "html_press":
-        return parse_html_press(res.text, authority=authority,
-                                default_law=default_law, source_url=url)
+        return parse_html_press(
+            res.text, authority=authority, default_law=default_law, source_url=url
+        )
     _LOG.warning("[%s] unknown format=%s", src["slug"], fmt)
     return []
 
@@ -1078,9 +1306,7 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     http = HttpClient(user_agent=USER_AGENT)
-    now_iso = datetime.now(UTC).isoformat(timespec="seconds").replace(
-        "+00:00", "Z"
-    )
+    now_iso = datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
 
     conn: sqlite3.Connection | None = None
     if not args.dry_run:
@@ -1104,9 +1330,7 @@ def main(argv: list[str] | None = None) -> int:
     by_law: dict[str, int] = {}
     sample_rows: list[dict[str, str | int | None]] = []
 
-    sources: list[dict[str, str]] = (
-        OSAKA_PRESS_PDFS + CUMULATIVE_PDFS + SINGLE_PRESS_PDFS
-    )
+    sources: list[dict[str, str]] = OSAKA_PRESS_PDFS + CUMULATIVE_PDFS + SINGLE_PRESS_PDFS
     if args.max_sources:
         sources = sources[: args.max_sources]
 
@@ -1123,25 +1347,25 @@ def main(argv: list[str] | None = None) -> int:
         rows = fetch_and_parse(http, src)
         if not rows:
             stats["sources_failed"] += 1
-            _LOG.info("[%s] no rows (authority=%s url=%s)",
-                      slug, authority, src["url"])
+            _LOG.info("[%s] no rows (authority=%s url=%s)", slug, authority, src["url"])
             continue
         stats["sources_fetched"] += 1
         stats["rows_parsed"] += len(rows)
-        _LOG.info("[%s] parsed=%d (authority=%s)",
-                  slug, len(rows), authority)
+        _LOG.info("[%s] parsed=%d (authority=%s)", slug, len(rows), authority)
 
         if conn is None:
             for r in rows[:3]:
-                sample_rows.append({
-                    "authority": authority,
-                    "target_name": r.target_name,
-                    "issuance_date": r.issuance_date,
-                    "kind": r.enforcement_kind,
-                    "law": r.related_law_ref,
-                    "amount": r.amount_yen,
-                    "reason": (r.reason_summary or "")[:120],
-                })
+                sample_rows.append(
+                    {
+                        "authority": authority,
+                        "target_name": r.target_name,
+                        "issuance_date": r.issuance_date,
+                        "kind": r.enforcement_kind,
+                        "law": r.related_law_ref,
+                        "amount": r.amount_yen,
+                        "reason": (r.reason_summary or "")[:120],
+                    }
+                )
             continue
 
         if authority not in auth_dedup_cache:
@@ -1164,12 +1388,9 @@ def main(argv: list[str] | None = None) -> int:
                 batch_keys.add(key)
                 db_keys.add(key)
 
-                canonical_id = _entity_canonical_id(
-                    authority, r.target_name, r.issuance_date
-                )
+                canonical_id = _entity_canonical_id(authority, r.target_name, r.issuance_date)
                 primary_name = (
-                    f"{r.target_name} ({r.issuance_date}) — "
-                    f"{authority} {r.enforcement_kind}"
+                    f"{r.target_name} ({r.issuance_date}) — {authority} {r.enforcement_kind}"
                 )
                 raw_json = json.dumps(
                     {
@@ -1191,8 +1412,7 @@ def main(argv: list[str] | None = None) -> int:
                     ensure_ascii=False,
                 )
                 try:
-                    upsert_entity(conn, canonical_id, primary_name,
-                                  src["url"], raw_json, now_iso)
+                    upsert_entity(conn, canonical_id, primary_name, src["url"], raw_json, now_iso)
                     insert_enforcement(
                         conn=conn,
                         entity_id=canonical_id,
@@ -1214,19 +1434,24 @@ def main(argv: list[str] | None = None) -> int:
                         primary_law = "(unknown)"
                     by_law[primary_law] = by_law.get(primary_law, 0) + 1
                     if len(sample_rows) < 5:
-                        sample_rows.append({
-                            "authority": authority,
-                            "target_name": r.target_name,
-                            "issuance_date": r.issuance_date,
-                            "kind": r.enforcement_kind,
-                            "law": r.related_law_ref,
-                            "amount": r.amount_yen,
-                            "reason": (r.reason_summary or "")[:140],
-                        })
+                        sample_rows.append(
+                            {
+                                "authority": authority,
+                                "target_name": r.target_name,
+                                "issuance_date": r.issuance_date,
+                                "kind": r.enforcement_kind,
+                                "law": r.related_law_ref,
+                                "amount": r.amount_yen,
+                                "reason": (r.reason_summary or "")[:140],
+                            }
+                        )
                 except sqlite3.Error as exc:
                     _LOG.error(
                         "[%s] DB error name=%r date=%s: %s",
-                        slug, r.target_name, r.issuance_date, exc,
+                        slug,
+                        r.target_name,
+                        r.issuance_date,
+                        exc,
                     )
                     continue
             conn.commit()
@@ -1246,11 +1471,13 @@ def main(argv: list[str] | None = None) -> int:
             pass
 
     _LOG.info(
-        "done sources_ok=%d sources_fail=%d parsed=%d inserted=%d "
-        "dup_db=%d dup_batch=%d",
-        stats["sources_fetched"], stats["sources_failed"],
-        stats["rows_parsed"], stats["rows_inserted"],
-        stats["rows_dup_in_db"], stats["rows_dup_in_batch"],
+        "done sources_ok=%d sources_fail=%d parsed=%d inserted=%d dup_db=%d dup_batch=%d",
+        stats["sources_fetched"],
+        stats["sources_failed"],
+        stats["rows_parsed"],
+        stats["rows_inserted"],
+        stats["rows_dup_in_db"],
+        stats["rows_dup_in_batch"],
     )
     print("=== SUMMARY ===")
     print(f"total_inserted: {stats['rows_inserted']}")

@@ -7,6 +7,12 @@
     "consumed_by": "verify_migration_targets.py",
     "constraint_footer": "LLM API 0, paid 0, work-hour phase 0"
   },
+  "_slug_overrides": {
+    "programs_source_verified_at": "jpintel",
+    "programs_jsic": "jpintel",
+    "jpi_programs_jsic": "autonomath"
+  },
+  "_slug_exemptions": [],
   "autonomath": {
     "forbidden": [
       "programs",
@@ -23,7 +29,6 @@
       "enforcement_cases"
     ],
     "forbidden_prefixes": [
-      "jpi_",
       "audit_seal_",
       "compliance_",
       "subscribers_",

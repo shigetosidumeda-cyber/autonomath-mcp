@@ -34,6 +34,7 @@ Dry-run by default. ``--apply`` actually writes. All writes run in a single
 transaction. After applying, rerun ``scripts/url_integrity_scan.py`` and it
 should exit 0.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -101,8 +102,8 @@ COLUMN_PATCHES: list[tuple[str, str, str, str]] = [
     (
         "UNI-81c7fb2813",
         "enriched_json",
-        "https://w\"",
-        "https://www.pref.tottori.lg.jp/64862.htm\\\"",
+        'https://w"',
+        'https://www.pref.tottori.lg.jp/64862.htm\\"',
     ),
     # UNI-d8aa2870e3 — fullwidth slash in brochure excerpt. Normalize to
     # halfwidth slash + space so ``FOLLOW`` stays part of the surrounding
@@ -117,9 +118,7 @@ COLUMN_PATCHES: list[tuple[str, str, str, str]] = [
 
 
 def _fetch_value(con: sqlite3.Connection, uid: str, column: str) -> Any:
-    row = con.execute(
-        f"SELECT {column} FROM programs WHERE unified_id = ?", (uid,)
-    ).fetchone()
+    row = con.execute(f"SELECT {column} FROM programs WHERE unified_id = ?", (uid,)).fetchone()
     if row is None:
         return None
     return row[0]
@@ -185,9 +184,7 @@ def run(db_path: str, apply: bool) -> int:
         try:
             # Bookkeeping column, idempotent.
             if not _column_exists(con, "programs", "source_url_corrected_at"):
-                con.execute(
-                    "ALTER TABLE programs ADD COLUMN source_url_corrected_at TEXT;"
-                )
+                con.execute("ALTER TABLE programs ADD COLUMN source_url_corrected_at TEXT;")
 
             for uid, col, _before, _after in planned:
                 current = _fetch_value(con, uid, col)
@@ -212,12 +209,8 @@ def run(db_path: str, apply: bool) -> int:
             raise
 
         print()
-        print(
-            f"APPLIED {len(planned)} patch(es). source_url_corrected_at = {corrected_at}"
-        )
-        print(
-            "Next: run `uv run python scripts/url_integrity_scan.py` and confirm exit 0."
-        )
+        print(f"APPLIED {len(planned)} patch(es). source_url_corrected_at = {corrected_at}")
+        print("Next: run `uv run python scripts/url_integrity_scan.py` and confirm exit 0.")
         return 0
     finally:
         con.close()

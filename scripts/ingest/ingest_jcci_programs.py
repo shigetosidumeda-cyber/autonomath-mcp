@@ -24,6 +24,7 @@ Usage:
     .venv/bin/python scripts/ingest/ingest_jcci_programs.py
     .venv/bin/python scripts/ingest/ingest_jcci_programs.py --dry-run
 """
+
 from __future__ import annotations
 
 import argparse
@@ -1291,9 +1292,7 @@ def upsert_program(
 
     con.execute("BEGIN IMMEDIATE")
     try:
-        prev = con.execute(
-            "SELECT excluded FROM programs WHERE unified_id = ?", (uid,)
-        ).fetchone()
+        prev = con.execute("SELECT excluded FROM programs WHERE unified_id = ?", (uid,)).fetchone()
 
         if prev is None:
             con.execute(
@@ -1461,7 +1460,12 @@ def main() -> int:
     con.close()
 
     _LOG.info("done counts=%s tier_dist=%s", counts, tier_dist)
-    print(json.dumps({"counts": counts, "tier_dist": tier_dist, "total_curated": len(rows)}, ensure_ascii=False))
+    print(
+        json.dumps(
+            {"counts": counts, "tier_dist": tier_dist, "total_curated": len(rows)},
+            ensure_ascii=False,
+        )
+    )
     return 0
 
 

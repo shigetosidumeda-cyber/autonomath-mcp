@@ -53,6 +53,7 @@ CLI:
         [--db autonomath.db] [--limit-pages N] [--skip-koeki] \\
         [--dry-run] [--verbose]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -86,19 +87,15 @@ USER_AGENT = (
 
 NPO_PORTAL_BASE = "https://www.npo-homepage.go.jp"
 NPO_TYPELIST7 = NPO_PORTAL_BASE + "/npoportal/publication/typelist/7"
-KOEKI_KANKOKU_INDEX = (
-    "https://www.koeki-info.go.jp/activities/brp3ihpgyj.html"
-)
+KOEKI_KANKOKU_INDEX = "https://www.koeki-info.go.jp/activities/brp3ihpgyj.html"
 
 # typelist 種別 -> (enforcement_kind, law_basis_label)
 # Derived from cancel/{n}/{id} segment of detail URLs in the row.
 NPO_CANCEL_TYPES: dict[int, tuple[str, str]] = {
     # 'authority required' / 改善命令 by court  : 改善命令違反による取消
-    9: ("license_revoke",
-        "特定非営利活動促進法第43条1項（改善命令違反による認証取消）"),
+    9: ("license_revoke", "特定非営利活動促進法第43条1項（改善命令違反による認証取消）"),
     # 事業報告書の未提出による取消 (法第43条1項)
-    10: ("license_revoke",
-         "特定非営利活動促進法第43条1項（事業報告書未提出による認証取消）"),
+    10: ("license_revoke", "特定非営利活動促進法第43条1項（事業報告書未提出による認証取消）"),
     # 一般取消 (例: 法人格喪失要件該当 / 設立要件不適合 等)
     1: ("license_revoke", "特定非営利活動促進法第43条1項（認証取消）"),
     2: ("license_revoke", "特定非営利活動促進法第43条1項（認証取消）"),
@@ -117,9 +114,7 @@ NPO_CANCEL_TYPES: dict[int, tuple[str, str]] = {
 # ---------------------------------------------------------------------------
 
 DATE_RE = re.compile(r"(\d{4})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日")
-WAREKI_RE = re.compile(
-    r"(令和|平成|R)\s*(\d+|元)\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日"
-)
+WAREKI_RE = re.compile(r"(令和|平成|R)\s*(\d+|元)\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日")
 ERA_OFFSET = {"令和": 2018, "R": 2018, "平成": 1988, "H": 1988}
 
 
@@ -159,13 +154,13 @@ def parse_date(text: str) -> str | None:
 @dataclass
 class EnfRow:
     target_name: str
-    enforcement_kind: str            # license_revoke | business_improvement | other
-    issuing_authority: str           # 所轄庁 / 内閣府公益認定等委員会
-    issuance_date: str               # ISO yyyy-mm-dd
+    enforcement_kind: str  # license_revoke | business_improvement | other
+    issuing_authority: str  # 所轄庁 / 内閣府公益認定等委員会
+    issuance_date: str  # ISO yyyy-mm-dd
     reason_summary: str
     related_law_ref: str
     source_url: str
-    corp_form: str                   # NPO法人 | 公益社団法人 | 公益財団法人
+    corp_form: str  # NPO法人 | 公益社団法人 | 公益財団法人
     extra: dict | None = None
 
 
@@ -174,9 +169,7 @@ class EnfRow:
 # ---------------------------------------------------------------------------
 
 
-CANCEL_HREF_RE = re.compile(
-    r"/npoportal/publication/typelist/cancel/(\d+)/(\d+)"
-)
+CANCEL_HREF_RE = re.compile(r"/npoportal/publication/typelist/cancel/(\d+)/(\d+)")
 
 
 def _parse_npo_row(cols: list[str], href: str) -> EnfRow | None:
@@ -195,8 +188,7 @@ def _parse_npo_row(cols: list[str], href: str) -> EnfRow | None:
     cancel_type = int(m.group(1)) if m else 1
     kind, law_basis = NPO_CANCEL_TYPES.get(
         cancel_type,
-        ("license_revoke",
-         "特定非営利活動促進法第43条1項（認証取消）"),
+        ("license_revoke", "特定非営利活動促進法第43条1項（認証取消）"),
     )
 
     if cancel_type == 9:
@@ -226,7 +218,9 @@ def _parse_npo_row(cols: list[str], href: str) -> EnfRow | None:
 
 
 def harvest_npo(
-    *, max_pages: int | None = None, verbose: bool = False,
+    *,
+    max_pages: int | None = None,
+    verbose: bool = False,
     rotate_every: int = 20,
 ) -> list[EnfRow]:
     """Scrape https://www.npo-homepage.go.jp/npoportal/publication/typelist/7.
@@ -239,9 +233,10 @@ def harvest_npo(
     try:
         from playwright.sync_api import sync_playwright  # type: ignore
     except ImportError as exc:
-        _LOG.error("playwright not installed: %s "
-                   "(pip install playwright && playwright install chromium)",
-                   exc)
+        _LOG.error(
+            "playwright not installed: %s (pip install playwright && playwright install chromium)",
+            exc,
+        )
         return []
 
     out: list[EnfRow] = []
@@ -269,7 +264,8 @@ def harvest_npo(
         total_pages = min(int(total_pages), max_pages)
     _LOG.info(
         "[npo] scraping %d pages from typelist/7 (rotate_every=%d)",
-        total_pages, rotate_every,
+        total_pages,
+        rotate_every,
     )
 
     pg = 1
@@ -284,11 +280,9 @@ def harvest_npo(
                 for cur in range(pg, end_block + 1):
                     url = f"{NPO_TYPELIST7}?page={cur}"
                     try:
-                        page.goto(url, wait_until="domcontentloaded",
-                                  timeout=60000)
+                        page.goto(url, wait_until="domcontentloaded", timeout=60000)
                     except Exception as exc:
-                        _LOG.warning("[npo] page=%d goto failed: %s",
-                                     cur, exc)
+                        _LOG.warning("[npo] page=%d goto failed: %s", cur, exc)
                         continue
                     time.sleep(1.4)
                     rows = page.evaluate("""() => {
@@ -307,8 +301,8 @@ def harvest_npo(
                         title = page.title() or ""
                         if "403" in title or "ERROR" in title:
                             _LOG.warning(
-                                "[npo] WAF block detected at page=%d, "
-                                "rotating session early", cur,
+                                "[npo] WAF block detected at page=%d, rotating session early",
+                                cur,
                             )
                             # Restart this rotation block from cur after
                             # rotating session. Rewind end_block
@@ -321,18 +315,17 @@ def harvest_npo(
                             time.sleep(3)
                             break
                         else:
-                            _LOG.warning("[npo] page=%d zero rows (no WAF)",
-                                         cur)
+                            _LOG.warning("[npo] page=%d zero rows (no WAF)", cur)
                             continue
                     for r in rows:
                         parsed = _parse_npo_row(
-                            r.get("cols") or [], r.get("href") or "",
+                            r.get("cols") or [],
+                            r.get("href") or "",
                         )
                         if parsed:
                             out.append(parsed)
                     if cur % 20 == 0 or verbose:
-                        _LOG.info("[npo] progress %d/%d total_rows=%d",
-                                  cur, total_pages, len(out))
+                        _LOG.info("[npo] progress %d/%d total_rows=%d", cur, total_pages, len(out))
                 else:
                     pg = end_block + 1
                 try:
@@ -341,8 +334,9 @@ def harvest_npo(
                     pass
         except Exception as exc:
             _LOG.warning(
-                "[npo] rotation block start=%d err=%s, "
-                "sleeping 8s and retrying", pg, exc,
+                "[npo] rotation block start=%d err=%s, sleeping 8s and retrying",
+                pg,
+                exc,
             )
             time.sleep(8)
         # short cooldown between rotations
@@ -358,30 +352,73 @@ def harvest_npo(
 # (cross-checked with web fetch 2026-04-25). 12 cases total.
 # (date_iso, target_name, kind_label, pdf_url)
 KOEKI_KANKOKU_CASES: list[tuple[str, str, str, str]] = [
-    ("2016-04-22", "公益社団法人日本近代五種協会", "勧告",
-     "https://www.koeki-info.go.jp/activities/documents/xzf7htras1.pdf"),
-    ("2016-06-03", "公益財団法人日本生涯学習協議会", "勧告",
-     "https://www.koeki-info.go.jp/activities/"),
-    ("2016-07-22", "公益財団法人全国里親会", "勧告",
-     "https://www.koeki-info.go.jp/activities/"),
-    ("2019-06-05", "公益財団法人国際医学教育財団", "勧告",
-     "https://www.koeki-info.go.jp/activities/"),
-    ("2019-11-22", "公益財団法人日本プロスポーツ協会", "勧告",
-     "https://www.koeki-info.go.jp/activities/"),
-    ("2021-07-01", "公益財団法人国際人材育成機構", "勧告",
-     "https://www.koeki-info.go.jp/content/20210701_kankoku.pdf"),
-    ("2021-10-25", "公益財団法人国際人材育成機構", "勧告",
-     "https://www.koeki-info.go.jp/activities/"),
-    ("2024-12-25", "公益社団法人日本PTA全国協議会", "勧告",
-     "https://www.koeki-info.go.jp/activities/"),
-    ("2025-06-25", "公益社団法人日本駆け込み寺", "勧告",
-     "https://www.koeki-info.go.jp/activities/documents/rzt9qi9utv.pdf"),
-    ("2025-12-24", "公益財団法人日本サイクリング協会", "勧告",
-     "https://www.koeki-info.go.jp/activities/documents/mnn6fkfbqe.pdf"),
-    ("2025-12-24", "公益社団法人日本青伸会", "勧告",
-     "https://www.koeki-info.go.jp/activities/documents/xqnig16vfp.pdf"),
-    ("2026-02-17", "公益社団法人日本青伸会", "命令",
-     "https://www.koeki-info.go.jp/activities/documents/w4a5wlhz7n.pdf"),
+    (
+        "2016-04-22",
+        "公益社団法人日本近代五種協会",
+        "勧告",
+        "https://www.koeki-info.go.jp/activities/documents/xzf7htras1.pdf",
+    ),
+    (
+        "2016-06-03",
+        "公益財団法人日本生涯学習協議会",
+        "勧告",
+        "https://www.koeki-info.go.jp/activities/",
+    ),
+    ("2016-07-22", "公益財団法人全国里親会", "勧告", "https://www.koeki-info.go.jp/activities/"),
+    (
+        "2019-06-05",
+        "公益財団法人国際医学教育財団",
+        "勧告",
+        "https://www.koeki-info.go.jp/activities/",
+    ),
+    (
+        "2019-11-22",
+        "公益財団法人日本プロスポーツ協会",
+        "勧告",
+        "https://www.koeki-info.go.jp/activities/",
+    ),
+    (
+        "2021-07-01",
+        "公益財団法人国際人材育成機構",
+        "勧告",
+        "https://www.koeki-info.go.jp/content/20210701_kankoku.pdf",
+    ),
+    (
+        "2021-10-25",
+        "公益財団法人国際人材育成機構",
+        "勧告",
+        "https://www.koeki-info.go.jp/activities/",
+    ),
+    (
+        "2024-12-25",
+        "公益社団法人日本PTA全国協議会",
+        "勧告",
+        "https://www.koeki-info.go.jp/activities/",
+    ),
+    (
+        "2025-06-25",
+        "公益社団法人日本駆け込み寺",
+        "勧告",
+        "https://www.koeki-info.go.jp/activities/documents/rzt9qi9utv.pdf",
+    ),
+    (
+        "2025-12-24",
+        "公益財団法人日本サイクリング協会",
+        "勧告",
+        "https://www.koeki-info.go.jp/activities/documents/mnn6fkfbqe.pdf",
+    ),
+    (
+        "2025-12-24",
+        "公益社団法人日本青伸会",
+        "勧告",
+        "https://www.koeki-info.go.jp/activities/documents/xqnig16vfp.pdf",
+    ),
+    (
+        "2026-02-17",
+        "公益社団法人日本青伸会",
+        "命令",
+        "https://www.koeki-info.go.jp/activities/documents/w4a5wlhz7n.pdf",
+    ),
 ]
 
 
@@ -397,22 +434,13 @@ def harvest_koeki() -> list[EnfRow]:
     for date_iso, target, kind_label, pdf_url in KOEKI_KANKOKU_CASES:
         if kind_label == "勧告":
             kind = "other"
-            law = (
-                "公益社団法人及び公益財団法人の認定等に関する法律 第28条"
-                "（勧告）"
-            )
+            law = "公益社団法人及び公益財団法人の認定等に関する法律 第28条（勧告）"
         elif kind_label == "命令":
             kind = "business_improvement"
-            law = (
-                "公益社団法人及び公益財団法人の認定等に関する法律 第29条"
-                "（命令）"
-            )
+            law = "公益社団法人及び公益財団法人の認定等に関する法律 第29条（命令）"
         elif kind_label == "認定取消":
             kind = "license_revoke"
-            law = (
-                "公益社団法人及び公益財団法人の認定等に関する法律 第29条"
-                "（認定取消）"
-            )
+            law = "公益社団法人及び公益財団法人の認定等に関する法律 第29条（認定取消）"
         else:
             kind = "other"
             law = "公益社団法人及び公益財団法人の認定等に関する法律"
@@ -429,21 +457,23 @@ def harvest_koeki() -> list[EnfRow]:
             "公益認定等委員会から行政庁を経由した処分。"
             f"対象法人: {target}"
         )
-        out.append(EnfRow(
-            target_name=target[:200],
-            enforcement_kind=kind,
-            issuing_authority="内閣府公益認定等委員会",
-            issuance_date=date_iso,
-            reason_summary=reason[:1500],
-            related_law_ref=law[:1000],
-            source_url=pdf_url,
-            corp_form=corp_form,
-            extra={
-                "feed": "koeki_info_kankoku_jirei",
-                "kind_label": kind_label,
-                "index_url": KOEKI_KANKOKU_INDEX,
-            },
-        ))
+        out.append(
+            EnfRow(
+                target_name=target[:200],
+                enforcement_kind=kind,
+                issuing_authority="内閣府公益認定等委員会",
+                issuance_date=date_iso,
+                reason_summary=reason[:1500],
+                related_law_ref=law[:1000],
+                source_url=pdf_url,
+                corp_form=corp_form,
+                extra={
+                    "feed": "koeki_info_kankoku_jirei",
+                    "kind_label": kind_label,
+                    "index_url": KOEKI_KANKOKU_INDEX,
+                },
+            )
+        )
     return out
 
 
@@ -453,9 +483,7 @@ def harvest_koeki() -> list[EnfRow]:
 
 
 def _slug8(target: str, date: str, extra: str = "") -> str:
-    h = hashlib.sha1(
-        f"{target}|{date}|{extra}".encode("utf-8")
-    ).hexdigest()
+    h = hashlib.sha1(f"{target}|{date}|{extra}".encode("utf-8")).hexdigest()
     return h[:8]
 
 
@@ -466,9 +494,7 @@ def ensure_tables(conn: sqlite3.Connection) -> None:
             (tbl,),
         ).fetchone()
         if not row:
-            raise SystemExit(
-                f"missing table '{tbl}' — apply migrations first"
-            )
+            raise SystemExit(f"missing table '{tbl}' — apply migrations first")
 
 
 def existing_dedup_keys(
@@ -593,9 +619,7 @@ def write_rows(
                 else:
                     cid_prefix = "enforcement:koeki-kankoku"
                     source_topic = "koeki_kankoku_jirei"
-                canonical_id = (
-                    f"{cid_prefix}-{date_compact}-{slug}"
-                )
+                canonical_id = f"{cid_prefix}-{date_compact}-{slug}"
                 primary_name = (
                     f"{r.target_name} ({r.issuance_date}) - "
                     f"{r.related_law_ref.split('（', 1)[0].strip()} / "
@@ -613,17 +637,19 @@ def write_rows(
                         "source_url": r.source_url,
                         "extra": r.extra or {},
                         "source_attribution": r.issuing_authority,
-                        "license": (
-                            "政府機関の著作物（出典明記で転載引用可・"
-                            "PDL v1.0 相当）"
-                        ),
+                        "license": ("政府機関の著作物（出典明記で転載引用可・PDL v1.0 相当）"),
                     },
                     ensure_ascii=False,
                 )
                 try:
                     upsert_entity(
-                        conn, canonical_id, primary_name,
-                        r.source_url, raw_json, now_iso, source_topic,
+                        conn,
+                        canonical_id,
+                        primary_name,
+                        r.source_url,
+                        raw_json,
+                        now_iso,
+                        source_topic,
                     )
                     insert_enforcement(conn, canonical_id, r, now_iso)
                     inserted += 1
@@ -634,13 +660,17 @@ def write_rows(
                 except sqlite3.IntegrityError as exc:
                     _LOG.warning(
                         "integrity error name=%r date=%s: %s",
-                        r.target_name, r.issuance_date, exc,
+                        r.target_name,
+                        r.issuance_date,
+                        exc,
                     )
                     continue
                 except sqlite3.Error as exc:
                     _LOG.error(
                         "DB error name=%r date=%s: %s",
-                        r.target_name, r.issuance_date, exc,
+                        r.target_name,
+                        r.issuance_date,
+                        exc,
                     )
                     continue
             conn.commit()
@@ -652,8 +682,7 @@ def write_rows(
             except sqlite3.Error:
                 pass
             wait = 5 * (attempt + 1)
-            _LOG.warning("write contention attempt=%d wait=%ds: %s",
-                         attempt, wait, exc)
+            _LOG.warning("write contention attempt=%d wait=%ds: %s", attempt, wait, exc)
             time.sleep(wait)
     if last_err is not None:
         raise last_err
@@ -671,15 +700,19 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--verbose", "-v", action="store_true")
     ap.add_argument(
-        "--limit-pages", type=int, default=None,
+        "--limit-pages",
+        type=int,
+        default=None,
         help="cap NPO portal pages (smoke test)",
     )
     ap.add_argument(
-        "--skip-npo", action="store_true",
+        "--skip-npo",
+        action="store_true",
         help="skip NPO portal scrape (debug)",
     )
     ap.add_argument(
-        "--skip-koeki", action="store_true",
+        "--skip-koeki",
+        action="store_true",
         help="skip 公益法人 勧告事例 (debug)",
     )
     return ap.parse_args(argv)
@@ -692,15 +725,14 @@ def main(argv: list[str] | None = None) -> int:
         format="%(asctime)s %(levelname)s %(name)s %(message)s",
     )
 
-    now_iso = dt.datetime.now(dt.UTC).isoformat(timespec="seconds").replace(
-        "+00:00", "Z"
-    )
+    now_iso = dt.datetime.now(dt.UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
 
     rows: list[EnfRow] = []
 
     if not args.skip_npo:
         npo_rows = harvest_npo(
-            max_pages=args.limit_pages, verbose=args.verbose,
+            max_pages=args.limit_pages,
+            verbose=args.verbose,
         )
         _LOG.info("[npo] harvested rows=%d", len(npo_rows))
         rows.extend(npo_rows)
@@ -716,8 +748,12 @@ def main(argv: list[str] | None = None) -> int:
         for r in rows[:10]:
             _LOG.info(
                 "DRY: corp=%s | name=%s | date=%s | auth=%s | kind=%s | reason=%s",
-                r.corp_form, r.target_name, r.issuance_date,
-                r.issuing_authority, r.enforcement_kind, r.reason_summary[:80],
+                r.corp_form,
+                r.target_name,
+                r.issuance_date,
+                r.issuing_authority,
+                r.enforcement_kind,
+                r.reason_summary[:80],
             )
         # breakdown
         bucket: dict[str, int] = {}
@@ -746,7 +782,10 @@ def main(argv: list[str] | None = None) -> int:
 
     _LOG.info(
         "done parsed=%d inserted=%d dup_db=%d dup_batch=%d",
-        len(rows), inserted, dup_db, dup_batch,
+        len(rows),
+        inserted,
+        dup_db,
+        dup_batch,
     )
     print(
         f"corporate-form ingest: parsed={len(rows)} inserted={inserted} "

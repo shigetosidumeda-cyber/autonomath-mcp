@@ -57,6 +57,7 @@ CLI:
     python scripts/ingest/ingest_enforcement_medical_pros.py \\
         [--db autonomath.db] [--dry-run] [--max-insert N] [--verbose]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -98,15 +99,9 @@ MHLW_AUTHORITY = "厚生労働省"
 BASE = "https://www.mhlw.go.jp"
 
 # Index pages — each lists 議事要旨 anchors per publication.
-INDEX_IDOU = (
-    f"{BASE}/stf/shingi/shingi-idou_127786.html"  # 医道分科会 (医師+歯科医師)
-)
-INDEX_KANGO = (
-    f"{BASE}/stf/shingi/shingi-idou_127798.html"  # 看護倫理部会
-)
-INDEX_YAKU = (
-    f"{BASE}/stf/shingi/shingi-idou_127806.html"  # 薬剤師倫理部会
-)
+INDEX_IDOU = f"{BASE}/stf/shingi/shingi-idou_127786.html"  # 医道分科会 (医師+歯科医師)
+INDEX_KANGO = f"{BASE}/stf/shingi/shingi-idou_127798.html"  # 看護倫理部会
+INDEX_YAKU = f"{BASE}/stf/shingi/shingi-idou_127806.html"  # 薬剤師倫理部会
 
 
 # ---------------------------------------------------------------------------
@@ -115,22 +110,32 @@ INDEX_YAKU = (
 
 _FULLWIDTH_DIGIT = str.maketrans("０１２３４５６７８９", "0123456789")
 _KANJI_NUM = {
-    "零": 0, "〇": 0, "○": 0,
-    "一": 1, "二": 2, "三": 3, "四": 4, "五": 5,
-    "六": 6, "七": 7, "八": 8, "九": 9, "十": 10,
+    "零": 0,
+    "〇": 0,
+    "○": 0,
+    "一": 1,
+    "二": 2,
+    "三": 3,
+    "四": 4,
+    "五": 5,
+    "六": 6,
+    "七": 7,
+    "八": 8,
+    "九": 9,
+    "十": 10,
 }
 
 ERA_OFFSET = {
-    "令和": 2018, "平成": 1988, "昭和": 1925,
-    "R": 2018, "H": 1988, "S": 1925,
+    "令和": 2018,
+    "平成": 1988,
+    "昭和": 1925,
+    "R": 2018,
+    "H": 1988,
+    "S": 1925,
 }
 
-_WAREKI_RE = re.compile(
-    r"(令和|平成|昭和)\s*(\d+|元)\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日?"
-)
-_DATE_TITLE_RE = re.compile(
-    r"(20\d{2})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日"
-)
+_WAREKI_RE = re.compile(r"(令和|平成|昭和)\s*(\d+|元)\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日?")
+_DATE_TITLE_RE = re.compile(r"(20\d{2})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日")
 
 
 def _normalize(s: str) -> str:
@@ -193,11 +198,12 @@ def _parse_count(token: str) -> int | None:
 # Index discovery
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class Publication:
     url: str
     is_pdf: bool
-    feed: str   # 'idou' / 'kango' / 'yaku'
+    feed: str  # 'idou' / 'kango' / 'yaku'
 
 
 def discover_publications(http: HttpClient) -> list[Publication]:
@@ -230,11 +236,13 @@ def discover_publications(http: HttpClient) -> list[Publication]:
             if absurl in seen:
                 continue
             seen.add(absurl)
-            out.append(Publication(
-                url=absurl,
-                is_pdf=absurl.lower().endswith(".pdf"),
-                feed=feed,
-            ))
+            out.append(
+                Publication(
+                    url=absurl,
+                    is_pdf=absurl.lower().endswith(".pdf"),
+                    feed=feed,
+                )
+            )
         _LOG.info("[index] %s -> total publications=%d", feed, len(out))
     _LOG.info("[index] discovered total=%d publications", len(out))
     return out
@@ -257,19 +265,15 @@ def discover_publications(http: HttpClient) -> list[Publication]:
 # Possible 処分 prefixes by feed.
 _KIND_PATTERNS_DOC = [
     ("license_revoke", re.compile(r"免\s*許\s*取\s*消")),
-    ("business_improvement", re.compile(
-        r"(?:歯科)?医業\s*停\s*止\s*\d+\s*年\s*\d+\s*月")),
-    ("business_improvement", re.compile(
-        r"(?:歯科)?医業\s*停\s*止\s*\d+\s*年")),
-    ("business_improvement", re.compile(
-        r"(?:歯科)?医業\s*停\s*止\s*\d+\s*月")),
+    ("business_improvement", re.compile(r"(?:歯科)?医業\s*停\s*止\s*\d+\s*年\s*\d+\s*月")),
+    ("business_improvement", re.compile(r"(?:歯科)?医業\s*停\s*止\s*\d+\s*年")),
+    ("business_improvement", re.compile(r"(?:歯科)?医業\s*停\s*止\s*\d+\s*月")),
     ("other", re.compile(r"戒\s*告")),
     ("other", re.compile(r"再教育研修")),
 ]
 _KIND_PATTERNS_NURSE = [
     ("license_revoke", re.compile(r"免\s*許\s*取\s*消")),
-    ("business_improvement", re.compile(
-        r"業\s*務\s*停\s*止\s*\d+\s*年\s*\d+\s*月")),
+    ("business_improvement", re.compile(r"業\s*務\s*停\s*止\s*\d+\s*年\s*\d+\s*月")),
     ("business_improvement", re.compile(r"業\s*務\s*停\s*止\s*\d+\s*年")),
     ("business_improvement", re.compile(r"業\s*務\s*停\s*止\s*\d+\s*月")),
     ("other", re.compile(r"戒\s*告")),
@@ -283,15 +287,15 @@ _REASON_SPLIT_RE = re.compile(r"[、，]")
 
 @dataclass
 class EnfRow:
-    kind_label: str            # original line (e.g., '医業停止２年')
-    enforcement_kind: str      # checked enum
-    profession: str            # '医師'/'歯科医師'/'看護師'/'保健師'/'薬剤師'/...
-    reason_text: str           # 罪種 (e.g. '麻薬及び向精神薬取締法違反')
+    kind_label: str  # original line (e.g., '医業停止２年')
+    enforcement_kind: str  # checked enum
+    profession: str  # '医師'/'歯科医師'/'看護師'/'保健師'/'薬剤師'/...
+    reason_text: str  # 罪種 (e.g. '麻薬及び向精神薬取締法違反')
     issuance_date: str
     source_url: str
     related_law_ref: str
-    publication_url: str       # may equal source_url for HTML; for PDF it's the PDF URL
-    feed: str                  # 'idou'/'kango'/'yaku'
+    publication_url: str  # may equal source_url for HTML; for PDF it's the PDF URL
+    feed: str  # 'idou'/'kango'/'yaku'
 
 
 def _detect_section(line: str, feed: str) -> str | None:
@@ -330,9 +334,7 @@ def _kind_patterns_for(feed: str) -> list[tuple[str, re.Pattern[str]]]:
 
 
 def _default_profession(feed: str) -> str:
-    return {"idou": "医師", "kango": "看護師", "yaku": "薬剤師"}.get(
-        feed, "看護師"
-    )
+    return {"idou": "医師", "kango": "看護師", "yaku": "薬剤師"}.get(feed, "看護師")
 
 
 def _extract_body_text(html: str) -> str:
@@ -351,7 +353,7 @@ def _slice_after_head(text: str) -> str:
     m = _PARSE_HEAD.search(text)
     if not m:
         return text
-    return text[m.end():]
+    return text[m.end() :]
 
 
 _PROFESSION_SECTION_RE = re.compile(
@@ -383,7 +385,7 @@ _KIND_LINE_RE = re.compile(
     r"|業\s*務\s*停\s*止\s*(?:\d+\s*年(?:\s*\d+\s*月)?|\d+\s*月|\d+\s*年)"
     r"|戒\s*告"
     r"|再教育研修(?:命令)?))\s*"
-    r"[・･\s\.：:]*"          # dotted leaders / colons / spaces
+    r"[・･\s\.：:]*"  # dotted leaders / colons / spaces
     r"(?P<count>\d+)\s*件\s*"
     r"[（(](?P<reasons>(?:[^（）()]|（[^（）]*）|\([^()]*\))*)[)）]",
     re.MULTILINE,
@@ -533,17 +535,19 @@ def parse_publication(
                     for _ in range(n):
                         if emitted >= total:
                             break
-                        out.append(EnfRow(
-                            kind_label=kind_label,
-                            enforcement_kind=enf_kind,
-                            profession=prof,
-                            reason_text=reason,
-                            issuance_date=issuance,
-                            source_url=source_url,
-                            related_law_ref=_law_for(prof),
-                            publication_url=source_url,
-                            feed=feed,
-                        ))
+                        out.append(
+                            EnfRow(
+                                kind_label=kind_label,
+                                enforcement_kind=enf_kind,
+                                profession=prof,
+                                reason_text=reason,
+                                issuance_date=issuance,
+                                source_url=source_url,
+                                related_law_ref=_law_for(prof),
+                                publication_url=source_url,
+                                feed=feed,
+                            )
+                        )
                         emitted += 1
             else:
                 # Distribute reasons but pad with first reason if short.
@@ -554,22 +558,25 @@ def parse_publication(
                     expanded.append(expanded[0] if expanded else "不明")
                 expanded = expanded[:total]
                 for reason in expanded:
-                    out.append(EnfRow(
-                        kind_label=kind_label,
-                        enforcement_kind=enf_kind,
-                        profession=prof,
-                        reason_text=reason,
-                        issuance_date=issuance,
-                        source_url=source_url,
-                        related_law_ref=_law_for(prof),
-                        publication_url=source_url,
-                        feed=feed,
-                    ))
+                    out.append(
+                        EnfRow(
+                            kind_label=kind_label,
+                            enforcement_kind=enf_kind,
+                            profession=prof,
+                            reason_text=reason,
+                            issuance_date=issuance,
+                            source_url=source_url,
+                            related_law_ref=_law_for(prof),
+                            publication_url=source_url,
+                            feed=feed,
+                        )
+                    )
     return out
 
 
 def fetch_publication_rows(
-    http: HttpClient, pub: Publication,
+    http: HttpClient,
+    pub: Publication,
 ) -> list[EnfRow]:
     """Fetch one publication and return parsed EnfRows."""
     if pub.is_pdf:
@@ -583,7 +590,9 @@ def fetch_publication_rows(
             _LOG.warning("[fetch] PDF parse fail %s: %s", pub.url, exc)
             return []
         return parse_publication(
-            text, source_url=pub.url, feed=pub.feed,
+            text,
+            source_url=pub.url,
+            feed=pub.feed,
         )
     # HTML
     res = http.get(pub.url)
@@ -592,13 +601,16 @@ def fetch_publication_rows(
         return []
     body = _extract_body_text(res.text)
     return parse_publication(
-        body, source_url=pub.url, feed=pub.feed,
+        body,
+        source_url=pub.url,
+        feed=pub.feed,
     )
 
 
 # ---------------------------------------------------------------------------
 # DB layer
 # ---------------------------------------------------------------------------
+
 
 def _slug8(*parts: str) -> str:
     h = hashlib.sha1("|".join(parts).encode("utf-8")).hexdigest()
@@ -607,9 +619,13 @@ def _slug8(*parts: str) -> str:
 
 def _kind_slug(profession: str) -> str:
     return {
-        "医師": "ISHI", "歯科医師": "SHIKA",
-        "看護師": "KANGO", "保健師": "HOKEN", "助産師": "JOSAN",
-        "准看護師": "JUNKAN", "薬剤師": "YAKUZAISHI",
+        "医師": "ISHI",
+        "歯科医師": "SHIKA",
+        "看護師": "KANGO",
+        "保健師": "HOKEN",
+        "助産師": "JOSAN",
+        "准看護師": "JUNKAN",
+        "薬剤師": "YAKUZAISHI",
     }.get(profession, "MED")
 
 
@@ -620,9 +636,7 @@ def ensure_tables(conn: sqlite3.Connection) -> None:
             (tbl,),
         ).fetchone()
         if not row:
-            raise SystemExit(
-                f"missing table '{tbl}' — apply migrations first"
-            )
+            raise SystemExit(f"missing table '{tbl}' — apply migrations first")
 
 
 def existing_dedup_keys(conn: sqlite3.Connection) -> set[tuple[str, str, str]]:
@@ -766,13 +780,8 @@ def write_rows(
                 str(seq),
                 r.kind_label,
             )
-            canonical_id = (
-                f"AM-ENF-MED-{kind_short}-"
-                f"{r.issuance_date.replace('-', '')}-{slug}"
-            )
-            primary_name = (
-                f"{target_name} - {r.kind_label} ({r.reason_text[:60]})"
-            )
+            canonical_id = f"AM-ENF-MED-{kind_short}-{r.issuance_date.replace('-', '')}-{slug}"
+            primary_name = f"{target_name} - {r.kind_label} ({r.reason_text[:60]})"
             reason_summary = (
                 f"医道審議会答申: {r.kind_label} / 違反: {r.reason_text} "
                 f"(関連法: {r.related_law_ref}; 個人氏名は非公表)"
@@ -797,20 +806,31 @@ def write_rows(
             )
             try:
                 upsert_entity(
-                    conn, canonical_id, primary_name,
-                    r.source_url, raw_json, now_iso,
+                    conn,
+                    canonical_id,
+                    primary_name,
+                    r.source_url,
+                    raw_json,
+                    now_iso,
                 )
                 insert_enforcement(
-                    conn, canonical_id, target_name,
-                    r.enforcement_kind, r.issuance_date,
-                    reason_summary, r.related_law_ref,
-                    r.source_url, now_iso,
+                    conn,
+                    canonical_id,
+                    target_name,
+                    r.enforcement_kind,
+                    r.issuance_date,
+                    reason_summary,
+                    r.related_law_ref,
+                    r.source_url,
+                    now_iso,
                 )
                 inserted += 1
             except sqlite3.Error as exc:
                 _LOG.error(
                     "DB error name=%r date=%s: %s",
-                    target_name, r.issuance_date, exc,
+                    target_name,
+                    r.issuance_date,
+                    exc,
                 )
                 continue
         conn.commit()
@@ -834,11 +854,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--verbose", "-v", action="store_true")
     ap.add_argument(
-        "--max-insert", type=int, default=None,
+        "--max-insert",
+        type=int,
+        default=None,
         help="Stop after N successful inserts (for incremental runs)",
     )
     ap.add_argument(
-        "--max-publications", type=int, default=None,
+        "--max-publications",
+        type=int,
+        default=None,
         help="Limit how many publications to fetch (debug)",
     )
     return ap.parse_args(argv)
@@ -852,9 +876,7 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     http = HttpClient(user_agent=USER_AGENT)
-    now_iso = datetime.now(UTC).isoformat(timespec="seconds").replace(
-        "+00:00", "Z"
-    )
+    now_iso = datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
 
     pubs = discover_publications(http)
     if args.max_publications:
@@ -866,7 +888,11 @@ def main(argv: list[str] | None = None) -> int:
         rows = fetch_publication_rows(http, pub)
         _LOG.info(
             "[%d/%d] %s feed=%s rows=%d",
-            i, len(pubs), pub.url, pub.feed, len(rows),
+            i,
+            len(pubs),
+            pub.url,
+            pub.feed,
+            len(rows),
         )
         all_rows.extend(rows)
 
@@ -876,7 +902,9 @@ def main(argv: list[str] | None = None) -> int:
         for r in all_rows[:10]:
             _LOG.info(
                 "sample: prof=%s kind=%s date=%s reason=%s",
-                r.profession, r.kind_label, r.issuance_date,
+                r.profession,
+                r.kind_label,
+                r.issuance_date,
                 r.reason_text[:60],
             )
         http.close()
@@ -893,7 +921,10 @@ def main(argv: list[str] | None = None) -> int:
     ensure_tables(conn)
 
     inserted, dup_db, dup_batch = write_rows(
-        conn, all_rows, now_iso=now_iso, max_insert=args.max_insert,
+        conn,
+        all_rows,
+        now_iso=now_iso,
+        max_insert=args.max_insert,
     )
     try:
         conn.close()
@@ -903,7 +934,10 @@ def main(argv: list[str] | None = None) -> int:
 
     _LOG.info(
         "done parsed=%d inserted=%d dup_db=%d dup_batch=%d",
-        len(all_rows), inserted, dup_db, dup_batch,
+        len(all_rows),
+        inserted,
+        dup_db,
+        dup_batch,
     )
     print(
         f"MHLW 医道審議会 ingest: parsed={len(all_rows)} "

@@ -34,6 +34,7 @@ CLI:
     python scripts/ingest/ingest_enforcement_kaigo_shogai.py [--db autonomath.db]
         [--limit N] [--dry-run] [--verbose]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -377,11 +378,15 @@ SEIREKI_RE = re.compile(r"(20\d{2}|19\d{2})\s*[年.\-／/]\s*(\d{1,2})\s*[月.\-
 ERA_OFFSET = {"令和": 2018, "R": 2018, "平成": 1988, "H": 1988, "昭和": 1925, "S": 1925}
 
 # Law article extraction
-KAIGO_ARTICLE_RE = re.compile(r"介護保険法[^第。]{0,8}第\s*(\d+)\s*条(?:[^第。]{0,3}第\s*\d+\s*項)?")
+KAIGO_ARTICLE_RE = re.compile(
+    r"介護保険法[^第。]{0,8}第\s*(\d+)\s*条(?:[^第。]{0,3}第\s*\d+\s*項)?"
+)
 SHOGAI_ARTICLE_RE = re.compile(
     r"(?:障害者総合支援法|障害者の日常生活|障害者自立支援法)[^第。]{0,12}第\s*(\d+)\s*条(?:[^第。]{0,3}第\s*\d+\s*項)?"
 )
-SHOGAI_DIRECT_ARTICLE_RE = re.compile(r"第\s*(\d+)\s*条第\s*(\d+)\s*項")  # in "（障害者総合支援法第５０条第１項第２号）"
+SHOGAI_DIRECT_ARTICLE_RE = re.compile(
+    r"第\s*(\d+)\s*条第\s*(\d+)\s*項"
+)  # in "（障害者総合支援法第５０条第１項第２号）"
 
 
 def _to_hankaku_digits(s: str) -> str:
@@ -454,7 +459,13 @@ def _classify_kind(text: str) -> str:
     s = _normalize(text)
     if "指定取消" in s or "指定の取消" in s or "指定取り消し" in s or "取消処分" in s:
         return "license_revoke"
-    if "効力の停止" in s or "効力停止" in s or "業務停止" in s or "受入停止" in s or "受入れ停止" in s:
+    if (
+        "効力の停止" in s
+        or "効力停止" in s
+        or "業務停止" in s
+        or "受入停止" in s
+        or "受入れ停止" in s
+    ):
         return "business_improvement"
     if "改善命令" in s or "改善勧告" in s:
         return "business_improvement"
@@ -519,9 +530,7 @@ def _clean(c: str | None) -> str:
     return _normalize(c.replace("\n", " "))
 
 
-def parse_osaka_pref_pdf(
-    pdf_bytes: bytes, *, authority: str, default_law: str
-) -> list[EnfRow]:
+def parse_osaka_pref_pdf(pdf_bytes: bytes, *, authority: str, default_law: str) -> list[EnfRow]:
     """Parse 大阪府/枚方市 4-column PDF: [date, location, service, reason+law]."""
     rows: list[EnfRow] = []
     seen_in_pdf: set[tuple[str, str, str]] = set()
@@ -543,29 +552,31 @@ def parse_osaka_pref_pdf(
                     # so that multiple events on same day in same city stay distinct.
                     reason_hash = (
                         hashlib.sha1((reason_text or "x").encode("utf-8")).hexdigest()[:6]
-                        if reason_text else "noinfo"
+                        if reason_text
+                        else "noinfo"
                     )
                     target_name = (
-                        f"{current_loc or '不詳'} "
-                        f"{current_service or ''} 事業者 [{reason_hash}]"
+                        f"{current_loc or '不詳'} {current_service or ''} 事業者 [{reason_hash}]"
                     ).strip()
                     target_name = target_name[:200]
                     key = (target_name, current_date)
                     if key not in seen_in_pdf:
                         seen_in_pdf.add(key)
-                        rows.append(EnfRow(
-                            target_name=target_name,
-                            location=current_loc,
-                            issuance_date=current_date,
-                            related_law_ref=law,
-                            reason_summary=(reason_text or "")[:4000] or None,
-                            enforcement_kind=current_kind,
-                            amount_yen=_extract_amount(reason_text or ""),
-                            extras={
-                                "service_type": current_service or "",
-                                "format": "osaka_pref_pdf",
-                            },
-                        ))
+                        rows.append(
+                            EnfRow(
+                                target_name=target_name,
+                                location=current_loc,
+                                issuance_date=current_date,
+                                related_law_ref=law,
+                                reason_summary=(reason_text or "")[:4000] or None,
+                                enforcement_kind=current_kind,
+                                amount_yen=_extract_amount(reason_text or ""),
+                                extras={
+                                    "service_type": current_service or "",
+                                    "format": "osaka_pref_pdf",
+                                },
+                            )
+                        )
                 current_date = None
                 current_loc = None
                 current_service = None
@@ -615,9 +626,7 @@ def parse_osaka_pref_pdf(
     return rows
 
 
-def parse_tokyo_cumulative_pdf(
-    pdf_bytes: bytes, *, default_law: str
-) -> list[EnfRow]:
+def parse_tokyo_cumulative_pdf(pdf_bytes: bytes, *, default_law: str) -> list[EnfRow]:
     """Parse 東京都福祉局 cumulative table:
     [年度, 申請者名称, 申請者住所, 事業所番号, 事業種別, 事業所名称, 事業所所在地,
      公表年月日, 指定取消日等, 処分等の内容, 処分事由・公表内容,
@@ -658,22 +667,26 @@ def parse_tokyo_cumulative_pdf(
                             f"[{disposition}] {reason} (事業所={facility_name}, 種別={service_type}, "
                             f"事業所所在地={facility_addr})"
                         )
-                        rows.append(EnfRow(
-                            target_name=target_name,
-                            location=facility_addr or addr or None,
-                            issuance_date=date_iso,
-                            related_law_ref=_extract_law_ref(reason or disposition, default_law),
-                            reason_summary=full_reason[:4000],
-                            enforcement_kind=kind,
-                            amount_yen=_extract_amount(reason),
-                            extras={
-                                "facility_name": facility_name,
-                                "service_type": service_type,
-                                "disposition_text": disposition,
-                                "torikeshi_date": torikeshi_date,
-                                "format": "tokyo_cumulative_pdf",
-                            },
-                        ))
+                        rows.append(
+                            EnfRow(
+                                target_name=target_name,
+                                location=facility_addr or addr or None,
+                                issuance_date=date_iso,
+                                related_law_ref=_extract_law_ref(
+                                    reason or disposition, default_law
+                                ),
+                                reason_summary=full_reason[:4000],
+                                enforcement_kind=kind,
+                                amount_yen=_extract_amount(reason),
+                                extras={
+                                    "facility_name": facility_name,
+                                    "service_type": service_type,
+                                    "disposition_text": disposition,
+                                    "torikeshi_date": torikeshi_date,
+                                    "format": "tokyo_cumulative_pdf",
+                                },
+                            )
+                        )
     except Exception as exc:  # noqa: BLE001
         _LOG.warning("tokyo cumulative pdf parse failed: %s", exc)
     return rows
@@ -771,24 +784,26 @@ def parse_press_pdf(
     amt_section = re.search(r"(?:返還[^。]{0,20}|不正請求[^。]{0,20}|介護給付費[^。]{0,20})", norm)
     if amt_section:
         # search for 円 in vicinity
-        sec_text = norm[amt_section.start(): amt_section.start() + 400]
+        sec_text = norm[amt_section.start() : amt_section.start() + 400]
         amount = _extract_amount(sec_text)
     if amount is None:
         amount = _extract_amount(norm[:3000])
 
-    return [EnfRow(
-        target_name=target_name[:200],
-        location=None,
-        issuance_date=issuance,
-        related_law_ref=_extract_law_ref(norm[:3000], default_law),
-        reason_summary=reason_summary[:4000],
-        enforcement_kind=kind,
-        amount_yen=amount,
-        extras={
-            "format": "press_pdf",
-            "source_url": source_url,
-        },
-    )]
+    return [
+        EnfRow(
+            target_name=target_name[:200],
+            location=None,
+            issuance_date=issuance,
+            related_law_ref=_extract_law_ref(norm[:3000], default_law),
+            reason_summary=reason_summary[:4000],
+            enforcement_kind=kind,
+            amount_yen=amount,
+            extras={
+                "format": "press_pdf",
+                "source_url": source_url,
+            },
+        )
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -801,7 +816,9 @@ def _slug8(name: str, date: str) -> str:
     return h[:8]
 
 
-def _entity_canonical_id(authority: str, target_name: str, issuance_date: str, law: str | None) -> str:
+def _entity_canonical_id(
+    authority: str, target_name: str, issuance_date: str, law: str | None
+) -> str:
     """Build canonical_id = AM-ENF-KAIGO-{pref-slug}-{seq} or AM-ENF-SHOGAI-{...}."""
     # Pref slug: roman or romaji-ish stub (best-effort: use authority hash).
     auth_slug = hashlib.sha1(authority.encode("utf-8")).hexdigest()[:6]
@@ -823,14 +840,11 @@ def ensure_tables(conn: sqlite3.Connection) -> None:
             raise SystemExit(f"missing table '{tbl}' — apply migrations first")
 
 
-def existing_dedup_keys(
-    conn: sqlite3.Connection, authority: str
-) -> set[tuple[str, str]]:
+def existing_dedup_keys(conn: sqlite3.Connection, authority: str) -> set[tuple[str, str]]:
     """{(target_name, issuance_date)} already in DB for this authority."""
     out: set[tuple[str, str]] = set()
     for n, d in conn.execute(
-        "SELECT target_name, issuance_date FROM am_enforcement_detail "
-        "WHERE issuing_authority=?",
+        "SELECT target_name, issuance_date FROM am_enforcement_detail WHERE issuing_authority=?",
         (authority,),
     ).fetchall():
         if n and d:
@@ -921,8 +935,7 @@ def insert_enforcement(
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--db", type=Path, default=DEFAULT_DB)
-    ap.add_argument("--limit", type=int, default=None,
-                    help="cap total inserts (debugging)")
+    ap.add_argument("--limit", type=int, default=None, help="cap total inserts (debugging)")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--verbose", "-v", action="store_true")
     return ap.parse_args(argv)
@@ -943,8 +956,7 @@ def fetch_and_parse(http: HttpClient, src: dict[str, str]) -> list[EnfRow]:
     if fmt == "tokyo_cumulative_pdf":
         return parse_tokyo_cumulative_pdf(body, default_law=default_law)
     if fmt in ("tokyo_press_pdf", "press_pdf"):
-        return parse_press_pdf(body, authority=authority, default_law=default_law,
-                               source_url=url)
+        return parse_press_pdf(body, authority=authority, default_law=default_law, source_url=url)
     _LOG.warning("[%s] unknown format=%s", src["slug"], fmt)
     return []
 
@@ -1007,14 +1019,16 @@ def main(argv: list[str] | None = None) -> int:
         if conn is None:
             # Dry run: just sample
             for r in rows[:2]:
-                sample_rows.append({
-                    "authority": authority,
-                    "target_name": r.target_name,
-                    "issuance_date": r.issuance_date,
-                    "kind": r.enforcement_kind,
-                    "law": r.related_law_ref,
-                    "amount": r.amount_yen,
-                })
+                sample_rows.append(
+                    {
+                        "authority": authority,
+                        "target_name": r.target_name,
+                        "issuance_date": r.issuance_date,
+                        "kind": r.enforcement_kind,
+                        "law": r.related_law_ref,
+                        "amount": r.amount_yen,
+                    }
+                )
             continue
 
         if authority not in auth_dedup_cache:
@@ -1041,8 +1055,7 @@ def main(argv: list[str] | None = None) -> int:
                     authority, r.target_name, r.issuance_date, r.related_law_ref
                 )
                 primary_name = (
-                    f"{r.target_name} ({r.issuance_date}) — "
-                    f"{authority} {r.enforcement_kind}"
+                    f"{r.target_name} ({r.issuance_date}) — {authority} {r.enforcement_kind}"
                 )
                 raw_json = json.dumps(
                     {
@@ -1063,8 +1076,7 @@ def main(argv: list[str] | None = None) -> int:
                     ensure_ascii=False,
                 )
                 try:
-                    upsert_entity(conn, canonical_id, primary_name,
-                                  src["url"], raw_json, now_iso)
+                    upsert_entity(conn, canonical_id, primary_name, src["url"], raw_json, now_iso)
                     insert_enforcement(
                         conn=conn,
                         entity_id=canonical_id,
@@ -1080,22 +1092,33 @@ def main(argv: list[str] | None = None) -> int:
                     )
                     stats["rows_inserted"] += 1
                     # Update breakdown
-                    law_key = "障害福祉" if (r.related_law_ref and "障害" in r.related_law_ref) else "介護保険"
+                    law_key = (
+                        "障害福祉"
+                        if (r.related_law_ref and "障害" in r.related_law_ref)
+                        else "介護保険"
+                    )
                     by_law[law_key] = by_law.get(law_key, 0) + 1
                     by_authority[authority] = by_authority.get(authority, 0) + 1
                     if len(sample_rows) < 3:
-                        sample_rows.append({
-                            "authority": authority,
-                            "target_name": r.target_name,
-                            "issuance_date": r.issuance_date,
-                            "kind": r.enforcement_kind,
-                            "law": r.related_law_ref,
-                            "amount": r.amount_yen,
-                            "reason": (r.reason_summary or "")[:120],
-                        })
+                        sample_rows.append(
+                            {
+                                "authority": authority,
+                                "target_name": r.target_name,
+                                "issuance_date": r.issuance_date,
+                                "kind": r.enforcement_kind,
+                                "law": r.related_law_ref,
+                                "amount": r.amount_yen,
+                                "reason": (r.reason_summary or "")[:120],
+                            }
+                        )
                 except sqlite3.Error as exc:
-                    _LOG.error("[%s] DB error name=%r date=%s: %s",
-                               slug, r.target_name, r.issuance_date, exc)
+                    _LOG.error(
+                        "[%s] DB error name=%r date=%s: %s",
+                        slug,
+                        r.target_name,
+                        r.issuance_date,
+                        exc,
+                    )
                     continue
             conn.commit()
         except sqlite3.Error as exc:
@@ -1115,9 +1138,12 @@ def main(argv: list[str] | None = None) -> int:
 
     _LOG.info(
         "done sources_ok=%d sources_fail=%d parsed=%d inserted=%d dup_db=%d dup_batch=%d",
-        stats["sources_fetched"], stats["sources_failed"],
-        stats["rows_parsed"], stats["rows_inserted"],
-        stats["rows_dup_in_db"], stats["rows_dup_in_batch"],
+        stats["sources_fetched"],
+        stats["sources_failed"],
+        stats["rows_parsed"],
+        stats["rows_inserted"],
+        stats["rows_dup_in_db"],
+        stats["rows_dup_in_batch"],
     )
     _LOG.info("by_law=%s", by_law)
     _LOG.info("by_authority=%s", by_authority)

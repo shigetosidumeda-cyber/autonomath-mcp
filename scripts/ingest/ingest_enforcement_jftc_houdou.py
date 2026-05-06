@@ -39,6 +39,7 @@ CLI:
     python scripts/ingest/ingest_enforcement_jftc_houdou.py --max-inserts 150
     python scripts/ingest/ingest_enforcement_jftc_houdou.py --dry-run -v
 """
+
 from __future__ import annotations
 
 import argparse
@@ -70,10 +71,7 @@ _LOG = logging.getLogger("autonomath.ingest_jftc_houdou")
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_DB = REPO_ROOT / "autonomath.db"
 
-USER_AGENT = (
-    "AutonoMath/0.1.0 (+https://bookyou.net) "
-    "ingest-jftc-houdou (contact=ops@jpcite.com)"
-)
+USER_AGENT = "AutonoMath/0.1.0 (+https://bookyou.net) ingest-jftc-houdou (contact=ops@jpcite.com)"
 BASE = "https://www.jftc.go.jp"
 INDEX_URL = f"{BASE}/houdou/pressrelease/index.html"
 HTTP_TIMEOUT = 60
@@ -81,8 +79,18 @@ RATE_SLEEP = 1.0  # polite 1 req/sec/host
 
 DEFAULT_YEARS = ["2020", "2021", "2022", "2023", "2024", "2025"]
 MONTHS = (
-    "jan", "feb", "mar", "apr", "may", "jun",
-    "jul", "aug", "sep", "oct", "nov", "dec",
+    "jan",
+    "feb",
+    "mar",
+    "apr",
+    "may",
+    "jun",
+    "jul",
+    "aug",
+    "sep",
+    "oct",
+    "nov",
+    "dec",
 )
 
 # Title-keyword → enforcement_kind. Order matters — more specific tokens
@@ -90,7 +98,7 @@ MONTHS = (
 KIND_ORDER: tuple[tuple[str, str], ...] = (
     ("排除措置命令", "business_improvement"),
     ("課徴金納付命令", "fine"),
-    ("確約計画", "other"),       # ...の認定 / の申請
+    ("確約計画", "other"),  # ...の認定 / の申請
     ("確約手続", "other"),
     ("審決", "other"),
     ("勧告", "investigation"),
@@ -110,12 +118,8 @@ WAREKI_RE = re.compile(
     r"([0-9０-９]+)\s*月\s*([0-9０-９]+)\s*日"
 )
 HOUJIN_RE = re.compile(r"\b([0-9]{13})\b")
-AMOUNT_RE = re.compile(
-    r"課徴金(?:の)?額[^\d]{0,30}?([0-9,０-９，]{2,20})\s*円"
-)
-AMOUNT_RE_ALT = re.compile(
-    r"([0-9,０-９，]{2,20})\s*円(?:の課徴金|を支払)"
-)
+AMOUNT_RE = re.compile(r"課徴金(?:の)?額[^\d]{0,30}?([0-9,０-９，]{2,20})\s*円")
+AMOUNT_RE_ALT = re.compile(r"([0-9,０-９，]{2,20})\s*円(?:の課徴金|を支払)")
 
 # Article extractor — first 法律条文 mentioned in summary section.
 ARTICLE_RE = re.compile(
@@ -214,7 +218,7 @@ class HttpClient:
                 last_err = RuntimeError(f"{resp.status_code} for {url}")
             except requests.RequestException as exc:
                 last_err = exc
-            time.sleep(2 ** attempt)
+            time.sleep(2**attempt)
         _LOG.warning("fetch failed after retries: %s: %s", url, last_err)
         return None
 
@@ -231,19 +235,17 @@ LIST_LINK_RE = re.compile(
 
 @dataclass
 class ListingEntry:
-    issuance_date: str   # ISO yyyy-mm-dd
-    title: str           # title without "(date)" prefix
-    raw_label: str       # full anchor text including date prefix
+    issuance_date: str  # ISO yyyy-mm-dd
+    title: str  # title without "(date)" prefix
+    raw_label: str  # full anchor text including date prefix
     detail_url: str
-    kind_token_jp: str   # 排除措置命令 / 課徴金納付命令 / etc.
+    kind_token_jp: str  # 排除措置命令 / 課徴金納付命令 / etc.
     enforcement_kind: str
     year: str
     month: str
 
 
-def parse_monthly_index(
-    html: str, *, year: str, month: str, base_url: str
-) -> list[ListingEntry]:
+def parse_monthly_index(html: str, *, year: str, month: str, base_url: str) -> list[ListingEntry]:
     soup = BeautifulSoup(html, "html.parser")
     out: list[ListingEntry] = []
     for a in soup.find_all("a", href=True):
@@ -274,16 +276,18 @@ def parse_monthly_index(
         if not kind:
             continue
         token, enf = kind
-        out.append(ListingEntry(
-            issuance_date=date_iso,
-            title=title,
-            raw_label=anchor,
-            detail_url=absurl,
-            kind_token_jp=token,
-            enforcement_kind=enf,
-            year=year,
-            month=month,
-        ))
+        out.append(
+            ListingEntry(
+                issuance_date=date_iso,
+                title=title,
+                raw_label=anchor,
+                detail_url=absurl,
+                kind_token_jp=token,
+                enforcement_kind=enf,
+                year=year,
+                month=month,
+            )
+        )
     # Dedup within page (some lists repeat the same anchor in nav/footer).
     seen: set[str] = set()
     unique: list[ListingEntry] = []
@@ -344,9 +348,7 @@ def parse_detail_page(html: str, source_url: str) -> DetailInfo:
             if len(txt) > 200:
                 body_chunks.append(txt)
                 break
-    body = body_chunks[0] if body_chunks else _normalize(
-        soup.get_text(" ", strip=True)
-    )
+    body = body_chunks[0] if body_chunks else _normalize(soup.get_text(" ", strip=True))
     info.summary_text = body[:4000]
 
     # Amount extraction — try the labelled pattern then alt.
@@ -384,9 +386,7 @@ def ensure_tables(conn: sqlite3.Connection) -> None:
             (tbl,),
         ).fetchone()
         if not row:
-            raise SystemExit(
-                f"missing table '{tbl}' — apply migrations first"
-            )
+            raise SystemExit(f"missing table '{tbl}' — apply migrations first")
 
 
 def ensure_jftc_authority(cur: sqlite3.Cursor) -> str:
@@ -414,8 +414,7 @@ def ensure_jftc_authority(cur: sqlite3.Cursor) -> str:
 
 def existing_dedup_keys(cur: sqlite3.Cursor) -> set[tuple[str, str]]:
     cur.execute(
-        "SELECT issuance_date, target_name FROM am_enforcement_detail "
-        "WHERE issuing_authority=?",
+        "SELECT issuance_date, target_name FROM am_enforcement_detail WHERE issuing_authority=?",
         ("公正取引委員会",),
     )
     out: set[tuple[str, str]] = set()
@@ -485,9 +484,7 @@ def insert_one(
         "issuing_authority": "公正取引委員会",
         "authority_canonical": "authority:jftc",
         "license": "PDL v1.0",
-        "attribution": (
-            "出典: 公正取引委員会ホームページ (https://www.jftc.go.jp/)"
-        ),
+        "attribution": ("出典: 公正取引委員会ホームページ (https://www.jftc.go.jp/)"),
         "fetched_at": now_iso,
     }
     cur.execute(
@@ -539,9 +536,7 @@ def insert_one(
 # ---------------------------------------------------------------------------
 
 
-def collect_listings(
-    http: HttpClient, years: list[str]
-) -> list[ListingEntry]:
+def collect_listings(http: HttpClient, years: list[str]) -> list[ListingEntry]:
     out: list[ListingEntry] = []
     for year in years:
         for month in MONTHS:
@@ -550,13 +545,13 @@ def collect_listings(
             if resp is None:
                 _LOG.debug("monthly index missing %s", url)
                 continue
-            entries = parse_monthly_index(
-                resp.text, year=year, month=month, base_url=url
-            )
+            entries = parse_monthly_index(resp.text, year=year, month=month, base_url=url)
             if entries:
                 _LOG.info(
                     "[list] %s/%s -> %d enforcement-tagged entries",
-                    year, month, len(entries),
+                    year,
+                    month,
+                    len(entries),
                 )
             out.extend(entries)
     _LOG.info("total listings (pre-dedup): %d", len(out))
@@ -566,7 +561,8 @@ def collect_listings(
 
 
 def choose_target_name(
-    listing: ListingEntry, detail: DetailInfo,
+    listing: ListingEntry,
+    detail: DetailInfo,
 ) -> tuple[str, str | None]:
     """Return (target_name, houjin_bangou) — best-effort single defendant.
 
@@ -576,9 +572,7 @@ def choose_target_name(
     """
     if detail.target_names:
         primary = detail.target_names[0]
-        houjin = (
-            detail.houjin_bangous[0] if detail.houjin_bangous else None
-        )
+        houjin = detail.houjin_bangous[0] if detail.houjin_bangous else None
         return primary, houjin
     # Derive from title — strip trailing "に対する…命令について" etc.
     derived = re.sub(
@@ -604,9 +598,7 @@ def run(
         level=logging.DEBUG if verbose else logging.INFO,
         format="%(asctime)s %(levelname)s %(message)s",
     )
-    now_iso = (
-        datetime.now(tz=UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
-    )
+    now_iso = datetime.now(tz=UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
 
     http = HttpClient()
 
@@ -616,12 +608,16 @@ def run(
     if dry_run:
         _LOG.info(
             "dry-run: %d candidate listings (would attempt to insert up to %d)",
-            len(listings), max_inserts,
+            len(listings),
+            max_inserts,
         )
         for e in listings[:8]:
             _LOG.info(
                 "  cand %s [%s] %s -> %s",
-                e.issuance_date, e.kind_token_jp, e.title[:60], e.detail_url,
+                e.issuance_date,
+                e.kind_token_jp,
+                e.title[:60],
+                e.detail_url,
             )
         return 0
 
@@ -665,7 +661,9 @@ def run(
         # Cheap pre-check on (date, title-derived target) before HTTP.
         # Real check after we have detail.target_names.
         canonical_id = build_canonical_id(
-            entry.issuance_date, entry.title, entry.detail_url,
+            entry.issuance_date,
+            entry.title,
+            entry.detail_url,
         )
         if canonical_id in existing_ids:
             skipped_dup_id += 1
@@ -739,7 +737,9 @@ def run(
             con.commit()
         except sqlite3.IntegrityError as exc:
             _LOG.warning(
-                "integrity error for %s: %s", canonical_id, exc,
+                "integrity error for %s: %s",
+                canonical_id,
+                exc,
             )
             try:
                 con.rollback()
@@ -758,25 +758,27 @@ def run(
             inserted += 1
             existing_keys.add(key)
             existing_ids.add(canonical_id)
-            breakdown[entry.enforcement_kind] = (
-                breakdown.get(entry.enforcement_kind, 0) + 1
-            )
+            breakdown[entry.enforcement_kind] = breakdown.get(entry.enforcement_kind, 0) + 1
             if len(samples) < 3:
-                samples.append({
-                    "canonical_id": canonical_id,
-                    "issuance_date": entry.issuance_date,
-                    "kind_jp": entry.kind_token_jp,
-                    "enforcement_kind": entry.enforcement_kind,
-                    "target_name": target_name,
-                    "houjin_bangou": houjin,
-                    "amount_yen": amt_yen,
-                    "related_law_ref": related_law_ref,
-                    "source_url": entry.detail_url,
-                })
+                samples.append(
+                    {
+                        "canonical_id": canonical_id,
+                        "issuance_date": entry.issuance_date,
+                        "kind_jp": entry.kind_token_jp,
+                        "enforcement_kind": entry.enforcement_kind,
+                        "target_name": target_name,
+                        "houjin_bangou": houjin,
+                        "amount_yen": amt_yen,
+                        "related_law_ref": related_law_ref,
+                        "source_url": entry.detail_url,
+                    }
+                )
             if inserted % 10 == 0:
                 _LOG.info(
                     "progress inserted=%d (target=%d) latest=%s [%s]",
-                    inserted, max_inserts, entry.issuance_date,
+                    inserted,
+                    max_inserts,
+                    entry.issuance_date,
                     entry.kind_token_jp,
                 )
         else:
@@ -797,24 +799,35 @@ def run(
 
     _LOG.info(
         "done inserted=%d dup_db=%d dup_id=%d no_data=%d listings=%d",
-        inserted, skipped_dup_db, skipped_dup_id, skipped_no_data, len(listings),
+        inserted,
+        skipped_dup_db,
+        skipped_dup_id,
+        skipped_no_data,
+        len(listings),
     )
     _LOG.info(
         "post-insert: jftc_rows=%d total_am_enforcement_detail=%d",
-        after_jftc, after_total,
+        after_jftc,
+        after_total,
     )
 
-    print(json.dumps({
-        "inserted": inserted,
-        "breakdown_by_enforcement_kind": breakdown,
-        "skipped_dup_db": skipped_dup_db,
-        "skipped_dup_canonical_id": skipped_dup_id,
-        "skipped_no_data": skipped_no_data,
-        "candidate_listings": len(listings),
-        "post_jftc_total": after_jftc,
-        "post_am_enforcement_detail_total": after_total,
-        "samples": samples,
-    }, ensure_ascii=False, indent=2))
+    print(
+        json.dumps(
+            {
+                "inserted": inserted,
+                "breakdown_by_enforcement_kind": breakdown,
+                "skipped_dup_db": skipped_dup_db,
+                "skipped_dup_canonical_id": skipped_dup_id,
+                "skipped_no_data": skipped_no_data,
+                "candidate_listings": len(listings),
+                "post_jftc_total": after_jftc,
+                "post_am_enforcement_detail_total": after_total,
+                "samples": samples,
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
     return inserted
 
 
@@ -822,11 +835,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--db", type=Path, default=DEFAULT_DB)
     ap.add_argument(
-        "--years", type=str, default=",".join(DEFAULT_YEARS),
+        "--years",
+        type=str,
+        default=",".join(DEFAULT_YEARS),
         help="comma-separated calendar years (e.g. 2020,2021,2022,2023,2024,2025)",
     )
     ap.add_argument(
-        "--max-inserts", type=int, default=150,
+        "--max-inserts",
+        type=int,
+        default=150,
         help="stop after this many fresh inserts (default 150)",
     )
     ap.add_argument("--dry-run", action="store_true")

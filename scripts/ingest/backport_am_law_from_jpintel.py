@@ -23,6 +23,7 @@ CLI:
   python scripts/ingest/backport_am_law_from_jpintel.py --apply --limit 500
   python scripts/ingest/backport_am_law_from_jpintel.py --fix-egov-only
 """
+
 from __future__ import annotations
 
 import argparse
@@ -49,8 +50,19 @@ AUTONOMATH_DB = REPO_ROOT / "autonomath.db"
 # Kanji → arabic conversion for law_number normalization
 # -----------------------------------------------------------------------------
 
-_K2A_DIGIT = {"〇": 0, "零": 0, "一": 1, "二": 2, "三": 3, "四": 4, "五": 5,
-              "六": 6, "七": 7, "八": 8, "九": 9}
+_K2A_DIGIT = {
+    "〇": 0,
+    "零": 0,
+    "一": 1,
+    "二": 2,
+    "三": 3,
+    "四": 4,
+    "五": 5,
+    "六": 6,
+    "七": 7,
+    "八": 8,
+    "九": 9,
+}
 
 
 def kanji_to_int(s: str) -> int:
@@ -107,11 +119,13 @@ def normalize_law_number(s: str | None) -> str | None:
         year = kanji_to_int(year_k)
     except Exception:
         return s
+
     def repl(m2: re.Match[str]) -> str:
         try:
             return f"第{kanji_to_int(m2.group(1))}号"
         except Exception:
             return m2.group(0)
+
     rest2 = re.sub(r"第([〇零一二三四五六七八九十百千万]+)号", repl, rest)
     return f"{era}{year}年{rest2}"
 
@@ -129,11 +143,16 @@ _SLUG_OVERRIDES = {
 
 # strip trailing legal suffixes before slugification to get clean keyword
 _SUFFIX_STRIPS = (
-    "等に関する法律", "に関する法律",
-    "等に関する政令", "に関する政令",
-    "等に関する命令", "に関する命令",
-    "等に関する省令", "に関する省令",
-    "に関する特別措置法", "特別措置法",
+    "等に関する法律",
+    "に関する法律",
+    "等に関する政令",
+    "に関する政令",
+    "等に関する命令",
+    "に関する命令",
+    "等に関する省令",
+    "に関する省令",
+    "に関する特別措置法",
+    "特別措置法",
 )
 
 
@@ -279,7 +298,10 @@ LIMIT ?;
 # e_gov_lawid digit-mistake detector
 # -----------------------------------------------------------------------------
 
-def find_egov_digit_fixes(jp: sqlite3.Connection, am: sqlite3.Connection) -> list[tuple[str, str, str, str]]:
+
+def find_egov_digit_fixes(
+    jp: sqlite3.Connection, am: sqlite3.Connection
+) -> list[tuple[str, str, str, str]]:
     """Return list of (canonical_id, canonical_name, wrong_egov_id, correct_egov_id).
 
     Match by normalized-law-number first; verify via title exact match against jpintel.
@@ -328,6 +350,7 @@ def find_egov_digit_fixes(jp: sqlite3.Connection, am: sqlite3.Connection) -> lis
 # Main back-port logic
 # -----------------------------------------------------------------------------
 
+
 def run_backport(limit: int, dry_run: bool) -> tuple[int, int, int]:
     """Return (inserted, skipped_dup_canonical, skipped_dup_egov)."""
     jp = sqlite3.connect(f"file:{JPINTEL_DB}?mode=ro", uri=True)
@@ -338,11 +361,14 @@ def run_backport(limit: int, dry_run: bool) -> tuple[int, int, int]:
     # fetch existing am_law canonical_ids and e_gov_lawids
     existing_slugs = {row[0] for row in am.execute("SELECT canonical_id FROM am_law")}
     existing_egov = {
-        row[0] for row in am.execute(
+        row[0]
+        for row in am.execute(
             "SELECT e_gov_lawid FROM am_law WHERE e_gov_lawid IS NOT NULL AND e_gov_lawid != ''"
         )
     }
-    _LOG.info("am_law existing: canonical_id=%d, e_gov_lawid=%d", len(existing_slugs), len(existing_egov))
+    _LOG.info(
+        "am_law existing: canonical_id=%d, e_gov_lawid=%d", len(existing_slugs), len(existing_egov)
+    )
 
     rows = jp.execute(SELECT_CANDIDATES_SQL, (limit,)).fetchall()
     _LOG.info("jp candidates fetched: %d", len(rows))
@@ -376,26 +402,30 @@ def run_backport(limit: int, dry_run: bool) -> tuple[int, int, int]:
         slug_seen.add(slug)
         # status mapping
         status = "active" if r["revision_status"] == "current" else r["revision_status"]
-        to_insert.append({
-            "canonical_id": slug,
-            "canonical_name": title,
-            "short_name": None,
-            "law_number": normalize_law_number(r["law_number"]),
-            "category": infer_category(title),
-            "first_enforced": r["enforced_date"],
-            "egov_url": r["full_text_url"],
-            "status": status,
-            "note": None,
-            "ministry": infer_ministry(title),
-            "effective_from": r["enforced_date"],
-            "last_amended_at": r["last_amended_date"],
-            "subject_areas_json": None,
-            "e_gov_lawid": egov,
-        })
+        to_insert.append(
+            {
+                "canonical_id": slug,
+                "canonical_name": title,
+                "short_name": None,
+                "law_number": normalize_law_number(r["law_number"]),
+                "category": infer_category(title),
+                "first_enforced": r["enforced_date"],
+                "egov_url": r["full_text_url"],
+                "status": status,
+                "note": None,
+                "ministry": infer_ministry(title),
+                "effective_from": r["enforced_date"],
+                "last_amended_at": r["last_amended_date"],
+                "subject_areas_json": None,
+                "e_gov_lawid": egov,
+            }
+        )
 
     _LOG.info(
         "prepared insert: %d (skipped egov-dup=%d, slug-conflict=%d)",
-        len(to_insert), skipped_egov, skipped_slug,
+        len(to_insert),
+        skipped_egov,
+        skipped_slug,
     )
 
     if dry_run:
@@ -403,8 +433,11 @@ def run_backport(limit: int, dry_run: bool) -> tuple[int, int, int]:
         for row in to_insert[:10]:
             _LOG.info(
                 "sample INSERT: %s | %s | %s | %s | %s",
-                row["canonical_id"], row["canonical_name"][:30],
-                row["law_number"], row["category"], row["e_gov_lawid"],
+                row["canonical_id"],
+                row["canonical_name"][:30],
+                row["law_number"],
+                row["category"],
+                row["e_gov_lawid"],
             )
         jp.close()
         am.close()
@@ -416,7 +449,8 @@ def run_backport(limit: int, dry_run: bool) -> tuple[int, int, int]:
         inserted = 0
         for row in to_insert:
             try:
-                am.execute("""
+                am.execute(
+                    """
                     INSERT INTO am_law (
                         canonical_id, canonical_name, short_name, law_number,
                         category, first_enforced, egov_url, status, note,
@@ -424,13 +458,24 @@ def run_backport(limit: int, dry_run: bool) -> tuple[int, int, int]:
                         subject_areas_json, e_gov_lawid
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     ON CONFLICT(canonical_id) DO NOTHING
-                """, (
-                    row["canonical_id"], row["canonical_name"], row["short_name"],
-                    row["law_number"], row["category"], row["first_enforced"],
-                    row["egov_url"], row["status"], row["note"],
-                    row["ministry"], row["effective_from"], row["last_amended_at"],
-                    row["subject_areas_json"], row["e_gov_lawid"],
-                ))
+                """,
+                    (
+                        row["canonical_id"],
+                        row["canonical_name"],
+                        row["short_name"],
+                        row["law_number"],
+                        row["category"],
+                        row["first_enforced"],
+                        row["egov_url"],
+                        row["status"],
+                        row["note"],
+                        row["ministry"],
+                        row["effective_from"],
+                        row["last_amended_at"],
+                        row["subject_areas_json"],
+                        row["e_gov_lawid"],
+                    ),
+                )
                 if am.total_changes > inserted:
                     inserted += 1
             except sqlite3.IntegrityError as e:
@@ -511,15 +556,16 @@ def verify_post(expected_min: int) -> dict[str, Any]:
 
 # -----------------------------------------------------------------------------
 
+
 def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--dry-run", action="store_true", help="print without writing")
     p.add_argument("--apply", action="store_true", help="write to am_law")
     p.add_argument("--limit", type=int, default=500, help="max rows to back-port")
-    p.add_argument("--fix-egov-only", action="store_true",
-                   help="only run the e_gov_lawid digit-mistake pass")
-    p.add_argument("--backport-only", action="store_true",
-                   help="only run the back-port pass")
+    p.add_argument(
+        "--fix-egov-only", action="store_true", help="only run the e_gov_lawid digit-mistake pass"
+    )
+    p.add_argument("--backport-only", action="store_true", help="only run the back-port pass")
     p.add_argument("--verbose", "-v", action="store_true")
     args = p.parse_args()
 
@@ -548,8 +594,7 @@ def main() -> int:
         stats = verify_post(expected_min=650)
         _LOG.info("POST STATS: %s", stats)
     if backport_stats:
-        _LOG.info("backport_stats: to_insert=%d, skipped_egov=%d, skipped_slug=%d",
-                  *backport_stats)
+        _LOG.info("backport_stats: to_insert=%d, skipped_egov=%d, skipped_slug=%d", *backport_stats)
     if fix_stats:
         _LOG.info("fix_stats: found=%d, fixed=%d", *fix_stats)
     return 0

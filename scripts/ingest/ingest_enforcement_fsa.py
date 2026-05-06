@@ -59,6 +59,7 @@ CLI:
     python scripts/ingest/ingest_enforcement_fsa.py \\
         [--db autonomath.db] [--max-rows 200] [--dry-run] [--verbose]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -101,27 +102,55 @@ KANTOU_INDEX_URLS = (
 
 # Title-level inclusion filter (any one suffices)
 KEYWORD_INCLUDE = (
-    "行政処分", "業務改善命令", "業務停止", "業務廃止", "登録取消",
-    "課徴金", "罰金", "過怠金", "取消し", "取消", "警告", "勧告", "告発",
-    "報告徴求", "業務上の", "改善命令",
+    "行政処分",
+    "業務改善命令",
+    "業務停止",
+    "業務廃止",
+    "登録取消",
+    "課徴金",
+    "罰金",
+    "過怠金",
+    "取消し",
+    "取消",
+    "警告",
+    "勧告",
+    "告発",
+    "報告徴求",
+    "業務上の",
+    "改善命令",
 )
 # Anti-spam exclusions in titles. "(案)" and 改正案 are policy drafts, not
 # enforcement actions. Public comments / policy papers also excluded.
 KEYWORD_EXCLUDE = (
-    "意見交換会", "アンケート", "監督指針", "（案）", "(案)",
-    "パブリックコメント", "募集", "セミナー", "シンポジウム",
-    "懇談会", "研究会", "白書", "改正", "の公表", "ガイドライン",
-    "事務ガイドライン", "金融上の措置", "災害",
-    "金融経済教育", "中間報告", "報告書", "の改訂",
+    "意見交換会",
+    "アンケート",
+    "監督指針",
+    "（案）",
+    "(案)",
+    "パブリックコメント",
+    "募集",
+    "セミナー",
+    "シンポジウム",
+    "懇談会",
+    "研究会",
+    "白書",
+    "改正",
+    "の公表",
+    "ガイドライン",
+    "事務ガイドライン",
+    "金融上の措置",
+    "災害",
+    "金融経済教育",
+    "中間報告",
+    "報告書",
+    "の改訂",
 )
 
 # ---------------------------------------------------------------------------
 # Date / number parsing
 # ---------------------------------------------------------------------------
 
-WAREKI_RE = re.compile(
-    r"(令和|平成|昭和)\s*(\d+|元)\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日"
-)
+WAREKI_RE = re.compile(r"(令和|平成|昭和)\s*(\d+|元)\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日")
 ERA_OFFSET = {"令和": 2018, "平成": 1988, "昭和": 1925}
 
 # 法人番号 13-digit
@@ -278,10 +307,17 @@ def classify_kind(title: str, body: str) -> str:
     """Map title + body keyword to am_enforcement_detail.enforcement_kind."""
     s = _normalize(title) + " " + _normalize(body)[:400]
     # license_revoke beats business_improvement; fine beats both.
-    if any(k in s for k in (
-        "業務廃止命令", "業務停止命令", "登録取消", "取消し",
-        "認可取消", "事業停止",
-    )):
+    if any(
+        k in s
+        for k in (
+            "業務廃止命令",
+            "業務停止命令",
+            "登録取消",
+            "取消し",
+            "認可取消",
+            "事業停止",
+        )
+    ):
         return "license_revoke"
     if "課徴金" in s or "罰金" in s or "過怠金" in s:
         return "fine"
@@ -396,10 +432,13 @@ def extract_target_name(title: str, body_text: str = "") -> str:
     cand = re.sub(r"\s+", " ", cand).strip()
     # Strip *paired* outer wrappers only — leave (株) prefix intact.
     for open_c, close_c in (
-        ("「", "」"), ("『", "』"), ("【", "】"), ("[", "]"),
+        ("「", "」"),
+        ("『", "』"),
+        ("【", "】"),
+        ("[", "]"),
     ):
         if cand.startswith(open_c) and cand.endswith(close_c):
-            cand = cand[len(open_c):-len(close_c)].strip()
+            cand = cand[len(open_c) : -len(close_c)].strip()
     return cand[:200]
 
 
@@ -416,9 +455,7 @@ def _abs_url(base: str, href: str) -> str:
     return urljoin(base, href)
 
 
-_IDX_ANCHOR_RE = re.compile(
-    r'<a\s+href="([^"]+)"[^>]*>([^<]{2,400})</a>', re.S
-)
+_IDX_ANCHOR_RE = re.compile(r'<a\s+href="([^"]+)"[^>]*>([^<]{2,400})</a>', re.S)
 
 
 def fetch_fsa_news_index(http: HttpClient) -> list[tuple[str, str]]:
@@ -522,19 +559,28 @@ def fetch_kantou_index(http: HttpClient, idx_url: str) -> list[tuple[str, str]]:
             continue
         if not href.startswith("/kantou/kinyuu/"):
             continue
-        if any(skip in href for skip in (
-            "kashikin/mokuji", "shintaku/mokuji", "shogakutanki/mokuji",
-            "touroku/mokuji", "/index.htm", "/index.html",
-            "kinshotorihou/mokuji", "kinshotorihou/kinsho",
-            "pagekthp00400016", "pagekthp00400017", "pagekthp00400022",
-            "pagekthp00400034", "pagekthp00400036", "pagekthp00400037",
-        )):
+        if any(
+            skip in href
+            for skip in (
+                "kashikin/mokuji",
+                "shintaku/mokuji",
+                "shogakutanki/mokuji",
+                "touroku/mokuji",
+                "/index.htm",
+                "/index.html",
+                "kinshotorihou/mokuji",
+                "kinshotorihou/kinsho",
+                "pagekthp00400016",
+                "pagekthp00400017",
+                "pagekthp00400022",
+                "pagekthp00400034",
+                "pagekthp00400036",
+                "pagekthp00400037",
+            )
+        ):
             continue
         # date title? Accept "令和X年Y月Z日" or any 行政処分/警告 text
-        if not (
-            WAREKI_RE.search(title)
-            or any(k in title for k in KEYWORD_INCLUDE)
-        ):
+        if not (WAREKI_RE.search(title) or any(k in title for k in KEYWORD_INCLUDE)):
             continue
         url = _abs_url(idx_url, href)
         if url in seen:
@@ -593,9 +639,7 @@ def parse_article(
     law_ref = law_ref_from_url(url, title_clean, body_text)
     amount = _parse_yen(body_text) if kind == "fine" else None
     houjin = _parse_houjin(body_text)
-    reason = (
-        f"{title_clean[:200]} | {body_text[:1200]}"
-    )[:1500]
+    reason = (f"{title_clean[:200]} | {body_text[:1200]}")[:1500]
     return EnfRow(
         target_name=target,
         issuance_date=date_iso,
@@ -683,8 +727,7 @@ def upsert_entity_and_enforcement(
     canonical_id = f"AM-ENF-FSA-{slug}{seq:04d}"
     domain = urlparse(row.source_url).netloc or None
     primary_name = (
-        f"{row.target_name} ({row.issuance_date}) - "
-        f"{row.issuing_authority} {row.enforcement_kind}"
+        f"{row.target_name} ({row.issuance_date}) - {row.issuing_authority} {row.enforcement_kind}"
     )[:500]
     raw_json = json.dumps(
         {
@@ -793,7 +836,9 @@ def write_rows(
             except sqlite3.Error as exc:
                 _LOG.error(
                     "insert error name=%r date=%s err=%s",
-                    r.target_name, r.issuance_date, exc,
+                    r.target_name,
+                    r.issuance_date,
+                    exc,
                 )
                 continue
         conn.commit()
@@ -827,9 +872,7 @@ def main(argv: list[str] | None = None) -> int:
         format="%(asctime)s %(levelname)s %(name)s %(message)s",
     )
     http = HttpClient(user_agent=USER_AGENT)
-    now_iso = datetime.now(UTC).isoformat(timespec="seconds").replace(
-        "+00:00", "Z"
-    )
+    now_iso = datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
 
     candidates = collect_candidate_urls(http)
     parsed: list[EnfRow] = []
@@ -853,8 +896,12 @@ def main(argv: list[str] | None = None) -> int:
         for r in parsed[:5]:
             _LOG.info(
                 "sample: name=%s date=%s auth=%s kind=%s law=%s amt=%s",
-                r.target_name, r.issuance_date, r.issuing_authority,
-                r.enforcement_kind, r.related_law_ref, r.amount_yen,
+                r.target_name,
+                r.issuance_date,
+                r.issuing_authority,
+                r.enforcement_kind,
+                r.related_law_ref,
+                r.amount_yen,
             )
         http.close()
         return 0
@@ -869,7 +916,10 @@ def main(argv: list[str] | None = None) -> int:
     ensure_tables(conn)
 
     inserted, dup_db, dup_batch = write_rows(
-        conn, parsed, now_iso=now_iso, max_inserts=args.max_rows,
+        conn,
+        parsed,
+        now_iso=now_iso,
+        max_inserts=args.max_rows,
     )
     try:
         conn.close()

@@ -69,6 +69,7 @@ CLI:
     python scripts/ingest/ingest_enforcement_grant_refund.py --max-rows 500
     python scripts/ingest/ingest_enforcement_grant_refund.py --dry-run
 """
+
 from __future__ import annotations
 
 import argparse
@@ -307,6 +308,7 @@ def _classify_kind(breadcrumb: str, h1: str) -> str:
 
 # -------------------------- HTTP fetch --------------------------
 
+
 class Fetcher:
     """Plain HTTP fetcher with rate limiting + retry. jbaudit has no bot block."""
 
@@ -342,8 +344,8 @@ class Fetcher:
 
 # -------------------------- Probe valid IDs --------------------------
 
-def probe_valid_ids(year_code: str, max_id: int = 800,
-                    workers: int = 30) -> list[str]:
+
+def probe_valid_ids(year_code: str, max_id: int = 800, workers: int = 30) -> list[str]:
     """Probe NNNN-0.htm for NNNN in 1..max_id; return 200-OK IDs (sorted)."""
     year_full = YEAR_FULL[year_code]
     base = f"https://report.jbaudit.go.jp/org/{year_code}/{year_full}-{year_code}-"
@@ -378,6 +380,7 @@ def probe_valid_ids(year_code: str, max_id: int = 800,
 
 # -------------------------- Page parser --------------------------
 
+
 def parse_page(html: str, source_url: str, year_code: str) -> list[dict[str, Any]]:
     """Parse a single audit board page; return list of entity records.
 
@@ -392,16 +395,46 @@ def parse_page(html: str, source_url: str, year_code: str) -> list[dict[str, Any
 
     # Filter: must be 不当事項 / 意見表示 / 補助金 (subsidy / grant) related
     blob = h1_text + "\n" + breadcrumb
-    is_subsidy = any(k in blob for k in [
-        "補助金", "交付金", "助成金", "補助事業", "補助対象", "貸付金",
-        "委託費", "補助事業者", "事業再構築", "ものづくり", "IT導入",
-        "持続化", "雇用調整", "緊急包括支援", "地方創生", "農業", "漁業",
-        "畜産", "林業", "研究費", "科研費",
-    ])
-    is_enforcement_topic = any(k in blob for k in [
-        "不当事項", "不正受給", "不正利用", "返還", "過大に交付",
-        "過大に支給", "意見を表示", "処置を要求", "是正改善",
-    ])
+    is_subsidy = any(
+        k in blob
+        for k in [
+            "補助金",
+            "交付金",
+            "助成金",
+            "補助事業",
+            "補助対象",
+            "貸付金",
+            "委託費",
+            "補助事業者",
+            "事業再構築",
+            "ものづくり",
+            "IT導入",
+            "持続化",
+            "雇用調整",
+            "緊急包括支援",
+            "地方創生",
+            "農業",
+            "漁業",
+            "畜産",
+            "林業",
+            "研究費",
+            "科研費",
+        ]
+    )
+    is_enforcement_topic = any(
+        k in blob
+        for k in [
+            "不当事項",
+            "不正受給",
+            "不正利用",
+            "返還",
+            "過大に交付",
+            "過大に支給",
+            "意見を表示",
+            "処置を要求",
+            "是正改善",
+        ]
+    )
     if not (is_subsidy and is_enforcement_topic):
         return []
 
@@ -410,7 +443,10 @@ def parse_page(html: str, source_url: str, year_code: str) -> list[dict[str, Any
 
     # Subsidy program name from H1 — find the "<...>補助金" / "<...>交付金" etc.
     program_name = None
-    for m in re.finditer(r"([一-鿿ぁ-んァ-ヶー・A-Za-z0-9]+(?:補助金|交付金|助成金|事業費補助金|促進補助金))", h1_text):
+    for m in re.finditer(
+        r"([一-鿿ぁ-んァ-ヶー・A-Za-z0-9]+(?:補助金|交付金|助成金|事業費補助金|促進補助金))",
+        h1_text,
+    ):
         program_name = m.group(1)
         break
 
@@ -436,10 +472,18 @@ def parse_page(html: str, source_url: str, year_code: str) -> list[dict[str, Any
         non_empty_cols = [c for c in col_headers if c]
         if non_empty_cols:
             first_col = non_empty_cols[0]
-            if any(k in first_col for k in [
-                "部局等", "局名", "都道府県名", "区分", "省名",
-                "実施機関", "交付者",
-            ]):
+            if any(
+                k in first_col
+                for k in [
+                    "部局等",
+                    "局名",
+                    "都道府県名",
+                    "区分",
+                    "省名",
+                    "実施機関",
+                    "交付者",
+                ]
+            ):
                 name_td_idx = 1
                 org_td_idx = 0
         # Carry forward "同" rows within a single table.
@@ -561,30 +605,33 @@ def parse_page(html: str, source_url: str, year_code: str) -> list[dict[str, Any
             # Use row-level authority if it gave a non-default canonical_id.
             final_authority = row_authority or issuing_authority
             final_canonical = row_authority_canonical or authority_canonical
-            out.append({
-                "ref_no": ref_no,
-                "target_name": target_name,
-                "houjin_bangou": houjin,
-                "prefecture": prefecture,
-                "amount_yen": unfair_amount_yen,
-                "issuance_date": YEAR_PUB_DATE[year_code],
-                "issuing_authority": final_authority,
-                "authority_canonical": final_canonical,
-                "issuing_authority_h1": issuing_authority,
-                "enforcement_kind": enforcement_kind,
-                "program_name": program_name,
-                "year_code": year_code,
-                "title": h1_text,
-                "tekiyo": tekiyo,
-                "reason_summary": reason_summary,
-                "source_url": source_url,
-                "related_law_ref": "補助金等に係る予算の執行の適正化に関する法律 第17条 等",
-            })
+            out.append(
+                {
+                    "ref_no": ref_no,
+                    "target_name": target_name,
+                    "houjin_bangou": houjin,
+                    "prefecture": prefecture,
+                    "amount_yen": unfair_amount_yen,
+                    "issuance_date": YEAR_PUB_DATE[year_code],
+                    "issuing_authority": final_authority,
+                    "authority_canonical": final_canonical,
+                    "issuing_authority_h1": issuing_authority,
+                    "enforcement_kind": enforcement_kind,
+                    "program_name": program_name,
+                    "year_code": year_code,
+                    "title": h1_text,
+                    "tekiyo": tekiyo,
+                    "reason_summary": reason_summary,
+                    "source_url": source_url,
+                    "related_law_ref": "補助金等に係る予算の執行の適正化に関する法律 第17条 等",
+                }
+            )
 
     return out
 
 
 # -------------------------- DB write --------------------------
+
 
 def existing_dedup_keys(cur: sqlite3.Cursor) -> set[tuple[str, str, str]]:
     cur.execute("""
@@ -701,6 +748,7 @@ def upsert_record(
 
 # -------------------------- main flow --------------------------
 
+
 def run(
     db_path: Path,
     years: list[str],
@@ -722,11 +770,7 @@ def run(
     for yc in years:
         cache_file = (cached_id_dir / f"{yc}_ids.txt") if cached_id_dir else None
         if cache_file and cache_file.exists():
-            ids = [
-                line.strip()
-                for line in cache_file.read_text().splitlines()
-                if line.strip()
-            ]
+            ids = [line.strip() for line in cache_file.read_text().splitlines() if line.strip()]
             _LOG.info("[%s] using cached %d ids from %s", yc, len(ids), cache_file)
         else:
             _LOG.info("[%s] probing valid page IDs (1..800)...", yc)
@@ -768,10 +812,16 @@ def run(
                 pages_with_data += 1
                 all_records.extend(recs)
             if pages_seen % 50 == 0:
-                _LOG.info("progress: %d/%d pages fetched, %d with data, %d records",
-                          pages_seen, len(tasks), pages_with_data, len(all_records))
-    _LOG.info("collected: %d records from %d/%d pages",
-              len(all_records), pages_with_data, pages_seen)
+                _LOG.info(
+                    "progress: %d/%d pages fetched, %d with data, %d records",
+                    pages_seen,
+                    len(tasks),
+                    pages_with_data,
+                    len(all_records),
+                )
+    _LOG.info(
+        "collected: %d records from %d/%d pages", len(all_records), pages_with_data, pages_seen
+    )
 
     if not all_records:
         _LOG.error("no records collected — aborting")
@@ -790,9 +840,14 @@ def run(
         for k, v in sorted(by_auth.items(), key=lambda kv: -kv[1])[:20]:
             _LOG.info("  authority %s: %d", k, v)
         for r in all_records[:5]:
-            _LOG.info("  sample: %s %s | %s | %s | ¥%s",
-                      r["year_code"], r["ref_no"], r["target_name"][:30],
-                      r["issuing_authority"][:30], r.get("amount_yen") or "?")
+            _LOG.info(
+                "  sample: %s %s | %s | %s | ¥%s",
+                r["year_code"],
+                r["ref_no"],
+                r["target_name"][:30],
+                r["issuing_authority"][:30],
+                r.get("amount_yen") or "?",
+            )
         return 0
 
     # 3. Write to DB with batched BEGIN IMMEDIATE.
@@ -830,8 +885,11 @@ def run(
         existing_dedup = existing_dedup_keys(cur)
         seen_canonical = existing_canonical_ids(cur)
         cur.close()
-        _LOG.info("loaded %d existing dedup keys + %d canonical_ids",
-                  len(existing_dedup), len(seen_canonical))
+        _LOG.info(
+            "loaded %d existing dedup keys + %d canonical_ids",
+            len(existing_dedup),
+            len(seen_canonical),
+        )
 
         batch: list[dict[str, Any]] = []
         for r in all_records:
@@ -854,8 +912,7 @@ def run(
                     try:
                         ok = upsert_record(cur, rec, now_iso, seen_canonical)
                     except sqlite3.IntegrityError as exc:
-                        _LOG.warning("integrity %s: %s",
-                                     rec.get("target_name"), exc)
+                        _LOG.warning("integrity %s: %s", rec.get("target_name"), exc)
                         skipped_constraint += 1
                         continue
                     if ok:
@@ -863,9 +920,7 @@ def run(
                         by_auth[rec["issuing_authority"]] = (
                             by_auth.get(rec["issuing_authority"], 0) + 1
                         )
-                        by_year[rec["year_code"]] = (
-                            by_year.get(rec["year_code"], 0) + 1
-                        )
+                        by_year[rec["year_code"]] = by_year.get(rec["year_code"], 0) + 1
                 cur.close()
                 con.execute("COMMIT")
                 _LOG.info("batch commit: inserted=%d (so far)", inserted)
@@ -877,24 +932,22 @@ def run(
                 try:
                     ok = upsert_record(cur, rec, now_iso, seen_canonical)
                 except sqlite3.IntegrityError as exc:
-                    _LOG.warning("integrity %s: %s",
-                                 rec.get("target_name"), exc)
+                    _LOG.warning("integrity %s: %s", rec.get("target_name"), exc)
                     skipped_constraint += 1
                     continue
                 if ok:
                     inserted += 1
-                    by_auth[rec["issuing_authority"]] = (
-                        by_auth.get(rec["issuing_authority"], 0) + 1
-                    )
-                    by_year[rec["year_code"]] = (
-                        by_year.get(rec["year_code"], 0) + 1
-                    )
+                    by_auth[rec["issuing_authority"]] = by_auth.get(rec["issuing_authority"], 0) + 1
+                    by_year[rec["year_code"]] = by_year.get(rec["year_code"], 0) + 1
             cur.close()
             con.execute("COMMIT")
             _LOG.info("final batch commit: inserted=%d", inserted)
         _LOG.info(
             "INSERT done inserted=%d skipped_dup=%d skipped_err=%d total_seen=%d",
-            inserted, skipped_dup, skipped_constraint, len(all_records),
+            inserted,
+            skipped_dup,
+            skipped_constraint,
+            len(all_records),
         )
         for k in sorted(by_year):
             _LOG.info("  year %s inserted: %d", k, by_year[k])
@@ -917,11 +970,19 @@ def main(argv: list[str] | None = None) -> int:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     ap.add_argument("--db", type=Path, default=DEFAULT_DB)
-    ap.add_argument("--years", type=str, default="r06,r05,r04,r03",
-                    help="comma-separated year codes (e.g. r06,r05)")
+    ap.add_argument(
+        "--years",
+        type=str,
+        default="r06,r05,r04,r03",
+        help="comma-separated year codes (e.g. r06,r05)",
+    )
     ap.add_argument("--max-rows", type=int, default=10000)
-    ap.add_argument("--cached-id-dir", type=Path, default=Path("/tmp"),
-                    help="directory holding {yc}_ids.txt cache files")
+    ap.add_argument(
+        "--cached-id-dir",
+        type=Path,
+        default=Path("/tmp"),
+        help="directory holding {yc}_ids.txt cache files",
+    )
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("-v", "--verbose", action="store_true")
     args = ap.parse_args(argv)

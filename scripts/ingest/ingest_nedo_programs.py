@@ -27,6 +27,7 @@ CLI:
     .venv/bin/python scripts/ingest/ingest_nedo_programs.py --pages 5 --dry-run
     .venv/bin/python scripts/ingest/ingest_nedo_programs.py --pages 8 --max 80
 """
+
 from __future__ import annotations
 
 import argparse
@@ -76,13 +77,14 @@ AUTHORITY_LEVEL = "national"
 
 MAX_BODY_EXCERPT = 200  # char cap per TOS (景表法 fair-use-equivalent)
 
-TIER_OPEN = "S"        # 公募 / 予告
-TIER_DECIDED = "A"     # 決定 (採択公表済)
+TIER_OPEN = "S"  # 公募 / 予告
+TIER_DECIDED = "A"  # 決定 (採択公表済)
 
 
 def fetch(client: httpx.Client, url: str, host_clock: dict[str, float]) -> bytes | None:
     """1 req/sec/host pacing + 3-retry backoff."""
     from urllib.parse import urlparse
+
     host = urlparse(url).netloc
     last = host_clock.get(host)
     if last is not None:
@@ -98,7 +100,7 @@ def fetch(client: httpx.Client, url: str, host_clock: dict[str, float]) -> bytes
             _LOG.warning("fetch_err url=%s attempt=%d err=%s", url, attempt, exc)
             if attempt == MAX_RETRIES:
                 return None
-            time.sleep(2 ** attempt)
+            time.sleep(2**attempt)
             continue
 
         if r.status_code == 200:
@@ -109,9 +111,9 @@ def fetch(client: httpx.Client, url: str, host_clock: dict[str, float]) -> bytes
         if r.status_code in (429, 503) and attempt < MAX_RETRIES:
             ra = r.headers.get("retry-after")
             try:
-                wait = float(ra) if ra else 2 ** attempt
+                wait = float(ra) if ra else 2**attempt
             except ValueError:
-                wait = 2 ** attempt
+                wait = 2**attempt
             _LOG.info("backoff url=%s status=%d wait=%.1fs", url, r.status_code, wait)
             time.sleep(wait)
             continue
@@ -207,9 +209,7 @@ def parse_koubo_detail(html: bytes, *, url: str, anchor_text: str) -> dict[str, 
         application_open = _normalize_date(period_m.group(1))
 
     # Released-on header date (page-published)
-    pub_m = re.search(
-        r"本公募\s*\n[^\n]*\n(\d{4}年\d{1,2}月\d{1,2}日)", text, flags=re.S
-    )
+    pub_m = re.search(r"本公募\s*\n[^\n]*\n(\d{4}年\d{1,2}月\d{1,2}日)", text, flags=re.S)
     page_date = _normalize_date(pub_m.group(1) if pub_m else None)
 
     # Department / unit hint — common phrasings:
@@ -280,12 +280,14 @@ def upsert_program(
 
     enriched_json = json.dumps(enriched, ensure_ascii=False)
     source_mentions = json.dumps(
-        [{
-            "source": "nedo.go.jp",
-            "attribution": ATTRIBUTION,
-            "license": LICENSE_NOTE,
-            "issuer_hojin_bangou": NEDO_HOJIN_BANGOU,
-        }],
+        [
+            {
+                "source": "nedo.go.jp",
+                "attribution": ATTRIBUTION,
+                "license": LICENSE_NOTE,
+                "issuer_hojin_bangou": NEDO_HOJIN_BANGOU,
+            }
+        ],
         ensure_ascii=False,
     )
 
@@ -307,17 +309,36 @@ def upsert_program(
                 updated_at
             ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
             (
-                uid, name, None,
-                AUTHORITY_LEVEL, ISSUER_NAME, None, None,
-                "subsidy", source_url,
-                None, None, None,
-                None, tier, None, None, None,
-                0, None,
-                None, None,
-                None, None,
-                None, application_window_json,
-                enriched_json, source_mentions,
-                source_url, now_iso, None,
+                uid,
+                name,
+                None,
+                AUTHORITY_LEVEL,
+                ISSUER_NAME,
+                None,
+                None,
+                "subsidy",
+                source_url,
+                None,
+                None,
+                None,
+                None,
+                tier,
+                None,
+                None,
+                None,
+                0,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                application_window_json,
+                enriched_json,
+                source_mentions,
+                source_url,
+                now_iso,
+                None,
                 now_iso,
             ),
         )
@@ -347,8 +368,9 @@ def upsert_program(
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--db", type=Path, default=DEFAULT_DB)
-    p.add_argument("--pages", type=int, default=5,
-                   help="number of koubo index pages to walk (10 entries each)")
+    p.add_argument(
+        "--pages", type=int, default=5, help="number of koubo index pages to walk (10 entries each)"
+    )
     p.add_argument("--max", type=int, default=80, help="cap programs to ingest")
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--verbose", action="store_true")
@@ -442,7 +464,10 @@ def main(argv: list[str] | None = None) -> int:
             if args.dry_run:
                 _LOG.info(
                     "dry-run: tier=%s status=%s name=%s url=%s",
-                    tier, meta["status"], meta["primary_name"][:60], url,
+                    tier,
+                    meta["status"],
+                    meta["primary_name"][:60],
+                    url,
                 )
                 continue
 
@@ -480,7 +505,11 @@ def main(argv: list[str] | None = None) -> int:
 
     _LOG.info(
         "done inserted=%d updated=%d skipped=%d errors=%d (candidates=%d)",
-        inserted, updated, skipped, errors, len(candidates),
+        inserted,
+        updated,
+        skipped,
+        errors,
+        len(candidates),
     )
     print(
         f"nedo_ingest inserted={inserted} updated={updated} skipped={skipped} "

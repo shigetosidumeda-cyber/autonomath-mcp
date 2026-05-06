@@ -23,6 +23,7 @@ the update in a single transaction, adds a ``source_url_corrected_at``
 TEXT column if it does not already exist, and refuses to run unless a
 non-placeholder ``--new-url`` is supplied.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -101,9 +102,7 @@ def run(db_path: str, new_url: str | None, apply: bool) -> int:
     con = sqlite3.connect(uri, uri=True, isolation_level=None)
     try:
         state = _fetch_current_state(con)
-        corrected_at = dt.datetime.now(dt.UTC).isoformat(
-            timespec="seconds"
-        )
+        corrected_at = dt.datetime.now(dt.UTC).isoformat(timespec="seconds")
 
         print(f"Target unified_id : {state['unified_id']}")
         print(f"Target primary_name: {state['primary_name']}")
@@ -125,9 +124,7 @@ def run(db_path: str, new_url: str | None, apply: bool) -> int:
             print()
 
         column_exists = _column_exists(con, "programs", "source_url_corrected_at")
-        add_column_sql = (
-            "ALTER TABLE programs ADD COLUMN source_url_corrected_at TEXT;"
-        )
+        add_column_sql = "ALTER TABLE programs ADD COLUMN source_url_corrected_at TEXT;"
         update_sql = (
             "UPDATE programs "
             "SET source_url = :new_url, "
@@ -139,10 +136,7 @@ def run(db_path: str, new_url: str | None, apply: bool) -> int:
         if not column_exists:
             print(f"  {add_column_sql}")
         else:
-            print(
-                "  -- source_url_corrected_at column already present; "
-                "no ALTER TABLE needed"
-            )
+            print("  -- source_url_corrected_at column already present; no ALTER TABLE needed")
         print(f"  {update_sql}")
         print(
             f"  -- params: uid={state['unified_id']!r}, "

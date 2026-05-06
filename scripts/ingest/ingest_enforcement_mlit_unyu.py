@@ -47,6 +47,7 @@ CLI:
         --db autonomath.db [--regions kanto,chubu,...] \
         [--limit 400] [--dry-run]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -82,10 +83,7 @@ _LOG = logging.getLogger("autonomath.ingest.enforcement_mlit_unyu")
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_DB = REPO_ROOT / "autonomath.db"
 
-USER_AGENT = (
-    "jpintel-mcp-ingest/1.0 "
-    "(+https://jpcite.com; contact=ops@jpcite.com)"
-)
+USER_AGENT = "jpintel-mcp-ingest/1.0 (+https://jpcite.com; contact=ops@jpcite.com)"
 PER_REQUEST_DELAY_SEC = 0.6
 HTTP_TIMEOUT_SEC = 60.0
 MAX_RETRIES = 3
@@ -225,9 +223,7 @@ HOUJIN_RE = re.compile(r"法\s*人\s*番\s*号\s*[（(:：]?\s*(\d{13})\s*[）)]
 # 「法人番号」 and digits (Kanto form style uses 「法人番号：」). Allow
 # whitespace within 「法人番号」 itself because pdfminer may insert
 # newlines between 「法人」 and 「番号」 from column wraps.
-HOUJIN_DIGIT_RE = re.compile(
-    r"法\s*人\s*番\s*号\s*[（(：:]?\s*([\d０-９\s　\n]{13,40})\s*[）)]?"
-)
+HOUJIN_DIGIT_RE = re.compile(r"法\s*人\s*番\s*号\s*[（(：:]?\s*([\d０-９\s　\n]{13,40})\s*[）)]?")
 DATE_8DIGIT_RE = re.compile(r"(20\d{2})(\d{2})(\d{2})")
 DATE_REIWA_DOTTED_RE = re.compile(r"R(\d+)\.(\d+)\.(\d+)")
 DATE_REIWA_KANJI_RE = re.compile(r"令和(\d+)年(\d+)月(\d+)日")
@@ -250,15 +246,16 @@ DATE_ANY_RE = re.compile(
     re.MULTILINE,
 )
 
+
 # Extract 法人番号 from a paren-grouped chunk. The 13 digits may span
 # linebreaks because of layout extraction quirks.
 def _normalize_houjin_block(block: str) -> str | None:
-    digits = "".join(ch for ch in block if ch.isdigit() or '０' <= ch <= '９')
+    digits = "".join(ch for ch in block if ch.isdigit() or "０" <= ch <= "９")
     # Convert full-width to half-width
     out = []
     for ch in digits:
-        if '０' <= ch <= '９':
-            out.append(chr(ord('0') + (ord(ch) - 0xff10)))
+        if "０" <= ch <= "９":
+            out.append(chr(ord("0") + (ord(ch) - 0xFF10)))
         else:
             out.append(ch)
     digits = "".join(out)
@@ -310,7 +307,7 @@ class UnyuHttpClient:
                 last_exc = exc
                 if attempt == MAX_RETRIES:
                     break
-                time.sleep(2 ** attempt)
+                time.sleep(2**attempt)
         _LOG.warning("GET text failed url=%s err=%s", url, last_exc)
         return 0, ""
 
@@ -325,7 +322,7 @@ class UnyuHttpClient:
                 last_exc = exc
                 if attempt == MAX_RETRIES:
                     break
-                time.sleep(2 ** attempt)
+                time.sleep(2**attempt)
         _LOG.warning("GET bytes failed url=%s err=%s", url, last_exc)
         return 0, b""
 
@@ -340,10 +337,10 @@ class UnyuHttpClient:
 
 @dataclass
 class UnyuRecord:
-    region: str                        # kanto/chubu/...
-    region_label: str                  # 関東運輸局
-    issuance_date: str                 # ISO yyyy-mm-dd
-    target_name: str                   # 事業者名 (cleaned)
+    region: str  # kanto/chubu/...
+    region_label: str  # 関東運輸局
+    issuance_date: str  # ISO yyyy-mm-dd
+    target_name: str  # 事業者名 (cleaned)
     houjin_bangou: str | None
     address: str | None
     office_name: str | None
@@ -352,8 +349,8 @@ class UnyuRecord:
     enforcement_kind: str
     related_law_ref: str | None
     reason_summary: str | None
-    source_url: str                    # PDF URL
-    source_hub_url: str                # HTML hub URL
+    source_url: str  # PDF URL
+    source_hub_url: str  # HTML hub URL
 
 
 # ---------------------------------------------------------------------------
@@ -406,7 +403,7 @@ def map_punishment(text: str) -> tuple[str, str] | tuple[None, None]:
     for kw, kind in PUNISH_PATTERNS:
         if kw in text:
             idx = text.find(kw)
-            tail = text[idx: idx + 80]
+            tail = text[idx : idx + 80]
             for stop in ("\n", "○", "■", "・", "事業者", "営業所"):
                 pos = tail.find(stop, len(kw))
                 if pos > 0:
@@ -420,7 +417,7 @@ def extract_law_ref(text: str) -> str | None:
         if kw in text:
             # Try to capture an article reference.
             idx = text.find(kw)
-            after = text[idx + len(kw): idx + len(kw) + 40]
+            after = text[idx + len(kw) : idx + len(kw) + 40]
             m = re.match(r"\s*(第[\d\s]+条(?:第[\d\s]+項)?(?:第[\d\s]+号)?)", after)
             if m:
                 return f"{name} {m.group(1).strip()}"
@@ -479,7 +476,7 @@ def _parse_column_flow(
         # Punishment + law from the date-side block (everything from the
         # date marker up to the next row-start date, or +600 chars).
         next_pos = row_dates[i + 1].start() if i + 1 < len(row_dates) else dm.start() + 600
-        date_block = text[dm.start(): next_pos]
+        date_block = text[dm.start() : next_pos]
         punish_raw, kind = map_punishment(date_block)
         if not punish_raw or not kind:
             continue
@@ -493,7 +490,7 @@ def _parse_column_flow(
         for marker in ("監査を実施", "違反が認められた", "違反行為の概要"):
             pos = date_block.find(marker)
             if pos >= 0:
-                tail = date_block[pos: pos + 700]
+                tail = date_block[pos : pos + 700]
                 tail = re.sub(r"\s+", " ", tail).strip()
                 summary = tail[:600]
                 break
@@ -504,7 +501,7 @@ def _parse_column_flow(
         # Target name = text immediately BEFORE the houjin match. Walk
         # back ~150 chars and trim parens / column noise.
         head_start = max(0, hm.start() - 150)
-        head = text[head_start: hm.start()]
+        head = text[head_start : hm.start()]
         # Strip whitespace and condense to single line.
         head = re.sub(r"\s+", "", head).strip()
         # Trim trailing 「（法人番号」 paren since regex matched at "法人番号".
@@ -520,8 +517,17 @@ def _parse_column_flow(
         # smallest possible name slice.
         boundary_idx = -1
         for marker in (
-            "他１件", "他２件", "他３件", "他４件", "他５件", "他６件", "他７件",
-            "他８件", "他９件", "他10件", "他１０件",
+            "他１件",
+            "他２件",
+            "他３件",
+            "他４件",
+            "他５件",
+            "他６件",
+            "他７件",
+            "他８件",
+            "他９件",
+            "他10件",
+            "他１０件",
             "者小池信也",  # Hokkaido 日本郵便 representative tail
             "代表者",
             "】",  # 【貨物軽自動車運送事業】 close
@@ -545,7 +551,7 @@ def _parse_column_flow(
         # the previous row's rep tail bleeding in.
         m_rep = re.match(r"^([一-鿿]{2,4})([\dー－‐\-]{1,3})", head)
         if m_rep:
-            head = head[m_rep.end():]
+            head = head[m_rep.end() :]
         # Drop column-header tokens if present.
         for header_token in (
             "事業者の氏名又は名称及び主たる事務所の位置",
@@ -556,7 +562,7 @@ def _parse_column_flow(
         ):
             pos = head.find(header_token)
             if pos >= 0:
-                head = head[pos + len(header_token):].strip()
+                head = head[pos + len(header_token) :].strip()
         # Trim leading punctuation.
         target_name = head.lstrip("（()【】 　,、")
         # If "代表者" appears, cut it.
@@ -575,22 +581,24 @@ def _parse_column_flow(
         if re.fullmatch(r"\d+", target_name):
             continue
 
-        records.append(UnyuRecord(
-            region=region,
-            region_label=region_label,
-            issuance_date=date_iso,
-            target_name=target_name,
-            houjin_bangou=houjin,
-            address=None,
-            office_name=None,
-            office_address=None,
-            punishment_raw=punish_raw,
-            enforcement_kind=kind,
-            related_law_ref=law_ref,
-            reason_summary=summary,
-            source_url=pdf_url,
-            source_hub_url=hub_url,
-        ))
+        records.append(
+            UnyuRecord(
+                region=region,
+                region_label=region_label,
+                issuance_date=date_iso,
+                target_name=target_name,
+                houjin_bangou=houjin,
+                address=None,
+                office_name=None,
+                office_address=None,
+                punishment_raw=punish_raw,
+                enforcement_kind=kind,
+                related_law_ref=law_ref,
+                reason_summary=summary,
+                source_url=pdf_url,
+                source_hub_url=hub_url,
+            )
+        )
 
     return records
 
@@ -610,6 +618,7 @@ def parse_pdf_records(
     the 法人番号 and 内容 / 違反条項 / 概要 by sequence.
     """
     import io
+
     try:
         text = extract_text(io.BytesIO(pdf_bytes))
     except Exception as exc:
@@ -655,10 +664,10 @@ def parse_pdf_records(
             matches = raw_matches[:1]
     else:
         for m in raw_matches:
-            after = text[m.end(): m.end() + 1]
+            after = text[m.end() : m.end() + 1]
             if after in ("、", "及"):
                 continue
-            window = text[m.end(): m.end() + 280]
+            window = text[m.end() : m.end() + 280]
             if HOUJIN_DIGIT_RE.search(window):
                 matches.append(m)
 
@@ -674,22 +683,36 @@ def parse_pdf_records(
         # which are followed by a punishment keyword within 250 chars.
         row_dates = []
         for m in raw_matches:
-            after = text[m.end(): m.end() + 1]
+            after = text[m.end() : m.end() + 1]
             if after in ("、", "及"):
                 continue
-            window = text[m.end(): m.end() + 250]
-            if any(kw in window for kw in (
-                "輸送施設の使用停止", "事業停止", "業務停止", "車両使用停止",
-                "自動車使用停止", "輸送施設の停止", "許可取消", "登録取消",
-                "文書警告", "文書勧告", "口頭注意", "勧告", "警告",
-            )):
+            window = text[m.end() : m.end() + 250]
+            if any(
+                kw in window
+                for kw in (
+                    "輸送施設の使用停止",
+                    "事業停止",
+                    "業務停止",
+                    "車両使用停止",
+                    "自動車使用停止",
+                    "輸送施設の停止",
+                    "許可取消",
+                    "登録取消",
+                    "文書警告",
+                    "文書勧告",
+                    "口頭注意",
+                    "勧告",
+                    "警告",
+                )
+            ):
                 row_dates.append(m)
         # Only switch to column-flow if dates and houjins counts are
         # comparable (within 2x).
         if (
             len(row_dates) >= 2
             and len(houjin_matches_all) >= 2
-            and max(len(row_dates), len(houjin_matches_all)) <= 3 * min(len(row_dates), len(houjin_matches_all))
+            and max(len(row_dates), len(houjin_matches_all))
+            <= 3 * min(len(row_dates), len(houjin_matches_all))
             and len(row_dates) > len(matches)
         ):
             return _parse_column_flow(
@@ -709,7 +732,7 @@ def parse_pdf_records(
     for i, m in enumerate(matches):
         end_pos = matches[i + 1].start() if i + 1 < len(matches) else len(text)
         block_start = m.start()
-        block = text[block_start: min(end_pos, block_start + 2500)]
+        block = text[block_start : min(end_pos, block_start + 2500)]
 
         # Normalize: strip internal whitespace from date token
         dt_token = re.sub(r"\s+", "", m.group("dt"))
@@ -759,7 +782,7 @@ def parse_pdf_records(
             ):
                 pos = target_name.find(header_token)
                 if pos >= 0:
-                    target_name = target_name[pos + len(header_token):].strip()
+                    target_name = target_name[pos + len(header_token) :].strip()
                     break
             # Some Hokushin/Chubu rows have "代表者" suffix — strip it.
             for stop in ("代表者", "代 表 者", "代表"):
@@ -787,14 +810,19 @@ def parse_pdf_records(
         # Skip header rows / boilerplate
         if target_name in ("事業者の氏名又は名称", "事業者の氏名又は名称及び主たる事務所の位置"):
             continue
-        if any(noise in target_name for noise in ("行政処分等の年月日", "事業者の氏名", "営業所の名称", "違反行為の概要")):
+        if any(
+            noise in target_name
+            for noise in ("行政処分等の年月日", "事業者の氏名", "営業所の名称", "違反行為の概要")
+        ):
             continue
         # Reason-summary leakage: prose paragraphs start with 、 , 及び ,
         # 監査 , 公安 etc. Real 事業者名 starts with 株式会社 / 有限会社 /
         # 合同会社 / kanji or 法人.
         if target_name[0] in ("、", "及", "監", "公", "（", "(", "○", "・", "※", "・", " "):
             continue
-        if target_name.startswith(("(1)", "(2)", "（１）", "（２）", "により", "公安", "労働", "行政")):
+        if target_name.startswith(
+            ("(1)", "(2)", "（１）", "（２）", "により", "公安", "労働", "行政")
+        ):
             continue
         # Reject prose continuations: too many parens or contains 「監査」
         if "監査" in target_name or "違反" in target_name or "認められ" in target_name:
@@ -814,7 +842,7 @@ def parse_pdf_records(
             if pos >= 0:
                 # Prefer the last occurrence of '令和' (which is the start of
                 # the prose) and capture up to ~600 chars.
-                tail = block[pos: pos + 700]
+                tail = block[pos : pos + 700]
                 tail = re.sub(r"\s+", " ", tail).strip()
                 summary = tail[:600]
                 break
@@ -823,22 +851,24 @@ def parse_pdf_records(
         if re.fullmatch(r"\d+", target_name):
             continue
 
-        records.append(UnyuRecord(
-            region=region,
-            region_label=region_label,
-            issuance_date=date_iso,
-            target_name=target_name,
-            houjin_bangou=houjin,
-            address=None,
-            office_name=None,
-            office_address=None,
-            punishment_raw=punish_raw,
-            enforcement_kind=kind,
-            related_law_ref=law_ref,
-            reason_summary=summary,
-            source_url=pdf_url,
-            source_hub_url=hub_url,
-        ))
+        records.append(
+            UnyuRecord(
+                region=region,
+                region_label=region_label,
+                issuance_date=date_iso,
+                target_name=target_name,
+                houjin_bangou=houjin,
+                address=None,
+                office_name=None,
+                office_address=None,
+                punishment_raw=punish_raw,
+                enforcement_kind=kind,
+                related_law_ref=law_ref,
+                reason_summary=summary,
+                source_url=pdf_url,
+                source_hub_url=hub_url,
+            )
+        )
 
     return records
 
@@ -872,8 +902,9 @@ def collect_pdfs_for_region(
     for hub_url in info["hubs"]:
         status, html = http.get_text(hub_url, info["encoding"])
         if status != 200 or not html:
-            _LOG.warning("hub fetch failed region=%s url=%s status=%s",
-                         region_code, hub_url, status)
+            _LOG.warning(
+                "hub fetch failed region=%s url=%s status=%s", region_code, hub_url, status
+            )
             continue
         # Extract direct PDFs.
         for href in PDF_HREF_RE.findall(html):
@@ -887,10 +918,18 @@ def collect_pdfs_for_region(
         # Drill into subpages: any href with /jigyousya/.../*.htm or
         # /unyu/gyousei/*.html
         for href in ANY_HREF_RE.findall(html):
-            if href.endswith(('.htm', '.html')) and any(
-                kw in href.lower() for kw in (
-                    "noriai", "kasikiri", "kashikiri", "jyouyou", "jouyou",
-                    "kamotu", "kamotsu", "kasekisai", "track",
+            if href.endswith((".htm", ".html")) and any(
+                kw in href.lower()
+                for kw in (
+                    "noriai",
+                    "kasikiri",
+                    "kashikiri",
+                    "jyouyou",
+                    "jouyou",
+                    "kamotu",
+                    "kamotsu",
+                    "kasekisai",
+                    "track",
                 )
             ):
                 sub_url = absolute_url(hub_url, href)
@@ -1032,12 +1071,21 @@ def upsert_record(
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--db", type=Path, default=DEFAULT_DB)
-    ap.add_argument("--regions", type=str, default=",".join(REGION_HUBS.keys()),
-                    help="comma-separated region codes")
-    ap.add_argument("--limit", type=int, default=None,
-                    help="stop after this many INSERTs (across all regions)")
-    ap.add_argument("--per-region-pdf-limit", type=int, default=None,
-                    help="cap PDFs walked per region (smoke tests)")
+    ap.add_argument(
+        "--regions",
+        type=str,
+        default=",".join(REGION_HUBS.keys()),
+        help="comma-separated region codes",
+    )
+    ap.add_argument(
+        "--limit", type=int, default=None, help="stop after this many INSERTs (across all regions)"
+    )
+    ap.add_argument(
+        "--per-region-pdf-limit",
+        type=int,
+        default=None,
+        help="cap PDFs walked per region (smoke tests)",
+    )
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--verbose", "-v", action="store_true")
     ap.add_argument("--log-file", type=Path, default=None)
@@ -1057,9 +1105,7 @@ def main(argv: list[str] | None = None) -> int:
         _LOG.error("unknown regions: %s (allowed: %s)", unknown, list(REGION_HUBS))
         return 2
 
-    fetched_at = dt.datetime.now(dt.UTC).isoformat(timespec="seconds").replace(
-        "+00:00", "Z"
-    )
+    fetched_at = dt.datetime.now(dt.UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
 
     http = UnyuHttpClient()
     conn: sqlite3.Connection | None = None
@@ -1079,9 +1125,14 @@ def main(argv: list[str] | None = None) -> int:
         for region_code in regions:
             info = REGION_HUBS[region_code]
             region_label = info["label"]
-            cs = {"pdfs_seen": 0, "pdfs_fetched": 0,
-                  "records_extracted": 0, "insert": 0, "skip_dup": 0,
-                  "skip_existing": 0}
+            cs = {
+                "pdfs_seen": 0,
+                "pdfs_fetched": 0,
+                "records_extracted": 0,
+                "insert": 0,
+                "skip_dup": 0,
+                "skip_existing": 0,
+            }
             stats[region_code] = cs
 
             _LOG.info("region=%s label=%s walking hubs...", region_code, region_label)
@@ -1096,9 +1147,7 @@ def main(argv: list[str] | None = None) -> int:
             # newer files usually have larger numeric IDs).
             pdf_pairs.sort(key=lambda p: p[0], reverse=True)
 
-            seq_counter = (
-                next_seq(conn, region_code) if conn is not None else 1
-            )
+            seq_counter = next_seq(conn, region_code) if conn is not None else 1
 
             stop_region = False
             for pdf_url, hub_url in pdf_pairs:
@@ -1134,20 +1183,21 @@ def main(argv: list[str] | None = None) -> int:
                         if cs["insert"] <= 3:
                             _LOG.info(
                                 "DRY %s | %s | %s | houjin=%s | %s | %s | law=%s",
-                                region_code, r.issuance_date, r.target_name,
-                                r.houjin_bangou, r.punishment_raw,
-                                r.enforcement_kind, r.related_law_ref,
+                                region_code,
+                                r.issuance_date,
+                                r.target_name,
+                                r.houjin_bangou,
+                                r.punishment_raw,
+                                r.enforcement_kind,
+                                r.related_law_ref,
                             )
                         continue
-                    canonical_id = (
-                        f"AM-ENF-MLIT-UNYU-{region_code}-{seq_counter:06d}"
-                    )
+                    canonical_id = f"AM-ENF-MLIT-UNYU-{region_code}-{seq_counter:06d}"
                     seq_counter += 1
                     try:
                         verdict = upsert_record(conn, r, canonical_id, fetched_at)
                     except sqlite3.Error as exc:
-                        _LOG.warning("DB insert err name=%s err=%s",
-                                     r.target_name, exc)
+                        _LOG.warning("DB insert err name=%s err=%s", r.target_name, exc)
                         continue
                     if verdict == "insert":
                         cs["insert"] += 1

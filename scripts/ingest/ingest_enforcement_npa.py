@@ -61,6 +61,7 @@ CLI:
     python scripts/ingest/ingest_enforcement_npa.py \\
         [--db autonomath.db] [--dry-run] [--verbose] [--limit 200]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -105,20 +106,20 @@ PDF_MAX_BYTES = 20 * 1024 * 1024
 
 @dataclass
 class Source:
-    prefecture: str             # 兵庫県 / 東京都 / 大阪府 / etc.
-    authority: str              # 兵庫県公安委員会 / 警視庁 / etc.
+    prefecture: str  # 兵庫県 / 東京都 / 大阪府 / etc.
+    authority: str  # 兵庫県公安委員会 / 警視庁 / etc.
     url: str
-    fmt: str                    # 'html' | 'pdf' | 'html_with_pdfs'
-    parser: str                 # parser hint
+    fmt: str  # 'html' | 'pdf' | 'html_with_pdfs'
+    parser: str  # parser hint
     note: str = ""
 
 
 @dataclass
 class EnfRow:
     target_name: str
-    issuance_date: str          # ISO yyyy-mm-dd
+    issuance_date: str  # ISO yyyy-mm-dd
     issuing_authority: str
-    enforcement_kind: str       # checked against am_enforcement_detail CHECK
+    enforcement_kind: str  # checked against am_enforcement_detail CHECK
     reason_summary: str
     related_law_ref: str
     source_url: str
@@ -132,29 +133,42 @@ class EnfRow:
 
 SOURCES: list[Source] = [
     # Hyogo: confirmed primary 警備業法 行政処分 PDFs (2 records as of 2026-04-25)
-    Source("兵庫県", "兵庫県公安委員会",
-           "https://www.police.pref.hyogo.lg.jp/sc/order.htm",
-           "html_with_pdfs", "hyogo_order_html",
-           note="兵庫県公安委員会 警備業法 行政処分公表"),
-
+    Source(
+        "兵庫県",
+        "兵庫県公安委員会",
+        "https://www.police.pref.hyogo.lg.jp/sc/order.htm",
+        "html_with_pdfs",
+        "hyogo_order_html",
+        note="兵庫県公安委員会 警備業法 行政処分公表",
+    ),
     # Hyogo: 公安委員会 公示 (特例施設占有者の指定 + 風適法41-2 + 警備業50-2 + 道交法)
-    Source("兵庫県", "兵庫県公安委員会",
-           "https://www.police.pref.hyogo.lg.jp/sc/koji/index.htm",
-           "html", "hyogo_koji_html",
-           note="兵庫県公安委員会 公示一覧 (特例施設占有者の指定等)"),
-
+    Source(
+        "兵庫県",
+        "兵庫県公安委員会",
+        "https://www.police.pref.hyogo.lg.jp/sc/koji/index.htm",
+        "html",
+        "hyogo_koji_html",
+        note="兵庫県公安委員会 公示一覧 (特例施設占有者の指定等)",
+    ),
     # Aichi: 安全なまちづくり条例 第32条第6項 公表 (currently empty,
     #         forward-compatible parser)
-    Source("愛知県", "愛知県公安委員会",
-           "https://www.pref.aichi.jp/police/anzen/anmachi/kouhyou1.html",
-           "html", "aichi_kouhyou_html",
-           note="愛知県安全なまちづくり条例第32条第6項公表"),
-
+    Source(
+        "愛知県",
+        "愛知県公安委員会",
+        "https://www.pref.aichi.jp/police/anzen/anmachi/kouhyou1.html",
+        "html",
+        "aichi_kouhyou_html",
+        note="愛知県安全なまちづくり条例第32条第6項公表",
+    ),
     # Tokyo: 性風俗営業等 場所提供 規制条例 第2条の10第3項 公表 (currently empty)
-    Source("東京都", "東京都公安委員会",
-           "https://www.keishicho.metro.tokyo.lg.jp/about_mpd/keiyaku_horei_kohyo/oshirase/shobun.html",
-           "html", "tokyo_shobun_html",
-           note="性風俗営業等 場所提供 規制条例 第2条の10第3項 公表"),
+    Source(
+        "東京都",
+        "東京都公安委員会",
+        "https://www.keishicho.metro.tokyo.lg.jp/about_mpd/keiyaku_horei_kohyo/oshirase/shobun.html",
+        "html",
+        "tokyo_shobun_html",
+        note="性風俗営業等 場所提供 規制条例 第2条の10第3項 公表",
+    ),
 ]
 
 
@@ -167,13 +181,14 @@ WAREKI_RE = re.compile(
     r"(令和|平成|昭和|R|H|S)\s*(\d+|元)\s*[年.\-．／/]\s*"
     r"(\d{1,2})\s*[月.\-．／/]\s*(\d{1,2})\s*日?"
 )
-SEIREKI_RE = re.compile(
-    r"(20\d{2}|19\d{2})\s*[年.\-／/]\s*(\d{1,2})\s*[月.\-／/]\s*(\d{1,2})"
-)
+SEIREKI_RE = re.compile(r"(20\d{2}|19\d{2})\s*[年.\-／/]\s*(\d{1,2})\s*[月.\-／/]\s*(\d{1,2})")
 ERA_OFFSET = {
-    "令和": 2018, "R": 2018,
-    "平成": 1988, "H": 1988,
-    "昭和": 1925, "S": 1925,
+    "令和": 2018,
+    "R": 2018,
+    "平成": 1988,
+    "H": 1988,
+    "昭和": 1925,
+    "S": 1925,
 }
 
 
@@ -237,8 +252,7 @@ def _classify_kind(text: str) -> str:
     return "other"
 
 
-def parse_hyogo_order_html(html: str, source_url: str, http: HttpClient
-                            ) -> list[EnfRow]:
+def parse_hyogo_order_html(html: str, source_url: str, http: HttpClient) -> list[EnfRow]:
     """Parse Hyogo 警備業法 / 探偵業法 行政処分 list HTML.
 
     The HTML lists rows inline; we cross-reference each row against the
@@ -261,15 +275,15 @@ def parse_hyogo_order_html(html: str, source_url: str, http: HttpClient
             continue
         # Heuristic: column with "公安委員会 第..." is 認定番号
         ninteibango = next(
-            (t for t in cell_texts if "公安委員会" in t and "号" in t), None,
+            (t for t in cell_texts if "公安委員会" in t and "号" in t),
+            None,
         )
         if not ninteibango:
             continue
         # The name column contains 株式会社/有限会社/合同会社; date column
         # contains 令和/平成; kind column contains 指示/営業停止/etc.
         target_name = next(
-            (t for t in cell_texts
-             if any(s in t for s in ("株式会社", "有限会社", "合同会社"))),
+            (t for t in cell_texts if any(s in t for s in ("株式会社", "有限会社", "合同会社"))),
             None,
         )
         date_text = next(
@@ -277,9 +291,21 @@ def parse_hyogo_order_html(html: str, source_url: str, http: HttpClient
             None,
         )
         kind_text = next(
-            (t for t in cell_texts
-             if any(k in t for k in ("指示", "営業停止", "認定の取消",
-                                       "許可の取消", "廃止命令", "停止命令"))),
+            (
+                t
+                for t in cell_texts
+                if any(
+                    k in t
+                    for k in (
+                        "指示",
+                        "営業停止",
+                        "認定の取消",
+                        "許可の取消",
+                        "廃止命令",
+                        "停止命令",
+                    )
+                )
+            ),
             None,
         )
         if not (target_name and date_text and kind_text):
@@ -309,8 +335,7 @@ def parse_hyogo_order_html(html: str, source_url: str, http: HttpClient
                 section_law = "古物営業法"
                 break
             if "風俗営業" in txt and ("違反" in txt or "適正化" in txt):
-                section_law = ("風俗営業等の規制及び業務の適正化等に関する"
-                               "法律")
+                section_law = "風俗営業等の規制及び業務の適正化等に関する法律"
                 break
         if not section_law:
             section_law = "警備業法"  # Hyogo /sc/order.htm primary section
@@ -321,28 +346,27 @@ def parse_hyogo_order_html(html: str, source_url: str, http: HttpClient
             pdf_text = _download_pdf_text(http, pdf_url)
             if pdf_text:
                 pdf_reason, pdf_law = _parse_hyogo_order_pdf_fields(pdf_text)
-        reason = (
-            f"{section_law}違反による行政処分（{kind_text}） / "
-            f"認定番号: {ninteibango}"
-        )
+        reason = f"{section_law}違反による行政処分（{kind_text}） / 認定番号: {ninteibango}"
         if pdf_reason:
             reason += f" / 処分理由: {pdf_reason[:200]}"
         related_law = pdf_law or section_law
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=date_iso,
-            issuing_authority="兵庫県公安委員会",
-            enforcement_kind=kind,
-            reason_summary=reason[:1500],
-            related_law_ref=related_law[:500],
-            source_url=source_url,
-            extra={
-                "ninteibango": ninteibango,
-                "kind_text": kind_text,
-                "pdf_url": pdf_url,
-                "section_law": section_law,
-            },
-        ))
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=date_iso,
+                issuing_authority="兵庫県公安委員会",
+                enforcement_kind=kind,
+                reason_summary=reason[:1500],
+                related_law_ref=related_law[:500],
+                source_url=source_url,
+                extra={
+                    "ninteibango": ninteibango,
+                    "kind_text": kind_text,
+                    "pdf_url": pdf_url,
+                    "section_law": section_law,
+                },
+            )
+        )
     return out
 
 
@@ -360,7 +384,8 @@ def _download_pdf_text(http: HttpClient, url: str) -> str | None:
         try:
             proc = subprocess.run(
                 ["pdftotext", "-layout", tmp_path, "-"],
-                capture_output=True, timeout=30,
+                capture_output=True,
+                timeout=30,
             )
             if proc.returncode == 0:
                 return proc.stdout.decode("utf-8", errors="replace")
@@ -405,8 +430,7 @@ def _parse_hyogo_order_pdf_fields(text: str) -> tuple[str | None, str | None]:
 # ---------------------------------------------------------------------------
 
 
-def parse_hyogo_koji_html(html: str, source_url: str
-                           ) -> list[EnfRow]:
+def parse_hyogo_koji_html(html: str, source_url: str) -> list[EnfRow]:
     out: list[EnfRow] = []
     soup = BeautifulSoup(html, "html.parser")
     # Walk all <table> with rows that have company-name cells.
@@ -432,13 +456,15 @@ def parse_hyogo_koji_html(html: str, source_url: str
             if not cell_texts or "名称" in cell_texts[0]:
                 continue
             target_name = next(
-                (t for t in cell_texts
-                 if any(s in t for s in ("株式会社", "有限会社", "合同会社"))),
+                (
+                    t
+                    for t in cell_texts
+                    if any(s in t for s in ("株式会社", "有限会社", "合同会社"))
+                ),
                 None,
             )
             date_text = next(
-                (t for t in cell_texts
-                 if WAREKI_RE.search(t) or SEIREKI_RE.search(t)),
+                (t for t in cell_texts if WAREKI_RE.search(t) or SEIREKI_RE.search(t)),
                 None,
             )
             if not (target_name and date_text):
@@ -448,24 +474,25 @@ def parse_hyogo_koji_html(html: str, source_url: str
                 continue
             # Strip trailing remarks from name.
             target_name = re.sub(
-                r"\s*変更事項.*$", "", target_name,
+                r"\s*変更事項.*$",
+                "",
+                target_name,
             ).strip()
             target_name = re.sub(
-                r"\s*に係る公示.*$", "", target_name,
+                r"\s*に係る公示.*$",
+                "",
+                target_name,
             ).strip()
             # Determine related law from section_label keywords.
             label = section_label
             if "風俗営業" in label or "風適" in label or "第41条" in label:
-                related_law = ("風俗営業等の規制及び業務の適正化等に関する"
-                               "法律")
+                related_law = "風俗営業等の規制及び業務の適正化等に関する法律"
             elif "警備業" in label or "第50条" in label:
                 related_law = "警備業法"
             elif "特例施設占有者" in label:
                 # 特例施設占有者 is defined in 風適法 第23条第3項
                 # (typically for ぱちんこ等遊技場業者). NOT 古物営業法.
-                related_law = (
-                    "風俗営業等の規制及び業務の適正化等に関する法律"
-                )
+                related_law = "風俗営業等の規制及び業務の適正化等に関する法律"
             elif "道路交通法" in label or "道交法" in label:
                 related_law = "道路交通法"
             elif "型式検定" in label:
@@ -478,24 +505,23 @@ def parse_hyogo_koji_html(html: str, source_url: str
             a = tr.find("a", href=True)
             if a:
                 pdf_url = _resolve_url(a["href"], source_url)
-            reason = (
-                f"{related_law}に基づく公示 / 公示種別: {label[:80]}"
-                f" / 名称: {target_name}"
+            reason = f"{related_law}に基づく公示 / 公示種別: {label[:80]} / 名称: {target_name}"
+            out.append(
+                EnfRow(
+                    target_name=target_name,
+                    issuance_date=date_iso,
+                    issuing_authority="兵庫県公安委員会",
+                    enforcement_kind="other",
+                    reason_summary=reason[:1500],
+                    related_law_ref=related_law[:500],
+                    source_url=source_url,
+                    extra={
+                        "section_label": label,
+                        "pdf_url": pdf_url,
+                        "category": "公示",
+                    },
+                )
             )
-            out.append(EnfRow(
-                target_name=target_name,
-                issuance_date=date_iso,
-                issuing_authority="兵庫県公安委員会",
-                enforcement_kind="other",
-                reason_summary=reason[:1500],
-                related_law_ref=related_law[:500],
-                source_url=source_url,
-                extra={
-                    "section_label": label,
-                    "pdf_url": pdf_url,
-                    "category": "公示",
-                },
-            ))
     # Dedup within batch
     seen = set()
     deduped: list[EnfRow] = []
@@ -514,8 +540,7 @@ def parse_hyogo_koji_html(html: str, source_url: str
 # ---------------------------------------------------------------------------
 
 
-def parse_aichi_kouhyou_html(html: str, source_url: str
-                              ) -> list[EnfRow]:
+def parse_aichi_kouhyou_html(html: str, source_url: str) -> list[EnfRow]:
     """Aichi 安全なまちづくり条例 第32条第6項 公表."""
     if not html:
         return []
@@ -529,13 +554,11 @@ def parse_aichi_kouhyou_html(html: str, source_url: str
         cells = tr.find_all(["td", "th"])
         cell_texts = [_normalize(c.get_text(" ", strip=True)) for c in cells]
         target_name = next(
-            (t for t in cell_texts
-             if any(s in t for s in ("株式会社", "有限会社", "合同会社"))),
+            (t for t in cell_texts if any(s in t for s in ("株式会社", "有限会社", "合同会社"))),
             None,
         )
         date_text = next(
-            (t for t in cell_texts
-             if WAREKI_RE.search(t) or SEIREKI_RE.search(t)),
+            (t for t in cell_texts if WAREKI_RE.search(t) or SEIREKI_RE.search(t)),
             None,
         )
         if not (target_name and date_text):
@@ -543,24 +566,24 @@ def parse_aichi_kouhyou_html(html: str, source_url: str
         date_iso = _parse_date(date_text)
         if not date_iso:
             continue
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=date_iso,
-            issuing_authority="愛知県公安委員会",
-            enforcement_kind="other",
-            reason_summary=(
-                "愛知県安全なまちづくり条例第32条第6項に基づく公表"
-                f" / 名称: {target_name}"
-            )[:1500],
-            related_law_ref="愛知県安全なまちづくり条例",
-            source_url=source_url,
-            extra={"category": "条例公表"},
-        ))
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=date_iso,
+                issuing_authority="愛知県公安委員会",
+                enforcement_kind="other",
+                reason_summary=(
+                    f"愛知県安全なまちづくり条例第32条第6項に基づく公表 / 名称: {target_name}"
+                )[:1500],
+                related_law_ref="愛知県安全なまちづくり条例",
+                source_url=source_url,
+                extra={"category": "条例公表"},
+            )
+        )
     return out
 
 
-def parse_tokyo_shobun_html(html: str, source_url: str
-                             ) -> list[EnfRow]:
+def parse_tokyo_shobun_html(html: str, source_url: str) -> list[EnfRow]:
     """警視庁 性風俗営業等 場所提供 規制条例 第2条の10第3項 公表."""
     if not html:
         return []
@@ -573,13 +596,11 @@ def parse_tokyo_shobun_html(html: str, source_url: str
         cells = tr.find_all(["td", "th"])
         cell_texts = [_normalize(c.get_text(" ", strip=True)) for c in cells]
         target_name = next(
-            (t for t in cell_texts
-             if any(s in t for s in ("株式会社", "有限会社", "合同会社"))),
+            (t for t in cell_texts if any(s in t for s in ("株式会社", "有限会社", "合同会社"))),
             None,
         )
         date_text = next(
-            (t for t in cell_texts
-             if WAREKI_RE.search(t) or SEIREKI_RE.search(t)),
+            (t for t in cell_texts if WAREKI_RE.search(t) or SEIREKI_RE.search(t)),
             None,
         )
         if not (target_name and date_text):
@@ -587,22 +608,24 @@ def parse_tokyo_shobun_html(html: str, source_url: str
         date_iso = _parse_date(date_text)
         if not date_iso:
             continue
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=date_iso,
-            issuing_authority="東京都公安委員会",
-            enforcement_kind="other",
-            reason_summary=(
-                "性風俗営業等に係る不当な勧誘等の規制条例第2条の10第3項に"
-                f"基づく公表 / 名称: {target_name}"
-            )[:1500],
-            related_law_ref=(
-                "性風俗営業等に係る不当な勧誘、料金の取立て等及び性関連"
-                "禁止営業への場所の提供の規制に関する条例"
-            ),
-            source_url=source_url,
-            extra={"category": "条例公表"},
-        ))
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=date_iso,
+                issuing_authority="東京都公安委員会",
+                enforcement_kind="other",
+                reason_summary=(
+                    "性風俗営業等に係る不当な勧誘等の規制条例第2条の10第3項に"
+                    f"基づく公表 / 名称: {target_name}"
+                )[:1500],
+                related_law_ref=(
+                    "性風俗営業等に係る不当な勧誘、料金の取立て等及び性関連"
+                    "禁止営業への場所の提供の規制に関する条例"
+                ),
+                source_url=source_url,
+                extra={"category": "条例公表"},
+            )
+        )
     return out
 
 
@@ -614,8 +637,7 @@ def parse_tokyo_shobun_html(html: str, source_url: str
 def fetch_source(http: HttpClient, src: Source) -> list[EnfRow]:
     res = http.get(src.url)
     if not res.ok:
-        _LOG.warning("[%s] fetch failed status=%s url=%s",
-                     src.parser, res.status, src.url)
+        _LOG.warning("[%s] fetch failed status=%s url=%s", src.parser, res.status, src.url)
         return []
     if src.parser == "hyogo_order_html":
         return parse_hyogo_order_html(res.text, src.url, http)
@@ -645,9 +667,7 @@ def ensure_tables(conn: sqlite3.Connection) -> None:
             (tbl,),
         ).fetchone()
         if not row:
-            raise SystemExit(
-                f"missing table '{tbl}' — apply migrations first"
-            )
+            raise SystemExit(f"missing table '{tbl}' — apply migrations first")
 
 
 def existing_dedup_keys(
@@ -767,17 +787,9 @@ def write_rows(
                 dup_batch += 1
                 continue
             batch_keys.add(key)
-            seq = _slug8(
-                f"{r.target_name}|{r.issuance_date}|{r.issuing_authority}|"
-                f"{idx}"
-            )
-            canonical_id = (
-                f"AM-ENF-NPA-{r.issuance_date.replace('-', '')}-{seq}"
-            )
-            primary_name = (
-                f"{r.target_name} ({r.issuance_date}) "
-                f"- {r.issuing_authority}"
-            )
+            seq = _slug8(f"{r.target_name}|{r.issuance_date}|{r.issuing_authority}|{idx}")
+            canonical_id = f"AM-ENF-NPA-{r.issuance_date.replace('-', '')}-{seq}"
+            primary_name = f"{r.target_name} ({r.issuance_date}) - {r.issuing_authority}"
             raw_json = json.dumps(
                 {
                     "target_name": r.target_name,
@@ -789,24 +801,27 @@ def write_rows(
                     "source_url": r.source_url,
                     "extra": r.extra or {},
                     "source_attribution": r.issuing_authority,
-                    "license": (
-                        "都道府県警察 / 公安委員会 公表資料"
-                        "（出典明記で転載引用可）"
-                    ),
+                    "license": ("都道府県警察 / 公安委員会 公表資料（出典明記で転載引用可）"),
                 },
                 ensure_ascii=False,
             )
             try:
                 upsert_entity(
-                    conn, canonical_id, primary_name,
-                    r.source_url, raw_json, now_iso,
+                    conn,
+                    canonical_id,
+                    primary_name,
+                    r.source_url,
+                    raw_json,
+                    now_iso,
                 )
                 insert_enforcement(conn, canonical_id, r, now_iso)
                 inserted += 1
             except sqlite3.Error as exc:
                 _LOG.error(
                     "DB error name=%r date=%s: %s",
-                    r.target_name, r.issuance_date, exc,
+                    r.target_name,
+                    r.issuance_date,
+                    exc,
                 )
                 continue
         conn.commit()
@@ -829,10 +844,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap.add_argument("--db", type=Path, default=DEFAULT_DB)
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--verbose", "-v", action="store_true")
-    ap.add_argument("--limit", type=int, default=None,
-                    help="Hard cap on inserted rows (default: no cap)")
-    ap.add_argument("--max-prefs", type=int, default=7,
-                    help="Walk at most N prefectures (per task spec)")
+    ap.add_argument(
+        "--limit", type=int, default=None, help="Hard cap on inserted rows (default: no cap)"
+    )
+    ap.add_argument(
+        "--max-prefs", type=int, default=7, help="Walk at most N prefectures (per task spec)"
+    )
     return ap.parse_args(argv)
 
 
@@ -844,9 +861,7 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     http = HttpClient(user_agent=USER_AGENT)
-    now_iso = datetime.now(UTC).isoformat(timespec="seconds").replace(
-        "+00:00", "Z"
-    )
+    now_iso = datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
 
     seen_prefs: set[str] = set()
     all_rows: list[EnfRow] = []
@@ -859,15 +874,17 @@ def main(argv: list[str] | None = None) -> int:
         _LOG.info("[%s] %s: %d rows", src.prefecture, src.parser, len(rows))
         all_rows.extend(rows)
 
-    _LOG.info("total parsed rows=%d (prefs=%d)",
-              len(all_rows), len(seen_prefs))
+    _LOG.info("total parsed rows=%d (prefs=%d)", len(all_rows), len(seen_prefs))
 
     if args.dry_run:
         for r in all_rows[:10]:
             _LOG.info(
                 "sample: name=%s date=%s auth=%s kind=%s law=%s",
-                r.target_name, r.issuance_date, r.issuing_authority,
-                r.enforcement_kind, r.related_law_ref,
+                r.target_name,
+                r.issuance_date,
+                r.issuing_authority,
+                r.enforcement_kind,
+                r.related_law_ref,
             )
         http.close()
         return 0
@@ -883,14 +900,21 @@ def main(argv: list[str] | None = None) -> int:
     ensure_tables(conn)
 
     inserted, dup_db, dup_batch = write_rows(
-        conn, all_rows, now_iso=now_iso, limit=args.limit,
+        conn,
+        all_rows,
+        now_iso=now_iso,
+        limit=args.limit,
     )
     # Per-authority summary for caller report.
     breakdown: dict[str, int] = {}
-    for r in all_rows[:inserted + dup_db + dup_batch]:
-        breakdown[r.issuing_authority] = breakdown.get(
-            r.issuing_authority, 0,
-        ) + 1
+    for r in all_rows[: inserted + dup_db + dup_batch]:
+        breakdown[r.issuing_authority] = (
+            breakdown.get(
+                r.issuing_authority,
+                0,
+            )
+            + 1
+        )
     try:
         conn.close()
     except sqlite3.Error:
@@ -899,7 +923,10 @@ def main(argv: list[str] | None = None) -> int:
 
     _LOG.info(
         "done parsed=%d inserted=%d dup_db=%d dup_batch=%d",
-        len(all_rows), inserted, dup_db, dup_batch,
+        len(all_rows),
+        inserted,
+        dup_db,
+        dup_batch,
     )
     print(
         f"NPA / 公安委員会 ingest: parsed={len(all_rows)} "

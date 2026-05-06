@@ -45,6 +45,7 @@ Exit codes:
     2  schema validation failure (predicate / seed row rejected)
     3  output quality gate: 0 rows encoded on a non-empty seed
 """
+
 from __future__ import annotations
 
 import argparse
@@ -264,15 +265,11 @@ def validate_seed_entry(entry: dict[str, Any], idx: int) -> list[str]:
 
     tax_category = entry.get("tax_category")
     if tax_category not in TAX_CATEGORIES:
-        errs.append(
-            f"{prefix}: tax_category {tax_category!r} not in {sorted(TAX_CATEGORIES)}"
-        )
+        errs.append(f"{prefix}: tax_category {tax_category!r} not in {sorted(TAX_CATEGORIES)}")
 
     ruleset_kind = entry.get("ruleset_kind")
     if ruleset_kind not in RULESET_KINDS:
-        errs.append(
-            f"{prefix}: ruleset_kind {ruleset_kind!r} not in {sorted(RULESET_KINDS)}"
-        )
+        errs.append(f"{prefix}: ruleset_kind {ruleset_kind!r} not in {sorted(RULESET_KINDS)}")
 
     start = entry.get("effective_start_date")
     if not _is_iso_date(start):
@@ -325,9 +322,7 @@ def validate_seed_entry(entry: dict[str, Any], idx: int) -> list[str]:
                     _validate_predicate(child, f"{prefix}.eligibility_conditions_json[{j}]")
                 )
         else:
-            errs.extend(
-                _validate_predicate(cond_json, f"{prefix}.eligibility_conditions_json")
-            )
+            errs.extend(_validate_predicate(cond_json, f"{prefix}.eligibility_conditions_json"))
     else:
         errs.append(
             f"{prefix}: eligibility_conditions_json must be dict / list / null, "
@@ -502,9 +497,7 @@ def upsert_row(conn: sqlite3.Connection, row: EncodedRow) -> str:
         },
     )
     # FTS mirror — delete-then-insert (fts5 virtual tables don't UPSERT).
-    conn.execute(
-        "DELETE FROM tax_rulesets_fts WHERE unified_id = ?", (row.unified_id,)
-    )
+    conn.execute("DELETE FROM tax_rulesets_fts WHERE unified_id = ?", (row.unified_id,))
     conn.execute(
         "INSERT INTO tax_rulesets_fts "
         "(unified_id, ruleset_name, eligibility_conditions, calculation_formula) "
@@ -539,9 +532,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    ap.add_argument(
-        "--db", default=str(DEFAULT_DB), help=f"SQLite DB path (default {DEFAULT_DB})"
-    )
+    ap.add_argument("--db", default=str(DEFAULT_DB), help=f"SQLite DB path (default {DEFAULT_DB})")
     ap.add_argument(
         "--seed",
         type=Path,
@@ -551,9 +542,7 @@ def main() -> int:
     ap.add_argument(
         "--dry-run",
         action="store_true",
-        help=(
-            f"Do not write to DB; emit encoded rows to {DEFAULT_PREVIEW}."
-        ),
+        help=(f"Do not write to DB; emit encoded rows to {DEFAULT_PREVIEW}."),
     )
     ap.add_argument(
         "--preview-out",
@@ -577,9 +566,7 @@ def main() -> int:
     validation_errors: list[str] = []
     for idx, entry in enumerate(seed):
         if not isinstance(entry, dict):
-            validation_errors.append(
-                f"seed[{idx}]: entry is {type(entry).__name__}, expected dict"
-            )
+            validation_errors.append(f"seed[{idx}]: entry is {type(entry).__name__}, expected dict")
             continue
         validation_errors.extend(validate_seed_entry(entry, idx))
 
@@ -653,8 +640,7 @@ def main() -> int:
             conn.execute("SELECT 1 FROM tax_rulesets_fts LIMIT 1")
         except sqlite3.OperationalError as exc:
             _LOG.error(
-                "tax_rulesets missing (%s). Apply migration 018: "
-                "python scripts/migrate.py",
+                "tax_rulesets missing (%s). Apply migration 018: python scripts/migrate.py",
                 exc,
             )
             return 2

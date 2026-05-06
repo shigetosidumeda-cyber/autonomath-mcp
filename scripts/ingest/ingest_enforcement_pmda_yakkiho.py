@@ -53,6 +53,7 @@ CLI:
     python scripts/ingest/ingest_enforcement_pmda_yakkiho.py \
         [--db autonomath.db] [--dry-run] [--verbose]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -131,9 +132,7 @@ def pmda_recall_detail_url(recall_no: str) -> str:
 # MHLW 回収命令 lists (sparse, but canonical for 国 / 都道府県 orders)
 # ---------------------------------------------------------------------------
 
-MHLW_KOKUKAISYU_URL = (
-    "https://www.mhlw.go.jp/topics/bukyoku/iyaku/kaisyu/mhlwkaisyu.html"
-)
+MHLW_KOKUKAISYU_URL = "https://www.mhlw.go.jp/topics/bukyoku/iyaku/kaisyu/mhlwkaisyu.html"
 MHLW_KENKAISYU_URL = (
     "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/iryou/"
     "topics/bukyoku/iyaku/kaisyu/kenkaisyu.html"
@@ -148,13 +147,14 @@ WAREKI_RE = re.compile(
     r"(令和|平成|昭和|R|H|S)\s*(\d+|元)\s*[年.\-．／/]\s*"
     r"(\d{1,2})\s*[月.\-．／/]\s*(\d{1,2})\s*日?"
 )
-SEIREKI_RE = re.compile(
-    r"(20\d{2}|19\d{2})\s*[年.\-／/]\s*(\d{1,2})\s*[月.\-／/]\s*(\d{1,2})"
-)
+SEIREKI_RE = re.compile(r"(20\d{2}|19\d{2})\s*[年.\-／/]\s*(\d{1,2})\s*[月.\-／/]\s*(\d{1,2})")
 ERA_OFFSET = {
-    "令和": 2018, "R": 2018,
-    "平成": 1988, "H": 1988,
-    "昭和": 1925, "S": 1925,
+    "令和": 2018,
+    "R": 2018,
+    "平成": 1988,
+    "H": 1988,
+    "昭和": 1925,
+    "S": 1925,
 }
 
 
@@ -193,13 +193,13 @@ def _parse_date(text: str) -> str | None:
 
 @dataclass
 class EnfRow:
-    target_name: str           # 製造販売業者等名称 (会社名)
-    product_name: str | None   # 販売名 (product label, for context)
-    issuance_date: str         # ISO yyyy-mm-dd
+    target_name: str  # 製造販売業者等名称 (会社名)
+    product_name: str | None  # 販売名 (product label, for context)
+    issuance_date: str  # ISO yyyy-mm-dd
     issuing_authority: str
-    enforcement_kind: str      # 'other' | 'business_improvement'
-    reason_summary: str        # always contains "薬機法"
-    related_law_ref: str       # "薬機法"
+    enforcement_kind: str  # 'other' | 'business_improvement'
+    reason_summary: str  # always contains "薬機法"
+    related_law_ref: str  # "薬機法"
     source_url: str
     extra: dict | None = None  # raw fields (recall_no, class, category)
 
@@ -220,9 +220,7 @@ def _strip_csv_cell(s: str) -> str:
     return s.strip()
 
 
-_MAH_NAME_RE = re.compile(
-    r"製造販売業者の名称[　\s:：]+([^\r\n]+)"
-)
+_MAH_NAME_RE = re.compile(r"製造販売業者の名称[　\s:：]+([^\r\n]+)")
 
 
 def _extract_mah_name(mah_blob: str) -> str | None:
@@ -292,31 +290,36 @@ def parse_pmda_recall_csv(
         # query (...AND reason_summary LIKE '%薬機%') captures these rows
         # when issuing_authority is 厚生労働省 (won't apply here — PMDA is
         # primary — but keep the convention consistent).
-        product_short = product_blob.replace("販売名 :", "").replace(
-            "販売名：", ""
-        ).replace("一般的名称：", "").strip(": 　")[:200]
+        product_short = (
+            product_blob.replace("販売名 :", "")
+            .replace("販売名：", "")
+            .replace("一般的名称：", "")
+            .strip(": 　")[:200]
+        )
         reason = (
             f"薬機法に基づく{cls_field or 'クラス分類'}回収（{kind or category_label}）"
             f" / 製品: {product_short[:120]} / 理由: {reason_blob[:200]}"
         )[:1500]
 
-        out.append(EnfRow(
-            target_name=mah_name,
-            product_name=product_short or None,
-            issuance_date=date_iso,
-            issuing_authority=PMDA_AUTHORITY,
-            enforcement_kind="other",
-            reason_summary=reason,
-            related_law_ref="薬機法",
-            source_url=source_url,
-            extra={
-                "recall_no": recall_no,
-                "class": cls_field,
-                "category": kind or category_label,
-                "product_name": product_short,
-                "detail_url": pmda_recall_detail_url(recall_no),
-            },
-        ))
+        out.append(
+            EnfRow(
+                target_name=mah_name,
+                product_name=product_short or None,
+                issuance_date=date_iso,
+                issuing_authority=PMDA_AUTHORITY,
+                enforcement_kind="other",
+                reason_summary=reason,
+                related_law_ref="薬機法",
+                source_url=source_url,
+                extra={
+                    "recall_no": recall_no,
+                    "class": cls_field,
+                    "category": kind or category_label,
+                    "product_name": product_short,
+                    "detail_url": pmda_recall_detail_url(recall_no),
+                },
+            )
+        )
     return out
 
 
@@ -334,8 +337,7 @@ def fetch_pmda_recalls(http: HttpClient) -> list[EnfRow]:
                 index_url = pmda_recall_index_url(fy, cls, suffix)
                 res = http.get(zip_url, max_bytes=30 * 1024 * 1024)
                 if not res.ok:
-                    _LOG.debug("[pmda] zip not available status=%s url=%s",
-                               res.status, zip_url)
+                    _LOG.debug("[pmda] zip not available status=%s url=%s", res.status, zip_url)
                     continue
                 try:
                     z = zipfile.ZipFile(io.BytesIO(res.body))
@@ -359,8 +361,7 @@ def fetch_pmda_recalls(http: HttpClient) -> list[EnfRow]:
                         category_label=cat_label,
                     )
                     out.extend(rows)
-                    _LOG.info("[pmda] fy=%d cls=%d cat=%s rows=%d",
-                              fy, cls, suffix, len(rows))
+                    _LOG.info("[pmda] fy=%d cls=%d cat=%s rows=%d", fy, cls, suffix, len(rows))
     _LOG.info("[pmda] total parsed rows=%d", len(out))
     return out
 
@@ -440,21 +441,22 @@ def parse_mhlw_kokukaisyu(html: str, source_url: str) -> list[EnfRow]:
         # Use FY April 1 as a stable issuance proxy when only year known.
         issuance = f"{fy_year:04d}-04-01"
         absurl = _resolve_url(href, source_url)
-        reason = (
-            f"薬機法に基づく回収命令（厚生労働省発動）/ "
-            f"事業者: {company} / 詳細: {absurl}"
-        )[:1500]
-        out.append(EnfRow(
-            target_name=company,
-            product_name=None,
-            issuance_date=issuance,
-            issuing_authority=MHLW_AUTHORITY,
-            enforcement_kind="other",
-            reason_summary=reason,
-            related_law_ref="薬機法",
-            source_url=source_url,
-            extra={"detail_url": absurl, "feed": "mhlw_koku_kaisyu"},
-        ))
+        reason = (f"薬機法に基づく回収命令（厚生労働省発動）/ 事業者: {company} / 詳細: {absurl}")[
+            :1500
+        ]
+        out.append(
+            EnfRow(
+                target_name=company,
+                product_name=None,
+                issuance_date=issuance,
+                issuing_authority=MHLW_AUTHORITY,
+                enforcement_kind="other",
+                reason_summary=reason,
+                related_law_ref="薬機法",
+                source_url=source_url,
+                extra={"detail_url": absurl, "feed": "mhlw_koku_kaisyu"},
+            )
+        )
     return out
 
 
@@ -484,26 +486,22 @@ def parse_mhlw_kenkaisyu(html: str, source_url: str) -> list[EnfRow]:
         absurl = _resolve_url(href, source_url) if href else source_url
         m_pref = _PREF_RE.search(text)
         pref = m_pref.group(1) if m_pref else None
-        authority = (
-            f"{MHLW_AUTHORITY} / {pref}" if pref else MHLW_AUTHORITY
-        )
-        reason = (
-            f"薬機法に基づく回収命令（{pref or '都道府県'}発動）/ "
-            f"事業者: {company}"
-        )[:1500]
+        authority = f"{MHLW_AUTHORITY} / {pref}" if pref else MHLW_AUTHORITY
+        reason = (f"薬機法に基づく回収命令（{pref or '都道府県'}発動）/ 事業者: {company}")[:1500]
         issuance = f"{fy_year:04d}-04-01"
-        out.append(EnfRow(
-            target_name=company,
-            product_name=None,
-            issuance_date=issuance,
-            issuing_authority=authority,
-            enforcement_kind="other",
-            reason_summary=reason,
-            related_law_ref="薬機法",
-            source_url=source_url,
-            extra={"detail_url": absurl, "feed": "mhlw_ken_kaisyu",
-                   "prefecture": pref},
-        ))
+        out.append(
+            EnfRow(
+                target_name=company,
+                product_name=None,
+                issuance_date=issuance,
+                issuing_authority=authority,
+                enforcement_kind="other",
+                reason_summary=reason,
+                related_law_ref="薬機法",
+                source_url=source_url,
+                extra={"detail_url": absurl, "feed": "mhlw_ken_kaisyu", "prefecture": pref},
+            )
+        )
     # Dedup within batch — kenkaisyu may yield same row from <li> + <tr>.
     seen: set[tuple[str, str, str]] = set()
     deduped: list[EnfRow] = []
@@ -539,9 +537,7 @@ def fetch_mhlw_recalls(http: HttpClient) -> list[EnfRow]:
 
 
 def _slug8(target: str, date: str, extra: str = "") -> str:
-    h = hashlib.sha1(
-        f"{target}|{date}|{extra}".encode("utf-8")
-    ).hexdigest()
+    h = hashlib.sha1(f"{target}|{date}|{extra}".encode("utf-8")).hexdigest()
     return h[:8]
 
 
@@ -552,9 +548,7 @@ def ensure_tables(conn: sqlite3.Connection) -> None:
             (tbl,),
         ).fetchone()
         if not row:
-            raise SystemExit(
-                f"missing table '{tbl}' — apply migrations first"
-            )
+            raise SystemExit(f"missing table '{tbl}' — apply migrations first")
 
 
 def existing_dedup_keys(
@@ -679,24 +673,17 @@ def write_rows(
 
             extra_seed = ""
             if r.extra:
-                extra_seed = (
-                    r.extra.get("recall_no")
-                    or r.extra.get("detail_url")
-                    or ""
-                )
+                extra_seed = r.extra.get("recall_no") or r.extra.get("detail_url") or ""
             slug = _slug8(r.target_name, r.issuance_date, extra_seed)
             authority_slug = (
-                "pmda" if "PMDA" in r.issuing_authority
-                or "総合機構" in r.issuing_authority
+                "pmda"
+                if "PMDA" in r.issuing_authority or "総合機構" in r.issuing_authority
                 else "mhlw"
             )
             canonical_id = (
-                f"enforcement:{authority_slug}-yakkiho-"
-                f"{r.issuance_date.replace('-', '')}-{slug}"
+                f"enforcement:{authority_slug}-yakkiho-{r.issuance_date.replace('-', '')}-{slug}"
             )
-            primary_name = (
-                f"{r.target_name} ({r.issuance_date}) - 薬機法回収"
-            )
+            primary_name = f"{r.target_name} ({r.issuance_date}) - 薬機法回収"
             raw_json = json.dumps(
                 {
                     "target_name": r.target_name,
@@ -708,27 +695,28 @@ def write_rows(
                     "reason_summary": r.reason_summary,
                     "source_url": r.source_url,
                     "extra": r.extra or {},
-                    "source_attribution": (
-                        "PMDA" if authority_slug == "pmda"
-                        else "厚生労働省"
-                    ),
-                    "license": (
-                        "政府機関の著作物（出典明記で転載引用可）"
-                    ),
+                    "source_attribution": ("PMDA" if authority_slug == "pmda" else "厚生労働省"),
+                    "license": ("政府機関の著作物（出典明記で転載引用可）"),
                 },
                 ensure_ascii=False,
             )
             try:
                 upsert_entity(
-                    conn, canonical_id, primary_name,
-                    r.source_url, raw_json, now_iso,
+                    conn,
+                    canonical_id,
+                    primary_name,
+                    r.source_url,
+                    raw_json,
+                    now_iso,
                 )
                 insert_enforcement(conn, canonical_id, r, now_iso)
                 inserted += 1
             except sqlite3.Error as exc:
                 _LOG.error(
                     "DB error name=%r date=%s: %s",
-                    r.target_name, r.issuance_date, exc,
+                    r.target_name,
+                    r.issuance_date,
+                    exc,
                 )
                 continue
         conn.commit()
@@ -752,11 +740,13 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--verbose", "-v", action="store_true")
     ap.add_argument(
-        "--skip-pmda", action="store_true",
+        "--skip-pmda",
+        action="store_true",
         help="skip PMDA recall feed (debug)",
     )
     ap.add_argument(
-        "--skip-mhlw", action="store_true",
+        "--skip-mhlw",
+        action="store_true",
         help="skip MHLW 国/都道府県 回収命令 lists (debug)",
     )
     return ap.parse_args(argv)
@@ -770,9 +760,7 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     http = HttpClient(user_agent=USER_AGENT)
-    now_iso = datetime.now(UTC).isoformat(timespec="seconds").replace(
-        "+00:00", "Z"
-    )
+    now_iso = datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
 
     all_rows: list[EnfRow] = []
     if not args.skip_pmda:
@@ -787,7 +775,9 @@ def main(argv: list[str] | None = None) -> int:
         for r in all_rows[:5]:
             _LOG.info(
                 "sample: name=%s date=%s auth=%s reason=%s",
-                r.target_name, r.issuance_date, r.issuing_authority,
+                r.target_name,
+                r.issuance_date,
+                r.issuing_authority,
                 r.reason_summary[:100],
             )
         http.close()
@@ -804,7 +794,9 @@ def main(argv: list[str] | None = None) -> int:
     ensure_tables(conn)
 
     inserted, dup_db, dup_batch = write_rows(
-        conn, all_rows, now_iso=now_iso,
+        conn,
+        all_rows,
+        now_iso=now_iso,
     )
     try:
         conn.close()
@@ -814,7 +806,10 @@ def main(argv: list[str] | None = None) -> int:
 
     _LOG.info(
         "done parsed=%d inserted=%d dup_db=%d dup_batch=%d",
-        len(all_rows), inserted, dup_db, dup_batch,
+        len(all_rows),
+        inserted,
+        dup_db,
+        dup_batch,
     )
     print(
         f"PMDA+MHLW 薬機法 ingest: parsed={len(all_rows)} "

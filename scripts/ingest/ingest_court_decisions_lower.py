@@ -46,6 +46,7 @@ Exit codes:
   1  network error or no data after retries
   2  DB schema missing
 """
+
 from __future__ import annotations
 
 import argparse
@@ -82,8 +83,17 @@ MAX_RETRIES = 3
 ALLOWED_HOST = "www.courts.go.jp"
 
 BANNED_SOURCE_HOSTS: tuple[str, ...] = (
-    "d1law", "westlaw", "lexis", "lex-db", "lexdb", "tkclex",
-    "noukaweb", "hojyokin-portal", "biz.stayway", "hojo-navi", "mirai-joho",
+    "d1law",
+    "westlaw",
+    "lexis",
+    "lex-db",
+    "lexdb",
+    "tkclex",
+    "noukaweb",
+    "hojyokin-portal",
+    "biz.stayway",
+    "hojo-navi",
+    "mirai-joho",
 )
 
 # (endpoint_segment, courtCaseType, label, default_subject_area)
@@ -155,7 +165,7 @@ KEYWORD_SEEDS: dict[str, tuple[tuple[str, str], ...]] = {
 }
 
 PAGE_SIZE = 30
-MAX_PER_KEYWORD = 90    # 3 pages per (endpoint, keyword)
+MAX_PER_KEYWORD = 90  # 3 pages per (endpoint, keyword)
 MAX_TOTAL_DETAILS = 1500
 MIN_ROWS_FOR_OK = 600
 
@@ -178,8 +188,18 @@ _GENGO: tuple[tuple[str, int], ...] = (
 )
 
 _KANJI_DIGIT = {
-    "〇": 0, "零": 0, "一": 1, "二": 2, "三": 3, "四": 4,
-    "五": 5, "六": 6, "七": 7, "八": 8, "九": 9, "十": 10,
+    "〇": 0,
+    "零": 0,
+    "一": 1,
+    "二": 2,
+    "三": 3,
+    "四": 4,
+    "五": 5,
+    "六": 6,
+    "七": 7,
+    "八": 8,
+    "九": 9,
+    "十": 10,
     "元": 1,
 }
 
@@ -320,10 +340,14 @@ class CourtsClient:
             except (httpx.HTTPError, httpx.TransportError) as exc:
                 last_exc = exc
                 if attempt < MAX_RETRIES:
-                    sleep_for = 2 ** attempt
+                    sleep_for = 2**attempt
                     _LOG.warning(
                         "GET %s failed (%s); retry %d/%d after %ds",
-                        url, exc, attempt, MAX_RETRIES, sleep_for,
+                        url,
+                        exc,
+                        attempt,
+                        MAX_RETRIES,
+                        sleep_for,
                     )
                     time.sleep(sleep_for)
         assert last_exc is not None
@@ -365,9 +389,7 @@ _DATE_FIND_RE = re.compile(
 )
 
 
-def parse_listing_page(
-    html: str, *, seed_keyword: str, seed_subject: str
-) -> list[ListingRow]:
+def parse_listing_page(html: str, *, seed_keyword: str, seed_subject: str) -> list[ListingRow]:
     soup = BeautifulSoup(html, "html.parser")
     table = soup.find("table", class_="search-result-table")
     if not table:
@@ -418,7 +440,7 @@ def parse_listing_page(
         date_m = _DATE_FIND_RE.search(line2)
         if date_m:
             decision_date_raw = date_m.group(0)
-            tail = line2[date_m.end():].strip()
+            tail = line2[date_m.end() :].strip()
             parts = re.split(r"\s+", tail)
             if parts:
                 court = parts[0]
@@ -503,14 +525,14 @@ def parse_listing_total(html: str) -> int | None:
 
 @dataclass
 class DetailFields:
-    courtroom: str | None = None       # 裁判所名・部 / 裁判所名 / 法廷名
-    decision_type: str | None = None   # 裁判種別 (rare on lower-court detail)
-    key_ruling: str | None = None      # 判示事項
-    summary: str | None = None         # 裁判要旨
-    references: str | None = None      # 参照法条
+    courtroom: str | None = None  # 裁判所名・部 / 裁判所名 / 法廷名
+    decision_type: str | None = None  # 裁判種別 (rare on lower-court detail)
+    key_ruling: str | None = None  # 判示事項
+    summary: str | None = None  # 裁判要旨
+    references: str | None = None  # 参照法条
     reporter_citation: str | None = None
     parties: str | None = None
-    field_label: str | None = None     # 分野 (search5/6 only)
+    field_label: str | None = None  # 分野 (search5/6 only)
 
 
 def parse_detail_page(html: str) -> DetailFields:
@@ -589,23 +611,26 @@ def walk_keyword(
     seen_ids: set[str] = set()
     total: int | None = None
     while True:
-        url = (
-            f"{base}?courtCaseType={courtCaseType}&query1={encoded}"
-            f"&offset={offset}#searched"
-        )
+        url = f"{base}?courtCaseType={courtCaseType}&query1={encoded}&offset={offset}#searched"
         try:
             html = client.get(url)
         except Exception as exc:  # noqa: BLE001
             _LOG.warning(
                 "listing fetch failed endpoint=%s kw=%s offset=%d err=%s",
-                endpoint, keyword, offset, exc,
+                endpoint,
+                keyword,
+                offset,
+                exc,
             )
             break
         if total is None:
             total = parse_listing_total(html)
             if total is not None:
                 _LOG.info(
-                    "endpoint=%s kw=%s total=%d", endpoint, keyword, total,
+                    "endpoint=%s kw=%s total=%d",
+                    endpoint,
+                    keyword,
+                    total,
                 )
         rows = parse_listing_page(html, seed_keyword=keyword, seed_subject=subject)
         if not rows:
@@ -672,9 +697,7 @@ def assemble(
         if "税法" in references or "国税" in references or "租税" in references:
             subject = "租税"
         elif (
-            "行政事件訴訟法" in references
-            or "行政手続法" in references
-            or "行政不服" in references
+            "行政事件訴訟法" in references or "行政手続法" in references or "行政不服" in references
         ):
             subject = "行政"
         elif "国家賠償" in references:
@@ -750,9 +773,12 @@ def open_db(db_path: Path) -> sqlite3.Connection:
 
 
 def upsert_row(conn: sqlite3.Connection, r: CourtRow) -> str:
-    existed = conn.execute(
-        "SELECT 1 FROM court_decisions WHERE unified_id = ?", (r.unified_id,)
-    ).fetchone() is not None
+    existed = (
+        conn.execute(
+            "SELECT 1 FROM court_decisions WHERE unified_id = ?", (r.unified_id,)
+        ).fetchone()
+        is not None
+    )
     conn.execute(
         """INSERT INTO court_decisions (
             unified_id, case_name, case_number, court, court_level,
@@ -784,11 +810,27 @@ def upsert_row(conn: sqlite3.Connection, r: CourtRow) -> str:
             updated_at = excluded.updated_at
         """,
         (
-            r.unified_id, r.case_name, r.case_number, r.court, r.court_level,
-            r.decision_date, r.decision_type, r.subject_area, r.related_law_ids_json,
-            r.key_ruling, r.parties_involved, r.impact_on_business, r.precedent_weight,
-            r.full_text_url, r.pdf_url, r.source_url, r.source_excerpt,
-            r.source_checksum, r.confidence, r.fetched_at, r.updated_at,
+            r.unified_id,
+            r.case_name,
+            r.case_number,
+            r.court,
+            r.court_level,
+            r.decision_date,
+            r.decision_type,
+            r.subject_area,
+            r.related_law_ids_json,
+            r.key_ruling,
+            r.parties_involved,
+            r.impact_on_business,
+            r.precedent_weight,
+            r.full_text_url,
+            r.pdf_url,
+            r.source_url,
+            r.source_excerpt,
+            r.source_checksum,
+            r.confidence,
+            r.fetched_at,
+            r.updated_at,
         ),
     )
     conn.execute("DELETE FROM court_decisions_fts WHERE unified_id = ?", (r.unified_id,))
@@ -810,21 +852,27 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--db", type=Path, default=DEFAULT_DB)
     ap.add_argument(
-        "--per-keyword-cap", type=int, default=MAX_PER_KEYWORD,
+        "--per-keyword-cap",
+        type=int,
+        default=MAX_PER_KEYWORD,
         help="cap rows per (endpoint, keyword) pair before moving on",
     )
     ap.add_argument(
-        "--total-cap", type=int, default=MAX_TOTAL_DETAILS,
+        "--total-cap",
+        type=int,
+        default=MAX_TOTAL_DETAILS,
         help="absolute cap across all keywords",
     )
     ap.add_argument(
-        "--skip-detail", action="store_true",
+        "--skip-detail",
+        action="store_true",
         help="skip per-case detail fetch (faster; misses 判示事項/裁判要旨)",
     )
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--verbose", "-v", action="store_true")
     ap.add_argument(
-        "--endpoints", nargs="*",
+        "--endpoints",
+        nargs="*",
         default=list(ENDPOINT_LABELS.keys()),
         help="subset of endpoint segments (search3 search4 search5 search6)",
     )
@@ -839,9 +887,7 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     fetched_at = (
-        _dt.datetime.now(_dt.timezone.utc)
-        .isoformat(timespec="seconds")
-        .replace("+00:00", "Z")
+        _dt.datetime.now(_dt.timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
     )
 
     conn: sqlite3.Connection | None = None
@@ -857,8 +903,12 @@ def main(argv: list[str] | None = None) -> int:
 
     client = CourtsClient()
     stats = {
-        "walked": 0, "built": 0, "inserted": 0, "updated": 0,
-        "skipped": 0, "detail_fail": 0,
+        "walked": 0,
+        "built": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped": 0,
+        "detail_fail": 0,
     }
     seen_unified: set[str] = set()
     rows_to_write: list[CourtRow] = []
@@ -875,7 +925,10 @@ def main(argv: list[str] | None = None) -> int:
                     break
                 _LOG.info(
                     "WALK endpoint=%s (%s) kw=%s subject=%s",
-                    endpoint, label, keyword, subject,
+                    endpoint,
+                    label,
+                    keyword,
+                    subject,
                 )
                 for listing in walk_keyword(
                     client,
@@ -896,7 +949,8 @@ def main(argv: list[str] | None = None) -> int:
                         except Exception as exc:  # noqa: BLE001
                             _LOG.warning(
                                 "detail fetch failed url=%s err=%s",
-                                listing.detail_url, exc,
+                                listing.detail_url,
+                                exc,
                             )
                             stats["detail_fail"] += 1
                     row = assemble(listing, detail, fetched_at)
@@ -910,7 +964,8 @@ def main(argv: list[str] | None = None) -> int:
                     stats["built"] += 1
                     _LOG.info(
                         "OK ep=%s kw=%s %s | %s | %s | %s | %s",
-                        endpoint, keyword,
+                        endpoint,
+                        keyword,
                         row.unified_id,
                         row.case_number,
                         (row.court or "?")[:24],
@@ -944,13 +999,18 @@ def main(argv: list[str] | None = None) -> int:
 
     _LOG.info(
         "done walked=%d built=%d inserted=%d updated=%d skipped=%d detail_fail=%d",
-        stats["walked"], stats["built"], stats["inserted"],
-        stats["updated"], stats["skipped"], stats["detail_fail"],
+        stats["walked"],
+        stats["built"],
+        stats["inserted"],
+        stats["updated"],
+        stats["skipped"],
+        stats["detail_fail"],
     )
     if stats["built"] < MIN_ROWS_FOR_OK:
         _LOG.warning(
             "built (%d) below min target (%d) — non-zero exit so callers retry",
-            stats["built"], MIN_ROWS_FOR_OK,
+            stats["built"],
+            MIN_ROWS_FOR_OK,
         )
         return 1
     return 0

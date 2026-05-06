@@ -46,6 +46,7 @@ CLI:
 NOTE: migration 015 must be applied before this script runs.
       `python scripts/migrate.py --db data/jpintel.db` is a separate step.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -132,11 +133,13 @@ class EGovClient:
 
     def __init__(self) -> None:
         self._session = requests.Session()
-        self._session.headers.update({
-            "User-Agent": USER_AGENT,
-            "Accept": "application/json",
-            "Accept-Language": "ja,en;q=0.5",
-        })
+        self._session.headers.update(
+            {
+                "User-Agent": USER_AGENT,
+                "Accept": "application/json",
+                "Accept-Language": "ja,en;q=0.5",
+            }
+        )
         self._last_call_monotonic: float = 0.0
 
     def _pace(self) -> None:
@@ -146,7 +149,9 @@ class EGovClient:
             time.sleep(wait)
         self._last_call_monotonic = time.monotonic()
 
-    def get_json(self, url: str, params: dict[str, Any] | None = None) -> tuple[dict[str, Any] | None, bytes | None, int]:
+    def get_json(
+        self, url: str, params: dict[str, Any] | None = None
+    ) -> tuple[dict[str, Any] | None, bytes | None, int]:
         """Fetch JSON with retry on 5xx.
 
         Returns (parsed_body | None, raw_bytes | None, status_code).
@@ -165,7 +170,7 @@ class EGovClient:
                 _LOG.warning("fetch_error url=%s attempt=%d err=%s", url, attempt, exc)
                 if attempt == MAX_RETRIES:
                     return None, None, 0
-                time.sleep((2 ** attempt) + random.uniform(0, 0.5))
+                time.sleep((2**attempt) + random.uniform(0, 0.5))
                 continue
 
             last_status = resp.status_code
@@ -177,12 +182,14 @@ class EGovClient:
                 )
                 if attempt == MAX_RETRIES:
                     return None, None, resp.status_code
-                time.sleep((2 ** attempt) + random.uniform(0, 0.5))
+                time.sleep((2**attempt) + random.uniform(0, 0.5))
                 continue
             if resp.status_code >= 400:
                 _LOG.warning(
                     "fetch_client_error url=%s status=%d body=%s",
-                    url, resp.status_code, resp.text[:200],
+                    url,
+                    resp.status_code,
+                    resp.text[:200],
                 )
                 return None, None, resp.status_code
 
@@ -235,7 +242,9 @@ def _extract_law_title(entry: dict[str, Any]) -> str | None:
 
 
 def _extract_law_short_title(entry: dict[str, Any]) -> str | None:
-    val = _first(entry, "abbrev", "law_title_kana", "lawAbbreviation", "law_short_title", "abbreviation")
+    val = _first(
+        entry, "abbrev", "law_title_kana", "lawAbbreviation", "law_short_title", "abbreviation"
+    )
     return str(val) if val is not None else None
 
 
@@ -251,7 +260,9 @@ def _extract_law_type_jp(entry: dict[str, Any]) -> str | None:
     "ImperialOrder", "MinisterialOrdinance", "Rule" (see law_type field).
     Fallback to `category` (e.g. "刑事", "文化") only if law_type missing.
     """
-    val = _first(entry, "law_type", "LawType", "lawType", "law_num_type", "category", "law_category")
+    val = _first(
+        entry, "law_type", "LawType", "lawType", "law_num_type", "category", "law_category"
+    )
     return str(val) if val is not None else None
 
 
@@ -493,7 +504,9 @@ def iter_law_index(
     return collected
 
 
-def fetch_law_detail(client: EGovClient, law_id_from_api: str) -> tuple[dict[str, Any] | None, bytes | None]:
+def fetch_law_detail(
+    client: EGovClient, law_id_from_api: str
+) -> tuple[dict[str, Any] | None, bytes | None]:
     """GET {BASE}/law_data/{law_id} — full text + metadata.
 
     Returns (parsed_body | None, raw_bytes | None). The raw bytes feed
@@ -602,7 +615,8 @@ def upsert_law(
 
     subject_areas_json = (
         json.dumps(subject_areas, ensure_ascii=False, separators=(",", ":"))
-        if subject_areas else None
+        if subject_areas
+        else None
     )
 
     conn.execute(
@@ -683,14 +697,14 @@ def build_row_from_api(
     if not law_id_api or not law_number or not law_title:
         _LOG.warning(
             "skip_missing_core law_id=%s law_number=%s law_title=%s",
-            law_id_api, law_number, (law_title or "")[:40],
+            law_id_api,
+            law_number,
+            (law_title or "")[:40],
         )
         return None
 
     if not law_type:
-        _LOG.warning(
-            "skip_unmapped_law_type law_id=%s raw_jp=%s", law_id_api, law_type_jp
-        )
+        _LOG.warning("skip_unmapped_law_type law_id=%s raw_jp=%s", law_id_api, law_type_jp)
         return None
 
     summary = _extract_summary(merged)
@@ -711,7 +725,8 @@ def build_row_from_api(
         # Per spec: leave NULL + log; reconciliation pass later fills it.
         _LOG.info(
             "superseded_forward_ref_unresolved law_id=%s succ=%s",
-            law_id_api, superseded_api_id,
+            law_id_api,
+            superseded_api_id,
         )
 
     fetched_at = datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
@@ -780,7 +795,11 @@ def run(
 
     _LOG.info(
         "ingest_start db=%s limit=%s law_type=%s since=%s dry_run=%s",
-        db_path, limit, law_type, since, dry_run,
+        db_path,
+        limit,
+        law_type,
+        since,
+        dry_run,
     )
 
     # 1) Index.
@@ -823,7 +842,12 @@ def run(
             if since and idx_amended and not _passes_since(idx_amended, since):
                 _LOG.info(
                     "[%d/%d] %s %s... -> SKIP (since=%s, amended=%s)",
-                    idx, total, law_id_api, law_title_preview, since, idx_amended,
+                    idx,
+                    total,
+                    law_id_api,
+                    law_title_preview,
+                    since,
+                    idx_amended,
                 )
                 counts["skipped"] += 1
                 continue
@@ -834,7 +858,11 @@ def run(
             except Exception as exc:  # noqa: BLE001 - defensive; log & keep going
                 _LOG.warning(
                     "[%d/%d] %s %s... -> ERR (%s)",
-                    idx, total, law_id_api, law_title_preview, exc,
+                    idx,
+                    total,
+                    law_id_api,
+                    law_title_preview,
+                    exc,
                 )
                 counts["errors"] += 1
                 continue
@@ -853,7 +881,11 @@ def run(
             if dry_run:
                 _LOG.info(
                     "[%d/%d] %s %s... -> %s DRY",
-                    idx, total, law_id_api, law_title_preview, row["unified_id"],
+                    idx,
+                    total,
+                    law_id_api,
+                    law_title_preview,
+                    row["unified_id"],
                 )
                 continue
 
@@ -886,7 +918,11 @@ def run(
                 conn.execute("ROLLBACK")
                 _LOG.warning(
                     "[%d/%d] %s %s... -> ERR (db: %s)",
-                    idx, total, law_id_api, law_title_preview, exc,
+                    idx,
+                    total,
+                    law_id_api,
+                    law_title_preview,
+                    exc,
                 )
                 counts["errors"] += 1
                 continue
@@ -903,7 +939,12 @@ def run(
 
             _LOG.info(
                 "[%d/%d] %s %s... -> %s %s",
-                idx, total, law_id_api, law_title_preview, row["unified_id"], tag,
+                idx,
+                total,
+                law_id_api,
+                law_title_preview,
+                row["unified_id"],
+                tag,
             )
     finally:
         if conn is not None:

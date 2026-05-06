@@ -19,6 +19,7 @@ Constraints:
   - INSERT OR IGNORE on canonical_id (idempotent)
   - Stops once net inserts >= --target
 """
+
 from __future__ import annotations
 
 import argparse
@@ -33,6 +34,7 @@ from pathlib import Path
 
 try:
     import certifi
+
     _SSL_CTX = ssl.create_default_context(cafile=certifi.where())
 except ImportError:
     _SSL_CTX = ssl.create_default_context()
@@ -63,10 +65,10 @@ def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--apply", action="store_true")
     p.add_argument("--dry-run", action="store_true")
-    p.add_argument("--target", type=int, default=500,
-                   help="stop after net inserts reaches this count")
-    p.add_argument("--max-laws", type=int, default=5000,
-                   help="upper cap on laws probed")
+    p.add_argument(
+        "--target", type=int, default=500, help="stop after net inserts reaches this count"
+    )
+    p.add_argument("--max-laws", type=int, default=5000, help="upper cap on laws probed")
     p.add_argument("--verbose", "-v", action="store_true")
     args = p.parse_args()
 
@@ -163,11 +165,16 @@ def main() -> int:
                 }
                 if dry:
                     if inserted < 5:
-                        _LOG.info("would insert: %s | %s | %s",
-                                  rev_canonical, title[:30], amendment_enforce)
+                        _LOG.info(
+                            "would insert: %s | %s | %s",
+                            rev_canonical,
+                            title[:30],
+                            amendment_enforce,
+                        )
                 else:
                     try:
-                        am.execute("""
+                        am.execute(
+                            """
                             INSERT INTO am_law (
                                 canonical_id, canonical_name, short_name, law_number,
                                 category, first_enforced, egov_url, status, note,
@@ -175,14 +182,26 @@ def main() -> int:
                                 last_amended_at, subject_areas_json, e_gov_lawid
                             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                             ON CONFLICT(canonical_id) DO NOTHING
-                        """, (
-                            row["canonical_id"], row["canonical_name"], row["short_name"],
-                            row["law_number"], row["category"], row["first_enforced"],
-                            row["egov_url"], row["status"], row["note"],
-                            row["ministry"], row["superseded_by"], row["effective_from"],
-                            row["effective_until"], row["last_amended_at"],
-                            row["subject_areas_json"], row["e_gov_lawid"],
-                        ))
+                        """,
+                            (
+                                row["canonical_id"],
+                                row["canonical_name"],
+                                row["short_name"],
+                                row["law_number"],
+                                row["category"],
+                                row["first_enforced"],
+                                row["egov_url"],
+                                row["status"],
+                                row["note"],
+                                row["ministry"],
+                                row["superseded_by"],
+                                row["effective_from"],
+                                row["effective_until"],
+                                row["last_amended_at"],
+                                row["subject_areas_json"],
+                                row["e_gov_lawid"],
+                            ),
+                        )
                         existing_ids.add(rev_canonical)
                     except sqlite3.IntegrityError as e:
                         _LOG.warning("integrity err %s: %s", rev_canonical, e)
@@ -197,7 +216,10 @@ def main() -> int:
             am.commit()
         _LOG.info(
             "DONE: probed=%d inserted=%d skipped_existing=%d laws_no_extra_rev=%d",
-            probed, inserted, skipped_existing, laws_no_extra_rev,
+            probed,
+            inserted,
+            skipped_existing,
+            laws_no_extra_rev,
         )
     except Exception:
         if not dry:

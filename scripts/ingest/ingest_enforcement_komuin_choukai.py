@@ -56,6 +56,7 @@ CLI:
       [--db autonomath.db] [--dry-run] [--verbose] [--limit 1000] \\
       [--source-filter parser_substr]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -94,27 +95,28 @@ USER_AGENT = "AutonoMath/0.1.0 (+https://bookyou.net)"
 # Dataclasses
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class Source:
-    locale: str          # 都道府県 / 政令市 / 中央省庁 名 (logical bucket)
-    authority: str       # issuing_authority (人格)
+    locale: str  # 都道府県 / 政令市 / 中央省庁 名 (logical bucket)
+    authority: str  # issuing_authority (人格)
     url: str
     parser: str
-    law_basis: str       # 国家公務員法第82条 / 地方公務員法第29条 / 教育公務員特例法第26条
-    org_class: str       # 国家公務員 / 地方公務員 / 教員 (for breakdown)
+    law_basis: str  # 国家公務員法第82条 / 地方公務員法第29条 / 教育公務員特例法第26条
+    org_class: str  # 国家公務員 / 地方公務員 / 教員 (for breakdown)
     note: str = ""
 
 
 @dataclass
 class EnfRow:
-    target_name: str         # anonymized: "{authority} 職員 #{seq:03d} (氏名非公表)"
-    issuance_date: str       # ISO yyyy-mm-dd
+    target_name: str  # anonymized: "{authority} 職員 #{seq:03d} (氏名非公表)"
+    issuance_date: str  # ISO yyyy-mm-dd
     issuing_authority: str
-    enforcement_kind: str    # CHECK enum
+    enforcement_kind: str  # CHECK enum
     reason_summary: str
     related_law_ref: str
     source_url: str
-    org_class: str           # 国家/地方/教員
+    org_class: str  # 国家/地方/教員
     extra: dict = field(default_factory=dict)
 
 
@@ -139,30 +141,42 @@ SOURCES: list[Source] = [
     # === 教員 (Teacher) ===
     # 長野県教育委員会 — 一覧 PDF (多数記録)
     Source(
-        "長野県", "長野県教育委員会",
+        "長野県",
+        "長野県教育委員会",
         "https://www.pref.nagano.lg.jp/kyoiku/kyoiku02/kyoshokuin/shishin/chokai/documents/shobunichiran080324.pdf",
-        "nagano_edu_list_pdf", CHOUKAI_LAW_TEACHER, ORG_TEACHER,
+        "nagano_edu_list_pdf",
+        CHOUKAI_LAW_TEACHER,
+        ORG_TEACHER,
         note="長野県教育委員会 懲戒処分一覧 (R5.4.1～)",
     ),
     # 山梨県教育委員会 — 年度別 PDF
     Source(
-        "山梨県", "山梨県教育委員会",
+        "山梨県",
+        "山梨県教育委員会",
         "https://www.pref.yamanashi.jp/documents/38330/kyouisyobun_r705.pdf",
-        "yamanashi_edu_list_pdf", CHOUKAI_LAW_TEACHER, ORG_TEACHER,
+        "yamanashi_edu_list_pdf",
+        CHOUKAI_LAW_TEACHER,
+        ORG_TEACHER,
         note="山梨県教育委員会 処分一覧 (R7年度)",
     ),
     Source(
-        "山梨県", "山梨県教育委員会",
+        "山梨県",
+        "山梨県教育委員会",
         "https://www.pref.yamanashi.jp/documents/38330/kyouisyobun_r602.pdf",
-        "yamanashi_edu_list_pdf", CHOUKAI_LAW_TEACHER, ORG_TEACHER,
+        "yamanashi_edu_list_pdf",
+        CHOUKAI_LAW_TEACHER,
+        ORG_TEACHER,
         note="山梨県教育委員会 処分一覧 (R6年度)",
     ),
     # 北海道教育庁 — 個別公表 PDF (per disposition date)
     *[
         Source(
-            "北海道", "北海道教育委員会",
+            "北海道",
+            "北海道教育委員会",
             f"https://www.dokyoi.pref.hokkaido.lg.jp{path}",
-            "hokkaido_edu_pdf", CHOUKAI_LAW_TEACHER, ORG_TEACHER,
+            "hokkaido_edu_pdf",
+            CHOUKAI_LAW_TEACHER,
+            ORG_TEACHER,
             note=f"北海道教育委員会 学校職員懲戒 ({label})",
         )
         for path, label in [
@@ -219,199 +233,289 @@ SOURCES: list[Source] = [
     ],
     # 横浜市 (政令市) 教育委員会 — known multi-record PDFs
     Source(
-        "横浜市", "横浜市教育委員会",
+        "横浜市",
+        "横浜市教育委員会",
         "https://www.city.yokohama.lg.jp/city-info/koho-kocho/press/kyoiku/2025/20251114kisyahappyou.files/20251114.pdf",
-        "yokohama_edu_pdf", CHOUKAI_LAW_TEACHER, ORG_TEACHER,
+        "yokohama_edu_pdf",
+        CHOUKAI_LAW_TEACHER,
+        ORG_TEACHER,
         note="横浜市教育委員会 教職員懲戒 (R7.11.14)",
     ),
     # === 国家公務員 ===
     # METI 経済産業省 quarterly
     Source(
-        "経済産業省", "経済産業大臣",
+        "経済産業省",
+        "経済産業大臣",
         "https://www.meti.go.jp/press/2024/01/20250131001/20250131001.html",
-        "meti_quarterly_html", CHOUKAI_LAW_KOKKA, ORG_KOKKA,
+        "meti_quarterly_html",
+        CHOUKAI_LAW_KOKKA,
+        ORG_KOKKA,
         note="METI 懲戒処分公表 R6第3四半期",
     ),
     Source(
-        "経済産業省", "経済産業大臣",
+        "経済産業省",
+        "経済産業大臣",
         "https://www.meti.go.jp/press/2025/04/20250425002/20250425002.html",
-        "meti_quarterly_html", CHOUKAI_LAW_KOKKA, ORG_KOKKA,
+        "meti_quarterly_html",
+        CHOUKAI_LAW_KOKKA,
+        ORG_KOKKA,
         note="METI 懲戒処分公表 R6第4四半期",
     ),
     Source(
-        "経済産業省", "経済産業大臣",
+        "経済産業省",
+        "経済産業大臣",
         "https://www.meti.go.jp/press/2025/10/20251031001/20251031001.html",
-        "meti_quarterly_html", CHOUKAI_LAW_KOKKA, ORG_KOKKA,
+        "meti_quarterly_html",
+        CHOUKAI_LAW_KOKKA,
+        ORG_KOKKA,
         note="METI 懲戒処分公表 R7第2四半期",
     ),
     Source(
-        "経済産業省", "経済産業大臣",
+        "経済産業省",
+        "経済産業大臣",
         "https://www.meti.go.jp/press/2024/10/20241025001/20241025001.html",
-        "meti_quarterly_html", CHOUKAI_LAW_KOKKA, ORG_KOKKA,
+        "meti_quarterly_html",
+        CHOUKAI_LAW_KOKKA,
+        ORG_KOKKA,
         note="METI 懲戒処分公表 R6第2四半期",
     ),
     Source(
-        "経済産業省", "経済産業大臣",
+        "経済産業省",
+        "経済産業大臣",
         "https://www.meti.go.jp/press/2024/04/20240426006/20240426006.html",
-        "meti_quarterly_html", CHOUKAI_LAW_KOKKA, ORG_KOKKA,
+        "meti_quarterly_html",
+        CHOUKAI_LAW_KOKKA,
+        ORG_KOKKA,
         note="METI 懲戒処分公表 R5第4四半期",
     ),
     Source(
-        "経済産業省", "経済産業大臣",
+        "経済産業省",
+        "経済産業大臣",
         "https://www.meti.go.jp/press/2023/01/20240126001/20240126001.html",
-        "meti_quarterly_html", CHOUKAI_LAW_KOKKA, ORG_KOKKA,
+        "meti_quarterly_html",
+        CHOUKAI_LAW_KOKKA,
+        ORG_KOKKA,
         note="METI 懲戒処分公表 R5第3四半期",
     ),
     # === 地方公務員 (知事部局) ===
     # 岩手県 知事部局 quarterly
     Source(
-        "岩手県", "岩手県知事",
+        "岩手県",
+        "岩手県知事",
         "https://www.pref.iwate.jp/_res/projects/default_project/_page_/001/011/022/080420syoubun.pdf",
-        "iwate_quarterly_pdf", CHOUKAI_LAW_CHIHO, ORG_CHIHO,
+        "iwate_quarterly_pdf",
+        CHOUKAI_LAW_CHIHO,
+        ORG_CHIHO,
         note="岩手県知事部局 懲戒処分公表 R7第4四半期",
     ),
     Source(
-        "岩手県", "岩手県知事",
+        "岩手県",
+        "岩手県知事",
         "https://www.pref.iwate.jp/_res/projects/default_project/_page_/001/011/022/kakononaiyou080420.pdf",
-        "iwate_quarterly_pdf", CHOUKAI_LAW_CHIHO, ORG_CHIHO,
+        "iwate_quarterly_pdf",
+        CHOUKAI_LAW_CHIHO,
+        ORG_CHIHO,
         note="岩手県知事部局 過去内容",
     ),
     # 福島県 知事部局
     Source(
-        "福島県", "福島県知事",
+        "福島県",
+        "福島県知事",
         "https://www.pref.fukushima.lg.jp/uploaded/life/840986_2568632_misc.pdf",
-        "fukushima_list_pdf", CHOUKAI_LAW_CHIHO, ORG_CHIHO,
+        "fukushima_list_pdf",
+        CHOUKAI_LAW_CHIHO,
+        ORG_CHIHO,
         note="福島県知事部局 処分事案一覧 R7年度",
     ),
     Source(
-        "福島県", "福島県知事",
+        "福島県",
+        "福島県知事",
         "https://www.pref.fukushima.lg.jp/uploaded/life/840986_2568662_misc.pdf",
-        "fukushima_list_pdf", CHOUKAI_LAW_CHIHO, ORG_CHIHO,
+        "fukushima_list_pdf",
+        CHOUKAI_LAW_CHIHO,
+        ORG_CHIHO,
         note="福島県知事部局 処分事案一覧 R6年度",
     ),
     # 埼玉県 教育委員会 — single-incident PDF
     Source(
-        "埼玉県", "埼玉県教育委員会",
+        "埼玉県",
+        "埼玉県教育委員会",
         "https://www.pref.saitama.lg.jp/documents/270496/070710_tyoukaishobun.pdf",
-        "saitama_edu_singlepdf", CHOUKAI_LAW_TEACHER, ORG_TEACHER,
+        "saitama_edu_singlepdf",
+        CHOUKAI_LAW_TEACHER,
+        ORG_TEACHER,
         note="埼玉県教育委員会 教職員懲戒 (R7.7.10)",
     ),
     # 千葉県 知事部局 single
     Source(
-        "千葉県", "千葉県知事",
+        "千葉県",
+        "千葉県知事",
         "https://www.pref.chiba.lg.jp/cj-jinji/press/2025/choukai080326.html",
-        "chiba_chiji_html", CHOUKAI_LAW_CHIHO, ORG_CHIHO,
+        "chiba_chiji_html",
+        CHOUKAI_LAW_CHIHO,
+        ORG_CHIHO,
         note="千葉県知事部局 懲戒処分 (R8.3.26)",
     ),
     # 神戸市 single
     Source(
-        "神戸市", "神戸市長",
+        "神戸市",
+        "神戸市長",
         "https://www.city.kobe.lg.jp/a06667/20250620chokai.html",
-        "kobe_html", CHOUKAI_LAW_CHIHO, ORG_CHIHO,
+        "kobe_html",
+        CHOUKAI_LAW_CHIHO,
+        ORG_CHIHO,
         note="神戸市 職員懲戒 (R7.6.20)",
     ),
     # === 千葉県教育委員会 multi-record HTML ===
     Source(
-        "千葉県", "千葉県教育委員会",
+        "千葉県",
+        "千葉県教育委員会",
         "https://www.pref.chiba.lg.jp/kyouiku/syokuin/press/2026/shobun20260416.html",
-        "chiba_edu_html", CHOUKAI_LAW_TEACHER, ORG_TEACHER,
+        "chiba_edu_html",
+        CHOUKAI_LAW_TEACHER,
+        ORG_TEACHER,
         note="千葉県教育委員会 教職員懲戒 (R8.4.16)",
     ),
     # === 神奈川県教育委員会 multi-incident HTML ===
     Source(
-        "神奈川県", "神奈川県教育委員会",
+        "神奈川県",
+        "神奈川県教育委員会",
         "https://www.pref.kanagawa.jp/docs/t8d/prs/r8404680.html",
-        "kanagawa_edu_html", CHOUKAI_LAW_TEACHER, ORG_TEACHER,
+        "kanagawa_edu_html",
+        CHOUKAI_LAW_TEACHER,
+        ORG_TEACHER,
         note="神奈川県教育委員会 教員懲戒 (R7.9.4)",
     ),
     Source(
-        "神奈川県", "神奈川県教育委員会",
+        "神奈川県",
+        "神奈川県教育委員会",
         "https://www.pref.kanagawa.jp/docs/t8d/prs/r1076189.html",
-        "kanagawa_edu_html", CHOUKAI_LAW_TEACHER, ORG_TEACHER,
+        "kanagawa_edu_html",
+        CHOUKAI_LAW_TEACHER,
+        ORG_TEACHER,
         note="神奈川県教育委員会 教職員懲戒",
     ),
     Source(
-        "神奈川県", "神奈川県教育委員会",
+        "神奈川県",
+        "神奈川県教育委員会",
         "https://www.pref.kanagawa.jp/docs/t8d/prs/r1061475.html",
-        "kanagawa_edu_html", CHOUKAI_LAW_TEACHER, ORG_TEACHER,
+        "kanagawa_edu_html",
+        CHOUKAI_LAW_TEACHER,
+        ORG_TEACHER,
         note="神奈川県教育委員会 教員懲戒",
     ),
     Source(
-        "神奈川県", "神奈川県教育委員会",
+        "神奈川県",
+        "神奈川県教育委員会",
         "https://www.pref.kanagawa.jp/docs/t8d/prs/r3623782.html",
-        "kanagawa_edu_html", CHOUKAI_LAW_TEACHER, ORG_TEACHER,
+        "kanagawa_edu_html",
+        CHOUKAI_LAW_TEACHER,
+        ORG_TEACHER,
         note="神奈川県教育委員会 教員懲戒",
     ),
     Source(
-        "神奈川県", "神奈川県知事",
+        "神奈川県",
+        "神奈川県知事",
         "https://www.pref.kanagawa.jp/docs/s6d/prs/r4975823.html",
-        "kanagawa_edu_html", CHOUKAI_LAW_CHIHO, ORG_CHIHO,
+        "kanagawa_edu_html",
+        CHOUKAI_LAW_CHIHO,
+        ORG_CHIHO,
         note="神奈川県知事部局 職員懲戒",
     ),
     # === 福岡県教育委員会 single-record PDFs ===
     *[
         Source(
-            "福岡県", "福岡県教育委員会",
+            "福岡県",
+            "福岡県教育委員会",
             f"https://www.pref.fukuoka.lg.jp/uploaded/attachment/{pdf_id}.pdf",
-            "fukuoka_edu_singlepdf", CHOUKAI_LAW_TEACHER, ORG_TEACHER,
+            "fukuoka_edu_singlepdf",
+            CHOUKAI_LAW_TEACHER,
+            ORG_TEACHER,
             note=f"福岡県教育委員会 教職員懲戒 attachment/{pdf_id}",
         )
         for pdf_id in [
-            "270310", "270312", "270314",  # R7-4 (2025-11-13)
-            "260222", "260291",  # R7-1 (2025-7-3)
+            "270310",
+            "270312",
+            "270314",  # R7-4 (2025-11-13)
+            "260222",
+            "260291",  # R7-1 (2025-7-3)
             "268355",  # R7-3 (2025-10-15)
         ]
     ],
     # === 宮城県教育委員会 multi-record PDFs ===
     Source(
-        "宮城県", "宮城県教育委員会",
+        "宮城県",
+        "宮城県教育委員会",
         "https://www.pref.miyagi.jp/documents/59446/20250424_syokuuinnosyobun.pdf",
-        "miyagi_edu_pdf", CHOUKAI_LAW_TEACHER, ORG_TEACHER,
+        "miyagi_edu_pdf",
+        CHOUKAI_LAW_TEACHER,
+        ORG_TEACHER,
         note="宮城県教育委員会 職員処分 (R7.4.24)",
     ),
     Source(
-        "宮城県", "宮城県教育委員会",
+        "宮城県",
+        "宮城県教育委員会",
         "https://www.pref.miyagi.jp/documents/53345/240711syokuinsyobun.pdf",
-        "miyagi_edu_pdf", CHOUKAI_LAW_TEACHER, ORG_TEACHER,
+        "miyagi_edu_pdf",
+        CHOUKAI_LAW_TEACHER,
+        ORG_TEACHER,
         note="宮城県教育委員会 職員処分 (R6.7.11)",
     ),
     Source(
-        "宮城県", "宮城県教育委員会",
+        "宮城県",
+        "宮城県教育委員会",
         "https://www.pref.miyagi.jp/documents/62057/1023-1syokuinnosyobun.pdf",
-        "miyagi_edu_pdf", CHOUKAI_LAW_TEACHER, ORG_TEACHER,
+        "miyagi_edu_pdf",
+        CHOUKAI_LAW_TEACHER,
+        ORG_TEACHER,
         note="宮城県教育委員会 職員処分 (R7.10.23)",
     ),
     Source(
-        "宮城県", "宮城県教育委員会",
+        "宮城県",
+        "宮城県教育委員会",
         "https://www.pref.miyagi.jp/documents/50680/20240202_syokuinnnosyobunnnituite.pdf",
-        "miyagi_edu_pdf", CHOUKAI_LAW_TEACHER, ORG_TEACHER,
+        "miyagi_edu_pdf",
+        CHOUKAI_LAW_TEACHER,
+        ORG_TEACHER,
         note="宮城県教育委員会 職員処分 (R6.2.2)",
     ),
     Source(
-        "宮城県", "宮城県教育委員会",
+        "宮城県",
+        "宮城県教育委員会",
         "https://www.pref.miyagi.jp/documents/48083/20230714_5.pdf",
-        "miyagi_edu_pdf", CHOUKAI_LAW_TEACHER, ORG_TEACHER,
+        "miyagi_edu_pdf",
+        CHOUKAI_LAW_TEACHER,
+        ORG_TEACHER,
         note="宮城県教育委員会 職員処分 (R5.7.14)",
     ),
     # === 埼玉県教育委員会 multi-record PDFs ===
     Source(
-        "埼玉県", "埼玉県教育委員会",
+        "埼玉県",
+        "埼玉県教育委員会",
         "https://www.pref.saitama.lg.jp/documents/264464/news2025020601.pdf",
-        "saitama_edu_multipdf", CHOUKAI_LAW_TEACHER, ORG_TEACHER,
+        "saitama_edu_multipdf",
+        CHOUKAI_LAW_TEACHER,
+        ORG_TEACHER,
         note="埼玉県教育委員会 教職員懲戒6件 (R7.2.6)",
     ),
     Source(
-        "埼玉県", "埼玉県教育委員会",
+        "埼玉県",
+        "埼玉県教育委員会",
         "https://www.pref.saitama.lg.jp/documents/259800/news20241017.pdf",
-        "saitama_edu_singlepdf", CHOUKAI_LAW_TEACHER, ORG_TEACHER,
+        "saitama_edu_singlepdf",
+        CHOUKAI_LAW_TEACHER,
+        ORG_TEACHER,
         note="埼玉県教育委員会 職員懲戒 (R6.10.17)",
     ),
     # === 札幌市教育委員会 multi-record PDFs ===
     *[
         Source(
-            "札幌市", "札幌市教育委員会",
+            "札幌市",
+            "札幌市教育委員会",
             f"https://www.city.sapporo.jp/kyoiku/kyoshokuin/documents/{stem}.pdf",
-            "sapporo_edu_pdf", CHOUKAI_LAW_TEACHER, ORG_TEACHER,
+            "sapporo_edu_pdf",
+            CHOUKAI_LAW_TEACHER,
+            ORG_TEACHER,
             note=f"札幌市教育委員会 学校職員懲戒 ({label})",
         )
         for stem, label in [
@@ -431,9 +535,12 @@ SOURCES: list[Source] = [
     ],
     # === 名古屋市 (政令市) 表形式 PDF ===
     Source(
-        "名古屋市", "名古屋市教育委員会",
+        "名古屋市",
+        "名古屋市教育委員会",
         "https://www.city.nagoya.jp/shikouhou/_res/projects/project_kouhou/_page_/002/000/120/385.pdf",
-        "nagoya_table_pdf", CHOUKAI_LAW_TEACHER, ORG_TEACHER,
+        "nagoya_table_pdf",
+        CHOUKAI_LAW_TEACHER,
+        ORG_TEACHER,
         note="名古屋市教育委員会 役職別6件 (R6.11.8)",
     ),
 ]
@@ -447,9 +554,7 @@ WAREKI_RE = re.compile(
     r"(令和|平成|R|H)\s*(\d+|元)\s*[年.\-．／/]\s*"
     r"(\d{1,2})\s*[月.\-．／/]\s*(\d{1,2})\s*日?"
 )
-SEIREKI_RE = re.compile(
-    r"(20\d{2})\s*[年.\-／/]\s*(\d{1,2})\s*[月.\-／/]\s*(\d{1,2})"
-)
+SEIREKI_RE = re.compile(r"(20\d{2})\s*[年.\-／/]\s*(\d{1,2})\s*[月.\-／/]\s*(\d{1,2})")
 ERA_OFFSET = {"令和": 2018, "R": 2018, "平成": 1988, "H": 1988}
 
 
@@ -485,6 +590,7 @@ def _parse_date(text: str) -> str | None:
 # Disposition kind classification
 # ---------------------------------------------------------------------------
 
+
 def _classify_kind(text: str) -> str:
     """Map 処分内容 keywords → enforcement_kind (CHECK enum)."""
     t = text or ""
@@ -503,13 +609,30 @@ def _classify_kind(text: str) -> str:
 def _classify_summary(reason: str) -> str:
     """Generate concise category tag from reason text."""
     r = reason or ""
-    if any(k in r for k in ("セクハラ", "セクシュアル", "わいせつ", "盗撮", "痴漢", "性的", "性暴力")):
+    if any(
+        k in r for k in ("セクハラ", "セクシュアル", "わいせつ", "盗撮", "痴漢", "性的", "性暴力")
+    ):
         return "性的非違行為"
     if any(k in r for k in ("酒気帯び", "酒酔い", "飲酒運転", "酒気を帯び")):
         return "飲酒運転"
-    if any(k in r for k in ("速度超過", "速度違反", "信号無視", "過失運転", "交通事故", "速度", "道交法")):
+    if any(
+        k in r
+        for k in ("速度超過", "速度違反", "信号無視", "過失運転", "交通事故", "速度", "道交法")
+    ):
         return "交通法規違反"
-    if any(k in r for k in ("横領", "着服", "詐取", "詐欺", "不正受給", "不正に出金", "不正に受給", "私的流用")):
+    if any(
+        k in r
+        for k in (
+            "横領",
+            "着服",
+            "詐取",
+            "詐欺",
+            "不正受給",
+            "不正に出金",
+            "不正に受給",
+            "私的流用",
+        )
+    ):
         return "金銭不正"
     if any(k in r for k in ("パワハラ", "パワー", "暴力", "暴行", "体罰")):
         return "暴行・パワハラ"
@@ -525,6 +648,7 @@ def _classify_summary(reason: str) -> str:
 # ---------------------------------------------------------------------------
 # Anonymization
 # ---------------------------------------------------------------------------
+
 
 def _anonymize_target(authority: str, role_label: str | None, seq: int) -> str:
     """Build anonymized target_name. Public-servant subjects are NEVER named.
@@ -559,9 +683,10 @@ def _make_role_label(position: str | None, gender: str | None, age: str | None) 
 # Parser: 長野県教育委員会 一覧 PDF
 # ---------------------------------------------------------------------------
 
+
 def parse_nagano_edu_list_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
     """Each block starts with `R<x>.<m>.<d>` then 4-cell row:
-       [所属/職位], [処分内容], [年齢], [理由文 multi-line].
+    [所属/職位], [処分内容], [年齢], [理由文 multi-line].
     """
     out: list[EnfRow] = []
     text = pdf_text
@@ -625,34 +750,38 @@ def parse_nagano_edu_list_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
         age = (age_m.group(1) + age_m.group(2)) if age_m else None
         # Reason text — everything after kind keyword, truncated.
         reason_start = kind_m.end()
-        reason_raw = joined[reason_start:reason_start + 1200]
+        reason_raw = joined[reason_start : reason_start + 1200]
         reason = _normalize(reason_raw)
         if not reason:
             reason = "詳細は出典PDF参照"
         category = _classify_summary(reason)
-        full_reason = f"[{category}] 職位={position} 年齢={age or '不明'} {kind_text}: {reason}"[:1500]
+        full_reason = f"[{category}] 職位={position} 年齢={age or '不明'} {kind_text}: {reason}"[
+            :1500
+        ]
         seq += 1
         target_name = _anonymize_target(
             "長野県教育委員会",
             _make_role_label(position, None, age),
             seq,
         )
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=date_iso,
-            issuing_authority="長野県教育委員会",
-            enforcement_kind=kind,
-            reason_summary=full_reason,
-            related_law_ref=CHOUKAI_LAW_TEACHER,
-            source_url=source_url,
-            org_class=ORG_TEACHER,
-            extra={
-                "kind_text": kind_text,
-                "position": position,
-                "age": age,
-                "category": category,
-            },
-        ))
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=date_iso,
+                issuing_authority="長野県教育委員会",
+                enforcement_kind=kind,
+                reason_summary=full_reason,
+                related_law_ref=CHOUKAI_LAW_TEACHER,
+                source_url=source_url,
+                org_class=ORG_TEACHER,
+                extra={
+                    "kind_text": kind_text,
+                    "position": position,
+                    "age": age,
+                    "category": category,
+                },
+            )
+        )
     return out
 
 
@@ -660,9 +789,10 @@ def parse_nagano_edu_list_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
 # Parser: 山梨県教育委員会 年度別 PDF
 # ---------------------------------------------------------------------------
 
+
 def parse_yamanashi_edu_list_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
     """Records each begin with date "R7.7.22" / "R8.1.28" in col 1, then
-       multiple lines for [所属先], [職名], [処分量定], [事案]."""
+    multiple lines for [所属先], [職名], [処分量定], [事案]."""
     out: list[EnfRow] = []
     rec_re = re.compile(r"R[0-9元]+\.\s*\d{1,2}\.\s*\d{1,2}")
     lines = pdf_text.splitlines()
@@ -723,7 +853,7 @@ def parse_yamanashi_edu_list_pdf(pdf_text: str, source_url: str) -> list[EnfRow]
         kind_text = _normalize(kind_m.group(1))
         kind = _classify_kind(kind_text)
         reason_start = kind_m.end()
-        reason = _normalize(joined[reason_start:reason_start + 1500])
+        reason = _normalize(joined[reason_start : reason_start + 1500])
         if not reason:
             reason = "詳細は出典PDF参照"
         category = _classify_summary(reason)
@@ -737,23 +867,25 @@ def parse_yamanashi_edu_list_pdf(pdf_text: str, source_url: str) -> list[EnfRow]
             _make_role_label(position, gender, age),
             seq,
         )
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=date_iso,
-            issuing_authority="山梨県教育委員会",
-            enforcement_kind=kind,
-            reason_summary=full_reason,
-            related_law_ref=CHOUKAI_LAW_TEACHER,
-            source_url=source_url,
-            org_class=ORG_TEACHER,
-            extra={
-                "kind_text": kind_text,
-                "position": position,
-                "age": age,
-                "gender": gender,
-                "category": category,
-            },
-        ))
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=date_iso,
+                issuing_authority="山梨県教育委員会",
+                enforcement_kind=kind,
+                reason_summary=full_reason,
+                related_law_ref=CHOUKAI_LAW_TEACHER,
+                source_url=source_url,
+                org_class=ORG_TEACHER,
+                extra={
+                    "kind_text": kind_text,
+                    "position": position,
+                    "age": age,
+                    "gender": gender,
+                    "category": category,
+                },
+            )
+        )
     return out
 
 
@@ -761,10 +893,11 @@ def parse_yamanashi_edu_list_pdf(pdf_text: str, source_url: str) -> list[EnfRow]
 # Parser: 北海道教育庁 個別公表 PDF
 # ---------------------------------------------------------------------------
 
+
 def parse_hokkaido_edu_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
     """北海道教育委員会 公表書: 表頭 [番号 / 被処分者 / 処分内容 / 事案の概要].
-       Each numbered row 1.. is a record. Issuance date is in the doc header
-       "令和７年(2025年)４月２４日付".
+    Each numbered row 1.. is a record. Issuance date is in the doc header
+    "令和７年(2025年)４月２４日付".
     """
     out: list[EnfRow] = []
     text = pdf_text
@@ -890,7 +1023,7 @@ def parse_hokkaido_edu_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
         age = (ga_m.group(2) + "歳") if ga_m else None
         # Reason: take everything after kind_m.end() up to next seq or end.
         reason_start = kind_m.end()
-        reason_raw = joined[reason_start:reason_start + 1500]
+        reason_raw = joined[reason_start : reason_start + 1500]
         reason = _normalize(reason_raw)
         if not reason:
             reason = "詳細は出典PDF参照"
@@ -905,30 +1038,33 @@ def parse_hokkaido_edu_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
             _make_role_label(f"{school}{role}", gender, age),
             seq,
         )
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=date_iso,
-            issuing_authority="北海道教育委員会",
-            enforcement_kind=kind,
-            reason_summary=full_reason,
-            related_law_ref=CHOUKAI_LAW_TEACHER,
-            source_url=source_url,
-            org_class=ORG_TEACHER,
-            extra={
-                "kind_text": kind_text,
-                "school": school,
-                "role": role,
-                "age": age,
-                "gender": gender,
-                "category": category,
-            },
-        ))
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=date_iso,
+                issuing_authority="北海道教育委員会",
+                enforcement_kind=kind,
+                reason_summary=full_reason,
+                related_law_ref=CHOUKAI_LAW_TEACHER,
+                source_url=source_url,
+                org_class=ORG_TEACHER,
+                extra={
+                    "kind_text": kind_text,
+                    "school": school,
+                    "role": role,
+                    "age": age,
+                    "gender": gender,
+                    "category": category,
+                },
+            )
+        )
     return out
 
 
 # ---------------------------------------------------------------------------
 # Parser: 横浜市教育委員会 multi-record PDF
 # ---------------------------------------------------------------------------
+
 
 def parse_yokohama_edu_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
     """Yokohama PDF format: each record is a labeled block:
@@ -944,7 +1080,10 @@ def parse_yokohama_edu_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
         block = "所属 " + chunk
         joined = " ".join(_normalize(line) for line in block.splitlines())
         # Date from 処分日 row
-        date_m = re.search(r"処\s*分\s*日\s+([^\s]+令和\s*\d+\s*年\s*\d{1,2}\s*月\s*\d{1,2}\s*日|令和\s*\d+\s*年\s*\d{1,2}\s*月\s*\d{1,2}\s*日)", joined)
+        date_m = re.search(
+            r"処\s*分\s*日\s+([^\s]+令和\s*\d+\s*年\s*\d{1,2}\s*月\s*\d{1,2}\s*日|令和\s*\d+\s*年\s*\d{1,2}\s*月\s*\d{1,2}\s*日)",
+            joined,
+        )
         if not date_m:
             date_m = WAREKI_RE.search(joined)
         if not date_m:
@@ -977,33 +1116,34 @@ def parse_yokohama_edu_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
         if not gaiyou:
             gaiyou = "詳細は出典PDF参照"
         category = _classify_summary(gaiyou)
-        full_reason = (
-            f"[{category}] 所属={school} 被処分者={subj} {kind_text}: {gaiyou}"
-        )[:1500]
+        full_reason = (f"[{category}] 所属={school} 被処分者={subj} {kind_text}: {gaiyou}")[:1500]
         seq += 1
         target_name = _anonymize_target("横浜市教育委員会", subj, seq)
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=date_iso,
-            issuing_authority="横浜市教育委員会",
-            enforcement_kind=kind,
-            reason_summary=full_reason,
-            related_law_ref=CHOUKAI_LAW_TEACHER,
-            source_url=source_url,
-            org_class=ORG_TEACHER,
-            extra={
-                "kind_text": kind_text,
-                "school": school,
-                "subj": subj,
-                "category": category,
-            },
-        ))
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=date_iso,
+                issuing_authority="横浜市教育委員会",
+                enforcement_kind=kind,
+                reason_summary=full_reason,
+                related_law_ref=CHOUKAI_LAW_TEACHER,
+                source_url=source_url,
+                org_class=ORG_TEACHER,
+                extra={
+                    "kind_text": kind_text,
+                    "school": school,
+                    "subj": subj,
+                    "category": category,
+                },
+            )
+        )
     return out
 
 
 # ---------------------------------------------------------------------------
 # Parser: METI quarterly HTML
 # ---------------------------------------------------------------------------
+
 
 def parse_meti_quarterly_html(html: str, source_url: str) -> list[EnfRow]:
     """METI quarterly public-disclosure page. The HTML body lists each case
@@ -1053,35 +1193,38 @@ def parse_meti_quarterly_html(html: str, source_url: str) -> list[EnfRow]:
         dept = dept_m.group(0) if dept_m else "経済産業省"
         # Reason text — take first 1000 chars after kind
         reason_start = kind_m.end()
-        reason = block_norm[reason_start:reason_start + 1000].strip()
+        reason = block_norm[reason_start : reason_start + 1000].strip()
         if not reason or len(reason) < 5:
             # Try preceding text as reason fallback
-            reason = block_norm[:kind_m.start()][-500:].strip()
+            reason = block_norm[: kind_m.start()][-500:].strip()
         category = _classify_summary(reason)
         full_reason = f"[{category}] 部局={dept} {kind_text}: {reason}"[:1500]
         seq += 1
         target_name = _anonymize_target("経済産業省", dept, seq)
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=date_iso,
-            issuing_authority="経済産業大臣",
-            enforcement_kind=kind,
-            reason_summary=full_reason,
-            related_law_ref=CHOUKAI_LAW_KOKKA,
-            source_url=source_url,
-            org_class=ORG_KOKKA,
-            extra={
-                "kind_text": kind_text,
-                "dept": dept,
-                "category": category,
-            },
-        ))
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=date_iso,
+                issuing_authority="経済産業大臣",
+                enforcement_kind=kind,
+                reason_summary=full_reason,
+                related_law_ref=CHOUKAI_LAW_KOKKA,
+                source_url=source_url,
+                org_class=ORG_KOKKA,
+                extra={
+                    "kind_text": kind_text,
+                    "dept": dept,
+                    "category": category,
+                },
+            )
+        )
     return out
 
 
 # ---------------------------------------------------------------------------
 # Parser: 岩手県知事部局 quarterly PDF
 # ---------------------------------------------------------------------------
+
 
 def parse_iwate_quarterly_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
     """Iwate quarterly format: each record numbered "１" "２" "３"... with
@@ -1127,7 +1270,10 @@ def parse_iwate_quarterly_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
         )
         dept = dept_m.group(0) if dept_m else "岩手県知事部局"
         # Position level
-        rank_m = re.search(r"(主任主査級|主査級|主事級|一般級|再任用職員|総括[^,\s]*|主幹[^,\s]*|副[^\s]+級)", joined)
+        rank_m = re.search(
+            r"(主任主査級|主査級|主事級|一般級|再任用職員|総括[^,\s]*|主幹[^,\s]*|副[^\s]+級)",
+            joined,
+        )
         rank = rank_m.group(0) if rank_m else "職員"
         # Gender / age
         ga_m = re.search(r"(\d{2})\s+([男女])", joined)
@@ -1138,7 +1284,7 @@ def parse_iwate_quarterly_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
         if reason_m:
             reason = _normalize(reason_m.group(1))
         else:
-            reason = _normalize(joined[kind_m.end():kind_m.end() + 1200])
+            reason = _normalize(joined[kind_m.end() : kind_m.end() + 1200])
         if not reason:
             reason = "詳細は出典PDF参照"
         category = _classify_summary(reason)
@@ -1152,30 +1298,33 @@ def parse_iwate_quarterly_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
             _make_role_label(f"{dept}{rank}", gender, age),
             seq,
         )
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=date_iso,
-            issuing_authority="岩手県知事",
-            enforcement_kind=kind,
-            reason_summary=full_reason,
-            related_law_ref=CHOUKAI_LAW_CHIHO,
-            source_url=source_url,
-            org_class=ORG_CHIHO,
-            extra={
-                "kind_text": kind_text,
-                "dept": dept,
-                "rank": rank,
-                "age": age,
-                "gender": gender,
-                "category": category,
-            },
-        ))
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=date_iso,
+                issuing_authority="岩手県知事",
+                enforcement_kind=kind,
+                reason_summary=full_reason,
+                related_law_ref=CHOUKAI_LAW_CHIHO,
+                source_url=source_url,
+                org_class=ORG_CHIHO,
+                extra={
+                    "kind_text": kind_text,
+                    "dept": dept,
+                    "rank": rank,
+                    "age": age,
+                    "gender": gender,
+                    "category": category,
+                },
+            )
+        )
     return out
 
 
 # ---------------------------------------------------------------------------
 # Parser: 福島県知事部局 list PDF
 # ---------------------------------------------------------------------------
+
 
 def parse_fukushima_list_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
     """Fukushima format: table per record [被処分者 / 処分の程度 / 処分年月日 / 事件概要].
@@ -1226,7 +1375,7 @@ def parse_fukushima_list_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
         age = (ga_m.group(1) + "代") if ga_m else None
         gender = ga_m.group(2) if ga_m else None
         # Reason — content after kind
-        reason = _normalize(window[kind_m.end():kind_m.end() + 1200])
+        reason = _normalize(window[kind_m.end() : kind_m.end() + 1200])
         if not reason or len(reason) < 5:
             reason = "詳細は出典PDF参照"
         category = _classify_summary(reason)
@@ -1242,23 +1391,25 @@ def parse_fukushima_list_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
             _make_role_label(subj, gender, age),
             seq,
         )
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=date_iso,
-            issuing_authority="福島県知事",
-            enforcement_kind=kind,
-            reason_summary=full_reason,
-            related_law_ref=CHOUKAI_LAW_CHIHO,
-            source_url=source_url,
-            org_class=ORG_CHIHO,
-            extra={
-                "kind_text": kind_text,
-                "subj": subj,
-                "age": age,
-                "gender": gender,
-                "category": category,
-            },
-        ))
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=date_iso,
+                issuing_authority="福島県知事",
+                enforcement_kind=kind,
+                reason_summary=full_reason,
+                related_law_ref=CHOUKAI_LAW_CHIHO,
+                source_url=source_url,
+                org_class=ORG_CHIHO,
+                extra={
+                    "kind_text": kind_text,
+                    "subj": subj,
+                    "age": age,
+                    "gender": gender,
+                    "category": category,
+                },
+            )
+        )
     return out
 
 
@@ -1266,9 +1417,10 @@ def parse_fukushima_list_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
 # Parser: 埼玉県教育委員会 single-incident PDF
 # ---------------------------------------------------------------------------
 
+
 def parse_saitama_edu_singlepdf(pdf_text: str, source_url: str) -> list[EnfRow]:
     """Saitama single-record format: labeled fields
-       [処分内容, 処分年月日, 職名・年齢・性別, 所属名, 発生年月日, 事件・事故の概要].
+    [処分内容, 処分年月日, 職名・年齢・性別, 所属名, 発生年月日, 事件・事故の概要].
     """
     text = _normalize(pdf_text)
     kind_m = re.search(
@@ -1301,35 +1453,39 @@ def parse_saitama_edu_singlepdf(pdf_text: str, source_url: str) -> list[EnfRow]:
     school_m = re.search(r"所\s*属\s*名\s+([^\n]{1,40})", text)
     school = _normalize(school_m.group(1)) if school_m else "公立学校"
     # Gaiyou — last labeled field
-    gaiyou_m = re.search(r"事\s*件\s*・\s*事\s*故\s*の\s*概\s*要\s*\n+(.+?)(?=●|問\s*合\s*せ|\Z)",
-                         pdf_text, re.S)
+    gaiyou_m = re.search(
+        r"事\s*件\s*・\s*事\s*故\s*の\s*概\s*要\s*\n+(.+?)(?=●|問\s*合\s*せ|\Z)", pdf_text, re.S
+    )
     gaiyou = _normalize(gaiyou_m.group(1) if gaiyou_m else "")[:1200]
     if not gaiyou:
         gaiyou = "詳細は出典PDF参照"
     category = _classify_summary(gaiyou)
     full_reason = f"[{category}] 学校={school} 職位={position} {kind_text}: {gaiyou}"[:1500]
     target_name = _anonymize_target("埼玉県教育委員会", position, 1)
-    return [EnfRow(
-        target_name=target_name,
-        issuance_date=date_iso,
-        issuing_authority="埼玉県教育委員会",
-        enforcement_kind=kind,
-        reason_summary=full_reason,
-        related_law_ref=CHOUKAI_LAW_TEACHER,
-        source_url=source_url,
-        org_class=ORG_TEACHER,
-        extra={
-            "kind_text": kind_text,
-            "school": school,
-            "position": position,
-            "category": category,
-        },
-    )]
+    return [
+        EnfRow(
+            target_name=target_name,
+            issuance_date=date_iso,
+            issuing_authority="埼玉県教育委員会",
+            enforcement_kind=kind,
+            reason_summary=full_reason,
+            related_law_ref=CHOUKAI_LAW_TEACHER,
+            source_url=source_url,
+            org_class=ORG_TEACHER,
+            extra={
+                "kind_text": kind_text,
+                "school": school,
+                "position": position,
+                "category": category,
+            },
+        )
+    ]
 
 
 # ---------------------------------------------------------------------------
 # Parser: 千葉県知事部局 single HTML
 # ---------------------------------------------------------------------------
+
 
 def parse_chiba_chiji_html(html: str, source_url: str) -> list[EnfRow]:
     """Chiba 知事部局 single-incident HTML page format."""
@@ -1367,30 +1523,33 @@ def parse_chiba_chiji_html(html: str, source_url: str) -> list[EnfRow]:
         text,
     )
     subj = subj_m.group(0) if subj_m else "知事部局職員"
-    gaiyou = text[max(0, kind_m.end() - 50):kind_m.end() + 1200]
+    gaiyou = text[max(0, kind_m.end() - 50) : kind_m.end() + 1200]
     category = _classify_summary(gaiyou)
     full_reason = f"[{category}] 部局={dept} 所属={subj} {kind_text}: {gaiyou}"[:1500]
     target_name = _anonymize_target("千葉県知事", subj, 1)
-    return [EnfRow(
-        target_name=target_name,
-        issuance_date=date_iso,
-        issuing_authority="千葉県知事",
-        enforcement_kind=kind,
-        reason_summary=full_reason,
-        related_law_ref=CHOUKAI_LAW_CHIHO,
-        source_url=source_url,
-        org_class=ORG_CHIHO,
-        extra={
-            "kind_text": kind_text,
-            "dept": dept,
-            "category": category,
-        },
-    )]
+    return [
+        EnfRow(
+            target_name=target_name,
+            issuance_date=date_iso,
+            issuing_authority="千葉県知事",
+            enforcement_kind=kind,
+            reason_summary=full_reason,
+            related_law_ref=CHOUKAI_LAW_CHIHO,
+            source_url=source_url,
+            org_class=ORG_CHIHO,
+            extra={
+                "kind_text": kind_text,
+                "dept": dept,
+                "category": category,
+            },
+        )
+    ]
 
 
 # ---------------------------------------------------------------------------
 # Parser: 神戸市 single HTML
 # ---------------------------------------------------------------------------
+
 
 def parse_kobe_html(html: str, source_url: str) -> list[EnfRow]:
     """Kobe-shi multi-incident HTML page — typically 1-3 cases per page."""
@@ -1427,34 +1586,37 @@ def parse_kobe_html(html: str, source_url: str) -> list[EnfRow]:
         )
         dept = dept_m.group(0) if dept_m else "神戸市"
         # Reason
-        reason = block[kind_m.end():kind_m.end() + 1200].strip()
+        reason = block[kind_m.end() : kind_m.end() + 1200].strip()
         if not reason or len(reason) < 5:
-            reason = block[max(0, kind_m.start() - 500):kind_m.start()].strip()
+            reason = block[max(0, kind_m.start() - 500) : kind_m.start()].strip()
         category = _classify_summary(reason)
         full_reason = f"[{category}] 部局={dept} {kind_text}: {reason}"[:1500]
         seq += 1
         target_name = _anonymize_target("神戸市長", dept, seq)
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=date_iso,
-            issuing_authority="神戸市長",
-            enforcement_kind=kind,
-            reason_summary=full_reason,
-            related_law_ref=CHOUKAI_LAW_CHIHO,
-            source_url=source_url,
-            org_class=ORG_CHIHO,
-            extra={
-                "kind_text": kind_text,
-                "dept": dept,
-                "category": category,
-            },
-        ))
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=date_iso,
+                issuing_authority="神戸市長",
+                enforcement_kind=kind,
+                reason_summary=full_reason,
+                related_law_ref=CHOUKAI_LAW_CHIHO,
+                source_url=source_url,
+                org_class=ORG_CHIHO,
+                extra={
+                    "kind_text": kind_text,
+                    "dept": dept,
+                    "category": category,
+                },
+            )
+        )
     return out
 
 
 # ---------------------------------------------------------------------------
 # Parser: 千葉県教育委員会 press HTML (multi-record, labeled "（1）被処分者...")
 # ---------------------------------------------------------------------------
+
 
 def parse_chiba_edu_html(html: str, source_url: str) -> list[EnfRow]:
     """Chiba edu press release HTML with （1）被処分者 ... （5）根拠条項 fields,
@@ -1473,11 +1635,11 @@ def parse_chiba_edu_html(html: str, source_url: str) -> list[EnfRow]:
         # Truncate block to next "（1）" or end
         next_m = re.search(r"[（(][1１][）)]\s*被処分者", block)
         if next_m:
-            block = block[:next_m.start()]
+            block = block[: next_m.start()]
         # Truncate to "再発防止" boundary
         end_m = re.search(r"再発防止|綱紀の粛正|問合せ先", block)
         if end_m:
-            block = block[:end_m.start()]
+            block = block[: end_m.start()]
         # Position / 所属
         pos_m = re.search(
             r"[（(][2２][）)]\s*所\s*属\s*[　\s]*([^\n（()(]{1,40})",
@@ -1515,33 +1677,34 @@ def parse_chiba_edu_html(html: str, source_url: str) -> list[EnfRow]:
         )
         head = _normalize(head_m.group(0)) if head_m else "教職員"
         category = _classify_summary(gaiyou)
-        full_reason = (
-            f"[{category}] 所属={school} {head} {kind_text}: {gaiyou}"
-        )[:1500]
+        full_reason = (f"[{category}] 所属={school} {head} {kind_text}: {gaiyou}")[:1500]
         seq += 1
         target_name = _anonymize_target("千葉県教育委員会", head, seq)
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=page_date or "1900-01-01",
-            issuing_authority="千葉県教育委員会",
-            enforcement_kind=kind,
-            reason_summary=full_reason,
-            related_law_ref=CHOUKAI_LAW_TEACHER,
-            source_url=source_url,
-            org_class=ORG_TEACHER,
-            extra={
-                "kind_text": kind_text,
-                "school": school,
-                "head": head,
-                "category": category,
-            },
-        ))
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=page_date or "1900-01-01",
+                issuing_authority="千葉県教育委員会",
+                enforcement_kind=kind,
+                reason_summary=full_reason,
+                related_law_ref=CHOUKAI_LAW_TEACHER,
+                source_url=source_url,
+                org_class=ORG_TEACHER,
+                extra={
+                    "kind_text": kind_text,
+                    "school": school,
+                    "head": head,
+                    "category": category,
+                },
+            )
+        )
     return out
 
 
 # ---------------------------------------------------------------------------
 # Parser: 神奈川県教育委員会 press HTML (multi-incident paragraph, named ind.)
 # ---------------------------------------------------------------------------
+
 
 def parse_kanagawa_edu_html(html: str, source_url: str) -> list[EnfRow]:
     """Kanagawa edu press: prose with 「事案の概要」「処分内容」「処分年月日」
@@ -1552,11 +1715,13 @@ def parse_kanagawa_edu_html(html: str, source_url: str) -> list[EnfRow]:
     text = _normalize(soup.get_text("\n", strip=True))
     # Each case has "1　<name> 不祥事" pattern, then sub-1/2/3.
     # Use 処分内容 anchor as record marker.
-    kind_anchors = list(re.finditer(
-        r"処\s*分\s*内\s*容\s*[　\s]*"
-        r"(懲戒免職[^\n（(]*|諭旨退職|免職|停職[^\n（(]*|減給[^\n（(]*|戒告|訓告)",
-        text,
-    ))
+    kind_anchors = list(
+        re.finditer(
+            r"処\s*分\s*内\s*容\s*[　\s]*"
+            r"(懲戒免職[^\n（(]*|諭旨退職|免職|停職[^\n（(]*|減給[^\n（(]*|戒告|訓告)",
+            text,
+        )
+    )
     if not kind_anchors:
         return out
     # For each kind anchor, look back ~600 chars for 事案の概要 and forward 200 for 処分年月日
@@ -1564,11 +1729,11 @@ def parse_kanagawa_edu_html(html: str, source_url: str) -> list[EnfRow]:
     for k_m in kind_anchors:
         # Reason: 事案の概要 in preceding 800 chars
         win_start = max(0, k_m.start() - 800)
-        prev_window = text[win_start:k_m.start()]
+        prev_window = text[win_start : k_m.start()]
         gaiyou_m = re.search(r"事\s*案\s*の\s*概\s*要\s*(.+?)$", prev_window, flags=re.S)
         gaiyou = _normalize(gaiyou_m.group(1)) if gaiyou_m else _normalize(prev_window[-500:])
         # Date: 処分年月日 in next ~200 chars
-        post_window = text[k_m.end():k_m.end() + 200]
+        post_window = text[k_m.end() : k_m.end() + 200]
         date_m = WAREKI_RE.search(post_window)
         if not date_m:
             date_m = WAREKI_RE.search(text)
@@ -1601,29 +1766,32 @@ def parse_kanagawa_edu_html(html: str, source_url: str) -> list[EnfRow]:
             _make_role_label(role, gender, age),
             seq,
         )
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=date_iso,
-            issuing_authority="神奈川県教育委員会",
-            enforcement_kind=kind,
-            reason_summary=full_reason,
-            related_law_ref=CHOUKAI_LAW_TEACHER,
-            source_url=source_url,
-            org_class=ORG_TEACHER,
-            extra={
-                "kind_text": kind_text,
-                "role": role,
-                "age": age,
-                "gender": gender,
-                "category": category,
-            },
-        ))
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=date_iso,
+                issuing_authority="神奈川県教育委員会",
+                enforcement_kind=kind,
+                reason_summary=full_reason,
+                related_law_ref=CHOUKAI_LAW_TEACHER,
+                source_url=source_url,
+                org_class=ORG_TEACHER,
+                extra={
+                    "kind_text": kind_text,
+                    "role": role,
+                    "age": age,
+                    "gender": gender,
+                    "category": category,
+                },
+            )
+        )
     return out
 
 
 # ---------------------------------------------------------------------------
 # Parser: 福岡県 単件 PDF (1-record format with labeled 1-7 fields)
 # ---------------------------------------------------------------------------
+
 
 def parse_fukuoka_edu_singlepdf(pdf_text: str, source_url: str) -> list[EnfRow]:
     """Single-record PDF with labeled fields:
@@ -1683,12 +1851,13 @@ def parse_fukuoka_edu_singlepdf(pdf_text: str, source_url: str) -> list[EnfRow]:
     # 7 処分の理由 — multi-line until end of doc
     reason_m = re.search(
         r"[7７]\s+処\s*分\s*の\s*理\s*由\s*\n+(.+?)(?=\Z|担当|問合せ|印\s*刷|教育委員会)",
-        pdf_text, re.S,
+        pdf_text,
+        re.S,
     )
     reason = _normalize(reason_m.group(1)) if reason_m else ""
     if not reason:
         # Fallback: take everything after kind_m.end()
-        reason = _normalize(text[kind_m.end():kind_m.end() + 1200])
+        reason = _normalize(text[kind_m.end() : kind_m.end() + 1200])
     if not reason:
         reason = "詳細は出典PDF参照"
     # Determine authority based on header
@@ -1708,29 +1877,32 @@ def parse_fukuoka_edu_singlepdf(pdf_text: str, source_url: str) -> list[EnfRow]:
         _make_role_label(f"{school}{job}", gender, age),
         1,
     )
-    return [EnfRow(
-        target_name=target_name,
-        issuance_date=date_iso,
-        issuing_authority=authority,
-        enforcement_kind=kind,
-        reason_summary=full_reason,
-        related_law_ref=CHOUKAI_LAW_TEACHER,
-        source_url=source_url,
-        org_class=ORG_TEACHER,
-        extra={
-            "kind_text": kind_text,
-            "school": school,
-            "job": job,
-            "age": age,
-            "gender": gender,
-            "category": category,
-        },
-    )]
+    return [
+        EnfRow(
+            target_name=target_name,
+            issuance_date=date_iso,
+            issuing_authority=authority,
+            enforcement_kind=kind,
+            reason_summary=full_reason,
+            related_law_ref=CHOUKAI_LAW_TEACHER,
+            source_url=source_url,
+            org_class=ORG_TEACHER,
+            extra={
+                "kind_text": kind_text,
+                "school": school,
+                "job": job,
+                "age": age,
+                "gender": gender,
+                "category": category,
+            },
+        )
+    ]
 
 
 # ---------------------------------------------------------------------------
 # Parser: 宮城県教育委員会 multi-incident PDF (1-9 numbered fields per record)
 # ---------------------------------------------------------------------------
+
 
 def parse_miyagi_edu_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
     """Miyagi 職員の処分について PDF — each record has 9 numbered fields:
@@ -1805,9 +1977,12 @@ def parse_miyagi_edu_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
         gaiyou_m = re.search(
             r"事\s*件\s*・\s*事\s*故\s*の\s*概\s*要\s*\n+(.+?)"
             r"(?=処\s*分\s*内\s*容|\Z)",
-            block, re.S,
+            block,
+            re.S,
         )
-        gaiyou_raw = gaiyou_m.group(1) if gaiyou_m else norm_short[kind_m.end():kind_m.end() + 1500]
+        gaiyou_raw = (
+            gaiyou_m.group(1) if gaiyou_m else norm_short[kind_m.end() : kind_m.end() + 1500]
+        )
         # Strip Japanese name patterns: 「<姓> <名>」 of 2-4 kanji each
         gaiyou_clean = re.sub(
             r"(?:[一-鿿]{1,4}\s*[一-鿿]{1,4})\s*(?:は|が|に|を|の)?",
@@ -1829,30 +2004,33 @@ def parse_miyagi_edu_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
             _make_role_label(f"{chiku}{school_kind}{kanri}", None, age),
             seq,
         )
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=date_iso,
-            issuing_authority="宮城県教育委員会",
-            enforcement_kind=kind,
-            reason_summary=full_reason,
-            related_law_ref=CHOUKAI_LAW_TEACHER,
-            source_url=source_url,
-            org_class=ORG_TEACHER,
-            extra={
-                "kind_text": kind_text,
-                "chiku": chiku,
-                "school_kind": school_kind,
-                "age": age,
-                "kanri": kanri,
-                "category": category,
-            },
-        ))
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=date_iso,
+                issuing_authority="宮城県教育委員会",
+                enforcement_kind=kind,
+                reason_summary=full_reason,
+                related_law_ref=CHOUKAI_LAW_TEACHER,
+                source_url=source_url,
+                org_class=ORG_TEACHER,
+                extra={
+                    "kind_text": kind_text,
+                    "chiku": chiku,
+                    "school_kind": school_kind,
+                    "age": age,
+                    "kanri": kanri,
+                    "category": category,
+                },
+            )
+        )
     return out
 
 
 # ---------------------------------------------------------------------------
 # Parser: 埼玉県教育委員会 multi-record PDF (【処分N】 marker format)
 # ---------------------------------------------------------------------------
+
 
 def parse_saitama_edu_multipdf(pdf_text: str, source_url: str) -> list[EnfRow]:
     """Saitama multi-record format with 【処分N】 markers.
@@ -1937,11 +2115,13 @@ def parse_saitama_edu_multipdf(pdf_text: str, source_url: str) -> list[EnfRow]:
         gaiyou_m = re.search(
             r"事\s*件\s*・\s*事\s*故\s*の\s*概\s*要\s*\n+(.+?)"
             r"(?=【\s*処\s*分|\Z)",
-            block, re.S,
+            block,
+            re.S,
         )
         gaiyou_raw = (
-            _normalize(gaiyou_m.group(1)) if gaiyou_m
-            else _normalize(norm_short[kind_m.end():kind_m.end() + 1500])
+            _normalize(gaiyou_m.group(1))
+            if gaiyou_m
+            else _normalize(norm_short[kind_m.end() : kind_m.end() + 1500])
         )
         # Strip Japanese name patterns
         gaiyou_clean = re.sub(
@@ -1964,30 +2144,33 @@ def parse_saitama_edu_multipdf(pdf_text: str, source_url: str) -> list[EnfRow]:
             _make_role_label(f"{school}{position}", gender, age),
             seq,
         )
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=date_iso,
-            issuing_authority="埼玉県教育委員会",
-            enforcement_kind=kind,
-            reason_summary=full_reason,
-            related_law_ref=CHOUKAI_LAW_TEACHER,
-            source_url=source_url,
-            org_class=ORG_TEACHER,
-            extra={
-                "kind_text": kind_text,
-                "school": school,
-                "position": position,
-                "gender": gender,
-                "age": age,
-                "category": category,
-            },
-        ))
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=date_iso,
+                issuing_authority="埼玉県教育委員会",
+                enforcement_kind=kind,
+                reason_summary=full_reason,
+                related_law_ref=CHOUKAI_LAW_TEACHER,
+                source_url=source_url,
+                org_class=ORG_TEACHER,
+                extra={
+                    "kind_text": kind_text,
+                    "school": school,
+                    "position": position,
+                    "gender": gender,
+                    "age": age,
+                    "category": category,
+                },
+            )
+        )
     return out
 
 
 # ---------------------------------------------------------------------------
 # Parser: 札幌市教育委員会 多数記録 PDF (numbered records with 被処分者/処分内容/事案概要)
 # ---------------------------------------------------------------------------
+
 
 def parse_sapporo_edu_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
     """Sapporo City edu format: numbered records with labeled fields.
@@ -2085,14 +2268,35 @@ def parse_sapporo_edu_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
         # Strategy: tokenize by spaces, drop any token-pair that looks like a
         # kanji name (姓 + 名), drop age/gender (we already extracted them).
         ROLE_KEYWORDS = (
-            "教諭", "教頭", "校長", "副校長", "主幹", "養護教諭", "学校職員",
-            "事務職員", "業務職員", "用務員", "栄養教諭", "栄養職員", "講師",
-            "副園長", "保育士",
+            "教諭",
+            "教頭",
+            "校長",
+            "副校長",
+            "主幹",
+            "養護教諭",
+            "学校職員",
+            "事務職員",
+            "業務職員",
+            "用務員",
+            "栄養教諭",
+            "栄養職員",
+            "講師",
+            "副園長",
+            "保育士",
         )
         SCHOOL_KEYWORDS = (
-            "小学校", "中学校", "高校", "高等学校", "特別支援学校", "養護学校",
-            "幼稚園", "保育所", "市立", "県立",
+            "小学校",
+            "中学校",
+            "高校",
+            "高等学校",
+            "特別支援学校",
+            "養護学校",
+            "幼稚園",
+            "保育所",
+            "市立",
+            "県立",
         )
+
         # Strip kanji-name patterns like "渡邊 健次", "佐藤 直哉" — but skip
         # tokens containing role keywords.
         # Bind `ROLE_KEYWORDS` / `SCHOOL_KEYWORDS` via default args so the
@@ -2144,11 +2348,13 @@ def parse_sapporo_edu_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
         gaiyou_m = re.search(
             r"事\s*案\s*概\s*要\s*\n*(.+?)"
             r"(?=被\s*処\s*分\s*者|\Z|\n\s*[\d１-９]\s*\n)",
-            block, re.S,
+            block,
+            re.S,
         )
         gaiyou_raw = (
-            _normalize(gaiyou_m.group(1)) if gaiyou_m
-            else _normalize(norm_short[kind_m.end():kind_m.end() + 1200])
+            _normalize(gaiyou_m.group(1))
+            if gaiyou_m
+            else _normalize(norm_short[kind_m.end() : kind_m.end() + 1200])
         )
         gaiyou = gaiyou_raw[:1200]
         if not gaiyou:
@@ -2162,38 +2368,39 @@ def parse_sapporo_edu_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
                 date_iso = _parse_date(date_m.group(0))
         if not date_iso:
             continue
-        full_reason = (
-            f"[{category}] 被処分者={subject} {kind_text}: {gaiyou}"
-        )[:1500]
+        full_reason = (f"[{category}] 被処分者={subject} {kind_text}: {gaiyou}")[:1500]
         seq += 1
         target_name = _anonymize_target(
             "札幌市教育委員会",
             _make_role_label(subject, gender, age),
             seq,
         )
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=date_iso,
-            issuing_authority="札幌市教育委員会",
-            enforcement_kind=kind,
-            reason_summary=full_reason,
-            related_law_ref=CHOUKAI_LAW_TEACHER,
-            source_url=source_url,
-            org_class=ORG_TEACHER,
-            extra={
-                "kind_text": kind_text,
-                "subject": subject,
-                "gender": gender,
-                "age": age,
-                "category": category,
-            },
-        ))
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=date_iso,
+                issuing_authority="札幌市教育委員会",
+                enforcement_kind=kind,
+                reason_summary=full_reason,
+                related_law_ref=CHOUKAI_LAW_TEACHER,
+                source_url=source_url,
+                org_class=ORG_TEACHER,
+                extra={
+                    "kind_text": kind_text,
+                    "subject": subject,
+                    "gender": gender,
+                    "age": age,
+                    "category": category,
+                },
+            )
+        )
     return out
 
 
 # ---------------------------------------------------------------------------
 # Parser: 名古屋市 表形式 PDF (役職別の3列テーブル)
 # ---------------------------------------------------------------------------
+
 
 def parse_nagoya_table_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
     """Nagoya City format: 3-column table {所属及び任用段階等 | 処分の内容 | 処分理由}.
@@ -2253,7 +2460,7 @@ def parse_nagoya_table_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
         k_m = KIND_RE.search(line)
         if k_m:
             # The position is everything before the kind, plus any pending lines
-            before = line[:k_m.start()].strip()
+            before = line[: k_m.start()].strip()
             position = " ".join(pending_pos + [before]).strip()
             position = re.sub(r"\s+", " ", position)
             if position and len(position) >= 2 and len(position) <= 80:
@@ -2262,7 +2469,12 @@ def parse_nagoya_table_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
         else:
             # Likely position-cell continuation
             stripped = line.strip()
-            if stripped and "地方公務員法" not in stripped and "懲戒処分" not in stripped and "懲戒免職" not in stripped:
+            if (
+                stripped
+                and "地方公務員法" not in stripped
+                and "懲戒処分" not in stripped
+                and "懲戒免職" not in stripped
+            ):
                 pending_pos.append(stripped)
                 # cap at 3 lines
                 if len(pending_pos) > 3:
@@ -2277,21 +2489,23 @@ def parse_nagoya_table_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
         )[:1500]
         seq += 1
         target_name = _anonymize_target(authority, position, seq)
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=date_iso,
-            issuing_authority=authority,
-            enforcement_kind=kind,
-            reason_summary=full_reason,
-            related_law_ref=law,
-            source_url=source_url,
-            org_class=org_class,
-            extra={
-                "kind_text": kind_text_clean,
-                "position": position,
-                "category": category,
-            },
-        ))
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=date_iso,
+                issuing_authority=authority,
+                enforcement_kind=kind,
+                reason_summary=full_reason,
+                related_law_ref=law,
+                source_url=source_url,
+                org_class=org_class,
+                extra={
+                    "kind_text": kind_text_clean,
+                    "position": position,
+                    "category": category,
+                },
+            )
+        )
     return out
 
 
@@ -2327,8 +2541,7 @@ def fetch_source(http: HttpClient, src: Source) -> list[EnfRow]:
     else:
         res = http.get(src.url)
     if not res.ok:
-        _LOG.warning("[%s] fetch failed status=%s url=%s",
-                     src.parser, res.status, src.url)
+        _LOG.warning("[%s] fetch failed status=%s url=%s", src.parser, res.status, src.url)
         return []
     parser = PARSERS.get(src.parser)
     if not parser:
@@ -2342,7 +2555,9 @@ def fetch_source(http: HttpClient, src: Source) -> list[EnfRow]:
             try:
                 proc = subprocess.run(
                     ["pdftotext", "-layout", tmp_path, "-"],
-                    capture_output=True, text=True, timeout=30,
+                    capture_output=True,
+                    text=True,
+                    timeout=30,
                 )
                 rows = parser(proc.stdout, src.url)
             finally:
@@ -2367,6 +2582,7 @@ def fetch_source(http: HttpClient, src: Source) -> list[EnfRow]:
 # ---------------------------------------------------------------------------
 # DB layer
 # ---------------------------------------------------------------------------
+
 
 def _slug8(s: str) -> str:
     return hashlib.sha1(s.encode("utf-8")).hexdigest()[:8]
@@ -2510,17 +2726,10 @@ def write_rows(
                     continue
                 batch_keys.add(key)
                 seq = _slug8(
-                    f"{r.target_name}|{r.issuance_date}|"
-                    f"{r.issuing_authority}|{chunk_idx}|{idx}"
+                    f"{r.target_name}|{r.issuance_date}|{r.issuing_authority}|{chunk_idx}|{idx}"
                 )
-                canonical_id = (
-                    f"AM-ENF-KOMU-"
-                    f"{r.issuance_date.replace('-', '')}-{seq}"
-                )
-                primary_name = (
-                    f"{r.target_name} ({r.issuance_date}) "
-                    f"- {r.issuing_authority}"
-                )
+                canonical_id = f"AM-ENF-KOMU-{r.issuance_date.replace('-', '')}-{seq}"
+                primary_name = f"{r.target_name} ({r.issuance_date}) - {r.issuing_authority}"
                 raw_json = json.dumps(
                     {
                         "target_name": r.target_name,
@@ -2534,24 +2743,27 @@ def write_rows(
                         "extra": r.extra or {},
                         "source_attribution": r.issuing_authority,
                         "anonymized": True,
-                        "license": (
-                            "国家・地方公務員 懲戒処分 公表資料"
-                            "（出典明記で転載引用可）"
-                        ),
+                        "license": ("国家・地方公務員 懲戒処分 公表資料（出典明記で転載引用可）"),
                     },
                     ensure_ascii=False,
                 )
                 try:
                     upsert_entity(
-                        conn, canonical_id, primary_name,
-                        r.source_url, raw_json, now_iso,
+                        conn,
+                        canonical_id,
+                        primary_name,
+                        r.source_url,
+                        raw_json,
+                        now_iso,
                     )
                     insert_enforcement(conn, canonical_id, r, now_iso)
                     inserted += 1
                 except sqlite3.Error as exc:
                     _LOG.error(
                         "DB error name=%r date=%s: %s",
-                        r.target_name, r.issuance_date, exc,
+                        r.target_name,
+                        r.issuance_date,
+                        exc,
                     )
                     continue
             conn.commit()
@@ -2568,15 +2780,19 @@ def write_rows(
 # CLI
 # ---------------------------------------------------------------------------
 
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--db", type=Path, default=DEFAULT_DB)
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--verbose", "-v", action="store_true")
     ap.add_argument("--limit", type=int, default=None)
-    ap.add_argument("--source-filter", type=str, default=None,
-                    help="Only run sources whose parser name matches "
-                         "this substring (debug)")
+    ap.add_argument(
+        "--source-filter",
+        type=str,
+        default=None,
+        help="Only run sources whose parser name matches this substring (debug)",
+    )
     return ap.parse_args(argv)
 
 
@@ -2588,9 +2804,7 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     http = HttpClient(user_agent=USER_AGENT)
-    now_iso = datetime.now(UTC).isoformat(timespec="seconds").replace(
-        "+00:00", "Z"
-    )
+    now_iso = datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
 
     all_rows: list[EnfRow] = []
     per_source_count: dict[str, int] = {}
@@ -2601,19 +2815,25 @@ def main(argv: list[str] | None = None) -> int:
         per_source_count[f"{src.locale}/{src.parser}/{src.note}"] = len(rows)
         _LOG.info(
             "[%s] %s (%s): %d rows",
-            src.locale, src.parser, src.note, len(rows),
+            src.locale,
+            src.parser,
+            src.note,
+            len(rows),
         )
         all_rows.extend(rows)
 
-    _LOG.info("total parsed rows=%d (sources=%d)",
-              len(all_rows), len(SOURCES))
+    _LOG.info("total parsed rows=%d (sources=%d)", len(all_rows), len(SOURCES))
 
     if args.dry_run:
         for r in all_rows[:30]:
             _LOG.info(
                 "sample: name=%r date=%s auth=%s kind=%s law=%s class=%s",
-                r.target_name, r.issuance_date, r.issuing_authority,
-                r.enforcement_kind, r.related_law_ref, r.org_class,
+                r.target_name,
+                r.issuance_date,
+                r.issuing_authority,
+                r.enforcement_kind,
+                r.related_law_ref,
+                r.org_class,
             )
         http.close()
         return 0
@@ -2629,7 +2849,10 @@ def main(argv: list[str] | None = None) -> int:
     ensure_tables(conn)
 
     inserted, dup_db, dup_batch = write_rows(
-        conn, all_rows, now_iso=now_iso, limit=args.limit,
+        conn,
+        all_rows,
+        now_iso=now_iso,
+        limit=args.limit,
     )
     # Per-org / per-authority breakdown for caller
     org_counts: dict[str, int] = {}
@@ -2637,12 +2860,8 @@ def main(argv: list[str] | None = None) -> int:
     kind_counts: dict[str, int] = {}
     for r in all_rows:
         org_counts[r.org_class] = org_counts.get(r.org_class, 0) + 1
-        auth_counts[r.issuing_authority] = (
-            auth_counts.get(r.issuing_authority, 0) + 1
-        )
-        kind_counts[r.enforcement_kind] = (
-            kind_counts.get(r.enforcement_kind, 0) + 1
-        )
+        auth_counts[r.issuing_authority] = auth_counts.get(r.issuing_authority, 0) + 1
+        kind_counts[r.enforcement_kind] = kind_counts.get(r.enforcement_kind, 0) + 1
     try:
         conn.close()
     except sqlite3.Error:
@@ -2651,7 +2870,10 @@ def main(argv: list[str] | None = None) -> int:
 
     _LOG.info(
         "done parsed=%d inserted=%d dup_db=%d dup_batch=%d",
-        len(all_rows), inserted, dup_db, dup_batch,
+        len(all_rows),
+        inserted,
+        dup_db,
+        dup_batch,
     )
     print(
         f"Komuin Choukai ingest: parsed={len(all_rows)} "
@@ -2660,12 +2882,9 @@ def main(argv: list[str] | None = None) -> int:
     print("breakdown by source:")
     for k in sorted(per_source_count.keys()):
         print(f"  {k}: parsed={per_source_count[k]}")
-    print("breakdown by org_class: "
-          f"{json.dumps(org_counts, ensure_ascii=False)}")
-    print("breakdown by issuing_authority: "
-          f"{json.dumps(auth_counts, ensure_ascii=False)}")
-    print("breakdown by enforcement_kind: "
-          f"{json.dumps(kind_counts, ensure_ascii=False)}")
+    print(f"breakdown by org_class: {json.dumps(org_counts, ensure_ascii=False)}")
+    print(f"breakdown by issuing_authority: {json.dumps(auth_counts, ensure_ascii=False)}")
+    print(f"breakdown by enforcement_kind: {json.dumps(kind_counts, ensure_ascii=False)}")
     return 0
 
 

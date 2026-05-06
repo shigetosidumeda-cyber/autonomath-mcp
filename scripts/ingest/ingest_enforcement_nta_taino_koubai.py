@@ -37,6 +37,7 @@ CLI:
     python scripts/ingest/ingest_enforcement_nta_taino_koubai.py --max-rows 400
     python scripts/ingest/ingest_enforcement_nta_taino_koubai.py --dry-run
 """
+
 from __future__ import annotations
 
 import argparse
@@ -87,10 +88,18 @@ KYOKU_MAP: dict[str, str] = {
 KYOKU_AUTHORITY_CANONICAL: dict[str, str] = {
     code: f"authority:nta-{slug}"
     for code, slug in [
-        ("01001", "tokyo"), ("02001", "kantoshinetsu"), ("03001", "sapporo"),
-        ("04001", "sendai"), ("05001", "kanazawa"), ("06001", "nagoya"),
-        ("07001", "osaka"), ("08001", "hiroshima"), ("09001", "takamatsu"),
-        ("10001", "fukuoka"), ("11001", "kumamoto"), ("12001", "okinawa"),
+        ("01001", "tokyo"),
+        ("02001", "kantoshinetsu"),
+        ("03001", "sapporo"),
+        ("04001", "sendai"),
+        ("05001", "kanazawa"),
+        ("06001", "nagoya"),
+        ("07001", "osaka"),
+        ("08001", "hiroshima"),
+        ("09001", "takamatsu"),
+        ("10001", "fukuoka"),
+        ("11001", "kumamoto"),
+        ("12001", "okinawa"),
     ]
 }
 
@@ -123,6 +132,7 @@ def ensure_bureau_authorities(cur: sqlite3.Cursor) -> None:
                 "Created by ingest_enforcement_nta_taino_koubai.py 2026-04-25",
             ),
         )
+
 
 # Search list URLs — three categories. Empty pages stop pagination.
 LIST_URLS = {
@@ -206,6 +216,7 @@ def _hash6(payload: str) -> str:
 
 # ----------------------- Fetcher -----------------------
 
+
 class KoubaiFetcher:
     """1 req/sec httpx fetcher with the AutonoMath UA."""
 
@@ -246,9 +257,8 @@ class KoubaiFetcher:
                     # koubai responses are utf-8; trust httpx
                     return resp.text
                 if resp.status_code in (429, 503):
-                    wait = (2 ** attempt) + random.uniform(0, 1)
-                    _LOG.info("rate-limit %s -> %s, wait %.1fs",
-                              url, resp.status_code, wait)
+                    wait = (2**attempt) + random.uniform(0, 1)
+                    _LOG.info("rate-limit %s -> %s, wait %.1fs", url, resp.status_code, wait)
                     time.sleep(wait)
                     continue
                 _LOG.warning("HTTP %s for %s", resp.status_code, url)
@@ -257,9 +267,8 @@ class KoubaiFetcher:
                 last_exc = exc
                 self._last_t = time.monotonic()
                 if attempt < max_retries - 1:
-                    wait = (2 ** attempt) + random.uniform(0, 1)
-                    _LOG.info("fetch error %s err=%s wait %.1fs",
-                              url, exc, wait)
+                    wait = (2**attempt) + random.uniform(0, 1)
+                    _LOG.info("fetch error %s err=%s wait %.1fs", url, exc, wait)
                     time.sleep(wait)
                     continue
         _LOG.warning("fetch failed url=%s err=%s", url, last_exc)
@@ -267,6 +276,7 @@ class KoubaiFetcher:
 
 
 # ----------------------- Parsers -----------------------
+
 
 def parse_list_page(html: str) -> list[tuple[str, str, str, str, str, str]]:
     """Return list of (relpath, kyoku, nendo, koubai, kind, baikyaku) tuples.
@@ -300,8 +310,9 @@ def _row_text(soup: BeautifulSoup, label: str) -> str | None:
     return None
 
 
-def parse_detail(html: str, source_url: str,
-                 ids: tuple[str, str, str, str, str]) -> dict[str, Any] | None:
+def parse_detail(
+    html: str, source_url: str, ids: tuple[str, str, str, str, str]
+) -> dict[str, Any] | None:
     """Parse hp0201/hp0307/hp0411 detail page → dict.
 
     Field labels are uniform across all three detail page variants —
@@ -355,10 +366,7 @@ def parse_detail(html: str, source_url: str,
     shubetu = _row_text(soup, "種別") or _row_text(soup, "主たる地目") or ""
     # 住居表示 (real estate) or 所在 (movables) etc.
     shozai = (
-        _row_text(soup, "住居表示等")
-        or _row_text(soup, "所在")
-        or _row_text(soup, "所在地")
-        or ""
+        _row_text(soup, "住居表示等") or _row_text(soup, "所在") or _row_text(soup, "所在地") or ""
     )
     # 公売公告番号
     koukoku_no = _row_text(soup, "公売公告番号") or f"{koubai}号"
@@ -459,6 +467,7 @@ def make_koukoku_record(item: dict[str, Any]) -> dict[str, Any]:
 
 # ----------------------- DB write -----------------------
 
+
 def existing_dedup_keys(cur: sqlite3.Cursor) -> set[tuple[str, str, str]]:
     cur.execute("""
         SELECT issuance_date, target_name, issuing_authority
@@ -487,10 +496,7 @@ def build_canonical_id(rec: dict[str, Any]) -> str:
         )
     payload = f"{rec['kyoku']}|{rec['nendo']}|{rec['koubai_no']}|koukoku"
     h = _hash6(payload)
-    return (
-        f"enforcement:nta-koukoku-{rec['kyoku']}-{rec['nendo']}-"
-        f"{rec['koubai_no']}-{h}"
-    )
+    return f"enforcement:nta-koukoku-{rec['kyoku']}-{rec['nendo']}-{rec['koubai_no']}-{h}"
 
 
 def upsert_record(
@@ -524,9 +530,7 @@ def upsert_record(
         "houshokin": rec.get("houshokin"),
         "source_url": rec["source_url"],
         "license": "出典: 国税庁 公売情報 (koubai.nta.go.jp)",
-        "attribution": (
-            f"出典: {rec['issuing_authority']} 公売情報 ({rec['source_url']})"
-        ),
+        "attribution": (f"出典: {rec['issuing_authority']} 公売情報 ({rec['source_url']})"),
         "fetched_at": now_iso,
         "tos_status": (
             "TOS無視/獲得優先 (2026-04-25 user directive); "
@@ -563,7 +567,7 @@ def upsert_record(
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
         (
             canonical_id,
-            None,                       # 滞納者氏名 = 非開示, 法人番号 = なし
+            None,  # 滞納者氏名 = 非開示, 法人番号 = なし
             rec["target_name"][:500],
             rec["enforcement_kind"],
             rec["issuing_authority"],
@@ -581,6 +585,7 @@ def upsert_record(
 
 
 # ----------------------- crawl orchestration -----------------------
+
 
 def walk_lists(
     fetcher: KoubaiFetcher,
@@ -612,7 +617,11 @@ def walk_lists(
                     new += 1
             _LOG.info(
                 "[list] %s page=%d items=%d new=%d total=%d",
-                cat, page, len(tuples), new, len(out),
+                cat,
+                page,
+                len(tuples),
+                new,
+                len(out),
             )
             if new == 0:
                 break
@@ -642,6 +651,7 @@ def fetch_details(
 
 
 # ----------------------- main -----------------------
+
 
 def run(
     db_path: Path,
@@ -675,14 +685,19 @@ def run(
     koukoku_records = [make_koukoku_record(v) for v in by_koukoku.values()]
 
     all_records = items + koukoku_records
-    _LOG.info("records: items=%d koukoku=%d total=%d",
-              len(items), len(koukoku_records), len(all_records))
+    _LOG.info(
+        "records: items=%d koukoku=%d total=%d", len(items), len(koukoku_records), len(all_records)
+    )
 
     if dry_run:
         for r in all_records[:5]:
-            _LOG.info("  sample: %s | %s | %s | %s",
-                      r["level"], r["issuance_date"],
-                      r["issuing_authority"], r["target_name"][:60])
+            _LOG.info(
+                "  sample: %s | %s | %s | %s",
+                r["level"],
+                r["issuance_date"],
+                r["issuing_authority"],
+                r["target_name"][:60],
+            )
         by_bureau: dict[str, int] = {}
         for r in all_records:
             by_bureau[r["bureau"]] = by_bureau.get(r["bureau"], 0) + 1
@@ -754,8 +769,7 @@ def run(
                     try:
                         ok = upsert_record(cur, rec, now_iso)
                     except sqlite3.IntegrityError as exc:
-                        _LOG.warning("integrity %s: %s",
-                                     rec.get("target_name"), exc)
+                        _LOG.warning("integrity %s: %s", rec.get("target_name"), exc)
                         skipped_constraint += 1
                         continue
                     if ok:
@@ -777,15 +791,12 @@ def run(
                 try:
                     ok = upsert_record(cur, rec, now_iso)
                 except sqlite3.IntegrityError as exc:
-                    _LOG.warning("integrity %s: %s",
-                                 rec.get("target_name"), exc)
+                    _LOG.warning("integrity %s: %s", rec.get("target_name"), exc)
                     skipped_constraint += 1
                     continue
                 if ok:
                     inserted += 1
-                    by_bureau_inserted[rec["bureau"]] = (
-                        by_bureau_inserted.get(rec["bureau"], 0) + 1
-                    )
+                    by_bureau_inserted[rec["bureau"]] = by_bureau_inserted.get(rec["bureau"], 0) + 1
                     by_kind_inserted[rec["enforcement_kind"]] = (
                         by_kind_inserted.get(rec["enforcement_kind"], 0) + 1
                     )
@@ -795,7 +806,10 @@ def run(
 
         _LOG.info(
             "INSERT done inserted=%d skipped_dup=%d skipped_err=%d total_seen=%d",
-            inserted, skipped_dup, skipped_constraint, len(all_records),
+            inserted,
+            skipped_dup,
+            skipped_constraint,
+            len(all_records),
         )
         for b, c in sorted(by_bureau_inserted.items(), key=lambda kv: -kv[1]):
             _LOG.info("  bureau %s inserted: %d", b, c)
@@ -818,8 +832,7 @@ def main(argv: list[str] | None = None) -> int:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     ap.add_argument("--db", type=Path, default=DEFAULT_DB)
-    ap.add_argument("--max-rows", type=int, default=2000,
-                    help="cap on rows inserted in this run")
+    ap.add_argument("--max-rows", type=int, default=2000, help="cap on rows inserted in this run")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("-v", "--verbose", action="store_true")
     args = ap.parse_args(argv)

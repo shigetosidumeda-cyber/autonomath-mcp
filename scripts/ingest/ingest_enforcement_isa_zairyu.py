@@ -58,6 +58,7 @@ CLI:
   python scripts/ingest/ingest_enforcement_isa_zairyu.py --dry-run -v
   python scripts/ingest/ingest_enforcement_isa_zairyu.py --skip-fetch
 """
+
 from __future__ import annotations
 
 import argparse
@@ -78,8 +79,7 @@ try:
     import openpyxl  # type: ignore
     import requests  # type: ignore
 except ImportError as exc:  # pragma: no cover
-    print(f"missing dep: {exc}. pip install openpyxl requests",
-          file=sys.stderr)
+    print(f"missing dep: {exc}. pip install openpyxl requests", file=sys.stderr)
     sys.exit(1)
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -87,15 +87,12 @@ DEFAULT_DB = REPO_ROOT / "autonomath.db"
 CACHE_DIR = REPO_ROOT / "data" / "_cache" / "isa_enforcement"
 
 USER_AGENT = (
-    "AutonoMath/0.1.0 (+https://bookyou.net) "
-    "ingest-isa-enforcement (contact=info@bookyou.net)"
+    "AutonoMath/0.1.0 (+https://bookyou.net) ingest-isa-enforcement (contact=info@bookyou.net)"
 )
 HTTP_TIMEOUT = 60
 RATE_SLEEP = 1.5  # ≤1 req/sec/host (gov rate-limit)
 
-PUBLIC_PAGE = (
-    "https://www.moj.go.jp/isa/applications/titp/nyuukokukanri07_00138.html"
-)
+PUBLIC_PAGE = "https://www.moj.go.jp/isa/applications/titp/nyuukokukanri07_00138.html"
 
 # (excel_url, kind_label, enforcement_kind, related_law_ref,
 #  target_kind {'jissyusha'/'kanri-dantai'}, file_label)
@@ -211,9 +208,7 @@ WAREKI_RE = re.compile(
     r"(令和|平成|昭和|R|H|S)\s*(元|[0-9０-９]+)\s*年\s*"
     r"([0-9０-９]+)\s*月\s*([0-9０-９]+)\s*日"
 )
-SEIREKI_RE = re.compile(
-    r"(20[0-9]{2})\s*[年\-/]\s*([0-9]+)\s*[月\-/]\s*([0-9]+)\s*日?"
-)
+SEIREKI_RE = re.compile(r"(20[0-9]{2})\s*[年\-/]\s*([0-9]+)\s*[月\-/]\s*([0-9]+)\s*日?")
 
 
 def _normalize(text: str) -> str:
@@ -307,9 +302,7 @@ def _coerce_date(cell: object) -> str | None:
 
 
 def _slug8(name: str, date_iso: str, kind: str) -> str:
-    h = hashlib.sha1(
-        f"{name}|{date_iso}|{kind}".encode("utf-8")
-    ).hexdigest()
+    h = hashlib.sha1(f"{name}|{date_iso}|{kind}".encode("utf-8")).hexdigest()
     return h[:10]
 
 
@@ -320,11 +313,24 @@ def _slugify_jp(text: str, max_len: int = 28) -> str:
     return text[:max_len] or "unknown"
 
 
-_BAD_NAME_LITERALS = frozenset({
-    "監理団体名", "実習実施者名", "代表者", "代表者名", "所在地",
-    "事業者名", "認定番号", "許可番号", "別紙", "別添", "備考",
-    "事業所", "番号", "計画番号",
-})
+_BAD_NAME_LITERALS = frozenset(
+    {
+        "監理団体名",
+        "実習実施者名",
+        "代表者",
+        "代表者名",
+        "所在地",
+        "事業者名",
+        "認定番号",
+        "許可番号",
+        "別紙",
+        "別添",
+        "備考",
+        "事業所",
+        "番号",
+        "計画番号",
+    }
+)
 
 
 def _is_valid_target_name(name: str | None) -> bool:
@@ -340,9 +346,20 @@ def _is_valid_target_name(name: str | None) -> bool:
     if re.fullmatch(r"[\d\-\.]+", s):
         return False
     if re.search(r"年.*月.*日", s) and not any(
-        kw in s for kw in (
-            "株式会社", "有限会社", "合同会社", "合資会社", "合名会社",
-            "協同組合", "協会", "組合", "(株)", "(有)", "(合)", "(同)",
+        kw in s
+        for kw in (
+            "株式会社",
+            "有限会社",
+            "合同会社",
+            "合資会社",
+            "合名会社",
+            "協同組合",
+            "協会",
+            "組合",
+            "(株)",
+            "(有)",
+            "(合)",
+            "(同)",
             "事業協同組合",
         )
     ):
@@ -359,15 +376,15 @@ def _is_valid_target_name(name: str | None) -> bool:
 class HttpClient:
     def __init__(self, *, user_agent: str = USER_AGENT) -> None:
         self.session = requests.Session()
-        self.session.headers.update({
-            "User-Agent": user_agent,
-            "Accept-Language": "ja,en;q=0.5",
-        })
+        self.session.headers.update(
+            {
+                "User-Agent": user_agent,
+                "Accept-Language": "ja,en;q=0.5",
+            }
+        )
         self._last: float = 0.0
 
-    def get(
-        self, url: str, *, timeout: float = HTTP_TIMEOUT
-    ) -> requests.Response | None:
+    def get(self, url: str, *, timeout: float = HTTP_TIMEOUT) -> requests.Response | None:
         delta = time.monotonic() - self._last
         if delta < RATE_SLEEP:
             time.sleep(RATE_SLEEP - delta)
@@ -383,14 +400,12 @@ class HttpClient:
                 last_err = RuntimeError(f"{resp.status_code} for {url}")
             except requests.RequestException as exc:
                 last_err = exc
-            time.sleep(2 ** attempt)
+            time.sleep(2**attempt)
         _LOG.warning("fetch failed after retries: %s: %s", url, last_err)
         return None
 
 
-def _fetch_or_cache(
-    http: HttpClient, url: str, *, skip_fetch: bool = False
-) -> bytes | None:
+def _fetch_or_cache(http: HttpClient, url: str, *, skip_fetch: bool = False) -> bytes | None:
     """Return Excel bytes. Fall back to cached copy when fresh fetch fails."""
     cache_path = CACHE_DIR / hashlib.sha1(url.encode()).hexdigest()
     if skip_fetch and cache_path.exists():
@@ -420,7 +435,7 @@ class EnfRow:
     representative: str | None
     location: str | None
     permit_or_cert_number: str | None  # 許可番号 / 認定番号 (first one only)
-    permit_or_cert_count: int           # number of cert/permit IDs revoked
+    permit_or_cert_count: int  # number of cert/permit IDs revoked
     issuance_date: str
     reason_summary: str
     enforcement_kind: str
@@ -454,10 +469,7 @@ def _classify_target_excel(
         ws = wb[sheet_name]
         if ws.max_row < 2:
             continue
-        header = [
-            _normalize(c.value if c.value is not None else "")
-            for c in ws[1]
-        ]
+        header = [_normalize(c.value if c.value is not None else "") for c in ws[1]]
         # Detect listing sheet
         name_idx = -1
         rep_idx = -1
@@ -467,32 +479,28 @@ def _classify_target_excel(
         date_idx = -1
         for i, h in enumerate(header):
             if name_idx < 0 and (
-                "実習実施者名" in h or "監理団体名" in h
-                or h.endswith("名称") or h == "事業者名"
+                "実習実施者名" in h or "監理団体名" in h or h.endswith("名称") or h == "事業者名"
             ):
                 name_idx = i
             elif rep_idx < 0 and "代表者" in h:
                 rep_idx = i
             elif loc_idx < 0 and "所在地" in h:
                 loc_idx = i
-            elif perm_idx < 0 and (
-                "許可番号" in h or "認定番号" in h or "計画" in h
-            ):
+            elif perm_idx < 0 and ("許可番号" in h or "認定番号" in h or "計画" in h):
                 perm_idx = i
-            elif reason_idx < 0 and (
-                "措置理由" in h or "処分理由" in h or "理由" in h
-            ):
+            elif reason_idx < 0 and ("措置理由" in h or "処分理由" in h or "理由" in h):
                 reason_idx = i
             elif date_idx < 0 and (
-                "措置年月日" in h or "処分年月日" in h
-                or "年月日" in h or "命令年月日" in h
+                "措置年月日" in h or "処分年月日" in h or "年月日" in h or "命令年月日" in h
             ):
                 date_idx = i
 
         if name_idx < 0 or date_idx < 0:
             _LOG.debug(
                 "skip sheet %s/%s — no name/date column header=%s",
-                src_url.rsplit("/", 1)[-1], sheet_name, header,
+                src_url.rsplit("/", 1)[-1],
+                sheet_name,
+                header,
             )
             continue
 
@@ -500,19 +508,13 @@ def _classify_target_excel(
         # non-empty. Subsequent rows with only perm-id columns belong to
         # the previous entity (collect perm count + secondary perm ids).
         current: EnfRow | None = None
-        for r_i, row in enumerate(
-            ws.iter_rows(min_row=2, values_only=True), 2
-        ):
+        for r_i, row in enumerate(ws.iter_rows(min_row=2, values_only=True), 2):
             cells = list(row)
             if len(cells) <= max(name_idx, date_idx):
                 continue
             raw_name = cells[name_idx]
-            name_str = _normalize(
-                str(raw_name) if raw_name is not None else ""
-            )
-            date_iso = _coerce_date(
-                cells[date_idx] if date_idx < len(cells) else None
-            )
+            name_str = _normalize(str(raw_name) if raw_name is not None else "")
+            date_iso = _coerce_date(cells[date_idx] if date_idx < len(cells) else None)
             if _is_valid_target_name(name_str) and date_iso:
                 # flush previous
                 if current is not None:
@@ -588,9 +590,7 @@ def ensure_tables(conn: sqlite3.Connection) -> None:
             (tbl,),
         ).fetchone()
         if not row:
-            raise SystemExit(
-                f"missing table '{tbl}' — apply migrations first"
-            )
+            raise SystemExit(f"missing table '{tbl}' — apply migrations first")
 
 
 def ensure_authority(label: str) -> str:
@@ -640,9 +640,7 @@ def build_canonical_id(row: EnfRow) -> str:
     return f"enforcement:isa-titp:{iso}:{name_slug}:{h}"[:255]
 
 
-def insert_one(
-    cur: sqlite3.Cursor, row: EnfRow, *, now_iso: str
-) -> bool:
+def insert_one(cur: sqlite3.Cursor, row: EnfRow, *, now_iso: str) -> bool:
     canonical_id = build_canonical_id(row)
     authority_canonical = ensure_authority(row.issuing_authority)
     raw = {
@@ -660,9 +658,7 @@ def insert_one(
         "reason_summary": row.reason_summary,
         "source_url": row.source_url,
         "source_topic": row.source_topic,
-        "license": (
-            "政府機関の著作物（出典明記で転載引用可、PDL v1.0 互換）"
-        ),
+        "license": ("政府機関の著作物（出典明記で転載引用可、PDL v1.0 互換）"),
         "attribution": (
             "出典: 法務省 出入国在留管理庁 "
             "「公表情報（監理団体一覧、行政処分等、失踪者数ほか）」"
@@ -671,8 +667,7 @@ def insert_one(
         "fetched_at": now_iso,
     }
     primary_name = (
-        f"{row.target_name} ({row.issuance_date}) - "
-        f"{row.issuing_authority} {row.enforcement_kind}"
+        f"{row.target_name} ({row.issuance_date}) - {row.issuing_authority} {row.enforcement_kind}"
     )[:500]
     cur.execute(
         """INSERT OR IGNORE INTO am_entities
@@ -727,11 +722,14 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--db", type=Path, default=DEFAULT_DB)
     ap.add_argument(
-        "--limit-files", type=int, default=None,
+        "--limit-files",
+        type=int,
+        default=None,
         help="cap number of source Excel files to process (debug)",
     )
     ap.add_argument(
-        "--skip-fetch", action="store_true",
+        "--skip-fetch",
+        action="store_true",
         help="use cached Excel files only — skip live HTTP fetch",
     )
     ap.add_argument("--dry-run", action="store_true")
@@ -746,9 +744,7 @@ def run(args: argparse.Namespace) -> int:
     )
     for noisy in ("openpyxl", "urllib3", "requests"):
         logging.getLogger(noisy).setLevel(logging.WARNING)
-    now_iso = datetime.now(tz=UTC).isoformat(
-        timespec="seconds"
-    ).replace("+00:00", "Z")
+    now_iso = datetime.now(tz=UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
     http = HttpClient()
 
     all_rows: list[EnfRow] = []
@@ -780,6 +776,7 @@ def run(args: argparse.Namespace) -> int:
 
     if args.dry_run or not all_rows:
         from collections import Counter
+
         by_kind = Counter(r.enforcement_kind for r in all_rows)
         by_auth = Counter(r.issuing_authority for r in all_rows)
         by_law = Counter(r.related_law_ref for r in all_rows)
@@ -787,8 +784,10 @@ def run(args: argparse.Namespace) -> int:
         for r in all_rows[:30]:
             _LOG.info(
                 "  CAND: %s | %s | %s | %s",
-                r.issuance_date, r.target_name[:40],
-                r.enforcement_kind, r.related_law_ref,
+                r.issuance_date,
+                r.target_name[:40],
+                r.enforcement_kind,
+                r.related_law_ref,
             )
         _LOG.info("dry-run: would attempt %d inserts", len(all_rows))
         _LOG.info("by enforcement_kind: %s", dict(by_kind))
@@ -831,12 +830,9 @@ def run(args: argparse.Namespace) -> int:
     breakdown_target_kind: dict[str, int] = {}
 
     batch_keys: set[tuple[str, str, str]] = set()
-    pre_total = con.execute(
-        "SELECT COUNT(*) FROM am_enforcement_detail"
-    ).fetchone()[0]
+    pre_total = con.execute("SELECT COUNT(*) FROM am_enforcement_detail").fetchone()[0]
     pre_titp = con.execute(
-        "SELECT COUNT(*) FROM am_enforcement_detail "
-        "WHERE related_law_ref LIKE '%技能実習法%'"
+        "SELECT COUNT(*) FROM am_enforcement_detail WHERE related_law_ref LIKE '%技能実習法%'"
     ).fetchone()[0]
 
     batch_size = 50
@@ -880,18 +876,12 @@ def run(args: argparse.Namespace) -> int:
             inserted += 1
             batch_keys.add(key)
             existing_ids.add(cid)
-            breakdown_kind[r.enforcement_kind] = (
-                breakdown_kind.get(r.enforcement_kind, 0) + 1
-            )
+            breakdown_kind[r.enforcement_kind] = breakdown_kind.get(r.enforcement_kind, 0) + 1
             breakdown_authority[r.issuing_authority] = (
                 breakdown_authority.get(r.issuing_authority, 0) + 1
             )
-            breakdown_law[r.related_law_ref] = (
-                breakdown_law.get(r.related_law_ref, 0) + 1
-            )
-            breakdown_target_kind[r.target_kind] = (
-                breakdown_target_kind.get(r.target_kind, 0) + 1
-            )
+            breakdown_law[r.related_law_ref] = breakdown_law.get(r.related_law_ref, 0) + 1
+            breakdown_target_kind[r.target_kind] = breakdown_target_kind.get(r.target_kind, 0) + 1
             pending += 1
             if pending >= batch_size:
                 try:
@@ -909,12 +899,9 @@ def run(args: argparse.Namespace) -> int:
     except sqlite3.Error as exc:
         _LOG.error("final commit failed: %s", exc)
 
-    post_total = con.execute(
-        "SELECT COUNT(*) FROM am_enforcement_detail"
-    ).fetchone()[0]
+    post_total = con.execute("SELECT COUNT(*) FROM am_enforcement_detail").fetchone()[0]
     post_titp = con.execute(
-        "SELECT COUNT(*) FROM am_enforcement_detail "
-        "WHERE related_law_ref LIKE '%技能実習法%'"
+        "SELECT COUNT(*) FROM am_enforcement_detail WHERE related_law_ref LIKE '%技能実習法%'"
     ).fetchone()[0]
     try:
         con.close()
@@ -922,29 +909,38 @@ def run(args: argparse.Namespace) -> int:
         pass
 
     _LOG.info(
-        "done parsed=%d inserted=%d dup_db=%d dup_id=%d "
-        "dup_batch=%d invalid=%d",
-        len(all_rows), inserted, skipped_dup_db, skipped_dup_id,
-        skipped_dup_batch, skipped_invalid,
+        "done parsed=%d inserted=%d dup_db=%d dup_id=%d dup_batch=%d invalid=%d",
+        len(all_rows),
+        inserted,
+        skipped_dup_db,
+        skipped_dup_id,
+        skipped_dup_batch,
+        skipped_invalid,
     )
 
-    print(json.dumps({
-        "inserted": inserted,
-        "parsed": len(all_rows),
-        "skipped_dup_db": skipped_dup_db,
-        "skipped_dup_id": skipped_dup_id,
-        "skipped_dup_batch": skipped_dup_batch,
-        "skipped_invalid": skipped_invalid,
-        "pre_titp_count": pre_titp,
-        "post_titp_count": post_titp,
-        "delta_titp": post_titp - pre_titp,
-        "pre_am_enforcement_total": pre_total,
-        "post_am_enforcement_total": post_total,
-        "breakdown_by_kind": breakdown_kind,
-        "breakdown_by_authority": breakdown_authority,
-        "breakdown_by_law": breakdown_law,
-        "breakdown_by_target_kind": breakdown_target_kind,
-    }, ensure_ascii=False, indent=2))
+    print(
+        json.dumps(
+            {
+                "inserted": inserted,
+                "parsed": len(all_rows),
+                "skipped_dup_db": skipped_dup_db,
+                "skipped_dup_id": skipped_dup_id,
+                "skipped_dup_batch": skipped_dup_batch,
+                "skipped_invalid": skipped_invalid,
+                "pre_titp_count": pre_titp,
+                "post_titp_count": post_titp,
+                "delta_titp": post_titp - pre_titp,
+                "pre_am_enforcement_total": pre_total,
+                "post_am_enforcement_total": post_total,
+                "breakdown_by_kind": breakdown_kind,
+                "breakdown_by_authority": breakdown_authority,
+                "breakdown_by_law": breakdown_law,
+                "breakdown_by_target_kind": breakdown_target_kind,
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
     return 0 if inserted >= 0 else 1
 
 

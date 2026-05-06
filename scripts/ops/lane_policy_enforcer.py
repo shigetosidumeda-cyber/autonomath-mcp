@@ -20,6 +20,7 @@ Exit codes:
 
 DEEP-60 spec: dual-CLI lane policy enforcer (sketch -> draft).
 """
+
 from __future__ import annotations
 
 import argparse
@@ -141,9 +142,7 @@ def detect_violations(
         if kind == "forbidden":
             violations.append((p, f"forbidden path for lane '{lane}'"))
         elif kind == "unknown":
-            violations.append(
-                (p, f"path not declared allowed for lane '{lane}' (unknown)")
-            )
+            violations.append((p, f"path not declared allowed for lane '{lane}' (unknown)"))
         else:
             allowed.append(p)
     return violations, allowed
@@ -181,12 +180,14 @@ def append_ledger_row(
 
 
 def _print_violations(violations: list[tuple[str, str]], lane: str) -> None:
-    print(f"[lane-enforcer] FAIL: {len(violations)} violation(s) for lane '{lane}'", file=sys.stderr)
+    print(
+        f"[lane-enforcer] FAIL: {len(violations)} violation(s) for lane '{lane}'", file=sys.stderr
+    )
     for p, reason in violations:
         print(f"  - {p}: {reason}", file=sys.stderr)
     print(
         "[lane-enforcer] hint: pass --bypass-with-reason "
-        "\"...\" --operator-signoff <name> to override (recorded in AGENT_LEDGER.csv).",
+        '"..." --operator-signoff <name> to override (recorded in AGENT_LEDGER.csv).',
         file=sys.stderr,
     )
 
@@ -262,8 +263,10 @@ def cmd_report(args: argparse.Namespace) -> int:
     repo_root = find_repo_root(pathlib.Path(args.policy).resolve().parent)
     paths = working_paths(repo_root)
     violations, allowed = detect_violations(paths, args.lane, policy)
-    print(f"[lane-enforcer] report for lane '{args.lane}' "
-          f"(repo={repo_root}, total_changed={len(paths)})")
+    print(
+        f"[lane-enforcer] report for lane '{args.lane}' "
+        f"(repo={repo_root}, total_changed={len(paths)})"
+    )
     print(f"  allowed:    {len(allowed)}")
     print(f"  violations: {len(violations)}")
     for p in allowed:

@@ -25,6 +25,7 @@ Constraints:
   * License: 'gov_standard' (NTA + 国税不服審判所 利用規約 / PDL v1.0 ministry
     standard). source_url required on every row.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -60,8 +61,15 @@ UA = "AutonoMath/0.1.0 (+https://bookyou.net; sss@bookyou.net)"
 DELAY_SEC = 2.0  # 1 req / 2 sec — kinder than robots.txt would require
 
 SHITSUGI_CATEGORIES = [
-    "shotoku", "gensen", "joto", "sozoku", "hyoka",
-    "hojin", "shohi", "inshi", "hotei",
+    "shotoku",
+    "gensen",
+    "joto",
+    "sozoku",
+    "hyoka",
+    "hojin",
+    "shohi",
+    "inshi",
+    "hotei",
 ]
 
 BUNSHO_CATEGORIES = [
@@ -79,8 +87,20 @@ BUNSHO_CATEGORIES = [
 
 # 元号→西暦変換 (起点年)
 ERA_BASE = {"令和": 2018, "平成": 1988, "昭和": 1925}
-KANJI_DIGITS = {"〇": 0, "一": 1, "二": 2, "三": 3, "四": 4, "五": 5,
-                "六": 6, "七": 7, "八": 8, "九": 9, "元": 1, "十": 10}
+KANJI_DIGITS = {
+    "〇": 0,
+    "一": 1,
+    "二": 2,
+    "三": 3,
+    "四": 4,
+    "五": 5,
+    "六": 6,
+    "七": 7,
+    "八": 8,
+    "九": 9,
+    "元": 1,
+    "十": 10,
+}
 
 
 def _kanji_to_int(s: str) -> int | None:
@@ -107,7 +127,9 @@ def _kanji_to_int(s: str) -> int | None:
         return None
 
 
-_ERA_DATE_RE = re.compile(r"(令和|平成|昭和)\s*([元一二三四五六七八九十〇\d]+)\s*年\s*([元一二三四五六七八九十〇\d]+)\s*月\s*([元一二三四五六七八九十〇\d]+)\s*日")
+_ERA_DATE_RE = re.compile(
+    r"(令和|平成|昭和)\s*([元一二三四五六七八九十〇\d]+)\s*年\s*([元一二三四五六七八九十〇\d]+)\s*月\s*([元一二三四五六七八九十〇\d]+)\s*日"
+)
 
 
 def parse_japanese_date(text: str) -> str | None:
@@ -187,6 +209,7 @@ def now_iso() -> str:
 # Saiketsu (国税不服審判所 公表裁決事例)
 # ---------------------------------------------------------------------------
 
+
 def discover_saiketsu_volumes() -> list[int]:
     """Read kfs.go.jp/service/JP/index.html and pull idx/{N}.html numbers."""
     html = fetch(f"{KFS_BASE}/service/JP/index.html")
@@ -223,7 +246,9 @@ def parse_volume_index(volume_no: int) -> list[tuple[str, str, str]]:
     return out
 
 
-def parse_saiketsu_decision(volume_no: int, case_no: str, tax_type: str, url: str, html: str, fiscal_period: str) -> dict[str, Any]:
+def parse_saiketsu_decision(
+    volume_no: int, case_no: str, tax_type: str, url: str, html: str, fiscal_period: str
+) -> dict[str, Any]:
     soup = BeautifulSoup(html, "html.parser")
     h1 = soup.find("h1")
     title = h1.get_text(" ", strip=True) if h1 else ""
@@ -266,7 +291,9 @@ def parse_volume_period(volume_no: int) -> str:
     return h1.get_text(" ", strip=True) if h1 else ""
 
 
-def ingest_saiketsu(conn: sqlite3.Connection, *, max_seconds: float, recent_only_years: int = 5) -> dict[str, int]:
+def ingest_saiketsu(
+    conn: sqlite3.Connection, *, max_seconds: float, recent_only_years: int = 5
+) -> dict[str, int]:
     """Ingest saiketsu volumes from newest to oldest. Cursor is the last-volume:case_no done."""
     t_start = time.time()
     counts = {"volumes_seen": 0, "decisions_seen": 0, "decisions_inserted": 0}
@@ -280,14 +307,20 @@ def ingest_saiketsu(conn: sqlite3.Connection, *, max_seconds: float, recent_only
             pass
 
     volumes = discover_saiketsu_volumes()
-    print(f"[saiketsu] discovered {len(volumes)} volumes (range {volumes[0]}..{volumes[-1]})", flush=True)
+    print(
+        f"[saiketsu] discovered {len(volumes)} volumes (range {volumes[0]}..{volumes[-1]})",
+        flush=True,
+    )
     # Newest first. Restrict to recent N years if requested.
     volumes_desc = sorted(volumes, reverse=True)
     if recent_only_years > 0:
         # ~4 volumes per year (3-month chunks)
         keep = recent_only_years * 4
         volumes_desc = volumes_desc[:keep]
-        print(f"[saiketsu] focusing on {len(volumes_desc)} most recent volumes (~{recent_only_years} years)", flush=True)
+        print(
+            f"[saiketsu] focusing on {len(volumes_desc)} most recent volumes (~{recent_only_years} years)",
+            flush=True,
+        )
 
     for volume_no in volumes_desc:
         if last_vol and volume_no > last_vol:
@@ -327,15 +360,26 @@ def ingest_saiketsu(conn: sqlite3.Connection, *, max_seconds: float, recent_only
                 time.sleep(DELAY_SEC)
                 continue
             try:
-                row = parse_saiketsu_decision(volume_no, case_no, tax_type, dec_url, page_html, fiscal_period)
+                row = parse_saiketsu_decision(
+                    volume_no, case_no, tax_type, dec_url, page_html, fiscal_period
+                )
                 conn.execute(
                     """INSERT OR IGNORE INTO nta_saiketsu
                        (volume_no, case_no, decision_date, fiscal_period, tax_type,
                         title, decision_summary, fulltext, source_url, license, ingested_at)
                        VALUES (?,?,?,?,?,?,?,?,?,'gov_standard',?)""",
-                    (row["volume_no"], row["case_no"], row["decision_date"], row["fiscal_period"],
-                     row["tax_type"], row["title"], row["decision_summary"], row["fulltext"],
-                     row["source_url"], now_iso()),
+                    (
+                        row["volume_no"],
+                        row["case_no"],
+                        row["decision_date"],
+                        row["fiscal_period"],
+                        row["tax_type"],
+                        row["title"],
+                        row["decision_summary"],
+                        row["fulltext"],
+                        row["source_url"],
+                        now_iso(),
+                    ),
                 )
                 if conn.total_changes > 0:
                     counts["decisions_inserted"] += 1
@@ -349,6 +393,7 @@ def ingest_saiketsu(conn: sqlite3.Connection, *, max_seconds: float, recent_only
 # ---------------------------------------------------------------------------
 # Shitsugi (国税庁 質疑応答事例)
 # ---------------------------------------------------------------------------
+
 
 def discover_shitsugi_pages(category: str) -> list[str]:
     """Walk the category index (multi-page) and return all page URLs."""
@@ -367,8 +412,9 @@ def discover_shitsugi_pages(category: str) -> list[str]:
         any_found = False
         for a in content.find_all("a", href=True):
             href = a["href"]
-            m = re.match(rf"^/law/shitsugi/{category}/(\d+)/(\d+)\.htm$", href) \
-                or re.match(rf"^(\d+)/(\d+)\.htm$", href)
+            m = re.match(rf"^/law/shitsugi/{category}/(\d+)/(\d+)\.htm$", href) or re.match(
+                rf"^(\d+)/(\d+)\.htm$", href
+            )
             if m:
                 # Build full URL
                 if href.startswith("/"):
@@ -392,6 +438,7 @@ def parse_shitsugi_page(url: str, html: str, category: str) -> dict[str, Any] | 
         return None
     content = soup.find("div", id="contents") or soup
     text = content.get_text("\n", strip=True)
+
     # Carve out 【照会要旨】 / 【回答要旨】 / 【関係法令通達】
     def carve(label: str, *, until: list[str]) -> str:
         idx = text.find(label)
@@ -464,8 +511,15 @@ def ingest_shitsugi(conn: sqlite3.Connection, *, max_seconds: float) -> dict[str
                            (slug, category, question, answer, related_law,
                             source_url, license, ingested_at)
                            VALUES (?,?,?,?,?,?,'gov_standard',?)""",
-                        (row["slug"], row["category"], row["question"], row["answer"],
-                         row["related_law"], row["source_url"], now_iso()),
+                        (
+                            row["slug"],
+                            row["category"],
+                            row["question"],
+                            row["answer"],
+                            row["related_law"],
+                            row["source_url"],
+                            now_iso(),
+                        ),
                     )
                     if conn.total_changes > 0:
                         counts["pages_inserted"] += 1
@@ -480,6 +534,7 @@ def ingest_shitsugi(conn: sqlite3.Connection, *, max_seconds: float) -> dict[str
 # ---------------------------------------------------------------------------
 # Bunsho kaitou (文書回答事例)
 # ---------------------------------------------------------------------------
+
 
 def discover_bunsho_entries(category: str, idx_no: str) -> list[str]:
     """Walk one category index page and return doc URLs."""
@@ -526,6 +581,7 @@ def parse_bunsho_page(url: str, html: str, category: str) -> dict[str, Any] | No
     text = content.get_text("\n", strip=True)
     # Date is usually visible in the footer or near the title
     response_date = parse_japanese_date(text[:2000]) or parse_japanese_date(text[-2000:])
+
     # 文書回答 sections: 【照会の趣旨】 + 【回答】(or 【回答内容】 / 別紙) + various
     def carve(label: str, *, until: list[str]) -> str:
         idx = text.find(label)
@@ -537,7 +593,10 @@ def parse_bunsho_page(url: str, html: str, category: str) -> dict[str, Any] | No
         end = min(ends) if ends else len(text)
         return text[start:end].strip()
 
-    request_summary = carve("【照会の趣旨】", until=["【事前照会者の", "【事前照会の事実関係】", "【回答】", "【回答内容】", "（注）"])
+    request_summary = carve(
+        "【照会の趣旨】",
+        until=["【事前照会者の", "【事前照会の事実関係】", "【回答】", "【回答内容】", "（注）"],
+    )
     if not request_summary:
         request_summary = carve("【事前照会の趣旨】", until=["【回答】", "【回答内容】"])
     answer = carve("【回答】", until=["（参考）", "（注）"])
@@ -554,7 +613,9 @@ def parse_bunsho_page(url: str, html: str, category: str) -> dict[str, Any] | No
         "slug": slug,
         "category": category,
         "response_date": response_date,
-        "request_summary": request_summary[:5000] if request_summary else (title[:500] if title else None),
+        "request_summary": request_summary[:5000]
+        if request_summary
+        else (title[:500] if title else None),
         "answer": answer[:50000] if answer else None,
         "source_url": url,
     }
@@ -602,9 +663,15 @@ def ingest_bunsho(conn: sqlite3.Connection, *, max_seconds: float) -> dict[str, 
                            (slug, category, response_date, request_summary, answer,
                             source_url, license, ingested_at)
                            VALUES (?,?,?,?,?,?,'gov_standard',?)""",
-                        (row["slug"], row["category"], row["response_date"],
-                         row["request_summary"], row["answer"],
-                         row["source_url"], now_iso()),
+                        (
+                            row["slug"],
+                            row["category"],
+                            row["response_date"],
+                            row["request_summary"],
+                            row["answer"],
+                            row["source_url"],
+                            now_iso(),
+                        ),
                     )
                     if conn.total_changes > 0:
                         counts["pages_inserted"] += 1
@@ -655,9 +722,16 @@ def ingest_tsutatsu_idx(conn: sqlite3.Connection) -> dict[str, int]:
                      body_excerpt=excluded.body_excerpt,
                      source_url=excluded.source_url,
                      refreshed_at=excluded.refreshed_at""",
-                (code, row["law_canonical_id"], row["article_number"],
-                 row["title"], body_excerpt, row["source_url"],
-                 row["source_fetched_at"], refreshed_at),
+                (
+                    code,
+                    row["law_canonical_id"],
+                    row["article_number"],
+                    row["title"],
+                    body_excerpt,
+                    row["source_url"],
+                    row["source_fetched_at"],
+                    refreshed_at,
+                ),
             )
             counts["rows_indexed"] += 1
         except Exception as exc:
@@ -669,20 +743,30 @@ def ingest_tsutatsu_idx(conn: sqlite3.Connection) -> dict[str, int]:
 # Driver
 # ---------------------------------------------------------------------------
 
+
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--target", required=True,
-                    choices=["saiketsu", "shitsugi", "bunsho", "tsutatsu_idx", "all"])
+    ap.add_argument(
+        "--target", required=True, choices=["saiketsu", "shitsugi", "bunsho", "tsutatsu_idx", "all"]
+    )
     ap.add_argument("--max-minutes", type=float, default=30.0)
-    ap.add_argument("--recent-years", type=int, default=5,
-                    help="For saiketsu, restrict to most recent N years (0=all)")
+    ap.add_argument(
+        "--recent-years",
+        type=int,
+        default=5,
+        help="For saiketsu, restrict to most recent N years (0=all)",
+    )
     ap.add_argument("--db", default=str(DB_PATH))
     args = ap.parse_args()
 
     conn = connect(Path(args.db))
     max_sec = args.max_minutes * 60.0
 
-    targets = [args.target] if args.target != "all" else ["tsutatsu_idx", "saiketsu", "shitsugi", "bunsho"]
+    targets = (
+        [args.target]
+        if args.target != "all"
+        else ["tsutatsu_idx", "saiketsu", "shitsugi", "bunsho"]
+    )
     overall = {}
     t_start = time.time()
     for target in targets:
@@ -694,7 +778,9 @@ def main() -> int:
         print(f"[{target}] starting (budget={budget:.0f}s)", flush=True)
         try:
             if target == "saiketsu":
-                overall[target] = ingest_saiketsu(conn, max_seconds=budget, recent_only_years=args.recent_years)
+                overall[target] = ingest_saiketsu(
+                    conn, max_seconds=budget, recent_only_years=args.recent_years
+                )
             elif target == "shitsugi":
                 overall[target] = ingest_shitsugi(conn, max_seconds=budget)
             elif target == "bunsho":
@@ -704,6 +790,7 @@ def main() -> int:
         except Exception as exc:
             print(f"[{target}] FAILED: {exc}", flush=True)
             import traceback
+
             traceback.print_exc()
         print(f"[{target}] result: {overall.get(target)}", flush=True)
 

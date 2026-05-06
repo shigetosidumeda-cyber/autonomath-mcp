@@ -26,6 +26,7 @@ CLI:
     python scripts/ingest/ingest_enforcement_jftc.py --fiscal-years R2,R3,R4,R5,R6
     python scripts/ingest/ingest_enforcement_jftc.py --dry-run
 """
+
 from __future__ import annotations
 
 import argparse
@@ -149,13 +150,11 @@ class HttpClient:
                 last_err = RuntimeError(f"{resp.status_code} for {url}")
             except requests.RequestException as exc:
                 last_err = exc
-            time.sleep(2 ** attempt)
+            time.sleep(2**attempt)
         raise RuntimeError(f"fetch failed after retries: {url}: {last_err}")
 
 
-def parse_annual_page(
-    html: str, fiscal_label: str, annual_url: str
-) -> list[dict[str, Any]]:
+def parse_annual_page(html: str, fiscal_label: str, annual_url: str) -> list[dict[str, Any]]:
     """Parse one fiscal-year annual page, returning per-row dicts."""
     soup = BeautifulSoup(html, "html.parser")
     records: list[dict[str, Any]] = []
@@ -196,9 +195,7 @@ def parse_annual_page(
             date_text = _strip_cell(cells[5])
             iso_date = _wareki_to_iso(date_text)
             if not iso_date:
-                _LOG.warning(
-                    "skip row without parseable date: %s / %s", case_no, date_text
-                )
+                _LOG.warning("skip row without parseable date: %s / %s", case_no, date_text)
                 continue
             records.append(
                 {
@@ -260,9 +257,7 @@ def parse_press_release(html: str) -> dict[str, Any]:
 
 def ensure_jftc_authority(cur: sqlite3.Cursor) -> str:
     """Return authority:jftc, creating if missing (idempotent)."""
-    cur.execute(
-        "SELECT canonical_id FROM am_authority WHERE canonical_id=?", ("authority:jftc",)
-    )
+    cur.execute("SELECT canonical_id FROM am_authority WHERE canonical_id=?", ("authority:jftc",))
     row = cur.fetchone()
     if row:
         return row[0]
@@ -293,8 +288,7 @@ def build_canonical_id(record: dict[str, Any]) -> str:
 def existing_dedup_keys(cur: sqlite3.Cursor) -> set[tuple[str, str]]:
     """Return set of (issuance_date, target_name_normalized) already present."""
     cur.execute(
-        "SELECT issuance_date, target_name FROM am_enforcement_detail "
-        "WHERE issuing_authority=?",
+        "SELECT issuance_date, target_name FROM am_enforcement_detail WHERE issuing_authority=?",
         ("公正取引委員会",),
     )
     out: set[tuple[str, str]] = set()

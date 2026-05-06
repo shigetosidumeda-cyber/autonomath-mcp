@@ -111,6 +111,7 @@ CLI:
         --db autonomath.db [--regions kanto,chugoku,...] \
         [--limit 300] [--dry-run]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -142,10 +143,7 @@ _LOG = logging.getLogger("autonomath.ingest.enforcement_mlit_maritime")
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_DB = REPO_ROOT / "autonomath.db"
 
-USER_AGENT = (
-    "jpintel-mcp-ingest/1.0 "
-    "(+https://jpcite.com; contact=ops@jpcite.com)"
-)
+USER_AGENT = "jpintel-mcp-ingest/1.0 (+https://jpcite.com; contact=ops@jpcite.com)"
 PER_REQUEST_DELAY_SEC = 0.6
 HTTP_TIMEOUT_SEC = 60.0
 MAX_RETRIES = 3
@@ -157,72 +155,127 @@ MAX_RETRIES = 3
 @dataclass(frozen=True)
 class Hub:
     region_code: str
-    region_label: str           # for issuing_authority
+    region_label: str  # for issuing_authority
     encoding: str
     url: str
-    primary_law: str            # default related_law_ref
-    drill_press: bool = False   # for 海事局 quarterly press releases
+    primary_law: str  # default related_law_ref
+    drill_press: bool = False  # for 海事局 quarterly press releases
 
 
 HUBS: list[Hub] = [
     # --- 海事局 central ---
-    Hub("hq", "国土交通省 海事局", "utf-8",
+    Hub(
+        "hq",
+        "国土交通省 海事局",
+        "utf-8",
         "https://www.mlit.go.jp/maritime/maritime_fr4_000012.html",
-        "船員法", drill_press=True),
-
+        "船員法",
+        drill_press=True,
+    ),
     # --- 関東運輸局 ---
-    Hub("kanto", "関東運輸局 海事振興部", "shift_jis",
+    Hub(
+        "kanto",
+        "関東運輸局 海事振興部",
+        "shift_jis",
         "https://wwwtb.mlit.go.jp/kanto/page3/ryokakusen/index_1.html",
-        "海上運送法"),
-    Hub("kanto", "関東運輸局 海事振興部", "shift_jis",
+        "海上運送法",
+    ),
+    Hub(
+        "kanto",
+        "関東運輸局 海事振興部",
+        "shift_jis",
         "https://wwwtb.mlit.go.jp/kanto/page3/kamotusen/index.html",
-        "内航海運業法"),
-    Hub("kanto", "関東運輸局 海事振興部", "shift_jis",
+        "内航海運業法",
+    ),
+    Hub(
+        "kanto",
+        "関東運輸局 海事振興部",
+        "shift_jis",
         "https://wwwtb.mlit.go.jp/kanto/page3/kouun/index.html",
-        "港湾運送事業法"),
-    Hub("kanto", "関東運輸局 運航労務監理官", "shift_jis",
+        "港湾運送事業法",
+    ),
+    Hub(
+        "kanto",
+        "関東運輸局 運航労務監理官",
+        "shift_jis",
         "https://wwwtb.mlit.go.jp/kanto/page3/senin/index.html",
-        "船員法"),
-
+        "船員法",
+    ),
     # --- 北海道運輸局 ---
-    Hub("hokkaido", "北海道運輸局 海事振興部", "shift_jis",
+    Hub(
+        "hokkaido",
+        "北海道運輸局 海事振興部",
+        "shift_jis",
         "https://wwwtb.mlit.go.jp/hokkaido/kakusyu/gyoseisyobun/ryokakusen/index.html",
-        "海上運送法"),
-    Hub("hokkaido", "北海道運輸局 運航労務監理官", "shift_jis",
+        "海上運送法",
+    ),
+    Hub(
+        "hokkaido",
+        "北海道運輸局 運航労務監理官",
+        "shift_jis",
         "https://wwwtb.mlit.go.jp/hokkaido/kakusyu/gyoseisyobun/kaiji/index.html",
-        "船員法"),
-
+        "船員法",
+    ),
     # --- 中国運輸局 ---
-    Hub("chugoku", "中国運輸局 海事振興部", "shift_jis",
+    Hub(
+        "chugoku",
+        "中国運輸局 海事振興部",
+        "shift_jis",
         "https://wwwtb.mlit.go.jp/chugoku/kaian/shobun.html",
-        "海上運送法"),
-    Hub("chugoku", "中国運輸局 海事振興部", "shift_jis",
+        "海上運送法",
+    ),
+    Hub(
+        "chugoku",
+        "中国運輸局 海事振興部",
+        "shift_jis",
         "https://wwwtb.mlit.go.jp/chugoku/kaian/shobun02.html",
-        "内航海運業法"),
-    Hub("chugoku", "中国運輸局 海事振興部", "shift_jis",
+        "内航海運業法",
+    ),
+    Hub(
+        "chugoku",
+        "中国運輸局 海事振興部",
+        "shift_jis",
         "https://wwwtb.mlit.go.jp/chugoku/kaian/shobun03.html",
-        "港湾運送事業法"),
-    Hub("chugoku", "中国運輸局 運航労務監理官", "shift_jis",
+        "港湾運送事業法",
+    ),
+    Hub(
+        "chugoku",
+        "中国運輸局 運航労務監理官",
+        "shift_jis",
         "https://wwwtb.mlit.go.jp/chugoku/kaian/shipownershobun.html",
-        "船員法"),
-
+        "船員法",
+    ),
     # --- 四国運輸局 ---
-    Hub("shikoku", "四国運輸局 海事振興部", "shift_jis",
+    Hub(
+        "shikoku",
+        "四国運輸局 海事振興部",
+        "shift_jis",
         "https://wwwtb.mlit.go.jp/shikoku/soshiki/kaijyou/syobun.html",
-        "海上運送法"),
-
+        "海上運送法",
+    ),
     # --- 九州運輸局 ---
-    Hub("kyushu", "九州運輸局 海事振興部", "shift_jis",
+    Hub(
+        "kyushu",
+        "九州運輸局 海事振興部",
+        "shift_jis",
         "https://wwwtb.mlit.go.jp/kyushu/kaijiseikyu/body.htm",
-        "海上運送法"),
-
+        "海上運送法",
+    ),
     # --- 沖縄総合事務局 ---
-    Hub("okinawa", "沖縄総合事務局運輸部", "utf-8",
+    Hub(
+        "okinawa",
+        "沖縄総合事務局運輸部",
+        "utf-8",
         "https://www.ogb.go.jp/unyu/gyousei/naiko-kaiun-jigyo",
-        "内航海運業法"),
-    Hub("okinawa", "沖縄総合事務局運輸部", "utf-8",
+        "内航海運業法",
+    ),
+    Hub(
+        "okinawa",
+        "沖縄総合事務局運輸部",
+        "utf-8",
         "https://www.ogb.go.jp/unyu/gyousei/kowanunso",
-        "港湾運送事業法"),
+        "港湾運送事業法",
+    ),
 ]
 
 
@@ -271,9 +324,7 @@ LAW_KEYWORDS_TO_NAME: list[tuple[str, str]] = [
 ]
 
 # 13-digit 法人番号 with optional whitespace / FW digits / line breaks.
-HOUJIN_DIGIT_RE = re.compile(
-    r"法\s*人\s*番\s*号\s*[（(：:]?\s*([\d０-９\s　\n]{13,40})\s*[）)]?"
-)
+HOUJIN_DIGIT_RE = re.compile(r"法\s*人\s*番\s*号\s*[（(：:]?\s*([\d０-９\s　\n]{13,40})\s*[）)]?")
 
 
 def _normalize_houjin_block(block: str) -> str | None:
@@ -282,7 +333,7 @@ def _normalize_houjin_block(block: str) -> str | None:
         if ch.isdigit():
             out.append(ch)
         elif "０" <= ch <= "９":
-            out.append(chr(ord("0") + (ord(ch) - 0xff10)))
+            out.append(chr(ord("0") + (ord(ch) - 0xFF10)))
     digits = "".join(out)
     return digits[:13] if len(digits) >= 13 else None
 
@@ -297,16 +348,14 @@ DATE_REIWA_KANJI_RE = re.compile(
 DATE_HEISEI_KANJI_RE = re.compile(
     r"平成\s*([０-９\d]+)\s*年\s*([０-９\d]+)\s*月\s*([０-９\d]+)\s*日"
 )
-DATE_PLAIN_KANJI_RE = re.compile(
-    r"(20\d\d)\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日"
-)
+DATE_PLAIN_KANJI_RE = re.compile(r"(20\d\d)\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日")
 
 
 def _to_halfwidth_int(s: str) -> int:
     out: list[str] = []
     for ch in s:
         if "０" <= ch <= "９":
-            out.append(chr(ord("0") + (ord(ch) - 0xff10)))
+            out.append(chr(ord("0") + (ord(ch) - 0xFF10)))
         elif ch.isdigit():
             out.append(ch)
     return int("".join(out)) if out else 0
@@ -318,23 +367,24 @@ def parse_any_date_iso(token: str) -> str | None:
     if m:
         try:
             y = 2018 + _to_halfwidth_int(m.group(1))
-            return dt.date(y, _to_halfwidth_int(m.group(2)),
-                           _to_halfwidth_int(m.group(3))).isoformat()
+            return dt.date(
+                y, _to_halfwidth_int(m.group(2)), _to_halfwidth_int(m.group(3))
+            ).isoformat()
         except ValueError:
             return None
     m = DATE_HEISEI_KANJI_RE.search(token)
     if m:
         try:
             y = 1988 + _to_halfwidth_int(m.group(1))
-            return dt.date(y, _to_halfwidth_int(m.group(2)),
-                           _to_halfwidth_int(m.group(3))).isoformat()
+            return dt.date(
+                y, _to_halfwidth_int(m.group(2)), _to_halfwidth_int(m.group(3))
+            ).isoformat()
         except ValueError:
             return None
     m = DATE_PLAIN_KANJI_RE.search(token)
     if m:
         try:
-            return dt.date(int(m.group(1)), int(m.group(2)),
-                           int(m.group(3))).isoformat()
+            return dt.date(int(m.group(1)), int(m.group(2)), int(m.group(3))).isoformat()
         except ValueError:
             return None
     return None
@@ -354,7 +404,7 @@ def map_punishment(text: str) -> tuple[str | None, str | None]:
     for kw, kind in PUNISH_PATTERNS:
         if kw in text:
             idx = text.find(kw)
-            tail = text[idx: idx + 80]
+            tail = text[idx : idx + 80]
             for stop in ("\n", "○", "■", "・", "事業者", "船員"):
                 pos = tail.find(stop, len(kw))
                 if pos > 0:
@@ -377,7 +427,7 @@ def extract_law_ref(text: str, default_law: str | None = None) -> str | None:
     if found_law is None:
         return None
     if found_at >= 0:
-        after = text[found_at + len(found_law): found_at + len(found_law) + 60]
+        after = text[found_at + len(found_law) : found_at + len(found_law) + 60]
         m = re.match(
             r"\s*第\s*[\d０-９]+\s*条"
             r"(?:\s*第\s*[\d０-９]+\s*項)?"
@@ -453,7 +503,7 @@ class MaritimeHttpClient:
                 last_exc = exc
                 if attempt == MAX_RETRIES:
                     break
-                time.sleep(2 ** attempt)
+                time.sleep(2**attempt)
         _LOG.warning("GET text failed url=%s err=%s", url, last_exc)
         return 0, ""
 
@@ -468,7 +518,7 @@ class MaritimeHttpClient:
                 last_exc = exc
                 if attempt == MAX_RETRIES:
                     break
-                time.sleep(2 ** attempt)
+                time.sleep(2**attempt)
         _LOG.warning("GET bytes failed url=%s err=%s", url, last_exc)
         return 0, b""
 
@@ -547,9 +597,7 @@ NARRATIVE_DATE_RE = re.compile(
     r"平成\s*[０-９\d]+\s*年\s*[０-９\d]+\s*月\s*[０-９\d]+\s*日)"
 )
 # Punishment kind for narrative format (3)
-NARRATIVE_PUNISH_RE = re.compile(
-    r"（\s*[3３]\s*）\s*処分等の種類\s*\n+\s*([^\n（）]{2,60})"
-)
+NARRATIVE_PUNISH_RE = re.compile(r"（\s*[3３]\s*）\s*処分等の種類\s*\n+\s*([^\n（）]{2,60})")
 
 
 def parse_narrative_pdf(
@@ -567,15 +615,13 @@ def parse_narrative_pdf(
     records: list[MaritimeRecord] = []
     # Split into segments at each occurrence of "（１）行政処分等の年月日".
     # Anchor on that explicit header to avoid fluke matches in prose.
-    splits = list(re.finditer(
-        r"（\s*[1１]\s*）\s*行政処分等の年月日", text
-    ))
+    splits = list(re.finditer(r"（\s*[1１]\s*）\s*行政処分等の年月日", text))
     if not splits:
         return records
     for i, m in enumerate(splits):
         seg_start = m.start()
         seg_end = splits[i + 1].start() if i + 1 < len(splits) else len(text)
-        seg = text[seg_start: seg_end]
+        seg = text[seg_start:seg_end]
 
         dm = NARRATIVE_DATE_RE.search(seg)
         if not dm:
@@ -597,10 +643,16 @@ def parse_narrative_pdf(
             target_name = target_name.strip("（()【】 　,、")
         if not target_name or len(target_name) < 2 or len(target_name) > 100:
             continue
-        if any(noise in target_name for noise in (
-            "氏名又は名称", "事業者", "原因となった", "違反点数",
-            "処分等の種類",
-        )):
+        if any(
+            noise in target_name
+            for noise in (
+                "氏名又は名称",
+                "事業者",
+                "原因となった",
+                "違反点数",
+                "処分等の種類",
+            )
+        ):
             continue
 
         pm = NARRATIVE_PUNISH_RE.search(seg)
@@ -630,7 +682,7 @@ def parse_narrative_pdf(
         summary: str | None = None
         sm = re.search(r"（\s*[5５]\s*）\s*処分等の内容", seg)
         if sm:
-            tail = seg[sm.end(): sm.end() + 800]
+            tail = seg[sm.end() : sm.end() + 800]
             tail = re.sub(r"\s+", " ", tail).strip()
             summary = tail[:600]
 
@@ -638,20 +690,22 @@ def parse_narrative_pdf(
         if related_law:
             related_law = re.sub(r"\s+", " ", related_law).strip()
 
-        records.append(MaritimeRecord(
-            region=hub.region_code,
-            issuing_authority=hub.region_label,
-            issuance_date=date_iso,
-            target_name=target_name,
-            houjin_bangou=houjin,
-            address=None,
-            punishment_raw=punish_raw,
-            enforcement_kind=kind,
-            related_law_ref=related_law,
-            reason_summary=summary,
-            source_url=pdf_url,
-            source_hub_url="",  # filled by caller
-        ))
+        records.append(
+            MaritimeRecord(
+                region=hub.region_code,
+                issuing_authority=hub.region_label,
+                issuance_date=date_iso,
+                target_name=target_name,
+                houjin_bangou=houjin,
+                address=None,
+                punishment_raw=punish_raw,
+                enforcement_kind=kind,
+                related_law_ref=related_law,
+                reason_summary=summary,
+                source_url=pdf_url,
+                source_hub_url="",  # filled by caller
+            )
+        )
     return records
 
 
@@ -662,10 +716,25 @@ def parse_narrative_pdf(
 # Column-header tokens that mark a tabular layout. Presence of >=3 of
 # these in the first 800 chars triggers the tabular parser.
 TABULAR_HEADER_TOKENS = (
-    "処分等年月日", "処分年月日", "事業者名", "事業者住所", "本社所在地",
-    "処分等の種類", "処分等の内容", "違反等の概要", "命令又は指導の内容",
-    "違反点数", "公表年月日", "船舶所有者名", "船種", "業種", "船名",
-    "処分を行った日", "行政処分内容", "備考", "所管局",
+    "処分等年月日",
+    "処分年月日",
+    "事業者名",
+    "事業者住所",
+    "本社所在地",
+    "処分等の種類",
+    "処分等の内容",
+    "違反等の概要",
+    "命令又は指導の内容",
+    "違反点数",
+    "公表年月日",
+    "船舶所有者名",
+    "船種",
+    "業種",
+    "船名",
+    "処分を行った日",
+    "行政処分内容",
+    "備考",
+    "所管局",
 )
 
 
@@ -721,24 +790,79 @@ def _strip_table_noise(text: str) -> str:
 #     文書指導\n
 #
 # The row-number lines uniquely separate records (1..2..3..N).
-HOKKAIDO_ROW_RE = re.compile(r"^(\d{1,3})\s*\n+\s*(令和\d+年\d+月\d+日|平成\d+年\d+月\d+日|20\d\d年\d{1,2}月\d{1,2}日)", re.MULTILINE)
+HOKKAIDO_ROW_RE = re.compile(
+    r"^(\d{1,3})\s*\n+\s*(令和\d+年\d+月\d+日|平成\d+年\d+月\d+日|20\d\d年\d{1,2}月\d{1,2}日)",
+    re.MULTILINE,
+)
 
 
 _ADDRESS_PREFIXES = (
-    "北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県",
-    "福島県", "茨城県", "栃木県", "群馬県", "埼玉県", "千葉県",
-    "東京都", "神奈川県", "新潟県", "富山県", "石川県", "福井県",
-    "山梨県", "長野県", "岐阜県", "静岡県", "愛知県", "三重県",
-    "滋賀県", "京都府", "大阪府", "兵庫県", "奈良県", "和歌山県",
-    "鳥取県", "島根県", "岡山県", "広島県", "山口県", "徳島県",
-    "香川県", "愛媛県", "高知県", "福岡県", "佐賀県", "長崎県",
-    "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県",
+    "北海道",
+    "青森県",
+    "岩手県",
+    "宮城県",
+    "秋田県",
+    "山形県",
+    "福島県",
+    "茨城県",
+    "栃木県",
+    "群馬県",
+    "埼玉県",
+    "千葉県",
+    "東京都",
+    "神奈川県",
+    "新潟県",
+    "富山県",
+    "石川県",
+    "福井県",
+    "山梨県",
+    "長野県",
+    "岐阜県",
+    "静岡県",
+    "愛知県",
+    "三重県",
+    "滋賀県",
+    "京都府",
+    "大阪府",
+    "兵庫県",
+    "奈良県",
+    "和歌山県",
+    "鳥取県",
+    "島根県",
+    "岡山県",
+    "広島県",
+    "山口県",
+    "徳島県",
+    "香川県",
+    "愛媛県",
+    "高知県",
+    "福岡県",
+    "佐賀県",
+    "長崎県",
+    "熊本県",
+    "大分県",
+    "宮崎県",
+    "鹿児島県",
+    "沖縄県",
 )
 _LEGAL_FORMS = (
-    "株式会社", "有限会社", "合同会社", "合資会社", "合名会社",
-    "協同組合", "事業協同組合", "一般社団法人", "公益社団法人",
-    "一般財団法人", "公益財団法人", "特定非営利活動法人", "ＮＰＯ法人",
-    "学校法人", "医療法人", "社会福祉法人", "宗教法人",
+    "株式会社",
+    "有限会社",
+    "合同会社",
+    "合資会社",
+    "合名会社",
+    "協同組合",
+    "事業協同組合",
+    "一般社団法人",
+    "公益社団法人",
+    "一般財団法人",
+    "公益財団法人",
+    "特定非営利活動法人",
+    "ＮＰＯ法人",
+    "学校法人",
+    "医療法人",
+    "社会福祉法人",
+    "宗教法人",
 )
 
 
@@ -754,21 +878,52 @@ def _is_address_line(line: str) -> bool:
 
 
 def _is_punishment_line(line: str) -> bool:
-    return bool(line) and any(p in line for p in (
-        "文書指導", "口頭指導", "警告", "戒告", "事業停止", "業務停止",
-        "事業の停止", "業務の停止", "許可取消", "許可の取消",
-        "登録取消", "登録の取消", "命令", "勧告",
-    ))
+    return bool(line) and any(
+        p in line
+        for p in (
+            "文書指導",
+            "口頭指導",
+            "警告",
+            "戒告",
+            "事業停止",
+            "業務停止",
+            "事業の停止",
+            "業務の停止",
+            "許可取消",
+            "許可の取消",
+            "登録取消",
+            "登録の取消",
+            "命令",
+            "勧告",
+        )
+    )
 
 
 def _is_metadata_line(line: str) -> bool:
-    return any(kw in line for kw in (
-        "番号", "処分等年月日", "事業者名", "事業者住所",
-        "処分等の種類", "違反等の概要", "命令又は指導の内容",
-        "是正状況", "氏名又は名称", "本社所在地",
-        "海上運送法に基づく行政処分等一覧", "公表年月日", "備考",
-        "別紙", "船 名", "業 種", "船 種", "船種", "船名",
-    ))
+    return any(
+        kw in line
+        for kw in (
+            "番号",
+            "処分等年月日",
+            "事業者名",
+            "事業者住所",
+            "処分等の種類",
+            "違反等の概要",
+            "命令又は指導の内容",
+            "是正状況",
+            "氏名又は名称",
+            "本社所在地",
+            "海上運送法に基づく行政処分等一覧",
+            "公表年月日",
+            "備考",
+            "別紙",
+            "船 名",
+            "業 種",
+            "船 種",
+            "船種",
+            "船名",
+        )
+    )
 
 
 def parse_hokkaido_yearly(
@@ -826,17 +981,16 @@ def parse_hokkaido_yearly(
 
         block_start = m.start()
         block_end = (
-            markers[i + 1].start() if i + 1 < len(markers)
-            else min(len(text2), block_start + 2500)
+            markers[i + 1].start() if i + 1 < len(markers) else min(len(text2), block_start + 2500)
         )
-        block = text2[block_start: block_end]
+        block = text2[block_start:block_end]
         # Look-behind window for name wrap from previous block.
         # We accept up to 1 short line (≤ 14 chars) immediately before
         # the row marker IF it does not look like punishment / address /
         # metadata, and IF it does not contain digits / 是正 / 監査.
         wrap_prefix = ""
         prev_end = markers[i - 1].end() if i > 0 else max(0, block_start - 200)
-        prev_chunk = text2[prev_end: block_start]
+        prev_chunk = text2[prev_end:block_start]
         prev_lines = [ln.strip() for ln in prev_chunk.split("\n") if ln.strip()]
         if prev_lines:
             last = prev_lines[-1]
@@ -846,14 +1000,45 @@ def parse_hokkaido_yearly(
                 and not _is_punishment_line(last)
                 and not _is_metadata_line(last)
                 and not re.search(r"[0-9０-９]", last)
-                and not any(bad in last for bad in (
-                    "監査", "違反", "事故", "実施", "改善", "事項",
-                    "確認", "報告", "措置", "通達", "輸送", "安全",
-                    "管理", "規程", "教育", "訓練", "周知", "徹底",
-                    "経営", "運航", "船舶", "旅客", "適正", "船員",
-                    "上記", "以上", "なお", "また", "命じ", "了知",
-                    "詳細", "別紙", "概要",
-                )) and not last.endswith(("。", "、"))
+                and not any(
+                    bad in last
+                    for bad in (
+                        "監査",
+                        "違反",
+                        "事故",
+                        "実施",
+                        "改善",
+                        "事項",
+                        "確認",
+                        "報告",
+                        "措置",
+                        "通達",
+                        "輸送",
+                        "安全",
+                        "管理",
+                        "規程",
+                        "教育",
+                        "訓練",
+                        "周知",
+                        "徹底",
+                        "経営",
+                        "運航",
+                        "船舶",
+                        "旅客",
+                        "適正",
+                        "船員",
+                        "上記",
+                        "以上",
+                        "なお",
+                        "また",
+                        "命じ",
+                        "了知",
+                        "詳細",
+                        "別紙",
+                        "概要",
+                    )
+                )
+                and not last.endswith(("。", "、"))
             )
             if ok:
                 # The fragment must look like the head of a 法人名:
@@ -875,12 +1060,12 @@ def parse_hokkaido_yearly(
         if houjin_pos >= 0:
             # Stuff between row date end and houjin opener
             row_text_end = m.end()
-            head = block[row_text_end: houjin_pos]
+            head = block[row_text_end:houjin_pos]
             # stuff between houjin opener and 13-digit number
             mid_text = re.sub(
                 r"^[（(][^（()）]*?[:：][\s\n]*",
                 "",
-                block[hm.start(): hm.end()],
+                block[hm.start() : hm.end()],
             )
             mid_text = re.sub(r"[\d０-９]{13}）?$", "", mid_text).strip()
             mid_text = mid_text.strip("（()）] 　\n")
@@ -938,8 +1123,7 @@ def parse_hokkaido_yearly(
                         # Walk back to a boundary or up to 16 chars
                         start = max(0, idx - 16)
                         # Trim to not include digits / address kanji
-                        for boundary in (" ", "　", "（", "(", "【",
-                                          "・", "、", "「", "『"):
+                        for boundary in (" ", "　", "（", "(", "【", "・", "、", "「", "『"):
                             bidx = joined.rfind(boundary, 0, idx)
                             if bidx >= 0 and bidx >= start:
                                 start = bidx + 1
@@ -965,10 +1149,8 @@ def parse_hokkaido_yearly(
             # 個人 case: look on the row's date line for name suffix.
             # PDF often emits "令和4年6月20日 天神英二" on one line OR
             # "令和4年6月20日\n天神英二\n北海道目梨郡羅臼町".
-            after_date = block[m.end():]
-            after_lines = [
-                ln.strip() for ln in after_date.split("\n") if ln.strip()
-            ]
+            after_date = block[m.end() :]
+            after_lines = [ln.strip() for ln in after_date.split("\n") if ln.strip()]
             cand: str | None = None
             for ln in after_lines[:6]:
                 if _is_address_line(ln):
@@ -984,8 +1166,7 @@ def parse_hokkaido_yearly(
                 if re.fullmatch(r"\d+", ln):
                     continue
                 # Drop lines starting with " " punctuation
-                if not ln or ln[0] in ("、", "及", "監", "公",
-                                       "○", "・", "※", "「", "『"):
+                if not ln or ln[0] in ("、", "及", "監", "公", "○", "・", "※", "「", "『"):
                     continue
                 # name should be ≤ 30 chars and have at least 1 kanji
                 if 2 <= len(ln) <= 30 and re.search(r"[一-龯ぁ-んァ-ンー]", ln):
@@ -1003,16 +1184,33 @@ def parse_hokkaido_yearly(
             continue
         if target_name[0] in ("、", "及", "監", "公", "○", "・", "※"):
             continue
-        if any(bad in target_name for bad in (
-            "違反等の概要", "命令又は指導の内容", "違反点数",
-            "氏名又は名称", "船種", "業種", "備考", "本社所在地",
-            "事業者住所", "公表年月日", "処分等の種類",
-        )):
+        if any(
+            bad in target_name
+            for bad in (
+                "違反等の概要",
+                "命令又は指導の内容",
+                "違反点数",
+                "氏名又は名称",
+                "船種",
+                "業種",
+                "備考",
+                "本社所在地",
+                "事業者住所",
+                "公表年月日",
+                "処分等の種類",
+            )
+        ):
             continue
         # Reject if the cleaned name reduces to a pure 法人 form keyword
         if target_name in (
-            "株式会社", "有限会社", "合同会社", "協同組合",
-            "合資会社", "合名会社", "（株）", "(株)",
+            "株式会社",
+            "有限会社",
+            "合同会社",
+            "協同組合",
+            "合資会社",
+            "合名会社",
+            "（株）",
+            "(株)",
         ):
             continue
         # Hokkaido yearly column-flow PDFs garble names so badly that
@@ -1026,33 +1224,74 @@ def parse_hokkaido_yearly(
         #      where tail "ホワイトリ" alone is too short to commit to), OR
         #   3) plausible 個人 (≤8 chars, all kanji/hiragana, no houjin).
         legal_suffix = next(
-            (s for s in (
-                "株式会社", "有限会社", "合同会社", "協同組合",
-                "合資会社", "合名会社", "（株）", "(株)",
-            ) if target_name.endswith(s)),
+            (
+                s
+                for s in (
+                    "株式会社",
+                    "有限会社",
+                    "合同会社",
+                    "協同組合",
+                    "合資会社",
+                    "合名会社",
+                    "（株）",
+                    "(株)",
+                )
+                if target_name.endswith(s)
+            ),
             None,
         )
         legal_prefix = next(
-            (s for s in (
-                "株式会社", "有限会社", "合同会社", "協同組合",
-                "合資会社", "合名会社",
-            ) if target_name.startswith(s)),
+            (
+                s
+                for s in (
+                    "株式会社",
+                    "有限会社",
+                    "合同会社",
+                    "協同組合",
+                    "合資会社",
+                    "合名会社",
+                )
+                if target_name.startswith(s)
+            ),
             None,
         )
         # Plausible 個人 (Japanese personal name): ≤8 chars, contains
         # at least 2 kanji (surname is normally kanji), no 法人 keywords,
         # and is NOT a stop-word fragment that often appears in prose
         # (filter explicit blacklist of common prose-leak fragments).
-        kanji_count = sum(
-            1 for ch in target_name
-            if "一" <= ch <= "鿿"
-        )
+        kanji_count = sum(1 for ch in target_name if "一" <= ch <= "鿿")
         prose_blacklist = (
-            "情報", "事項", "記録", "状況", "概要", "結果", "場合",
-            "範囲", "対象", "確認", "措置", "処分", "教育", "訓練",
-            "周知", "徹底", "適切", "最新", "経営", "運航",
-            "事業", "事故", "違反", "命令", "勧告", "是正", "監査",
-            "報告", "輸送", "安全", "管理",
+            "情報",
+            "事項",
+            "記録",
+            "状況",
+            "概要",
+            "結果",
+            "場合",
+            "範囲",
+            "対象",
+            "確認",
+            "措置",
+            "処分",
+            "教育",
+            "訓練",
+            "周知",
+            "徹底",
+            "適切",
+            "最新",
+            "経営",
+            "運航",
+            "事業",
+            "事故",
+            "違反",
+            "命令",
+            "勧告",
+            "是正",
+            "監査",
+            "報告",
+            "輸送",
+            "安全",
+            "管理",
         )
         plausible_individual = (
             houjin is None
@@ -1060,9 +1299,17 @@ def parse_hokkaido_yearly(
             and re.fullmatch(r"[一-龯ぁ-んァ-ンー]+", target_name) is not None
             and kanji_count >= 2
             and not any(
-                kw in target_name for kw in (
-                    "株式会社", "有限会社", "合同会社", "協同組合",
-                    "合資会社", "合名会社", "（株）", "(株)", "会社",
+                kw in target_name
+                for kw in (
+                    "株式会社",
+                    "有限会社",
+                    "合同会社",
+                    "協同組合",
+                    "合資会社",
+                    "合名会社",
+                    "（株）",
+                    "(株)",
+                    "会社",
                 )
             )
             and not any(bad in target_name for bad in prose_blacklist)
@@ -1072,7 +1319,7 @@ def parse_hokkaido_yearly(
             accept = True
         elif legal_prefix and len(target_name) - len(legal_prefix) >= 4:
             # Need name part to look like a real business name, not address fragment
-            tail = target_name[len(legal_prefix):]
+            tail = target_name[len(legal_prefix) :]
             if not tail.startswith(_ADDRESS_PREFIXES) and not re.fullmatch(
                 r"[一-龯ぁ-んァ-ンー]{1,3}", tail
             ):
@@ -1096,12 +1343,18 @@ def parse_hokkaido_yearly(
         # Reason summary
         summary: str | None = None
         for marker in (
-            "通常監査を実施", "特別監査を実施", "違反事実", "違反行為",
-            "違反が認められた", "事故が発生", "事実が確認", "を確認した",
+            "通常監査を実施",
+            "特別監査を実施",
+            "違反事実",
+            "違反行為",
+            "違反が認められた",
+            "事故が発生",
+            "事実が確認",
+            "を確認した",
         ):
             pos = block.find(marker)
             if pos >= 0:
-                tail = block[pos: pos + 700]
+                tail = block[pos : pos + 700]
                 tail = re.sub(r"\s+", " ", tail).strip()
                 summary = tail[:500]
                 break
@@ -1110,20 +1363,22 @@ def parse_hokkaido_yearly(
         if related_law:
             related_law = re.sub(r"\s+", " ", related_law).strip()
 
-        out.append(MaritimeRecord(
-            region=hub.region_code,
-            issuing_authority=hub.region_label,
-            issuance_date=date_iso,
-            target_name=target_name,
-            houjin_bangou=houjin,
-            address=None,
-            punishment_raw=punish_raw,
-            enforcement_kind=kind,
-            related_law_ref=related_law,
-            reason_summary=summary,
-            source_url=pdf_url,
-            source_hub_url="",
-        ))
+        out.append(
+            MaritimeRecord(
+                region=hub.region_code,
+                issuing_authority=hub.region_label,
+                issuance_date=date_iso,
+                target_name=target_name,
+                houjin_bangou=houjin,
+                address=None,
+                punishment_raw=punish_raw,
+                enforcement_kind=kind,
+                related_law_ref=related_law,
+                reason_summary=summary,
+                source_url=pdf_url,
+                source_hub_url="",
+            )
+        )
     return out
 
 
@@ -1153,10 +1408,10 @@ def parse_tabular_pdf(
     # immediate next char is 「、」 (prose continuation).
     row_dates: list[re.Match[str]] = []
     for dm in date_matches:
-        next_ch = cleaned[dm.end(): dm.end() + 1]
+        next_ch = cleaned[dm.end() : dm.end() + 1]
         if next_ch == "、":
             continue
-        window = cleaned[dm.start(): dm.start() + 700]
+        window = cleaned[dm.start() : dm.start() + 700]
         if any(kw in window for (kw, _) in PUNISH_PATTERNS):
             row_dates.append(dm)
 
@@ -1188,11 +1443,11 @@ def parse_tabular_pdf(
             if (i + 1) * step < len(row_dates)
             else min(len(cleaned), dm.start() + 1500)
         )
-        block = cleaned[dm.start(): end_pos]
+        block = cleaned[dm.start() : end_pos]
 
         # Target name: scan ~250 chars BEFORE houjin for a 法人-suffix
         # token, OR the line directly preceding 「（法人番号」.
-        head = cleaned[max(0, hm.start() - 250): hm.start()]
+        head = cleaned[max(0, hm.start() - 250) : hm.start()]
         # Drop leading column-header noise
         head = _strip_table_noise(head)
         head = re.sub(r"\s+", " ", head).strip()
@@ -1216,12 +1471,32 @@ def parse_tabular_pdf(
             for tok in reversed(tokens):
                 if re.fullmatch(r"[\d０-９]+", tok):
                     continue
-                if any(kw in tok for kw in (
-                    "年", "月", "日", "番号", "事業者", "船種", "業種",
-                    "船 名", "船名", "本社", "所在地", "備考", "所管",
-                    "違反", "命令", "概要", "公表",
-                    "北海道", "都", "府", "県",
-                )):
+                if any(
+                    kw in tok
+                    for kw in (
+                        "年",
+                        "月",
+                        "日",
+                        "番号",
+                        "事業者",
+                        "船種",
+                        "業種",
+                        "船 名",
+                        "船名",
+                        "本社",
+                        "所在地",
+                        "備考",
+                        "所管",
+                        "違反",
+                        "命令",
+                        "概要",
+                        "公表",
+                        "北海道",
+                        "都",
+                        "府",
+                        "県",
+                    )
+                ):
                     continue
                 if len(tok) >= 2:
                     target_name = tok
@@ -1246,19 +1521,37 @@ def parse_tabular_pdf(
         target_name = re.sub(r"^[日月年に]+", "", target_name)
         if not target_name or len(target_name) < 2 or len(target_name) > 80:
             continue
-        if any(bad in target_name for bad in (
-            "違反等の概要", "命令又は指導の内容", "違反点数",
-            "氏名又は名称", "船種", "業種", "備考", "本社所在地",
-            "事業者住所", "公表年月日", "処分等の種類", "船舶所有者名",
-            "輸送の安全",
-        )):
+        if any(
+            bad in target_name
+            for bad in (
+                "違反等の概要",
+                "命令又は指導の内容",
+                "違反点数",
+                "氏名又は名称",
+                "船種",
+                "業種",
+                "備考",
+                "本社所在地",
+                "事業者住所",
+                "公表年月日",
+                "処分等の種類",
+                "船舶所有者名",
+                "輸送の安全",
+            )
+        ):
             continue
         if target_name[0] in ("、", "及", "監", "公", "○", "・", "※"):
             continue
         # Reject if the cleaned name reduces to a pure 法人 form keyword
         if target_name in (
-            "株式会社", "有限会社", "合同会社", "協同組合",
-            "合資会社", "合名会社", "（株）", "(株)",
+            "株式会社",
+            "有限会社",
+            "合同会社",
+            "協同組合",
+            "合資会社",
+            "合名会社",
+            "（株）",
+            "(株)",
         ):
             continue
 
@@ -1270,13 +1563,20 @@ def parse_tabular_pdf(
 
         summary: str | None = None
         for marker in (
-            "違反等の概要", "違反事実", "違反行為", "監査を実施",
-            "を確認した", "事故が発生", "違反が認められた",
-            "違反に関する累積", "通常監査", "特別監査",
+            "違反等の概要",
+            "違反事実",
+            "違反行為",
+            "監査を実施",
+            "を確認した",
+            "事故が発生",
+            "違反が認められた",
+            "違反に関する累積",
+            "通常監査",
+            "特別監査",
         ):
             pos = block.find(marker)
             if pos >= 0:
-                tail = block[pos: pos + 700]
+                tail = block[pos : pos + 700]
                 tail = re.sub(r"\s+", " ", tail).strip()
                 summary = tail[:500]
                 break
@@ -1288,20 +1588,22 @@ def parse_tabular_pdf(
         if related_law:
             related_law = re.sub(r"\s+", " ", related_law).strip()
 
-        records.append(MaritimeRecord(
-            region=hub.region_code,
-            issuing_authority=hub.region_label,
-            issuance_date=date_iso,
-            target_name=target_name,
-            houjin_bangou=houjin,
-            address=None,
-            punishment_raw=punish_raw,
-            enforcement_kind=kind,
-            related_law_ref=related_law,
-            reason_summary=summary,
-            source_url=pdf_url,
-            source_hub_url="",
-        ))
+        records.append(
+            MaritimeRecord(
+                region=hub.region_code,
+                issuing_authority=hub.region_label,
+                issuance_date=date_iso,
+                target_name=target_name,
+                houjin_bangou=houjin,
+                address=None,
+                punishment_raw=punish_raw,
+                enforcement_kind=kind,
+                related_law_ref=related_law,
+                reason_summary=summary,
+                source_url=pdf_url,
+                source_hub_url="",
+            )
+        )
     return records
 
 
@@ -1334,10 +1636,10 @@ def parse_tabular_no_houjin(
                 continue
         except ValueError:
             continue
-        if text[dm.end(): dm.end() + 1] == "、":
+        if text[dm.end() : dm.end() + 1] == "、":
             continue
 
-        window = text[dm.start(): dm.start() + 800]
+        window = text[dm.start() : dm.start() + 800]
         if not any(kw in window for (kw, _) in PUNISH_PATTERNS):
             continue
         nm = NAME_RE.search(window)
@@ -1362,14 +1664,25 @@ def parse_tabular_no_houjin(
         target_name = re.sub(r"^[日月年に]+(?=[一-龯ぁ-んァ-ンー])", "", target_name)
         if not target_name or len(target_name) < 3 or len(target_name) > 60:
             continue
-        if any(bad in target_name for bad in (
-            "違反等の概要", "命令又は指導の内容", "違反点数",
-        )):
+        if any(
+            bad in target_name
+            for bad in (
+                "違反等の概要",
+                "命令又は指導の内容",
+                "違反点数",
+            )
+        ):
             continue
         # Reject pure 法人 form keyword leftovers
         if target_name in (
-            "株式会社", "有限会社", "合同会社", "協同組合",
-            "合資会社", "合名会社", "（株）", "(株)",
+            "株式会社",
+            "有限会社",
+            "合同会社",
+            "協同組合",
+            "合資会社",
+            "合名会社",
+            "（株）",
+            "(株)",
         ):
             continue
 
@@ -1381,20 +1694,22 @@ def parse_tabular_no_houjin(
             related_law = re.sub(r"\s+", " ", related_law).strip()
         summary = re.sub(r"\s+", " ", window[:500]).strip()
 
-        records.append(MaritimeRecord(
-            region=hub.region_code,
-            issuing_authority=hub.region_label,
-            issuance_date=date_iso,
-            target_name=target_name,
-            houjin_bangou=None,
-            address=None,
-            punishment_raw=punish_raw,
-            enforcement_kind=kind,
-            related_law_ref=related_law,
-            reason_summary=summary,
-            source_url=pdf_url,
-            source_hub_url="",
-        ))
+        records.append(
+            MaritimeRecord(
+                region=hub.region_code,
+                issuing_authority=hub.region_label,
+                issuance_date=date_iso,
+                target_name=target_name,
+                houjin_bangou=None,
+                address=None,
+                punishment_raw=punish_raw,
+                enforcement_kind=kind,
+                related_law_ref=related_law,
+                reason_summary=summary,
+                source_url=pdf_url,
+                source_hub_url="",
+            )
+        )
     return records
 
 
@@ -1423,8 +1738,7 @@ def parse_pdf(
 
     # Hokkaido yearly summary detection: header + multi-row markers.
     is_hokkaido_yearly = (
-        "海上運送法に基づく行政処分等一覧" in text
-        or "行政処分等一覧" in text
+        "海上運送法に基づく行政処分等一覧" in text or "行政処分等一覧" in text
     ) and len(HOKKAIDO_ROW_RE.findall(text)) >= 5
     if is_hokkaido_yearly:
         recs = parse_hokkaido_yearly(text, hub=hub, pdf_url=pdf_url)
@@ -1465,8 +1779,7 @@ def open_db(db_path: Path) -> sqlite3.Connection:
     conn.execute("PRAGMA busy_timeout = 300000")
     conn.execute("PRAGMA journal_mode = WAL")
     row = conn.execute(
-        "SELECT name FROM sqlite_master WHERE type='table' "
-        "AND name='am_enforcement_detail'"
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='am_enforcement_detail'"
     ).fetchone()
     if not row:
         conn.close()
@@ -1570,13 +1883,15 @@ def upsert_record(
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--db", type=Path, default=DEFAULT_DB)
-    ap.add_argument("--regions", type=str, default="",
-                    help="comma-separated region codes "
-                         "(default: all hubs)")
-    ap.add_argument("--limit", type=int, default=None,
-                    help="stop after this many INSERTs across all hubs")
-    ap.add_argument("--per-hub-pdf-limit", type=int, default=None,
-                    help="cap PDFs walked per hub (smoke tests)")
+    ap.add_argument(
+        "--regions", type=str, default="", help="comma-separated region codes (default: all hubs)"
+    )
+    ap.add_argument(
+        "--limit", type=int, default=None, help="stop after this many INSERTs across all hubs"
+    )
+    ap.add_argument(
+        "--per-hub-pdf-limit", type=int, default=None, help="cap PDFs walked per hub (smoke tests)"
+    )
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--verbose", "-v", action="store_true")
     ap.add_argument("--log-file", type=Path, default=None)
@@ -1599,11 +1914,7 @@ def main(argv: list[str] | None = None) -> int:
         _LOG.error("no hubs selected")
         return 2
 
-    fetched_at = (
-        dt.datetime.now(dt.UTC)
-        .isoformat(timespec="seconds")
-        .replace("+00:00", "Z")
-    )
+    fetched_at = dt.datetime.now(dt.UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
 
     http = MaritimeHttpClient()
     conn: sqlite3.Connection | None = None
@@ -1612,7 +1923,8 @@ def main(argv: list[str] | None = None) -> int:
         conn.execute("BEGIN IMMEDIATE")
         existing_keys = load_existing_keys(conn)
         _LOG.info(
-            "existing am_enforcement_detail keys=%d", len(existing_keys),
+            "existing am_enforcement_detail keys=%d",
+            len(existing_keys),
         )
     else:
         existing_keys = set()
@@ -1626,19 +1938,28 @@ def main(argv: list[str] | None = None) -> int:
     try:
         for hub in hubs:
             key = f"{hub.region_code}:{hub.url}"
-            cs = stats.setdefault(hub.region_code, {
-                "pdfs_seen": 0, "pdfs_fetched": 0,
-                "records_extracted": 0, "insert": 0,
-                "skip_dup": 0, "skip_existing": 0,
-            })
+            cs = stats.setdefault(
+                hub.region_code,
+                {
+                    "pdfs_seen": 0,
+                    "pdfs_fetched": 0,
+                    "records_extracted": 0,
+                    "insert": 0,
+                    "skip_dup": 0,
+                    "skip_existing": 0,
+                },
+            )
             _LOG.info(
                 "hub region=%s label=%s url=%s",
-                hub.region_code, hub.region_label, hub.url,
+                hub.region_code,
+                hub.region_label,
+                hub.url,
             )
             pdf_pairs = collect_pdfs_for_hub(http, hub)
             cs["pdfs_seen"] += len(pdf_pairs)
             _LOG.info(
-                "  pdfs_found=%d", len(pdf_pairs),
+                "  pdfs_found=%d",
+                len(pdf_pairs),
             )
             if args.per_hub_pdf_limit is not None:
                 pdf_pairs = pdf_pairs[: args.per_hub_pdf_limit]
@@ -1646,10 +1967,7 @@ def main(argv: list[str] | None = None) -> int:
             # Process newest URLs first as a heuristic.
             pdf_pairs.sort(key=lambda p: p[0], reverse=True)
 
-            seq_counter = (
-                next_seq(conn, hub.region_code)
-                if conn is not None else 1
-            )
+            seq_counter = next_seq(conn, hub.region_code) if conn is not None else 1
 
             stop_hub = False
             for pdf_url, hub_url in pdf_pairs:
@@ -1661,16 +1979,23 @@ def main(argv: list[str] | None = None) -> int:
                     continue
                 cs["pdfs_fetched"] += 1
                 recs = parse_pdf(
-                    body, hub=hub, pdf_url=pdf_url, hub_url=hub_url,
+                    body,
+                    hub=hub,
+                    pdf_url=pdf_url,
+                    hub_url=hub_url,
                 )
                 cs["records_extracted"] += len(recs)
                 _LOG.debug(
-                    "  pdf=%s extracted=%d", pdf_url, len(recs),
+                    "  pdf=%s extracted=%d",
+                    pdf_url,
+                    len(recs),
                 )
                 for r in recs:
                     dedup_key = (
-                        r.issuing_authority, r.issuance_date,
-                        r.target_name, r.enforcement_kind,
+                        r.issuing_authority,
+                        r.issuance_date,
+                        r.target_name,
+                        r.enforcement_kind,
                     )
                     if dedup_key in existing_keys:
                         cs["skip_existing"] += 1
@@ -1690,27 +2015,30 @@ def main(argv: list[str] | None = None) -> int:
                             samples.append(r)
                         if cs["insert"] <= 3:
                             _LOG.info(
-                                "DRY %s | %s | %s | houjin=%s | "
-                                "%s | %s | law=%s",
-                                hub.region_code, r.issuance_date,
-                                r.target_name, r.houjin_bangou,
-                                r.punishment_raw, r.enforcement_kind,
+                                "DRY %s | %s | %s | houjin=%s | %s | %s | law=%s",
+                                hub.region_code,
+                                r.issuance_date,
+                                r.target_name,
+                                r.houjin_bangou,
+                                r.punishment_raw,
+                                r.enforcement_kind,
                                 r.related_law_ref,
                             )
                         continue
-                    canonical_id = (
-                        f"AM-ENF-MLIT-MARITIME-{hub.region_code}-"
-                        f"{seq_counter:06d}"
-                    )
+                    canonical_id = f"AM-ENF-MLIT-MARITIME-{hub.region_code}-{seq_counter:06d}"
                     seq_counter += 1
                     try:
                         verdict = upsert_record(
-                            conn, r, canonical_id, fetched_at,
+                            conn,
+                            r,
+                            canonical_id,
+                            fetched_at,
                         )
                     except sqlite3.Error as exc:
                         _LOG.warning(
                             "DB insert err name=%s err=%s",
-                            r.target_name, exc,
+                            r.target_name,
+                            exc,
                         )
                         continue
                     if verdict == "insert":
@@ -1752,7 +2080,7 @@ def main(argv: list[str] | None = None) -> int:
     print(
         "\n".join(
             [
-                f"== sample {i+1} ==\n"
+                f"== sample {i + 1} ==\n"
                 f"  date={s.issuance_date}\n"
                 f"  authority={s.issuing_authority}\n"
                 f"  target={s.target_name}\n"

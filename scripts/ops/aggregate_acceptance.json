@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-05-06T22:38:22Z",
+  "summary": {
+    "total": 0,
+    "expected_total": 258,
+    "passed": 0,
+    "failed": 0,
+    "skipped": 0,
+    "automated": 0,
+    "semi_automated": 0,
+    "manual": 0,
+    "automation_ratio": 0.0,
+    "automation_target": 0.795,
+    "automation_target_met": false
+  },
+  "per_spec": {},
+  "per_check_kind": {},
+  "rows": []
+}

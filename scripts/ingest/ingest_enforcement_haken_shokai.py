@@ -53,6 +53,7 @@ CLI:
     python scripts/ingest/ingest_enforcement_haken_shokai.py --dry-run -v
     python scripts/ingest/ingest_enforcement_haken_shokai.py --limit-detail 5
 """
+
 from __future__ import annotations
 
 import argparse
@@ -75,17 +76,13 @@ try:
     import requests  # type: ignore
     from bs4 import BeautifulSoup  # type: ignore
 except ImportError as exc:  # pragma: no cover
-    print(f"missing dep: {exc}. pip install pdfplumber requests beautifulsoup4",
-          file=sys.stderr)
+    print(f"missing dep: {exc}. pip install pdfplumber requests beautifulsoup4", file=sys.stderr)
     sys.exit(1)
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_DB = REPO_ROOT / "autonomath.db"
 
-USER_AGENT = (
-    "AutonoMath/0.1.0 (+https://bookyou.net) "
-    "ingest-haken-shokai (contact=ops@jpcite.com)"
-)
+USER_AGENT = "AutonoMath/0.1.0 (+https://bookyou.net) ingest-haken-shokai (contact=ops@jpcite.com)"
 HTTP_TIMEOUT = 60
 RATE_SLEEP = 1.0  # 1 req/sec/host
 
@@ -117,37 +114,64 @@ WAREKI_SHORT_RE = re.compile(
     r"(令和|平成)\s*(元|[0-9０-９]+)\s*年"
     r"\s*([0-9０-９]+)\s*月\s*([0-9０-９]+)\s*日"
 )
-SEIREKI_RE = re.compile(
-    r"(20[0-9]{2})\s*年\s*([0-9]+)\s*月\s*([0-9]+)\s*日"
-)
+SEIREKI_RE = re.compile(r"(20[0-9]{2})\s*年\s*([0-9]+)\s*月\s*([0-9]+)\s*日")
 ERA_OFFSET = {"令和": 2018, "R": 2018, "平成": 1988, "H": 1988}
 
 # 許可番号 patterns
-HAKEN_NUM_RE = re.compile(
-    r"派\s*([0-9０-９]{1,3})\s*[\-－ｰー‐]\s*([0-9０-９]{4,7})"
-)
-SHOKAI_NUM_RE = re.compile(
-    r"([0-9０-９]{1,3})\s*[\-－ｰー‐]\s*ユ\s*[\-－ｰー‐]\s*([0-9０-９]{4,7})"
-)
+HAKEN_NUM_RE = re.compile(r"派\s*([0-9０-９]{1,3})\s*[\-－ｰー‐]\s*([0-9０-９]{4,7})")
+SHOKAI_NUM_RE = re.compile(r"([0-9０-９]{1,3})\s*[\-－ｰー‐]\s*ユ\s*[\-－ｰー‐]\s*([0-9０-９]{4,7})")
 # 特定労働者派遣事業 届出番号 (legacy 2013-2018, abolished 2018 reform)
-TOKUTEI_NUM_RE = re.compile(
-    r"特\s*([0-9０-９]{1,3})\s*[\-－ｰー‐]\s*([0-9０-９]{4,7})"
-)
+TOKUTEI_NUM_RE = re.compile(r"特\s*([0-9０-９]{1,3})\s*[\-－ｰー‐]\s*([0-9０-９]{4,7})")
 
 # 都道府県 → 労働局 label map
 PREF_TO_BUREAU = {
-    "01": "北海道", "02": "青森", "03": "岩手", "04": "宮城",
-    "05": "秋田", "06": "山形", "07": "福島", "08": "茨城",
-    "09": "栃木", "10": "群馬", "11": "埼玉", "12": "千葉",
-    "13": "東京", "14": "神奈川", "15": "新潟", "16": "富山",
-    "17": "石川", "18": "福井", "19": "山梨", "20": "長野",
-    "21": "岐阜", "22": "静岡", "23": "愛知", "24": "三重",
-    "25": "滋賀", "26": "京都", "27": "大阪", "28": "兵庫",
-    "29": "奈良", "30": "和歌山", "31": "鳥取", "32": "島根",
-    "33": "岡山", "34": "広島", "35": "山口", "36": "徳島",
-    "37": "香川", "38": "愛媛", "39": "高知", "40": "福岡",
-    "41": "佐賀", "42": "長崎", "43": "熊本", "44": "大分",
-    "45": "宮崎", "46": "鹿児島", "47": "沖縄",
+    "01": "北海道",
+    "02": "青森",
+    "03": "岩手",
+    "04": "宮城",
+    "05": "秋田",
+    "06": "山形",
+    "07": "福島",
+    "08": "茨城",
+    "09": "栃木",
+    "10": "群馬",
+    "11": "埼玉",
+    "12": "千葉",
+    "13": "東京",
+    "14": "神奈川",
+    "15": "新潟",
+    "16": "富山",
+    "17": "石川",
+    "18": "福井",
+    "19": "山梨",
+    "20": "長野",
+    "21": "岐阜",
+    "22": "静岡",
+    "23": "愛知",
+    "24": "三重",
+    "25": "滋賀",
+    "26": "京都",
+    "27": "大阪",
+    "28": "兵庫",
+    "29": "奈良",
+    "30": "和歌山",
+    "31": "鳥取",
+    "32": "島根",
+    "33": "岡山",
+    "34": "広島",
+    "35": "山口",
+    "36": "徳島",
+    "37": "香川",
+    "38": "愛媛",
+    "39": "高知",
+    "40": "福岡",
+    "41": "佐賀",
+    "42": "長崎",
+    "43": "熊本",
+    "44": "大分",
+    "45": "宮崎",
+    "46": "鹿児島",
+    "47": "沖縄",
 }
 
 # 労働局名候補
@@ -280,17 +304,59 @@ def _extract_shokai_perm(text: str) -> str | None:
 # Header / fragment labels that must never appear as target_name.
 # Confirmed garbage rows from old archive PDFs (2014-2018) where 単独 PDF
 # parser falls back without a real 別添 list.
-_BAD_NAME_LITERALS = frozenset({
-    "名称", "事業者の名称", "事業主の名称", "事業主名", "商号又は名称",
-    "代表者", "代表者職氏名", "代 表 者", "代 表 者 職 氏 名",
-    "所在地", "事業主の所在地", "事業者の所在地", "及び住所", "住所",
-    "許可番号", "許可番号:", "許可年月日", "届出受理番号", "届出年月日",
-    "番号", "事業所名称", "事業所所在地", "事業所", "事業者名",
-    "二", "三", "四", "五", "六", "七", "八", "九", "十",
-    "（１）", "（２）", "（３）", "（４）", "（５）",
-    "(1)", "(2)", "(3)", "(4)", "(5)",
-    "別紙", "別添", "別表", "一覧", "以下のとおり", "下記のとおり",
-})
+_BAD_NAME_LITERALS = frozenset(
+    {
+        "名称",
+        "事業者の名称",
+        "事業主の名称",
+        "事業主名",
+        "商号又は名称",
+        "代表者",
+        "代表者職氏名",
+        "代 表 者",
+        "代 表 者 職 氏 名",
+        "所在地",
+        "事業主の所在地",
+        "事業者の所在地",
+        "及び住所",
+        "住所",
+        "許可番号",
+        "許可番号:",
+        "許可年月日",
+        "届出受理番号",
+        "届出年月日",
+        "番号",
+        "事業所名称",
+        "事業所所在地",
+        "事業所",
+        "事業者名",
+        "二",
+        "三",
+        "四",
+        "五",
+        "六",
+        "七",
+        "八",
+        "九",
+        "十",
+        "（１）",
+        "（２）",
+        "（３）",
+        "（４）",
+        "（５）",
+        "(1)",
+        "(2)",
+        "(3)",
+        "(4)",
+        "(5)",
+        "別紙",
+        "別添",
+        "別表",
+        "一覧",
+        "以下のとおり",
+        "下記のとおり",
+    }
+)
 
 
 def _is_valid_target_name(name: str | None) -> bool:
@@ -317,7 +383,8 @@ def _is_valid_target_name(name: str | None) -> bool:
     if re.fullmatch(r"\d{4}-\d{2}-\d{2}", s):
         return False
     if re.search(r"年.*月.*日", s) and not any(
-        kw in s for kw in ("株式会社", "有限会社", "合同会社", "合資会社", "合名会社", "(株)", "(有)")
+        kw in s
+        for kw in ("株式会社", "有限会社", "合同会社", "合資会社", "合名会社", "(株)", "(有)")
     ):
         # If the entire candidate is essentially a date sentence, reject.
         if re.fullmatch(r"[\d０-９年月日\s\.\-/平成令和元昭和大正]+", s):
@@ -339,10 +406,12 @@ def _is_valid_target_name(name: str | None) -> bool:
 class HttpClient:
     def __init__(self, *, user_agent: str = USER_AGENT) -> None:
         self.session = requests.Session()
-        self.session.headers.update({
-            "User-Agent": user_agent,
-            "Accept-Language": "ja,en;q=0.5",
-        })
+        self.session.headers.update(
+            {
+                "User-Agent": user_agent,
+                "Accept-Language": "ja,en;q=0.5",
+            }
+        )
         self._last: float = 0.0
 
     def get(self, url: str, *, timeout: float = HTTP_TIMEOUT) -> requests.Response | None:
@@ -361,7 +430,7 @@ class HttpClient:
                 last_err = RuntimeError(f"{resp.status_code} for {url}")
             except requests.RequestException as exc:
                 last_err = exc
-            time.sleep(2 ** attempt)
+            time.sleep(2**attempt)
         _LOG.warning("fetch failed after retries: %s: %s", url, last_err)
         return None
 
@@ -373,11 +442,13 @@ class HttpClient:
 
 @dataclass
 class EnfRow:
-    target_name: str          # 事業者名
-    issuance_date: str        # ISO yyyy-mm-dd
-    enforcement_kind: str     # license_revoke / contract_suspend / business_improvement / investigation / other
-    issuing_authority: str    # 厚生労働省 OR 厚生労働省 {pref}労働局
-    related_law_ref: str      # 労働者派遣法第14条第1項第1号 etc.
+    target_name: str  # 事業者名
+    issuance_date: str  # ISO yyyy-mm-dd
+    enforcement_kind: (
+        str  # license_revoke / contract_suspend / business_improvement / investigation / other
+    )
+    issuing_authority: str  # 厚生労働省 OR 厚生労働省 {pref}労働局
+    related_law_ref: str  # 労働者派遣法第14条第1項第1号 etc.
     location: str | None = None
     permit_number_haken: str | None = None
     permit_number_shokai: str | None = None
@@ -414,14 +485,21 @@ def parse_master_haken_pdf(pdf_bytes: bytes, source_url: str) -> list[EnfRow]:
                     current_section = "improvement"
                 if "２ 事業停止命令" in text or "2 事業停止命令" in text:
                     current_section = "suspend"
-                if "労働者派遣事業の許可の取消し" in text or "３ 労働者派遣事業の許可の取消し" in text or "3 労働者派遣事業の許可の取消し" in text:
+                if (
+                    "労働者派遣事業の許可の取消し" in text
+                    or "３ 労働者派遣事業の許可の取消し" in text
+                    or "3 労働者派遣事業の許可の取消し" in text
+                ):
                     current_section = "revoke"
                 tables = page.extract_tables() or []
                 for table in tables:
                     if not table or len(table) < 2:
                         continue
                     header = [_normalize(c or "") for c in table[0]]
-                    if not any("命令日" in h or "取消し日" in h or "許可の取消し通知日" in h for h in header):
+                    if not any(
+                        "命令日" in h or "取消し日" in h or "許可の取消し通知日" in h
+                        for h in header
+                    ):
                         continue
                     is_revoke = any("許可の取消し" in h or "取消し日" in h for h in header)
                     is_suspend = any("事業停止期間" in h for h in header)
@@ -451,17 +529,19 @@ def parse_master_haken_pdf(pdf_bytes: bytes, source_url: str) -> list[EnfRow]:
                             authority = "厚生労働省"
                             if bureau_cell:
                                 authority = f"厚生労働省 {bureau_cell}"
-                            out.append(EnfRow(
-                                target_name=name,
-                                issuance_date=iso,
-                                enforcement_kind="license_revoke",
-                                issuing_authority=authority,
-                                related_law_ref="労働者派遣法第14条第1項",
-                                permit_number_haken=perm_haken,
-                                reason_summary=f"労働者派遣事業の許可取消し ({date_cell})",
-                                source_url=source_url,
-                                source_topic="mhlw_haken_master_revoke",
-                            ))
+                            out.append(
+                                EnfRow(
+                                    target_name=name,
+                                    issuance_date=iso,
+                                    enforcement_kind="license_revoke",
+                                    issuing_authority=authority,
+                                    related_law_ref="労働者派遣法第14条第1項",
+                                    permit_number_haken=perm_haken,
+                                    reason_summary=f"労働者派遣事業の許可取消し ({date_cell})",
+                                    source_url=source_url,
+                                    source_topic="mhlw_haken_master_revoke",
+                                )
+                            )
                         elif is_suspend:
                             # cols: 命令日, 名称, 事業停止期間, 実施労働局
                             if len(cells) < 4:
@@ -479,24 +559,24 @@ def parse_master_haken_pdf(pdf_bytes: bytes, source_url: str) -> list[EnfRow]:
                             perm_haken = _extract_haken_perm(name_cell)
                             if not _is_valid_target_name(name) or len(name) > 200:
                                 continue
-                            authority = (
-                                f"厚生労働省 {bureau_cell}" if bureau_cell else "厚生労働省"
+                            authority = f"厚生労働省 {bureau_cell}" if bureau_cell else "厚生労働省"
+                            out.append(
+                                EnfRow(
+                                    target_name=name,
+                                    issuance_date=iso,
+                                    enforcement_kind="contract_suspend",
+                                    issuing_authority=authority,
+                                    related_law_ref="労働者派遣法第14条第2項",
+                                    permit_number_haken=perm_haken,
+                                    suspend_period=period_cell or None,
+                                    reason_summary=(
+                                        f"労働者派遣事業の事業停止命令 ({cells[0]})"
+                                        + (f" 期間: {period_cell}" if period_cell else "")
+                                    ),
+                                    source_url=source_url,
+                                    source_topic="mhlw_haken_master_suspend",
+                                )
                             )
-                            out.append(EnfRow(
-                                target_name=name,
-                                issuance_date=iso,
-                                enforcement_kind="contract_suspend",
-                                issuing_authority=authority,
-                                related_law_ref="労働者派遣法第14条第2項",
-                                permit_number_haken=perm_haken,
-                                suspend_period=period_cell or None,
-                                reason_summary=(
-                                    f"労働者派遣事業の事業停止命令 ({cells[0]})"
-                                    + (f" 期間: {period_cell}" if period_cell else "")
-                                ),
-                                source_url=source_url,
-                                source_topic="mhlw_haken_master_suspend",
-                            ))
                         else:
                             # 改善命令: 命令日, 名称, 実施労働局
                             if len(cells) < 3:
@@ -513,20 +593,20 @@ def parse_master_haken_pdf(pdf_bytes: bytes, source_url: str) -> list[EnfRow]:
                             perm_haken = _extract_haken_perm(name_cell)
                             if not _is_valid_target_name(name) or len(name) > 200:
                                 continue
-                            authority = (
-                                f"厚生労働省 {bureau_cell}" if bureau_cell else "厚生労働省"
+                            authority = f"厚生労働省 {bureau_cell}" if bureau_cell else "厚生労働省"
+                            out.append(
+                                EnfRow(
+                                    target_name=name,
+                                    issuance_date=iso,
+                                    enforcement_kind="business_improvement",
+                                    issuing_authority=authority,
+                                    related_law_ref="労働者派遣法第49条第1項",
+                                    permit_number_haken=perm_haken,
+                                    reason_summary=f"労働者派遣事業改善命令 ({cells[0]})",
+                                    source_url=source_url,
+                                    source_topic="mhlw_haken_master_improvement",
+                                )
                             )
-                            out.append(EnfRow(
-                                target_name=name,
-                                issuance_date=iso,
-                                enforcement_kind="business_improvement",
-                                issuing_authority=authority,
-                                related_law_ref="労働者派遣法第49条第1項",
-                                permit_number_haken=perm_haken,
-                                reason_summary=f"労働者派遣事業改善命令 ({cells[0]})",
-                                source_url=source_url,
-                                source_topic="mhlw_haken_master_improvement",
-                            ))
     except Exception as exc:  # noqa: BLE001
         _LOG.warning("master haken PDF parse failed: %s", exc)
     return out
@@ -544,7 +624,11 @@ def parse_master_shokai_pdf(pdf_bytes: bytes, source_url: str) -> list[EnfRow]:
                     current_section = "improvement"
                 if "２ 事業停止命令" in text or "2 事業停止命令" in text:
                     current_section = "suspend"
-                if "３ 許可の取消し" in text or "3 許可の取消し" in text or "許可の取消し（職業安定法" in text:
+                if (
+                    "３ 許可の取消し" in text
+                    or "3 許可の取消し" in text
+                    or "許可の取消し（職業安定法" in text
+                ):
                     current_section = "revoke"
                 if "４ 事業廃止命令" in text or "4 事業廃止命令" in text:
                     current_section = "shut_down"
@@ -573,20 +657,20 @@ def parse_master_shokai_pdf(pdf_bytes: bytes, source_url: str) -> list[EnfRow]:
                             name = re.sub(r"［[^］]*ユ[^］]*］", "", name).strip()
                             if not _is_valid_target_name(name) or len(name) > 200:
                                 continue
-                            authority = (
-                                f"厚生労働省 {bureau_cell}" if bureau_cell else "厚生労働省"
+                            authority = f"厚生労働省 {bureau_cell}" if bureau_cell else "厚生労働省"
+                            out.append(
+                                EnfRow(
+                                    target_name=name,
+                                    issuance_date=iso,
+                                    enforcement_kind="license_revoke",
+                                    issuing_authority=authority,
+                                    related_law_ref="職業安定法第32条の9第1項",
+                                    permit_number_shokai=perm_shokai,
+                                    reason_summary=f"有料職業紹介事業の許可取消し ({cells[0]})",
+                                    source_url=source_url,
+                                    source_topic="mhlw_shokai_master_revoke",
+                                )
                             )
-                            out.append(EnfRow(
-                                target_name=name,
-                                issuance_date=iso,
-                                enforcement_kind="license_revoke",
-                                issuing_authority=authority,
-                                related_law_ref="職業安定法第32条の9第1項",
-                                permit_number_shokai=perm_shokai,
-                                reason_summary=f"有料職業紹介事業の許可取消し ({cells[0]})",
-                                source_url=source_url,
-                                source_topic="mhlw_shokai_master_revoke",
-                            ))
                         elif is_suspend:
                             if len(cells) < 4:
                                 continue
@@ -601,24 +685,24 @@ def parse_master_shokai_pdf(pdf_bytes: bytes, source_url: str) -> list[EnfRow]:
                             name = re.sub(r"［[^］]*ユ[^］]*］", "", name).strip()
                             if not _is_valid_target_name(name) or len(name) > 200:
                                 continue
-                            authority = (
-                                f"厚生労働省 {bureau_cell}" if bureau_cell else "厚生労働省"
+                            authority = f"厚生労働省 {bureau_cell}" if bureau_cell else "厚生労働省"
+                            out.append(
+                                EnfRow(
+                                    target_name=name,
+                                    issuance_date=iso,
+                                    enforcement_kind="contract_suspend",
+                                    issuing_authority=authority,
+                                    related_law_ref="職業安定法第32条の9第2項",
+                                    permit_number_shokai=perm_shokai,
+                                    suspend_period=period_cell or None,
+                                    reason_summary=(
+                                        f"有料職業紹介事業の事業停止命令 ({cells[0]})"
+                                        + (f" 期間: {period_cell}" if period_cell else "")
+                                    ),
+                                    source_url=source_url,
+                                    source_topic="mhlw_shokai_master_suspend",
+                                )
                             )
-                            out.append(EnfRow(
-                                target_name=name,
-                                issuance_date=iso,
-                                enforcement_kind="contract_suspend",
-                                issuing_authority=authority,
-                                related_law_ref="職業安定法第32条の9第2項",
-                                permit_number_shokai=perm_shokai,
-                                suspend_period=period_cell or None,
-                                reason_summary=(
-                                    f"有料職業紹介事業の事業停止命令 ({cells[0]})"
-                                    + (f" 期間: {period_cell}" if period_cell else "")
-                                ),
-                                source_url=source_url,
-                                source_topic="mhlw_shokai_master_suspend",
-                            ))
                         elif is_shut_down:
                             if len(cells) < 3:
                                 continue
@@ -631,19 +715,19 @@ def parse_master_shokai_pdf(pdf_bytes: bytes, source_url: str) -> list[EnfRow]:
                             name = re.sub(r"［[^］]*ユ[^］]*］", "", name).strip()
                             if not _is_valid_target_name(name) or len(name) > 200:
                                 continue
-                            authority = (
-                                f"厚生労働省 {bureau_cell}" if bureau_cell else "厚生労働省"
+                            authority = f"厚生労働省 {bureau_cell}" if bureau_cell else "厚生労働省"
+                            out.append(
+                                EnfRow(
+                                    target_name=name,
+                                    issuance_date=iso,
+                                    enforcement_kind="license_revoke",
+                                    issuing_authority=authority,
+                                    related_law_ref="職業安定法第33条の3第2項（第32条の9第1項準用）",
+                                    reason_summary=f"無料職業紹介事業の事業廃止命令 ({cells[0]})",
+                                    source_url=source_url,
+                                    source_topic="mhlw_shokai_master_shutdown",
+                                )
                             )
-                            out.append(EnfRow(
-                                target_name=name,
-                                issuance_date=iso,
-                                enforcement_kind="license_revoke",
-                                issuing_authority=authority,
-                                related_law_ref="職業安定法第33条の3第2項（第32条の9第1項準用）",
-                                reason_summary=f"無料職業紹介事業の事業廃止命令 ({cells[0]})",
-                                source_url=source_url,
-                                source_topic="mhlw_shokai_master_shutdown",
-                            ))
                         else:
                             # 改善命令: 命令日, 名称, 実施労働局
                             if len(cells) < 3:
@@ -658,20 +742,20 @@ def parse_master_shokai_pdf(pdf_bytes: bytes, source_url: str) -> list[EnfRow]:
                             name = re.sub(r"［[^］]*ユ[^］]*］", "", name).strip()
                             if not _is_valid_target_name(name) or len(name) > 200:
                                 continue
-                            authority = (
-                                f"厚生労働省 {bureau_cell}" if bureau_cell else "厚生労働省"
+                            authority = f"厚生労働省 {bureau_cell}" if bureau_cell else "厚生労働省"
+                            out.append(
+                                EnfRow(
+                                    target_name=name,
+                                    issuance_date=iso,
+                                    enforcement_kind="business_improvement",
+                                    issuing_authority=authority,
+                                    related_law_ref="職業安定法第48条の3",
+                                    permit_number_shokai=perm_shokai,
+                                    reason_summary=f"有料職業紹介事業改善命令 ({cells[0]})",
+                                    source_url=source_url,
+                                    source_topic="mhlw_shokai_master_improvement",
+                                )
                             )
-                            out.append(EnfRow(
-                                target_name=name,
-                                issuance_date=iso,
-                                enforcement_kind="business_improvement",
-                                issuing_authority=authority,
-                                related_law_ref="職業安定法第48条の3",
-                                permit_number_shokai=perm_shokai,
-                                reason_summary=f"有料職業紹介事業改善命令 ({cells[0]})",
-                                source_url=source_url,
-                                source_topic="mhlw_shokai_master_improvement",
-                            ))
     except Exception as exc:  # noqa: BLE001
         _LOG.warning("master shokai PDF parse failed: %s", exc)
     return out
@@ -682,8 +766,17 @@ def parse_master_shokai_pdf(pdf_bytes: bytes, source_url: str) -> list[EnfRow]:
 # ---------------------------------------------------------------------------
 
 INC_KW = ["派遣", "職業紹介", "派遣元", "派遣先", "派遣事業", "労働者派遣法", "職業安定法"]
-ACT_KW = ["行政処分", "許可取消", "許可を取り消し", "事業停止", "事業廃止",
-          "改善命令", "業務改善命令", "告発", "違反"]
+ACT_KW = [
+    "行政処分",
+    "許可取消",
+    "許可を取り消し",
+    "事業停止",
+    "事業廃止",
+    "改善命令",
+    "業務改善命令",
+    "告発",
+    "違反",
+]
 EXCLUDE_TITLE_KW = ["ハローワーク", "障害者の就職件数", "職業紹介状況", "民間人材ビジネス実態"]
 
 
@@ -732,12 +825,14 @@ def parse_index_pages(html: str) -> list[PressEntry]:
                 iso = f"{y:04d}-{mo:02d}-{d:02d}"
             except ValueError:
                 iso = None
-        out.append(PressEntry(
-            issuance_date=iso,
-            title=title,
-            detail_url=url,
-            enforcement_kind=_classify_kind(title),
-        ))
+        out.append(
+            PressEntry(
+                issuance_date=iso,
+                title=title,
+                detail_url=url,
+                enforcement_kind=_classify_kind(title),
+            )
+        )
     return out
 
 
@@ -883,16 +978,18 @@ def parse_detail_pdf_for_entities(
                     header = [_normalize(c or "") for c in table[0]]
                     # 一覧 PDF header: 番号 | 許可番号 | 許可年月日 | 事業者の名称 | 代表者 | 所在地
                     is_list_haken = any(
-                        ("派遣事業者" in h or "事業者の名称" in h or "事業者の名称" in h or "派遣事業主" in h or "派遣元事業主" in h)
+                        (
+                            "派遣事業者" in h
+                            or "事業者の名称" in h
+                            or "事業者の名称" in h
+                            or "派遣事業主" in h
+                            or "派遣元事業主" in h
+                        )
                         for h in header
                     ) and any("許可番号" in h for h in header)
                     is_list_shokai = any(
-                        "事業者の名称" in h or "事業主" in h
-                        for h in header
-                    ) and any(
-                        "許可番号" in h
-                        for h in header
-                    )
+                        "事業者の名称" in h or "事業主" in h for h in header
+                    ) and any("許可番号" in h for h in header)
                     if not is_list_haken and not is_list_shokai:
                         continue
                     # find name / perm / address columns
@@ -938,24 +1035,24 @@ def parse_detail_pdf_for_entities(
                         perm_haken = _extract_haken_perm(perm)
                         perm_shokai = _extract_shokai_perm(perm)
                         bureau_label = _bureau_from_haken_num(perm)
-                        authority = (
-                            f"厚生労働省 {bureau_label}" if bureau_label else "厚生労働省"
+                        authority = f"厚生労働省 {bureau_label}" if bureau_label else "厚生労働省"
+                        out.append(
+                            EnfRow(
+                                target_name=name,
+                                issuance_date=page_disp_iso,
+                                enforcement_kind=title_kind,
+                                issuing_authority=authority,
+                                related_law_ref=related_law,
+                                location=addr,
+                                permit_number_haken=perm_haken,
+                                permit_number_shokai=perm_shokai,
+                                reason_summary=(
+                                    f"{page_title}（一覧 #{cells[0] if cells else ''}）"
+                                )[:600],
+                                source_url=pdf_url,
+                                source_topic="mhlw_houdou_list",
+                            )
                         )
-                        out.append(EnfRow(
-                            target_name=name,
-                            issuance_date=page_disp_iso,
-                            enforcement_kind=title_kind,
-                            issuing_authority=authority,
-                            related_law_ref=related_law,
-                            location=addr,
-                            permit_number_haken=perm_haken,
-                            permit_number_shokai=perm_shokai,
-                            reason_summary=(
-                                f"{page_title}（一覧 #{cells[0] if cells else ''}）"
-                            )[:600],
-                            source_url=pdf_url,
-                            source_topic="mhlw_houdou_list",
-                        ))
 
         # Path B: 単独 PDF — extract single entity from full_text_norm.
         # Trigger only if Path A returned nothing for this PDF.
@@ -978,9 +1075,13 @@ def _infer_law_basis(title_kind: str, body_text: str) -> str:
     """Return a related_law_ref hint based on title kind + body text."""
     if "労働者派遣法第14条第１項第１号" in body_text or "労働者派遣法第14条第1項第1号" in body_text:
         ref = "労働者派遣法第14条第1項第1号"
-    elif "労働者派遣法第14条第１項第４号" in body_text or "労働者派遣法第14条第1項第4号" in body_text:
+    elif (
+        "労働者派遣法第14条第１項第４号" in body_text or "労働者派遣法第14条第1項第4号" in body_text
+    ):
         ref = "労働者派遣法第14条第1項第4号"
-    elif "労働者派遣法第14条第１項第３号" in body_text or "労働者派遣法第14条第1項第3号" in body_text:
+    elif (
+        "労働者派遣法第14条第１項第３号" in body_text or "労働者派遣法第14条第1項第3号" in body_text
+    ):
         ref = "労働者派遣法第14条第1項第3号"
     elif "労働者派遣法第14条第２項" in body_text or "労働者派遣法第14条第2項" in body_text:
         ref = "労働者派遣法第14条第2項"
@@ -1026,12 +1127,8 @@ _LOC_RE = re.compile(
     r"[\s　]*[:：]?\s*([^\n]+?)"
     r"(?=\s*許可|\s*代表|\s*届出|\s*事業所|$)"
 )
-_PERM_DATE_RE = re.compile(
-    r"許\s*可\s*年\s*月\s*日[\s　]*[:：]?\s*([^\n]+)"
-)
-_PERM_NUM_RE = re.compile(
-    r"許\s*可\s*番\s*号[\s　]*[:：]?\s*([^\n]+?)(?=\s|$)"
-)
+_PERM_DATE_RE = re.compile(r"許\s*可\s*年\s*月\s*日[\s　]*[:：]?\s*([^\n]+)")
+_PERM_NUM_RE = re.compile(r"許\s*可\s*番\s*号[\s　]*[:：]?\s*([^\n]+?)(?=\s|$)")
 
 
 def _parse_single_business_pdf(
@@ -1095,7 +1192,9 @@ def _parse_single_business_pdf(
 
     # Reason summary: 1st sentence of '処分理由' block
     reason = None
-    rm = re.search(r"処\s*分\s*理\s*由(.+?)(?=処\s*分\s*内\s*容|別\s*紙|別\s*添|$)", full_text, re.DOTALL)
+    rm = re.search(
+        r"処\s*分\s*理\s*由(.+?)(?=処\s*分\s*内\s*容|別\s*紙|別\s*添|$)", full_text, re.DOTALL
+    )
     if rm:
         snippet = re.split(r"。", _normalize(rm.group(1)), maxsplit=2)
         if snippet:
@@ -1103,19 +1202,21 @@ def _parse_single_business_pdf(
     if not reason:
         reason = page_title[:600]
 
-    out.append(EnfRow(
-        target_name=name,
-        issuance_date=disp_date,
-        enforcement_kind=title_kind,
-        issuing_authority=authority,
-        related_law_ref=related_law,
-        location=location,
-        permit_number_haken=perm_haken,
-        permit_number_shokai=perm_shokai,
-        reason_summary=reason,
-        source_url=pdf_url,
-        source_topic="mhlw_houdou_single",
-    ))
+    out.append(
+        EnfRow(
+            target_name=name,
+            issuance_date=disp_date,
+            enforcement_kind=title_kind,
+            issuing_authority=authority,
+            related_law_ref=related_law,
+            location=location,
+            permit_number_haken=perm_haken,
+            permit_number_shokai=perm_shokai,
+            reason_summary=reason,
+            source_url=pdf_url,
+            source_topic="mhlw_houdou_single",
+        )
+    )
     return out
 
 
@@ -1209,8 +1310,7 @@ def insert_one(
         "fetched_at": now_iso,
     }
     primary_name = (
-        f"{row.target_name} ({row.issuance_date}) - "
-        f"{row.issuing_authority} {row.enforcement_kind}"
+        f"{row.target_name} ({row.issuance_date}) - {row.issuing_authority} {row.enforcement_kind}"
     )[:500]
     cur.execute(
         """INSERT OR IGNORE INTO am_entities
@@ -1264,12 +1364,11 @@ def insert_one(
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--db", type=Path, default=DEFAULT_DB)
-    ap.add_argument("--limit-detail", type=int, default=None,
-                    help="cap number of detail pages to walk (debug)")
-    ap.add_argument("--no-master", action="store_true",
-                    help="skip master haken/shokai PDFs")
-    ap.add_argument("--no-houdou", action="store_true",
-                    help="skip houdou press-release walk")
+    ap.add_argument(
+        "--limit-detail", type=int, default=None, help="cap number of detail pages to walk (debug)"
+    )
+    ap.add_argument("--no-master", action="store_true", help="skip master haken/shokai PDFs")
+    ap.add_argument("--no-houdou", action="store_true", help="skip houdou press-release walk")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("-v", "--verbose", action="store_true")
     return ap.parse_args(argv)
@@ -1281,9 +1380,17 @@ def run(args: argparse.Namespace) -> int:
         format="%(asctime)s %(levelname)s %(message)s",
     )
     # Silence pdfminer / pdfplumber chatter even when our logger is DEBUG.
-    for noisy in ("pdfminer", "pdfminer.pdfinterp", "pdfminer.pdfpage",
-                  "pdfminer.cmapdb", "pdfminer.converter", "pdfminer.layout",
-                  "pdfplumber", "PIL", "urllib3"):
+    for noisy in (
+        "pdfminer",
+        "pdfminer.pdfinterp",
+        "pdfminer.pdfpage",
+        "pdfminer.cmapdb",
+        "pdfminer.converter",
+        "pdfminer.layout",
+        "pdfplumber",
+        "PIL",
+        "urllib3",
+    ):
         logging.getLogger(noisy).setLevel(logging.WARNING)
     now_iso = datetime.now(tz=UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
     http = HttpClient()
@@ -1343,10 +1450,16 @@ def run(args: argparse.Namespace) -> int:
     if args.dry_run or not all_rows:
         # Print all rows and breakdowns
         for r in all_rows:
-            _LOG.info("  CAND: %s | %s | %s | %s | %s",
-                      r.issuance_date, r.target_name[:40], r.enforcement_kind,
-                      r.issuing_authority, r.related_law_ref)
+            _LOG.info(
+                "  CAND: %s | %s | %s | %s | %s",
+                r.issuance_date,
+                r.target_name[:40],
+                r.enforcement_kind,
+                r.issuing_authority,
+                r.related_law_ref,
+            )
         from collections import Counter
+
         by_kind = Counter(r.enforcement_kind for r in all_rows)
         by_auth = Counter(r.issuing_authority for r in all_rows)
         _LOG.info("dry-run: would attempt %d inserts", len(all_rows))
@@ -1392,9 +1505,7 @@ def run(args: argparse.Namespace) -> int:
         "SELECT COUNT(*) FROM am_enforcement_detail "
         "WHERE related_law_ref LIKE '%派遣%' OR related_law_ref LIKE '%職業安定%'"
     ).fetchone()[0]
-    pre_total = con.execute(
-        "SELECT COUNT(*) FROM am_enforcement_detail"
-    ).fetchone()[0]
+    pre_total = con.execute("SELECT COUNT(*) FROM am_enforcement_detail").fetchone()[0]
 
     # Batch commit every 50 rows
     batch_size = 50
@@ -1439,7 +1550,9 @@ def run(args: argparse.Namespace) -> int:
             batch_keys.add(key)
             existing_ids.add(cid)
             breakdown_kind[r.enforcement_kind] = breakdown_kind.get(r.enforcement_kind, 0) + 1
-            breakdown_authority[r.issuing_authority] = breakdown_authority.get(r.issuing_authority, 0) + 1
+            breakdown_authority[r.issuing_authority] = (
+                breakdown_authority.get(r.issuing_authority, 0) + 1
+            )
             short_law = r.related_law_ref.split("第")[0] if r.related_law_ref else "(none)"
             breakdown_law[short_law] = breakdown_law.get(short_law, 0) + 1
             pending += 1
@@ -1464,9 +1577,7 @@ def run(args: argparse.Namespace) -> int:
         "SELECT COUNT(*) FROM am_enforcement_detail "
         "WHERE related_law_ref LIKE '%派遣%' OR related_law_ref LIKE '%職業安定%'"
     ).fetchone()[0]
-    post_total = con.execute(
-        "SELECT COUNT(*) FROM am_enforcement_detail"
-    ).fetchone()[0]
+    post_total = con.execute("SELECT COUNT(*) FROM am_enforcement_detail").fetchone()[0]
     try:
         con.close()
     except sqlite3.Error:
@@ -1474,26 +1585,36 @@ def run(args: argparse.Namespace) -> int:
 
     _LOG.info(
         "done parsed=%d inserted=%d dup_db=%d dup_id=%d dup_batch=%d invalid=%d",
-        len(all_rows), inserted, skipped_dup_db, skipped_dup_id,
-        skipped_dup_batch, skipped_invalid,
+        len(all_rows),
+        inserted,
+        skipped_dup_db,
+        skipped_dup_id,
+        skipped_dup_batch,
+        skipped_invalid,
     )
 
-    print(json.dumps({
-        "inserted": inserted,
-        "parsed": len(all_rows),
-        "skipped_dup_db": skipped_dup_db,
-        "skipped_dup_id": skipped_dup_id,
-        "skipped_dup_batch": skipped_dup_batch,
-        "skipped_invalid": skipped_invalid,
-        "pre_haken_shokai_count": pre_count,
-        "post_haken_shokai_count": post_count,
-        "delta_haken_shokai": post_count - pre_count,
-        "pre_am_enforcement_total": pre_total,
-        "post_am_enforcement_total": post_total,
-        "breakdown_by_kind": breakdown_kind,
-        "breakdown_by_authority": breakdown_authority,
-        "breakdown_by_law_short": breakdown_law,
-    }, ensure_ascii=False, indent=2))
+    print(
+        json.dumps(
+            {
+                "inserted": inserted,
+                "parsed": len(all_rows),
+                "skipped_dup_db": skipped_dup_db,
+                "skipped_dup_id": skipped_dup_id,
+                "skipped_dup_batch": skipped_dup_batch,
+                "skipped_invalid": skipped_invalid,
+                "pre_haken_shokai_count": pre_count,
+                "post_haken_shokai_count": post_count,
+                "delta_haken_shokai": post_count - pre_count,
+                "pre_am_enforcement_total": pre_total,
+                "post_am_enforcement_total": post_total,
+                "breakdown_by_kind": breakdown_kind,
+                "breakdown_by_authority": breakdown_authority,
+                "breakdown_by_law_short": breakdown_law,
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
     return 0 if inserted >= 0 else 1
 
 

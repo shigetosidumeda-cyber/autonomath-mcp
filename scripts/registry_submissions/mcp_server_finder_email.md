@@ -32,7 +32,7 @@ info@bookyou.net
 ### Subject
 
 ```
-[Server submission] AutonoMath — 96-tool MCP for Japanese institutional data (補助金 / 法令 / 判例 / 税制 / 適格事業者)
+[Server submission] AutonoMath — 139-tool MCP for Japanese institutional data (補助金 / 法令 / 判例 / 税制 / 適格事業者)
 ```
 
 ### Body
@@ -54,7 +54,7 @@ Language:           Python (>= 3.11)
 MCP protocol:       2025-06-18
 Transport:          stdio
 Install:            uvx autonomath-mcp
-Tool count:         96 at default gates
+Tool count:         139 at default gates
 Pricing:            ¥3/request tax-exclusive (¥3.30 tax-inclusive, fully metered via Stripe); first 3 requests/day per IP free (anonymous, JST next-day reset); no tier SKUs, no seat fees, no annual minimums, no signup required for the free tier.
 Operator:           Bookyou株式会社 (T8010001213708) — 代表 梅田茂利 — info@bookyou.net
 
@@ -113,7 +113,7 @@ I can supply a 512×512 PNG icon and a 1200×630 OG image on request — please 
 
 - 79-query public eval suite (evals/) runs in CI on every PR; per-tool precision table in docs/per_tool_precision.md.
 - 4 broken tools (query_at_snapshot, intent_of, reason_answer, related_programs) are deliberately gated OFF — they remain in the codebase so a fix flips them ON without a manifest bump.
-- Honest tool count is 96 at default gates. Older snapshots ("55", "59", "66", "72") may appear in historical files; please ignore those when listing.
+- Honest tool count is 139 at default gates. Older snapshots ("55", "59", "66", "72") may appear in historical files; please ignore those when listing.
 - Evidence Pre-fetch / precomputed intelligence prepares source URLs, fetched timestamps, exclusion-rule checks, and cross-dataset joins for retrieval; describe it as evidence packaging, not as model-cost savings.
 
 Happy to provide additional info if helpful — feel free to reply directly.

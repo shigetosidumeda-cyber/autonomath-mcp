@@ -45,6 +45,7 @@ CLI:
     python scripts/ingest/ingest_enforcement_shigaku.py \
         [--db autonomath.db] [--limit N] [--dry-run] [--verbose]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -87,30 +88,78 @@ AUTHORITY_MEXT = "authority:mext"
 
 # 12 yearly PDFs from 私学事業団. Filename pattern: s_hojo_<year>.pdf
 SHIGAKU_PDFS: list[dict[str, object]] = [
-    {"slug": "h25", "year_label": "平成25年度", "year_num": 2013,
-     "url": "https://www.shigaku.go.jp/files/s_hojo_h25.pdf"},
-    {"slug": "h26", "year_label": "平成26年度", "year_num": 2014,
-     "url": "https://www.shigaku.go.jp/files/s_hojo_h26.pdf"},
-    {"slug": "h27", "year_label": "平成27年度", "year_num": 2015,
-     "url": "https://www.shigaku.go.jp/files/s_hojo_h27.pdf"},
-    {"slug": "h28", "year_label": "平成28年度", "year_num": 2016,
-     "url": "https://www.shigaku.go.jp/files/s_hojo_h28.pdf"},
-    {"slug": "h29", "year_label": "平成29年度", "year_num": 2017,
-     "url": "https://www.shigaku.go.jp/files/s_hojo_h29.pdf"},
-    {"slug": "h30", "year_label": "平成30年度", "year_num": 2018,
-     "url": "https://www.shigaku.go.jp/files/s_hojo_h30.pdf"},
-    {"slug": "r01", "year_label": "令和元年度", "year_num": 2019,
-     "url": "https://www.shigaku.go.jp/files/s_hojo_r01.pdf"},
-    {"slug": "r02", "year_label": "令和2年度", "year_num": 2020,
-     "url": "https://www.shigaku.go.jp/files/s_hojo_r02.pdf"},
-    {"slug": "r03", "year_label": "令和3年度", "year_num": 2021,
-     "url": "https://www.shigaku.go.jp/files/s_hojo_r03.pdf"},
-    {"slug": "r04", "year_label": "令和4年度", "year_num": 2022,
-     "url": "https://www.shigaku.go.jp/files/s_hojo_r04.pdf"},
-    {"slug": "r05", "year_label": "令和5年度", "year_num": 2023,
-     "url": "https://www.shigaku.go.jp/files/s_hojo_r05.pdf"},
-    {"slug": "r06", "year_label": "令和6年度", "year_num": 2024,
-     "url": "https://www.shigaku.go.jp/files/s_hojo_r06.pdf"},
+    {
+        "slug": "h25",
+        "year_label": "平成25年度",
+        "year_num": 2013,
+        "url": "https://www.shigaku.go.jp/files/s_hojo_h25.pdf",
+    },
+    {
+        "slug": "h26",
+        "year_label": "平成26年度",
+        "year_num": 2014,
+        "url": "https://www.shigaku.go.jp/files/s_hojo_h26.pdf",
+    },
+    {
+        "slug": "h27",
+        "year_label": "平成27年度",
+        "year_num": 2015,
+        "url": "https://www.shigaku.go.jp/files/s_hojo_h27.pdf",
+    },
+    {
+        "slug": "h28",
+        "year_label": "平成28年度",
+        "year_num": 2016,
+        "url": "https://www.shigaku.go.jp/files/s_hojo_h28.pdf",
+    },
+    {
+        "slug": "h29",
+        "year_label": "平成29年度",
+        "year_num": 2017,
+        "url": "https://www.shigaku.go.jp/files/s_hojo_h29.pdf",
+    },
+    {
+        "slug": "h30",
+        "year_label": "平成30年度",
+        "year_num": 2018,
+        "url": "https://www.shigaku.go.jp/files/s_hojo_h30.pdf",
+    },
+    {
+        "slug": "r01",
+        "year_label": "令和元年度",
+        "year_num": 2019,
+        "url": "https://www.shigaku.go.jp/files/s_hojo_r01.pdf",
+    },
+    {
+        "slug": "r02",
+        "year_label": "令和2年度",
+        "year_num": 2020,
+        "url": "https://www.shigaku.go.jp/files/s_hojo_r02.pdf",
+    },
+    {
+        "slug": "r03",
+        "year_label": "令和3年度",
+        "year_num": 2021,
+        "url": "https://www.shigaku.go.jp/files/s_hojo_r03.pdf",
+    },
+    {
+        "slug": "r04",
+        "year_label": "令和4年度",
+        "year_num": 2022,
+        "url": "https://www.shigaku.go.jp/files/s_hojo_r04.pdf",
+    },
+    {
+        "slug": "r05",
+        "year_label": "令和5年度",
+        "year_num": 2023,
+        "url": "https://www.shigaku.go.jp/files/s_hojo_r05.pdf",
+    },
+    {
+        "slug": "r06",
+        "year_label": "令和6年度",
+        "year_num": 2024,
+        "url": "https://www.shigaku.go.jp/files/s_hojo_r06.pdf",
+    },
 ]
 
 # Single event: MEXT 解散命令 (堀越学園, 2013-03-28).
@@ -196,7 +245,7 @@ def split_schools(s: str) -> list[str]:
             if tail:
                 out.append(tail)
             break
-        chunk = s[pos: chosen_end].strip()
+        chunk = s[pos:chosen_end].strip()
         if chunk:
             out.append(chunk)
         pos = chosen_end
@@ -327,15 +376,10 @@ def parse_shigaku_pdf(
                     if not tbl or len(tbl) < 2 or not tbl[0]:
                         continue
                     first_cells = "".join(
-                        (c or "").replace("\n", "").replace(" ", "").replace(
-                            "　", ""
-                        )
+                        (c or "").replace("\n", "").replace(" ", "").replace("　", "")
                         for c in tbl[0]
                     )
-                    if (
-                        "法人名" not in first_cells
-                        or "対象学校名" not in first_cells
-                    ):
+                    if "法人名" not in first_cells or "対象学校名" not in first_cells:
                         continue
                     # Header row found, parse data rows
                     for r in tbl[1:]:
@@ -350,13 +394,9 @@ def parse_shigaku_pdf(
                         if cols[0].isdigit():
                             if len(cols) < 5:
                                 continue
-                            hojin, schools, treatment, jiyu = (
-                                cols[1], cols[2], cols[3], cols[4]
-                            )
+                            hojin, schools, treatment, jiyu = (cols[1], cols[2], cols[3], cols[4])
                         else:
-                            hojin, schools, treatment, jiyu = (
-                                cols[0], cols[1], cols[2], cols[3]
-                            )
+                            hojin, schools, treatment, jiyu = (cols[0], cols[1], cols[2], cols[3])
                         if not hojin or not schools or "法人名" in hojin:
                             continue
                         # Strip column-spacing artifacts in name fields
@@ -372,21 +412,23 @@ def parse_shigaku_pdf(
                         # honest proxy).
                         issuance_date = f"{year_num:04d}-04-01"
                         for sch in split_schools(schools):
-                            rows.append(ShigakuRow(
-                                year_label=year_label,
-                                year_num=year_num,
-                                hojin_name=hojin,
-                                school_name=sch,
-                                treatment=treatment_clean,
-                                treatment_pct=pct,
-                                jiyu=jiyu_clean,
-                                enforcement_kind=kind,
-                                related_law_ref=law_ref,
-                                section_label=section_label,
-                                source_url=source_url,
-                                source_slug=source_slug,
-                                issuance_date=issuance_date,
-                            ))
+                            rows.append(
+                                ShigakuRow(
+                                    year_label=year_label,
+                                    year_num=year_num,
+                                    hojin_name=hojin,
+                                    school_name=sch,
+                                    treatment=treatment_clean,
+                                    treatment_pct=pct,
+                                    jiyu=jiyu_clean,
+                                    enforcement_kind=kind,
+                                    related_law_ref=law_ref,
+                                    section_label=section_label,
+                                    source_url=source_url,
+                                    source_slug=source_slug,
+                                    issuance_date=issuance_date,
+                                )
+                            )
     except Exception as exc:  # noqa: BLE001
         _LOG.warning("shigaku pdf parse failed %s: %s", source_url, exc)
     return rows
@@ -401,9 +443,7 @@ def _slug(s: str, n: int = 12) -> str:
     return hashlib.sha1(_norm(s).encode("utf-8")).hexdigest()[:n]
 
 
-def _entity_canonical_id(
-    bucket: str, year_num: int, hojin_name: str, school_name: str
-) -> str:
+def _entity_canonical_id(bucket: str, year_num: int, hojin_name: str, school_name: str) -> str:
     """E.g. enforcement:shigaku:2024:<sha12-hojin>:<sha12-school>."""
     h = _slug(hojin_name, 10)
     s = _slug(school_name, 10)
@@ -422,9 +462,7 @@ def ensure_tables(conn: sqlite3.Connection) -> None:
             (tbl,),
         ).fetchone()
         if not row:
-            raise SystemExit(
-                f"missing table '{tbl}' — apply migrations first"
-            )
+            raise SystemExit(f"missing table '{tbl}' — apply migrations first")
 
 
 def upsert_entity(
@@ -485,10 +523,13 @@ def upsert_enforcement(
     source_fetched_at: str,
 ) -> str:
     """Insert or replace the row keyed on entity_id (1:1 by design)."""
-    existed = conn.execute(
-        "SELECT 1 FROM am_enforcement_detail WHERE entity_id=? LIMIT 1",
-        (entity_id,),
-    ).fetchone() is not None
+    existed = (
+        conn.execute(
+            "SELECT 1 FROM am_enforcement_detail WHERE entity_id=? LIMIT 1",
+            (entity_id,),
+        ).fetchone()
+        is not None
+    )
     if existed:
         conn.execute(
             "DELETE FROM am_enforcement_detail WHERE entity_id=?",
@@ -527,12 +568,12 @@ def upsert_enforcement(
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--db", type=Path, default=DEFAULT_DB)
-    ap.add_argument("--limit", type=int, default=None,
-                    help="cap total inserts (debugging)")
+    ap.add_argument("--limit", type=int, default=None, help="cap total inserts (debugging)")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--verbose", "-v", action="store_true")
-    ap.add_argument("--max-sources", type=int, default=None,
-                    help="cap number of yearly PDFs walked")
+    ap.add_argument(
+        "--max-sources", type=int, default=None, help="cap number of yearly PDFs walked"
+    )
     return ap.parse_args(argv)
 
 
@@ -544,9 +585,7 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     http = HttpClient(user_agent=USER_AGENT)
-    now_iso = datetime.now(UTC).isoformat(timespec="seconds").replace(
-        "+00:00", "Z"
-    )
+    now_iso = datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
 
     conn: sqlite3.Connection | None = None
     if not args.dry_run:
@@ -598,8 +637,7 @@ def main(argv: list[str] | None = None) -> int:
             res = http.get(url, max_bytes=15 * 1024 * 1024)
             if not res.ok:
                 stats["pdfs_failed"] += 1
-                _LOG.warning("[%s] fetch fail status=%s url=%s",
-                             slug, res.status, url)
+                _LOG.warning("[%s] fetch fail status=%s url=%s", slug, res.status, url)
                 continue
             stats["pdfs_fetched"] += 1
             rows = parse_shigaku_pdf(
@@ -619,8 +657,7 @@ def main(argv: list[str] | None = None) -> int:
                     "shigaku", r.year_num, r.hojin_name, r.school_name
                 )
                 primary_name = (
-                    f"{r.hojin_name} ({r.school_name}) — "
-                    f"{r.year_label} 経常費補助金 {r.treatment}"
+                    f"{r.hojin_name} ({r.school_name}) — {r.year_label} 経常費補助金 {r.treatment}"
                 )
                 raw_json = json.dumps(
                     {
@@ -639,30 +676,26 @@ def main(argv: list[str] | None = None) -> int:
                         "authority_canonical": r.authority_canonical,
                         "source_url": r.source_url,
                         "source_slug": r.source_slug,
-                        "source_attribution": (
-                            "日本私立学校振興・共済事業団 公表資料"
-                        ),
-                        "license": (
-                            "公的助成業務における公表資料 (出典明記で引用可)"
-                        ),
+                        "source_attribution": ("日本私立学校振興・共済事業団 公表資料"),
+                        "license": ("公的助成業務における公表資料 (出典明記で引用可)"),
                     },
                     ensure_ascii=False,
                 )
                 if conn is None:
                     if len(sample_rows) < 8:
-                        sample_rows.append({
-                            "year": r.year_label,
-                            "hojin": r.hojin_name,
-                            "school": r.school_name,
-                            "kind": r.enforcement_kind,
-                            "treatment": r.treatment,
-                            "law": r.related_law_ref,
-                        })
+                        sample_rows.append(
+                            {
+                                "year": r.year_label,
+                                "hojin": r.hojin_name,
+                                "school": r.school_name,
+                                "kind": r.enforcement_kind,
+                                "treatment": r.treatment,
+                                "law": r.related_law_ref,
+                            }
+                        )
                     stats["rows_inserted"] += 1
                     by_year[r.year_label] = by_year.get(r.year_label, 0) + 1
-                    by_kind[r.enforcement_kind] = by_kind.get(
-                        r.enforcement_kind, 0
-                    ) + 1
+                    by_kind[r.enforcement_kind] = by_kind.get(r.enforcement_kind, 0) + 1
                     continue
                 try:
                     upsert_entity(
@@ -685,10 +718,7 @@ def main(argv: list[str] | None = None) -> int:
                         enforcement_kind=r.enforcement_kind,
                         reason_summary=(
                             f"[{r.year_label}] {r.treatment} — 事由: {r.jiyu}"
-                            + (
-                                f" / 区分: {r.section_label}"
-                                if r.section_label else ""
-                            )
+                            + (f" / 区分: {r.section_label}" if r.section_label else "")
                         ),
                         related_law_ref=r.related_law_ref,
                         amount_yen=None,
@@ -700,21 +730,20 @@ def main(argv: list[str] | None = None) -> int:
                     else:
                         stats["rows_updated"] += 1
                     by_year[r.year_label] = by_year.get(r.year_label, 0) + 1
-                    by_kind[r.enforcement_kind] = by_kind.get(
-                        r.enforcement_kind, 0
-                    ) + 1
+                    by_kind[r.enforcement_kind] = by_kind.get(r.enforcement_kind, 0) + 1
                     if len(sample_rows) < 8:
-                        sample_rows.append({
-                            "year": r.year_label,
-                            "hojin": r.hojin_name,
-                            "school": r.school_name,
-                            "kind": r.enforcement_kind,
-                            "treatment": r.treatment,
-                            "law": r.related_law_ref[:60],
-                        })
+                        sample_rows.append(
+                            {
+                                "year": r.year_label,
+                                "hojin": r.hojin_name,
+                                "school": r.school_name,
+                                "kind": r.enforcement_kind,
+                                "treatment": r.treatment,
+                                "law": r.related_law_ref[:60],
+                            }
+                        )
                 except sqlite3.Error as exc:
-                    _LOG.error("[%s] DB error %s/%s: %s",
-                               slug, r.hojin_name, r.school_name, exc)
+                    _LOG.error("[%s] DB error %s/%s: %s", slug, r.hojin_name, r.school_name, exc)
                     continue
 
         # -- Phase 2: MEXT one-offs --------------------------------------
@@ -753,14 +782,16 @@ def main(argv: list[str] | None = None) -> int:
                 if conn is None:
                     stats["mext_inserted"] += 1
                     if len(sample_rows) < 8:
-                        sample_rows.append({
-                            "year": str(src["issuance_date"])[:4],
-                            "hojin": src["hojin_name"],
-                            "school": school_str,
-                            "kind": src["enforcement_kind"],
-                            "treatment": "解散命令",
-                            "law": src["related_law_ref"],
-                        })
+                        sample_rows.append(
+                            {
+                                "year": str(src["issuance_date"])[:4],
+                                "hojin": src["hojin_name"],
+                                "school": school_str,
+                                "kind": src["enforcement_kind"],
+                                "treatment": "解散命令",
+                                "law": src["related_law_ref"],
+                            }
+                        )
                     continue
                 try:
                     upsert_entity(
@@ -773,9 +804,7 @@ def main(argv: list[str] | None = None) -> int:
                         authority_canonical=str(src["authority_canonical"]),
                         source_topic="mext_shigaku_enforcement",
                     )
-                    target_name = (
-                        f"{src['hojin_name']} / {school_str}"
-                    )
+                    target_name = f"{src['hojin_name']} / {school_str}"
                     verdict = upsert_enforcement(
                         conn,
                         entity_id=canonical_id,
@@ -794,18 +823,20 @@ def main(argv: list[str] | None = None) -> int:
                         stats["rows_inserted"] += 1
                     else:
                         stats["rows_updated"] += 1
-                    by_kind[str(src["enforcement_kind"])] = by_kind.get(
-                        str(src["enforcement_kind"]), 0
-                    ) + 1
+                    by_kind[str(src["enforcement_kind"])] = (
+                        by_kind.get(str(src["enforcement_kind"]), 0) + 1
+                    )
                     if len(sample_rows) < 8:
-                        sample_rows.append({
-                            "year": str(src["issuance_date"])[:4],
-                            "hojin": src["hojin_name"],
-                            "school": school_str,
-                            "kind": src["enforcement_kind"],
-                            "treatment": "解散命令",
-                            "law": src["related_law_ref"],
-                        })
+                        sample_rows.append(
+                            {
+                                "year": str(src["issuance_date"])[:4],
+                                "hojin": src["hojin_name"],
+                                "school": school_str,
+                                "kind": src["enforcement_kind"],
+                                "treatment": "解散命令",
+                                "law": src["related_law_ref"],
+                            }
+                        )
                 except sqlite3.Error as exc:
                     stats["mext_failed"] += 1
                     _LOG.error("[%s] MEXT DB error: %s", slug, exc)
@@ -831,9 +862,13 @@ def main(argv: list[str] | None = None) -> int:
     _LOG.info(
         "done pdfs_ok=%d pdfs_fail=%d parsed=%d inserted=%d updated=%d "
         "mext_inserted=%d mext_failed=%d",
-        stats["pdfs_fetched"], stats["pdfs_failed"],
-        stats["rows_parsed"], stats["rows_inserted"], stats["rows_updated"],
-        stats["mext_inserted"], stats["mext_failed"],
+        stats["pdfs_fetched"],
+        stats["pdfs_failed"],
+        stats["rows_parsed"],
+        stats["rows_inserted"],
+        stats["rows_updated"],
+        stats["mext_inserted"],
+        stats["mext_failed"],
     )
     print("=== SUMMARY ===")
     print(f"pdfs_fetched: {stats['pdfs_fetched']}")

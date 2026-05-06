@@ -42,6 +42,7 @@ CLI:
         [--dry-run]
         [--limit N]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -149,6 +150,7 @@ PREFECTURE_FEDS: list[tuple[str, str, str]] = [
 # in primary_name). We deliberately do NOT mint per-round rows (would inflate to
 # 50+ near-duplicates per portal); instead, the portal row's primary_name carries
 # the latest 公募回 label, and application_window_json carries the schedule.
+
 
 @dataclass
 class PortalRecord:
@@ -393,7 +395,7 @@ def _decode_html(body: bytes, headers: dict[str, str]) -> str:
     for token in ct.split(";"):
         token = token.strip()
         if token.startswith("charset="):
-            charset = token[len("charset="):].strip().strip('"')
+            charset = token[len("charset=") :].strip().strip('"')
             break
     if charset is None:
         # Sniff meta charset
@@ -597,9 +599,7 @@ def build_portal_row(rec: PortalRecord, prb: FetchProbe) -> dict[str, Any]:
         "amount_band": None,
         "application_window_json": aw_json,
         "enriched_json": json.dumps(enriched, ensure_ascii=False),
-        "source_mentions_json": json.dumps(
-            {"shokokai_portal": rec.source_url}, ensure_ascii=False
-        ),
+        "source_mentions_json": json.dumps({"shokokai_portal": rec.source_url}, ensure_ascii=False),
         "updated_at": now,
         "source_url": rec.source_url,
         "source_fetched_at": now,
@@ -610,9 +610,7 @@ def build_portal_row(rec: PortalRecord, prb: FetchProbe) -> dict[str, Any]:
     }
 
 
-def build_federation_row(
-    pref: str, name: str, url: str, prb: FetchProbe
-) -> dict[str, Any]:
+def build_federation_row(pref: str, name: str, url: str, prb: FetchProbe) -> dict[str, Any]:
     now = dt.datetime.now(dt.UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
     aliases = [name]
     enriched = {
@@ -667,9 +665,7 @@ def build_federation_row(
         "amount_band": None,
         "application_window_json": None,
         "enriched_json": json.dumps(enriched, ensure_ascii=False),
-        "source_mentions_json": json.dumps(
-            {"prefecture_federation": url}, ensure_ascii=False
-        ),
+        "source_mentions_json": json.dumps({"prefecture_federation": url}, ensure_ascii=False),
         "updated_at": now,
         "source_url": url,
         "source_fetched_at": now,
@@ -802,9 +798,7 @@ def upsert_rows(db_path: Path, rows: list[dict[str, Any]], dry_run: bool) -> dic
 # ---------------------------------------------------------------------------
 
 
-def build_round_row(
-    parent: PortalRecord, parent_prb: FetchProbe, round_no: int
-) -> dict[str, Any]:
+def build_round_row(parent: PortalRecord, parent_prb: FetchProbe, round_no: int) -> dict[str, Any]:
     """Mint a per-round program row for an active 持続化補助金 portal."""
     now = dt.datetime.now(dt.UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
     name = f"{parent.short_alias.replace('第19回', '').replace('第3回', '').replace('第2回', '').strip()} 第{round_no}回"
@@ -872,9 +866,7 @@ def build_round_row(
             ["money_amount", "documents", "exclusions", "statistics"],
             ensure_ascii=False,
         ),
-        "a_to_j_coverage_json": _coverage_json(
-            {"A": True, "C": tier == "S", "I": True}
-        ),
+        "a_to_j_coverage_json": _coverage_json({"A": True, "C": tier == "S", "I": True}),
         "excluded": 0,
         "exclusion_reason": None,
         "crop_categories_json": None,
@@ -899,9 +891,7 @@ def build_round_row(
         ).hexdigest(),
         "source_url_corrected_at": None,
         "source_last_check_status": parent_prb.status if parent_prb.status else None,
-        "source_fail_count": 0
-        if (parent_prb.status and parent_prb.status < 400)
-        else 1,
+        "source_fail_count": 0 if (parent_prb.status and parent_prb.status < 400) else 1,
     }
 
 
@@ -910,8 +900,9 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--db", type=Path, default=DEFAULT_DB)
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--limit", type=int, default=None)
-    p.add_argument("--no-rounds", action="store_true",
-                   help="Skip per-round rows for 持続化 portals.")
+    p.add_argument(
+        "--no-rounds", action="store_true", help="Skip per-round rows for 持続化 portals."
+    )
     p.add_argument("--verbose", action="store_true")
     args = p.parse_args(argv)
 

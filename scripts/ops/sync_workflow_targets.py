@@ -130,8 +130,7 @@ def _desired_ruff_targets(repo_root: Path, tracked: set[str]) -> list[str]:
     selected = sorted(
         path
         for path in candidates
-        if path in tracked
-        and any(path.startswith(prefix) for prefix in RUFF_ALLOW_PREFIXES)
+        if path in tracked and any(path.startswith(prefix) for prefix in RUFF_ALLOW_PREFIXES)
     )
     return selected
 
@@ -139,10 +138,7 @@ def _desired_ruff_targets(repo_root: Path, tracked: set[str]) -> list[str]:
 def _desired_pytest_targets(repo_root: Path, tracked: set[str]) -> list[str]:
     candidates = _glob_real_paths(repo_root, PYTEST_GLOB_ROOTS, "test_*.py")
     selected = sorted(
-        path
-        for path in candidates
-        if path in tracked
-        and PYTEST_FILENAME_RE.match(Path(path).name)
+        path for path in candidates if path in tracked and PYTEST_FILENAME_RE.match(Path(path).name)
     )
     return selected
 
@@ -190,9 +186,7 @@ def _replace_release_ruff_lint(text: str, targets: list[str]) -> str:
 def _current_env_targets(text: str, name: str) -> list[str] | None:
     for match in ENV_BLOCK_RE.finditer(text):
         if match.group("name") == name:
-            return [
-                line.strip() for line in match.group("body").splitlines() if line.strip()
-            ]
+            return [line.strip() for line in match.group("body").splitlines() if line.strip()]
     return None
 
 
@@ -281,17 +275,13 @@ def run(repo_root: Path, apply: bool) -> int:
 
     if not diffs:
         print(
-            f"[OK] workflow targets in sync (ruff={len(desired_ruff)} "
-            f"pytest={len(desired_pytest)})"
+            f"[OK] workflow targets in sync (ruff={len(desired_ruff)} pytest={len(desired_pytest)})"
         )
         return 0
 
     for line in diffs:
         print(line)
-    print(
-        f"[DRIFT] ruff_desired={len(desired_ruff)} "
-        f"pytest_desired={len(desired_pytest)}"
-    )
+    print(f"[DRIFT] ruff_desired={len(desired_ruff)} pytest_desired={len(desired_pytest)}")
 
     if not apply:
         return 1

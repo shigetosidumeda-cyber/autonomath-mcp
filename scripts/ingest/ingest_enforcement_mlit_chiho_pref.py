@@ -42,6 +42,7 @@ CLI:
 
 Parallel-safe: BEGIN IMMEDIATE + busy_timeout=300000.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -75,13 +76,9 @@ HTML_MAX = 4 * 1024 * 1024
 # ---------------------------------------------------------------------------
 
 # 令和7年4月17日 / 令和8年4月9日 (full-width digits permitted via NFKC)
-_R_DATE = re.compile(
-    r"令\s*和\s*([\d０-９]+)\s*年\s*([\d０-９]{1,2})\s*月\s*([\d０-９]{1,2})\s*日"
-)
+_R_DATE = re.compile(r"令\s*和\s*([\d０-９]+)\s*年\s*([\d０-９]{1,2})\s*月\s*([\d０-９]{1,2})\s*日")
 # 平成28年5月16日
-_H_DATE = re.compile(
-    r"平\s*成\s*([\d０-９]+)\s*年\s*([\d０-９]{1,2})\s*月\s*([\d０-９]{1,2})\s*日"
-)
+_H_DATE = re.compile(r"平\s*成\s*([\d０-９]+)\s*年\s*([\d０-９]{1,2})\s*月\s*([\d０-９]{1,2})\s*日")
 # 2024/3/27 or 2024.3.27
 _ISO_DATE = re.compile(r"(\d{4})[./\-](\d{1,2})[./\-](\d{1,2})")
 # R7.4.17 / R8.4.9
@@ -167,16 +164,17 @@ def all_dates(text: str) -> list[str]:
 # Row container
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class EnfRow:
-    org_slug: str                 # e.g. 'osaka-pref' / 'hkd' / 'cbr' / 'cgr' / 'qsr'
-    issuing_authority: str        # '大阪府' / '北海道開発局' / '中部地方整備局' / ...
+    org_slug: str  # e.g. 'osaka-pref' / 'hkd' / 'cbr' / 'cgr' / 'qsr'
+    issuing_authority: str  # '大阪府' / '北海道開発局' / '中部地方整備局' / ...
     target_name: str
     address: str | None
-    issuance_date: str            # ISO yyyy-mm-dd
+    issuance_date: str  # ISO yyyy-mm-dd
     period_start: str | None
     period_end: str | None
-    enforcement_kind: str         # contract_suspend / business_improvement / license_revoke
+    enforcement_kind: str  # contract_suspend / business_improvement / license_revoke
     punishment_raw: str
     reason_summary: str | None
     related_law_ref: str | None
@@ -192,6 +190,7 @@ class EnfRow:
 # ---------------------------------------------------------------------------
 # Punishment → kind mapping
 # ---------------------------------------------------------------------------
+
 
 def map_kind(punish: str) -> str:
     p = punish or ""
@@ -212,6 +211,7 @@ def map_kind(punish: str) -> str:
 # HTML helpers
 # ---------------------------------------------------------------------------
 
+
 def _strip_html(s: str) -> str:
     s = re.sub(r"<br\s*/?>", " / ", s, flags=re.IGNORECASE)
     s = re.sub(r"<[^>]+>", "", s)
@@ -231,7 +231,8 @@ def _table_rows(tbl_html: str) -> list[list[str]]:
     rows: list[list[str]] = []
     for tr_m in re.finditer(r"<tr[^>]*>.*?</tr>", tbl_html, flags=re.DOTALL | re.IGNORECASE):
         cells = re.findall(
-            r"<t[hd][^>]*>(.*?)</t[hd]>", tr_m.group(0),
+            r"<t[hd][^>]*>(.*?)</t[hd]>",
+            tr_m.group(0),
             flags=re.DOTALL | re.IGNORECASE,
         )
         rows.append([_strip_html(c) for c in cells])
@@ -242,11 +243,15 @@ def _table_rows(tbl_html: str) -> list[list[str]]:
 # pdftotext shell-out
 # ---------------------------------------------------------------------------
 
+
 def _pdftotext(body: bytes) -> str:
     try:
         proc = subprocess.run(
             ["pdftotext", "-layout", "-enc", "UTF-8", "-", "-"],
-            input=body, capture_output=True, check=False, timeout=60,
+            input=body,
+            capture_output=True,
+            check=False,
+            timeout=60,
         )
     except (FileNotFoundError, subprocess.TimeoutExpired) as exc:
         _LOG.warning("pdftotext failed: %s", exc)
@@ -269,8 +274,8 @@ OSAKA_FY_URLS = [
 
 def parse_osaka_fy_page(html: str, source_url: str) -> list[EnfRow]:
     """Osaka 大阪府 8-column table:
-       建設業者名 / 主たる営業所所在地等 / 許可番号 / 処分内容 /
-       処分年月日 / 処分事由 / 備考(原因) / 法人番号
+    建設業者名 / 主たる営業所所在地等 / 許可番号 / 処分内容 /
+    処分年月日 / 処分事由 / 備考(原因) / 法人番号
     """
     rows: list[EnfRow] = []
     for tbl_html in _html_tables(html):
@@ -314,7 +319,9 @@ def parse_osaka_fy_page(html: str, source_url: str) -> list[EnfRow]:
             reason_combined: str | None = None
             for piece in [reason_clause, reason_detail]:
                 if piece:
-                    reason_combined = (reason_combined + " / " + piece) if reason_combined else piece
+                    reason_combined = (
+                        (reason_combined + " / " + piece) if reason_combined else piece
+                    )
             if reason_combined:
                 reason_combined = reason_combined[:1500]
 
@@ -328,21 +335,23 @@ def parse_osaka_fy_page(html: str, source_url: str) -> list[EnfRow]:
                 if m:
                     related = m.group(0)[:200]
 
-            rows.append(EnfRow(
-                org_slug="osaka-pref",
-                issuing_authority="大阪府",
-                target_name=name,
-                address=address,
-                issuance_date=iso,
-                period_start=period_start,
-                period_end=period_end,
-                enforcement_kind=kind,
-                punishment_raw=punish,
-                reason_summary=reason_combined,
-                related_law_ref=related,
-                houjin_bangou=houjin,
-                source_url=source_url,
-            ))
+            rows.append(
+                EnfRow(
+                    org_slug="osaka-pref",
+                    issuing_authority="大阪府",
+                    target_name=name,
+                    address=address,
+                    issuance_date=iso,
+                    period_start=period_start,
+                    period_end=period_end,
+                    enforcement_kind=kind,
+                    punishment_raw=punish,
+                    reason_summary=reason_combined,
+                    related_law_ref=related,
+                    houjin_bangou=houjin,
+                    source_url=source_url,
+                )
+            )
     return rows
 
 
@@ -365,7 +374,9 @@ def find_hkd_pdf_links(html: str, page_url: str) -> list[str]:
     out: list[str] = []
     seen: set[str] = set()
     for href in re.findall(
-        r'<a[^>]+href="([^"]+\.pdf)"', html, flags=re.IGNORECASE,
+        r'<a[^>]+href="([^"]+\.pdf)"',
+        html,
+        flags=re.IGNORECASE,
     ):
         if href.startswith("http"):
             absurl = href
@@ -426,7 +437,19 @@ def parse_hkd_pdf(text: str, source_url: str) -> list[EnfRow]:
         cand = lead.group(1).strip()
         # Strip 「」 quotes if present.
         cand = cand.strip("「」『』\"' 　")
-        if any(tok in cand for tok in ("株式会社", "有限会社", "合同会社", "合資会社", "（株）", "(株)", "（有）", "(有)")):
+        if any(
+            tok in cand
+            for tok in (
+                "株式会社",
+                "有限会社",
+                "合同会社",
+                "合資会社",
+                "（株）",
+                "(株)",
+                "（有）",
+                "(有)",
+            )
+        ):
             target_name = cand
 
     # Pattern 1: line right after 指名停止措置業者名 ... 住所 header (skip the header line itself).
@@ -446,7 +469,9 @@ def parse_hkd_pdf(text: str, source_url: str) -> list[EnfRow]:
                     continue
                 if re.match(r"^[1-9０-９一二三四五六七八九]\s*[.．、]?\s*$", line):
                     continue
-                line_clean = re.sub(r"^(?:[1-9０-９一二三四五六七八九]\s*[.．、)）]?\s*)+", "", line).strip()
+                line_clean = re.sub(
+                    r"^(?:[1-9０-９一二三四五六七八九]\s*[.．、)）]?\s*)+", "", line
+                ).strip()
                 parts = re.split(r"\s{2,}|　{1,}", line_clean)
                 parts = [p.strip() for p in parts if p.strip()]
                 if not parts:
@@ -455,9 +480,16 @@ def parse_hkd_pdf(text: str, source_url: str) -> list[EnfRow]:
                 if cand in {"指名停止措置業者名", "業者名", "住所", "業者の住所"}:
                     continue
                 if not any(
-                    tok in cand for tok in (
-                        "株式会社", "有限会社", "合同会社", "合資会社",
-                        "（株）", "(株)", "（有）", "(有)",
+                    tok in cand
+                    for tok in (
+                        "株式会社",
+                        "有限会社",
+                        "合同会社",
+                        "合資会社",
+                        "（株）",
+                        "(株)",
+                        "（有）",
+                        "(有)",
                     )
                 ):
                     continue
@@ -473,9 +505,14 @@ def parse_hkd_pdf(text: str, source_url: str) -> list[EnfRow]:
                 if "住所" in line or "所在地" in line:
                     continue
                 cand = line.strip()
-                if any(skip in cand for skip in ("措置業者名", "指名停止措置業者名", "電話", "問合せ", "代表取締役")):
+                if any(
+                    skip in cand
+                    for skip in ("措置業者名", "指名停止措置業者名", "電話", "問合せ", "代表取締役")
+                ):
                     continue
-                cand = re.sub(r"^(?:[1-9０-９一二三四五六七八九]\s*[.．、)）]?\s*)+", "", cand).strip()
+                cand = re.sub(
+                    r"^(?:[1-9０-９一二三四五六七八九]\s*[.．、)）]?\s*)+", "", cand
+                ).strip()
                 parts = re.split(r"\s{2,}|　{1,}", cand)
                 if parts and parts[0] not in {"指名停止措置業者名"}:
                     target_name = parts[0].strip()
@@ -528,21 +565,23 @@ def parse_hkd_pdf(text: str, source_url: str) -> list[EnfRow]:
     if period_text:
         raw_punish = f"指名停止 {period_text.group(1)}"
 
-    return [EnfRow(
-        org_slug="hkd",
-        issuing_authority="北海道開発局",
-        target_name=target_name,
-        address=address,
-        issuance_date=issuance,
-        period_start=period_start,
-        period_end=period_end,
-        enforcement_kind="contract_suspend",
-        punishment_raw=raw_punish,
-        reason_summary=reason,
-        related_law_ref="北海道開発局工事契約等指名停止等の措置要領",
-        houjin_bangou=None,
-        source_url=source_url,
-    )]
+    return [
+        EnfRow(
+            org_slug="hkd",
+            issuing_authority="北海道開発局",
+            target_name=target_name,
+            address=address,
+            issuance_date=issuance,
+            period_start=period_start,
+            period_end=period_end,
+            enforcement_kind="contract_suspend",
+            punishment_raw=raw_punish,
+            reason_summary=reason,
+            related_law_ref="北海道開発局工事契約等指名停止等の措置要領",
+            houjin_bangou=None,
+            source_url=source_url,
+        )
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -576,7 +615,9 @@ def find_cbr_detail_links(index_html: str, base_url: str) -> list[str]:
     seen: set[str] = set()
     base = base_url.rsplit("/", 1)[0] + "/"
     for href in re.findall(
-        r'<a[^>]+href="([^"]+\.html?)"', index_html, flags=re.IGNORECASE,
+        r'<a[^>]+href="([^"]+\.html?)"',
+        index_html,
+        flags=re.IGNORECASE,
     ):
         if not (href.startswith("teishi") or href.startswith("shiji")):
             continue
@@ -635,21 +676,13 @@ def parse_cbr_detail(html: str, source_url: str) -> list[EnfRow]:
         or fields.get("違反行為の概要")
         or fields.get("違反事実")
     )
-    law_ref = (
-        fields.get("根拠法令")
-        or fields.get("関係法令")
-        or "建設業法"
-    )
+    law_ref = fields.get("根拠法令") or fields.get("関係法令") or "建設業法"
     period: str | None = None
     period_start: str | None = None
     period_end: str | None = None
     if "営業停止" in punishment or "停止" in punishment:
         # Period appears in 処分の内容 or in dedicated 期間 field.
-        period_field = (
-            fields.get("処分の期間")
-            or fields.get("期間")
-            or punishment
-        )
+        period_field = fields.get("処分の期間") or fields.get("期間") or punishment
         period_dates = all_dates(period_field)
         if len(period_dates) >= 2:
             period_start, period_end = period_dates[0], period_dates[1]
@@ -664,26 +697,29 @@ def parse_cbr_detail(html: str, source_url: str) -> list[EnfRow]:
         reason_parts.append(f"許可番号: {license_no}")
     summary = " / ".join(reason_parts)[:1500] if reason_parts else None
 
-    return [EnfRow(
-        org_slug="cbr",
-        issuing_authority="中部地方整備局",
-        target_name=name,
-        address=address,
-        issuance_date=issuance,
-        period_start=period_start,
-        period_end=period_end,
-        enforcement_kind=map_kind(punishment),
-        punishment_raw=punishment,
-        reason_summary=summary,
-        related_law_ref=law_ref,
-        houjin_bangou=None,
-        source_url=source_url,
-    )]
+    return [
+        EnfRow(
+            org_slug="cbr",
+            issuing_authority="中部地方整備局",
+            target_name=name,
+            address=address,
+            issuance_date=issuance,
+            period_start=period_start,
+            period_end=period_end,
+            enforcement_kind=map_kind(punishment),
+            punishment_raw=punishment,
+            reason_summary=summary,
+            related_law_ref=law_ref,
+            houjin_bangou=None,
+            source_url=source_url,
+        )
+    ]
 
 
 # ---------------------------------------------------------------------------
 # Single-case PDF parser (Chugoku / Kyushu / Kanto / 中部営業停止 PDF) (Source 4-6)
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class SingleCasePdfSource:
@@ -694,7 +730,8 @@ class SingleCasePdfSource:
 
 
 def parse_single_case_pdf(
-    text: str, source: SingleCasePdfSource,
+    text: str,
+    source: SingleCasePdfSource,
 ) -> list[EnfRow]:
     """Generic 'press-release style' 指名停止 PDF (1 PDF = 1+ company).
 
@@ -743,8 +780,22 @@ def parse_single_case_pdf(
         cand = inline.group(1).strip()
         # Strip trailing whitespace/colon noise.
         cand = re.split(r"\s{2,}|　", cand)[0].strip()
-        if cand and len(cand) >= 2 and any(
-            tok in cand for tok in ("株式会社", "有限会社", "合同会社", "合資会社", "（株）", "(株)", "（有）", "(有)")
+        if (
+            cand
+            and len(cand) >= 2
+            and any(
+                tok in cand
+                for tok in (
+                    "株式会社",
+                    "有限会社",
+                    "合同会社",
+                    "合資会社",
+                    "（株）",
+                    "(株)",
+                    "（有）",
+                    "(有)",
+                )
+            )
         ):
             addr_match = re.search(r"業\s*者\s*の?\s*住\s*所\s*[：:]\s*([^\n]+)", text)
             addr = None
@@ -766,14 +817,25 @@ def parse_single_case_pdf(
                 continue
             # Recognize company tokens.
             if not any(
-                tok in line for tok in (
-                    "株式会社", "有限会社", "合同会社", "（株）", "(株)",
-                    "（有）", "(有)", "合資会社", "（資）", "（名）",
+                tok in line
+                for tok in (
+                    "株式会社",
+                    "有限会社",
+                    "合同会社",
+                    "（株）",
+                    "(株)",
+                    "（有）",
+                    "(有)",
+                    "合資会社",
+                    "（資）",
+                    "（名）",
                 )
             ):
                 continue
             # Strip leading list-numbering like "1." or "(1)".
-            line_clean = re.sub(r"^(?:[1-9０-９一二三四五六七八九]\s*[.．、)）]?\s*)+", "", line).strip()
+            line_clean = re.sub(
+                r"^(?:[1-9０-９一二三四五六七八九]\s*[.．、)）]?\s*)+", "", line
+            ).strip()
             parts = re.split(r"\s{2,}|　{1,}", line_clean)
             parts = [p.strip() for p in parts if p.strip()]
             if not parts:
@@ -794,10 +856,16 @@ def parse_single_case_pdf(
                 if any(tok in line for tok in ("代表", "問合せ", "ホームページ", "電話")):
                     continue
                 # Strip leading numbering.
-                line = re.sub(r"^(?:[1-9０-９一二三四五六七八九]\s*[.．、)）]?\s*)+", "", line).strip()
+                line = re.sub(
+                    r"^(?:[1-9０-９一二三四五六七八九]\s*[.．、)）]?\s*)+", "", line
+                ).strip()
                 parts = re.split(r"\s{2,}|　{1,}", line)
                 parts = [p.strip() for p in parts if p.strip()]
-                if parts and len(parts[0]) >= 2 and parts[0] not in {"指名停止措置業者名", "業者名"}:
+                if (
+                    parts
+                    and len(parts[0]) >= 2
+                    and parts[0] not in {"指名停止措置業者名", "業者名"}
+                ):
                     company_lines.append((parts[0], " ".join(parts[1:]) or None))
                     break
 
@@ -817,10 +885,15 @@ def parse_single_case_pdf(
 
     # Reason summary
     reason_parts = []
-    sub = re.search(r"事\s*実\s*の\s*概\s*要\s*\n([\s\S]+?)(?=(?:５|5)[\s.．、]+|別紙のとおり|＜問い合わせ先＞)", text)
+    sub = re.search(
+        r"事\s*実\s*の\s*概\s*要\s*\n([\s\S]+?)(?=(?:５|5)[\s.．、]+|別紙のとおり|＜問い合わせ先＞)",
+        text,
+    )
     if sub:
         reason_parts.append(re.sub(r"\s+", " ", sub.group(1).strip())[:1200])
-    sub = re.search(r"指名停止措置理由[\s\S]*?\n([\s\S]+?)(?=＜|【問合せ先】|問い合わせ先|別紙のとおり)", text)
+    sub = re.search(
+        r"指名停止措置理由[\s\S]*?\n([\s\S]+?)(?=＜|【問合せ先】|問い合わせ先|別紙のとおり)", text
+    )
     if sub:
         reason_parts.append(re.sub(r"\s+", " ", sub.group(1).strip())[:600])
     reason = " / ".join(reason_parts)[:1500] if reason_parts else None
@@ -837,27 +910,30 @@ def parse_single_case_pdf(
 
     rows: list[EnfRow] = []
     for name, addr in company_lines:
-        rows.append(EnfRow(
-            org_slug=source.org_slug,
-            issuing_authority=source.issuing_authority,
-            target_name=name,
-            address=addr,
-            issuance_date=issuance,
-            period_start=period_start,
-            period_end=period_end,
-            enforcement_kind="contract_suspend",
-            punishment_raw=punish_label,
-            reason_summary=reason,
-            related_law_ref="工事請負契約に係る指名停止等の措置要領",
-            houjin_bangou=None,
-            source_url=source.pdf_url,
-        ))
+        rows.append(
+            EnfRow(
+                org_slug=source.org_slug,
+                issuing_authority=source.issuing_authority,
+                target_name=name,
+                address=addr,
+                issuance_date=issuance,
+                period_start=period_start,
+                period_end=period_end,
+                enforcement_kind="contract_suspend",
+                punishment_raw=punish_label,
+                reason_summary=reason,
+                related_law_ref="工事請負契約に係る指名停止等の措置要領",
+                houjin_bangou=None,
+                source_url=source.pdf_url,
+            )
+        )
     return rows
 
 
 # ---------------------------------------------------------------------------
 # Index discovery for 指名停止 PDFs (Chugoku, Kyushu)
 # ---------------------------------------------------------------------------
+
 
 def discover_qsr_pdfs(http: HttpClient) -> list[SingleCasePdfSource]:
     """Walk 九州地方整備局 fiscal year index pages for individual PDF case links."""
@@ -883,11 +959,13 @@ def discover_qsr_pdfs(http: HttpClient) -> list[SingleCasePdfSource]:
             if absurl in seen:
                 continue
             seen.add(absurl)
-            out.append(SingleCasePdfSource(
-                org_slug="qsr",
-                issuing_authority="九州地方整備局",
-                pdf_url=absurl,
-            ))
+            out.append(
+                SingleCasePdfSource(
+                    org_slug="qsr",
+                    issuing_authority="九州地方整備局",
+                    pdf_url=absurl,
+                )
+            )
     return out
 
 
@@ -915,11 +993,13 @@ def discover_cgr_pdfs(http: HttpClient) -> list[SingleCasePdfSource]:
             if absurl in seen:
                 continue
             seen.add(absurl)
-            out.append(SingleCasePdfSource(
-                org_slug="cgr",
-                issuing_authority="中国地方整備局",
-                pdf_url=absurl,
-            ))
+            out.append(
+                SingleCasePdfSource(
+                    org_slug="cgr",
+                    issuing_authority="中国地方整備局",
+                    pdf_url=absurl,
+                )
+            )
     return out
 
 
@@ -945,11 +1025,13 @@ def discover_ktr_pdfs(http: HttpClient) -> list[SingleCasePdfSource]:
             if absurl in seen:
                 continue
             seen.add(absurl)
-            out.append(SingleCasePdfSource(
-                org_slug="ktr",
-                issuing_authority="関東地方整備局",
-                pdf_url=absurl,
-            ))
+            out.append(
+                SingleCasePdfSource(
+                    org_slug="ktr",
+                    issuing_authority="関東地方整備局",
+                    pdf_url=absurl,
+                )
+            )
     return out
 
 
@@ -962,16 +1044,13 @@ def parse_ktr_pdf(text: str, source: SingleCasePdfSource) -> list[EnfRow]:
     """
     if not text or "監督処分" not in text and "営業停止" not in text and "指示" not in text:
         return []
+
     # Try field extraction.
     def field(pat: str) -> str | None:
         m = re.search(pat + r"\s*[：:\s]*([^\n]+)", text)
         return m.group(1).strip() if m else None
 
-    name = (
-        field(r"商号又は名称")
-        or field(r"商\s*号")
-        or field(r"処分業者")
-    )
+    name = field(r"商号又は名称") or field(r"商\s*号") or field(r"処分業者")
     if not name:
         return []
     # Drop trailing ()
@@ -988,26 +1067,29 @@ def parse_ktr_pdf(text: str, source: SingleCasePdfSource) -> list[EnfRow]:
     period_start = period_dates[0] if len(period_dates) >= 1 else None
     period_end = period_dates[1] if len(period_dates) >= 2 else None
 
-    return [EnfRow(
-        org_slug=source.org_slug,
-        issuing_authority=source.issuing_authority,
-        target_name=name,
-        address=address,
-        issuance_date=issuance,
-        period_start=period_start,
-        period_end=period_end,
-        enforcement_kind=map_kind(punishment),
-        punishment_raw=punishment,
-        reason_summary=(reason or "")[:1500] or None,
-        related_law_ref=law[:200] if law else None,
-        houjin_bangou=None,
-        source_url=source.pdf_url,
-    )]
+    return [
+        EnfRow(
+            org_slug=source.org_slug,
+            issuing_authority=source.issuing_authority,
+            target_name=name,
+            address=address,
+            issuance_date=issuance,
+            period_start=period_start,
+            period_end=period_end,
+            enforcement_kind=map_kind(punishment),
+            punishment_raw=punishment,
+            reason_summary=(reason or "")[:1500] or None,
+            related_law_ref=law[:200] if law else None,
+            houjin_bangou=None,
+            source_url=source.pdf_url,
+        )
+    ]
 
 
 # ---------------------------------------------------------------------------
 # DB layer
 # ---------------------------------------------------------------------------
+
 
 def open_db(db_path: Path) -> sqlite3.Connection:
     if not db_path.exists():
@@ -1036,27 +1118,33 @@ def load_dedup(conn: sqlite3.Connection) -> set[tuple[str, str, str]]:
 
 
 def insert_row(
-    conn: sqlite3.Connection, row: EnfRow, fetched_at: str,
+    conn: sqlite3.Connection,
+    row: EnfRow,
+    fetched_at: str,
 ) -> str:
     """Insert am_entities + am_enforcement_detail. Returns 'insert' | 'skip'."""
     canonical_id = row.canonical_id()
-    raw_json = json.dumps({
-        "org_slug": row.org_slug,
-        "issuing_authority": row.issuing_authority,
-        "target_name": row.target_name,
-        "address": row.address,
-        "issuance_date": row.issuance_date,
-        "period_start": row.period_start,
-        "period_end": row.period_end,
-        "enforcement_kind": row.enforcement_kind,
-        "punishment_raw": row.punishment_raw,
-        "reason_summary": row.reason_summary,
-        "related_law_ref": row.related_law_ref,
-        "houjin_bangou": row.houjin_bangou,
-        "source_url": row.source_url,
-        "fetched_at": fetched_at,
-        "source": "mlit_chiho_pref",
-    }, ensure_ascii=False, separators=(",", ":"))
+    raw_json = json.dumps(
+        {
+            "org_slug": row.org_slug,
+            "issuing_authority": row.issuing_authority,
+            "target_name": row.target_name,
+            "address": row.address,
+            "issuance_date": row.issuance_date,
+            "period_start": row.period_start,
+            "period_end": row.period_end,
+            "enforcement_kind": row.enforcement_kind,
+            "punishment_raw": row.punishment_raw,
+            "reason_summary": row.reason_summary,
+            "related_law_ref": row.related_law_ref,
+            "houjin_bangou": row.houjin_bangou,
+            "source_url": row.source_url,
+            "fetched_at": fetched_at,
+            "source": "mlit_chiho_pref",
+        },
+        ensure_ascii=False,
+        separators=(",", ":"),
+    )
     src_domain = urllib.parse.urlparse(row.source_url).netloc
 
     cur = conn.execute(
@@ -1066,8 +1154,13 @@ def insert_row(
         ) VALUES (?, 'enforcement', 'mlit_chiho_pref', ?, ?, ?, ?, ?, ?)
         """,
         (
-            canonical_id, row.target_name, 0.92,
-            row.source_url, src_domain, fetched_at, raw_json,
+            canonical_id,
+            row.target_name,
+            0.92,
+            row.source_url,
+            src_domain,
+            fetched_at,
+            raw_json,
         ),
     )
     entity_inserted = cur.rowcount > 0
@@ -1109,16 +1202,21 @@ def insert_row(
 # Main
 # ---------------------------------------------------------------------------
 
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--db", type=Path, default=DEFAULT_DB)
-    ap.add_argument("--limit", type=int, default=None,
-                    help="stop once total inserted reaches this value")
+    ap.add_argument(
+        "--limit", type=int, default=None, help="stop once total inserted reaches this value"
+    )
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--verbose", "-v", action="store_true")
-    ap.add_argument("--sources", type=str,
-                    default="osaka,hkd,cbr,cgr,qsr,ktr",
-                    help="comma-list of source ids to walk")
+    ap.add_argument(
+        "--sources",
+        type=str,
+        default="osaka,hkd,cbr,cgr,qsr,ktr",
+        help="comma-list of source ids to walk",
+    )
     return ap.parse_args(argv)
 
 
@@ -1305,8 +1403,11 @@ def main(argv: list[str] | None = None) -> int:
         for r in pending[:5]:
             _LOG.info(
                 "DRY %s | %s | %s | %s | %s",
-                r.issuing_authority, r.issuance_date, r.target_name,
-                r.punishment_raw[:40], r.enforcement_kind,
+                r.issuing_authority,
+                r.issuance_date,
+                r.target_name,
+                r.punishment_raw[:40],
+                r.enforcement_kind,
             )
         return 0
 
@@ -1334,8 +1435,9 @@ def main(argv: list[str] | None = None) -> int:
                 break
             except sqlite3.OperationalError as exc:
                 wait = 5 * (write_attempt + 1)
-                _LOG.warning("write contention attempt=%d wait=%ds err=%s",
-                             write_attempt, wait, exc)
+                _LOG.warning(
+                    "write contention attempt=%d wait=%ds err=%s", write_attempt, wait, exc
+                )
                 time.sleep(wait)
                 continue
             finally:
@@ -1364,13 +1466,18 @@ def main(argv: list[str] | None = None) -> int:
 
     _LOG.info("SUMMARY queued=%d inserted=%d skip=%d", len(pending), inserted, skip)
     _LOG.info("BREAKDOWN %s", breakdown_q)
-    print(json.dumps({
-        "queued": len(pending),
-        "inserted": inserted,
-        "skip": skip,
-        "per_source": counters,
-        "breakdown_by_org": breakdown_q,
-    }, ensure_ascii=False))
+    print(
+        json.dumps(
+            {
+                "queued": len(pending),
+                "inserted": inserted,
+                "skip": skip,
+                "per_source": counters,
+                "breakdown_by_org": breakdown_q,
+            },
+            ensure_ascii=False,
+        )
+    )
     return 0
 
 

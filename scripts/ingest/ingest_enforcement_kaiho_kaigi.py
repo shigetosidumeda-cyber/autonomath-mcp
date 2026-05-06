@@ -85,6 +85,7 @@ CLI:
         --db autonomath.db [--regions tokyou,3yh,4kb,...] \
         [--limit 500] [--years R07,R08] [--dry-run]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -116,10 +117,7 @@ _LOG = logging.getLogger("autonomath.ingest.enforcement_kaiho_kaigi")
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_DB = REPO_ROOT / "autonomath.db"
 
-USER_AGENT = (
-    "jpintel-mcp-ingest/1.0 "
-    "(+https://jpcite.com; contact=ops@jpcite.com)"
-)
+USER_AGENT = "jpintel-mcp-ingest/1.0 (+https://jpcite.com; contact=ops@jpcite.com)"
 PER_REQUEST_DELAY_SEC = 0.5
 HTTP_TIMEOUT_SEC = 60.0
 MAX_RETRIES = 3
@@ -134,9 +132,9 @@ BASE = "https://www.mlit.go.jp"
 
 @dataclass(frozen=True)
 class Hub:
-    region_code: str   # 1hd / 2sd / 3yh / 4kb / 5hs / 6mj / 7ns / 8nh / tokyou
+    region_code: str  # 1hd / 2sd / 3yh / 4kb / 5hs / 6mj / 7ns / 8nh / tokyou
     region_label: str  # 函館地方海難審判所 etc
-    prefix: str        # PDF file prefix: hd / sd / yh / kb / hs / mj / ns / nh / tk
+    prefix: str  # PDF file prefix: hd / sd / yh / kb / hs / mj / ns / nh / tk
 
 
 REGIONAL_HUBS: list[Hub] = [
@@ -161,17 +159,17 @@ DEFAULT_YEARS = ["R07", "R08"]  # the 2-year live archive window
 # Order matters — most specific first. Patterns are matched against the
 # disposition sentence after digits/whitespace are normalized.
 DISPOSITION_PATTERNS: list[tuple[str, str]] = [
-    ("海技免許を取り消す",   "license_revoke"),
-    ("海技免状を取り消す",   "license_revoke"),
-    ("操縦免許を取り消す",   "license_revoke"),
-    ("免許を取り消す",       "license_revoke"),
-    ("免許の取消",            "license_revoke"),
-    ("業務停止",              "business_improvement"),  # 業務を{N}か月停止 → matches after digit strip
-    ("業務の停止",            "business_improvement"),
-    ("業務を停止",            "business_improvement"),
-    ("を戒告する",            "other"),
-    ("戒告する",              "other"),
-    ("戒告",                  "other"),
+    ("海技免許を取り消す", "license_revoke"),
+    ("海技免状を取り消す", "license_revoke"),
+    ("操縦免許を取り消す", "license_revoke"),
+    ("免許を取り消す", "license_revoke"),
+    ("免許の取消", "license_revoke"),
+    ("業務停止", "business_improvement"),  # 業務を{N}か月停止 → matches after digit strip
+    ("業務の停止", "business_improvement"),
+    ("業務を停止", "business_improvement"),
+    ("を戒告する", "other"),
+    ("戒告する", "other"),
+    ("戒告", "other"),
 ]
 
 
@@ -185,16 +183,13 @@ def _strip_digits_and_punct(s: str) -> str:
         out.append(ch)
     return "".join(out)
 
+
 # ---------------------------------------------------------------------------
 # Date helpers (Reiwa / Heisei)
 # ---------------------------------------------------------------------------
 
-DATE_REIWA_RE = re.compile(
-    r"令和\s*([０-９\d元]+)\s*年\s*([０-９\d]+)\s*月\s*([０-９\d]+)\s*日"
-)
-DATE_HEISEI_RE = re.compile(
-    r"平成\s*([０-９\d元]+)\s*年\s*([０-９\d]+)\s*月\s*([０-９\d]+)\s*日"
-)
+DATE_REIWA_RE = re.compile(r"令和\s*([０-９\d元]+)\s*年\s*([０-９\d]+)\s*月\s*([０-９\d]+)\s*日")
+DATE_HEISEI_RE = re.compile(r"平成\s*([０-９\d元]+)\s*年\s*([０-９\d]+)\s*月\s*([０-９\d]+)\s*日")
 
 
 def _to_halfwidth_int(s: str) -> int:
@@ -203,7 +198,7 @@ def _to_halfwidth_int(s: str) -> int:
     out: list[str] = []
     for ch in s:
         if "０" <= ch <= "９":
-            out.append(chr(ord("0") + (ord(ch) - 0xff10)))
+            out.append(chr(ord("0") + (ord(ch) - 0xFF10)))
         elif ch.isdigit():
             out.append(ch)
     return int("".join(out)) if out else 0
@@ -215,16 +210,18 @@ def parse_any_date_iso(token: str) -> str | None:
     if m:
         try:
             y = 2018 + _to_halfwidth_int(m.group(1))
-            return dt.date(y, _to_halfwidth_int(m.group(2)),
-                           _to_halfwidth_int(m.group(3))).isoformat()
+            return dt.date(
+                y, _to_halfwidth_int(m.group(2)), _to_halfwidth_int(m.group(3))
+            ).isoformat()
         except ValueError:
             return None
     m = DATE_HEISEI_RE.search(token)
     if m:
         try:
             y = 1988 + _to_halfwidth_int(m.group(1))
-            return dt.date(y, _to_halfwidth_int(m.group(2)),
-                           _to_halfwidth_int(m.group(3))).isoformat()
+            return dt.date(
+                y, _to_halfwidth_int(m.group(2)), _to_halfwidth_int(m.group(3))
+            ).isoformat()
         except ValueError:
             return None
     return None
@@ -240,12 +237,12 @@ class TribunalRecord:
     region_code: str
     issuing_authority: str
     issuance_date: str
-    target_label: str           # anonymized: "{職名} {免許種別}"
-    license_type: str           # "海技士" / "小型船舶操縦士"
-    enforcement_kind: str       # license_revoke / business_improvement / other
-    disposition_text: str       # main 主文 line for this 受審人
-    case_title: str             # ヨットＡ岸壁衝突事件 etc
-    incident_date: str | None   # 事件発生年月日
+    target_label: str  # anonymized: "{職名} {免許種別}"
+    license_type: str  # "海技士" / "小型船舶操縦士"
+    enforcement_kind: str  # license_revoke / business_improvement / other
+    disposition_text: str  # main 主文 line for this 受審人
+    case_title: str  # ヨットＡ岸壁衝突事件 etc
+    incident_date: str | None  # 事件発生年月日
     incident_place: str | None  # 事件発生場所
     related_law_ref: str
     source_url: str
@@ -295,7 +292,7 @@ class HttpClient:
                 last_exc = exc
                 if attempt == MAX_RETRIES:
                     break
-                time.sleep(2 ** attempt)
+                time.sleep(2**attempt)
         _LOG.warning("GET text failed url=%s err=%s", url, last_exc)
         return 0, ""
 
@@ -310,7 +307,7 @@ class HttpClient:
                 last_exc = exc
                 if attempt == MAX_RETRIES:
                     break
-                time.sleep(2 ** attempt)
+                time.sleep(2**attempt)
         _LOG.warning("GET bytes failed url=%s err=%s", url, last_exc)
         return 0, b""
 
@@ -322,14 +319,10 @@ class HttpClient:
 # Regional index page → list of (pdf_url, hub_url)
 # ---------------------------------------------------------------------------
 
-PDF_HREF_RE = re.compile(
-    r'href\s*=\s*["\']([^"\']+\.pdf)["\']', re.IGNORECASE
-)
+PDF_HREF_RE = re.compile(r'href\s*=\s*["\']([^"\']+\.pdf)["\']', re.IGNORECASE)
 
 
-def collect_pdfs_for_regional_hub(
-    http: HttpClient, hub: Hub, year: str
-) -> list[tuple[str, str]]:
+def collect_pdfs_for_regional_hub(http: HttpClient, hub: Hub, year: str) -> list[tuple[str, str]]:
     """Year is like ``R07``/``R08`` (zero-padded). Return [(pdf_url, hub_url)]."""
     if hub.region_code == "tokyou":
         # Single-page archive irrespective of year argument.
@@ -392,9 +385,7 @@ DEFENDANT_HEAD_RE = re.compile(
 )
 
 # Generic "受審人X" + "職名Y" + (海技|操縦)免許 (less greedy fallback)
-DEFENDANT_HEAD_LOOSE_RE = re.compile(
-    r"受\s*審\s*人\s*([ａ-ｚa-z0-9０-９１２]{1,4})"
-)
+DEFENDANT_HEAD_LOOSE_RE = re.compile(r"受\s*審\s*人\s*([ａ-ｚa-z0-9０-９１２]{1,4})")
 
 # 事件発生 block extractor
 INCIDENT_DATE_RE = re.compile(
@@ -411,9 +402,7 @@ INCIDENT_PLACE_RE = re.compile(
 )
 
 # 案件タイトル (just below 裁決 marker)
-CASE_TITLE_RE = re.compile(
-    r"裁\s*決\s*\n+\s*(?:（[第１２一二]）)?\s*([^\n]{3,80}事件)"
-)
+CASE_TITLE_RE = re.compile(r"裁\s*決\s*\n+\s*(?:（[第１２一二]）)?\s*([^\n]{3,80}事件)")
 
 # Top-of-doc 言渡日 marker (used as fallback if we cannot read it from
 # the index page). Format: 令和X年M月D日 followed by tribunal name.
@@ -423,9 +412,7 @@ ISSUE_DATE_RE = re.compile(
 )
 
 # Case number at top: "令和7年横審第25号"
-CASE_NO_RE = re.compile(
-    r"令和\s*([０-９\d元]+)\s*年\s*([^第\n]+第\s*[０-９\d]+\s*号)"
-)
+CASE_NO_RE = re.compile(r"令和\s*([０-９\d元]+)\s*年\s*([^第\n]+第\s*[０-９\d]+\s*号)")
 
 
 def _strip_all_ws(s: str) -> str:
@@ -443,9 +430,13 @@ def classify_disposition(line: str) -> str | None:
     if "懲戒しない" in norm:
         return None
     # 取消 / 取り消す anywhere → license_revoke (most severe; check first).
-    if ("免許を取り消す" in norm or "免許の取消" in norm
-            or "免状を取り消す" in norm or "免許を取消す" in norm
-            or "免状の取消" in norm):
+    if (
+        "免許を取り消す" in norm
+        or "免許の取消" in norm
+        or "免状を取り消す" in norm
+        or "免許を取消す" in norm
+        or "免状の取消" in norm
+    ):
         return "license_revoke"
     # 停止 anywhere following 業務 (with optional period digits) →
     # business_improvement. Catches "業務を停止" / "業務を１か月停止" /
@@ -465,8 +456,8 @@ def extract_shubun_block(text: str) -> str | None:
         return None
     rm = RIYU_RE.search(text, sm.end())
     if not rm:
-        return text[sm.end(): sm.end() + 800]
-    return text[sm.end(): rm.start()]
+        return text[sm.end() : sm.end() + 800]
+    return text[sm.end() : rm.start()]
 
 
 def extract_defendants_heading(text: str) -> dict[str, dict[str, str]]:
@@ -491,18 +482,19 @@ def extract_defendants_heading(text: str) -> dict[str, dict[str, str]]:
             continue
         letter = _strip_all_ws(m_letter.group(1)).lower()
         # Normalize fullwidth letters to halfwidth for mapping.
-        letter = letter.translate(str.maketrans(
-            "ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ",
-            "abcdefghijklmnopqrstuvwxyz",
-        )).translate(str.maketrans("０１２３４５６７８９", "0123456789"))
+        letter = letter.translate(
+            str.maketrans(
+                "ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ",
+                "abcdefghijklmnopqrstuvwxyz",
+            )
+        ).translate(str.maketrans("０１２３４５６７８９", "0123456789"))
         # Look for 職名 within first 200 chars
         m_job = re.search(r"職\s*名\s*([^\n]+)", blk[:400])
-        m_lic = re.search(r"(海\s*技\s*免\s*許|操\s*縦\s*免\s*許)\s*([^\n]+)",
-                          blk[:600])
+        m_lic = re.search(r"(海\s*技\s*免\s*許|操\s*縦\s*免\s*許)\s*([^\n]+)", blk[:600])
         if not m_job or not m_lic:
             continue
         job = _norm_label(m_job.group(1)).strip()
-        lic_kind = _norm_label(m_lic.group(1))   # 海技免許 / 操縦免許
+        lic_kind = _norm_label(m_lic.group(1))  # 海技免許 / 操縦免許
         lic_text = _norm_label(m_lic.group(2)).strip()
         # Trim trailing job noise like "海技免許" leakage if regex was greedy
         for stop in ("海技免許", "操縦免許", "補佐人"):
@@ -598,10 +590,16 @@ def parse_ruling_pdf(
     matched_letters: set[str] = set()
     for m in DEFENDANT_LINE_RE.finditer(shubun):
         letter_raw = m.group(1)
-        letter = letter_raw.lower().translate(str.maketrans(
-            "ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ",
-            "abcdefghijklmnopqrstuvwxyz",
-        )).translate(str.maketrans("０１２３４５６７８９", "0123456789"))
+        letter = (
+            letter_raw.lower()
+            .translate(
+                str.maketrans(
+                    "ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ",
+                    "abcdefghijklmnopqrstuvwxyz",
+                )
+            )
+            .translate(str.maketrans("０１２３４５６７８９", "0123456789"))
+        )
         sentence = m.group(2)
         if letter in matched_letters:
             continue
@@ -630,25 +628,25 @@ def parse_ruling_pdf(
         # for it explicitly. Combine it with the substantive law.
         related_law = f"海難審判法第4条 / {base_law}第10条"
 
-        target_label = (
-            f"{job} {license_type} (受審人{letter}) #SEQ (氏名非公表)"
-        )
+        target_label = f"{job} {license_type} (受審人{letter}) #SEQ (氏名非公表)"
 
-        records.append(TribunalRecord(
-            region_code=hub.region_code,
-            issuing_authority=hub.region_label,
-            issuance_date=issue_date,
-            target_label=target_label,
-            license_type=license_type,
-            enforcement_kind=kind,
-            disposition_text=_norm_label(sentence)[:200],
-            case_title=case_title,
-            incident_date=incident_date,
-            incident_place=incident_place,
-            related_law_ref=related_law,
-            source_url=pdf_url,
-            source_hub_url=hub_url,
-        ))
+        records.append(
+            TribunalRecord(
+                region_code=hub.region_code,
+                issuing_authority=hub.region_label,
+                issuance_date=issue_date,
+                target_label=target_label,
+                license_type=license_type,
+                enforcement_kind=kind,
+                disposition_text=_norm_label(sentence)[:200],
+                case_title=case_title,
+                incident_date=incident_date,
+                incident_place=incident_place,
+                related_law_ref=related_law,
+                source_url=pdf_url,
+                source_hub_url=hub_url,
+            )
+        )
     return records
 
 
@@ -664,8 +662,7 @@ def open_db(db_path: Path) -> sqlite3.Connection:
     conn.execute("PRAGMA busy_timeout = 300000")
     conn.execute("PRAGMA journal_mode = WAL")
     row = conn.execute(
-        "SELECT name FROM sqlite_master WHERE type='table' "
-        "AND name='am_enforcement_detail'"
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='am_enforcement_detail'"
     ).fetchone()
     if not row:
         conn.close()
@@ -746,8 +743,11 @@ def upsert_record(
     summary = (
         f"{rec.case_title}: {rec.disposition_text}"
         + (f" (発生 {rec.incident_date}" if rec.incident_date else "")
-        + (f" / {rec.incident_place})" if rec.incident_place else
-           (")" if rec.incident_date else ""))
+        + (
+            f" / {rec.incident_place})"
+            if rec.incident_place
+            else (")" if rec.incident_date else "")
+        )
     )
 
     conn.execute(
@@ -779,17 +779,30 @@ def upsert_record(
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--db", type=Path, default=DEFAULT_DB)
-    ap.add_argument("--regions", type=str, default="",
-                    help="comma-separated region codes (default: all hubs). "
-                         "Use 'tokyou' for the central Tokyo tribunal.")
-    ap.add_argument("--years", type=str, default=",".join(DEFAULT_YEARS),
-                    help="comma-separated years (e.g. R07,R08). Tokyo "
-                         "central hub ignores this — it walks its own "
-                         "single archive page.")
-    ap.add_argument("--limit", type=int, default=None,
-                    help="stop after this many INSERTs across all hubs")
-    ap.add_argument("--per-hub-pdf-limit", type=int, default=None,
-                    help="cap PDFs walked per hub per year (smoke tests)")
+    ap.add_argument(
+        "--regions",
+        type=str,
+        default="",
+        help="comma-separated region codes (default: all hubs). "
+        "Use 'tokyou' for the central Tokyo tribunal.",
+    )
+    ap.add_argument(
+        "--years",
+        type=str,
+        default=",".join(DEFAULT_YEARS),
+        help="comma-separated years (e.g. R07,R08). Tokyo "
+        "central hub ignores this — it walks its own "
+        "single archive page.",
+    )
+    ap.add_argument(
+        "--limit", type=int, default=None, help="stop after this many INSERTs across all hubs"
+    )
+    ap.add_argument(
+        "--per-hub-pdf-limit",
+        type=int,
+        default=None,
+        help="cap PDFs walked per hub per year (smoke tests)",
+    )
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--verbose", "-v", action="store_true")
     ap.add_argument("--log-file", type=Path, default=None)
@@ -817,11 +830,7 @@ def main(argv: list[str] | None = None) -> int:
     if not years:
         years = list(DEFAULT_YEARS)
 
-    fetched_at = (
-        dt.datetime.now(dt.UTC)
-        .isoformat(timespec="seconds")
-        .replace("+00:00", "Z")
-    )
+    fetched_at = dt.datetime.now(dt.UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
 
     http = HttpClient()
     conn: sqlite3.Connection | None = None
@@ -830,7 +839,8 @@ def main(argv: list[str] | None = None) -> int:
         conn.execute("BEGIN IMMEDIATE")
         existing_keys = load_existing_keys(conn)
         _LOG.info(
-            "existing am_enforcement_detail keys=%d", len(existing_keys),
+            "existing am_enforcement_detail keys=%d",
+            len(existing_keys),
         )
     else:
         existing_keys = set()
@@ -844,21 +854,30 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         for hub in hubs:
-            cs = stats.setdefault(hub.region_code, {
-                "pdfs_seen": 0, "pdfs_fetched": 0,
-                "records_extracted": 0, "insert": 0,
-                "skip_dup": 0, "skip_existing": 0,
-            })
+            cs = stats.setdefault(
+                hub.region_code,
+                {
+                    "pdfs_seen": 0,
+                    "pdfs_fetched": 0,
+                    "records_extracted": 0,
+                    "insert": 0,
+                    "skip_dup": 0,
+                    "skip_existing": 0,
+                },
+            )
             iter_years = ["R08"] if hub.region_code == "tokyou" else years
             for yr in iter_years:
                 _LOG.info(
                     "hub region=%s label=%s year=%s",
-                    hub.region_code, hub.region_label, yr,
+                    hub.region_code,
+                    hub.region_label,
+                    yr,
                 )
                 pdf_pairs = collect_pdfs_for_regional_hub(http, hub, yr)
                 cs["pdfs_seen"] += len(pdf_pairs)
                 _LOG.info(
-                    "  pdfs_found=%d", len(pdf_pairs),
+                    "  pdfs_found=%d",
+                    len(pdf_pairs),
                 )
                 if args.per_hub_pdf_limit is not None:
                     pdf_pairs = pdf_pairs[: args.per_hub_pdf_limit]
@@ -866,10 +885,7 @@ def main(argv: list[str] | None = None) -> int:
                 # Newest URLs first as a heuristic.
                 pdf_pairs.sort(key=lambda p: p[0], reverse=True)
 
-                seq_counter = (
-                    next_seq(conn, hub.region_code)
-                    if conn is not None else 1
-                )
+                seq_counter = next_seq(conn, hub.region_code) if conn is not None else 1
 
                 stop_hub = False
                 for pdf_url, hub_url in pdf_pairs:
@@ -881,23 +897,30 @@ def main(argv: list[str] | None = None) -> int:
                         continue
                     cs["pdfs_fetched"] += 1
                     recs = parse_ruling_pdf(
-                        body, hub=hub, pdf_url=pdf_url, hub_url=hub_url,
+                        body,
+                        hub=hub,
+                        pdf_url=pdf_url,
+                        hub_url=hub_url,
                         fallback_issue_date=None,
                     )
                     cs["records_extracted"] += len(recs)
                     _LOG.debug(
                         "  pdf=%s extracted=%d",
-                        pdf_url.rsplit("/", 1)[-1], len(recs),
+                        pdf_url.rsplit("/", 1)[-1],
+                        len(recs),
                     )
                     for r in recs:
                         # Substitute SEQ placeholder with the per-region
                         # sequence to anonymize while keeping uniqueness.
                         target_name = r.target_label.replace(
-                            "#SEQ", f"#{seq_counter:03d}",
+                            "#SEQ",
+                            f"#{seq_counter:03d}",
                         )
                         dedup_key = (
-                            r.issuing_authority, r.issuance_date,
-                            target_name, r.enforcement_kind,
+                            r.issuing_authority,
+                            r.issuance_date,
+                            target_name,
+                            r.enforcement_kind,
                         )
                         if dedup_key in existing_keys:
                             cs["skip_existing"] += 1
@@ -907,12 +930,10 @@ def main(argv: list[str] | None = None) -> int:
                             cs["insert"] += 1
                             total_inserts += 1
                             region_breakdown[r.issuing_authority] = (
-                                region_breakdown.get(
-                                    r.issuing_authority, 0) + 1
+                                region_breakdown.get(r.issuing_authority, 0) + 1
                             )
                             kind_breakdown[r.enforcement_kind] = (
-                                kind_breakdown.get(
-                                    r.enforcement_kind, 0) + 1
+                                kind_breakdown.get(r.enforcement_kind, 0) + 1
                             )
                             law_breakdown[r.related_law_ref] = (
                                 law_breakdown.get(r.related_law_ref, 0) + 1
@@ -923,36 +944,37 @@ def main(argv: list[str] | None = None) -> int:
                             if cs["insert"] <= 3:
                                 _LOG.info(
                                     "DRY %s | %s | %s | %s | %s",
-                                    hub.region_code, r.issuance_date,
-                                    target_name, r.enforcement_kind,
+                                    hub.region_code,
+                                    r.issuance_date,
+                                    target_name,
+                                    r.enforcement_kind,
                                     r.disposition_text[:60],
                                 )
                             continue
-                        canonical_id = (
-                            f"AM-ENF-KAIGI-{hub.region_code}-"
-                            f"{seq_counter:06d}"
-                        )
+                        canonical_id = f"AM-ENF-KAIGI-{hub.region_code}-{seq_counter:06d}"
                         try:
                             verdict = upsert_record(
-                                conn, r, canonical_id, fetched_at,
+                                conn,
+                                r,
+                                canonical_id,
+                                fetched_at,
                                 target_name,
                             )
                         except sqlite3.Error as exc:
                             _LOG.warning(
                                 "DB insert err name=%s err=%s",
-                                target_name, exc,
+                                target_name,
+                                exc,
                             )
                             continue
                         if verdict == "insert":
                             cs["insert"] += 1
                             total_inserts += 1
                             region_breakdown[r.issuing_authority] = (
-                                region_breakdown.get(
-                                    r.issuing_authority, 0) + 1
+                                region_breakdown.get(r.issuing_authority, 0) + 1
                             )
                             kind_breakdown[r.enforcement_kind] = (
-                                kind_breakdown.get(
-                                    r.enforcement_kind, 0) + 1
+                                kind_breakdown.get(r.enforcement_kind, 0) + 1
                             )
                             law_breakdown[r.related_law_ref] = (
                                 law_breakdown.get(r.related_law_ref, 0) + 1
@@ -965,8 +987,7 @@ def main(argv: list[str] | None = None) -> int:
                         if total_inserts > 0 and total_inserts % 50 == 0:
                             conn.commit()
                             conn.execute("BEGIN IMMEDIATE")
-                        if (args.limit is not None
-                                and total_inserts >= args.limit):
+                        if args.limit is not None and total_inserts >= args.limit:
                             stop_hub = True
                             break
                     if stop_hub:
@@ -984,17 +1005,14 @@ def main(argv: list[str] | None = None) -> int:
             conn.close()
 
     _LOG.info("SUMMARY total_inserts=%d", total_inserts)
-    _LOG.info("PER REGION: %s",
-              json.dumps(region_breakdown, ensure_ascii=False))
-    _LOG.info("PER KIND: %s",
-              json.dumps(kind_breakdown, ensure_ascii=False))
-    _LOG.info("PER LAW: %s",
-              json.dumps(law_breakdown, ensure_ascii=False))
+    _LOG.info("PER REGION: %s", json.dumps(region_breakdown, ensure_ascii=False))
+    _LOG.info("PER KIND: %s", json.dumps(kind_breakdown, ensure_ascii=False))
+    _LOG.info("PER LAW: %s", json.dumps(law_breakdown, ensure_ascii=False))
     _LOG.info("HUB STATS: %s", json.dumps(stats, ensure_ascii=False))
     print(
         "\n".join(
             [
-                f"== sample {i+1} ==\n"
+                f"== sample {i + 1} ==\n"
                 f"  date={s.issuance_date}\n"
                 f"  authority={s.issuing_authority}\n"
                 f"  target={s.target_label.replace('#SEQ', '#xxx')}\n"

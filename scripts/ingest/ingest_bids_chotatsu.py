@@ -30,6 +30,7 @@ CLI:
         [--dry-run]              (parse + count only)
         [--log-level LEVEL]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -120,61 +121,117 @@ MAFF_BASE = "https://www.maff.go.jp"
 
 SOURCES: list[SourcePage] = [
     # MAFF 物品・役務 (12 cats)
-    SourcePage("農林水産省", None, "事務用品類",
-               f"{MAFF_BASE}/j/supply/nyusatu/buppin_ekimu/zimu/index.html"),
-    SourcePage("農林水産省", None, "OA機器類",
-               f"{MAFF_BASE}/j/supply/nyusatu/buppin_ekimu/oa/index.html"),
-    SourcePage("農林水産省", None, "印刷・製本",
-               f"{MAFF_BASE}/j/supply/nyusatu/buppin_ekimu/insatu_seihon/index.html"),
-    SourcePage("農林水産省", None, "物品その他",
-               f"{MAFF_BASE}/j/supply/nyusatu/buppin_ekimu/sonota1/index.html"),
-    SourcePage("農林水産省", None, "調査",
-               f"{MAFF_BASE}/j/supply/nyusatu/buppin_ekimu/tyosa/index.html"),
-    SourcePage("農林水産省", None, "研究開発",
-               f"{MAFF_BASE}/j/supply/nyusatu/buppin_ekimu/kenkyu/index.html"),
-    SourcePage("農林水産省", None, "広報",
-               f"{MAFF_BASE}/j/supply/nyusatu/buppin_ekimu/koho/index.html"),
-    SourcePage("農林水産省", None, "機器の賃貸借",
-               f"{MAFF_BASE}/j/supply/nyusatu/buppin_ekimu/kiki/index.html"),
-    SourcePage("農林水産省", None, "システム関係",
-               f"{MAFF_BASE}/j/supply/nyusatu/buppin_ekimu/system/index.html"),
-    SourcePage("農林水産省", None, "米麦関係",
-               f"{MAFF_BASE}/j/supply/nyusatu/buppin_ekimu/beibaku/index.html"),
-    SourcePage("農林水産省", None, "役務その他",
-               f"{MAFF_BASE}/j/supply/nyusatu/buppin_ekimu/sonota3/index.html"),
+    SourcePage(
+        "農林水産省",
+        None,
+        "事務用品類",
+        f"{MAFF_BASE}/j/supply/nyusatu/buppin_ekimu/zimu/index.html",
+    ),
+    SourcePage(
+        "農林水産省", None, "OA機器類", f"{MAFF_BASE}/j/supply/nyusatu/buppin_ekimu/oa/index.html"
+    ),
+    SourcePage(
+        "農林水産省",
+        None,
+        "印刷・製本",
+        f"{MAFF_BASE}/j/supply/nyusatu/buppin_ekimu/insatu_seihon/index.html",
+    ),
+    SourcePage(
+        "農林水産省",
+        None,
+        "物品その他",
+        f"{MAFF_BASE}/j/supply/nyusatu/buppin_ekimu/sonota1/index.html",
+    ),
+    SourcePage(
+        "農林水産省", None, "調査", f"{MAFF_BASE}/j/supply/nyusatu/buppin_ekimu/tyosa/index.html"
+    ),
+    SourcePage(
+        "農林水産省",
+        None,
+        "研究開発",
+        f"{MAFF_BASE}/j/supply/nyusatu/buppin_ekimu/kenkyu/index.html",
+    ),
+    SourcePage(
+        "農林水産省", None, "広報", f"{MAFF_BASE}/j/supply/nyusatu/buppin_ekimu/koho/index.html"
+    ),
+    SourcePage(
+        "農林水産省",
+        None,
+        "機器の賃貸借",
+        f"{MAFF_BASE}/j/supply/nyusatu/buppin_ekimu/kiki/index.html",
+    ),
+    SourcePage(
+        "農林水産省",
+        None,
+        "システム関係",
+        f"{MAFF_BASE}/j/supply/nyusatu/buppin_ekimu/system/index.html",
+    ),
+    SourcePage(
+        "農林水産省",
+        None,
+        "米麦関係",
+        f"{MAFF_BASE}/j/supply/nyusatu/buppin_ekimu/beibaku/index.html",
+    ),
+    SourcePage(
+        "農林水産省",
+        None,
+        "役務その他",
+        f"{MAFF_BASE}/j/supply/nyusatu/buppin_ekimu/sonota3/index.html",
+    ),
     # MAFF 建設工事
-    SourcePage("農林水産省", None, "発注見通し",
-               f"{MAFF_BASE}/j/supply/nyusatu/kensetu/mitosi/index.html"),
-    SourcePage("農林水産省", None, "建築",
-               f"{MAFF_BASE}/j/supply/nyusatu/kensetu/kentiku/index.html"),
-    SourcePage("農林水産省", None, "機械設備",
-               f"{MAFF_BASE}/j/supply/nyusatu/kensetu/kikai/index.html"),
-    SourcePage("農林水産省", None, "電気設備",
-               f"{MAFF_BASE}/j/supply/nyusatu/kensetu/denki/index.html"),
-    SourcePage("農林水産省", None, "工事その他1",
-               f"{MAFF_BASE}/j/supply/nyusatu/kensetu/sonota1/index.html"),
-    SourcePage("農林水産省", None, "測量業務",
-               f"{MAFF_BASE}/j/supply/nyusatu/kensetu/sokuryo/index.html"),
-    SourcePage("農林水産省", None, "設計・コンサルタント",
-               f"{MAFF_BASE}/j/supply/nyusatu/kensetu/consult/index.html"),
-    SourcePage("農林水産省", None, "工事その他2",
-               f"{MAFF_BASE}/j/supply/nyusatu/kensetu/sonota2/index.html"),
+    SourcePage(
+        "農林水産省", None, "発注見通し", f"{MAFF_BASE}/j/supply/nyusatu/kensetu/mitosi/index.html"
+    ),
+    SourcePage(
+        "農林水産省", None, "建築", f"{MAFF_BASE}/j/supply/nyusatu/kensetu/kentiku/index.html"
+    ),
+    SourcePage(
+        "農林水産省", None, "機械設備", f"{MAFF_BASE}/j/supply/nyusatu/kensetu/kikai/index.html"
+    ),
+    SourcePage(
+        "農林水産省", None, "電気設備", f"{MAFF_BASE}/j/supply/nyusatu/kensetu/denki/index.html"
+    ),
+    SourcePage(
+        "農林水産省",
+        None,
+        "工事その他1",
+        f"{MAFF_BASE}/j/supply/nyusatu/kensetu/sonota1/index.html",
+    ),
+    SourcePage(
+        "農林水産省", None, "測量業務", f"{MAFF_BASE}/j/supply/nyusatu/kensetu/sokuryo/index.html"
+    ),
+    SourcePage(
+        "農林水産省",
+        None,
+        "設計・コンサルタント",
+        f"{MAFF_BASE}/j/supply/nyusatu/kensetu/consult/index.html",
+    ),
+    SourcePage(
+        "農林水産省",
+        None,
+        "工事その他2",
+        f"{MAFF_BASE}/j/supply/nyusatu/kensetu/sonota2/index.html",
+    ),
     # MAFF 売払い・随意契約・落札者
-    SourcePage("農林水産省", None, "売払い",
-               f"{MAFF_BASE}/j/supply/nyusatu/uriharai/index.html"),
-    SourcePage("農林水産省", None, "随意契約",
-               f"{MAFF_BASE}/j/supply/nyusatu/zuii/keiyaku/index.html"),
-    SourcePage("農林水産省", None, "落札者等",
-               f"{MAFF_BASE}/j/supply/nyusatu/zuii/rakusatu/index.html"),
+    SourcePage("農林水産省", None, "売払い", f"{MAFF_BASE}/j/supply/nyusatu/uriharai/index.html"),
+    SourcePage(
+        "農林水産省", None, "随意契約", f"{MAFF_BASE}/j/supply/nyusatu/zuii/keiyaku/index.html"
+    ),
+    SourcePage(
+        "農林水産省", None, "落札者等", f"{MAFF_BASE}/j/supply/nyusatu/zuii/rakusatu/index.html"
+    ),
     # MAFF 委託事業 (4 cats)
-    SourcePage("農林水産省", None, "委託事業 調査",
-               f"{MAFF_BASE}/j/supply/itaku/tyosa/index.html"),
-    SourcePage("農林水産省", None, "委託事業 研究開発",
-               f"{MAFF_BASE}/j/supply/itaku/kenkyu_kaihatu/index.html"),
-    SourcePage("農林水産省", None, "委託事業 広報",
-               f"{MAFF_BASE}/j/supply/itaku/koho/index.html"),
-    SourcePage("農林水産省", None, "委託事業 その他",
-               f"{MAFF_BASE}/j/supply/itaku/sonota/index.html"),
+    SourcePage("農林水産省", None, "委託事業 調査", f"{MAFF_BASE}/j/supply/itaku/tyosa/index.html"),
+    SourcePage(
+        "農林水産省",
+        None,
+        "委託事業 研究開発",
+        f"{MAFF_BASE}/j/supply/itaku/kenkyu_kaihatu/index.html",
+    ),
+    SourcePage("農林水産省", None, "委託事業 広報", f"{MAFF_BASE}/j/supply/itaku/koho/index.html"),
+    SourcePage(
+        "農林水産省", None, "委託事業 その他", f"{MAFF_BASE}/j/supply/itaku/sonota/index.html"
+    ),
 ]
 
 
@@ -269,8 +326,10 @@ def _polite_get(url: str, tries: int = MAX_RETRIES) -> str | None:
                 _LOG.warning("404 url=%s", url)
                 return None
             if resp.status_code in (429, 503):
-                wait_s = 2 ** attempt
-                _LOG.warning("backoff status=%d attempt=%d wait=%ds", resp.status_code, attempt, wait_s)
+                wait_s = 2**attempt
+                _LOG.warning(
+                    "backoff status=%d attempt=%d wait=%ds", resp.status_code, attempt, wait_s
+                )
                 time.sleep(wait_s)
                 continue
             resp.raise_for_status()
@@ -283,9 +342,8 @@ def _polite_get(url: str, tries: int = MAX_RETRIES) -> str | None:
             return resp.text
         except Exception as exc:  # noqa: BLE001
             last_exc = exc
-            wait_s = 2 ** attempt
-            _LOG.warning("retry %d/%d url=%s err=%s wait=%ds",
-                         attempt, tries, url, exc, wait_s)
+            wait_s = 2**attempt
+            _LOG.warning("retry %d/%d url=%s err=%s wait=%ds", attempt, tries, url, exc, wait_s)
             time.sleep(wait_s)
             _LAST_HOST_FETCH[host] = time.monotonic()
     _LOG.error("fetch_failed url=%s err=%s", url, last_exc)
@@ -370,9 +428,21 @@ def _parse_maff_table(html: str, source: SourcePage, fetched_at: str) -> list[Bi
             try:
                 title = _td_text(cells[idx["title"]])
                 announce_raw = _td_text(cells[idx["announce"]])
-                kind_raw = _td_text(cells[idx["kind"]]) if "kind" in idx and idx["kind"] < len(cells) else ""
-                deadline_raw = _td_text(cells[idx["deadline"]]) if "deadline" in idx and idx["deadline"] < len(cells) else ""
-                classification = _td_text(cells[idx["classification"]]) if "classification" in idx and idx["classification"] < len(cells) else None
+                kind_raw = (
+                    _td_text(cells[idx["kind"]])
+                    if "kind" in idx and idx["kind"] < len(cells)
+                    else ""
+                )
+                deadline_raw = (
+                    _td_text(cells[idx["deadline"]])
+                    if "deadline" in idx and idx["deadline"] < len(cells)
+                    else ""
+                )
+                classification = (
+                    _td_text(cells[idx["classification"]])
+                    if "classification" in idx and idx["classification"] < len(cells)
+                    else None
+                )
             except IndexError:
                 continue
 
@@ -457,18 +527,29 @@ ON CONFLICT(unified_id) DO UPDATE SET
 
 
 def _upsert(conn: sqlite3.Connection, rec: BidRecord) -> str:
-    existed = conn.execute(
-        "SELECT 1 FROM bids WHERE unified_id = ?", (rec.unified_id,)
-    ).fetchone() is not None
+    existed = (
+        conn.execute("SELECT 1 FROM bids WHERE unified_id = ?", (rec.unified_id,)).fetchone()
+        is not None
+    )
     conn.execute(
         _UPSERT_SQL,
         (
-            rec.unified_id, rec.bid_title, rec.bid_kind, rec.procuring_entity,
-            rec.ministry, rec.prefecture,
-            rec.announcement_date, rec.bid_deadline,
-            rec.bid_description, rec.classification_code,
-            rec.source_url, rec.source_excerpt, rec.source_checksum,
-            rec.confidence, rec.fetched_at, rec.fetched_at,
+            rec.unified_id,
+            rec.bid_title,
+            rec.bid_kind,
+            rec.procuring_entity,
+            rec.ministry,
+            rec.prefecture,
+            rec.announcement_date,
+            rec.bid_deadline,
+            rec.bid_description,
+            rec.classification_code,
+            rec.source_url,
+            rec.source_excerpt,
+            rec.source_checksum,
+            rec.confidence,
+            rec.fetched_at,
+            rec.fetched_at,
         ),
     )
     # Mirror to FTS if table exists (best effort)
@@ -477,8 +558,13 @@ def _upsert(conn: sqlite3.Connection, rec: BidRecord) -> str:
         conn.execute(
             "INSERT INTO bids_fts (unified_id, bid_title, bid_description, "
             "procuring_entity, winner_name) VALUES (?,?,?,?,?)",
-            (rec.unified_id, rec.bid_title or "", rec.bid_description or "",
-             rec.procuring_entity or "", ""),
+            (
+                rec.unified_id,
+                rec.bid_title or "",
+                rec.bid_description or "",
+                rec.procuring_entity or "",
+                "",
+            ),
         )
     except sqlite3.OperationalError:
         pass  # bids_fts not present
@@ -492,8 +578,14 @@ def _upsert(conn: sqlite3.Connection, rec: BidRecord) -> str:
 
 def run(db_path: Path, limit: int | None, dry_run: bool) -> int:
     fetched_at = _now_iso()
-    counts = {"pages_ok": 0, "pages_fail": 0, "parsed": 0,
-              "insert": 0, "update": 0, "skip_banned": 0}
+    counts = {
+        "pages_ok": 0,
+        "pages_fail": 0,
+        "parsed": 0,
+        "insert": 0,
+        "update": 0,
+        "skip_banned": 0,
+    }
 
     all_records: list[BidRecord] = []
     for src in SOURCES:
@@ -547,19 +639,21 @@ def run(db_path: Path, limit: int | None, dry_run: bool) -> int:
         conn.close()
 
     _LOG.info("done counts=%s", counts)
-    print(f"INGEST DONE — insert={counts['insert']} update={counts['update']} "
-          f"pages_ok={counts['pages_ok']}/{counts['pages_ok']+counts['pages_fail']}")
+    print(
+        f"INGEST DONE — insert={counts['insert']} update={counts['update']} "
+        f"pages_ok={counts['pages_ok']}/{counts['pages_ok'] + counts['pages_fail']}"
+    )
     return 0
 
 
 def parse_args() -> argparse.Namespace:
-    ap = argparse.ArgumentParser(description=__doc__,
-                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     ap.add_argument("--db", type=Path, default=DEFAULT_DB)
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--dry-run", action="store_true")
-    ap.add_argument("--log-level", default="INFO",
-                    choices=("DEBUG", "INFO", "WARNING", "ERROR"))
+    ap.add_argument("--log-level", default="INFO", choices=("DEBUG", "INFO", "WARNING", "ERROR"))
     return ap.parse_args()
 
 
@@ -571,11 +665,12 @@ def main() -> int:
     logging.basicConfig(
         level=getattr(logging, args.log_level),
         format="%(asctime)s %(levelname)s %(name)s %(message)s",
-        handlers=[logging.FileHandler(log_path, encoding="utf-8"),
-                  logging.StreamHandler(sys.stderr)],
+        handlers=[
+            logging.FileHandler(log_path, encoding="utf-8"),
+            logging.StreamHandler(sys.stderr),
+        ],
     )
-    _LOG.info("start db=%s limit=%s dry_run=%s log=%s",
-              args.db, args.limit, args.dry_run, log_path)
+    _LOG.info("start db=%s limit=%s dry_run=%s log=%s", args.db, args.limit, args.dry_run, log_path)
     return run(db_path=args.db, limit=args.limit, dry_run=args.dry_run)
 
 

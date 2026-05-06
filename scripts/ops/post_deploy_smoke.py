@@ -80,7 +80,9 @@ class ModuleResult:
         return f"[{flag}] {self.name:20s}  {self.elapsed_s:6.2f}s  {self.summary}"
 
 
-def _timed(fn: Callable[[argparse.Namespace], ModuleResult]) -> Callable[[argparse.Namespace], ModuleResult]:
+def _timed(
+    fn: Callable[[argparse.Namespace], ModuleResult],
+) -> Callable[[argparse.Namespace], ModuleResult]:
     def _wrap(args: argparse.Namespace) -> ModuleResult:
         t0 = time.perf_counter()
         try:
@@ -169,7 +171,9 @@ def module_routes_500_zero(args: argparse.Namespace) -> ModuleResult:
 # ---------------------------------------------------------------------------
 
 
-def _mcp_request(server_cmd: list[str], payload: dict[str, Any], timeout_s: float = 30.0) -> dict[str, Any]:
+def _mcp_request(
+    server_cmd: list[str], payload: dict[str, Any], timeout_s: float = 30.0
+) -> dict[str, Any]:
     """Send one stdio JSON-RPC request to a freshly spawned MCP server."""
     init = {
         "jsonrpc": "2.0",
@@ -182,11 +186,7 @@ def _mcp_request(server_cmd: list[str], payload: dict[str, Any], timeout_s: floa
         },
     }
     initialized = {"jsonrpc": "2.0", "method": "notifications/initialized", "params": {}}
-    body = (
-        json.dumps(init) + "\n"
-        + json.dumps(initialized) + "\n"
-        + json.dumps(payload) + "\n"
-    )
+    body = json.dumps(init) + "\n" + json.dumps(initialized) + "\n" + json.dumps(payload) + "\n"
     proc = subprocess.run(
         server_cmd,
         input=body.encode("utf-8"),
@@ -271,7 +271,9 @@ def _load_sensitive_tools() -> list[dict[str, Any]]:
     return data
 
 
-def _call_mcp_tool(server_cmd: list[str], name: str, arguments: dict[str, Any], timeout_s: float) -> dict[str, Any]:
+def _call_mcp_tool(
+    server_cmd: list[str], name: str, arguments: dict[str, Any], timeout_s: float
+) -> dict[str, Any]:
     request = {
         "jsonrpc": "2.0",
         "id": 7,
@@ -401,7 +403,12 @@ def module_stripe_webhook(args: argparse.Namespace) -> ModuleResult:
             summary=f"request_error: {exc}",
         )
 
-    accept = (200, 202, 204, 400)  # 400 lets a sig-verify-only deploy still pass the idempotency hop
+    accept = (
+        200,
+        202,
+        204,
+        400,
+    )  # 400 lets a sig-verify-only deploy still pass the idempotency hop
     first_ok = r1.status_code in accept
     second_ok = r2.status_code in accept
     idempotent = r1.status_code == r2.status_code
@@ -481,17 +488,23 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         prog="post_deploy_smoke",
         description="DEEP-61 jpcite v0.3.4 post-deploy smoke runbook (5 module gate).",
     )
-    parser.add_argument("--base-url", default=os.environ.get("JPCITE_SMOKE_BASE_URL", DEFAULT_BASE_URL))
+    parser.add_argument(
+        "--base-url", default=os.environ.get("JPCITE_SMOKE_BASE_URL", DEFAULT_BASE_URL)
+    )
     parser.add_argument(
         "--module",
         default="all",
         choices=("routes", "mcp", "disclaimer", "stripe", "health", "all"),
         help="Run a single module or all (default: all).",
     )
-    parser.add_argument("--mcp-cmd", default=os.environ.get("JPCITE_SMOKE_MCP_CMD", "autonomath-mcp"))
+    parser.add_argument(
+        "--mcp-cmd", default=os.environ.get("JPCITE_SMOKE_MCP_CMD", "autonomath-mcp")
+    )
     parser.add_argument("--mcp-timeout", type=float, default=30.0)
     parser.add_argument("--mcp-min-tools", type=int, default=139)
-    parser.add_argument("--skip-stripe", action="store_true", help="Skip the Stripe webhook module.")
+    parser.add_argument(
+        "--skip-stripe", action="store_true", help="Skip the Stripe webhook module."
+    )
     parser.add_argument("--report-out", default=None, help="Write JSON report to this path.")
     parser.add_argument("--verbose", "-v", action="store_true")
     return parser.parse_args(argv)
@@ -522,7 +535,9 @@ def main(argv: list[str] | None = None) -> int:
         "results": [asdict(r) for r in results],
     }
     if args.report_out:
-        Path(args.report_out).write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
+        Path(args.report_out).write_text(
+            json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
     print(json.dumps({"ok": overall_ok, "modules": [r.name for r in results]}))
     return 0 if overall_ok else 1
 

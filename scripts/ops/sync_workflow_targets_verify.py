@@ -138,26 +138,21 @@ def _desired_ruff_targets(repo_root: Path, tracked: set[str]) -> list[str]:
     return sorted(
         path
         for path in candidates
-        if path in tracked
-        and any(path.startswith(prefix) for prefix in RUFF_ALLOW_PREFIXES)
+        if path in tracked and any(path.startswith(prefix) for prefix in RUFF_ALLOW_PREFIXES)
     )
 
 
 def _desired_pytest_targets(repo_root: Path, tracked: set[str]) -> list[str]:
     candidates = _glob_real(repo_root, PYTEST_GLOB_ROOTS, "test_*.py")
     return sorted(
-        path
-        for path in candidates
-        if path in tracked and PYTEST_FILENAME_RE.match(Path(path).name)
+        path for path in candidates if path in tracked and PYTEST_FILENAME_RE.match(Path(path).name)
     )
 
 
 def _parse_env_block(text: str, name: str) -> list[str] | None:
     for match in ENV_BLOCK_RE.finditer(text):
         if match.group("name") == name:
-            return [
-                line.strip() for line in match.group("body").splitlines() if line.strip()
-            ]
+            return [line.strip() for line in match.group("body").splitlines() if line.strip()]
     return None
 
 
@@ -205,16 +200,43 @@ def _collect(repo_root: Path) -> list[DiffRow]:
     release_text = release_path.read_text(encoding="utf-8")
 
     rows: list[DiffRow] = []
-    rows.extend(_diff_block("test.yml", "RUFF_TARGETS",
-                            _parse_env_block(test_text, "RUFF_TARGETS"), desired_ruff))
-    rows.extend(_diff_block("test.yml", "PYTEST_TARGETS",
-                            _parse_env_block(test_text, "PYTEST_TARGETS"), desired_pytest))
-    rows.extend(_diff_block("release.yml", "RUFF_TARGETS",
-                            _parse_env_block(release_text, "RUFF_TARGETS"), desired_ruff))
-    rows.extend(_diff_block("release.yml", "PYTEST_TARGETS",
-                            _parse_env_block(release_text, "PYTEST_TARGETS"), desired_pytest))
-    rows.extend(_diff_block("release.yml (inline)", "ruff check",
-                            _parse_release_ruff_lint(release_text), desired_ruff))
+    rows.extend(
+        _diff_block(
+            "test.yml", "RUFF_TARGETS", _parse_env_block(test_text, "RUFF_TARGETS"), desired_ruff
+        )
+    )
+    rows.extend(
+        _diff_block(
+            "test.yml",
+            "PYTEST_TARGETS",
+            _parse_env_block(test_text, "PYTEST_TARGETS"),
+            desired_pytest,
+        )
+    )
+    rows.extend(
+        _diff_block(
+            "release.yml",
+            "RUFF_TARGETS",
+            _parse_env_block(release_text, "RUFF_TARGETS"),
+            desired_ruff,
+        )
+    )
+    rows.extend(
+        _diff_block(
+            "release.yml",
+            "PYTEST_TARGETS",
+            _parse_env_block(release_text, "PYTEST_TARGETS"),
+            desired_pytest,
+        )
+    )
+    rows.extend(
+        _diff_block(
+            "release.yml (inline)",
+            "ruff check",
+            _parse_release_ruff_lint(release_text),
+            desired_ruff,
+        )
+    )
     return rows
 
 

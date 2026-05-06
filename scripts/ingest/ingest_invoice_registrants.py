@@ -46,6 +46,7 @@ Exit codes:
     2  parse failure rate above threshold (>5% of rows rejected)
     3  DB schema missing (run scripts/migrate.py first)
 """
+
 from __future__ import annotations
 
 import argparse
@@ -118,12 +119,10 @@ MAX_RETRIES = 3
 
 # Mandatory attribution strings (PDL v1.0).
 ATTRIBUTION_SOURCE = (
-    "出典: 国税庁適格請求書発行事業者公表サイト（国税庁）"
-    "(https://www.invoice-kohyo.nta.go.jp/)"
+    "出典: 国税庁適格請求書発行事業者公表サイト（国税庁）(https://www.invoice-kohyo.nta.go.jp/)"
 )
 ATTRIBUTION_EDIT_NOTICE = (
-    "本データは国税庁適格請求書発行事業者公表サイトを"
-    "Bookyou株式会社が編集・加工したものです。"
+    "本データは国税庁適格請求書発行事業者公表サイトをBookyou株式会社が編集・加工したものです。"
 )
 
 # Aggregator domains we refuse to store as source_url. Same list as the
@@ -194,30 +193,30 @@ _KIND_MAP: dict[str, str] = {
 # 凡例 sheet). Code-valued columns (process, correct, kind, country,
 # latest) are always present and never NULL for the row itself.
 _CSV_COLS_KNOWN = (
-    "sequenceNumber",              # 0: 7.  一連番号
-    "registratedNumber",           # 1: 8.  登録番号 (T+13 digits) — PK
-    "process",                     # 2: 9.  事業者処理区分 01=新規 02=変更 03=失効 04=取消 99=削除
-    "correct",                     # 3: 10. 訂正区分 0=訂正以外 1=訂正 空文字=削除
-    "kind",                        # 4: 11. 人格区分 1=個人 2=法人
-    "country",                     # 5: 12. 国内外区分 1=国内 2=特定国外 3=特定国外以外の国外
-    "latest",                      # 6: 13. 最新履歴 1=最新 空文字=過去情報
-    "registrationDate",            # 7: 14. 登録年月日 (YYYY-MM-DD)
-    "updateDate",                  # 8: 15. 更新年月日
-    "disposalDate",                # 9: 16. 取消年月日
-    "expireDate",                  # 10: 17. 失効年月日
-    "address",                     # 11: 18. 本店又は主たる事務所の所在地（法人）
-    "addressPrefectureCode",       # 12: 19. 所在地都道府県コード（法人）
-    "addressCityCode",             # 13: 20. 所在地市区町村コード（法人）
-    "addressRequest",              # 14: 21. 所在地（公表申出, 個人）
-    "addressRequestPrefectureCode",# 15: 22. 所在地都道府県コード（公表申出, 個人）
-    "addressRequestCityCode",      # 16: 23. 所在地市区町村コード（公表申出, 個人）
-    "kana",                        # 17: 24. 日本語（カナ）
-    "name",                        # 18: 25. 氏名又は名称
-    "addressInside",               # 19: 26. 国内事業所所在地
-    "addressInsidePrefectureCode", # 20: 27. 国内事業所所在地都道府県コード
-    "addressInsideCityCode",       # 21: 28. 国内事業所所在地市区町村コード
-    "tradeName",                   # 22: 29. 主たる屋号
-    "popularName_previousName",    # 23: 30. 通称・旧姓
+    "sequenceNumber",  # 0: 7.  一連番号
+    "registratedNumber",  # 1: 8.  登録番号 (T+13 digits) — PK
+    "process",  # 2: 9.  事業者処理区分 01=新規 02=変更 03=失効 04=取消 99=削除
+    "correct",  # 3: 10. 訂正区分 0=訂正以外 1=訂正 空文字=削除
+    "kind",  # 4: 11. 人格区分 1=個人 2=法人
+    "country",  # 5: 12. 国内外区分 1=国内 2=特定国外 3=特定国外以外の国外
+    "latest",  # 6: 13. 最新履歴 1=最新 空文字=過去情報
+    "registrationDate",  # 7: 14. 登録年月日 (YYYY-MM-DD)
+    "updateDate",  # 8: 15. 更新年月日
+    "disposalDate",  # 9: 16. 取消年月日
+    "expireDate",  # 10: 17. 失効年月日
+    "address",  # 11: 18. 本店又は主たる事務所の所在地（法人）
+    "addressPrefectureCode",  # 12: 19. 所在地都道府県コード（法人）
+    "addressCityCode",  # 13: 20. 所在地市区町村コード（法人）
+    "addressRequest",  # 14: 21. 所在地（公表申出, 個人）
+    "addressRequestPrefectureCode",  # 15: 22. 所在地都道府県コード（公表申出, 個人）
+    "addressRequestCityCode",  # 16: 23. 所在地市区町村コード（公表申出, 個人）
+    "kana",  # 17: 24. 日本語（カナ）
+    "name",  # 18: 25. 氏名又は名称
+    "addressInside",  # 19: 26. 国内事業所所在地
+    "addressInsidePrefectureCode",  # 20: 27. 国内事業所所在地都道府県コード
+    "addressInsideCityCode",  # 21: 28. 国内事業所所在地市区町村コード
+    "tradeName",  # 22: 29. 主たる屋号
+    "popularName_previousName",  # 23: 30. 通称・旧姓
 )
 
 # CSV `process` field values that mean "this row is a delete event, not
@@ -230,18 +229,53 @@ _PROCESS_DELETE = {"99"}
 # blank for foreign / 外国法人. Verified 2026-04-24 against the
 # 総務省 全国地方公共団体コード list.
 _PREF_CODE_MAP: dict[str, str] = {
-    "01": "北海道", "02": "青森県", "03": "岩手県", "04": "宮城県",
-    "05": "秋田県", "06": "山形県", "07": "福島県", "08": "茨城県",
-    "09": "栃木県", "10": "群馬県", "11": "埼玉県", "12": "千葉県",
-    "13": "東京都", "14": "神奈川県", "15": "新潟県", "16": "富山県",
-    "17": "石川県", "18": "福井県", "19": "山梨県", "20": "長野県",
-    "21": "岐阜県", "22": "静岡県", "23": "愛知県", "24": "三重県",
-    "25": "滋賀県", "26": "京都府", "27": "大阪府", "28": "兵庫県",
-    "29": "奈良県", "30": "和歌山県", "31": "鳥取県", "32": "島根県",
-    "33": "岡山県", "34": "広島県", "35": "山口県", "36": "徳島県",
-    "37": "香川県", "38": "愛媛県", "39": "高知県", "40": "福岡県",
-    "41": "佐賀県", "42": "長崎県", "43": "熊本県", "44": "大分県",
-    "45": "宮崎県", "46": "鹿児島県", "47": "沖縄県",
+    "01": "北海道",
+    "02": "青森県",
+    "03": "岩手県",
+    "04": "宮城県",
+    "05": "秋田県",
+    "06": "山形県",
+    "07": "福島県",
+    "08": "茨城県",
+    "09": "栃木県",
+    "10": "群馬県",
+    "11": "埼玉県",
+    "12": "千葉県",
+    "13": "東京都",
+    "14": "神奈川県",
+    "15": "新潟県",
+    "16": "富山県",
+    "17": "石川県",
+    "18": "福井県",
+    "19": "山梨県",
+    "20": "長野県",
+    "21": "岐阜県",
+    "22": "静岡県",
+    "23": "愛知県",
+    "24": "三重県",
+    "25": "滋賀県",
+    "26": "京都府",
+    "27": "大阪府",
+    "28": "兵庫県",
+    "29": "奈良県",
+    "30": "和歌山県",
+    "31": "鳥取県",
+    "32": "島根県",
+    "33": "岡山県",
+    "34": "広島県",
+    "35": "山口県",
+    "36": "徳島県",
+    "37": "香川県",
+    "38": "愛媛県",
+    "39": "高知県",
+    "40": "福岡県",
+    "41": "佐賀県",
+    "42": "長崎県",
+    "43": "熊本県",
+    "44": "大分県",
+    "45": "宮崎県",
+    "46": "鹿児島県",
+    "47": "沖縄県",
 }
 
 
@@ -389,10 +423,7 @@ def build_source_url(mode: str, fmt: str, date_str: str, dl_fil_kanri_no: str | 
     if type_code is None:
         raise ValueError(f"unknown format: {fmt!r}")
     if dl_fil_kanri_no is not None:
-        return (
-            f"{SOURCE_URL_BASE}/{bucket}/dlfile?"
-            f"dlFilKanriNo={dl_fil_kanri_no}&type={type_code}"
-        )
+        return f"{SOURCE_URL_BASE}/{bucket}/dlfile?dlFilKanriNo={dl_fil_kanri_no}&type={type_code}"
     # Fallback pseudo-URL: identifies the bucket + date for lineage/audit
     # purposes; actual bytes must come from --source-file.
     yyyymmdd = date_str.replace("-", "")
@@ -474,7 +505,9 @@ def polite_get(url: str, tries: int = MAX_RETRIES) -> bytes:
             if attempt == tries:
                 break
             wait = 2**attempt
-            _LOG.warning("fetch_retry attempt=%d/%d wait=%ds url=%s err=%s", attempt, tries, wait, url, exc)
+            _LOG.warning(
+                "fetch_retry attempt=%d/%d wait=%ds url=%s err=%s", attempt, tries, wait, url, exc
+            )
             time.sleep(wait)
     assert last_exc is not None
     raise last_exc
@@ -553,7 +586,7 @@ def _detect_encoding(probe: bytes) -> str:
         # 11xxxxxx; the short suffix (up to 3 bytes) is a classic boundary
         # artifact.
         if exc.end >= len(probe) - 3:
-            tail = probe[exc.start:]
+            tail = probe[exc.start :]
             if tail and (tail[0] & 0xC0) == 0xC0:  # UTF-8 lead byte
                 try:
                     probe[: exc.start].decode("utf-8")
@@ -787,7 +820,9 @@ def iter_json_rows(stream: io.IOBase) -> Iterator[dict[str, Any]]:
 POLICY_SKIP = object()
 
 
-def normalize_row(raw: dict[str, Any], source_url: str, checksum: str, now_iso: str) -> dict[str, Any] | None | object:
+def normalize_row(
+    raw: dict[str, Any], source_url: str, checksum: str, now_iso: str
+) -> dict[str, Any] | None | object:
     """Turn a raw bulk record into a DB-ready dict.
 
     Returns:
@@ -851,30 +886,40 @@ def normalize_row(raw: dict[str, Any], source_url: str, checksum: str, now_iso: 
 
     # Address priority depends on 人格区分.
     if kind == "corporation":
-        address = nfkc_strip(
-            _first_present(raw, "address", "国内所在地", "address_normalized")
-        )
+        address = nfkc_strip(_first_present(raw, "address", "国内所在地", "address_normalized"))
         if not address:
             address = nfkc_strip(_first_present(raw, "addressInside"))
-        pref_code = str(raw.get("addressPrefectureCode", "")).strip().zfill(2) if raw.get("addressPrefectureCode") else ""
+        pref_code = (
+            str(raw.get("addressPrefectureCode", "")).strip().zfill(2)
+            if raw.get("addressPrefectureCode")
+            else ""
+        )
         if not pref_code:
-            pref_code = str(raw.get("addressInsidePrefectureCode", "")).strip().zfill(2) if raw.get("addressInsidePrefectureCode") else ""
+            pref_code = (
+                str(raw.get("addressInsidePrefectureCode", "")).strip().zfill(2)
+                if raw.get("addressInsidePrefectureCode")
+                else ""
+            )
     else:
         # 個人 / その他
         address = nfkc_strip(_first_present(raw, "addressRequest", "address"))
         if not address:
             address = nfkc_strip(_first_present(raw, "addressInside"))
-        pref_code = str(raw.get("addressRequestPrefectureCode", "")).strip().zfill(2) if raw.get("addressRequestPrefectureCode") else ""
+        pref_code = (
+            str(raw.get("addressRequestPrefectureCode", "")).strip().zfill(2)
+            if raw.get("addressRequestPrefectureCode")
+            else ""
+        )
         if not pref_code:
-            pref_code = str(raw.get("addressInsidePrefectureCode", "")).strip().zfill(2) if raw.get("addressInsidePrefectureCode") else ""
+            pref_code = (
+                str(raw.get("addressInsidePrefectureCode", "")).strip().zfill(2)
+                if raw.get("addressInsidePrefectureCode")
+                else ""
+            )
 
     explicit_pref_raw = nfkc_strip(_first_present(raw, "都道府県", "prefecture"))
     prefecture_from_code = _PREF_CODE_MAP.get(pref_code) if pref_code else None
-    prefecture = (
-        explicit_pref_raw
-        or prefecture_from_code
-        or extract_prefecture(address, None)
-    )
+    prefecture = explicit_pref_raw or prefecture_from_code or extract_prefecture(address, None)
 
     registered_date = normalize_date(
         _first_present(raw, "registrationDate", "登録年月日", "registeredDate", "registered_date")
@@ -890,9 +935,7 @@ def normalize_row(raw: dict[str, Any], source_url: str, checksum: str, now_iso: 
         _first_present(raw, "expireDate", "失効年月日", "expiredDate", "expired_date")
     )
 
-    trade_name = nfkc_strip(
-        _first_present(raw, "tradeName", "屋号", "主たる屋号", "trade_name")
-    )
+    trade_name = nfkc_strip(_first_present(raw, "tradeName", "屋号", "主たる屋号", "trade_name"))
 
     last_updated = normalize_date(
         _first_present(raw, "updateDate", "最新更新年月日", "lastUpdated", "last_updated_nta")
@@ -1057,9 +1100,7 @@ def apply_batch(
     return len(batch), lineage_rows
 
 
-def split_insert_update(
-    conn: sqlite3.Connection, batch: list[dict[str, Any]]
-) -> tuple[int, int]:
+def split_insert_update(conn: sqlite3.Connection, batch: list[dict[str, Any]]) -> tuple[int, int]:
     """Pre-batch count of how many PKs already exist. Best-effort telemetry only."""
     if not batch:
         return 0, 0
@@ -1136,10 +1177,13 @@ def run_ingest(
                 "NTA index. Pass --source-file to ingest a locally-cached bulk "
                 "file, or pick a date within the past 40 business days (sabun) "
                 "or a recent 1st-of-month (zenken).",
-                bucket, date_str,
+                bucket,
+                date_str,
             )
             return 1
-    source_url = build_source_url(mode=mode, fmt=fmt, date_str=date_str, dl_fil_kanri_no=dl_fil_kanri_no)
+    source_url = build_source_url(
+        mode=mode, fmt=fmt, date_str=date_str, dl_fil_kanri_no=dl_fil_kanri_no
+    )
     if source_url_is_banned(source_url):
         _LOG.error("source_banned url=%s", source_url)
         return 1
@@ -1183,13 +1227,15 @@ def run_ingest(
         ).fetchone()
         lineage_enabled = row is not None
         if not lineage_enabled:
-            _LOG.warning("source_lineage_audit missing -- lineage rows skipped (migration 014 not applied?)")
+            _LOG.warning(
+                "source_lineage_audit missing -- lineage rows skipped (migration 014 not applied?)"
+            )
 
     now_iso = datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
 
     total_seen = 0
     total_parsed = 0
-    total_rejected = 0       # parse errors (schema violations)
+    total_rejected = 0  # parse errors (schema violations)
     total_skipped_policy = 0  # legitimate skips: process=99 (削除), latest!=1 (履歴)
     total_written = 0
     total_inserted = 0
@@ -1234,7 +1280,11 @@ def run_ingest(
             if total_parsed and total_parsed % 10_000 == 0:
                 _LOG.info(
                     "progress seen=%d parsed=%d rejected=%d skipped_policy=%d written=%d",
-                    total_seen, total_parsed, total_rejected, total_skipped_policy, total_written,
+                    total_seen,
+                    total_parsed,
+                    total_rejected,
+                    total_skipped_policy,
+                    total_written,
                 )
         _flush()
     finally:
@@ -1254,11 +1304,19 @@ def run_ingest(
         "summary mode=%s fmt=%s date=%s seen=%d parsed=%d rejected=%d "
         "skipped_policy=%d inserted=%d updated=%d written=%d lineage=%d "
         "elapsed=%.1fs reject_rate=%.3f",
-        mode, fmt, date_str,
-        total_seen, total_parsed, total_rejected,
+        mode,
+        fmt,
+        date_str,
+        total_seen,
+        total_parsed,
+        total_rejected,
         total_skipped_policy,
-        total_inserted, total_updated, total_written, total_lineage,
-        elapsed, reject_rate,
+        total_inserted,
+        total_updated,
+        total_written,
+        total_lineage,
+        elapsed,
+        reject_rate,
     )
 
     # Human-readable completion banner (the spec demands this exact shape).
@@ -1281,7 +1339,9 @@ def run_ingest(
     if quality_fail:
         _LOG.error(
             "PARSE QUALITY FAILURE seen=%d rejected=%d rate=%.3f > 0.05 threshold",
-            total_seen, total_rejected, reject_rate,
+            total_seen,
+            total_rejected,
+            reject_rate,
         )
         return 2
     return 0
@@ -1294,9 +1354,18 @@ def run_ingest(
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--db", type=Path, default=DEFAULT_DB, help=f"SQLite DB path (default {DEFAULT_DB})")
-    ap.add_argument("--mode", choices=("full", "delta"), default="full", help="monthly full snapshot or daily delta")
-    ap.add_argument("--format", dest="fmt", choices=("csv", "xml", "json"), default="csv", help="bulk format")
+    ap.add_argument(
+        "--db", type=Path, default=DEFAULT_DB, help=f"SQLite DB path (default {DEFAULT_DB})"
+    )
+    ap.add_argument(
+        "--mode",
+        choices=("full", "delta"),
+        default="full",
+        help="monthly full snapshot or daily delta",
+    )
+    ap.add_argument(
+        "--format", dest="fmt", choices=("csv", "xml", "json"), default="csv", help="bulk format"
+    )
     ap.add_argument(
         "--date",
         type=str,
@@ -1317,7 +1386,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default=DEFAULT_CACHE_DIR,
         help=f"download cache directory (default {DEFAULT_CACHE_DIR})",
     )
-    ap.add_argument("--batch-size", type=int, default=5000, help="rows per transaction (default 5000)")
+    ap.add_argument(
+        "--batch-size", type=int, default=5000, help="rows per transaction (default 5000)"
+    )
     return ap.parse_args(argv)
 
 

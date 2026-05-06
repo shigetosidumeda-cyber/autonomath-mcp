@@ -26,6 +26,7 @@ Usage:
     if res.ok:
         parse(res.body)
 """
+
 from __future__ import annotations
 
 import dataclasses
@@ -39,10 +40,7 @@ import httpx
 
 _LOG = logging.getLogger("jpintel.scripts.http")
 
-DEFAULT_USER_AGENT = (
-    "jpintel-mcp-ingest/1.0 "
-    "(+https://jpcite.com; contact=ops@jpcite.com)"
-)
+DEFAULT_USER_AGENT = "jpintel-mcp-ingest/1.0 (+https://jpcite.com; contact=ops@jpcite.com)"
 DEFAULT_PER_HOST_DELAY_SEC = 1.0  # 1 req/sec/host per §5
 DEFAULT_TIMEOUT_SEC = 15.0
 DEFAULT_MAX_BYTES = 2 * 1024 * 1024  # HTML cap
@@ -163,7 +161,11 @@ class HttpClient:
 
         if not self._robots_allowed(url):
             return FetchResult(
-                url=url, status=0, body=b"", headers={}, ok=False,
+                url=url,
+                status=0,
+                body=b"",
+                headers={},
+                ok=False,
                 skip_reason="robots",
             )
 
@@ -190,13 +192,16 @@ class HttpClient:
                         # respect Retry-After if present, else backoff
                         ra = resp.headers.get("retry-after")
                         try:
-                            wait = float(ra) if ra else 2 ** attempt
+                            wait = float(ra) if ra else 2**attempt
                         except ValueError:
-                            wait = 2 ** attempt
+                            wait = 2**attempt
                         wait += random.uniform(0, 0.5)
                         _LOG.info(
                             "rate-limited host=%s status=%s backoff=%.1fs attempt=%d",
-                            host, resp.status_code, wait, attempt,
+                            host,
+                            resp.status_code,
+                            wait,
+                            attempt,
                         )
                         time.sleep(wait)
                         continue
@@ -210,14 +215,18 @@ class HttpClient:
             except httpx.HTTPError as exc:
                 last_exc = exc
                 if attempt < self._retries:
-                    wait = (2 ** attempt) + random.uniform(0, 0.5)
+                    wait = (2**attempt) + random.uniform(0, 0.5)
                     _LOG.info("fetch error host=%s err=%s backoff=%.1fs", host, exc, wait)
                     time.sleep(wait)
                     continue
 
         _LOG.warning("fetch failed url=%s err=%s", url, last_exc)
         return FetchResult(
-            url=url, status=0, body=b"", headers={}, ok=False,
+            url=url,
+            status=0,
+            body=b"",
+            headers={},
+            ok=False,
             skip_reason="rate-limit-exceeded" if last_exc is None else f"error:{last_exc}",
         )
 

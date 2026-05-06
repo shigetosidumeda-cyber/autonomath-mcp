@@ -64,6 +64,7 @@ Exit codes:
   1  network error or no data after retries
   2  DB schema missing (court_decisions table absent)
 """
+
 from __future__ import annotations
 
 import argparse
@@ -105,8 +106,17 @@ PDF_URL_TMPL = "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-{hid}.pdf"
 
 # Banned commercial aggregators — kept in sync with ingest_court_decisions.py.
 BANNED_SOURCE_HOSTS: tuple[str, ...] = (
-    "d1law", "westlaw", "lexis", "lex-db", "lexdb", "tkclex",
-    "noukaweb", "hojyokin-portal", "biz.stayway", "hojo-navi", "mirai-joho",
+    "d1law",
+    "westlaw",
+    "lexis",
+    "lex-db",
+    "lexdb",
+    "tkclex",
+    "noukaweb",
+    "hojyokin-portal",
+    "biz.stayway",
+    "hojo-navi",
+    "mirai-joho",
 )
 
 # Reference-law seeds. (法令名, search-endpoint-key, subject_area_hint)
@@ -137,7 +147,7 @@ REFERENCE_LAWS: tuple[tuple[str, str, str], ...] = (
 )
 
 PAGE_SIZE = 30
-MAX_PER_LAW = 240    # 8 pages
+MAX_PER_LAW = 240  # 8 pages
 MAX_TOTAL_DETAILS = 600  # absolute cap across all laws
 MIN_ROWS_FOR_OK = 200
 
@@ -162,8 +172,18 @@ _GENGO: tuple[tuple[str, int], ...] = (
 )
 
 _KANJI_DIGIT = {
-    "〇": 0, "零": 0, "一": 1, "二": 2, "三": 3, "四": 4,
-    "五": 5, "六": 6, "七": 7, "八": 8, "九": 9, "十": 10,
+    "〇": 0,
+    "零": 0,
+    "一": 1,
+    "二": 2,
+    "三": 3,
+    "四": 4,
+    "五": 5,
+    "六": 6,
+    "七": 7,
+    "八": 8,
+    "九": 9,
+    "十": 10,
     "元": 1,
 }
 
@@ -313,10 +333,14 @@ class CourtsClient:
             except (httpx.HTTPError, httpx.TransportError) as exc:
                 last_exc = exc
                 if attempt < MAX_RETRIES:
-                    sleep_for = 2 ** attempt
+                    sleep_for = 2**attempt
                     _LOG.warning(
                         "GET %s failed (%s); retry %d/%d after %ds",
-                        url, exc, attempt, MAX_RETRIES, sleep_for,
+                        url,
+                        exc,
+                        attempt,
+                        MAX_RETRIES,
+                        sleep_for,
                     )
                     time.sleep(sleep_for)
         assert last_exc is not None
@@ -334,8 +358,9 @@ class CourtsClient:
 @dataclass
 class ListingRow:
     """One row out of search2/search4 result table."""
-    hid: str                       # courts.go.jp internal id (path segment)
-    detail_n: int                  # detail2/detail4/detail7/detail8 variant
+
+    hid: str  # courts.go.jp internal id (path segment)
+    detail_n: int  # detail2/detail4/detail7/detail8 variant
     detail_url: str
     pdf_url: str | None
     case_number: str
@@ -346,7 +371,7 @@ class ListingRow:
     result: str | None
     original_court: str | None
     original_case_number: str | None
-    list_label: str                # 最高裁判例 / 高裁判例 / etc.
+    list_label: str  # 最高裁判例 / 高裁判例 / etc.
     seed_subject_area: str
     seed_law: str
 
@@ -354,9 +379,7 @@ class ListingRow:
 _DETAIL_LINK_RE = re.compile(r"\.\./(\d+)/detail(\d+)/")
 
 
-def parse_listing_page(
-    html: str, *, seed_law: str, seed_subject: str
-) -> list[ListingRow]:
+def parse_listing_page(html: str, *, seed_law: str, seed_subject: str) -> list[ListingRow]:
     soup = BeautifulSoup(html, "html.parser")
     table = soup.find("table", class_="search-result-table")
     if not table:
@@ -417,7 +440,7 @@ def parse_listing_page(
         )
         if date_m:
             decision_date_raw = date_m.group(0)
-            tail = line2[date_m.end():].strip()
+            tail = line2[date_m.end() :].strip()
             # Tokenise the rest with whitespace; first chunk = court (may include 部/小法廷).
             parts = re.split(r"\s+", tail)
             # court is a single token ending in 法廷|裁判所|支部.
@@ -512,12 +535,12 @@ def parse_listing_total(html: str) -> int | None:
 
 @dataclass
 class DetailFields:
-    courtroom: str | None = None       # 法廷名 (上書き court)
-    key_ruling: str | None = None      # 判示事項
-    summary: str | None = None         # 裁判要旨
-    references: str | None = None      # 参照法条
+    courtroom: str | None = None  # 法廷名 (上書き court)
+    key_ruling: str | None = None  # 判示事項
+    summary: str | None = None  # 裁判要旨
+    references: str | None = None  # 参照法条
     reporter_citation: str | None = None  # 判例集等巻・号・頁
-    parties: str | None = None         # 当事者 (rare in courts.go.jp HTML)
+    parties: str | None = None  # 当事者 (rare in courts.go.jp HTML)
 
 
 def parse_detail_page(html: str) -> DetailFields:
@@ -555,6 +578,7 @@ def parse_detail_page(html: str) -> DetailFields:
 @dataclass
 class CourtRow:
     """Final shape ready to UPSERT into court_decisions."""
+
     unified_id: str
     case_name: str
     case_number: str
@@ -592,9 +616,7 @@ def walk_law(
     seen_ids: set[str] = set()
     total: int | None = None
     while True:
-        url = (
-            f"{base}?filter%5Breference%5D={encoded}&offset={offset}#searched"
-        )
+        url = f"{base}?filter%5Breference%5D={encoded}&offset={offset}#searched"
         try:
             html = client.get(url)
         except Exception as exc:  # noqa: BLE001
@@ -663,7 +685,9 @@ def assemble(
     if references:
         if "税法" in references or "国税" in references or "租税" in references:
             subject = "租税"
-        elif "行政事件訴訟法" in references or "行政手続法" in references or "行政不服" in references:
+        elif (
+            "行政事件訴訟法" in references or "行政手続法" in references or "行政不服" in references
+        ):
             subject = "行政"
         elif "国家賠償" in references:
             subject = "行政"
@@ -728,9 +752,12 @@ def open_db(db_path: Path) -> sqlite3.Connection:
 
 
 def upsert_row(conn: sqlite3.Connection, r: CourtRow) -> str:
-    existed = conn.execute(
-        "SELECT 1 FROM court_decisions WHERE unified_id = ?", (r.unified_id,)
-    ).fetchone() is not None
+    existed = (
+        conn.execute(
+            "SELECT 1 FROM court_decisions WHERE unified_id = ?", (r.unified_id,)
+        ).fetchone()
+        is not None
+    )
     conn.execute(
         """INSERT INTO court_decisions (
             unified_id, case_name, case_number, court, court_level,
@@ -762,11 +789,27 @@ def upsert_row(conn: sqlite3.Connection, r: CourtRow) -> str:
             updated_at = excluded.updated_at
         """,
         (
-            r.unified_id, r.case_name, r.case_number, r.court, r.court_level,
-            r.decision_date, r.decision_type, r.subject_area, r.related_law_ids_json,
-            r.key_ruling, r.parties_involved, r.impact_on_business, r.precedent_weight,
-            r.full_text_url, r.pdf_url, r.source_url, r.source_excerpt,
-            r.source_checksum, r.confidence, r.fetched_at, r.updated_at,
+            r.unified_id,
+            r.case_name,
+            r.case_number,
+            r.court,
+            r.court_level,
+            r.decision_date,
+            r.decision_type,
+            r.subject_area,
+            r.related_law_ids_json,
+            r.key_ruling,
+            r.parties_involved,
+            r.impact_on_business,
+            r.precedent_weight,
+            r.full_text_url,
+            r.pdf_url,
+            r.source_url,
+            r.source_excerpt,
+            r.source_checksum,
+            r.confidence,
+            r.fetched_at,
+            r.updated_at,
         ),
     )
     # FTS mirror.
@@ -789,15 +832,20 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--db", type=Path, default=DEFAULT_DB)
     ap.add_argument(
-        "--per-law-cap", type=int, default=MAX_PER_LAW,
+        "--per-law-cap",
+        type=int,
+        default=MAX_PER_LAW,
         help="cap rows per (law, endpoint) pair before moving on",
     )
     ap.add_argument(
-        "--total-cap", type=int, default=MAX_TOTAL_DETAILS,
+        "--total-cap",
+        type=int,
+        default=MAX_TOTAL_DETAILS,
         help="absolute cap across all laws",
     )
     ap.add_argument(
-        "--skip-detail", action="store_true",
+        "--skip-detail",
+        action="store_true",
         help="skip per-case detail fetch (faster; misses 判示事項/裁判要旨/参照法条)",
     )
     ap.add_argument("--dry-run", action="store_true")
@@ -813,9 +861,7 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     fetched_at = (
-        _dt.datetime.now(_dt.timezone.utc)
-        .isoformat(timespec="seconds")
-        .replace("+00:00", "Z")
+        _dt.datetime.now(_dt.timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
     )
 
     conn: sqlite3.Connection | None = None
@@ -831,8 +877,12 @@ def main(argv: list[str] | None = None) -> int:
 
     client = CourtsClient()
     stats = {
-        "walked": 0, "built": 0, "inserted": 0, "updated": 0,
-        "skipped": 0, "detail_fail": 0,
+        "walked": 0,
+        "built": 0,
+        "inserted": 0,
+        "updated": 0,
+        "skipped": 0,
+        "detail_fail": 0,
     }
     seen_unified: set[str] = set()
     rows_to_write: list[CourtRow] = []
@@ -903,13 +953,18 @@ def main(argv: list[str] | None = None) -> int:
 
     _LOG.info(
         "done walked=%d built=%d inserted=%d updated=%d skipped=%d detail_fail=%d",
-        stats["walked"], stats["built"], stats["inserted"],
-        stats["updated"], stats["skipped"], stats["detail_fail"],
+        stats["walked"],
+        stats["built"],
+        stats["inserted"],
+        stats["updated"],
+        stats["skipped"],
+        stats["detail_fail"],
     )
     if stats["built"] < MIN_ROWS_FOR_OK:
         _LOG.warning(
             "built (%d) below min target (%d) — non-zero exit so callers retry",
-            stats["built"], MIN_ROWS_FOR_OK,
+            stats["built"],
+            MIN_ROWS_FOR_OK,
         )
         return 1
     return 0

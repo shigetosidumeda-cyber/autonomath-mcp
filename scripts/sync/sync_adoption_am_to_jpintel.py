@@ -119,9 +119,7 @@ def run(src_path: Path, tgt_path: Path, batch: int, dry_run: bool) -> int:
     corp_map = build_houjin_master_from_corporate(src)
 
     # Already-present houjin_master (fast skip)
-    existing_hb: set[str] = {
-        r[0] for r in tgt.execute("SELECT houjin_bangou FROM houjin_master")
-    }
+    existing_hb: set[str] = {r[0] for r in tgt.execute("SELECT houjin_bangou FROM houjin_master")}
     print(f"[tgt] existing houjin_master rows = {len(existing_hb)}", flush=True)
 
     initial_adoption = tgt.execute("SELECT COUNT(*) FROM adoption_records").fetchone()[0]
@@ -196,7 +194,7 @@ def run(src_path: Path, tgt_path: Path, batch: int, dry_run: bool) -> int:
                 before = tgt.execute("SELECT COUNT(*) FROM adoption_records").fetchone()[0]
                 tgt.executemany(insert_adoption_sql, ad_batch)
                 after = tgt.execute("SELECT COUNT(*) FROM adoption_records").fetchone()[0]
-                inserted_adoption += (after - before)
+                inserted_adoption += after - before
             tgt.execute("COMMIT")
         except Exception:
             tgt.execute("ROLLBACK")
@@ -264,10 +262,7 @@ def run(src_path: Path, tgt_path: Path, batch: int, dry_run: bool) -> int:
         municipality = j.get("municipality")
         project_title = j.get("project_title") or j.get("summary")
         industry_raw = j.get("industry_raw")
-        industry_jsic_medium = (
-            j.get("industry_jsic_medium")
-            or j.get("industry_jsic_inferred")
-        )
+        industry_jsic_medium = j.get("industry_jsic_medium") or j.get("industry_jsic_inferred")
         amount_granted_yen = safe_int(j.get("amount_granted_yen"))
         amount_project_total_yen = safe_int(
             j.get("amount_project_total_yen") or j.get("project_total_yen")
@@ -329,16 +324,13 @@ def run(src_path: Path, tgt_path: Path, batch: int, dry_run: bool) -> int:
     final_adoption = tgt.execute("SELECT COUNT(*) FROM adoption_records").fetchone()[0]
     final_houjin = tgt.execute("SELECT COUNT(*) FROM houjin_master").fetchone()[0]
     inserted_adoption = final_adoption - initial_adoption
-    inserted_houjin = final_houjin - len({h for h in existing_hb if False})  # placeholder; computed below
+    inserted_houjin = final_houjin - len(
+        {h for h in existing_hb if False}
+    )  # placeholder; computed below
 
     # recompute inserted_houjin vs pre
     initial_hb_count = len(
-        set(
-            r[0]
-            for r in tgt.execute(
-                "SELECT houjin_bangou FROM houjin_master LIMIT 0"
-            )
-        )
+        set(r[0] for r in tgt.execute("SELECT houjin_bangou FROM houjin_master LIMIT 0"))
     )
     # above is 0; use final - 0 since initial was 0 at start
     # (we'll report final_houjin which is clean)

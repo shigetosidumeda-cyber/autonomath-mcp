@@ -39,6 +39,7 @@ CLI:
   .venv/bin/python scripts/ingest/ingest_jst_programs.py --years 2023,2024,2025,2026
   .venv/bin/python scripts/ingest/ingest_jst_programs.py --dry-run
 """
+
 from __future__ import annotations
 
 import argparse
@@ -140,9 +141,9 @@ _CATEGORY_MAP = (
     ("/cpse/", "cpse"),
 )
 
-TIER_OPEN = "S"      # 募集中 + URL live
-TIER_RECENT = "A"    # 90 日以内
-TIER_OTHER = "B"     # 古い archive
+TIER_OPEN = "S"  # 募集中 + URL live
+TIER_RECENT = "A"  # 90 日以内
+TIER_OTHER = "B"  # 古い archive
 
 
 # ---------------------------------------------------------------------------
@@ -166,7 +167,7 @@ def fetch(client: httpx.Client, url: str, host_clock: dict[str, float]) -> bytes
             _LOG.warning("fetch_err url=%s attempt=%d err=%s", url, attempt, exc)
             if attempt == MAX_RETRIES:
                 return None
-            time.sleep(2 ** attempt)
+            time.sleep(2**attempt)
             continue
 
         if r.status_code == 200:
@@ -177,9 +178,9 @@ def fetch(client: httpx.Client, url: str, host_clock: dict[str, float]) -> bytes
         if r.status_code in (429, 503) and attempt < MAX_RETRIES:
             ra = r.headers.get("retry-after")
             try:
-                wait = float(ra) if ra else 2 ** attempt
+                wait = float(ra) if ra else 2**attempt
             except ValueError:
-                wait = 2 ** attempt
+                wait = 2**attempt
             _LOG.info("backoff url=%s status=%d wait=%.1fs", url, r.status_code, wait)
             time.sleep(wait)
             continue
@@ -277,12 +278,14 @@ def parse_table_page(html: bytes, base_url: str) -> list[dict[str, Any]]:
         if not title:
             continue
         href = normalize_url(a["href"], base_url)
-        out.append({
-            "title": title,
-            "url": href,
-            "date_text": date_text,
-            "category_jp": category_jp,
-        })
+        out.append(
+            {
+                "title": title,
+                "url": href,
+                "date_text": date_text,
+                "category_jp": category_jp,
+            }
+        )
     return out
 
 
@@ -305,11 +308,13 @@ def parse_atom(xml_bytes: bytes) -> list[dict[str, Any]]:
             href = (link_el.get("href") or "").strip()
         if not title or not href:
             continue
-        out.append({
-            "title": title,
-            "url": href,
-            "published": (pub_el.text or "").strip() if pub_el is not None else "",
-        })
+        out.append(
+            {
+                "title": title,
+                "url": href,
+                "published": (pub_el.text or "").strip() if pub_el is not None else "",
+            }
+        )
     return out
 
 
@@ -340,12 +345,14 @@ def upsert_program(
 
     enriched_json = json.dumps(enriched, ensure_ascii=False)
     source_mentions = json.dumps(
-        [{
-            "source": "jst.go.jp",
-            "attribution": ATTRIBUTION,
-            "license": LICENSE_NOTE,
-            "issuer_hojin_bangou": JST_HOJIN_BANGOU,
-        }],
+        [
+            {
+                "source": "jst.go.jp",
+                "attribution": ATTRIBUTION,
+                "license": LICENSE_NOTE,
+                "issuer_hojin_bangou": JST_HOJIN_BANGOU,
+            }
+        ],
         ensure_ascii=False,
     )
 
@@ -367,17 +374,36 @@ def upsert_program(
                 updated_at
             ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
             (
-                uid, name, None,
-                AUTHORITY_LEVEL, ISSUER_NAME, None, None,
-                "research_grant", source_url,
-                None, None, None,
-                None, tier, None, None, None,
-                0, None,
-                None, None,
-                None, None,
-                None, application_window_json,
-                enriched_json, source_mentions,
-                source_url, now_iso, None,
+                uid,
+                name,
+                None,
+                AUTHORITY_LEVEL,
+                ISSUER_NAME,
+                None,
+                None,
+                "research_grant",
+                source_url,
+                None,
+                None,
+                None,
+                None,
+                tier,
+                None,
+                None,
+                None,
+                0,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                application_window_json,
+                enriched_json,
+                source_mentions,
+                source_url,
+                now_iso,
+                None,
                 now_iso,
             ),
         )
@@ -418,11 +444,16 @@ def upsert_program(
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--db", type=Path, default=DEFAULT_DB)
-    p.add_argument("--years", type=str, default="2022,2023,2024,2025,2026",
-                   help="comma-separated archive years to walk")
+    p.add_argument(
+        "--years",
+        type=str,
+        default="2022,2023,2024,2025,2026",
+        help="comma-separated archive years to walk",
+    )
     p.add_argument("--max", type=int, default=300, help="cap programs to ingest")
-    p.add_argument("--no-verify", action="store_true",
-                   help="skip HEAD liveness check (faster local test)")
+    p.add_argument(
+        "--no-verify", action="store_true", help="skip HEAD liveness check (faster local test)"
+    )
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--verbose", action="store_true")
     args = p.parse_args(argv)
@@ -458,15 +489,18 @@ def main(argv: list[str] | None = None) -> int:
                 continue
             if is_excluded_title(item["title"]):
                 continue
-            candidates.setdefault(url, {
-                "title": item["title"],
-                "url": url,
-                "published_at": item["published"],
-                "source_kind": "active_rss",
-                "year": None,
-                "category_jp": None,
-                "date_text": "",
-            })
+            candidates.setdefault(
+                url,
+                {
+                    "title": item["title"],
+                    "url": url,
+                    "published_at": item["published"],
+                    "source_kind": "active_rss",
+                    "year": None,
+                    "category_jp": None,
+                    "date_text": "",
+                },
+            )
         _LOG.info("rss collected=%d", len(candidates))
 
     # 1b: Active table (bosyu.html)
@@ -620,7 +654,10 @@ def main(argv: list[str] | None = None) -> int:
             if args.dry_run:
                 _LOG.info(
                     "dry-run tier=%s kind=%s name=%s url=%s",
-                    tier, c["source_kind"], title[:50], url,
+                    tier,
+                    c["source_kind"],
+                    title[:50],
+                    url,
                 )
                 continue
 
@@ -658,7 +695,11 @@ def main(argv: list[str] | None = None) -> int:
 
     _LOG.info(
         "done inserted=%d updated=%d skipped=%d errors=%d (candidates=%d)",
-        inserted, updated, skipped, errors, len(cands),
+        inserted,
+        updated,
+        skipped,
+        errors,
+        len(cands),
     )
     print(
         f"jst_ingest inserted={inserted} updated={updated} skipped={skipped} "

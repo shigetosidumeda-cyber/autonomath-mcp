@@ -51,6 +51,7 @@ CLI:
     python scripts/ingest/ingest_enforcement_env_atmos_water.py
         [--db autonomath.db] [--dry-run] [--verbose]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -140,7 +141,7 @@ DIOXIN_2023_PR = "https://www.env.go.jp/press/press_04606.html"
 # Water: 令和6年度水質汚濁防止法 法第13条第1項 改善命令 都道府県別件数
 # (extracted from PDF p.27 表7 改善命令、立入検査、行政指導件数等)
 WATER_KAIZEN_PREF: list[tuple[str, int]] = [
-    ("山形県", 1),     # 1
+    ("山形県", 1),  # 1
     ("埼玉県", 1),
     ("広島県", 1),
     ("福岡県", 4),
@@ -359,12 +360,42 @@ SOIL_4_3_PREF: list[tuple[str, int]] = [
 # のものを 自治体名抽出。 source PDF p.50-52
 DIOXIN_INDIVIDUAL: list[tuple[str, str, str, str]] = [
     # (authority, kind, summary, segment)
-    ("宮城県", "contract_suspend", "廃棄物焼却炉(2t/時未満) 新設 / 排出基準超過 5.7 ng-TEQ/m3 → 一時停止命令、改善後の設置者測定で基準値以下 (3.7ng-TEQ/m3)。", "stop"),
-    ("宮崎県", "business_improvement", "廃棄物焼却炉(2t/時未満) 新設 / 排出基準超過 72 ng-TEQ/m3 → 改善命令 [廃棄物処理法に基づく措置]。改善後の設置者測定で基準値以下 (1.4ng-TEQ/m3)。", "kaizen"),
-    ("宮崎県", "business_improvement", "廃棄物焼却炉(2t/時未満) 既設 / 排出基準超過 40 ng-TEQ/m3 → 改善命令。改善後の設置者測定で基準値以下 (3.8ng-TEQ/m3)。", "kaizen"),
-    ("広島県", "contract_suspend", "廃棄物焼却炉(2t/時未満) 既設 / 排出基準超過 11 ng-TEQ/m3 → 改善命令及び一時停止命令。改善後の設置者測定で基準値以下 (3.4ng-TEQ/m3)。", "kaizen+stop"),
-    ("鹿児島市", "contract_suspend", "廃棄物焼却炉(2t/時未満) 新設 / 排出基準超過 24 ng-TEQ/m3 → 改善命令及び一時停止命令。改善後の設置者測定で基準値以下 (0.037ng-TEQ/m3)。", "kaizen+stop"),
-    ("新潟市", "contract_suspend", "廃棄物焼却炉(2t/時未満) 既設 / 排出基準超過 59 ng-TEQ/m3 → 改善命令及び一時停止命令 [廃棄物処理法に基づく措置]。改善後の設置者測定で基準値以下 (0.94ng-TEQ/m3)。", "kaizen+stop"),
+    (
+        "宮城県",
+        "contract_suspend",
+        "廃棄物焼却炉(2t/時未満) 新設 / 排出基準超過 5.7 ng-TEQ/m3 → 一時停止命令、改善後の設置者測定で基準値以下 (3.7ng-TEQ/m3)。",
+        "stop",
+    ),
+    (
+        "宮崎県",
+        "business_improvement",
+        "廃棄物焼却炉(2t/時未満) 新設 / 排出基準超過 72 ng-TEQ/m3 → 改善命令 [廃棄物処理法に基づく措置]。改善後の設置者測定で基準値以下 (1.4ng-TEQ/m3)。",
+        "kaizen",
+    ),
+    (
+        "宮崎県",
+        "business_improvement",
+        "廃棄物焼却炉(2t/時未満) 既設 / 排出基準超過 40 ng-TEQ/m3 → 改善命令。改善後の設置者測定で基準値以下 (3.8ng-TEQ/m3)。",
+        "kaizen",
+    ),
+    (
+        "広島県",
+        "contract_suspend",
+        "廃棄物焼却炉(2t/時未満) 既設 / 排出基準超過 11 ng-TEQ/m3 → 改善命令及び一時停止命令。改善後の設置者測定で基準値以下 (3.4ng-TEQ/m3)。",
+        "kaizen+stop",
+    ),
+    (
+        "鹿児島市",
+        "contract_suspend",
+        "廃棄物焼却炉(2t/時未満) 新設 / 排出基準超過 24 ng-TEQ/m3 → 改善命令及び一時停止命令。改善後の設置者測定で基準値以下 (0.037ng-TEQ/m3)。",
+        "kaizen+stop",
+    ),
+    (
+        "新潟市",
+        "contract_suspend",
+        "廃棄物焼却炉(2t/時未満) 既設 / 排出基準超過 59 ng-TEQ/m3 → 改善命令及び一時停止命令 [廃棄物処理法に基づく措置]。改善後の設置者測定で基準値以下 (0.94ng-TEQ/m3)。",
+        "kaizen+stop",
+    ),
 ]
 # Dioxin 報告徴求 (法第34条第1項) 都道府県別 (表Ⅱ-6(1) 大気)
 DIOXIN_REPORT_PREF: list[tuple[str, int]] = [
@@ -417,8 +448,7 @@ NAMED_ROWS: list[EnfRow] = [
         "2024-06-01",
         "名古屋市",
         "contract_suspend",
-        "未処理の汚水を名古屋港に排出 → 水質汚濁防止法第13条に基づく"
-        "使用停止命令。",
+        "未処理の汚水を名古屋港に排出 → 水質汚濁防止法第13条に基づく使用停止命令。",
         f"{LAW_SUITAKU} 第13条 (改善命令・一時停止命令)",
         "https://www.city.nagoya.jp/kankyo/",
     ),
@@ -450,32 +480,73 @@ def _fy_to_iso(fy: int) -> str:
 # ---------------------------------------------------------------------------
 
 PREF_SLUG: dict[str, str] = {
-    "東京都": "tokyo", "神奈川県": "kanagawa", "千葉県": "chiba",
-    "埼玉県": "saitama", "茨城県": "ibaraki", "栃木県": "tochigi",
-    "群馬県": "gunma", "山梨県": "yamanashi", "新潟県": "niigata",
-    "長野県": "nagano", "静岡県": "shizuoka", "愛知県": "aichi",
-    "三重県": "mie", "岐阜県": "gifu", "富山県": "toyama",
-    "石川県": "ishikawa", "福井県": "fukui", "滋賀県": "shiga",
-    "京都府": "kyoto", "大阪府": "osaka", "兵庫県": "hyogo",
-    "奈良県": "nara", "和歌山県": "wakayama", "鳥取県": "tottori",
-    "島根県": "shimane", "岡山県": "okayama", "広島県": "hiroshima",
-    "山口県": "yamaguchi", "徳島県": "tokushima", "香川県": "kagawa",
-    "愛媛県": "ehime", "高知県": "kochi", "福岡県": "fukuoka",
-    "佐賀県": "saga", "長崎県": "nagasaki", "熊本県": "kumamoto",
-    "大分県": "oita", "宮崎県": "miyazaki", "鹿児島県": "kagoshima",
-    "沖縄県": "okinawa", "北海道": "hokkaido",
-    "青森県": "aomori", "岩手県": "iwate", "宮城県": "miyagi",
-    "秋田県": "akita", "山形県": "yamagata", "福島県": "fukushima",
-    "横浜市": "yokohama-city", "川崎市": "kawasaki-city",
-    "相模原市": "sagamihara-city", "千葉市": "chiba-city",
-    "さいたま市": "saitama-city", "新潟市": "niigata-city",
-    "名古屋市": "nagoya-city", "京都市": "kyoto-city",
-    "大阪市": "osaka-city", "堺市": "sakai-city",
-    "神戸市": "kobe-city", "岡山市": "okayama-city",
-    "広島市": "hiroshima-city", "北九州市": "kitakyushu-city",
-    "福岡市": "fukuoka-city", "熊本市": "kumamoto-city",
-    "札幌市": "sapporo-city", "仙台市": "sendai-city",
-    "静岡市": "shizuoka-city", "浜松市": "hamamatsu-city",
+    "東京都": "tokyo",
+    "神奈川県": "kanagawa",
+    "千葉県": "chiba",
+    "埼玉県": "saitama",
+    "茨城県": "ibaraki",
+    "栃木県": "tochigi",
+    "群馬県": "gunma",
+    "山梨県": "yamanashi",
+    "新潟県": "niigata",
+    "長野県": "nagano",
+    "静岡県": "shizuoka",
+    "愛知県": "aichi",
+    "三重県": "mie",
+    "岐阜県": "gifu",
+    "富山県": "toyama",
+    "石川県": "ishikawa",
+    "福井県": "fukui",
+    "滋賀県": "shiga",
+    "京都府": "kyoto",
+    "大阪府": "osaka",
+    "兵庫県": "hyogo",
+    "奈良県": "nara",
+    "和歌山県": "wakayama",
+    "鳥取県": "tottori",
+    "島根県": "shimane",
+    "岡山県": "okayama",
+    "広島県": "hiroshima",
+    "山口県": "yamaguchi",
+    "徳島県": "tokushima",
+    "香川県": "kagawa",
+    "愛媛県": "ehime",
+    "高知県": "kochi",
+    "福岡県": "fukuoka",
+    "佐賀県": "saga",
+    "長崎県": "nagasaki",
+    "熊本県": "kumamoto",
+    "大分県": "oita",
+    "宮崎県": "miyazaki",
+    "鹿児島県": "kagoshima",
+    "沖縄県": "okinawa",
+    "北海道": "hokkaido",
+    "青森県": "aomori",
+    "岩手県": "iwate",
+    "宮城県": "miyagi",
+    "秋田県": "akita",
+    "山形県": "yamagata",
+    "福島県": "fukushima",
+    "横浜市": "yokohama-city",
+    "川崎市": "kawasaki-city",
+    "相模原市": "sagamihara-city",
+    "千葉市": "chiba-city",
+    "さいたま市": "saitama-city",
+    "新潟市": "niigata-city",
+    "名古屋市": "nagoya-city",
+    "京都市": "kyoto-city",
+    "大阪市": "osaka-city",
+    "堺市": "sakai-city",
+    "神戸市": "kobe-city",
+    "岡山市": "okayama-city",
+    "広島市": "hiroshima-city",
+    "北九州市": "kitakyushu-city",
+    "福岡市": "fukuoka-city",
+    "熊本市": "kumamoto-city",
+    "札幌市": "sapporo-city",
+    "仙台市": "sendai-city",
+    "静岡市": "shizuoka-city",
+    "浜松市": "hamamatsu-city",
     "環境省": "env",
     "環境省 (都道府県集計)": "env-rollup",
 }
@@ -512,17 +583,18 @@ def _expand_water_kaizen(fy: int, source_url: str) -> list[EnfRow]:
                 f"環境省「水質汚濁防止法等の施行状況」p.27 表7 集計値。"
                 f"発動 {i}/{n} 件目。事業者名は集計上非公表。"
             )
-            rows.append(EnfRow(
-                target_name=target,
-                issuance_date=_fy_to_iso(fy),
-                issuing_authority=auth,
-                enforcement_kind="business_improvement",
-                reason_summary=summary,
-                related_law_ref=f"{LAW_SUITAKU} 第13条第1項",
-                source_url=source_url,
-                extras={"fy": fy, "case_index": i, "case_total": n,
-                        "law_short": "水濁法"},
-            ))
+            rows.append(
+                EnfRow(
+                    target_name=target,
+                    issuance_date=_fy_to_iso(fy),
+                    issuing_authority=auth,
+                    enforcement_kind="business_improvement",
+                    reason_summary=summary,
+                    related_law_ref=f"{LAW_SUITAKU} 第13条第1項",
+                    source_url=source_url,
+                    extras={"fy": fy, "case_index": i, "case_total": n, "law_short": "水濁法"},
+                )
+            )
     return rows
 
 
@@ -533,27 +605,25 @@ def _expand_water_kouhatsu(fy: int, source_url: str) -> list[EnfRow]:
         if n <= 0:
             continue
         for i in range(1, n + 1):
-            target = (
-                f"{auth} 水質汚濁防止法 排水基準違反告発 "
-                f"(令和{fy - 2018}年度 件{i}/{n})"
-            )
+            target = f"{auth} 水質汚濁防止法 排水基準違反告発 (令和{fy - 2018}年度 件{i}/{n})"
             summary = (
                 f"{auth} 知事/市長 が水質汚濁防止法第31条第1項第1号 (排水基準"
                 f"違反、6月以下の拘禁刑又は50万円以下の罰金) に基づき告発。"
                 f"環境省「水質汚濁防止法等の施行状況」p.36 表9 集計値。"
                 f"件 {i}/{n}。事業者名は集計上非公表。"
             )
-            rows.append(EnfRow(
-                target_name=target,
-                issuance_date=_fy_to_iso(fy),
-                issuing_authority=auth,
-                enforcement_kind="fine",
-                reason_summary=summary,
-                related_law_ref=f"{LAW_SUITAKU} 第31条第1項第1号 (排水基準違反)",
-                source_url=source_url,
-                extras={"fy": fy, "case_index": i, "case_total": n,
-                        "law_short": "水濁法"},
-            ))
+            rows.append(
+                EnfRow(
+                    target_name=target,
+                    issuance_date=_fy_to_iso(fy),
+                    issuing_authority=auth,
+                    enforcement_kind="fine",
+                    reason_summary=summary,
+                    related_law_ref=f"{LAW_SUITAKU} 第31条第1項第1号 (排水基準違反)",
+                    source_url=source_url,
+                    extras={"fy": fy, "case_index": i, "case_total": n, "law_short": "水濁法"},
+                )
+            )
     return rows
 
 
@@ -562,27 +632,25 @@ def _expand_air_national(fy: int, source_url: str) -> list[EnfRow]:
     rows: list[EnfRow] = []
     for auth, n in AIR_2023_NATIONAL:
         for i in range(1, n + 1):
-            target = (
-                f"大気汚染防止法 改善命令又は一時停止命令 "
-                f"(令和{fy - 2018}年度 件{i}/{n})"
-            )
+            target = f"大気汚染防止法 改善命令又は一時停止命令 (令和{fy - 2018}年度 件{i}/{n})"
             summary = (
                 f"環境省「大気汚染防止法施行状況調査」によると、"
                 f"令和{fy - 2018}年度に都道府県等が実施した行政処分 "
                 f"(改善命令又は一時停止命令) 全国計 {n} 件。"
                 f"件 {i}/{n}。発動自治体内訳は PDF 表14 で集計のみ。"
             )
-            rows.append(EnfRow(
-                target_name=target,
-                issuance_date=_fy_to_iso(fy),
-                issuing_authority=auth,
-                enforcement_kind="business_improvement",
-                reason_summary=summary,
-                related_law_ref=f"{LAW_TAIKI} 第14条 (改善命令)",
-                source_url=source_url,
-                extras={"fy": fy, "case_index": i, "case_total": n,
-                        "law_short": "大防法"},
-            ))
+            rows.append(
+                EnfRow(
+                    target_name=target,
+                    issuance_date=_fy_to_iso(fy),
+                    issuing_authority=auth,
+                    enforcement_kind="business_improvement",
+                    reason_summary=summary,
+                    related_law_ref=f"{LAW_TAIKI} 第14条 (改善命令)",
+                    source_url=source_url,
+                    extras={"fy": fy, "case_index": i, "case_total": n, "law_short": "大防法"},
+                )
+            )
     return rows
 
 
@@ -597,28 +665,31 @@ def _expand_soil(fy: int, source_url: str) -> list[EnfRow]:
             if n <= 0:
                 continue
             for i in range(1, n + 1):
-                target = (
-                    f"{auth} 土壌汚染対策法 {label} "
-                    f"(令和{fy - 2018}年度 件{i}/{n})"
-                )
+                target = f"{auth} 土壌汚染対策法 {label} (令和{fy - 2018}年度 件{i}/{n})"
                 summary = (
                     f"{auth} 知事/市長 が土壌汚染対策法 {article} に基づき、"
                     f"土地所有者等に対し汚染状況調査を命令。"
                     f"環境省「土壌汚染対策法施行状況」p.14 表2-1 集計値。"
                     f"件 {i}/{n}。事業者名は集計上非公表。"
                 )
-                rows.append(EnfRow(
-                    target_name=target,
-                    issuance_date=_fy_to_iso(fy),
-                    issuing_authority=auth,
-                    enforcement_kind="investigation",
-                    reason_summary=summary,
-                    related_law_ref=article,
-                    source_url=source_url,
-                    extras={"fy": fy, "case_index": i, "case_total": n,
+                rows.append(
+                    EnfRow(
+                        target_name=target,
+                        issuance_date=_fy_to_iso(fy),
+                        issuing_authority=auth,
+                        enforcement_kind="investigation",
+                        reason_summary=summary,
+                        related_law_ref=article,
+                        source_url=source_url,
+                        extras={
+                            "fy": fy,
+                            "case_index": i,
+                            "case_total": n,
                             "law_short": "土対法",
-                            "article_label": label},
-                ))
+                            "article_label": label,
+                        },
+                    )
+                )
     return rows
 
 
@@ -626,55 +697,61 @@ def _expand_dioxin(fy: int, pdf_url: str, pr_url: str) -> list[EnfRow]:
     """ダイオキシン特措法 個別事案 + 報告徴求 集計."""
     rows: list[EnfRow] = []
     # 個別事案 (表Ⅱ-4) 6件
-    for idx, (auth, kind, summary, _seg) in enumerate(DIOXIN_INDIVIDUAL,
-                                                      start=1):
+    for idx, (auth, kind, summary, _seg) in enumerate(DIOXIN_INDIVIDUAL, start=1):
         target = (
-            f"{auth} ダイオキシン類対策特別措置法 排出基準超過事案 "
-            f"(令和{fy - 2018}年度 案{idx})"
+            f"{auth} ダイオキシン類対策特別措置法 排出基準超過事案 (令和{fy - 2018}年度 案{idx})"
         )
         full_summary = (
             f"{auth} 知事/市長 が、ダイオキシン類対策特別措置法第22条第1項に"
             f"基づく行政処分を発動。{summary}"
             f" 環境省「ダイオキシン類対策特別措置法施行状況」表Ⅱ-4 出典。"
         )
-        rows.append(EnfRow(
-            target_name=target,
-            issuance_date=_fy_to_iso(fy),
-            issuing_authority=auth,
-            enforcement_kind=kind,
-            reason_summary=full_summary,
-            related_law_ref=f"{LAW_DIOXIN} 第22条第1項",
-            source_url=pdf_url,
-            extras={"fy": fy, "case_index": idx,
+        rows.append(
+            EnfRow(
+                target_name=target,
+                issuance_date=_fy_to_iso(fy),
+                issuing_authority=auth,
+                enforcement_kind=kind,
+                reason_summary=full_summary,
+                related_law_ref=f"{LAW_DIOXIN} 第22条第1項",
+                source_url=pdf_url,
+                extras={
+                    "fy": fy,
+                    "case_index": idx,
                     "law_short": "ダイオ特措法",
-                    "facility_type": "廃棄物焼却炉"},
-        ))
+                    "facility_type": "廃棄物焼却炉",
+                },
+            )
+        )
     # 報告徴求 集計 (表Ⅱ-6(1))
     for auth, n in DIOXIN_REPORT_PREF:
         if n <= 0:
             continue
         for i in range(1, n + 1):
-            target = (
-                f"{auth} ダイオキシン類対策特別措置法 報告徴求 "
-                f"(令和{fy - 2018}年度 件{i}/{n})"
-            )
+            target = f"{auth} ダイオキシン類対策特別措置法 報告徴求 (令和{fy - 2018}年度 件{i}/{n})"
             summary = (
                 f"{auth} 知事/市長 がダイオキシン類対策特別措置法第34条第1項"
                 f"に基づき、特定施設設置者に報告を徴収。"
                 f"環境省「ダイオキシン類対策特別措置法施行状況」表Ⅱ-6 集計。"
                 f"件 {i}/{n}。"
             )
-            rows.append(EnfRow(
-                target_name=target,
-                issuance_date=_fy_to_iso(fy),
-                issuing_authority=auth,
-                enforcement_kind="investigation",
-                reason_summary=summary,
-                related_law_ref=f"{LAW_DIOXIN} 第34条第1項 (報告徴収)",
-                source_url=pr_url,
-                extras={"fy": fy, "case_index": i, "case_total": n,
-                        "law_short": "ダイオ特措法"},
-            ))
+            rows.append(
+                EnfRow(
+                    target_name=target,
+                    issuance_date=_fy_to_iso(fy),
+                    issuing_authority=auth,
+                    enforcement_kind="investigation",
+                    reason_summary=summary,
+                    related_law_ref=f"{LAW_DIOXIN} 第34条第1項 (報告徴収)",
+                    source_url=pr_url,
+                    extras={
+                        "fy": fy,
+                        "case_index": i,
+                        "case_total": n,
+                        "law_short": "ダイオ特措法",
+                    },
+                )
+            )
     return rows
 
 
@@ -701,9 +778,7 @@ def ensure_tables(conn: sqlite3.Connection) -> None:
             (tbl,),
         ).fetchone()
         if not row:
-            raise SystemExit(
-                f"missing table '{tbl}' — apply migrations first"
-            )
+            raise SystemExit(f"missing table '{tbl}' — apply migrations first")
 
 
 def existing_dedup_keys(
@@ -811,24 +886,20 @@ def write_rows(
                 continue
             batch_keys.add(key)
 
-            extra_seed = (
-                r.source_url + (
-                    f"|{r.extras.get('case_index', '')}"
-                    f"|{r.extras.get('article_label', '')}"
-                    f"|{r.extras.get('law_short', '')}"
-                    if r.extras else ""
-                )
+            extra_seed = r.source_url + (
+                f"|{r.extras.get('case_index', '')}"
+                f"|{r.extras.get('article_label', '')}"
+                f"|{r.extras.get('law_short', '')}"
+                if r.extras
+                else ""
             )
             slug = _slug8(r.target_name, r.issuance_date, extra_seed)
             auth_slug = _authority_slug(r.issuing_authority)
             law_short = r.extras.get("law_short", "env") if r.extras else "env"
             canonical_id = (
-                f"AM-ENF-ENV-{law_short}-{auth_slug}-"
-                f"{r.issuance_date.replace('-', '')}-{slug}"
+                f"AM-ENF-ENV-{law_short}-{auth_slug}-{r.issuance_date.replace('-', '')}-{slug}"
             )
-            primary_name = (
-                f"{r.target_name} - {r.issuing_authority} 環境法 行政処分"
-            )
+            primary_name = f"{r.target_name} - {r.issuing_authority} 環境法 行政処分"
             raw_json = json.dumps(
                 {
                     "target_name": r.target_name,
@@ -839,27 +910,29 @@ def write_rows(
                     "reason_summary": r.reason_summary,
                     "source_url": r.source_url,
                     "extras": r.extras or {},
-                    "source_attribution": (
-                        "環境省 / 自治体 ウェブサイト (施行状況調査・"
-                        "報道発表)"
-                    ),
-                    "license": (
-                        "政府機関 / 自治体の著作物（出典明記で転載引用可）"
-                    ),
+                    "source_attribution": ("環境省 / 自治体 ウェブサイト (施行状況調査・報道発表)"),
+                    "license": ("政府機関 / 自治体の著作物（出典明記で転載引用可）"),
                 },
                 ensure_ascii=False,
             )
             try:
                 upsert_entity(
-                    conn, canonical_id, primary_name,
-                    r.source_url, raw_json, now_iso,
+                    conn,
+                    canonical_id,
+                    primary_name,
+                    r.source_url,
+                    raw_json,
+                    now_iso,
                 )
                 insert_enforcement(conn, canonical_id, r, now_iso)
                 inserted += 1
             except sqlite3.Error as exc:
                 _LOG.error(
                     "DB error name=%r date=%s auth=%s: %s",
-                    r.target_name, r.issuance_date, r.issuing_authority, exc,
+                    r.target_name,
+                    r.issuance_date,
+                    r.issuing_authority,
+                    exc,
                 )
                 continue
         conn.commit()
@@ -913,9 +986,7 @@ def main(argv: list[str] | None = None) -> int:
         format="%(asctime)s %(levelname)s %(name)s %(message)s",
     )
 
-    now_iso = datetime.now(UTC).isoformat(timespec="seconds").replace(
-        "+00:00", "Z"
-    )
+    now_iso = datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
 
     rows = build_seed_rows()
     _LOG.info("built %d seed rows", len(rows))
@@ -923,9 +994,13 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.dry_run:
         for r in rows[:5]:
-            _LOG.info("sample: %s | %s | %s | %s",
-                      r.target_name, r.issuance_date,
-                      r.issuing_authority, r.enforcement_kind)
+            _LOG.info(
+                "sample: %s | %s | %s | %s",
+                r.target_name,
+                r.issuance_date,
+                r.issuing_authority,
+                r.enforcement_kind,
+            )
         return 0
 
     if not args.db.exists():
@@ -945,7 +1020,10 @@ def main(argv: list[str] | None = None) -> int:
 
     _LOG.info(
         "done parsed=%d inserted=%d dup_db=%d dup_batch=%d",
-        len(rows), inserted, dup_db, dup_batch,
+        len(rows),
+        inserted,
+        dup_db,
+        dup_batch,
     )
     print(
         f"env_atmos_water ingest: parsed={len(rows)} inserted={inserted} "

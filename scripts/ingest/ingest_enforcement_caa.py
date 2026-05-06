@@ -37,6 +37,7 @@ CLI:
         [--limit N] \\
         [--dry-run]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -432,9 +433,7 @@ def ensure_tables(conn: sqlite3.Connection) -> None:
             (tbl,),
         ).fetchone()
         if not row:
-            raise SystemExit(
-                f"missing table '{tbl}' in DB — apply migrations before running"
-            )
+            raise SystemExit(f"missing table '{tbl}' in DB — apply migrations before running")
 
 
 def upsert_entity(
@@ -494,10 +493,13 @@ def upsert_enforcement(
     am_enforcement_detail has no UNIQUE on entity_id in the schema; we
     use DELETE-then-INSERT keyed by entity_id so re-runs don't duplicate.
     """
-    existed = conn.execute(
-        "SELECT 1 FROM am_enforcement_detail WHERE entity_id=? LIMIT 1",
-        (entity_id,),
-    ).fetchone() is not None
+    existed = (
+        conn.execute(
+            "SELECT 1 FROM am_enforcement_detail WHERE entity_id=? LIMIT 1",
+            (entity_id,),
+        ).fetchone()
+        is not None
+    )
     if existed:
         conn.execute(
             "DELETE FROM am_enforcement_detail WHERE entity_id=?",
@@ -538,7 +540,9 @@ def upsert_enforcement(
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--db", type=Path, default=DEFAULT_DB, help=f"autonomath.db path (default {DEFAULT_DB})")
+    ap.add_argument(
+        "--db", type=Path, default=DEFAULT_DB, help=f"autonomath.db path (default {DEFAULT_DB})"
+    )
     ap.add_argument(
         "--years",
         type=str,
@@ -605,7 +609,9 @@ def main(argv: list[str] | None = None) -> int:
         _LOG.info("fetch year index %s", url)
         res = http.get(url)
         if not res.ok:
-            _LOG.warning("year %s fetch failed status=%s skip=%s", year, res.status, res.skip_reason)
+            _LOG.warning(
+                "year %s fetch failed status=%s skip=%s", year, res.status, res.skip_reason
+            )
             continue
         items = parse_year_index(res.text)
         _LOG.info("year %s entries: %d", year, len(items))
@@ -694,7 +700,9 @@ def main(argv: list[str] | None = None) -> int:
                 if hb:
                     stats["houjin_hits"] += 1
                 canonical_id = f"enforcement:caa:{eid}:{_slug(biz)}"
-                primary_name = f"{biz} に対する{action}" if action != "その他" else entry.headline[:200]
+                primary_name = (
+                    f"{biz} に対する{action}" if action != "その他" else entry.headline[:200]
+                )
                 raw_json = json.dumps(
                     dict(shared_raw, target_name=biz, houjin_bangou=hb),
                     ensure_ascii=False,

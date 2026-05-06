@@ -105,6 +105,7 @@ one of:
 The companion #29 stream covers 税理士/弁護士/CPA/司法書士/行政書士. The
 related_law_ref value never overlaps.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -154,9 +155,7 @@ _FULLWIDTH_DIGIT = str.maketrans("０１２３４５６７８９", "0123456789")
 
 ERA_OFFSET = {"令和": 2018, "平成": 1988, "昭和": 1925, "大正": 1911}
 
-_WAREKI_RE = re.compile(
-    r"(令和|平成|昭和|大正)\s*(\d+|元)\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日?"
-)
+_WAREKI_RE = re.compile(r"(令和|平成|昭和|大正)\s*(\d+|元)\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日?")
 _WESTERN_RE = re.compile(r"(20\d{2})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日?")
 
 
@@ -195,17 +194,18 @@ def _parse_date(text: str) -> str | None:
 # Row container
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class EnfRow:
-    profession: str               # 鑑定士/調査士/社労士/診断士
-    target_name: str              # 名前 OR "{資格} #NNN (氏名非公表)"
-    enforcement_kind: str         # CHECK enum value
-    issuance_date: str            # ISO yyyy-mm-dd
+    profession: str  # 鑑定士/調査士/社労士/診断士
+    target_name: str  # 名前 OR "{資格} #NNN (氏名非公表)"
+    enforcement_kind: str  # CHECK enum value
+    issuance_date: str  # ISO yyyy-mm-dd
     issuing_authority: str
     related_law_ref: str
     reason_summary: str
     source_url: str
-    canonical_seed: str           # extra slug seed (registration #, pref, etc.)
+    canonical_seed: str  # extra slug seed (registration #, pref, etc.)
     raw: dict[str, Any] = field(default_factory=dict)
 
 
@@ -274,32 +274,34 @@ def collect_kanteishi_rows() -> list[EnfRow]:
         for enf_kind, count, kind_label in entry["kinds"]:
             for i in range(count):
                 seq += 1
-                out.append(EnfRow(
-                    profession="鑑定士",
-                    target_name=f"不動産鑑定士 #{seq:03d} (氏名非公表)",
-                    enforcement_kind=enf_kind,
-                    issuance_date=entry["issuance_date"],
-                    issuing_authority="国土交通省",
-                    related_law_ref="不動産鑑定士法(不動産の鑑定評価に関する法律)第40条",
-                    reason_summary=(
-                        f"国土交通省告示: {kind_label} / "
-                        f"事案: {entry['title']} / "
-                        f"理由: {entry['reason']} / "
-                        f"(件番号: {seq})"
-                    )[:1900],
-                    source_url=entry["url"],
-                    canonical_seed=f"{entry['issuance_date']}|{seq}",
-                    raw={
-                        "title": entry["title"],
-                        "issuance_date": entry["issuance_date"],
-                        "kind_label": kind_label,
-                        "kind_count_in_press": count,
-                        "kind_seq": i + 1,
-                        "anonymized": True,
-                        "license": "政府機関の著作物（出典明記で転載引用可）",
-                        "attribution": "出典: 国土交通省 (https://www.mlit.go.jp/)",
-                    },
-                ))
+                out.append(
+                    EnfRow(
+                        profession="鑑定士",
+                        target_name=f"不動産鑑定士 #{seq:03d} (氏名非公表)",
+                        enforcement_kind=enf_kind,
+                        issuance_date=entry["issuance_date"],
+                        issuing_authority="国土交通省",
+                        related_law_ref="不動産鑑定士法(不動産の鑑定評価に関する法律)第40条",
+                        reason_summary=(
+                            f"国土交通省告示: {kind_label} / "
+                            f"事案: {entry['title']} / "
+                            f"理由: {entry['reason']} / "
+                            f"(件番号: {seq})"
+                        )[:1900],
+                        source_url=entry["url"],
+                        canonical_seed=f"{entry['issuance_date']}|{seq}",
+                        raw={
+                            "title": entry["title"],
+                            "issuance_date": entry["issuance_date"],
+                            "kind_label": kind_label,
+                            "kind_count_in_press": count,
+                            "kind_seq": i + 1,
+                            "anonymized": True,
+                            "license": "政府機関の著作物（出典明記で転載引用可）",
+                            "attribution": "出典: 国土交通省 (https://www.mlit.go.jp/)",
+                        },
+                    )
+                )
     return out
 
 
@@ -321,7 +323,8 @@ def collect_chosashi_rows(http: HttpClient) -> list[EnfRow]:
     if not res.ok:
         _LOG.warning(
             "[chosashi] fetch fail %s status=%s",
-            CHOSASHI_INDEX_URL, res.status,
+            CHOSASHI_INDEX_URL,
+            res.status,
         )
         return []
     soup = BeautifulSoup(res.text, "html.parser")
@@ -346,38 +349,38 @@ def collect_chosashi_rows(http: HttpClient) -> list[EnfRow]:
                 dd = nodes[i + 1]
                 kai = _normalize(dd.get_text(" ", strip=True))
                 a = dd.find("a", href=True)
-                detail_url = (
-                    urljoin(CHOSASHI_INDEX_URL, a["href"]) if a else CHOSASHI_INDEX_URL
-                )
+                detail_url = urljoin(CHOSASHI_INDEX_URL, a["href"]) if a else CHOSASHI_INDEX_URL
                 seq += 1
-                out.append(EnfRow(
-                    profession="調査士",
-                    target_name=f"土地家屋調査士 #{seq:03d} (氏名非公表)",
-                    # The 連合会 index page does not expose 処分種別; per the
-                    # disclosure regulation the index lists 戒告 from 6か月
-                    # 業務停止 1年+期間 業務禁止 5年。 We default to 'other'
-                    # since kind is unknown without the (image) detail page.
-                    enforcement_kind="other",
-                    issuance_date=iso,
-                    issuing_authority="法務省",
-                    related_law_ref="土地家屋調査士法第42条",
-                    reason_summary=(
-                        f"法務大臣告示(土地家屋調査士法第42条): "
-                        f"処分日 {iso} / 所属会 {kai} / "
-                        f"(出典: 日本土地家屋調査士会連合会 情報公開規程第7条 mirror; "
-                        f"detail page is rendered as image and is not OCRed; "
-                        f"処分種別 not extractable from index)"
-                    )[:1900],
-                    source_url=detail_url,
-                    canonical_seed=f"{iso}|{kai}|{seq}",
-                    raw={
-                        "kai_name": kai,
-                        "issuance_date": iso,
-                        "anonymized": True,
-                        "source_attribution": "法務省 / 日本土地家屋調査士会連合会",
-                        "license": "公的告示の二次転記(連合会情報公開規程第7条)",
-                    },
-                ))
+                out.append(
+                    EnfRow(
+                        profession="調査士",
+                        target_name=f"土地家屋調査士 #{seq:03d} (氏名非公表)",
+                        # The 連合会 index page does not expose 処分種別; per the
+                        # disclosure regulation the index lists 戒告 from 6か月
+                        # 業務停止 1年+期間 業務禁止 5年。 We default to 'other'
+                        # since kind is unknown without the (image) detail page.
+                        enforcement_kind="other",
+                        issuance_date=iso,
+                        issuing_authority="法務省",
+                        related_law_ref="土地家屋調査士法第42条",
+                        reason_summary=(
+                            f"法務大臣告示(土地家屋調査士法第42条): "
+                            f"処分日 {iso} / 所属会 {kai} / "
+                            f"(出典: 日本土地家屋調査士会連合会 情報公開規程第7条 mirror; "
+                            f"detail page is rendered as image and is not OCRed; "
+                            f"処分種別 not extractable from index)"
+                        )[:1900],
+                        source_url=detail_url,
+                        canonical_seed=f"{iso}|{kai}|{seq}",
+                        raw={
+                            "kai_name": kai,
+                            "issuance_date": iso,
+                            "anonymized": True,
+                            "source_attribution": "法務省 / 日本土地家屋調査士会連合会",
+                            "license": "公的告示の二次転記(連合会情報公開規程第7条)",
+                        },
+                    )
+                )
                 i += 2
             else:
                 i += 1
@@ -406,7 +409,9 @@ def collect_sharo_rows(http: HttpClient) -> list[EnfRow]:
     res = http.get(SHARO_INDEX_URL)
     if not res.ok:
         _LOG.warning(
-            "[sharo] fetch fail %s status=%s", SHARO_INDEX_URL, res.status,
+            "[sharo] fetch fail %s status=%s",
+            SHARO_INDEX_URL,
+            res.status,
         )
         return []
     soup = BeautifulSoup(res.text, "html.parser")
@@ -417,6 +422,7 @@ def collect_sharo_rows(http: HttpClient) -> list[EnfRow]:
     # the next sibling <table>.
     headings = soup.find_all(["h2", "h3", "h4"])
     section_for_table: dict[int, str] = {}
+
     # MHLW heading text variants: '失格' / '業務の停止' / '戒告' (note 'の' insert).
     # We strip 'の' before substring-matching so both '業務停止' and '業務の停止'
     # match. Also order matters — 戒告 is a substring-conflict-free term;
@@ -430,6 +436,7 @@ def collect_sharo_rows(http: HttpClient) -> list[EnfRow]:
         if "戒告" in t:
             return "other"
         return None
+
     for h in headings:
         txt = _normalize(h.get_text(" ", strip=True))
         kind = _heading_kind(txt)
@@ -446,16 +453,18 @@ def collect_sharo_rows(http: HttpClient) -> list[EnfRow]:
         if kind is None:
             continue
         for tr in tbl.find_all("tr"):
-            cells = [
-                _normalize(td.get_text(" ", strip=True))
-                for td in tr.find_all(["td", "th"])
-            ]
+            cells = [_normalize(td.get_text(" ", strip=True)) for td in tr.find_all(["td", "th"])]
             if len(cells) < 3:
                 continue
             # Skip header row (column titles; never starts with a 都道府県会).
             if cells[0] in (
-                "所属都道府県会", "氏名", "氏名又は名称",
-                "処分年月日", "公告内容", "備考", "業務停止期間",
+                "所属都道府県会",
+                "氏名",
+                "氏名又は名称",
+                "処分年月日",
+                "公告内容",
+                "備考",
+                "業務停止期間",
             ):
                 continue
             pref = cells[0]
@@ -492,32 +501,34 @@ def collect_sharo_rows(http: HttpClient) -> list[EnfRow]:
             else:
                 reason_base = "相当の注意を怠り、社会保険労務士法に違反する行為を行った"
                 law_ref = "社会保険労務士法第25条の2第2項"
-            out.append(EnfRow(
-                profession="社労士",
-                target_name=name,
-                enforcement_kind=kind,
-                issuance_date=iso,
-                issuing_authority=SHARO_AUTHORITY,
-                related_law_ref=law_ref,
-                reason_summary=(
-                    f"厚生労働大臣告示({kind_label_jp}): "
-                    f"処分日 {iso} / 所属会 {pref} / "
-                    f"理由: {reason_base} / "
-                    f"(出典: 厚労省 社会保険労務士懲戒処分公告 / "
-                    f"公告URL: {detail_url})"
-                )[:1900],
-                source_url=detail_url,
-                canonical_seed=f"{iso}|{name}|{pref}",
-                raw={
-                    "pref_kai": pref,
-                    "name": name,
-                    "issuance_date": iso,
-                    "kind_label_jp": kind_label_jp,
-                    "duration": date_cell,
-                    "license": "政府機関の著作物（出典明記で転載引用可）",
-                    "attribution": "出典: 厚生労働省 (https://www.mhlw.go.jp/)",
-                },
-            ))
+            out.append(
+                EnfRow(
+                    profession="社労士",
+                    target_name=name,
+                    enforcement_kind=kind,
+                    issuance_date=iso,
+                    issuing_authority=SHARO_AUTHORITY,
+                    related_law_ref=law_ref,
+                    reason_summary=(
+                        f"厚生労働大臣告示({kind_label_jp}): "
+                        f"処分日 {iso} / 所属会 {pref} / "
+                        f"理由: {reason_base} / "
+                        f"(出典: 厚労省 社会保険労務士懲戒処分公告 / "
+                        f"公告URL: {detail_url})"
+                    )[:1900],
+                    source_url=detail_url,
+                    canonical_seed=f"{iso}|{name}|{pref}",
+                    raw={
+                        "pref_kai": pref,
+                        "name": name,
+                        "issuance_date": iso,
+                        "kind_label_jp": kind_label_jp,
+                        "duration": date_cell,
+                        "license": "政府機関の著作物（出典明記で転載引用可）",
+                        "attribution": "出典: 厚生労働省 (https://www.mhlw.go.jp/)",
+                    },
+                )
+            )
     return out
 
 
@@ -623,7 +634,10 @@ def _parse_shindanshi_pdf(text: str) -> list[tuple[str, str]]:
 
 
 def fetch_shindanshi_pdfs(
-    cache_dir: Path, *, redownload: bool = False, only_first_n: int | None = None,
+    cache_dir: Path,
+    *,
+    redownload: bool = False,
+    only_first_n: int | None = None,
 ) -> dict[str, bytes]:
     """Download chusho monthly 消除 PDFs via Playwright (Akamai bot block).
 
@@ -644,10 +658,7 @@ def fetch_shindanshi_pdfs(
     out: dict[str, bytes] = {}
     pending: list[tuple[str, str]] = []
 
-    todo = (
-        SHINDANSHI_PDFS[:only_first_n]
-        if only_first_n is not None else SHINDANSHI_PDFS
-    )
+    todo = SHINDANSHI_PDFS[:only_first_n] if only_first_n is not None else SHINDANSHI_PDFS
     for date_iso, rel in todo:
         local = cache_dir / rel.split("/")[-1]
         if local.exists() and local.stat().st_size > 1000 and not redownload:
@@ -662,7 +673,8 @@ def fetch_shindanshi_pdfs(
 
     _LOG.info(
         "[shindanshi] downloading %d/%d PDFs (Playwright headed)",
-        len(pending), len(todo),
+        len(pending),
+        len(todo),
     )
 
     # Use parallel playwright contexts (5) to bypass Akamai per-session
@@ -670,9 +682,7 @@ def fetch_shindanshi_pdfs(
     from concurrent.futures import ThreadPoolExecutor, as_completed
 
     n_parallel = 5
-    batches: list[list[tuple[str, str]]] = [
-        pending[i::n_parallel] for i in range(n_parallel)
-    ]
+    batches: list[list[tuple[str, str]]] = [pending[i::n_parallel] for i in range(n_parallel)]
 
     def _fetch_batch(batch: list[tuple[str, str]]) -> list[tuple[str, bytes]]:
         results: list[tuple[str, bytes]] = []
@@ -741,7 +751,9 @@ def fetch_shindanshi_pdfs(
 
     _LOG.info(
         "[shindanshi] PDFs available: %d/%d (cached at %s)",
-        len(out), len(todo), cache_dir,
+        len(out),
+        len(todo),
+        cache_dir,
     )
     return out
 
@@ -757,8 +769,7 @@ def collect_shindanshi_rows(
         # Only use what's already cached
         cache_dir.mkdir(parents=True, exist_ok=True)
         for date_iso, rel in (
-            SHINDANSHI_PDFS[:only_first_n]
-            if only_first_n is not None else SHINDANSHI_PDFS
+            SHINDANSHI_PDFS[:only_first_n] if only_first_n is not None else SHINDANSHI_PDFS
         ):
             local = cache_dir / rel.split("/")[-1]
             if local.exists() and local.stat().st_size > 1000:
@@ -782,37 +793,40 @@ def collect_shindanshi_rows(
         pairs = _parse_shindanshi_pdf(text)
         url_full = "https://www.chusho.meti.go.jp" + rel
         for reg, name in pairs:
-            out.append(EnfRow(
-                profession="診断士",
-                target_name=name,
-                enforcement_kind="license_revoke",
-                issuance_date=iso,
-                issuing_authority="経済産業省 中小企業庁",
-                related_law_ref="中小企業支援法施行規則第31条",
-                reason_summary=(
-                    f"中小企業庁による中小企業診断士登録消除公示: "
-                    f"処分月 {iso} / 登録番号 {reg} / "
-                    f"理由: 中小企業診断士登録規則に基づく登録の消除 "
-                    f"(更新登録未了等または消除申請による) / "
-                    f"出典: 中小企業庁 中小企業診断士関連情報"
-                )[:1900],
-                source_url=url_full,
-                canonical_seed=f"{iso}|{reg}|{name}",
-                raw={
-                    "registration_no": reg,
-                    "name": name,
-                    "issuance_date": iso,
-                    "pdf_url": url_full,
-                    "license": "政府機関の著作物（出典明記で転載引用可）",
-                    "attribution": "出典: 経済産業省 中小企業庁 (https://www.chusho.meti.go.jp/)",
-                },
-            ))
+            out.append(
+                EnfRow(
+                    profession="診断士",
+                    target_name=name,
+                    enforcement_kind="license_revoke",
+                    issuance_date=iso,
+                    issuing_authority="経済産業省 中小企業庁",
+                    related_law_ref="中小企業支援法施行規則第31条",
+                    reason_summary=(
+                        f"中小企業庁による中小企業診断士登録消除公示: "
+                        f"処分月 {iso} / 登録番号 {reg} / "
+                        f"理由: 中小企業診断士登録規則に基づく登録の消除 "
+                        f"(更新登録未了等または消除申請による) / "
+                        f"出典: 中小企業庁 中小企業診断士関連情報"
+                    )[:1900],
+                    source_url=url_full,
+                    canonical_seed=f"{iso}|{reg}|{name}",
+                    raw={
+                        "registration_no": reg,
+                        "name": name,
+                        "issuance_date": iso,
+                        "pdf_url": url_full,
+                        "license": "政府機関の著作物（出典明記で転載引用可）",
+                        "attribution": "出典: 経済産業省 中小企業庁 (https://www.chusho.meti.go.jp/)",
+                    },
+                )
+            )
     return out
 
 
 # ---------------------------------------------------------------------------
 # DB layer
 # ---------------------------------------------------------------------------
+
 
 def ensure_tables(conn: sqlite3.Connection) -> None:
     for tbl in ("am_entities", "am_enforcement_detail"):
@@ -821,13 +835,12 @@ def ensure_tables(conn: sqlite3.Connection) -> None:
             (tbl,),
         ).fetchone()
         if not row:
-            raise SystemExit(
-                f"missing table '{tbl}' — apply migrations first"
-            )
+            raise SystemExit(f"missing table '{tbl}' — apply migrations first")
 
 
 def existing_dedup_keys_for_authorities(
-    conn: sqlite3.Connection, authorities: list[str],
+    conn: sqlite3.Connection,
+    authorities: list[str],
 ) -> set[tuple[str, str, str]]:
     """Return {(target_name, issuance_date, issuing_authority)} for all
     rows whose issuing_authority is one of those we care about, scoped by
@@ -880,8 +893,13 @@ def upsert_entity(
            ) VALUES (?, 'enforcement', ?, NULL,
                      ?, NULL, 0.92, ?, ?, ?, ?, 'active', 'ok')""",
         (
-            canonical_id, source_topic, primary_name[:500],
-            source_url, domain, fetched_at, raw_json,
+            canonical_id,
+            source_topic,
+            primary_name[:500],
+            source_url,
+            domain,
+            fetched_at,
+            raw_json,
         ),
     )
     return cur.rowcount > 0
@@ -908,10 +926,15 @@ def insert_enforcement(
                source_url, source_fetched_at
            ) VALUES (?, NULL, ?, ?, ?, ?, NULL, NULL, ?, ?, NULL, ?, ?)""",
         (
-            canonical_id, target_name[:500], enforcement_kind,
-            issuing_authority, issuance_date,
-            reason_summary[:4000], related_law_ref[:1000],
-            source_url, fetched_at,
+            canonical_id,
+            target_name[:500],
+            enforcement_kind,
+            issuing_authority,
+            issuance_date,
+            reason_summary[:4000],
+            related_law_ref[:1000],
+            source_url,
+            fetched_at,
         ),
     )
 
@@ -952,13 +975,8 @@ def write_rows(
             continue
         prof_slug = PROFESSION_SLUG.get(r.profession, "PRO")
         slug = _slug8(r.source_url, r.target_name, r.canonical_seed)
-        canonical_id = (
-            f"AM-ENF-PRO-{prof_slug}-"
-            f"{r.issuance_date.replace('-', '')}-{slug}"
-        )
-        primary_name = (
-            f"{r.target_name} - {r.related_law_ref} ({r.issuance_date})"
-        )
+        canonical_id = f"AM-ENF-PRO-{prof_slug}-{r.issuance_date.replace('-', '')}-{slug}"
+        primary_name = f"{r.target_name} - {r.related_law_ref} ({r.issuance_date})"
         raw_json = json.dumps(
             {
                 **r.raw,
@@ -1027,41 +1045,52 @@ def write_rows(
 # CLI
 # ---------------------------------------------------------------------------
 
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--db", type=Path, default=DEFAULT_DB)
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("-v", "--verbose", action="store_true")
     ap.add_argument(
-        "--max-insert", type=int, default=None,
+        "--max-insert",
+        type=int,
+        default=None,
         help="Stop after N inserts (debug)",
     )
     ap.add_argument(
-        "--skip-kanteishi", action="store_true",
+        "--skip-kanteishi",
+        action="store_true",
         help="Skip 不動産鑑定士 source A",
     )
     ap.add_argument(
-        "--skip-chosashi", action="store_true",
+        "--skip-chosashi",
+        action="store_true",
         help="Skip 土地家屋調査士 source B",
     )
     ap.add_argument(
-        "--skip-sharo", action="store_true",
+        "--skip-sharo",
+        action="store_true",
         help="Skip 社会保険労務士 source C",
     )
     ap.add_argument(
-        "--skip-shindanshi", action="store_true",
+        "--skip-shindanshi",
+        action="store_true",
         help="Skip 中小企業診断士 source D",
     )
     ap.add_argument(
-        "--shindanshi-skip-download", action="store_true",
+        "--shindanshi-skip-download",
+        action="store_true",
         help="Use only PDFs already in --pdf-cache (no Playwright launch)",
     )
     ap.add_argument(
-        "--shindanshi-only-n", type=int, default=None,
+        "--shindanshi-only-n",
+        type=int,
+        default=None,
         help="Limit chusho PDFs to first N (debug)",
     )
     ap.add_argument(
-        "--pdf-cache", type=Path,
+        "--pdf-cache",
+        type=Path,
         default=Path("/tmp/shindan_pdfs"),
         help="Directory to cache chusho 消除 PDFs",
     )
@@ -1075,9 +1104,7 @@ def main(argv: list[str] | None = None) -> int:
         format="%(asctime)s %(levelname)s %(name)s %(message)s",
     )
 
-    fetched_at = (
-        datetime.now(tz=UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
-    )
+    fetched_at = datetime.now(tz=UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
 
     http = HttpClient(user_agent=USER_AGENT, respect_robots=False)
 
@@ -1119,13 +1146,23 @@ def main(argv: list[str] | None = None) -> int:
         for r in all_rows[:10]:
             _LOG.info(
                 "sample prof=%s name=%s kind=%s date=%s law=%s url=%s",
-                r.profession, r.target_name[:25], r.enforcement_kind,
-                r.issuance_date, r.related_law_ref, r.source_url[:60],
+                r.profession,
+                r.target_name[:25],
+                r.enforcement_kind,
+                r.issuance_date,
+                r.related_law_ref,
+                r.source_url[:60],
             )
-        print(json.dumps({
-            "parsed": len(all_rows),
-            "breakdown_profession": by_prof,
-        }, ensure_ascii=False, indent=2))
+        print(
+            json.dumps(
+                {
+                    "parsed": len(all_rows),
+                    "breakdown_profession": by_prof,
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
         return 0
 
     if not args.db.exists():
@@ -1138,7 +1175,8 @@ def main(argv: list[str] | None = None) -> int:
         conn.execute("PRAGMA foreign_keys=ON")
         ensure_tables(conn)
         inserted, skipped_dup = write_rows(
-            conn, all_rows,
+            conn,
+            all_rows,
             fetched_at=fetched_at,
             max_insert=args.max_insert,
         )
@@ -1153,15 +1191,24 @@ def main(argv: list[str] | None = None) -> int:
     # (best-effort; precise tally not stored).
 
     # Summary
-    print(json.dumps({
-        "ok": True,
-        "parsed": len(all_rows),
-        "inserted": inserted,
-        "skipped_dup": skipped_dup,
-        "breakdown_profession_parsed": by_prof,
-    }, ensure_ascii=False, indent=2))
+    print(
+        json.dumps(
+            {
+                "ok": True,
+                "parsed": len(all_rows),
+                "inserted": inserted,
+                "skipped_dup": skipped_dup,
+                "breakdown_profession_parsed": by_prof,
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
     _LOG.info(
-        "done parsed=%d inserted=%d dup=%d", len(all_rows), inserted, skipped_dup,
+        "done parsed=%d inserted=%d dup=%d",
+        len(all_rows),
+        inserted,
+        skipped_dup,
     )
     return 0
 

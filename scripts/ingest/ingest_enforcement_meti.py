@@ -40,6 +40,7 @@ CLI:
     python scripts/ingest/ingest_enforcement_meti.py --write-only \
         --staging-json /tmp/meti_records.json
 """
+
 from __future__ import annotations
 
 import argparse
@@ -62,7 +63,10 @@ try:
     from bs4 import BeautifulSoup  # type: ignore
     from playwright.sync_api import sync_playwright  # type: ignore
 except ImportError as exc:  # pragma: no cover
-    print(f"missing dep: {exc}. pip install bs4 playwright; playwright install chromium", file=sys.stderr)
+    print(
+        f"missing dep: {exc}. pip install bs4 playwright; playwright install chromium",
+        file=sys.stderr,
+    )
     sys.exit(1)
 
 _LOG = logging.getLogger("autonomath.ingest_meti")
@@ -92,14 +96,14 @@ YEN_RE = re.compile(r"[¥￥]?\s*([0-9０-９,，]+)\s*円?")
 #   subsidy_exclude, grant_refund, contract_suspend, business_improvement,
 #   license_revoke, fine, investigation, other
 SYSTEM_KIND_DEFAULT = {
-    "I": "grant_refund",          # COVID 不正受給認定
+    "I": "grant_refund",  # COVID 不正受給認定
     "E": "business_improvement",  # 犯収法 行政処分(是正命令等)
-    "F": "license_revoke",        # 再エネ 認定取消し
-    "C": "fine",                  # 外為 輸出禁止
-    "D": "license_revoke",        # 弁理士 懲戒
+    "F": "license_revoke",  # 再エネ 認定取消し
+    "C": "fine",  # 外為 輸出禁止
+    "D": "license_revoke",  # 弁理士 懲戒
     "H": "business_improvement",  # 電気/ガス 業務改善
-    "G": "contract_suspend",      # 指名停止
-    "A": "license_revoke",        # 商品先物 取消等
+    "G": "contract_suspend",  # 指名停止
+    "A": "license_revoke",  # 商品先物 取消等
     "B": "business_improvement",  # 特商法
 }
 
@@ -130,20 +134,36 @@ SYSTEM_AUTHORITY_CANONICAL = {
 # Keywords (in 件名) that indicate enforcement releases.
 ENFORCEMENT_KEYWORDS = [
     # E 系統
-    "犯罪による収益", "犯罪収益", "郵便物受取",
+    "犯罪による収益",
+    "犯罪収益",
+    "郵便物受取",
     # F 系統
-    "再生可能エネルギー", "認定取消し", "認定取消", "FIT", "FIP",
+    "再生可能エネルギー",
+    "認定取消し",
+    "認定取消",
+    "FIT",
+    "FIP",
     "納付金を納付しない",
     # H 系統
-    "業務改善命令", "業務停止命令", "電気事業法", "ガス事業法",
+    "業務改善命令",
+    "業務停止命令",
+    "電気事業法",
+    "ガス事業法",
     # C 系統
-    "外国為替及び外国貿易法", "外為法", "輸出禁止", "安全保障貿易",
+    "外国為替及び外国貿易法",
+    "外為法",
+    "輸出禁止",
+    "安全保障貿易",
     # D 系統 (弁理士)
-    "弁理士に対する懲戒", "弁理士法",
+    "弁理士に対する懲戒",
+    "弁理士法",
     # 一般
-    "改善命令", "停止命令", "命令を発出",
+    "改善命令",
+    "停止命令",
+    "命令を発出",
     # 商品先物 A
-    "商品先物取引", "商品取引",
+    "商品先物取引",
+    "商品取引",
     # 特商法 B (本省 hub は薄いが念のため)
     "特定商取引法",
 ]
@@ -210,6 +230,7 @@ def _hash8(payload: str) -> str:
 
 # ----------------------- Playwright fetcher -----------------------
 
+
 class HeadedFetcher:
     """Playwright headed-Chromium fetcher to bypass Akamai bot screening.
 
@@ -257,8 +278,9 @@ class HeadedFetcher:
         if elapsed < target:
             time.sleep(target - elapsed)
 
-    def fetch_html(self, url: str, wait_until: str = "domcontentloaded",
-                   extra_wait: float = 1.5) -> tuple[int, str]:
+    def fetch_html(
+        self, url: str, wait_until: str = "domcontentloaded", extra_wait: float = 1.5
+    ) -> tuple[int, str]:
         self._pace()
         try:
             resp = self._page.goto(url, wait_until=wait_until, timeout=45000)
@@ -287,6 +309,7 @@ class HeadedFetcher:
 
 
 # ----------------------- Parsers per system -----------------------
+
 
 def parse_covid_master(html: str, source_url: str) -> list[dict[str, Any]]:
     """Parse /covid-19/fusei_nintei.html master list — 5 sub-tables."""
@@ -326,25 +349,27 @@ def parse_covid_master(html: str, source_url: str) -> list[dict[str, Any]]:
             iso_date = _iso_from_text(date_text)
             if not iso_date or not target:
                 continue
-            out.append({
-                "system": "I",
-                "subkind": subkind,
-                "program_name": program_name,
-                "serial": no,
-                "target_name": target,
-                "amount_yen": _yen_to_int(yen_text),
-                "amount_text": yen_text,
-                "issuance_date": iso_date,
-                "issuance_date_text": date_text,
-                "address": address,
-                "reason_summary": summary,
-                "source_url": source_url,
-                "title": f"{program_name} 不正受給認定者公表 — {target}",
-                "issuing_authority": SYSTEM_AUTHORITY["I"],
-                "authority_canonical": SYSTEM_AUTHORITY_CANONICAL["I"],
-                "enforcement_kind": SYSTEM_KIND_DEFAULT["I"],
-                "related_law_ref": "持続化給付金給付規程第10条第2項第2号 等",
-            })
+            out.append(
+                {
+                    "system": "I",
+                    "subkind": subkind,
+                    "program_name": program_name,
+                    "serial": no,
+                    "target_name": target,
+                    "amount_yen": _yen_to_int(yen_text),
+                    "amount_text": yen_text,
+                    "issuance_date": iso_date,
+                    "issuance_date_text": date_text,
+                    "address": address,
+                    "reason_summary": summary,
+                    "source_url": source_url,
+                    "title": f"{program_name} 不正受給認定者公表 — {target}",
+                    "issuing_authority": SYSTEM_AUTHORITY["I"],
+                    "authority_canonical": SYSTEM_AUTHORITY_CANONICAL["I"],
+                    "enforcement_kind": SYSTEM_KIND_DEFAULT["I"],
+                    "related_law_ref": "持続化給付金給付規程第10条第2項第2号 等",
+                }
+            )
     return out
 
 
@@ -414,11 +439,7 @@ def parse_press_release(html: str, source_url: str) -> dict[str, Any] | None:
     iso_date = f"{m.group(3)[:4]}-{m.group(3)[4:6]}-{m.group(3)[6:8]}"
 
     # body text for downstream extraction
-    body_el = (
-        soup.find("div", id="MainContents")
-        or soup.find("div", class_="main")
-        or soup.body
-    )
+    body_el = soup.find("div", id="MainContents") or soup.find("div", class_="main") or soup.body
     body_text = _normalize(body_el.get_text(separator="\n")) if body_el else ""
 
     # houjin_bangou — search body for 13-digit numbers
@@ -430,7 +451,10 @@ def parse_press_release(html: str, source_url: str) -> dict[str, Any] | None:
     # target_name — best-effort; we use title minus standard suffix
     target_name = None
     # 「(法人番号 ...)」周辺の社名抽出
-    m2 = re.search(r"([^\s、。]{2,40}(株式会社|有限会社|合同会社|合資会社|合名会社|個人事業主|協同組合|社団法人|財団法人))", body_text)
+    m2 = re.search(
+        r"([^\s、。]{2,40}(株式会社|有限会社|合同会社|合資会社|合名会社|個人事業主|協同組合|社団法人|財団法人))",
+        body_text,
+    )
     if m2:
         target_name = m2.group(1)
     if not target_name:
@@ -486,6 +510,7 @@ def parse_press_release(html: str, source_url: str) -> dict[str, Any] | None:
 
 # ----------------------- 系統 G PDF parser -----------------------
 
+
 def parse_shimei_pdf(pdf_bytes: bytes, source_url: str) -> list[dict[str, Any]]:
     """Parse /information_2/downloadfiles/shimeiteishi.pdf — current 指名停止 list."""
     if not pdf_bytes:
@@ -533,27 +558,30 @@ def parse_shimei_pdf(pdf_bytes: bytes, source_url: str) -> list[dict[str, Any]]:
         parts = re.split(r"\s{2,}|　{2,}", before, maxsplit=2)
         target = parts[0]
         reason = parts[1] if len(parts) > 1 else None
-        out.append({
-            "system": "G",
-            "title": f"指名停止: {target}",
-            "target_name": target,
-            "houjin_bangou": None,
-            "issuance_date": start_iso,
-            "issuance_date_text": dates[0].group(0),
-            "exclusion_start": start_iso,
-            "exclusion_end": end_iso,
-            "address": None,
-            "reason_summary": reason or ln,
-            "source_url": source_url,
-            "issuing_authority": SYSTEM_AUTHORITY["G"],
-            "authority_canonical": SYSTEM_AUTHORITY_CANONICAL["G"],
-            "enforcement_kind": SYSTEM_KIND_DEFAULT["G"],
-            "related_law_ref": "経済産業省所管補助金等指名停止措置要領",
-        })
+        out.append(
+            {
+                "system": "G",
+                "title": f"指名停止: {target}",
+                "target_name": target,
+                "houjin_bangou": None,
+                "issuance_date": start_iso,
+                "issuance_date_text": dates[0].group(0),
+                "exclusion_start": start_iso,
+                "exclusion_end": end_iso,
+                "address": None,
+                "reason_summary": reason or ln,
+                "source_url": source_url,
+                "issuing_authority": SYSTEM_AUTHORITY["G"],
+                "authority_canonical": SYSTEM_AUTHORITY_CANONICAL["G"],
+                "enforcement_kind": SYSTEM_KIND_DEFAULT["G"],
+                "related_law_ref": "経済産業省所管補助金等指名停止措置要領",
+            }
+        )
     return out
 
 
 # ----------------------- DB write -----------------------
+
 
 def existing_dedup_keys(cur: sqlite3.Cursor) -> set[tuple[str, str, str]]:
     cur.execute("""
@@ -670,6 +698,7 @@ def upsert_record(
 
 # ----------------------- crawl orchestration -----------------------
 
+
 def crawl_system_I(fetcher: HeadedFetcher) -> list[dict[str, Any]]:
     """COVID 不正受給 — single master page, 608+ rows."""
     url = "https://www.meti.go.jp/covid-19/fusei_nintei.html"
@@ -683,8 +712,9 @@ def crawl_system_I(fetcher: HeadedFetcher) -> list[dict[str, Any]]:
     return rows
 
 
-def crawl_press_archive(fetcher: HeadedFetcher, months: list[str],
-                         max_releases: int) -> list[dict[str, Any]]:
+def crawl_press_archive(
+    fetcher: HeadedFetcher, months: list[str], max_releases: int
+) -> list[dict[str, Any]]:
     """Walk monthly archive pages, collect press release URLs whose <a> text
     matches enforcement keywords, then fetch each release.
     """
@@ -713,14 +743,12 @@ def crawl_press_archive(fetcher: HeadedFetcher, months: list[str],
                 continue
             seen.add(full)
             candidate_urls.append((full, txt))
-    _LOG.info("[archive] %d candidate releases across %d months",
-              len(candidate_urls), len(months))
+    _LOG.info("[archive] %d candidate releases across %d months", len(candidate_urls), len(months))
     candidate_urls = candidate_urls[:max_releases]
     for i, (url, anchor) in enumerate(candidate_urls, 1):
         status, html = fetcher.fetch_html(url)
         if status != 200 or not html:
-            _LOG.info("[release %d/%d] skip (status=%s) %s",
-                      i, len(candidate_urls), status, url)
+            _LOG.info("[release %d/%d] skip (status=%s) %s", i, len(candidate_urls), status, url)
             continue
         rec = parse_press_release(html, url)
         if not rec:
@@ -761,6 +789,7 @@ def gen_months(start_ym: str, end_ym: str) -> list[str]:
 
 # ----------------------- main -----------------------
 
+
 def collect(
     systems: list[str],
     start_ym: str,
@@ -769,8 +798,13 @@ def collect(
     max_rows: int,
 ) -> list[dict[str, Any]]:
     months = gen_months(start_ym, end_ym)
-    _LOG.info("collect plan: systems=%s months=%d max_releases=%d max_rows=%d",
-              systems, len(months), max_press_releases, max_rows)
+    _LOG.info(
+        "collect plan: systems=%s months=%d max_releases=%d max_rows=%d",
+        systems,
+        len(months),
+        max_press_releases,
+        max_rows,
+    )
     all_records: list[dict[str, Any]] = []
     with HeadedFetcher() as fetcher:
         if "I" in systems:
@@ -819,8 +853,7 @@ def run(
         if staging_json:
             staging_json.parent.mkdir(parents=True, exist_ok=True)
             with staging_json.open("w") as f:
-                json.dump({"collected_at": now_iso, "records": all_records},
-                          f, ensure_ascii=False)
+                json.dump({"collected_at": now_iso, "records": all_records}, f, ensure_ascii=False)
             _LOG.info("staged %d records to %s", len(all_records), staging_json)
         if collect_only:
             return len(all_records)
@@ -837,9 +870,13 @@ def run(
         for s, c in sorted(by_sys.items()):
             _LOG.info("  dry-run system %s: %d", s, c)
         for r in all_records[:5]:
-            _LOG.info("  sample: %s %s | %s | %s",
-                      r["system"], r["issuance_date"], r["target_name"][:30],
-                      r["enforcement_kind"])
+            _LOG.info(
+                "  sample: %s %s | %s | %s",
+                r["system"],
+                r["issuance_date"],
+                r["target_name"][:30],
+                r["enforcement_kind"],
+            )
         return 0
 
     # Write — use small batches with explicit retry on database-lock.
@@ -899,8 +936,7 @@ def run(
                     try:
                         ok = upsert_record(cur, rec, now_iso)
                     except sqlite3.IntegrityError as exc:
-                        _LOG.warning("integrity %s: %s",
-                                     rec.get("target_name"), exc)
+                        _LOG.warning("integrity %s: %s", rec.get("target_name"), exc)
                         skipped_constraint += 1
                         continue
                     if ok:
@@ -917,8 +953,7 @@ def run(
                 try:
                     ok = upsert_record(cur, rec, now_iso)
                 except sqlite3.IntegrityError as exc:
-                    _LOG.warning("integrity %s: %s",
-                                 rec.get("target_name"), exc)
+                    _LOG.warning("integrity %s: %s", rec.get("target_name"), exc)
                     skipped_constraint += 1
                     continue
                 if ok:
@@ -929,7 +964,10 @@ def run(
             _LOG.info("final batch commit: inserted=%d", inserted)
         _LOG.info(
             "INSERT done inserted=%d skipped_dup=%d skipped_err=%d total_seen=%d",
-            inserted, skipped_dup, skipped_constraint, len(all_records),
+            inserted,
+            skipped_dup,
+            skipped_constraint,
+            len(all_records),
         )
         for s, c in sorted(by_system.items()):
             _LOG.info("  system %s inserted: %d", s, c)
@@ -945,26 +983,47 @@ def run(
 
 
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description=__doc__,
-                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     ap.add_argument("--db", type=Path, default=DEFAULT_DB)
-    ap.add_argument("--systems", type=str, default="I,G,E,F,C,D,H,A,B",
-                    help="comma-separated system letters (subset of A..I)")
-    ap.add_argument("--start-ym", type=str, default="202104",
-                    help="press archive start month yyyymm (default 202104)")
-    ap.add_argument("--end-ym", type=str, default="202604",
-                    help="press archive end month yyyymm (default 202604)")
-    ap.add_argument("--max-press-releases", type=int, default=200,
-                    help="cap on press release fetches (rate-limit safety)")
-    ap.add_argument("--max-rows", type=int, default=10000,
-                    help="cap on total rows inserted in this run")
-    ap.add_argument("--staging-json", type=Path, default=None,
-                    help="path to JSON file for staging (collect-only) or "
-                         "input (write-only)")
-    ap.add_argument("--collect-only", action="store_true",
-                    help="collect+stage only; skip DB write")
-    ap.add_argument("--write-only", action="store_true",
-                    help="skip collection; load --staging-json + write DB")
+    ap.add_argument(
+        "--systems",
+        type=str,
+        default="I,G,E,F,C,D,H,A,B",
+        help="comma-separated system letters (subset of A..I)",
+    )
+    ap.add_argument(
+        "--start-ym",
+        type=str,
+        default="202104",
+        help="press archive start month yyyymm (default 202104)",
+    )
+    ap.add_argument(
+        "--end-ym",
+        type=str,
+        default="202604",
+        help="press archive end month yyyymm (default 202604)",
+    )
+    ap.add_argument(
+        "--max-press-releases",
+        type=int,
+        default=200,
+        help="cap on press release fetches (rate-limit safety)",
+    )
+    ap.add_argument(
+        "--max-rows", type=int, default=10000, help="cap on total rows inserted in this run"
+    )
+    ap.add_argument(
+        "--staging-json",
+        type=Path,
+        default=None,
+        help="path to JSON file for staging (collect-only) or input (write-only)",
+    )
+    ap.add_argument("--collect-only", action="store_true", help="collect+stage only; skip DB write")
+    ap.add_argument(
+        "--write-only", action="store_true", help="skip collection; load --staging-json + write DB"
+    )
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("-v", "--verbose", action="store_true")
     args = ap.parse_args(argv)

@@ -44,6 +44,7 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 try:
     import sqlglot
     from sqlglot import exp as sqlglot_exp
+
     SQLGLOT_AVAILABLE = True
 except ImportError:  # pragma: no cover - environment-conditional
     SQLGLOT_AVAILABLE = False
@@ -132,6 +133,7 @@ class FileReport:
 # 1. Marker + filename parsing
 # ---------------------------------------------------------------------------
 
+
 def parse_filename(path: str) -> Tuple[Optional[int], str, str, bool]:
     name = os.path.basename(path)
     m = FILENAME_RE.match(name)
@@ -171,7 +173,32 @@ def read_first_line_marker(path: str) -> Optional[str]:
     return m.group(1)
 
 
-def infer_slug_target(slug: str) -> Optional[str]:
+def infer_slug_target(slug: str, rules: Optional[Dict[str, Any]] = None) -> Optional[str]:
+    """Infer the expected target_db from a filename slug.
+
+    Supports JSON-driven exemptions via the optional ``rules`` arg:
+      rules["_slug_overrides"]: {"<exact_slug>": "<target>"}
+        — wins outright, regardless of prefix patterns
+      rules["_slug_exemptions"]: ["<exact_slug>", ...]
+        — slug bypasses prefix inference (treated as "unknown",
+        which only triggers a warning, not a hard error)
+
+    These are how we handle migrations whose slug prefix would
+    otherwise SLUG_MARKER_DRIFT against an intentional, reviewed
+    target choice (e.g. wave24_113b_jpi_programs_jsic.sql is
+    intentionally autonomath because jpi_* mirror tables live
+    on autonomath.db; rename would break the 78-table mirror
+    naming convention from migration 032).
+    """
+    if rules:
+        overrides = rules.get("_slug_overrides", {}) or {}
+        if isinstance(overrides, dict) and slug in overrides:
+            tgt = overrides[slug]
+            if tgt in VALID_TARGETS:
+                return tgt
+        exemptions = rules.get("_slug_exemptions", []) or []
+        if isinstance(exemptions, list) and slug in exemptions:
+            return None
     for pat, tgt in SLUG_PREFIX_TO_TARGET:
         if re.match(pat, slug):
             return tgt
@@ -225,12 +252,17 @@ def extract_body_tables(sql: str) -> List[str]:
             for node in stmt.walk():
                 # walk yields tuples in older sqlglot; current returns nodes
                 target = node[0] if isinstance(node, tuple) else node
+                # sqlglot ≥ 25 renamed AlterTable → Alter; both names are
+                # supported here so the verifier survives a future bump.
+                AlterCls = getattr(sqlglot_exp, "AlterTable", None) or getattr(
+                    sqlglot_exp, "Alter", None
+                )
                 if isinstance(target, sqlglot_exp.Create):
                     this = target.this
                     name = _identifier_name(this)
                     if name:
                         tables.append(name)
-                elif isinstance(target, sqlglot_exp.AlterTable):
+                elif AlterCls is not None and isinstance(target, AlterCls):
                     this = target.this
                     name = _identifier_name(this)
                     if name:
@@ -281,6 +313,7 @@ def _dedupe_keep_order(items: Iterable[str]) -> List[str]:
 # 3. Schema guard cross-check
 # ---------------------------------------------------------------------------
 
+
 def load_rules(rules_path: Optional[str]) -> Dict[str, Dict[str, Any]]:
     if rules_path and os.path.exists(rules_path):
         try:
@@ -292,7 +325,9 @@ def load_rules(rules_path: Optional[str]) -> Dict[str, Dict[str, Any]]:
     return EMBEDDED_RULES
 
 
-def check_forbidden(target: str, body_tables: List[str], rules: Dict[str, Dict[str, Any]]) -> List[str]:
+def check_forbidden(
+    target: str, body_tables: List[str], rules: Dict[str, Dict[str, Any]]
+) -> List[str]:
     """Return a list of forbidden table hits for the given target."""
     cfg = rules.get(target, {})
     forbidden_exact = set(cfg.get("forbidden", []))
@@ -316,6 +351,7 @@ def check_forbidden(target: str, body_tables: List[str], rules: Dict[str, Dict[s
 # 4. Per-file check pipeline
 # ---------------------------------------------------------------------------
 
+
 def check_file(path: str, rules: Dict[str, Dict[str, Any]]) -> FileReport:
     num, suffix, slug, is_rollback = parse_filename(path)
     marker = read_first_line_marker(path)
@@ -332,7 +368,7 @@ def check_file(path: str, rules: Dict[str, Dict[str, Any]]) -> FileReport:
 
     # check 3: filename slug consistency (DEEP-52 §3 check #3)
     if marker in VALID_TARGETS and slug:
-        inferred = infer_slug_target(slug)
+        inferred = infer_slug_target(slug, rules)
         if inferred is not None and inferred != marker:
             errors.append(f"SLUG_MARKER_DRIFT:slug_implies={inferred},marker={marker}")
         elif inferred is None:
@@ -384,6 +420,7 @@ def check_file(path: str, rules: Dict[str, Dict[str, Any]]) -> FileReport:
 # 5. In-memory dry-run (forward + rollback + idempotency)
 # ---------------------------------------------------------------------------
 
+
 def _sort_key(report: FileReport) -> Tuple[int, str, int]:
     return (report.num or 0, report.suffix or "", 1 if report.is_rollback else 0)
 
@@ -419,11 +456,13 @@ def dry_run_target(
         if rep.marker != target:
             continue
         elapsed_ms, err = _apply_sql_file(handle, rep.path)
-        forward_log.append({
-            "file": rep.filename,
-            "ms": elapsed_ms,
-            "error": err,
-        })
+        forward_log.append(
+            {
+                "file": rep.filename,
+                "ms": elapsed_ms,
+                "error": err,
+            }
+        )
         if err:
             errors.append(f"FORWARD_FAIL:{rep.filename}:{err}")
 
@@ -504,6 +543,7 @@ def _apply_sql_file(handle: sqlite3.Connection, path: str) -> Tuple[int, Optiona
 # 6. CLI
 # ---------------------------------------------------------------------------
 
+
 def discover_migrations(migrations_dir: str) -> List[str]:
     """Return all wave24_*.sql files (excludes *.draft via the suffix filter)."""
     pat = os.path.join(migrations_dir, "wave24_*.sql")
@@ -567,8 +607,14 @@ def _json_default(obj: Any) -> Any:
 
 def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(description="DEEP-52 migration target_db verifier")
-    parser.add_argument("--check", action="store_true", help="run the 5 per-file checks (default if neither flag given)")
-    parser.add_argument("--dry-run", action="store_true", help="apply forward+rollback against :memory: handles")
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="run the 5 per-file checks (default if neither flag given)",
+    )
+    parser.add_argument(
+        "--dry-run", action="store_true", help="apply forward+rollback against :memory: handles"
+    )
     parser.add_argument("--target", choices=list(VALID_TARGETS), help="restrict to one target")
     parser.add_argument(
         "--migrations-dir",
@@ -610,13 +656,19 @@ def main(argv: Optional[List[str]] = None) -> int:
     write_audit_json(args.out, "migration_target_verify.json", audit_payload)
 
     overall_errors = sum(1 for r in reports if r.errors)
-    print(json.dumps({
-        "phase": "check",
-        "files_total": rollup["files_total"],
-        "files_with_errors": overall_errors,
-        "error_counts_by_kind": rollup["error_counts_by_kind"],
-        "files_per_target": rollup["files_per_target"],
-    }, ensure_ascii=False, indent=2))
+    print(
+        json.dumps(
+            {
+                "phase": "check",
+                "files_total": rollup["files_total"],
+                "files_with_errors": overall_errors,
+                "error_counts_by_kind": rollup["error_counts_by_kind"],
+                "files_per_target": rollup["files_per_target"],
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
 
     dry_run_failed = False
     if args.dry_run:
@@ -628,25 +680,35 @@ def main(argv: Optional[List[str]] = None) -> int:
             dry_results[tgt] = res
             if res["errors"]:
                 dry_run_failed = True
-        write_audit_json(args.out, "migration_dry_run.json", {
-            "generated_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
-            "results": dry_results,
-        })
-        print(json.dumps({
-            "phase": "dry_run",
-            "targets": list(dry_results.keys()),
-            "any_errors": dry_run_failed,
-            "summary": {
-                t: {
-                    "duration_s": v["duration_s"],
-                    "forward_count": v["forward_count"],
-                    "rollback_count": v["rollback_count"],
-                    "errors": len(v["errors"]),
-                    "schema_returns_to_baseline": v["schema_returns_to_baseline"],
-                }
-                for t, v in dry_results.items()
+        write_audit_json(
+            args.out,
+            "migration_dry_run.json",
+            {
+                "generated_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+                "results": dry_results,
             },
-        }, ensure_ascii=False, indent=2))
+        )
+        print(
+            json.dumps(
+                {
+                    "phase": "dry_run",
+                    "targets": list(dry_results.keys()),
+                    "any_errors": dry_run_failed,
+                    "summary": {
+                        t: {
+                            "duration_s": v["duration_s"],
+                            "forward_count": v["forward_count"],
+                            "rollback_count": v["rollback_count"],
+                            "errors": len(v["errors"]),
+                            "schema_returns_to_baseline": v["schema_returns_to_baseline"],
+                        }
+                        for t, v in dry_results.items()
+                    },
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
 
     return 0 if (overall_errors == 0 and not dry_run_failed) else 1
 

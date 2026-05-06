@@ -90,6 +90,7 @@ NOT part of this script (per ops request):
       for first local wiring test.
     * Reconciling PENDING: law_name sentinels (see above).
 """
+
 from __future__ import annotations
 
 import argparse
@@ -176,9 +177,7 @@ BANNED_SOURCE_HOSTS: tuple[str, ...] = (
     "tkclex",
 )
 
-USER_AGENT = (
-    "AutonoMath/0.1.0 (+https://jpcite.com) research crawler"
-)
+USER_AGENT = "AutonoMath/0.1.0 (+https://jpcite.com) research crawler"
 # Per-host delay: stricter than §5 (1req/s) because SPA navigation fires
 # additional XHR under the hood. 2 seconds still completes a full walk of
 # a year's high-court docket in tolerable time.
@@ -459,9 +458,9 @@ def parse_law_references(
 class SearchFilters:
     """CLI-derived filters for the search form."""
 
-    court: str | None = None            # 'supreme' | 'high' | 'district' | ...
-    subject_area: str | None = None     # freeform; matched against 事件名 field
-    date_from: str | None = None        # 'YYYY-MM-DD'
+    court: str | None = None  # 'supreme' | 'high' | 'district' | ...
+    subject_area: str | None = None  # freeform; matched against 事件名 field
+    date_from: str | None = None  # 'YYYY-MM-DD'
     limit: int | None = None
 
 
@@ -600,6 +599,7 @@ def walk_search_results(
 
     # -- Walk each detail page ------------------------------------------
     for idx, url in enumerate(detail_urls, start=1):
+
         def _visit(u: str = url):
             page.goto(u, wait_until="domcontentloaded")
             page.wait_for_selector("body", timeout=DEFAULT_NAV_TIMEOUT_MS)
@@ -625,6 +625,7 @@ def _extract_detail_meta(page: Page, source_url: str) -> dict[str, Any] | None:
     Returns None if the page doesn't parse (structure drift). Label-based
     lookups insulate us from classname churn.
     """
+
     def _label(text: str) -> str | None:
         # Pattern: <dt>text</dt><dd>value</dd> — SPA renders definition
         # lists for case metadata. Fallback: <th>text</th><td>value</td>.
@@ -784,16 +785,22 @@ def build_decision(
         except Exception as exc:  # noqa: BLE001
             _LOG.warning("PDF extraction failed url=%s err=%s", pdf_url, exc)
 
-    sections = segment_sections(full_text) if full_text else {
-        "key_ruling": None,
-        "summary": None,
-        "references": None,
-    }
+    sections = (
+        segment_sections(full_text)
+        if full_text
+        else {
+            "key_ruling": None,
+            "summary": None,
+            "references": None,
+        }
+    )
     resolved_law_ids, pending = parse_law_references(sections["references"], laws_lookup)
 
     # source_excerpt budget — TOS gate.
     excerpt_cap = (
-        EXCERPT_CHARS_TOS_CLEARED if (tos_cleared or not respect_tos) else EXCERPT_CHARS_TOS_RESPECTED
+        EXCERPT_CHARS_TOS_CLEARED
+        if (tos_cleared or not respect_tos)
+        else EXCERPT_CHARS_TOS_RESPECTED
     )
     source_excerpt: str | None = None
     if full_text:
@@ -859,9 +866,7 @@ def load_laws_lookup(db_path: Path) -> dict[str, str]:
     lookup: dict[str, str] = {}
     try:
         conn = sqlite3.connect(str(db_path))
-        cur = conn.execute(
-            "SELECT unified_id, law_title, law_short_title FROM laws"
-        )
+        cur = conn.execute("SELECT unified_id, law_title, law_short_title FROM laws")
         for uid, title, short in cur.fetchall():
             for candidate in (title, short):
                 if not candidate:
@@ -889,10 +894,13 @@ def upsert_decision(conn: sqlite3.Connection, d: CourtDecision) -> str:
     Returns 'insert' or 'update' (pre-check pattern — SQLite UPSERT
     conflates changes() for both).
     """
-    existed = conn.execute(
-        "SELECT 1 FROM court_decisions WHERE unified_id = ?",
-        (d.unified_id,),
-    ).fetchone() is not None
+    existed = (
+        conn.execute(
+            "SELECT 1 FROM court_decisions WHERE unified_id = ?",
+            (d.unified_id,),
+        ).fetchone()
+        is not None
+    )
 
     conn.execute(
         """INSERT INTO court_decisions (
@@ -987,7 +995,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="filter court_level",
     )
     ap.add_argument("--subject-area", type=str, default=None, help="filter 事件名 substring")
-    ap.add_argument("--date-from", type=str, default=None, help="filter decision_date >= YYYY-MM-DD")
+    ap.add_argument(
+        "--date-from", type=str, default=None, help="filter decision_date >= YYYY-MM-DD"
+    )
     ap.add_argument("--dry-run", action="store_true", help="parse only, no DB writes")
     ap.add_argument(
         "--respect-tos",
@@ -1028,8 +1038,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     if pdfplumber is None:
         _LOG.error(
-            "pdfplumber not installed (%s); pip install pdfplumber "
-            "(add to [ingest] extras)",
+            "pdfplumber not installed (%s); pip install pdfplumber (add to [ingest] extras)",
             _PDFPLUMBER_IMPORT_ERR,
         )
         return 1
@@ -1131,7 +1140,9 @@ def main(argv: list[str] | None = None) -> int:
                     (decision.case_name or "")[:50],
                     decision.court_level,
                     decision.precedent_weight,
-                    0 if decision.related_law_ids_json is None else decision.related_law_ids_json.count("LAW-"),
+                    0
+                    if decision.related_law_ids_json is None
+                    else decision.related_law_ids_json.count("LAW-"),
                     len(decision.pending_law_names),
                     decision.replacement_count,
                 )

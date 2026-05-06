@@ -97,6 +97,7 @@ The script attempts LIVE refetch by default. If MAFF returns 403,
 falls back to the local Wayback cache under /tmp/maff_wb_html and
 /tmp/maff_wb_v2 (paths configurable via --cache-root).
 """
+
 from __future__ import annotations
 
 import argparse
@@ -126,10 +127,7 @@ from scripts.lib.http import HttpClient  # noqa: E402
 _LOG = logging.getLogger("autonomath.ingest.maff")
 
 DEFAULT_DB = REPO_ROOT / "autonomath.db"
-USER_AGENT = (
-    "AutonoMath/0.1.0 ingest "
-    "(+https://bookyou.net; contact=info@bookyou.net)"
-)
+USER_AGENT = "AutonoMath/0.1.0 ingest (+https://bookyou.net; contact=info@bookyou.net)"
 SOURCE_ATTRIBUTION = "農林水産省 ウェブサイト (PDL v1.0; 出典明記利用可)"
 
 CENTRAL_AUTHORITY = "農林水産省"
@@ -165,9 +163,7 @@ KNOWN_ZYUI_EXAM_BAN_URLS: tuple[str, ...] = (
 )
 
 # Known central カルタヘナ法 行政処分 press releases.
-KNOWN_KARTAHENA_URLS: tuple[str, ...] = (
-    "https://www.maff.go.jp/j/press/syouan/nouan/190507.html",
-)
+KNOWN_KARTAHENA_URLS: tuple[str, ...] = ("https://www.maff.go.jp/j/press/syouan/nouan/190507.html",)
 
 # ---------------------------------------------------------------------------
 # Date / numeral parsing
@@ -177,12 +173,8 @@ _FULLWIDTH_DIGIT = str.maketrans("０１２３４５６７８９", "0123456789")
 
 ERA_OFFSET = {"令和": 2018, "平成": 1988, "昭和": 1925}
 
-_WAREKI_RE = re.compile(
-    r"(令和|平成|昭和)\s*(\d+|元)\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日?"
-)
-_SEIREKI_RE = re.compile(
-    r"(20\d{2})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日"
-)
+_WAREKI_RE = re.compile(r"(令和|平成|昭和)\s*(\d+|元)\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日?")
+_SEIREKI_RE = re.compile(r"(20\d{2})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日")
 
 
 def _normalize(s: str) -> str:
@@ -226,7 +218,13 @@ DEFAULT_CACHE_ROOTS = (
 
 
 def _slug_for_url(url: str) -> str:
-    return url.replace("https://", "").replace("http://", "").replace(":80", "").replace("/", "_").replace(":", "_")
+    return (
+        url.replace("https://", "")
+        .replace("http://", "")
+        .replace(":80", "")
+        .replace("/", "_")
+        .replace(":", "_")
+    )
 
 
 def _scan_cache(roots: tuple[Path, ...]) -> dict[str, Path]:
@@ -302,7 +300,9 @@ class ShokuhinIndexEntry:
 
 
 def parse_index_for_shokuhin(
-    html: str, base_url: str, authority: str,
+    html: str,
+    base_url: str,
+    authority: str,
 ) -> list[ShokuhinIndexEntry]:
     soup = BeautifulSoup(html, "html.parser")
     out: list[ShokuhinIndexEntry] = []
@@ -315,9 +315,11 @@ def parse_index_for_shokuhin(
         if not text:
             continue
         # Filter to enforcement-themed links
-        if not (("不適正表示" in text and "措置" in text)
-                or ("違反" in text and "措置" in text)
-                or "改善命令" in text):
+        if not (
+            ("不適正表示" in text and "措置" in text)
+            or ("違反" in text and "措置" in text)
+            or "改善命令" in text
+        ):
             continue
         if href.startswith("/"):
             href = "https://www.maff.go.jp" + href
@@ -328,9 +330,13 @@ def parse_index_for_shokuhin(
         if href in seen:
             continue
         seen.add(href)
-        out.append(ShokuhinIndexEntry(
-            url=href, title=text, authority=authority,
-        ))
+        out.append(
+            ShokuhinIndexEntry(
+                url=href,
+                title=text,
+                authority=authority,
+            )
+        )
     return out
 
 
@@ -351,6 +357,7 @@ SHOKUHIN_BODY_RE = re.compile(
     r"\s*法人番号\s*(\d{13})\s*[。\.]?"
 )
 
+
 # Single-target pattern (1 case per page).
 @dataclass
 class ShokuhinCase:
@@ -367,16 +374,19 @@ class ShokuhinCase:
 
 
 def parse_shokuhin_page(
-    html: str, source_url: str, fallback_authority: str,
+    html: str,
+    source_url: str,
+    fallback_authority: str,
 ) -> list[ShokuhinCase]:
     soup = BeautifulSoup(html, "html.parser")
-    title = (soup.select_one("title").get_text(strip=True)
-             if soup.select_one("title") else "")
+    title = soup.select_one("title").get_text(strip=True) if soup.select_one("title") else ""
     title = title.split("：")[0].strip()
-    main = (soup.select_one("#main_content")
-            or soup.select_one("main")
-            or soup.select_one("body")
-            or soup)
+    main = (
+        soup.select_one("#main_content")
+        or soup.select_one("main")
+        or soup.select_one("body")
+        or soup
+    )
     body = main.get_text(separator="\n", strip=True)
     if not body:
         return []
@@ -429,25 +439,25 @@ def parse_shokuhin_page(
             if len(reason_chunks) >= 2:
                 break
         reason = " ".join(reason_chunks).strip() or title
-        out.append(ShokuhinCase(
-            company_name=company,
-            houjin_bangou=hb,
-            address=addr,
-            issuance_date=date,
-            enforcement_kind="business_improvement",
-            related_law_ref="食品表示法 第6条第1項",
-            reason_summary=reason[:1500],
-            source_url=source_url,
-            issuing_authority=authority,
-            raw_title=title,
-        ))
+        out.append(
+            ShokuhinCase(
+                company_name=company,
+                houjin_bangou=hb,
+                address=addr,
+                issuance_date=date,
+                enforcement_kind="business_improvement",
+                related_law_ref="食品表示法 第6条第1項",
+                reason_summary=reason[:1500],
+                source_url=source_url,
+                issuing_authority=authority,
+                raw_title=title,
+            )
+        )
     return out
 
 
 # 獣医師業務停止 parsing
-ZYUI_HEADER_RE = re.compile(
-    r"獣医師\s*(\d+)\s*名"
-)
+ZYUI_HEADER_RE = re.compile(r"獣医師\s*(\d+)\s*名")
 ZYUI_NUMBERED_CASE_RE = re.compile(
     r"[（\(]\s*(\d+)\s*[）\)]\s*"
     r"([^（\(\n]+?)\s*"
@@ -474,14 +484,15 @@ class ZyuiCase:
 
 def parse_zyui_page(html: str, source_url: str) -> list[ZyuiCase]:
     soup = BeautifulSoup(html, "html.parser")
-    title = (soup.select_one("title").get_text(strip=True)
-             if soup.select_one("title") else "")
+    title = soup.select_one("title").get_text(strip=True) if soup.select_one("title") else ""
     if "獣医師" not in title or "業務停止処分" not in title:
         return []
-    main = (soup.select_one("#main_content")
-            or soup.select_one("main")
-            or soup.select_one("body")
-            or soup)
+    main = (
+        soup.select_one("#main_content")
+        or soup.select_one("main")
+        or soup.select_one("body")
+        or soup
+    )
     body = main.get_text(separator="\n", strip=True)
     date = _parse_date(body)
     if not date:
@@ -503,7 +514,7 @@ def parse_zyui_page(html: str, source_url: str) -> list[ZyuiCase]:
                 continue
             seq = int(sm.group(1))
             # Pull case description = next ~600 chars
-            tail = sec[sm.end():sm.end() + 800]
+            tail = sec[sm.end() : sm.end() + 800]
             # Extract 事件の概要
             jian = ""
             jm = re.search(r"事件の概要\s*[:：]?\s*(.+?)(?:司法処分|お問合せ|$)", tail, re.S)
@@ -516,29 +527,30 @@ def parse_zyui_page(html: str, source_url: str) -> list[ZyuiCase]:
                 shihou = sm2.group(1).strip()
                 shihou = re.sub(r"\s+", " ", shihou)[:300]
             stop = ""
-            stop_m = re.search(r"行政処分の内容\s*[:：]?\s*(.+?)(?:事件の概要|司法処分|$)", tail, re.S)
+            stop_m = re.search(
+                r"行政処分の内容\s*[:：]?\s*(.+?)(?:事件の概要|司法処分|$)", tail, re.S
+            )
             if stop_m:
                 stop = stop_m.group(1).strip()
                 stop = re.sub(r"\s+", " ", stop)[:200]
-            reason = (
-                f"獣医師業務停止: {stop}; 事件の概要: {jian}"
-                f"; 司法処分: {shihou}"
-            )
+            reason = f"獣医師業務停止: {stop}; 事件の概要: {jian}; 司法処分: {shihou}"
             idx += 1
-            out.append(ZyuiCase(
-                publication_url=source_url,
-                issuance_date=date,
-                seq_in_publication=idx,
-                enforcement_kind="business_improvement",
-                related_law_ref="獣医師法 第8条第2項",
-                reason_summary=reason[:1500],
-                source_url=source_url,
-            ))
+            out.append(
+                ZyuiCase(
+                    publication_url=source_url,
+                    issuance_date=date,
+                    seq_in_publication=idx,
+                    enforcement_kind="business_improvement",
+                    related_law_ref="獣医師法 第8条第2項",
+                    reason_summary=reason[:1500],
+                    source_url=source_url,
+                )
+            )
     else:
         # Single-case form
         m1 = ZYUI_SINGLE_CASE_RE.search(body)
         if m1:
-            tail = body[m1.end():m1.end() + 800]
+            tail = body[m1.end() : m1.end() + 800]
             jian = ""
             jm = re.search(r"事件の概要\s*[:：]?\s*(.+?)(?:司法処分|お問合せ|$)", tail, re.S)
             if jm:
@@ -548,36 +560,38 @@ def parse_zyui_page(html: str, source_url: str) -> list[ZyuiCase]:
             if sm2:
                 shihou = re.sub(r"\s+", " ", sm2.group(1).strip())[:300]
             stop = ""
-            stop_m = re.search(r"行政処分の内容\s*[:：]?\s*(.+?)(?:事件の概要|司法処分|$)", tail, re.S)
+            stop_m = re.search(
+                r"行政処分の内容\s*[:：]?\s*(.+?)(?:事件の概要|司法処分|$)", tail, re.S
+            )
             if stop_m:
                 stop = re.sub(r"\s+", " ", stop_m.group(1).strip())[:200]
-            reason = (
-                f"獣医師業務停止: {stop}; 事件の概要: {jian}"
-                f"; 司法処分: {shihou}"
+            reason = f"獣医師業務停止: {stop}; 事件の概要: {jian}; 司法処分: {shihou}"
+            out.append(
+                ZyuiCase(
+                    publication_url=source_url,
+                    issuance_date=date,
+                    seq_in_publication=1,
+                    enforcement_kind="business_improvement",
+                    related_law_ref="獣医師法 第8条第2項",
+                    reason_summary=reason[:1500],
+                    source_url=source_url,
+                )
             )
-            out.append(ZyuiCase(
-                publication_url=source_url,
-                issuance_date=date,
-                seq_in_publication=1,
-                enforcement_kind="business_improvement",
-                related_law_ref="獣医師法 第8条第2項",
-                reason_summary=reason[:1500],
-                source_url=source_url,
-            ))
     return out
 
 
 def parse_zyui_exam_ban_page(html: str, source_url: str) -> list[ZyuiCase]:
     """Parse 獣医師国家試験 受験禁止処分 page."""
     soup = BeautifulSoup(html, "html.parser")
-    title = (soup.select_one("title").get_text(strip=True)
-             if soup.select_one("title") else "")
+    title = soup.select_one("title").get_text(strip=True) if soup.select_one("title") else ""
     if "受験禁止処分" not in title:
         return []
-    main = (soup.select_one("#main_content")
-            or soup.select_one("main")
-            or soup.select_one("body")
-            or soup)
+    main = (
+        soup.select_one("#main_content")
+        or soup.select_one("main")
+        or soup.select_one("body")
+        or soup
+    )
     body = main.get_text(separator="\n", strip=True)
     date = _parse_date(body)
     if not date:
@@ -592,20 +606,23 @@ def parse_zyui_exam_ban_page(html: str, source_url: str) -> list[ZyuiCase]:
     if nm:
         naiyo = re.sub(r"\s+", " ", nm.group(1).strip())[:300]
     reason = f"獣医師国家試験受験禁止処分: {naiyo}; 理由: {riyu}"
-    return [ZyuiCase(
-        publication_url=source_url,
-        issuance_date=date,
-        seq_in_publication=1,
-        enforcement_kind="license_revoke",
-        related_law_ref="獣医師法 第14条",
-        reason_summary=reason[:1500],
-        source_url=source_url,
-    )]
+    return [
+        ZyuiCase(
+            publication_url=source_url,
+            issuance_date=date,
+            seq_in_publication=1,
+            enforcement_kind="license_revoke",
+            related_law_ref="獣医師法 第14条",
+            reason_summary=reason[:1500],
+            source_url=source_url,
+        )
+    ]
 
 
 # ---------------------------------------------------------------------------
 # カルタヘナ法
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class KartahenaCase:
@@ -621,14 +638,15 @@ class KartahenaCase:
 
 def parse_kartahena_page(html: str, source_url: str) -> list[KartahenaCase]:
     soup = BeautifulSoup(html, "html.parser")
-    title = (soup.select_one("title").get_text(strip=True)
-             if soup.select_one("title") else "")
+    title = soup.select_one("title").get_text(strip=True) if soup.select_one("title") else ""
     if "カルタヘナ" not in title or "行政処分" not in title:
         return []
-    main = (soup.select_one("#main_content")
-            or soup.select_one("main")
-            or soup.select_one("body")
-            or soup)
+    main = (
+        soup.select_one("#main_content")
+        or soup.select_one("main")
+        or soup.select_one("body")
+        or soup
+    )
     body = main.get_text(separator="\n", strip=True)
     date = _parse_date(body)
     if not date:
@@ -643,33 +661,35 @@ def parse_kartahena_page(html: str, source_url: str) -> list[KartahenaCase]:
     addr = re.sub(r"\s+", " ", addr_m.group(1).strip())[:300] if addr_m else ""
     naiyo = re.sub(r"\s+", " ", naiyo_m.group(1).strip())[:600] if naiyo_m else ""
     riyu = re.sub(r"\s+", " ", riyu_m.group(1).strip())[:600] if riyu_m else ""
-    reason = (
-        f"カルタヘナ法行政処分: {naiyo}; 処分理由: {riyu}"
-    )
-    return [KartahenaCase(
-        target_name=target,
-        address=addr,
-        issuance_date=date,
-        enforcement_kind="contract_suspend",
-        related_law_ref=(
-            "遺伝子組換え生物等の使用等の規制による生物の多様性の確保に関する法律 第14条第1項"
-        ),
-        reason_summary=reason[:1500],
-        source_url=source_url,
-        issuing_authority=CENTRAL_AUTHORITY,
-    )]
+    reason = f"カルタヘナ法行政処分: {naiyo}; 処分理由: {riyu}"
+    return [
+        KartahenaCase(
+            target_name=target,
+            address=addr,
+            issuance_date=date,
+            enforcement_kind="contract_suspend",
+            related_law_ref=(
+                "遺伝子組換え生物等の使用等の規制による生物の多様性の確保に関する法律 第14条第1項"
+            ),
+            reason_summary=reason[:1500],
+            source_url=source_url,
+            issuing_authority=CENTRAL_AUTHORITY,
+        )
+    ]
 
 
 # ---------------------------------------------------------------------------
 # Common DB row representation
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class EnfRow:
     """Unified enforcement row before insert."""
+
     canonical_id: str
     primary_name: str  # for am_entities
-    target_name: str   # for am_enforcement_detail
+    target_name: str  # for am_enforcement_detail
     houjin_bangou: str | None
     enforcement_kind: str
     issuing_authority: str
@@ -684,6 +704,7 @@ class EnfRow:
 # DB layer
 # ---------------------------------------------------------------------------
 
+
 def _slug8(*parts: str) -> str:
     h = hashlib.sha1("|".join(parts).encode("utf-8")).hexdigest()
     return h[:8]
@@ -696,9 +717,7 @@ def ensure_tables(conn: sqlite3.Connection) -> None:
             (tbl,),
         ).fetchone()
         if not row:
-            raise SystemExit(
-                f"missing table '{tbl}' — apply migrations first"
-            )
+            raise SystemExit(f"missing table '{tbl}' — apply migrations first")
 
 
 def existing_dedup_keys(conn: sqlite3.Connection) -> set[tuple[str, str, str]]:
@@ -818,20 +837,33 @@ def write_rows(
             batch_keys.add(key)
             try:
                 upsert_entity(
-                    conn, r.canonical_id, r.primary_name,
-                    r.source_url, r.raw_json, now_iso,
+                    conn,
+                    r.canonical_id,
+                    r.primary_name,
+                    r.source_url,
+                    r.raw_json,
+                    now_iso,
                 )
                 insert_enforcement(
-                    conn, r.canonical_id, r.target_name, r.houjin_bangou,
-                    r.enforcement_kind, r.issuing_authority, r.issuance_date,
-                    r.reason_summary, r.related_law_ref,
-                    r.source_url, now_iso,
+                    conn,
+                    r.canonical_id,
+                    r.target_name,
+                    r.houjin_bangou,
+                    r.enforcement_kind,
+                    r.issuing_authority,
+                    r.issuance_date,
+                    r.reason_summary,
+                    r.related_law_ref,
+                    r.source_url,
+                    now_iso,
                 )
                 inserted += 1
             except sqlite3.Error as exc:
                 _LOG.error(
                     "DB error name=%r date=%s: %s",
-                    r.target_name, r.issuance_date, exc,
+                    r.target_name,
+                    r.issuance_date,
+                    exc,
                 )
                 continue
         conn.commit()
@@ -855,39 +887,40 @@ def build_shokuhin_rows(
     out: list[EnfRow] = []
     for c in cases:
         slug = _slug8(c.source_url, c.company_name, c.houjin_bangou)
-        canonical_id = (
-            f"AM-ENF-MAFF-SHOKUHIN-{c.issuance_date.replace('-', '')}-{slug}"
+        canonical_id = f"AM-ENF-MAFF-SHOKUHIN-{c.issuance_date.replace('-', '')}-{slug}"
+        primary_name = f"{c.company_name} - 食品表示違反措置 ({c.issuance_date})"
+        raw_json = json.dumps(
+            {
+                "category": "shokuhin_hyoji_houhan",
+                "company_name": c.company_name,
+                "houjin_bangou": c.houjin_bangou,
+                "address": c.address,
+                "issuance_date": c.issuance_date,
+                "enforcement_kind": c.enforcement_kind,
+                "related_law_ref": c.related_law_ref,
+                "issuing_authority": c.issuing_authority,
+                "title": c.raw_title,
+                "source_url": c.source_url,
+                "source_attribution": SOURCE_ATTRIBUTION,
+                "license": "PDL v1.0 (出典明記利用可)",
+            },
+            ensure_ascii=False,
         )
-        primary_name = (
-            f"{c.company_name} - 食品表示違反措置 ({c.issuance_date})"
+        out.append(
+            EnfRow(
+                canonical_id=canonical_id,
+                primary_name=primary_name[:500],
+                target_name=c.company_name[:500],
+                houjin_bangou=c.houjin_bangou,
+                enforcement_kind=c.enforcement_kind,
+                issuing_authority=c.issuing_authority,
+                issuance_date=c.issuance_date,
+                reason_summary=c.reason_summary,
+                related_law_ref=c.related_law_ref,
+                source_url=c.source_url,
+                raw_json=raw_json,
+            )
         )
-        raw_json = json.dumps({
-            "category": "shokuhin_hyoji_houhan",
-            "company_name": c.company_name,
-            "houjin_bangou": c.houjin_bangou,
-            "address": c.address,
-            "issuance_date": c.issuance_date,
-            "enforcement_kind": c.enforcement_kind,
-            "related_law_ref": c.related_law_ref,
-            "issuing_authority": c.issuing_authority,
-            "title": c.raw_title,
-            "source_url": c.source_url,
-            "source_attribution": SOURCE_ATTRIBUTION,
-            "license": "PDL v1.0 (出典明記利用可)",
-        }, ensure_ascii=False)
-        out.append(EnfRow(
-            canonical_id=canonical_id,
-            primary_name=primary_name[:500],
-            target_name=c.company_name[:500],
-            houjin_bangou=c.houjin_bangou,
-            enforcement_kind=c.enforcement_kind,
-            issuing_authority=c.issuing_authority,
-            issuance_date=c.issuance_date,
-            reason_summary=c.reason_summary,
-            related_law_ref=c.related_law_ref,
-            source_url=c.source_url,
-            raw_json=raw_json,
-        ))
     return out
 
 
@@ -898,47 +931,43 @@ def build_zyui_rows(
     for c in cases:
         target_name = f"獣医師 #{c.seq_in_publication:03d} (氏名非公表)"
         slug = _slug8(c.source_url, str(c.seq_in_publication), c.related_law_ref)
-        kind_short = (
-            "ZYUI-EXAM"
-            if c.related_law_ref == "獣医師法 第14条"
-            else "ZYUI-STOP"
+        kind_short = "ZYUI-EXAM" if c.related_law_ref == "獣医師法 第14条" else "ZYUI-STOP"
+        canonical_id = f"AM-ENF-MAFF-{kind_short}-{c.issuance_date.replace('-', '')}-{slug}"
+        primary_name = f"{target_name} - 獣医師処分 ({c.issuance_date})"
+        raw_json = json.dumps(
+            {
+                "category": "zyuui_syobun",
+                "publication_url": c.publication_url,
+                "seq_in_publication": c.seq_in_publication,
+                "issuance_date": c.issuance_date,
+                "enforcement_kind": c.enforcement_kind,
+                "related_law_ref": c.related_law_ref,
+                "issuing_authority": CENTRAL_AUTHORITY,
+                "anonymized": True,
+                "anonymization_reason": (
+                    "個人特定情報のため匿名化。氏名・年齢・在住都道府県は 出典 URL から確認可能。"
+                ),
+                "source_url": c.source_url,
+                "source_attribution": SOURCE_ATTRIBUTION,
+                "license": "PDL v1.0 (出典明記利用可)",
+            },
+            ensure_ascii=False,
         )
-        canonical_id = (
-            f"AM-ENF-MAFF-{kind_short}-{c.issuance_date.replace('-', '')}-{slug}"
+        out.append(
+            EnfRow(
+                canonical_id=canonical_id,
+                primary_name=primary_name[:500],
+                target_name=target_name[:500],
+                houjin_bangou=None,
+                enforcement_kind=c.enforcement_kind,
+                issuing_authority=CENTRAL_AUTHORITY,
+                issuance_date=c.issuance_date,
+                reason_summary=c.reason_summary,
+                related_law_ref=c.related_law_ref,
+                source_url=c.source_url,
+                raw_json=raw_json,
+            )
         )
-        primary_name = (
-            f"{target_name} - 獣医師処分 ({c.issuance_date})"
-        )
-        raw_json = json.dumps({
-            "category": "zyuui_syobun",
-            "publication_url": c.publication_url,
-            "seq_in_publication": c.seq_in_publication,
-            "issuance_date": c.issuance_date,
-            "enforcement_kind": c.enforcement_kind,
-            "related_law_ref": c.related_law_ref,
-            "issuing_authority": CENTRAL_AUTHORITY,
-            "anonymized": True,
-            "anonymization_reason": (
-                "個人特定情報のため匿名化。氏名・年齢・在住都道府県は "
-                "出典 URL から確認可能。"
-            ),
-            "source_url": c.source_url,
-            "source_attribution": SOURCE_ATTRIBUTION,
-            "license": "PDL v1.0 (出典明記利用可)",
-        }, ensure_ascii=False)
-        out.append(EnfRow(
-            canonical_id=canonical_id,
-            primary_name=primary_name[:500],
-            target_name=target_name[:500],
-            houjin_bangou=None,
-            enforcement_kind=c.enforcement_kind,
-            issuing_authority=CENTRAL_AUTHORITY,
-            issuance_date=c.issuance_date,
-            reason_summary=c.reason_summary,
-            related_law_ref=c.related_law_ref,
-            source_url=c.source_url,
-            raw_json=raw_json,
-        ))
     return out
 
 
@@ -946,37 +975,38 @@ def build_kartahena_rows(cases: list[KartahenaCase]) -> list[EnfRow]:
     out: list[EnfRow] = []
     for c in cases:
         slug = _slug8(c.source_url, c.target_name)
-        canonical_id = (
-            f"AM-ENF-MAFF-KARTAHENA-{c.issuance_date.replace('-', '')}-{slug}"
+        canonical_id = f"AM-ENF-MAFF-KARTAHENA-{c.issuance_date.replace('-', '')}-{slug}"
+        primary_name = f"{c.target_name} - カルタヘナ法行政処分 ({c.issuance_date})"
+        raw_json = json.dumps(
+            {
+                "category": "kartahena_gyousei_shobun",
+                "target_name": c.target_name,
+                "address": c.address,
+                "issuance_date": c.issuance_date,
+                "enforcement_kind": c.enforcement_kind,
+                "related_law_ref": c.related_law_ref,
+                "issuing_authority": c.issuing_authority,
+                "source_url": c.source_url,
+                "source_attribution": SOURCE_ATTRIBUTION,
+                "license": "PDL v1.0 (出典明記利用可)",
+            },
+            ensure_ascii=False,
         )
-        primary_name = (
-            f"{c.target_name} - カルタヘナ法行政処分 ({c.issuance_date})"
+        out.append(
+            EnfRow(
+                canonical_id=canonical_id,
+                primary_name=primary_name[:500],
+                target_name=c.target_name[:500],
+                houjin_bangou=None,
+                enforcement_kind=c.enforcement_kind,
+                issuing_authority=c.issuing_authority,
+                issuance_date=c.issuance_date,
+                reason_summary=c.reason_summary,
+                related_law_ref=c.related_law_ref,
+                source_url=c.source_url,
+                raw_json=raw_json,
+            )
         )
-        raw_json = json.dumps({
-            "category": "kartahena_gyousei_shobun",
-            "target_name": c.target_name,
-            "address": c.address,
-            "issuance_date": c.issuance_date,
-            "enforcement_kind": c.enforcement_kind,
-            "related_law_ref": c.related_law_ref,
-            "issuing_authority": c.issuing_authority,
-            "source_url": c.source_url,
-            "source_attribution": SOURCE_ATTRIBUTION,
-            "license": "PDL v1.0 (出典明記利用可)",
-        }, ensure_ascii=False)
-        out.append(EnfRow(
-            canonical_id=canonical_id,
-            primary_name=primary_name[:500],
-            target_name=c.target_name[:500],
-            houjin_bangou=None,
-            enforcement_kind=c.enforcement_kind,
-            issuing_authority=c.issuing_authority,
-            issuance_date=c.issuance_date,
-            reason_summary=c.reason_summary,
-            related_law_ref=c.related_law_ref,
-            source_url=c.source_url,
-            raw_json=raw_json,
-        ))
     return out
 
 
@@ -1001,10 +1031,14 @@ def collect_shokuhin_rows(
             _LOG.warning("[shokuhin] index unreachable: %s", index_url)
             continue
         entries = parse_index_for_shokuhin(
-            html, index_url, default_authority,
+            html,
+            index_url,
+            default_authority,
         )
         _LOG.info(
-            "[shokuhin] index=%s entries=%d", index_url, len(entries),
+            "[shokuhin] index=%s entries=%d",
+            index_url,
+            len(entries),
         )
         for e in entries:
             page = _fetch_with_cache(e.url, http, cache)
@@ -1063,6 +1097,7 @@ def collect_kartahena_rows(
 # CLI
 # ---------------------------------------------------------------------------
 
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--db", type=Path, default=DEFAULT_DB)
@@ -1070,13 +1105,17 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap.add_argument("--verbose", "-v", action="store_true")
     ap.add_argument("--max-insert", type=int, default=None)
     ap.add_argument(
-        "--cache-root", action="append", type=Path, default=None,
+        "--cache-root",
+        action="append",
+        type=Path,
+        default=None,
         help="Additional cache directory of pre-fetched HTML "
-             "(can repeat). Default: /tmp/maff_wb_html, "
-             "/tmp/maff_wb_v2, /tmp/maff_case_html.",
+        "(can repeat). Default: /tmp/maff_wb_html, "
+        "/tmp/maff_wb_v2, /tmp/maff_case_html.",
     )
     ap.add_argument(
-        "--skip-live", action="store_true",
+        "--skip-live",
+        action="store_true",
         help="Do not attempt LIVE refetch (cache only).",
     )
     return ap.parse_args(argv)
@@ -1084,8 +1123,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 class _NullHttp:
     """Pass-through that always returns None for fetch_live (cache-only mode)."""
+
     def get(self, url, **kw):
-        class R: pass
+        class R:
+            pass
+
         r = R()
         r.ok = False
         r.body = b""
@@ -1093,7 +1135,9 @@ class _NullHttp:
         r.status = 0
         r.headers = {}
         return r
-    def close(self): pass
+
+    def close(self):
+        pass
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -1111,12 +1155,11 @@ def main(argv: list[str] | None = None) -> int:
     cache_index = _scan_cache(cache_roots)
     _LOG.info(
         "cache: roots=%s entries=%d",
-        [str(p) for p in cache_roots], len(cache_index),
+        [str(p) for p in cache_roots],
+        len(cache_index),
     )
 
-    now_iso = datetime.now(UTC).isoformat(timespec="seconds").replace(
-        "+00:00", "Z"
-    )
+    now_iso = datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
 
     # Walk all sources
     shokuhin = collect_shokuhin_rows(http, cache_index)
@@ -1130,15 +1173,21 @@ def main(argv: list[str] | None = None) -> int:
 
     _LOG.info(
         "parsed shokuhin=%d zyui=%d kartahena=%d total=%d",
-        len(shokuhin), len(zyui), len(kartahena), len(all_rows),
+        len(shokuhin),
+        len(zyui),
+        len(kartahena),
+        len(all_rows),
     )
 
     if args.dry_run:
         for r in all_rows[:8]:
             _LOG.info(
                 "sample: target=%r kind=%s law=%s date=%s authority=%s",
-                r.target_name, r.enforcement_kind, r.related_law_ref,
-                r.issuance_date, r.issuing_authority,
+                r.target_name,
+                r.enforcement_kind,
+                r.related_law_ref,
+                r.issuance_date,
+                r.issuing_authority,
             )
         if hasattr(http, "close"):
             http.close()
@@ -1156,7 +1205,10 @@ def main(argv: list[str] | None = None) -> int:
     ensure_tables(conn)
 
     inserted, dup_db, dup_batch = write_rows(
-        conn, all_rows, now_iso=now_iso, max_insert=args.max_insert,
+        conn,
+        all_rows,
+        now_iso=now_iso,
+        max_insert=args.max_insert,
     )
     try:
         conn.close()
@@ -1170,13 +1222,14 @@ def main(argv: list[str] | None = None) -> int:
     by_authority: dict[str, int] = {}
     for r in all_rows:
         by_law[r.related_law_ref] = by_law.get(r.related_law_ref, 0) + 1
-        by_authority[r.issuing_authority] = (
-            by_authority.get(r.issuing_authority, 0) + 1
-        )
+        by_authority[r.issuing_authority] = by_authority.get(r.issuing_authority, 0) + 1
 
     _LOG.info(
         "done parsed=%d inserted=%d dup_db=%d dup_batch=%d",
-        len(all_rows), inserted, dup_db, dup_batch,
+        len(all_rows),
+        inserted,
+        dup_db,
+        dup_batch,
     )
     print(
         f"MAFF enforcement ingest: parsed={len(all_rows)} "

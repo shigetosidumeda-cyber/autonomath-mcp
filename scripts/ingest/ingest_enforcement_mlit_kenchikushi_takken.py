@@ -85,6 +85,7 @@ CLI:
     python scripts/ingest/ingest_enforcement_mlit_kenchikushi_takken.py \
         --db autonomath.db [--stop-at 500] [--dry-run] [--verbose]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -113,10 +114,7 @@ DEFAULT_DB = REPO_ROOT / "autonomath.db"
 _LOG = logging.getLogger("autonomath.ingest.mlit_kenchikushi_takken")
 
 MLIT_SEARCH_URL = "https://www.mlit.go.jp/nega-inf/cgi-bin/search.cgi"
-USER_AGENT = (
-    "jpintel-mcp-ingest/1.0 "
-    "(+https://jpcite.com; contact=ops@jpcite.com)"
-)
+USER_AGENT = "jpintel-mcp-ingest/1.0 (+https://jpcite.com; contact=ops@jpcite.com)"
 
 PER_REQUEST_DELAY_SEC = 0.7
 HTTP_TIMEOUT_SEC = 30.0
@@ -211,9 +209,7 @@ DEFAULT_ISSUING_AUTHORITY = "国土交通省"
 # Regex
 # ---------------------------------------------------------------------------
 
-RESULT_COUNT_RE = re.compile(
-    r'<h3 class="title">検索結果：\s*(\d+)\s*件</h3>'
-)
+RESULT_COUNT_RE = re.compile(r'<h3 class="title">検索結果：\s*(\d+)\s*件</h3>')
 
 # 4-col row (建築士関連): date / name(+登録番号 in span) / punish / detail
 ROW_RE_4COL = re.compile(
@@ -236,12 +232,8 @@ ROW_RE_6COL = re.compile(
 )
 
 # Detail anchor inside <td class="detail">...
-OVERVIEW_HREF_RE = re.compile(
-    r'<a[^>]+class="overview"[^>]+href="([^"]+)"'
-)
-DETAIL_HREF_RE = re.compile(
-    r'<a[^>]+class="details"[^>]+href="([^"]+)"'
-)
+OVERVIEW_HREF_RE = re.compile(r'<a[^>]+class="overview"[^>]+href="([^"]+)"')
+DETAIL_HREF_RE = re.compile(r'<a[^>]+class="details"[^>]+href="([^"]+)"')
 
 # Detail page dt/dd pair
 DL_RE = re.compile(
@@ -289,7 +281,7 @@ class MlitHttpClient:
                 last_exc = exc
                 if attempt == MAX_RETRIES:
                     break
-                time.sleep(2 ** attempt)
+                time.sleep(2**attempt)
         _LOG.warning("GET failed url=%s err=%s", url, last_exc)
         return 0, ""
 
@@ -304,7 +296,7 @@ class MlitHttpClient:
                 last_exc = exc
                 if attempt == MAX_RETRIES:
                     break
-                time.sleep(2 ** attempt)
+                time.sleep(2**attempt)
         _LOG.warning("POST failed url=%s err=%s", url, last_exc)
         return 0, ""
 
@@ -319,19 +311,19 @@ class MlitHttpClient:
 
 @dataclass
 class EnfRow:
-    category: str               # ikkyuu / takuti / ...
-    kind: str                   # kenchikushi / takken
+    category: str  # ikkyuu / takuti / ...
+    kind: str  # kenchikushi / takken
     target_name: str
-    houjin_bangou: str | None   # 13-digit (only for 法人, takken side)
+    houjin_bangou: str | None  # 13-digit (only for 法人, takken side)
     address: str | None
-    issuance_date: str          # ISO yyyy-mm-dd
+    issuance_date: str  # ISO yyyy-mm-dd
     issuing_authority: str
     punishment_raw: str
-    enforcement_kind: str       # mapped enum
+    enforcement_kind: str  # mapped enum
     related_law_ref: str
-    overview_url: str           # search.cgi?jigyoubunya=...&no=...
+    overview_url: str  # search.cgi?jigyoubunya=...&no=...
     external_detail_url: str | None  # 詳細 anchor (pref site / press release)
-    register_no: str | None     # 建築士登録番号 (for ikkyuu) — span content
+    register_no: str | None  # 建築士登録番号 (for ikkyuu) — span content
     reason_summary: str | None = None  # filled from detail page if fetched
     period_raw: str | None = None
     detail_law_ref: str | None = None  # 根拠法令 from detail page
@@ -415,15 +407,17 @@ def parse_list_page(html: str, *, cols: int) -> tuple[int | None, list[dict[str,
             span = (rm.group(3) or "").strip()
             punish = rm.group(4).strip()
             td_detail = rm.group(5)
-            rows.append({
-                "date_ja": date_ja,
-                "agency_raw": "",
-                "target_name": name,
-                "span": span,
-                "address": "",
-                "punish": punish,
-                "td_detail": td_detail,
-            })
+            rows.append(
+                {
+                    "date_ja": date_ja,
+                    "agency_raw": "",
+                    "target_name": name,
+                    "span": span,
+                    "address": "",
+                    "punish": punish,
+                    "td_detail": td_detail,
+                }
+            )
     elif cols == 6:
         for rm in ROW_RE_6COL.finditer(html):
             date_ja = rm.group(1).strip()
@@ -433,15 +427,17 @@ def parse_list_page(html: str, *, cols: int) -> tuple[int | None, list[dict[str,
             address = rm.group(5).strip()
             punish = rm.group(6).strip()
             td_detail = rm.group(7)
-            rows.append({
-                "date_ja": date_ja,
-                "agency_raw": agency,
-                "target_name": name,
-                "span": span,
-                "address": address,
-                "punish": punish,
-                "td_detail": td_detail,
-            })
+            rows.append(
+                {
+                    "date_ja": date_ja,
+                    "agency_raw": agency,
+                    "target_name": name,
+                    "span": span,
+                    "address": address,
+                    "punish": punish,
+                    "td_detail": td_detail,
+                }
+            )
     return total, rows
 
 
@@ -537,9 +533,7 @@ def enrich_detail(http: MlitHttpClient, row: EnfRow) -> None:
     row.reason_summary = " / ".join(parts)[:1500]
     if row.detail_law_ref and row.detail_law_ref not in row.related_law_ref:
         # detail-page 根拠法令 is more precise — append as suffix.
-        row.related_law_ref = (
-            f"{row.related_law_ref} ({row.detail_law_ref})"
-        )[:200]
+        row.related_law_ref = (f"{row.related_law_ref} ({row.detail_law_ref})")[:200]
 
 
 def walk_year(
@@ -590,8 +584,7 @@ def walk_year(
         url = MLIT_SEARCH_URL + "?" + urllib.parse.urlencode(qs)
         status, html = http.get(url)
         if status != 200:
-            _LOG.warning("cat=%s year=%d page=%d GET status=%s",
-                         category, year, page, status)
+            _LOG.warning("cat=%s year=%d page=%d GET status=%s", category, year, page, status)
             break
         _, prows = parse_list_page(html, cols=cols)
         for r in prows:
@@ -613,8 +606,7 @@ def open_db(path: Path) -> sqlite3.Connection:
     conn.execute("PRAGMA busy_timeout = 300000")
     conn.execute("PRAGMA foreign_keys = ON")
     row = conn.execute(
-        "SELECT name FROM sqlite_master "
-        "WHERE type='table' AND name='am_enforcement_detail'"
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='am_enforcement_detail'"
     ).fetchone()
     if not row:
         conn.close()
@@ -645,10 +637,7 @@ def make_canonical_id(row: EnfRow) -> str:
     else:
         key = hashlib.sha1(row.target_name.encode("utf-8")).hexdigest()[:12]
     punish_hash = hashlib.sha1(row.punishment_raw.encode("utf-8")).hexdigest()[:6]
-    return (
-        f"enforcement:mlit:{row.issuance_date}:{key}:"
-        f"{row.enforcement_kind}:{punish_hash}"
-    )
+    return f"enforcement:mlit:{row.issuance_date}:{key}:{row.enforcement_kind}:{punish_hash}"
 
 
 def upsert(
@@ -722,10 +711,11 @@ def upsert(
             row.enforcement_kind,
             row.issuing_authority,
             row.issuance_date,
-            (row.reason_summary or
-             f"{CATEGORIES[row.category]['law']}に基づく{row.punishment_raw}"
-             f"（{CATEGORIES[row.category]['label']}）"
-             )[:4000],
+            (
+                row.reason_summary
+                or f"{CATEGORIES[row.category]['law']}に基づく{row.punishment_raw}"
+                f"（{CATEGORIES[row.category]['label']}）"
+            )[:4000],
             row.related_law_ref[:1000],
             src_url,
             fetched_at,
@@ -742,12 +732,12 @@ def upsert(
 # Default walk order: prioritize categories with known volume so we hit
 # the +500 stop quickly and have time left for enrichment of remaining rows.
 DEFAULT_CATEGORY_ORDER = (
-    "takuti",        # 246+ rows over 5y
-    "ikkyuu",        # 125+
+    "takuti",  # 246+ rows over 5y
+    "ikkyuu",  # 125+
     "kentikukijun",  # 48
     "siteikakunin",  # 36
-    "mansyon",       # 16
-    "tintai",        # 6
+    "mansyon",  # 16
+    "tintai",  # 6
     "kenchikuchosakensa",
     "siteikouzou",
     "kouzoukeisan",
@@ -766,12 +756,13 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default=",".join(DEFAULT_CATEGORY_ORDER),
         help="comma-separated jigyoubunya codes",
     )
-    ap.add_argument("--stop-at", type=int, default=500,
-                    help="stop after N inserts (default 500)")
-    ap.add_argument("--enrich-detail", action="store_true",
-                    help="also fetch overview detail page (slow)")
-    ap.add_argument("--enrich-cap", type=int, default=120,
-                    help="cap on number of rows to enrich with detail")
+    ap.add_argument("--stop-at", type=int, default=500, help="stop after N inserts (default 500)")
+    ap.add_argument(
+        "--enrich-detail", action="store_true", help="also fetch overview detail page (slow)"
+    )
+    ap.add_argument(
+        "--enrich-cap", type=int, default=120, help="cap on number of rows to enrich with detail"
+    )
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--verbose", "-v", action="store_true")
     return ap.parse_args(argv)
@@ -787,13 +778,10 @@ def main(argv: list[str] | None = None) -> int:
     cats = [c.strip() for c in args.categories.split(",") if c.strip()]
     unknown = [c for c in cats if c not in CATEGORIES]
     if unknown:
-        _LOG.error("unknown categories: %s (allowed=%s)",
-                   unknown, list(CATEGORIES))
+        _LOG.error("unknown categories: %s (allowed=%s)", unknown, list(CATEGORIES))
         return 2
 
-    fetched_at = dt.datetime.now(dt.UTC).isoformat(timespec="seconds").replace(
-        "+00:00", "Z"
-    )
+    fetched_at = dt.datetime.now(dt.UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
     http = MlitHttpClient()
     conn: sqlite3.Connection | None = None
     if not args.dry_run:
@@ -822,15 +810,17 @@ def main(argv: list[str] | None = None) -> int:
                 walked += len(rows)
                 _LOG.info(
                     "walk cat=%s year=%d -> %d rows (running insert=%d)",
-                    cat, year, len(rows), inserted,
+                    cat,
+                    year,
+                    len(rows),
+                    inserted,
                 )
                 if not rows:
                     continue
                 for row in rows:
                     if inserted >= args.stop_at:
                         break
-                    key = (row.target_name, row.issuance_date,
-                           row.enforcement_kind)
+                    key = (row.target_name, row.issuance_date, row.enforcement_kind)
                     if key in dedup:
                         skipped_db += 1
                         continue
@@ -845,7 +835,9 @@ def main(argv: list[str] | None = None) -> int:
                             detail_count += 1
                         except Exception as exc:  # noqa: BLE001
                             _LOG.debug(
-                                "enrich fail %s: %s", row.overview_url, exc,
+                                "enrich fail %s: %s",
+                                row.overview_url,
+                                exc,
                             )
 
                     if conn is None:
@@ -858,7 +850,9 @@ def main(argv: list[str] | None = None) -> int:
                         except sqlite3.Error as exc:
                             _LOG.error(
                                 "DB upsert fail name=%r date=%s: %s",
-                                row.target_name, row.issuance_date, exc,
+                                row.target_name,
+                                row.issuance_date,
+                                exc,
                             )
                             continue
                         if verdict in ("insert", "update"):

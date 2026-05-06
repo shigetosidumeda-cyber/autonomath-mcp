@@ -23,6 +23,7 @@ CLI:
     .venv/bin/python scripts/ingest/ingest_sii_programs.py --dry-run
     .venv/bin/python scripts/ingest/ingest_sii_programs.py --max 60
 """
+
 from __future__ import annotations
 
 import argparse
@@ -57,9 +58,7 @@ HTTP_TIMEOUT = 30
 MAX_RETRIES = 3
 
 ATTRIBUTION = "出典: SII (一般社団法人 環境共創イニシアチブ)"
-LICENSE_NOTE = (
-    "SII /opendata/notice.html: 出典記載 + 第三者権利非侵害 で複製・翻案・再配布可"
-)
+LICENSE_NOTE = "SII /opendata/notice.html: 出典記載 + 第三者権利非侵害 で複製・翻案・再配布可"
 
 ACTIVE_INDEX = "https://sii.or.jp/information/division.html"
 CLOSED_INDEX = "https://sii.or.jp/information/close_division.html"
@@ -69,16 +68,26 @@ ISSUER_NAME = "一般社団法人 環境共創イニシアチブ (SII)"
 AUTHORITY_LEVEL = "national"
 
 # Tier defaults — see CLAUDE.md / ext upsert semantics.
-TIER_ACTIVE = "S"   # 現行公募中 (R7補正 / R8 / 都ゼロエミ)
-TIER_RECENT = "A"   # 直近 (R7/R8 で執行終了 or close 移行直後)
-TIER_BACK = "B"     # 過去 5 年 (R3〜R6)
-TIER_OLD = "C"      # 5 年超前 (H30 以前)
+TIER_ACTIVE = "S"  # 現行公募中 (R7補正 / R8 / 都ゼロエミ)
+TIER_RECENT = "A"  # 直近 (R7/R8 で執行終了 or close 移行直後)
+TIER_BACK = "B"  # 過去 5 年 (R3〜R6)
+TIER_OLD = "C"  # 5 年超前 (H30 以前)
 
 # Skip non-program slugs that appear in the index header/footer.
 NAV_SLUGS = {
-    "kobo", "sitemap", "newsrelease", "opendata", "information",
-    "company", "logo", "privacy", "anonymous_processing",
-    "customer_harassment_policy", "policy", "kobo", "blog",
+    "kobo",
+    "sitemap",
+    "newsrelease",
+    "opendata",
+    "information",
+    "company",
+    "logo",
+    "privacy",
+    "anonymous_processing",
+    "customer_harassment_policy",
+    "policy",
+    "kobo",
+    "blog",
 }
 
 
@@ -103,7 +112,7 @@ def fetch(client: httpx.Client, url: str, host_clock: dict[str, float]) -> bytes
             _LOG.warning("fetch_err url=%s attempt=%d err=%s", url, attempt, exc)
             if attempt == MAX_RETRIES:
                 return None
-            time.sleep(2 ** attempt)
+            time.sleep(2**attempt)
             continue
 
         if r.status_code == 200:
@@ -114,9 +123,9 @@ def fetch(client: httpx.Client, url: str, host_clock: dict[str, float]) -> bytes
         if r.status_code in (429, 503) and attempt < MAX_RETRIES:
             ra = r.headers.get("retry-after")
             try:
-                wait = float(ra) if ra else 2 ** attempt
+                wait = float(ra) if ra else 2**attempt
             except ValueError:
-                wait = 2 ** attempt
+                wait = 2**attempt
             _LOG.info("backoff url=%s status=%d wait=%.1fs", url, r.status_code, wait)
             time.sleep(wait)
             continue
@@ -142,6 +151,7 @@ def collect_slug_links(html: bytes, *, base: str = "https://sii.or.jp") -> list[
                 continue
             # extract path
             from urllib.parse import urlparse as _up
+
             href = _up(href).path
         m = pat.match(href)
         if not m:
@@ -186,9 +196,7 @@ def classify_tier(slug_text: str, slug_url: str, *, is_active: bool) -> str:
     return TIER_BACK
 
 
-def parse_slug_page(
-    html: bytes, *, slug_url: str, fallback_name: str
-) -> dict[str, Any]:
+def parse_slug_page(html: bytes, *, slug_url: str, fallback_name: str) -> dict[str, Any]:
     """Parse a SII slug page and extract canonical fields."""
     soup = BeautifulSoup(html, "html.parser")
     name = fallback_name
@@ -199,7 +207,7 @@ def parse_slug_page(
         # so match from after 事業トップ（ to the FINAL closing ） (balanced strip).
         idx = ttl.find("事業トップ（")
         if idx >= 0:
-            inner = ttl[idx + len("事業トップ（"):]
+            inner = ttl[idx + len("事業トップ（") :]
             if inner.endswith("）"):
                 inner = inner[:-1]
             cand = inner.strip()
@@ -226,9 +234,7 @@ def compute_unified_id(source_url: str) -> str:
 
 def already_present(conn: sqlite3.Connection, uid: str) -> tuple[bool, bool]:
     """(exists, excluded)."""
-    row = conn.execute(
-        "SELECT excluded FROM programs WHERE unified_id = ?", (uid,)
-    ).fetchone()
+    row = conn.execute("SELECT excluded FROM programs WHERE unified_id = ?", (uid,)).fetchone()
     if row is None:
         return False, False
     return True, bool(row[0])
@@ -273,17 +279,36 @@ def upsert_program(
                 updated_at
             ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
             (
-                uid, name, None,
-                AUTHORITY_LEVEL, ISSUER_NAME, None, None,
-                "subsidy", source_url,
-                None, None, None,
-                None, tier, None, None, None,
-                0, None,
-                None, None,
-                None, None,
-                None, None,
-                enriched_json, source_mentions,
-                source_url, now_iso, None,
+                uid,
+                name,
+                None,
+                AUTHORITY_LEVEL,
+                ISSUER_NAME,
+                None,
+                None,
+                "subsidy",
+                source_url,
+                None,
+                None,
+                None,
+                None,
+                tier,
+                None,
+                None,
+                None,
+                0,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                enriched_json,
+                source_mentions,
+                source_url,
+                now_iso,
+                None,
                 now_iso,
             ),
         )
@@ -397,7 +422,10 @@ def main(argv: list[str] | None = None) -> int:
             if args.dry_run:
                 _LOG.info(
                     "dry-run: tier=%s uid=%s name=%s url=%s",
-                    tier, uid, meta["primary_name"][:60], slug_url,
+                    tier,
+                    uid,
+                    meta["primary_name"][:60],
+                    slug_url,
                 )
                 continue
 
@@ -434,7 +462,11 @@ def main(argv: list[str] | None = None) -> int:
 
     _LOG.info(
         "done inserted=%d updated=%d skipped=%d errors=%d (candidates=%d)",
-        inserted, updated, skipped, errors, len(candidates),
+        inserted,
+        updated,
+        skipped,
+        errors,
+        len(candidates),
     )
     print(
         f"sii_ingest inserted={inserted} updated={updated} skipped={skipped} "

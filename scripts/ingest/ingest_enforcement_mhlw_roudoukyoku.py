@@ -46,6 +46,7 @@ CLI:
         [--db autonomath.db] [--limit-prefs N] [--dry-run] \
         [--no-national] [--no-fallback]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -88,22 +89,53 @@ NATIONAL_PDF_URL = "https://www.mhlw.go.jp/content/001684100.pdf"
 
 # Prefecture jp-label → slug mapping (for canonical_id construction)
 LABEL_TO_SLUG: dict[str, str] = {
-    "北海道労働局": "hokkaido", "青森労働局": "aomori", "岩手労働局": "iwate",
-    "宮城労働局": "miyagi", "秋田労働局": "akita", "山形労働局": "yamagata",
-    "福島労働局": "fukushima", "茨城労働局": "ibaraki", "栃木労働局": "tochigi",
-    "群馬労働局": "gunma", "埼玉労働局": "saitama", "千葉労働局": "chiba",
-    "東京労働局": "tokyo", "神奈川労働局": "kanagawa", "新潟労働局": "niigata",
-    "富山労働局": "toyama", "石川労働局": "ishikawa", "福井労働局": "fukui",
-    "山梨労働局": "yamanashi", "長野労働局": "nagano", "岐阜労働局": "gifu",
-    "静岡労働局": "shizuoka", "愛知労働局": "aichi", "三重労働局": "mie",
-    "滋賀労働局": "shiga", "京都労働局": "kyoto", "大阪労働局": "osaka",
-    "兵庫労働局": "hyogo", "奈良労働局": "nara", "和歌山労働局": "wakayama",
-    "鳥取労働局": "tottori", "島根労働局": "shimane", "岡山労働局": "okayama",
-    "広島労働局": "hiroshima", "山口労働局": "yamaguchi", "徳島労働局": "tokushima",
-    "香川労働局": "kagawa", "愛媛労働局": "ehime", "高知労働局": "kochi",
-    "福岡労働局": "fukuoka", "佐賀労働局": "saga", "長崎労働局": "nagasaki",
-    "熊本労働局": "kumamoto", "大分労働局": "oita", "宮崎労働局": "miyazaki",
-    "鹿児島労働局": "kagoshima", "沖縄労働局": "okinawa",
+    "北海道労働局": "hokkaido",
+    "青森労働局": "aomori",
+    "岩手労働局": "iwate",
+    "宮城労働局": "miyagi",
+    "秋田労働局": "akita",
+    "山形労働局": "yamagata",
+    "福島労働局": "fukushima",
+    "茨城労働局": "ibaraki",
+    "栃木労働局": "tochigi",
+    "群馬労働局": "gunma",
+    "埼玉労働局": "saitama",
+    "千葉労働局": "chiba",
+    "東京労働局": "tokyo",
+    "神奈川労働局": "kanagawa",
+    "新潟労働局": "niigata",
+    "富山労働局": "toyama",
+    "石川労働局": "ishikawa",
+    "福井労働局": "fukui",
+    "山梨労働局": "yamanashi",
+    "長野労働局": "nagano",
+    "岐阜労働局": "gifu",
+    "静岡労働局": "shizuoka",
+    "愛知労働局": "aichi",
+    "三重労働局": "mie",
+    "滋賀労働局": "shiga",
+    "京都労働局": "kyoto",
+    "大阪労働局": "osaka",
+    "兵庫労働局": "hyogo",
+    "奈良労働局": "nara",
+    "和歌山労働局": "wakayama",
+    "鳥取労働局": "tottori",
+    "島根労働局": "shimane",
+    "岡山労働局": "okayama",
+    "広島労働局": "hiroshima",
+    "山口労働局": "yamaguchi",
+    "徳島労働局": "tokushima",
+    "香川労働局": "kagawa",
+    "愛媛労働局": "ehime",
+    "高知労働局": "kochi",
+    "福岡労働局": "fukuoka",
+    "佐賀労働局": "saga",
+    "長崎労働局": "nagasaki",
+    "熊本労働局": "kumamoto",
+    "大分労働局": "oita",
+    "宮崎労働局": "miyazaki",
+    "鹿児島労働局": "kagoshima",
+    "沖縄労働局": "okinawa",
 }
 
 # ---------------------------------------------------------------------------
@@ -115,135 +147,264 @@ LABEL_TO_SLUG: dict[str, str] = {
 PREFECTURES: list[dict[str, str]] = [
     # 既存 ≥50 row → 'skip' フラグ
     # (Hokkaido は 0 row なので新規収集対象)
-    {"slug": "hokkaido", "label": "北海道労働局",
-     "url": "https://jsite.mhlw.go.jp/hokkaido-roudoukyoku/jirei_toukei/Announcement.html",
-     "kind": "html"},
-    {"slug": "aomori", "label": "青森労働局",
-     "url": "https://jsite.mhlw.go.jp/aomori-roudoukyoku/newpage_00205.html",
-     "kind": "html"},
-    {"slug": "iwate", "label": "岩手労働局",
-     "url": "https://jsite.mhlw.go.jp/iwate-roudoukyoku/roudoukyoku/gyoumu_naiyou/kijunbu/kantoku/kantokukaosirase_00001.html",
-     "kind": "html"},
-    {"slug": "akita", "label": "秋田労働局",
-     "url": "https://jsite.mhlw.go.jp/akita-roudoukyoku/jirei_toukei/_120559.html",
-     "kind": "html"},
-    {"slug": "yamagata", "label": "山形労働局",
-     "url": "https://jsite.mhlw.go.jp/yamagata-roudoukyoku/content/contents/002615121.pdf",
-     "kind": "pdf"},
-    {"slug": "fukushima", "label": "福島労働局",
-     "url": "https://jsite.mhlw.go.jp/fukushima-roudoukyoku/jirei_toukei/souken_jirei.html",
-     "kind": "html"},
-    {"slug": "tochigi", "label": "栃木労働局",
-     "url": "https://jsite.mhlw.go.jp/tochigi-roudoukyoku/content/contents/002623424.pdf",
-     "kind": "pdf"},
-    {"slug": "gunma", "label": "群馬労働局",
-     "url": "https://jsite.mhlw.go.jp/gunma-roudoukyoku/jirei_toukei/20170508-1.html",
-     "kind": "html"},
-    {"slug": "kanagawa", "label": "神奈川労働局",
-     "url": "https://jsite.mhlw.go.jp/kanagawa-roudoukyoku/content/contents/000841861.pdf",
-     "kind": "pdf"},
-    {"slug": "niigata", "label": "新潟労働局",
-     "url": "https://jsite.mhlw.go.jp/niigata-roudoukyoku/jirei_toukei.html",
-     "kind": "html"},
-    {"slug": "toyama", "label": "富山労働局",
-     "url": "https://jsite.mhlw.go.jp/toyama-roudoukyoku/jirei_toukei/souken_jirei.html",
-     "kind": "html"},
-    {"slug": "ishikawa", "label": "石川労働局",
-     "url": "https://jsite.mhlw.go.jp/ishikawa-roudoukyoku/jirei_toukei/souken_jirei.html",
-     "kind": "html"},
-    {"slug": "fukui", "label": "福井労働局",
-     "url": "https://jsite.mhlw.go.jp/fukui-roudoukyoku/jirei_toukei/_120789.html",
-     "kind": "html"},
-    {"slug": "yamanashi", "label": "山梨労働局",
-     "url": "https://jsite.mhlw.go.jp/yamanashi-roudoukyoku/jirei_toukei/souken_jirei.html",
-     "kind": "html"},
-    {"slug": "nagano", "label": "長野労働局",
-     "url": "https://jsite.mhlw.go.jp/nagano-roudoukyoku/jirei_toukei/roudoukijun-houreiihan_kouhyoujian.html",
-     "kind": "html"},
-    {"slug": "shizuoka", "label": "静岡労働局",
-     "url": "https://jsite.mhlw.go.jp/shizuoka-roudoukyoku/jirei_toukei/20120703.html",
-     "kind": "html"},
-    {"slug": "aichi", "label": "愛知労働局",
-     "url": "https://jsite.mhlw.go.jp/aichi-roudoukyoku/jirei_toukei.html",
-     "kind": "html"},
-    {"slug": "mie", "label": "三重労働局",
-     "url": "https://jsite.mhlw.go.jp/mie-roudoukyoku/jirei_toukei/mie_kouhyou.html",
-     "kind": "html"},
-    {"slug": "shiga", "label": "滋賀労働局",
-     "url": "https://jsite.mhlw.go.jp/shiga-roudoukyoku/jirei_toukei/souken_jirei.html",
-     "kind": "html"},
-    {"slug": "kyoto", "label": "京都労働局",
-     "url": "https://jsite.mhlw.go.jp/kyoto-roudoukyoku/jirei_toukei/souken_jirei.html",
-     "kind": "html"},
-    {"slug": "hyogo", "label": "兵庫労働局",
-     "url": "https://jsite.mhlw.go.jp/hyogo-roudoukyoku/jirei_toukei/_122042.html",
-     "kind": "html"},
-    {"slug": "nara", "label": "奈良労働局",
-     "url": "https://jsite.mhlw.go.jp/nara-roudoukyoku/jirei_toukei.html",
-     "kind": "html"},
-    {"slug": "wakayama", "label": "和歌山労働局",
-     "url": "https://jsite.mhlw.go.jp/wakayama-roudoukyoku/jirei_toukei/souken_jirei.html",
-     "kind": "html"},
-    {"slug": "tottori", "label": "鳥取労働局",
-     "url": "https://jsite.mhlw.go.jp/tottori-roudoukyoku/jirei_toukei.html",
-     "kind": "html"},
-    {"slug": "shimane", "label": "島根労働局",
-     "url": "https://jsite.mhlw.go.jp/shimane-roudoukyoku/jirei_toukei.html",
-     "kind": "html"},
-    {"slug": "okayama", "label": "岡山労働局",
-     "url": "https://jsite.mhlw.go.jp/okayama-roudoukyoku/content/contents/002411234.pdf",
-     "kind": "pdf"},
-    {"slug": "hiroshima", "label": "広島労働局",
-     "url": "https://jsite.mhlw.go.jp/hiroshima-roudoukyoku/jirei_toukei/newpage_00001.html",
-     "kind": "html"},
-    {"slug": "yamaguchi", "label": "山口労働局",
-     "url": "https://jsite.mhlw.go.jp/yamaguchi-roudoukyoku/jirei_toukei/_121193.html",
-     "kind": "html"},
-    {"slug": "tokushima", "label": "徳島労働局",
-     "url": "https://jsite.mhlw.go.jp/tokushima-roudoukyoku/jirei_toukei/souken_jirei.html",
-     "kind": "html"},
-    {"slug": "kagawa", "label": "香川労働局",
-     "url": "https://jsite.mhlw.go.jp/kagawa-roudoukyoku/jirei_toukei_00007.html",
-     "kind": "html"},
-    {"slug": "ehime", "label": "愛媛労働局",
-     "url": "https://jsite.mhlw.go.jp/ehime-roudoukyoku/jirei_toukei/290510_001.html",
-     "kind": "html"},
-    {"slug": "kochi", "label": "高知労働局",
-     "url": "https://jsite.mhlw.go.jp/kochi-roudoukyoku/newpage_00211.html",
-     "kind": "html"},
-    {"slug": "saga", "label": "佐賀労働局",
-     "url": "https://jsite.mhlw.go.jp/saga-roudoukyoku/newpage_00138.html",
-     "kind": "html"},
-    {"slug": "nagasaki", "label": "長崎労働局",
-     "url": "https://jsite.mhlw.go.jp/nagasaki-roudoukyoku/jirei_toukei/souken_jirei.html",
-     "kind": "html"},
-    {"slug": "kumamoto", "label": "熊本労働局",
-     "url": "https://jsite.mhlw.go.jp/kumamoto-roudoukyoku/jirei_toukei/_120857.html",
-     "kind": "html"},
-    {"slug": "oita", "label": "大分労働局",
-     "url": "https://jsite.mhlw.go.jp/oita-roudoukyoku/jirei_toukei/kouhyoujian.html",
-     "kind": "html"},
-    {"slug": "miyazaki", "label": "宮崎労働局",
-     "url": "https://jsite.mhlw.go.jp/miyazaki-roudoukyoku/jirei_toukei/souken_jirei.html",
-     "kind": "html"},
-    {"slug": "kagoshima", "label": "鹿児島労働局",
-     "url": "https://jsite.mhlw.go.jp/kagoshima-roudoukyoku/jirei_toukei.html",
-     "kind": "html"},
-    {"slug": "miyagi", "label": "宮城労働局",
-     "url": "https://jsite.mhlw.go.jp/miyagi-roudoukyoku/jirei_toukei.html",
-     "kind": "html"},
-    {"slug": "gifu", "label": "岐阜労働局",
-     "url": "https://jsite.mhlw.go.jp/gifu-roudoukyoku/riyousha_mokuteki_menu/mokuteki_naiyou/jirei_toukei.html",
-     "kind": "html"},
-    {"slug": "ibaraki", "label": "茨城労働局",
-     "url": "https://jsite.mhlw.go.jp/ibaraki-roudoukyoku/content/contents/002618154.pdf",
-     "kind": "pdf"},
-    {"slug": "saitama", "label": "埼玉労働局",
-     "url": "https://jsite.mhlw.go.jp/saitama-roudoukyoku/content/contents/002597705.pdf",
-     "kind": "pdf"},
-    {"slug": "shimane", "label": "島根労働局",
-     "url": "https://jsite.mhlw.go.jp/shimane-roudoukyoku/content/contents/002615222.pdf",
-     "kind": "pdf"},
+    {
+        "slug": "hokkaido",
+        "label": "北海道労働局",
+        "url": "https://jsite.mhlw.go.jp/hokkaido-roudoukyoku/jirei_toukei/Announcement.html",
+        "kind": "html",
+    },
+    {
+        "slug": "aomori",
+        "label": "青森労働局",
+        "url": "https://jsite.mhlw.go.jp/aomori-roudoukyoku/newpage_00205.html",
+        "kind": "html",
+    },
+    {
+        "slug": "iwate",
+        "label": "岩手労働局",
+        "url": "https://jsite.mhlw.go.jp/iwate-roudoukyoku/roudoukyoku/gyoumu_naiyou/kijunbu/kantoku/kantokukaosirase_00001.html",
+        "kind": "html",
+    },
+    {
+        "slug": "akita",
+        "label": "秋田労働局",
+        "url": "https://jsite.mhlw.go.jp/akita-roudoukyoku/jirei_toukei/_120559.html",
+        "kind": "html",
+    },
+    {
+        "slug": "yamagata",
+        "label": "山形労働局",
+        "url": "https://jsite.mhlw.go.jp/yamagata-roudoukyoku/content/contents/002615121.pdf",
+        "kind": "pdf",
+    },
+    {
+        "slug": "fukushima",
+        "label": "福島労働局",
+        "url": "https://jsite.mhlw.go.jp/fukushima-roudoukyoku/jirei_toukei/souken_jirei.html",
+        "kind": "html",
+    },
+    {
+        "slug": "tochigi",
+        "label": "栃木労働局",
+        "url": "https://jsite.mhlw.go.jp/tochigi-roudoukyoku/content/contents/002623424.pdf",
+        "kind": "pdf",
+    },
+    {
+        "slug": "gunma",
+        "label": "群馬労働局",
+        "url": "https://jsite.mhlw.go.jp/gunma-roudoukyoku/jirei_toukei/20170508-1.html",
+        "kind": "html",
+    },
+    {
+        "slug": "kanagawa",
+        "label": "神奈川労働局",
+        "url": "https://jsite.mhlw.go.jp/kanagawa-roudoukyoku/content/contents/000841861.pdf",
+        "kind": "pdf",
+    },
+    {
+        "slug": "niigata",
+        "label": "新潟労働局",
+        "url": "https://jsite.mhlw.go.jp/niigata-roudoukyoku/jirei_toukei.html",
+        "kind": "html",
+    },
+    {
+        "slug": "toyama",
+        "label": "富山労働局",
+        "url": "https://jsite.mhlw.go.jp/toyama-roudoukyoku/jirei_toukei/souken_jirei.html",
+        "kind": "html",
+    },
+    {
+        "slug": "ishikawa",
+        "label": "石川労働局",
+        "url": "https://jsite.mhlw.go.jp/ishikawa-roudoukyoku/jirei_toukei/souken_jirei.html",
+        "kind": "html",
+    },
+    {
+        "slug": "fukui",
+        "label": "福井労働局",
+        "url": "https://jsite.mhlw.go.jp/fukui-roudoukyoku/jirei_toukei/_120789.html",
+        "kind": "html",
+    },
+    {
+        "slug": "yamanashi",
+        "label": "山梨労働局",
+        "url": "https://jsite.mhlw.go.jp/yamanashi-roudoukyoku/jirei_toukei/souken_jirei.html",
+        "kind": "html",
+    },
+    {
+        "slug": "nagano",
+        "label": "長野労働局",
+        "url": "https://jsite.mhlw.go.jp/nagano-roudoukyoku/jirei_toukei/roudoukijun-houreiihan_kouhyoujian.html",
+        "kind": "html",
+    },
+    {
+        "slug": "shizuoka",
+        "label": "静岡労働局",
+        "url": "https://jsite.mhlw.go.jp/shizuoka-roudoukyoku/jirei_toukei/20120703.html",
+        "kind": "html",
+    },
+    {
+        "slug": "aichi",
+        "label": "愛知労働局",
+        "url": "https://jsite.mhlw.go.jp/aichi-roudoukyoku/jirei_toukei.html",
+        "kind": "html",
+    },
+    {
+        "slug": "mie",
+        "label": "三重労働局",
+        "url": "https://jsite.mhlw.go.jp/mie-roudoukyoku/jirei_toukei/mie_kouhyou.html",
+        "kind": "html",
+    },
+    {
+        "slug": "shiga",
+        "label": "滋賀労働局",
+        "url": "https://jsite.mhlw.go.jp/shiga-roudoukyoku/jirei_toukei/souken_jirei.html",
+        "kind": "html",
+    },
+    {
+        "slug": "kyoto",
+        "label": "京都労働局",
+        "url": "https://jsite.mhlw.go.jp/kyoto-roudoukyoku/jirei_toukei/souken_jirei.html",
+        "kind": "html",
+    },
+    {
+        "slug": "hyogo",
+        "label": "兵庫労働局",
+        "url": "https://jsite.mhlw.go.jp/hyogo-roudoukyoku/jirei_toukei/_122042.html",
+        "kind": "html",
+    },
+    {
+        "slug": "nara",
+        "label": "奈良労働局",
+        "url": "https://jsite.mhlw.go.jp/nara-roudoukyoku/jirei_toukei.html",
+        "kind": "html",
+    },
+    {
+        "slug": "wakayama",
+        "label": "和歌山労働局",
+        "url": "https://jsite.mhlw.go.jp/wakayama-roudoukyoku/jirei_toukei/souken_jirei.html",
+        "kind": "html",
+    },
+    {
+        "slug": "tottori",
+        "label": "鳥取労働局",
+        "url": "https://jsite.mhlw.go.jp/tottori-roudoukyoku/jirei_toukei.html",
+        "kind": "html",
+    },
+    {
+        "slug": "shimane",
+        "label": "島根労働局",
+        "url": "https://jsite.mhlw.go.jp/shimane-roudoukyoku/jirei_toukei.html",
+        "kind": "html",
+    },
+    {
+        "slug": "okayama",
+        "label": "岡山労働局",
+        "url": "https://jsite.mhlw.go.jp/okayama-roudoukyoku/content/contents/002411234.pdf",
+        "kind": "pdf",
+    },
+    {
+        "slug": "hiroshima",
+        "label": "広島労働局",
+        "url": "https://jsite.mhlw.go.jp/hiroshima-roudoukyoku/jirei_toukei/newpage_00001.html",
+        "kind": "html",
+    },
+    {
+        "slug": "yamaguchi",
+        "label": "山口労働局",
+        "url": "https://jsite.mhlw.go.jp/yamaguchi-roudoukyoku/jirei_toukei/_121193.html",
+        "kind": "html",
+    },
+    {
+        "slug": "tokushima",
+        "label": "徳島労働局",
+        "url": "https://jsite.mhlw.go.jp/tokushima-roudoukyoku/jirei_toukei/souken_jirei.html",
+        "kind": "html",
+    },
+    {
+        "slug": "kagawa",
+        "label": "香川労働局",
+        "url": "https://jsite.mhlw.go.jp/kagawa-roudoukyoku/jirei_toukei_00007.html",
+        "kind": "html",
+    },
+    {
+        "slug": "ehime",
+        "label": "愛媛労働局",
+        "url": "https://jsite.mhlw.go.jp/ehime-roudoukyoku/jirei_toukei/290510_001.html",
+        "kind": "html",
+    },
+    {
+        "slug": "kochi",
+        "label": "高知労働局",
+        "url": "https://jsite.mhlw.go.jp/kochi-roudoukyoku/newpage_00211.html",
+        "kind": "html",
+    },
+    {
+        "slug": "saga",
+        "label": "佐賀労働局",
+        "url": "https://jsite.mhlw.go.jp/saga-roudoukyoku/newpage_00138.html",
+        "kind": "html",
+    },
+    {
+        "slug": "nagasaki",
+        "label": "長崎労働局",
+        "url": "https://jsite.mhlw.go.jp/nagasaki-roudoukyoku/jirei_toukei/souken_jirei.html",
+        "kind": "html",
+    },
+    {
+        "slug": "kumamoto",
+        "label": "熊本労働局",
+        "url": "https://jsite.mhlw.go.jp/kumamoto-roudoukyoku/jirei_toukei/_120857.html",
+        "kind": "html",
+    },
+    {
+        "slug": "oita",
+        "label": "大分労働局",
+        "url": "https://jsite.mhlw.go.jp/oita-roudoukyoku/jirei_toukei/kouhyoujian.html",
+        "kind": "html",
+    },
+    {
+        "slug": "miyazaki",
+        "label": "宮崎労働局",
+        "url": "https://jsite.mhlw.go.jp/miyazaki-roudoukyoku/jirei_toukei/souken_jirei.html",
+        "kind": "html",
+    },
+    {
+        "slug": "kagoshima",
+        "label": "鹿児島労働局",
+        "url": "https://jsite.mhlw.go.jp/kagoshima-roudoukyoku/jirei_toukei.html",
+        "kind": "html",
+    },
+    {
+        "slug": "miyagi",
+        "label": "宮城労働局",
+        "url": "https://jsite.mhlw.go.jp/miyagi-roudoukyoku/jirei_toukei.html",
+        "kind": "html",
+    },
+    {
+        "slug": "gifu",
+        "label": "岐阜労働局",
+        "url": "https://jsite.mhlw.go.jp/gifu-roudoukyoku/riyousha_mokuteki_menu/mokuteki_naiyou/jirei_toukei.html",
+        "kind": "html",
+    },
+    {
+        "slug": "ibaraki",
+        "label": "茨城労働局",
+        "url": "https://jsite.mhlw.go.jp/ibaraki-roudoukyoku/content/contents/002618154.pdf",
+        "kind": "pdf",
+    },
+    {
+        "slug": "saitama",
+        "label": "埼玉労働局",
+        "url": "https://jsite.mhlw.go.jp/saitama-roudoukyoku/content/contents/002597705.pdf",
+        "kind": "pdf",
+    },
+    {
+        "slug": "shimane",
+        "label": "島根労働局",
+        "url": "https://jsite.mhlw.go.jp/shimane-roudoukyoku/content/contents/002615222.pdf",
+        "kind": "pdf",
+    },
     # 既に subsidy_exclude row 多数あり (大阪 207 / 千葉 100 / 東京 88 / 福岡 78
     # / 茨城 1 / 沖縄 1 / 埼玉 1)。
     # 国 PDF の方が違反公表事案 (送検) を扱うので衝突しないが、authority が
@@ -258,7 +419,9 @@ ISSUING_AUTHORITY_FMT = "厚生労働省 {label}"
 # Date parsing
 # ---------------------------------------------------------------------------
 
-WAREKI_RE = re.compile(r"(令和|平成|R|H)\s*(\d+|元)\s*[年.\-．／]\s*(\d{1,2})\s*[月.\-．／]\s*(\d{1,2})\s*日?")
+WAREKI_RE = re.compile(
+    r"(令和|平成|R|H)\s*(\d+|元)\s*[年.\-．／]\s*(\d{1,2})\s*[月.\-．／]\s*(\d{1,2})\s*日?"
+)
 SEIREKI_RE = re.compile(r"(20\d{2}|19\d{2})\s*[年.\-／/]\s*(\d{1,2})\s*[月.\-／/]\s*(\d{1,2})")
 ERA_OFFSET = {"令和": 2018, "R": 2018, "平成": 1988, "H": 1988}
 
@@ -404,14 +567,19 @@ def parse_pdf_rows(
                         if not current_label:
                             # Try to infer from name cell as last resort.
                             continue
-                        rows.append((current_label, EnfRow(
-                            target_name=name,
-                            location=location or None,
-                            issuance_date=date_iso,
-                            related_law_ref=law_ref or None,
-                            reason_summary=summary or None,
-                            extras=extras or None,
-                        )))
+                        rows.append(
+                            (
+                                current_label,
+                                EnfRow(
+                                    target_name=name,
+                                    location=location or None,
+                                    issuance_date=date_iso,
+                                    related_law_ref=law_ref or None,
+                                    reason_summary=summary or None,
+                                    extras=extras or None,
+                                ),
+                            )
+                        )
     except Exception as exc:  # noqa: BLE001
         _LOG.warning("PDF parse failed: %s", exc)
     return rows
@@ -452,14 +620,19 @@ def parse_html_table_rows(html: str, fixed_label: str) -> list[tuple[str, EnfRow
             law_ref = cells[law_idx] if law_idx < len(cells) else None
             summary = cells[sum_idx] if sum_idx < len(cells) else None
             extras = cells[ext_idx] if ext_idx < len(cells) else None
-            rows.append((fixed_label, EnfRow(
-                target_name=name,
-                location=location or None,
-                issuance_date=date_iso,
-                related_law_ref=law_ref or None,
-                reason_summary=summary or None,
-                extras=extras or None,
-            )))
+            rows.append(
+                (
+                    fixed_label,
+                    EnfRow(
+                        target_name=name,
+                        location=location or None,
+                        issuance_date=date_iso,
+                        related_law_ref=law_ref or None,
+                        reason_summary=summary or None,
+                        extras=extras or None,
+                    ),
+                )
+            )
     return rows
 
 
@@ -534,8 +707,7 @@ def existing_dedup_keys(conn: sqlite3.Connection, authority: str) -> set[tuple[s
     """Return {(target_name, issuance_date)} already in DB for this authority."""
     out: set[tuple[str, str]] = set()
     for n, d in conn.execute(
-        "SELECT target_name, issuance_date FROM am_enforcement_detail "
-        "WHERE issuing_authority=?",
+        "SELECT target_name, issuance_date FROM am_enforcement_detail WHERE issuing_authority=?",
         (authority,),
     ).fetchall():
         if n and d:
@@ -621,21 +793,31 @@ def insert_enforcement(
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--db", type=Path, default=DEFAULT_DB)
-    ap.add_argument("--limit-prefs", type=int, default=None,
-                    help="cap number of prefectures walked (debugging)")
+    ap.add_argument(
+        "--limit-prefs", type=int, default=None, help="cap number of prefectures walked (debugging)"
+    )
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--verbose", "-v", action="store_true")
-    ap.add_argument("--skip-threshold", type=int, default=50,
-                    help="skip prefecture already with this many rows (default 50)")
-    ap.add_argument("--no-national", action="store_true",
-                    help="skip national PDF, use per-prefecture URLs only")
-    ap.add_argument("--no-fallback", action="store_true",
-                    help="use national PDF only (skip per-prefecture fallback)")
+    ap.add_argument(
+        "--skip-threshold",
+        type=int,
+        default=50,
+        help="skip prefecture already with this many rows (default 50)",
+    )
+    ap.add_argument(
+        "--no-national", action="store_true", help="skip national PDF, use per-prefecture URLs only"
+    )
+    ap.add_argument(
+        "--no-fallback",
+        action="store_true",
+        help="use national PDF only (skip per-prefecture fallback)",
+    )
     return ap.parse_args(argv)
 
 
 def fetch_and_parse_prefecture(
-    http: HttpClient, pref: dict[str, str],
+    http: HttpClient,
+    pref: dict[str, str],
 ) -> tuple[list[tuple[str, EnfRow]], str | None]:
     """Return (rows, effective_pdf_or_html_url). May skip silently on 404."""
     url = pref["url"]
@@ -679,8 +861,11 @@ def fetch_and_parse_national(http: HttpClient) -> tuple[dict[str, list[EnfRow]],
     by_label: dict[str, list[EnfRow]] = {}
     for label, row in pairs:
         by_label.setdefault(label, []).append(row)
-    _LOG.info("national PDF parsed: %d prefectures, %d rows total",
-              len(by_label), sum(len(v) for v in by_label.values()))
+    _LOG.info(
+        "national PDF parsed: %d prefectures, %d rows total",
+        len(by_label),
+        sum(len(v) for v in by_label.values()),
+    )
     return by_label, NATIONAL_PDF_URL
 
 
@@ -762,8 +947,9 @@ def main(argv: list[str] | None = None) -> int:
 
         existing_n = auth_counts.get(authority, 0)
         if existing_n >= skip_threshold:
-            _LOG.info("[%s] skip — existing rows=%d (>= threshold %d)",
-                      slug, existing_n, skip_threshold)
+            _LOG.info(
+                "[%s] skip — existing rows=%d (>= threshold %d)", slug, existing_n, skip_threshold
+            )
             stats["prefs_skipped_existing"] += 1
             continue
 
@@ -799,9 +985,7 @@ def main(argv: list[str] | None = None) -> int:
                     f"{r.issuance_date.replace('-', '')}-"
                     f"{_slug8(r.target_name, r.issuance_date)}"
                 )
-                primary_name = (
-                    f"{r.target_name} ({r.issuance_date}) - {label} 公表事案"
-                )
+                primary_name = f"{r.target_name} ({r.issuance_date}) - {label} 公表事案"
                 raw_json = json.dumps(
                     {
                         "prefecture": label,
@@ -820,8 +1004,7 @@ def main(argv: list[str] | None = None) -> int:
                     ensure_ascii=False,
                 )
                 try:
-                    upsert_entity(conn, canonical_id, primary_name,
-                                  src_url, raw_json, now_iso)
+                    upsert_entity(conn, canonical_id, primary_name, src_url, raw_json, now_iso)
                     insert_enforcement(
                         conn=conn,
                         entity_id=canonical_id,
@@ -835,8 +1018,13 @@ def main(argv: list[str] | None = None) -> int:
                     )
                     inserted += 1
                 except sqlite3.Error as exc:
-                    _LOG.error("[%s] DB error name=%r date=%s: %s",
-                               slug, r.target_name, r.issuance_date, exc)
+                    _LOG.error(
+                        "[%s] DB error name=%r date=%s: %s",
+                        slug,
+                        r.target_name,
+                        r.issuance_date,
+                        exc,
+                    )
                     continue
             conn.commit()
         except sqlite3.Error as exc:
@@ -852,8 +1040,14 @@ def main(argv: list[str] | None = None) -> int:
         stats["rows_dup_in_batch"] += dup_batch
         if inserted:
             covered.append(f"{slug}:{inserted}")
-        _LOG.info("[%s] inserted=%d (cand=%d, dup_db=%d, dup_batch=%d)",
-                  slug, inserted, len(items), dup_db, dup_batch)
+        _LOG.info(
+            "[%s] inserted=%d (cand=%d, dup_db=%d, dup_batch=%d)",
+            slug,
+            inserted,
+            len(items),
+            dup_db,
+            dup_batch,
+        )
 
     http.close()
     if conn is not None:

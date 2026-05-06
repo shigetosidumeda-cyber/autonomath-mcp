@@ -27,6 +27,7 @@ Constraints:
 Run:
   .venv/bin/python scripts/ingest/ingest_smrj_programs.py
 """
+
 from __future__ import annotations
 
 import dataclasses
@@ -66,6 +67,7 @@ HTTP_TIMEOUT = 30
 # description_fallback, application_window, amount_max_man_yen, target_types,
 # funding_purpose).
 # ---------------------------------------------------------------------------
+
 
 @dataclasses.dataclass(frozen=True)
 class SmrjSeed:
@@ -774,6 +776,7 @@ SEEDS: tuple[SmrjSeed, ...] = (
 # HTTP fetch
 # ---------------------------------------------------------------------------
 
+
 def fetch(url: str, *, retries: int = 2) -> tuple[int, str]:
     """Fetch URL with retry. Returns (status, decoded_text). 0 status => failure."""
     last_err: Exception | None = None
@@ -825,6 +828,7 @@ def parse_meta(html: str) -> tuple[str | None, str | None]:
 # Build row
 # ---------------------------------------------------------------------------
 
+
 def make_unified_id(slug: str) -> str:
     """Stable hash-based UNI- id (10 hex chars), namespaced under smrj."""
     h = hashlib.sha1(f"smrj:{slug}".encode("utf-8")).hexdigest()[:10]
@@ -836,7 +840,9 @@ def authority_for_url(url: str) -> tuple[str, str]:
     return ("national", "中小企業基盤整備機構 (SMRJ)")
 
 
-def build_row(seed: SmrjSeed, fetched_at: str, http_status: int, fetched_meta: tuple[str | None, str | None]) -> dict[str, object]:
+def build_row(
+    seed: SmrjSeed, fetched_at: str, http_status: int, fetched_meta: tuple[str | None, str | None]
+) -> dict[str, object]:
     auth_level, auth_name = authority_for_url(seed.source_url)
     enriched = {
         "_meta": {
@@ -917,7 +923,9 @@ def build_row(seed: SmrjSeed, fetched_at: str, http_status: int, fetched_meta: t
         "source_url": seed.source_url,
         "source_fetched_at": fetched_at,
         "source_checksum": hashlib.sha1(
-            f"{seed.slug}|{seed.source_url}|{seed.name}|{seed.tier_hint}|{seed.max_man_yen}".encode("utf-8")
+            f"{seed.slug}|{seed.source_url}|{seed.name}|{seed.tier_hint}|{seed.max_man_yen}".encode(
+                "utf-8"
+            )
         ).hexdigest()[:16],
         "updated_at": fetched_at,
     }
@@ -981,8 +989,7 @@ WHERE programs.excluded = 0
 
 
 FTS_INSERT_SQL = (
-    "INSERT INTO programs_fts(unified_id, primary_name, aliases, enriched_text) "
-    "VALUES (?,?,?,?)"
+    "INSERT INTO programs_fts(unified_id, primary_name, aliases, enriched_text) VALUES (?,?,?,?)"
 )
 
 

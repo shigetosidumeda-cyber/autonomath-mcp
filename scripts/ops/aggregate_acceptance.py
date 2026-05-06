@@ -161,14 +161,11 @@ def build_report(
     total = summary["expected_total"] or 1
     summary["automation_ratio"] = round(summary["automated"] / total, 4)
     summary["automation_target"] = AUTOMATION_TARGET
-    summary["automation_target_met"] = (
-        summary["automation_ratio"] + 1e-9 >= AUTOMATION_TARGET
-    )
+    summary["automation_target_met"] = summary["automation_ratio"] + 1e-9 >= AUTOMATION_TARGET
 
     return {
         "schema_version": 1,
-        "generated_at": datetime.datetime.utcnow().isoformat(timespec="seconds")
-        + "Z",
+        "generated_at": datetime.datetime.utcnow().isoformat(timespec="seconds") + "Z",
         "summary": summary,
         "per_spec": dict(sorted(per_spec.items())),
         "per_check_kind": dict(sorted(per_check_kind.items())),
@@ -205,9 +202,7 @@ def main(argv: list[str] | None = None) -> int:
     junit = parse_junit(Path(args.junit))
     report = build_report(rows, junit, target_count=args.target_count)
 
-    Path(args.out).write_text(
-        json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
+    Path(args.out).write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
     print(
         f"[aggregate_acceptance] wrote {args.out} "
         f"(rows={report['summary']['total']}, "

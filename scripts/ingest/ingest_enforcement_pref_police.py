@@ -75,6 +75,7 @@ CLI:
     python scripts/ingest/ingest_enforcement_pref_police.py \\
         [--db autonomath.db] [--dry-run] [--verbose] [--limit 200]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -114,20 +115,20 @@ USER_AGENT = "AutonoMath/0.1.0 (+https://bookyou.net)"
 
 @dataclass
 class Source:
-    prefecture: str             # 兵庫県 / 東京都 / 大阪府 / etc.
-    authority: str              # 兵庫県公安委員会 / 警視庁公安委員会 etc.
+    prefecture: str  # 兵庫県 / 東京都 / 大阪府 / etc.
+    authority: str  # 兵庫県公安委員会 / 警視庁公安委員会 etc.
     url: str
     parser: str
-    related_law: str            # default related_law for this source
+    related_law: str  # default related_law for this source
     note: str = ""
 
 
 @dataclass
 class EnfRow:
     target_name: str
-    issuance_date: str          # ISO yyyy-mm-dd
+    issuance_date: str  # ISO yyyy-mm-dd
     issuing_authority: str
-    enforcement_kind: str       # checked against CHECK constraint
+    enforcement_kind: str  # checked against CHECK constraint
     reason_summary: str
     related_law_ref: str
     source_url: str
@@ -149,99 +150,185 @@ SHITSUYA = "質屋営業法"
 
 SOURCES: list[Source] = [
     # === 警備業法 行政処分 (公表) ===
-    Source("大阪府", "大阪府公安委員会",
-           "https://www.police.pref.osaka.lg.jp/tetsuduki/ninkyoka/3/12075.html",
-           "osaka_keibi_html", KEIBIGYOU,
-           note="大阪府公安委員会 警備業法 行政処分公表"),
-    Source("宮城県", "宮城県公安委員会",
-           "https://www.police.pref.miyagi.jp/seian/kyoninka/gyouseisyobun/kouhyouichiran.html",
-           "miyagi_keibi_html", KEIBIGYOU,
-           note="宮城県公安委員会 警備業法 行政処分公表"),
-    Source("千葉県", "千葉県公安委員会",
-           "https://www.police.pref.chiba.jp/fuhoka/orders_information_12.html",
-           "chiba_keibi_html", KEIBIGYOU,
-           note="千葉県公安委員会 警備業法 行政処分公表"),
-    Source("静岡県", "静岡県公安委員会",
-           "https://www.pref.shizuoka.jp/police/about/hore/kebi.html",
-           "shizuoka_keibi_html", KEIBIGYOU,
-           note="静岡県公安委員会 警備業法 行政処分公表 (anchor-based)"),
-
+    Source(
+        "大阪府",
+        "大阪府公安委員会",
+        "https://www.police.pref.osaka.lg.jp/tetsuduki/ninkyoka/3/12075.html",
+        "osaka_keibi_html",
+        KEIBIGYOU,
+        note="大阪府公安委員会 警備業法 行政処分公表",
+    ),
+    Source(
+        "宮城県",
+        "宮城県公安委員会",
+        "https://www.police.pref.miyagi.jp/seian/kyoninka/gyouseisyobun/kouhyouichiran.html",
+        "miyagi_keibi_html",
+        KEIBIGYOU,
+        note="宮城県公安委員会 警備業法 行政処分公表",
+    ),
+    Source(
+        "千葉県",
+        "千葉県公安委員会",
+        "https://www.police.pref.chiba.jp/fuhoka/orders_information_12.html",
+        "chiba_keibi_html",
+        KEIBIGYOU,
+        note="千葉県公安委員会 警備業法 行政処分公表",
+    ),
+    Source(
+        "静岡県",
+        "静岡県公安委員会",
+        "https://www.pref.shizuoka.jp/police/about/hore/kebi.html",
+        "shizuoka_keibi_html",
+        KEIBIGYOU,
+        note="静岡県公安委員会 警備業法 行政処分公表 (anchor-based)",
+    ),
     # === 自動車運転代行業 行政処分 (公表) ===
-    Source("神奈川県", "神奈川県公安委員会",
-           "https://www.police.pref.kanagawa.jp/kotsu/ho_shiko/mesf0076.html",
-           "kanagawa_daiko_html", DAIKO,
-           note="神奈川県公安委員会 運転代行 行政処分公表"),
-    Source("奈良県", "奈良県公安委員会",
-           "https://www.police.pref.nara.jp/0000005528.html",
-           "nara_daiko_html", DAIKO,
-           note="奈良県公安委員会 運転代行 行政処分公表"),
-    Source("福井県", "福井県公安委員会",
-           "https://www.pref.fukui.lg.jp/kenkei/doc/kenkei/daiko.html",
-           "fukui_daiko_html", DAIKO,
-           note="福井県公安委員会 運転代行 行政処分公表"),
-    Source("埼玉県", "埼玉県公安委員会",
-           "https://www.police.pref.saitama.lg.jp/f0010/shinse/daikou.html",
-           "saitama_daiko_html", DAIKO,
-           note="埼玉県公安委員会 運転代行 行政処分公表"),
-    Source("北海道", "北海道知事",
-           "https://www.pref.hokkaido.lg.jp/ss/stk/daikougyo.html",
-           "hokkaido_daiko_html", DAIKO,
-           note="北海道知事 運転代行 行政処分公表 (運転代行は知事処分)"),
-    Source("石川県", "石川県公安委員会",
-           "https://www2.police.pref.ishikawa.lg.jp/trafficsafety/trafficsafety05/trafficsafety14.html",
-           "ishikawa_daiko_html", DAIKO,
-           note="石川県公安委員会 運転代行 行政処分公表"),
-    Source("山口県", "山口県公安委員会",
-           "https://www.pref.yamaguchi.lg.jp/site/police/10488.html",
-           "yamaguchi_daiko_html", DAIKO,
-           note="山口県公安委員会 運転代行 行政処分公表"),
-    Source("熊本県", "熊本県公安委員会",
-           "https://www.pref.kumamoto.jp/site/police/51952.html",
-           "kumamoto_daiko_html", DAIKO,
-           note="熊本県公安委員会 運転代行 行政処分公表"),
-    Source("京都府", "京都府公安委員会",
-           "https://www.pref.kyoto.jp/fukei/kotu/koki_2/daiko/shobun.html",
-           "kyoto_daiko_html", DAIKO,
-           note="京都府公安委員会 運転代行 行政処分公表"),
-    Source("福岡県", "福岡県公安委員会",
-           "https://www.police.pref.fukuoka.jp/kotsu/kotsukikaku/untendaiko/gyoseisyobunkohyo.html",
-           "fukuoka_daiko_html", DAIKO,
-           note="福岡県公安委員会 運転代行 行政処分公表"),
+    Source(
+        "神奈川県",
+        "神奈川県公安委員会",
+        "https://www.police.pref.kanagawa.jp/kotsu/ho_shiko/mesf0076.html",
+        "kanagawa_daiko_html",
+        DAIKO,
+        note="神奈川県公安委員会 運転代行 行政処分公表",
+    ),
+    Source(
+        "奈良県",
+        "奈良県公安委員会",
+        "https://www.police.pref.nara.jp/0000005528.html",
+        "nara_daiko_html",
+        DAIKO,
+        note="奈良県公安委員会 運転代行 行政処分公表",
+    ),
+    Source(
+        "福井県",
+        "福井県公安委員会",
+        "https://www.pref.fukui.lg.jp/kenkei/doc/kenkei/daiko.html",
+        "fukui_daiko_html",
+        DAIKO,
+        note="福井県公安委員会 運転代行 行政処分公表",
+    ),
+    Source(
+        "埼玉県",
+        "埼玉県公安委員会",
+        "https://www.police.pref.saitama.lg.jp/f0010/shinse/daikou.html",
+        "saitama_daiko_html",
+        DAIKO,
+        note="埼玉県公安委員会 運転代行 行政処分公表",
+    ),
+    Source(
+        "北海道",
+        "北海道知事",
+        "https://www.pref.hokkaido.lg.jp/ss/stk/daikougyo.html",
+        "hokkaido_daiko_html",
+        DAIKO,
+        note="北海道知事 運転代行 行政処分公表 (運転代行は知事処分)",
+    ),
+    Source(
+        "石川県",
+        "石川県公安委員会",
+        "https://www2.police.pref.ishikawa.lg.jp/trafficsafety/trafficsafety05/trafficsafety14.html",
+        "ishikawa_daiko_html",
+        DAIKO,
+        note="石川県公安委員会 運転代行 行政処分公表",
+    ),
+    Source(
+        "山口県",
+        "山口県公安委員会",
+        "https://www.pref.yamaguchi.lg.jp/site/police/10488.html",
+        "yamaguchi_daiko_html",
+        DAIKO,
+        note="山口県公安委員会 運転代行 行政処分公表",
+    ),
+    Source(
+        "熊本県",
+        "熊本県公安委員会",
+        "https://www.pref.kumamoto.jp/site/police/51952.html",
+        "kumamoto_daiko_html",
+        DAIKO,
+        note="熊本県公安委員会 運転代行 行政処分公表",
+    ),
+    Source(
+        "京都府",
+        "京都府公安委員会",
+        "https://www.pref.kyoto.jp/fukei/kotu/koki_2/daiko/shobun.html",
+        "kyoto_daiko_html",
+        DAIKO,
+        note="京都府公安委員会 運転代行 行政処分公表",
+    ),
+    Source(
+        "福岡県",
+        "福岡県公安委員会",
+        "https://www.police.pref.fukuoka.jp/kotsu/kotsukikaku/untendaiko/gyoseisyobunkohyo.html",
+        "fukuoka_daiko_html",
+        DAIKO,
+        note="福岡県公安委員会 運転代行 行政処分公表",
+    ),
     # Added 2026-04-25 (second-pass discovery)
-    Source("青森県", "青森県公安委員会",
-           "https://www.police.pref.aomori.jp/koutubu/koutu_kikaku/unten_daikou.html",
-           "aomori_daiko_html", DAIKO,
-           note="青森県公安委員会 運転代行 行政処分公表"),
-    Source("秋田県", "秋田県公安委員会",
-           "https://www.police.pref.akita.lg.jp/kouan/gyouseishobun-daikou/daikou-itiran",
-           "akita_daiko_html", DAIKO,
-           note="秋田県公安委員会 運転代行 行政処分公表"),
-    Source("富山県", "富山県公安委員会",
-           "https://police.pref.toyama.jp/documents/533/gyoseisyobun.pdf",
-           "toyama_daiko_pdf", DAIKO,
-           note="富山県公安委員会 運転代行 行政処分簿 (PDF)"),
-    Source("茨城県", "茨城県公安委員会",
-           "https://www.pref.ibaraki.jp/kenkei/a02_traffic/drive_agency/penalty.html",
-           "ibaraki_daiko_html", DAIKO,
-           note="茨城県公安委員会 運転代行 行政処分公表"),
-    Source("長崎県", "長崎県公安委員会",
-           "https://www.police.pref.nagasaki.jp/police/disclosure/gyosei-shobun/kotsubu/",
-           "nagasaki_daiko_html", DAIKO,
-           note="長崎県公安委員会 運転代行 行政処分公表 (一覧形式)"),
-    Source("佐賀県", "佐賀県知事",
-           "https://www.pref.saga.lg.jp/kiji00359076/3_59076_up_ih1ctsmb.pdf",
-           "saga_chiji_daiko_pdf", DAIKO,
-           note="佐賀県知事 運転代行 行政処分票 (PDF) 令8.1.27"),
-    Source("佐賀県", "佐賀県知事",
-           "https://www.pref.saga.lg.jp/kiji00359076/3_59076_up_br8q0kne.pdf",
-           "saga_chiji_daiko_pdf", DAIKO,
-           note="佐賀県知事 運転代行 行政処分票 (PDF) 令8.2.25"),
-
+    Source(
+        "青森県",
+        "青森県公安委員会",
+        "https://www.police.pref.aomori.jp/koutubu/koutu_kikaku/unten_daikou.html",
+        "aomori_daiko_html",
+        DAIKO,
+        note="青森県公安委員会 運転代行 行政処分公表",
+    ),
+    Source(
+        "秋田県",
+        "秋田県公安委員会",
+        "https://www.police.pref.akita.lg.jp/kouan/gyouseishobun-daikou/daikou-itiran",
+        "akita_daiko_html",
+        DAIKO,
+        note="秋田県公安委員会 運転代行 行政処分公表",
+    ),
+    Source(
+        "富山県",
+        "富山県公安委員会",
+        "https://police.pref.toyama.jp/documents/533/gyoseisyobun.pdf",
+        "toyama_daiko_pdf",
+        DAIKO,
+        note="富山県公安委員会 運転代行 行政処分簿 (PDF)",
+    ),
+    Source(
+        "茨城県",
+        "茨城県公安委員会",
+        "https://www.pref.ibaraki.jp/kenkei/a02_traffic/drive_agency/penalty.html",
+        "ibaraki_daiko_html",
+        DAIKO,
+        note="茨城県公安委員会 運転代行 行政処分公表",
+    ),
+    Source(
+        "長崎県",
+        "長崎県公安委員会",
+        "https://www.police.pref.nagasaki.jp/police/disclosure/gyosei-shobun/kotsubu/",
+        "nagasaki_daiko_html",
+        DAIKO,
+        note="長崎県公安委員会 運転代行 行政処分公表 (一覧形式)",
+    ),
+    Source(
+        "佐賀県",
+        "佐賀県知事",
+        "https://www.pref.saga.lg.jp/kiji00359076/3_59076_up_ih1ctsmb.pdf",
+        "saga_chiji_daiko_pdf",
+        DAIKO,
+        note="佐賀県知事 運転代行 行政処分票 (PDF) 令8.1.27",
+    ),
+    Source(
+        "佐賀県",
+        "佐賀県知事",
+        "https://www.pref.saga.lg.jp/kiji00359076/3_59076_up_br8q0kne.pdf",
+        "saga_chiji_daiko_pdf",
+        DAIKO,
+        note="佐賀県知事 運転代行 行政処分票 (PDF) 令8.2.25",
+    ),
     # === 警備業法 行政処分 (公表) — additional ===
-    Source("兵庫県", "兵庫県公安委員会",
-           "https://www.police.pref.hyogo.lg.jp/sc/order.htm",
-           "hyogo_keibi_html", KEIBIGYOU,
-           note="兵庫県公安委員会 警備業法 行政処分公表"),
+    Source(
+        "兵庫県",
+        "兵庫県公安委員会",
+        "https://www.police.pref.hyogo.lg.jp/sc/order.htm",
+        "hyogo_keibi_html",
+        KEIBIGYOU,
+        note="兵庫県公安委員会 警備業法 行政処分公表",
+    ),
 ]
 
 
@@ -254,9 +341,7 @@ WAREKI_RE = re.compile(
     r"(令和|平成|R|H)\s*(\d+|元)\s*[年.\-．／/]\s*"
     r"(\d{1,2})\s*[月.\-．／/]\s*(\d{1,2})\s*日?"
 )
-SEIREKI_RE = re.compile(
-    r"(20\d{2})\s*[年.\-／/]\s*(\d{1,2})\s*[月.\-／/]\s*(\d{1,2})"
-)
+SEIREKI_RE = re.compile(r"(20\d{2})\s*[年.\-／/]\s*(\d{1,2})\s*[月.\-／/]\s*(\d{1,2})")
 ERA_OFFSET = {"令和": 2018, "R": 2018, "平成": 1988, "H": 1988}
 
 
@@ -302,11 +387,22 @@ def _resolve_url(href: str, base: str) -> str:
 def _classify_kind(text: str) -> str:
     """Map 処分内容 keywords → enforcement_kind (CHECK enum)."""
     t = text or ""
-    if any(k in t for k in ("認定の取消", "認定取消", "許可の取消", "許可取消",
-                              "営業廃止", "廃止命令")):
+    if any(
+        k in t for k in ("認定の取消", "認定取消", "許可の取消", "許可取消", "営業廃止", "廃止命令")
+    ):
         return "license_revoke"
-    if any(k in t for k in ("中止命令", "再発防止命令", "営業停止", "業務停止",
-                              "停止命令", "停止処分", "指示")):
+    if any(
+        k in t
+        for k in (
+            "中止命令",
+            "再発防止命令",
+            "営業停止",
+            "業務停止",
+            "停止命令",
+            "停止処分",
+            "指示",
+        )
+    ):
         return "business_improvement"
     if "公示" in t or "指定" in t:
         return "other"
@@ -336,17 +432,23 @@ def _parse_table_with_company_and_date(
         if not cell_texts:
             continue
         # Skip header rows
-        if any(("認定" == c or "氏名又は名称" == c or "処分年月日" == c
-                or "業者名" == c or "処分の年月日" == c) for c in cell_texts):
+        if any(
+            (
+                "認定" == c
+                or "氏名又は名称" == c
+                or "処分年月日" == c
+                or "業者名" == c
+                or "処分の年月日" == c
+            )
+            for c in cell_texts
+        ):
             continue
         target_name = next(
-            (t for t in cell_texts
-             if any(s in t for s in ("株式会社", "有限会社", "合同会社"))),
+            (t for t in cell_texts if any(s in t for s in ("株式会社", "有限会社", "合同会社"))),
             None,
         )
         date_text = next(
-            (t for t in cell_texts
-             if WAREKI_RE.search(t) or SEIREKI_RE.search(t)),
+            (t for t in cell_texts if WAREKI_RE.search(t) or SEIREKI_RE.search(t)),
             None,
         )
         if not (target_name and date_text):
@@ -356,17 +458,28 @@ def _parse_table_with_company_and_date(
             continue
         # Extract 認定番号
         ninteibango = next(
-            (t for t in cell_texts if "号" in t and (
-                "公安委員会" in t or "第" in t)),
+            (t for t in cell_texts if "号" in t and ("公安委員会" in t or "第" in t)),
             None,
         )
         # Extract 処分内容
         kind_text = next(
-            (t for t in cell_texts
-             if any(k in t for k in ("指示", "営業停止", "営業廃止",
-                                       "停止命令", "認定の取消",
-                                       "認定取消", "許可の取消",
-                                       "許可取消"))),
+            (
+                t
+                for t in cell_texts
+                if any(
+                    k in t
+                    for k in (
+                        "指示",
+                        "営業停止",
+                        "営業廃止",
+                        "停止命令",
+                        "認定の取消",
+                        "認定取消",
+                        "許可の取消",
+                        "許可取消",
+                    )
+                )
+            ),
             None,
         )
         if kind_text is None:
@@ -374,25 +487,25 @@ def _parse_table_with_company_and_date(
             kind_text = "指示"
         kind = _classify_kind(kind_text)
         section = section_law_hint or related_law
-        reason = (
-            f"{section}違反による行政処分（{kind_text}）"
-        )
+        reason = f"{section}違反による行政処分（{kind_text}）"
         if ninteibango:
             reason += f" / 認定番号: {ninteibango[:80]}"
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=date_iso,
-            issuing_authority=authority,
-            enforcement_kind=kind,
-            reason_summary=reason[:1500],
-            related_law_ref=related_law[:500],
-            source_url=source_url,
-            extra={
-                "ninteibango": ninteibango,
-                "kind_text": kind_text,
-                "section_law": section,
-            },
-        ))
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=date_iso,
+                issuing_authority=authority,
+                enforcement_kind=kind,
+                reason_summary=reason[:1500],
+                related_law_ref=related_law[:500],
+                source_url=source_url,
+                extra={
+                    "ninteibango": ninteibango,
+                    "kind_text": kind_text,
+                    "section_law": section,
+                },
+            )
+        )
     return out
 
 
@@ -453,24 +566,23 @@ def parse_chiba_keibi_html(html: str, source_url: str) -> list[EnfRow]:
         if not date_iso:
             continue
         kind = _classify_kind(kind_text)
-        reason = (
-            f"{KEIBIGYOU}違反による行政処分（{kind_text}）"
-            f" / 認定番号: {ninteibango[:80]}"
+        reason = f"{KEIBIGYOU}違反による行政処分（{kind_text}） / 認定番号: {ninteibango[:80]}"
+        out.append(
+            EnfRow(
+                target_name=name,
+                issuance_date=date_iso,
+                issuing_authority="千葉県公安委員会",
+                enforcement_kind=kind,
+                reason_summary=reason[:1500],
+                related_law_ref=KEIBIGYOU[:500],
+                source_url=source_url,
+                extra={
+                    "ninteibango": ninteibango,
+                    "kind_text": kind_text,
+                    "section_law": KEIBIGYOU,
+                },
+            )
         )
-        out.append(EnfRow(
-            target_name=name,
-            issuance_date=date_iso,
-            issuing_authority="千葉県公安委員会",
-            enforcement_kind=kind,
-            reason_summary=reason[:1500],
-            related_law_ref=KEIBIGYOU[:500],
-            source_url=source_url,
-            extra={
-                "ninteibango": ninteibango,
-                "kind_text": kind_text,
-                "section_law": KEIBIGYOU,
-            },
-        ))
     return out
 
 
@@ -521,23 +633,23 @@ def parse_shizuoka_keibi_html(html: str, source_url: str) -> list[EnfRow]:
         kind_text = "処分（詳細はPDF参照）"
         kind = "business_improvement"
         pdf_url = _resolve_url(href, source_url)
-        reason = (
-            f"{KEIBIGYOU}違反による行政処分 / 詳細PDF: {pdf_url}"
+        reason = f"{KEIBIGYOU}違反による行政処分 / 詳細PDF: {pdf_url}"
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=date_iso,
+                issuing_authority="静岡県公安委員会",
+                enforcement_kind=kind,
+                reason_summary=reason[:1500],
+                related_law_ref=KEIBIGYOU[:500],
+                source_url=source_url,
+                extra={
+                    "pdf_url": pdf_url,
+                    "kind_text": kind_text,
+                    "section_law": KEIBIGYOU,
+                },
+            )
         )
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=date_iso,
-            issuing_authority="静岡県公安委員会",
-            enforcement_kind=kind,
-            reason_summary=reason[:1500],
-            related_law_ref=KEIBIGYOU[:500],
-            source_url=source_url,
-            extra={
-                "pdf_url": pdf_url,
-                "kind_text": kind_text,
-                "section_law": KEIBIGYOU,
-            },
-        ))
     return out
 
 
@@ -571,13 +683,13 @@ _NARA_KIND_PATTERNS = [
 
 def parse_nara_daiko_html(html: str, source_url: str) -> list[EnfRow]:
     """Nara publishes records inline as section-prefixed entries:
-       認定取消処分がなされた自動車運転代行業者
-         運転代行ヤマト(R8.2.26)(サイズ：58.95KB)
-       営業停止処分がなされた自動車運転代行業者
-         奈良運転代行Goo(R6.6.28)(サイズ：68.99KB)
-         運転代行フルート(R6.7.22)...
-       指示処分がなされた自動車運転代行業者
-         運転代行一心(R6.5.1)...
+    認定取消処分がなされた自動車運転代行業者
+      運転代行ヤマト(R8.2.26)(サイズ：58.95KB)
+    営業停止処分がなされた自動車運転代行業者
+      奈良運転代行Goo(R6.6.28)(サイズ：68.99KB)
+      運転代行フルート(R6.7.22)...
+    指示処分がなされた自動車運転代行業者
+      運転代行一心(R6.5.1)...
     """
     soup = BeautifulSoup(html, "html.parser")
     out: list[EnfRow] = []
@@ -619,7 +731,7 @@ def parse_nara_daiko_html(html: str, source_url: str) -> list[EnfRow]:
     )
     for i, (start, hdr) in enumerate(boundaries):
         end = boundaries[i + 1][0] if i + 1 < len(boundaries) else len(text)
-        section_text = text[start + len(hdr): end]
+        section_text = text[start + len(hdr) : end]
         kind_text = hdr.replace("処分がなされた自動車運転代行業者", "")
         kind = header_map[hdr]
         for m in entry_re.finditer(section_text):
@@ -629,8 +741,7 @@ def parse_nara_daiko_html(html: str, source_url: str) -> list[EnfRow]:
             # Reject obviously non-name fragments
             if len(raw_name) < 2 or raw_name in ("代行", "運転代行"):
                 continue
-            if any(stop in raw_name for stop in ("一覧", "規定", "基準", "サイズ",
-                                                  "について")):
+            if any(stop in raw_name for stop in ("一覧", "規定", "基準", "サイズ", "について")):
                 continue
             yr = 2018 + int(m.group(2))
             mo, d = int(m.group(3)), int(m.group(4))
@@ -642,16 +753,18 @@ def parse_nara_daiko_html(html: str, source_url: str) -> list[EnfRow]:
                 continue
             seen_in_text.add(key)
             reason = f"{DAIKO}違反による行政処分（{kind_text}）"
-            out.append(EnfRow(
-                target_name=raw_name,
-                issuance_date=date_iso,
-                issuing_authority="奈良県公安委員会",
-                enforcement_kind=kind,
-                reason_summary=reason[:1500],
-                related_law_ref=DAIKO[:500],
-                source_url=source_url,
-                extra={"kind_text": kind_text, "section_law": DAIKO},
-            ))
+            out.append(
+                EnfRow(
+                    target_name=raw_name,
+                    issuance_date=date_iso,
+                    issuing_authority="奈良県公安委員会",
+                    enforcement_kind=kind,
+                    reason_summary=reason[:1500],
+                    related_law_ref=DAIKO[:500],
+                    source_url=source_url,
+                    extra={"kind_text": kind_text, "section_law": DAIKO},
+                )
+            )
     return out
 
 
@@ -669,28 +782,32 @@ def parse_fukui_daiko_html(html: str, source_url: str) -> list[EnfRow]:
         if not cell_texts:
             continue
         # Skip header
-        if any("処分年月日" in c or "処分内容" in c or "業者名" in c
-                for c in cell_texts) and not any(
-                WAREKI_RE.search(c) for c in cell_texts):
+        if any(
+            "処分年月日" in c or "処分内容" in c or "業者名" in c for c in cell_texts
+        ) and not any(WAREKI_RE.search(c) for c in cell_texts):
             continue
         date_text = next(
-            (t for t in cell_texts
-             if WAREKI_RE.search(t) or SEIREKI_RE.search(t)),
+            (t for t in cell_texts if WAREKI_RE.search(t) or SEIREKI_RE.search(t)),
             None,
         )
         kind_text = next(
-            (t for t in cell_texts
-             if any(k in t for k in ("指示", "営業停止", "認定の取消",
-                                       "認定取消", "営業廃止"))),
+            (
+                t
+                for t in cell_texts
+                if any(k in t for k in ("指示", "営業停止", "認定の取消", "認定取消", "営業廃止"))
+            ),
             None,
         )
         # Name: a cell that looks like a 運転代行 屋号 or 株式会社
         target_name = next(
-            (t for t in cell_texts
-             if (("代行" in t and len(t) <= 30 and "違反" not in t
-                  and "業者" not in t)
-                 or any(s in t for s in ("株式会社", "有限会社",
-                                          "合同会社")))),
+            (
+                t
+                for t in cell_texts
+                if (
+                    ("代行" in t and len(t) <= 30 and "違反" not in t and "業者" not in t)
+                    or any(s in t for s in ("株式会社", "有限会社", "合同会社"))
+                )
+            ),
             None,
         )
         if not (target_name and date_text and kind_text):
@@ -700,16 +817,18 @@ def parse_fukui_daiko_html(html: str, source_url: str) -> list[EnfRow]:
             continue
         kind = _classify_kind(kind_text)
         reason = f"{DAIKO}違反による行政処分（{kind_text}）"
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=date_iso,
-            issuing_authority="福井県公安委員会",
-            enforcement_kind=kind,
-            reason_summary=reason[:1500],
-            related_law_ref=DAIKO[:500],
-            source_url=source_url,
-            extra={"kind_text": kind_text, "section_law": DAIKO},
-        ))
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=date_iso,
+                issuing_authority="福井県公安委員会",
+                enforcement_kind=kind,
+                reason_summary=reason[:1500],
+                related_law_ref=DAIKO[:500],
+                source_url=source_url,
+                extra={"kind_text": kind_text, "section_law": DAIKO},
+            )
+        )
     return out
 
 
@@ -736,16 +855,19 @@ def parse_saitama_daiko_html(html: str, source_url: str) -> list[EnfRow]:
             continue
         # Heuristic: name col contains 代行 keyword
         target_name = next(
-            (t for t in cell_texts
-             if "代行" in t and len(t) <= 30
+            (
+                t
+                for t in cell_texts
+                if "代行" in t
+                and len(t) <= 30
                 and "認定" not in t
                 and "処分" not in t
-                and "業者" not in t),
+                and "業者" not in t
+            ),
             None,
         )
         date_text = next(
-            (t for t in cell_texts
-             if WAREKI_RE.search(t) or SEIREKI_RE.search(t)),
+            (t for t in cell_texts if WAREKI_RE.search(t) or SEIREKI_RE.search(t)),
             None,
         )
         ninteibango = next(
@@ -765,26 +887,25 @@ def parse_saitama_daiko_html(html: str, source_url: str) -> list[EnfRow]:
             if a["href"].lower().endswith(".pdf"):
                 pdf_url = _resolve_url(a["href"], source_url)
                 break
-        reason = (
-            f"{DAIKO}違反による行政処分（指示処分等） "
-            f"/ 認定番号: {ninteibango or '不明'}"
-        )
+        reason = f"{DAIKO}違反による行政処分（指示処分等） / 認定番号: {ninteibango or '不明'}"
         if pdf_url:
             reason += f" / 詳細PDF: {pdf_url}"
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=date_iso,
-            issuing_authority="埼玉県公安委員会",
-            enforcement_kind=kind,
-            reason_summary=reason[:1500],
-            related_law_ref=DAIKO[:500],
-            source_url=source_url,
-            extra={
-                "ninteibango": ninteibango,
-                "pdf_url": pdf_url,
-                "section_law": DAIKO,
-            },
-        ))
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=date_iso,
+                issuing_authority="埼玉県公安委員会",
+                enforcement_kind=kind,
+                reason_summary=reason[:1500],
+                related_law_ref=DAIKO[:500],
+                source_url=source_url,
+                extra={
+                    "ninteibango": ninteibango,
+                    "pdf_url": pdf_url,
+                    "section_law": DAIKO,
+                },
+            )
+        )
     return out
 
 
@@ -795,9 +916,9 @@ def parse_saitama_daiko_html(html: str, source_url: str) -> list[EnfRow]:
 
 def parse_hokkaido_daiko_html(html: str, source_url: str) -> list[EnfRow]:
     """Hokkaido (北海道知事 — not 公安委員会) publishes inline records:
-       令和6年(2024年)9月 4日 指示処分(運転代行アンカー) (PDF 58.6KB)
-       令和6年(2024年)9月19日 指示処分(アクティブ代行サービス) (PDF 61.7KB)
-       令和7年(2025年)5月29日 指示処分(アクセス運転代行) (PDF 60.2KB)
+    令和6年(2024年)9月 4日 指示処分(運転代行アンカー) (PDF 58.6KB)
+    令和6年(2024年)9月19日 指示処分(アクティブ代行サービス) (PDF 61.7KB)
+    令和7年(2025年)5月29日 指示処分(アクセス運転代行) (PDF 60.2KB)
     """
     soup = BeautifulSoup(html, "html.parser")
     out: list[EnfRow] = []
@@ -826,17 +947,19 @@ def parse_hokkaido_daiko_html(html: str, source_url: str) -> list[EnfRow]:
             continue
         seen.add(key)
         reason = f"{DAIKO}違反による行政処分（{kind_text}）"
-        out.append(EnfRow(
-            target_name=name,
-            issuance_date=date_iso,
-            # Source page is 北海道庁 (知事) not 公安委員会; keep accurate
-            issuing_authority="北海道知事",
-            enforcement_kind=kind,
-            reason_summary=reason[:1500],
-            related_law_ref=DAIKO[:500],
-            source_url=source_url,
-            extra={"kind_text": kind_text, "section_law": DAIKO},
-        ))
+        out.append(
+            EnfRow(
+                target_name=name,
+                issuance_date=date_iso,
+                # Source page is 北海道庁 (知事) not 公安委員会; keep accurate
+                issuing_authority="北海道知事",
+                enforcement_kind=kind,
+                reason_summary=reason[:1500],
+                related_law_ref=DAIKO[:500],
+                source_url=source_url,
+                extra={"kind_text": kind_text, "section_law": DAIKO},
+            )
+        )
     return out
 
 
@@ -854,25 +977,27 @@ def parse_ishikawa_daiko_html(html: str, source_url: str) -> list[EnfRow]:
         if len(cell_texts) < 3:
             continue
         date_text = next(
-            (t for t in cell_texts
-             if WAREKI_RE.search(t) or SEIREKI_RE.search(t)),
+            (t for t in cell_texts if WAREKI_RE.search(t) or SEIREKI_RE.search(t)),
             None,
         )
         target_name = next(
-            (t for t in cell_texts
-             if "代行" in t and len(t) <= 30
-                and "業者" not in t and "処分" not in t),
+            (
+                t
+                for t in cell_texts
+                if "代行" in t and len(t) <= 30 and "業者" not in t and "処分" not in t
+            ),
             None,
         )
         kind_text = next(
-            (t for t in cell_texts
-             if any(k in t for k in ("指示", "営業停止", "認定の取消",
-                                       "認定取消", "営業廃止"))),
+            (
+                t
+                for t in cell_texts
+                if any(k in t for k in ("指示", "営業停止", "認定の取消", "認定取消", "営業廃止"))
+            ),
             None,
         )
         ninteibango = next(
-            (t for t in cell_texts
-             if "公安委員会" in t and "号" in t),
+            (t for t in cell_texts if "公安委員会" in t and "号" in t),
             None,
         )
         if not (target_name and date_text and kind_text):
@@ -881,24 +1006,23 @@ def parse_ishikawa_daiko_html(html: str, source_url: str) -> list[EnfRow]:
         if not date_iso:
             continue
         kind = _classify_kind(kind_text)
-        reason = (
-            f"{DAIKO}違反による行政処分（{kind_text}） "
-            f"/ 認定番号: {ninteibango or '不明'}"
+        reason = f"{DAIKO}違反による行政処分（{kind_text}） / 認定番号: {ninteibango or '不明'}"
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=date_iso,
+                issuing_authority="石川県公安委員会",
+                enforcement_kind=kind,
+                reason_summary=reason[:1500],
+                related_law_ref=DAIKO[:500],
+                source_url=source_url,
+                extra={
+                    "ninteibango": ninteibango,
+                    "kind_text": kind_text,
+                    "section_law": DAIKO,
+                },
+            )
         )
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=date_iso,
-            issuing_authority="石川県公安委員会",
-            enforcement_kind=kind,
-            reason_summary=reason[:1500],
-            related_law_ref=DAIKO[:500],
-            source_url=source_url,
-            extra={
-                "ninteibango": ninteibango,
-                "kind_text": kind_text,
-                "section_law": DAIKO,
-            },
-        ))
     return out
 
 
@@ -916,24 +1040,34 @@ def parse_yamaguchi_daiko_html(html: str, source_url: str) -> list[EnfRow]:
         if not cell_texts:
             continue
         date_text = next(
-            (t for t in cell_texts
-             if WAREKI_RE.search(t) or SEIREKI_RE.search(t)),
+            (t for t in cell_texts if WAREKI_RE.search(t) or SEIREKI_RE.search(t)),
             None,
         )
         target_name = next(
-            (t for t in cell_texts
-             if "代行" in t and len(t) <= 30
+            (
+                t
+                for t in cell_texts
+                if "代行" in t
+                and len(t) <= 30
                 and "業者" not in t
                 and "処分" not in t
-                and "県" not in t),
+                and "県" not in t
+            ),
             None,
         )
-        kind_text = next(
-            (t for t in cell_texts
-             if any(k in t for k in ("指示", "営業停止", "認定の取消",
-                                       "認定取消", "営業廃止"))),
-            None,
-        ) or "処分（詳細はPDF参照）"
+        kind_text = (
+            next(
+                (
+                    t
+                    for t in cell_texts
+                    if any(
+                        k in t for k in ("指示", "営業停止", "認定の取消", "認定取消", "営業廃止")
+                    )
+                ),
+                None,
+            )
+            or "処分（詳細はPDF参照）"
+        )
         if not (target_name and date_text):
             continue
         date_iso = _parse_date(date_text)
@@ -941,16 +1075,18 @@ def parse_yamaguchi_daiko_html(html: str, source_url: str) -> list[EnfRow]:
             continue
         kind = _classify_kind(kind_text)
         reason = f"{DAIKO}違反による行政処分（{kind_text}）"
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=date_iso,
-            issuing_authority="山口県公安委員会",
-            enforcement_kind=kind,
-            reason_summary=reason[:1500],
-            related_law_ref=DAIKO[:500],
-            source_url=source_url,
-            extra={"kind_text": kind_text, "section_law": DAIKO},
-        ))
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=date_iso,
+                issuing_authority="山口県公安委員会",
+                enforcement_kind=kind,
+                reason_summary=reason[:1500],
+                related_law_ref=DAIKO[:500],
+                source_url=source_url,
+                extra={"kind_text": kind_text, "section_law": DAIKO},
+            )
+        )
     return out
 
 
@@ -968,25 +1104,27 @@ def parse_kumamoto_daiko_html(html: str, source_url: str) -> list[EnfRow]:
         if not cell_texts:
             continue
         date_text = next(
-            (t for t in cell_texts
-             if WAREKI_RE.search(t) or SEIREKI_RE.search(t)),
+            (t for t in cell_texts if WAREKI_RE.search(t) or SEIREKI_RE.search(t)),
             None,
         )
         target_name = next(
-            (t for t in cell_texts
-             if "代行" in t and len(t) <= 30
-                and "処分" not in t and "業者" not in t),
+            (
+                t
+                for t in cell_texts
+                if "代行" in t and len(t) <= 30 and "処分" not in t and "業者" not in t
+            ),
             None,
         )
         kind_text = next(
-            (t for t in cell_texts
-             if any(k in t for k in ("指示", "営業停止", "認定の取消",
-                                       "認定取消", "営業廃止"))),
+            (
+                t
+                for t in cell_texts
+                if any(k in t for k in ("指示", "営業停止", "認定の取消", "認定取消", "営業廃止"))
+            ),
             None,
         )
         ninteibango = next(
-            (t for t in cell_texts
-             if "公安委員会" in t and "号" in t),
+            (t for t in cell_texts if "公安委員会" in t and "号" in t),
             None,
         )
         if not (target_name and date_text and kind_text):
@@ -995,24 +1133,23 @@ def parse_kumamoto_daiko_html(html: str, source_url: str) -> list[EnfRow]:
         if not date_iso:
             continue
         kind = _classify_kind(kind_text)
-        reason = (
-            f"{DAIKO}違反による行政処分（{kind_text}） "
-            f"/ 認定番号: {ninteibango or '不明'}"
+        reason = f"{DAIKO}違反による行政処分（{kind_text}） / 認定番号: {ninteibango or '不明'}"
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=date_iso,
+                issuing_authority="熊本県公安委員会",
+                enforcement_kind=kind,
+                reason_summary=reason[:1500],
+                related_law_ref=DAIKO[:500],
+                source_url=source_url,
+                extra={
+                    "ninteibango": ninteibango,
+                    "kind_text": kind_text,
+                    "section_law": DAIKO,
+                },
+            )
         )
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=date_iso,
-            issuing_authority="熊本県公安委員会",
-            enforcement_kind=kind,
-            reason_summary=reason[:1500],
-            related_law_ref=DAIKO[:500],
-            source_url=source_url,
-            extra={
-                "ninteibango": ninteibango,
-                "kind_text": kind_text,
-                "section_law": DAIKO,
-            },
-        ))
     return out
 
 
@@ -1030,21 +1167,26 @@ def parse_kyoto_daiko_html(html: str, source_url: str) -> list[EnfRow]:
         if not cell_texts:
             continue
         date_text = next(
-            (t for t in cell_texts
-             if WAREKI_RE.search(t) or SEIREKI_RE.search(t)),
+            (t for t in cell_texts if WAREKI_RE.search(t) or SEIREKI_RE.search(t)),
             None,
         )
         target_name = next(
-            (t for t in cell_texts
-             if (("代行" in t and len(t) <= 30
-                  and "処分" not in t and "業者" not in t)
-                 or any(s in t for s in ("株式会社", "有限会社",
-                                          "合同会社")))),
+            (
+                t
+                for t in cell_texts
+                if (
+                    ("代行" in t and len(t) <= 30 and "処分" not in t and "業者" not in t)
+                    or any(s in t for s in ("株式会社", "有限会社", "合同会社"))
+                )
+            ),
             None,
         )
         kind_text = next(
-            (t for t in cell_texts
-             if any(k in t for k in ("指示処分", "営業停止処分", "認定取消"))),
+            (
+                t
+                for t in cell_texts
+                if any(k in t for k in ("指示処分", "営業停止処分", "認定取消"))
+            ),
             None,
         )
         if not (target_name and kind_text):
@@ -1058,16 +1200,18 @@ def parse_kyoto_daiko_html(html: str, source_url: str) -> list[EnfRow]:
             continue
         kind = _classify_kind(kind_text)
         reason = f"{DAIKO}違反による行政処分（{kind_text}）"
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=date_iso,
-            issuing_authority="京都府公安委員会",
-            enforcement_kind=kind,
-            reason_summary=reason[:1500],
-            related_law_ref=DAIKO[:500],
-            source_url=source_url,
-            extra={"kind_text": kind_text, "section_law": DAIKO},
-        ))
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=date_iso,
+                issuing_authority="京都府公安委員会",
+                enforcement_kind=kind,
+                reason_summary=reason[:1500],
+                related_law_ref=DAIKO[:500],
+                source_url=source_url,
+                extra={"kind_text": kind_text, "section_law": DAIKO},
+            )
+        )
     return out
 
 
@@ -1092,14 +1236,15 @@ def parse_fukuoka_daiko_html(html: str, source_url: str) -> list[EnfRow]:
         if not cell_texts:
             continue
         date_text = next(
-            (t for t in cell_texts
-             if WAREKI_RE.search(t) or SEIREKI_RE.search(t)),
+            (t for t in cell_texts if WAREKI_RE.search(t) or SEIREKI_RE.search(t)),
             None,
         )
         target_name = next(
-            (t for t in cell_texts
-             if "代行" in t and len(t) <= 30
-                and "処分" not in t and "業者" not in t),
+            (
+                t
+                for t in cell_texts
+                if "代行" in t and len(t) <= 30 and "処分" not in t and "業者" not in t
+            ),
             None,
         )
         if not (target_name and date_text):
@@ -1107,12 +1252,19 @@ def parse_fukuoka_daiko_html(html: str, source_url: str) -> list[EnfRow]:
         date_iso = _parse_date(date_text)
         if not date_iso:
             continue
-        kind_text = next(
-            (t for t in cell_texts
-             if any(k in t for k in ("指示", "営業停止", "認定の取消",
-                                       "認定取消", "営業廃止"))),
-            None,
-        ) or "処分（詳細はPDF参照）"
+        kind_text = (
+            next(
+                (
+                    t
+                    for t in cell_texts
+                    if any(
+                        k in t for k in ("指示", "営業停止", "認定の取消", "認定取消", "営業廃止")
+                    )
+                ),
+                None,
+            )
+            or "処分（詳細はPDF参照）"
+        )
         kind = _classify_kind(kind_text)
         # Recover PDF link
         pdf_url = None
@@ -1123,20 +1275,22 @@ def parse_fukuoka_daiko_html(html: str, source_url: str) -> list[EnfRow]:
         reason = f"{DAIKO}違反による行政処分（{kind_text}）"
         if pdf_url:
             reason += f" / 詳細PDF: {pdf_url}"
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=date_iso,
-            issuing_authority="福岡県公安委員会",
-            enforcement_kind=kind,
-            reason_summary=reason[:1500],
-            related_law_ref=DAIKO[:500],
-            source_url=source_url,
-            extra={
-                "pdf_url": pdf_url,
-                "kind_text": kind_text,
-                "section_law": DAIKO,
-            },
-        ))
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=date_iso,
+                issuing_authority="福岡県公安委員会",
+                enforcement_kind=kind,
+                reason_summary=reason[:1500],
+                related_law_ref=DAIKO[:500],
+                source_url=source_url,
+                extra={
+                    "pdf_url": pdf_url,
+                    "kind_text": kind_text,
+                    "section_law": DAIKO,
+                },
+            )
+        )
     return out
 
 
@@ -1181,16 +1335,18 @@ def parse_aomori_daiko_html(html: str, source_url: str) -> list[EnfRow]:
             continue
         seen.add(key)
         reason = f"{DAIKO}違反による行政処分（{kind_text}）"
-        out.append(EnfRow(
-            target_name=name,
-            issuance_date=date_iso,
-            issuing_authority="青森県公安委員会",
-            enforcement_kind=kind,
-            reason_summary=reason[:1500],
-            related_law_ref=DAIKO[:500],
-            source_url=source_url,
-            extra={"kind_text": kind_text, "section_law": DAIKO},
-        ))
+        out.append(
+            EnfRow(
+                target_name=name,
+                issuance_date=date_iso,
+                issuing_authority="青森県公安委員会",
+                enforcement_kind=kind,
+                reason_summary=reason[:1500],
+                related_law_ref=DAIKO[:500],
+                source_url=source_url,
+                extra={"kind_text": kind_text, "section_law": DAIKO},
+            )
+        )
     return out
 
 
@@ -1236,16 +1392,18 @@ def parse_akita_daiko_html(html: str, source_url: str) -> list[EnfRow]:
         # Akita doesn't list kind_text inline — default to license/business action;
         # fall back to "other" if uncertain.
         reason = f"{DAIKO}違反による行政処分（公表対象）"
-        out.append(EnfRow(
-            target_name=name,
-            issuance_date=date_iso,
-            issuing_authority="秋田県公安委員会",
-            enforcement_kind="other",
-            reason_summary=reason[:1500],
-            related_law_ref=DAIKO[:500],
-            source_url=source_url,
-            extra={"kind_text": "公表対象処分", "section_law": DAIKO},
-        ))
+        out.append(
+            EnfRow(
+                target_name=name,
+                issuance_date=date_iso,
+                issuing_authority="秋田県公安委員会",
+                enforcement_kind="other",
+                reason_summary=reason[:1500],
+                related_law_ref=DAIKO[:500],
+                source_url=source_url,
+                extra={"kind_text": "公表対象処分", "section_law": DAIKO},
+            )
+        )
     return out
 
 
@@ -1282,17 +1440,18 @@ def _parse_pref_pol_pdf(pdf_text: str, source_url: str, authority: str) -> list[
         return out
     kind = _classify_kind(kind_text)
     reason = f"{DAIKO}違反による行政処分（{kind_text}）"
-    out.append(EnfRow(
-        target_name=name,
-        issuance_date=date_iso,
-        issuing_authority=authority,
-        enforcement_kind=kind,
-        reason_summary=reason[:1500],
-        related_law_ref=DAIKO[:500],
-        source_url=source_url,
-        extra={"kind_text": kind_text, "section_law": DAIKO,
-               "format": "pdf"},
-    ))
+    out.append(
+        EnfRow(
+            target_name=name,
+            issuance_date=date_iso,
+            issuing_authority=authority,
+            enforcement_kind=kind,
+            reason_summary=reason[:1500],
+            related_law_ref=DAIKO[:500],
+            source_url=source_url,
+            extra={"kind_text": kind_text, "section_law": DAIKO, "format": "pdf"},
+        )
+    )
     return out
 
 
@@ -1351,21 +1510,26 @@ def parse_saga_chiji_daiko_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
         r"処\s*分\s*理\s*由\s+([^\n\r]{1,400}(?:\n\s*[^\n\r]{1,200}){0,4})",
         text_norm,
     )
-    reason = (
-        f"{DAIKO}違反による行政処分（{kind_text}）"
-        + (f"; {_normalize(reason_m.group(1)).strip()[:1000]}" if reason_m else "")
+    reason = f"{DAIKO}違反による行政処分（{kind_text}）" + (
+        f"; {_normalize(reason_m.group(1)).strip()[:1000]}" if reason_m else ""
     )
-    out.append(EnfRow(
-        target_name=name,
-        issuance_date=date_iso,
-        issuing_authority="佐賀県知事",
-        enforcement_kind=kind,
-        reason_summary=reason[:1500],
-        related_law_ref=DAIKO[:500],
-        source_url=source_url,
-        extra={"kind_text": kind_text, "section_law": DAIKO,
-               "format": "pdf", "issuer_type": "知事"},
-    ))
+    out.append(
+        EnfRow(
+            target_name=name,
+            issuance_date=date_iso,
+            issuing_authority="佐賀県知事",
+            enforcement_kind=kind,
+            reason_summary=reason[:1500],
+            related_law_ref=DAIKO[:500],
+            source_url=source_url,
+            extra={
+                "kind_text": kind_text,
+                "section_law": DAIKO,
+                "format": "pdf",
+                "issuer_type": "知事",
+            },
+        )
+    )
     return out
 
 
@@ -1386,24 +1550,39 @@ def parse_ibaraki_daiko_html(html: str, source_url: str) -> list[EnfRow]:
         if len(cell_texts) < 4:
             continue
         # Skip header
-        if any("処分年月" in c or "認定番号" == c or "詳細" == c for c in cell_texts) and \
-                not any(WAREKI_RE.search(c) or YM_RE.search(c) for c in cell_texts):
+        if any("処分年月" in c or "認定番号" == c or "詳細" == c for c in cell_texts) and not any(
+            WAREKI_RE.search(c) or YM_RE.search(c) for c in cell_texts
+        ):
             continue
         date_text = next(
-            (c for c in cell_texts
-             if WAREKI_RE.search(c) or SEIREKI_RE.search(c) or YM_RE.search(c)),
+            (
+                c
+                for c in cell_texts
+                if WAREKI_RE.search(c) or SEIREKI_RE.search(c) or YM_RE.search(c)
+            ),
             None,
         )
-        kind_text = next((c for c in cell_texts
-                          if any(k in c for k in ("営業停止", "認定取消", "認定の取消",
-                                                    "営業廃止", "指示")) and len(c) <= 12),
-                         None)
+        kind_text = next(
+            (
+                c
+                for c in cell_texts
+                if any(k in c for k in ("営業停止", "認定取消", "認定の取消", "営業廃止", "指示"))
+                and len(c) <= 12
+            ),
+            None,
+        )
         target_name = next(
-            (c for c in cell_texts
-             if (("代行" in c or any(s in c for s in ("株式会社", "有限会社",
-                                                       "合同会社"))) and len(c) <= 40
-                 and "業者" not in c and "認定" not in c
-                 and "PDF" not in c)),
+            (
+                c
+                for c in cell_texts
+                if (
+                    ("代行" in c or any(s in c for s in ("株式会社", "有限会社", "合同会社")))
+                    and len(c) <= 40
+                    and "業者" not in c
+                    and "認定" not in c
+                    and "PDF" not in c
+                )
+            ),
             None,
         )
         if not (date_text and kind_text and target_name):
@@ -1424,16 +1603,18 @@ def parse_ibaraki_daiko_html(html: str, source_url: str) -> list[EnfRow]:
             continue
         seen.add(key)
         reason = f"{DAIKO}違反による行政処分（{kind_text}）"
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=parsed,
-            issuing_authority="茨城県公安委員会",
-            enforcement_kind=kind,
-            reason_summary=reason[:1500],
-            related_law_ref=DAIKO[:500],
-            source_url=source_url,
-            extra={"kind_text": kind_text, "section_law": DAIKO},
-        ))
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=parsed,
+                issuing_authority="茨城県公安委員会",
+                enforcement_kind=kind,
+                reason_summary=reason[:1500],
+                related_law_ref=DAIKO[:500],
+                source_url=source_url,
+                extra={"kind_text": kind_text, "section_law": DAIKO},
+            )
+        )
     return out
 
 
@@ -1472,16 +1653,18 @@ def parse_nagasaki_daiko_html(html: str, source_url: str) -> list[EnfRow]:
         seen.add(key)
         # No kind text inline — default to "other" (公表対象だが処分種別は省略)
         reason = f"{DAIKO}違反による行政処分（公表対象）"
-        out.append(EnfRow(
-            target_name=name,
-            issuance_date=date_iso,
-            issuing_authority="長崎県公安委員会",
-            enforcement_kind="other",
-            reason_summary=reason[:1500],
-            related_law_ref=DAIKO[:500],
-            source_url=source_url,
-            extra={"kind_text": "公表対象処分", "section_law": DAIKO},
-        ))
+        out.append(
+            EnfRow(
+                target_name=name,
+                issuance_date=date_iso,
+                issuing_authority="長崎県公安委員会",
+                enforcement_kind="other",
+                reason_summary=reason[:1500],
+                related_law_ref=DAIKO[:500],
+                source_url=source_url,
+                extra={"kind_text": "公表対象処分", "section_law": DAIKO},
+            )
+        )
     return out
 
 
@@ -1501,20 +1684,27 @@ def parse_hyogo_keibi_html(html: str, source_url: str) -> list[EnfRow]:
             continue
         # Skip header
         if any("認定の番号" in c or "処分の年月日" in c for c in cell_texts) and not any(
-                WAREKI_RE.search(c) for c in cell_texts):
+            WAREKI_RE.search(c) for c in cell_texts
+        ):
             continue
-        date_text = next((c for c in cell_texts
-                          if WAREKI_RE.search(c) or SEIREKI_RE.search(c)), None)
+        date_text = next(
+            (c for c in cell_texts if WAREKI_RE.search(c) or SEIREKI_RE.search(c)), None
+        )
         kind_text = next(
-            (c for c in cell_texts
-             if any(k in c for k in ("営業停止", "認定取消", "認定の取消",
-                                       "営業廃止", "指示")) and len(c) <= 12),
+            (
+                c
+                for c in cell_texts
+                if any(k in c for k in ("営業停止", "認定取消", "認定の取消", "営業廃止", "指示"))
+                and len(c) <= 12
+            ),
             None,
         )
         target_name = next(
-            (c for c in cell_texts
-             if any(s in c for s in ("株式会社", "有限会社", "合同会社"))
-                and len(c) <= 40),
+            (
+                c
+                for c in cell_texts
+                if any(s in c for s in ("株式会社", "有限会社", "合同会社")) and len(c) <= 40
+            ),
             None,
         )
         if not (date_text and kind_text and target_name):
@@ -1528,16 +1718,18 @@ def parse_hyogo_keibi_html(html: str, source_url: str) -> list[EnfRow]:
             continue
         seen.add(key)
         reason = f"{KEIBIGYOU}違反による行政処分（{kind_text}）"
-        out.append(EnfRow(
-            target_name=target_name,
-            issuance_date=date_iso,
-            issuing_authority="兵庫県公安委員会",
-            enforcement_kind=kind,
-            reason_summary=reason[:1500],
-            related_law_ref=KEIBIGYOU[:500],
-            source_url=source_url,
-            extra={"kind_text": kind_text, "section_law": KEIBIGYOU},
-        ))
+        out.append(
+            EnfRow(
+                target_name=target_name,
+                issuance_date=date_iso,
+                issuing_authority="兵庫県公安委員会",
+                enforcement_kind=kind,
+                reason_summary=reason[:1500],
+                related_law_ref=KEIBIGYOU[:500],
+                source_url=source_url,
+                extra={"kind_text": kind_text, "section_law": KEIBIGYOU},
+            )
+        )
     return out
 
 
@@ -1587,9 +1779,9 @@ def _fetch_with_ssl_bypass(url: str) -> tuple[int, bytes, dict[str, str]]:
     request rate is well below the 1 req/sec cap.
     """
     import httpx
+
     headers = {"User-Agent": USER_AGENT, "Accept-Language": "ja,en;q=0.5"}
-    r = httpx.get(url, verify=False, follow_redirects=True, timeout=15.0,
-                   headers=headers)
+    r = httpx.get(url, verify=False, follow_redirects=True, timeout=15.0, headers=headers)
     return r.status_code, r.content, dict(r.headers)
 
 
@@ -1601,16 +1793,16 @@ def fetch_source(http: HttpClient, src: Source) -> list[EnfRow]:
         try:
             status, body, headers = _fetch_with_ssl_bypass(src.url)
         except Exception as exc:
-            _LOG.warning("[%s] ssl-bypass fetch failed url=%s err=%s",
-                         src.parser, src.url, exc)
+            _LOG.warning("[%s] ssl-bypass fetch failed url=%s err=%s", src.parser, src.url, exc)
             return []
         if not (200 <= status < 300):
-            _LOG.warning("[%s] ssl-bypass non-2xx status=%s url=%s",
-                         src.parser, status, src.url)
+            _LOG.warning("[%s] ssl-bypass non-2xx status=%s url=%s", src.parser, status, src.url)
             return []
+
         # Synthesize a minimal FetchResult-like result
         class _R:
             pass
+
         res = _R()
         res.ok = True
         res.status = status
@@ -1621,7 +1813,7 @@ def fetch_source(http: HttpClient, src: Source) -> list[EnfRow]:
         for part in ct.split(";"):
             part = part.strip().lower()
             if part.startswith("charset="):
-                encoding = part[len("charset="):]
+                encoding = part[len("charset=") :]
                 break
         try:
             res.text = body.decode(encoding or "utf-8", errors="replace")
@@ -1629,12 +1821,12 @@ def fetch_source(http: HttpClient, src: Source) -> list[EnfRow]:
             res.text = body.decode("utf-8", errors="replace")
     elif is_pdf:
         from scripts.lib.http import PDF_MAX_BYTES
+
         res = http.get(src.url, max_bytes=PDF_MAX_BYTES)
     else:
         res = http.get(src.url)
     if not res.ok:
-        _LOG.warning("[%s] fetch failed status=%s url=%s",
-                     src.parser, res.status, src.url)
+        _LOG.warning("[%s] fetch failed status=%s url=%s", src.parser, res.status, src.url)
         return []
     parser = PARSERS.get(src.parser)
     if not parser:
@@ -1644,13 +1836,16 @@ def fetch_source(http: HttpClient, src: Source) -> list[EnfRow]:
         if is_pdf:
             import subprocess
             import tempfile
+
             with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as f:
                 f.write(res.body)
                 tmp_path = f.name
             try:
                 proc = subprocess.run(
                     ["pdftotext", "-layout", tmp_path, "-"],
-                    capture_output=True, text=True, timeout=20,
+                    capture_output=True,
+                    text=True,
+                    timeout=20,
                 )
                 rows = parser(proc.stdout, src.url)
             finally:
@@ -1688,9 +1883,7 @@ def ensure_tables(conn: sqlite3.Connection) -> None:
             (tbl,),
         ).fetchone()
         if not row:
-            raise SystemExit(
-                f"missing table '{tbl}' — apply migrations first"
-            )
+            raise SystemExit(f"missing table '{tbl}' — apply migrations first")
 
 
 def existing_dedup_keys(
@@ -1835,17 +2028,10 @@ def write_rows(
                     continue
                 batch_keys.add(key)
                 seq = _slug8(
-                    f"{r.target_name}|{r.issuance_date}|"
-                    f"{r.issuing_authority}|{chunk_idx}|{idx}"
+                    f"{r.target_name}|{r.issuance_date}|{r.issuing_authority}|{chunk_idx}|{idx}"
                 )
-                canonical_id = (
-                    f"AM-ENF-PREFPOL-"
-                    f"{r.issuance_date.replace('-', '')}-{seq}"
-                )
-                primary_name = (
-                    f"{r.target_name} ({r.issuance_date}) "
-                    f"- {r.issuing_authority}"
-                )
+                canonical_id = f"AM-ENF-PREFPOL-{r.issuance_date.replace('-', '')}-{seq}"
+                primary_name = f"{r.target_name} ({r.issuance_date}) - {r.issuing_authority}"
                 raw_json = json.dumps(
                     {
                         "target_name": r.target_name,
@@ -1857,24 +2043,27 @@ def write_rows(
                         "source_url": r.source_url,
                         "extra": r.extra or {},
                         "source_attribution": r.issuing_authority,
-                        "license": (
-                            "都道府県警察 / 公安委員会 公表資料"
-                            "（出典明記で転載引用可）"
-                        ),
+                        "license": ("都道府県警察 / 公安委員会 公表資料（出典明記で転載引用可）"),
                     },
                     ensure_ascii=False,
                 )
                 try:
                     upsert_entity(
-                        conn, canonical_id, primary_name,
-                        r.source_url, raw_json, now_iso,
+                        conn,
+                        canonical_id,
+                        primary_name,
+                        r.source_url,
+                        raw_json,
+                        now_iso,
                     )
                     insert_enforcement(conn, canonical_id, r, now_iso)
                     inserted += 1
                 except sqlite3.Error as exc:
                     _LOG.error(
                         "DB error name=%r date=%s: %s",
-                        r.target_name, r.issuance_date, exc,
+                        r.target_name,
+                        r.issuance_date,
+                        exc,
                     )
                     continue
             conn.commit()
@@ -1897,11 +2086,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap.add_argument("--db", type=Path, default=DEFAULT_DB)
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--verbose", "-v", action="store_true")
-    ap.add_argument("--limit", type=int, default=None,
-                    help="Hard cap on inserted rows (default: no cap)")
-    ap.add_argument("--source-filter", type=str, default=None,
-                    help="Only run sources whose parser name matches "
-                         "this substring (debug)")
+    ap.add_argument(
+        "--limit", type=int, default=None, help="Hard cap on inserted rows (default: no cap)"
+    )
+    ap.add_argument(
+        "--source-filter",
+        type=str,
+        default=None,
+        help="Only run sources whose parser name matches this substring (debug)",
+    )
     return ap.parse_args(argv)
 
 
@@ -1913,9 +2106,7 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     http = HttpClient(user_agent=USER_AGENT)
-    now_iso = datetime.now(UTC).isoformat(timespec="seconds").replace(
-        "+00:00", "Z"
-    )
+    now_iso = datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
 
     all_rows: list[EnfRow] = []
     per_source_count: dict[str, int] = {}
@@ -1927,15 +2118,17 @@ def main(argv: list[str] | None = None) -> int:
         _LOG.info("[%s] %s: %d rows", src.prefecture, src.parser, len(rows))
         all_rows.extend(rows)
 
-    _LOG.info("total parsed rows=%d (sources=%d)",
-              len(all_rows), len(SOURCES))
+    _LOG.info("total parsed rows=%d (sources=%d)", len(all_rows), len(SOURCES))
 
     if args.dry_run:
         for r in all_rows[:30]:
             _LOG.info(
                 "sample: name=%r date=%s auth=%s kind=%s law=%s",
-                r.target_name, r.issuance_date, r.issuing_authority,
-                r.enforcement_kind, r.related_law_ref,
+                r.target_name,
+                r.issuance_date,
+                r.issuing_authority,
+                r.enforcement_kind,
+                r.related_law_ref,
             )
         http.close()
         return 0
@@ -1951,18 +2144,17 @@ def main(argv: list[str] | None = None) -> int:
     ensure_tables(conn)
 
     inserted, dup_db, dup_batch = write_rows(
-        conn, all_rows, now_iso=now_iso, limit=args.limit,
+        conn,
+        all_rows,
+        now_iso=now_iso,
+        limit=args.limit,
     )
     # Per-authority + per-law breakdown for caller report
     auth_counts: dict[str, int] = {}
     law_counts: dict[str, int] = {}
     for r in all_rows:
-        auth_counts[r.issuing_authority] = (
-            auth_counts.get(r.issuing_authority, 0) + 1
-        )
-        law_counts[r.related_law_ref] = (
-            law_counts.get(r.related_law_ref, 0) + 1
-        )
+        auth_counts[r.issuing_authority] = auth_counts.get(r.issuing_authority, 0) + 1
+        law_counts[r.related_law_ref] = law_counts.get(r.related_law_ref, 0) + 1
     try:
         conn.close()
     except sqlite3.Error:
@@ -1971,7 +2163,10 @@ def main(argv: list[str] | None = None) -> int:
 
     _LOG.info(
         "done parsed=%d inserted=%d dup_db=%d dup_batch=%d",
-        len(all_rows), inserted, dup_db, dup_batch,
+        len(all_rows),
+        inserted,
+        dup_db,
+        dup_batch,
     )
     print(
         f"PrefPolice 公安委員会 ingest: parsed={len(all_rows)} "
@@ -1980,14 +2175,8 @@ def main(argv: list[str] | None = None) -> int:
     print("breakdown by 都道府県警察:")
     for k in sorted(per_source_count.keys()):
         print(f"  {k}: parsed={per_source_count[k]}")
-    print(
-        "breakdown by issuing_authority: "
-        f"{json.dumps(auth_counts, ensure_ascii=False)}"
-    )
-    print(
-        "breakdown by 法: "
-        f"{json.dumps(law_counts, ensure_ascii=False)}"
-    )
+    print(f"breakdown by issuing_authority: {json.dumps(auth_counts, ensure_ascii=False)}")
+    print(f"breakdown by 法: {json.dumps(law_counts, ensure_ascii=False)}")
     return 0
 
 

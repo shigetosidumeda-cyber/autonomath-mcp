@@ -71,6 +71,7 @@ CLI:
     python scripts/ingest/ingest_enforcement_jpx.py --dry-run
     python scripts/ingest/ingest_enforcement_jpx.py --max-rows 500 -v
 """
+
 from __future__ import annotations
 
 import argparse
@@ -129,10 +130,10 @@ class JpxSource:
     law_basis: str
     enforcement_kind: str
     parser: str  # one of 'delisted', 'improvement_report', 'alert',
-                 # 'alert_history', 'public_announce', 'agreement_violation',
-                 # 'supervision', 'grace_period', 'improvement_period',
-                 # 'cpaaob_kankoku', 'alert_excel', 'grace_excel',
-                 # 'improvement_period_excel'
+    # 'alert_history', 'public_announce', 'agreement_violation',
+    # 'supervision', 'grace_period', 'improvement_period',
+    # 'cpaaob_kankoku', 'alert_excel', 'grace_excel',
+    # 'improvement_period_excel'
 
 
 SOURCES: list[JpxSource] = [
@@ -170,10 +171,7 @@ SOURCES: list[JpxSource] = [
     ),
     JpxSource(
         name="特別注意銘柄(2019-2023 Excel)",
-        url=(
-            f"{BASE_JPX}/listing/measures/alert/"
-            "tvdivq0000000i86-att/jp_History_2019-2023.xlsx"
-        ),
+        url=(f"{BASE_JPX}/listing/measures/alert/tvdivq0000000i86-att/jp_History_2019-2023.xlsx"),
         authority="日本取引所自主規制法人",
         law_basis="東京証券取引所有価証券上場規程第503条",
         enforcement_kind="contract_suspend",
@@ -189,10 +187,7 @@ SOURCES: list[JpxSource] = [
     ),
     JpxSource(
         name="上場契約違約金徴求",
-        url=(
-            f"{BASE_JPX}/listing/measures/listing-agreement-violation/"
-            "index.html"
-        ),
+        url=(f"{BASE_JPX}/listing/measures/listing-agreement-violation/index.html"),
         authority="日本取引所自主規制法人",
         law_basis="東京証券取引所有価証券上場規程第509条",
         enforcement_kind="fine",
@@ -335,7 +330,9 @@ def _parse_yen(text: str) -> int | None:
     if not text:
         return None
     s = unicodedata.normalize("NFKC", text).translate(_TR_DIGITS).replace(",", "")
-    m = re.search(r"(?:金|料|金額)?\s*(\d{1,4})\s*(?:億)?\s*(\d{1,4})?\s*(?:万)?\s*(\d{1,4})?\s*円", s)
+    m = re.search(
+        r"(?:金|料|金額)?\s*(\d{1,4})\s*(?:億)?\s*(\d{1,4})?\s*(?:万)?\s*(\d{1,4})?\s*円", s
+    )
     if not m:
         return None
     g = [int(x) if x else 0 for x in m.groups()]
@@ -457,9 +454,7 @@ def parse_delisted(html: str, src: JpxSource) -> list[EnfRow]:
         reason = cells[4]
         if not date_iso or not name:
             continue
-        summary = (
-            f"{name} (証券コード {code}, {market}) 上場廃止 理由: {reason}"
-        )[:1500]
+        summary = (f"{name} (証券コード {code}, {market}) 上場廃止 理由: {reason}")[:1500]
         rows.append(
             EnfRow(
                 target_name=name,
@@ -709,10 +704,7 @@ def parse_public_announce(html: str, src: JpxSource) -> list[EnfRow]:
         code = re.sub(r"\D", "", cells[2])[:6]
         market = cells[3]
         note = cells[5] if len(cells) > 5 else ""
-        summary = (
-            f"{name} (証券コード {code}, {market}) "
-            f"公表措置 備考: {note}"
-        )[:1500]
+        summary = (f"{name} (証券コード {code}, {market}) 公表措置 備考: {note}")[:1500]
         rows.append(
             EnfRow(
                 target_name=name,
@@ -750,10 +742,7 @@ def parse_agreement_violation(html: str, src: JpxSource) -> list[EnfRow]:
         market = cells[3]
         note = cells[5] if len(cells) > 5 else ""
         amt = _parse_yen(note)
-        summary = (
-            f"{name} (証券コード {code}, {market}) "
-            f"上場契約違約金徴求 備考: {note}"
-        )[:1500]
+        summary = (f"{name} (証券コード {code}, {market}) 上場契約違約金徴求 備考: {note}")[:1500]
         rows.append(
             EnfRow(
                 target_name=name,
@@ -954,10 +943,7 @@ def parse_improvement_period(html: str, src: JpxSource) -> list[EnfRow]:
         if not date_iso:
             continue
         note = cells[-1] if cells else ""
-        summary = (
-            f"{name} (証券コード {code}, {market}) "
-            f"改善期間該当 備考: {note}"
-        )[:1500]
+        summary = (f"{name} (証券コード {code}, {market}) 改善期間該当 備考: {note}")[:1500]
         rows.append(
             EnfRow(
                 target_name=name,
@@ -1022,20 +1008,19 @@ def parse_improvement_period_excel(body: bytes, src: JpxSource) -> list[EnfRow]:
                         break
             for c in r:
                 if isinstance(c, str) and c.strip() in (
-                    "プライム", "スタンダード", "グロース",
-                    "JASDAQスタンダード", "JASDAQグロース",
-                    "東証一部", "東証二部",
+                    "プライム",
+                    "スタンダード",
+                    "グロース",
+                    "JASDAQスタンダード",
+                    "JASDAQグロース",
+                    "東証一部",
+                    "東証二部",
                 ):
                     market = c.strip()
                     break
-            note_chunks = [
-                _normalize(str(c)) for c in r if isinstance(c, str) and c.strip()
-            ]
+            note_chunks = [_normalize(str(c)) for c in r if isinstance(c, str) and c.strip()]
             note = " | ".join(note_chunks)[:600]
-            summary = (
-                f"{name} (証券コード {code}, {market}) "
-                f"改善期間該当銘柄 詳細: {note}"
-            )[:1500]
+            summary = (f"{name} (証券コード {code}, {market}) 改善期間該当銘柄 詳細: {note}")[:1500]
             rows.append(
                 EnfRow(
                     target_name=name,
@@ -1057,9 +1042,7 @@ def parse_improvement_period_excel(body: bytes, src: JpxSource) -> list[EnfRow]:
 
 # -- CPAAOB 監査法人勧告 --
 
-CPAAOB_PDF_RE = re.compile(
-    r'/cpaaob/sonota/houdou/[^"]+\.pdf'
-)
+CPAAOB_PDF_RE = re.compile(r'/cpaaob/sonota/houdou/[^"]+\.pdf')
 CPAAOB_TITLE_RE = re.compile(
     r"(.+?)に対する検査結果に基づく勧告について(?:\s*[（(]([^)）]+)[)）])?"
 )
@@ -1185,8 +1168,7 @@ def existing_dedup_keys(conn: sqlite3.Connection) -> set[tuple[str, str, str]]:
     the fine kind."""
     out: set[tuple[str, str, str]] = set()
     cur = conn.execute(
-        "SELECT issuing_authority, issuance_date, target_name "
-        "FROM am_enforcement_detail"
+        "SELECT issuing_authority, issuance_date, target_name FROM am_enforcement_detail"
     )
     for a, d, n in cur.fetchall():
         if a and d and n:
@@ -1218,8 +1200,7 @@ def upsert_entity_and_enforcement(
     canonical_id = f"AM-ENF-JPX-{slug}{seq:04d}"
     domain = urlparse(row.source_url).netloc or None
     primary_name = (
-        f"{row.target_name} ({row.issuance_date}) - "
-        f"{row.issuing_authority} {row.enforcement_kind}"
+        f"{row.target_name} ({row.issuance_date}) - {row.issuing_authority} {row.enforcement_kind}"
     )[:500]
     raw_json = json.dumps(
         {
@@ -1335,7 +1316,9 @@ def write_rows(
             except sqlite3.Error as exc:
                 _LOG.error(
                     "insert error name=%r date=%s err=%s",
-                    r.target_name, r.issuance_date, exc,
+                    r.target_name,
+                    r.issuance_date,
+                    exc,
                 )
                 continue
         conn.commit()
@@ -1369,9 +1352,7 @@ def main(argv: list[str] | None = None) -> int:
         format="%(asctime)s %(levelname)s %(name)s %(message)s",
     )
     fetcher = Fetcher()
-    now_iso = datetime.now(UTC).isoformat(timespec="seconds").replace(
-        "+00:00", "Z"
-    )
+    now_iso = datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
 
     rows = collect_rows(fetcher)
     fetcher.close()
@@ -1385,9 +1366,7 @@ def main(argv: list[str] | None = None) -> int:
         for r in rows:
             sec = r.extra.get("source_section", "?")
             by_section[sec] = by_section.get(sec, 0) + 1
-            by_authority[r.issuing_authority] = (
-                by_authority.get(r.issuing_authority, 0) + 1
-            )
+            by_authority[r.issuing_authority] = by_authority.get(r.issuing_authority, 0) + 1
             by_kind[r.enforcement_kind] = by_kind.get(r.enforcement_kind, 0) + 1
         _LOG.info("--- by section ---")
         for k, v in sorted(by_section.items(), key=lambda x: -x[1]):
@@ -1401,8 +1380,11 @@ def main(argv: list[str] | None = None) -> int:
         for r in rows[:5]:
             _LOG.info(
                 "sample: name=%s date=%s auth=%s kind=%s law=%s",
-                r.target_name, r.issuance_date, r.issuing_authority,
-                r.enforcement_kind, r.related_law_ref,
+                r.target_name,
+                r.issuance_date,
+                r.issuing_authority,
+                r.enforcement_kind,
+                r.related_law_ref,
             )
         return 0
 
@@ -1415,7 +1397,10 @@ def main(argv: list[str] | None = None) -> int:
     ensure_tables(conn)
 
     inserted, dup_db, dup_batch, dup_fine = write_rows(
-        conn, rows, now_iso=now_iso, max_inserts=args.max_rows,
+        conn,
+        rows,
+        now_iso=now_iso,
+        max_inserts=args.max_rows,
     )
 
     # Authority + law breakdown of inserted rows (post-write)

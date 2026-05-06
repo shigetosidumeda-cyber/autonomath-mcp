@@ -45,6 +45,7 @@ Source URL pattern (per p-portal.go.jp observed layout — see SOURCE_URL_TODO):
     The query-string permalink is used when the 案件番号 is present; otherwise
     we fall back to the ZIP URL with a ``#<案件番号>`` fragment and log WARN.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -97,22 +98,14 @@ RATE_LIMIT_SECONDS = 3.0  # spec: 1 req / 3 sec
 # citation under CC-BY 4.0 — the fragment is additive, not a substitute.
 # ---------------------------------------------------------------------------
 P_PORTAL_ROOT = "https://www.p-portal.go.jp/"
-CASE_PERMALINK_TEMPLATE = (
-    "https://www.p-portal.go.jp/pps-web-biz/UZT001Kensaku?case_no={case_no}"
-)
+CASE_PERMALINK_TEMPLATE = "https://www.p-portal.go.jp/pps-web-biz/UZT001Kensaku?case_no={case_no}"
 
 # GEPS bulk-download URLs. These are documented inside the portal and
 # observed on 2026-04. If the deployment moves them, update here — the
 # rest of the script is URL-agnostic.
-BULK_URL_FULL_MONTHLY = (
-    "https://www.p-portal.go.jp/pps-web-biz/opendata/monthly_full_latest.zip"
-)
-BULK_URL_DIFF_DAILY = (
-    "https://www.p-portal.go.jp/pps-web-biz/opendata/daily_diff_latest.zip"
-)
-BULK_URL_FY_TEMPLATE = (
-    "https://www.p-portal.go.jp/pps-web-biz/opendata/fy{fiscal_year}_full.zip"
-)
+BULK_URL_FULL_MONTHLY = "https://www.p-portal.go.jp/pps-web-biz/opendata/monthly_full_latest.zip"
+BULK_URL_DIFF_DAILY = "https://www.p-portal.go.jp/pps-web-biz/opendata/daily_diff_latest.zip"
+BULK_URL_FY_TEMPLATE = "https://www.p-portal.go.jp/pps-web-biz/opendata/fy{fiscal_year}_full.zip"
 
 
 # ---------------------------------------------------------------------------
@@ -191,13 +184,53 @@ BID_KIND_MAP: dict[str, str] = {
 # Canonical 47-都道府県 list inlined from src/jpintel_mcp/api/vocab.py so the
 # ingest script stays self-contained (runs without the package installed).
 _PREFECTURES_CANONICAL: tuple[str, ...] = (
-    "北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県",
-    "茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県",
-    "新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県", "岐阜県",
-    "静岡県", "愛知県", "三重県", "滋賀県", "京都府", "大阪府", "兵庫県",
-    "奈良県", "和歌山県", "鳥取県", "島根県", "岡山県", "広島県", "山口県",
-    "徳島県", "香川県", "愛媛県", "高知県", "福岡県", "佐賀県", "長崎県",
-    "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県",
+    "北海道",
+    "青森県",
+    "岩手県",
+    "宮城県",
+    "秋田県",
+    "山形県",
+    "福島県",
+    "茨城県",
+    "栃木県",
+    "群馬県",
+    "埼玉県",
+    "千葉県",
+    "東京都",
+    "神奈川県",
+    "新潟県",
+    "富山県",
+    "石川県",
+    "福井県",
+    "山梨県",
+    "長野県",
+    "岐阜県",
+    "静岡県",
+    "愛知県",
+    "三重県",
+    "滋賀県",
+    "京都府",
+    "大阪府",
+    "兵庫県",
+    "奈良県",
+    "和歌山県",
+    "鳥取県",
+    "島根県",
+    "岡山県",
+    "広島県",
+    "山口県",
+    "徳島県",
+    "香川県",
+    "愛媛県",
+    "高知県",
+    "福岡県",
+    "佐賀県",
+    "長崎県",
+    "熊本県",
+    "大分県",
+    "宮崎県",
+    "鹿児島県",
+    "沖縄県",
 )
 
 
@@ -298,7 +331,7 @@ def _normalize_date(v: Any) -> str | None:
     for era, base in (("令和", 2018), ("平成", 1988), ("昭和", 1925)):
         if s.startswith(era):
             try:
-                rest = s[len(era):]
+                rest = s[len(era) :]
                 y_str, _, rest = rest.partition("年")
                 m_str, _, rest = rest.partition("月")
                 d_str, _, _ = rest.partition("日")
@@ -480,10 +513,14 @@ def polite_get_bytes(url: str, tries: int = MAX_RETRIES) -> bytes:
             return body
         except Exception as exc:  # noqa: BLE001
             last_exc = exc
-            wait = 2 ** attempt
+            wait = 2**attempt
             _LOG.warning(
                 "retry attempt=%d/%d url=%s err=%s sleep=%ds",
-                attempt, tries, url, exc, wait,
+                attempt,
+                tries,
+                url,
+                exc,
+                wait,
             )
             time.sleep(wait)
     assert last_exc is not None
@@ -547,6 +584,7 @@ def map_row_to_record(
     If any are missing the row is dropped and unmapped_counter['skip_missing']
     is incremented so the quality gate can fire (>20% drop).
     """
+
     def get(key: str) -> str | None:
         i = header_idx.get(key)
         if i is None or i >= len(row):
@@ -566,7 +604,9 @@ def map_row_to_record(
     source_url, used_fallback = _source_url_for(case_number, zip_url)
     if used_fallback:
         _LOG.warning(
-            "source_url_fallback case_number=%r zip=%s", case_number, zip_url,
+            "source_url_fallback case_number=%r zip=%s",
+            case_number,
+            zip_url,
         )
 
     # Attribution / lineage guard: should never trigger for GEPS, kept for
@@ -664,22 +704,39 @@ ON CONFLICT(unified_id) DO UPDATE SET
 
 def upsert_record(conn: sqlite3.Connection, rec: BidRecord) -> str:
     """UPSERT a single BidRecord; mirror to bids_fts; return 'insert'/'update'."""
-    existed = conn.execute(
-        "SELECT 1 FROM bids WHERE unified_id = ?", (rec.unified_id,)
-    ).fetchone() is not None
+    existed = (
+        conn.execute("SELECT 1 FROM bids WHERE unified_id = ?", (rec.unified_id,)).fetchone()
+        is not None
+    )
     conn.execute(
         _UPSERT_SQL,
         (
-            rec.unified_id, rec.bid_title, rec.bid_kind, rec.procuring_entity,
-            rec.procuring_houjin_bangou, rec.ministry, rec.prefecture,
+            rec.unified_id,
+            rec.bid_title,
+            rec.bid_kind,
+            rec.procuring_entity,
+            rec.procuring_houjin_bangou,
+            rec.ministry,
+            rec.prefecture,
             rec.program_id_hint,
-            rec.announcement_date, rec.question_deadline, rec.bid_deadline,
+            rec.announcement_date,
+            rec.question_deadline,
+            rec.bid_deadline,
             rec.decision_date,
-            rec.budget_ceiling_yen, rec.awarded_amount_yen,
-            rec.winner_name, rec.winner_houjin_bangou, rec.participant_count,
-            rec.bid_description, rec.eligibility_conditions, rec.classification_code,
-            rec.source_url, rec.source_excerpt, rec.source_checksum,
-            rec.confidence, rec.fetched_at, rec.updated_at,
+            rec.budget_ceiling_yen,
+            rec.awarded_amount_yen,
+            rec.winner_name,
+            rec.winner_houjin_bangou,
+            rec.participant_count,
+            rec.bid_description,
+            rec.eligibility_conditions,
+            rec.classification_code,
+            rec.source_url,
+            rec.source_excerpt,
+            rec.source_checksum,
+            rec.confidence,
+            rec.fetched_at,
+            rec.updated_at,
         ),
     )
     # FTS mirror: delete + insert keeps the row fresh on updates. The FTS
@@ -736,8 +793,13 @@ def run(
         return 1
 
     counts: dict[str, int] = {
-        "read": 0, "insert": 0, "update": 0,
-        "skip_since": 0, "skip_missing": 0, "skip_banned": 0, "skip_check": 0,
+        "read": 0,
+        "insert": 0,
+        "update": 0,
+        "skip_since": 0,
+        "skip_missing": 0,
+        "skip_banned": 0,
+        "skip_check": 0,
     }
 
     conn: sqlite3.Connection | None = None
@@ -756,7 +818,9 @@ def run(
             missing = [k for k, v in header_idx.items() if v is None]
             _LOG.info(
                 "csv_member name=%s cols=%d unmapped_keys=%s",
-                member, len(header), missing,
+                member,
+                len(header),
+                missing,
             )
 
             for raw_row in reader:
@@ -765,7 +829,11 @@ def run(
                 counts["read"] += 1
 
                 rec = map_row_to_record(
-                    member, header_idx, raw_row, zip_url, fetched_at,
+                    member,
+                    header_idx,
+                    raw_row,
+                    zip_url,
+                    fetched_at,
                     unmapped_counter=counts,
                 )
                 if rec is None:
@@ -810,7 +878,10 @@ def run(
     missing_ratio = counts.get("skip_missing", 0) / read
     _LOG.info("counts=%s missing_ratio=%.2f", counts, missing_ratio)
     if missing_ratio > 0.20 and counts["read"] > 50:
-        _LOG.error("column_drift_gate missing_ratio=%.2f >0.20 — CSV column map needs refresh", missing_ratio)
+        _LOG.error(
+            "column_drift_gate missing_ratio=%.2f >0.20 — CSV column map needs refresh",
+            missing_ratio,
+        )
         return 2
     if counts["read"] > 0 and (counts["insert"] + counts["update"]) == 0 and not dry_run:
         _LOG.error("zero_rows_gate read=%d but nothing written", counts["read"])
@@ -823,21 +894,36 @@ def parse_args() -> argparse.Namespace:
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    ap.add_argument("--db", type=Path, default=DEFAULT_DB,
-                    help=f"SQLite DB path (default: {DEFAULT_DB})")
-    ap.add_argument("--mode", choices=("full", "diff", "backfill"), default="diff",
-                    help="full = monthly full dump; diff = yesterday's diff; "
-                         "backfill = full fiscal-year archive (requires --fiscal-year)")
-    ap.add_argument("--fiscal-year", type=int, default=None,
-                    help="FY for --mode backfill (e.g. 2024). Ignored otherwise.")
-    ap.add_argument("--since", type=str, default=None,
-                    help="Skip rows with announcement_date older than YYYY-MM-DD")
-    ap.add_argument("--limit", type=int, default=None,
-                    help="Stop after N successful UPSERTs (smoke-test shortcut)")
-    ap.add_argument("--dry-run", action="store_true",
-                    help="Parse + count only; never write to DB")
-    ap.add_argument("--log-level", default="INFO",
-                    choices=("DEBUG", "INFO", "WARNING", "ERROR"))
+    ap.add_argument(
+        "--db", type=Path, default=DEFAULT_DB, help=f"SQLite DB path (default: {DEFAULT_DB})"
+    )
+    ap.add_argument(
+        "--mode",
+        choices=("full", "diff", "backfill"),
+        default="diff",
+        help="full = monthly full dump; diff = yesterday's diff; "
+        "backfill = full fiscal-year archive (requires --fiscal-year)",
+    )
+    ap.add_argument(
+        "--fiscal-year",
+        type=int,
+        default=None,
+        help="FY for --mode backfill (e.g. 2024). Ignored otherwise.",
+    )
+    ap.add_argument(
+        "--since",
+        type=str,
+        default=None,
+        help="Skip rows with announcement_date older than YYYY-MM-DD",
+    )
+    ap.add_argument(
+        "--limit",
+        type=int,
+        default=None,
+        help="Stop after N successful UPSERTs (smoke-test shortcut)",
+    )
+    ap.add_argument("--dry-run", action="store_true", help="Parse + count only; never write to DB")
+    ap.add_argument("--log-level", default="INFO", choices=("DEBUG", "INFO", "WARNING", "ERROR"))
     return ap.parse_args()
 
 
@@ -856,7 +942,12 @@ def main() -> int:
     )
     _LOG.info(
         "start db=%s mode=%s fiscal_year=%s since=%s limit=%s dry_run=%s log=%s",
-        args.db, args.mode, args.fiscal_year, args.since, args.limit, args.dry_run,
+        args.db,
+        args.mode,
+        args.fiscal_year,
+        args.since,
+        args.limit,
+        args.dry_run,
         log_path,
     )
     return run(

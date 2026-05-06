@@ -20,6 +20,7 @@ hardcoded-main-only version of the script.
 
 NO Anthropic API. NO LLM.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -162,11 +163,11 @@ def write_all(
         for canonical_id, egov_lawid, kind, articles in plan:
             for art in articles:
                 source_url = (
-                    f"https://laws.e-gov.go.jp/law/{egov_lawid}"
-                    f"#Mp-At_{art['article_number']}"
+                    f"https://laws.e-gov.go.jp/law/{egov_lawid}#Mp-At_{art['article_number']}"
                 )
                 try:
-                    con.execute("""
+                    con.execute(
+                        """
                         INSERT INTO am_law_article (
                             law_canonical_id, article_number, article_number_sort,
                             title, text_summary, text_full,
@@ -180,17 +181,19 @@ def write_all(
                             source_url = excluded.source_url,
                             source_fetched_at = excluded.source_fetched_at,
                             article_kind = excluded.article_kind
-                    """, (
-                        canonical_id,
-                        art['article_number'],
-                        art['article_number_sort'],
-                        art['title'],
-                        art['text_full'][:500],
-                        art['text_full'],
-                        source_url,
-                        fetched_at,
-                        kind,
-                    ))
+                    """,
+                        (
+                            canonical_id,
+                            art["article_number"],
+                            art["article_number_sort"],
+                            art["title"],
+                            art["text_full"][:500],
+                            art["text_full"],
+                            source_url,
+                            fetched_at,
+                            kind,
+                        ),
+                    )
                     total += 1
                     by_kind[kind] = by_kind.get(kind, 0) + 1
                 except Exception as e:
@@ -207,14 +210,22 @@ def write_all(
 def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--db", default=str(DEFAULT_DB))
-    p.add_argument("--limit", type=int, default=120,
-                   help="Max number of laws to ingest in this run.")
-    p.add_argument("--include-non-empty", action="store_true",
-                   help="Also re-fetch laws that already have any articles ingested.")
-    p.add_argument("--retag-only", action="store_true",
-                   help="Skip ingestion; only re-tag main->enforcement_* on existing rows.")
-    p.add_argument("--no-retag", action="store_true",
-                   help="Do not perform retag pass before ingestion.")
+    p.add_argument(
+        "--limit", type=int, default=120, help="Max number of laws to ingest in this run."
+    )
+    p.add_argument(
+        "--include-non-empty",
+        action="store_true",
+        help="Also re-fetch laws that already have any articles ingested.",
+    )
+    p.add_argument(
+        "--retag-only",
+        action="store_true",
+        help="Skip ingestion; only re-tag main->enforcement_* on existing rows.",
+    )
+    p.add_argument(
+        "--no-retag", action="store_true", help="Do not perform retag pass before ingestion."
+    )
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--verbose", action="store_true")
     args = p.parse_args()
@@ -234,9 +245,7 @@ def main() -> int:
         con.close()
         return 0
 
-    candidates = select_candidates(
-        con, only_empty=not args.include_non_empty, limit=args.limit
-    )
+    candidates = select_candidates(con, only_empty=not args.include_non_empty, limit=args.limit)
     print(f"[bulk] candidates={len(candidates)}  dry_run={args.dry_run}")
     con.close()  # release any read transaction held by select_candidates
 
@@ -264,8 +273,7 @@ def main() -> int:
         if i < len(candidates):
             time.sleep(SLEEP_BETWEEN)
 
-    print(f"[bulk] fetch_phase_done plan_size={len(plan)} skipped={len(skipped)}",
-          flush=True)
+    print(f"[bulk] fetch_phase_done plan_size={len(plan)} skipped={len(skipped)}", flush=True)
 
     # PHASE 2: SINGLE write transaction for everything
     total_articles = sum(len(p[3]) for p in plan)

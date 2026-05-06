@@ -53,6 +53,7 @@ CLI:
     python scripts/ingest/ingest_enforcement_kanpou_bankruptcy.py --max-inserts 2000
     python scripts/ingest/ingest_enforcement_kanpou_bankruptcy.py --dry-run -v
 """
+
 from __future__ import annotations
 
 import argparse
@@ -82,6 +83,7 @@ except ImportError as exc:
 
 try:
     import pdfplumber  # type: ignore
+
     _HAVE_PDFPLUMBER = True
 except ImportError:
     _HAVE_PDFPLUMBER = False
@@ -92,8 +94,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_DB = REPO_ROOT / "autonomath.db"
 
 USER_AGENT = (
-    "AutonoMath/0.1.0 (+https://bookyou.net) "
-    "ingest-kanpou-bankruptcy (contact=ops@jpcite.com)"
+    "AutonoMath/0.1.0 (+https://bookyou.net) ingest-kanpou-bankruptcy (contact=ops@jpcite.com)"
 )
 BASE = "https://www.kanpo.go.jp"
 HTTP_TIMEOUT = 60
@@ -107,44 +108,44 @@ RATE_SLEEP = 0.6  # be polite to NPB infra
 # Section heading → (canonical label, enforcement_kind, law basis)
 SECTION_MAP: dict[str, tuple[str, str, str]] = {
     # --- 裁判所 court bankruptcy ---
-    "破産手続開始":           ("破産手続開始決定",   "license_revoke",      "破産法第30条"),
-    "破産手続廃止":           ("破産手続廃止決定",   "license_revoke",      "破産法第217条"),
-    "破産手続終結":           ("破産手続終結決定",   "license_revoke",      "破産法第220条"),
-    "破産手続終結及び免責許可決定": ("破産手続終結決定", "license_revoke",  "破産法第220条"),
-    "破産債権の届出期間":     ("破産債権届出期間",   "license_revoke",      "破産法第31条"),
+    "破産手続開始": ("破産手続開始決定", "license_revoke", "破産法第30条"),
+    "破産手続廃止": ("破産手続廃止決定", "license_revoke", "破産法第217条"),
+    "破産手続終結": ("破産手続終結決定", "license_revoke", "破産法第220条"),
+    "破産手続終結及び免責許可決定": ("破産手続終結決定", "license_revoke", "破産法第220条"),
+    "破産債権の届出期間": ("破産債権届出期間", "license_revoke", "破産法第31条"),
     # 特別清算
-    "特別清算開始":           ("特別清算開始命令",   "contract_suspend",    "会社法第511条"),
-    "特別清算終結":           ("特別清算終結決定",   "contract_suspend",    "会社法第573条"),
-    "特別清算協定認可":       ("特別清算協定認可",   "contract_suspend",    "会社法第569条"),
-    "監督命令":               ("監督命令",          "contract_suspend",    "会社法第522条"),
-    "監督命令取消":           ("監督命令取消",       "contract_suspend",    "会社法第522条"),
+    "特別清算開始": ("特別清算開始命令", "contract_suspend", "会社法第511条"),
+    "特別清算終結": ("特別清算終結決定", "contract_suspend", "会社法第573条"),
+    "特別清算協定認可": ("特別清算協定認可", "contract_suspend", "会社法第569条"),
+    "監督命令": ("監督命令", "contract_suspend", "会社法第522条"),
+    "監督命令取消": ("監督命令取消", "contract_suspend", "会社法第522条"),
     # 民事再生
-    "再生手続開始":           ("民事再生手続開始決定", "business_improvement", "民事再生法第33条"),
-    "再生手続終結":           ("民事再生手続終結決定", "business_improvement", "民事再生法第188条"),
-    "再生計画認可":           ("民事再生計画認可決定", "business_improvement", "民事再生法第174条"),
-    "再生計画取消":           ("民事再生計画取消決定", "business_improvement", "民事再生法第189条"),
-    "再生債権":               ("民事再生債権",       "business_improvement", "民事再生法第94条"),
-    "小規模個人再生":         ("小規模個人再生手続開始", "business_improvement", "民事再生法第221条"),
-    "給与所得者等再生":       ("給与所得者等再生手続開始", "business_improvement", "民事再生法第239条"),
+    "再生手続開始": ("民事再生手続開始決定", "business_improvement", "民事再生法第33条"),
+    "再生手続終結": ("民事再生手続終結決定", "business_improvement", "民事再生法第188条"),
+    "再生計画認可": ("民事再生計画認可決定", "business_improvement", "民事再生法第174条"),
+    "再生計画取消": ("民事再生計画取消決定", "business_improvement", "民事再生法第189条"),
+    "再生債権": ("民事再生債権", "business_improvement", "民事再生法第94条"),
+    "小規模個人再生": ("小規模個人再生手続開始", "business_improvement", "民事再生法第221条"),
+    "給与所得者等再生": ("給与所得者等再生手続開始", "business_improvement", "民事再生法第239条"),
     # 会社更生
-    "会社更生手続開始":       ("会社更生手続開始決定", "other",            "会社更生法第41条"),
-    "会社更生計画認可":       ("会社更生計画認可決定", "other",            "会社更生法第199条"),
+    "会社更生手続開始": ("会社更生手続開始決定", "other", "会社更生法第41条"),
+    "会社更生計画認可": ("会社更生計画認可決定", "other", "会社更生法第199条"),
     # --- 会社その他 corporate notices ---
-    "解散公告":               ("解散公告",           "license_revoke",      "会社法第471条"),
-    "清算結了公告":           ("清算結了公告",       "license_revoke",      "会社法第507条"),
-    "合併公告":               ("合併公告",           "other",            "会社法第789条"),
-    "吸収分割公告":           ("吸収分割公告",       "other",            "会社法第789条"),
-    "新設分割公告":           ("新設分割公告",       "other",            "会社法第810条"),
-    "株式交換公告":           ("株式交換公告",       "other",            "会社法第789条"),
-    "株式移転公告":           ("株式移転公告",       "other",            "会社法第810条"),
-    "組織変更公告":           ("組織変更公告",       "other",            "会社法第779条"),
-    "事業譲渡公告":           ("事業譲渡公告",       "other",            "会社法第467条"),
-    "資本金の額の減少公告":   ("資本金減少公告",     "other",            "会社法第449条"),
-    "優先資本金の額の減少公告": ("優先資本金減少公告", "other",          "資産流動化法第109条"),
-    "準備金の額の減少公告":   ("準備金減少公告",     "other",            "会社法第449条"),
-    "資本準備金の額の減少公告": ("資本準備金減少公告", "other",          "会社法第449条"),
-    "債権申出の催告":         ("債権申出の催告",     "other",            "確定給付企業年金法第83条"),
-    "債権申出の公告":         ("債権申出の公告",     "other",            "確定給付企業年金法第83条"),
+    "解散公告": ("解散公告", "license_revoke", "会社法第471条"),
+    "清算結了公告": ("清算結了公告", "license_revoke", "会社法第507条"),
+    "合併公告": ("合併公告", "other", "会社法第789条"),
+    "吸収分割公告": ("吸収分割公告", "other", "会社法第789条"),
+    "新設分割公告": ("新設分割公告", "other", "会社法第810条"),
+    "株式交換公告": ("株式交換公告", "other", "会社法第789条"),
+    "株式移転公告": ("株式移転公告", "other", "会社法第810条"),
+    "組織変更公告": ("組織変更公告", "other", "会社法第779条"),
+    "事業譲渡公告": ("事業譲渡公告", "other", "会社法第467条"),
+    "資本金の額の減少公告": ("資本金減少公告", "other", "会社法第449条"),
+    "優先資本金の額の減少公告": ("優先資本金減少公告", "other", "資産流動化法第109条"),
+    "準備金の額の減少公告": ("準備金減少公告", "other", "会社法第449条"),
+    "資本準備金の額の減少公告": ("資本準備金減少公告", "other", "会社法第449条"),
+    "債権申出の催告": ("債権申出の催告", "other", "確定給付企業年金法第83条"),
+    "債権申出の公告": ("債権申出の公告", "other", "確定給付企業年金法第83条"),
 }
 
 # Compiled section regex (longest first to prefer specific matches)
@@ -157,9 +158,7 @@ WAREKI_RE = re.compile(
     r"([0-9０-９一二三四五六七八九十〇]+)\s*月\s*"
     r"([0-9０-９一二三四五六七八九十〇]+)\s*日"
 )
-SEIREKI_RE = re.compile(
-    r"([0-9０-９]{4})\s*年\s*([0-9０-９]{1,2})\s*月\s*([0-9０-９]{1,2})\s*日"
-)
+SEIREKI_RE = re.compile(r"([0-9０-９]{4})\s*年\s*([0-9０-９]{1,2})\s*月\s*([0-9０-９]{1,2})\s*日")
 # Court name regex e.g. "東京地方裁判所民事第２０部" / "大阪地方裁判所第６民事部"
 COURT_RE = re.compile(
     r"(?:[一-鿿々]{2,8})\s*(?:地方|高等|簡易|家庭)?裁判所"
@@ -168,12 +167,30 @@ COURT_RE = re.compile(
 )
 # 法人 名 capture - must end in a recognized 法人 suffix
 COMPANY_SUFFIXES = (
-    "株式会社", "有限会社", "合同会社", "合資会社", "合名会社",
-    "一般社団法人", "公益社団法人", "一般財団法人", "公益財団法人",
-    "社団法人", "財団法人", "医療法人", "学校法人", "社会福祉法人",
-    "宗教法人", "独立行政法人", "国立大学法人", "公立大学法人",
-    "事業協同組合", "農業協同組合", "信用組合", "信用金庫",
-    "特定目的会社", "投資法人",
+    "株式会社",
+    "有限会社",
+    "合同会社",
+    "合資会社",
+    "合名会社",
+    "一般社団法人",
+    "公益社団法人",
+    "一般財団法人",
+    "公益財団法人",
+    "社団法人",
+    "財団法人",
+    "医療法人",
+    "学校法人",
+    "社会福祉法人",
+    "宗教法人",
+    "独立行政法人",
+    "国立大学法人",
+    "公立大学法人",
+    "事業協同組合",
+    "農業協同組合",
+    "信用組合",
+    "信用金庫",
+    "特定目的会社",
+    "投資法人",
 )
 # Case number: 令和X年（フ/ヒ/ヲ/ホ/ハ）第NNN号
 CASE_RE = re.compile(
@@ -192,10 +209,20 @@ def _normalize(text: str) -> str:
 
 
 _KANJI_DIGITS = {
-    "〇": 0, "零": 0,
-    "一": 1, "二": 2, "三": 3, "四": 4, "五": 5,
-    "六": 6, "七": 7, "八": 8, "九": 9,
-    "十": 10, "百": 100, "千": 1000,
+    "〇": 0,
+    "零": 0,
+    "一": 1,
+    "二": 2,
+    "三": 3,
+    "四": 4,
+    "五": 5,
+    "六": 6,
+    "七": 7,
+    "八": 8,
+    "九": 9,
+    "十": 10,
+    "百": 100,
+    "千": 1000,
 }
 
 
@@ -282,7 +309,9 @@ class HttpClient:
         for attempt in range(3):
             try:
                 resp = self.session.get(
-                    url, timeout=HTTP_TIMEOUT, allow_redirects=True,
+                    url,
+                    timeout=HTTP_TIMEOUT,
+                    allow_redirects=True,
                 )
                 self._last = time.monotonic()
                 if resp.status_code == 200:
@@ -292,7 +321,7 @@ class HttpClient:
                 last_err = RuntimeError(f"{resp.status_code} for {url}")
             except requests.RequestException as exc:
                 last_err = exc
-            time.sleep(2 ** attempt)
+            time.sleep(2**attempt)
         _LOG.debug("fetch failed after retries: %s: %s", url, last_err)
         return None
 
@@ -301,7 +330,9 @@ class HttpClient:
         for attempt in range(3):
             try:
                 resp = self.session.get(
-                    url, timeout=HTTP_TIMEOUT, allow_redirects=True,
+                    url,
+                    timeout=HTTP_TIMEOUT,
+                    allow_redirects=True,
                 )
                 self._last = time.monotonic()
                 if resp.status_code == 200:
@@ -310,7 +341,7 @@ class HttpClient:
                     return None
             except requests.RequestException:
                 pass
-            time.sleep(2 ** attempt)
+            time.sleep(2**attempt)
         return None
 
 
@@ -321,9 +352,9 @@ class HttpClient:
 
 @dataclass
 class Issue:
-    date: str       # YYYYMMDD
-    issue_id: str   # e.g. 20260424h01694 or 20260424g00096
-    kind: str       # 'h' (本紙), 'g' (号外), 'c' (政府調達), 't' (特別号外)
+    date: str  # YYYYMMDD
+    issue_id: str  # e.g. 20260424h01694 or 20260424g00096
+    kind: str  # 'h' (本紙), 'g' (号外), 'c' (政府調達), 't' (特別号外)
     page_count: int = 0
 
 
@@ -342,9 +373,7 @@ def discover_issues(http: HttpClient, days: int) -> list[Issue]:
         _LOG.error("failed to fetch kanpo.go.jp homepage")
         return out
     # Extract YYYYMMDD/<issue_id> patterns
-    issue_re = re.compile(
-        r'href="\.\/(?P<date>20\d{6})/(?P<id>20\d{6}[hgct]\d+)/'
-    )
+    issue_re = re.compile(r'href="\.\/(?P<date>20\d{6})/(?P<id>20\d{6}[hgct]\d+)/')
     seen: set[str] = set()
     for m in issue_re.finditer(home.text):
         iid = m.group("id")
@@ -434,22 +463,22 @@ def extract_page_text(pdf_bytes: bytes) -> str:
 
 @dataclass
 class Record:
-    issue_date: str          # ISO yyyy-mm-dd (掲載日)
-    issue_id: str            # 20260424h01694 etc.
+    issue_date: str  # ISO yyyy-mm-dd (掲載日)
+    issue_id: str  # 20260424h01694 etc.
     page_no: int
-    section: str             # canonical Japanese section label
-    enforcement_kind: str    # mapped enum
-    law_basis: str           # law article string
-    target_name: str         # 法人名
-    address: str | None      # 本店所在地
+    section: str  # canonical Japanese section label
+    enforcement_kind: str  # mapped enum
+    law_basis: str  # law article string
+    target_name: str  # 法人名
+    address: str | None  # 本店所在地
     decision_date: str | None  # 決定年月日 ISO
     case_number: str | None  # 令和X年（ヒ）第NNN号
-    court: str | None        # 裁判所名
+    court: str | None  # 裁判所名
     representative: str | None  # 代表者
-    raw_excerpt: str         # 200-1000 char excerpt
-    source_url: str          # PDF URL
-    source_page_url: str     # HTML detail URL
-    source_topic: str        # e.g. 'kanpou_court' / 'kanpou_company'
+    raw_excerpt: str  # 200-1000 char excerpt
+    source_url: str  # PDF URL
+    source_page_url: str  # HTML detail URL
+    source_topic: str  # e.g. 'kanpou_court' / 'kanpou_company'
 
     def slug(self) -> str:
         return _slugify(f"{self.section}-{self.target_name}", 32)
@@ -465,7 +494,9 @@ def _find_company_in_window(window: str) -> tuple[str | None, str | None]:
     suffixes_alt = "|".join(re.escape(s) for s in COMPANY_SUFFIXES)
     # A: name + suffix at end
     pattern_a = re.compile(
-        r"(?P<name>[一-鿿々ぁ-ゖァ-ヺー〇A-Za-zＡ-Ｚａ-ｚ0-9０-９・\-－&'’＆.\.,，、]{1,40}?(?:" + suffixes_alt + r"))"
+        r"(?P<name>[一-鿿々ぁ-ゖァ-ヺー〇A-Za-zＡ-Ｚａ-ｚ0-9０-９・\-－&'’＆.\.,，、]{1,40}?(?:"
+        + suffixes_alt
+        + r"))"
     )
     # B: 株式会社 + name (株式会社が前置き)
     pattern_b = re.compile(
@@ -482,7 +513,7 @@ def _find_company_in_window(window: str) -> tuple[str | None, str | None]:
     found.sort(key=lambda x: x[0])
     name = found[0][1].strip()
     # Address hint: text right after name
-    rest = window[found[0][0] + len(name): found[0][0] + len(name) + 200]
+    rest = window[found[0][0] + len(name) : found[0][0] + len(name) + 200]
     addr_m = re.search(
         r"((?:[一-鿿々]{2,4}(?:都|道|府|県))[一-鿿々ぁ-ゖァ-ヺー0-9０-９\-\s　A-Za-z丁目番地号]{4,80})",
         rest,
@@ -599,32 +630,28 @@ def extract_records(
         else:
             topic = "kanpou_court"
         # Build URLs
-        pdf_url = (
-            f"{BASE}/{issue.date}/{issue.issue_id}/pdf/"
-            f"{issue.issue_id}{page_no:04d}.pdf"
+        pdf_url = f"{BASE}/{issue.date}/{issue.issue_id}/pdf/{issue.issue_id}{page_no:04d}.pdf"
+        page_url = f"{BASE}/{issue.date}/{issue.issue_id}/{issue.issue_id}{page_no:04d}f.html"
+        out.append(
+            Record(
+                issue_date=issue_date_iso,
+                issue_id=issue.issue_id,
+                page_no=page_no,
+                section=canonical_section,
+                enforcement_kind=enf_kind,
+                law_basis=law_basis,
+                target_name=name,
+                address=addr,
+                decision_date=eff_date,
+                case_number=case_no,
+                court=court,
+                representative=rep,
+                raw_excerpt=excerpt,
+                source_url=pdf_url,
+                source_page_url=page_url,
+                source_topic=topic,
+            )
         )
-        page_url = (
-            f"{BASE}/{issue.date}/{issue.issue_id}/"
-            f"{issue.issue_id}{page_no:04d}f.html"
-        )
-        out.append(Record(
-            issue_date=issue_date_iso,
-            issue_id=issue.issue_id,
-            page_no=page_no,
-            section=canonical_section,
-            enforcement_kind=enf_kind,
-            law_basis=law_basis,
-            target_name=name,
-            address=addr,
-            decision_date=eff_date,
-            case_number=case_no,
-            court=court,
-            representative=rep,
-            raw_excerpt=excerpt,
-            source_url=pdf_url,
-            source_page_url=page_url,
-            source_topic=topic,
-        ))
     return out
 
 
@@ -798,15 +825,10 @@ def process_issue(
     pages = candidate_court_pages(issue, issue.page_count)
     if not pages:
         return []
-    issue_date_iso = (
-        f"{issue.date[:4]}-{issue.date[4:6]}-{issue.date[6:]}"
-    )
+    issue_date_iso = f"{issue.date[:4]}-{issue.date[4:6]}-{issue.date[6:]}"
     records: list[Record] = []
     for p in pages:
-        pdf_url = (
-            f"{BASE}/{issue.date}/{issue.issue_id}/pdf/"
-            f"{issue.issue_id}{p:04d}.pdf"
-        )
+        pdf_url = f"{BASE}/{issue.date}/{issue.issue_id}/pdf/{issue.issue_id}{p:04d}.pdf"
         pdf_bytes = http.get_bytes(pdf_url)
         if not pdf_bytes:
             continue
@@ -814,12 +836,18 @@ def process_issue(
         if len(text) < 100:
             continue  # CID-only page, skip
         page_records = extract_records(
-            text, issue=issue, page_no=p, issue_date_iso=issue_date_iso,
+            text,
+            issue=issue,
+            page_no=p,
+            issue_date_iso=issue_date_iso,
         )
         records.extend(page_records)
     _LOG.info(
         "[issue] %s/%s -> %d records (pages=%d)",
-        issue.date, issue.issue_id, len(records), len(pages),
+        issue.date,
+        issue.issue_id,
+        len(records),
+        len(pages),
     )
     return records
 
@@ -838,9 +866,7 @@ def run(
     )
     for noisy in ("pdfminer", "pdfplumber", "urllib3", "requests"):
         logging.getLogger(noisy).setLevel(logging.WARNING)
-    now_iso = (
-        datetime.now(tz=UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
-    )
+    now_iso = datetime.now(tz=UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
 
     http = HttpClient()
 
@@ -860,24 +886,30 @@ def run(
         sec_count: dict[str, int] = {}
         for r in preview_records:
             sec_count[r.section] = sec_count.get(r.section, 0) + 1
-        print(json.dumps({
-            "dry_run": True,
-            "issues_discovered": len(issues),
-            "preview_records": len(preview_records),
-            "by_section": sec_count,
-            "samples": [
+        print(
+            json.dumps(
                 {
-                    "section": r.section,
-                    "target_name": r.target_name,
-                    "decision_date": r.decision_date,
-                    "case_number": r.case_number,
-                    "court": r.court,
-                    "law_basis": r.law_basis,
-                    "issue_id": r.issue_id,
-                }
-                for r in preview_records[:10]
-            ],
-        }, ensure_ascii=False, indent=2))
+                    "dry_run": True,
+                    "issues_discovered": len(issues),
+                    "preview_records": len(preview_records),
+                    "by_section": sec_count,
+                    "samples": [
+                        {
+                            "section": r.section,
+                            "target_name": r.target_name,
+                            "decision_date": r.decision_date,
+                            "case_number": r.case_number,
+                            "court": r.court,
+                            "law_basis": r.law_basis,
+                            "issue_id": r.issue_id,
+                        }
+                        for r in preview_records[:10]
+                    ],
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
         return 0
 
     # 2. Open DB
@@ -918,7 +950,8 @@ def run(
         for issue in issues:
             if inserted >= max_inserts:
                 _LOG.info(
-                    "reached --max-inserts=%d, stopping", max_inserts,
+                    "reached --max-inserts=%d, stopping",
+                    max_inserts,
                 )
                 break
             try:
@@ -975,30 +1008,30 @@ def run(
                     breakdown_kind[rec.enforcement_kind] = (
                         breakdown_kind.get(rec.enforcement_kind, 0) + 1
                     )
-                    breakdown_section[rec.section] = (
-                        breakdown_section.get(rec.section, 0) + 1
-                    )
+                    breakdown_section[rec.section] = breakdown_section.get(rec.section, 0) + 1
                     if rec.court:
-                        breakdown_court[rec.court] = (
-                            breakdown_court.get(rec.court, 0) + 1
-                        )
+                        breakdown_court[rec.court] = breakdown_court.get(rec.court, 0) + 1
                     if len(samples) < 8:
-                        samples.append({
-                            "canonical_id": canonical_id,
-                            "section": rec.section,
-                            "target_name": rec.target_name,
-                            "decision_date": rec.decision_date,
-                            "case_number": rec.case_number,
-                            "court": rec.court,
-                            "law_basis": rec.law_basis,
-                            "address": rec.address,
-                        })
+                        samples.append(
+                            {
+                                "canonical_id": canonical_id,
+                                "section": rec.section,
+                                "target_name": rec.target_name,
+                                "decision_date": rec.decision_date,
+                                "case_number": rec.case_number,
+                                "court": rec.court,
+                                "law_basis": rec.law_basis,
+                                "address": rec.address,
+                            }
+                        )
                     if inserted % 25 == 0:
                         _LOG.info(
                             "progress inserted=%d (target=%d) latest=%s [%s] %s",
-                            inserted, max_inserts,
+                            inserted,
+                            max_inserts,
                             rec.decision_date or rec.issue_date,
-                            rec.section, rec.target_name[:30],
+                            rec.section,
+                            rec.target_name[:30],
                         )
     finally:
         # Ensure final state queried even on early exit
@@ -1021,27 +1054,37 @@ def run(
 
     _LOG.info(
         "done inserted=%d dup_db=%d dup_id=%d issues=%d",
-        inserted, skipped_dup_db, skipped_dup_id, len(issues),
+        inserted,
+        skipped_dup_db,
+        skipped_dup_id,
+        len(issues),
     )
     _LOG.info(
         "post-insert: kanpou_or_bankruptcy_rows=%d total_am_enforcement_detail=%d",
-        after_kanpou, after_total,
+        after_kanpou,
+        after_total,
     )
 
-    print(json.dumps({
-        "inserted": inserted,
-        "breakdown_by_enforcement_kind": breakdown_kind,
-        "breakdown_by_section": breakdown_section,
-        "breakdown_by_court_top10": dict(
-            sorted(breakdown_court.items(), key=lambda x: x[1], reverse=True)[:10]
-        ),
-        "skipped_dup_db": skipped_dup_db,
-        "skipped_dup_canonical_id": skipped_dup_id,
-        "issues_processed": len(issues),
-        "post_kanpou_or_bankruptcy_rows": after_kanpou,
-        "post_am_enforcement_detail_total": after_total,
-        "samples": samples,
-    }, ensure_ascii=False, indent=2))
+    print(
+        json.dumps(
+            {
+                "inserted": inserted,
+                "breakdown_by_enforcement_kind": breakdown_kind,
+                "breakdown_by_section": breakdown_section,
+                "breakdown_by_court_top10": dict(
+                    sorted(breakdown_court.items(), key=lambda x: x[1], reverse=True)[:10]
+                ),
+                "skipped_dup_db": skipped_dup_db,
+                "skipped_dup_canonical_id": skipped_dup_id,
+                "issues_processed": len(issues),
+                "post_kanpou_or_bankruptcy_rows": after_kanpou,
+                "post_am_enforcement_detail_total": after_total,
+                "samples": samples,
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
     return inserted
 
 
@@ -1049,11 +1092,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--db", type=Path, default=DEFAULT_DB)
     ap.add_argument(
-        "--days", type=int, default=90,
+        "--days",
+        type=int,
+        default=90,
         help="walk daily issues from the last N days (default 90)",
     )
     ap.add_argument(
-        "--max-inserts", type=int, default=2500,
+        "--max-inserts",
+        type=int,
+        default=2500,
         help="stop after this many fresh inserts (default 2500)",
     )
     ap.add_argument("--dry-run", action="store_true")

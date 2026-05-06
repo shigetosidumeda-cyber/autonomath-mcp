@@ -16,6 +16,7 @@ Usage:
         --canonical-id law:corporate-tax \\
         --dry-run
 """
+
 from __future__ import annotations
 
 import argparse
@@ -61,7 +62,7 @@ def fetch_law_xml(law_id: str) -> bytes:
             last_err = exc
             if attempt == MAX_RETRIES:
                 raise
-            time.sleep(2 ** attempt)
+            time.sleep(2**attempt)
             continue
 
         if resp.status_code == 200:
@@ -69,13 +70,11 @@ def fetch_law_xml(law_id: str) -> bytes:
         if resp.status_code == 404:
             raise FileNotFoundError(f"law_id {law_id} not found (404)")
         if 500 <= resp.status_code < 600:
-            _LOG.warning(
-                "fetch_5xx url=%s attempt=%d status=%d", url, attempt, resp.status_code
-            )
+            _LOG.warning("fetch_5xx url=%s attempt=%d status=%d", url, attempt, resp.status_code)
             last_err = RuntimeError(f"5xx {resp.status_code}")
             if attempt == MAX_RETRIES:
                 raise last_err
-            time.sleep(2 ** attempt)
+            time.sleep(2**attempt)
             continue
         raise RuntimeError(f"client error {resp.status_code}: {resp.text[:200]}")
 
@@ -86,7 +85,7 @@ def article_num_to_sort(num_str: str) -> float:
     """'42_12_7' -> 42.012007, '1' -> 1.0, '1_2' -> 1.002 (monotonic)."""
     if not num_str:
         return 0.0
-    parts = num_str.split('_')
+    parts = num_str.split("_")
     try:
         main = int(parts[0])
     except (ValueError, IndexError):
@@ -109,7 +108,7 @@ def text_recursive(elem: ET.Element) -> str:
         parts.append(text_recursive(child))
         if child.tail:
             parts.append(child.tail)
-    return ''.join(parts)
+    return "".join(parts)
 
 
 def parse_articles(xml_bytes: bytes) -> list[dict]:
@@ -123,18 +122,18 @@ def parse_articles(xml_bytes: bytes) -> list[dict]:
     root = ET.fromstring(xml_bytes)
     articles: list[dict] = []
     seen_nums: set[str] = set()
-    for art in root.iter('Article'):
-        num = art.get('Num')
+    for art in root.iter("Article"):
+        num = art.get("Num")
         if not num:
             continue
         # Some addendum (附則) blocks repeat Num across separate SupplProvision
         # contexts. Track ancestor SupplProvision to disambiguate.
-        suppl = ''
+        suppl = ""
         # If inside SupplProvision, suffix article_number with _suppl<idx>
         # heuristic: walk ancestors via XPath-like (lxml not avail), so we
         # look for a closest SupplProvision attribute match using ET parent map.
         # ET has no parent ref; build once per call.
-        if not hasattr(parse_articles, '_parent_map_cache'):
+        if not hasattr(parse_articles, "_parent_map_cache"):
             parse_articles._parent_map_cache = None  # type: ignore
         # We don't compute parent map for performance; the dedupe relies on
         # uniqueness of (Num) within main + having additional articles in
@@ -153,21 +152,23 @@ def parse_articles(xml_bytes: bytes) -> list[dict]:
             num_final = num
         seen_nums.add(num_final)
 
-        title_el = art.find('ArticleTitle')
-        article_title = (title_el.text or '').strip() if title_el is not None else ''
-        caption_el = art.find('ArticleCaption')
-        caption = (caption_el.text or '').strip() if caption_el is not None else ''
+        title_el = art.find("ArticleTitle")
+        article_title = (title_el.text or "").strip() if title_el is not None else ""
+        caption_el = art.find("ArticleCaption")
+        caption = (caption_el.text or "").strip() if caption_el is not None else ""
         title_combined = caption or article_title
 
         full_text = text_recursive(art).strip()
-        full_text = re.sub(r'[ \t\r\n　]+', ' ', full_text)
+        full_text = re.sub(r"[ \t\r\n　]+", " ", full_text)
 
-        articles.append({
-            'article_number': num_final,
-            'article_number_sort': article_num_to_sort(num_final.split('_附')[0]),
-            'title': title_combined,
-            'text_full': full_text,
-        })
+        articles.append(
+            {
+                "article_number": num_final,
+                "article_number_sort": article_num_to_sort(num_final.split("_附")[0]),
+                "title": title_combined,
+                "text_full": full_text,
+            }
+        )
     return articles
 
 
@@ -177,11 +178,12 @@ def upsert_article(
     art: dict,
     source_url: str,
     fetched_at: str,
-    article_kind: str = 'main',
+    article_kind: str = "main",
 ) -> None:
     con.execute("BEGIN IMMEDIATE")
     try:
-        con.execute("""
+        con.execute(
+            """
             INSERT INTO am_law_article (
                 law_canonical_id, article_number, article_number_sort,
                 title, text_summary, text_full,
@@ -195,17 +197,19 @@ def upsert_article(
                 source_url = excluded.source_url,
                 source_fetched_at = excluded.source_fetched_at,
                 article_kind = excluded.article_kind
-        """, (
-            canonical_id,
-            art['article_number'],
-            art['article_number_sort'],
-            art['title'],
-            art['text_full'][:500],
-            art['text_full'],
-            source_url,
-            fetched_at,
-            article_kind,
-        ))
+        """,
+            (
+                canonical_id,
+                art["article_number"],
+                art["article_number_sort"],
+                art["title"],
+                art["text_full"][:500],
+                art["text_full"],
+                source_url,
+                fetched_at,
+                article_kind,
+            ),
+        )
         con.commit()
     except Exception:
         con.rollback()
@@ -213,27 +217,36 @@ def upsert_article(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Ingest e-Gov law articles into am_law_article"
+    parser = argparse.ArgumentParser(description="Ingest e-Gov law articles into am_law_article")
+    parser.add_argument("--egov-law-id", required=True, help="e-Gov law_id (e.g. 340AC0000000034)")
+    parser.add_argument(
+        "--canonical-id", required=True, help="am_law canonical_id (e.g. law:corporate-tax)"
     )
-    parser.add_argument('--egov-law-id', required=True,
-                        help='e-Gov law_id (e.g. 340AC0000000034)')
-    parser.add_argument('--canonical-id', required=True,
-                        help='am_law canonical_id (e.g. law:corporate-tax)')
-    parser.add_argument('--db', default=str(DEFAULT_DB),
-                        help='SQLite path (default: autonomath.db)')
-    parser.add_argument('--article-kind', default='main',
-                        choices=('main', 'suppl', 'enforcement_order',
-                                 'enforcement_regulation', 'tsutatsu',
-                                 'notice', 'guideline', 'appendix'),
-                        help="article_kind label (default: main)")
-    parser.add_argument('--dry-run', action='store_true', help='Parse only, no write')
-    parser.add_argument('--verbose', action='store_true')
+    parser.add_argument(
+        "--db", default=str(DEFAULT_DB), help="SQLite path (default: autonomath.db)"
+    )
+    parser.add_argument(
+        "--article-kind",
+        default="main",
+        choices=(
+            "main",
+            "suppl",
+            "enforcement_order",
+            "enforcement_regulation",
+            "tsutatsu",
+            "notice",
+            "guideline",
+            "appendix",
+        ),
+        help="article_kind label (default: main)",
+    )
+    parser.add_argument("--dry-run", action="store_true", help="Parse only, no write")
+    parser.add_argument("--verbose", action="store_true")
     args = parser.parse_args()
 
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
-        format='%(asctime)s %(levelname)s %(message)s'
+        format="%(asctime)s %(levelname)s %(message)s",
     )
 
     print(f"[ingest_law_articles_egov] law_id={args.egov_law_id} canonical_id={args.canonical_id}")
@@ -252,14 +265,16 @@ def main() -> None:
         # Dump first 500 bytes for debug
         try:
             print("=== xml head ===", file=sys.stderr)
-            print(xml_bytes[:500].decode('utf-8', errors='replace'), file=sys.stderr)
+            print(xml_bytes[:500].decode("utf-8", errors="replace"), file=sys.stderr)
         except Exception:
             pass
         sys.exit(2)
 
     if args.dry_run:
         for art in articles[:5]:
-            print(f"  num={art['article_number']:<15} title={art['title'][:30]:<30} text_len={len(art['text_full'])}")
+            print(
+                f"  num={art['article_number']:<15} title={art['title'][:30]:<30} text_len={len(art['text_full'])}"
+            )
         print(f"[dry-run] would upsert {len(articles)} articles")
         return
 
@@ -268,8 +283,7 @@ def main() -> None:
     con.execute("PRAGMA busy_timeout = 300000")
 
     initial = con.execute(
-        "SELECT COUNT(*) FROM am_law_article WHERE law_canonical_id=?",
-        (args.canonical_id,)
+        "SELECT COUNT(*) FROM am_law_article WHERE law_canonical_id=?", (args.canonical_id,)
     ).fetchone()[0]
 
     inserted = 0
@@ -277,22 +291,24 @@ def main() -> None:
     t2 = time.time()
     for art in articles:
         source_url = (
-            f"https://laws.e-gov.go.jp/law/{args.egov_law_id}"
-            f"#Mp-At_{art['article_number']}"
+            f"https://laws.e-gov.go.jp/law/{args.egov_law_id}#Mp-At_{art['article_number']}"
         )
         try:
             upsert_article(
-                con, args.canonical_id, art, source_url, fetched_at,
+                con,
+                args.canonical_id,
+                art,
+                source_url,
+                fetched_at,
                 article_kind=args.article_kind,
             )
             inserted += 1
         except Exception as e:
-            failed.append((art['article_number'], str(e)))
+            failed.append((art["article_number"], str(e)))
     t_write = time.time() - t2
 
     final = con.execute(
-        "SELECT COUNT(*) FROM am_law_article WHERE law_canonical_id=?",
-        (args.canonical_id,)
+        "SELECT COUNT(*) FROM am_law_article WHERE law_canonical_id=?", (args.canonical_id,)
     ).fetchone()[0]
     con.close()
 
@@ -302,12 +318,14 @@ def main() -> None:
     print(f"initial -> final: {initial} -> {final} (delta {final - initial})")
     print(f"upserted: {inserted}")
     print(f"failed: {len(failed)}")
-    print(f"timings: fetch={t_fetch:.1f}s parse={t_parse:.1f}s write={t_write:.1f}s total={elapsed:.1f}s")
+    print(
+        f"timings: fetch={t_fetch:.1f}s parse={t_parse:.1f}s write={t_write:.1f}s total={elapsed:.1f}s"
+    )
     if failed:
         print("failed list (first 20):")
         for fn, fe in failed[:20]:
             print(f"  {fn}: {fe}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

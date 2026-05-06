@@ -42,6 +42,7 @@ CLI:
         --db autonomath.db [--topics aviation,rail,port,warehouse,seibi] \
         [--limit 400] [--dry-run]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -71,10 +72,7 @@ _LOG = logging.getLogger("autonomath.ingest.enforcement_mlit_other_transport")
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_DB = REPO_ROOT / "autonomath.db"
 
-USER_AGENT = (
-    "jpintel-mcp-ingest/1.0 "
-    "(+https://jpcite.com; contact=ops@jpcite.com)"
-)
+USER_AGENT = "jpintel-mcp-ingest/1.0 (+https://jpcite.com; contact=ops@jpcite.com)"
 PER_REQUEST_DELAY_SEC = 0.5
 HTTP_TIMEOUT_SEC = 60.0
 MAX_RETRIES = 3
@@ -83,9 +81,24 @@ PAGE_FETCH_LIMIT_DEFAULT = None  # No limit by default
 # Era key sequence (newest -> oldest). 'koku_news.html' is the current year.
 ERA_KEYS = [
     "",  # current year (no prefix)
-    "R7", "R6", "R5", "R4", "R3", "R2",
-    "H31", "H30", "H29", "H28", "H27", "H26", "H25", "H24",
-    "H23", "H22", "H21", "H20",
+    "R7",
+    "R6",
+    "R5",
+    "R4",
+    "R3",
+    "R2",
+    "H31",
+    "H30",
+    "H29",
+    "H28",
+    "H27",
+    "H26",
+    "H25",
+    "H24",
+    "H23",
+    "H22",
+    "H21",
+    "H20",
 ]
 
 # Press release archive base URL pattern.
@@ -112,18 +125,28 @@ TOPICS: dict[str, dict] = {
         "url_prefixes": ("/report/press/cab", "/report/press/kouku", "/report/press/100"),
         # Title keywords that indicate enforcement action.
         "title_must_match": (
-            "業務改善命令", "業務改善勧告", "業務改善",
-            "改善命令", "改善勧告",
+            "業務改善命令",
+            "業務改善勧告",
+            "業務改善",
+            "改善命令",
+            "改善勧告",
             "厳重注意",
-            "事業許可取消", "経営許可取消",
-            "許可取消", "認可取消", "認定取消",
-            "免許取消", "資格停止",
+            "事業許可取消",
+            "経営許可取消",
+            "許可取消",
+            "認可取消",
+            "認定取消",
+            "免許取消",
+            "資格停止",
             "操縦士に対する行政処分",
             "操縦士等に対する行政処分",
-            "操縦士免許取消", "機長免許取消",
-            "事業者に対する処分", "に対する処分",
+            "操縦士免許取消",
+            "機長免許取消",
+            "事業者に対する処分",
+            "に対する処分",
             "に対する警告",
-            "業務停止命令", "事業停止",
+            "業務停止命令",
+            "事業停止",
             "認証取消",
             # Additional patterns from MLIT press archives:
             "航空従事者に対する",
@@ -136,8 +159,12 @@ TOPICS: dict[str, dict] = {
         ),
         # Title keywords to EXCLUDE (false positives — name conflicts).
         "title_must_not_match": (
-            "ガイドライン", "検討会", "公募",
-            "募集", "委員会", "審議",
+            "ガイドライン",
+            "検討会",
+            "公募",
+            "募集",
+            "委員会",
+            "審議",
             "結果概要",  # info-only summaries
             "意見",
             "認可申請",  # routine licensing announcements
@@ -151,14 +178,21 @@ TOPICS: dict[str, dict] = {
         "archive_basename": "tetsudo_news.html",
         "url_prefixes": ("/report/press/tetsudo", "/report/press/tetudo"),
         "title_must_match": (
-            "業務改善命令", "業務改善勧告", "改善命令", "改善勧告",
-            "事業改善命令", "鉄道事業改善",
+            "業務改善命令",
+            "業務改善勧告",
+            "改善命令",
+            "改善勧告",
+            "事業改善命令",
+            "鉄道事業改善",
             "厳重注意",
-            "認定取消", "認可取消", "許可取消",
+            "認定取消",
+            "認可取消",
+            "許可取消",
             "事業許可取消",
             "業務停止",
             "の取消処分",  # for "に対する認定の取消処分" pattern
-            "に対する処分", "に対する警告",
+            "に対する処分",
+            "に対する警告",
             # Additional patterns from MLIT 鉄道局 press archives:
             "改善指示",
             "に対する不利益処分",
@@ -168,8 +202,13 @@ TOPICS: dict[str, dict] = {
             "認定の取消処分",
         ),
         "title_must_not_match": (
-            "認可申請", "ガイドライン", "検討会", "公募",
-            "募集", "委員会", "審議",
+            "認可申請",
+            "ガイドライン",
+            "検討会",
+            "公募",
+            "募集",
+            "委員会",
+            "審議",
             "認可について",  # 運賃 認可 announcements (usually routine)
             "誘客促進",  # info-only
             "改善モデル",
@@ -183,16 +222,28 @@ TOPICS: dict[str, dict] = {
         "archive_basename": "kowan_news.html",
         "url_prefixes": ("/report/press/port", "/report/press/kowan"),
         "title_must_match": (
-            "業務改善命令", "業務改善勧告", "改善命令", "改善勧告",
+            "業務改善命令",
+            "業務改善勧告",
+            "改善命令",
+            "改善勧告",
             "事業改善命令",
             "厳重注意",
-            "認可取消", "許可取消", "認定取消",
-            "業務停止", "事業停止",
-            "に対する処分", "に対する警告",
+            "認可取消",
+            "許可取消",
+            "認定取消",
+            "業務停止",
+            "事業停止",
+            "に対する処分",
+            "に対する警告",
         ),
         "title_must_not_match": (
-            "認可申請", "ガイドライン", "検討会", "公募",
-            "募集", "委員会", "審議",
+            "認可申請",
+            "ガイドライン",
+            "検討会",
+            "公募",
+            "募集",
+            "委員会",
+            "審議",
         ),
     },
     "warehouse": {
@@ -202,21 +253,30 @@ TOPICS: dict[str, dict] = {
         "law_basis": "倉庫業法",
         # Single archive page (not yearly).
         "archive_basename": None,
-        "archive_urls": (
-            "https://www.mlit.go.jp/seisakutokatsu/freight/news.html",
-        ),
+        "archive_urls": ("https://www.mlit.go.jp/seisakutokatsu/freight/news.html",),
         "url_prefixes": ("/report/press/tokatsu", "/report/press/jidosha"),
         "title_must_match": (
-            "倉庫業", "倉庫業法",
-            "業務改善命令", "改善命令",
+            "倉庫業",
+            "倉庫業法",
+            "業務改善命令",
+            "改善命令",
             "厳重注意",
-            "認可取消", "許可取消", "登録取消",
-            "業務停止", "事業停止",
-            "に対する処分", "に対する警告",
+            "認可取消",
+            "許可取消",
+            "登録取消",
+            "業務停止",
+            "事業停止",
+            "に対する処分",
+            "に対する警告",
         ),
         "title_must_not_match": (
-            "認可申請", "ガイドライン", "検討会",
-            "公募", "募集", "委員会", "審議",
+            "認可申請",
+            "ガイドライン",
+            "検討会",
+            "公募",
+            "募集",
+            "委員会",
+            "審議",
         ),
     },
 }
@@ -321,12 +381,8 @@ ARTICLE_RE = re.compile(r"第([\d０-９]+)条(?:第([\d０-９]+)項)?(?:第([\
 # Date patterns in archive index pages.
 # Note: older MLIT archives use broken HTML where <dt> is closed with </p>
 # instead of </dt>. We allow either close tag.
-DATE_RE_ISO = re.compile(
-    r"<dt[^>]*>\s*(\d{4})/(\d{1,2})/(\d{1,2})\s*</(?:dt|p)\s*>"
-)
-DATE_RE_KANJI = re.compile(
-    r"<dt[^>]*>\s*(20\d\d)年(\d{1,2})月(\d{1,2})日\s*</(?:dt|p)\s*>"
-)
+DATE_RE_ISO = re.compile(r"<dt[^>]*>\s*(\d{4})/(\d{1,2})/(\d{1,2})\s*</(?:dt|p)\s*>")
+DATE_RE_KANJI = re.compile(r"<dt[^>]*>\s*(20\d\d)年(\d{1,2})月(\d{1,2})日\s*</(?:dt|p)\s*>")
 
 # Press release link extraction: <a href="/report/press/...html">title</a>
 LINK_RE = re.compile(
@@ -338,12 +394,10 @@ LINK_RE = re.compile(
 # The MLIT template uses h2 class="title" for the headline and p class="date"
 # for the date. The body is a <p> inside <div class="clearfix">.
 TITLE_RE = re.compile(r'<h2\s+class="title">(.*?)</h2>', re.DOTALL)
-DATE_BODY_RE = re.compile(
-    r'<p\s+class="date(?:\s+mb20)?">\s*(.*?)\s*</p>', re.DOTALL
-)
+DATE_BODY_RE = re.compile(r'<p\s+class="date(?:\s+mb20)?">\s*(.*?)\s*</p>', re.DOTALL)
 BODY_RE = re.compile(
     r'<div\s+class="clearfix">\s*<p\s+class="date(?:\s+mb20)?">.*?</p>'
-    r'\s*<p>(.*?)</p>',
+    r"\s*<p>(.*?)</p>",
     re.DOTALL,
 )
 
@@ -387,9 +441,7 @@ def parse_kanji_date(text: str) -> str | None:
     m = DATE_PLAIN_KANJI_RE.search(text)
     if m:
         try:
-            return dt.date(
-                int(m.group(1)), int(m.group(2)), int(m.group(3))
-            ).isoformat()
+            return dt.date(int(m.group(1)), int(m.group(2)), int(m.group(3))).isoformat()
         except (ValueError, TypeError):
             pass
     return None
@@ -414,7 +466,7 @@ def extract_law_ref(text: str, default_law: str) -> str:
     for kw, name in LAW_NAME_PATTERNS:
         if kw in text:
             idx = text.find(kw)
-            after = text[idx + len(kw): idx + len(kw) + 80]
+            after = text[idx + len(kw) : idx + len(kw) + 80]
             am = ARTICLE_RE.match(after)
             if am:
                 # Build "法名 第X条第Y項第Z号"
@@ -514,7 +566,7 @@ class HttpClient:
                 last_exc = exc
                 if attempt == MAX_RETRIES:
                     break
-                time.sleep(2 ** attempt)
+                time.sleep(2**attempt)
         _LOG.warning("GET text failed url=%s err=%s", url, last_exc)
         return 0, ""
 
@@ -537,7 +589,7 @@ class HttpClient:
                 last_exc = exc
                 if attempt == MAX_RETRIES:
                     break
-                time.sleep(2 ** attempt)
+                time.sleep(2**attempt)
         _LOG.warning("POST text failed url=%s err=%s", url, last_exc)
         return 0, ""
 
@@ -552,17 +604,17 @@ class HttpClient:
 
 @dataclass
 class EnforcementRecord:
-    topic: str               # aviation/rail/port/warehouse/seibi/...
-    authority: str           # 国土交通省 航空局/...
-    title: str               # press release headline
-    issuance_date: str       # ISO yyyy-mm-dd
+    topic: str  # aviation/rail/port/warehouse/seibi/...
+    authority: str  # 国土交通省 航空局/...
+    title: str  # press release headline
+    issuance_date: str  # ISO yyyy-mm-dd
     target_name: str | None
     enforcement_kind: str
     punishment_raw: str
     related_law_ref: str
     reason_summary: str | None
-    source_url: str          # individual press release page URL
-    archive_url: str         # the index URL where this record was discovered
+    source_url: str  # individual press release page URL
+    archive_url: str  # the index URL where this record was discovered
     houjin_bangou: str | None = None  # 法人番号 (13 digits) when known
 
 
@@ -676,28 +728,24 @@ NEGAINF_NAME_RE = re.compile(
     r'<td\s+class="name"[^>]*>(.*?)(?:<span[^>]*>(?:（|\()(\d{13})(?:）|\))?</span>)?',
     re.DOTALL,
 )
-NEGAINF_ADDRESS_RE = re.compile(
-    r'<td\s+class="address"[^>]*>(.*?)</td>', re.DOTALL
-)
-NEGAINF_PUNISH_RE = re.compile(
-    r'<td\s+class="punish"[^>]*>(.*?)</td>', re.DOTALL
-)
+NEGAINF_ADDRESS_RE = re.compile(r'<td\s+class="address"[^>]*>(.*?)</td>', re.DOTALL)
+NEGAINF_PUNISH_RE = re.compile(r'<td\s+class="punish"[^>]*>(.*?)</td>', re.DOTALL)
 NEGAINF_AGENCY_RE = re.compile(
     r'<td\s+class="date"[^>]*>(.*?運輸局.*?|.*?支局.*?|.*?事務所.*?)</td>',
     re.DOTALL,
 )
-NEGAINF_NO_RE = re.compile(r'no=(\d+)')
+NEGAINF_NO_RE = re.compile(r"no=(\d+)")
 
 
 @dataclass
 class NegaInfRow:
-    issuance_date: str          # ISO yyyy-mm-dd
-    agency: str | None          # 運輸局 etc.
-    name: str                   # 事業者名
-    corporate_id: str | None    # 法人番号
-    address: str                # 住所
-    punish_text: str            # 処分等の種類
-    detail_no: str              # detail page NO
+    issuance_date: str  # ISO yyyy-mm-dd
+    agency: str | None  # 運輸局 etc.
+    name: str  # 事業者名
+    corporate_id: str | None  # 法人番号
+    address: str  # 住所
+    punish_text: str  # 処分等の種類
+    detail_no: str  # detail page NO
 
 
 def parse_negainf_list(html: str) -> tuple[list[NegaInfRow], int]:
@@ -730,9 +778,7 @@ def parse_negainf_list(html: str) -> tuple[list[NegaInfRow], int]:
         if agency_m:
             agency = strip_html(agency_m.group(1)).strip()
         # Name + corporate id
-        name_block_m = re.search(
-            r'<td\s+class="name"[^>]*>(.*?)</td>', tr, re.DOTALL
-        )
+        name_block_m = re.search(r'<td\s+class="name"[^>]*>(.*?)</td>', tr, re.DOTALL)
         if not name_block_m:
             continue
         name_block = name_block_m.group(1)
@@ -756,21 +802,21 @@ def parse_negainf_list(html: str) -> tuple[list[NegaInfRow], int]:
         if not detail_m:
             continue
         detail_no = detail_m.group(1)
-        rows.append(NegaInfRow(
-            issuance_date=iso,
-            agency=agency,
-            name=name,
-            corporate_id=corporate_id,
-            address=addr,
-            punish_text=punish,
-            detail_no=detail_no,
-        ))
+        rows.append(
+            NegaInfRow(
+                issuance_date=iso,
+                agency=agency,
+                name=name,
+                corporate_id=corporate_id,
+                address=addr,
+                punish_text=punish,
+                detail_no=detail_no,
+            )
+        )
     return rows, max_page
 
 
-def fetch_negainf_pages(
-    http: HttpClient, jigyoubunya: str
-) -> list[NegaInfRow]:
+def fetch_negainf_pages(http: HttpClient, jigyoubunya: str) -> list[NegaInfRow]:
     """Walk all pages of a nega-inf category and return all rows."""
     base_data = {
         "jigyoubunya": jigyoubunya,
@@ -807,9 +853,7 @@ def fetch_negainf_pages(
 # Detail page field extraction. The DD content uses <br> for line breaks
 # so we capture until </dd>.
 def _field_re(label: str) -> re.Pattern:
-    return re.compile(
-        rf"{re.escape(label)}</dt>\s*<dd[^>]*>(.*?)</dd>", re.DOTALL
-    )
+    return re.compile(rf"{re.escape(label)}</dt>\s*<dd[^>]*>(.*?)</dd>", re.DOTALL)
 
 
 NEGAINF_DETAIL_FIELDS = {
@@ -861,16 +905,24 @@ def parse_negainf_detail(html: str) -> dict[str, str]:
             idx = clean.find(label)
             if idx == -1:
                 continue
-            tail = clean[idx + len(label):idx + len(label) + 400]
+            tail = clean[idx + len(label) : idx + len(label) + 400]
             # Skip whitespace, then capture until next label or end
             tail = tail.lstrip()
             # Find next japanese label
             next_idx = len(tail)
             for next_label in [
-                "処分等年月日", "処分等を行った者", "事業者名",
-                "事業場名", "事業場住所", "本社住所",
-                "根拠法令", "処分等の種類", "処分等の期間",
-                "違反行為の概要", "検索結果一覧", "国土交通省",
+                "処分等年月日",
+                "処分等を行った者",
+                "事業者名",
+                "事業場名",
+                "事業場住所",
+                "本社住所",
+                "根拠法令",
+                "処分等の種類",
+                "処分等の期間",
+                "違反行為の概要",
+                "検索結果一覧",
+                "国土交通省",
             ]:
                 if next_label == label:
                     continue
@@ -1171,12 +1223,21 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--db", type=Path, default=DEFAULT_DB)
     all_topics = list(TOPICS.keys()) + list(NEGAINF_TOPICS.keys())
-    ap.add_argument("--topics", type=str, default=",".join(all_topics),
-                    help=f"comma-separated topic codes (allowed: {','.join(all_topics)})")
-    ap.add_argument("--limit", type=int, default=None,
-                    help="stop after this many INSERTs (across all topics)")
-    ap.add_argument("--per-topic-page-limit", type=int, default=None,
-                    help="cap pages walked per topic (smoke test)")
+    ap.add_argument(
+        "--topics",
+        type=str,
+        default=",".join(all_topics),
+        help=f"comma-separated topic codes (allowed: {','.join(all_topics)})",
+    )
+    ap.add_argument(
+        "--limit", type=int, default=None, help="stop after this many INSERTs (across all topics)"
+    )
+    ap.add_argument(
+        "--per-topic-page-limit",
+        type=int,
+        default=None,
+        help="cap pages walked per topic (smoke test)",
+    )
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--verbose", "-v", action="store_true")
     ap.add_argument("--log-file", type=Path, default=None)
@@ -1200,9 +1261,7 @@ def main(argv: list[str] | None = None) -> int:
     press_topics = [t for t in topics if t in TOPICS]
     negi_topics = [t for t in topics if t in NEGAINF_TOPICS]
 
-    fetched_at = dt.datetime.now(dt.UTC).isoformat(timespec="seconds").replace(
-        "+00:00", "Z"
-    )
+    fetched_at = dt.datetime.now(dt.UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
 
     http = HttpClient()
     conn: sqlite3.Connection | None = None
@@ -1213,7 +1272,8 @@ def main(argv: list[str] | None = None) -> int:
         existing_urls = load_existing_source_urls(conn)
         _LOG.info(
             "existing am_enforcement_detail keys=%d urls=%d",
-            len(existing_keys), len(existing_urls),
+            len(existing_keys),
+            len(existing_urls),
         )
     else:
         existing_keys = set()
@@ -1248,27 +1308,22 @@ def main(argv: list[str] | None = None) -> int:
 
             _LOG.info(
                 "topic=%s (negi-inf) jigyoubunya=%s label=%s",
-                topic_slug, jbunya, n_info["label"],
+                topic_slug,
+                jbunya,
+                n_info["label"],
             )
             rows = fetch_negainf_pages(http, jbunya)
             cs["list_rows"] = len(rows)
-            _LOG.info(
-                "topic=%s rows discovered=%d", topic_slug, len(rows)
-            )
+            _LOG.info("topic=%s rows discovered=%d", topic_slug, len(rows))
 
-            seq_counter = (
-                next_seq(conn, topic_slug) if conn is not None else 1
-            )
+            seq_counter = next_seq(conn, topic_slug) if conn is not None else 1
 
             stop_topic = False
             for row in rows:
                 if args.limit is not None and total_inserts >= args.limit:
                     stop_topic = True
                     break
-                detail_url = (
-                    f"{NEGAINF_BASE}?jigyoubunya={jbunya}"
-                    f"&EID=search&no={row.detail_no}"
-                )
+                detail_url = f"{NEGAINF_BASE}?jigyoubunya={jbunya}&EID=search&no={row.detail_no}"
                 if detail_url in existing_urls:
                     cs["skip_existing"] += 1
                     continue
@@ -1311,22 +1366,20 @@ def main(argv: list[str] | None = None) -> int:
                     if cs["insert"] <= 5:
                         _LOG.info(
                             "DRY %s | %s | %s | %s | %s | law=%s",
-                            topic_slug, rec.issuance_date,
-                            rec.target_name, rec.punishment_raw,
-                            rec.enforcement_kind, rec.related_law_ref,
+                            topic_slug,
+                            rec.issuance_date,
+                            rec.target_name,
+                            rec.punishment_raw,
+                            rec.enforcement_kind,
+                            rec.related_law_ref,
                         )
                     continue
-                canonical_id = (
-                    f"AM-ENF-MLIT-OTHER-{topic_slug}-{seq_counter:06d}"
-                )
+                canonical_id = f"AM-ENF-MLIT-OTHER-{topic_slug}-{seq_counter:06d}"
                 seq_counter += 1
                 try:
-                    verdict = upsert_record(
-                        conn, rec, canonical_id, fetched_at
-                    )
+                    verdict = upsert_record(conn, rec, canonical_id, fetched_at)
                 except sqlite3.Error as exc:
-                    _LOG.warning("DB insert err name=%s err=%s",
-                                 rec.target_name, exc)
+                    _LOG.warning("DB insert err name=%s err=%s", rec.target_name, exc)
                     continue
                 if verdict == "insert":
                     cs["insert"] += 1
@@ -1375,7 +1428,9 @@ def main(argv: list[str] | None = None) -> int:
             archives = archive_urls_for_topic(topic_info)
             _LOG.info(
                 "topic=%s archives=%d label=%s",
-                topic_slug, len(archives), topic_info["label"],
+                topic_slug,
+                len(archives),
+                topic_info["label"],
             )
 
             # Collect (date, url, title) candidates from all archive indexes.
@@ -1384,8 +1439,7 @@ def main(argv: list[str] | None = None) -> int:
             for archive_url in archives:
                 status, html = http.get_text(archive_url)
                 if status != 200 or not html:
-                    _LOG.debug("archive fetch failed %s status=%s",
-                               archive_url, status)
+                    _LOG.debug("archive fetch failed %s status=%s", archive_url, status)
                     continue
                 cs["archives_walked"] += 1
                 items = parse_index(html, topic_info)
@@ -1401,15 +1455,15 @@ def main(argv: list[str] | None = None) -> int:
 
             _LOG.info(
                 "topic=%s candidates=%d filtered_in=%d",
-                topic_slug, cs["candidate_pages"], cs["filtered_in"],
+                topic_slug,
+                cs["candidate_pages"],
+                cs["filtered_in"],
             )
 
             if args.per_topic_page_limit is not None:
                 candidates = candidates[: args.per_topic_page_limit]
 
-            seq_counter = (
-                next_seq(conn, topic_slug) if conn is not None else 1
-            )
+            seq_counter = next_seq(conn, topic_slug) if conn is not None else 1
 
             stop_topic = False
             for date_iso, url, title, archive_url in candidates:
@@ -1438,8 +1492,12 @@ def main(argv: list[str] | None = None) -> int:
                     cs["skip_no_match"] += 1
                     continue
                 cs["extracted"] += 1
-                key = (rec.authority, rec.issuance_date,
-                       rec.target_name or "", rec.enforcement_kind)
+                key = (
+                    rec.authority,
+                    rec.issuance_date,
+                    rec.target_name or "",
+                    rec.enforcement_kind,
+                )
                 if key in existing_keys:
                     cs["skip_existing"] += 1
                     continue
@@ -1457,20 +1515,20 @@ def main(argv: list[str] | None = None) -> int:
                     if cs["insert"] <= 5:
                         _LOG.info(
                             "DRY %s | %s | %s | %s | %s | law=%s",
-                            topic_slug, rec.issuance_date,
-                            rec.target_name, rec.punishment_raw,
-                            rec.enforcement_kind, rec.related_law_ref,
+                            topic_slug,
+                            rec.issuance_date,
+                            rec.target_name,
+                            rec.punishment_raw,
+                            rec.enforcement_kind,
+                            rec.related_law_ref,
                         )
                     continue
-                canonical_id = (
-                    f"AM-ENF-MLIT-OTHER-{topic_slug}-{seq_counter:06d}"
-                )
+                canonical_id = f"AM-ENF-MLIT-OTHER-{topic_slug}-{seq_counter:06d}"
                 seq_counter += 1
                 try:
                     verdict = upsert_record(conn, rec, canonical_id, fetched_at)
                 except sqlite3.Error as exc:
-                    _LOG.warning("DB insert err name=%s err=%s",
-                                 rec.target_name, exc)
+                    _LOG.warning("DB insert err name=%s err=%s", rec.target_name, exc)
                     continue
                 if verdict == "insert":
                     cs["insert"] += 1

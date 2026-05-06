@@ -20,6 +20,7 @@ Rules:
 - 1 req / 0.8s polite delay.
 - No Anthropic API, no aggregators.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -159,11 +160,11 @@ def parse_article_number(head: str) -> tuple[str, float] | None:
     if not m:
         return None
     gd = m.groupdict()
-    a = gd["law"]      # law part: "1" / "12の2" / "36・37"
-    b = gd["seq"]      # 2nd level
-    c1 = gd["eda1"]    # eda after seq -> "Bの<eda1>"
-    c2 = gd["sub"]     # 3rd level
-    d1 = gd["eda2"]    # eda after sub -> "B-Cの<eda2>"
+    a = gd["law"]  # law part: "1" / "12の2" / "36・37"
+    b = gd["seq"]  # 2nd level
+    c1 = gd["eda1"]  # eda after seq -> "Bの<eda1>"
+    c2 = gd["sub"]  # 3rd level
+    d1 = gd["eda2"]  # eda after sub -> "B-Cの<eda2>"
     if not b:
         # bare integer (附則通達 etc.) — treat law part as full number
         try:
@@ -193,13 +194,7 @@ def parse_article_number(head: str) -> tuple[str, float] | None:
         bi = int(b)
         ci = int(c2) if c2 else 0
         ei = int(c1 if c1 and not c2 else d1 or 0)
-        sort = (
-            ai
-            + ai_eda / 100.0
-            + bi / 1000.0
-            + ci / 1_000_000.0
-            + ei / 1_000_000_000.0
-        )
+        sort = ai + ai_eda / 100.0 + bi / 1000.0 + ci / 1_000_000.0 + ei / 1_000_000_000.0
     except ValueError:
         sort = 0.0
     return main, sort
@@ -322,7 +317,9 @@ def connect(db: Path) -> sqlite3.Connection:
     return conn
 
 
-def upsert(conn: sqlite3.Connection, law_id: str, notices: Sequence[Notice], *, fetched_at: str) -> int:
+def upsert(
+    conn: sqlite3.Connection, law_id: str, notices: Sequence[Notice], *, fetched_at: str
+) -> int:
     # dedupe within batch on article_number (keep first)
     seen: set[str] = set()
     uniq: list[Notice] = []

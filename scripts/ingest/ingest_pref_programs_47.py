@@ -24,6 +24,7 @@ Usage:
     .venv/bin/python scripts/ingest/ingest_pref_programs_47.py
     .venv/bin/python scripts/ingest/ingest_pref_programs_47.py --dry-run --max-per-pref 30
 """
+
 from __future__ import annotations
 
 import argparse
@@ -64,177 +65,404 @@ DEFAULT_MAX_PER_PREF = 25  # cap programs harvested per prefecture
 # 47 prefectures: (name, primary host(s), seed URLs)
 # Seeds were probed live 2026-04-25 — all return 200.
 PREFECTURES: list[dict] = [
-    {"pref": "北海道", "slug": "hokkaido", "seeds": [
-        "https://www.pref.hokkaido.lg.jp/kz/csk/index.html",
-        "https://www.pref.hokkaido.lg.jp/kz/index.html",
-    ]},
-    {"pref": "青森県", "slug": "aomori", "seeds": [
-        "https://www.pref.aomori.lg.jp/",
-    ]},
-    {"pref": "岩手県", "slug": "iwate", "seeds": [
-        "https://www.pref.iwate.jp/",
-    ]},
-    {"pref": "宮城県", "slug": "miyagi", "seeds": [
-        "https://www.pref.miyagi.jp/",
-    ]},
-    {"pref": "秋田県", "slug": "akita", "seeds": [
-        "https://www.pref.akita.lg.jp/pages/genre/34580",  # 補助金 関連ジャンル
-        "https://www.pref.akita.lg.jp/pages/genre/11678",  # 中小企業支援
-        "https://www.pref.akita.lg.jp/pages/genre/11700",  # 電子手続き・入札・補助金等
-    ]},
-    {"pref": "山形県", "slug": "yamagata", "seeds": [
-        "https://www.pref.yamagata.jp/",
-    ]},
-    {"pref": "福島県", "slug": "fukushima", "seeds": [
-        "https://www.pref.fukushima.lg.jp/",
-    ]},
-    {"pref": "茨城県", "slug": "ibaraki", "seeds": [
-        "https://www.pref.ibaraki.jp/",
-    ]},
-    {"pref": "栃木県", "slug": "tochigi", "seeds": [
-        "https://www.pref.tochigi.lg.jp/",
-    ]},
-    {"pref": "群馬県", "slug": "gunma", "seeds": [
-        "https://www.pref.gunma.jp/page/3001.html",
-    ]},
-    {"pref": "埼玉県", "slug": "saitama", "seeds": [
-        "https://www.pref.saitama.lg.jp/soshiki/a0801/index.html",
-    ]},
-    {"pref": "千葉県", "slug": "chiba", "seeds": [
-        "https://www.pref.chiba.lg.jp/keishi/index.html",
-    ]},
-    {"pref": "東京都", "slug": "tokyo", "seeds": [
-        "https://www.metro.tokyo.lg.jp/purpose/grant",
-        "https://www.zaimu.metro.tokyo.lg.jp/zaisei/zaisei/hojokin",
-        "https://www.sangyo-rodo.metro.tokyo.lg.jp/chushou/",
-    ]},
-    {"pref": "神奈川県", "slug": "kanagawa", "seeds": [
-        "https://www.pref.kanagawa.jp/",
-    ]},
-    {"pref": "新潟県", "slug": "niigata", "seeds": [
-        "https://www.pref.niigata.lg.jp/",
-    ]},
-    {"pref": "富山県", "slug": "toyama", "seeds": [
-        "https://www.pref.toyama.jp/",
-    ]},
-    {"pref": "石川県", "slug": "ishikawa", "seeds": [
-        "https://www.pref.ishikawa.lg.jp/",
-        "https://www.pref.ishikawa.lg.jp/index.html",
-    ], "depth": 3},
-    {"pref": "福井県", "slug": "fukui", "seeds": [
-        "https://www.pref.fukui.lg.jp/",
-    ]},
-    {"pref": "山梨県", "slug": "yamanashi", "seeds": [
-        "https://www.pref.yamanashi.jp/",
-    ]},
-    {"pref": "長野県", "slug": "nagano", "seeds": [
-        "https://www.pref.nagano.lg.jp/",
-    ]},
-    {"pref": "岐阜県", "slug": "gifu", "seeds": [
-        "https://www.pref.gifu.lg.jp/",
-    ]},
-    {"pref": "静岡県", "slug": "shizuoka", "seeds": [
-        "https://www.pref.shizuoka.jp/sangyoshigoto/index.html",
-    ]},
-    {"pref": "愛知県", "slug": "aichi", "seeds": [
-        "https://www.pref.aichi.jp/soshiki/sangyoshinko/",
-        "https://www.pref.aichi.jp/",
-    ]},
-    {"pref": "三重県", "slug": "mie", "seeds": [
-        "https://www.pref.mie.lg.jp/",
-    ], "depth": 3},
-    {"pref": "滋賀県", "slug": "shiga", "seeds": [
-        "https://www.pref.shiga.lg.jp/",
-    ]},
-    {"pref": "京都府", "slug": "kyoto", "seeds": [
-        "https://www.pref.kyoto.jp/sangyo/index.html",
-        "https://www.pref.kyoto.jp/",
-    ]},
-    {"pref": "大阪府", "slug": "osaka", "seeds": [
-        "https://www.pref.osaka.lg.jp/",
-    ]},
-    {"pref": "兵庫県", "slug": "hyogo", "seeds": [
-        "https://web.pref.hyogo.lg.jp/",
-        "https://web.pref.hyogo.lg.jp/index.html",
-    ], "depth": 3},
-    {"pref": "奈良県", "slug": "nara", "seeds": [
-        "https://www.pref.nara.lg.jp/",
-    ]},
-    {"pref": "和歌山県", "slug": "wakayama", "seeds": [
-        "https://www.pref.wakayama.lg.jp/",
-    ]},
-    {"pref": "鳥取県", "slug": "tottori", "seeds": [
-        "https://www.pref.tottori.lg.jp/keieishien/",
-        "https://www.pref.tottori.lg.jp/9100.htm",
-        "https://www.pref.tottori.lg.jp/9087.htm",
-    ], "depth": 3},
-    {"pref": "島根県", "slug": "shimane", "seeds": [
-        "https://www.pref.shimane.lg.jp/",
-        "https://www.pref.shimane.lg.jp/industry/",
-    ], "depth": 3},
-    {"pref": "岡山県", "slug": "okayama", "seeds": [
-        "https://www.pref.okayama.jp/",
-    ], "depth": 3},
-    {"pref": "広島県", "slug": "hiroshima", "seeds": [
-        "https://www.pref.hiroshima.lg.jp/",
-    ]},
-    {"pref": "山口県", "slug": "yamaguchi", "seeds": [
-        "https://www.pref.yamaguchi.lg.jp/soshiki/91/",
-        "https://www.pref.yamaguchi.lg.jp/soshiki/93/",
-        "https://www.pref.yamaguchi.lg.jp/",
-    ], "depth": 3},
-    {"pref": "徳島県", "slug": "tokushima", "seeds": [
-        "https://www.pref.tokushima.lg.jp/",
-    ]},
-    {"pref": "香川県", "slug": "kagawa", "seeds": [
-        "https://www.pref.kagawa.lg.jp/",
-    ]},
-    {"pref": "愛媛県", "slug": "ehime", "seeds": [
-        "https://www.pref.ehime.jp/",
-    ], "depth": 3},
-    {"pref": "高知県", "slug": "kochi", "seeds": [
-        "https://www.pref.kochi.lg.jp/",
-    ]},
-    {"pref": "福岡県", "slug": "fukuoka", "seeds": [
-        "https://www.pref.fukuoka.lg.jp/",
-    ]},
-    {"pref": "佐賀県", "slug": "saga", "seeds": [
-        "https://www.pref.saga.lg.jp/",
-    ]},
-    {"pref": "長崎県", "slug": "nagasaki", "seeds": [
-        "https://www.pref.nagasaki.jp/",
-    ]},
-    {"pref": "熊本県", "slug": "kumamoto", "seeds": [
-        "https://www.pref.kumamoto.jp/",
-    ], "depth": 3},
-    {"pref": "大分県", "slug": "oita", "seeds": [
-        "https://www.pref.oita.jp/",
-    ]},
-    {"pref": "宮崎県", "slug": "miyazaki", "seeds": [
-        "https://www.pref.miyazaki.lg.jp/",
-    ]},
-    {"pref": "鹿児島県", "slug": "kagoshima", "seeds": [
-        "https://www.pref.kagoshima.jp/",
-    ]},
-    {"pref": "沖縄県", "slug": "okinawa", "seeds": [
-        "https://www.pref.okinawa.lg.jp/",
-        "https://www.pref.okinawa.jp/",
-    ], "depth": 3},
+    {
+        "pref": "北海道",
+        "slug": "hokkaido",
+        "seeds": [
+            "https://www.pref.hokkaido.lg.jp/kz/csk/index.html",
+            "https://www.pref.hokkaido.lg.jp/kz/index.html",
+        ],
+    },
+    {
+        "pref": "青森県",
+        "slug": "aomori",
+        "seeds": [
+            "https://www.pref.aomori.lg.jp/",
+        ],
+    },
+    {
+        "pref": "岩手県",
+        "slug": "iwate",
+        "seeds": [
+            "https://www.pref.iwate.jp/",
+        ],
+    },
+    {
+        "pref": "宮城県",
+        "slug": "miyagi",
+        "seeds": [
+            "https://www.pref.miyagi.jp/",
+        ],
+    },
+    {
+        "pref": "秋田県",
+        "slug": "akita",
+        "seeds": [
+            "https://www.pref.akita.lg.jp/pages/genre/34580",  # 補助金 関連ジャンル
+            "https://www.pref.akita.lg.jp/pages/genre/11678",  # 中小企業支援
+            "https://www.pref.akita.lg.jp/pages/genre/11700",  # 電子手続き・入札・補助金等
+        ],
+    },
+    {
+        "pref": "山形県",
+        "slug": "yamagata",
+        "seeds": [
+            "https://www.pref.yamagata.jp/",
+        ],
+    },
+    {
+        "pref": "福島県",
+        "slug": "fukushima",
+        "seeds": [
+            "https://www.pref.fukushima.lg.jp/",
+        ],
+    },
+    {
+        "pref": "茨城県",
+        "slug": "ibaraki",
+        "seeds": [
+            "https://www.pref.ibaraki.jp/",
+        ],
+    },
+    {
+        "pref": "栃木県",
+        "slug": "tochigi",
+        "seeds": [
+            "https://www.pref.tochigi.lg.jp/",
+        ],
+    },
+    {
+        "pref": "群馬県",
+        "slug": "gunma",
+        "seeds": [
+            "https://www.pref.gunma.jp/page/3001.html",
+        ],
+    },
+    {
+        "pref": "埼玉県",
+        "slug": "saitama",
+        "seeds": [
+            "https://www.pref.saitama.lg.jp/soshiki/a0801/index.html",
+        ],
+    },
+    {
+        "pref": "千葉県",
+        "slug": "chiba",
+        "seeds": [
+            "https://www.pref.chiba.lg.jp/keishi/index.html",
+        ],
+    },
+    {
+        "pref": "東京都",
+        "slug": "tokyo",
+        "seeds": [
+            "https://www.metro.tokyo.lg.jp/purpose/grant",
+            "https://www.zaimu.metro.tokyo.lg.jp/zaisei/zaisei/hojokin",
+            "https://www.sangyo-rodo.metro.tokyo.lg.jp/chushou/",
+        ],
+    },
+    {
+        "pref": "神奈川県",
+        "slug": "kanagawa",
+        "seeds": [
+            "https://www.pref.kanagawa.jp/",
+        ],
+    },
+    {
+        "pref": "新潟県",
+        "slug": "niigata",
+        "seeds": [
+            "https://www.pref.niigata.lg.jp/",
+        ],
+    },
+    {
+        "pref": "富山県",
+        "slug": "toyama",
+        "seeds": [
+            "https://www.pref.toyama.jp/",
+        ],
+    },
+    {
+        "pref": "石川県",
+        "slug": "ishikawa",
+        "seeds": [
+            "https://www.pref.ishikawa.lg.jp/",
+            "https://www.pref.ishikawa.lg.jp/index.html",
+        ],
+        "depth": 3,
+    },
+    {
+        "pref": "福井県",
+        "slug": "fukui",
+        "seeds": [
+            "https://www.pref.fukui.lg.jp/",
+        ],
+    },
+    {
+        "pref": "山梨県",
+        "slug": "yamanashi",
+        "seeds": [
+            "https://www.pref.yamanashi.jp/",
+        ],
+    },
+    {
+        "pref": "長野県",
+        "slug": "nagano",
+        "seeds": [
+            "https://www.pref.nagano.lg.jp/",
+        ],
+    },
+    {
+        "pref": "岐阜県",
+        "slug": "gifu",
+        "seeds": [
+            "https://www.pref.gifu.lg.jp/",
+        ],
+    },
+    {
+        "pref": "静岡県",
+        "slug": "shizuoka",
+        "seeds": [
+            "https://www.pref.shizuoka.jp/sangyoshigoto/index.html",
+        ],
+    },
+    {
+        "pref": "愛知県",
+        "slug": "aichi",
+        "seeds": [
+            "https://www.pref.aichi.jp/soshiki/sangyoshinko/",
+            "https://www.pref.aichi.jp/",
+        ],
+    },
+    {
+        "pref": "三重県",
+        "slug": "mie",
+        "seeds": [
+            "https://www.pref.mie.lg.jp/",
+        ],
+        "depth": 3,
+    },
+    {
+        "pref": "滋賀県",
+        "slug": "shiga",
+        "seeds": [
+            "https://www.pref.shiga.lg.jp/",
+        ],
+    },
+    {
+        "pref": "京都府",
+        "slug": "kyoto",
+        "seeds": [
+            "https://www.pref.kyoto.jp/sangyo/index.html",
+            "https://www.pref.kyoto.jp/",
+        ],
+    },
+    {
+        "pref": "大阪府",
+        "slug": "osaka",
+        "seeds": [
+            "https://www.pref.osaka.lg.jp/",
+        ],
+    },
+    {
+        "pref": "兵庫県",
+        "slug": "hyogo",
+        "seeds": [
+            "https://web.pref.hyogo.lg.jp/",
+            "https://web.pref.hyogo.lg.jp/index.html",
+        ],
+        "depth": 3,
+    },
+    {
+        "pref": "奈良県",
+        "slug": "nara",
+        "seeds": [
+            "https://www.pref.nara.lg.jp/",
+        ],
+    },
+    {
+        "pref": "和歌山県",
+        "slug": "wakayama",
+        "seeds": [
+            "https://www.pref.wakayama.lg.jp/",
+        ],
+    },
+    {
+        "pref": "鳥取県",
+        "slug": "tottori",
+        "seeds": [
+            "https://www.pref.tottori.lg.jp/keieishien/",
+            "https://www.pref.tottori.lg.jp/9100.htm",
+            "https://www.pref.tottori.lg.jp/9087.htm",
+        ],
+        "depth": 3,
+    },
+    {
+        "pref": "島根県",
+        "slug": "shimane",
+        "seeds": [
+            "https://www.pref.shimane.lg.jp/",
+            "https://www.pref.shimane.lg.jp/industry/",
+        ],
+        "depth": 3,
+    },
+    {
+        "pref": "岡山県",
+        "slug": "okayama",
+        "seeds": [
+            "https://www.pref.okayama.jp/",
+        ],
+        "depth": 3,
+    },
+    {
+        "pref": "広島県",
+        "slug": "hiroshima",
+        "seeds": [
+            "https://www.pref.hiroshima.lg.jp/",
+        ],
+    },
+    {
+        "pref": "山口県",
+        "slug": "yamaguchi",
+        "seeds": [
+            "https://www.pref.yamaguchi.lg.jp/soshiki/91/",
+            "https://www.pref.yamaguchi.lg.jp/soshiki/93/",
+            "https://www.pref.yamaguchi.lg.jp/",
+        ],
+        "depth": 3,
+    },
+    {
+        "pref": "徳島県",
+        "slug": "tokushima",
+        "seeds": [
+            "https://www.pref.tokushima.lg.jp/",
+        ],
+    },
+    {
+        "pref": "香川県",
+        "slug": "kagawa",
+        "seeds": [
+            "https://www.pref.kagawa.lg.jp/",
+        ],
+    },
+    {
+        "pref": "愛媛県",
+        "slug": "ehime",
+        "seeds": [
+            "https://www.pref.ehime.jp/",
+        ],
+        "depth": 3,
+    },
+    {
+        "pref": "高知県",
+        "slug": "kochi",
+        "seeds": [
+            "https://www.pref.kochi.lg.jp/",
+        ],
+    },
+    {
+        "pref": "福岡県",
+        "slug": "fukuoka",
+        "seeds": [
+            "https://www.pref.fukuoka.lg.jp/",
+        ],
+    },
+    {
+        "pref": "佐賀県",
+        "slug": "saga",
+        "seeds": [
+            "https://www.pref.saga.lg.jp/",
+        ],
+    },
+    {
+        "pref": "長崎県",
+        "slug": "nagasaki",
+        "seeds": [
+            "https://www.pref.nagasaki.jp/",
+        ],
+    },
+    {
+        "pref": "熊本県",
+        "slug": "kumamoto",
+        "seeds": [
+            "https://www.pref.kumamoto.jp/",
+        ],
+        "depth": 3,
+    },
+    {
+        "pref": "大分県",
+        "slug": "oita",
+        "seeds": [
+            "https://www.pref.oita.jp/",
+        ],
+    },
+    {
+        "pref": "宮崎県",
+        "slug": "miyazaki",
+        "seeds": [
+            "https://www.pref.miyazaki.lg.jp/",
+        ],
+    },
+    {
+        "pref": "鹿児島県",
+        "slug": "kagoshima",
+        "seeds": [
+            "https://www.pref.kagoshima.jp/",
+        ],
+    },
+    {
+        "pref": "沖縄県",
+        "slug": "okinawa",
+        "seeds": [
+            "https://www.pref.okinawa.lg.jp/",
+            "https://www.pref.okinawa.jp/",
+        ],
+        "depth": 3,
+    },
 ]
 
 # Filter heuristics
 SUBSIDY_KEYWORDS_TEXT = ("補助金", "助成金", "支援金", "交付金", "奨励金", "事業費補助")
 SUBSIDY_KEYWORDS_URL = ("hojo", "josei", "joseikin", "hojokin", "shien", "subsidy")
 NAV_NOISE = (
-    "閲覧補助", "サイトマップ", "プライバシー", "アクセシビリティ", "問い合わせ",
-    "お問合せ", "お問い合わせ", "ホーム", "前のページ", "次のページ", "トップへ",
-    "ページの先頭", "戻る", "ログイン", "RSS", "Twitter", "Facebook", "Instagram",
-    "YouTube", "メニュー", "検索", "翻訳", "Language", "English", "やさしい日本語",
-    "高齢者", "外国人", "妊産婦",
-    "中小企業支援", "犯罪被害者等支援", "雇用・労働・定住支援",
-    "コンテンツにスキップ", "本文へスキップ", "ページの先頭へ戻る",
-    "ほかの助成・補助金に関する記事を探す", "ほかの",
-    "新着記事", "お知らせ",
+    "閲覧補助",
+    "サイトマップ",
+    "プライバシー",
+    "アクセシビリティ",
+    "問い合わせ",
+    "お問合せ",
+    "お問い合わせ",
+    "ホーム",
+    "前のページ",
+    "次のページ",
+    "トップへ",
+    "ページの先頭",
+    "戻る",
+    "ログイン",
+    "RSS",
+    "Twitter",
+    "Facebook",
+    "Instagram",
+    "YouTube",
+    "メニュー",
+    "検索",
+    "翻訳",
+    "Language",
+    "English",
+    "やさしい日本語",
+    "高齢者",
+    "外国人",
+    "妊産婦",
+    "中小企業支援",
+    "犯罪被害者等支援",
+    "雇用・労働・定住支援",
+    "コンテンツにスキップ",
+    "本文へスキップ",
+    "ページの先頭へ戻る",
+    "ほかの助成・補助金に関する記事を探す",
+    "ほかの",
+    "新着記事",
+    "お知らせ",
 )
 NOISE_HOST_BLACKLIST = ("noukaweb", "hojyokin-portal", "stayway", "j-net21")  # never harvest
 
@@ -243,7 +471,9 @@ _host_locks: dict[str, threading.Lock] = defaultdict(threading.Lock)
 _host_last: dict[str, float] = {}
 
 
-def _polite_get(url: str, *, session: requests.Session, timeout: int = HTTP_TIMEOUT) -> requests.Response | None:
+def _polite_get(
+    url: str, *, session: requests.Session, timeout: int = HTTP_TIMEOUT
+) -> requests.Response | None:
     host = urlparse(url).netloc
     with _host_locks[host]:
         last = _host_last.get(host, 0.0)
@@ -393,7 +623,9 @@ def harvest_pref(
                 continue
             # skip non-page URL endings
             low = href.lower()
-            if low.endswith((".css", ".js", ".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".ico", ".zip")):
+            if low.endswith(
+                (".css", ".js", ".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".ico", ".zip")
+            ):
                 continue
             if _is_program_link(text, href):
                 key = (href, text)
@@ -412,16 +644,60 @@ def harvest_pref(
             if depth + 1 < bfs_depth:
                 low_u = href.lower()
                 low_t = text or ""
-                if (any(k in low_u for k in SUBSIDY_KEYWORDS_URL) or
-                    any(k in low_t for k in SUBSIDY_KEYWORDS_TEXT) or
-                    any(k in low_u for k in ("sangyo", "keiei", "shoko", "shokorodo", "soshiki",
-                                               "chusho", "chuusho", "nourin", "nogyo", "nougyou",
-                                               "kanko", "kankou", "kankyo", "kankyou", "fukushi",
-                                               "kosodate", "iryo", "iryou", "shinko", "shinkou",
-                                               "rodo", "roudou", "kigyou", "kigyo", "shien")) or
-                    any(k in low_t for k in ("中小企業", "産業", "経営", "商工", "農林",
-                                               "観光", "環境", "福祉", "雇用", "労働",
-                                               "事業者", "起業", "創業", "DX", "脱炭素"))):
+                if (
+                    any(k in low_u for k in SUBSIDY_KEYWORDS_URL)
+                    or any(k in low_t for k in SUBSIDY_KEYWORDS_TEXT)
+                    or any(
+                        k in low_u
+                        for k in (
+                            "sangyo",
+                            "keiei",
+                            "shoko",
+                            "shokorodo",
+                            "soshiki",
+                            "chusho",
+                            "chuusho",
+                            "nourin",
+                            "nogyo",
+                            "nougyou",
+                            "kanko",
+                            "kankou",
+                            "kankyo",
+                            "kankyou",
+                            "fukushi",
+                            "kosodate",
+                            "iryo",
+                            "iryou",
+                            "shinko",
+                            "shinkou",
+                            "rodo",
+                            "roudou",
+                            "kigyou",
+                            "kigyo",
+                            "shien",
+                        )
+                    )
+                    or any(
+                        k in low_t
+                        for k in (
+                            "中小企業",
+                            "産業",
+                            "経営",
+                            "商工",
+                            "農林",
+                            "観光",
+                            "環境",
+                            "福祉",
+                            "雇用",
+                            "労働",
+                            "事業者",
+                            "起業",
+                            "創業",
+                            "DX",
+                            "脱炭素",
+                        )
+                    )
+                ):
                     if href not in visited:
                         queue.append((href, depth + 1))
 
@@ -497,9 +773,7 @@ def upsert_program(
 
     con.execute("BEGIN IMMEDIATE")
     try:
-        prev = con.execute(
-            "SELECT excluded FROM programs WHERE unified_id = ?", (uid,)
-        ).fetchone()
+        prev = con.execute("SELECT excluded FROM programs WHERE unified_id = ?", (uid,)).fetchone()
         if prev is None:
             con.execute(
                 """INSERT INTO programs (
@@ -538,15 +812,29 @@ def upsert_program(
                     prog.get("municipality"),
                     prog.get("program_kind"),
                     src,
-                    None, None, None,
-                    None, tier, None, None, None,
-                    0, None,
-                    None, None,
-                    None, None,
-                    None, None,
-                    enriched_json, None,
-                    src, fetched_at, checksum,
-                    200, 0,
+                    None,
+                    None,
+                    None,
+                    None,
+                    tier,
+                    None,
+                    None,
+                    None,
+                    0,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    enriched_json,
+                    None,
+                    src,
+                    fetched_at,
+                    checksum,
+                    200,
+                    0,
                     now_iso,
                 ),
             )
@@ -633,14 +921,17 @@ def main() -> int:
             continue
         seen.add(k)
         unique.append(p)
-    _LOG.info("harvested=%d unique=%d prefectures=%d",
-              len(all_progs), len(unique), len({p["prefecture"] for p in unique}))
+    _LOG.info(
+        "harvested=%d unique=%d prefectures=%d",
+        len(all_progs),
+        len(unique),
+        len({p["prefecture"] for p in unique}),
+    )
 
     if args.dry_run:
         for p in unique[:50]:
             print(p["prefecture"], "|", p["primary_name"][:80], "|", p["source_url"][:120])
-        print(json.dumps({"unique_total": len(unique),
-                          "by_pref": pref_counts}, ensure_ascii=False))
+        print(json.dumps({"unique_total": len(unique), "by_pref": pref_counts}, ensure_ascii=False))
         return 0
 
     db_path = Path(args.db)
@@ -663,12 +954,17 @@ def main() -> int:
     con.close()
 
     _LOG.info("done counts=%s by_pref=%s", counts, pref_counts)
-    print(json.dumps({
-        "counts": counts,
-        "by_pref": pref_counts,
-        "unique_total": len(unique),
-        "prefectures_covered": len({p["prefecture"] for p in unique}),
-    }, ensure_ascii=False))
+    print(
+        json.dumps(
+            {
+                "counts": counts,
+                "by_pref": pref_counts,
+                "unique_total": len(unique),
+                "prefectures_covered": len({p["prefecture"] for p in unique}),
+            },
+            ensure_ascii=False,
+        )
+    )
     return 0
 
 

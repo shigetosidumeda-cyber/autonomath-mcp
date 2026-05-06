@@ -64,6 +64,7 @@ Exit codes:
     1 network / parse failure
     2 DB lock / missing schema
 """
+
 from __future__ import annotations
 
 import argparse
@@ -103,10 +104,7 @@ DEFAULT_DB = REPO_ROOT / "autonomath.db"
 MLIT_SEARCH_URL = "https://www.mlit.go.jp/nega-inf/cgi-bin/search.cgi"
 KANKOCHO_TRAVEL_XLSX = "https://www.mlit.go.jp/kankocho/content/001913487.xlsx"
 
-USER_AGENT = (
-    "jpintel-mcp-ingest/1.0 "
-    "(+https://jpcite.com; contact=ops@jpcite.com)"
-)
+USER_AGENT = "jpintel-mcp-ingest/1.0 (+https://jpcite.com; contact=ops@jpcite.com)"
 
 PER_REQUEST_DELAY_SEC = 1.0
 HTTP_TIMEOUT_SEC = 30.0
@@ -161,9 +159,7 @@ ROW_RE_FW = re.compile(
     r'\s*<td class="detail"><a[^>]+href="([^"]+)"[^>]*>詳細</a></td>\s*</tr>',
     re.DOTALL,
 )
-RESULT_COUNT_RE = re.compile(
-    r'<h3 class="title">検索結果：\s*(\d+)\s*件</h3>'
-)
+RESULT_COUNT_RE = re.compile(r'<h3 class="title">検索結果：\s*(\d+)\s*件</h3>')
 HOUJIN_13_RE = re.compile(r"\d{13}")
 
 # Detail page dt/dd parser
@@ -263,15 +259,15 @@ class EnforcementRow:
     """One normalized MLIT enforcement event (to be written to
     am_entities + am_enforcement_detail)."""
 
-    category: str                    # kensetugyousya / takuti / ...
+    category: str  # kensetugyousya / takuti / ...
     target_name: str
-    houjin_bangou: str | None        # 13-digit
+    houjin_bangou: str | None  # 13-digit
     address: str | None
-    issuance_date: str               # ISO yyyy-mm-dd
-    issuing_authority: str           # 大阪府 / 国交省 / 観光庁 ...
-    punishment_raw: str              # 許可取消 / 営業停止 / ...
-    enforcement_kind: str            # license_revoke / business_improvement / contract_suspend
-    source_url: str                  # canonical permalink (detail page for mlit, xlsx for travel)
+    issuance_date: str  # ISO yyyy-mm-dd
+    issuing_authority: str  # 大阪府 / 国交省 / 観光庁 ...
+    punishment_raw: str  # 許可取消 / 営業停止 / ...
+    enforcement_kind: str  # license_revoke / business_improvement / contract_suspend
+    source_url: str  # canonical permalink (detail page for mlit, xlsx for travel)
     # From detail page (may be None if skip-detail)
     representative: str | None = None
     license_no: str | None = None
@@ -291,9 +287,10 @@ def make_canonical_id(row: EnforcementRow) -> str:
     If houjin_bangou is missing (旅行業 xlsx), fall back to short sha1 of
     target_name + registration_no.
     """
-    key = row.houjin_bangou or hashlib.sha1(
-        f"{row.target_name}|{row.registration_no or ''}".encode()
-    ).hexdigest()[:12]
+    key = (
+        row.houjin_bangou
+        or hashlib.sha1(f"{row.target_name}|{row.registration_no or ''}".encode()).hexdigest()[:12]
+    )
     # enforcement_kind may repeat on same day for same houjin (e.g.
     # 許可取消 + 指示 issued together); include raw punishment too.
     punish_slug = hashlib.sha1(row.punishment_raw.encode()).hexdigest()[:6]
@@ -409,15 +406,17 @@ def parse_list_page(html: str) -> tuple[int | None, list[dict[str, str]]]:
         issuer = rm.group(5).strip()
         punish = rm.group(6).strip()
         detail_href = rm.group(7).strip()
-        rows.append({
-            "target_name": target_name_raw,
-            "houjin_bangou": houjin,
-            "address": address,
-            "date_ja": date_ja,
-            "issuer": issuer,
-            "punish": punish,
-            "detail_href": detail_href,
-        })
+        rows.append(
+            {
+                "target_name": target_name_raw,
+                "houjin_bangou": houjin,
+                "address": address,
+                "date_ja": date_ja,
+                "issuer": issuer,
+                "punish": punish,
+                "detail_href": detail_href,
+            }
+        )
     return total, rows
 
 
@@ -457,19 +456,26 @@ def walk_category(
         if status != 200 or not html:
             _LOG.warning(
                 "cat=%s year=%d POST failed status=%s len=%d",
-                category, year, status, len(html),
+                category,
+                year,
+                status,
+                len(html),
             )
             continue
         total, rows = parse_list_page(html)
         if total is None:
             _LOG.warning(
                 "cat=%s year=%d could not parse result count; skipping",
-                category, year,
+                category,
+                year,
             )
             continue
         _LOG.info(
             "cat=%s year=%d total=%d page1_rows=%d",
-            category, year, total, len(rows),
+            category,
+            year,
+            total,
+            len(rows),
         )
         all_rows.extend(rows)
         if total <= 10:
@@ -503,7 +509,10 @@ def walk_category(
             if status != 200:
                 _LOG.warning(
                     "cat=%s year=%d page=%d GET failed status=%s",
-                    category, year, page, status,
+                    category,
+                    year,
+                    page,
+                    status,
                 )
                 continue
             _, prows = parse_list_page(html)
@@ -511,7 +520,9 @@ def walk_category(
             if not prows:
                 _LOG.warning(
                     "cat=%s year=%d page=%d zero rows — stopping pagination",
-                    category, year, page,
+                    category,
+                    year,
+                    page,
                 )
                 break
         if limit is not None and len(all_rows) >= limit:
@@ -550,10 +561,9 @@ def fetch_detail(
 def parse_travel_xlsx(xlsx_bytes: bytes) -> list[EnforcementRow]:
     """Parse 観光庁 旅行業 xlsx into EnforcementRow list."""
     if openpyxl is None:
-        raise RuntimeError(
-            "openpyxl not installed; pip install openpyxl"
-        )
+        raise RuntimeError("openpyxl not installed; pip install openpyxl")
     import io
+
     wb = openpyxl.load_workbook(io.BytesIO(xlsx_bytes), data_only=True)
     ws = wb[wb.sheetnames[0]]
     rows: list[EnforcementRow] = []
@@ -579,21 +589,23 @@ def parse_travel_xlsx(xlsx_bytes: bytes) -> list[EnforcementRow]:
         if not issuance or not target_name or not punishment_raw:
             continue
         kind = map_enforcement_kind(punishment_raw, "travel")
-        rows.append(EnforcementRow(
-            category="travel",
-            target_name=target_name,
-            houjin_bangou=None,  # 観光庁 xlsx に法人番号なし
-            address=address,
-            issuance_date=issuance,
-            issuing_authority=issuer or "観光庁",
-            punishment_raw=punishment_raw,
-            enforcement_kind=kind,
-            source_url=KANKOCHO_TRAVEL_XLSX,
-            registration_no=reg_no,
-            period_raw=period,
-            related_law_ref=law,
-            reason_summary=violation,
-        ))
+        rows.append(
+            EnforcementRow(
+                category="travel",
+                target_name=target_name,
+                houjin_bangou=None,  # 観光庁 xlsx に法人番号なし
+                address=address,
+                issuance_date=issuance,
+                issuing_authority=issuer or "観光庁",
+                punishment_raw=punishment_raw,
+                enforcement_kind=kind,
+                source_url=KANKOCHO_TRAVEL_XLSX,
+                registration_no=reg_no,
+                period_raw=period,
+                related_law_ref=law,
+                reason_summary=violation,
+            )
+        )
     return rows
 
 
@@ -736,7 +748,9 @@ def normalize_mlit_row(
     if not issuance:
         _LOG.warning(
             "cat=%s cannot parse date=%r target=%r",
-            category, raw["date_ja"], raw["target_name"],
+            category,
+            raw["date_ja"],
+            raw["target_name"],
         )
         return None
     punishment = raw["punish"].strip()
@@ -784,25 +798,37 @@ def normalize_mlit_row(
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--db", type=Path, default=DEFAULT_DB,
-                    help=f"SQLite DB (default {DEFAULT_DB})")
-    ap.add_argument("--categories", type=str,
-                    default=",".join(CATEGORIES_ALL),
-                    help="comma-separated: kensetugyousya,takuti,shimeiteishi,travel")
-    ap.add_argument("--year-from", type=int,
-                    default=dt.date.today().year - 4,
-                    help="start year (inclusive); default = today-4")
-    ap.add_argument("--year-to", type=int,
-                    default=dt.date.today().year,
-                    help="end year (inclusive); default = today")
-    ap.add_argument("--limit", type=int, default=None,
-                    help="per-category row cap (for smoke tests)")
-    ap.add_argument("--dry-run", action="store_true",
-                    help="parse only; no DB writes")
-    ap.add_argument("--skip-detail", action="store_true",
-                    help="one-shot一覧だけ取得, 違反事実 prose 無し (faster)")
-    ap.add_argument("--log-file", type=Path, default=None,
-                    help="append progress summary to this file")
+    ap.add_argument("--db", type=Path, default=DEFAULT_DB, help=f"SQLite DB (default {DEFAULT_DB})")
+    ap.add_argument(
+        "--categories",
+        type=str,
+        default=",".join(CATEGORIES_ALL),
+        help="comma-separated: kensetugyousya,takuti,shimeiteishi,travel",
+    )
+    ap.add_argument(
+        "--year-from",
+        type=int,
+        default=dt.date.today().year - 4,
+        help="start year (inclusive); default = today-4",
+    )
+    ap.add_argument(
+        "--year-to",
+        type=int,
+        default=dt.date.today().year,
+        help="end year (inclusive); default = today",
+    )
+    ap.add_argument(
+        "--limit", type=int, default=None, help="per-category row cap (for smoke tests)"
+    )
+    ap.add_argument("--dry-run", action="store_true", help="parse only; no DB writes")
+    ap.add_argument(
+        "--skip-detail",
+        action="store_true",
+        help="one-shot一覧だけ取得, 違反事実 prose 無し (faster)",
+    )
+    ap.add_argument(
+        "--log-file", type=Path, default=None, help="append progress summary to this file"
+    )
     ap.add_argument("--verbose", "-v", action="store_true")
     return ap.parse_args(argv)
 
@@ -817,13 +843,10 @@ def main(argv: list[str] | None = None) -> int:
     categories = [c.strip() for c in args.categories.split(",") if c.strip()]
     unknown = [c for c in categories if c not in CATEGORIES_ALL]
     if unknown:
-        _LOG.error("unknown categories: %s (allowed: %s)",
-                   unknown, CATEGORIES_ALL)
+        _LOG.error("unknown categories: %s (allowed: %s)", unknown, CATEGORIES_ALL)
         return 2
 
-    fetched_at = dt.datetime.now(dt.UTC).isoformat(timespec="seconds").replace(
-        "+00:00", "Z"
-    )
+    fetched_at = dt.datetime.now(dt.UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
 
     http = MlitHttpClient()
     conn: sqlite3.Connection | None = None
@@ -836,8 +859,15 @@ def main(argv: list[str] | None = None) -> int:
     stats: dict[str, dict[str, int]] = {}
     try:
         for cat in categories:
-            cat_stats = {"walked": 0, "detail_fetched": 0, "built": 0,
-                         "insert": 0, "skip": 0, "update": 0, "parse_skip": 0}
+            cat_stats = {
+                "walked": 0,
+                "detail_fetched": 0,
+                "built": 0,
+                "insert": 0,
+                "skip": 0,
+                "update": 0,
+                "parse_skip": 0,
+            }
             stats[cat] = cat_stats
 
             if cat == "travel":
@@ -853,8 +883,9 @@ def main(argv: list[str] | None = None) -> int:
                     continue
                 # Filter year range
                 y0, y1 = args.year_from, args.year_to
-                trows = [r for r in trows if r.issuance_date
-                         and y0 <= int(r.issuance_date[:4]) <= y1]
+                trows = [
+                    r for r in trows if r.issuance_date and y0 <= int(r.issuance_date[:4]) <= y1
+                ]
                 cat_stats["walked"] = len(trows)
                 cat_stats["built"] = len(trows)
                 if args.limit:
@@ -863,8 +894,10 @@ def main(argv: list[str] | None = None) -> int:
                     for r in trows[:5]:
                         _LOG.info(
                             "DRY travel %s | %s | %s | %s",
-                            r.issuance_date, r.target_name,
-                            r.punishment_raw, r.enforcement_kind,
+                            r.issuance_date,
+                            r.target_name,
+                            r.punishment_raw,
+                            r.enforcement_kind,
                         )
                     continue
                 for r in trows:
@@ -880,10 +913,16 @@ def main(argv: list[str] | None = None) -> int:
             # MLIT search for kensetugyousya / takuti / shimeiteishi.
             _LOG.info(
                 "walking cat=%s years=%d..%d",
-                cat, args.year_from, args.year_to,
+                cat,
+                args.year_from,
+                args.year_to,
             )
             list_rows = walk_category(
-                http, cat, args.year_from, args.year_to, args.limit,
+                http,
+                cat,
+                args.year_from,
+                args.year_to,
+                args.limit,
             )
             cat_stats["walked"] = len(list_rows)
             _LOG.info("cat=%s walked=%d", cat, len(list_rows))
@@ -905,8 +944,11 @@ def main(argv: list[str] | None = None) -> int:
                     if cat_stats["built"] <= 3:
                         _LOG.info(
                             "DRY %s %s | %s | houjin=%s | %s | kind=%s",
-                            cat, row.issuance_date, row.target_name,
-                            row.houjin_bangou, row.punishment_raw,
+                            cat,
+                            row.issuance_date,
+                            row.target_name,
+                            row.houjin_bangou,
+                            row.punishment_raw,
                             row.enforcement_kind,
                         )
                     continue
@@ -918,8 +960,9 @@ def main(argv: list[str] | None = None) -> int:
                     cat_stats["parse_skip"] += 1
 
                 # Periodic flush every 50 inserts to survive mid-run crashes.
-                if (cat_stats["insert"] + cat_stats["update"]) % 50 == 0 \
-                        and (cat_stats["insert"] + cat_stats["update"]) > 0:
+                if (cat_stats["insert"] + cat_stats["update"]) % 50 == 0 and (
+                    cat_stats["insert"] + cat_stats["update"]
+                ) > 0:
                     conn.commit()
                     conn.execute("BEGIN IMMEDIATE")
 
@@ -936,7 +979,10 @@ def main(argv: list[str] | None = None) -> int:
     total_walked = sum(s.get("walked", 0) for s in stats.values())
     _LOG.info(
         "SUMMARY walked=%d insert=%d skip=%d per_cat=%s",
-        total_walked, total_insert, total_skip, stats,
+        total_walked,
+        total_insert,
+        total_skip,
+        stats,
     )
 
     if args.log_file is not None:

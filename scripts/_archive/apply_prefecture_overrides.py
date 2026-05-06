@@ -6,6 +6,7 @@ override confidence is at or above --min-confidence (default 0.90).
 
 Safe to re-run. Does not touch rows that already have a prefecture set.
 """
+
 from __future__ import annotations
 
 import argparse

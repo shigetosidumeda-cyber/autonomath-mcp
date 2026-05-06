@@ -56,6 +56,7 @@ CLI:
     python scripts/ingest/ingest_enforcement_professionals.py --max-rows 250
     python scripts/ingest/ingest_enforcement_professionals.py --dry-run
 """
+
 from __future__ import annotations
 
 import argparse
@@ -89,13 +90,14 @@ WAREKI_RE = re.compile(
     r"(令和|平成|昭和|R|H|S)\s*(\d+|元)\s*[年.\-．／/]\s*"
     r"(\d{1,2})\s*[月.\-．／/]\s*(\d{1,2})\s*日?"
 )
-SEIREKI_RE = re.compile(
-    r"(20\d{2}|19\d{2})\s*[年.\-／/]\s*(\d{1,2})\s*[月.\-／/]\s*(\d{1,2})"
-)
+SEIREKI_RE = re.compile(r"(20\d{2}|19\d{2})\s*[年.\-／/]\s*(\d{1,2})\s*[月.\-／/]\s*(\d{1,2})")
 ERA_OFFSET = {
-    "令和": 2018, "R": 2018,
-    "平成": 1988, "H": 1988,
-    "昭和": 1925, "S": 1925,
+    "令和": 2018,
+    "R": 2018,
+    "平成": 1988,
+    "H": 1988,
+    "昭和": 1925,
+    "S": 1925,
 }
 
 
@@ -146,13 +148,13 @@ def parse_jpdate(text: str) -> str | None:
 @dataclass
 class EnfRow:
     target_name: str
-    issuance_date: str         # ISO yyyy-mm-dd
+    issuance_date: str  # ISO yyyy-mm-dd
     issuing_authority: str
-    enforcement_kind: str      # 'business_improvement' | 'license_revoke' | 'other'
+    enforcement_kind: str  # 'business_improvement' | 'license_revoke' | 'other'
     reason_summary: str
     related_law_ref: str
     source_url: str
-    profession_kind: str       # ZEIRISHI | BENGOSHI | CPA | SHIHO | GYOSEI
+    profession_kind: str  # ZEIRISHI | BENGOSHI | CPA | SHIHO | GYOSEI
     extra: dict = field(default_factory=dict)
 
 
@@ -241,34 +243,35 @@ def parse_nta_240401(html: str, source_url: str) -> list[EnfRow]:
         detail_url = ""
         if href_m:
             href = href_m.group(1)
-            detail_url = ("https://www.nta.go.jp" + href) if href.startswith("/") \
-                else href
+            detail_url = ("https://www.nta.go.jp" + href) if href.startswith("/") else href
         # Determine kind
         kind = classify_enforcement_kind(descr)
         # Extract law article references (法第NN条 / 第NN条第N項)
-        law_refs = re.findall(r"第\s*(\d+)\s*条(?:の\s*\d+)?(?:第\s*[一二三四五六七八九十0-9]+\s*項)?", descr)
+        law_refs = re.findall(
+            r"第\s*(\d+)\s*条(?:の\s*\d+)?(?:第\s*[一二三四五六七八九十0-9]+\s*項)?", descr
+        )
         article_blob = "・".join(sorted(set(f"第{n}条" for n in law_refs)))
         related_law = ZEIRISHI_LAW + ((" " + article_blob) if article_blob else "")
-        reason = (
-            f"{descr[:1200]} / 登録番号: {license_no} / 事務所: {office}"
-        )[:1500]
-        out.append(EnfRow(
-            target_name=name,
-            issuance_date=start_iso,
-            issuing_authority=NTA_AUTHORITY,
-            enforcement_kind=kind,
-            reason_summary=reason,
-            related_law_ref=related_law[:1000],
-            source_url=source_url,
-            profession_kind="ZEIRISHI",
-            extra={
-                "license_no": license_no,
-                "office": office,
-                "publish_date": publish_iso,
-                "detail_url": detail_url,
-                "feed": "nta_zeirishi_240401",
-            },
-        ))
+        reason = (f"{descr[:1200]} / 登録番号: {license_no} / 事務所: {office}")[:1500]
+        out.append(
+            EnfRow(
+                target_name=name,
+                issuance_date=start_iso,
+                issuing_authority=NTA_AUTHORITY,
+                enforcement_kind=kind,
+                reason_summary=reason,
+                related_law_ref=related_law[:1000],
+                source_url=source_url,
+                profession_kind="ZEIRISHI",
+                extra={
+                    "license_no": license_no,
+                    "office": office,
+                    "publish_date": publish_iso,
+                    "detail_url": detail_url,
+                    "feed": "nta_zeirishi_240401",
+                },
+            )
+        )
     return out
 
 
@@ -313,26 +316,27 @@ def parse_nta_list(html: str, source_url: str) -> list[EnfRow]:
         article_blob = "・".join(sorted(set(f"第{n}条" for n in law_refs)))
         related_law = ZEIRISHI_LAW + ((" " + article_blob) if article_blob else "")
         reason = (
-            f"{descr[:800]} / 登録番号: {license_no} / 事務所: {office} / "
-            f"官報掲載: {kanpou_date}"
+            f"{descr[:800]} / 登録番号: {license_no} / 事務所: {office} / 官報掲載: {kanpou_date}"
         )[:1500]
-        out.append(EnfRow(
-            target_name=name,
-            issuance_date=iso_date,
-            issuing_authority=NTA_AUTHORITY,
-            enforcement_kind=kind,
-            reason_summary=reason,
-            related_law_ref=related_law[:1000],
-            source_url=source_url,
-            profession_kind="ZEIRISHI",
-            extra={
-                "license_no": license_no,
-                "office": office,
-                "kanpou_date_text": kanpou_date,
-                "pdf_url": pdf_url,
-                "feed": "nta_zeirishi_kanpou",
-            },
-        ))
+        out.append(
+            EnfRow(
+                target_name=name,
+                issuance_date=iso_date,
+                issuing_authority=NTA_AUTHORITY,
+                enforcement_kind=kind,
+                reason_summary=reason,
+                related_law_ref=related_law[:1000],
+                source_url=source_url,
+                profession_kind="ZEIRISHI",
+                extra={
+                    "license_no": license_no,
+                    "office": office,
+                    "kanpou_date_text": kanpou_date,
+                    "pdf_url": pdf_url,
+                    "feed": "nta_zeirishi_kanpou",
+                },
+            )
+        )
     return out
 
 
@@ -363,10 +367,10 @@ CPA_LAW = "公認会計士法"
 
 # Known disciplinary news pages (verified 2026-04-25).
 FSA_DISCIPLINARY_URLS = [
-    "https://www.fsa.go.jp/news/r7/sonota/20251031.html",       # CPA × 4 (anonymized)
+    "https://www.fsa.go.jp/news/r7/sonota/20251031.html",  # CPA × 4 (anonymized)
     "https://www.fsa.go.jp/news/r6/sonota/20250117/20250117.html",  # アスカ
-    "https://www.fsa.go.jp/news/r6/sonota/20241122.html",       # 爽監査法人
-    "https://www.fsa.go.jp/news/r6/sonota/20241224-2.html",     # CPA
+    "https://www.fsa.go.jp/news/r6/sonota/20241122.html",  # 爽監査法人
+    "https://www.fsa.go.jp/news/r6/sonota/20241224-2.html",  # CPA
     "https://www.fsa.go.jp/news/r5/sonota/20231226-3/20231226.html",  # 太陽
     "https://www.fsa.go.jp/news/r4/sonota/20220729.html",
     "https://www.fsa.go.jp/news/r3/sonota/20210806/syobun.html",
@@ -420,7 +424,7 @@ def parse_fsa_disciplinary(html: str, source_url: str) -> list[EnfRow]:
         seen_houjin.add(houjin)
         # Take a 800-char window after the firm name as context for kind/date
         idx = fm.start()
-        ctx = plain[idx: idx + 1500]
+        ctx = plain[idx : idx + 1500]
         # Find disciplinary effective date — first wareki date after the firm
         sd = WAREKI_RE.search(ctx)
         eff_iso = parse_jpdate(sd.group(0)) if sd else publish_iso
@@ -429,28 +433,26 @@ def parse_fsa_disciplinary(html: str, source_url: str) -> list[EnfRow]:
         kind = classify_enforcement_kind(ctx)
         # Find 公認会計士法第NN条
         law_refs = re.findall(r"法第\s*(\d+(?:の\s*\d+)?)\s*条", ctx)
-        article_blob = "・".join(
-            sorted(set(f"第{a.replace(' ', '')}条" for a in law_refs))
-        )
+        article_blob = "・".join(sorted(set(f"第{a.replace(' ', '')}条" for a in law_refs)))
         related_law = CPA_LAW + ((" " + article_blob) if article_blob else "")
-        reason = (
-            f"金融庁による公認会計士法に基づく懲戒処分。{ctx[:800]}"
-        )[:1500]
-        firm_rows.append(EnfRow(
-            target_name=firm_name,
-            issuance_date=eff_iso,
-            issuing_authority=FSA_AUTHORITY,
-            enforcement_kind=kind,
-            reason_summary=reason,
-            related_law_ref=related_law[:1000],
-            source_url=source_url,
-            profession_kind="CPA",
-            extra={
-                "houjin_bangou": houjin,
-                "feed": "fsa_audit_firm",
-                "publish_date": publish_iso,
-            },
-        ))
+        reason = (f"金融庁による公認会計士法に基づく懲戒処分。{ctx[:800]}")[:1500]
+        firm_rows.append(
+            EnfRow(
+                target_name=firm_name,
+                issuance_date=eff_iso,
+                issuing_authority=FSA_AUTHORITY,
+                enforcement_kind=kind,
+                reason_summary=reason,
+                related_law_ref=related_law[:1000],
+                source_url=source_url,
+                profession_kind="CPA",
+                extra={
+                    "houjin_bangou": houjin,
+                    "feed": "fsa_audit_firm",
+                    "publish_date": publish_iso,
+                },
+            )
+        )
     out.extend(firm_rows)
 
     # ---- 公認会計士 (individual CPA) extraction ----
@@ -474,18 +476,18 @@ def parse_fsa_disciplinary(html: str, source_url: str) -> list[EnfRow]:
     if cpa_count == 0:
         # Fallback: count distinct "・公認会計士 A/B/Ａ/Ｂ" bullet markers.
         # Each individual has a labeled letter and (登録番号：…) block.
-        cpa_count = len(re.findall(
-            r"・[\s　]*公認会計士[\s　]*[A-ZＡ-Ｚ][\s　]*[（(]",
-            plain,
-        ))
+        cpa_count = len(
+            re.findall(
+                r"・[\s　]*公認会計士[\s　]*[A-ZＡ-Ｚ][\s　]*[（(]",
+                plain,
+            )
+        )
     if cpa_count == 0:
         # Try generic "・公認会計士…(" where letter may be obscured.
         cpa_count = len(re.findall(r"・[\s　]*公認会計士[\s　]*[（(]", plain))
     if cpa_count == 0:
         # Last-ditch: count "業務停止" actions specifically in a 公認会計士 paragraph.
-        cpa_count = len(re.findall(
-            r"公認会計士[^。\n]{0,200}?(業務停止|登録抹消|戒告)", plain
-        ))
+        cpa_count = len(re.findall(r"公認会計士[^。\n]{0,200}?(業務停止|登録抹消|戒告)", plain))
         # Cap at 6 (most pages have 1-6 CPAs).
         cpa_count = min(cpa_count, 6)
 
@@ -506,31 +508,31 @@ def parse_fsa_disciplinary(html: str, source_url: str) -> list[EnfRow]:
                 eff_iso = publish_iso
             kind = classify_enforcement_kind(sent or "業務停止")
             law_refs = re.findall(r"法第\s*(\d+(?:の\s*\d+)?)\s*条", sent or "")
-            article_blob = "・".join(
-                sorted(set(f"第{a.replace(' ', '')}条" for a in law_refs))
-            )
+            article_blob = "・".join(sorted(set(f"第{a.replace(' ', '')}条" for a in law_refs)))
             related_law = CPA_LAW + ((" " + article_blob) if article_blob else "")
             target = f"公認会計士{chr(ord('A') + i)} (匿名処分・{publish_iso})"
             reason = (
                 f"金融庁による公認会計士法に基づく懲戒処分（個人名は処分期間"
                 f"経過後に削除済）。{(sent or '')[:600]}"
             )[:1500]
-            out.append(EnfRow(
-                target_name=target,
-                issuance_date=eff_iso,
-                issuing_authority=FSA_AUTHORITY,
-                enforcement_kind=kind,
-                reason_summary=reason,
-                related_law_ref=related_law[:1000],
-                source_url=source_url,
-                profession_kind="CPA",
-                extra={
-                    "anonymized": True,
-                    "ordinal": i + 1,
-                    "feed": "fsa_cpa_individual",
-                    "publish_date": publish_iso,
-                },
-            ))
+            out.append(
+                EnfRow(
+                    target_name=target,
+                    issuance_date=eff_iso,
+                    issuing_authority=FSA_AUTHORITY,
+                    enforcement_kind=kind,
+                    reason_summary=reason,
+                    related_law_ref=related_law[:1000],
+                    source_url=source_url,
+                    profession_kind="CPA",
+                    extra={
+                        "anonymized": True,
+                        "ordinal": i + 1,
+                        "feed": "fsa_cpa_individual",
+                        "publish_date": publish_iso,
+                    },
+                )
+            )
 
     return out
 
@@ -569,9 +571,7 @@ GYOSEI_PREF_URLS = [
 HYOGOKAI_URL = "https://www.hyogokai.or.jp/about/disciplinary/"
 
 # 日本司法書士会連合会 — 綱紀事案公表
-SHIHO_INDEX_URL = (
-    "https://www.shiho-shoshi.or.jp/association/release/dis_list/"
-)
+SHIHO_INDEX_URL = "https://www.shiho-shoshi.or.jp/association/release/dis_list/"
 
 # 弁護士懲戒処分 — 官報公告 transcribed by 弁護士自治を考える会 (jlfmt.com).
 # Aggregator-marked source with explicit 出典: 国立印刷局「官報」.
@@ -644,7 +644,13 @@ def parse_pref_gyosei(html: str, source_url: str, pref: str) -> list[EnfRow]:
             r"(氏名|事務所|登録番号|処分年月日|処分の年月日|行政処分|行政書士法)"
         )
         denylist = {
-            "都星人", "対象者", "氏名", "本会", "事務局", "知事", "都知事",
+            "都星人",
+            "対象者",
+            "氏名",
+            "本会",
+            "事務局",
+            "知事",
+            "都知事",
         }
         for m in compact_nospace_re.finditer(plain):
             cand = m.group(1).strip()
@@ -669,9 +675,12 @@ def parse_pref_gyosei(html: str, source_url: str, pref: str) -> list[EnfRow]:
                     name_candidates.append(cand)
 
     # Find publish/processing date — prefer 処分日 / 処分の年月日 sentence
-    pub_m = re.search(r"処分(?:をした)?[\s　]*年月日[\s　]*[：:]?[\s　]*"
-                      r"([令和平成昭和RHS][\s　]*[元0-9０-９]+[\s　]*年[\s　]*"
-                      r"[0-9０-９]+[\s　]*月[\s　]*[0-9０-９]+[\s　]*日)", plain)
+    pub_m = re.search(
+        r"処分(?:をした)?[\s　]*年月日[\s　]*[：:]?[\s　]*"
+        r"([令和平成昭和RHS][\s　]*[元0-9０-９]+[\s　]*年[\s　]*"
+        r"[0-9０-９]+[\s　]*月[\s　]*[0-9０-９]+[\s　]*日)",
+        plain,
+    )
     iso = parse_jpdate(pub_m.group(1)) if pub_m else None
     if not iso:
         # Fallback: first wareki date
@@ -695,17 +704,19 @@ def parse_pref_gyosei(html: str, source_url: str, pref: str) -> list[EnfRow]:
         if not nm or len(nm) > 40 or nm in seen:
             continue
         seen.add(nm)
-        out.append(EnfRow(
-            target_name=nm,
-            issuance_date=iso,
-            issuing_authority=pref,
-            enforcement_kind=kind,
-            reason_summary=f"{pref}による行政書士法に基づく行政処分。{plain[:1000]}"[:1500],
-            related_law_ref=related_law[:1000],
-            source_url=source_url,
-            profession_kind="GYOSEI",
-            extra={"prefecture": pref, "feed": "pref_gyoseishoshi"},
-        ))
+        out.append(
+            EnfRow(
+                target_name=nm,
+                issuance_date=iso,
+                issuing_authority=pref,
+                enforcement_kind=kind,
+                reason_summary=f"{pref}による行政書士法に基づく行政処分。{plain[:1000]}"[:1500],
+                related_law_ref=related_law[:1000],
+                source_url=source_url,
+                profession_kind="GYOSEI",
+                extra={"prefecture": pref, "feed": "pref_gyoseishoshi"},
+            )
+        )
     return out
 
 
@@ -755,32 +766,30 @@ def parse_hyogokai(html: str, source_url: str) -> list[EnfRow]:
         kind = classify_enforcement_kind(block)
         # Law refs
         law_refs = re.findall(r"行政書士法\s*第\s*(\d+)\s*条", block)
-        article_blob = "・".join(
-            sorted(set(f"第{n}条" for n in law_refs))
-        )
-        related_law = "行政書士法" + (
-            (" " + article_blob) if article_blob else ""
-        )
+        article_blob = "・".join(sorted(set(f"第{n}条" for n in law_refs)))
+        related_law = "行政書士法" + ((" " + article_blob) if article_blob else "")
         # 登録番号
         reg_m = re.search(r"登録番号[\s　]*([0-9]{6,12})", block)
         reg_no = reg_m.group(1) if reg_m else ""
-        out.append(EnfRow(
-            target_name=name,
-            issuance_date=iso,
-            issuing_authority="兵庫県行政書士会",
-            enforcement_kind=kind,
-            reason_summary=(
-                f"兵庫県行政書士会会長による行政書士法に基づく処分。{block[:1000]}"
-            )[:1500],
-            related_law_ref=related_law[:1000],
-            source_url=source_url,
-            profession_kind="GYOSEI",
-            extra={
-                "prefecture": "兵庫県",
-                "registration_no": reg_no,
-                "feed": "hyogokai_chokai",
-            },
-        ))
+        out.append(
+            EnfRow(
+                target_name=name,
+                issuance_date=iso,
+                issuing_authority="兵庫県行政書士会",
+                enforcement_kind=kind,
+                reason_summary=(
+                    f"兵庫県行政書士会会長による行政書士法に基づく処分。{block[:1000]}"
+                )[:1500],
+                related_law_ref=related_law[:1000],
+                source_url=source_url,
+                profession_kind="GYOSEI",
+                extra={
+                    "prefecture": "兵庫県",
+                    "registration_no": reg_no,
+                    "feed": "hyogokai_chokai",
+                },
+            )
+        )
     return out
 
 
@@ -789,9 +798,7 @@ def parse_hyogokai(html: str, source_url: str) -> list[EnfRow]:
 # ---------------------------------------------------------------------------
 
 
-SHIHO_TITLE_RE = re.compile(
-    r"^(\d{8})([^_]+)_([^｜]+?)(?:｜|$)"
-)
+SHIHO_TITLE_RE = re.compile(r"^(\d{8})([^_]+)_([^｜]+?)(?:｜|$)")
 
 
 def parse_shiho_index(html: str, source_url: str) -> list[tuple[str, str]]:
@@ -831,9 +838,7 @@ def parse_shiho_case(html: str, source_url: str, local_label: str) -> EnfRow | N
     if len(date_compact) != 8:
         return None
     try:
-        iso = (
-            f"{date_compact[:4]}-{date_compact[4:6]}-{date_compact[6:8]}"
-        )
+        iso = f"{date_compact[:4]}-{date_compact[4:6]}-{date_compact[6:8]}"
     except Exception:
         return None
     kind = classify_enforcement_kind(kind_text)
@@ -863,7 +868,8 @@ def fetch_shiho_shoshi(http: HttpClient) -> list[EnfRow]:
     res = http.get(SHIHO_INDEX_URL)
     if not res.ok:
         _LOG.warning(
-            "[shiho] index fetch failed status=%s", res.status,
+            "[shiho] index fetch failed status=%s",
+            res.status,
         )
         return out
     cases = parse_shiho_index(res.text, SHIHO_INDEX_URL)
@@ -877,7 +883,9 @@ def fetch_shiho_shoshi(http: HttpClient) -> list[EnfRow]:
         if cr.status != 200:
             _LOG.warning(
                 "[shiho] case fetch failed url=%s status=%s reason=%s",
-                case_url, cr.status, cr.skip_reason,
+                case_url,
+                cr.status,
+                cr.skip_reason,
             )
             continue
         row = parse_shiho_case(cr.text, case_url, local)
@@ -927,28 +935,72 @@ def parse_jlfmt_bengoshi(html: str, source_url: str) -> list[EnfRow]:
     # Circled digits in CJK: ①-⑳, then 21+ uses ㉑-㊿.
     # Match each row marker followed by name + 5 digits (登録番号).
     # The row payload runs until next circled marker or end.
-    marker_re = re.compile(
-        r"[①-⑳㉑-㊿]"
-    )
+    marker_re = re.compile(r"[①-⑳㉑-㊿]")
     matches = list(marker_re.finditer(plain))
     if not matches:
         return out
     # Bar association whitelist (substring match)
     bar_assocs = (
-        "東京", "第一東京", "第二東京", "大阪", "京都", "兵庫", "神戸",
-        "名古屋", "愛知", "横浜", "神奈川", "千葉", "埼玉", "札幌",
-        "福岡", "広島", "岡山", "群馬", "栃木", "茨城", "山梨",
-        "長野", "新潟", "富山", "石川", "福井", "静岡", "岐阜", "三重",
-        "滋賀", "奈良", "和歌山", "鳥取", "島根", "山口", "徳島",
-        "香川", "愛媛", "高知", "佐賀", "長崎", "熊本", "大分",
-        "宮崎", "鹿児島", "沖縄", "福島", "宮城", "山形", "秋田",
-        "岩手", "青森", "仙台", "釧路", "函館", "旭川",
+        "東京",
+        "第一東京",
+        "第二東京",
+        "大阪",
+        "京都",
+        "兵庫",
+        "神戸",
+        "名古屋",
+        "愛知",
+        "横浜",
+        "神奈川",
+        "千葉",
+        "埼玉",
+        "札幌",
+        "福岡",
+        "広島",
+        "岡山",
+        "群馬",
+        "栃木",
+        "茨城",
+        "山梨",
+        "長野",
+        "新潟",
+        "富山",
+        "石川",
+        "福井",
+        "静岡",
+        "岐阜",
+        "三重",
+        "滋賀",
+        "奈良",
+        "和歌山",
+        "鳥取",
+        "島根",
+        "山口",
+        "徳島",
+        "香川",
+        "愛媛",
+        "高知",
+        "佐賀",
+        "長崎",
+        "熊本",
+        "大分",
+        "宮崎",
+        "鹿児島",
+        "沖縄",
+        "福島",
+        "宮城",
+        "山形",
+        "秋田",
+        "岩手",
+        "青森",
+        "仙台",
+        "釧路",
+        "函館",
+        "旭川",
     )
     for i, m in enumerate(matches):
         start = m.end()
-        end = (
-            matches[i + 1].start() if i + 1 < len(matches) else min(start + 200, len(plain))
-        )
+        end = matches[i + 1].start() if i + 1 < len(matches) else min(start + 200, len(plain))
         row = plain[start:end].strip()
         # Tokenize: strip leading whitespace, then expect:
         #   <name with possible space> <reg_no:4-5 digits> <bar_assoc> <sanction>
@@ -983,27 +1035,29 @@ def parse_jlfmt_bengoshi(html: str, source_url: str) -> list[EnfRow]:
             year = default_year
         iso = f"{year:04d}-{mo:02d}-{d:02d}"
         kind = classify_enforcement_kind(sanction)
-        out.append(EnfRow(
-            target_name=name,
-            issuance_date=iso,
-            issuing_authority=f"日本弁護士連合会（{bar}弁護士会）",
-            enforcement_kind=kind,
-            reason_summary=(
-                f"日本弁護士連合会による弁護士法に基づく懲戒処分。"
-                f"処分: {sanction} / 所属: {bar}弁護士会 / 登録番号: {reg_no}。"
-                f"出典: 国立印刷局「官報」（弁護士自治を考える会 jlfmt.com 転載）。"
-            )[:1500],
-            related_law_ref="弁護士法 第57条",
-            source_url=source_url,
-            profession_kind="BENGOSHI",
-            extra={
-                "registration_no": reg_no,
-                "bar_association": bar,
-                "sanction_text": sanction,
-                "feed": "jlfmt_kanpou",
-                "source_attribution": "国立印刷局「官報」",
-            },
-        ))
+        out.append(
+            EnfRow(
+                target_name=name,
+                issuance_date=iso,
+                issuing_authority=f"日本弁護士連合会（{bar}弁護士会）",
+                enforcement_kind=kind,
+                reason_summary=(
+                    f"日本弁護士連合会による弁護士法に基づく懲戒処分。"
+                    f"処分: {sanction} / 所属: {bar}弁護士会 / 登録番号: {reg_no}。"
+                    f"出典: 国立印刷局「官報」（弁護士自治を考える会 jlfmt.com 転載）。"
+                )[:1500],
+                related_law_ref="弁護士法 第57条",
+                source_url=source_url,
+                profession_kind="BENGOSHI",
+                extra={
+                    "registration_no": reg_no,
+                    "bar_association": bar,
+                    "sanction_text": sanction,
+                    "feed": "jlfmt_kanpou",
+                    "source_attribution": "国立印刷局「官報」",
+                },
+            )
+        )
     return out
 
 
@@ -1065,17 +1119,19 @@ def parse_toben_chokai(html: str, source_url: str) -> list[EnfRow]:
     law_refs = re.findall(r"弁護士法\s*第\s*(\d+)\s*条", plain)
     article_blob = "・".join(sorted(set(f"第{n}条" for n in law_refs)))
     related_law = "弁護士法" + ((" " + article_blob) if article_blob else "")
-    out.append(EnfRow(
-        target_name=name,
-        issuance_date=iso,
-        issuing_authority="東京弁護士会",
-        enforcement_kind=kind,
-        reason_summary=f"東京弁護士会による弁護士法に基づく懲戒処分。{plain[:1000]}"[:1500],
-        related_law_ref=related_law[:1000],
-        source_url=source_url,
-        profession_kind="BENGOSHI",
-        extra={"feed": "toben_chokai"},
-    ))
+    out.append(
+        EnfRow(
+            target_name=name,
+            issuance_date=iso,
+            issuing_authority="東京弁護士会",
+            enforcement_kind=kind,
+            reason_summary=f"東京弁護士会による弁護士法に基づく懲戒処分。{plain[:1000]}"[:1500],
+            related_law_ref=related_law[:1000],
+            source_url=source_url,
+            profession_kind="BENGOSHI",
+            extra={"feed": "toben_chokai"},
+        )
+    )
     return out
 
 
@@ -1110,9 +1166,7 @@ def fetch_toben_chokai(http: HttpClient) -> list[EnfRow]:
 # ---------------------------------------------------------------------------
 
 
-def enrich_nta_with_details(
-    http: HttpClient, rows: list[EnfRow]
-) -> list[EnfRow]:
+def enrich_nta_with_details(http: HttpClient, rows: list[EnfRow]) -> list[EnfRow]:
     """For each NTA 240401 row with detail_url, fetch the per-record HTML
     and append the rich 行為事実概要 section to reason_summary."""
     enriched_count = 0
@@ -1132,7 +1186,7 @@ def enrich_nta_with_details(
         if idx == -1:
             idx = plain.find("行為又は事実の概要")
         if idx != -1:
-            chunk = plain[idx: idx + 1200]
+            chunk = plain[idx : idx + 1200]
             r.reason_summary = (chunk + " / " + r.reason_summary)[:1500]
             r.extra["enriched_from_detail"] = True
             enriched_count += 1
@@ -1204,8 +1258,12 @@ def upsert_entity(
             updated_at        = datetime('now')
         """,
         (
-            canonical_id, primary_name[:500], url, domain,
-            now_iso, raw_json,
+            canonical_id,
+            primary_name[:500],
+            url,
+            domain,
+            now_iso,
+            raw_json,
         ),
     )
 
@@ -1273,18 +1331,16 @@ def write_rows(
                 continue
             batch_keys.add(key)
 
-            seq_seed = r.extra.get("license_no") or r.extra.get("ordinal", "") \
-                or r.target_name
+            seq_seed = r.extra.get("license_no") or r.extra.get("ordinal", "") or r.target_name
             slug = _slug6(
-                r.target_name, r.issuance_date, str(seq_seed),
+                r.target_name,
+                r.issuance_date,
+                str(seq_seed),
             )
             canonical_id = (
-                f"AM-ENF-PROF-{r.profession_kind}-"
-                f"{r.issuance_date.replace('-', '')}-{slug}"
+                f"AM-ENF-PROF-{r.profession_kind}-{r.issuance_date.replace('-', '')}-{slug}"
             )
-            primary_name = (
-                f"{r.target_name} ({r.issuance_date}) - {r.related_law_ref[:30]}"
-            )
+            primary_name = f"{r.target_name} ({r.issuance_date}) - {r.related_law_ref[:30]}"
             raw_json = json.dumps(
                 {
                     "target_name": r.target_name,
@@ -1303,15 +1359,21 @@ def write_rows(
             )
             try:
                 upsert_entity(
-                    conn, canonical_id, primary_name,
-                    r.source_url, raw_json, now_iso,
+                    conn,
+                    canonical_id,
+                    primary_name,
+                    r.source_url,
+                    raw_json,
+                    now_iso,
                 )
                 insert_enforcement(conn, canonical_id, r, now_iso)
                 inserted += 1
             except sqlite3.Error as exc:
                 _LOG.error(
                     "DB error name=%r date=%s: %s",
-                    r.target_name, r.issuance_date, exc,
+                    r.target_name,
+                    r.issuance_date,
+                    exc,
                 )
                 continue
         conn.commit()
@@ -1332,8 +1394,12 @@ def write_rows(
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--db", type=Path, default=DEFAULT_DB)
-    ap.add_argument("--max-rows", type=int, default=None,
-                    help="cap inserts at this many rows (default unlimited)")
+    ap.add_argument(
+        "--max-rows",
+        type=int,
+        default=None,
+        help="cap inserts at this many rows (default unlimited)",
+    )
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--verbose", "-v", action="store_true")
     ap.add_argument("--skip-nta", action="store_true")
@@ -1353,9 +1419,7 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     http = HttpClient(user_agent=USER_AGENT)
-    now_iso = datetime.now(UTC).isoformat(timespec="seconds").replace(
-        "+00:00", "Z"
-    )
+    now_iso = datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
 
     all_rows: list[EnfRow] = []
     if not args.skip_nta:
@@ -1380,11 +1444,16 @@ def main(argv: list[str] | None = None) -> int:
         for r in all_rows[:10]:
             _LOG.info(
                 "sample: prof=%s name=%s date=%s auth=%s kind=%s law=%s",
-                r.profession_kind, r.target_name, r.issuance_date,
-                r.issuing_authority, r.enforcement_kind, r.related_law_ref,
+                r.profession_kind,
+                r.target_name,
+                r.issuance_date,
+                r.issuing_authority,
+                r.enforcement_kind,
+                r.related_law_ref,
             )
         # breakdown
         from collections import Counter
+
         ck = Counter(r.profession_kind for r in all_rows)
         _LOG.info("breakdown by profession: %s", dict(ck))
         http.close()
@@ -1400,7 +1469,10 @@ def main(argv: list[str] | None = None) -> int:
     conn.execute("PRAGMA foreign_keys=ON")
 
     inserted, dup_db, dup_batch = write_rows(
-        conn, all_rows, now_iso=now_iso, max_rows=args.max_rows,
+        conn,
+        all_rows,
+        now_iso=now_iso,
+        max_rows=args.max_rows,
     )
     try:
         conn.close()
@@ -1410,7 +1482,10 @@ def main(argv: list[str] | None = None) -> int:
 
     _LOG.info(
         "done parsed=%d inserted=%d dup_db=%d dup_batch=%d",
-        len(all_rows), inserted, dup_db, dup_batch,
+        len(all_rows),
+        inserted,
+        dup_db,
+        dup_batch,
     )
     print(
         f"Professional 懲戒 ingest: parsed={len(all_rows)} "

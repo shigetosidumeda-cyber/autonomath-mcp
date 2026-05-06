@@ -56,6 +56,7 @@ CLI:
     python scripts/ingest/ingest_enforcement_soumu_telecom.py --max-rows 500
     python scripts/ingest/ingest_enforcement_soumu_telecom.py --dry-run
 """
+
 from __future__ import annotations
 
 import argparse
@@ -169,8 +170,8 @@ REGION_INDEX: dict[str, dict[str, Any]] = {
 }
 
 # 信越 uses Wareki-coded archive paths
-SHINETSU_HEISEI_RANGE = list(range(25, 31))   # h25..h30 = 2013..2018
-SHINETSU_REIWA_RANGE = list(range(1, 8))      # r01..r07 = 2019..2025
+SHINETSU_HEISEI_RANGE = list(range(25, 31))  # h25..h30 = 2013..2018
+SHINETSU_REIWA_RANGE = list(range(1, 8))  # r01..r07 = 2019..2025
 SHINETSU_TMPL_H = "https://www.soumu.go.jp/soutsu/shinetsu/sbt/hodo/h{:02d}houdo.html"
 SHINETSU_TMPL_R = "https://www.soumu.go.jp/soutsu/shinetsu/sbt/hodo/r{:02d}houdo.html"
 SHINETSU_CURRENT = "https://www.soumu.go.jp/soutsu/shinetsu/sbt/hodo/houdou1.html"
@@ -184,83 +185,155 @@ SOUMU_MAIN_TMPL = "https://www.soumu.go.jp/menu_news/s-news/{yy:02d}{mm:02d}m.ht
 # These are tight enforcement-action keywords (not just topic mentions).
 ENFORCEMENT_KEYWORDS = [
     # 電気通信事業法 系
-    "業務改善命令", "業務停止命令",
-    "電気通信事業の登録の取消", "電気通信事業の登録取消",
+    "業務改善命令",
+    "業務停止命令",
+    "電気通信事業の登録の取消",
+    "電気通信事業の登録取消",
     "電気通信事業の登録抹消",
-    "電気通信業務の休止", "電気通信業務の廃止",
-    "業務の休止及び廃止の周知義務", "周知義務",
+    "電気通信業務の休止",
+    "電気通信業務の廃止",
+    "業務の休止及び廃止の周知義務",
+    "周知義務",
     # 電波法 系 (enforcement-style only)
-    "電波法違反", "電波法に違反",
-    "不法無線局", "不法電波", "違法電波", "妨害電波",
+    "電波法違反",
+    "電波法に違反",
+    "不法無線局",
+    "不法電波",
+    "違法電波",
+    "妨害電波",
     "無線局を不法",
-    "従事停止", "従事停止処分",
-    "免許の取消", "免許取消し", "免許取消",
+    "従事停止",
+    "従事停止処分",
+    "免許の取消",
+    "免許取消し",
+    "免許取消",
     "運用停止",
     # 取締り系 (police+kyoku coordinated raids)
-    "摘発", "取締り", "取締",
+    "摘発",
+    "取締り",
+    "取締",
     # 放送法 系
-    "認定放送持株会社の認定", "認定放送持株会社の認定取消",
+    "認定放送持株会社の認定",
+    "認定放送持株会社の認定取消",
     "基幹放送局の認定取消",
-    "コミュニティ放送局の免許取消", "コミュニティ放送局の認定取消",
+    "コミュニティ放送局の免許取消",
+    "コミュニティ放送局の認定取消",
     # 信書便 (enforcement-style only — 取消 / 命令)
-    "信書便事業の許可取消", "信書便事業の認定取消",
+    "信書便事業の許可取消",
+    "信書便事業の認定取消",
     "信書便事業者に対する業務改善命令",
     # 一般行政処分
-    "行政処分", "改善命令", "停止命令", "業務命令",
-    "認定の取消", "許可取消", "登録取消",
-    "認可取消", "認定取消",
-    "厳重注意", "文書注意",
+    "行政処分",
+    "改善命令",
+    "停止命令",
+    "業務命令",
+    "認定の取消",
+    "許可取消",
+    "登録取消",
+    "認可取消",
+    "認定取消",
+    "厳重注意",
+    "文書注意",
 ]
 
 # Negative filter — these reject the anchor unless a STRONG_POSITIVE also
 # matches. Catches announcements, demos, appointments, awards.
 EXCLUDE_KEYWORDS = [
-    "意見募集", "公募", "募集中", "募集の", "募集について",
-    "シンポジウム", "セミナー", "講演",
-    "委員の任命", "任命", "派遣", "委嘱",
-    "調査結果", "アンケート",
-    "予備免許", "免許状等のデジタル化",
-    "免許の付与", "免許を付与", "免許付与",
-    "感謝状", "表彰", "贈呈",
-    "周知啓発", "電波利用環境保護", "STOP",
-    "白書", "年次報告", "答申",
-    "意見公募", "意見公募手続",
-    "防災訓練", "防災フェスタ", "総合防災訓練", "水防演習",
-    "展示", "試験運用",
+    "意見募集",
+    "公募",
+    "募集中",
+    "募集の",
+    "募集について",
+    "シンポジウム",
+    "セミナー",
+    "講演",
+    "委員の任命",
+    "任命",
+    "派遣",
+    "委嘱",
+    "調査結果",
+    "アンケート",
+    "予備免許",
+    "免許状等のデジタル化",
+    "免許の付与",
+    "免許を付与",
+    "免許付与",
+    "感謝状",
+    "表彰",
+    "贈呈",
+    "周知啓発",
+    "電波利用環境保護",
+    "STOP",
+    "白書",
+    "年次報告",
+    "答申",
+    "意見公募",
+    "意見公募手続",
+    "防災訓練",
+    "防災フェスタ",
+    "総合防災訓練",
+    "水防演習",
+    "展示",
+    "試験運用",
     "災害対策用",
-    "情報通信月間", "電波の日", "記念講演会",
-    "テレワーク", "コンテスト",
-    "認定証", "認定状",
+    "情報通信月間",
+    "電波の日",
+    "記念講演会",
+    "テレワーク",
+    "コンテスト",
+    "認定証",
+    "認定状",
     "新規参入",
     "公衆無線LAN環境整備支援事業",
     "事業計画の変更の認可",  # 通常の認可 — 取消ではない
     "提案の公募",
-    "予算", "決算",
+    "予算",
+    "決算",
     # 信書便/電気通信 license GRANTS (NOT enforcement)
-    "特定信書便事業の許可", "信書便事業の許可",
-    "信書便約款の変更の認可", "信書便事業の認可",
+    "特定信書便事業の許可",
+    "信書便事業の許可",
+    "信書便約款の変更の認可",
+    "信書便事業の認可",
     "電気通信事業の登録",  # 登録 = grant (取消 caught by STRONG_POSITIVE first)
     "電気通信事業の届出",
-    "申請者 役務の種類", "申請者役務の種類",  # 信書便許可 list table title
+    "申請者 役務の種類",
+    "申請者役務の種類",  # 信書便許可 list table title
     "提供区域 兼業する事業",
-    "免許状", "免許の交付", "免許状の交付",
+    "免許状",
+    "免許の交付",
+    "免許状の交付",
     "事業開始予定日",
 ]
 
 # Strong-positive overrides — these guarantee inclusion even if a negative
 # keyword is also present in the title.
 STRONG_POSITIVE = [
-    "業務改善命令", "業務停止命令",
-    "認定取消", "認定の取消", "認定取消し",
-    "登録取消", "登録の取消", "登録取消し",
-    "許可取消", "許可の取消", "許可取消し",
-    "免許取消", "免許の取消", "免許取消し",
+    "業務改善命令",
+    "業務停止命令",
+    "認定取消",
+    "認定の取消",
+    "認定取消し",
+    "登録取消",
+    "登録の取消",
+    "登録取消し",
+    "許可取消",
+    "許可の取消",
+    "許可取消し",
+    "免許取消",
+    "免許の取消",
+    "免許取消し",
     "運用停止",
-    "電波法違反", "電波法に違反",
-    "従事停止処分", "従事停止",
-    "不法無線局", "不法電波", "違法電波", "妨害電波",
+    "電波法違反",
+    "電波法に違反",
+    "従事停止処分",
+    "従事停止",
+    "不法無線局",
+    "不法電波",
+    "違法電波",
+    "妨害電波",
     "摘発",
-    "行政処分", "改善命令",
+    "行政処分",
+    "改善命令",
     "電気通信業務の休止",
     "電気通信業務の廃止",
     "周知義務",
@@ -338,8 +411,7 @@ class Fetcher:
         if elapsed < self._min_interval:
             time.sleep(self._min_interval - elapsed)
 
-    def fetch(self, url: str, retries: int = 3,
-              encoding: str = "shift_jis") -> tuple[int, str]:
+    def fetch(self, url: str, retries: int = 3, encoding: str = "shift_jis") -> tuple[int, str]:
         for attempt in range(retries):
             self._pace()
             req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
@@ -374,16 +446,35 @@ ANCHOR_RE = re.compile(
 
 
 _HARD_EXCLUDES = (
-    "周知啓発", "強化期間", "電波利用環境保護", "STOP THE",
-    "防災訓練", "防災フェスタ", "総合防災訓練", "水防演習",
-    "情報通信月間", "電波の日", "記念講演",
-    "セミナー", "シンポジウム", "募集", "意見公募",
-    "感謝状", "表彰", "贈呈", "授与",
-    "白書", "年次報告", "答申",
-    "免許の付与", "免許を付与",
-    "コンテスト", "テレワーク",
+    "周知啓発",
+    "強化期間",
+    "電波利用環境保護",
+    "STOP THE",
+    "防災訓練",
+    "防災フェスタ",
+    "総合防災訓練",
+    "水防演習",
+    "情報通信月間",
+    "電波の日",
+    "記念講演",
+    "セミナー",
+    "シンポジウム",
+    "募集",
+    "意見公募",
+    "感謝状",
+    "表彰",
+    "贈呈",
+    "授与",
+    "白書",
+    "年次報告",
+    "答申",
+    "免許の付与",
+    "免許を付与",
+    "コンテスト",
+    "テレワーク",
     "公衆無線LAN環境整備支援事業",
-    "申請者 役務の種類", "申請者役務の種類",
+    "申請者 役務の種類",
+    "申請者役務の種類",
     "提案の公募",
 )
 
@@ -431,18 +522,27 @@ def classify_kind(title: str) -> str:
     """Pick enforcement_kind from press release title."""
     t = title
     # license_revoke
-    if any(k in t for k in [
-        "認定取消", "認定の取消", "登録取消", "登録の取消",
-        "許可取消", "許可の取消", "免許取消", "免許の取消"
-    ]):
+    if any(
+        k in t
+        for k in [
+            "認定取消",
+            "認定の取消",
+            "登録取消",
+            "登録の取消",
+            "許可取消",
+            "許可の取消",
+            "免許取消",
+            "免許の取消",
+        ]
+    ):
         return "license_revoke"
     # contract_suspend
-    if any(k in t for k in ["業務停止命令", "業務停止", "運用停止",
-                             "従事停止", "停止命令"]):
+    if any(k in t for k in ["業務停止命令", "業務停止", "運用停止", "従事停止", "停止命令"]):
         return "contract_suspend"
     # business_improvement
-    if any(k in t for k in ["業務改善命令", "業務改善", "改善命令",
-                             "周知義務", "厳重注意", "文書注意"]):
+    if any(
+        k in t for k in ["業務改善命令", "業務改善", "改善命令", "周知義務", "厳重注意", "文書注意"]
+    ):
         return "business_improvement"
     # investigation (摘発・取締り — 個人の電波法違反摘発が大半)
     if any(k in t for k in ["摘発", "取締り", "取締", "捜索"]):
@@ -505,7 +605,7 @@ def extract_target_name(title: str, body: str) -> str:
         r"(?:株式会社|有限会社|合同会社|合資会社|合名会社|"
         r"特定非営利活動法人|社団法人|財団法人|協同組合|商工会|"
         r"放送局|FM|エフエム))",
-        body
+        body,
     )
     if m:
         name = _normalize(m.group(1))
@@ -518,7 +618,7 @@ def extract_target_name(title: str, body: str) -> str:
     m2 = re.search(
         r"([一-龥]{2,5}[県府都道][一-龥ぁ-んァ-ヶー]{0,30}在住の?)\s*"
         r"([0-9０-９]+)\s*歳",
-        body
+        body,
     )
     if m2:
         return _normalize(m2.group(1) + m2.group(2) + "歳")
@@ -563,16 +663,16 @@ def parse_press_release(
 
     # Extract main body text (between common delimiters)
     body_text = ""
-    body_match = re.search(
-        r"<body[^>]*>(.*?)</body>", html, re.DOTALL | re.IGNORECASE
-    )
+    body_match = re.search(r"<body[^>]*>(.*?)</body>", html, re.DOTALL | re.IGNORECASE)
     if body_match:
         body_html = body_match.group(1)
         # remove scripts/styles
-        body_html = re.sub(r"<script[^>]*>.*?</script>", " ", body_html,
-                            flags=re.DOTALL | re.IGNORECASE)
-        body_html = re.sub(r"<style[^>]*>.*?</style>", " ", body_html,
-                            flags=re.DOTALL | re.IGNORECASE)
+        body_html = re.sub(
+            r"<script[^>]*>.*?</script>", " ", body_html, flags=re.DOTALL | re.IGNORECASE
+        )
+        body_html = re.sub(
+            r"<style[^>]*>.*?</style>", " ", body_html, flags=re.DOTALL | re.IGNORECASE
+        )
         body_text = re.sub(r"<[^>]+>", " ", body_html)
         body_text = _normalize(body_text)
         # trim to 8KB
@@ -592,18 +692,34 @@ def parse_press_release(
         #   /sbt/hodo/241021.html  (shinetsu: YYMMDD)
         # try patterns
         for pat, transform in [
-            (r"/press/(\d{4})/(\d{4})[a-z]+\.html", lambda m: f"{m.group(1)}-{m.group(2)[:2]}-{m.group(2)[2:]}"),
-            (r"/press/(\d{4})/pre(\d{2})(\d{2})(\d{2})_\d+\.html",
-             lambda m: f"{m.group(1)}-{m.group(3)}-{m.group(4)}"),
-            (r"/press/(\d{8})\.html", lambda m: f"{m.group(1)[:4]}-{m.group(1)[4:6]}-{m.group(1)[6:8]}"),
-            (r"/hodo/(\d{8})[a-z]?\d*\.html",
-             lambda m: f"{m.group(1)[:4]}-{m.group(1)[4:6]}-{m.group(1)[6:8]}"),
-            (r"/hodo/(\d{4})/(\d{4})_(\d{2})_(\d{2})-\d+\.html",
-             lambda m: f"{m.group(2)}-{m.group(3)}-{m.group(4)}"),
-            (r"/sbt/hodo/(\d{2})(\d{2})(\d{2})\.html",
-             lambda m: f"20{m.group(1)}-{m.group(2)}-{m.group(3)}"),
-            (r"/(\d{4})/(\d{4})\.html",  # hokkaido /YYYY/MMDD.html
-             lambda m: f"{m.group(1)}-{m.group(2)[:2]}-{m.group(2)[2:]}"),
+            (
+                r"/press/(\d{4})/(\d{4})[a-z]+\.html",
+                lambda m: f"{m.group(1)}-{m.group(2)[:2]}-{m.group(2)[2:]}",
+            ),
+            (
+                r"/press/(\d{4})/pre(\d{2})(\d{2})(\d{2})_\d+\.html",
+                lambda m: f"{m.group(1)}-{m.group(3)}-{m.group(4)}",
+            ),
+            (
+                r"/press/(\d{8})\.html",
+                lambda m: f"{m.group(1)[:4]}-{m.group(1)[4:6]}-{m.group(1)[6:8]}",
+            ),
+            (
+                r"/hodo/(\d{8})[a-z]?\d*\.html",
+                lambda m: f"{m.group(1)[:4]}-{m.group(1)[4:6]}-{m.group(1)[6:8]}",
+            ),
+            (
+                r"/hodo/(\d{4})/(\d{4})_(\d{2})_(\d{2})-\d+\.html",
+                lambda m: f"{m.group(2)}-{m.group(3)}-{m.group(4)}",
+            ),
+            (
+                r"/sbt/hodo/(\d{2})(\d{2})(\d{2})\.html",
+                lambda m: f"20{m.group(1)}-{m.group(2)}-{m.group(3)}",
+            ),
+            (
+                r"/(\d{4})/(\d{4})\.html",  # hokkaido /YYYY/MMDD.html
+                lambda m: f"{m.group(1)}-{m.group(2)[:2]}-{m.group(2)[2:]}",
+            ),
         ]:
             mm = re.search(pat, source_url)
             if mm:
@@ -718,9 +834,7 @@ def upsert_record(
         "exclusion_end": rec.get("exclusion_end"),
         "source_url": rec["source_url"],
         "license": "PDL v1.0 (政府標準利用規約 第2.0版 互換)",
-        "attribution": (
-            f"出典: {rec['issuing_authority']} 報道資料 ({rec['source_url']})"
-        ),
+        "attribution": (f"出典: {rec['issuing_authority']} 報道資料 ({rec['source_url']})"),
         "fetched_at": now_iso,
     }
 
@@ -787,15 +901,13 @@ def collect_index_urls(
                 yr = 1988 + h
                 if yr < year_lo or yr > year_hi:
                     continue
-                out.append((rk, "信越総合通信局",
-                            SHINETSU_TMPL_H.format(h)))
+                out.append((rk, "信越総合通信局", SHINETSU_TMPL_H.format(h)))
             # Reiwa 1..7 = 2019..2025
             for r in SHINETSU_REIWA_RANGE:
                 yr = 2018 + r
                 if yr < year_lo or yr > year_hi:
                     continue
-                out.append((rk, "信越総合通信局",
-                            SHINETSU_TMPL_R.format(r)))
+                out.append((rk, "信越総合通信局", SHINETSU_TMPL_R.format(r)))
             # current (2026)
             if 2026 >= year_lo and 2026 <= year_hi:
                 out.append((rk, "信越総合通信局", SHINETSU_CURRENT))
@@ -834,10 +946,13 @@ def crawl_index_page(
             continue
         # restrict to same region's path (avoid links to /menu_news/s-news/)
         # but allow soumu main news links if they're enforcement-style
-        if (f"/soutsu/{region_key}/" in url or
-                "/menu_news/s-news/" in url or
-                # shinetsu uses /sbt/
-                (region_key == "shinetsu" and "/shinetsu/" in url)):
+        if (
+            f"/soutsu/{region_key}/" in url
+            or "/menu_news/s-news/" in url
+            or
+            # shinetsu uses /sbt/
+            (region_key == "shinetsu" and "/shinetsu/" in url)
+        ):
             seen.add(url)
             out.append((url, txt))
     return out
@@ -855,8 +970,7 @@ def fetch_and_parse_press_releases(
     seen_press_urls: set[str] = set()
     for rk, rn, idx_url in indexes:
         anchors = crawl_index_page(fetcher, rk, rn, idx_url)
-        _LOG.info("[%s] index %s -> %d enforcement anchors",
-                  rk, idx_url[-50:], len(anchors))
+        _LOG.info("[%s] index %s -> %d enforcement anchors", rk, idx_url[-50:], len(anchors))
         for url, txt in anchors:
             if url in seen_press_urls:
                 continue
@@ -892,15 +1006,20 @@ def fetch_and_parse_press_releases(
             _LOG.debug("[%s] press %s -> %s", rk, url, status)
             continue
         rec = parse_press_release(
-            html, url, rk, rn, auth_canonical,
+            html,
+            url,
+            rk,
+            rn,
+            auth_canonical,
             fallback_date=fallback_date,
             anchor_text=anchor,
         )
         if rec:
             out.append(rec)
         if i % 50 == 0:
-            _LOG.info("progress: %d/%d press releases parsed (%d records)",
-                      i, len(candidates), len(out))
+            _LOG.info(
+                "progress: %d/%d press releases parsed (%d records)", i, len(candidates), len(out)
+            )
     _LOG.info("parsed %d enforcement records", len(out))
     return out
 
@@ -939,16 +1058,14 @@ def run(
     else:
         fetcher = Fetcher(qps=4.0)
         indexes = collect_index_urls(region_keys, year_lo, year_hi)
-        _LOG.info("regions=%s years=%d..%d → %d index URLs",
-                  region_keys, year_lo, year_hi, len(indexes))
-        all_records = fetch_and_parse_press_releases(
-            fetcher, indexes, max_releases
+        _LOG.info(
+            "regions=%s years=%d..%d → %d index URLs", region_keys, year_lo, year_hi, len(indexes)
         )
+        all_records = fetch_and_parse_press_releases(fetcher, indexes, max_releases)
         if staging_json:
             staging_json.parent.mkdir(parents=True, exist_ok=True)
             with staging_json.open("w") as f:
-                json.dump({"collected_at": now_iso, "records": all_records},
-                          f, ensure_ascii=False)
+                json.dump({"collected_at": now_iso, "records": all_records}, f, ensure_ascii=False)
             _LOG.info("staged %d records to %s", len(all_records), staging_json)
         if collect_only:
             return len(all_records)
@@ -978,10 +1095,14 @@ def run(
         for k, v in sorted(by_law.items(), key=lambda kv: -kv[1]):
             _LOG.info("  law %s: %d", k, v)
         for r in all_records[:8]:
-            _LOG.info("  sample: %s %s | %s | %s | %s",
-                      r["region_key"], r["issuance_date"],
-                      r["target_name"][:30], r["enforcement_kind"],
-                      r.get("related_law_ref") or "")
+            _LOG.info(
+                "  sample: %s %s | %s | %s | %s",
+                r["region_key"],
+                r["issuance_date"],
+                r["target_name"][:30],
+                r["enforcement_kind"],
+                r.get("related_law_ref") or "",
+            )
         return 0
 
     # --- write to DB with batched BEGIN IMMEDIATE ---
@@ -1020,8 +1141,11 @@ def run(
         existing_dedup = existing_dedup_keys(cur)
         seen_canonical = existing_canonical_ids(cur)
         cur.close()
-        _LOG.info("loaded %d existing dedup keys + %d canonical_ids",
-                  len(existing_dedup), len(seen_canonical))
+        _LOG.info(
+            "loaded %d existing dedup keys + %d canonical_ids",
+            len(existing_dedup),
+            len(seen_canonical),
+        )
 
         batch: list[dict[str, Any]] = []
         for rec in all_records:
@@ -1039,23 +1163,37 @@ def run(
             batch.append(rec)
             if len(batch) >= BATCH:
                 inserted = _flush_batch(
-                    con, batch, now_iso, seen_canonical,
-                    by_kind, by_region, by_law, inserted,
+                    con,
+                    batch,
+                    now_iso,
+                    seen_canonical,
+                    by_kind,
+                    by_region,
+                    by_law,
+                    inserted,
                     _begin_immediate,
                 )
                 batch.clear()
                 _LOG.info("batch commit: inserted=%d", inserted)
         if batch:
             inserted = _flush_batch(
-                con, batch, now_iso, seen_canonical,
-                by_kind, by_region, by_law, inserted,
+                con,
+                batch,
+                now_iso,
+                seen_canonical,
+                by_kind,
+                by_region,
+                by_law,
+                inserted,
                 _begin_immediate,
             )
             _LOG.info("final batch commit: inserted=%d", inserted)
 
         _LOG.info(
             "INSERT done inserted=%d skipped_dup=%d total_seen=%d",
-            inserted, skipped_dup, len(all_records),
+            inserted,
+            skipped_dup,
+            len(all_records),
         )
         _LOG.info("== breakdown by enforcement_kind ==")
         for k, v in sorted(by_kind.items(), key=lambda kv: -kv[1]):
@@ -1098,12 +1236,8 @@ def _flush_batch(
             continue
         if ok:
             inserted += 1
-            by_kind[rec["enforcement_kind"]] = by_kind.get(
-                rec["enforcement_kind"], 0
-            ) + 1
-            by_region[rec["region_key"]] = by_region.get(
-                rec["region_key"], 0
-            ) + 1
+            by_kind[rec["enforcement_kind"]] = by_kind.get(rec["enforcement_kind"], 0) + 1
+            by_region[rec["region_key"]] = by_region.get(rec["region_key"], 0) + 1
             law = rec.get("related_law_ref") or "(none)"
             primary = law.split("/")[0].split("第")[0].strip() or law
             by_law[primary] = by_law.get(primary, 0) + 1
