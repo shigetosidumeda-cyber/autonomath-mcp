@@ -1326,7 +1326,7 @@ def search_programs(
             "applied_filters": filters,
             "unparsed_terms": [],
         }
-        common_kwargs = {
+        common_kwargs: dict[str, Any] = {
             "request_id": safe_request_id(request),
             "query_echo": query_echo,
             "suggested_actions": suggested_actions,

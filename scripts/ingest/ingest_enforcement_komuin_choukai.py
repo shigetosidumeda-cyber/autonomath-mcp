@@ -60,6 +60,7 @@ CLI:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import json
 import logging
@@ -973,7 +974,7 @@ def parse_hokkaido_edu_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
     # Build blocks from markers: each block = lines [marker_i - 5 : marker_i+1 + 5]
     # bounded by next marker.
     n = len(lines)
-    for k, (idx, seq_num) in enumerate(seq_marker_idx):
+    for k, (idx, _seq_num) in enumerate(seq_marker_idx):
         # Start: prev marker idx + 1 OR (idx - 5)
         prev_idx = seq_marker_idx[k - 1][0] + 1 if k > 0 else max(0, idx - 5)
         start = max(prev_idx, idx - 5)
@@ -1155,14 +1156,7 @@ def parse_meti_quarterly_html(html: str, source_url: str) -> list[EnfRow]:
     out: list[EnfRow] = []
     soup = BeautifulSoup(html, "html.parser")
     text = _normalize(soup.get_text("\n", strip=True))
-    # Each case prefix: "事案１" or numbering plus 処分量定 line.
-    case_re = re.compile(
-        r"(?:事案[\s０-９0-9]*|^\s*[０-９0-9]+[.\s．]\s*)"
-        r"(?:[^\n]*?)\n"
-        r"((?:[^\n]+\n){0,12})",
-        re.MULTILINE,
-    )
-    # Fallback simpler approach: split text by 事案 markers
+    # Split text by 事案 markers (each block contains a 処分量定 line within ~12 lines).
     blocks = re.split(r"(?:事案\s*[０-９0-9]+|^\s*[０-９0-9]+\s*[\.．])", text, flags=re.MULTILINE)
     seq = 0
     for block in blocks[1:]:
@@ -1239,7 +1233,6 @@ def parse_iwate_quarterly_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
     seq = 0
     for i in range(1, len(blocks), 2):
         try:
-            num_raw = blocks[i].strip()
             content = blocks[i + 1] if i + 1 < len(blocks) else ""
         except IndexError:
             break
