@@ -1,0 +1,43 @@
+{
+  "_comment": "DEEP-56 path-prefix lane mapping. Order matters: billing_auth_security must be evaluated BEFORE runtime_code because billing/auth/middleware paths are subset of src/jpintel_mcp/. Files matching no rule fall back to 'other'.",
+  "_evaluation_order": [
+    "billing_auth_security",
+    "runtime_code",
+    "migrations",
+    "cron_etl_ops",
+    "workflows",
+    "root_release_files",
+    "other"
+  ],
+  "billing_auth_security": [
+    "src/jpintel_mcp/billing/",
+    "src/jpintel_mcp/api/auth/",
+    "src/jpintel_mcp/middleware/"
+  ],
+  "runtime_code": [
+    "src/jpintel_mcp/api/",
+    "src/jpintel_mcp/mcp/",
+    "src/jpintel_mcp/tools/",
+    "src/jpintel_mcp/ingest/",
+    "src/jpintel_mcp/"
+  ],
+  "migrations": [
+    "scripts/migrations/"
+  ],
+  "cron_etl_ops": [
+    "scripts/cron/",
+    "scripts/etl/"
+  ],
+  "workflows": [
+    ".github/workflows/"
+  ],
+  "root_release_files": [
+    "pyproject.toml",
+    "server.json",
+    "smithery.yaml",
+    "dxt/manifest.json",
+    "mcp-server.json",
+    "CHANGELOG.md",
+    "uv.lock"
+  ]
+}

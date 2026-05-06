@@ -1,0 +1,138 @@
+[
+  {
+    "name": "match_due_diligence_questions",
+    "law": "§52/§72/社労士法",
+    "law_ids": ["showa_26_tax_attorney_act", "showa_24_lawyer_act", "showa_43_labor_consultant_act"],
+    "fence": "DD checklist, not advice",
+    "wave": "Wave 22",
+    "sample_arguments": {"industry_jsic": "D", "houjin_bangou": "T8010001213708"}
+  },
+  {
+    "name": "prepare_kessan_briefing",
+    "law": "§52",
+    "law_ids": ["showa_26_tax_attorney_act"],
+    "fence": "kessan territory, briefing only",
+    "wave": "Wave 22",
+    "sample_arguments": {"fy_end": "2026-03-31", "houjin_bangou": "T8010001213708"}
+  },
+  {
+    "name": "cross_check_jurisdiction",
+    "law": "§52/§72/司法書士法§3",
+    "law_ids": ["showa_26_tax_attorney_act", "showa_24_lawyer_act", "showa_25_judicial_scrivener_act"],
+    "fence": "registered vs invoice vs operational, no advice",
+    "wave": "Wave 22",
+    "sample_arguments": {"houjin_bangou": "T8010001213708"}
+  },
+  {
+    "name": "bundle_application_kit",
+    "law": "行政書士法§1",
+    "law_ids": ["showa_26_administrative_writer_act"],
+    "fence": "scaffold + 一次 URL only, no 申請書面 generation",
+    "wave": "Wave 22",
+    "sample_arguments": {"program_id": "program-1"}
+  },
+  {
+    "name": "render_36_kyotei_am",
+    "law": "労基法§36/社労士法§2",
+    "law_ids": ["showa_22_labor_standards_act", "showa_43_labor_consultant_act"],
+    "fence": "draft requiring 社労士 supervision",
+    "wave": "Phase A",
+    "sample_arguments": {"profile_key": "manufacturing_smb"}
+  },
+  {
+    "name": "get_36_kyotei_metadata_am",
+    "law": "労基法§36",
+    "law_ids": ["showa_22_labor_standards_act"],
+    "fence": "metadata only — gated behind AUTONOMATH_36_KYOTEI_ENABLED",
+    "wave": "Phase A",
+    "sample_arguments": {}
+  },
+  {
+    "name": "get_am_tax_rule",
+    "law": "§52",
+    "law_ids": ["showa_26_tax_attorney_act"],
+    "fence": "ruleset surface, no opinion",
+    "wave": "v0.2 baseline",
+    "sample_arguments": {"ruleset_id": "1"}
+  },
+  {
+    "name": "search_tax_incentives",
+    "law": "§52",
+    "law_ids": ["showa_26_tax_attorney_act"],
+    "fence": "incentive index, no calc advice",
+    "wave": "v0.2 baseline",
+    "sample_arguments": {"q": "研究開発"}
+  },
+  {
+    "name": "search_acceptance_stats_am",
+    "law": "行政書士法§1",
+    "law_ids": ["showa_26_administrative_writer_act"],
+    "fence": "stats only — operator must not phrase as 採択指南",
+    "wave": "v0.2 baseline",
+    "sample_arguments": {"program_id": "program-1"}
+  },
+  {
+    "name": "check_enforcement_am",
+    "law": "弁護士法§72",
+    "law_ids": ["showa_24_lawyer_act"],
+    "fence": "enforcement signal, no advice / no negotiation framing",
+    "wave": "v0.2 baseline",
+    "sample_arguments": {"houjin_bangou": "T8010001213708"}
+  },
+  {
+    "name": "search_loans_am",
+    "law": "貸金業法§3",
+    "law_ids": ["showa_58_money_lending_business_act"],
+    "fence": "信用情報 / 担保 axis exposed without recommendation",
+    "wave": "v0.2 baseline",
+    "sample_arguments": {"q": "日本政策金融公庫"}
+  },
+  {
+    "name": "search_mutual_plans_am",
+    "law": "保険業法§3",
+    "law_ids": ["heisei_7_insurance_business_act"],
+    "fence": "mutual plan index, no insurance solicitation",
+    "wave": "v0.2 baseline",
+    "sample_arguments": {"q": "小規模"}
+  },
+  {
+    "name": "pack_construction",
+    "law": "§52/§47条の2",
+    "law_ids": ["showa_26_tax_attorney_act", "showa_56_construction_industry_act"],
+    "fence": "JSIC D vertical pack, NTA citations only",
+    "wave": "Wave 23",
+    "sample_arguments": {"prefecture": "tokyo", "limit": 5}
+  },
+  {
+    "name": "pack_manufacturing",
+    "law": "§52",
+    "law_ids": ["showa_26_tax_attorney_act"],
+    "fence": "JSIC E vertical pack, NTA citations only",
+    "wave": "Wave 23",
+    "sample_arguments": {"prefecture": "aichi", "limit": 5}
+  },
+  {
+    "name": "pack_real_estate",
+    "law": "§52/宅建業法§3",
+    "law_ids": ["showa_26_tax_attorney_act", "showa_27_real_estate_act"],
+    "fence": "JSIC K vertical pack, NTA citations only",
+    "wave": "Wave 23",
+    "sample_arguments": {"prefecture": "osaka", "limit": 5}
+  },
+  {
+    "name": "rule_engine_check",
+    "law": "弁護士法§72",
+    "law_ids": ["showa_24_lawyer_act"],
+    "fence": "exclusion / prerequisite signal, no判断行為",
+    "wave": "v0.2 baseline",
+    "sample_arguments": {"program_id": "program-1"}
+  },
+  {
+    "name": "apply_eligibility_chain_am",
+    "law": "行政書士法§1/§52",
+    "law_ids": ["showa_26_administrative_writer_act", "showa_26_tax_attorney_act"],
+    "fence": "chain composition only, no eligibility opinion",
+    "wave": "Wave 21",
+    "sample_arguments": {"program_id": "program-1"}
+  }
+]

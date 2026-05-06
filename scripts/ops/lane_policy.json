@@ -1,0 +1,62 @@
+{
+  "$schema_version": "1.0.0",
+  "spec_origin": "DEEP_59_to_65_gap_sketches.md / DEEP-60",
+  "purpose": "dual-CLI lane enforcement for jpcite (session_a vs codex)",
+  "llm_api_calls": 0,
+  "lanes": {
+    "session_a": {
+      "owner_role": "session A (audit / housekeeping / inbox draft)",
+      "allowed_paths": [
+        "tools/offline/_inbox/value_growth_dual/",
+        "tools/offline/_inbox/_housekeeping_audit_2026_05_06/",
+        "tools/offline/_inbox/_archive_2026_05_06/",
+        "tools/offline/_inbox/value_growth_dual/_executable_artifacts_2026_05_06/",
+        "tools/offline/_inbox/value_growth_dual/_executable_artifacts_2026_05_07/"
+      ],
+      "forbidden_paths": [
+        "src/",
+        "scripts/",
+        ".github/workflows/",
+        "site/",
+        "pyproject.toml",
+        "server.json",
+        "smithery.yaml"
+      ],
+      "violation_severity": "block_commit"
+    },
+    "codex": {
+      "owner_role": "codex (code-side implementation)",
+      "allowed_paths": [
+        "src/",
+        "scripts/",
+        ".github/workflows/",
+        "site/",
+        "pyproject.toml",
+        "server.json",
+        "smithery.yaml"
+      ],
+      "forbidden_paths": [
+        "tools/offline/_inbox/value_growth_dual/",
+        "tools/offline/_inbox/_housekeeping_audit_2026_05_06/",
+        "tools/offline/_inbox/_archive_2026_05_06/"
+      ],
+      "violation_severity": "block_commit"
+    }
+  },
+  "shared_paths": {
+    "comment": "files both lanes may legitimately edit (audit ledger only)",
+    "paths": [
+      "tools/offline/_inbox/value_growth_dual/AGENT_LEDGER.csv"
+    ]
+  },
+  "override": {
+    "mechanism": "--bypass-with-reason flag on enforcer CLI",
+    "reason_min_chars": 24,
+    "reason_recorded_in": "AGENT_LEDGER.csv",
+    "operator_signoff_required": true
+  },
+  "ledger": {
+    "path_relative_repo_root": "tools/offline/_inbox/value_growth_dual/AGENT_LEDGER.csv",
+    "append_only": true
+  }
+}

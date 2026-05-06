@@ -1,0 +1,130 @@
+# DEEP-60 dual-CLI lane policy enforcer (jpcite)
+# Drop-in for .github/workflows/ — enforces lane discipline on PR + push.
+# LLM API calls = 0; uses python3 stdlib + git only.
+
+name: lane-enforcer
+
+on:
+  pull_request:
+    branches: ["main"]
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  enforce-lane:
+    name: Lane policy check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout (full history for diff)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Resolve lane from PR / commit metadata
+        id: lane
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${GITHUB_EVENT_NAME}" == "pull_request" ]]; then
+            BRANCH="${GITHUB_HEAD_REF}"
+          else
+            BRANCH="${GITHUB_REF_NAME}"
+          fi
+          # convention: branches starting with 'session-a/' or commit msg [lane:session_a]
+          LANE="codex"
+          if [[ "${BRANCH}" == session-a/* ]]; then LANE="session_a"; fi
+          MSG="$(git log -1 --pretty=%B)"
+          if echo "${MSG}" | grep -q '\[lane:session_a\]'; then LANE="session_a"; fi
+          if echo "${MSG}" | grep -q '\[lane:codex\]'; then LANE="codex"; fi
+          echo "lane=${LANE}" >> "$GITHUB_OUTPUT"
+          echo "[lane-enforcer-ci] resolved lane: ${LANE} (branch=${BRANCH})"
+
+      - name: Stage diff vs base for --check
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${GITHUB_EVENT_NAME}" == "pull_request" ]]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          else
+            BASE_SHA="$(git rev-parse HEAD~1 || git rev-parse HEAD)"
+          fi
+          echo "[lane-enforcer-ci] base sha: ${BASE_SHA}"
+          # mimic 'staged' state by re-staging changes vs base, so enforcer
+          # `git diff --cached` sees the right set.
+          git reset --soft "${BASE_SHA}"
+          git diff --name-only --cached | sed 's/^/  + /'
+
+      - name: Run enforcer --check
+        id: check
+        shell: bash
+        run: |
+          set +e
+          python3 \
+            tools/offline/_inbox/value_growth_dual/_executable_artifacts_2026_05_07/deep60_lane_enforcer/lane_policy_enforcer.py \
+            --check \
+            --lane "${{ steps.lane.outputs.lane }}" \
+            --session "ci/${GITHUB_RUN_ID}" \
+            > enforcer_stdout.txt 2> enforcer_stderr.txt
+          rc=$?
+          echo "rc=${rc}" >> "$GITHUB_OUTPUT"
+          cat enforcer_stdout.txt
+          cat enforcer_stderr.txt >&2
+          exit 0
+
+      - name: Comment on PR if violations
+        if: ${{ github.event_name == 'pull_request' && steps.check.outputs.rc != '0' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const stdout = fs.existsSync('enforcer_stdout.txt')
+              ? fs.readFileSync('enforcer_stdout.txt', 'utf8') : '';
+            const stderr = fs.existsSync('enforcer_stderr.txt')
+              ? fs.readFileSync('enforcer_stderr.txt', 'utf8') : '';
+            const body = [
+              '## DEEP-60 lane-enforcer: violations detected',
+              '',
+              'Lane: `${{ steps.lane.outputs.lane }}`',
+              '',
+              '<details><summary>enforcer stdout</summary>',
+              '',
+              '```',
+              stdout || '(empty)',
+              '```',
+              '',
+              '</details>',
+              '',
+              '<details><summary>enforcer stderr</summary>',
+              '',
+              '```',
+              stderr || '(empty)',
+              '```',
+              '',
+              '</details>',
+              '',
+              'Override locally: `JPCITE_LANE_OVERRIDE=\"...\" JPCITE_LANE_SIGNOFF=<name> git commit ...`',
+            ].join('\n');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });
+
+      - name: Fail job on violation
+        if: ${{ steps.check.outputs.rc != '0' }}
+        shell: bash
+        run: |
+          echo "[lane-enforcer-ci] enforcer rc=${{ steps.check.outputs.rc }} -> failing job."
+          exit 1

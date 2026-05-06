@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>jpcite production gate status (DEEP-58)</title>
+  <meta name="robots" content="index,follow">
+  <meta name="description" content="jpcite v0.3.4 production deploy gate status. 4 blocker + 8 ACK boolean + 33 spec implementation status, refreshed daily.">
+  <link rel="canonical" href="https://jpcite.com/transparency/production-gate.html">
+  <style>
+    :root {
+      --c-bg:#0d1117;--c-card:#161b22;--c-fg:#e6edf3;--c-muted:#8b949e;
+      --c-border:#30363d;
+      --c-blocked:#f85149;--c-partial:#d29922;--c-resolved:#3fb950;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; padding:0; font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif; background:var(--c-bg); color:var(--c-fg); line-height:1.55; }
+    main { max-width:1080px; margin:0 auto; padding:32px 20px 96px; }
+    h1 { font-size:1.65rem; margin:0 0 6px; }
+    h2 { font-size:1.15rem; margin:32px 0 12px; border-bottom:1px solid var(--c-border); padding-bottom:6px; }
+    p.lead { color:var(--c-muted); margin:0 0 24px; }
+    .meta { font-size:0.85rem; color:var(--c-muted); }
+    .meta code { background:var(--c-card); padding:2px 6px; border-radius:4px; }
+    .blocker-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
+    .card { background:var(--c-card); border:1px solid var(--c-border); border-radius:8px; padding:14px 16px; }
+    .badge { display:inline-block; padding:3px 10px; border-radius:12px; font-size:0.75rem; font-weight:600; letter-spacing:0.05em; }
+    .badge.BLOCKED { background:var(--c-blocked); color:#fff; }
+    .badge.PARTIAL { background:var(--c-partial); color:#000; }
+    .badge.RESOLVED { background:var(--c-resolved); color:#000; }
+    .ack-list { list-style:none; padding:0; margin:0; display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:8px; }
+    .ack-list li { background:var(--c-card); border:1px solid var(--c-border); border-radius:6px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; gap:10px; }
+    .ack-mark { font-size:1.05rem; font-weight:700; }
+    .ack-mark.BLOCKED { color:var(--c-blocked); }
+    .ack-mark.PARTIAL { color:var(--c-partial); }
+    .ack-mark.RESOLVED { color:var(--c-resolved); }
+    table { width:100%; border-collapse:collapse; font-size:0.9rem; }
+    table th, table td { padding:8px 10px; border-bottom:1px solid var(--c-border); text-align:left; vertical-align:top; }
+    table th { color:var(--c-muted); font-weight:600; font-size:0.78rem; letter-spacing:0.04em; text-transform:uppercase; }
+    a { color:#58a6ff; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    footer { margin-top:48px; padding-top:18px; border-top:1px solid var(--c-border); font-size:0.8rem; color:var(--c-muted); }
+    code.sha { font-family:ui-monospace,Menlo,monospace; font-size:0.78rem; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>jpcite production gate status</h1>
+  <p class="lead">jpcite v0.3.4 production deploy ゲートの自動収集ダッシュボード。4 blocker + 8 ACK boolean + 33 spec の状態を毎朝 06:00 JST に更新します。</p>
+  <p class="meta">
+    snapshot_date: <code>{{ snap.snapshot_date }}</code> /
+    last_update_utc: <code>{{ snap.last_update_utc }}</code> /
+    last_update_jst: <code>{{ snap.last_update_jst }}</code> /
+    git: <code class="sha">{{ snap.git_head_sha }}</code>
+  </p>
+
+  <h2>4 blocker</h2>
+  <div class="blocker-grid">
+    {% for b in snap.blockers %}
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+        <strong>{{ b.title }}</strong>
+        <span class="badge {{ b.status }}">{{ b.status }}</span>
+      </div>
+      <p class="meta" style="margin:6px 0 0;">
+        {{ b.deep }} &middot; <a href="{{ b.evidence_url }}">{{ b.evidence_url }}</a>
+        {% if b.duration_ms is defined %}<br>duration: {{ b.duration_ms }} ms{% endif %}
+        {% if b.sha256 %}<br>sha256: <code class="sha">{{ b.sha256[:12] }}…</code>{% endif %}
+      </p>
+    </div>
+    {% endfor %}
+  </div>
+
+  <h2>8 ACK boolean</h2>
+  <ul class="ack-list">
+    {% for a in snap.acks %}
+    <li>
+      <span>
+        <strong>{{ a.title }}</strong><br>
+        <span class="meta">{{ a.id }} &middot; {{ a.deep }}</span>
+      </span>
+      <span class="ack-mark {{ a.status }}">
+        {% if a.status == 'RESOLVED' %}&#10003;{% elif a.status == 'BLOCKED' %}&#10007;{% else %}&middot;&middot;&middot;{% endif %}
+      </span>
+    </li>
+    {% endfor %}
+  </ul>
+
+  <h2>33 spec implementation</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>spec</th>
+        <th>status</th>
+        <th>last_check</th>
+        <th>evidence</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in snap.specs %}
+      <tr>
+        <td><strong>{{ s.id }}</strong><br><span class="meta">{{ s.title }}</span></td>
+        <td><span class="badge {{ s.status }}">{{ s.status }}</span></td>
+        <td class="meta">{{ s.last_check or '—' }}</td>
+        <td><a href="{{ s.evidence_url }}">{{ s.evidence_url }}</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <footer>
+    <p>
+      DEEP-58 production gate dashboard / DEEP-26 axis B (transparency = SEO uplift) 整合。
+      生成元: <code>scripts/cron/aggregate_production_gate_status.py</code> (LLM API import 0)。
+      schema: <code>{{ snap.schema_version }}</code>。
+      公開そのものを moat とする方針です — 詳細は spec
+      <a href="/docs/_internal/DEEP_58_production_gate_dashboard.html">DEEP-58</a> / <a href="/docs/_internal/DEEP_26_reverse_proxy.html">DEEP-26</a> を参照。
+    </p>
+    <p>operator: Bookyou株式会社 (T8010001213708) &middot; product: jpcite</p>
+  </footer>
+</main>
+</body>
+</html>

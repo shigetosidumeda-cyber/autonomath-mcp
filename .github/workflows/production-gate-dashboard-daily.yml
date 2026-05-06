@@ -1,0 +1,127 @@
+name: production-gate-dashboard-daily
+
+# DEEP-58 production gate progress dashboard (session A draft, jpcite v0.3.4).
+# Runs daily at 06:00 JST (UTC 21:00 prev day) and on manual dispatch.
+# - Aggregates 4 blocker + 8 ACK boolean + 33 spec status (DEEP-22..54)
+# - Emits analytics/production_gate_<date>.json + analytics/production_gate.html
+# - Auto-deploys the static page to Cloudflare Pages under /transparency/
+# - On failure: SES email alert to ops + GitHub issue auto-open
+# - LLM API import is FORBIDDEN; aggregator is stdlib + jinja2 + sqlite3 only.
+
+on:
+  schedule:
+    - cron: '0 21 * * *'   # daily 21:00 UTC == 06:00 JST next day
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Manual run reason (audit trail)'
+        required: false
+        default: 'manual'
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: production-gate-dashboard
+  cancel-in-progress: false
+
+jobs:
+  aggregate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      TZ: Asia/Tokyo
+      JPINTEL_DB_PATH: data/jpintel.db
+      DEEP58_OUT_DIR: analytics
+    steps:
+      - name: Checkout (full history for fingerprint)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install runtime deps (jinja2 only)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install jinja2
+
+      - name: Verify no LLM API import in aggregator
+        run: |
+          ! grep -E "^[[:space:]]*(import|from)[[:space:]]+(anthropic|openai|google\.generativeai|claude_agent_sdk)" \
+            scripts/cron/aggregate_production_gate_status.py
+          ! grep -E "(ANTHROPIC_API_KEY|OPENAI_API_KEY|GEMINI_API_KEY|GOOGLE_API_KEY)" \
+            scripts/cron/aggregate_production_gate_status.py
+
+      - name: Aggregate production gate status
+        id: aggregate
+        run: |
+          DATE=$(date -u +%Y-%m-%d)
+          mkdir -p analytics
+          python scripts/cron/aggregate_production_gate_status.py \
+            --out "analytics/production_gate_${DATE}.json" \
+            --html-out analytics/production_gate.html \
+            --db-path "$JPINTEL_DB_PATH" \
+            --template-dir scripts/templates \
+            --verbose
+          echo "snapshot_date=${DATE}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload snapshot artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-gate-${{ steps.aggregate.outputs.snapshot_date }}
+          path: |
+            analytics/production_gate_*.json
+            analytics/production_gate.html
+          retention-days: 90
+
+      - name: Stage transparency page
+        run: |
+          mkdir -p site/transparency
+          cp analytics/production_gate.html site/transparency/production-gate.html
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: jpcite-site
+          directory: site
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
+
+  on-failure:
+    needs: aggregate
+    if: failure()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Send SES email alert
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-1
+      - name: SES alert
+        run: |
+          aws ses send-email \
+            --from "ops@jpcite.com" \
+            --destination "ToAddresses=info@bookyou.net" \
+            --message "Subject={Data=DEEP-58 production gate aggregator FAILED},Body={Text={Data=run=${{ github.run_id }} sha=${{ github.sha }} - investigate logs.}}"
+
+      - name: Open follow-up GitHub issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `DEEP-58 production gate aggregator failed (${context.runId})`,
+              body: `Daily aggregator run failed.\n\nrun: ${context.runId}\nsha: ${context.sha}\n\nSee \`scripts/cron/aggregate_production_gate_status.py\` and DEEP-58 spec.`,
+              labels: ['deep-58', 'cron-failure', 'production-gate'],
+            });

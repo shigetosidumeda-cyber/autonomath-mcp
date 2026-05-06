@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jpcite.com/schemas/operator_ack_signoff/v1.json",
+  "title": "DEEP-51 operator ACK YAML",
+  "description": "Schema for ACK YAML emitted by operator_ack_signoff.py and consumed by scripts/ops/production_deploy_go_gate.py --operator-ack <yaml>. All 8 boolean signoff fields plus a DEEP-56 dirty_tree_fingerprint object plus a _meta block carrying yaml_sha256 + git_commit_hash + signed_at + signed_by.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "fly_app_confirmed",
+    "fly_secrets_names_confirmed",
+    "appi_disabled_or_turnstile_secret_confirmed",
+    "target_db_packet_reviewed",
+    "rollback_reconciliation_packet_ready",
+    "live_gbiz_ingest_disabled_or_approved",
+    "dirty_lanes_reviewed",
+    "pre_deploy_verify_clean",
+    "dirty_tree_fingerprint",
+    "_meta"
+  ],
+  "properties": {
+    "fly_app_confirmed": {
+      "type": "boolean",
+      "description": "Operator verified flyctl status -a autonomath-api -j -> App.Name=='autonomath-api'."
+    },
+    "fly_secrets_names_confirmed": {
+      "type": "boolean",
+      "description": "Operator verified flyctl secrets list -a autonomath-api -j name set matches docs/_internal/SECRETS_REGISTRY.md required + conditional."
+    },
+    "appi_disabled_or_turnstile_secret_confirmed": {
+      "type": "boolean",
+      "description": "Either CLOUDFLARE_TURNSTILE_SECRET present in fly secrets OR JPINTEL_APPI_DISABLED=1 set."
+    },
+    "target_db_packet_reviewed": {
+      "type": "boolean",
+      "description": "DEEP-52 verify_migration_targets / migration_inventory exit 0 against dirty migrations."
+    },
+    "rollback_reconciliation_packet_ready": {
+      "type": "boolean",
+      "description": "scripts/migrations/*_rollback.sql packet present and reviewed against DEEP-46."
+    },
+    "live_gbiz_ingest_disabled_or_approved": {
+      "type": "boolean",
+      "description": "Either gBiz token absent in fly secrets OR GBIZINFO_INGEST_APPROVED=1 set, per DEEP-01 / DEEP-54."
+    },
+    "dirty_lanes_reviewed": {
+      "type": "boolean",
+      "description": "Operator reviewed DEEP-50 dirty lane breakdown; DEEP-56 fingerprint matches current tree state."
+    },
+    "pre_deploy_verify_clean": {
+      "type": "boolean",
+      "description": "scripts/ops/pre_deploy_verify.py --json -> {\"ok\": true}."
+    },
+    "dirty_tree_fingerprint": {
+      "type": "object",
+      "description": "DEEP-56 fingerprint object. 7 required fields capturing the dirty-tree state at signoff moment so a stale ACK is detectable.",
+      "additionalProperties": true,
+      "required": [
+        "tree_sha",
+        "dirty_file_count",
+        "dirty_lane_count",
+        "lanes",
+        "untracked_count",
+        "computed_at",
+        "git_status_digest"
+      ],
+      "properties": {
+        "tree_sha": {
+          "type": "string",
+          "description": "sha256 of `git status --porcelain=v2` byte stream.",
+          "minLength": 40
+        },
+        "dirty_file_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "dirty_lane_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "lanes": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Sorted lane labels touched by dirty files (lane = first path segment in DEEP-50 mapping)."
+        },
+        "untracked_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "computed_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "UTC ISO-8601 timestamp of fingerprint computation."
+        },
+        "git_status_digest": {
+          "type": "string",
+          "description": "Short human-readable summary like '12M 3?? 0??=15total'."
+        }
+      }
+    },
+    "_meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tool_version",
+        "operator_email",
+        "signed_at",
+        "git_commit_hash",
+        "yaml_sha256"
+      ],
+      "properties": {
+        "tool_version": {
+          "type": "string",
+          "pattern": "^operator_ack_signoff/[0-9]+\\.[0-9]+\\.[0-9]+$",
+          "description": "Tool semver like 'operator_ack_signoff/0.1.0'."
+        },
+        "operator_email": {
+          "type": "string",
+          "format": "email",
+          "description": "Email of the human signing off (env OPERATOR_EMAIL, default info@bookyou.net)."
+        },
+        "signed_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "UTC ISO-8601 timestamp at YAML emission."
+        },
+        "git_commit_hash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{7,40}$",
+          "description": "git rev-parse HEAD at signoff."
+        },
+        "yaml_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "description": "sha256 of the YAML body excluding this field; pair with git_commit_hash for tamper detection."
+        },
+        "signed_by": {
+          "type": "string",
+          "description": "Optional human-readable signer name. Operator_email is the canonical identity."
+        }
+      }
+    }
+  }
+}

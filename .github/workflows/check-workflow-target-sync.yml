@@ -1,0 +1,99 @@
+# DEEP-57: Release Readiness CI guard (PR-side check)
+#
+# Triggered on every pull_request that touches .github/workflows/* or tests/*.
+# The job rebuilds the desired RUFF_TARGETS / PYTEST_TARGETS env list from
+# git-tracked sources and compares it against what release.yml + test.yml
+# currently declare. Drift fails the PR check so the release gate cannot
+# silently fall out of sync with the lint/pytest surface.
+#
+# Pairs with sync_workflow_targets_verify.py (this directory) and the
+# DEEP-49 sync_workflow_targets.py (../sync_workflow_targets/).
+#
+# Constraints (CLAUDE.md):
+#   - Zero LLM API calls. Pure Python stdlib + pinned-SHA actions.
+#   - Read-only on PR. The matching --apply path lives in the monthly
+#     workflow (sync-workflow-targets-monthly.yml), never on PR runs.
+#   - No paid plan. ubuntu-latest free runner only.
+#
+# This file is a session-A draft — it lives under
+# tools/offline/_inbox/value_growth_dual/_executable_artifacts_2026_05_07/
+# release_readiness_ci/ and is NOT yet copied into .github/workflows/.
+# The codex lane operator will move it after acceptance review.
+
+name: check-workflow-target-sync
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/**"
+      - "tests/**"
+      - "scripts/ops/release_readiness.py"
+      - "scripts/ops/sync_workflow_targets.py"
+      - "scripts/ops/sync_workflow_targets_verify.py"
+  # Allow manual replay so the operator can re-run the check without
+  # pushing a new commit (useful right before a release tag cut).
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: check-workflow-target-sync-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  workflow-target-sync:
+    name: Verify workflow targets in sync with git tree
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout (full history for ls-files)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.12"
+
+      # Step 1 — release_readiness.py soft probe.
+      # --warn-only never fails the job here; we only want its JSON in the
+      # log so reviewers can compare the gate's view of the world against
+      # the sync diff produced by step 2 + 3.
+      - name: Release readiness probe (warn-only)
+        id: readiness
+        run: |
+          python scripts/ops/release_readiness.py --warn-only --json > /tmp/readiness.json
+          python -c "import json,sys; d=json.load(open('/tmp/readiness.json')); print('overall:', d.get('overall_status'));"
+        continue-on-error: true
+
+      # Step 2 — DEEP-49 sync gate (the existing --check mode).
+      # This is the canonical source-of-truth comparator. It exits 1 on
+      # drift, which would fail the job. Kept first so the operator sees
+      # the structured diff before step 3's verifier complement.
+      - name: DEEP-49 sync_workflow_targets --check
+        run: |
+          python scripts/ops/sync_workflow_targets.py --check
+
+      # Step 3 — DEEP-57 verifier complement.
+      # Cross-checks env list parsing across BOTH test.yml and release.yml,
+      # plus the inline `ruff check` step in release.yml, and prints a
+      # row-per-diff table so reviewers do not have to re-derive set
+      # arithmetic by eye.
+      - name: DEEP-57 verifier (--check)
+        run: |
+          python scripts/ops/sync_workflow_targets_verify.py --check
+
+      # Step 4 — Surface the readiness JSON as a PR check artifact for
+      # human review. Tiny file (<10 KB) so retention is fine on free
+      # plan.
+      - name: Upload readiness artifact
+        if: always()
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: release-readiness-probe
+          path: /tmp/readiness.json
+          if-no-files-found: warn
+          retention-days: 14

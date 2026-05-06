@@ -1,0 +1,21 @@
+# DEEP-60 lane attributes (jpcite dual-CLI lane policy)
+# These attributes are descriptive — the enforcer (lane_policy_enforcer.py)
+# reads lane_policy.json, not .gitattributes. .gitattributes here serves as
+# a quick-lookup human-readable map of which path belongs to which lane.
+
+# session A lane (audit / inbox / housekeeping)
+tools/offline/_inbox/value_growth_dual/**                  -session-a-lane
+tools/offline/_inbox/_housekeeping_audit_2026_05_06/**     -session-a-lane
+tools/offline/_inbox/_archive_2026_05_06/**                -session-a-lane
+
+# codex lane (code side)
+src/**                                                     -codex-lane
+scripts/**                                                 -codex-lane
+.github/workflows/**                                       -codex-lane
+site/**                                                    -codex-lane
+pyproject.toml                                             -codex-lane
+server.json                                                -codex-lane
+smithery.yaml                                              -codex-lane
+
+# shared (audit ledger only — both lanes append, append-only enforced by enforcer)
+tools/offline/_inbox/value_growth_dual/AGENT_LEDGER.csv    -session-a-lane -codex-lane

@@ -1,0 +1,66 @@
+{
+  "_meta": {
+    "spec": "DEEP-52 §4 schema_guard cross-check",
+    "jpcite_version": "0.3.4",
+    "generated": "2026-05-07",
+    "purpose": "Forbidden table list per target_db. A CREATE/ALTER hit on the opposite target's forbidden list is a hard fail and blocks the production gate.",
+    "consumed_by": "verify_migration_targets.py",
+    "constraint_footer": "LLM API 0, paid 0, work-hour phase 0"
+  },
+  "autonomath": {
+    "forbidden": [
+      "programs",
+      "api_keys",
+      "audit_seal",
+      "audit_seals",
+      "audit_seal_keys",
+      "audit_seal_key_version",
+      "subscribers",
+      "compliance_subscribers",
+      "case_studies",
+      "exclusion_rules",
+      "loan_programs",
+      "enforcement_cases"
+    ],
+    "forbidden_prefixes": [
+      "jpi_",
+      "audit_seal_",
+      "compliance_",
+      "subscribers_",
+      "api_keys_"
+    ],
+    "forbidden_prefix_allowlist": []
+  },
+  "jpintel": {
+    "forbidden": [
+      "am_entities",
+      "am_relation",
+      "am_alias",
+      "am_recommended_programs",
+      "am_program_combinations",
+      "am_program_calendar_12mo",
+      "am_amendment_snapshot",
+      "am_amendment_diff",
+      "am_compat_matrix",
+      "am_compat_matrix_visibility",
+      "am_industry_jsic",
+      "am_target_profile",
+      "am_law_article",
+      "am_enforcement_detail",
+      "am_application_round",
+      "am_amount_condition",
+      "am_tax_treaty",
+      "am_tax_rule",
+      "am_subsidy_rule",
+      "am_authority",
+      "am_region",
+      "autonomath_houjin_master"
+    ],
+    "forbidden_prefixes": [
+      "am_",
+      "autonomath_",
+      "houjin_master_"
+    ],
+    "forbidden_prefix_allowlist": []
+  }
+}

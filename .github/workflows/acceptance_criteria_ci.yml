@@ -1,0 +1,123 @@
+name: acceptance-criteria-ci
+
+# DEEP-59 acceptance criteria CI guard for jpcite v0.3.4.
+#
+# Triggers:
+#   - pull_request: every PR touching db/, api/, mcp/, operator/, site/,
+#     docs/, .github/workflows/, or this guard itself.
+#   - schedule: weekly Monday 03:17 UTC sweep (drift catch).
+#   - workflow_dispatch: manual run.
+#
+# Guarantees:
+#   - LLM API call count = 0 (no anthropic / openai SDK usage)
+#   - Hermetic: JPCITE_OFFLINE=1 forces gh / network checks to no-op skip
+#   - Artifact uploaded: aggregate_acceptance.json (per-spec rollup)
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "db/**"
+      - "api/**"
+      - "mcp/**"
+      - "operator/**"
+      - "site/**"
+      - "docs/**"
+      - ".github/workflows/**"
+      - "tools/offline/_inbox/value_growth_dual/_executable_artifacts_2026_05_07/deep59_acceptance_ci/**"
+      - "tests/**"
+  schedule:
+    - cron: "17 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: acceptance-criteria-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  acceptance-guard:
+    name: pytest acceptance criteria
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      JPCITE_OFFLINE: "1"
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install runtime deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest sqlglot jsonschema PyYAML
+
+      - name: Verify zero LLM SDK in guard module
+        run: |
+          ! python -c "import importlib, sys; \
+            mod = importlib.import_module('test_acceptance_criteria'); \
+            sys.exit(0)" 2>/dev/null \
+            || true
+          ! grep -E '^(from |import )(anthropic|openai)' \
+              tools/offline/_inbox/value_growth_dual/_executable_artifacts_2026_05_07/deep59_acceptance_ci/*.py
+
+      - name: Run acceptance criteria guard
+        id: pytest
+        working-directory: tools/offline/_inbox/value_growth_dual/_executable_artifacts_2026_05_07/deep59_acceptance_ci
+        env:
+          JPCITE_REPO_ROOT: ${{ github.workspace }}
+        run: |
+          python -m pytest \
+            test_acceptance_criteria.py \
+            -v \
+            --tb=short \
+            --junitxml=acceptance_junit.xml
+
+      - name: Aggregate per-spec rollup
+        if: always()
+        working-directory: tools/offline/_inbox/value_growth_dual/_executable_artifacts_2026_05_07/deep59_acceptance_ci
+        run: |
+          python aggregate_acceptance.py \
+            --yaml acceptance_criteria.yaml \
+            --junit acceptance_junit.xml \
+            --out aggregate_acceptance.json
+
+      - name: Upload aggregate JSON artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aggregate-acceptance-${{ github.run_id }}
+          path: |
+            tools/offline/_inbox/value_growth_dual/_executable_artifacts_2026_05_07/deep59_acceptance_ci/aggregate_acceptance.json
+            tools/offline/_inbox/value_growth_dual/_executable_artifacts_2026_05_07/deep59_acceptance_ci/acceptance_junit.xml
+          retention-days: 30
+
+      - name: Enforce automation ratio target
+        if: always()
+        working-directory: tools/offline/_inbox/value_growth_dual/_executable_artifacts_2026_05_07/deep59_acceptance_ci
+        run: |
+          python - <<'PY'
+          import json, sys
+          rep = json.load(open("aggregate_acceptance.json"))
+          summ = rep["summary"]
+          ratio = summ["automation_ratio"]
+          target = summ["automation_target"]
+          print(f"automation_ratio={ratio} target={target}")
+          if not summ["automation_target_met"]:
+              print("::error::automation ratio below DEEP-59 target")
+              sys.exit(1)
+          if summ["failed"]:
+              print(f"::error::failed criteria: {summ['failed']}")
+              sys.exit(1)
+          PY
