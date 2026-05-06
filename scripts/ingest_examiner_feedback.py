@@ -88,9 +88,7 @@ if TYPE_CHECKING:
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DB = REPO_ROOT / "autonomath.db"
-DEFAULT_INPUT = (
-    Path.home() / "Autonomath" / "data" / "runtime" / "examiner_feedback.jsonl"
-)
+DEFAULT_INPUT = Path.home() / "Autonomath" / "data" / "runtime" / "examiner_feedback.jsonl"
 
 SOURCE_URL = "internal://autonomath/examiner_feedback"
 SOURCE_TYPE = "reference"
@@ -161,9 +159,7 @@ def preflight(conn: sqlite3.Connection) -> None:
     seeded = {row[0] for row in cur.fetchall()}
     expected = {"examiner_warning", "examiner_correction", "quality_score"}
     if seeded != expected:
-        raise SystemExit(
-            f"[fatal] am_annotation_kind missing seed rows: {expected - seeded}"
-        )
+        raise SystemExit(f"[fatal] am_annotation_kind missing seed rows: {expected - seeded}")
 
 
 # ---------------------------------------------------------------------------
@@ -174,15 +170,12 @@ def preflight(conn: sqlite3.Connection) -> None:
 def ensure_source(conn: sqlite3.Connection, dry_run: bool) -> int | None:
     """Insert (or fetch) the synthetic am_source row and return its id."""
     if dry_run:
-        cur = conn.execute(
-            "SELECT id FROM am_source WHERE source_url = ?", (SOURCE_URL,)
-        )
+        cur = conn.execute("SELECT id FROM am_source WHERE source_url = ?", (SOURCE_URL,))
         row = cur.fetchone()
         return row[0] if row else None
 
     conn.execute(
-        "INSERT OR IGNORE INTO am_source(source_url, source_type, domain) "
-        "VALUES (?, ?, ?)",
+        "INSERT OR IGNORE INTO am_source(source_url, source_type, domain) VALUES (?, ?, ?)",
         (SOURCE_URL, SOURCE_TYPE, SOURCE_DOMAIN),
     )
     cur = conn.execute("SELECT id FROM am_source WHERE source_url = ?", (SOURCE_URL,))

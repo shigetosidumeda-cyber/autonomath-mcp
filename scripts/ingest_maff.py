@@ -35,6 +35,7 @@ Run:
   .venv/bin/python scripts/ingest_maff.py --dry-run
   .venv/bin/python scripts/ingest_maff.py --limit 50  # smoke test
 """
+
 from __future__ import annotations
 
 import argparse
@@ -98,13 +99,14 @@ class MaffEntry:
     title: str
     detail_url: str
     announce_date: str | None  # ISO 8601 date or None
-    deadline: str | None       # ISO 8601 date or None
-    bureau: str | None         # path segment, e.g. "nousan"
+    deadline: str | None  # ISO 8601 date or None
+    bureau: str | None  # path segment, e.g. "nousan"
 
 
 # ---------------------------------------------------------------------------
 # HTTP fetch (UTF-8 / Shift_JIS aware)
 # ---------------------------------------------------------------------------
+
 
 def fetch(url: str, *, retries: int = 2) -> tuple[int, str]:
     last_err: Exception | None = None
@@ -154,6 +156,7 @@ def wareki_to_iso(s: str) -> str | None:
 # Index page parser
 # ---------------------------------------------------------------------------
 
+
 def parse_index(html: str) -> list[MaffEntry]:
     """Extract entries from /j/supply/hozyo/ index. Each 公募 row is
     [公告日, 締切日, 件名(link)] in a table; both cells[0] and cells[1] MUST
@@ -200,19 +203,22 @@ def parse_index(html: str) -> list[MaffEntry]:
             m = re.search(r"/(?:j/supply/hozyo/)?([a-z_]+)/\d{6}", full_url)
             if m:
                 bureau = m.group(1)
-            entries.append(MaffEntry(
-                title=title, detail_url=full_url,
-                announce_date=announce, deadline=deadline, bureau=bureau,
-            ))
+            entries.append(
+                MaffEntry(
+                    title=title,
+                    detail_url=full_url,
+                    announce_date=announce,
+                    deadline=deadline,
+                    bureau=bureau,
+                )
+            )
     return entries
 
 
 # ---------------------------------------------------------------------------
 # Detail page parser (best-effort extraction)
 # ---------------------------------------------------------------------------
-AMOUNT_RE = re.compile(
-    r"(?:上限|限度|最大)[\s:]*([0-9,，]+)\s*(?:万円|百万円|億円|千円|円)"
-)
+AMOUNT_RE = re.compile(r"(?:上限|限度|最大)[\s:]*([0-9,，]+)\s*(?:万円|百万円|億円|千円|円)")
 TARGET_HINTS: dict[str, str] = {
     "農業者": "individual_farmer",
     "農業法人": "agricultural_corporation",
@@ -276,7 +282,10 @@ def parse_detail(html: str, entry: MaffEntry) -> dict[str, object]:
 # Tier classification
 # ---------------------------------------------------------------------------
 
-def classify(detail: dict[str, object], entry: MaffEntry, http_status: int) -> tuple[str, int, str | None]:
+
+def classify(
+    detail: dict[str, object], entry: MaffEntry, http_status: int
+) -> tuple[str, int, str | None]:
     """Return (tier, excluded, exclusion_reason)."""
     if http_status != 200:
         return "X", 1, "dead_source_url"
@@ -307,6 +316,7 @@ def classify(detail: dict[str, object], entry: MaffEntry, http_status: int) -> t
 # ---------------------------------------------------------------------------
 # Build row & UPSERT
 # ---------------------------------------------------------------------------
+
 
 def make_unified_id(detail_url: str) -> str:
     h = hashlib.sha1(f"maff:{detail_url}".encode("utf-8")).hexdigest()[:10]
@@ -345,7 +355,10 @@ def build_row(
         "extraction": {
             "basic": {
                 "正式名称": entry.title,
-                "_source_ref": {"url": entry.detail_url, "excerpt": detail.get("body_excerpt") or ""},
+                "_source_ref": {
+                    "url": entry.detail_url,
+                    "excerpt": detail.get("body_excerpt") or "",
+                },
             },
             "money": {
                 "amount_max_man_yen": detail.get("amount_max_man_yen"),
@@ -383,7 +396,8 @@ def build_row(
         "crop_categories_json": None,
         "equipment_category": None,
         "target_types_json": json.dumps(detail.get("target_types") or [], ensure_ascii=False)
-        if detail.get("target_types") else None,
+        if detail.get("target_types")
+        else None,
         "funding_purpose_json": None,
         "amount_band": None,
         "application_window_json": application_window,
@@ -392,7 +406,9 @@ def build_row(
         "source_url": entry.detail_url,
         "source_fetched_at": fetched_at,
         "source_checksum": hashlib.sha1(
-            f"{entry.detail_url}|{entry.title}|{entry.deadline}|{detail.get('amount_max_man_yen')}".encode("utf-8")
+            f"{entry.detail_url}|{entry.title}|{entry.deadline}|{detail.get('amount_max_man_yen')}".encode(
+                "utf-8"
+            )
         ).hexdigest()[:16],
         "updated_at": fetched_at,
     }
@@ -445,8 +461,7 @@ WHERE programs.source_checksum IS NULL OR programs.source_checksum != excluded.s
 """
 
 FTS_INSERT_SQL = (
-    "INSERT INTO programs_fts(unified_id, primary_name, aliases, enriched_text) "
-    "VALUES (?,?,?,?)"
+    "INSERT INTO programs_fts(unified_id, primary_name, aliases, enriched_text) VALUES (?,?,?,?)"
 )
 
 
@@ -479,6 +494,7 @@ def upsert(conn: sqlite3.Connection, row: dict[str, object]) -> str:
 # Main
 # ---------------------------------------------------------------------------
 
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true", help="No DB writes")
@@ -508,8 +524,12 @@ def main() -> int:
         if d_status == 200 and d_html:
             detail = parse_detail(d_html, e)
         else:
-            detail = {"parsed_title": None, "amount_max_man_yen": None,
-                      "target_types": [], "body_excerpt": ""}
+            detail = {
+                "parsed_title": None,
+                "amount_max_man_yen": None,
+                "target_types": [],
+                "body_excerpt": "",
+            }
         rows.append(build_row(e, detail, d_status, fetched_at))
         ok = "OK" if d_status == 200 else f"HTTP {d_status}"
         print(f"  [{i:03d}/{len(entries)}] {ok} tier={rows[-1]['tier']} {e.title[:60]}")

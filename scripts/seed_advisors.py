@@ -52,6 +52,7 @@ Exit codes:
     1  IO / parse failure
     2  schema missing (run scripts/migrate.py first)
 """
+
 from __future__ import annotations
 
 import argparse
@@ -67,9 +68,7 @@ from typing import Any
 
 _LOG = logging.getLogger("jpintel.seed_advisors")
 
-SOURCE_LANDING_URL = (
-    "https://www.chusho.meti.go.jp/keiei/kakushin/nintei/support.html"
-)
+SOURCE_LANDING_URL = "https://www.chusho.meti.go.jp/keiei/kakushin/nintei/support.html"
 
 
 def _default_db_path() -> Path:
@@ -158,9 +157,7 @@ def _normalize_row_for_csv(raw: dict[str, Any]) -> dict[str, Any] | None:
             maybe = json.loads(specialties_raw)
             specialties = maybe if isinstance(maybe, list) else [specialties_raw]
         except json.JSONDecodeError:
-            specialties = [
-                s.strip() for s in specialties_raw.split(",") if s.strip()
-            ]
+            specialties = [s.strip() for s in specialties_raw.split(",") if s.strip()]
     else:
         # 認定支援機関 covers all of subsidy/loan/tax by definition; default
         # to these three so the match ranker has something to work with.
@@ -175,9 +172,7 @@ def _normalize_row_for_csv(raw: dict[str, Any]) -> dict[str, Any] | None:
             maybe = json.loads(industries_raw)
             industries = maybe if isinstance(maybe, list) else None
         except json.JSONDecodeError:
-            industries = [
-                s.strip() for s in industries_raw.split(",") if s.strip()
-            ]
+            industries = [s.strip() for s in industries_raw.split(",") if s.strip()]
     else:
         industries = None
 
@@ -209,9 +204,7 @@ def _read_source_file(path: Path) -> list[dict[str, Any]]:
             cols = set(reader.fieldnames or [])
             missing = _REQUIRED_CSV_COLS - cols
             if missing:
-                raise ValueError(
-                    f"CSV missing required columns: {sorted(missing)}"
-                )
+                raise ValueError(f"CSV missing required columns: {sorted(missing)}")
             return [dict(r) for r in reader]
     if suffix in {".xlsx", ".xlsm"}:
         try:
@@ -278,9 +271,7 @@ def _insert_rows(
                 r["firm_name_kana"],
                 r["firm_type"],
                 json.dumps(r["specialties"], ensure_ascii=False),
-                json.dumps(r["industries"], ensure_ascii=False)
-                if r.get("industries")
-                else None,
+                json.dumps(r["industries"], ensure_ascii=False) if r.get("industries") else None,
                 r["prefecture"],
                 r["city"],
                 r["address"],
@@ -291,7 +282,7 @@ def _insert_rows(
                 5,
                 3000,
                 "flat",
-                now,          # verified_at: 認定支援機関 公表一覧 = 認定そのもの
+                now,  # verified_at: 認定支援機関 公表一覧 = 認定そのもの
                 source_url,
                 now,
                 now,
@@ -319,11 +310,15 @@ def _log_placeholder_preview() -> None:
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument(
-        "--db", type=Path, default=None,
+        "--db",
+        type=Path,
+        default=None,
         help="SQLite DB path (default: JPINTEL_DB_PATH or ./data/jpintel.db)",
     )
     p.add_argument(
-        "--source-file", type=Path, default=None,
+        "--source-file",
+        type=Path,
+        default=None,
         help=(
             "Excel / CSV workbook downloaded from "
             "https://www.chusho.meti.go.jp/keiei/kakushin/nintei/support.html . "
@@ -332,14 +327,17 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         ),
     )
     p.add_argument(
-        "--source-url", type=str, default=SOURCE_LANDING_URL,
+        "--source-url",
+        type=str,
+        default=SOURCE_LANDING_URL,
         help=(
             "Override the source_url written to each row. Defaults to the "
             "中小企業庁 認定支援機関 landing page."
         ),
     )
     p.add_argument(
-        "--dry-run", action="store_true",
+        "--dry-run",
+        action="store_true",
         help="Parse + validate, no DB writes. Safe to run without a source file.",
     )
     return p.parse_args(argv)
@@ -381,7 +379,9 @@ def main(argv: list[str] | None = None) -> int:
 
     _LOG.info(
         "parsed rows_total=%d rows_accepted=%d rejected=%d",
-        len(raw_rows), len(normalized), len(raw_rows) - len(normalized),
+        len(raw_rows),
+        len(normalized),
+        len(raw_rows) - len(normalized),
     )
 
     if args.dry_run:

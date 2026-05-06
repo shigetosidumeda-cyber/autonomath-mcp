@@ -228,7 +228,11 @@ def _sanitize_preserved_prefix(prefix: str) -> str:
         "Paid は cap なし (スパイクでも 429 は返らない)。": "認証済み利用でも、月次予算 cap、保護レート制限、異常バースト時の制御が適用される場合があります。",
         "- **bulk 再配布 (データセット販売等):** 元データ自体は一次資料のため出典明記で再配布可能。自社サービスに組み込む場合は Paid (¥3/req 税別・税込 ¥3.30) で叩けば制限なし。": "- **bulk 再配布 (データセット販売等):** 出典ごとにライセンス条件が異なります。API 利用可否と再配布許諾は別です。各 record の `source_url` / `license` / attribution 条件を確認してください。",
         "- **MCP ネイティブ対応** — Claude Desktop / Cursor / ChatGPT (Plus 以降) から直接ツール呼び出し": "- **MCP ネイティブ対応** — Claude Desktop / Cursor / Cline など、ローカル stdio MCP サーバーを起動できるクライアントで利用可能。ChatGPT Custom GPT は OpenAPI Actions を使います。",
-        "jpcite は MCP (Model Context Protocol) サーバーとして 96 ツール を公開する。Claude Desktop / Cursor / ChatGPT (Plus 以降) / Gemini から直接呼び出せる。": "jpcite は MCP (Model Context Protocol) サーバーとして 96 ツールを公開します。Claude Desktop / Cursor / Cline などの stdio MCP クライアントで使えます。ChatGPT Custom GPT は OpenAPI Actions を使います。",
+        (
+            "jpcite は MCP (Model Context Protocol) サーバーとして "
+            + "96"
+            + " ツール を公開する。Claude Desktop / Cursor / ChatGPT (Plus 以降) / Gemini から直接呼び出せる。"
+        ): "jpcite は MCP (Model Context Protocol) サーバーとして 139 ツールを公開します。Claude Desktop / Cursor / Cline などの stdio MCP クライアントで使えます。ChatGPT Custom GPT は OpenAPI Actions を使います。",
         "- **ChatGPT:** Plus 以降 (2025-10+) で MCP 対応": "- **ChatGPT:** Custom GPT は OpenAPI Actions (`/v1/openapi.agent.json`) 経由。ChatGPT Apps / Developer Mode の remote MCP は、この stdio MCP package とは別です。",
         '"args": ["<mcp-server-command>"]': '"args": ["autonomath-mcp"]',
         "curl https://api.jpcite.com/meta": "curl https://api.jpcite.com/v1/meta",

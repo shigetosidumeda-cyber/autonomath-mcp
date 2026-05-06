@@ -41,6 +41,7 @@ Env knobs
 ---------
     AUTONOMATH_DB_PATH    override DB path (default: ./autonomath.db)
 """
+
 from __future__ import annotations
 
 import argparse
@@ -74,9 +75,7 @@ def _configure_logging() -> None:
 def _audit_counts(conn: sqlite3.Connection) -> dict[str, int]:
     """Return current row counts for am_entities + the two FTS tables."""
     out: dict[str, int] = {}
-    out["am_entities"] = conn.execute(
-        "SELECT COUNT(*) FROM am_entities"
-    ).fetchone()[0]
+    out["am_entities"] = conn.execute("SELECT COUNT(*) FROM am_entities").fetchone()[0]
     for table, _ in FTS_TABLES.values():
         try:
             out[table] = conn.execute(
@@ -87,9 +86,7 @@ def _audit_counts(conn: sqlite3.Connection) -> dict[str, int]:
     return out
 
 
-def _rebuild_one(
-    conn: sqlite3.Connection, table: str, batch: int
-) -> int:
+def _rebuild_one(conn: sqlite3.Connection, table: str, batch: int) -> int:
     """Wipe `table`, then bulk INSERT every row from am_entities. Returns count.
 
     We DELETE rather than DROP+CREATE because the audit confirmed no
@@ -100,15 +97,12 @@ def _rebuild_one(
     t0 = time.perf_counter()
     conn.execute(f"DELETE FROM {table}")  # noqa: S608 — whitelist
     conn.commit()
-    log.info(
-        "[%s] DELETE done in %.1fs", table, time.perf_counter() - t0
-    )
+    log.info("[%s] DELETE done in %.1fs", table, time.perf_counter() - t0)
 
     log.info("[%s] streaming am_entities and bulk-inserting", table)
     t0 = time.perf_counter()
     cur = conn.execute(
-        "SELECT canonical_id, record_kind, primary_name, raw_json "
-        "FROM am_entities ORDER BY rowid"
+        "SELECT canonical_id, record_kind, primary_name, raw_json FROM am_entities ORDER BY rowid"
     )
     inserted = 0
     pending: list[tuple[str, str, str, str]] = []
@@ -118,9 +112,7 @@ def _rebuild_one(
         "VALUES (?, ?, ?, ?)"
     )
     for row in cur:
-        pending.append(
-            (row[0], row[1] or "", row[2] or "", row[3] or "")
-        )
+        pending.append((row[0], row[1] or "", row[2] or "", row[3] or ""))
         if len(pending) >= batch:
             conn.executemany(insert_sql, pending)
             conn.commit()
@@ -130,7 +122,10 @@ def _rebuild_one(
                 rate = inserted / (time.perf_counter() - t0)
                 log.info(
                     "[%s] inserted=%d rate=%.0f rows/s elapsed=%.1fs",
-                    table, inserted, rate, time.perf_counter() - t0,
+                    table,
+                    inserted,
+                    rate,
+                    time.perf_counter() - t0,
                 )
     if pending:
         conn.executemany(insert_sql, pending)
@@ -140,7 +135,10 @@ def _rebuild_one(
     dt = time.perf_counter() - t0
     log.info(
         "[%s] insert done rows=%d elapsed=%.1fs avg=%.0f rows/s",
-        table, inserted, dt, inserted / dt if dt > 0 else 0,
+        table,
+        inserted,
+        dt,
+        inserted / dt if dt > 0 else 0,
     )
     return inserted
 
@@ -192,7 +190,10 @@ def main(argv: list[str] | None = None) -> int:
                     delta = before["am_entities"] - before.get(table, 0)
                     log.info(
                         "would_rebuild table=%s parent=%d current=%d delta=%d",
-                        table, before["am_entities"], before.get(table, 0), delta,
+                        table,
+                        before["am_entities"],
+                        before.get(table, 0),
+                        delta,
                     )
             return 0
 
@@ -204,7 +205,9 @@ def main(argv: list[str] | None = None) -> int:
         for _key, (table, tokenizer) in targets:
             log.info(
                 "rebuilding table=%s tokenize=%s parent_rows=%d",
-                table, tokenizer, before["am_entities"],
+                table,
+                tokenizer,
+                before["am_entities"],
             )
             _rebuild_one(conn, table, args.batch)
 
@@ -214,14 +217,13 @@ def main(argv: list[str] | None = None) -> int:
             if after.get(table) != after["am_entities"]:
                 log.warning(
                     "mismatch table=%s parent=%d fts=%d delta=%d",
-                    table, after["am_entities"],
+                    table,
+                    after["am_entities"],
                     after.get(table, 0),
                     after["am_entities"] - after.get(table, 0),
                 )
             else:
-                log.info(
-                    "parity table=%s rows=%d", table, after.get(table, 0)
-                )
+                log.info("parity table=%s rows=%d", table, after.get(table, 0))
         return 0
     finally:
         conn.close()

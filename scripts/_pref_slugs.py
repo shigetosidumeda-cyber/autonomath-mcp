@@ -68,11 +68,27 @@ JA_TO_SLUG: dict[str, str] = {ja: slug for slug, ja in PREFECTURES}
 REGIONS: list[tuple[str, list[str]]] = [
     ("北海道・東北", ["hokkaido", "aomori", "iwate", "miyagi", "akita", "yamagata", "fukushima"]),
     ("関東", ["ibaraki", "tochigi", "gunma", "saitama", "chiba", "tokyo", "kanagawa"]),
-    ("中部", ["niigata", "toyama", "ishikawa", "fukui", "yamanashi", "nagano", "gifu", "shizuoka", "aichi"]),
+    (
+        "中部",
+        [
+            "niigata",
+            "toyama",
+            "ishikawa",
+            "fukui",
+            "yamanashi",
+            "nagano",
+            "gifu",
+            "shizuoka",
+            "aichi",
+        ],
+    ),
     ("近畿", ["mie", "shiga", "kyoto", "osaka", "hyogo", "nara", "wakayama"]),
     ("中国", ["tottori", "shimane", "okayama", "hiroshima", "yamaguchi"]),
     ("四国", ["tokushima", "kagawa", "ehime", "kochi"]),
-    ("九州・沖縄", ["fukuoka", "saga", "nagasaki", "kumamoto", "oita", "miyazaki", "kagoshima", "okinawa"]),
+    (
+        "九州・沖縄",
+        ["fukuoka", "saga", "nagasaki", "kumamoto", "oita", "miyazaki", "kagoshima", "okinawa"],
+    ),
 ]
 
 assert sum(len(slugs) for _, slugs in REGIONS) == 47, "REGIONS must cover 47 prefectures"

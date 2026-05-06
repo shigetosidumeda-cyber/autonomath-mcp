@@ -144,7 +144,7 @@ def _check_file(
 
 def _publish_command(repo_id: str, export_dir: str, dataset: str, report_date: str) -> str:
     return (
-        f'.venv/bin/huggingface-cli upload {repo_id} {export_dir}/ . '
+        f".venv/bin/huggingface-cli upload {repo_id} {export_dir}/ . "
         f'--repo-type dataset --commit-message "Publish {dataset} safe export {report_date}"'
     )
 
@@ -397,7 +397,9 @@ def _aggregate_safety_status(manifest: dict[str, Any], dataset: dict[str, Any]) 
     return "passed"
 
 
-def _read_aggregate_exports(dist_root: Path, repo_root: Path, report_date: str) -> list[dict[str, Any]]:
+def _read_aggregate_exports(
+    dist_root: Path, repo_root: Path, report_date: str
+) -> list[dict[str, Any]]:
     export_dir = dist_root / SAFE_EXPORT_DIRS["safe-aggregates"]
     manifest_path = export_dir / "manifest.json"
     if not manifest_path.exists():
@@ -457,7 +459,9 @@ def _read_aggregate_exports(dist_root: Path, repo_root: Path, report_date: str) 
         if manifest.get("aggregate_only") is not True:
             blockers.append("aggregate manifest does not set aggregate_only=true")
         if manifest.get("row_level_sensitive_data_exported") is not False:
-            blockers.append("aggregate manifest does not prove row_level_sensitive_data_exported=false")
+            blockers.append(
+                "aggregate manifest does not prove row_level_sensitive_data_exported=false"
+            )
 
         min_k = _as_int(dataset.get("min_k"))
         min_cell = _as_int(dataset.get("min_exported_cell_count"))
@@ -604,7 +608,7 @@ def main(argv: list[str] | None = None) -> int:
         f"({summary['ready_local_rows']:,} rows, {summary['ready_local_bytes']:,} bytes)"
     )
     if report["unsafe_or_stale_exports"]:
-        print("Unsafe/stale exports flagged: " f"{len(report['unsafe_or_stale_exports'])}")
+        print(f"Unsafe/stale exports flagged: {len(report['unsafe_or_stale_exports'])}")
     print("Publish performed: false")
     return 0
 

@@ -25,6 +25,7 @@ Decision flow mirrors ``docs/_internal/operators_playbook.md`` §3.1:
     [3] abuse pattern (low tier, high volume)  -> deny
     [4] otherwise                              -> hold (24h)
 """
+
 from __future__ import annotations
 
 import argparse
@@ -68,9 +69,7 @@ def has_table(conn: sqlite3.Connection, name: str) -> bool:
     return row is not None
 
 
-def find_customer_id(
-    conn: sqlite3.Connection, charge_id: str, override: str | None
-) -> str | None:
+def find_customer_id(conn: sqlite3.Connection, charge_id: str, override: str | None) -> str | None:
     """Best-effort mapping ``charge_id -> customer_id``.
 
     We never call Stripe.  The mapping comes from one of:
@@ -109,9 +108,7 @@ def fetch_customer(conn: sqlite3.Connection, customer_id: str) -> dict | None:
     return dict(row) if row else None
 
 
-def fetch_call_count(
-    conn: sqlite3.Connection, customer_id: str
-) -> tuple[int, int, int]:
+def fetch_call_count(conn: sqlite3.Connection, customer_id: str) -> tuple[int, int, int]:
     """Return ``(total, last_7d, max_per_day)`` call counts."""
     if not has_table(conn, "usage_events") or not has_table(conn, "api_keys"):
         return 0, 0, 0
@@ -132,9 +129,7 @@ def fetch_call_count(
     return total, last_7d, max_per_day
 
 
-def fetch_past_disputes(
-    conn: sqlite3.Connection, customer_id: str
-) -> list[dict]:
+def fetch_past_disputes(conn: sqlite3.Connection, customer_id: str) -> list[dict]:
     if not has_table(conn, "ops_dispute_log"):
         return []
     rows = conn.execute(
@@ -146,9 +141,7 @@ def fetch_past_disputes(
     return [dict(r) for r in rows]
 
 
-def fetch_charge_amount(
-    conn: sqlite3.Connection, charge_id: str
-) -> int | None:
+def fetch_charge_amount(conn: sqlite3.Connection, charge_id: str) -> int | None:
     if not has_table(conn, "stripe_charges"):
         return None
     row = conn.execute(
@@ -190,33 +183,26 @@ def suggest(
     tier = (customer.get("tier") or "").lower()
     age_days = days_since(customer.get("created_at"))
     notes.append(
-        f"customer tier={tier or 'unknown'}, "
-        f"created {age_days:.1f}d ago" if age_days is not None else "created at=?"
+        f"customer tier={tier or 'unknown'}, created {age_days:.1f}d ago"
+        if age_days is not None
+        else "created at=?"
     )
-    notes.append(
-        f"call counts: total={total_calls}, last_7d={last_7d}, "
-        f"max_per_day={max_per_day}"
-    )
+    notes.append(f"call counts: total={total_calls}, last_7d={last_7d}, max_per_day={max_per_day}")
     if past_disputes:
-        notes.append(
-            f"past disputes recorded locally: {len(past_disputes)}"
-        )
+        notes.append(f"past disputes recorded locally: {len(past_disputes)}")
     else:
         notes.append("no prior disputes on file")
 
     # 1) abuse: low tier with sustained high volume -> deny
     if tier in ABUSE_LOW_TIER and max_per_day > ABUSE_DAILY_CALL_THRESHOLD:
         notes.append(
-            "abuse pattern: low tier with peak day "
-            f"{max_per_day} > {ABUSE_DAILY_CALL_THRESHOLD}"
+            f"abuse pattern: low tier with peak day {max_per_day} > {ABUSE_DAILY_CALL_THRESHOLD}"
         )
         return "deny", notes
 
     # 2) repeat disputer -> deny (operator can override)
     if len(past_disputes) >= 2:
-        notes.append(
-            "repeat disputer: 2+ prior dispute logs -- DENY suggested"
-        )
+        notes.append("repeat disputer: 2+ prior dispute logs -- DENY suggested")
         return "deny", notes
 
     # 3) recent + low usage -> full
@@ -232,9 +218,7 @@ def suggest(
         return "full", notes
 
     # 4) mid-cycle moderate use -> partial (prorated)
-    notes.append(
-        "mid-cycle moderate use -- PARTIAL (prorated) refund recommended"
-    )
+    notes.append("mid-cycle moderate use -- PARTIAL (prorated) refund recommended")
     return "partial", notes
 
 
@@ -274,12 +258,8 @@ def main(argv: list[str] | None = None) -> int:
         total, last_7d, max_per_day = (
             fetch_call_count(conn, customer_id) if customer_id else (0, 0, 0)
         )
-        past_disputes = (
-            fetch_past_disputes(conn, customer_id) if customer_id else []
-        )
-        action, notes = suggest(
-            customer, total, last_7d, max_per_day, past_disputes
-        )
+        past_disputes = fetch_past_disputes(conn, customer_id) if customer_id else []
+        action, notes = suggest(customer, total, last_7d, max_per_day, past_disputes)
     finally:
         conn.close()
 
@@ -323,16 +303,11 @@ def main(argv: list[str] | None = None) -> int:
         print("  3. Keep API key live until current cycle end.")
         print("  4. Append decision to research/refund_decisions.log.")
     elif action == "deny":
-        print(
-            "  2. DO NOT refund.  Reply with refund_denied.md template "
-            "citing ToS §6.3."
-        )
+        print("  2. DO NOT refund.  Reply with refund_denied.md template citing ToS §6.3.")
         print("  3. Consider abuse handling per operators_playbook §5.")
         print("  4. Append decision to research/refund_decisions.log.")
     else:  # hold
-        print(
-            "  2. HOLD 24h.  Reply with 'will respond within 3 business days'."
-        )
+        print("  2. HOLD 24h.  Reply with 'will respond within 3 business days'.")
         print("  3. Re-run helper after gathering more info.")
     print("=== End ===")
     return 0

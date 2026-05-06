@@ -456,7 +456,13 @@ def main() -> int:
 
     try:
         result = run_export(args.db, args.output, preview=args.preview)
-    except (FileNotFoundError, F3ReadinessError, HfExportSafetyError, RuntimeError, sqlite3.Error) as exc:
+    except (
+        FileNotFoundError,
+        F3ReadinessError,
+        HfExportSafetyError,
+        RuntimeError,
+        sqlite3.Error,
+    ) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
 
@@ -464,10 +470,7 @@ def main() -> int:
     export = manifest["exports"][0]
     print(f"Source DB:  {args.db}")
     print(f"Output dir: {args.output}")
-    print(
-        f"  {EXPORT_TABLE:28s} {export['rows']:>9,} rows  "
-        f"{_fmt_bytes(export['bytes']):>12s}"
-    )
+    print(f"  {EXPORT_TABLE:28s} {export['rows']:>9,} rows  {_fmt_bytes(export['bytes']):>12s}")
     print("  README.md")
     print("  manifest.json")
     print(

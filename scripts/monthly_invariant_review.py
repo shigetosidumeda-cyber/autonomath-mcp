@@ -142,8 +142,13 @@ def probe_inv33_margin(month: str) -> dict[str, Any]:
         # The python-stripe client supports `created` filtering.
         from datetime import datetime as _dt
         from datetime import timedelta as _td
+
         first_of_this = _dt.now(UTC).replace(
-            day=1, hour=0, minute=0, second=0, microsecond=0,
+            day=1,
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0,
         )
         first_of_prev = (first_of_this - _td(days=1)).replace(day=1)
         gte = int(first_of_prev.timestamp())
@@ -250,11 +255,14 @@ def _write_artifact(month: str, results: dict[str, dict[str, Any]]) -> Path:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Monthly Tier 3 invariant review")
-    parser.add_argument("--month",
-                        default=datetime.now(UTC).strftime("%Y-%m"),
-                        help="Month label YYYY-MM (default: current UTC month)")
-    parser.add_argument("--dry-run", action="store_true",
-                        help="Run probes but do not write the markdown artifact")
+    parser.add_argument(
+        "--month",
+        default=datetime.now(UTC).strftime("%Y-%m"),
+        help="Month label YYYY-MM (default: current UTC month)",
+    )
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Run probes but do not write the markdown artifact"
+    )
     args = parser.parse_args(argv)
 
     logging.basicConfig(

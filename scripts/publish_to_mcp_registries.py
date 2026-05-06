@@ -144,9 +144,9 @@ def submit_mcp_registry(repo: Path, dry_run: bool = False) -> SubResult:
     if code != 200:
         msg = (body.get("detail") if isinstance(body, dict) else body) or "validate fail"
         errs = body.get("errors", []) if isinstance(body, dict) else []
-        err_brief = "; ".join(
-            f"{e.get('location','?')}: {e.get('message','?')}" for e in errs
-        )[:300]
+        err_brief = "; ".join(f"{e.get('location', '?')}: {e.get('message', '?')}" for e in errs)[
+            :300
+        ]
         return SubResult(
             id="mcp_registry",
             title="MCP Official Registry",
@@ -388,20 +388,23 @@ class Surface:
 
 
 SURFACES: list[Surface] = [
-    Surface("mcp_registry", "1. MCP Official Registry", submit_mcp_registry,
-            "POST /v0/publish (GH-OAuth → JWT)."),
-    Surface("dxt", "2. DXT (Anthropic Desktop Extension)", submit_dxt,
-            ".mcpb is self-distributing; no API."),
-    Surface("smithery", "3. Smithery", submit_smithery,
-            "Auto-index from public GitHub repo."),
-    Surface("glama", "4. Glama", submit_glama,
-            "Auto-index from public GitHub repo (daily)."),
-    Surface("pulsemcp", "5a. PulseMCP", submit_pulsemcp,
-            "Auto-ingest from MCP Official Registry."),
-    Surface("mcp_so", "5b. mcp.so", submit_mcp_so,
-            "Manual web-form / GH-issue."),
-    Surface("awesome_mcp", "5c. Awesome MCP Servers (punkpeye)", submit_awesome_mcp,
-            "GitHub PR."),
+    Surface(
+        "mcp_registry",
+        "1. MCP Official Registry",
+        submit_mcp_registry,
+        "POST /v0/publish (GH-OAuth → JWT).",
+    ),
+    Surface(
+        "dxt",
+        "2. DXT (Anthropic Desktop Extension)",
+        submit_dxt,
+        ".mcpb is self-distributing; no API.",
+    ),
+    Surface("smithery", "3. Smithery", submit_smithery, "Auto-index from public GitHub repo."),
+    Surface("glama", "4. Glama", submit_glama, "Auto-index from public GitHub repo (daily)."),
+    Surface("pulsemcp", "5a. PulseMCP", submit_pulsemcp, "Auto-ingest from MCP Official Registry."),
+    Surface("mcp_so", "5b. mcp.so", submit_mcp_so, "Manual web-form / GH-issue."),
+    Surface("awesome_mcp", "5c. Awesome MCP Servers (punkpeye)", submit_awesome_mcp, "GitHub PR."),
 ]
 
 

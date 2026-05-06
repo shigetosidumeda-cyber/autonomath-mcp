@@ -92,7 +92,9 @@ def _sha256(path: Path, chunk: int = 1 << 20) -> str:
 
 def _resolve_latest(prefix: str, bucket: str | None, name_prefix: str) -> str:
     items = list_keys(prefix, bucket=bucket)
-    items = [it for it in items if Path(it[0]).name.startswith(name_prefix) and it[0].endswith(".db.gz")]
+    items = [
+        it for it in items if Path(it[0]).name.startswith(name_prefix) and it[0].endswith(".db.gz")
+    ]
     if not items:
         raise RuntimeError(f"no backups found under prefix={prefix!r}")
     items.sort(key=lambda x: x[1], reverse=True)
@@ -257,9 +259,7 @@ def main() -> int:
             return 1
 
         if not args.no_pre_backup:
-            pb_dir = Path(
-                os.environ.get("RESTORE_PRE_BACKUP_DIR", str(cfg["pre_backup_dir"]))
-            )
+            pb_dir = Path(os.environ.get("RESTORE_PRE_BACKUP_DIR", str(cfg["pre_backup_dir"])))
             try:
                 _pre_backup(live, pb_dir)
             except Exception as exc:

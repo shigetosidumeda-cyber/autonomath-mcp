@@ -88,7 +88,9 @@ def _coerce_columns(conn: sqlite3.Connection, df: pd.DataFrame, table: str) -> p
     return df
 
 
-def export_table(conn: sqlite3.Connection, table: str, query: str, out_dir: Path) -> tuple[int, int]:
+def export_table(
+    conn: sqlite3.Connection, table: str, query: str, out_dir: Path
+) -> tuple[int, int]:
     """Run SELECT and write parquet. Returns (row_count, file_size_bytes)."""
     df = pd.read_sql_query(query, conn)
     df = _coerce_columns(conn, df, table)

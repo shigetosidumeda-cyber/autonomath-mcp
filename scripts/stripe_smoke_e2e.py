@@ -32,6 +32,7 @@ Run
 Exit 0 on full pass, non-zero on any step failure.
 See docs/canonical/stripe_smoke_runbook.md for common failures + remedies.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -51,7 +52,7 @@ from typing import Any
 try:
     import stripe  # >=11.3 per pyproject
 except ImportError:
-    print("FAIL  stripe SDK not installed — run `pip install -e \".[dev]\"`")
+    print('FAIL  stripe SDK not installed — run `pip install -e ".[dev]"`')
     sys.exit(2)
 
 import httpx
@@ -63,6 +64,7 @@ REPO = Path(__file__).resolve().parent.parent
 # Stripe-Signature header helper (matches Stripe's spec)
 # https://stripe.com/docs/webhooks/signatures#verify-manually
 # ---------------------------------------------------------------------------
+
 
 def stripe_signature(payload: bytes, secret: str, t: int) -> str:
     """Return a valid `Stripe-Signature: t=...,v1=...` header value.
@@ -108,17 +110,20 @@ def _bail(msg: str, fix: str = "") -> None:
 # Credential gate — refuse to run against live creds
 # ---------------------------------------------------------------------------
 
+
 def _require_test_creds() -> tuple[str, str, str]:
     sk = os.environ.get("STRIPE_SECRET_KEY_TEST", "").strip()
     whsec = os.environ.get("STRIPE_WEBHOOK_SECRET_TEST", "").strip()
     price = os.environ.get("STRIPE_PRICE_ID_TEST", "").strip()
 
     missing = [
-        name for name, val in (
+        name
+        for name, val in (
             ("STRIPE_SECRET_KEY_TEST", sk),
             ("STRIPE_WEBHOOK_SECRET_TEST", whsec),
             ("STRIPE_PRICE_ID_TEST", price),
-        ) if not val
+        )
+        if not val
     ]
     if missing:
         _bail(
@@ -149,6 +154,7 @@ def _require_test_creds() -> tuple[str, str, str]:
 # Local API server
 # ---------------------------------------------------------------------------
 
+
 def _free_port() -> int:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind(("127.0.0.1", 0))
@@ -168,13 +174,14 @@ def _start_api(port: int, db_path: Path, env_extra: dict[str, str]) -> subproces
     cmd = [
         str(uvicorn_bin) if uvicorn_bin.exists() else "uvicorn",
         "jpintel_mcp.api.main:app",
-        "--host", "127.0.0.1",
-        "--port", str(port),
-        "--log-level", "warning",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        str(port),
+        "--log-level",
+        "warning",
     ]
-    proc = subprocess.Popen(
-        cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-    )
+    proc = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     # Wait for /readyz.
     deadline = time.monotonic() + 20.0
     url = f"http://127.0.0.1:{port}/readyz"
@@ -197,6 +204,7 @@ def _start_api(port: int, db_path: Path, env_extra: dict[str, str]) -> subproces
 # Webhook POST helpers
 # ---------------------------------------------------------------------------
 
+
 def _post_webhook(base: str, secret: str, event: dict[str, Any]) -> httpx.Response:
     payload = json.dumps(event, separators=(",", ":")).encode("utf-8")
     header = stripe_signature(payload, secret, int(time.time()))
@@ -218,9 +226,7 @@ def _retrieve_raw_api_key(db_path: Path, sub_id: str) -> str | None:
     return None  # not used; see _mint_test_key_for_sub below
 
 
-def _mint_test_key_for_sub(
-    db_path: Path, customer_id: str, sub_id: str, tier: str = "paid"
-) -> str:
+def _mint_test_key_for_sub(db_path: Path, customer_id: str, sub_id: str, tier: str = "paid") -> str:
     """Insert a test api_key row with a known raw value so we can call
     authenticated endpoints. Parallel to billing.keys.issue_key(), but
     returns the raw key unconditionally so the smoke can use it.
@@ -249,6 +255,7 @@ def _mint_test_key_for_sub(
 # Smoke steps
 # ---------------------------------------------------------------------------
 
+
 def step_checkout_url(base: str, price_id: str) -> dict[str, str]:
     """Step 1: POST /v1/billing/checkout — returns Stripe Checkout Session URL."""
     r = httpx.post(
@@ -266,9 +273,7 @@ def step_checkout_url(base: str, price_id: str) -> dict[str, str]:
     if not body.get("url", "").startswith("https://checkout.stripe.com/"):
         raise RuntimeError(f"checkout url not stripe-hosted: {body.get('url')!r}")
     if not body.get("session_id", "").startswith("cs_test_"):
-        raise RuntimeError(
-            f"session_id not a test-mode id: {body.get('session_id')!r}"
-        )
+        raise RuntimeError(f"session_id not a test-mode id: {body.get('session_id')!r}")
     return body
 
 
@@ -277,9 +282,7 @@ def step_confirm_session(session_id: str) -> Any:
     return stripe.checkout.Session.retrieve(session_id)
 
 
-def step_create_subscription_for_testclock(
-    price_id: str, email: str
-) -> tuple[str, str]:
+def step_create_subscription_for_testclock(price_id: str, email: str) -> tuple[str, str]:
     """Create a paid test subscription bypassing the UI.
 
     Flow: create a Customer with a test payment method (pm_card_visa), attach,
@@ -328,8 +331,7 @@ def step_verify_key_row(db_path: Path, sub_id: str) -> tuple[str, str]:
     conn.row_factory = sqlite3.Row
     try:
         row = conn.execute(
-            "SELECT key_hash, tier, revoked_at FROM api_keys "
-            "WHERE stripe_subscription_id = ?",
+            "SELECT key_hash, tier, revoked_at FROM api_keys WHERE stripe_subscription_id = ?",
             (sub_id,),
         ).fetchone()
     finally:
@@ -349,9 +351,7 @@ def step_auth_me(base: str, raw_key: str) -> dict[str, Any]:
     return {"raw_key_accepted": True}
 
 
-def step_search_metered(
-    base: str, raw_key: str, db_path: Path
-) -> None:
+def step_search_metered(base: str, raw_key: str, db_path: Path) -> None:
     r = httpx.get(
         f"{base}/v1/programs/search",
         params={"q": "農業", "limit": 3},
@@ -385,9 +385,7 @@ def step_search_metered(
         raise RuntimeError("no usage_events row after metered search")
 
 
-def step_dunning_fail(
-    base: str, secret: str, sub_id: str, customer_id: str, db_path: Path
-) -> None:
+def step_dunning_fail(base: str, secret: str, sub_id: str, customer_id: str, db_path: Path) -> None:
     event = {
         "id": f"evt_smoke_fail_{int(time.time())}",
         "object": "event",
@@ -407,8 +405,7 @@ def step_dunning_fail(
     conn = sqlite3.connect(db_path)
     try:
         row = conn.execute(
-            "SELECT tier FROM api_keys WHERE stripe_subscription_id = ? "
-            "AND revoked_at IS NULL",
+            "SELECT tier FROM api_keys WHERE stripe_subscription_id = ? AND revoked_at IS NULL",
             (sub_id,),
         ).fetchone()
     finally:
@@ -418,8 +415,12 @@ def step_dunning_fail(
 
 
 def step_dunning_recover(
-    base: str, secret: str, sub_id: str, customer_id: str,
-    price_id: str, db_path: Path,
+    base: str,
+    secret: str,
+    sub_id: str,
+    customer_id: str,
+    price_id: str,
+    db_path: Path,
 ) -> None:
     event = {
         "id": f"evt_smoke_paid_{int(time.time())}",
@@ -440,8 +441,7 @@ def step_dunning_recover(
     conn = sqlite3.connect(db_path)
     try:
         row = conn.execute(
-            "SELECT tier FROM api_keys WHERE stripe_subscription_id = ? "
-            "AND revoked_at IS NULL",
+            "SELECT tier FROM api_keys WHERE stripe_subscription_id = ? AND revoked_at IS NULL",
             (sub_id,),
         ).fetchone()
     finally:
@@ -451,7 +451,11 @@ def step_dunning_recover(
 
 
 def step_cancel(
-    base: str, secret: str, sub_id: str, db_path: Path, raw_key: str,
+    base: str,
+    secret: str,
+    sub_id: str,
+    db_path: Path,
+    raw_key: str,
 ) -> None:
     event = {
         "id": f"evt_smoke_del_{int(time.time())}",
@@ -481,14 +485,13 @@ def step_cancel(
         timeout=10.0,
     )
     if r2.status_code not in (401, 403):
-        raise RuntimeError(
-            f"revoked key still accepted: {r2.status_code} {r2.text[:200]}"
-        )
+        raise RuntimeError(f"revoked key still accepted: {r2.status_code} {r2.text[:200]}")
 
 
 # ---------------------------------------------------------------------------
 # main
 # ---------------------------------------------------------------------------
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
@@ -545,9 +548,7 @@ def main() -> int:
         _ok("stripe.checkout.Session.retrieve confirmed")
 
         # 3) Create a real test subscription via pm_card_visa (bypasses UI)
-        cust_id, sub_id = step_create_subscription_for_testclock(
-            price, "smoke+e2e@jpcite.com"
-        )
+        cust_id, sub_id = step_create_subscription_for_testclock(price, "smoke+e2e@jpcite.com")
         _ok(f"Stripe test Subscription created: {sub_id}")
 
         # 4) Synthesized customer.subscription.created webhook
@@ -587,12 +588,12 @@ def main() -> int:
     finally:
         # Cleanup Stripe resources
         try:
-            if 'sub_id' in locals():
+            if "sub_id" in locals():
                 stripe.Subscription.cancel(sub_id)
         except Exception:
             pass
         try:
-            if 'cust_id' in locals():
+            if "cust_id" in locals():
                 stripe.Customer.delete(cust_id)
         except Exception:
             pass

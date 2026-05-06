@@ -46,6 +46,7 @@ Run:
   .venv/bin/python scripts/ingest_mhlw.py
   .venv/bin/python scripts/ingest_mhlw.py --dry-run
 """
+
 from __future__ import annotations
 
 import argparse
@@ -245,9 +246,7 @@ SEEDS: tuple[MhlwSeed, ...] = (
         source_url="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/koyou/kyufukin/d01-1.html",
         program_kind="subsidy",
         tier_hint="B",
-        description=(
-            "男性労働者の育児休業取得等に取り組む事業主に対する助成。"
-        ),
+        description=("男性労働者の育児休業取得等に取り組む事業主に対する助成。"),
         authority_name="厚生労働省 雇用環境・均等局",
         max_man_yen=60.0,
         target_types=("corporation",),
@@ -259,9 +258,7 @@ SEEDS: tuple[MhlwSeed, ...] = (
         source_url="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/koyou/kyufukin/d01-1.html",
         program_kind="subsidy",
         tier_hint="B",
-        description=(
-            "育児休業取得時・職場復帰時・代替要員確保時等の取組に応じて助成。"
-        ),
+        description=("育児休業取得時・職場復帰時・代替要員確保時等の取組に応じて助成。"),
         authority_name="厚生労働省 雇用環境・均等局",
         max_man_yen=72.0,
         target_types=("corporation",),
@@ -384,6 +381,7 @@ SEEDS: tuple[MhlwSeed, ...] = (
 # HTTP fetch + meta parse
 # ---------------------------------------------------------------------------
 
+
 def fetch(url: str, *, retries: int = 2) -> tuple[int, str]:
     last_err: Exception | None = None
     for attempt in range(retries + 1):
@@ -444,7 +442,9 @@ def classify(seed: MhlwSeed, http_status: int) -> tuple[str, int, str | None]:
     return seed.tier_hint, 0, None
 
 
-def build_row(seed: MhlwSeed, http_status: int, meta: tuple[str | None, str | None], fetched_at: str) -> dict[str, object]:
+def build_row(
+    seed: MhlwSeed, http_status: int, meta: tuple[str | None, str | None], fetched_at: str
+) -> dict[str, object]:
     tier, excluded, excl_reason = classify(seed, http_status)
     enriched = {
         "_meta": {
@@ -476,7 +476,9 @@ def build_row(seed: MhlwSeed, http_status: int, meta: tuple[str | None, str | No
     return {
         "unified_id": make_unified_id(seed.slug),
         "primary_name": seed.name,
-        "aliases_json": json.dumps(list(seed.aliases), ensure_ascii=False) if seed.aliases else None,
+        "aliases_json": json.dumps(list(seed.aliases), ensure_ascii=False)
+        if seed.aliases
+        else None,
         "authority_level": "national",
         "authority_name": seed.authority_name,
         "prefecture": None,
@@ -495,8 +497,12 @@ def build_row(seed: MhlwSeed, http_status: int, meta: tuple[str | None, str | No
         "exclusion_reason": excl_reason,
         "crop_categories_json": None,
         "equipment_category": None,
-        "target_types_json": json.dumps(list(seed.target_types), ensure_ascii=False) if seed.target_types else None,
-        "funding_purpose_json": json.dumps(list(seed.funding_purpose), ensure_ascii=False) if seed.funding_purpose else None,
+        "target_types_json": json.dumps(list(seed.target_types), ensure_ascii=False)
+        if seed.target_types
+        else None,
+        "funding_purpose_json": json.dumps(list(seed.funding_purpose), ensure_ascii=False)
+        if seed.funding_purpose
+        else None,
         "amount_band": None,
         "application_window_json": None,
         "enriched_json": json.dumps(enriched, ensure_ascii=False),
@@ -504,7 +510,9 @@ def build_row(seed: MhlwSeed, http_status: int, meta: tuple[str | None, str | No
         "source_url": seed.source_url,
         "source_fetched_at": fetched_at,
         "source_checksum": hashlib.sha1(
-            f"{seed.slug}|{seed.source_url}|{seed.name}|{seed.max_man_yen}|{','.join(seed.target_types)}".encode("utf-8")
+            f"{seed.slug}|{seed.source_url}|{seed.name}|{seed.max_man_yen}|{','.join(seed.target_types)}".encode(
+                "utf-8"
+            )
         ).hexdigest()[:16],
         "updated_at": fetched_at,
     }
@@ -573,7 +581,12 @@ def upsert(conn: sqlite3.Connection, row: dict[str, object]) -> str:
     if action == "insert":
         conn.execute(
             FTS_INSERT_SQL,
-            (row["unified_id"], row["primary_name"], row["aliases_json"] or "", row["primary_name"]),
+            (
+                row["unified_id"],
+                row["primary_name"],
+                row["aliases_json"] or "",
+                row["primary_name"],
+            ),
         )
     return action
 

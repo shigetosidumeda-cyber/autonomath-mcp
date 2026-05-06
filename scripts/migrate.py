@@ -9,6 +9,7 @@ Usage:
     python scripts/migrate.py --db path.db    # explicit target
     python scripts/migrate.py --dry-run       # print planned migrations, no changes
 """
+
 from __future__ import annotations
 
 import argparse
@@ -221,10 +222,7 @@ def _ensure_base_schema(conn: sqlite3.Connection) -> None:
         except sqlite3.OperationalError as e:
             msg = str(e).lower()
             stmt_lower = stmt.lower()
-            is_index_stmt = (
-                "create index" in stmt_lower
-                or "create unique index" in stmt_lower
-            )
+            is_index_stmt = "create index" in stmt_lower or "create unique index" in stmt_lower
             if "no such column" in msg and is_index_stmt:
                 _LOG.warning("schema_index_deferred stmt=%r err=%s", stmt, e)
                 continue
@@ -284,7 +282,12 @@ def run_migrations(db_path: Path, dry_run: bool = False) -> list[str]:
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Idempotent SQL migrations for jpintel-mcp")
-    p.add_argument("--db", type=Path, default=None, help="Path to SQLite DB (default: JPINTEL_DB_PATH or ./data/jpintel.db)")
+    p.add_argument(
+        "--db",
+        type=Path,
+        default=None,
+        help="Path to SQLite DB (default: JPINTEL_DB_PATH or ./data/jpintel.db)",
+    )
     p.add_argument("--dry-run", action="store_true", help="Print plan, apply nothing")
     return p.parse_args(argv)
 

@@ -25,6 +25,7 @@ Usage::
 
 The scan opens the DB in read-only mode (``mode=ro``) and performs no writes.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -51,22 +52,26 @@ DEFAULT_REPORT_DIR = os.path.join(REPO_ROOT, "research")
 # ---------------------------------------------------------------------------
 
 # Hostnames that cannot serve real content to customers.
-SYNTHETIC_HOSTS: frozenset[str] = frozenset({
-    "example.com",
-    "example.jp",
-    "example.org",
-    "example.net",
-    "localhost",
-    "test.com",
-    "test.jp",
-})
+SYNTHETIC_HOSTS: frozenset[str] = frozenset(
+    {
+        "example.com",
+        "example.jp",
+        "example.org",
+        "example.net",
+        "localhost",
+        "test.com",
+        "test.jp",
+    }
+)
 
 # Explicit sentinel IPs (loopback / unspecified / link-local broadcast).
-SENTINEL_IPS: frozenset[str] = frozenset({
-    "127.0.0.1",
-    "0.0.0.0",
-    "::1",
-})
+SENTINEL_IPS: frozenset[str] = frozenset(
+    {
+        "127.0.0.1",
+        "0.0.0.0",
+        "::1",
+    }
+)
 
 # Tokens that scream "unfilled placeholder" regardless of surrounding text.
 PLACEHOLDER_TOKENS: tuple[str, ...] = ("TODO", "FIXME", "XXXX", "...", "…")
@@ -105,12 +110,7 @@ def _is_private_ip(host: str) -> bool:
         ip = ipaddress.ip_address(host)
     except ValueError:
         return False
-    return bool(
-        ip.is_private
-        or ip.is_loopback
-        or ip.is_unspecified
-        or ip.is_link_local
-    )
+    return bool(ip.is_private or ip.is_loopback or ip.is_unspecified or ip.is_link_local)
 
 
 def classify_url(url: str) -> list[str]:
@@ -259,12 +259,14 @@ def scan(db_path: str) -> tuple[list[dict[str, str]], int]:
                     if key in seen:
                         continue
                     seen.add(key)
-                    flagged.append({
-                        "unified_id": unified_id,
-                        "column": col,
-                        "url": url,
-                        "reason": "; ".join(reasons),
-                    })
+                    flagged.append(
+                        {
+                            "unified_id": unified_id,
+                            "column": col,
+                            "url": url,
+                            "reason": "; ".join(reasons),
+                        }
+                    )
     finally:
         con.close()
     return flagged, total
@@ -305,9 +307,7 @@ def render_report(
     db_path: str,
 ) -> str:
     now = dt.datetime.now(dt.UTC).isoformat(timespec="seconds")
-    reason_counter: Counter[str] = Counter(
-        _primary_reason(row["reason"]) for row in flagged
-    )
+    reason_counter: Counter[str] = Counter(_primary_reason(row["reason"]) for row in flagged)
     column_counter: Counter[str] = Counter(row["column"] for row in flagged)
 
     lines: list[str] = []
@@ -335,10 +335,12 @@ def render_report(
     lines.append("## Reason rollup")
     lines.append("")
     if reason_counter:
-        lines.append(_md_table(
-            ["reason", "count"],
-            sorted(reason_counter.items(), key=lambda kv: (-kv[1], kv[0])),
-        ))
+        lines.append(
+            _md_table(
+                ["reason", "count"],
+                sorted(reason_counter.items(), key=lambda kv: (-kv[1], kv[0])),
+            )
+        )
     else:
         lines.append("(none)")
     lines.append("")
@@ -346,10 +348,12 @@ def render_report(
     lines.append("## Column rollup")
     lines.append("")
     if column_counter:
-        lines.append(_md_table(
-            ["column", "count"],
-            sorted(column_counter.items(), key=lambda kv: (-kv[1], kv[0])),
-        ))
+        lines.append(
+            _md_table(
+                ["column", "count"],
+                sorted(column_counter.items(), key=lambda kv: (-kv[1], kv[0])),
+            )
+        )
     else:
         lines.append("(none)")
     lines.append("")
@@ -359,11 +363,12 @@ def render_report(
     if not flagged:
         lines.append("(none)")
     elif len(flagged) <= PAGINATE_THRESHOLD:
-        lines.append(_md_table(
-            ["unified_id", "column", "url", "reason"],
-            [(r["unified_id"], r["column"], r["url"], r["reason"])
-             for r in flagged],
-        ))
+        lines.append(
+            _md_table(
+                ["unified_id", "column", "url", "reason"],
+                [(r["unified_id"], r["column"], r["url"], r["reason"]) for r in flagged],
+            )
+        )
     else:
         lines.append(
             f"> Total {len(flagged)} violations exceed the "
@@ -375,22 +380,19 @@ def render_report(
         buckets: dict[str, list[dict[str, str]]] = defaultdict(list)
         for row in flagged:
             buckets[_primary_reason(row["reason"])].append(row)
-        for reason, rows in sorted(
-            buckets.items(), key=lambda kv: (-len(kv[1]), kv[0])
-        ):
+        for reason, rows in sorted(buckets.items(), key=lambda kv: (-len(kv[1]), kv[0])):
             lines.append(f"### {reason} — {len(rows)}")
             lines.append("")
             shown = rows[:PER_REASON_CAP]
-            lines.append(_md_table(
-                ["unified_id", "column", "url", "reason"],
-                [(r["unified_id"], r["column"], r["url"], r["reason"])
-                 for r in shown],
-            ))
+            lines.append(
+                _md_table(
+                    ["unified_id", "column", "url", "reason"],
+                    [(r["unified_id"], r["column"], r["url"], r["reason"]) for r in shown],
+                )
+            )
             if len(rows) > PER_REASON_CAP:
                 lines.append("")
-                lines.append(
-                    f"…(+{len(rows) - PER_REASON_CAP} more in JSON side-car)"
-                )
+                lines.append(f"…(+{len(rows) - PER_REASON_CAP} more in JSON side-car)")
             lines.append("")
 
     lines.append("---")
@@ -435,9 +437,7 @@ def run(
         with open(json_path, "w", encoding="utf-8") as fh:
             json.dump(
                 {
-                    "generated_at": dt.datetime.now(
-                        dt.UTC
-                    ).isoformat(timespec="seconds"),
+                    "generated_at": dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
                     "db_path": db_path,
                     "total_programs": total,
                     "violation_count": len(flagged),
@@ -452,9 +452,7 @@ def run(
     print(f"url_integrity_scan — scanned {total} programs")
     print(f"violations: {len(flagged)}")
     if flagged:
-        by_reason: Counter[str] = Counter(
-            _primary_reason(r["reason"]) for r in flagged
-        )
+        by_reason: Counter[str] = Counter(_primary_reason(r["reason"]) for r in flagged)
         for reason, count in by_reason.most_common():
             print(f"  {count:>4}  {reason}")
     if report_path:
@@ -483,10 +481,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument(
         "--json",
         default=None,
-        help=(
-            "Path to write JSON side-car (default: derive from --report). "
-            "Pass '' to skip."
-        ),
+        help=("Path to write JSON side-car (default: derive from --report). Pass '' to skip."),
     )
     args = ap.parse_args(argv)
     report = args.report if args.report else None

@@ -152,8 +152,12 @@ class RunStats:
 
     @property
     def err_count(self) -> int:
-        return self.total - self.ok_count + len(
-            [e for e in self.errors if e]  # transport failures already in statuses=0
+        return (
+            self.total
+            - self.ok_count
+            + len(
+                [e for e in self.errors if e]  # transport failures already in statuses=0
+            )
         )
 
     @property
@@ -201,9 +205,7 @@ async def _warmup(client: httpx.AsyncClient, shape: Shape, n: int) -> None:
             pass
 
 
-async def run_sequential(
-    base_url: str, shape: Shape, n: int, warmup: int
-) -> RunStats:
+async def run_sequential(base_url: str, shape: Shape, n: int, warmup: int) -> RunStats:
     stats = RunStats()
     async with httpx.AsyncClient(
         base_url=base_url,
@@ -283,9 +285,7 @@ def _summarize_runs(runs: list[RunStats]) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 
-async def bench_shape(
-    base_url: str, shape: Shape
-) -> dict[str, Any]:
+async def bench_shape(base_url: str, shape: Shape) -> dict[str, Any]:
     out: dict[str, Any] = {"name": shape.name, "cells": {}}
 
     # Sequential (concurrency=1) baseline
@@ -336,7 +336,9 @@ async def bench_shape(
 def print_table(shapes: list[dict[str, Any]]) -> None:
     print()
     print("=" * 110)
-    print(f"{'Shape':<46} {'Cell':<18} {'p50':>7} {'p90':>7} {'p95':>7} {'p99':>7} {'max':>7} {'rps':>8}")
+    print(
+        f"{'Shape':<46} {'Cell':<18} {'p50':>7} {'p90':>7} {'p95':>7} {'p99':>7} {'max':>7} {'rps':>8}"
+    )
     print("-" * 110)
     for s in shapes:
         for cell_name, c in s["cells"].items():
@@ -358,18 +360,11 @@ def build_flags(shapes: list[dict[str, Any]]) -> list[str]:
                     "exceeds 500ms — shipping blocker."
                 )
             if c["p99_ms"] > 1000:
-                flags.append(
-                    f"{s['name']} [{cell_name}] p99={c['p99_ms']:.1f}ms "
-                    "exceeds 1000ms."
-                )
+                flags.append(f"{s['name']} [{cell_name}] p99={c['p99_ms']:.1f}ms exceeds 1000ms.")
             if c["http_5xx"] > 0:
-                flags.append(
-                    f"{s['name']} [{cell_name}] {c['http_5xx']} 5xx responses."
-                )
+                flags.append(f"{s['name']} [{cell_name}] {c['http_5xx']} 5xx responses.")
             if c["timeouts"] > 0:
-                flags.append(
-                    f"{s['name']} [{cell_name}] {c['timeouts']} timeouts."
-                )
+                flags.append(f"{s['name']} [{cell_name}] {c['timeouts']} timeouts.")
     return flags
 
 
@@ -421,9 +416,7 @@ async def run(base_url: str) -> int:
         "flags": flags,
     }
     REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    REPORT_PATH.write_text(
-        json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
+    REPORT_PATH.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"\n[bench] report written to {REPORT_PATH}")
     return 0
 

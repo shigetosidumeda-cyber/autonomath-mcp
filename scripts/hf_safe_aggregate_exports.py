@@ -70,9 +70,7 @@ EXPORT_DEFINITIONS: tuple[AggregateExportDefinition, ...] = (
       ORDER BY prefecture
         """,
         license="pdl_v1.0",
-        attribution=(
-            "Source: National Tax Agency Qualified Invoice Issuer Publication Site (NTA)"
-        ),
+        attribution=("Source: National Tax Agency Qualified Invoice Issuer Publication Site (NTA)"),
         transformation_note=(
             "Aggregated by prefecture by Bookyou Inc.; cells below k=5 are not exported."
         ),

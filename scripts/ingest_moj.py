@@ -30,6 +30,7 @@ Run:
   .venv/bin/python scripts/ingest_moj.py
   .venv/bin/python scripts/ingest_moj.py --dry-run
 """
+
 from __future__ import annotations
 
 import argparse
@@ -139,7 +140,10 @@ SEEDS: tuple[MojSeed, ...] = (
         authority_name="法務省 / 日本司法支援センター (法テラス)",
         target_types=("individual",),
         funding_purpose=("法律相談", "司法支援"),
-        aliases=("法テラス", "JLF",),
+        aliases=(
+            "法テラス",
+            "JLF",
+        ),
     ),
     MojSeed(
         slug="moj-houterasu-stalker",
@@ -177,8 +181,7 @@ SEEDS: tuple[MojSeed, ...] = (
         program_kind="grant",
         tier_hint="B",
         description=(
-            "人権啓発活動を地方公共団体に委託する事業。人権擁護に関する"
-            "研修・講演会・冊子作成等。"
+            "人権啓発活動を地方公共団体に委託する事業。人権擁護に関する研修・講演会・冊子作成等。"
         ),
         authority_name="法務省 人権擁護局",
         target_types=("prefecture", "municipality"),
@@ -279,8 +282,7 @@ SEEDS: tuple[MojSeed, ...] = (
         program_kind="public_service",
         tier_hint="C",
         description=(
-            "司法書士会・土地家屋調査士会連合会と連携した検索サービス。"
-            "登記申請等の専門家紹介。"
+            "司法書士会・土地家屋調査士会連合会と連携した検索サービス。登記申請等の専門家紹介。"
         ),
         authority_name="法務省 民事局",
         target_types=("individual", "corporation"),
@@ -292,6 +294,7 @@ SEEDS: tuple[MojSeed, ...] = (
 # ---------------------------------------------------------------------------
 # HTTP fetch + meta parse (same pattern)
 # ---------------------------------------------------------------------------
+
 
 def fetch(url: str, *, retries: int = 2) -> tuple[int, str]:
     last_err: Exception | None = None
@@ -341,7 +344,9 @@ def classify(seed: MojSeed, http_status: int) -> tuple[str, int, str | None]:
     return seed.tier_hint, 0, None
 
 
-def build_row(seed: MojSeed, http_status: int, meta: tuple[str | None, str | None], fetched_at: str) -> dict[str, object]:
+def build_row(
+    seed: MojSeed, http_status: int, meta: tuple[str | None, str | None], fetched_at: str
+) -> dict[str, object]:
     tier, excluded, excl_reason = classify(seed, http_status)
     enriched = {
         "_meta": {
@@ -369,7 +374,9 @@ def build_row(seed: MojSeed, http_status: int, meta: tuple[str | None, str | Non
     return {
         "unified_id": make_unified_id(seed.slug),
         "primary_name": seed.name,
-        "aliases_json": json.dumps(list(seed.aliases), ensure_ascii=False) if seed.aliases else None,
+        "aliases_json": json.dumps(list(seed.aliases), ensure_ascii=False)
+        if seed.aliases
+        else None,
         "authority_level": "national",
         "authority_name": seed.authority_name,
         "prefecture": None,
@@ -388,8 +395,12 @@ def build_row(seed: MojSeed, http_status: int, meta: tuple[str | None, str | Non
         "exclusion_reason": excl_reason,
         "crop_categories_json": None,
         "equipment_category": None,
-        "target_types_json": json.dumps(list(seed.target_types), ensure_ascii=False) if seed.target_types else None,
-        "funding_purpose_json": json.dumps(list(seed.funding_purpose), ensure_ascii=False) if seed.funding_purpose else None,
+        "target_types_json": json.dumps(list(seed.target_types), ensure_ascii=False)
+        if seed.target_types
+        else None,
+        "funding_purpose_json": json.dumps(list(seed.funding_purpose), ensure_ascii=False)
+        if seed.funding_purpose
+        else None,
         "amount_band": None,
         "application_window_json": None,
         "enriched_json": json.dumps(enriched, ensure_ascii=False),
@@ -465,7 +476,12 @@ def upsert(conn: sqlite3.Connection, row: dict[str, object]) -> str:
     if action == "insert":
         conn.execute(
             FTS_INSERT_SQL,
-            (row["unified_id"], row["primary_name"], row["aliases_json"] or "", row["primary_name"]),
+            (
+                row["unified_id"],
+                row["primary_name"],
+                row["aliases_json"] or "",
+                row["primary_name"],
+            ),
         )
     return action
 

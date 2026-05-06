@@ -22,7 +22,7 @@ other, even accidentally.
                       jpi_programs, am_alias, am_amendment_diff,
                       am_program_summary, am_insurance_mutual,
                       am_entities_fts, am_entities_vec
-        MUST NOT contain: programs
+        MUST NOT contain: programs / programs_fts residue from jpintel.db
 
 A guard violation aborts startup (exit 2 from CLI, raises from module
 import). Silent continuation is forbidden — the Wave 8 incident burned
@@ -49,14 +49,17 @@ Usage
 CLI:
     python scripts/schema_guard.py data/jpintel.db jpintel
     python scripts/schema_guard.py autonomath.db autonomath
+    python scripts/schema_guard.py autonomath.db autonomath --drop-empty-cross-pollution
 
 Module:
     from scripts.schema_guard import assert_jpintel_schema, assert_am_schema
     assert_jpintel_schema("data/jpintel.db")
     assert_am_schema("autonomath.db")
 """
+
 from __future__ import annotations
 
+import contextlib
 import os
 import sqlite3
 import sys
@@ -108,9 +111,17 @@ AM_REQUIRED = {
 # autonomath.db as the unified primary DB. `api_keys` lives directly at the
 # top-level (not jpi-namespaced) so REST/MCP can read quota/auth from a
 # single connection. The pre-merge "api_keys means a swap happened" rule is
-# stale — only `programs` remains forbidden (jpintel.db keeps that table;
-# autonomath uses `jpi_programs` for the mirrored copy).
-AM_FORBIDDEN = {"programs"}
+# stale — `programs` and its FTS5 residue remain forbidden (jpintel.db keeps
+# that table; autonomath uses `jpi_programs` for the mirrored copy).
+AM_FORBIDDEN = {
+    "programs",
+    "programs_fts",
+    "programs_fts_data",
+    "programs_fts_idx",
+    "programs_fts_content",
+    "programs_fts_docsize",
+    "programs_fts_config",
+}
 AM_REQUIRED_COLUMNS = {
     "am_alias": {"canonical_id", "alias", "alias_kind", "language"},
     "am_amendment_diff": {"entity_id", "field_name", "detected_at"},
@@ -135,7 +146,13 @@ AM_REQUIRED_COLUMNS = {
         "last_verified",
         "license",
     },
-    "jpi_programs": {"unified_id", "primary_name", "source_url", "source_fetched_at", "subsidy_rate_text"},
+    "jpi_programs": {
+        "unified_id",
+        "primary_name",
+        "source_url",
+        "source_fetched_at",
+        "subsidy_rate_text",
+    },
 }
 AM_REQUIRED_VIEWS = {
     "am_unified_rule",
@@ -207,6 +224,12 @@ def _connect_ro(db_path: str) -> sqlite3.Connection:
     return sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
 
 
+def _connect_rw(db_path: str) -> sqlite3.Connection:
+    if not Path(db_path).exists():
+        raise SchemaGuardError(f"DB file missing: {db_path}")
+    return sqlite3.connect(db_path)
+
+
 def _list_objects(db_path: str, object_type: str) -> set[str]:
     conn = _connect_ro(db_path)
     try:
@@ -269,6 +292,64 @@ def _table_count(db_path: str, table: str) -> int:
         conn.close()
 
 
+def _count_table_rw(conn: sqlite3.Connection, table: str) -> int:
+    cols = conn.execute(f"PRAGMA table_info({table})").fetchall()  # noqa: S608 — caller passes literal table names only
+    if not cols:
+        return -1
+    row = conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()  # noqa: S608 — caller passes literal table names only
+    return int(row[0]) if row else 0
+
+
+def drop_empty_autonomath_cross_pollution(db_path: str) -> bool:
+    """Drop empty jpintel ``programs`` residue from autonomath.db.
+
+    Long-lived volumes may have migration 110 recorded while an empty
+    ``programs`` / ``programs_fts`` table still exists. The cleanup is
+    intentionally narrow: it only runs after migration 110, only on a DB that
+    already looks like autonomath, and only when logical row counts are zero.
+    Any non-empty residue is left in place so the normal forbidden-table guard
+    fails closed.
+    """
+
+    conn = _connect_rw(db_path)
+    try:
+        tables = {
+            row[0]
+            for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
+        }
+        if not {"schema_migrations", "am_entities", "jpi_programs"} <= tables:
+            return False
+        applied = {row[0] for row in conn.execute("SELECT id FROM schema_migrations").fetchall()}
+        if "110_autonomath_drop_cross_pollution.sql" not in applied:
+            return False
+        if not (tables & AM_FORBIDDEN):
+            return False
+        if "programs" in tables and _count_table_rw(conn, "programs") != 0:
+            return False
+        if "programs_fts" in tables and _count_table_rw(conn, "programs_fts") != 0:
+            return False
+
+        conn.execute("BEGIN IMMEDIATE")
+        for table in (
+            "programs_fts",
+            "programs_fts_data",
+            "programs_fts_idx",
+            "programs_fts_content",
+            "programs_fts_docsize",
+            "programs_fts_config",
+            "programs",
+        ):
+            conn.execute(f"DROP TABLE IF EXISTS {table}")  # noqa: S608 — static table allowlist
+        conn.commit()
+        return True
+    except Exception:
+        with contextlib.suppress(Exception):
+            conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
 def _quick_check(db_path: str) -> str:
     conn = _connect_ro(db_path)
     try:
@@ -296,10 +377,7 @@ def _assert(
     wrong_kind = forbidden & tables
     errors = []
     if missing:
-        errors.append(
-            f"{profile}: required tables missing from {db_path}: "
-            f"{sorted(missing)}"
-        )
+        errors.append(f"{profile}: required tables missing from {db_path}: {sorted(missing)}")
     if wrong_kind:
         errors.append(
             f"{profile}: FORBIDDEN tables present in {db_path} "
@@ -312,16 +390,14 @@ def _assert(
         missing_columns = columns - present
         if missing_columns:
             errors.append(
-                f"{profile}: required columns missing from {table}: "
-                f"{sorted(missing_columns)}"
+                f"{profile}: required columns missing from {table}: {sorted(missing_columns)}"
             )
     if required_views:
         views = _list_views(db_path)
         missing_views = required_views - views
         if missing_views:
             errors.append(
-                f"{profile}: required views missing from {db_path}: "
-                f"{sorted(missing_views)}"
+                f"{profile}: required views missing from {db_path}: {sorted(missing_views)}"
             )
     if required_migrations:
         applied = _applied_migrations(db_path)
@@ -361,8 +437,7 @@ def _assert(
             n = _table_count(db_path, table)
             if n == 0:
                 errors.append(
-                    f"{profile}: required prod-nonempty table is empty in "
-                    f"{db_path}: {table}"
+                    f"{profile}: required prod-nonempty table is empty in {db_path}: {table}"
                 )
 
     if errors:
@@ -408,17 +483,29 @@ assert_am_entities_schema = assert_am_schema
 
 
 def _main(argv: list[str]) -> int:
-    if len(argv) != 3:
+    if len(argv) not in (3, 4):
         print(
-            "usage: schema_guard.py <db_path> <profile:jpintel|autonomath>",
+            "usage: schema_guard.py <db_path> <profile:jpintel|autonomath> "
+            "[--drop-empty-cross-pollution]",
             file=sys.stderr,
         )
         return 2
     db_path, profile = argv[1], argv[2]
+    drop_empty_cross_pollution = len(argv) == 4 and argv[3] == "--drop-empty-cross-pollution"
+    if len(argv) == 4 and not drop_empty_cross_pollution:
+        print(f"unknown option: {argv[3]}", file=sys.stderr)
+        return 2
     try:
         if profile == "jpintel":
+            if drop_empty_cross_pollution:
+                print("--drop-empty-cross-pollution is autonomath-only", file=sys.stderr)
+                return 2
             assert_jpintel_schema(db_path)
         elif profile == "autonomath":
+            if drop_empty_cross_pollution:
+                did_drop = drop_empty_autonomath_cross_pollution(db_path)
+                if did_drop:
+                    print("schema_guard cleanup: dropped empty autonomath cross-pollution")
             assert_am_schema(db_path)
         else:
             print(f"unknown profile: {profile}", file=sys.stderr)

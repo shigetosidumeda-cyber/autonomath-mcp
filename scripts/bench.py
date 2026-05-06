@@ -225,8 +225,7 @@ async def probe_concurrent(
         start = time.perf_counter()
         deadline = start + duration_s
         tasks = [
-            asyncio.create_task(load_worker(client, path, deadline, out))
-            for _ in range(workers)
+            asyncio.create_task(load_worker(client, path, deadline, out)) for _ in range(workers)
         ]
         await asyncio.gather(*tasks)
         out.wall_s = time.perf_counter() - start
@@ -365,8 +364,9 @@ def write_report(
     if flags:
         summary_lines.extend(flags)
     else:
-        summary_lines.append("_None — all endpoints within p99 < 500ms, "
-                             "no 5xx, search throughput >= 100 req/s._")
+        summary_lines.append(
+            "_None — all endpoints within p99 < 500ms, no 5xx, search throughput >= 100 req/s._"
+        )
     summary_lines.append("")
     summary_lines.append(CACHE_SECTION)
     summary_lines.append("")
@@ -458,10 +458,7 @@ async def run(base_url: str, api_key: str | None) -> int:
     print("-" * 78)
     print(f"{'Endpoint':<52} {'p50':>6} {'p95':>7} {'p99':>7} {'max':>7}")
     for r in seq_results:
-        print(
-            f"{r.path[:52]:<52} "
-            f"{r.p50:>6.1f} {r.p95:>7.1f} {r.p99:>7.1f} {r.max:>7.1f}"
-        )
+        print(f"{r.path[:52]:<52} {r.p50:>6.1f} {r.p95:>7.1f} {r.p99:>7.1f} {r.max:>7.1f}")
     print("-" * 78)
     print("CONCURRENT LOAD")
     print("-" * 78)

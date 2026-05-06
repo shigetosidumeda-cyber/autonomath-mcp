@@ -31,6 +31,7 @@ Two-tier verification discipline:
 Aggregators banned from source_url (never use): noukaweb, hojyokin-portal,
 biz.stayway, hojyokin.jp, creabiz, yorisoi.
 """
+
 import sqlite3
 from datetime import datetime, timezone
 

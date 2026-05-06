@@ -32,7 +32,7 @@ from typing import Any
 try:
     import stripe
 except ImportError:  # pragma: no cover
-    print("FAIL stripe SDK not installed — run `pip install -e \".[dev]\"`", file=sys.stderr)
+    print('FAIL stripe SDK not installed — run `pip install -e ".[dev]"`', file=sys.stderr)
     sys.exit(2)
 
 
@@ -104,7 +104,11 @@ def ensure(dry_run: bool) -> dict[str, str]:
     if product is None:
         print("product.missing — will create", file=sys.stderr)
         if dry_run:
-            return {"product_id": "(dry-run)", "price_id": "(dry-run)", "lookup_key": PRICE_LOOKUP_KEY}
+            return {
+                "product_id": "(dry-run)",
+                "price_id": "(dry-run)",
+                "lookup_key": PRICE_LOOKUP_KEY,
+            }
         product = stripe.Product.create(
             name=PRODUCT_NAME,
             description=PRODUCT_DESCRIPTION,

@@ -34,6 +34,7 @@ Run:
   .venv/bin/python scripts/walk_pref_subsidy_seeds.py --pref 鳥取県 --limit-children 30
   .venv/bin/python scripts/walk_pref_subsidy_seeds.py --max-children-per-seed 25
 """
+
 from __future__ import annotations
 
 import argparse
@@ -69,6 +70,7 @@ except Exception:  # noqa: BLE001
 # don't fail in environments that haven't installed it yet.
 try:
     import pdfplumber  # type: ignore[import-untyped]
+
     _HAS_PDFPLUMBER = True
 except ImportError:  # noqa: BLE001
     _HAS_PDFPLUMBER = False
@@ -89,14 +91,30 @@ PROGRAM_KEYWORDS = ("補助金", "助成金", "交付金", "支援金", "奨励�
 
 # Substrings that suggest the URL points to a program detail page.
 URL_HINTS = (
-    "hojokin", "hojo", "josei", "jyosei", "joseikin", "jyoseikin",
-    "shien", "sien", "kyufukin", "kifu", "shoreikin",
+    "hojokin",
+    "hojo",
+    "josei",
+    "jyosei",
+    "joseikin",
+    "jyoseikin",
+    "shien",
+    "sien",
+    "kyufukin",
+    "kifu",
+    "shoreikin",
 )
 
 # Minor exclusion to avoid pulling navigation / search / FAQ.
 EXCLUDE_TITLES = {
-    "補助金一覧", "助成金一覧", "補助金", "助成金", "支援制度", "支援",
-    "詳細", "詳細はこちら", "こちら",
+    "補助金一覧",
+    "助成金一覧",
+    "補助金",
+    "助成金",
+    "支援制度",
+    "支援",
+    "詳細",
+    "詳細はこちら",
+    "こちら",
 }
 
 AMOUNT_RE = re.compile(r"(?:上限|限度|最大)[\s:]*([0-9,，]+)\s*(?:万円|百万円|億円|千円|円)")
@@ -106,8 +124,17 @@ DATE_RE = re.compile(r"(20\d{2})[年/-](\d{1,2})[月/-](\d{1,2})")
 # Drop these PDF-boilerplate prefix words when scoring a candidate title — they
 # are 様式 / 別紙 sheet headers, not the actual program name.
 PDF_TITLE_BOILERPLATE_PREFIX = (
-    "別紙", "別表", "様式", "別添", "参考", "参考資料",
-    "（参考）", "(参考)", "資料", "目次", "概要",
+    "別紙",
+    "別表",
+    "様式",
+    "別添",
+    "参考",
+    "参考資料",
+    "（参考）",
+    "(参考)",
+    "資料",
+    "目次",
+    "概要",
 )
 # Cap PDF text extraction (don't ingest 100-page books — only need the
 # detail-page-equivalent first chunk). 8 pages covers the typical
@@ -132,6 +159,7 @@ class ProgramCandidate:
 # ---------------------------------------------------------------------------
 # HTTP fetch
 # ---------------------------------------------------------------------------
+
 
 class _RateLimiter:
     """Simple per-host rate-limiter (1 req/s default)."""
@@ -207,6 +235,7 @@ def fetch(url: str, *, retries: int = 2) -> tuple[int, str, str | None, bytes | 
 # robots.txt
 # ---------------------------------------------------------------------------
 
+
 class RobotsCache:
     def __init__(self) -> None:
         self._cache: dict[str, urllib.robotparser.RobotFileParser] = {}
@@ -241,6 +270,7 @@ class RobotsCache:
 # Seed parsing
 # ---------------------------------------------------------------------------
 
+
 def is_program_link(title: str, href: str) -> bool:
     """Heuristic: link is likely a program detail page."""
     if not title or not href:
@@ -268,7 +298,9 @@ def extract_program_links(
         href = a["href"].strip()
         if href.startswith("#") or href.startswith("mailto:") or href.startswith("javascript:"):
             continue
-        if href.lower().endswith((".jpg", ".jpeg", ".png", ".gif", ".zip", ".xls", ".xlsx", ".doc", ".docx", ".pptx")):
+        if href.lower().endswith(
+            (".jpg", ".jpeg", ".png", ".gif", ".zip", ".xls", ".xlsx", ".doc", ".docx", ".pptx")
+        ):
             continue
         title = a.get_text(" ", strip=True)
         full = urllib.parse.urljoin(seed_url, href)
@@ -330,7 +362,10 @@ def _root_lg_jp(host: str) -> str | None:
 # Detail extraction
 # ---------------------------------------------------------------------------
 
-def _heuristic_extract_from_text(body_text: str, title: str, fallback_title: str) -> dict[str, object]:
+
+def _heuristic_extract_from_text(
+    body_text: str, title: str, fallback_title: str
+) -> dict[str, object]:
     """Apply amount / deadline heuristics to a body of text. Shared by HTML+PDF paths."""
     if not title:
         title = fallback_title
@@ -405,7 +440,7 @@ def _strip_pdf_boilerplate(line: str) -> str:
     # Drop the prefix word + immediately-following separator (digit / 第N / -).
     for prefix in PDF_TITLE_BOILERPLATE_PREFIX:
         if s.startswith(prefix):
-            tail = s[len(prefix):].lstrip(" :：・-第")
+            tail = s[len(prefix) :].lstrip(" :：・-第")
             # Keep stripping numerics / Japanese ordinal noise after the prefix
             # (covers '別紙第一号' → '号 新市町村...' → '新市町村...').
             tail = re.sub(r"^[0-9０-９一二三四五六七八九十]+号?\s*", "", tail)
@@ -419,8 +454,8 @@ def _strip_pdf_boilerplate(line: str) -> str:
 # "No. N" page numbers, single-character labels, etc.
 _PDF_TITLE_REJECT_RE = re.compile(
     r"^("
-    r"No\.?\s*\d+|ページ|頁|\d+/\d+"   # page numbers
-    r"|.{0,15}[部課室局署]$"              # bare department headers ('総 務 部')
+    r"No\.?\s*\d+|ページ|頁|\d+/\d+"  # page numbers
+    r"|.{0,15}[部課室局署]$"  # bare department headers ('総 務 部')
     r"|主管課名|担当課|問合せ先|連絡先"
     r"|目次|表紙"
     r")$"
@@ -442,6 +477,7 @@ def extract_pdf_text(pdf_bytes: bytes) -> str:
     if not _HAS_PDFPLUMBER:
         return ""
     import io as _io
+
     try:
         with pdfplumber.open(_io.BytesIO(pdf_bytes)) as pdf:
             chunks: list[str] = []
@@ -565,8 +601,7 @@ ON CONFLICT(unified_id) DO NOTHING
 """
 
 FTS_INSERT_SQL = (
-    "INSERT INTO programs_fts(unified_id, primary_name, aliases, enriched_text) "
-    "VALUES (?,?,?,?)"
+    "INSERT INTO programs_fts(unified_id, primary_name, aliases, enriched_text) VALUES (?,?,?,?)"
 )
 
 
@@ -622,14 +657,17 @@ def build_row(
         "amount_band": None,
         "application_window_json": (
             json.dumps({"deadline": extract["deadline_iso"]}, ensure_ascii=False)
-            if extract.get("deadline_iso") else None
+            if extract.get("deadline_iso")
+            else None
         ),
         "enriched_json": json.dumps(enriched, ensure_ascii=False),
         "source_mentions_json": json.dumps({"seed": cand.seed_url}, ensure_ascii=False),
         "source_url": cand.url,
         "source_fetched_at": fetched_at,
         "source_checksum": hashlib.sha1(
-            f"{cand.url}|{title}|{extract.get('deadline_iso')}|{extract.get('amount_max_man_yen')}".encode("utf-8")
+            f"{cand.url}|{title}|{extract.get('deadline_iso')}|{extract.get('amount_max_man_yen')}".encode(
+                "utf-8"
+            )
         ).hexdigest()[:16],
         "updated_at": fetched_at,
     }
@@ -659,6 +697,7 @@ def upsert(conn: sqlite3.Connection, row: dict[str, object]) -> str:
 # Failure logger
 # ---------------------------------------------------------------------------
 
+
 def append_failure(rec: dict[str, object]) -> None:
     FAILURES_PATH.parent.mkdir(parents=True, exist_ok=True)
     with FAILURES_PATH.open("a", encoding="utf-8") as fh:
@@ -668,6 +707,7 @@ def append_failure(rec: dict[str, object]) -> None:
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
+
 
 def load_seeds(only_pref: str | None = None) -> list[tuple[str, str, dict[str, object]]]:
     seeds_data = json.loads(SEED_PATH.read_text(encoding="utf-8"))
@@ -754,10 +794,17 @@ def reparse_pdf_failures(args: argparse.Namespace) -> int:
 
     fetched_at = datetime.now(timezone.utc).isoformat()
     robots = RobotsCache()
-    stats: dict[str, dict[str, int]] = defaultdict(lambda: {
-        "attempted": 0, "parsed": 0, "unparseable": 0, "robots_blocked": 0,
-        "fetch_failed": 0, "inserted": 0, "skipped": 0,
-    })
+    stats: dict[str, dict[str, int]] = defaultdict(
+        lambda: {
+            "attempted": 0,
+            "parsed": 0,
+            "unparseable": 0,
+            "robots_blocked": 0,
+            "fetch_failed": 0,
+            "inserted": 0,
+            "skipped": 0,
+        }
+    )
 
     try:
         for rec in pdf_failures:
@@ -790,10 +837,14 @@ def reparse_pdf_failures(args: argparse.Namespace) -> int:
             if not is_pdf_text_meaningful(pdf_text):
                 stats[pref]["unparseable"] += 1
                 # Re-log the honest skip-tag.
-                append_failure({
-                    "pref": pref, "stage": "child", "url": url,
-                    "disposition": "pdf_unparseable",
-                })
+                append_failure(
+                    {
+                        "pref": pref,
+                        "stage": "child",
+                        "url": url,
+                        "disposition": "pdf_unparseable",
+                    }
+                )
                 continue
             stats[pref]["parsed"] += 1
 
@@ -834,8 +885,12 @@ def reparse_pdf_failures(args: argparse.Namespace) -> int:
     # doesn't overwrite the main runlog).
     reparse_log = RUNLOG_PATH.with_suffix(".pdf_reparse.json")
     reparse_log.write_text(
-        json.dumps({pref: dict(s) for pref, s in stats.items()},
-                   ensure_ascii=False, indent=2, sort_keys=True),
+        json.dumps(
+            {pref: dict(s) for pref, s in stats.items()},
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+        ),
         encoding="utf-8",
     )
 
@@ -854,23 +909,33 @@ def reparse_pdf_failures(args: argparse.Namespace) -> int:
     print("top 10 prefectures by new rows:")
     ranked = sorted(stats.items(), key=lambda kv: kv[1]["inserted"], reverse=True)
     for pref, s in ranked[:10]:
-        print(f"  {pref:8}  inserted={s['inserted']:>3}  parsed={s['parsed']:>3}  "
-              f"unparseable={s['unparseable']}  attempt={s['attempted']}")
+        print(
+            f"  {pref:8}  inserted={s['inserted']:>3}  parsed={s['parsed']:>3}  "
+            f"unparseable={s['unparseable']}  attempt={s['attempted']}"
+        )
     return 0
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true", help="No DB writes")
-    ap.add_argument("--pref", type=str, default=None, help="Run only one prefecture (e.g. '鳥取県')")
-    ap.add_argument("--max-children-per-seed", type=int, default=40,
-                    help="Max child links to fetch per seed (default 40)")
-    ap.add_argument("--limit-seeds", type=int, default=None,
-                    help="Only process N seeds total (smoke test)")
     ap.add_argument(
-        "--reparse-pdf-failures", action="store_true",
+        "--pref", type=str, default=None, help="Run only one prefecture (e.g. '鳥取県')"
+    )
+    ap.add_argument(
+        "--max-children-per-seed",
+        type=int,
+        default=40,
+        help="Max child links to fetch per seed (default 40)",
+    )
+    ap.add_argument(
+        "--limit-seeds", type=int, default=None, help="Only process N seeds total (smoke test)"
+    )
+    ap.add_argument(
+        "--reparse-pdf-failures",
+        action="store_true",
         help="Re-walk only the previously-failed PDF children "
-             "(disposition='http_200' AND URL ending '.pdf'). Don't re-fetch HTML.",
+        "(disposition='http_200' AND URL ending '.pdf'). Don't re-fetch HTML.",
     )
     args = ap.parse_args()
     if args.reparse_pdf_failures:
@@ -890,12 +955,23 @@ def main() -> int:
     print(f"seeds total: {len(seeds)}")
 
     robots = RobotsCache()
-    runlog: dict[str, dict[str, object]] = defaultdict(lambda: {
-        "seeds": 0, "seed_ok": 0, "seed_dead": 0, "robots_blocked": 0,
-        "candidates": 0, "child_ok": 0, "child_failed": 0, "inserted": 0, "skipped": 0,
-        # PDF-walker counters (added 2026-04-29).
-        "pdf_attempted": 0, "pdf_parsed": 0, "pdf_unparseable": 0,
-    })
+    runlog: dict[str, dict[str, object]] = defaultdict(
+        lambda: {
+            "seeds": 0,
+            "seed_ok": 0,
+            "seed_dead": 0,
+            "robots_blocked": 0,
+            "candidates": 0,
+            "child_ok": 0,
+            "child_failed": 0,
+            "inserted": 0,
+            "skipped": 0,
+            # PDF-walker counters (added 2026-04-29).
+            "pdf_attempted": 0,
+            "pdf_parsed": 0,
+            "pdf_unparseable": 0,
+        }
+    )
 
     if args.dry_run:
         conn = None
@@ -916,10 +992,14 @@ def main() -> int:
             # robots
             if not robots.allowed(seed_url):
                 log["robots_blocked"] = int(log["robots_blocked"]) + 1
-                append_failure({
-                    "pref": pref, "stage": "seed", "url": seed_url,
-                    "disposition": "robots_blocked",
-                })
+                append_failure(
+                    {
+                        "pref": pref,
+                        "stage": "seed",
+                        "url": seed_url,
+                        "disposition": "robots_blocked",
+                    }
+                )
                 print(f"  [SKIP robots] {pref}: {seed_url}")
                 continue
 
@@ -929,16 +1009,22 @@ def main() -> int:
                 # seed wouldn't yield child links). PDF seeds are treated as
                 # dead at the seed stage.
                 log["seed_dead"] = int(log["seed_dead"]) + 1
-                append_failure({
-                    "pref": pref, "stage": "seed", "url": seed_url,
-                    "disposition": f"http_{status}" if status else "fetch_failed",
-                })
+                append_failure(
+                    {
+                        "pref": pref,
+                        "stage": "seed",
+                        "url": seed_url,
+                        "disposition": f"http_{status}" if status else "fetch_failed",
+                    }
+                )
                 print(f"  [DEAD seed] {pref}: HTTP {status} {seed_url}")
                 continue
             log["seed_ok"] = int(log["seed_ok"]) + 1
 
             cands = extract_program_links(
-                html, seed_url, pref,
+                html,
+                seed_url,
+                pref,
                 seed.get("kind", "subsidy_listing"),
                 seed.get("topic"),
             )
@@ -952,18 +1038,26 @@ def main() -> int:
                 # disallow `.pdf` paths via Disallow: /*.pdf even when the parent
                 # listing is allowed).
                 if not robots.allowed(cand.url):
-                    append_failure({
-                        "pref": pref, "stage": "child", "url": cand.url,
-                        "disposition": "robots_blocked",
-                    })
+                    append_failure(
+                        {
+                            "pref": pref,
+                            "stage": "child",
+                            "url": cand.url,
+                            "disposition": "robots_blocked",
+                        }
+                    )
                     continue
                 cstatus, chtml, cctype, cpdf = fetch(cand.url)
                 if cstatus != 200:
                     log["child_failed"] = int(log["child_failed"]) + 1
-                    append_failure({
-                        "pref": pref, "stage": "child", "url": cand.url,
-                        "disposition": f"http_{cstatus}" if cstatus else "fetch_failed",
-                    })
+                    append_failure(
+                        {
+                            "pref": pref,
+                            "stage": "child",
+                            "url": cand.url,
+                            "disposition": f"http_{cstatus}" if cstatus else "fetch_failed",
+                        }
+                    )
                     continue
 
                 # PDF path — extract text via pdfplumber, run same heuristics.
@@ -973,10 +1067,14 @@ def main() -> int:
                     if not is_pdf_text_meaningful(pdf_text):
                         log["pdf_unparseable"] = int(log["pdf_unparseable"]) + 1
                         log["child_failed"] = int(log["child_failed"]) + 1
-                        append_failure({
-                            "pref": pref, "stage": "child", "url": cand.url,
-                            "disposition": "pdf_unparseable",
-                        })
+                        append_failure(
+                            {
+                                "pref": pref,
+                                "stage": "child",
+                                "url": cand.url,
+                                "disposition": "pdf_unparseable",
+                            }
+                        )
                         continue
                     log["pdf_parsed"] = int(log["pdf_parsed"]) + 1
                     log["child_ok"] = int(log["child_ok"]) + 1
@@ -990,10 +1088,14 @@ def main() -> int:
                     row = build_row(cand, extract, fetched_at)
                 else:
                     log["child_failed"] = int(log["child_failed"]) + 1
-                    append_failure({
-                        "pref": pref, "stage": "child", "url": cand.url,
-                        "disposition": f"http_{cstatus}_no_body",
-                    })
+                    append_failure(
+                        {
+                            "pref": pref,
+                            "stage": "child",
+                            "url": cand.url,
+                            "disposition": f"http_{cstatus}_no_body",
+                        }
+                    )
                     continue
 
                 if args.dry_run:
@@ -1007,16 +1109,24 @@ def main() -> int:
                         log["skipped"] = int(log["skipped"]) + 1
                 except sqlite3.IntegrityError as exc:
                     log["child_failed"] = int(log["child_failed"]) + 1
-                    append_failure({
-                        "pref": pref, "stage": "upsert", "url": cand.url,
-                        "disposition": f"integrity_error:{exc}",
-                    })
+                    append_failure(
+                        {
+                            "pref": pref,
+                            "stage": "upsert",
+                            "url": cand.url,
+                            "disposition": f"integrity_error:{exc}",
+                        }
+                    )
 
             # Persist runlog after each seed's children are processed.
             RUNLOG_PATH.parent.mkdir(parents=True, exist_ok=True)
             RUNLOG_PATH.write_text(
-                json.dumps({p: dict(s) for p, s in runlog.items()},
-                           ensure_ascii=False, indent=2, sort_keys=True),
+                json.dumps(
+                    {p: dict(s) for p, s in runlog.items()},
+                    ensure_ascii=False,
+                    indent=2,
+                    sort_keys=True,
+                ),
                 encoding="utf-8",
             )
 
@@ -1057,8 +1167,10 @@ def main() -> int:
     print("top 15 by inserted:")
     ranked = sorted(runlog.items(), key=lambda kv: int(kv[1]["inserted"]), reverse=True)
     for pref, stats in ranked[:15]:
-        print(f"  {pref:8}  inserted={stats['inserted']:>4}  cand={stats['candidates']:>4}  "
-              f"child_fail={stats['child_failed']:>3}  seed_dead={stats['seed_dead']}")
+        print(
+            f"  {pref:8}  inserted={stats['inserted']:>4}  cand={stats['candidates']:>4}  "
+            f"child_fail={stats['child_failed']:>3}  seed_dead={stats['seed_dead']}"
+        )
     return 0
 
 

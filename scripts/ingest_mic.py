@@ -39,6 +39,7 @@ Run:
   .venv/bin/python scripts/ingest_mic.py
   .venv/bin/python scripts/ingest_mic.py --dry-run
 """
+
 from __future__ import annotations
 
 import argparse
@@ -201,8 +202,7 @@ SEEDS: tuple[MicSeed, ...] = (
         program_kind="subsidy",
         tier_hint="B",
         description=(
-            "ICT を活用した地域活性化の優良事例を表彰し、"
-            "地域における ICT 利活用の促進を図る事業。"
+            "ICT を活用した地域活性化の優良事例を表彰し、地域における ICT 利活用の促進を図る事業。"
         ),
         authority_name="総務省 情報流通行政局",
         target_types=("municipality", "prefecture", "private_organization"),
@@ -244,9 +244,7 @@ SEEDS: tuple[MicSeed, ...] = (
         source_url="https://www.soumu.go.jp/menu_seisaku/ictseisaku/index.html",
         program_kind="rd_grant",
         tier_hint="B",
-        description=(
-            "IoT を活用した新サービスの創出・実証・社会実装を支援する補助事業。"
-        ),
+        description=("IoT を活用した新サービスの創出・実証・社会実装を支援する補助事業。"),
         authority_name="総務省 情報流通行政局",
         target_types=("corporation",),
         funding_purpose=("IoT", "新サービス開発"),
@@ -315,6 +313,7 @@ SEEDS: tuple[MicSeed, ...] = (
 # HTTP fetch
 # ---------------------------------------------------------------------------
 
+
 def fetch(url: str, *, retries: int = 2) -> tuple[int, str]:
     last_err: Exception | None = None
     for attempt in range(retries + 1):
@@ -356,8 +355,12 @@ def parse_meta(html: str) -> tuple[str | None, str | None]:
 # Tier classification & Build row
 # ---------------------------------------------------------------------------
 
+
 def classify(seed: MicSeed, http_status: int) -> tuple[str, int, str | None]:
-    if http_status not in (200, 0):  # 0 = our retry-failure sentinel; treat as B (do not exclude curated)
+    if http_status not in (
+        200,
+        0,
+    ):  # 0 = our retry-failure sentinel; treat as B (do not exclude curated)
         return "X", 1, "dead_source_url"
     if http_status == 0:
         return "B", 0, None
@@ -375,7 +378,9 @@ def make_unified_id(slug: str) -> str:
     return f"UNI-{h}"
 
 
-def build_row(seed: MicSeed, http_status: int, meta: tuple[str | None, str | None], fetched_at: str) -> dict[str, object]:
+def build_row(
+    seed: MicSeed, http_status: int, meta: tuple[str | None, str | None], fetched_at: str
+) -> dict[str, object]:
     tier, excluded, excl_reason = classify(seed, http_status)
     enriched = {
         "_meta": {
@@ -408,7 +413,9 @@ def build_row(seed: MicSeed, http_status: int, meta: tuple[str | None, str | Non
     return {
         "unified_id": make_unified_id(seed.slug),
         "primary_name": seed.name,
-        "aliases_json": json.dumps(list(seed.aliases), ensure_ascii=False) if seed.aliases else None,
+        "aliases_json": json.dumps(list(seed.aliases), ensure_ascii=False)
+        if seed.aliases
+        else None,
         "authority_level": "national",
         "authority_name": seed.authority_name,
         "prefecture": None,
@@ -427,8 +434,12 @@ def build_row(seed: MicSeed, http_status: int, meta: tuple[str | None, str | Non
         "exclusion_reason": excl_reason,
         "crop_categories_json": None,
         "equipment_category": None,
-        "target_types_json": json.dumps(list(seed.target_types), ensure_ascii=False) if seed.target_types else None,
-        "funding_purpose_json": json.dumps(list(seed.funding_purpose), ensure_ascii=False) if seed.funding_purpose else None,
+        "target_types_json": json.dumps(list(seed.target_types), ensure_ascii=False)
+        if seed.target_types
+        else None,
+        "funding_purpose_json": json.dumps(list(seed.funding_purpose), ensure_ascii=False)
+        if seed.funding_purpose
+        else None,
         "amount_band": None,
         "application_window_json": None,
         "enriched_json": json.dumps(enriched, ensure_ascii=False),
@@ -436,7 +447,9 @@ def build_row(seed: MicSeed, http_status: int, meta: tuple[str | None, str | Non
         "source_url": seed.source_url,
         "source_fetched_at": fetched_at,
         "source_checksum": hashlib.sha1(
-            f"{seed.slug}|{seed.source_url}|{seed.name}|{seed.max_man_yen}|{','.join(seed.target_types)}".encode("utf-8")
+            f"{seed.slug}|{seed.source_url}|{seed.name}|{seed.max_man_yen}|{','.join(seed.target_types)}".encode(
+                "utf-8"
+            )
         ).hexdigest()[:16],
         "updated_at": fetched_at,
     }
@@ -487,8 +500,7 @@ WHERE programs.source_checksum IS NULL OR programs.source_checksum != excluded.s
 """
 
 FTS_INSERT_SQL = (
-    "INSERT INTO programs_fts(unified_id, primary_name, aliases, enriched_text) "
-    "VALUES (?,?,?,?)"
+    "INSERT INTO programs_fts(unified_id, primary_name, aliases, enriched_text) VALUES (?,?,?,?)"
 )
 
 
@@ -506,7 +518,12 @@ def upsert(conn: sqlite3.Connection, row: dict[str, object]) -> str:
     if action == "insert":
         conn.execute(
             FTS_INSERT_SQL,
-            (row["unified_id"], row["primary_name"], row["aliases_json"] or "", row["primary_name"]),
+            (
+                row["unified_id"],
+                row["primary_name"],
+                row["aliases_json"] or "",
+                row["primary_name"],
+            ),
         )
     return action
 

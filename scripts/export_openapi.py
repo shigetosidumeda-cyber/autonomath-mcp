@@ -533,6 +533,12 @@ def main() -> int:
         default=Path("docs/openapi/v1.json"),
         help="Output path (default: docs/openapi/v1.json).",
     )
+    parser.add_argument(
+        "--site-out",
+        type=Path,
+        default=Path("site/docs/openapi/v1.json"),
+        help="Static site mirror path (default: site/docs/openapi/v1.json).",
+    )
     args = parser.parse_args()
 
     app = _build_app(include_preview=args.include_preview)
@@ -545,6 +551,12 @@ def main() -> int:
         json.dumps(schema, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
+    if args.site_out:
+        args.site_out.parent.mkdir(parents=True, exist_ok=True)
+        args.site_out.write_text(
+            json.dumps(schema, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
 
     preview_paths = [
         p
@@ -557,6 +569,8 @@ def main() -> int:
         f"{len(schema.get('paths', {}))} paths "
         f"({len(preview_paths)} preview)"
     )
+    if args.site_out:
+        print(f"wrote {args.site_out} ({mode})")
     return 0
 
 

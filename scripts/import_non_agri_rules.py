@@ -7,6 +7,7 @@ real unified_ids (i.e., not placeholder condition tags).
 Idempotent: re-running does not duplicate because rule_id is the PRIMARY KEY
 and we use INSERT OR IGNORE.
 """
+
 from __future__ import annotations
 
 import json
@@ -27,8 +28,7 @@ def main() -> int:
         return 1
     if not MATCHED_PATH.exists():
         print(
-            f"matched file not found: {MATCHED_PATH}\n"
-            "Run scripts/match_non_agri_ids.py first.",
+            f"matched file not found: {MATCHED_PATH}\nRun scripts/match_non_agri_ids.py first.",
             file=sys.stderr,
         )
         return 1
@@ -46,16 +46,11 @@ def main() -> int:
             print("exclusion_rules table missing — run migrations first", file=sys.stderr)
             return 1
 
-        (before_count,) = conn.execute(
-            "SELECT COUNT(*) FROM exclusion_rules"
-        ).fetchone()
+        (before_count,) = conn.execute("SELECT COUNT(*) FROM exclusion_rules").fetchone()
         print(f"exclusion_rules rows before: {before_count}")
 
         # Build set of valid unified_ids for a sanity check
-        valid_uids = {
-            row[0]
-            for row in conn.execute("SELECT unified_id FROM programs").fetchall()
-        }
+        valid_uids = {row[0] for row in conn.execute("SELECT unified_id FROM programs").fetchall()}
 
         imported = 0
         skipped_low_conf = 0
@@ -141,9 +136,7 @@ def main() -> int:
 
         conn.commit()
 
-        (after_count,) = conn.execute(
-            "SELECT COUNT(*) FROM exclusion_rules"
-        ).fetchone()
+        (after_count,) = conn.execute("SELECT COUNT(*) FROM exclusion_rules").fetchone()
 
         print()
         print(f"imported:                 {imported}")

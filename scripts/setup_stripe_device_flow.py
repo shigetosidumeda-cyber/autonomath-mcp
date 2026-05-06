@@ -65,7 +65,7 @@ import sys
 try:
     import stripe
 except ImportError:
-    print("FAIL  stripe SDK not installed — run `pip install -e \".[dev]\"`", file=sys.stderr)
+    print('FAIL  stripe SDK not installed — run `pip install -e ".[dev]"`', file=sys.stderr)
     sys.exit(2)
 
 # Match billing/stripe_usage.py — pinned to 2024-11-20.acacia for legacy
@@ -146,8 +146,7 @@ def main() -> int:
         price = existing
         print(f"[setup_stripe_device_flow] REUSE existing Price: {price.id}")
     else:
-        print("[setup_stripe_device_flow] no Price with lookup_key="
-              f"{LOOKUP_KEY!r}; creating one")
+        print(f"[setup_stripe_device_flow] no Price with lookup_key={LOOKUP_KEY!r}; creating one")
         price = _create_product_and_price()
         print(f"[setup_stripe_device_flow] CREATED Price: {price.id}")
 

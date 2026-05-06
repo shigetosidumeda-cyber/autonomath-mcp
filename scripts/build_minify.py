@@ -190,7 +190,9 @@ def generate_webp() -> tuple[int, int]:
     png_total = 0
     webp_total = 0
     assets = SITE / "assets"
-    for png in sorted(list(assets.glob("*.png")) + list(assets.glob("*.jpg")) + list(assets.glob("*.jpeg"))):
+    for png in sorted(
+        list(assets.glob("*.png")) + list(assets.glob("*.jpg")) + list(assets.glob("*.jpeg"))
+    ):
         if png.name in WEBP_SKIP:
             LOG.info("webp skip (sns/icon)  %s", png.relative_to(REPO))
             continue
@@ -222,7 +224,10 @@ def generate_webp() -> tuple[int, int]:
 # JP+latin subset .woff2 files once and stash them under site/static/fonts/.
 # At runtime the docs theme then references them via @font-face below.
 FONT_DIR = SITE / "static" / "fonts"
-FONT_WEIGHTS = ["400", "700"]  # regular + bold; mkdocs-material does not need 300/i variants for body copy
+FONT_WEIGHTS = [
+    "400",
+    "700",
+]  # regular + bold; mkdocs-material does not need 300/i variants for body copy
 GOOGLE_FONTS_CSS_URL = (
     "https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@{weights}&display=swap"
 )
@@ -261,7 +266,9 @@ def fetch_noto_sans_jp() -> list[Path]:
 
     # The returned CSS contains many @font-face blocks (one per weight per
     # unicode-range subset). We download each woff2 once.
-    woff2_urls = sorted(set(re.findall(r"url\((https://fonts\.gstatic\.com/[^)]+\.woff2)\)", css_text)))
+    woff2_urls = sorted(
+        set(re.findall(r"url\((https://fonts\.gstatic\.com/[^)]+\.woff2)\)", css_text))
+    )
     LOG.info("fonts CSS lists %d woff2 subsets", len(woff2_urls))
     saved: list[Path] = []
     for url in woff2_urls:
@@ -324,7 +331,9 @@ def patch_mkdocs_html() -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--no-fonts", action="store_true", help="skip Noto Sans JP self-host (offline)")
+    parser.add_argument(
+        "--no-fonts", action="store_true", help="skip Noto Sans JP self-host (offline)"
+    )
     parser.add_argument("--no-webp", action="store_true", help="skip WebP generation")
     parser.add_argument("--verbose", "-v", action="store_true")
     args = parser.parse_args()
@@ -354,7 +363,12 @@ def main() -> int:
         LOG.info("WebP total  %7d -> %7d  (saved %d B vs PNG sources)", png_b, png_a, png_b - png_a)
     if font_files:
         font_bytes = sum(p.stat().st_size for p in font_files)
-        LOG.info("Fonts       %d woff2 (%d B) self-hosted; %d HTML files patched", len(font_files), font_bytes, html_patched)
+        LOG.info(
+            "Fonts       %d woff2 (%d B) self-hosted; %d HTML files patched",
+            len(font_files),
+            font_bytes,
+            html_patched,
+        )
     LOG.info("Total saved per first-paint (css+js): %d B", (css_b - css_a) + (js_b - js_a))
     return 0
 

@@ -47,6 +47,7 @@ Notes:
   identical schema so the email digest, dashboard, and CLI all read
   one source.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -148,8 +149,7 @@ def mau(conn: sqlite3.Connection) -> tuple[int, int]:
     anon = 0
     if has_table(conn, "anon_rate_limit"):
         row = conn.execute(
-            "SELECT COUNT(DISTINCT ip_hash) AS n "
-            "FROM anon_rate_limit WHERE date >= ?",
+            "SELECT COUNT(DISTINCT ip_hash) AS n FROM anon_rate_limit WHERE date >= ?",
             (month_start,),
         ).fetchone()
         anon = int(row["n"] or 0)
@@ -174,9 +174,7 @@ def mau(conn: sqlite3.Connection) -> tuple[int, int]:
 # whose api_key is non-revoked.  ``end`` may be NULL for "open ended"
 # (default = now).
 # ---------------------------------------------------------------------------
-def mrr_for_window(
-    conn: sqlite3.Connection, start_iso: str, end_iso: str | None = None
-) -> int:
+def mrr_for_window(conn: sqlite3.Connection, start_iso: str, end_iso: str | None = None) -> int:
     if not has_table(conn, "usage_events"):
         return 0
     has_metered = has_column(conn, "usage_events", "metered")
@@ -211,9 +209,7 @@ def mrr_wow_delta(conn: sqlite3.Connection) -> tuple[int, int, float]:
     last_start = end_now - timedelta(days=14)
     last_end = end_now - timedelta(days=7)
     this_week = mrr_for_window(conn, this_start.isoformat())
-    last_week = mrr_for_window(
-        conn, last_start.isoformat(), last_end.isoformat()
-    )
+    last_week = mrr_for_window(conn, last_start.isoformat(), last_end.isoformat())
     pct = ((this_week - last_week) / last_week * 100.0) if last_week else 0.0
     return this_week, last_week, pct
 
@@ -590,18 +586,14 @@ def render_text(payload: dict) -> str:
     lines: list[str] = []
     lines.append(f"=== jpcite ops quick stats ({payload['date_jst']}) ===")
     lines.append(
-        f"MAU: {payload['mau_total']} "
-        f"(anon {payload['mau_anon']} + paid {payload['mau_paid']})"
+        f"MAU: {payload['mau_total']} (anon {payload['mau_anon']} + paid {payload['mau_paid']})"
     )
     lines.append(f"MRR (current month): {fmt_yen(payload['mrr_yen'])}")
     delta = payload["mrr_wow_delta_yen"]
-    lines.append(
-        f"MRR WoW Δ: {fmt_yen_signed(delta)} ({payload['mrr_wow_pct']:+.1f}%)"
-    )
+    lines.append(f"MRR WoW Δ: {fmt_yen_signed(delta)} ({payload['mrr_wow_pct']:+.1f}%)")
     lines.append(f"¥/customer avg: {fmt_yen(payload['mrr_per_customer_yen'])}")
     lines.append(
-        f"Cap usage: {payload['cap_set']} customers cap-set, "
-        f"{payload['cap_reached']} cap-reached"
+        f"Cap usage: {payload['cap_set']} customers cap-set, {payload['cap_reached']} cap-reached"
     )
     lines.append(
         f"Trial signups (24h): {payload['trial_signups_24h']} new / "
@@ -609,9 +601,7 @@ def render_text(payload: dict) -> str:
     )
     lines.append(f"Churn (7d): {payload['churn_7d']} paid keys revoked")
     lines.append(f"Past-due subscriptions: {payload['past_due_count']}")
-    lines.append(
-        f"Unsynced metered events (>1h): {payload['unsynced_metered_events']}"
-    )
+    lines.append(f"Unsynced metered events (>1h): {payload['unsynced_metered_events']}")
     if payload["reconcile_drift_pct"] is not None:
         lines.append(
             f"Reconcile drift: {payload['reconcile_drift_pct']:.4f} "
@@ -642,7 +632,8 @@ def render_text(payload: dict) -> str:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--json", action="store_true",
+        "--json",
+        action="store_true",
         help="Emit JSON (matches /v1/admin/kpi schema).",
     )
     args = parser.parse_args(argv)

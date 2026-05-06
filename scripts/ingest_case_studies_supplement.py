@@ -56,6 +56,7 @@ Exit codes:
     0  success
     1  fatal (source file missing, DB locked, schema mismatch)
 """
+
 from __future__ import annotations
 
 import argparse
@@ -71,9 +72,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = REPO_ROOT / "autonomath.db"
-SOURCE_FILE = Path(
-    "/Users/shigetoumeda/Autonomath/data/adoption_index_desktop_supplement.jsonl"
-)
+SOURCE_FILE = Path("/Users/shigetoumeda/Autonomath/data/adoption_index_desktop_supplement.jsonl")
 DEFAULT_TABLE = "jpi_adoption_records"
 SOURCE_TAG_URL = "autonomath:adoption_supplement"
 SOURCE_TAG_DOMAIN = "autonomath"
@@ -119,9 +118,7 @@ def ensure_am_source(conn: sqlite3.Connection) -> None:
 
 
 def table_exists(conn: sqlite3.Connection, name: str) -> bool:
-    cur = conn.execute(
-        "SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (name,)
-    )
+    cur = conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (name,))
     return cur.fetchone() is not None
 
 
@@ -182,9 +179,7 @@ def shape_record(d: dict) -> dict | None:
         "program_name_raw": (d.get("program_name") or "").strip() or None,
         "company_name_raw": company_name,
         "round_label": (d.get("call_label") or "").strip() or None,
-        "round_number": parse_round_number(
-            d.get("call_label", ""), d.get("call_id", "")
-        ),
+        "round_number": parse_round_number(d.get("call_label", ""), d.get("call_id", "")),
         "announced_at": (d.get("announced_at") or "").strip() or None,
         "prefecture": (company.get("prefecture") or "").strip() or None,
         "municipality": (company.get("city") or "").strip() or None,
@@ -341,16 +336,26 @@ def main() -> int:
             print(f"[5/5] inserting {len(truly_new)} rows into {args.target_table}")
             conn.execute("BEGIN")
             ensure_am_source(conn)
-            fetched_at = datetime.now(UTC).isoformat(timespec="seconds").replace(
-                "+00:00", "Z"
-            )
+            fetched_at = datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
             cols = (
-                "houjin_bangou", "program_id_hint", "program_name_raw",
-                "company_name_raw", "round_label", "round_number",
-                "announced_at", "prefecture", "municipality",
-                "project_title", "industry_raw", "industry_jsic_medium",
-                "amount_granted_yen", "amount_project_total_yen",
-                "source_url", "source_pdf_page", "fetched_at", "confidence",
+                "houjin_bangou",
+                "program_id_hint",
+                "program_name_raw",
+                "company_name_raw",
+                "round_label",
+                "round_number",
+                "announced_at",
+                "prefecture",
+                "municipality",
+                "project_title",
+                "industry_raw",
+                "industry_jsic_medium",
+                "amount_granted_yen",
+                "amount_project_total_yen",
+                "source_url",
+                "source_pdf_page",
+                "fetched_at",
+                "confidence",
             )
             placeholders = ",".join("?" for _ in cols)
             sql = (
@@ -360,19 +365,33 @@ def main() -> int:
             inserted = 0
             for rec in truly_new:
                 row = (
-                    rec["houjin_bangou"], rec["program_id_hint"], rec["program_name_raw"],
-                    rec["company_name_raw"], rec["round_label"], rec["round_number"],
-                    rec["announced_at"], rec["prefecture"], rec["municipality"],
-                    rec["project_title"], rec["industry_raw"], rec["industry_jsic_medium"],
-                    rec["amount_granted_yen"], rec["amount_project_total_yen"],
-                    rec["source_url"], rec["source_pdf_page"], fetched_at, rec["confidence"],
+                    rec["houjin_bangou"],
+                    rec["program_id_hint"],
+                    rec["program_name_raw"],
+                    rec["company_name_raw"],
+                    rec["round_label"],
+                    rec["round_number"],
+                    rec["announced_at"],
+                    rec["prefecture"],
+                    rec["municipality"],
+                    rec["project_title"],
+                    rec["industry_raw"],
+                    rec["industry_jsic_medium"],
+                    rec["amount_granted_yen"],
+                    rec["amount_project_total_yen"],
+                    rec["source_url"],
+                    rec["source_pdf_page"],
+                    fetched_at,
+                    rec["confidence"],
                 )
                 try:
                     conn.execute(sql, row)
                     inserted += 1
                 except sqlite3.IntegrityError as exc:
-                    print(f"   skip integrity error: {exc} for {rec.get('company_name_raw')}",
-                          file=sys.stderr)
+                    print(
+                        f"   skip integrity error: {exc} for {rec.get('company_name_raw')}",
+                        file=sys.stderr,
+                    )
             conn.commit()
             print(f"   inserted: {inserted}")
     finally:

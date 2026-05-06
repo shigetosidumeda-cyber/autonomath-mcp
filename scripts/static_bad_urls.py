@@ -14,12 +14,8 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
-_DEFAULT_JSON_REPORTS = (
-    REPO_ROOT / "analysis_wave18" / "url_liveness_2026-04-30.json",
-)
-_DEFAULT_JSONL_REPORTS = (
-    REPO_ROOT / "data" / "autonomath" / "dead_pref_urls.jsonl",
-)
+_DEFAULT_JSON_REPORTS = (REPO_ROOT / "analysis_wave18" / "url_liveness_2026-04-30.json",)
+_DEFAULT_JSONL_REPORTS = (REPO_ROOT / "data" / "autonomath" / "dead_pref_urls.jsonl",)
 _BAD_CLASSIFICATIONS = {"hard_404", "soft_404"}
 _BAD_STATUS_CODES = {403, 404, 410}
 _BAD_DISPOSITIONS = {"dead_url", "confirmed_dead", "broken", "hard_404", "soft_404"}
@@ -37,9 +33,9 @@ def _status_code(value: object) -> int | None:
 
 
 def _is_bad_liveness_row(row: dict[str, Any]) -> bool:
-    classification = str(
-        row.get("latest_classification") or row.get("classification") or ""
-    ).strip().lower()
+    classification = (
+        str(row.get("latest_classification") or row.get("classification") or "").strip().lower()
+    )
     disposition = str(row.get("disposition") or "").strip().lower()
     status_code = _status_code(row.get("status_code") or row.get("http_status"))
 

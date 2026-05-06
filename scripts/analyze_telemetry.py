@@ -281,7 +281,9 @@ def _repl(con: duckdb.DuckDBPyConnection, row_count: int, date_span: str) -> Non
                     cols = [d[0] for d in rel.description]  # type: ignore[union-attr]
                     # Simple tabular output
                     widths = [len(c) for c in cols]
-                    str_rows = [[str(v) if v is not None else "NULL" for v in row] for row in result]
+                    str_rows = [
+                        [str(v) if v is not None else "NULL" for v in row] for row in result
+                    ]
                     for row in str_rows:
                         for i, cell in enumerate(row):
                             widths[i] = max(widths[i], len(cell))

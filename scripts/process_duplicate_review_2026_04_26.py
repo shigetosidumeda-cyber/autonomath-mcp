@@ -41,6 +41,7 @@ Usage:
     python scripts/process_duplicate_review_2026_04_26.py --dry-run
     python scripts/process_duplicate_review_2026_04_26.py --apply
 """
+
 from __future__ import annotations
 
 import argparse
@@ -128,6 +129,7 @@ def registered_domain(host: str) -> str:
     if len(labels) >= 2:
         return ".".join(labels[-2:])
     return host
+
 
 TIER_RANK = {"S": 0, "A": 1, "B": 2, "C": 3, "X": 4, None: 5, "": 5}
 
@@ -340,9 +342,7 @@ def apply_merge(
     return n
 
 
-def apply_aggregator_exclude(
-    cur: sqlite3.Cursor, uids: list[str]
-) -> int:
+def apply_aggregator_exclude(cur: sqlite3.Cursor, uids: list[str]) -> int:
     n = 0
     for uid in uids:
         cur.execute(
@@ -400,7 +400,11 @@ def main() -> int:
     print(f"Mode: {'APPLY' if args.apply else 'DRY-RUN'}")
     print(f"Pre-state: active={pre_active}, excluded={pre_excluded}")
 
-    entries = [json.loads(line) for line in QUEUE_PATH.read_text(encoding="utf-8").splitlines() if line.strip()]
+    entries = [
+        json.loads(line)
+        for line in QUEUE_PATH.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
     print(f"Queue size: {len(entries)}")
 
     # Decisions.

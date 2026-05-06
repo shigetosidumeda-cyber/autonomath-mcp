@@ -41,6 +41,7 @@ Performance budget on this 7.4 GB DB:
   Encoding cost: e5-small ~2 ms/row CPU on M-class HW, ~250s per tier ideal.
   Disk write: 384 * 4 bytes = 1.5 KB/vector + map row -> ~200 MB / 4 tiers.
 """
+
 from __future__ import annotations
 
 import json
@@ -348,6 +349,7 @@ def serialize_f32(vec) -> bytes:
     # numpy is the cleanest path; struct fallback for tiny envs.
     try:
         import numpy as np  # noqa: F401
+
         return vec.astype("float32").tobytes()
     except Exception:
         return struct.pack(f"{len(vec)}f", *vec)
@@ -365,10 +367,7 @@ def load_encoder():
     log.info("loading sentence-transformer model=%s", model_path)
     m = SentenceTransformer(model_path)
 
-    dim_fn = (
-        getattr(m, "get_embedding_dimension", None)
-        or m.get_sentence_embedding_dimension
-    )
+    dim_fn = getattr(m, "get_embedding_dimension", None) or m.get_sentence_embedding_dimension
     dim = dim_fn()
     if dim != EMBED_DIM:
         raise SystemExit(
@@ -445,9 +444,7 @@ def populate_facet(
         todo_cids.append(cid)
         todo_texts.append(text)
         if scanned % 50000 == 0:
-            log.info(
-                "[%s] scanned=%d, queued=%d", facet, scanned, len(todo_cids)
-            )
+            log.info("[%s] scanned=%d, queued=%d", facet, scanned, len(todo_cids))
 
     if not todo_cids:
         log.info("[%s] nothing to embed", facet)
@@ -492,9 +489,7 @@ def populate_facet(
         conn.rollback()
         raise
     write_dt = time.perf_counter() - t0
-    log.info(
-        "[%s] wrote %d vectors in %.1fs", facet, len(todo_cids), write_dt
-    )
+    log.info("[%s] wrote %d vectors in %.1fs", facet, len(todo_cids), write_dt)
     return scanned, len(todo_cids), len(todo_cids)
 
 
@@ -533,16 +528,12 @@ def main() -> int:
 
     # Show before-counts.
     for f in TIER_B_FACETS:
-        n = conn.execute(
-            f"SELECT COUNT(*) FROM am_vec_tier_b_{f}"
-        ).fetchone()[0]
+        n = conn.execute(f"SELECT COUNT(*) FROM am_vec_tier_b_{f}").fetchone()[0]
         log.info("before: am_vec_tier_b_%s = %d", f, n)
 
     summary: List[str] = []
     for facet, fields in FACET_FIELDS.items():
-        scanned, synthesised, inserted = populate_facet(
-            conn, encoder, facet, fields
-        )
+        scanned, synthesised, inserted = populate_facet(conn, encoder, facet, fields)
         summary.append(
             f"  {facet}: scanned={scanned} synthesised={synthesised} inserted={inserted}"
         )
@@ -552,9 +543,7 @@ def main() -> int:
     for line in summary:
         log.info(line)
     for f in TIER_B_FACETS:
-        n = conn.execute(
-            f"SELECT COUNT(*) FROM am_vec_tier_b_{f}"
-        ).fetchone()[0]
+        n = conn.execute(f"SELECT COUNT(*) FROM am_vec_tier_b_{f}").fetchone()[0]
         log.info("after:  am_vec_tier_b_%s = %d", f, n)
 
     conn.close()

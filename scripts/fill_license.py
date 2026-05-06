@@ -21,6 +21,7 @@ License vocabulary (CHECK-enforced by migration 049):
     proprietary        — JST/J-STAGE 等 配信制限
     unknown            — domain 抽出失敗 or rules 不該当
 """
+
 from __future__ import annotations
 
 import argparse
@@ -143,7 +144,9 @@ def _verify_schema(conn: sqlite3.Connection) -> None:
         raise SystemExit("am_source.source_url column not found — schema unexpected.")
 
 
-def _classify_all(conn: sqlite3.Connection, *, force: bool) -> tuple[Counter[str], list[tuple[str, int]]]:
+def _classify_all(
+    conn: sqlite3.Connection, *, force: bool
+) -> tuple[Counter[str], list[tuple[str, int]]]:
     """Walk every am_source row, return (counter, updates).
 
     updates is a list of (license_value, id) for rows that need UPDATE.
@@ -151,9 +154,7 @@ def _classify_all(conn: sqlite3.Connection, *, force: bool) -> tuple[Counter[str
     """
     counter: Counter[str] = Counter()
     updates: list[tuple[str, int]] = []
-    rows = conn.execute(
-        "SELECT id, source_url, domain, license FROM am_source"
-    )
+    rows = conn.execute("SELECT id, source_url, domain, license FROM am_source")
     for row_id, source_url, stored_domain, current_license in rows:
         domain = _extract_domain(source_url, stored_domain)
         license_value = classify_domain(domain)
@@ -204,7 +205,9 @@ def main() -> int:
     )
     grp = parser.add_mutually_exclusive_group(required=True)
     grp.add_argument("--dry-run", action="store_true", help="Print classification breakdown only.")
-    grp.add_argument("--apply", action="store_true", help="Execute UPDATEs in a single transaction.")
+    grp.add_argument(
+        "--apply", action="store_true", help="Execute UPDATEs in a single transaction."
+    )
     parser.add_argument(
         "--force",
         action="store_true",

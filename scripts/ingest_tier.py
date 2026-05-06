@@ -21,6 +21,7 @@ Exit codes:
     2   CLI / config error (bad tier, missing DB, etc.) — hard fail
     3   unexpected driver crash (every authority failed; unlikely in steady state)
 """
+
 from __future__ import annotations
 
 import argparse
@@ -182,6 +183,7 @@ class ProgramRow:
     Fetchers return these. The driver computes the checksum + compares to
     `programs.source_checksum` to decide add / update / unchanged.
     """
+
     unified_id: str
     primary_name: str
     authority_name: str
@@ -277,6 +279,7 @@ def fetch_authority(spec: AuthoritySpec, *, http: HttpClient) -> Iterator[Progra
 
 # -- per-authority stubs -----------------------------------------------------
 
+
 def _fetch_jgrants(http: HttpClient) -> Iterator[ProgramRow]:  # noqa: ARG001
     # TODO(owner=@shigeto): implement via jgrants OpenAPI (digital.go.jp)
     # Signature: yields ProgramRow per 公募. Use authority_level='national',
@@ -364,7 +367,9 @@ def upsert_program(
         )
 
     new_checksum = _compute_source_checksum(row.enriched, row.extras)
-    row.source_url or _extract_source_url(row.enriched, row.extras) if _extract_source_url else row.source_url
+    row.source_url or _extract_source_url(
+        row.enriched, row.extras
+    ) if _extract_source_url else row.source_url
 
     cur = conn.execute(
         "SELECT source_checksum FROM programs WHERE unified_id=?",
@@ -484,8 +489,9 @@ def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Tiered ingest driver for jpintel-mcp.")
     parser.add_argument("tier", choices=["daily", "weekly", "monthly"])
     parser.add_argument("--authority", default=None, help="limit to a single authority name")
-    parser.add_argument("--month-slot", type=int, default=None,
-                        help="monthly: municipality rotation slot (0..3)")
+    parser.add_argument(
+        "--month-slot", type=int, default=None, help="monthly: municipality rotation slot (0..3)"
+    )
     parser.add_argument("--dry-run", action="store_true", help="no DB writes")
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args(argv)

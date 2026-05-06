@@ -10,6 +10,7 @@ Usage:
 
 No external dependencies beyond stdlib (sqlite3, json, re, datetime, argparse).
 """
+
 from __future__ import annotations
 
 import argparse
@@ -64,8 +65,7 @@ def _fmt_sample(rows: list[tuple[str, ...]], limit: int = 10) -> list[tuple[str,
 def _md_table(headers: list[str], rows: list[tuple[Any, ...]]) -> str:
     if not rows:
         return "(no rows)"
-    out = ["| " + " | ".join(headers) + " |",
-           "|" + "|".join(["---"] * len(headers)) + "|"]
+    out = ["| " + " | ".join(headers) + " |", "|" + "|".join(["---"] * len(headers)) + "|"]
     for r in rows:
         cells = [str(c) if c is not None else "NULL" for c in r]
         cells = [c.replace("|", "\\|").replace("\n", " ") for c in cells]
@@ -177,8 +177,7 @@ def check_suspicious_source_url(conn: sqlite3.Connection) -> dict[str, Any]:
     # every row should be re-fetched from primary before a paid launch.
     # Treat noukaweb-only as WARN (known, tracked). example.com /
     # localhost / 127.0.0.1 are placeholder URLs = real defect = FAIL.
-    hostile_labels = {"localhost", "127.0.0.1", "example.com", "example.org",
-                       "test subdomain"}
+    hostile_labels = {"localhost", "127.0.0.1", "example.com", "example.org", "test subdomain"}
     hostile = sum(n for label, n in per_pattern if label in hostile_labels)
     if hostile > 0:
         status = "fail"
@@ -199,10 +198,12 @@ def check_suspicious_source_url(conn: sqlite3.Connection) -> dict[str, Any]:
 
     if all_offenders:
         body.append("\nTop 10 offenders (hostile placeholders listed first):")
-        body.append(_md_table(
-            ["pattern", "unified_id", "source_url"],
-            _fmt_sample(all_offenders, 10),
-        ))
+        body.append(
+            _md_table(
+                ["pattern", "unified_id", "source_url"],
+                _fmt_sample(all_offenders, 10),
+            )
+        )
     return {
         "title": "3. Suspicious source_url (2nd-source / test / localhost)",
         "status": status,
@@ -215,8 +216,7 @@ def check_source_fetched_staleness(conn: sqlite3.Connection) -> dict[str, Any]:
     # All rows in this snapshot share a single bulk-stamped
     # source_fetched_at, so staleness per-row is misleading. We still run the
     # check (returns 0 if all recent) and surface a note about the bulk stamp.
-    six_months_ago = (dt.datetime.now(dt.UTC) -
-                      dt.timedelta(days=183)).isoformat()
+    six_months_ago = (dt.datetime.now(dt.UTC) - dt.timedelta(days=183)).isoformat()
     per_tier = conn.execute(
         "SELECT tier, COUNT(*) FROM programs "
         "WHERE source_fetched_at IS NOT NULL AND source_fetched_at < ? "
@@ -226,9 +226,9 @@ def check_source_fetched_staleness(conn: sqlite3.Connection) -> dict[str, Any]:
     null_count = conn.execute(
         "SELECT COUNT(*) FROM programs WHERE source_fetched_at IS NULL"
     ).fetchone()[0]
-    distinct_ts = conn.execute(
-        "SELECT COUNT(DISTINCT source_fetched_at) FROM programs"
-    ).fetchone()[0]
+    distinct_ts = conn.execute("SELECT COUNT(DISTINCT source_fetched_at) FROM programs").fetchone()[
+        0
+    ]
     min_ts, max_ts = conn.execute(
         "SELECT MIN(source_fetched_at), MAX(source_fetched_at) FROM programs"
     ).fetchone()
@@ -236,8 +236,7 @@ def check_source_fetched_staleness(conn: sqlite3.Connection) -> dict[str, Any]:
     body = [
         f"Rows older than 6 months (stale): **{stale_total}**",
         f"Rows with `source_fetched_at` NULL: **{null_count}**",
-        f"Distinct `source_fetched_at` values: **{distinct_ts}**  "
-        f"(min={min_ts}, max={max_ts})",
+        f"Distinct `source_fetched_at` values: **{distinct_ts}**  (min={min_ts}, max={max_ts})",
     ]
     if per_tier:
         body.append("\n" + _md_table(["tier", "stale_count"], per_tier))
@@ -262,24 +261,20 @@ def check_source_fetched_staleness(conn: sqlite3.Connection) -> dict[str, Any]:
 
 def check_primary_name_pathologies(conn: sqlite3.Connection) -> dict[str, Any]:
     rules: list[tuple[str, str, list[Any]]] = [
-        ("empty or NULL",
-         "primary_name IS NULL OR primary_name = ''", []),
-        ("contains [制度名不明]",
-         "primary_name LIKE ?", ["%[制度名不明]%"]),
-        ("ASCII ellipsis `...`",
-         "primary_name LIKE ?", ["%...%"]),
-        ("unicode ellipsis `…`",
-         "primary_name LIKE ?", ["%…%"]),
-        ("HTML tag",
-         "primary_name REGEXP '<[a-zA-Z/][^>]*>'", None),  # handled below
+        ("empty or NULL", "primary_name IS NULL OR primary_name = ''", []),
+        ("contains [制度名不明]", "primary_name LIKE ?", ["%[制度名不明]%"]),
+        ("ASCII ellipsis `...`", "primary_name LIKE ?", ["%...%"]),
+        ("unicode ellipsis `…`", "primary_name LIKE ?", ["%…%"]),
+        ("HTML tag", "primary_name REGEXP '<[a-zA-Z/][^>]*>'", None),  # handled below
     ]
+
     # sqlite doesn't have REGEXP builtin — register python helper
     def _re_match(pattern: str, text: str | None) -> int:
         if text is None:
             return 0
         return 1 if re.search(pattern, text) else 0
-    conn.create_function("REGEXP", 2,
-                          lambda pat, val: _re_match(pat, val))
+
+    conn.create_function("REGEXP", 2, lambda pat, val: _re_match(pat, val))
 
     rows: list[tuple[str, int, list[tuple[Any, ...]]]] = []
     all_offenders: list[tuple[str, str, str]] = []
@@ -289,8 +284,7 @@ def check_primary_name_pathologies(conn: sqlite3.Connection) -> dict[str, Any]:
             n = conn.execute(q).fetchone()[0]
             if n:
                 sample = conn.execute(
-                    f"SELECT unified_id, primary_name FROM programs "
-                    f"WHERE {cond} LIMIT 10"
+                    f"SELECT unified_id, primary_name FROM programs WHERE {cond} LIMIT 10"
                 ).fetchall()
             else:
                 sample = []
@@ -299,8 +293,7 @@ def check_primary_name_pathologies(conn: sqlite3.Connection) -> dict[str, Any]:
             n = conn.execute(q, params).fetchone()[0]
             if n:
                 sample = conn.execute(
-                    f"SELECT unified_id, primary_name FROM programs "
-                    f"WHERE {cond} LIMIT 10",
+                    f"SELECT unified_id, primary_name FROM programs WHERE {cond} LIMIT 10",
                     params,
                 ).fetchall()
             else:
@@ -311,14 +304,15 @@ def check_primary_name_pathologies(conn: sqlite3.Connection) -> dict[str, Any]:
 
     total = sum(n for _, n, _ in rows)
     body = [f"Rows with name pathology: **{total}**\n"]
-    body.append(_md_table(["pattern", "count"],
-                           [(label, n) for label, n, _ in rows]))
+    body.append(_md_table(["pattern", "count"], [(label, n) for label, n, _ in rows]))
     if all_offenders:
         body.append("\nTop 10 offenders:")
-        body.append(_md_table(
-            ["pattern", "unified_id", "primary_name"],
-            _fmt_sample(all_offenders, 10),
-        ))
+        body.append(
+            _md_table(
+                ["pattern", "unified_id", "primary_name"],
+                _fmt_sample(all_offenders, 10),
+            )
+        )
     status = "ok" if total == 0 else "warn"
     return {
         "title": "5. primary_name pathologies",
@@ -342,10 +336,13 @@ def check_amount_outliers(conn: sqlite3.Connection) -> dict[str, Any]:
         "subsidy/補助金 it is almost certainly a parse bug. Loans are fine.",
     ]
     if rows:
-        body.append("\n" + _md_table(
-            ["unified_id", "primary_name", "amount_max_man_yen"],
-            _fmt_sample(rows, 10),
-        ))
+        body.append(
+            "\n"
+            + _md_table(
+                ["unified_id", "primary_name", "amount_max_man_yen"],
+                _fmt_sample(rows, 10),
+            )
+        )
     # Treat as policy — humans must decide which are loans (ok) vs
     # subsidies (fail).
     status = "policy" if count > 0 else "ok"
@@ -371,14 +368,16 @@ def check_tier_distribution(conn: sqlite3.Connection) -> dict[str, Any]:
     ]
     drift_rows: list[tuple[str, int, int, int]] = []
     all_tiers = set(actual) | set(REFERENCE_TIER)
-    for t in sorted(all_tiers, key=lambda x: (x != 'S', x)):
+    for t in sorted(all_tiers, key=lambda x: (x != "S", x)):
         a = actual.get(t, 0)
         r = REFERENCE_TIER.get(t, 0)
         drift_rows.append((t, r, a, a - r))
-    body.append(_md_table(
-        ["tier", "reference", "actual", "delta"],
-        drift_rows,
-    ))
+    body.append(
+        _md_table(
+            ["tier", "reference", "actual", "delta"],
+            drift_rows,
+        )
+    )
     # Drift is expected (memory itself flags the S=1→59 and B=1805→59
     # instability), so we treat this as policy not fail. Verdict: note the
     # drift and ask if B=3297 is the "true" distribution.
@@ -388,9 +387,9 @@ def check_tier_distribution(conn: sqlite3.Connection) -> dict[str, Any]:
         body.append(
             "\n> Note: memory-recorded snapshot is 2026-04-20 strict recalc "
             "(S=1, A=525, B=59, C=2421, X=469). Current DB "
-            f"shows S={actual.get('S',0)}, A={actual.get('A',0)}, "
-            f"B={actual.get('B',0)}, C={actual.get('C',0)}, "
-            f"X={actual.get('X',0)}. Investigate: was there a re-enrichment "
+            f"shows S={actual.get('S', 0)}, A={actual.get('A', 0)}, "
+            f"B={actual.get('B', 0)}, C={actual.get('C', 0)}, "
+            f"X={actual.get('X', 0)}. Investigate: was there a re-enrichment "
             "pass that reclassified many rows upward from C→B?"
         )
     return {
@@ -407,8 +406,7 @@ def check_enriched_json_validity(conn: sqlite3.Connection) -> dict[str, Any]:
     ).fetchone()[0]
     parse_failures: list[tuple[str, str]] = []
     for uid, blob in conn.execute(
-        "SELECT unified_id, enriched_json FROM programs "
-        "WHERE enriched_json IS NOT NULL"
+        "SELECT unified_id, enriched_json FROM programs WHERE enriched_json IS NOT NULL"
     ):
         try:
             json.loads(blob)
@@ -419,10 +417,13 @@ def check_enriched_json_validity(conn: sqlite3.Connection) -> dict[str, Any]:
         f"JSON parse failures: **{len(parse_failures)}**",
     ]
     if parse_failures:
-        body.append("\n" + _md_table(
-            ["unified_id", "error"],
-            _fmt_sample(parse_failures, 10),
-        ))
+        body.append(
+            "\n"
+            + _md_table(
+                ["unified_id", "error"],
+                _fmt_sample(parse_failures, 10),
+            )
+        )
     status = "ok" if not parse_failures else "fail"
     return {
         "title": "8. enriched_json validity",
@@ -468,22 +469,25 @@ def check_vocab_consistency(conn: sqlite3.Connection) -> dict[str, Any]:
         # Rarest 10 tokens (likely drift/typos)
         for tok, cnt in atoms.most_common()[:-11:-1]:
             all_offenders.append((col, tok, cnt))
-    body.append(_md_table(
-        ["column", "distinct_atoms", "occurrences", "language"],
-        drift_rows,
-    ))
+    body.append(
+        _md_table(
+            ["column", "distinct_atoms", "occurrences", "language"],
+            drift_rows,
+        )
+    )
     # >50 distinct atoms = drift per memory
     drift = any(distinct > 50 for _, distinct, _, _ in drift_rows)
     body.append(
-        "\n> Memory `project_registry_vocab_drift.md` threshold: "
-        "distinct > 50 per column = drift."
+        "\n> Memory `project_registry_vocab_drift.md` threshold: distinct > 50 per column = drift."
     )
     if all_offenders:
         body.append("\nTop 10 rarest tokens (likely drift/typos):")
-        body.append(_md_table(
-            ["column", "token", "count"],
-            _fmt_sample(all_offenders, 10),
-        ))
+        body.append(
+            _md_table(
+                ["column", "token", "count"],
+                _fmt_sample(all_offenders, 10),
+            )
+        )
     status = "warn" if drift else "ok"
     return {
         "title": "9. funding_purpose / target_types / crop_categories vocabulary",
@@ -513,8 +517,7 @@ def check_authority_level(conn: sqlite3.Connection) -> dict[str, Any]:
         body.append(_md_table(["value", "count"], unknown))
     if null_count:
         body.append(
-            f"\n> {null_count} rows have NULL `authority_level`. Need to be "
-            "filled before launch."
+            f"\n> {null_count} rows have NULL `authority_level`. Need to be filled before launch."
         )
     # Allowed vocab today in the code path uses English lowercase
     # (national/prefecture/municipality/financial). Report, don't auto-fail.
@@ -561,16 +564,20 @@ def check_prefecture_consistency(conn: sqlite3.Connection) -> dict[str, Any]:
     ]
     if national_with_pref:
         body.append("\nTop 10 national+prefecture:")
-        body.append(_md_table(
-            ["unified_id", "primary_name", "prefecture"],
-            national_with_pref,
-        ))
+        body.append(
+            _md_table(
+                ["unified_id", "primary_name", "prefecture"],
+                national_with_pref,
+            )
+        )
     if pref_no_pref:
         body.append("\nTop 10 prefecture+(no-prefecture):")
-        body.append(_md_table(
-            ["unified_id", "primary_name"],
-            pref_no_pref,
-        ))
+        body.append(
+            _md_table(
+                ["unified_id", "primary_name"],
+                pref_no_pref,
+            )
+        )
     # The national+prefecture case is policy (e.g. 地方創生 national programs
     # that are launched per-prefecture may legitimately have prefecture).
     # The prefecture+(no prefecture) case is a real data bug.
@@ -591,12 +598,9 @@ def check_prefecture_consistency(conn: sqlite3.Connection) -> dict[str, Any]:
 def check_orphaned_exclusion_refs(conn: sqlite3.Connection) -> dict[str, Any]:
     # Exclusion rules use short slugs for agri-MAFF programs AND UNI- ids
     # for external programs. Only flag UNI-* refs that don't resolve.
-    all_uni = {r[0] for r in conn.execute(
-        "SELECT unified_id FROM programs").fetchall()}
+    all_uni = {r[0] for r in conn.execute("SELECT unified_id FROM programs").fetchall()}
     orphans: list[tuple[str, str, str]] = []  # (rule_id, field, ref)
-    for rule_id, a, b in conn.execute(
-        "SELECT rule_id, program_a, program_b FROM exclusion_rules"
-    ):
+    for rule_id, a, b in conn.execute("SELECT rule_id, program_a, program_b FROM exclusion_rules"):
         for field, ref in (("program_a", a), ("program_b", b)):
             if ref and ref.startswith("UNI-") and ref not in all_uni:
                 orphans.append((rule_id, field, ref))
@@ -608,13 +612,11 @@ def check_orphaned_exclusion_refs(conn: sqlite3.Connection) -> dict[str, Any]:
         try:
             group = json.loads(group_blob)
         except json.JSONDecodeError:
-            orphans.append((rule_id, "program_b_group_json",
-                            "<invalid-json>"))
+            orphans.append((rule_id, "program_b_group_json", "<invalid-json>"))
             continue
         if isinstance(group, list):
             for ref in group:
-                if (isinstance(ref, str) and ref.startswith("UNI-")
-                        and ref not in all_uni):
+                if isinstance(ref, str) and ref.startswith("UNI-") and ref not in all_uni:
                     orphans.append((rule_id, "program_b_group_json", ref))
     body = [f"Orphaned UNI-* references in `exclusion_rules`: **{len(orphans)}**"]
     body.append(
@@ -623,10 +625,13 @@ def check_orphaned_exclusion_refs(conn: sqlite3.Connection) -> dict[str, Any]:
         "namespace and are not counted as orphans here."
     )
     if orphans:
-        body.append("\n" + _md_table(
-            ["rule_id", "field", "ref"],
-            _fmt_sample(orphans, 10),
-        ))
+        body.append(
+            "\n"
+            + _md_table(
+                ["rule_id", "field", "ref"],
+                _fmt_sample(orphans, 10),
+            )
+        )
     status = "ok" if not orphans else "fail"
     return {
         "title": "12. Orphaned exclusion_rules references",
@@ -665,10 +670,13 @@ def check_empty_enriched_dimensions(conn: sqlite3.Connection) -> dict[str, Any]:
         "probably a failed enrichment run.",
     ]
     if bad:
-        body.append("\n" + _md_table(
-            ["unified_id", "coverage"],
-            _fmt_sample(bad, 10),
-        ))
+        body.append(
+            "\n"
+            + _md_table(
+                ["unified_id", "coverage"],
+                _fmt_sample(bad, 10),
+            )
+        )
     status = "ok" if not bad else "warn"
     return {
         "title": "13. Empty A-J enrichment dimensions",
@@ -727,12 +735,14 @@ def run(db_path: str, report_path: str | None) -> int:
         try:
             results.append(check(conn))
         except Exception as e:  # noqa: BLE001
-            results.append({
-                "title": f"{check.__name__} (ERROR)",
-                "status": "fail",
-                "body": f"Check raised {type(e).__name__}: {e}",
-                "offenders": [],
-            })
+            results.append(
+                {
+                    "title": f"{check.__name__} (ERROR)",
+                    "status": "fail",
+                    "body": f"Check raised {type(e).__name__}: {e}",
+                    "offenders": [],
+                }
+            )
 
     wall = time.monotonic() - t0
 
@@ -742,13 +752,11 @@ def run(db_path: str, report_path: str | None) -> int:
     warns = [r for r in results if r["status"] == "warn"]
     policies = [r for r in results if r["status"] == "policy"]
     if blockers:
-        verdict_en = (
-            f"**Must fix {len(blockers)} blocker(s) before launch** — "
-            + ", ".join(r["title"] for r in blockers)
+        verdict_en = f"**Must fix {len(blockers)} blocker(s) before launch** — " + ", ".join(
+            r["title"] for r in blockers
         )
-        verdict_jp = (
-            f"**本番公開前に {len(blockers)} 件の FAIL を修正必須**: "
-            + "、".join(r["title"] for r in blockers)
+        verdict_jp = f"**本番公開前に {len(blockers)} 件の FAIL を修正必須**: " + "、".join(
+            r["title"] for r in blockers
         )
         verdict_short = f"FAIL ({len(blockers)} blockers)"
     elif status_counts["warn"] > 0 or status_counts["policy"] > 0:
@@ -763,8 +771,7 @@ def run(db_path: str, report_path: str | None) -> int:
             "ドキュメントに明示必須。"
         )
         verdict_short = (
-            f"SHIP WITH CAVEATS ({status_counts['warn']} warn, "
-            f"{status_counts['policy']} policy)"
+            f"SHIP WITH CAVEATS ({status_counts['warn']} warn, {status_counts['policy']} policy)"
         )
     else:
         verdict_en = "**OK to launch** — no issues detected."
@@ -814,31 +821,26 @@ def run(db_path: str, report_path: str | None) -> int:
     lines.append("### 集計")
     lines.append("")
     lines.append(f"- OK (問題なし): **{status_counts['ok']}** / 13 カテゴリ")
-    lines.append(f"- WARN (既知問題、非ブロッカー): "
-                 f"**{status_counts['warn']}**")
-    lines.append(f"- POLICY (人間判断が必要): "
-                 f"**{status_counts['policy']}**")
-    lines.append(f"- FAIL (本番ブロッカー): "
-                 f"**{status_counts['fail']}**")
+    lines.append(f"- WARN (既知問題、非ブロッカー): **{status_counts['warn']}**")
+    lines.append(f"- POLICY (人間判断が必要): **{status_counts['policy']}**")
+    lines.append(f"- FAIL (本番ブロッカー): **{status_counts['fail']}**")
     lines.append("")
     lines.append("### 本番公開前に対処すべき Top 3")
     lines.append("")
     if top_issues:
         for i, r in enumerate(top_issues, 1):
-            lines.append(
-                f"{i}. **[{STATUS_ICON[r['status']]}]** "
-                f"{r['title']}"
-            )
+            lines.append(f"{i}. **[{STATUS_ICON[r['status']]}]** {r['title']}")
     else:
         lines.append("(該当なし)")
     lines.append("")
     lines.append("## Category results")
     lines.append("")
-    lines.append(_md_table(
-        ["#", "check", "status"],
-        [(i + 1, r["title"], STATUS_ICON[r["status"]])
-         for i, r in enumerate(results)],
-    ))
+    lines.append(
+        _md_table(
+            ["#", "check", "status"],
+            [(i + 1, r["title"], STATUS_ICON[r["status"]]) for i, r in enumerate(results)],
+        )
+    )
     lines.append("")
     lines.append("## Details")
     lines.append("")
@@ -851,9 +853,7 @@ def run(db_path: str, report_path: str | None) -> int:
     lines.append("")
     lines.append("## 付記 / Notes")
     lines.append("")
-    lines.append(
-        "- This audit is read-only. Database was not modified."
-    )
+    lines.append("- This audit is read-only. Database was not modified.")
     lines.append(
         "- Staleness check (4) is unreliable because every row shares one "
         "bulk-stamped `source_fetched_at` (2026-04-22). Per-row fetch "
@@ -899,11 +899,12 @@ def run(db_path: str, report_path: str | None) -> int:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--db", default=DEFAULT_DB,
-                    help=f"Path to sqlite DB (default: {DEFAULT_DB})")
-    ap.add_argument("--report", default=DEFAULT_REPORT,
-                    help=f"Path to write Markdown report "
-                         f"(default: {DEFAULT_REPORT}); pass '' to skip")
+    ap.add_argument("--db", default=DEFAULT_DB, help=f"Path to sqlite DB (default: {DEFAULT_DB})")
+    ap.add_argument(
+        "--report",
+        default=DEFAULT_REPORT,
+        help=f"Path to write Markdown report (default: {DEFAULT_REPORT}); pass '' to skip",
+    )
     args = ap.parse_args()
     report = args.report if args.report else None
     return run(args.db, report)

@@ -12,6 +12,7 @@ Safety:
 
 Exit codes: 0 on success, 1 on failure.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -92,7 +93,9 @@ def run_restore(backup_path: Path, target_path: Path, yes: bool) -> None:
 
     # Decompress (if needed) into a temp space on the same filesystem as target
     # so final rename is atomic and does not cross devices.
-    with tempfile.TemporaryDirectory(prefix="jpintel-restore-", dir=str(target_path.parent)) as tmpd:
+    with tempfile.TemporaryDirectory(
+        prefix="jpintel-restore-", dir=str(target_path.parent)
+    ) as tmpd:
         work_dir = Path(tmpd)
         usable = _decompress_if_needed(backup_path, work_dir)
 
@@ -116,7 +119,12 @@ def run_restore(backup_path: Path, target_path: Path, yes: bool) -> None:
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Restore a jpintel-mcp SQLite backup")
     p.add_argument("backup", type=Path, help="Path to backup file (.db or .db.gz)")
-    p.add_argument("--target", type=Path, default=None, help="Target DB path (default: JPINTEL_DB_PATH or ./data/jpintel.db)")
+    p.add_argument(
+        "--target",
+        type=Path,
+        default=None,
+        help="Target DB path (default: JPINTEL_DB_PATH or ./data/jpintel.db)",
+    )
     p.add_argument("--yes", action="store_true", help="Confirm overwrite of target")
     return p.parse_args(argv)
 

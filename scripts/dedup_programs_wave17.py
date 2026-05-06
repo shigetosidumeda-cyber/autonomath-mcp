@@ -30,6 +30,7 @@ Usage:
     python scripts/dedup_programs_wave17.py --dry-run   # report only
     python scripts/dedup_programs_wave17.py --apply     # mutate DB
 """
+
 from __future__ import annotations
 
 import argparse
@@ -40,9 +41,7 @@ from collections import defaultdict
 from pathlib import Path
 
 DB_PATH = Path(__file__).resolve().parent.parent / "data" / "jpintel.db"
-REVIEW_QUEUE_PATH = (
-    Path(__file__).resolve().parent.parent / "data" / "duplicate_review_queue.jsonl"
-)
+REVIEW_QUEUE_PATH = Path(__file__).resolve().parent.parent / "data" / "duplicate_review_queue.jsonl"
 EXCLUSION_REASON = "duplicate_merged"  # Wave 18 coordination
 
 TIER_RANK = {"S": 0, "A": 1, "B": 2, "C": 3, "X": 4, None: 5, "": 5}
@@ -63,6 +62,7 @@ def winner_key(row: dict) -> tuple:
 
 def pick_winner(rows: list[dict]) -> dict:
     """Pick survivor: highest tier, latest source_fetched_at, smallest uid."""
+
     def key(r: dict) -> tuple:
         tier_rank = TIER_RANK.get(r.get("tier"), 99)
         # Higher fetched_at is better → invert by using negative comparison

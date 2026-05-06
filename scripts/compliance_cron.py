@@ -391,9 +391,7 @@ def _detail_url(table: str, unified_id: str) -> str:
 # ---------------------------------------------------------------------------
 
 
-def _filter_for_subscriber(
-    changes: list[Change], sub: SubscriberRow
-) -> list[Change]:
+def _filter_for_subscriber(changes: list[Change], sub: SubscriberRow) -> list[Change]:
     """Return the subset of `changes` that this subscriber cares about.
 
     Filters applied:
@@ -651,13 +649,9 @@ def run_digest(
     """Monthly digest (free subs). Covers prior calendar month (JST)."""
     jst_now = now.astimezone(JST)
     # First of this month JST:
-    first_of_this = jst_now.replace(
-        day=1, hour=0, minute=0, second=0, microsecond=0
-    )
+    first_of_this = jst_now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     last_of_prev = first_of_this - timedelta(seconds=1)
-    first_of_prev = last_of_prev.replace(
-        day=1, hour=0, minute=0, second=0, microsecond=0
-    )
+    first_of_prev = last_of_prev.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     since = first_of_prev.astimezone(UTC).isoformat()
     until = first_of_this.astimezone(UTC).isoformat()
     ym = first_of_prev.strftime("%Y-%m")
@@ -716,9 +710,7 @@ def run_digest(
             dry_run=dry_run,
         )
         if dry_run:
-            logger.info(
-                "cron.dry_run.digest subscriber=%s matches=%d", sub.id, len(matches)
-            )
+            logger.info("cron.dry_run.digest subscriber=%s matches=%d", sub.id, len(matches))
             summary["sent"] += 1 if delivered else 0
             continue
         _log_notification(

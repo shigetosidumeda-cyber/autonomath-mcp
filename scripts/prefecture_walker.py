@@ -26,6 +26,7 @@ confidence >= 0.9. Partial progress saved every 500 programs.
 Run: python scripts/prefecture_walker.py --limit 100
      python scripts/prefecture_walker.py --limit 6771
 """
+
 from __future__ import annotations
 
 import argparse
@@ -70,14 +71,51 @@ logger = logging.getLogger("prefecture_walker")
 
 PREFECTURES: list[str] = [
     "北海道",
-    "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県",
-    "茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県",
-    "新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県",
-    "岐阜県", "静岡県", "愛知県", "三重県",
-    "滋賀県", "京都府", "大阪府", "兵庫県", "奈良県", "和歌山県",
-    "鳥取県", "島根県", "岡山県", "広島県", "山口県",
-    "徳島県", "香川県", "愛媛県", "高知県",
-    "福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県",
+    "青森県",
+    "岩手県",
+    "宮城県",
+    "秋田県",
+    "山形県",
+    "福島県",
+    "茨城県",
+    "栃木県",
+    "群馬県",
+    "埼玉県",
+    "千葉県",
+    "東京都",
+    "神奈川県",
+    "新潟県",
+    "富山県",
+    "石川県",
+    "福井県",
+    "山梨県",
+    "長野県",
+    "岐阜県",
+    "静岡県",
+    "愛知県",
+    "三重県",
+    "滋賀県",
+    "京都府",
+    "大阪府",
+    "兵庫県",
+    "奈良県",
+    "和歌山県",
+    "鳥取県",
+    "島根県",
+    "岡山県",
+    "広島県",
+    "山口県",
+    "徳島県",
+    "香川県",
+    "愛媛県",
+    "高知県",
+    "福岡県",
+    "佐賀県",
+    "長崎県",
+    "熊本県",
+    "大分県",
+    "宮崎県",
+    "鹿児島県",
     "沖縄県",
 ]
 PREF_SET = set(PREFECTURES)
@@ -116,43 +154,91 @@ HIRAGANA_PREF_STEMS: dict[str, str] = {
 }
 # Anchor: stem must be at the start OR preceded by a particle like 'の'
 # so we don't pick up coincidental kana runs inside descriptions.
-HIRAGANA_PREF_RE = re.compile(
-    r"(?:^|[のをは　 ])(" + "|".join(HIRAGANA_PREF_STEMS.keys()) + r")"
-)
+HIRAGANA_PREF_RE = re.compile(r"(?:^|[のをは　 ])(" + "|".join(HIRAGANA_PREF_STEMS.keys()) + r")")
 
 # Short names (県/府/都 省略) used only when strongly anchored in url/host
 # (避: 普通名詞と衝突).
 URL_HOST_TO_PREF: dict[str, str] = {
     "hokkaido": "北海道",
-    "aomori": "青森県", "iwate": "岩手県", "miyagi": "宮城県", "akita": "秋田県",
-    "yamagata": "山形県", "fukushima": "福島県",
-    "ibaraki": "茨城県", "tochigi": "栃木県", "gunma": "群馬県",
-    "saitama": "埼玉県", "chiba": "千葉県", "tokyo": "東京都",
+    "aomori": "青森県",
+    "iwate": "岩手県",
+    "miyagi": "宮城県",
+    "akita": "秋田県",
+    "yamagata": "山形県",
+    "fukushima": "福島県",
+    "ibaraki": "茨城県",
+    "tochigi": "栃木県",
+    "gunma": "群馬県",
+    "saitama": "埼玉県",
+    "chiba": "千葉県",
+    "tokyo": "東京都",
     "kanagawa": "神奈川県",
-    "niigata": "新潟県", "toyama": "富山県", "ishikawa": "石川県",
-    "fukui": "福井県", "yamanashi": "山梨県", "nagano": "長野県",
-    "gifu": "岐阜県", "shizuoka": "静岡県", "aichi": "愛知県", "mie": "三重県",
-    "shiga": "滋賀県", "kyoto": "京都府", "osaka": "大阪府", "hyogo": "兵庫県",
-    "nara": "奈良県", "wakayama": "和歌山県",
-    "tottori": "鳥取県", "shimane": "島根県", "okayama": "岡山県",
-    "hiroshima": "広島県", "yamaguchi": "山口県",
-    "tokushima": "徳島県", "kagawa": "香川県", "ehime": "愛媛県", "kochi": "高知県",
-    "fukuoka": "福岡県", "saga": "佐賀県", "nagasaki": "長崎県",
-    "kumamoto": "熊本県", "oita": "大分県", "miyazaki": "宮崎県",
-    "kagoshima": "鹿児島県", "okinawa": "沖縄県",
+    "niigata": "新潟県",
+    "toyama": "富山県",
+    "ishikawa": "石川県",
+    "fukui": "福井県",
+    "yamanashi": "山梨県",
+    "nagano": "長野県",
+    "gifu": "岐阜県",
+    "shizuoka": "静岡県",
+    "aichi": "愛知県",
+    "mie": "三重県",
+    "shiga": "滋賀県",
+    "kyoto": "京都府",
+    "osaka": "大阪府",
+    "hyogo": "兵庫県",
+    "nara": "奈良県",
+    "wakayama": "和歌山県",
+    "tottori": "鳥取県",
+    "shimane": "島根県",
+    "okayama": "岡山県",
+    "hiroshima": "広島県",
+    "yamaguchi": "山口県",
+    "tokushima": "徳島県",
+    "kagawa": "香川県",
+    "ehime": "愛媛県",
+    "kochi": "高知県",
+    "fukuoka": "福岡県",
+    "saga": "佐賀県",
+    "nagasaki": "長崎県",
+    "kumamoto": "熊本県",
+    "oita": "大分県",
+    "miyazaki": "宮崎県",
+    "kagoshima": "鹿児島県",
+    "okinawa": "沖縄県",
     "metro": "東京都",  # www.metro.tokyo.lg.jp 系
 }
 
 NATIONAL_AUTHORITY_PATTERNS = re.compile(
-    "|".join([
-        r"農林水産省", r"経済産業省", r"厚生労働省", r"文部科学省",
-        r"国土交通省", r"環境省", r"内閣府", r"財務省", r"総務省",
-        r"金融庁", r"中小企業庁", r"国税庁", r"気象庁", r"復興庁",
-        r"デジタル庁", r"こども家庭庁",
-        r"日本政策金融公庫", r"政策金融公庫", r"中小機構", r"NEDO",
-        r"JST", r"IPA", r"JETRO",
-        r"独立行政法人", r"国立研究開発法人",
-    ])
+    "|".join(
+        [
+            r"農林水産省",
+            r"経済産業省",
+            r"厚生労働省",
+            r"文部科学省",
+            r"国土交通省",
+            r"環境省",
+            r"内閣府",
+            r"財務省",
+            r"総務省",
+            r"金融庁",
+            r"中小企業庁",
+            r"国税庁",
+            r"気象庁",
+            r"復興庁",
+            r"デジタル庁",
+            r"こども家庭庁",
+            r"日本政策金融公庫",
+            r"政策金融公庫",
+            r"中小機構",
+            r"NEDO",
+            r"JST",
+            r"IPA",
+            r"JETRO",
+            r"独立行政法人",
+            r"国立研究開発法人",
+        ]
+    )
 )
 
 # Keywords anchored near a prefecture mention when scraping HTML pass-3
@@ -281,9 +367,7 @@ def _fetch_or_cache_muni_data() -> dict[str, list[str]]:
         r.raise_for_status()
         data = r.json()
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    MUNI_CACHE_PATH.write_text(
-        json.dumps(data, ensure_ascii=False), encoding="utf-8"
-    )
+    MUNI_CACHE_PATH.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
     return data
 
 
@@ -540,7 +624,7 @@ def scan_body_for_prefecture(body: str) -> Override | None:
     # Find anchor keywords, look at +/-150 chars
     anchors = list(PASS3_ANCHOR.finditer(text))
     for a in anchors:
-        window = text[max(0, a.start() - 20): a.end() + 180]
+        window = text[max(0, a.start() - 20) : a.end() + 180]
         m = PREF_RE.search(window)
         if m:
             return Override(
@@ -552,7 +636,7 @@ def scan_body_for_prefecture(body: str) -> Override | None:
     # Fallback: first prefecture mention anywhere (weaker)
     m = PREF_RE.search(text)
     if m:
-        snippet = text[max(0, m.start() - 40): m.end() + 80]
+        snippet = text[max(0, m.start() - 40) : m.end() + 80]
         return Override(
             prefecture=m.group(0),
             source="http_scrape_weak",
@@ -630,7 +714,9 @@ def print_report(
 
     print("\n=== prefecture_walker report ===")
     print(f"programs processed : {len(touched_uids)}")
-    print(f"attached           : {len(attached)} ({len(attached)/max(1,len(touched_uids))*100:.1f}%)")
+    print(
+        f"attached           : {len(attached)} ({len(attached) / max(1, len(touched_uids)) * 100:.1f}%)"
+    )
     print(f"skipped/failed     : {len(touched_uids) - len(attached)}")
     print("\nby source:")
     for src, n in source_counts.most_common():
@@ -640,7 +726,11 @@ def print_report(
         print(f"  {bin_:12} {conf_bins[bin_]}")
     # 10 random samples
     sample = random.sample(
-        [(u, overrides[u]) for u in touched_uids if u in overrides and overrides[u].get("prefecture")],
+        [
+            (u, overrides[u])
+            for u in touched_uids
+            if u in overrides and overrides[u].get("prefecture")
+        ],
         k=min(10, len([u for u in touched_uids if u in overrides])),
     )
     print("\n10 random samples:")
@@ -675,7 +765,8 @@ def main() -> int:
     overrides = load_existing_overrides()
     logger.info(
         "loaded registry: %d programs, %d existing overrides",
-        len(programs), len(overrides),
+        len(programs),
+        len(overrides),
     )
 
     muni_to_pref = build_muni_to_prefecture(registry)

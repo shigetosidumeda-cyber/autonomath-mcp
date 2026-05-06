@@ -46,6 +46,7 @@ CLI:
 See ``tests/test_ingest_external_data.py`` for the fixture-driven
 behaviour contract.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -80,13 +81,13 @@ LOG_DIR = REPO_ROOT / "data"
 # for migration 011.
 SKIP_DIRS: frozenset[str] = frozenset(
     {
-        "01_meti_acceptance_stats",        # per-round acceptance ratios
-        "02_maff_acceptance_stats",        # per-round acceptance ratios
-        "05_adoption_additional",          # 100k+ adoption award rows
+        "01_meti_acceptance_stats",  # per-round acceptance ratios
+        "02_maff_acceptance_stats",  # per-round acceptance ratios
+        "05_adoption_additional",  # 100k+ adoption award rows
         "18_estat_industry_distribution",  # 73k estat industry rows
-        "19_ministry_qa_faq",              # ministry FAQ Q&A
-        "10_municipality_master",          # master.json / historical_raw.json (master schema, not program records)
-        "32_houjin_master",                # master.jsonl (houjin master, 数百万件クラス)
+        "19_ministry_qa_faq",  # ministry FAQ Q&A
+        "10_municipality_master",  # master.json / historical_raw.json (master schema, not program records)
+        "32_houjin_master",  # master.jsonl (houjin master, 数百万件クラス)
     }
 )
 
@@ -156,9 +157,7 @@ def _iter_jsonl(path: Path) -> list[dict[str, Any]]:
             try:
                 row = orjson.loads(raw) if orjson is not None else json.loads(raw.decode("utf-8"))
             except (ValueError, json.JSONDecodeError) as e:
-                _LOG.warning(
-                    "skip_parse_error file=%s line=%d err=%s", path.name, lineno, e
-                )
+                _LOG.warning("skip_parse_error file=%s line=%d err=%s", path.name, lineno, e)
                 continue
             if not isinstance(row, dict):
                 continue
@@ -220,6 +219,7 @@ def _ext_unified_id(name: str, *extra: Any) -> str:
     the same way, the deterministic hash means a re-ingest is
     idempotent (UPSERT on unified_id).
     """
+
     def _stringify(v: Any) -> str:
         if v is None:
             return ""
@@ -276,9 +276,7 @@ _PROGRAM_FIELDS_UPDATABLE = (
 )
 
 
-def _upsert_program(
-    conn: sqlite3.Connection, row: dict[str, Any], now: str
-) -> str:
+def _upsert_program(conn: sqlite3.Connection, row: dict[str, Any], now: str) -> str:
     """UPSERT a program row and return one of {"insert","update","skip"}.
 
     Contract:
@@ -341,21 +339,21 @@ def _upsert_program(
                 row.get("amount_max_man_yen"),
                 row.get("amount_min_man_yen"),
                 row.get("subsidy_rate"),
-                None,            # trust_level
-                ext_tier,        # tier — C for ext w/ primary source, X else
-                None,            # coverage_score
-                None,            # gap_to_tier_s_json
-                None,            # a_to_j_coverage_json
-                0,               # excluded
-                None,            # exclusion_reason
-                None,            # crop_categories_json
-                None,            # equipment_category
+                None,  # trust_level
+                ext_tier,  # tier — C for ext w/ primary source, X else
+                None,  # coverage_score
+                None,  # gap_to_tier_s_json
+                None,  # a_to_j_coverage_json
+                0,  # excluded
+                None,  # exclusion_reason
+                None,  # crop_categories_json
+                None,  # equipment_category
                 row.get("target_types_json"),
                 row.get("funding_purpose_json"),
-                None,            # amount_band
-                None,            # application_window_json
+                None,  # amount_band
+                None,  # application_window_json
                 row.get("enriched_json"),
-                None,            # source_mentions_json
+                None,  # source_mentions_json
                 row.get("source_url"),
                 row.get("source_fetched_at") or now,
                 row.get("source_checksum"),
@@ -515,9 +513,7 @@ def _upsert_and_classify(
     accurate reporting is the pre-check. Worth the extra SELECT for
     tables ingested at our scale (< 5k rows per run).
     """
-    existed = (
-        conn.execute(check_sql, check_params).fetchone() is not None
-    )
+    existed = conn.execute(check_sql, check_params).fetchone() is not None
     conn.execute(upsert_sql, upsert_params)
     return "update" if existed else "insert"
 
@@ -598,9 +594,7 @@ def _handle_prefecture_programs(
         if not name:
             counts["skip"] += 1
             continue
-        uid = _ext_unified_id(
-            name, src.get("authority_name"), src.get("prefecture")
-        )
+        uid = _ext_unified_id(name, src.get("authority_name"), src.get("prefecture"))
         row = {
             "unified_id": uid,
             "primary_name": name,
@@ -673,9 +667,7 @@ def _handle_new_program_candidates(
                 src.get("policy_background_excerpt"),
                 src.get("source_url"),
                 # source_pdf_page can be str ("56-58 (line ...)") or int
-                str(src["source_pdf_page"])
-                if src.get("source_pdf_page") is not None
-                else None,
+                str(src["source_pdf_page"]) if src.get("source_pdf_page") is not None else None,
                 src.get("fetched_at"),
                 src.get("confidence"),
             ),
@@ -684,9 +676,7 @@ def _handle_new_program_candidates(
     return counts
 
 
-def _classify_loan_security(
-    raw: str | None, excerpt: str | None
-) -> dict[str, str | None]:
+def _classify_loan_security(raw: str | None, excerpt: str | None) -> dict[str, str | None]:
     """Split Japanese 担保・保証人 phrasing into three orthogonal axes.
 
     Returns a dict with keys collateral_required / personal_guarantor_required /
@@ -723,7 +713,9 @@ def _classify_loan_security(
 
     # 代表者保証 / 経営者保証 免除 — the GL on 経営者保証 (金融庁) and the
     # 事業承継特別保証 product explicitly waive personal guarantees.
-    if any(k in text for k in ("経営者保証免除", "代表者保証免除", "経営者保証不要", "代表者保証不要")):
+    if any(
+        k in text for k in ("経営者保証免除", "代表者保証免除", "経営者保証不要", "代表者保証不要")
+    ):
         personal = "not_required"
 
     # "要相談（担保・保証）" or bare "要相談" in the security field means
@@ -753,7 +745,15 @@ def _handle_loan_programs(
     Loans are programs too. We write the rich fields to loan_programs
     and mirror a minimal program row so search surfaces still find them.
     """
-    counts = {"insert": 0, "update": 0, "skip_since": 0, "skip_banned": 0, "programs_insert": 0, "programs_update": 0, "programs_skip": 0}
+    counts = {
+        "insert": 0,
+        "update": 0,
+        "skip_since": 0,
+        "skip_banned": 0,
+        "programs_insert": 0,
+        "programs_update": 0,
+        "programs_skip": 0,
+    }
     for src in rows:
         if not _passes_since(src.get("fetched_at"), since):
             counts["skip_since"] += 1
@@ -767,9 +767,7 @@ def _handle_loan_programs(
             rate_names = ",".join(str(x) for x in rate_names)
         # Split 担保 / 個人保証人 / 第三者保証人 on ingest — keeps downstream
         # queries simple and lets a user filter by risk axis directly.
-        risk = _classify_loan_security(
-            src.get("security_required"), src.get("source_excerpt")
-        )
+        risk = _classify_loan_security(src.get("security_required"), src.get("source_excerpt"))
         verdict = _upsert_and_classify(
             conn,
             "SELECT 1 FROM loan_programs WHERE program_name = ? AND "
@@ -1066,8 +1064,7 @@ def _handle_case_law(
         court = src.get("court")
         verdict = _upsert_and_classify(
             conn,
-            "SELECT 1 FROM case_law WHERE case_number = ? AND "
-            "(court IS ? OR court = ?)",
+            "SELECT 1 FROM case_law WHERE case_number = ? AND (court IS ? OR court = ?)",
             (case_number, court, court),
             """INSERT INTO case_law (
                 case_name, court, decision_date, case_number,
@@ -1178,21 +1175,15 @@ def _make_program_handler(
             row = {
                 "unified_id": uid,
                 "primary_name": name,
-                "authority_level": (
-                    src.get(authority_level_key) if authority_level_key else None
-                ),
+                "authority_level": (src.get(authority_level_key) if authority_level_key else None),
                 "authority_name": _first_str(src.get(authority_key)) if authority_key else None,
                 "prefecture": src.get(prefecture_key) if prefecture_key else None,
-                "municipality": (
-                    src.get(municipality_key) if municipality_key else None
-                ),
+                "municipality": (src.get(municipality_key) if municipality_key else None),
                 "program_kind": kind,
                 "official_url": resolved_url,
                 "amount_max_man_yen": amount_max_man_yen,
                 "target_types_json": (
-                    _json_dump(src.get(target_types_key) or [])
-                    if target_types_key
-                    else None
+                    _json_dump(src.get(target_types_key) or []) if target_types_key else None
                 ),
                 "source_url": resolved_url,
                 "source_fetched_at": src.get("fetched_at"),
@@ -1277,9 +1268,7 @@ _AUTO_URL_KEYS: tuple[str, ...] = (
 
 def _auto_detect_handler(
     first_row: dict[str, Any],
-) -> Callable[
-    [sqlite3.Connection, list[dict[str, Any]], str, str | None], dict[str, int]
-] | None:
+) -> Callable[[sqlite3.Connection, list[dict[str, Any]], str, str | None], dict[str, int]] | None:
     """Fallback handler picker for directories without an explicit entry.
 
     Inspects the first record's keys. Returns None if the shape does not
@@ -1297,12 +1286,8 @@ def _auto_detect_handler(
     auth_key = next((k for k in _AUTO_AUTHORITY_KEYS if k in keys), None)
     if not auth_key:
         return None
-    amount_yen_key = next(
-        (k for k in _AUTO_AMOUNT_YEN_KEYS if k in keys), None
-    )
-    amount_man_yen_key = next(
-        (k for k in _AUTO_AMOUNT_MANYEN_KEYS if k in keys), None
-    )
+    amount_yen_key = next((k for k in _AUTO_AMOUNT_YEN_KEYS if k in keys), None)
+    amount_man_yen_key = next((k for k in _AUTO_AMOUNT_MANYEN_KEYS if k in keys), None)
     url_key = next((k for k in _AUTO_URL_KEYS if k in keys), "official_url")
     return _make_program_handler(
         name_key=name_key,
@@ -1569,9 +1554,7 @@ def run_ingest(
                         len(rows),
                     )
                     continue
-                _LOG.info(
-                    "auto_detected_handler dir=%s rows=%d", name, len(rows)
-                )
+                _LOG.info("auto_detected_handler dir=%s rows=%d", name, len(rows))
             _LOG.info("ingesting dir=%s rows=%d since=%s", name, len(rows), since)
             if dry_run:
                 results[name] = {"dry_run_rows": len(rows)}

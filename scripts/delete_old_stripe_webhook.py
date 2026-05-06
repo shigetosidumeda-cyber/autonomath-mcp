@@ -11,6 +11,7 @@ Usage (run inside Fly machine where STRIPE_SECRET_KEY=sk_live_... is in env):
 The OLD endpoint was created 2026-03-?? and contains the compromised signing secret
 that was previously committed to docs/_internal/stripe_tax_setup.md (since redacted).
 """
+
 from __future__ import annotations
 
 import os
@@ -32,7 +33,10 @@ def main() -> int:
     # Sanity: confirm new endpoint exists and is enabled before deleting old.
     new_ep = stripe.WebhookEndpoint.retrieve(NEW_ENDPOINT_ID)
     if new_ep.status != "enabled":
-        print(f"FAIL  new endpoint {NEW_ENDPOINT_ID} status={new_ep.status} (expected enabled). Aborting.", file=sys.stderr)
+        print(
+            f"FAIL  new endpoint {NEW_ENDPOINT_ID} status={new_ep.status} (expected enabled). Aborting.",
+            file=sys.stderr,
+        )
         return 2
     print(f"INFO  new endpoint {NEW_ENDPOINT_ID} enabled. Proceeding to delete old.", flush=True)
 

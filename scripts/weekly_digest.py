@@ -54,8 +54,7 @@ TODAY = datetime.date.today()
 def _date_range_keys(days: int = 7) -> list[str]:
     """Return R2 object keys for the last `days` days (YYYY-MM-DD.json.gz)."""
     return [
-        f"{(TODAY - datetime.timedelta(days=i)).isoformat()}.json.gz"
-        for i in range(1, days + 1)
+        f"{(TODAY - datetime.timedelta(days=i)).isoformat()}.json.gz" for i in range(1, days + 1)
     ]
 
 
@@ -252,11 +251,7 @@ def run_queries(con: duckdb.DuckDBPyConnection) -> str:
           ROUND(100.0 * COUNT(*) FILTER (WHERE status = 429) / NULLIF(COUNT(*), 0), 3) AS pct
         FROM telemetry
     """).fetchone()
-    body_429 = (
-        f"throttled={q429[0]}  total={q429[1]}  rate={q429[2]}%"
-        if q429
-        else "(no data)"
-    )
+    body_429 = f"throttled={q429[0]}  total={q429[1]}  rate={q429[2]}%" if q429 else "(no data)"
     section("Anonymous quota exhaustion (429)", body_429)
 
     # ── 8. Stripe billable request count (7-day total) ───────────────────────
@@ -267,11 +262,7 @@ def run_queries(con: duckdb.DuckDBPyConnection) -> str:
         WHERE status BETWEEN 200 AND 299
           AND (params_shape NOT LIKE '%anon%' OR params_shape IS NULL)
     """).fetchone()
-    body_bill = (
-        f"Estimated billable requests (7d): {billable[0]}"
-        if billable
-        else "(no data)"
-    )
+    body_bill = f"Estimated billable requests (7d): {billable[0]}" if billable else "(no data)"
     note = "(Note: verify exact count in Stripe Dashboard → Billing → Meters)"
     section("Stripe billable requests (7-day estimate)", f"{body_bill}\n{note}")
 

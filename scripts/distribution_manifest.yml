@@ -1,16 +1,15 @@
 # Canonical Distribution Manifest
 #
-# Source of truth for jpcite / autonomath-mcp distribution metadata. Hand-edited.
-# Referenced by:
-#   * scripts/check_distribution_manifest_drift.py  (static-file scan)
-#   * scripts/probe_runtime_distribution.py         (runtime introspection)
-#   * .github/workflows/distribution-manifest-check.yml
-#   * tests/test_distribution_manifest.py
+# Read-only source of truth for jpcite distribution metadata. This file is
+# consumed by scripts/check_distribution_manifest_drift.py and
+# scripts/probe_runtime_distribution.py. It intentionally records canonical
+# values only; downstream distribution surfaces must be edited separately.
 #
-# Bumping protocol — see scripts/distribution_manifest_README.md.
-# §28.3 + §28.10 of docs/_internal/value_maximization_plan_no_llm_api.md is the
-# upstream rationale. Any drift between this file and the manifests/READMEs/sites
-# is treated as a launch blocker per §28.9 No-Go #6.
+# Last verified on 2026-05-06 JST:
+# - Public distribution surfaces use the 139-tool standard configuration.
+# - Runtime route count is 269 and generated OpenAPI path count is 227.
+# - Pricing/free-tier language is consistent: JPY 3 per billable unit or
+#   request, tax-included JPY 3.30 where expanded, anonymous 3/day free.
 
 product: jpcite
 canonical_domains:
@@ -22,32 +21,141 @@ canonical_repo: shigetosidumeda-cyber/autonomath-mcp
 canonical_api_env:
   api_key: JPCITE_API_KEY
   api_base: JPCITE_API_BASE
-tool_count_default_gates: 126  # source: len(mcp._tool_manager.list_tools()) at boot — verified 2026-05-04 JST (Wave 24 +24 tools)
-# NOTE: older public surfaces claimed 89, 92, 93, 96, or 98 tools at default gates. Runtime now reports 120.
-# Treat stale public mentions as distribution drift.
-route_count: 248              # source: len(app.routes) at boot — verified 2026-05-04 JST (Wave 24 +25 routes)
-# NOTE: CLAUDE.md says 196 (and the Wave 21-22 changelog says 194). Runtime now reports 240.
-# Treat stale public route-count mentions as distribution drift.
-pyproject_version: "0.3.4"    # source: pyproject.toml [project] version field
-tagline_ja: "日本の制度 120-tool MCP — 補助金/法令/判例/税制/適格事業者/法人/採択事例/行政処分/入札/融資。¥3/req、anon 3/日 free"
 
-# Forbidden tokens — these strings must NOT appear in user-facing distribution
-# surfaces. The drift checker exits non-zero if it finds any, except in the
-# exclude paths listed below.
+pyproject_version: "0.3.4"
+tool_count_default_gates: 139  # runtime len(mcp._tool_manager.list_tools()), verified 2026-05-05 JST
+route_count: 269              # runtime len(app.routes), verified 2026-05-06 JST
+openapi_path_count: 227       # docs/openapi/v1.json .paths length, verified 2026-05-06 JST
+
+pricing_unit_jpy_ex_tax: 3
+pricing_unit_jpy_tax_included: "3.30"
+pricing_model: "metered billable unit; no subscription tiers, seat fees, or annual minimums"
+free_tier_requests_per_day: 3
+free_tier_scope: anonymous per IP
+free_tier_reset_timezone: JST
+tagline_ja: "日本の制度 139-tool MCP — 補助金/法令/判例/税制/適格事業者/法人/採択事例/行政処分/入札/融資。JPY 3/req、anon 3/day free"
+
+# Read-only drift checker surfaces. Pricing/free-tier scans are intentionally
+# narrower than version/tool-count scans because some public docs link to
+# pricing instead of repeating it.
+distribution_surface_paths:
+  - README.md
+  - pyproject.toml
+  - server.json
+  - site/server.json
+  - mcp-server.json
+  - mcp-server.full.json
+  - mcp-server.core.json
+  - mcp-server.composition.json
+  - site/mcp-server.json
+  - site/mcp-server.full.json
+  - dxt/manifest.json
+  - smithery.yaml
+  - docs/openapi/v1.json
+  - docs/openapi/agent.json
+  - site/docs/openapi/v1.json
+  - site/docs/openapi/agent.json
+  - site/openapi.agent.json
+  - site/llms.txt
+  - site/llms.en.txt
+  - site/en/llms.txt
+
+# Package-name scans are narrower than distribution scans. The agent-safe
+# OpenAPI specs are OpenAI Actions schemas with billing/operator operations
+# removed; they are not MCP install manifests and need not repeat the MCP
+# package identifier.
+canonical_mcp_package_surface_paths:
+  - README.md
+  - pyproject.toml
+  - server.json
+  - site/server.json
+  - mcp-server.json
+  - mcp-server.full.json
+  - mcp-server.core.json
+  - mcp-server.composition.json
+  - site/mcp-server.json
+  - site/mcp-server.full.json
+  - dxt/manifest.json
+  - smithery.yaml
+  - docs/openapi/v1.json
+  - site/llms.txt
+  - site/llms.en.txt
+  - site/en/llms.txt
+
+version_surface_paths:
+  - pyproject.toml
+  - server.json
+  - site/server.json
+  - mcp-server.json
+  - mcp-server.full.json
+  - mcp-server.core.json
+  - mcp-server.composition.json
+  - site/mcp-server.json
+  - site/mcp-server.full.json
+  - dxt/manifest.json
+  - docs/openapi/v1.json
+  - docs/openapi/agent.json
+  - site/docs/openapi/v1.json
+  - site/docs/openapi/agent.json
+  - site/openapi.agent.json
+
+tool_count_surface_paths:
+  - README.md
+  - pyproject.toml
+  - server.json
+  - site/server.json
+  - mcp-server.json
+  - mcp-server.full.json
+  - site/mcp-server.json
+  - site/mcp-server.full.json
+  - dxt/manifest.json
+  - dxt/README.md
+  - smithery.yaml
+  - docs/openapi/v1.json
+  - site/docs/openapi/v1.json
+  - docs/mcp-tools.md
+  - site/llms.txt
+  - site/llms.en.txt
+  - site/en/llms.txt
+  - site/_data/public_counts.json
+
+pricing_surface_paths:
+  - README.md
+  - pyproject.toml
+  - mcp-server.json
+  - dxt/manifest.json
+  - docs/openapi/v1.json
+  - site/llms.txt
+
+docs_paths:
+  - README.md
+  - dxt/README.md
+  - docs/openapi/v1.json
+  - docs/openapi/agent.json
+  - site/docs/openapi/v1.json
+  - site/docs/openapi/agent.json
+  - docs/mcp-tools.md
+  - site/llms.txt
+  - site/llms.en.txt
+  - site/en/llms.txt
+  - site/openapi.agent.json
+  - site/_data/public_counts.json
+  - site/pricing.html
+
+# Forbidden tokens must not appear in distribution surfaces except in excluded
+# historical/redirect paths.
 forbidden_tokens:
-  - jpintel-mcp           # legacy package name; src/jpintel_mcp/ import path is OK
-  - zeimu-kaikei.ai       # old brand domain; only OK in 301 redirect + historical context
-  - 税務会計AI             # old product name; historical context only
+  - jpintel-mcp
+  - zeimu-kaikei.ai
+  - 税務会計AI
 
-# Paths where the forbidden tokens are intentionally retained.
-# The drift checker treats matches inside these paths as historical context, not drift.
 forbidden_token_exclude_paths:
-  - CLAUDE.md                       # historical notes for Claude sessions
-  - CHANGELOG.md                    # release history
-  - HANDOFF_                        # handoff snapshots (HANDOFF_2026-04-25.md etc.)
-  - site/_redirects                 # 301 redirect surface
-  - docs/_internal/                 # internal planning docs may discuss drift itself
-  - analysis_wave18/                # audits and analyses
-  - analysis_value/                 # internal strategy notes
-  - _archive/                       # archived files
-  - site/llms.txt                   # carries explicit "formerly" disclosure for SEO migration
+  - CLAUDE.md
+  - CHANGELOG.md
+  - HANDOFF_
+  - site/_redirects
+  - docs/_internal/
+  - analysis_wave18/
+  - analysis_value/
+  - _archive/
+  - site/llms.txt

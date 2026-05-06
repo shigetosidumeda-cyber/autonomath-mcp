@@ -20,6 +20,7 @@ Writes:
   research/non_agri_matched.json     — draft rules with unified_id + confidence
   research/non_agri_unmatched.md     — report of unmatched placeholders
 """
+
 from __future__ import annotations
 
 import difflib
@@ -120,22 +121,48 @@ PLACEHOLDER_TO_KEYWORD: dict[str, list[str]] = {
     "it-hojo-2025-tsujyo": [r"^IT導入補助金$", r"IT導入補助金", r"デジタル化・AI導入補助金"],
     "it-hojo-2024-tsujyo": [r"IT導入補助金2024", r"^IT導入補助金$", r"IT導入補助金"],
     "it-hojo-2024-fukususha": [r"IT導入補助金2024.*複数", r"IT導入補助金2024", r"IT導入補助金"],
-    "it-hojo-cybersec-otasuke": [r"IT導入補助金2024（セキュリティ対策推進枠）", r"IT導入補助金.*セキュリティ"],
+    "it-hojo-cybersec-otasuke": [
+        r"IT導入補助金2024（セキュリティ対策推進枠）",
+        r"IT導入補助金.*セキュリティ",
+    ],
     # Monozukuri
-    "mono-hojo-22-ji": [r"ものづくり・商業・サービス生産性向上促進補助金$", r"^ものづくり補助金$", r"^ものづくり補助金（一般型）$", r"ものづくり補助金"],
-    "mono-hojo": [r"ものづくり・商業・サービス生産性向上促進補助金$", r"^ものづくり補助金$", r"ものづくり補助金"],
+    "mono-hojo-22-ji": [
+        r"ものづくり・商業・サービス生産性向上促進補助金$",
+        r"^ものづくり補助金$",
+        r"^ものづくり補助金（一般型）$",
+        r"ものづくり補助金",
+    ],
+    "mono-hojo": [
+        r"ものづくり・商業・サービス生産性向上促進補助金$",
+        r"^ものづくり補助金$",
+        r"ものづくり補助金",
+    ],
     # Saikouchiku
-    "jigyo-saikouchiku-13": [r"^事業再構築補助金$", r"事業再構築補助金（成長枠）", r"事業再構築補助金"],
+    "jigyo-saikouchiku-13": [
+        r"^事業再構築補助金$",
+        r"事業再構築補助金（成長枠）",
+        r"事業再構築補助金",
+    ],
     "jigyo-saikouchiku": [r"^事業再構築補助金$", r"事業再構築補助金"],
     # Shoryokuka
     "shoryokuka-ippan-5": [r"中小企業省力化投資補助金（一般型）", r"中小企業省力化投資補助金"],
     "shoryokuka-ippan": [r"中小企業省力化投資補助金（一般型）", r"中小企業省力化投資補助金"],
     # Shinjigyou
-    "shinjigyou-shinshutsu-2": [r"中小企業新事業進出補助金", r"^新事業進出補助金$", r"新事業進出補助金"],
+    "shinjigyou-shinshutsu-2": [
+        r"中小企業新事業進出補助金",
+        r"^新事業進出補助金$",
+        r"新事業進出補助金",
+    ],
     "shinjigyou-shinshutsu": [r"中小企業新事業進出補助金", r"新事業進出補助金"],
     # Jizokuka
-    "jizokuka-ippan-tsujyo-19": [r"小規模事業者持続化補助金（一般型 通常枠）", r"小規模事業者持続化補助金"],
-    "jizokuka-ippan-tsujyo": [r"小規模事業者持続化補助金（一般型 通常枠）", r"小規模事業者持続化補助金"],
+    "jizokuka-ippan-tsujyo-19": [
+        r"小規模事業者持続化補助金（一般型 通常枠）",
+        r"小規模事業者持続化補助金",
+    ],
+    "jizokuka-ippan-tsujyo": [
+        r"小規模事業者持続化補助金（一般型 通常枠）",
+        r"小規模事業者持続化補助金",
+    ],
     "jizokuka-ippan": [r"小規模事業者持続化補助金（一般型 通常枠）", r"小規模事業者持続化補助金"],
     "jizokuka-sogyo-3": [r"小規模事業者持続化補助金"],
     "jizokuka-sogyo": [r"小規模事業者持続化補助金"],
@@ -149,14 +176,32 @@ PLACEHOLDER_TO_KEYWORD: dict[str, list[str]] = {
     "koyouchousei-kyuugyou": [r"^雇用調整助成金$"],
     "career-up-seisyain": [r"キャリアアップ助成金（正社員化コース）", r"^キャリアアップ助成金$"],
     "career-up-shougai-shuusyokusha": [r"キャリアアップ助成金（障害者正社員化コース）"],
-    "ryouritsu-shusseji-dai1shu": [r"両立支援等助成金（出生時両立支援コース）", r"両立支援等助成金"],
-    "ryouritsu-shusseji-dai2shu": [r"両立支援等助成金（出生時両立支援コース）", r"両立支援等助成金"],
-    "ryouritsu-ikuji-kyugyou-shien": [r"両立支援等助成金（育児休業等支援コース）", r"両立支援等助成金"],
-    "ryouritsu-ikukyu-shutokuji": [r"両立支援等助成金（育児休業等支援コース）", r"両立支援等助成金"],
+    "ryouritsu-shusseji-dai1shu": [
+        r"両立支援等助成金（出生時両立支援コース）",
+        r"両立支援等助成金",
+    ],
+    "ryouritsu-shusseji-dai2shu": [
+        r"両立支援等助成金（出生時両立支援コース）",
+        r"両立支援等助成金",
+    ],
+    "ryouritsu-ikuji-kyugyou-shien": [
+        r"両立支援等助成金（育児休業等支援コース）",
+        r"両立支援等助成金",
+    ],
+    "ryouritsu-ikukyu-shutokuji": [
+        r"両立支援等助成金（育児休業等支援コース）",
+        r"両立支援等助成金",
+    ],
     "ryouritsu-jujuan-sentakuken-seido": [r"両立支援等助成金"],
     "sangyo-koyou-antei-sangyourenkei": [r"産業雇用安定助成金（産業連携人材確保等支援コース）"],
-    "trial-koyou-ippan": [r"トライアル雇用助成金（一般トライアルコース）", r"^トライアル雇用助成金$"],
-    "tokuteikyuushokusha-koyou-kaihatsu": [r"^特定求職者雇用開発助成金$", r"特定求職者雇用開発助成金"],
+    "trial-koyou-ippan": [
+        r"トライアル雇用助成金（一般トライアルコース）",
+        r"^トライアル雇用助成金$",
+    ],
+    "tokuteikyuushokusha-koyou-kaihatsu": [
+        r"^特定求職者雇用開発助成金$",
+        r"特定求職者雇用開発助成金",
+    ],
     "gyoumu-kaizen-r8": [r"^業務改善助成金$"],
     # Tax
     "chusho-kyoka-zeisei": [r"^中小企業経営強化税制$"],
@@ -179,9 +224,7 @@ def normalize(s: str) -> str:
 
 
 def load_programs(conn: sqlite3.Connection) -> list[dict[str, Any]]:
-    rows = conn.execute(
-        "SELECT unified_id, primary_name, aliases_json FROM programs"
-    ).fetchall()
+    rows = conn.execute("SELECT unified_id, primary_name, aliases_json FROM programs").fetchall()
     programs: list[dict[str, Any]] = []
     for uid, name, aliases_json in rows:
         aliases: list[str] = []
@@ -285,12 +328,8 @@ def main() -> int:
             a_placeholder = rule.get("program_a") or ""
             b_placeholder = rule.get("program_b") or ""
 
-            a_uid, a_conf, a_method = match_placeholder(
-                a_placeholder, programs, unified_id_set
-            )
-            b_uid, b_conf, b_method = match_placeholder(
-                b_placeholder, programs, unified_id_set
-            )
+            a_uid, a_conf, a_method = match_placeholder(a_placeholder, programs, unified_id_set)
+            b_uid, b_conf, b_method = match_placeholder(b_placeholder, programs, unified_id_set)
 
             # Replace IDs if a confident match exists; otherwise keep the placeholder.
             new_rule["program_a"] = a_uid if (a_conf >= CONFIDENCE_THRESHOLD) else a_placeholder
@@ -328,7 +367,10 @@ def main() -> int:
                     },
                 )
                 entry["rules"].append(
-                    {"rule_id": rule.get("rule_id", "?"), "desc": (rule.get("description") or "")[:160]}
+                    {
+                        "rule_id": rule.get("rule_id", "?"),
+                        "desc": (rule.get("description") or "")[:160],
+                    }
                 )
                 if method == "condition" and entry["skip_reason"] is None:
                     entry["skip_reason"] = "condition_state"
@@ -357,13 +399,13 @@ def main() -> int:
             reason = entry["skip_reason"] or "no_match"
             first = entry["rules"][0] if entry["rules"] else {"rule_id": "?", "desc": ""}
             desc_clean = (first["desc"] or "").replace("|", "/").replace("\n", " ")
-            lines.append(
-                f"| `{ph}` | {reason} | `{first['rule_id']}` | {desc_clean} |"
-            )
+            lines.append(f"| `{ph}` | {reason} | `{first['rule_id']}` | {desc_clean} |")
         lines.append("")
         lines.append("## Per-rule outcome summary")
         lines.append("")
-        lines.append(f"- Fully matched (both program_a AND program_b >= {CONFIDENCE_THRESHOLD}): **{per_rule_stats['fully_matched']}**")
+        lines.append(
+            f"- Fully matched (both program_a AND program_b >= {CONFIDENCE_THRESHOLD}): **{per_rule_stats['fully_matched']}**"
+        )
         lines.append(f"- Partially matched (one side resolved): **{per_rule_stats['partial']}**")
         lines.append(f"- Neither side matched: **{per_rule_stats['none']}**")
         lines.append("")

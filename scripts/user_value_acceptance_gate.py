@@ -14,6 +14,7 @@ value plan:
 It is not a replacement for the full test suite. Treat it as a fast
 post-implementation acceptance screen before deeper pytest/smoke/deploy checks.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -399,7 +400,9 @@ def check_deploy_safety() -> CheckResult:
     if "R2 secrets not fully configured" not in backup or "exit 1" not in backup:
         evidence.append(".github/workflows/nightly-backup.yml missing explicit R2 fail-closed exit")
     if "::warning::R2" in backup or "silently lost off-site DR" not in backup:
-        evidence.append(".github/workflows/nightly-backup.yml may still carry old R2 warning semantics")
+        evidence.append(
+            ".github/workflows/nightly-backup.yml may still carry old R2 warning semantics"
+        )
 
     if evidence:
         return _fail(

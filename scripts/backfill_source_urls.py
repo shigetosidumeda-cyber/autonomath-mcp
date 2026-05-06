@@ -10,6 +10,7 @@ name in the page title or H1 before being added here.
 Banned aggregators (never use): noukaweb, hojyokin-portal, biz.stayway,
 hojyokin.jp, creabiz, yorisoi.
 """
+
 import sqlite3
 from datetime import datetime, timezone
 

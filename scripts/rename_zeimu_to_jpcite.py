@@ -21,6 +21,7 @@ Don't touch:
 - Test files explicitly testing CORS for the legacy origin (handled in a
   separate test-suite pass).
 """
+
 from __future__ import annotations
 
 import sys
@@ -69,7 +70,8 @@ CORS_NEW_BLOCK = (
 def main() -> int:
     targets = sorted(SRC.rglob("*"))
     py_targets = [
-        p for p in targets
+        p
+        for p in targets
         if p.is_file()
         and p.suffix in {".py", ".html", ".txt"}
         and "zeimu-kaikei" in p.read_text(encoding="utf-8", errors="ignore")
@@ -114,7 +116,9 @@ def main() -> int:
             CORS_FILE.write_text(new_cors, encoding="utf-8")
             print(f"[CORS] Added 3 legacy zeimu-kaikei origins to {CORS_FILE.relative_to(ROOT)}")
     else:
-        print(f"[CORS][WARN] Anchor not found in {CORS_FILE.relative_to(ROOT)} — manual review required")
+        print(
+            f"[CORS][WARN] Anchor not found in {CORS_FILE.relative_to(ROOT)} — manual review required"
+        )
 
     print(f"\nTotal files changed: {len(files_changed)}")
     print(f"Total URL replacements: {total_replacements}")

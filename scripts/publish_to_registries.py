@@ -135,9 +135,7 @@ def check_dxt(repo: Path) -> tuple[bool, str]:
         return False, f"dxt/manifest.json invalid JSON: {e}"
     bundle = repo / "site" / "downloads" / "autonomath-mcp.mcpb"
     if not bundle.exists():
-        return False, (
-            f".mcpb bundle missing at {bundle} — run `bash scripts/build_mcpb.sh`"
-        )
+        return False, (f".mcpb bundle missing at {bundle} — run `bash scripts/build_mcpb.sh`")
     return True, f"dxt manifest + bundle ok ({bundle.stat().st_size} bytes)"
 
 
@@ -274,7 +272,9 @@ def main(argv: list[str] | None = None) -> int:
 
     for s in SURFACES:
         if s.id in skip:
-            results.append({"id": s.id, "title": s.title, "status": "skipped", "detail": "user-requested skip"})
+            results.append(
+                {"id": s.id, "title": s.title, "status": "skipped", "detail": "user-requested skip"}
+            )
             continue
         try:
             ok, detail = s.check(repo)
@@ -282,21 +282,27 @@ def main(argv: list[str] | None = None) -> int:
             ok, detail = False, f"exception: {exc!r}"
         if not ok and not s.is_no_op:
             overall_ok = False
-        results.append({
-            "id": s.id,
-            "title": s.title,
-            "status": "ok" if ok else ("warn" if s.is_no_op else "fail"),
-            "detail": detail,
-            "notes": s.notes,
-        })
+        results.append(
+            {
+                "id": s.id,
+                "title": s.title,
+                "status": "ok" if ok else ("warn" if s.is_no_op else "fail"),
+                "detail": detail,
+                "notes": s.notes,
+            }
+        )
 
     if args.json:
-        print(json.dumps({"overall_ok": overall_ok, "results": results}, ensure_ascii=False, indent=2))
+        print(
+            json.dumps({"overall_ok": overall_ok, "results": results}, ensure_ascii=False, indent=2)
+        )
     else:
         print(f"AutonoMath registry smoke — repo={repo}")
         print("=" * 72)
         for r in results:
-            marker = {"ok": "[ok]", "warn": "[warn]", "fail": "[FAIL]", "skipped": "[skip]"}[str(r["status"])]
+            marker = {"ok": "[ok]", "warn": "[warn]", "fail": "[FAIL]", "skipped": "[skip]"}[
+                str(r["status"])
+            ]
             print(f"{marker:<7} {r['title']}")
             print(f"        {r['detail']}")
             if r["notes"]:

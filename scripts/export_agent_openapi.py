@@ -36,13 +36,21 @@ def main() -> None:
         default=Path("site/docs/openapi/agent.json"),
         help="Static site output path.",
     )
+    parser.add_argument(
+        "--site-root-out",
+        type=Path,
+        default=Path("site/openapi.agent.json"),
+        help="Static site root alias output path.",
+    )
     args = parser.parse_args()
 
     app = create_app()
     schema = build_agent_openapi_schema(app.openapi())
     _write(args.out, schema)
+    _write(args.site_root_out, schema)
     _write(args.site_out, schema)
     print(f"[ok] wrote {args.out}")
+    print(f"[ok] wrote {args.site_root_out}")
     print(f"[ok] wrote {args.site_out}")
 
 

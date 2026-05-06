@@ -39,7 +39,13 @@ _REGISTRY = {
         "live": "/data/jpintel.db",
         "prefix": "jpintel/",
         "name_prefix": "jpintel-",
-        "canary_tables": ["api_keys", "subscribers", "anon_rate_limit", "usage_events", "stripe_webhook_events"],
+        "canary_tables": [
+            "api_keys",
+            "subscribers",
+            "anon_rate_limit",
+            "usage_events",
+            "stripe_webhook_events",
+        ],
     },
     "autonomath": {
         "live": "/data/autonomath.db",
@@ -74,7 +80,9 @@ def _capture_sentry(level: str, message: str, **extra: object) -> None:
     try:
         import sentry_sdk
 
-        sentry_sdk.capture_message(message, level=level, scope=lambda s: [s.set_extra(k, v) for k, v in extra.items()])
+        sentry_sdk.capture_message(
+            message, level=level, scope=lambda s: [s.set_extra(k, v) for k, v in extra.items()]
+        )
     except Exception:
         pass
 
@@ -82,7 +90,11 @@ def _capture_sentry(level: str, message: str, **extra: object) -> None:
 def _check_one(db_id: str, cfg: dict, work: Path) -> int:
     bucket = os.environ.get("R2_BUCKET") or os.environ.get("JPINTEL_BACKUP_BUCKET")
     items = list_keys(cfg["prefix"], bucket=bucket)
-    items = [it for it in items if Path(it[0]).name.startswith(cfg["name_prefix"]) and it[0].endswith(".db.gz")]
+    items = [
+        it
+        for it in items
+        if Path(it[0]).name.startswith(cfg["name_prefix"]) and it[0].endswith(".db.gz")
+    ]
     if not items:
         _LOG.error("no_backups db=%s prefix=%s", db_id, cfg["prefix"])
         _capture_sentry("error", f"backup integrity: no backups for {db_id}", prefix=cfg["prefix"])
@@ -105,7 +117,9 @@ def _check_one(db_id: str, cfg: dict, work: Path) -> int:
     actual = _sha256(gz)
     if expected != actual:
         _LOG.error("sha_mismatch db=%s expected=%s actual=%s", db_id, expected, actual)
-        _capture_sentry("error", f"backup integrity: sha mismatch {db_id}", expected=expected, actual=actual)
+        _capture_sentry(
+            "error", f"backup integrity: sha mismatch {db_id}", expected=expected, actual=actual
+        )
         return 3
 
     decomp = work / Path(gz.stem)
@@ -132,8 +146,20 @@ def _check_one(db_id: str, cfg: dict, work: Path) -> int:
     if live_size > 0:
         ratio = backup_size / live_size
         if ratio < 0.5 or ratio > 2.0:
-            _LOG.error("size_drift db=%s backup=%d live=%d ratio=%.2f", db_id, backup_size, live_size, ratio)
-            _capture_sentry("warning", f"backup integrity: size drift {db_id}", backup=backup_size, live=live_size, ratio=ratio)
+            _LOG.error(
+                "size_drift db=%s backup=%d live=%d ratio=%.2f",
+                db_id,
+                backup_size,
+                live_size,
+                ratio,
+            )
+            _capture_sentry(
+                "warning",
+                f"backup integrity: size drift {db_id}",
+                backup=backup_size,
+                live=live_size,
+                ratio=ratio,
+            )
             return 5
 
     mismatches: list[tuple[str, int, int]] = []
@@ -149,10 +175,18 @@ def _check_one(db_id: str, cfg: dict, work: Path) -> int:
 
     if mismatches:
         _LOG.error("row_count_mismatch db=%s mismatches=%s", db_id, mismatches)
-        _capture_sentry("warning", f"backup integrity: row count mismatch {db_id}", mismatches=mismatches)
+        _capture_sentry(
+            "warning", f"backup integrity: row count mismatch {db_id}", mismatches=mismatches
+        )
         return 4
 
-    _LOG.info("ok db=%s backup_size=%d live_size=%d tables=%d", db_id, backup_size, live_size, len(cfg["canary_tables"]))
+    _LOG.info(
+        "ok db=%s backup_size=%d live_size=%d tables=%d",
+        db_id,
+        backup_size,
+        live_size,
+        len(cfg["canary_tables"]),
+    )
     return 0
 
 
@@ -163,7 +197,11 @@ def main() -> int:
         try:
             import sentry_sdk
 
-            sentry_sdk.init(dsn=dsn, traces_sample_rate=0.0, environment=os.environ.get("SENTRY_ENVIRONMENT", "production"))
+            sentry_sdk.init(
+                dsn=dsn,
+                traces_sample_rate=0.0,
+                environment=os.environ.get("SENTRY_ENVIRONMENT", "production"),
+            )
         except Exception:
             pass
 

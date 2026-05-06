@@ -28,6 +28,7 @@ Exit codes:
   0  success (even if some hosts failed — fail-open)
   2  catastrophic config error
 """
+
 from __future__ import annotations
 
 import argparse
@@ -437,8 +438,12 @@ def _diff_and_classify(prev: str, curr: str, target: Target) -> DiffResult:
             n=2,
         )
     )
-    added = "\n".join(line[1:] for line in diff_lines if line.startswith("+") and not line.startswith("+++"))
-    added_keywords = [k for k in HIGH_KEYWORDS if k.lower() in added.lower() and k.lower() not in prev.lower()]
+    added = "\n".join(
+        line[1:] for line in diff_lines if line.startswith("+") and not line.startswith("+++")
+    )
+    added_keywords = [
+        k for k in HIGH_KEYWORDS if k.lower() in added.lower() and k.lower() not in prev.lower()
+    ]
     # price heuristic
     has_price = bool(re.search(r"¥\s?\d[\d,]*", added))
     severity = "LOW"
@@ -501,7 +506,9 @@ def _slack_notify(webhook: str, diffs: list[DiffResult]) -> None:
     high = [d for d in diffs if d.changed and d.severity == "HIGH"]
     if not high:
         return
-    blocks = [{"type": "header", "text": {"type": "plain_text", "text": "jpintel-mcp competitive watch"}}]
+    blocks = [
+        {"type": "header", "text": {"type": "plain_text", "text": "jpintel-mcp competitive watch"}}
+    ]
     for d in high[:10]:
         text = f"*{d.target.name}* ({d.target.segment})\n{d.target.url}\n"
         if d.added_keywords:

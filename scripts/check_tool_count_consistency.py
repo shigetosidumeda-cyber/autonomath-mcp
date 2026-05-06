@@ -129,9 +129,7 @@ def runtime_tool_count() -> int:
         line = line.strip()
         if line.isdigit():
             return int(line)
-    sys.stderr.write(
-        f"[check_tool_count_consistency] no integer in output:\n{out.stdout}\n"
-    )
+    sys.stderr.write(f"[check_tool_count_consistency] no integer in output:\n{out.stdout}\n")
     sys.exit(2)
 
 

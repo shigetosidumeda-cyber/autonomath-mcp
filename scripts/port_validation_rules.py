@@ -30,6 +30,7 @@ Usage::
 Environment:
     JPINTEL_DB_PATH overrides the default ``data/jpintel.db``.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -56,11 +57,11 @@ PREDICATE_PREFIX = "autonomath.intake."
 class Candidate:
     """One generic check_* predicate to register as a validation rule."""
 
-    function_name: str          # check_weekly_work_hours_over -> registered as predicate_ref tail
-    description: str            # 1-line English summary for operator visibility
-    rationale_ja: str           # why it qualifies as 汎用
-    severity: str               # 'info' | 'warning' | 'critical'
-    message_ja: str             # operator-visible message at violation
+    function_name: str  # check_weekly_work_hours_over -> registered as predicate_ref tail
+    description: str  # 1-line English summary for operator visibility
+    rationale_ja: str  # why it qualifies as 汎用
+    severity: str  # 'info' | 'warning' | 'critical'
+    message_ja: str  # operator-visible message at violation
 
 
 # ---------------------------------------------------------------------------
@@ -78,9 +79,7 @@ CANDIDATES: list[Candidate] = [
             "training_hours_per_year > 8760 (24 hours x 365 days) is physically "
             "impossible regardless of industry."
         ),
-        rationale_ja=(
-            "24×365=8760 のハード上限のみ。業種・stage・品目に一切依存しない。"
-        ),
+        rationale_ja=("24×365=8760 のハード上限のみ。業種・stage・品目に一切依存しない。"),
         severity="critical",
         message_ja="年間研修時間が 8760 時間 (24 時間 × 365 日) を超過しており物理的に不可能です。",
     ),
@@ -118,8 +117,7 @@ CANDIDATES: list[Candidate] = [
             "Pure date arithmetic."
         ),
         rationale_ja=(
-            "生年月日から計算した年齢と自己申告年齢の整合性チェック。"
-            "純粋な日付算術のみ。"
+            "生年月日から計算した年齢と自己申告年齢の整合性チェック。純粋な日付算術のみ。"
         ),
         severity="info",
         message_ja="生年月日から計算した年齢と入力された年齢が 1 年以上ずれています。",
@@ -208,7 +206,12 @@ def _ensure_source(conn: sqlite3.Connection) -> int:
     )
     cur = conn.execute(sql, insert_vals)
     sid = int(cur.lastrowid or 0)
-    _LOG.info("source_inserted name=%s id=%s license=%s", SOURCE_NAME, sid, SOURCE_LICENSE if has_license else "(no column)")
+    _LOG.info(
+        "source_inserted name=%s id=%s license=%s",
+        SOURCE_NAME,
+        sid,
+        SOURCE_LICENSE if has_license else "(no column)",
+    )
     return sid
 
 
@@ -255,7 +258,9 @@ def _insert_rule(
     rid = int(cur.lastrowid or 0)
     _LOG.info(
         "rule_inserted rule_id=%s predicate_ref=%s severity=%s",
-        rid, predicate_ref, candidate.severity,
+        rid,
+        predicate_ref,
+        candidate.severity,
     )
     return rid
 
@@ -266,8 +271,10 @@ def _insert_rule(
 
 
 def _print_dry_run() -> None:
-    print(f"\nCandidates ({len(CANDIDATES)}) — generic predicates from "
-          f"autonomath.intake_consistency_rules:\n")
+    print(
+        f"\nCandidates ({len(CANDIDATES)}) — generic predicates from "
+        f"autonomath.intake_consistency_rules:\n"
+    )
     for i, c in enumerate(CANDIDATES, 1):
         print(f"[{i}] {c.function_name}")
         print(f"    predicate_ref : {PREDICATE_PREFIX}{c.function_name}")
@@ -303,7 +310,11 @@ def _do_apply(db_path: Path) -> None:
             raise
         _LOG.info(
             "apply_done db=%s source_id=%s inserted=%d skipped=%d total=%d",
-            db_path, source_id, inserted, skipped, len(CANDIDATES),
+            db_path,
+            source_id,
+            inserted,
+            skipped,
+            len(CANDIDATES),
         )
         print(f"\nApplied to {db_path}")
         print(f"  source_id : {source_id}")
@@ -318,23 +329,29 @@ def main(argv: Optional[list[str]] = None) -> int:
     parser = argparse.ArgumentParser(
         description="Port 6 generic intake validation predicates into am_validation_rule.",
     )
-    parser.add_argument("--dry-run", action="store_true",
-                        help="Print candidate list and exit without touching the DB.")
-    parser.add_argument("--apply", action="store_true",
-                        help="Insert rows into am_validation_rule. Requires --confirm.")
-    parser.add_argument("--confirm", action="store_true",
-                        help="Required together with --apply to actually write.")
-    parser.add_argument("--db", default=None,
-                        help=f"SQLite DB path (default: {DEFAULT_DB} or $JPINTEL_DB_PATH).")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Print candidate list and exit without touching the DB.",
+    )
+    parser.add_argument(
+        "--apply",
+        action="store_true",
+        help="Insert rows into am_validation_rule. Requires --confirm.",
+    )
+    parser.add_argument(
+        "--confirm", action="store_true", help="Required together with --apply to actually write."
+    )
+    parser.add_argument(
+        "--db", default=None, help=f"SQLite DB path (default: {DEFAULT_DB} or $JPINTEL_DB_PATH)."
+    )
     parser.add_argument("-v", "--verbose", action="store_true", help="Verbose logging.")
     args = parser.parse_args(argv)
 
     _configure_logging(verbose=args.verbose)
 
     if args.apply and not args.confirm:
-        raise SystemExit(
-            "--apply requires --confirm. Re-run with: --apply --confirm"
-        )
+        raise SystemExit("--apply requires --confirm. Re-run with: --apply --confirm")
     if not args.dry_run and not args.apply:
         # Default behaviour = dry-run (safer)
         _LOG.info("no_mode_specified_defaulting_to_dry_run")

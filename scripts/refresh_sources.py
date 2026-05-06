@@ -25,6 +25,7 @@ See ``docs/data_integrity.md`` for the broader policy; this script is the
 "liveness" half of that playbook (the "content freshness" half — diffing
 the body — is intentionally not implemented here).
 """
+
 from __future__ import annotations
 
 import argparse
@@ -156,8 +157,7 @@ def load_rows(
     sql = (
         "SELECT unified_id, source_url, tier, "
         "COALESCE(source_fail_count, 0) AS source_fail_count "
-        "FROM programs WHERE " + " AND ".join(clauses) +
-        " ORDER BY unified_id"
+        "FROM programs WHERE " + " AND ".join(clauses) + " ORDER BY unified_id"
     )
     if max_rows is not None and max_rows > 0:
         sql += f" LIMIT {int(max_rows)}"
@@ -203,9 +203,7 @@ class RobotsCache:
         except Exception:
             return True
 
-    async def _fetch(
-        self, host_root: str
-    ) -> urllib.robotparser.RobotFileParser | None:
+    async def _fetch(self, host_root: str) -> urllib.robotparser.RobotFileParser | None:
         robots_url = f"{host_root}/robots.txt"
         try:
             resp = await self._client.get(
@@ -230,6 +228,7 @@ class RobotsCache:
 
 def ssl_err():  # pragma: no cover — trivial alias
     import ssl
+
     return ssl.SSLError
 
 
@@ -334,15 +333,17 @@ async def handle_row(
 
         if not await robots.can_fetch(url):
             stats["robots_disallow"] += 1
-            changes.append({
-                "unified_id": unified_id,
-                "url": url,
-                "host": host,
-                "outcome": "robots_disallow",
-                "status": None,
-                "final_url": None,
-                "fail_count_after": row["source_fail_count"],
-            })
+            changes.append(
+                {
+                    "unified_id": unified_id,
+                    "url": url,
+                    "host": host,
+                    "outcome": "robots_disallow",
+                    "status": None,
+                    "final_url": None,
+                    "fail_count_after": row["source_fail_count"],
+                }
+            )
             return
 
         await limiter.acquire(host)
@@ -351,16 +352,18 @@ async def handle_row(
     if status is None:
         stats["error"] += 1
         outcome = "error"
-        changes.append({
-            "unified_id": unified_id,
-            "url": url,
-            "host": host,
-            "outcome": outcome,
-            "status": None,
-            "final_url": None,
-            "error": error,
-            "fail_count_after": row["source_fail_count"] + 1,
-        })
+        changes.append(
+            {
+                "unified_id": unified_id,
+                "url": url,
+                "host": host,
+                "outcome": outcome,
+                "status": None,
+                "final_url": None,
+                "error": error,
+                "fail_count_after": row["source_fail_count"] + 1,
+            }
+        )
         return
 
     final_host = ""
@@ -370,9 +373,7 @@ async def handle_row(
         except Exception:
             final_host = ""
 
-    redirected_host = bool(
-        final_url and final_host and final_host != host
-    )
+    redirected_host = bool(final_url and final_host and final_host != host)
 
     if 200 <= status < 300:
         outcome = "ok"
@@ -397,18 +398,20 @@ async def handle_row(
             quarantined = True
             stats["quarantined"] += 1
 
-    changes.append({
-        "unified_id": unified_id,
-        "url": url,
-        "host": host,
-        "outcome": outcome,
-        "status": status,
-        "final_url": final_url,
-        "final_host": final_host,
-        "redirected_host": redirected_host,
-        "fail_count_after": new_fail_count,
-        "quarantined": quarantined,
-    })
+    changes.append(
+        {
+            "unified_id": unified_id,
+            "url": url,
+            "host": host,
+            "outcome": outcome,
+            "status": status,
+            "final_url": final_url,
+            "final_host": final_host,
+            "redirected_host": redirected_host,
+            "fail_count_after": new_fail_count,
+            "quarantined": quarantined,
+        }
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -451,8 +454,7 @@ def commit_changes(
 
         if ch.get("redirected_host"):
             cur.execute(
-                "INSERT INTO source_redirects (unified_id, orig_url, final_url) "
-                "VALUES (?, ?, ?)",
+                "INSERT INTO source_redirects (unified_id, orig_url, final_url) VALUES (?, ?, ?)",
                 (uid, ch["url"], ch["final_url"]),
             )
             written["log_redirect"] += 1
@@ -579,9 +581,7 @@ def build_report(
         if ch["outcome"] in ("fail", "error"):
             host_fail[ch["host"]] += 1
 
-    quarantined_ids = [
-        ch["unified_id"] for ch in changes if ch.get("quarantined")
-    ]
+    quarantined_ids = [ch["unified_id"] for ch in changes if ch.get("quarantined")]
 
     # Per-tier roll-up for the freshness report.
     # ``rows`` is the candidate set, ``changes`` mirrors it 1:1 by unified_id.
@@ -609,9 +609,7 @@ def build_report(
     }
 
     return {
-        "generated_at": dt.datetime.now(dt.UTC).isoformat(
-            timespec="seconds"
-        ),
+        "generated_at": dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
         "dry_run": dry_run,
         "tiers_in_scope": list(tiers_in_scope) if tiers_in_scope else None,
         "rows_checked": len(rows),
@@ -635,9 +633,7 @@ def build_report(
 # treats this file as a snapshot — we replace the top-level structure but
 # keep a `history` list with the last 12 runs so the dashboard can chart
 # trend without bloating the JSON.
-DEFAULT_FRESHNESS_REPORT = os.path.join(
-    REPO_ROOT, "data", "source_freshness_report.json"
-)
+DEFAULT_FRESHNESS_REPORT = os.path.join(REPO_ROOT, "data", "source_freshness_report.json")
 FRESHNESS_HISTORY_KEEP = 12
 
 
@@ -672,9 +668,7 @@ def append_freshness_report(
     # Translate this run's per_tier into the (total, stale, broken) shape
     # Loop I expects. We surface "dead" as broken; "stale" stays owned by
     # Loop I's stale-by-age check and is left untouched here.
-    merged_per_tier: dict[str, dict[str, int]] = dict(
-        existing.get("per_tier") or {}
-    )
+    merged_per_tier: dict[str, dict[str, int]] = dict(existing.get("per_tier") or {})
     for tier, counts in per_tier.items():
         prev = merged_per_tier.get(tier, {"total": 0, "stale": 0, "broken": 0})
         merged_per_tier[tier] = {
@@ -684,15 +678,17 @@ def append_freshness_report(
         }
 
     history = list(existing.get("history") or [])
-    history.append({
-        "generated_at": report.get("generated_at"),
-        "tiers_in_scope": report.get("tiers_in_scope"),
-        "rows_checked": report.get("rows_checked"),
-        "per_tier": per_tier,
-        "totals": report.get("totals"),
-        "elapsed_seconds": report.get("elapsed_seconds"),
-        "dry_run": report.get("dry_run"),
-    })
+    history.append(
+        {
+            "generated_at": report.get("generated_at"),
+            "tiers_in_scope": report.get("tiers_in_scope"),
+            "rows_checked": report.get("rows_checked"),
+            "per_tier": per_tier,
+            "totals": report.get("totals"),
+            "elapsed_seconds": report.get("elapsed_seconds"),
+            "dry_run": report.get("dry_run"),
+        }
+    )
     history = history[-FRESHNESS_HISTORY_KEEP:]
 
     new_doc = {
@@ -700,9 +696,7 @@ def append_freshness_report(
         "generated_at": report.get("generated_at"),
         "dry_run": bool(report.get("dry_run")),
         "stale_threshold_days": existing.get("stale_threshold_days") or 60,
-        "rows_scanned": max(
-            int(existing.get("rows_scanned") or 0), rows_scanned_total
-        ),
+        "rows_scanned": max(int(existing.get("rows_scanned") or 0), rows_scanned_total),
         "stale_count": int(existing.get("stale_count") or 0),
         "broken_count": broken_count,
         "per_tier": merged_per_tier,
@@ -739,8 +733,7 @@ def maybe_open_dead_url_issue(
     )
     top_hosts = report.get("top_failing_hosts") or []
     body_lines = [
-        f"Tier C dead URL count exceeded the alert threshold "
-        f"(`{dead_c}` > `{threshold}`).",
+        f"Tier C dead URL count exceeded the alert threshold (`{dead_c}` > `{threshold}`).",
         "",
         f"Generated at: `{report.get('generated_at')}`",
         f"Tiers in scope: `{report.get('tiers_in_scope')}`",
@@ -752,8 +745,7 @@ def maybe_open_dead_url_issue(
         body_lines.append(f"- `{host}` × {n}")
     body_lines.append("")
     body_lines.append(
-        "Per-tier (this run):\n"
-        + "\n".join(f"- {t}: {v}" for t, v in (per_tier.items() or []))
+        "Per-tier (this run):\n" + "\n".join(f"- {t}: {v}" for t, v in (per_tier.items() or []))
     )
     body = "\n".join(body_lines)
 
@@ -780,11 +772,17 @@ def maybe_open_dead_url_issue(
     try:
         subprocess.run(
             [
-                "gh", "issue", "create",
-                "--title", title,
-                "--label", "data-quality",
-                "--label", "automation",
-                "--body", body,
+                "gh",
+                "issue",
+                "create",
+                "--title",
+                title,
+                "--label",
+                "data-quality",
+                "--label",
+                "automation",
+                "--body",
+                body,
             ],
             check=True,
             env={**os.environ, "GH_TOKEN": token},
@@ -923,8 +921,14 @@ def main(argv: list[str] | None = None) -> int:
         if not rows:
             print("no rows to check — exiting clean")
             report = build_report(
-                rows, Counter(), Counter(), [], Counter(),
-                time.monotonic(), dry_run, tiers,
+                rows,
+                Counter(),
+                Counter(),
+                [],
+                Counter(),
+                time.monotonic(),
+                dry_run,
+                tiers,
             )
             os.makedirs(os.path.dirname(args.report), exist_ok=True)
             with open(args.report, "w", encoding="utf-8") as fh:
@@ -933,14 +937,10 @@ def main(argv: list[str] | None = None) -> int:
             return 0
 
         started_at = time.monotonic()
-        stats, per_host, changes = asyncio.run(
-            run_async(rows, concurrency, args.per_host_qps)
-        )
+        stats, per_host, changes = asyncio.run(run_async(rows, concurrency, args.per_host_qps))
 
         written = commit_changes(con, changes, dry_run)
-        report = build_report(
-            rows, stats, per_host, changes, written, started_at, dry_run, tiers
-        )
+        report = build_report(rows, stats, per_host, changes, written, started_at, dry_run, tiers)
     finally:
         con.close()
 
@@ -955,9 +955,7 @@ def main(argv: list[str] | None = None) -> int:
     except Exception as exc:  # pragma: no cover — informational
         print(f"warn: freshness append failed: {exc}", file=sys.stderr)
 
-    issue_action = maybe_open_dead_url_issue(
-        report, threshold=args.issue_on_tier_c_dead_threshold
-    )
+    issue_action = maybe_open_dead_url_issue(report, threshold=args.issue_on_tier_c_dead_threshold)
     if issue_action:
         print("tier_c_dead_alert:", json.dumps(issue_action, ensure_ascii=False))
 

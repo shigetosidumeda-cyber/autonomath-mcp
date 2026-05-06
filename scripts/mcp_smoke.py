@@ -7,6 +7,7 @@ JSON-RPC 2.0 on stdio. Exits 0 if all 4 core tools respond with the right shape.
 Usage:
     .venv/bin/python scripts/mcp_smoke.py
 """
+
 from __future__ import annotations
 
 import json
@@ -65,8 +66,14 @@ class McpClient:
                 raw = self.q.get(timeout=0.5)
             except Empty:
                 if self.proc.poll() is not None:
-                    err = self.proc.stderr.read().decode("utf-8", errors="replace") if self.proc.stderr else ""
-                    raise RuntimeError(f"server exited early rc={self.proc.returncode} stderr={err[:2000]}") from None
+                    err = (
+                        self.proc.stderr.read().decode("utf-8", errors="replace")
+                        if self.proc.stderr
+                        else ""
+                    )
+                    raise RuntimeError(
+                        f"server exited early rc={self.proc.returncode} stderr={err[:2000]}"
+                    ) from None
                 continue
             try:
                 frame = json.loads(raw)
@@ -127,7 +134,10 @@ def main() -> int:
                 "clientInfo": {"name": "jpintel-smoke", "version": "0.1"},
             },
         )
-        check("result" in init, f"initialize returned result (proto={init.get('result', {}).get('protocolVersion')})")
+        check(
+            "result" in init,
+            f"initialize returned result (proto={init.get('result', {}).get('protocolVersion')})",
+        )
         cli.notify("notifications/initialized", {})
 
         listed = cli.request("tools/list", {})
@@ -142,10 +152,19 @@ def main() -> int:
                 {"name": "search_programs", "arguments": {"q": "農業", "limit": 5}},
             )
         )
-        check(isinstance(sr.get("results"), list) and len(sr["results"]) >= 1,
-              f"search_programs returned {len(sr.get('results', []))} results (total={sr.get('total')})")
+        check(
+            isinstance(sr.get("results"), list) and len(sr["results"]) >= 1,
+            f"search_programs returned {len(sr.get('results', []))} results (total={sr.get('total')})",
+        )
         first = sr["results"][0]
-        for field in ("unified_id", "primary_name", "tier", "trust_level", "coverage_score", "equipment_category"):
+        for field in (
+            "unified_id",
+            "primary_name",
+            "tier",
+            "trust_level",
+            "coverage_score",
+            "equipment_category",
+        ):
             check(field in first, f"search_programs result has '{field}' field")
         unified_id = first["unified_id"]
 
@@ -173,8 +192,10 @@ def main() -> int:
         else:
             blocks = result.get("content") or []
             rules = json.loads(blocks[0]["text"]) if blocks else []
-        check(isinstance(rules, list) and len(rules) >= 22,
-              f"list_exclusion_rules returned {len(rules) if isinstance(rules, list) else 'non-list'} rules (expect >=22)")
+        check(
+            isinstance(rules, list) and len(rules) >= 22,
+            f"list_exclusion_rules returned {len(rules) if isinstance(rules, list) else 'non-list'} rules (expect >=22)",
+        )
         for f in ("rule_id", "kind", "severity", "description"):
             check(f in rules[0], f"exclusion rule row has '{f}'")
 
@@ -185,10 +206,14 @@ def main() -> int:
                 {"name": "check_exclusions", "arguments": {"program_ids": [unified_id]}},
             )
         )
-        check("hits" in ce and isinstance(ce["hits"], list),
-              f"check_exclusions returned hits list (len={len(ce.get('hits', []))})")
-        check(ce.get("checked_rules", 0) >= 22,
-              f"check_exclusions checked_rules={ce.get('checked_rules')} (expect >=22)")
+        check(
+            "hits" in ce and isinstance(ce["hits"], list),
+            f"check_exclusions returned hits list (len={len(ce.get('hits', []))})",
+        )
+        check(
+            ce.get("checked_rules", 0) >= 22,
+            f"check_exclusions checked_rules={ce.get('checked_rules')} (expect >=22)",
+        )
 
         print("\nAll 4 MCP tools PASS.")
         return 0

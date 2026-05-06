@@ -71,6 +71,7 @@ Idempotent. The UNIQUE index ``uq_am_facts_entity_field_text``
 (entity_id, field_name, COALESCE(field_value_text, '')) is the natural
 de-dup key, so re-runs are safe (INSERT OR IGNORE).
 """
+
 from __future__ import annotations
 
 import argparse
@@ -97,9 +98,7 @@ SOURCE_TYPE = "primary"
 SOURCE_DOMAIN = "info.gbiz.go.jp"
 LICENSE = "cc_by_4.0"
 
-NTA_PERMALINK_FMT = (
-    "https://www.houjin-bangou.nta.go.jp/henkorireki-johoto.html?selHoujinNo={}"
-)
+NTA_PERMALINK_FMT = "https://www.houjin-bangou.nta.go.jp/henkorireki-johoto.html?selHoujinNo={}"
 
 CONFIDENCE = 0.95
 
@@ -144,6 +143,7 @@ NEW_FIELD_NAMES: list[str] = [
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _now_iso() -> str:
     return datetime.now(tz=UTC).strftime("%Y-%m-%d %H:%M:%S")
@@ -203,6 +203,7 @@ def _normalise_postal(value: Any) -> str | None:
 # DB helpers
 # ---------------------------------------------------------------------------
 
+
 def _open_db(path: Path) -> sqlite3.Connection:
     if not path.exists():
         raise SystemExit(f"db not found: {path}")
@@ -257,6 +258,7 @@ def _fetch_existing_houjin_ids(conn: sqlite3.Connection) -> set[str]:
 # ---------------------------------------------------------------------------
 # Record -> facts
 # ---------------------------------------------------------------------------
+
 
 def _record_to_facts(rec: dict[str, Any]) -> list[dict[str, Any]]:
     """Map one gBiz JSONL record to a list of fact rows.
@@ -397,6 +399,7 @@ def _record_to_facts(rec: dict[str, Any]) -> list[dict[str, Any]]:
 # ---------------------------------------------------------------------------
 # Main ingest
 # ---------------------------------------------------------------------------
+
 
 def _entity_row(rec: dict[str, Any], cn: str) -> tuple[Any, ...]:
     """Build the parameter tuple for ``INSERT OR IGNORE INTO am_entities``."""
@@ -615,6 +618,7 @@ def ingest(
 # ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
+
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Ingest METI gBizINFO -> am_entities/facts")

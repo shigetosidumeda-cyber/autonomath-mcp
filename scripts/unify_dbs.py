@@ -200,9 +200,7 @@ def main() -> int:
         for t, pre, post in mismatches:
             print(f"  {t}: pre={pre} post={post}", file=sys.stderr)
         return 1
-    print(
-        f"identity OK: {len(pre_counts)} tables copied, total {sum(pre_counts.values())} rows"
-    )
+    print(f"identity OK: {len(pre_counts)} tables copied, total {sum(pre_counts.values())} rows")
 
     if failures:
         print(f"\n{len(failures)} table(s) failed:", file=sys.stderr)

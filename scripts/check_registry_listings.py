@@ -196,7 +196,9 @@ def check_registry(entry: dict[str, Any]) -> dict[str, Any]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--quiet", action="store_true", help="Suppress stdout; exit code only")
-    parser.add_argument("--json", action="store_true", help="Stdout-only JSON; do not write log file")
+    parser.add_argument(
+        "--json", action="store_true", help="Stdout-only JSON; do not write log file"
+    )
     parser.add_argument(
         "--data-dir",
         default=os.environ.get("AUTONOMATH_DATA_DIR", "data"),

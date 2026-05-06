@@ -10,6 +10,7 @@ Pure Pillow, no external image deps. Re-run via:
 
     .venv/bin/python scripts/generate_og_images.py
 """
+
 from __future__ import annotations
 
 import argparse

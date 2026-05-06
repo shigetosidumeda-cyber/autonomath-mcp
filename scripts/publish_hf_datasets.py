@@ -638,11 +638,7 @@ def _print_sample_row(df: pd.DataFrame) -> None:
         if isinstance(v, str) and len(v) > 220:
             safe[k] = v[:200] + "...(truncated)"
         else:
-            safe[k] = (
-                None
-                if pd.isna(v) and not isinstance(v, (list, dict))
-                else v
-            )
+            safe[k] = None if pd.isna(v) and not isinstance(v, (list, dict)) else v
     print("  sample row (1):")
     for k, v in safe.items():
         print(f"    {k}: {v!r}")
@@ -719,7 +715,9 @@ def run_one(
     manifest = write_outputs(spec, df, out_dir, dry_run=not push)
 
     print(f"  rows written:  {manifest['rows']:,}")
-    print(f"  parquet bytes: {manifest['parquet_bytes']:,} ({_fmt_bytes(manifest['parquet_bytes'])})")
+    print(
+        f"  parquet bytes: {manifest['parquet_bytes']:,} ({_fmt_bytes(manifest['parquet_bytes'])})"
+    )
     print(f"  avg row bytes: {manifest['avg_row_bytes']:,}")
     _print_sample_row(df)
 

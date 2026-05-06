@@ -111,19 +111,28 @@ def inv03_no_fk_violations(con: sqlite3.Connection) -> InvariantResult:
             measured={"violations": len(rows), "sample": [list(r) for r in rows[:3]]},
         )
     return InvariantResult(
-        "INV-03", "programs schema integrity (FK violations)", "pass",
+        "INV-03",
+        "programs schema integrity (FK violations)",
+        "pass",
         measured={"violations": 0},
     )
 
 
 def inv04_aggregator_ban(con: sqlite3.Connection) -> InvariantResult:
     BANNED = [
-        "noukaweb", "hojyokin-portal", "biz.stayway", "stayway.jp",
-        "nikkei.com", "prtimes.jp", "wikipedia.org",
+        "noukaweb",
+        "hojyokin-portal",
+        "biz.stayway",
+        "stayway.jp",
+        "nikkei.com",
+        "prtimes.jp",
+        "wikipedia.org",
     ]
     if not _table_exists(con, "programs"):
         return InvariantResult(
-            "INV-04", "aggregator domain ban", "skip",
+            "INV-04",
+            "aggregator domain ban",
+            "skip",
             reason="programs table absent",
         )
     hits: dict[str, int] = {}
@@ -136,67 +145,77 @@ def inv04_aggregator_ban(con: sqlite3.Connection) -> InvariantResult:
             hits[d] = n
     if hits:
         return InvariantResult(
-            "INV-04", "aggregator domain ban", "fail",
+            "INV-04",
+            "aggregator domain ban",
+            "fail",
             reason=f"banned domains found: {hits}",
             measured={"hits": hits},
         )
-    return InvariantResult("INV-04", "aggregator domain ban", "pass",
-                           measured={"hits": {}})
+    return InvariantResult("INV-04", "aggregator domain ban", "pass", measured={"hits": {}})
 
 
 def inv09_quarantine_share(con: sqlite3.Connection) -> InvariantResult:
     if not _table_exists(con, "programs"):
-        return InvariantResult("INV-09", "tier='X' quarantine share", "skip",
-                               reason="programs table absent")
+        return InvariantResult(
+            "INV-09", "tier='X' quarantine share", "skip", reason="programs table absent"
+        )
     total = con.execute("SELECT COUNT(*) FROM programs").fetchone()[0]
     if total < 100:
         return InvariantResult(
-            "INV-09", "tier='X' quarantine share", "skip",
+            "INV-09",
+            "tier='X' quarantine share",
+            "skip",
             reason=f"row count too low ({total})",
             measured={"total": total},
         )
-    x = con.execute(
-        "SELECT COUNT(*) FROM programs WHERE tier='X'"
-    ).fetchone()[0]
+    x = con.execute("SELECT COUNT(*) FROM programs WHERE tier='X'").fetchone()[0]
     share = x / total
     if share >= 0.30:
         return InvariantResult(
-            "INV-09", "tier='X' quarantine share", "fail",
+            "INV-09",
+            "tier='X' quarantine share",
+            "fail",
             reason=f"quarantine share {share:.2%} >= 30%",
             measured={"x": x, "total": total, "share": share},
         )
     return InvariantResult(
-        "INV-09", "tier='X' quarantine share", "pass",
+        "INV-09",
+        "tier='X' quarantine share",
+        "pass",
         measured={"x": x, "total": total, "share": round(share, 4)},
     )
 
 
 def inv10_source_fetched_at(con: sqlite3.Connection) -> InvariantResult:
     if not _table_exists(con, "programs"):
-        return InvariantResult("INV-10", "source_fetched_at NULL share", "skip",
-                               reason="programs table absent")
-    total = con.execute(
-        "SELECT COUNT(*) FROM programs WHERE excluded=0"
-    ).fetchone()[0]
+        return InvariantResult(
+            "INV-10", "source_fetched_at NULL share", "skip", reason="programs table absent"
+        )
+    total = con.execute("SELECT COUNT(*) FROM programs WHERE excluded=0").fetchone()[0]
     if total < 100:
         return InvariantResult(
-            "INV-10", "source_fetched_at NULL share", "skip",
+            "INV-10",
+            "source_fetched_at NULL share",
+            "skip",
             reason=f"row count too low ({total})",
             measured={"total": total},
         )
     nulls = con.execute(
-        "SELECT COUNT(*) FROM programs "
-        "WHERE excluded=0 AND source_fetched_at IS NULL"
+        "SELECT COUNT(*) FROM programs WHERE excluded=0 AND source_fetched_at IS NULL"
     ).fetchone()[0]
     share = nulls / total
     if share >= 0.01:
         return InvariantResult(
-            "INV-10", "source_fetched_at NULL share", "fail",
+            "INV-10",
+            "source_fetched_at NULL share",
+            "fail",
             reason=f"NULL share {share:.2%} >= 1%",
             measured={"nulls": nulls, "total": total, "share": share},
         )
     return InvariantResult(
-        "INV-10", "source_fetched_at NULL share", "pass",
+        "INV-10",
+        "source_fetched_at NULL share",
+        "pass",
         measured={"nulls": nulls, "total": total, "share": round(share, 4)},
     )
 
@@ -206,7 +225,9 @@ def inv18_envelope_shape(_: sqlite3.Connection) -> InvariantResult:
         from jpintel_mcp.models import SearchResponse
     except Exception as exc:
         return InvariantResult(
-            "INV-18", "API envelope shape", "fail",
+            "INV-18",
+            "API envelope shape",
+            "fail",
             reason=f"models import failed: {exc}",
         )
     expected = {"total", "limit", "offset", "results"}
@@ -214,43 +235,50 @@ def inv18_envelope_shape(_: sqlite3.Connection) -> InvariantResult:
     missing = expected - actual
     if missing:
         return InvariantResult(
-            "INV-18", "API envelope shape", "fail",
+            "INV-18",
+            "API envelope shape",
+            "fail",
             reason=f"SearchResponse missing keys: {missing}",
             measured={"actual": sorted(actual), "missing": sorted(missing)},
         )
     return InvariantResult(
-        "INV-18", "API envelope shape", "pass",
+        "INV-18",
+        "API envelope shape",
+        "pass",
         measured={"actual": sorted(actual)},
     )
 
 
 def inv19_5xx_rate(con: sqlite3.Connection) -> InvariantResult:
     if not _table_exists(con, "usage_events"):
-        return InvariantResult("INV-19", "5xx error rate", "skip",
-                               reason="usage_events absent")
+        return InvariantResult("INV-19", "5xx error rate", "skip", reason="usage_events absent")
     total = con.execute(
-        "SELECT COUNT(*) FROM usage_events "
-        "WHERE ts >= datetime('now', '-7 days')"
+        "SELECT COUNT(*) FROM usage_events WHERE ts >= datetime('now', '-7 days')"
     ).fetchone()[0]
     if total < 100:
         return InvariantResult(
-            "INV-19", "5xx error rate", "skip",
+            "INV-19",
+            "5xx error rate",
+            "skip",
             reason=f"thin telemetry ({total} rows)",
             measured={"total": total},
         )
     errors = con.execute(
-        "SELECT COUNT(*) FROM usage_events "
-        "WHERE ts >= datetime('now', '-7 days') AND status >= 500"
+        "SELECT COUNT(*) FROM usage_events WHERE ts >= datetime('now', '-7 days') AND status >= 500"
     ).fetchone()[0]
     rate = errors / total
     if rate >= 0.005:
         return InvariantResult(
-            "INV-19", "5xx error rate", "fail",
+            "INV-19",
+            "5xx error rate",
+            "fail",
             reason=f"5xx rate {rate:.4%} >= 0.5%",
             measured={"errors": errors, "total": total, "rate": rate},
         )
     return InvariantResult(
-        "INV-19", "5xx error rate", "pass",
+        "INV-19",
+        "5xx error rate",
+        "pass",
         measured={"errors": errors, "total": total, "rate": round(rate, 6)},
     )
 
@@ -260,7 +288,9 @@ def inv21_redactor(_: sqlite3.Connection) -> InvariantResult:
         from jpintel_mcp.security.pii_redact import redact_text
     except Exception as exc:
         return InvariantResult(
-            "INV-21", "PII redactor", "fail",
+            "INV-21",
+            "PII redactor",
+            "fail",
             reason=f"redact_text import failed: {exc}",
         )
     samples = [
@@ -272,7 +302,9 @@ def inv21_redactor(_: sqlite3.Connection) -> InvariantResult:
         out = redact_text(raw)
         if leaked in out:
             return InvariantResult(
-                "INV-21", "PII redactor", "fail",
+                "INV-21",
+                "PII redactor",
+                "fail",
                 reason=f"PII leaked: {leaked} in {out!r}",
                 measured={"raw": raw, "out": out},
             )
@@ -284,7 +316,9 @@ def inv23_b2b_tax_id(_: sqlite3.Connection) -> InvariantResult:
         from jpintel_mcp.api.billing import _check_b2b_tax_id_safe
     except Exception as exc:
         return InvariantResult(
-            "INV-23", "B2B tax_id hook", "fail",
+            "INV-23",
+            "B2B tax_id hook",
+            "fail",
             reason=f"hook import failed: {exc}",
         )
     try:
@@ -292,7 +326,9 @@ def inv23_b2b_tax_id(_: sqlite3.Connection) -> InvariantResult:
         _check_b2b_tax_id_safe("")
     except Exception as exc:
         return InvariantResult(
-            "INV-23", "B2B tax_id hook", "fail",
+            "INV-23",
+            "B2B tax_id hook",
+            "fail",
             reason=f"hook raised on empty input: {exc}",
         )
     return InvariantResult("INV-23", "B2B tax_id hook", "pass")
@@ -320,8 +356,9 @@ def inv24_keyword_block_docs(_: sqlite3.Connection) -> InvariantResult:
                 continue
             candidates.append(p)
     if not candidates:
-        return InvariantResult("INV-24", "景表法 keyword block (docs/site)",
-                               "skip", reason="no doc files to scan")
+        return InvariantResult(
+            "INV-24", "景表法 keyword block (docs/site)", "skip", reason="no doc files to scan"
+        )
     hits: list[tuple[str, str]] = []
     for p in candidates:
         try:
@@ -333,12 +370,16 @@ def inv24_keyword_block_docs(_: sqlite3.Connection) -> InvariantResult:
                 hits.append((str(p.relative_to(_REPO)), kw))
     if hits:
         return InvariantResult(
-            "INV-24", "景表法 keyword block (docs/site)", "fail",
+            "INV-24",
+            "景表法 keyword block (docs/site)",
+            "fail",
             reason=f"{len(hits)} hits in user-facing files",
             measured={"sample_hits": hits[:5]},
         )
     return InvariantResult(
-        "INV-24", "景表法 keyword block (docs/site)", "pass",
+        "INV-24",
+        "景表法 keyword block (docs/site)",
+        "pass",
         measured={"files_scanned": len(candidates)},
     )
 
@@ -351,19 +392,24 @@ def inv26_p50_tools_list(con: sqlite3.Connection) -> InvariantResult:
     fresh data.
     """
     if not _table_exists(con, "usage_events"):
-        return InvariantResult("INV-26", "P50 latency tools/list", "skip",
-                               reason="usage_events absent")
+        return InvariantResult(
+            "INV-26", "P50 latency tools/list", "skip", reason="usage_events absent"
+        )
     n = con.execute(
-        "SELECT COUNT(*) FROM usage_events "
-        "WHERE ts >= datetime('now', '-7 days')"
+        "SELECT COUNT(*) FROM usage_events WHERE ts >= datetime('now', '-7 days')"
     ).fetchone()[0]
     if n < 50:
         return InvariantResult(
-            "INV-26", "P50 latency tools/list", "skip",
-            reason=f"thin telemetry ({n})", measured={"rows": n},
+            "INV-26",
+            "P50 latency tools/list",
+            "skip",
+            reason=f"thin telemetry ({n})",
+            measured={"rows": n},
         )
     return InvariantResult(
-        "INV-26", "P50 latency tools/list", "pass",
+        "INV-26",
+        "P50 latency tools/list",
+        "pass",
         reason="row presence ok; numeric P50 enforced via structlog archive",
         measured={"rows": n},
     )
@@ -371,8 +417,7 @@ def inv26_p50_tools_list(con: sqlite3.Connection) -> InvariantResult:
 
 def inv27_p99_search(con: sqlite3.Connection) -> InvariantResult:
     if not _table_exists(con, "usage_events"):
-        return InvariantResult("INV-27", "P99 latency search", "skip",
-                               reason="usage_events absent")
+        return InvariantResult("INV-27", "P99 latency search", "skip", reason="usage_events absent")
     n = con.execute(
         "SELECT COUNT(*) FROM usage_events "
         "WHERE endpoint LIKE '/v1/programs%' "
@@ -380,11 +425,16 @@ def inv27_p99_search(con: sqlite3.Connection) -> InvariantResult:
     ).fetchone()[0]
     if n < 100:
         return InvariantResult(
-            "INV-27", "P99 latency search", "skip",
-            reason=f"thin telemetry ({n})", measured={"rows": n},
+            "INV-27",
+            "P99 latency search",
+            "skip",
+            reason=f"thin telemetry ({n})",
+            measured={"rows": n},
         )
     return InvariantResult(
-        "INV-27", "P99 latency search", "pass",
+        "INV-27",
+        "P99 latency search",
+        "pass",
         reason="row presence ok; numeric P99 enforced via structlog archive",
         measured={"rows": n},
     )
@@ -394,10 +444,13 @@ def inv28_cache_layer(_: sqlite3.Connection) -> InvariantResult:
     try:
         from jpintel_mcp.api.meta import _reset_meta_cache  # noqa: F401
     except ImportError:
-        return InvariantResult("INV-28", "cache hit rate (meta TTL)", "skip",
-                               reason="cache layer not wired")
+        return InvariantResult(
+            "INV-28", "cache hit rate (meta TTL)", "skip", reason="cache layer not wired"
+        )
     return InvariantResult(
-        "INV-28", "cache hit rate (meta TTL)", "pass",
+        "INV-28",
+        "cache hit rate (meta TTL)",
+        "pass",
         reason="cache module wired; numeric hit rate via Grafana",
     )
 
@@ -406,28 +459,34 @@ def inv29_stripe_diff(con: sqlite3.Connection) -> InvariantResult:
     env = os.getenv("JPINTEL_ENV", "dev")
     if env != "prod":
         return InvariantResult(
-            "INV-29", "Stripe usage_record vs request count", "skip",
+            "INV-29",
+            "Stripe usage_record vs request count",
+            "skip",
             reason=f"JPINTEL_ENV={env}; prod-only",
         )
     if not _table_exists(con, "usage_events"):
-        return InvariantResult("INV-29", "Stripe usage_record vs request count",
-                               "skip", reason="usage_events absent")
+        return InvariantResult(
+            "INV-29", "Stripe usage_record vs request count", "skip", reason="usage_events absent"
+        )
     metered = con.execute(
-        "SELECT COUNT(*) FROM usage_events "
-        "WHERE metered=1 AND ts >= datetime('now', '-7 days')"
+        "SELECT COUNT(*) FROM usage_events WHERE metered=1 AND ts >= datetime('now', '-7 days')"
     ).fetchone()[0]
     total = con.execute(
-        "SELECT COUNT(*) FROM usage_events "
-        "WHERE ts >= datetime('now', '-7 days')"
+        "SELECT COUNT(*) FROM usage_events WHERE ts >= datetime('now', '-7 days')"
     ).fetchone()[0]
     if total < 50:
         return InvariantResult(
-            "INV-29", "Stripe usage_record vs request count", "skip",
-            reason=f"thin traffic ({total})", measured={"total": total},
+            "INV-29",
+            "Stripe usage_record vs request count",
+            "skip",
+            reason=f"thin traffic ({total})",
+            measured={"total": total},
         )
     if metered == 0:
         return InvariantResult(
-            "INV-29", "Stripe usage_record vs request count", "fail",
+            "INV-29",
+            "Stripe usage_record vs request count",
+            "fail",
             reason="metered=1 count is 0 in prod",
             measured={"metered": 0, "total": total},
         )
@@ -439,18 +498,23 @@ def inv29_stripe_diff(con: sqlite3.Connection) -> InvariantResult:
         import stripe
 
         from jpintel_mcp.config import settings
+
         if settings.stripe_secret_key:
             stripe.api_key = settings.stripe_secret_key
             if settings.stripe_api_version:
                 stripe.api_version = settings.stripe_api_version
             # Coarse summary: count usage_records summary on the metered
             # subscription items. Skip on any auth/network error.
-            stripe_diff = {"note": "stripe reconciliation skipped — runner uses "
-                                   "summary-only path; full diff in monthly review"}
+            stripe_diff = {
+                "note": "stripe reconciliation skipped — runner uses "
+                "summary-only path; full diff in monthly review"
+            }
     except Exception as exc:
         stripe_diff = {"stripe_error": str(exc)}
     return InvariantResult(
-        "INV-29", "Stripe usage_record vs request count", "pass",
+        "INV-29",
+        "Stripe usage_record vs request count",
+        "pass",
         measured={"metered": metered, "total": total, **stripe_diff},
     )
 
@@ -481,8 +545,15 @@ def run_all() -> dict[str, Any]:
     results: list[InvariantResult] = []
     for fn in INVARIANTS:
         try:
-            r = fn(con) if con is not None else InvariantResult(
-                fn.__name__, fn.__name__, "skip", reason="DB unavailable",
+            r = (
+                fn(con)
+                if con is not None
+                else InvariantResult(
+                    fn.__name__,
+                    fn.__name__,
+                    "skip",
+                    reason="DB unavailable",
+                )
             )
         except Exception as exc:
             r = InvariantResult(
@@ -530,10 +601,10 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Weekly Tier 2 invariant runner",
     )
-    parser.add_argument("--dry-run", action="store_true",
-                        help="run all checks but do not write JSON artifact")
-    parser.add_argument("--json", action="store_true",
-                        help="emit summary JSON to stdout")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="run all checks but do not write JSON artifact"
+    )
+    parser.add_argument("--json", action="store_true", help="emit summary JSON to stdout")
     args = parser.parse_args(argv)
 
     logging.basicConfig(

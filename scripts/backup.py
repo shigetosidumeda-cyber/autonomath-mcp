@@ -7,6 +7,7 @@ Prunes backups older than --keep days.
 
 Exit codes: 0 on success, 1 on failure.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -178,8 +179,15 @@ def run_backup(
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Online SQLite backup for jpintel-mcp")
-    p.add_argument("--db", type=Path, default=None, help="Path to source SQLite DB (default: JPINTEL_DB_PATH or ./data/jpintel.db)")
-    p.add_argument("--out", type=Path, default=Path("/tmp/jpintel-backups"), help="Output directory")
+    p.add_argument(
+        "--db",
+        type=Path,
+        default=None,
+        help="Path to source SQLite DB (default: JPINTEL_DB_PATH or ./data/jpintel.db)",
+    )
+    p.add_argument(
+        "--out", type=Path, default=Path("/tmp/jpintel-backups"), help="Output directory"
+    )
     p.add_argument("--keep", type=int, default=14, help="Retention in days (prune older files)")
     p.add_argument("--gzip", action="store_true", help="Gzip the .db after backup")
     p.add_argument("--log", type=Path, default=None, help="Optional log file path")

@@ -147,7 +147,9 @@ def _expected_outputs(
         if manifest.get("aggregate_only") is not True:
             blockers.append("aggregate manifest does not set aggregate_only=true")
         if manifest.get("row_level_sensitive_data_exported") is not False:
-            blockers.append("aggregate manifest does not prove row_level_sensitive_data_exported=false")
+            blockers.append(
+                "aggregate manifest does not prove row_level_sensitive_data_exported=false"
+            )
 
         for dataset in datasets:
             if not isinstance(dataset, dict):
@@ -165,7 +167,9 @@ def _expected_outputs(
             min_k = _as_int(dataset.get("min_k"))
             min_cell = _as_int(dataset.get("min_exported_cell_count"))
             if min_k is not None and min_cell is not None and min_cell < min_k:
-                blockers.append(f"aggregate dataset {file_name} has min cell {min_cell} below k={min_k}")
+                blockers.append(
+                    f"aggregate dataset {file_name} has min cell {min_cell} below k={min_k}"
+                )
             expected.append(
                 {
                     "logical_dataset": str(dataset.get("dataset") or source.dataset),
@@ -276,7 +280,9 @@ def _validate_expected_outputs(
                 )
             manifest_sha256 = expected["manifest_sha256"]
             if manifest_sha256 and str(manifest_sha256) != actual_sha256:
-                output_blockers.append(f"manifest sha256 does not match file checksum for {path_rel}")
+                output_blockers.append(
+                    f"manifest sha256 does not match file checksum for {path_rel}"
+                )
 
         if int(expected["rows"]) < 0:
             output_blockers.append(f"negative row count in manifest for {path_rel}")
@@ -494,7 +500,9 @@ def prepare_upload_bundle(
     blocked = [entry for entry in source_entries if entry["blockers"]]
     checksum_lines = _checksum_lines(source_entries)
     checksums_path = bundle_dir / "checksums.sha256"
-    checksums_path.write_text("\n".join(checksum_lines) + ("\n" if checksum_lines else ""), encoding="utf-8")
+    checksums_path.write_text(
+        "\n".join(checksum_lines) + ("\n" if checksum_lines else ""), encoding="utf-8"
+    )
 
     summary = {
         "safe_source_dir_count": len(source_entries),
@@ -506,7 +514,9 @@ def prepare_upload_bundle(
         "source_file_bytes": sum(int(entry["source_bytes"]) for entry in source_entries),
         "data_file_bytes": sum(int(entry["data_bytes"]) for entry in source_entries),
         "row_count": sum(int(entry["row_count"]) for entry in ready),
-        "copied_small_file_count": sum(int(entry["copied_small_file_count"]) for entry in source_entries),
+        "copied_small_file_count": sum(
+            int(entry["copied_small_file_count"]) for entry in source_entries
+        ),
         "excluded_source_count": len(EXCLUDED_SOURCE_DIRS),
         "publish_performed": False,
     }

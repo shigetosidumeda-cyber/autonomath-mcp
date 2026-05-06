@@ -15,6 +15,7 @@ against the production DB at data/jpintel.db on 2026-04-23):
              created_at, revoked_at, last_used_at)
     usage_events(id, key_hash, endpoint, ts, status, metered)
 """
+
 from __future__ import annotations
 
 import os
@@ -171,26 +172,16 @@ def top_customers_by_usage(conn: sqlite3.Connection, now: datetime) -> None:
         print("  (no paid customer activity in window)")
         return
     print(f"  Window: calls since {since}")
-    print(
-        f"  {'rank':<5} {'customer_id':<22} {'tier':<8} "
-        f"{'last_used_at':<26} {'call_count':>10}"
-    )
-    print(
-        f"  {'-' * 5:<5} {'-' * 22:<22} {'-' * 8:<8} {'-' * 26:<26} {'-' * 10:>10}"
-    )
+    print(f"  {'rank':<5} {'customer_id':<22} {'tier':<8} {'last_used_at':<26} {'call_count':>10}")
+    print(f"  {'-' * 5:<5} {'-' * 22:<22} {'-' * 8:<8} {'-' * 26:<26} {'-' * 10:>10}")
     for i, r in enumerate(rows, 1):
         cid = (r["customer_id"] or "-")[:22]
         lua = (r["last_used_at"] or "-")[:26]
-        print(
-            f"  {i:<5} {cid:<22} {r['tier']:<8} "
-            f"{lua:<26} {r['call_count']:>10}"
-        )
+        print(f"  {i:<5} {cid:<22} {r['tier']:<8} {lua:<26} {r['call_count']:>10}")
 
 
 def outliers(conn: sqlite3.Connection, now: datetime) -> None:
-    section(
-        f"Outliers (daily call-count > {OUTLIER_MULTIPLIER:g}x tier limit, last 7 days)"
-    )
+    section(f"Outliers (daily call-count > {OUTLIER_MULTIPLIER:g}x tier limit, last 7 days)")
     # aggregate calls per (key_hash, date-in-utc)
     since = (now - timedelta(days=7)).isoformat()
     rows = conn.execute(
@@ -228,8 +219,10 @@ def outliers(conn: sqlite3.Connection, now: datetime) -> None:
     if not flagged:
         print("  (no outliers)")
     else:
-        print(f"  {'key_prefix':<14} {'customer_id':<22} {'tier':<8} "
-              f"{'day':<12} {'n_calls':>10} {'limit':>8} {'x':>6}")
+        print(
+            f"  {'key_prefix':<14} {'customer_id':<22} {'tier':<8} "
+            f"{'day':<12} {'n_calls':>10} {'limit':>8} {'x':>6}"
+        )
         print(
             f"  {'-' * 14:<14} {'-' * 22:<22} {'-' * 8:<8} {'-' * 12:<12} "
             f"{'-' * 10:>10} {'-' * 8:>8} {'-' * 6:>6}"

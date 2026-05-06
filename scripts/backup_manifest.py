@@ -120,7 +120,11 @@ def main() -> int:
             db_items = [(k, m, s) for (k, m, s) in items if k.endswith(".db.gz")]
             tier_map = _classify_tier(db_items, now)
             db_items_sorted = sorted(db_items, key=lambda x: x[1], reverse=True)
-            newest_age_hours = (now - db_items_sorted[0][1]).total_seconds() / 3600 if db_items_sorted else float("inf")
+            newest_age_hours = (
+                (now - db_items_sorted[0][1]).total_seconds() / 3600
+                if db_items_sorted
+                else float("inf")
+            )
             rpo_violated = newest_age_hours > cfg["expected_rpo_hours"] * 2
 
             for k, m, s in db_items_sorted:

@@ -119,7 +119,7 @@ def collect_counts() -> dict[str, Any]:
     # Hard-coded reference values that are not row-counts but still belong on
     # the public count surface (price + tool count + free quota). These are the
     # source of truth that other pages cite via ``data-stat-key``.
-    counts["mcp_tools_total"] = 96
+    counts["mcp_tools_total"] = 139
     counts["price_per_req"] = 3
     counts["price_per_req_inc_tax"] = 3.30
     counts["anonymous_quota_per_day"] = 3
