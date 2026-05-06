@@ -8,6 +8,7 @@ Self-serve flow:
 
 We never store raw keys. SHA256-HMAC with salt.
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -181,8 +182,7 @@ def issue_trial_key(
                trial_email, trial_started_at, trial_expires_at,
                trial_requests_used
            ) VALUES (?, NULL, 'trial', NULL, ?, ?, ?, ?, ?, ?, 0)""",
-        (key_hash, started_at, bcrypt_hash, cap_yen,
-         trial_email, started_at, expires_at),
+        (key_hash, started_at, bcrypt_hash, cap_yen, trial_email, started_at, expires_at),
     )
 
     # Structured event for weekly digest + SLO panel. Tier carries 'trial'
@@ -262,13 +262,9 @@ def _validate_label(label: str | None) -> str:
     if not cleaned:
         raise ChildKeyError("label is required", "label_missing")
     if len(cleaned) > MAX_LABEL_LEN:
-        raise ChildKeyError(
-            f"label exceeds {MAX_LABEL_LEN} chars", "label_too_long"
-        )
+        raise ChildKeyError(f"label exceeds {MAX_LABEL_LEN} chars", "label_too_long")
     if any(ch in cleaned for ch in ("\n", "\r", "\t", "\0")):
-        raise ChildKeyError(
-            "label must not contain control characters", "label_invalid"
-        )
+        raise ChildKeyError("label must not contain control characters", "label_invalid")
     return cleaned
 
 
@@ -311,9 +307,7 @@ def issue_child_key(
     parent_parent = parent["parent_key_id"] if "parent_key_id" in parent_keys else None
     if parent_parent is not None:
         # The parent is itself a child — flat tree only, refuse to nest.
-        raise ChildKeyError(
-            "child keys cannot spawn grandchildren", "nesting_forbidden"
-        )
+        raise ChildKeyError("child keys cannot spawn grandchildren", "nesting_forbidden")
     if parent_id is None:
         # Legacy parent row that pre-dates migration 086 — backfill its
         # id from rowid so the FK + tree-aggregation query both work.
@@ -332,8 +326,7 @@ def issue_child_key(
     # Anti-abuse: count NON-revoked children only — a revoked sibling
     # frees up a slot for a fresh child. Active siblings consume slots.
     (active_children,) = conn.execute(
-        "SELECT COUNT(*) FROM api_keys "
-        "WHERE parent_key_id = ? AND revoked_at IS NULL",
+        "SELECT COUNT(*) FROM api_keys WHERE parent_key_id = ? AND revoked_at IS NULL",
         (parent_id,),
     ).fetchone()
     if int(active_children) >= MAX_CHILDREN_PER_PARENT:
@@ -480,9 +473,7 @@ def revoke_child_by_id(
     return cur.rowcount > 0
 
 
-def revoke_key_tree(
-    conn: sqlite3.Connection, parent_key_hash: str
-) -> int:
+def revoke_key_tree(conn: sqlite3.Connection, parent_key_hash: str) -> int:
     """Cascade-revoke a parent + every active child below it.
 
     Returns the total number of rows flipped to revoked_at. Used by
@@ -505,14 +496,12 @@ def revoke_key_tree(
     total = 0
     if parent_id is not None:
         cur = conn.execute(
-            "UPDATE api_keys SET revoked_at = ? "
-            "WHERE parent_key_id = ? AND revoked_at IS NULL",
+            "UPDATE api_keys SET revoked_at = ? WHERE parent_key_id = ? AND revoked_at IS NULL",
             (now, parent_id),
         )
         total += cur.rowcount
     cur = conn.execute(
-        "UPDATE api_keys SET revoked_at = ? "
-        "WHERE key_hash = ? AND revoked_at IS NULL",
+        "UPDATE api_keys SET revoked_at = ? WHERE key_hash = ? AND revoked_at IS NULL",
         (now, parent_key_hash),
     )
     total += cur.rowcount
@@ -604,9 +593,7 @@ def update_subscription_status_by_id(
     Used from invoice.payment_failed where the payload does not carry the
     full Subscription object.
     """
-    return update_subscription_status(
-        conn, stripe_subscription_id, status=status
-    )
+    return update_subscription_status(conn, stripe_subscription_id, status=status)
 
 
 __all__ = [

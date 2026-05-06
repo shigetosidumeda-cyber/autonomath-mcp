@@ -27,6 +27,7 @@ caller supplies `idempotency_key`, which is derived from the local
 usage_events row id so duplicate calls for the same logical request collide
 and Stripe deduplicates server-side).
 """
+
 from __future__ import annotations
 
 import logging
@@ -190,8 +191,7 @@ def _mark_synced(usage_event_id: int, stripe_record_id: str) -> bool:
         conn = connect()
         try:
             conn.execute(
-                "UPDATE usage_events SET stripe_record_id = ?, stripe_synced_at = ? "
-                "WHERE id = ?",
+                "UPDATE usage_events SET stripe_record_id = ?, stripe_synced_at = ? WHERE id = ?",
                 (
                     stripe_record_id,
                     datetime.now(UTC).isoformat(),
@@ -235,9 +235,7 @@ def _report_sync(
     if not si_id:
         _clear_subscription_item_cache()
         if raise_on_failure:
-            raise UsageReportError(
-                f"metered subscription item not found for {subscription_id}"
-            )
+            raise UsageReportError(f"metered subscription item not found for {subscription_id}")
         return False
     _configure_stripe()
     # Idempotency key MUST be stable per logical request so the inline

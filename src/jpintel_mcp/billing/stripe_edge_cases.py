@@ -621,9 +621,7 @@ def _notify_operator_currency_edge(
             try:
                 r = http.post("/email", json=payload)
                 if r.status_code >= 400:
-                    logger.warning(
-                        "currency_edge.email.api_error status=%d", r.status_code
-                    )
+                    logger.warning("currency_edge.email.api_error status=%d", r.status_code)
             except httpx.HTTPError as exc:
                 logger.warning("currency_edge.email.transport_error err=%s", exc)
     except Exception:  # noqa: BLE001
@@ -786,11 +784,13 @@ def stripe_tax_with_fallback(
         # from amount_total / amount_subtotal so the cache survives a future
         # SDK shape change.
         amount_subtotal = (
-            calc.get("amount_subtotal") if isinstance(calc, dict)
+            calc.get("amount_subtotal")
+            if isinstance(calc, dict)
             else getattr(calc, "amount_subtotal", 0)
         ) or 0
         tax_amount = (
-            calc.get("tax_amount_exclusive") if isinstance(calc, dict)
+            calc.get("tax_amount_exclusive")
+            if isinstance(calc, dict)
             else getattr(calc, "tax_amount_exclusive", 0)
         ) or 0
         rate_bps = (

@@ -5,6 +5,7 @@ must use the same usage_events, monthly-cap, and Stripe-idempotency path as
 normal API requests. This helper builds the minimal ApiContext from api_keys and
 delegates to deps.log_usage() inline.
 """
+
 from __future__ import annotations
 
 import logging
@@ -31,9 +32,7 @@ def _row_get(row: Any, key: str, idx: int, default: Any = None) -> Any:
     return default
 
 
-def _api_context_for_key(
-    conn: sqlite3.Connection, key_hash: str
-) -> ApiContext | None:
+def _api_context_for_key(conn: sqlite3.Connection, key_hash: str) -> ApiContext | None:
     fallback_shape = False
     try:
         row = conn.execute(
@@ -89,9 +88,11 @@ def record_metered_delivery(
     """Record one delivery through the canonical usage/cap billing path.
 
     Returns True when a usage row (or other inline usage-side update) was
-    written. False means the key was missing or the monthly cap final guard
-    blocked the billable row. Stripe reporting remains fire-and-forget inside
-    deps.log_usage().
+    written. False means the key was missing or a non-2xx/non-metered delivery
+    could not be recorded. Paid 2xx deliveries are strict: final cap/audit-row
+    failures propagate from deps.log_usage() so callers cannot return a
+    successful delivery response after billing failed closed. Stripe reporting
+    remains fire-and-forget inside deps.log_usage().
     """
     if not key_hash:
         return False
@@ -100,6 +101,7 @@ def record_metered_delivery(
         _log.warning("metered_delivery.api_key_missing endpoint=%s", endpoint)
         return False
     before = conn.total_changes
+    strict_metering = ctx.metered and 200 <= status_code < 300
     log_usage(
         conn,
         ctx,
@@ -109,5 +111,6 @@ def record_metered_delivery(
         result_count=result_count,
         client_tag=client_tag,
         quantity=quantity,
+        strict_metering=strict_metering,
     )
     return conn.total_changes > before
