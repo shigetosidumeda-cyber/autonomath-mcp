@@ -12,6 +12,7 @@ Schema posture: tests apply 079_saved_searches.sql + 099 channel columns +
 113_weekly_digest_state.sql onto a tmp jpintel.db, then exercise
 `weekly_digest.run_one` and `weekly_digest.run` directly.
 """
+
 from __future__ import annotations
 
 import importlib
@@ -56,6 +57,7 @@ def _apply_migration(conn: sqlite3.Connection, path: Path) -> None:
 
     # Pre-skip ALTER TABLE ADD COLUMN whose column already exists.
     import re
+
     pattern = re.compile(
         r"ALTER\s+TABLE\s+(\w+)\s+ADD\s+COLUMN\s+(\w+)",
         re.IGNORECASE,
@@ -64,9 +66,7 @@ def _apply_migration(conn: sqlite3.Connection, path: Path) -> None:
     for m in pattern.finditer(cleaned):
         table, col = m.group(1), m.group(2)
         try:
-            existing = {
-                r[1] for r in conn.execute(f"PRAGMA table_info({table})").fetchall()
-            }
+            existing = {r[1] for r in conn.execute(f"PRAGMA table_info({table})").fetchall()}
         except sqlite3.OperationalError:
             existing = set()
         if col in existing:
@@ -202,18 +202,12 @@ def weekly_db(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
         )
 
         # Apply migration 079 (saved_searches base) + 099 channel columns + 113.
-        _apply_migration(
-            conn, REPO / "scripts" / "migrations" / "079_saved_searches.sql"
-        )
+        _apply_migration(conn, REPO / "scripts" / "migrations" / "079_saved_searches.sql")
         # 099 — only the saved_searches column-add half (course_subscriptions
         # is unrelated to weekly_digest, but the migration is idempotent so
         # applying the whole thing is fine here).
-        _apply_migration(
-            conn, REPO / "scripts" / "migrations" / "099_recurring_engagement.sql"
-        )
-        _apply_migration(
-            conn, REPO / "scripts" / "migrations" / "113_weekly_digest_state.sql"
-        )
+        _apply_migration(conn, REPO / "scripts" / "migrations" / "099_recurring_engagement.sql")
+        _apply_migration(conn, REPO / "scripts" / "migrations" / "113_weekly_digest_state.sql")
 
         # Seed 5 programs all matching the saved query (prefecture='東京都').
         base_now = datetime.now(UTC)

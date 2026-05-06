@@ -13,7 +13,11 @@ Covers:
 from __future__ import annotations
 
 import json
+import sqlite3
 
+import pytest
+
+from jpintel_mcp.api.deps import hash_api_key
 from jpintel_mcp.models import MINIMAL_FIELD_WHITELIST
 
 # Extra fields only present on fields=full (both endpoints).
@@ -185,6 +189,49 @@ def test_search_minimal_smaller_than_default(client):
         json.dumps(client.get("/v1/programs/search", params={**p}).json(), ensure_ascii=False)
     )
     assert d_min < d_def, f"minimal ({d_min}) should be smaller than default ({d_def})"
+
+
+@pytest.mark.parametrize(
+    ("path", "endpoint"),
+    [
+        ("/v1/programs/search", "programs.search"),
+        ("/v1/programs/UNI-test-s-1", "programs.get"),
+    ],
+)
+def test_paid_final_cap_failure_returns_503_without_usage_event(
+    client,
+    seeded_db,
+    paid_key,
+    monkeypatch,
+    path,
+    endpoint,
+):
+    key_hash = hash_api_key(paid_key)
+
+    def usage_count() -> int:
+        conn = sqlite3.connect(seeded_db)
+        try:
+            (count,) = conn.execute(
+                "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = ?",
+                (key_hash, endpoint),
+            ).fetchone()
+            return int(count)
+        finally:
+            conn.close()
+
+    def _reject_final_cap(*_args, **_kwargs):
+        return False, False
+
+    import jpintel_mcp.api.deps as deps
+
+    before = usage_count()
+    monkeypatch.setattr(deps, "_metered_cap_final_check", _reject_final_cap)
+
+    r = client.get(path, headers={"X-API-Key": paid_key})
+
+    assert r.status_code == 503, r.text
+    assert r.json()["detail"]["code"] == "billing_cap_final_check_failed"
+    assert usage_count() == before
 
 
 # ---------------------------------------------------------------------------

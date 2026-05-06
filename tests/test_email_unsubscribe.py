@@ -17,6 +17,7 @@ Anti-enumeration is implicit in the response shape (always 200 +
 side here — the success-shape stability is what protects against
 "is this email valid" probing.
 """
+
 from __future__ import annotations
 
 import sqlite3

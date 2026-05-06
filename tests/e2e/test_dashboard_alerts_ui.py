@@ -17,6 +17,7 @@ Flow:
 This test is skipped against staging/prod by `_require_local_db` (it
 seeds and revokes a real DB row).
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -54,9 +55,7 @@ async def test_alerts_subscribe_list_delete_flow(
     await page.locator("#dash2-alerts-filter-type").select_option("law_id")
     await page.locator("#dash2-alerts-filter-value").fill("law_345AC0000000050")
     await page.locator("#dash2-alerts-severity").select_option("critical")
-    await page.locator("#dash2-alerts-webhook").fill(
-        "https://hooks.example.com/autonomath/e5-test"
-    )
+    await page.locator("#dash2-alerts-webhook").fill("https://hooks.example.com/autonomath/e5-test")
     await page.locator("#dash2-alerts-email").fill("ops@example.com")
     await page.locator("#dash2-alerts-submit").click()
 
@@ -77,9 +76,7 @@ async def test_alerts_subscribe_list_delete_flow(
     await page.locator("#dash2-alerts-filter-value").fill("law_dummy")
     await page.locator("#dash2-alerts-webhook").fill("https://10.0.0.5/hook")
     await page.locator("#dash2-alerts-submit").click()
-    await expect(banner).to_contain_text(
-        "internal/loopback IP", timeout=3000
-    )
+    await expect(banner).to_contain_text("internal/loopback IP", timeout=3000)
     # The row count must NOT have increased.
     assert await page.locator("#dash2-alerts-tbody tr[data-sub-id]").count() == 1
 

@@ -13,6 +13,7 @@ Coverage:
   10. use_confidence skips events without key_hash (anonymous)
   11. overall_confidence weights by trial count (chatty tool dominates)
 """
+
 from __future__ import annotations
 
 import math
@@ -73,9 +74,9 @@ def test_beta_posterior_rejects_invalid(hits: int, trials: int) -> None:
 
 def test_ci95_more_trials_narrower_band() -> None:
     """As we accumulate evidence the 95% credible band must shrink."""
-    a1, b1 = beta_posterior(1.0, 1.0, 8, 10)        # n=10
-    a2, b2 = beta_posterior(1.0, 1.0, 80, 100)      # n=100
-    a3, b3 = beta_posterior(1.0, 1.0, 800, 1000)    # n=1000
+    a1, b1 = beta_posterior(1.0, 1.0, 8, 10)  # n=10
+    a2, b2 = beta_posterior(1.0, 1.0, 80, 100)  # n=100
+    a3, b3 = beta_posterior(1.0, 1.0, 800, 1000)  # n=1000
     lo1, hi1 = confidence_interval_95(a1, b1)
     lo2, hi2 = confidence_interval_95(a2, b2)
     lo3, hi3 = confidence_interval_95(a3, b3)
@@ -115,14 +116,8 @@ def test_ci95_rejects_non_positive() -> None:
 def test_discovery_per_tool_aggregation() -> None:
     rows = [
         # programs.search: 7/10 hits
-        *[
-            {"tool": "programs.search", "result_count": 5, "cohort": "smb"}
-            for _ in range(7)
-        ],
-        *[
-            {"tool": "programs.search", "result_count": 0, "cohort": "smb"}
-            for _ in range(3)
-        ],
+        *[{"tool": "programs.search", "result_count": 5, "cohort": "smb"} for _ in range(7)],
+        *[{"tool": "programs.search", "result_count": 0, "cohort": "smb"} for _ in range(3)],
         # enforcement.search: 1/2 hits, mixed cohort
         {"tool": "enforcement.search", "result_count": 1, "cohort": "vc"},
         {
@@ -136,9 +131,7 @@ def test_discovery_per_tool_aggregation() -> None:
     assert by_tool["programs.search"]["hits"] == 7
     assert by_tool["programs.search"]["trials"] == 10
     # Posterior mean = (1+7)/(1+1+10) = 8/12 ≈ 0.6667
-    assert math.isclose(
-        by_tool["programs.search"]["discovery"], 8 / 12, rel_tol=1e-12
-    )
+    assert math.isclose(by_tool["programs.search"]["discovery"], 8 / 12, rel_tol=1e-12)
     # Cohort breakdown stores smb but not vc/developer
     assert "smb" in by_tool["programs.search"]["by_cohort"]
     assert by_tool["programs.search"]["by_cohort"]["smb"]["trials"] == 10

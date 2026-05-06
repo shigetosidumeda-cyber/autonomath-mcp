@@ -4,6 +4,7 @@ Pure offline checks (feedback_autonomath_no_api_use): we never hit the live
 API from CI. Only validate the action manifest's YAML, required keys,
 description-length budgets, and example workflow shape.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -42,8 +43,9 @@ def test_action_yml_required_top_keys() -> None:
 
 def test_action_yml_is_composite() -> None:
     data = _load(ACTION_YML)
-    assert data["runs"]["using"] == "composite", \
+    assert data["runs"]["using"] == "composite", (
         "must be a composite action (no Docker / no JS bundle)"
+    )
     steps = data["runs"]["steps"]
     assert isinstance(steps, list) and steps, "composite action needs >=1 step"
     # constraint: keep entrypoint trivial — only shell steps allowed
@@ -59,8 +61,9 @@ def test_action_description_length_budget() -> None:
     data = _load(ACTION_YML)
     desc = data["description"]
     assert isinstance(desc, str)
-    assert 20 <= len(desc) <= 125, \
+    assert 20 <= len(desc) <= 125, (
         f"description must be 20-125 chars (Marketplace tile budget); got {len(desc)}"
+    )
 
 
 def test_action_inputs_contract() -> None:
@@ -98,16 +101,14 @@ def test_action_no_llm_imports() -> None:
     text = ACTION_YML.read_text(encoding="utf-8")
     forbidden = ("anthropic", "openai", "gemini.googleapis", "claude.ai/api")
     for token in forbidden:
-        assert token not in text.lower(), \
-            f"action.yml must not reference LLM provider: {token}"
+        assert token not in text.lower(), f"action.yml must not reference LLM provider: {token}"
 
 
 # --- example workflow --------------------------------------------------------
 
 
 def test_example_workflow_exists() -> None:
-    assert EXAMPLE_WF.is_file(), \
-        "example/.github/workflows/check-subsidies.yml missing"
+    assert EXAMPLE_WF.is_file(), "example/.github/workflows/check-subsidies.yml missing"
 
 
 def test_example_workflow_parses() -> None:
@@ -126,8 +127,7 @@ def test_example_workflow_uses_action() -> None:
             if uses.startswith("bookyou/jpcite-action@"):
                 found = True
                 with_blk = step.get("with") or {}
-                assert "query" in with_blk, \
-                    "example workflow must set 'query' input"
+                assert "query" in with_blk, "example workflow must set 'query' input"
     assert found, "example workflow does not reference bookyou/jpcite-action"
 
 
@@ -141,8 +141,7 @@ def test_license_and_readme_exist() -> None:
 
 def test_readme_has_5_step_section() -> None:
     text = (ACTION_DIR / "README.md").read_text(encoding="utf-8")
-    assert "5-step" in text or "5 step" in text, \
-        "README must include a 5-step usage section"
+    assert "5-step" in text or "5 step" in text, "README must include a 5-step usage section"
     # check the bookyou/jpcite-action handle is documented
     assert "bookyou/jpcite-action" in text
 

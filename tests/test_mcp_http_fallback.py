@@ -12,6 +12,7 @@ call is made. The test file is self-contained — it does not depend on
 the seeded fixtures from conftest because the mode-detection code is
 agnostic to whether jpintel_mcp.config is fully wired.
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -235,13 +236,17 @@ def test_http_call_converts_429_to_mcp_upgrade_payload(
 
     out = _http_fallback.http_call("/v1/programs/search", retry=0)
 
-    assert out["error"] == "quota_exceeded"
-    assert out["status_code"] == 429
-    assert out["path"] == "/v1/programs/search"
-    assert out["message"] == "device-flow upgrade instructions"
-    assert out["upgrade_url"] == "https://jpcite.com/pricing.html#api-paid"
-    assert out["direct_checkout_url"] == "https://jpcite.com/v1/billing/checkout"
-    assert out["trial_signup_url"] == "https://jpcite.com/trial.html"
+    # W9-3: HTTP fallback errors now use §I canonical envelope with
+    # error.code/message dict (not bare string). Legacy fields live
+    # inside the error block.
+    assert isinstance(out["error"], dict)
+    assert out["error"]["code"] == "quota_exceeded"
+    assert out["error"]["status_code"] == 429
+    assert out["error"]["path"] == "/v1/programs/search"
+    assert out["error"]["message"] == "device-flow upgrade instructions"
+    assert out["error"]["upgrade_url"] == "https://jpcite.com/pricing.html#api-paid"
+    assert out["error"]["direct_checkout_url"] == "https://jpcite.com/v1/billing/checkout"
+    assert out["error"]["trial_signup_url"] == "https://jpcite.com/trial.html"
 
 
 # --------------------------------------------------------------------------- #
@@ -255,10 +260,12 @@ def test_remote_only_for_unwired_tool() -> None:
     from jpintel_mcp.mcp._http_fallback import remote_only_error
 
     out = remote_only_error("search_acceptance_stats_am")
-    assert out["error"] == "remote_only_via_REST_API"
-    assert out["tool"] == "search_acceptance_stats_am"
-    assert "rest_api_base" in out
-    assert "remediation" in out
+    # W9-3: §I canonical envelope — extras live inside the error block.
+    assert isinstance(out["error"], dict)
+    assert out["error"]["code"] == "remote_only_via_REST_API"
+    assert out["error"]["tool"] == "search_acceptance_stats_am"
+    assert "rest_api_base" in out["error"]
+    assert "remediation" in out["error"]
 
 
 def test_rule_engine_check_returns_remote_only_in_fallback(
@@ -290,5 +297,7 @@ def test_rule_engine_check_returns_remote_only_in_fallback(
     # production: the early-return shim sits in the tool body itself.
     # We assert the flag is on and the helper returns the right shape.
     out = _http_fallback.remote_only_error("rule_engine_check")
-    assert out["error"] == "remote_only_via_REST_API"
-    assert out["tool"] == "rule_engine_check"
+    # W9-3: §I canonical envelope.
+    assert isinstance(out["error"], dict)
+    assert out["error"]["code"] == "remote_only_via_REST_API"
+    assert out["error"]["tool"] == "rule_engine_check"

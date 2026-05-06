@@ -18,6 +18,7 @@ The legacy inline path (``background_tasks=None``) is also exercised as a
 regression guard so the refactor cannot silently break cron / test
 callers that drive ``log_usage`` directly.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -164,8 +165,7 @@ def test_log_usage_with_bg_tasks_writes_after_drain(
     c.row_factory = sqlite3.Row
     try:
         row = c.execute(
-            "SELECT endpoint, metered, params_digest, status "
-            "FROM usage_events WHERE key_hash = ?",
+            "SELECT endpoint, metered, params_digest, status FROM usage_events WHERE key_hash = ?",
             (kh,),
         ).fetchone()
     finally:

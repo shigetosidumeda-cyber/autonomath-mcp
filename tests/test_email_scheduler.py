@@ -313,8 +313,7 @@ def test_run_due_honors_unsubscribed_recipients(conn: sqlite3.Connection):
     assert captured == []  # no Postmark call
     for kind in ("day1", "day3"):
         row = conn.execute(
-            "SELECT sent_at, last_error FROM email_schedule "
-            "WHERE api_key_id = ? AND kind = ?",
+            "SELECT sent_at, last_error FROM email_schedule WHERE api_key_id = ? AND kind = ?",
             ("hash_abcd1234", kind),
         ).fetchone()
         assert row["sent_at"] is not None, kind

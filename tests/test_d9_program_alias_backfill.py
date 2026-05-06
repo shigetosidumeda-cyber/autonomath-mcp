@@ -60,9 +60,7 @@ def _build_am_db() -> sqlite3.Connection:
 
 
 def test_generate_name_aliases_keeps_search_useful_variants() -> None:
-    aliases = backfill.generate_name_aliases(
-        "IT導入補助金 2026 (インボイス対応類型)"
-    )
+    aliases = backfill.generate_name_aliases("IT導入補助金 2026 (インボイス対応類型)")
 
     assert "IT 導入補助金 2026 (インボイス対応類型)" in aliases
     assert "インボイス対応類型" in aliases
@@ -93,8 +91,7 @@ def test_backfill_program_aliases_updates_programs_and_fts() -> None:
         ("program:one", "program", "IT導入補助金 2026"),
     )
     am.executemany(
-        "INSERT INTO am_alias(entity_table, canonical_id, alias, alias_kind) "
-        "VALUES (?, ?, ?, ?)",
+        "INSERT INTO am_alias(entity_table, canonical_id, alias, alias_kind) VALUES (?, ?, ?, ?)",
         [
             ("am_entities", "program:one", "IT補助金", "abbreviation"),
             ("am_entities", "program:one", "program:one", "legacy"),
@@ -138,8 +135,7 @@ def test_backfill_program_aliases_does_not_overwrite_excluded_or_other_tier() ->
         ("program:one", "program", "IT導入補助金 2026"),
     )
     am.execute(
-        "INSERT INTO am_alias(entity_table, canonical_id, alias, alias_kind) "
-        "VALUES (?, ?, ?, ?)",
+        "INSERT INTO am_alias(entity_table, canonical_id, alias, alias_kind) VALUES (?, ?, ?, ?)",
         ("am_entities", "program:one", "IT補助金", "abbreviation"),
     )
 

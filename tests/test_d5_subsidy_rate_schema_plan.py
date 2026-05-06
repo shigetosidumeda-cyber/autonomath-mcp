@@ -97,9 +97,7 @@ def test_plan_reports_missing_text_column_and_text_contamination(tmp_path: Path)
     assert report["summary_counts"]["contaminated_subsidy_rate_rows"] == 1
     assert report["summary_counts"]["targets_missing_subsidy_rate_text"] == 1
     assert jp_counts["contaminated_subsidy_rate_rows"] == 1
-    assert jp_counts["contaminated_value_samples"] == [
-        {"subsidy_rate_raw": "30%", "rows": 1}
-    ]
+    assert jp_counts["contaminated_value_samples"] == [{"subsidy_rate_raw": "30%", "rows": 1}]
 
     additive_sql = _target_sql(report, "jpintel", "data_preservation_sql")
     assert 'ALTER TABLE "programs" ADD COLUMN subsidy_rate_text TEXT;' in additive_sql

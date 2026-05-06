@@ -10,6 +10,7 @@ Per ``feedback_autonomath_no_api_use``: harness drives the MCP server stdio
 binary directly; LLM-side reasoning is the customer's responsibility. We do
 NOT call the Anthropic API from this process.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -201,9 +202,7 @@ def assert_thresholds(a: dict[str, Any], b: dict[str, Any], c: dict[str, Any]) -
 
 def _spawn_client() -> MCPStdioClient:
     if not MCP_BINARY.exists():
-        raise SystemExit(
-            f"missing {MCP_BINARY} - run `pip install -e .[dev]` first"
-        )
+        raise SystemExit(f"missing {MCP_BINARY} - run `pip install -e .[dev]` first")
     env = os.environ.copy()
     env["AUTONOMATH_ENABLED"] = "1"
     env["AUTONOMATH_36_KYOTEI_ENABLED"] = "0"

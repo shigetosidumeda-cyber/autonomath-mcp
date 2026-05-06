@@ -24,6 +24,7 @@ these three layers had no test:
 These tests exercise the full chain: TestClient → router → handler →
 _apply_envelope → response_model serialisation → JSON wire.
 """
+
 from __future__ import annotations
 
 import sys
@@ -71,16 +72,16 @@ def test_am_endpoint_zero_result_emits_envelope_hint(client):
     body = r.json()
     # The L5 envelope must populate something callers can pivot on.
     meta = body.get("meta") or {}
-    has_meta_suggestions = isinstance(meta.get("suggestions"), list) and len(
-        meta.get("suggestions") or []
-    ) > 0
-    has_actions = isinstance(body.get("suggested_actions"), list) and len(
-        body.get("suggested_actions") or []
-    ) > 0
+    has_meta_suggestions = (
+        isinstance(meta.get("suggestions"), list) and len(meta.get("suggestions") or []) > 0
+    )
+    has_actions = (
+        isinstance(body.get("suggested_actions"), list)
+        and len(body.get("suggested_actions") or []) > 0
+    )
     has_status = body.get("status") in ("empty", "ok")
     assert has_meta_suggestions or has_actions or has_status, (
-        f"empty /v1/am/tax_incentives produced no envelope hint: "
-        f"keys={sorted(body.keys())}"
+        f"empty /v1/am/tax_incentives produced no envelope hint: keys={sorted(body.keys())}"
     )
 
 
@@ -96,7 +97,9 @@ def test_envelope_merge_native_meta_survives_apply():
     from jpintel_mcp.api.autonomath import _apply_envelope
 
     result = {
-        "total": 1, "limit": 20, "offset": 0,
+        "total": 1,
+        "limit": 20,
+        "offset": 0,
         "results": [{"x": 1}],
         "meta": {"data_as_of": "2026-04-25"},
     }
@@ -142,12 +145,9 @@ def test_response_model_does_not_strip_envelope_only_keys(client):
         assert k in body, f"L6 contract key {k} missing from {sorted(body.keys())}"
     # L5 additions ride alongside thanks to extra="allow".
     extra_keys_present = any(
-        k in body
-        for k in ("status", "tool_name", "api_version", "suggested_actions")
+        k in body for k in ("status", "tool_name", "api_version", "suggested_actions")
     )
-    assert extra_keys_present, (
-        f"L5 envelope keys stripped by response_model: {sorted(body.keys())}"
-    )
+    assert extra_keys_present, f"L5 envelope keys stripped by response_model: {sorted(body.keys())}"
 
 
 def test_response_model_carries_extra_meta_fields(client):
@@ -236,8 +236,7 @@ def test_tool_level_fields_minimal_keeps_envelope_meta():
     meta = out.get("meta") or {}
     # On empty result, meta.suggestions must still surface.
     assert "suggestions" in meta, (
-        f"tool-level fields=minimal incorrectly skipped envelope meta: "
-        f"keys={sorted(meta.keys())}"
+        f"tool-level fields=minimal incorrectly skipped envelope meta: keys={sorted(meta.keys())}"
     )
 
 

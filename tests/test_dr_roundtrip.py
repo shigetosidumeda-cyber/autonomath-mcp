@@ -6,6 +6,7 @@ against a fixture SQLite DB, asserting bit-identical row counts post-restore.
 
 Network / R2 paths are NOT exercised — local filesystem only.
 """
+
 from __future__ import annotations
 
 import gzip
@@ -38,7 +39,9 @@ if not BACKUP_SCRIPT.is_file() or not RESTORE_SCRIPT.is_file():
 # ---------------------------------------------------------------------------
 
 
-def _seed_fixture_db(db_path: Path, *, n_programs: int = 40, n_keys: int = 20, n_events: int = 60) -> dict[str, int]:
+def _seed_fixture_db(
+    db_path: Path, *, n_programs: int = 40, n_keys: int = 20, n_events: int = 60
+) -> dict[str, int]:
     """Build a small but realistic schema mirror with ~100 rows total."""
     db_path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(str(db_path))
@@ -72,7 +75,14 @@ def _seed_fixture_db(db_path: Path, *, n_programs: int = 40, n_keys: int = 20, n
             tier = ["S", "A", "B", "C"][i % 4]
             conn.execute(
                 "INSERT INTO programs VALUES (?,?,?,?,?,?)",
-                (f"UNI-fix-{i:04d}", f"DR fixture program #{i}", tier, "東京都", 100 * (i + 1), now),
+                (
+                    f"UNI-fix-{i:04d}",
+                    f"DR fixture program #{i}",
+                    tier,
+                    "東京都",
+                    100 * (i + 1),
+                    now,
+                ),
             )
         for i in range(n_keys):
             conn.execute(
@@ -110,9 +120,12 @@ def backup_artifact(
         [
             sys.executable,
             str(BACKUP_SCRIPT),
-            "--db", str(src_db),
-            "--out", str(out_dir),
-            "--keep", "0",
+            "--db",
+            str(src_db),
+            "--out",
+            str(out_dir),
+            "--keep",
+            "0",
             "--gzip",
         ],
         capture_output=True,
@@ -190,7 +203,8 @@ def test_restore_to_new_target_preserves_row_counts(
             sys.executable,
             str(RESTORE_SCRIPT),
             str(gz_path),
-            "--target", str(target),
+            "--target",
+            str(target),
             "--yes",
         ],
         capture_output=True,
@@ -257,8 +271,7 @@ def test_restore_refuses_corrupted_backup(
         timeout=60,
     )
     assert proc.returncode != 0, (
-        f"restore.py accepted a truncated backup (rc=0). "
-        f"stdout={proc.stdout} stderr={proc.stderr}"
+        f"restore.py accepted a truncated backup (rc=0). stdout={proc.stdout} stderr={proc.stderr}"
     )
     # Either checksum mismatch or decompression error must surface in logs.
     combined = (proc.stderr + proc.stdout).lower()

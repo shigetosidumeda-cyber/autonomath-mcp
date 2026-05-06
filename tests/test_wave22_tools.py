@@ -95,8 +95,7 @@ def known_program_id() -> str:
         ).fetchone()
         if not row:
             row = con.execute(
-                "SELECT canonical_id FROM am_entities "
-                "WHERE record_kind = 'program' LIMIT 1"
+                "SELECT canonical_id FROM am_entities WHERE record_kind = 'program' LIMIT 1"
             ).fetchone()
         if not row:
             pytest.skip("am_entities has no program rows")
@@ -146,19 +145,23 @@ def test_migration_102_dd_question_templates_loaded() -> None:
     industry_specific / lifecycle / tax / governance)."""
     con = sqlite3.connect(_DB_PATH)
     try:
-        row = con.execute(
-            "SELECT COUNT(*) FROM dd_question_templates"
-        ).fetchone()
+        row = con.execute("SELECT COUNT(*) FROM dd_question_templates").fetchone()
         assert row is not None
         assert row[0] >= 60, f"expected >=60 question templates, got {row[0]}"
         cats = {
-            r[0] for r in con.execute(
+            r[0]
+            for r in con.execute(
                 "SELECT DISTINCT question_category FROM dd_question_templates"
             ).fetchall()
         }
         expected = {
-            "credit", "enforcement", "invoice_compliance",
-            "industry_specific", "lifecycle", "tax", "governance",
+            "credit",
+            "enforcement",
+            "invoice_compliance",
+            "industry_specific",
+            "lifecycle",
+            "tax",
+            "governance",
         }
         missing = expected - cats
         assert not missing, f"missing categories: {missing}"
@@ -189,14 +192,14 @@ def test_match_dd_questions_happy_path(known_houjin_bangou: str) -> None:
     # _next_calls compounding hints.
     next_tools = {nc["tool"] for nc in out["_next_calls"]}
     # The compounding hint should propose at least one Wave 22 cross-tool.
-    assert "cross_check_jurisdiction" in next_tools or \
-           "prepare_kessan_briefing" in next_tools
+    assert "cross_check_jurisdiction" in next_tools or "prepare_kessan_briefing" in next_tools
 
 
 def test_match_dd_questions_invalid_houjin_bangou() -> None:
     out = _match_dd_questions_impl(houjin_bangou="abc")
     assert out.get("error", {}).get("code") in (
-        "missing_required_arg", "invalid_enum",
+        "missing_required_arg",
+        "invalid_enum",
     )
 
 
@@ -225,7 +228,8 @@ def test_prepare_kessan_briefing_invalid_fy() -> None:
         fiscal_year="not-a-year",  # type: ignore[arg-type]
     )
     assert out.get("error", {}).get("code") in (
-        "invalid_enum", "missing_required_arg",
+        "invalid_enum",
+        "missing_required_arg",
     )
 
 
@@ -245,8 +249,10 @@ def test_forecast_program_renewal_happy_path(known_program_id: str) -> None:
     # Signals dict, when present, has the four expected components.
     if "signals" in out:
         for k in (
-            "frequency_signal", "recency_signal",
-            "pipeline_signal", "snapshot_signal",
+            "frequency_signal",
+            "recency_signal",
+            "pipeline_signal",
+            "snapshot_signal",
         ):
             assert k in out["signals"]
 

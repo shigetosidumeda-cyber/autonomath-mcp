@@ -26,6 +26,7 @@ These are the 3-layer interaction edge cases. Production code is read-only;
 tests target only the public ``_envelope_merge`` / ``_apply_envelope`` /
 ``_with_mcp_telemetry`` / ``SearchResponse`` surfaces.
 """
+
 from __future__ import annotations
 
 import sys
@@ -110,10 +111,17 @@ def test_native_meta_data_as_of_wins_over_envelope():
     # Original native key preserved verbatim.
     assert meta.get("data_as_of") == "2026-04-25"
     # Envelope keys are additive — at least one of them lands.
-    assert any(k in meta for k in (
-        "suggestions", "wall_time_ms", "token_estimate", "tips",
-        "alternative_intents", "input_warnings",
-    ))
+    assert any(
+        k in meta
+        for k in (
+            "suggestions",
+            "wall_time_ms",
+            "token_estimate",
+            "tips",
+            "alternative_intents",
+            "input_warnings",
+        )
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -260,7 +268,9 @@ def test_rest_apply_envelope_helper_emits_eight_keys():
         "results": [],
     }
     out = _apply_envelope(
-        "search_tax_incentives", result, query="zzzzzzzzz_no_match",
+        "search_tax_incentives",
+        result,
+        query="zzzzzzzzz_no_match",
     )
     # All 8 REST-side envelope keys must land on the merged dict.
     for key in _REST_ENVELOPE_ADDITIVE:

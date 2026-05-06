@@ -11,6 +11,7 @@ from jpintel_mcp.utils.jp_money import format_yen, parse_yen, parse_yen_range
 # parse_yen — happy path
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.parametrize(
     ("raw", "expected"),
     [
@@ -39,6 +40,7 @@ def test_parse_yen_happy(raw: str, expected: int) -> None:
 # ---------------------------------------------------------------------------
 # parse_yen — negative markers
 # ---------------------------------------------------------------------------
+
 
 def test_parse_yen_triangle_negative() -> None:
     assert parse_yen("△500") == -500
@@ -73,6 +75,7 @@ def test_parse_yen_double_negative_cancels() -> None:
 # parse_yen — full-width / NFKC
 # ---------------------------------------------------------------------------
 
+
 def test_parse_yen_fullwidth_digits() -> None:
     assert parse_yen("１，０００") == 1_000
 
@@ -88,6 +91,7 @@ def test_parse_yen_fullwidth_man_with_yen() -> None:
 # ---------------------------------------------------------------------------
 # parse_yen — type passthrough
 # ---------------------------------------------------------------------------
+
 
 def test_parse_yen_int_passthrough() -> None:
     assert parse_yen(1000) == 1000
@@ -105,6 +109,7 @@ def test_parse_yen_negative_float_truncates_toward_zero() -> None:
 # ---------------------------------------------------------------------------
 # parse_yen — error cases
 # ---------------------------------------------------------------------------
+
 
 def test_parse_yen_percent_raises() -> None:
     with pytest.raises(ValueError):
@@ -147,6 +152,7 @@ def test_parse_yen_bool_raises() -> None:
 # parse_yen_range
 # ---------------------------------------------------------------------------
 
+
 def test_range_man_tilde() -> None:
     assert parse_yen_range("100万〜500万") == (1_000_000, 5_000_000)
 
@@ -183,6 +189,7 @@ def test_range_with_yen_suffix_both_sides() -> None:
 # ---------------------------------------------------------------------------
 # format_yen
 # ---------------------------------------------------------------------------
+
 
 def test_format_auto_yen() -> None:
     assert format_yen(1_500) == "1,500円"
@@ -235,6 +242,7 @@ def test_format_non_int_raises() -> None:
 # ---------------------------------------------------------------------------
 # Inverse property: parse(format(n)) == n for representative n
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.parametrize(
     "n",

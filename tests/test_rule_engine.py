@@ -81,8 +81,7 @@ def test_rule_engine_compat_pair_resolution_incompatible():
     # No error envelope expected (this is a clean DENY, not a conflict).
     assert res.get("error") is None or res["error"].get("code") != "rules_conflict"
     assert res["judgment"] == "deny", (
-        f"expected judgment=deny for incompatible pair {pa!r}+{pb!r}, "
-        f"got {res['judgment']!r}"
+        f"expected judgment=deny for incompatible pair {pa!r}+{pb!r}, got {res['judgment']!r}"
     )
     # Evidence must include at least one am_compat_matrix row.
     sources = {ev["source"] for ev in res["evidence"]}
@@ -137,26 +136,30 @@ def test_rule_engine_rules_conflict_returns_explicit_error():
         def __getitem__(self, key):  # type: ignore[override]
             return super().__getitem__(key)
 
-    deny_row = _FakeRow({
-        "rule_id": "exclusion:fake-deny-001",
-        "source_table": "jpi_exclusion_rules",
-        "scope_program_id": pa,
-        "pair_program_id": pb,
-        "kind": "exclude",
-        "severity": "critical",
-        "message_ja": "synthetic-deny: A and B forbidden",
-        "source_url": "https://example.test/deny",
-    })
-    allow_row = _FakeRow({
-        "rule_id": "compat:fake-allow-001",
-        "source_table": "am_compat_matrix",
-        "scope_program_id": pa,
-        "pair_program_id": pb,
-        "kind": "compat:compatible",
-        "severity": "info",
-        "message_ja": "synthetic-allow: A and B OK",
-        "source_url": "https://example.test/allow",
-    })
+    deny_row = _FakeRow(
+        {
+            "rule_id": "exclusion:fake-deny-001",
+            "source_table": "jpi_exclusion_rules",
+            "scope_program_id": pa,
+            "pair_program_id": pb,
+            "kind": "exclude",
+            "severity": "critical",
+            "message_ja": "synthetic-deny: A and B forbidden",
+            "source_url": "https://example.test/deny",
+        }
+    )
+    allow_row = _FakeRow(
+        {
+            "rule_id": "compat:fake-allow-001",
+            "source_table": "am_compat_matrix",
+            "scope_program_id": pa,
+            "pair_program_id": pb,
+            "kind": "compat:compatible",
+            "severity": "info",
+            "message_ja": "synthetic-allow: A and B OK",
+            "source_url": "https://example.test/allow",
+        }
+    )
 
     def fake_fetch(conn, program_id, pair_id):
         if pair_id == pb:
@@ -171,16 +174,12 @@ def test_rule_engine_rules_conflict_returns_explicit_error():
         _rule_engine_check_impl.__globals__,
         {"_fetch_rules_for_pair": fake_fetch},
     ):
-        res = _rule_engine_check_impl(
-            program_id=pa, alongside_programs=[pb]
-        )
+        res = _rule_engine_check_impl(program_id=pa, alongside_programs=[pb])
 
     # Conflict must surface.
     err = res.get("error")
     assert isinstance(err, dict), f"expected error envelope, got {res}"
-    assert err.get("code") == "rules_conflict", (
-        f"expected code=rules_conflict, got {err}"
-    )
+    assert err.get("code") == "rules_conflict", f"expected code=rules_conflict, got {err}"
     # judgment label set to 'conflict' on the top level.
     assert res.get("judgment") == "conflict"
     # Both rule_ids must be present in the evidence — never silently merged.
@@ -225,12 +224,8 @@ def test_rule_engine_unknown_bucket_returns_unknown_with_reason():
     # confidence is low for unknown.
     assert res["confidence"] <= 0.5
     # The unknown evidence row must be in the trace.
-    has_unknown = any(
-        ev["rule_kind"] == "compat:unknown" for ev in res["evidence"]
-    )
-    assert has_unknown, (
-        "expected at least one compat:unknown rule in evidence trace"
-    )
+    has_unknown = any(ev["rule_kind"] == "compat:unknown" for ev in res["evidence"])
+    assert has_unknown, "expected at least one compat:unknown rule in evidence trace"
 
 
 # ---------------------------------------------------------------------------

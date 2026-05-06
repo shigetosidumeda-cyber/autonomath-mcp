@@ -74,9 +74,7 @@ def entity_with_sources() -> str:
     """A canonical_id that has at least one row in am_entity_source."""
     con = sqlite3.connect(_DB_PATH)
     try:
-        row = con.execute(
-            "SELECT entity_id FROM am_entity_source LIMIT 1"
-        ).fetchone()
+        row = con.execute("SELECT entity_id FROM am_entity_source LIMIT 1").fetchone()
         if not row:
             pytest.skip("am_entity_source is empty")
         return row[0]
@@ -140,15 +138,11 @@ def test_get_provenance_happy_returns_sources_with_required_fields(
     # Required field shape per spec
     assert src.get("source_id") is not None
     assert "license" in src
-    assert src["license"] in _VALID_LICENSES, (
-        f"license {src['license']!r} outside closed enum"
-    )
+    assert src["license"] in _VALID_LICENSES, f"license {src['license']!r} outside closed enum"
     # fetched_at (am_entity_source.promoted_at) — when present, must be ISO8601.
     fetched = src.get("fetched_at")
     if fetched is not None:
-        assert _ISO8601_RE.match(str(fetched)), (
-            f"fetched_at not ISO 8601: {fetched!r}"
-        )
+        assert _ISO8601_RE.match(str(fetched)), f"fetched_at not ISO 8601: {fetched!r}"
     # source_url + role + domain are also expected.
     assert "source_url" in src
     assert "role" in src
@@ -167,7 +161,9 @@ def test_get_provenance_empty_entity_id_returns_missing_required_arg():
 
 def test_get_provenance_include_facts_returns_facts_array(entity_with_sources: str):
     res = get_provenance(
-        entity_id=entity_with_sources, include_facts=True, fact_limit=5,
+        entity_id=entity_with_sources,
+        include_facts=True,
+        fact_limit=5,
     )
     assert "facts" in res
     assert isinstance(res["facts"], list)

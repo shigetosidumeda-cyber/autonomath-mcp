@@ -207,9 +207,7 @@ def test_cli_writes_dry_run_plan_without_mutating_temp_db(tmp_path: Path) -> Non
     db_path = tmp_path / "jpintel.db"
     output = tmp_path / "plan.json"
     conn = _build_program_db(db_path, include_fact_tables=False)
-    before_columns = [
-        row["name"] for row in conn.execute("PRAGMA table_info(programs)").fetchall()
-    ]
+    before_columns = [row["name"] for row in conn.execute("PRAGMA table_info(programs)").fetchall()]
     before_rows = conn.execute("SELECT COUNT(*) FROM programs").fetchone()[0]
     conn.close()
 
@@ -237,9 +235,7 @@ def test_cli_writes_dry_run_plan_without_mutating_temp_db(tmp_path: Path) -> Non
     assert "am_entity_facts table is missing" in " ".join(payload["blockers"])
 
     conn = _connect(db_path)
-    after_columns = [
-        row["name"] for row in conn.execute("PRAGMA table_info(programs)").fetchall()
-    ]
+    after_columns = [row["name"] for row in conn.execute("PRAGMA table_info(programs)").fetchall()]
     after_rows = conn.execute("SELECT COUNT(*) FROM programs").fetchone()[0]
     conn.close()
     assert after_columns == before_columns

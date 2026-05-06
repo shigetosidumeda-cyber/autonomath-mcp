@@ -1,4 +1,5 @@
 """Tests for the self-serve dashboard endpoints (/v1/session, /v1/me/*)."""
+
 from __future__ import annotations
 
 import base64
@@ -50,7 +51,6 @@ def _csrf_headers(client) -> dict:
     """
     tok = client.cookies.get("am_csrf")
     return {"X-CSRF-Token": tok} if tok else {}
-
 
 
 @pytest.fixture()
@@ -371,8 +371,8 @@ def test_usage_aggregates_daily_counts(client, paid_key, seeded_db: Path):
     rows = (
         [(kh, "meta", _ts(today, 9), 200, 0)] * 3
         + [(kh, "meta", _ts(today, 10), 200, 0)] * 2  # 5 today
-        + [(kh, "meta", _ts(y1, 9), 200, 0)] * 7      # 7 yesterday
-        + [(kh, "meta", _ts(y2, 9), 200, 0)] * 1      # 1 day-2
+        + [(kh, "meta", _ts(y1, 9), 200, 0)] * 7  # 7 yesterday
+        + [(kh, "meta", _ts(y2, 9), 200, 0)] * 1  # 1 day-2
     )
     c = sqlite3.connect(seeded_db)
     try:
@@ -426,9 +426,7 @@ def test_billing_portal_free_tier_returns_404(client, seeded_db: Path):
     # promise that doesn't exist.)
     c = sqlite3.connect(seeded_db)
     c.row_factory = sqlite3.Row
-    raw = issue_key(
-        c, customer_id=None, tier="free", stripe_subscription_id=None
-    )
+    raw = issue_key(c, customer_id=None, tier="free", stripe_subscription_id=None)
     c.commit()
     c.close()
 
@@ -473,9 +471,7 @@ def test_billing_portal_happy_path_mocks_stripe(client, paid_key, monkeypatch):
     assert "/dashboard" in fake_created[0]["return_url"]
 
 
-def test_billing_portal_rejects_child_key(
-    client, paid_key, monkeypatch, seeded_db: Path
-):
+def test_billing_portal_rejects_child_key(client, paid_key, monkeypatch, seeded_db: Path):
     from jpintel_mcp.api import me as me_mod
 
     c = sqlite3.connect(seeded_db)
@@ -496,9 +492,7 @@ def test_billing_portal_rejects_child_key(
         called.append(kwargs)
         raise AssertionError("child key must not open Stripe billing portal")
 
-    monkeypatch.setattr(
-        me_mod.stripe.billing_portal.Session, "create", _should_not_be_called
-    )
+    monkeypatch.setattr(me_mod.stripe.billing_portal.Session, "create", _should_not_be_called)
 
     r = client.post("/v1/session", json={"api_key": child_raw})
     assert r.status_code == 200, r.text
@@ -704,9 +698,7 @@ class _ConnProxy:
         return getattr(self._conn, name)
 
 
-def test_p01_atomic_rotation_insert_failure_keeps_old_key_valid(
-    paid_key, seeded_db: Path
-):
+def test_p01_atomic_rotation_insert_failure_keeps_old_key_valid(paid_key, seeded_db: Path):
     """P0-1: failure during the INSERT half must roll back the UPDATE so
     the old key remains valid (atomic rotation).
 
@@ -786,9 +778,7 @@ def test_p01_atomic_rotation_insert_failure_keeps_old_key_valid(
         ).fetchone()
         assert row is not None, "old key row must still exist"
         # UPDATE rolled back → revoked_at is still NULL
-        assert row["revoked_at"] is None, (
-            f"UPDATE not rolled back: revoked_at={row['revoked_at']}"
-        )
+        assert row["revoked_at"] is None, f"UPDATE not rolled back: revoked_at={row['revoked_at']}"
         # No orphan new key was inserted (INSERT failed before commit).
         # We can't know the new_hash without seeing it, but we can check
         # that the row count for our customer didn't grow by 1 from this
@@ -798,9 +788,7 @@ def test_p01_atomic_rotation_insert_failure_keeps_old_key_valid(
         c.close()
 
 
-def test_p03_monthly_cap_yen_preserved_across_rotation(
-    client, paid_key, seeded_db: Path
-):
+def test_p03_monthly_cap_yen_preserved_across_rotation(client, paid_key, seeded_db: Path):
     """P0-3: monthly_cap_yen on the old key carries to the new key."""
     from jpintel_mcp.api.deps import hash_api_key
 
@@ -835,9 +823,7 @@ def test_p03_monthly_cap_yen_preserved_across_rotation(
         c.close()
 
 
-def test_p03_alert_subscriptions_migrate_to_new_key(
-    client, paid_key, seeded_db: Path
-):
+def test_p03_alert_subscriptions_migrate_to_new_key(client, paid_key, seeded_db: Path):
     """P0-3: alert_subscriptions pointing at the old key_hash get rebound
     to the new key_hash on rotation."""
     from jpintel_mcp.api.deps import hash_api_key
@@ -893,9 +879,7 @@ def test_p03_alert_subscriptions_migrate_to_new_key(
         c.close()
 
 
-def test_bonus_rotation_reissues_session_cookie_for_new_key(
-    client, paid_key, seeded_db: Path
-):
+def test_bonus_rotation_reissues_session_cookie_for_new_key(client, paid_key, seeded_db: Path):
     """Bonus: the rotate-key response sets a fresh cookie bound to the
     NEW key_hash, so /v1/me succeeds with the cookie that came back
     from the rotate response."""
@@ -924,9 +908,7 @@ def test_bonus_rotation_reissues_session_cookie_for_new_key(
     assert r.json()["tier"] == "paid"
 
 
-def test_p01_concurrent_rotation_only_creates_one_new_key(
-    client, paid_key, seeded_db: Path
-):
+def test_p01_concurrent_rotation_only_creates_one_new_key(client, paid_key, seeded_db: Path):
     """P0-1: N threads racing to /v1/me/rotate-key for the SAME old key
     end up with exactly one rotation winner — the others 401 (key already
     revoked inside the txn) or 5xx (writer-lock contention). Never end
@@ -961,10 +943,7 @@ def test_p01_concurrent_rotation_only_creates_one_new_key(
     n = 4
     results: list[int] = [0] * n
     new_keys: list[str] = [""] * n
-    threads = [
-        threading.Thread(target=_worker, args=(results, new_keys, i))
-        for i in range(n)
-    ]
+    threads = [threading.Thread(target=_worker, args=(results, new_keys, i)) for i in range(n)]
     for t in threads:
         t.start()
     for t in threads:
@@ -998,14 +977,11 @@ def test_p01_concurrent_rotation_only_creates_one_new_key(
     # threads produced a new key (which would mean the txn wasn't
     # atomic w.r.t. the revoked-at gate).
     assert successes <= 1, (
-        f"expected ≤1 successful rotation, got {successes}; "
-        f"results={results}, new_keys={new_keys}"
+        f"expected ≤1 successful rotation, got {successes}; results={results}, new_keys={new_keys}"
     )
 
 
-def test_billing_portal_stripe_error_returns_subsystem_unavailable(
-    client, paid_key, monkeypatch
-):
+def test_billing_portal_stripe_error_returns_subsystem_unavailable(client, paid_key, monkeypatch):
     """Stripe failures must surface as a generic 503 envelope, not leak
     the upstream error message."""
     import stripe
@@ -1054,8 +1030,7 @@ def test_audit_log_rotate_key_writes_one_row(client, paid_key, seeded_db: Path):
     c.row_factory = sqlite3.Row
     try:
         n_before = c.execute(
-            "SELECT COUNT(*) AS n FROM audit_log "
-            "WHERE event_type = 'key_rotate' AND key_hash = ?",
+            "SELECT COUNT(*) AS n FROM audit_log WHERE event_type = 'key_rotate' AND key_hash = ?",
             (old_hash,),
         ).fetchone()["n"]
     finally:

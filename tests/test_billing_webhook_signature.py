@@ -28,6 +28,7 @@ Test taxonomy (audit a37c4ec09836f3f93):
 10. Multiple v1 signatures (rotation) → valid one wins
 11. invoice.payment_failed → dunning email enqueue
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -80,9 +81,7 @@ def stripe_env(monkeypatch):
 
     monkeypatch.setattr(settings, "stripe_secret_key", "sk_test_dummy", raising=False)
     monkeypatch.setattr(settings, "stripe_webhook_secret", WHSEC_TEST, raising=False)
-    monkeypatch.setattr(
-        settings, "stripe_price_per_request", "price_metered_test", raising=False
-    )
+    monkeypatch.setattr(settings, "stripe_price_per_request", "price_metered_test", raising=False)
     monkeypatch.setattr(settings, "env", "dev", raising=False)
     yield settings
 
@@ -99,9 +98,10 @@ def test_hand_signature_validates_via_stripe_sdk():
     payload = b'{"id":"evt_roundtrip","type":"ping"}'
     header, _ = _sign_payload(payload)
     # Direct call. Raises SignatureVerificationError on mismatch.
-    assert WebhookSignature.verify_header(
-        payload.decode("utf-8"), header, WHSEC_TEST, tolerance=300
-    ) is True
+    assert (
+        WebhookSignature.verify_header(payload.decode("utf-8"), header, WHSEC_TEST, tolerance=300)
+        is True
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -131,20 +131,14 @@ def _sub_updated_payload(
                 "status": "active",
                 "current_period_end": 1900000000,
                 "cancel_at_period_end": False,
-                "items": {
-                    "data": [
-                        {"price": {"id": "price_metered_test"}}
-                    ]
-                },
+                "items": {"data": [{"price": {"id": "price_metered_test"}}]},
             }
         },
     }
     return json.dumps(body, separators=(",", ":")).encode("utf-8")
 
 
-def _trial_will_end_payload(
-    *, event_id: str = "evt_trial_will_end"
-) -> bytes:
+def _trial_will_end_payload(*, event_id: str = "evt_trial_will_end") -> bytes:
     body = {
         "id": event_id,
         "object": "event",
@@ -157,20 +151,14 @@ def _trial_will_end_payload(
                 "customer": "cus_trial_real",
                 "trial_end": 1900000000,
                 "status": "trialing",
-                "items": {
-                    "data": [
-                        {"price": {"id": "price_metered_test"}}
-                    ]
-                },
+                "items": {"data": [{"price": {"id": "price_metered_test"}}]},
             }
         },
     }
     return json.dumps(body, separators=(",", ":")).encode("utf-8")
 
 
-def _payment_failed_payload(
-    *, event_id: str = "evt_payment_failed_real_sig"
-) -> bytes:
+def _payment_failed_payload(*, event_id: str = "evt_payment_failed_real_sig") -> bytes:
     body = {
         "id": event_id,
         "object": "event",
@@ -195,9 +183,7 @@ def _payment_failed_payload(
 # ---------------------------------------------------------------------------
 
 
-def test_valid_signature_returns_200_and_records_dedup_row(
-    client, stripe_env, seeded_db: Path
-):
+def test_valid_signature_returns_200_and_records_dedup_row(client, stripe_env, seeded_db: Path):
     payload = _sub_updated_payload(event_id="evt_real_sig_valid")
     header, _ = _sign_payload(payload)
 
@@ -348,9 +334,7 @@ def test_replay_same_signature_dedup_hit(client, stripe_env, seeded_db: Path):
 
 def test_livemode_false_in_dev_processes(client, stripe_env, seeded_db: Path):
     """env=dev + livemode=False matches → 200 + processed."""
-    payload = _sub_updated_payload(
-        event_id="evt_real_sig_lm_dev", livemode=False
-    )
+    payload = _sub_updated_payload(event_id="evt_real_sig_lm_dev", livemode=False)
     header, _ = _sign_payload(payload)
     r = client.post(
         "/v1/billing/webhook",
@@ -371,9 +355,7 @@ def test_livemode_false_in_prod_env_skipped(client, stripe_env, monkeypatch):
     from jpintel_mcp.config import settings
 
     monkeypatch.setattr(settings, "env", "prod", raising=False)
-    payload = _sub_updated_payload(
-        event_id="evt_real_sig_lm_prod_skip", livemode=False
-    )
+    payload = _sub_updated_payload(event_id="evt_real_sig_lm_prod_skip", livemode=False)
     header, _ = _sign_payload(payload)
     r = client.post(
         "/v1/billing/webhook",
@@ -389,9 +371,7 @@ def test_livemode_false_in_prod_env_skipped(client, stripe_env, monkeypatch):
 # ---------------------------------------------------------------------------
 
 
-def test_oversize_content_length_returns_413_before_signature_check(
-    client, stripe_env
-):
+def test_oversize_content_length_returns_413_before_signature_check(client, stripe_env):
     """1 MB+1 byte must 413 even with a structurally invalid signature.
 
     The cheap reject MUST happen before the signature path — otherwise

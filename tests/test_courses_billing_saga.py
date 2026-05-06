@@ -13,6 +13,7 @@ Constraints:
 - 8 cases — first half exercise happy path + clean-fail; second half exercise edge cases.
 - src/ implementation is a placeholder; helpers in this file are call surrogates.
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -46,7 +47,9 @@ def _saga_begin(conn: sqlite3.Connection, sub_id: int, key_hash: str, day_n: int
     return int(cur.lastrowid or 0)
 
 
-def _saga_finish(conn: sqlite3.Connection, saga_id: int, *, status: str, error: str | None = None) -> None:
+def _saga_finish(
+    conn: sqlite3.Connection, saga_id: int, *, status: str, error: str | None = None
+) -> None:
     conn.execute(
         "UPDATE courses_billing_saga SET status=?, error_msg=? WHERE id=?",
         (status, error, saga_id),
@@ -196,13 +199,9 @@ def test_cap_exceeded_503_no_partial_state(
     assert partial_count == 0
 
 
-def test_stripe_webhook_timeout_retry(
-    jpintel_conn, mock_stripe_client, mock_postmark
-) -> None:
+def test_stripe_webhook_timeout_retry(jpintel_conn, mock_stripe_client, mock_postmark) -> None:
     """Idempotency-Key collision should fail-fast on first try, succeed on retry."""
-    mock_stripe_client.idempotency_collision.add(
-        "courses.delivery:kaikei_pack_30day:hash_xx:day_1"
-    )
+    mock_stripe_client.idempotency_collision.add("courses.delivery:kaikei_pack_30day:hash_xx:day_1")
     first = subscribe_course_pattern_a(
         jpintel_conn,
         api_key_hash="hash_xx",
@@ -265,9 +264,7 @@ def test_reconcile_cron_finds_partial_state_zero(
     assert reconcile_courses(jpintel_conn) == 0
 
 
-def test_idempotency_cache_dedup(
-    jpintel_conn, mock_stripe_client, mock_postmark
-) -> None:
+def test_idempotency_cache_dedup(jpintel_conn, mock_stripe_client, mock_postmark) -> None:
     """Same (course × day × api_key) on the same UTC day must dedup at the cache layer.
 
     The placeholder uses the Stripe-side idempotency_key path; the cache layer

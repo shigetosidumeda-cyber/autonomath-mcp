@@ -32,6 +32,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from jpintel_mcp.api.deps import hash_api_key
+
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
@@ -553,6 +555,50 @@ def test_get_source_manifest_unknown_returns_404(client: TestClient) -> None:
     assert body["program_id"] == "UNI-does-not-exist"
     # 404 body still carries the disclaimer envelope.
     assert "_disclaimer" in body
+
+
+def test_paid_final_cap_failure_returns_503_without_usage_event(
+    client: TestClient,
+    seeded_db: Path,
+    paid_key: str,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    key_hash = hash_api_key(paid_key)
+    endpoint = "source_manifest.get"
+
+    def _reject_final_cap(*_args: object, **_kwargs: object) -> tuple[bool, bool]:
+        return False, False
+
+    import jpintel_mcp.api.deps as deps
+
+    monkeypatch.setattr(deps, "_metered_cap_final_check", _reject_final_cap)
+
+    conn = sqlite3.connect(seeded_db)
+    try:
+        (before,) = conn.execute(
+            "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = ?",
+            (key_hash, endpoint),
+        ).fetchone()
+    finally:
+        conn.close()
+
+    r = client.get(
+        "/v1/source_manifest/program:test:p1",
+        headers={"X-API-Key": paid_key},
+    )
+
+    assert r.status_code == 503, r.text
+    assert r.json()["detail"]["code"] == "billing_cap_final_check_failed"
+
+    conn = sqlite3.connect(seeded_db)
+    try:
+        (after,) = conn.execute(
+            "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = ?",
+            (key_hash, endpoint),
+        ).fetchone()
+    finally:
+        conn.close()
+    assert after == before
 
 
 # ---------------------------------------------------------------------------

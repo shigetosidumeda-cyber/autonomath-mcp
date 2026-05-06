@@ -19,8 +19,7 @@ def _schema_snapshot(path: Path) -> dict[str, int]:
         "SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name"
     ).fetchall()
     snapshot = {
-        name: int(conn.execute(f'SELECT COUNT(*) FROM "{name}"').fetchone()[0])
-        for (name,) in rows
+        name: int(conn.execute(f'SELECT COUNT(*) FROM "{name}"').fetchone()[0]) for (name,) in rows
     }
     conn.close()
     return snapshot

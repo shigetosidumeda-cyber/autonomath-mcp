@@ -553,20 +553,13 @@ def test_houjin_watch_bumps_last_event_at_on_success(
     assert len(post["last_event_at"]) >= 10  # ISO date-ish
 
 
-def test_billing_failure_before_send_skips_post_and_retries_next_pass(
+def test_billing_failure_after_success_marks_delivered_and_does_not_resend(
     seeded_db,
     watch_key,
     other_key,
     monkeypatch,
 ):
-    """DEEP-48 Pattern A — charge fails BEFORE POST → no HTTP send, next cron retries.
-
-    Replaces the legacy "POST then bill" path. Under the charge-first fence,
-    if billing throws on webhook A the POST is skipped entirely so the
-    customer is never notified for an unbilled event. Webhook B (separate
-    api_key_hash) charges cleanly and POSTs as normal. The next cron pass
-    re-attempts webhook A's billing and (if successful) finally delivers.
-    """
+    """A 2xx webhook is persisted before billing; billing failure never resends."""
     from jpintel_mcp.api.deps import hash_api_key
     from scripts.cron import dispatch_webhooks as dw
 
@@ -590,20 +583,19 @@ def test_billing_failure_before_send_skips_post_and_retries_next_pass(
     other_watch_id = _register_watch(seeded_db, other_hash, "houjin", _TEST_HOUJIN_A)
     _seed_enforcement_for_houjin(seeded_db, "ENF-BILLING-FAIL-1", _TEST_HOUJIN_A)
 
-    # Only webhook B will POST; webhook A's billing fails pre-send.
-    mock = _MockClient(responses=[(200, "")])
+    mock = _MockClient(responses=[(200, ""), (200, "")])
     _patch_dispatcher(monkeypatch, mock)
 
     bill_calls: list[int] = []
 
-    def _billing_fails(*_args, **_kwargs):
+    def _billing_fails_once(*_args, **_kwargs):
         bill_calls.append(1)
         if len(bill_calls) == 1:
             raise RuntimeError("billing cap closed")
 
     monkeypatch.setattr(
         "scripts.cron.dispatch_webhooks._bill_one_delivery",
-        _billing_fails,
+        _billing_fails_once,
     )
 
     summary = dw.run(
@@ -612,11 +604,9 @@ def test_billing_failure_before_send_skips_post_and_retries_next_pass(
         jpintel_db=seeded_db,
     )
 
-    # Pattern A: webhook A's POST is skipped (pre-charge failed),
-    # webhook B's POST goes through.
-    assert len(mock.calls) == 1
+    assert len(mock.calls) == 2
     assert len(bill_calls) == 2
-    assert summary["deliveries_succeeded"] == 1
+    assert summary["deliveries_succeeded"] == 2
     assert summary["billing_failures"] == 1
     assert summary["billed_units"] == 1
 
@@ -644,21 +634,18 @@ def test_billing_failure_before_send_skips_post_and_retries_next_pass(
     finally:
         c.close()
 
-    # Only webhook B has a delivery row. Webhook A's pre-charge failure
-    # leaves no delivery row so the next cron sweep re-attempts cleanly.
     delivery_by_wid = {r["webhook_id"]: r for r in delivery_rows}
     assert other_wid in delivery_by_wid
     assert delivery_by_wid[other_wid]["status_code"] == 200
-    assert wid not in delivery_by_wid
+    assert wid in delivery_by_wid
+    assert delivery_by_wid[wid]["status_code"] == 200
     assert webhook["status"] == "active"
     assert webhook["failure_count"] == 0
-    # Webhook A never delivered → no last_delivery_at update.
-    assert webhook["last_delivery_at"] is None
-    # Webhook A's watch was never bumped (no event fired).
-    assert watch["last_event_at"] is None
+    assert webhook["last_delivery_at"] is not None
+    assert watch["last_event_at"] is not None
     assert other_watch["last_event_at"] is not None
 
-    # Next cron pass: webhook A's billing succeeds → POST happens → delivered.
+    # Next cron pass: both events are already delivered, so no resend happens.
     mock2 = _MockClient(responses=[(200, ""), (200, "")])
     import httpx as _httpx
 
@@ -674,10 +661,128 @@ def test_billing_failure_before_send_skips_post_and_retries_next_pass(
         jpintel_db=seeded_db,
     )
 
-    # Webhook A retries fresh and posts; webhook B is dedup-skipped.
-    assert summary["deliveries_skipped_dedup"] >= 1
-    assert summary["deliveries_succeeded"] == 1
-    assert len(mock2.calls) == 1
+    assert summary["deliveries_skipped_dedup"] >= 2
+    assert summary["deliveries_succeeded"] == 0
+    assert len(mock2.calls) == 0
+
+
+def test_failed_webhook_delivery_is_not_billed_and_remains_retryable(
+    seeded_db,
+    watch_key,
+    monkeypatch,
+):
+    from jpintel_mcp.api.deps import hash_api_key
+    from scripts.cron import dispatch_webhooks as dw
+
+    watcher_hash = hash_api_key(watch_key)
+    wid = _register_webhook(
+        seeded_db,
+        watcher_hash,
+        "https://hooks.example.com/http-fail",
+        ["enforcement.added"],
+        secret="whsec_http_fail",
+    )
+    _register_watch(seeded_db, watcher_hash, "houjin", _TEST_HOUJIN_A)
+    _seed_enforcement_for_houjin(seeded_db, "ENF-NO-BILL-FAIL-1", _TEST_HOUJIN_A)
+
+    mock = _MockClient(responses=[(500, "nope")])
+    _patch_dispatcher(monkeypatch, mock)
+
+    bill_calls: list[int] = []
+    monkeypatch.setattr(
+        "scripts.cron.dispatch_webhooks._bill_one_delivery",
+        lambda *_a, **_k: bill_calls.append(1),
+    )
+
+    summary = dw.run(
+        since_iso="2000-01-01T00:00:00+00:00",
+        dry_run=False,
+        jpintel_db=seeded_db,
+    )
+
+    assert summary["deliveries_succeeded"] == 0
+    assert summary["deliveries_failed"] == 1
+    assert summary["billed_units"] == 0
+    assert bill_calls == []
+
+    c = sqlite3.connect(seeded_db)
+    c.row_factory = sqlite3.Row
+    try:
+        row = c.execute(
+            "SELECT status_code, delivered_at FROM webhook_deliveries WHERE webhook_id = ?",
+            (wid,),
+        ).fetchone()
+    finally:
+        c.close()
+    assert row["status_code"] == 500
+    assert row["delivered_at"] is None
+
+    mock2 = _MockClient(responses=[(200, "")])
+    import httpx as _httpx
+
+    monkeypatch.setattr(_httpx, "Client", lambda *a, **k: mock2)
+
+    summary2 = dw.run(
+        since_iso="2000-01-01T00:00:00+00:00",
+        dry_run=False,
+        jpintel_db=seeded_db,
+    )
+
+    assert summary2["deliveries_succeeded"] == 1
+    assert summary2["billed_units"] == 1
+    assert bill_calls == [1]
+
+
+def test_unmetered_webhook_is_not_delivered_or_billed(
+    seeded_db,
+    monkeypatch,
+):
+    from jpintel_mcp.api.deps import hash_api_key
+    from scripts.cron import dispatch_webhooks as dw
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        free_key = issue_key(
+            c,
+            customer_id="cus_watch_free",
+            tier="free",
+            stripe_subscription_id=None,
+        )
+        c.commit()
+    finally:
+        c.close()
+
+    free_hash = hash_api_key(free_key)
+    _register_webhook(
+        seeded_db,
+        free_hash,
+        "https://hooks.example.com/free",
+        ["enforcement.added"],
+        secret="whsec_free",
+    )
+    _register_watch(seeded_db, free_hash, "houjin", _TEST_HOUJIN_A)
+    _seed_enforcement_for_houjin(seeded_db, "ENF-NO-METER-1", _TEST_HOUJIN_A)
+
+    mock = _MockClient(responses=[(200, "")])
+    _patch_dispatcher(monkeypatch, mock)
+
+    bill_calls: list[int] = []
+    monkeypatch.setattr(
+        "scripts.cron.dispatch_webhooks._bill_one_delivery",
+        lambda *_a, **_k: bill_calls.append(1),
+    )
+
+    summary = dw.run(
+        since_iso="2000-01-01T00:00:00+00:00",
+        dry_run=False,
+        jpintel_db=seeded_db,
+    )
+
+    assert len(mock.calls) == 0
+    assert bill_calls == []
+    assert summary["deliveries_succeeded"] == 0
+    assert summary["deliveries_skipped_unmetered"] == 1
+    assert summary["billing_failures"] == 1
 
 
 def test_main_returns_nonzero_when_billing_failed(monkeypatch, capsys):

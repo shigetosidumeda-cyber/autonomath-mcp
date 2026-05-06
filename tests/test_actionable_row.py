@@ -7,6 +7,7 @@ round-trip:
   - application_url: where to send the applicant (aliases official_url for now)
   - required_documents: document-name list (detail-only; heavy enriched parse)
 """
+
 from __future__ import annotations
 
 import json
@@ -124,9 +125,7 @@ def test_search_row_has_application_url(client: TestClient) -> None:
 
 def test_search_minimal_strips_actionable_fields(client: TestClient) -> None:
     """fields=minimal keeps only the 7-key whitelist."""
-    r = client.get(
-        "/v1/programs/search", params={"limit": 5, "fields": "minimal"}
-    )
+    r = client.get("/v1/programs/search", params={"limit": 5, "fields": "minimal"})
     assert r.status_code == 200
     for row in r.json()["results"]:
         assert "next_deadline" not in row
@@ -134,9 +133,7 @@ def test_search_minimal_strips_actionable_fields(client: TestClient) -> None:
         assert "required_documents" not in row
 
 
-def test_get_program_detail_has_required_documents_key(
-    client: TestClient, seeded_db: Path
-) -> None:
+def test_get_program_detail_has_required_documents_key(client: TestClient, seeded_db: Path) -> None:
     """required_documents is always keyed on detail (may be empty list)."""
     r = client.get("/v1/programs/UNI-test-s-1")
     assert r.status_code == 200
@@ -174,9 +171,7 @@ def seed_future_deadline(seeded_db: Path):
         # null-deadline body, so without this DELETE the next read returns
         # stale JSON and next_deadline stays None. See Wave 24 diagnosis.
         try:
-            conn.execute(
-                "DELETE FROM l4_query_cache WHERE tool_name='api.programs.get'"
-            )
+            conn.execute("DELETE FROM l4_query_cache WHERE tool_name='api.programs.get'")
         except sqlite3.OperationalError:
             # Table may not exist in minimal test schemas — defensive no-op.
             pass
@@ -196,9 +191,7 @@ def seed_future_deadline(seeded_db: Path):
             ("UNI-test-s-1",),
         )
         try:
-            conn.execute(
-                "DELETE FROM l4_query_cache WHERE tool_name='api.programs.get'"
-            )
+            conn.execute("DELETE FROM l4_query_cache WHERE tool_name='api.programs.get'")
         except sqlite3.OperationalError:
             pass
         conn.commit()
@@ -207,9 +200,7 @@ def seed_future_deadline(seeded_db: Path):
     _clear_program_cache()
 
 
-def test_search_row_emits_future_deadline(
-    seed_future_deadline: str, seeded_db: Path
-) -> None:
+def test_search_row_emits_future_deadline(seed_future_deadline: str, seeded_db: Path) -> None:
     from jpintel_mcp.api.main import create_app
 
     c = TestClient(create_app())
@@ -219,9 +210,7 @@ def test_search_row_emits_future_deadline(
     assert s_row["next_deadline"] == seed_future_deadline
 
 
-def test_get_program_emits_future_deadline(
-    seed_future_deadline: str, seeded_db: Path
-) -> None:
+def test_get_program_emits_future_deadline(seed_future_deadline: str, seeded_db: Path) -> None:
     from jpintel_mcp.api.main import create_app
 
     c = TestClient(create_app())

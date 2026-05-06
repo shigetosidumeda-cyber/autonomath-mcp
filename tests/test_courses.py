@@ -384,11 +384,9 @@ def test_subscribe_charge_failure_before_send_does_not_email(
     finally:
         conn.close()
 
-    # Subscription row exists (insert succeeded) but stays at day 0 +
-    # no last_sent_at because the email was never attempted.
-    assert row is not None
-    assert row[0] == 0
-    assert row[1] is None
+    # Billing failed before delivery, so no active subscription remains to
+    # block a clean retry.
+    assert row is None
     assert usage_count == 0
 
 

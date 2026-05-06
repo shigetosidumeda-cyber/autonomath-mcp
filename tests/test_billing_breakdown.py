@@ -11,6 +11,7 @@ docs/_internal/value_maximization_plan_no_llm_api.md §28.1 + §28.7:
   * Cross-account isolation: account A cannot see account B's events.
   * CSV format with proper header + RFC 4180 escapes.
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -85,10 +86,7 @@ def _seed_events(
             "INSERT INTO usage_events("
             "  key_hash, endpoint, ts, status, metered, client_tag, quantity"
             ") VALUES (?,?,?,?,?,?,?)",
-            [
-                (key_hash, "test", _ts_jst(d), 200, 1, tag, qty)
-                for (tag, d, qty) in rows
-            ],
+            [(key_hash, "test", _ts_jst(d), 200, 1, tag, qty) for (tag, d, qty) in rows],
         )
         c.commit()
     finally:
@@ -121,9 +119,7 @@ def _today_jst() -> date:
 # ---------------------------------------------------------------------------
 
 
-def test_breakdown_totals_match_count_and_sum(
-    client, breakdown_key: str, seeded_db: Path
-):
+def test_breakdown_totals_match_count_and_sum(client, breakdown_key: str, seeded_db: Path):
     """100 rows across 3 client_tags + 5 untagged. Totals reconcile.
 
     Layout:
@@ -178,14 +174,12 @@ def test_breakdown_totals_match_count_and_sum(
 # ---------------------------------------------------------------------------
 
 
-def test_breakdown_sorted_by_yen_desc(
-    client, breakdown_key: str, seeded_db: Path
-):
+def test_breakdown_sorted_by_yen_desc(client, breakdown_key: str, seeded_db: Path):
     kh = hash_api_key(breakdown_key)
     today = _today_jst()
     # tag_b has the highest yen (40 units) > tag_c (25) > tag_a (30 with q=1)
     rows = (
-        [("tag_a", today, 1)] * 30   # 30 units → ¥90
+        [("tag_a", today, 1)] * 30  # 30 units → ¥90
         + [("tag_b", today, 4)] * 10  # 40 units → ¥120
         + [("tag_c", today, 1)] * 25  # 25 units → ¥75
     )
@@ -234,9 +228,7 @@ def test_breakdown_totals_include_rows_beyond_max_breakdown_rows(
 # ---------------------------------------------------------------------------
 
 
-def test_breakdown_tax_exact_round_number(
-    client, breakdown_key: str, seeded_db: Path
-):
+def test_breakdown_tax_exact_round_number(client, breakdown_key: str, seeded_db: Path):
     """Exactly ¥100,000 ex-tax → ¥110,000 inc-tax (no rounding edge)."""
     kh = hash_api_key(breakdown_key)
     today = _today_jst()
@@ -264,9 +256,7 @@ def test_breakdown_tax_exact_round_number(
     assert body["total_billable_yen_incl_tax"] == 33000  # 30000 × 1.10, exact
 
 
-def test_breakdown_tax_100k_inclusive_110k(
-    client, breakdown_key: str, seeded_db: Path
-):
+def test_breakdown_tax_100k_inclusive_110k(client, breakdown_key: str, seeded_db: Path):
     """Direct ¥100,000 → ¥110,000 cross-check via _consumption_tax helper."""
     from jpintel_mcp.api.billing_breakdown import _consumption_tax_inclusive_yen
 
@@ -278,9 +268,7 @@ def test_breakdown_tax_100k_inclusive_110k(
 # ---------------------------------------------------------------------------
 
 
-def test_breakdown_tax_truncates_kirisute(
-    client, breakdown_key: str, seeded_db: Path
-):
+def test_breakdown_tax_truncates_kirisute(client, breakdown_key: str, seeded_db: Path):
     """¥99 ex-tax → ¥108 inc-tax (¥99 × 1.10 = ¥108.9 → 切り捨て ¥108)."""
     from jpintel_mcp.api.billing_breakdown import _consumption_tax_inclusive_yen
 
@@ -309,9 +297,7 @@ def test_breakdown_tax_truncates_kirisute(
 # ---------------------------------------------------------------------------
 
 
-def test_breakdown_csv_format(
-    client, breakdown_key: str, seeded_db: Path
-):
+def test_breakdown_csv_format(client, breakdown_key: str, seeded_db: Path):
     kh = hash_api_key(breakdown_key)
     today = _today_jst()
     rows = (
@@ -353,9 +339,7 @@ def test_breakdown_csv_format(
 # ---------------------------------------------------------------------------
 
 
-def test_breakdown_period_filter_excludes_outside_rows(
-    client, breakdown_key: str, seeded_db: Path
-):
+def test_breakdown_period_filter_excludes_outside_rows(client, breakdown_key: str, seeded_db: Path):
     """Period [today-2, today]: rows on today-5 must NOT appear."""
     kh = hash_api_key(breakdown_key)
     today = _today_jst()
@@ -363,7 +347,7 @@ def test_breakdown_period_filter_excludes_outside_rows(
     out_window = today - timedelta(days=5)
 
     rows = (
-        [("inside_tag", in_window, 1)] * 7   # in: 7 units ¥21
+        [("inside_tag", in_window, 1)] * 7  # in: 7 units ¥21
         + [("outside_tag", out_window, 1)] * 100  # out: must be excluded
     )
     _seed_events(seeded_db, key_hash=kh, rows=rows)
@@ -386,9 +370,7 @@ def test_breakdown_period_filter_excludes_outside_rows(
     assert "outside_tag" not in tags
 
 
-def test_breakdown_only_counts_billable_success_rows(
-    client, breakdown_key: str, seeded_db: Path
-):
+def test_breakdown_only_counts_billable_success_rows(client, breakdown_key: str, seeded_db: Path):
     kh = hash_api_key(breakdown_key)
     today = _today_jst()
     ts = _ts_jst(today)
@@ -416,9 +398,7 @@ def test_breakdown_only_counts_billable_success_rows(
     assert [row["client_tag"] for row in body["by_client_tag"]] == ["kept"]
 
 
-def test_breakdown_uses_jst_day_for_utc_stored_events(
-    client, breakdown_key: str, seeded_db: Path
-):
+def test_breakdown_uses_jst_day_for_utc_stored_events(client, breakdown_key: str, seeded_db: Path):
     kh = hash_api_key(breakdown_key)
     may_1_jst_start_utc = datetime(2026, 4, 30, 15, 0, 0, tzinfo=UTC).isoformat()
     april_30_jst_utc = datetime(2026, 4, 30, 14, 59, 59, tzinfo=UTC).isoformat()
@@ -451,9 +431,7 @@ def test_breakdown_uses_jst_day_for_utc_stored_events(
 # ---------------------------------------------------------------------------
 
 
-def test_breakdown_cross_account_isolation(
-    client, breakdown_key: str, seeded_db: Path
-):
+def test_breakdown_cross_account_isolation(client, breakdown_key: str, seeded_db: Path):
     """Account A's request must not see account B's usage_events."""
     # Set up account B's key + events.
     c = sqlite3.connect(seeded_db)
@@ -514,12 +492,8 @@ def test_child_key_breakdown_does_not_expose_sibling_usage(
     c = sqlite3.connect(seeded_db)
     c.row_factory = sqlite3.Row
     try:
-        child_a, child_a_hash = issue_child_key(
-            c, parent_key_hash=parent_hash, label="child-a"
-        )
-        child_b, child_b_hash = issue_child_key(
-            c, parent_key_hash=parent_hash, label="child-b"
-        )
+        child_a, child_a_hash = issue_child_key(c, parent_key_hash=parent_hash, label="child-a")
+        child_b, child_b_hash = issue_child_key(c, parent_key_hash=parent_hash, label="child-b")
         c.commit()
     finally:
         c.close()
@@ -548,9 +522,7 @@ def test_child_key_breakdown_does_not_expose_sibling_usage(
     assert r.status_code == 200, r.text
     child_body = r.json()
     assert child_body["total_requests"] == 3
-    assert [row["client_tag"] for row in child_body["by_client_tag"]] == [
-        "child_a_tag"
-    ]
+    assert [row["client_tag"] for row in child_body["by_client_tag"]] == ["child_a_tag"]
 
     parent = client.get(
         "/v1/billing/client_tag_breakdown",
@@ -566,15 +538,12 @@ def test_child_key_breakdown_does_not_expose_sibling_usage(
 # ---------------------------------------------------------------------------
 
 
-def test_breakdown_surfaces_untagged_as_null(
-    client, breakdown_key: str, seeded_db: Path
-):
+def test_breakdown_surfaces_untagged_as_null(client, breakdown_key: str, seeded_db: Path):
     """Rows with NULL client_tag MUST appear as a client_tag: null bucket."""
     kh = hash_api_key(breakdown_key)
     today = _today_jst()
     rows = (
-        [("alpha", today, 1)] * 3
-        + [(None, today, 1)] * 7  # 7 untagged → ¥21
+        [("alpha", today, 1)] * 3 + [(None, today, 1)] * 7  # 7 untagged → ¥21
     )
     _seed_events(seeded_db, key_hash=kh, rows=rows)
 
@@ -586,9 +555,7 @@ def test_breakdown_surfaces_untagged_as_null(
     body = r.json()
 
     # The untagged bucket exists — and its tag is JSON null.
-    untagged_buckets = [
-        row for row in body["by_client_tag"] if row["client_tag"] is None
-    ]
+    untagged_buckets = [row for row in body["by_client_tag"] if row["client_tag"] is None]
     assert len(untagged_buckets) == 1
     assert untagged_buckets[0]["requests"] == 7
     assert untagged_buckets[0]["billable_units"] == 7
@@ -609,9 +576,7 @@ def test_breakdown_requires_api_key(client):
     assert r.status_code == 401
 
 
-def test_breakdown_unauthenticated_does_not_consume_anon_quota(
-    client, seeded_db: Path
-):
+def test_breakdown_unauthenticated_does_not_consume_anon_quota(client, seeded_db: Path):
     r = client.get("/v1/billing/client_tag_breakdown")
     assert r.status_code == 401
 

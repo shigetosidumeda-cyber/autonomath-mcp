@@ -11,6 +11,7 @@ and every URL collapses to `unknown`. Tests below exercise that honest
 empty-map path so they pass deterministically regardless of whether the
 8.3 GB autonomath.db happens to be on disk.
 """
+
 from __future__ import annotations
 
 import sys

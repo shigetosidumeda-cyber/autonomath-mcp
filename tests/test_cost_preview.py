@@ -50,9 +50,7 @@ def test_dd_batch_preview_uses_normalized_houjin_quantity() -> None:
     ("bundle_class", "expected_units"),
     [("standard", 334), ("deal", 1001), ("case", 3334)],
 )
-def test_dd_export_preview_includes_bundle_quantity(
-    bundle_class: str, expected_units: int
-) -> None:
+def test_dd_export_preview_includes_bundle_quantity(bundle_class: str, expected_units: int) -> None:
     yen, units = _cost(
         CostPreviewCall(
             tool="/v1/am/dd_export",
@@ -149,9 +147,7 @@ def test_cost_preview_endpoint_does_not_consume_anon_quota(client, seeded_db) ->
     assert count == 0
 
 
-def test_cost_preview_invalid_api_keys_share_ip_preview_throttle(
-    client, seeded_db
-) -> None:
+def test_cost_preview_invalid_api_keys_share_ip_preview_throttle(client, seeded_db) -> None:
     """Bogus key rotation must not mint unlimited preview buckets."""
     from jpintel_mcp.api.cost import _reset_preview_rate_state
 

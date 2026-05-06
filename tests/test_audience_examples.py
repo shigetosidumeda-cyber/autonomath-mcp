@@ -21,6 +21,7 @@ Skips:
     - aggregator hosts other than ``api.jpcite.com`` are skipped
       (the page may show third-party JST snippets for context).
 """
+
 from __future__ import annotations
 
 import re
@@ -49,15 +50,9 @@ _SITE_AUDIENCES = _REPO / "site" / "audiences"
 # survive copy-rebrand work in either direction without dropping
 # examples on the floor.
 _API_HOST_RE = r"api\.(?:jpcite\.com|zeimu-kaikei\.ai|autonomath\.ai)"
-_CURL_URL_RE = re.compile(
-    rf"https?://{_API_HOST_RE}(/[A-Za-z0-9_/{{}}.-]+(?:\?[^\s'\"`]*)?)"
-)
-_HTTPX_GET_RE = re.compile(
-    rf"httpx\.get\s*\(\s*[\"'](https?://{_API_HOST_RE}/[^\"']+)[\"']"
-)
-_HTTPX_POST_RE = re.compile(
-    rf"httpx\.post\s*\(\s*[\"'](https?://{_API_HOST_RE}/[^\"']+)[\"']"
-)
+_CURL_URL_RE = re.compile(rf"https?://{_API_HOST_RE}(/[A-Za-z0-9_/{{}}.-]+(?:\?[^\s'\"`]*)?)")
+_HTTPX_GET_RE = re.compile(rf"httpx\.get\s*\(\s*[\"'](https?://{_API_HOST_RE}/[^\"']+)[\"']")
+_HTTPX_POST_RE = re.compile(rf"httpx\.post\s*\(\s*[\"'](https?://{_API_HOST_RE}/[^\"']+)[\"']")
 
 
 def _normalise_url(raw: str) -> str:
@@ -171,15 +166,9 @@ def test_audience_example_routes_resolve(client, audience, method, path):
         r = client.get(path)
     else:
         r = client.post(path, json={})
-    assert r.status_code != 404, (
-        f"{audience}/{method} {path} → 404 (broken example)"
-    )
-    assert r.status_code != 405, (
-        f"{audience}/{method} {path} → 405 (wrong HTTP verb in snippet)"
-    )
-    assert r.status_code < 500, (
-        f"{audience}/{method} {path} → {r.status_code} 5xx server error"
-    )
+    assert r.status_code != 404, f"{audience}/{method} {path} → 404 (broken example)"
+    assert r.status_code != 405, f"{audience}/{method} {path} → 405 (wrong HTTP verb in snippet)"
+    assert r.status_code < 500, f"{audience}/{method} {path} → {r.status_code} 5xx server error"
 
 
 @pytest.mark.skipif(BeautifulSoup is None, reason="bs4 not installed")
@@ -207,6 +196,5 @@ def test_no_aggregator_hosts_in_examples():
         haystack = "\n".join(url_surfaces)
         for needle in banned:
             assert needle not in haystack, (
-                f"{html_path.name} cites banned aggregator '{needle}' "
-                f"in a link / code surface"
+                f"{html_path.name} cites banned aggregator '{needle}' in a link / code surface"
             )

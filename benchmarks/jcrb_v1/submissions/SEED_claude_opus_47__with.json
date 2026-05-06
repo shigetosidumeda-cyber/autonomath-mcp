@@ -1,0 +1,18 @@
+{
+  "model": "claude-opus-4-7",
+  "provider": "claude",
+  "mode": "with_jpcite",
+  "submitted_at": "2026-05-04T00:00:00Z",
+  "submitter": "bookyou (seed estimate, not validated)",
+  "n": 100,
+  "exact_match": 0.62,
+  "citation_ok": 0.94,
+  "by_domain": {
+    "subsidy_eligibility": {"n": 20, "exact_match": 0.55, "citation_ok": 0.90},
+    "tax_application":     {"n": 20, "exact_match": 0.75, "citation_ok": 0.98},
+    "law_citation":        {"n": 20, "exact_match": 0.78, "citation_ok": 0.98},
+    "adoption_statistics": {"n": 20, "exact_match": 0.45, "citation_ok": 0.92},
+    "enforcement_risk":    {"n": 20, "exact_match": 0.55, "citation_ok": 0.92}
+  },
+  "questions_sha256": "seed-not-validated"
+}

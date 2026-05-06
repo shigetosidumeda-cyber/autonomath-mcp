@@ -13,6 +13,7 @@ The cron uses httpx so we monkeypatch httpx.Client to avoid real network
 I/O. The dispatcher's HMAC + payload formatting is asserted by capturing
 the headers / body the patched client sees.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -84,6 +85,30 @@ def test_register_requires_auth(client):
         },
     )
     assert r.status_code == 401
+
+
+def test_register_requires_paid_metered_key(client, seeded_db: Path):
+    conn = sqlite3.connect(seeded_db)
+    try:
+        free_key = issue_key(
+            conn,
+            customer_id="cus_webhook_free",
+            tier="free",
+            stripe_subscription_id=None,
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+    r = client.post(
+        "/v1/me/webhooks",
+        headers={"X-API-Key": free_key},
+        json={
+            "url": "https://hooks.example.com/free",
+            "event_types": ["program.created"],
+        },
+    )
+    assert r.status_code == 402
 
 
 def test_register_rejects_http_url(client, webhook_key):
@@ -185,8 +210,7 @@ def test_list_only_mine(client, webhook_key, seeded_db):
     c.execute(
         "INSERT INTO customer_webhooks(api_key_hash, url, event_types_json, "
         "secret_hmac) VALUES (?, ?, ?, ?)",
-        ("foreign_key_hash", "https://other.example.com/x", '["program.created"]',
-         "whsec_foreign"),
+        ("foreign_key_hash", "https://other.example.com/x", '["program.created"]', "whsec_foreign"),
     )
     c.commit()
     c.close()
@@ -301,7 +325,9 @@ class _MockClient:
 
 
 def test_test_delivery_signs_payload_with_hmac(
-    client, webhook_key, monkeypatch,
+    client,
+    webhook_key,
+    monkeypatch,
 ):
     # Register first.
     r = client.post(
@@ -316,6 +342,7 @@ def test_test_delivery_signs_payload_with_hmac(
     # Stub httpx.Client used inside test_delivery.
     mock = _MockClient(responses=[(200, "")])
     import httpx as _httpx
+
     monkeypatch.setattr(_httpx, "Client", lambda *a, **k: mock)
 
     rt = client.post(f"/v1/me/webhooks/{wid}/test", headers={"X-API-Key": webhook_key})
@@ -330,9 +357,7 @@ def test_test_delivery_signs_payload_with_hmac(
     assert len(mock.calls) == 1
     sent_url, sent_body, sent_headers = mock.calls[0]
     assert sent_url == "https://hooks.example.com/test"
-    expected_sig = "hmac-sha256=" + hmac.new(
-        secret.encode(), sent_body, hashlib.sha256
-    ).hexdigest()
+    expected_sig = "hmac-sha256=" + hmac.new(secret.encode(), sent_body, hashlib.sha256).hexdigest()
     assert sent_headers["X-Jpcite-Signature"] == expected_sig
     assert sent_headers["X-Zeimu-Signature"] == expected_sig
     assert sent_headers["X-Jpcite-Event"] == "test.ping"
@@ -373,9 +398,7 @@ def _backdate_existing_programs(db_path: Path) -> None:
     the start of any dispatcher-cron test BEFORE seeding fresh rows.
     """
     c = sqlite3.connect(db_path)
-    c.execute(
-        "UPDATE programs SET updated_at = '1990-01-01T00:00:00+00:00'"
-    )
+    c.execute("UPDATE programs SET updated_at = '1990-01-01T00:00:00+00:00'")
     c.commit()
     c.close()
 
@@ -402,8 +425,9 @@ def _seed_program_created(db_path: Path, unified_id: str = "P-TEST-1") -> None:
     c.close()
 
 
-def _register_webhook(db_path: Path, api_key_hash: str, url: str,
-                      event_types: list[str], secret: str = "whsec_test") -> int:
+def _register_webhook(
+    db_path: Path, api_key_hash: str, url: str, event_types: list[str], secret: str = "whsec_test"
+) -> int:
     c = sqlite3.connect(db_path)
     cur = c.execute(
         "INSERT INTO customer_webhooks(api_key_hash, url, event_types_json, "
@@ -428,8 +452,11 @@ def test_dispatch_delivers_signs_and_dedups(seeded_db, webhook_key, monkeypatch)
     secret = "whsec_dedup_test"
     _backdate_existing_programs(seeded_db)
     wid = _register_webhook(
-        seeded_db, key_hash, "https://hooks.example.com/zk",
-        ["program.created"], secret=secret,
+        seeded_db,
+        key_hash,
+        "https://hooks.example.com/zk",
+        ["program.created"],
+        secret=secret,
     )
     _seed_program_created(seeded_db, unified_id="P-DEDUP-1")
 
@@ -437,6 +464,7 @@ def test_dispatch_delivers_signs_and_dedups(seeded_db, webhook_key, monkeypatch)
     # program.created here, not amendment_diff which lives in autonomath.db).
     mock = _MockClient(responses=[(200, "")])
     import httpx as _httpx
+
     monkeypatch.setattr(_httpx, "Client", lambda *a, **k: mock)
 
     # Stub the stripe report path so the test does not require Stripe.
@@ -463,9 +491,7 @@ def test_dispatch_delivers_signs_and_dedups(seeded_db, webhook_key, monkeypatch)
 
     # HMAC matches.
     sent_url, sent_body, sent_headers = mock.calls[0]
-    expected = "hmac-sha256=" + hmac.new(
-        secret.encode(), sent_body, hashlib.sha256
-    ).hexdigest()
+    expected = "hmac-sha256=" + hmac.new(secret.encode(), sent_body, hashlib.sha256).hexdigest()
     assert sent_headers["X-Jpcite-Signature"] == expected
     assert sent_headers["X-Zeimu-Signature"] == expected
     assert sent_headers["User-Agent"] == "jpcite-webhook/1.0"
@@ -481,7 +507,8 @@ def test_dispatch_delivers_signs_and_dedups(seeded_db, webhook_key, monkeypatch)
     c.row_factory = sqlite3.Row
     rows = c.execute(
         "SELECT event_type, event_id, status_code, attempt_count "
-        "FROM webhook_deliveries WHERE webhook_id = ?", (wid,)
+        "FROM webhook_deliveries WHERE webhook_id = ?",
+        (wid,),
     ).fetchall()
     assert len(rows) == 1
     assert rows[0]["event_type"] == "program.created"
@@ -510,13 +537,17 @@ def test_dispatch_retry_on_5xx_then_success(seeded_db, webhook_key, monkeypatch)
     key_hash = hash_api_key(webhook_key)
     _backdate_existing_programs(seeded_db)
     _register_webhook(
-        seeded_db, key_hash, "https://hooks.example.com/r",
-        ["program.created"], secret="whsec_retry",
+        seeded_db,
+        key_hash,
+        "https://hooks.example.com/r",
+        ["program.created"],
+        secret="whsec_retry",
     )
     _seed_program_created(seeded_db, unified_id="P-RETRY-1")
 
     mock = _MockClient(responses=[(502, "bad gateway"), (200, "")])
     import httpx as _httpx
+
     monkeypatch.setattr(_httpx, "Client", lambda *a, **k: mock)
     # No-op the sleep so the test does not actually wait 60s.
     monkeypatch.setattr("scripts.cron.dispatch_webhooks.time.sleep", lambda _s: None)
@@ -542,9 +573,7 @@ def test_dispatch_retry_on_5xx_then_success(seeded_db, webhook_key, monkeypatch)
 
     c = sqlite3.connect(seeded_db)
     c.row_factory = sqlite3.Row
-    row = c.execute(
-        "SELECT attempt_count, status_code FROM webhook_deliveries"
-    ).fetchone()
+    row = c.execute("SELECT attempt_count, status_code FROM webhook_deliveries").fetchone()
     c.close()
     assert row["status_code"] == 200
     assert row["attempt_count"] == 2
@@ -558,8 +587,11 @@ def test_dispatch_auto_disable_after_5_failures(seeded_db, webhook_key, monkeypa
     key_hash = hash_api_key(webhook_key)
     _backdate_existing_programs(seeded_db)
     wid = _register_webhook(
-        seeded_db, key_hash, "https://hooks.example.com/dead",
-        ["program.created"], secret="whsec_dead",
+        seeded_db,
+        key_hash,
+        "https://hooks.example.com/dead",
+        ["program.created"],
+        secret="whsec_dead",
     )
     # Seed 5 fresh program rows so the collector returns 5 events.
     for i in range(5):
@@ -569,6 +601,7 @@ def test_dispatch_auto_disable_after_5_failures(seeded_db, webhook_key, monkeypa
     # _MockClient cycles forever on the last entry once exhausted.
     mock = _MockClient(responses=[(503, "down")])
     import httpx as _httpx
+
     monkeypatch.setattr(_httpx, "Client", lambda *a, **k: mock)
     monkeypatch.setattr("scripts.cron.dispatch_webhooks.time.sleep", lambda _s: None)
     monkeypatch.setattr(
@@ -593,8 +626,8 @@ def test_dispatch_auto_disable_after_5_failures(seeded_db, webhook_key, monkeypa
     c = sqlite3.connect(seeded_db)
     c.row_factory = sqlite3.Row
     row = c.execute(
-        "SELECT status, failure_count, disabled_reason FROM customer_webhooks "
-        "WHERE id = ?", (wid,),
+        "SELECT status, failure_count, disabled_reason FROM customer_webhooks WHERE id = ?",
+        (wid,),
     ).fetchone()
     c.close()
     assert row["status"] == "disabled"
@@ -610,13 +643,17 @@ def test_dispatch_does_not_retry_4xx(seeded_db, webhook_key, monkeypatch):
     key_hash = hash_api_key(webhook_key)
     _backdate_existing_programs(seeded_db)
     _register_webhook(
-        seeded_db, key_hash, "https://hooks.example.com/badreq",
-        ["program.created"], secret="whsec_400",
+        seeded_db,
+        key_hash,
+        "https://hooks.example.com/badreq",
+        ["program.created"],
+        secret="whsec_400",
     )
     _seed_program_created(seeded_db, unified_id="P-400-1")
 
     mock = _MockClient(responses=[(400, "bad request")])
     import httpx as _httpx
+
     monkeypatch.setattr(_httpx, "Client", lambda *a, **k: mock)
     monkeypatch.setattr("scripts.cron.dispatch_webhooks.time.sleep", lambda _s: None)
     monkeypatch.setattr(
@@ -648,7 +685,5 @@ def test_compute_signature_matches_python_reference():
 
     secret = "whsec_known"
     body = b'{"event_type":"x","timestamp":"y","data":{}}'
-    expected = "hmac-sha256=" + hmac.new(
-        secret.encode(), body, hashlib.sha256
-    ).hexdigest()
+    expected = "hmac-sha256=" + hmac.new(secret.encode(), body, hashlib.sha256).hexdigest()
     assert compute_signature(secret, body) == expected

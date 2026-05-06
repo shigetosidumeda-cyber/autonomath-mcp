@@ -10,6 +10,7 @@ exercise the tool we inject a small fixture-scoped batch of rows with
 populated windows + funding_purpose. Each test re-seeds inside the test so
 state doesn't leak between cases.
 """
+
 from __future__ import annotations
 
 import json
@@ -45,25 +46,78 @@ def _seed_roadmap_programs(db_path: Path) -> None:
 
     rows = [
         # near: starts 15 days from now, equipment, corporation, S, 東京都
-        ("UNI-roadmap-near", "Roadmap 設備支援 (近)", "S", "東京都", "国",
-         "subsidy", 1000.0, ["corporation"], ["設備投資"],
-         {"start_date": near.isoformat(), "end_date": (near + timedelta(days=60)).isoformat(), "cycle": "annual"}),
+        (
+            "UNI-roadmap-near",
+            "Roadmap 設備支援 (近)",
+            "S",
+            "東京都",
+            "国",
+            "subsidy",
+            1000.0,
+            ["corporation"],
+            ["設備投資"],
+            {
+                "start_date": near.isoformat(),
+                "end_date": (near + timedelta(days=60)).isoformat(),
+                "cycle": "annual",
+            },
+        ),
         # mid: 6 months out, green, sole prop, A, no prefecture
-        ("UNI-roadmap-mid", "Roadmap GX 補助金 (中)", "A", None, "国",
-         "subsidy", 500.0, ["sole_proprietor"], ["環境対応"],
-         {"start_date": mid.isoformat(), "end_date": (mid + timedelta(days=30)).isoformat(), "cycle": "annual"}),
+        (
+            "UNI-roadmap-mid",
+            "Roadmap GX 補助金 (中)",
+            "A",
+            None,
+            "国",
+            "subsidy",
+            500.0,
+            ["sole_proprietor"],
+            ["環境対応"],
+            {
+                "start_date": mid.isoformat(),
+                "end_date": (mid + timedelta(days=30)).isoformat(),
+                "cycle": "annual",
+            },
+        ),
         # far: 2 years out, equipment, B
-        ("UNI-roadmap-far", "Roadmap 投資補助 (遠)", "B", "東京都", "都道府県",
-         "subsidy", 800.0, ["corporation"], ["設備投資"],
-         {"start_date": far.isoformat(), "end_date": None, "cycle": "annual"}),
+        (
+            "UNI-roadmap-far",
+            "Roadmap 投資補助 (遠)",
+            "B",
+            "東京都",
+            "都道府県",
+            "subsidy",
+            800.0,
+            ["corporation"],
+            ["設備投資"],
+            {"start_date": far.isoformat(), "end_date": None, "cycle": "annual"},
+        ),
         # past start, annual cycle → projected next year
-        ("UNI-roadmap-rolled", "Roadmap 年次更新", "A", "東京都", "都道府県",
-         "subsidy", 200.0, ["corporation"], ["人件費"],
-         {"start_date": past.isoformat(), "end_date": None, "cycle": "annual"}),
+        (
+            "UNI-roadmap-rolled",
+            "Roadmap 年次更新",
+            "A",
+            "東京都",
+            "都道府県",
+            "subsidy",
+            200.0,
+            ["corporation"],
+            ["人件費"],
+            {"start_date": past.isoformat(), "end_date": None, "cycle": "annual"},
+        ),
         # past start + non-annual → excluded
-        ("UNI-roadmap-dead", "Roadmap 旧制度", "C", None, "国",
-         "subsidy", 100.0, ["corporation"], ["設備投資"],
-         {"start_date": past.isoformat(), "end_date": past.isoformat(), "cycle": "rolling"}),
+        (
+            "UNI-roadmap-dead",
+            "Roadmap 旧制度",
+            "C",
+            None,
+            "国",
+            "subsidy",
+            100.0,
+            ["corporation"],
+            ["設備投資"],
+            {"start_date": past.isoformat(), "end_date": past.isoformat(), "cycle": "rolling"},
+        ),
     ]
     now = datetime.now(UTC).isoformat()
     conn = sqlite3.connect(db_path)
@@ -84,15 +138,37 @@ def _seed_roadmap_programs(db_path: Path) -> None:
                     enriched_json, source_mentions_json, updated_at,
                     source_url
                 ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
-                (uid, name, None, auth, None, pref, None, kind,
-                 f"https://example.gov.jp/{uid}",
-                 amt, None, None, None, tier, None, None, None,
-                 0, None, None, None,
-                 json.dumps(ttypes, ensure_ascii=False),
-                 json.dumps(fpurp, ensure_ascii=False),
-                 None, json.dumps(window, ensure_ascii=False),
-                 None, None, now,
-                 f"https://primary.gov.jp/{uid}"),
+                (
+                    uid,
+                    name,
+                    None,
+                    auth,
+                    None,
+                    pref,
+                    None,
+                    kind,
+                    f"https://example.gov.jp/{uid}",
+                    amt,
+                    None,
+                    None,
+                    None,
+                    tier,
+                    None,
+                    None,
+                    None,
+                    0,
+                    None,
+                    None,
+                    None,
+                    json.dumps(ttypes, ensure_ascii=False),
+                    json.dumps(fpurp, ensure_ascii=False),
+                    None,
+                    json.dumps(window, ensure_ascii=False),
+                    None,
+                    None,
+                    now,
+                    f"https://primary.gov.jp/{uid}",
+                ),
             )
         conn.commit()
     finally:
@@ -217,9 +293,7 @@ def test_subsidy_roadmap_empty_returns_nested_error_envelope(client, roadmap_db)
 def test_subsidy_roadmap_total_ceiling_sums_correctly(client, roadmap_db):
     res = subsidy_roadmap_3yr(industry="製造業", limit=50)
     assert "timeline" in res
-    expected = sum(
-        e["max_amount_yen"] or 0 for e in res["timeline"]
-    )
+    expected = sum(e["max_amount_yen"] or 0 for e in res["timeline"])
     assert res["total_ceiling_yen"] == expected
     # Sanity check: amount_max_man_yen 1000 → 10_000_000 yen.
     near_entry = next(
@@ -253,9 +327,7 @@ def test_subsidy_roadmap_unknown_prefecture_surfaces_input_warnings(client, road
     if not warnings and "input_warnings" in container:
         warnings = container["input_warnings"]
     assert warnings, f"expected input_warnings, got {res!r}"
-    pref_warning = next(
-        (w for w in warnings if w.get("field") == "prefecture"), None
-    )
+    pref_warning = next((w for w in warnings if w.get("field") == "prefecture"), None)
     assert pref_warning is not None
     assert pref_warning["code"] == "unknown_prefecture"
     assert pref_warning["value"] == "Tokio"
@@ -269,9 +341,7 @@ def test_regulatory_prep_pack_unknown_prefecture_surfaces_input_warnings(client)
     if not warnings:
         warnings = res.get("error", {}).get("input_warnings") or []
     assert warnings, f"expected input_warnings, got {res!r}"
-    pref_warning = next(
-        (w for w in warnings if w.get("field") == "prefecture"), None
-    )
+    pref_warning = next((w for w in warnings if w.get("field") == "prefecture"), None)
     assert pref_warning is not None
     assert pref_warning["code"] == "unknown_prefecture"
     assert pref_warning["value"] == "東京府"

@@ -9,6 +9,7 @@ the live DBs and assert the gold value matches. They DO NOT exercise the
 MCP server (that's done by ``run_eval.py``); they exclusively validate the
 seed data integrity, which is the load-bearing invariant.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -33,15 +34,11 @@ _DB_FOR_SEED = {
 
 
 @pytest.mark.parametrize("seed", _SEEDS, ids=lambda s: s["id"])
-def test_tier_a_gold_sql_matches_gold_value(
-    seed: dict, autonomath_db_ro, jpintel_db_ro
-) -> None:
+def test_tier_a_gold_sql_matches_gold_value(seed: dict, autonomath_db_ro, jpintel_db_ro) -> None:
     """Each Tier A gold_sql, executed live, must return gold_value."""
     db_fixture_name = _DB_FOR_SEED.get(seed["id"])
     assert db_fixture_name, f"unmapped seed id: {seed['id']}"
-    conn = {"autonomath_db_ro": autonomath_db_ro, "jpintel_db_ro": jpintel_db_ro}[
-        db_fixture_name
-    ]
+    conn = {"autonomath_db_ro": autonomath_db_ro, "jpintel_db_ro": jpintel_db_ro}[db_fixture_name]
     rows = list(conn.execute(seed["gold_sql"]))
     assert rows, f"{seed['id']}: gold_sql returned 0 rows"
     actual = rows[0][seed["gold_field"]]
@@ -50,13 +47,11 @@ def test_tier_a_gold_sql_matches_gold_value(
     # but YAML ints stay int. Compare numerically when both look numeric.
     if isinstance(actual, (int, float)) and isinstance(expected, (int, float)):
         assert float(actual) == float(expected), (
-            f"{seed['id']}: expected {seed['gold_field']}={expected!r}, "
-            f"got {actual!r}"
+            f"{seed['id']}: expected {seed['gold_field']}={expected!r}, got {actual!r}"
         )
     else:
         assert str(actual) == str(expected), (
-            f"{seed['id']}: expected {seed['gold_field']}={expected!r}, "
-            f"got {actual!r}"
+            f"{seed['id']}: expected {seed['gold_field']}={expected!r}, got {actual!r}"
         )
 
 

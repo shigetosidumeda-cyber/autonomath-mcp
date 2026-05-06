@@ -1,4 +1,5 @@
 """Tests for /v1/subscribers public endpoints."""
+
 from __future__ import annotations
 
 import importlib
@@ -42,9 +43,7 @@ def _reset_rate_limit(client):
 def _row_count(db: Path, email: str) -> int:
     c = sqlite3.connect(db)
     try:
-        (n,) = c.execute(
-            "SELECT COUNT(*) FROM subscribers WHERE email = ?", (email,)
-        ).fetchone()
+        (n,) = c.execute("SELECT COUNT(*) FROM subscribers WHERE email = ?", (email,)).fetchone()
         return n
     finally:
         c.close()
@@ -107,8 +106,6 @@ def test_unsubscribe_valid_token(client, seeded_db: Path):
 
 
 def test_unsubscribe_bad_token(client):
-    r = client.get(
-        "/v1/subscribers/unsubscribe?email=x@example.com&token=" + ("0" * 64)
-    )
+    r = client.get("/v1/subscribers/unsubscribe?email=x@example.com&token=" + ("0" * 64))
     assert r.status_code == 400
     assert "Invalid" in r.text

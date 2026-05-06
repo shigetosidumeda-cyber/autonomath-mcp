@@ -56,9 +56,7 @@ _graph_traverse = graph_traverse_tool.graph_traverse.__wrapped__
 
 # Seed with a references_law edge → law:akkie-toiki. Verified via direct
 # SELECT on v_am_relation_all (relation_type='references_law').
-_SEED_PROGRAM_WITH_LAW = (
-    "program:74_vacant_house_housing_safetynet:000001:6_968716a5f1"
-)
+_SEED_PROGRAM_WITH_LAW = "program:74_vacant_house_housing_safetynet:000001:6_968716a5f1"
 
 # A seed with multiple edges that share a common neighbour reachable both
 # directly and transitively — used to demonstrate cycle suppression.
@@ -127,9 +125,7 @@ def test_program_to_law_traversal_returns_heterogeneous_edges() -> None:
     # virtual-table page faults (FTS5 + recursive CTE), not algorithmic
     # work we can shorten here. Pin a generous ceiling so a true regression
     # (10 × slowdown) still trips, without flaking on cold cache load.
-    assert res["elapsed_ms"] < 5000.0, (
-        f"graph_traverse latency regression: {res['elapsed_ms']} ms"
-    )
+    assert res["elapsed_ms"] < 5000.0, f"graph_traverse latency regression: {res['elapsed_ms']} ms"
 
 
 # ---------------------------------------------------------------------------
@@ -160,8 +156,7 @@ def test_cycle_suppression_no_repeated_targets_within_path() -> None:
     )
 
     assert res["traversed_count"] >= 1, (
-        f"hub seed should expand at depth 3; got 0 edges. "
-        f"error={res.get('error')}"
+        f"hub seed should expand at depth 3; got 0 edges. error={res.get('error')}"
     )
 
     # No self-loops (src == tgt) — the CTE seed already filters
@@ -169,9 +164,7 @@ def test_cycle_suppression_no_repeated_targets_within_path() -> None:
     # will reject any same-node target since src is already on the path.
     for path in res["paths"]:
         for edge in path["edges"]:
-            assert edge["src"] != edge["tgt"], (
-                f"self-loop leaked into traversal: {edge}"
-            )
+            assert edge["src"] != edge["tgt"], f"self-loop leaked into traversal: {edge}"
 
     # Per-path cycle invariant: within any single path's nodes list, no
     # node is repeated. ``instr(path, ',' || tgt || ',') = 0`` in the
@@ -180,9 +173,7 @@ def test_cycle_suppression_no_repeated_targets_within_path() -> None:
     # emitted row is duplicate-free.
     for path in res["paths"]:
         nodes = path["nodes"]
-        assert len(nodes) == len(set(nodes)), (
-            f"cycle leaked into single path nodes={nodes}"
-        )
+        assert len(nodes) == len(set(nodes)), f"cycle leaked into single path nodes={nodes}"
 
     # The seed must not appear as a target of any edge — visiting the
     # start node again would mean the path-instr() check failed at the
@@ -190,9 +181,7 @@ def test_cycle_suppression_no_repeated_targets_within_path() -> None:
     # the CTE seeds the path string with the start id.)
     for path in res["paths"]:
         for edge in path["edges"]:
-            assert edge["tgt"] != _SEED_HUB_PROVISIONAL, (
-                f"start entity revisited as target: {edge}"
-            )
+            assert edge["tgt"] != _SEED_HUB_PROVISIONAL, f"start entity revisited as target: {edge}"
 
 
 # ---------------------------------------------------------------------------
@@ -223,6 +212,4 @@ def test_depth_zero_returns_only_start_entity() -> None:
     assert only_path["total_distance"] == 0
 
     # Short-circuit must skip the DB entirely and run in microseconds.
-    assert elapsed < 50.0, (
-        f"depth=0 should short-circuit without DB I/O; took {elapsed:.1f}ms"
-    )
+    assert elapsed < 50.0, f"depth=0 should short-circuit without DB I/O; took {elapsed:.1f}ms"

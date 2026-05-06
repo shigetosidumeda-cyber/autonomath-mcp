@@ -236,9 +236,7 @@ def test_missing_body_text_column_is_reported_without_mutating_db(tmp_path: Path
         "present_pct": 0.0,
         "missing_pct": 100.0,
     }
-    assert "laws.body_text:missing_column" in {
-        gap["code"] for gap in report["readiness_gaps"]
-    }
+    assert "laws.body_text:missing_column" in {gap["code"] for gap in report["readiness_gaps"]}
     assert report["acceptance"]["current_schema_column_present"] is False
 
 

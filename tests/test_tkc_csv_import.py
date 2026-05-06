@@ -115,8 +115,8 @@ def test_skips_row_with_empty_name_label(importer):
 def test_capital_yen_normalization_1000x(importer):
     csv_text = (
         "関与先名,資本金（千円）\n"
-        "テストA,10000\n"   # 10,000 千円 → 10,000,000 円
-        "テストB,500\n"      # 500 千円 → 500,000 円
+        "テストA,10000\n"  # 10,000 千円 → 10,000,000 円
+        "テストB,500\n"  # 500 千円 → 500,000 円
     )
     records, _errors = importer.convert_csv_text(csv_text)
     yen_values = [r.capital_yen for r in records]
@@ -125,12 +125,7 @@ def test_capital_yen_normalization_1000x(importer):
 
 def test_employee_count_tolerates_suffix(importer):
     # 1,000 must be quoted in CSV so the comma is not a separator.
-    csv_text = (
-        '関与先名,従業員数\n'
-        'A社,"1,000"\n'
-        'B社,45人\n'
-        'C社, 12 \n'
-    )
+    csv_text = '関与先名,従業員数\nA社,"1,000"\nB社,45人\nC社, 12 \n'
     records, _errors = importer.convert_csv_text(csv_text)
     assert [r.employee_count for r in records] == [1000, 45, 12]
 
@@ -177,9 +172,13 @@ def test_records_to_csv_text_roundtrips(importer, applier):
     # Header must include all jpcite-side columns.
     first_line = csv_text.splitlines()[0]
     for col in (
-        "name_label", "jsic_major", "prefecture",
-        "employee_count", "capital_yen",
-        "target_types", "last_active_program_ids",
+        "name_label",
+        "jsic_major",
+        "prefecture",
+        "employee_count",
+        "capital_yen",
+        "target_types",
+        "last_active_program_ids",
     ):
         assert col in first_line, f"missing {col} in header"
     # Pipe-joined list serialization in body.
@@ -222,16 +221,12 @@ def test_post_bulk_import_short_circuits_empty_records(applier):
 def test_load_records_accepts_list_or_dict(applier, tmp_path):
     records_list = [{"name_label": "A"}]
     list_path = tmp_path / "list.json"
-    list_path.write_text(
-        json.dumps(records_list, ensure_ascii=False), encoding="utf-8"
-    )
+    list_path.write_text(json.dumps(records_list, ensure_ascii=False), encoding="utf-8")
     assert applier._load_records(list_path) == records_list
 
     wrapped = {"records": records_list, "errors": [], "summary": {}}
     wrap_path = tmp_path / "wrap.json"
-    wrap_path.write_text(
-        json.dumps(wrapped, ensure_ascii=False), encoding="utf-8"
-    )
+    wrap_path.write_text(json.dumps(wrapped, ensure_ascii=False), encoding="utf-8")
     assert applier._load_records(wrap_path) == records_list
 
     bad_path = tmp_path / "bad.json"

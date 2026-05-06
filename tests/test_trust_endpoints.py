@@ -16,6 +16,7 @@ and the schema is asserted by mig 101 itself. Wider behavioural coverage
 is left for the per-feature smoke tests in tests/smoke/ once the cron
 loop produces real data.
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -162,7 +163,8 @@ def test_sla_endpoint_24h_window(client: TestClient) -> None:
 
 
 def test_corrections_list_returns_seeded_row(
-    trust_seeded_db: Path, client: TestClient,
+    trust_seeded_db: Path,
+    client: TestClient,
 ) -> None:
     r = client.get("/v1/corrections?limit=10")
     assert r.status_code == 200, r.text
@@ -173,7 +175,8 @@ def test_corrections_list_returns_seeded_row(
 
 
 def test_corrections_submit_then_dedup(
-    trust_seeded_db: Path, client: TestClient,
+    trust_seeded_db: Path,
+    client: TestClient,
 ) -> None:
     payload = {
         "entity_id": "UNI-test-s-1",
@@ -195,7 +198,8 @@ def test_corrections_submit_then_dedup(
 
 
 def test_corrections_submit_rejects_invalid_email(
-    trust_seeded_db: Path, client: TestClient,
+    trust_seeded_db: Path,
+    client: TestClient,
 ) -> None:
     r = client.post(
         "/v1/corrections",
@@ -215,7 +219,8 @@ def test_corrections_submit_rejects_invalid_email(
 
 
 def test_corrections_rss_feed_serves_xml(
-    trust_seeded_db: Path, client: TestClient,
+    trust_seeded_db: Path,
+    client: TestClient,
 ) -> None:
     r = client.get("/v1/corrections/feed")
     assert r.status_code == 200
@@ -225,7 +230,8 @@ def test_corrections_rss_feed_serves_xml(
 
 
 def test_section52_rollup_returns_window(
-    trust_seeded_db: Path, client: TestClient,
+    trust_seeded_db: Path,
+    client: TestClient,
 ) -> None:
     r = client.get("/v1/trust/section52?days=30")
     assert r.status_code == 200, r.text
@@ -262,6 +268,7 @@ def test_cross_source_fallback_on_jpi_programs(client: TestClient) -> None:
 
 
 # ---- unit tests against the helper directly ---------------------------------
+
 
 def test_verdict_table() -> None:
     assert _verdict(0, 0) == "no_data"

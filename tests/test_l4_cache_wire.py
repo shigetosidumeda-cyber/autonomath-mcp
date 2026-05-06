@@ -40,9 +40,7 @@ if TYPE_CHECKING:
 
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
-_AUTONOMATH_DB = Path(
-    os.environ.get("AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db"))
-)
+_AUTONOMATH_DB = Path(os.environ.get("AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db")))
 
 
 # ---------------------------------------------------------------------------
@@ -104,8 +102,7 @@ def _hit_count(tool: str) -> int:
     try:
         try:
             (n,) = conn.execute(
-                "SELECT COALESCE(SUM(hit_count), 0) "
-                "FROM l4_query_cache WHERE tool_name = ?",
+                "SELECT COALESCE(SUM(hit_count), 0) FROM l4_query_cache WHERE tool_name = ?",
                 (tool,),
             ).fetchone()
             return int(n)
@@ -194,18 +191,14 @@ def test_programs_search_l4_miss_then_hit(client: "TestClient"):
     assert _hit_count(_L4_TOOL_SEARCH) == 1
 
 
-def test_programs_search_l4_ttl_expire_refreshes(
-    client: "TestClient", seeded_db: Path
-):
+def test_programs_search_l4_ttl_expire_refreshes(client: "TestClient", seeded_db: Path):
     """After TTL expires, the next call refetches and overwrites the row.
 
     Concretely: warm the cache, mutate the underlying DB so the recompute
     would yield a different total, expire the row, fire one more request.
     The new response must reflect the mutation."""
     # Warm with a query that matches the seeded tier-S row.
-    r1 = client.get(
-        "/v1/programs/search", params={"q": "テスト", "limit": 20}
-    )
+    r1 = client.get("/v1/programs/search", params={"q": "テスト", "limit": 20})
     assert r1.status_code == 200, r1.text
     initial_total = r1.json()["total"]
     assert initial_total >= 1, f"baseline expected ≥1 result, got {initial_total}"
@@ -228,8 +221,7 @@ def test_programs_search_l4_ttl_expire_refreshes(
         c.execute(
             "INSERT INTO programs_fts(unified_id, primary_name, aliases, "
             "enriched_text) VALUES (?, ?, '', ?)",
-            ("UNI-test-l4-extra", "テスト L4 cache extra row",
-             "テスト L4 cache extra row"),
+            ("UNI-test-l4-extra", "テスト L4 cache extra row", "テスト L4 cache extra row"),
         )
         c.commit()
     finally:
@@ -237,18 +229,14 @@ def test_programs_search_l4_ttl_expire_refreshes(
 
     try:
         # Within TTL → still see the cached total (cache hit, mutation hidden).
-        r2 = client.get(
-            "/v1/programs/search", params={"q": "テスト", "limit": 20}
-        )
+        r2 = client.get("/v1/programs/search", params={"q": "テスト", "limit": 20})
         assert r2.json()["total"] == initial_total
         assert _hit_count(_L4_TOOL_SEARCH) == 1
 
         # Expire the row → next call must MISS, recompute, and observe the
         # mutation.
         _force_expire_all(_L4_TOOL_SEARCH)
-        r3 = client.get(
-            "/v1/programs/search", params={"q": "テスト", "limit": 20}
-        )
+        r3 = client.get("/v1/programs/search", params={"q": "テスト", "limit": 20})
         assert r3.status_code == 200, r3.text
         assert r3.json()["total"] == initial_total + 1, (
             f"expected refresh after TTL expiry: "
@@ -259,12 +247,8 @@ def test_programs_search_l4_ttl_expire_refreshes(
         # extra row. Both the row and the FTS shadow must go.
         c = sqlite3.connect(seeded_db)
         try:
-            c.execute(
-                "DELETE FROM programs WHERE unified_id = 'UNI-test-l4-extra'"
-            )
-            c.execute(
-                "DELETE FROM programs_fts WHERE unified_id = 'UNI-test-l4-extra'"
-            )
+            c.execute("DELETE FROM programs WHERE unified_id = 'UNI-test-l4-extra'")
+            c.execute("DELETE FROM programs_fts WHERE unified_id = 'UNI-test-l4-extra'")
             c.commit()
         finally:
             c.close()
@@ -292,9 +276,7 @@ def test_programs_get_l4_miss_then_hit(client: "TestClient"):
     assert _hit_count(_L4_TOOL_GET) == 1
 
 
-def test_programs_get_l4_ttl_expire_refreshes(
-    client: "TestClient", seeded_db: Path
-):
+def test_programs_get_l4_ttl_expire_refreshes(client: "TestClient", seeded_db: Path):
     """After TTL expiry, a get-by-id picks up DB-side mutations.
 
     Note: the row→Program in-memory cache (``_PROGRAM_CACHE``) sits below
@@ -408,13 +390,9 @@ def test_am_tax_incentives_l4_ttl_expire_refreshes(client: "TestClient"):
     # — next request goes through the miss path and overwrites in place.
     r3 = client.get("/v1/am/tax_incentives", params={"limit": 5})
     assert r3.status_code == 200, r3.text
-    assert _row_count(_AM_TAX_TOOL) == 1, (
-        "expected INSERT OR REPLACE to overwrite, not duplicate"
-    )
+    assert _row_count(_AM_TAX_TOOL) == 1, "expected INSERT OR REPLACE to overwrite, not duplicate"
     # hit_count was reset by the INSERT OR REPLACE → 0 after the miss path.
-    assert _hit_count(_AM_TAX_TOOL) == 0, (
-        "INSERT OR REPLACE on stale row must reset hit_count to 0"
-    )
+    assert _hit_count(_AM_TAX_TOOL) == 0, "INSERT OR REPLACE on stale row must reset hit_count to 0"
 
 
 # ---------------------------------------------------------------------------
@@ -442,12 +420,8 @@ def test_cache_key_includes_ctx_tier_for_search():
         "fields": "default",
         "include_advisors": False,
     }
-    free_key = canonical_cache_key(
-        _L4_TOOL_SEARCH, {**base, "ctx_tier": "free"}
-    )
-    paid_key = canonical_cache_key(
-        _L4_TOOL_SEARCH, {**base, "ctx_tier": "paid"}
-    )
+    free_key = canonical_cache_key(_L4_TOOL_SEARCH, {**base, "ctx_tier": "free"})
+    paid_key = canonical_cache_key(_L4_TOOL_SEARCH, {**base, "ctx_tier": "paid"})
     assert free_key != paid_key, (
         "ctx.tier must partition the cache key — fields=full payloads "
         "differ between tiers and a shared key would poison both buckets."
@@ -456,12 +430,8 @@ def test_cache_key_includes_ctx_tier_for_search():
 
 def test_cache_key_includes_ctx_tier_for_get():
     base = {"unified_id": "UNI-test-s-1", "fields": "default"}
-    free_key = canonical_cache_key(
-        _L4_TOOL_GET, {**base, "ctx_tier": "free"}
-    )
-    paid_key = canonical_cache_key(
-        _L4_TOOL_GET, {**base, "ctx_tier": "paid"}
-    )
+    free_key = canonical_cache_key(_L4_TOOL_GET, {**base, "ctx_tier": "free"})
+    paid_key = canonical_cache_key(_L4_TOOL_GET, {**base, "ctx_tier": "paid"})
     assert free_key != paid_key
 
 
@@ -476,10 +446,6 @@ def test_cache_key_includes_ctx_tier_for_am_tax():
         "limit": 20,
         "offset": 0,
     }
-    free_key = canonical_cache_key(
-        _AM_TAX_TOOL, {**base, "ctx_tier": "free"}
-    )
-    paid_key = canonical_cache_key(
-        _AM_TAX_TOOL, {**base, "ctx_tier": "paid"}
-    )
+    free_key = canonical_cache_key(_AM_TAX_TOOL, {**base, "ctx_tier": "free"})
+    paid_key = canonical_cache_key(_AM_TAX_TOOL, {**base, "ctx_tier": "paid"})
     assert free_key != paid_key

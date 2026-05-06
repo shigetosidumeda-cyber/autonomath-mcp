@@ -106,10 +106,7 @@ def test_generate_liveness_shards_from_plan_writes_domain_disjoint_scripts(
         f"LOG_PATH={shlex.quote(str(log_dir / 'tier_bc_liveness_shard_01_2026-05-01.log'))}"
         in text_1
     )
-    assert (
-        f"RESULT_DIR={shlex.quote(str(result_dir / 'shard_01'))}"
-        in text_1
-    )
+    assert f"RESULT_DIR={shlex.quote(str(result_dir / 'shard_01'))}" in text_1
 
     text_2 = script_2.read_text(encoding="utf-8")
     assert "run_domain c.example 1 domain_001.csv.tmp" in text_2

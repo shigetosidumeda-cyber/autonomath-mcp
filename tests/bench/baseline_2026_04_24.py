@@ -10,6 +10,7 @@ Results written to docs/performance.md.
 DO NOT mock the DB. Uses the real data/jpintel.db (CLAUDE.md hard rule).
 DO NOT commit results as ground truth — snapshot only.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -48,7 +49,10 @@ GET_ENDPOINTS: list[tuple[str, str]] = [
     ("GET /healthz", "/healthz"),
     ("GET /v1/meta", "/v1/meta"),
     ("GET /v1/programs/search?q=IT", "/v1/programs/search?q=IT&limit=20"),
-    ("GET /v1/programs/search?q=スマート農業&tier=S,A", "/v1/programs/search?q=スマート農業&tier=S&tier=A&limit=20"),
+    (
+        "GET /v1/programs/search?q=スマート農業&tier=S,A",
+        "/v1/programs/search?q=スマート農業&tier=S&tier=A&limit=20",
+    ),
     (f"GET /v1/programs/{_UNI_IDS[0]}", f"/v1/programs/{_UNI_IDS[0]}"),
     (f"GET /v1/programs/{_UNI_IDS[1]}", f"/v1/programs/{_UNI_IDS[1]}"),
     (f"GET /v1/programs/{_UNI_IDS[2]}", f"/v1/programs/{_UNI_IDS[2]}"),
@@ -69,6 +73,7 @@ MEASURE_N = 500
 
 
 # ── Measurement helpers ───────────────────────────────────────────────────
+
 
 def _percentile(data: list[float], pct: float) -> float:
     """Return the p-th percentile (0-100) of sorted data."""
@@ -92,9 +97,7 @@ async def _warm_get(client: httpx.AsyncClient, path: str) -> None:
             pass
 
 
-async def _measure_get(
-    client: httpx.AsyncClient, path: str
-) -> tuple[list[float], int]:
+async def _measure_get(client: httpx.AsyncClient, path: str) -> tuple[list[float], int]:
     latencies: list[float] = []
     errors = 0
     for _ in range(MEASURE_N):
@@ -145,12 +148,11 @@ def _stats(latencies: list[float], errors: int) -> dict:
 
 # ── Main benchmark ────────────────────────────────────────────────────────
 
+
 async def run_benchmark() -> list[dict]:
     results = []
     transport = httpx.ASGITransport(app=app)
-    async with httpx.AsyncClient(
-        transport=transport, base_url="http://testserver"
-    ) as client:
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
         # GET endpoints
         for label, path in GET_ENDPOINTS:
             print(f"  warming  {label} ...", flush=True)
@@ -189,6 +191,7 @@ async def run_benchmark() -> list[dict]:
 
 # ── Markdown output ───────────────────────────────────────────────────────
 
+
 def _capacity_estimate(p95_ms: float, label: str) -> str:
     if p95_ms <= 0:
         return "N/A"
@@ -204,7 +207,11 @@ def write_performance_md(results: list[dict], out_path: Path) -> None:
 
     # Hot path for capacity estimate
     search_result = next(
-        (r for r in results if "programs/search?q=IT" in r["label"] and "スマート" not in r["label"]),
+        (
+            r
+            for r in results
+            if "programs/search?q=IT" in r["label"] and "スマート" not in r["label"]
+        ),
         None,
     )
     if search_result:
@@ -219,9 +226,7 @@ def write_performance_md(results: list[dict], out_path: Path) -> None:
             f"| {r['label']}{flag} | {r['p50']}ms | {r['p95']}ms | {r['p99']}ms | {r['max']}ms | {r['err_pct']}% |"
         )
 
-    slowest_lines = "\n".join(
-        f"- `{r['label']}`: P95 = {r['p95']}ms" for r in top3
-    )
+    slowest_lines = "\n".join(f"- `{r['label']}`: P95 = {r['p95']}ms" for r in top3)
 
     flag_section = ""
     if flagged:
@@ -262,16 +267,16 @@ Per `docs/monitoring.md` P1 thresholds — multiply measured P95 by 10× for ale
 
 | Endpoint group | Measured P95 | P1 alert threshold |
 |---|---|---|
-| `/v1/programs/search` | {search_result['p95'] if search_result else 'N/A'}ms | {round(search_result['p95'] * 10) if search_result else 'N/A'}ms |
-| `/v1/laws/search` | {next((r['p95'] for r in results if 'laws' in r['label']), 'N/A')}ms | {round(next((r['p95'] for r in results if 'laws' in r['label']), 0) * 10)}ms |
-| `/v1/programs/prescreen` | {next((r['p95'] for r in results if 'prescreen' in r['label']), 'N/A')}ms | {round(next((r['p95'] for r in results if 'prescreen' in r['label']), 0) * 10)}ms |
-| `/healthz` | {next((r['p95'] for r in results if '/healthz' in r['label']), 'N/A')}ms | {round(next((r['p95'] for r in results if '/healthz' in r['label']), 0) * 10)}ms |
+| `/v1/programs/search` | {search_result["p95"] if search_result else "N/A"}ms | {round(search_result["p95"] * 10) if search_result else "N/A"}ms |
+| `/v1/laws/search` | {next((r["p95"] for r in results if "laws" in r["label"]), "N/A")}ms | {round(next((r["p95"] for r in results if "laws" in r["label"]), 0) * 10)}ms |
+| `/v1/programs/prescreen` | {next((r["p95"] for r in results if "prescreen" in r["label"]), "N/A")}ms | {round(next((r["p95"] for r in results if "prescreen" in r["label"]), 0) * 10)}ms |
+| `/healthz` | {next((r["p95"] for r in results if "/healthz" in r["label"]), "N/A")}ms | {round(next((r["p95"] for r in results if "/healthz" in r["label"]), 0) * 10)}ms |
 
 Error rate > 2% over 15 min → P1 alert (any endpoint).
 
 ## Capacity estimate
 
-Hot path `/v1/programs/search` sequential P95: {search_result['p95'] if search_result else 'N/A'}ms.
+Hot path `/v1/programs/search` sequential P95: {search_result["p95"] if search_result else "N/A"}ms.
 
 Concurrent capacity estimate: {cap_str}.
 
@@ -298,6 +303,7 @@ Concurrent capacity estimate: {cap_str}.
 
 # ── Entry point ───────────────────────────────────────────────────────────
 
+
 def main() -> None:
     print(f"AutonoMath performance baseline — {MEASURE_N} reqs/endpoint after {WARMUP_N} warm-up")
     print(f"DB: {DB_PATH}")
@@ -311,7 +317,9 @@ def main() -> None:
     print("\n=== SUMMARY ===")
     for r in results:
         flag = " [SLOW - INVESTIGATE]" if r["p95"] > 500 else ""
-        print(f"  {r['label']}: P50={r['p50']}ms P95={r['p95']}ms P99={r['p99']}ms Err={r['err_pct']}%{flag}")
+        print(
+            f"  {r['label']}: P50={r['p50']}ms P95={r['p95']}ms P99={r['p99']}ms Err={r['err_pct']}%{flag}"
+        )
 
 
 if __name__ == "__main__":

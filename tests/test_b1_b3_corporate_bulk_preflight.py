@@ -175,8 +175,9 @@ def test_build_report_flags_missing_bulk_index_and_artifacts(tmp_path: Path) -> 
     )
 
     assert report["ok"] is False
-    assert "jpintel_db:index:invoice_registrants.idx_invoice_registrants_last_updated" in (
-        report["issues"]
+    assert (
+        "jpintel_db:index:invoice_registrants.idx_invoice_registrants_last_updated"
+        in (report["issues"])
     )
     assert "gbiz_jsonl:missing" in report["issues"]
     assert "invoice_cache:missing_or_empty" in report["issues"]

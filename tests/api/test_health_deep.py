@@ -126,9 +126,7 @@ def test_individual_check_exception_does_not_propagate(
     def forced_ok() -> dict[str, object]:
         return {"status": "ok", "details": "ok", "value": 1}
 
-    monkeypatch.setattr(
-        hd, "CHECKS", (("boom", boom), ("ok", forced_ok))
-    )
+    monkeypatch.setattr(hd, "CHECKS", (("boom", boom), ("ok", forced_ok)))
     doc = hd.get_deep_health()  # must not raise
     assert doc["checks"]["boom"]["status"] == "fail"
     assert "kaboom" in doc["checks"]["boom"]["details"]

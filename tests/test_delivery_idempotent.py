@@ -15,6 +15,7 @@ Constraints:
 - Test pattern: pytest fixtures + parametrize + per-event hash assertions.
 - 10 test cases, including event-hash collision detection (sha256 false-positive 0).
 """
+
 from __future__ import annotations
 
 # Pull DEEP-46/47/48 shared fixtures (jpintel_conn, autonomath_conn,
@@ -224,9 +225,7 @@ def test_charge_failure_no_webhook_post(
     assert result["status"] == "charge_failed"
     assert sends == []
     # No idempotent log row → next cron will retry
-    rows = jpintel_conn.execute(
-        "SELECT COUNT(*) FROM delivery_idempotent_log"
-    ).fetchone()
+    rows = jpintel_conn.execute("SELECT COUNT(*) FROM delivery_idempotent_log").fetchone()
     assert rows[0] == 0
 
 
@@ -339,12 +338,8 @@ def test_idempotency_cache_mig_087_compat(
         sender=sender,
     )
     # Both tables independently populated, no cross-pollination
-    legacy = jpintel_conn.execute(
-        "SELECT COUNT(*) FROM idempotency_cache"
-    ).fetchone()[0]
-    new = jpintel_conn.execute(
-        "SELECT COUNT(*) FROM delivery_idempotent_log"
-    ).fetchone()[0]
+    legacy = jpintel_conn.execute("SELECT COUNT(*) FROM idempotency_cache").fetchone()[0]
+    new = jpintel_conn.execute("SELECT COUNT(*) FROM delivery_idempotent_log").fetchone()[0]
     assert legacy == 1
     assert new == 1
 
@@ -370,6 +365,7 @@ def test_reconcile_cron_finds_inconsistency_zero(
     jpintel_conn, mock_stripe_client, synthetic_event_factory
 ) -> None:
     """After 50 happy-path deliveries, reconcile should find 0 inconsistencies."""
+
     def sender(url: str, payload: dict[str, Any]) -> bool:
         return True
 
@@ -403,6 +399,7 @@ def test_aggregator_url_reject_pre_send(
     jpintel_conn, mock_stripe_client, synthetic_event_factory, url
 ) -> None:
     """Aggregator hosts must be rejected BEFORE any charge / send happens (data-hygiene NN)."""
+
     def sender(url: str, payload: dict[str, Any]) -> bool:  # noqa: ARG001
         raise AssertionError("Aggregator delivery must not call sender")
 
@@ -433,6 +430,7 @@ def test_per_event_3yen_charge_confirm(
     jpintel_conn, mock_stripe_client, synthetic_event_factory
 ) -> None:
     """Each successful delivery charges exactly ¥3 — no batch discount, no tier markup."""
+
     def sender(url: str, payload: dict[str, Any]) -> bool:
         return True
 

@@ -173,9 +173,7 @@ def test_build_report_generates_official_sources_counts_and_string_commands(
         "https://www.houjin-bangou.nta.go.jp/",
         "https://www.houjin-bangou.nta.go.jp/download/",
     ]
-    assert source_by_id["B3_NTA_INVOICE"]["source_domains"] == [
-        "www.invoice-kohyo.nta.go.jp"
-    ]
+    assert source_by_id["B3_NTA_INVOICE"]["source_domains"] == ["www.invoice-kohyo.nta.go.jp"]
     assert source_by_id["B1_GBIZINFO"]["expected_local_artifacts"]["jsonl_snapshot"] == str(
         gbiz_jsonl
     )
@@ -189,9 +187,7 @@ def test_build_report_generates_official_sources_counts_and_string_commands(
     assert report["report_counts"]["source_count"] == 3
     assert report["report_counts"]["command_count"] == len(all_commands)
     assert report["ok"] is False
-    assert {
-        blocker["code"] for blocker in report["blockers"]
-    } >= {
+    assert {blocker["code"] for blocker in report["blockers"]} >= {
         "license_review:B1_NTA_HOUJIN",
         "license_review:B1_GBIZINFO",
         "privacy_review:B3_NTA_INVOICE",

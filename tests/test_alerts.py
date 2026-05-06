@@ -6,6 +6,7 @@ Coverage:
   * DELETE /v1/me/alerts/subscriptions/{id} — soft-delete + 404
   * scripts/cron/amendment_alert.run — dry-run path with seeded amendments
 """
+
 from __future__ import annotations
 
 import json
@@ -166,6 +167,7 @@ def test_subscribe_happy_path(client, alert_key, seeded_db):
 
     # Persisted with correct api_key_hash.
     from jpintel_mcp.api.deps import hash_api_key
+
     expected_hash = hash_api_key(alert_key)
     c = sqlite3.connect(seeded_db)
     c.row_factory = sqlite3.Row
@@ -231,17 +233,32 @@ def test_list_only_mine_and_active(client, alert_key, seeded_db):
             "INSERT INTO alert_subscriptions("
             "api_key_hash, filter_type, min_severity, email, active, "
             "created_at, updated_at) VALUES (?,?,?,?,?,?,?)",
-            ("not_my_hash", "all", "important", "x@example.com",
-             1, "2026-04-24T00:00:00+00:00", "2026-04-24T00:00:00+00:00"),
+            (
+                "not_my_hash",
+                "all",
+                "important",
+                "x@example.com",
+                1,
+                "2026-04-24T00:00:00+00:00",
+                "2026-04-24T00:00:00+00:00",
+            ),
         )
         # Insert an inactive (deactivated) sub for our key.
         from jpintel_mcp.api.deps import hash_api_key
+
         c.execute(
             "INSERT INTO alert_subscriptions("
             "api_key_hash, filter_type, min_severity, email, active, "
             "created_at, updated_at) VALUES (?,?,?,?,?,?,?)",
-            (hash_api_key(alert_key), "all", "important", "old@example.com",
-             0, "2026-04-24T00:00:00+00:00", "2026-04-24T00:00:00+00:00"),
+            (
+                hash_api_key(alert_key),
+                "all",
+                "important",
+                "old@example.com",
+                0,
+                "2026-04-24T00:00:00+00:00",
+                "2026-04-24T00:00:00+00:00",
+            ),
         )
         c.commit()
     finally:
@@ -294,8 +311,15 @@ def test_delete_other_keys_sub_404s(client, alert_key, seeded_db):
             "INSERT INTO alert_subscriptions("
             "api_key_hash, filter_type, min_severity, email, active, "
             "created_at, updated_at) VALUES (?,?,?,?,?,?,?)",
-            ("foreign_hash", "all", "important", "x@example.com",
-             1, "2026-04-24T00:00:00+00:00", "2026-04-24T00:00:00+00:00"),
+            (
+                "foreign_hash",
+                "all",
+                "important",
+                "x@example.com",
+                1,
+                "2026-04-24T00:00:00+00:00",
+                "2026-04-24T00:00:00+00:00",
+            ),
         )
         c.commit()
         foreign_id = c.execute(
@@ -368,8 +392,7 @@ def amendment_db(tmp_path: Path) -> Path:
         "INSERT INTO am_amendment_snapshot("
         "entity_id, version_seq, observed_at, effective_until, "
         "amount_max_yen, eligibility_hash) VALUES (?,?,?,?,?,?)",
-        ("program:test:001", 2, "2026-04-25T00:00:00+00:00",
-         "2026-12-31", 1000000, "h1"),
+        ("program:test:001", 2, "2026-04-25T00:00:00+00:00", "2026-12-31", 1000000, "h1"),
     )
     c.commit()
     c.close()
@@ -390,9 +413,15 @@ def test_cron_dry_run_with_subscription(seeded_db: Path, amendment_db: Path, ale
             "webhook_url, email, active, created_at, updated_at"
             ") VALUES (?,?,?,?,?,?,?,?,?)",
             (
-                key_hash, "law_id", "law_345AC0000000050", "critical",
-                "https://hooks.example.com/x", "ops@example.com",
-                1, "2026-04-20T00:00:00+00:00", "2026-04-20T00:00:00+00:00",
+                key_hash,
+                "law_id",
+                "law_345AC0000000050",
+                "critical",
+                "https://hooks.example.com/x",
+                "ops@example.com",
+                1,
+                "2026-04-20T00:00:00+00:00",
+                "2026-04-20T00:00:00+00:00",
             ),
         )
         c.commit()
@@ -426,9 +455,14 @@ def test_cron_skips_when_severity_below_min(seeded_db: Path, amendment_db: Path,
             "email, active, created_at, updated_at"
             ") VALUES (?,?,?,?,?,?,?,?)",
             (
-                key_hash, "law_id", "nonexistent_law_id", "critical",
-                "ops@example.com", 1,
-                "2026-04-20T00:00:00+00:00", "2026-04-20T00:00:00+00:00",
+                key_hash,
+                "law_id",
+                "nonexistent_law_id",
+                "critical",
+                "ops@example.com",
+                1,
+                "2026-04-20T00:00:00+00:00",
+                "2026-04-20T00:00:00+00:00",
             ),
         )
         c.commit()

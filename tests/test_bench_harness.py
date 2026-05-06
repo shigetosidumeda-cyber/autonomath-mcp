@@ -15,6 +15,7 @@ These tests verify:
 
 NO LLM IMPORTS HERE.
 """
+
 from __future__ import annotations
 
 import ast
@@ -56,10 +57,14 @@ def test_emit_generates_three_lines_per_query() -> None:
     )
 
     res = _run_harness(
-        "--mode", "emit",
-        "--queries-csv", str(SAMPLE_QUERIES_CSV),
-        "--model", "claude-sonnet-4-6",
-        "--jpcite-base-url", "https://api.jpcite.com",
+        "--mode",
+        "emit",
+        "--queries-csv",
+        str(SAMPLE_QUERIES_CSV),
+        "--model",
+        "claude-sonnet-4-6",
+        "--jpcite-base-url",
+        "https://api.jpcite.com",
     )
     assert res.returncode == 0, res.stderr
     lines = [ln for ln in res.stdout.splitlines() if ln.strip()]
@@ -98,9 +103,7 @@ def test_emit_generates_three_lines_per_query() -> None:
             assert rec["tools_enabled"] == []
             assert rec["prefetch_method"] == "POST"
             assert rec["prefetch_url"] is not None
-            assert rec["prefetch_url"] == (
-                "https://api.jpcite.com/v1/evidence/packets/query"
-            )
+            assert rec["prefetch_url"] == ("https://api.jpcite.com/v1/evidence/packets/query")
             assert rec["prefetch_body"]["query_text"] == rec["query_text"]
             assert rec["prefetch_body"]["include_compression"] is True
         elif rec["arm"] == "jpcite_precomputed_intelligence":
@@ -156,59 +159,113 @@ def fixture_results_csv(tmp_path: Path) -> Path:
     rows = [
         # direct_web rows
         {
-            "query_id": 1, "query_text": "Q1", "arm": "direct_web",
+            "query_id": 1,
+            "query_text": "Q1",
+            "arm": "direct_web",
             "model": "claude-sonnet-4-6",
-            "input_tokens": 10000, "output_tokens": 500, "reasoning_tokens": 0,
-            "web_searches": 3, "jpcite_requests": 0,
-            "yen_cost_per_answer": 12.0, "latency_seconds": 8.0,
-            "citation_rate": 0.6, "hallucination_rate": 0.2,
-            "corpus_snapshot_id": "", "packet_id": "", "notes": "",
+            "input_tokens": 10000,
+            "output_tokens": 500,
+            "reasoning_tokens": 0,
+            "web_searches": 3,
+            "jpcite_requests": 0,
+            "yen_cost_per_answer": 12.0,
+            "latency_seconds": 8.0,
+            "citation_rate": 0.6,
+            "hallucination_rate": 0.2,
+            "corpus_snapshot_id": "",
+            "packet_id": "",
+            "notes": "",
         },
         {
-            "query_id": 2, "query_text": "Q2", "arm": "direct_web",
+            "query_id": 2,
+            "query_text": "Q2",
+            "arm": "direct_web",
             "model": "claude-sonnet-4-6",
-            "input_tokens": 20000, "output_tokens": 800, "reasoning_tokens": 0,
-            "web_searches": 5, "jpcite_requests": 0,
-            "yen_cost_per_answer": 18.0, "latency_seconds": 12.0,
-            "citation_rate": 0.7, "hallucination_rate": 0.15,
-            "corpus_snapshot_id": "", "packet_id": "", "notes": "",
+            "input_tokens": 20000,
+            "output_tokens": 800,
+            "reasoning_tokens": 0,
+            "web_searches": 5,
+            "jpcite_requests": 0,
+            "yen_cost_per_answer": 18.0,
+            "latency_seconds": 12.0,
+            "citation_rate": 0.7,
+            "hallucination_rate": 0.15,
+            "corpus_snapshot_id": "",
+            "packet_id": "",
+            "notes": "",
         },
         {
-            "query_id": 3, "query_text": "Q3", "arm": "direct_web",
+            "query_id": 3,
+            "query_text": "Q3",
+            "arm": "direct_web",
             "model": "claude-sonnet-4-6",
-            "input_tokens": 30000, "output_tokens": 1100, "reasoning_tokens": 0,
-            "web_searches": 7, "jpcite_requests": 0,
-            "yen_cost_per_answer": 25.0, "latency_seconds": 15.0,
-            "citation_rate": 0.8, "hallucination_rate": 0.1,
-            "corpus_snapshot_id": "", "packet_id": "", "notes": "",
+            "input_tokens": 30000,
+            "output_tokens": 1100,
+            "reasoning_tokens": 0,
+            "web_searches": 7,
+            "jpcite_requests": 0,
+            "yen_cost_per_answer": 25.0,
+            "latency_seconds": 15.0,
+            "citation_rate": 0.8,
+            "hallucination_rate": 0.1,
+            "corpus_snapshot_id": "",
+            "packet_id": "",
+            "notes": "",
         },
         # jpcite_packet rows (paired by query_id)
         {
-            "query_id": 1, "query_text": "Q1", "arm": "jpcite_packet",
+            "query_id": 1,
+            "query_text": "Q1",
+            "arm": "jpcite_packet",
             "model": "claude-sonnet-4-6",
-            "input_tokens": 1000, "output_tokens": 400, "reasoning_tokens": 0,
-            "web_searches": 0, "jpcite_requests": 1,
-            "yen_cost_per_answer": 5.0, "latency_seconds": 3.0,
-            "citation_rate": 0.95, "hallucination_rate": 0.05,
-            "corpus_snapshot_id": "corpus-2026-04-29", "packet_id": "evp_x1", "notes": "",
+            "input_tokens": 1000,
+            "output_tokens": 400,
+            "reasoning_tokens": 0,
+            "web_searches": 0,
+            "jpcite_requests": 1,
+            "yen_cost_per_answer": 5.0,
+            "latency_seconds": 3.0,
+            "citation_rate": 0.95,
+            "hallucination_rate": 0.05,
+            "corpus_snapshot_id": "corpus-2026-04-29",
+            "packet_id": "evp_x1",
+            "notes": "",
         },
         {
-            "query_id": 2, "query_text": "Q2", "arm": "jpcite_packet",
+            "query_id": 2,
+            "query_text": "Q2",
+            "arm": "jpcite_packet",
             "model": "claude-sonnet-4-6",
-            "input_tokens": 2000, "output_tokens": 600, "reasoning_tokens": 0,
-            "web_searches": 0, "jpcite_requests": 1,
-            "yen_cost_per_answer": 6.0, "latency_seconds": 3.5,
-            "citation_rate": 0.92, "hallucination_rate": 0.06,
-            "corpus_snapshot_id": "corpus-2026-04-29", "packet_id": "evp_x2", "notes": "",
+            "input_tokens": 2000,
+            "output_tokens": 600,
+            "reasoning_tokens": 0,
+            "web_searches": 0,
+            "jpcite_requests": 1,
+            "yen_cost_per_answer": 6.0,
+            "latency_seconds": 3.5,
+            "citation_rate": 0.92,
+            "hallucination_rate": 0.06,
+            "corpus_snapshot_id": "corpus-2026-04-29",
+            "packet_id": "evp_x2",
+            "notes": "",
         },
         {
-            "query_id": 3, "query_text": "Q3", "arm": "jpcite_packet",
+            "query_id": 3,
+            "query_text": "Q3",
+            "arm": "jpcite_packet",
             "model": "claude-sonnet-4-6",
-            "input_tokens": 3000, "output_tokens": 700, "reasoning_tokens": 0,
-            "web_searches": 0, "jpcite_requests": 1,
-            "yen_cost_per_answer": 7.0, "latency_seconds": 4.0,
-            "citation_rate": 0.94, "hallucination_rate": 0.04,
-            "corpus_snapshot_id": "corpus-2026-04-29", "packet_id": "evp_x3", "notes": "",
+            "input_tokens": 3000,
+            "output_tokens": 700,
+            "reasoning_tokens": 0,
+            "web_searches": 0,
+            "jpcite_requests": 1,
+            "yen_cost_per_answer": 7.0,
+            "latency_seconds": 4.0,
+            "citation_rate": 0.94,
+            "hallucination_rate": 0.04,
+            "corpus_snapshot_id": "corpus-2026-04-29",
+            "packet_id": "evp_x3",
+            "notes": "",
         },
     ]
     fieldnames = list(rows[0].keys())
@@ -481,15 +538,12 @@ def test_aggregate_computes_three_arm_pairing_and_deltas(tmp_path: Path) -> None
         "jpcite_packet": [],
         "jpcite_precomputed_intelligence": [],
     }
-    assert summary["arms"]["jpcite_precomputed_intelligence"]["input_tokens"][
-        "p50"
-    ] == 375.0
-    assert summary["median_delta_pct_vs_direct_web"]["jpcite_packet"][
-        "input_tokens"
-    ] == 50.0
-    assert summary["median_delta_pct_vs_direct_web"][
-        "jpcite_precomputed_intelligence"
-    ]["input_tokens"] == 75.0
+    assert summary["arms"]["jpcite_precomputed_intelligence"]["input_tokens"]["p50"] == 375.0
+    assert summary["median_delta_pct_vs_direct_web"]["jpcite_packet"]["input_tokens"] == 50.0
+    assert (
+        summary["median_delta_pct_vs_direct_web"]["jpcite_precomputed_intelligence"]["input_tokens"]
+        == 75.0
+    )
 
 
 def test_aggregate_with_missing_csv_arg_errors() -> None:
@@ -525,23 +579,30 @@ def test_harness_has_no_llm_imports() -> None:
         if isinstance(node, ast.Import):
             for alias in node.names:
                 head = alias.name.split(".")[0]
-                if head in {
+                if (
+                    head
+                    in {
+                        "anthropic",
+                        "openai",
+                        "claude_agent_sdk",
+                    }
+                    or alias.name == "google.generativeai"
+                    or alias.name.startswith("google.generativeai.")
+                ):
+                    hits.append(f"import {alias.name}")
+        elif (
+            isinstance(node, ast.ImportFrom)
+            and node.module
+            and (
+                node.module.split(".")[0]
+                in {
                     "anthropic",
                     "openai",
                     "claude_agent_sdk",
-                } or alias.name == "google.generativeai" or alias.name.startswith(
-                    "google.generativeai."
-                ):
-                    hits.append(f"import {alias.name}")
-        elif isinstance(node, ast.ImportFrom) and node.module and (
-            node.module.split(".")[0]
-            in {
-                "anthropic",
-                "openai",
-                "claude_agent_sdk",
-            }
-            or node.module == "google.generativeai"
-            or node.module.startswith("google.generativeai.")
+                }
+                or node.module == "google.generativeai"
+                or node.module.startswith("google.generativeai.")
+            )
         ):
             hits.append(f"from {node.module} import ...")
     assert not hits, (

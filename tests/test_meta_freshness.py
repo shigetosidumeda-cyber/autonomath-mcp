@@ -5,6 +5,7 @@ NOT ship the legacy `backend/knowledge_base/data/canonical/enriched/` tree. An
 older implementation read fetched_at from those JSON files and silently
 returned `total=0` in prod. This test pins the DB-backed loader.
 """
+
 from __future__ import annotations
 
 import datetime as dt

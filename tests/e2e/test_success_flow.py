@@ -10,6 +10,7 @@ route that returns a canned `{api_key, tier, customer_id}` body. This
 tests the UI *rendering + copy-button* contract without requiring a
 real paid Checkout session.
 """
+
 from __future__ import annotations
 
 import re
@@ -22,10 +23,7 @@ if TYPE_CHECKING:
     from playwright.async_api import Page
 
 _FAKE_KEY = "jpintel_test_" + "a" * 40
-_FAKE_RESPONSE = (
-    '{"api_key": "' + _FAKE_KEY + '", "tier": "paid", '
-    '"customer_id": "cus_test_e2e"}'
-)
+_FAKE_RESPONSE = '{"api_key": "' + _FAKE_KEY + '", "tier": "paid", "customer_id": "cus_test_e2e"}'
 
 
 @pytest.mark.asyncio
@@ -40,9 +38,7 @@ async def test_success_page_renders_key_block_and_curl_when_api_succeeds(
             body=_FAKE_RESPONSE,
         )
 
-    await page.route(
-        re.compile(r".*/v1/billing/keys/from-checkout.*"), _handle
-    )
+    await page.route(re.compile(r".*/v1/billing/keys/from-checkout.*"), _handle)
 
     # session_id must match /^cs_[a-zA-Z0-9_]+$/ per success.html's regex.
     await page.goto(url_for("/success.html?session_id=cs_test_e2e_fake_12345"))
@@ -68,19 +64,13 @@ async def test_success_page_renders_key_block_and_curl_when_api_succeeds(
     curl_block = page.locator("#curl-block")
     curl_text = await curl_block.text_content()
     assert curl_text is not None
-    assert _FAKE_KEY in curl_text, (
-        f"curl snippet should embed the issued key; got {curl_text!r}"
-    )
-    assert "X-API-Key" in curl_text, (
-        f"curl snippet missing X-API-Key header; got {curl_text!r}"
-    )
+    assert _FAKE_KEY in curl_text, f"curl snippet should embed the issued key; got {curl_text!r}"
+    assert "X-API-Key" in curl_text, f"curl snippet missing X-API-Key header; got {curl_text!r}"
 
 
 @pytest.mark.asyncio
 @pytest.mark.e2e
-async def test_success_page_shows_missing_session_state_without_query(
-    page: Page, url_for
-) -> None:
+async def test_success_page_shows_missing_session_state_without_query(page: Page, url_for) -> None:
     # No session_id query → success.html should render the "missing" state
     # immediately (the inline script runs getSessionId() and falls through).
     await page.goto(url_for("/success.html"))
@@ -95,9 +85,7 @@ async def test_success_page_shows_missing_session_state_without_query(
 
 @pytest.mark.asyncio
 @pytest.mark.e2e
-async def test_success_page_shows_unpaid_state_on_402(
-    page: Page, url_for
-) -> None:
+async def test_success_page_shows_unpaid_state_on_402(page: Page, url_for) -> None:
     async def _handle(route) -> None:
         await route.fulfill(
             status=402,
@@ -105,9 +93,7 @@ async def test_success_page_shows_unpaid_state_on_402(
             body='{"detail": "checkout session not paid"}',
         )
 
-    await page.route(
-        re.compile(r".*/v1/billing/keys/from-checkout.*"), _handle
-    )
+    await page.route(re.compile(r".*/v1/billing/keys/from-checkout.*"), _handle)
     await page.goto(url_for("/success.html?session_id=cs_test_unpaid_00001"))
 
     unpaid = page.locator("#state-error-unpaid")
@@ -120,9 +106,7 @@ async def test_success_page_shows_unpaid_state_on_402(
 
 @pytest.mark.asyncio
 @pytest.mark.e2e
-async def test_success_page_shows_conflict_state_on_409(
-    page: Page, url_for
-) -> None:
+async def test_success_page_shows_conflict_state_on_409(page: Page, url_for) -> None:
     async def _handle(route) -> None:
         await route.fulfill(
             status=409,
@@ -130,9 +114,7 @@ async def test_success_page_shows_conflict_state_on_409(
             body='{"detail": "key already issued"}',
         )
 
-    await page.route(
-        re.compile(r".*/v1/billing/keys/from-checkout.*"), _handle
-    )
+    await page.route(re.compile(r".*/v1/billing/keys/from-checkout.*"), _handle)
     await page.goto(url_for("/success.html?session_id=cs_test_conflict_00001"))
 
     conflict = page.locator("#state-error-conflict")

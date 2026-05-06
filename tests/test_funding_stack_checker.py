@@ -18,8 +18,10 @@ Each test builds a tmp jpintel.db (with the slim schema needed by
 ``exclusion_rules``) and a tmp autonomath.db (with ``am_compat_matrix``)
 so we never touch the production 9.4 GB DB.
 """
+
 from __future__ import annotations
 
+import contextlib
 import json
 import sqlite3
 from pathlib import Path
@@ -35,6 +37,24 @@ from jpintel_mcp.services.funding_stack_checker import (
 # ---------------------------------------------------------------------------
 # Fixture builders
 # ---------------------------------------------------------------------------
+
+
+@pytest.fixture(autouse=True)
+def _ensure_audit_seal_tables(seeded_db: Path) -> None:
+    """Layer audit seal migrations onto the baseline seeded jpintel DB."""
+    migrations = Path(__file__).resolve().parents[1] / "scripts" / "migrations"
+    for mig in ("089_audit_seal_table.sql", "119_audit_seal_seal_id_columns.sql"):
+        conn = sqlite3.connect(seeded_db)
+        try:
+            with contextlib.suppress(sqlite3.OperationalError):
+                conn.executescript((migrations / mig).read_text(encoding="utf-8"))
+            conn.commit()
+        finally:
+            conn.close()
+
+    from jpintel_mcp.api._audit_seal import _reset_corpus_snapshot_cache_for_tests
+
+    _reset_corpus_snapshot_cache_for_tests()
 
 
 def _build_jpintel_db(path: Path) -> None:
@@ -169,10 +189,20 @@ def _build_autonomath_db(path: Path) -> None:
         ("P12", "P13", "compatible", "前後関係で併用可", "https://example.test/c2", 0.9, 0),
         ("P14", "P15", "compatible", "対象経費分離可", "https://example.test/c3", 0.9, 0),
         # 1 sourced incompatible (covers test 2)
-        ("P20", "P21", "incompatible", "重複受給禁止 (適正化法 17 条)", "https://example.test/i1", 0.95, 0),
-        # 2 unknown / heuristic (case_by_case + inferred_only=1 — covers test 3 / 4)
+        (
+            "P20",
+            "P21",
+            "incompatible",
+            "重複受給禁止 (適正化法 17 条)",
+            "https://example.test/i1",
+            0.95,
+            0,
+        ),
+        # unknown / heuristic rows (case_by_case + inferred_only=1 — covers test 3 / 4)
         ("P1", "P2", "case_by_case", "heuristic — 経費分離可なら併用可", None, 0.4, 1),
         ("P30", "P31", "case_by_case", "heuristic", None, 0.3, 1),
+        # Heuristic incompatible without source_url: must not become a hard blocker.
+        ("P40", "P41", "incompatible", "heuristic — 併用不可推定", None, 0.25, 1),
     ]
     for r in rows:
         conn.execute(
@@ -204,6 +234,25 @@ def checker(tmp_dbs: tuple[Path, Path]) -> FundingStackChecker:
     return FundingStackChecker(jpintel_db=jp, autonomath_db=am)
 
 
+def _action_ids(actions: list[dict[str, object]]) -> list[str]:
+    ids: list[str] = []
+    for action in actions:
+        assert isinstance(action, dict)
+        assert {
+            "action_id",
+            "label_ja",
+            "detail_ja",
+            "reason",
+            "source_fields",
+        } <= set(action)
+        assert isinstance(action["label_ja"], str)
+        assert isinstance(action["detail_ja"], str)
+        assert isinstance(action["reason"], str)
+        assert isinstance(action["source_fields"], list)
+        ids.append(str(action["action_id"]))
+    return ids
+
+
 # ---------------------------------------------------------------------------
 # Test 1 — sourced compatible
 # ---------------------------------------------------------------------------
@@ -221,7 +270,13 @@ def test_check_pair_sourced_compatible(checker: FundingStackChecker) -> None:
     assert v.rule_chain[0]["source"] == "am_compat_matrix"
     assert v.rule_chain[0]["compat_status"] == "compatible"
     assert v.rule_chain[0]["inferred_only"] == 0
-    assert "_disclaimer" in v.to_dict()
+    assert _action_ids(v.next_actions) == [
+        "keep_evidence",
+        "retain_cost_allocation_docs",
+    ]
+    body = v.to_dict()
+    assert body["next_actions"] == v.next_actions
+    assert "_disclaimer" in body
     # Order independence.
     v_swapped = checker.check_pair("P11", "P10")
     assert v_swapped.verdict == "compatible"
@@ -240,8 +295,18 @@ def test_check_pair_sourced_incompatible(checker: FundingStackChecker) -> None:
 
     assert v.verdict == "incompatible"
     assert v.confidence == 1.0
+    assert v.hard_blocker is True
     assert v.rule_chain[0]["source"] == "am_compat_matrix"
     assert v.rule_chain[0]["compat_status"] == "incompatible"
+    assert v.rule_chain[0]["evidence_level"] == "authoritative"
+    assert v.rule_chain[0]["hard_blocker"] is True
+    assert _action_ids(v.next_actions) == [
+        "same_expense_check",
+        "split_cost_basis",
+        "choose_alternative_bundle",
+        "verify_primary_rule",
+    ]
+    assert v.to_dict()["next_actions"] == v.next_actions
 
 
 # ---------------------------------------------------------------------------
@@ -267,6 +332,56 @@ def test_check_pair_rule_fallback_wins_over_heuristic(
     decisive = v.rule_chain[-1]
     assert decisive["source"] == "exclusion_rules"
     assert decisive["kind"] == "absolute"
+    assert decisive["hard_blocker"] is True
+
+
+def test_check_pair_heuristic_incompatible_without_source_requires_review(
+    checker: FundingStackChecker,
+) -> None:
+    """inferred_only=1 かつ source_url なしの incompatible は、推定由来の
+    warning/requires_review として扱い、hard blocker にはしない。"""
+
+    v = checker.check_pair("P40", "P41")
+
+    assert v.verdict == "requires_review"
+    assert v.confidence == 0.3
+    assert v.hard_blocker is False
+    step = v.rule_chain[0]
+    assert step["source"] == "am_compat_matrix"
+    assert step["compat_status"] == "incompatible"
+    assert step["inferred_only"] == 1
+    assert step["source_url"] is None
+    assert step["evidence_level"] == "heuristic"
+    assert step["hard_blocker"] is False
+    assert _action_ids(v.next_actions) == [
+        "verify_inferred_incompatibility",
+        "contact_program_office",
+        "add_manual_review",
+    ]
+    body = v.to_dict()
+    assert body["hard_blocker"] is False
+
+
+def test_check_stack_heuristic_incompatible_without_source_is_warning(
+    checker: FundingStackChecker,
+) -> None:
+    """推定のみの incompatible pair だけなら stack 全体も blocker ではなく
+    requires_review として返す。"""
+
+    result = checker.check_stack(["P40", "P41"])
+
+    assert result.all_pairs_status == "requires_review"
+    assert result.blockers == []
+    assert len(result.warnings) == 1
+    assert result.warnings[0]["program_a"] == "P40"
+    assert result.warnings[0]["program_b"] == "P41"
+    assert result.warnings[0]["hard_blocker"] is False
+    assert result.pairs[0]["hard_blocker"] is False
+    assert _action_ids(result.next_actions) == [
+        "verify_inferred_incompatibility",
+        "contact_program_office",
+        "add_manual_review",
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -304,6 +419,11 @@ def test_check_pair_prerequisite_requires_review(
     decisive = v.rule_chain[-1]
     assert decisive["source"] == "exclusion_rules"
     assert decisive["kind"] == "prerequisite"
+    assert _action_ids(v.next_actions) == [
+        "contact_program_office",
+        "confirm_prerequisite_certification",
+        "separate_expense_categories",
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -330,11 +450,16 @@ def test_check_stack_aggregates_to_incompatible(
     assert isinstance(result, StackResult)
     assert result.all_pairs_status == "incompatible"
     assert len(result.pairs) == 6  # C(4, 2)
-    assert any(
-        b["program_a"] == "P20" and b["program_b"] == "P21"
-        for b in result.blockers
-    )
+    assert any(b["program_a"] == "P20" and b["program_b"] == "P21" for b in result.blockers)
+    assert _action_ids(result.next_actions)[:4] == [
+        "same_expense_check",
+        "split_cost_basis",
+        "choose_alternative_bundle",
+        "verify_primary_rule",
+    ]
+    assert "fetch_primary_source" in _action_ids(result.next_actions)
     body = result.to_dict()
+    assert body["next_actions"] == result.next_actions
     assert "_disclaimer" in body
 
 
@@ -382,13 +507,36 @@ def rest_client(seeded_db: Path, tmp_path: Path, monkeypatch):
     # Seed funding-stack-specific exclusion rules into the conftest DB.
     conn = sqlite3.connect(seeded_db)
     rules = [
-        ("excl-fs-P1-vs-P2", "absolute", "critical", "P1", "P2", None,
-         "P1 と P2 は絶対併用不可", json.dumps([])),
-        ("excl-fs-P3-requires-P4", "prerequisite", "high", "P3", "P4", None,
-         "P3 は P4 を前提とする", json.dumps([])),
-        ("excl-fs-P5-vs-group", "exclude", "high", "P5", None,
-         json.dumps(["P6", "P7"]),
-         "P5 は P6 / P7 と併用不可", json.dumps([])),
+        (
+            "excl-fs-P1-vs-P2",
+            "absolute",
+            "critical",
+            "P1",
+            "P2",
+            None,
+            "P1 と P2 は絶対併用不可",
+            json.dumps([]),
+        ),
+        (
+            "excl-fs-P3-requires-P4",
+            "prerequisite",
+            "high",
+            "P3",
+            "P4",
+            None,
+            "P3 は P4 を前提とする",
+            json.dumps([]),
+        ),
+        (
+            "excl-fs-P5-vs-group",
+            "exclude",
+            "high",
+            "P5",
+            None,
+            json.dumps(["P6", "P7"]),
+            "P5 は P6 / P7 と併用不可",
+            json.dumps([]),
+        ),
     ]
     for r in rules:
         conn.execute(
@@ -411,18 +559,15 @@ def rest_client(seeded_db: Path, tmp_path: Path, monkeypatch):
     # stays on the conftest seeded DB so auth + log_usage continue to work.
     from jpintel_mcp.api import funding_stack as fs_module
 
-    monkeypatch.setattr(
-        fs_module.settings, "autonomath_db_path", am, raising=False
-    )
+    monkeypatch.setattr(fs_module.settings, "autonomath_db_path", am, raising=False)
     fs_module.reset_checker()
 
     # MCP-side checker (used by tool-level tests) shares the same singleton
     # contract; reset for safety.
     try:
         from jpintel_mcp.mcp.autonomath_tools import funding_stack_tools as fst_module
-        monkeypatch.setattr(
-            fst_module.settings, "autonomath_db_path", am, raising=False
-        )
+
+        monkeypatch.setattr(fst_module.settings, "autonomath_db_path", am, raising=False)
         fst_module._reset_checker()
     except Exception:
         pass
@@ -448,6 +593,32 @@ def test_rest_endpoint_5_programs_returns_10_pairs(rest_client) -> None:
     assert len(body["pairs"]) == 10
     assert body["total_pairs"] == 10
     assert "_disclaimer" in body
+    assert _action_ids(body["next_actions"]) == [
+        "same_expense_check",
+        "split_cost_basis",
+        "choose_alternative_bundle",
+        "verify_primary_rule",
+        "fetch_primary_source",
+        "mark_unknown_not_safe",
+        "add_manual_review",
+    ]
+    pair_by_ids = {(pair["program_a"], pair["program_b"]): pair for pair in body["pairs"]}
+    assert _action_ids(pair_by_ids[("P10", "P11")]["next_actions"]) == [
+        "keep_evidence",
+        "retain_cost_allocation_docs",
+    ]
+    assert _action_ids(pair_by_ids[("P20", "P21")]["next_actions"]) == [
+        "same_expense_check",
+        "split_cost_basis",
+        "choose_alternative_bundle",
+        "verify_primary_rule",
+    ]
+    assert _action_ids(pair_by_ids[("P10", "P20")]["next_actions"]) == [
+        "fetch_primary_source",
+        "mark_unknown_not_safe",
+        "add_manual_review",
+    ]
+    assert all(pair["next_actions"] for pair in body["pairs"])
     # all_pairs_status must roll up to 'incompatible' because (P20, P21)
     # is sourced-incompat in the fixture.
     assert body["all_pairs_status"] == "incompatible"
@@ -463,9 +634,7 @@ def test_rest_endpoint_6_programs_returns_422(rest_client) -> None:
     assert r.status_code == 422, r.text
 
 
-def test_rest_endpoint_quantity_logged_per_pair(
-    rest_client, seeded_db: Path, paid_key
-) -> None:
+def test_rest_endpoint_quantity_logged_per_pair(rest_client, seeded_db: Path, paid_key) -> None:
     """5 programs (10 pairs) must result in a usage_events row whose
     ``quantity`` column = 10 — confirming we bill ¥3 per pair, not per
     request."""
@@ -482,6 +651,11 @@ def test_rest_endpoint_quantity_logged_per_pair(
         headers={"X-API-Key": paid_key},
     )
     assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["total_pairs"] == 10
+    assert len(body["pairs"]) == 10
+    assert body["next_actions"]
+    assert all(pair["next_actions"] for pair in body["pairs"])
 
     # TestClient runs BackgroundTasks synchronously after the response,
     # so by the time we get here the deferred row has been committed via
@@ -490,7 +664,7 @@ def test_rest_endpoint_quantity_logged_per_pair(
     try:
         c.row_factory = sqlite3.Row
         rows = c.execute(
-            "SELECT quantity FROM usage_events "
+            "SELECT quantity, result_count FROM usage_events "
             "WHERE key_hash = ? AND endpoint = 'funding_stack.check' "
             "ORDER BY id DESC LIMIT 1",
             (key_hash,),
@@ -500,6 +674,386 @@ def test_rest_endpoint_quantity_logged_per_pair(
 
     assert len(rows) == 1
     assert int(rows[0]["quantity"]) == 10
+    assert int(rows[0]["result_count"]) == 10
+
+
+def test_artifact_compatibility_table_wraps_funding_stack(rest_client) -> None:
+    payload = {
+        "program_ids": ["P10", "P11", "P20", "P21", "P-ALONE"],
+    }
+    r = rest_client.post("/v1/artifacts/compatibility_table", json=payload)
+    assert r.status_code == 200, r.text
+    body = r.json()
+
+    assert body["artifact_type"] == "compatibility_table"
+    assert body["endpoint"] == "artifacts.compatibility_table"
+    assert body["summary"]["total_pairs"] == 10
+    assert body["summary"]["all_pairs_status"] == "incompatible"
+    assert body["summary"]["verdict_counts"]["incompatible"] == 1
+    assert body["summary"]["verdict_counts"]["unknown"] >= 1
+    assert "corpus_snapshot_id" in body
+    assert "corpus_checksum" in body
+    assert body["packet_id"].startswith("pkt_compatibility_table_")
+    assert body["_evidence"]["source_count"] == len(body["sources"])
+    assert body["copy_paste_parts"]
+    assert body["markdown_display"].startswith("# compatibility_table")
+    assert body["recommended_followup"]
+    assert body["human_review_required"]
+    assert body["billing_metadata"]["endpoint"] == "artifacts.compatibility_table"
+    assert body["billing_metadata"]["unit_type"] == "compatibility_pair"
+    assert body["billing_metadata"]["quantity"] == 10
+    assert body["billing_metadata"]["result_count"] == 10
+    assert body["billing_metadata"]["pair_count"] == 10
+    assert body["billing_metadata"]["metered"] is False
+    assert body["billing_metadata"]["strict_metering"] is True
+    assert body["billing_metadata"]["pricing_note"] == body["billing_note"]
+    assert body["billing_metadata"]["audit_seal"]["authenticated_key_present"] is False
+    assert body["billing_metadata"]["audit_seal"]["requested_for_metered_key"] is False
+    assert (
+        body["billing_metadata"]["audit_seal"]["billing_metadata_covered_by_response_hash"] is False
+    )
+    assert body["billing_metadata"]["audit_seal"]["seal_field_excluded_from_response_hash"] is False
+    assert any(
+        gap.get("gap_id") == "source_missing" and gap.get("message") == "source_missing:pair_003"
+        for gap in body["known_gaps"]
+    )
+    claim_coverage = body["_evidence"]["claim_coverage"]
+    assert claim_coverage["claim_count"] == body["summary"]["total_pairs"]
+    assert claim_coverage["source_missing_claim_count"] >= 1
+
+    sections = {section["section_id"]: section for section in body["sections"]}
+    rows = sections["compatibility_pairs"]["rows"]
+    assert len(rows) == 10
+    assert rows[0]["row_id"] == "pair_001"
+    assert all(row["next_actions"] for row in rows)
+    assert sections["blockers"]["rows"]
+    assert any(source["source_url"] == "https://example.test/c1" for source in body["sources"])
+
+
+def test_artifact_compatibility_table_6_programs_returns_422(rest_client) -> None:
+    r = rest_client.post(
+        "/v1/artifacts/compatibility_table",
+        json={"program_ids": ["A", "B", "C", "D", "E", "F"]},
+    )
+    assert r.status_code == 422, r.text
+
+
+def test_artifact_compatibility_table_usage_logged_per_pair(
+    rest_client, seeded_db: Path, paid_key
+) -> None:
+    from jpintel_mcp.api.deps import hash_api_key
+
+    key_hash = hash_api_key(paid_key)
+    payload = {
+        "program_ids": ["P10", "P11", "P20", "P21", "P-ALONE"],
+    }
+    r = rest_client.post(
+        "/v1/artifacts/compatibility_table",
+        json=payload,
+        headers={"X-API-Key": paid_key},
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["summary"]["total_pairs"] == 10
+    assert "audit_seal" in body
+    assert body["billing_metadata"]["endpoint"] == "artifacts.compatibility_table"
+    assert body["billing_metadata"]["unit_type"] == "compatibility_pair"
+    assert body["billing_metadata"]["quantity"] == 10
+    assert body["billing_metadata"]["result_count"] == 10
+    assert body["billing_metadata"]["pair_count"] == 10
+    assert body["billing_metadata"]["metered"] is True
+    assert body["billing_metadata"]["audit_seal"]["authenticated_key_present"] is True
+    assert body["billing_metadata"]["audit_seal"]["requested_for_metered_key"] is True
+    assert body["billing_metadata"]["audit_seal"]["included_when_available"] is True
+    assert (
+        body["billing_metadata"]["audit_seal"]["billing_metadata_covered_by_response_hash"] is True
+    )
+
+    from jpintel_mcp.api._audit_seal import _canonical_json, _sha256_hex
+
+    sealed_body = dict(body)
+    seal = sealed_body.pop("audit_seal")
+    assert seal["response_hash"] == _sha256_hex(_canonical_json(sealed_body))
+    without_billing = dict(sealed_body)
+    without_billing.pop("billing_metadata")
+    assert seal["response_hash"] != _sha256_hex(_canonical_json(without_billing))
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        c.row_factory = sqlite3.Row
+        rows = c.execute(
+            "SELECT quantity, result_count FROM usage_events "
+            "WHERE key_hash = ? AND endpoint = 'artifacts.compatibility_table' "
+            "ORDER BY id DESC LIMIT 1",
+            (key_hash,),
+        ).fetchall()
+    finally:
+        c.close()
+
+    assert len(rows) == 1
+    assert int(rows[0]["quantity"]) == 10
+    assert int(rows[0]["result_count"]) == 10
+
+
+@pytest.mark.parametrize(
+    ("path", "endpoint", "payload"),
+    [
+        pytest.param(
+            "/v1/artifacts/compatibility_table",
+            "artifacts.compatibility_table",
+            {"program_ids": ["P10", "P11", "P20", "P21", "P-ALONE"]},
+            id="compatibility_table",
+        ),
+        pytest.param(
+            "/v1/artifacts/application_strategy_pack",
+            "artifacts.application_strategy_pack",
+            {
+                "profile": {"prefecture": "Tokyo"},
+                "max_candidates": 2,
+                "compatibility_top_n": 0,
+            },
+            id="application_strategy_pack",
+        ),
+    ],
+)
+def test_paid_artifact_seal_persist_failure_not_billed(
+    rest_client,
+    seeded_db: Path,
+    paid_key,
+    monkeypatch: pytest.MonkeyPatch,
+    path: str,
+    endpoint: str,
+    payload: dict[str, object],
+) -> None:
+    from jpintel_mcp.api.deps import hash_api_key
+
+    key_hash = hash_api_key(paid_key)
+
+    def usage_totals() -> tuple[int, int]:
+        c = sqlite3.connect(seeded_db)
+        try:
+            row = c.execute(
+                "SELECT COUNT(*), COALESCE(SUM(quantity), 0) FROM usage_events "
+                "WHERE key_hash = ? AND endpoint = ?",
+                (key_hash, endpoint),
+            ).fetchone()
+            return int(row[0]), int(row[1])
+        finally:
+            c.close()
+
+    def audit_seal_count() -> int:
+        c = sqlite3.connect(seeded_db)
+        try:
+            row = c.execute(
+                "SELECT COUNT(*) FROM audit_seals WHERE api_key_hash = ? AND endpoint = ?",
+                (key_hash, endpoint),
+            ).fetchone()
+            return int(row[0])
+        finally:
+            c.close()
+
+    before_usage = usage_totals()
+    before_seals = audit_seal_count()
+
+    def fail_persist(*args, **kwargs) -> None:  # noqa: ANN002, ANN003
+        raise sqlite3.OperationalError("forced seal persist failure")
+
+    monkeypatch.setattr("jpintel_mcp.api._audit_seal.persist_seal", fail_persist)
+
+    r = rest_client.post(
+        path,
+        json=payload,
+        headers={"X-API-Key": paid_key},
+    )
+
+    assert r.status_code == 503, r.text
+    assert r.json()["detail"]["code"] == "audit_seal_persist_failed"
+    assert usage_totals() == before_usage
+    assert audit_seal_count() == before_seals
+
+
+@pytest.mark.parametrize(
+    ("path", "endpoint", "payload"),
+    [
+        pytest.param(
+            "/v1/artifacts/compatibility_table",
+            "artifacts.compatibility_table",
+            {"program_ids": ["P10", "P11", "P20", "P21", "P-ALONE"]},
+            id="compatibility_table",
+        ),
+        pytest.param(
+            "/v1/artifacts/application_strategy_pack",
+            "artifacts.application_strategy_pack",
+            {
+                "profile": {"prefecture": "Tokyo"},
+                "max_candidates": 2,
+                "compatibility_top_n": 0,
+            },
+            id="application_strategy_pack",
+        ),
+    ],
+)
+def test_paid_artifact_final_metering_cap_failure_not_billed_or_sealed(
+    rest_client,
+    seeded_db: Path,
+    paid_key,
+    monkeypatch: pytest.MonkeyPatch,
+    path: str,
+    endpoint: str,
+    payload: dict[str, object],
+) -> None:
+    from jpintel_mcp.api.deps import hash_api_key
+    from jpintel_mcp.api.middleware import customer_cap
+
+    key_hash = hash_api_key(paid_key)
+
+    def usage_totals() -> tuple[int, int]:
+        c = sqlite3.connect(seeded_db)
+        try:
+            row = c.execute(
+                "SELECT COUNT(*), COALESCE(SUM(quantity), 0) FROM usage_events "
+                "WHERE key_hash = ? AND endpoint = ?",
+                (key_hash, endpoint),
+            ).fetchone()
+            return int(row[0]), int(row[1])
+        finally:
+            c.close()
+
+    def audit_seal_count() -> int:
+        c = sqlite3.connect(seeded_db)
+        try:
+            row = c.execute(
+                "SELECT COUNT(*) FROM audit_seals WHERE api_key_hash = ? AND endpoint = ?",
+                (key_hash, endpoint),
+            ).fetchone()
+            return int(row[0])
+        finally:
+            c.close()
+
+    before_usage = usage_totals()
+    before_seals = audit_seal_count()
+    monkeypatch.setattr(
+        customer_cap,
+        "metered_charge_within_cap",
+        lambda *args, **kwargs: False,
+    )
+
+    r = rest_client.post(
+        path,
+        json=payload,
+        headers={"X-API-Key": paid_key},
+    )
+
+    assert r.status_code == 503, r.text
+    assert r.json()["detail"]["code"] == "billing_cap_final_check_failed"
+    assert usage_totals() == before_usage
+    assert audit_seal_count() == before_seals
+
+
+@pytest.mark.parametrize("tier", ["trial", "free"])
+def test_artifact_compatibility_table_non_metered_seal_persist_failure_returns_200(
+    rest_client,
+    seeded_db: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    tier: str,
+) -> None:
+    from jpintel_mcp.api.deps import hash_api_key
+    from jpintel_mcp.billing.keys import issue_key
+
+    conn = sqlite3.connect(seeded_db)
+    try:
+        raw_key = issue_key(
+            conn,
+            customer_id=f"cus_{tier}_artifact_seal_failure",
+            tier=tier,
+            stripe_subscription_id=None,
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+    key_hash = hash_api_key(raw_key)
+
+    def usage_rows() -> list[sqlite3.Row]:
+        c = sqlite3.connect(seeded_db)
+        try:
+            c.row_factory = sqlite3.Row
+            return c.execute(
+                "SELECT id, metered, quantity, result_count FROM usage_events "
+                "WHERE key_hash = ? AND endpoint = 'artifacts.compatibility_table' "
+                "ORDER BY id",
+                (key_hash,),
+            ).fetchall()
+        finally:
+            c.close()
+
+    before_usage = usage_rows()
+
+    def fail_persist(*args, **kwargs) -> None:  # noqa: ANN002, ANN003
+        raise sqlite3.OperationalError("forced seal persist failure")
+
+    monkeypatch.setattr("jpintel_mcp.api._audit_seal.persist_seal", fail_persist)
+
+    r = rest_client.post(
+        "/v1/artifacts/compatibility_table",
+        json={"program_ids": ["P10", "P11", "P20", "P21", "P-ALONE"]},
+        headers={"X-API-Key": raw_key},
+    )
+
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["_seal_unavailable"] is True
+    assert "audit_seal" not in body
+    assert body["billing_metadata"]["metered"] is False
+    audit_metadata = body["billing_metadata"]["audit_seal"]
+    assert audit_metadata["authenticated_key_present"] is True
+    assert audit_metadata["requested_for_metered_key"] is False
+    assert audit_metadata["seal_unavailable"] is True
+    assert audit_metadata["included_when_available"] is False
+    assert audit_metadata["billing_metadata_covered_by_response_hash"] is False
+    assert audit_metadata["seal_field_excluded_from_response_hash"] is False
+    assert "authenticated_response_audit_seal" not in body["billing_metadata"]["value_basis"]
+    assert "metered_response_audit_seal" not in body["billing_metadata"]["value_basis"]
+
+    after_usage = usage_rows()
+    assert len(after_usage) == len(before_usage) + 1
+    usage = after_usage[-1]
+    assert int(usage["metered"]) == 0
+    assert int(usage["quantity"]) == 10
+    assert int(usage["result_count"]) == 10
+
+
+def test_artifact_compatibility_table_trial_key_not_marked_metered(
+    rest_client,
+    seeded_db: Path,
+) -> None:
+    from jpintel_mcp.billing.keys import issue_key
+
+    conn = sqlite3.connect(seeded_db)
+    try:
+        trial_key = issue_key(conn, customer_id="cus_trial_artifact", tier="trial")
+        conn.commit()
+    finally:
+        conn.close()
+
+    r = rest_client.post(
+        "/v1/artifacts/compatibility_table",
+        json={"program_ids": ["P10", "P11", "P20", "P21", "P-ALONE"]},
+        headers={"X-API-Key": trial_key},
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+
+    assert body["billing_metadata"]["metered"] is False
+    assert body["billing_metadata"]["audit_seal"]["authenticated_key_present"] is True
+    assert body["billing_metadata"]["audit_seal"]["requested_for_metered_key"] is False
+    assert body["billing_metadata"]["audit_seal"]["included_when_available"] is True
+    assert (
+        body["billing_metadata"]["audit_seal"]["billing_metadata_covered_by_response_hash"] is True
+    )
+    assert body["billing_metadata"]["audit_seal"]["seal_field_excluded_from_response_hash"] is True
+    assert "authenticated_response_audit_seal" in body["billing_metadata"]["value_basis"]
+    assert "metered_response_audit_seal" not in body["billing_metadata"]["value_basis"]
 
 
 # ---------------------------------------------------------------------------

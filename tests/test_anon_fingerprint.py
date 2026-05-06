@@ -27,6 +27,7 @@ separate buckets" here — that's the *intended* behaviour at a coffee-shop
 NAT (5 laptops = 5 buckets) and it is implicit in the way `hash_ip()`
 composes (different fingerprint string -> different HMAC input).
 """
+
 from __future__ import annotations
 
 import hashlib

@@ -41,9 +41,7 @@ def test_inv04_no_banned_aggregator_in_programs():
                 "SELECT COUNT(*) FROM programs WHERE source_url LIKE ?",
                 (f"%{domain}%",),
             ).fetchone()[0]
-            assert n == 0, (
-                f"Banned aggregator '{domain}' found in {n} programs.source_url"
-            )
+            assert n == 0, f"Banned aggregator '{domain}' found in {n} programs.source_url"
 
 
 # ---------------------------------------------------------------------------
@@ -73,8 +71,7 @@ def test_inv21_no_pii_in_query_log():
         for (q,) in rows:
             for p in PII_PATTERNS:
                 assert not p.search(q), (
-                    f"PII pattern {p.pattern} found in "
-                    f"query_log_v2.query_normalized: {q[:60]}"
+                    f"PII pattern {p.pattern} found in query_log_v2.query_normalized: {q[:60]}"
                 )
 
 
@@ -169,10 +166,7 @@ def test_inv23_invoice_registration_number_set():
     env = os.getenv("JPINTEL_ENV", "dev")
     inv_num = os.getenv("INVOICE_REGISTRATION_NUMBER", "")
     if env != "prod" and not inv_num:
-        pytest.skip(
-            "INVOICE_REGISTRATION_NUMBER not set and not prod env; "
-            "dev/test mode skip"
-        )
+        pytest.skip("INVOICE_REGISTRATION_NUMBER not set and not prod env; dev/test mode skip")
     assert inv_num.startswith("T") and len(inv_num) == 14, (
         f"Invalid invoice registration number: {inv_num!r} "
         f"(expected T+13 digits, got len={len(inv_num)})"
@@ -236,9 +230,7 @@ def test_inv_tier_x_excluded_from_programs_search(client):
             or (candidate.get("program") or {}).get("tier")
             or (candidate.get("data") or {}).get("tier")
         )
-        assert tier != "X", (
-            f"tier=X leaked into /v1/programs/search results: {candidate!r}"
-        )
+        assert tier != "X", f"tier=X leaked into /v1/programs/search results: {candidate!r}"
 
 
 def test_inv_tier_x_excluded_from_generate_program_pages_query():
@@ -255,6 +247,7 @@ def test_inv_tier_x_excluded_from_generate_program_pages_query():
     so the row-fetch shape doesn't need to re-enforce the invariant.
     """
     from pathlib import Path
+
     repo_root = Path(__file__).resolve().parents[1]
     script_path = repo_root / "scripts" / "generate_program_pages.py"
     if not script_path.exists():
@@ -273,9 +266,7 @@ def test_inv_tier_x_excluded_from_generate_program_pages_query():
     #      (see _iter_rows safe_tiers list — only S/A/B/C accepted).
     #   3. ``tier IN ('S','A')`` — frozen S+A subset (post-2026-04-29
     #      AI-feel reduction). Still excludes X, still safe.
-    from_blocks = [
-        m.start() for m in re.finditer(r"\bFROM\s+programs\b", src, re.IGNORECASE)
-    ]
+    from_blocks = [m.start() for m in re.finditer(r"\bFROM\s+programs\b", src, re.IGNORECASE)]
     assert from_blocks, "expected at least one FROM programs in generator"
     accepted_predicates = (
         "tier IN ('S','A','B','C')",

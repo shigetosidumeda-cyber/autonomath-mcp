@@ -5,6 +5,7 @@ retry when they send a natural variant of a prefecture / industry code /
 authority level. These tests lock in the canonical mapping so future
 refactors can't silently regress.
 """
+
 from __future__ import annotations
 
 import pytest

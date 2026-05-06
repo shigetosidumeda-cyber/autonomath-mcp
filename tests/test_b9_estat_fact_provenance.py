@@ -58,9 +58,12 @@ def _insert_estat_entity(conn: sqlite3.Connection, entity_id: str, source_url: s
 
 
 def test_normalize_source_url_keeps_query_and_strips_fragment() -> None:
-    assert backfill.normalize_source_url(
-        "HTTPS://WWW.E-STAT.GO.JP/path/%E7%B5%B1%E8%A8%88/?a=1#section"
-    ) == "https://www.e-stat.go.jp/path/統計?a=1"
+    assert (
+        backfill.normalize_source_url(
+            "HTTPS://WWW.E-STAT.GO.JP/path/%E7%B5%B1%E8%A8%88/?a=1#section"
+        )
+        == "https://www.e-stat.go.jp/path/統計?a=1"
+    )
 
 
 def test_dry_run_reports_assignments_without_updating() -> None:
@@ -81,9 +84,10 @@ def test_dry_run_reports_assignments_without_updating() -> None:
     assert result["candidate_assignments"] == 2
     assert result["updated_rows"] == 0
     assert result["method_counts"] == {"entity_source_url_exact": 2}
-    assert conn.execute(
-        "SELECT COUNT(*) FROM am_entity_facts WHERE source_id IS NULL"
-    ).fetchone()[0] == 2
+    assert (
+        conn.execute("SELECT COUNT(*) FROM am_entity_facts WHERE source_id IS NULL").fetchone()[0]
+        == 2
+    )
 
 
 def test_apply_updates_only_limited_estat_industry_rows() -> None:

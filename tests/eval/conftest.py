@@ -10,6 +10,7 @@ Fixtures:
 Per ``feedback_autonomath_no_api_use``: harness MUST NOT call the Anthropic API.
 The MCP server resolves tools deterministically against local SQLite.
 """
+
 from __future__ import annotations
 
 import json

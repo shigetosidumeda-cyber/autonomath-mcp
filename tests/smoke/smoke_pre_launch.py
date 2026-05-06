@@ -5,6 +5,7 @@ Usage:
 
 Writes: tests/smoke/pre_launch_2026_04_24.md
 """
+
 from __future__ import annotations
 
 import json
@@ -38,6 +39,7 @@ os.environ["ANON_RATE_LIMIT_ENABLED"] = "false"
 # the burst is drained — this gate is orthogonal to the daily cap.
 os.environ["RATE_LIMIT_BURST_DISABLED"] = "1"
 
+
 # ── Logging capture for telemetry Part C ───────────────────────────────────
 class _JsonCapture(logging.Handler):
     def __init__(self) -> None:
@@ -70,7 +72,9 @@ _sample_case = _conn.execute("SELECT case_id FROM case_studies LIMIT 1").fetchon
 _sample_loan = _conn.execute("SELECT id FROM loan_programs LIMIT 1").fetchone()["id"]
 _sample_law = _conn.execute("SELECT unified_id FROM laws LIMIT 1").fetchone()["unified_id"]
 _sample_tax = _conn.execute("SELECT unified_id FROM tax_rulesets LIMIT 1").fetchone()["unified_id"]
-_enforcement_case_id = _conn.execute("SELECT case_id FROM enforcement_cases LIMIT 1").fetchone()["case_id"]
+_enforcement_case_id = _conn.execute("SELECT case_id FROM enforcement_cases LIMIT 1").fetchone()[
+    "case_id"
+]
 _conn.close()
 
 # ── Result stores ──────────────────────────────────────────────────────────
@@ -85,11 +89,16 @@ def _verdict(ok: bool) -> str:
     return "PASS" if ok else "FAIL"
 
 
-def _rest(label: str, method: str, path: str, expected_status: int,
-          expected_keys: list[str] | None = None,
-          params: dict | None = None,
-          json_body: dict | None = None,
-          headers: dict | None = None) -> bool:
+def _rest(
+    label: str,
+    method: str,
+    path: str,
+    expected_status: int,
+    expected_keys: list[str] | None = None,
+    params: dict | None = None,
+    json_body: dict | None = None,
+    headers: dict | None = None,
+) -> bool:
     """Execute a REST call and record outcome."""
     try:
         start = time.monotonic()
@@ -121,18 +130,24 @@ def _rest(label: str, method: str, path: str, expected_status: int,
         if parse_error:
             actual += f" (parse error: {parse_error})"
         elif not keys_ok and body is not None:
-            missing = [k for k in (expected_keys or []) if k not in (body if isinstance(body, dict) else {})]
+            missing = [
+                k
+                for k in (expected_keys or [])
+                if k not in (body if isinstance(body, dict) else {})
+            ]
             actual += f" (missing keys: {missing})"
 
-        rest_results.append({
-            "label": label,
-            "method": method,
-            "path": path,
-            "expected": str(expected_status),
-            "actual": actual,
-            "latency_ms": latency,
-            "verdict": verdict,
-        })
+        rest_results.append(
+            {
+                "label": label,
+                "method": method,
+                "path": path,
+                "expected": str(expected_status),
+                "actual": actual,
+                "latency_ms": latency,
+                "verdict": verdict,
+            }
+        )
 
         if not ok:
             fail_msg = (
@@ -148,15 +163,17 @@ def _rest(label: str, method: str, path: str, expected_status: int,
 
     except Exception as exc:
         tb = traceback.format_exc()
-        rest_results.append({
-            "label": label,
-            "method": method,
-            "path": path,
-            "expected": str(expected_status),
-            "actual": f"EXCEPTION: {exc}",
-            "latency_ms": 0,
-            "verdict": "FAIL",
-        })
+        rest_results.append(
+            {
+                "label": label,
+                "method": method,
+                "path": path,
+                "expected": str(expected_status),
+                "actual": f"EXCEPTION: {exc}",
+                "latency_ms": 0,
+                "verdict": "FAIL",
+            }
+        )
         all_failures.append(f"REST EXCEPTION [{label}]: {exc}\n{tb}")
         return False
 
@@ -173,13 +190,15 @@ def _mcp_tool(
 
     fn = getattr(srv, tool_name, None)
     if fn is None:
-        mcp_results.append({
-            "tool": tool_name,
-            "sample_args": str(args),
-            "response_type": "N/A",
-            "verdict": "FAIL",
-            "note": "function not found in server module",
-        })
+        mcp_results.append(
+            {
+                "tool": tool_name,
+                "sample_args": str(args),
+                "response_type": "N/A",
+                "verdict": "FAIL",
+                "note": "function not found in server module",
+            }
+        )
         all_failures.append(f"MCP FAIL [{tool_name}]: function not found in server module")
         return False
 
@@ -196,14 +215,19 @@ def _mcp_tool(
             ok = not check_non_empty
             note = "returned None"
         elif isinstance(result, dict):
-            if "error" in result and result.get("code") in ("no_matching_records", "seed_not_found", "invalid_enum", "internal"):
+            if "error" in result and result.get("code") in (
+                "no_matching_records",
+                "seed_not_found",
+                "invalid_enum",
+                "internal",
+            ):
                 # Structured error from expansion tools — acceptable for 0-row tables
                 if allow_empty:
                     ok = True
-                    note = f"structured error (allowed): {result.get('error','')}"
+                    note = f"structured error (allowed): {result.get('error', '')}"
                 else:
                     ok = False
-                    note = f"structured error: {result.get('error','')}"
+                    note = f"structured error: {result.get('error', '')}"
             elif check_source_url and "source_url" not in result:
                 # Allow None source_url — just require key presence
                 ok = "source_url" in result
@@ -223,14 +247,16 @@ def _mcp_tool(
                 ok = True
                 note = "empty list (acceptable)"
 
-        mcp_results.append({
-            "tool": tool_name,
-            "sample_args": str(args)[:80],
-            "response_type": rtype,
-            "latency_ms": latency,
-            "verdict": _verdict(ok),
-            "note": note,
-        })
+        mcp_results.append(
+            {
+                "tool": tool_name,
+                "sample_args": str(args)[:80],
+                "response_type": rtype,
+                "latency_ms": latency,
+                "verdict": _verdict(ok),
+                "note": note,
+            }
+        )
         if not ok:
             all_failures.append(
                 f"MCP FAIL [{tool_name}]: {note} | result sample: {str(result)[:200]}"
@@ -241,26 +267,30 @@ def _mcp_tool(
         # Some tools raise ValueError for not-found — that's a design choice, not a bug
         # But for our smoke args, we expect success
         tb = traceback.format_exc()
-        mcp_results.append({
-            "tool": tool_name,
-            "sample_args": str(args)[:80],
-            "response_type": "ValueError",
-            "latency_ms": 0,
-            "verdict": "FAIL",
-            "note": str(e)[:120],
-        })
+        mcp_results.append(
+            {
+                "tool": tool_name,
+                "sample_args": str(args)[:80],
+                "response_type": "ValueError",
+                "latency_ms": 0,
+                "verdict": "FAIL",
+                "note": str(e)[:120],
+            }
+        )
         all_failures.append(f"MCP FAIL [{tool_name}]: ValueError: {e}\n{tb}")
         return False
     except Exception as exc:
         tb = traceback.format_exc()
-        mcp_results.append({
-            "tool": tool_name,
-            "sample_args": str(args)[:80],
-            "response_type": "EXCEPTION",
-            "latency_ms": 0,
-            "verdict": "FAIL",
-            "note": str(exc)[:120],
-        })
+        mcp_results.append(
+            {
+                "tool": tool_name,
+                "sample_args": str(args)[:80],
+                "response_type": "EXCEPTION",
+                "latency_ms": 0,
+                "verdict": "FAIL",
+                "note": str(exc)[:120],
+            }
+        )
         all_failures.append(f"MCP EXCEPTION [{tool_name}]: {exc}\n{tb}")
         return False
 
@@ -279,15 +309,17 @@ _rest("healthz", "GET", "/healthz", 200, ["status"])
 with TestClient(app, raise_server_exceptions=False) as live_client:
     r_readyz = live_client.get("/readyz")
     readyz_ok = r_readyz.status_code == 200 and r_readyz.json().get("status") == "ready"
-    rest_results.append({
-        "label": "readyz",
-        "method": "GET",
-        "path": "/readyz",
-        "expected": "200",
-        "actual": f"{r_readyz.status_code} body={r_readyz.json().get('status','')}",
-        "latency_ms": 0,
-        "verdict": _verdict(readyz_ok),
-    })
+    rest_results.append(
+        {
+            "label": "readyz",
+            "method": "GET",
+            "path": "/readyz",
+            "expected": "200",
+            "actual": f"{r_readyz.status_code} body={r_readyz.json().get('status', '')}",
+            "latency_ms": 0,
+            "verdict": _verdict(readyz_ok),
+        }
+    )
     if not readyz_ok:
         all_failures.append(f"REST FAIL [readyz]: {r_readyz.status_code} {r_readyz.json()}")
 
@@ -300,51 +332,78 @@ _rest("meta", "GET", "/v1/meta", 200, ["total_programs", "tier_counts"])
 # router is alive) and note the MCP version passes in Part B.
 r_ping = client.get("/v1/ping")
 ping_ok = r_ping.status_code == 200 and r_ping.json().get("ok") is True
-rest_results.append({
-    "label": "ping (REST health / auth probe)",
-    "method": "GET",
-    "path": "/v1/ping",
-    "expected": "200",
-    "actual": f"{r_ping.status_code}",
-    "latency_ms": 0,
-    "verdict": _verdict(ping_ok),
-})
+rest_results.append(
+    {
+        "label": "ping (REST health / auth probe)",
+        "method": "GET",
+        "path": "/v1/ping",
+        "expected": "200",
+        "actual": f"{r_ping.status_code}",
+        "latency_ms": 0,
+        "verdict": _verdict(ping_ok),
+    }
+)
 if not ping_ok:
     all_failures.append(f"REST FAIL [ping]: {r_ping.status_code} {str(r_ping.text)[:200]}")
 
 # /v1/programs/search with q+tier  — response model is SearchResponse: total/limit/offset/results
-_rest("programs/search (q+tier)", "GET", "/v1/programs/search",
-      200, ["total", "results"],
-      params={"q": "IT", "tier": ["S", "A"], "limit": 5})
+_rest(
+    "programs/search (q+tier)",
+    "GET",
+    "/v1/programs/search",
+    200,
+    ["total", "results"],
+    params={"q": "IT", "tier": ["S", "A"], "limit": 5},
+)
 
 # /v1/programs/<real_id>
-_rest(f"programs/get ({_sample_program})", "GET", f"/v1/programs/{_sample_program}",
-      200, ["unified_id", "tier"])
+_rest(
+    f"programs/get ({_sample_program})",
+    "GET",
+    f"/v1/programs/{_sample_program}",
+    200,
+    ["unified_id", "tier"],
+)
 
 # /v1/case-studies/search (hyphen, not underscore)
-_rest("case-studies/search", "GET", "/v1/case-studies/search",
-      200, None,  # list or dict response
-      params={"q": "IT", "limit": 5})
+_rest(
+    "case-studies/search",
+    "GET",
+    "/v1/case-studies/search",
+    200,
+    None,  # list or dict response
+    params={"q": "IT", "limit": 5},
+)
 
 # /v1/loan-programs/search (hyphen)
-_rest("loan-programs/search", "GET", "/v1/loan-programs/search",
-      200, None,
-      params={"limit": 5})
+_rest("loan-programs/search", "GET", "/v1/loan-programs/search", 200, None, params={"limit": 5})
 
 # /v1/enforcement-cases/search (hyphen + -cases suffix)
-_rest("enforcement-cases/search", "GET", "/v1/enforcement-cases/search",
-      200, None,
-      params={"limit": 5})
+_rest(
+    "enforcement-cases/search",
+    "GET",
+    "/v1/enforcement-cases/search",
+    200,
+    None,
+    params={"limit": 5},
+)
 
 # /v1/exclusions/rules
 _rest("exclusion_rules", "GET", "/v1/exclusions/rules", 200, None)
 
 # POST /v1/programs/prescreen  (under programs prefix, not standalone)
-_rest("prescreen (POST)", "POST", "/v1/programs/prescreen",
-      200, ["results"],
-      json_body={"prefecture": "東京都", "is_sole_proprietor": True, "limit": 5})
+_rest(
+    "prescreen (POST)",
+    "POST",
+    "/v1/programs/prescreen",
+    200,
+    ["results"],
+    json_body={"prefecture": "東京都", "is_sole_proprietor": True, "limit": 5},
+)
 
-print(f"  REST done: {sum(1 for r in rest_results if r['verdict']=='PASS')}/{len(rest_results)} passed")
+print(
+    f"  REST done: {sum(1 for r in rest_results if r['verdict'] == 'PASS')}/{len(rest_results)} passed"
+)
 
 # ── Error paths ───────────────────────────────────────────────────────────
 print("=== Part A (error paths) ===")
@@ -352,15 +411,17 @@ print("=== Part A (error paths) ===")
 # Empty query (should still return 200 with empty hits or a 422)
 r_empty = client.get("/v1/programs/search", params={"q": "", "limit": 5})
 empty_ok = r_empty.status_code in (200, 422)
-rest_results.append({
-    "label": "programs/search (empty q)",
-    "method": "GET",
-    "path": "/v1/programs/search?q=",
-    "expected": "200 or 422",
-    "actual": str(r_empty.status_code),
-    "latency_ms": 0,
-    "verdict": _verdict(empty_ok),
-})
+rest_results.append(
+    {
+        "label": "programs/search (empty q)",
+        "method": "GET",
+        "path": "/v1/programs/search?q=",
+        "expected": "200 or 422",
+        "actual": str(r_empty.status_code),
+        "latency_ms": 0,
+        "verdict": _verdict(empty_ok),
+    }
+)
 if not empty_ok:
     all_failures.append(f"REST FAIL [empty q]: {r_empty.status_code}")
 
@@ -370,15 +431,17 @@ _rest("programs/get (404)", "GET", "/v1/programs/NONEXISTENT-XYZ", 404, None)
 # 422 for invalid tier
 r_bad_tier = client.get("/v1/programs/search", params={"tier": "INVALID", "limit": 5})
 tier422_ok = r_bad_tier.status_code == 422
-rest_results.append({
-    "label": "programs/search (invalid tier → 422)",
-    "method": "GET",
-    "path": "/v1/programs/search?tier=INVALID",
-    "expected": "422",
-    "actual": str(r_bad_tier.status_code),
-    "latency_ms": 0,
-    "verdict": _verdict(tier422_ok),
-})
+rest_results.append(
+    {
+        "label": "programs/search (invalid tier → 422)",
+        "method": "GET",
+        "path": "/v1/programs/search?tier=INVALID",
+        "expected": "422",
+        "actual": str(r_bad_tier.status_code),
+        "latency_ms": 0,
+        "verdict": _verdict(tier422_ok),
+    }
+)
 if not tier422_ok:
     all_failures.append(f"REST FAIL [invalid tier]: expected 422 got {r_bad_tier.status_code}")
 
@@ -393,6 +456,7 @@ _rconn.commit()
 _rconn.close()
 
 from jpintel_mcp.config import settings as _live_settings
+
 _anon_enabled_orig = _live_settings.anon_rate_limit_enabled
 _live_settings.anon_rate_limit_enabled = True
 
@@ -401,25 +465,29 @@ RATE_TEST_IP = "10.99.88.77"
 try:
     with TestClient(app, raise_server_exceptions=False) as rl_client:
         for i in range(3):
-            rl_client.get("/v1/programs/search",
-                          params={"limit": 1},
-                          headers={"X-Forwarded-For": RATE_TEST_IP})
-        r4 = rl_client.get("/v1/programs/search",
-                           params={"limit": 1},
-                           headers={"X-Forwarded-For": RATE_TEST_IP})
+            rl_client.get(
+                "/v1/programs/search",
+                params={"limit": 1},
+                headers={"X-Forwarded-For": RATE_TEST_IP},
+            )
+        r4 = rl_client.get(
+            "/v1/programs/search", params={"limit": 1}, headers={"X-Forwarded-For": RATE_TEST_IP}
+        )
 finally:
     _live_settings.anon_rate_limit_enabled = _anon_enabled_orig
 
 rl429_ok = r4.status_code == 429
-rest_results.append({
-    "label": "rate limit (4th anon → 429)",
-    "method": "GET",
-    "path": "/v1/programs/search (4th from same IP)",
-    "expected": "429",
-    "actual": str(r4.status_code),
-    "latency_ms": 0,
-    "verdict": _verdict(rl429_ok),
-})
+rest_results.append(
+    {
+        "label": "rate limit (4th anon → 429)",
+        "method": "GET",
+        "path": "/v1/programs/search (4th from same IP)",
+        "expected": "429",
+        "actual": str(r4.status_code),
+        "latency_ms": 0,
+        "verdict": _verdict(rl429_ok),
+    }
+)
 if not rl429_ok:
     all_failures.append(
         f"REST FAIL [rate limit 429]: 4th request got {r4.status_code} not 429. "
@@ -443,7 +511,9 @@ _mcp_tool("get_meta", {})
 _mcp_tool("enum_values", {"field": "target_type", "limit": 10})
 _mcp_tool("search_enforcement_cases", {"limit": 5}, check_source_url=False, allow_empty=True)
 _mcp_tool("get_enforcement_case", {"case_id": _enforcement_case_id}, check_source_url=True)
-_mcp_tool("search_case_studies", {"q": "農業", "limit": 5}, check_source_url=False, allow_empty=True)
+_mcp_tool(
+    "search_case_studies", {"q": "農業", "limit": 5}, check_source_url=False, allow_empty=True
+)
 _mcp_tool("get_case_study", {"case_id": _sample_case}, check_source_url=True)
 _mcp_tool("search_loan_programs", {"limit": 5}, check_source_url=False, allow_empty=True)
 _mcp_tool("get_loan_program", {"loan_id": _sample_loan}, check_source_url=False)
@@ -456,19 +526,35 @@ _mcp_tool("get_law", {"unified_id": _sample_law}, check_source_url=True)
 _mcp_tool("list_law_revisions", {"unified_id": _sample_law}, allow_empty=True)
 _mcp_tool("search_court_decisions", {"limit": 5}, check_source_url=False, allow_empty=True)
 # court_decisions table has 0 rows — not_found structured error is acceptable
-_mcp_tool("get_court_decision", {"unified_id": "HAN-000000ffff"}, allow_empty=True, check_source_url=False)
-_mcp_tool("find_precedents_by_statute", {"law_unified_id": _sample_law, "limit": 5}, allow_empty=True)
+_mcp_tool(
+    "get_court_decision", {"unified_id": "HAN-000000ffff"}, allow_empty=True, check_source_url=False
+)
+_mcp_tool(
+    "find_precedents_by_statute", {"law_unified_id": _sample_law, "limit": 5}, allow_empty=True
+)
 _mcp_tool("search_bids", {"limit": 5}, check_source_url=False, allow_empty=True)
 # bids table has 0 rows — not_found structured error is acceptable
 _mcp_tool("get_bid", {"unified_id": "BID-000000ffff"}, allow_empty=True, check_source_url=False)
-_mcp_tool("bid_eligible_for_profile", {"bid_unified_id": "BID-000000ffff", "business_profile": {"prefecture": "東京都"}}, allow_empty=True)
+_mcp_tool(
+    "bid_eligible_for_profile",
+    {"bid_unified_id": "BID-000000ffff", "business_profile": {"prefecture": "東京都"}},
+    allow_empty=True,
+)
 _mcp_tool("search_tax_rules", {"limit": 5}, check_source_url=False, allow_empty=True)
 _mcp_tool("get_tax_rule", {"unified_id": _sample_tax}, check_source_url=False)
-_mcp_tool("evaluate_tax_applicability", {"business_profile": {"annual_revenue_yen": 10000000, "business_type": "sole_proprietor"}}, allow_empty=True)
+_mcp_tool(
+    "evaluate_tax_applicability",
+    {"business_profile": {"annual_revenue_yen": 10000000, "business_type": "sole_proprietor"}},
+    allow_empty=True,
+)
 _mcp_tool("search_invoice_registrants", {"limit": 5}, check_source_url=False, allow_empty=True)
 _mcp_tool("trace_program_to_law", {"program_unified_id": _sample_program}, allow_empty=True)
 _mcp_tool("find_cases_by_law", {"law_unified_id": _sample_law, "limit": 5}, allow_empty=True)
-_mcp_tool("combined_compliance_check", {"business_profile": {"prefecture": "東京都", "annual_revenue_yen": 50000000}}, allow_empty=True)
+_mcp_tool(
+    "combined_compliance_check",
+    {"business_profile": {"prefecture": "東京都", "annual_revenue_yen": 50000000}},
+    allow_empty=True,
+)
 
 mcp_pass = sum(1 for r in mcp_results if r["verdict"] == "PASS")
 print(f"  MCP done: {mcp_pass}/{len(mcp_results)} passed")
@@ -477,7 +563,16 @@ print(f"  MCP done: {mcp_pass}/{len(mcp_results)} passed")
 # Part C: Query telemetry verification
 # ══════════════════════════════════════════════════════════════════════════════
 print("=== Part C: Telemetry verification ===")
-REQUIRED_TELEMETRY_FIELDS = {"ts", "channel", "endpoint", "params_shape", "result_count", "latency_ms", "status", "error_class"}
+REQUIRED_TELEMETRY_FIELDS = {
+    "ts",
+    "channel",
+    "endpoint",
+    "params_shape",
+    "result_count",
+    "latency_ms",
+    "status",
+    "error_class",
+}
 
 # Capture telemetry: hit 3 endpoints and inspect logs
 _telemetry_handler.records.clear()
@@ -491,13 +586,15 @@ telem_lines = [rec for rec in _telemetry_handler.records if rec.strip()]
 for i, endpoint in enumerate(["/v1/programs/search", "/v1/meta", "/v1/enforcement/search"]):
     matching = [l for l in telem_lines if endpoint in l]
     if not matching:
-        telemetry_results.append({
-            "endpoint": endpoint,
-            "captured": "NO",
-            "valid_json": "N/A",
-            "fields_present": "N/A",
-            "verdict": "FAIL",
-        })
+        telemetry_results.append(
+            {
+                "endpoint": endpoint,
+                "captured": "NO",
+                "valid_json": "N/A",
+                "fields_present": "N/A",
+                "verdict": "FAIL",
+            }
+        )
         all_failures.append(f"TELEMETRY FAIL [{endpoint}]: no log line captured")
         continue
 
@@ -515,21 +612,23 @@ for i, endpoint in enumerate(["/v1/programs/search", "/v1/meta", "/v1/enforcemen
         note = f"JSON error: {e}"
 
     ok = valid and fields_ok
-    telemetry_results.append({
-        "endpoint": endpoint,
-        "captured": "YES",
-        "valid_json": _verdict(valid),
-        "fields_present": _verdict(fields_ok),
-        "channel": parsed.get("channel", "?"),
-        "status": parsed.get("status", "?"),
-        "latency_ms": parsed.get("latency_ms", "?"),
-        "note": note,
-        "verdict": _verdict(ok),
-    })
+    telemetry_results.append(
+        {
+            "endpoint": endpoint,
+            "captured": "YES",
+            "valid_json": _verdict(valid),
+            "fields_present": _verdict(fields_ok),
+            "channel": parsed.get("channel", "?"),
+            "status": parsed.get("status", "?"),
+            "latency_ms": parsed.get("latency_ms", "?"),
+            "note": note,
+            "verdict": _verdict(ok),
+        }
+    )
     if not ok:
         all_failures.append(f"TELEMETRY FAIL [{endpoint}]: {note}")
 
-print(f"  Telemetry done: {sum(1 for t in telemetry_results if t['verdict']=='PASS')}/3 passed")
+print(f"  Telemetry done: {sum(1 for t in telemetry_results if t['verdict'] == 'PASS')}/3 passed")
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Part D: Generate report
@@ -570,7 +669,7 @@ lines = [
 ]
 for r in rest_results:
     lines.append(
-        f"| `{r['method']} {r['path'][:60]}` | {r['expected']} | {r['actual']} | {r.get('latency_ms',0)} | **{r['verdict']}** |"
+        f"| `{r['method']} {r['path'][:60]}` | {r['expected']} | {r['actual']} | {r.get('latency_ms', 0)} | **{r['verdict']}** |"
     )
 
 lines += [
@@ -584,7 +683,7 @@ lines += [
 ]
 for r in mcp_results:
     lines.append(
-        f"| `{r['tool']}` | `{r.get('sample_args','')[:50]}` | {r.get('response_type','?')} | {r.get('latency_ms',0)} | **{r['verdict']}** | {r.get('note','')} |"
+        f"| `{r['tool']}` | `{r.get('sample_args', '')[:50]}` | {r.get('response_type', '?')} | {r.get('latency_ms', 0)} | **{r['verdict']}** | {r.get('note', '')} |"
     )
 
 lines += [
@@ -598,10 +697,14 @@ lines += [
 ]
 for t in telemetry_results:
     lines.append(
-        f"| `{t['endpoint']}` | {t['captured']} | {t.get('valid_json','?')} | {t.get('fields_present','?')} | {t.get('channel','?')} | {t.get('status','?')} | {t.get('latency_ms','?')} | **{t['verdict']}** |"
+        f"| `{t['endpoint']}` | {t['captured']} | {t.get('valid_json', '?')} | {t.get('fields_present', '?')} | {t.get('channel', '?')} | {t.get('status', '?')} | {t.get('latency_ms', '?')} | **{t['verdict']}** |"
     )
 
-lines += ["", "Required fields: `ts`, `channel`, `endpoint`, `params_shape`, `result_count`, `latency_ms`, `status`, `error_class`", ""]
+lines += [
+    "",
+    "Required fields: `ts`, `channel`, `endpoint`, `params_shape`, `result_count`, `latency_ms`, `status`, `error_class`",
+    "",
+]
 
 if all_failures:
     lines += ["---", "", "## Failures (detail)", ""]
@@ -627,7 +730,9 @@ lines += [
 
 REPORT_PATH.write_text("\n".join(lines), encoding="utf-8")
 print(f"\nReport written to: {REPORT_PATH}")
-print(f"\nFINAL: REST {rest_pass}/{rest_total} | MCP {mcp_pass}/{mcp_total} | Telemetry {telem_pass}/3 | Failures {fail_count} | Verdict: {SUMMARY}")
+print(
+    f"\nFINAL: REST {rest_pass}/{rest_total} | MCP {mcp_pass}/{mcp_total} | Telemetry {telem_pass}/3 | Failures {fail_count} | Verdict: {SUMMARY}"
+)
 
 if all_failures:
     print("\n--- FAILURES ---")

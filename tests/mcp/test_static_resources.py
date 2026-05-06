@@ -6,6 +6,7 @@ pre-existing import chain dependency unrelated to this module. This test file
 loads `static_resources.py` directly via importlib so it stays isolated and
 remains green even when the wider MCP wiring is being refactored.
 """
+
 from __future__ import annotations
 
 import importlib.util
@@ -32,7 +33,9 @@ sr = _load_module()
 def test_list_static_resources_returns_at_least_six():
     items = sr.list_static_resources()
     assert isinstance(items, list)
-    assert len(items) >= 6, f"expected ≥6 static resources on disk, got {len(items)}: {[i['id'] for i in items]}"
+    assert len(items) >= 6, (
+        f"expected ≥6 static resources on disk, got {len(items)}: {[i['id'] for i in items]}"
+    )
     for item in items:
         assert "id" in item
         assert "filename" in item
@@ -63,7 +66,9 @@ def test_get_static_resource_unknown_raises():
 def test_list_example_profiles_returns_at_least_four():
     items = sr.list_example_profiles()
     assert isinstance(items, list)
-    assert len(items) >= 4, f"expected ≥4 example profiles, got {len(items)}: {[i['id'] for i in items]}"
+    assert len(items) >= 4, (
+        f"expected ≥4 example profiles, got {len(items)}: {[i['id'] for i in items]}"
+    )
     for item in items:
         assert "id" in item
         assert "filename" in item

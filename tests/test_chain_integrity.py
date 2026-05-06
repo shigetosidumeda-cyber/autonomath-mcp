@@ -26,6 +26,7 @@ etc.) won't break them. Each chain asserts:
   2. step 2 accepts that key and returns 200 (or, where data is sparse,
      a structured 404 — never a 5xx).
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -52,9 +53,9 @@ def chain_seed(seeded_db: Path) -> Path:
     c.row_factory = sqlite3.Row
     # Match real schema (unified_id is 14 chars, prefixed):
     #   LAW-<10 lowercase hex>, HAN-<10 lowercase hex>, BID-<10 lowercase hex>.
-    LAW_ID = "LAW-cha1n0001"   # 14 chars total
-    CD_ID = "HAN-cha1n0001"   # 14 chars total
-    BID_ID = "BID-cha1n0001"   # 14 chars total
+    LAW_ID = "LAW-cha1n0001"  # 14 chars total
+    CD_ID = "HAN-cha1n0001"  # 14 chars total
+    BID_ID = "BID-cha1n0001"  # 14 chars total
     INV_NUM = "T9999999999991"  # T + 13 digits
     try:
         try:
@@ -62,9 +63,17 @@ def chain_seed(seeded_db: Path) -> Path:
                 """INSERT INTO laws(unified_id, law_number, law_title, law_type,
                        revision_status, summary, source_url, fetched_at, updated_at)
                    VALUES(?,?,?,?,?,?,?,?,?)""",
-                (LAW_ID, "昭和32年法律第26号", "租税特別措置法",
-                 "act", "current", "法人税の特別措置に関する法律。",
-                 "https://elaws.e-gov.go.jp/", now, now),
+                (
+                    LAW_ID,
+                    "昭和32年法律第26号",
+                    "租税特別措置法",
+                    "act",
+                    "current",
+                    "法人税の特別措置に関する法律。",
+                    "https://elaws.e-gov.go.jp/",
+                    now,
+                    now,
+                ),
             )
         except sqlite3.IntegrityError:
             pass
@@ -75,10 +84,21 @@ def chain_seed(seeded_db: Path) -> Path:
                        subject_area, related_law_ids_json, key_ruling,
                        source_url, fetched_at, updated_at)
                    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)""",
-                (CD_ID, "テスト租税訴訟事件", "令和3年(行コ)第123号",
-                 "東京高等裁判所", "high", "2024-03-10", "判決",
-                 "租税", '["LAW-cha1n0001"]', "テスト判決の要旨。",
-                 "https://www.courts.go.jp/", now, now),
+                (
+                    CD_ID,
+                    "テスト租税訴訟事件",
+                    "令和3年(行コ)第123号",
+                    "東京高等裁判所",
+                    "high",
+                    "2024-03-10",
+                    "判決",
+                    "租税",
+                    '["LAW-cha1n0001"]',
+                    "テスト判決の要旨。",
+                    "https://www.courts.go.jp/",
+                    now,
+                    now,
+                ),
             )
         except sqlite3.IntegrityError:
             pass
@@ -88,9 +108,16 @@ def chain_seed(seeded_db: Path) -> Path:
                        normalized_name, address_normalized, prefecture,
                        registered_date, registrant_kind, fetched_at, updated_at)
                    VALUES(?,?,?,?,?,?,?,?)""",
-                (INV_NUM, "テスト商事株式会社",
-                 "東京都千代田区テスト町1-1-1", "東京都",
-                 "2023-10-01", "corporation", now, now),
+                (
+                    INV_NUM,
+                    "テスト商事株式会社",
+                    "東京都千代田区テスト町1-1-1",
+                    "東京都",
+                    "2023-10-01",
+                    "corporation",
+                    now,
+                    now,
+                ),
             )
         except sqlite3.IntegrityError:
             pass
@@ -99,8 +126,7 @@ def chain_seed(seeded_db: Path) -> Path:
                 """INSERT INTO bids(unified_id, bid_title, bid_kind,
                        procuring_entity, source_url, fetched_at, updated_at)
                    VALUES(?,?,?,?,?,?,?)""",
-                (BID_ID, "テスト調達案件", "open", "総務省",
-                 "https://example.go.jp/bid", now, now),
+                (BID_ID, "テスト調達案件", "open", "総務省", "https://example.go.jp/bid", now, now),
             )
         except sqlite3.IntegrityError:
             pass
@@ -168,10 +194,12 @@ def test_chain_s1_check_exclusions_accepts_legacy_name(client, chain_seed):
     also trigger the rule — this is the OTHER half of dual-key parity."""
     r = client.post(
         "/v1/exclusions/check",
-        json={"program_ids": [
-            "テスト S-tier 補助金",
-            "B-tier 融資 スーパーL資金",
-        ]},
+        json={
+            "program_ids": [
+                "テスト S-tier 補助金",
+                "B-tier 融資 スーパーL資金",
+            ]
+        },
     )
     assert r.status_code == 200, r.text
     hits = r.json().get("hits") or []
@@ -304,6 +332,4 @@ def test_chains_never_emit_5xx(client, chain_seed, paid_key):
             r = client.get(path, headers=headers)
         else:
             r = client.post(path, json=body or {}, headers=headers)
-        assert r.status_code < 500, (
-            f"{method} {path} → {r.status_code}: 5xx leaked from chain"
-        )
+        assert r.status_code < 500, f"{method} {path} → {r.status_code}: 5xx leaked from chain"

@@ -12,6 +12,7 @@ tests assert:
 Stripe is never called for real; webhook signature verification + the
 Subscription.retrieve fallback used by invoice.paid are monkeypatched.
 """
+
 from __future__ import annotations
 
 import json
@@ -168,9 +169,7 @@ def stripe_env(monkeypatch):
 
     monkeypatch.setattr(settings, "stripe_secret_key", "sk_test_dummy", raising=False)
     monkeypatch.setattr(settings, "stripe_webhook_secret", "whsec_dummy", raising=False)
-    monkeypatch.setattr(
-        settings, "stripe_price_per_request", "price_metered_test", raising=False
-    )
+    monkeypatch.setattr(settings, "stripe_price_per_request", "price_metered_test", raising=False)
     yield settings
 
 
@@ -278,9 +277,7 @@ def test_webhook_subscription_updated_writes_past_due(
     assert row[1] == "past_due"
 
 
-def test_webhook_payment_failed_marks_past_due(
-    client, stripe_env, monkeypatch, seeded_db: Path
-):
+def test_webhook_payment_failed_marks_past_due(client, stripe_env, monkeypatch, seeded_db: Path):
     """invoice.payment_failed (no Subscription payload) -> caches 'past_due'."""
     sub_id = "sub_invoice_failed"
     c = sqlite3.connect(seeded_db)
@@ -312,8 +309,7 @@ def test_webhook_payment_failed_marks_past_due(
     c = sqlite3.connect(seeded_db)
     try:
         row = c.execute(
-            "SELECT stripe_subscription_status FROM api_keys "
-            "WHERE stripe_subscription_id = ?",
+            "SELECT stripe_subscription_status FROM api_keys WHERE stripe_subscription_id = ?",
             (sub_id,),
         ).fetchone()
     finally:
@@ -360,8 +356,7 @@ def test_webhook_payment_failed_does_not_regress_canceled(
     c = sqlite3.connect(seeded_db)
     try:
         row = c.execute(
-            "SELECT stripe_subscription_status FROM api_keys "
-            "WHERE stripe_subscription_id = ?",
+            "SELECT stripe_subscription_status FROM api_keys WHERE stripe_subscription_id = ?",
             (sub_id,),
         ).fetchone()
     finally:
@@ -370,9 +365,7 @@ def test_webhook_payment_failed_does_not_regress_canceled(
     assert row[0] == "canceled"
 
 
-def test_webhook_invoice_paid_resyncs_from_stripe(
-    client, stripe_env, monkeypatch, seeded_db: Path
-):
+def test_webhook_invoice_paid_resyncs_from_stripe(client, stripe_env, monkeypatch, seeded_db: Path):
     """invoice.paid -> live retrieve refreshes the cached subscription_status."""
     from jpintel_mcp.api import billing as billing_mod
 

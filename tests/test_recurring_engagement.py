@@ -129,6 +129,47 @@ def test_quarterly_rejects_invalid_year(client, recurring_key):
     assert r.status_code == 400
 
 
+def test_quarterly_requires_paid_metered_key(
+    client,
+    seeded_db: Path,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from jpintel_mcp.api import recurring_quarterly as mod
+
+    conn = sqlite3.connect(seeded_db)
+    try:
+        free_key = issue_key(
+            conn,
+            customer_id="cus_recurring_free",
+            tier="free",
+            stripe_subscription_id=None,
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+    render_calls: list[int] = []
+
+    def fake_render(*, out_path: Path, context: dict[str, object]) -> bool:
+        render_calls.append(1)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_bytes(b"%PDF-1.4\nshould not exist")
+        return True
+
+    monkeypatch.setattr(mod, "_QUARTERLY_CACHE_DIR", tmp_path)
+    monkeypatch.setattr(mod, "_render_pdf_to", fake_render)
+
+    r = client.get(
+        "/v1/me/recurring/quarterly/2026/1",
+        headers={"X-API-Key": free_key},
+    )
+
+    assert r.status_code == 402
+    assert render_calls == []
+    assert list(tmp_path.iterdir()) == []
+
+
 def test_quarterly_billing_503_does_not_leave_pdf_cache(
     client,
     recurring_key,
@@ -269,20 +310,13 @@ def test_quarterly_cron_unexpected_usage_exception_skips_customer_and_continues(
     assert succeeding_cache.exists()
 
 
-def test_quarterly_cron_charges_first_then_render_failure_is_pdf_failed(
+def test_quarterly_cron_render_failure_is_not_billed_or_cached(
     seeded_db: Path,
     recurring_key,
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """DEEP-47 Pattern A — charge BEFORE render.
-
-    Replaces the legacy "render then bill" path. Under the charge-first
-    fence, a render failure leaves a billed row behind (status='pdf_failed'
-    in the saga table) which the reconcile cron can refund out-of-band.
-    The previous behaviour (render fails before billing happens) created a
-    surface where 100% of cap-exceeded keys still ate WeasyPrint CPU.
-    """
+    """Render failure does not bill because no PDF was delivered."""
     from jpintel_mcp.api import recurring_quarterly as mod
     from scripts.cron import generate_quarterly_reports as cron
 
@@ -314,11 +348,10 @@ def test_quarterly_cron_charges_first_then_render_failure_is_pdf_failed(
 
     summary = cron.run(year=2026, quarter=1)
 
-    # Pattern A: billing fired pre-render and succeeded; the render failure
-    # is a separate signal handled by reconcile cron, not a billing failure.
     assert summary["rendered"] == 0
     assert summary["render_failed"] == 1
-    assert billed_calls == [key_hash]
+    assert summary["billed"] == 0
+    assert billed_calls == []
     assert list(tmp_path.iterdir()) == []
 
 

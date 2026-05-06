@@ -117,18 +117,27 @@ class _Fixture:
 
     def write_healthy(self) -> None:
         _write(os.path.join(self.mig_dir, "wave24_200_am_demo_index.sql"), GOOD_AUTONOMATH_FORWARD)
-        _write(os.path.join(self.mig_dir, "wave24_200_am_demo_index_rollback.sql"), GOOD_AUTONOMATH_ROLLBACK)
+        _write(
+            os.path.join(self.mig_dir, "wave24_200_am_demo_index_rollback.sql"),
+            GOOD_AUTONOMATH_ROLLBACK,
+        )
         _write(os.path.join(self.mig_dir, "wave24_201_jpi_demo.sql"), GOOD_JPINTEL_FORWARD)
-        _write(os.path.join(self.mig_dir, "wave24_201_jpi_demo_rollback.sql"), GOOD_JPINTEL_ROLLBACK)
+        _write(
+            os.path.join(self.mig_dir, "wave24_201_jpi_demo_rollback.sql"), GOOD_JPINTEL_ROLLBACK
+        )
 
     def write_extras(self) -> None:
         _write(os.path.join(self.mig_dir, "wave24_203_no_marker.sql"), NO_MARKER)
         _write(os.path.join(self.mig_dir, "wave24_204_invalid_marker.sql"), INVALID_MARKER)
-        _write(os.path.join(self.mig_dir, "wave24_205_lonely_forward.sql"), GOOD_AUTONOMATH_FORWARD.replace("am_demo", "am_lonely"))
+        _write(
+            os.path.join(self.mig_dir, "wave24_205_lonely_forward.sql"),
+            GOOD_AUTONOMATH_FORWARD.replace("am_demo", "am_lonely"),
+        )
         _write(os.path.join(self.mig_dir, "wave24_206_bad_programs.sql"), BAD_AUTONOMATH_BODY)
 
 
 # -------- tests --------------------------------------------------------------
+
 
 class MarkerMissing(unittest.TestCase):
     def test_marker_missing_flag(self) -> None:
@@ -236,10 +245,14 @@ class PerTargetIsolation(unittest.TestCase):
                 handle.close()
                 if target == "autonomath":
                     for t in tables:
-                        self.assertFalse(t.startswith("jpi_"), f"autonomath handle leaked jpintel table {t}")
+                        self.assertFalse(
+                            t.startswith("jpi_"), f"autonomath handle leaked jpintel table {t}"
+                        )
                 else:
                     for t in tables:
-                        self.assertFalse(t.startswith("am_"), f"jpintel handle leaked autonomath table {t}")
+                        self.assertFalse(
+                            t.startswith("am_"), f"jpintel handle leaked autonomath table {t}"
+                        )
 
 
 class LLMImportZero(unittest.TestCase):

@@ -12,6 +12,7 @@ Coverage:
   9. DELETE returns 404 for someone else's testimonial (no info leak)
  10. PII posture: api_key_hash never in public response
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -78,9 +79,7 @@ def other_key(seeded_db: Path) -> str:
     return raw
 
 
-def _submit_one(
-    client, submitter_key: str, audience: str = "Dev", text: str | None = None
-) -> int:
+def _submit_one(client, submitter_key: str, audience: str = "Dev", text: str | None = None) -> int:
     body = {
         "audience": audience,
         "text": text or "AutonoMath は法令引用が公式 e-Gov に紐付いていて引用根拠が明確。",
@@ -169,9 +168,7 @@ def test_public_list_hides_pending(client, submitter_key):
     assert body["rows"] == []
 
 
-def test_public_list_shows_approved(
-    client, submitter_key, admin_enabled, seeded_db: Path
-):
+def test_public_list_shows_approved(client, submitter_key, admin_enabled, seeded_db: Path):
     tid = _submit_one(client, submitter_key, audience="VC")
     # Approve.
     r = client.post(
@@ -191,9 +188,7 @@ def test_public_list_shows_approved(
     assert "api_key_hash" not in row
 
 
-def test_public_list_drops_after_unapprove(
-    client, submitter_key, admin_enabled
-):
+def test_public_list_drops_after_unapprove(client, submitter_key, admin_enabled):
     tid = _submit_one(client, submitter_key)
     client.post(
         f"/v1/admin/testimonials/{tid}/approve",
@@ -255,9 +250,7 @@ def test_owner_can_delete_own_testimonial(client, submitter_key):
     assert r.status_code == 204
 
 
-def test_other_key_cannot_delete_someone_elses_testimonial(
-    client, submitter_key, other_key
-):
+def test_other_key_cannot_delete_someone_elses_testimonial(client, submitter_key, other_key):
     tid = _submit_one(client, submitter_key)
     r = client.delete(
         f"/v1/me/testimonials/{tid}",

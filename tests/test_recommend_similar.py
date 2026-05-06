@@ -28,6 +28,7 @@ These tests must pass on a clean checkout regardless of whether
 graceful empty envelope on missing tables / missing seed embedding,
 keyed by ``data_quality.reason`` so the customer LLM can branch.
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -171,7 +172,11 @@ def test_recommend_returns_k_results():
             ("case", "case-nonexistent"),
             ("court", "HAN-nonexistent"),
         ):
-            r = impls[tool_key](seed, k=k) if tool_key != "program" else impls[tool_key](program_id=seed, k=k)
+            r = (
+                impls[tool_key](seed, k=k)
+                if tool_key != "program"
+                else impls[tool_key](program_id=seed, k=k)
+            )
             assert isinstance(r, dict)
             assert r.get("total", 0) == 0
             assert isinstance(r.get("results"), list)
@@ -240,9 +245,7 @@ def test_envelope_carries_disclaimer():
         "recommend_similar_case",
         "recommend_similar_court_decision",
     ):
-        assert tool_name in SENSITIVE_TOOLS, (
-            f"{tool_name} not in envelope_wrapper.SENSITIVE_TOOLS"
-        )
+        assert tool_name in SENSITIVE_TOOLS, f"{tool_name} not in envelope_wrapper.SENSITIVE_TOOLS"
         std = disclaimer_for(tool_name, "standard")
         mini = disclaimer_for(tool_name, "minimal")
         strict = disclaimer_for(tool_name, "strict")
@@ -251,14 +254,12 @@ def test_envelope_carries_disclaimer():
         assert isinstance(strict, str) and len(strict) > len(std), (
             f"{tool_name}: strict ({len(strict)}) <= standard ({len(std)})"
         )
-        assert len(mini) < len(std), (
-            f"{tool_name}: minimal ({len(mini)}) >= standard ({len(std)})"
-        )
+        assert len(mini) < len(std), f"{tool_name}: minimal ({len(mini)}) >= standard ({len(std)})"
         # 行政書士法 §1 / 弁護士法 §72 / 税理士法 §52 — at least one of
         # these must surface in every disclaimer (audit trace).
-        assert any(
-            phrase in std for phrase in ("行政書士法", "弁護士法", "税理士法")
-        ), f"{tool_name}: standard missing 業法 reference"
+        assert any(phrase in std for phrase in ("行政書士法", "弁護士法", "税理士法")), (
+            f"{tool_name}: standard missing 業法 reference"
+        )
 
     # (a) impl-level _disclaimer on graceful-empty path (always reachable).
     rp = impls["program"](program_id="UNI-nonexistent-12345", k=10)
@@ -296,9 +297,7 @@ def test_density_weighted_ranking():
     s_close = compose(distance=0.10, verification_count=0, density_score=0.0)
     s_mid = compose(distance=0.30, verification_count=0, density_score=0.0)
     s_far = compose(distance=0.80, verification_count=0, density_score=0.0)
-    assert s_close > s_mid > s_far, (
-        f"cosine not monotonic: {s_close} {s_mid} {s_far}"
-    )
+    assert s_close > s_mid > s_far, f"cosine not monotonic: {s_close} {s_mid} {s_far}"
 
     # 2. verification_count boost.
     base = compose(distance=0.30, verification_count=0, density_score=0.0)
@@ -312,15 +311,11 @@ def test_density_weighted_ranking():
     # 4. Verification cap.
     capped_5 = compose(distance=0.30, verification_count=5, density_score=0.0)
     capped_50 = compose(distance=0.30, verification_count=50, density_score=0.0)
-    assert capped_50 == pytest.approx(capped_5), (
-        "verification_count above 5 should not exceed cap"
-    )
+    assert capped_50 == pytest.approx(capped_5), "verification_count above 5 should not exceed cap"
 
     # 5. Cosine signal dominates: a tiny cosine improvement should
     # outweigh max verification_count + non-trivial density_score, since
     # cosine weight is 1.0 and the boosts are 0.10 + 0.05.
     big_boost = compose(distance=0.30, verification_count=5, density_score=1.0)
     cosine_win = compose(distance=0.10, verification_count=0, density_score=0.0)
-    assert cosine_win > big_boost, (
-        "cosine signal must dominate verification + density boosts"
-    )
+    assert cosine_win > big_boost, "cosine signal must dominate verification + density boosts"

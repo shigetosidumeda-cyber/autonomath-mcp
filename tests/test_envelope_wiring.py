@@ -23,6 +23,7 @@ Covers
 5. ``stats.py`` cache no longer uses an inline dict — calls go through
    ``cache.l4.get_or_compute`` with the ``api.stats`` tool name.
 """
+
 from __future__ import annotations
 
 import sys
@@ -139,8 +140,10 @@ def test_envelope_merge_minimal_opt_out_skips_meta():
     # status / suggested_actions still present (always-on hints), but
     # the meta block (suggestions / tips / token_estimate) is suppressed.
     assert merged.get("status") == "empty"
-    assert "meta" not in merged or merged.get("meta") is None or "suggestions" not in (
-        merged.get("meta") or {}
+    assert (
+        "meta" not in merged
+        or merged.get("meta") is None
+        or "suggestions" not in (merged.get("meta") or {})
     )
 
 
@@ -235,7 +238,10 @@ def test_envelope_merge_soft_fails_on_envelope_import_error():
     ):
         result = {"total": 0, "results": []}
         out = _envelope_merge(
-            tool_name="x", result=result, kwargs={}, latency_ms=0.0,
+            tool_name="x",
+            result=result,
+            kwargs={},
+            latency_ms=0.0,
         )
         # On soft-fail we get the original back with no envelope keys.
         assert out is result or "status" not in out
@@ -256,7 +262,9 @@ def test_apply_envelope_rest_helper_adds_meta_suggestions():
         "results": [],
     }
     out = _apply_envelope(
-        "search_tax_incentives", result, query="zzzzzzzzz",
+        "search_tax_incentives",
+        result,
+        query="zzzzzzzzz",
     )
     assert out.get("status") == "empty"
     assert isinstance(out.get("meta"), dict)
@@ -298,9 +306,7 @@ def _l4_table_present(seeded_db: Path):
     explicitly for cache-related assertions."""
     import sqlite3 as _sqlite3
 
-    migration = (
-        _REPO / "scripts" / "migrations" / "043_l4_cache.sql"
-    ).read_text(encoding="utf-8")
+    migration = (_REPO / "scripts" / "migrations" / "043_l4_cache.sql").read_text(encoding="utf-8")
     conn = _sqlite3.connect(seeded_db)
     try:
         conn.executescript(migration)
@@ -398,9 +404,7 @@ def test_rest_response_keeps_legacy_total_offset_limit(client):
     """β2 wiring is additive — total / limit / offset survive."""
     r = client.get("/v1/am/enums/authority")
     if r.status_code != 200:
-        pytest.skip(
-            f"/v1/am/enums/authority returned {r.status_code}, skipping."
-        )
+        pytest.skip(f"/v1/am/enums/authority returned {r.status_code}, skipping.")
     body = r.json()
     # Endpoint declares enum_name + values; envelope adds status/etc but
     # never strips existing fields.

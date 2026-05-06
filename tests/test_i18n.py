@@ -10,6 +10,7 @@ Covers the scaffolding landed ahead of the T+150d English V4 launch:
     do not contain 全角 punctuation; Japanese strings do not contain raw
     ASCII colons except inside quoted parens (light heuristic).
 """
+
 from __future__ import annotations
 
 import sys

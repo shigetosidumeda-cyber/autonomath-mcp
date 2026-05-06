@@ -1,0 +1,18 @@
+{
+  "model": "gpt-5",
+  "provider": "openai",
+  "mode": "without_jpcite",
+  "submitted_at": "2026-05-04T00:00:00Z",
+  "submitter": "bookyou (seed estimate, not validated)",
+  "n": 100,
+  "exact_match": 0.20,
+  "citation_ok": 0.45,
+  "by_domain": {
+    "subsidy_eligibility": {"n": 20, "exact_match": 0.15, "citation_ok": 0.35},
+    "tax_application":     {"n": 20, "exact_match": 0.30, "citation_ok": 0.55},
+    "law_citation":        {"n": 20, "exact_match": 0.30, "citation_ok": 0.55},
+    "adoption_statistics": {"n": 20, "exact_match": 0.15, "citation_ok": 0.40},
+    "enforcement_risk":    {"n": 20, "exact_match": 0.10, "citation_ok": 0.40}
+  },
+  "questions_sha256": "seed-not-validated"
+}

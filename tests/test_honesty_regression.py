@@ -3,6 +3,7 @@
 Background: Z3 audit (2026-04-26) found compat_matrix moat / amendment time-series claims were inflated.
 We cleaned up landing/docs/docstrings on 2026-04-26. These tests ensure they stay clean.
 """
+
 import re
 from pathlib import Path
 
@@ -78,6 +79,7 @@ def test_disclaimer_mentions_law():
         SENSITIVE_TOOLS,
         disclaimer_for,
     )
+
     laws = ("弁護士法", "税理士法", "行政書士法", "社労士法")
     for tool in SENSITIVE_TOOLS:
         d = disclaimer_for(tool, "standard")
@@ -93,6 +95,7 @@ def test_disclaimer_no_advice_promise():
         SENSITIVE_TOOLS,
         disclaimer_for,
     )
+
     forbidden = ["精度の高い", "確実な判定", "decisive", "guaranteed", "保証"]
     for tool in SENSITIVE_TOOLS:
         for level in ("minimal", "standard", "strict"):

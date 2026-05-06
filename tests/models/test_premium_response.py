@@ -1,4 +1,5 @@
 """Tests for jpintel_mcp.models.premium_response."""
+
 from __future__ import annotations
 
 from datetime import datetime, timezone

@@ -14,6 +14,7 @@ integration tests"). They need the real DB to be populated; the suite
 skips individual assertions that depend on content we cannot guarantee
 (e.g. there are no known-conflicting program ids in the seeded set).
 """
+
 from __future__ import annotations
 
 import json
@@ -71,8 +72,9 @@ class MCPClient:
     # ------------------------------------------------------------------
     # Raw JSON-RPC plumbing
     # ------------------------------------------------------------------
-    def _send(self, method: str, params: dict[str, Any] | None = None,
-              is_notification: bool = False) -> int | None:
+    def _send(
+        self, method: str, params: dict[str, Any] | None = None, is_notification: bool = False
+    ) -> int | None:
         msg: dict[str, Any] = {"jsonrpc": "2.0", "method": method}
         if not is_notification:
             self._next_id += 1
@@ -112,9 +114,7 @@ class MCPClient:
             try:
                 msg = json.loads(buf)
             except json.JSONDecodeError as e:
-                raise RuntimeError(
-                    f"MCP server emitted non-JSON on stdout: {buf!r} ({e})"
-                ) from e
+                raise RuntimeError(f"MCP server emitted non-JSON on stdout: {buf!r} ({e})") from e
             # Skip notifications (no id) and mismatched-id responses.
             if "id" not in msg:
                 continue
@@ -148,11 +148,14 @@ class MCPClient:
     # High-level protocol helpers
     # ------------------------------------------------------------------
     def initialize(self) -> dict[str, Any]:
-        mid = self._send("initialize", {
-            "protocolVersion": "2024-11-05",
-            "capabilities": {},
-            "clientInfo": {"name": "autonomath-integration-test", "version": "0.0.0"},
-        })
+        mid = self._send(
+            "initialize",
+            {
+                "protocolVersion": "2024-11-05",
+                "capabilities": {},
+                "clientInfo": {"name": "autonomath-integration-test", "version": "0.0.0"},
+            },
+        )
         assert mid is not None
         resp = self._recv(mid)
         self.server_info = resp.get("result", {}).get("serverInfo")
@@ -247,6 +250,7 @@ def mcp():
 # Tests
 # ======================================================================
 
+
 # ----- handshake ------------------------------------------------------
 def test_initialize_reports_server_info(mcp: MCPClient) -> None:
     assert mcp.server_info is not None, "initialize() did not capture serverInfo"
@@ -279,9 +283,7 @@ def test_list_tools_covers_all_handlers(mcp: MCPClient) -> None:
         "search_loan_programs",
         "get_loan_program",
     }
-    assert expected.issubset(names), (
-        f"missing tools: {expected - names}. Got: {sorted(names)}"
-    )
+    assert expected.issubset(names), f"missing tools: {expected - names}. Got: {sorted(names)}"
     # Every tool must carry an inputSchema (Claude Desktop requires it).
     for t in tools:
         if t["name"] in expected:
@@ -315,9 +317,7 @@ def test_search_programs_short_query_uses_like_fallback(mcp: MCPClient) -> None:
     assert not is_error_response(resp), f"tool errored: {resp}"
     payload = extract_tool_payload(resp)
     # LIKE fallback path should yield plenty of matches.
-    assert payload["total"] > 0, (
-        f"short-query LIKE fallback returned zero hits for 農業: {payload}"
-    )
+    assert payload["total"] > 0, f"short-query LIKE fallback returned zero hits for 農業: {payload}"
 
 
 def test_search_programs_phrase_relevance(mcp: MCPClient) -> None:
@@ -332,7 +332,8 @@ def test_search_programs_phrase_relevance(mcp: MCPClient) -> None:
     assert payload["results"], "expected at least one hit for 税額控除"
     tax_like_keywords = ("税", "控除", "税制")
     tax_hits = [
-        r for r in payload["results"]
+        r
+        for r in payload["results"]
         if any(kw in (r.get("primary_name") or "") for kw in tax_like_keywords)
     ]
     assert tax_hits, (
@@ -399,8 +400,7 @@ def test_batch_get_programs_round_trip(mcp: MCPClient) -> None:
     assert set(payload.keys()) >= {"results", "not_found"}
     returned = {r["unified_id"] for r in payload["results"]}
     assert returned == set(uids), (
-        f"batch dropped/added ids. asked={uids} got={returned} "
-        f"not_found={payload['not_found']}"
+        f"batch dropped/added ids. asked={uids} got={returned} not_found={payload['not_found']}"
     )
     # Batch contract: full shape always carries these keys.
     for row in payload["results"]:
@@ -411,9 +411,7 @@ def test_batch_get_programs_round_trip(mcp: MCPClient) -> None:
 def test_batch_get_programs_over_limit_errors(mcp: MCPClient) -> None:
     fake_ids = [f"UNI-fake-{i}" for i in range(51)]
     resp = mcp.call_tool("batch_get_programs", {"unified_ids": fake_ids})
-    assert is_error_response(resp), (
-        f"expected validation error for 51 ids, got success: {resp}"
-    )
+    assert is_error_response(resp), f"expected validation error for 51 ids, got success: {resp}"
     # Drill into the error text to confirm it's the right failure.
     result = resp.get("result") or {}
     text_blob = " ".join(
@@ -464,9 +462,12 @@ def test_check_exclusions_known_conflict(mcp: MCPClient) -> None:
     `keiei-kaishi-shikin` vs `koyo-shuno-shikin` is excl-keiei-kaishi-vs-
     koyo-shuno-absolute in the seeded rule set.
     """
-    resp = mcp.call_tool("check_exclusions", {
-        "program_ids": ["keiei-kaishi-shikin", "koyo-shuno-shikin"],
-    })
+    resp = mcp.call_tool(
+        "check_exclusions",
+        {
+            "program_ids": ["keiei-kaishi-shikin", "koyo-shuno-shikin"],
+        },
+    )
     assert not is_error_response(resp), f"tool errored: {resp}"
     payload = extract_tool_payload(resp)
     assert payload["checked_rules"] >= _EXCLUSION_RULES_FLOOR
@@ -491,9 +492,7 @@ def test_check_exclusions_no_conflict(mcp: MCPClient) -> None:
     # must be zero. Prerequisite hits could theoretically fire, so we
     # only assert on kind=absolute mutexes.
     mutex_hits = [h for h in payload["hits"] if h.get("kind") == "absolute"]
-    assert not mutex_hits, (
-        f"unrelated ids {uids} unexpectedly triggered mutex rules: {mutex_hits}"
-    )
+    assert not mutex_hits, f"unrelated ids {uids} unexpectedly triggered mutex rules: {mutex_hits}"
 
 
 # ----- get_meta -------------------------------------------------------
@@ -508,9 +507,7 @@ def test_get_meta_shape(mcp: MCPClient) -> None:
     tier_keys = set(payload["tier_counts"].keys())
     # S/A/B/C must all be represented in the real dataset.
     for t in ("S", "A", "B", "C"):
-        assert t in tier_keys, (
-            f"tier {t} missing from tier_counts: {tier_keys}"
-        )
+        assert t in tier_keys, f"tier {t} missing from tier_counts: {tier_keys}"
     assert payload["exclusion_rules_count"] >= _EXCLUSION_RULES_FLOOR
     # last_ingested_at must be an ISO-8601 timestamp.
     last = payload.get("last_ingested_at")
@@ -523,18 +520,19 @@ def test_get_meta_shape(mcp: MCPClient) -> None:
 # ----- protocol error handling ---------------------------------------
 def test_unknown_tool_returns_error(mcp: MCPClient) -> None:
     resp = mcp.call_tool("does_not_exist_tool", {})
-    assert is_error_response(resp), (
-        f"expected error for unknown tool, got success: {resp}"
-    )
+    assert is_error_response(resp), f"expected error for unknown tool, got success: {resp}"
     err = resp.get("error") or {}
     result = resp.get("result") or {}
     text_blob = " ".join(
         (c.get("text") or "") for c in (result.get("content") or []) if isinstance(c, dict)
     )
     combined = (err.get("message", "") + " " + text_blob).lower()
-    assert "unknown" in combined or "not found" in combined or "no such" in combined or "does_not_exist" in combined, (
-        f"unexpected error shape for unknown tool: {resp}"
-    )
+    assert (
+        "unknown" in combined
+        or "not found" in combined
+        or "no such" in combined
+        or "does_not_exist" in combined
+    ), f"unexpected error shape for unknown tool: {resp}"
 
 
 if __name__ == "__main__":

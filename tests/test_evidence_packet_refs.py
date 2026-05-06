@@ -22,6 +22,7 @@ Schema posture: tests apply 079_saved_searches.sql + 099 channel columns +
 jpintel.db, then exercise the digest cron + dispatcher + saved-search
 endpoint directly.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -79,6 +80,7 @@ def _apply_migration(conn: sqlite3.Connection, path: Path) -> None:
     cleaned = "\n".join(cleaned_lines)
 
     import re
+
     pattern = re.compile(
         r"ALTER\s+TABLE\s+(\w+)\s+ADD\s+COLUMN\s+(\w+)",
         re.IGNORECASE,
@@ -87,9 +89,7 @@ def _apply_migration(conn: sqlite3.Connection, path: Path) -> None:
     for m in pattern.finditer(cleaned):
         table, col = m.group(1), m.group(2)
         try:
-            existing = {
-                r[1] for r in conn.execute(f"PRAGMA table_info({table})").fetchall()
-            }
+            existing = {r[1] for r in conn.execute(f"PRAGMA table_info({table})").fetchall()}
         except sqlite3.OperationalError:
             existing = set()
         if col in existing:
@@ -219,15 +219,9 @@ def weekly_db(tmp_path: Path) -> Iterator[Path]:
             """
         )
 
-        _apply_migration(
-            conn, REPO / "scripts" / "migrations" / "079_saved_searches.sql"
-        )
-        _apply_migration(
-            conn, REPO / "scripts" / "migrations" / "099_recurring_engagement.sql"
-        )
-        _apply_migration(
-            conn, REPO / "scripts" / "migrations" / "113_weekly_digest_state.sql"
-        )
+        _apply_migration(conn, REPO / "scripts" / "migrations" / "079_saved_searches.sql")
+        _apply_migration(conn, REPO / "scripts" / "migrations" / "099_recurring_engagement.sql")
+        _apply_migration(conn, REPO / "scripts" / "migrations" / "113_weekly_digest_state.sql")
 
         base_now = datetime.now(UTC)
         _seed_programs(
@@ -331,7 +325,10 @@ def test_digest_json_payload_includes_evidence_packet_endpoint_for_new(weekly_db
         row = _fetch_active_weekly(conn)
         assert row is not None
         outcome = mod.run_one(
-            jp_conn=conn, row=row, now_utc=datetime.now(UTC), dry_run=False,
+            jp_conn=conn,
+            row=row,
+            now_utc=datetime.now(UTC),
+            dry_run=False,
         )
         assert outcome["status"] == "sent"
         payload = outcome["json_payload"]
@@ -347,8 +344,11 @@ def test_digest_json_payload_includes_evidence_packet_endpoint_for_new(weekly_db
             assert "evidence_summary" in hit
             summary = hit["evidence_summary"]
             assert set(summary.keys()) == {
-                "primary_name", "source_url", "fetched_at",
-                "license", "last_amendment_diff_id",
+                "primary_name",
+                "source_url",
+                "fetched_at",
+                "license",
+                "last_amendment_diff_id",
             }
     finally:
         conn.close()
@@ -362,7 +362,10 @@ def test_digest_endpoint_is_relative_path_not_full_packet(weekly_db: Path):
     try:
         row = _fetch_active_weekly(conn)
         outcome = mod.run_one(
-            jp_conn=conn, row=row, now_utc=datetime.now(UTC), dry_run=False,
+            jp_conn=conn,
+            row=row,
+            now_utc=datetime.now(UTC),
+            dry_run=False,
         )
         payload = outcome["json_payload"]
         for hit in payload["hits"]:
@@ -386,7 +389,10 @@ def test_digest_email_renders_endpoint_as_url(weekly_db: Path):
     try:
         row = _fetch_active_weekly(conn)
         outcome = mod.run_one(
-            jp_conn=conn, row=row, now_utc=datetime.now(UTC), dry_run=False,
+            jp_conn=conn,
+            row=row,
+            now_utc=datetime.now(UTC),
+            dry_run=False,
         )
         plaintext = outcome["plaintext_preview"]
         # Plaintext: "Evidence: https://jpcite.com/v1/evidence/packets/program/..."
@@ -462,13 +468,9 @@ def test_digest_modified_section_carries_endpoint(weekly_db: Path):
     by_id = {h["unified_id"]: h for h in payload["hits"]}
     # NEW + MODIFIED carry the endpoint reference.
     assert "evidence_packet_endpoint" in by_id["mod-test-new"]
-    assert by_id["mod-test-new"]["evidence_packet_endpoint"].endswith(
-        "mod-test-new"
-    )
+    assert by_id["mod-test-new"]["evidence_packet_endpoint"].endswith("mod-test-new")
     assert "evidence_packet_endpoint" in by_id["mod-test-mod"]
-    assert by_id["mod-test-mod"]["evidence_packet_endpoint"].endswith(
-        "mod-test-mod"
-    )
+    assert by_id["mod-test-mod"]["evidence_packet_endpoint"].endswith("mod-test-mod")
     # Unchanged rows DO NOT carry the endpoint (only NEW/MODIFIED need
     # cite-back follow-up).
     assert "evidence_packet_endpoint" not in by_id["mod-test-unchanged"]
@@ -493,6 +495,7 @@ def test_digest_modified_section_carries_endpoint(weekly_db: Path):
 def webhook_key_local(seeded_db: Path) -> str:
     """Authenticated paid key for webhook tests."""
     from jpintel_mcp.billing.keys import issue_key
+
     c = sqlite3.connect(seeded_db)
     c.row_factory = sqlite3.Row
     raw = issue_key(
@@ -604,7 +607,9 @@ def _register_webhook(
 
 
 def test_webhook_program_created_payload_carries_evidence_endpoint(
-    seeded_db, webhook_key_local, monkeypatch,
+    seeded_db,
+    webhook_key_local,
+    monkeypatch,
 ):
     """program.created webhook payload includes data.evidence_packet_endpoint."""
     from jpintel_mcp.api.deps import hash_api_key
@@ -614,13 +619,17 @@ def test_webhook_program_created_payload_carries_evidence_endpoint(
     secret = "whsec_evidence_created"
     _backdate_existing(seeded_db)
     _register_webhook(
-        seeded_db, key_hash, "https://hooks.example.com/ep",
-        ["program.created"], secret=secret,
+        seeded_db,
+        key_hash,
+        "https://hooks.example.com/ep",
+        ["program.created"],
+        secret=secret,
     )
     _seed_program(seeded_db, unified_id="EP-CREATED-1")
 
     mock = _MockClient(responses=[(200, "")])
     import httpx as _httpx
+
     monkeypatch.setattr(_httpx, "Client", lambda *a, **k: mock)
     monkeypatch.setattr(
         "scripts.cron.dispatch_webhooks._bill_one_delivery",
@@ -644,9 +653,7 @@ def test_webhook_program_created_payload_carries_evidence_endpoint(
     data = payload["data"]
     # Section 17 step 9 — required keys per the brief.
     assert data["entity_id"] == "EP-CREATED-1"
-    assert data["evidence_packet_endpoint"] == (
-        "/v1/evidence/packets/program/EP-CREATED-1"
-    )
+    assert data["evidence_packet_endpoint"] == ("/v1/evidence/packets/program/EP-CREATED-1")
     assert "diff_id" in data
     assert "field_name" in data
     assert "source_url" in data
@@ -658,15 +665,15 @@ def test_webhook_program_created_payload_carries_evidence_endpoint(
     )
 
     # HMAC still matches over the augmented body.
-    expected_sig = "hmac-sha256=" + hmac.new(
-        secret.encode(), sent_body, hashlib.sha256
-    ).hexdigest()
+    expected_sig = "hmac-sha256=" + hmac.new(secret.encode(), sent_body, hashlib.sha256).hexdigest()
     assert sent_headers["X-Jpcite-Signature"] == expected_sig
     assert sent_headers["X-Zeimu-Signature"] == expected_sig
 
 
 def test_webhook_evidence_endpoint_is_relative_path(
-    seeded_db, webhook_key_local, monkeypatch,
+    seeded_db,
+    webhook_key_local,
+    monkeypatch,
 ):
     """The reference URL is `/v1/evidence/packets/program/{program_id}`."""
     from jpintel_mcp.api.deps import hash_api_key
@@ -675,13 +682,17 @@ def test_webhook_evidence_endpoint_is_relative_path(
     key_hash = hash_api_key(webhook_key_local)
     _backdate_existing(seeded_db)
     _register_webhook(
-        seeded_db, key_hash, "https://hooks.example.com/fmt",
-        ["program.created"], secret="whsec_fmt",
+        seeded_db,
+        key_hash,
+        "https://hooks.example.com/fmt",
+        ["program.created"],
+        secret="whsec_fmt",
     )
     _seed_program(seeded_db, unified_id="EP-FMT-7")
 
     mock = _MockClient(responses=[(200, "")])
     import httpx as _httpx
+
     monkeypatch.setattr(_httpx, "Client", lambda *a, **k: mock)
     monkeypatch.setattr(
         "scripts.cron.dispatch_webhooks._bill_one_delivery",
@@ -710,7 +721,10 @@ def test_webhook_evidence_endpoint_is_relative_path(
 
 
 def test_webhook_program_amended_payload_carries_evidence_endpoint(
-    seeded_db, webhook_key_local, monkeypatch, tmp_path,
+    seeded_db,
+    webhook_key_local,
+    monkeypatch,
+    tmp_path,
 ):
     """program.amended payload carries entity_id + diff_id + endpoint."""
     from jpintel_mcp.api.deps import hash_api_key
@@ -719,8 +733,11 @@ def test_webhook_program_amended_payload_carries_evidence_endpoint(
     key_hash = hash_api_key(webhook_key_local)
     _backdate_existing(seeded_db)
     _register_webhook(
-        seeded_db, key_hash, "https://hooks.example.com/amended",
-        ["program.amended"], secret="whsec_amended",
+        seeded_db,
+        key_hash,
+        "https://hooks.example.com/amended",
+        ["program.amended"],
+        secret="whsec_amended",
     )
 
     # Build a tmp autonomath.db with a single am_amendment_diff row.
@@ -751,6 +768,7 @@ def test_webhook_program_amended_payload_carries_evidence_endpoint(
 
     mock = _MockClient(responses=[(200, "")])
     import httpx as _httpx
+
     monkeypatch.setattr(_httpx, "Client", lambda *a, **k: mock)
     monkeypatch.setattr(
         "scripts.cron.dispatch_webhooks._bill_one_delivery",
@@ -779,15 +797,15 @@ def test_webhook_program_amended_payload_carries_evidence_endpoint(
     assert data["field_name"] == "amount_max_man_yen"
     assert data["source_url"] == "https://example.gov/p/amended"
     assert "corpus_snapshot_id" in data
-    assert data["evidence_packet_endpoint"] == (
-        "/v1/evidence/packets/program/EP-AMENDED-1"
-    )
+    assert data["evidence_packet_endpoint"] == ("/v1/evidence/packets/program/EP-AMENDED-1")
     # No full packet body inlined.
     assert "evidence_packet" not in data
 
 
 def test_webhook_backwards_compat_extra_field_only(
-    seeded_db, webhook_key_local, monkeypatch,
+    seeded_db,
+    webhook_key_local,
+    monkeypatch,
 ):
     """Adding `evidence_packet_endpoint` is JSON-additive — existing fields
     on data still present and unchanged."""
@@ -797,13 +815,17 @@ def test_webhook_backwards_compat_extra_field_only(
     key_hash = hash_api_key(webhook_key_local)
     _backdate_existing(seeded_db)
     _register_webhook(
-        seeded_db, key_hash, "https://hooks.example.com/compat",
-        ["program.created"], secret="whsec_compat",
+        seeded_db,
+        key_hash,
+        "https://hooks.example.com/compat",
+        ["program.created"],
+        secret="whsec_compat",
     )
     _seed_program(seeded_db, unified_id="EP-COMPAT-1")
 
     mock = _MockClient(responses=[(200, "")])
     import httpx as _httpx
+
     monkeypatch.setattr(_httpx, "Client", lambda *a, **k: mock)
     monkeypatch.setattr(
         "scripts.cron.dispatch_webhooks._bill_one_delivery",
@@ -839,7 +861,9 @@ def test_webhook_backwards_compat_extra_field_only(
 
 
 def test_saved_search_results_includes_evidence_endpoint(
-    client, webhook_key_local, seeded_db,
+    client,
+    webhook_key_local,
+    seeded_db,
 ):
     """GET /v1/me/saved_searches/{id}/results — each row carries the URL ref."""
     # Apply 079 + 099 to the seeded DB so saved_searches table exists.
@@ -851,8 +875,7 @@ def test_saved_search_results_includes_evidence_endpoint(
         cols = {row[1] for row in c.execute("PRAGMA table_info(saved_searches)")}
         if "channel_format" not in cols:
             c.execute(
-                "ALTER TABLE saved_searches ADD COLUMN channel_format "
-                "TEXT NOT NULL DEFAULT 'email'"
+                "ALTER TABLE saved_searches ADD COLUMN channel_format TEXT NOT NULL DEFAULT 'email'"
             )
         if "channel_url" not in cols:
             c.execute("ALTER TABLE saved_searches ADD COLUMN channel_url TEXT")

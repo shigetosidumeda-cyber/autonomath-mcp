@@ -1,4 +1,5 @@
 """Tests for GET /v1/ping."""
+
 from __future__ import annotations
 
 import sqlite3
@@ -94,3 +95,39 @@ def test_ping_increments_usage_for_authed_only(client, plus_key, seeded_db: Path
         assert n_after_authed == 1
     finally:
         c.close()
+
+
+def test_ping_paid_final_cap_failure_returns_503_without_usage_event(
+    client,
+    plus_key,
+    seeded_db: Path,
+    monkeypatch,
+) -> None:
+    from jpintel_mcp.api.deps import hash_api_key
+    from jpintel_mcp.api.middleware import customer_cap
+
+    kh = hash_api_key(plus_key)
+
+    def usage_count() -> int:
+        c = sqlite3.connect(seeded_db)
+        try:
+            (count,) = c.execute(
+                "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = ?",
+                (kh, "ping"),
+            ).fetchone()
+            return int(count)
+        finally:
+            c.close()
+
+    before = usage_count()
+    monkeypatch.setattr(
+        customer_cap,
+        "metered_charge_within_cap",
+        lambda *args, **kwargs: False,
+    )
+
+    r = client.get("/v1/ping", headers={"X-API-Key": plus_key})
+
+    assert r.status_code == 503, r.text
+    assert r.json()["detail"]["code"] == "billing_cap_final_check_failed"
+    assert usage_count() == before

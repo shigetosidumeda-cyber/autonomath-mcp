@@ -37,6 +37,57 @@ MANIFEST_PATH = SCRIPTS_DIR / "distribution_manifest.yml"
 DRIFT_SCRIPT = SCRIPTS_DIR / "check_distribution_manifest_drift.py"
 PROBE_SCRIPT = SCRIPTS_DIR / "probe_runtime_distribution.py"
 
+EXPECTED_TOOL_COUNT_DEFAULT_GATES = 139
+EXPECTED_ROUTE_COUNT = 269
+EXPECTED_OPENAPI_PATH_COUNT = 227
+
+EXPECTED_WAVE6_P0_CANDIDATES = {
+    "server.json",
+    "site/server.json",
+    "smithery.yaml",
+    "mcp-server.core.json",
+    "mcp-server.composition.json",
+    "docs/openapi/agent.json",
+    "site/openapi.agent.json",
+    "site/llms.en.txt",
+    "site/en/llms.txt",
+    "site/_data/public_counts.json",
+}
+EXPECTED_WAVE6_P0_DISTRIBUTION_SURFACES = {
+    "server.json",
+    "site/server.json",
+    "smithery.yaml",
+    "mcp-server.core.json",
+    "mcp-server.composition.json",
+    "docs/openapi/agent.json",
+    "site/openapi.agent.json",
+    "site/llms.en.txt",
+    "site/en/llms.txt",
+}
+EXPECTED_WAVE6_P0_VERSION_SURFACES = {
+    "server.json",
+    "site/server.json",
+    "mcp-server.core.json",
+    "mcp-server.composition.json",
+    "docs/openapi/agent.json",
+    "site/openapi.agent.json",
+}
+EXPECTED_WAVE6_P0_TOOL_COUNT_SURFACES = {
+    "server.json",
+    "site/server.json",
+    "smithery.yaml",
+    "site/llms.en.txt",
+    "site/en/llms.txt",
+    "site/_data/public_counts.json",
+}
+EXPECTED_WAVE6_P0_DOC_PATHS = {
+    "docs/openapi/agent.json",
+    "site/openapi.agent.json",
+    "site/llms.en.txt",
+    "site/en/llms.txt",
+    "site/_data/public_counts.json",
+}
+
 REQUIRED_TOP_KEYS = {
     "product",
     "canonical_domains",
@@ -44,10 +95,20 @@ REQUIRED_TOP_KEYS = {
     "canonical_pypi_package",
     "canonical_repo",
     "canonical_api_env",
+    "canonical_mcp_package_surface_paths",
     "tool_count_default_gates",
     "route_count",
+    "openapi_path_count",
     "pyproject_version",
+    "pricing_unit_jpy_ex_tax",
+    "pricing_unit_jpy_tax_included",
+    "free_tier_requests_per_day",
     "tagline_ja",
+    "distribution_surface_paths",
+    "version_surface_paths",
+    "tool_count_surface_paths",
+    "pricing_surface_paths",
+    "docs_paths",
     "forbidden_tokens",
     "forbidden_token_exclude_paths",
 }
@@ -100,10 +161,88 @@ def test_manifest_parses_and_has_required_keys() -> None:
 
     assert isinstance(data["forbidden_tokens"], list)
     assert isinstance(data["forbidden_token_exclude_paths"], list)
+    assert isinstance(data["distribution_surface_paths"], list)
+    assert isinstance(data["version_surface_paths"], list)
+    assert isinstance(data["tool_count_surface_paths"], list)
+    assert isinstance(data["pricing_surface_paths"], list)
+    assert isinstance(data["canonical_mcp_package_surface_paths"], list)
+    assert isinstance(data["docs_paths"], list)
+
+    for key in (
+        "distribution_surface_paths",
+        "version_surface_paths",
+        "tool_count_surface_paths",
+        "pricing_surface_paths",
+        "canonical_mcp_package_surface_paths",
+        "docs_paths",
+    ):
+        assert len(data[key]) == len(set(data[key])), f"{key} contains duplicates"
+
+    assert int(data["tool_count_default_gates"]) == EXPECTED_TOOL_COUNT_DEFAULT_GATES
+    assert int(data["route_count"]) == EXPECTED_ROUTE_COUNT
+    assert int(data["openapi_path_count"]) == EXPECTED_OPENAPI_PATH_COUNT
+
+    assert "site/mcp-server.json" in data["version_surface_paths"]
+    assert "site/mcp-server.full.json" in data["version_surface_paths"]
+    assert "mcp-server.full.json" in data["version_surface_paths"]
+    assert "docs/mcp-tools.md" in data["tool_count_surface_paths"]
+    assert "dxt/README.md" in data["tool_count_surface_paths"]
+    assert "docs/mcp-tools.md" not in data["pricing_surface_paths"]
+    assert "dxt/README.md" not in data["pricing_surface_paths"]
+
+    assert set(data["distribution_surface_paths"]) >= EXPECTED_WAVE6_P0_DISTRIBUTION_SURFACES
+    assert set(data["version_surface_paths"]) >= EXPECTED_WAVE6_P0_VERSION_SURFACES
+    assert set(data["tool_count_surface_paths"]) >= EXPECTED_WAVE6_P0_TOOL_COUNT_SURFACES
+    assert set(data["docs_paths"]) >= EXPECTED_WAVE6_P0_DOC_PATHS
+
+    # Split subset manifests intentionally expose fewer tools, so only their
+    # release version and public-surface metadata belong in this checker.
+    assert "mcp-server.core.json" not in data["tool_count_surface_paths"]
+    assert "mcp-server.composition.json" not in data["tool_count_surface_paths"]
+
+    # Wave 6 P0 additions should not broaden pricing/free-tier scans.
+    assert not (EXPECTED_WAVE6_P0_CANDIDATES & set(data["pricing_surface_paths"]))
+
+    # Agent-safe OpenAPI files are Actions schemas, not MCP package manifests.
+    assert "docs/openapi/agent.json" in data["distribution_surface_paths"]
+    assert "site/openapi.agent.json" in data["distribution_surface_paths"]
+    assert "docs/openapi/agent.json" in data["version_surface_paths"]
+    assert "site/openapi.agent.json" in data["version_surface_paths"]
+    assert "docs/openapi/agent.json" not in data["canonical_mcp_package_surface_paths"]
+    assert "site/openapi.agent.json" not in data["canonical_mcp_package_surface_paths"]
 
     # The drift checker enforces these specific tokens — pin them.
     assert "jpintel-mcp" in data["forbidden_tokens"]
     assert "zeimu-kaikei.ai" in data["forbidden_tokens"]
+
+
+def test_openapi_agent_specs_use_info_version_without_package_requirement() -> None:
+    sys.path.insert(0, str(SCRIPTS_DIR))
+    from check_distribution_manifest_drift import (  # type: ignore[import-not-found]
+        _scan_canonical_values,
+        _scan_versions,
+    )
+
+    data = _load_manifest_dict()
+    agent_paths = ["docs/openapi/agent.json", "site/openapi.agent.json"]
+    version_rows = _scan_versions(
+        {
+            "pyproject_version": data["pyproject_version"],
+            "version_surface_paths": agent_paths,
+        }
+    )
+    assert not version_rows
+
+    canonical_rows = _scan_canonical_values(
+        {
+            "canonical_domains": data["canonical_domains"],
+            "canonical_mcp_package": data["canonical_mcp_package"],
+            "canonical_api_env": data["canonical_api_env"],
+            "distribution_surface_paths": agent_paths,
+            "canonical_mcp_package_surface_paths": [],
+        }
+    )
+    assert not [row for row in canonical_rows if row.field == "canonical_mcp_package"]
 
 
 # ---------------------------------------------------------------------------
@@ -145,70 +284,125 @@ def test_synthetic_drift_detected(tmp_path: Path) -> None:
     """Plant a known-bad value into a copied surface and confirm exit 1.
 
     Strategy:
-      * Copy the manifest + the SURFACES into a tmp tree.
-      * Mutate the tmp ``server.json`` to declare a definitely-wrong tool count.
-      * Override the ``REPO_ROOT`` constant inside the script via env-driven
-        path or by chdir + manifest pointer.
+      * Copy the manifest + current manifest-declared surfaces into a tmp tree.
+      * Mutate the tmp ``mcp-server.json`` to declare a bad tool count.
 
     Because the drift script hard-codes ``REPO_ROOT`` from the script
     location, we instead clone the script into the tmp tree as well so its
     ``REPO_ROOT`` resolves to the tmp tree. This keeps the test isolated
     from the live repo state.
     """
-    # Build a minimal tmp repo mirroring the SURFACES list.
+    manifest = _load_manifest_dict()
+    expected_tool_count = int(manifest["tool_count_default_gates"])
+    expected_version = str(manifest["pyproject_version"])
+    expected_openapi_paths = int(manifest["openapi_path_count"])
+
+    # Build a minimal tmp repo mirroring the manifest-declared surface lists.
     tmp_root = tmp_path / "repo"
     (tmp_root / "scripts").mkdir(parents=True)
-    (tmp_root / "dxt").mkdir()
-    (tmp_root / "site").mkdir()
-    (tmp_root / "sdk" / "python" / "autonomath").mkdir(parents=True)
 
     # Copy the script + manifest.
     shutil.copy(DRIFT_SCRIPT, tmp_root / "scripts" / "check_distribution_manifest_drift.py")
     shutil.copy(MANIFEST_PATH, tmp_root / "scripts" / "distribution_manifest.yml")
 
-    # Plant minimal surface stubs containing the canonical site URL so the
-    # checker does not flag missing-domain drift on every file.
-    canonical_blob = (
-        '{"description":"AutonoMath stub","website":"https://jpcite.com",'
-        '"package":"autonomath-mcp","repo":"github.com/shigetosidumeda-cyber/autonomath-mcp"}\n'
+    # Plant minimal surface stubs containing the canonical markers so the
+    # clean tmp run is genuinely drift-free under the current checker.
+    surface_sentence = (
+        f"https://jpcite.com - autonomath-mcp exposes {expected_tool_count} "
+        "MCP tools at default gates. JPY 3/req, 3 free/day. "
+        "github.com/shigetosidumeda-cyber/autonomath-mcp"
+    )
+    json_surface = {
+        "name": "autonomath-mcp",
+        "version": expected_version,
+        "websiteUrl": "https://jpcite.com",
+        "description": surface_sentence,
+        "tool_count": expected_tool_count,
+        "repository": {"url": "https://github.com/shigetosidumeda-cyber/autonomath-mcp"},
+    }
+    dxt_surface = {
+        **json_surface,
+        "tools": [{"name": f"tool_{idx:03d}"} for idx in range(expected_tool_count)],
+    }
+    openapi_surface = {
+        "openapi": "3.1.0",
+        "info": {
+            "title": "jpcite",
+            "version": expected_version,
+            "description": surface_sentence,
+        },
+        "paths": {f"/stub/{idx:03d}": {} for idx in range(expected_openapi_paths)},
+    }
+    agent_description = (
+        "Agent-safe OpenAPI Actions surface for jpcite at https://jpcite.com. "
+        "It may mention MCP behavior, but it is not an MCP package manifest."
+    )
+    openapi_agent_surface = {
+        "openapi": "3.1.0",
+        "info": {
+            "title": "jpcite Agent Evidence API",
+            "version": expected_version,
+            "description": agent_description,
+        },
+        "paths": {"/v1/evidence/packets/query": {}},
+    }
+    pyproject_text = (
+        "[project]\n"
+        'name = "autonomath-mcp"\n'
+        f'version = "{expected_version}"\n'
+        f'description = "{surface_sentence}"\n'
+        "\n[project.urls]\n"
+        'Repository = "https://github.com/shigetosidumeda-cyber/autonomath-mcp"\n'
+    )
+    smithery_text = (
+        "metadata:\n"
+        f'  version: "{expected_version}"\n'
+        '  homepage: "https://jpcite.com"\n'
+        '  repository: "https://github.com/shigetosidumeda-cyber/autonomath-mcp"\n'
+        f'  description: "{surface_sentence}"\n'
+    )
+    subset_surface = {
+        "name": "autonomath-mcp-subset",
+        "version": expected_version,
+        "homepage": "https://jpcite.com",
+        "description": (
+            "Subset manifest for autonomath-mcp. "
+            f"The full public surface remains {expected_tool_count}-tool MCP."
+        ),
+        "packages": [{"identifier": "autonomath-mcp", "version": expected_version}],
+    }
+    llms_surface = (
+        f"# jpcite\n{surface_sentence}\n{expected_openapi_paths} public paths are available.\n"
     )
     minimal_files = {
-        "server.json": json.dumps(
-                {
-                    "name": "autonomath-mcp",
-                    "version": "0.3.4",
-                    "websiteUrl": "https://jpcite.com",
-                    "description": "120 MCP tools at default gates — autonomath-mcp",
-                    "tool_count": 120,
-                    "repository": {"url": "https://github.com/shigetosidumeda-cyber/autonomath-mcp"},
-                }
+        "README.md": f"# autonomath-mcp\n\n{surface_sentence}\n",
+        "pyproject.toml": pyproject_text,
+        "server.json": json.dumps(json_surface, ensure_ascii=False) + "\n",
+        "site/server.json": json.dumps(json_surface, ensure_ascii=False) + "\n",
+        "mcp-server.json": json.dumps(json_surface, ensure_ascii=False) + "\n",
+        "mcp-server.full.json": json.dumps(dxt_surface, ensure_ascii=False) + "\n",
+        "mcp-server.core.json": json.dumps(subset_surface, ensure_ascii=False) + "\n",
+        "mcp-server.composition.json": json.dumps(subset_surface, ensure_ascii=False) + "\n",
+        "site/mcp-server.json": json.dumps(dxt_surface, ensure_ascii=False) + "\n",
+        "site/mcp-server.full.json": json.dumps(dxt_surface, ensure_ascii=False) + "\n",
+        "dxt/manifest.json": json.dumps(dxt_surface, ensure_ascii=False) + "\n",
+        "dxt/README.md": f"# Claude Desktop Extension\n\n{surface_sentence}\n",
+        "smithery.yaml": smithery_text,
+        "docs/openapi/v1.json": json.dumps(openapi_surface, ensure_ascii=False) + "\n",
+        "site/docs/openapi/v1.json": json.dumps(openapi_surface, ensure_ascii=False) + "\n",
+        "docs/openapi/agent.json": json.dumps(openapi_agent_surface, ensure_ascii=False) + "\n",
+        "docs/mcp-tools.md": f"# MCP Tools\n\n{surface_sentence}\n",
+        "site/openapi.agent.json": json.dumps(openapi_agent_surface, ensure_ascii=False) + "\n",
+        "site/docs/openapi/agent.json": json.dumps(openapi_agent_surface, ensure_ascii=False)
+        + "\n",
+        "site/llms.txt": llms_surface,
+        "site/llms.en.txt": llms_surface,
+        "site/en/llms.txt": llms_surface,
+        "site/_data/public_counts.json": json.dumps(
+            {"mcp_tools_total": expected_tool_count}, ensure_ascii=False
         )
         + "\n",
-        "mcp-server.json": canonical_blob,
-        "dxt/manifest.json": canonical_blob,
-        "smithery.yaml": (
-            'version: "0.3.4"\nhomepage: "https://jpcite.com"\n'
-            'env: JPCITE_API_KEY="" JPCITE_API_BASE=""\n'
-            "package: autonomath-mcp\n"
-            "repo: https://github.com/shigetosidumeda-cyber/autonomath-mcp\n"
-            "description: 120 MCP tools at default gates\n"
-        ),
-        "scripts/mcp_registries_submission.json": canonical_blob,
-        "pyproject.toml": (
-            'version = "0.3.4"\nname = "autonomath-mcp"\n'
-            'description = "120 MCP tools — see https://jpcite.com"\n'
-            'Repository = "https://github.com/shigetosidumeda-cyber/autonomath-mcp"\n'
-        ),
-        "README.md": (
-            "# autonomath-mcp\n\nhttps://jpcite.com — 120 MCP tools at default gates. "
-            "github.com/shigetosidumeda-cyber/autonomath-mcp\n"
-        ),
-        "site/llms.txt": "# jpcite\nhttps://jpcite.com — 120 MCP tools at default gates.\n",
-        "CLAUDE.md": "# autonomath-mcp\nhttps://jpcite.com — 120 MCP tools at default gates.\n",
-        "sdk/python/autonomath/_shared.py": (
-            'DEFAULT_BASE_URL = "https://api.jpcite.com"\n'
-            "JPCITE_API_KEY_HINT = 'use env JPCITE_API_KEY'\n"
-        ),
+        "site/pricing.html": f"<html><body>{surface_sentence}</body></html>\n",
     }
     for rel, content in minimal_files.items():
         target = tmp_root / rel
@@ -228,8 +422,8 @@ def test_synthetic_drift_detected(tmp_path: Path) -> None:
         f"stdout: {rc_clean.stdout}\nstderr: {rc_clean.stderr}"
     )
 
-    # Now mutate server.json to declare a wrong tool count.
-    server_path = tmp_root / "server.json"
+    # Now mutate a scanned surface to declare a wrong tool count.
+    server_path = tmp_root / "mcp-server.json"
     bad_blob = json.loads(server_path.read_text(encoding="utf-8"))
     bad_blob["tool_count"] = 55  # synthetic drift
     bad_blob["description"] = "55 MCP tools at default gates — autonomath-mcp"

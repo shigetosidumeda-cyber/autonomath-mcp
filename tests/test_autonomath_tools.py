@@ -364,9 +364,18 @@ def test_search_tax_incentives_standard_shape():
     assert res["total"] >= 1
     row = res["results"][0]
     # Standard adds 6 fields on top of minimal-4.
-    assert {"id", "name", "score", "source_url", "authority",
-            "tax_category", "amount_or_rate", "application_period_to",
-            "fetched_at", "summary"}.issubset(row.keys())
+    assert {
+        "id",
+        "name",
+        "score",
+        "source_url",
+        "authority",
+        "tax_category",
+        "amount_or_rate",
+        "application_period_to",
+        "fetched_at",
+        "summary",
+    }.issubset(row.keys())
 
 
 def test_search_tax_incentives_limit_cap_emits_warning():
@@ -421,9 +430,18 @@ def test_search_certifications_standard_shape():
     _assert_paginated_envelope(res)
     assert res["total"] >= 1
     row = res["results"][0]
-    assert {"id", "name", "score", "source_url", "authority",
-            "root_law", "validity_years", "target_size",
-            "fetched_at", "summary"}.issubset(row.keys())
+    assert {
+        "id",
+        "name",
+        "score",
+        "source_url",
+        "authority",
+        "root_law",
+        "validity_years",
+        "target_size",
+        "fetched_at",
+        "summary",
+    }.issubset(row.keys())
 
 
 def test_search_certifications_limit_cap_emits_warning():

@@ -504,13 +504,10 @@ def test_webhook_message_id_dedup(webhook_client, seeded_db: Path, monkeypatch):
             "SELECT COUNT(*) FROM postmark_webhook_events WHERE message_id = ?",
             ("msg-dedupe-1",),
         ).fetchone()
-        assert events_n == 1, (
-            f"expected 1 dedup row, got {events_n}"
-        )
+        assert events_n == 1, f"expected 1 dedup row, got {events_n}"
 
         row = c.execute(
-            "SELECT event_type, processed_at FROM postmark_webhook_events"
-            " WHERE message_id = ?",
+            "SELECT event_type, processed_at FROM postmark_webhook_events WHERE message_id = ?",
             ("msg-dedupe-1",),
         ).fetchone()
         assert row[0] == "Bounce"

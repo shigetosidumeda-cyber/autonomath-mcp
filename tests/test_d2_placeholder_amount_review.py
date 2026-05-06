@@ -61,8 +61,7 @@ def _build_db() -> sqlite3.Connection:
 def test_collect_flags_tiny_program_max_without_blanket_nulling_100() -> None:
     conn = _build_db()
     conn.executemany(
-        "INSERT INTO am_entities(canonical_id, record_kind, primary_name) "
-        "VALUES (?, ?, ?)",
+        "INSERT INTO am_entities(canonical_id, record_kind, primary_name) VALUES (?, ?, ?)",
         [
             ("program:suspicious", "program", "Suspicious max"),
             ("program:legit", "program", "Legit one million"),
@@ -148,8 +147,7 @@ def test_export_dry_run_does_not_write_csv(tmp_path: Path) -> None:
 def test_export_apply_writes_deterministic_csv(tmp_path: Path) -> None:
     conn = _build_db()
     conn.executemany(
-        "INSERT INTO am_entities(canonical_id, record_kind, primary_name) "
-        "VALUES (?, 'program', ?)",
+        "INSERT INTO am_entities(canonical_id, record_kind, primary_name) VALUES (?, 'program', ?)",
         [("program:b", "B"), ("program:a", "A")],
     )
     conn.executemany(

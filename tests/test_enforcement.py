@@ -17,6 +17,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from jpintel_mcp.api.deps import hash_api_key
+
 if TYPE_CHECKING:
     from pathlib import Path
 
@@ -242,9 +244,7 @@ def test_search_orders_by_disclosed_date_desc(client, seeded_enforcement_cases):
 
 
 def test_search_free_text_matches_program_hint(client, seeded_enforcement_cases):
-    r = client.get(
-        "/v1/enforcement-cases/search", params={"q": "経営発展"}
-    )
+    r = client.get("/v1/enforcement-cases/search", params={"q": "経営発展"})
     d = r.json()
     ids = {row["case_id"] for row in d["results"]}
     assert "ENF-001" in ids
@@ -310,15 +310,11 @@ def test_search_filter_disclosed_date_range(client, seeded_enforcement_cases):
 
 
 def test_search_rejects_malformed_disclosed_from(client):
-    r = client.get(
-        "/v1/enforcement-cases/search", params={"disclosed_from": "2024/01/01"}
-    )
+    r = client.get("/v1/enforcement-cases/search", params={"disclosed_from": "2024/01/01"})
     assert r.status_code == 422
 
 
-def test_search_occurred_fiscal_years_deserialized_as_int_list(
-    client, seeded_enforcement_cases
-):
+def test_search_occurred_fiscal_years_deserialized_as_int_list(client, seeded_enforcement_cases):
     r = client.get(
         "/v1/enforcement-cases/search",
         params={"recipient_houjin_bangou": "1234567890123"},
@@ -329,9 +325,7 @@ def test_search_occurred_fiscal_years_deserialized_as_int_list(
 
 
 def test_search_is_sole_proprietor_bool_cast(client, seeded_enforcement_cases):
-    r = client.get(
-        "/v1/enforcement-cases/search", params={"prefecture": "北海道"}
-    )
+    r = client.get("/v1/enforcement-cases/search", params={"prefecture": "北海道"})
     d = r.json()
     row = next(row for row in d["results"] if row["case_id"] == "ENF-002")
     assert row["is_sole_proprietor"] is True
@@ -343,14 +337,52 @@ def test_search_limit_clamp_respects_upper_bound(client):
     assert r.status_code == 422
 
 
+def test_search_paid_final_cap_failure_returns_503_without_usage_event(
+    client,
+    seeded_enforcement_cases,
+    seeded_db: Path,
+    paid_key: str,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    key_hash = hash_api_key(paid_key)
+    endpoint = "enforcement.search"
+
+    def usage_count() -> int:
+        conn = sqlite3.connect(seeded_db)
+        try:
+            (count,) = conn.execute(
+                "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = ?",
+                (key_hash, endpoint),
+            ).fetchone()
+            return int(count)
+        finally:
+            conn.close()
+
+    def _reject_final_cap(*_args: object, **_kwargs: object) -> tuple[bool, bool]:
+        return False, False
+
+    import jpintel_mcp.api.deps as deps
+
+    monkeypatch.setattr(deps, "_metered_cap_final_check", _reject_final_cap)
+
+    before = usage_count()
+    r = client.get(
+        "/v1/enforcement-cases/search",
+        params={"ministry": "農林水産省", "limit": 1},
+        headers={"X-API-Key": paid_key},
+    )
+
+    assert r.status_code == 503, r.text
+    assert r.json()["detail"]["code"] == "billing_cap_final_check_failed"
+    assert usage_count() == before
+
+
 # ---------------------------------------------------------------------------
 # REST: /v1/enforcement-cases/details/search
 # ---------------------------------------------------------------------------
 
 
-def test_search_enforcement_details_returns_autonomath_rows(
-    client, seeded_enforcement_detail_db
-):
+def test_search_enforcement_details_returns_autonomath_rows(client, seeded_enforcement_detail_db):
     r = client.get(
         "/v1/enforcement-cases/details/search",
         params={"q": "ディープ", "limit": 5},
@@ -383,9 +415,7 @@ def test_search_enforcement_details_filters_active_on_and_houjin(
     assert row["active_on_requested_date"] is True
 
 
-def test_search_enforcement_details_filters_kind_and_amount(
-    client, seeded_enforcement_detail_db
-):
+def test_search_enforcement_details_filters_kind_and_amount(client, seeded_enforcement_detail_db):
     r = client.get(
         "/v1/enforcement-cases/details/search",
         params={

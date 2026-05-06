@@ -38,10 +38,7 @@ def test_legitimate_instructions_word_preserved() -> None:
     unusable. Only override directives ("ignore X instructions",
     "new instructions:" with colon) match.
     """
-    text = (
-        "Follow the application instructions on the official portal. "
-        "New rules apply for FY2026."
-    )
+    text = "Follow the application instructions on the official portal. New rules apply for FY2026."
     clean, hits = sanitize_prompt_injection(text)
     assert clean == text
     assert hits == []

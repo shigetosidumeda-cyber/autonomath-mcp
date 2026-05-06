@@ -14,6 +14,7 @@ Browser constraints (MEMORY: feedback_playwright_screenshots):
   - `page.wait_for_timeout` is avoided throughout the suite — all waits
     are explicit selectors / predicates so flakes don't compound
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -37,6 +38,7 @@ if TYPE_CHECKING:
 # Pytest config
 # --------------------------------------------------------------------------- #
 
+
 # Register custom markers so pytest doesn't warn on `@pytest.mark.production`.
 def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line(
@@ -44,9 +46,7 @@ def pytest_configure(config: pytest.Config) -> None:
         "production: opt-in marker for tests that hit real prod. Skipped unless"
         " `--run-production` is passed on the CLI.",
     )
-    config.addinivalue_line(
-        "markers", "e2e: browser-driven smoke test (Playwright)."
-    )
+    config.addinivalue_line("markers", "e2e: browser-driven smoke test (Playwright).")
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:
@@ -64,9 +64,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
     )
 
 
-def pytest_collection_modifyitems(
-    config: pytest.Config, items: list[pytest.Item]
-) -> None:
+def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
     """Skip production/e2e tests unless explicitly requested."""
     run_production = config.getoption("--run-production")
     run_e2e = (
@@ -74,12 +72,8 @@ def pytest_collection_modifyitems(
         or os.environ.get("JPINTEL_E2E", "").strip().lower() in ("1", "true")
         or run_production
     )
-    skip_prod = pytest.mark.skip(
-        reason="@pytest.mark.production requires --run-production"
-    )
-    skip_e2e = pytest.mark.skip(
-        reason="@pytest.mark.e2e requires --run-e2e or JPINTEL_E2E=1"
-    )
+    skip_prod = pytest.mark.skip(reason="@pytest.mark.production requires --run-production")
+    skip_e2e = pytest.mark.skip(reason="@pytest.mark.e2e requires --run-e2e or JPINTEL_E2E=1")
     for item in items:
         if "production" in item.keywords and not run_production:
             item.add_marker(skip_prod)
@@ -128,9 +122,7 @@ async def playwright_instance() -> AsyncGenerator:
 
 
 @pytest_asyncio.fixture(scope="session")
-async def browser(
-    playwright_instance, headless_env: bool
-) -> AsyncGenerator[Browser, None]:
+async def browser(playwright_instance, headless_env: bool) -> AsyncGenerator[Browser, None]:
     # chromium only — CI installs just this one (~200MB smaller than all three).
     br = await playwright_instance.chromium.launch(headless=headless_env)
     try:
@@ -203,16 +195,10 @@ async def page(
         rep = getattr(request.node, "__e2e_rep_call", None)
         if rep is not None and rep.failed:
             _ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
-            safe = (
-                rep.nodeid.replace("/", "_")
-                .replace(":", "_")
-                .replace("::", "__")
-            )
+            safe = rep.nodeid.replace("/", "_").replace(":", "_").replace("::", "__")
             with contextlib.suppress(Exception):
                 # Screenshots must never mask the real failure.
-                await pg.screenshot(
-                    path=str(_ARTIFACT_DIR / f"{safe}.png"), full_page=False
-                )
+                await pg.screenshot(path=str(_ARTIFACT_DIR / f"{safe}.png"), full_page=False)
 
 
 # --------------------------------------------------------------------------- #
@@ -231,12 +217,8 @@ async def page(
 
 def _require_local_db(base_url: str) -> Path:
     if "localhost" not in base_url and "127.0.0.1" not in base_url:
-        pytest.skip(
-            "DB-writing fixtures are local-only (refuses to touch staging/prod)."
-        )
-    db_path = Path(
-        os.environ.get("JPINTEL_E2E_DB_PATH", "./data/jpintel.db")
-    ).resolve()
+        pytest.skip("DB-writing fixtures are local-only (refuses to touch staging/prod).")
+    db_path = Path(os.environ.get("JPINTEL_E2E_DB_PATH", "./data/jpintel.db")).resolve()
     if not db_path.exists():
         pytest.skip(f"local DB not found at {db_path}; start the API server first")
     return db_path
@@ -294,9 +276,7 @@ def _align_salt_with_server() -> None:
 
 
 @pytest.fixture()
-def seeded_api_key(
-    base_url: str, is_local_target: bool
-) -> Generator[dict[str, str], None, None]:
+def seeded_api_key(base_url: str, is_local_target: bool) -> Generator[dict[str, str], None, None]:
     """Yield a dict with `raw_key`, `key_hash`, `customer_id`, `tier`.
 
     Cleans up (revokes) the key on teardown so the DB doesn't accumulate

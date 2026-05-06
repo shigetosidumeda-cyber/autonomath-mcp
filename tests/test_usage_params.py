@@ -9,6 +9,7 @@ Ensures:
 5. The compute helper is deterministic on key ordering and canonicalizes
    JSON so `?tier=A&tier=S` == `?tier=S&tier=A`.
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -160,9 +161,7 @@ def test_two_identical_searches_produce_same_digest(client, plus_key, seeded_db:
 
     params = {"q": "補助金", "prefecture": "東京都"}
     for _ in range(2):
-        r = client.get(
-            "/v1/programs/search", params=params, headers={"X-API-Key": plus_key}
-        )
+        r = client.get("/v1/programs/search", params=params, headers={"X-API-Key": plus_key})
         assert r.status_code == 200, r.text
 
     rows = _fetch_usage(seeded_db, kh, "programs.search")
@@ -171,9 +170,7 @@ def test_two_identical_searches_produce_same_digest(client, plus_key, seeded_db:
     assert rows[0]["params_digest"] is not None
 
 
-def test_different_searches_produce_different_digests(
-    client, plus_key, seeded_db: Path
-):
+def test_different_searches_produce_different_digests(client, plus_key, seeded_db: Path):
     kh = hash_api_key(plus_key)
     _clear_usage(seeded_db, kh)
 
@@ -193,9 +190,7 @@ def test_different_searches_produce_different_digests(
     assert rows[0]["params_digest"] != rows[1]["params_digest"]
 
 
-def test_meta_endpoint_without_params_writes_null_digest(
-    client, plus_key, seeded_db: Path
-):
+def test_meta_endpoint_without_params_writes_null_digest(client, plus_key, seeded_db: Path):
     """/meta has no user-controlled params — digest must be NULL so the
     digest cron doesn't try to personalize on an empty bucket."""
     kh = hash_api_key(plus_key)

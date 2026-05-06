@@ -14,6 +14,7 @@ server singleton wired in `jpintel_mcp.mcp.server` and the
 Existing tools (`list_static_resources_am` / `get_static_resource_am` / etc.)
 are intentionally NOT removed — they remain registered for back-compat.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -50,10 +51,7 @@ EXPECTED_PROFILES = {
 def _purge_modules() -> None:
     """Drop cached modules so each test re-imports under fresh env."""
     for mod_name in list(sys.modules):
-        if (
-            mod_name.startswith("jpintel_mcp")
-            or mod_name == "jpintel_mcp"
-        ):
+        if mod_name.startswith("jpintel_mcp") or mod_name == "jpintel_mcp":
             sys.modules.pop(mod_name, None)
 
 
@@ -205,9 +203,7 @@ def test_read_each_taxonomy_succeeds(fresh_mcp):
         # additionally assert it doesn't carry our error sentinel).
         parsed = json.loads(text)
         if isinstance(parsed, dict):
-            assert parsed.get("error") != "resource_file_missing", (
-                f"{uri} missing on disk"
-            )
+            assert parsed.get("error") != "resource_file_missing", f"{uri} missing on disk"
 
 
 def test_read_each_example_profile_succeeds(fresh_mcp):

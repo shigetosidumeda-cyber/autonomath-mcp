@@ -41,10 +41,7 @@ def _has_required_compat_schema(path: Path) -> bool:
     try:
         conn = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
         try:
-            cols = {
-                row[1]
-                for row in conn.execute("PRAGMA table_info(am_compat_matrix)")
-            }
+            cols = {row[1] for row in conn.execute("PRAGMA table_info(am_compat_matrix)")}
             required = {
                 "program_a_id",
                 "program_b_id",
@@ -54,8 +51,7 @@ def _has_required_compat_schema(path: Path) -> bool:
             if not required.issubset(cols):
                 return False
             row = conn.execute(
-                "SELECT 1 FROM am_compat_matrix "
-                "WHERE compat_status='compatible' LIMIT 1"
+                "SELECT 1 FROM am_compat_matrix WHERE compat_status='compatible' LIMIT 1"
             ).fetchone()
             return row is not None
         finally:
@@ -65,11 +61,7 @@ def _has_required_compat_schema(path: Path) -> bool:
 
 
 _ENV_DB_PATH = Path(os.environ.get("AUTONOMATH_DB_PATH", str(_DEFAULT_DB)))
-_DB_PATH = (
-    _ENV_DB_PATH
-    if _has_required_compat_schema(_ENV_DB_PATH)
-    else _DEFAULT_DB
-)
+_DB_PATH = _ENV_DB_PATH if _has_required_compat_schema(_ENV_DB_PATH) else _DEFAULT_DB
 
 if not _has_required_compat_schema(_DB_PATH):
     pytest.skip(
@@ -216,8 +208,13 @@ def test_candidate_program_ids_triggers_compat_matrix_lookup():
     )
     cm = res["compat_matrix"]
     # Must be a dict with the design's required keys.
-    for k in ("pairs", "incompatible_count", "case_by_case_count",
-              "unknown_count", "missing_count"):
+    for k in (
+        "pairs",
+        "incompatible_count",
+        "case_by_case_count",
+        "unknown_count",
+        "missing_count",
+    ):
         assert k in cm, f"compat_matrix missing required key {k!r}; got {cm.keys()}"
     # Exactly one pair was passed (binomial(2,2)=1) so pairs[] has exactly one
     # entry on a hit, zero if missing. The compat lookup MUST succeed for a
@@ -286,9 +283,7 @@ def test_unknown_bucket_pct_is_honestly_surfaced():
         "should surface ~9.93% on the 2026-04-25 snapshot. Silent zero would "
         "be a 詐欺 risk regression."
     )
-    assert pct < 30.0, (
-        f"compat_unknown_bucket_pct={pct} is too high; check matrix integrity."
-    )
+    assert pct < 30.0, f"compat_unknown_bucket_pct={pct} is too high; check matrix integrity."
     # exclusion_join_coverage_pct also present (P0.3 §6 design — both keys
     # must be in data_quality even when one is honestly 0.0).
     assert "exclusion_join_coverage_pct" in dq

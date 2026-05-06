@@ -37,9 +37,7 @@ def _stripe_env(monkeypatch):
     from jpintel_mcp.config import settings
 
     monkeypatch.setattr(settings, "stripe_secret_key", "sk_test_dummy", raising=False)
-    monkeypatch.setattr(
-        settings, "stripe_price_per_request", "price_metered_test", raising=False
-    )
+    monkeypatch.setattr(settings, "stripe_price_per_request", "price_metered_test", raising=False)
     monkeypatch.setattr(settings, "stripe_tax_enabled", True, raising=False)
     yield settings
 
@@ -58,9 +56,7 @@ def _patch_checkout(monkeypatch) -> list[dict]:
     return captured
 
 
-def test_checkout_enables_automatic_tax_when_flag_on(
-    client: TestClient, _stripe_env, monkeypatch
-):
+def test_checkout_enables_automatic_tax_when_flag_on(client: TestClient, _stripe_env, monkeypatch):
     """STRIPE_TAX_ENABLED=true → automatic_tax={"enabled": True} is sent."""
     captured = _patch_checkout(monkeypatch)
 
@@ -151,9 +147,7 @@ def test_checkout_skips_tax_params_when_flag_off(client: TestClient, monkeypatch
     from jpintel_mcp.config import settings
 
     monkeypatch.setattr(settings, "stripe_secret_key", "sk_test_dummy", raising=False)
-    monkeypatch.setattr(
-        settings, "stripe_price_per_request", "price_metered_test", raising=False
-    )
+    monkeypatch.setattr(settings, "stripe_price_per_request", "price_metered_test", raising=False)
     monkeypatch.setattr(settings, "stripe_tax_enabled", False, raising=False)
 
     captured = _patch_checkout(monkeypatch)
@@ -181,9 +175,7 @@ def test_apply_invoice_metadata_writes_custom_fields_and_footer(monkeypatch):
     from jpintel_mcp.api import billing as billing_mod
     from jpintel_mcp.config import settings
 
-    monkeypatch.setattr(
-        settings, "invoice_registration_number", "T8010001213708", raising=False
-    )
+    monkeypatch.setattr(settings, "invoice_registration_number", "T8010001213708", raising=False)
     monkeypatch.setattr(
         settings,
         "invoice_footer_ja",
@@ -237,9 +229,7 @@ def test_apply_invoice_metadata_swallows_stripe_errors(monkeypatch):
     from jpintel_mcp.api import billing as billing_mod
     from jpintel_mcp.config import settings
 
-    monkeypatch.setattr(
-        settings, "invoice_registration_number", "T8010001213708", raising=False
-    )
+    monkeypatch.setattr(settings, "invoice_registration_number", "T8010001213708", raising=False)
     monkeypatch.setattr(settings, "invoice_footer_ja", "適格請求書", raising=False)
 
     def _modify(customer_id, **kwargs):

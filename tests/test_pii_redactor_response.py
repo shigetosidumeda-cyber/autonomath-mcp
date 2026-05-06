@@ -45,6 +45,7 @@ def _reload_sanitizer():
     `tests/test_loop_a_wire.py::_reload_sanitizer`.
     """
     from jpintel_mcp.api import response_sanitizer
+
     return importlib.reload(response_sanitizer)
 
 

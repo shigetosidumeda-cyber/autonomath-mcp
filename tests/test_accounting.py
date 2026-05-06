@@ -11,6 +11,7 @@ the 501 assertion below should be replaced with a real-shape assertion.
 Until then, this is the meaningful happy-path: the request body validates,
 routes correctly, and returns the documented roadmap response.
 """
+
 from __future__ import annotations
 
 import sys
@@ -28,9 +29,7 @@ if _SRC.is_dir() and str(_SRC) not in sys.path:
 
 
 @pytest.fixture()
-def preview_client(
-    seeded_db, monkeypatch: pytest.MonkeyPatch
-) -> Iterator[TestClient]:
+def preview_client(seeded_db, monkeypatch: pytest.MonkeyPatch) -> Iterator[TestClient]:
     """TestClient with `enable_preview_endpoints=True` — mounts the router."""
     from jpintel_mcp.api import main as main_module
     from jpintel_mcp.config import settings

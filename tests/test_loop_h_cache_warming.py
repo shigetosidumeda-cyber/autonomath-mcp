@@ -26,9 +26,7 @@ if TYPE_CHECKING:
 def _short_digest(params: dict) -> str:
     """Mirror api/deps.py::compute_params_digest exactly (16-char prefix)."""
     cleaned = {k: v for k, v in params.items() if v is not None}
-    canonical = json.dumps(
-        cleaned, sort_keys=True, separators=(",", ":"), ensure_ascii=False
-    )
+    canonical = json.dumps(cleaned, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:16]
 
 
@@ -161,8 +159,7 @@ def test_loop_h_warms_hot_query_into_l4_cache(tmp_path: Path):
     # Two distinct (endpoint, digest) pairs were inserted.
     assert result["scanned"] == 2
     assert result["actions_executed"] >= 1, (
-        "expected at least one warmed row, got "
-        f"{result['actions_executed']}"
+        f"expected at least one warmed row, got {result['actions_executed']}"
     )
 
     # Verify the warmed row is in the cache with the new payload.
@@ -174,10 +171,7 @@ def test_loop_h_warms_hot_query_into_l4_cache(tmp_path: Path):
         ).fetchall()
         assert len(rows) >= 1
         # Find the row carrying the injected compute output.
-        warmed = [
-            r for r in rows
-            if json.loads(r[0]).get("from") == "warm"
-        ]
+        warmed = [r for r in rows if json.loads(r[0]).get("from") == "warm"]
         assert warmed, "compute output did not reach l4_query_cache"
         result_json, ttl_seconds, created_at = warmed[0]
         body = json.loads(result_json)
@@ -219,8 +213,7 @@ def test_loop_h_dry_run_does_not_mutate(tmp_path: Path):
     conn = sqlite3.connect(db_path)
     try:
         (before,) = conn.execute(
-            "SELECT result_json FROM l4_query_cache "
-            "WHERE tool_name = 'api.programs.search'"
+            "SELECT result_json FROM l4_query_cache WHERE tool_name = 'api.programs.search'"
         ).fetchone()
     finally:
         conn.close()
@@ -239,8 +232,7 @@ def test_loop_h_dry_run_does_not_mutate(tmp_path: Path):
     conn = sqlite3.connect(db_path)
     try:
         (after,) = conn.execute(
-            "SELECT result_json FROM l4_query_cache "
-            "WHERE tool_name = 'api.programs.search'"
+            "SELECT result_json FROM l4_query_cache WHERE tool_name = 'api.programs.search'"
         ).fetchone()
     finally:
         conn.close()
@@ -250,7 +242,8 @@ def test_loop_h_dry_run_does_not_mutate(tmp_path: Path):
 def test_loop_h_empty_db_returns_scaffold(tmp_path: Path):
     """Pre-launch: missing DB -> orchestrator-friendly zero dict."""
     out = loop_h.run(
-        dry_run=True, db_path=tmp_path / "does-not-exist.db",
+        dry_run=True,
+        db_path=tmp_path / "does-not-exist.db",
     )
     assert out == {
         "loop": "loop_h_cache_warming",
@@ -265,7 +258,9 @@ def test_loop_h_no_factories_returns_scaffold(tmp_path: Path):
     db_path = tmp_path / "jpintel.db"
     _seed_db(db_path)
     out = loop_h.run(
-        dry_run=False, db_path=db_path, compute_factories=None,
+        dry_run=False,
+        db_path=db_path,
+        compute_factories=None,
     )
     assert out["loop"] == "loop_h_cache_warming"
     assert out["actions_executed"] == 0
@@ -331,9 +326,7 @@ def test_orchestrator_injects_compute_factories_into_loop_h(monkeypatch):
             "actions_executed": 0,
         }
 
-    loop_h_mod = importlib.import_module(
-        "jpintel_mcp.self_improve.loop_h_cache_warming"
-    )
+    loop_h_mod = importlib.import_module("jpintel_mcp.self_improve.loop_h_cache_warming")
     monkeypatch.setattr(loop_h_mod, "run", _spy_run)
 
     out = orch._run_one("loop_h_cache_warming", dry_run=True)

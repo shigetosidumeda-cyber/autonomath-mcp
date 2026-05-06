@@ -11,6 +11,7 @@ Coverage:
   5. /v1/admin/cron_runs returns rows + status_counts when the table is
      populated; gracefully no-ops when the table is missing.
 """
+
 from __future__ import annotations
 
 import json
@@ -222,17 +223,24 @@ def cron_runs_seed(seeded_db: Path):
                     "2030-04-29T01:00:00Z",
                     "2030-04-29T01:00:05Z",
                     "ok",
-                    7, 0, None,
+                    7,
+                    0,
+                    None,
                     json.dumps({"billed": 7, "frequency": "daily"}),
-                    "wf-1", "abc12345",
+                    "wf-1",
+                    "abc12345",
                 ),
                 (
                     "run_saved_searches",
                     "2030-04-29T02:00:00Z",
                     "2030-04-29T02:00:01Z",
                     "error",
-                    0, 0, "RuntimeError: postmark 503",
-                    None, "wf-2", "abc12345",
+                    0,
+                    0,
+                    "RuntimeError: postmark 503",
+                    None,
+                    "wf-2",
+                    "abc12345",
                 ),
                 # One ok run of dispatch_webhooks.
                 (
@@ -240,7 +248,12 @@ def cron_runs_seed(seeded_db: Path):
                     "2030-04-29T01:30:00Z",
                     "2030-04-29T01:30:02Z",
                     "ok",
-                    12, 3, None, None, "wf-1", "abc12345",
+                    12,
+                    3,
+                    None,
+                    None,
+                    "wf-1",
+                    "abc12345",
                 ),
             ],
         )
@@ -261,10 +274,9 @@ def test_admin_cron_runs_503_when_admin_key_disabled(client, monkeypatch):
     from jpintel_mcp.config import settings
 
     monkeypatch.setattr(settings, "admin_api_key", "", raising=False)
-    r = client.get(
-        "/v1/admin/cron_runs", headers={"X-API-Key": "anything"}
-    )
+    r = client.get("/v1/admin/cron_runs", headers={"X-API-Key": "anything"})
     assert r.status_code == 503
+    assert "disabled" in r.json()["detail"].lower()
 
 
 def test_admin_cron_runs_happy_path(client, admin_enabled, cron_runs_seed):

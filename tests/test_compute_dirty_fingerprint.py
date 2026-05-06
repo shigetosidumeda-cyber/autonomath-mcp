@@ -183,7 +183,9 @@ def test_02_lane_classification(synthetic_repo: Path) -> None:
         ("README.md", "other"),
     ]
     for path, expected in cases:
-        assert cdf.classify_lane(path) == expected, f"{path} -> {cdf.classify_lane(path)} != {expected}"
+        assert cdf.classify_lane(path) == expected, (
+            f"{path} -> {cdf.classify_lane(path)} != {expected}"
+        )
 
 
 def test_03_large_file_skip(synthetic_repo_with_large: Path) -> None:
@@ -198,9 +200,7 @@ def test_03_large_file_skip(synthetic_repo_with_large: Path) -> None:
     raw = cdf.git_status_porcelain_z(synthetic_repo_with_large)
     paths_sorted = sorted({p for _, p in raw})
     assert "big_blob.bin" in paths_sorted
-    expected_path_sha = hashlib.sha256(
-        "\n".join(paths_sorted).encode("utf-8")
-    ).hexdigest()
+    expected_path_sha = hashlib.sha256("\n".join(paths_sorted).encode("utf-8")).hexdigest()
     assert fp["path_sha256"] == expected_path_sha
 
 

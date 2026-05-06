@@ -29,6 +29,7 @@ def _reload_sanitizer():
     up monkeypatched env / settings overrides between cases.
     """
     from jpintel_mcp.api import response_sanitizer
+
     return importlib.reload(response_sanitizer)
 
 

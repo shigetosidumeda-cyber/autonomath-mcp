@@ -12,6 +12,7 @@ Verifies:
     ``cost_savings_estimate`` entirely.
   * Source file has zero LLM imports.
 """
+
 from __future__ import annotations
 
 import ast
@@ -245,9 +246,7 @@ def test_compose_token_count_baseline_returns_exact_context_estimate() -> None:
     assert result["source_token_count"] == 18_500
     assert result["source_tokens_estimate"] == 18_500
     assert result["source_tokens_input_source"] == "caller_supplied"
-    assert result["avoided_tokens_estimate"] == max(
-        0, 18_500 - result["packet_tokens_estimate"]
-    )
+    assert result["avoided_tokens_estimate"] == max(0, 18_500 - result["packet_tokens_estimate"])
     assert result["estimate_scope"] == "input_context_only"
     assert result["savings_claim"] == "estimate_not_guarantee"
     assert result["input_context_reduction_rate"] == round(
@@ -290,14 +289,25 @@ def test_module_has_zero_llm_imports() -> None:
     )
     tree = ast.parse(src_path.read_text(encoding="utf-8"))
 
-    forbidden = {"anthropic", "openai", "google.generativeai", "claude_agent_sdk", "tiktoken", "sentencepiece"}
+    forbidden = {
+        "anthropic",
+        "openai",
+        "google.generativeai",
+        "claude_agent_sdk",
+        "tiktoken",
+        "sentencepiece",
+    }
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             for alias in node.names:
                 head = alias.name.split(".")[0]
-                assert head not in {"anthropic", "openai", "claude_agent_sdk", "tiktoken", "sentencepiece"}, (
-                    f"Forbidden import: {alias.name}"
-                )
+                assert head not in {
+                    "anthropic",
+                    "openai",
+                    "claude_agent_sdk",
+                    "tiktoken",
+                    "sentencepiece",
+                }, f"Forbidden import: {alias.name}"
         elif isinstance(node, ast.ImportFrom):
             mod = node.module or ""
             head = mod.split(".")[0]

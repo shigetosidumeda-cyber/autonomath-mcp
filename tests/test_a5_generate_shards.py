@@ -134,8 +134,7 @@ def test_generate_shards_from_temp_csv_json_writes_four_scripts(tmp_path: Path) 
     assert "set -euo pipefail" in text_1
     assert f"cd {shlex.quote(str(repo_root))}" in text_1
     assert (
-        "exec > >(tee analysis_wave18/source_verification_shard_1_2026-05-01.log) "
-        "2>&1"
+        "exec > >(tee analysis_wave18/source_verification_shard_1_2026-05-01.log) 2>&1"
     ) in text_1
     assert "--domain a.example" in text_1
     assert "--limit 2" in text_1
@@ -143,9 +142,7 @@ def test_generate_shards_from_temp_csv_json_writes_four_scripts(tmp_path: Path) 
     assert "--dry-run" not in text_1
 
     assert "--domain b.example" in script_2.read_text(encoding="utf-8")
-    assert "backfill_am_source_last_verified.py" not in script_3.read_text(
-        encoding="utf-8"
-    )
+    assert "backfill_am_source_last_verified.py" not in script_3.read_text(encoding="utf-8")
     assert "--domain c.example" in script_4.read_text(encoding="utf-8")
 
 

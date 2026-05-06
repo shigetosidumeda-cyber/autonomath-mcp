@@ -50,15 +50,10 @@ def test_usage_reporter_prefers_metered_overage_subscription_item(monkeypatch):
 
     monkeypatch.setattr(stripe_usage.stripe.Subscription, "retrieve", _retrieve)
 
-    assert (
-        stripe_usage._get_subscription_item_id("sub_widget_multi_item")
-        == "si_widget_overage"
-    )
+    assert stripe_usage._get_subscription_item_id("sub_widget_multi_item") == "si_widget_overage"
 
 
-def test_usage_report_failure_leaves_ledger_unsynced(
-    seeded_db: Path, monkeypatch
-):
+def test_usage_report_failure_leaves_ledger_unsynced(seeded_db: Path, monkeypatch):
     from jpintel_mcp.api.deps import hash_api_key
     from jpintel_mcp.billing import stripe_usage
     from jpintel_mcp.billing.keys import issue_key
@@ -132,9 +127,7 @@ def widget_schema(seeded_db: Path):
         conn.execute("DELETE FROM widget_keys")
         conn.execute("DELETE FROM bg_task_queue WHERE dedup_key LIKE 'widget_overage:%'")
         conn.execute("DELETE FROM stripe_webhook_events WHERE event_id LIKE 'evt_widget_%'")
-        conn.execute(
-            "DELETE FROM stripe_webhook_events WHERE event_id LIKE 'widget:evt_widget_%'"
-        )
+        conn.execute("DELETE FROM stripe_webhook_events WHERE event_id LIKE 'widget:evt_widget_%'")
         conn.commit()
     finally:
         conn.close()
@@ -144,9 +137,7 @@ def widget_schema(seeded_db: Path):
         conn.execute("DELETE FROM widget_keys")
         conn.execute("DELETE FROM bg_task_queue WHERE dedup_key LIKE 'widget_overage:%'")
         conn.execute("DELETE FROM stripe_webhook_events WHERE event_id LIKE 'evt_widget_%'")
-        conn.execute(
-            "DELETE FROM stripe_webhook_events WHERE event_id LIKE 'widget:evt_widget_%'"
-        )
+        conn.execute("DELETE FROM stripe_webhook_events WHERE event_id LIKE 'widget:evt_widget_%'")
         conn.commit()
     finally:
         conn.close()
@@ -158,12 +149,8 @@ def widget_stripe_env(monkeypatch):
     from jpintel_mcp.config import settings
 
     for target in (settings, billing.settings, widget_auth.settings):
-        monkeypatch.setattr(
-            target, "stripe_secret_key", "sk_test_dummy", raising=False
-        )
-        monkeypatch.setattr(
-            target, "stripe_webhook_secret", "whsec_dummy", raising=False
-        )
+        monkeypatch.setattr(target, "stripe_secret_key", "sk_test_dummy", raising=False)
+        monkeypatch.setattr(target, "stripe_webhook_secret", "whsec_dummy", raising=False)
         monkeypatch.setattr(target, "env", "test", raising=False)
     return settings
 
@@ -207,9 +194,7 @@ def test_widget_signup_plan_accepts_metered_and_legacy_alias():
     assert legacy.plan == PLAN_BUSINESS
 
 
-def test_widget_signup_rejects_offsite_stripe_redirects(
-    client, widget_stripe_env, monkeypatch
-):
+def test_widget_signup_rejects_offsite_stripe_redirects(client, widget_stripe_env, monkeypatch):
     import stripe
 
     monkeypatch.setenv("STRIPE_PRICE_WIDGET_METERED", "price_widget_metered")
@@ -451,8 +436,7 @@ def test_main_webhook_dedup_does_not_block_widget_provisioning(
             ("sub_widget_seen_by_main_first",),
         ).fetchone()
         rows = conn.execute(
-            "SELECT event_id FROM stripe_webhook_events "
-            "WHERE event_id IN (?, ?) ORDER BY event_id",
+            "SELECT event_id FROM stripe_webhook_events WHERE event_id IN (?, ?) ORDER BY event_id",
             (
                 "evt_widget_seen_by_main_first",
                 "widget:evt_widget_seen_by_main_first",
@@ -599,12 +583,8 @@ def test_widget_overage_stale_rows_use_returned_counter(
             "SELECT * FROM widget_keys WHERE key_id = ?",
             (key_id,),
         ).fetchone()
-        widget_auth._enforce_quota_and_increment(
-            conn, widget_auth.WidgetKeyRow(row1)
-        )
-        widget_auth._enforce_quota_and_increment(
-            conn, widget_auth.WidgetKeyRow(row2)
-        )
+        widget_auth._enforce_quota_and_increment(conn, widget_auth.WidgetKeyRow(row1))
+        widget_auth._enforce_quota_and_increment(conn, widget_auth.WidgetKeyRow(row2))
         stored = conn.execute(
             "SELECT reqs_used_mtd, reqs_total FROM widget_keys WHERE key_id = ?",
             (key_id,),
@@ -644,8 +624,7 @@ def test_widget_overage_enqueues_durable_usage_sync(
         ).fetchone()
         widget_auth._enforce_quota_and_increment(conn, widget_auth.WidgetKeyRow(row))
         queued = conn.execute(
-            "SELECT kind, payload_json, status, dedup_key FROM bg_task_queue "
-            "WHERE dedup_key = ?",
+            "SELECT kind, payload_json, status, dedup_key FROM bg_task_queue WHERE dedup_key = ?",
             (f"widget_overage:widget_{key_id}_1",),
         ).fetchone()
     finally:
@@ -734,8 +713,7 @@ def test_widget_overage_missing_subscription_id_rolls_back_and_503(
             (key_id,),
         ).fetchone()
         queued_count = conn.execute(
-            "SELECT COUNT(*) FROM bg_task_queue "
-            "WHERE dedup_key = ?",
+            "SELECT COUNT(*) FROM bg_task_queue WHERE dedup_key = ?",
             (f"widget_overage:widget_{key_id}_1",),
         ).fetchone()[0]
     finally:
@@ -782,8 +760,7 @@ def test_widget_month_rollover_stale_rows_use_current_counter(
         widget_auth._enforce_quota_and_increment(conn, wk2)
 
         stored = conn.execute(
-            "SELECT reqs_used_mtd, reqs_total, bucket_month "
-            "FROM widget_keys WHERE key_id = ?",
+            "SELECT reqs_used_mtd, reqs_total, bucket_month FROM widget_keys WHERE key_id = ?",
             (key_id,),
         ).fetchone()
     finally:

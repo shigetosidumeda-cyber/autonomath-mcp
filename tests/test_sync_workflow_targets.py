@@ -41,9 +41,7 @@ SCRIPT_PATH = REPO_ROOT / "scripts" / "ops" / "sync_workflow_targets.py"
 
 
 def _load_module():
-    spec = importlib.util.spec_from_file_location(
-        "sync_workflow_targets", SCRIPT_PATH
-    )
+    spec = importlib.util.spec_from_file_location("sync_workflow_targets", SCRIPT_PATH)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -95,9 +93,7 @@ def _scaffold_repo(tmp_path: Path) -> Path:
     )
     # Scripts that should be picked up.
     (repo / "scripts" / "ops" / "release_readiness.py").write_text("# stub\n")
-    (repo / "scripts" / "ops" / "preflight_production_improvement.py").write_text(
-        "# stub\n"
-    )
+    (repo / "scripts" / "ops" / "preflight_production_improvement.py").write_text("# stub\n")
     (repo / "scripts" / "etl" / "generate_program_rss_feeds.py").write_text("# stub\n")
     (repo / "scripts" / "generate_program_pages.py").write_text("# stub\n")
     # Tests that should be picked up.
@@ -135,9 +131,7 @@ def test_apply_mode_rewrites_env_blocks(repo: Path) -> None:
     rc = mod.main(["--apply", "--repo-root", str(repo)])
     assert rc == 0
     test_yml = (repo / ".github" / "workflows" / "test.yml").read_text(encoding="utf-8")
-    release_yml = (repo / ".github" / "workflows" / "release.yml").read_text(
-        encoding="utf-8"
-    )
+    release_yml = (repo / ".github" / "workflows" / "release.yml").read_text(encoding="utf-8")
     # Both alpha + beta must appear in both env blocks now.
     for name in ("test_alpha.py", "test_beta.py"):
         assert name in test_yml

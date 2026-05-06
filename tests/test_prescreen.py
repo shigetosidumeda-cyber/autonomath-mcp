@@ -10,6 +10,7 @@ profile and expect ranked matches with reasons + caveats. The tests lock in:
   - MCP parity — the in-process MCP tool calls run_prescreen and returns the
     same model_dump shape
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -140,6 +141,45 @@ def test_prescreen_empty_prefecture_is_ok(client: TestClient) -> None:
     assert r.status_code == 200, r.text
 
 
+def test_prescreen_paid_final_cap_failure_returns_503_without_usage_event(
+    client: TestClient,
+    seeded_db: Path,
+    paid_key: str,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import jpintel_mcp.api.deps as deps
+    from jpintel_mcp.api.deps import hash_api_key
+
+    key_hash = hash_api_key(paid_key)
+
+    def usage_count() -> int:
+        conn = sqlite3.connect(seeded_db)
+        try:
+            (n,) = conn.execute(
+                "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = ?",
+                (key_hash, "programs.prescreen"),
+            ).fetchone()
+            return int(n)
+        finally:
+            conn.close()
+
+    def _reject_final_cap(*_args: object, **_kwargs: object) -> tuple[bool, bool]:
+        return False, False
+
+    before_usage = usage_count()
+    monkeypatch.setattr(deps, "_metered_cap_final_check", _reject_final_cap)
+
+    r = client.post(
+        "/v1/programs/prescreen",
+        headers={"X-API-Key": paid_key},
+        json={"limit": 1},
+    )
+
+    assert r.status_code == 503, r.text
+    assert r.json()["detail"]["code"] == "billing_cap_final_check_failed"
+    assert usage_count() == before_usage
+
+
 # ---------------------------------------------------------------------------
 # Prerequisite caveat — seed an extra program whose unified_id matches
 # the prereq rule `program_a`. conftest's excl-test-prereq has
@@ -187,9 +227,7 @@ def seeded_db_with_prereq_program(seeded_db: Path):
     conn = sqlite3.connect(seeded_db)
     try:
         conn.execute("DELETE FROM programs WHERE unified_id = ?", ("seinen-shuno-shikin",))
-        conn.execute(
-            "DELETE FROM programs_fts WHERE unified_id = ?", ("seinen-shuno-shikin",)
-        )
+        conn.execute("DELETE FROM programs_fts WHERE unified_id = ?", ("seinen-shuno-shikin",))
         conn.commit()
     finally:
         conn.close()
@@ -207,12 +245,8 @@ def test_prescreen_prerequisite_caveat_visible(
     )
     assert r.status_code == 200, r.text
     matches = r.json()["results"]
-    prereq_row = next(
-        m for m in matches if m["unified_id"] == "seinen-shuno-shikin"
-    )
-    assert any(
-        "認定新規就農者" in c and "未申告" in c for c in prereq_row["caveats"]
-    )
+    prereq_row = next(m for m in matches if m["unified_id"] == "seinen-shuno-shikin")
+    assert any("認定新規就農者" in c and "未申告" in c for c in prereq_row["caveats"])
 
 
 def test_prescreen_prerequisite_suppressed_when_declared(
@@ -231,12 +265,8 @@ def test_prescreen_prerequisite_suppressed_when_declared(
     )
     assert r.status_code == 200, r.text
     matches = r.json()["results"]
-    prereq_row = next(
-        m for m in matches if m["unified_id"] == "seinen-shuno-shikin"
-    )
-    assert not any(
-        "認定新規就農者" in c and "未申告" in c for c in prereq_row["caveats"]
-    )
+    prereq_row = next(m for m in matches if m["unified_id"] == "seinen-shuno-shikin")
+    assert not any("認定新規就農者" in c and "未申告" in c for c in prereq_row["caveats"])
 
 
 # ---------------------------------------------------------------------------

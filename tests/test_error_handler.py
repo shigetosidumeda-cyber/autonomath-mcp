@@ -7,6 +7,7 @@ Ensures:
 - FastAPI's normal HTTPException handling is not swallowed (404 stays 404,
   body is not the generic 500 payload).
 """
+
 from __future__ import annotations
 
 from fastapi.testclient import TestClient

@@ -46,11 +46,7 @@ from jpintel_mcp.email.scheduler import (
 )
 
 TEMPLATES_DIR = (
-    Path(__file__).resolve().parent.parent
-    / "src"
-    / "jpintel_mcp"
-    / "email"
-    / "templates"
+    Path(__file__).resolve().parent.parent / "src" / "jpintel_mcp" / "email" / "templates"
 )
 
 _STALE_USER_FACING_COPY = (

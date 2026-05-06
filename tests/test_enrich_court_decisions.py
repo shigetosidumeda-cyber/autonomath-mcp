@@ -60,9 +60,7 @@ _EMPTY_DETAIL_HTML = """<!DOCTYPE html>
 
 
 def test_safe_url_accepts_canonical_hanrei_pattern() -> None:
-    assert enrich._safe_url(
-        "https://www.courts.go.jp/hanrei/89339/detail2/index.html"
-    ) is True
+    assert enrich._safe_url("https://www.courts.go.jp/hanrei/89339/detail2/index.html") is True
 
 
 def test_safe_url_rejects_other_hosts() -> None:
@@ -70,19 +68,11 @@ def test_safe_url_rejects_other_hosts() -> None:
 
 
 def test_safe_url_rejects_kozisotatu_path() -> None:
-    assert (
-        enrich._safe_url(
-            "https://www.courts.go.jp/tokyo/saiban/kozisotatu/index.html"
-        )
-        is False
-    )
+    assert enrich._safe_url("https://www.courts.go.jp/tokyo/saiban/kozisotatu/index.html") is False
 
 
 def test_safe_url_rejects_http_scheme() -> None:
-    assert (
-        enrich._safe_url("http://www.courts.go.jp/hanrei/1/detail2/index.html")
-        is False
-    )
+    assert enrich._safe_url("http://www.courts.go.jp/hanrei/1/detail2/index.html") is False
 
 
 def test_extract_excerpt_returns_labelled_segments_within_400_chars() -> None:
@@ -172,10 +162,7 @@ def _build_mock_client() -> enrich.CourtsClient:
       * /hanrei/3/... -> 404
       * /robots.txt   -> permissive (User-agent: *, Disallow: kozisotatu only)
     """
-    robots_body = (
-        "User-agent: *\n"
-        "Disallow: /tokyo/saiban/kozisotatu/index.html\n"
-    )
+    robots_body = "User-agent: *\nDisallow: /tokyo/saiban/kozisotatu/index.html\n"
 
     def handler(request: httpx.Request) -> httpx.Response:
         url = str(request.url)
@@ -312,11 +299,15 @@ def test_write_csv_round_trip(tmp_path: Path) -> None:
 def test_main_dry_run_end_to_end(tmp_path: Path) -> None:
     db = _build_db(tmp_path)
     out = tmp_path / "out.csv"
-    rc = enrich.main([
-        "--db", str(db),
-        "--output", str(out),
-        "--dry-run",
-    ])
+    rc = enrich.main(
+        [
+            "--db",
+            str(db),
+            "--output",
+            str(out),
+            "--dry-run",
+        ]
+    )
     assert rc == 0
     with out.open(encoding="utf-8") as fh:
         rows = list(csv.DictReader(fh))
@@ -330,13 +321,13 @@ def test_robots_disallows_kozisotatu(monkeypatch: pytest.MonkeyPatch) -> None:
     _safe_url short-circuits first, but the robotparser would also block it.
     """
     rp = enrich.urllib.robotparser.RobotFileParser()
-    rp.parse([
-        "User-agent: *",
-        "Disallow: /tokyo/saiban/kozisotatu/index.html",
-    ])
-    assert enrich.robots_allows(
-        rp, "https://www.courts.go.jp/hanrei/1/detail2/index.html"
+    rp.parse(
+        [
+            "User-agent: *",
+            "Disallow: /tokyo/saiban/kozisotatu/index.html",
+        ]
     )
+    assert enrich.robots_allows(rp, "https://www.courts.go.jp/hanrei/1/detail2/index.html")
     assert not enrich.robots_allows(
         rp, "https://www.courts.go.jp/tokyo/saiban/kozisotatu/index.html"
     )

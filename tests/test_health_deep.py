@@ -10,6 +10,7 @@ exist, so individual checks return `fail`. The aggregate status will be
 `unhealthy` in that case, but the HTTP response itself remains 200 — the
 contract is "always 200 + status field"; failure is signaled in the body.
 """
+
 from __future__ import annotations
 
 import sys
@@ -63,9 +64,7 @@ def test_health_deep_route_returns_200(client: TestClient):
         assert "value" not in check_result
 
 
-def test_health_deep_route_redacts_internal_details(
-    client: TestClient, monkeypatch
-):
+def test_health_deep_route_redacts_internal_details(client: TestClient, monkeypatch):
     """Public deep health keeps status but hides paths, counts, ratios, values."""
     from jpintel_mcp.api import autonomath as autonomath_mod
 
@@ -111,9 +110,7 @@ def test_health_deep_route_redacts_internal_details(
     }
 
 
-def test_health_deep_can_fail_http_for_unhealthy_monitor(
-    client: TestClient, monkeypatch
-):
+def test_health_deep_can_fail_http_for_unhealthy_monitor(client: TestClient, monkeypatch):
     """Fly can opt into HTTP 503 when the aggregate is unhealthy."""
     from jpintel_mcp.api import autonomath as autonomath_mod
 
@@ -134,9 +131,7 @@ def test_health_deep_can_fail_http_for_unhealthy_monitor(
     assert resp.json()["status"] == "unhealthy"
 
 
-def test_health_deep_can_fail_http_for_degraded_monitor(
-    client: TestClient, monkeypatch
-):
+def test_health_deep_can_fail_http_for_degraded_monitor(client: TestClient, monkeypatch):
     """Fly can require exact status=ok, not merely non-unhealthy."""
     from jpintel_mcp.api import autonomath as autonomath_mod
 

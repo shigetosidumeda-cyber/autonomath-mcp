@@ -216,7 +216,9 @@ def test_prepare_bundle_blocks_manifest_mismatches_and_preview_export(tmp_path: 
 
     assert manifest["summary"]["source_dirs_ready_count"] == 0
     assert manifest["summary"]["source_dirs_blocked_count"] == 3
-    blocked = {entry["dataset"]: " ".join(entry["blockers"]) for entry in manifest["sources_blocked"]}
+    blocked = {
+        entry["dataset"]: " ".join(entry["blockers"]) for entry in manifest["sources_blocked"]
+    }
     assert "manifest byte count does not match file size" in blocked["laws-jp"]
     assert "statistics-estat manifest is preview_only" in blocked["statistics-estat"]
     assert "f3_full_publish_ready=false" in blocked["statistics-estat"]

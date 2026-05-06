@@ -54,15 +54,21 @@ def _patch_all_pass(monkeypatch: pytest.MonkeyPatch, repo_root: pathlib.Path) ->
         if "pre_deploy_verify.py" in joined:
             return 0, json.dumps({"ok": True, "failures": []}), ""
         if "compute_dirty_fingerprint" in joined:
-            return 0, json.dumps({
-                "tree_sha": "f" * 64,
-                "dirty_file_count": 0,
-                "dirty_lane_count": 0,
-                "lanes": [],
-                "untracked_count": 0,
-                "computed_at": "2026-05-07T00:00:00Z",
-                "git_status_digest": "0M 0?? 0??=0total",
-            }), ""
+            return (
+                0,
+                json.dumps(
+                    {
+                        "tree_sha": "f" * 64,
+                        "dirty_file_count": 0,
+                        "dirty_lane_count": 0,
+                        "lanes": [],
+                        "untracked_count": 0,
+                        "computed_at": "2026-05-07T00:00:00Z",
+                        "git_status_digest": "0M 0?? 0??=0total",
+                    }
+                ),
+                "",
+            )
         if "migration_inventory" in joined or "verify_migration_targets" in joined:
             return 0, json.dumps({"target_db_ok": True}), ""
         return 0, "", ""
@@ -120,15 +126,23 @@ def test_all_pass_yields_schema_valid_yaml(monkeypatch, tmp_path):
     """Case 3: all PASS + auto-yes -> YAML body matches schema shape."""
     _patch_all_pass(monkeypatch, tmp_path)
     out = tmp_path / "ack.yaml"
-    rc = oas.main([
-        "--all", "--commit", "--yes",
-        "--ack-out", str(out),
-        "--repo-root", str(tmp_path),
-        "--operator-email", "info@bookyou.net",
-    ])
+    rc = oas.main(
+        [
+            "--all",
+            "--commit",
+            "--yes",
+            "--ack-out",
+            str(out),
+            "--repo-root",
+            str(tmp_path),
+            "--operator-email",
+            "info@bookyou.net",
+        ]
+    )
     assert rc == 0
     assert out.is_file()
     import yaml
+
     payload = yaml.safe_load(out.read_text())
     for name in oas.BOOLEAN_NAMES:
         assert payload[name] is True, f"missing or false: {name}"
@@ -144,11 +158,17 @@ def test_commit_writes_to_out_of_repo_path(monkeypatch, tmp_path):
     """Case 4: --commit honors --ack-out and creates parent dir."""
     _patch_all_pass(monkeypatch, tmp_path)
     deep = tmp_path / "out-of-repo" / "nested" / "ack.yaml"
-    rc = oas.main([
-        "--all", "--commit", "--yes",
-        "--ack-out", str(deep),
-        "--repo-root", str(tmp_path),
-    ])
+    rc = oas.main(
+        [
+            "--all",
+            "--commit",
+            "--yes",
+            "--ack-out",
+            str(deep),
+            "--repo-root",
+            str(tmp_path),
+        ]
+    )
     assert rc == 0
     assert deep.is_file()
     assert deep.parent.is_dir()
@@ -157,8 +177,14 @@ def test_commit_writes_to_out_of_repo_path(monkeypatch, tmp_path):
 def test_no_llm_api_imports_in_module():
     """Case 5: source file must contain ZERO LLM API imports."""
     src = (_MODULE_DIR / "operator_ack_signoff.py").read_text()
-    forbidden = ["anthropic", "openai", "google.generativeai",
-                 "claude_agent_sdk", "ANTHROPIC_API_KEY", "OPENAI_API_KEY"]
+    forbidden = [
+        "anthropic",
+        "openai",
+        "google.generativeai",
+        "claude_agent_sdk",
+        "ANTHROPIC_API_KEY",
+        "OPENAI_API_KEY",
+    ]
     for token in forbidden:
         assert token not in src, f"forbidden token leaked into module: {token}"
 
@@ -167,13 +193,20 @@ def test_signature_integrity_8_booleans(monkeypatch, tmp_path):
     """Case 6: every boolean name appears in YAML AND is True on full pass."""
     _patch_all_pass(monkeypatch, tmp_path)
     out = tmp_path / "ack.yaml"
-    rc = oas.main([
-        "--all", "--commit", "--yes",
-        "--ack-out", str(out),
-        "--repo-root", str(tmp_path),
-    ])
+    rc = oas.main(
+        [
+            "--all",
+            "--commit",
+            "--yes",
+            "--ack-out",
+            str(out),
+            "--repo-root",
+            str(tmp_path),
+        ]
+    )
     assert rc == 0
     import yaml
+
     payload = yaml.safe_load(out.read_text())
     for name in oas.BOOLEAN_NAMES:
         assert name in payload
@@ -185,13 +218,20 @@ def test_sha256_and_git_hash_binding(monkeypatch, tmp_path):
     """Case 7: yaml_sha256 + git_commit_hash both populated and well-formed."""
     _patch_all_pass(monkeypatch, tmp_path)
     out = tmp_path / "ack.yaml"
-    rc = oas.main([
-        "--all", "--commit", "--yes",
-        "--ack-out", str(out),
-        "--repo-root", str(tmp_path),
-    ])
+    rc = oas.main(
+        [
+            "--all",
+            "--commit",
+            "--yes",
+            "--ack-out",
+            str(out),
+            "--repo-root",
+            str(tmp_path),
+        ]
+    )
     assert rc == 0
     import yaml
+
     payload = yaml.safe_load(out.read_text())
     sha = payload["_meta"]["yaml_sha256"]
     git_hash = payload["_meta"]["git_commit_hash"]
@@ -203,13 +243,20 @@ def test_timestamp_tampering_detect(monkeypatch, tmp_path):
     """Case 8: tampering with signed_at AFTER emission breaks sha256."""
     _patch_all_pass(monkeypatch, tmp_path)
     out = tmp_path / "ack.yaml"
-    rc = oas.main([
-        "--all", "--commit", "--yes",
-        "--ack-out", str(out),
-        "--repo-root", str(tmp_path),
-    ])
+    rc = oas.main(
+        [
+            "--all",
+            "--commit",
+            "--yes",
+            "--ack-out",
+            str(out),
+            "--repo-root",
+            str(tmp_path),
+        ]
+    )
     assert rc == 0
     import yaml
+
     payload = yaml.safe_load(out.read_text())
     original_sha = payload["_meta"]["yaml_sha256"]
 
@@ -218,7 +265,8 @@ def test_timestamp_tampering_detect(monkeypatch, tmp_path):
     tampered_meta = {k: v for k, v in payload["_meta"].items() if k != "yaml_sha256"}
     body_no_sha = yaml.safe_dump(
         {k: v for k, v in payload.items() if k != "_meta"},
-        sort_keys=True, allow_unicode=True,
+        sort_keys=True,
+        allow_unicode=True,
     ) + yaml.safe_dump({"_meta": tampered_meta}, sort_keys=True, allow_unicode=True)
     new_sha = hashlib.sha256(body_no_sha.encode("utf-8")).hexdigest()
     assert new_sha != original_sha, "tampered timestamp must break sha256"
@@ -227,6 +275,7 @@ def test_timestamp_tampering_detect(monkeypatch, tmp_path):
 def test_schema_mismatch_rejected(tmp_path):
     """Case 9: a YAML missing a required boolean must fail schema match."""
     import yaml as _yaml
+
     bad = {
         "fly_app_confirmed": True,
         # missing fly_secrets_names_confirmed
@@ -254,11 +303,15 @@ def test_schema_mismatch_rejected(tmp_path):
 def test_single_boolean_mode_returns_just_one_result(monkeypatch, tmp_path, capsys):
     """Case 10: --boolean=N mode runs ONE verify only and emits no YAML."""
     _patch_all_pass(monkeypatch, tmp_path)
-    rc = oas.main([
-        "--boolean", "5",
-        "--repo-root", str(tmp_path),
-        "--json",
-    ])
+    rc = oas.main(
+        [
+            "--boolean",
+            "5",
+            "--repo-root",
+            str(tmp_path),
+            "--json",
+        ]
+    )
     captured = capsys.readouterr()
     assert rc == 0
     # No YAML was emitted (no "WROTE:" line).
@@ -270,8 +323,7 @@ def test_single_boolean_mode_returns_just_one_result(monkeypatch, tmp_path, caps
     # column-0 opening brace and walk forward via brace-balance.
     text = captured.out
     # Locate column-0 "{" lines (start of a top-level JSON object).
-    starts = [i for i in range(len(text))
-              if text[i] == "{" and (i == 0 or text[i - 1] == "\n")]
+    starts = [i for i in range(len(text)) if text[i] == "{" and (i == 0 or text[i - 1] == "\n")]
     assert starts, "no top-level JSON object found in stdout"
     start = starts[-1]
     depth = 0
@@ -286,6 +338,6 @@ def test_single_boolean_mode_returns_just_one_result(monkeypatch, tmp_path, caps
                 end = j
                 break
     assert end > start, "could not balance braces on top-level JSON"
-    block = text[start:end + 1]
+    block = text[start : end + 1]
     parsed = json.loads(block)
     assert parsed["boolean_name"] == "rollback_reconciliation_packet_ready"

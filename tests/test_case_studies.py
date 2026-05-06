@@ -17,6 +17,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from jpintel_mcp.api.deps import hash_api_key
+
 if TYPE_CHECKING:
     from pathlib import Path
 
@@ -224,6 +226,46 @@ def test_search_is_sole_proprietor_bool_cast(client, seeded_case_studies):
 def test_search_limit_clamp_upper_bound(client):
     r = client.get("/v1/case-studies/search", params={"limit": 101})
     assert r.status_code == 422
+
+
+def test_search_paid_final_cap_failure_returns_503_without_usage_event(
+    client,
+    seeded_case_studies,
+    seeded_db: Path,
+    paid_key: str,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import jpintel_mcp.api.deps as deps
+
+    endpoint = "case_studies.search"
+    key_hash = hash_api_key(paid_key)
+
+    def usage_count() -> int:
+        conn = sqlite3.connect(seeded_db)
+        try:
+            (count,) = conn.execute(
+                "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = ?",
+                (key_hash, endpoint),
+            ).fetchone()
+            return int(count)
+        finally:
+            conn.close()
+
+    def _reject_final_cap(*_args: object, **_kwargs: object) -> tuple[bool, bool]:
+        return False, False
+
+    before = usage_count()
+    monkeypatch.setattr(deps, "_metered_cap_final_check", _reject_final_cap)
+
+    r = client.get(
+        "/v1/case-studies/search",
+        params={"limit": 100},
+        headers={"X-API-Key": paid_key},
+    )
+
+    assert r.status_code == 503, r.text
+    assert r.json()["detail"]["code"] == "billing_cap_final_check_failed"
+    assert usage_count() == before
 
 
 # ---------------------------------------------------------------------------

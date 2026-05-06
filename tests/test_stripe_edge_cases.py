@@ -23,6 +23,7 @@ The dedup test in ``test_stripe_webhook_dedup.py`` already exercises the
 dict-stub path; this module's case 7 verifies the bracket access works
 unchanged on a pathological dict missing the "id" key.
 """
+
 from __future__ import annotations
 
 import json
@@ -38,9 +39,7 @@ def stripe_env(monkeypatch):
 
     monkeypatch.setattr(settings, "stripe_secret_key", "sk_test_dummy", raising=False)
     monkeypatch.setattr(settings, "stripe_webhook_secret", "whsec_dummy", raising=False)
-    monkeypatch.setattr(
-        settings, "stripe_price_per_request", "price_metered_test", raising=False
-    )
+    monkeypatch.setattr(settings, "stripe_price_per_request", "price_metered_test", raising=False)
     monkeypatch.setattr(settings, "env", "test", raising=False)
     yield settings
 
@@ -105,9 +104,7 @@ def test_refund_request_persists_and_returns_id(client, seeded_db, stripe_env):
 # ---------------------------------------------------------------------------
 
 
-def test_dispute_created_audit_log_no_revoke(
-    client, stripe_env, monkeypatch, seeded_db
-):
+def test_dispute_created_audit_log_no_revoke(client, stripe_env, monkeypatch, seeded_db):
     """charge.dispute.created writes audit_log row WITHOUT revoking keys.
 
     Memory: dispute lifecycle can flip closed→won, so auto-revoking on
@@ -162,8 +159,7 @@ def test_dispute_created_audit_log_no_revoke(
     try:
         # Audit row exists.
         row = c.execute(
-            "SELECT event_type FROM audit_log WHERE event_type = ? "
-            "ORDER BY ts DESC LIMIT 1",
+            "SELECT event_type FROM audit_log WHERE event_type = ? ORDER BY ts DESC LIMIT 1",
             ("charge.dispute.created",),
         ).fetchone()
         assert row is not None, "dispute.created should write audit_log row"
@@ -182,9 +178,7 @@ def test_dispute_created_audit_log_no_revoke(
 # ---------------------------------------------------------------------------
 
 
-def test_tax_exempt_metadata_propagates_to_stripe(
-    client, stripe_env, monkeypatch, seeded_db
-):
+def test_tax_exempt_metadata_propagates_to_stripe(client, stripe_env, monkeypatch, seeded_db):
     """customer.updated with metadata.tax_exempt="exempt" → Customer.modify."""
     event = {
         "id": "evt_tax_exempt_1",
@@ -224,9 +218,7 @@ def test_tax_exempt_metadata_propagates_to_stripe(
 # ---------------------------------------------------------------------------
 
 
-def test_currency_edge_non_jpy_audits_and_warns(
-    client, stripe_env, monkeypatch, seeded_db, caplog
-):
+def test_currency_edge_non_jpy_audits_and_warns(client, stripe_env, monkeypatch, seeded_db, caplog):
     """invoice.created with currency="usd" emits warning + audit_log row."""
     event = {
         "id": "evt_currency_usd_1",
@@ -262,8 +254,7 @@ def test_currency_edge_non_jpy_audits_and_warns(
 
     # Warning log emitted with currency=usd.
     assert any(
-        "stripe.currency_edge" in rec.message and "usd" in rec.message
-        for rec in caplog.records
+        "stripe.currency_edge" in rec.message and "usd" in rec.message for rec in caplog.records
     ), f"missing currency_edge warning; saw {[r.message for r in caplog.records]}"
 
     c = sqlite3.connect(seeded_db)
@@ -285,9 +276,7 @@ def test_currency_edge_non_jpy_audits_and_warns(
 # ---------------------------------------------------------------------------
 
 
-def test_invoice_voided_audit_logs_with_original_id(
-    client, stripe_env, monkeypatch, seeded_db
-):
+def test_invoice_voided_audit_logs_with_original_id(client, stripe_env, monkeypatch, seeded_db):
     """invoice.voided writes audit_log row tagged with the invoice id."""
     event = {
         "id": "evt_invoice_voided_1",
@@ -328,9 +317,7 @@ def test_invoice_voided_audit_logs_with_original_id(
 # ---------------------------------------------------------------------------
 
 
-def test_stripe_tax_fallback_cache_hit_then_jp_default(
-    seeded_db, stripe_env, monkeypatch
-):
+def test_stripe_tax_fallback_cache_hit_then_jp_default(seeded_db, stripe_env, monkeypatch):
     """Stripe Tax 5xx → cached rate. No cache → JP standard 1000 bps."""
     import stripe as _stripe_mod
 
@@ -393,9 +380,7 @@ def test_stripe_tax_fallback_cache_hit_then_jp_default(
 # ---------------------------------------------------------------------------
 
 
-def test_dedup_path_handles_event_without_id_key(
-    client, stripe_env, monkeypatch, seeded_db
-):
+def test_dedup_path_handles_event_without_id_key(client, stripe_env, monkeypatch, seeded_db):
     """A stub event without an "id" key must still 200 (empty event_id path).
 
     The latent-bug fix changed `event.get("id") or ""` to `event["id"] or ""`

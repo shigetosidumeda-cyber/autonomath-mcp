@@ -123,6 +123,7 @@ def test_half_year_bucketing_collapses_to_fiscal_halves() -> None:
 
     # Spot-check the bucket boundaries directly via _bucket_key.
     import datetime
+
     assert _bucket_key(datetime.date(2026, 4, 1), "half_year") == "2026-H1"
     assert _bucket_key(datetime.date(2026, 9, 30), "half_year") == "2026-H1"
     assert _bucket_key(datetime.date(2026, 10, 1), "half_year") == "2026-H2"
@@ -132,12 +133,12 @@ def test_half_year_bucketing_collapses_to_fiscal_halves() -> None:
 
     # Every event must be in its declared bucket.
     import datetime as _dt
+
     for bucket in res["calendar"]:
         for ev in bucket["events"]:
             d = _dt.date.fromisoformat(ev["date"])
             assert _bucket_key(d, "half_year") == bucket["period"], (
-                f"event {ev['title']} ({ev['date']}) misplaced in "
-                f"bucket {bucket['period']}"
+                f"event {ev['title']} ({ev['date']}) misplaced in bucket {bucket['period']}"
             )
 
     # The tax_sunset インボイス 2割特例 (2026-09-30) must land in 2026-H1.
@@ -167,9 +168,7 @@ def test_window_over_one_year_returns_out_of_range_error() -> None:
     # Hard error envelope must be present.
     assert "error" in res, f"expected error envelope; got {list(res.keys())}"
     err = res["error"]
-    assert err["code"] == "out_of_range", (
-        f"expected code='out_of_range'; got {err['code']}"
-    )
+    assert err["code"] == "out_of_range", f"expected code='out_of_range'; got {err['code']}"
     assert err["severity"] == "hard"
     # The message must mention the cap so the LLM caller can self-correct.
     assert str(_MAX_WINDOW_DAYS) in err["message"] or "1-year" in err["message"]

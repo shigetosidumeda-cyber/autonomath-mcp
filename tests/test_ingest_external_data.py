@@ -13,6 +13,7 @@ collection layout, runs the ingest, and asserts on:
 We keep the fixtures tiny (1-2 rows per directory) on purpose — the goal
 is behavioural, not throughput.
 """
+
 from __future__ import annotations
 
 import json
@@ -250,9 +251,7 @@ def _count(db_path: Path, table: str) -> int:
 
 def test_one_row_in_each_of_six_tables(scratch_db: Path, data_dir: Path) -> None:
     """First-pass ingest writes one row per directory to the right table."""
-    results = ext.run_ingest(
-        data_dir=data_dir, db_path=scratch_db, dry_run=False
-    )
+    results = ext.run_ingest(data_dir=data_dir, db_path=scratch_db, dry_run=False)
 
     # Spec-called-out tables (≥ 6 per task description).
     assert _count(scratch_db, "program_documents") == 1
@@ -278,9 +277,9 @@ def test_one_row_in_each_of_six_tables(scratch_db: Path, data_dir: Path) -> None
     # programs: 06 + 08 (loan mirror) = 2 inserts.
     c = sqlite3.connect(str(scratch_db))
     try:
-        n = c.execute(
-            "SELECT COUNT(*) FROM programs WHERE unified_id LIKE 'UNI-ext-%'"
-        ).fetchone()[0]
+        n = c.execute("SELECT COUNT(*) FROM programs WHERE unified_id LIKE 'UNI-ext-%'").fetchone()[
+            0
+        ]
     finally:
         c.close()
     assert n == 2
@@ -311,18 +310,13 @@ def test_reingest_is_idempotent(scratch_db: Path, data_dir: Path) -> None:
     # Second pass, identical inputs.
     ext.run_ingest(data_dir=data_dir, db_path=scratch_db, dry_run=False)
 
-    counts_after = {
-        t: _count(scratch_db, t)
-        for t in counts_before
-    }
+    counts_after = {t: _count(scratch_db, t) for t in counts_before}
     assert counts_before == counts_after, (
         f"idempotent re-ingest grew the DB: {counts_before} -> {counts_after}"
     )
 
 
-def test_existing_program_source_excerpt_only_updated(
-    scratch_db: Path, data_dir: Path
-) -> None:
+def test_existing_program_source_excerpt_only_updated(scratch_db: Path, data_dir: Path) -> None:
     """Pre-existing programs row (non-excluded) gets its enriched_json /
     source_url refreshed on re-ingest, but curator-owned fields like
     `primary_name` and `amount_max_man_yen` survive when the external
@@ -333,9 +327,7 @@ def test_existing_program_source_excerpt_only_updated(
     """
     # Seed a canonical row with a synthetic unified_id that matches what
     # _ext_unified_id() will derive for the fixture's 06 record.
-    uid = ext._ext_unified_id(
-        "テスト県 助成金", "テスト県産業労働局", "テスト県"
-    )
+    uid = ext._ext_unified_id("テスト県 助成金", "テスト県産業労働局", "テスト県")
     now = datetime.now(UTC).isoformat()
     c = sqlite3.connect(str(scratch_db))
     try:
@@ -356,7 +348,7 @@ def test_existing_program_source_excerpt_only_updated(
             ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
             (
                 uid,
-                "CANONICAL 上書き禁止 Name",   # <-- must not change
+                "CANONICAL 上書き禁止 Name",  # <-- must not change
                 None,
                 "prefecture",
                 "テスト県産業労働局",
@@ -364,19 +356,25 @@ def test_existing_program_source_excerpt_only_updated(
                 None,
                 "subsidy",
                 None,
-                9999,                           # <-- must not change
+                9999,  # <-- must not change
                 None,
                 None,
                 None,
-                "S",                            # <-- must not change
-                None, None, None,
-                0,                              # excluded = 0 (updatable)
+                "S",  # <-- must not change
                 None,
-                None, None,
-                None, None,
-                None, None,
-                None, None,                     # enriched_json starts null
-                None,                           # source_url starts null
+                None,
+                None,
+                0,  # excluded = 0 (updatable)
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,  # enriched_json starts null
+                None,  # source_url starts null
                 now,
                 None,
                 now,
@@ -411,9 +409,7 @@ def test_existing_program_source_excerpt_only_updated(
     assert enriched.get("source_excerpt") == "助成上限2,000万円"
 
 
-def test_banned_aggregator_urls_rejected(
-    scratch_db: Path, tmp_path: Path
-) -> None:
+def test_banned_aggregator_urls_rejected(scratch_db: Path, tmp_path: Path) -> None:
     """Rows whose source_url/official_url points at a banned aggregator
     (biz.stayway, hojyokin-portal, noukaweb, ...) must be dropped before
     they ever hit the DB. CLAUDE.md names these as 詐欺-risk sources.
@@ -476,9 +472,7 @@ def test_banned_aggregator_urls_rejected(
     assert results["11_mhlw_employment_grants"]["skip_banned"] == 1
 
 
-def test_case_law_ingest_and_idempotency(
-    scratch_db: Path, tmp_path: Path
-) -> None:
+def test_case_law_ingest_and_idempotency(scratch_db: Path, tmp_path: Path) -> None:
     """49_case_law_judgments routes to the `case_law` table keyed on
     (case_number, court). Rows missing case_number are skipped; re-ingest
     on the same inputs is a no-op.
@@ -580,9 +574,7 @@ def test_classify_loan_security_axes() -> None:
     assert r["third_party_guarantor_required"] == "unknown"
 
 
-def test_loan_risk_columns_populated_on_ingest(
-    scratch_db: Path, tmp_path: Path
-) -> None:
+def test_loan_risk_columns_populated_on_ingest(scratch_db: Path, tmp_path: Path) -> None:
     """Ingest writes the three risk axes into the loan_programs table,
     not just the legacy free-text `security_required` column.
     """
@@ -635,9 +627,7 @@ def test_loan_risk_columns_populated_on_ingest(
     assert rows["一般貸付"]["third_party_guarantor_required"] == "negotiable"
 
 
-def test_case_law_banned_pdf_url_rejected(
-    scratch_db: Path, tmp_path: Path
-) -> None:
+def test_case_law_banned_pdf_url_rejected(scratch_db: Path, tmp_path: Path) -> None:
     """If either source_url or pdf_url points at a banned aggregator,
     the case_law row is dropped before write.
     """

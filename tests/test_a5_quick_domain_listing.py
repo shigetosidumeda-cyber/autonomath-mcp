@@ -174,9 +174,7 @@ def test_write_json_and_csv_reports(tmp_path: Path) -> None:
     quick.write_json_report(report, json_path)
     quick.write_csv_report(report, csv_path)
 
-    assert json.loads(json_path.read_text(encoding="utf-8"))["selection"][
-        "quick_domain_count"
-    ] == 1
+    assert json.loads(json_path.read_text(encoding="utf-8"))["selection"]["quick_domain_count"] == 1
     with csv_path.open(encoding="utf-8", newline="") as handle:
         rows = list(csv.DictReader(handle))
     assert rows[0]["domain"] == "a.example"

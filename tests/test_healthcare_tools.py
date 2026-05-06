@@ -99,9 +99,7 @@ def test_healthcare_tools_not_registered_when_disabled() -> None:
         "print(f'count={len(names)};leaked={leaked}')"
     )
     out = _run_in_subprocess(snippet, env_flag="")
-    assert "leaked=[]" in out, (
-        f"healthcare tools leaked into default env: {out}"
-    )
+    assert "leaked=[]" in out, f"healthcare tools leaked into default env: {out}"
 
 
 # ---------------------------------------------------------------------------
@@ -221,9 +219,7 @@ def test_healthcare_stub_schema_shape(fn_name: str) -> None:
     sig = inspect.signature(fn)
     actual = set(sig.parameters.keys())
     expected = _EXPECTED_PARAMS[fn_name]
-    assert actual == expected, (
-        f"{fn_name} parameters mismatch: expected {expected}, got {actual}"
-    )
+    assert actual == expected, f"{fn_name} parameters mismatch: expected {expected}, got {actual}"
     # Every parameter must be type-annotated (Annotated[..., Field(...)])
     # — the Field carries the schema description used by FastMCP.
     for pname, p in sig.parameters.items():
@@ -232,6 +228,4 @@ def test_healthcare_stub_schema_shape(fn_name: str) -> None:
         )
     # Docstring must be non-empty (FastMCP uses it as the tool description
     # when the decorator is bare).
-    assert (inspect.getdoc(fn) or "").strip(), (
-        f"{fn_name} has empty docstring"
-    )
+    assert (inspect.getdoc(fn) or "").strip(), f"{fn_name} has empty docstring"

@@ -132,9 +132,7 @@ def _find_active_or_amended_candidate() -> tuple[str, str, datetime.date]:
     entity_id, max_v, first_eff_from = row
     eff_from = datetime.date.fromisoformat(first_eff_from)
     # as_of = today JST, but at least one day past effective_from.
-    today = (
-        datetime.datetime.now(datetime.UTC) + datetime.timedelta(hours=9)
-    ).date()
+    today = (datetime.datetime.now(datetime.UTC) + datetime.timedelta(hours=9)).date()
     as_of = max(today, eff_from + datetime.timedelta(days=1))
     expected = "active" if max_v == 1 else "amended"
     return entity_id, expected, as_of

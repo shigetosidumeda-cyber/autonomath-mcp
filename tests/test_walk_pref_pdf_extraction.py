@@ -8,6 +8,7 @@ so 茨城県 (24 candidates → 1 row) and 和歌山県 (24 candidates → 0 row
 under-counted. PDFs hosted on `pref.*.lg.jp` are legitimate primary sources;
 this module verifies the heuristics that turn them into program rows.
 """
+
 from __future__ import annotations
 
 import importlib.util
@@ -35,6 +36,7 @@ def walker():
 # extract_pdf_text — corrupt / non-PDF inputs
 # ---------------------------------------------------------------------------
 
+
 def test_extract_pdf_text_empty(walker):
     assert walker.extract_pdf_text(b"") == ""
 
@@ -51,6 +53,7 @@ def test_extract_pdf_text_truncated_pdf(walker):
 # ---------------------------------------------------------------------------
 # is_pdf_text_meaningful — image-only / scanned PDF detection
 # ---------------------------------------------------------------------------
+
 
 def test_is_pdf_text_meaningful_empty(walker):
     assert walker.is_pdf_text_meaningful("") is False
@@ -76,12 +79,16 @@ def test_is_pdf_text_meaningful_threshold(walker):
 # _strip_pdf_boilerplate — 様式 / 別紙 / (参考) prefixes
 # ---------------------------------------------------------------------------
 
-@pytest.mark.parametrize("raw,expected", [
-    ("別紙第一号 新市町村づくり支援事業", "新市町村づくり支援事業"),
-    ("様式 1 補助金交付申請書", "補助金交付申請書"),
-    ("（参考）令和7年度 補助金一覧", "令和7年度 補助金一覧"),
-    ("補助金交付申請書", "補助金交付申請書"),  # no prefix → unchanged
-])
+
+@pytest.mark.parametrize(
+    "raw,expected",
+    [
+        ("別紙第一号 新市町村づくり支援事業", "新市町村づくり支援事業"),
+        ("様式 1 補助金交付申請書", "補助金交付申請書"),
+        ("（参考）令和7年度 補助金一覧", "令和7年度 補助金一覧"),
+        ("補助金交付申請書", "補助金交付申請書"),  # no prefix → unchanged
+    ],
+)
 def test_strip_pdf_boilerplate(walker, raw, expected):
     assert walker._strip_pdf_boilerplate(raw) == expected
 
@@ -89,6 +96,7 @@ def test_strip_pdf_boilerplate(walker, raw, expected):
 # ---------------------------------------------------------------------------
 # extract_program_pdf — title / amount / deadline heuristics
 # ---------------------------------------------------------------------------
+
 
 def test_extract_program_pdf_with_marker(walker):
     """When PDF has '制度名 / 事業名' marker, use the value that follows."""
@@ -125,11 +133,7 @@ def test_extract_program_pdf_falls_back_to_first_line(walker):
 
 def test_extract_program_pdf_skips_dept_header(walker):
     """Skip '総 務 部' (department header) and 'No. 1' (page number)."""
-    text = (
-        "総 務 部\n"
-        "No. 1\n"
-        "新市町村づくり支援事業\n"
-    )
+    text = "総 務 部\nNo. 1\n新市町村づくり支援事業\n"
     result = walker.extract_program_pdf(text, fallback_title="X")
     assert result["title"] == "新市町村づくり支援事業"
 
@@ -150,24 +154,14 @@ def test_extract_program_pdf_strips_trailing_group_hint(walker):
 
 def test_extract_program_pdf_handles_value_before_marker(walker):
     """茨城県 form layout: '<title> 主管課名 <dept>' all on one line."""
-    text = (
-        "様式２\n"
-        "総 務 部\n"
-        "No. 4\n"
-        "共生の地域づくり助成事業 主管課名 市町村課・財政G\n"
-        "制 度 名\n"
-    )
+    text = "様式２\n総 務 部\nNo. 4\n共生の地域づくり助成事業 主管課名 市町村課・財政G\n制 度 名\n"
     result = walker.extract_program_pdf(text, fallback_title="X")
     assert result["title"] == "共生の地域づくり助成事業"
 
 
 def test_extract_program_pdf_amount_with_kanji_unit(walker):
     """AMOUNT_RE picks up '上限 100万円' style explicit limit text."""
-    text = (
-        "新規補助制度\n"
-        "上限 100万円 を補助する。\n"
-        "募集期間 令和7年5月15日まで\n"
-    )
+    text = "新規補助制度\n上限 100万円 を補助する。\n募集期間 令和7年5月15日まで\n"
     result = walker.extract_program_pdf(text, fallback_title="X")
     assert result["amount_max_man_yen"] == 100.0
     assert result["deadline_iso"] == "2025-05-15"
@@ -184,6 +178,7 @@ def test_extract_program_pdf_handles_empty_text(walker):
 # ---------------------------------------------------------------------------
 # fetch — verifies PDF detection (URL suffix or Content-Type)
 # ---------------------------------------------------------------------------
+
 
 def test_fetch_returns_4_tuple(walker):
     """fetch() must always return a 4-tuple — schema is part of the contract."""

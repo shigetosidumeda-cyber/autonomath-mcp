@@ -11,9 +11,10 @@ import reconcile_law_prefixes as reconcile  # noqa: E402
 
 
 def test_normalize_law_prefix_strips_articles_and_width_noise() -> None:
-    assert reconcile.normalize_law_prefix(
-        " 補助金等に係る予算の執行の適正化に関する法律　第２条 "
-    ) == "補助金等に係る予算の執行の適正化に関する法律"
+    assert (
+        reconcile.normalize_law_prefix(" 補助金等に係る予算の執行の適正化に関する法律　第２条 ")
+        == "補助金等に係る予算の執行の適正化に関する法律"
+    )
 
 
 def test_build_law_prefix_index_keeps_ambiguous_prefixes_out() -> None:

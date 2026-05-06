@@ -11,6 +11,7 @@ Covers:
   7. ``wrap_for_mcp`` returns a CallToolResult with structuredContent + content[].
   8. The opt-in flag is parsed from the vendor Accept header only.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -293,15 +294,9 @@ def test_wants_envelope_v2_ignores_query_param() -> None:
 
 
 def test_wants_envelope_v2_recognises_accept_header() -> None:
+    assert wants_envelope_v2(_FakeRequest(accept="application/vnd.jpcite.v2+json")) is True
     assert (
-        wants_envelope_v2(_FakeRequest(accept="application/vnd.jpcite.v2+json"))
-        is True
-    )
-    assert (
-        wants_envelope_v2(
-            _FakeRequest(accept="text/html, application/vnd.jpcite.v2+json")
-        )
-        is True
+        wants_envelope_v2(_FakeRequest(accept="text/html, application/vnd.jpcite.v2+json")) is True
     )
     assert wants_envelope_v2(_FakeRequest(accept="application/json")) is False
 
@@ -321,9 +316,7 @@ def test_query_echo_accepts_pydantic_or_dict() -> None:
         normalized_input={"q": "hello"},
         applied_filters={"tier": ["S"]},
     )
-    env_a = StandardResponse.rich(
-        results=[{"x": 1}], request_id="rid-a", query_echo=qe
-    )
+    env_a = StandardResponse.rich(results=[{"x": 1}], request_id="rid-a", query_echo=qe)
     env_b = StandardResponse.rich(
         results=[{"x": 1}],
         request_id="rid-b",

@@ -19,6 +19,7 @@ matching the operator-tool contract documented in the script's module
 docstring). Production runtime tolerance lives in
 `src/jpintel_mcp/utils/slug.py` and is covered by other tests.
 """
+
 from __future__ import annotations
 
 import importlib.util
@@ -36,9 +37,7 @@ SCRIPT_PATH = REPO_ROOT / "tools" / "offline" / "generate_aliases.py"
 @pytest.fixture(scope="module")
 def gen_aliases_mod():
     """Load `tools/offline/generate_aliases.py` as a module."""
-    spec = importlib.util.spec_from_file_location(
-        "generate_aliases", SCRIPT_PATH
-    )
+    spec = importlib.util.spec_from_file_location("generate_aliases", SCRIPT_PATH)
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
     sys.modules["generate_aliases"] = mod
@@ -122,36 +121,37 @@ def test_width_normalisation_emits_halfwidth(gen_aliases_mod):
     kks = gen_aliases_mod._load_kakasi()
     name = "令和Ｒ６補助金"
     aliases, methods = gen_aliases_mod.generate_for_name(name, kks)
-    assert "width" in methods, (
-        f"expected width rule to fire on {name!r}, methods={methods!r}"
-    )
-    assert any("R6" in a for a in aliases), (
-        f"expected half-width R6 in aliases, got {aliases!r}"
-    )
+    assert "width" in methods, f"expected width rule to fire on {name!r}, methods={methods!r}"
+    assert any("R6" in a for a in aliases), f"expected half-width R6 in aliases, got {aliases!r}"
 
 
 def test_dry_run_smoke(tmp_path, gen_aliases_mod, capsys):
     """End-to-end: build a fixture DB, run main() with --dry-run --limit 1,
     assert exit 0 + stdout contains the expected program row."""
     db = tmp_path / "fixture.db"
-    _seed_jpintel(db, [
-        ("UNI-test-0001", "経済産業省 中小企業庁の小規模事業者持続化補助金"),
-        ("UNI-test-0002", "ものづくり・商業・サービス生産性向上促進補助金"),
-    ])
-    rc = gen_aliases_mod.main([
-        "--jpintel-db", str(db),
-        "--limit", "1",
-        "--dry-run",
-    ])
+    _seed_jpintel(
+        db,
+        [
+            ("UNI-test-0001", "経済産業省 中小企業庁の小規模事業者持続化補助金"),
+            ("UNI-test-0002", "ものづくり・商業・サービス生産性向上促進補助金"),
+        ],
+    )
+    rc = gen_aliases_mod.main(
+        [
+            "--jpintel-db",
+            str(db),
+            "--limit",
+            "1",
+            "--dry-run",
+        ]
+    )
     assert rc == 0
     out = capsys.readouterr().out
     # Header + at least one data row.
     assert "program_id\tprimary_name\taliases_json" in out
     assert "UNI-test-0001" in out
     # The aliases_json column must be a parseable JSON array.
-    data_line = [
-        line for line in out.splitlines() if line.startswith("UNI-test-0001")
-    ][0]
+    data_line = [line for line in out.splitlines() if line.startswith("UNI-test-0001")][0]
     cols = data_line.split("\t")
     aliases = json.loads(cols[2])
     assert isinstance(aliases, list)
@@ -162,15 +162,22 @@ def test_csv_write_path(tmp_path, gen_aliases_mod):
     """End-to-end: --output writes a CSV + sidecar stats JSON, both
     parseable, with the expected schema."""
     db = tmp_path / "fixture.db"
-    _seed_jpintel(db, [
-        ("UNI-test-A", "中小企業庁 経営革新支援"),
-        ("UNI-test-B", "農林水産省の補助金"),
-    ])
+    _seed_jpintel(
+        db,
+        [
+            ("UNI-test-A", "中小企業庁 経営革新支援"),
+            ("UNI-test-B", "農林水産省の補助金"),
+        ],
+    )
     out_csv = tmp_path / "aliases.csv"
-    rc = gen_aliases_mod.main([
-        "--jpintel-db", str(db),
-        "--output", str(out_csv),
-    ])
+    rc = gen_aliases_mod.main(
+        [
+            "--jpintel-db",
+            str(db),
+            "--output",
+            str(out_csv),
+        ]
+    )
     assert rc == 0
     assert out_csv.exists()
     text = out_csv.read_text(encoding="utf-8-sig")
@@ -204,8 +211,7 @@ def test_only_empty_filters_existing_aliases(tmp_path, gen_aliases_mod):
         """
     )
     conn.execute(
-        "INSERT INTO programs VALUES "
-        "('UNI-empty', '中小企業庁支援', '', 'A', 0, '2026-04-30')"
+        "INSERT INTO programs VALUES ('UNI-empty', '中小企業庁支援', '', 'A', 0, '2026-04-30')"
     )
     conn.execute(
         "INSERT INTO programs VALUES "
@@ -215,11 +221,15 @@ def test_only_empty_filters_existing_aliases(tmp_path, gen_aliases_mod):
     conn.close()
 
     out_csv = tmp_path / "out.csv"
-    rc = gen_aliases_mod.main([
-        "--jpintel-db", str(db),
-        "--output", str(out_csv),
-        "--only-empty",
-    ])
+    rc = gen_aliases_mod.main(
+        [
+            "--jpintel-db",
+            str(db),
+            "--output",
+            str(out_csv),
+            "--only-empty",
+        ]
+    )
     assert rc == 0
     text = out_csv.read_text(encoding="utf-8-sig")
     assert "UNI-empty" in text

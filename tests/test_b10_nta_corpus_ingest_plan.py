@@ -99,9 +99,7 @@ def _coverage_report() -> dict[str, Any]:
                     "license_missing": None,
                     "license_column_present": False,
                 },
-                "counts_by_dimension": [
-                    {"tax_type": "law:hojin-zei-tsutatsu", "rows": 7}
-                ],
+                "counts_by_dimension": [{"tax_type": "law:hojin-zei-tsutatsu", "rows": 7}],
             },
         },
     }
@@ -159,8 +157,7 @@ def test_generate_ingest_plan_writes_runbook_and_target_shards(tmp_path: Path) -
         "tsutatsu-not-in-cron",
     }
     assert any(
-        query["name"] == "nta_duplicate_source_url_groups"
-        for query in plan["acceptance_queries"]
+        query["name"] == "nta_duplicate_source_url_groups" for query in plan["acceptance_queries"]
     )
 
     shitsugi = next(shard for shard in plan["shards"] if shard["target"] == "shitsugi")

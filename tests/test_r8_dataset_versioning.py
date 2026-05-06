@@ -20,6 +20,7 @@ The fixtures depend on the shared `seeded_db` from `conftest.py`. Each
 test starts by writing valid_from / valid_until on the seeded rows so the
 predicate has something to bite against.
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -86,17 +87,13 @@ def test_past_date_query_returns_then_live_row(client: "TestClient"):
     assert r.status_code == 200, r.text
     body = r.json()
     ids = [row["unified_id"] for row in body["results"]]
-    assert "UNI-test-s-1" in ids, (
-        "row retired on 2026-02-01 must still be visible on 2026-01-15"
-    )
+    assert "UNI-test-s-1" in ids, "row retired on 2026-02-01 must still be visible on 2026-01-15"
 
     # Sanity: at DAY_T2 (after retirement) the same row must be GONE.
     r2 = client.get("/v1/programs/search", params={"as_of_date": DAY_T2, "limit": 50})
     assert r2.status_code == 200
     ids2 = [row["unified_id"] for row in r2.json()["results"]]
-    assert "UNI-test-s-1" not in ids2, (
-        "row retired on 2026-02-01 must be excluded on 2026-03-01"
-    )
+    assert "UNI-test-s-1" not in ids2, "row retired on 2026-02-01 must be excluded on 2026-03-01"
 
 
 def test_live_query_preserves_existing_behavior(client: "TestClient"):

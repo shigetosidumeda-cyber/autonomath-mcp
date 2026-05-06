@@ -17,6 +17,7 @@ across the REST surface; ``api/_error_envelope.py:make_error`` and
 * The ``request_id`` is reused: the same id appears in
   ``response.headers['x-request-id']`` AND ``body['error']['request_id']``.
 """
+
 from __future__ import annotations
 
 
@@ -225,8 +226,7 @@ def test_422_validation_error_carries_envelope(seeded_db, client):
 
 
 def test_documentation_anchors_match_codes():
-    """Every error envelope's `documentation` URL ends with `#<code>`.
-    """
+    """Every error envelope's `documentation` URL ends with `#<code>`."""
     for code in ERROR_CODES:
         body = make_error(code=code)
         assert body["error"]["documentation"].endswith(f"#{code}")
@@ -244,9 +244,11 @@ def test_safe_request_id_mints_id_when_no_state_or_header():
     id is also stamped onto ``request.state.request_id`` so subsequent
     callers in the same request see the same value.
     """
+
     class _FakeReq:
         class state:  # noqa: N801
             pass
+
         headers: dict = {}
 
     # Patch headers to dict-like that returns None for missing keys.

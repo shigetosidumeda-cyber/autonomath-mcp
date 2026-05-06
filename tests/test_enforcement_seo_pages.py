@@ -168,11 +168,11 @@ def fixture_paths(tmp_path: Path) -> dict[str, Path]:
     (site_dir / "sitemap-index.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-        '  <sitemap>\n'
-        '    <loc>https://jpcite.com/sitemap.xml</loc>\n'
-        '    <lastmod>2026-05-01</lastmod>\n'
-        '  </sitemap>\n'
-        '</sitemapindex>\n',
+        "  <sitemap>\n"
+        "    <loc>https://jpcite.com/sitemap.xml</loc>\n"
+        "    <lastmod>2026-05-01</lastmod>\n"
+        "  </sitemap>\n"
+        "</sitemapindex>\n",
         encoding="utf-8",
     )
     return {
@@ -284,9 +284,7 @@ def test_sitemap_structure_is_well_formed(fixture_paths: dict[str, Path]) -> Non
     locs = [u.findtext(f"{SITEMAP_NS}loc") for u in urls]
     assert "https://jpcite.com/enforcement/" in locs
     # All other locs point to act-*.html.
-    detail_locs = [
-        loc for loc in locs if loc != "https://jpcite.com/enforcement/"
-    ]
+    detail_locs = [loc for loc in locs if loc != "https://jpcite.com/enforcement/"]
     for loc in detail_locs:
         assert loc.startswith("https://jpcite.com/enforcement/act-")
         assert loc.endswith(".html")

@@ -19,6 +19,7 @@ Timezone notes (CLAUDE.md "Common gotchas"):
   * Paid quota resets at UTC 月初 00:00 — assert ``reset_timezone="UTC"``
     and the ISO timestamp ends with ``+00:00``.
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -63,9 +64,7 @@ def test_rest_anonymous_usage_returns_3_limit_and_jst_reset(
     ), f"unexpected upgrade_url={upgrade_url!r}"
 
 
-def test_rest_anonymous_usage_does_not_consume_quota(
-    client: TestClient, seeded_db: Path
-) -> None:
+def test_rest_anonymous_usage_does_not_consume_quota(client: TestClient, seeded_db: Path) -> None:
     """The probe must be free — calling it never increments anon_rate_limit.
 
     Hits /v1/usage 3 times then verifies anon_rate_limit row count is 0.
@@ -85,9 +84,7 @@ def test_rest_anonymous_usage_does_not_consume_quota(
     assert n == 0, f"probe inserted {n} anon_rate_limit rows; expected 0"
 
 
-def test_rest_anonymous_usage_reflects_existing_count(
-    client: TestClient, seeded_db: Path
-) -> None:
+def test_rest_anonymous_usage_reflects_existing_count(client: TestClient, seeded_db: Path) -> None:
     """If the IP+fingerprint hash already has N calls today, the
     probe MUST report used=N / remaining=3-N.
     """
@@ -104,9 +101,7 @@ def test_rest_anonymous_usage_reflects_existing_count(
     assert body["remaining"] == 3 - 2, body
 
 
-def test_rest_paid_usage_returns_paid_tier_and_utc_reset(
-    client: TestClient, paid_key: str
-) -> None:
+def test_rest_paid_usage_returns_paid_tier_and_utc_reset(client: TestClient, paid_key: str) -> None:
     """X-API-Key (paid tier) → tier=paid, limit=null, reset_at UTC."""
     r = client.get("/v1/usage", headers={"X-API-Key": paid_key})
     assert r.status_code == 200, r.text
@@ -195,9 +190,7 @@ def test_mcp_get_usage_status_unknown_key_surfaces_error_envelope(
     assert res["error"]["code"] == "key_not_found"
 
 
-def test_mcp_get_usage_status_paid_key_returns_paid_tier(
-    client: TestClient, paid_key: str
-) -> None:
+def test_mcp_get_usage_status_paid_key_returns_paid_tier(client: TestClient, paid_key: str) -> None:
     """Paid api_key → tier=paid, used=0, UTC reset boundary."""
     from jpintel_mcp.mcp.server import get_usage_status
 

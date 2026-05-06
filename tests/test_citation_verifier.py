@@ -7,6 +7,7 @@ and the 422 fences (citation count + excerpt length).
 Network is NEVER touched in this suite — every URL fetch is monkeypatched
 through ``CitationVerifier.fetch_source``.
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -14,7 +15,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from jpintel_mcp.billing.keys import issue_key
+from jpintel_mcp.billing.keys import hash_api_key, issue_key
 from jpintel_mcp.services.citation_verifier import CitationVerifier
 
 if TYPE_CHECKING:
@@ -46,6 +47,18 @@ def paid_key_for_citations(seeded_db: Path) -> str:
     c.commit()
     c.close()
     return raw
+
+
+def _usage_count(db_path: Path, raw_key: str, endpoint: str) -> int:
+    c = sqlite3.connect(db_path)
+    try:
+        (n,) = c.execute(
+            "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = ?",
+            (hash_api_key(raw_key), endpoint),
+        ).fetchone()
+    finally:
+        c.close()
+    return int(n)
 
 
 # ---------------------------------------------------------------------------
@@ -295,6 +308,38 @@ def test_rest_endpoint_marks_caller_supplied_source_text_basis(
     assert r.json()["caller_text_matched_count"] == 1
 
 
+def test_paid_rest_endpoint_final_metering_cap_failure_does_not_bill(
+    client,
+    paid_key_for_citations: str,
+    seeded_db: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from jpintel_mcp.api.middleware import customer_cap
+
+    monkeypatch.setattr(
+        customer_cap,
+        "metered_charge_within_cap",
+        lambda *args, **kwargs: False,
+    )
+
+    r = client.post(
+        "/v1/citations/verify",
+        json={
+            "citations": [
+                {
+                    "source_text": "補助上限は5,000,000円です。",
+                    "excerpt": "5,000,000円",
+                }
+            ]
+        },
+        headers={"X-API-Key": paid_key_for_citations},
+    )
+
+    assert r.status_code == 503, r.text
+    assert r.json()["detail"]["code"] == "billing_cap_final_check_failed"
+    assert _usage_count(seeded_db, paid_key_for_citations, "citations.verify") == 0
+
+
 # ---------------------------------------------------------------------------
 # Test 9 — > 10 citations → 422
 # ---------------------------------------------------------------------------
@@ -305,10 +350,7 @@ def test_rest_endpoint_rejects_more_than_10_citations(
     paid_key_for_citations: str,
 ) -> None:
     payload = {
-        "citations": [
-            {"source_url": f"https://example.com/{i}", "excerpt": "x"}
-            for i in range(11)
-        ]
+        "citations": [{"source_url": f"https://example.com/{i}", "excerpt": "x"} for i in range(11)]
     }
     r = client.post(
         "/v1/citations/verify",

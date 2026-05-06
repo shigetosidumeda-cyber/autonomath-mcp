@@ -9,6 +9,7 @@ days?"). The tests lock in:
   - prefecture filter honors national-programs fallback
   - profile_echo normalization through MCP tool matches REST
 """
+
 from __future__ import annotations
 
 import json
@@ -18,6 +19,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 from fastapi.testclient import TestClient
+
+from jpintel_mcp.api.deps import hash_api_key
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -179,6 +182,46 @@ def test_calendar_rejects_bad_authority_level(client: TestClient) -> None:
     # Normalization doesn't reject Atlantis — it just yields no rows
     assert r.status_code == 200
     assert r.json()["total"] == 0
+
+
+def test_calendar_deadlines_paid_final_cap_failure_returns_503_without_usage_event(
+    seeded_db_with_deadlines: dict[str, str],
+    seeded_db: Path,
+    client: TestClient,
+    paid_key: str,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import jpintel_mcp.api.deps as deps
+
+    endpoint = "calendar.deadlines"
+    key_hash = hash_api_key(paid_key)
+
+    def usage_count() -> int:
+        conn = sqlite3.connect(seeded_db)
+        try:
+            (count,) = conn.execute(
+                "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = ?",
+                (key_hash, endpoint),
+            ).fetchone()
+            return int(count)
+        finally:
+            conn.close()
+
+    def _reject_final_cap(*_args: object, **_kwargs: object) -> tuple[bool, bool]:
+        return False, False
+
+    before = usage_count()
+    monkeypatch.setattr(deps, "_metered_cap_final_check", _reject_final_cap)
+
+    r = client.get(
+        "/v1/calendar/deadlines",
+        headers={"X-API-Key": paid_key},
+        params={"within_days": 30},
+    )
+
+    assert r.status_code == 503, r.text
+    assert r.json()["detail"]["code"] == "billing_cap_final_check_failed"
+    assert usage_count() == before
 
 
 # ---------------------------------------------------------------------------

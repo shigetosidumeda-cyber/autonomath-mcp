@@ -79,8 +79,12 @@ def test_all_audience_and_vertical_enum_values_present(entries):
     """Every one of 5 audience × 6 vertical must be represented (2 phrases each)."""
     seen_audience = {e["audience"] for e in entries}
     seen_vertical = {e["vertical"] for e in entries}
-    assert seen_audience == ALLOWED_AUDIENCE, f"missing audience: {ALLOWED_AUDIENCE - seen_audience}"
-    assert seen_vertical == ALLOWED_VERTICAL, f"missing vertical: {ALLOWED_VERTICAL - seen_vertical}"
+    assert seen_audience == ALLOWED_AUDIENCE, (
+        f"missing audience: {ALLOWED_AUDIENCE - seen_audience}"
+    )
+    assert seen_vertical == ALLOWED_VERTICAL, (
+        f"missing vertical: {ALLOWED_VERTICAL - seen_vertical}"
+    )
     # Each (audience, vertical) cell must have exactly 2 phrases
     from collections import Counter
 

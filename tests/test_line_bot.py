@@ -15,6 +15,7 @@ These tests apply migrations 021 (`line_users`) and 106
 schema.sql doesn't ship those tables (they live in the migrations
 folder and are applied via entrypoint.sh / scripts/migrate.py at boot).
 """
+
 from __future__ import annotations
 
 import base64
@@ -156,9 +157,7 @@ def test_flow_idle_returns_welcome():
     assert len(messages) == 1
     assert flow.WELCOME_TEXT in messages[0]["text"]
     quick = messages[0]["quickReply"]["items"]
-    assert {q["action"]["text"] for q in quick} == {
-        label for label, _ in flow.INDUSTRY_CHOICES
-    }
+    assert {q["action"]["text"] for q in quick} == {label for label, _ in flow.INDUSTRY_CHOICES}
 
 
 def test_flow_industry_to_prefecture():
@@ -189,9 +188,7 @@ def test_flow_prefecture_to_employees():
     assert state["step"] == "employees"
     assert state["answers"]["prefecture"] == "東京都"
     quick = messages[0]["quickReply"]["items"]
-    assert {q["action"]["text"] for q in quick} == {
-        label for label, _ in flow.EMPLOYEE_CHOICES
-    }
+    assert {q["action"]["text"] for q in quick} == {label for label, _ in flow.EMPLOYEE_CHOICES}
 
 
 def test_flow_employees_to_revenue():
@@ -241,7 +238,7 @@ def test_flow_revenue_no_match_falls_back():
             "step": "revenue",
             "answers": {
                 "industry": "建設業",
-                "prefecture": "鳥取県",   # nothing seeded for 鳥取
+                "prefecture": "鳥取県",  # nothing seeded for 鳥取
                 "employees": "〜5人",
             },
         },
@@ -436,6 +433,5 @@ def test_no_connect_or_reseller_in_line_bot_code():
                 found.append(f"{f.name}: {pat!r}")
     assert not found, (
         "Forbidden pattern(s) leaked into the LINE bot surface — these "
-        "violate the locked 100% organic-acquisition policy:\n  "
-        + "\n  ".join(found)
+        "violate the locked 100% organic-acquisition policy:\n  " + "\n  ".join(found)
     )

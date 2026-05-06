@@ -11,6 +11,7 @@ Crawl order is breadth-first with a visited set. A dead internal link
 (404, 5xx) fails the test with the referring page + href. Anchors (#foo)
 are resolved to the page, not the anchor — we only assert the page loads.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -55,9 +56,7 @@ def _strip_fragment(href: str) -> str:
 
 @pytest.mark.asyncio
 @pytest.mark.e2e
-async def test_internal_link_crawl_has_no_dead_links(
-    page: Page, url_for, base_url: str
-) -> None:
+async def test_internal_link_crawl_has_no_dead_links(page: Page, url_for, base_url: str) -> None:
     """Crawl each known page + its first-hop internal links; assert all 200.
 
     Bounded to one hop so the test stays under 30s even on staging — the
@@ -119,9 +118,6 @@ async def test_internal_link_crawl_has_no_dead_links(
             if r.status not in (200, 204, 304):
                 failures.append((start, target, r.status))
 
-    assert not failures, (
-        "dead internal links:\n"
-        + "\n".join(
-            f"  {ref} -> {href} (HTTP {status})" for ref, href, status in failures
-        )
+    assert not failures, "dead internal links:\n" + "\n".join(
+        f"  {ref} -> {href} (HTTP {status})" for ref, href, status in failures
     )

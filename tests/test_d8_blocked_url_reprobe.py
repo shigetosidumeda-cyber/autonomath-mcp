@@ -125,12 +125,7 @@ def test_transparent_prober_uses_ua_respects_robots_and_get_fallback() -> None:
         if request.url.path == "/robots.txt":
             return httpx.Response(
                 200,
-                text=(
-                    "User-agent: *\n"
-                    "Disallow: /private\n"
-                    "User-agent: jpcite-research\n"
-                    "Allow: /\n"
-                ),
+                text=("User-agent: *\nDisallow: /private\nUser-agent: jpcite-research\nAllow: /\n"),
             )
         if request.method == "HEAD":
             return httpx.Response(405, request=request)

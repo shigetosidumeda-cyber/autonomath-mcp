@@ -64,9 +64,7 @@ class TestBuildFtsMatchPure:
         FTS5 phrase-quote syntax. This is the core CLAUDE.md gotcha
         workaround: forces trigrams to appear contiguously."""
         out = _build_fts_match("税額控除")
-        assert out == '"税額控除"', (
-            f"pure kanji compound was NOT phrase-quoted; got {out!r}"
-        )
+        assert out == '"税額控除"', f"pure kanji compound was NOT phrase-quoted; got {out!r}"
 
     def test_two_char_kanji_phrase_quoted(self) -> None:
         """Two-char kanji (``農業``) is the threshold case from CLAUDE.md."""
@@ -117,9 +115,7 @@ class TestBuildFtsMatchPure:
         # producing a literal-triple-quote phrase that FTS5 parses but
         # never matches.
         out = _build_fts_match('"DX" 製造業')
-        assert '"""' not in out, (
-            f"triple-quote escape leaked into FTS expression: {out!r}"
-        )
+        assert '"""' not in out, f"triple-quote escape leaked into FTS expression: {out!r}"
         assert '"DX"' in out
         assert '"製造業"' in out
         assert "AND" in out
@@ -128,10 +124,10 @@ class TestBuildFtsMatchPure:
         """``'"中小企業 デジタル化"'`` — the user wants the whole thing as a
         phrase, internal space included. Tokenizer must NOT split on the
         space inside the user quote."""
-        toks = _tokenize_query("\"中小企業 デジタル化\"")
+        toks = _tokenize_query('"中小企業 デジタル化"')
         assert len(toks) == 1
         assert toks[0] == ("中小企業 デジタル化", True)
-        out = _build_fts_match("\"中小企業 デジタル化\"")
+        out = _build_fts_match('"中小企業 デジタル化"')
         assert out == '"中小企業 デジタル化"'
 
     def test_user_quoted_disables_kana_expansion(self) -> None:
@@ -294,10 +290,16 @@ class TestTokenizeQuery:
 # ---------------------------------------------------------------------------
 
 
-def _insert(conn: sqlite3.Connection, *, unified_id: str, primary_name: str,
-            tier: str | None, excluded: int = 0,
-            aliases: list[str] | None = None,
-            enriched_text: str = "") -> None:
+def _insert(
+    conn: sqlite3.Connection,
+    *,
+    unified_id: str,
+    primary_name: str,
+    tier: str | None,
+    excluded: int = 0,
+    aliases: list[str] | None = None,
+    enriched_text: str = "",
+) -> None:
     """Mirror tests/test_search_relevance.py::_insert."""
     now = datetime.now(UTC).isoformat()
     aliases_json = json.dumps(aliases or [], ensure_ascii=False)
@@ -315,17 +317,34 @@ def _insert(conn: sqlite3.Connection, *, unified_id: str, primary_name: str,
             enriched_json, source_mentions_json, updated_at
         ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
         (
-            unified_id, primary_name, aliases_json,
-            "国", None, None, None,
-            "補助金", None,
-            None, None, None,
-            None, tier, None, None, None,
-            excluded, None,
-            None, None,
+            unified_id,
+            primary_name,
+            aliases_json,
+            "国",
+            None,
+            None,
+            None,
+            "補助金",
+            None,
+            None,
+            None,
+            None,
+            None,
+            tier,
+            None,
+            None,
+            None,
+            excluded,
+            None,
+            None,
+            None,
             json.dumps([], ensure_ascii=False),
             json.dumps([], ensure_ascii=False),
-            None, None,
-            enriched_text, None, now,
+            None,
+            None,
+            enriched_text,
+            None,
+            now,
         ),
     )
     conn.execute(
@@ -348,6 +367,7 @@ def _reset_per_ip_endpoint_buckets() -> None:
         from jpintel_mcp.api.middleware.per_ip_endpoint_limit import (
             _reset_per_ip_endpoint_buckets as _r,
         )
+
         _r()
     except ImportError:
         pass
@@ -387,7 +407,8 @@ def db_conn(seeded_db: Path) -> sqlite3.Connection:
 
 
 def test_q_zeigaku_kojo_returns_tax_credit_rows_not_furusato(
-    client: TestClient, db_conn: sqlite3.Connection,
+    client: TestClient,
+    db_conn: sqlite3.Connection,
 ) -> None:
     """``q=税額控除`` must return programs whose primary_name carries the
     phrase ``税額控除``, NOT ふるさと納税-only rows that share only the
@@ -423,7 +444,8 @@ def test_q_zeigaku_kojo_returns_tax_credit_rows_not_furusato(
 
 
 def test_q_gx_compound_returns_gx_subsidies(
-    client: TestClient, db_conn: sqlite3.Connection,
+    client: TestClient,
+    db_conn: sqlite3.Connection,
 ) -> None:
     """``q=GX 補助金`` (mixed ASCII + kanji) — ASCII 2-char route
     must surface rows containing GX in name+aliases."""
@@ -444,7 +466,8 @@ def test_q_gx_compound_returns_gx_subsidies(
 
 
 def test_q_chusho_kigyo_returns_smb_rows(
-    client: TestClient, db_conn: sqlite3.Connection,
+    client: TestClient,
+    db_conn: sqlite3.Connection,
 ) -> None:
     """``q=中小企業`` (4-char kanji compound) — phrase-quoted, must
     return SMB-related rows."""
@@ -463,7 +486,8 @@ def test_q_chusho_kigyo_returns_smb_rows(
 
 
 def test_q_user_quoted_dx_preserved(
-    client: TestClient, db_conn: sqlite3.Connection,
+    client: TestClient,
+    db_conn: sqlite3.Connection,
 ) -> None:
     # q='"DX" 製造業' — the user explicitly phrase-quoted DX. The rewriter
     # must NOT produce a triple-quote escape sequence (which the prior
@@ -478,7 +502,8 @@ def test_q_user_quoted_dx_preserved(
         tier="A",
     )
     r = client.get(
-        "/v1/programs/search", params={"q": '"DX" 製造業', "limit": 5},
+        "/v1/programs/search",
+        params={"q": '"DX" 製造業', "limit": 5},
     )
     assert r.status_code == 200
     body = r.json()
@@ -499,9 +524,7 @@ def test_q_empty_returns_empty_not_corpus_dump(client: TestClient) -> None:
     r = client.get("/v1/programs/search?q=&limit=10")
     assert r.status_code == 200
     body = r.json()
-    assert body["total"] == 0, (
-        f"empty q dumped {body['total']} rows; expected 0"
-    )
+    assert body["total"] == 0, f"empty q dumped {body['total']} rows; expected 0"
     assert body["results"] == []
 
 
@@ -547,9 +570,7 @@ def test_q_single_kanji_does_not_crash(client: TestClient) -> None:
     assert r.status_code == 200
 
 
-def test_q_punctuation_only_does_not_crash(
-    client: TestClient, paid_key: str
-) -> None:
+def test_q_punctuation_only_does_not_crash(client: TestClient, paid_key: str) -> None:
     """``q="**"`` / ``q=":;"`` — punctuation-only. Tokenizer returns
     empty; LIKE path takes over with the literal substring (which
     matches 0 in practice)."""
@@ -559,13 +580,12 @@ def test_q_punctuation_only_does_not_crash(
             params={"q": q, "limit": 3},
             headers={"X-API-Key": paid_key},
         )
-        assert r.status_code == 200, (
-            f"q={q!r} crashed: status={r.status_code} body={r.text[:200]}"
-        )
+        assert r.status_code == 200, f"q={q!r} crashed: status={r.status_code} body={r.text[:200]}"
 
 
 def test_q_mixed_punctuation_separates_tokens(
-    client: TestClient, db_conn: sqlite3.Connection,
+    client: TestClient,
+    db_conn: sqlite3.Connection,
 ) -> None:
     """``q="中小企業, 製造業"`` (comma separator) — must split into two
     tokens even without whitespace. Prior behavior glued the comma onto
@@ -589,7 +609,8 @@ def test_q_mixed_punctuation_separates_tokens(
 
 
 def test_q_number_kanji_compound_works(
-    client: TestClient, db_conn: sqlite3.Connection,
+    client: TestClient,
+    db_conn: sqlite3.Connection,
 ) -> None:
     """``q="100億 補助金"`` — number+kanji token (``100億``) plus kanji
     token (``補助金``). Must AND, must phrase-quote each."""
@@ -610,7 +631,8 @@ def test_q_number_kanji_compound_works(
 
 
 def test_q_user_quoted_disables_kana_expansion(
-    client: TestClient, db_conn: sqlite3.Connection,
+    client: TestClient,
+    db_conn: sqlite3.Connection,
 ) -> None:
     """``q='"のうぎょう"'`` — user explicitly phrase-quoted a hiragana
     reading. Rewriter must NOT inject KANA_EXPANSIONS (which would
@@ -627,15 +649,14 @@ def test_q_user_quoted_disables_kana_expansion(
     r1 = client.get("/v1/programs/search", params={"q": "のうぎょう", "limit": 10})
     assert r1.status_code == 200
     names1 = [row["primary_name"] for row in r1.json()["results"]]
-    assert "テスト農業特例補助金" in names1, (
-        f"bare hiragana query did not expand; names={names1}"
-    )
+    assert "テスト農業特例補助金" in names1, f"bare hiragana query did not expand; names={names1}"
     # Quoted '"のうぎょう"' → no expansion → seed row (which only has 農業)
     # must NOT be in the result set unless the corpus already had a doc
     # whose enriched text literally contains のうぎょう (unlikely for the
     # seed).
     r2 = client.get(
-        "/v1/programs/search", params={"q": '"のうぎょう"', "limit": 10},
+        "/v1/programs/search",
+        params={"q": '"のうぎょう"', "limit": 10},
     )
     assert r2.status_code == 200
     names2 = [row["primary_name"] for row in r2.json()["results"]]

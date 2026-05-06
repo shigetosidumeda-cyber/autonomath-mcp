@@ -33,9 +33,7 @@ def stripe_env(monkeypatch):
 
     monkeypatch.setattr(settings, "stripe_secret_key", "sk_test_dummy", raising=False)
     monkeypatch.setattr(settings, "stripe_webhook_secret", "whsec_dummy", raising=False)
-    monkeypatch.setattr(
-        settings, "stripe_price_per_request", "price_metered_test", raising=False
-    )
+    monkeypatch.setattr(settings, "stripe_price_per_request", "price_metered_test", raising=False)
     yield settings
 
 
@@ -43,7 +41,7 @@ def _patch_webhook_construct_event(monkeypatch, event: dict):
     """Bypass Stripe signature verification; still exercises dispatch logic."""
     from jpintel_mcp.api import billing as billing_mod
 
-    def _construct(_body, _sig, _secret):
+    def _construct(_body, _sig, _secret, **_kwargs):
         return event
 
     monkeypatch.setattr(billing_mod.stripe.Webhook, "construct_event", _construct)
@@ -210,7 +208,10 @@ def test_invoice_paid_replay_does_not_send_hidden_welcome_email(
     monkeypatch.setattr(
         billing_mod.stripe.Subscription,
         "retrieve",
-        lambda _id, **_: {"id": "sub_dedup_email", "items": {"data": [{"price": {"id": "price_metered_test"}}]}},
+        lambda _id, **_: {
+            "id": "sub_dedup_email",
+            "items": {"data": [{"price": {"id": "price_metered_test"}}]},
+        },
     )
 
     for _ in range(3):
@@ -292,6 +293,7 @@ def test_livemode_mismatch_in_dev_env_ignores_live_event(
     _patch_webhook_construct_event(monkeypatch, event)
 
     import logging
+
     with caplog.at_level(logging.ERROR, logger="jpintel.billing"):
         r = client.post(
             "/v1/billing/webhook",
@@ -466,7 +468,7 @@ def test_concurrent_invoice_paid_and_subscription_updated_converge(
     # construct_event is patched per-thread. We swap construct_event to a
     # lookup keyed by signature header so both threads can run independently
     # against the same TestClient.
-    def _construct(body, sig, secret):
+    def _construct(body, sig, secret, **_kwargs):
         # `sig` is unique per request (we set it from each thread). Use the
         # body itself to pick the event back; both events serialize unique
         # JSON so the body is the natural lookup key.
@@ -508,8 +510,7 @@ def test_concurrent_invoice_paid_and_subscription_updated_converge(
             ("sub_concurrent",),
         ).fetchone()
         (n_events,) = c.execute(
-            "SELECT COUNT(*) FROM stripe_webhook_events "
-            "WHERE event_id IN (?, ?)",
+            "SELECT COUNT(*) FROM stripe_webhook_events WHERE event_id IN (?, ?)",
             ("evt_concurrent_paid", "evt_concurrent_updated"),
         ).fetchone()
     finally:

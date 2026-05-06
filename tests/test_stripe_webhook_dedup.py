@@ -15,6 +15,7 @@ marker on migration 053 means jpintel.db). The seeded_db fixture in
 conftest.py runs init_db() which executes schema.sql, and migration 053
 is replicated into schema.sql (verified at fixture boot).
 """
+
 from __future__ import annotations
 
 import json
@@ -35,9 +36,7 @@ def stripe_env(monkeypatch):
 
     monkeypatch.setattr(settings, "stripe_secret_key", "sk_test_dummy", raising=False)
     monkeypatch.setattr(settings, "stripe_webhook_secret", "whsec_dummy", raising=False)
-    monkeypatch.setattr(
-        settings, "stripe_price_per_request", "price_metered_test", raising=False
-    )
+    monkeypatch.setattr(settings, "stripe_price_per_request", "price_metered_test", raising=False)
     monkeypatch.setattr(settings, "env", "test", raising=False)
     yield settings
 
@@ -91,8 +90,7 @@ def test_first_delivery_processes_and_records_event(
     c = sqlite3.connect(seeded_db)
     try:
         row = c.execute(
-            "SELECT event_id, event_type, livemode FROM stripe_webhook_events"
-            " WHERE event_id = ?",
+            "SELECT event_id, event_type, livemode FROM stripe_webhook_events WHERE event_id = ?",
             ("evt_dedup_first_legacy",),
         ).fetchone()
         assert row is not None, "first delivery did not record event into dedup table"
@@ -114,9 +112,7 @@ def test_first_delivery_processes_and_records_event(
 # ---------------------------------------------------------------------------
 
 
-def test_duplicate_replay_short_circuits(
-    client, stripe_env, monkeypatch, seeded_db: Path
-):
+def test_duplicate_replay_short_circuits(client, stripe_env, monkeypatch, seeded_db: Path):
     """Second delivery of the same event_id returns duplicate_ignored.
 
     The dedup row already exists from delivery #1. Delivery #2 must:
@@ -144,9 +140,7 @@ def test_duplicate_replay_short_circuits(
 
     # Replay — same event_id. The handler must short-circuit before any
     # subscription side-effect or background task scheduling.
-    with patch(
-        "jpintel_mcp.api.billing._apply_invoice_metadata_safe"
-    ) as mock_apply:
+    with patch("jpintel_mcp.api.billing._apply_invoice_metadata_safe") as mock_apply:
         r2 = _post_webhook(client, event)
 
     assert r2.status_code == 200, r2.text
@@ -162,16 +156,12 @@ def test_duplicate_replay_short_circuits(
             "SELECT COUNT(*) FROM stripe_webhook_events WHERE event_id = ?",
             ("evt_dedup_replay_legacy",),
         ).fetchone()
-        assert n_events == 1, (
-            f"expected single dedup row after replay, got {n_events}"
-        )
+        assert n_events == 1, f"expected single dedup row after replay, got {n_events}"
 
         (n_keys,) = c.execute(
             "SELECT COUNT(*) FROM api_keys WHERE stripe_subscription_id = ?",
             ("sub_dedup_replay",),
         ).fetchone()
-        assert n_keys == 0, (
-            f"subscription.created replay must not mint keys, got {n_keys} keys"
-        )
+        assert n_keys == 0, f"subscription.created replay must not mint keys, got {n_keys} keys"
     finally:
         c.close()

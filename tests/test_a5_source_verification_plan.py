@@ -98,9 +98,7 @@ def test_plan_commands_use_existing_domain_sharded_backfill() -> None:
         batch_limit=10,
     )
 
-    commandable = next(
-        row for row in report["domain_coverage"] if row["domain"] == "fast.example"
-    )
+    commandable = next(row for row in report["domain_coverage"] if row["domain"] == "fast.example")
     missing_domain = next(
         row for row in report["domain_coverage"] if row["domain"] == "missing.example"
     )

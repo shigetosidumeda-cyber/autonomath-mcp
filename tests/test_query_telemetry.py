@@ -7,6 +7,7 @@ Rules:
 - Real app + TestClient (no DB mocking per CLAUDE.md).
 - The seeded_db + client fixtures from conftest.py are reused as-is.
 """
+
 from __future__ import annotations
 
 import json
@@ -83,9 +84,7 @@ def test_telemetry_rest_success(client, telemetry_handler) -> None:
     except json.JSONDecodeError as exc:
         pytest.fail(f"telemetry log is not valid JSON: {exc!r}\nraw={raw!r}")
 
-    assert REQUIRED_FIELDS.issubset(data.keys()), (
-        f"Missing fields: {REQUIRED_FIELDS - data.keys()}"
-    )
+    assert REQUIRED_FIELDS.issubset(data.keys()), f"Missing fields: {REQUIRED_FIELDS - data.keys()}"
     assert data["channel"] == "rest"
     assert data["endpoint"] == "/v1/programs/search"
     assert isinstance(data["latency_ms"], int)
@@ -115,9 +114,7 @@ def test_telemetry_rest_404(client, telemetry_handler) -> None:
     except json.JSONDecodeError as exc:
         pytest.fail(f"telemetry log is not valid JSON: {exc!r}\nraw={raw!r}")
 
-    assert REQUIRED_FIELDS.issubset(data.keys()), (
-        f"Missing fields: {REQUIRED_FIELDS - data.keys()}"
-    )
+    assert REQUIRED_FIELDS.issubset(data.keys()), f"Missing fields: {REQUIRED_FIELDS - data.keys()}"
     assert data["channel"] == "rest"
     assert data["status"] == 404
     # Starlette returns 404 as a response (not a raised exception) for

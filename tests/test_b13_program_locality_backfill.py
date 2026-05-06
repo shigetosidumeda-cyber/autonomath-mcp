@@ -37,12 +37,11 @@ def _write_json(path: Path, data: object) -> Path:
 
 
 def test_extract_prefecture_from_url_pref_host() -> None:
-    assert backfill.extract_prefecture_from_url(
-        "https://www.pref.aichi.jp/soshiki/"
-    ) == "愛知県"
-    assert backfill.extract_prefecture_from_url(
-        "https://www.city.akiruno.tokyo.jp/0001.html"
-    ) == "東京都"
+    assert backfill.extract_prefecture_from_url("https://www.pref.aichi.jp/soshiki/") == "愛知県"
+    assert (
+        backfill.extract_prefecture_from_url("https://www.city.akiruno.tokyo.jp/0001.html")
+        == "東京都"
+    )
 
 
 def test_backfill_uses_existing_municipality_without_overwrite(tmp_path: Path) -> None:

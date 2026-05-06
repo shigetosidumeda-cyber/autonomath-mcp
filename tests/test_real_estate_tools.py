@@ -96,9 +96,7 @@ def test_real_estate_tools_not_registered_when_disabled() -> None:
         "print(f'count={len(names)};leaked={leaked}')"
     )
     out = _run_in_subprocess(snippet, env_flag="")
-    assert "leaked=[]" in out, (
-        f"real estate tools leaked into default env: {out}"
-    )
+    assert "leaked=[]" in out, f"real estate tools leaked into default env: {out}"
 
 
 # ---------------------------------------------------------------------------
@@ -146,8 +144,7 @@ def test_real_estate_tools_registered_when_enabled() -> None:
         ),
         (
             "dd_property_am",
-            "fn(prefecture='神奈川県', city='横浜市西区', "
-            "owner_corporate_number='1234567890123')",
+            "fn(prefecture='神奈川県', city='横浜市西区', owner_corporate_number='1234567890123')",
         ),
         (
             "cross_check_zoning",
@@ -206,9 +203,7 @@ def test_real_estate_paginated_stub_envelope(fn_name: str, call: str) -> None:
         "print(repr(res))"
     )
     out = _run_in_subprocess(snippet, env_flag="1")
-    assert "'total': 0" in out, (
-        f"paginated stub {fn_name!r} must report total=0: {out}"
-    )
+    assert "'total': 0" in out, f"paginated stub {fn_name!r} must report total=0: {out}"
     assert "'results': []" in out, (
         f"paginated stub {fn_name!r} must return empty results list: {out}"
     )
@@ -275,9 +270,7 @@ def test_real_estate_stub_schema_shape(fn_name: str) -> None:
     sig = inspect.signature(fn)
     actual = set(sig.parameters.keys())
     expected = _EXPECTED_PARAMS[fn_name]
-    assert actual == expected, (
-        f"{fn_name} parameters mismatch: expected {expected}, got {actual}"
-    )
+    assert actual == expected, f"{fn_name} parameters mismatch: expected {expected}, got {actual}"
     # Every parameter must be type-annotated (Annotated[..., Field(...)])
     # — the Field carries the schema description used by FastMCP.
     for pname, p in sig.parameters.items():
@@ -286,6 +279,4 @@ def test_real_estate_stub_schema_shape(fn_name: str) -> None:
         )
     # Docstring must be non-empty (FastMCP uses it as the tool description
     # when the decorator is bare).
-    assert (inspect.getdoc(fn) or "").strip(), (
-        f"{fn_name} has empty docstring"
-    )
+    assert (inspect.getdoc(fn) or "").strip(), f"{fn_name} has empty docstring"

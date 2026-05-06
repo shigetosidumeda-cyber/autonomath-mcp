@@ -24,6 +24,7 @@ Coverage focus
 
 from __future__ import annotations
 
+import contextlib
 import json
 import sqlite3
 from pathlib import Path
@@ -66,6 +67,24 @@ def kaikei_trial_key(seeded_db: Path) -> str:
     c.commit()
     c.close()
     return raw
+
+
+@pytest.fixture(autouse=True)
+def _ensure_audit_seal_tables(seeded_db: Path):
+    """Layer audit_seals migrations onto the baseline seeded test DB."""
+    migrations = _REPO / "scripts" / "migrations"
+    for mig in ("089_audit_seal_table.sql", "119_audit_seal_seal_id_columns.sql"):
+        c = sqlite3.connect(seeded_db)
+        try:
+            with contextlib.suppress(sqlite3.OperationalError):
+                c.executescript((migrations / mig).read_text(encoding="utf-8"))
+            c.commit()
+        finally:
+            c.close()
+
+    from jpintel_mcp.api._audit_seal import _reset_corpus_snapshot_cache_for_tests
+
+    _reset_corpus_snapshot_cache_for_tests()
 
 
 @pytest.fixture(autouse=True)
@@ -240,9 +259,7 @@ def test_snapshot_attestation_requires_idempotency_key(client, kaikei_key):
     assert r.json()["detail"]["code"] == "idempotency_key_required"
 
 
-def test_snapshot_attestation_idempotency_dedupes_billing(
-    client, kaikei_key, seeded_db
-):
+def test_snapshot_attestation_idempotency_dedupes_billing(client, kaikei_key, seeded_db):
     key_hash = hash_api_key(kaikei_key)
     headers = _idem_headers(
         kaikei_key,
@@ -778,6 +795,121 @@ def test_cite_chain_returns_multi_level_tree(client, kaikei_key):
     # §47条の2 envelope on the response.
     assert "47条の2" in body["_disclaimer"]
     assert body["billing"]["units"] == 1
+    seal = body["audit_seal"]
+    assert seal["seal_id"].startswith("seal_")
+    assert seal["verify_endpoint"] == f"/v1/audit/seals/{seal['seal_id']}"
+
+    verify = client.get(seal["verify_endpoint"])
+    assert verify.status_code == 200, verify.text
+    assert verify.json()["verified"] is True
+
+
+def test_cite_chain_final_metering_cap_failure_not_billed_or_sealed(
+    client,
+    kaikei_key,
+    seeded_db: Path,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    from jpintel_mcp.api.middleware import customer_cap
+
+    key_hash = hash_api_key(kaikei_key)
+
+    def usage_count() -> int:
+        c = sqlite3.connect(seeded_db)
+        try:
+            return int(
+                c.execute(
+                    "SELECT COUNT(*) FROM usage_events "
+                    "WHERE key_hash = ? AND endpoint = 'audit.cite_chain'",
+                    (key_hash,),
+                ).fetchone()[0]
+            )
+        finally:
+            c.close()
+
+    def audit_seal_count() -> int:
+        c = sqlite3.connect(seeded_db)
+        try:
+            return int(
+                c.execute(
+                    "SELECT COUNT(*) FROM audit_seals "
+                    "WHERE api_key_hash = ? AND endpoint = 'audit.cite_chain'",
+                    (key_hash,),
+                ).fetchone()[0]
+            )
+        finally:
+            c.close()
+
+    before_usage = usage_count()
+    before_seals = audit_seal_count()
+    monkeypatch.setattr(
+        customer_cap,
+        "metered_charge_within_cap",
+        lambda *args, **kwargs: False,
+    )
+
+    r = client.get(
+        "/v1/audit/cite_chain/TAX-aaaaaaaaaa",
+        headers={"X-API-Key": kaikei_key},
+    )
+
+    assert r.status_code == 503, r.text
+    assert r.json()["detail"]["code"] == "billing_cap_final_check_failed"
+    assert usage_count() == before_usage
+    assert audit_seal_count() == before_seals
+
+
+def test_cite_chain_audit_seal_persist_failure_not_billed_or_sealed(
+    client,
+    kaikei_key,
+    seeded_db: Path,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    key_hash = hash_api_key(kaikei_key)
+
+    def usage_count() -> int:
+        c = sqlite3.connect(seeded_db)
+        try:
+            return int(
+                c.execute(
+                    "SELECT COUNT(*) FROM usage_events "
+                    "WHERE key_hash = ? AND endpoint = 'audit.cite_chain'",
+                    (key_hash,),
+                ).fetchone()[0]
+            )
+        finally:
+            c.close()
+
+    def audit_seal_count() -> int:
+        c = sqlite3.connect(seeded_db)
+        try:
+            return int(
+                c.execute(
+                    "SELECT COUNT(*) FROM audit_seals "
+                    "WHERE api_key_hash = ? AND endpoint = 'audit.cite_chain'",
+                    (key_hash,),
+                ).fetchone()[0]
+            )
+        finally:
+            c.close()
+
+    before_usage = usage_count()
+    before_seals = audit_seal_count()
+
+    def fail_persist(*args, **kwargs) -> None:  # noqa: ANN002, ANN003
+        raise sqlite3.OperationalError("forced audit seal persist failure")
+
+    monkeypatch.setattr("jpintel_mcp.api._audit_seal.persist_seal", fail_persist)
+
+    r = client.get(
+        "/v1/audit/cite_chain/TAX-aaaaaaaaaa",
+        headers={"X-API-Key": kaikei_key},
+    )
+
+    assert r.status_code == 503, r.text
+    assert r.json()["detail"]["code"] == "audit_seal_persist_failed"
+    assert usage_count() == before_usage
+    assert audit_seal_count() == before_seals
 
 
 def test_cite_chain_404_for_unknown_ruleset(client, kaikei_key):

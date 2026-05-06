@@ -14,16 +14,13 @@ The endpoint is anonymous-accessible and symmetrical to §31 disclosure
 Email layer is stubbed via a monkeypatched
 `_notify_operator_and_requester` recorder so we don't reach Postmark.
 """
+
 from __future__ import annotations
 
 import json
 import sqlite3
-from typing import TYPE_CHECKING
 
 import pytest
-
-if TYPE_CHECKING:
-    from pathlib import Path  # noqa: F401  (kept for parallel structure with test_appi_disclosure.py)
 
 
 @pytest.fixture()
@@ -41,9 +38,10 @@ def email_recorder(monkeypatch):
 
 
 @pytest.fixture(autouse=True)
-def _clear_appi_rows(seeded_db):
+def _clear_appi_rows(seeded_db, monkeypatch):
     """Each test starts with an empty intake table so duplicate-detection
     assertions don't bleed between cases."""
+    monkeypatch.delenv("CLOUDFLARE_TURNSTILE_SECRET", raising=False)
     c = sqlite3.connect(seeded_db)
     try:
         c.execute("DELETE FROM appi_deletion_requests")

@@ -102,9 +102,7 @@ def test_unknown_public_source_is_never_promoted_without_review() -> None:
 def test_proprietary_pdl_domain_stays_review_required() -> None:
     mod = _load_module()
 
-    classified = mod.classify_source_url(
-        "https://www.nta.go.jp/taxes/shiraberu/invoice/index.htm"
-    )
+    classified = mod.classify_source_url("https://www.nta.go.jp/taxes/shiraberu/invoice/index.htm")
 
     assert classified is not None
     proposed_license, confidence, reason = classified

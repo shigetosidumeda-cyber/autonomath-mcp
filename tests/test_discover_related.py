@@ -29,12 +29,15 @@ fail-open to an empty list, not 5xx.
 
 from __future__ import annotations
 
+import contextlib
 import sqlite3
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
+
+from jpintel_mcp.api.deps import hash_api_key
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -336,6 +339,24 @@ def fixture_db(tmp_path_factory: pytest.TempPathFactory) -> Path:
 
 
 @pytest.fixture(autouse=True)
+def _ensure_audit_seal_tables(seeded_db: Path) -> None:
+    """Layer audit_seals migrations onto the baseline seeded test DB."""
+    migrations = Path(__file__).resolve().parents[1] / "scripts" / "migrations"
+    conn = sqlite3.connect(seeded_db)
+    try:
+        for mig in ("089_audit_seal_table.sql", "119_audit_seal_seal_id_columns.sql"):
+            with contextlib.suppress(sqlite3.OperationalError):
+                conn.executescript((migrations / mig).read_text(encoding="utf-8"))
+        conn.commit()
+    finally:
+        conn.close()
+
+    from jpintel_mcp.api._audit_seal import _reset_corpus_snapshot_cache_for_tests
+
+    _reset_corpus_snapshot_cache_for_tests()
+
+
+@pytest.fixture(autouse=True)
 def _override_paths(
     fixture_db: Path, tmp_db_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> Iterator[None]:
@@ -440,6 +461,49 @@ def test_envelope_complies(client: TestClient, paid_key: str) -> None:
     assert seal.get("call_id"), "audit_seal must carry call_id"
 
 
+def test_paid_final_cap_failure_returns_503_without_usage_event(
+    client: TestClient,
+    seeded_db: Path,
+    paid_key: str,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Paid 2xx must fail closed if the final billing cap rejects the charge."""
+
+    def _reject_final_cap(*_args, **_kwargs):
+        return False, False
+
+    import jpintel_mcp.api.deps as deps
+
+    key_hash = hash_api_key(paid_key)
+    conn = sqlite3.connect(seeded_db)
+    try:
+        (before,) = conn.execute(
+            "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = ?",
+            (key_hash, "discover.related"),
+        ).fetchone()
+    finally:
+        conn.close()
+
+    monkeypatch.setattr(deps, "_metered_cap_final_check", _reject_final_cap)
+
+    r = client.get(
+        "/v1/discover/related/UNI-test-s-1?k=10",
+        headers={"X-API-Key": paid_key},
+    )
+    assert r.status_code == 503, r.text
+    assert r.json()["detail"]["code"] == "billing_cap_final_check_failed"
+
+    conn = sqlite3.connect(seeded_db)
+    try:
+        (after,) = conn.execute(
+            "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = ?",
+            (key_hash, "discover.related"),
+        ).fetchone()
+    finally:
+        conn.close()
+    assert after == before
+
+
 def test_mcp_rest_parity(client: TestClient, fixture_db: Path) -> None:
     """The MCP tool and the REST endpoint emit structurally identical 5-axis
     related blocks for the same seed (modulo the audit_seal which is REST-
@@ -465,8 +529,7 @@ def test_mcp_rest_parity(client: TestClient, fixture_db: Path) -> None:
         rest_ids = [r.get("entity_id") for r in rest_rows]
         mcp_ids = [r.get("entity_id") for r in mcp_rows]
         assert rest_ids == mcp_ids, (
-            f"axis {axis_name} entity_id ordering drift: "
-            f"REST={rest_ids} MCP={mcp_ids}"
+            f"axis {axis_name} entity_id ordering drift: REST={rest_ids} MCP={mcp_ids}"
         )
 
     # Both share the same disclaimer + billing_unit + corpus_snapshot_id.

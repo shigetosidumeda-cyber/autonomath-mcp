@@ -1,4 +1,5 @@
 """Tests for lineage tracking: migration + ingest + API surface."""
+
 from __future__ import annotations
 
 import json
@@ -112,9 +113,13 @@ def test_migrate_on_empty_db_creates_columns(tmp_path: Path) -> None:
     try:
         cols_after = _programs_columns(conn)
         # schema_migrations bookkeeping must also exist.
-        tables = {r["name"] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+        tables = {
+            r["name"] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")
+        }
         # Idx must be registered.
-        indexes = {r["name"] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='index'")}
+        indexes = {
+            r["name"] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='index'")
+        }
     finally:
         conn.close()
 
@@ -158,14 +163,8 @@ def test_target_db_jpintel_migration_skips_autonomath_db(tmp_path: Path) -> None
             "-- target_db: jpintel\nCREATE TABLE jpintel_only_marker(id INTEGER);",
             "test-checksum",
         )
-        tables = {
-            r[0]
-            for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")
-        }
-        applied = {
-            r[0]
-            for r in conn.execute("SELECT id FROM schema_migrations")
-        }
+        tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+        applied = {r[0] for r in conn.execute("SELECT id FROM schema_migrations")}
     finally:
         conn.close()
 
@@ -184,10 +183,7 @@ def test_target_db_jpintel_migration_applies_to_jpintel_db(tmp_path: Path) -> No
             "-- target_db: jpintel\nCREATE TABLE jpintel_only_marker(id INTEGER);",
             "test-checksum",
         )
-        tables = {
-            r[0]
-            for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")
-        }
+        tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
     finally:
         conn.close()
 
@@ -199,7 +195,9 @@ def test_ingest_populates_lineage_fields(tmp_path: Path, monkeypatch) -> None:
     # has something to read without touching the real /Users/shigetoumeda/Autonomath.
     autonomath_root = tmp_path / "autonomath"
     registry_dir = autonomath_root / "data"
-    enriched_dir = autonomath_root / "backend" / "knowledge_base" / "data" / "canonical" / "enriched"
+    enriched_dir = (
+        autonomath_root / "backend" / "knowledge_base" / "data" / "canonical" / "enriched"
+    )
     agri_dir = autonomath_root / "backend" / "knowledge_base" / "data" / "agri"
     enriched_dir.mkdir(parents=True)
     registry_dir.mkdir(parents=True, exist_ok=True)

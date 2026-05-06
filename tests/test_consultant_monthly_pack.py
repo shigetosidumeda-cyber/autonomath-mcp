@@ -17,6 +17,7 @@ business model — the test contract covers:
     5. Page count is in the 3-10 page envelope (single-顧問先 target)
     6. ¥3-rate accounting bookkeeping reflects the configured req_count
 """
+
 from __future__ import annotations
 
 import importlib.util
@@ -37,9 +38,7 @@ SCRIPT_PATH = REPO_ROOT / "scripts" / "etl" / "generate_consultant_monthly_pack.
 
 @pytest.fixture(scope="module")
 def pack_module():
-    spec = importlib.util.spec_from_file_location(
-        "generate_consultant_monthly_pack", SCRIPT_PATH
-    )
+    spec = importlib.util.spec_from_file_location("generate_consultant_monthly_pack", SCRIPT_PATH)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     sys.modules["generate_consultant_monthly_pack"] = module
@@ -432,9 +431,7 @@ def test_pdf_rendering_envelope(
     assert 1 <= page_count <= 12, f"page_count out of envelope: {page_count}"
 
 
-def test_amendment_filter_respects_prefecture(
-    pack_module, fixture_dbs: tuple[Path, Path]
-) -> None:
+def test_amendment_filter_respects_prefecture(pack_module, fixture_dbs: tuple[Path, Path]) -> None:
     """A prefectural program for a different prefecture should NOT surface."""
     am_path, _ = fixture_dbs
     conn = sqlite3.connect(f"file:{am_path}?mode=ro", uri=True)

@@ -141,9 +141,7 @@ def test_format_xlsx_round_trip() -> None:
 
     # _meta sheet carries disclaimer + brand + license_summary.
     meta_pairs = {
-        row[0]: row[1]
-        for row in wb["_meta"].iter_rows(values_only=True)
-        if row and row[0] != "key"
+        row[0]: row[1] for row in wb["_meta"].iter_rows(values_only=True) if row and row[0] != "key"
     }
     assert "税理士法 §52" in (meta_pairs.get("disclaimer") or "")
     assert "Bookyou株式会社" in (meta_pairs.get("brand") or "")
@@ -168,9 +166,7 @@ def test_format_md_round_trip() -> None:
     assert lines[0].startswith("> **税理士法 §52**"), lines[0]
 
     # Find the pipe-table header (first line starting `| unified_id`).
-    header_idx = next(
-        (i for i, ln in enumerate(lines) if ln.startswith("| unified_id")), -1
-    )
+    header_idx = next((i for i, ln in enumerate(lines) if ln.startswith("| unified_id")), -1)
     assert header_idx >= 0, "pipe-table header missing"
 
     header = lines[header_idx]
@@ -220,13 +216,15 @@ def test_format_ics_round_trip() -> None:
 def test_format_ics_skips_rows_without_deadline() -> None:
     """A row with no deadline columns produces no VEVENT (silently)."""
     icalendar = pytest.importorskip("icalendar")
-    rows = [{
-        "unified_id": "PROG-no-deadline",
-        "primary_name": "no-deadline program",
-        "source_url": "https://x.go.jp",
-        "source_fetched_at": "2026-04-29T00:00:00+09:00",
-        "license": "cc_by_4.0",
-    }]
+    rows = [
+        {
+            "unified_id": "PROG-no-deadline",
+            "primary_name": "no-deadline program",
+            "source_url": "https://x.go.jp",
+            "source_fetched_at": "2026-04-29T00:00:00+09:00",
+            "license": "cc_by_4.0",
+        }
+    ]
     resp = render(rows, "ics", SAMPLE_META)
     cal = icalendar.Calendar.from_ical(resp.body)
     assert list(cal.walk("VEVENT")) == []
@@ -275,9 +273,7 @@ def test_format_csv_freee_round_trip() -> None:
     assert resp.media_type.startswith("text/csv")
     assert resp.headers.get("X-AutonoMath-Format") == "csv-freee"
     # Vendor-template URL MUST appear in the response header for trace.
-    assert "support.freee.co.jp" in (
-        resp.headers.get("X-AutonoMath-Vendor-Template") or ""
-    )
+    assert "support.freee.co.jp" in (resp.headers.get("X-AutonoMath-Vendor-Template") or "")
 
     text = resp.body.decode("utf-8")
     lines = text.splitlines()

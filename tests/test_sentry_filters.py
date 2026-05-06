@@ -113,8 +113,10 @@ def test_scrub_breadcrumbs_redacts_stripe_urls():
     bc = [
         {
             "category": "httplib",
-            "data": {"url": "https://api.stripe.com/v1/checkout/sessions/cs_live_xxx",
-                     "method": "POST"},
+            "data": {
+                "url": "https://api.stripe.com/v1/checkout/sessions/cs_live_xxx",
+                "method": "POST",
+            },
         },
         {
             "category": "httplib",
@@ -152,9 +154,7 @@ def test_before_send_runs_request_and_breadcrumb_scrubbers():
             "headers": {"X-API-Key": "raw"},
             "cookies": {"x": 1},
         },
-        "breadcrumbs": [
-            {"category": "httplib", "data": {"url": "https://api.stripe.com/v1/x"}}
-        ],
+        "breadcrumbs": [{"category": "httplib", "data": {"url": "https://api.stripe.com/v1/x"}}],
     }
     out = sentry_before_send(event, {})
     assert out is event
@@ -169,8 +169,10 @@ def test_before_send_breadcrumbs_as_dict_values_shape():
         "request": {},
         "breadcrumbs": {
             "values": [
-                {"category": "httplib",
-                 "data": {"url": "https://api.stripe.com/v1/y", "method": "POST"}}
+                {
+                    "category": "httplib",
+                    "data": {"url": "https://api.stripe.com/v1/y", "method": "POST"},
+                }
             ]
         },
     }
@@ -243,9 +245,7 @@ def test_before_send_transaction_non_billing_keeps_bodies():
     txn_event = {
         "transaction": "/v1/programs",
         "request": {},
-        "spans": [
-            {"op": "http.client", "data": {"http.request.body": b"keep-me"}}
-        ],
+        "spans": [{"op": "http.client", "data": {"http.request.body": b"keep-me"}}],
     }
     sentry_before_send_transaction(txn_event, {})
     # /programs is not sensitive — bodies pass through.

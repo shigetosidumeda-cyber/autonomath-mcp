@@ -47,9 +47,7 @@ def test_cors_methods_restricted(client: TestClient) -> None:
     assert "PATCH" not in allow.upper().split(", "), (
         f"PATCH leaked into Access-Control-Allow-Methods: {allow!r}"
     )
-    assert "*" not in allow, (
-        f"Wildcard method leaked into Access-Control-Allow-Methods: {allow!r}"
-    )
+    assert "*" not in allow, f"Wildcard method leaked into Access-Control-Allow-Methods: {allow!r}"
 
 
 def test_cors_allows_cost_cap_preflight(client: TestClient) -> None:
@@ -86,6 +84,33 @@ def test_cors_exposes_cost_cap_short_circuit(client: TestClient) -> None:
     assert resp.headers.get("X-Cost-Cap-Required") == "true"
 
 
+def test_cors_exposes_anon_429_conversion_headers(client: TestClient, monkeypatch) -> None:
+    """Anon 429 direct/trial links must be readable by browser clients."""
+    from jpintel_mcp.config import settings
+
+    monkeypatch.setattr(settings, "anon_rate_limit_per_day", 1)
+    ip = "198.51.100.201"
+
+    ok = client.get(
+        "/meta",
+        headers={"Origin": "https://jpcite.com", "x-forwarded-for": ip},
+    )
+    assert ok.status_code == 200, ok.text
+
+    resp = client.get(
+        "/meta",
+        headers={"Origin": "https://jpcite.com", "x-forwarded-for": ip},
+    )
+    assert resp.status_code == 429
+    assert resp.headers.get("access-control-allow-origin") == "https://jpcite.com"
+
+    exposed = resp.headers.get("access-control-expose-headers", "")
+    assert "X-Anon-Direct-Checkout-Url" in exposed
+    assert "X-Anon-Trial-Url" in exposed
+    assert resp.headers.get("X-Anon-Direct-Checkout-Url")
+    assert resp.headers.get("X-Anon-Trial-Url")
+
+
 # ---------------------------------------------------------------------------
 # X-Request-ID: format validation
 # ---------------------------------------------------------------------------
@@ -102,13 +127,9 @@ def test_request_id_invalid_format_replaced(client: TestClient) -> None:
     resp = client.get("/healthz", headers={"X-Request-ID": bad})
     out = resp.headers.get("x-request-id", "")
     assert out != bad, "malicious X-Request-ID echoed back into response"
-    assert "\n" not in out and "@" not in out, (
-        f"unsanitised id leaked: {out!r}"
-    )
+    assert "\n" not in out and "@" not in out, f"unsanitised id leaked: {out!r}"
     # Format = secrets.token_hex(8) → 16 lowercase hex chars.
-    assert _TOKEN_HEX_8_RE.fullmatch(out), (
-        f"replacement id is not token_hex(8): {out!r}"
-    )
+    assert _TOKEN_HEX_8_RE.fullmatch(out), f"replacement id is not token_hex(8): {out!r}"
 
 
 def test_request_id_valid_format_echoed(client: TestClient) -> None:

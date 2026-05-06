@@ -13,6 +13,7 @@ Covers:
 Fixtures `seeded_api_key` + `seeded_usage_events` are local-only; they
 skip when pointing at staging/prod.
 """
+
 from __future__ import annotations
 
 import re
@@ -126,8 +127,7 @@ async def test_rotate_key_invalidates_old_key(
         await page.locator("#dash-signin-submit").click()
     old_resp = await old_resp_info.value
     assert old_resp.status == 401, (
-        f"expected 401 when signing in with the rotated-out key; got "
-        f"{old_resp.status}"
+        f"expected 401 when signing in with the rotated-out key; got {old_resp.status}"
     )
 
 
@@ -137,6 +137,7 @@ async def test_billing_portal_button_redirects(
     page: Page, url_for, seeded_api_key: dict[str, str]
 ) -> None:
     """Stub the billing-portal endpoint — it calls Stripe which we avoid."""
+
     async def _handle(route) -> None:
         await route.fulfill(
             status=200,
@@ -144,9 +145,7 @@ async def test_billing_portal_button_redirects(
             body='{"url": "https://example.com/stubbed-billing-portal"}',
         )
 
-    await page.route(
-        re.compile(r".*/v1/me/billing-portal.*"), _handle
-    )
+    await page.route(re.compile(r".*/v1/me/billing-portal.*"), _handle)
 
     await page.goto(url_for("/dashboard.html"))
     await page.locator("#dash-signin-key").fill(seeded_api_key["raw_key"])

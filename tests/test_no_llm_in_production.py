@@ -19,6 +19,7 @@ Detection strategy:
     / `GOOGLE_API_KEY` while permitting comments that mention the names
     in invariant-enforcement context (e.g. "NO ANTHROPIC_API_KEY").
 """
+
 from __future__ import annotations
 
 import ast
@@ -87,9 +88,7 @@ def _scan_imports(py_file: pathlib.Path) -> list[str]:
     return hits
 
 
-_ENV_PATTERN = re.compile(
-    r"\b(" + "|".join(re.escape(name) for name in FORBIDDEN_ENV) + r")\b"
-)
+_ENV_PATTERN = re.compile(r"\b(" + "|".join(re.escape(name) for name in FORBIDDEN_ENV) + r")\b")
 
 
 def _scan_env_vars(py_file: pathlib.Path, in_meta_allowlist: bool) -> list[str]:
@@ -187,11 +186,8 @@ def test_offline_dir_is_not_imported_from_production() -> None:
                         if any(s in alias.name for s in forbidden_substrings):
                             violations.append(f"{rel}: import {alias.name}")
                 elif isinstance(node, ast.ImportFrom):
-                    if node.module and any(
-                        s in node.module for s in forbidden_substrings
-                    ):
+                    if node.module and any(s in node.module for s in forbidden_substrings):
                         violations.append(f"{rel}: from {node.module} import ...")
-    assert not violations, (
-        "Production code imports from tools/offline/:\n  - "
-        + "\n  - ".join(violations)
+    assert not violations, "Production code imports from tools/offline/:\n  - " + "\n  - ".join(
+        violations
     )

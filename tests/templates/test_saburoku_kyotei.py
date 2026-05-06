@@ -1,4 +1,5 @@
 """Tests for 36協定 deterministic template renderer."""
+
 from __future__ import annotations
 
 import re

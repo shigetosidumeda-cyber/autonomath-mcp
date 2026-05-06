@@ -14,6 +14,7 @@ each test via dependency override.
 
 No Anthropic API is touched. No production data is mutated.
 """
+
 from __future__ import annotations
 
 import math
@@ -70,10 +71,7 @@ CREATE TABLE am_entity_facts (
 """
 
 _MIGRATION_069 = (
-    Path(__file__).resolve().parent.parent
-    / "scripts"
-    / "migrations"
-    / "069_uncertainty_view.sql"
+    Path(__file__).resolve().parent.parent / "scripts" / "migrations" / "069_uncertainty_view.sql"
 )
 
 
@@ -151,13 +149,7 @@ def test_score_fact_high_band_for_gov_fresh_amount() -> None:
     assert out["model"] == MODEL_TAG
     assert out["alpha"] > out["beta"], "evidence > doubt expected"
     # 1 + 1.0 * exp(-30/365) * 0.90 + 0.1   ≈ 1.929
-    expected_alpha = (
-        1.0
-        + LICENSE_W["gov_standard_v2.0"]
-        * math.exp(-30.0 / 365.0)
-        * 0.90
-        + 0.1
-    )
+    expected_alpha = 1.0 + LICENSE_W["gov_standard_v2.0"] * math.exp(-30.0 / 365.0) * 0.90 + 0.1
     assert math.isclose(out["alpha"], expected_alpha, rel_tol=1e-6)
     assert out["score"] > 0.60  # well above BAND_LOW
     lo, hi = out["ci_95"]
@@ -178,7 +170,9 @@ def test_score_fact_unknown_band_for_null_source_text() -> None:
     # license_w 0.30 × freshness floor 0.20 × text 0.70 = 0.042 evidence.
     expected_evidence = LICENSE_W_NULL * 0.20 * KIND_W_DEFAULT
     assert math.isclose(
-        out["alpha"], 1.0 + expected_evidence, rel_tol=1e-6,
+        out["alpha"],
+        1.0 + expected_evidence,
+        rel_tol=1e-6,
     )
     assert out["score"] < 0.40
     # CI must remain bounded inside [0, 1] even with very thin evidence.
@@ -210,12 +204,12 @@ def test_score_fact_freshness_floor_clamps_at_two_years() -> None:
     # Same alpha: freshness clamps for both, and there's no agreement
     # bonus, so the posterior is independent of the extra 3 years.
     assert math.isclose(
-        out_two_years["alpha"], out_five_years["alpha"], rel_tol=1e-6,
+        out_two_years["alpha"],
+        out_five_years["alpha"],
+        rel_tol=1e-6,
     )
     # Sanity: clamp value 0.20 reflected in evidence axis weight.
-    fresh_axis = next(
-        a for a in out_two_years["evidence"] if a["axis"] == "freshness"
-    )
+    fresh_axis = next(a for a in out_two_years["evidence"] if a["axis"] == "freshness")
     assert math.isclose(fresh_axis["weight"], 0.20, rel_tol=1e-6)
 
 
@@ -265,8 +259,7 @@ def test_get_uncertainty_for_fact_returns_payload(
 ) -> None:
     """End-to-end: view → score_fact gives a dict with expected keys."""
     fact_id = fixture_db.execute(
-        "SELECT id FROM am_entity_facts "
-        " WHERE entity_id='e_agree' ORDER BY id LIMIT 1"
+        "SELECT id FROM am_entity_facts  WHERE entity_id='e_agree' ORDER BY id LIMIT 1"
     ).fetchone()["id"]
     payload = get_uncertainty_for_fact(fact_id, fixture_db)
     assert payload is not None
@@ -277,7 +270,10 @@ def test_get_uncertainty_for_fact_returns_payload(
     assert len(payload["ci_95"]) == 2
     axes = {a["axis"] for a in payload["evidence"]}
     assert axes == {
-        "license", "freshness", "field_kind", "cross_source_agreement",
+        "license",
+        "freshness",
+        "field_kind",
+        "cross_source_agreement",
     }
 
 
@@ -286,8 +282,7 @@ def test_fact_uncertainty_payload_exposes_continuous_score(
 ) -> None:
     """A7: per-fact uncertainty is numeric evidence, not just a label."""
     fact_id = fixture_db.execute(
-        "SELECT id FROM am_entity_facts "
-        " WHERE entity_id='e_agree' ORDER BY id LIMIT 1"
+        "SELECT id FROM am_entity_facts  WHERE entity_id='e_agree' ORDER BY id LIMIT 1"
     ).fetchone()["id"]
 
     payload = get_uncertainty_for_fact(fact_id, fixture_db)
@@ -364,9 +359,7 @@ def test_multi_source_agreement_changes_continuous_score() -> None:
     assert agreed_sources["score"] > single_source["score"]
     assert agreed_sources["label"] == single_source["label"]
     agreement_axis = next(
-        axis
-        for axis in agreed_sources["evidence"]
-        if axis["axis"] == "cross_source_agreement"
+        axis for axis in agreed_sources["evidence"] if axis["axis"] == "cross_source_agreement"
     )
     assert agreement_axis["n_sources"] == 3
     assert math.isclose(agreement_axis["bonus_alpha"], 0.2, rel_tol=1e-6)
@@ -408,7 +401,8 @@ def test_data_quality_endpoint_aggregates(
     monkeypatch.setattr(settings, "autonomath_db_path", db_file)
     # Bypass the L4 cache so the test is deterministic across runs.
     monkeypatch.setattr(
-        stats_mod, "_cache_get_or_compute",
+        stats_mod,
+        "_cache_get_or_compute",
         lambda key, compute: compute(),
     )
 
@@ -425,7 +419,10 @@ def test_data_quality_endpoint_aggregates(
     assert 0.0 <= body["mean_score"] <= 1.0
     # All four label buckets always present (zero-fill rule).
     assert set(body["label_histogram"].keys()) >= {
-        "high", "medium", "low", "unknown",
+        "high",
+        "medium",
+        "low",
+        "unknown",
     }
     # NULL-source fact ('e_solo' note) lands in unknown.
     assert body["label_histogram"]["unknown"] >= 1

@@ -200,8 +200,9 @@ def test_preview_exports_only_source_complete_safe_rows_and_manifest_flags_b9(
     assert manifest["publish_performed"] is False
     assert manifest["f3_full_publish_ready"] is False
     assert manifest["b9_provenance_complete"] is False
-    assert "B9 e-Stat fact provenance is not 100% complete" in (
-        manifest["full_f3_gate_incomplete_reason"]
+    assert (
+        "B9 e-Stat fact provenance is not 100% complete"
+        in (manifest["full_f3_gate_incomplete_reason"])
     )
     assert manifest["total_exported_rows"] == 1
     assert manifest["license_values"] == ["gov_standard_v2.0"]

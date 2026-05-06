@@ -138,9 +138,7 @@ def stripe_env(monkeypatch):
 
     monkeypatch.setattr(settings, "stripe_secret_key", "sk_test_dummy", raising=False)
     monkeypatch.setattr(settings, "stripe_webhook_secret", "whsec_dummy", raising=False)
-    monkeypatch.setattr(
-        settings, "stripe_price_per_request", "price_metered_test", raising=False
-    )
+    monkeypatch.setattr(settings, "stripe_price_per_request", "price_metered_test", raising=False)
     yield settings
 
 
@@ -260,9 +258,7 @@ def test_checkout_allows_english_redirect_paths(client, stripe_env, monkeypatch)
     assert captured[0]["branding_settings"] == {"display_name": "jpcite"}
 
 
-def test_checkout_attaches_pending_device_user_code_metadata(
-    client, stripe_env, monkeypatch
-):
+def test_checkout_attaches_pending_device_user_code_metadata(client, stripe_env, monkeypatch):
     """MCP device-flow checkout must bind the Stripe Session to the pending code."""
     from jpintel_mcp.api import billing as billing_mod
 
@@ -364,9 +360,7 @@ def test_portal_unauthed_returns_401(client, stripe_env, monkeypatch):
             "Stripe portal session created for unauthed request — enumeration regression"
         )
 
-    monkeypatch.setattr(
-        billing_mod.stripe.billing_portal.Session, "create", _should_not_be_called
-    )
+    monkeypatch.setattr(billing_mod.stripe.billing_portal.Session, "create", _should_not_be_called)
 
     r = client.post(
         "/v1/billing/portal",
@@ -376,9 +370,7 @@ def test_portal_unauthed_returns_401(client, stripe_env, monkeypatch):
     assert called == []
 
 
-def test_portal_resolves_customer_from_authed_key(
-    client, stripe_env, paid_key, monkeypatch
-):
+def test_portal_resolves_customer_from_authed_key(client, stripe_env, paid_key, monkeypatch):
     """Authed caller gets a portal URL whose `customer` is the API key's
     own `customer_id` from the DB — the body-supplied `customer_id` is
     IGNORED so a paying customer cannot pivot to another customer's
@@ -426,9 +418,7 @@ def test_portal_rejects_offsite_return_url(client, stripe_env, paid_key, monkeyp
         called.append(kwargs)
         raise AssertionError("Stripe portal created with offsite return_url")
 
-    monkeypatch.setattr(
-        billing_mod.stripe.billing_portal.Session, "create", _should_not_be_called
-    )
+    monkeypatch.setattr(billing_mod.stripe.billing_portal.Session, "create", _should_not_be_called)
 
     r = client.post(
         "/v1/billing/portal",
@@ -445,9 +435,7 @@ def test_service_checkout_redirect_validator_rejects_offsite_urls():
     from jpintel_mcp.api.billing import validate_jpcite_service_redirect_url
 
     with pytest.raises(HTTPException):
-        validate_jpcite_service_redirect_url(
-            "https://example.test/alerts.html", kind="success"
-        )
+        validate_jpcite_service_redirect_url("https://example.test/alerts.html", kind="success")
 
     assert (
         validate_jpcite_service_redirect_url(
@@ -457,9 +445,7 @@ def test_service_checkout_redirect_validator_rejects_offsite_urls():
     )
 
 
-def test_portal_rejects_child_api_key(
-    client, stripe_env, paid_key, monkeypatch, seeded_db: Path
-):
+def test_portal_rejects_child_api_key(client, stripe_env, paid_key, monkeypatch, seeded_db: Path):
     """A delegated child key can use data APIs, but cannot manage billing."""
     from jpintel_mcp.api import billing as billing_mod
 
@@ -481,9 +467,7 @@ def test_portal_rejects_child_api_key(
         called.append(kwargs)
         raise AssertionError("child key must not open Stripe billing portal")
 
-    monkeypatch.setattr(
-        billing_mod.stripe.billing_portal.Session, "create", _should_not_be_called
-    )
+    monkeypatch.setattr(billing_mod.stripe.billing_portal.Session, "create", _should_not_be_called)
 
     r = client.post(
         "/v1/billing/portal",
@@ -848,7 +832,7 @@ def _patch_webhook_construct_event(monkeypatch, event: dict):
     """Bypass Stripe signature verification; still exercises dispatch logic."""
     from jpintel_mcp.api import billing as billing_mod
 
-    def _construct(body, sig, secret):
+    def _construct(body, sig, secret, **_kwargs):
         return event
 
     monkeypatch.setattr(billing_mod.stripe.Webhook, "construct_event", _construct)
@@ -903,9 +887,7 @@ def test_webhook_rejects_oversize_content_length(client, stripe_env):
     assert detail.get("error") == "out_of_range"
 
 
-def test_webhook_no_content_length_still_validates_signature(
-    client, stripe_env, monkeypatch
-):
+def test_webhook_no_content_length_still_validates_signature(client, stripe_env, monkeypatch):
     """Missing content-length → no 413; signature path is still hit."""
     import stripe
 
@@ -942,9 +924,7 @@ def test_webhook_subscription_created_does_not_issue_key(
             "object": {
                 "id": "sub_metered_new",
                 "customer": "cus_metered_new",
-                "items": {
-                    "data": [{"price": {"id": "price_metered_test"}}]
-                },
+                "items": {"data": [{"price": {"id": "price_metered_test"}}]},
             }
         },
     }
@@ -995,9 +975,7 @@ def test_webhook_invoice_paid_does_not_issue_hidden_key(
     monkeypatch.setattr(
         billing_mod.stripe.Subscription,
         "retrieve",
-        lambda _id, **_: _fake_sub(
-            price_id="price_metered_test", sub_id="sub_webhook_fallback"
-        ),
+        lambda _id, **_: _fake_sub(price_id="price_metered_test", sub_id="sub_webhook_fallback"),
     )
 
     r = client.post(
@@ -1372,8 +1350,7 @@ def test_webhook_returns_fast_with_slow_outbound_io(
     c = sqlite3.connect(seeded_db)
     try:
         row = c.execute(
-            "SELECT 1 FROM bg_task_queue"
-            " WHERE kind = ? AND dedup_key = ?",
+            "SELECT 1 FROM bg_task_queue WHERE kind = ? AND dedup_key = ?",
             ("welcome_email", "welcome:sub_perf_gate"),
         ).fetchone()
     finally:

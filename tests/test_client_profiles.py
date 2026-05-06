@@ -12,6 +12,7 @@ api_key_hash so the saved_searches cron can join × N profiles per call.
 Mirrors the test_saved_searches.py pattern: applies migration 096 onto the
 shared `seeded_db` fixture so the table exists for the router.
 """
+
 from __future__ import annotations
 
 import io

@@ -1,4 +1,5 @@
 """Tests for POST /v1/feedback."""
+
 from __future__ import annotations
 
 import sqlite3

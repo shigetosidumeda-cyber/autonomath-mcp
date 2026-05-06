@@ -260,11 +260,11 @@ def test_validate_impl_dirty_payload_flags_violations():
     payload = {
         "behavioral": {
             "training_hours_per_year": 99999,  # > 8760
-            "annual_work_days": 999,           # > 365
-            "weekly_work_hours": 9999,         # > 168
+            "annual_work_days": 999,  # > 365
+            "weekly_work_hours": 9999,  # > 168
         },
         "plan": {
-            "start_year": 1900,                # outside ±20y
+            "start_year": 1900,  # outside ±20y
             "desired_amount_man_yen": 999999,  # > 50 億
         },
     }

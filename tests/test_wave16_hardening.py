@@ -17,6 +17,7 @@ Three independent surfaces, one test file:
     header set + not on whitelist -> 403 BEFORE any router (covers regular
     + OPTIONS preflight). Same-origin (no Origin) and webhook callers pass.
 """
+
 from __future__ import annotations
 
 import importlib
@@ -56,9 +57,7 @@ def _reset_session_rate_limit(client):
 # ---------------------------------------------------------------------------
 
 
-def test_bcrypt_new_key_writes_bcrypt_column_and_authenticates(
-    client, seeded_db: Path
-):
+def test_bcrypt_new_key_writes_bcrypt_column_and_authenticates(client, seeded_db: Path):
     """New keys issued via `issue_key()` carry a non-NULL `key_hash_bcrypt`
     AND still authenticate end-to-end through `require_key`.
     """
@@ -90,14 +89,10 @@ def test_bcrypt_new_key_writes_bcrypt_column_and_authenticates(
     r = client.get("/v1/programs/search?q=test", headers={"X-API-Key": raw})
     # Either 200 results or 200 empty — a 401 here would mean bcrypt
     # verify rejected a freshly-issued key (regression).
-    assert r.status_code != 401, (
-        f"freshly-issued key rejected by bcrypt dual-path: {r.text[:200]}"
-    )
+    assert r.status_code != 401, f"freshly-issued key rejected by bcrypt dual-path: {r.text[:200]}"
 
 
-def test_bcrypt_legacy_key_with_null_bcrypt_still_authenticates(
-    client, seeded_db: Path
-):
+def test_bcrypt_legacy_key_with_null_bcrypt_still_authenticates(client, seeded_db: Path):
     """A row whose `key_hash_bcrypt` is NULL (representing a key issued
     before migration 073) MUST still pass `require_key` on HMAC PRIMARY
     KEY match alone. Backwards compatibility is non-negotiable.
@@ -122,8 +117,7 @@ def test_bcrypt_legacy_key_with_null_bcrypt_still_authenticates(
 
     r = client.get("/v1/programs/search?q=test", headers={"X-API-Key": raw})
     assert r.status_code != 401, (
-        f"legacy NULL-bcrypt key rejected (backwards-compat broken): "
-        f"{r.text[:200]}"
+        f"legacy NULL-bcrypt key rejected (backwards-compat broken): {r.text[:200]}"
     )
 
 
@@ -149,9 +143,7 @@ def signed_in_client(client, seeded_db: Path):
     r = client.post("/v1/session", json={"api_key": raw})
     assert r.status_code == 200, r.text
     assert "am_session" in client.cookies
-    assert "am_csrf" in client.cookies, (
-        "session creation MUST set am_csrf companion cookie"
-    )
+    assert "am_csrf" in client.cookies, "session creation MUST set am_csrf companion cookie"
     return client, client.cookies["am_csrf"]
 
 
@@ -200,9 +192,7 @@ def test_csrf_billing_portal_passes_with_matching_token(signed_in_client):
     )
     # 503 (Stripe unconfigured) or 404 (no_customer) or 200 (real Stripe in
     # CI) — the rejection condition is 403. Anything else means CSRF passed.
-    assert r.status_code != 403, (
-        f"CSRF rejected a matching token: {r.text[:200]}"
-    )
+    assert r.status_code != 403, f"CSRF rejected a matching token: {r.text[:200]}"
 
 
 # ---------------------------------------------------------------------------
@@ -223,8 +213,7 @@ def test_cors_origin_not_on_whitelist_returns_403(client, monkeypatch):
     )
     r = client.get("/v1/meta", headers={"Origin": "https://evil.example.com"})
     assert r.status_code == 403, (
-        f"non-whitelist Origin not blocked; expected 403 got {r.status_code}: "
-        f"{r.text[:200]}"
+        f"non-whitelist Origin not blocked; expected 403 got {r.status_code}: {r.text[:200]}"
     )
     body = r.json()
     assert body.get("error") == "origin_not_allowed"
@@ -241,9 +230,7 @@ def test_cors_origin_on_whitelist_passes(client, monkeypatch):
         raising=False,
     )
     r = client.get("/v1/meta", headers={"Origin": "https://autonomath.ai"})
-    assert r.status_code != 403, (
-        f"whitelisted Origin was blocked: {r.text[:200]}"
-    )
+    assert r.status_code != 403, f"whitelisted Origin was blocked: {r.text[:200]}"
 
 
 def test_cors_no_origin_header_passes(client, monkeypatch):
@@ -260,9 +247,7 @@ def test_cors_no_origin_header_passes(client, monkeypatch):
     assert r.status_code != 403
 
 
-def test_cors_preflight_options_blocked_for_non_whitelist_origin(
-    client, monkeypatch
-):
+def test_cors_preflight_options_blocked_for_non_whitelist_origin(client, monkeypatch):
     """OPTIONS preflight from a non-whitelist origin -> 403, NOT 200/204."""
     from jpintel_mcp.config import settings
 
@@ -308,6 +293,4 @@ def test_cors_webhook_path_exempt_from_origin_check(client, monkeypatch):
         headers={"Origin": "https://stripe-injected.example"},
         content=b"{}",
     )
-    assert r.status_code != 403, (
-        f"webhook path was hit by origin gate (regression): {r.text[:200]}"
-    )
+    assert r.status_code != 403, f"webhook path was hit by origin gate (regression): {r.text[:200]}"

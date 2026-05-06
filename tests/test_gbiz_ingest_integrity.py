@@ -96,9 +96,7 @@ def test_houjin_bangou_fact_field_is_13_digit_numeric(db_conn):
     if not rows:
         pytest.skip("no houjin_bangou facts present")
     bad = [r["field_value_text"] for r in rows if not _HOUJIN_RE.match(r["field_value_text"] or "")]
-    assert not bad, (
-        f"houjin_bangou facts with non-13-digit value: {bad[:5]}"
-    )
+    assert not bad, f"houjin_bangou facts with non-13-digit value: {bad[:5]}"
 
 
 # --- duplicate-rejection invariants ----------------------------------------
@@ -210,9 +208,7 @@ def test_jpi_mirrored_tables_present(db_conn):
     cnt = db_conn.execute(
         "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name LIKE 'jpi_%'"
     ).fetchone()[0]
-    assert cnt >= 50, (
-        f"expected ≥50 jpi_* mirror tables (76+ per CLAUDE.md); got {cnt}"
-    )
+    assert cnt >= 50, f"expected ≥50 jpi_* mirror tables (76+ per CLAUDE.md); got {cnt}"
 
 
 def test_jpi_corporate_entity_count_consistency(db_conn):

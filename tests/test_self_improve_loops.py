@@ -76,7 +76,13 @@ def test_no_llm_imports_in_loop(name: str):
     """
     mod = importlib.import_module(f"jpintel_mcp.self_improve.{name}")
     src = Path(mod.__file__).read_text(encoding="utf-8")
-    forbidden = ("import anthropic", "import openai", "from anthropic", "from openai", "google.generativeai")
+    forbidden = (
+        "import anthropic",
+        "import openai",
+        "from anthropic",
+        "from openai",
+        "google.generativeai",
+    )
     for needle in forbidden:
         assert needle not in src, f"{name} imports forbidden LLM SDK: {needle}"
 

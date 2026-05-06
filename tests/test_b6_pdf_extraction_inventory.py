@@ -217,9 +217,7 @@ def test_collect_inventory_counts_sources_profiles_local_files_and_shards(
     assert all("run_program_pdf_extraction_batch.py" in shard["run_command"] for shard in shards)
     assert all(str(tmp_path / "inventory.csv") in shard["run_command"] for shard in shards)
 
-    local_rows = [
-        row for row in report["candidate_rows"] if row["ref_type"] == "local_file"
-    ]
+    local_rows = [row for row in report["candidate_rows"] if row["ref_type"] == "local_file"]
     assert len(local_rows) == 1
     assert local_rows[0]["local_file_exists"] == "true"
     assert str(local_source_pdf) in local_rows[0]["matched_local_paths"]

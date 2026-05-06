@@ -9,6 +9,7 @@ Monkeypatched items to look out for:
   - `api.anon_limit._jst_day_bucket` to simulate a month rollover without
     needing freezegun (not in the dev deps).
 """
+
 from __future__ import annotations
 
 import importlib
@@ -157,9 +158,7 @@ def test_over_limit_returns_429_with_retry_after_and_resets_at(
     # `detail` was localised to Japanese for end-user surfaces; accept either
     # the old English string or the current JP copy so the test is stable
     # across copy edits.
-    assert "5" in body["detail"] and (
-        "anon" in body["detail"].lower() or "上限" in body["detail"]
-    )
+    assert "5" in body["detail"] and ("anon" in body["detail"].lower() or "上限" in body["detail"])
     assert body["limit"] == 5
     assert body["resets_at"].startswith(("20", "21"))  # ISO8601 year prefix
     retry_after = r.headers.get("Retry-After")
@@ -212,11 +211,14 @@ def test_bogus_api_key_counts_as_anonymous(
     assert r.status_code == 429
 
     anon = _anon_module()
-    assert _count_row(
-        seeded_db,
-        _testclient_hash(anon, ip),
-        anon._jst_day_bucket(),
-    ) == 3
+    assert (
+        _count_row(
+            seeded_db,
+            _testclient_hash(anon, ip),
+            anon._jst_day_bucket(),
+        )
+        == 3
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -224,9 +226,7 @@ def test_bogus_api_key_counts_as_anonymous(
 # ---------------------------------------------------------------------------
 
 
-def test_day_rollover_gives_fresh_quota(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch
-):
+def test_day_rollover_gives_fresh_quota(client: TestClient, monkeypatch: pytest.MonkeyPatch):
     """Month N exhausted -> switch to month N+1 bucket -> quota resets."""
     from jpintel_mcp.config import settings
 

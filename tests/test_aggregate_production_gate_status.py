@@ -49,7 +49,9 @@ import aggregate_production_gate_status as agg  # noqa: E402
 # ---------------------------------------------------------------------------
 
 
-def _make_completed(returncode: int, stdout: str = "", stderr: str = "") -> subprocess.CompletedProcess:
+def _make_completed(
+    returncode: int, stdout: str = "", stderr: str = ""
+) -> subprocess.CompletedProcess:
     return subprocess.CompletedProcess(
         args=["dummy"],
         returncode=returncode,
@@ -62,8 +64,20 @@ class _HTMLValidator(HTMLParser):
     """Tiny HTML validator: balanced tag stack + no parse errors."""
 
     VOID = {
-        "area", "base", "br", "col", "embed", "hr", "img", "input",
-        "link", "meta", "param", "source", "track", "wbr",
+        "area",
+        "base",
+        "br",
+        "col",
+        "embed",
+        "hr",
+        "img",
+        "input",
+        "link",
+        "meta",
+        "param",
+        "source",
+        "track",
+        "wbr",
     }
 
     def __init__(self) -> None:
@@ -114,18 +128,37 @@ def test_html_render_syntax(tmp_path: Path) -> None:
         last_update_jst="2026-05-08T06:00:00+09:00",
     )
     snap.blockers = [
-        {"id": b["id"], "title": b["title"], "deep": b["deep"], "status": "PARTIAL",
-         "evidence_url": b["verify_cmd"], "sha256": "deadbeef" * 8, "duration_ms": 100, "stderr_tail": ""}
+        {
+            "id": b["id"],
+            "title": b["title"],
+            "deep": b["deep"],
+            "status": "PARTIAL",
+            "evidence_url": b["verify_cmd"],
+            "sha256": "deadbeef" * 8,
+            "duration_ms": 100,
+            "stderr_tail": "",
+        }
         for b in agg.BLOCKERS
     ]
     snap.acks = [
-        {"id": a["id"], "title": a["title"], "deep": a["deep"], "status": "RESOLVED",
-         "evidence_url": "scripts/operator_ack_signoff.py"}
+        {
+            "id": a["id"],
+            "title": a["title"],
+            "deep": a["deep"],
+            "status": "RESOLVED",
+            "evidence_url": "scripts/operator_ack_signoff.py",
+        }
         for a in agg.ACK_BOOLEANS
     ]
     snap.specs = [
-        {"id": s, "title": f"{s} implementation", "status": "PARTIAL",
-         "last_check": "", "evidence_url": f"docs/_internal/{s}_*.md", "sha256": ""}
+        {
+            "id": s,
+            "title": f"{s} implementation",
+            "status": "PARTIAL",
+            "last_check": "",
+            "evidence_url": f"docs/_internal/{s}_*.md",
+            "sha256": "",
+        }
         for s in agg.SPEC_IDS
     ]
     out = tmp_path / "out.html"
@@ -217,8 +250,14 @@ def test_33_spec_table_render(tmp_path: Path) -> None:
         last_update_jst="2026-05-08T06:00:00+09:00",
     )
     snap.specs = [
-        {"id": s, "title": f"{s} implementation", "status": "PARTIAL",
-         "last_check": "", "evidence_url": f"docs/_internal/{s}_*.md", "sha256": ""}
+        {
+            "id": s,
+            "title": f"{s} implementation",
+            "status": "PARTIAL",
+            "last_check": "",
+            "evidence_url": f"docs/_internal/{s}_*.md",
+            "sha256": "",
+        }
         for s in agg.SPEC_IDS
     ]
     out = tmp_path / "out.html"

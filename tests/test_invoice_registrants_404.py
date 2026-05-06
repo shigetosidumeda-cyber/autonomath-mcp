@@ -10,6 +10,7 @@ partial mirror — here is the official lookup".
 These tests pin the 404 body shape so a future refactor can't silently
 regress to a bare `detail` string.
 """
+
 import sqlite3
 from pathlib import Path
 

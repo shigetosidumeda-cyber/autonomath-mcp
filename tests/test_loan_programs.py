@@ -16,6 +16,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from jpintel_mcp.api.deps import hash_api_key
+
 if TYPE_CHECKING:
     from pathlib import Path
 
@@ -117,9 +119,7 @@ def test_search_orders_by_amount_max_desc(client, seeded_loan_programs):
 
 
 def test_search_free_text_matches_provider(client, seeded_loan_programs):
-    r = client.get(
-        "/v1/loan-programs/search", params={"q": "商工会議所", "limit": 100}
-    )
+    r = client.get("/v1/loan-programs/search", params={"q": "商工会議所", "limit": 100})
     names = _ids_by_name(r.json()["results"])
     assert "マル経融資（テスト）" in names
 
@@ -202,6 +202,46 @@ def test_search_min_loan_period_years(client, seeded_loan_programs):
 def test_search_limit_clamp_upper_bound(client):
     r = client.get("/v1/loan-programs/search", params={"limit": 101})
     assert r.status_code == 422
+
+
+def test_search_paid_final_cap_failure_returns_503_without_usage_event(
+    client,
+    seeded_loan_programs,
+    seeded_db: Path,
+    paid_key: str,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    key_hash = hash_api_key(paid_key)
+    endpoint = "loan_programs.search"
+
+    def usage_count() -> int:
+        conn = sqlite3.connect(seeded_db)
+        try:
+            (count,) = conn.execute(
+                "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = ?",
+                (key_hash, endpoint),
+            ).fetchone()
+            return int(count)
+        finally:
+            conn.close()
+
+    def _reject_final_cap(*_args: object, **_kwargs: object) -> tuple[bool, bool]:
+        return False, False
+
+    import jpintel_mcp.api.deps as deps
+
+    monkeypatch.setattr(deps, "_metered_cap_final_check", _reject_final_cap)
+
+    before = usage_count()
+    r = client.get(
+        "/v1/loan-programs/search",
+        params={"provider": "日本政策金融公庫", "limit": 1},
+        headers={"X-API-Key": paid_key},
+    )
+
+    assert r.status_code == 503, r.text
+    assert r.json()["detail"]["code"] == "billing_cap_final_check_failed"
+    assert usage_count() == before
 
 
 # ---------------------------------------------------------------------------

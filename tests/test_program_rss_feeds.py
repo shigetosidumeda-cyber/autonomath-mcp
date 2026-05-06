@@ -16,6 +16,7 @@ Tests use a tmp sqlite fixture so they do not depend on a live data/jpintel.db
 or autonomath.db at repo root. The module under test connects via a URI with
 ``mode=ro`` — pytest's tmp_path produces normal files which we open RO too.
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -100,23 +101,102 @@ def jpintel_db(tmp_path: Path) -> Path:
         conn.executescript(_PROGRAMS_SCHEMA)
         # Insert: 5 Tier S (one aggregator-domain row), 2 Tier A, 1 Tier B, 1 excluded.
         rows = [
-            ("UNI-S-001", "東京都ものづくり補助金", "S", "東京都", "東京都", "subsidy",
-             "https://www.metro.tokyo.lg.jp/x", "2026-04-26 10:00:00", 1500.0, 0),
-            ("UNI-S-002", "北海道農業経営支援", "S", "北海道", "北海道", "subsidy",
-             "https://www.pref.hokkaido.lg.jp/y", "2026-04-25 10:00:00", 800.0, 0),
-            ("UNI-S-003", "全国DX投資促進", "S", "東京都", "経産省", "subsidy",
-             "https://www.meti.go.jp/z", "2026-04-24 10:00:00", 5000.0, 0),
-            ("UNI-A-001", "愛知県スタートアップ", "A", "愛知県", "愛知県", "loan",
-             "https://www.pref.aichi.lg.jp/q", "2026-04-23 10:00:00", 300.0, 0),
-            ("UNI-A-002", "京都市創業支援", "A", "京都府", "京都市", "subsidy",
-             "https://www.city.kyoto.lg.jp/r", "2026-04-22 10:00:00", 200.0, 0),
-            ("UNI-B-001", "大阪市起業塾", "B", "大阪府", "大阪市", "subsidy",
-             "https://www.city.osaka.lg.jp/s", "2026-04-21 10:00:00", 50.0, 0),
-            ("UNI-S-004", "青森県集約サイト由来", "S", "青森県", "青森県", "subsidy",
-             "https://www.smart-hojokin.jp/subsidies/67658", "2026-04-30 10:00:00", 1000.0, 0),
-            ("UNI-S-005", "焼津市スマート農業普及", "S", "静岡県", "焼津市", "subsidy",
-             "https://www.city.yaizu.lg.jp/business/suisan-nougyo/agriculture/manage-support/smart/smart-hojokin.html",
-             "2026-04-29 10:00:00", 500.0, 0),
+            (
+                "UNI-S-001",
+                "東京都ものづくり補助金",
+                "S",
+                "東京都",
+                "東京都",
+                "subsidy",
+                "https://www.metro.tokyo.lg.jp/x",
+                "2026-04-26 10:00:00",
+                1500.0,
+                0,
+            ),
+            (
+                "UNI-S-002",
+                "北海道農業経営支援",
+                "S",
+                "北海道",
+                "北海道",
+                "subsidy",
+                "https://www.pref.hokkaido.lg.jp/y",
+                "2026-04-25 10:00:00",
+                800.0,
+                0,
+            ),
+            (
+                "UNI-S-003",
+                "全国DX投資促進",
+                "S",
+                "東京都",
+                "経産省",
+                "subsidy",
+                "https://www.meti.go.jp/z",
+                "2026-04-24 10:00:00",
+                5000.0,
+                0,
+            ),
+            (
+                "UNI-A-001",
+                "愛知県スタートアップ",
+                "A",
+                "愛知県",
+                "愛知県",
+                "loan",
+                "https://www.pref.aichi.lg.jp/q",
+                "2026-04-23 10:00:00",
+                300.0,
+                0,
+            ),
+            (
+                "UNI-A-002",
+                "京都市創業支援",
+                "A",
+                "京都府",
+                "京都市",
+                "subsidy",
+                "https://www.city.kyoto.lg.jp/r",
+                "2026-04-22 10:00:00",
+                200.0,
+                0,
+            ),
+            (
+                "UNI-B-001",
+                "大阪市起業塾",
+                "B",
+                "大阪府",
+                "大阪市",
+                "subsidy",
+                "https://www.city.osaka.lg.jp/s",
+                "2026-04-21 10:00:00",
+                50.0,
+                0,
+            ),
+            (
+                "UNI-S-004",
+                "青森県集約サイト由来",
+                "S",
+                "青森県",
+                "青森県",
+                "subsidy",
+                "https://www.smart-hojokin.jp/subsidies/67658",
+                "2026-04-30 10:00:00",
+                1000.0,
+                0,
+            ),
+            (
+                "UNI-S-005",
+                "焼津市スマート農業普及",
+                "S",
+                "静岡県",
+                "焼津市",
+                "subsidy",
+                "https://www.city.yaizu.lg.jp/business/suisan-nougyo/agriculture/manage-support/smart/smart-hojokin.html",
+                "2026-04-29 10:00:00",
+                500.0,
+                0,
+            ),
             ("UNI-EXC-001", "除外", "S", "東京都", None, "subsidy", None, None, None, 1),
         ]
         for r in rows:
@@ -146,9 +226,14 @@ def autonomath_db(tmp_path: Path) -> Path:
         rows = [
             ("entityA", "amount_max_yen", "1000000", "1500000", "2026-04-28 10:00:00"),
             ("entityB", "subsidy_rate_max", "0.5", "0.66", "2026-04-29 12:00:00"),
-            ("entityC", "source_url", "https://old.example.jp", "https://new.example.jp",
-             "2026-04-30 09:00:00"),
-            ("entityD", "target_set_json", "[]", "[\"sme\"]", "2026-04-27 08:00:00"),
+            (
+                "entityC",
+                "source_url",
+                "https://old.example.jp",
+                "https://new.example.jp",
+                "2026-04-30 09:00:00",
+            ),
+            ("entityD", "target_set_json", "[]", '["sme"]', "2026-04-27 08:00:00"),
         ]
         for r in rows:
             conn.execute(
@@ -170,18 +255,20 @@ def _generate(jpintel_db: Path, autonomath_db: Path, out_dir: Path) -> int:
 
     return mod.main(
         [
-            "--jpintel-db", str(jpintel_db),
-            "--autonomath-db", str(autonomath_db),
-            "--out-dir", str(out_dir),
-            "--lastmod", "2026-05-01T00:00:00+00:00",
+            "--jpintel-db",
+            str(jpintel_db),
+            "--autonomath-db",
+            str(autonomath_db),
+            "--out-dir",
+            str(out_dir),
+            "--lastmod",
+            "2026-05-01T00:00:00+00:00",
         ]
     )
 
 
 # --- 1. Tier S item count ---------------------------------------------------
-def test_tier_s_feed_item_count(
-    jpintel_db: Path, autonomath_db: Path, tmp_path: Path
-):
+def test_tier_s_feed_item_count(jpintel_db: Path, autonomath_db: Path, tmp_path: Path):
     out = tmp_path / "rss"
     rc = _generate(jpintel_db, autonomath_db, out)
     assert rc == 0
@@ -201,9 +288,7 @@ def test_tier_s_feed_item_count(
 
 
 # --- 2. Amendment RSS reverse-chrono ordering -------------------------------
-def test_amendment_feed_is_reverse_chrono(
-    jpintel_db: Path, autonomath_db: Path, tmp_path: Path
-):
+def test_amendment_feed_is_reverse_chrono(jpintel_db: Path, autonomath_db: Path, tmp_path: Path):
     out = tmp_path / "rss"
     rc = _generate(jpintel_db, autonomath_db, out)
     assert rc == 0
@@ -255,9 +340,7 @@ def test_prefecture_url_pattern_and_isolation(
 
 
 # --- 4. Idempotency ---------------------------------------------------------
-def test_idempotent_byte_identical(
-    jpintel_db: Path, autonomath_db: Path, tmp_path: Path
-):
+def test_idempotent_byte_identical(jpintel_db: Path, autonomath_db: Path, tmp_path: Path):
     out = tmp_path / "rss"
     assert _generate(jpintel_db, autonomath_db, out) == 0
     snap1 = {p.relative_to(out): p.read_bytes() for p in out.rglob("*.xml")}
@@ -269,9 +352,7 @@ def test_idempotent_byte_identical(
 
 
 # --- 5. Brand + copyright sanity --------------------------------------------
-def test_brand_and_copyright(
-    jpintel_db: Path, autonomath_db: Path, tmp_path: Path
-):
+def test_brand_and_copyright(jpintel_db: Path, autonomath_db: Path, tmp_path: Path):
     out = tmp_path / "rss"
     assert _generate(jpintel_db, autonomath_db, out) == 0
     for path in [

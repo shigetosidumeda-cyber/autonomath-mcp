@@ -3,6 +3,8 @@ from __future__ import annotations
 import sqlite3
 from typing import TYPE_CHECKING
 
+import pytest
+
 if TYPE_CHECKING:
     from pathlib import Path
 
@@ -178,9 +180,7 @@ def _make_jpintel_db(path: Path) -> None:
         conn.close()
 
 
-def test_prod_autonomath_guard_skips_quick_check(
-    tmp_path: Path, monkeypatch
-) -> None:
+def test_prod_autonomath_guard_skips_quick_check(tmp_path: Path, monkeypatch) -> None:
     from scripts import schema_guard
 
     db_path = tmp_path / "autonomath.db"
@@ -239,6 +239,103 @@ def test_autonomath_guard_requires_evidence_critical_tables(tmp_path: Path) -> N
     assert "jpi_programs" in message
 
 
+def _add_cross_pollution(
+    db_path: Path,
+    *,
+    migration_110_applied: bool,
+    programs_rows: int = 0,
+    fts_rows: int = 0,
+) -> None:
+    conn = sqlite3.connect(db_path)
+    try:
+        conn.execute("CREATE TABLE programs(id INTEGER PRIMARY KEY, primary_name TEXT)")
+        for i in range(programs_rows):
+            conn.execute(
+                "INSERT INTO programs(id, primary_name) VALUES (?, ?)",
+                (i + 1, f"wrong-db-{i}"),
+            )
+        conn.execute("CREATE VIRTUAL TABLE programs_fts USING fts5(unified_id, primary_name)")
+        for i in range(fts_rows):
+            conn.execute(
+                "INSERT INTO programs_fts(unified_id, primary_name) VALUES (?, ?)",
+                (f"UNI-wrong-{i}", f"wrong fts {i}"),
+            )
+        if migration_110_applied:
+            conn.execute(
+                "INSERT OR REPLACE INTO schema_migrations(id, checksum, applied_at) "
+                "VALUES ('110_autonomath_drop_cross_pollution.sql', 'test', 'now')"
+            )
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def _table_names(db_path: Path) -> set[str]:
+    conn = sqlite3.connect(db_path)
+    try:
+        return {
+            row[0]
+            for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
+        }
+    finally:
+        conn.close()
+
+
+def test_autonomath_cleanup_drops_empty_cross_pollution_after_110_applied(
+    tmp_path: Path,
+) -> None:
+    from scripts import schema_guard
+
+    db_path = tmp_path / "autonomath_empty_cross_pollution.db"
+    _make_autonomath_db(db_path)
+    _add_cross_pollution(db_path, migration_110_applied=True)
+
+    assert schema_guard.drop_empty_autonomath_cross_pollution(str(db_path)) is True
+    tables = _table_names(db_path)
+    assert not (tables & schema_guard.AM_FORBIDDEN)
+    schema_guard.assert_am_schema(str(db_path))
+
+
+def test_autonomath_cleanup_refuses_nonempty_programs(tmp_path: Path) -> None:
+    from scripts import schema_guard
+
+    db_path = tmp_path / "autonomath_nonempty_programs.db"
+    _make_autonomath_db(db_path)
+    _add_cross_pollution(
+        db_path,
+        migration_110_applied=True,
+        programs_rows=1,
+    )
+
+    assert schema_guard.drop_empty_autonomath_cross_pollution(str(db_path)) is False
+    with pytest.raises(schema_guard.SchemaGuardError, match="FORBIDDEN"):
+        schema_guard.assert_am_schema(str(db_path))
+
+
+def test_autonomath_cleanup_refuses_nonempty_programs_fts(tmp_path: Path) -> None:
+    from scripts import schema_guard
+
+    db_path = tmp_path / "autonomath_nonempty_programs_fts.db"
+    _make_autonomath_db(db_path)
+    _add_cross_pollution(db_path, migration_110_applied=True, fts_rows=1)
+
+    assert schema_guard.drop_empty_autonomath_cross_pollution(str(db_path)) is False
+    with pytest.raises(schema_guard.SchemaGuardError, match="FORBIDDEN"):
+        schema_guard.assert_am_schema(str(db_path))
+
+
+def test_autonomath_cleanup_requires_110_applied(tmp_path: Path) -> None:
+    from scripts import schema_guard
+
+    db_path = tmp_path / "autonomath_empty_cross_pollution_without_110.db"
+    _make_autonomath_db(db_path)
+    _add_cross_pollution(db_path, migration_110_applied=False)
+
+    assert schema_guard.drop_empty_autonomath_cross_pollution(str(db_path)) is False
+    with pytest.raises(schema_guard.SchemaGuardError, match="FORBIDDEN"):
+        schema_guard.assert_am_schema(str(db_path))
+
+
 def test_prod_jpintel_guard_keeps_quick_check(tmp_path: Path, monkeypatch) -> None:
     from scripts import schema_guard
 
@@ -282,13 +379,9 @@ def test_migrate_continues_after_duplicate_column_in_multi_column_migration(
             );
             """
         )
-        sql = (
-            migrate.MIGRATIONS_DIR / "123_funnel_events.sql"
-        ).read_text(encoding="utf-8")
+        sql = (migrate.MIGRATIONS_DIR / "123_funnel_events.sql").read_text(encoding="utf-8")
         migrate._apply_one(conn, "123_funnel_events.sql", sql, "test")
-        cols = {
-            row[1] for row in conn.execute("PRAGMA table_info(analytics_events)")
-        }
+        cols = {row[1] for row in conn.execute("PRAGMA table_info(analytics_events)")}
         applied = conn.execute(
             "SELECT 1 FROM schema_migrations WHERE id = ?",
             ("123_funnel_events.sql",),
@@ -341,7 +434,10 @@ def test_migrate_load_migrations_skips_rollback_and_manual_files(
 
     migrations_dir = tmp_path / "migrations"
     migrations_dir.mkdir()
-    (migrations_dir / "001_forward.sql").write_text("CREATE TABLE ok(id INTEGER);\n", encoding="utf-8")
+    (migrations_dir / "001_forward.sql").write_text(
+        "CREATE TABLE ok(id INTEGER);\n",
+        encoding="utf-8",
+    )
     (migrations_dir / "002_forward_rollback.sql").write_text(
         "DROP TABLE ok;\n",
         encoding="utf-8",

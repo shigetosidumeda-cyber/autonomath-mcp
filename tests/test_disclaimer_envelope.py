@@ -20,6 +20,7 @@ Covers
 This guards against the J9-style regression where a wired field exists in
 envelope_wrapper but no caller actually surfaces it on the tool response.
 """
+
 from __future__ import annotations
 
 import sys
@@ -83,9 +84,7 @@ def test_sensitive_tools_carry_disclaimer():
         "get_am_tax_rule",
         "list_tax_sunset_alerts",
     }
-    assert expected.issubset(sensitive), (
-        f"SENSITIVE_TOOLS missing entries: {expected - sensitive}"
-    )
+    assert expected.issubset(sensitive), f"SENSITIVE_TOOLS missing entries: {expected - sensitive}"
 
     for tool_name in expected:
         result = {
@@ -132,9 +131,7 @@ def test_disclaimer_level_minimal_is_shorter():
         mini = disclaimer_for(tool_name, "minimal")
         strict = disclaimer_for(tool_name, "strict")
         assert std and mini and strict
-        assert len(mini) < len(std), (
-            f"{tool_name}: minimal ({len(mini)}) >= standard ({len(std)})"
-        )
+        assert len(mini) < len(std), f"{tool_name}: minimal ({len(mini)}) >= standard ({len(std)})"
         assert len(strict) > len(std), (
             f"{tool_name}: strict ({len(strict)}) <= standard ({len(std)})"
         )

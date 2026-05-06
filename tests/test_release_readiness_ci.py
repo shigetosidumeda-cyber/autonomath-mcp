@@ -205,9 +205,7 @@ def _seed_repo(tmp_path: Path) -> Path:
         "            scripts/ops/preflight_production_improvement.py \\\n"
         "            scripts/ops/this_does_not_exist.py\n"
     )
-    (repo / ".github" / "workflows" / "release.yml").write_text(
-        release_yml, encoding="utf-8"
-    )
+    (repo / ".github" / "workflows" / "release.yml").write_text(release_yml, encoding="utf-8")
 
     # Initialise as git repo so ls-files works.
     _git(repo, "init", "-q", "-b", "main")

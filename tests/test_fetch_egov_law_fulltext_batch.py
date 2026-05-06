@@ -12,6 +12,7 @@ Exercises:
      calls — second acquire waits ≥ delay seconds.
   5. ``disallows_api_path`` correctly flags blocking robots.txt rules.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -28,9 +29,7 @@ SCRIPT_PATH = REPO_ROOT / "scripts" / "etl" / "fetch_egov_law_fulltext_batch.py"
 
 
 def _load_module():
-    spec = importlib.util.spec_from_file_location(
-        "fetch_egov_law_fulltext_batch", SCRIPT_PATH
-    )
+    spec = importlib.util.spec_from_file_location("fetch_egov_law_fulltext_batch", SCRIPT_PATH)
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)

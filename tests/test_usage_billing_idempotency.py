@@ -82,7 +82,7 @@ def test_request_idempotency_key_distinguishes_multiple_usage_events(
                     ctx,
                     "am.dd_batch.row",
                     params={"houjin_bangou": "9876543210987", "depth": "basic"},
-                    )
+                )
             finally:
                 idem.billing_event_index.reset(index_token)
                 idem.billing_idempotency_key.reset(key_token)
@@ -91,8 +91,7 @@ def test_request_idempotency_key_distinguishes_multiple_usage_events(
         record_request_once()
 
         rows = conn.execute(
-            "SELECT endpoint, params_digest, billing_idempotency_key "
-            "FROM usage_events ORDER BY id"
+            "SELECT endpoint, params_digest, billing_idempotency_key FROM usage_events ORDER BY id"
         ).fetchall()
     finally:
         conn.close()
@@ -144,8 +143,7 @@ def test_duplicate_billing_idempotency_does_not_advance_cap_cache(
             """
         )
         conn.execute(
-            "INSERT INTO api_keys(key_hash, last_used_at, tier, id) "
-            "VALUES (?, NULL, 'paid', 1)",
+            "INSERT INTO api_keys(key_hash, last_used_at, tier, id) VALUES (?, NULL, 'paid', 1)",
             ("kh_paid",),
         )
         ctx = ApiContext(
@@ -299,8 +297,7 @@ def test_duplicate_billing_idempotency_retries_stripe_report_without_cap_cache(
             """
         )
         conn.execute(
-            "INSERT INTO api_keys(key_hash, last_used_at, tier, id) "
-            "VALUES (?, NULL, 'paid', 1)",
+            "INSERT INTO api_keys(key_hash, last_used_at, tier, id) VALUES (?, NULL, 'paid', 1)",
             ("kh_paid_stripe",),
         )
         ctx = ApiContext(
@@ -353,9 +350,7 @@ def test_duplicate_billing_idempotency_retries_stripe_report_without_cap_cache(
     assert len(reported) == 2
     assert {call[0] for call in reported} == {"sub_paid_stripe"}
     assert [call[1]["usage_event_id"] for call in reported] == [rows[0]["id"], rows[0]["id"]]
-    assert {call[1]["idempotency_key"] for call in reported} == {
-        rows[0]["billing_idempotency_key"]
-    }
+    assert {call[1]["idempotency_key"] for call in reported} == {rows[0]["billing_idempotency_key"]}
 
 
 def test_body_fingerprint_collision_guard_rejects_different_payload(tmp_path) -> None:
@@ -367,15 +362,12 @@ def test_body_fingerprint_collision_guard_rejects_different_payload(tmp_path) ->
     conn = sqlite3.connect(db_path, isolation_level=None)
     try:
         _create_idempotency_cache_table(conn)
-        assert _check_or_record_body_fingerprint(
-            conn, "collision:test", "body-a"
-        ) == ("ok", None)
-        assert _check_or_record_body_fingerprint(
-            conn, "collision:test", "body-a"
-        ) == ("ok", None)
-        assert _check_or_record_body_fingerprint(
-            conn, "collision:test", "body-b"
-        ) == ("mismatch", "body-a")
+        assert _check_or_record_body_fingerprint(conn, "collision:test", "body-a") == ("ok", None)
+        assert _check_or_record_body_fingerprint(conn, "collision:test", "body-a") == ("ok", None)
+        assert _check_or_record_body_fingerprint(conn, "collision:test", "body-b") == (
+            "mismatch",
+            "body-a",
+        )
     finally:
         conn.close()
 
@@ -396,9 +388,10 @@ def test_body_fingerprint_collision_guard_db_lock_fails_closed(tmp_path) -> None
     contender = sqlite3.connect(db_path, timeout=0, isolation_level=None)
     try:
         locker.execute("BEGIN IMMEDIATE")
-        assert _check_or_record_body_fingerprint(
-            contender, "collision:locked", "body-a"
-        ) == ("busy", None)
+        assert _check_or_record_body_fingerprint(contender, "collision:locked", "body-a") == (
+            "busy",
+            None,
+        )
     finally:
         with contextlib.suppress(Exception):
             locker.execute("ROLLBACK")
@@ -422,8 +415,7 @@ def test_same_idempotency_key_different_body_is_unmetered_409(
     conn = sqlite3.connect(seeded_db)
     try:
         before = conn.execute(
-            "SELECT COUNT(*) FROM usage_events "
-            "WHERE key_hash = ? AND endpoint = 'programs.get'",
+            "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = 'programs.get'",
             (key_hash,),
         ).fetchone()[0]
     finally:
@@ -449,8 +441,7 @@ def test_same_idempotency_key_different_body_is_unmetered_409(
     conn = sqlite3.connect(seeded_db)
     try:
         after = conn.execute(
-            "SELECT COUNT(*) FROM usage_events "
-            "WHERE key_hash = ? AND endpoint = 'programs.get'",
+            "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = 'programs.get'",
             (key_hash,),
         ).fetchone()[0]
     finally:
@@ -475,8 +466,7 @@ def test_corrupt_idempotency_replay_fails_closed_without_second_usage(
     conn = sqlite3.connect(seeded_db)
     try:
         before = conn.execute(
-            "SELECT COUNT(*) FROM usage_events "
-            "WHERE key_hash = ? AND endpoint = 'programs.get'",
+            "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = 'programs.get'",
             (key_hash,),
         ).fetchone()[0]
     finally:
@@ -519,8 +509,7 @@ def test_corrupt_idempotency_replay_fails_closed_without_second_usage(
     conn = sqlite3.connect(seeded_db)
     try:
         after = conn.execute(
-            "SELECT COUNT(*) FROM usage_events "
-            "WHERE key_hash = ? AND endpoint = 'programs.get'",
+            "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = 'programs.get'",
             (key_hash,),
         ).fetchone()[0]
     finally:

@@ -15,6 +15,7 @@ Why these tests matter:
       parser emits a single collapsed string here, every downstream insert
       will be wrong.
 """
+
 from __future__ import annotations
 
 import csv

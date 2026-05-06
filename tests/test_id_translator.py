@@ -11,6 +11,7 @@ and the ``am_alias`` fallback path. The autonomath connection helper is
 monkeypatched onto a tiny in-memory SQLite seeded with just enough rows
 to drive each branch — keeps the test independent of the 9.4 GB live DB.
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -114,9 +115,7 @@ def _patch_connect(monkeypatch):
 
 
 def test_unified_to_canonical_returns_highest_confidence_link() -> None:
-    canonical = id_translator.program_unified_to_canonical(
-        "UNI-ext-b98165dd96"
-    )
+    canonical = id_translator.program_unified_to_canonical("UNI-ext-b98165dd96")
     assert canonical == "program:04_program_documents:000000:23_25d25bdfe8"
 
 
@@ -153,17 +152,13 @@ def test_canonical_to_unified_via_entity_id_map() -> None:
 
 def test_canonical_to_unified_falls_back_to_am_alias() -> None:
     """When entity_id_map has no link, am_alias should still resolve."""
-    uni = id_translator.program_canonical_to_unified(
-        "program:fallback_only:000001:55_deadbeef00"
-    )
+    uni = id_translator.program_canonical_to_unified("program:fallback_only:000001:55_deadbeef00")
     assert uni == "UNI-fallback-only-1"
 
 
 def test_canonical_to_unified_returns_none_for_unknown_id() -> None:
     assert (
-        id_translator.program_canonical_to_unified(
-            "program:never_seen:000001:00_zzzzzzzzzz"
-        )
+        id_translator.program_canonical_to_unified("program:never_seen:000001:00_zzzzzzzzzz")
         is None
     )
 
@@ -197,9 +192,7 @@ def test_normalize_program_id_unknown_id_preserves_input_slot() -> None:
     assert uni == "UNI-no-such-thing"
     assert canonical is None
 
-    uni2, canonical2 = id_translator.normalize_program_id(
-        "program:no:such:00_x"
-    )
+    uni2, canonical2 = id_translator.normalize_program_id("program:no:such:00_x")
     assert canonical2 == "program:no:such:00_x"
     assert uni2 is None
 
@@ -211,9 +204,7 @@ def test_normalize_program_id_garbage_returns_double_none() -> None:
 
 
 def test_normalize_program_id_strips_whitespace() -> None:
-    uni, canonical = id_translator.normalize_program_id(
-        "  UNI-ext-b98165dd96  "
-    )
+    uni, canonical = id_translator.normalize_program_id("  UNI-ext-b98165dd96  ")
     assert uni == "UNI-ext-b98165dd96"
     assert canonical == "program:04_program_documents:000000:23_25d25bdfe8"
 

@@ -16,6 +16,7 @@ program rows, 2 application rounds, 2 amendment snapshots, 1 law
 article) so it does not contend with the 8.3 GB production DB which
 parallel agents may be writing to.
 """
+
 from __future__ import annotations
 
 import json
@@ -109,15 +110,39 @@ def fake_autonomath_db() -> Path:
         "authority_canonical, confidence, source_url, source_url_domain, "
         "fetched_at, raw_json) VALUES (?,?,?,?,?,?,?,?,?)",
         [
-            ("program:test:tokyo_a", "program", "テスト都心補助金", None,
-             0.9, "https://example.go.jp/a", "example.go.jp",
-             "2024-01-01T00:00:00Z", raw_a),
-            ("program:test:osaka_b", "program", "テスト大阪補助金", None,
-             0.8, "https://example.go.jp/b", "example.go.jp",
-             "2024-06-01T00:00:00Z", raw_b),
-            ("program:test:hokkai_c", "program", "テスト北海道補助金", None,
-             0.7, "https://example.go.jp/c", "example.go.jp",
-             "2024-09-01T00:00:00Z", raw_c),
+            (
+                "program:test:tokyo_a",
+                "program",
+                "テスト都心補助金",
+                None,
+                0.9,
+                "https://example.go.jp/a",
+                "example.go.jp",
+                "2024-01-01T00:00:00Z",
+                raw_a,
+            ),
+            (
+                "program:test:osaka_b",
+                "program",
+                "テスト大阪補助金",
+                None,
+                0.8,
+                "https://example.go.jp/b",
+                "example.go.jp",
+                "2024-06-01T00:00:00Z",
+                raw_b,
+            ),
+            (
+                "program:test:hokkai_c",
+                "program",
+                "テスト北海道補助金",
+                None,
+                0.7,
+                "https://example.go.jp/c",
+                "example.go.jp",
+                "2024-09-01T00:00:00Z",
+                raw_c,
+            ),
         ],
     )
 
@@ -127,10 +152,26 @@ def fake_autonomath_db() -> Path:
         "round_seq, application_open_date, application_close_date, status, "
         "source_url, source_fetched_at) VALUES (?,?,?,?,?,?,?,?)",
         [
-            ("program:test:tokyo_a", "1次", 1, "2026-01-01", "2026-12-31",
-             "open", "https://example.go.jp/a", "2024-01-01T00:00:00Z"),
-            ("program:test:osaka_b", "0次", 0, "2023-04-01", "2023-09-30",
-             "closed", "https://example.go.jp/b", "2024-06-01T00:00:00Z"),
+            (
+                "program:test:tokyo_a",
+                "1次",
+                1,
+                "2026-01-01",
+                "2026-12-31",
+                "open",
+                "https://example.go.jp/a",
+                "2024-01-01T00:00:00Z",
+            ),
+            (
+                "program:test:osaka_b",
+                "0次",
+                0,
+                "2023-04-01",
+                "2023-09-30",
+                "closed",
+                "https://example.go.jp/b",
+                "2024-06-01T00:00:00Z",
+            ),
             # hokkai_c has no application round => LEFT JOIN keeps it.
         ],
     )
@@ -143,12 +184,28 @@ def fake_autonomath_db() -> Path:
         "effective_from, effective_until, eligibility_hash, summary_hash, "
         "source_url, source_fetched_at) VALUES (?,?,?,?,?,?,?,?,?)",
         [
-            ("program:test:tokyo_a", 1, "2024-04-01T00:00:00Z",
-             "2024-04-01", None, same_hash, same_hash,
-             "https://example.go.jp/a", "2024-04-01T00:00:00Z"),
-            ("program:test:tokyo_a", 2, "2025-04-01T00:00:00Z",
-             "2025-04-01", None, same_hash, same_hash,
-             "https://example.go.jp/a", "2025-04-01T00:00:00Z"),
+            (
+                "program:test:tokyo_a",
+                1,
+                "2024-04-01T00:00:00Z",
+                "2024-04-01",
+                None,
+                same_hash,
+                same_hash,
+                "https://example.go.jp/a",
+                "2024-04-01T00:00:00Z",
+            ),
+            (
+                "program:test:tokyo_a",
+                2,
+                "2025-04-01T00:00:00Z",
+                "2025-04-01",
+                None,
+                same_hash,
+                same_hash,
+                "https://example.go.jp/a",
+                "2025-04-01T00:00:00Z",
+            ),
         ],
     )
 
@@ -156,10 +213,7 @@ def fake_autonomath_db() -> Path:
     conn.execute(
         "INSERT INTO am_law_article(law_canonical, article_number, text, "
         "last_amended, effective_from) VALUES (?,?,?,?,?)",
-        ("law:test:租税特別措置法", "41の19",
-         "テスト条文本文",
-         "令5課消2-9",
-         "2023-04-01"),
+        ("law:test:租税特別措置法", "41の19", "テスト条文本文", "令5課消2-9", "2023-04-01"),
     )
 
     # Build the view (mirror of migration 070).
@@ -338,9 +392,7 @@ def test_amendment_lifecycle_caveat_injected() -> None:
     # Assert the helper is wired into both endpoints by inspecting the
     # source — cheap-but-sufficient guard against future regressions
     # where someone removes the call site.
-    src_path = Path(__file__).resolve().parents[1] / (
-        "src/jpintel_mcp/api/autonomath.py"
-    )
+    src_path = Path(__file__).resolve().parents[1] / ("src/jpintel_mcp/api/autonomath.py")
     src = src_path.read_text(encoding="utf-8")
     # search_by_law endpoint wires the caveat after tools.search_by_law.
     assert "_attach_lifecycle_caveat(result)" in src

@@ -15,6 +15,7 @@ Constraints:
 - Test pattern: pytest fixtures + parametrize + freezegun-style fake clock.
 - 8 test cases covering the success path + every failure branch in DEEP-47 §3.
 """
+
 from __future__ import annotations
 
 # Pull DEEP-46/47/48 shared fixtures (jpintel_conn, autonomath_conn,
@@ -48,9 +49,7 @@ def _idempotency_key(api_key_hash: str, year: int, quarter: int) -> str:
     return f"recurring.quarterly_pdf:{api_key_hash}:{year}:{quarter}"
 
 
-def _saga_insert(
-    conn: sqlite3.Connection, *, key_hash: str, label: str, status: str
-) -> int:
+def _saga_insert(conn: sqlite3.Connection, *, key_hash: str, label: str, status: str) -> int:
     cur = conn.execute(
         """
         INSERT INTO recurring_pdf_billing
@@ -97,9 +96,7 @@ def get_quarterly_pdf_pattern_a(
     if existing is not None:
         return {"status": "success", "saga_id": existing["id"], "cached": True}
 
-    saga_id = _saga_insert(
-        conn, key_hash=api_key_hash, label=label, status="charge_failed"
-    )
+    saga_id = _saga_insert(conn, key_hash=api_key_hash, label=label, status="charge_failed")
     charged = stripe_client.record_metered_delivery(
         api_key_hash=api_key_hash,
         endpoint="recurring.quarterly_pdf",
@@ -125,9 +122,7 @@ def get_quarterly_pdf_pattern_a(
     if not uploaded:
         return {"status": "r2_failed", "saga_id": saga_id}
 
-    expires_at = (datetime.now(timezone.utc) + timedelta(days=92)).strftime(
-        "%Y-%m-%dT%H:%M:%S.%fZ"
-    )
+    expires_at = (datetime.now(timezone.utc) + timedelta(days=92)).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     _saga_update(
         conn,
         saga_id,
@@ -217,9 +212,7 @@ def test_charge_first_then_pdf_generate_then_r2_upload_then_email(
     assert pdf_renderer.calls == 1
     assert "jpcite-quarterly-pdf/hash_aaa/2026_q2.pdf" in mock_r2_storage.objects
     # Saga row marked success
-    rows = jpintel_conn.execute(
-        "SELECT status FROM recurring_pdf_billing"
-    ).fetchall()
+    rows = jpintel_conn.execute("SELECT status FROM recurring_pdf_billing").fetchall()
     assert rows[0]["status"] == "success"
 
 
@@ -260,9 +253,7 @@ def test_pdf_generation_failure_after_charge(
     # No R2 object — leak avoided
     assert len(mock_r2_storage.objects) == 0
     # The saga row carries charge_at so the operator can refund
-    saga = jpintel_conn.execute(
-        "SELECT charge_at, status FROM recurring_pdf_billing"
-    ).fetchone()
+    saga = jpintel_conn.execute("SELECT charge_at, status FROM recurring_pdf_billing").fetchone()
     assert saga["charge_at"] is not None
     assert saga["status"] == "pdf_failed"
 

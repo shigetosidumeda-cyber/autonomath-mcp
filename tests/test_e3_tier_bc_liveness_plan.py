@@ -65,7 +65,9 @@ def test_domain_grouping_counts_only_tier_bc_unknown_http_rows(tmp_path: Path) -
         "UNI-B2",
         "UNI-C1",
     ]
-    assert [row[0] for row in conn.execute("SELECT source_url_status FROM programs ORDER BY unified_id")] == [
+    assert [
+        row[0] for row in conn.execute("SELECT source_url_status FROM programs ORDER BY unified_id")
+    ] == [
         "unknown",
         "unknown",
         " ",

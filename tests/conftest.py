@@ -5,6 +5,15 @@ import tempfile
 # --- must run before any jpintel_mcp import so Settings picks up test env ---
 _TMP_DIR = tempfile.mkdtemp(prefix="jpintel-test-")
 _DB_PATH = os.path.join(_TMP_DIR, "jpintel.db")
+_REPO_ROOT = os.path.dirname(os.path.dirname(__file__))
+_AUTONOMATH_DB_PATH = os.environ.get(
+    "AUTONOMATH_DB_PATH",
+    os.path.join(_REPO_ROOT, "autonomath.db"),
+)
+_AUTONOMATH_GRAPH_DB_PATH = os.environ.get(
+    "AUTONOMATH_GRAPH_DB_PATH",
+    os.path.join(_REPO_ROOT, "graph.sqlite"),
+)
 os.environ["JPINTEL_DB_PATH"] = _DB_PATH
 os.environ["API_KEY_SALT"] = "test-salt"
 os.environ["RATE_LIMIT_FREE_PER_DAY"] = "100"
@@ -26,6 +35,42 @@ from pathlib import Path  # noqa: E402
 
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
+
+
+def _restore_autonomath_paths() -> None:
+    os.environ["AUTONOMATH_DB_PATH"] = _AUTONOMATH_DB_PATH
+    os.environ["AUTONOMATH_GRAPH_DB_PATH"] = _AUTONOMATH_GRAPH_DB_PATH
+    try:
+        from jpintel_mcp.config import settings
+
+        settings.autonomath_db_path = Path(_AUTONOMATH_DB_PATH)
+    except Exception:
+        pass
+    module = sys.modules.get("jpintel_mcp.mcp.autonomath_tools.db")
+    if module is not None:
+        try:
+            module.AUTONOMATH_DB_PATH = Path(_AUTONOMATH_DB_PATH)
+            module.GRAPH_DB_PATH = Path(_AUTONOMATH_GRAPH_DB_PATH)
+        except Exception:
+            pass
+
+
+def _reset_autonomath_state() -> None:
+    for module_name, func_name in (
+        ("jpintel_mcp.mcp.autonomath_tools.db", "close_all"),
+        ("jpintel_mcp.api.evidence", "reset_composer"),
+        ("jpintel_mcp.services.evidence_packet", "_reset_cache_for_tests"),
+        ("jpintel_mcp.api.funding_stack", "reset_checker"),
+        ("jpintel_mcp.mcp.autonomath_tools.funding_stack_tools", "_reset_checker"),
+    ):
+        module = sys.modules.get(module_name)
+        if module is None:
+            continue
+        try:
+            reset = getattr(module, func_name)
+            reset()
+        except Exception:
+            pass
 
 
 @pytest.fixture(scope="session")
@@ -98,17 +143,34 @@ def seeded_db(tmp_db_path: Path) -> Path:
                 enriched_json, source_mentions_json, updated_at
             ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
             (
-                p["unified_id"], p["primary_name"], None,
-                p.get("authority_level"), None, p.get("prefecture"), None,
-                p.get("program_kind"), None,
-                p.get("amount_max_man_yen"), None, None,
-                None, p.get("tier"), None, None, None,
-                p.get("excluded", 0), p.get("exclusion_reason"),
-                None, None,
+                p["unified_id"],
+                p["primary_name"],
+                None,
+                p.get("authority_level"),
+                None,
+                p.get("prefecture"),
+                None,
+                p.get("program_kind"),
+                None,
+                p.get("amount_max_man_yen"),
+                None,
+                None,
+                None,
+                p.get("tier"),
+                None,
+                None,
+                None,
+                p.get("excluded", 0),
+                p.get("exclusion_reason"),
+                None,
+                None,
                 json.dumps(p.get("target_types", []), ensure_ascii=False),
                 json.dumps(p.get("funding_purpose", []), ensure_ascii=False),
-                None, None,
-                None, None, now,
+                None,
+                None,
+                None,
+                None,
+                now,
             ),
         )
         conn.execute(
@@ -123,10 +185,16 @@ def seeded_db(tmp_db_path: Path) -> Path:
             source_urls_json, extra_json
         ) VALUES (?,?,?,?,?,?,?,?,?,?)""",
         (
-            "excl-test-mutex", "absolute", "critical",
-            "keiei-kaishi-shikin", "koyo-shuno-shikin",
-            json.dumps([]), "テスト排他ルール", "test source",
-            json.dumps(["https://example.com"]), None,
+            "excl-test-mutex",
+            "absolute",
+            "critical",
+            "keiei-kaishi-shikin",
+            "koyo-shuno-shikin",
+            json.dumps([]),
+            "テスト排他ルール",
+            "test source",
+            json.dumps(["https://example.com"]),
+            None,
         ),
     )
     conn.execute(
@@ -136,10 +204,16 @@ def seeded_db(tmp_db_path: Path) -> Path:
             source_urls_json, extra_json
         ) VALUES (?,?,?,?,?,?,?,?,?,?)""",
         (
-            "excl-test-prereq", "prerequisite", "critical",
-            "seinen-shuno-shikin", "認定新規就農者",
-            json.dumps([]), "前提条件テスト", "test source",
-            json.dumps([]), None,
+            "excl-test-prereq",
+            "prerequisite",
+            "critical",
+            "seinen-shuno-shikin",
+            "認定新規就農者",
+            json.dumps([]),
+            "前提条件テスト",
+            "test source",
+            json.dumps([]),
+            None,
         ),
     )
     # Migration 051 dual-key rule: program_a is a primary_name string, but
@@ -153,11 +227,18 @@ def seeded_db(tmp_db_path: Path) -> Path:
             program_a_uid, program_b_uid
         ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""",
         (
-            "excl-test-uid-mutex", "absolute", "high",
-            "テスト S-tier 補助金", "B-tier 融資 スーパーL資金",
-            json.dumps([]), "uid-keyed テスト排他ルール", "test source",
-            json.dumps(["https://example.com/uid"]), None,
-            "UNI-test-s-1", "UNI-test-b-1",
+            "excl-test-uid-mutex",
+            "absolute",
+            "high",
+            "テスト S-tier 補助金",
+            "B-tier 融資 スーパーL資金",
+            json.dumps([]),
+            "uid-keyed テスト排他ルール",
+            "test source",
+            json.dumps(["https://example.com/uid"]),
+            None,
+            "UNI-test-s-1",
+            "UNI-test-b-1",
         ),
     )
     conn.execute(
@@ -187,6 +268,8 @@ def _reset_anon_rate_limit(seeded_db: Path):
     is short-window and per-process, so a single autouse reset per test
     keeps each test's bucket fresh.
     """
+    _restore_autonomath_paths()
+    _reset_autonomath_state()
     # Some modules temporarily point settings.db_path / JPINTEL_DB_PATH at a
     # specialized fixture DB. Reset both before every test so API auth,
     # funnel, feedback, and anon quota checks all hit the seeded integration DB.
@@ -209,6 +292,7 @@ def _reset_anon_rate_limit(seeded_db: Path):
         c.close()
     try:
         from jpintel_mcp.api.meta import _reset_meta_cache
+
         _reset_meta_cache()
     except ImportError:
         pass
@@ -218,6 +302,7 @@ def _reset_anon_rate_limit(seeded_db: Path):
         from jpintel_mcp.api.middleware.rate_limit import (
             _reset_rate_limit_buckets,
         )
+
         _reset_rate_limit_buckets()
     except ImportError:
         pass
@@ -231,10 +316,14 @@ def _reset_anon_rate_limit(seeded_db: Path):
         from jpintel_mcp.api.middleware.per_ip_endpoint_limit import (
             _reset_per_ip_endpoint_buckets,
         )
+
         _reset_per_ip_endpoint_buckets()
     except ImportError:
         pass
     yield
+    _reset_autonomath_state()
+    _restore_autonomath_paths()
+    _reset_autonomath_state()
 
 
 @pytest.fixture(autouse=True)
@@ -343,6 +432,7 @@ def _sync_bg_task_queue(seeded_db: Path, monkeypatch):
         # request scope) and the second conn would block on busy_timeout.
         try:
             from jpintel_mcp.api._bg_task_queue import mark_done as _mark_done
+
             _mark_done(conn, row_id)
         except Exception:
             pass
@@ -372,6 +462,7 @@ def paid_key(seeded_db: Path) -> str:
     c = sqlite3.connect(seeded_db)
     c.row_factory = sqlite3.Row
     import uuid
+
     sub_id = f"sub_test_{uuid.uuid4().hex[:8]}"
     raw = issue_key(c, customer_id="cus_test_paid", tier="paid", stripe_subscription_id=sub_id)
     c.commit()

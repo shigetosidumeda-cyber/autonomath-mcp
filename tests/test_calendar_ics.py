@@ -16,6 +16,7 @@ tests add an autonomath-side `entity_id_map` that points the canonical
 `program:test:*` IDs at those jpi rows, plus `am_application_round`
 rows so the calendar feed has events to render.
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -91,8 +92,7 @@ def _build_autonomath_fixture(
         )
     for jpi, am in id_map:
         conn.execute(
-            "INSERT OR IGNORE INTO entity_id_map(jpi_unified_id, am_canonical_id) "
-            "VALUES (?,?)",
+            "INSERT OR IGNORE INTO entity_id_map(jpi_unified_id, am_canonical_id) VALUES (?,?)",
             (jpi, am),
         )
     conn.commit()
@@ -150,9 +150,7 @@ def ics_fixture(seeded_db: Path, monkeypatch: pytest.MonkeyPatch):
         ("UNI-test-a-1", "program:test:a1"),
         ("UNI-test-b-1", "program:test:b1"),
     ]
-    _build_autonomath_fixture(
-        am_path, rounds=rounds, id_map=id_map
-    )
+    _build_autonomath_fixture(am_path, rounds=rounds, id_map=id_map)
     # Point the ICS endpoint's connect helper at the fixture. The path is
     # resolved at module-import-time via os.environ so we MUST purge the
     # cached jpintel_mcp.mcp.autonomath_tools.db module before re-import.
@@ -193,9 +191,7 @@ def test_ics_returns_calendar_content_type(
     assert "charset=utf-8" in ctype
 
 
-def test_ics_body_is_valid_rfc5545(
-    ics_fixture: Path, auth_client: tuple[TestClient, str]
-) -> None:
+def test_ics_body_is_valid_rfc5545(ics_fixture: Path, auth_client: tuple[TestClient, str]) -> None:
     """Test 2: BEGIN:VCALENDAR / END:VCALENDAR present + exactly 3 VEVENTs.
 
     The fixture has 4 rounds total but only 3 are future-within-horizon AND
@@ -241,9 +237,7 @@ def test_ics_each_vevent_has_required_fields(
         assert "URL:" in blk
 
 
-def test_ics_anonymous_returns_401(
-    ics_fixture: Path, client: TestClient
-) -> None:
+def test_ics_anonymous_returns_401(ics_fixture: Path, client: TestClient) -> None:
     """Test 4: missing X-API-Key → 401."""
     r = client.get("/v1/calendar/deadlines.ics", params={"within_days": 30})
     assert r.status_code == 401, r.text
@@ -352,6 +346,7 @@ def test_ics_logs_usage_with_quantity_one(
     call = captured[0]
     assert call["endpoint"] == "calendar.deadlines.ics"
     assert call["quantity"] == 1
+    assert call["strict_metering"] is True
 
 
 def test_ics_caps_at_500_events(

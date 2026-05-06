@@ -11,6 +11,7 @@ it_hojo_2025 / monodukuri / saikouchiku / jigyou_saikouchiku /
 jizokuka_ippan / jizokuka_shokokai / jizokuka_sogyo / shoryokuka_ippan
 / shinjigyou).
 """
+
 from __future__ import annotations
 
 import importlib.util
@@ -22,7 +23,8 @@ import pytest
 _REPO = Path(__file__).resolve().parent.parent
 _SCRIPT = _REPO / "scripts" / "etl" / "reconcile_adoption_to_program.py"
 _spec = importlib.util.spec_from_file_location(
-    "reconcile_adoption_to_program", _SCRIPT,
+    "reconcile_adoption_to_program",
+    _SCRIPT,
 )
 assert _spec is not None and _spec.loader is not None
 _mod = importlib.util.module_from_spec(_spec)
@@ -103,6 +105,7 @@ def test_confidence_band(score: float, expected: str) -> None:
 
 def _scorer():
     from rapidfuzz import distance
+
     return distance.JaroWinkler.normalized_similarity
 
 
@@ -139,10 +142,13 @@ def test_matcher_signal_exact() -> None:
     norm_index = {_mod._normalize(pr.primary_name): [pr]}
     alias_index: dict[str, list[_mod.ProgramRow]] = {}
 
-    ad = _make_adoption(program_name_raw="IT導入補助金 2023 後期",
-                        program_id_hint="it_hojo_2023")
+    ad = _make_adoption(program_name_raw="IT導入補助金 2023 後期", program_id_hint="it_hojo_2023")
     pid, score, signal, stripped = _mod._try_match(
-        ad, programs, norm_index, alias_index, _scorer(),
+        ad,
+        programs,
+        norm_index,
+        alias_index,
+        _scorer(),
     )
     assert pid == "p1"
     assert score == 1.0
@@ -160,7 +166,11 @@ def test_matcher_signal_fuzzy_high() -> None:
     # Single-trailing-char drift — JaroWinkler ≈ 0.97 against the program.
     ad = _make_adoption(program_name_raw="事業再構築補助金A")
     pid, score, signal, _stripped = _mod._try_match(
-        ad, programs, norm_index, alias_index, _scorer(),
+        ad,
+        programs,
+        norm_index,
+        alias_index,
+        _scorer(),
     )
     assert pid == "p2"
     assert score >= 0.92
@@ -179,7 +189,11 @@ def test_matcher_signal_hint_when_program_name_missing() -> None:
         program_id_hint="jigyou_saikouchiku",  # mapped in HINT_TO_CANONICAL_PROGRAM
     )
     pid, score, signal, _stripped = _mod._try_match(
-        ad, programs, norm_index, alias_index, _scorer(),
+        ad,
+        programs,
+        norm_index,
+        alias_index,
+        _scorer(),
     )
     assert pid == "program:base:a841db60bb"
     assert score == 1.0
@@ -198,7 +212,11 @@ def test_matcher_signal_unmatched_when_no_signal() -> None:
         program_id_hint="unknown_hint_not_in_table",
     )
     pid, score, signal, _stripped = _mod._try_match(
-        ad, programs, norm_index, alias_index, _scorer(),
+        ad,
+        programs,
+        norm_index,
+        alias_index,
+        _scorer(),
     )
     # No fuzzy match clears even 0.85.
     assert pid is None

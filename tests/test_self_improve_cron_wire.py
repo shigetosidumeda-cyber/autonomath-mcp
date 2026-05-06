@@ -22,9 +22,7 @@ WORKFLOW_PATH = REPO_ROOT / ".github" / "workflows" / "self-improve-weekly.yml"
 
 
 def _load_orchestrator():
-    spec = importlib.util.spec_from_file_location(
-        "self_improve_orchestrator", ORCH_PATH
-    )
+    spec = importlib.util.spec_from_file_location("self_improve_orchestrator", ORCH_PATH)
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
@@ -40,9 +38,7 @@ def test_all_ten_loops_discovered_and_wired_to_weekly_cron() -> None:
         "scripts/self_improve_orchestrator.LOOPS drifted from "
         "jpintel_mcp.self_improve.LOOP_NAMES — re-sync before launch"
     )
-    assert len(orch.LOOPS) == 10, (
-        f"expected exactly 10 self-improve loops, got {len(orch.LOOPS)}"
-    )
+    assert len(orch.LOOPS) == 10, f"expected exactly 10 self-improve loops, got {len(orch.LOOPS)}"
 
     # 2. Each loop is importable and exposes the expected run() callable.
     for name in orch.LOOPS:

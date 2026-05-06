@@ -9,6 +9,7 @@ These fixtures are intentionally pure-Python — no real network, no real LLM.
 The session A lane writes draft tests; codex lane integrates them under
 src/jpintel_mcp/tests/billing/ at v0.3.4 cut.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -339,7 +340,9 @@ class SyntheticEvent:
 
     @property
     def event_hash(self) -> str:
-        body = f"{self.event_id}|{self.customer_id}|{self.event_kind}|{sorted(self.payload.items())}"
+        body = (
+            f"{self.event_id}|{self.customer_id}|{self.event_kind}|{sorted(self.payload.items())}"
+        )
         return hashlib.sha256(body.encode("utf-8")).hexdigest()
 
 

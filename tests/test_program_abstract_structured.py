@@ -22,6 +22,7 @@ Uses the conftest-seeded tmp jpintel.db and inserts a single
 hermetic — no real DB dependency, no mocking (per CLAUDE.md "Never
 mock the DB in integration tests").
 """
+
 from __future__ import annotations
 
 import json
@@ -43,8 +44,7 @@ _SAMPLE_PROGRAM_ID = "UNI-16b8d86302"
 _SAMPLE_NAME = "人材確保等支援助成金（外国人労働者就労環境整備助成コース）"
 _SAMPLE_LEGAL = "雇用保険法 (厚生労働省) - 雇用保険二事業 (事業主負担分)"
 _SAMPLE_SOURCE_URL = (
-    "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/"
-    "koyou_roudou/koyou/kyufukin/gaikokujin.html"
+    "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/koyou/kyufukin/gaikokujin.html"
 )
 
 
@@ -108,10 +108,7 @@ def _build_enriched_json() -> str:
                 "obligations": [
                     {
                         "kind": "retention_target",
-                        "label": (
-                            "計画期間終了後の外国人労働者離職率を"
-                            "15%以下に維持"
-                        ),
+                        "label": ("計画期間終了後の外国人労働者離職率を15%以下に維持"),
                         "legal_basis": "雇用保険法施行規則",
                     }
                 ],

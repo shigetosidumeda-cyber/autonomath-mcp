@@ -102,10 +102,7 @@ def test_prerequisite_chain_returns_keiei_kakushin_for_monodukuri():
     # Chain must include the 経営革新計画 認定 row.
     chain = res["prerequisite_chain"]
     assert chain, f"expected non-empty chain for {pid!r}"
-    keiei_rows = [
-        e for e in chain
-        if "経営革新計画" in (e.get("name") or "")
-    ]
+    keiei_rows = [e for e in chain if "経営革新計画" in (e.get("name") or "")]
     assert keiei_rows, (
         f"expected at least one 経営革新計画 entry in chain for {pid!r}, "
         f"got names {[e.get('name') for e in chain]}"
@@ -123,9 +120,7 @@ def test_prerequisite_chain_returns_keiei_kakushin_for_monodukuri():
     assert res["total_preparation_time_days"] == sum(
         (e["preparation_time_days"] or 0) for e in chain
     )
-    assert res["total_preparation_cost_yen"] == sum(
-        (e["preparation_cost_yen"] or 0) for e in chain
-    )
+    assert res["total_preparation_cost_yen"] == sum((e["preparation_cost_yen"] or 0) for e in chain)
 
     # data_quality is always surfaced — coverage_pct must equal the
     # constant declared in the tool module.
@@ -193,13 +188,9 @@ def test_prerequisite_chain_excessive_depth_emits_warning():
     res = _prerequisite_chain_impl(target_program_id=pid, depth=7)
 
     assert res.get("error") is None
-    assert res["realistic"] is False, (
-        f"depth=7 must yield realistic=False; got {res['realistic']}"
-    )
+    assert res["realistic"] is False, f"depth=7 must yield realistic=False; got {res['realistic']}"
     warnings = res["warnings"]
     assert warnings, "depth>5 must emit at least one warning"
     # At least one warning must reference depth realism in Japanese.
     depth_warning = [w for w in warnings if "現実的" in w or "5 段" in w]
-    assert depth_warning, (
-        f"depth warning must mention 現実的 or 5 段; got {warnings}"
-    )
+    assert depth_warning, f"depth warning must mention 現実的 or 5 段; got {warnings}"

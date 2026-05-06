@@ -24,12 +24,15 @@ Priority order (as called out in K10):
 The tests run against the same TestClient as the integration suite,
 so every route is exercised against the seeded DB.
 """
+
 from __future__ import annotations
 
 import sqlite3
 from pathlib import Path
 
 import pytest
+
+from jpintel_mcp.api.deps import hash_api_key
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -140,10 +143,13 @@ def _assert_route_exists(response, *, path: str) -> None:
         ("/v1/am/loans", {"limit": 5}),
         ("/v1/am/enforcement", {"limit": 5}),
         ("/v1/am/mutual_plans", {"limit": 5}),
-        ("/v1/am/law_article", {
-            "law_name_or_canonical_id": "租税特別措置法",
-            "article_number": "42-4",
-        }),
+        (
+            "/v1/am/law_article",
+            {
+                "law_name_or_canonical_id": "租税特別措置法",
+                "article_number": "42-4",
+            },
+        ),
         ("/v1/am/static", None),
         ("/v1/am/example_profiles", None),
         ("/v1/am/templates/saburoku_kyotei/metadata", None),
@@ -248,11 +254,45 @@ def test_advisors_match_smoke(client, advisors_table):
 def test_advisors_match_accepts_legacy_agri_alias(client, advisors_table):
     r = client.get("/v1/advisors/match", params={"industry": "agri"})
     assert r.status_code == 200, r.text
-    canonical = client.get(
-        "/v1/advisors/match", params={"industry": "agriculture_forestry"}
-    )
+    canonical = client.get("/v1/advisors/match", params={"industry": "agriculture_forestry"})
     assert canonical.status_code == 200, canonical.text
     assert r.json()["total"] == canonical.json()["total"]
+
+
+def test_advisors_match_paid_final_cap_failure_returns_503_without_usage_event(
+    client,
+    advisors_table,
+    seeded_db,
+    paid_key,
+    monkeypatch,
+):
+    import jpintel_mcp.api.deps as deps
+
+    endpoint = "advisors.match"
+    key_hash = hash_api_key(paid_key)
+
+    def usage_count() -> int:
+        conn = sqlite3.connect(seeded_db)
+        try:
+            (count,) = conn.execute(
+                "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = ?",
+                (key_hash, endpoint),
+            ).fetchone()
+            return int(count)
+        finally:
+            conn.close()
+
+    def _reject_final_cap(*_args, **_kwargs):
+        return False, False
+
+    before = usage_count()
+    monkeypatch.setattr(deps, "_metered_cap_final_check", _reject_final_cap)
+
+    r = client.get("/v1/advisors/match", headers={"X-API-Key": paid_key})
+
+    assert r.status_code == 503, r.text
+    assert r.json()["detail"]["code"] == "billing_cap_final_check_failed"
+    assert usage_count() == before
 
 
 def test_advisors_signup_smoke(client, advisors_table):

@@ -52,9 +52,10 @@ def test_backfill_content_hashes_updates_only_null_rows() -> None:
     assert result["am_source_content_hash_null_before"] == 1
     assert result["updated_rows"] == 1
     assert result["am_source_content_hash_null_after"] == 0
-    assert conn.execute(
-        "SELECT content_hash FROM am_source WHERE id = 2"
-    ).fetchone()[0] == existing_hash
+    assert (
+        conn.execute("SELECT content_hash FROM am_source WHERE id = 2").fetchone()[0]
+        == existing_hash
+    )
 
 
 def test_backfill_content_hashes_is_idempotent() -> None:
@@ -90,6 +91,4 @@ def test_backfill_blocks_digest_collisions() -> None:
     result = backfill.backfill_content_hashes(conn, apply=True)
 
     assert result["status"] == "collision_blocked"
-    assert conn.execute(
-        "SELECT content_hash FROM am_source WHERE id = 1"
-    ).fetchone()[0] is None
+    assert conn.execute("SELECT content_hash FROM am_source WHERE id = 1").fetchone()[0] is None

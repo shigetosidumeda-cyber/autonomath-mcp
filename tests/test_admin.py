@@ -10,6 +10,7 @@ Coverage:
   7. empty-table graceful degradation for funnel_daily + cohort_retention
   8. OpenAPI export does NOT surface /v1/admin/*
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -394,9 +395,7 @@ def test_admin_analytics_split_happy_path(client, admin_enabled, seeded_db: Path
     body = r.json()
     assert body["bot_requests"] == 1
     assert body["human_requests"] == 3
-    assert body["paid_conversion_denominator_human_request"] == body[
-        "human_requests"
-    ]
+    assert body["paid_conversion_denominator_human_request"] == body["human_requests"]
 
     by_ua = {row["user_agent_class"]: row for row in body["by_ua_class"]}
     assert by_ua["browser:chrome"]["request_count"] >= 2
@@ -415,9 +414,7 @@ def test_admin_analytics_split_happy_path(client, admin_enabled, seeded_db: Path
 # ---------------------------------------------------------------------------
 
 
-def test_admin_funnel_empty_when_table_missing(
-    client, admin_enabled, drop_funnel_tables
-):
+def test_admin_funnel_empty_when_table_missing(client, admin_enabled, drop_funnel_tables):
     r = client.get(
         "/v1/admin/funnel",
         params={"start": "2026-05-06", "end": "2026-05-20"},
@@ -430,9 +427,7 @@ def test_admin_funnel_empty_when_table_missing(
     assert "funnel_daily" in body["note"]
 
 
-def test_admin_cohort_zero_when_table_missing(
-    client, admin_enabled, drop_funnel_tables
-):
+def test_admin_cohort_zero_when_table_missing(client, admin_enabled, drop_funnel_tables):
     r = client.get(
         "/v1/admin/cohort",
         params={"cohort_month": "2026-05"},
@@ -457,6 +452,4 @@ def test_admin_paths_absent_from_openapi(client):
     assert r.status_code == 200
     paths = set(r.json()["paths"].keys())
     for p in paths:
-        assert not p.startswith("/v1/admin/"), (
-            f"admin path {p!r} must not appear in /openapi.json"
-        )
+        assert not p.startswith("/v1/admin/"), f"admin path {p!r} must not appear in /openapi.json"

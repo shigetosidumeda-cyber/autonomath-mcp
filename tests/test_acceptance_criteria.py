@@ -42,13 +42,11 @@ import yaml
 # Constants & paths
 # ---------------------------------------------------------------------------
 
-REPO_ROOT = Path(
-    os.environ.get("JPCITE_REPO_ROOT", Path(__file__).resolve().parents[1])
-)
+REPO_ROOT = Path(os.environ.get("JPCITE_REPO_ROOT", Path(__file__).resolve().parents[1]))
 CRITERIA_FILE = Path(
     os.environ.get(
         "JPCITE_ACCEPTANCE_YAML",
-        Path(__file__).resolve().parent / "acceptance_criteria.yaml",
+        Path(__file__).resolve().parent / "fixtures" / "acceptance_criteria.yaml",
     )
 )
 OFFLINE = os.environ.get("JPCITE_OFFLINE", "0") == "1"
@@ -266,9 +264,7 @@ def check_schema_org_jsonld(html_file: str | Path) -> CheckResult:
     return CheckResult(True, f"schema.org JSON-LD ok: {p.name}")
 
 
-def check_regex_pattern_count(
-    file: str | Path, pattern: str, min_count: int
-) -> CheckResult:
+def check_regex_pattern_count(file: str | Path, pattern: str, min_count: int) -> CheckResult:
     """10) Assert `pattern` appears at least `min_count` times in `file`."""
     p = (REPO_ROOT / file) if not Path(file).is_absolute() else Path(file)
     if not p.exists():
@@ -347,9 +343,7 @@ def check_gh_api(command: str, expected: str) -> CheckResult:
     if shutil.which("gh") is None:
         return CheckResult(False, "gh CLI missing", automated=False)
     try:
-        proc = subprocess.run(
-            command, shell=True, capture_output=True, text=True, timeout=30
-        )
+        proc = subprocess.run(command, shell=True, capture_output=True, text=True, timeout=30)
     except subprocess.TimeoutExpired:
         return CheckResult(False, "gh timeout")
     if proc.returncode != 0:
@@ -413,20 +407,14 @@ CHECK_DISPATCH: dict[str, Callable[..., CheckResult]] = {
     "regex_pattern_count": lambda **kw: check_regex_pattern_count(
         kw["file"], kw["pattern"], int(kw.get("min_count", 1))
     ),
-    "migration_first_line_marker": lambda **kw: check_migration_first_line_marker(
-        kw["file"]
-    ),
-    "business_law_forbidden_phrases": lambda **kw: check_business_law_forbidden_phrases(
-        kw["file"]
-    ),
+    "migration_first_line_marker": lambda **kw: check_migration_first_line_marker(kw["file"]),
+    "business_law_forbidden_phrases": lambda **kw: check_business_law_forbidden_phrases(kw["file"]),
     # auxiliaries
     "sql_count": lambda **kw: check_sql_count(
         kw["query"], kw.get("expected", ">= 0"), kw.get("db_path")
     ),
     "gh_api": lambda **kw: check_gh_api(kw["command"], kw["expected"]),
-    "disclaimer_marker_present": lambda **kw: check_disclaimer_marker_present(
-        kw["file"]
-    ),
+    "disclaimer_marker_present": lambda **kw: check_disclaimer_marker_present(kw["file"]),
 }
 
 # Subset that counts toward the "12 core check_kind" automation ratio.
@@ -488,9 +476,7 @@ def _id_for(row: dict[str, Any]) -> str:
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.parametrize(
-    "row", CRITERIA, ids=[_id_for(r) for r in CRITERIA] if CRITERIA else None
-)
+@pytest.mark.parametrize("row", CRITERIA, ids=[_id_for(r) for r in CRITERIA] if CRITERIA else None)
 def test_acceptance_criterion(row: dict[str, Any]) -> None:
     """Drive each criterion through its declared check_kind."""
     kind = row["check_kind"]

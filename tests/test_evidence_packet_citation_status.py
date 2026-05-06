@@ -136,10 +136,22 @@ def _build_fixture_autonomath_db(path: Path) -> None:
         )
         # Sources — one URL per program.
         sources = [
-            ("https://www.maff.go.jp/cv-verified.html", "verified-domain.go.jp", "gov_standard_v2.0"),
-            ("https://www.meti.go.jp/cv-inferred.html", "inferred-domain.go.jp", "gov_standard_v2.0"),
+            (
+                "https://www.maff.go.jp/cv-verified.html",
+                "verified-domain.go.jp",
+                "gov_standard_v2.0",
+            ),
+            (
+                "https://www.meti.go.jp/cv-inferred.html",
+                "inferred-domain.go.jp",
+                "gov_standard_v2.0",
+            ),
             ("https://www.cao.go.jp/cv-stale.html", "stale-domain.go.jp", "pdl_v1.0"),
-            ("https://www.example.go.jp/cv-unknown.html", "unknown-domain.go.jp", "gov_standard_v2.0"),
+            (
+                "https://www.example.go.jp/cv-unknown.html",
+                "unknown-domain.go.jp",
+                "gov_standard_v2.0",
+            ),
         ]
         con.executemany(
             "INSERT INTO am_source(source_url, domain, license) VALUES (?,?,?)",
@@ -183,10 +195,42 @@ def _build_fixture_autonomath_db(path: Path) -> None:
             "authority_name, prefecture, tier, source_url, "
             "source_fetched_at) VALUES (?,?,?,?,?,?,?)",
             [
-                ("UNI-cv-verified", "CV テスト 検証済", "農水省", "東京都", "S", sources[0][0], "2026-05-01T00:00:00"),
-                ("UNI-cv-inferred", "CV テスト 推測", "経産省", "大阪府", "A", sources[1][0], "2026-05-01T00:00:00"),
-                ("UNI-cv-stale", "CV テスト 失効", "内閣府", "京都府", "A", sources[2][0], "2026-05-01T00:00:00"),
-                ("UNI-cv-unknown", "CV テスト 未検証", "総務省", "福岡県", "B", sources[3][0], "2026-05-01T00:00:00"),
+                (
+                    "UNI-cv-verified",
+                    "CV テスト 検証済",
+                    "農水省",
+                    "東京都",
+                    "S",
+                    sources[0][0],
+                    "2026-05-01T00:00:00",
+                ),
+                (
+                    "UNI-cv-inferred",
+                    "CV テスト 推測",
+                    "経産省",
+                    "大阪府",
+                    "A",
+                    sources[1][0],
+                    "2026-05-01T00:00:00",
+                ),
+                (
+                    "UNI-cv-stale",
+                    "CV テスト 失効",
+                    "内閣府",
+                    "京都府",
+                    "A",
+                    sources[2][0],
+                    "2026-05-01T00:00:00",
+                ),
+                (
+                    "UNI-cv-unknown",
+                    "CV テスト 未検証",
+                    "総務省",
+                    "福岡県",
+                    "B",
+                    sources[3][0],
+                    "2026-05-01T00:00:00",
+                ),
             ],
         )
         # Add a recent_change to the verified program so changes_only profile
@@ -365,15 +409,15 @@ def _find_citation(env: dict, source_url: str) -> dict | None:
     return None
 
 
-def test_citation_status_verified_case(
-    fixture_db: Path, fixture_jpintel: Path
-) -> None:
+def test_citation_status_verified_case(fixture_db: Path, fixture_jpintel: Path) -> None:
     """A program whose primary URL has a verified row gets verification_status='verified'."""
     composer = _get_composer(fixture_jpintel, fixture_db)
     env = composer.compose_for_program("UNI-cv-verified")
     assert env is not None
     cit = _find_citation(env, "https://www.maff.go.jp/cv-verified.html")
-    assert cit is not None, f"missing citation row, citations={env['evidence_value'].get('citations')}"
+    assert cit is not None, (
+        f"missing citation row, citations={env['evidence_value'].get('citations')}"
+    )
     assert cit["verification_status"] == "verified"
     assert cit["matched_form"] == "1,000,000円"
     assert cit["source_checksum"] == "sha256:verified-checksum"
@@ -385,9 +429,7 @@ def test_citation_status_verified_case(
     assert ev["citation_count"] >= 1
 
 
-def test_citation_status_inferred_case(
-    fixture_db: Path, fixture_jpintel: Path
-) -> None:
+def test_citation_status_inferred_case(fixture_db: Path, fixture_jpintel: Path) -> None:
     """A program with an inferred row reports verification_status='inferred'."""
     composer = _get_composer(fixture_jpintel, fixture_db)
     env = composer.compose_for_program("UNI-cv-inferred")
@@ -402,9 +444,7 @@ def test_citation_status_inferred_case(
     assert env["evidence_value"]["citation_inferred_count"] >= 1
 
 
-def test_citation_status_stale_case(
-    fixture_db: Path, fixture_jpintel: Path
-) -> None:
+def test_citation_status_stale_case(fixture_db: Path, fixture_jpintel: Path) -> None:
     """A program with a stale row reports verification_status='stale'."""
     composer = _get_composer(fixture_jpintel, fixture_db)
     env = composer.compose_for_program("UNI-cv-stale")
@@ -436,9 +476,7 @@ def test_citation_status_unknown_default_when_no_join(
     assert env["evidence_value"]["citation_unknown_count"] >= 1
 
 
-def test_citations_block_is_always_present(
-    fixture_db: Path, fixture_jpintel: Path
-) -> None:
+def test_citations_block_is_always_present(fixture_db: Path, fixture_jpintel: Path) -> None:
     """Even when no jpintel.db join hits, evidence_value.citations[] is a list."""
     composer = _get_composer(fixture_jpintel, fixture_db)
     env = composer.compose_for_program("UNI-cv-unknown")
@@ -446,8 +484,7 @@ def test_citations_block_is_always_present(
     cits = env["evidence_value"]["citations"]
     assert isinstance(cits, list)
     assert all(
-        c["verification_status"] in {"verified", "inferred", "unknown", "stale"}
-        for c in cits
+        c["verification_status"] in {"verified", "inferred", "unknown", "stale"} for c in cits
     )
 
 
@@ -471,9 +508,7 @@ def test_profile_full_is_default_and_keeps_all_blocks(
     assert env["evidence_value"]["citation_count"] >= 1
 
 
-def test_profile_brief_drops_facts_rules_aliases(
-    fixture_db: Path, fixture_jpintel: Path
-) -> None:
+def test_profile_brief_drops_facts_rules_aliases(fixture_db: Path, fixture_jpintel: Path) -> None:
     """`profile='brief'` drops facts/rules/precomputed/aliases on every record."""
     composer = _get_composer(fixture_jpintel, fixture_db)
     env = composer.compose_for_program("UNI-cv-verified", profile="brief")
@@ -491,9 +526,7 @@ def test_profile_brief_drops_facts_rules_aliases(
     assert env["evidence_value"]["citation_count"] >= 1
 
 
-def test_profile_verified_only_filters_records(
-    fixture_db: Path, fixture_jpintel: Path
-) -> None:
+def test_profile_verified_only_filters_records(fixture_db: Path, fixture_jpintel: Path) -> None:
     """`profile='verified_only'` keeps only verified-citation records.
 
     The query packet pulls all 4 programs; only `program:cv:verified` has
@@ -516,10 +549,7 @@ def test_profile_verified_only_filters_records(
     ev = env["evidence_value"]
     assert ev["records_returned"] == len(env["records"])
     assert ev["citation_count"] == ev["citation_verified_count"]
-    assert all(
-        c["verification_status"] == "verified"
-        for c in ev["citations"]
-    )
+    assert all(c["verification_status"] == "verified" for c in ev["citations"])
     assert "https://www.maff.go.jp/cv-unverified-change.html" not in {
         c["source_url"] for c in ev["citations"]
     }
@@ -583,9 +613,7 @@ def test_profile_changes_only_keeps_only_records_with_recent_changes(
         assert rec.get("recent_changes")
 
 
-def test_unknown_profile_falls_back_to_full(
-    fixture_db: Path, fixture_jpintel: Path
-) -> None:
+def test_unknown_profile_falls_back_to_full(fixture_db: Path, fixture_jpintel: Path) -> None:
     """Unrecognised `profile` values fall through to full (forward-compat)."""
     composer = _get_composer(fixture_jpintel, fixture_db)
     env = composer.compose_for_program("UNI-cv-verified", profile="future_value")

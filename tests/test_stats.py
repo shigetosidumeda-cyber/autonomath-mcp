@@ -10,6 +10,7 @@ Coverage:
   7. 5-minute in-memory cache: second call within TTL returns cached payload
   8. No auth required (no AnonIpLimitDep — same posture as meta_freshness)
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -181,6 +182,7 @@ def test_freshness_returns_min_max_per_source(client, seeded_db: Path):
     # Bust any cached freshness response from a prior test.
     try:
         from jpintel_mcp.api.stats import _reset_stats_cache
+
         _reset_stats_cache()
     except Exception:
         pass
@@ -215,6 +217,7 @@ def test_freshness_zero_rows_returns_nulls(client, seeded_db: Path):
         c.close()
     try:
         from jpintel_mcp.api.stats import _reset_stats_cache
+
         _reset_stats_cache()
     except Exception:
         pass
@@ -279,9 +282,7 @@ def test_coverage_is_cached_for_five_minutes(client, seeded_db: Path):
     c = sqlite3.connect(seeded_db)
     try:
         # Snapshot the row before deleting so we can restore it.
-        snap = c.execute(
-            "SELECT * FROM programs WHERE unified_id = 'UNI-test-s-1'"
-        ).fetchone()
+        snap = c.execute("SELECT * FROM programs WHERE unified_id = 'UNI-test-s-1'").fetchone()
         assert snap is not None, "seeded UNI-test-s-1 missing from DB"
         col_names = [d[0] for d in c.execute("SELECT * FROM programs LIMIT 0").description]
         c.execute("DELETE FROM programs WHERE unified_id = 'UNI-test-s-1'")

@@ -34,8 +34,7 @@ def _seed_min_db(db_path: Path) -> None:
             """
         )
         conn.executemany(
-            "INSERT INTO jpi_programs(unified_id, primary_name, excluded) "
-            "VALUES (?, ?, 0)",
+            "INSERT INTO jpi_programs(unified_id, primary_name, excluded) VALUES (?, ?, 0)",
             [
                 ("program:base:abc123", "ものづくり補助金"),
                 ("program:base:def456", "事業再構築補助金"),

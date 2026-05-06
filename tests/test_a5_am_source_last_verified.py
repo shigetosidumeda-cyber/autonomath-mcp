@@ -51,9 +51,7 @@ def test_load_candidates_filters_to_unverified_http_rows() -> None:
 
     rows = backfill.load_candidates(conn, domain="a.example")
 
-    assert [(row.source_id, row.source_url) for row in rows] == [
-        (1, "https://a.example/one")
-    ]
+    assert [(row.source_id, row.source_url) for row in rows] == [(1, "https://a.example/one")]
 
 
 def test_verify_am_sources_updates_only_verified_results() -> None:
@@ -94,12 +92,11 @@ def test_verify_am_sources_updates_only_verified_results() -> None:
     assert result["verified_probe_rows"] == 1
     assert result["updated_rows"] == 1
     assert result["outcomes"] == {"ok": 1, "robots_disallow": 1}
-    assert conn.execute(
-        "SELECT last_verified IS NOT NULL FROM am_source WHERE id = 1"
-    ).fetchone()[0] == 1
-    assert conn.execute(
-        "SELECT last_verified FROM am_source WHERE id = 2"
-    ).fetchone()[0] is None
+    assert (
+        conn.execute("SELECT last_verified IS NOT NULL FROM am_source WHERE id = 1").fetchone()[0]
+        == 1
+    )
+    assert conn.execute("SELECT last_verified FROM am_source WHERE id = 2").fetchone()[0] is None
 
 
 def test_verify_am_sources_dry_run_does_not_update() -> None:
@@ -126,29 +123,39 @@ def test_verify_am_sources_dry_run_does_not_update() -> None:
 
     assert result["verified_probe_rows"] == 1
     assert result["updated_rows"] == 0
-    assert conn.execute(
-        "SELECT last_verified FROM am_source WHERE id = 1"
-    ).fetchone()[0] is None
+    assert conn.execute("SELECT last_verified FROM am_source WHERE id = 1").fetchone()[0] is None
 
 
 def test_classify_http_status_maps_common_outcomes() -> None:
-    assert backfill.classify_http_status(
-        200,
-        final_url="https://a.example/one",
-        original_url="https://a.example/one",
-    ) == "ok"
-    assert backfill.classify_http_status(
-        200,
-        final_url="https://a.example/two",
-        original_url="https://a.example/one",
-    ) == "redirect"
-    assert backfill.classify_http_status(
-        403,
-        final_url="https://a.example/one",
-        original_url="https://a.example/one",
-    ) == "blocked"
-    assert backfill.classify_http_status(
-        404,
-        final_url="https://a.example/one",
-        original_url="https://a.example/one",
-    ) == "broken"
+    assert (
+        backfill.classify_http_status(
+            200,
+            final_url="https://a.example/one",
+            original_url="https://a.example/one",
+        )
+        == "ok"
+    )
+    assert (
+        backfill.classify_http_status(
+            200,
+            final_url="https://a.example/two",
+            original_url="https://a.example/one",
+        )
+        == "redirect"
+    )
+    assert (
+        backfill.classify_http_status(
+            403,
+            final_url="https://a.example/one",
+            original_url="https://a.example/one",
+        )
+        == "blocked"
+    )
+    assert (
+        backfill.classify_http_status(
+            404,
+            final_url="https://a.example/one",
+            original_url="https://a.example/one",
+        )
+        == "broken"
+    )

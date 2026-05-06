@@ -8,6 +8,7 @@ Verifies:
 Policy: anonymous quota is 3 req/day per IP, resets at JST 翌日 00:00.
 See src/jpintel_mcp/api/anon_limit.py and CLAUDE.md "Common gotchas".
 """
+
 from __future__ import annotations
 
 import importlib
@@ -82,7 +83,7 @@ def test_anon_4th_request_is_429_with_jst_reset(
             headers={"x-forwarded-for": ip},
             params={"q": "補助金", "limit": 1},
         )
-        assert r.status_code == 200, f"request #{i+1} unexpectedly failed: {r.status_code}"
+        assert r.status_code == 200, f"request #{i + 1} unexpectedly failed: {r.status_code}"
     # Final probe: ensure the burst bucket is fresh so the 4th is rejected
     # by the daily limiter, not the burst limiter.
     _reset_per_ip_endpoint_buckets()

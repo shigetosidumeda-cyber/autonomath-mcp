@@ -42,14 +42,13 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DRIVER_PATH = REPO_ROOT / "scripts" / "cron" / "cross_source_check.py"
 MIGRATION_101 = REPO_ROOT / "scripts" / "migrations" / "101_trust_infrastructure.sql"
-MIGRATION_107 = (
-    REPO_ROOT / "scripts" / "migrations" / "107_cross_source_baseline_state.sql"
-)
+MIGRATION_107 = REPO_ROOT / "scripts" / "migrations" / "107_cross_source_baseline_state.sql"
 
 
 def _load_driver():
     spec = importlib.util.spec_from_file_location(
-        "cross_source_check", DRIVER_PATH,
+        "cross_source_check",
+        DRIVER_PATH,
     )
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
@@ -127,8 +126,7 @@ def _seed_4_88m_shape(conn: sqlite3.Connection, *, n_rows: int = 1000) -> None:
             # not backfill source_id.
             rows.append((f"E-{i}", "amount_max_yen", "100", None))
     conn.executemany(
-        "INSERT INTO am_entity_facts (entity_id, field_name, value, source_id) "
-        "VALUES (?,?,?,?)",
+        "INSERT INTO am_entity_facts (entity_id, field_name, value, source_id) VALUES (?,?,?,?)",
         rows,
     )
     conn.commit()
@@ -201,8 +199,7 @@ def test_first_wet_pass_emits_zero_correction_logs_and_flips_flag(
 
     # State flipped to completed.
     row = conn.execute(
-        "SELECT baseline_completed, baseline_run_at "
-        "FROM cross_source_baseline_state WHERE id = 1"
+        "SELECT baseline_completed, baseline_run_at FROM cross_source_baseline_state WHERE id = 1"
     ).fetchone()
     assert row is not None
     assert int(row[0]) == 1, "baseline_completed must be 1 after first run"
@@ -297,6 +294,7 @@ def test_manual_baseline_flag_works_regardless_of_state(fresh_db: Path) -> None:
 
 # --- additional defence-in-depth tests --------------------------------------
 
+
 def test_migration_107_first_line_marks_target_db_autonomath() -> None:
     """entrypoint.sh §4 only auto-applies migrations whose FIRST LINE is
     `-- target_db: autonomath`. If migration 107 ever loses that marker
@@ -306,8 +304,7 @@ def test_migration_107_first_line_marks_target_db_autonomath() -> None:
     assert MIGRATION_107.is_file(), "migration 107 missing"
     first_line = MIGRATION_107.read_text(encoding="utf-8").splitlines()[0]
     assert first_line.strip() == "-- target_db: autonomath", (
-        f"migration 107 first line must be '-- target_db: autonomath', "
-        f"got: {first_line!r}"
+        f"migration 107 first line must be '-- target_db: autonomath', got: {first_line!r}"
     )
 
 

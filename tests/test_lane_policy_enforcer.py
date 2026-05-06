@@ -6,6 +6,7 @@ Run:
 
 LLM API calls = 0; uses tempfile + subprocess + stdlib only.
 """
+
 from __future__ import annotations
 
 import csv
@@ -51,7 +52,10 @@ def _make_fake_repo(tmp: pathlib.Path) -> pathlib.Path:
     repo.mkdir()
     _git(repo, "init", "-q")
     # mirror canonical enforcer path so tests resemble real layout
-    target = repo / "tools/offline/_inbox/value_growth_dual/_executable_artifacts_2026_05_07/deep60_lane_enforcer"
+    target = (
+        repo
+        / "tools/offline/_inbox/value_growth_dual/_executable_artifacts_2026_05_07/deep60_lane_enforcer"
+    )
     target.mkdir(parents=True)
     shutil.copy(ENFORCER, target / "lane_policy_enforcer.py")
     shutil.copy(POLICY, target / "lane_policy.json")
@@ -63,7 +67,10 @@ def _make_fake_repo(tmp: pathlib.Path) -> pathlib.Path:
 
 
 def _run_enforcer(repo: pathlib.Path, *args: str) -> subprocess.CompletedProcess:
-    enf = repo / "tools/offline/_inbox/value_growth_dual/_executable_artifacts_2026_05_07/deep60_lane_enforcer/lane_policy_enforcer.py"
+    enf = (
+        repo
+        / "tools/offline/_inbox/value_growth_dual/_executable_artifacts_2026_05_07/deep60_lane_enforcer/lane_policy_enforcer.py"
+    )
     return subprocess.run(
         [sys.executable, str(enf), *args],
         capture_output=True,
@@ -147,6 +154,7 @@ class LanePolicyTest(unittest.TestCase):
         text = GHA.read_text(encoding="utf-8")
         try:
             import yaml  # type: ignore
+
             data = yaml.safe_load(text)
             self.assertIn("jobs", data)
             self.assertIn("enforce-lane", data["jobs"])
@@ -191,16 +199,19 @@ class LanePolicyTest(unittest.TestCase):
         with ledger.open(encoding="utf-8") as fh:
             rows = list(csv.reader(fh))
         # header + 1 record
-        self.assertEqual(rows[0], [
-            "agent_run_id",
-            "timestamp_utc",
-            "session",
-            "lane",
-            "write_paths",
-            "violation_count",
-            "override_reason",
-            "operator_signoff",
-        ])
+        self.assertEqual(
+            rows[0],
+            [
+                "agent_run_id",
+                "timestamp_utc",
+                "session",
+                "lane",
+                "write_paths",
+                "violation_count",
+                "override_reason",
+                "operator_signoff",
+            ],
+        )
         self.assertEqual(rows[-1][2], "test_run")
         self.assertEqual(rows[-1][3], "session_a")
         self.assertEqual(rows[-1][5], "0")

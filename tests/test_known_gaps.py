@@ -4,6 +4,7 @@ Each test feeds a packet of a different shape and asserts that the
 expected ``kind`` is present (and that unrelated kinds are absent so
 we don't drift into false positives).
 """
+
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
@@ -51,9 +52,7 @@ def test_structured_miss_emits_not_found_in_local_mirror() -> None:
     report = detect_gaps(packet)
     assert "not_found_in_local_mirror" in _kinds(report)
     entry = _by_kind(report, "not_found_in_local_mirror")
-    assert entry["affected_records"] == [
-        "structured_miss:enforcement:T1234567890123"
-    ]
+    assert entry["affected_records"] == ["structured_miss:enforcement:T1234567890123"]
     assert "ローカルミラー" in entry["message"]
 
 
@@ -222,9 +221,7 @@ def test_clean_packet_yields_empty_report() -> None:
                 "source_url": "https://example.go.jp/ok",
                 "last_verified": fresh_iso,
                 "confidence": 0.92,
-                "facts": [
-                    {"field": "amount_max_yen", "value": 1, "confidence": 0.9}
-                ],
+                "facts": [{"field": "amount_max_yen", "value": 1, "confidence": 0.9}],
             }
         ]
     }

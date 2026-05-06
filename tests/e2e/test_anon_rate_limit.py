@@ -19,6 +19,7 @@ Guardrails:
      from CI would DoS our real users until JST 月初 00:00.
   4. Uses page.request (no rendered DOM) so 5 calls finish quickly.
 """
+
 from __future__ import annotations
 
 import os
@@ -29,8 +30,7 @@ import pytest
 pytestmark = pytest.mark.skipif(
     os.environ.get("JPINTEL_E2E_ANON_LIMIT", "").strip() not in ("1", "true"),
     reason=(
-        "anon rate-limit e2e requires JPINTEL_E2E_ANON_LIMIT=1 and a running "
-        "non-production target"
+        "anon rate-limit e2e requires JPINTEL_E2E_ANON_LIMIT=1 and a running non-production target"
     ),
 )
 

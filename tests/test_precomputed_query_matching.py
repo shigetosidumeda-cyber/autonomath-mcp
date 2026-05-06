@@ -192,8 +192,7 @@ def _build_autonomath_db(path: Path) -> None:
                 ),
             )
             con.execute(
-                "INSERT INTO am_amendment_diff(entity_id, field_name, detected_at) "
-                "VALUES (?,?,?)",
+                "INSERT INTO am_amendment_diff(entity_id, field_name, detected_at) VALUES (?,?,?)",
                 (entity_id, "summary_200", "2026-04-29T00:00:00"),
             )
         con.commit()

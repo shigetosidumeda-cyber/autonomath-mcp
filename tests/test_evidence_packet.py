@@ -20,6 +20,7 @@ DB — we build a real-shaped one.
 
 from __future__ import annotations
 
+import contextlib
 import sqlite3
 import sys
 from pathlib import Path  # noqa: TC003 — runtime fixture annotation
@@ -400,6 +401,23 @@ def _override_paths(fixture_db: Path, monkeypatch: pytest.MonkeyPatch) -> Iterat
 
         _evp_mcp._reset_composer()
     yield
+
+
+@pytest.fixture(autouse=True)
+def _ensure_audit_seal_tables(seeded_db: Path) -> None:
+    migrations = Path(__file__).resolve().parents[1] / "scripts" / "migrations"
+    conn = sqlite3.connect(seeded_db)
+    try:
+        for mig in ("089_audit_seal_table.sql", "119_audit_seal_seal_id_columns.sql"):
+            with contextlib.suppress(sqlite3.OperationalError):
+                conn.executescript((migrations / mig).read_text(encoding="utf-8"))
+        conn.commit()
+    finally:
+        conn.close()
+
+    from jpintel_mcp.api._audit_seal import _reset_corpus_snapshot_cache_for_tests
+
+    _reset_corpus_snapshot_cache_for_tests()
 
 
 # ---------------------------------------------------------------------------
@@ -814,6 +832,32 @@ def test_query_without_records_guides_agents_to_skip_or_broaden(
     assert "no_records_returned" in recommendation["reason_codes"]
 
 
+def test_query_without_records_suppresses_cost_savings_recommendation(
+    fixture_db: Path,
+) -> None:
+    """Compression baseline alone must not create a value recommendation."""
+    from jpintel_mcp.config import settings
+    from jpintel_mcp.services.evidence_packet import EvidencePacketComposer
+
+    composer = EvidencePacketComposer(jpintel_db=settings.db_path, autonomath_db=fixture_db)
+    env = composer.compose_for_query(
+        "zz-no-program-match",
+        limit=10,
+        include_compression=True,
+        input_token_price_jpy_per_1m=300.0,
+        source_tokens_basis="token_count",
+        source_token_count=18_500,
+    )
+
+    assert env["records"] == []
+    recommendation = env["agent_recommendation"]
+    assert recommendation["context_savings"]["break_even_met"] is True
+    assert recommendation["recommend_for_cost_savings"] is False
+    assert recommendation["suppressed_cost_savings_decision"] == ("supported_by_caller_baseline")
+    assert recommendation["cost_savings_decision"] == "not_applicable_no_evidence"
+    assert recommendation["missing_for_cost_claim"] == ["source_linked_records_returned"]
+
+
 def test_missing_program_summary_table_fails_open(tmp_path: Path) -> None:
     """Optional am_program_summary absence never blocks packet rendering."""
     from jpintel_mcp.config import settings
@@ -856,6 +900,78 @@ def _usage_count(db_path: Path, raw_key: str, endpoint: str) -> int:
     return int(row[0] if row else 0)
 
 
+def _audit_seal_count(db_path: Path, raw_key: str, endpoint: str) -> int:
+    from jpintel_mcp.api.deps import hash_api_key
+
+    conn = sqlite3.connect(db_path)
+    try:
+        has_table = conn.execute(
+            "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'audit_seals'",
+        ).fetchone()
+        if has_table is None:
+            return 0
+        row = conn.execute(
+            "SELECT COUNT(*) FROM audit_seals WHERE api_key_hash = ? AND endpoint = ?",
+            (hash_api_key(raw_key), endpoint),
+        ).fetchone()
+    finally:
+        conn.close()
+    return int(row[0] if row else 0)
+
+
+def _assert_anonymous_conversion_cta(body: dict) -> None:
+    cta = body["conversion_cta"]
+    assert cta["audience"] == "anonymous"
+    assert "無料3回" in cta["headline_ja"]
+    assert "通常品質" in cta["headline_ja"]
+    assert "継続利用" in cta["body_ja"]
+    assert "完成物" in cta["body_ja"]
+    assert cta["primary_action"]["url"].startswith("https://jpcite.com/")
+    assert [option["label_ja"] for option in cta["artifact_options"]] == [
+        "顧問先メモ",
+        "申請前チェック",
+        "併用排他表",
+        "法人DD",
+        "稟議シート",
+        "月次監視",
+    ]
+
+
+def _assert_decision_insights(
+    body: dict,
+    *,
+    expect_source_traceability: bool = True,
+) -> None:
+    insights = body["decision_insights"]
+    assert insights["schema_version"] == "v1"
+    assert "records" in insights["generated_from"]
+    assert "quality" in insights["generated_from"]
+    assert isinstance(insights["why_review"], list)
+    assert isinstance(insights["next_checks"], list)
+    assert isinstance(insights["evidence_gaps"], list)
+
+    why_signals = {item["signal"] for item in insights["why_review"]}
+    next_signals = {item["signal"] for item in insights["next_checks"]}
+    if expect_source_traceability:
+        assert "source_traceability" in why_signals
+        assert "source_recheck" in next_signals
+    assert "corpus_freshness" in why_signals
+    assert "freshness_endpoint_recheck" in next_signals
+    assert all(
+        item.get("message_ja")
+        for section in ("why_review", "next_checks", "evidence_gaps")
+        for item in insights[section]
+    )
+    assert all(
+        "source_fields" in item
+        and isinstance(item["source_fields"], list)
+        and "basis" in item
+        and item["source_fields"] == item["basis"]
+        for section in ("why_review", "next_checks", "evidence_gaps")
+        for item in insights[section]
+    )
+
+
 def test_rest_get_evidence_packet_json(client: TestClient) -> None:
     """GET /v1/evidence/packets/program/{id} returns the JSON envelope."""
     r = client.get("/v1/evidence/packets/program/UNI-evp-p1")
@@ -863,6 +979,97 @@ def test_rest_get_evidence_packet_json(client: TestClient) -> None:
     body = r.json()
     assert body["api_version"] == "v1"
     assert body["records"][0]["primary_name"] == "EVP テスト P1 補助金"
+    _assert_anonymous_conversion_cta(body)
+    _assert_decision_insights(body)
+
+
+def test_rest_get_evidence_packet_json_omits_conversion_cta_for_paid_key(
+    client: TestClient,
+    paid_key: str,
+) -> None:
+    r = client.get(
+        "/v1/evidence/packets/program/UNI-evp-p1",
+        headers={"X-API-Key": paid_key},
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert "conversion_cta" not in body
+    _assert_decision_insights(body)
+
+
+@pytest.mark.parametrize(
+    ("method", "path", "endpoint", "kwargs"),
+    [
+        (
+            "get",
+            "/v1/evidence/packets/program/UNI-evp-p1",
+            "evidence.packet.get",
+            {},
+        ),
+        (
+            "post",
+            "/v1/evidence/packets/query",
+            "evidence.packet.query",
+            {"json": {"query_text": "EVP", "limit": 1}},
+        ),
+    ],
+)
+def test_rest_evidence_packet_paid_json_audit_seal_verifies(
+    client: TestClient,
+    paid_key: str,
+    method: str,
+    path: str,
+    endpoint: str,
+    kwargs: dict[str, object],
+) -> None:
+    request = getattr(client, method)
+
+    response = request(path, headers={"X-API-Key": paid_key}, **kwargs)
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    seal = body["audit_seal"]
+    assert seal["endpoint"] == endpoint
+    verify = client.get(f"/v1/audit/seals/{seal['seal_id']}")
+    assert verify.status_code == 200, verify.text
+    verified = verify.json()
+    assert verified["verified"] is True
+    assert verified["seal_id"] == seal["seal_id"]
+    assert verified["subject_hash"] == seal["subject_hash"]
+
+
+def test_rest_evidence_packet_json_excludes_conversion_cta_from_seal_input(
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from jpintel_mcp.api import evidence as evidence_api
+
+    seal_inputs: list[tuple[str, bool, bool]] = []
+    original_log_usage = evidence_api.log_usage
+
+    def _capture_log_usage(*args: object, **kwargs: object) -> object:
+        endpoint = str(args[2])
+        body = kwargs.get("response_body")
+        if isinstance(body, dict):
+            seal_inputs.append((endpoint, "conversion_cta" in body, "decision_insights" in body))
+        return original_log_usage(*args, **kwargs)
+
+    monkeypatch.setattr(evidence_api, "log_usage", _capture_log_usage)
+
+    get_response = client.get("/v1/evidence/packets/program/UNI-evp-p1")
+    post_response = client.post(
+        "/v1/evidence/packets/query",
+        json={"query_text": "EVP", "limit": 1},
+    )
+
+    assert get_response.status_code == 200, get_response.text
+    assert post_response.status_code == 200, post_response.text
+    assert "conversion_cta" in get_response.json()
+    assert "conversion_cta" in post_response.json()
+    assert seal_inputs == [
+        ("evidence.packet.get", False, True),
+        ("evidence.packet.query", False, True),
+    ]
 
 
 def test_rest_get_evidence_packet_pdf_pages_compression(client: TestClient) -> None:
@@ -944,7 +1151,10 @@ def test_rest_post_evidence_packet_query_pdf_pages_compression(
         },
     )
     assert r.status_code == 200, r.text
-    compression = r.json()["compression"]
+    body = r.json()
+    _assert_anonymous_conversion_cta(body)
+    _assert_decision_insights(body, expect_source_traceability=False)
+    compression = body["compression"]
     assert compression["source_tokens_estimate"] == 7000
     assert compression["source_tokens_input_source"] == "caller_supplied"
     assert compression["estimate_scope"] == "input_context_only"
@@ -965,7 +1175,9 @@ def test_rest_post_evidence_packet_query_token_count_compression(
         },
     )
     assert r.status_code == 200, r.text
-    compression = r.json()["compression"]
+    body = r.json()
+    _assert_decision_insights(body, expect_source_traceability=False)
+    compression = body["compression"]
     assert compression["source_tokens_basis"] == "token_count"
     assert compression["source_tokens_estimate"] == 18_500
     assert compression["source_token_count"] == 18_500
@@ -1026,6 +1238,8 @@ def test_rest_get_evidence_packet_csv(client: TestClient) -> None:
     assert "entity_id" in first_line
     assert "primary_name" in first_line
     assert "fact_count" in first_line
+    assert "conversion_cta" not in body
+    assert "decision_insights" not in body
 
 
 def test_rest_get_evidence_packet_md(client: TestClient) -> None:
@@ -1040,6 +1254,42 @@ def test_rest_get_evidence_packet_md(client: TestClient) -> None:
     assert "# Evidence Packet" in body
     assert "## Records" in body
     assert "EVP テスト P1 補助金" in body
+    assert "conversion_cta" not in body
+    assert "decision_insights" not in body
+
+
+def test_decision_insights_surface_gaps_without_schema_dependency() -> None:
+    from jpintel_mcp.api.evidence import _build_decision_insights
+
+    insights = _build_decision_insights(
+        {
+            "records": [
+                {
+                    "entity_id": "program:gap",
+                    "primary_name": "gap fixture",
+                    "fact_provenance_coverage_pct": 0.5,
+                }
+            ],
+            "quality": {
+                "known_gaps": ["per-fact provenance is partial"],
+                "coverage_score": 0.4,
+                "human_review_required": True,
+            },
+            "evidence_value": {"fact_provenance_coverage_pct_avg": 0.5},
+        }
+    )
+
+    gap_signals = {item["signal"] for item in insights["evidence_gaps"]}
+    assert {
+        "known_gaps",
+        "missing_source_links",
+        "partial_fact_provenance",
+        "human_review_required",
+    } <= gap_signals
+    assert all(
+        "source_fields" in item and item["source_fields"] == item["basis"]
+        for item in insights["evidence_gaps"]
+    )
 
 
 def test_evidence_license_gate_filters_mixed_license_facts() -> None:
@@ -1055,9 +1305,7 @@ def test_evidence_license_gate_filters_mixed_license_facts() -> None:
                 "total_facts": 2,
                 "precomputed": {"summaries": {"200": "derived from mixed facts"}},
                 "short_summary": {"text": "derived from mixed facts"},
-                "recent_changes": [
-                    {"title": "derived change", "license": "proprietary"}
-                ],
+                "recent_changes": [{"title": "derived change", "license": "proprietary"}],
                 "rules": [
                     {
                         "label": "unlicensed derived rule",
@@ -1247,13 +1495,55 @@ def test_evidence_gate_recomputes_value_signals_after_blocking_all_records() -> 
     assert gated["records"] == []
     assert summary["allowed_count"] == 0
     assert summary["blocked_count"] == 1
+    assert summary["blocked_reasons"]["proprietary"] == 1
     assert gated["evidence_value"]["records_returned"] == 0
     assert gated["evidence_value"]["source_linked_records"] == 0
+    assert "records_blocked_by_license_gate" in gated["quality"]["known_gaps"]
     recommendation = gated["agent_recommendation"]
     assert recommendation["recommendation"] == "broaden_query_or_skip"
     assert recommendation["recommend_to_user"] is False
     assert recommendation["recommend_for_evidence"] is False
     assert recommendation["evidence_decision"] == "no_records_returned"
+    from jpintel_mcp.api.evidence import _build_decision_insights
+
+    insights = _build_decision_insights(gated)
+    signals = {gap["signal"] for gap in insights["evidence_gaps"]}
+    assert "records_blocked_by_license_gate" in signals
+    assert "license_gate_follow_up" in {check["signal"] for check in insights["next_checks"]}
+
+
+def test_evidence_license_gate_marks_fact_level_drop_reason() -> None:
+    from jpintel_mcp.api.evidence import _gate_evidence_envelope
+
+    envelope = {
+        "records": [
+            {
+                "entity_id": "program:fact-level-blocked",
+                "primary_name": "fact-level blocked fixture",
+                "license": "pdl_v1.0",
+                "source_url": "https://example.com/public",
+                "facts": [
+                    {
+                        "field": "private_note",
+                        "value": "must not export",
+                        "source": {
+                            "license": "proprietary",
+                            "url": "https://example.com/private",
+                        },
+                    }
+                ],
+            }
+        ],
+        "quality": {"known_gaps": []},
+    }
+
+    gated, summary = _gate_evidence_envelope(envelope)
+
+    assert gated["records"] == []
+    assert summary["allowed_count"] == 0
+    assert summary["blocked_count"] == 1
+    assert summary["blocked_reasons"]["no_redistributable_facts"] == 1
+    assert "records_blocked_by_license_gate" in gated["quality"]["known_gaps"]
 
 
 def test_rest_json_license_gate_filters_mixed_license_facts(
@@ -1307,7 +1597,9 @@ def test_rest_json_license_gate_filters_mixed_license_facts(
             "DELETE FROM am_entity_facts "
             "WHERE entity_id = 'program:evp:p1' AND field_name = 'private_note'"
         )
-        con.execute("DELETE FROM am_source WHERE source_url = ?", ("https://example.com/private-evidence",))
+        con.execute(
+            "DELETE FROM am_source WHERE source_url = ?", ("https://example.com/private-evidence",)
+        )
         con.commit()
         con.close()
 
@@ -1456,6 +1748,105 @@ def test_rest_post_evidence_packet_renderer_failure_does_not_bill(
     assert _usage_count(seeded_db, paid_key, "evidence.packet.query") == 0
 
 
+@pytest.mark.parametrize(
+    ("method", "path", "endpoint", "kwargs"),
+    [
+        (
+            "get",
+            "/v1/evidence/packets/program/UNI-evp-p1",
+            "evidence.packet.get",
+            {},
+        ),
+        (
+            "get",
+            "/v1/evidence/packets/program/UNI-evp-p1",
+            "evidence.packet.get",
+            {"params": {"output_format": "csv"}},
+        ),
+        (
+            "get",
+            "/v1/evidence/packets/program/UNI-evp-p1",
+            "evidence.packet.get",
+            {"params": {"output_format": "md"}},
+        ),
+        (
+            "post",
+            "/v1/evidence/packets/query",
+            "evidence.packet.query",
+            {"json": {"query_text": "EVP", "limit": 1}},
+        ),
+    ],
+)
+def test_rest_evidence_packet_final_metering_cap_failure_does_not_bill_or_seal(
+    client: TestClient,
+    paid_key: str,
+    seeded_db: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    method: str,
+    path: str,
+    endpoint: str,
+    kwargs: dict[str, object],
+) -> None:
+    from jpintel_mcp.api.middleware import customer_cap
+
+    monkeypatch.setattr(
+        customer_cap,
+        "metered_charge_within_cap",
+        lambda *args, **kwargs: False,
+    )
+    request = getattr(client, method)
+
+    r = request(path, headers={"X-API-Key": paid_key}, **kwargs)
+
+    assert r.status_code == 503, r.text
+    assert r.json()["detail"]["code"] == "billing_cap_final_check_failed"
+    assert _usage_count(seeded_db, paid_key, endpoint) == 0
+    assert _audit_seal_count(seeded_db, paid_key, endpoint) == 0
+
+
+@pytest.mark.parametrize(
+    ("method", "path", "endpoint", "kwargs"),
+    [
+        (
+            "get",
+            "/v1/evidence/packets/program/UNI-evp-p1",
+            "evidence.packet.get",
+            {},
+        ),
+        (
+            "post",
+            "/v1/evidence/packets/query",
+            "evidence.packet.query",
+            {"json": {"query_text": "EVP", "limit": 1}},
+        ),
+    ],
+)
+def test_rest_evidence_packet_audit_seal_persist_failure_does_not_bill_or_seal(
+    client: TestClient,
+    paid_key: str,
+    seeded_db: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    method: str,
+    path: str,
+    endpoint: str,
+    kwargs: dict[str, object],
+) -> None:
+    import jpintel_mcp.api._audit_seal as seal_mod
+
+    def _raise(*args: object, **kwargs: object) -> None:
+        raise sqlite3.OperationalError("forced seal persist failure")
+
+    monkeypatch.setattr(seal_mod, "persist_seal", _raise)
+    request = getattr(client, method)
+
+    response = request(path, headers={"X-API-Key": paid_key}, **kwargs)
+
+    assert response.status_code == 503, response.text
+    assert response.json()["detail"]["code"] == "audit_seal_persist_failed"
+    assert _usage_count(seeded_db, paid_key, endpoint) == 0
+    assert _audit_seal_count(seeded_db, paid_key, endpoint) == 0
+
+
 # ---------------------------------------------------------------------------
 # Cache hits (monkeypatch upstream count)
 # ---------------------------------------------------------------------------
@@ -1518,7 +1909,13 @@ def test_mcp_and_rest_emit_identical_envelopes(fixture_db: Path, client: TestCli
     # structure. `_meta` is appended by the AnonQuotaHeaderMiddleware /
     # ResponseSanitizer pipeline; the MCP tool returns the raw composer
     # envelope without those wrappings.
-    for k in ("packet_id", "generated_at", "_meta"):
+    for k in (
+        "packet_id",
+        "generated_at",
+        "_meta",
+        "conversion_cta",
+        "decision_insights",
+    ):
         rest_env.pop(k, None)
         mcp_env.pop(k, None)
     assert rest_env == mcp_env, (
@@ -1583,8 +1980,7 @@ def test_pdf_pages_baseline_exposes_break_even_and_reduction_rate(fixture_db: Pa
     assert isinstance(cost_savings["break_even_source_tokens_estimate"], int)
     assert (
         cost_savings["break_even_source_tokens_estimate"]
-        == compression["packet_tokens_estimate"]
-        + cost_savings["break_even_avoided_tokens"]
+        == compression["packet_tokens_estimate"] + cost_savings["break_even_avoided_tokens"]
     )
     assert cost_savings["provider_billing_not_guaranteed"] is True
     assert cost_savings["jpcite_cost_jpy_ex_tax"] == 3

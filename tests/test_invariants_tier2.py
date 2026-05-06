@@ -105,9 +105,7 @@ def test_inv04_weekly_recheck_aggregator_ban():
                 "SELECT COUNT(*) FROM programs WHERE source_url LIKE ?",
                 (f"%{domain}%",),
             ).fetchone()[0]
-            assert n == 0, (
-                f"Banned aggregator '{domain}' found in {n} programs.source_url"
-            )
+            assert n == 0, f"Banned aggregator '{domain}' found in {n} programs.source_url"
 
 
 # ---------------------------------------------------------------------------
@@ -128,13 +126,10 @@ def test_inv09_quarantine_count_within_budget():
         total = _row_count(con, "programs")
         if total < 100:
             pytest.skip(f"programs row count too low ({total}) for share check")
-        x_count = con.execute(
-            "SELECT COUNT(*) FROM programs WHERE tier='X'"
-        ).fetchone()[0]
+        x_count = con.execute("SELECT COUNT(*) FROM programs WHERE tier='X'").fetchone()[0]
     share = x_count / total if total else 0.0
     assert share < 0.30, (
-        f"Quarantine share too high: tier='X' {x_count}/{total} = "
-        f"{share:.2%} (>= 30%)"
+        f"Quarantine share too high: tier='X' {x_count}/{total} = {share:.2%} (>= 30%)"
     )
 
 
@@ -151,19 +146,15 @@ def test_inv10_source_fetched_at_not_null():
     with connect() as con:
         if not _table_exists(con, "programs"):
             pytest.skip("programs table not present")
-        total = con.execute(
-            "SELECT COUNT(*) FROM programs WHERE excluded=0"
-        ).fetchone()[0]
+        total = con.execute("SELECT COUNT(*) FROM programs WHERE excluded=0").fetchone()[0]
         if total < 100:
             pytest.skip(f"programs row count too low ({total})")
         nulls = con.execute(
-            "SELECT COUNT(*) FROM programs "
-            "WHERE excluded=0 AND source_fetched_at IS NULL"
+            "SELECT COUNT(*) FROM programs WHERE excluded=0 AND source_fetched_at IS NULL"
         ).fetchone()[0]
     null_share = nulls / total if total else 0.0
     assert null_share < 0.01, (
-        f"source_fetched_at NULL share too high: {nulls}/{total} = "
-        f"{null_share:.2%} (>= 1%)"
+        f"source_fetched_at NULL share too high: {nulls}/{total} = {null_share:.2%} (>= 1%)"
     )
 
 
@@ -184,9 +175,7 @@ def test_inv18_search_response_envelope_shape():
     expected_search = {"total", "limit", "offset", "results"}
     actual = set(SearchResponse.model_fields.keys())
     missing = expected_search - actual
-    assert not missing, (
-        f"SearchResponse envelope missing keys: {missing} (got {actual})"
-    )
+    assert not missing, f"SearchResponse envelope missing keys: {missing} (got {actual})"
 
     # BatchGetProgramsResponse must expose `results` at minimum
     batch_actual = set(BatchGetProgramsResponse.model_fields.keys())
@@ -227,21 +216,16 @@ def test_inv19_5xx_error_rate_under_threshold():
         if not _table_exists(con, "usage_events"):
             pytest.skip("usage_events table not present")
         total = con.execute(
-            "SELECT COUNT(*) FROM usage_events "
-            "WHERE ts >= datetime('now', '-7 days')"
+            "SELECT COUNT(*) FROM usage_events WHERE ts >= datetime('now', '-7 days')"
         ).fetchone()[0]
         if total < 100:
-            pytest.skip(
-                f"insufficient usage_events for rate check (got {total}, need 100)"
-            )
+            pytest.skip(f"insufficient usage_events for rate check (got {total}, need 100)")
         errors = con.execute(
             "SELECT COUNT(*) FROM usage_events "
             "WHERE ts >= datetime('now', '-7 days') AND status >= 500"
         ).fetchone()[0]
     rate = errors / total if total else 0.0
-    assert rate < 0.005, (
-        f"5xx rate too high: {errors}/{total} = {rate:.4%} (>= 0.5%)"
-    )
+    assert rate < 0.005, f"5xx rate too high: {errors}/{total} = {rate:.4%} (>= 0.5%)"
 
 
 # ---------------------------------------------------------------------------
@@ -377,8 +361,7 @@ def test_inv26_p50_tools_list_latency():
         # weekly cron via `latency_p50_tools_list_ms` field.
         # Here we soft-pass when the table is too thin for stats.
         n = con.execute(
-            "SELECT COUNT(*) FROM usage_events "
-            "WHERE ts >= datetime('now', '-7 days')"
+            "SELECT COUNT(*) FROM usage_events WHERE ts >= datetime('now', '-7 days')"
         ).fetchone()[0]
     if n < 50:
         pytest.skip(f"insufficient telemetry rows: {n} (< 50)")
@@ -453,12 +436,10 @@ def test_inv29_stripe_usage_diff_below_threshold():
         if not _table_exists(con, "usage_events"):
             pytest.skip("usage_events table not present")
         metered = con.execute(
-            "SELECT COUNT(*) FROM usage_events "
-            "WHERE metered=1 AND ts >= datetime('now', '-7 days')"
+            "SELECT COUNT(*) FROM usage_events WHERE metered=1 AND ts >= datetime('now', '-7 days')"
         ).fetchone()[0]
         total = con.execute(
-            "SELECT COUNT(*) FROM usage_events "
-            "WHERE ts >= datetime('now', '-7 days')"
+            "SELECT COUNT(*) FROM usage_events WHERE ts >= datetime('now', '-7 days')"
         ).fetchone()[0]
     if total < 50:
         pytest.skip(f"insufficient usage_events: {total}")

@@ -8,6 +8,7 @@ Coverage focus is the gap-fix surface added by migration 097
     * Both branches survive without autonomath.db (changed_ids = ∅) by
       pre-seeding `am_amendment_diff` so the cron has matches to deliver.
 """
+
 from __future__ import annotations
 
 import json
@@ -48,9 +49,7 @@ def _ensure_saved_searches_with_fanout(seeded_db: Path):
         if "profile_ids_json" not in cols:
             c.execute("ALTER TABLE saved_searches ADD COLUMN profile_ids_json TEXT")
         c.execute("DELETE FROM saved_searches")
-        c.execute(
-            "DELETE FROM usage_events WHERE endpoint = 'saved_searches.digest'"
-        )
+        c.execute("DELETE FROM usage_events WHERE endpoint = 'saved_searches.digest'")
         c.commit()
     finally:
         c.close()
@@ -110,9 +109,7 @@ def _seed_autonomath_with_diff(tmp_path: Path, unified_ids: list[str]) -> Path:
 
 def _patch_email_ok(monkeypatch) -> None:
     """Stub the email path so `sent` is True without invoking Postmark."""
-    monkeypatch.setattr(
-        rss, "_send_digest_email", lambda **_kw: {"ok": True}
-    )
+    monkeypatch.setattr(rss, "_send_digest_email", lambda **_kw: {"ok": True})
 
 
 def _usage_rows(db_path: Path) -> list[tuple[str | None, int]]:
@@ -127,14 +124,31 @@ def _usage_rows(db_path: Path) -> list[tuple[str | None, int]]:
         c.close()
 
 
+def _last_run_at(db_path: Path, saved_id: int) -> str | None:
+    c = sqlite3.connect(db_path)
+    try:
+        row = c.execute(
+            "SELECT last_run_at FROM saved_searches WHERE id = ?",
+            (saved_id,),
+        ).fetchone()
+        return row[0] if row else None
+    finally:
+        c.close()
+
+
 def test_profile_ids_fanout_meters_one_row_per_profile(
-    seeded_db: Path, consultant_key: str, monkeypatch, tmp_path: Path,
+    seeded_db: Path,
+    consultant_key: str,
+    monkeypatch,
+    tmp_path: Path,
 ):
     from jpintel_mcp.api.deps import hash_api_key
 
     key_hash = hash_api_key(consultant_key)
     saved_id = _seed_saved_search(
-        seeded_db, api_key_hash=key_hash, profile_ids=[101, 202, 303],
+        seeded_db,
+        api_key_hash=key_hash,
+        profile_ids=[101, 202, 303],
     )
 
     am_path = _seed_autonomath_with_diff(tmp_path, ["UNI-test-s-1"])
@@ -158,7 +172,10 @@ def test_profile_ids_fanout_meters_one_row_per_profile(
 
 
 def test_profile_ids_null_keeps_legacy_single_delivery(
-    seeded_db: Path, consultant_key: str, monkeypatch, tmp_path: Path,
+    seeded_db: Path,
+    consultant_key: str,
+    monkeypatch,
+    tmp_path: Path,
 ):
     from jpintel_mcp.api.deps import hash_api_key
 
@@ -179,3 +196,56 @@ def test_profile_ids_null_keeps_legacy_single_delivery(
     rows = _usage_rows(seeded_db)
     assert len(rows) == 1
     assert rows[0][0] is None  # no client_tag in legacy path
+
+
+def test_billing_failure_after_email_marks_run_and_prevents_resend(
+    seeded_db: Path,
+    consultant_key: str,
+    monkeypatch,
+    tmp_path: Path,
+):
+    """Once an email digest was sent, a strict billing failure must not leave
+    last_run_at stale; otherwise the next cron run sends the same digest again.
+    """
+    from jpintel_mcp.api.deps import hash_api_key
+
+    key_hash = hash_api_key(consultant_key)
+    saved_id = _seed_saved_search(
+        seeded_db,
+        api_key_hash=key_hash,
+        profile_ids=None,
+    )
+    am_path = _seed_autonomath_with_diff(tmp_path, ["UNI-test-s-1"])
+
+    send_calls: list[dict] = []
+
+    def _send_ok(**kwargs):
+        send_calls.append(kwargs)
+        return {"ok": True}
+
+    def _billing_fails(**_kwargs):
+        raise RuntimeError("billing cap closed")
+
+    monkeypatch.setattr(rss, "_send_digest_email", _send_ok)
+    monkeypatch.setattr(rss, "_record_metered_delivery", _billing_fails)
+
+    with pytest.raises(RuntimeError, match="billing cap closed"):
+        rss.run(
+            dry_run=False,
+            autonomath_db=am_path,
+            jpintel_db=seeded_db,
+        )
+
+    assert len(send_calls) == 1
+    assert _last_run_at(seeded_db, saved_id) is not None
+
+    monkeypatch.setattr(rss, "_record_metered_delivery", lambda **_kw: True)
+    summary = rss.run(
+        dry_run=False,
+        autonomath_db=am_path,
+        jpintel_db=seeded_db,
+    )
+
+    assert summary["emails_sent"] == 0
+    assert summary["skipped_window"] == 1
+    assert len(send_calls) == 1

@@ -25,8 +25,7 @@ def _schema_snapshot(path: Path) -> dict[str, int]:
         "SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name"
     ).fetchall()
     snapshot = {
-        name: int(conn.execute(f'SELECT COUNT(*) FROM "{name}"').fetchone()[0])
-        for (name,) in rows
+        name: int(conn.execute(f'SELECT COUNT(*) FROM "{name}"').fetchone()[0]) for (name,) in rows
     }
     conn.close()
     return snapshot
@@ -250,9 +249,9 @@ def test_cli_writes_json_without_mutating_database(tmp_path: Path, capsys) -> No
     assert _schema_snapshot(db) == before
     payload = json.loads(output.read_text(encoding="utf-8"))
     assert payload["coverage"]["b5_courts"]["official_courts_go_jp_rows"] == 1
-    assert payload["coverage"]["b5_courts"]["metadata_gaps_available"][
-        "source_excerpt_missing"
-    ] == 1
+    assert (
+        payload["coverage"]["b5_courts"]["metadata_gaps_available"]["source_excerpt_missing"] == 1
+    )
     assert payload["completion_status"] == {"B5": "readiness_only", "complete": False}
     printed = json.loads(capsys.readouterr().out)
     assert printed["coverage"]["b5_courts"]["candidate_table_count"] == 1

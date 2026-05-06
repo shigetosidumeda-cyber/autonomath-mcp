@@ -142,11 +142,13 @@ def test_build_report_summarizes_safe_exports_and_flags_legacy_dist(tmp_path: Pa
     assert readiness["datasets_ready_local"][0]["operator_next_action"].startswith(
         "Operator only after HF write-token authentication"
     )
-    assert "Do not publish or upload dist/hf-dataset" in (
-        readiness["unsafe_or_stale_exports"][0]["operator_next_action"]
+    assert (
+        "Do not publish or upload dist/hf-dataset"
+        in (readiness["unsafe_or_stale_exports"][0]["operator_next_action"])
     )
-    assert "safety gate fails on the current DB" in (
-        readiness["unsafe_or_stale_exports"][0]["blockers"][0]
+    assert (
+        "safety gate fails on the current DB"
+        in (readiness["unsafe_or_stale_exports"][0]["blockers"][0])
     )
 
 
@@ -170,8 +172,9 @@ def test_statistics_preview_manifest_is_blocked(tmp_path: Path) -> None:
     assert set(blocked) == {"statistics-estat"}
     assert blocked["statistics-estat"]["safety_gate_status"] == "passed"
     assert "full F3 readiness incomplete" in " ".join(blocked["statistics-estat"]["blockers"])
-    assert "Do not publish. Resolve the blockers" in (
-        blocked["statistics-estat"]["operator_next_action"]
+    assert (
+        "Do not publish. Resolve the blockers"
+        in (blocked["statistics-estat"]["operator_next_action"])
     )
     assert readiness["summary"]["datasets_ready_local_count"] == 3
 
@@ -193,8 +196,9 @@ def test_file_byte_mismatch_blocks_dataset(tmp_path: Path) -> None:
     blocked = {dataset["dataset"]: dataset for dataset in readiness["datasets_blocked"]}
     assert set(blocked) == {"laws-jp"}
     assert blocked["laws-jp"]["bytes"] == len(b"laws parquet")
-    assert "manifest byte count does not match parquet file size" in (
-        blocked["laws-jp"]["blockers"][0]
+    assert (
+        "manifest byte count does not match parquet file size"
+        in (blocked["laws-jp"]["blockers"][0])
     )
 
 

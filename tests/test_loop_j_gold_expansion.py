@@ -33,81 +33,95 @@ def _fake_query_log_rows() -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
     # === Group 1: 6 distinct sessions, conf 0.97, positive sentiment ===
     for i in range(6):
-        rows.append({
-            "session_id": f"sess_agri_{i}",
-            "query_text": "認定新規就農者向けの補助制度を教えてください。",
-            "tool": "search_programs",
-            "tool_args": {"q": "認定新規就農者", "tier": ["S", "A", "B"], "limit": 10},
-            "top_result_id": "UNI-5cb4538235",
-            "confidence": 0.97,
-            "sentiment": "positive",
-        })
+        rows.append(
+            {
+                "session_id": f"sess_agri_{i}",
+                "query_text": "認定新規就農者向けの補助制度を教えてください。",
+                "tool": "search_programs",
+                "tool_args": {"q": "認定新規就農者", "tier": ["S", "A", "B"], "limit": 10},
+                "top_result_id": "UNI-5cb4538235",
+                "confidence": 0.97,
+                "sentiment": "positive",
+            }
+        )
     # === Group 2: 5 distinct sessions, conf 0.96, query has PII ===
     for i in range(5):
-        rows.append({
-            "session_id": f"sess_corp_{i}",
-            "query_text": "インボイス登録番号 T1234567890123 の事業者は誰?連絡 03-1234-5678 まで。",
-            "tool": "search_corp",
-            "tool_args": '{"houjin_bangou": "1234567890123"}',  # JSON string form
-            "top_result_id": "CORP-1",
-            "confidence": 0.96,
-            "sentiment": "neutral",
-        })
+        rows.append(
+            {
+                "session_id": f"sess_corp_{i}",
+                "query_text": "インボイス登録番号 T1234567890123 の事業者は誰?連絡 03-1234-5678 まで。",
+                "tool": "search_corp",
+                "tool_args": '{"houjin_bangou": "1234567890123"}',  # JSON string form
+                "top_result_id": "CORP-1",
+                "confidence": 0.96,
+                "sentiment": "neutral",
+            }
+        )
     # === Drop: low confidence (0.80) ===
     for i in range(6):
-        rows.append({
-            "session_id": f"sess_lowconf_{i}",
-            "query_text": "曖昧なクエリ",
-            "tool": "search_programs",
-            "tool_args": {"q": "曖昧"},
-            "top_result_id": "UNI-x",
-            "confidence": 0.80,
-            "sentiment": "positive",
-        })
+        rows.append(
+            {
+                "session_id": f"sess_lowconf_{i}",
+                "query_text": "曖昧なクエリ",
+                "tool": "search_programs",
+                "tool_args": {"q": "曖昧"},
+                "top_result_id": "UNI-x",
+                "confidence": 0.80,
+                "sentiment": "positive",
+            }
+        )
     # === Drop: low stability (only 2 sessions, even at 0.99 conf) ===
     for i in range(2):
-        rows.append({
-            "session_id": f"sess_unstable_{i}",
-            "query_text": "未成熟なクエリ",
-            "tool": "search_programs",
-            "tool_args": {"q": "未成熟"},
-            "top_result_id": "UNI-y",
-            "confidence": 0.99,
-            "sentiment": "positive",
-        })
+        rows.append(
+            {
+                "session_id": f"sess_unstable_{i}",
+                "query_text": "未成熟なクエリ",
+                "tool": "search_programs",
+                "tool_args": {"q": "未成熟"},
+                "top_result_id": "UNI-y",
+                "confidence": 0.99,
+                "sentiment": "positive",
+            }
+        )
     # === Drop: already in evals/gold.yaml ===
     for i in range(6):
-        rows.append({
-            "session_id": f"sess_existing_{i}",
-            "query_text": "既存ゴールドクエリ",
-            "tool": "search_programs",
-            "tool_args": {"q": "既存"},
-            "top_result_id": "UNI-existing",
-            "confidence": 0.98,
-            "sentiment": "positive",
-        })
+        rows.append(
+            {
+                "session_id": f"sess_existing_{i}",
+                "query_text": "既存ゴールドクエリ",
+                "tool": "search_programs",
+                "tool_args": {"q": "既存"},
+                "top_result_id": "UNI-existing",
+                "confidence": 0.98,
+                "sentiment": "positive",
+            }
+        )
     # === Drop: negative sentiment ===
     for i in range(6):
-        rows.append({
-            "session_id": f"sess_neg_{i}",
-            "query_text": "不満のあったクエリ",
-            "tool": "search_programs",
-            "tool_args": {"q": "不満"},
-            "top_result_id": "UNI-z",
-            "confidence": 0.99,
-            "sentiment": "negative",
-        })
+        rows.append(
+            {
+                "session_id": f"sess_neg_{i}",
+                "query_text": "不満のあったクエリ",
+                "tool": "search_programs",
+                "tool_args": {"q": "不満"},
+                "top_result_id": "UNI-z",
+                "confidence": 0.99,
+                "sentiment": "negative",
+            }
+        )
     # === Drop: no top_result_id ===
     for i in range(6):
-        rows.append({
-            "session_id": f"sess_zero_{i}",
-            "query_text": "ゼロ結果のクエリ",
-            "tool": "search_programs",
-            "tool_args": {"q": "ゼロ"},
-            "top_result_id": "",
-            "confidence": 0.99,
-            "sentiment": "positive",
-        })
+        rows.append(
+            {
+                "session_id": f"sess_zero_{i}",
+                "query_text": "ゼロ結果のクエリ",
+                "tool": "search_programs",
+                "tool_args": {"q": "ゼロ"},
+                "top_result_id": "",
+                "confidence": 0.99,
+                "sentiment": "positive",
+            }
+        )
     return rows
 
 

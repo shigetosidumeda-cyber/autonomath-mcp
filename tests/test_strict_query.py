@@ -17,6 +17,7 @@ What we cover:
 * OPTIONS preflight bypass -> 200 / 405 not 422.
 * Path with declared param via alias is accepted.
 """
+
 from __future__ import annotations
 
 
@@ -70,9 +71,7 @@ def test_multiple_unknown_keys_listed_sorted(seeded_db):
 
 def test_all_known_keys_passes_through(seeded_db):
     c = _build_client()
-    r = c.get(
-        "/v1/programs/search?q=test&prefecture=東京都&tier=S&limit=3&offset=0"
-    )
+    r = c.get("/v1/programs/search?q=test&prefecture=東京都&tier=S&limit=3&offset=0")
     assert r.status_code == 200, r.text
     body = r.json()
     # The legitimate response shape should be preserved.

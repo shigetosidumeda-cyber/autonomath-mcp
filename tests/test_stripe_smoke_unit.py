@@ -11,6 +11,7 @@ These tests exercise:
 
 No real Stripe calls happen here — this file is safe to run offline.
 """
+
 from __future__ import annotations
 
 import importlib.util
@@ -115,9 +116,7 @@ def test_webhook_roundtrip_subscription_created(client, monkeypatch, seeded_db: 
 
     monkeypatch.setattr(settings, "stripe_secret_key", "sk_test_dummy", raising=False)
     monkeypatch.setattr(settings, "stripe_webhook_secret", "whsec_dummy", raising=False)
-    monkeypatch.setattr(
-        settings, "stripe_price_per_request", "price_unit", raising=False
-    )
+    monkeypatch.setattr(settings, "stripe_price_per_request", "price_unit", raising=False)
 
     event = {
         "id": "evt_unit_sub_created",
@@ -166,9 +165,7 @@ def test_webhook_roundtrip_subscription_created(client, monkeypatch, seeded_db: 
     assert event_row[0] is not None
 
 
-def test_webhook_roundtrip_payment_failed_demotes_tier(
-    client, monkeypatch, seeded_db: Path
-):
+def test_webhook_roundtrip_payment_failed_demotes_tier(client, monkeypatch, seeded_db: Path):
     """invoice.payment_failed via smoke's payload shape → tier=free."""
     from jpintel_mcp.api import billing as billing_mod
     from jpintel_mcp.billing.keys import issue_key
@@ -176,15 +173,11 @@ def test_webhook_roundtrip_payment_failed_demotes_tier(
 
     monkeypatch.setattr(settings, "stripe_secret_key", "sk_test_dummy", raising=False)
     monkeypatch.setattr(settings, "stripe_webhook_secret", "whsec_dummy", raising=False)
-    monkeypatch.setattr(
-        settings, "stripe_price_per_request", "price_unit", raising=False
-    )
+    monkeypatch.setattr(settings, "stripe_price_per_request", "price_unit", raising=False)
 
     c = sqlite3.connect(seeded_db)
     c.row_factory = sqlite3.Row
-    issue_key(
-        c, customer_id="cus_dun", tier="paid", stripe_subscription_id="sub_dun_1"
-    )
+    issue_key(c, customer_id="cus_dun", tier="paid", stripe_subscription_id="sub_dun_1")
     c.commit()
     c.close()
 

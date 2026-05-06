@@ -28,7 +28,10 @@ def test_funnel_event_accepts_browser_beacon(client, seeded_db: Path) -> None:
             "session_id": "abc123",
             "properties": {"endpoint": "intelligence.precomputed.query"},
         },
-        headers={"User-Agent": "Mozilla/5.0 Chrome/120.0", "Referer": "https://jpcite.com/pricing.html"},
+        headers={
+            "User-Agent": "Mozilla/5.0 Chrome/120.0",
+            "Referer": "https://jpcite.com/pricing.html",
+        },
     )
 
     assert response.status_code == 202, response.text
@@ -54,9 +57,7 @@ def test_funnel_event_accepts_browser_beacon(client, seeded_db: Path) -> None:
     assert row["event_name"] == "playground_success"
     assert row["page"] == "/playground.html"
     assert row["session_id"] == "abc123"
-    assert json.loads(row["properties_json"]) == {
-        "endpoint": "intelligence.precomputed.query"
-    }
+    assert json.loads(row["properties_json"]) == {"endpoint": "intelligence.precomputed.query"}
     assert row["user_agent_class"] == "browser:chrome"
     assert row["is_bot"] == 0
     assert row["is_anonymous"] == 1
@@ -131,9 +132,7 @@ def test_funnel_event_drops_foreign_absolute_page(client, seeded_db: Path) -> No
     assert json.loads(row["properties_json"]) == {"target": "pricing"}
 
 
-def test_funnel_event_large_properties_remain_valid_json(
-    client, seeded_db: Path
-) -> None:
+def test_funnel_event_large_properties_remain_valid_json(client, seeded_db: Path) -> None:
     _clear_funnel_events(seeded_db)
 
     response = client.post(
@@ -172,9 +171,7 @@ def test_funnel_event_rejects_oversized_body(client, seeded_db: Path) -> None:
         "/v1/funnel/event",
         content=(
             '{"event":"quickstart_copy","page":"/docs/getting-started/",'
-            '"properties":{"too_big":"'
-            + ("x" * 5000)
-            + '"}}'
+            '"properties":{"too_big":"' + ("x" * 5000) + '"}}'
         ),
         headers={"Content-Type": "text/plain;charset=UTF-8"},
     )

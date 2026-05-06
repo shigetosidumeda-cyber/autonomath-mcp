@@ -67,7 +67,8 @@ def test_build_report_counts_staging_roots_and_keeps_commands_inert(tmp_path: Pa
     assert root_by_path["autonomath_staging"]["loc"] == 5
     assert root_by_path["autonomath_staging"]["db_like_file_count"] == 1
     owner_by_top = {
-        owner["top_level"]: owner for owner in root_by_path["autonomath_staging"]["ownership_estimate"]
+        owner["top_level"]: owner
+        for owner in root_by_path["autonomath_staging"]["ownership_estimate"]
     }
     assert owner_by_top["api_meta"]["owner_area"] == "api_mcp"
     assert owner_by_top["."]["owner_area"] == "mixed_or_unknown"

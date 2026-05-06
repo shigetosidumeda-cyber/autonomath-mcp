@@ -5,9 +5,7 @@ import re
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-BENCH_QUERIES_CSV = (
-    REPO_ROOT / "tools" / "offline" / "bench_queries_2026_04_30.csv"
-)
+BENCH_QUERIES_CSV = REPO_ROOT / "tools" / "offline" / "bench_queries_2026_04_30.csv"
 
 
 def _read_rows() -> list[dict[str, str]]:
@@ -30,9 +28,7 @@ def test_bench_queries_are_canonical_and_non_empty() -> None:
 def test_bench_queries_are_unique_and_diverse() -> None:
     rows = _read_rows()
 
-    normalized_queries = [
-        re.sub(r"\s+", " ", row["query_text"].strip()).casefold() for row in rows
-    ]
+    normalized_queries = [re.sub(r"\s+", " ", row["query_text"].strip()).casefold() for row in rows]
     assert len(set(normalized_queries)) == len(normalized_queries)
 
     domains = {row["domain"] for row in rows}

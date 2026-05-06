@@ -4,6 +4,7 @@ Surfaces the gBizINFO + auxiliary corporate facts already in autonomath.db
 (see api/houjin.py docstring). Module-skips when autonomath.db is missing
 locally — same convention as test_annotation_tools.py / test_provenance_tools.py.
 """
+
 from __future__ import annotations
 
 import os
@@ -16,15 +17,14 @@ import pytest
 if TYPE_CHECKING:
     from fastapi.testclient import TestClient
 
+from jpintel_mcp.api.deps import hash_api_key
+
 _REPO_ROOT = Path(__file__).resolve().parents[1]
-_AUTONOMATH_DB = Path(
-    os.environ.get("AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db"))
-)
+_AUTONOMATH_DB = Path(os.environ.get("AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db")))
 
 if not _AUTONOMATH_DB.exists():
     pytest.skip(
-        f"autonomath.db ({_AUTONOMATH_DB}) not present; "
-        "skipping /v1/houjin/{bangou} suite.",
+        f"autonomath.db ({_AUTONOMATH_DB}) not present; skipping /v1/houjin/{{bangou}} suite.",
         allow_module_level=True,
     )
 
@@ -46,12 +46,10 @@ _MALFORMED_BANGOU = "12345"
 
 
 @pytest.fixture(autouse=True)
-def _pin_jpintel_db_for_anon_quota(
-    seeded_db: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def _pin_jpintel_db_for_anon_quota(seeded_db: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Keep anon quota writes on the seeded jpintel DB during full-suite runs."""
-    from jpintel_mcp.config import settings
     from jpintel_mcp.api import anon_limit as _anon_limit
+    from jpintel_mcp.config import settings
 
     monkeypatch.setattr(settings, "db_path", seeded_db)
     monkeypatch.setattr(_anon_limit.settings, "db_path", seeded_db)
@@ -112,7 +110,9 @@ def test_get_valid_houjin_returns_expected_envelope(client: TestClient) -> None:
         "adoptions",
         "enforcement",
         "provenance",
+        "_attribution",
         "_disclaimer",
+        "_disclaimer_gbiz",
         "_namayoke_caveat",
     ):
         assert key in body, f"missing envelope key: {key}"
@@ -160,6 +160,19 @@ def test_get_valid_houjin_returns_expected_envelope(client: TestClient) -> None:
     prov = body["provenance"]
     assert prov["canonical_id"] == f"houjin:{_SAMPLE_BANGOU}"
     assert "gBizINFO" in prov["data_origin"]
+    assert prov["gbizinfo_source_url"].endswith(f"hojinBango={_SAMPLE_BANGOU}")
+    assert prov["upstream_source"] == "NTA Houjin Bangou Web-API"
+
+    # gBizINFO attribution — required for AI relays and customer exports.
+    attribution = body["_attribution"]
+    assert attribution["source"] == "Gビズインフォ"
+    assert attribution["publisher"] == "経済産業省"
+    assert attribution["source_url"].endswith(f"hojinBango={_SAMPLE_BANGOU}")
+    assert attribution["license"] == "政府標準利用規約 2.0 (CC-BY 4.0 互換)"
+    assert "4795140981406" in attribution["license_url"]
+    assert attribution["operator"] == "Bookyou株式会社 (T8010001213708)"
+    assert attribution["upstream_source"] == "NTA Houjin Bangou Web-API"
+    assert "Gビズインフォ" in body["_disclaimer_gbiz"]
 
     # §52 fence + 名寄せ caveat — pinned strings (copy changes go through review).
     assert "税務助言" in body["_disclaimer"]
@@ -167,9 +180,83 @@ def test_get_valid_houjin_returns_expected_envelope(client: TestClient) -> None:
     assert "名寄せ" in body["_namayoke_caveat"]
 
     # Response budget — under 50KB target.
-    assert len(r.content) < 50_000, (
-        f"response is {len(r.content)} bytes, > 50KB budget"
+    assert len(r.content) < 50_000, f"response is {len(r.content)} bytes, > 50KB budget"
+
+
+def test_get_valid_houjin_v2_carries_gbiz_attribution_and_citation(
+    client: TestClient,
+) -> None:
+    """V2 envelope keeps gBiz attribution inside results and citations."""
+    if not _has_any_data(_SAMPLE_BANGOU):
+        pytest.skip(f"sample 法人番号 {_SAMPLE_BANGOU} no longer in DB.")
+
+    r = client.get(
+        f"/v1/houjin/{_SAMPLE_BANGOU}",
+        headers={"Accept": "application/vnd.jpcite.v2+json"},
     )
+    assert r.status_code == 200, r.text
+    assert r.headers.get("X-Envelope-Version") == "v2"
+    body = r.json()
+
+    assert body["status"] == "sparse"
+    assert body["meta"]["billable_units"] == 1
+    result = body["results"][0]
+    attribution = result["_attribution"]
+    assert attribution["source"] == "Gビズインフォ"
+    assert attribution["source_url"].endswith(f"hojinBango={_SAMPLE_BANGOU}")
+    assert attribution["upstream_source"] == "NTA Houjin Bangou Web-API"
+    assert "Gビズインフォ" in result["_disclaimer_gbiz"]
+
+    assert body["citations"], "v2 houjin response must cite gBizINFO"
+    citation = body["citations"][0]
+    assert citation["source_url"].endswith(f"hojinBango={_SAMPLE_BANGOU}")
+    assert citation["publisher"] == "経済産業省"
+    assert citation["license"] == "政府標準利用規約 2.0 (CC-BY 4.0 互換)"
+    assert citation["upstream_source"] == "NTA Houjin Bangou Web-API"
+    assert "Gビズインフォ" in citation["citation_text_ja"]
+    assert "/results/0/corp_facts" in citation["field_paths"]
+
+
+def test_paid_houjin_final_metering_cap_failure_does_not_bill(
+    client: TestClient,
+    seeded_db: Path,
+    paid_key: str,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Paid 2xx houjin delivery must fail closed if final cap rejects billing."""
+    if not _has_any_data(_SAMPLE_BANGOU):
+        pytest.skip(f"sample 法人番号 {_SAMPLE_BANGOU} no longer in DB.")
+
+    from jpintel_mcp.api.middleware import customer_cap
+
+    key_hash = hash_api_key(paid_key)
+
+    def usage_count() -> int:
+        conn = sqlite3.connect(seeded_db)
+        try:
+            row = conn.execute(
+                "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = ?",
+                (key_hash, "houjin.get"),
+            ).fetchone()
+            return int(row[0])
+        finally:
+            conn.close()
+
+    before = usage_count()
+    monkeypatch.setattr(
+        customer_cap,
+        "metered_charge_within_cap",
+        lambda *args, **kwargs: False,
+    )
+
+    r = client.get(
+        f"/v1/houjin/{_SAMPLE_BANGOU}",
+        headers={"X-API-Key": paid_key},
+    )
+
+    assert r.status_code == 503, r.text
+    assert r.json()["detail"]["code"] == "billing_cap_final_check_failed"
+    assert usage_count() == before
 
 
 def test_invalid_format_houjin_returns_422(client: TestClient) -> None:
@@ -213,9 +300,7 @@ def test_unknown_houjin_returns_404_with_envelope(client: TestClient) -> None:
     assert miss_bangou in body["alternative"]
 
 
-def test_anon_within_quota_returns_200(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_anon_within_quota_returns_200(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """Anonymous caller within the daily IP cap gets 200.
 
     Uses the autouse ``_reset_anon_rate_limit`` fixture (conftest.py) so
@@ -223,8 +308,8 @@ def test_anon_within_quota_returns_200(
     """
     if not _has_any_data(_SAMPLE_BANGOU):
         pytest.skip(f"sample 法人番号 {_SAMPLE_BANGOU} no longer in DB.")
-    from jpintel_mcp.config import settings
     from jpintel_mcp.api import anon_limit as _anon_limit
+    from jpintel_mcp.config import settings
 
     monkeypatch.setattr(settings, "anon_rate_limit_per_day", 5)
     monkeypatch.setattr(_anon_limit.settings, "anon_rate_limit_per_day", 5)
@@ -238,9 +323,7 @@ def test_anon_within_quota_returns_200(
     assert r.headers.get("X-Anon-Quota-Remaining") is not None
 
 
-def test_anon_over_quota_returns_429(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_anon_over_quota_returns_429(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """Anonymous caller hitting the daily IP cap gets 429 on /v1/houjin too.
 
     Pinning the limit at 1 makes the second call cross the threshold;
@@ -248,8 +331,8 @@ def test_anon_over_quota_returns_429(
     """
     if not _has_any_data(_SAMPLE_BANGOU):
         pytest.skip(f"sample 法人番号 {_SAMPLE_BANGOU} no longer in DB.")
-    from jpintel_mcp.config import settings
     from jpintel_mcp.api import anon_limit as _anon_limit
+    from jpintel_mcp.config import settings
 
     # 1 call per day → 2nd call MUST 429.
     monkeypatch.setattr(settings, "anon_rate_limit_per_day", 1)

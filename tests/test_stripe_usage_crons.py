@@ -86,11 +86,13 @@ def test_stripe_usage_backfill_enqueues_usage_event_quantity(
         dedup_key: str | None = None,
         **_kwargs: Any,
     ) -> int:
-        enqueued.append({
-            "kind": kind,
-            "payload": payload,
-            "dedup_key": dedup_key,
-        })
+        enqueued.append(
+            {
+                "kind": kind,
+                "payload": payload,
+                "dedup_key": dedup_key,
+            }
+        )
         return len(enqueued)
 
     monkeypatch.setattr(mod, "enqueue", fake_enqueue)
@@ -340,8 +342,7 @@ def test_stripe_usage_backfill_requeues_failed_dedup_row(tmp_path: Path) -> None
             quantity=7,
         )
         row = conn.execute(
-            "SELECT status, attempts, last_error, payload_json "
-            "FROM bg_task_queue WHERE id = ?",
+            "SELECT status, attempts, last_error, payload_json FROM bg_task_queue WHERE id = ?",
             (task_id,),
         ).fetchone()
     finally:
@@ -407,8 +408,7 @@ def test_stripe_usage_backfill_requeues_stale_processing_dedup_row(
             quantity=3,
         )
         row = conn.execute(
-            "SELECT status, attempts, last_error, payload_json "
-            "FROM bg_task_queue WHERE id = ?",
+            "SELECT status, attempts, last_error, payload_json FROM bg_task_queue WHERE id = ?",
             (task_id,),
         ).fetchone()
     finally:
@@ -469,8 +469,7 @@ def test_stripe_usage_backfill_requeues_done_dedup_row_when_event_unsynced(
             quantity=9,
         )
         row = conn.execute(
-            "SELECT status, attempts, last_error, payload_json "
-            "FROM bg_task_queue WHERE id = ?",
+            "SELECT status, attempts, last_error, payload_json FROM bg_task_queue WHERE id = ?",
             (task_id,),
         ).fetchone()
     finally:
@@ -528,11 +527,13 @@ def _create_backfill_queue_db(db_path: Path, *, task_status: str, updated_at: st
             ") VALUES (?,?,?,?,?,?,?,?)",
             (
                 "stripe_usage_sync",
-                json.dumps({
-                    "subscription_id": "sub_widget",
-                    "quantity": 1,
-                    "idempotency_key": "widget_key_42",
-                }),
+                json.dumps(
+                    {
+                        "subscription_id": "sub_widget",
+                        "quantity": 1,
+                        "idempotency_key": "widget_key_42",
+                    }
+                ),
                 task_status,
                 5,
                 "stripe unavailable",
@@ -614,9 +615,7 @@ def test_widget_overage_requeue_hydrates_missing_idempotency_key(
 
     conn = sqlite3.connect(db_path)
     try:
-        row = conn.execute(
-            "SELECT status, payload_json FROM bg_task_queue WHERE id = 1"
-        ).fetchone()
+        row = conn.execute("SELECT status, payload_json FROM bg_task_queue WHERE id = 1").fetchone()
     finally:
         conn.close()
 
@@ -671,9 +670,7 @@ def test_widget_overage_requeue_enforces_dedup_idempotency_and_quantity(
 
     conn = sqlite3.connect(db_path)
     try:
-        row = conn.execute(
-            "SELECT status, payload_json FROM bg_task_queue WHERE id = 1"
-        ).fetchone()
+        row = conn.execute("SELECT status, payload_json FROM bg_task_queue WHERE id = 1").fetchone()
     finally:
         conn.close()
 

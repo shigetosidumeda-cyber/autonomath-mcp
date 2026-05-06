@@ -9,6 +9,7 @@ static host we're using (Cloudflare Pages, Fly, etc.) — we probe the
 page as HTML but fall back to 200 + "About jpintel" in the raw body
 when a Markdown-to-HTML step isn't configured.
 """
+
 from __future__ import annotations
 
 import re

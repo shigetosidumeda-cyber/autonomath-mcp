@@ -11,6 +11,7 @@ Covers:
       S-tier program wins.
     * Migration 114 is idempotent (re-applying via raw SQL is a no-op).
 """
+
 from __future__ import annotations
 
 import importlib.util
@@ -25,7 +26,8 @@ import pytest
 _REPO = Path(__file__).resolve().parent.parent
 _CRON_PATH = _REPO / "scripts" / "cron" / "adoption_program_join.py"
 _spec = importlib.util.spec_from_file_location(
-    "adoption_program_join", _CRON_PATH,
+    "adoption_program_join",
+    _CRON_PATH,
 )
 assert _spec is not None and _spec.loader is not None
 _cron = importlib.util.module_from_spec(_spec)
@@ -62,20 +64,19 @@ _MIG_114 = _REPO / "scripts" / "migrations" / "114_adoption_program_join.sql"
 
 _PROGRAMS = [
     (
-        "prog-1", "IT導入補助金",
+        "prog-1",
+        "IT導入補助金",
         json.dumps(["IT補助金", "デジタル化補助金"], ensure_ascii=False),
-        None, "B", 450.0,
+        None,
+        "B",
+        450.0,
     ),
-    ("prog-2", "事業再構築補助金", json.dumps([], ensure_ascii=False),
-     None, "A", 8000.0),
-    ("prog-3", "ものづくり補助金", json.dumps([], ensure_ascii=False),
-     None, "S", 1250.0),
+    ("prog-2", "事業再構築補助金", json.dumps([], ensure_ascii=False), None, "A", 8000.0),
+    ("prog-3", "ものづくり補助金", json.dumps([], ensure_ascii=False), None, "S", 1250.0),
     # Same primary_name, different prefecture + tier — exercises the S>B
     # tie-break in `_pick_best`.
-    ("prog-4", "ものづくり補助金", json.dumps([], ensure_ascii=False),
-     "東京都", "B", 200.0),
-    ("prog-5", "小規模事業者持続化補助金", json.dumps([], ensure_ascii=False),
-     None, "B", 200.0),
+    ("prog-4", "ものづくり補助金", json.dumps([], ensure_ascii=False), "東京都", "B", 200.0),
+    ("prog-5", "小規模事業者持続化補助金", json.dumps([], ensure_ascii=False), None, "B", 200.0),
 ]
 
 
@@ -102,14 +103,14 @@ _ADOPTIONS = [
     (7, "デジタル化補助金", None, 5_000_000),
     (8, "IT補助金", None, 5_000_000),
     # Fuzzy_high (4) — single-char trailing drift, ratios all >= 0.92.
-    (9, "IT導入補助金1", None, 5_000_000),                      # 0.9333
-    (10, "事業再構築補助金A", None, 30_000_000),                 # 0.9412
-    (11, "ものづくり補助金A", None, 12_000_000),                 # 0.9412 (S>B tie-break)
-    (12, "小規模事業者持続化補助金1", None, 1_000_000),            # 0.9600
+    (9, "IT導入補助金1", None, 5_000_000),  # 0.9333
+    (10, "事業再構築補助金A", None, 30_000_000),  # 0.9412
+    (11, "ものづくり補助金A", None, 12_000_000),  # 0.9412 (S>B tie-break)
+    (12, "小規模事業者持続化補助金1", None, 1_000_000),  # 0.9600
     # Fuzzy_med (3) — multi-char round/year suffix drift, 0.80 <= r < 0.92.
-    (13, "IT導入補助金 後期", None, 5_000_000),                  # 0.8750
-    (14, "IT導入補助金 前期", None, 5_000_000),                  # 0.8750
-    (15, "ものづくり補助金 第10次", None, 12_000_000),            # 0.8000
+    (13, "IT導入補助金 後期", None, 5_000_000),  # 0.8750
+    (14, "IT導入補助金 前期", None, 5_000_000),  # 0.8750
+    (15, "ものづくり補助金 第10次", None, 12_000_000),  # 0.8000
     # Unmatched (5) — ratio < 0.80 against any program.
     (16, "全く関係ない補助金A", None, 1_000_000),
     (17, "全く関係ない補助金A", None, 1_000_000),
@@ -217,8 +218,15 @@ def _seed_autonomath(db_path: Path) -> None:
                 "  id, houjin_bangou, program_name_raw, prefecture, "
                 "  amount_granted_yen, source_url, fetched_at"
                 ") VALUES (?, ?, ?, ?, ?, ?, ?)",
-                (row_id, "0", name, prefecture, amount,
-                 "https://example.invalid/", "2026-04-30T00:00:00Z"),
+                (
+                    row_id,
+                    "0",
+                    name,
+                    prefecture,
+                    amount,
+                    "https://example.invalid/",
+                    "2026-04-30T00:00:00Z",
+                ),
             )
         conn.commit()
     finally:
@@ -244,21 +252,14 @@ def test_match_bucket_counts(seeded_dbs):
     j, a = seeded_dbs
     out = _cron.run(jpintel_db=j, autonomath_db=a)
     assert out["rows_scanned"] == 20
-    assert out["exact_matched"] == 8, (
-        f"expected 8 exact, got {out['exact_matched']}; "
-        f"out={out}"
-    )
+    assert out["exact_matched"] == 8, f"expected 8 exact, got {out['exact_matched']}; out={out}"
     assert out["fuzzy_high_matched"] == 4, (
-        f"expected 4 fuzzy_high, got {out['fuzzy_high_matched']}; "
-        f"out={out}"
+        f"expected 4 fuzzy_high, got {out['fuzzy_high_matched']}; out={out}"
     )
     assert out["fuzzy_med_matched"] == 3, (
-        f"expected 3 fuzzy_med, got {out['fuzzy_med_matched']}; "
-        f"out={out}"
+        f"expected 3 fuzzy_med, got {out['fuzzy_med_matched']}; out={out}"
     )
-    assert out["unmatched"] == 5, (
-        f"expected 5 unmatched, got {out['unmatched']}; out={out}"
-    )
+    assert out["unmatched"] == 5, f"expected 5 unmatched, got {out['unmatched']}; out={out}"
     # elapsed_s should be present and non-negative.
     assert isinstance(out["elapsed_s"], float)
     assert out["elapsed_s"] >= 0.0
@@ -348,9 +349,7 @@ def test_tie_break_prefers_higher_tier(seeded_dbs):
     finally:
         conn.close()
     assert row is not None
-    assert row[0] == "prog-3", (
-        f"expected prog-3 (tier=S), got {row[0]} — tie-break broke"
-    )
+    assert row[0] == "prog-3", f"expected prog-3 (tier=S), got {row[0]} — tie-break broke"
     assert row[1] == "fuzzy_name_high"
 
 

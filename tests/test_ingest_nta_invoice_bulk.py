@@ -35,9 +35,7 @@ WORKFLOW_PATH = REPO_ROOT / ".github" / "workflows" / "nta-bulk-monthly.yml"
 
 
 def _load_driver():
-    spec = importlib.util.spec_from_file_location(
-        "ingest_nta_invoice_bulk", DRIVER_PATH
-    )
+    spec = importlib.util.spec_from_file_location("ingest_nta_invoice_bulk", DRIVER_PATH)
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
@@ -115,9 +113,7 @@ def test_workflow_file_uses_jpintel_db_path_and_120_min_timeout() -> None:
     assert WORKFLOW_PATH.is_file(), "nta-bulk-monthly.yml missing"
     wf = WORKFLOW_PATH.read_text(encoding="utf-8")
     # Schedule: 1st of month, 18:00 UTC = 03:00 JST on the 2nd.
-    assert '0 18 1 * *' in wf, (
-        "monthly cron schedule must be '0 18 1 * *' (18:00 UTC on day 1)"
-    )
+    assert "0 18 1 * *" in wf, "monthly cron schedule must be '0 18 1 * *' (18:00 UTC on day 1)"
     # Path: must write to /data/jpintel.db, NOT /data/autonomath.db.
     assert "--db /data/jpintel.db" in wf, (
         "invoice_registrants lives in jpintel.db (migration 019); the "

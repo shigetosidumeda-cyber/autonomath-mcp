@@ -12,6 +12,7 @@ Python process via `subprocess`, so the env var is observed at module load.
 This matches how the rest of the launch gates (`AUTONOMATH_HEALTHCARE_ENABLED`,
 `AUTONOMATH_REAL_ESTATE_ENABLED`) would be tested at the registration layer.
 """
+
 from __future__ import annotations
 
 import json
@@ -116,8 +117,7 @@ def test_default_disabled_tools_absent():
     names = set(out["tools"])
     for t in _GATED_TOOLS:
         assert t not in names, (
-            f"{t} leaked into the registry with the gate disabled — "
-            "the launch gate is broken."
+            f"{t} leaked into the registry with the gate disabled — the launch gate is broken."
         )
 
 
@@ -132,8 +132,7 @@ def test_default_disabled_other_tools_present():
         f"deep_health_am missing — package import may be broken. Got: {sorted(names)}"
     )
     assert "list_static_resources_am" in names, (
-        f"list_static_resources_am missing — package import may be broken. "
-        f"Got: {sorted(names)}"
+        f"list_static_resources_am missing — package import may be broken. Got: {sorted(names)}"
     )
 
 
@@ -148,8 +147,7 @@ def test_enabled_tools_present():
     names = set(out["tools"])
     for t in _GATED_TOOLS:
         assert t in names, (
-            f"{t} missing with gate enabled — registration is broken. "
-            f"Got: {sorted(names)}"
+            f"{t} missing with gate enabled — registration is broken. Got: {sorted(names)}"
         )
 
 
@@ -165,9 +163,7 @@ def test_enabled_render_returns_disclaimer():
     # negation-context "保証しません" — INV-22-safe).
     assert "draft" in msg, f"disclaimer missing 'draft': {msg!r}"
     assert "社労士" in msg, f"disclaimer missing '社労士': {msg!r}"
-    assert "保証しません" in msg, (
-        f"disclaimer missing '保証しません' (negation context): {msg!r}"
-    )
+    assert "保証しません" in msg, f"disclaimer missing '保証しません' (negation context): {msg!r}"
     # Affirmative INV-22 violations must NOT appear (the response_sanitizer
     # affirmative regex set keys on these phrases).
     assert "保証します" not in msg
@@ -186,14 +182,11 @@ def test_gate_toggles_exactly_two_tools():
     enabled = set(_run_with_env("1", _list_tools_snippet())["tools"])
     diff = enabled - disabled
     assert diff == set(_GATED_TOOLS), (
-        f"gate flipped unexpected tools. expected diff={set(_GATED_TOOLS)}, "
-        f"got diff={diff}"
+        f"gate flipped unexpected tools. expected diff={set(_GATED_TOOLS)}, got diff={diff}"
     )
     # No tool should disappear when the gate flips on.
     regression = disabled - enabled
-    assert regression == set(), (
-        f"tools disappeared when gate enabled (regression): {regression}"
-    )
+    assert regression == set(), f"tools disappeared when gate enabled (regression): {regression}"
 
 
 # ----------------------------------------------------------------------

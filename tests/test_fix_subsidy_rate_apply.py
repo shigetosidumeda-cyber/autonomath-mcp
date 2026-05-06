@@ -131,8 +131,7 @@ _TEN_ROW_FIXTURE: tuple[tuple[str, str, str], ...] = (
 
 def _seed_ten(conn: sqlite3.Connection) -> None:
     conn.executemany(
-        "INSERT INTO programs(unified_id, primary_name, subsidy_rate) "
-        "VALUES (?, ?, ?)",
+        "INSERT INTO programs(unified_id, primary_name, subsidy_rate) VALUES (?, ?, ?)",
         _TEN_ROW_FIXTURE,
     )
 
@@ -229,16 +228,12 @@ def test_apply_round_trip_csv_and_db_match(tmp_path: Path) -> None:
 
     for csv_row in csv_rows:
         live = conn.execute(
-            "SELECT subsidy_rate, subsidy_rate_text FROM programs "
-            "WHERE unified_id = ?",
+            "SELECT subsidy_rate, subsidy_rate_text FROM programs WHERE unified_id = ?",
             (csv_row["unified_id"],),
         ).fetchone()
         assert live["subsidy_rate_text"] == csv_row["original_subsidy_rate_text"]
         if csv_row["parsed_subsidy_rate"]:
-            assert (
-                abs(float(live["subsidy_rate"]) - float(csv_row["parsed_subsidy_rate"]))
-                < 1e-6
-            )
+            assert abs(float(live["subsidy_rate"]) - float(csv_row["parsed_subsidy_rate"])) < 1e-6
         else:
             assert live["subsidy_rate"] is None
 
@@ -428,8 +423,7 @@ def test_backfill_apply_populates_and_is_idempotent(tmp_path: Path) -> None:
     inspect = sqlite3.connect(str(db_path))
     inspect.row_factory = sqlite3.Row
     rows = inspect.execute(
-        "SELECT unified_id, subsidy_rate, subsidy_rate_text "
-        "  FROM programs ORDER BY unified_id"
+        "SELECT unified_id, subsidy_rate, subsidy_rate_text   FROM programs ORDER BY unified_id"
     ).fetchall()
     by_id = {row["unified_id"]: row for row in rows}
     assert by_id["UNI-130ae87809"]["subsidy_rate_text"] == "定額"
@@ -461,9 +455,7 @@ def test_backfill_skips_drifted_rows(tmp_path: Path) -> None:
     )
     _seed_post_apply_state(conn)
     # Drift: simulate a subsequent re-import that changed UNI-3ee089e35d.
-    conn.execute(
-        "UPDATE programs SET subsidy_rate = 0.42 WHERE unified_id = 'UNI-3ee089e35d'"
-    )
+    conn.execute("UPDATE programs SET subsidy_rate = 0.42 WHERE unified_id = 'UNI-3ee089e35d'")
     conn.commit()
     conn.close()
 
@@ -478,8 +470,7 @@ def test_backfill_skips_drifted_rows(tmp_path: Path) -> None:
     inspect = sqlite3.connect(str(db_path))
     inspect.row_factory = sqlite3.Row
     drifted = inspect.execute(
-        "SELECT subsidy_rate, subsidy_rate_text FROM programs "
-        "WHERE unified_id = 'UNI-3ee089e35d'"
+        "SELECT subsidy_rate, subsidy_rate_text FROM programs WHERE unified_id = 'UNI-3ee089e35d'"
     ).fetchone()
     inspect.close()
     # Drifted row must NOT have been overwritten.

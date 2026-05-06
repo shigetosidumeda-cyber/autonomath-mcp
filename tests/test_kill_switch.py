@@ -11,6 +11,7 @@ The conftest disables ``RATE_LIMIT_BURST_DISABLED=1`` so the per-second
 burst gate does not 429 our 31-request loop. We also clear the
 per-IP-endpoint sliding window between tests so each test starts clean.
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -73,9 +74,7 @@ def test_kill_switch_on_returns_503_envelope_on_search(
     ``os.environ.get`` so this just works.
     """
     monkeypatch.setenv("KILL_SWITCH_GLOBAL", "1")
-    monkeypatch.setenv(
-        "KILL_SWITCH_REASON", "test ddos from 1.2.3.4"
-    )
+    monkeypatch.setenv("KILL_SWITCH_REASON", "test ddos from 1.2.3.4")
 
     r = client.get("/v1/programs/search?q=test")
     assert r.status_code == 503, r.text
@@ -90,11 +89,7 @@ def test_kill_switch_on_returns_503_envelope_on_search(
     # domains retire.
     msg = body["error"]["user_message"]
     assert "/status" in msg, msg
-    assert (
-        ("autonomath.ai" in msg)
-        or ("zeimu-kaikei.ai" in msg)
-        or ("jpcite.com" in msg)
-    ), msg
+    assert ("autonomath.ai" in msg) or ("zeimu-kaikei.ai" in msg) or ("jpcite.com" in msg), msg
 
 
 def test_kill_switch_on_healthz_still_200(
@@ -167,9 +162,7 @@ def test_kill_switch_writes_audit_log_on_block(
     # Make sure we start clean for the audit_log assertion below.
     c = sqlite3.connect(seeded_db)
     try:
-        c.execute(
-            "DELETE FROM audit_log WHERE event_type = 'kill_switch_block'"
-        )
+        c.execute("DELETE FROM audit_log WHERE event_type = 'kill_switch_block'")
         c.commit()
     except sqlite3.OperationalError:
         # Table may not exist on fresh DBs — schema added by migration
@@ -218,9 +211,7 @@ def test_per_ip_endpoint_search_cap_31st_returns_429(
     headers = {"X-API-Key": paid_key}
     for i in range(30):
         r = client.get("/v1/programs/search?q=test", headers=headers)
-        assert r.status_code != 429, (
-            f"hit per-ip 429 unexpectedly at request {i + 1}: {r.text}"
-        )
+        assert r.status_code != 429, f"hit per-ip 429 unexpectedly at request {i + 1}: {r.text}"
 
     # 31st must be 429 from PerIpEndpointLimitMiddleware.
     r = client.get("/v1/programs/search?q=test", headers=headers)
@@ -242,9 +233,7 @@ def test_per_ip_endpoint_cap_disabled_via_env(
     headers = {"X-API-Key": paid_key}
     for i in range(35):
         r = client.get("/v1/programs/search?q=test", headers=headers)
-        assert r.status_code != 429, (
-            f"hit 429 at {i + 1} despite disable flag"
-        )
+        assert r.status_code != 429, f"hit 429 at {i + 1} despite disable flag"
 
 
 # ---------------------------------------------------------------------------
@@ -252,9 +241,7 @@ def test_per_ip_endpoint_cap_disabled_via_env(
 # ---------------------------------------------------------------------------
 
 
-def test_admin_kill_switch_status_off(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_admin_kill_switch_status_off(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """``GET /v1/admin/kill_switch_status`` returns ``enabled=false`` when
     the switch is off. Requires ``X-API-Key=ADMIN_API_KEY``.
     """
@@ -277,9 +264,7 @@ def test_admin_kill_switch_status_off(
     assert body["reason"] is None
 
 
-def test_admin_kill_switch_status_on(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_admin_kill_switch_status_on(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """When ``KILL_SWITCH_GLOBAL=1`` the admin endpoint returns enabled
     with a ``since_iso`` timestamp and the configured reason.
 

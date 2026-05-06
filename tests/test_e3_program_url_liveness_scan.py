@@ -85,31 +85,46 @@ def test_load_unknown_tier_bc_candidates_applies_limit_and_domain() -> None:
 
 
 def test_classify_liveness() -> None:
-    assert liveness.classify_liveness(
-        200,
-        final_url="https://example.jp/a",
-        original_url="https://example.jp/a",
-    ) == "ok"
-    assert liveness.classify_liveness(
-        200,
-        final_url="https://example.jp/b",
-        original_url="https://example.jp/a",
-    ) == "ok_redirect"
-    assert liveness.classify_liveness(
-        403,
-        final_url="https://example.jp/a",
-        original_url="https://example.jp/a",
-    ) == "blocked"
-    assert liveness.classify_liveness(
-        404,
-        final_url="https://example.jp/a",
-        original_url="https://example.jp/a",
-    ) == "hard_404"
-    assert liveness.classify_liveness(
-        503,
-        final_url="https://example.jp/a",
-        original_url="https://example.jp/a",
-    ) == "server_error"
+    assert (
+        liveness.classify_liveness(
+            200,
+            final_url="https://example.jp/a",
+            original_url="https://example.jp/a",
+        )
+        == "ok"
+    )
+    assert (
+        liveness.classify_liveness(
+            200,
+            final_url="https://example.jp/b",
+            original_url="https://example.jp/a",
+        )
+        == "ok_redirect"
+    )
+    assert (
+        liveness.classify_liveness(
+            403,
+            final_url="https://example.jp/a",
+            original_url="https://example.jp/a",
+        )
+        == "blocked"
+    )
+    assert (
+        liveness.classify_liveness(
+            404,
+            final_url="https://example.jp/a",
+            original_url="https://example.jp/a",
+        )
+        == "hard_404"
+    )
+    assert (
+        liveness.classify_liveness(
+            503,
+            final_url="https://example.jp/a",
+            original_url="https://example.jp/a",
+        )
+        == "server_error"
+    )
 
 
 def test_scan_writes_report_and_never_mutates_db(tmp_path: Path) -> None:
@@ -181,12 +196,7 @@ def test_transparent_prober_uses_ua_respects_robots_and_get_fallback() -> None:
         if request.url.path == "/robots.txt":
             return httpx.Response(
                 200,
-                text=(
-                    "User-agent: *\n"
-                    "Disallow: /private\n"
-                    "User-agent: jpcite-research\n"
-                    "Allow: /\n"
-                ),
+                text=("User-agent: *\nDisallow: /private\nUser-agent: jpcite-research\nAllow: /\n"),
             )
         if request.method == "HEAD":
             return httpx.Response(405, request=request)

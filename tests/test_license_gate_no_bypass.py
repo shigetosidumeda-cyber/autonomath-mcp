@@ -15,6 +15,7 @@ it until the new path is wired.
 Spec source: `docs/_internal/value_maximization_plan_no_llm_api.md`
 §24 + §28.9 No-Go #5.
 """
+
 from __future__ import annotations
 
 import ast
@@ -47,18 +48,20 @@ _GATE_TOKENS: tuple[str, ...] = (
 # Functions we explicitly accept as gate-free (e.g. the gate primitives
 # themselves, helpers that don't actually emit bytes to the customer).
 # Add a justification comment for each entry.
-_WHITELIST: frozenset[tuple[str, str]] = frozenset({
-    # `_license_gate.py` is the gate itself — it cannot reference its
-    # own primitives without being self-referential.
-    ("_license_gate.py", "filter_redistributable"),
-    ("_license_gate.py", "assert_no_blocked"),
-    ("_license_gate.py", "annotate_attribution"),
-    # `formats/` package contains pure-format dispatch helpers (CSV /
-    # XLSX serializers); they receive ALREADY-GATED rows from the route
-    # layer, so the gate runs upstream of them. The CI guard runs over
-    # `api/` (top-level only). If `formats/` ever gets scanned, add
-    # whitelist entries here.
-})
+_WHITELIST: frozenset[tuple[str, str]] = frozenset(
+    {
+        # `_license_gate.py` is the gate itself — it cannot reference its
+        # own primitives without being self-referential.
+        ("_license_gate.py", "filter_redistributable"),
+        ("_license_gate.py", "assert_no_blocked"),
+        ("_license_gate.py", "annotate_attribution"),
+        # `formats/` package contains pure-format dispatch helpers (CSV /
+        # XLSX serializers); they receive ALREADY-GATED rows from the route
+        # layer, so the gate runs upstream of them. The CI guard runs over
+        # `api/` (top-level only). If `formats/` ever gets scanned, add
+        # whitelist entries here.
+    }
+)
 
 # Pre-existing export-shaped functions that the gate is NOT yet wired
 # into. These are listed here AS A LEDGER, not as an exoneration — the
@@ -68,30 +71,36 @@ _WHITELIST: frozenset[tuple[str, str]] = frozenset({
 # gate. Adding to this set requires a justification comment.
 #
 # Each entry is `(filename, function_name, justification)`.
-_KNOWN_UNWIRED_EXPORTS: frozenset[tuple[str, str, str]] = frozenset({
-    (
-        "audit.py", "_render_csv",
-        "audit log CSV export — pre-§24 path, scheduled for license-gate "
-        "wiring after the audit log row schema gets a `license` column "
-        "(audit rows are operator-only today, NOT customer-facing).",
-    ),
-    (
-        "audit.py", "_render_docx",
-        "audit log DOCX export — same as _render_csv (operator-only).",
-    ),
-    (
-        "bulk_evaluate.py", "_build_zip",
-        "bulk_evaluate ZIP — receives customer-supplied rows so the "
-        "license attribution is the customer's, not ours; gate-wiring "
-        "still pending the row-schema change to carry source license.",
-    ),
-    (
-        "saved_searches.py", "saved_search_results_xlsx",
-        "saved search Excel export — pre-§24 path, scheduled for "
-        "license-gate wiring once each saved search result row carries "
-        "source-side license attribution.",
-    ),
-})
+_KNOWN_UNWIRED_EXPORTS: frozenset[tuple[str, str, str]] = frozenset(
+    {
+        (
+            "audit.py",
+            "_render_csv",
+            "audit log CSV export — pre-§24 path, scheduled for license-gate "
+            "wiring after the audit log row schema gets a `license` column "
+            "(audit rows are operator-only today, NOT customer-facing).",
+        ),
+        (
+            "audit.py",
+            "_render_docx",
+            "audit log DOCX export — same as _render_csv (operator-only).",
+        ),
+        (
+            "bulk_evaluate.py",
+            "_build_zip",
+            "bulk_evaluate ZIP — receives customer-supplied rows so the "
+            "license attribution is the customer's, not ours; gate-wiring "
+            "still pending the row-schema change to carry source license.",
+        ),
+        (
+            "saved_searches.py",
+            "saved_search_results_xlsx",
+            "saved search Excel export — pre-§24 path, scheduled for "
+            "license-gate wiring once each saved search result row carries "
+            "source-side license attribution.",
+        ),
+    }
+)
 
 
 # ---------------------------------------------------------------------------
@@ -198,11 +207,15 @@ def _scan_file(path: Path) -> list[tuple[Path, int, str, str]]:
         if _function_mentions_gate(node):
             continue
 
-        violations.append((
-            path, node.lineno, node.name,
-            "export-shaped function does NOT reference "
-            f"{_GATE_TOKENS} — license gate bypass risk (§24).",
-        ))
+        violations.append(
+            (
+                path,
+                node.lineno,
+                node.name,
+                "export-shaped function does NOT reference "
+                f"{_GATE_TOKENS} — license gate bypass risk (§24).",
+            )
+        )
 
     return violations
 
@@ -233,17 +246,13 @@ def test_no_new_export_function_bypasses_license_gate():
         all_violations.extend(_scan_file(path))
 
     known_pairs = {(p[0], p[1]) for p in _KNOWN_UNWIRED_EXPORTS}
-    new_violations = [
-        v for v in all_violations
-        if (v[0].name, v[2]) not in known_pairs
-    ]
+    new_violations = [v for v in all_violations if (v[0].name, v[2]) not in known_pairs]
 
     if not new_violations:
         return  # green — no NEW bypass paths
 
     msgs = [
-        f"  {p.relative_to(_API_DIR.parent.parent.parent.parent)}:{ln} "
-        f"({fn}) — {reason}"
+        f"  {p.relative_to(_API_DIR.parent.parent.parent.parent)}:{ln} ({fn}) — {reason}"
         for p, ln, fn, reason in new_violations
     ]
     pytest.fail(

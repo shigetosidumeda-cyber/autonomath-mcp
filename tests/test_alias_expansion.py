@@ -12,6 +12,7 @@ Covers:
     * Reject does NOT write to am_alias.
     * Re-approve is a noop (no double am_alias INSERT).
 """
+
 from __future__ import annotations
 
 import importlib.util
@@ -26,7 +27,8 @@ import pytest
 _REPO = Path(__file__).resolve().parent.parent
 _CRON_PATH = _REPO / "scripts" / "cron" / "alias_dict_expansion.py"
 _spec = importlib.util.spec_from_file_location(
-    "alias_dict_expansion", _CRON_PATH,
+    "alias_dict_expansion",
+    _CRON_PATH,
 )
 assert _spec is not None and _spec.loader is not None
 _cron = importlib.util.module_from_spec(_spec)
@@ -139,8 +141,11 @@ def seeded_dbs(tmp_path: Path) -> tuple[Path, Path]:
 def test_cron_proposes_candidates_from_empty_log(seeded_dbs):
     j, a = seeded_dbs
     out = _cron.run(
-        dry_run=False, days=7, min_count=2,
-        jpintel_db=j, autonomath_db=a,
+        dry_run=False,
+        days=7,
+        min_count=2,
+        jpintel_db=j,
+        autonomath_db=a,
     )
     assert out["scanned_queries"] == 2  # '**' filtered out by min_count.
     assert out["candidates_proposed"] >= 2
@@ -168,18 +173,14 @@ def test_cron_proposes_candidates_from_empty_log(seeded_dbs):
 
 def test_cron_is_idempotent(seeded_dbs):
     j, a = seeded_dbs
-    _cron.run(dry_run=False, days=7, min_count=2,
-              jpintel_db=j, autonomath_db=a)
-    out2 = _cron.run(dry_run=False, days=7, min_count=2,
-                     jpintel_db=j, autonomath_db=a)
+    _cron.run(dry_run=False, days=7, min_count=2, jpintel_db=j, autonomath_db=a)
+    out2 = _cron.run(dry_run=False, days=7, min_count=2, jpintel_db=j, autonomath_db=a)
     assert out2["candidates_inserted"] == 0
     assert out2["candidates_bumped"] >= 2
     # Row count must not double.
     conn = sqlite3.connect(j)
     try:
-        n = conn.execute(
-            "SELECT count(*) FROM alias_candidates_queue"
-        ).fetchone()[0]
+        n = conn.execute("SELECT count(*) FROM alias_candidates_queue").fetchone()[0]
     finally:
         conn.close()
     assert n == out2["candidates_proposed"]
@@ -187,15 +188,12 @@ def test_cron_is_idempotent(seeded_dbs):
 
 def test_cron_dry_run_does_not_write(seeded_dbs):
     j, a = seeded_dbs
-    out = _cron.run(dry_run=True, days=7, min_count=2,
-                    jpintel_db=j, autonomath_db=a)
+    out = _cron.run(dry_run=True, days=7, min_count=2, jpintel_db=j, autonomath_db=a)
     assert out["candidates_proposed"] >= 2
     assert out["candidates_inserted"] == 0
     conn = sqlite3.connect(j)
     try:
-        n = conn.execute(
-            "SELECT count(*) FROM alias_candidates_queue"
-        ).fetchone()[0]
+        n = conn.execute("SELECT count(*) FROM alias_candidates_queue").fetchone()[0]
     finally:
         conn.close()
     assert n == 0
@@ -203,8 +201,7 @@ def test_cron_dry_run_does_not_write(seeded_dbs):
 
 def test_review_list_returns_pending(seeded_dbs):
     j, a = seeded_dbs
-    _cron.run(dry_run=False, days=7, min_count=2,
-              jpintel_db=j, autonomath_db=a)
+    _cron.run(dry_run=False, days=7, min_count=2, jpintel_db=j, autonomath_db=a)
     rows = alias_review.list_pending(jpintel_db=j, limit=10)
     assert len(rows) >= 2
     assert all(r["status"] == "pending" for r in rows)
@@ -212,13 +209,14 @@ def test_review_list_returns_pending(seeded_dbs):
 
 def test_review_approve_writes_am_alias_and_flips_queue(seeded_dbs):
     j, a = seeded_dbs
-    _cron.run(dry_run=False, days=7, min_count=2,
-              jpintel_db=j, autonomath_db=a)
+    _cron.run(dry_run=False, days=7, min_count=2, jpintel_db=j, autonomath_db=a)
     rows = alias_review.list_pending(jpintel_db=j, limit=10)
     target = next(r for r in rows if r["candidate_alias"] == "農業 のうぎょう")
     out = alias_review.approve(
-        target["id"], reviewer="test",
-        jpintel_db=j, autonomath_db=a,
+        target["id"],
+        reviewer="test",
+        jpintel_db=j,
+        autonomath_db=a,
     )
     assert out["op"] == "approved"
     assert out["entity_table"] == "am_industry_jsic"
@@ -226,8 +224,7 @@ def test_review_approve_writes_am_alias_and_flips_queue(seeded_dbs):
     conn = sqlite3.connect(a)
     try:
         am_rows = conn.execute(
-            "SELECT entity_table, canonical_id, alias, alias_kind "
-            "  FROM am_alias"
+            "SELECT entity_table, canonical_id, alias, alias_kind   FROM am_alias"
         ).fetchall()
     finally:
         conn.close()
@@ -247,8 +244,7 @@ def test_review_approve_writes_am_alias_and_flips_queue(seeded_dbs):
 
 def test_review_approve_is_noop_on_already_approved(seeded_dbs):
     j, a = seeded_dbs
-    _cron.run(dry_run=False, days=7, min_count=2,
-              jpintel_db=j, autonomath_db=a)
+    _cron.run(dry_run=False, days=7, min_count=2, jpintel_db=j, autonomath_db=a)
     rows = alias_review.list_pending(jpintel_db=j, limit=10)
     target_id = rows[0]["id"]
     alias_review.approve(target_id, jpintel_db=j, autonomath_db=a)
@@ -265,8 +261,7 @@ def test_review_approve_is_noop_on_already_approved(seeded_dbs):
 
 def test_review_reject_does_not_touch_am_alias(seeded_dbs):
     j, a = seeded_dbs
-    _cron.run(dry_run=False, days=7, min_count=2,
-              jpintel_db=j, autonomath_db=a)
+    _cron.run(dry_run=False, days=7, min_count=2, jpintel_db=j, autonomath_db=a)
     rows = alias_review.list_pending(jpintel_db=j, limit=10)
     target_id = rows[0]["id"]
     out = alias_review.reject(target_id, reviewer="test", jpintel_db=j)
@@ -306,14 +301,11 @@ def test_cron_skips_already_known_aliases(tmp_path: Path):
         conn.commit()
     finally:
         conn.close()
-    out = _cron.run(dry_run=False, days=7, min_count=2,
-                    jpintel_db=j, autonomath_db=a)
+    out = _cron.run(dry_run=False, days=7, min_count=2, jpintel_db=j, autonomath_db=a)
     # The proposal targeting JSIC 'A' should be filtered.
     conn = sqlite3.connect(j)
     try:
-        rows = conn.execute(
-            "SELECT canonical_term FROM alias_candidates_queue"
-        ).fetchall()
+        rows = conn.execute("SELECT canonical_term FROM alias_candidates_queue").fetchall()
     finally:
         conn.close()
     canonicals = {r[0] for r in rows}

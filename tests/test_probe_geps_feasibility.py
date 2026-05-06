@@ -6,6 +6,7 @@ that decide the feasibility verdict. Network behaviour is captured through
 hand-crafted ProbeResult fixtures that mirror real responses observed on
 2026-04-30.
 """
+
 from __future__ import annotations
 
 import csv
@@ -31,9 +32,7 @@ def _legacy_redirect() -> probe.ProbeResult:
         status=200,
         final_url="https://www.geps.go.jp/",
         body_len=2567,
-        body_excerpt=(
-            "政府電子調達(GEPS)のポータルサイトは、調達ポータルに統合されました。"
-        ),
+        body_excerpt=("政府電子調達(GEPS)のポータルサイトは、調達ポータルに統合されました。"),
     )
 
 
@@ -212,9 +211,7 @@ class TestHelpers:
         )
 
     def test_is_oidc_redirect_misses_normal_url(self) -> None:
-        assert not probe._is_oidc_redirect(
-            "https://www.p-portal.go.jp/pps-web-biz/UAA01/OAA0101"
-        )
+        assert not probe._is_oidc_redirect("https://www.p-portal.go.jp/pps-web-biz/UAA01/OAA0101")
 
 
 # ---------------------------------------------------------------------------
@@ -285,21 +282,21 @@ class TestRowParser:
     _FIXTURE = (
         "<html><body>"
         "<table>"
-        "<tr><td id=\"tri_WAA0101FM01/procurementResultListBean/articleNm\">"
+        '<tr><td id="tri_WAA0101FM01/procurementResultListBean/articleNm">'
         "テスト調達案件A</td>"
-        "<td id=\"tri_WAA0101FM01/procurementResultListBean/procurementItemNo\">"
+        '<td id="tri_WAA0101FM01/procurementResultListBean/procurementItemNo">'
         "0000000000000456436</td>"
-        "<td id=\"tri_WAA0101FM01/procurementResultListBean/procurementOrgan\">"
+        '<td id="tri_WAA0101FM01/procurementResultListBean/procurementOrgan">'
         "厚生労働省</td>"
-        "<td id=\"tri_WAA0101FM01/procurementResultListBean/receiptAddress\">"
+        '<td id="tri_WAA0101FM01/procurementResultListBean/receiptAddress">'
         "愛知県</td></tr>"
-        "<tr><td id=\"tri_WAA0101FM01/procurementResultListBean/articleNm\">"
+        '<tr><td id="tri_WAA0101FM01/procurementResultListBean/articleNm">'
         "テスト調達案件B</td>"
-        "<td id=\"tri_WAA0101FM01/procurementResultListBean/procurementItemNo\">"
+        '<td id="tri_WAA0101FM01/procurementResultListBean/procurementItemNo">'
         "0000000000000527319</td>"
-        "<td id=\"tri_WAA0101FM01/procurementResultListBean/procurementOrgan\">"
+        '<td id="tri_WAA0101FM01/procurementResultListBean/procurementOrgan">'
         "財務省</td>"
-        "<td id=\"tri_WAA0101FM01/procurementResultListBean/receiptAddress\">"
+        '<td id="tri_WAA0101FM01/procurementResultListBean/receiptAddress">'
         "東京都</td></tr>"
         "</table></body></html>"
     )

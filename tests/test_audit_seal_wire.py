@@ -162,12 +162,118 @@ def test_verify_endpoint_200_for_existing_seal(client, paid_key, seeded_db):
     assert body["issued_at"] == seal["issued_at"]
 
 
+def test_verify_endpoint_rejects_tampered_snapshot_or_seal_id(
+    client,
+    paid_key,
+    seeded_db,
+):
+    _seed_ma_pillar(seeded_db)
+    r = client.post(
+        "/v1/am/dd_batch",
+        headers=_idem_headers(paid_key),
+        json={
+            "houjin_bangous": list(_FIVE_HOUJIN[:2]),
+            "depth": "summary",
+            "max_cost_jpy": 6,
+        },
+    )
+    assert r.status_code == 200, r.text
+    seal = r.json()["audit_seal"]
+    seal_id = seal["seal_id"]
+
+    conn = sqlite3.connect(seeded_db)
+    try:
+        conn.execute(
+            "UPDATE audit_seals SET corpus_snapshot_id = ? WHERE seal_id = ?",
+            ("corpus-tampered", seal_id),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+    rv = client.get(f"/v1/audit/seals/{seal_id}")
+    assert rv.status_code == 200, rv.text
+    body = rv.json()
+    assert body["verified"] is False
+    assert body["corpus_snapshot_id"] == "corpus-tampered"
+
+    tampered_seal_id = "seal_" + ("f" * 32)
+    conn = sqlite3.connect(seeded_db)
+    try:
+        conn.execute(
+            "UPDATE audit_seals SET seal_id = ?, corpus_snapshot_id = ? WHERE seal_id = ?",
+            (tampered_seal_id, seal["corpus_snapshot_id"], seal_id),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+    rv = client.get(f"/v1/audit/seals/{tampered_seal_id}")
+    assert rv.status_code == 200, rv.text
+    assert rv.json()["verified"] is False
+
+
 def test_verify_endpoint_404_for_missing_seal(client):
     rv = client.get("/v1/audit/seals/seal_does_not_exist_0000000000000000")
     assert rv.status_code == 404, rv.text
     body = rv.json()
     assert body["verified"] is False
     assert body["seal_id"] == "seal_does_not_exist_0000000000000000"
+
+
+def test_verify_endpoint_accepts_pre119_call_id_schema(client, monkeypatch):
+    from jpintel_mcp import config
+    from jpintel_mcp.api._audit_seal import compute_hmac
+    from jpintel_mcp.api.deps import get_db
+
+    monkeypatch.delenv("JPINTEL_AUDIT_SEAL_KEYS", raising=False)
+    monkeypatch.setattr(config.settings, "audit_seal_secret", "legacy-secret")
+
+    conn = sqlite3.connect(":memory:", isolation_level=None, check_same_thread=False)
+    conn.row_factory = sqlite3.Row
+    repo = Path(__file__).resolve().parent.parent
+    conn.executescript(
+        (repo / "scripts" / "migrations" / "089_audit_seal_table.sql").read_text(encoding="utf-8")
+    )
+    call_id = "01HW2J3000000000000000000A"
+    ts = "2026-05-04T12:34:56+00:00"
+    query_hash = "q" * 64
+    response_hash = "r" * 64
+    conn.execute(
+        "INSERT INTO audit_seals("
+        "call_id, api_key_hash, ts, endpoint, query_hash, response_hash, "
+        "source_urls_json, client_tag, hmac, retention_until"
+        ") VALUES (?,?,?,?,?,?,?,?,?,?)",
+        (
+            call_id,
+            "k" * 64,
+            ts,
+            "legacy.endpoint",
+            query_hash,
+            response_hash,
+            "[]",
+            None,
+            compute_hmac(call_id, ts, query_hash, response_hash),
+            "2033-05-04T12:34:56+00:00",
+        ),
+    )
+
+    def _legacy_db():
+        yield conn
+
+    client.app.dependency_overrides[get_db] = _legacy_db
+    try:
+        rv = client.get(f"/v1/audit/seals/{call_id}")
+    finally:
+        client.app.dependency_overrides.pop(get_db, None)
+        conn.close()
+
+    assert rv.status_code == 200, rv.text
+    body = rv.json()
+    assert body["seal_id"] == call_id
+    assert body["verified"] is True
+    assert body["subject_hash"] == "sha256:" + response_hash
+    assert body["corpus_snapshot_id"] is None
 
 
 # ---------------------------------------------------------------------------

@@ -21,6 +21,7 @@ Coverage:
 Email side-effect is stubbed so we never reach Postmark. We assert on
 the trial_signups DB state and the redirect contract instead.
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -91,9 +92,7 @@ def _post_signup(client, email: str):
     return client.post("/v1/signup", json={"email": email})
 
 
-def test_trial_signup_creates_pending_row_and_mails_link(
-    client, seeded_db, email_recorder
-):
+def test_trial_signup_creates_pending_row_and_mails_link(client, seeded_db, email_recorder):
     r = _post_signup(client, "evaluator@example.com")
     assert r.status_code == 202, r.text
     body = r.json()
@@ -128,9 +127,7 @@ def test_trial_signup_creates_pending_row_and_mails_link(
     assert sent["expires_at_iso"]
 
 
-def test_trial_signup_gmail_dot_plus_normalisation(
-    client, seeded_db, email_recorder
-):
+def test_trial_signup_gmail_dot_plus_normalisation(client, seeded_db, email_recorder):
     """gmail dot/+ collapsing: the two below are the same mailbox to Google."""
     from jpintel_mcp.api.signup import _normalize_email
 
@@ -139,9 +136,7 @@ def test_trial_signup_gmail_dot_plus_normalisation(
     assert _normalize_email("Bar+anything@example.com") == "bar@example.com"
 
 
-def test_trial_signup_lifetime_dedup_silent_no_double_send(
-    client, seeded_db, email_recorder
-):
+def test_trial_signup_lifetime_dedup_silent_no_double_send(client, seeded_db, email_recorder):
     """Re-signup with the same email → 202 (uniform shape) but NO second mail."""
     # First signup succeeds.
     r1 = _post_signup(client, "dup@example.com")
@@ -150,8 +145,7 @@ def test_trial_signup_lifetime_dedup_silent_no_double_send(
     # Reset per-IP gate so we test the email-uniqueness path, not the IP path.
     c = sqlite3.connect(seeded_db)
     try:
-        c.execute("DELETE FROM trial_signups WHERE email_normalized != ?",
-                  ("dup@example.com",))
+        c.execute("DELETE FROM trial_signups WHERE email_normalized != ?", ("dup@example.com",))
         # bump created_at backwards so the per-IP 24h check passes.
         old = (datetime.now(UTC) - timedelta(hours=25)).isoformat()
         c.execute(
@@ -222,8 +216,7 @@ def test_verify_issues_trial_key_and_redirects_to_landing(
     c.row_factory = sqlite3.Row
     try:
         signup = c.execute(
-            "SELECT verified_at, issued_api_key_hash "
-            "FROM trial_signups WHERE email_normalized = ?",
+            "SELECT verified_at, issued_api_key_hash FROM trial_signups WHERE email_normalized = ?",
             ("claim@example.com",),
         ).fetchone()
         assert signup["verified_at"] is not None
@@ -255,9 +248,7 @@ def test_verify_issues_trial_key_and_redirects_to_landing(
     assert welcome_recorder[0]["to"] == "claim@example.com"
 
 
-def test_verify_with_invalid_token_redirects_to_invalid_state(
-    client, seeded_db, email_recorder
-):
+def test_verify_with_invalid_token_redirects_to_invalid_state(client, seeded_db, email_recorder):
     r = _post_signup(client, "tampered@example.com")
     assert r.status_code == 202
 
@@ -278,17 +269,13 @@ def test_verify_with_invalid_token_redirects_to_invalid_state(
     # No api_keys row was issued.
     c = sqlite3.connect(seeded_db)
     try:
-        rows = c.execute(
-            "SELECT COUNT(*) FROM api_keys WHERE tier = 'trial'"
-        ).fetchone()
+        rows = c.execute("SELECT COUNT(*) FROM api_keys WHERE tier = 'trial'").fetchone()
     finally:
         c.close()
     assert rows[0] == 0
 
 
-def test_verify_after_expiry_window_redirects_expired(
-    client, seeded_db, email_recorder
-):
+def test_verify_after_expiry_window_redirects_expired(client, seeded_db, email_recorder):
     r = _post_signup(client, "stale@example.com")
     assert r.status_code == 202
 
@@ -305,8 +292,7 @@ def test_verify_after_expiry_window_redirects_expired(
     c = sqlite3.connect(seeded_db)
     try:
         c.execute(
-            "UPDATE trial_signups SET created_at = ?, token_hash = ? "
-            "WHERE email_normalized = ?",
+            "UPDATE trial_signups SET created_at = ?, token_hash = ? WHERE email_normalized = ?",
             (old, new_hash, "stale@example.com"),
         )
         c.commit()
@@ -321,9 +307,7 @@ def test_verify_after_expiry_window_redirects_expired(
     assert "trial.html?status=expired" in r.headers["location"]
 
 
-def test_trial_key_authenticates_for_api_calls(
-    client, seeded_db, email_recorder, welcome_recorder
-):
+def test_trial_key_authenticates_for_api_calls(client, seeded_db, email_recorder, welcome_recorder):
     """Issued trial key authenticates: hitting an authed endpoint with
     X-API-Key returns 200, exercising the same require_key path that
     paid keys use.
@@ -396,8 +380,7 @@ def test_expire_trials_cron_revokes_past_deadline(
     c = sqlite3.connect(seeded_db)
     try:
         c.execute(
-            "UPDATE api_keys SET trial_expires_at = ? "
-            "WHERE tier = 'trial' AND trial_email = ?",
+            "UPDATE api_keys SET trial_expires_at = ? WHERE tier = 'trial' AND trial_email = ?",
             (past, "expire@example.com"),
         )
         c.commit()
@@ -459,9 +442,7 @@ def test_expire_trials_cron_revokes_cap_exhaustion(
     assert counts["revoked_expired"] == 0
 
 
-def test_trial_request_cap_fires_at_200th(
-    client, seeded_db, email_recorder, welcome_recorder
-):
+def test_trial_request_cap_fires_at_200th(client, seeded_db, email_recorder, welcome_recorder):
     """Synchronous 200-req cap (Bug 1, 2026-04-29 funnel audit).
 
     The pre-fix posture left this completely unenforced:
@@ -533,8 +514,7 @@ def test_trial_request_cap_fires_at_200th(
     c = sqlite3.connect(seeded_db)
     try:
         used = c.execute(
-            "SELECT trial_requests_used FROM api_keys "
-            "WHERE tier = 'trial' AND trial_email = ?",
+            "SELECT trial_requests_used FROM api_keys WHERE tier = 'trial' AND trial_email = ?",
             ("cap-sync@example.com",),
         ).fetchone()[0]
     finally:
@@ -558,9 +538,7 @@ def test_trial_request_cap_fires_at_200th(
     assert detail.get("trial_request_cap") == 200
     assert detail.get("trial_requests_used") == 200
     assert "upgrade_url" in detail
-    assert detail["upgrade_url"] == (
-        "https://jpcite.com/pricing.html?from=trial#api-paid"
-    )
+    assert detail["upgrade_url"] == ("https://jpcite.com/pricing.html?from=trial#api-paid")
     assert "trial_terms" in detail
     assert "cta_text_ja" in detail
 
@@ -591,8 +569,7 @@ def test_trial_expiry_is_enforced_synchronously(
     c = sqlite3.connect(seeded_db)
     try:
         c.execute(
-            "UPDATE api_keys SET trial_expires_at = ? "
-            "WHERE tier = 'trial' AND trial_email = ?",
+            "UPDATE api_keys SET trial_expires_at = ? WHERE tier = 'trial' AND trial_email = ?",
             (expired_at, "expired-sync@example.com"),
         )
         c.commit()
@@ -606,15 +583,12 @@ def test_trial_expiry_is_enforced_synchronously(
     assert r.status_code == 401, r.text
     detail = r.json().get("detail", {})
     assert detail.get("trial_expired") is True
-    assert detail.get("upgrade_url") == (
-        "https://jpcite.com/pricing.html?from=trial#api-paid"
-    )
+    assert detail.get("upgrade_url") == ("https://jpcite.com/pricing.html?from=trial#api-paid")
 
     c = sqlite3.connect(seeded_db)
     try:
         revoked_at = c.execute(
-            "SELECT revoked_at FROM api_keys "
-            "WHERE tier = 'trial' AND trial_email = ?",
+            "SELECT revoked_at FROM api_keys WHERE tier = 'trial' AND trial_email = ?",
             ("expired-sync@example.com",),
         ).fetchone()[0]
     finally:
@@ -661,8 +635,7 @@ def test_trial_revoked_key_returns_recovery_envelope(
     c = sqlite3.connect(seeded_db)
     try:
         c.execute(
-            "UPDATE api_keys SET revoked_at = ? "
-            "WHERE tier = 'trial' AND trial_email = ?",
+            "UPDATE api_keys SET revoked_at = ? WHERE tier = 'trial' AND trial_email = ?",
             (now, "revoked@example.com"),
         )
         c.commit()
@@ -678,9 +651,7 @@ def test_trial_revoked_key_returns_recovery_envelope(
     detail = body.get("detail", {})
     assert isinstance(detail, dict)
     assert detail.get("trial_expired") is True
-    assert detail.get("upgrade_url") == (
-        "https://jpcite.com/pricing.html?from=trial#api-paid"
-    )
+    assert detail.get("upgrade_url") == ("https://jpcite.com/pricing.html?from=trial#api-paid")
     assert "cta_text_ja" in detail
 
 
@@ -712,14 +683,14 @@ def test_trial_expired_email_handler_dispatches(seeded_db, monkeypatch):
 
     # Drive the handler directly. The cron would enqueue a payload with
     # this exact shape via _bg_enqueue.
-    worker._HANDLERS["trial_expired_email"]({
-        "to": "expired-handler@example.com",
-        "key_last4": "abcd",
-        "cause": "expired",
-        "checkout_url": (
-            "https://jpcite.com/pricing.html?from=trial#api-paid"
-        ),
-    })
+    worker._HANDLERS["trial_expired_email"](
+        {
+            "to": "expired-handler@example.com",
+            "key_last4": "abcd",
+            "cause": "expired",
+            "checkout_url": ("https://jpcite.com/pricing.html?from=trial#api-paid"),
+        }
+    )
 
     assert len(captured) == 1
     sent = captured[0]
@@ -786,6 +757,4 @@ def test_expire_trials_cron_uses_from_trial_url(
     assert payload["to"] == "checkout-url@example.com"
     assert payload["cause"] == "cap"
     # The single fix that unblocks the trial-attribution banner.
-    assert payload["checkout_url"] == (
-        "https://jpcite.com/pricing.html?from=trial#api-paid"
-    )
+    assert payload["checkout_url"] == ("https://jpcite.com/pricing.html?from=trial#api-paid")

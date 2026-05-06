@@ -9,6 +9,7 @@ Re-run nightly to catch DB drift. Seeded RNG so output is stable.
 4 of 10 templates wired (T1-T4). T5-T10 stubbed - implementer fills in
 during P2.3.x. Each stub = 1 SQL + 1 question template + tool name (~30 min).
 """
+
 from __future__ import annotations
 
 import json

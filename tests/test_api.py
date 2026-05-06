@@ -389,6 +389,51 @@ def test_check_exclusions_mutex_hit(client):
     assert set(hit["programs_involved"]) == {"keiei-kaishi-shikin", "koyo-shuno-shikin"}
 
 
+def test_check_exclusions_paid_final_cap_failure_returns_503_without_usage_event(
+    client,
+    seeded_db,
+    paid_key,
+    monkeypatch,
+):
+    import sqlite3
+
+    import jpintel_mcp.api.deps as deps
+    from jpintel_mcp.api.deps import hash_api_key
+
+    def _reject_final_cap(*_args, **_kwargs):
+        return False, False
+
+    key_hash = hash_api_key(paid_key)
+    conn = sqlite3.connect(seeded_db)
+    try:
+        before = conn.execute(
+            "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = ?",
+            (key_hash, "exclusions.check"),
+        ).fetchone()[0]
+    finally:
+        conn.close()
+
+    monkeypatch.setattr(deps, "_metered_cap_final_check", _reject_final_cap)
+
+    r = client.post(
+        "/v1/exclusions/check",
+        headers={"X-API-Key": paid_key},
+        json={"program_ids": ["keiei-kaishi-shikin", "koyo-shuno-shikin"]},
+    )
+    assert r.status_code == 503, r.text
+    assert r.json()["detail"]["code"] == "billing_cap_final_check_failed"
+
+    conn = sqlite3.connect(seeded_db)
+    try:
+        after = conn.execute(
+            "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = ?",
+            (key_hash, "exclusions.check"),
+        ).fetchone()[0]
+    finally:
+        conn.close()
+    assert after == before
+
+
 def test_check_exclusions_prerequisite_hit(client):
     r = client.post("/v1/exclusions/check", json={"program_ids": ["seinen-shuno-shikin"]})
     d = r.json()

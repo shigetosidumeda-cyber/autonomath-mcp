@@ -13,6 +13,7 @@ Test posture:
   * Each integration: at least one happy path + at least one negative
     edge (unauth, SSRF prefix, idempotency dedup).
 """
+
 from __future__ import annotations
 
 import json
@@ -23,6 +24,7 @@ from unittest.mock import patch
 
 import pytest
 
+from jpintel_mcp.api.deps import hash_api_key
 from jpintel_mcp.billing.keys import issue_key
 
 # ---------------------------------------------------------------------------
@@ -54,8 +56,7 @@ def _ensure_integrations_schema(seeded_db: Path):
         cols = {row[1] for row in c.execute("PRAGMA table_info(saved_searches)")}
         if "channel_format" not in cols:
             c.execute(
-                "ALTER TABLE saved_searches ADD COLUMN channel_format "
-                "TEXT NOT NULL DEFAULT 'email'"
+                "ALTER TABLE saved_searches ADD COLUMN channel_format TEXT NOT NULL DEFAULT 'email'"
             )
         if "channel_url" not in cols:
             c.execute("ALTER TABLE saved_searches ADD COLUMN channel_url TEXT")
@@ -73,7 +74,8 @@ def _ensure_integrations_schema(seeded_db: Path):
 
         def _strip_comments(s: str) -> str:
             return "\n".join(
-                line for line in s.splitlines()
+                line
+                for line in s.splitlines()
                 if line.strip() and not line.strip().startswith("--")
             ).strip()
 
@@ -145,6 +147,45 @@ def test_slack_slash_command_empty_query_returns_help(client):
     assert "/zeimukaikei" in body["text"]
 
 
+def test_slack_slash_command_paid_final_cap_failure_is_not_billed(
+    client,
+    integration_key,
+    seeded_db,
+    monkeypatch,
+):
+    from jpintel_mcp.api.middleware import customer_cap
+
+    key_hash = hash_api_key(integration_key)
+
+    def usage_count() -> int:
+        c = sqlite3.connect(seeded_db)
+        try:
+            row = c.execute(
+                "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = ?",
+                (key_hash, "programs.search"),
+            ).fetchone()
+            return int(row[0])
+        finally:
+            c.close()
+
+    before_usage = usage_count()
+    monkeypatch.setattr(
+        customer_cap,
+        "metered_charge_within_cap",
+        lambda *args, **kwargs: False,
+    )
+
+    r = client.post(
+        "/v1/integrations/slack",
+        params={"key": integration_key},
+        data={"text": "DX 補助金", "team_id": "T1", "user_id": "U1"},
+    )
+
+    assert r.status_code == 503, r.text
+    assert r.json()["detail"]["code"] == "billing_cap_final_check_failed"
+    assert usage_count() == before_usage
+
+
 def test_slack_recurring_webhook_ssrf_prefix(client, integration_key):
     """SSRF defense: only https://hooks.slack.com/services/ allowed."""
     # First create a saved search so the bind has a target.
@@ -179,9 +220,7 @@ def test_slack_recurring_webhook_ssrf_prefix(client, integration_key):
 # ---------------------------------------------------------------------------
 
 
-def test_google_oauth_start_returns_authorize_url(
-    client, integration_key, monkeypatch
-):
+def test_google_oauth_start_returns_authorize_url(client, integration_key, monkeypatch):
     monkeypatch.setenv("GOOGLE_OAUTH_CLIENT_ID", "test-client-id")
     r = client.post(
         "/v1/integrations/google/start",
@@ -205,9 +244,7 @@ def test_google_oauth_start_503_when_unconfigured(client, integration_key, monke
     assert r.status_code == 503
 
 
-def test_google_callback_persists_token(
-    client, integration_key, monkeypatch, seeded_db
-):
+def test_google_callback_persists_token(client, integration_key, monkeypatch, seeded_db):
     monkeypatch.setenv("GOOGLE_OAUTH_CLIENT_ID", "cid")
     monkeypatch.setenv("GOOGLE_OAUTH_CLIENT_SECRET", "csecret")
     # Begin flow.
@@ -253,8 +290,7 @@ def test_google_callback_persists_token(
     c = sqlite3.connect(seeded_db)
     c.row_factory = sqlite3.Row
     row = c.execute(
-        "SELECT provider, encrypted_blob FROM integration_accounts "
-        "WHERE provider='google_sheets'"
+        "SELECT provider, encrypted_blob FROM integration_accounts WHERE provider='google_sheets'"
     ).fetchone()
     c.close()
     assert row is not None
@@ -308,8 +344,7 @@ def test_email_connect_flags_account(client, integration_key, seeded_db):
     c = sqlite3.connect(seeded_db)
     c.row_factory = sqlite3.Row
     row = c.execute(
-        "SELECT display_handle FROM integration_accounts "
-        "WHERE provider='postmark_inbound'"
+        "SELECT display_handle FROM integration_accounts WHERE provider='postmark_inbound'"
     ).fetchone()
     c.close()
     assert row is not None
@@ -398,9 +433,7 @@ def test_kintone_connect_rejects_non_cybozu_domain(client, integration_key):
     assert r.status_code == 422
 
 
-def test_kintone_connect_then_sync_is_idempotent(
-    client, integration_key, seeded_db
-):
+def test_kintone_connect_then_sync_is_idempotent(client, integration_key, seeded_db):
     # Connect.
     r0 = client.post(
         "/v1/integrations/kintone/connect",
@@ -467,6 +500,89 @@ def test_kintone_connect_then_sync_is_idempotent(
         )
     assert r3.status_code == 200
     assert r3.json()["deduped"] is True
+
+
+def test_kintone_sync_paid_final_cap_failure_does_not_push_or_lock_idempotency(
+    client,
+    integration_key,
+    seeded_db,
+    monkeypatch,
+):
+    from jpintel_mcp.api.middleware import customer_cap
+
+    key_hash = hash_api_key(integration_key)
+    idempotency_key = "ss-test-cap-fail-2026-05-06"
+
+    r0 = client.post(
+        "/v1/integrations/kintone/connect",
+        headers={"X-API-Key": integration_key},
+        json={
+            "domain": "acme.cybozu.com",
+            "app_id": 42,
+            "api_token": "kt-" + "x" * 32,
+        },
+    )
+    assert r0.status_code == 200, r0.text
+
+    r1 = client.post(
+        "/v1/me/saved_searches",
+        headers={"X-API-Key": integration_key},
+        json={
+            "name": "kintone cap failure",
+            "query": {"prefecture": "東京都"},
+            "frequency": "daily",
+            "notify_email": "test@example.com",
+        },
+    )
+    saved_id = r1.json()["id"]
+
+    def usage_count() -> int:
+        c = sqlite3.connect(seeded_db)
+        try:
+            row = c.execute(
+                "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = ?",
+                (key_hash, "programs.search"),
+            ).fetchone()
+            return int(row[0])
+        finally:
+            c.close()
+
+    def sync_log_count() -> int:
+        c = sqlite3.connect(seeded_db)
+        try:
+            row = c.execute(
+                "SELECT COUNT(*) FROM integration_sync_log "
+                "WHERE provider = 'kintone' AND idempotency_key = ?",
+                (idempotency_key,),
+            ).fetchone()
+            return int(row[0])
+        finally:
+            c.close()
+
+    before_usage = usage_count()
+    before_sync_logs = sync_log_count()
+    monkeypatch.setattr(
+        customer_cap,
+        "metered_charge_within_cap",
+        lambda *args, **kwargs: False,
+    )
+
+    with patch.object(urllib.request, "urlopen") as urlopen_mock:
+        r2 = client.post(
+            "/v1/integrations/kintone/sync",
+            headers={"X-API-Key": integration_key},
+            json={
+                "saved_search_id": saved_id,
+                "idempotency_key": idempotency_key,
+                "max_rows": 5,
+            },
+        )
+
+    assert r2.status_code == 503, r2.text
+    assert r2.json()["detail"]["code"] == "billing_cap_final_check_failed"
+    assert not urlopen_mock.called
+    assert usage_count() == before_usage
+    assert sync_log_count() == before_sync_logs
 
 
 def test_kintone_sync_requires_connect(client, integration_key):

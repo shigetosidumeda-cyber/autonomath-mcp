@@ -45,9 +45,10 @@ def _build_db() -> sqlite3.Connection:
 
 
 def test_normalize_source_url_strips_fragment_and_trailing_slash() -> None:
-    assert backfill.normalize_source_url(
-        "HTTPS://Example.GO.JP/path/%E8%A3%9C%E5%8A%A9/#section"
-    ) == "https://example.go.jp/path/補助"
+    assert (
+        backfill.normalize_source_url("HTTPS://Example.GO.JP/path/%E8%A3%9C%E5%8A%A9/#section")
+        == "https://example.go.jp/path/補助"
+    )
 
 
 def test_resolve_fact_source_prefers_fact_source_url_exact_match() -> None:
@@ -106,9 +107,7 @@ def test_backfill_program_fact_source_ids_uses_unambiguous_entity_source() -> No
 
     assert result["updated_rows"] == 1
     assert result["method_counts"] == {"entity_source_unambiguous": 1}
-    assert conn.execute(
-        "SELECT source_id FROM am_entity_facts WHERE id = 10"
-    ).fetchone()[0] == 1
+    assert conn.execute("SELECT source_id FROM am_entity_facts WHERE id = 10").fetchone()[0] == 1
 
 
 def test_ranked_fallback_is_explicitly_gated() -> None:
@@ -149,6 +148,4 @@ def test_ranked_fallback_is_explicitly_gated() -> None:
     assert conservative["candidate_assignments"] == 1
     assert conservative["method_counts"] == {"entity_source_unique_primary": 1}
     assert ranked["updated_rows"] == 1
-    assert conn.execute(
-        "SELECT source_id FROM am_entity_facts WHERE id = 10"
-    ).fetchone()[0] == 2
+    assert conn.execute("SELECT source_id FROM am_entity_facts WHERE id = 10").fetchone()[0] == 2

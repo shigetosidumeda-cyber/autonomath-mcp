@@ -13,6 +13,7 @@ flaky DOM that isn't our code. The interceptor asserts the *request
 shape* is correct (method + path) and returns a fake redirect URL.
 Stripe-side behaviour is already covered by `tests/test_billing.py`.
 """
+
 from __future__ import annotations
 
 import re
@@ -27,9 +28,7 @@ if TYPE_CHECKING:
 
 @pytest.mark.asyncio
 @pytest.mark.e2e
-async def test_pricing_page_loads_with_hero_and_pricing_card(
-    page: Page, url_for
-) -> None:
+async def test_pricing_page_loads_with_hero_and_pricing_card(page: Page, url_for) -> None:
     await page.goto(url_for("/pricing.html"))
 
     # H1 — "料金"
@@ -47,9 +46,7 @@ async def test_primary_cta_links_to_checkout(page: Page, url_for) -> None:
     cta = page.locator("a.btn-primary").first
     await expect(cta).to_be_visible()
     href = await cta.get_attribute("href")
-    assert href and "checkout" in href, (
-        f"primary CTA href doesn't route to checkout: {href!r}"
-    )
+    assert href and "checkout" in href, f"primary CTA href doesn't route to checkout: {href!r}"
 
 
 @pytest.mark.asyncio
@@ -77,6 +74,5 @@ async def test_pricing_cta_click_initiates_checkout_request(
         await cta.click()
 
     assert seen_requests, (
-        "no request to /v1/billing/checkout* was observed after clicking "
-        "the primary CTA"
+        "no request to /v1/billing/checkout* was observed after clicking the primary CTA"
     )

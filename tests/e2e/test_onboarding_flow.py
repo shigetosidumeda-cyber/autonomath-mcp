@@ -34,6 +34,7 @@ Local two-port setup (Cloudflare Pages mock):
 When `JPINTEL_E2E_API_BASE` is unset we fall back to `base_url` (the prod
 shape — single host with API + Pages co-deployed).
 """
+
 from __future__ import annotations
 
 import os
@@ -95,9 +96,7 @@ async def test_step03_dev_audience_page_renders(page: Page, url_for) -> None:
     h1 = page.locator("h1").first
     await expect(h1).to_be_visible()
     text = (await h1.inner_text()).strip()
-    assert "AI agent" in text or "developer" in text, (
-        f"dev audience h1 unexpected: {text!r}"
-    )
+    assert "AI agent" in text or "developer" in text, f"dev audience h1 unexpected: {text!r}"
 
 
 # --------------------------------------------------------------------------- #
@@ -130,9 +129,7 @@ async def test_step05_api_search_returns_results(page: Page, base_url: str) -> N
     # timezone as the browser walk, and fits the "real network round-trip"
     # contract of the e2e suite.
     api_base = os.environ.get("JPINTEL_E2E_API_BASE", "").rstrip("/") or base_url
-    api_url = (
-        f"{api_base}/v1/programs/search?q={quote('持続化補助金')}&limit=3"
-    )
+    api_url = f"{api_base}/v1/programs/search?q={quote('持続化補助金')}&limit=3"
     resp = await page.request.get(api_url)
     assert resp.ok, f"GET {api_url} → {resp.status}"
     data = await resp.json()
@@ -149,9 +146,7 @@ async def test_step05_api_search_returns_results(page: Page, base_url: str) -> N
 
 @pytest.mark.asyncio
 @pytest.mark.e2e
-async def test_step06_dashboard_signin_form_renders_for_anon(
-    page: Page, url_for
-) -> None:
+async def test_step06_dashboard_signin_form_renders_for_anon(page: Page, url_for) -> None:
     await page.goto(url_for("/dashboard.html"))
     # The unauth view shows a sign-in card with an api_key paste input.
     # We assert *some* input element with `am_` placeholder is present —
@@ -167,9 +162,7 @@ async def test_step06_dashboard_signin_form_renders_for_anon(
 
 @pytest.mark.asyncio
 @pytest.mark.e2e
-async def test_step07_stats_page_renders_three_widgets(
-    page: Page, url_for
-) -> None:
+async def test_step07_stats_page_renders_three_widgets(page: Page, url_for) -> None:
     await page.goto(url_for("/stats.html"))
     body = await page.locator("body").inner_text()
     # 3 widget headings — the page might show "失敗" copy if the API base

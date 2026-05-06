@@ -12,6 +12,7 @@ Email layer is stubbed via a monkeypatched `_notify_operator_and_requester`
 recorder so we don't reach Postmark; the postmark client itself is also
 covered separately in test_email.py.
 """
+
 from __future__ import annotations
 
 import sqlite3

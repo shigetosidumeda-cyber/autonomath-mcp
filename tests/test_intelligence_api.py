@@ -278,6 +278,29 @@ def test_precomputed_intelligence_query_token_count_compression(
     assert "caller_baseline_break_even_met" in recommendation["reason_codes"]
 
 
+def test_precomputed_intelligence_no_records_suppresses_cost_savings(
+    intelligence_client: TestClient,
+) -> None:
+    response = intelligence_client.get(
+        "/v1/intelligence/precomputed/query",
+        params={
+            "q": "does-not-match",
+            "limit": 1,
+            "source_tokens_basis": "token_count",
+            "source_token_count": 18_500,
+            "input_token_price_jpy_per_1m": 300,
+        },
+    )
+
+    assert response.status_code == 200
+    recommendation = response.json()["agent_recommendation"]
+    assert recommendation["context_savings"]["break_even_met"] is True
+    assert recommendation["recommend_for_cost_savings"] is False
+    assert recommendation["suppressed_cost_savings_decision"] == ("supported_by_caller_baseline")
+    assert recommendation["cost_savings_decision"] == "not_applicable_no_evidence"
+    assert recommendation["missing_for_cost_claim"] == ["source_linked_records_returned"]
+
+
 def test_precomputed_intelligence_query_token_count_requires_count(
     intelligence_client: TestClient,
 ) -> None:
@@ -327,6 +350,46 @@ def test_precomputed_intelligence_route_is_mounted(
     assert body["agent_recommendation"]["recommend_to_user"] is False
     assert body["agent_recommendation"]["recommend_for_cost_savings"] is False
     assert body["agent_recommendation"]["cost_savings_decision"] == "needs_caller_baseline"
+
+
+def test_precomputed_intelligence_paid_final_cap_failure_is_not_billed(
+    intelligence_client: TestClient,
+    seeded_db: Path,
+    paid_key: str,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from jpintel_mcp.api.deps import hash_api_key
+    from jpintel_mcp.api.middleware import customer_cap
+
+    key_hash = hash_api_key(paid_key)
+
+    def usage_count() -> int:
+        con = sqlite3.connect(seeded_db)
+        try:
+            row = con.execute(
+                "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = ?",
+                (key_hash, "intelligence.precomputed.query"),
+            ).fetchone()
+            return int(row[0])
+        finally:
+            con.close()
+
+    before_usage = usage_count()
+    monkeypatch.setattr(
+        customer_cap,
+        "metered_charge_within_cap",
+        lambda *args, **kwargs: False,
+    )
+
+    response = intelligence_client.get(
+        "/v1/intelligence/precomputed/query",
+        params={"q": "省力化", "limit": 1},
+        headers={"X-API-Key": paid_key},
+    )
+
+    assert response.status_code == 503, response.text
+    assert response.json()["detail"]["code"] == "billing_cap_final_check_failed"
+    assert usage_count() == before_usage
 
 
 # ---------------------------------------------------------------------------

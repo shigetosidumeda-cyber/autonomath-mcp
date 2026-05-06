@@ -186,8 +186,7 @@ def test_analyze_source_verification_logs_writes_json_and_markdown(
     db_path = tmp_path / "autonomath.db"
     with _build_db(db_path) as conn:
         conn.execute(
-            "INSERT INTO am_source(id, source_url, domain, last_verified) "
-            "VALUES (?, ?, ?, ?)",
+            "INSERT INTO am_source(id, source_url, domain, last_verified) VALUES (?, ?, ?, ?)",
             (1, "https://a.example/verified", "a.example", "2026-05-01 00:00:00"),
         )
 
@@ -226,7 +225,5 @@ def test_analyze_source_verification_logs_writes_json_and_markdown(
     analyzer.write_markdown_report(report, md_output)
 
     assert report["completion_status"]["A5_complete"] is True
-    assert json.loads(json_output.read_text(encoding="utf-8"))["log_totals"][
-        "updated_rows"
-    ] == 1
+    assert json.loads(json_output.read_text(encoding="utf-8"))["log_totals"]["updated_rows"] == 1
     assert "A5 complete: yes" in md_output.read_text(encoding="utf-8")

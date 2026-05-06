@@ -114,7 +114,9 @@ def test_exit_code_0_when_all_modules_pass():
         mod.ModuleResult(name="disclaimer_emit_17", ok=True, elapsed_s=23.5, summary="17/17"),
         mod.ModuleResult(name="stripe_webhook", ok=True, elapsed_s=2.0, summary="ok"),
     ]
-    with mock.patch.object(mod, "select_modules", return_value=[lambda args: r for r in fake_results]):
+    with mock.patch.object(
+        mod, "select_modules", return_value=[lambda args: r for r in fake_results]
+    ):
         # patch select_modules to return a list of zero-arg lambdas that return the canned results
         # easier: patch each MODULE entry directly
         pass
@@ -151,7 +153,9 @@ def test_exit_code_0_when_all_modules_pass():
 
 def test_exit_code_1_when_any_module_fails():
     mod = _load_module()
-    bad = mod.ModuleResult(name="disclaimer_emit_17", ok=False, elapsed_s=4.0, summary="14/17 missing 3")
+    bad = mod.ModuleResult(
+        name="disclaimer_emit_17", ok=False, elapsed_s=4.0, summary="14/17 missing 3"
+    )
     fake_calls = iter([bad])
 
     def fake_fn(_args):
@@ -174,7 +178,14 @@ def test_exit_code_1_when_any_module_fails():
 
 def test_no_llm_api_imports_in_script_source():
     text = SCRIPT.read_text(encoding="utf-8")
-    forbidden = ("import anthropic", "import openai", "import google.generativeai", "import claude_agent_sdk", "from anthropic", "from openai")
+    forbidden = (
+        "import anthropic",
+        "import openai",
+        "import google.generativeai",
+        "import claude_agent_sdk",
+        "from anthropic",
+        "from openai",
+    )
     for needle in forbidden:
         assert needle not in text, f"DEEP-61 violation: script source contains {needle!r}"
 
@@ -186,7 +197,9 @@ def test_no_llm_api_imports_in_script_source():
 
 def test_stdout_is_single_json_line():
     mod = _load_module()
-    fake_calls = iter([mod.ModuleResult(name="health_endpoints", ok=True, elapsed_s=0.1, summary="ok")])
+    fake_calls = iter(
+        [mod.ModuleResult(name="health_endpoints", ok=True, elapsed_s=0.1, summary="ok")]
+    )
 
     def fake_fn(_args):
         return next(fake_calls)
@@ -231,9 +244,11 @@ def test_deep25_verify_primitive_envelope_shape():
     """
     mod = _load_module()
     a = {"result": {"_disclaimer": {"laws": []}}}
-    b = {"result": {"content": [{"type": "text", "text": json.dumps({"_disclaimer": {"laws": []}})}]}}
+    b = {
+        "result": {"content": [{"type": "text", "text": json.dumps({"_disclaimer": {"laws": []}})}]}
+    }
     c = {"result": {"content": [{"type": "text", "_disclaimer": {"laws": []}, "text": "{}"}]}}
-    bad = {"result": {"content": [{"type": "text", "text": "{\"_no_disclaimer\": true}"}]}}
+    bad = {"result": {"content": [{"type": "text", "text": '{"_no_disclaimer": true}'}]}}
     assert mod._envelope_has_disclaimer(a)
     assert mod._envelope_has_disclaimer(b)
     assert mod._envelope_has_disclaimer(c)

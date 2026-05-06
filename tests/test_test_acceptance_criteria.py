@@ -33,8 +33,12 @@ import pytest
 import yaml
 
 HERE = Path(__file__).resolve().parent
+REPO_ROOT = HERE.parent
+OPS_DIR = REPO_ROOT / "scripts" / "ops"
 if str(HERE) not in sys.path:
     sys.path.insert(0, str(HERE))
+if str(OPS_DIR) not in sys.path:
+    sys.path.insert(0, str(OPS_DIR))
 
 import test_acceptance_criteria as guard  # noqa: E402
 import aggregate_acceptance as aggregator  # noqa: E402
@@ -60,11 +64,29 @@ def test_01_twelve_check_kinds_each_work(tmp_path: Path, monkeypatch: pytest.Mon
     bad_schema = {"type": "object", "required": ["x"]}
     assert not guard.check_jsonschema("data.json", bad_schema).ok
 
-    # 3. sql_syntax
-    (tmp_path / "good.sql").write_text("CREATE TABLE t (id INTEGER PRIMARY KEY);", encoding="utf-8")
-    assert guard.check_sql_syntax("good.sql").ok
-    (tmp_path / "bad.sql").write_text("CREATE TABLE )))(((;", encoding="utf-8")
-    assert not guard.check_sql_syntax("bad.sql").ok
+    # 3. sql_syntax (only assert the verifier when sqlglot is available;
+    # otherwise the verifier reports automated=False which is also valid.)
+    try:
+        import sqlglot  # type: ignore[import-untyped]  # noqa: F401
+
+        sqlglot_installed = True
+    except ImportError:
+        sqlglot_installed = False
+    if sqlglot_installed:
+        (tmp_path / "good.sql").write_text(
+            "CREATE TABLE t (id INTEGER PRIMARY KEY);", encoding="utf-8"
+        )
+        assert guard.check_sql_syntax("good.sql").ok
+        (tmp_path / "bad.sql").write_text("CREATE TABLE )))(((;", encoding="utf-8")
+        assert not guard.check_sql_syntax("bad.sql").ok
+    else:
+        # sqlglot missing: verifier returns automated=False sentinel
+        (tmp_path / "good.sql").write_text(
+            "CREATE TABLE t (id INTEGER PRIMARY KEY);", encoding="utf-8"
+        )
+        res = guard.check_sql_syntax("good.sql")
+        assert res.automated is False
+        assert "sqlglot" in res.detail
 
     # 4. python_compile
     (tmp_path / "ok.py").write_text("x = 1\n", encoding="utf-8")
@@ -79,9 +101,7 @@ def test_01_twelve_check_kinds_each_work(tmp_path: Path, monkeypatch: pytest.Mon
     assert not guard.check_llm_api_import_zero("dirty.py").ok
 
     # 6. pytest_collect (use a tiny file with one test)
-    (tmp_path / "tiny_test.py").write_text(
-        "def test_a():\n    assert True\n", encoding="utf-8"
-    )
+    (tmp_path / "tiny_test.py").write_text("def test_a():\n    assert True\n", encoding="utf-8")
     assert guard.check_pytest_collect("tiny_test.py").ok
 
     # 7. gha_yaml_syntax
@@ -190,8 +210,12 @@ def test_02_yaml_parse_correctness(tmp_path: Path) -> None:
 
 
 def test_03_parametrize_fan_out_ready_for_258() -> None:
-    seed = guard.load_criteria(guard.CRITERIA_FILE)
-    assert len(seed) >= 30, f"only {len(seed)} rows in seed YAML"
+    criteria_file = REPO_ROOT / "tests" / "fixtures" / "acceptance_criteria.yaml"
+    if not criteria_file.exists():
+        # fall back to module default (covers env-override + legacy layout)
+        criteria_file = guard.CRITERIA_FILE
+    seed = guard.load_criteria(criteria_file)
+    assert len(seed) >= 30, f"only {len(seed)} rows in seed YAML at {criteria_file}"
 
     # Synthetic scaling exercise: clone seed * 9 with new ids, ensure dispatch
     # still understands every kind even when count crosses 258.
@@ -216,7 +240,9 @@ def test_04_automation_ratio_target_met() -> None:
     # 206/258 = 0.7984 clears the 0.795 DEEP-59 target.
     rows: list[dict] = []
     for i in range(206):
-        rows.append({"id": f"X-{i}", "spec": "X", "check_kind": "file_existence", "automation": "auto"})
+        rows.append(
+            {"id": f"X-{i}", "spec": "X", "check_kind": "file_existence", "automation": "auto"}
+        )
     for i in range(30):
         rows.append({"id": f"Y-{i}", "spec": "Y", "check_kind": "sql_count", "automation": "semi"})
     for i in range(22):
@@ -230,9 +256,7 @@ def test_04_automation_ratio_target_met() -> None:
     assert rep["summary"]["automation_target_met"] is True
 
     # Edge case: exactly at the 79.5% target with 206 auto / 258 total.
-    boundary_rep = aggregator.build_report(
-        rows, junit={}, target_count=258
-    )
+    boundary_rep = aggregator.build_report(rows, junit={}, target_count=258)
     assert boundary_rep["summary"]["automation_target"] == 0.795
 
 
@@ -258,7 +282,12 @@ def test_05_self_llm_import_free() -> None:
 
 def test_06_aggregate_json_schema_valid(tmp_path: Path) -> None:
     rows = [
-        {"id": "DEEP-22-1", "spec": "DEEP-22", "check_kind": "file_existence", "automation": "auto"},
+        {
+            "id": "DEEP-22-1",
+            "spec": "DEEP-22",
+            "check_kind": "file_existence",
+            "automation": "auto",
+        },
         {"id": "DEEP-22-2", "spec": "DEEP-22", "check_kind": "sql_syntax", "automation": "auto"},
         {"id": "DEEP-23-1", "spec": "DEEP-23", "check_kind": "gh_api", "automation": "semi"},
     ]
@@ -294,10 +323,10 @@ def test_06_aggregate_json_schema_valid(tmp_path: Path) -> None:
 
 
 def test_07_gha_workflow_syntax_ok(monkeypatch: pytest.MonkeyPatch) -> None:
-    wf = HERE / "acceptance_criteria_ci.yml"
-    assert wf.exists()
-    monkeypatch.setattr(guard, "REPO_ROOT", HERE)
-    res = guard.check_gha_yaml_syntax("acceptance_criteria_ci.yml")
+    wf = REPO_ROOT / ".github" / "workflows" / "acceptance_criteria_ci.yml"
+    assert wf.exists(), f"workflow missing at {wf}"
+    monkeypatch.setattr(guard, "REPO_ROOT", REPO_ROOT)
+    res = guard.check_gha_yaml_syntax(".github/workflows/acceptance_criteria_ci.yml")
     assert res.ok, res.detail
     # extra: confirm jobs / on are present in parsed form
     doc = yaml.safe_load(wf.read_text(encoding="utf-8"))
@@ -313,11 +342,31 @@ def test_07_gha_workflow_syntax_ok(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def test_08_per_spec_rollup_consistency() -> None:
     rows = [
-        {"id": "DEEP-22-1", "spec": "DEEP-22", "check_kind": "file_existence", "automation": "auto"},
+        {
+            "id": "DEEP-22-1",
+            "spec": "DEEP-22",
+            "check_kind": "file_existence",
+            "automation": "auto",
+        },
         {"id": "DEEP-22-2", "spec": "DEEP-22", "check_kind": "sql_syntax", "automation": "auto"},
-        {"id": "DEEP-23-1", "spec": "DEEP-23", "check_kind": "html5_doctype_meta", "automation": "auto"},
-        {"id": "DEEP-23-2", "spec": "DEEP-23", "check_kind": "schema_org_jsonld", "automation": "auto"},
-        {"id": "DEEP-38-1", "spec": "DEEP-38", "check_kind": "business_law_forbidden_phrases", "automation": "auto"},
+        {
+            "id": "DEEP-23-1",
+            "spec": "DEEP-23",
+            "check_kind": "html5_doctype_meta",
+            "automation": "auto",
+        },
+        {
+            "id": "DEEP-23-2",
+            "spec": "DEEP-23",
+            "check_kind": "schema_org_jsonld",
+            "automation": "auto",
+        },
+        {
+            "id": "DEEP-38-1",
+            "spec": "DEEP-38",
+            "check_kind": "business_law_forbidden_phrases",
+            "automation": "auto",
+        },
     ]
     junit = {
         "DEEP-22-1-file_existence": "passed",

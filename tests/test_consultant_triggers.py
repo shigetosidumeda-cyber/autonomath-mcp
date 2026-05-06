@@ -19,6 +19,7 @@ Constraints honoured by these tests:
       env so the cron's `_deliver` returns True silently — fine for
       asserting "the row was processed".
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -115,9 +116,12 @@ def _ensure_trigger_tables(seeded_db: Path):
         """)
         # Clean slate between cases.
         for table in (
-            "client_profiles", "customer_intentions",
-            "program_post_award_calendar", "post_award_alert_log",
-            "same_day_push_log", "am_idempotency_cache",
+            "client_profiles",
+            "customer_intentions",
+            "program_post_award_calendar",
+            "post_award_alert_log",
+            "same_day_push_log",
+            "am_idempotency_cache",
         ):
             with contextlib.suppress(sqlite3.OperationalError):
                 c.execute(f"DELETE FROM {table}")
@@ -194,7 +198,9 @@ def test_bulk_evaluate_commit_requires_paid_key(client, trial_consultant_key):
 
 
 def test_bulk_evaluate_commit_bills_and_returns_zip(
-    client, consultant_key, seeded_db,
+    client,
+    consultant_key,
+    seeded_db,
 ):
     r = client.post(
         "/v1/me/clients/bulk_evaluate",
@@ -232,8 +238,7 @@ def test_bulk_evaluate_commit_bills_and_returns_zip(
     c = sqlite3.connect(seeded_db)
     try:
         rows = c.execute(
-            "SELECT quantity FROM usage_events "
-            "WHERE endpoint = 'clients.bulk_evaluate'"
+            "SELECT quantity FROM usage_events WHERE endpoint = 'clients.bulk_evaluate'"
         ).fetchall()
     finally:
         c.close()
@@ -242,7 +247,10 @@ def test_bulk_evaluate_commit_bills_and_returns_zip(
 
 
 def test_bulk_evaluate_commit_blocks_delivery_when_billing_fails(
-    client, consultant_key, seeded_db, monkeypatch,
+    client,
+    consultant_key,
+    seeded_db,
+    monkeypatch,
 ):
     import jpintel_mcp.api.bulk_evaluate as bulk_module
 
@@ -268,8 +276,7 @@ def test_bulk_evaluate_commit_blocks_delivery_when_billing_fails(
     c = sqlite3.connect(seeded_db)
     try:
         rows = c.execute(
-            "SELECT quantity FROM usage_events "
-            "WHERE endpoint = 'clients.bulk_evaluate'"
+            "SELECT quantity FROM usage_events WHERE endpoint = 'clients.bulk_evaluate'"
         ).fetchall()
     finally:
         c.close()
@@ -277,7 +284,9 @@ def test_bulk_evaluate_commit_blocks_delivery_when_billing_fails(
 
 
 def test_bulk_evaluate_rejects_unsafe_idempotency_key_before_billing(
-    client, consultant_key, seeded_db,
+    client,
+    consultant_key,
+    seeded_db,
 ):
     r = client.post(
         "/v1/me/clients/bulk_evaluate",
@@ -295,8 +304,7 @@ def test_bulk_evaluate_rejects_unsafe_idempotency_key_before_billing(
     c = sqlite3.connect(seeded_db)
     try:
         rows = c.execute(
-            "SELECT quantity FROM usage_events "
-            "WHERE endpoint = 'clients.bulk_evaluate'"
+            "SELECT quantity FROM usage_events WHERE endpoint = 'clients.bulk_evaluate'"
         ).fetchall()
     finally:
         c.close()
@@ -304,7 +312,9 @@ def test_bulk_evaluate_rejects_unsafe_idempotency_key_before_billing(
 
 
 def test_bulk_evaluate_rejects_overlong_idempotency_key_before_billing(
-    client, consultant_key, seeded_db,
+    client,
+    consultant_key,
+    seeded_db,
 ):
     r = client.post(
         "/v1/me/clients/bulk_evaluate",
@@ -322,8 +332,7 @@ def test_bulk_evaluate_rejects_overlong_idempotency_key_before_billing(
     c = sqlite3.connect(seeded_db)
     try:
         rows = c.execute(
-            "SELECT quantity FROM usage_events "
-            "WHERE endpoint = 'clients.bulk_evaluate'"
+            "SELECT quantity FROM usage_events WHERE endpoint = 'clients.bulk_evaluate'"
         ).fetchall()
     finally:
         c.close()
@@ -331,13 +340,14 @@ def test_bulk_evaluate_rejects_overlong_idempotency_key_before_billing(
 
 
 def test_bulk_evaluate_final_cap_guard_blocks_delivery_and_cache(
-    client, consultant_key, seeded_db, monkeypatch,
+    client,
+    consultant_key,
+    seeded_db,
+    monkeypatch,
 ):
     import jpintel_mcp.api.middleware.customer_cap as cap_module
 
-    monkeypatch.setattr(
-        cap_module, "metered_charge_within_cap", lambda *args, **kwargs: False
-    )
+    monkeypatch.setattr(cap_module, "metered_charge_within_cap", lambda *args, **kwargs: False)
 
     r = client.post(
         "/v1/me/clients/bulk_evaluate",
@@ -356,12 +366,9 @@ def test_bulk_evaluate_final_cap_guard_blocks_delivery_and_cache(
     c = sqlite3.connect(seeded_db)
     try:
         usage_rows = c.execute(
-            "SELECT quantity FROM usage_events "
-            "WHERE endpoint = 'clients.bulk_evaluate'"
+            "SELECT quantity FROM usage_events WHERE endpoint = 'clients.bulk_evaluate'"
         ).fetchall()
-        cache_rows = c.execute(
-            "SELECT response_blob FROM am_idempotency_cache"
-        ).fetchall()
+        cache_rows = c.execute("SELECT response_blob FROM am_idempotency_cache").fetchall()
     finally:
         c.close()
     assert usage_rows == []
@@ -371,7 +378,8 @@ def test_bulk_evaluate_final_cap_guard_blocks_delivery_and_cache(
 
 
 def test_bulk_evaluate_commit_requires_cost_cap(
-    client, consultant_key,
+    client,
+    consultant_key,
 ):
     r = client.post(
         "/v1/me/clients/bulk_evaluate",
@@ -387,7 +395,8 @@ def test_bulk_evaluate_commit_requires_cost_cap(
 
 
 def test_bulk_evaluate_commit_rejects_low_cost_cap(
-    client, consultant_key,
+    client,
+    consultant_key,
 ):
     r = client.post(
         "/v1/me/clients/bulk_evaluate",
@@ -405,7 +414,8 @@ def test_bulk_evaluate_commit_rejects_low_cost_cap(
 
 
 def test_bulk_evaluate_commit_requires_idempotency_key(
-    client, consultant_key,
+    client,
+    consultant_key,
 ):
     r = client.post(
         "/v1/me/clients/bulk_evaluate",
@@ -418,7 +428,9 @@ def test_bulk_evaluate_commit_requires_idempotency_key(
 
 
 def test_bulk_evaluate_idempotent_replay(
-    client, consultant_key, seeded_db,
+    client,
+    consultant_key,
+    seeded_db,
 ):
     # First call — should bill 5.
     r1 = client.post(
@@ -442,8 +454,7 @@ def test_bulk_evaluate_idempotent_replay(
     c = sqlite3.connect(seeded_db)
     try:
         rows = c.execute(
-            "SELECT quantity FROM usage_events "
-            "WHERE endpoint = 'clients.bulk_evaluate'"
+            "SELECT quantity FROM usage_events WHERE endpoint = 'clients.bulk_evaluate'"
         ).fetchall()
     finally:
         c.close()
@@ -455,7 +466,8 @@ def test_bulk_evaluate_idempotent_replay(
 
 
 def test_bulk_evaluate_idempotency_rejects_payload_mismatch(
-    client, consultant_key,
+    client,
+    consultant_key,
 ):
     r1 = client.post(
         "/v1/me/clients/bulk_evaluate",
@@ -477,7 +489,10 @@ def test_bulk_evaluate_idempotency_rejects_payload_mismatch(
 
 
 def test_bulk_evaluate_idempotency_reservation_prevents_cache_failure_overbill(
-    client, consultant_key, seeded_db, monkeypatch,
+    client,
+    consultant_key,
+    seeded_db,
+    monkeypatch,
 ):
     import jpintel_mcp.api.bulk_evaluate as bulk_module
 
@@ -517,8 +532,7 @@ def test_bulk_evaluate_idempotency_reservation_prevents_cache_failure_overbill(
     c = sqlite3.connect(seeded_db)
     try:
         rows = c.execute(
-            "SELECT quantity FROM usage_events "
-            "WHERE endpoint = 'clients.bulk_evaluate'"
+            "SELECT quantity FROM usage_events WHERE endpoint = 'clients.bulk_evaluate'"
         ).fetchall()
     finally:
         c.close()
@@ -527,7 +541,9 @@ def test_bulk_evaluate_idempotency_reservation_prevents_cache_failure_overbill(
 
 
 def test_bulk_evaluate_accepts_idempotency_header(
-    client, consultant_key, seeded_db,
+    client,
+    consultant_key,
+    seeded_db,
 ):
     idem_key = "header-idempotency-key"
     r = client.post(
@@ -555,8 +571,7 @@ def test_bulk_evaluate_accepts_idempotency_header(
     c = sqlite3.connect(seeded_db)
     try:
         rows = c.execute(
-            "SELECT quantity FROM usage_events "
-            "WHERE endpoint = 'clients.bulk_evaluate'"
+            "SELECT quantity FROM usage_events WHERE endpoint = 'clients.bulk_evaluate'"
         ).fetchall()
     finally:
         c.close()
@@ -565,7 +580,9 @@ def test_bulk_evaluate_accepts_idempotency_header(
 
 
 def test_bulk_evaluate_rejects_reusing_billed_key_after_cache_expiry(
-    client, consultant_key, seeded_db,
+    client,
+    consultant_key,
+    seeded_db,
 ):
     idem_key = "expired-cache-reuse"
     r1 = client.post(
@@ -578,10 +595,7 @@ def test_bulk_evaluate_rejects_reusing_billed_key_after_cache_expiry(
 
     c = sqlite3.connect(seeded_db)
     try:
-        c.execute(
-            "UPDATE am_idempotency_cache "
-            "SET expires_at = '2000-01-01T00:00:00+00:00'"
-        )
+        c.execute("UPDATE am_idempotency_cache SET expires_at = '2000-01-01T00:00:00+00:00'")
         c.commit()
     finally:
         c.close()
@@ -598,8 +612,7 @@ def test_bulk_evaluate_rejects_reusing_billed_key_after_cache_expiry(
     c = sqlite3.connect(seeded_db)
     try:
         rows = c.execute(
-            "SELECT quantity FROM usage_events "
-            "WHERE endpoint = 'clients.bulk_evaluate'"
+            "SELECT quantity FROM usage_events WHERE endpoint = 'clients.bulk_evaluate'"
         ).fetchall()
     finally:
         c.close()
@@ -613,7 +626,9 @@ def test_bulk_evaluate_rejects_reusing_billed_key_after_cache_expiry(
 
 
 def _seed_intention_with_milestone(
-    db_path: Path, key_hash: str, days_out: int,
+    db_path: Path,
+    key_hash: str,
+    days_out: int,
 ) -> tuple[int, str]:
     """Insert one customer_intention + one program_post_award_calendar row
     so today + days_out maps to the milestone deadline.
@@ -634,8 +649,11 @@ def _seed_intention_with_milestone(
             "  kind_label, source_url"
             ") VALUES (?,?,?,?,?)",
             (
-                program_id, "report_due_T+6m", 30 + days_out,
-                "中間報告書 (試験)", "https://example.invalid/post-award",
+                program_id,
+                "report_due_T+6m",
+                30 + days_out,
+                "中間報告書 (試験)",
+                "https://example.invalid/post-award",
             ),
         )
         cur = c.execute(
@@ -644,8 +662,12 @@ def _seed_intention_with_milestone(
             "  status, notify_email"
             ") VALUES (?,?,?,?,?,?)",
             (
-                key_hash, None, program_id, awarded,
-                "awarded", "consultant@example.invalid",
+                key_hash,
+                None,
+                program_id,
+                awarded,
+                "awarded",
+                "consultant@example.invalid",
             ),
         )
         intention_id = cur.lastrowid
@@ -656,14 +678,17 @@ def _seed_intention_with_milestone(
 
 
 def test_post_award_monitor_fires_alert_at_7_days(
-    seeded_db, consultant_key,
+    seeded_db,
+    consultant_key,
 ):
     from jpintel_mcp.api.deps import hash_api_key
     from scripts.cron import post_award_monitor as pam
 
     key_hash = hash_api_key(consultant_key)
     intention_id, _ = _seed_intention_with_milestone(
-        seeded_db, key_hash, days_out=7,
+        seeded_db,
+        key_hash,
+        days_out=7,
     )
 
     counters = pam.run(db_path=seeded_db)
@@ -674,8 +699,7 @@ def test_post_award_monitor_fires_alert_at_7_days(
     c = sqlite3.connect(seeded_db)
     try:
         (count,) = c.execute(
-            "SELECT COUNT(*) FROM usage_events "
-            "WHERE endpoint = 'post_award.alert'"
+            "SELECT COUNT(*) FROM usage_events WHERE endpoint = 'post_award.alert'"
         ).fetchone()
         # Idempotency row in place.
         log_row = c.execute(
@@ -723,8 +747,12 @@ def _seed_matching_profile(db_path: Path, key_hash: str) -> int:
             "  last_active_program_ids_json"
             ") VALUES (?,?,?,?,?,?,?,?)",
             (
-                key_hash, "テスト顧問先A", "E", "東京都",
-                12, 5000000,
+                key_hash,
+                "テスト顧問先A",
+                "E",
+                "東京都",
+                12,
+                5000000,
                 '["sole_proprietor","corporation"]',
                 "[]",
             ),
@@ -750,7 +778,8 @@ def _bump_program_updated_at(db_path: Path, program_id: str) -> None:
 
 
 def test_same_day_push_fires_for_matching_profile(
-    seeded_db, consultant_key,
+    seeded_db,
+    consultant_key,
 ):
     from jpintel_mcp.api.deps import hash_api_key
     from scripts.cron import same_day_push as sdp
@@ -771,12 +800,10 @@ def test_same_day_push_fires_for_matching_profile(
     c = sqlite3.connect(seeded_db)
     try:
         (count,) = c.execute(
-            "SELECT COUNT(*) FROM usage_events "
-            "WHERE endpoint = 'same_day.push'"
+            "SELECT COUNT(*) FROM usage_events WHERE endpoint = 'same_day.push'"
         ).fetchone()
         log = c.execute(
-            "SELECT program_id, profile_id FROM same_day_push_log "
-            "WHERE api_key_hash = ?",
+            "SELECT program_id, profile_id FROM same_day_push_log WHERE api_key_hash = ?",
             (key_hash,),
         ).fetchall()
     finally:
@@ -786,7 +813,8 @@ def test_same_day_push_fires_for_matching_profile(
 
 
 def test_same_day_push_idempotent_within_window(
-    seeded_db, consultant_key,
+    seeded_db,
+    consultant_key,
 ):
     from jpintel_mcp.api.deps import hash_api_key
     from scripts.cron import same_day_push as sdp

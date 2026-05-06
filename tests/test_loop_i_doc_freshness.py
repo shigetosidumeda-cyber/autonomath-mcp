@@ -99,9 +99,7 @@ def test_loop_i_classifies_stale_and_broken(tmp_path: Path) -> None:
     rows = _fake_rows()
     report_path = tmp_path / "source_freshness_report.json"
 
-    fake_client = _FakeAsyncClient(
-        {"https://example.gov/broken-probe": 503}
-    )
+    fake_client = _FakeAsyncClient({"https://example.gov/broken-probe": 503})
 
     def factory() -> _FakeAsyncClient:
         return fake_client

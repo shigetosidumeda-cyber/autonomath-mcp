@@ -101,9 +101,7 @@ def test_autonomath_envelope_exception_is_incident_sanitized() -> None:
 
     @with_envelope("boom_am")
     def boom() -> dict:
-        raise sqlite3.OperationalError(
-            "no such table: am_tax_measure from /Users/me/autonomath.db"
-        )
+        raise sqlite3.OperationalError("no such table: am_tax_measure from /Users/me/autonomath.db")
 
     out = boom()
     blob = str(out)

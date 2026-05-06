@@ -11,6 +11,7 @@ Auth model:
   Anonymous calls return 401 (the dashboard.py module re-checks key_hash
   on top of require_key's permissive anon=tier:free fallback).
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -57,8 +58,15 @@ def fresh_paid_key(seeded_db) -> str:
 
 
 def _seed_usage(
-    db_path, key_hash: str, *, endpoint: str, count: int, days_ago: int = 0,
-    metered: int = 1, status: int = 200, quantity: int = 1,
+    db_path,
+    key_hash: str,
+    *,
+    endpoint: str,
+    count: int,
+    days_ago: int = 0,
+    metered: int = 1,
+    status: int = 200,
+    quantity: int = 1,
 ) -> None:
     """Insert N usage_events rows for a given endpoint at days_ago."""
     base = datetime.now(UTC) - timedelta(days=days_ago, hours=1)
@@ -130,9 +138,7 @@ def test_revoked_key_is_401(client, fresh_paid_key, seeded_db, path):
 
 
 def test_dashboard_empty_returns_zeros(client, fresh_paid_key):
-    r = client.get(
-        "/v1/me/dashboard", headers={"X-API-Key": fresh_paid_key}
-    )
+    r = client.get("/v1/me/dashboard", headers={"X-API-Key": fresh_paid_key})
     assert r.status_code == 200, r.text
     body = r.json()
     assert body["days"] == 30
@@ -145,16 +151,12 @@ def test_dashboard_empty_returns_zeros(client, fresh_paid_key):
     assert body["cap_remaining_yen"] is None
 
 
-def test_dashboard_aggregates_call_counts(
-    client, fresh_paid_key, seeded_db
-):
+def test_dashboard_aggregates_call_counts(client, fresh_paid_key, seeded_db):
     kh = hash_api_key(fresh_paid_key)
     _seed_usage(seeded_db, kh, endpoint="programs.search", count=12, days_ago=0)
     _seed_usage(seeded_db, kh, endpoint="laws.search", count=4, days_ago=2)
 
-    r = client.get(
-        "/v1/me/dashboard?days=30", headers={"X-API-Key": fresh_paid_key}
-    )
+    r = client.get("/v1/me/dashboard?days=30", headers={"X-API-Key": fresh_paid_key})
     assert r.status_code == 200
     body = r.json()
     assert body["last_30_calls"] == 16
@@ -167,13 +169,9 @@ def test_dashboard_aggregates_call_counts(
 
 def test_dashboard_clamps_days_param(client, fresh_paid_key):
     # ge=1, le=90 — values out of range should be 422.
-    r = client.get(
-        "/v1/me/dashboard?days=0", headers={"X-API-Key": fresh_paid_key}
-    )
+    r = client.get("/v1/me/dashboard?days=0", headers={"X-API-Key": fresh_paid_key})
     assert r.status_code == 422
-    r = client.get(
-        "/v1/me/dashboard?days=400", headers={"X-API-Key": fresh_paid_key}
-    )
+    r = client.get("/v1/me/dashboard?days=400", headers={"X-API-Key": fresh_paid_key})
     assert r.status_code == 422
 
 
@@ -187,12 +185,14 @@ def test_dashboard_reports_cap_state(client, fresh_paid_key, seeded_db):
         )
         c.commit()
     _seed_usage(
-        seeded_db, kh, endpoint="programs.search", count=50,
-        metered=1, status=200,
+        seeded_db,
+        kh,
+        endpoint="programs.search",
+        count=50,
+        metered=1,
+        status=200,
     )
-    r = client.get(
-        "/v1/me/dashboard", headers={"X-API-Key": fresh_paid_key}
-    )
+    r = client.get("/v1/me/dashboard", headers={"X-API-Key": fresh_paid_key})
     body = r.json()
     assert body["monthly_cap_yen"] == 1000
     assert body["month_to_date_calls"] >= 50
@@ -201,9 +201,7 @@ def test_dashboard_reports_cap_state(client, fresh_paid_key, seeded_db):
     assert body["cap_remaining_yen"] <= 850
 
 
-def test_dashboard_amounts_use_billed_quantity(
-    client, fresh_paid_key, seeded_db
-):
+def test_dashboard_amounts_use_billed_quantity(client, fresh_paid_key, seeded_db):
     kh = hash_api_key(fresh_paid_key)
     _seed_usage(
         seeded_db,
@@ -215,9 +213,7 @@ def test_dashboard_amounts_use_billed_quantity(
         quantity=12,
     )
 
-    r = client.get(
-        "/v1/me/dashboard?days=30", headers={"X-API-Key": fresh_paid_key}
-    )
+    r = client.get("/v1/me/dashboard?days=30", headers={"X-API-Key": fresh_paid_key})
     assert r.status_code == 200
     body = r.json()
     assert body["last_30_calls"] == 12
@@ -231,9 +227,7 @@ def test_dashboard_amounts_use_billed_quantity(
 # ---------------------------------------------------------------------------
 
 
-def test_usage_by_tool_orders_by_count_desc(
-    client, fresh_paid_key, seeded_db
-):
+def test_usage_by_tool_orders_by_count_desc(client, fresh_paid_key, seeded_db):
     kh = hash_api_key(fresh_paid_key)
     _seed_usage(seeded_db, kh, endpoint="programs.search", count=20)
     _seed_usage(seeded_db, kh, endpoint="laws.search", count=7)
@@ -255,9 +249,7 @@ def test_usage_by_tool_orders_by_count_desc(
     assert p["amount_yen"] == 20 * 3
 
 
-def test_usage_by_tool_amount_uses_billed_quantity(
-    client, fresh_paid_key, seeded_db
-):
+def test_usage_by_tool_amount_uses_billed_quantity(client, fresh_paid_key, seeded_db):
     kh = hash_api_key(fresh_paid_key)
     _seed_usage(
         seeded_db,
@@ -281,9 +273,7 @@ def test_usage_by_tool_amount_uses_billed_quantity(
     assert body["total_amount_yen"] == 9 * 3
 
 
-def test_usage_by_tool_excludes_other_keys(
-    client, fresh_paid_key, seeded_db
-):
+def test_usage_by_tool_excludes_other_keys(client, fresh_paid_key, seeded_db):
     """Telemetry isolation: another key's usage MUST NOT leak into the response."""
     kh = hash_api_key(fresh_paid_key)
     _seed_usage(seeded_db, kh, endpoint="programs.search", count=3)
@@ -298,9 +288,7 @@ def test_usage_by_tool_excludes_other_keys(
     other_kh = hash_api_key(other_raw)
     _seed_usage(seeded_db, other_kh, endpoint="programs.search", count=999)
 
-    r = client.get(
-        "/v1/me/usage_by_tool", headers={"X-API-Key": fresh_paid_key}
-    )
+    r = client.get("/v1/me/usage_by_tool", headers={"X-API-Key": fresh_paid_key})
     body = r.json()
     assert body["total_calls"] == 3  # only this key's 3 rows
 
@@ -310,22 +298,16 @@ def test_usage_by_tool_excludes_other_keys(
 # ---------------------------------------------------------------------------
 
 
-def test_billing_history_empty_when_stripe_unconfigured(
-    client, fresh_paid_key
-):
+def test_billing_history_empty_when_stripe_unconfigured(client, fresh_paid_key):
     """Local/test runs have no STRIPE_SECRET_KEY; expect empty list, not 500."""
-    r = client.get(
-        "/v1/me/billing_history", headers={"X-API-Key": fresh_paid_key}
-    )
+    r = client.get("/v1/me/billing_history", headers={"X-API-Key": fresh_paid_key})
     assert r.status_code == 200, r.text
     body = r.json()
     assert body["invoices"] == []
     assert body["customer_id"] is not None  # cus_dash_…
 
 
-def test_billing_history_no_customer_id_returns_empty(
-    client, fresh_paid_key, seeded_db
-):
+def test_billing_history_no_customer_id_returns_empty(client, fresh_paid_key, seeded_db):
     """A key with NULL customer_id (e.g. legacy bootstrap) returns
     `customer_id=None` + empty list rather than 500."""
     kh = hash_api_key(fresh_paid_key)
@@ -335,9 +317,7 @@ def test_billing_history_no_customer_id_returns_empty(
             (kh,),
         )
         c.commit()
-    r = client.get(
-        "/v1/me/billing_history", headers={"X-API-Key": fresh_paid_key}
-    )
+    r = client.get("/v1/me/billing_history", headers={"X-API-Key": fresh_paid_key})
     assert r.status_code == 200
     body = r.json()
     assert body["customer_id"] is None

@@ -40,6 +40,7 @@ from pathlib import Path
 
 import pytest
 
+from jpintel_mcp.api.deps import hash_api_key
 from jpintel_mcp.billing.keys import issue_key
 
 _FIVE_HOUJIN: tuple[str, ...] = (
@@ -381,6 +382,45 @@ def test_group_graph_unknown_seed_returns_empty_envelope(client, paid_key):
     _check_disclaimer_envelope(body)
     assert "graph_scope_note" in body
     assert "part_of" in body["graph_scope_note"]
+
+
+def test_group_graph_paid_final_cap_failure_does_not_bill(
+    client,
+    paid_key,
+    seeded_db: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from jpintel_mcp.api.middleware import customer_cap
+
+    key_hash = hash_api_key(paid_key)
+
+    def usage_count() -> int:
+        conn = sqlite3.connect(seeded_db)
+        try:
+            row = conn.execute(
+                "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = ?",
+                (key_hash, "am.group_graph"),
+            ).fetchone()
+            return int(row[0])
+        finally:
+            conn.close()
+
+    before = usage_count()
+    monkeypatch.setattr(
+        customer_cap,
+        "metered_charge_within_cap",
+        lambda *args, **kwargs: False,
+    )
+
+    r = client.get(
+        "/v1/am/group_graph",
+        headers={"X-API-Key": paid_key},
+        params={"houjin_bangou": _FIVE_HOUJIN[0], "depth": 2},
+    )
+
+    assert r.status_code == 503, r.text
+    assert r.json()["detail"]["code"] == "billing_cap_final_check_failed"
+    assert usage_count() == before
 
 
 # ---------------------------------------------------------------------------

@@ -23,6 +23,7 @@ scan. The 150 ms ceiling is still enough headroom over the observed
 enriched_json scan would trip it (the scan blows past 150 ms even on
 a tiny corpus when the test client is warm).
 """
+
 from __future__ import annotations
 
 import itertools
@@ -96,6 +97,7 @@ def _percentile(samples: list[float], pct: float) -> float:
     ordered = sorted(samples)
     # nearest-rank: ceil(pct/100 * N) - 1
     from math import ceil
+
     idx = max(0, ceil(pct / 100 * len(ordered)) - 1)
     return ordered[idx]
 
@@ -124,18 +126,34 @@ def _insert_row(
             enriched_json, source_mentions_json, updated_at
         ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
         (
-            unified_id, primary_name,
+            unified_id,
+            primary_name,
             json.dumps(aliases or [], ensure_ascii=False),
-            "国", None, None, None,
-            "補助金", None,
-            None, None, None,
-            None, tier, None, None, None,
-            0, None,
-            None, None,
+            "国",
+            None,
+            None,
+            None,
+            "補助金",
+            None,
+            None,
+            None,
+            None,
+            None,
+            tier,
+            None,
+            None,
+            None,
+            0,
+            None,
+            None,
+            None,
             json.dumps([], ensure_ascii=False),
             json.dumps([], ensure_ascii=False),
-            None, None,
-            enriched_text or None, None, now,
+            None,
+            None,
+            enriched_text or None,
+            None,
+            now,
         ),
     )
     conn.execute(
@@ -180,9 +198,7 @@ def seeded_for_perf(seeded_db: Path) -> Path:
     return seeded_db
 
 
-def test_short_ascii_query_returns_results(
-    client: TestClient, seeded_for_perf: Path
-) -> None:
+def test_short_ascii_query_returns_results(client: TestClient, seeded_for_perf: Path) -> None:
     """q=IT must surface the primary_name match."""
     r = client.get("/v1/programs/search", params={"q": "IT", "limit": 10})
     assert r.status_code == 200
@@ -199,9 +215,7 @@ def test_short_ascii_query_returns_results(
         )
 
 
-def test_short_ascii_query_p95_under_150ms(
-    client: TestClient, seeded_for_perf: Path
-) -> None:
+def test_short_ascii_query_p95_under_150ms(client: TestClient, seeded_for_perf: Path) -> None:
     """P95 over 20 consecutive q=IT calls must stay under 150 ms.
 
     Warm-up: 3 calls to fill any lazy caches (first-request FastAPI
@@ -220,8 +234,7 @@ def test_short_ascii_query_p95_under_150ms(
 
     p95 = _percentile(samples, 95)
     assert p95 < 150.0, (
-        f"q=IT P95={p95:.1f} ms (target <150 ms). "
-        f"All samples (ms): {[f'{s:.1f}' for s in samples]}"
+        f"q=IT P95={p95:.1f} ms (target <150 ms). All samples (ms): {[f'{s:.1f}' for s in samples]}"
     )
 
 
@@ -250,6 +263,5 @@ def test_short_japanese_query_still_covers_enriched(
     body = r.json()
     names = [row["primary_name"] for row in body["results"]]
     assert "テスト控除対象事業(本文のみ)" in names, (
-        f"2-char kanji '税額' failed to match enriched_text; "
-        f"names={names}"
+        f"2-char kanji '税額' failed to match enriched_text; names={names}"
     )

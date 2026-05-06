@@ -155,9 +155,7 @@ def test_collect_report_from_api_style_schema_is_read_only(tmp_path: Path) -> No
     assert any(plan["target"] == "programs" for plan in report["schema_safe_upsert_plan"])
 
     assert (
-        conn.execute(
-            "SELECT COUNT(*) FROM programs WHERE unified_id LIKE 'UNI-jg-%'"
-        ).fetchone()[0]
+        conn.execute("SELECT COUNT(*) FROM programs WHERE unified_id LIKE 'UNI-jg-%'").fetchone()[0]
         == 2
     )
 

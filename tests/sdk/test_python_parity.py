@@ -16,6 +16,7 @@ Run::
     cd autonomath_staging/sdk/python
     .venv/bin/pytest -q ../../../tests/sdk/test_python_parity.py
 """
+
 from __future__ import annotations
 
 import inspect
@@ -212,11 +213,13 @@ def test_prescreen_hits_v1_programs_prescreen_and_parses() -> None:
         )
 
     client = _client_with_handler(handler)
-    env = client.prescreen({
-        "prefecture": "東京都",
-        "industry_jsic": "39",
-        "planned_investment_man_yen": 500,
-    })
+    env = client.prescreen(
+        {
+            "prefecture": "東京都",
+            "industry_jsic": "39",
+            "planned_investment_man_yen": 500,
+        }
+    )
     assert captured["path"] == "/v1/programs/prescreen"
     assert captured["method"] == "POST"
     assert env.status == "rich"
@@ -329,6 +332,7 @@ def test_no_live_api_called(monkeypatch: pytest.MonkeyPatch) -> None:
         return real_request(self, method, url, *a, **k)
 
     monkeypatch.setattr(httpx.Client, "request", guard)
+
     # Smoke: a normal mocked call still works under the guard.
     def handler(_req: httpx.Request) -> httpx.Response:
         return httpx.Response(

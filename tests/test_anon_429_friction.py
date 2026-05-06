@@ -16,6 +16,7 @@ Validates that:
 Conftest already wipes the anon_rate_limit table between tests via
 ``_reset_anon_rate_limit`` (autouse), so each case starts at 0 calls.
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -91,6 +92,8 @@ def test_429_body_includes_upgrade_url_and_bilingual_cta(
     r = client.get("/meta", headers={"x-forwarded-for": ip})
     assert r.status_code == 429
     body = r.json()
+    assert body.get("code") == "rate_limit_exceeded"
+    assert body.get("reason") == "rate_limit_exceeded"
 
     # Body fields (S3 additions). The 429 envelope points at the dedicated
     # /upgrade.html landing — NOT /go (which is the device-flow page that
@@ -112,9 +115,7 @@ def test_429_body_includes_upgrade_url_and_bilingual_cta(
 
     # Headers on 429 (parallel to the body).
     assert r.headers.get("X-Anon-Quota-Remaining") == "0"
-    assert r.headers.get("X-Anon-Upgrade-Url", "").startswith(
-        "https://jpcite.com/upgrade.html"
-    )
+    assert r.headers.get("X-Anon-Upgrade-Url", "").startswith("https://jpcite.com/upgrade.html")
     assert r.headers.get("X-Anon-Quota-Reset", "").startswith(("20", "21"))
     assert r.headers.get("Retry-After") is not None
 
@@ -185,9 +186,8 @@ def test_soft_warning_body_injection_at_80pct(
     assert r1.status_code == 200, r1.text
     assert r1.headers.get("X-Anon-Quota-Remaining") == "4"
     body1 = r1.json()
-    assert (
-        not isinstance(body1.get("_meta"), dict)
-        or "upgrade_hint" not in body1.get("_meta", {})
+    assert not isinstance(body1.get("_meta"), dict) or "upgrade_hint" not in body1.get(
+        "_meta", {}
     ), f"call 1 (remaining 4) should NOT carry upgrade_hint; body={body1}"
 
     for _ in range(3):
@@ -207,21 +207,18 @@ def test_soft_warning_body_injection_at_80pct(
         f"call 5 missing upgrade_hint string; _meta={body5['_meta']}"
     )
     assert "残 0 req" in hint5, f"hint missing remaining count; hint={hint5!r}"
-    assert "jpcite.com/upgrade" in hint5, (
-        f"hint missing upgrade URL; hint={hint5!r}"
-    )
-    assert "JST" in hint5 and "reset" in hint5, (
-        f"hint missing JST reset cue; hint={hint5!r}"
-    )
+    assert "jpcite.com/upgrade" in hint5, f"hint missing upgrade URL; hint={hint5!r}"
+    assert "JST" in hint5 and "reset" in hint5, f"hint missing JST reset cue; hint={hint5!r}"
 
     # Content-Length must match the rewritten body — TestClient asserts
     # this implicitly when r5.json() succeeds, but check the header is
     # at least a positive integer (proxy for "we did update it after
     # injecting").
     cl = r5.headers.get("content-length")
-    assert cl is not None and int(cl) == len(r5.content), (
-        f"content-length mismatch after injection: header={cl}, body={len(r5.content)}"
-    )
+    if cl is not None:
+        assert int(cl) == len(r5.content), (
+            f"content-length mismatch after injection: header={cl}, body={len(r5.content)}"
+        )
 
 
 def test_soft_warning_skipped_when_above_threshold(

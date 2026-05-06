@@ -12,6 +12,7 @@ and `_bg_task_worker.py`:
 Each test gets its own throw-away SQLite DB built from `db/schema.sql`
 so no fixture seeded by the global conftest leaks state between cases.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -97,9 +98,7 @@ def test_enqueue_dedup_returns_existing_id(tmp_path):
     assert rows[0] == 1
 
     # Original payload preserved (ON CONFLICT DO NOTHING; not DO UPDATE).
-    row = conn.execute(
-        "SELECT payload_json FROM bg_task_queue WHERE id = ?", (first,)
-    ).fetchone()
+    row = conn.execute("SELECT payload_json FROM bg_task_queue WHERE id = ?", (first,)).fetchone()
     payload = json.loads(row["payload_json"])
     assert payload["to"] == "a@example.com"
 
@@ -228,8 +227,7 @@ def test_mark_failed_schedules_exponential_retry(tmp_path):
     t0 = datetime.now(UTC)
     mark_failed(conn, task_id, "transport hiccup")
     row = conn.execute(
-        "SELECT status, attempts, next_attempt_at, last_error "
-        "FROM bg_task_queue WHERE id=?",
+        "SELECT status, attempts, next_attempt_at, last_error FROM bg_task_queue WHERE id=?",
         (task_id,),
     ).fetchone()
     assert row["status"] == "pending"  # rescheduled
@@ -245,16 +243,13 @@ def test_mark_failed_schedules_exponential_retry(tmp_path):
 def test_mark_failed_doubles_each_attempt(tmp_path):
     """1st->60s, 2nd->120s, 3rd->240s."""
     conn = _fresh_db(tmp_path)
-    task_id = enqueue(
-        conn, kind="welcome_email", payload={}
-    )
+    task_id = enqueue(conn, kind="welcome_email", payload={})
 
     expected = [60, 120, 240]
     for attempt, exp_delay in enumerate(expected, start=1):
         # Make the row pending+due first.
         conn.execute(
-            "UPDATE bg_task_queue SET status='processing', "
-            "next_attempt_at=? WHERE id=?",
+            "UPDATE bg_task_queue SET status='processing', next_attempt_at=? WHERE id=?",
             (datetime.now(UTC).isoformat(), task_id),
         )
         t0 = datetime.now(UTC)
@@ -265,12 +260,12 @@ def test_mark_failed_doubles_each_attempt(tmp_path):
         ).fetchone()
         assert row["attempts"] == attempt
         assert row["status"] == "pending"
-        next_at = datetime.fromisoformat(
-            row["next_attempt_at"].replace("Z", "+00:00")
-        )
+        next_at = datetime.fromisoformat(row["next_attempt_at"].replace("Z", "+00:00"))
         delta = (next_at - t0).total_seconds()
         assert (exp_delay - 5) <= delta <= (exp_delay + 5), (
-            attempt, delta, exp_delay,
+            attempt,
+            delta,
+            exp_delay,
         )
 
 
@@ -306,14 +301,10 @@ def test_mark_failed_caps_backoff_at_one_hour(tmp_path):
 
 def test_max_attempts_flips_status_to_failed(tmp_path):
     conn = _fresh_db(tmp_path)
-    task_id = enqueue(
-        conn, kind="welcome_email", payload={}, max_attempts=3
-    )
+    task_id = enqueue(conn, kind="welcome_email", payload={}, max_attempts=3)
     # Burn 3 attempts.
     for i in range(3):
-        conn.execute(
-            "UPDATE bg_task_queue SET status='processing' WHERE id=?", (task_id,)
-        )
+        conn.execute("UPDATE bg_task_queue SET status='processing' WHERE id=?", (task_id,))
         mark_failed(conn, task_id, f"err {i}")
     row = conn.execute(
         "SELECT status, attempts, last_error FROM bg_task_queue WHERE id=?",
@@ -330,9 +321,7 @@ def test_mark_done_idempotent(tmp_path):
     conn.execute("UPDATE bg_task_queue SET status='processing' WHERE id=?", (task_id,))
     mark_done(conn, task_id)
     mark_done(conn, task_id)  # second call must not raise
-    row = conn.execute(
-        "SELECT status FROM bg_task_queue WHERE id=?", (task_id,)
-    ).fetchone()
+    row = conn.execute("SELECT status FROM bg_task_queue WHERE id=?", (task_id,)).fetchone()
     assert row["status"] == "done"
 
 
@@ -358,6 +347,7 @@ def test_dispatch_invokes_correct_handler(tmp_path, monkeypatch):
     def make_recorder(label):
         def _rec(payload):
             calls.append((label, payload))
+
         return _rec
 
     # Patch the dispatch table directly so we don't touch real Postmark / Stripe.
@@ -455,9 +445,7 @@ def test_run_worker_loop_drains_and_stops(tmp_path, monkeypatch):
     setup.close()
 
     # Speed the worker poll from 2s to 0.05s for the test.
-    monkeypatch.setattr(
-        "jpintel_mcp.api._bg_task_worker.POLL_INTERVAL_S", 0.05, raising=False
-    )
+    monkeypatch.setattr("jpintel_mcp.api._bg_task_worker.POLL_INTERVAL_S", 0.05, raising=False)
 
     async def run():
         stop = asyncio.Event()

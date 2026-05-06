@@ -7,6 +7,7 @@ cannot capture (FK + NOT NULL on key_hash).
 Per CLAUDE.md "What NOT to do": NO mocked DB. We use the real seeded_db
 fixture and inspect the row that the middleware committed.
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -62,9 +63,7 @@ def test_analytics_events_table_exists(seeded_db: Path) -> None:
     assert expected.issubset(cols), f"Missing columns: {expected - cols}"
 
 
-def test_anon_search_records_one_analytics_row(
-    client: TestClient, seeded_db: Path
-) -> None:
+def test_anon_search_records_one_analytics_row(client: TestClient, seeded_db: Path) -> None:
     """A single anonymous GET /v1/programs/search must persist exactly
     one analytics_events row with is_anonymous=1, status=200, NULL
     key_hash, non-NULL anon_ip_hash."""
@@ -84,8 +83,7 @@ def test_anon_search_records_one_analytics_row(
         c.close()
 
     assert len(rows) == 1, (
-        f"Expected exactly 1 analytics_events row, got {len(rows)}: "
-        f"{[dict(r) for r in rows]}"
+        f"Expected exactly 1 analytics_events row, got {len(rows)}: {[dict(r) for r in rows]}"
     )
     row = rows[0]
     assert row["method"] == "GET"
@@ -131,9 +129,7 @@ def test_authenticated_request_records_key_hash(
     assert row["anon_ip_hash"] is None
 
 
-def test_health_path_excluded(
-    client: TestClient, seeded_db: Path
-) -> None:
+def test_health_path_excluded(client: TestClient, seeded_db: Path) -> None:
     """/healthz must NOT generate analytics_events rows — health probes
     would dominate the table without adding signal."""
     _clear_analytics(seeded_db)
@@ -165,9 +161,7 @@ def test_funnel_event_path_excluded_from_analytics_denominator(
     assert _count_analytics_for_path(seeded_db, "/v1/funnel/event") == 0
 
 
-def test_multiple_requests_aggregate_correctly(
-    client: TestClient, seeded_db: Path
-) -> None:
+def test_multiple_requests_aggregate_correctly(client: TestClient, seeded_db: Path) -> None:
     """N requests => N rows. This is the primary launch-blocker check
     behind P0-10: analytics dashboards counted 0 in production because
     no middleware persisted the universe of traffic."""

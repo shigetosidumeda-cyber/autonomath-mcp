@@ -115,9 +115,7 @@ def test_public_sitemap_controls_have_retired_standalone_jsonld_surface() -> Non
     crawler URLs are 404'd by site/_redirects.
     """
     robots = (REPO_ROOT / "site" / "robots.txt").read_text(encoding="utf-8")
-    sitemap_index = (REPO_ROOT / "site" / "sitemap-index.xml").read_text(
-        encoding="utf-8"
-    )
+    sitemap_index = (REPO_ROOT / "site" / "sitemap-index.xml").read_text(encoding="utf-8")
     headers = (REPO_ROOT / "site" / "_headers").read_text(encoding="utf-8")
     redirects = (REPO_ROOT / "site" / "_redirects").read_text(encoding="utf-8")
 

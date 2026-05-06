@@ -6,6 +6,7 @@ by the migration 063 schema (advisory_locks table).
 No mocks — the test opens an in-process sqlite3 connection in autocommit
 mode, applies the 063 schema, then exercises the context manager.
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -66,9 +67,7 @@ def test_acquire_releases_correctly(lock_db: sqlite3.Connection):
         assert row[1] == holder
 
     # After the with-block, the row is deleted.
-    row = lock_db.execute(
-        "SELECT 1 FROM advisory_locks WHERE key = ?", (key,)
-    ).fetchone()
+    row = lock_db.execute("SELECT 1 FROM advisory_locks WHERE key = ?", (key,)).fetchone()
     assert row is None
 
 
@@ -82,7 +81,5 @@ def test_second_acquire_after_release_succeeds(lock_db: sqlite3.Connection):
         pass
     with advisory_lock(lock_db, key):
         # Reacquire on the same key works because the prior holder released.
-        row = lock_db.execute(
-            "SELECT key FROM advisory_locks WHERE key = ?", (key,)
-        ).fetchone()
+        row = lock_db.execute("SELECT key FROM advisory_locks WHERE key = ?", (key,)).fetchone()
         assert row is not None

@@ -143,9 +143,7 @@ def test_apply_blocks_when_candidate_set_is_not_reviewed_safe_set() -> None:
         expected_round_ids=(810,),
     )
 
-    statuses = dict(
-        conn.execute("SELECT round_id, status FROM am_application_round").fetchall()
-    )
+    statuses = dict(conn.execute("SELECT round_id, status FROM am_application_round").fetchall())
     assert result["safe_to_apply"] is False
     assert result["blocked_reason"]
     assert result["updated_rows"] == 0

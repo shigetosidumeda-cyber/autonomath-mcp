@@ -11,6 +11,7 @@ Three cases:
 3. The production `am_entities_vec` table (when present) is queryable via a
    bare `SELECT ... LIMIT 1` after wire-up.
 """
+
 from __future__ import annotations
 
 import os
@@ -35,16 +36,12 @@ def test_vec0_module_registered_on_connect(tmp_path):
         # Creating a virtual table proves the module is registered into
         # this specific connection (vec0 modules are per-connection).
         conn.execute("CREATE VIRTUAL TABLE t USING vec0(v float[4])")
-        conn.execute(
-            "INSERT INTO t(rowid, v) VALUES (1, '[0.1,0.2,0.3,0.4]')"
-        )
+        conn.execute("INSERT INTO t(rowid, v) VALUES (1, '[0.1,0.2,0.3,0.4]')")
         rows = conn.execute("SELECT rowid FROM t LIMIT 1").fetchall()
         assert rows and rows[0][0] == 1
     except sqlite3.OperationalError as e:
         msg = str(e).lower()
-        assert "no such module" not in msg, (
-            f"vec0 not loaded into connect()-returned conn: {e}"
-        )
+        assert "no such module" not in msg, f"vec0 not loaded into connect()-returned conn: {e}"
         raise
     finally:
         conn.close()
@@ -94,8 +91,7 @@ def test_am_entities_vec_queryable_when_present():
     try:
         # Confirm the vec0 table exists in schema before attempting query.
         row = conn.execute(
-            "SELECT name FROM sqlite_master "
-            "WHERE type='table' AND name='am_entities_vec'"
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='am_entities_vec'"
         ).fetchone()
         if row is None:
             pytest.skip("am_entities_vec not in this autonomath.db build")
@@ -105,7 +101,5 @@ def test_am_entities_vec_queryable_when_present():
         conn.execute("SELECT COUNT(*) FROM am_entities_vec").fetchone()
     except sqlite3.OperationalError as e:
         msg = str(e).lower()
-        assert "no such module" not in msg, (
-            f"vec0 not loaded into connect_autonomath() conn: {e}"
-        )
+        assert "no such module" not in msg, f"vec0 not loaded into connect_autonomath() conn: {e}"
         raise

@@ -12,6 +12,7 @@ We test each helper in isolation AND verify build_envelope round-trips
 each field correctly. The opt-out (fields="minimal") MUST drop the meta
 block entirely.
 """
+
 from __future__ import annotations
 
 import sys
@@ -81,7 +82,9 @@ def test_derive_alternative_intents_keyword_match():
 
 def test_derive_alternative_intents_rich_returns_empty():
     out = derive_alternative_intents(
-        "x", "税制 control", status="rich",
+        "x",
+        "税制 control",
+        status="rich",
     )
     assert out == []
 
@@ -150,6 +153,7 @@ def test_compute_token_estimate_handles_unserializable():
     # `set` is not JSON-serializable; must not raise.
     class Weird:
         pass
+
     est = compute_token_estimate(Weird())
     assert est > 0
 

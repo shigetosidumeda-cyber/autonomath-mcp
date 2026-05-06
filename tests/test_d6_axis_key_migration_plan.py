@@ -7,10 +7,7 @@ import sys
 from pathlib import Path
 
 SCRIPT_PATH = (
-    Path(__file__).resolve().parent.parent
-    / "scripts"
-    / "etl"
-    / "plan_axis_key_migration.py"
+    Path(__file__).resolve().parent.parent / "scripts" / "etl" / "plan_axis_key_migration.py"
 )
 
 
@@ -134,7 +131,10 @@ def test_build_plan_consumes_preflight_and_only_emits_sql_strings(tmp_path: Path
     assert all(isinstance(sql, str) for sql in migration_sql)
     assert any("ADD COLUMN axis_key" in sql for sql in migration_sql)
     assert any("SET axis_key" in sql for sql in migration_sql)
-    assert any("CREATE UNIQUE INDEX IF NOT EXISTS uq_am_facts_entity_field_axis_text" in sql for sql in migration_sql)
+    assert any(
+        "CREATE UNIQUE INDEX IF NOT EXISTS uq_am_facts_entity_field_axis_text" in sql
+        for sql in migration_sql
+    )
     assert any("DROP INDEX IF EXISTS uq_am_facts_entity_field_text" in sql for sql in migration_sql)
     assert report["unique_index_strategy"]["legacy_index_present"] is True
     assert report["data_backfill_policy"]["excluded_suffix_examples"] == [
@@ -171,9 +171,7 @@ def test_build_plan_blocks_on_preflight_duplicate_violations_with_existing_axis_
     assert report["ok"] is False
     assert "preflight:duplicate_violations:proposed_unique_key" in codes
     assert report["schema"]["am_entity_facts"]["has_axis_key"] is True
-    assert not any(
-        "ADD COLUMN axis_key" in sql for sql in report["sql"]["migration_statements"]
-    )
+    assert not any("ADD COLUMN axis_key" in sql for sql in report["sql"]["migration_statements"])
     assert report["conflict_handling"]["migration_gate"] == "blocked_until_precheck_zero"
     assert report["conflict_handling"]["preflight_duplicate_violation_groups"] == 2
 

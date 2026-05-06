@@ -23,6 +23,7 @@ both non-empty strings AND match what
 instant. The cache TTL is 5 minutes so a single-process test run sees
 identical values across the 11 round-trips.
 """
+
 from __future__ import annotations
 
 import json
@@ -336,9 +337,7 @@ def test_corpus_snapshot_coverage_all_11_routers(client, snapshot_seed, paid_key
     # ---- 4. court_decisions (already wired) ----
     r = client.get("/v1/court-decisions/HAN-5a0a050001", headers=headers)
     assert r.status_code == 200, r.text
-    _assert_snapshot_fields(
-        r.json(), expected_snap, expected_ck, where="court_decisions"
-    )
+    _assert_snapshot_fields(r.json(), expected_snap, expected_ck, where="court_decisions")
 
     # ---- 5. audit cite_chain (already wired) ----
     # Uses the seeded TAX-5e500a0001 ruleset id; chain may be 1 hop deep
@@ -372,9 +371,7 @@ def test_corpus_snapshot_coverage_all_11_routers(client, snapshot_seed, paid_key
     assert loan_row is not None, "loan_programs seed row missing"
     r = client.get(f"/v1/loan-programs/{loan_row[0]}", headers=headers)
     assert r.status_code == 200, r.text
-    _assert_snapshot_fields(
-        r.json(), expected_snap, expected_ck, where="loan_programs"
-    )
+    _assert_snapshot_fields(r.json(), expected_snap, expected_ck, where="loan_programs")
 
     # ---- 8. case_studies (newly wired) ----
     r = client.get("/v1/case-studies/CS-snapshot-001", headers=headers)
@@ -396,6 +393,4 @@ def test_corpus_snapshot_coverage_all_11_routers(client, snapshot_seed, paid_key
     # `attribution` so PDL v1.0 compliance and the audit trail compose.
     r = client.get("/v1/invoice_registrants/T9999999999992", headers=headers)
     assert r.status_code == 200, r.text
-    _assert_snapshot_fields(
-        r.json(), expected_snap, expected_ck, where="invoice_registrants"
-    )
+    _assert_snapshot_fields(r.json(), expected_snap, expected_ck, where="invoice_registrants")

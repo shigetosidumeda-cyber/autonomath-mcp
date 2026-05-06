@@ -133,9 +133,7 @@ def _build_program_db(path: Path) -> sqlite3.Connection:
 
 
 def test_strategy_variants_cover_b7_normalization_cases() -> None:
-    variants = gaps.generate_strategy_variants(
-        "IT導入補助金 2025 (デジタル化・AI導入補助金)"
-    )
+    variants = gaps.generate_strategy_variants("IT導入補助金 2025 (デジタル化・AI導入補助金)")
     by_strategy = {
         strategy: {variant.variant for variant in variants if variant.strategy == strategy}
         for strategy in {variant.strategy for variant in variants}
@@ -149,8 +147,7 @@ def test_strategy_variants_cover_b7_normalization_cases() -> None:
 
     suffix_variants = gaps.generate_strategy_variants("中小企業設備導入補助事業")
     assert any(
-        variant.strategy == "grant_suffix_variants"
-        and variant.variant == "中小企業設備導入補助金"
+        variant.strategy == "grant_suffix_variants" and variant.variant == "中小企業設備導入補助金"
         for variant in suffix_variants
     )
 
@@ -175,12 +172,13 @@ def test_collect_report_is_read_only_and_recommends_aliases(tmp_path: Path) -> N
     assert report["totals"]["current_unmatched_rows"] == 3
     assert report["totals"]["current_unmatched_named_rows"] == 2
     assert report["totals"]["current_unmatched_blank_name_rows"] == 1
-    assert report["candidate_counts_by_strategy"]["strip_fiscal_year_round"][
-        "rows_with_candidates"
-    ] == 1
-    assert report["candidate_counts_by_strategy"]["grant_suffix_variants"][
-        "rows_with_candidates"
-    ] == 1
+    assert (
+        report["candidate_counts_by_strategy"]["strip_fiscal_year_round"]["rows_with_candidates"]
+        == 1
+    )
+    assert (
+        report["candidate_counts_by_strategy"]["grant_suffix_variants"]["rows_with_candidates"] == 1
+    )
 
     recommendations = report["recommended_alias_additions"]
     assert {
