@@ -14,9 +14,7 @@ class Settings(BaseSettings):
     # autonomath.db (7.3 GB, 402,768 entities + 5.26M facts). Distinct from
     # autonomath_path above (legacy /Users/shigetoumeda/Autonomath project).
     # Dev: ./autonomath.db at repo root. Prod: /data/autonomath.db on Fly volume.
-    autonomath_db_path: Path = Field(
-        default=Path("./autonomath.db"), alias="AUTONOMATH_DB_PATH"
-    )
+    autonomath_db_path: Path = Field(default=Path("./autonomath.db"), alias="AUTONOMATH_DB_PATH")
     # Feature flag gating the 16 am_* MCP tools. Flip False for rollback to
     # 31-tool mode (if autonomath.db becomes unavailable or misbehaves).
     autonomath_enabled: bool = Field(default=True, alias="AUTONOMATH_ENABLED")
@@ -26,25 +24,21 @@ class Settings(BaseSettings):
     # `am_unified_rule` (migration 064). Default True. Flip "0"/"false" to
     # disable in case of regression — the legacy `combined_compliance_check`
     # / `check_exclusions` tools remain registered for compatibility.
-    rule_engine_enabled: bool = Field(
-        default=True, alias="AUTONOMATH_RULE_ENGINE_ENABLED"
-    )
+    rule_engine_enabled: bool = Field(default=True, alias="AUTONOMATH_RULE_ENGINE_ENABLED")
     # Feature flag gating the 6 healthcare_* MCP tool stubs (P6-D W4 prep).
-    # Default False — keeps the public manifest at 66 tools through the
-    # 2026-05-06 launch. Operators flip to True to preview the contract
-    # surface ahead of T+90d real-query land. See
+    # Default False — keeps preview-only healthcare stubs out of the public
+    # manifest. Operators flip to True to preview the contract surface ahead
+    # of T+90d real-query land. See
     # docs/healthcare_v3_plan.md and src/jpintel_mcp/mcp/healthcare_tools/.
     healthcare_enabled: bool = Field(default=False, alias="AUTONOMATH_HEALTHCARE_ENABLED")
     # Feature flag gating the 5 real_estate_* MCP tool stubs (P6-F W4 prep).
-    # Default False — keeps the public manifest at 66 tools through the
-    # 2026-05-06 launch. Operators flip to True to preview the contract
-    # surface ahead of T+200d (target 2026-11-22) real-query land. Migration
+    # Default False — keeps preview-only real-estate stubs out of the public
+    # manifest. Operators flip to True to preview the contract surface ahead
+    # of T+200d (target 2026-11-22) real-query land. Migration
     # 042 (real_estate_programs + zoning_overlays) is already applied so the
     # SQL implementation can land body-only at T+200d. See
     # docs/real_estate_v5_plan.md and src/jpintel_mcp/mcp/real_estate_tools/.
-    real_estate_enabled: bool = Field(
-        default=False, alias="AUTONOMATH_REAL_ESTATE_ENABLED"
-    )
+    real_estate_enabled: bool = Field(default=False, alias="AUTONOMATH_REAL_ESTATE_ENABLED")
     # Feature flag gating the 36協定 (時間外労働協定届) template renderer pair
     # (`render_36_kyotei_am` + `get_36_kyotei_metadata_am`). 36協定 is a
     # 社労士 (labor & social security attorney) regulated obligation under
@@ -68,18 +62,18 @@ class Settings(BaseSettings):
     # "false" via env to short-circuit the predicate in case of
     # regression. See analysis_wave18/_r8_dataset_versioning_2026-04-25.md
     # and docs/compliance/data_governance.md (法廷証拠 reproducibility).
-    r8_versioning_enabled: bool = Field(
-        default=True, alias="AUTONOMATH_R8_VERSIONING_ENABLED"
-    )
-    # Snapshot tool registration gate (`query_at_snapshot`). Migration 067
-    # was REFERENCED by snapshot_tool but never actually written — the
-    # tool errors with "no such column: valid_from" on every invocation
-    # (smoke test 2026-04-29). Default False so the broken tool stays out
-    # of `tools/list`. Flip to "1" / "true" once migration 067 lands and
-    # adds `valid_from` / `valid_until` to programs / laws / tax_rulesets.
-    autonomath_snapshot_enabled: bool = Field(
-        default=False, alias="AUTONOMATH_SNAPSHOT_ENABLED"
-    )
+    r8_versioning_enabled: bool = Field(default=True, alias="AUTONOMATH_R8_VERSIONING_ENABLED")
+    # Snapshot tool registration gate. Originally gated `query_at_snapshot`
+    # which referenced never-landed migration 067 (jpintel-side `valid_from`
+    # column). DEEP-22 (2026-05-07) replaces it: migration
+    # `wave24_180_time_machine_index.sql` indexes the autonomath spine
+    # (`am_amendment_snapshot.effective_from`, 14,596 captures + 144
+    # definitive-dated rows) and a new wrapper `time_machine_tools.py`
+    # registers `query_at_snapshot_v2` + `query_program_evolution`. Default
+    # flipped True with DEEP-22 land. The legacy `snapshot_tool.query_at_snapshot`
+    # (broken) stays gated by reading this same flag — flip to "0" via env
+    # only if the legacy tool needs to be muted again.
+    autonomath_snapshot_enabled: bool = Field(default=True, alias="AUTONOMATH_SNAPSHOT_ENABLED")
     # Reasoning subsystem gate (`intent_of` + `reason_answer`). Both tools
     # depend on a `reasoning` package (lazy-imported via _reasoning_import)
     # which is NOT present in the current install — every invocation returns
@@ -87,9 +81,7 @@ class Settings(BaseSettings):
     # broken pair stays out of `tools/list`. Flip to "1" / "true" once the
     # `reasoning` package is bundled into the install (or relocated to a
     # path on sys.path).
-    autonomath_reasoning_enabled: bool = Field(
-        default=False, alias="AUTONOMATH_REASONING_ENABLED"
-    )
+    autonomath_reasoning_enabled: bool = Field(default=False, alias="AUTONOMATH_REASONING_ENABLED")
     # Graph-walk tool gate (`related_programs`). 2026-04-29 rewritten to
     # read `am_relation` + `am_entities` directly from autonomath.db (same
     # store ``graph_traverse_tool.py`` already uses). The legacy
@@ -98,9 +90,7 @@ class Settings(BaseSettings):
     # one-flag rollback in case a regression surfaces. Distinct from
     # `graph_traverse` (which has its own AUTONOMATH_GRAPH_TRAVERSE_ENABLED
     # gate and walks v_am_relation_all multi-kind).
-    autonomath_graph_enabled: bool = Field(
-        default=True, alias="AUTONOMATH_GRAPH_ENABLED"
-    )
+    autonomath_graph_enabled: bool = Field(default=True, alias="AUTONOMATH_GRAPH_ENABLED")
     # R5 prerequisite_chain — surfaces the multi-step certification / 計画
     # / agency-relation prerequisites that gate a target program. Reads
     # from `am_prerequisite_bundle` (795 rows / 135 programs / 1.6%
@@ -122,9 +112,7 @@ class Settings(BaseSettings):
     # v1.0 / ministry standard). Every result envelope carries a 税理士法
     # §52 _disclaimer declaring the output citation-only retrieval.
     # Default True; flip to "0" / "false" via env for one-flag rollback.
-    autonomath_nta_corpus_enabled: bool = Field(
-        default=True, alias="AUTONOMATH_NTA_CORPUS_ENABLED"
-    )
+    autonomath_nta_corpus_enabled: bool = Field(default=True, alias="AUTONOMATH_NTA_CORPUS_ENABLED")
     # Wave 22 composition tools (5 MCP surfaces): match_due_diligence_questions /
     # prepare_kessan_briefing / forecast_program_renewal / cross_check_jurisdiction /
     # bundle_application_kit. Pure SQLite + Python, NO LLM, every response carries
@@ -133,9 +121,7 @@ class Settings(BaseSettings):
     # for a one-flag rollback (the tool module reads via os.environ.get for fast
     # short-circuit at import time — this Settings field mirrors the value for
     # discoverability / typed-access in code paths that already hold a Settings).
-    autonomath_wave22_enabled: bool = Field(
-        default=True, alias="AUTONOMATH_WAVE22_ENABLED"
-    )
+    autonomath_wave22_enabled: bool = Field(default=True, alias="AUTONOMATH_WAVE22_ENABLED")
     # Wave 23 industry pack wrappers (3 MCP surfaces): pack_construction (JSIC D) /
     # pack_manufacturing (JSIC E) / pack_real_estate (JSIC K). Bundle programs +
     # nta_saiketsu citations + 通達 references in 1 req. NO LLM, single ¥3/req.
@@ -183,9 +169,7 @@ class Settings(BaseSettings):
     # the per-fact join becomes a hot spot. See
     # `src/jpintel_mcp/api/uncertainty.py` and migration
     # `069_uncertainty_view.sql`.
-    uncertainty_enabled: bool = Field(
-        default=True, alias="AUTONOMATH_UNCERTAINTY_ENABLED"
-    )
+    uncertainty_enabled: bool = Field(default=True, alias="AUTONOMATH_UNCERTAINTY_ENABLED")
     # S7 disclaimer envelope level (see envelope_wrapper.SENSITIVE_TOOLS).
     # Sensitive tools (dd_profile_am / regulatory_prep_pack /
     # combined_compliance_check / rule_engine_check / predict_subsidy_outcome /
@@ -209,9 +193,7 @@ class Settings(BaseSettings):
     pii_redact_representative: bool = Field(
         default=False, alias="AUTONOMATH_PII_REDACT_REPRESENTATIVE"
     )
-    pii_redact_postal_code: bool = Field(
-        default=False, alias="AUTONOMATH_PII_REDACT_POSTAL_CODE"
-    )
+    pii_redact_postal_code: bool = Field(default=False, alias="AUTONOMATH_PII_REDACT_POSTAL_CODE")
     # 法人番号 (13桁) は 国税庁 法人番号公表サイト + gbiz PDL v1.0 で 公開情報。
     # gbiz / 法人番号 lookup を 1st-class surface に持つ check_enforcement_am /
     # search_corp 等は queried.houjin_bangou を verbatim echo する必要があり、
@@ -275,9 +257,7 @@ class Settings(BaseSettings):
     # must be kept stable across deploys for the 7-year tax-record retention
     # window. Default 'dev-audit-seal-salt' is sentinel-only; production sets
     # AUDIT_SEAL_SECRET on Fly via `fly secrets set`.
-    audit_seal_secret: str = Field(
-        default="dev-audit-seal-salt", alias="AUDIT_SEAL_SECRET"
-    )
+    audit_seal_secret: str = Field(default="dev-audit-seal-salt", alias="AUDIT_SEAL_SECRET")
     # Hard daily cap for authenticated keys whose `tier="free"`. This is the
     # dunning-demote state (a paid customer whose card is failing) — NOT the
     # public Free tier, which is anonymous and governed by anon_rate_limit
@@ -330,9 +310,7 @@ class Settings(BaseSettings):
     postmark_from_transactional: str = Field(
         default="noreply@jpcite.com", alias="POSTMARK_FROM_TRANSACTIONAL"
     )
-    postmark_from_reply: str = Field(
-        default="info@bookyou.net", alias="POSTMARK_FROM_REPLY"
-    )
+    postmark_from_reply: str = Field(default="info@bookyou.net", alias="POSTMARK_FROM_REPLY")
 
     # Preview/roadmap endpoints (legal / accounting / calendar). Default False
     # so the stable OpenAPI export (docs/openapi/v1.json) does NOT advertise

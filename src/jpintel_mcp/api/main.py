@@ -121,13 +121,13 @@ from jpintel_mcp.api.tax_rulesets import router as tax_rulesets_router
 from jpintel_mcp.api.testimonials import (
     admin_router as testimonials_admin_router,
 )
-from jpintel_mcp.api.time_machine import router as time_machine_router
 from jpintel_mcp.api.testimonials import (
     me_router as testimonials_me_router,
 )
 from jpintel_mcp.api.testimonials import (
     public_router as testimonials_public_router,
 )
+from jpintel_mcp.api.time_machine import router as time_machine_router
 from jpintel_mcp.api.transparency import router as transparency_router
 from jpintel_mcp.api.trust import router as trust_router
 from jpintel_mcp.api.usage import router as usage_router

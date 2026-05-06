@@ -12,6 +12,7 @@ Coverage:
   * `last_event_at` is bumped on successful delivery
   * absent customer_watches table degrades gracefully (no crash)
 """
+
 from __future__ import annotations
 
 import json
@@ -85,10 +86,7 @@ def _ensure_watch_tables(seeded_db: Path):
         c.execute("DELETE FROM customer_watches")
         # Wipe corpora rows that other dispatcher tests may have seeded.
         c.execute("DELETE FROM enforcement_cases")
-        c.execute(
-            "DELETE FROM invoice_registrants "
-            "WHERE invoice_registration_number LIKE 'T999%'"
-        )
+        c.execute("DELETE FROM invoice_registrants WHERE invoice_registration_number LIKE 'T999%'")
         c.commit()
     finally:
         c.close()
@@ -241,7 +239,8 @@ def _patch_dispatcher(monkeypatch, mock_client):
 
     monkeypatch.setattr(_httpx, "Client", lambda *a, **k: mock_client)
     monkeypatch.setattr(
-        "scripts.cron.dispatch_webhooks.time.sleep", lambda _s: None,
+        "scripts.cron.dispatch_webhooks.time.sleep",
+        lambda _s: None,
     )
     monkeypatch.setattr(
         "scripts.cron.dispatch_webhooks._bill_one_delivery",
@@ -259,7 +258,10 @@ def _patch_dispatcher(monkeypatch, mock_client):
 
 
 def test_houjin_watch_fans_out_enforcement_only_to_watching_key(
-    seeded_db, watch_key, other_key, monkeypatch,
+    seeded_db,
+    watch_key,
+    other_key,
+    monkeypatch,
 ):
     """A 'houjin' watch on bangou A fires enforcement.added for A-targeted
     rows ONLY to the watching key. The non-watching key (with the same
@@ -278,12 +280,18 @@ def test_houjin_watch_fans_out_enforcement_only_to_watching_key(
 
     # Both keys subscribe to enforcement.added.
     _register_webhook(
-        seeded_db, watcher_hash, "https://hooks.example.com/watcher",
-        ["enforcement.added"], secret="whsec_watcher",
+        seeded_db,
+        watcher_hash,
+        "https://hooks.example.com/watcher",
+        ["enforcement.added"],
+        secret="whsec_watcher",
     )
     _register_webhook(
-        seeded_db, other_hash, "https://hooks.example.com/other",
-        ["enforcement.added"], secret="whsec_other",
+        seeded_db,
+        other_hash,
+        "https://hooks.example.com/other",
+        ["enforcement.added"],
+        secret="whsec_other",
     )
     # Only the first key registers a houjin watch on A.
     _register_watch(seeded_db, watcher_hash, "houjin", _TEST_HOUJIN_A)
@@ -316,7 +324,8 @@ def test_houjin_watch_fans_out_enforcement_only_to_watching_key(
     # ENF-A-1 (watched houjin): delivered ONLY to the watcher, with watch
     # metadata. Must NOT appear at the non-watching URL.
     watched_payloads_at_watcher = [
-        p for u, p in deliveries
+        p
+        for u, p in deliveries
         if u == "https://hooks.example.com/watcher"
         and p["data"].get("recipient_houjin_bangou") == _TEST_HOUJIN_A
     ]
@@ -325,7 +334,8 @@ def test_houjin_watch_fans_out_enforcement_only_to_watching_key(
     assert watched_payloads_at_watcher[0]["data"]["watch_target_id"] == _TEST_HOUJIN_A
 
     watched_payloads_at_other = [
-        p for u, p in deliveries
+        p
+        for u, p in deliveries
         if u == "https://hooks.example.com/other"
         and p["data"].get("recipient_houjin_bangou") == _TEST_HOUJIN_A
     ]
@@ -338,8 +348,7 @@ def test_houjin_watch_fans_out_enforcement_only_to_watching_key(
     # ENF-B-1 (unwatched houjin): delivered to BOTH keys via the legacy
     # global fan-out path (no watch metadata).
     legacy_b_payloads = [
-        p for _u, p in deliveries
-        if p["data"].get("recipient_houjin_bangou") == _TEST_HOUJIN_B
+        p for _u, p in deliveries if p["data"].get("recipient_houjin_bangou") == _TEST_HOUJIN_B
     ]
     assert len(legacy_b_payloads) == 2
     for p in legacy_b_payloads:
@@ -347,7 +356,9 @@ def test_houjin_watch_fans_out_enforcement_only_to_watching_key(
 
 
 def test_houjin_watch_fans_out_invoice_registrant(
-    seeded_db, watch_key, monkeypatch,
+    seeded_db,
+    watch_key,
+    monkeypatch,
 ):
     """The 'houjin' watch surface delivers invoice_registrant.matched even
     though the global collector is still a placeholder. R14: the M&A
@@ -358,8 +369,11 @@ def test_houjin_watch_fans_out_invoice_registrant(
 
     watcher_hash = hash_api_key(watch_key)
     _register_webhook(
-        seeded_db, watcher_hash, "https://hooks.example.com/inv",
-        ["invoice_registrant.matched"], secret="whsec_inv",
+        seeded_db,
+        watcher_hash,
+        "https://hooks.example.com/inv",
+        ["invoice_registrant.matched"],
+        secret="whsec_inv",
     )
     _register_watch(seeded_db, watcher_hash, "houjin", _TEST_HOUJIN_C)
 
@@ -393,7 +407,9 @@ def test_kind_fan_out_per_event_type(seeded_db, watch_key, monkeypatch):
 
     watcher_hash = hash_api_key(watch_key)
     _register_webhook(
-        seeded_db, watcher_hash, "https://hooks.example.com/multi",
+        seeded_db,
+        watcher_hash,
+        "https://hooks.example.com/multi",
         ["enforcement.added", "invoice_registrant.matched"],
         secret="whsec_multi",
     )
@@ -412,9 +428,7 @@ def test_kind_fan_out_per_event_type(seeded_db, watch_key, monkeypatch):
     )
 
     assert summary["deliveries_succeeded"] == 2
-    delivered_event_types = sorted(
-        json.loads(b.decode())["event_type"] for _u, b, _h in mock.calls
-    )
+    delivered_event_types = sorted(json.loads(b.decode())["event_type"] for _u, b, _h in mock.calls)
     assert delivered_event_types == [
         "enforcement.added",
         "invoice_registrant.matched",
@@ -422,7 +436,9 @@ def test_kind_fan_out_per_event_type(seeded_db, watch_key, monkeypatch):
 
 
 def test_houjin_watch_does_not_affect_program_created_global_fanout(
-    seeded_db, watch_key, monkeypatch,
+    seeded_db,
+    watch_key,
+    monkeypatch,
 ):
     """Non-watch event types (program.created) keep the legacy global
     fan-out — registering a houjin watch must NOT suppress unrelated
@@ -433,8 +449,11 @@ def test_houjin_watch_does_not_affect_program_created_global_fanout(
 
     watcher_hash = hash_api_key(watch_key)
     _register_webhook(
-        seeded_db, watcher_hash, "https://hooks.example.com/global",
-        ["program.created"], secret="whsec_global",
+        seeded_db,
+        watcher_hash,
+        "https://hooks.example.com/global",
+        ["program.created"],
+        secret="whsec_global",
     )
     # Even though we register a houjin watch, program.created events have
     # no `_target_api_key_hashes` so the legacy path applies.
@@ -480,7 +499,9 @@ def test_houjin_watch_does_not_affect_program_created_global_fanout(
 
 
 def test_houjin_watch_bumps_last_event_at_on_success(
-    seeded_db, watch_key, monkeypatch,
+    seeded_db,
+    watch_key,
+    monkeypatch,
 ):
     """Successful delivery updates customer_watches.last_event_at so the
     /v1/me/watches dashboard reflects the most recent event firing.
@@ -490,8 +511,11 @@ def test_houjin_watch_bumps_last_event_at_on_success(
 
     watcher_hash = hash_api_key(watch_key)
     _register_webhook(
-        seeded_db, watcher_hash, "https://hooks.example.com/bump",
-        ["enforcement.added"], secret="whsec_bump",
+        seeded_db,
+        watcher_hash,
+        "https://hooks.example.com/bump",
+        ["enforcement.added"],
+        secret="whsec_bump",
     )
     watch_id = _register_watch(seeded_db, watcher_hash, "houjin", _TEST_HOUJIN_A)
     _seed_enforcement_for_houjin(seeded_db, "ENF-BUMP-1", _TEST_HOUJIN_A)
@@ -500,7 +524,8 @@ def test_houjin_watch_bumps_last_event_at_on_success(
     c = sqlite3.connect(seeded_db)
     c.row_factory = sqlite3.Row
     pre = c.execute(
-        "SELECT last_event_at FROM customer_watches WHERE id = ?", (watch_id,),
+        "SELECT last_event_at FROM customer_watches WHERE id = ?",
+        (watch_id,),
     ).fetchone()
     c.close()
     assert pre["last_event_at"] is None
@@ -520,11 +545,165 @@ def test_houjin_watch_bumps_last_event_at_on_success(
     c = sqlite3.connect(seeded_db)
     c.row_factory = sqlite3.Row
     post = c.execute(
-        "SELECT last_event_at FROM customer_watches WHERE id = ?", (watch_id,),
+        "SELECT last_event_at FROM customer_watches WHERE id = ?",
+        (watch_id,),
     ).fetchone()
     c.close()
     assert post["last_event_at"] is not None
     assert len(post["last_event_at"]) >= 10  # ISO date-ish
+
+
+def test_billing_failure_before_send_skips_post_and_retries_next_pass(
+    seeded_db,
+    watch_key,
+    other_key,
+    monkeypatch,
+):
+    """DEEP-48 Pattern A — charge fails BEFORE POST → no HTTP send, next cron retries.
+
+    Replaces the legacy "POST then bill" path. Under the charge-first fence,
+    if billing throws on webhook A the POST is skipped entirely so the
+    customer is never notified for an unbilled event. Webhook B (separate
+    api_key_hash) charges cleanly and POSTs as normal. The next cron pass
+    re-attempts webhook A's billing and (if successful) finally delivers.
+    """
+    from jpintel_mcp.api.deps import hash_api_key
+    from scripts.cron import dispatch_webhooks as dw
+
+    watcher_hash = hash_api_key(watch_key)
+    other_hash = hash_api_key(other_key)
+    wid = _register_webhook(
+        seeded_db,
+        watcher_hash,
+        "https://hooks.example.com/billing-fail",
+        ["enforcement.added"],
+        secret="whsec_billing_fail",
+    )
+    other_wid = _register_webhook(
+        seeded_db,
+        other_hash,
+        "https://hooks.example.com/billing-ok",
+        ["enforcement.added"],
+        secret="whsec_billing_ok",
+    )
+    watch_id = _register_watch(seeded_db, watcher_hash, "houjin", _TEST_HOUJIN_A)
+    other_watch_id = _register_watch(seeded_db, other_hash, "houjin", _TEST_HOUJIN_A)
+    _seed_enforcement_for_houjin(seeded_db, "ENF-BILLING-FAIL-1", _TEST_HOUJIN_A)
+
+    # Only webhook B will POST; webhook A's billing fails pre-send.
+    mock = _MockClient(responses=[(200, "")])
+    _patch_dispatcher(monkeypatch, mock)
+
+    bill_calls: list[int] = []
+
+    def _billing_fails(*_args, **_kwargs):
+        bill_calls.append(1)
+        if len(bill_calls) == 1:
+            raise RuntimeError("billing cap closed")
+
+    monkeypatch.setattr(
+        "scripts.cron.dispatch_webhooks._bill_one_delivery",
+        _billing_fails,
+    )
+
+    summary = dw.run(
+        since_iso="2000-01-01T00:00:00+00:00",
+        dry_run=False,
+        jpintel_db=seeded_db,
+    )
+
+    # Pattern A: webhook A's POST is skipped (pre-charge failed),
+    # webhook B's POST goes through.
+    assert len(mock.calls) == 1
+    assert len(bill_calls) == 2
+    assert summary["deliveries_succeeded"] == 1
+    assert summary["billing_failures"] == 1
+    assert summary["billed_units"] == 1
+
+    c = sqlite3.connect(seeded_db)
+    c.row_factory = sqlite3.Row
+    try:
+        delivery_rows = c.execute(
+            "SELECT webhook_id, status_code, delivered_at, attempt_count "
+            "FROM webhook_deliveries WHERE webhook_id IN (?, ?) "
+            "ORDER BY webhook_id",
+            (wid, other_wid),
+        ).fetchall()
+        webhook = c.execute(
+            "SELECT status, failure_count, last_delivery_at FROM customer_webhooks WHERE id = ?",
+            (wid,),
+        ).fetchone()
+        watch = c.execute(
+            "SELECT last_event_at FROM customer_watches WHERE id = ?",
+            (watch_id,),
+        ).fetchone()
+        other_watch = c.execute(
+            "SELECT last_event_at FROM customer_watches WHERE id = ?",
+            (other_watch_id,),
+        ).fetchone()
+    finally:
+        c.close()
+
+    # Only webhook B has a delivery row. Webhook A's pre-charge failure
+    # leaves no delivery row so the next cron sweep re-attempts cleanly.
+    delivery_by_wid = {r["webhook_id"]: r for r in delivery_rows}
+    assert other_wid in delivery_by_wid
+    assert delivery_by_wid[other_wid]["status_code"] == 200
+    assert wid not in delivery_by_wid
+    assert webhook["status"] == "active"
+    assert webhook["failure_count"] == 0
+    # Webhook A never delivered → no last_delivery_at update.
+    assert webhook["last_delivery_at"] is None
+    # Webhook A's watch was never bumped (no event fired).
+    assert watch["last_event_at"] is None
+    assert other_watch["last_event_at"] is not None
+
+    # Next cron pass: webhook A's billing succeeds → POST happens → delivered.
+    mock2 = _MockClient(responses=[(200, ""), (200, "")])
+    import httpx as _httpx
+
+    monkeypatch.setattr(_httpx, "Client", lambda *a, **k: mock2)
+    monkeypatch.setattr(
+        "scripts.cron.dispatch_webhooks._bill_one_delivery",
+        lambda *a, **k: None,
+    )
+
+    summary = dw.run(
+        since_iso="2000-01-01T00:00:00+00:00",
+        dry_run=False,
+        jpintel_db=seeded_db,
+    )
+
+    # Webhook A retries fresh and posts; webhook B is dedup-skipped.
+    assert summary["deliveries_skipped_dedup"] >= 1
+    assert summary["deliveries_succeeded"] == 1
+    assert len(mock2.calls) == 1
+
+
+def test_main_returns_nonzero_when_billing_failed(monkeypatch, capsys):
+    from scripts.cron import dispatch_webhooks as dw
+
+    class _Heartbeat:
+        def __enter__(self):
+            return {}
+
+        def __exit__(self, *_exc):
+            return False
+
+    monkeypatch.setattr(dw, "heartbeat", lambda _name: _Heartbeat())
+    monkeypatch.setattr(
+        dw,
+        "run",
+        lambda **_kwargs: {
+            "deliveries_succeeded": 1,
+            "deliveries_skipped_dedup": 0,
+            "billing_failures": 1,
+        },
+    )
+
+    assert dw.main([]) == 1
+    out = json.loads(capsys.readouterr().out)
+    assert out["billing_failures"] == 1
 
 
 def test_disabled_watch_is_ignored(seeded_db, watch_key, monkeypatch):
@@ -542,8 +721,11 @@ def test_disabled_watch_is_ignored(seeded_db, watch_key, monkeypatch):
 
     watcher_hash = hash_api_key(watch_key)
     _register_webhook(
-        seeded_db, watcher_hash, "https://hooks.example.com/disabled",
-        ["enforcement.added"], secret="whsec_disabled",
+        seeded_db,
+        watcher_hash,
+        "https://hooks.example.com/disabled",
+        ["enforcement.added"],
+        secret="whsec_disabled",
     )
     watch_id = _register_watch(seeded_db, watcher_hash, "houjin", _TEST_HOUJIN_A)
     # Disable the watch.
@@ -577,7 +759,9 @@ def test_disabled_watch_is_ignored(seeded_db, watch_key, monkeypatch):
 
 
 def test_missing_customer_watches_table_does_not_crash(
-    seeded_db, watch_key, monkeypatch,
+    seeded_db,
+    watch_key,
+    monkeypatch,
 ):
     """If migration 088 is not yet applied (cold DB), the dispatcher must
     keep working — `_load_active_watches` swallows OperationalError.
@@ -587,8 +771,11 @@ def test_missing_customer_watches_table_does_not_crash(
 
     watcher_hash = hash_api_key(watch_key)
     _register_webhook(
-        seeded_db, watcher_hash, "https://hooks.example.com/cold",
-        ["enforcement.added"], secret="whsec_cold",
+        seeded_db,
+        watcher_hash,
+        "https://hooks.example.com/cold",
+        ["enforcement.added"],
+        secret="whsec_cold",
     )
     _seed_enforcement_for_houjin(seeded_db, "ENF-COLD-1", _TEST_HOUJIN_A)
 
@@ -648,7 +835,8 @@ def test_collect_houjin_watch_events_no_active_watches_returns_empty(seeded_db):
     c.row_factory = sqlite3.Row
     try:
         events = _collect_houjin_watch_events(
-            c, Path("/tmp/__no_such_autonomath.db__"),
+            c,
+            Path("/tmp/__no_such_autonomath.db__"),
             "2000-01-01T00:00:00+00:00",
         )
     finally:

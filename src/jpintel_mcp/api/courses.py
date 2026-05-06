@@ -41,8 +41,10 @@ Course completion → upsell:
     advice is 弁護士法 §72. We mention this in the docstring so the
     template editor sees the constraint at copy time.
 """
+
 from __future__ import annotations
 
+import contextlib
 import logging
 from datetime import UTC, datetime
 from typing import Annotated, Any, Literal
@@ -51,8 +53,8 @@ from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, EmailStr, Field
 
 from jpintel_mcp.api.deps import (
-    ApiContextDep,
-    DbDep,
+    ApiContextDep,  # noqa: TC001 - FastAPI resolves dependency aliases at runtime.
+    DbDep,  # noqa: TC001 - FastAPI resolves dependency aliases at runtime.
 )
 
 router = APIRouter(prefix="/v1/me/courses", tags=["courses"])
@@ -205,6 +207,99 @@ def _record_metered_delivery(
         logger.warning("courses.delivery_billing_skipped endpoint=%s", endpoint)
 
 
+def _raise_delivery_billing_cap_failed() -> None:
+    raise HTTPException(
+        status.HTTP_503_SERVICE_UNAVAILABLE,
+        detail={
+            "code": "billing_cap_final_check_failed",
+            "message": (
+                "This paid response was not delivered because the "
+                "final billing-cap check rejected the metered charge."
+            ),
+        },
+    )
+
+
+def _preflight_metered_delivery(
+    *,
+    conn: Any,
+    key_hash: str,
+    metered: bool,
+    endpoint: str,
+) -> None:
+    """Run the strict delivery cap check before irreversible course effects.
+
+    This intentionally closes any SQLite transaction before returning: the
+    caller may send email next, and must not hold the writer lock while doing
+    external I/O. The usage row is still written after a successful send; this
+    preflight only rejects obviously unbillable deliveries before email.
+    """
+    from jpintel_mcp.api.deps import _metered_cap_final_check
+
+    if not metered:
+        logger.warning(
+            "courses.delivery_billing_unavailable endpoint=%s",
+            endpoint,
+        )
+        raise HTTPException(
+            status.HTTP_402_PAYMENT_REQUIRED,
+            detail={
+                "code": "billing_required",
+                "message": "Course delivery requires a paid metered API key.",
+            },
+        )
+
+    txn_started = False
+    try:
+        allowed, txn_started = _metered_cap_final_check(
+            conn,
+            key_hash=key_hash,
+            metered=metered,
+            status_code=200,
+            quantity=1,
+        )
+        if txn_started:
+            conn.execute("COMMIT")
+            txn_started = False
+    except Exception:
+        if txn_started and conn.in_transaction:
+            with contextlib.suppress(Exception):
+                conn.execute("ROLLBACK")
+        raise
+    if not allowed:
+        logger.warning(
+            "courses.delivery_billing_preflight_failed endpoint=%s",
+            endpoint,
+        )
+        _raise_delivery_billing_cap_failed()
+
+
+def _mark_delivery_sent_without_usage_row(
+    *,
+    conn: Any,
+    sub_id: int,
+    sent_at: str,
+    endpoint: str,
+) -> None:
+    """Advance the subscription after a sent email even if usage persistence failed.
+
+    At this point the external send already happened. Advancing current_day
+    prevents client retries or cron from sending D+1 repeatedly while the
+    caller still receives a fail-closed response for the missing audit row.
+    """
+    try:
+        conn.execute(
+            "UPDATE course_subscriptions SET current_day = 1, last_sent_at = ? WHERE id = ?",
+            (sent_at, sub_id),
+        )
+    except Exception:
+        logger.exception(
+            "courses.delivery_sent_marker_failed endpoint=%s sub_id=%s",
+            endpoint,
+            sub_id,
+        )
+
+
 # ---------------------------------------------------------------------------
 # Endpoints
 # ---------------------------------------------------------------------------
@@ -241,8 +336,7 @@ def subscribe_course(
 
     # Cap on simultaneous active courses per key.
     (active_count,) = conn.execute(
-        "SELECT COUNT(*) FROM course_subscriptions "
-        "WHERE api_key_id = ? AND status = 'active'",
+        "SELECT COUNT(*) FROM course_subscriptions WHERE api_key_id = ? AND status = 'active'",
         (ctx.key_hash,),
     ).fetchone()
 
@@ -265,6 +359,19 @@ def subscribe_course(
         )
 
     now = datetime.now(UTC).isoformat().replace("+00:00", "Z")
+    _preflight_metered_delivery(
+        conn=conn,
+        key_hash=ctx.key_hash,
+        metered=ctx.metered,
+        endpoint="courses.delivery",
+    )
+
+    # DEEP-46 Pattern A: insert subscription row at current_day=0, then
+    # charge → email send → advance current_day=1. The previous order was
+    # email → charge → advance; that left a partial-charge / partial-email
+    # window if either side blew up. With Pattern A the only inconsistency
+    # window is "charge succeeded, email failed" — handled below by leaving
+    # current_day=0 so the cron retries the SAME D+1 next sweep.
     cur = conn.execute(
         """INSERT INTO course_subscriptions(
                 api_key_id, email, course_slug, started_at,
@@ -275,7 +382,7 @@ def subscribe_course(
             payload.notify_email,
             payload.course_slug,
             now,
-            0,  # bumped to 1 below after the synchronous D+1 send
+            0,  # bumped to 1 below ONLY after both charge + email succeed
             "active",
             None,
             now,
@@ -288,29 +395,71 @@ def subscribe_course(
             "failed to create course subscription",
         )
 
-    # D+1 immediate send. We DO bill on success.
-    outcome = _send_day_n_now(
-        to=payload.notify_email,
-        course_slug=payload.course_slug,
-        day_n=1,
-    )
-    sent_ok = (
-        "error" not in outcome
-        and outcome.get("reason") not in {"unknown_course_or_day", "send_failed"}
-    )
-    if sent_ok:
-        conn.execute(
-            "UPDATE course_subscriptions SET current_day = 1, last_sent_at = ? "
-            "WHERE id = ?",
-            (now, sub_id),
-        )
-        # Metered ¥3 for the immediate D+1 — same endpoint name shape as the
-        # cron uses so dashboards do not split on send-path.
+    # Step 1 (Pattern A): charge ¥3 BEFORE the external email send. If the
+    # cap final-check rejects, the email is never sent and current_day stays
+    # at 0 so the cron will not race forward. The charge row is the single
+    # source of truth for "did this customer get billed this day".
+    charge_txn_started = False
+    try:
+        if not conn.in_transaction:
+            conn.execute("BEGIN IMMEDIATE")
+            charge_txn_started = True
         _record_metered_delivery(
             conn=conn,
             key_hash=ctx.key_hash,
             endpoint="courses.delivery",
         )
+        if charge_txn_started:
+            conn.execute("COMMIT")
+            charge_txn_started = False
+    except Exception as exc:
+        if charge_txn_started and conn.in_transaction:
+            with contextlib.suppress(Exception):
+                conn.execute("ROLLBACK")
+        logger.warning(
+            "courses.delivery_charge_failed_pre_send endpoint=%s sub_id=%s",
+            "courses.delivery",
+            sub_id,
+            exc_info=True,
+        )
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail={
+                "code": "billing_cap_final_check_failed",
+                "message": (
+                    "This paid course was not delivered because the "
+                    "billing charge could not be recorded before send."
+                ),
+            },
+        ) from exc
+
+    # Step 2 (Pattern A): synchronous D+1 send. Charge already succeeded; if
+    # the email transport fails, current_day stays at 0 so the cron retries
+    # the same day on the next sweep. The customer is NOT double-charged
+    # because the cron's idempotency_cache key (course × day × YYYYMMDD)
+    # dedups the second attempt.
+    outcome = _send_day_n_now(
+        to=payload.notify_email,
+        course_slug=payload.course_slug,
+        day_n=1,
+    )
+    sent_ok = "error" not in outcome and outcome.get("reason") not in {
+        "unknown_course_or_day",
+        "send_failed",
+    }
+
+    # Step 3 (Pattern A): advance current_day=1 ONLY after a successful send.
+    if sent_ok:
+        try:
+            conn.execute(
+                "UPDATE course_subscriptions SET current_day = 1, last_sent_at = ? WHERE id = ?",
+                (now, sub_id),
+            )
+        except Exception:
+            logger.exception(
+                "courses.subscription_advance_failed sub_id=%s",
+                sub_id,
+            )
 
     row = conn.execute(
         "SELECT id, api_key_id, email, course_slug, started_at, current_day, "
@@ -363,21 +512,16 @@ def cancel_course(
             "course cancel requires an authenticated API key",
         )
     if course_slug not in COURSE_CATALOG:
-        raise HTTPException(
-            status.HTTP_404_NOT_FOUND, "course not found"
-        )
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "course not found")
     row = conn.execute(
         "SELECT id FROM course_subscriptions "
         "WHERE api_key_id = ? AND course_slug = ? AND status = 'active'",
         (ctx.key_hash, course_slug),
     ).fetchone()
     if row is None:
-        raise HTTPException(
-            status.HTTP_404_NOT_FOUND, "active course subscription not found"
-        )
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "active course subscription not found")
     conn.execute(
-        "UPDATE course_subscriptions SET status = 'cancelled' "
-        "WHERE id = ?",
+        "UPDATE course_subscriptions SET status = 'cancelled' WHERE id = ?",
         (row["id"],),
     )
     return DeleteCourseResponse(ok=True, course_slug=course_slug)

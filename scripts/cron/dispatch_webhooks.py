@@ -60,6 +60,7 @@ Usage:
     python scripts/cron/dispatch_webhooks.py --since 2026-04-29T00:00:00+00:00
     python scripts/cron/dispatch_webhooks.py --window-minutes 60  # default 1440 (24h)
 """
+
 from __future__ import annotations
 
 import argparse
@@ -225,9 +226,7 @@ def _collect_program_created(
                 "program_kind": r["program_kind"],
                 "tier": r["tier"],
                 "corpus_snapshot_id": snapshot_id,
-                "evidence_packet_endpoint": _evidence_packet_endpoint(
-                    str(r["unified_id"])
-                ),
+                "evidence_packet_endpoint": _evidence_packet_endpoint(str(r["unified_id"])),
             },
             "timestamp": r["updated_at"],
         }
@@ -286,11 +285,13 @@ def _collect_program_amended(
                     },
                     "timestamp": r["detected_at"],
                 }
-            grouped[eid]["data"]["diffs"].append({
-                "field": r["field_name"],
-                "before": r["prev_value"],
-                "after": r["new_value"],
-            })
+            grouped[eid]["data"]["diffs"].append(
+                {
+                    "field": r["field_name"],
+                    "before": r["prev_value"],
+                    "after": r["new_value"],
+                }
+            )
         return list(grouped.values())
     finally:
         am_conn.close()
@@ -371,20 +372,22 @@ def _collect_tax_ruleset_amended(
         ).fetchall()
     out: list[dict[str, Any]] = []
     for r in rows:
-        out.append({
-            "event_type": "tax_ruleset.amended",
-            "event_id": str(r["unified_id"]),
-            "data": {
-                "unified_id": r["unified_id"],
-                "name": r["ruleset_name"],
-                "tax_category": r["tax_category"],
-                "ruleset_kind": r["ruleset_kind"],
-                "effective_from": r["effective_from"],
-                "effective_until": r["effective_until"],
-                "related_law_ids": json.loads(r["related_law_ids_json"] or "[]"),
-            },
-            "timestamp": r["effective_from"] or datetime.now(UTC).isoformat(),
-        })
+        out.append(
+            {
+                "event_type": "tax_ruleset.amended",
+                "event_id": str(r["unified_id"]),
+                "data": {
+                    "unified_id": r["unified_id"],
+                    "name": r["ruleset_name"],
+                    "tax_category": r["tax_category"],
+                    "ruleset_kind": r["ruleset_kind"],
+                    "effective_from": r["effective_from"],
+                    "effective_until": r["effective_until"],
+                    "related_law_ids": json.loads(r["related_law_ids_json"] or "[]"),
+                },
+                "timestamp": r["effective_from"] or datetime.now(UTC).isoformat(),
+            }
+        )
     return out
 
 
@@ -533,29 +536,31 @@ def _collect_houjin_watch_events(
         keys = houjin_watches.get(houjin) or set()
         if not keys:
             continue
-        out.append({
-            "event_type": "enforcement.added",
-            "event_id": f"watch:houjin:{houjin}:enf:{r['case_id']}",
-            "data": {
-                "watch_kind": "houjin",
-                "watch_target_id": houjin,
-                "case_id": r["case_id"],
-                "event_kind": r["event_type"],
-                "recipient_name": r["recipient_name"],
-                "recipient_houjin_bangou": houjin,
-                "prefecture": r["prefecture"],
-                "ministry": r["ministry"],
-                "amount_yen": r["amount_yen"],
-                "reason_excerpt": r["reason_excerpt"],
-                "source_url": r["source_url"],
-                "disclosed_date": r["disclosed_date"],
-                "corpus_snapshot_id": snapshot_id,
-            },
-            "timestamp": r["fetched_at"],
-            "_target_api_key_hashes": set(keys),
-            "_watch_target_id": houjin,
-            "_watch_kind": "houjin",
-        })
+        out.append(
+            {
+                "event_type": "enforcement.added",
+                "event_id": f"watch:houjin:{houjin}:enf:{r['case_id']}",
+                "data": {
+                    "watch_kind": "houjin",
+                    "watch_target_id": houjin,
+                    "case_id": r["case_id"],
+                    "event_kind": r["event_type"],
+                    "recipient_name": r["recipient_name"],
+                    "recipient_houjin_bangou": houjin,
+                    "prefecture": r["prefecture"],
+                    "ministry": r["ministry"],
+                    "amount_yen": r["amount_yen"],
+                    "reason_excerpt": r["reason_excerpt"],
+                    "source_url": r["source_url"],
+                    "disclosed_date": r["disclosed_date"],
+                    "corpus_snapshot_id": snapshot_id,
+                },
+                "timestamp": r["fetched_at"],
+                "_target_api_key_hashes": set(keys),
+                "_watch_target_id": houjin,
+                "_watch_kind": "houjin",
+            }
+        )
 
     # 2. invoice_registrant.matched scoped per watch — real path even though
     # the global collector is still a placeholder. M&A subscribers want the
@@ -579,31 +584,33 @@ def _collect_houjin_watch_events(
         keys = houjin_watches.get(houjin) or set()
         if not keys:
             continue
-        out.append({
-            "event_type": "invoice_registrant.matched",
-            "event_id": (
-                f"watch:houjin:{houjin}:inv:{r['invoice_registration_number']}"
-                f"@{r['updated_at']}"
-            ),
-            "data": {
-                "watch_kind": "houjin",
-                "watch_target_id": houjin,
-                "invoice_registration_number": r["invoice_registration_number"],
-                "houjin_bangou": houjin,
-                "normalized_name": r["normalized_name"],
-                "prefecture": r["prefecture"],
-                "registered_date": r["registered_date"],
-                "revoked_date": r["revoked_date"],
-                "expired_date": r["expired_date"],
-                "registrant_kind": r["registrant_kind"],
-                "source_url": r["source_url"],
-                "corpus_snapshot_id": snapshot_id,
-            },
-            "timestamp": r["updated_at"],
-            "_target_api_key_hashes": set(keys),
-            "_watch_target_id": houjin,
-            "_watch_kind": "houjin",
-        })
+        out.append(
+            {
+                "event_type": "invoice_registrant.matched",
+                "event_id": (
+                    f"watch:houjin:{houjin}:inv:{r['invoice_registration_number']}"
+                    f"@{r['updated_at']}"
+                ),
+                "data": {
+                    "watch_kind": "houjin",
+                    "watch_target_id": houjin,
+                    "invoice_registration_number": r["invoice_registration_number"],
+                    "houjin_bangou": houjin,
+                    "normalized_name": r["normalized_name"],
+                    "prefecture": r["prefecture"],
+                    "registered_date": r["registered_date"],
+                    "revoked_date": r["revoked_date"],
+                    "expired_date": r["expired_date"],
+                    "registrant_kind": r["registrant_kind"],
+                    "source_url": r["source_url"],
+                    "corpus_snapshot_id": snapshot_id,
+                },
+                "timestamp": r["updated_at"],
+                "_target_api_key_hashes": set(keys),
+                "_watch_target_id": houjin,
+                "_watch_kind": "houjin",
+            }
+        )
 
     # 3. program.amended scoped per watch — autonomath.am_amendment_diff
     # rows whose entity_id is the watched 法人番号. corporate_entity rows
@@ -660,11 +667,13 @@ def _collect_houjin_watch_events(
                     "_watch_target_id": houjin,
                     "_watch_kind": "houjin",
                 }
-            grouped[key]["data"]["diffs"].append({
-                "field": r["field_name"],
-                "before": r["prev_value"],
-                "after": r["new_value"],
-            })
+            grouped[key]["data"]["diffs"].append(
+                {
+                    "field": r["field_name"],
+                    "before": r["prev_value"],
+                    "after": r["new_value"],
+                }
+            )
         out.extend(grouped.values())
 
     return out
@@ -715,7 +724,8 @@ def _deliver_one(
     if dry_run:
         logger.info(
             "webhook.dry_run host=%s event=%s",
-            urlparse(url).hostname, event_type,
+            urlparse(url).hostname,
+            event_type,
         )
         return 200, None
 
@@ -770,8 +780,15 @@ def _record_delivery_attempt(
                     status_code, attempt_count, delivered_at, error, created_at
                ) VALUES (?,?,?,?,?,?,?,?,?)""",
             (
-                webhook_id, event_type, event_id, payload_str,
-                status_code, attempt_count, delivered_at, error, now,
+                webhook_id,
+                event_type,
+                event_id,
+                payload_str,
+                status_code,
+                attempt_count,
+                delivered_at,
+                error,
+                now,
             ),
         )
         return int(cur.lastrowid or 0)
@@ -783,8 +800,14 @@ def _record_delivery_attempt(
                       error = ?, payload_json = ?
                 WHERE webhook_id = ? AND event_type = ? AND event_id = ?""",
             (
-                status_code, attempt_count, delivered_at, error, payload_str,
-                webhook_id, event_type, event_id,
+                status_code,
+                attempt_count,
+                delivered_at,
+                error,
+                payload_str,
+                webhook_id,
+                event_type,
+                event_id,
             ),
         )
         row = conn.execute(
@@ -846,9 +869,9 @@ def _bill_one_delivery(
 
     Mirrors the inline path in `deps.log_usage` but with endpoint=
     'webhook.delivered' so dashboards can break out webhook revenue.
-    Failures here are non-fatal: the delivery already succeeded, the
-    customer endpoint already received the payload, billing reconciliation
-    happens via the cron + Stripe usage backfill scripts.
+    Strict local billing failures propagate. Callers must persist the
+    successful delivery state before invoking this helper because the
+    customer endpoint already received the payload.
     """
     if not jp_conn:
         return
@@ -879,8 +902,7 @@ def _queue_disabled_email(
         # Look up the email tied to this key (same lookup path as
         # me.py:_lookup_subscriber_email).
         row = jp_conn.execute(
-            "SELECT email FROM email_schedule WHERE api_key_id = ? "
-            "ORDER BY id ASC LIMIT 1",
+            "SELECT email FROM email_schedule WHERE api_key_id = ? ORDER BY id ASC LIMIT 1",
             (api_key_hash,),
         ).fetchone()
         if row is None:
@@ -893,6 +915,7 @@ def _queue_disabled_email(
 
     try:
         from jpintel_mcp.api._bg_task_queue import enqueue
+
         enqueue(
             jp_conn,
             kind="webhook_disabled_email",
@@ -925,9 +948,7 @@ def run(
     am_path = autonomath_db or Path(str(settings.autonomath_db_path))
 
     if since_iso is None:
-        since_iso = (
-            datetime.now(UTC) - timedelta(minutes=window_minutes)
-        ).isoformat()
+        since_iso = (datetime.now(UTC) - timedelta(minutes=window_minutes)).isoformat()
 
     jp_conn = connect(jpintel_db) if jpintel_db else connect()
 
@@ -941,6 +962,7 @@ def run(
         "deliveries_skipped_dedup": 0,
         "webhooks_disabled": 0,
         "billed_units": 0,
+        "billing_failures": 0,
         "dry_run": dry_run,
     }
 
@@ -975,9 +997,7 @@ def run(
         watches_by_kind: dict[str, dict[str, set[str]]] = {}
         if subscribed_types & set(_HOUJIN_WATCH_EVENT_TYPES):
             watches_by_kind = _load_active_watches(jp_conn)
-        watched_houjins: frozenset[str] = frozenset(
-            (watches_by_kind.get("houjin") or {}).keys()
-        )
+        watched_houjins: frozenset[str] = frozenset((watches_by_kind.get("houjin") or {}).keys())
 
         events: list[dict[str, Any]] = []
         if "program.amended" in subscribed_types:
@@ -997,7 +1017,10 @@ def run(
         if watches_by_kind.get("houjin"):
             events.extend(
                 _collect_houjin_watch_events(
-                    jp_conn, am_path, since_iso, watches=watches_by_kind,
+                    jp_conn,
+                    am_path,
+                    since_iso,
+                    watches=watches_by_kind,
                 )
             )
         summary["events_collected"] = len(events)
@@ -1034,9 +1057,7 @@ def run(
                     target_keys = ev.get("_target_api_key_hashes")
                     if target_keys is not None and w["api_key_hash"] not in target_keys:
                         continue
-                    if _already_delivered(
-                        jp_conn, wid, ev["event_type"], ev["event_id"]
-                    ):
+                    if _already_delivered(jp_conn, wid, ev["event_type"], ev["event_id"]):
                         summary["deliveries_skipped_dedup"] += 1
                         continue
 
@@ -1045,6 +1066,34 @@ def run(
                         "timestamp": ev["timestamp"] or now_iso,
                         "data": ev["data"],
                     }
+
+                    # DEEP-48 Pattern A — charge-first fence.
+                    # Idempotency dedup is already done above via
+                    # `_already_delivered`. The charge happens BEFORE the
+                    # first POST attempt so a cap-exceeded customer never
+                    # gets a webhook fired they cannot pay for. On charge
+                    # failure we skip this (webhook, event) entirely; the
+                    # next cron sweep will re-attempt the charge once the
+                    # cap window resets.
+                    pre_charged = False
+                    if not dry_run:
+                        try:
+                            _bill_one_delivery(jp_conn, wid, w["api_key_hash"])
+                            pre_charged = True
+                            summary["billed_units"] += 1
+                        except Exception:  # noqa: BLE001
+                            summary["billing_failures"] += 1
+                            logger.exception(
+                                "webhook.delivery_pre_charge_failed "
+                                "webhook_id=%s event_type=%s event_id=%s",
+                                wid,
+                                ev["event_type"],
+                                ev["event_id"],
+                            )
+                            # Charge-first failed → skip the POST, do NOT
+                            # write a delivery row, let the next cron pass
+                            # retry. This is the DEEP-48 fail-closed branch.
+                            continue
 
                     # Per-event retry loop: initial + 3 retries.
                     status_code: int | None = None
@@ -1093,10 +1142,24 @@ def run(
                         summary["deliveries_succeeded"] += 1
                         last_success = now_iso
                         cur_failure_count = 0
-                        # Bill the successful delivery.
                         if not dry_run:
-                            _bill_one_delivery(jp_conn, wid, w["api_key_hash"])
-                            summary["billed_units"] += 1
+                            # Persist success before strict billing. Once the
+                            # external endpoint has received the payload, a
+                            # billing exception must not leave the dispatcher
+                            # poised to resend or show stale webhook/watch
+                            # state on the next run.
+                            jp_conn.execute(
+                                """UPDATE customer_webhooks
+                                      SET failure_count = ?, last_delivery_at = ?,
+                                          updated_at = ?
+                                    WHERE id = ?""",
+                                (
+                                    cur_failure_count,
+                                    last_success,
+                                    datetime.now(UTC).isoformat(),
+                                    wid,
+                                ),
+                            )
                         # Bump customer_watches.last_event_at so the
                         # /v1/me/watches dashboard reflects the most recent
                         # fired event. Cheap (single UPDATE per delivery)
@@ -1111,6 +1174,10 @@ def run(
                                 api_key_hash=w["api_key_hash"],
                                 when_iso=now_iso,
                             )
+                        # DEEP-48 Pattern A: charge already happened
+                        # pre-send (see `pre_charged` above). No second
+                        # billing call here — that would double-charge.
+                        _ = pre_charged  # tag unused-var lint
                     else:
                         summary["deliveries_failed"] += 1
                         cur_failure_count += 1
@@ -1128,19 +1195,19 @@ def run(
                                   SET failure_count = ?, last_delivery_at = ?,
                                       updated_at = ?
                                 WHERE id = ?""",
-                            (cur_failure_count, last_success,
-                             datetime.now(UTC).isoformat(), wid),
+                            (cur_failure_count, last_success, datetime.now(UTC).isoformat(), wid),
                         )
                     elif failures_this_run:
                         jp_conn.execute(
                             """UPDATE customer_webhooks
                                   SET failure_count = ?, updated_at = ?
                                 WHERE id = ?""",
-                            (cur_failure_count,
-                             datetime.now(UTC).isoformat(), wid),
+                            (cur_failure_count, datetime.now(UTC).isoformat(), wid),
                         )
                     if _maybe_disable_webhook(
-                        jp_conn, wid, cur_failure_count,
+                        jp_conn,
+                        wid,
+                        cur_failure_count,
                         failures_this_run[-1] if failures_this_run else None,
                     ):
                         summary["webhooks_disabled"] += 1
@@ -1161,6 +1228,7 @@ def run(
         return summary
     finally:
         import contextlib
+
         with contextlib.suppress(Exception):
             jp_conn.close()
 
@@ -1168,11 +1236,15 @@ def run(
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Customer webhook dispatcher")
     parser.add_argument("--dry-run", action="store_true")
-    parser.add_argument("--since", default=None,
-                        help="ISO datetime (default: now - --window-minutes)")
-    parser.add_argument("--window-minutes", type=int,
-                        default=_DEFAULT_WINDOW_MINUTES,
-                        help="Lookback window when --since not provided.")
+    parser.add_argument(
+        "--since", default=None, help="ISO datetime (default: now - --window-minutes)"
+    )
+    parser.add_argument(
+        "--window-minutes",
+        type=int,
+        default=_DEFAULT_WINDOW_MINUTES,
+        help="Lookback window when --since not provided.",
+    )
     parser.add_argument("--log-level", default="INFO")
     args = parser.parse_args(argv)
 
@@ -1187,16 +1259,25 @@ def main(argv: list[str] | None = None) -> int:
             dry_run=args.dry_run,
         )
         hb["rows_processed"] = int(
-            summary.get("delivered", summary.get("dispatched", 0)) or 0
+            summary.get("deliveries_succeeded", summary.get("delivered", 0)) or 0
         )
-        hb["rows_skipped"] = int(summary.get("skipped", 0) or 0)
+        hb["rows_skipped"] = int(
+            summary.get("deliveries_skipped_dedup", summary.get("skipped", 0)) or 0
+        )
         hb["metadata"] = {
             k: summary[k]
-            for k in ("scanned", "failed", "retried", "dry_run")
+            for k in (
+                "events_collected",
+                "deliveries_attempted",
+                "deliveries_failed",
+                "billing_failures",
+                "billed_units",
+                "dry_run",
+            )
             if k in summary
         }
     print(json.dumps(summary, ensure_ascii=False))
-    return 0
+    return 1 if int(summary.get("billing_failures") or 0) else 0
 
 
 if __name__ == "__main__":

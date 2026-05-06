@@ -16,6 +16,7 @@ Cost posture (project_autonomath_business_model — ¥3/req metered ONLY):
 §52 fence: every PDF body carries the disclaimer block (see
 src/jpintel_mcp/templates/quarterly_report.html).
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -24,6 +25,7 @@ import logging
 import sqlite3
 import urllib.error
 import urllib.request
+import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Annotated, Any, Literal
@@ -128,8 +130,7 @@ def _gather_watch_amendments(
     and surface a placeholder list when autonomath.db is not attached.
     """
     rows = conn.execute(
-        "SELECT last_active_program_ids_json FROM client_profiles "
-        "WHERE api_key_hash = ?",
+        "SELECT last_active_program_ids_json FROM client_profiles WHERE api_key_hash = ?",
         (key_hash,),
     ).fetchall()
     watched: set[str] = set()
@@ -162,9 +163,7 @@ def _gather_watch_amendments(
     ]
 
 
-def _gather_eligible_unapplied(
-    conn: sqlite3.Connection, key_hash: str
-) -> list[dict[str, Any]]:
+def _gather_eligible_unapplied(conn: sqlite3.Connection, key_hash: str) -> list[dict[str, Any]]:
     """Programs that match any client_profile filters but are NOT in
     last_active_program_ids_json (= eligible but not yet applied).
     """
@@ -218,9 +217,7 @@ def _gather_eligible_unapplied(
     ]
 
 
-def _record_metered_pdf(
-    conn: sqlite3.Connection, key_hash: str
-) -> bool:
+def _record_metered_pdf(conn: sqlite3.Connection, key_hash: str) -> bool:
     """Bill ¥3 for the PDF render. Mirrors saved_searches.digest shape."""
     from jpintel_mcp.billing.delivery import record_metered_delivery
 
@@ -245,11 +242,7 @@ def _render_pdf_to(
     without WeasyPrint installed, missing system fonts, etc) so callers
     can surface a 503 instead of a 500.
     """
-    template_path = (
-        Path(__file__).resolve().parent.parent
-        / "templates"
-        / "quarterly_report.html"
-    )
+    template_path = Path(__file__).resolve().parent.parent / "templates" / "quarterly_report.html"
     try:
         # Lazy-import jinja2 + weasyprint so a missing optional dep at
         # import time (test env) does not break the whole api package.
@@ -274,6 +267,57 @@ def _render_pdf_to(
         return False
 
 
+def _render_metered_pdf_to_cache(
+    *,
+    conn: sqlite3.Connection,
+    key_hash: str,
+    cache_path: Path,
+    context: dict[str, Any],
+) -> bool:
+    """Charge ¥3, then render the PDF, then promote it to cache.
+
+    DEEP-47 Pattern A — charge BEFORE PDF render. The previous order
+    (render → charge → promote) burned WeasyPrint CPU on a customer who was
+    over their monthly cap, then 503'd them after the spend. Charge-first
+    means the only failure path that costs us compute is "billed but the
+    customer's renderer / R2 went sideways", which is reconciled by
+    `cleanup_pdf_unpaid_cache.py` (status='r2_failed' / 'pdf_failed' rows
+    age out after 7 days) and refunded out-of-band by operator if needed.
+
+    The cache path is the customer-visible deliverable. Never write it
+    before the strict metered usage row exists; otherwise a billing 503
+    could leave an unbilled PDF cache hit behind.
+    """
+    # Step 1 (Pattern A): charge ¥3 BEFORE rendering. Cap-exceeded /
+    # webhook-collision keys never burn renderer CPU.
+    billed = _record_metered_pdf(conn, key_hash)
+    if not billed:
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail={
+                "code": "pdf_billing_unavailable",
+                "message": (
+                    "This paid PDF was not delivered because billing could not be recorded."
+                ),
+            },
+        )
+
+    # Step 2 (Pattern A): render the PDF. On render failure the charge
+    # row remains; reconcile cron flips status='pdf_failed' for refund.
+    tmp_path = cache_path.with_name(f".{cache_path.name}.{uuid.uuid4().hex}.tmp")
+    try:
+        rendered = _render_pdf_to(out_path=tmp_path, context=context)
+        if not rendered:
+            return False
+        # Step 3 (Pattern A): promote temp file to cache. R2-equivalent
+        # in the recurring_quarterly surface (we serve from local disk via
+        # FileResponse — the actual R2 path is exercised by the test stub).
+        tmp_path.replace(cache_path)
+        return True
+    finally:
+        tmp_path.unlink(missing_ok=True)
+
+
 @router.get("/quarterly/{year}/{quarter}")
 def get_quarterly_pdf(
     year: int,
@@ -292,13 +336,9 @@ def get_quarterly_pdf(
             "quarterly report requires an authenticated API key",
         )
     if quarter < 1 or quarter > 4:
-        raise HTTPException(
-            status.HTTP_400_BAD_REQUEST, "quarter must be 1, 2, 3, or 4"
-        )
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "quarter must be 1, 2, 3, or 4")
     if year < 2024 or year > 2100:
-        raise HTTPException(
-            status.HTTP_400_BAD_REQUEST, "year out of range"
-        )
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "year out of range")
 
     token = _api_key_id_token(ctx.key_hash)
     cache_path = _QUARTERLY_CACHE_DIR / f"{token}_{year}_q{quarter}.pdf"
@@ -311,17 +351,15 @@ def get_quarterly_pdf(
 
     period_start, period_end = _quarter_period(year, quarter)
     usage_stats = _gather_usage_stats(conn, ctx.key_hash, period_start, period_end)
-    watch_amendments = _gather_watch_amendments(
-        conn, ctx.key_hash, period_start, period_end
-    )
+    watch_amendments = _gather_watch_amendments(conn, ctx.key_hash, period_start, period_end)
     eligible_unapplied = _gather_eligible_unapplied(conn, ctx.key_hash)
     amendment_summary = {
         "ウォッチ対象改正": len(watch_amendments),
         "新規申請可能制度": len(eligible_unapplied),
         "対象期間 (日)": (
-            datetime.fromisoformat(period_end)
-            - datetime.fromisoformat(period_start)
-        ).days + 1,
+            datetime.fromisoformat(period_end) - datetime.fromisoformat(period_start)
+        ).days
+        + 1,
     }
     context = {
         "year": year,
@@ -335,13 +373,17 @@ def get_quarterly_pdf(
         "eligible_unapplied": eligible_unapplied,
         "amendment_summary": amendment_summary,
     }
-    rendered = _render_pdf_to(out_path=cache_path, context=context)
+    rendered = _render_metered_pdf_to_cache(
+        conn=conn,
+        key_hash=ctx.key_hash,
+        cache_path=cache_path,
+        context=context,
+    )
     if not rendered:
         raise HTTPException(
             status.HTTP_503_SERVICE_UNAVAILABLE,
             "PDF renderer unavailable — install weasyprint + jinja2 on the host",
         )
-    _record_metered_pdf(conn, ctx.key_hash)
     return FileResponse(
         path=str(cache_path),
         media_type="application/pdf",
@@ -457,9 +499,7 @@ def set_slack_webhook(
 
 class StartEmailCourseRequest(BaseModel):
     notify_email: EmailStr
-    course_slug: Annotated[
-        Literal["invoice", "dencho"], Field(default="invoice")
-    ] = "invoice"
+    course_slug: Annotated[Literal["invoice", "dencho"], Field(default="invoice")] = "invoice"
 
 
 @router.post("/email_course/start", status_code=status.HTTP_201_CREATED)

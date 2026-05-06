@@ -55,7 +55,7 @@ from typing import Annotated, Any
 
 from pydantic import Field
 
-from jpintel_mcp.config import Settings, settings
+from jpintel_mcp.config import Settings
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
 from .error_envelope import make_error
@@ -278,8 +278,20 @@ def query_at_snapshot(
     }
 
 
-# Gate registration on AUTONOMATH_SNAPSHOT_ENABLED so the broken tool is
-# absent from `tools/list` until migration 067 lands. Body-only definition
-# above remains importable for tests / future fix.
-if settings.autonomath_snapshot_enabled:
+# DEEP-22 (2026-05-07): the AUTONOMATH_SNAPSHOT_ENABLED flag now lights up
+# the new time_machine_tools.py wrapper (`query_at_snapshot_v2`) which
+# pivots off am_amendment_snapshot.effective_from. The LEGACY tool below
+# still references the never-landed jpintel-side migration 067
+# (`valid_from` column on programs) and remains broken. Gate it behind a
+# separate AUTONOMATH_LEGACY_SNAPSHOT_ENABLED flag so it stays off by
+# default — operators flip it on only if they really need the legacy
+# behaviour after writing migration 067.
+import os as _os  # noqa: E402
+
+_LEGACY_ENABLED = _os.environ.get("AUTONOMATH_LEGACY_SNAPSHOT_ENABLED", "0") in (
+    "1",
+    "true",
+    "True",
+)
+if _LEGACY_ENABLED:
     query_at_snapshot = mcp.tool(annotations=_READ_ONLY)(query_at_snapshot)

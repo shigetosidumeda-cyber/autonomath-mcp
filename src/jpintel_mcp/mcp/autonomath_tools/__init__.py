@@ -19,6 +19,9 @@ NOT registered:
                               which reads am_entities directly.
 """
 
+import os
+from importlib import import_module
+
 from jpintel_mcp.mcp.server import mcp as _mcp
 
 from . import (
@@ -47,6 +50,7 @@ from . import (
     sunset_tool,  # noqa: F401  — V1 feature #11 (dd_v4_05): list_tax_sunset_alerts
     tax_rule_tool,  # noqa: F401  — decorator side-effect (1 tool)
     template_tool,  # noqa: F401  — Phase A: render_36_kyotei_am + get_36_kyotei_metadata_am
+    time_machine_tools,  # noqa: F401  — DEEP-22 (2026-05-07): 2 tools (query_at_snapshot_v2 / query_program_evolution) over am_amendment_snapshot 14,596 captures + 144 definitive-dated. AUTONOMATH_SNAPSHOT_ENABLED gate (default ON post-DEEP-22). NO LLM, single ¥3/req billing.
     tools,  # noqa: F401  — decorator side-effect (10 tools)
     validation_tools,  # noqa: F401  — V4 Phase 4: validate (am_validation_rule dispatcher, migration 047)
     wave22_tools,  # noqa: F401  — Wave 22: 5 composition tools (match_due_diligence_questions / prepare_kessan_briefing / forecast_program_renewal / cross_check_jurisdiction / bundle_application_kit, AUTONOMATH_WAVE22_ENABLED gate). Adds dd_question_templates DB (migration 104).
@@ -57,6 +61,25 @@ from . import (
 # URIs and prompt templates to the FastMCP capability surface.
 from .prompts import register_prompts as _register_prompts
 from .resources import register_resources as _register_resources
+
+
+def _experimental_mcp_enabled() -> bool:
+    return os.getenv("AUTONOMATH_EXPERIMENTAL_MCP_ENABLED", "0").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+
+
+if _experimental_mcp_enabled():
+    for _module_name in (
+        "jpintel_mcp.mcp.autonomath_tools.intel_wave31",
+        "jpintel_mcp.mcp.autonomath_tools.wave24_tools_first_half",
+        "jpintel_mcp.mcp.autonomath_tools.wave24_tools_second_half",
+    ):
+        import_module(_module_name)
+
 
 _register_resources(_mcp)
 _register_prompts(_mcp)

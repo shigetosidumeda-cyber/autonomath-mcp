@@ -11,13 +11,16 @@ Two pre-recorded courses exist in COURSE_CATALOG: 'invoice' (5d) /
 D+1 fire on subscribe is mocked here via the bg_task_queue inline
 runner (already wired in the conftest fixture).
 """
+
 from __future__ import annotations
 
 import sqlite3
-from pathlib import Path
+from datetime import UTC, datetime
+from pathlib import Path  # noqa: TC003 - Fixture annotations use pytest runtime objects.
 
 import pytest
 
+from jpintel_mcp.api.deps import hash_api_key
 from jpintel_mcp.billing.keys import issue_key
 
 
@@ -148,6 +151,245 @@ def test_subscribe_duplicate_is_409(client, course_key):
         json=body,
     )
     assert r2.status_code == 409, r2.text
+
+
+def test_subscribe_final_cap_failure_does_not_send_or_persist(
+    client,
+    course_key,
+    seeded_db: Path,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    """The immediate D+1 delivery must fail closed before email/sub state."""
+    from jpintel_mcp.api import courses as courses_mod
+
+    key_hash = hash_api_key(course_key)
+    conn = sqlite3.connect(seeded_db)
+    try:
+        conn.execute(
+            "UPDATE api_keys SET monthly_cap_yen = ? WHERE key_hash = ?",
+            (3, key_hash),
+        )
+        conn.execute(
+            "INSERT INTO usage_events(key_hash, endpoint, ts, status, metered, quantity) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            (
+                key_hash,
+                "already.billed",
+                datetime.now(UTC).isoformat(),
+                200,
+                1,
+                1,
+            ),
+        )
+        before_usage = conn.execute(
+            "SELECT COUNT(*) FROM usage_events "
+            "WHERE key_hash = ? AND endpoint = 'courses.delivery'",
+            (key_hash,),
+        ).fetchone()[0]
+        conn.commit()
+    finally:
+        conn.close()
+
+    sends: list[dict] = []
+
+    def _send_day_n_now(**kwargs):
+        sends.append(kwargs)
+        return {"MessageID": "should-not-send"}
+
+    monkeypatch.setattr(courses_mod, "_send_day_n_now", _send_day_n_now)
+
+    r = client.post(
+        "/v1/me/courses",
+        headers={"X-API-Key": course_key},
+        json={
+            "course_slug": "invoice",
+            "notify_email": "cap@example.com",
+        },
+    )
+
+    assert r.status_code == 503, r.text
+    assert r.json()["detail"]["code"] == "billing_cap_final_check_failed"
+    assert sends == []
+
+    conn = sqlite3.connect(seeded_db)
+    try:
+        course_count = conn.execute(
+            "SELECT COUNT(*) FROM course_subscriptions "
+            "WHERE api_key_id = ? AND course_slug = 'invoice'",
+            (key_hash,),
+        ).fetchone()[0]
+        after_usage = conn.execute(
+            "SELECT COUNT(*) FROM usage_events "
+            "WHERE key_hash = ? AND endpoint = 'courses.delivery'",
+            (key_hash,),
+        ).fetchone()[0]
+    finally:
+        conn.close()
+
+    assert course_count == 0
+    assert after_usage == before_usage
+
+
+def test_subscribe_unbillable_key_does_not_send_or_persist(
+    client,
+    seeded_db: Path,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    """Non-metered keys cannot trigger the paid immediate course delivery."""
+    from jpintel_mcp.api import courses as courses_mod
+
+    conn = sqlite3.connect(seeded_db)
+    try:
+        free_key = issue_key(
+            conn,
+            customer_id="cus_courses_free",
+            tier="free",
+            stripe_subscription_id=None,
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+    key_hash = hash_api_key(free_key)
+    sends: list[dict] = []
+
+    def _send_day_n_now(**kwargs):
+        sends.append(kwargs)
+        return {"MessageID": "should-not-send"}
+
+    monkeypatch.setattr(courses_mod, "_send_day_n_now", _send_day_n_now)
+
+    r = client.post(
+        "/v1/me/courses",
+        headers={"X-API-Key": free_key},
+        json={
+            "course_slug": "invoice",
+            "notify_email": "free@example.com",
+        },
+    )
+
+    assert r.status_code == 402, r.text
+    assert r.json()["detail"]["code"] == "billing_required"
+    assert sends == []
+
+    conn = sqlite3.connect(seeded_db)
+    try:
+        course_count = conn.execute(
+            "SELECT COUNT(*) FROM course_subscriptions WHERE api_key_id = ?",
+            (key_hash,),
+        ).fetchone()[0]
+        usage_count = conn.execute(
+            "SELECT COUNT(*) FROM usage_events "
+            "WHERE key_hash = ? AND endpoint = 'courses.delivery'",
+            (key_hash,),
+        ).fetchone()[0]
+    finally:
+        conn.close()
+
+    assert course_count == 0
+    assert usage_count == 0
+
+
+def test_subscribe_does_not_hold_writer_lock_while_sending(
+    client,
+    course_key,
+    seeded_db: Path,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    """The preflight BEGIN IMMEDIATE must be closed before external email I/O."""
+    from jpintel_mcp.api import courses as courses_mod
+
+    lock_probe_ok = False
+
+    def _send_day_n_now(**kwargs):
+        nonlocal lock_probe_ok
+        probe = sqlite3.connect(seeded_db, timeout=0.05, isolation_level=None)
+        try:
+            probe.execute("BEGIN IMMEDIATE")
+            probe.execute("COMMIT")
+            lock_probe_ok = True
+        finally:
+            probe.close()
+        return {"MessageID": "sent-without-held-writer-lock"}
+
+    monkeypatch.setattr(courses_mod, "_send_day_n_now", _send_day_n_now)
+
+    r = client.post(
+        "/v1/me/courses",
+        headers={"X-API-Key": course_key},
+        json={
+            "course_slug": "invoice",
+            "notify_email": "lock@example.com",
+        },
+    )
+
+    assert r.status_code == 201, r.text
+    assert lock_probe_ok is True
+
+
+def test_subscribe_charge_failure_before_send_does_not_email(
+    client,
+    course_key,
+    seeded_db: Path,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    """DEEP-46 Pattern A — charge fails BEFORE send → no email, no advance.
+
+    Replaces the legacy "charge fails AFTER send" path; under Pattern A the
+    charge happens pre-send so a billing failure must short-circuit the
+    flow before any external email goes out. The subscription row remains
+    at current_day=0 so the cron retries cleanly on the next sweep.
+    """
+    from jpintel_mcp.api import courses as courses_mod
+
+    sends: list[dict] = []
+
+    def _send_day_n_now(**kwargs):
+        sends.append(kwargs)
+        return {"MessageID": f"sent-{len(sends)}"}
+
+    def _record_metered_delivery(**kwargs):
+        raise sqlite3.OperationalError("simulated usage_events write failure")
+
+    monkeypatch.setattr(courses_mod, "_send_day_n_now", _send_day_n_now)
+    monkeypatch.setattr(courses_mod, "_record_metered_delivery", _record_metered_delivery)
+
+    r = client.post(
+        "/v1/me/courses",
+        headers={"X-API-Key": course_key},
+        json={
+            "course_slug": "invoice",
+            "notify_email": "audit-fail@example.com",
+        },
+    )
+
+    assert r.status_code == 503, r.text
+    assert r.json()["detail"]["code"] == "billing_cap_final_check_failed"
+    # Pattern A — email never went out because charge failed first.
+    assert len(sends) == 0
+
+    key_hash = hash_api_key(course_key)
+    conn = sqlite3.connect(seeded_db)
+    try:
+        row = conn.execute(
+            "SELECT current_day, last_sent_at FROM course_subscriptions "
+            "WHERE api_key_id = ? AND course_slug = 'invoice' AND status = 'active'",
+            (key_hash,),
+        ).fetchone()
+        usage_count = conn.execute(
+            "SELECT COUNT(*) FROM usage_events "
+            "WHERE key_hash = ? AND endpoint = 'courses.delivery'",
+            (key_hash,),
+        ).fetchone()[0]
+    finally:
+        conn.close()
+
+    # Subscription row exists (insert succeeded) but stays at day 0 +
+    # no last_sent_at because the email was never attempted.
+    assert row is not None
+    assert row[0] == 0
+    assert row[1] is None
+    assert usage_count == 0
 
 
 def test_cancel_flips_status(client, course_key):

@@ -703,6 +703,21 @@ def saved_search_results(
     rows, total = _run_saved_search_query(conn, query)
     snapshot_id, checksum = compute_corpus_snapshot(conn)
 
+    # DEEP-48 Pattern A — charge BEFORE rendering the deliverable. If the
+    # cap final-check rejects, log_usage raises and the renderer never
+    # runs, so the customer never receives an unbilled body. Same hash key
+    # in the strict-metering path serves as the idempotent dedup fence —
+    # the middleware idempotency_cache (mig 087) already covers replay,
+    # and here the saved_search_id + format fingerprint scopes the charge.
+    log_usage(
+        conn,
+        ctx,
+        "saved_searches.results",
+        params={"saved_search_id": saved_id, "format": format},
+        result_count=len(rows),
+        strict_metering=True,
+    )
+
     if format == "json":
         from fastapi.responses import JSONResponse
 
@@ -713,21 +728,13 @@ def saved_search_results(
             "corpus_snapshot_id": snapshot_id,
             "corpus_checksum": checksum,
         }
-        response = JSONResponse(
+        return JSONResponse(
             content=envelope,
             headers={
                 "X-Corpus-Snapshot-Id": snapshot_id,
                 "X-Corpus-Checksum": checksum,
             },
         )
-        log_usage(
-            conn,
-            ctx,
-            "saved_searches.results",
-            params={"saved_search_id": saved_id, "format": format},
-            result_count=len(rows),
-        )
-        return response
 
     from jpintel_mcp.api._format_dispatch import render
 
@@ -742,13 +749,6 @@ def saved_search_results(
     resp = render(rows, format, meta)
     resp.headers["X-Corpus-Snapshot-Id"] = snapshot_id
     resp.headers["X-Corpus-Checksum"] = checksum
-    log_usage(
-        conn,
-        ctx,
-        "saved_searches.results",
-        params={"saved_search_id": saved_id, "format": format},
-        result_count=len(rows),
-    )
     return resp
 
 
@@ -793,20 +793,22 @@ def saved_search_results_xlsx(
     from jpintel_mcp.api.formats.xlsx import render_xlsx
 
     rows, total = _run_saved_search_query(conn, query)
-    meta = {
-        "saved_search_id": saved_id,
-        "total": total,
-        "license": "jpcite evidence export",
-    }
-    response = render_xlsx(rows, meta)
+    # DEEP-48 Pattern A — charge BEFORE rendering the workbook so a
+    # cap-exceeded customer never gets an unbilled .xlsx body back.
     log_usage(
         conn,
         ctx,
         "saved_searches.results_xlsx",
         params={"saved_search_id": saved_id, "format": "xlsx"},
         result_count=len(rows),
+        strict_metering=True,
     )
-    return response
+    meta = {
+        "saved_search_id": saved_id,
+        "total": total,
+        "license": "jpcite evidence export",
+    }
+    return render_xlsx(rows, meta)
 
 
 __all__ = [

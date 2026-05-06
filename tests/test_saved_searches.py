@@ -6,6 +6,7 @@ Coverage focus is the gap-fix surface added by migration 099:
     * email channel must NOT carry a channel_url
     * row read survives the legacy-shape branch (channel_format absent)
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -46,8 +47,7 @@ def _ensure_saved_searches_table(seeded_db: Path):
         cols = {row[1] for row in c.execute("PRAGMA table_info(saved_searches)")}
         if "channel_format" not in cols:
             c.execute(
-                "ALTER TABLE saved_searches ADD COLUMN channel_format "
-                "TEXT NOT NULL DEFAULT 'email'"
+                "ALTER TABLE saved_searches ADD COLUMN channel_format TEXT NOT NULL DEFAULT 'email'"
             )
         if "channel_url" not in cols:
             c.execute("ALTER TABLE saved_searches ADD COLUMN channel_url TEXT")
@@ -208,9 +208,18 @@ def test_results_xlsx_replays_saved_filters_before_billing(
     assert _usage_count(seeded_db, "saved_searches.results_xlsx") == before + 1
 
 
-def test_results_xlsx_renderer_failure_is_not_billed(
+def test_results_xlsx_renderer_failure_charges_first_per_pattern_a(
     client, saved_search_key, seeded_db: Path, monkeypatch
 ):
+    """DEEP-48 Pattern A — charge BEFORE render.
+
+    Replaces the legacy "render-fail = no bill" path: under the charge-first
+    fence, a renderer crash AFTER successful billing leaves a +1 usage row
+    behind. The cap-exceeded path (final_cap_failure test below) is the
+    correct fail-closed branch; this test pins the charge-first invariant
+    so a future refactor that re-orders charge after render is caught.
+    """
+
     def _fake_build_search_response(**kwargs):
         return {"total": 1, "results": [{"unified_id": "UNI-render-fails"}]}
 
@@ -242,4 +251,65 @@ def test_results_xlsx_renderer_failure_is_not_billed(
             f"/v1/me/saved_searches/{saved_id}/results.xlsx",
             headers={"X-API-Key": saved_search_key},
         )
-    assert _usage_count(seeded_db, "saved_searches.results_xlsx") == before
+    # Pattern A: charge happened pre-render, so the renderer crash leaves
+    # a usage row behind. Reconcile cron handles the rare refund path.
+    assert _usage_count(seeded_db, "saved_searches.results_xlsx") == before + 1
+
+
+def test_results_paid_final_cap_failure_returns_503_without_usage_event(
+    client, saved_search_key, seeded_db: Path, monkeypatch
+):
+    import jpintel_mcp.api.deps as deps
+    from jpintel_mcp.api.deps import hash_api_key
+
+    def _fake_build_search_response(**kwargs):
+        return {"total": 1, "results": [{"unified_id": "UNI-final-cap"}]}
+
+    def _reject_final_cap(*_args, **_kwargs):
+        return False, False
+
+    from jpintel_mcp.api import programs as programs_mod
+
+    monkeypatch.setattr(programs_mod, "_build_search_response", _fake_build_search_response)
+
+    r0 = client.post(
+        "/v1/me/saved_searches",
+        headers={"X-API-Key": saved_search_key},
+        json={
+            "name": "final cap check",
+            "query": {"prefecture": "東京都"},
+            "frequency": "daily",
+            "notify_email": "test@example.com",
+        },
+    )
+    assert r0.status_code == 201, r0.text
+    saved_id = r0.json()["id"]
+
+    key_hash = hash_api_key(saved_search_key)
+    c = sqlite3.connect(seeded_db)
+    try:
+        before = c.execute(
+            "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = ?",
+            (key_hash, "saved_searches.results"),
+        ).fetchone()[0]
+    finally:
+        c.close()
+
+    monkeypatch.setattr(deps, "_metered_cap_final_check", _reject_final_cap)
+
+    r = client.get(
+        f"/v1/me/saved_searches/{saved_id}/results",
+        headers={"X-API-Key": saved_search_key},
+    )
+    assert r.status_code == 503, r.text
+    assert r.json()["detail"]["code"] == "billing_cap_final_check_failed"
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        after = c.execute(
+            "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND endpoint = ?",
+            (key_hash, "saved_searches.results"),
+        ).fetchone()[0]
+    finally:
+        c.close()
+    assert after == before
