@@ -1,0 +1,9 @@
+# Autonomath boot migration allowlist.
+#
+# entrypoint.sh defaults to AUTONOMATH_BOOT_MIGRATION_MODE=manifest and only
+# considers filenames listed here for boot-time autonomath.db self-heal.
+#
+# Keep this empty unless a deploy packet explicitly approves a migration for
+# boot-time application. Prefer offline/manual migration review for new schema
+# changes, especially files with DROP/DELETE, vec0 virtual tables, or
+# -- boot_time: manual.

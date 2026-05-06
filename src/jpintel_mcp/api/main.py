@@ -10,6 +10,7 @@ import unicodedata
 from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime
+from importlib import import_module
 from typing import Any
 
 import uvicorn
@@ -20,6 +21,7 @@ from fastapi.openapi.utils import get_openapi
 from fastapi.responses import JSONResponse, RedirectResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.gzip import GZipMiddleware
 from starlette.responses import Response
 from structlog.contextvars import bind_contextvars, clear_contextvars
 
@@ -104,6 +106,7 @@ from jpintel_mcp.api.middleware import (
     SecurityHeadersMiddleware,
     StrictQueryMiddleware,
 )
+from jpintel_mcp.api.middleware.origin_enforcement import _MUST_INCLUDE
 from jpintel_mcp.api.openapi_agent import build_agent_openapi_schema
 from jpintel_mcp.api.prescreen import router as prescreen_router
 from jpintel_mcp.api.programs import router as programs_router
@@ -118,6 +121,7 @@ from jpintel_mcp.api.tax_rulesets import router as tax_rulesets_router
 from jpintel_mcp.api.testimonials import (
     admin_router as testimonials_admin_router,
 )
+from jpintel_mcp.api.time_machine import router as time_machine_router
 from jpintel_mcp.api.testimonials import (
     me_router as testimonials_me_router,
 )
@@ -127,16 +131,47 @@ from jpintel_mcp.api.testimonials import (
 from jpintel_mcp.api.transparency import router as transparency_router
 from jpintel_mcp.api.trust import router as trust_router
 from jpintel_mcp.api.usage import router as usage_router
+from jpintel_mcp.api.verify import router as verify_router
 from jpintel_mcp.api.widget_auth import router as widget_router
 from jpintel_mcp.config import settings
 from jpintel_mcp.db.session import init_db
 from jpintel_mcp.security.pii_redact import redact_pii
+
+artifacts_router: Any | None = None
 
 # ── Query telemetry ────────────────────────────────────────────────────────
 # Structured JSON lines emitted to stdout via "autonomath.query" logger.
 # No PII: only keys (not values) are logged; free-text is reduced to length
 # and script-language heuristic.  Logging failure never blocks responses.
 _query_log = logging.getLogger("autonomath.query")
+
+
+def _env_truthy(name: str) -> bool:
+    return os.getenv(name, "0").strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _optional_router(module_name: str, attr: str = "router") -> Any | None:
+    try:
+        module = import_module(module_name)
+    except ModuleNotFoundError as exc:
+        if exc.name == module_name:
+            return None
+        raise
+    return getattr(module, attr)
+
+
+def _include_experimental_router(
+    app: FastAPI,
+    module_name: str,
+    *,
+    attr: str = "router",
+    dependencies: list[Any] | None = None,
+) -> None:
+    if not _env_truthy("AUTONOMATH_EXPERIMENTAL_API_ENABLED"):
+        return
+    router = _optional_router(module_name, attr)
+    if router is not None:
+        app.include_router(router, dependencies=dependencies)
 
 
 def _detect_lang(text: str) -> str:
@@ -207,6 +242,155 @@ def _emit_query_log(
 _ready: bool = False
 
 
+def _is_production_env() -> bool:
+    """Return true for both supported production env labels."""
+    env = os.getenv("JPINTEL_ENV", getattr(settings, "env", "dev")) or "dev"
+    return env.lower() in {"prod", "production"}
+
+
+# ── §S2 production secrets boot-gate (W28) ─────────────────────────────────
+# Forbidden API_KEY_SALT values that MUST never ship to production. The
+# pre-commit hook (`tests/test_no_default_secrets_in_prod.py`) scans tracked
+# `.env.production` / `fly.production.toml` files for these strings and the
+# boot-gate (`_assert_production_secrets`) refuses to start the API when
+# `JPINTEL_ENV` is `prod`/`production` and the running config still carries
+# a placeholder. The empty string is included so we also reject the case
+# where API_KEY_SALT was unset by a misconfigured fly secret rotation.
+_FORBIDDEN_SALTS: frozenset[str] = frozenset(
+    {
+        "dev-salt",
+        "test-salt",
+        "change-this-salt-in-prod",
+        "",
+    }
+)
+_FORBIDDEN_AUDIT_SEAL_VALUES: frozenset[str] = frozenset(
+    {
+        "dev-audit-seal-salt",
+        "test-audit-seal-salt",
+        "change-this-audit-seal-secret-in-prod",
+        "",
+    }
+)
+
+
+def _audit_seal_rotation_keys(raw: str) -> list[str]:
+    """Return configured audit-seal rotation secret values.
+
+    Production operators normally set a comma-separated list. Historical
+    rotation tests used JSON objects with an ``s`` secret field, so the boot
+    gate accepts that shape too and validates the same underlying secrets.
+    """
+    raw = raw.strip()
+    if not raw:
+        return []
+    if raw[0] in "[{":
+        try:
+            parsed = json.loads(raw)
+        except json.JSONDecodeError as exc:
+            raise SystemExit(
+                "[BOOT FAIL] JPINTEL_AUDIT_SEAL_KEYS must be valid JSON or a "
+                "comma-separated rotation list in production."
+            ) from exc
+        if isinstance(parsed, dict):
+            parsed = [parsed]
+        if not isinstance(parsed, list):
+            raise SystemExit(
+                "[BOOT FAIL] JPINTEL_AUDIT_SEAL_KEYS JSON must be a list in production."
+            )
+        keys: list[str] = []
+        for item in parsed:
+            secret = item.get("s") if isinstance(item, dict) else item
+            keys.append(secret if isinstance(secret, str) else "")
+        return keys
+    return [part.strip() for part in raw.split(",")]
+
+
+def _assert_audit_seal_value(name: str, value: str) -> None:
+    if value in _FORBIDDEN_AUDIT_SEAL_VALUES:
+        raise SystemExit(
+            f"[BOOT FAIL] {name} is set to a forbidden placeholder ({value!r}). "
+            "Set a unique audit-seal key value."
+        )
+    if len(value) < 32:
+        raise SystemExit(f"[BOOT FAIL] {name} must be ≥32 chars in production (got {len(value)}).")
+
+
+def _assert_production_secrets() -> None:
+    """Hard-fail boot when production env carries placeholder/missing secrets.
+
+    Called from the lifespan startup hook (and exercised directly by
+    `tests/test_boot_gate.py`). Behaviour matrix:
+
+      * `JPINTEL_ENV` not in {"prod", "production"} → no-op.
+      * API_KEY_SALT ∈ _FORBIDDEN_SALTS → SystemExit("[BOOT FAIL] API_KEY_SALT ...").
+      * len(API_KEY_SALT) < 32 → SystemExit("[BOOT FAIL] API_KEY_SALT ≥32 chars ...").
+      * JPINTEL_AUDIT_SEAL_KEYS set but empty/short/placeholder →
+        SystemExit("[BOOT FAIL] JPINTEL_AUDIT_SEAL_KEYS ...").
+      * AUDIT_SEAL_SECRET placeholder/missing AND no valid
+        JPINTEL_AUDIT_SEAL_KEYS rotation list set →
+        SystemExit("[BOOT FAIL] AUDIT_SEAL ...").
+      * CLOUDFLARE_TURNSTILE_SECRET empty while APPI intake is enabled →
+        SystemExit("[BOOT FAIL] CLOUDFLARE_TURNSTILE_SECRET ...").
+      * STRIPE_WEBHOOK_SECRET empty → SystemExit("[BOOT FAIL] STRIPE_WEBHOOK_SECRET ...").
+      * STRIPE_SECRET_KEY empty → SystemExit("[BOOT FAIL] STRIPE_SECRET_KEY ...").
+
+    The function reads from the live `settings` module so tests can
+    reload+rebind it via `monkeypatch.setattr(main, "settings", ...)`.
+    """
+    env_label = (getattr(settings, "env", "") or "").lower()
+    if env_label not in {"prod", "production"}:
+        return
+
+    salt = getattr(settings, "api_key_salt", "") or ""
+    if salt in _FORBIDDEN_SALTS:
+        raise SystemExit(
+            f"[BOOT FAIL] API_KEY_SALT is set to a forbidden placeholder ({salt!r}). "
+            f"Set a unique value via `fly secrets set API_KEY_SALT=...`."
+        )
+    if len(salt) < 32:
+        raise SystemExit(
+            f"[BOOT FAIL] API_KEY_SALT must be ≥32 chars in production (got {len(salt)})."
+        )
+
+    audit_secret = getattr(settings, "audit_seal_secret", "") or ""
+    audit_keys_raw = os.getenv("JPINTEL_AUDIT_SEAL_KEYS")
+    audit_rotation_keys = (
+        _audit_seal_rotation_keys(audit_keys_raw) if audit_keys_raw is not None else []
+    )
+    if audit_keys_raw is not None and not audit_rotation_keys:
+        raise SystemExit(
+            "[BOOT FAIL] JPINTEL_AUDIT_SEAL_KEYS must contain at least one "
+            "non-placeholder ≥32-char value in production."
+        )
+    for index, audit_key in enumerate(audit_rotation_keys, start=1):
+        _assert_audit_seal_value(f"JPINTEL_AUDIT_SEAL_KEYS[{index}]", audit_key)
+
+    audit_secret_ok = audit_secret not in _FORBIDDEN_AUDIT_SEAL_VALUES and (len(audit_secret) >= 32)
+    if not audit_secret_ok and not audit_rotation_keys:
+        raise SystemExit(
+            "[BOOT FAIL] AUDIT_SEAL_SECRET (or JPINTEL_AUDIT_SEAL_KEYS rotation "
+            "list) must be set to a non-placeholder ≥32-char value in production."
+        )
+
+    appi_enabled = os.getenv("AUTONOMATH_APPI_ENABLED", "1") not in {
+        "0",
+        "false",
+        "False",
+    }
+    if appi_enabled and not os.getenv("CLOUDFLARE_TURNSTILE_SECRET", "").strip():
+        raise SystemExit(
+            "[BOOT FAIL] CLOUDFLARE_TURNSTILE_SECRET must be set in production "
+            "when APPI intake is enabled."
+        )
+
+    if not (getattr(settings, "stripe_webhook_secret", "") or "").strip():
+        raise SystemExit("[BOOT FAIL] STRIPE_WEBHOOK_SECRET must be set in production.")
+
+    if not (getattr(settings, "stripe_secret_key", "") or "").strip():
+        raise SystemExit("[BOOT FAIL] STRIPE_SECRET_KEY must be set in production.")
+
+
 def _init_sentry() -> None:
     # Two-gate init: (a) DSN present (no-op in CI / dev without SENTRY_DSN),
     # (b) JPINTEL_ENV=prod (silences staging / dev / test even when an
@@ -216,7 +400,7 @@ def _init_sentry() -> None:
     # quota, breaking the P1-5 alert rule.
     if not settings.sentry_dsn:
         return
-    if os.getenv("JPINTEL_ENV", "dev") != "prod":
+    if not _is_production_env():
         return
     try:
         import sentry_sdk
@@ -822,16 +1006,19 @@ def _sanitize_openapi_public_schema(node: Any) -> None:
 async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
     """Startup/teardown for the API.
 
-    On startup we initialise Sentry, configure logging, and run `init_db()`
-    (idempotent — safe on an already-migrated volume). After init_db we run
-    two hard-fail integrity gates:
-      1) **Aggregator domain assertion**: `programs.source_url` MUST NOT
+    On startup we initialise Sentry, configure logging, run the production
+    secret boot gate, and then run `init_db()` (idempotent — safe on an
+    already-migrated volume). After init_db we run hard-fail integrity gates:
+      1) **Production secret boot gate**: in `JPINTEL_ENV=prod`/`production`,
+         placeholders or missing operational secrets abort before DB init.
+         This includes APPI Turnstile when APPI intake is enabled.
+      2) **Aggregator domain assertion**: `programs.source_url` MUST NOT
          contain any banned aggregator domain (noukaweb, hojyokin-portal,
          biz.stayway, stayway.jp, nikkei.com, prtimes.jp, wikipedia.org).
          Past incidents → 詐欺 risk; we refuse to serve traffic if any
          aggregator-sourced row leaked in. See memory: `feedback_no_fake_data`
          and CLAUDE.md "Data hygiene".
-      2) **Pepper guard (prod only)**: in `JPINTEL_ENV=prod`, the API-key
+      3) **Pepper guard (prod only)**: in `JPINTEL_ENV=prod`, the API-key
          hashing pepper `AUTONOMATH_API_HASH_PEPPER` must be set and not
          the placeholder. Empty / placeholder → log critical + sys.exit(1).
     Only after both pass do we flip `_ready` so `/readyz` starts returning
@@ -841,6 +1028,7 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
     global _ready
     _init_sentry()
     setup_logging(level=settings.log_level, fmt=settings.log_format)
+    _assert_production_secrets()
     init_db()
 
     # ── Pepper guard (prod only) ────────────────────────────────────────
@@ -848,7 +1036,7 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
     # missing or still the dev placeholder. Hashing keys with a
     # known-public pepper would render every stored hash trivially
     # crackable. Skip in dev/test so local runs don't require setup.
-    if os.getenv("JPINTEL_ENV") == "prod":
+    if _is_production_env():
         _pepper = os.getenv("AUTONOMATH_API_HASH_PEPPER", "")
         if _pepper in ("", "dev-pepper-change-me"):
             logger.critical(
@@ -867,7 +1055,7 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
     # reaches a customer. Dev / test skip this gate (no integrations
     # exercised on local uvicorn). Supports comma-separated MultiFernet
     # rotation list — extra keys decrypt legacy ciphertexts only.
-    if os.getenv("JPINTEL_ENV") == "prod":
+    if _is_production_env():
         _fkey = os.getenv("INTEGRATION_TOKEN_SECRET", "").strip()
         if _fkey:
             try:
@@ -979,8 +1167,7 @@ def create_app() -> FastAPI:
             "For AI workflows, call `/v1/intelligence/precomputed/query` or "
             "`/v1/evidence/packets/query` before answer generation to retrieve "
             "compact source-linked evidence. Optional compression fields compare "
-            "caller-supplied input-context baselines; they are estimates, not "
-            "external provider billing guarantees.\n\n"
+            "caller-supplied input-context baselines.\n\n"
             "## Information lookup, not professional advice (税理士法 §52)\n\n"
             "**This API returns information retrieved from public Japanese "
             "sources and official provider pages. It is NOT 税務助言 (tax advice), NOT 法律相談 "
@@ -1013,7 +1200,7 @@ def create_app() -> FastAPI:
             "## About\n\n"
             "Canonical site: https://jpcite.com. "
             "MCP package: `pip install autonomath-mcp` (PyPI). "
-            "MCP exposes 96 tools in the standard configuration.\n\n"
+            "MCP exposes 139 tools in the standard configuration.\n\n"
             "---\n\n"
             "## 日本語要約 (JP summary)\n\n"
             "jpcite は **11,684 件の検索可能な補助金 / 融資 / 税制 / 認定** "
@@ -1046,7 +1233,10 @@ def create_app() -> FastAPI:
         openapi_url="/v1/openapi.json",
     )
 
-    origins = [o.strip() for o in settings.cors_origins.split(",") if o.strip()]
+    origins = sorted(
+        {o.strip().rstrip("/") for o in settings.cors_origins.split(",") if o.strip()}
+        | set(_MUST_INCLUDE)
+    )
     # Wave 16 P1: hard origin enforcement is mounted after CORS below so it
     # runs outermost. That lets it return the legacy 403 for disallowed
     # regular/preflight origins before any DB write or Stripe API call, while
@@ -1197,6 +1387,8 @@ def create_app() -> FastAPI:
             "X-Anon-Quota-Remaining",
             "X-Anon-Quota-Reset",
             "X-Anon-Upgrade-Url",
+            "X-Anon-Direct-Checkout-Url",
+            "X-Anon-Trial-Url",
             "X-Billed-Yen",
             "X-Cost-Yen",
             "X-Cost-Cap-Required",
@@ -1212,6 +1404,7 @@ def create_app() -> FastAPI:
         max_age=3600,
     )
     app.add_middleware(OriginEnforcementMiddleware)
+    app.add_middleware(GZipMiddleware, minimum_size=1024, compresslevel=6)
 
     _log = logging.getLogger("jpintel.api")
 
@@ -1518,6 +1711,20 @@ def create_app() -> FastAPI:
     # runway it's meant to report on. See api/usage.py docstring.
     app.include_router(usage_router)
     app.include_router(programs_router, dependencies=[AnonIpLimitDep])
+    # W29-9 fix: customer-agent e2e flow needs the narrative + eligibility
+    # predicate caches reachable over HTTP (Wave 24 / W26-6 shipped them
+    # MCP-only). Both routes share `/v1/programs/{id}/...` prefix so they
+    # mount adjacent to programs_router and inherit the same anon quota.
+    _include_experimental_router(
+        app,
+        "jpintel_mcp.api.eligibility_predicate",
+        dependencies=[AnonIpLimitDep],
+    )
+    _include_experimental_router(
+        app,
+        "jpintel_mcp.api.narrative",
+        dependencies=[AnonIpLimitDep],
+    )
     app.include_router(prescreen_router, dependencies=[AnonIpLimitDep])
     app.include_router(exclusions_router, dependencies=[AnonIpLimitDep])
     app.include_router(enforcement_router, dependencies=[AnonIpLimitDep])
@@ -1539,24 +1746,193 @@ def create_app() -> FastAPI:
     # compat-matrix rule verdicts into one envelope. ¥3/req metered;
     # anonymous tier inherits the 3/day IP cap via AnonIpLimitDep.
     app.include_router(evidence_router, dependencies=[AnonIpLimitDep])
+    # /v1/evidence/packets/batch — paid-only bulk composer. It enforces
+    # metered API key auth inside the handler and should not burn anonymous
+    # quota before returning its auth/cap envelope.
+    _include_experimental_router(app, "jpintel_mcp.api.evidence_batch")
     # /v1/source_manifest/{program_id} — per-program source rollup.
     app.include_router(source_manifest_router, dependencies=[AnonIpLimitDep])
     # /v1/citations/verify — deterministic citation verifier.
     app.include_router(citations_router, dependencies=[AnonIpLimitDep])
+    # /v1/verify/answer — DEEP-25 + DEEP-37 verifiable answer primitive.
+    # 4-axis weighted score (sources_match + sources_alive + corpus_present
+    # + boundary_clean), claim_count cap = 5, ¥3/req, LLM call 0.
+    app.include_router(verify_router, dependencies=[AnonIpLimitDep])
     # /v1/cost/preview — Evidence Pre-fetch Layer estimator (no LLM).
     # Free/non-metered estimator: it has its own short per-IP throttle and
     # must not burn the anonymous 3/day discovery allowance.
     app.include_router(cost_router)
+    # /v1/calculator/savings — public ROI estimator. Pure arithmetic,
+    # no DB write and no metering; keep it outside AnonIpLimitDep so the
+    # marketing calculator can call it repeatedly without burning API quota.
+    _include_experimental_router(app, "jpintel_mcp.api.calculator")
     # /v1/intelligence/precomputed/query — compact precomputed context
     # bundle for offline token-cost benchmarking and LLM prefetch flows.
     app.include_router(intelligence_router, dependencies=[AnonIpLimitDep])
+    # /v1/intel/probability_radar — program × houjin radar bundle
+    # (probability estimate + same-industry rate + ROI + evidence) in 1 call.
+    # Pure SQLite over am_recommended_programs / am_adopted_company_features /
+    # jpi_adoption_records. Sensitive: §52 / 行政書士法 §1 disclaimer.
+    _include_experimental_router(
+        app,
+        "jpintel_mcp.api.intel",
+        dependencies=[AnonIpLimitDep],
+    )
+    # /v1/intel/program/{program_id}/full — composite per-program bundle
+    # (meta + eligibility + amendments + adoptions + similar + citations +
+    # audit_proof) in 1 call. Replaces the 8-call fan-out a customer LLM
+    # otherwise has to assemble. Pure SQLite over programs /
+    # am_program_eligibility_predicate / am_amendment_diff /
+    # jpi_adoption_records / am_recommended_programs / program_law_refs /
+    # nta_tsutatsu_index / audit_merkle_anchor. Sensitive: §52 / §1 / §72.
+    _include_experimental_router(
+        app,
+        "jpintel_mcp.api.intel_program_full",
+        attr="intel_program_full_router",
+        dependencies=[AnonIpLimitDep],
+    )
+    # /v1/intel/citation_pack/{program_id} — markdown / json bundle of every
+    # primary-source citation surface (法令 / 通達 / 裁決 / 判例 / 行政処分 /
+    # 採択) for a program in 1 call. Pure SQLite cross-join of
+    # program_law_refs / laws / nta_tsutatsu_index / nta_saiketsu /
+    # court_decisions / enforcement_cases / adoption_records. Sensitive:
+    # §52 / §47条の2 / §1 / §72 disclaimer.
+    _include_experimental_router(
+        app,
+        "jpintel_mcp.api.intel_citation_pack",
+        dependencies=[AnonIpLimitDep],
+    )
+    # /v1/intel/regulatory_context/{program_id} — program → 法令 + 通達 +
+    # 裁決 + 判例 + 行政処分 full regulatory bundle in 1 call. Pure SQLite
+    # over program_law_refs / laws / am_law_article / nta_tsutatsu_index /
+    # nta_saiketsu / court_decisions / enforcement_cases. Sensitive: 弁護士法
+    # §72 + 税理士法 §52 + 行政書士法 §1 disclaimer.
+    _include_experimental_router(
+        app,
+        "jpintel_mcp.api.intel_regulatory_context",
+        dependencies=[AnonIpLimitDep],
+    )
+    # /v1/intel/timeline/{program_id} — annual cross-substrate event timeline
+    # (amendment + adoption + enforcement + narrative_update). Pure SQLite
+    # over am_amendment_diff / am_adoption_trend_monthly /
+    # am_enforcement_anomaly / am_adopted_company_features /
+    # am_program_narrative_full. Sensitive: §52 / §1 / §72 disclaimer.
+    _include_experimental_router(
+        app,
+        "jpintel_mcp.api.intel_timeline",
+        dependencies=[AnonIpLimitDep],
+    )
+    # /v1/intel/actionable/* — pre-rendered actionable Q/A cache lookup
+    # (Wave 30-5). Top-N (intent_class × input_dict) tuples are precomputed
+    # offline by scripts/cron/precompute_actionable_answers.py into
+    # am_actionable_qa_cache (migration 169). On hit returns the cached
+    # envelope (¥3 metered, hit_count bumped); on miss returns 404 with
+    # {_not_cached: true} so the caller can fall back to the on-demand
+    # composer. NO LLM call. Pure SQLite + sha256.
+    _include_experimental_router(
+        app,
+        "jpintel_mcp.api.intel_actionable",
+        dependencies=[AnonIpLimitDep],
+    )
+    # /v1/intel/diff — composite entity-comparison endpoint (M&A DD).
+    # Returns shared / unique_to_a / unique_to_b / conflict_points across
+    # programs / houjin_master / am_law_article + am_5hop_graph (depth) +
+    # am_program_eligibility_predicate + am_id_bridge. Pure SQLite, no LLM.
+    _include_experimental_router(
+        app,
+        "jpintel_mcp.api.intel_diff",
+        dependencies=[AnonIpLimitDep],
+    )
+    # /v1/intel/path — bidirectional BFS reasoning chain between 2 entities.
+    # Joins am_5hop_graph (Wave 24 §152) + am_citation_network (Wave 24 §163)
+    # + am_id_bridge (159) and returns shortest path + up to 3 alternates so
+    # a customer LLM can visualise the citation chain in 1 RPC. Pure SQLite,
+    # no LLM. Sensitive: §52 / §72 / §1 disclaimer.
+    _include_experimental_router(
+        app,
+        "jpintel_mcp.api.intel_path",
+        dependencies=[AnonIpLimitDep],
+    )
+    _include_experimental_router(
+        app,
+        "jpintel_mcp.api.intel_risk_score",
+        dependencies=[AnonIpLimitDep],
+    )
+    # /v1/intel/conflict — combo conflict detector + alternative bundles.
+    # Cross-joins am_funding_stack_empirical (実証 stack co-occurrence) +
+    # am_program_eligibility_predicate (法的 mutual exclusion) +
+    # am_compat_matrix (rule-based fallback). Returns conflict_pairs +
+    # compatible_subset + top-3 alternative_bundles. Pure SQLite + Python
+    # graph walk. Sensitive: §52 / §1 / §72 disclaimer.
+    _include_experimental_router(
+        app,
+        "jpintel_mcp.api.intel_conflict",
+        dependencies=[AnonIpLimitDep],
+    )
+    # /v1/intel/why_excluded — eligibility-failure reasoning + remediation +
+    # alternative-program suggestion in 1 call. Cross-joins
+    # am_program_eligibility_predicate_json (W26-6) with houjin attrs
+    # (am_entities corp.*) and am_recommended_programs (W29-8). Pure
+    # SQLite + Python diff. Sensitive: 行政書士法 §1 / 税理士法 §52 fence.
+    _include_experimental_router(
+        app,
+        "jpintel_mcp.api.intel_why_excluded",
+        dependencies=[AnonIpLimitDep],
+    )
+    # /v1/intel/bundle/optimal — houjin → 最適 program bundle (greedy weighted
+    # max-IS) in 1 call. Cross-joins am_recommended_programs (W29-8 precomputed
+    # top-N per houjin) + am_program_eligibility_predicate (W26-6 predicate
+    # filter) + am_funding_stack_empirical (W22-6 conflict edges) + jpi_programs
+    # (amount roll-up). Returns bundle + bundle_total + conflict_avoidance +
+    # optimization_log + runner_up_bundles. Pure SQLite + Python greedy. Sensitive:
+    # 行政書士法 §1 / 税理士法 §52 fence.
+    _include_experimental_router(
+        app,
+        "jpintel_mcp.api.intel_bundle_optimal",
+        dependencies=[AnonIpLimitDep],
+    )
+    # /v1/intel/houjin/{houjin_id}/full — composite houjin 360 bundle
+    # (meta + adoption_history + enforcement + invoice_status + peer_summary +
+    # jurisdiction + watch_status) in 1 GET. Cross-joins houjin_master +
+    # am_adopted_company_features + am_enforcement_detail + invoice_registrants
+    # + am_geo_industry_density + customer_watches (mig 088). Pure SQLite,
+    # NO LLM. Sensitive: §52 / §72 / 行政書士法 §1 disclaimer.
+    _include_experimental_router(
+        app,
+        "jpintel_mcp.api.intel_houjin_full",
+        dependencies=[AnonIpLimitDep],
+    )
+    # /v1/intel/peer_group — 同業他社 N peers (Jaccard on jsic + prefecture +
+    # log-bucketed capital/employees) + per-peer adoption facts + statistical
+    # context + peer-validated program recs. Cross-joins houjin_master +
+    # am_adopted_company_features + am_geo_industry_density + am_entity_facts
+    # + jpi_adoption_records + jpi_programs. Pure SQLite + Python. Sensitive:
+    # 景表法 / 行政書士法 §1 / 税理士法 §52 fence.
+    _include_experimental_router(
+        app,
+        "jpintel_mcp.api.intel_peer_group",
+        dependencies=[AnonIpLimitDep],
+    )
     # /v1/funding_stack/check — pure rule engine over compat_matrix + exclusion_rules.
     app.include_router(funding_stack_router, dependencies=[AnonIpLimitDep])
+    # /v1/artifacts/compatibility_table — same rule engine wrapped as a
+    # copy-paste-ready artifact envelope. The artifact backend is shipped as
+    # its own packet, so a hardening-only checkout must still boot without it.
+    _include_experimental_router(
+        app,
+        "jpintel_mcp.api.artifacts",
+        dependencies=[AnonIpLimitDep],
+    )
     # /v1/discover/related/{entity_id} — multi-axis (5) related entity composer.
     # Pure SQL + sqlite-vec over am_5hop_graph / am_funding_stack_empirical /
     # am_entity_density_score / am_entities_vec_* + program_law_refs. Same
     # anon 3/日 IP cap as the other discovery surfaces.
     app.include_router(discover_router, dependencies=[AnonIpLimitDep])
+    # /v1/programs/{id}/at + /v1/programs/{id}/evolution/{year} — DEEP-22
+    # Regulatory Time Machine. Pivots off am_amendment_snapshot
+    # (14,596 captures + 144 definitive-dated). Pure SQL + Python — NO LLM.
+    # ¥3/req metered, anonymous tier shares the 3/日 IP cap.
+    app.include_router(time_machine_router, dependencies=[AnonIpLimitDep])
     # /v1/houjin/{bangou} — corporate 360 lookup surfacing 1.12M gBizINFO
     # facts already in autonomath.db (am_entities corporate_entity +
     # am_entity_facts corp.*). Same anon-quota posture as the other
@@ -1704,6 +2080,12 @@ def create_app() -> FastAPI:
     # Autonomath REST router exposes the 16 am_* tools at /v1/am/*.
     # Same anonymous IP rate-limit dep as other public endpoints.
     app.include_router(autonomath_router, dependencies=[AnonIpLimitDep])
+    # Wave 24 REST wrappers for the extended /v1/am/* surface.
+    _include_experimental_router(
+        app,
+        "jpintel_mcp.api.wave24_endpoints",
+        dependencies=[AnonIpLimitDep],
+    )
     # M&A pillar bundle (Wave 22 / 2026-04-29):
     #   POST /v1/am/dd_batch     — 1..200 法人 batch DD (¥3 per id)
     #   GET  /v1/am/group_graph  — 2-hop part_of traversal (¥3 per call)
@@ -1728,6 +2110,12 @@ def create_app() -> FastAPI:
     # WITHOUT AnonIpLimitDep so customers can always verify a seal even
     # after the 3/日 anon quota is exhausted; billable=0.
     app.include_router(audit_public_router)
+    # W29-9 fix: per-evidence-packet Merkle inclusion proof
+    # (GET /v1/audit/proof/{evidence_packet_id}). Mounted WITHOUT
+    # AnonIpLimitDep — public read; the audit-log moat IS the moat,
+    # third-party verification cannot be paywalled. See
+    # api/audit_proof.py module docstring.
+    _include_experimental_router(app, "jpintel_mcp.api.audit_proof")
     # Autonomath health probe (10-check aggregate) — same exemption as
     # /healthz / /readyz. Mounted without AnonIpLimitDep so production
     # uptime monitors can poll without burning the 3/日 anonymous quota.

@@ -1,0 +1,24 @@
+-- target_db: jpintel
+-- ROLLBACK companion for wave24_110a_tier_c_cleanup.sql
+-- Manual review required.
+--
+-- This migration quarantines rows based on current tier/name state and does
+-- not persist a before-image table. A generic automatic rollback would risk
+-- reactivating rows that were intentionally quarantined later for the same
+-- duplicate/garbage reasons.
+--
+-- Safe operator rollback procedure:
+--   1. Inspect affected rows with:
+--        SELECT unified_id, primary_name, tier, excluded, exclusion_reason, merged_from
+--          FROM programs
+--         WHERE tier = 'X'
+--           AND exclusion_reason IN ('duplicate_of','garbage_name');
+--   2. Restore only approved rows by unified_id:
+--        UPDATE programs
+--           SET tier = 'C', excluded = 0, exclusion_reason = NULL
+--         WHERE unified_id IN (...);
+--
+-- The no-op SELECT keeps this companion executable while preventing an
+-- accidental broad unquarantine.
+
+SELECT 'wave24_110a_tier_c_cleanup rollback requires manual row review' AS rollback_note;

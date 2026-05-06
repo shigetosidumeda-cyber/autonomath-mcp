@@ -1,3 +1,4 @@
+-- target_db: jpintel
 -- 007_anon_rate_limit.sql
 -- Per-IP MONTHLY quota for anonymous (no X-API-Key) callers.
 --
@@ -10,9 +11,9 @@
 -- by api/anon_limit.py. Matches the same salt strategy used by api_keys and
 -- feedback.ip_hash so an operator with DB access cannot back-derive an IP.
 --
--- Bucketing: 2026-04-23 switched from daily → monthly (50 req/month per IP).
--- Column name `date` is retained for schema stability; now stores YYYY-MM-01
--- (first-of-month JST) instead of YYYY-MM-DD. One UPSERT per call, zero scan.
+-- Historical note: 2026-04-23 temporarily switched daily bucketing to monthly
+-- bucketing. The current public anonymous allowance is enforced in
+-- api/anon_limit.py. Column name `date` is retained for schema stability.
 -- SQLite `date()` comparisons still work on a YYYY-MM-01 value.
 --
 -- Idempotent: CREATE TABLE / INDEX IF NOT EXISTS — safe to re-run via
