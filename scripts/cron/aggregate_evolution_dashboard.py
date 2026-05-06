@@ -73,17 +73,27 @@ AXES: list[dict[str, Any]] = [
         "id": "IA-01",
         "title": "新 1 次資料 (primary corpus growth)",
         "signals": [
-            {"id": "am_law_article_count",   "kind": "sqlite_count",  "table": "am_law_article", "db": "autonomath"},
-            {"id": "programs_count",         "kind": "sqlite_count",  "table": "programs",       "db": "jpintel"},
-            {"id": "kokkai_utterance_count", "kind": "placeholder",   "ref": "kokkai_utterances",  "db": "autonomath"},
+            {
+                "id": "am_law_article_count",
+                "kind": "sqlite_count",
+                "table": "am_law_article",
+                "db": "autonomath",
+            },
+            {"id": "programs_count", "kind": "sqlite_count", "table": "programs", "db": "jpintel"},
+            {
+                "id": "kokkai_utterance_count",
+                "kind": "placeholder",
+                "ref": "kokkai_utterances",
+                "db": "autonomath",
+            },
         ],
     },
     {
         "id": "IA-02",
         "title": "customer feedback (usage envelope)",
         "signals": [
-            {"id": "tool_call_density",   "kind": "placeholder", "ref": "usage_events.density"},
-            {"id": "zero_result_rate",    "kind": "placeholder", "ref": "usage_events.zero_result"},
+            {"id": "tool_call_density", "kind": "placeholder", "ref": "usage_events.density"},
+            {"id": "zero_result_rate", "kind": "placeholder", "ref": "usage_events.zero_result"},
             {"id": "disclaimer_envelope", "kind": "placeholder", "ref": "usage_events.disclaimer"},
         ],
     },
@@ -98,8 +108,13 @@ AXES: list[dict[str, Any]] = [
         "id": "IA-04",
         "title": "regulatory early detect",
         "signals": [
-            {"id": "regulatory_signal_count", "kind": "placeholder", "ref": "regulatory_signal", "db": "jpintel"},
-            {"id": "egov_pubcomment_count",   "kind": "placeholder", "ref": "egov_pubcomment"},
+            {
+                "id": "regulatory_signal_count",
+                "kind": "placeholder",
+                "ref": "regulatory_signal",
+                "db": "jpintel",
+            },
+            {"id": "egov_pubcomment_count", "kind": "placeholder", "ref": "egov_pubcomment"},
         ],
     },
     {
@@ -113,61 +128,141 @@ AXES: list[dict[str, Any]] = [
         "id": "IA-06",
         "title": "tech perf (p95 / cold-start / cron success)",
         "signals": [
-            {"id": "api_p95_ms",         "kind": "analytics_json", "file": "tech_perf.json", "path": "p95_ms"},
-            {"id": "cold_start_rto_s",   "kind": "analytics_json", "file": "tech_perf.json", "path": "cold_start_s"},
-            {"id": "cron_success_rate",  "kind": "analytics_json", "file": "tech_perf.json", "path": "cron_success_rate"},
+            {
+                "id": "api_p95_ms",
+                "kind": "analytics_json",
+                "file": "tech_perf.json",
+                "path": "p95_ms",
+            },
+            {
+                "id": "cold_start_rto_s",
+                "kind": "analytics_json",
+                "file": "tech_perf.json",
+                "path": "cold_start_s",
+            },
+            {
+                "id": "cron_success_rate",
+                "kind": "analytics_json",
+                "file": "tech_perf.json",
+                "path": "cron_success_rate",
+            },
         ],
     },
     {
         "id": "IA-07",
         "title": "OSS ecosystem (PyPI / npm / MCP registry)",
         "signals": [
-            {"id": "pypi_downloads_weekly", "kind": "analytics_json", "file": "npm_daily.jsonl", "path": "pypi_weekly"},
-            {"id": "npm_downloads_weekly",  "kind": "analytics_json", "file": "npm_daily.jsonl", "path": "npm_weekly"},
-            {"id": "mcp_registry_rank",     "kind": "manual_sample",   "ref": "mcp_registry"},
+            {
+                "id": "pypi_downloads_weekly",
+                "kind": "analytics_json",
+                "file": "npm_daily.jsonl",
+                "path": "pypi_weekly",
+            },
+            {
+                "id": "npm_downloads_weekly",
+                "kind": "analytics_json",
+                "file": "npm_daily.jsonl",
+                "path": "npm_weekly",
+            },
+            {"id": "mcp_registry_rank", "kind": "manual_sample", "ref": "mcp_registry"},
         ],
     },
     {
         "id": "IA-08",
         "title": "cohort behavior (industry journal mention)",
         "signals": [
-            {"id": "industry_journal_mention_count", "kind": "placeholder", "ref": "industry_journal_mention", "db": "jpintel"},
+            {
+                "id": "industry_journal_mention_count",
+                "kind": "placeholder",
+                "ref": "industry_journal_mention",
+                "db": "jpintel",
+            },
         ],
     },
     {
         "id": "IA-09",
         "title": "SEO (GSC + AI crawler UA)",
         "signals": [
-            {"id": "gsc_impression",      "kind": "analytics_json", "file": "seo.json", "path": "impression"},
-            {"id": "gsc_avg_position",    "kind": "analytics_json", "file": "seo.json", "path": "avg_position"},
-            {"id": "ai_crawler_ua_rate",  "kind": "analytics_json", "file": "seo.json", "path": "ai_crawler_rate"},
+            {
+                "id": "gsc_impression",
+                "kind": "analytics_json",
+                "file": "seo.json",
+                "path": "impression",
+            },
+            {
+                "id": "gsc_avg_position",
+                "kind": "analytics_json",
+                "file": "seo.json",
+                "path": "avg_position",
+            },
+            {
+                "id": "ai_crawler_ua_rate",
+                "kind": "analytics_json",
+                "file": "seo.json",
+                "path": "ai_crawler_rate",
+            },
         ],
     },
     {
         "id": "IA-10",
         "title": "moat verify (V_cobb_douglas / λ_max / cascade_q)",
         "signals": [
-            {"id": "v_cobb_douglas",  "kind": "analytics_json", "file": "moat_verify.json", "path": "v_cobb_douglas"},
-            {"id": "lambda_max",      "kind": "analytics_json", "file": "moat_verify.json", "path": "lambda_max"},
-            {"id": "cascade_q",       "kind": "analytics_json", "file": "moat_verify.json", "path": "cascade_q"},
-            {"id": "bayesian_post",   "kind": "analytics_json", "file": "moat_verify.json", "path": "bayesian_posterior"},
+            {
+                "id": "v_cobb_douglas",
+                "kind": "analytics_json",
+                "file": "moat_verify.json",
+                "path": "v_cobb_douglas",
+            },
+            {
+                "id": "lambda_max",
+                "kind": "analytics_json",
+                "file": "moat_verify.json",
+                "path": "lambda_max",
+            },
+            {
+                "id": "cascade_q",
+                "kind": "analytics_json",
+                "file": "moat_verify.json",
+                "path": "cascade_q",
+            },
+            {
+                "id": "bayesian_post",
+                "kind": "analytics_json",
+                "file": "moat_verify.json",
+                "path": "bayesian_posterior",
+            },
         ],
     },
     {
         "id": "IA-11",
         "title": "financial (MAPC / ARPU / net margin)",
         "signals": [
-            {"id": "mapc",       "kind": "analytics_json", "file": "financial.json", "path": "mapc"},
-            {"id": "arpu",       "kind": "analytics_json", "file": "financial.json", "path": "arpu"},
-            {"id": "net_margin", "kind": "analytics_json", "file": "financial.json", "path": "net_margin"},
+            {"id": "mapc", "kind": "analytics_json", "file": "financial.json", "path": "mapc"},
+            {"id": "arpu", "kind": "analytics_json", "file": "financial.json", "path": "arpu"},
+            {
+                "id": "net_margin",
+                "kind": "analytics_json",
+                "file": "financial.json",
+                "path": "net_margin",
+            },
         ],
     },
     {
         "id": "IA-12",
         "title": "brand (自発 vs 他発 mention ratio)",
         "signals": [
-            {"id": "self_vs_other_ratio", "kind": "analytics_json", "file": "brand_mention.json", "path": "self_vs_other_ratio"},
-            {"id": "brand_reach_total",   "kind": "analytics_json", "file": "brand_mention.json", "path": "brand_reach_total"},
+            {
+                "id": "self_vs_other_ratio",
+                "kind": "analytics_json",
+                "file": "brand_mention.json",
+                "path": "self_vs_other_ratio",
+            },
+            {
+                "id": "brand_reach_total",
+                "kind": "analytics_json",
+                "file": "brand_mention.json",
+                "path": "brand_reach_total",
+            },
         ],
     },
 ]
@@ -178,21 +273,21 @@ assert len(AXES) == 12, "expected exactly 12 axes IA-01..IA-12"
 DEFAULT_THRESHOLDS: dict[str, dict[str, dict[str, float]]] = {
     "IA-01": {
         "am_law_article_count": {"healthy": 10000, "degraded": 1000},
-        "programs_count":       {"healthy": 8000,  "degraded": 1000},
+        "programs_count": {"healthy": 8000, "degraded": 1000},
     },
     "IA-06": {
-        "api_p95_ms":        {"healthy_le": 800,   "degraded_le": 2000},
-        "cold_start_rto_s":  {"healthy_le": 5,     "degraded_le": 30},
-        "cron_success_rate": {"healthy": 0.95,     "degraded": 0.80},
+        "api_p95_ms": {"healthy_le": 800, "degraded_le": 2000},
+        "cold_start_rto_s": {"healthy_le": 5, "degraded_le": 30},
+        "cron_success_rate": {"healthy": 0.95, "degraded": 0.80},
     },
     "IA-09": {
-        "gsc_impression":   {"healthy": 1000, "degraded": 100},
+        "gsc_impression": {"healthy": 1000, "degraded": 100},
         "gsc_avg_position": {"healthy_le": 20, "degraded_le": 50},
     },
     "IA-10": {
         "v_cobb_douglas": {"healthy": 1.0, "degraded": 0.5},
-        "lambda_max":     {"healthy": 0.0, "degraded": -0.05},
-        "cascade_q":      {"healthy": 0.05, "degraded": 0.01},
+        "lambda_max": {"healthy": 0.0, "degraded": -0.05},
+        "cascade_q": {"healthy": 0.05, "degraded": 0.01},
     },
     "IA-12": {
         "self_vs_other_ratio": {"healthy_le": 0.7, "degraded_le": 0.9},
@@ -231,8 +326,8 @@ class SignalRow:
 
 @dataclass
 class EvolutionSnapshot:
-    snapshot_date: str           # ISO week e.g. '2026-W19'
-    snapshot_iso_date: str       # ISO date of Tuesday of that week (run day)
+    snapshot_date: str  # ISO week e.g. '2026-W19'
+    snapshot_iso_date: str  # ISO date of Tuesday of that week (run day)
     git_head_sha: str = "unknown"
     axes: list[dict[str, Any]] = field(default_factory=list)
     rows: list[dict[str, Any]] = field(default_factory=list)
@@ -274,6 +369,7 @@ def git_head_sha(repo_root: Path) -> str:
     """Best-effort git HEAD sha; returns 'unknown' offline."""
     import shutil
     import subprocess
+
     if shutil.which("git") is None:
         return "unknown"
     try:
@@ -493,7 +589,7 @@ def collect_signal(
         value, json_blob, note = fetch_manual_sample(signal["ref"], analytics_dir)
     elif kind == "placeholder":
         # Source not yet wired; emit degraded with note for transparency.
-        note = f"placeholder ref={signal.get('ref','?')}"
+        note = f"placeholder ref={signal.get('ref', '?')}"
     else:
         note = f"unknown kind={kind}"
     status = classify_status(axis_id, sid, value, json_blob, thresholds)
@@ -517,7 +613,7 @@ def build_snapshot(
     analytics_dir: Path,
     threshold_yml: Path | None,
 ) -> EvolutionSnapshot:
-    now_utc = _dt.datetime.now(_dt.timezone.utc)
+    now_utc = _dt.datetime.now(_dt.UTC)
     jst = _dt.timezone(_dt.timedelta(hours=9))
     now_jst = now_utc.astimezone(jst)
     snap = EvolutionSnapshot(
@@ -564,9 +660,7 @@ def build_snapshot(
     return snap
 
 
-def collect_kpi_plots(
-    rows: list[SignalRow], current_week: str
-) -> dict[str, list[dict[str, Any]]]:
+def collect_kpi_plots(rows: list[SignalRow], current_week: str) -> dict[str, list[dict[str, Any]]]:
     """Materialize 5 KPI series. Current week only — historical points get
     appended by future cron runs reading the snapshot table.
 
@@ -683,14 +777,13 @@ def render_html(snap: EvolutionSnapshot, template_dir: Path, out_path: Path) -> 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="DEEP-42 evolution dashboard aggregator")
+    parser.add_argument("--repo-root", type=Path, default=Path.cwd(), help="repo root path")
+    parser.add_argument("--week", default="current", help="ISO week 'YYYY-Www' or 'current'")
     parser.add_argument(
-        "--repo-root", type=Path, default=Path.cwd(), help="repo root path"
-    )
-    parser.add_argument(
-        "--week", default="current", help="ISO week 'YYYY-Www' or 'current'"
-    )
-    parser.add_argument(
-        "--out", type=Path, default=None, help="JSON snapshot path (default: analytics/evolution_dashboard_<YYYY-WW>.json)"
+        "--out",
+        type=Path,
+        default=None,
+        help="JSON snapshot path (default: analytics/evolution_dashboard_<YYYY-WW>.json)",
     )
     parser.add_argument(
         "--html-out",
@@ -708,9 +801,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         type=Path,
         default=Path(os.environ.get("AUTONOMATH_DB_PATH", "autonomath.db")),
     )
-    parser.add_argument(
-        "--analytics-dir", type=Path, default=Path("analytics")
-    )
+    parser.add_argument("--analytics-dir", type=Path, default=Path("analytics"))
     parser.add_argument(
         "--threshold-yml",
         type=Path,
@@ -721,9 +812,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         type=Path,
         default=Path("scripts/templates"),
     )
-    parser.add_argument(
-        "--no-db", action="store_true", help="skip DB upsert (offline / dry-run)"
-    )
+    parser.add_argument("--no-db", action="store_true", help="skip DB upsert (offline / dry-run)")
     parser.add_argument("--verbose", "-v", action="store_true")
     return parser.parse_args(argv)
 

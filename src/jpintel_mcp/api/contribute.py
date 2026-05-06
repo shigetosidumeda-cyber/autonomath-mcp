@@ -77,7 +77,7 @@ _ALLOWED_SUFFIXES: tuple[str, ...] = (
     "mirasapo-plus.go.jp",
     "jfc.go.jp",
     "kanpou.npb.go.jp",
-    "smrj.go.jp",   # 中小機構
+    "smrj.go.jp",  # 中小機構
     "kanpou.go.jp",
     "npb.go.jp",
     "ninteisien.jp",  # 認定支援機関ポータル
@@ -291,10 +291,7 @@ def _validate_credit_consent(req: ContributionSubmitRequest) -> None:
     if req.tax_pro_credit_name and not req.public_credit_consent:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=(
-                "tax_pro_credit_name requires public_credit_consent=true "
-                "(APPI 配慮)"
-            ),
+            detail=("tax_pro_credit_name requires public_credit_consent=true (APPI 配慮)"),
         )
 
 
@@ -320,10 +317,7 @@ def _check_rate_limit(ip: str) -> None:
     if len(timestamps) >= _RATE_LIMIT_MAX:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail=(
-                f"contribution rate limit exceeded "
-                f"({_RATE_LIMIT_MAX} per 24h per IP)"
-            ),
+            detail=(f"contribution rate limit exceeded ({_RATE_LIMIT_MAX} per 24h per IP)"),
         )
     timestamps.append(now)
 
@@ -366,10 +360,7 @@ def submit_eligibility_observation(
     if not payload.consent_acknowledged:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=(
-                "consent_acknowledged must be true "
-                "(観察事実のみ・判断助言を含めない fence)"
-            ),
+            detail=("consent_acknowledged must be true (観察事実のみ・判断助言を含めない fence)"),
         )
 
     # 3. Per-IP rate limit (5 / 24h). Use the constant key 'anon' when no
@@ -408,8 +399,7 @@ def submit_eligibility_observation(
                 payload.observed_outcome,
                 payload.houjin_bangou_hash,
                 json.dumps(list(payload.source_urls), ensure_ascii=False),
-                (payload.tax_pro_credit_name
-                 if payload.public_credit_consent else None),
+                (payload.tax_pro_credit_name if payload.public_credit_consent else None),
                 "pending",
                 now_iso,
             ),

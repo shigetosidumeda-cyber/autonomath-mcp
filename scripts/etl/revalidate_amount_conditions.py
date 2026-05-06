@@ -65,7 +65,7 @@ import os
 import re
 import sqlite3
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -241,7 +241,7 @@ def write_report(
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     total = sum(final.values()) or 1
-    now = datetime.now(timezone.utc).isoformat()
+    now = datetime.now(UTC).isoformat()
 
     bucket_lines: list[str] = []
     for yen, total_n, text_n in buckets:

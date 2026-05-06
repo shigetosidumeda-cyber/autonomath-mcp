@@ -25,14 +25,14 @@ in-process scrubber + aggregator + LLM-0 invariants:
 Network is NEVER touched in this suite — the SVG + MD endpoints are
 pure SQLite + string format.
 """
+
 from __future__ import annotations
 
-import os
 import re
 import sqlite3
 import sys
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import pytest
@@ -43,9 +43,7 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 MIG_FORWARD = REPO_ROOT / "scripts" / "migrations" / "wave24_183_citation_log.sql"
-MIG_ROLLBACK = (
-    REPO_ROOT / "scripts" / "migrations" / "wave24_183_citation_log_rollback.sql"
-)
+MIG_ROLLBACK = REPO_ROOT / "scripts" / "migrations" / "wave24_183_citation_log_rollback.sql"
 SRC_MODULE = REPO_ROOT / "src" / "jpintel_mcp" / "api" / "citation_badge.py"
 
 
@@ -233,9 +231,7 @@ def test_citation_md_renders_row(cit_db):
     assert "DEEP-25" in md  # Verify-this-citation block
 
     # invalid path renders link-safe
-    invalid_md = cb.render_citation_md(
-        request_id=uuid.uuid4().hex, row=None
-    )
+    invalid_md = cb.render_citation_md(request_id=uuid.uuid4().hex, row=None)
     assert "invalid" in invalid_md.lower()
     assert "request_id" in invalid_md
 
@@ -249,9 +245,7 @@ def test_ttl_flips_to_expired(cit_db):
     from jpintel_mcp.api import citation_badge as cb
 
     rid = uuid.uuid4().hex
-    old = (
-        datetime.now(timezone.utc) - timedelta(days=120)
-    ).strftime("%Y-%m-%d %H:%M:%S")
+    old = (datetime.now(UTC) - timedelta(days=120)).strftime("%Y-%m-%d %H:%M:%S")
     _insert_row(
         cit_db,
         request_id=rid,

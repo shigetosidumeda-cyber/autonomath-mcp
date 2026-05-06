@@ -33,7 +33,7 @@ import logging
 import os
 import pathlib
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 TEMPLATES_DIR = REPO_ROOT / "data" / "organic_outreach_templates"
@@ -169,7 +169,7 @@ def _violation_check(templates: list[dict]) -> dict:
     """
     import re
 
-    violations = {tok: 0 for tok in FORBIDDEN_TOKENS}
+    violations = dict.fromkeys(FORBIDDEN_TOKENS, 0)
     for t in templates:
         path = pathlib.Path(t["_path"])
         text = path.read_text(encoding="utf-8")
@@ -221,7 +221,7 @@ def main() -> int:
     kpi = _aggregate_kpi(templates, probes)
     violations = _violation_check(templates)
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     month_str = now.strftime("%Y-%m")
     record = {
         "month": month_str,

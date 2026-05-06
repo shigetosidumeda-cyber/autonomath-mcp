@@ -434,11 +434,11 @@ def _parse_table_with_company_and_date(
         # Skip header rows
         if any(
             (
-                "認定" == c
-                or "氏名又は名称" == c
-                or "処分年月日" == c
-                or "業者名" == c
-                or "処分の年月日" == c
+                c == "認定"
+                or c == "氏名又は名称"
+                or c == "処分年月日"
+                or c == "業者名"
+                or c == "処分の年月日"
             )
             for c in cell_texts
         ):
@@ -1550,7 +1550,7 @@ def parse_ibaraki_daiko_html(html: str, source_url: str) -> list[EnfRow]:
         if len(cell_texts) < 4:
             continue
         # Skip header
-        if any("処分年月" in c or "認定番号" == c or "詳細" == c for c in cell_texts) and not any(
+        if any("処分年月" in c or c == "認定番号" or c == "詳細" for c in cell_texts) and not any(
             WAREKI_RE.search(c) or YM_RE.search(c) for c in cell_texts
         ):
             continue

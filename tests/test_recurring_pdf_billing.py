@@ -26,11 +26,10 @@ from __future__ import annotations
 pytest_plugins = ["tests.conftest_delivery_strict"]
 
 import sqlite3
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import pytest
-
 
 # ---------------------------------------------------------------------------
 # Surrogate implementation
@@ -42,7 +41,7 @@ def _quarter_label(year: int, quarter: int) -> str:
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
 
 def _idempotency_key(api_key_hash: str, year: int, quarter: int) -> str:
@@ -122,7 +121,7 @@ def get_quarterly_pdf_pattern_a(
     if not uploaded:
         return {"status": "r2_failed", "saga_id": saga_id}
 
-    expires_at = (datetime.now(timezone.utc) + timedelta(days=92)).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    expires_at = (datetime.now(UTC) + timedelta(days=92)).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     _saga_update(
         conn,
         saga_id,
@@ -180,7 +179,7 @@ class _StubRenderer:
         if self.fail_next > 0:
             self.fail_next -= 1
             return None
-        return f"PDF<{api_key_hash}|{year}|{quarter}>".encode("utf-8")
+        return f"PDF<{api_key_hash}|{year}|{quarter}>".encode()
 
 
 @pytest.fixture

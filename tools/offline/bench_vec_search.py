@@ -16,6 +16,7 @@ Usage:
         [--iters 100] [--k 10] [--min-rows 100] \
         [--out docs/_internal/W21_VEC_BENCH.md]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -95,7 +96,9 @@ def main() -> int:
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--dim", type=int, default=EMBED_DIM)
     p.add_argument("--out", default=str(DEFAULT_OUT))
-    p.add_argument("--json", action="store_true", help="emit JSON to stdout instead of writing markdown")
+    p.add_argument(
+        "--json", action="store_true", help="emit JSON to stdout instead of writing markdown"
+    )
     args = p.parse_args()
 
     if not os.path.exists(args.db):
@@ -103,6 +106,7 @@ def main() -> int:
         return 2
 
     import random
+
     rng = random.Random(args.seed)
 
     conn = sqlite3.connect(args.db)
@@ -165,7 +169,9 @@ def main() -> int:
     lines.append("|---|---:|---:|---:|---:|---:|---:|---:|")
     for r in results:
         if "error" in r:
-            lines.append(f"| {r['table']} | {r['rows']} | ERR | ERR | ERR | ERR | ERR | ERR |  ({r['error']})")
+            lines.append(
+                f"| {r['table']} | {r['rows']} | ERR | ERR | ERR | ERR | ERR | ERR |  ({r['error']})"
+            )
             continue
         lines.append(
             f"| {r['table']} | {r['rows']} | {r['p50_ms']} | {r['p95_ms']} | {r['p99_ms']} | "
@@ -176,7 +182,10 @@ def main() -> int:
         lines.append("## Skipped tables")
         lines.append("")
         for s in skipped:
-            lines.append(f"- `{s['table']}` — {s['reason']}" + (f" (rows={s.get('rows')})" if 'rows' in s else ""))
+            lines.append(
+                f"- `{s['table']}` — {s['reason']}"
+                + (f" (rows={s.get('rows')})" if "rows" in s else "")
+            )
     lines.append("")
     lines.append("## HNSW availability")
     lines.append("")
@@ -228,7 +237,13 @@ def main() -> int:
 
     out_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"[bench] wrote {out_path}", file=sys.stderr)
-    print(json.dumps({"out": str(out_path), "results": results, "skipped": skipped}, ensure_ascii=False, indent=2))
+    print(
+        json.dumps(
+            {"out": str(out_path), "results": results, "skipped": skipped},
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
     return 0
 
 

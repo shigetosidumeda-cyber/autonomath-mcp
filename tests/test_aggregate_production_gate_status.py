@@ -43,7 +43,6 @@ if not SCRIPT_PATH.exists():
 sys.path.insert(0, str(SCRIPT_PATH.parent))
 import aggregate_production_gate_status as agg  # noqa: E402
 
-
 # ---------------------------------------------------------------------------
 # helpers
 # ---------------------------------------------------------------------------

@@ -14,9 +14,8 @@ from __future__ import annotations
 
 import ast
 import sqlite3
-import textwrap
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -26,9 +25,7 @@ _ROLLBACK = _REPO_ROOT / "scripts" / "migrations" / "wave24_185_kokkai_utterance
 _KOKKAI_CRON = _REPO_ROOT / "scripts" / "cron" / "ingest_kokkai_weekly.py"
 _SHINGIKAI_CRON = _REPO_ROOT / "scripts" / "cron" / "ingest_shingikai_weekly.py"
 _WORKFLOW = _REPO_ROOT / ".github" / "workflows" / "kokkai-shingikai-weekly.yml"
-_TOOL_MODULE = (
-    _REPO_ROOT / "src" / "jpintel_mcp" / "mcp" / "autonomath_tools" / "kokkai_tools.py"
-)
+_TOOL_MODULE = _REPO_ROOT / "src" / "jpintel_mcp" / "mcp" / "autonomath_tools" / "kokkai_tools.py"
 
 
 # ---------------------------------------------------------------------------
@@ -194,9 +191,7 @@ def test_kokkai_api_mock_fetch(tmp_path) -> None:
         client = MagicMock()
         client.get = AsyncMock(side_effect=responses)
         sem = asyncio.Semaphore(1)
-        result = await mod._fetch_speeches(
-            client, sem, "税理士法", "2026-01-01", max_records=10
-        )
+        result = await mod._fetch_speeches(client, sem, "税理士法", "2026-01-01", max_records=10)
         return result
 
     out = asyncio.run(_runner())

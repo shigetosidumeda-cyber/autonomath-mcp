@@ -50,7 +50,6 @@ import sqlite3
 import sys
 import time
 import unicodedata
-import urllib.parse
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -233,7 +232,7 @@ class KoubaiFetcher:
         self._delay = delay
         self._last_t = 0.0
 
-    def __enter__(self) -> "KoubaiFetcher":
+    def __enter__(self) -> KoubaiFetcher:
         # Seed session: visit landing page once to acquire PHPSESSID + master_session.
         self.get(f"{KOUBAI_BASE}/hp001.php")
         return self

@@ -33,13 +33,13 @@ if TYPE_CHECKING:
 
 
 def log_event(
-    db: "sqlite3.Connection",
+    db: sqlite3.Connection,
     *,
     event_type: str,
     key_hash: str | None = None,
     key_hash_new: str | None = None,
     customer_id: str | None = None,
-    request: "Request | None" = None,
+    request: Request | None = None,
     **metadata: Any,
 ) -> None:
     """Append a row to ``audit_log``. Never raises on schema absence — a

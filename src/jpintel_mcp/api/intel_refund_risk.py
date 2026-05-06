@@ -178,7 +178,7 @@ def _score_refund_surface(
         "off_purpose_use": 30.0,
     }
     total = 0.0
-    counts = {k: 0 for k in kind_weight}
+    counts = dict.fromkeys(kind_weight, 0)
     refund_amount_total = 0
     overlap_count = 0
     for ev in evidence:

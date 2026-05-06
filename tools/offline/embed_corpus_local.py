@@ -75,6 +75,7 @@ OUTPUT:
     を書き込む。デフォルトは既存 entity_id を skip する resume-safe
     mode。既存 vec の再生成は `--replace-existing` を明示する。
 """
+
 from __future__ import annotations
 
 import argparse
@@ -82,9 +83,9 @@ import logging
 import sqlite3
 import sys
 import time
+from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Iterator
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_AUTONOMATH_DB = REPO_ROOT / "autonomath.db"
@@ -105,17 +106,18 @@ E5_PASSAGE_PREFIX = "passage: "
 # Corpus dispatch table
 # ---------------------------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class CorpusSpec:
     """One row per corpus. Encapsulates SELECT + dest vec table."""
 
-    key: str                    # CLI key (programs / laws / ...)
-    tier: str                   # vec table tier letter (S / L / C / ...)
-    source_db: str              # 'jpintel' or 'autonomath'
-    source_table: str           # source SQL table name
-    vec_table: str              # destination am_entities_vec_<tier>
-    select_sql: str             # SELECT id_int, text_for_embed FROM ...
-    count_sql: str              # SELECT COUNT(*) FROM ... matching select_sql WHERE
+    key: str  # CLI key (programs / laws / ...)
+    tier: str  # vec table tier letter (S / L / C / ...)
+    source_db: str  # 'jpintel' or 'autonomath'
+    source_table: str  # source SQL table name
+    vec_table: str  # destination am_entities_vec_<tier>
+    select_sql: str  # SELECT id_int, text_for_embed FROM ...
+    count_sql: str  # SELECT COUNT(*) FROM ... matching select_sql WHERE
 
 
 def _programs_select() -> tuple[str, str]:
@@ -138,9 +140,11 @@ def _programs_select() -> tuple[str, str]:
            AND p.primary_name != ''
          ORDER BY p.rowid ASC
     """
-    cnt = ("SELECT COUNT(*) FROM programs "
-           "WHERE excluded=0 AND tier IN ('S','A','B','C') "
-           "AND primary_name IS NOT NULL AND primary_name != ''")
+    cnt = (
+        "SELECT COUNT(*) FROM programs "
+        "WHERE excluded=0 AND tier IN ('S','A','B','C') "
+        "AND primary_name IS NOT NULL AND primary_name != ''"
+    )
     return sql, cnt
 
 
@@ -159,9 +163,11 @@ def _laws_select() -> tuple[str, str]:
                COALESCE(a.text_full,'') != ''
          ORDER BY a.article_id ASC
     """
-    cnt = ("SELECT COUNT(*) FROM am_law_article "
-           "WHERE COALESCE(title,'') || COALESCE(text_summary,'') "
-           "|| COALESCE(text_full,'') != ''")
+    cnt = (
+        "SELECT COUNT(*) FROM am_law_article "
+        "WHERE COALESCE(title,'') || COALESCE(text_summary,'') "
+        "|| COALESCE(text_full,'') != ''"
+    )
     return sql, cnt
 
 
@@ -179,9 +185,11 @@ def _cases_select() -> tuple[str, str]:
                || COALESCE(c.source_excerpt,'') != ''
          ORDER BY c.rowid ASC
     """
-    cnt = ("SELECT COUNT(*) FROM case_studies "
-           "WHERE COALESCE(case_title,'') || COALESCE(case_summary,'') "
-           "|| COALESCE(source_excerpt,'') != ''")
+    cnt = (
+        "SELECT COUNT(*) FROM case_studies "
+        "WHERE COALESCE(case_title,'') || COALESCE(case_summary,'') "
+        "|| COALESCE(source_excerpt,'') != ''"
+    )
     return sql, cnt
 
 
@@ -198,8 +206,10 @@ def _tsutatsu_select() -> tuple[str, str]:
          WHERE COALESCE(t.title,'') || COALESCE(t.body_excerpt,'') != ''
          ORDER BY t.id ASC
     """
-    cnt = ("SELECT COUNT(*) FROM nta_tsutatsu_index "
-           "WHERE COALESCE(title,'') || COALESCE(body_excerpt,'') != ''")
+    cnt = (
+        "SELECT COUNT(*) FROM nta_tsutatsu_index "
+        "WHERE COALESCE(title,'') || COALESCE(body_excerpt,'') != ''"
+    )
     return sql, cnt
 
 
@@ -217,9 +227,11 @@ def _saiketsu_select() -> tuple[str, str]:
                || COALESCE(s.fulltext,'') != ''
          ORDER BY s.id ASC
     """
-    cnt = ("SELECT COUNT(*) FROM nta_saiketsu "
-           "WHERE COALESCE(title,'') || COALESCE(decision_summary,'') "
-           "|| COALESCE(fulltext,'') != ''")
+    cnt = (
+        "SELECT COUNT(*) FROM nta_saiketsu "
+        "WHERE COALESCE(title,'') || COALESCE(decision_summary,'') "
+        "|| COALESCE(fulltext,'') != ''"
+    )
     return sql, cnt
 
 
@@ -239,10 +251,12 @@ def _court_select() -> tuple[str, str]:
                || COALESCE(j.source_excerpt,'') != ''
          ORDER BY j.rowid ASC
     """
-    cnt = ("SELECT COUNT(*) FROM court_decisions "
-           "WHERE COALESCE(case_name,'') || COALESCE(key_ruling,'') "
-           "|| COALESCE(impact_on_business,'') "
-           "|| COALESCE(source_excerpt,'') != ''")
+    cnt = (
+        "SELECT COUNT(*) FROM court_decisions "
+        "WHERE COALESCE(case_name,'') || COALESCE(key_ruling,'') "
+        "|| COALESCE(impact_on_business,'') "
+        "|| COALESCE(source_excerpt,'') != ''"
+    )
     return sql, cnt
 
 
@@ -263,21 +277,23 @@ def _adoptions_select() -> tuple[str, str]:
                || COALESCE(a.company_name_raw,'') != ''
          ORDER BY a.id ASC
     """
-    cnt = ("SELECT COUNT(*) FROM jpi_adoption_records "
-           "WHERE COALESCE(program_name_raw,'') || COALESCE(project_title,'') "
-           "|| COALESCE(company_name_raw,'') != ''")
+    cnt = (
+        "SELECT COUNT(*) FROM jpi_adoption_records "
+        "WHERE COALESCE(program_name_raw,'') || COALESCE(project_title,'') "
+        "|| COALESCE(company_name_raw,'') != ''"
+    )
     return sql, cnt
 
 
 def _build_corpus_specs() -> dict[str, CorpusSpec]:
     rows: list[tuple[str, str, str, str, Callable[[], tuple[str, str]]]] = [
-        ("programs",  "S", "jpintel",    "programs",              _programs_select),
-        ("laws",      "L", "autonomath", "am_law_article",        _laws_select),
-        ("cases",     "C", "jpintel",    "case_studies",          _cases_select),
-        ("tsutatsu",  "T", "autonomath", "nta_tsutatsu_index",    _tsutatsu_select),
-        ("saiketsu",  "K", "autonomath", "nta_saiketsu",          _saiketsu_select),
-        ("court",     "J", "jpintel",    "court_decisions",       _court_select),
-        ("adoptions", "A", "autonomath", "jpi_adoption_records",  _adoptions_select),
+        ("programs", "S", "jpintel", "programs", _programs_select),
+        ("laws", "L", "autonomath", "am_law_article", _laws_select),
+        ("cases", "C", "jpintel", "case_studies", _cases_select),
+        ("tsutatsu", "T", "autonomath", "nta_tsutatsu_index", _tsutatsu_select),
+        ("saiketsu", "K", "autonomath", "nta_saiketsu", _saiketsu_select),
+        ("court", "J", "jpintel", "court_decisions", _court_select),
+        ("adoptions", "A", "autonomath", "jpi_adoption_records", _adoptions_select),
     ]
     out: dict[str, CorpusSpec] = {}
     for key, tier, source_db, source_table, fn in rows:
@@ -301,8 +317,10 @@ CORPUS_SPECS: dict[str, CorpusSpec] = _build_corpus_specs()
 # DB helpers
 # ---------------------------------------------------------------------------
 
-def open_conn(spec: CorpusSpec, jpintel_db: Path,
-              autonomath_db: Path) -> tuple[sqlite3.Connection, sqlite3.Connection]:
+
+def open_conn(
+    spec: CorpusSpec, jpintel_db: Path, autonomath_db: Path
+) -> tuple[sqlite3.Connection, sqlite3.Connection]:
     """Return (src_conn, vec_conn).
 
     - src_conn: where SELECT runs (jpintel.db or autonomath.db per spec).
@@ -333,6 +351,7 @@ def open_conn(spec: CorpusSpec, jpintel_db: Path,
         )
     try:
         import sqlite_vec  # type: ignore
+
         sqlite_vec.load(vec_conn)
     except Exception as exc:  # noqa: BLE001
         try:
@@ -363,8 +382,7 @@ def count_rows(conn: sqlite3.Connection, spec: CorpusSpec) -> int:
     try:
         row = conn.execute(spec.count_sql).fetchone()
     except sqlite3.OperationalError as exc:
-        LOG.error("count failed for %s (%s): %s",
-                  spec.key, spec.source_table, exc)
+        LOG.error("count failed for %s (%s): %s", spec.key, spec.source_table, exc)
         return -1
     return int(row[0]) if row else 0
 
@@ -379,7 +397,8 @@ def load_existing_entity_ids(
         if not required:
             LOG.warning(
                 "cannot read existing ids from %s during dry-run: %s",
-                vec_table, exc,
+                vec_table,
+                exc,
             )
             return None
         raise SystemExit(
@@ -389,8 +408,9 @@ def load_existing_entity_ids(
     return {int(row[0]) for row in rows if row and row[0] is not None}
 
 
-def iter_rows(conn: sqlite3.Connection, spec: CorpusSpec,
-              max_rows: int | None) -> Iterator[tuple[int, str]]:
+def iter_rows(
+    conn: sqlite3.Connection, spec: CorpusSpec, max_rows: int | None
+) -> Iterator[tuple[int, str]]:
     sql = spec.select_sql
     if max_rows is not None and max_rows > 0:
         sql = sql.rstrip() + f"\n         LIMIT {int(max_rows)}"
@@ -406,15 +426,14 @@ def iter_rows(conn: sqlite3.Connection, spec: CorpusSpec,
         yield rid_int, txt.strip()
 
 
-def upsert_embedding(conn: sqlite3.Connection, vec_table: str,
-                     rowid: int, embedding_bytes: bytes) -> None:
+def upsert_embedding(
+    conn: sqlite3.Connection, vec_table: str, rowid: int, embedding_bytes: bytes
+) -> None:
     # sqlite-vec vec0 vtables do NOT honor INSERT OR REPLACE — the
     # `entity_id INTEGER PRIMARY KEY` declaration triggers a UNIQUE
     # constraint failure on duplicate entity_id even with OR REPLACE.
     # Resume-safe path is explicit DELETE + INSERT.
-    conn.execute(
-        f"DELETE FROM {vec_table} WHERE entity_id = ?", (rowid,)
-    )
+    conn.execute(f"DELETE FROM {vec_table} WHERE entity_id = ?", (rowid,))
     conn.execute(
         f"INSERT INTO {vec_table}(entity_id, embedding) VALUES (?, ?)",
         (rowid, embedding_bytes),
@@ -424,6 +443,7 @@ def upsert_embedding(conn: sqlite3.Connection, vec_table: str,
 # ---------------------------------------------------------------------------
 # Model
 # ---------------------------------------------------------------------------
+
 
 def load_model(model_name: str):
     """sentence-transformers の SentenceTransformer をロード.
@@ -438,7 +458,8 @@ def load_model(model_name: str):
         LOG.error(
             "sentence-transformers (or torch) is not installed. "
             "Run: pip install sentence-transformers torch (in .venv). "
-            "Original error: %s", exc,
+            "Original error: %s",
+            exc,
         )
         raise SystemExit(2)
     LOG.info("loading model %s ... (first run downloads ~2.2 GB)", model_name)
@@ -464,27 +485,39 @@ def embed_batch(model, texts: list[str]):
 # Per-corpus driver
 # ---------------------------------------------------------------------------
 
-def run_corpus(spec: CorpusSpec, jpintel_db: Path, autonomath_db: Path,
-               batch_size: int, max_rows: int | None,
-               model_name: str, dry_run: bool,
-               replace_existing: bool) -> dict:
+
+def run_corpus(
+    spec: CorpusSpec,
+    jpintel_db: Path,
+    autonomath_db: Path,
+    batch_size: int,
+    max_rows: int | None,
+    model_name: str,
+    dry_run: bool,
+    replace_existing: bool,
+) -> dict:
     """Returns dict report for the corpus (stable shape for caller)."""
-    LOG.info("---- corpus=%s tier=%s source=%s.%s vec=%s ----",
-             spec.key, spec.tier, spec.source_db,
-             spec.source_table, spec.vec_table)
+    LOG.info(
+        "---- corpus=%s tier=%s source=%s.%s vec=%s ----",
+        spec.key,
+        spec.tier,
+        spec.source_db,
+        spec.source_table,
+        spec.vec_table,
+    )
     src_conn, vec_conn = open_conn(spec, jpintel_db, autonomath_db)
     try:
         total = count_rows(src_conn, spec)
         LOG.info("[%s] candidate row count: %d", spec.key, total)
-        existing_ids = load_existing_entity_ids(
-            vec_conn, spec.vec_table, required=not dry_run
-        )
+        existing_ids = load_existing_entity_ids(vec_conn, spec.vec_table, required=not dry_run)
         existing_count = len(existing_ids) if existing_ids is not None else -1
         resume_mode = not replace_existing
-        LOG.info("[%s] existing vec rows: %s resume_skip_existing=%s",
-                 spec.key,
-                 existing_count if existing_count >= 0 else "unknown",
-                 resume_mode)
+        LOG.info(
+            "[%s] existing vec rows: %s resume_skip_existing=%s",
+            spec.key,
+            existing_count if existing_count >= 0 else "unknown",
+            resume_mode,
+        )
 
         if dry_run:
             return {
@@ -496,7 +529,9 @@ def run_corpus(spec: CorpusSpec, jpintel_db: Path, autonomath_db: Path,
                 "remaining_rows": (
                     max(total - existing_count, 0)
                     if resume_mode and existing_count >= 0
-                    else total if not resume_mode else -1
+                    else total
+                    if not resume_mode
+                    else -1
                 ),
                 "embedded": 0,
                 "skipped_existing": 0,
@@ -510,8 +545,7 @@ def run_corpus(spec: CorpusSpec, jpintel_db: Path, autonomath_db: Path,
         smoke = embed_batch(model, ["smoke"])
         actual_dim = int(smoke.shape[-1])
         if actual_dim != EMBEDDING_DIM:
-            LOG.error("model output dim %d != expected %d.",
-                      actual_dim, EMBEDDING_DIM)
+            LOG.error("model output dim %d != expected %d.", actual_dim, EMBEDDING_DIM)
             raise SystemExit(3)
         LOG.info("[%s] smoke encode ok, dim=%d", spec.key, actual_dim)
 
@@ -519,6 +553,7 @@ def run_corpus(spec: CorpusSpec, jpintel_db: Path, autonomath_db: Path,
         try:
             from tqdm import tqdm
         except ImportError:
+
             def tqdm(it, **_kw):  # type: ignore
                 return it
 
@@ -532,12 +567,9 @@ def run_corpus(spec: CorpusSpec, jpintel_db: Path, autonomath_db: Path,
         # This avoids a no-op run when the first N source rows are already
         # present in the vec table.
         source_limit = max_rows if replace_existing else None
-        bar_total = (
-            min(total, max_rows) if replace_existing and max_rows else total
-        )
+        bar_total = min(total, max_rows) if replace_existing and max_rows else total
         rows_iter = iter_rows(src_conn, spec, source_limit)
-        bar = tqdm(rows_iter, total=bar_total,
-                   desc=f"embed:{spec.key}", unit="row")
+        bar = tqdm(rows_iter, total=bar_total, desc=f"embed:{spec.key}", unit="row")
 
         def flush() -> None:
             nonlocal embedded, batch_rids, batch_texts
@@ -569,7 +601,11 @@ def run_corpus(spec: CorpusSpec, jpintel_db: Path, autonomath_db: Path,
         LOG.info(
             "[%s] done. embedded=%d skipped_existing=%d skipped_empty=%d "
             "candidate=%d existing_before=%d",
-            spec.key, embedded, skipped_existing, skipped_empty, total,
+            spec.key,
+            embedded,
+            skipped_existing,
+            skipped_empty,
+            total,
             existing_count,
         )
         return {
@@ -578,8 +614,7 @@ def run_corpus(spec: CorpusSpec, jpintel_db: Path, autonomath_db: Path,
             "vec_table": spec.vec_table,
             "candidate_rows": total,
             "existing_rows": existing_count,
-            "remaining_rows": max(total - existing_count - embedded, 0)
-                              if resume_mode else 0,
+            "remaining_rows": max(total - existing_count - embedded, 0) if resume_mode else 0,
             "embedded": embedded,
             "skipped_existing": skipped_existing,
             "skipped_empty": skipped_empty,
@@ -602,39 +637,49 @@ def run_corpus(spec: CorpusSpec, jpintel_db: Path, autonomath_db: Path,
 # CLI entrypoint
 # ---------------------------------------------------------------------------
 
+
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    p.add_argument("--autonomath-db", type=Path,
-                   default=DEFAULT_AUTONOMATH_DB)
-    p.add_argument("--jpintel-db", type=Path,
-                   default=DEFAULT_JPINTEL_DB)
-    p.add_argument("--corpus", default="all",
-                   choices=["all", *CORPUS_SPECS.keys()],
-                   help="どの corpus を embed するか (default 'all')")
-    p.add_argument("--max-rows", type=int, default=0,
-                   help="本 invocation で 1 corpus あたり embed する row 上限. "
-                        "0 = 無制限 (default 0)")
-    p.add_argument("--batch-size", type=int, default=DEFAULT_BATCH_SIZE,
-                   help=f"encode 1 batch あたりの text 数 "
-                        f"(default {DEFAULT_BATCH_SIZE})")
-    p.add_argument("--model", default=MODEL_NAME,
-                   help=f"sentence-transformers model id "
-                        f"(default {MODEL_NAME})")
-    p.add_argument("--dry-run", action="store_true",
-                   help="各 corpus の SELECT count を報告して終了 "
-                        "(model load + DB 書込みなし、torch 不要)")
-    p.add_argument("--replace-existing", action="store_true",
-                   help="既存 vec entity_id も DELETE+INSERT で再生成する。"
-                        "未指定時は既存 vec を skip して resume する")
+    p.add_argument("--autonomath-db", type=Path, default=DEFAULT_AUTONOMATH_DB)
+    p.add_argument("--jpintel-db", type=Path, default=DEFAULT_JPINTEL_DB)
+    p.add_argument(
+        "--corpus",
+        default="all",
+        choices=["all", *CORPUS_SPECS.keys()],
+        help="どの corpus を embed するか (default 'all')",
+    )
+    p.add_argument(
+        "--max-rows",
+        type=int,
+        default=0,
+        help="本 invocation で 1 corpus あたり embed する row 上限. 0 = 無制限 (default 0)",
+    )
+    p.add_argument(
+        "--batch-size",
+        type=int,
+        default=DEFAULT_BATCH_SIZE,
+        help=f"encode 1 batch あたりの text 数 (default {DEFAULT_BATCH_SIZE})",
+    )
+    p.add_argument(
+        "--model", default=MODEL_NAME, help=f"sentence-transformers model id (default {MODEL_NAME})"
+    )
+    p.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="各 corpus の SELECT count を報告して終了 (model load + DB 書込みなし、torch 不要)",
+    )
+    p.add_argument(
+        "--replace-existing",
+        action="store_true",
+        help="既存 vec entity_id も DELETE+INSERT で再生成する。"
+        "未指定時は既存 vec を skip して resume する",
+    )
     args = p.parse_args()
 
-    logging.basicConfig(level=logging.INFO,
-                        format="%(asctime)s %(levelname)s %(message)s")
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     targets: list[CorpusSpec] = (
-        list(CORPUS_SPECS.values())
-        if args.corpus == "all"
-        else [CORPUS_SPECS[args.corpus]]
+        list(CORPUS_SPECS.values()) if args.corpus == "all" else [CORPUS_SPECS[args.corpus]]
     )
 
     max_rows = None if args.max_rows == 0 else args.max_rows
@@ -662,10 +707,17 @@ def main() -> int:
             "  %-9s tier=%s vec=%-22s candidate=%6d existing=%6d "
             "remaining=%6d embedded=%6d skipped_existing=%6d "
             "skipped_empty=%5d dry_run=%s replace_existing=%s",
-            r["corpus"], r["tier"], r["vec_table"],
-            max(r["candidate_rows"], 0), r["existing_rows"],
-            r["remaining_rows"], r["embedded"], r["skipped_existing"],
-            r["skipped_empty"], r["dry_run"], r["replace_existing"],
+            r["corpus"],
+            r["tier"],
+            r["vec_table"],
+            max(r["candidate_rows"], 0),
+            r["existing_rows"],
+            r["remaining_rows"],
+            r["embedded"],
+            r["skipped_existing"],
+            r["skipped_empty"],
+            r["dry_run"],
+            r["replace_existing"],
         )
         grand_candidate += max(r["candidate_rows"], 0)
         grand_embedded += r["embedded"]

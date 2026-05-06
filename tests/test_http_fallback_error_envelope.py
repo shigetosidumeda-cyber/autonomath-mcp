@@ -25,14 +25,8 @@ These tests pin the contract for every error helper in
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import httpx
 import pytest
-
-if TYPE_CHECKING:
-    pass
-
 
 # Six fields the envelope contract requires on every response.
 REQUIRED_ENVELOPE_FIELDS = (

@@ -21,8 +21,9 @@ from __future__ import annotations
 
 import inspect
 import sys
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable, Dict
+from typing import Any
 
 import pytest
 
@@ -32,7 +33,6 @@ if str(_SDK_ROOT) not in sys.path:
     sys.path.insert(0, str(_SDK_ROOT))
 
 import httpx  # noqa: E402
-
 from autonomath import (  # noqa: E402
     AsyncAutonoMathClient,
     AutonoMathClient,
@@ -159,7 +159,7 @@ def test_upcoming_deadlines_default_window_is_30():
 # Endpoint contract checks (mock httpx; no live API)
 # ---------------------------------------------------------------------------
 def test_usage_hits_v1_usage_and_parses() -> None:
-    captured: Dict[str, Any] = {}
+    captured: dict[str, Any] = {}
 
     def handler(req: httpx.Request) -> httpx.Response:
         captured["path"] = req.url.path
@@ -189,7 +189,7 @@ def test_usage_hits_v1_usage_and_parses() -> None:
 
 
 def test_prescreen_hits_v1_programs_prescreen_and_parses() -> None:
-    captured: Dict[str, Any] = {}
+    captured: dict[str, Any] = {}
 
     def handler(req: httpx.Request) -> httpx.Response:
         captured["path"] = req.url.path
@@ -232,7 +232,7 @@ def test_prescreen_hits_v1_programs_prescreen_and_parses() -> None:
 
 
 def test_search_query_forwards_ts_filters() -> None:
-    captured: Dict[str, Any] = {}
+    captured: dict[str, Any] = {}
 
     def handler(req: httpx.Request) -> httpx.Response:
         captured["params"] = dict(req.url.params)
@@ -260,7 +260,7 @@ def test_search_query_forwards_ts_filters() -> None:
 
 
 def test_tax_get_rule_hits_singular_endpoint() -> None:
-    captured: Dict[str, Any] = {}
+    captured: dict[str, Any] = {}
 
     def handler(req: httpx.Request) -> httpx.Response:
         captured["path"] = req.url.path
@@ -280,7 +280,7 @@ def test_tax_get_rule_hits_singular_endpoint() -> None:
 
 
 def test_tax_list_rules_filters_by_fiscal_year() -> None:
-    captured: Dict[str, Any] = {}
+    captured: dict[str, Any] = {}
 
     def handler(req: httpx.Request) -> httpx.Response:
         captured["params"] = dict(req.url.params)
@@ -292,7 +292,7 @@ def test_tax_list_rules_filters_by_fiscal_year() -> None:
 
 
 def test_reasoning_answer_forwards_ts_options() -> None:
-    captured: Dict[str, Any] = {}
+    captured: dict[str, Any] = {}
 
     def handler(req: httpx.Request) -> httpx.Response:
         captured["body"] = req.read().decode("utf-8")

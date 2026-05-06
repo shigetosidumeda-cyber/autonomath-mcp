@@ -15,7 +15,6 @@ from pathlib import Path
 
 import pytest
 
-
 _REPO = Path(__file__).resolve().parent.parent
 _SRC = _REPO / "src"
 if _SRC.is_dir() and str(_SRC) not in sys.path:

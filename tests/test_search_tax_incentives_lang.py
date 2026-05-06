@@ -47,11 +47,9 @@ os.environ.setdefault("AUTONOMATH_ENABLED", "1")
 # import between autonomath_tools/tools.py and server.py (same dance as
 # test_autonomath_tools.py).
 from jpintel_mcp.mcp import server  # noqa: F401, E402
-
 from jpintel_mcp.mcp.autonomath_tools.tools import (  # noqa: E402
     search_tax_incentives,
 )
-
 
 # ---------------------------------------------------------------------------
 # Tiny helpers

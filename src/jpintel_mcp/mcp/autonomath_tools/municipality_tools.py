@@ -228,9 +228,7 @@ if _ENABLED and settings.autonomath_enabled:
         pref: Annotated[
             str,
             Field(
-                description=(
-                    "都道府県名 (e.g. '東京都', '北海道', '大阪府'). 完全一致 filter."
-                ),
+                description=("都道府県名 (e.g. '東京都', '北海道', '大阪府'). 完全一致 filter."),
                 min_length=1,
                 max_length=20,
             ),

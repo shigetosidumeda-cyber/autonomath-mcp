@@ -21,7 +21,6 @@ sys.path.insert(0, str(SCRIPTS_EVAL))
 import _persona_index  # noqa: E402
 import run_practitioner_eval as runner  # noqa: E402
 
-
 HAPPY_RESPONSE = json.dumps(
     {
         "artifact_id": "kanyosaki_monthly_briefing_provisioning",

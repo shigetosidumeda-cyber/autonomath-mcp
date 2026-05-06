@@ -71,9 +71,7 @@ logger = logging.getLogger("jpintel.cron.municipality_subsidy_weekly")
 GLOBAL_CONCURRENCY = 50
 PER_HOST_INTERVAL_SECONDS = 2.0
 HTTPX_TIMEOUT = httpx.Timeout(30.0, connect=10.0)
-USER_AGENT = (
-    "jpcite-municipality-cron/0.3.4 (+https://jpcite.com/cron-policy)"
-)
+USER_AGENT = "jpcite-municipality-cron/0.3.4 (+https://jpcite.com/cron-policy)"
 
 # Aggregator banlist — mirrors api/contribute.py + api/_verifier.py +
 # api/citation_badge.py. Substring match against urlparse(url).netloc.
@@ -214,14 +212,11 @@ def _open_db(path: str) -> sqlite3.Connection:
     return conn
 
 
-def _existing_sha256(
-    conn: sqlite3.Connection, muni_code: str, subsidy_url: str
-) -> str | None:
+def _existing_sha256(conn: sqlite3.Connection, muni_code: str, subsidy_url: str) -> str | None:
     """Return the prior sha256 for this (muni_code, subsidy_url) row, if any."""
     try:
         row = conn.execute(
-            "SELECT sha256 FROM municipality_subsidy "
-            "WHERE muni_code = ? AND subsidy_url = ?",
+            "SELECT sha256 FROM municipality_subsidy WHERE muni_code = ? AND subsidy_url = ?",
             (muni_code, subsidy_url),
         ).fetchone()
     except sqlite3.OperationalError:
@@ -321,9 +316,7 @@ _DEADLINE_RE = re.compile(
     r"(?:申請(?:期限|期間)|締切|締め切り|応募期限)[\s:：]*"
     r"([0-9０-９令和平成]{1,4}[年./\-][0-9０-９]{1,2}[月./\-][0-9０-９]{1,2}[日]?)"
 )
-_TARGET_RE = re.compile(
-    r"(?:対象(?:者|事業者|企業)?|応募資格)[\s:：]*([^\n。]{1,200})"
-)
+_TARGET_RE = re.compile(r"(?:対象(?:者|事業者|企業)?|応募資格)[\s:：]*([^\n。]{1,200})")
 
 
 def parse_html(html: str) -> dict[str, str | None]:
@@ -435,9 +428,7 @@ async def fetch_and_ingest(
         logger.warning("HTTP %s %s", resp.status_code, url)
         return "http_error", {}
     else:
-        page_status = (
-            "redirect" if str(resp.url) != url else "active"
-        )
+        page_status = "redirect" if str(resp.url) != url else "active"
         body_bytes = resp.content
         ctype = (resp.headers.get("content-type") or "").lower()
         if "pdf" in ctype or url.lower().endswith(".pdf"):
@@ -483,14 +474,14 @@ def load_seed(path: str) -> list[dict[str, Any]]:
 
 async def run(args: argparse.Namespace) -> int:
     seed = load_seed(args.seed)
-    logger.info("DEEP-44 cron start: seed_rows=%d db=%s dry_run=%s",
-                len(seed), args.db, args.dry_run)
+    logger.info(
+        "DEEP-44 cron start: seed_rows=%d db=%s dry_run=%s", len(seed), args.db, args.dry_run
+    )
 
     conn = _open_db(args.db)
     sem = asyncio.Semaphore(GLOBAL_CONCURRENCY)
     rate = HostRateLimiter()
-    counters = {"inserted": 0, "updated": 0, "skipped": 0,
-                "banned": 0, "http_error": 0}
+    counters = {"inserted": 0, "updated": 0, "skipped": 0, "banned": 0, "http_error": 0}
 
     async with httpx.AsyncClient(
         timeout=HTTPX_TIMEOUT,
@@ -499,10 +490,7 @@ async def run(args: argparse.Namespace) -> int:
             "Accept": "text/html,application/pdf,application/xhtml+xml;q=0.9,*/*;q=0.8",
         },
     ) as client:
-        tasks = [
-            fetch_and_ingest(client, sem, rate, conn, s, args.dry_run)
-            for s in seed
-        ]
+        tasks = [fetch_and_ingest(client, sem, rate, conn, s, args.dry_run) for s in seed]
         for coro in asyncio.as_completed(tasks):
             status, _row = await coro
             counters[status] = counters.get(status, 0) + 1

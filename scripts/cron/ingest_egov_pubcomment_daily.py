@@ -202,9 +202,7 @@ async def _fetch_announcements(
             try:
                 resp = await client.get(EGOV_SEARCH_BASE, params=params)
             except httpx.HTTPError as exc:
-                logger.warning(
-                    "egov fetch failed for %s @ p%d: %s", keyword, page, exc
-                )
+                logger.warning("egov fetch failed for %s @ p%d: %s", keyword, page, exc)
                 await asyncio.sleep(RATE_LIMIT_SECONDS * 2)
                 break
             await asyncio.sleep(RATE_LIMIT_SECONDS)
@@ -270,9 +268,7 @@ def parse_announcement_record(rec: dict[str, Any]) -> dict[str, Any] | None:
     url = rec.get("url") or rec.get("full_text_url") or rec.get("link") or ""
     if not (case_id and ministry and target_law and announce and deadline and url):
         return None
-    sha256 = hashlib.sha256(
-        f"{summary}|{url}".encode("utf-8")
-    ).hexdigest()
+    sha256 = hashlib.sha256(f"{summary}|{url}".encode()).hexdigest()
     return {
         "id": str(case_id),
         "ministry": ministry,
@@ -291,9 +287,7 @@ def detect_keywords(text: str) -> list[str]:
     return [k for k in KEYWORDS if k in text]
 
 
-def classify_jpcite_relevance(
-    summary: str, target_law: str
-) -> tuple[int, str | None]:
+def classify_jpcite_relevance(summary: str, target_law: str) -> tuple[int, str | None]:
     """Return (relevant_flag, cohort_impact_json_or_None).
 
     relevant_flag is 1 iff any of KEYWORDS matches summary OR target_law.

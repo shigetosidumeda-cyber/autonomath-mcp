@@ -29,7 +29,7 @@ import random
 import sqlite3
 import sys
 import tempfile
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -37,9 +37,7 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 MIG_FILE = REPO_ROOT / "scripts" / "migrations" / "wave24_190_restore_drill_log.sql"
-ROLLBACK_FILE = (
-    REPO_ROOT / "scripts" / "migrations" / "wave24_190_restore_drill_log_rollback.sql"
-)
+ROLLBACK_FILE = REPO_ROOT / "scripts" / "migrations" / "wave24_190_restore_drill_log_rollback.sql"
 CRON_FILE = REPO_ROOT / "scripts" / "cron" / "restore_drill_monthly.py"
 
 
@@ -127,8 +125,7 @@ def test_migration_creates_restore_drill_log(applied_migration: Path) -> None:
     try:
         # Table exists.
         rows = conn.execute(
-            "SELECT name FROM sqlite_master "
-            "WHERE type='table' AND name='restore_drill_log'"
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='restore_drill_log'"
         ).fetchall()
         assert rows, "restore_drill_log table missing after migration"
 
@@ -187,9 +184,7 @@ def test_migration_creates_restore_drill_log(applied_migration: Path) -> None:
             )"""
         )
         conn.commit()
-        n = conn.execute(
-            "SELECT COUNT(*) FROM restore_drill_log"
-        ).fetchone()[0]
+        n = conn.execute("SELECT COUNT(*) FROM restore_drill_log").fetchone()[0]
         assert n == 1
     finally:
         conn.close()
@@ -201,8 +196,7 @@ def test_migration_creates_restore_drill_log(applied_migration: Path) -> None:
         conn.executescript(rollback)
         conn.commit()
         rows = conn.execute(
-            "SELECT name FROM sqlite_master "
-            "WHERE type='table' AND name='restore_drill_log'"
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='restore_drill_log'"
         ).fetchall()
         assert not rows, "restore_drill_log should be dropped by rollback"
     finally:
@@ -229,9 +223,7 @@ def _wire_mock_r2(
         return list(candidates)
 
     def fake_download(key, local, *, bucket=None):
-        calls["download"].append(
-            {"key": key, "local": str(local), "bucket": bucket}
-        )
+        calls["download"].append({"key": key, "local": str(local), "bucket": bucket})
         on_download(key, local, bucket)
 
     monkeypatch.setattr(mod, "list_keys", fake_list_keys)
@@ -246,7 +238,7 @@ def test_drill_happy_path_inserts_ok_row(
     tmp_path: Path,
 ) -> None:
     mod = restore_drill_module
-    now = datetime(2026, 5, 7, 18, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 5, 7, 18, 0, tzinfo=UTC)
     fake_mtime = now - timedelta(days=10)
     candidates = [
         ("jpintel/jpintel-20260420-180000.db.gz", fake_mtime, 4096),
@@ -322,7 +314,7 @@ def test_drill_top10_expected_json_marks_ok(
     tmp_path: Path,
 ) -> None:
     mod = restore_drill_module
-    now = datetime(2026, 5, 7, 18, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 5, 7, 18, 0, tzinfo=UTC)
     fake_mtime = now - timedelta(days=20)
     candidates = [
         ("jpintel/jpintel-20260417-000000.db.gz", fake_mtime, 8192),
@@ -382,7 +374,7 @@ def test_drill_detects_corrupt_backup(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     mod = restore_drill_module
-    now = datetime(2026, 5, 7, 18, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 5, 7, 18, 0, tzinfo=UTC)
     fake_mtime = now - timedelta(days=4)
     candidates = [
         ("jpintel/jpintel-broken.db.gz", fake_mtime, 256),
@@ -423,9 +415,7 @@ def test_drill_detects_corrupt_backup(
         forced_kind="jpintel",
     )
 
-    assert payload["integrity_status"] == "corrupted", (
-        f"expected corrupted, got {payload}"
-    )
+    assert payload["integrity_status"] == "corrupted", f"expected corrupted, got {payload}"
     captured = capsys.readouterr()
     assert "RESTORE_DRILL_RED" in captured.err
 
@@ -433,8 +423,7 @@ def test_drill_detects_corrupt_backup(
     conn = sqlite3.connect(applied_migration)
     try:
         row = conn.execute(
-            "SELECT integrity_status, notes FROM restore_drill_log "
-            "ORDER BY id DESC LIMIT 1"
+            "SELECT integrity_status, notes FROM restore_drill_log ORDER BY id DESC LIMIT 1"
         ).fetchone()
     finally:
         conn.close()
@@ -454,7 +443,7 @@ def test_drill_rto_under_30min_on_small_db(
     tmp_path: Path,
 ) -> None:
     mod = restore_drill_module
-    now = datetime(2026, 5, 7, 18, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 5, 7, 18, 0, tzinfo=UTC)
     fake_mtime = now - timedelta(days=14)
     candidates = [
         ("autonomath/autonomath-fast.db.gz", fake_mtime, 1024),
@@ -493,8 +482,7 @@ def test_drill_rto_under_30min_on_small_db(
     conn = sqlite3.connect(applied_migration)
     try:
         rto_row = conn.execute(
-            "SELECT rto_total_seconds FROM restore_drill_log "
-            "ORDER BY id DESC LIMIT 1"
+            "SELECT rto_total_seconds FROM restore_drill_log ORDER BY id DESC LIMIT 1"
         ).fetchone()
     finally:
         conn.close()

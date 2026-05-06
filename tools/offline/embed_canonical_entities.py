@@ -76,6 +76,7 @@ OUTPUT:
     書き込み時は map を upsert し、vec0 は DELETE+INSERT (vec0 quirks:
     INSERT OR REPLACE silently fails on duplicate INTEGER PK).
 """
+
 from __future__ import annotations
 
 import argparse
@@ -83,9 +84,9 @@ import logging
 import sqlite3
 import sys
 import time
+from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterator
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_AUTONOMATH_DB = REPO_ROOT / "autonomath.db"
@@ -109,9 +110,9 @@ E5_PASSAGE_PREFIX = "passage: "
 class KindSpec:
     """One row per record_kind. Encapsulates vec table + key facts."""
 
-    kind: str                       # CLI key (= am_entities.record_kind)
-    vec_table: str                  # destination am_canonical_vec_<short>
-    map_table: str                  # sidecar mapping table
+    kind: str  # CLI key (= am_entities.record_kind)
+    vec_table: str  # destination am_canonical_vec_<short>
+    map_table: str  # sidecar mapping table
     # field_names that carry meaningful descriptive text for this kind
     # (subset of am_entity_facts.field_name). NULL/empty values are
     # silently skipped — primary_name from am_entities is always
@@ -128,8 +129,12 @@ KIND_SPECS: dict[str, KindSpec] = {
         vec_table="am_canonical_vec_program",
         map_table="am_canonical_vec_program_map",
         fact_fields=(
-            "program.authority", "program_kind", "authority_raw",
-            "source_excerpt", "doc.form_name", "target_raw",
+            "program.authority",
+            "program_kind",
+            "authority_raw",
+            "source_excerpt",
+            "doc.form_name",
+            "target_raw",
         ),
     ),
     "enforcement": KindSpec(
@@ -137,8 +142,11 @@ KIND_SPECS: dict[str, KindSpec] = {
         vec_table="am_canonical_vec_enforcement",
         map_table="am_canonical_vec_enforcement_map",
         fact_fields=(
-            "source.title", "source_excerpt", "legal_basis_raw",
-            "authority_raw", "company_name",
+            "source.title",
+            "source_excerpt",
+            "legal_basis_raw",
+            "authority_raw",
+            "company_name",
         ),
     ),
     "corporate_entity": KindSpec(
@@ -146,8 +154,10 @@ KIND_SPECS: dict[str, KindSpec] = {
         vec_table="am_canonical_vec_corporate",
         map_table="am_canonical_vec_corporate_map",
         fact_fields=(
-            "corp.legal_name", "corp.legal_name_kana",
-            "corp.business_summary", "corp.location",
+            "corp.legal_name",
+            "corp.legal_name_kana",
+            "corp.business_summary",
+            "corp.location",
             "houjin_bangou",
         ),
     ),
@@ -156,8 +166,11 @@ KIND_SPECS: dict[str, KindSpec] = {
         vec_table="am_canonical_vec_statistic",
         map_table="am_canonical_vec_statistic_map",
         fact_fields=(
-            "statistic_source_title", "jsic_name_major",
-            "jsic_name_medium", "scale_bucket", "region_level",
+            "statistic_source_title",
+            "jsic_name_major",
+            "jsic_name_medium",
+            "scale_bucket",
+            "region_level",
         ),
     ),
     "case_study": KindSpec(
@@ -165,7 +178,9 @@ KIND_SPECS: dict[str, KindSpec] = {
         vec_table="am_canonical_vec_case_study",
         map_table="am_canonical_vec_case_study_map",
         fact_fields=(
-            "case_title", "case_summary", "company_name",
+            "case_title",
+            "case_summary",
+            "company_name",
             "source_excerpt",
         ),
     ),
@@ -174,7 +189,9 @@ KIND_SPECS: dict[str, KindSpec] = {
         vec_table="am_canonical_vec_law",
         map_table="am_canonical_vec_law_map",
         fact_fields=(
-            "law.summary", "law.category", "source_excerpt",
+            "law.summary",
+            "law.category",
+            "source_excerpt",
             "authority_raw",
         ),
     ),
@@ -183,8 +200,11 @@ KIND_SPECS: dict[str, KindSpec] = {
         vec_table="am_canonical_vec_tax_measure",
         map_table="am_canonical_vec_tax_measure_map",
         fact_fields=(
-            "tax.subkind", "program_kind", "source_excerpt",
-            "authority_raw", "target_raw",
+            "tax.subkind",
+            "program_kind",
+            "source_excerpt",
+            "authority_raw",
+            "target_raw",
         ),
     ),
 }
@@ -209,6 +229,7 @@ def open_conn(autonomath_db: Path) -> sqlite3.Connection:
         )
     try:
         import sqlite_vec  # type: ignore
+
         sqlite_vec.load(conn)
     except Exception as exc:  # noqa: BLE001
         try:
@@ -254,7 +275,8 @@ def load_existing_canonical_ids(
         if not required:
             LOG.warning(
                 "cannot read existing canonical ids from %s during dry-run: %s",
-                spec.vec_table, exc,
+                spec.vec_table,
+                exc,
             )
             return None
         raise SystemExit(
@@ -339,8 +361,7 @@ def upsert_one(
         )
     else:
         cur = conn.execute(
-            f"INSERT INTO {spec.map_table} (canonical_id, source_text) "
-            f"VALUES (?, ?)",
+            f"INSERT INTO {spec.map_table} (canonical_id, source_text) VALUES (?, ?)",
             (canonical_id, source_text),
         )
         sid = int(cur.lastrowid)
@@ -351,8 +372,7 @@ def upsert_one(
         (sid,),
     )
     conn.execute(
-        f"INSERT INTO {spec.vec_table}(synthetic_id, embedding) "
-        f"VALUES (?, ?)",
+        f"INSERT INTO {spec.vec_table}(synthetic_id, embedding) VALUES (?, ?)",
         (sid, embedding_bytes),
     )
 
@@ -370,11 +390,11 @@ def load_model(model_name: str):
         LOG.error(
             "sentence-transformers (or torch) is not installed in this venv. "
             "Use .venv312 or run: pip install sentence-transformers torch. "
-            "Original: %s", exc,
+            "Original: %s",
+            exc,
         )
         raise SystemExit(2)
-    LOG.info("loading model %s ... (first run downloads ~2.2 GB weights)",
-             model_name)
+    LOG.info("loading model %s ... (first run downloads ~2.2 GB weights)", model_name)
     t0 = time.time()
     model = SentenceTransformer(model_name)
     LOG.info("model loaded in %.1fs", time.time() - t0)
@@ -412,9 +432,7 @@ def run_kind(
     try:
         total = count_candidates(conn, spec)
         LOG.info("[%s] candidate row count: %d", spec.kind, total)
-        existing_ids = load_existing_canonical_ids(
-            conn, spec, required=not dry_run
-        )
+        existing_ids = load_existing_canonical_ids(conn, spec, required=not dry_run)
         existing_count = len(existing_ids) if existing_ids is not None else -1
         resume_mode = not replace_existing
         LOG.info(
@@ -433,7 +451,9 @@ def run_kind(
                 "remaining_rows": (
                     max(total - existing_count, 0)
                     if resume_mode and existing_count >= 0
-                    else total if not resume_mode else -1
+                    else total
+                    if not resume_mode
+                    else -1
                 ),
                 "embedded": 0,
                 "skipped_existing": 0,
@@ -446,14 +466,14 @@ def run_kind(
         smoke = embed_batch(model, ["smoke"])
         actual_dim = int(smoke.shape[-1])
         if actual_dim != EMBEDDING_DIM:
-            LOG.error("model output dim %d != expected %d.",
-                      actual_dim, EMBEDDING_DIM)
+            LOG.error("model output dim %d != expected %d.", actual_dim, EMBEDDING_DIM)
             raise SystemExit(3)
         LOG.info("[%s] smoke encode ok, dim=%d", spec.kind, actual_dim)
 
         try:
             from tqdm import tqdm
         except ImportError:
+
             def tqdm(it, **_kw):  # type: ignore
                 return it
 
@@ -465,20 +485,16 @@ def run_kind(
 
         # In resume mode, max_rows caps newly embedded rows, not source rows.
         source_limit = max_rows if replace_existing else None
-        cap = (
-            min(total, max_rows) if replace_existing and max_rows else total
-        )
+        cap = min(total, max_rows) if replace_existing and max_rows else total
         rows_iter = iter_entities(conn, spec, source_limit)
-        bar = tqdm(rows_iter, total=cap,
-                   desc=f"embed:{spec.kind}", unit="row")
+        bar = tqdm(rows_iter, total=cap, desc=f"embed:{spec.kind}", unit="row")
 
         def flush() -> None:
             nonlocal embedded, batch_cids, batch_texts
             if not batch_cids:
                 return
             vecs = embed_batch(model, batch_texts)
-            for cid, txt, vec in zip(batch_cids, batch_texts, vecs,
-                                     strict=True):
+            for cid, txt, vec in zip(batch_cids, batch_texts, vecs, strict=True):
                 upsert_one(conn, spec, cid, txt, vec.tobytes())
                 embedded += 1
             conn.commit()
@@ -496,18 +512,18 @@ def run_kind(
             batch_texts.append(text)
             if len(batch_cids) >= batch_size:
                 flush()
-            if (
-                resume_mode
-                and max_rows is not None
-                and embedded + len(batch_cids) >= max_rows
-            ):
+            if resume_mode and max_rows is not None and embedded + len(batch_cids) >= max_rows:
                 break
         flush()
 
         LOG.info(
             "[%s] done. embedded=%d skipped_existing=%d skipped_empty=%d "
             "candidate=%d existing_before=%d",
-            spec.kind, embedded, skipped_existing, skipped_empty, total,
+            spec.kind,
+            embedded,
+            skipped_existing,
+            skipped_empty,
+            total,
             existing_count,
         )
         return {
@@ -515,8 +531,7 @@ def run_kind(
             "vec_table": spec.vec_table,
             "candidate_rows": total,
             "existing_rows": existing_count,
-            "remaining_rows": max(total - existing_count - embedded, 0)
-                              if resume_mode else 0,
+            "remaining_rows": max(total - existing_count - embedded, 0) if resume_mode else 0,
             "embedded": embedded,
             "skipped_existing": skipped_existing,
             "skipped_empty": skipped_empty,
@@ -539,42 +554,45 @@ def main() -> int:
     p = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     p.add_argument("--autonomath-db", type=Path, default=DEFAULT_AUTONOMATH_DB)
     p.add_argument(
-        "--kind", default="all",
+        "--kind",
+        default="all",
         choices=["all", *KIND_SPECS.keys()],
         help="どの am_entities.record_kind を embed するか (default 'all')",
     )
     p.add_argument(
-        "--max-rows", type=int, default=0,
-        help="本 invocation で 1 kind あたり embed する row 上限. "
-             "0 = 無制限 (default 0)",
+        "--max-rows",
+        type=int,
+        default=0,
+        help="本 invocation で 1 kind あたり embed する row 上限. 0 = 無制限 (default 0)",
     )
     p.add_argument(
-        "--batch-size", type=int, default=DEFAULT_BATCH_SIZE,
+        "--batch-size",
+        type=int,
+        default=DEFAULT_BATCH_SIZE,
         help=f"encode 1 batch あたり text 数 (default {DEFAULT_BATCH_SIZE})",
     )
     p.add_argument(
-        "--model", default=MODEL_NAME,
+        "--model",
+        default=MODEL_NAME,
         help=f"sentence-transformers model id (default {MODEL_NAME})",
     )
     p.add_argument(
-        "--dry-run", action="store_true",
-        help="各 kind の SELECT count を報告して終了 "
-             "(model load + DB 書込みなし、torch 不要)",
+        "--dry-run",
+        action="store_true",
+        help="各 kind の SELECT count を報告して終了 (model load + DB 書込みなし、torch 不要)",
     )
     p.add_argument(
-        "--replace-existing", action="store_true",
+        "--replace-existing",
+        action="store_true",
         help="既存 canonical vec も DELETE+INSERT で再生成する。未指定時は "
-             "map + vec が揃った canonical_id を skip して resume する",
+        "map + vec が揃った canonical_id を skip して resume する",
     )
     args = p.parse_args()
 
-    logging.basicConfig(level=logging.INFO,
-                        format="%(asctime)s %(levelname)s %(message)s")
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     targets: list[KindSpec] = (
-        list(KIND_SPECS.values())
-        if args.kind == "all"
-        else [KIND_SPECS[args.kind]]
+        list(KIND_SPECS.values()) if args.kind == "all" else [KIND_SPECS[args.kind]]
     )
     max_rows = None if args.max_rows == 0 else args.max_rows
 
@@ -599,15 +617,20 @@ def main() -> int:
             "  %-18s vec=%-32s candidate=%7d existing=%7d "
             "remaining=%7d embedded=%7d skipped_existing=%7d "
             "skipped_empty=%5d dry_run=%s replace_existing=%s",
-            r["kind"], r["vec_table"],
-            max(r["candidate_rows"], 0), r["existing_rows"],
-            r["remaining_rows"], r["embedded"], r["skipped_existing"],
-            r["skipped_empty"], r["dry_run"], r["replace_existing"],
+            r["kind"],
+            r["vec_table"],
+            max(r["candidate_rows"], 0),
+            r["existing_rows"],
+            r["remaining_rows"],
+            r["embedded"],
+            r["skipped_existing"],
+            r["skipped_empty"],
+            r["dry_run"],
+            r["replace_existing"],
         )
         grand_candidate += max(r["candidate_rows"], 0)
         grand_embedded += r["embedded"]
-    LOG.info("  TOTAL candidate=%d embedded=%d",
-             grand_candidate, grand_embedded)
+    LOG.info("  TOTAL candidate=%d embedded=%d", grand_candidate, grand_embedded)
     return 0
 
 

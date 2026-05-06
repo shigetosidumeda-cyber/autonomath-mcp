@@ -11,18 +11,20 @@ Writes: tools/offline/_inbox/egov_law_articles/raw/{lawnum}.json
 Stdout: [C-{iter}] egov_law_articles +N (back={n}/9484, tail_idx={t}) — {title} ({slug})
         or [DONE-C] converged at idx=t (A=h)
 """
-import socket
-import dns.resolver
-import urllib.request
-import urllib.error
-import json
+
 import hashlib
-import time
+import json
 import os
+import socket
 import sys
-from pathlib import Path
-from datetime import datetime, timezone
+import time
+import urllib.error
+import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import UTC, datetime
+from pathlib import Path
+
+import dns.resolver
 
 ROOT = Path("/Users/shigetoumeda/jpcite")
 INBOX = ROOT / "tools/offline/_inbox/egov_law_articles"
@@ -51,7 +53,7 @@ socket.getaddrinfo = _patched
 
 
 def now_utc() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def atomic_write_json(path: Path, data) -> None:
@@ -204,13 +206,15 @@ def main() -> int:
                 skip += 1
             elif "error" in res:
                 err += 1
-                errors_collected.append({
-                    "ts": now_utc(),
-                    "source_id": "egov_law_articles",
-                    "url": res.get("url", ""),
-                    "kind": "fetch_error_c",
-                    "msg": res["error"],
-                })
+                errors_collected.append(
+                    {
+                        "ts": now_utc(),
+                        "source_id": "egov_law_articles",
+                        "url": res.get("url", ""),
+                        "kind": "fetch_error_c",
+                        "msg": res["error"],
+                    }
+                )
             else:
                 ai = lawnum_to_agent.get(ln, 1)
                 f = jsonl_files.get(ai)

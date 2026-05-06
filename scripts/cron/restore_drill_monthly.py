@@ -60,7 +60,7 @@ import sqlite3
 import sys
 import tempfile
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -101,7 +101,7 @@ _TOP10_JPINTEL = [
 
 
 def _now_utc() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def _today_jst_str() -> str:
@@ -193,9 +193,7 @@ def _top10_count_diff(
                     continue
                 exp = int(expected_for_kind[tbl])
                 try:
-                    actual = int(
-                        conn.execute(f"SELECT COUNT(*) FROM {tbl}").fetchone()[0]
-                    )
+                    actual = int(conn.execute(f"SELECT COUNT(*) FROM {tbl}").fetchone()[0])
                 except sqlite3.Error:
                     # Missing table is itself a drift signal but not corruption.
                     detail[tbl] = {"expected": exp, "actual": -1}
@@ -269,9 +267,7 @@ def _insert_drill_row(
                 rto_total_seconds,
                 sampled_age_days,
                 top10_count_status,
-                json.dumps(top10_count_detail, ensure_ascii=False)
-                if top10_count_detail
-                else None,
+                json.dumps(top10_count_detail, ensure_ascii=False) if top10_count_detail else None,
                 notes,
             ),
         )
@@ -350,9 +346,7 @@ def run_drill(
 
     # 3. Download
     tmp_dir.mkdir(parents=True, exist_ok=True)
-    work_dir = Path(
-        tempfile.mkdtemp(prefix=f"restore_drill_{kind}_", dir=tmp_dir)
-    )
+    work_dir = Path(tempfile.mkdtemp(prefix=f"restore_drill_{kind}_", dir=tmp_dir))
     gz_local = work_dir / Path(chosen_key).name
     db_local = work_dir / gz_local.stem  # strips .gz
 
@@ -389,9 +383,7 @@ def run_drill(
         fk_status, fk_seconds = _fk_check(db_local)
 
         # 8. Top-10 row count diff
-        top10_status, top10_detail = _top10_count_diff(
-            db_local, kind, expected_json
-        )
+        top10_status, top10_detail = _top10_count_diff(db_local, kind, expected_json)
 
         # Cap notes for any extra context.
         if integrity_status == "corrupted":
@@ -482,14 +474,11 @@ def main(argv: list[str] | None = None) -> int:
     )
     p.add_argument(
         "--bucket",
-        default=os.environ.get("R2_BUCKET")
-        or os.environ.get("JPINTEL_BACKUP_BUCKET"),
+        default=os.environ.get("R2_BUCKET") or os.environ.get("JPINTEL_BACKUP_BUCKET"),
     )
     p.add_argument(
         "--tmp-dir",
-        default=os.environ.get("RESTORE_DRILL_TMP_DIR")
-        or os.environ.get("TMPDIR")
-        or "/tmp",
+        default=os.environ.get("RESTORE_DRILL_TMP_DIR") or os.environ.get("TMPDIR") or "/tmp",
     )
     p.add_argument(
         "--expected-json",
@@ -540,9 +529,7 @@ def main(argv: list[str] | None = None) -> int:
         _LOG.exception("drill_unexpected_failure err=%s", exc)
         return 5
 
-    if payload.get("integrity_status") == "corrupted" or payload.get(
-        "fk_status"
-    ) == "violations":
+    if payload.get("integrity_status") == "corrupted" or payload.get("fk_status") == "violations":
         return 3
 
     print(json.dumps(payload, ensure_ascii=False, indent=2))

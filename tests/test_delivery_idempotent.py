@@ -28,11 +28,10 @@ pytest_plugins = ["tests.conftest_delivery_strict"]
 import hashlib
 import sqlite3
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import pytest
-
 
 # ---------------------------------------------------------------------------
 # Surrogate implementation
@@ -46,7 +45,7 @@ _AGGREGATOR_HOST_DENYLIST = {
 
 
 def _now_dt() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def _iso(dt: datetime) -> str:
@@ -98,7 +97,7 @@ def deliver_with_idempotent_log(
     ).fetchone()
     if row is not None:
         ttl_expires = datetime.strptime(row["ttl_expires_at"], "%Y-%m-%dT%H:%M:%S.%fZ")
-        ttl_expires = ttl_expires.replace(tzinfo=timezone.utc)
+        ttl_expires = ttl_expires.replace(tzinfo=UTC)
         if ttl_expires > _now_dt():
             return {"status": "skipped_duplicate", "prior_status": row["status"]}
 

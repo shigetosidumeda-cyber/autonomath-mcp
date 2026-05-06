@@ -697,20 +697,18 @@ def run(
         # related_law_ref fallback.
         related_law_ref = detail.related_law_ref
         if not related_law_ref:
-            if "排除措置命令" == entry.kind_token_jp:
+            if entry.kind_token_jp == "排除措置命令":
                 related_law_ref = "独占禁止法"
-            elif "課徴金納付命令" == entry.kind_token_jp:
+            elif entry.kind_token_jp == "課徴金納付命令":
                 # Some 課徴金 are 景表法 not 独禁法 — title usually carries the
                 # word. Check title text.
                 if "景品表示" in entry.title or "景表" in entry.title:
                     related_law_ref = "景品表示法 第8条"
                 else:
                     related_law_ref = "独占禁止法 第7条の2"
-            elif "確約計画" == entry.kind_token_jp:
+            elif entry.kind_token_jp == "確約計画" or entry.kind_token_jp == "確約手続":
                 related_law_ref = "独占禁止法 第48条の3"
-            elif "確約手続" == entry.kind_token_jp:
-                related_law_ref = "独占禁止法 第48条の3"
-            elif "審決" == entry.kind_token_jp:
+            elif entry.kind_token_jp == "審決":
                 related_law_ref = "独占禁止法"
             else:
                 related_law_ref = "独占禁止法"

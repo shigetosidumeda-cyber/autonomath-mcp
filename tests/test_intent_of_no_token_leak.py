@@ -54,7 +54,6 @@ os.environ.setdefault("AUTONOMATH_ENABLED", "1")
 from jpintel_mcp.mcp import server  # noqa: F401, E402
 from jpintel_mcp.mcp.autonomath_tools.tools import intent_of  # noqa: E402
 
-
 _RAW_MISSING = "<<<missing:"
 _RAW_PRECOMP = "<<<precompute gap:"
 

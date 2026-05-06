@@ -189,6 +189,18 @@ exclude = [
     "src/jpintel_mcp/_archive/",
 ]
 
+[tool.mypy]
+# `_archive/` is a frozen capsule of pre-Wave-25 modules kept for forensic
+# reference (autonomath_tools_dead_2026-04-25 / embedding_2026-04-25 /
+# reasoning_2026-04-25). The dated directory names contain hyphens and digits,
+# which mypy rejects as invalid dotted package names — even with `__init__.py`
+# present — and the fatal "contains __init__.py but is not a valid Python
+# package name" stops the whole walk. Excluding the tree both unblocks the
+# remaining checks and signals "do not type-check archived code".
+exclude = [
+    "^src/jpintel_mcp/_archive/",
+]
+
 [tool.ruff]
 line-length = 100
 target-version = "py311"

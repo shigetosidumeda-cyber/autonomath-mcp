@@ -29,13 +29,14 @@ WORKFLOW:
 NO LLM IMPORT. NO API KEY. The subagent invocation happens out-of-band
 on the operator workstation per `feedback_no_operator_llm_api`.
 """
+
 from __future__ import annotations
 
 import argparse
 import json
 import sqlite3
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -68,14 +69,14 @@ EXPECTED_ROW_SCHEMA: dict[str, Any] = {
             "type": "string",
             "minLength": 600,
             "description": "Coherent prose narrative in Japanese, ~600-1500字, markdown-formatted. "
-                           "Must reference the 一次資料 source_url. Must include 趣旨・対象・上限額・"
-                           "申請窓口・主要な落とし穴 in flowing prose (not bullet lists).",
+            "Must reference the 一次資料 source_url. Must include 趣旨・対象・上限額・"
+            "申請窓口・主要な落とし穴 in flowing prose (not bullet lists).",
         },
         "counter_arguments_md": {
             "type": "string",
             "minLength": 200,
             "description": "反駁 bank — この narrative の弱点・反論・よくある誤解 を箇条書き 3-7 項目で。"
-                           "auditor 補助用、申請者向けでない。",
+            "auditor 補助用、申請者向けでない。",
         },
         "model_used": {
             "type": "string",
@@ -114,12 +115,10 @@ SQL_DONE = """
 
 
 def utc_now_iso() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def query_rows(
-    db_path: Path, sql: str, params: tuple[Any, ...] = ()
-) -> list[dict[str, Any]]:
+def query_rows(db_path: Path, sql: str, params: tuple[Any, ...] = ()) -> list[dict[str, Any]]:
     """Read-only SELECT helper. No write paths in this script."""
     conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
     conn.row_factory = sqlite3.Row
@@ -158,9 +157,7 @@ def list_pending(
     return pending
 
 
-def shard_rows(
-    rows: list[dict[str, Any]], n_shards: int
-) -> list[list[dict[str, Any]]]:
+def shard_rows(rows: list[dict[str, Any]], n_shards: int) -> list[list[dict[str, Any]]]:
     """Round-robin shard assignment. Keeps tier mix balanced across agents."""
     shards: list[list[dict[str, Any]]] = [[] for _ in range(n_shards)]
     for i, row in enumerate(rows):
@@ -235,9 +232,7 @@ def build_batch_payload(
     }
 
 
-def write_batch(
-    payload: dict[str, Any], out_path: Path, dry_run: bool
-) -> None:
+def write_batch(payload: dict[str, Any], out_path: Path, dry_run: bool) -> None:
     if dry_run:
         return
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -250,27 +245,35 @@ def write_batch(
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     p.add_argument(
-        "--shards", type=int, default=DEFAULT_SHARDS,
+        "--shards",
+        type=int,
+        default=DEFAULT_SHARDS,
         help=f"Number of agent shards (default {DEFAULT_SHARDS}).",
     )
     p.add_argument(
-        "--tier", default=DEFAULT_TIERS,
+        "--tier",
+        default=DEFAULT_TIERS,
         help=f"Comma-separated tier list (default '{DEFAULT_TIERS}').",
     )
     p.add_argument(
-        "--limit", type=int, default=None,
+        "--limit",
+        type=int,
+        default=None,
         help="Cap total pending rows before sharding (smoke test convenience).",
     )
     p.add_argument(
-        "--jpintel-db", default=str(DEFAULT_JPINTEL_DB),
+        "--jpintel-db",
+        default=str(DEFAULT_JPINTEL_DB),
         help=f"Path to jpintel.db (default {DEFAULT_JPINTEL_DB}).",
     )
     p.add_argument(
-        "--autonomath-db", default=str(DEFAULT_AUTONOMATH_DB),
+        "--autonomath-db",
+        default=str(DEFAULT_AUTONOMATH_DB),
         help=f"Path to autonomath.db (default {DEFAULT_AUTONOMATH_DB}).",
     )
     p.add_argument(
-        "--out-dir", default=str(BATCHES_DIR),
+        "--out-dir",
+        default=str(BATCHES_DIR),
         help=f"Output directory for agentN.json files (default {BATCHES_DIR}).",
     )
     p.add_argument("--dry-run", action="store_true")
@@ -300,7 +303,7 @@ def main() -> int:
     shards = shard_rows(pending, n_shards)
 
     print("=" * 78)
-    print(f"# generate_program_narratives.py  (W20 / migration 149)")
+    print("# generate_program_narratives.py  (W20 / migration 149)")
     print(f"# tiers              : {tiers}")
     print(f"# pending program ct : {len(pending)}")
     print(f"# shards             : {n_shards}")
@@ -316,7 +319,7 @@ def main() -> int:
             Path(__file__).resolve().parent
             / "_inbox"
             / "narrative"
-            / f"{datetime.now(timezone.utc).strftime('%Y%m%d')}_{agent_id}.jsonl"
+            / f"{datetime.now(UTC).strftime('%Y%m%d')}_{agent_id}.jsonl"
         )
         payload = build_batch_payload(
             agent_index=i,

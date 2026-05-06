@@ -21,8 +21,6 @@ import pathlib
 import sqlite3
 import sys
 
-import pytest
-
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 MIG_SQL = REPO_ROOT / "scripts" / "migrations" / "wave24_187_brand_mention.sql"
 ROLLBACK_SQL = REPO_ROOT / "scripts" / "migrations" / "wave24_187_brand_mention_rollback.sql"
@@ -35,7 +33,6 @@ TRANSPARENCY_HTML = REPO_ROOT / "site" / "transparency" / "brand-health.html"
 # requires sys.path injection in some test layouts).
 sys.path.insert(0, str(REPO_ROOT / "scripts" / "cron"))
 import scrape_brand_signals as sbs  # noqa: E402
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -68,17 +65,14 @@ def test_case_1_migration_applies_idempotent(tmp_path):
     _apply_migration(str(db))
     with _conn(str(db)) as c:
         # table exists
-        names = {r[0] for r in c.execute(
-            "SELECT name FROM sqlite_master WHERE type='table'")}
+        names = {r[0] for r in c.execute("SELECT name FROM sqlite_master WHERE type='table'")}
         assert "brand_mention" in names
         # 2 indexes + 1 unique
-        idxs = {r[0] for r in c.execute(
-            "SELECT name FROM sqlite_master WHERE type='index'")}
+        idxs = {r[0] for r in c.execute("SELECT name FROM sqlite_master WHERE type='index'")}
         assert "idx_brand_mention_source_date" in idxs
         assert "idx_brand_mention_kind_date" in idxs
         # 3 views
-        views = {r[0] for r in c.execute(
-            "SELECT name FROM sqlite_master WHERE type='view'")}
+        views = {r[0] for r in c.execute("SELECT name FROM sqlite_master WHERE type='view'")}
         assert "v_brand_mention_source_rollup" in views
         assert "v_brand_mention_monthly_trend" in views
         assert "v_brand_mention_root_kpi" in views
@@ -95,56 +89,76 @@ def test_case_2_ten_source_mock_insert(tmp_path):
     allowlist = sbs.load_allowlist(ALLOWLIST_JSON)
     # 1 row per source = 10 rows
     rows = [
-        {"source": "github",
-         "mention_url": "https://github.com/owner/repo/issues/1",
-         "author": "stranger1",
-         "mention_date": "2026-05-01",
-         "snippet": "uses jpcite for citation"},
-        {"source": "pypi",
-         "mention_url": "https://pypi.org/project/autonomath-mcp/",
-         "author": "bookyou",
-         "mention_date": "2026-05-01",
-         "snippet": "downloads"},
-        {"source": "npm",
-         "mention_url": "https://www.npmjs.com/package/@jpcite/disclaimer-spec",
-         "author": "@jpcite",
-         "mention_date": "2026-05-01",
-         "snippet": "downloads"},
-        {"source": "zenn",
-         "mention_url": "https://zenn.dev/some_user/articles/abc",
-         "author": "some_user",
-         "mention_date": "2026-05-01",
-         "snippet": "jpcite を使ってみた"},
-        {"source": "qiita",
-         "mention_url": "https://qiita.com/foo/items/xyz",
-         "author": "foo",
-         "mention_date": "2026-05-01",
-         "snippet": "autonomath で..."},
-        {"source": "x",
-         "mention_url": "https://twitter.com/random_dev/status/12345",
-         "author": "random_dev",
-         "mention_date": "2026-05-01",
-         "snippet": "x post"},
-        {"source": "hn",
-         "mention_url": "https://news.ycombinator.com/item?id=98765",
-         "author": "hnuser",
-         "mention_date": "2026-05-01",
-         "snippet": "Show HN: jpcite"},
-        {"source": "lobsters",
-         "mention_url": "https://lobste.rs/s/abc/jpcite_review",
-         "author": "lobster_dev",
-         "mention_date": "2026-05-01",
-         "snippet": "RSS feed item"},
-        {"source": "industry_journal",
-         "mention_url": "https://example-tax-journal.example/article/1",
-         "author": "税務通信",
-         "mention_date": "2026-05-01",
-         "snippet": "jpcite に言及"},
-        {"source": "industry_assoc",
-         "mention_url": "https://nichizeiren.example/report/2026.pdf",
-         "author": "日税連 ICT 委員会",
-         "mention_date": "2026-05-01",
-         "snippet": "推奨ツール"},
+        {
+            "source": "github",
+            "mention_url": "https://github.com/owner/repo/issues/1",
+            "author": "stranger1",
+            "mention_date": "2026-05-01",
+            "snippet": "uses jpcite for citation",
+        },
+        {
+            "source": "pypi",
+            "mention_url": "https://pypi.org/project/autonomath-mcp/",
+            "author": "bookyou",
+            "mention_date": "2026-05-01",
+            "snippet": "downloads",
+        },
+        {
+            "source": "npm",
+            "mention_url": "https://www.npmjs.com/package/@jpcite/disclaimer-spec",
+            "author": "@jpcite",
+            "mention_date": "2026-05-01",
+            "snippet": "downloads",
+        },
+        {
+            "source": "zenn",
+            "mention_url": "https://zenn.dev/some_user/articles/abc",
+            "author": "some_user",
+            "mention_date": "2026-05-01",
+            "snippet": "jpcite を使ってみた",
+        },
+        {
+            "source": "qiita",
+            "mention_url": "https://qiita.com/foo/items/xyz",
+            "author": "foo",
+            "mention_date": "2026-05-01",
+            "snippet": "autonomath で...",
+        },
+        {
+            "source": "x",
+            "mention_url": "https://twitter.com/random_dev/status/12345",
+            "author": "random_dev",
+            "mention_date": "2026-05-01",
+            "snippet": "x post",
+        },
+        {
+            "source": "hn",
+            "mention_url": "https://news.ycombinator.com/item?id=98765",
+            "author": "hnuser",
+            "mention_date": "2026-05-01",
+            "snippet": "Show HN: jpcite",
+        },
+        {
+            "source": "lobsters",
+            "mention_url": "https://lobste.rs/s/abc/jpcite_review",
+            "author": "lobster_dev",
+            "mention_date": "2026-05-01",
+            "snippet": "RSS feed item",
+        },
+        {
+            "source": "industry_journal",
+            "mention_url": "https://example-tax-journal.example/article/1",
+            "author": "税務通信",
+            "mention_date": "2026-05-01",
+            "snippet": "jpcite に言及",
+        },
+        {
+            "source": "industry_assoc",
+            "mention_url": "https://nichizeiren.example/report/2026.pdf",
+            "author": "日税連 ICT 委員会",
+            "mention_date": "2026-05-01",
+            "snippet": "推奨ツール",
+        },
     ]
     counts = sbs.insert_rows(str(db), rows, allowlist)
     # Each of the 10 sources got at least 1 insert.
@@ -153,8 +167,7 @@ def test_case_2_ten_source_mock_insert(tmp_path):
     with _conn(str(db)) as c:
         total = c.execute("SELECT COUNT(*) FROM brand_mention").fetchone()[0]
         assert total == 10
-        sources = {r[0] for r in c.execute(
-            "SELECT DISTINCT source FROM brand_mention")}
+        sources = {r[0] for r in c.execute("SELECT DISTINCT source FROM brand_mention")}
         assert sources == set(sbs.ALL_SOURCES)
 
 
@@ -218,7 +231,7 @@ def test_case_3_classify_self_vs_other_accuracy_95(tmp_path):
         ("industry_assoc", "日弁連 ICT 戦略本部", "other"),
         ("github", "random_user_2", "other"),
         ("github", None, "other"),  # null author defaults other
-        ("zenn", "", "other"),       # empty author defaults other
+        ("zenn", "", "other"),  # empty author defaults other
         ("qiita", "third_party_eng", "other"),
     ]
     correct = 0
@@ -227,7 +240,9 @@ def test_case_3_classify_self_vs_other_accuracy_95(tmp_path):
         if got == expected:
             correct += 1
     accuracy = correct / len(labeled)
-    assert accuracy >= 0.95, f"classify accuracy {accuracy:.2%} < 95% (correct={correct}/{len(labeled)})"
+    assert accuracy >= 0.95, (
+        f"classify accuracy {accuracy:.2%} < 95% (correct={correct}/{len(labeled)})"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -240,26 +255,34 @@ def test_case_4_dedup_unique_url_hash(tmp_path):
     _apply_migration(str(db))
     allowlist = sbs.load_allowlist(ALLOWLIST_JSON)
     rows = [
-        {"source": "github",
-         "mention_url": "https://github.com/x/y/issues/1",
-         "author": "alice",
-         "mention_date": "2026-05-01",
-         "snippet": "first"},
-        {"source": "github",
-         "mention_url": "https://github.com/x/y/issues/1",  # dup
-         "author": "alice",
-         "mention_date": "2026-05-01",
-         "snippet": "duplicate"},
-        {"source": "zenn",
-         "mention_url": "https://zenn.dev/a/articles/b",
-         "author": "a",
-         "mention_date": "2026-05-01",
-         "snippet": "first"},
-        {"source": "zenn",
-         "mention_url": "https://zenn.dev/a/articles/b",  # dup
-         "author": "a",
-         "mention_date": "2026-05-01",
-         "snippet": "duplicate"},
+        {
+            "source": "github",
+            "mention_url": "https://github.com/x/y/issues/1",
+            "author": "alice",
+            "mention_date": "2026-05-01",
+            "snippet": "first",
+        },
+        {
+            "source": "github",
+            "mention_url": "https://github.com/x/y/issues/1",  # dup
+            "author": "alice",
+            "mention_date": "2026-05-01",
+            "snippet": "duplicate",
+        },
+        {
+            "source": "zenn",
+            "mention_url": "https://zenn.dev/a/articles/b",
+            "author": "a",
+            "mention_date": "2026-05-01",
+            "snippet": "first",
+        },
+        {
+            "source": "zenn",
+            "mention_url": "https://zenn.dev/a/articles/b",  # dup
+            "author": "a",
+            "mention_date": "2026-05-01",
+            "snippet": "duplicate",
+        },
     ]
     sbs.insert_rows(str(db), rows, allowlist)
     # Re-run with the same payload — total must stay at 2.
@@ -292,7 +315,9 @@ def test_case_5_llm_zero_no_forbidden_imports():
                 head = node.module.split(".")[0]
                 if head in {"anthropic", "openai", "claude_agent_sdk"}:
                     bad_imports.append(f"from {node.module}")
-                if node.module == "google.generativeai" or node.module.startswith("google.generativeai."):
+                if node.module == "google.generativeai" or node.module.startswith(
+                    "google.generativeai."
+                ):
                     bad_imports.append(f"from {node.module}")
     assert not bad_imports, f"forbidden LLM imports in cron: {bad_imports}"
     # Also assert no bare "anthropic"/"openai" string is wired as a real call
@@ -321,7 +346,9 @@ def test_case_6_dashboard_json_schema_valid():
     assert required.issubset(payload.keys()), f"missing keys: {required - payload.keys()}"
     # Source counts must cover all 10 sources
     sc = payload["source_counts"]
-    assert set(sc.keys()) >= set(sbs.ALL_SOURCES), f"source_counts missing: {set(sbs.ALL_SOURCES) - set(sc.keys())}"
+    assert set(sc.keys()) >= set(sbs.ALL_SOURCES), (
+        f"source_counts missing: {set(sbs.ALL_SOURCES) - set(sc.keys())}"
+    )
     for src, count in sc.items():
         assert isinstance(count, int) and count >= 0, f"bad count for {src}: {count!r}"
     # self_vs_other shape
@@ -354,8 +381,12 @@ def test_rollback_companion_drops_all(tmp_path):
     try:
         conn.executescript(rb)
         conn.commit()
-        names = {r[0] for r in conn.execute(
-            "SELECT name FROM sqlite_master WHERE type IN ('table','view','index') AND name LIKE '%brand_mention%'")}
+        names = {
+            r[0]
+            for r in conn.execute(
+                "SELECT name FROM sqlite_master WHERE type IN ('table','view','index') AND name LIKE '%brand_mention%'"
+            )
+        }
         assert names == set(), f"rollback left objects: {names}"
     finally:
         conn.close()

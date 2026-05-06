@@ -54,7 +54,6 @@ import argparse
 import json
 import logging
 import math
-import re
 import sqlite3
 import sys
 from collections import defaultdict
@@ -492,7 +491,7 @@ def report(rows: list[dict[str, Any]], k: int = 10) -> None:
             f"{r['density_score']:>9.4f}"
         )
 
-    print(f"\n=== summary ===")
+    print("\n=== summary ===")
     print(f"populated_cells: {len(rows)}")
     print(f"non_zero_program_cells: {sum(1 for r in rows if r['program_count'] > 0)}")
     print(f"sum(program_count): {sum(r['program_count'] for r in rows)}")

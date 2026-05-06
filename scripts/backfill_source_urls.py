@@ -12,7 +12,7 @@ hojyokin.jp, creabiz, yorisoi.
 """
 
 import sqlite3
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 # fmt: off
 MAPPINGS = {
@@ -101,7 +101,7 @@ MAPPINGS = {
 def main() -> None:
     db_path = "data/jpintel.db"
     conn = sqlite3.connect(db_path)
-    ts = datetime.now(timezone.utc).isoformat()
+    ts = datetime.now(UTC).isoformat()
     updated = 0
     skipped = 0
     for uid, url in MAPPINGS.items():

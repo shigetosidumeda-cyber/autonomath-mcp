@@ -537,7 +537,7 @@ def fetch_mhlw_recalls(http: HttpClient) -> list[EnfRow]:
 
 
 def _slug8(target: str, date: str, extra: str = "") -> str:
-    h = hashlib.sha1(f"{target}|{date}|{extra}".encode("utf-8")).hexdigest()
+    h = hashlib.sha1(f"{target}|{date}|{extra}".encode()).hexdigest()
     return h[:8]
 
 

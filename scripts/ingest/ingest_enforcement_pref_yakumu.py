@@ -74,7 +74,6 @@ import unicodedata
 import urllib.parse
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
@@ -328,13 +327,13 @@ def _parse_date(text: str) -> str | None:
 # / 合同会社 / etc. + optional kanji/katakana stem.
 _NAME_CHARS = r"[A-Za-z0-9Ａ-Ｚａ-ｚ０-９ー・\-゠-ヿ一-鿿\s]"
 _COMPANY_RE = re.compile(
-    rf"((?:株式会社|有限会社|合同会社|合資会社|合名会社|"
-    rf"一般社団法人|公益社団法人|一般財団法人|公益財団法人|"
-    rf"学校法人|医療法人|社会福祉法人|特定非営利活動法人|"
-    rf"独立行政法人|地方独立行政法人)"
-    rf"[一-鿿ァ-ヿA-Za-zＡ-Ｚａ-ｚ０-９0-9ー・]{{1,30}}|"
-    rf"[一-鿿ァ-ヿA-Za-zＡ-Ｚａ-ｚ０-９0-9ー・]{{1,30}}"
-    rf"(?:株式会社|有限会社|合同会社|（株）|\(株\)|（有）|\(有\)))"
+    r"((?:株式会社|有限会社|合同会社|合資会社|合名会社|"
+    r"一般社団法人|公益社団法人|一般財団法人|公益財団法人|"
+    r"学校法人|医療法人|社会福祉法人|特定非営利活動法人|"
+    r"独立行政法人|地方独立行政法人)"
+    r"[一-鿿ァ-ヿA-Za-zＡ-Ｚａ-ｚ０-９0-9ー・]{1,30}|"
+    r"[一-鿿ァ-ヿA-Za-zＡ-Ｚａ-ｚ０-９0-9ー・]{1,30}"
+    r"(?:株式会社|有限会社|合同会社|（株）|\(株\)|（有）|\(有\)))"
 )
 # Pharmacy-specific: 薬局 / drug store names
 _YAKKYOKU_RE = re.compile(
@@ -648,6 +647,7 @@ def _extract_pdf_text(blob: bytes) -> str:
     """
     try:
         import io
+
         import pdfplumber
     except ImportError:
         _LOG.warning("pdfplumber not installed; skip PDF")
@@ -787,7 +787,7 @@ def parse_direct_html(
 
 
 def _slug8(target: str, date: str, extra: str = "") -> str:
-    h = hashlib.sha1(f"{target}|{date}|{extra}".encode("utf-8")).hexdigest()
+    h = hashlib.sha1(f"{target}|{date}|{extra}".encode()).hexdigest()
     return h[:8]
 
 

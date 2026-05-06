@@ -729,7 +729,7 @@ def _infer_kind(text: str, url: str) -> str:
 
 
 def ext_unified_id(name: str, source_url: str) -> str:
-    blob = f"pref47|{name}|{source_url}".encode("utf-8")
+    blob = f"pref47|{name}|{source_url}".encode()
     digest = hashlib.sha1(blob).hexdigest()[:10]
     return f"UNI-ext-{digest}"
 
@@ -769,7 +769,7 @@ def upsert_program(
         },
     }
     enriched_json = json.dumps(enriched, ensure_ascii=False)
-    checksum = hashlib.sha1(f"{name}|{src}".encode("utf-8")).hexdigest()[:16]
+    checksum = hashlib.sha1(f"{name}|{src}".encode()).hexdigest()[:16]
 
     con.execute("BEGIN IMMEDIATE")
     try:

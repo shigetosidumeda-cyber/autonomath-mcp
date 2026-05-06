@@ -692,7 +692,7 @@ async def _head_one(client, url: str) -> SourceLiveness:
             last_modified=last_mod,
             signals=signals,
         )
-    except asyncio.TimeoutError:
+    except TimeoutError:
         return SourceLiveness(
             url=url,
             alive=None,

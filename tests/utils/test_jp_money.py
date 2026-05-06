@@ -6,7 +6,6 @@ import pytest
 
 from jpintel_mcp.utils.jp_money import format_yen, parse_yen, parse_yen_range
 
-
 # ---------------------------------------------------------------------------
 # parse_yen — happy path
 # ---------------------------------------------------------------------------

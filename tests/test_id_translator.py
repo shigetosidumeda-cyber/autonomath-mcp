@@ -20,7 +20,6 @@ import pytest
 
 from jpintel_mcp.db import id_translator
 
-
 # ---------------------------------------------------------------------------
 # Tiny seeded in-memory DB shared by the test session.
 # ---------------------------------------------------------------------------

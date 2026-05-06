@@ -40,9 +40,8 @@ if str(HERE) not in sys.path:
 if str(OPS_DIR) not in sys.path:
     sys.path.insert(0, str(OPS_DIR))
 
-import test_acceptance_criteria as guard  # noqa: E402
 import aggregate_acceptance as aggregator  # noqa: E402
-
+import test_acceptance_criteria as guard  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # 1) Each of the 12 check_kind verifiers handles synthetic inputs correctly.

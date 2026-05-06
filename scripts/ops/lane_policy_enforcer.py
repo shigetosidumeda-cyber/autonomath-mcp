@@ -32,7 +32,7 @@ import pathlib
 import subprocess
 import sys
 import uuid
-from typing import Iterable
+from collections.abc import Iterable
 
 POLICY_FILENAME = "lane_policy.json"
 LEDGER_REL_DEFAULT = "tools/offline/_inbox/value_growth_dual/AGENT_LEDGER.csv"
@@ -50,7 +50,7 @@ MIN_REASON_CHARS = 24
 
 
 def _utc_now_iso() -> str:
-    return _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return _dt.datetime.now(_dt.UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def _run_git(args: list[str], cwd: pathlib.Path) -> str:

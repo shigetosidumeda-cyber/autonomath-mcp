@@ -12,10 +12,8 @@
 from __future__ import annotations
 
 import csv
-import json
 import pathlib
 import sys
-import tempfile
 
 import pytest
 
@@ -26,7 +24,6 @@ TOOL_DIR = REPO / "tools" / "offline" / "operator_review"
 sys.path.insert(0, str(TOOL_DIR))
 
 import log_citation_sample as lcs  # noqa: E402
-
 
 # ---------------------------------------------------------------------------
 # fixtures
@@ -40,56 +37,64 @@ def sample_csv(tmp_path: pathlib.Path) -> pathlib.Path:
     rows = []
     # claude: 5 samples, 1 jpcite cited
     for i in range(5):
-        rows.append({
-            "sample_month": "2026-05",
-            "llm_provider": "claude",
-            "query_id": f"Q{i+1:03d}",
-            "query_text": "test",
-            "jpcite_cited": "1" if i == 0 else "0",
-            "competitor_cited": "0",
-            "citation_url": "https://jpcite.com/x" if i == 0 else "",
-            "sampled_at": "2026-05-01T09:00:00Z",
-            "sampled_by": "operator",
-        })
+        rows.append(
+            {
+                "sample_month": "2026-05",
+                "llm_provider": "claude",
+                "query_id": f"Q{i + 1:03d}",
+                "query_text": "test",
+                "jpcite_cited": "1" if i == 0 else "0",
+                "competitor_cited": "0",
+                "citation_url": "https://jpcite.com/x" if i == 0 else "",
+                "sampled_at": "2026-05-01T09:00:00Z",
+                "sampled_by": "operator",
+            }
+        )
     # perplexity: 5 samples, 2 jpcite cited
     for i in range(5):
-        rows.append({
-            "sample_month": "2026-05",
-            "llm_provider": "perplexity",
-            "query_id": f"Q{i+1:03d}",
-            "query_text": "test",
-            "jpcite_cited": "1" if i < 2 else "0",
-            "competitor_cited": "1" if i == 4 else "0",
-            "citation_url": "",
-            "sampled_at": "2026-05-01T09:01:00Z",
-            "sampled_by": "operator",
-        })
+        rows.append(
+            {
+                "sample_month": "2026-05",
+                "llm_provider": "perplexity",
+                "query_id": f"Q{i + 1:03d}",
+                "query_text": "test",
+                "jpcite_cited": "1" if i < 2 else "0",
+                "competitor_cited": "1" if i == 4 else "0",
+                "citation_url": "",
+                "sampled_at": "2026-05-01T09:01:00Z",
+                "sampled_by": "operator",
+            }
+        )
     # chatgpt: 5 samples, 0 jpcite, 3 competitor
     for i in range(5):
-        rows.append({
-            "sample_month": "2026-05",
-            "llm_provider": "chatgpt",
-            "query_id": f"Q{i+1:03d}",
-            "query_text": "test",
-            "jpcite_cited": "0",
-            "competitor_cited": "1" if i < 3 else "0",
-            "citation_url": "",
-            "sampled_at": "2026-05-01T09:02:00Z",
-            "sampled_by": "operator",
-        })
+        rows.append(
+            {
+                "sample_month": "2026-05",
+                "llm_provider": "chatgpt",
+                "query_id": f"Q{i + 1:03d}",
+                "query_text": "test",
+                "jpcite_cited": "0",
+                "competitor_cited": "1" if i < 3 else "0",
+                "citation_url": "",
+                "sampled_at": "2026-05-01T09:02:00Z",
+                "sampled_by": "operator",
+            }
+        )
     # gemini: 5 samples, 1 jpcite, 1 competitor
     for i in range(5):
-        rows.append({
-            "sample_month": "2026-05",
-            "llm_provider": "gemini",
-            "query_id": f"Q{i+1:03d}",
-            "query_text": "test",
-            "jpcite_cited": "1" if i == 0 else "0",
-            "competitor_cited": "1" if i == 1 else "0",
-            "citation_url": "",
-            "sampled_at": "2026-05-01T09:03:00Z",
-            "sampled_by": "operator",
-        })
+        rows.append(
+            {
+                "sample_month": "2026-05",
+                "llm_provider": "gemini",
+                "query_id": f"Q{i + 1:03d}",
+                "query_text": "test",
+                "jpcite_cited": "1" if i == 0 else "0",
+                "competitor_cited": "1" if i == 1 else "0",
+                "citation_url": "",
+                "sampled_at": "2026-05-01T09:03:00Z",
+                "sampled_by": "operator",
+            }
+        )
 
     with p.open("w", encoding="utf-8-sig", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
@@ -136,17 +141,19 @@ def test_aggregate_pre_tipping_state() -> None:
     rows = []
     # 100 samples, 2 jpcite cited → q = 0.02 → pre_tipping
     for i in range(100):
-        rows.append({
-            "sample_month": "2026-05",
-            "llm_provider": "claude",
-            "query_id": f"Q{i+1:03d}",
-            "query_text": "x",
-            "jpcite_cited": 1 if i < 2 else 0,
-            "competitor_cited": 0,
-            "citation_url": None,
-            "sampled_at": "x",
-            "sampled_by": "operator",
-        })
+        rows.append(
+            {
+                "sample_month": "2026-05",
+                "llm_provider": "claude",
+                "query_id": f"Q{i + 1:03d}",
+                "query_text": "x",
+                "jpcite_cited": 1 if i < 2 else 0,
+                "competitor_cited": 0,
+                "citation_url": None,
+                "sampled_at": "x",
+                "sampled_by": "operator",
+            }
+        )
     s_pre = lcs.aggregate(rows, month="2026-05")
     assert s_pre["q_jpcite"] == 0.02
     assert s_pre["cascade_state"] == "pre_tipping"
@@ -154,17 +161,19 @@ def test_aggregate_pre_tipping_state() -> None:
     # 100 samples, 7 cited → q = 0.07 → approach
     rows2 = []
     for i in range(100):
-        rows2.append({
-            "sample_month": "2026-05",
-            "llm_provider": "claude",
-            "query_id": f"Q{i+1:03d}",
-            "query_text": "x",
-            "jpcite_cited": 1 if i < 7 else 0,
-            "competitor_cited": 0,
-            "citation_url": None,
-            "sampled_at": "x",
-            "sampled_by": "operator",
-        })
+        rows2.append(
+            {
+                "sample_month": "2026-05",
+                "llm_provider": "claude",
+                "query_id": f"Q{i + 1:03d}",
+                "query_text": "x",
+                "jpcite_cited": 1 if i < 7 else 0,
+                "competitor_cited": 0,
+                "citation_url": None,
+                "sampled_at": "x",
+                "sampled_by": "operator",
+            }
+        )
     s_app = lcs.aggregate(rows2, month="2026-05")
     assert s_app["q_jpcite"] == 0.07
     assert s_app["cascade_state"] == "approach"

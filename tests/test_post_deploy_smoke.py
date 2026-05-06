@@ -18,11 +18,9 @@ import importlib.util
 import io
 import json
 import sys
-from contextlib import redirect_stdout, redirect_stderr
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 from unittest import mock
-
-import pytest
 
 HERE = Path(__file__).resolve().parent
 REPO_ROOT = HERE.parent

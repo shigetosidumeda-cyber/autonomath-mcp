@@ -47,7 +47,7 @@ DAY_NEW = "2027-12-31"
 
 
 @pytest.fixture(autouse=True)
-def _seed_versioning(seeded_db: "Path"):
+def _seed_versioning(seeded_db: Path):
     """Stamp valid_from on all rows; retire UNI-test-s-1 on 2026-02-01.
 
     Mirrors the post-migration-067 state on a fresh test DB. The autouse
@@ -75,7 +75,7 @@ def _seed_versioning(seeded_db: "Path"):
     yield
 
 
-def test_past_date_query_returns_then_live_row(client: "TestClient"):
+def test_past_date_query_returns_then_live_row(client: TestClient):
     """A row retired on 2026-02-01 must STILL be visible at 2026-01-15.
 
     DAY_T1 (2026-01-15) is between the row's valid_from (2026-01-01) and
@@ -96,7 +96,7 @@ def test_past_date_query_returns_then_live_row(client: "TestClient"):
     assert "UNI-test-s-1" not in ids2, "row retired on 2026-02-01 must be excluded on 2026-03-01"
 
 
-def test_live_query_preserves_existing_behavior(client: "TestClient"):
+def test_live_query_preserves_existing_behavior(client: TestClient):
     """Search WITHOUT as_of_date must behave as before for currently-live rows.
 
     Spec (`analysis_wave18/_r8_dataset_versioning_2026-04-25.md`): omit
@@ -125,7 +125,7 @@ def test_live_query_preserves_existing_behavior(client: "TestClient"):
     assert "UNI-test-s-1" in ids
 
 
-def test_invalid_date_format_returns_422(client: "TestClient"):
+def test_invalid_date_format_returns_422(client: TestClient):
     """Malformed as_of_date must 422 with no DB round-trip.
 
     Examples that should fail: '2026-13-99', '20260115', 'yesterday',

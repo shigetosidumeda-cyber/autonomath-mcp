@@ -63,7 +63,8 @@ import re
 import sqlite3
 from typing import Annotated, Any
 
-from fastapi import APIRouter, HTTPException, Path as PathParam
+from fastapi import APIRouter, HTTPException
+from fastapi import Path as PathParam
 from fastapi.responses import JSONResponse
 
 from jpintel_mcp.config import settings

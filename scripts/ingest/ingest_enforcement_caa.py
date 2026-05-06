@@ -47,7 +47,6 @@ import logging
 import re
 import sqlite3
 import sys
-import time
 import unicodedata
 from dataclasses import dataclass, field
 from datetime import UTC, datetime

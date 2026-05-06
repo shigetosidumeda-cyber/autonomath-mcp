@@ -65,12 +65,11 @@ inserts are PK-deduped.
 from __future__ import annotations
 
 import argparse
-import json
 import re
 import sqlite3
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -176,7 +175,7 @@ def mine(
     if verbose:
         print(f"[info] existing PR keys cached: {len(existing)}")
 
-    now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    now_iso = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     # Stream INSERTs in batches.
     BATCH = 5000

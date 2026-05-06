@@ -247,8 +247,8 @@ def test_admin_kill_switch_status_off(client: TestClient, monkeypatch: pytest.Mo
     """
     monkeypatch.setenv("ADMIN_API_KEY", "test-admin-key")
     # Force settings reload so the new ADMIN_API_KEY is picked up.
-    from jpintel_mcp.config import settings
     from jpintel_mcp.api import admin as admin_mod
+    from jpintel_mcp.config import settings
 
     monkeypatch.setattr(settings, "admin_api_key", "test-admin-key")
     monkeypatch.setattr(admin_mod.settings, "admin_api_key", "test-admin-key")
@@ -300,8 +300,8 @@ def test_admin_kill_switch_status_requires_admin_key(
     """Without an admin key configured, the endpoint is 503. With one
     configured but missing X-API-Key, 401.
     """
-    from jpintel_mcp.config import settings
     from jpintel_mcp.api import admin as admin_mod
+    from jpintel_mcp.config import settings
 
     # No admin key → 503.
     monkeypatch.setattr(settings, "admin_api_key", "")

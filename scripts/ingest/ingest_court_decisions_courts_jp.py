@@ -77,9 +77,9 @@ import sys
 import time
 import unicodedata
 import urllib.parse
-from dataclasses import dataclass, field
+from collections.abc import Iterator
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterator
 
 import httpx
 from bs4 import BeautifulSoup  # type: ignore[import-untyped]
@@ -286,7 +286,7 @@ def map_precedent_weight(level: str) -> str:
 
 
 def compute_unified_id(case_number: str, court: str) -> str:
-    key = f"{case_number}|{court}".encode("utf-8")
+    key = f"{case_number}|{court}".encode()
     return "HAN-" + hashlib.sha256(key).hexdigest()[:10]
 
 
@@ -687,9 +687,7 @@ def assemble(
             subject = "租税"
         elif (
             "行政事件訴訟法" in references or "行政手続法" in references or "行政不服" in references
-        ):
-            subject = "行政"
-        elif "国家賠償" in references:
+        ) or "国家賠償" in references:
             subject = "行政"
         elif "補助金" in references:
             subject = "補助金適正化"
@@ -861,7 +859,7 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     fetched_at = (
-        _dt.datetime.now(_dt.timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+        _dt.datetime.now(_dt.UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
     )
 
     conn: sqlite3.Connection | None = None

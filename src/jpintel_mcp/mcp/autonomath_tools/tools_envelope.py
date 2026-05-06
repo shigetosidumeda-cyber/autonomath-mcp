@@ -35,8 +35,8 @@ if str(_HERE) not in sys.path:
     sys.path.insert(0, str(_HERE))
 
 import tools as _raw  # noqa: E402  (legacy tools module)
-from .envelope_wrapper import with_envelope  # noqa: E402
 
+from .envelope_wrapper import with_envelope  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Wrapped tool bindings.

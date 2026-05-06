@@ -16,12 +16,12 @@
 Network is NEVER touched in this suite — `check_source_alive` is
 monkeypatched per case.
 """
+
 from __future__ import annotations
 
 import importlib
 import sys
 from pathlib import Path
-from typing import Any
 
 import pytest
 
@@ -159,9 +159,7 @@ def test_boundary_violation_score_clamped_to_zero(verify_client, monkeypatch):
     from jpintel_mcp.api import _verifier as v
 
     async def _stub_alive(urls):
-        return [
-            v.SourceLiveness(url=u, alive=True, status_code=200) for u in urls
-        ]
+        return [v.SourceLiveness(url=u, alive=True, status_code=200) for u in urls]
 
     monkeypatch.setattr("jpintel_mcp.api.verify.check_source_alive", _stub_alive)
 
@@ -189,12 +187,7 @@ def test_boundary_violation_score_clamped_to_zero(verify_client, monkeypatch):
 def test_claim_count_cap_returns_400(verify_client):
     # Six numeric claims in one payload triggers >5 atomic claims.
     answer = (
-        "Aは最大10万円。"
-        "Bは最大20万円。"
-        "Cは最大30万円。"
-        "Dは最大40万円。"
-        "Eは最大50万円。"
-        "Fは最大60万円。"
+        "Aは最大10万円。Bは最大20万円。Cは最大30万円。Dは最大40万円。Eは最大50万円。Fは最大60万円。"
     )
     resp = verify_client.post(
         "/v1/verify/answer",
@@ -224,9 +217,7 @@ def test_language_en_returns_en_disclaimer(verify_client, monkeypatch):
     from jpintel_mcp.api import _verifier as v
 
     async def _stub_alive(urls):
-        return [
-            v.SourceLiveness(url=u, alive=True, status_code=200) for u in urls
-        ]
+        return [v.SourceLiveness(url=u, alive=True, status_code=200) for u in urls]
 
     monkeypatch.setattr("jpintel_mcp.api.verify.check_source_alive", _stub_alive)
 
@@ -242,9 +233,7 @@ def test_language_en_returns_en_disclaimer(verify_client, monkeypatch):
     body = resp.json()
     assert body["language"] == "en"
     # English disclaimer must NOT be Japanese.
-    assert "tax advice" in body["_disclaimer"].lower() or "qualified" in body[
-        "_disclaimer"
-    ].lower()
+    assert "tax advice" in body["_disclaimer"].lower() or "qualified" in body["_disclaimer"].lower()
 
 
 # ---------------------------------------------------------------------------
@@ -258,9 +247,7 @@ def test_aggregator_url_rejected():
 
     from jpintel_mcp.api._verifier import check_source_alive
 
-    sources = asyncio.run(
-        check_source_alive(["https://noukaweb.com/some-program"])
-    )
+    sources = asyncio.run(check_source_alive(["https://noukaweb.com/some-program"]))
     assert len(sources) == 1
     s = sources[0]
     assert s.aggregator_violation is True
@@ -311,9 +298,7 @@ def test_anonymous_single_call_succeeds(verify_client, monkeypatch):
     from jpintel_mcp.api import _verifier as v
 
     async def _stub_alive(urls):
-        return [
-            v.SourceLiveness(url=u, alive=True, status_code=200) for u in urls
-        ]
+        return [v.SourceLiveness(url=u, alive=True, status_code=200) for u in urls]
 
     monkeypatch.setattr("jpintel_mcp.api.verify.check_source_alive", _stub_alive)
 
@@ -367,8 +352,7 @@ def test_zero_llm_api_imports_in_verifier_modules():
         content = fp.read_text(encoding="utf-8")
         for bad in forbidden:
             assert bad not in content, (
-                f"{fp.name} must not contain `{bad}` "
-                f"(memory feedback_no_operator_llm_api)"
+                f"{fp.name} must not contain `{bad}` (memory feedback_no_operator_llm_api)"
             )
 
     # Also confirm the modules import cleanly without dragging in any
@@ -382,8 +366,7 @@ def test_zero_llm_api_imports_in_verifier_modules():
     leaked = [
         m
         for m in sys.modules
-        if m.split(".")[0]
-        in {"anthropic", "openai", "google", "claude_agent_sdk"}
+        if m.split(".")[0] in {"anthropic", "openai", "google", "claude_agent_sdk"}
         and m != "google"  # google namespace package may exist via httpx etc.
     ]
     # google submodules of generativeai would be the regression we worry

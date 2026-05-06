@@ -267,8 +267,7 @@ def score(query: str, candidate: dict[str, Any]) -> tuple[float, str, dict[str, 
         and is_valid_houjin_bangou(cand_bangou)
         and q == cand_bangou,
         "kana_eq": bool(q_bare and c_bare and q_bare == c_bare),
-        "legal_form_variant": bool(q_bare and c_bare and q_bare == c_bare)
-        and legal_form_active,
+        "legal_form_variant": bool(q_bare and c_bare and q_bare == c_bare) and legal_form_active,
         "addr_eq": bool(candidate.get("address_match")),
         "alias_only": axis == "alias_only",
     }

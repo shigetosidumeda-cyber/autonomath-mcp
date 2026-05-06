@@ -39,12 +39,11 @@ import asyncio
 import concurrent.futures
 import hashlib
 import json
-import os
 import subprocess
 import sys
 from collections import Counter
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 # ---------------------------------------------------------------------------
 # Constants & configuration

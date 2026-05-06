@@ -65,11 +65,10 @@ import sqlite3
 import sys
 import time
 import unicodedata
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
-from urllib.parse import urljoin
 
 try:
     import requests  # type: ignore

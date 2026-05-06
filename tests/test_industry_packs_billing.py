@@ -96,7 +96,6 @@ from jpintel_mcp.mcp.autonomath_tools.wave22_tools import (  # noqa: E402
     _cross_check_jurisdiction_impl,
 )
 
-
 # ---------------------------------------------------------------------------
 # Shared assertion helper
 # ---------------------------------------------------------------------------

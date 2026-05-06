@@ -59,16 +59,16 @@ import argparse
 import datetime as dt
 import hashlib
 import json
-import struct
 import sqlite3
+import struct
 import sys
 from collections import Counter
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Iterator
 
-import sqlite_vec  # type: ignore
 import pyarrow as pa
 import pyarrow.parquet as pq
+import sqlite_vec  # type: ignore
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_DB = REPO_ROOT / "autonomath.db"
@@ -279,7 +279,7 @@ def write_manifest(
     manifest = {
         "dataset": "bookyou/embeddings-jp",
         "snapshot_id": snapshot_id,
-        "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(),
+        "generated_at": dt.datetime.now(dt.UTC).isoformat(),
         "embedding_model": EMBED_MODEL,
         "embedding_dim": EMBED_DIM,
         "row_count": len(rows),

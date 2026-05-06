@@ -41,8 +41,7 @@ import argparse
 import json
 import shutil
 import subprocess
-import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -85,7 +84,7 @@ def check_npm(repo: Path) -> tuple[bool, str]:
     """Smoke: npm pack --dry-run inside sdk/typescript/ if present."""
     pkg = repo / "sdk" / "typescript"
     if not (pkg / "package.json").exists():
-        return True, f"skipped (no sdk/typescript/package.json — npm publish not yet wired)"
+        return True, "skipped (no sdk/typescript/package.json — npm publish not yet wired)"
     npm = _which_or_none("npm")
     if npm is None:
         return False, "npm not on PATH; install Node.js + npm to validate"

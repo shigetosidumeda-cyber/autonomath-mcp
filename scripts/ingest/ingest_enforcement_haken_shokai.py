@@ -66,7 +66,7 @@ import sqlite3
 import sys
 import time
 import unicodedata
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from urllib.parse import urljoin
@@ -261,7 +261,7 @@ def _bureau_from_haken_num(haken_num: str | None) -> str | None:
 
 
 def _slug8(name: str, date: str) -> str:
-    h = hashlib.sha1(f"{name}|{date}".encode("utf-8")).hexdigest()
+    h = hashlib.sha1(f"{name}|{date}".encode()).hexdigest()
     return h[:8]
 
 

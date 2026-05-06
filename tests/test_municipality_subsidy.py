@@ -20,26 +20,12 @@ from pathlib import Path
 import pytest
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
-_MIGRATION = (
-    _REPO_ROOT / "scripts" / "migrations" / "wave24_191_municipality_subsidy.sql"
-)
-_ROLLBACK = (
-    _REPO_ROOT
-    / "scripts"
-    / "migrations"
-    / "wave24_191_municipality_subsidy_rollback.sql"
-)
-_CRON = (
-    _REPO_ROOT / "scripts" / "cron" / "ingest_municipality_subsidy_weekly.py"
-)
+_MIGRATION = _REPO_ROOT / "scripts" / "migrations" / "wave24_191_municipality_subsidy.sql"
+_ROLLBACK = _REPO_ROOT / "scripts" / "migrations" / "wave24_191_municipality_subsidy_rollback.sql"
+_CRON = _REPO_ROOT / "scripts" / "cron" / "ingest_municipality_subsidy_weekly.py"
 _SEED = _REPO_ROOT / "data" / "municipality_seed_urls.json"
 _TOOL_MODULE = (
-    _REPO_ROOT
-    / "src"
-    / "jpintel_mcp"
-    / "mcp"
-    / "autonomath_tools"
-    / "municipality_tools.py"
+    _REPO_ROOT / "src" / "jpintel_mcp" / "mcp" / "autonomath_tools" / "municipality_tools.py"
 )
 
 
@@ -70,8 +56,7 @@ def test_migration_applies_idempotently(tmp_path) -> None:
 
         # Verify table.
         rows = conn.execute(
-            "SELECT name FROM sqlite_master "
-            "WHERE type='table' AND name='municipality_subsidy'"
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='municipality_subsidy'"
         ).fetchall()
         assert {r[0] for r in rows} == {"municipality_subsidy"}
 
@@ -124,8 +109,7 @@ def test_migration_applies_idempotently(tmp_path) -> None:
         conn.executescript(_ROLLBACK.read_text(encoding="utf-8"))
         conn.commit()
         rows = conn.execute(
-            "SELECT name FROM sqlite_master "
-            "WHERE type='table' AND name='municipality_subsidy'"
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='municipality_subsidy'"
         ).fetchall()
         assert rows == []
     finally:
@@ -165,8 +149,7 @@ def test_67_seed_url_parse() -> None:
             ".lg.jp" in url_lower
             or ".go.jp" in url_lower
             or "metro.tokyo" in url_lower
-            or ("pref." in url_lower and url_lower.endswith(".jp")
-                or "pref." in url_lower)
+            or ("pref." in url_lower and url_lower.endswith(".jp") or "pref." in url_lower)
             or ("city." in url_lower)
         )
         assert is_govt, f"non-1次資料 URL in seed: {row['subsidy_url']}"
@@ -199,9 +182,7 @@ def test_aggregator_url_reject() -> None:
     ]
     for url in banned_urls:
         assert mod.is_aggregator_url(url), f"should reject aggregator: {url}"
-        assert not mod.is_allowed_municipality_url(url), (
-            f"aggregator slipped allowlist: {url}"
-        )
+        assert not mod.is_allowed_municipality_url(url), f"aggregator slipped allowlist: {url}"
 
     # 1次資料 must pass.
     legit_urls = [
@@ -264,8 +245,7 @@ def test_sha256_diff_detection(tmp_path) -> None:
 
     # Verify single row remains (UNIQUE constraint enforced) with new content.
     rows = conn.execute(
-        "SELECT amount_text, sha256 FROM municipality_subsidy "
-        "WHERE muni_code='130001'"
+        "SELECT amount_text, sha256 FROM municipality_subsidy WHERE muni_code='130001'"
     ).fetchall()
     assert len(rows) == 1
     assert rows[0]["amount_text"] == "上限 200万円"

@@ -22,6 +22,7 @@ Usage:
     uv run python tools/offline/narrative_rollback.py --quarantine-id 42
     uv run python tools/offline/narrative_rollback.py --quarantine-id 42 --dry-run
 """
+
 from __future__ import annotations
 
 import argparse
@@ -159,9 +160,7 @@ def _postmark_email(api_key_id: int, narrative_id: int, n_requests: int) -> bool
         )
         return True
     except Exception as exc:  # noqa: BLE001
-        logger.warning(
-            "postmark_email_failed key=%d err=%s", api_key_id, str(exc)[:160]
-        )
+        logger.warning("postmark_email_failed key=%d err=%s", api_key_id, str(exc)[:160])
         return False
 
 
@@ -185,9 +184,7 @@ def rollback(*, db_path: Path, quarantine_id: int, dry_run: bool) -> dict:
             (quarantine_id,),
         ).fetchone()
         if row is None:
-            logger.warning(
-                "quarantine_id_not_found quarantine_id=%d", quarantine_id
-            )
+            logger.warning("quarantine_id_not_found quarantine_id=%d", quarantine_id)
             return summary
         narrative_id = int(row["narrative_id"])
         table = str(row["narrative_table"])
@@ -219,9 +216,7 @@ def rollback(*, db_path: Path, quarantine_id: int, dry_run: bool) -> dict:
                 (narrative_id, table),
             ).fetchall()
         except sqlite3.OperationalError as exc:
-            logger.warning(
-                "serve_log_select_failed err=%s", str(exc)[:160]
-            )
+            logger.warning("serve_log_select_failed err=%s", str(exc)[:160])
             affected = []
 
         summary["affected_api_keys"] = len(affected)
@@ -229,9 +224,7 @@ def rollback(*, db_path: Path, quarantine_id: int, dry_run: bool) -> dict:
             kid = int(r["api_key_id"])
             n = int(r["n"])
             if dry_run:
-                logger.info(
-                    "credit_dry_run key=%d n=%d yen=%d", kid, n, n * 3
-                )
+                logger.info("credit_dry_run key=%d n=%d yen=%d", kid, n, n * 3)
                 continue
             if _stripe_credit(kid, n * 3):
                 summary["stripe_credits"] += 1
@@ -253,9 +246,7 @@ def rollback(*, db_path: Path, quarantine_id: int, dry_run: bool) -> dict:
 
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    p = argparse.ArgumentParser(
-        description="§10.10 narrative rollback + customer-credit helper"
-    )
+    p = argparse.ArgumentParser(description="§10.10 narrative rollback + customer-credit helper")
     p.add_argument("--db", type=Path, default=None)
     p.add_argument("--quarantine-id", type=int, required=True)
     p.add_argument("--dry-run", action="store_true")

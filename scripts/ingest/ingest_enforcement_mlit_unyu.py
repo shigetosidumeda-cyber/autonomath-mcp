@@ -52,7 +52,6 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
-import hashlib
 import json
 import logging
 import re
@@ -439,7 +438,7 @@ def _parse_column_flow(
     region_label: str,
     pdf_url: str,
     hub_url: str,
-) -> list["UnyuRecord"]:
+) -> list[UnyuRecord]:
     """Column-flow PDF layout (e.g. Hokkaido).
 
     Row-start dates appear in a leading column block; 事業者名 + 法人番号

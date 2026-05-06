@@ -104,7 +104,6 @@ from jpintel_mcp.mcp.autonomath_tools.industry_packs import (  # noqa: E402
     _pack_real_estate_impl,
 )
 
-
 # ---------------------------------------------------------------------------
 # Shared canonical-envelope assertion helper
 # ---------------------------------------------------------------------------

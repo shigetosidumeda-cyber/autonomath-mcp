@@ -16,8 +16,8 @@ Returns: dict with
 """
 
 import os
-import sqlite3
 import re
+import sqlite3
 import unicodedata
 from datetime import date
 from pathlib import Path

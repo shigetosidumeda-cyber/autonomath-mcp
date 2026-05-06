@@ -35,9 +35,9 @@ Test design
 from __future__ import annotations
 
 import os
-import sqlite3
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 import pytest
 
@@ -64,9 +64,6 @@ os.environ.setdefault("AUTONOMATH_INDUSTRY_PACKS_ENABLED", "1")
 # server import first to break the autonomath_tools<->server circular
 # import (same convention as test_wave22_tools.py / test_industry_packs.py).
 from jpintel_mcp.mcp import server  # noqa: F401, E402
-from jpintel_mcp.mcp.autonomath_tools.snapshot_helper import (  # noqa: E402
-    _reset_cache_for_tests as _reset_snapshot_cache,
-)
 from jpintel_mcp.mcp.autonomath_tools.envelope_wrapper import (  # noqa: E402
     build_envelope,
 )
@@ -74,6 +71,9 @@ from jpintel_mcp.mcp.autonomath_tools.industry_packs import (  # noqa: E402
     _pack_construction_impl,
     _pack_manufacturing_impl,
     _pack_real_estate_impl,
+)
+from jpintel_mcp.mcp.autonomath_tools.snapshot_helper import (  # noqa: E402
+    _reset_cache_for_tests as _reset_snapshot_cache,
 )
 from jpintel_mcp.mcp.autonomath_tools.wave22_tools import (  # noqa: E402
     _bundle_application_kit_impl,
@@ -110,7 +110,6 @@ from jpintel_mcp.mcp.autonomath_tools.wave24_tools_second_half import (  # noqa:
     _score_application_probability_impl,
     _simulate_tax_change_impact_impl,
 )
-
 
 # ---------------------------------------------------------------------------
 # Shared assertion

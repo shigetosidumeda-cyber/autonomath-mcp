@@ -26,12 +26,13 @@ from __future__ import annotations
 
 import functools
 import sqlite3
-from typing import Annotated, Any, Callable, Literal
+from collections.abc import Callable
+from typing import Annotated, Any, Literal
 
 from pydantic import Field
 
 from jpintel_mcp.mcp._error_helpers import safe_internal_message
-from jpintel_mcp.mcp.server import mcp, _READ_ONLY, _with_mcp_telemetry
+from jpintel_mcp.mcp.server import _READ_ONLY, _with_mcp_telemetry, mcp
 
 from . import enforcement_tool, gx_tool, law_article_tool, loan_tool, mutual_tool
 

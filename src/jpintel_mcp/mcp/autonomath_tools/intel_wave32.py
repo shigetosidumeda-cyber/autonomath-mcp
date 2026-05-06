@@ -16,7 +16,8 @@ import asyncio
 import importlib
 import inspect
 import os
-from typing import Annotated, Any, Callable
+from collections.abc import Callable
+from typing import Annotated, Any
 
 from pydantic import BaseModel, Field
 

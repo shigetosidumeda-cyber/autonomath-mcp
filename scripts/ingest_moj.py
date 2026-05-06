@@ -45,7 +45,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from bs4 import BeautifulSoup
@@ -332,7 +332,7 @@ def parse_meta(html: str) -> tuple[str | None, str | None]:
 
 
 def make_unified_id(slug: str) -> str:
-    h = hashlib.sha1(f"moj:{slug}".encode("utf-8")).hexdigest()[:10]
+    h = hashlib.sha1(f"moj:{slug}".encode()).hexdigest()[:10]
     return f"UNI-{h}"
 
 
@@ -408,7 +408,7 @@ def build_row(
         "source_url": seed.source_url,
         "source_fetched_at": fetched_at,
         "source_checksum": hashlib.sha1(
-            f"{seed.slug}|{seed.source_url}|{seed.name}|{seed.program_kind}".encode("utf-8")
+            f"{seed.slug}|{seed.source_url}|{seed.name}|{seed.program_kind}".encode()
         ).hexdigest()[:16],
         "updated_at": fetched_at,
     }
@@ -493,10 +493,10 @@ def main() -> int:
 
     print(f"jpintel.db: {DB_PATH}")
     if not args.dry_run and not DB_PATH.exists():
-        print(f"[ERROR] DB not found", file=sys.stderr)
+        print("[ERROR] DB not found", file=sys.stderr)
         return 2
 
-    fetched_at = datetime.now(timezone.utc).isoformat()
+    fetched_at = datetime.now(UTC).isoformat()
     rows: list[dict[str, object]] = []
     unique_urls = sorted({s.source_url for s in SEEDS})
     print(f"Probing {len(unique_urls)} unique MOJ-related URLs at 1 req/s ...")

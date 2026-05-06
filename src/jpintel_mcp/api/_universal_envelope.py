@@ -69,7 +69,7 @@ def _load_license_map() -> dict[str, str]:
     """
     global _LICENSE_MAP_CACHE, _LICENSE_MAP_EXPIRY
     now = time.monotonic()
-    if _LICENSE_MAP_CACHE is not None and _LICENSE_MAP_EXPIRY > now:
+    if _LICENSE_MAP_CACHE is not None and now < _LICENSE_MAP_EXPIRY:
         return _LICENSE_MAP_CACHE
     mapping: dict[str, str] = {}
     try:

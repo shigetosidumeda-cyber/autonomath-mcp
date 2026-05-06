@@ -118,18 +118,20 @@ def parse_csv(csv_path: pathlib.Path) -> list[dict[str, Any]]:
             llm = (raw.get("llm_provider") or "").strip().lower()
             if llm not in LLM_PROVIDERS:
                 continue  # skip header / malformed
-            rows.append({
-                "sample_month": (raw.get("sample_month") or "").strip(),
-                "llm_provider": llm,
-                "query_id": (raw.get("query_id") or "").strip(),
-                "query_text": (raw.get("query_text") or "").strip(),
-                "jpcite_cited": 1 if jpcite else 0,
-                "competitor_cited": 1 if competitor else 0,
-                "citation_url": (raw.get("citation_url") or "").strip() or None,
-                "sampled_at": (raw.get("sampled_at") or "").strip()
-                              or _dt.datetime.utcnow().isoformat(timespec="seconds") + "Z",
-                "sampled_by": (raw.get("sampled_by") or "operator").strip(),
-            })
+            rows.append(
+                {
+                    "sample_month": (raw.get("sample_month") or "").strip(),
+                    "llm_provider": llm,
+                    "query_id": (raw.get("query_id") or "").strip(),
+                    "query_text": (raw.get("query_text") or "").strip(),
+                    "jpcite_cited": 1 if jpcite else 0,
+                    "competitor_cited": 1 if competitor else 0,
+                    "citation_url": (raw.get("citation_url") or "").strip() or None,
+                    "sampled_at": (raw.get("sampled_at") or "").strip()
+                    or _dt.datetime.utcnow().isoformat(timespec="seconds") + "Z",
+                    "sampled_by": (raw.get("sampled_by") or "operator").strip(),
+                }
+            )
     return rows
 
 
@@ -140,8 +142,7 @@ def parse_csv(csv_path: pathlib.Path) -> list[dict[str, Any]]:
 
 def aggregate(rows: list[dict[str, Any]], month: str) -> dict[str, Any]:
     by_llm: dict[str, dict[str, Any]] = {
-        llm: {"sample_count": 0, "jpcite_cited": 0, "competitor_cited": 0}
-        for llm in LLM_PROVIDERS
+        llm: {"sample_count": 0, "jpcite_cited": 0, "competitor_cited": 0} for llm in LLM_PROVIDERS
     }
     total = 0
     total_jpcite = 0
@@ -168,8 +169,9 @@ def aggregate(rows: list[dict[str, Any]], month: str) -> dict[str, Any]:
             "competitor_cited": agg["competitor_cited"],
             "jpcite_rate": round(agg["jpcite_cited"] / n, 4) if n else 0.0,
             "competitor_rate": round(agg["competitor_cited"] / n, 4) if n else 0.0,
-            "missing_rate": round(max(0, EXPECTED_QUERIES_PER_LLM - n)
-                                  / EXPECTED_QUERIES_PER_LLM, 4),
+            "missing_rate": round(
+                max(0, EXPECTED_QUERIES_PER_LLM - n) / EXPECTED_QUERIES_PER_LLM, 4
+            ),
         }
 
     q_jpcite = round(total_jpcite / total, 4) if total else 0.0
@@ -185,8 +187,7 @@ def aggregate(rows: list[dict[str, Any]], month: str) -> dict[str, Any]:
         "month": month,
         "total_samples": total,
         "expected_total": EXPECTED_TOTAL_SAMPLES,
-        "missing_rate": round(max(0, EXPECTED_TOTAL_SAMPLES - total)
-                              / EXPECTED_TOTAL_SAMPLES, 4),
+        "missing_rate": round(max(0, EXPECTED_TOTAL_SAMPLES - total) / EXPECTED_TOTAL_SAMPLES, 4),
         "q_jpcite": q_jpcite,
         "q_competitor": q_competitor,
         "critical_q_star": CRITICAL_Q_STAR,
@@ -204,7 +205,8 @@ def trend_from_db(db_path: pathlib.Path, months: int = 12) -> list[dict[str, Any
     try:
         conn = sqlite3.connect(str(db_path))
         conn.row_factory = sqlite3.Row
-        cur = conn.execute("""
+        cur = conn.execute(
+            """
             SELECT sample_month,
                    COUNT(*) AS total_samples,
                    SUM(jpcite_cited) AS jpcite_cited,
@@ -213,16 +215,20 @@ def trend_from_db(db_path: pathlib.Path, months: int = 12) -> list[dict[str, Any
              GROUP BY sample_month
              ORDER BY sample_month DESC
              LIMIT ?
-        """, (months,))
+        """,
+            (months,),
+        )
         out = []
         for row in cur.fetchall():
             n = row["total_samples"] or 0
-            out.append({
-                "month": row["sample_month"],
-                "total_samples": n,
-                "q_jpcite": round((row["jpcite_cited"] or 0) / n, 4) if n else 0.0,
-                "q_competitor": round((row["competitor_cited"] or 0) / n, 4) if n else 0.0,
-            })
+            out.append(
+                {
+                    "month": row["sample_month"],
+                    "total_samples": n,
+                    "q_jpcite": round((row["jpcite_cited"] or 0) / n, 4) if n else 0.0,
+                    "q_competitor": round((row["competitor_cited"] or 0) / n, 4) if n else 0.0,
+                }
+            )
         conn.close()
         return list(reversed(out))
     except sqlite3.Error:
@@ -250,17 +256,26 @@ def upsert_to_db(rows: list[dict[str, Any]], db_path: pathlib.Path) -> int:
             )
         """)
         for r in rows:
-            conn.execute("""
+            conn.execute(
+                """
                 INSERT INTO citation_sample
                   (sample_month, llm_provider, query_id, query_text,
                    jpcite_cited, competitor_cited, citation_url,
                    sampled_at, sampled_by)
                 VALUES (?,?,?,?,?,?,?,?,?)
-            """, (
-                r["sample_month"], r["llm_provider"], r["query_id"],
-                r["query_text"], r["jpcite_cited"], r["competitor_cited"],
-                r["citation_url"], r["sampled_at"], r["sampled_by"],
-            ))
+            """,
+                (
+                    r["sample_month"],
+                    r["llm_provider"],
+                    r["query_id"],
+                    r["query_text"],
+                    r["jpcite_cited"],
+                    r["competitor_cited"],
+                    r["citation_url"],
+                    r["sampled_at"],
+                    r["sampled_by"],
+                ),
+            )
             inserted += 1
         conn.commit()
     finally:
@@ -274,15 +289,19 @@ def upsert_to_db(rows: list[dict[str, Any]], db_path: pathlib.Path) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(prog="log_citation_sample",
-                                description=__doc__.splitlines()[0])
+    p = argparse.ArgumentParser(prog="log_citation_sample", description=__doc__.splitlines()[0])
     p.add_argument("--month", help="YYYY-MM (e.g. 2026-05)")
     p.add_argument("--csv", help="CSV input path (default = ./citation_samples_<month>.csv)")
     p.add_argument("--json-out", help="JSON output path")
     p.add_argument("--db", default=str(DEFAULT_DB_PATH), help="autonomath.db path")
-    p.add_argument("--upsert-db", action="store_true", help="UPSERT rows to autonomath.citation_sample")
-    p.add_argument("--validate-query-set", action="store_true",
-                   help="Validate citation_query_set_100.json shape and exit")
+    p.add_argument(
+        "--upsert-db", action="store_true", help="UPSERT rows to autonomath.citation_sample"
+    )
+    p.add_argument(
+        "--validate-query-set",
+        action="store_true",
+        help="Validate citation_query_set_100.json shape and exit",
+    )
     args = p.parse_args(argv)
 
     if args.validate_query_set:
@@ -294,8 +313,10 @@ def main(argv: list[str] | None = None) -> int:
     if not args.month:
         p.error("--month required (YYYY-MM)")
 
-    csv_path = pathlib.Path(args.csv) if args.csv else (
-        HERE / DEFAULT_CSV_TEMPLATE.format(month=args.month)
+    csv_path = (
+        pathlib.Path(args.csv)
+        if args.csv
+        else (HERE / DEFAULT_CSV_TEMPLATE.format(month=args.month))
     )
     rows = []
     if csv_path.exists():
@@ -310,20 +331,28 @@ def main(argv: list[str] | None = None) -> int:
     if args.upsert_db:
         summary["db_inserted"] = upsert_to_db(rows, db_path)
 
-    json_path = pathlib.Path(args.json_out) if args.json_out else (
-        HERE / DEFAULT_JSON_TEMPLATE.format(month=args.month)
+    json_path = (
+        pathlib.Path(args.json_out)
+        if args.json_out
+        else (HERE / DEFAULT_JSON_TEMPLATE.format(month=args.month))
     )
-    json_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2),
-                         encoding="utf-8")
+    json_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
     sys.stdout.write(f"wrote {json_path}\n")
-    sys.stdout.write(json.dumps({
-        "month": summary["month"],
-        "q_jpcite": summary["q_jpcite"],
-        "cascade_state": summary["cascade_state"],
-        "total_samples": summary["total_samples"],
-        "missing_rate": summary["missing_rate"],
-        "llm_api_calls": summary["llm_api_calls"],
-    }, ensure_ascii=False, indent=2) + "\n")
+    sys.stdout.write(
+        json.dumps(
+            {
+                "month": summary["month"],
+                "q_jpcite": summary["q_jpcite"],
+                "cascade_state": summary["cascade_state"],
+                "total_samples": summary["total_samples"],
+                "missing_rate": summary["missing_rate"],
+                "llm_api_calls": summary["llm_api_calls"],
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+        + "\n"
+    )
     return 0
 
 

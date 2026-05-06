@@ -36,11 +36,6 @@ from __future__ import annotations
 import hashlib
 import sqlite3
 import time
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    pass
-
 
 # Process-local cache: { (cache_key,): (expiry_unix, snapshot_id, checksum) }.
 # `cache_key` is a 1-tuple of the connection's database file path — distinct
@@ -175,7 +170,7 @@ def compute_corpus_snapshot(
     counts = _corpus_row_counts(conn)
     counts_csv = ",".join(str(c) for c in counts)
 
-    digest_input = f"{snapshot_id}|{api_version}|{counts_csv}".encode("utf-8")
+    digest_input = f"{snapshot_id}|{api_version}|{counts_csv}".encode()
     checksum = "sha256:" + hashlib.sha256(digest_input).hexdigest()[:16]
 
     _CACHE[cache_key] = (now + _TTL_SECONDS, snapshot_id, checksum)

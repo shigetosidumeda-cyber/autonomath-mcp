@@ -55,7 +55,6 @@ CLI:
 from __future__ import annotations
 
 import argparse
-import datetime as dt
 import hashlib
 import json
 import logging
@@ -560,7 +559,7 @@ def _authority_slug(authority: str) -> str:
 
 
 def _slug8(target: str, date: str, extra: str) -> str:
-    h = hashlib.sha1(f"{target}|{date}|{extra}".encode("utf-8")).hexdigest()
+    h = hashlib.sha1(f"{target}|{date}|{extra}".encode()).hexdigest()
     return h[:8]
 
 

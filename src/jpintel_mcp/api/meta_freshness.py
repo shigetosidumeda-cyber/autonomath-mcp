@@ -35,7 +35,7 @@ import os
 import statistics
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import APIRouter, HTTPException, Query
 
@@ -67,14 +67,14 @@ def _enriched_dir() -> Path:
 
 
 def _utcnow() -> _dt.datetime:
-    return _dt.datetime.now(_dt.timezone.utc)
+    return _dt.datetime.now(_dt.UTC)
 
 
 def _utcnow_iso() -> str:
     return _utcnow().replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
-def _parse_fetched_at(val: Any) -> Optional[_dt.datetime]:
+def _parse_fetched_at(val: Any) -> _dt.datetime | None:
     if not isinstance(val, str) or not val:
         return None
     v = val.strip()
@@ -84,13 +84,13 @@ def _parse_fetched_at(val: Any) -> Optional[_dt.datetime]:
             v = v[:-1] + "+00:00"
         dt = _dt.datetime.fromisoformat(v)
         if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=_dt.timezone.utc)
+            dt = dt.replace(tzinfo=_dt.UTC)
         return dt
     except ValueError:
         # date-only fallback
         try:
             d = _dt.date.fromisoformat(v[:10])
-            return _dt.datetime.combine(d, _dt.time.min, tzinfo=_dt.timezone.utc)
+            return _dt.datetime.combine(d, _dt.time.min, tzinfo=_dt.UTC)
         except Exception:  # noqa: BLE001
             return None
 
@@ -100,7 +100,7 @@ def aggregate_freshness(
     registry: dict[str, Any],
     enriched_lookup: dict[str, dict[str, Any]],
     *,
-    now: Optional[_dt.datetime] = None,
+    now: _dt.datetime | None = None,
     tier_filter: str = "all",
 ) -> dict[str, Any]:
     """Compute freshness summary + per-program rows.
@@ -150,7 +150,7 @@ def aggregate_freshness(
         )
 
     total = len(rows)
-    median_date: Optional[str] = None
+    median_date: str | None = None
     pct_30 = 0.0
     pct_180 = 0.0
     if rows:

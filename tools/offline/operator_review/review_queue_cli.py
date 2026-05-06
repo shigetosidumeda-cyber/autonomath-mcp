@@ -27,10 +27,11 @@ import os
 import re
 import sqlite3
 import sys
+from collections.abc import Iterable, Iterator
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Iterable, Iterator
+from typing import Any
 
 # --------------------------------------------------------------------------
 # Constants
@@ -86,9 +87,9 @@ FENCE_PHRASES = (
 
 # Individual PII patterns (法人番号 13 桁は OK、個人 PII のみ reject).
 PII_PATTERNS = (
-    re.compile(r"\b\d{12}\b"),                    # マイナンバー (12 桁)
-    re.compile(r"0\d{1,4}-?\d{1,4}-?\d{4}"),      # 電話番号
-    re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+"),      # email
+    re.compile(r"\b\d{12}\b"),  # マイナンバー (12 桁)
+    re.compile(r"0\d{1,4}-?\d{1,4}-?\d{4}"),  # 電話番号
+    re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+"),  # email
 )
 
 COHORT_DEFAULT_TRUST = {
@@ -103,6 +104,7 @@ COHORT_DEFAULT_TRUST = {
 # --------------------------------------------------------------------------
 # Logging
 # --------------------------------------------------------------------------
+
 
 def setup_logger() -> logging.Logger:
     if LOG_DIR.parent.exists():
@@ -134,6 +136,7 @@ LOG = setup_logger()
 # --------------------------------------------------------------------------
 # DB helpers
 # --------------------------------------------------------------------------
+
 
 @contextmanager
 def open_db(path: str) -> Iterator[sqlite3.Connection]:
@@ -196,7 +199,12 @@ def update_status(
                reviewed_at = ?
          WHERE contribution_id = ?
         """,
-        (new_status, reviewer_notes, datetime.utcnow().isoformat(timespec="seconds"), contribution_id),
+        (
+            new_status,
+            reviewer_notes,
+            datetime.utcnow().isoformat(timespec="seconds"),
+            contribution_id,
+        ),
     )
     if quality_flag and new_status == "approved":
         # Promote linked am_amount_condition row(s) to community_verified.
@@ -214,6 +222,7 @@ def update_status(
 # --------------------------------------------------------------------------
 # Validators (LLM-free, regex + rule)
 # --------------------------------------------------------------------------
+
 
 def detect_aggregator(urls: str | None) -> bool:
     if not urls:
@@ -262,11 +271,7 @@ def auto_decision(row: dict[str, Any], auto_threshold: float) -> tuple[str | Non
     # Approve: high-trust 税理士 cohort over auto threshold.
     cohort = (row.get("cohort") or "").strip()
     trust = row.get("trust_score")
-    if (
-        cohort == "税理士"
-        and trust is not None
-        and float(trust) >= auto_threshold
-    ):
+    if cohort == "税理士" and trust is not None and float(trust) >= auto_threshold:
         return "approve", None
     return None, None
 
@@ -274,6 +279,7 @@ def auto_decision(row: dict[str, Any], auto_threshold: float) -> tuple[str | Non
 # --------------------------------------------------------------------------
 # Display
 # --------------------------------------------------------------------------
+
 
 def _ascii_table(rows: list[dict[str, Any]], cols: list[str]) -> str:
     widths = {c: max(len(c), max((len(str(r.get(c, ""))) for r in rows), default=0)) for c in cols}
@@ -320,14 +326,27 @@ def render_one(row: dict[str, Any]) -> str:
 # Interactive loop
 # --------------------------------------------------------------------------
 
-def interactive(conn: sqlite3.Connection, rows: list[dict[str, Any]], auto_threshold: float) -> dict[str, int]:
+
+def interactive(
+    conn: sqlite3.Connection, rows: list[dict[str, Any]], auto_threshold: float
+) -> dict[str, int]:
     counts = {"approved": 0, "rejected": 0, "skipped": 0, "auto_approved": 0, "auto_rejected": 0}
     for idx, row in enumerate(rows, 1):
         decision, code = auto_decision(row, auto_threshold)
         if decision == "approve":
-            update_status(conn, row["contribution_id"], "approved", reviewer_notes="auto:trust>=threshold",
-                          quality_flag="community_verified")
-            LOG.info("auto_approved %s cohort=%s trust=%s", row["contribution_id"], row.get("cohort"), row.get("trust_score"))
+            update_status(
+                conn,
+                row["contribution_id"],
+                "approved",
+                reviewer_notes="auto:trust>=threshold",
+                quality_flag="community_verified",
+            )
+            LOG.info(
+                "auto_approved %s cohort=%s trust=%s",
+                row["contribution_id"],
+                row.get("cohort"),
+                row.get("trust_score"),
+            )
             counts["auto_approved"] += 1
             continue
         if decision == "reject":
@@ -347,9 +366,13 @@ def interactive(conn: sqlite3.Connection, rows: list[dict[str, Any]], auto_thres
             counts["skipped"] += 1
             continue
         if choice == "a":
-            update_status(conn, row["contribution_id"], "approved",
-                          reviewer_notes="manual:approved",
-                          quality_flag="community_verified")
+            update_status(
+                conn,
+                row["contribution_id"],
+                "approved",
+                reviewer_notes="manual:approved",
+                quality_flag="community_verified",
+            )
             LOG.info("approved %s", row["contribution_id"])
             counts["approved"] += 1
             continue
@@ -362,8 +385,12 @@ def interactive(conn: sqlite3.Connection, rows: list[dict[str, Any]], auto_thres
                 print("  invalid code; skipping.")
                 counts["skipped"] += 1
                 continue
-            update_status(conn, row["contribution_id"], "rejected",
-                          reviewer_notes=f"manual:{code}:{REJECT_TEMPLATES[code]}")
+            update_status(
+                conn,
+                row["contribution_id"],
+                "rejected",
+                reviewer_notes=f"manual:{code}:{REJECT_TEMPLATES[code]}",
+            )
             LOG.info("rejected %s code=%s", row["contribution_id"], code)
             counts["rejected"] += 1
             continue
@@ -375,6 +402,7 @@ def interactive(conn: sqlite3.Connection, rows: list[dict[str, Any]], auto_thres
 # --------------------------------------------------------------------------
 # Dry-run from CSV (no DB writes)
 # --------------------------------------------------------------------------
+
 
 def dry_run(csv_path: str, auto_threshold: float) -> None:
     with open(csv_path, encoding="utf-8") as f:
@@ -410,6 +438,7 @@ def dry_run(csv_path: str, auto_threshold: float) -> None:
 # Entry
 # --------------------------------------------------------------------------
 
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(description="jpcite contribution review CLI (LLM-free)")
     p.add_argument("--month", help="filter by created_at YYYY-MM (default: all pending)")
@@ -442,13 +471,23 @@ def main(argv: list[str] | None = None) -> int:
                 counts = interactive(conn, rows, args.auto_approve_trust_above)
             else:
                 # batch mode: only auto rules fire; rest stay pending.
-                counts = {"approved": 0, "rejected": 0, "skipped": 0, "auto_approved": 0, "auto_rejected": 0}
+                counts = {
+                    "approved": 0,
+                    "rejected": 0,
+                    "skipped": 0,
+                    "auto_approved": 0,
+                    "auto_rejected": 0,
+                }
                 for row in rows:
                     decision, code = auto_decision(row, args.auto_approve_trust_above)
                     if decision == "approve":
-                        update_status(conn, row["contribution_id"], "approved",
-                                      reviewer_notes="auto:trust>=threshold",
-                                      quality_flag="community_verified")
+                        update_status(
+                            conn,
+                            row["contribution_id"],
+                            "approved",
+                            reviewer_notes="auto:trust>=threshold",
+                            quality_flag="community_verified",
+                        )
                         counts["auto_approved"] += 1
                     elif decision == "reject":
                         note = f"auto_reject:{code}:{REJECT_TEMPLATES[code]}"

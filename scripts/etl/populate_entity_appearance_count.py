@@ -39,7 +39,7 @@ import logging
 import sqlite3
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 _LOG = logging.getLogger("jpintel.populate_entity_appearance_count")
@@ -62,7 +62,7 @@ def populate(db_path: Path) -> dict[str, int]:
     Returns a small dict with ``rows`` / ``max_count`` for caller logging.
     """
     started = time.monotonic()
-    now_iso = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    now_iso = datetime.now(UTC).isoformat(timespec="seconds")
     conn = sqlite3.connect(str(db_path))
     try:
         conn.execute("PRAGMA journal_mode=WAL;")

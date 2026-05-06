@@ -21,6 +21,7 @@ Hard constraints (memory `feedback_no_operator_llm_api`)
 * `_disclaimer` is the 17-token sensitive envelope (jpcite canonical
   wording, mirrors Wave 30 §52 hardening).
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -150,9 +151,8 @@ def _open_autonomath_ro() -> sqlite3.Connection | None:
 
 def _ip_hash(request: Request) -> str:
     """Salted sha256 of client IP — APPI 配慮, never raw."""
-    ip = (
-        request.headers.get("X-Forwarded-For", "").split(",")[0].strip()
-        or (request.client.host if request.client else "")
+    ip = request.headers.get("X-Forwarded-For", "").split(",")[0].strip() or (
+        request.client.host if request.client else ""
     )
     if not ip:
         return ""

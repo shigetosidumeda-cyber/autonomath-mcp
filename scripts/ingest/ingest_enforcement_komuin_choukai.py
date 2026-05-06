@@ -72,7 +72,7 @@ import unicodedata
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urlparse
 
 try:
     from bs4 import BeautifulSoup  # type: ignore
@@ -83,7 +83,7 @@ except ImportError as exc:  # pragma: no cover
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.lib.http import HttpClient, PDF_MAX_BYTES  # noqa: E402
+from scripts.lib.http import PDF_MAX_BYTES, HttpClient  # noqa: E402
 
 _LOG = logging.getLogger("autonomath.ingest.komuin_choukai")
 

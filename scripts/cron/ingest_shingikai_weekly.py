@@ -113,9 +113,7 @@ def _load_config(path: str) -> dict[str, Any]:
     try:
         import yaml  # type: ignore[import-not-found]
     except ImportError as exc:
-        raise RuntimeError(
-            "pyyaml required for shingikai cron; pip install pyyaml"
-        ) from exc
+        raise RuntimeError("pyyaml required for shingikai cron; pip install pyyaml") from exc
     with p.open("r", encoding="utf-8") as fh:
         data = yaml.safe_load(fh) or {}
     if not isinstance(data, dict):
@@ -353,9 +351,7 @@ async def run(args: argparse.Namespace) -> int:
                 total_minutes += m
                 total_signals += s
                 success_councils += 1
-                logger.info(
-                    "council %s done: minutes=+%d signals=+%d", council["id"], m, s
-                )
+                logger.info("council %s done: minutes=+%d signals=+%d", council["id"], m, s)
             except Exception:
                 logger.exception("council %s failed; continuing", council["id"])
                 continue

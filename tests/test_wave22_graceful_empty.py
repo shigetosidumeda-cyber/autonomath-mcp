@@ -56,7 +56,6 @@ from jpintel_mcp.mcp.autonomath_tools.wave22_tools import (  # noqa: E402
     _kessan_briefing_impl,
 )
 
-
 # ---------------------------------------------------------------------------
 # Sentinels guaranteed not to exist
 # ---------------------------------------------------------------------------

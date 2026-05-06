@@ -20,26 +20,14 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
-_MIGRATION = (
-    _REPO_ROOT / "scripts" / "migrations" / "wave24_192_pubcomment_announcement.sql"
-)
+_MIGRATION = _REPO_ROOT / "scripts" / "migrations" / "wave24_192_pubcomment_announcement.sql"
 _ROLLBACK = (
-    _REPO_ROOT
-    / "scripts"
-    / "migrations"
-    / "wave24_192_pubcomment_announcement_rollback.sql"
+    _REPO_ROOT / "scripts" / "migrations" / "wave24_192_pubcomment_announcement_rollback.sql"
 )
-_PUBCOMMENT_CRON = (
-    _REPO_ROOT / "scripts" / "cron" / "ingest_egov_pubcomment_daily.py"
-)
+_PUBCOMMENT_CRON = _REPO_ROOT / "scripts" / "cron" / "ingest_egov_pubcomment_daily.py"
 _WORKFLOW = _REPO_ROOT / ".github" / "workflows" / "egov-pubcomment-daily.yml"
 _TOOL_MODULE = (
-    _REPO_ROOT
-    / "src"
-    / "jpintel_mcp"
-    / "mcp"
-    / "autonomath_tools"
-    / "pubcomment_tools.py"
+    _REPO_ROOT / "src" / "jpintel_mcp" / "mcp" / "autonomath_tools" / "pubcomment_tools.py"
 )
 
 
@@ -61,8 +49,7 @@ def test_pubcomment_migration_applies_idempotently(tmp_path) -> None:
         conn.commit()
         # Verify table exists.
         rows = conn.execute(
-            "SELECT name FROM sqlite_master "
-            "WHERE type='table' AND name='pubcomment_announcement'"
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='pubcomment_announcement'"
         ).fetchall()
         assert {r[0] for r in rows} == {"pubcomment_announcement"}
         # Verify indexes.
@@ -88,8 +75,7 @@ def test_pubcomment_migration_applies_idempotently(tmp_path) -> None:
         conn.executescript(_ROLLBACK.read_text(encoding="utf-8"))
         conn.commit()
         rows = conn.execute(
-            "SELECT name FROM sqlite_master "
-            "WHERE type='table' AND name='pubcomment_announcement'"
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='pubcomment_announcement'"
         ).fetchall()
         assert rows == []
     finally:
@@ -145,9 +131,7 @@ def test_egov_mock_fetch(tmp_path) -> None:
         client = MagicMock()
         client.get = AsyncMock(side_effect=responses)
         sem = asyncio.Semaphore(1)
-        return await mod._fetch_announcements(
-            client, sem, "税理士法", "2026-01-01", max_records=10
-        )
+        return await mod._fetch_announcements(client, sem, "税理士法", "2026-01-01", max_records=10)
 
     out = asyncio.run(_runner())
     assert len(out) == 2
@@ -222,9 +206,7 @@ def test_jpcite_relevant_auto_classifier() -> None:
     spec.loader.exec_module(mod)
 
     # No match -> 0, None.
-    flag, impact = mod.classify_jpcite_relevance(
-        summary="無関係 な 改正案", target_law="無関係法"
-    )
+    flag, impact = mod.classify_jpcite_relevance(summary="無関係 な 改正案", target_law="無関係法")
     assert flag == 0
     assert impact is None
 

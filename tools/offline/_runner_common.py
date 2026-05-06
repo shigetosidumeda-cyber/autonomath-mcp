@@ -7,14 +7,16 @@ The role of this module: keep prompt rendering / JSON-Schema rendering /
 inbox path conventions consistent across the 7+ helpers so a single
 audit can certify all of them at once.
 """
+
 from __future__ import annotations
 
 import json
 import sqlite3
 import sys
-from datetime import datetime, timezone
+from collections.abc import Iterator
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_JPINTEL_DB = REPO_ROOT / "data" / "jpintel.db"
@@ -29,11 +31,11 @@ sys.path.insert(0, str(REPO_ROOT / "src"))
 
 
 def utc_now_iso() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def utc_today_compact() -> str:
-    return datetime.now(timezone.utc).strftime("%Y%m%d")
+    return datetime.now(UTC).strftime("%Y%m%d")
 
 
 def chunk(rows: list[dict[str, Any]], size: int) -> Iterator[list[dict[str, Any]]]:
@@ -43,9 +45,7 @@ def chunk(rows: list[dict[str, Any]], size: int) -> Iterator[list[dict[str, Any]
         yield rows[i : i + size]
 
 
-def query_rows(
-    db_path: Path, sql: str, params: tuple[Any, ...] = ()
-) -> list[dict[str, Any]]:
+def query_rows(db_path: Path, sql: str, params: tuple[Any, ...] = ()) -> list[dict[str, Any]]:
     """Read-only SELECT helper. No write paths in this module."""
     conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
     conn.row_factory = sqlite3.Row

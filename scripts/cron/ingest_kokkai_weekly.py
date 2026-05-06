@@ -142,9 +142,7 @@ def _delta_from_date(conn: sqlite3.Connection, weeks: int) -> str:
     Falls back to today − weeks*7d when the table is empty (first run).
     """
     try:
-        row = conn.execute(
-            "SELECT MAX(date) AS m FROM kokkai_utterance"
-        ).fetchone()
+        row = conn.execute("SELECT MAX(date) AS m FROM kokkai_utterance").fetchone()
     except sqlite3.OperationalError:
         row = None
     base: datetime

@@ -22,6 +22,7 @@ WORKFLOW:
 
 NO LLM IMPORT.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -37,7 +38,6 @@ from _runner_common import (
 from jpintel_mcp.ingest.schemas.eligibility_predicate import (
     EligibilityPredicateBatchRow,
 )
-
 
 TOOL_SLUG = "eligibility_predicates"
 

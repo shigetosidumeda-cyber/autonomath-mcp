@@ -116,9 +116,7 @@ def _compute_with_conn(conn: sqlite3.Connection) -> tuple[str, str]:
         except sqlite3.Error:
             counts.append(0)
 
-    digest_input = (f"{snapshot_id}|{_API_VERSION}|{','.join(str(c) for c in counts)}").encode(
-        "utf-8"
-    )
+    digest_input = (f"{snapshot_id}|{_API_VERSION}|{','.join(str(c) for c in counts)}").encode()
     checksum = "sha256:" + hashlib.sha256(digest_input).hexdigest()[:16]
     return snapshot_id, checksum
 

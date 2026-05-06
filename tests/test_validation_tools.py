@@ -40,13 +40,12 @@ os.environ["AUTONOMATH_GRAPH_DB_PATH"] = str(_GRAPH_PATH)
 os.environ.setdefault("AUTONOMATH_ENABLED", "1")
 
 # server import first to break circular dependency.
-from jpintel_mcp.mcp import server  # noqa: F401, E402
-
 from jpintel_mcp.api._validation_predicates import (  # noqa: E402
     PREDICATE_PREFIX,
     PREDICATES,
     resolve_predicate,
 )
+from jpintel_mcp.mcp import server  # noqa: F401, E402
 from jpintel_mcp.mcp.autonomath_tools.validation_tools import (  # noqa: E402
     _canonical_applicant_hash,
     _validate_impl,

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 test_verify_migration_targets.py — DEEP-52 §6 acceptance tests.
 
@@ -22,7 +21,6 @@ from __future__ import annotations
 
 import os
 import re
-import shutil
 import sqlite3
 import sys
 import tempfile
@@ -238,7 +236,7 @@ class PerTargetIsolation(unittest.TestCase):
                 for r in sorted(forwards, key=vmt._sort_key):
                     if r.is_rollback:
                         continue
-                    with open(r.path, "r", encoding="utf-8") as fh:
+                    with open(r.path, encoding="utf-8") as fh:
                         handle.executescript(fh.read())
                 cur = handle.execute("SELECT name FROM sqlite_master WHERE type='table'")
                 tables = [row[0] for row in cur.fetchall()]

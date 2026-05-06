@@ -59,7 +59,7 @@ import logging
 import os
 import sqlite3
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -198,7 +198,7 @@ def _build_template_model(email: str, source: str | None) -> dict[str, Any]:
         "brand_new": "jpcite",
         "info_url": INFO_URL,
         "unsub_url": f"https://jpcite.com/v1/subscribers/unsubscribe?token={token}",
-        "year": datetime.now(timezone.utc).year,
+        "year": datetime.now(UTC).year,
     }
 
 
@@ -298,7 +298,7 @@ def run(
         template_model = _build_template_model(email, row["source"])
         result = _send_one(to=email, template_model=template_model, dry_run=dry_run)
 
-        ts = datetime.now(timezone.utc).isoformat(timespec="seconds")
+        ts = datetime.now(UTC).isoformat(timespec="seconds")
         if dry_run:
             status = "dry_run"
         elif result.get("error"):

@@ -1747,7 +1747,7 @@ def parse_table_yokohama_fire(
             continue
         # Header detection: first row contains 行政区 + 違反
         head = rows[0]
-        if not (any("行政区" in c or "区" == c for c in head) and any("違反" in c for c in head)):
+        if not (any("行政区" in c or c == "区" for c in head) and any("違反" in c for c in head)):
             continue
         for r in rows[1:]:
             if len(r) < 4:
@@ -2001,7 +2001,7 @@ def parse_generic_fire_html(
             if len(r) < 2:
                 continue
             joined = " ".join(r)
-            if "名称" in r[0] or "建物" == r[0] or "対象物" == r[0]:
+            if "名称" in r[0] or r[0] == "建物" or r[0] == "対象物":
                 continue
             name = r[0]
             address = r[1] if len(r) > 1 else ""

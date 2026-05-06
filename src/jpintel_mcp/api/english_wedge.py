@@ -67,8 +67,8 @@ def search_laws_en_route(
         str, Query(min_length=1, max_length=200, description="English keyword (2+ chars).")
     ],
     limit: Annotated[int, Query(ge=1, le=50, description="Max results.")] = 10,
-    conn: DbDep = None,  # noqa: B008
-    ctx: ApiContextDep = None,  # noqa: B008
+    conn: DbDep | None = None,  # noqa: B008
+    ctx: ApiContextDep | None = None,  # noqa: B008
 ) -> dict[str, Any]:
     body = _search_laws_en_impl(q=q, limit=limit)
     if conn is not None and ctx is not None:
@@ -98,8 +98,8 @@ def get_law_article_en_route(
         str, Path(min_length=1, max_length=200, description="Canonical law id or law name.")
     ],
     article_no: Annotated[str, Path(min_length=1, max_length=50, description="Article number.")],
-    conn: DbDep = None,  # noqa: B008
-    ctx: ApiContextDep = None,  # noqa: B008
+    conn: DbDep | None = None,  # noqa: B008
+    ctx: ApiContextDep | None = None,  # noqa: B008
 ) -> dict[str, Any]:
     body = _get_law_article_en_impl(law_id=law_id, article_no=article_no)
     if conn is not None and ctx is not None:
@@ -133,8 +133,8 @@ def get_tax_treaty_route(
     country_b: Annotated[
         str, Query(min_length=2, max_length=3, description="Counterparty (default 'JPN').")
     ] = "JPN",
-    conn: DbDep = None,  # noqa: B008
-    ctx: ApiContextDep = None,  # noqa: B008
+    conn: DbDep | None = None,  # noqa: B008
+    ctx: ApiContextDep | None = None,  # noqa: B008
 ) -> dict[str, Any]:
     body = _get_tax_treaty_impl(country_a=country_a, country_b=country_b)
     if conn is not None and ctx is not None:
@@ -167,8 +167,8 @@ def check_foreign_capital_eligibility_route(
     houjin_bangou: Annotated[
         str, Query(max_length=13, description="13-digit 法人番号 (optional).")
     ] = "",
-    conn: DbDep = None,  # noqa: B008
-    ctx: ApiContextDep = None,  # noqa: B008
+    conn: DbDep | None = None,  # noqa: B008
+    ctx: ApiContextDep | None = None,  # noqa: B008
 ) -> dict[str, Any]:
     body = _check_foreign_capital_eligibility_impl(
         houjin_bangou=houjin_bangou,
@@ -208,8 +208,8 @@ def find_fdi_friendly_subsidies_route(
         int, Query(ge=0, le=100, description="Applicant foreign-equity %.")
     ] = 100,
     limit: Annotated[int, Query(ge=1, le=50, description="Max results.")] = 20,
-    conn: DbDep = None,  # noqa: B008
-    ctx: ApiContextDep = None,  # noqa: B008
+    conn: DbDep | None = None,  # noqa: B008
+    ctx: ApiContextDep | None = None,  # noqa: B008
 ) -> dict[str, Any]:
     body = _find_fdi_friendly_subsidies_impl(
         industry_jsic=industry_jsic,

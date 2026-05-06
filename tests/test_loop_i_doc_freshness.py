@@ -30,7 +30,7 @@ class _FakeAsyncClient:
         self._status = status_by_url
         self.head_calls: list[str] = []
 
-    async def __aenter__(self) -> "_FakeAsyncClient":
+    async def __aenter__(self) -> _FakeAsyncClient:
         return self
 
     async def __aexit__(self, *exc_info: Any) -> None:

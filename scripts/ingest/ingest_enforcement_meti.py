@@ -45,7 +45,6 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import io
 import json
 import logging
 import random
@@ -245,7 +244,7 @@ class HeadedFetcher:
         self._slow = slow
         self._last_t = 0.0
 
-    def __enter__(self) -> "HeadedFetcher":
+    def __enter__(self) -> HeadedFetcher:
         self._pw = sync_playwright().start()
         self._browser = self._pw.chromium.launch(
             headless=False,

@@ -25,7 +25,7 @@ import logging
 import os
 import shutil
 import subprocess
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 _LOG = logging.getLogger("jpintel.r2")
@@ -114,7 +114,7 @@ def list_keys(
             continue
         ts_str, path, size = parts[0], parts[1], parts[2]
         try:
-            mtime = datetime.fromisoformat(ts_str.replace("Z", "+00:00")).astimezone(timezone.utc)
+            mtime = datetime.fromisoformat(ts_str.replace("Z", "+00:00")).astimezone(UTC)
         except ValueError:
             continue
         try:

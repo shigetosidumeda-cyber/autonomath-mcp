@@ -50,7 +50,7 @@ import argparse
 import hashlib
 import sqlite3
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -173,7 +173,7 @@ def populate(dry_run: bool = False, verbose: bool = False) -> tuple[int, int, in
 
     am_conn.close()
 
-    now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    now_iso = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     jp_conn = sqlite3.connect(JPINTEL_DB)
     jp_conn.row_factory = sqlite3.Row

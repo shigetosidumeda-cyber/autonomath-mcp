@@ -75,6 +75,7 @@ Flags:
     --max-rows N              本 invocation の上限 (default 500)
     --dry-run                 プロンプト雛形 + list を stdout に
 """
+
 from __future__ import annotations
 
 import argparse
@@ -82,9 +83,10 @@ import json
 import logging
 import sqlite3
 import sys
-from datetime import datetime, timezone
+from collections.abc import Iterator
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_AUTONOMATH_DB = REPO_ROOT / "autonomath.db"
@@ -137,8 +139,7 @@ SUBAGENT_PROMPT_TEMPLATE = """\
 """
 
 
-def list_target_enforcements(autonomath_db: Path, limit: int
-                              ) -> list[dict[str, Any]]:
+def list_target_enforcements(autonomath_db: Path, limit: int) -> list[dict[str, Any]]:
     """amount_yen IS NULL の処分行を SQL から取得 (LLM 呼出なし)."""
     sql = """
         SELECT enforcement_id,
@@ -167,16 +168,13 @@ def list_target_enforcements(autonomath_db: Path, limit: int
     return [dict(r) for r in rows]
 
 
-def chunk(rows: list[dict[str, Any]], size: int
-          ) -> Iterator[list[dict[str, Any]]]:
+def chunk(rows: list[dict[str, Any]], size: int) -> Iterator[list[dict[str, Any]]]:
     for i in range(0, len(rows), size):
-        yield rows[i:i + size]
+        yield rows[i : i + size]
 
 
-def render_subagent_prompt(enforcements: list[dict[str, Any]],
-                            inbox_path: Path) -> str:
-    enforcement_list_json = json.dumps(enforcements, ensure_ascii=False,
-                                        indent=2)
+def render_subagent_prompt(enforcements: list[dict[str, Any]], inbox_path: Path) -> str:
+    enforcement_list_json = json.dumps(enforcements, ensure_ascii=False, indent=2)
     return SUBAGENT_PROMPT_TEMPLATE.format(
         inbox_path=str(inbox_path),
         enforcement_list_json=enforcement_list_json,
@@ -185,29 +183,28 @@ def render_subagent_prompt(enforcements: list[dict[str, Any]],
 
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    p.add_argument("--batch-size", type=int, default=50,
-                   help="1 batch あたりの enforcement 件数 (default 50)")
-    p.add_argument("--batch-id", required=True,
-                   help="trace 用 batch ID (e.g. 2026-05-04-001)")
-    p.add_argument("--autonomath-db", type=Path,
-                   default=DEFAULT_AUTONOMATH_DB)
-    p.add_argument("--max-rows", type=int, default=500,
-                   help="本 invocation で取り出す row 上限 (default 500)")
-    p.add_argument("--dry-run", action="store_true",
-                   help="プロンプト雛形と list を stdout に出すのみ")
+    p.add_argument(
+        "--batch-size", type=int, default=50, help="1 batch あたりの enforcement 件数 (default 50)"
+    )
+    p.add_argument("--batch-id", required=True, help="trace 用 batch ID (e.g. 2026-05-04-001)")
+    p.add_argument("--autonomath-db", type=Path, default=DEFAULT_AUTONOMATH_DB)
+    p.add_argument(
+        "--max-rows", type=int, default=500, help="本 invocation で取り出す row 上限 (default 500)"
+    )
+    p.add_argument(
+        "--dry-run", action="store_true", help="プロンプト雛形と list を stdout に出すのみ"
+    )
     args = p.parse_args()
 
-    logging.basicConfig(level=logging.INFO,
-                        format="%(asctime)s %(levelname)s %(message)s")
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     INBOX_DIR.mkdir(parents=True, exist_ok=True)
 
-    LOG.info("listing am_enforcement_detail rows with amount_yen IS NULL "
-             "(limit=%d)", args.max_rows)
+    LOG.info("listing am_enforcement_detail rows with amount_yen IS NULL (limit=%d)", args.max_rows)
     enforcements = list_target_enforcements(args.autonomath_db, args.max_rows)
     LOG.info("got %d enforcement rows", len(enforcements))
 
-    today = datetime.now(timezone.utc).strftime("%Y%m%d")
+    today = datetime.now(UTC).strftime("%Y%m%d")
     batch_id = args.batch_id
 
     n_batches = 0
@@ -215,22 +212,27 @@ def main() -> int:
         n_batches += 1
         inbox_filename = f"{today}-{batch_id}-batch{batch_idx:03d}.jsonl"
         inbox_path = INBOX_DIR / inbox_filename
-        prompt_path = PROMPT_DIR / (
-            f"enforcement_amount_{batch_id}_batch{batch_idx:03d}.md"
-        )
+        prompt_path = PROMPT_DIR / (f"enforcement_amount_{batch_id}_batch{batch_idx:03d}.md")
         prompt_text = render_subagent_prompt(batch_rows, inbox_path)
         prompt_path.write_text(prompt_text, encoding="utf-8")
-        LOG.info("batch %03d: %d enforcements → prompt=%s inbox=%s",
-                 batch_idx, len(batch_rows), prompt_path, inbox_path)
+        LOG.info(
+            "batch %03d: %d enforcements → prompt=%s inbox=%s",
+            batch_idx,
+            len(batch_rows),
+            prompt_path,
+            inbox_path,
+        )
         if args.dry_run:
             print(f"--- batch {batch_idx} ---")
             print(prompt_text)
 
     LOG.info("done. batches=%d inbox_dir=%s", n_batches, INBOX_DIR)
-    LOG.info("next step: run a Claude Code subagent on each "
-             "/tmp/enforcement_amount_*.md prompt; subagent must write "
-             "JSONL to %s, then run scripts/cron/ingest_offline_inbox.py",
-             INBOX_DIR)
+    LOG.info(
+        "next step: run a Claude Code subagent on each "
+        "/tmp/enforcement_amount_*.md prompt; subagent must write "
+        "JSONL to %s, then run scripts/cron/ingest_offline_inbox.py",
+        INBOX_DIR,
+    )
     return 0
 
 

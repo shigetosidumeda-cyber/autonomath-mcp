@@ -59,38 +59,80 @@ BLOCKERS: list[dict[str, str]] = [
         "id": "BLOCKER_DIRTY_TREE",
         "title": "dirty tree fingerprint",
         "deep": "DEEP-56",
-        "verify_cmd": "scripts/compute_dirty_fingerprint.py",
+        "verify_cmd": "tools/offline/operator_review/compute_dirty_fingerprint.py",
     },
     {
         "id": "BLOCKER_WORKFLOW_TRACKING",
         "title": "workflow targets sync",
         "deep": "DEEP-49",
-        "verify_cmd": "scripts/sync_workflow_targets.py --check",
+        "verify_cmd": "scripts/ops/sync_workflow_targets.py --check",
     },
     {
         "id": "BLOCKER_OPERATOR_ACK",
         "title": "operator ACK signoff",
         "deep": "DEEP-51",
-        "verify_cmd": "scripts/operator_ack_signoff.py --dry-run --json",
+        "verify_cmd": "tools/offline/operator_review/operator_ack_signoff.py --dry-run --json --yes --all",
     },
     {
         "id": "BLOCKER_DELIVERY_STRICT",
         "title": "delivery strict (pre-deploy)",
         "deep": "DEEP-50",
-        "verify_cmd": "scripts/pre_deploy_verify.py --json",
+        "verify_cmd": "scripts/ops/pre_deploy_verify.py --warn-only",
     },
 ]
 
 # 8 ACK booleans (DEEP-51 operator_ack_signoff.py contract).
+# `boolean_name` mirrors operator_ack_signoff.BOOLEAN_NAMES so the
+# results array emitted by `--json --all --yes` populates each row.
 ACK_BOOLEANS: list[dict[str, str]] = [
-    {"id": "ACK_MIGRATION_TARGETS", "title": "migration targets verified", "deep": "DEEP-52"},
-    {"id": "ACK_FINGERPRINT_CLEAN", "title": "dirty tree fingerprint clean", "deep": "DEEP-56"},
-    {"id": "ACK_WORKFLOWS_TRACKED", "title": "GHA workflows tracked", "deep": "DEEP-49"},
-    {"id": "ACK_DELIVERY_STRICT", "title": "delivery strict tests green", "deep": "DEEP-50"},
-    {"id": "ACK_SMOKE_RUNBOOK", "title": "smoke runbook executed", "deep": "DEEP-61"},
-    {"id": "ACK_LANE_ENFORCED", "title": "dual-CLI lane enforcer green", "deep": "DEEP-60"},
-    {"id": "ACK_RELEASE_READINESS", "title": "release readiness CI green", "deep": "DEEP-59"},
-    {"id": "ACK_PROD_RUNBOOK", "title": "prod deploy runbook signed", "deep": "DEEP-57"},
+    {
+        "id": "ACK_MIGRATION_TARGETS",
+        "title": "migration targets verified",
+        "deep": "DEEP-52",
+        "boolean_name": "target_db_packet_reviewed",
+    },
+    {
+        "id": "ACK_FINGERPRINT_CLEAN",
+        "title": "dirty tree fingerprint clean",
+        "deep": "DEEP-56",
+        "boolean_name": "dirty_lanes_reviewed",
+    },
+    {
+        "id": "ACK_WORKFLOWS_TRACKED",
+        "title": "GHA workflows tracked",
+        "deep": "DEEP-49",
+        "boolean_name": "fly_app_confirmed",
+    },
+    {
+        "id": "ACK_DELIVERY_STRICT",
+        "title": "delivery strict tests green",
+        "deep": "DEEP-50",
+        "boolean_name": "pre_deploy_verify_clean",
+    },
+    {
+        "id": "ACK_SMOKE_RUNBOOK",
+        "title": "smoke runbook executed",
+        "deep": "DEEP-61",
+        "boolean_name": "appi_disabled_or_turnstile_secret_confirmed",
+    },
+    {
+        "id": "ACK_LANE_ENFORCED",
+        "title": "dual-CLI lane enforcer green",
+        "deep": "DEEP-60",
+        "boolean_name": "rollback_reconciliation_packet_ready",
+    },
+    {
+        "id": "ACK_RELEASE_READINESS",
+        "title": "release readiness CI green",
+        "deep": "DEEP-59",
+        "boolean_name": "fly_secrets_names_confirmed",
+    },
+    {
+        "id": "ACK_PROD_RUNBOOK",
+        "title": "prod deploy runbook signed",
+        "deep": "DEEP-57",
+        "boolean_name": "live_gbiz_ingest_disabled_or_approved",
+    },
 ]
 
 # 33 spec implementation rows (DEEP-22..57). Each row gets last_check via
@@ -152,7 +194,7 @@ def _sha256_text(text: str) -> str:
 def run_verify(cmd: str, *, repo_root: Path, timeout_sec: int = 120) -> VerifyResult:
     """Invoke a verify command relative to repo_root; never raise."""
 
-    started = _dt.datetime.now(_dt.timezone.utc)
+    started = _dt.datetime.now(_dt.UTC)
     parts = cmd.split()
     full = (
         [sys.executable, str(repo_root / parts[0]), *parts[1:]]
@@ -168,7 +210,7 @@ def run_verify(cmd: str, *, repo_root: Path, timeout_sec: int = 120) -> VerifyRe
             timeout=timeout_sec,
             check=False,
         )
-        elapsed_ms = int((_dt.datetime.now(_dt.timezone.utc) - started).total_seconds() * 1000)
+        elapsed_ms = int((_dt.datetime.now(_dt.UTC) - started).total_seconds() * 1000)
         return VerifyResult(
             cmd=cmd,
             returncode=proc.returncode,
@@ -178,7 +220,7 @@ def run_verify(cmd: str, *, repo_root: Path, timeout_sec: int = 120) -> VerifyRe
             duration_ms=elapsed_ms,
         )
     except subprocess.TimeoutExpired as exc:
-        elapsed_ms = int((_dt.datetime.now(_dt.timezone.utc) - started).total_seconds() * 1000)
+        elapsed_ms = int((_dt.datetime.now(_dt.UTC) - started).total_seconds() * 1000)
         return VerifyResult(
             cmd=cmd,
             returncode=-1,
@@ -190,7 +232,7 @@ def run_verify(cmd: str, *, repo_root: Path, timeout_sec: int = 120) -> VerifyRe
             error="timeout",
         )
     except (FileNotFoundError, PermissionError, OSError) as exc:
-        elapsed_ms = int((_dt.datetime.now(_dt.timezone.utc) - started).total_seconds() * 1000)
+        elapsed_ms = int((_dt.datetime.now(_dt.UTC) - started).total_seconds() * 1000)
         return VerifyResult(
             cmd=cmd,
             returncode=-2,
@@ -255,14 +297,30 @@ def collect_blockers(repo_root: Path) -> list[dict[str, Any]]:
 
 
 def _ack_status_from_signoff(json_text: str) -> dict[str, str]:
-    """Parse operator_ack_signoff.py --json stdout into {ACK_ID: status}."""
+    """Parse operator_ack_signoff.py --json stdout into {ACK_ID or boolean_name: status}.
 
+    operator_ack_signoff.py emits a top-level `results: [{boolean_name, passed, detail}]`
+    array. Older synthetic payloads use a flat `acks: {ID: bool|str}` dict; both shapes
+    are honored so the test fixtures keep working.
+
+    Note the input may contain leading non-JSON banner lines (interactive UI prefix);
+    isolate the JSON object via the first `{`.
+    """
+
+    text = (json_text or "").strip()
+    if not text:
+        return {}
+    # Strip optional banner/header lines before the JSON body.
+    brace_idx = text.find("{")
+    if brace_idx > 0:
+        text = text[brace_idx:]
     try:
-        payload = json.loads(json_text or "{}")
+        payload = json.loads(text)
     except json.JSONDecodeError:
         return {}
-    acks = payload.get("acks") or {}
     out: dict[str, str] = {}
+    # Shape A: synthetic / test fixtures use `acks: {ID: bool|str}`.
+    acks = payload.get("acks") or {}
     for ack_key, value in acks.items():
         if isinstance(value, bool):
             out[ack_key] = "RESOLVED" if value else "BLOCKED"
@@ -271,6 +329,16 @@ def _ack_status_from_signoff(json_text: str) -> dict[str, str]:
             out[ack_key] = up if up in {"RESOLVED", "BLOCKED", "PARTIAL"} else "PARTIAL"
         else:
             out[ack_key] = "PARTIAL"
+    # Shape B: real DEEP-51 contract uses `results: [{boolean_name, passed}]`.
+    for row in payload.get("results") or []:
+        name = row.get("boolean_name")
+        passed = row.get("passed")
+        if not isinstance(name, str):
+            continue
+        if isinstance(passed, bool):
+            out[name] = "RESOLVED" if passed else "BLOCKED"
+        else:
+            out[name] = "PARTIAL"
     return out
 
 
@@ -278,14 +346,20 @@ def collect_acks(repo_root: Path, signoff_stdout: str) -> list[dict[str, Any]]:
     parsed = _ack_status_from_signoff(signoff_stdout)
     rows: list[dict[str, Any]] = []
     for entry in ACK_BOOLEANS:
-        status = parsed.get(entry["id"], "PARTIAL")
+        # Prefer the real DEEP-51 boolean_name key; fall back to the
+        # legacy ACK_* id (used by synthetic test fixtures).
+        bool_name = entry.get("boolean_name")
+        if bool_name and bool_name in parsed:
+            status = parsed[bool_name]
+        else:
+            status = parsed.get(entry["id"], "PARTIAL")
         rows.append(
             {
                 "id": entry["id"],
                 "title": entry["title"],
                 "deep": entry["deep"],
                 "status": status,
-                "evidence_url": "scripts/operator_ack_signoff.py",
+                "evidence_url": "tools/offline/operator_review/operator_ack_signoff.py",
             }
         )
     return rows
@@ -302,7 +376,7 @@ def collect_specs(repo_root: Path) -> list[dict[str, Any]]:
             status = result.status
             evidence = str(verify_sh.relative_to(repo_root))
             sha256 = result.sha256
-            last_check = _dt.datetime.now(_dt.timezone.utc).isoformat(timespec="seconds")
+            last_check = _dt.datetime.now(_dt.UTC).isoformat(timespec="seconds")
         else:
             status = "PARTIAL"
             evidence = f"docs/_internal/{spec_id}_*.md"
@@ -322,7 +396,7 @@ def collect_specs(repo_root: Path) -> list[dict[str, Any]]:
 
 
 def build_snapshot(repo_root: Path) -> GateSnapshot:
-    now_utc = _dt.datetime.now(_dt.timezone.utc)
+    now_utc = _dt.datetime.now(_dt.UTC)
     jst = _dt.timezone(_dt.timedelta(hours=9))
     now_jst = now_utc.astimezone(jst)
     snap = GateSnapshot(
@@ -333,7 +407,7 @@ def build_snapshot(repo_root: Path) -> GateSnapshot:
     )
     snap.blockers = collect_blockers(repo_root)
     # Operator ACK invocation drives the 8-ACK pane.
-    signoff_cmd = "scripts/operator_ack_signoff.py --dry-run --json"
+    signoff_cmd = "tools/offline/operator_review/operator_ack_signoff.py --dry-run --json --yes --all"
     signoff_result = run_verify(signoff_cmd, repo_root=repo_root)
     snap.acks = collect_acks(repo_root, signoff_result.stdout)
     snap.specs = collect_specs(repo_root)

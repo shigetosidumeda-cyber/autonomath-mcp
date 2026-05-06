@@ -165,7 +165,7 @@ def _reset_l4_cache(seeded_db: Path):
 # ---------------------------------------------------------------------------
 
 
-def test_programs_search_l4_miss_then_hit(client: "TestClient"):
+def test_programs_search_l4_miss_then_hit(client: TestClient):
     """First call seeds the cache; the second call within TTL must HIT.
 
     We assert via two channels:
@@ -191,7 +191,7 @@ def test_programs_search_l4_miss_then_hit(client: "TestClient"):
     assert _hit_count(_L4_TOOL_SEARCH) == 1
 
 
-def test_programs_search_l4_ttl_expire_refreshes(client: "TestClient", seeded_db: Path):
+def test_programs_search_l4_ttl_expire_refreshes(client: TestClient, seeded_db: Path):
     """After TTL expires, the next call refetches and overwrites the row.
 
     Concretely: warm the cache, mutate the underlying DB so the recompute
@@ -259,7 +259,7 @@ def test_programs_search_l4_ttl_expire_refreshes(client: "TestClient", seeded_db
 # ---------------------------------------------------------------------------
 
 
-def test_programs_get_l4_miss_then_hit(client: "TestClient"):
+def test_programs_get_l4_miss_then_hit(client: TestClient):
     assert _row_count(_L4_TOOL_GET) == 0
 
     r1 = client.get("/v1/programs/UNI-test-s-1")
@@ -276,7 +276,7 @@ def test_programs_get_l4_miss_then_hit(client: "TestClient"):
     assert _hit_count(_L4_TOOL_GET) == 1
 
 
-def test_programs_get_l4_ttl_expire_refreshes(client: "TestClient", seeded_db: Path):
+def test_programs_get_l4_ttl_expire_refreshes(client: TestClient, seeded_db: Path):
     """After TTL expiry, a get-by-id picks up DB-side mutations.
 
     Note: the row→Program in-memory cache (``_PROGRAM_CACHE``) sits below
@@ -349,7 +349,7 @@ _AM_TAX_TOOL = "api.am.tax_incentives"
         "the L4 wire test for /v1/am/tax_incentives."
     ),
 )
-def test_am_tax_incentives_l4_miss_then_hit(client: "TestClient"):
+def test_am_tax_incentives_l4_miss_then_hit(client: TestClient):
     """Same MISS → HIT contract on the autonomath router."""
     assert _row_count(_AM_TAX_TOOL) == 0
 
@@ -371,7 +371,7 @@ def test_am_tax_incentives_l4_miss_then_hit(client: "TestClient"):
     not _AUTONOMATH_AVAILABLE,
     reason="autonomath.db not present — skipping",
 )
-def test_am_tax_incentives_l4_ttl_expire_refreshes(client: "TestClient"):
+def test_am_tax_incentives_l4_ttl_expire_refreshes(client: TestClient):
     """After TTL expiry the next call MISSes again (row gets overwritten).
 
     We don't mutate the autonomath.db (read-only artifact). Instead we

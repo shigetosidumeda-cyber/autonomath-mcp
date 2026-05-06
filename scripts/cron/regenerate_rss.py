@@ -41,11 +41,11 @@ import html as html_lib
 import logging
 import re
 import sys
+from collections.abc import Iterable
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from email.utils import format_datetime
 from pathlib import Path
-from typing import Iterable
 
 logger = logging.getLogger("autonomath.cron.regenerate_rss")
 
@@ -58,7 +58,7 @@ from jpintel_mcp.observability import heartbeat  # noqa: E402
 _DEFAULT_NEWS = _REPO_ROOT / "site" / "news"
 _DEFAULT_OUT_JA = _REPO_ROOT / "site" / "rss.xml.new"
 _DEFAULT_OUT_EN = _REPO_ROOT / "site" / "en" / "rss.xml.new"
-_UTC = timezone.utc
+_UTC = UTC
 
 _MAX_ITEMS = 50
 

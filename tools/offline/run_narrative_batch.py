@@ -24,6 +24,7 @@ LANG / SECTION 仕様:
 
 NO LLM IMPORT.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -37,7 +38,6 @@ from _runner_common import (
 )
 
 from jpintel_mcp.ingest.schemas.program_narrative import Narrative
-
 
 TOOL_SLUG = "program_narrative"
 

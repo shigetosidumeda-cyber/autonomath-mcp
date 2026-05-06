@@ -66,7 +66,6 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import io
 import json
 import logging
 import re
@@ -493,9 +492,7 @@ def parse_hyogo_koji_html(html: str, source_url: str) -> list[EnfRow]:
                 # 特例施設占有者 is defined in 風適法 第23条第3項
                 # (typically for ぱちんこ等遊技場業者). NOT 古物営業法.
                 related_law = "風俗営業等の規制及び業務の適正化等に関する法律"
-            elif "道路交通法" in label or "道交法" in label:
-                related_law = "道路交通法"
-            elif "型式検定" in label:
+            elif "道路交通法" in label or "道交法" in label or "型式検定" in label:
                 related_law = "道路交通法"
             else:
                 # Default fallback — keep generic instead of guessing.

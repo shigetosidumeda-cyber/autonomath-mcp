@@ -48,6 +48,7 @@ do NOT add `narrative_full` to that cron because:
       contract of am_program_narrative), so it shares 0 SQL with the
       sibling cron's program_narrative handler
 """
+
 from __future__ import annotations
 
 import argparse
@@ -57,7 +58,7 @@ import re
 import shutil
 import sqlite3
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -95,7 +96,7 @@ UPSERT_SQL = f"""
 
 
 def utc_now_iso() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def expected_hash(narrative_md: str, counter_arguments_md: str) -> str:
@@ -136,7 +137,9 @@ def validate_row(row: dict[str, Any], known_pids: set[str] | None) -> str | None
         return "model_used_empty"
     ch = row.get("content_hash", "")
     if not isinstance(ch, str) or not HEX64_RE.match(ch):
-        return f"content_hash_not_sha256_hex:{ch[:16] if isinstance(ch, str) else type(ch).__name__}"
+        return (
+            f"content_hash_not_sha256_hex:{ch[:16] if isinstance(ch, str) else type(ch).__name__}"
+        )
     expected = expected_hash(nm, cm)
     if ch != expected:
         return f"content_hash_mismatch:claimed={ch[:12]}..,expected={expected[:12]}.."
@@ -227,24 +230,29 @@ def process_file(
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     p.add_argument(
-        "--inbox", default=str(DEFAULT_INBOX),
+        "--inbox",
+        default=str(DEFAULT_INBOX),
         help=f"Inbox directory containing *.jsonl (default {DEFAULT_INBOX}).",
     )
     p.add_argument(
-        "--db", default=str(DEFAULT_AUTONOMATH_DB),
+        "--db",
+        default=str(DEFAULT_AUTONOMATH_DB),
         help=f"autonomath.db path (default {DEFAULT_AUTONOMATH_DB}).",
     )
     p.add_argument(
-        "--jpintel-db", default=str(DEFAULT_JPINTEL_DB),
+        "--jpintel-db",
+        default=str(DEFAULT_JPINTEL_DB),
         help="jpintel.db path (read-only, used for program_id existence check).",
     )
     p.add_argument(
-        "--no-pid-check", action="store_true",
+        "--no-pid-check",
+        action="store_true",
         help="Skip program_id existence check against jpintel.programs.",
     )
     p.add_argument("--dry-run", action="store_true")
     p.add_argument(
-        "--keep-files", action="store_true",
+        "--keep-files",
+        action="store_true",
         help="Do not move processed files to _done/ on success.",
     )
     return p.parse_args()
@@ -288,7 +296,7 @@ def main() -> int:
         return 2
 
     print("=" * 78)
-    print(f"# ingest_narrative_inbox.py  (W20 / migration 149)")
+    print("# ingest_narrative_inbox.py  (W20 / migration 149)")
     print(f"# inbox     : {inbox}")
     print(f"# db        : {db}")
     print(f"# files     : {len(files)}")
@@ -302,17 +310,16 @@ def main() -> int:
     try:
         for f in files:
             applied, noop, quar = process_file(
-                f, conn, known_pids,
+                f,
+                conn,
+                known_pids,
                 dry_run=args.dry_run,
                 keep_files=args.keep_files,
             )
             grand_applied += applied
             grand_noop += noop
             grand_quarantined += quar
-            print(
-                f"  {f.name:<40} applied={applied:>5} "
-                f"noop={noop:>5} quarantined={quar:>5}"
-            )
+            print(f"  {f.name:<40} applied={applied:>5} noop={noop:>5} quarantined={quar:>5}")
     finally:
         conn.close()
 

@@ -13,7 +13,6 @@ from pathlib import Path
 
 import pytest
 
-
 REPO_ROOT = Path(__file__).resolve().parent.parent
 CRON_SCRIPT = REPO_ROOT / "scripts" / "cron" / "ingest_offline_inbox.py"
 

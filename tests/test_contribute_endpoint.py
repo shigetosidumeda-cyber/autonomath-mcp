@@ -23,7 +23,6 @@ import json
 import pathlib
 import re
 import sqlite3
-from typing import TYPE_CHECKING
 
 import pytest
 from fastapi import FastAPI
@@ -31,9 +30,6 @@ from fastapi.testclient import TestClient
 
 from jpintel_mcp.api import contribute
 from jpintel_mcp.api.contribute import router as contribute_router
-
-if TYPE_CHECKING:
-    from pathlib import Path
 
 
 # ---------------------------------------------------------------------------
@@ -252,7 +248,10 @@ def test_houjin_hash_one_way(client) -> None:
     # near the 法人番号 path. It only validates the shape.
     src = (
         pathlib.Path(__file__).resolve().parents[1]
-        / "src" / "jpintel_mcp" / "api" / "contribute.py"
+        / "src"
+        / "jpintel_mcp"
+        / "api"
+        / "contribute.py"
     ).read_text(encoding="utf-8")
     assert "hashlib.sha256(houjin" not in src, "server must not hash 法人番号"
     assert "sha256(houjin" not in src, "server must not hash 法人番号"
@@ -274,7 +273,7 @@ def test_rate_limit_5_per_24h(client, autonomath_db) -> None:
             "/v1/contribute/eligibility_observation",
             json=_valid_payload(observed_amount_yen=10000 + i),
         )
-        assert r.status_code == 201, f"#{i+1}: {r.text}"
+        assert r.status_code == 201, f"#{i + 1}: {r.text}"
 
     # 6th call should bounce.
     r = client.post(
@@ -340,8 +339,7 @@ def test_anonymous_mode_no_api_key(client, autonomath_db) -> None:
     conn.row_factory = sqlite3.Row
     try:
         row = conn.execute(
-            "SELECT contributor_api_key_id FROM contribution_queue "
-            "WHERE id = ?",
+            "SELECT contributor_api_key_id FROM contribution_queue WHERE id = ?",
             (r.json()["contribution_id"],),
         ).fetchone()
         assert row is not None

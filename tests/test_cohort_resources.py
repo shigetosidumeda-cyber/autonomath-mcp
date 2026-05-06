@@ -19,6 +19,7 @@ Coverage maps to DEEP-34 §8 acceptance criteria:
  10. tool_routing dict has at least 1 intent + tool pair per cohort
      (DEEP-29 sync placeholder — every cohort declares a routing surface).
 """
+
 from __future__ import annotations
 
 import importlib.util
@@ -93,9 +94,7 @@ def test_forbidden_phrases_includes_global_base():
         sp = cr.persona_for_cohort(cohort_id)
         merged = set(sp.forbidden_phrases)
         missing = base - merged
-        assert not missing, (
-            f"cohort {cohort_id} missing global forbidden tokens: {missing}"
-        )
+        assert not missing, f"cohort {cohort_id} missing global forbidden tokens: {missing}"
 
 
 # ---------------------------------------------------------------------------
@@ -113,10 +112,7 @@ def test_bilingual_lang_switch():
     assert sp_en.system_prompt.strip()
     assert sp_en.system_prompt != sp_ja.system_prompt
     # Specifically the EN string mentions "tax accountant" or "税理士法 §52" rendered.
-    assert (
-        "Japanese tax accountants" in sp_en.system_prompt
-        or "税理士" in sp_en.system_prompt
-    )
+    assert "Japanese tax accountants" in sp_en.system_prompt or "税理士" in sp_en.system_prompt
 
 
 # ---------------------------------------------------------------------------
@@ -177,9 +173,9 @@ def test_no_llm_imports_in_cohort_module():
             # the cause — read its source and assert no actual import statement.
             src = _TARGET.read_text(encoding="utf-8")
             for token in forbidden:
-                assert (
-                    f"import {token}" not in src and f"from {token}" not in src
-                ), f"cohort_resources imports forbidden LLM SDK: {token}"
+                assert f"import {token}" not in src and f"from {token}" not in src, (
+                    f"cohort_resources imports forbidden LLM SDK: {token}"
+                )
 
 
 # ---------------------------------------------------------------------------

@@ -62,10 +62,10 @@ def test_anon_4th_request_is_429_with_jst_reset(
     daily limiter.
     """
     _anon_mod()
-    from jpintel_mcp.config import settings
     from jpintel_mcp.api.middleware.per_ip_endpoint_limit import (
         _reset_per_ip_endpoint_buckets,
     )
+    from jpintel_mcp.config import settings
 
     monkeypatch.setattr(settings, "anon_rate_limit_per_day", _LIMIT)
 

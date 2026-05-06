@@ -15,12 +15,12 @@ from __future__ import annotations
 import hashlib
 import sqlite3
 import time
+from collections.abc import Callable, Iterator
 from dataclasses import dataclass, field
-from typing import Any, Callable, Iterator
+from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
-
 
 # ---------------------------------------------------------------------------
 # In-memory SQLite (autonomath + jpintel split, no ATTACH cross-DB JOIN)

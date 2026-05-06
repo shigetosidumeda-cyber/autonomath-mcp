@@ -10,7 +10,6 @@ from fastapi.testclient import TestClient
 from jpintel_mcp.api.deps import get_db
 from jpintel_mcp.api.intel_onboarding_brief import router
 
-
 HOUJIN_ID = "1010001000001"
 
 

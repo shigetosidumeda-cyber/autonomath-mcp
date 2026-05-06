@@ -46,7 +46,6 @@ from __future__ import annotations
 
 import argparse
 import asyncio
-import contextlib
 import json
 import logging
 import os
@@ -61,9 +60,7 @@ from typing import Any
 import httpx
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_DB_PATH = os.environ.get(
-    "AUTONOMATH_DB_PATH", str(REPO_ROOT / "autonomath.db")
-)
+DEFAULT_DB_PATH = os.environ.get("AUTONOMATH_DB_PATH", str(REPO_ROOT / "autonomath.db"))
 DEFAULT_ALLOWLIST_PATH = REPO_ROOT / "data" / "brand_self_accounts.json"
 DEFAULT_RUN_LOG_PATH = REPO_ROOT / "analytics" / "brand_signals_run.jsonl"
 
@@ -324,9 +321,7 @@ async def fetch_lobsters(client: httpx.AsyncClient) -> list[dict[str, Any]]:
                 link_el = item.find("link")
                 title_el = item.find("title")
                 pub_el = item.find("pubDate")
-                author_el = item.find(
-                    "{http://purl.org/dc/elements/1.1/}creator"
-                )
+                author_el = item.find("{http://purl.org/dc/elements/1.1/}creator")
                 if link_el is None or not (link_el.text or "").strip():
                     continue
                 rows.append(
@@ -334,7 +329,9 @@ async def fetch_lobsters(client: httpx.AsyncClient) -> list[dict[str, Any]]:
                         "source": "lobsters",
                         "mention_url": (link_el.text or "").strip(),
                         "author": (author_el.text if author_el is not None else None),
-                        "mention_date": _rss_date_to_iso(pub_el.text if pub_el is not None else None),
+                        "mention_date": _rss_date_to_iso(
+                            pub_el.text if pub_el is not None else None
+                        ),
                         "snippet": ((title_el.text or "") if title_el is not None else "")[:240],
                     }
                 )
@@ -408,6 +405,7 @@ def _rss_date_to_iso(s: str | None) -> str:
     # RFC 822 'Mon, 05 May 2026 12:00:00 +0000'
     try:
         from email.utils import parsedate_to_datetime
+
         return parsedate_to_datetime(s).strftime("%Y-%m-%d")
     except Exception:
         return datetime.now(UTC).strftime("%Y-%m-%d")
@@ -422,7 +420,7 @@ def insert_rows(
     db_path: str, rows: list[dict[str, Any]], allowlist: dict[str, set[str]]
 ) -> dict[str, int]:
     """Bulk-insert rows with INSERT OR IGNORE; classify kind. Return per-source counts."""
-    counts: dict[str, int] = {src: 0 for src in ALL_SOURCES}
+    counts: dict[str, int] = dict.fromkeys(ALL_SOURCES, 0)
     if not rows:
         return counts
     conn = sqlite3.connect(db_path)
@@ -489,7 +487,7 @@ async def run_async(sources: list[str], dry_run: bool, db_path: str) -> dict[str
         per_source[src] = {"ok": True, "rows": len(res)}
         all_rows.extend(res)
     if dry_run:
-        inserted = {src: 0 for src in sources}
+        inserted = dict.fromkeys(sources, 0)
     else:
         inserted = insert_rows(db_path, all_rows, allowlist)
     summary = {

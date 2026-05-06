@@ -22,6 +22,7 @@ All cases avoid network. The HEAD path is monkeypatched via httpx
 AsyncClient stub. No LLM SDK is touched anywhere — verified by reusing
 the assertion pattern from `test_verify_answer.py::test_zero_llm_api_imports_in_verifier_modules`.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -30,9 +31,6 @@ import sqlite3
 import sys
 import time
 from pathlib import Path
-
-import pytest
-
 
 # ---------------------------------------------------------------------------
 # Case 1 — tokenize_claims sudachipy fallback graceful
@@ -277,8 +275,7 @@ def test_deep38_detector_overlap_with_inline_boundary_check():
 
     inline_law_universe = {law for law, _, _, _ in _COMPILED_JA}
     assert seven_keys_inline.issubset(inline_law_universe), (
-        f"verifier inline catalog missing 業法 keys: "
-        f"{seven_keys_inline - inline_law_universe}"
+        f"verifier inline catalog missing 業法 keys: {seven_keys_inline - inline_law_universe}"
     )
 
     d38_universe = {
@@ -307,12 +304,7 @@ def test_claim_count_cap_enforced_at_route(client, monkeypatch):
     monkeypatch.setattr("jpintel_mcp.api.verify.check_source_alive", _stub_alive)
 
     answer = (
-        "Aは最大10万円。"
-        "Bは最大20万円。"
-        "Cは最大30万円。"
-        "Dは最大40万円。"
-        "Eは最大50万円。"
-        "Fは最大60万円。"
+        "Aは最大10万円。Bは最大20万円。Cは最大30万円。Dは最大40万円。Eは最大50万円。Fは最大60万円。"
     )
     resp = client.post(
         "/v1/verify/answer",
@@ -355,8 +347,7 @@ def test_zero_llm_api_imports_after_deepening():
         content = fp.read_text(encoding="utf-8")
         for bad in forbidden:
             assert bad not in content, (
-                f"{fp.name} must not contain `{bad}` "
-                f"(memory feedback_no_operator_llm_api)"
+                f"{fp.name} must not contain `{bad}` (memory feedback_no_operator_llm_api)"
             )
 
     sys.modules.pop("jpintel_mcp.api._verifier", None)

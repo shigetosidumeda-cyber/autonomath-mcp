@@ -50,7 +50,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime
 from pathlib import Path
 
 from bs4 import BeautifulSoup
@@ -319,7 +319,7 @@ def classify(
 
 
 def make_unified_id(detail_url: str) -> str:
-    h = hashlib.sha1(f"maff:{detail_url}".encode("utf-8")).hexdigest()[:10]
+    h = hashlib.sha1(f"maff:{detail_url}".encode()).hexdigest()[:10]
     return f"UNI-{h}"
 
 
@@ -406,9 +406,7 @@ def build_row(
         "source_url": entry.detail_url,
         "source_fetched_at": fetched_at,
         "source_checksum": hashlib.sha1(
-            f"{entry.detail_url}|{entry.title}|{entry.deadline}|{detail.get('amount_max_man_yen')}".encode(
-                "utf-8"
-            )
+            f"{entry.detail_url}|{entry.title}|{entry.deadline}|{detail.get('amount_max_man_yen')}".encode()
         ).hexdigest()[:16],
         "updated_at": fetched_at,
     }
@@ -506,7 +504,7 @@ def main() -> int:
         print(f"[ERROR] DB not found: {DB_PATH}", file=sys.stderr)
         return 2
 
-    fetched_at = datetime.now(timezone.utc).isoformat()
+    fetched_at = datetime.now(UTC).isoformat()
     print(f"Fetching MAFF index: {INDEX_URL}")
     status, html = fetch(INDEX_URL)
     if status != 200:

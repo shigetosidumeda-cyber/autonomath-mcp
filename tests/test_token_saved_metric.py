@@ -109,7 +109,7 @@ def test_calculation_uses_estimated_baseline() -> None:
 
 
 def test_rollup_surfaces_seeded_row_in_usage_envelope(
-    client: TestClient, seeded_db: "Path", paid_key: str
+    client: TestClient, seeded_db: Path, paid_key: str
 ) -> None:
     """A seeded usage_events row with tokens_saved_estimated MUST roll up
     into the /v1/usage envelope's ``tokens_saved_estimated_*`` fields.

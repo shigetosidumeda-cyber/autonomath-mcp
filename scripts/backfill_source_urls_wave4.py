@@ -33,7 +33,7 @@ biz.stayway, hojyokin.jp, creabiz, yorisoi.
 """
 
 import sqlite3
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 # fmt: off
 
@@ -410,7 +410,7 @@ CANONICAL_ONLY_MAPPINGS: dict[str, str] = {
 def main() -> None:
     db_path = "data/jpintel.db"
     conn = sqlite3.connect(db_path)
-    ts = datetime.now(timezone.utc).isoformat()
+    ts = datetime.now(UTC).isoformat()
 
     updated_verified = 0
     skipped_verified = 0

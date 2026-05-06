@@ -86,7 +86,6 @@ NAV_SLUGS = {
     "anonymous_processing",
     "customer_harassment_policy",
     "policy",
-    "kobo",
     "blog",
 }
 

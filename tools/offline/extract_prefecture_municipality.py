@@ -48,9 +48,9 @@ import re
 import sqlite3
 import sys
 from collections import Counter, defaultdict
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
 from urllib.parse import urlparse
 
 # ---------------------------------------------------------------------------
@@ -112,17 +112,44 @@ ROMAJI_PREF: dict[str, str] = {v: k for k, v in PREF_ROMAJI.items()}
 
 # Tokyo 23 wards: am_region rows 13101..13123. Codes/names verified in DB.
 TOKYO_23_WARDS: tuple[str, ...] = (
-    "千代田区", "中央区", "港区", "新宿区", "文京区", "台東区", "墨田区",
-    "江東区", "品川区", "目黒区", "大田区", "世田谷区", "渋谷区", "中野区",
-    "杉並区", "豊島区", "北区", "荒川区", "板橋区", "練馬区", "足立区",
-    "葛飾区", "江戸川区",
+    "千代田区",
+    "中央区",
+    "港区",
+    "新宿区",
+    "文京区",
+    "台東区",
+    "墨田区",
+    "江東区",
+    "品川区",
+    "目黒区",
+    "大田区",
+    "世田谷区",
+    "渋谷区",
+    "中野区",
+    "杉並区",
+    "豊島区",
+    "北区",
+    "荒川区",
+    "板橋区",
+    "練馬区",
+    "足立区",
+    "葛飾区",
+    "江戸川区",
 )
 # Bare-ku names that ALSO occur as designated wards in other prefectures
 # (中央区, 北区, etc.). We cannot resolve these without a prefecture anchor,
 # so they only match when an explicit prefecture/city signal is present.
-AMBIGUOUS_BARE_WARDS: frozenset[str] = frozenset({
-    "中央区", "北区", "南区", "西区", "東区", "緑区", "港区",
-})
+AMBIGUOUS_BARE_WARDS: frozenset[str] = frozenset(
+    {
+        "中央区",
+        "北区",
+        "南区",
+        "西区",
+        "東区",
+        "緑区",
+        "港区",
+    }
+)
 
 # Prefecture-name regex: longest match first (北海道 before 北).
 PREF_PATTERN = re.compile(
@@ -137,9 +164,7 @@ PREF_PATTERN = re.compile(
 # 北海道 is the one prefecture name with 道; we strip prefectures from the
 # name in extract_from_name before running this regex, so the 道 exclusion
 # never blocks a real muni search.
-MUNI_PATTERN = re.compile(
-    r"([一-鿿々ヶケぁ-んァ-ヴー]{1,8}[市町村区])"
-)
+MUNI_PATTERN = re.compile(r"([一-鿿々ヶケぁ-んァ-ヴー]{1,8}[市町村区])")
 
 
 # ---------------------------------------------------------------------------
@@ -151,7 +176,7 @@ MUNI_PATTERN = re.compile(
 class RegionEntry:
     code: str
     name_ja: str
-    level: str        # prefecture / designated_city / designated_ward / municipality
+    level: str  # prefecture / designated_city / designated_ward / municipality
     parent_code: str | None
 
 
@@ -160,22 +185,20 @@ class RegionIndex:
     """In-memory views of am_region used by the matcher."""
 
     pref_codes: set[str]
-    pref_by_name: dict[str, str]      # name_ja -> region_code
-    name_to_pref: dict[str, set[str]] # muni name_ja -> {pref_code, ...}
-    designated_cities: dict[str, str] # city name_ja -> pref_code (e.g. 札幌市 -> 01)
+    pref_by_name: dict[str, str]  # name_ja -> region_code
+    name_to_pref: dict[str, set[str]]  # muni name_ja -> {pref_code, ...}
+    designated_cities: dict[str, str]  # city name_ja -> pref_code (e.g. 札幌市 -> 01)
     designated_wards: dict[str, dict[str, str]]
     # designated_wards[parent_city_name] -> {ward_name: pref_code}
 
     @classmethod
-    def load(cls, region_db_path: Path) -> "RegionIndex":
+    def load(cls, region_db_path: Path) -> RegionIndex:
         if not region_db_path.exists():
             raise FileNotFoundError(f"am_region source not found: {region_db_path}")
         # `immutable=1` skips WAL journal touching when another process has
         # autonomath.db open in WAL mode (the live API on this workstation
         # holds a connection). Pure read-only path; no journal is created.
-        con = sqlite3.connect(
-            f"file:{region_db_path}?mode=ro&immutable=1", uri=True
-        )
+        con = sqlite3.connect(f"file:{region_db_path}?mode=ro&immutable=1", uri=True)
         con.row_factory = sqlite3.Row
         try:
             rows = con.execute(
@@ -211,7 +234,7 @@ class RegionIndex:
                     # matched alone when the parent city is known from context.
                     bare = e.name_ja
                     if bare.startswith(parent.name_ja):
-                        bare = bare[len(parent.name_ja):]
+                        bare = bare[len(parent.name_ja) :]
                     designated_wards[parent.name_ja][bare] = e.code[:2]
                     # Also register the full form so name-scan still hits.
                     name_to_pref[e.name_ja].add(e.code[:2])
@@ -239,7 +262,7 @@ class RegionIndex:
 class Extracted:
     prefecture: str | None = None
     municipality: str | None = None
-    source: str = ""           # "name", "url", "name+url", or ""
+    source: str = ""  # "name", "url", "name+url", or ""
 
     @property
     def signal(self) -> str:
@@ -407,11 +430,7 @@ def merge(name_ext: Extracted, url_ext: Extracted) -> tuple[Extracted, str]:
     if "name" in sources and "url" in sources:
         # Cross-check: if both name and URL claim a prefecture and they agree,
         # 'high'. If they disagree, downgrade to 'medium' and prefer name.
-        if (
-            name_ext.prefecture
-            and url_ext.prefecture
-            and name_ext.prefecture != url_ext.prefecture
-        ):
+        if name_ext.prefecture and url_ext.prefecture and name_ext.prefecture != url_ext.prefecture:
             confidence = "medium"
             merged.prefecture = name_ext.prefecture
         else:
@@ -432,17 +451,12 @@ def merge(name_ext: Extracted, url_ext: Extracted) -> tuple[Extracted, str]:
 # ---------------------------------------------------------------------------
 
 
-def iter_programs(
-    db_path: Path, only_missing: bool, limit: int | None
-) -> Iterable[sqlite3.Row]:
+def iter_programs(db_path: Path, only_missing: bool, limit: int | None) -> Iterable[sqlite3.Row]:
     # immutable=1: see RegionIndex.load comment. Read-only across the scan.
     con = sqlite3.connect(f"file:{db_path}?mode=ro&immutable=1", uri=True)
     con.row_factory = sqlite3.Row
     try:
-        sql = (
-            "SELECT unified_id, primary_name, source_url, prefecture, municipality "
-            "FROM programs"
-        )
+        sql = "SELECT unified_id, primary_name, source_url, prefecture, municipality FROM programs"
         if only_missing:
             sql += (
                 " WHERE (prefecture IS NULL OR prefecture = '')"
@@ -498,9 +512,7 @@ def main(argv: list[str] | None = None) -> int:
 
     for row in iter_programs(db_path, only_missing=not args.all_rows, limit=args.limit):
         url_ext = extract_from_url(row["source_url"], idx)
-        name_ext = extract_from_name(
-            row["primary_name"], idx, url_prefecture=url_ext.prefecture
-        )
+        name_ext = extract_from_name(row["primary_name"], idx, url_prefecture=url_ext.prefecture)
         merged, confidence = merge(name_ext, url_ext)
 
         stats["total_scanned"] += 1
@@ -515,9 +527,8 @@ def main(argv: list[str] | None = None) -> int:
         # Skip writing rows where we have nothing new to offer.
         cur_pref = row["prefecture"] or ""
         cur_muni = row["municipality"] or ""
-        if (
-            (merged.prefecture in (None, "", cur_pref))
-            and (merged.municipality in (None, "", cur_muni))
+        if (merged.prefecture in (None, "", cur_pref)) and (
+            merged.municipality in (None, "", cur_muni)
         ):
             continue
 

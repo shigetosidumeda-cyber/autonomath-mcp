@@ -22,7 +22,6 @@ import threading
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
-
 # The conftest already sets JPINTEL_DB_PATH for the integration suite,
 # but for these focused unit tests we want a clean per-test DB. We build
 # one straight from db/schema.sql.

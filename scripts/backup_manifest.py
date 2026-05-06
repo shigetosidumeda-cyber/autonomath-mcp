@@ -31,7 +31,7 @@ import logging
 import os
 import sys
 import tempfile
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -102,7 +102,7 @@ def main() -> int:
     out_path = Path(os.environ.get("BACKUP_MANIFEST_PATH", "analytics/backups.jsonl"))
     out_path.parent.mkdir(parents=True, exist_ok=True)
     bucket = os.environ.get("R2_BUCKET") or os.environ.get("JPINTEL_BACKUP_BUCKET")
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     rows: list[dict] = []
     with tempfile.TemporaryDirectory(prefix="backup-manifest-") as td:

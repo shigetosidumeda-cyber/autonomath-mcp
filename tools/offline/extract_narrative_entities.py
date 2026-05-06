@@ -47,6 +47,7 @@ Cron handle
 -----------
     .github/workflows/narrative-factcheck-weekly.yml (operator runner)
 """
+
 from __future__ import annotations
 
 import argparse
@@ -54,9 +55,9 @@ import logging
 import re
 import sqlite3
 import sys
+from collections.abc import Iterable
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Iterable
 
 logger = logging.getLogger("autonomath.offline.extract_narrative_entities")
 
@@ -123,9 +124,7 @@ RE_YEAR = re.compile(
 RE_PERCENT = re.compile(r"\d+(?:\.\d+)?\s*[%％]")
 
 # Count: 100件 / 1,000社 / 50人 / 12箇所 / 5社
-RE_COUNT = re.compile(
-    r"\d{1,3}(?:,\d{3})*(?:\s*(?:件|社|人|名|箇所|か所|個|拠点|事業者|法人))"
-)
+RE_COUNT = re.compile(r"\d{1,3}(?:,\d{3})*(?:\s*(?:件|社|人|名|箇所|か所|個|拠点|事業者|法人))")
 
 # URL: http(s)://...
 RE_URL = re.compile(r"https?://[^\s<>「」『』、。\)\]]+")
@@ -435,9 +434,7 @@ def match_against_corpus(
             # (we cannot disprove "30%" without the calling-context).
             return (bool(norm), None, None)
     except sqlite3.OperationalError as exc:
-        logger.warning(
-            "corpus_match_query_failed kind=%s err=%s", kind, str(exc)[:160]
-        )
+        logger.warning("corpus_match_query_failed kind=%s err=%s", kind, str(exc)[:160])
         return (False, None, None)
     if r:
         return (True, r[0], r[1])
@@ -449,9 +446,7 @@ def match_against_corpus(
 # ---------------------------------------------------------------------------
 
 
-def evaluate_match_rate(
-    conn: sqlite3.Connection, narrative_id: int, narrative_table: str
-) -> float:
+def evaluate_match_rate(conn: sqlite3.Connection, narrative_id: int, narrative_table: str) -> float:
     rows = conn.execute(
         "SELECT entity_kind, corpus_match FROM am_narrative_extracted_entities "
         "WHERE narrative_id=? AND narrative_table=?",
@@ -476,16 +471,11 @@ def evaluate_match_rate(
 
 
 def _resolve_body_column(conn: sqlite3.Connection, table: str) -> str:
-    cols = {
-        r[1]
-        for r in conn.execute(f"PRAGMA table_info({table})").fetchall()
-    }
+    cols = {r[1] for r in conn.execute(f"PRAGMA table_info({table})").fetchall()}
     for cand in _BODY_COLUMN_CANDIDATES:
         if cand in cols:
             return cand
-    raise RuntimeError(
-        f"no body column found in {table}; tried {_BODY_COLUMN_CANDIDATES}"
-    )
+    raise RuntimeError(f"no body column found in {table}; tried {_BODY_COLUMN_CANDIDATES}")
 
 
 def _resolve_parent_program(
@@ -501,9 +491,7 @@ def _resolve_parent_program(
     if row is None:
         return (None, None)
     pid = row[0]
-    canon_row = conn.execute(
-        "SELECT canonical_id FROM programs WHERE id=?", (pid,)
-    ).fetchone()
+    canon_row = conn.execute("SELECT canonical_id FROM programs WHERE id=?", (pid,)).fetchone()
     return (pid, canon_row[0] if canon_row else None)
 
 
@@ -537,16 +525,12 @@ def process_narrative(
     body = str(row[0])
     entities = extract_entities(body)
 
-    parent_pid, parent_entity = _resolve_parent_program(
-        conn, narrative_table, narrative_id
-    )
+    parent_pid, parent_entity = _resolve_parent_program(conn, narrative_table, narrative_id)
 
     now = datetime.now(UTC).isoformat()
     matched_count = 0
     for ent in entities:
-        ok, corpus_table, corpus_pk = match_against_corpus(
-            conn, ent, parent_pid, parent_entity
-        )
+        ok, corpus_table, corpus_pk = match_against_corpus(conn, ent, parent_pid, parent_entity)
         if ok:
             matched_count += 1
         if dry_run:
@@ -573,9 +557,7 @@ def process_narrative(
                 ),
             )
         except sqlite3.OperationalError as exc:
-            logger.warning(
-                "narrative_extract_insert_failed err=%s", str(exc)[:160]
-            )
+            logger.warning("narrative_extract_insert_failed err=%s", str(exc)[:160])
 
     if dry_run:
         return {
@@ -599,8 +581,7 @@ def process_narrative(
                 (narrative_id, narrative_table, "low_match_rate", rate, now),
             )
             conn.execute(
-                f"UPDATE {narrative_table} SET is_active=0 "
-                "WHERE narrative_id=?",
+                f"UPDATE {narrative_table} SET is_active=0 WHERE narrative_id=?",
                 (narrative_id,),
             )
         except sqlite3.OperationalError as exc:
@@ -653,9 +634,7 @@ def run(
             try:
                 body_col = _resolve_body_column(conn, tbl)
             except (RuntimeError, sqlite3.OperationalError) as exc:
-                logger.warning(
-                    "skip_table_no_body table=%s err=%s", tbl, str(exc)[:160]
-                )
+                logger.warning("skip_table_no_body table=%s err=%s", tbl, str(exc)[:160])
                 continue
 
             if narrative_id is not None:
@@ -675,9 +654,7 @@ def run(
                     continue
 
             for nid in ids:
-                result = process_narrative(
-                    conn, tbl, int(nid), body_col, dry_run=dry_run
-                )
+                result = process_narrative(conn, tbl, int(nid), body_col, dry_run=dry_run)
                 summary["narratives_processed"] += 1
                 if result.get("quarantined"):
                     summary["quarantined"] += 1

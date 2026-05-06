@@ -60,6 +60,7 @@ Usage (manual, on operator workstation)
         JPINTEL_AUDIT_SEAL_KEYS="$(cat /tmp/jpintel_keys.json)"
     shred -u /tmp/jpintel_keys.json   # or `rm -P` on macOS
 """
+
 from __future__ import annotations
 
 import argparse
@@ -70,7 +71,6 @@ import sqlite3
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
-
 
 # ---------------------------------------------------------------------------
 # Hard guard: never let an LLM SDK leak in here. Operator memory
@@ -347,8 +347,7 @@ def main(argv: list[str] | None = None) -> int:
             file=sys.stderr,
         )
         print(
-            "[next] fly secrets set -a autonomath-api "
-            f'JPINTEL_AUDIT_SEAL_KEYS="$(cat {out_path})"',
+            f'[next] fly secrets set -a autonomath-api JPINTEL_AUDIT_SEAL_KEYS="$(cat {out_path})"',
             file=sys.stderr,
         )
         return 0

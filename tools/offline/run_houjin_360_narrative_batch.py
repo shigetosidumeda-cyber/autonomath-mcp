@@ -19,6 +19,7 @@ WORKFLOW:
 
 NO LLM IMPORT.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -31,7 +32,6 @@ from _runner_common import (
 )
 
 from jpintel_mcp.ingest.schemas.houjin_360_narrative import Houjin360Narrative
-
 
 TOOL_SLUG = "houjin_360_narrative"
 

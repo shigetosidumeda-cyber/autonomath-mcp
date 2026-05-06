@@ -65,7 +65,6 @@ from urllib.parse import urlparse
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.lib.http import HttpClient  # noqa: E402
 
 _LOG = logging.getLogger("autonomath.ingest.env_sanpai")
 
@@ -3082,7 +3081,7 @@ SEED_ROWS: list[EnfRow] = [
 
 
 def _slug8(target: str, date: str, extra: str = "") -> str:
-    h = hashlib.sha1(f"{target}|{date}|{extra}".encode("utf-8")).hexdigest()
+    h = hashlib.sha1(f"{target}|{date}|{extra}".encode()).hexdigest()
     return h[:8]
 
 

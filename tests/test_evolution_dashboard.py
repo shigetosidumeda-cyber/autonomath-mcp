@@ -22,14 +22,17 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SCRIPT_PATH = REPO_ROOT / "scripts" / "cron" / "aggregate_evolution_dashboard.py"
-MIGRATION_PATH = REPO_ROOT / "scripts" / "migrations" / "wave24_188_evolution_dashboard_snapshot.sql"
-ROLLBACK_PATH = REPO_ROOT / "scripts" / "migrations" / "wave24_188_evolution_dashboard_snapshot_rollback.sql"
+MIGRATION_PATH = (
+    REPO_ROOT / "scripts" / "migrations" / "wave24_188_evolution_dashboard_snapshot.sql"
+)
+ROLLBACK_PATH = (
+    REPO_ROOT / "scripts" / "migrations" / "wave24_188_evolution_dashboard_snapshot_rollback.sql"
+)
 TEMPLATE_PATH = REPO_ROOT / "scripts" / "templates" / "evolution.html.j2"
 WORKFLOW_PATH = REPO_ROOT / ".github" / "workflows" / "evolution-dashboard-weekly.yml"
 
 sys.path.insert(0, str(SCRIPT_PATH.parent))
 import aggregate_evolution_dashboard as agg  # noqa: E402
-
 
 # ---------------------------------------------------------------------------
 # 1. migration apply (idempotent)
@@ -78,9 +81,7 @@ def test_migration_apply_creates_table_and_views(tmp_path: Path) -> None:
         idx_names = {row[0] for row in cur.fetchall()}
         assert {"idx_eds_axis_date", "idx_eds_date", "idx_eds_status"} <= idx_names
         # Verify views.
-        cur = conn.execute(
-            "SELECT name FROM sqlite_master WHERE type='view'"
-        )
+        cur = conn.execute("SELECT name FROM sqlite_master WHERE type='view'")
         view_names = {row[0] for row in cur.fetchall()}
         assert {"v_evolution_dashboard_latest", "v_evolution_axis_status"} <= view_names
         # Verify CHECK constraint on status.
@@ -141,17 +142,21 @@ def test_12_axis_aggregate_with_real_sources(tmp_path: Path) -> None:
     conn = sqlite3.connect(str(db))
     try:
         conn.execute("CREATE TABLE programs (id INTEGER PRIMARY KEY)")
-        conn.executemany(
-            "INSERT INTO programs (id) VALUES (?)", [(i,) for i in range(1, 9001)]
-        )
+        conn.executemany("INSERT INTO programs (id) VALUES (?)", [(i,) for i in range(1, 9001)])
         conn.commit()
     finally:
         conn.close()
     analytics = tmp_path / "analytics"
     analytics.mkdir()
     (analytics / "moat_verify.json").write_text(
-        json.dumps({"v_cobb_douglas": 1.2, "lambda_max": 0.05, "cascade_q": 0.07,
-                    "bayesian_posterior": 0.92}),
+        json.dumps(
+            {
+                "v_cobb_douglas": 1.2,
+                "lambda_max": 0.05,
+                "cascade_q": 0.07,
+                "bayesian_posterior": 0.92,
+            }
+        ),
         encoding="utf-8",
     )
     (analytics / "brand_mention.json").write_text(
@@ -174,7 +179,7 @@ def test_12_axis_aggregate_with_real_sources(tmp_path: Path) -> None:
     ia10 = next(a for a in snap.axes if a["id"] == "IA-10")
     statuses = {s["signal_id"]: s["status"] for s in ia10["signals"]}
     assert statuses["v_cobb_douglas"] == "healthy"  # 1.2 >= 1.0
-    assert statuses["lambda_max"] == "healthy"      # 0.05 >= 0.0
+    assert statuses["lambda_max"] == "healthy"  # 0.05 >= 0.0
     ia12 = next(a for a in snap.axes if a["id"] == "IA-12")
     self_vs = next(s for s in ia12["signals"] if s["signal_id"] == "self_vs_other_ratio")
     assert self_vs["status"] == "healthy"  # 0.6 <= 0.7 healthy_le
@@ -230,9 +235,9 @@ def test_5_kpi_plot_data_series(tmp_path: Path) -> None:
     assert len(agg.KPI_PLOT_KEYS) == 5
     rows = [
         agg.SignalRow("IA-12", "self_vs_other_ratio", signal_value=0.55, status="healthy"),
-        agg.SignalRow("IA-10", "v_cobb_douglas",   signal_value=1.1, status="healthy"),
-        agg.SignalRow("IA-10", "lambda_max",       signal_value=0.02, status="healthy"),
-        agg.SignalRow("IA-10", "cascade_q",        signal_value=0.06, status="healthy"),
+        agg.SignalRow("IA-10", "v_cobb_douglas", signal_value=1.1, status="healthy"),
+        agg.SignalRow("IA-10", "lambda_max", signal_value=0.02, status="healthy"),
+        agg.SignalRow("IA-10", "cascade_q", signal_value=0.06, status="healthy"),
         agg.SignalRow("IA-07", "pypi_downloads_weekly", signal_value=120.0, status="healthy"),
         # plus a non-KPI row to ensure filter works.
         agg.SignalRow("IA-01", "programs_count", signal_value=9000.0, status="healthy"),

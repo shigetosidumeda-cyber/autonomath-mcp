@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import importlib
 
-
 EXPECTED_TOOLS = {
     "intel_scenario_simulate",
     "intel_competitor_landscape",
@@ -35,4 +34,4 @@ def test_intel_wave32_tools_registered() -> None:
     importlib.import_module("jpintel_mcp.mcp.autonomath_tools.intel_wave32")
 
     names = {tool.name for tool in server.mcp._tool_manager.list_tools()}
-    assert EXPECTED_TOOLS <= names
+    assert names >= EXPECTED_TOOLS

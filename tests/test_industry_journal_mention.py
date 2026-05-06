@@ -23,14 +23,16 @@ import importlib.util
 import sqlite3
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SCRIPT_PATH = REPO_ROOT / "scripts" / "cron" / "ingest_industry_journal_mention.py"
 MIGRATION_PATH = REPO_ROOT / "scripts" / "migrations" / "wave24_186_industry_journal_mention.sql"
-ROLLBACK_PATH = REPO_ROOT / "scripts" / "migrations" / "wave24_186_industry_journal_mention_rollback.sql"
+ROLLBACK_PATH = (
+    REPO_ROOT / "scripts" / "migrations" / "wave24_186_industry_journal_mention_rollback.sql"
+)
 
 
 @pytest.fixture(scope="module")
@@ -80,13 +82,31 @@ def test_migration_applies_cleanly(tmp_path):
         conn.execute(
             "INSERT INTO industry_journal_mention(journal_name, cohort, issue_date, article_title, "
             "mention_keyword, source_url, source_layer, retrieved_at) VALUES (?,?,?,?,?,?,?,?)",
-            ("税務通信", "税理士", "2026-04", "サンプル記事", "jpcite", "https://x", "cinii", "2026-05-07T00:00:00+00:00"),
+            (
+                "税務通信",
+                "税理士",
+                "2026-04",
+                "サンプル記事",
+                "jpcite",
+                "https://x",
+                "cinii",
+                "2026-05-07T00:00:00+00:00",
+            ),
         )
         with pytest.raises(sqlite3.IntegrityError):
             conn.execute(
                 "INSERT INTO industry_journal_mention(journal_name, cohort, issue_date, article_title, "
                 "mention_keyword, source_url, source_layer, retrieved_at) VALUES (?,?,?,?,?,?,?,?)",
-                ("税務通信", "税理士", "2026-04", "サンプル記事", "jpcite", "https://x", "cinii", "2026-05-07T00:00:00+00:00"),
+                (
+                    "税務通信",
+                    "税理士",
+                    "2026-04",
+                    "サンプル記事",
+                    "jpcite",
+                    "https://x",
+                    "cinii",
+                    "2026-05-07T00:00:00+00:00",
+                ),
             )
 
         # Idempotent re-apply (CREATE IF NOT EXISTS) — must not raise
@@ -119,7 +139,7 @@ def test_api_mock_fetch_cinii_jstage_toc(cron_module):
 
     # J-STAGE: minimal Atom payload
     jstage_payload = (
-        '<feed><entry><title>jpcite と監査ガバナンス</title>'
+        "<feed><entry><title>jpcite と監査ガバナンス</title>"
         '<link href="https://www.jstage.jst.go.jp/foo"/>'
         "<name>佐藤 花子</name><published>2026-03-10</published>"
         "</entry></feed>"
@@ -132,9 +152,9 @@ def test_api_mock_fetch_cinii_jstage_toc(cron_module):
 
     # publisher_toc: minimal HTML <a> tag with kanji content
     toc_payload = (
-        '<html><body>'
+        "<html><body>"
         '<a href="https://www.zeiken.co.jp/article/2026/04/jpcite">jpcite で税務通信2026年4月号特集</a>'
-        '</body></html>'
+        "</body></html>"
     )
     with patch.object(cron_module, "_safe_get", return_value=toc_payload):
         toc_records = cron_module.fetch_publisher_toc("https://www.zeiken.co.jp/news/")
@@ -206,7 +226,7 @@ def test_self_vs_other_ratio(cron_module, tmp_path):
         '{"title": "jpcite の評価レポート",'
         ' "dc:creator": ["山田 太郎"], "prism:publicationName": "税務通信",'
         ' "prism:publicationDate": "2026-04-15", "@id": "https://cir.nii.ac.jp/other"}'
-        ']}]}'
+        "]}]}"
     )
 
     with patch.object(cron_module, "_safe_get", return_value=cinii_payload):
@@ -237,7 +257,9 @@ def test_no_llm_imports_in_cron_module():
                 head = (alias.name or "").split(".")[0]
                 if head in forbidden_heads:
                     hits.append(f"import {alias.name}")
-                if alias.name == "google.generativeai" or (alias.name or "").startswith("google.generativeai."):
+                if alias.name == "google.generativeai" or (alias.name or "").startswith(
+                    "google.generativeai."
+                ):
                     hits.append(f"import {alias.name}")
         elif isinstance(node, ast.ImportFrom):
             module = node.module or ""

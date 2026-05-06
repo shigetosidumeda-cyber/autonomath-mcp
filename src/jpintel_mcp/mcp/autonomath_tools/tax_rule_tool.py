@@ -32,7 +32,8 @@ from typing import Annotated, Any, Literal
 
 from pydantic import Field
 
-from jpintel_mcp.mcp.server import mcp, _READ_ONLY
+from jpintel_mcp.mcp.server import _READ_ONLY, mcp
+
 from .db import connect_autonomath
 from .error_envelope import make_error
 

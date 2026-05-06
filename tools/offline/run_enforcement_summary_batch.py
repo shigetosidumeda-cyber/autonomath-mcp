@@ -18,6 +18,7 @@ WORKFLOW:
 
 NO LLM IMPORT.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -30,7 +31,6 @@ from _runner_common import (
 )
 
 from jpintel_mcp.ingest.schemas.enforcement_summary import EnforcementSummary
-
 
 TOOL_SLUG = "enforcement_summary"
 

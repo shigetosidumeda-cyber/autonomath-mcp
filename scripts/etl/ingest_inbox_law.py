@@ -32,7 +32,6 @@ NO LLM, NO Anthropic API. Pure stdlib + sqlite3.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import logging
 import re

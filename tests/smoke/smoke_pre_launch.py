@@ -57,6 +57,7 @@ _query_log.setLevel(logging.DEBUG)
 
 # ── Now import the app ──────────────────────────────────────────────────────
 from fastapi.testclient import TestClient
+
 from jpintel_mcp.api.main import create_app
 
 app = create_app()

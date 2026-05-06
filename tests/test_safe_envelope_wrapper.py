@@ -40,7 +40,6 @@ from jpintel_mcp.mcp.autonomath_tools.autonomath_wrappers import (  # noqa: E402
     _safe_envelope,
 )
 
-
 # ---------------------------------------------------------------------------
 # Decorator-level tests (no DB required)
 # ---------------------------------------------------------------------------

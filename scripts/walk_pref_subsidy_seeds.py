@@ -50,8 +50,8 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import urllib.robotparser
-from collections import Counter, defaultdict
-from datetime import date, datetime, timezone
+from collections import defaultdict
+from datetime import UTC, date, datetime
 from pathlib import Path
 
 from bs4 import BeautifulSoup
@@ -606,7 +606,7 @@ FTS_INSERT_SQL = (
 
 
 def build_unified_id(child_url: str, title: str) -> str:
-    h = hashlib.sha1(f"{child_url}|{title}".encode("utf-8")).hexdigest()[:10]
+    h = hashlib.sha1(f"{child_url}|{title}".encode()).hexdigest()[:10]
     return f"UNI-pref-{h}"
 
 
@@ -665,9 +665,7 @@ def build_row(
         "source_url": cand.url,
         "source_fetched_at": fetched_at,
         "source_checksum": hashlib.sha1(
-            f"{cand.url}|{title}|{extract.get('deadline_iso')}|{extract.get('amount_max_man_yen')}".encode(
-                "utf-8"
-            )
+            f"{cand.url}|{title}|{extract.get('deadline_iso')}|{extract.get('amount_max_man_yen')}".encode()
         ).hexdigest()[:16],
         "updated_at": fetched_at,
     }
@@ -792,7 +790,7 @@ def reparse_pdf_failures(args: argparse.Namespace) -> int:
         conn.execute("PRAGMA foreign_keys = ON")
         conn.execute("PRAGMA journal_mode = WAL")
 
-    fetched_at = datetime.now(timezone.utc).isoformat()
+    fetched_at = datetime.now(UTC).isoformat()
     robots = RobotsCache()
     stats: dict[str, dict[str, int]] = defaultdict(
         lambda: {
@@ -948,7 +946,7 @@ def main() -> int:
         print(f"[ERROR] seed file not found: {SEED_PATH}", file=sys.stderr)
         return 2
 
-    fetched_at = datetime.now(timezone.utc).isoformat()
+    fetched_at = datetime.now(UTC).isoformat()
     seeds = load_seeds(args.pref)
     if args.limit_seeds:
         seeds = seeds[: args.limit_seeds]

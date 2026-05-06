@@ -54,6 +54,7 @@ Usage:
         --mode aggregate \\
         > bench_summary.json
 """
+
 from __future__ import annotations
 
 import argparse
@@ -200,9 +201,7 @@ def build_instruction(
 
     if arm == PRECOMPUTED_ARM:
         encoded = urllib.parse.quote(qtxt, safe="")
-        prefetch = (
-            f"{jpcite_base_url.rstrip('/')}/v1/intelligence/precomputed/query?q={encoded}"
-        )
+        prefetch = f"{jpcite_base_url.rstrip('/')}/v1/intelligence/precomputed/query?q={encoded}"
         text = (
             f"Fetch the operator-owned precomputed intelligence bundle for "
             f"Q id={qid} from {prefetch} (or the equivalent internal/customer "
@@ -243,9 +242,7 @@ def _parse_arms(raw: str | None) -> tuple[str, ...]:
         raise ValueError("--arms must name at least one arm")
     unknown = sorted(set(requested) - set(ARMS))
     if unknown:
-        raise ValueError(
-            f"unknown arm(s): {', '.join(unknown)}; valid arms: {', '.join(ARMS)}"
-        )
+        raise ValueError(f"unknown arm(s): {', '.join(unknown)}; valid arms: {', '.join(ARMS)}")
     requested_set = set(requested)
     return tuple(arm for arm in ARMS if arm in requested_set)
 
@@ -306,8 +303,7 @@ def aggregate(args: argparse.Namespace, out=sys.stdout) -> int:
     optional_numeric_columns: tuple[str, ...] = ()
     active_numeric_columns = REQUIRED_NUMERIC_METRIC_COLUMNS
     per_arm: dict[str, dict[str, list[float]]] = {
-        arm: {col: [] for col in NUMERIC_METRIC_COLUMNS + RATE_METRIC_COLUMNS}
-        for arm in ARMS
+        arm: {col: [] for col in NUMERIC_METRIC_COLUMNS + RATE_METRIC_COLUMNS} for arm in ARMS
     }
     paired_query_ids: dict[str, set[int]] = {arm: set() for arm in ARMS}
     seen_arms: set[str] = set()
@@ -318,9 +314,7 @@ def aggregate(args: argparse.Namespace, out=sys.stdout) -> int:
         optional_numeric_columns = tuple(
             col for col in OPTIONAL_NUMERIC_METRIC_COLUMNS if col in header
         )
-        active_numeric_columns = (
-            REQUIRED_NUMERIC_METRIC_COLUMNS + optional_numeric_columns
-        )
+        active_numeric_columns = REQUIRED_NUMERIC_METRIC_COLUMNS + optional_numeric_columns
         for row in reader:
             arm = row.get("arm", "").strip()
             if arm not in configured_arms:
@@ -340,14 +334,10 @@ def aggregate(args: argparse.Namespace, out=sys.stdout) -> int:
                 except ValueError:
                     continue
 
-    active_arms = (
-        configured_arms if args.arms else tuple(arm for arm in ARMS if arm in seen_arms)
-    )
+    active_arms = configured_arms if args.arms else tuple(arm for arm in ARMS if arm in seen_arms)
 
     if active_arms:
-        paired_query_count = len(
-            set.intersection(*(paired_query_ids[arm] for arm in active_arms))
-        )
+        paired_query_count = len(set.intersection(*(paired_query_ids[arm] for arm in active_arms)))
     else:
         paired_query_count = 0
 
@@ -406,16 +396,12 @@ def aggregate(args: argparse.Namespace, out=sys.stdout) -> int:
                 if baseline == 0:
                     arm_delta[col] = None
                 else:
-                    arm_delta[col] = round(
-                        (baseline - candidate) / baseline * 100.0, 2
-                    )
+                    arm_delta[col] = round((baseline - candidate) / baseline * 100.0, 2)
             summary["median_delta_pct_vs_direct_web"][arm] = arm_delta
 
     # Preserve the original top-level key for the legacy direct_web vs
     # jpcite_packet comparison.
-    summary["median_delta_pct"] = summary["median_delta_pct_vs_direct_web"].get(
-        PACKET_ARM, {}
-    )
+    summary["median_delta_pct"] = summary["median_delta_pct_vs_direct_web"].get(PACKET_ARM, {})
 
     out.write(json.dumps(summary, ensure_ascii=False, indent=2) + "\n")
     return 0

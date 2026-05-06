@@ -62,7 +62,7 @@ def test_bulk_import_creates_profiles(client, consultant_key):
         "name_label,jsic_major,prefecture,employee_count,capital_yen\n"
         "アルファ商事,E,東京都,30,10000000\n"
         "ベータ製作所,E,大阪府,12,5000000\n"
-    ).encode("utf-8")
+    ).encode()
 
     r = client.post(
         "/v1/me/client_profiles/bulk_import",
@@ -141,7 +141,7 @@ def test_delete_removes_profile(client, consultant_key):
 
 def test_bulk_import_missing_required_header_is_400(client, consultant_key):
     """CSV without `name_label` column → 400."""
-    csv_body = "jsic_major,prefecture\nE,東京都\n".encode("utf-8")
+    csv_body = "jsic_major,prefecture\nE,東京都\n".encode()
     r = client.post(
         "/v1/me/client_profiles/bulk_import",
         headers={"X-API-Key": consultant_key},

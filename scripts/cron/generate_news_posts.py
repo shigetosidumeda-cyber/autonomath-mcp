@@ -53,7 +53,7 @@ import logging
 import re
 import sys
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta, timezone
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 from urllib.parse import urlparse
@@ -92,7 +92,7 @@ logger = logging.getLogger("autonomath.cron.generate_news_posts")
 # JST = UTC+9. We stamp dates in JST throughout to match every other
 # date surfaced on jpcite.com (CLAUDE.md baseline).
 _JST = timezone(timedelta(hours=9))
-_UTC = timezone.utc
+_UTC = UTC
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 _TEMPLATE_DIR = _REPO_ROOT / "site" / "_templates"

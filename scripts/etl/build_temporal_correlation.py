@@ -21,9 +21,9 @@ import argparse
 import re
 import sqlite3
 import sys
+from collections.abc import Iterable
 from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import Iterable
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 AUTONOMATH_DB = REPO_ROOT / "autonomath.db"

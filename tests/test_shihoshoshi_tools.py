@@ -225,12 +225,7 @@ def test_zero_llm_imports_in_shihoshoshi_module() -> None:
     DEEP-30 surface).
     """
     src_path = (
-        _REPO_ROOT
-        / "src"
-        / "jpintel_mcp"
-        / "mcp"
-        / "autonomath_tools"
-        / "shihoshoshi_tools.py"
+        _REPO_ROOT / "src" / "jpintel_mcp" / "mcp" / "autonomath_tools" / "shihoshoshi_tools.py"
     )
     src = src_path.read_text(encoding="utf-8")
     # No LLM SDK imports — match feedback_no_operator_llm_api hard rule.

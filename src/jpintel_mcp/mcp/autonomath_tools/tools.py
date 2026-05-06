@@ -39,7 +39,7 @@ import logging
 import os
 import re
 import sqlite3
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 from typing import Annotated, Any, Literal
 
 from pydantic import Field
@@ -80,7 +80,7 @@ def _clamp_offset(offset: int) -> int:
 
 def _today_iso() -> str:
     """Today's date in JST (UTC+9), ISO YYYY-MM-DD."""
-    return (datetime.now(timezone.utc) + timedelta(hours=9)).date().isoformat()
+    return (datetime.now(UTC) + timedelta(hours=9)).date().isoformat()
 
 
 _AS_OF_PATTERN = re.compile(r"^(?:\d{4}-\d{2}-\d{2}|today)$")

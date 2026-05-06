@@ -53,9 +53,7 @@ FORBIDDEN_LLM_MODULES = {
 
 def _load_tracker_module():
     """Import tracker module without running main()."""
-    spec = importlib.util.spec_from_file_location(
-        "track_organic_outreach_monthly", TRACKER_PATH
-    )
+    spec = importlib.util.spec_from_file_location("track_organic_outreach_monthly", TRACKER_PATH)
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
@@ -66,8 +64,7 @@ def test_32_template_yaml_load():
     """1. 32 yaml templates load + minimum required fields per template."""
     yaml_files = sorted(TEMPLATES_DIR.glob("*.yaml"))
     assert len(yaml_files) == 32, (
-        f"expected 32 yaml templates, found {len(yaml_files)}: "
-        f"{[p.name for p in yaml_files]}"
+        f"expected 32 yaml templates, found {len(yaml_files)}: {[p.name for p in yaml_files]}"
     )
     mod = _load_tracker_module()
     templates = mod._load_yaml_templates()
@@ -147,9 +144,7 @@ def test_forbidden_phrase_guard_in_publishable_fields():
                 pat = re.compile(re.escape(tok_low) + r"\s+ng\b", re.IGNORECASE)
                 if pat.search(value):
                     continue
-                pytest.fail(
-                    f"{path.name} field {key!r} contains forbidden token {tok!r}: {value}"
-                )
+                pytest.fail(f"{path.name} field {key!r} contains forbidden token {tok!r}: {value}")
 
 
 def test_kpi_aggregation_shape():
@@ -157,10 +152,7 @@ def test_kpi_aggregation_shape():
     mod = _load_tracker_module()
     templates = mod._load_yaml_templates()
     # Mock probe results without HTTP (offline test).
-    probes = [
-        {"channel": ch, "status": "ok", "mention_count": 0}
-        for ch in mod.CHANNEL_PROBES
-    ]
+    probes = [{"channel": ch, "status": "ok", "mention_count": 0} for ch in mod.CHANNEL_PROBES]
     kpi = mod._aggregate_kpi(templates, probes)
     assert "per_channel_template_count" in kpi
     assert "per_cohort_template_count" in kpi

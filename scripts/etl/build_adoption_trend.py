@@ -325,7 +325,7 @@ def report(conn: sqlite3.Connection) -> None:
     print()
 
     # Monthly total chart over last 12 months (cross-major sum).
-    monthly_total: dict[str, int] = {ym: 0 for ym in last12}
+    monthly_total: dict[str, int] = dict.fromkeys(last12, 0)
     for ymmap in per_major.values():
         for ym, c in ymmap.items():
             if ym in monthly_total:

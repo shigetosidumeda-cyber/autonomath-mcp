@@ -25,6 +25,7 @@ from typing import Annotated, Any
 from pydantic import Field
 
 from jpintel_mcp.config import settings
+from jpintel_mcp.mcp._error_helpers import safe_internal_message
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 from jpintel_mcp.templates.saburoku_kyotei import (
     TemplateError,
@@ -32,8 +33,6 @@ from jpintel_mcp.templates.saburoku_kyotei import (
     get_template_metadata,
     render_36_kyotei,
 )
-
-from jpintel_mcp.mcp._error_helpers import safe_internal_message
 
 from .error_envelope import make_error
 

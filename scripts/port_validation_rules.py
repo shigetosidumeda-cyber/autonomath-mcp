@@ -40,7 +40,6 @@ import sqlite3
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 _LOG = logging.getLogger("port_validation_rules")
 
@@ -154,7 +153,7 @@ def _configure_logging(verbose: bool = False) -> None:
     root.addHandler(sh)
 
 
-def _resolve_db_path(arg_db: Optional[str]) -> Path:
+def _resolve_db_path(arg_db: str | None) -> Path:
     if arg_db:
         return Path(arg_db).expanduser().resolve()
     env = os.environ.get("JPINTEL_DB_PATH")
@@ -228,7 +227,7 @@ def _insert_rule(
     conn: sqlite3.Connection,
     candidate: Candidate,
     source_id: int,
-) -> Optional[int]:
+) -> int | None:
     predicate_ref = PREDICATE_PREFIX + candidate.function_name
     if _rule_exists(conn, predicate_ref):
         _LOG.info("skip_existing predicate_ref=%s", predicate_ref)
@@ -325,7 +324,7 @@ def _do_apply(db_path: Path) -> None:
         conn.close()
 
 
-def main(argv: Optional[list[str]] = None) -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Port 6 generic intake validation predicates into am_validation_rule.",
     )

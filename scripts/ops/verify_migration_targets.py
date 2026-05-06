@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 verify_migration_targets.py — DEEP-52 spec implementation (jpcite v0.3.4)
 
@@ -35,8 +34,9 @@ import re
 import sqlite3
 import sys
 import time
+from collections.abc import Iterable, Sequence
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
+from typing import Any
 
 # sqlglot is OPTIONAL at import-time so --check still runs in environments
 # where sqlglot isn't installed; SQL body parsing degrades to a regex walk
@@ -56,7 +56,7 @@ VALID_TARGETS = ("autonomath", "jpintel")
 # target. The first match wins; an unknown slug only triggers a warning,
 # not a hard failure (slugs are operator-authored and may not always carry
 # a target hint).
-SLUG_PREFIX_TO_TARGET: Sequence[Tuple[str, str]] = (
+SLUG_PREFIX_TO_TARGET: Sequence[tuple[str, str]] = (
     (r"^am_", "autonomath"),
     (r"^autonomath_", "autonomath"),
     (r"^programs_", "autonomath"),
@@ -79,7 +79,7 @@ FIRST_LINE_MARKER_RE = re.compile(r"^-- target_db:\s*([A-Za-z0-9_]+)\s*$")
 # Forbidden tables are sourced from schema_guard_rules.json (loaded at
 # runtime). We keep an embedded fallback so the verifier still runs if the
 # rules file is missing — the embedded list mirrors DEEP-52 §4.
-EMBEDDED_RULES: Dict[str, Dict[str, Any]] = {
+EMBEDDED_RULES: dict[str, dict[str, Any]] = {
     "autonomath": {
         "forbidden": [
             "programs",
@@ -118,15 +118,15 @@ EMBEDDED_RULES: Dict[str, Dict[str, Any]] = {
 class FileReport:
     path: str
     filename: str
-    num: Optional[int]
+    num: int | None
     suffix: str
     slug: str
     is_rollback: bool
-    marker: Optional[str]
-    body_tables: List[str]
-    rollback_pair: Optional[str]
-    errors: List[str]
-    warnings: List[str]
+    marker: str | None
+    body_tables: list[str]
+    rollback_pair: str | None
+    errors: list[str]
+    warnings: list[str]
 
 
 # ---------------------------------------------------------------------------
@@ -134,7 +134,7 @@ class FileReport:
 # ---------------------------------------------------------------------------
 
 
-def parse_filename(path: str) -> Tuple[Optional[int], str, str, bool]:
+def parse_filename(path: str) -> tuple[int | None, str, str, bool]:
     name = os.path.basename(path)
     m = FILENAME_RE.match(name)
     if not m:
@@ -146,7 +146,7 @@ def parse_filename(path: str) -> Tuple[Optional[int], str, str, bool]:
     return num, suffix, slug, is_rollback
 
 
-def read_first_line_marker(path: str) -> Optional[str]:
+def read_first_line_marker(path: str) -> str | None:
     """Return the marker value from the first line, or None if absent.
 
     Per DEEP-52 §3 check #1: literal `-- target_db: <name>` on line 1 with
@@ -173,7 +173,7 @@ def read_first_line_marker(path: str) -> Optional[str]:
     return m.group(1)
 
 
-def infer_slug_target(slug: str, rules: Optional[Dict[str, Any]] = None) -> Optional[str]:
+def infer_slug_target(slug: str, rules: dict[str, Any] | None = None) -> str | None:
     """Infer the expected target_db from a filename slug.
 
     Supports JSON-driven exemptions via the optional ``rules`` arg:
@@ -228,7 +228,7 @@ RE_CREATE_VIEW = re.compile(
 )
 
 
-def extract_body_tables(sql: str) -> List[str]:
+def extract_body_tables(sql: str) -> list[str]:
     """Return the list of table identifiers touched by CREATE/ALTER/INDEX/VIEW.
 
     Prefers sqlglot when available, regex fallback otherwise. Comments are
@@ -239,7 +239,7 @@ def extract_body_tables(sql: str) -> List[str]:
     no_block_comments = re.sub(r"/\*.*?\*/", "", no_line_comments, flags=re.DOTALL)
     cleaned = no_block_comments
 
-    tables: List[str] = []
+    tables: list[str] = []
 
     if SQLGLOT_AVAILABLE:
         try:
@@ -257,17 +257,7 @@ def extract_body_tables(sql: str) -> List[str]:
                 AlterCls = getattr(sqlglot_exp, "AlterTable", None) or getattr(
                     sqlglot_exp, "Alter", None
                 )
-                if isinstance(target, sqlglot_exp.Create):
-                    this = target.this
-                    name = _identifier_name(this)
-                    if name:
-                        tables.append(name)
-                elif AlterCls is not None and isinstance(target, AlterCls):
-                    this = target.this
-                    name = _identifier_name(this)
-                    if name:
-                        tables.append(name)
-                elif isinstance(target, sqlglot_exp.Drop):
+                if isinstance(target, sqlglot_exp.Create) or AlterCls is not None and isinstance(target, AlterCls) or isinstance(target, sqlglot_exp.Drop):
                     this = target.this
                     name = _identifier_name(this)
                     if name:
@@ -287,7 +277,7 @@ def extract_body_tables(sql: str) -> List[str]:
     return _dedupe_keep_order(tables)
 
 
-def _identifier_name(node: Any) -> Optional[str]:
+def _identifier_name(node: Any) -> str | None:
     if node is None:
         return None
     if SQLGLOT_AVAILABLE and hasattr(node, "name"):
@@ -299,9 +289,9 @@ def _identifier_name(node: Any) -> Optional[str]:
     return None
 
 
-def _dedupe_keep_order(items: Iterable[str]) -> List[str]:
+def _dedupe_keep_order(items: Iterable[str]) -> list[str]:
     seen: set = set()
-    out: List[str] = []
+    out: list[str] = []
     for it in items:
         if it not in seen:
             seen.add(it)
@@ -314,10 +304,10 @@ def _dedupe_keep_order(items: Iterable[str]) -> List[str]:
 # ---------------------------------------------------------------------------
 
 
-def load_rules(rules_path: Optional[str]) -> Dict[str, Dict[str, Any]]:
+def load_rules(rules_path: str | None) -> dict[str, dict[str, Any]]:
     if rules_path and os.path.exists(rules_path):
         try:
-            with open(rules_path, "r", encoding="utf-8") as fh:
+            with open(rules_path, encoding="utf-8") as fh:
                 return json.load(fh)
         except (OSError, json.JSONDecodeError) as exc:
             sys.stderr.write(f"[warn] rules load failed {rules_path}: {exc}\n")
@@ -326,14 +316,14 @@ def load_rules(rules_path: Optional[str]) -> Dict[str, Dict[str, Any]]:
 
 
 def check_forbidden(
-    target: str, body_tables: List[str], rules: Dict[str, Dict[str, Any]]
-) -> List[str]:
+    target: str, body_tables: list[str], rules: dict[str, dict[str, Any]]
+) -> list[str]:
     """Return a list of forbidden table hits for the given target."""
     cfg = rules.get(target, {})
     forbidden_exact = set(cfg.get("forbidden", []))
     forbidden_prefixes = list(cfg.get("forbidden_prefixes", []))
     allowlist = set(cfg.get("forbidden_prefix_allowlist", []))
-    hits: List[str] = []
+    hits: list[str] = []
     for tbl in body_tables:
         if tbl in allowlist:
             continue
@@ -352,11 +342,11 @@ def check_forbidden(
 # ---------------------------------------------------------------------------
 
 
-def check_file(path: str, rules: Dict[str, Dict[str, Any]]) -> FileReport:
+def check_file(path: str, rules: dict[str, dict[str, Any]]) -> FileReport:
     num, suffix, slug, is_rollback = parse_filename(path)
     marker = read_first_line_marker(path)
-    errors: List[str] = []
-    warnings: List[str] = []
+    errors: list[str] = []
+    warnings: list[str] = []
 
     # check 1: marker presence
     if marker is None:
@@ -375,7 +365,7 @@ def check_file(path: str, rules: Dict[str, Dict[str, Any]]) -> FileReport:
             warnings.append("SLUG_PREFIX_UNKNOWN")
 
     # check 4: rollback pairing — resolved at the dir level, recorded here
-    rollback_pair: Optional[str] = None
+    rollback_pair: str | None = None
     if not is_rollback:
         rollback_pair = path[:-4] + "_rollback.sql"
         if not os.path.exists(rollback_pair):
@@ -387,9 +377,9 @@ def check_file(path: str, rules: Dict[str, Dict[str, Any]]) -> FileReport:
             errors.append("ROLLBACK_ORPHAN:no_forward")
 
     # check 5: SQL body vs target
-    body_tables: List[str] = []
+    body_tables: list[str] = []
     try:
-        with open(path, "r", encoding="utf-8", errors="replace") as fh:
+        with open(path, encoding="utf-8", errors="replace") as fh:
             sql = fh.read()
     except OSError as exc:
         errors.append(f"READ_FAILED:{exc}")
@@ -421,15 +411,15 @@ def check_file(path: str, rules: Dict[str, Dict[str, Any]]) -> FileReport:
 # ---------------------------------------------------------------------------
 
 
-def _sort_key(report: FileReport) -> Tuple[int, str, int]:
+def _sort_key(report: FileReport) -> tuple[int, str, int]:
     return (report.num or 0, report.suffix or "", 1 if report.is_rollback else 0)
 
 
 def dry_run_target(
     target: str,
-    forwards: List[FileReport],
-    rules: Dict[str, Dict[str, Any]],
-) -> Dict[str, Any]:
+    forwards: list[FileReport],
+    rules: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
     """Apply forward+rollback for one target against a fresh :memory: handle.
 
     DEEP-52 §5: forward in (NNN, suffix) order on handle X; rollback in
@@ -444,10 +434,10 @@ def dry_run_target(
     # Baseline schema_version. Fresh :memory: starts at 0.
     base_schema_version = _schema_version(handle)
 
-    forward_log: List[Dict[str, Any]] = []
-    rollback_log: List[Dict[str, Any]] = []
-    idempotency_log: List[Dict[str, Any]] = []
-    errors: List[str] = []
+    forward_log: list[dict[str, Any]] = []
+    rollback_log: list[dict[str, Any]] = []
+    idempotency_log: list[dict[str, Any]] = []
+    errors: list[str] = []
 
     sorted_forwards = sorted([r for r in forwards if not r.is_rollback], key=_sort_key)
 
@@ -519,10 +509,10 @@ def _schema_version(handle: sqlite3.Connection) -> int:
     return int(row[0]) if row else 0
 
 
-def _apply_sql_file(handle: sqlite3.Connection, path: str) -> Tuple[int, Optional[str]]:
+def _apply_sql_file(handle: sqlite3.Connection, path: str) -> tuple[int, str | None]:
     started = time.time()
     try:
-        with open(path, "r", encoding="utf-8", errors="replace") as fh:
+        with open(path, encoding="utf-8", errors="replace") as fh:
             sql = fh.read()
     except OSError as exc:
         return 0, f"read:{exc}"
@@ -544,7 +534,7 @@ def _apply_sql_file(handle: sqlite3.Connection, path: str) -> Tuple[int, Optiona
 # ---------------------------------------------------------------------------
 
 
-def discover_migrations(migrations_dir: str) -> List[str]:
+def discover_migrations(migrations_dir: str) -> list[str]:
     """Return all wave24_*.sql files (excludes *.draft via the suffix filter)."""
     pat = os.path.join(migrations_dir, "wave24_*.sql")
     files = sorted(glob.glob(pat))
@@ -552,11 +542,11 @@ def discover_migrations(migrations_dir: str) -> List[str]:
 
 
 def run_check(
-    files: List[str],
-    rules: Dict[str, Dict[str, Any]],
-    target_filter: Optional[str],
-) -> Tuple[List[FileReport], Dict[str, Any]]:
-    reports: List[FileReport] = [check_file(p, rules) for p in files]
+    files: list[str],
+    rules: dict[str, dict[str, Any]],
+    target_filter: str | None,
+) -> tuple[list[FileReport], dict[str, Any]]:
+    reports: list[FileReport] = [check_file(p, rules) for p in files]
 
     # Cross-check rollback pair markers match.
     by_path = {r.path: r for r in reports}
@@ -572,8 +562,8 @@ def run_check(
     if target_filter:
         reports = [r for r in reports if r.marker == target_filter]
 
-    error_counter: Dict[str, int] = {}
-    target_counter: Dict[str, int] = {}
+    error_counter: dict[str, int] = {}
+    target_counter: dict[str, int] = {}
     for r in reports:
         for e in r.errors:
             head = e.split(":", 1)[0]
@@ -605,7 +595,7 @@ def _json_default(obj: Any) -> Any:
     raise TypeError(f"unserializable {type(obj).__name__}")
 
 
-def main(argv: Optional[List[str]] = None) -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="DEEP-52 migration target_db verifier")
     parser.add_argument(
         "--check",
@@ -673,7 +663,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     dry_run_failed = False
     if args.dry_run:
         targets_to_run = [args.target] if args.target else list(VALID_TARGETS)
-        dry_results: Dict[str, Any] = {}
+        dry_results: dict[str, Any] = {}
         for tgt in targets_to_run:
             forwards = [r for r in reports if r.marker == tgt]
             res = dry_run_target(tgt, forwards, rules)

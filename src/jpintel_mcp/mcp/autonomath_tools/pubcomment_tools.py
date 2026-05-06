@@ -88,13 +88,7 @@ def _open_db() -> sqlite3.Connection | dict[str, Any]:
 
 
 def _today_iso() -> str:
-    return (
-        datetime.datetime.now(
-            datetime.timezone(datetime.timedelta(hours=9))
-        )
-        .date()
-        .isoformat()
-    )
+    return datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).date().isoformat()
 
 
 # ---------------------------------------------------------------------------
@@ -200,7 +194,9 @@ def _get_pubcomment_status_impl(
         "limit": limit,
         "offset": 0,
         "as_of_jst": today,
-        "_disclaimer": _DISCLAIMER_PUBCOMMENT if sensitive_cohort_hit or results else _DISCLAIMER_PUBCOMMENT,
+        "_disclaimer": _DISCLAIMER_PUBCOMMENT
+        if sensitive_cohort_hit or results
+        else _DISCLAIMER_PUBCOMMENT,
         "_next_calls": [
             {
                 "tool": "search_kokkai_utterance",

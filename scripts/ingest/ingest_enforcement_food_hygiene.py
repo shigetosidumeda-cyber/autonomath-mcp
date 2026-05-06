@@ -56,7 +56,8 @@ import sqlite3
 import sys
 import unicodedata
 from dataclasses import dataclass
-from datetime import UTC, date as date_cls, datetime
+from datetime import UTC, datetime
+from datetime import date as date_cls
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -242,7 +243,7 @@ def fetch_mhlw_food_feeds(http: HttpClient) -> list[FoodEnfRow]:
 
 
 def _slug8(name: str, date: str, extra: str = "") -> str:
-    h = hashlib.sha1(f"{name}|{date}|{extra}".encode("utf-8")).hexdigest()
+    h = hashlib.sha1(f"{name}|{date}|{extra}".encode()).hexdigest()
     return h[:8]
 
 

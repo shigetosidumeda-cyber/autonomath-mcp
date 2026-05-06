@@ -35,6 +35,7 @@ import time
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
+
 try:
     import requests
 except ImportError as exc:  # pragma: no cover — guarded at module load
@@ -449,7 +450,11 @@ def run(
         for rec in cinii_records:
             counters["articles_examined"] += 1
             blob = " ".join(
-                [rec.get("article_title", ""), rec.get("article_authors", ""), rec.get("journal_name", "")]
+                [
+                    rec.get("article_title", ""),
+                    rec.get("article_authors", ""),
+                    rec.get("journal_name", ""),
+                ]
             )
             hits = _grep_keywords(blob)
             if not hits:
@@ -500,7 +505,9 @@ def run(
                     time.sleep(sleep_sec)
                     for rec in js_records:
                         counters["articles_examined"] += 1
-                        blob = " ".join([rec.get("article_title", ""), rec.get("article_authors", "")])
+                        blob = " ".join(
+                            [rec.get("article_title", ""), rec.get("article_authors", "")]
+                        )
                         hits = _grep_keywords(blob)
                         if not hits:
                             continue
@@ -584,10 +591,24 @@ def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(
         description="DEEP-40 monthly industry journal mention ingest (LLM 0).",
     )
-    p.add_argument("--db", type=Path, default=_DEFAULT_DB, help=f"SQLite path (default: {_DEFAULT_DB})")
-    p.add_argument("--month", type=str, default="", help="Target YYYY-MM (informational; spec retains 13mo lookback).")
-    p.add_argument("--months-back", type=int, default=13, help="Lookback window in months (default 13).")
-    p.add_argument("--sleep", type=float, default=_RATE_SLEEP_SEC, help=f"Per-request sleep sec (default {_RATE_SLEEP_SEC}).")
+    p.add_argument(
+        "--db", type=Path, default=_DEFAULT_DB, help=f"SQLite path (default: {_DEFAULT_DB})"
+    )
+    p.add_argument(
+        "--month",
+        type=str,
+        default="",
+        help="Target YYYY-MM (informational; spec retains 13mo lookback).",
+    )
+    p.add_argument(
+        "--months-back", type=int, default=13, help="Lookback window in months (default 13)."
+    )
+    p.add_argument(
+        "--sleep",
+        type=float,
+        default=_RATE_SLEEP_SEC,
+        help=f"Per-request sleep sec (default {_RATE_SLEEP_SEC}).",
+    )
     p.add_argument("--dry-run", action="store_true", help="Fetch + grep, do not write to DB.")
     p.add_argument("--verbose", action="store_true")
     args = p.parse_args(argv)

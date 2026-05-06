@@ -20,6 +20,7 @@ WORKFLOW:
 
 NO LLM IMPORT.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -32,7 +33,6 @@ from _runner_common import (
 )
 
 from jpintel_mcp.ingest.schemas.invoice_buyer_seller import BuyerSellerEdge
-
 
 TOOL_SLUG = "edinet_relations"
 

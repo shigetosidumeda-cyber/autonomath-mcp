@@ -223,7 +223,7 @@ def report(conn: sqlite3.Connection) -> None:
         "SELECT cited_entity_id AS e FROM am_citation_network "
         "UNION SELECT citing_entity_id FROM am_citation_network)"
     ).fetchone()[0]
-    print(f"\n=== am_citation_network report ===")
+    print("\n=== am_citation_network report ===")
     print(f"edges_total={total}  distinct_entities={distinct}")
 
     # Per-kind edge breakdown

@@ -103,6 +103,18 @@ ErrorCode = Literal[
     "db_unavailable",
     "subsystem_unavailable",
     "internal",
+    # Wave 31 intel_* tools surface two extra codes:
+    #   - "not_found": canonical id / bangou / seed name resolved no row.
+    #     Distinct from "seed_not_found" because Wave 31 callers pass
+    #     concrete identifiers (program_id / houjin_bangou / law_id), not
+    #     graph seeds.
+    #   - "invalid_input": payload-level validation failure (Pydantic
+    #     ValidationError, malformed JSON, contradictory fields) that
+    #     pre-dates the per-arg "missing_required_arg" / "invalid_enum"
+    #     branches. Kept as a separate code so dashboards can split
+    #     "shape-wrong" from "value-wrong".
+    "not_found",
+    "invalid_input",
 ]
 
 #: Public list of error codes + severity + one-line description.
@@ -156,6 +168,14 @@ ERROR_CODES: dict[str, dict[str, str]] = {
     "internal": {
         "severity": "hard",
         "summary": "Unhandled exception inside the tool. Report and retry with backoff.",
+    },
+    "not_found": {
+        "severity": "soft",
+        "summary": "Concrete identifier (program_id / houjin_bangou / law_id) resolved no row. Try search_* first.",
+    },
+    "invalid_input": {
+        "severity": "hard",
+        "summary": "Payload-level validation failure (Pydantic / JSON / contradictory fields). Inspect 'message' for the offending shape.",
     },
 }
 

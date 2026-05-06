@@ -51,7 +51,7 @@ import sqlite3
 import subprocess
 import sys
 import tempfile
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -154,10 +154,10 @@ def _pre_backup(live: Path, out_dir: Path) -> Path | None:
         live.stat().st_size * 2 + _FREE_SPACE_MARGIN_BYTES,
         "pre-restore backup",
     )
-    ts = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+    ts = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
     dst = out_dir / f"pre-restore-{live.stem}-{ts}.db"
     sys.path.insert(0, str(Path(__file__).resolve().parent))
-    from backup import _online_backup, _gzip_file, _write_sha256  # type: ignore
+    from backup import _gzip_file, _online_backup, _write_sha256  # type: ignore
 
     _online_backup(live, dst)
     gz = _gzip_file(dst)

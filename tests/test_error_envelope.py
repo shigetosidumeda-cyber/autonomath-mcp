@@ -20,7 +20,6 @@ across the REST surface; ``api/_error_envelope.py:make_error`` and
 
 from __future__ import annotations
 
-
 from fastapi.testclient import TestClient
 
 from jpintel_mcp.api._error_envelope import (
@@ -29,7 +28,6 @@ from jpintel_mcp.api._error_envelope import (
     make_error,
     safe_request_id,
 )
-
 
 # ---------------------------------------------------------------------------
 # make_error helper unit tests

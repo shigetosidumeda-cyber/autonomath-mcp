@@ -50,7 +50,7 @@ def _import_anon():
 # ---------------------------------------------------------------------------
 
 
-def test_db_lock_returns_429_not_200(client: "TestClient", monkeypatch: pytest.MonkeyPatch) -> None:
+def test_db_lock_returns_429_not_200(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     """Pre-fix: this asserted 200 (fail-open). Post-fix: must be 429."""
     anon = _import_anon()
 
@@ -68,7 +68,7 @@ def test_db_lock_returns_429_not_200(client: "TestClient", monkeypatch: pytest.M
 
 
 def test_db_lock_envelope_has_unavailable_reason(
-    client: "TestClient", monkeypatch: pytest.MonkeyPatch
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """The fail-closed envelope distinguishes itself from a real over-quota
     via reason='rate_limit_unavailable'."""
@@ -98,7 +98,7 @@ def test_db_lock_envelope_has_unavailable_reason(
 
 
 def test_real_quota_exceed_carries_distinct_reason(
-    client: "TestClient", monkeypatch: pytest.MonkeyPatch
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """The healthy-DB over-quota path carries reason='rate_limit_exceeded'
     so it is unambiguously split from the fail-closed envelope above."""
@@ -126,7 +126,7 @@ def test_real_quota_exceed_carries_distinct_reason(
 
 
 def test_db_generic_sqlite_error_also_fails_closed(
-    client: "TestClient", monkeypatch: pytest.MonkeyPatch
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """sqlite3.Error (not just OperationalError) must also trigger fail-closed.
     The except clause is `except sqlite3.Error` which is the parent of every
@@ -145,7 +145,7 @@ def test_db_generic_sqlite_error_also_fails_closed(
 
 
 def test_db_lock_envelope_carries_upgrade_url(
-    client: "TestClient", monkeypatch: pytest.MonkeyPatch
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """Even on backend outage the conversion path must surface — a degraded
     rate limiter is no excuse to drop the upgrade hint that turns a friction

@@ -35,7 +35,7 @@ import logging
 import os
 import re
 import sys
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 # Reuse the proven online backup helpers.
@@ -48,7 +48,7 @@ _KEY_RE = re.compile(r"^jpintel-(\d{8})-(\d{6})\.db\.gz$")
 
 
 def _now_utc() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def _stamp(now: datetime) -> str:

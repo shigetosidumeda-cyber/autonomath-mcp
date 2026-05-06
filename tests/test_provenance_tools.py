@@ -45,7 +45,6 @@ from jpintel_mcp.mcp.autonomath_tools.provenance_tools import (  # noqa: E402
     get_provenance_for_fact,
 )
 
-
 # ---------------------------------------------------------------------------
 # Fixtures: discover real entities + fact ids for happy-path tests.
 # ---------------------------------------------------------------------------

@@ -24,7 +24,6 @@ from pathlib import Path
 
 import pytest
 
-
 REPO = Path(__file__).resolve().parent.parent
 SRC = REPO / "src"
 if str(SRC) not in sys.path:

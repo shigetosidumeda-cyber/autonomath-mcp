@@ -20,6 +20,7 @@ WORKFLOW:
 
 NO LLM IMPORT.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -33,7 +34,6 @@ from _runner_common import (
 )
 
 from jpintel_mcp.ingest.schemas.program_documents import ProgramDocumentsRow
-
 
 TOOL_SLUG = "program_application_documents"
 
@@ -81,9 +81,7 @@ def parse_args() -> argparse.Namespace:
     return p.parse_args()
 
 
-def list_pending(
-    jpintel_db: str, autonomath_db: str, limit: int
-) -> list[dict]:
+def list_pending(jpintel_db: str, autonomath_db: str, limit: int) -> list[dict]:
     programs = query_rows(jpintel_db, SQL_PROGRAMS)
     done = {r["program_unified_id"] for r in query_rows(autonomath_db, SQL_DONE_PROGRAM_UIDS)}
     out = []

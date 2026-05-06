@@ -141,8 +141,12 @@ def test_per_law_coverage_seven_axes(corpus):
                 per_law_clean[mapped] += 1
 
     for law in EXPECTED_LAWS:
-        assert per_law_violation[law] >= 7, f"{law}: only {per_law_violation[law]} violation samples (need >= 7)"
-        assert per_law_clean[law] >= 7, f"{law}: only {per_law_clean[law]} clean samples (need >= 7)"
+        assert per_law_violation[law] >= 7, (
+            f"{law}: only {per_law_violation[law]} violation samples (need >= 7)"
+        )
+        assert per_law_clean[law] >= 7, (
+            f"{law}: only {per_law_clean[law]} clean samples (need >= 7)"
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -157,7 +161,9 @@ def _run_detector(sample: dict[str, Any]) -> list[dict[str, Any]]:
 def _build_confusion_matrix(corpus: list[dict[str, Any]]) -> dict[str, Any]:
     """Compute overall + per-業法 TP/FP/FN/TN."""
     overall = {"tp": 0, "fp": 0, "fn": 0, "tn": 0}
-    per_law: dict[str, dict[str, int]] = {law: {"tp": 0, "fp": 0, "fn": 0, "tn": 0} for law in EXPECTED_LAWS}
+    per_law: dict[str, dict[str, int]] = {
+        law: {"tp": 0, "fp": 0, "fn": 0, "tn": 0} for law in EXPECTED_LAWS
+    }
     miss_ids: list[str] = []
     fp_ids: list[str] = []
 
@@ -207,8 +213,7 @@ def test_overall_true_positive_rate_above_95pct(corpus):
     assert expected_violations == 50, f"violation cohort changed: {expected_violations}"
     rate = overall["tp"] / expected_violations
     assert rate > TP_RATE_FLOOR, (
-        f"TP rate {rate:.2%} below floor {TP_RATE_FLOOR:.0%} "
-        f"(missed: {cm['miss_ids']})"
+        f"TP rate {rate:.2%} below floor {TP_RATE_FLOOR:.0%} (missed: {cm['miss_ids']})"
     )
 
 
@@ -219,8 +224,7 @@ def test_overall_false_positive_rate_below_5pct(corpus):
     assert expected_cleans == 50, f"clean cohort changed: {expected_cleans}"
     rate = overall["fp"] / expected_cleans
     assert rate < FP_RATE_CEILING, (
-        f"FP rate {rate:.2%} above ceiling {FP_RATE_CEILING:.0%} "
-        f"(false hits: {cm['fp_ids']})"
+        f"FP rate {rate:.2%} above ceiling {FP_RATE_CEILING:.0%} (false hits: {cm['fp_ids']})"
     )
 
 

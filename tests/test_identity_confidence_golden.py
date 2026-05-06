@@ -47,12 +47,8 @@ from jpintel_mcp.api._identity_confidence import AXIS_SCORE, score
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 GOLDEN_PATH = REPO_ROOT / "tests" / "fixtures" / "identity_confidence_golden.yaml"
-GENERATOR_PATH = (
-    REPO_ROOT / "scripts" / "ops" / "generate_identity_confidence_golden.py"
-)
-CALCULATOR_PATH = (
-    REPO_ROOT / "src" / "jpintel_mcp" / "api" / "_identity_confidence.py"
-)
+GENERATOR_PATH = REPO_ROOT / "scripts" / "ops" / "generate_identity_confidence_golden.py"
+CALCULATOR_PATH = REPO_ROOT / "src" / "jpintel_mcp" / "api" / "_identity_confidence.py"
 THIS_FILE = pathlib.Path(__file__).resolve()
 
 PER_AXIS_TARGET = 200
@@ -150,9 +146,9 @@ def test_corpus_schema_keys(corpus: list[dict[str, Any]]) -> None:
         missing = required - set(e.keys())
         assert not missing, f"entry {e.get('id')} missing keys {missing}"
         # Each entry must have at least one candidate_* identifier
-        assert (
-            "candidate_houjin_bangou" in e or "candidate_houjin_name" in e
-        ), f"entry {e['id']} has no candidate_* field"
+        assert "candidate_houjin_bangou" in e or "candidate_houjin_name" in e, (
+            f"entry {e['id']} has no candidate_* field"
+        )
 
 
 def test_expected_ranges_match_axis_table(corpus: list[dict[str, Any]]) -> None:
@@ -255,9 +251,7 @@ def test_overall_accuracy_above_90_percent(corpus: list[dict[str, Any]]) -> None
 
 def test_per_cohort_accuracy(corpus: list[dict[str, Any]]) -> None:
     """DEEP-64 §5 (3) — kabushiki / godo / yugen / ippan / sole each >= 75%."""
-    by_cohort: dict[str, dict[str, int]] = defaultdict(
-        lambda: {"in_range": 0, "total": 0}
-    )
+    by_cohort: dict[str, dict[str, int]] = defaultdict(lambda: {"in_range": 0, "total": 0})
     for e in corpus:
         cand = _entry_to_candidate(e)
         s, _axis, _axes = score(e["query"], cand)

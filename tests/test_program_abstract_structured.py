@@ -39,7 +39,6 @@ from jpintel_mcp.mcp.autonomath_tools.multilingual_abstract_tool import (
     _program_abstract_structured_impl,
 )
 
-
 _SAMPLE_PROGRAM_ID = "UNI-16b8d86302"
 _SAMPLE_NAME = "人材確保等支援助成金（外国人労働者就労環境整備助成コース）"
 _SAMPLE_LEGAL = "雇用保険法 (厚生労働省) - 雇用保険二事業 (事業主負担分)"

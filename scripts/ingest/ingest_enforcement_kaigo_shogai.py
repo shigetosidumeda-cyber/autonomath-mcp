@@ -646,7 +646,7 @@ def parse_tokyo_cumulative_pdf(pdf_bytes: bytes, *, default_law: str) -> list[En
                         if not raw or len(raw) < 11:
                             continue
                         cols = [_clean(c) for c in raw]
-                        if "申請者名称" in cols[1] or "年度" == cols[0]:
+                        if "申請者名称" in cols[1] or cols[0] == "年度":
                             continue
                         target_name = cols[1]
                         if not target_name or len(target_name) > 200:
@@ -812,7 +812,7 @@ def parse_press_pdf(
 
 
 def _slug8(name: str, date: str) -> str:
-    h = hashlib.sha1(f"{name}|{date}".encode("utf-8")).hexdigest()
+    h = hashlib.sha1(f"{name}|{date}".encode()).hexdigest()
     return h[:8]
 
 

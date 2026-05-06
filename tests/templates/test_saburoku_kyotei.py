@@ -15,7 +15,6 @@ from jpintel_mcp.templates.saburoku_kyotei import (
     render_36_kyotei,
 )
 
-
 VALID_FIELDS = {
     "company_name": "Bookyou株式会社",
     "address": "東京都文京区小日向2-22-1",

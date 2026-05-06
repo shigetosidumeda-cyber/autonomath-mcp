@@ -32,11 +32,9 @@ import argparse
 import re
 import sqlite3
 import ssl
-import sys
 import time
 import urllib.parse
 import urllib.request
-from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 
@@ -413,7 +411,7 @@ def discover_shitsugi_pages(category: str) -> list[str]:
         for a in content.find_all("a", href=True):
             href = a["href"]
             m = re.match(rf"^/law/shitsugi/{category}/(\d+)/(\d+)\.htm$", href) or re.match(
-                rf"^(\d+)/(\d+)\.htm$", href
+                r"^(\d+)/(\d+)\.htm$", href
             )
             if m:
                 # Build full URL

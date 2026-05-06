@@ -45,7 +45,6 @@ from jpintel_mcp.mcp.autonomath_tools.lifecycle_calendar_tool import (  # noqa: 
     _unified_lifecycle_calendar_impl,
 )
 
-
 # ---------------------------------------------------------------------------
 # Case 1 — 2026-09-30 周辺 tax_sunset 検出 (インボイス 2割特例 経過措置)
 # ---------------------------------------------------------------------------

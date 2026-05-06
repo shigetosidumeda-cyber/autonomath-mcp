@@ -19,7 +19,6 @@ from pathlib import Path
 
 import pytest
 
-
 # Ensure src/ is on path for direct test runs.
 _REPO = Path(__file__).resolve().parent.parent
 _SRC = _REPO / "src"

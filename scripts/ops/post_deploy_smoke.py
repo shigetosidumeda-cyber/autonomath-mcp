@@ -33,9 +33,10 @@ import os
 import subprocess
 import sys
 import time
-from dataclasses import dataclass, field, asdict
+from collections.abc import Callable
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 import httpx
 
@@ -333,7 +334,7 @@ def module_disclaimer_emit_17(args: argparse.Namespace) -> ModuleResult:
 
     ok = not misses
     summary = (
-        f"17/17 sensitive tools emit _disclaimer"
+        "17/17 sensitive tools emit _disclaimer"
         if ok
         else f"{len(hits)}/17 emit OK, {len(misses)} missing first={misses[:3]}"
     )

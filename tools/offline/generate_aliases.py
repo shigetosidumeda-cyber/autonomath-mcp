@@ -100,6 +100,7 @@ What this script does NOT do
 * Does NOT overwrite `programs.aliases_json` directly. Operator review of
   the CSV is the gate.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -203,9 +204,7 @@ PARTICLE_PATTERNS: list[tuple[re.Pattern[str], str]] = [
 # leading municipal / prefectural ID prefix (PREF-… / MUN-… / JIM-… / etc.)
 # that is appended in operator-side enrichment.
 # ---------------------------------------------------------------------------
-LEADING_BRACKET_RE = re.compile(
-    r"^(?:[【】「-』\[\(（].*?[】」』\)\]）]\s*)+"
-)
+LEADING_BRACKET_RE = re.compile(r"^(?:[【】「-』\[\(（].*?[】」』\)\]）]\s*)+")
 LEADING_ID_RE = re.compile(r"^(?:PREF|MUN|JIM|GOV)-[A-Z0-9_\-]+_[^_]+_")
 LEADING_DEADLINE_RE = re.compile(r"^【\d+/\d+〆?】\s*")
 
@@ -213,6 +212,7 @@ LEADING_DEADLINE_RE = re.compile(r"^【\d+/\d+〆?】\s*")
 # ---------------------------------------------------------------------------
 # pykakasi loader (lazy, single-instance).
 # ---------------------------------------------------------------------------
+
 
 def _load_kakasi():
     """Lazy pykakasi loader. Exits with code 2 if pykakasi missing.
@@ -225,8 +225,7 @@ def _load_kakasi():
         import pykakasi  # type: ignore[import-untyped]
     except ImportError:
         LOG.error(
-            "pykakasi is required for kana generation. "
-            "Install with: pip install -e \".[site]\""
+            'pykakasi is required for kana generation. Install with: pip install -e ".[site]"'
         )
         sys.exit(2)
     return pykakasi.kakasi()
@@ -244,10 +243,7 @@ _FW_LETTERS = (
     "ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ"
     "ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ"
 )
-_HW_LETTERS = (
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    "abcdefghijklmnopqrstuvwxyz"
-)
+_HW_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 _FW_TO_HW = str.maketrans(_FW_DIGITS + _FW_LETTERS, _HW_DIGITS + _HW_LETTERS)
 _HW_TO_FW = str.maketrans(_HW_DIGITS + _HW_LETTERS, _FW_DIGITS + _FW_LETTERS)
 
@@ -263,6 +259,7 @@ def _has_halfwidth_alnum(text: str) -> bool:
 # ---------------------------------------------------------------------------
 # Per-rule generators. Each returns a list of candidate strings (may be empty).
 # ---------------------------------------------------------------------------
+
 
 def gen_hira(name: str, kks) -> list[str]:
     parts = kks.convert(name)
@@ -358,6 +355,7 @@ def gen_bracket_strip(name: str) -> list[str]:
 # Orchestration
 # ---------------------------------------------------------------------------
 
+
 def _norm_for_dedup(text: str) -> str:
     """Casefold + whitespace-trim for dedup comparison (does NOT modify
     the surface form we emit — only used for set-membership checks).
@@ -371,8 +369,9 @@ def _norm_for_dedup(text: str) -> str:
     return text.strip().casefold()
 
 
-def generate_for_name(name: str, kks, max_aliases: int = MAX_ALIASES
-                      ) -> tuple[list[str], list[str]]:
+def generate_for_name(
+    name: str, kks, max_aliases: int = MAX_ALIASES
+) -> tuple[list[str], list[str]]:
     """Return (aliases, methods_fired).
 
     Pure function. Caller passes the kakasi handle (pre-loaded) so this is
@@ -423,8 +422,9 @@ def generate_for_name(name: str, kks, max_aliases: int = MAX_ALIASES
     return aliases, methods_fired
 
 
-def iter_programs(jpintel_db: Path, only_empty: bool, limit: int | None
-                  ) -> Iterable[tuple[str, str, str | None]]:
+def iter_programs(
+    jpintel_db: Path, only_empty: bool, limit: int | None
+) -> Iterable[tuple[str, str, str | None]]:
     """Yield (unified_id, primary_name, current_aliases_json) read-only.
 
     Read-only mode is enforced via SQLite URI `?mode=ro` so any accidental
@@ -441,10 +441,7 @@ def iter_programs(jpintel_db: Path, only_empty: bool, limit: int | None
             "   AND primary_name != ''"
         )
         if only_empty:
-            sql += (
-                " AND (aliases_json IS NULL OR aliases_json = '' "
-                "      OR aliases_json = '[]')"
-            )
+            sql += " AND (aliases_json IS NULL OR aliases_json = ''       OR aliases_json = '[]')"
         sql += " ORDER BY unified_id"
         if limit:
             sql += f" LIMIT {int(limit)}"
@@ -460,17 +457,17 @@ def write_csv(rows: list[dict], out_path: Path) -> None:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with out_path.open("w", encoding="utf-8-sig", newline="") as f:
         w = csv.writer(f, quoting=csv.QUOTE_ALL)
-        w.writerow(
-            ["program_id", "primary_name", "aliases_json", "n_aliases", "methods"]
-        )
+        w.writerow(["program_id", "primary_name", "aliases_json", "n_aliases", "methods"])
         for r in rows:
-            w.writerow([
-                r["program_id"],
-                r["primary_name"],
-                json.dumps(r["aliases"], ensure_ascii=False),
-                len(r["aliases"]),
-                ",".join(r["methods"]),
-            ])
+            w.writerow(
+                [
+                    r["program_id"],
+                    r["primary_name"],
+                    json.dumps(r["aliases"], ensure_ascii=False),
+                    len(r["aliases"]),
+                    ",".join(r["methods"]),
+                ]
+            )
 
 
 def print_dry_run(rows: list[dict]) -> None:
@@ -500,9 +497,7 @@ def summary_stats(rows: list[dict]) -> dict:
     return {
         "total_programs": total,
         "with_at_least_one_alias": with_any,
-        "with_at_least_one_alias_pct": (
-            round(100 * with_any / total, 2) if total else 0.0
-        ),
+        "with_at_least_one_alias_pct": (round(100 * with_any / total, 2) if total else 0.0),
         "avg_aliases_per_program": round(avg, 3),
         "max_aliases_per_program": max(n_aliases) if n_aliases else 0,
         "method_fire_count": method_count,
@@ -516,23 +511,33 @@ def default_output_path() -> Path:
 
 
 def main(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(
-        description=__doc__.split("\n\n")[0] if __doc__ else None
+    p = argparse.ArgumentParser(description=__doc__.split("\n\n")[0] if __doc__ else None)
+    p.add_argument(
+        "--jpintel-db",
+        type=Path,
+        default=DEFAULT_JPINTEL_DB,
+        help="Path to jpintel.db (read-only opened)",
     )
-    p.add_argument("--jpintel-db", type=Path, default=DEFAULT_JPINTEL_DB,
-                   help="Path to jpintel.db (read-only opened)")
-    p.add_argument("--output", type=Path, default=None,
-                   help="CSV output path (default: analysis_wave18/aliases_backfill_<DATE>.csv)")
-    p.add_argument("--limit", type=int, default=None,
-                   help="Process only first N rows")
-    p.add_argument("--dry-run", action="store_true",
-                   help="Print to stdout instead of writing CSV")
-    p.add_argument("--only-empty", action="store_true",
-                   help="Only process rows where aliases_json is NULL/''/'[]'")
-    p.add_argument("--max-aliases", type=int, default=MAX_ALIASES,
-                   help=f"Cap aliases per program (default {MAX_ALIASES})")
-    p.add_argument("--verbose", "-v", action="store_true",
-                   help="Verbose logging")
+    p.add_argument(
+        "--output",
+        type=Path,
+        default=None,
+        help="CSV output path (default: analysis_wave18/aliases_backfill_<DATE>.csv)",
+    )
+    p.add_argument("--limit", type=int, default=None, help="Process only first N rows")
+    p.add_argument("--dry-run", action="store_true", help="Print to stdout instead of writing CSV")
+    p.add_argument(
+        "--only-empty",
+        action="store_true",
+        help="Only process rows where aliases_json is NULL/''/'[]'",
+    )
+    p.add_argument(
+        "--max-aliases",
+        type=int,
+        default=MAX_ALIASES,
+        help=f"Cap aliases per program (default {MAX_ALIASES})",
+    )
+    p.add_argument("--verbose", "-v", action="store_true", help="Verbose logging")
     args = p.parse_args(argv)
 
     logging.basicConfig(
@@ -550,15 +555,15 @@ def main(argv: list[str] | None = None) -> int:
     for unified_id, primary_name, _current in iter_programs(
         args.jpintel_db, only_empty=args.only_empty, limit=args.limit
     ):
-        aliases, methods = generate_for_name(
-            primary_name, kks, max_aliases=args.max_aliases
+        aliases, methods = generate_for_name(primary_name, kks, max_aliases=args.max_aliases)
+        rows.append(
+            {
+                "program_id": unified_id,
+                "primary_name": primary_name,
+                "aliases": aliases,
+                "methods": methods,
+            }
         )
-        rows.append({
-            "program_id": unified_id,
-            "primary_name": primary_name,
-            "aliases": aliases,
-            "methods": methods,
-        })
 
     stats = summary_stats(rows)
     LOG.info("scanned %d programs", stats["total_programs"])

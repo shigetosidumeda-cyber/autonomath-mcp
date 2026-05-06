@@ -39,6 +39,7 @@ agree on a single source of truth. Whitelisted (NOT redacted):
 都道府県 / 市区町村 names. The SVG `alt` text is the static literal
 ``"jpcite verified"`` — never embeds PII or program names.
 """
+
 from __future__ import annotations
 
 import json
@@ -50,7 +51,8 @@ import uuid
 from typing import Annotated, Literal
 from urllib.parse import urlparse
 
-from fastapi import APIRouter, HTTPException, Path as FPath, Query, Response, status
+from fastapi import APIRouter, HTTPException, Query, Response, status
+from fastapi import Path as FPath
 
 logger = logging.getLogger("jpintel.api.citation_badge")
 
@@ -60,9 +62,7 @@ logger = logging.getLogger("jpintel.api.citation_badge")
 # ---------------------------------------------------------------------------
 
 VerifiedStatus = Literal["verified", "expired", "invalid", "boundary_warn"]
-_VALID_STATUSES: frozenset[str] = frozenset(
-    {"verified", "expired", "invalid", "boundary_warn"}
-)
+_VALID_STATUSES: frozenset[str] = frozenset({"verified", "expired", "invalid", "boundary_warn"})
 
 # Aggregator banlist mirrored from `_verifier.py` so the badge enforcement
 # stays in lock-step with DEEP-25. Reused for citation MD source rejection.
@@ -136,9 +136,7 @@ _SCRUBBER_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
     # Strictly digit-hyphen-digit-hyphen-digit (canonical_id uses
     # colons, not hyphens, so canonical_ids are never scrubbed).
     (
-        re.compile(
-            r"(?<=[都道府県市区町村])[^\d\n]{0,15}\d+-\d+-\d+"
-        ),
+        re.compile(r"(?<=[都道府県市区町村])[^\d\n]{0,15}\d+-\d+-\d+"),
         "[番地]",
     ),
 )
@@ -219,9 +217,7 @@ def _open_autonomath() -> sqlite3.Connection | None:
     try:
         from jpintel_mcp.config import settings
 
-        path = os.environ.get(
-            "AUTONOMATH_DB_PATH", str(settings.autonomath_db_path)
-        )
+        path = os.environ.get("AUTONOMATH_DB_PATH", str(settings.autonomath_db_path))
     except Exception:  # noqa: BLE001 — defensive in test env
         path = os.environ.get("AUTONOMATH_DB_PATH", "")
 
@@ -297,10 +293,7 @@ def _fetch_row(request_id: str) -> sqlite3.Row | None:
             alt = request_id.replace("-", "").lower()
         else:
             rid = request_id.lower()
-            alt = (
-                f"{rid[0:8]}-{rid[8:12]}-{rid[12:16]}-"
-                f"{rid[16:20]}-{rid[20:32]}"
-            )
+            alt = f"{rid[0:8]}-{rid[8:12]}-{rid[12:16]}-{rid[16:20]}-{rid[20:32]}"
         row = conn.execute(
             "SELECT request_id, api_key_id, answer_text, source_urls, "
             "       created_at, verified_status, ttl_days "
@@ -445,17 +438,12 @@ def render_citation_md(
     # caller may pass `None` when the upstream tool did not run that
     # surface. Static template still renders the row so the schema is
     # stable across pages.
-    ic_str = (
-        f"{identity_confidence:.3f}"
-        if isinstance(identity_confidence, float)
-        else "N/A"
-    )
+    ic_str = f"{identity_confidence:.3f}" if isinstance(identity_confidence, float) else "N/A"
 
     lineage_md = ""
     if amendment_lineage:
         lineage_md = "\n".join(
-            f"- {entry.get('effective_from', '????-??-??')}: "
-            f"{entry.get('summary', '')}"
+            f"- {entry.get('effective_from', '????-??-??')}: {entry.get('summary', '')}"
             for entry in amendment_lineage
             if isinstance(entry, dict)
         )

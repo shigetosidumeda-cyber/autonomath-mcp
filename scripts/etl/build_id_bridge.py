@@ -59,9 +59,8 @@ import argparse
 import sqlite3
 import sys
 import time
-from collections import Counter, defaultdict
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 try:
     from rapidfuzz import fuzz, process

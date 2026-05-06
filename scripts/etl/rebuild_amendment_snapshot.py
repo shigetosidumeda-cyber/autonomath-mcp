@@ -81,10 +81,8 @@ import argparse
 import hashlib
 import json
 import logging
-import os
 import re
 import sqlite3
-import sys
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any

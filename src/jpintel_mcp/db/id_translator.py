@@ -74,7 +74,6 @@ from __future__ import annotations
 import logging
 import sqlite3
 from functools import lru_cache
-from typing import Optional
 
 logger = logging.getLogger("jpintel.db.id_translator")
 
@@ -131,7 +130,7 @@ def _get_conn() -> sqlite3.Connection | None:
 
 
 @lru_cache(maxsize=10_000)
-def program_unified_to_canonical(unified_id: str) -> Optional[str]:
+def program_unified_to_canonical(unified_id: str) -> str | None:
     """Translate ``UNI-...`` → ``program:...`` via ``entity_id_map``.
 
     Returns the highest-confidence ``am_canonical_id`` for the given
@@ -162,7 +161,7 @@ def program_unified_to_canonical(unified_id: str) -> Optional[str]:
 
 
 @lru_cache(maxsize=10_000)
-def program_canonical_to_unified(canonical_id: str) -> Optional[str]:
+def program_canonical_to_unified(canonical_id: str) -> str | None:
     """Translate ``program:...`` → ``UNI-...``.
 
     Two-tier resolution:
@@ -226,7 +225,7 @@ def program_canonical_to_unified(canonical_id: str) -> Optional[str]:
 
 def normalize_program_id(
     program_id: str | None,
-) -> tuple[Optional[str], Optional[str]]:
+) -> tuple[str | None, str | None]:
     """Resolve ``program_id`` (either form) to ``(unified_id, canonical_id)``.
 
     Either component is ``None`` when translation fails. The original

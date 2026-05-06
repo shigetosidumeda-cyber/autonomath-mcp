@@ -1244,7 +1244,7 @@ def _parse_iso_date(s: str | None) -> date | None:
 
 
 def ext_unified_id(name: str, source_url: str) -> str:
-    blob = f"jcci|{name}|{source_url}".encode("utf-8")
+    blob = f"jcci|{name}|{source_url}".encode()
     digest = hashlib.sha1(blob).hexdigest()[:10]
     return f"UNI-ext-{digest}"
 
@@ -1288,7 +1288,7 @@ def upsert_program(
     }
     enriched_json = json.dumps(enriched, ensure_ascii=False)
 
-    checksum = hashlib.sha1(f"{name}|{src}|{status}".encode("utf-8")).hexdigest()[:16]
+    checksum = hashlib.sha1(f"{name}|{src}|{status}".encode()).hexdigest()[:16]
 
     con.execute("BEGIN IMMEDIATE")
     try:

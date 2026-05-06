@@ -302,7 +302,7 @@ def _coerce_date(cell: object) -> str | None:
 
 
 def _slug8(name: str, date_iso: str, kind: str) -> str:
-    h = hashlib.sha1(f"{name}|{date_iso}|{kind}".encode("utf-8")).hexdigest()
+    h = hashlib.sha1(f"{name}|{date_iso}|{kind}".encode()).hexdigest()
     return h[:10]
 
 

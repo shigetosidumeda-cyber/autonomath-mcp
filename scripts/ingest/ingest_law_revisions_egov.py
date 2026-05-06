@@ -25,8 +25,8 @@ from __future__ import annotations
 import argparse
 import json
 import logging
-import ssl
 import sqlite3
+import ssl
 import sys
 import time
 import urllib.request

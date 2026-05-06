@@ -62,9 +62,10 @@ import subprocess
 import sys
 import time
 import urllib.parse
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
@@ -838,7 +839,6 @@ def parse_hokkaido_xls(body: bytes, source: Source) -> list[PrefRow]:
     if xlrd is None:
         _LOG.error("xlrd not installed; cannot parse %s", source.url)
         return []
-    import io
 
     try:
         wb = xlrd.open_workbook(file_contents=body)
@@ -1525,7 +1525,7 @@ def main(argv: list[str] | None = None) -> int:
 
     # Phase 2: fetch + parse everything, queue rows for a single short
     # write transaction at the end.
-    pending: list[tuple[str, dict[str, int], "PrefRow"]] = []  # (cat_key, cat_stats, row)
+    pending: list[tuple[str, dict[str, int], PrefRow]] = []  # (cat_key, cat_stats, row)
 
     try:
         for source in sources:

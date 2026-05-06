@@ -22,7 +22,6 @@ from pathlib import Path
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Helper module unit tests (no FastAPI client needed)
 # ---------------------------------------------------------------------------
@@ -80,10 +79,9 @@ def test_heartbeat_failure_writes_error_row_and_reraises(
 ) -> None:
     from jpintel_mcp.observability import heartbeat
 
-    with pytest.raises(RuntimeError, match="kaboom"):
-        with heartbeat("test_cron_fail") as hb:
-            hb["rows_processed"] = 7
-            raise RuntimeError("kaboom: thing exploded")
+    with pytest.raises(RuntimeError, match="kaboom"), heartbeat("test_cron_fail") as hb:
+        hb["rows_processed"] = 7
+        raise RuntimeError("kaboom: thing exploded")
 
     conn = sqlite3.connect(isolated_db)
     conn.row_factory = sqlite3.Row
@@ -152,9 +150,8 @@ def test_heartbeat_truncates_long_error_message(isolated_db: Path) -> None:
     from jpintel_mcp.observability import heartbeat
 
     big = "x" * 1200
-    with pytest.raises(ValueError):
-        with heartbeat("test_cron_big_err"):
-            raise ValueError(big)
+    with pytest.raises(ValueError), heartbeat("test_cron_big_err"):
+        raise ValueError(big)
 
     conn = sqlite3.connect(isolated_db)
     conn.row_factory = sqlite3.Row

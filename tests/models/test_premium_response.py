@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 from pydantic import ValidationError
@@ -13,7 +13,6 @@ from jpintel_mcp.models.premium_response import (
     PremiumResponse,
     ProvenanceBadge,
 )
-
 
 # ──────────────────────────────────────────────────────────────
 # ProvenanceBadge: 4 tiers all yield correct color
@@ -110,7 +109,7 @@ def test_adoption_score_boundary_exactly_0_50_is_borderline() -> None:
 def _sample_entry(**overrides: object) -> AuditLogEntry:
     base = dict(
         entry_id="evt_001",
-        timestamp_utc=datetime(2026, 4, 25, 12, 0, 0, tzinfo=timezone.utc),
+        timestamp_utc=datetime(2026, 4, 25, 12, 0, 0, tzinfo=UTC),
         actor="api:anonymous",
         action="validate",
         payload={"endpoint": "/v1/am/validate", "ok": True},
@@ -142,7 +141,7 @@ def test_audit_log_pre_set_wrong_hash_raises() -> None:
     with pytest.raises(ValidationError) as exc:
         AuditLogEntry(
             entry_id="evt_002",
-            timestamp_utc=datetime(2026, 4, 25, 12, 0, 0, tzinfo=timezone.utc),
+            timestamp_utc=datetime(2026, 4, 25, 12, 0, 0, tzinfo=UTC),
             actor="api:anonymous",
             action="validate",
             payload={"endpoint": "/v1/am/validate"},
@@ -156,7 +155,7 @@ def test_audit_log_pre_set_correct_hash_accepted() -> None:
     e1 = _sample_entry()
     e2 = AuditLogEntry(
         entry_id="evt_001",
-        timestamp_utc=datetime(2026, 4, 25, 12, 0, 0, tzinfo=timezone.utc),
+        timestamp_utc=datetime(2026, 4, 25, 12, 0, 0, tzinfo=UTC),
         actor="api:anonymous",
         action="validate",
         payload={"endpoint": "/v1/am/validate", "ok": True},
@@ -177,7 +176,7 @@ def test_premium_response_full_construction() -> None:
         quality_score=0.92,
         provenance=ProvenanceBadge(tier="canonical", annotation="METI 公式"),
         warnings=["募集期間外"],
-        data_freshness=datetime(2026, 4, 25, 0, 0, 0, tzinfo=timezone.utc),
+        data_freshness=datetime(2026, 4, 25, 0, 0, 0, tzinfo=UTC),
         request_id="req_abc123",
     )
     assert resp.quality_grade == "A"
@@ -193,7 +192,7 @@ def test_premium_response_quality_score_out_of_range_rejected() -> None:
             quality_grade="S",
             quality_score=1.5,
             provenance=ProvenanceBadge(tier="canonical"),
-            data_freshness=datetime(2026, 4, 25, tzinfo=timezone.utc),
+            data_freshness=datetime(2026, 4, 25, tzinfo=UTC),
             request_id="req_x",
         )
 
@@ -205,6 +204,6 @@ def test_premium_response_invalid_grade_rejected() -> None:
             quality_grade="Z",  # type: ignore[arg-type]
             quality_score=0.5,
             provenance=ProvenanceBadge(tier="canonical"),
-            data_freshness=datetime(2026, 4, 25, tzinfo=timezone.utc),
+            data_freshness=datetime(2026, 4, 25, tzinfo=UTC),
             request_id="req_x",
         )

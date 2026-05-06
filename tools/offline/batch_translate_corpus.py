@@ -53,6 +53,7 @@ The disclaimer "JP primary_name is canonical, EN is machine-translated
 reference" is surfaced in every response that JOINs am_alias on
 language='en'. See src/jpintel_mcp/api/programs.py:_apply_lang_en_alias.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -62,9 +63,10 @@ import os
 import sqlite3
 import sys
 import time
-from datetime import datetime, timezone
+from collections.abc import Iterator
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_AUTONOMATH_DB = REPO_ROOT / "autonomath.db"
@@ -98,8 +100,9 @@ PROMPT_HEADER = (
 )
 
 
-def estimate_cost_yen(n_rows: int, model: str = DEFAULT_MODEL,
-                      use_batch: bool = False) -> dict[str, float]:
+def estimate_cost_yen(
+    n_rows: int, model: str = DEFAULT_MODEL, use_batch: bool = False
+) -> dict[str, float]:
     """Per-row cost estimate (yen, exclusive of consumption tax)."""
     # ~50 input tokens + 30 output tokens per row when batched at 100
     in_tok = 50
@@ -132,10 +135,13 @@ def estimate_cost_yen(n_rows: int, model: str = DEFAULT_MODEL,
 # Corpus iterators
 # ---------------------------------------------------------------------------
 
-def iter_programs(jpintel_db: Path, limit: int | None = None,
-                  resume: bool = True,
-                  autonomath_db: Path | None = None
-                  ) -> Iterator[tuple[str, str, str]]:
+
+def iter_programs(
+    jpintel_db: Path,
+    limit: int | None = None,
+    resume: bool = True,
+    autonomath_db: Path | None = None,
+) -> Iterator[tuple[str, str, str]]:
     """Yield (entity_table, canonical_id, jp_name) for programs.primary_name.
 
     `entity_table` for programs is 'am_entities' (programs are mirrored as
@@ -176,8 +182,9 @@ def iter_programs(jpintel_db: Path, limit: int | None = None,
         yield ("am_entities", canonical_id, row["primary_name"])
 
 
-def iter_laws(autonomath_db: Path, limit: int | None = None,
-              resume: bool = True) -> Iterator[tuple[str, str, str]]:
+def iter_laws(
+    autonomath_db: Path, limit: int | None = None, resume: bool = True
+) -> Iterator[tuple[str, str, str]]:
     """Yield (entity_table, canonical_id, jp_name) for am_law.canonical_name."""
     conn = sqlite3.connect(autonomath_db)
     conn.row_factory = sqlite3.Row
@@ -185,8 +192,7 @@ def iter_laws(autonomath_db: Path, limit: int | None = None,
     already = set()
     if resume:
         cur = conn.execute(
-            "SELECT canonical_id FROM am_alias "
-            "WHERE language = 'en' AND entity_table = 'am_law'"
+            "SELECT canonical_id FROM am_alias WHERE language = 'en' AND entity_table = 'am_law'"
         )
         already = {r[0] for r in cur.fetchall()}
 
@@ -201,10 +207,12 @@ def iter_laws(autonomath_db: Path, limit: int | None = None,
         yield ("am_law", row["canonical_id"], row["canonical_name"])
 
 
-def iter_tax_rulesets(jpintel_db: Path, limit: int | None = None,
-                      resume: bool = True,
-                      autonomath_db: Path | None = None
-                      ) -> Iterator[tuple[str, str, str]]:
+def iter_tax_rulesets(
+    jpintel_db: Path,
+    limit: int | None = None,
+    resume: bool = True,
+    autonomath_db: Path | None = None,
+) -> Iterator[tuple[str, str, str]]:
     """Yield (entity_table, canonical_id, jp_name) for tax_rulesets.ruleset_name."""
     conn = sqlite3.connect(jpintel_db)
     conn.row_factory = sqlite3.Row
@@ -237,18 +245,22 @@ def iter_tax_rulesets(jpintel_db: Path, limit: int | None = None,
         yield ("am_entities", canonical_id, row["ruleset_name"])
 
 
-def iter_court_decisions(jpintel_db: Path, limit: int | None = None,
-                         resume: bool = True,
-                         autonomath_db: Path | None = None
-                         ) -> Iterator[tuple[str, str, str]]:
+def iter_court_decisions(
+    jpintel_db: Path,
+    limit: int | None = None,
+    resume: bool = True,
+    autonomath_db: Path | None = None,
+) -> Iterator[tuple[str, str, str]]:
     """Yield (entity_table, canonical_id, jp_name) for court_decisions case names."""
     conn = sqlite3.connect(jpintel_db)
     conn.row_factory = sqlite3.Row
 
     # Probe for the actual column name (some snapshots use case_name, others case_title)
     cols = {r[1] for r in conn.execute("PRAGMA table_info(court_decisions)").fetchall()}
-    title_col = "case_name" if "case_name" in cols else (
-        "case_title" if "case_title" in cols else "summary"
+    title_col = (
+        "case_name"
+        if "case_name" in cols
+        else ("case_title" if "case_title" in cols else "summary")
     )
     pk_col = "unified_id" if "unified_id" in cols else "decision_id"
 
@@ -278,9 +290,9 @@ def iter_court_decisions(jpintel_db: Path, limit: int | None = None,
         yield ("am_entities", canonical_id, row["title"])
 
 
-def iter_invoice(jpintel_db: Path, limit: int = 1000, resume: bool = True,
-                 autonomath_db: Path | None = None
-                 ) -> Iterator[tuple[str, str, str]]:
+def iter_invoice(
+    jpintel_db: Path, limit: int = 1000, resume: bool = True, autonomath_db: Path | None = None
+) -> Iterator[tuple[str, str, str]]:
     """Yield 1000 sample invoice_registrants for transliteration (legal name)."""
     conn = sqlite3.connect(jpintel_db)
     conn.row_factory = sqlite3.Row
@@ -294,7 +306,8 @@ def iter_invoice(jpintel_db: Path, limit: int = 1000, resume: bool = True,
     pk_col = "registration_no" if "registration_no" in cols else "houjin_bangou"
     rows = conn.execute(
         f"SELECT {pk_col} AS pk, {name_col} AS nm FROM invoice_registrants "
-        f"WHERE {name_col} IS NOT NULL LIMIT ?", (limit,)
+        f"WHERE {name_col} IS NOT NULL LIMIT ?",
+        (limit,),
     ).fetchall()
     conn.close()
 
@@ -328,9 +341,10 @@ CORPUS_DISPATCH = {
 # Anthropic API call
 # ---------------------------------------------------------------------------
 
-def call_anthropic_batch(jp_names: list[str], model: str = DEFAULT_MODEL,
-                         use_batch_api: bool = False
-                         ) -> list[str | None]:
+
+def call_anthropic_batch(
+    jp_names: list[str], model: str = DEFAULT_MODEL, use_batch_api: bool = False
+) -> list[str | None]:
     """Translate a list of JP names → list of EN names (None on parse error).
 
     Uses the per-batch `claude.messages.create()` form at the synchronous
@@ -351,7 +365,7 @@ def call_anthropic_batch(jp_names: list[str], model: str = DEFAULT_MODEL,
     client = anthropic.Anthropic(api_key=api_key)
 
     # Build numbered prompt
-    numbered = "\n".join(f"{i+1}. {nm}" for i, nm in enumerate(jp_names))
+    numbered = "\n".join(f"{i + 1}. {nm}" for i, nm in enumerate(jp_names))
     prompt = PROMPT_HEADER + numbered
 
     if use_batch_api:
@@ -387,8 +401,8 @@ def call_anthropic_batch(jp_names: list[str], model: str = DEFAULT_MODEL,
 # Writer
 # ---------------------------------------------------------------------------
 
-def upsert_alias(autonomath_db: Path, entity_table: str,
-                 canonical_id: str, alias: str) -> None:
+
+def upsert_alias(autonomath_db: Path, entity_table: str, canonical_id: str, alias: str) -> None:
     """Insert (entity_table, canonical_id, alias) into am_alias.
 
     Idempotent: am_alias has UNIQUE (entity_table, canonical_id, alias),
@@ -413,36 +427,46 @@ def upsert_alias(autonomath_db: Path, entity_table: str,
 # Main
 # ---------------------------------------------------------------------------
 
+
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    p.add_argument("--corpus", choices=list(CORPUS_DISPATCH.keys()) + ["all"],
-                   default="all", help="which corpus to translate")
-    p.add_argument("--dry-run", action="store_true",
-                   help="print plan + cost estimate, do not call API")
-    p.add_argument("--use-batch-api", action="store_true",
-                   help="use Anthropic Batch API (50%% off, async)")
-    p.add_argument("--batch-size", type=int, default=100,
-                   help="rows per Anthropic call (default 100)")
-    p.add_argument("--limit", type=int, default=None,
-                   help="cap rows per corpus (testing)")
-    p.add_argument("--resume", action="store_true", default=True,
-                   help="skip rows already in am_alias.language=en")
-    p.add_argument("--no-resume", dest="resume", action="store_false",
-                   help="re-translate even if alias exists")
-    p.add_argument("--model", default=DEFAULT_MODEL,
-                   help=f"Anthropic model id (default {DEFAULT_MODEL})")
-    p.add_argument("--autonomath-db", type=Path,
-                   default=DEFAULT_AUTONOMATH_DB)
-    p.add_argument("--jpintel-db", type=Path,
-                   default=DEFAULT_JPINTEL_DB)
+    p.add_argument(
+        "--corpus",
+        choices=list(CORPUS_DISPATCH.keys()) + ["all"],
+        default="all",
+        help="which corpus to translate",
+    )
+    p.add_argument(
+        "--dry-run", action="store_true", help="print plan + cost estimate, do not call API"
+    )
+    p.add_argument(
+        "--use-batch-api", action="store_true", help="use Anthropic Batch API (50%% off, async)"
+    )
+    p.add_argument(
+        "--batch-size", type=int, default=100, help="rows per Anthropic call (default 100)"
+    )
+    p.add_argument("--limit", type=int, default=None, help="cap rows per corpus (testing)")
+    p.add_argument(
+        "--resume",
+        action="store_true",
+        default=True,
+        help="skip rows already in am_alias.language=en",
+    )
+    p.add_argument(
+        "--no-resume", dest="resume", action="store_false", help="re-translate even if alias exists"
+    )
+    p.add_argument(
+        "--model", default=DEFAULT_MODEL, help=f"Anthropic model id (default {DEFAULT_MODEL})"
+    )
+    p.add_argument("--autonomath-db", type=Path, default=DEFAULT_AUTONOMATH_DB)
+    p.add_argument("--jpintel-db", type=Path, default=DEFAULT_JPINTEL_DB)
     args = p.parse_args()
 
-    logging.basicConfig(level=logging.INFO,
-                        format="%(asctime)s %(levelname)s %(message)s")
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
     corpora = list(CORPUS_DISPATCH.keys()) if args.corpus == "all" else [args.corpus]
     run_log: dict[str, Any] = {
-        "started_at": datetime.now(timezone.utc).isoformat(),
+        "started_at": datetime.now(UTC).isoformat(),
         "args": vars(args),
         "corpora": {},
     }
@@ -451,40 +475,53 @@ def main() -> int:
     plan: dict[str, list[tuple[str, str, str]]] = {}
     for c in corpora:
         if c == "laws":
-            rows = list(iter_laws(args.autonomath_db, limit=args.limit,
-                                  resume=args.resume))
+            rows = list(iter_laws(args.autonomath_db, limit=args.limit, resume=args.resume))
         elif c == "programs":
-            rows = list(iter_programs(args.jpintel_db, limit=args.limit,
-                                      resume=args.resume,
-                                      autonomath_db=args.autonomath_db))
+            rows = list(
+                iter_programs(
+                    args.jpintel_db,
+                    limit=args.limit,
+                    resume=args.resume,
+                    autonomath_db=args.autonomath_db,
+                )
+            )
         elif c == "tax_rulesets":
-            rows = list(iter_tax_rulesets(args.jpintel_db, limit=args.limit,
-                                          resume=args.resume,
-                                          autonomath_db=args.autonomath_db))
+            rows = list(
+                iter_tax_rulesets(
+                    args.jpintel_db,
+                    limit=args.limit,
+                    resume=args.resume,
+                    autonomath_db=args.autonomath_db,
+                )
+            )
         elif c == "court_decisions":
-            rows = list(iter_court_decisions(args.jpintel_db, limit=args.limit,
-                                             resume=args.resume,
-                                             autonomath_db=args.autonomath_db))
+            rows = list(
+                iter_court_decisions(
+                    args.jpintel_db,
+                    limit=args.limit,
+                    resume=args.resume,
+                    autonomath_db=args.autonomath_db,
+                )
+            )
         elif c == "invoice":
-            rows = list(iter_invoice(args.jpintel_db,
-                                     limit=args.limit or 1000,
-                                     resume=args.resume,
-                                     autonomath_db=args.autonomath_db))
+            rows = list(
+                iter_invoice(
+                    args.jpintel_db,
+                    limit=args.limit or 1000,
+                    resume=args.resume,
+                    autonomath_db=args.autonomath_db,
+                )
+            )
         else:
             rows = []
         plan[c] = rows
-        cost = estimate_cost_yen(len(rows), model=args.model,
-                                 use_batch=args.use_batch_api)
-        run_log["corpora"][c] = {"n_rows_to_translate": len(rows),
-                                  "cost_estimate": cost}
-        LOG.info("corpus=%s rows=%d cost=¥%.0f",
-                 c, len(rows), cost["yen_total"])
+        cost = estimate_cost_yen(len(rows), model=args.model, use_batch=args.use_batch_api)
+        run_log["corpora"][c] = {"n_rows_to_translate": len(rows), "cost_estimate": cost}
+        LOG.info("corpus=%s rows=%d cost=¥%.0f", c, len(rows), cost["yen_total"])
 
-    total_yen = sum(v["cost_estimate"]["yen_total"]
-                    for v in run_log["corpora"].values())
+    total_yen = sum(v["cost_estimate"]["yen_total"] for v in run_log["corpora"].values())
     LOG.info("=" * 50)
-    LOG.info("TOTAL ESTIMATE: ¥%.0f (%d rows)",
-             total_yen, sum(len(r) for r in plan.values()))
+    LOG.info("TOTAL ESTIMATE: ¥%.0f (%d rows)", total_yen, sum(len(r) for r in plan.values()))
 
     if args.dry_run:
         path = RUN_LOG_DIR / f"batch_translate_dryrun_{int(time.time())}.json"
@@ -500,11 +537,12 @@ def main() -> int:
             continue
         LOG.info("translating corpus=%s n=%d", c, len(rows))
         for i in range(0, len(rows), args.batch_size):
-            batch = rows[i:i + args.batch_size]
+            batch = rows[i : i + args.batch_size]
             jp_names = [r[2] for r in batch]
             try:
                 en_names = call_anthropic_batch(
-                    jp_names, model=args.model,
+                    jp_names,
+                    model=args.model,
                     use_batch_api=args.use_batch_api,
                 )
             except Exception as e:  # noqa: BLE001
@@ -517,16 +555,19 @@ def main() -> int:
                     translated_total += 1
                 else:
                     errors_total += 1
-            LOG.info("  batch %d done (translated=%d errors=%d)",
-                     i // args.batch_size, translated_total, errors_total)
+            LOG.info(
+                "  batch %d done (translated=%d errors=%d)",
+                i // args.batch_size,
+                translated_total,
+                errors_total,
+            )
 
-    run_log["finished_at"] = datetime.now(timezone.utc).isoformat()
+    run_log["finished_at"] = datetime.now(UTC).isoformat()
     run_log["translated_total"] = translated_total
     run_log["errors_total"] = errors_total
     log_path = RUN_LOG_DIR / f"batch_translate_run_{int(time.time())}.json"
     log_path.write_text(json.dumps(run_log, indent=2, ensure_ascii=False))
-    LOG.info("done. translated=%d errors=%d log=%s",
-             translated_total, errors_total, log_path)
+    LOG.info("done. translated=%d errors=%d log=%s", translated_total, errors_total, log_path)
     return 0 if errors_total == 0 else 1
 
 

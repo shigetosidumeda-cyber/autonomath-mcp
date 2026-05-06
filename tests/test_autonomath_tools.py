@@ -53,7 +53,6 @@ os.environ.setdefault("AUTONOMATH_ENABLED", "1")
 # server.py (imports autonomath_tools.tools). After server is loaded, both
 # wrapper packages and the underlying tool modules are safe to import.
 from jpintel_mcp.mcp import server  # noqa: F401, E402
-
 from jpintel_mcp.mcp.autonomath_tools.autonomath_wrappers import (  # noqa: E402
     check_enforcement_am,
     get_law_article_am,
@@ -74,7 +73,6 @@ from jpintel_mcp.mcp.autonomath_tools.tools import (  # noqa: E402
     search_certifications,
     search_tax_incentives,
 )
-
 
 # ---------------------------------------------------------------------------
 # Tiny helpers — keep envelope assertions readable.

@@ -51,7 +51,7 @@ class AdoptionScore(BaseModel):
     suggested_fixes: list[str] = Field(default_factory=list)
 
     @model_validator(mode="after")
-    def _verdict_consistent(self) -> "AdoptionScore":
+    def _verdict_consistent(self) -> AdoptionScore:
         # Pass score thresholds — empirical from Autonomath constants:
         # >= 0.70 pass, 0.50-0.70 borderline, < 0.50 fail
         if self.score >= 0.70:
@@ -80,7 +80,7 @@ class AuditLogEntry(BaseModel):
     content_hash: str = ""  # auto-set by validator; never accept user input
 
     @model_validator(mode="after")
-    def _set_and_verify_hash(self) -> "AuditLogEntry":
+    def _set_and_verify_hash(self) -> AuditLogEntry:
         canonical = (
             f"{self.entry_id}|{self.timestamp_utc.isoformat()}|{self.actor}|"
             f"{self.action}|{sorted(self.payload.items())}"

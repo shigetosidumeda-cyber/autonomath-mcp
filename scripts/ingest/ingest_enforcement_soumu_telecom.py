@@ -909,7 +909,7 @@ def collect_index_urls(
                     continue
                 out.append((rk, "信越総合通信局", SHINETSU_TMPL_R.format(r)))
             # current (2026)
-            if 2026 >= year_lo and 2026 <= year_hi:
+            if year_lo <= 2026 and year_hi >= 2026:
                 out.append((rk, "信越総合通信局", SHINETSU_CURRENT))
             continue
 

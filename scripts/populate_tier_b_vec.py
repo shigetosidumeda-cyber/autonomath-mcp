@@ -51,8 +51,8 @@ import sqlite3
 import struct
 import sys
 import time
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable, List, Optional, Set, Tuple
 
 # ---------------------------------------------------------------------------
 # Config
@@ -74,14 +74,14 @@ TIER_B_MAX_CHARS = 1_000
 
 # Topics that carry no obligation / dealbreaker / exclusion content at all
 # (statistic dumps, adoption-only lists). Skip unconditionally.
-SKIP_TOPICS: Set[str] = {
+SKIP_TOPICS: set[str] = {
     "05_adoption_additional",
     "18_estat_industry_distribution",
 }
 
 # Subset of fields per facet. Mirrors `embedding/facet_synthesis.py` but kept
 # self-contained to avoid the broken schema-guard import in that module.
-DEALBREAKER_FIELDS: Tuple[Tuple[str, str], ...] = (
+DEALBREAKER_FIELDS: tuple[tuple[str, str], ...] = (
     # Strong enforcement-record signal (100% on record_kind=enforcement).
     ("rescission_date", "取消日"),
     ("return_status", "返還状況"),
@@ -122,7 +122,7 @@ DEALBREAKER_FIELDS: Tuple[Tuple[str, str], ...] = (
     ("clawback_conditions", "返還条件"),
 )
 
-ELIGIBILITY_FIELDS: Tuple[Tuple[str, str], ...] = (
+ELIGIBILITY_FIELDS: tuple[tuple[str, str], ...] = (
     # Discovered via DB sampling 2026-04-25; ordered by observed frequency.
     ("target_types", "対象種別"),
     ("target", "対象"),
@@ -213,7 +213,7 @@ ELIGIBILITY_FIELDS: Tuple[Tuple[str, str], ...] = (
     ("duration_months", "期間(月)"),
 )
 
-EXCLUSION_FIELDS: Tuple[Tuple[str, str], ...] = (
+EXCLUSION_FIELDS: tuple[tuple[str, str], ...] = (
     # Discovered keys (program records have compatible_with / incompatible_with).
     ("compatible_with", "併用可否"),
     ("incompatible_with", "併用不可"),
@@ -246,7 +246,7 @@ EXCLUSION_FIELDS: Tuple[Tuple[str, str], ...] = (
     ("rule_type", "ルール種別"),
 )
 
-OBLIGATION_FIELDS: Tuple[Tuple[str, str], ...] = (
+OBLIGATION_FIELDS: tuple[tuple[str, str], ...] = (
     ("obligations", "義務"),
     ("obligation", "義務"),
     ("key_obligations", "主要義務"),
@@ -327,9 +327,9 @@ def _as_text(value) -> str:
     return str(value)
 
 
-def synthesize_facet(rec: dict, fields: Tuple[Tuple[str, str], ...]) -> str:
-    parts: List[str] = []
-    seen: Set[str] = set()
+def synthesize_facet(rec: dict, fields: tuple[tuple[str, str], ...]) -> str:
+    parts: list[str] = []
+    seen: set[str] = set()
     for key, label in fields:
         if key not in rec:
             continue
@@ -379,7 +379,7 @@ def load_encoder():
 # ---------------------------------------------------------------------------
 # Per-facet ingest
 # ---------------------------------------------------------------------------
-def existing_canonical_ids(conn: sqlite3.Connection, tier: str) -> Set[str]:
+def existing_canonical_ids(conn: sqlite3.Connection, tier: str) -> set[str]:
     rows = conn.execute(
         "SELECT canonical_id FROM am_vec_rowid_map WHERE tier = ?",
         (f"tier_b_{tier}",),
@@ -388,8 +388,8 @@ def existing_canonical_ids(conn: sqlite3.Connection, tier: str) -> Set[str]:
 
 
 def stream_entities(
-    conn: sqlite3.Connection, limit: Optional[int]
-) -> Iterable[Tuple[str, str, str]]:
+    conn: sqlite3.Connection, limit: int | None
+) -> Iterable[tuple[str, str, str]]:
     """Yield (canonical_id, source_topic, raw_json) for non-skipped entities."""
     sql = (
         "SELECT canonical_id, source_topic, raw_json FROM am_entities "
@@ -397,7 +397,7 @@ def stream_entities(
             ",".join("?" * len(SKIP_TOPICS))
         )
     )
-    params: List = list(SKIP_TOPICS)
+    params: list = list(SKIP_TOPICS)
     if TOPIC_FILTER:
         sql += " AND source_topic LIKE ?"
         params.append(f"%{TOPIC_FILTER}%")
@@ -413,8 +413,8 @@ def populate_facet(
     conn: sqlite3.Connection,
     encoder,
     facet: str,
-    fields: Tuple[Tuple[str, str], ...],
-) -> Tuple[int, int, int]:
+    fields: tuple[tuple[str, str], ...],
+) -> tuple[int, int, int]:
     """Synthesize -> encode -> insert for one facet.
 
     Returns (scanned, synthesised, inserted).
@@ -427,8 +427,8 @@ def populate_facet(
     # Pass 1: scan + synthesise (in memory). Holds up to ~150k 1KB strings
     # = ~150 MB RAM worst case. Acceptable on shared-cpu-2x; if not, batch
     # by source_topic.
-    todo_cids: List[str] = []
-    todo_texts: List[str] = []
+    todo_cids: list[str] = []
+    todo_texts: list[str] = []
     scanned = 0
     for cid, _topic, raw in stream_entities(conn, LIMIT):
         scanned += 1
@@ -531,7 +531,7 @@ def main() -> int:
         n = conn.execute(f"SELECT COUNT(*) FROM am_vec_tier_b_{f}").fetchone()[0]
         log.info("before: am_vec_tier_b_%s = %d", f, n)
 
-    summary: List[str] = []
+    summary: list[str] = []
     for facet, fields in FACET_FIELDS.items():
         scanned, synthesised, inserted = populate_facet(conn, encoder, facet, fields)
         summary.append(

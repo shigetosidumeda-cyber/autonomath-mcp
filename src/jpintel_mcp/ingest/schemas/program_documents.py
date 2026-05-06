@@ -10,7 +10,6 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-
 DocKind = Literal[
     "申請書",
     "計画書",

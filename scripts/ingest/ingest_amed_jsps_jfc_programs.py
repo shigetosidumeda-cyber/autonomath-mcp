@@ -50,14 +50,14 @@ import argparse
 import hashlib
 import json
 import logging
-import ssl
 import sqlite3
+import ssl
 import sys
 import time
 import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 try:
@@ -1653,7 +1653,7 @@ def upsert_seed(conn: sqlite3.Connection, seed: ProgramSeed, *, http_status: int
     """Insert if not present; otherwise update non-key columns. Returns 'inserted'|'updated'|'skipped'."""
 
     uid = seed.unified_id()
-    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    now = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     # Primary URL must be on whitelist.
     if seed.host() not in ALLOWED_HOSTS:

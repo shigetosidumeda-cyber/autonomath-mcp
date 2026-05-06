@@ -16,7 +16,6 @@ import hashlib
 import json
 import pathlib
 import re
-import subprocess
 import sys
 
 import pytest
@@ -28,7 +27,6 @@ _MODULE_DIR = _REPO_ROOT / "tools" / "offline" / "operator_review"
 sys.path.insert(0, str(_MODULE_DIR))
 
 import operator_ack_signoff as oas  # noqa: E402
-
 
 # ----------------------------------------------------------------------
 # helpers
@@ -85,7 +83,12 @@ def _patch_all_pass(monkeypatch: pytest.MonkeyPatch, repo_root: pathlib.Path) ->
     ops_dir.mkdir(parents=True, exist_ok=True)
     (ops_dir / "pre_deploy_verify.py").write_text("# stub\n")
     (ops_dir / "migration_inventory.py").write_text("# stub\n")
+    (ops_dir / "verify_migration_targets.py").write_text("# stub\n")
     (ops_dir / "compute_dirty_fingerprint.py").write_text("# stub\n")
+    # Operator-review canonical fingerprint location (B7 fix)
+    operator_review_dir = repo_root / "tools" / "offline" / "operator_review"
+    operator_review_dir.mkdir(parents=True, exist_ok=True)
+    (operator_review_dir / "compute_dirty_fingerprint.py").write_text("# stub\n")
     # Secrets registry
     docs_dir = repo_root / "docs" / "_internal"
     docs_dir.mkdir(parents=True, exist_ok=True)
@@ -274,7 +277,6 @@ def test_timestamp_tampering_detect(monkeypatch, tmp_path):
 
 def test_schema_mismatch_rejected(tmp_path):
     """Case 9: a YAML missing a required boolean must fail schema match."""
-    import yaml as _yaml
 
     bad = {
         "fly_app_confirmed": True,

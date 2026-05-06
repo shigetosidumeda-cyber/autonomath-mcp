@@ -460,12 +460,14 @@ def _intel_houjin_full_impl(
     """W30-3 — composite houjin 360 bundle."""
     from jpintel_mcp.api.intel_houjin_full import (
         _DEFAULT_MAX_PER_SECTION,
-        _DISCLAIMER as _HOUJIN_FULL_DISCLAIMER,
         _HARD_MAX_PER_SECTION,
         _build_houjin_full,
         _normalize_houjin,
         _open_autonomath_ro,
         _parse_include_sections,
+    )
+    from jpintel_mcp.api.intel_houjin_full import (
+        _DISCLAIMER as _HOUJIN_FULL_DISCLAIMER,
     )
 
     normalized = _normalize_houjin(houjin_id)
@@ -510,9 +512,9 @@ def _intel_diff_impl(
 ) -> dict[str, Any]:
     """W31-1 — composite entity diff (M&A DD)."""
     from jpintel_mcp.api.intel_diff import (
+        _DIFF_DISCLAIMER,
         EntityRef,
         IntelDiffRequest,
-        _DIFF_DISCLAIMER,
         _diff_attr_dicts,
         _diff_neighbour_sets,
         _diff_predicate_sets,
@@ -627,9 +629,11 @@ def _intel_path_impl(
 ) -> dict[str, Any]:
     """W31-2 — bidirectional BFS reasoning chain between 2 entities."""
     from jpintel_mcp.api.intel_path import (
+        _DISCLAIMER as _PATH_DISCLAIMER,
+    )
+    from jpintel_mcp.api.intel_path import (
         IntelPathRequest,
         PathEntity,
-        _DISCLAIMER as _PATH_DISCLAIMER,
         _build_path_envelope,
         _open_autonomath_ro,
     )
@@ -743,8 +747,10 @@ def _intel_conflict_impl(
 ) -> dict[str, Any]:
     """W31-4 — combo conflict detector + alternative bundles."""
     from jpintel_mcp.api.intel_conflict import (
-        ConflictRequest,
         _DISCLAIMER as _CONFLICT_DISCLAIMER,
+    )
+    from jpintel_mcp.api.intel_conflict import (
+        ConflictRequest,
         _build_conflict_envelope,
     )
 
@@ -779,9 +785,11 @@ def _intel_why_excluded_impl(
 ) -> dict[str, Any]:
     """W31-5 — eligibility-failure reasoning + remediation."""
     from jpintel_mcp.api.intel_why_excluded import (
+        _DISCLAIMER as _WHY_DISCLAIMER,
+    )
+    from jpintel_mcp.api.intel_why_excluded import (
         HoujinAttrs,
         WhyExcludedRequest,
-        _DISCLAIMER as _WHY_DISCLAIMER,
         _build_why_excluded_envelope,
     )
 
@@ -814,9 +822,13 @@ def _intel_peer_group_impl(
 ) -> dict[str, Any]:
     """W31-6 — 同業他社 N peers (Jaccard on jsic + prefecture)."""
     from jpintel_mcp.api.intel_peer_group import (
+        _DISCLAIMER as _PEER_DISCLAIMER,
+    )
+    from jpintel_mcp.api.intel_peer_group import (
         HoujinAttributes,
         PeerGroupRequest,
-        _DISCLAIMER as _PEER_DISCLAIMER,
+    )
+    from jpintel_mcp.api.intel_peer_group import (
         _build_envelope as _build_peer_envelope,
     )
 
@@ -863,6 +875,8 @@ def _intel_regulatory_context_impl(
     """W31-7 — full regulatory bundle (法令 + 通達 + 裁決 + 判例 + 行政処分)."""
     from jpintel_mcp.api.intel_regulatory_context import (
         _DISCLAIMER as _REG_DISCLAIMER,
+    )
+    from jpintel_mcp.api.intel_regulatory_context import (
         _build_regulatory_envelope,
         _normalize_since_date,
         _parse_include,
@@ -908,8 +922,10 @@ def _intel_bundle_optimal_impl(
 ) -> dict[str, Any]:
     """W31-8 — houjin → 最適 program bundle (greedy weighted)."""
     from jpintel_mcp.api.intel_bundle_optimal import (
-        BundleOptimalRequest,
         _BUNDLE_DISCLAIMER,
+        BundleOptimalRequest,
+    )
+    from jpintel_mcp.api.intel_bundle_optimal import (
         _build_envelope as _build_bundle_envelope,
     )
 
@@ -1000,6 +1016,8 @@ def _intel_risk_score_impl(
     """W32-3 — multi-axis rules-based houjin risk score. Pure SQLite."""
     from jpintel_mcp.api.intel_risk_score import (
         _DISCLAIMER as _RISK_SCORE_DISCLAIMER,
+    )
+    from jpintel_mcp.api.intel_risk_score import (
         _build_risk_score,
         _fetch_houjin_meta,
         _normalize_houjin,

@@ -88,7 +88,6 @@ from __future__ import annotations
 import datetime
 import json
 import logging
-import math
 import os
 import re
 import sqlite3
@@ -1231,7 +1230,6 @@ _STOPWORDS_JA = {
     "する",
     "いる",
     "なる",
-    "され",
     "され",
     "本",
     "当",

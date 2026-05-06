@@ -10,7 +10,6 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-
 Section = Literal["overview", "eligibility", "application_flow", "pitfalls"]
 Lang = Literal["ja", "en"]
 

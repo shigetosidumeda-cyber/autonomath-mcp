@@ -30,7 +30,6 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-
 # ---------------------------------------------------------------------------
 # Helpers — minimal autonomath fixture (faithful to migrations 049 + 069).
 # ---------------------------------------------------------------------------

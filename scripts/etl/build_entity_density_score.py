@@ -40,12 +40,10 @@ Non-LLM: pure SQL aggregation + Python statistics. No external services.
 from __future__ import annotations
 
 import argparse
-import math
 import sqlite3
 import statistics
 import sys
 import time
-from collections import defaultdict
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]

@@ -46,7 +46,6 @@ import json
 import logging
 import re
 import sqlite3
-import sys
 import unicodedata
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
@@ -1611,7 +1610,7 @@ for auth, url, note in PLACEHOLDER_PUBLIC_PAGES:
 
 
 def _slug8(name: str, date: str) -> str:
-    h = hashlib.sha1(f"{name}|{date}".encode("utf-8")).hexdigest()
+    h = hashlib.sha1(f"{name}|{date}".encode()).hexdigest()
     return h[:8]
 
 

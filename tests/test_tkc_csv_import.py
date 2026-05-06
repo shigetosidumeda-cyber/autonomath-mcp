@@ -22,7 +22,6 @@ from pathlib import Path
 
 import pytest
 
-
 REPO = Path(__file__).resolve().parents[1]
 TKC_DIR = REPO / "sdk" / "integrations" / "tkc-csv"
 SAMPLE_CSV = TKC_DIR / "sample_tkc_fx2.csv"

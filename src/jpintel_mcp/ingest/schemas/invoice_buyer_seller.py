@@ -10,7 +10,6 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-
 ConfidenceBand = Literal["high", "medium", "low"]
 EvidenceKind = Literal[
     "public_disclosure", "joint_adoption", "supplier_list", "co_filing", "press_release"

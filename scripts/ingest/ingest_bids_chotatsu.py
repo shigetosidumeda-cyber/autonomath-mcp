@@ -43,7 +43,7 @@ import time
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urlparse
 
 try:
     import requests
@@ -404,7 +404,7 @@ def _parse_maff_table(html: str, source: SourcePage, fetched_at: str) -> list[Bi
         for i, h in enumerate(header_cells):
             if "競争形態" in h or "形態" in h or "契約方式" in h:
                 idx["kind"] = i
-            elif "公告日" in h or "公示日" in h or "公告" == h:
+            elif "公告日" in h or "公示日" in h or h == "公告":
                 idx["announce"] = i
             elif "締切" in h or "提出期限" in h or "入札日" in h or "開札" in h:
                 idx["deadline"] = i
@@ -456,7 +456,7 @@ def _parse_maff_table(html: str, source: SourcePage, fetched_at: str) -> list[Bi
             seen_uids.add(uid)
 
             checksum = hashlib.sha256(
-                f"{title}|{announce_iso}|{kind_raw}|{deadline_raw}".encode("utf-8")
+                f"{title}|{announce_iso}|{kind_raw}|{deadline_raw}".encode()
             ).hexdigest()
             excerpt = (
                 f"件名: {title} / 公告: {announce_raw} / 形態: {kind_raw}"

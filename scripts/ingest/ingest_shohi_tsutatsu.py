@@ -30,10 +30,9 @@ import logging
 import re
 import sqlite3
 import sys
-import time
+from collections.abc import Iterator
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Iterable, Iterator
 
 try:
     from bs4 import BeautifulSoup, NavigableString, Tag
