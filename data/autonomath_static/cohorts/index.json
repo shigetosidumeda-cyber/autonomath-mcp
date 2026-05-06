@@ -1,0 +1,72 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2026-05-07T00:00:00+09:00",
+  "deep_spec": "DEEP-34",
+  "cohort_count": 8,
+  "cohorts": [
+    {
+      "slug": "tax_advisor",
+      "cohort_id": "tax_pro",
+      "cohort": "税理士事務所",
+      "yaml_file": "cohort_tax_advisor.yaml",
+      "business_law": "税理士法 §52",
+      "summary": "税理士業務補助。audit_seal pack 主 surface、§52 業務独占侵害禁止 (税務代理 / 税務書類作成 / 税務相談を行わない)。"
+    },
+    {
+      "slug": "kaikeishi",
+      "cohort_id": "cpa",
+      "cohort": "公認会計士",
+      "yaml_file": "cohort_kaikeishi.yaml",
+      "business_law": "公認会計士法 §47条の2",
+      "summary": "公認会計士業務補助。研究開発税制 v2 ruleset 連携、§47条の2 監査・証明 業務独占侵害禁止。"
+    },
+    {
+      "slug": "shihoshoshi",
+      "cohort_id": "judicial",
+      "cohort": "司法書士",
+      "yaml_file": "cohort_shihoshoshi.yaml",
+      "business_law": "司法書士法 §3",
+      "summary": "司法書士業務補助。商業登記 surface、§3 登記/供託 手続代理 業務独占侵害禁止。"
+    },
+    {
+      "slug": "subsidy_consultant",
+      "cohort_id": "admin",
+      "cohort": "補助金 consultant",
+      "yaml_file": "cohort_subsidy_consultant.yaml",
+      "business_law": "行政書士法 §1",
+      "summary": "補助金 consultant 業務補助。client_profiles fan-out + saved_searches、§1 申請書面 作成代理 禁止。"
+    },
+    {
+      "slug": "ma_dd",
+      "cohort_id": "lawyer",
+      "cohort": "M&A デューデリ",
+      "yaml_file": "cohort_ma_dd.yaml",
+      "business_law": "弁護士法 §72",
+      "summary": "M&A デューデリ補助。houjin_watch + DD 60 question deck、§72 法律事務代理 禁止。"
+    },
+    {
+      "slug": "foreign_fdi",
+      "cohort_id": "foreign_fdi",
+      "cohort": "FDI",
+      "yaml_file": "cohort_foreign_fdi.yaml",
+      "business_law": "外国法事務弁護士 boundary",
+      "summary": "FDI 補助。law_articles.body_en + am_tax_treaty + foreign_capital_eligibility、英語 default。"
+    },
+    {
+      "slug": "smb_line",
+      "cohort_id": "smb_line",
+      "cohort": "中小 LINE",
+      "yaml_file": "cohort_smb_line.yaml",
+      "business_law": "景表法 §5",
+      "summary": "中小事業者 LINE Bot 提供。≦250文字、口語化、優位性誇張・誤認表示 禁止。"
+    },
+    {
+      "slug": "industry_pack",
+      "cohort_id": "industry_pack",
+      "cohort": "建設/製造/不動産",
+      "yaml_file": "cohort_industry_pack.yaml",
+      "business_law": "業法 cohort 特化なし",
+      "summary": "建設 (JSIC D) / 製造 (JSIC E) / 不動産 (JSIC K) 横断。pack_* 3 tool で top 10 + saiketsu + 通達 一括取得。"
+    }
+  ]
+}

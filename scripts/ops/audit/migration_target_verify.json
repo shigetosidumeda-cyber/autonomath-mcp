@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-05-07T06:56:29+0900",
+  "generated_at": "2026-05-07T07:38:54+0900",
   "migrations_dir": "/Users/shigetoumeda/jpcite/scripts/migrations",
   "rules_file": "/Users/shigetoumeda/jpcite/scripts/ops/schema_guard_rules.json",
   "target_filter": null,
   "rollup": {
-    "files_total": 108,
+    "files_total": 128,
     "files_with_errors": 2,
     "error_counts_by_kind": {
       "ROLLBACK_PAIR_BROKEN": 2
     },
     "files_per_target": {
-      "jpintel": 13,
-      "autonomath": 95
+      "jpintel": 19,
+      "autonomath": 109
     }
   },
   "files": [
@@ -2054,6 +2054,418 @@
       "errors": [
         "ROLLBACK_PAIR_BROKEN:missing"
       ],
+      "warnings": [
+        "SLUG_PREFIX_UNKNOWN"
+      ]
+    },
+    {
+      "path": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_183_citation_log.sql",
+      "filename": "wave24_183_citation_log.sql",
+      "num": 183,
+      "suffix": "",
+      "slug": "citation_log",
+      "is_rollback": false,
+      "marker": "autonomath",
+      "body_tables": [
+        "idx_citation_log_created",
+        "idx_citation_log_status",
+        "idx_citation_log_api_key"
+      ],
+      "rollback_pair": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_183_citation_log_rollback.sql",
+      "errors": [],
+      "warnings": [
+        "SLUG_PREFIX_UNKNOWN"
+      ]
+    },
+    {
+      "path": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_183_citation_log_rollback.sql",
+      "filename": "wave24_183_citation_log_rollback.sql",
+      "num": 183,
+      "suffix": "",
+      "slug": "citation_log",
+      "is_rollback": true,
+      "marker": "autonomath",
+      "body_tables": [
+        "idx_citation_log_api_key",
+        "idx_citation_log_status",
+        "idx_citation_log_created",
+        "citation_log"
+      ],
+      "rollback_pair": null,
+      "errors": [],
+      "warnings": [
+        "SLUG_PREFIX_UNKNOWN"
+      ]
+    },
+    {
+      "path": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_184_contribution_queue.sql",
+      "filename": "wave24_184_contribution_queue.sql",
+      "num": 184,
+      "suffix": "",
+      "slug": "contribution_queue",
+      "is_rollback": false,
+      "marker": "autonomath",
+      "body_tables": [
+        "idx_contribution_queue_status_program",
+        "idx_contribution_queue_submitted_at",
+        "idx_contribution_queue_houjin_hash",
+        "idx_contribution_queue_api_key",
+        "v_contribution_queue_pending_count",
+        "v_contribution_queue_per_program"
+      ],
+      "rollback_pair": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_184_contribution_queue_rollback.sql",
+      "errors": [],
+      "warnings": [
+        "SLUG_PREFIX_UNKNOWN"
+      ]
+    },
+    {
+      "path": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_184_contribution_queue_rollback.sql",
+      "filename": "wave24_184_contribution_queue_rollback.sql",
+      "num": 184,
+      "suffix": "",
+      "slug": "contribution_queue",
+      "is_rollback": true,
+      "marker": "autonomath",
+      "body_tables": [
+        "v_contribution_queue_per_program",
+        "v_contribution_queue_pending_count",
+        "idx_contribution_queue_api_key",
+        "idx_contribution_queue_houjin_hash",
+        "idx_contribution_queue_submitted_at",
+        "idx_contribution_queue_status_program",
+        "contribution_queue"
+      ],
+      "rollback_pair": null,
+      "errors": [],
+      "warnings": [
+        "SLUG_PREFIX_UNKNOWN"
+      ]
+    },
+    {
+      "path": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_185_kokkai_utterance.sql",
+      "filename": "wave24_185_kokkai_utterance.sql",
+      "num": 185,
+      "suffix": "",
+      "slug": "kokkai_utterance",
+      "is_rollback": false,
+      "marker": "autonomath",
+      "body_tables": [
+        "ix_kokkai_date",
+        "ix_kokkai_committee_date",
+        "ix_shingikai_council_date",
+        "ix_signal_law_detected"
+      ],
+      "rollback_pair": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_185_kokkai_utterance_rollback.sql",
+      "errors": [],
+      "warnings": [
+        "SLUG_PREFIX_UNKNOWN"
+      ]
+    },
+    {
+      "path": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_185_kokkai_utterance_rollback.sql",
+      "filename": "wave24_185_kokkai_utterance_rollback.sql",
+      "num": 185,
+      "suffix": "",
+      "slug": "kokkai_utterance",
+      "is_rollback": true,
+      "marker": "autonomath",
+      "body_tables": [
+        "ix_signal_law_detected",
+        "regulatory_signal",
+        "ix_shingikai_council_date",
+        "shingikai_minutes",
+        "ix_kokkai_committee_date",
+        "ix_kokkai_date",
+        "kokkai_utterance"
+      ],
+      "rollback_pair": null,
+      "errors": [],
+      "warnings": [
+        "SLUG_PREFIX_UNKNOWN"
+      ]
+    },
+    {
+      "path": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_186_industry_journal_mention.sql",
+      "filename": "wave24_186_industry_journal_mention.sql",
+      "num": 186,
+      "suffix": "",
+      "slug": "industry_journal_mention",
+      "is_rollback": false,
+      "marker": "autonomath",
+      "body_tables": [
+        "ix_ijm_issue_cohort",
+        "ix_ijm_self_authored",
+        "ix_ijm_keyword",
+        "ix_ijm_journal"
+      ],
+      "rollback_pair": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_186_industry_journal_mention_rollback.sql",
+      "errors": [],
+      "warnings": [
+        "SLUG_PREFIX_UNKNOWN"
+      ]
+    },
+    {
+      "path": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_186_industry_journal_mention_rollback.sql",
+      "filename": "wave24_186_industry_journal_mention_rollback.sql",
+      "num": 186,
+      "suffix": "",
+      "slug": "industry_journal_mention",
+      "is_rollback": true,
+      "marker": "autonomath",
+      "body_tables": [
+        "ix_ijm_journal",
+        "ix_ijm_keyword",
+        "ix_ijm_self_authored",
+        "ix_ijm_issue_cohort",
+        "industry_journal_mention"
+      ],
+      "rollback_pair": null,
+      "errors": [],
+      "warnings": [
+        "SLUG_PREFIX_UNKNOWN"
+      ]
+    },
+    {
+      "path": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_187_brand_mention.sql",
+      "filename": "wave24_187_brand_mention.sql",
+      "num": 187,
+      "suffix": "",
+      "slug": "brand_mention",
+      "is_rollback": false,
+      "marker": "autonomath",
+      "body_tables": [
+        "idx_brand_mention_source_date",
+        "idx_brand_mention_kind_date",
+        "v_brand_mention_source_rollup",
+        "v_brand_mention_monthly_trend",
+        "v_brand_mention_root_kpi"
+      ],
+      "rollback_pair": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_187_brand_mention_rollback.sql",
+      "errors": [],
+      "warnings": [
+        "SLUG_PREFIX_UNKNOWN"
+      ]
+    },
+    {
+      "path": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_187_brand_mention_rollback.sql",
+      "filename": "wave24_187_brand_mention_rollback.sql",
+      "num": 187,
+      "suffix": "",
+      "slug": "brand_mention",
+      "is_rollback": true,
+      "marker": "autonomath",
+      "body_tables": [
+        "v_brand_mention_root_kpi",
+        "v_brand_mention_monthly_trend",
+        "v_brand_mention_source_rollup",
+        "idx_brand_mention_kind_date",
+        "idx_brand_mention_source_date",
+        "brand_mention"
+      ],
+      "rollback_pair": null,
+      "errors": [],
+      "warnings": [
+        "SLUG_PREFIX_UNKNOWN"
+      ]
+    },
+    {
+      "path": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_188_evolution_dashboard_snapshot.sql",
+      "filename": "wave24_188_evolution_dashboard_snapshot.sql",
+      "num": 188,
+      "suffix": "",
+      "slug": "evolution_dashboard_snapshot",
+      "is_rollback": false,
+      "marker": "jpintel",
+      "body_tables": [
+        "idx_eds_axis_date",
+        "idx_eds_date",
+        "idx_eds_status",
+        "v_evolution_dashboard_latest",
+        "v_evolution_axis_status"
+      ],
+      "rollback_pair": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_188_evolution_dashboard_snapshot_rollback.sql",
+      "errors": [],
+      "warnings": [
+        "SLUG_PREFIX_UNKNOWN"
+      ]
+    },
+    {
+      "path": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_188_evolution_dashboard_snapshot_rollback.sql",
+      "filename": "wave24_188_evolution_dashboard_snapshot_rollback.sql",
+      "num": 188,
+      "suffix": "",
+      "slug": "evolution_dashboard_snapshot",
+      "is_rollback": true,
+      "marker": "jpintel",
+      "body_tables": [
+        "v_evolution_axis_status",
+        "v_evolution_dashboard_latest",
+        "idx_eds_status",
+        "idx_eds_date",
+        "idx_eds_axis_date",
+        "evolution_dashboard_snapshot"
+      ],
+      "rollback_pair": null,
+      "errors": [],
+      "warnings": [
+        "SLUG_PREFIX_UNKNOWN"
+      ]
+    },
+    {
+      "path": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_189_citation_sample.sql",
+      "filename": "wave24_189_citation_sample.sql",
+      "num": 189,
+      "suffix": "",
+      "slug": "citation_sample",
+      "is_rollback": false,
+      "marker": "autonomath",
+      "body_tables": [
+        "idx_citation_sample_month",
+        "idx_citation_sample_provider",
+        "idx_citation_sample_month_provider",
+        "v_citation_rate_monthly",
+        "v_citation_q_monthly"
+      ],
+      "rollback_pair": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_189_citation_sample_rollback.sql",
+      "errors": [],
+      "warnings": [
+        "SLUG_PREFIX_UNKNOWN"
+      ]
+    },
+    {
+      "path": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_189_citation_sample_rollback.sql",
+      "filename": "wave24_189_citation_sample_rollback.sql",
+      "num": 189,
+      "suffix": "",
+      "slug": "citation_sample",
+      "is_rollback": true,
+      "marker": "autonomath",
+      "body_tables": [
+        "v_citation_q_monthly",
+        "v_citation_rate_monthly",
+        "idx_citation_sample_month_provider",
+        "idx_citation_sample_provider",
+        "idx_citation_sample_month",
+        "citation_sample"
+      ],
+      "rollback_pair": null,
+      "errors": [],
+      "warnings": [
+        "SLUG_PREFIX_UNKNOWN"
+      ]
+    },
+    {
+      "path": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_190_restore_drill_log.sql",
+      "filename": "wave24_190_restore_drill_log.sql",
+      "num": 190,
+      "suffix": "",
+      "slug": "restore_drill_log",
+      "is_rollback": false,
+      "marker": "jpintel",
+      "body_tables": [
+        "ix_restore_drill_kind_date",
+        "ix_restore_drill_red"
+      ],
+      "rollback_pair": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_190_restore_drill_log_rollback.sql",
+      "errors": [],
+      "warnings": [
+        "SLUG_PREFIX_UNKNOWN"
+      ]
+    },
+    {
+      "path": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_190_restore_drill_log_rollback.sql",
+      "filename": "wave24_190_restore_drill_log_rollback.sql",
+      "num": 190,
+      "suffix": "",
+      "slug": "restore_drill_log",
+      "is_rollback": true,
+      "marker": "jpintel",
+      "body_tables": [
+        "ix_restore_drill_red",
+        "ix_restore_drill_kind_date",
+        "restore_drill_log"
+      ],
+      "rollback_pair": null,
+      "errors": [],
+      "warnings": [
+        "SLUG_PREFIX_UNKNOWN"
+      ]
+    },
+    {
+      "path": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_191_municipality_subsidy.sql",
+      "filename": "wave24_191_municipality_subsidy.sql",
+      "num": 191,
+      "suffix": "",
+      "slug": "municipality_subsidy",
+      "is_rollback": false,
+      "marker": "jpintel",
+      "body_tables": [
+        "ix_ms_pref_muni",
+        "ix_ms_sha256",
+        "ix_ms_status_retrieved"
+      ],
+      "rollback_pair": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_191_municipality_subsidy_rollback.sql",
+      "errors": [],
+      "warnings": [
+        "SLUG_PREFIX_UNKNOWN"
+      ]
+    },
+    {
+      "path": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_191_municipality_subsidy_rollback.sql",
+      "filename": "wave24_191_municipality_subsidy_rollback.sql",
+      "num": 191,
+      "suffix": "",
+      "slug": "municipality_subsidy",
+      "is_rollback": true,
+      "marker": "jpintel",
+      "body_tables": [
+        "ix_ms_status_retrieved",
+        "ix_ms_sha256",
+        "ix_ms_pref_muni",
+        "municipality_subsidy"
+      ],
+      "rollback_pair": null,
+      "errors": [],
+      "warnings": [
+        "SLUG_PREFIX_UNKNOWN"
+      ]
+    },
+    {
+      "path": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_192_pubcomment_announcement.sql",
+      "filename": "wave24_192_pubcomment_announcement.sql",
+      "num": 192,
+      "suffix": "",
+      "slug": "pubcomment_announcement",
+      "is_rollback": false,
+      "marker": "autonomath",
+      "body_tables": [
+        "ix_pubcomment_announce_date",
+        "ix_pubcomment_deadline",
+        "ix_pubcomment_law_relevant"
+      ],
+      "rollback_pair": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_192_pubcomment_announcement_rollback.sql",
+      "errors": [],
+      "warnings": [
+        "SLUG_PREFIX_UNKNOWN"
+      ]
+    },
+    {
+      "path": "/Users/shigetoumeda/jpcite/scripts/migrations/wave24_192_pubcomment_announcement_rollback.sql",
+      "filename": "wave24_192_pubcomment_announcement_rollback.sql",
+      "num": 192,
+      "suffix": "",
+      "slug": "pubcomment_announcement",
+      "is_rollback": true,
+      "marker": "autonomath",
+      "body_tables": [
+        "ix_pubcomment_law_relevant",
+        "ix_pubcomment_deadline",
+        "ix_pubcomment_announce_date",
+        "pubcomment_announcement"
+      ],
+      "rollback_pair": null,
+      "errors": [],
       "warnings": [
         "SLUG_PREFIX_UNKNOWN"
       ]

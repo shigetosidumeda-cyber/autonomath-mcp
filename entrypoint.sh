@@ -220,9 +220,12 @@ write_trusted_stamp() {
 
 # 2. R2 bootstrap: download autonomath.db if missing or SHA mismatch.
 needs_download=0
+missing_db=0
+sha_mismatch_db=0
 if [ ! -s "$DB_PATH" ]; then
   log "no existing DB at $DB_PATH"
   needs_download=1
+  missing_db=1
 elif [ -n "$DB_SHA256" ]; then
   if sha_stamp_matches "$DB_PATH" "$DB_SHA256"; then
     log "SHA256 stamp match for existing $DB_PATH — skipping full-file hash"
@@ -243,32 +246,28 @@ elif [ -n "$DB_SHA256" ]; then
       rm -f "$(sha_stamp_path "$DB_PATH")"
       log "SHA256 mismatch (have=$existing_sha want=$DB_SHA256) — re-downloading"
       needs_download=1
+      sha_mismatch_db=1
     fi
   fi
 else
   log "existing DB at $DB_PATH (no AUTONOMATH_DB_SHA256 set; skipping verification)"
 fi
 
-if [ "$needs_download" -eq 1 ]; then
-  if [ -z "$DB_URL" ]; then
-    # autonomath.db is optional at boot. /v1/am/* and 16 MCP autonomath tools
-    # will return 503 until the DB is uploaded (R2 bootstrap pending), but the
-    # core API/jpintel.db endpoints stay live. Do NOT hard-fail here.
-    log "AUTONOMATH_DB_URL unset and DB missing — skipping bootstrap (autonomath features will be 503 until DB is restored)"
-    needs_download=0
+bootstrap_autonomath_db_snapshot() {
+  local mode="${1:-foreground}"
+  log "downloading DB snapshot from R2 ($mode)"
+  # Pre-clean stale WAL/SHM from the previous DB. Preserve .partial in
+  # background mode so a fresh-volume restart can resume a large download.
+  rm -f "${DB_PATH}-shm" "${DB_PATH}-wal"
+  if [ "$mode" = "foreground" ]; then
+    rm -f "$TMP_DB"
   fi
-fi
-
-if [ "$needs_download" -eq 1 ]; then
-  log "downloading DB snapshot from R2"
-  # Pre-clean: stale WAL/SHM from the previous DB attach to the new file
-  # at sqlite open time and cause spurious integrity_check failures. Always
-  # remove them when downloading a fresh DB. Idempotent.
-  rm -f "${DB_PATH}-shm" "${DB_PATH}-wal" "${DB_PATH}.partial"
-  # Resume-friendly (-C -), follow redirects (-L), hard-fail on HTTP >=400 (-f),
-  # retry transient errors. --retry-all-errors is curl >=7.71; harmless if absent.
-  curl -fL --retry 5 --retry-delay 10 --retry-all-errors \
-       -C - -o "$TMP_DB" "$DB_URL"
+  if ! curl -fL --retry 5 --retry-delay 10 --retry-all-errors \
+       -C - -o "$TMP_DB" "$DB_URL"; then
+    err "DB snapshot download failed"
+    rm -f "$TMP_DB"
+    return 1
+  fi
 
   if [ -n "$DB_SHA256" ]; then
     log "verifying SHA256 of downloaded snapshot"
@@ -276,19 +275,67 @@ if [ "$needs_download" -eq 1 ]; then
     if [ "$got_sha" != "$DB_SHA256" ]; then
       err "SHA256 mismatch on download (got=$got_sha want=$DB_SHA256)"
       rm -f "$TMP_DB"
-      exit 1
+      return 1
     fi
     log "SHA256 verified"
   else
     log "AUTONOMATH_DB_SHA256 unset — skipping integrity check (NOT recommended for prod)"
   fi
 
-  # Atomic rename so a crash mid-download never leaves a half-baked DB at $DB_PATH.
-  mv "$TMP_DB" "$DB_PATH"
+  if [ "$mode" = "background" ] && [ -f /app/scripts/schema_guard.py ]; then
+    log "validating downloaded snapshot with schema_guard.py before landing"
+    if ! python /app/scripts/schema_guard.py "$TMP_DB" autonomath --drop-empty-cross-pollution; then
+      err "schema_guard failed for staged autonomath snapshot"
+      rm -f "$TMP_DB"
+      return 1
+    fi
+  fi
+
+  if ! mv "$TMP_DB" "$DB_PATH"; then
+    err "failed to land DB snapshot at $DB_PATH"
+    return 1
+  fi
   if [ -n "$DB_SHA256" ]; then
     write_sha_stamp "$DB_PATH" "$DB_SHA256"
   fi
   log "DB snapshot landed at $DB_PATH"
+}
+
+AUTONOMATH_BOOTSTRAP_MODE="${AUTONOMATH_BOOTSTRAP_MODE:-background}"
+
+if [ "$needs_download" -eq 1 ]; then
+  if [ -z "$DB_URL" ]; then
+    if [ "$missing_db" -eq 1 ]; then
+      # autonomath.db is optional at boot. /v1/am/* and 16 MCP autonomath tools
+      # will return 503 until the DB is uploaded (R2 bootstrap pending), but the
+      # core API/jpintel.db endpoints stay live. Do NOT hard-fail here.
+      log "AUTONOMATH_DB_URL unset and DB missing — skipping bootstrap (autonomath features will be 503 until DB is restored)"
+      needs_download=0
+    elif [ "$sha_mismatch_db" -eq 1 ]; then
+      err "AUTONOMATH_DB_URL unset and existing DB SHA256 mismatch — failing boot (have=$existing_sha want=$DB_SHA256)"
+      exit 1
+    else
+      err "AUTONOMATH_DB_URL unset but DB requires download — failing boot"
+      exit 1
+    fi
+  fi
+fi
+
+if [ "$needs_download" -eq 1 ] && [ "$missing_db" -eq 1 ] && [ "$AUTONOMATH_BOOTSTRAP_MODE" = "background" ]; then
+  log "starting background autonomath DB bootstrap; /v1/am/* will return 503 until it lands"
+  (
+    if ! mkdir "${TMP_DB}.lock" 2>/dev/null; then
+      log "background autonomath DB bootstrap already in progress"
+      exit 0
+    fi
+    trap 'rmdir "${TMP_DB}.lock" 2>/dev/null || true' EXIT
+    bootstrap_autonomath_db_snapshot background || err "background autonomath DB bootstrap failed"
+  ) &
+  needs_download=0
+fi
+
+if [ "$needs_download" -eq 1 ]; then
+  bootstrap_autonomath_db_snapshot foreground || exit 1
 elif [ -s "$DB_PATH" ]; then
   size_bytes="$(file_size "$DB_PATH")"
   log "using existing DB at $DB_PATH ($size_bytes bytes)"
@@ -382,7 +429,57 @@ if [ -f /app/scripts/schema_guard.py ]; then
       am_mig_skipped=0
       am_mig_already=0
       am_mig_failed=0
+      am_mig_degraded=0
+      am_mig_mode="${AUTONOMATH_BOOT_MIGRATION_MODE:-manifest}"
+      am_mig_manifest="${AUTONOMATH_BOOT_MIGRATION_MANIFEST:-/app/scripts/migrations/autonomath_boot_manifest.txt}"
+      am_mig_in_manifest() {
+        local name="$1"
+        [ -f "$am_mig_manifest" ] || return 1
+        grep -Ev '^[[:space:]]*(#|$)' "$am_mig_manifest" \
+          | awk '{print $1}' \
+          | grep -Fxq "$name"
+      }
+      case "$am_mig_mode" in
+        manifest)
+          if [ -f "$am_mig_manifest" ]; then
+            log "autonomath boot migrations restricted to manifest: $am_mig_manifest"
+          else
+            log "autonomath boot migration manifest missing — no autonomath migrations will auto-apply"
+          fi
+          ;;
+        discover)
+          log "AUTONOMATH_BOOT_MIGRATION_MODE=discover — legacy all-file autonomath migration discovery enabled"
+          ;;
+        off)
+          log "AUTONOMATH_BOOT_MIGRATION_MODE=off — autonomath migrations disabled at boot"
+          ;;
+        *)
+          err "unknown AUTONOMATH_BOOT_MIGRATION_MODE=$am_mig_mode (expected manifest, discover, or off)"
+          if [ "${AUTONOMATH_ENABLED:-true}" = "true" ] || [ "${AUTONOMATH_ENABLED:-1}" = "1" ]; then
+            exit 1
+          fi
+          ;;
+      esac
       for am_mig in $(ls /app/scripts/migrations/*.sql 2>/dev/null | sort); do
+        am_mig_id="$(basename "$am_mig")"
+        case "$am_mig_mode" in
+          off)
+            am_mig_skipped=$((am_mig_skipped + 1))
+            continue
+            ;;
+          manifest)
+            if ! am_mig_in_manifest "$am_mig_id"; then
+              am_mig_skipped=$((am_mig_skipped + 1))
+              continue
+            fi
+            ;;
+          discover)
+            ;;
+          *)
+            am_mig_skipped=$((am_mig_skipped + 1))
+            continue
+            ;;
+        esac
         case "$am_mig" in
           *_rollback.sql)
             log "skipping $am_mig (rollback companion, manual-review only)"
@@ -401,7 +498,6 @@ if [ -f /app/scripts/schema_guard.py ]; then
           am_mig_skipped=$((am_mig_skipped + 1))
           continue
         fi
-        am_mig_id="$(basename "$am_mig")"
         # Skip if already recorded in schema_migrations bookkeeping.
         already=$(sqlite3 "$DB_PATH" "SELECT 1 FROM schema_migrations WHERE id='$am_mig_id' LIMIT 1;" 2>/dev/null || echo "")
         if [ "$already" = "1" ]; then
@@ -410,14 +506,35 @@ if [ -f /app/scripts/schema_guard.py ]; then
         fi
         log "applying $am_mig to $DB_PATH"
         am_mig_output="$(mktemp)"
-        if sqlite3 "$DB_PATH" < "$am_mig" >"$am_mig_output" 2>&1; then
+        is_vec_mig=0
+        sqlite_args=("$DB_PATH")
+        if grep -Eqi 'USING[[:space:]]+vec0[[:space:]]*\(' "$am_mig"; then
+          is_vec_mig=1
+          vec0_path="${AUTONOMATH_VEC0_PATH:-/opt/vec0.so}"
+          if [ -n "$vec0_path" ] && [ -f "$vec0_path" ]; then
+            sqlite_args=(-cmd ".load $vec0_path" "$DB_PATH")
+          else
+            log "autonomath vec0 migration degraded (vec0 extension missing: ${vec0_path:-unset}): $am_mig"
+            am_mig_degraded=$((am_mig_degraded + 1))
+            rm -f "$am_mig_output"
+            continue
+          fi
+        fi
+        if sqlite3 "${sqlite_args[@]}" < "$am_mig" >"$am_mig_output" 2>&1; then
           # Record successful apply. Use INSERT OR IGNORE so concurrent
           # boots on the same volume don't crash on the bookkeeping write.
           now=$(date -u +%FT%TZ)
           sqlite3 "$DB_PATH" "INSERT OR IGNORE INTO schema_migrations(id,checksum,applied_at) VALUES('$am_mig_id','self_heal','$now');" 2>/dev/null || true
           am_mig_applied=$((am_mig_applied + 1))
         else
-          if grep -qi "duplicate column" "$am_mig_output" \
+          if [ "$is_vec_mig" -eq 1 ] && grep -qi "no such module: vec0" "$am_mig_output"; then
+            # vec0-backed virtual tables are optional search acceleration.
+            # Do not mark the migration applied; a later boot with vec0
+            # installed should retry and create the vector tables.
+            log "autonomath vec0 migration degraded (vec0 unavailable): $am_mig"
+            grep -v "^$" "$am_mig_output" | head -5 || true
+            am_mig_degraded=$((am_mig_degraded + 1))
+          elif grep -qi "duplicate column" "$am_mig_output" \
              && ! grep -vi "duplicate column" "$am_mig_output" | grep -q '[^[:space:]]'; then
             # SQLite has no ALTER TABLE ADD COLUMN IF NOT EXISTS. Treat a
             # duplicate column as "schema already has this additive change",
@@ -427,6 +544,15 @@ if [ -f /app/scripts/schema_guard.py ]; then
             sqlite3 "$DB_PATH" "INSERT OR IGNORE INTO schema_migrations(id,checksum,applied_at) VALUES('$am_mig_id','self_heal_duplicate_column','$now');" 2>/dev/null || true
             log "autonomath migration duplicate-column treated as applied: $am_mig"
             am_mig_applied=$((am_mig_applied + 1))
+          elif grep -qi "no such table:" "$am_mig_output"; then
+            # Some autonomath migrations enrich optional absorbed/source
+            # tables that are absent on older production volumes. Do not mark
+            # them applied: a later boot after the source table is loaded must
+            # retry. Keep boot alive; schema_guard below still protects the
+            # required serving schema.
+            log "autonomath migration degraded (optional source table missing): $am_mig"
+            grep -v "^$" "$am_mig_output" | head -5 || true
+            am_mig_degraded=$((am_mig_degraded + 1))
           else
             # Do not mark hard-failed migrations as applied. Schema guard below
             # catches structural drift, and leaving the row unrecorded means a
@@ -438,7 +564,7 @@ if [ -f /app/scripts/schema_guard.py ]; then
         fi
         rm -f "$am_mig_output"
       done
-      log "autonomath self-heal migrations: applied=$am_mig_applied already=$am_mig_already skipped=$am_mig_skipped failed=$am_mig_failed"
+      log "autonomath self-heal migrations: applied=$am_mig_applied already=$am_mig_already skipped=$am_mig_skipped degraded=$am_mig_degraded failed=$am_mig_failed"
       if [ "$am_mig_failed" -gt 0 ]; then
         if [ "${AUTONOMATH_ENABLED:-true}" = "true" ] || [ "${AUTONOMATH_ENABLED:-1}" = "1" ]; then
           err "AUTONOMATH_ENABLED=true and autonomath migrations failed — failing boot"
@@ -447,7 +573,7 @@ if [ -f /app/scripts/schema_guard.py ]; then
         log "AUTONOMATH_ENABLED=false — continuing despite autonomath migration failures"
       fi
       log "running schema_guard.py on $DB_PATH (autonomath profile)"
-      python /app/scripts/schema_guard.py "$DB_PATH" autonomath || {
+      python /app/scripts/schema_guard.py "$DB_PATH" autonomath --drop-empty-cross-pollution || {
         err "schema_guard failed for autonomath"
         if [ "${AUTONOMATH_ENABLED:-true}" = "true" ] || [ "${AUTONOMATH_ENABLED:-1}" = "1" ]; then
           err "AUTONOMATH_ENABLED=true — failing boot instead of serving a silently degraded API"

@@ -11,7 +11,9 @@ htmlcov/
 
 # Virtualenvs
 .venv/
+.venv*/
 venv/
+node_modules/
 
 # Local data — bake only the launch-day seed files (jpintel.db + unified_registry.json)
 # so deploys = data refresh. Everything else under data/ stays out (would balloon
@@ -32,18 +34,54 @@ autonomath.db.*
 autonomath.db.pre_*
 autonomath.db.WAS_*
 autonomath.db.CORRUPT_*
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.sqlite3
+*.sqlite3-shm
+*.sqlite3-wal
+*.parquet
+*.jsonl
+!data/jpintel.db
+!data/unified_registry.json
+!data/autonomath_static
+!data/autonomath_static/**
 
 # Research + raw inputs (large, not needed at runtime)
 research/
 docs/_internal/
 site/
 sdk/
+tools/offline/
+dist/
+dist.bak*/
+.wrangler/
+analysis_*/
+autonomath_staging/
+benchmarks/
+analytics/
+parts/
+content/
+evals/
+monitoring/
+.cache/
+
+# Local generated artifacts / caches
+build/
+*.log
+*.tmp
+*.bak
+*.bak.*
 
 # Research-only HF publication scripts. Dockerfile intentionally copies
 # scripts/ for migrations, runtime backup/restore helpers, and production
 # cron utilities under scripts/etl/.
 scripts/hf_*.py
 scripts/publish_hf_datasets.py
+src/scripts/
 
 # Dev / VCS
 .git/

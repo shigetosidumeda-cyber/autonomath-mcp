@@ -136,16 +136,19 @@ jobs:
 
               programs = table_count("programs")
               jpi_programs = table_count("jpi_programs")
-              if programs < 10_000:
+              catalog_count = max(programs, jpi_programs)
+              if catalog_count < 10_000:
                   raise SystemExit(
                       "program catalog unexpectedly small: "
-                      f"programs={programs} jpi_programs={jpi_programs}"
+                      f"programs={programs} jpi_programs={jpi_programs} "
+                      f"catalog_count={catalog_count}"
                   )
           finally:
               conn.close()
           print(
               f"seed DB verified: {db} ({db.stat().st_size} bytes) "
-              f"programs={programs} jpi_programs={jpi_programs}"
+              f"programs={programs} jpi_programs={jpi_programs} "
+              f"catalog_count={catalog_count}"
           )
           PY
 

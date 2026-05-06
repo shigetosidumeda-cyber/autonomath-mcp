@@ -14,13 +14,13 @@ Current public docs and release tags are the source of truth for version and pri
 [![MCP 2025-06-18](https://img.shields.io/badge/MCP-2025--06--18-6E56CF.svg)](https://modelcontextprotocol.io/)
 [![Made in Japan](https://img.shields.io/badge/made%20in-%F0%9F%87%AF%F0%9F%87%B5-red.svg)](https://jpcite.com)
 
-LLM agent / RAG パイプラインに渡す前の compact context を REST + MCP で返します。公開行には 出典 URL + content_hash + 取得日時 が付き、官公庁・自治体・公庫・公式事業者ページなど確認可能な出典を優先します。**11,684 programs / 9,484 laws / 1,185 enforcement cases + 22,258 enforcement-detail records / 96 MCP tools / median 7 day freshness**。LLM は呼び出さず、民間まとめサイトにも依存しません。通常の検索・取得は ¥3/billable unit、anon 3/日 free。
+LLM agent / RAG パイプラインに渡す前の compact context を REST + MCP で返します。公開行には 出典 URL + content_hash + 取得日時 が付き、官公庁・自治体・公庫・公式事業者ページなど確認可能な出典を優先します。**11,684 programs / 9,484 laws / 1,185 enforcement cases + 22,258 enforcement-detail records / 139 MCP tools / median 7 day freshness**。LLM は呼び出さず、民間まとめサイトにも依存しません。通常の検索・取得は ¥3/billable unit、anon 3/日 free。
 
-*English: Evidence-first context layer for Japanese public-program data, exposed as REST + MCP. Published rows return source URL + content_hash + fetched_at so an LLM agent or RAG pipeline can ground answers on verifiable official sources — no LLM calls inside the service, no aggregator scraping. **11,684 programs / 9,484 laws / 1,185 enforcement cases + 22,258 enforcement-detail records / 96 MCP tools / median 7 day freshness.** ¥3/billable unit for normal search/detail calls, 3/day free anonymous.*
+*English: Evidence-first context layer for Japanese public-program data, exposed as REST + MCP. Published rows return source URL + content_hash + fetched_at so an LLM agent or RAG pipeline can ground answers on verifiable official sources — no LLM calls inside the service, no aggregator scraping. **11,684 programs / 9,484 laws / 1,185 enforcement cases + 22,258 enforcement-detail records / 139 MCP tools / median 7 day freshness.** ¥3/billable unit for normal search/detail calls, 3/day free anonymous.*
 
 Use jpcite when an AI answer needs Japanese public-program evidence, source URLs, fetched_at metadata, compatibility rules, enforcement checks, or known gaps before drafting prose. Skip it for short general questions, translation, brainstorming, or topics that do not need source-linked Japanese institutional data.
 
-Token and cost impact is workload-dependent. jpcite can reduce the input context a caller sends to GPT/Claude by returning compact source-linked facts first, but it is not a provider billing guarantee; output tokens, reasoning tokens, tool calls, search, cache behavior, and model choice remain controlled by the caller.
+Evidence Packet lets a caller give GPT/Claude compact, source-linked input before drafting: `source_url`, `source_fetched_at`, `known_gaps`, and caller-supplied input-context estimates can be compared with the caller baseline to explain what context was used. JSON Evidence Packets may also include top-level `decision_insights` (`why_review`, `next_checks`, `evidence_gaps`) for AI answer scaffolding. `/v1/intel/match` adds AI-facing `next_questions`, `eligibility_gaps`, and `document_readiness` so an agent can turn matched programs into customer interview questions, eligibility-gap checks, and document-readiness lists. `/v1/intel/bundle/optimal` `decision_support` explains the selected bundle's rationale, decision signals, and follow-up actions; `/v1/intel/houjin/{houjin_id}/full` `decision_support` turns corporate 360 evidence into corporate DD, credit-precheck notes, and monitoring suggestions. Funding stack/compat `next_actions` are AI-facing follow-up actions for compatibility tables, pre-application checks, and alternative bundle proposals. Output tokens, reasoning tokens, tool calls, search, cache behavior, and model choice remain controlled by the caller.
 
 ## How jpcite compares to single-source MCP servers
 
@@ -49,7 +49,7 @@ An evidence-first context layer over Japanese institutional public data, exposed
 - **2,286 採択事例 + 108 融資 (担保・個人保証人・第三者保証人 三軸分解) + 1,185 行政処分 + 22,258 enforcement-detail records + 2,065 court decisions + 362 bids**
 - **154 laws full-text indexed + 9,484 law metadata records** (e-Gov CC-BY; full-text coverage is incremental — name resolver covers all 9,484, body text 154) **+ 50 tax rulesets + 13,801 invoice registrants (PDL v1.0 delta)**
 - **181 exclusion / prerequisite rules** (125 exclude + 17 prerequisite + 15 absolute + 24 other) — surfaced as structured eligibility predicates, not free-text
-- **96 MCP tools** in the standard public configuration (39 core + 3 audit/composition + 25 jpcite generic + 4 universal + 5 static-resource tools + 4 NTA corpus + 10 composition tools + 3 industry-pack tools + 3 corporate-layer tools), protocol 2025-06-18, stdio. Optional labor-agreement tools are disabled unless explicitly enabled.
+- **139 MCP tools** in the standard public configuration, protocol 2025-06-18, stdio. See [`docs/mcp-tools.md`](./docs/mcp-tools.md) for the current public tool catalogue and arguments. Optional labor-agreement tools are disabled unless explicitly enabled.
 - **REST API** — endpoints under `/v1/programs/*`, `/v1/laws/*`, `/v1/tax_rulesets/*`, `/v1/case-studies/*`, `/v1/loan-programs/*`, `/v1/enforcement-cases/*`, `/v1/exclusions/*`, `/v1/am/*`. OpenAPI: [`docs/openapi/v1.json`](./docs/openapi/v1.json)
 - **No LLM inside the service** — no external LLM calls in the data/evidence path. Content endpoints are generated from the corpus and deterministic application code; reasoning lives in the caller's agent.
 - **Median 7-day freshness** on tier S/A program rows; per-source `source_fetched_at` distribution exposed at `GET /v1/stats/freshness`
@@ -144,20 +144,20 @@ Get an API key at <https://jpcite.com/dashboard>.
 
 ## MCP tools
 
-96 tools at default gates, MCP protocol `2025-06-18`, FastMCP over stdio. 完全なリストと引数は [docs/mcp-tools.md](./docs/mcp-tools.md) を参照 (Single source of truth)。
+139 tools at default gates, MCP protocol `2025-06-18`, FastMCP over stdio. 完全なリストと引数は [docs/mcp-tools.md](./docs/mcp-tools.md) を参照 (Single source of truth)。
 
 | Group | Coverage |
 |-------|----------|
-| **Core (39)** | Programs, Case Studies, Loans, Enforcement, Exclusions, Laws, Court Decisions, Bids, Tax Rulesets, Quota probe (get_usage_status) |
-| **Audit / composition (3)** | audit_batch_evaluate, compose_audit_workpaper, resolve_citation_chain |
-| **jpcite generic (25)** | Entity/Fact DB, funding stack, evidence/source manifests, lifecycle/graph/rule-engine, tax/certification/loan/enforcement wrappers |
-| **V4 universal (4)** | get_annotations, validate, get_provenance, get_provenance_for_fact |
-| **Static resources (5)** | list_static_resources_am, get_static_resource_am, list_example_profiles_am, get_example_profile_am, deep_health_am |
-| **NTA corpus (4)** | cite_tsutatsu, find_bunsho_kaitou, find_saiketsu, find_shitsugi |
-| **Eligibility composition (5)** | apply_eligibility_chain_am, find_complementary_programs_am, program_active_periods_am, simulate_application_am, track_amendment_lineage_am |
-| **Application composition (5)** | bundle_application_kit, cross_check_jurisdiction, forecast_program_renewal, match_due_diligence_questions, prepare_kessan_briefing |
-| **Industry packs (3)** | pack_construction, pack_manufacturing, pack_real_estate |
-| **Corporate layer (3)** | get_houjin_360_am, list_edinet_disclosures, search_invoice_by_houjin_partial |
+| **Core** | Programs, Case Studies, Loans, Enforcement, Exclusions, Laws, Court Decisions, Bids, Tax Rulesets, Quota probe (get_usage_status) |
+| **Audit / composition** | audit_batch_evaluate, compose_audit_workpaper, resolve_citation_chain |
+| **jpcite generic** | Entity/Fact DB, funding stack, evidence/source manifests, lifecycle/graph/rule-engine, tax/certification/loan/enforcement wrappers |
+| **V4 universal** | get_annotations, validate, get_provenance, get_provenance_for_fact |
+| **Static resources** | list_static_resources_am, get_static_resource_am, list_example_profiles_am, get_example_profile_am, deep_health_am |
+| **NTA corpus** | cite_tsutatsu, find_bunsho_kaitou, find_saiketsu, find_shitsugi |
+| **Eligibility composition** | apply_eligibility_chain_am, find_complementary_programs_am, program_active_periods_am, simulate_application_am, track_amendment_lineage_am |
+| **Application composition** | bundle_application_kit, cross_check_jurisdiction, forecast_program_renewal, match_due_diligence_questions, prepare_kessan_briefing |
+| **Industry packs** | pack_construction, pack_manufacturing, pack_real_estate |
+| **Corporate layer** | get_houjin_360_am, list_edinet_disclosures, search_invoice_by_houjin_partial |
 
 Full list: [docs/mcp-tools.md](https://jpcite.com/docs/mcp-tools/)
 
@@ -169,6 +169,7 @@ Full list: [docs/mcp-tools.md](https://jpcite.com/docs/mcp-tools/)
 
 - Agent-safe import: <https://api.jpcite.com/v1/openapi.agent.json> (`docs/openapi/agent.json`) for ChatGPT Custom GPT Actions and AI tool importers.
 - Full developer spec: <https://api.jpcite.com/v1/openapi.json> (`docs/openapi/v1.json`) for SDK generators, Postman, and complete REST reference.
+- AI-facing value fields: Evidence Packet `decision_insights` summarizes why to review, next checks, and evidence gaps; `/v1/intel/match` `next_questions`, `eligibility_gaps`, and `document_readiness` summarize customer questions, unresolved eligibility checks, and document readiness; funding stack/compat `next_actions` turn pair verdicts into compatibility-table checks, pre-application checklist items, and alternative bundle prompts; `/v1/intel/bundle/optimal` `decision_support` summarizes bundle rationale, decision signals, and next actions; `/v1/intel/houjin/{houjin_id}/full` `decision_support` summarizes corporate DD questions, credit precheck notes, and monitoring suggestions.
 
 **Python MCP package** (`autonomath-mcp`) — package name is kept for client compatibility:
 
@@ -212,11 +213,11 @@ Tool quality is publicly verifiable: see [`evals/`](./evals/) for a 79-query gol
 - **¥3 per billable unit** (税込 ¥3.30) — normal search/detail calls are 1 unit, while batch/export endpoints bill by documented fan-out units
 - **First 3 requests/day free** (anonymous, IP-based, JST daily reset)
 - **No subscription tiers, no seat fees, no annual minimums**; anonymous trial calls do not require signup and remain capped at 3 requests/day per IP.
-- **Cost preview is an estimate, not a billing guarantee** — use `/v1/cost/preview` for jpcite billable-unit estimates. Use evidence packet `include_compression=true` for caller-supplied input-context comparisons. Provider output/reasoning/search/cache costs remain outside jpcite.
+- **Cost preview and context estimates** — use `/v1/cost/preview` for jpcite billable-unit estimates. Use evidence packet `include_compression=true` to compare caller-supplied input-context estimates with the caller baseline. Provider output/reasoning/search/cache costs remain outside jpcite.
 
 ## Optional disabled domains
 
-The standard distribution exposes 96 tools for Japanese public-program
+The standard distribution exposes 139 tools for Japanese public-program
 search, evidence, provenance, tax rulesets, laws, court decisions, bids,
 invoice registrants, and related entity facts. Additional domain-specific
 surfaces are intentionally disabled unless enabled through support-managed

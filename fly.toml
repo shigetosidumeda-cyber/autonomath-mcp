@@ -11,6 +11,7 @@ primary_region = "nrt"
   JPINTEL_DB_PATH = "/data/jpintel.db"
   AUTONOMATH_DB_PATH = "/data/autonomath.db"
   AUTONOMATH_ENABLED = "true"
+  AUTONOMATH_APPI_ENABLED = "0"
   SENTRY_ENVIRONMENT = "production"
   # SENTRY_DSN, STRIPE_*, API_KEY_SALT, JPINTEL_CORS_ORIGINS: set via `flyctl secrets set`
   # AUTONOMATH_DB_URL + AUTONOMATH_DB_SHA256 (optional R2 bootstrap): set via secrets
@@ -61,18 +62,15 @@ primary_region = "nrt"
     hard_limit = 100
 
   # Fly silently caps grace_period at 60s (`flyctl config validate` warning).
-  # Normal redeploy should avoid 9.79 GB boot-time SHA/integrity scans via
-  # DB stamp files; fresh R2 bootstrap or stamp miss can still exceed 60s.
-  # The deep check fails unless the autonomath health body is fully ok.
-  # If a fresh-volume bootstrap runs long, Fly retries before declaring
-  # unhealthy; expect a brief first-deploy restart loop rather than widening
-  # this check past Fly's effective cap.
+  # Liveness must not depend on the optional 9GB autonomath.db restore path.
+  # Deep autonomath health is checked by deploy smoke/monitoring; using it here
+  # can restart-loop a fresh volume before R2 bootstrap or stamp repair finishes.
   [[http_service.checks]]
     interval = "30s"
     timeout = "10s"
     grace_period = "60s"
     method = "GET"
-    path = "/v1/am/health/deep?fail_on_degraded=true"
+    path = "/healthz"
 
 [metrics]
   port = 9091

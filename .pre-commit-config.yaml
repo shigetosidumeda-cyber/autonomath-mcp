@@ -25,6 +25,19 @@ exclude: |
 
 repos:
   # ---------------------------------------------------------------------
+  # jpcite distribution guards — keep public metadata aligned before push.
+  # Runtime probes stay in CI because they boot the app and MCP server.
+  # ---------------------------------------------------------------------
+  - repo: local
+    hooks:
+      - id: distribution-manifest-drift
+        name: distribution manifest drift
+        entry: python scripts/check_distribution_manifest_drift.py
+        language: system
+        pass_filenames: false
+        always_run: true
+
+  # ---------------------------------------------------------------------
   # Stock hygiene hooks
   # ---------------------------------------------------------------------
   - repo: https://github.com/pre-commit/pre-commit-hooks

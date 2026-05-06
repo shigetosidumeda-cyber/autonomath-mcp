@@ -1,0 +1,63 @@
+version: "1.0.0"
+generated_at: "2026-05-07T00:00:00+09:00"
+cohort: "建設/製造/不動産"
+cohort_id: "industry_pack"
+business_law: "業法 cohort 特化なし (横断 §52 / §47条の2)"
+forbidden_phrases:
+  - "採択保証"
+  - "施工保証"
+  - "性能保証"
+  - "適合保証"
+  - "推測"
+  - "予測"
+  - "保証"
+required_routing:
+  - "tax_pro"
+languages:
+  - "ja"
+  - "en"
+system_prompt_template: |
+  あなたは jpcite を使って建設 (JSIC D) / 製造 (JSIC E) / 不動産 (JSIC K) 業界の事業者を補助する AI です。
+  事実検索のみを行い、施工/性能/適合判断は専門家本人 (人間) に委ねます。
+  必ず source_url を引用してください。
+  pack_construction / pack_manufacturing / pack_real_estate (Wave 23) で top 10 programs + saiketsu + 通達 を一括取得します。
+  ${INDUSTRY_JSIC_MAJOR:-D} を pack 選択の hint とします。
+  ${REGION:-Tokyo} の制度を優先。
+  禁止フレーズ: 採択保証 / 施工保証 / 性能保証 / 適合保証。
+system_prompt_template_en: |
+  You are an AI assistant supporting construction (JSIC D) / manufacturing (JSIC E) / real-estate (JSIC K) cohorts via jpcite.
+  Provide retrieval only — defer construction / performance / conformity judgments to qualified humans.
+  Always cite source_url.
+  Use pack_construction / pack_manufacturing / pack_real_estate (Wave 23) to fetch top 10 programs + saiketsu + 通達 in one call.
+  Use ${INDUSTRY_JSIC_MAJOR:-D} as the pack-selection hint.
+  Prefer programs in ${REGION:-Tokyo}.
+  Forbidden: "guaranteed adoption", "construction guarantee", "performance guarantee", "compliance guarantee".
+few_shot_queries:
+  - user: "建設業 (JSIC D) の top 10 補助金 + 裁決事例 + 通達"
+    tool: "pack_construction"
+    args:
+      region: "Tokyo"
+  - user: "製造業 (JSIC E) ものづくり補助金 + 裁決事例 + 通達"
+    tool: "pack_manufacturing"
+    args:
+      region: "Tokyo"
+  - user: "不動産業 (JSIC K) 空き家 補助金 + 裁決事例 + 通達"
+    tool: "pack_real_estate"
+    args:
+      region: "Tokyo"
+tool_routing:
+  - intent: "construction_pack"
+    tool: "pack_construction"
+  - intent: "manufacturing_pack"
+    tool: "pack_manufacturing"
+  - intent: "real_estate_pack"
+    tool: "pack_real_estate"
+disclaimer_envelope:
+  primary: "業法 cohort 特化なし"
+  secondary:
+    - "税理士法 §52"
+    - "公認会計士法 §47条の2"
+    - "建設業法 §28"
+  routing_required:
+    - "tax_pro"
+  boundary_short: "施工/性能/適合判断は行わない (情報検索のみ)"

@@ -1,0 +1,239 @@
+{
+  "_meta": {
+    "spec": "DEEP-38 業法 fence violation detector",
+    "version": "1.0.0",
+    "generated": "2026-05-07",
+    "last_reviewed_at": "2026-05-07",
+    "source": "DEEP-23 disclaimer-spec OSS / 09_B_PUBLIC_CLAIM_GUARD.md",
+    "language_set": ["jp", "en"],
+    "total_jp_phrases": 84,
+    "total_en_phrases": 40,
+    "minItems": 3
+  },
+  "jp": {
+    "税理士法": {
+      "section": "§52",
+      "cohort": "tax_pro",
+      "scope": "税務代理 / 税務書類作成 / 税務相談",
+      "forbidden": [
+        "採択保証",
+        "確実な税額",
+        "申告代行します",
+        "税務代理を行います",
+        "最適な税額計算",
+        "確実に節税",
+        "税務署対応します",
+        "税務調査対応",
+        "あなたの税額は",
+        "税務相談に応じます",
+        "税理士業務を提供",
+        "税務書類作成代行"
+      ],
+      "routing_required": ["税理士へ相談", "有資格者", "税務代理"]
+    },
+    "弁護士法": {
+      "section": "§72",
+      "cohort": "lawyer",
+      "scope": "法律事務 / 訴訟代理",
+      "forbidden": [
+        "法律相談",
+        "訴訟代理",
+        "示談交渉します",
+        "契約書作成",
+        "法律判断",
+        "裁判所対応",
+        "弁護士業務",
+        "法律事務代行",
+        "あなたの権利は",
+        "あなたは勝てます",
+        "法的助言",
+        "法律意見"
+      ],
+      "routing_required": ["弁護士へ相談", "有資格者", "法律事務"]
+    },
+    "行政書士法": {
+      "section": "§1",
+      "cohort": "admin",
+      "scope": "官公署提出書類作成 / 権利義務 / 事実証明",
+      "forbidden": [
+        "許認可申請代行",
+        "申請書作成代行",
+        "書類作成代行",
+        "官公署提出代行",
+        "補助金申請代行",
+        "許可取得代行",
+        "行政書士業務",
+        "官公署書類代行",
+        "事実証明書作成代行",
+        "権利義務書類作成代行",
+        "営業許可申請代行",
+        "建設業許可代行"
+      ],
+      "routing_required": ["行政書士へ相談", "有資格者", "官公署提出"]
+    },
+    "司法書士法": {
+      "section": "§3",
+      "cohort": "judicial",
+      "scope": "登記 / 供託 / 簡裁訴訟代理",
+      "forbidden": [
+        "登記申請代行",
+        "商業登記代行",
+        "不動産登記代行",
+        "供託代行",
+        "140万以下訴訟代理",
+        "司法書士業務",
+        "簡裁訴訟代理",
+        "登記書類作成代行",
+        "登記手続代行",
+        "供託書作成代行",
+        "司法書士独占業務",
+        "登記申請手続代行"
+      ],
+      "routing_required": ["司法書士へ相談", "有資格者", "登記申請"]
+    },
+    "弁理士法": {
+      "section": "§75",
+      "cohort": "patent",
+      "scope": "特許出願 / 商標出願 / 鑑定",
+      "forbidden": [
+        "特許出願代行",
+        "商標出願代行",
+        "特許鑑定",
+        "弁理士業務",
+        "意匠出願代行",
+        "実用新案出願代行",
+        "特許申請代行",
+        "商標登録代行",
+        "特許異議申立代行",
+        "商標異議申立代行",
+        "PCT出願代行",
+        "知的財産権鑑定"
+      ],
+      "routing_required": ["弁理士へ相談", "有資格者", "特許出願"]
+    },
+    "社労士法": {
+      "section": "§27",
+      "cohort": "labor",
+      "scope": "労働社会保険諸法令 / 帳簿作成 / 申請書作成",
+      "forbidden": [
+        "社会保険手続代行",
+        "労働基準法助言",
+        "就業規則作成代行",
+        "36協定作成",
+        "社労士業務",
+        "労務管理相談",
+        "社会保険申請代行",
+        "労働保険申請代行",
+        "雇用保険申請代行",
+        "賃金台帳作成代行",
+        "労働者名簿作成代行",
+        "社会保険労務士業務"
+      ],
+      "routing_required": ["社労士へ相談", "有資格者", "社会保険手続"]
+    },
+    "公認会計士法": {
+      "section": "§47条の2",
+      "cohort": "cpa",
+      "scope": "監査証明業務 / 監査証明業務以外の業務制限",
+      "forbidden": [
+        "監査証明します",
+        "会計監査します",
+        "内部統制監査",
+        "四半期review",
+        "公認会計士業務",
+        "監査証明業務",
+        "財務諸表監査",
+        "金商法監査",
+        "会社法監査",
+        "監査意見表明",
+        "保証業務",
+        "監査報告書作成"
+      ],
+      "routing_required": ["公認会計士へ相談", "有資格者", "監査証明"]
+    }
+  },
+  "en": {
+    "tax_pro": {
+      "law": "税理士法",
+      "section": "§52",
+      "forbidden": [
+        "I'll file your tax return",
+        "Guaranteed tax savings",
+        "Your tax liability is",
+        "Tax filing on your behalf",
+        "We file your taxes",
+        "Tax representation service"
+      ]
+    },
+    "lawyer": {
+      "law": "弁護士法",
+      "section": "§72",
+      "forbidden": [
+        "Legal advice",
+        "I'll represent you in court",
+        "Settlement negotiation",
+        "Litigation representation",
+        "Legal opinion",
+        "I'll handle your lawsuit"
+      ]
+    },
+    "admin": {
+      "law": "行政書士法",
+      "section": "§1",
+      "forbidden": [
+        "Permit application on your behalf",
+        "Government filing service",
+        "I'll create your articles of incorporation",
+        "Subsidy application filing",
+        "Administrative filing service"
+      ]
+    },
+    "judicial": {
+      "law": "司法書士法",
+      "section": "§3",
+      "forbidden": [
+        "Real estate registration on your behalf",
+        "Commercial registration filing",
+        "Property registration service",
+        "Deposit filing service",
+        "Court registration service"
+      ]
+    },
+    "patent": {
+      "law": "弁理士法",
+      "section": "§75",
+      "forbidden": [
+        "Patent application filing service",
+        "Trademark registration on your behalf",
+        "Patent valuation",
+        "Trademark filing service",
+        "Patent prosecution service",
+        "PCT filing on your behalf"
+      ]
+    },
+    "labor": {
+      "law": "社労士法",
+      "section": "§27",
+      "forbidden": [
+        "Social insurance filing service",
+        "Labor law consultation",
+        "Work rules drafting service",
+        "Labor regulation advisory",
+        "Employment regulation filing"
+      ]
+    },
+    "cpa": {
+      "law": "公認会計士法",
+      "section": "§47条の2",
+      "forbidden": [
+        "Audit certification",
+        "Financial audit service",
+        "Internal control audit",
+        "Quarterly review service",
+        "Statutory audit",
+        "Audit opinion issuance",
+        "Assurance service"
+      ]
+    }
+  }
+}

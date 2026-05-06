@@ -1,0 +1,132 @@
+# Hallucination Guard (§10.10) SLA Targets — machine-readable.
+#
+# Owner: Bookyou株式会社 / 梅田茂利 / info@bookyou.net
+# Status: Living. Source of truth for the §10.10 alert pipeline.
+#
+# The narrative §10.10 surface complements the prose SLAs in
+# `monitoring/sla_targets.md`. The MD covers infra (uptime, p95 latency,
+# 5xx rate, webhook delivery). This YAML covers content-quality KPIs
+# specific to the LLM-generated narrative + corpus fact-check pipeline.
+#
+# Alert channel: Telegram (operator personal chat). NO Slack, NO PagerDuty.
+# Per `feedback_zero_touch_solo`: solo operator, single push channel.
+
+version: 1
+
+narrative_quality:
+  # Weighted match rate from am_narrative_extracted_entities (W = {money:3,
+  # law:3, url:2, houjin:2, program:2, year:1, percent:1, count:1, jsic:1}).
+  # Median taken over the rolling 7-day window.
+  factcheck_match_rate_median:
+    target: 0.92
+    alert_threshold: 0.85   # < 0.85 fires Telegram critical
+    window: 7d
+    source_view: am_narrative_quality_kpi
+    cron: scripts/cron/narrative_drift_detect.py
+    owner_action: "Audit match_rate dist + retune extractor regex / spaCy."
+
+  # Active narratives flagged into am_narrative_quarantine vs total active.
+  quarantine_rate:
+    target: 0.010
+    alert_threshold: 0.020
+    window: rolling
+    source_view: am_narrative_quality_kpi
+    owner_action: "Inspect dominant reason ('low_match_rate' / 'corpus_drift') + decide regenerate-vs-rollback."
+
+  # Customer-filed P0/P1 reports past sla_due_at while still state='inbox'.
+  customer_report_sla_breach:
+    target: 0
+    alert_threshold: 1
+    window: rolling
+    sla_hours_p0: 24
+    sla_hours_p1: 24
+    sla_hours_p2: 72
+    sla_hours_p3: 72
+    cron: scripts/cron/narrative_report_sla_breach.py
+    cron_cadence: hourly
+    owner_action: "Disposition the P0/P1 inbox row immediately (rollback + credit if defect confirmed)."
+
+  # Sample audit NG rate from monthly stratified n=1,000 push.
+  sample_audit_ng_rate:
+    target: 0.03
+    alert_threshold: 0.05   # > 5% triggers full prompt re-tune
+    window: monthly
+    cron: scripts/cron/narrative_audit_push.py
+    cron_cadence: "monthly @ 1st 09:00 JST"
+    owner_action: "Re-tune all generation prompts; pause new narrative ingest until median NG <= 3%."
+
+  # Rollbacks executed per month via tools/offline/narrative_rollback.py.
+  rollback_count_monthly:
+    target: 5
+    alert_threshold: 10     # > 10 = consider §10.6 narrative ingestion freeze
+    window: monthly
+    owner_action: "Investigate root cause; consider §10.6 narrative ingestion freeze."
+
+# Materialized calendar (W3-12 / W3-13). `am_program_calendar_12mo` is
+# the read-path source for `get_program_calendar_12mo` (#99) — when
+# row count drifts low or the table goes stale, UC2 / UC7 / UC10
+# return empty results.
+calendar_materialization:
+  am_program_calendar_12mo_rows:
+    # 5,640 tier-S+A+B programs × 12 months ≈ 67,680 rows. Allow ±10%
+    # drift band; below `alert_threshold` indicates the populate cron
+    # silently skipped programs (e.g. tier_X reclassification, exclude
+    # flag flipped) or migration 128 not applied to /data.
+    target: 67680
+    alert_threshold: 60000
+    window: rolling
+    cron: scripts/cron/populate_program_calendar_12mo.py
+    cron_cadence: "monthly @ 5th 18:00 UTC (= 03:00 JST 6th)"
+    owner_action: "Verify migration 128 applied to /data/autonomath.db. Re-run populate workflow with --dry-run to inspect counters."
+  am_program_calendar_12mo_freshness_days:
+    # MAX(computed_at) age in days. Cron is monthly so anything > 35
+    # days indicates two missed runs.
+    target: 35
+    alert_threshold: 40
+    window: rolling
+    owner_action: "Check populate-calendar-monthly.yml workflow runs; trigger workflow_dispatch if last run failed."
+
+# Wave 24 #97 personalization KPI — drives UC1 / UC6 / UC8 envelopes.
+# `am_recommended_programs` is empty out of the box (only migration
+# wave24_126 ships); the cron `precompute_recommended_programs.py` (monthly)
+# is the only writer. If the count drops back to 0 between runs, the
+# recommender silently degrades to empty envelopes — that's the W3-12 /
+# W3-13 regression and must alert.
+recommendation_personalization:
+  am_recommended_programs_rows:
+    # 100,000 cohort × 10 = 1.0M target. Allow drop to 100k (10%) before
+    # paging — that band tolerates partial reruns mid-cycle.
+    target: 1000000
+    alert_threshold: 100000
+    window: rolling
+    source_table: am_recommended_programs
+    cron: scripts/cron/precompute_recommended_programs.py
+    cron_cadence: "monthly @ 1st 18:00 UTC (= 03:00 JST 2nd)"
+    owner_action: "Re-run precompute-recommended-monthly via workflow_dispatch; verify migration wave24_126 applied; check FLY_API_TOKEN secret."
+  am_recommended_programs_houjin_coverage:
+    # Distinct 法人 with at least one TOP-N row.
+    target: 100000
+    alert_threshold: 10000
+    window: rolling
+    source_table: am_recommended_programs
+    owner_action: "If coverage drops, investigate cohort selection (houjin_master.close_date filter, total_received_yen ordering)."
+  am_recommended_programs_freshness_days:
+    # MAX(computed_at) age in days. Cron is monthly so anything > 35
+    # days = two missed runs.
+    target: 35
+    alert_threshold: 40
+    window: rolling
+    owner_action: "Check precompute-recommended-monthly.yml runs; trigger workflow_dispatch if last run failed."
+
+push:
+  channel: telegram
+  env_vars:
+    bot_token: TG_BOT_TOKEN
+    chat_id:   TG_CHAT_ID
+  pusher_cron: scripts/cron/dispatch_webhooks.py
+  fallback: email_to_info_at_bookyou_net   # if Telegram down > 6h
+
+# Cross-reference back to the prose SLA doc for infra metrics.
+see_also:
+  - monitoring/sla_targets.md
+  - monitoring/sentry_alert_rules.yml

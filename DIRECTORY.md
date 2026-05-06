@@ -6,7 +6,7 @@ Post-launch canonical layout. Read this in 2 minutes before touching the tree.
 
 - **User-facing brand**: **jpcite** (apex `jpcite.com`, API `api.jpcite.com`). Legacy brands `zeimu-kaikei.ai` and `autonomath.ai` still resolve via 301 redirect for SEO carry-over.
 - **Operator entity**: **Bookyou株式会社** (適格請求書発行事業者番号 T8010001213708), 代表 梅田茂利, info@bookyou.net.
-- **Product / package name**: **AutonoMath** is the product name. PyPI package is `autonomath-mcp`. Console scripts are `autonomath-api` + `autonomath-mcp`. Fly app is `autonomath-api`.
+- **Product / package name**: **jpcite** is the user-facing product. `autonomath-mcp` package slug and `autonomath-api` / `autonomath-mcp` console script slugs are legacy technical names retained for compatibility. Fly app is `autonomath-api`.
 - **Source import path**: **`src/jpintel_mcp/`** is the legacy package import path and is intentionally kept. Do **NOT** rename to `autonomath_mcp` — every consumer's `from jpintel_mcp...` import would break. The directory name is invisible to users; only the PyPI distribution name matters externally.
 - The "jpintel" string must NOT appear in user-facing copy (Intel trademark collision). Internal file paths and import statements are fine.
 
@@ -46,6 +46,38 @@ Post-launch canonical layout. Read this in 2 minutes before touching the tree.
 | `autonomath_staging/` | **Pre-launch staging snapshot, gitignored** | archive (filesystem-only, not in git) |
 | `.github/` | CI/CD workflows (~50 YAMLs) | live |
 
+## Hygiene Rules
+
+The layout above is the source-of-truth map. The working tree also contains
+local runtime data, generated artifacts, and operator research output. Treat
+these as different lanes before reviewing or deploying.
+
+| Lane | Examples | Rule |
+|---|---|---|
+| Runtime source | `src/`, production-safe `scripts/`, `entrypoint.sh`, `Dockerfile` | Review with tests and deploy impact |
+| Migrations | `scripts/migrations/` | Immutable once applied; add new migration instead of editing old ones |
+| Public source | `docs/`, hand-authored `site/*.html`, `README.md` | Review as user-facing copy/docs |
+| Generated public artifacts | `docs/openapi/*.json`, `site/openapi*.json`, `site/docs/`, generated SEO/sitemap/llms-full | Regenerate from source; do not hand-edit |
+| Runtime/local data | root `*.db`, `*.sqlite`, WAL/SHM files | Local or volume data, not source |
+| Operator research | `tools/offline/_inbox/`, `analysis_wave18/`, `docs/_internal/` drafts | Promote only distilled, reviewed outputs |
+| Build/archive output | `dist/`, `dist.bak*/`, package tarballs | Keep out of normal review unless publishing |
+
+Generated artifact details live in
+`docs/_internal/generated_artifacts_map_2026-05-06.md`. A machine-generated
+repo inventory and dirty-tree lane report can be written with:
+
+```bash
+uv run python scripts/ops/repo_hygiene_inventory.py
+uv run python scripts/ops/repo_dirty_lane_report.py
+uv run python scripts/ops/repo_value_asset_report.py
+uv run python scripts/ops/mcp_manifest_deep_diff.py
+uv run python scripts/ops/migration_inventory.py
+```
+
+Before production deploy, inspect the dirty tree by lane. Do not mix runtime
+code, generated site/OpenAPI output, SDK packaging, operator research, and
+DB/migration changes in one review unless that is the explicit release bundle.
+
 ## Top-level files
 
 | File | Purpose |
@@ -75,7 +107,7 @@ Post-launch canonical layout. Read this in 2 minutes before touching the tree.
 ```
 src/jpintel_mcp/
   api/           FastAPI REST app, mounted at /v1/*
-  mcp/           FastMCP stdio server (93 tools at default gates)
+  mcp/           FastMCP stdio server (runtime-derived tool count; do not hard-code stale counts)
     autonomath_tools/    50 autonomath-gated tools (composition, NTA, Wave 21-23)
     healthcare_tools/    healthcare gate (off by default)
     real_estate_tools/   real-estate gate (off by default)
@@ -225,9 +257,11 @@ Operator-only tools. **This directory is permitted to import LLM SDKs (`anthropi
 
 ```
 tools/offline/
-  batch_translate_corpus.py    e-Gov 英訳 batch translator
-  bench_harness.py             local bench harness
-  bench_queries_2026_04_30.csv input fixture
+  INFO_COLLECTOR_*.md          repeatable external information-collection prompts
+  run_*_batch.py               local batch precompute / ingest runners
+  ingest_* / extract_*         offline ETL helpers
+  _runner_common.py            shared offline runner helpers
+  _inbox/ _outbox/ _done/      ignored raw run outputs and handoff artifacts
   README.md                    rules of the road
 ```
 
