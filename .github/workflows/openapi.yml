@@ -33,9 +33,10 @@ jobs:
       - name: Dump /openapi.json
         # Use the stable exporter so ordering matches the committed schema.
         run: |
-          mkdir -p docs/openapi
-          python scripts/export_openapi.py --out docs/openapi/v1.json
+          mkdir -p docs/openapi site/docs/openapi
+          python scripts/export_openapi.py --out docs/openapi/v1.json --site-out site/docs/openapi/v1.json
+          python scripts/export_agent_openapi.py
 
       - name: Verify committed schema is current
         run: |
-          git diff --exit-code docs/openapi/v1.json
+          git diff --exit-code docs/openapi/v1.json site/docs/openapi/v1.json docs/openapi/agent.json site/openapi.agent.json site/docs/openapi/agent.json

@@ -19,20 +19,51 @@ env:
     scripts/generate_industry_program_pages.py
     scripts/generate_prefecture_pages.py
     scripts/generate_program_pages.py
+    scripts/ops/pre_deploy_verify.py
+    scripts/ops/perf_smoke.py
+    scripts/ops/preflight_production_improvement.py
+    scripts/ops/production_deploy_go_gate.py
+    scripts/ops/repo_dirty_lane_report.py
+    scripts/ops/release_readiness.py
     scripts/regen_llms_full.py
     scripts/regen_llms_full_en.py
     scripts/etl/generate_program_rss_feeds.py
   PYTEST_TARGETS: >-
     tests/test_program_rss_feeds.py
-    tests/test_distribution_manifest.py
     tests/test_static_public_reachability.py
     tests/test_enforcement.py
     tests/test_rate_limit.py
+    tests/test_anon_rate_limit.py
+    tests/test_rate_limit_tz.py
     tests/test_source_manifest.py
     tests/test_extract_prefecture.py
     tests/test_no_llm_in_production.py
-    tests/test_openapi_export.py
-    tests/test_openapi_agent.py
+    tests/test_license_gate.py
+    tests/test_license_gate_no_bypass.py
+    tests/test_disclaimer_envelope.py
+    tests/test_hallucination_guard.py
+    tests/test_known_gaps.py
+    tests/test_response_sanitizer.py
+    tests/test_prompt_injection_sanitizer.py
+    tests/test_pii_redactor_response.py
+    tests/test_security_headers.py
+    tests/test_auth_quota.py
+    tests/test_appi_turnstile.py
+    tests/test_boot_gate.py
+    tests/test_entrypoint_vec0_boot_gate.py
+    tests/test_fly_health_check.py
+    tests/test_schema_guard.py
+    tests/test_d2_placeholder_amount_review.py
+    tests/test_citation_verifier.py
+    tests/test_evidence_packet_citation_status.py
+    tests/test_e1_license_review_queue.py
+    tests/test_official_license_label_proposals.py
+    tests/test_pre_deploy_verify.py
+    tests/test_production_improvement_preflight.py
+    tests/test_production_deploy_go_gate.py
+    tests/test_ci_workflows.py
+    tests/test_perf_smoke.py
+    tests/test_release_readiness.py
     tests/test_billing.py
     tests/test_billing_webhook_signature.py
     tests/test_programs_batch.py
@@ -94,15 +125,6 @@ jobs:
         run: |
           pip install mypy types-requests pydantic>=2.9 pydantic-settings>=2.6 fastapi>=0.115
           mypy src/
-
-      - name: Verify OpenAPI spec is up to date
-        # Regenerate the spec and diff against the committed file.
-        # A non-empty diff means someone changed the API without running
-        # `scripts/export_openapi.py` — treat it as a CI failure.
-        if: matrix.python-version == '3.12'
-        run: |
-          python scripts/export_openapi.py --out /tmp/openapi_ci.json
-          diff docs/openapi/v1.json /tmp/openapi_ci.json
 
       - name: Install docs dependencies
         if: matrix.python-version == '3.12'

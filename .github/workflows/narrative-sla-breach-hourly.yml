@@ -1,0 +1,105 @@
+name: narrative-sla-breach-hourly
+
+# §10.10 (3) Hallucination Guard — hourly SLA breach pusher (Telegram).
+#
+# What this does
+# --------------
+# Runs `scripts/cron/narrative_report_sla_breach.py` on the
+# autonomath-api Fly machine every hour. The script walks
+# `am_narrative_customer_reports` for P0/P1 rows whose `sla_due_at` is
+# in the past AND whose `state` is still `inbox`, then pushes a
+# one-line summary per breach to the operator Telegram bot. NO LLM
+# call (per `feedback_no_operator_llm_api`) — pure SQLite + urllib.
+#
+# Required GitHub repository secrets:
+#   FLY_API_TOKEN   Fly.io deploy token with ssh access to app
+#                   `autonomath-api` (same secret as nightly-backup.yml).
+#   TG_BOT_TOKEN    Telegram bot token (issued by @BotFather). Forwarded
+#                   to the Fly machine as a one-shot env var; the script
+#                   logs the breach count and no-ops gracefully if
+#                   missing.
+#   TG_CHAT_ID      Operator Telegram chat ID (numeric).
+#
+# Failure routing
+# ---------------
+# `narrative_report_sla_breach.py` exits non-zero on hard failure (DB
+# unreadable, Telegram POST 4xx repeated). The Sentry fallback step
+# uses `if: failure()` so it only fires when flyctl ssh itself fails.
+# Inside-the-machine errors emit their own Sentry breadcrumb.
+
+on:
+  schedule:
+    # Top of every hour. SLA targets are P0=1h / P1=4h, so hourly is
+    # the floor that keeps P0 breaches surfacing within the SLA window.
+    - cron: "0 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run with --dry-run (count only, no Telegram push)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+concurrency:
+  group: narrative-sla-breach-hourly
+  cancel-in-progress: false
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run SLA breach push on Fly machine
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          FLAGS=""
+          if [ "${DRY_RUN}" = "true" ]; then
+            FLAGS="${FLAGS} --dry-run"
+          fi
+          flyctl ssh console -a autonomath-api \
+            -e TG_BOT_TOKEN="${TG_BOT_TOKEN:-}" \
+            -e TG_CHAT_ID="${TG_CHAT_ID:-}" \
+            -C "/opt/venv/bin/python /app/scripts/cron/narrative_report_sla_breach.py ${FLAGS}"
+
+      - name: Sentry alert on cron failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=narrative-sla-breach-hourly/1.0" \
+            -d "$(cat <<JSON
+          {
+            "level": "error",
+            "logger": "github.actions.narrative-sla-breach-hourly",
+            "platform": "other",
+            "message": "narrative-sla-breach-hourly failed: flyctl ssh exited non-zero. Check Fly.io app autonomath-api logs.",
+            "tags": {
+              "workflow": "narrative-sla-breach-hourly",
+              "run_id": "${GITHUB_RUN_ID}",
+              "run_attempt": "${GITHUB_RUN_ATTEMPT}"
+            }
+          }
+          JSON
+          )" || echo "::warning::Sentry alert POST failed; continuing."

@@ -1,0 +1,84 @@
+name: refresh-sources-daily
+
+# MASTER_PLAN_v1 章 3 §D3:
+#   tier S/A daily verify pass — HEAD → 200 → GET → SHA256 diff against
+#   programs.source_content_hash_at_verify (mig wave24_108). On any
+#   outcome we bump source_verified_at = NOW so the median-freshness KPI
+#   reflects "we re-checked the live source at this timestamp" — not just
+#   "we updated content".
+#
+#   Pure SQLite + httpx; no LLM calls (memory `feedback_no_operator_llm_api`).
+#
+#   Pace: ~1,454 tier S+A rows × ~1 req/host/sec ≈ 30-45 min wall clock.
+#   GitHub Actions free-tier ceiling is 6h; 90 min job timeout is generous.
+#
+# Cadence: 18:00 UTC == 03:00 JST daily. Pairs with the weekly tier B/C
+# pass at refresh-sources-weekly.yml (Sunday only).
+
+on:
+  schedule:
+    # 03:05 JST every day (18:05 UTC previous day). Offset +5 min from
+    # analytics-cron 18:00 UTC to avoid runner contention (W14-12 audit).
+    - cron: '5 18 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "If true, --dry-run (no DB writes; report only)."
+        required: false
+        default: 'false'
+      max_rows:
+        description: "Optional row cap for smoke tests (default unset)."
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+  issues: write   # tier-C alert is in the weekly job; daily inherits perm symmetry.
+
+concurrency:
+  group: refresh-sources-daily
+  cancel-in-progress: false
+
+jobs:
+  refresh-sa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: 'pyproject.toml'
+
+      - name: Install package
+        run: pip install -e .
+
+      - name: Run S/A verify pass (HEAD→GET→SHA256 + verified_at bump)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+          INPUT_MAX_ROWS: ${{ github.event.inputs.max_rows }}
+        run: |
+          set -euo pipefail
+          ARGS=(--tier "S,A" --enrich)
+          if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then
+            ARGS+=(--dry-run)
+          fi
+          if [ -n "${INPUT_MAX_ROWS:-}" ]; then
+            ARGS+=(--max-rows "${INPUT_MAX_ROWS}")
+          fi
+          python scripts/refresh_sources.py "${ARGS[@]}"
+
+      - uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: refresh-sources-daily-SA
+          path: |
+            data/refresh_sources_report.json
+            data/source_freshness_report.json
+
+      # CI runs against the in-repo dev mirror DB. The Fly volume's
+      # autonomath.db / jpintel.db are the canonical writes — those are
+      # touched by the Fly machine via `scripts/cron/refresh_sources_nightly.sh`
+      # on the same cron expression. CI only proves the script works.

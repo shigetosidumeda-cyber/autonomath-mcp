@@ -1,0 +1,125 @@
+name: populate-calendar-monthly
+
+# Monthly populate of `am_program_calendar_12mo` (W3-12 / W3-13 fix).
+#
+# What this does
+# --------------
+# Rebuilds the per-(program × month) materialized calendar over the
+# rolling 12-month window for tier S+A+B programs (~5,640 programs ×
+# 12 months ≈ 67,680 rows). The read path of `get_program_calendar_12mo`
+# (#99) selects directly from this table; without this cron the table
+# is 0 rows and UC2 / UC7 / UC10 (smoke tests) return empty.
+#
+# Source tables (both live in autonomath.db post mig 032):
+#   * jpi_programs              tier filter + program universe
+#   * am_application_round      open/close window per round (1,256 rows)
+#
+# Cadence
+# -------
+# 18:00 UTC on the 5th of every month == 03:00 JST on the 6th. The
+# 5-day buffer after month-flip lets last-minute round amendments
+# from the daily ingest cron land before the rebuild.
+#
+# Idempotency
+# -----------
+# DELETE-then-INSERT inside a single transaction. Re-running the same
+# month (or workflow_dispatch) yields an identical row set.
+#
+# Required GitHub repository secret:
+#   FLY_API_TOKEN   Fly.io deploy token with ssh access to app
+#                   `autonomath-api`. Same secret used by
+#                   saved-searches-cron.yml + nta-bulk-monthly.yml +
+#                   trial-expire-cron.yml.
+
+on:
+  schedule:
+    # 18:00 UTC on the 5th of every month == 03:00 JST on the 6th.
+    - cron: "0 18 5 * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run with --dry-run (compute only, no DELETE/INSERT)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+      tiers:
+        description: "Comma-separated tier filter (default: S,A,B)"
+        required: false
+        default: "S,A,B"
+      max_programs:
+        description: "Cap programs processed (smoke / CI; blank = all)"
+        required: false
+        default: ""
+
+concurrency:
+  group: populate-calendar-monthly
+  cancel-in-progress: false
+
+jobs:
+  populate:
+    runs-on: ubuntu-latest
+    # 5,640 programs × 12 months × per-program round query =
+    # ~5-10 min wall clock on Fly shared-cpu-1x. 30 min is generous
+    # headroom for cold-cache + transaction commit on 8.29 GB
+    # autonomath.db.
+    timeout-minutes: 30
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run populate on Fly machine
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          TIERS: ${{ inputs.tiers || 'S,A,B' }}
+          MAX_PROGRAMS: ${{ inputs.max_programs || '' }}
+        run: |
+          set -euo pipefail
+          FLAGS="--tiers ${TIERS}"
+          if [ "${DRY_RUN}" = "true" ]; then
+            FLAGS="${FLAGS} --dry-run"
+          fi
+          if [ -n "${MAX_PROGRAMS}" ]; then
+            FLAGS="${FLAGS} --max-programs ${MAX_PROGRAMS}"
+          fi
+          # `flyctl ssh console -C "<cmd>"` runs <cmd> non-interactively
+          # in the autonomath-api machine. The python entry uses the
+          # baked-in /opt/venv interpreter so we inherit AUTONOMATH_DB_PATH
+          # from the Fly secret store.
+          flyctl ssh console -a autonomath-api -C \
+            "/opt/venv/bin/python /app/scripts/cron/populate_program_calendar_12mo.py ${FLAGS}"
+
+      - name: Sentry alert on cron failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop. Inside-the-machine errors already emit a Sentry breadcrumb when populate_program_calendar_12mo.py raises, so this is defense-in-depth for the case where flyctl ssh itself fails (machine offline, deploy lock)."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=populate-calendar-monthly/1.0" \
+            -d "$(cat <<JSON
+          {
+            "level": "error",
+            "logger": "github.actions.populate-calendar-monthly",
+            "platform": "other",
+            "message": "populate-calendar-monthly failed: flyctl ssh exited non-zero (machine offline, SSH refused, or deploy lock). Check Fly.io app autonomath-api logs.",
+            "tags": {
+              "workflow": "populate-calendar-monthly",
+              "run_id": "${GITHUB_RUN_ID}",
+              "run_attempt": "${GITHUB_RUN_ATTEMPT}"
+            }
+          }
+          JSON
+          )" || echo "::warning::Sentry alert POST failed; continuing."

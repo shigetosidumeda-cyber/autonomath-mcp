@@ -1,0 +1,109 @@
+name: ingest-offline-inbox-hourly
+
+# Hourly drain of operator-side offline inbox JSONL into production
+# SQLite (autonomath.db + jpintel.db). LLM-FREE — every line of inference
+# happened upstream on the operator workstation under tools/offline/;
+# this cron is pure SQLite + Pydantic + pathlib.
+#
+# Tool surface: exclusion_rules, enforcement_amount,
+# jsic_tags, jsic_classification, program_narrative, houjin_360_narrative,
+# enforcement_summary, program_application_documents,
+# eligibility_predicates, edinet_relations, amount_conditions.
+# public_source_foundation is manual-only and excluded from --tool all because
+# it converts external research output to backlog files, not production tables.
+#
+# Validation flow per row:
+#   1. JSON parse
+#   2. Pydantic v2 model_validate (schema in src/jpintel_mcp/ingest/schemas/)
+#   3. literal-quote check (form + optional kobo_text_cache substring)
+#   4. INSERT OR REPLACE / UPDATE on the matching production table
+#   5. Failures land in tools/offline/_quarantine/{tool}/ for operator review
+#
+# CI guard `tests/test_no_llm_in_production.py` already forbids LLM
+# imports / API-key env vars in scripts/cron/. Do NOT add Anthropic /
+# OpenAI / Google secrets here.
+#
+# Required GitHub repository secret:
+#   FLY_API_TOKEN  Fly.io deploy token with ssh access to autonomath-api.
+
+on:
+  schedule:
+    # 25 minutes past every hour. Stays clear of news-pipeline (top of
+    # the hour 補助金通信) and amendment-alert (20:30 UTC) windows.
+    - cron: "25 * * * *"
+  workflow_dispatch:
+    inputs:
+      tool:
+        description: "Restrict to one tool (default: all)"
+        required: false
+        default: "all"
+        type: choice
+        options:
+          - "all"
+          - "exclusion_rules"
+          - "enforcement_amount"
+          - "jsic_tags"
+          - "jsic_classification"
+          - "program_narrative"
+          - "houjin_360_narrative"
+          - "enforcement_summary"
+          - "program_application_documents"
+          - "eligibility_predicates"
+          - "edinet_relations"
+          - "amount_conditions"
+          - "public_source_foundation"
+      dry_run:
+        description: "Run with --dry-run (no DB write, no file move)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+concurrency:
+  group: ingest-offline-inbox-hourly
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  drain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Drain offline inbox on Fly machine
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          TOOL: ${{ inputs.tool || 'all' }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          FLAGS="--tool ${TOOL}"
+          if [ "${DRY_RUN}" = "true" ]; then FLAGS="${FLAGS} --dry-run"; fi
+          flyctl ssh console -a autonomath-api -C \
+            "/opt/venv/bin/python /app/scripts/cron/ingest_offline_inbox.py ${FLAGS}"
+
+      - name: Sentry alert on cron failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=ingest-offline-inbox-hourly/1.0" \
+            -d "{\"level\":\"error\",\"logger\":\"github.actions.ingest-offline-inbox-hourly\",\"platform\":\"other\",\"message\":\"ingest-offline-inbox-hourly failed: flyctl ssh exited non-zero. Run ${GITHUB_RUN_ID}.\",\"tags\":{\"workflow\":\"ingest-offline-inbox-hourly\",\"run_id\":\"${GITHUB_RUN_ID}\"}}" \
+            || echo "::warning::Sentry alert POST failed; continuing."

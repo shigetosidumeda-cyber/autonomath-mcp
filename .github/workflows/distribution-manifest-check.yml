@@ -57,6 +57,14 @@ jobs:
         run: |
           .venv/bin/python scripts/probe_runtime_distribution.py
 
+      - name: Tool-count consistency check
+        # Scans public distribution copy after the runtime probe confirms the
+        # canonical count.
+        env:
+          AUTONOMATH_ENABLED: "1"
+        run: |
+          .venv/bin/python scripts/check_tool_count_consistency.py
+
       - name: Tests for the manifest guard itself
         # Confirms the manifest parses, the script handles synthetic drift,
         # and the runtime probe agrees with the manifest.

@@ -1,0 +1,115 @@
+name: narrative-audit-monthly
+
+# §10.10 (6) Hallucination Guard — monthly stratified narrative audit push.
+#
+# What this does
+# --------------
+# Runs `scripts/cron/narrative_audit_push.py` on the autonomath-api Fly
+# machine on the 1st of each month at 09:00 JST (00:00 UTC). The script
+# pulls a stratified random sample (default n=1,000) across the five
+# §10.10 narrative tables (am_program_narrative / am_houjin_360_narrative
+# / am_enforcement_summary / am_case_study_narrative /
+# am_law_article_summary), weighted by live row counts, and pushes each
+# row to the operator Telegram bot for ✓/✗/修正 disposition. NO LLM
+# call (per `feedback_no_operator_llm_api`) — pure SQLite + urllib.
+#
+# Required GitHub repository secrets:
+#   FLY_API_TOKEN   Fly.io deploy token with ssh access to app
+#                   `autonomath-api` (same secret as nightly-backup.yml).
+#   TG_BOT_TOKEN    Telegram bot token (issued by @BotFather). Forwarded
+#                   to the Fly machine as a one-shot env var so we do not
+#                   require the secret to be baked into the Fly secret
+#                   store. The script no-ops gracefully if missing.
+#   TG_CHAT_ID      Operator Telegram chat ID (numeric).
+#
+# Failure routing
+# ---------------
+# `narrative_audit_push.py` exits non-zero on hard failure (DB
+# unreadable, Telegram POST 4xx repeated). The Sentry fallback step uses
+# `if: failure()` so it only fires when flyctl ssh itself fails (machine
+# offline, deploy lock). Inside-the-machine errors emit their own
+# Sentry breadcrumb via `safe_capture_message`.
+
+on:
+  schedule:
+    # 00:00 UTC on the 1st == 09:00 JST on the 1st.
+    - cron: "0 0 1 * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run with --dry-run (sample only, no Telegram push)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+      sample_size:
+        description: "Override stratified sample size (default 1000)"
+        required: false
+        default: "1000"
+
+concurrency:
+  group: narrative-audit-monthly
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run narrative audit push on Fly machine
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          SAMPLE_SIZE: ${{ inputs.sample_size || '1000' }}
+        run: |
+          set -euo pipefail
+          FLAGS="--sample-size ${SAMPLE_SIZE}"
+          if [ "${DRY_RUN}" = "true" ]; then
+            FLAGS="${FLAGS} --dry-run"
+          fi
+          # Forward TG_* secrets one-shot to the Fly machine via the
+          # `flyctl ssh console` env stanza. AUTONOMATH_DB_PATH is read
+          # from the Fly secret store on the machine itself.
+          flyctl ssh console -a autonomath-api \
+            -e TG_BOT_TOKEN="${TG_BOT_TOKEN:-}" \
+            -e TG_CHAT_ID="${TG_CHAT_ID:-}" \
+            -C "/opt/venv/bin/python /app/scripts/cron/narrative_audit_push.py ${FLAGS}"
+
+      - name: Sentry alert on cron failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=narrative-audit-monthly/1.0" \
+            -d "$(cat <<JSON
+          {
+            "level": "error",
+            "logger": "github.actions.narrative-audit-monthly",
+            "platform": "other",
+            "message": "narrative-audit-monthly failed: flyctl ssh exited non-zero. Check Fly.io app autonomath-api logs.",
+            "tags": {
+              "workflow": "narrative-audit-monthly",
+              "run_id": "${GITHUB_RUN_ID}",
+              "run_attempt": "${GITHUB_RUN_ATTEMPT}"
+            }
+          }
+          JSON
+          )" || echo "::warning::Sentry alert POST failed; continuing."

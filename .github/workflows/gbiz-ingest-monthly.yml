@@ -1,0 +1,207 @@
+name: gBizINFO v2 monthly ingest
+
+# Monthly cold-start (bulk JSONL ZIP) + 5-family delta pulls for the
+# gBizINFO REST API v2. Wraps the 6 cron scripts under
+# scripts/cron/ingest_gbiz_*_v2.py + ingest_gbiz_bulk_jsonl_monthly.py.
+#
+# Runs ON the Fly production machine via flyctl ssh — same pattern as
+# nta-bulk-monthly.yml — so the DB write lands on the Fly volume
+# (canonical autonomath.db at /data/autonomath.db).
+#
+# Cadence:
+#   * 5th of month 18:00 UTC (= 03:00 JST on the 6th) — chosen so the
+#     gBizINFO bulk ZIP regenerated on the 1st-5th has a settling
+#     window before download, AND the cron staggers off the NTA bulk
+#     cron (1st of month 18:00 UTC, see nta-bulk-monthly.yml).
+#   * Bulk cold-start runs first (single job), then 5 delta pulls run
+#     in parallel via matrix strategy (fail-fast=false so one family
+#     failure does not kill siblings).
+#
+# License: gBizINFO 政府標準利用規約 第2.0版 (CC BY 4.0 互換).
+# Attribution renderers in src/jpintel_mcp/api/middleware/gbiz_attribution.py
+# are the enforcement point. Per condition 2 of the 6-condition contract
+# (docs/legal/gbizinfo_terms_compliance.md), this workflow uses a single
+# Bookyou名義 token loaded from Fly secret GBIZINFO_API_TOKEN.
+#
+# Required secrets:
+#   FLY_API_TOKEN        — for flyctl ssh into the Fly app machine
+# Fly app secret:
+#   GBIZINFO_API_TOKEN   — Bookyou single token on the Fly machine
+# Optional secrets:
+#   SLACK_WEBHOOK_INGEST — notify on driver failure
+
+env:
+  FLY_APP: autonomath-api
+
+on:
+  schedule:
+    # 18:00 UTC on the 5th of every month == 03:00 JST 6th of month.
+    # 1-day buffer after gBizINFO bulk ZIP regenerate window (1st-5th)
+    # plus stagger off NTA bulk (1st 18:10 UTC).
+    - cron: "0 18 5 * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "ingest mode: both / bulk-only / delta-only"
+        required: false
+        default: "both"
+        type: choice
+        options:
+          - both
+          - bulk-only
+          - delta-only
+
+concurrency:
+  group: gbiz-ingest-monthly
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  bulk-cold-start:
+    # One-shot per month: download authenticated ZIP from
+    # https://info.gbiz.go.jp/hojin/DownloadTop and seed all 5 mirror
+    # tables. Skipped when operator selects "delta-only".
+    if: ${{ github.event.inputs.mode == 'bulk-only' || github.event.inputs.mode == 'both' || github.event.inputs.mode == '' || github.event_name == 'schedule' }}
+    runs-on: ubuntu-latest
+    # Bulk JSONL ingest: ZIP download + ~5M corp profiles × 21 facts;
+    # realistically caps out around 60-90 min on Fly shared-cpu-1x.
+    # 180 min budget gives 2x headroom for cold cache + ANALYZE pass.
+    timeout-minutes: 180
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run gBizINFO bulk JSONL monthly on Fly machine
+        id: run
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          OUTPUT_DIR="/data/_gbiz_bulk/$(date -u +%Y-%m)"
+          set +e
+          flyctl ssh console -a "${FLY_APP}" -C \
+            "/opt/venv/bin/python /app/scripts/cron/ingest_gbiz_bulk_jsonl_monthly.py \
+              --output-dir ${OUTPUT_DIR} \
+              --db /data/autonomath.db \
+              --log-file /data/gbiz_bulk_load_log.jsonl" \
+            | tee gbiz_bulk_load.out
+          rc=$?
+          set -e
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::ingest_gbiz_bulk_jsonl_monthly.py exited $rc"
+            exit 1
+          fi
+
+      - name: Open issue on bulk failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          BODY="Loader: \`scripts/cron/ingest_gbiz_bulk_jsonl_monthly.py\`\nRun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\nSHA: \`${{ github.sha }}\`\n\nLikely causes: gBizINFO ZIP regenerate window slipped past the 5th, token revoked/suspended (403), 429 rate-limit breach, or disk-space gate (autonomath.db /data <2GB free).\n\nRunbook: \`docs/legal/gbizinfo_terms_compliance.md\` rollback section + \`docs/runbook/gbiz_outage.md\`.\n"
+          gh issue create \
+            --title "gbiz-ingest-monthly bulk failed on $(date -u +%Y-%m-%d)" \
+            --label ingest-failure \
+            --label gbizinfo \
+            --label automation \
+            --body "$BODY"
+
+      - name: Slack notify on bulk failure
+        if: failure() && env.SLACK_WEBHOOK_INGEST != ''
+        env:
+          SLACK_WEBHOOK_INGEST: ${{ secrets.SLACK_WEBHOOK_INGEST }}
+        run: |
+          set -euo pipefail
+          curl -fsS -X POST -H 'content-type: application/json' \
+            --data "{\"text\":\":warning: gbiz-ingest-monthly bulk failure — ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}" \
+            "$SLACK_WEBHOOK_INGEST" || true
+
+  delta-pulls:
+    # 5 endpoint families pulled in parallel. Each delta run scans the
+    # last 30 days of /v2/hojin/updateInfo/{family}?from=&to=. Bulk runs
+    # first to seed cold-start; delta is then cheap (mostly 24h-cache
+    # short-circuits). fail-fast=false so one family's 429/403 does not
+    # kill the other 4.
+    needs: bulk-cold-start
+    # If bulk skipped (delta-only mode), the `needs` would normally
+    # block this — guard with always() + status check.
+    if: ${{ always() && (needs.bulk-cold-start.result == 'success' || needs.bulk-cold-start.result == 'skipped') && (github.event.inputs.mode == 'delta-only' || github.event.inputs.mode == 'both' || github.event.inputs.mode == '' || github.event_name == 'schedule') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        family:
+          - corporate
+          - subsidy
+          - certification
+          - commendation
+          - procurement
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Compute 30-day delta window
+        id: window
+        run: |
+          set -euo pipefail
+          DATE_TO=$(date -u +%Y-%m-%d)
+          DATE_FROM=$(date -u -d "30 days ago" +%Y-%m-%d 2>/dev/null \
+            || date -u -v-30d +%Y-%m-%d)
+          echo "date_from=$DATE_FROM" >> "$GITHUB_OUTPUT"
+          echo "date_to=$DATE_TO" >> "$GITHUB_OUTPUT"
+
+      - name: Run gBizINFO ${{ matrix.family }} delta on Fly machine
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          set +e
+          flyctl ssh console -a "${FLY_APP}" -C \
+            "/opt/venv/bin/python /app/scripts/cron/ingest_gbiz_${{ matrix.family }}_v2.py \
+              --from ${{ steps.window.outputs.date_from }} \
+              --to ${{ steps.window.outputs.date_to }} \
+              --db /data/autonomath.db \
+              --log-file /data/gbiz_delta_load_log.jsonl" \
+            | tee gbiz_${{ matrix.family }}_delta.out
+          rc=$?
+          set -e
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::ingest_gbiz_${{ matrix.family }}_v2.py exited $rc"
+            exit 1
+          fi
+
+      - name: Open issue on delta failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          BODY="Loader: \`scripts/cron/ingest_gbiz_${{ matrix.family }}_v2.py\`\nRun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\nFamily: ${{ matrix.family }}\nWindow: ${{ steps.window.outputs.date_from }} → ${{ steps.window.outputs.date_to }}\nSHA: \`${{ github.sha }}\`\n\nLikely causes: 429 rate-limit breach (token may be at risk — check other families for cascading failures), 403 token revocation, schema drift in the v2 updateInfo response, or disk gate.\n\nRunbook: \`docs/legal/gbizinfo_terms_compliance.md\` rollback section.\n"
+          gh issue create \
+            --title "gbiz-ingest-monthly delta ${{ matrix.family }} failed on $(date -u +%Y-%m-%d)" \
+            --label ingest-failure \
+            --label gbizinfo \
+            --label automation \
+            --body "$BODY"
+
+      - name: Slack notify on delta failure
+        if: failure() && env.SLACK_WEBHOOK_INGEST != ''
+        env:
+          SLACK_WEBHOOK_INGEST: ${{ secrets.SLACK_WEBHOOK_INGEST }}
+        run: |
+          set -euo pipefail
+          curl -fsS -X POST -H 'content-type: application/json' \
+            --data "{\"text\":\":warning: gbiz-ingest-monthly delta ${{ matrix.family }} failure — ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}" \
+            "$SLACK_WEBHOOK_INGEST" || true

@@ -1,0 +1,105 @@
+name: precompute-actionable-daily
+
+# Wave 30-5: daily pre-compute of am_actionable_qa_cache (migration 169).
+#
+# Why daily: the upstream programs / amendment_diff / law_refs corpora
+# refresh at most once per day (incremental-law-load weekly, ingest-daily
+# at 03:00 JST). A daily refresh of the (intent_class × input_dict)
+# cache rows keeps the hit envelope deterministic against the latest
+# corpus snapshot without burning cycles on hourly re-warming.
+#
+# Schedule:
+#   `30 18 * * *` UTC == 03:30 JST daily.
+#   Lands ~30 min after the daily ingest (`0 18 * * *` UTC = 03:00 JST)
+#   so the upstream snapshot is already settled.
+#
+# Required GitHub repository secret:
+#   FLY_API_TOKEN   Fly.io deploy token with ssh access to autonomath-api.
+#
+# Constraints honoured:
+#   * No LLM SDK invocation — pure SQLite + Python sha256 + standard library.
+#   * Read-mostly on autonomath.db; writes only to am_actionable_qa_cache
+#     (PK upsert per cache_key inside one writable connection).
+#
+# Failure routing: cron exits non-zero if migration 169 hasn't been applied
+# or if autonomath.db is missing. Sentry alert step routes such failures
+# the same way the precompute-recommended-monthly cron does.
+
+on:
+  schedule:
+    - cron: "30 18 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run with --dry-run (no DB writes)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+      budget:
+        description: "Maximum cache rows to write (default 1000)"
+        required: false
+        default: "1000"
+        type: string
+      intent:
+        description: "Restrict to one intent class (blank = all 4)"
+        required: false
+        default: ""
+        type: choice
+        options:
+          - ""
+          - "subsidy_search"
+          - "eligibility_check"
+          - "amendment_diff"
+          - "citation_pack"
+
+concurrency:
+  group: precompute-actionable-daily
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  precompute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Precompute am_actionable_qa_cache
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          BUDGET: ${{ inputs.budget || '1000' }}
+          INTENT: ${{ inputs.intent || '' }}
+        run: |
+          set -euo pipefail
+          FLAGS="--budget ${BUDGET}"
+          if [ "${DRY_RUN}" = "true" ]; then FLAGS="${FLAGS} --dry-run"; fi
+          if [ -n "${INTENT}" ]; then FLAGS="${FLAGS} --intent ${INTENT}"; fi
+          flyctl ssh console -a autonomath-api -C \
+            "/opt/venv/bin/python /app/scripts/cron/precompute_actionable_answers.py ${FLAGS}"
+
+      - name: Sentry alert on cron failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=precompute-actionable-daily/1.0" \
+            -d "{\"level\":\"error\",\"logger\":\"github.actions.precompute-actionable-daily\",\"platform\":\"other\",\"message\":\"precompute-actionable-daily failed. Run ${GITHUB_RUN_ID}.\",\"tags\":{\"workflow\":\"precompute-actionable-daily\",\"run_id\":\"${GITHUB_RUN_ID}\"}}" \
+            || echo "::warning::Sentry alert POST failed; continuing."

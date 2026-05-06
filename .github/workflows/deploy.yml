@@ -47,11 +47,47 @@ jobs:
         id: fly-token
         run: |
           if [ -z "${FLY_API_TOKEN:-}" ]; then
-            echo "::notice::FLY_API_TOKEN is not configured; skipping GitHub-hosted Fly deploy."
-            echo "available=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "available=true" >> "$GITHUB_OUTPUT"
+            echo "::error::FLY_API_TOKEN is not configured; refusing to mark deploy successful."
+            exit 1
           fi
+          echo "available=true" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Python
+        if: steps.fly-token.outputs.available == 'true'
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install package with dev + site extras
+        if: steps.fly-token.outputs.available == 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,site]"
+
+      - name: Prepare production deploy operator ACK
+        if: steps.fly-token.outputs.available == 'true'
+        id: operator-ack
+        env:
+          PRODUCTION_DEPLOY_OPERATOR_ACK_YAML: ${{ secrets.PRODUCTION_DEPLOY_OPERATOR_ACK_YAML }}
+        run: |
+          set -euo pipefail
+          if [ -z "${PRODUCTION_DEPLOY_OPERATOR_ACK_YAML:-}" ]; then
+            echo "::error::PRODUCTION_DEPLOY_OPERATOR_ACK_YAML is not configured; refusing deploy."
+            exit 1
+          fi
+          ack_path="${RUNNER_TEMP}/production_deploy_operator_ack.yml"
+          printf '%s\n' "$PRODUCTION_DEPLOY_OPERATOR_ACK_YAML" > "$ack_path"
+          echo "path=$ack_path" >> "$GITHUB_OUTPUT"
+
+      - name: Run local pre-deploy verification
+        if: steps.fly-token.outputs.available == 'true'
+        run: python scripts/ops/pre_deploy_verify.py
+
+      - name: Run production deploy GO gate
+        if: steps.fly-token.outputs.available == 'true'
+        run: python scripts/ops/production_deploy_go_gate.py --operator-ack "${{ steps.operator-ack.outputs.path }}"
 
       - name: Set up flyctl
         if: steps.fly-token.outputs.available == 'true'
@@ -89,12 +125,28 @@ jobs:
               result = conn.execute("PRAGMA quick_check").fetchone()
               if not result or result[0] != "ok":
                   raise SystemExit(f"quick_check failed: {result!r}")
-              programs = conn.execute("SELECT COUNT(*) FROM programs").fetchone()[0]
+              def table_count(name: str) -> int:
+                  exists = conn.execute(
+                      "SELECT 1 FROM sqlite_master WHERE type='table' AND name=?",
+                      (name,),
+                  ).fetchone()
+                  if not exists:
+                      return 0
+                  return conn.execute(f"SELECT COUNT(*) FROM {name}").fetchone()[0]
+
+              programs = table_count("programs")
+              jpi_programs = table_count("jpi_programs")
               if programs < 10_000:
-                  raise SystemExit(f"programs table unexpectedly small: {programs}")
+                  raise SystemExit(
+                      "program catalog unexpectedly small: "
+                      f"programs={programs} jpi_programs={jpi_programs}"
+                  )
           finally:
               conn.close()
-          print(f"seed DB verified: {db} ({db.stat().st_size} bytes)")
+          print(
+              f"seed DB verified: {db} ({db.stat().st_size} bytes) "
+              f"programs={programs} jpi_programs={jpi_programs}"
+          )
           PY
 
       - name: Extract release version from pyproject.toml

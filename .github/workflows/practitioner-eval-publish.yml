@@ -1,0 +1,54 @@
+name: practitioner-eval-publish
+
+on:
+  schedule:
+    - cron: "30 18 * * 6"   # weekly Saturday 18:30 UTC = Sunday 03:30 JST
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  run-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: confirm stdlib only (no extras needed)
+        run: python -V
+
+      - name: run substring/regex eval over live REST
+        run: |
+          python scripts/eval/run_practitioner_eval.py \
+            --corpus tests/eval/practitioner_output_acceptance_queries_2026-05-06.jsonl \
+            --api-base https://api.jpcite.com \
+            --out-dir site/practitioner-eval/_data \
+            --max-per-persona 3
+        env:
+          JPCITE_API_KEY: ${{ secrets.JPCITE_API_KEY }}
+
+      - name: assert results_latest.json shape
+        run: |
+          python -c "
+          import json, sys
+          j = json.load(open('site/practitioner-eval/_data/results_latest.json'))
+          assert j['corpus_snapshot_id']
+          assert len(j['persona_results']) == 15, f\"expected 15 personas, got {len(j['persona_results'])}\"
+          for p in j['persona_results']:
+              assert len(p['queries']) == 3, f\"persona {p['persona_slug']} has {len(p['queries'])} queries\"
+          print('shape OK: 15 personas x 3 queries')
+          "
+
+      - name: commit
+        run: |
+          git config user.name "practitioner-eval-bot"
+          git config user.email "noreply@bookyou.net"
+          git add site/practitioner-eval/_data/results_*.json
+          git diff --cached --quiet && echo "no changes" || \
+            git commit -m "practitioner-eval: weekly run $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push || true

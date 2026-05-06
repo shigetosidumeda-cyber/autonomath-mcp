@@ -1,0 +1,97 @@
+name: precompute-recommended-monthly
+
+# Monthly precompute of `am_recommended_programs` (Wave 24 §10.3 ETL).
+#
+# Why monthly: cohort changes are slow (法人 master refreshes monthly with
+# the NTA bulk). TOP-10 per houjin is stable enough that nightly re-rank
+# would burn cycles for marginal gain. Re-run on demand via
+# workflow_dispatch when programs.tier flips or 法人 cohort jumps.
+#
+# Schedule:
+#   `0 18 1 * *` UTC == 03:00 JST on the 2nd of the month (UTC 18:00 of
+#   the 1st = JST 03:00 of the 2nd). Aligns with the §10.3 ETL clause:
+#   "月初 JST 03:00".
+#
+# Required GitHub repository secret:
+#   FLY_API_TOKEN   Fly.io deploy token with ssh access to autonomath-api.
+#
+# Constraints honoured:
+#   * No LLM SDK invocation — pure SQLite + Python statistics.
+#   * Read-mostly on jpi_programs / houjin_master / adoption_records;
+#     writes only to am_recommended_programs (PK upsert per 法人 inside tx).
+#
+# Failure routing: cron exits non-zero if migration wave24_126 hasn't been
+# applied or if autonomath.db is missing. Sentry alert step routes such
+# failures the same way the precompute-refresh-cron does.
+
+on:
+  schedule:
+    - cron: "0 18 1 * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run with --dry-run (no DB writes)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+      max_houjin:
+        description: "Cohort cap (top-N 法人 by total_received_yen)"
+        required: false
+        default: "100000"
+        type: string
+      top_n:
+        description: "Programs per 法人 (default 10)"
+        required: false
+        default: "10"
+        type: string
+
+concurrency:
+  group: precompute-recommended-monthly
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  precompute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Precompute am_recommended_programs
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          MAX_HOUJIN: ${{ inputs.max_houjin || '100000' }}
+          TOP_N: ${{ inputs.top_n || '10' }}
+        run: |
+          set -euo pipefail
+          FLAGS="--max-houjin ${MAX_HOUJIN} --top-n ${TOP_N}"
+          if [ "${DRY_RUN}" = "true" ]; then FLAGS="${FLAGS} --dry-run"; fi
+          flyctl ssh console -a autonomath-api -C \
+            "/opt/venv/bin/python /app/scripts/cron/precompute_recommended_programs.py ${FLAGS}"
+
+      - name: Sentry alert on cron failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=precompute-recommended-monthly/1.0" \
+            -d "{\"level\":\"error\",\"logger\":\"github.actions.precompute-recommended-monthly\",\"platform\":\"other\",\"message\":\"precompute-recommended-monthly failed. Run ${GITHUB_RUN_ID}.\",\"tags\":{\"workflow\":\"precompute-recommended-monthly\",\"run_id\":\"${GITHUB_RUN_ID}\"}}" \
+            || echo "::warning::Sentry alert POST failed; continuing."

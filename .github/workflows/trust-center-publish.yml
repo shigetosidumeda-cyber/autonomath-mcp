@@ -1,0 +1,48 @@
+name: trust-center-publish
+
+on:
+  schedule:
+    - cron: "0 19 * * 6"   # weekly Saturday 19:00 UTC = Sunday 04:00 JST (after practitioner-eval-publish)
+  workflow_dispatch: {}
+  workflow_run:
+    workflows: ["practitioner-eval-publish"]
+    types: [completed]
+
+permissions:
+  contents: write
+
+jobs:
+  assemble-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: assemble trust matrix
+        run: python scripts/eval/assemble_trust_matrix.py
+
+      - name: assert matrix shape
+        run: |
+          python -c "
+          import json
+          j = json.load(open('site/trust/_data/matrix_latest.json'))
+          assert len(j['rows']) == 7, f\"expected 7 rows, got {len(j['rows'])}\"
+          for r in j['rows']:
+              assert r.get('anchor_file'), f\"row {r.get('id')} missing anchor_file\"
+          print('shape OK: 7 rows, all with anchor_file')
+          "
+
+      - name: commit
+        run: |
+          git config user.name "trust-center-bot"
+          git config user.email "noreply@bookyou.net"
+          git add site/trust/_data/matrix_latest.json
+          git diff --cached --quiet && echo "no changes" || \
+            git commit -m "trust-center: weekly run $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push || true

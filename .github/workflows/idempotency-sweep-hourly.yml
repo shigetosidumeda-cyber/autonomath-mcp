@@ -1,0 +1,69 @@
+name: idempotency-sweep-hourly
+
+# Hourly sweep of expired am_idempotency_cache rows (M4 — Billing/Infra Block).
+#
+# What this does
+# --------------
+# Runs scripts/cron/idempotency_cache_sweep.py once per hour. The script
+# DELETEs rows from am_idempotency_cache whose expires_at < now (TTL
+# default 24h, see migration 087). Both call sites
+# (IdempotencyMiddleware, bulk_evaluate.py) lazy-evict on read, but
+# without an active sweep the table grows unbounded. Hourly cadence at
+# launch volume keeps the table at steady-state size and bounds the
+# replay window for any abandoned cache entries.
+#
+# Why hourly :15
+# --------------
+# Off-cycle from the :00 / :05 cluster (sunset-alerts at :15 itself —
+# accepted overlap, both crons are short-lived flyctl ssh calls and the
+# SQLite writer lock holds <1s for either).
+#
+# Required GitHub repository secret
+# ---------------------------------
+#   FLY_API_TOKEN   Fly.io deploy token with ssh access to autonomath-api.
+
+on:
+  schedule:
+    # :15 every hour. The script is idempotent so a missed slot heals
+    # on the next run; we rely on at-least-once, not exactly-once.
+    - cron: "15 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run with --dry-run (count only, no DELETE)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+concurrency:
+  group: idempotency-sweep-hourly
+  cancel-in-progress: false
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run idempotency cache sweep on Fly machine
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN_INPUT: ${{ github.event.inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          if [ -z "${FLY_API_TOKEN:-}" ]; then
+            echo "::notice::FLY_API_TOKEN unset; skipping idempotency sweep."
+            exit 0
+          fi
+          DRY_RUN="${DRY_RUN_INPUT:-false}"
+          FLAGS=""
+          if [ "${DRY_RUN}" = "true" ]; then
+            FLAGS="${FLAGS} --dry-run"
+          fi
+          flyctl ssh console -a autonomath-api -C \
+            "/opt/venv/bin/python /app/scripts/cron/idempotency_cache_sweep.py ${FLAGS}"
