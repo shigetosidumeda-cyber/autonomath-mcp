@@ -19,6 +19,7 @@ PII posture (INV-21):
 from __future__ import annotations
 
 import contextlib
+import json
 import sqlite3
 from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, Annotated, Any, cast
@@ -739,6 +740,86 @@ def _data_quality_is_empty(out: dict[str, Any]) -> bool:
     return not any(int(v or 0) > 0 for v in label_hist.values())
 
 
+def _decode_snapshot_json(raw: Any, default: dict[str, Any]) -> dict[str, Any]:
+    if raw in (None, ""):
+        return default
+    try:
+        parsed = json.loads(str(raw))
+    except (TypeError, ValueError, json.JSONDecodeError):
+        return default
+    return parsed if isinstance(parsed, dict) else default
+
+
+def _read_data_quality_snapshot(am_conn: sqlite3.Connection) -> dict[str, Any] | None:
+    """Read the precomputed data-quality row if migration 145 is present.
+
+    The table is intentionally optional during rolling deploys and local
+    fixtures, so missing/empty snapshots fall through to the legacy inline
+    aggregation path below.
+    """
+    try:
+        row = am_conn.execute(
+            "SELECT * FROM am_data_quality_snapshot "
+            "ORDER BY snapshot_at DESC LIMIT 1"
+        ).fetchone()
+    except sqlite3.OperationalError:
+        return None
+    if row is None:
+        return None
+
+    keys = set(row.keys()) if hasattr(row, "keys") else set()
+
+    def _get(name: str, default: Any = None) -> Any:
+        if keys and name not in keys:
+            return default
+        try:
+            return row[name]
+        except (IndexError, KeyError, TypeError):
+            return default
+
+    snapshot_at = _get("snapshot_at")
+    out: dict[str, Any] = {
+        "fact_count_total": int(_get("fact_count_total", 0) or 0),
+        "mean_score": _get("mean_score"),
+        "label_histogram": _decode_snapshot_json(
+            _get("label_histogram_json"),
+            {"high": 0, "medium": 0, "low": 0, "unknown": 0},
+        ),
+        "license_breakdown": _decode_snapshot_json(_get("license_breakdown_json"), {}),
+        "freshness_buckets": _decode_snapshot_json(
+            _get("freshness_buckets_json"),
+            {**{label: 0 for label, _ in _FRESHNESS_BUCKETS}, "unknown": 0},
+        ),
+        "field_kind_breakdown": _decode_snapshot_json(
+            _get("field_kind_breakdown_json"),
+            {},
+        ),
+        "cross_source_agreement": _decode_snapshot_json(
+            _get("cross_source_agreement_json"),
+            {
+                "facts_with_n_sources_>=2": 0,
+                "facts_with_consistent_value": 0,
+                "agreement_rate": 0.0,
+            },
+        ),
+        "source_url_freshness_pct": _get("source_url_freshness_pct"),
+        "model": _get("model") or "beta_posterior_v1",
+        "generated_at": snapshot_at
+        or datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
+    }
+    for optional_key in (
+        "source_count",
+        "fallback_source",
+        "fallback_note",
+        "am_source_total_rows",
+        "compute_ms",
+    ):
+        value = _get(optional_key)
+        if value is not None:
+            out[optional_key] = value
+    return out
+
+
 @router.get("/data_quality", response_model=DataQualityResponse)
 def stats_data_quality() -> Any:
     def _compute() -> dict[str, Any]:
@@ -789,6 +870,11 @@ def stats_data_quality() -> Any:
                     datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
                 ),
             }
+        snapshot = _read_data_quality_snapshot(am_conn)
+        if snapshot is not None:
+            with contextlib.suppress(Exception):
+                am_conn.close()
+            return snapshot
         try:
             cursor = am_conn.execute(
                 "SELECT field_kind, license, days_since_fetch, "
