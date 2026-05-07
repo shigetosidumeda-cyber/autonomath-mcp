@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>建設業特化 jpcite — 補助金候補 + 法基通 + 採択事例 を 1 API で (¥3/課金単位)</title>
-<meta name="description" content="建設業特化の補助金候補抽出 + 国税庁通達 (法人税基本通達・消費税基本通達) + 採択事例を 1 API で。建設業コンサル・全国建設業協会・ANDPAD / kintone 等 業務 SaaS 向け。建設業 業種別パック (`pack_construction`) で 1 リクエストに集約、¥3/課金単位 従量。">
+<meta name="description" content="建設業特化の補助金候補抽出 + 国税庁通達 (法人税基本通達・消費税基本通達) + 採択事例を 1 API で。建設業コンサル・全国建設業協会・ANDPAD / kintone 等 業務 SaaS 向け。建設業 業種別パック (`pack_construction`) で 1 リクエストに集約、¥3/課金単位 従量。corpus 開示 (2026-05-07): JSIC D 関連 program 284 件 / JSIC D 採択事例 81 件 / 国土交通省 行政処分 79 件。">
 
 <meta property="og:title" content="建設業特化 jpcite — コンサル / 業種団体 / 業務 SaaS 向け">
-<meta property="og:description" content="JSIC D fence で 285 件 program filter + 法基通 / 消基通 セクション固定参照 + 採択事例 + 国土交通省 行政処分 79 件 cohort を 1 API で。¥3/課金単位 従量。">
+<meta property="og:description" content="JSIC D fence で 284 件 program filter + 法基通 / 消基通 セクション固定参照 + 採択事例 81 件 + 国土交通省 行政処分 79 件 cohort を 1 API で。¥3/課金単位 従量。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/audiences/construction.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -19,7 +19,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="建設業特化 jpcite (コンサル / 業種団体 / 業務 SaaS)">
-<meta name="twitter:description" content="建設業特化 業種別パック: JSIC D 285 件 + 法基通 + 採択事例 + 国交省 行政処分。¥3/課金単位 従量。">
+<meta name="twitter:description" content="建設業特化 業種別パック: JSIC D 284 件 + 法基通 + 採択事例 81 件 + 国交省 行政処分 79 件。¥3/課金単位 従量。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/audiences/construction.html">
@@ -126,10 +126,10 @@
 
  <h2 class="section-title" style="margin-top:32px;">主要価値</h2>
  <ul class="card-list" style="font-size:16px;line-height:2;">
- <li><strong>JSIC D fence (建設業)</strong> — 建設・建築・住宅・耐震・改修・空き家・工事・下請 キーワード union で <strong>285 件 の S/A/B/C tier program</strong> を絞り込み (snapshot 2026-04-30 時点)</li>
+ <li><strong>JSIC D fence (建設業)</strong> — 建設・建築・住宅・耐震・改修・空き家・工事・下請 キーワード union で <strong>284 件 の S/A/B/C tier program</strong> を絞り込み (snapshot 2026-05-07 時点)</li>
  <li><strong>法基通 (法人税基本通達) + 消基通 (消費税基本通達) のセクション固定参照</strong> — 各補助金候補に対する課税関係 (圧縮記帳 / 国庫補助金等の益金不算入 / 消費税の不課税) のセクション ID 付き引用</li>
  <li><strong>国土交通省 行政処分 cohort</strong> — 建設業法・宅建業法等の処分 79 件 (ministry='国土交通省') を houjin_bangou で横断検索、与信審査・反社チェックの補助情報として併記可</li>
- <li><strong>JSIC D 採択事例 43 件</strong> (D06 総合工事業 28 / D08 設備工事業 10 / D 親 5) — 案件提案書に「同業の採択パターン」として添付できる一次資料リンク付き</li>
+ <li><strong>JSIC D 採択事例 81 件</strong> (snapshot 2026-05-07 時点、JSIC D 配下の case_studies 総数) — 案件提案書に「同業の採択パターン」として添付できる一次資料リンク付き</li>
  <li>各補助金候補・各通達・各裁決事例・各処分・各採択事例に <strong>一次資料 source_url</strong> を併記 (官庁・自治体・公庫などの一次資料に限定)</li>
  <li>1 リクエスト ¥3 (税込 ¥3.30) 完全従量、3 リクエスト/日まで無料 (匿名 IP ベース、JST 翌日 00:00 リセット)</li>
  </ul>
@@ -146,7 +146,7 @@
   -H "X-API-Key: $JPCITE_API_KEY"</code></pre>
 
  <p class="legal-note" style="font-size:13px;color:var(--text-muted);margin:24px 0 0;">
- corpus 開示 (2026-04-30 snapshot): JSIC D 関連 program 285 件 / JSIC D 採択事例 43 件 / 国土交通省 行政処分 79 件。本サービスは情報検索です。個別具体的な税務・法律判断は資格を有する専門家にご相談ください (税理士法 §52 / 公認会計士法 §47条の2 / 行政書士法 §1 / 建設業法 §3)。本ページは LLM による生成・要約は行っておらず、SQLite + 一次資料 URL のみで構成されています。
+ corpus 開示 (2026-05-07 snapshot): JSIC D 関連 program 284 件 / JSIC D 採択事例 81 件 / 国土交通省 行政処分 79 件。本サービスは情報検索です。個別具体的な税務・法律判断は資格を有する専門家にご相談ください (税理士法 §52 / 公認会計士法 §47条の2 / 行政書士法 §1 / 建設業法 §3)。本ページは LLM による生成・要約は行っておらず、SQLite + 一次資料 URL のみで構成されています。
  </p>
 
  <div class="cta-row" style="margin-top:24px;flex-wrap:wrap;gap:12px;">

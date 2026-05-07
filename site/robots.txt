@@ -116,9 +116,9 @@ Crawl-delay: 1
 # (sitemap.xml + sitemap-programs.xml + sitemap-prefectures.xml +
 #  sitemap-audiences.xml + sitemap-cross.xml + sitemap-industries.xml +
 #  sitemap-qa.xml + sitemap-pages.xml + sitemap-enforcement.xml +
-#  docs/sitemap.xml).
-# Industries / qa / pages are listed inline as a fallback for crawlers
-# that ignore index files.
+#  sitemap-cities.xml + docs/sitemap.xml).
+# Industries / qa / pages / cities are listed inline as a fallback for
+# crawlers that ignore index files.
 # ------------------------------------------------------------------
 Sitemap: https://jpcite.com/sitemap-index.xml
 Sitemap: https://jpcite.com/sitemap.xml
@@ -130,4 +130,5 @@ Sitemap: https://jpcite.com/sitemap-industries.xml
 Sitemap: https://jpcite.com/sitemap-qa.xml
 Sitemap: https://jpcite.com/sitemap-pages.xml
 Sitemap: https://jpcite.com/sitemap-enforcement.xml
+Sitemap: https://jpcite.com/sitemap-cities.xml
 Sitemap: https://jpcite.com/docs/sitemap.xml
