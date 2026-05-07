@@ -49,6 +49,7 @@ from . import (
     multilingual_abstract_tool,  # noqa: F401  — R7: program_abstract_structured (closed-vocab JA-only abstract; customer LLM translates)
     municipality_tools,  # noqa: F401  — DEEP-44 (2026-05-07): 自治体 1,741 補助金 page diff (1st pass 67 自治体 = 47 都道府県 + 20 政令市). 1 tool (search_municipality_subsidies) over municipality_subsidy (jpintel.db, migration wave24_191). AUTONOMATH_MUNICIPALITY_ENABLED gate (default ON). NO LLM, single ¥3/req billing. 政府著作物 §13 license — source_attribution envelope per row, NO _disclaimer (pure 1次資料 listing).
     nta_corpus_tools,  # noqa: F401  — migration 103: 4 tools (find_saiketsu / cite_tsutatsu / find_shitsugi / find_bunsho_kaitou) over nta_saiketsu / nta_tsutatsu_index / nta_shitsugi / nta_bunsho_kaitou; AUTONOMATH_NTA_CORPUS_ENABLED gate (default ON), §52 envelope on every result.
+    policy_upstream_tools,  # noqa: F401  — DEEP-46 (2026-05-07): 2 政策 上流 signal 統合 tools (policy_upstream_watch / policy_upstream_timeline) cross-axis rollup over kokkai_utterance + shingikai_minutes + pubcomment_announcement + am_amendment_diff + jpi_programs. AUTONOMATH_POLICY_UPSTREAM_ENABLED gate (default ON). NO LLM, single ¥3/req billing. §52/§47条の2/§72/§1 envelope mandatory.
     prerequisite_chain_tool,  # noqa: F401  — R5: prerequisite_chain (am_prerequisite_bundle, 1.6% coverage surfaced honestly, AUTONOMATH_PREREQUISITE_CHAIN_ENABLED gate)
     provenance_tools,  # noqa: F401  — V4 Phase 4: get_provenance + get_provenance_for_fact (am_source.license, migration 049)
     pubcomment_tools,  # noqa: F401  — DEEP-45 (2026-05-07): 1 e-Gov パブコメ surface tool (get_pubcomment_status) over pubcomment_announcement (migration wave24_192). AUTONOMATH_PUBCOMMENT_ENABLED gate (default ON). NO LLM, single ¥3/req billing. §52/§47条の2/§72/§1 envelope. Lead time 30-60 日.
@@ -59,10 +60,12 @@ from . import (
     snapshot_tool,  # noqa: F401  — R8: query_at_snapshot (dataset versioning, migration 067)
     source_manifest_tools,  # noqa: F401  — 2026-04-30: get_source_manifest (api/source_manifest.py companion). Per-program provenance rollup.
     static_resources_tool,  # noqa: F401  — Phase A: 4 tools (list/get static resources + example profiles)
+    succession_tools,  # noqa: F401  — 2026-05-07: 2 tools (match_succession_am / succession_playbook_am) over jpintel.programs + laws. M&A pillar of cohort revenue model. AUTONOMATH_SUCCESSION_ENABLED gate (default ON). NO LLM, single ¥3/req billing event. §52 / §72 envelope. REST companion at POST /v1/succession/match + GET /v1/succession/playbook.
     sunset_tool,  # noqa: F401  — V1 feature #11 (dd_v4_05): list_tax_sunset_alerts
     tax_rule_tool,  # noqa: F401  — decorator side-effect (1 tool)
     template_tool,  # noqa: F401  — Phase A: render_36_kyotei_am + get_36_kyotei_metadata_am
     time_machine_tools,  # noqa: F401  — DEEP-22 (2026-05-07): 2 tools (query_at_snapshot_v2 / query_program_evolution) over am_amendment_snapshot 14,596 captures + 144 definitive-dated. AUTONOMATH_SNAPSHOT_ENABLED gate (default ON post-DEEP-22). NO LLM, single ¥3/req billing.
+    timeline_trend_tools,  # noqa: F401  — R8 (2026-05-07): 3 timeline + trend tools (program_timeline_am / cases_timeline_trend_am / upcoming_rounds_for_my_profile_am) over jpi_adoption_records (201,845) + am_application_round (1,256) + client_profiles. AUTONOMATH_TIMELINE_TREND_ENABLED gate (default ON). NO LLM, single ¥3/req billing event. §52/§47条の2/§1 envelope on the 2 trend surfaces; §1 only on upcoming-rounds. REST companion at /v1/programs/{id}/timeline + /v1/cases/timeline_trend + /v1/me/upcoming_rounds_for_my_profile.
     tools,  # noqa: F401  — decorator side-effect (10 tools)
     validation_tools,  # noqa: F401  — V4 Phase 4: validate (am_validation_rule dispatcher, migration 047)
     wave22_tools,  # noqa: F401  — Wave 22: 5 composition tools (match_due_diligence_questions / prepare_kessan_briefing / forecast_program_renewal / cross_check_jurisdiction / bundle_application_kit, AUTONOMATH_WAVE22_ENABLED gate). Adds dd_question_templates DB (migration 104).
