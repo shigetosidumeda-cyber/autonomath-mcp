@@ -28,9 +28,11 @@ ADMIN_KEY = "test-admin-secret-xyz"
 @pytest.fixture()
 def admin_enabled(monkeypatch):
     """Flip settings.admin_api_key on for the duration of a test."""
+    from jpintel_mcp.api import admin as admin_mod
     from jpintel_mcp.config import settings
 
-    monkeypatch.setattr(settings, "admin_api_key", ADMIN_KEY, raising=False)
+    for settings_obj in (settings, admin_mod.settings):
+        monkeypatch.setattr(settings_obj, "admin_api_key", ADMIN_KEY, raising=False)
     yield ADMIN_KEY
 
 
@@ -123,9 +125,11 @@ def drop_funnel_tables(seeded_db: Path):
 
 def test_admin_funnel_503_when_admin_key_disabled(client, monkeypatch):
     """Empty settings.admin_api_key → 503 regardless of any client header."""
+    from jpintel_mcp.api import admin as admin_mod
     from jpintel_mcp.config import settings
 
-    monkeypatch.setattr(settings, "admin_api_key", "", raising=False)
+    for settings_obj in (settings, admin_mod.settings):
+        monkeypatch.setattr(settings_obj, "admin_api_key", "", raising=False)
     r = client.get(
         "/v1/admin/funnel",
         params={"start": "2026-05-06", "end": "2026-05-20"},

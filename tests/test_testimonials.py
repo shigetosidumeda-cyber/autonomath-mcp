@@ -31,9 +31,11 @@ ADMIN_KEY = "test-admin-secret-testimonials"
 
 @pytest.fixture()
 def admin_enabled(monkeypatch):
+    from jpintel_mcp.api import admin as admin_mod
     from jpintel_mcp.config import settings
 
-    monkeypatch.setattr(settings, "admin_api_key", ADMIN_KEY, raising=False)
+    for settings_obj in (settings, admin_mod.settings):
+        monkeypatch.setattr(settings_obj, "admin_api_key", ADMIN_KEY, raising=False)
     yield ADMIN_KEY
 
 
@@ -217,9 +219,11 @@ def test_approve_requires_admin_key(client, submitter_key, admin_enabled):
 
 
 def test_approve_503_when_admin_disabled(client, submitter_key, monkeypatch):
+    from jpintel_mcp.api import admin as admin_mod
     from jpintel_mcp.config import settings
 
-    monkeypatch.setattr(settings, "admin_api_key", "", raising=False)
+    for settings_obj in (settings, admin_mod.settings):
+        monkeypatch.setattr(settings_obj, "admin_api_key", "", raising=False)
     tid = _submit_one(client, submitter_key)
     r = client.post(
         f"/v1/admin/testimonials/{tid}/approve",
