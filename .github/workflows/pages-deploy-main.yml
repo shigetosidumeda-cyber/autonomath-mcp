@@ -13,9 +13,9 @@
 #   - `pages-regenerate.yml` regenerates per-program / per-prefecture
 #     pages from the live SQLite (≈8-12 min wall) on a nightly cron.
 #   - This file (`pages-deploy-main.yml`) is the lightweight "ship the
-#     committed `site/` tree as-is" path: no Fly fetch, no DB rebuild,
-#     no MkDocs rebuild — just rsync, JSON validate, and `wrangler pages
-#     deploy`. This is the CI equivalent of the operator workflow
+#     committed `site/` tree plus rebuilt MkDocs docs" path: no Fly fetch,
+#     no DB rebuild — just docs build, rsync, JSON validate, and Pages
+#     deploy. This is the CI equivalent of the operator workflow
 #     documented in `tools/offline/_inbox/HANDOFF_2026_05_07_FRONTEND_DEPLOY_STOP.md`.
 #
 # Required GitHub repository secrets (canonical names match the existing
@@ -48,6 +48,10 @@ on:
       - main
     paths:
       - "site/**"
+      - "docs/**"
+      - "overrides/**"
+      - "mkdocs.yml"
+      - "docs-requirements.txt"
       - ".github/workflows/pages-deploy-main.yml"
   workflow_dispatch: {}
 
@@ -84,6 +88,14 @@ jobs:
             exit 0
           fi
           echo "available=true" >> "$GITHUB_OUTPUT"
+
+      - name: Build docs (MkDocs Material → site/docs/)
+        if: steps.cf-secrets.outputs.available == 'true'
+        run: |
+          set -euo pipefail
+          python3 -m pip install --upgrade pip
+          python3 -m pip install -r docs-requirements.txt
+          python3 -m mkdocs build --strict
 
       - name: Build static artifact (rsync site/ → dist/site/)
         if: steps.cf-secrets.outputs.available == 'true'
