@@ -1109,6 +1109,58 @@ def _intel_risk_score_impl(
     return body
 
 
+def _houjin_360_impl(houjin_bangou: str, limit: int = 10) -> dict[str, Any]:
+    """R8 — unified houjin 360 surface in 1 call.
+
+    Wraps the REST handler's pure-SQL builder so the MCP transport sees
+    the identical envelope shape (master + adoption_records +
+    enforcement_cases + bids_won + invoice_registrant_status +
+    recent_news + watch_alerts + scores).
+    """
+    from jpintel_mcp.api.houjin_360 import (
+        _DISCLAIMER as _HOUJIN_360_DISCLAIMER,
+    )
+    from jpintel_mcp.api.houjin_360 import (
+        _build_houjin_360,
+        _normalize_bangou,
+        _open_autonomath_ro,
+    )
+
+    normalized = _normalize_bangou(houjin_bangou)
+    if normalized is None:
+        return make_error(
+            code="invalid_input",
+            message=(
+                f"houjin_bangou must be 13 digits (with or without 'T' "
+                f"prefix); got {houjin_bangou!r}."
+            ),
+            field="houjin_bangou",
+        )
+    capped_limit = max(1, min(int(limit or 10), 50))
+
+    jp_conn_or_err = _open_jpintel()
+    if isinstance(jp_conn_or_err, dict):
+        return jp_conn_or_err
+    jp_conn = jp_conn_or_err
+    am_conn = _open_autonomath_ro()
+    try:
+        body = _build_houjin_360(
+            jpintel_conn=jp_conn,
+            am_conn=am_conn,
+            bangou=normalized,
+            limit=capped_limit,
+        )
+    finally:
+        if am_conn is not None:
+            with contextlib.suppress(sqlite3.Error):
+                am_conn.close()
+        with contextlib.suppress(sqlite3.Error):
+            jp_conn.close()
+    body.setdefault("_disclaimer", _HOUJIN_360_DISCLAIMER)
+    body.setdefault("_billing_unit", 1)
+    return body
+
+
 # ---------------------------------------------------------------------------
 # MCP tool registration — gated by AUTONOMATH_INTEL_COMPOSITE_ENABLED +
 # AUTONOMATH_ENABLED. Each docstring kept ≤ 400 chars per Wave 21 spec.
@@ -1551,6 +1603,32 @@ if _ENABLED and settings.autonomath_enabled:
             include_axes=include_axes,
             weight_overrides=weight_overrides,
         )
+
+    @mcp.tool(annotations=_READ_ONLY)
+    def houjin_360(
+        houjin_bangou: Annotated[
+            str,
+            Field(
+                min_length=13,
+                max_length=14,
+                description="13-digit 法人番号 (NTA canonical), with or without 'T' prefix.",
+            ),
+        ],
+        limit: Annotated[
+            int,
+            Field(
+                10,
+                ge=1,
+                le=50,
+                description=(
+                    "Per-list-section row cap (adoption_records, "
+                    "enforcement_cases, bids_won, recent_news, watch_alerts)."
+                ),
+            ),
+        ] = 10,
+    ) -> dict[str, Any]:
+        """[R8] Unified houjin 360 in 1 call: master + adoption_records + enforcement_cases + bids_won + invoice_registrant_status + recent_news + watch_alerts + 3-axis scores (risk_score / credit_score / compliance_score). Joins houjin_master + jpi_adoption_records + am_enforcement_detail + bids + jpi_invoice_registrants + am_amendment_diff + customer_watches. Pure SQL, NO LLM. ¥3/req. §52/§72/§1 fence — descriptive signals, never a 与信/税務/法令適用 verdict."""
+        return _houjin_360_impl(houjin_bangou=houjin_bangou, limit=limit)
 
 
 # ---------------------------------------------------------------------------
