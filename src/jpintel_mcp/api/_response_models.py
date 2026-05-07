@@ -1464,12 +1464,23 @@ class TemplateRenderResponse(BaseModel):
 
 
 class DeepHealthResponse(BaseModel):
-    """``GET /v1/am/health/deep`` — 10-check aggregate."""
+    """``GET /v1/am/health/deep`` — 10-check aggregate + Sentry probe.
+
+    ``sentry_active`` (read-only) reflects whether ``_init_sentry`` succeeded
+    at lifespan startup. False when ``SENTRY_DSN`` is unset or the two-gate
+    (DSN ∧ ``JPINTEL_ENV=prod``) was not satisfied. Aggregate ``status`` is
+    intentionally unaffected — Sentry being dark is a meta-signal for the
+    operator, not a fail/warn for the API itself.
+    """
 
     model_config = _ALLOW_EXTRA
 
     status: str = Field(..., description="ok | degraded | unhealthy")
     checks: dict[str, Any] = Field(default_factory=dict)
+    sentry_active: bool | None = Field(
+        default=None,
+        description="True iff Sentry SDK initialised at API lifespan startup.",
+    )
     generated_at: str | None = None
 
 

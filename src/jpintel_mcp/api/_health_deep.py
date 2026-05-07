@@ -348,6 +348,40 @@ _CACHE: dict[str, Any] = {"ts": 0.0, "doc": None}
 _CACHE_TTL: float = 30.0  # seconds
 
 
+def _probe_sentry_active() -> bool:
+    """Best-effort read-only probe: is Sentry initialised and transmitting?
+
+    Returns True iff (a) the API lifespan ran ``_init_sentry`` AND (b) the
+    sentry_sdk client is configured. Returns False when:
+
+      * ``SENTRY_DSN`` is unset (the common dev / CI / unit-test posture);
+      * ``JPINTEL_ENV`` is not ``prod`` (two-gate enforcement);
+      * ``sentry_sdk`` is not installed at all (graceful);
+      * ``sentry_sdk.Hub.current.client`` is None for any other reason.
+
+    Never raises — observability state is a *probe*, not a check, and a
+    raising probe would crash the deep-health aggregation it lives in.
+    """
+    try:
+        import sentry_sdk  # noqa: PLC0415 — lazy so absent SDK doesn't break import
+    except ImportError:
+        return False
+    try:
+        client = sentry_sdk.Hub.current.client
+    except Exception:  # noqa: BLE001 — never let a hub call crash health probe
+        return False
+    if client is None:
+        return False
+    # A client exists; verify it carries a DSN. sentry_sdk leaves
+    # `client.dsn` set to the configured DSN when init succeeded; `None`
+    # when init was called with dsn=None (e.g. tests that import the SDK
+    # but never wire a real DSN).
+    try:
+        return bool(getattr(client, "dsn", None))
+    except Exception:  # noqa: BLE001
+        return False
+
+
 def get_deep_health(force: bool = False) -> dict[str, object]:
     """Run every registered check; return aggregate health document.
 
@@ -387,6 +421,13 @@ def get_deep_health(force: bool = False) -> dict[str, object]:
         "status": _aggregate(ordered),
         "version": _read_version(),
         "checks": ordered,
+        # Read-only observability probe surfaced alongside the 10 checks.
+        # Top-level (not in `checks`) on purpose — Sentry being inactive is
+        # NOT a fail/warn for the API itself; it is a meta-signal for the
+        # operator that error-monitoring is dark. Aggregate `status` is
+        # therefore unaffected. Documented in
+        # docs/runbook/sentry_setup.md "Verify after deploy".
+        "sentry_active": _probe_sentry_active(),
         "timestamp_utc": now_utc.isoformat(),
         "evaluated_at_jst": now_jst.isoformat(),
     }

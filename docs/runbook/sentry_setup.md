@@ -9,7 +9,89 @@
 > dashboard + verification). Subsequent edits ~5 min per rule.
 > **Prerequisite**: Sentry account active, project `bookyou/autonomath-api`
 > already exists with a working DSN deployed to Fly via `flyctl secrets`.
-> **Last reviewed**: 2026-04-29
+> **Last reviewed**: 2026-05-07
+
+## Step 0 — Provision DSN (do this first if SENTRY_DSN is not yet on Fly)
+
+R8 audit (2026-05-07) flagged this as the **post-launch error monitoring
+critical path**. Without these six clicks, every error in production stays
+trapped inside Fly machine logs and the operator iPhone gets nothing.
+
+**Pre-state self-check** (10 sec):
+```bash
+flyctl secrets list -a autonomath-api | grep -E "SENTRY_DSN|JPINTEL_ENV"
+# If SENTRY_DSN is absent → continue with Step 0.
+# If SENTRY_DSN is present → skip to Step 1.
+curl -s https://api.jpcite.com/v1/am/health/deep | jq .sentry_active
+# False → Sentry is dark in production.
+# True  → already wired.
+```
+
+1. **Create / log in to Sentry account**
+   - Open <https://sentry.io/signup/> in a browser. Sign up with
+     `info@bookyou.net` (the operator address — invoices and billing email
+     route here, so it has to match `monitoring/sentry_alert_rules.yml`).
+   - On the free Developer plan, the org name should be `bookyou` to match
+     the rest of the runbook references.
+
+2. **Create the project**
+   - Sentry left nav → **Projects** → **+ Create Project**.
+   - **Platform**: Python → FastAPI.
+   - **Project name**: `autonomath-api` (legacy distribution name; do NOT
+     rename to `jpcite-api` — the source package, console scripts, and PyPI
+     distribution are all `autonomath-mcp` per `pyproject.toml`).
+   - **Alert frequency**: "Alert me on every new issue" (per-rule overrides
+     come in Step 2).
+   - **Team**: leave default (solo ops, single team).
+   - Click **Create Project**.
+
+3. **Capture the DSN**
+   - On the post-create wizard, copy the **DSN** string. It looks like
+     `https://abcdef0123456789@o123456.ingest.sentry.io/4501234567890123`.
+   - The DSN is a *public* token (Sentry's threat model treats it as such),
+     but treat it like a secret: don't paste into Slack / GitHub / commits.
+   - Optional: also capture the auth token from Settings → Account → API →
+     Auth Tokens if you plan to use `sentry-cli` for release tracking.
+
+4. **Inject DSN into Fly**
+   ```bash
+   # Single-line form so log scrapers and grep both find the directive:
+   flyctl secrets set SENTRY_DSN="https://abcdef0123456789@o123456.ingest.sentry.io/4501234567890123" -a autonomath-api
+   # JPINTEL_ENV must already be `prod`. Confirm:
+   flyctl secrets list -a autonomath-api | grep JPINTEL_ENV
+   # If missing or wrong:
+   flyctl secrets set JPINTEL_ENV=prod -a autonomath-api
+   ```
+   `flyctl secrets set` triggers an automatic redeploy. Wait ~60s for it to
+   finish (`flyctl status -a autonomath-api`).
+
+5. **Verify Sentry is now live**
+   ```bash
+   # 5a. Health probe (read-only, doesn't fire a Sentry event):
+   curl -s https://api.jpcite.com/v1/am/health/deep | jq .sentry_active
+   # Expect: true
+
+   # 5b. Fire a smoke event (one harmless message):
+   flyctl ssh console -a autonomath-api
+   python -c "import sentry_sdk, os; sentry_sdk.init(os.environ['SENTRY_DSN'], environment='production'); sentry_sdk.capture_message('runbook smoke', level='info')"
+   exit
+   # Then in Sentry → Issues, expect a "runbook smoke" event within 60s.
+   # If nothing arrives in 2 min, troubleshoot:
+   #   * `flyctl logs -a autonomath-api | grep -i sentry`
+   #   * Confirm DSN string is correct (re-paste from Sentry → Settings → Client Keys).
+   #   * Confirm JPINTEL_ENV=prod (two-gate enforcement).
+   ```
+   Mark the "runbook smoke" event as **Resolved** so it doesn't pollute the
+   first real-incident stream.
+
+6. **Fly secrets convention** — if the operator rotates the DSN later (e.g.
+   a leaked client key), repeat step 4 with the new DSN. There is no
+   in-code config: the SDK reads `SENTRY_DSN` from the environment on
+   process boot, so a `flyctl secrets set` already triggers the correct
+   redeploy.
+
+After Step 0 is green (`sentry_active=true` on the deep-health probe AND
+the smoke event lands in the Issues stream), continue with Step 1 below.
 
 ## What you'll set up
 
@@ -148,6 +230,13 @@ widgets that work, plus operator weekly habit of cat-ing the health-deep
 JSON for the rest.
 
 ## Step 4 — Verification (5-10 min)
+
+0. **Read-only probe (no event fires)**: confirm
+   `curl -s https://api.jpcite.com/v1/am/health/deep | jq .sentry_active`
+   returns `true`. This proves the API process completed `_init_sentry` —
+   no Sentry quota burn, no PII leakage, just a boolean. The probe is
+   surfaced specifically so the operator can verify post-deploy without
+   having to fire a smoke event each time.
 
 1. **Email test**: Sentry → Settings → Notifications → "Send test email".
    Confirm `info@bookyou.net` receives within 1 min.

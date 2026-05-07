@@ -1869,6 +1869,14 @@ def _public_deep_health_doc(doc: dict[str, Any]) -> dict[str, Any]:
     if isinstance(timestamp, str):
         public["timestamp_utc"] = timestamp
 
+    # Surface Sentry init state as a top-level boolean. False when SENTRY_DSN
+    # is missing or two-gate (DSN ∧ JPINTEL_ENV=prod) was not satisfied at
+    # API lifespan startup. Operators rely on this for the "post-launch
+    # error monitoring is dark" alarm without leaking DSN material.
+    sentry_active = doc.get("sentry_active")
+    if isinstance(sentry_active, bool):
+        public["sentry_active"] = sentry_active
+
     checks = doc.get("checks")
     if isinstance(checks, dict):
         public_checks: dict[str, dict[str, str]] = {}
