@@ -2817,79 +2817,94 @@ def create_application_strategy_pack(
     return body
 
 
-@router.post(
-    "/company_public_baseline",
-    response_model=ArtifactResponse,
-    response_model_exclude_unset=True,
-    summary="会社 public baseline artifact (法人番号公開情報ベースライン — no LLM)",
-    description=(
-        "既存 `/v1/intel/houjin/{houjin_id}/full` と同じ公開情報素材を取得し、"
-        "会社の公開情報ベースライン、根拠URL、known gaps、次アクションを "
-        "artifact envelope として返す。NO LLM。"
-    ),
-)
-def create_company_public_baseline(
-    payload: CompanyPublicArtifactRequest,
-    conn: DbDep,
-    ctx: ApiContextDep,
-) -> dict[str, Any]:
-    return _create_company_public_artifact(
-        payload=payload,
-        conn=conn,
-        ctx=ctx,
-        artifact_type="company_public_baseline",
-        builder=_build_company_public_baseline_artifact,
-    )
-
-
-@router.post(
-    "/company_folder_brief",
-    response_model=ArtifactResponse,
-    response_model_exclude_unset=True,
-    summary="会社 folder brief artifact (社内フォルダ用公開情報ブリーフ — no LLM)",
-    description=(
-        "既存 `/v1/intel/houjin/{houjin_id}/full` と同じ公開情報素材を取得し、"
-        "社内フォルダへ貼れる会社概要、DD snapshot、確認チェックリストを "
-        "artifact envelope として返す。NO LLM。"
-    ),
-)
-def create_company_folder_brief(
-    payload: CompanyPublicArtifactRequest,
-    conn: DbDep,
-    ctx: ApiContextDep,
-) -> dict[str, Any]:
-    return _create_company_public_artifact(
-        payload=payload,
-        conn=conn,
-        ctx=ctx,
-        artifact_type="company_folder_brief",
-        builder=_build_company_folder_brief_artifact,
-    )
-
-
-@router.post(
-    "/company_public_audit_pack",
-    response_model=ArtifactResponse,
-    response_model_exclude_unset=True,
-    summary="会社 public audit pack artifact (公開根拠監査パック — no LLM)",
-    description=(
-        "既存 `/v1/intel/houjin/{houjin_id}/full` と同じ公開情報素材を取得し、"
-        "監査・レビュー向けの対象、根拠台帳、risk/gap register、review controls を "
-        "artifact envelope として返す。NO LLM。"
-    ),
-)
-def create_company_public_audit_pack(
-    payload: CompanyPublicArtifactRequest,
-    conn: DbDep,
-    ctx: ApiContextDep,
-) -> dict[str, Any]:
-    return _create_company_public_artifact(
-        payload=payload,
-        conn=conn,
-        ctx=ctx,
-        artifact_type="company_public_audit_pack",
-        builder=_build_company_public_audit_pack_artifact,
-    )
+# ── R8 BUGHUNT 2026-05-07: parallel-agent merge residue ─────────────────────
+# /v1/artifacts/{company_public_baseline,company_folder_brief,
+# company_public_audit_pack} are now the always-on canonical surface in
+# `jpintel_mcp.api.company_public_packs` (mounted unconditionally in
+# `api/main.py`). Round 2 parallel agents shipped the same three routes here
+# inside `artifacts.py`, which is gated behind AUTONOMATH_EXPERIMENTAL_API_ENABLED.
+# When that flag is ON in production, FastAPI registers both copies and emits
+# `Duplicate Operation ID` warnings (observed in tests/test_openapi_agent.py).
+# The three blocks below are intentionally commented out — kept inline as
+# audit residue per the destruction-free organization rule (no rm/mv). Builders
+# `_build_company_public_baseline_artifact`, `_build_company_folder_brief_artifact`,
+# and `_build_company_public_audit_pack_artifact` remain live; only the local
+# `@router.post(...)` decorations are deactivated. To re-home them in this
+# module, first remove `company_public_packs.py` from the always-on wiring.
+# ─────────────────────────────────────────────────────────────────────────────
+# @router.post(
+#     "/company_public_baseline",
+#     response_model=ArtifactResponse,
+#     response_model_exclude_unset=True,
+#     summary="会社 public baseline artifact (法人番号公開情報ベースライン — no LLM)",
+#     description=(
+#         "既存 `/v1/intel/houjin/{houjin_id}/full` と同じ公開情報素材を取得し、"
+#         "会社の公開情報ベースライン、根拠URL、known gaps、次アクションを "
+#         "artifact envelope として返す。NO LLM。"
+#     ),
+# )
+# def create_company_public_baseline(
+#     payload: CompanyPublicArtifactRequest,
+#     conn: DbDep,
+#     ctx: ApiContextDep,
+# ) -> dict[str, Any]:
+#     return _create_company_public_artifact(
+#         payload=payload,
+#         conn=conn,
+#         ctx=ctx,
+#         artifact_type="company_public_baseline",
+#         builder=_build_company_public_baseline_artifact,
+#     )
+#
+#
+# @router.post(
+#     "/company_folder_brief",
+#     response_model=ArtifactResponse,
+#     response_model_exclude_unset=True,
+#     summary="会社 folder brief artifact (社内フォルダ用公開情報ブリーフ — no LLM)",
+#     description=(
+#         "既存 `/v1/intel/houjin/{houjin_id}/full` と同じ公開情報素材を取得し、"
+#         "社内フォルダへ貼れる会社概要、DD snapshot、確認チェックリストを "
+#         "artifact envelope として返す。NO LLM。"
+#     ),
+# )
+# def create_company_folder_brief(
+#     payload: CompanyPublicArtifactRequest,
+#     conn: DbDep,
+#     ctx: ApiContextDep,
+# ) -> dict[str, Any]:
+#     return _create_company_public_artifact(
+#         payload=payload,
+#         conn=conn,
+#         ctx=ctx,
+#         artifact_type="company_folder_brief",
+#         builder=_build_company_folder_brief_artifact,
+#     )
+#
+#
+# @router.post(
+#     "/company_public_audit_pack",
+#     response_model=ArtifactResponse,
+#     response_model_exclude_unset=True,
+#     summary="会社 public audit pack artifact (公開根拠監査パック — no LLM)",
+#     description=(
+#         "既存 `/v1/intel/houjin/{houjin_id}/full` と同じ公開情報素材を取得し、"
+#         "監査・レビュー向けの対象、根拠台帳、risk/gap register、review controls を "
+#         "artifact envelope として返す。NO LLM。"
+#     ),
+# )
+# def create_company_public_audit_pack(
+#     payload: CompanyPublicArtifactRequest,
+#     conn: DbDep,
+#     ctx: ApiContextDep,
+# ) -> dict[str, Any]:
+#     return _create_company_public_artifact(
+#         payload=payload,
+#         conn=conn,
+#         ctx=ctx,
+#         artifact_type="company_public_audit_pack",
+#         builder=_build_company_public_audit_pack_artifact,
+#     )
 
 
 @router.post(
