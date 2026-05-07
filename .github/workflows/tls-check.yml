@@ -83,3 +83,23 @@ jobs:
           if [ "$DAYS_LEFT" -lt 5 ]; then
             exit 1
           fi
+
+      - name: Sentry alert on TLS-check failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=tls-check/1.0" \
+            -d "{\"level\":\"error\",\"logger\":\"github.actions.tls-check\",\"platform\":\"other\",\"message\":\"tls-check failed (cert <5d or fetch error). Run ${GITHUB_RUN_ID}.\",\"tags\":{\"workflow\":\"tls-check\",\"run_id\":\"${GITHUB_RUN_ID}\"}}" \
+            || echo "::warning::Sentry alert POST failed; continuing."

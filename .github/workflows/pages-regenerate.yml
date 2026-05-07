@@ -226,3 +226,23 @@ jobs:
           directory: dist/site
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           branch: main
+
+      - name: Sentry alert on pages-regenerate failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=pages-regenerate/1.0" \
+            -d "{\"level\":\"error\",\"logger\":\"github.actions.pages-regenerate\",\"platform\":\"other\",\"message\":\"pages-regenerate failed (SEO/GEO surface stale). Run ${GITHUB_RUN_ID}.\",\"tags\":{\"workflow\":\"pages-regenerate\",\"run_id\":\"${GITHUB_RUN_ID}\"}}" \
+            || echo "::warning::Sentry alert POST failed; continuing."

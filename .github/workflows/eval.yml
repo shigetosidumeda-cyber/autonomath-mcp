@@ -106,3 +106,23 @@ jobs:
           name: eval-report
           path: eval_report.json
           retention-days: 30
+
+      - name: Sentry alert on eval failure (scheduled only)
+        if: failure() && github.event_name == 'schedule'
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=eval-cron/1.0" \
+            -d "{\"level\":\"error\",\"logger\":\"github.actions.eval\",\"platform\":\"other\",\"message\":\"eval (nightly Tier A/B/C) failed — precision/refusal regression risk. Run ${GITHUB_RUN_ID}.\",\"tags\":{\"workflow\":\"eval\",\"run_id\":\"${GITHUB_RUN_ID}\"}}" \
+            || echo "::warning::Sentry alert POST failed; continuing."

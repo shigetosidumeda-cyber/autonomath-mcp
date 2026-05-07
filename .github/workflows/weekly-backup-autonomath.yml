@@ -137,13 +137,22 @@ jobs:
           aws s3 cp "$LATEST_BASENAME"         "s3://$R2_BUCKET/$PREFIX/" --endpoint-url "$R2_ENDPOINT"
           aws s3 cp "${LATEST_BASENAME}.sha256" "s3://$R2_BUCKET/$PREFIX/" --endpoint-url "$R2_ENDPOINT"
 
-          # Rotation: keep only the 4 newest jpintel-*.db.gz + their .sha256.
+          # Rotation: keep only the 4 newest autonomath-*.db.gz + their .sha256.
           # 4 weekly snapshots == 28 days RPO ceiling for autonomath.db.
           # Lex order == chronological (timestamp YYYYMMDD-HHMMSS).
+          # Bug fix 2026-05-07 (R8 BACKUP INTEGRITY DEEP audit): prior
+          # `--prefix "$PREFIX/jpintel-"` returned 0 keys because the M9
+          # cron switch in 2026-04-29 (backup.py -> backup_autonomath.py)
+          # made the file basename `autonomath-{stamp}.db.gz`, not
+          # `jpintel-{stamp}.db.gz`. The mapfile silently emptied, the
+          # `[ "${#ALL[@]}" -gt "$KEEP" ]` branch never fired, and the
+          # `autonomath-api/autonomath-db/` R2 prefix had unbounded
+          # accumulation (cron-side `_prune_r2` only handles the
+          # `autonomath/` prefix that the cron script uploads to).
           KEEP=4
           mapfile -t ALL < <(aws s3api list-objects-v2 \
               --bucket "$R2_BUCKET" \
-              --prefix "$PREFIX/jpintel-" \
+              --prefix "$PREFIX/autonomath-" \
               --endpoint-url "$R2_ENDPOINT" \
               --query 'Contents[].Key' \
               --output text | tr '\t' '\n' | grep -E '\.db\.gz$' | sort -r || true)
@@ -157,3 +166,23 @@ jobs:
           else
             echo "No rotation needed (${#ALL[@]} <= $KEEP)."
           fi
+
+      - name: Sentry alert on weekly autonomath backup failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=weekly-backup-autonomath/1.0" \
+            -d "{\"level\":\"error\",\"logger\":\"github.actions.weekly-backup-autonomath\",\"platform\":\"other\",\"message\":\"weekly-backup-autonomath failed (8.3GB R2 backup gap risk). Run ${GITHUB_RUN_ID}.\",\"tags\":{\"workflow\":\"weekly-backup-autonomath\",\"run_id\":\"${GITHUB_RUN_ID}\"}}" \
+            || echo "::warning::Sentry alert POST failed; continuing."

@@ -125,3 +125,23 @@ jobs:
       # DB is the Fly volume. Tier S/A writes here only to prove the script
       # would have written; the Fly nightly cron (scripts/cron/refresh_sources_nightly.sh)
       # is the authoritative writer.
+
+      - name: Sentry alert on cron failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=refresh-sources/1.0" \
+            -d "{\"level\":\"error\",\"logger\":\"github.actions.refresh-sources\",\"platform\":\"other\",\"message\":\"refresh-sources failed (data freshness gap risk). Run ${GITHUB_RUN_ID}.\",\"tags\":{\"workflow\":\"refresh-sources\",\"run_id\":\"${GITHUB_RUN_ID}\"}}" \
+            || echo "::warning::Sentry alert POST failed; continuing."
