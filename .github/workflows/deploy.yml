@@ -122,6 +122,9 @@ jobs:
           else
             echo "Hydrating the Docker seed DB from a verified production volume snapshot."
             echo "(existing dev fixture: ${existing_bytes} bytes; below 100MB threshold)"
+            # `flyctl ssh sftp get` refuses to overwrite an existing local target,
+            # so any small dev fixture must be removed before the fetch.
+            rm -f data/jpintel.db
             remote_seed="/tmp/jpintel-ci-seed.db"
             flyctl ssh console -a autonomath-api -q -C \
               "bash -lc 'set -euo pipefail; rm -f ${remote_seed}; sqlite3 /data/jpintel.db \".backup ${remote_seed}\"; sqlite3 ${remote_seed} \"PRAGMA quick_check; SELECT COUNT(*) FROM programs;\"'"
