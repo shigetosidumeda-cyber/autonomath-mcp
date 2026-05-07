@@ -74,8 +74,15 @@ jobs:
           # M9: backup_autonomath.py emits autonomath-{stamp}.db.gz into
           # /data/backups-autonomath. We pick the newest match for the
           # SFTP pull + sha256 verify below.
+          # `flyctl ssh console -C` is argv-style: pipes / redirects / && in
+          # the quoted string become literal arguments rather than shell
+          # operators (so "ls ... | head -1" runs `ls` with `|`, `head`, `-1`
+          # as filenames and errors on the missing `head` file). Wrap
+          # explicitly in `sh -c '...'` so the remote shell parses the pipe.
+          # Same defect class as nightly-backup.yml — caught by the R8
+          # backup/restore drill audit on 2026-05-07.
           LATEST=$(flyctl ssh console -a autonomath-api -C \
-              "ls -1t /data/backups-autonomath/autonomath-*.db.gz | head -1" | tr -d '\r\n')
+              "sh -c 'ls -1t /data/backups-autonomath/autonomath-*.db.gz | head -1'" | tr -d '\r\n')
           if [ -z "$LATEST" ]; then
             echo "ERROR: could not locate latest backup on machine" >&2
             exit 1
