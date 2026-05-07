@@ -83,6 +83,15 @@ jobs:
 
       - name: Run local pre-deploy verification
         if: steps.fly-token.outputs.available == 'true'
+        # The 9.7 GB autonomath.db lives on Fly volumes and is hydrated later in
+        # this job (see "Hydrate jpintel seed DB for Docker build"); it is never
+        # present on a fresh GHA runner checkout. JPCITE_PREFLIGHT_ALLOW_MISSING_DB=1
+        # tells preflight_production_improvement.py to treat that expected
+        # absence as a `skipped:missing_db_in_ci` marker rather than a hard
+        # `database:missing` issue. Production boot does not export this env-var,
+        # so the production path is unchanged.
+        env:
+          JPCITE_PREFLIGHT_ALLOW_MISSING_DB: "1"
         run: python scripts/ops/pre_deploy_verify.py
 
       - name: Run production deploy GO gate

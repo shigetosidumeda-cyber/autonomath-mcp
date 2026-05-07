@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sqlite3
 import sys
 from datetime import UTC, datetime
@@ -19,6 +20,19 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_DB = REPO_ROOT / "autonomath.db"
 DEFAULT_MIGRATIONS_DIR = REPO_ROOT / "scripts" / "migrations"
+
+# CI-only escape hatch. The 9.7 GB autonomath.db lives on Fly volumes and is
+# never present on a fresh GitHub Actions runner checkout, so the standard
+# database existence audit is meaningless there. When this env-var is set,
+# missing-DB is downgraded from a hard `database:missing` issue to a
+# `skipped:missing_db_in_ci` marker that keeps `ok=True`. Production boot does
+# not export this env-var, so the production path is unchanged.
+SKIP_MISSING_DB_ENV = "JPCITE_PREFLIGHT_ALLOW_MISSING_DB"
+
+
+def _skip_missing_db_enabled() -> bool:
+    return os.environ.get(SKIP_MISSING_DB_ENV, "").strip().lower() in {"1", "true", "yes", "on"}
+
 
 REQUIRED_MIGRATIONS = (
     "172_corpus_snapshot.sql",
@@ -267,6 +281,14 @@ def build_report(
             canonical_pairs = audit_canonical_pairs(conn)
     except FileNotFoundError:
         report["database_exists"] = False
+        if _skip_missing_db_enabled():
+            # CI runner does not (and should not) carry the 9.7 GB autonomath.db
+            # — `JPCITE_PREFLIGHT_ALLOW_MISSING_DB=1` declares that the caller
+            # accepts a degraded preflight that still considers the run OK.
+            report["skipped"] = "missing_db_in_ci"
+            report["skip_reason_env"] = SKIP_MISSING_DB_ENV
+            report["ok"] = not report["issues"]
+            return report
         report["issues"].append("database:missing")
         report["ok"] = False
         return report
@@ -319,6 +341,8 @@ def main(argv: list[str] | None = None) -> int:
     else:
         print(f"ok={report['ok']}")
         print(f"db={report['database']}")
+        if "skipped" in report:
+            print(f"skipped={report['skipped']} env={report.get('skip_reason_env', '')}")
         print(f"required_migrations={REQUIRED_MIGRATIONS}")
         print(f"177_active_files={report['migration_files_177']['active_files']}")
         for pair in report.get("canonical_table_pairs", {}).get("pairs", []):

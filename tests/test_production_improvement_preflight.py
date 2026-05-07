@@ -260,3 +260,71 @@ def test_main_warn_only_exits_zero_on_ng(tmp_path, capsys):
 
     assert exit_code == 0
     assert "database:missing" in capsys.readouterr().out
+
+
+def test_build_report_missing_db_with_skip_env_returns_ok(tmp_path, monkeypatch):
+    """CI runner case: env-var declares missing DB is acceptable."""
+    module = _load_module()
+    missing_db = tmp_path / "missing.db"
+    migrations_dir = _empty_migrations_dir(tmp_path / "migrations")
+
+    monkeypatch.setenv(module.SKIP_MISSING_DB_ENV, "1")
+
+    report = module.build_report(missing_db, migrations_dir=migrations_dir)
+
+    assert report["ok"] is True
+    assert report["issues"] == []
+    assert report["database_exists"] is False
+    assert report["skipped"] == "missing_db_in_ci"
+    assert report["skip_reason_env"] == module.SKIP_MISSING_DB_ENV
+
+
+def test_build_report_missing_db_without_skip_env_fails(tmp_path, monkeypatch):
+    """Production boot path: no env-var → missing DB is a hard fail."""
+    module = _load_module()
+    missing_db = tmp_path / "missing.db"
+    migrations_dir = _empty_migrations_dir(tmp_path / "migrations")
+
+    monkeypatch.delenv(module.SKIP_MISSING_DB_ENV, raising=False)
+
+    report = module.build_report(missing_db, migrations_dir=migrations_dir)
+
+    assert report["ok"] is False
+    assert "database:missing" in report["issues"]
+    assert "skipped" not in report
+
+
+def test_build_report_skip_env_does_not_mask_other_issues(tmp_path, monkeypatch):
+    """Skip-env only suppresses missing-DB; other migration_files issues still surface."""
+    module = _load_module()
+    missing_db = tmp_path / "missing.db"
+    migrations_dir = _empty_migrations_dir(tmp_path / "migrations")
+    # Two active 177_*.sql files trigger `migration_files:177_active_collision`,
+    # which is independent of DB presence.
+    (migrations_dir / "177_psf_p0_identity_ingest_ops.sql").write_text("-- ok\n")
+    (migrations_dir / "177_evidence_packet_persistence.sql").write_text("-- conflict\n")
+
+    monkeypatch.setenv(module.SKIP_MISSING_DB_ENV, "1")
+
+    report = module.build_report(missing_db, migrations_dir=migrations_dir)
+
+    assert report["ok"] is False
+    assert "migration_files:177_active_collision" in report["issues"]
+    assert "database:missing" not in report["issues"]
+
+
+def test_main_skip_env_exits_zero_without_warn_only(tmp_path, monkeypatch, capsys):
+    """End-to-end: skip-env → main() exits 0 without --warn-only."""
+    module = _load_module()
+    missing_db = tmp_path / "missing.db"
+    migrations_dir = _empty_migrations_dir(tmp_path / "migrations")
+
+    monkeypatch.setenv(module.SKIP_MISSING_DB_ENV, "1")
+
+    exit_code = module.main(
+        ["--db", str(missing_db), "--migrations-dir", str(migrations_dir), "--json"]
+    )
+
+    captured = capsys.readouterr().out
+    assert exit_code == 0
+    assert '"skipped": "missing_db_in_ci"' in captured
