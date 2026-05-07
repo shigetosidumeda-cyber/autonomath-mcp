@@ -24,13 +24,27 @@ _AGENT_OPENAPI_PATHS = [
 ]
 
 
-def test_openapi_export_matches_committed_spec(tmp_path: Path) -> None:
-    out = tmp_path / "openapi.json"
+def _stable_env() -> dict[str, str]:
     env = os.environ.copy()
     env["PYTHONDONTWRITEBYTECODE"] = "1"
+    env["AUTONOMATH_EXPERIMENTAL_API_ENABLED"] = "0"
+    return env
+
+
+def test_openapi_export_matches_committed_spec(tmp_path: Path) -> None:
+    out = tmp_path / "openapi.json"
+    site_out = tmp_path / "site-openapi.json"
+    env = _stable_env()
 
     subprocess.run(
-        [sys.executable, "scripts/export_openapi.py", "--out", str(out)],
+        [
+            sys.executable,
+            "scripts/export_openapi.py",
+            "--out",
+            str(out),
+            "--site-out",
+            str(site_out),
+        ],
         cwd=REPO_ROOT,
         env=env,
         check=True,
@@ -41,19 +55,27 @@ def test_openapi_export_matches_committed_spec(tmp_path: Path) -> None:
     assert out.read_text(encoding="utf-8") == (
         REPO_ROOT / "docs" / "openapi" / "v1.json"
     ).read_text(encoding="utf-8")
+    assert site_out.read_text(encoding="utf-8") == out.read_text(encoding="utf-8")
 
 
-def test_served_openapi_json_matches_committed_spec(client) -> None:
+def test_served_openapi_json_matches_committed_stable_spec(monkeypatch) -> None:
+    from fastapi.testclient import TestClient
+
+    from jpintel_mcp.api.main import create_app
+
+    monkeypatch.setenv("AUTONOMATH_EXPERIMENTAL_API_ENABLED", "0")
+    client = TestClient(create_app())
     response = client.get("/v1/openapi.json")
     assert response.status_code == 200, response.text
     committed = json.loads((REPO_ROOT / "docs" / "openapi" / "v1.json").read_text(encoding="utf-8"))
     assert response.json() == committed
 
 
-def test_static_agent_openapi_matches_dynamic_projection() -> None:
+def test_static_agent_openapi_matches_dynamic_stable_projection(monkeypatch) -> None:
     from jpintel_mcp.api.main import create_app
     from jpintel_mcp.api.openapi_agent import build_agent_openapi_schema
 
+    monkeypatch.setenv("AUTONOMATH_EXPERIMENTAL_API_ENABLED", "0")
     dynamic_schema = build_agent_openapi_schema(create_app().openapi())
 
     for path in _AGENT_OPENAPI_PATHS:
@@ -63,11 +85,18 @@ def test_static_agent_openapi_matches_dynamic_projection() -> None:
 
 def test_dynamic_openapi_exposes_company_public_artifacts(tmp_path: Path) -> None:
     out = tmp_path / "openapi.json"
-    env = os.environ.copy()
-    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    site_out = tmp_path / "site-openapi.json"
+    env = _stable_env()
 
     subprocess.run(
-        [sys.executable, "scripts/export_openapi.py", "--out", str(out)],
+        [
+            sys.executable,
+            "scripts/export_openapi.py",
+            "--out",
+            str(out),
+            "--site-out",
+            str(site_out),
+        ],
         cwd=REPO_ROOT,
         env=env,
         check=True,
@@ -105,8 +134,30 @@ def test_evidence_prefetch_openapi_has_non_empty_response_schema() -> None:
         assert operation["responses"]["200"]["content"]["application/json"]["example"]
 
 
-def test_artifact_openapi_exposes_value_pack_artifacts() -> None:
-    schema = json.loads((REPO_ROOT / "docs" / "openapi" / "v1.json").read_text(encoding="utf-8"))
+def test_experimental_openapi_export_exposes_value_pack_artifacts(tmp_path: Path) -> None:
+    out = tmp_path / "openapi-experimental.json"
+    site_out = tmp_path / "site-openapi-experimental.json"
+    env = os.environ.copy()
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    env["AUTONOMATH_EXPERIMENTAL_API_ENABLED"] = "1"
+
+    subprocess.run(
+        [
+            sys.executable,
+            "scripts/export_openapi.py",
+            "--out",
+            str(out),
+            "--site-out",
+            str(site_out),
+        ],
+        cwd=REPO_ROOT,
+        env=env,
+        check=True,
+        text=True,
+        capture_output=True,
+    )
+
+    schema = json.loads(out.read_text(encoding="utf-8"))
     houjin = schema["paths"]["/v1/artifacts/houjin_dd_pack"]["post"]
     strategy = schema["paths"]["/v1/artifacts/application_strategy_pack"]["post"]
 
@@ -114,6 +165,7 @@ def test_artifact_openapi_exposes_value_pack_artifacts() -> None:
     assert "法人DD pack artifact" in houjin["summary"]
     assert strategy["tags"] == ["artifacts"]
     assert "制度申請 strategy pack artifact" in strategy["summary"]
+    assert site_out.read_text(encoding="utf-8") == out.read_text(encoding="utf-8")
 
 
 def test_evidence_prefetch_openapi_describes_context_estimate_limits() -> None:

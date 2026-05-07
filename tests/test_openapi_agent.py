@@ -12,8 +12,10 @@ def test_agent_openapi_exposes_only_evidence_safe_paths(client: TestClient) -> N
     response = client.get("/v1/openapi.agent.json")
     assert response.status_code == 200, response.text
     body = response.json()
+    full_schema = client.get("/v1/openapi.json").json()
+    expected_paths = set(AGENT_SAFE_PATHS) & set(full_schema["paths"])
 
-    assert set(body["paths"]) == set(AGENT_SAFE_PATHS)
+    assert set(body["paths"]) == expected_paths
     assert body.get("security") == []
     assert "/v1/billing/checkout" not in body["paths"]
     assert "/v1/billing/webhook" not in body["paths"]

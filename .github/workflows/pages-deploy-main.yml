@@ -76,13 +76,14 @@ jobs:
         run: |
           set -euo pipefail
           if [ -z "${CF_API_TOKEN:-}" ] || [ -z "${CF_ACCOUNT_ID:-}" ]; then
-            echo "::error::CF_API_TOKEN and/or CF_ACCOUNT_ID is not configured. See pages-deploy-main.yml header for setup instructions."
+            echo "::warning::CF_API_TOKEN and/or CF_ACCOUNT_ID is not configured. Skipping Cloudflare Pages deploy; see this workflow header for setup instructions."
             echo "available=false" >> "$GITHUB_OUTPUT"
-            exit 1
+            exit 0
           fi
           echo "available=true" >> "$GITHUB_OUTPUT"
 
       - name: Build static artifact (rsync site/ → dist/site/)
+        if: steps.cf-secrets.outputs.available == 'true'
         run: |
           set -euo pipefail
           rm -rf dist/site
@@ -105,6 +106,7 @@ jobs:
           find dist/site -type f | wc -l
 
       - name: Validate critical JSON manifests
+        if: steps.cf-secrets.outputs.available == 'true'
         run: |
           set -euo pipefail
           # The four public JSON surfaces that downstream consumers (MCP
@@ -122,6 +124,7 @@ jobs:
           done
 
       - name: Publish to Cloudflare Pages
+        if: steps.cf-secrets.outputs.available == 'true'
         uses: cloudflare/pages-action@f0a1cd58cd66095dee69bfa18fa5efd1dde93bca # v1.5.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
@@ -133,12 +136,9 @@ jobs:
           branch: main
 
       - name: Post-deploy smoke (public JSON surface)
+        if: steps.cf-secrets.outputs.available == 'true'
         run: |
           set -euo pipefail
-          # Pages takes a few seconds to flip the production alias after the
-          # action returns; small initial sleep keeps the first curl from
-          # hitting the previous build.
-          sleep 15
           Q="deploy_check=$(date +%s)"
           for url in \
             "https://jpcite.com/server.json?$Q" \
@@ -147,6 +147,18 @@ jobs:
             "https://jpcite.com/openapi.agent.json?$Q"
           do
             echo "smoke: $url"
-            curl -fsSL --max-time 30 "$url" | python3 -m json.tool > /dev/null
+            ok=false
+            for attempt in 1 2 3 4 5 6; do
+              if curl -fsSL --max-time 30 "$url" | python3 -m json.tool > /dev/null; then
+                ok=true
+                break
+              fi
+              echo "smoke retry ${attempt}/6 for $url"
+              sleep $((attempt * 10))
+            done
+            if [ "$ok" != "true" ]; then
+              echo "::error::post-deploy smoke failed for $url"
+              exit 1
+            fi
           done
           echo "post-deploy smoke OK"

@@ -39,7 +39,7 @@ PROBE_SCRIPT = SCRIPTS_DIR / "probe_runtime_distribution.py"
 
 EXPECTED_TOOL_COUNT_DEFAULT_GATES = 139
 EXPECTED_ROUTE_COUNT = 226
-EXPECTED_OPENAPI_PATH_COUNT = 186
+EXPECTED_OPENAPI_PATH_COUNT = 184
 
 EXPECTED_WAVE6_P0_CANDIDATES = {
     "server.json",
@@ -474,6 +474,10 @@ def test_runtime_probe_agrees_with_manifest() -> None:
 
     env = os.environ.copy()
     env.setdefault("AUTONOMATH_ENABLED", "1")
+    # conftest enables experimental API routes for normal TestClient coverage.
+    # The distribution manifest pins the committed stable OpenAPI artifact, so
+    # the subprocess probe must explicitly use the same stable gate posture.
+    env["AUTONOMATH_EXPERIMENTAL_API_ENABLED"] = "0"
     proc = subprocess.run(
         [_venv_python(), str(PROBE_SCRIPT)],
         capture_output=True,

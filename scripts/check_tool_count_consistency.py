@@ -3,13 +3,15 @@
 
 Customers fact-check the tool count across the marketing site, llms.txt
 files, README, and manifests. If any of those drift from the actual
-runtime tool count (`mcp._tool_manager.list_tools()`), customers see
-inconsistent numbers and lose trust.
+public distribution manifest, customers see inconsistent numbers and lose
+trust.
 
-This script is a single source of truth: it asks the runtime for the
-canonical tool count, then greps the user-visible surfaces for any
-*other* count that looks like a tool reference. If it finds drift, it
-prints the offending lines and exits 1 so CI / pre-commit can block it.
+This script treats ``scripts/distribution_manifest.yml`` as the public
+source of truth, then greps the user-visible surfaces for any *other*
+count that looks like a top-line tool reference. It also asks the runtime
+for the actual MCP tool count and asserts runtime >= public count. Runtime
+may be higher while post-manifest tools are held for the next intentional
+public count bump.
 
 Excluded surfaces:
 - ``site/tos.html``, ``site/tokushoho.html``, ``site/privacy.html``,
@@ -26,7 +28,7 @@ Usage:
     .venv/bin/python scripts/check_tool_count_consistency.py --fix-list
 
 Exit codes:
-    0  All references match the runtime canonical count
+    0  All references match the public manifest count and runtime has at least that many tools
     1  Drift detected (script prints offending file:line entries)
     2  Runtime introspection failed
 """
@@ -40,6 +42,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+MANIFEST_PATH = REPO_ROOT / "scripts" / "distribution_manifest.yml"
 
 # User-visible roots that should track the canonical count.
 INCLUDE_ROOTS = [
@@ -99,7 +102,20 @@ TOOL_COUNT_PATTERNS = [
 # considered a candidate. Sub-counts like "7 tools" describing a
 # subgroup are excluded by being out of this range; if you add a tool
 # group with 25-50 tools, refine this further.
-SUSPECT_RANGE = range(50, 151)
+SUSPECT_RANGE = range(50, 201)
+
+
+def public_manifest_tool_count() -> int:
+    """Return the public MCP tool count pinned by distribution_manifest.yml."""
+    text = MANIFEST_PATH.read_text(encoding="utf-8")
+    match = re.search(r"^tool_count_default_gates:\s*(\d{1,3})\b", text, re.MULTILINE)
+    if not match:
+        sys.stderr.write(
+            "[check_tool_count_consistency] tool_count_default_gates missing from "
+            f"{MANIFEST_PATH.relative_to(REPO_ROOT)}\n"
+        )
+        sys.exit(2)
+    return int(match.group(1))
 
 
 def runtime_tool_count() -> int:
@@ -112,6 +128,11 @@ def runtime_tool_count() -> int:
         "-c",
         (
             "import os; os.environ.setdefault('AUTONOMATH_ENABLED','1');"
+            "os.environ.setdefault('AUTONOMATH_EXPERIMENTAL_MCP_ENABLED','1');"
+            "os.environ.setdefault('AUTONOMATH_WAVE24_FIRST_HALF_ENABLED','1');"
+            "os.environ.setdefault('AUTONOMATH_WAVE24_SECOND_HALF_ENABLED','1');"
+            "os.environ.setdefault('AUTONOMATH_INTEL_COMPOSITE_ENABLED','1');"
+            "os.environ.setdefault('AUTONOMATH_INTEL_WAVE32_ENABLED','1');"
             "from jpintel_mcp.mcp.server import mcp;"
             "print(len(mcp._tool_manager.list_tools()))"
         ),
@@ -186,18 +207,28 @@ def main() -> int:
         "--canonical",
         type=int,
         default=None,
-        help="Override runtime probe (use with care; for CI without an installed venv).",
+        help="Override the public manifest count (use with care).",
     )
     args = parser.parse_args()
 
-    canonical = args.canonical if args.canonical is not None else runtime_tool_count()
-    drift = find_drift(canonical)
+    public_count = args.canonical if args.canonical is not None else public_manifest_tool_count()
+    runtime_count = runtime_tool_count()
+
+    if runtime_count < public_count:
+        print(
+            f"[check_tool_count_consistency] DRIFT — public manifest count is "
+            f"{public_count} tools, but runtime exposes only {runtime_count} tools."
+        )
+        return 1
+
+    drift = find_drift(public_count)
 
     if not drift:
         if not args.fix_list:
             print(
-                f"[check_tool_count_consistency] OK — all references match "
-                f"runtime canonical count ({canonical} tools)."
+                f"[check_tool_count_consistency] OK — all references match public "
+                f"manifest count ({public_count} tools); runtime exposes "
+                f"{runtime_count} tools."
             )
         return 0
 
@@ -207,9 +238,9 @@ def main() -> int:
         return 1
 
     print(
-        f"[check_tool_count_consistency] DRIFT — runtime canonical = "
-        f"{canonical} tools, but found {len(drift)} occurrences of other "
-        f"counts in user-visible surfaces:"
+        f"[check_tool_count_consistency] DRIFT — public manifest count = "
+        f"{public_count} tools, runtime exposes {runtime_count} tools, but "
+        f"found {len(drift)} occurrences of other counts in user-visible surfaces:"
     )
     for fp, line_no, line, found in drift:
         rel = fp.relative_to(REPO_ROOT)

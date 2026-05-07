@@ -44,29 +44,23 @@ _ENV_KEYS = (
 )
 
 
-def test_main_allows_artifact_backend_to_ship_as_separate_packet() -> None:
+def test_main_keeps_value_pack_artifacts_behind_experimental_gate() -> None:
     code = textwrap.dedent(
         """
-        import builtins
+        import os
 
-        original_import = builtins.__import__
-
-        def import_without_artifact_packet(name, globals=None, locals=None, fromlist=(), level=0):
-            if name == "jpintel_mcp.api.artifacts":
-                raise ModuleNotFoundError(
-                    "No module named 'jpintel_mcp.api.artifacts'",
-                    name="jpintel_mcp.api.artifacts",
-                )
-            return original_import(name, globals, locals, fromlist, level)
-
-        builtins.__import__ = import_without_artifact_packet
+        os.environ["AUTONOMATH_EXPERIMENTAL_API_ENABLED"] = "0"
 
         import jpintel_mcp.api.main as main
 
-        assert main.artifacts_router is None
         app = main.create_app()
         paths = {route.path for route in app.routes}
         assert "/v1/artifacts/compatibility_table" not in paths
+        assert "/v1/artifacts/application_strategy_pack" not in paths
+        assert "/v1/artifacts/houjin_dd_pack" not in paths
+        assert "/v1/artifacts/company_public_baseline" in paths
+        assert "/v1/artifacts/company_folder_brief" in paths
+        assert "/v1/artifacts/company_public_audit_pack" in paths
         """
     )
     result = subprocess.run(

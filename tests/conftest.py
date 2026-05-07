@@ -22,6 +22,36 @@ os.environ["RATE_LIMIT_FREE_PER_DAY"] = "100"
 # 6th anon call in a chain. The dedicated test file (test_rate_limit.py)
 # clears this var inside its own fixtures so it CAN exercise the middleware.
 os.environ.setdefault("RATE_LIMIT_BURST_DISABLED", "1")
+# Cluster A (R8 audit 2026-05-07): the experimental router include in
+# `api/main.py:_include_experimental_router` defaults the gate to OFF, so
+# routes such as `/v1/intel/*`, `/v1/artifacts/*`, `/v1/calculator/savings`
+# return 404 `route_not_found` under TestClient unless the env flag is set
+# before app import. R8_PYTEST_BASELINE_FAIL_AUDIT counted 108 fails on
+# this single fingerprint across 23 test files. Live re-run with the flag
+# set converts every one of them back to PASS, so we activate it here at
+# module-import scope (fixture scope is too late because `create_app()` is
+# called by client fixtures that import the module before the fixture body
+# runs). Production boot is unaffected: the flag is read fresh from the
+# real env on Fly.io, where it is intentionally off until each surface is
+# launch-cleared. Test-session-only.
+os.environ.setdefault("AUTONOMATH_EXPERIMENTAL_API_ENABLED", "1")
+# Wave 21-23 default-ON gates: source already defaults these to ON
+# (`composition_tools.py:_ENABLED`, `wave22_tools.py:_ENABLED`,
+# `industry_packs.py:_ENABLED` all read `os.environ.get(..., "1")`), but
+# pinning them here keeps the flag matrix explicit and makes test-runner
+# overrides obvious. Re-pinning to "1" is a no-op when source default is
+# already "1"; if a future config change flips a default to "0", these
+# lines keep the test surface stable instead of silently regressing.
+os.environ.setdefault("AUTONOMATH_COMPOSITION_ENABLED", "1")
+os.environ.setdefault("AUTONOMATH_WAVE22_ENABLED", "1")
+os.environ.setdefault("AUTONOMATH_INDUSTRY_PACKS_ENABLED", "1")
+# Snapshot tool (DEEP-22) — config.py defaults autonomath_snapshot_enabled
+# to True; mirror at env-var layer so any os.getenv-style reader (e.g.
+# autonomath_tools.snapshot_tool) sees a truthy value under TestClient.
+os.environ.setdefault("AUTONOMATH_SNAPSHOT_ENABLED", "1")
+# AUTONOMATH_REASONING_ENABLED + AUTONOMATH_36_KYOTEI_ENABLED stay OFF
+# by default (production posture per CLAUDE.md "broken-tool gates" /
+# 36協定 launch gate). Tests that need them set them locally.
 
 # purge any already-imported jpintel_mcp modules so Settings re-reads env
 for mod in list(sys.modules):

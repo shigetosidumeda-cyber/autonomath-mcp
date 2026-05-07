@@ -74,7 +74,7 @@ jobs:
         run: |
           set +e
           python3 \
-            tools/offline/_inbox/value_growth_dual/_executable_artifacts_2026_05_07/deep60_lane_enforcer/lane_policy_enforcer.py \
+            scripts/ops/lane_policy_enforcer.py \
             --check \
             --lane "${{ steps.lane.outputs.lane }}" \
             --session "ci/${GITHUB_RUN_ID}" \
@@ -87,6 +87,7 @@ jobs:
 
       - name: Comment on PR if violations
         if: ${{ github.event_name == 'pull_request' && steps.check.outputs.rc != '0' }}
+        continue-on-error: true
         uses: actions/github-script@v7
         with:
           script: |

@@ -5919,7 +5919,7 @@
       },
       "DeepHealthResponse": {
         "additionalProperties": true,
-        "description": "``GET /v1/am/health/deep`` \u2014 10-check aggregate.",
+        "description": "``GET /v1/am/health/deep`` \u2014 10-check aggregate + Sentry probe.\n\n``sentry_active`` (read-only) reflects whether ``_init_sentry`` succeeded\nat lifespan startup. False when ``SENTRY_DSN`` is unset or the two-controlled\n(DSN \u2227 ``JPINTEL_ENV=prod``) was not satisfied. Aggregate ``status`` is\nintentionally unaffected \u2014 Sentry being dark is a meta-signal for the\nsupport team, not a fail/warn for the API itself.",
         "properties": {
           "checks": {
             "additionalProperties": true,
@@ -5936,6 +5936,18 @@
               }
             ],
             "title": "Generated At"
+          },
+          "sentry_active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "True iff Sentry SDK initialised at API lifespan startup.",
+            "title": "Sentry Active"
           },
           "status": {
             "description": "ok | degraded | unhealthy",
@@ -8872,95 +8884,6 @@
         "title": "SearchResponse",
         "type": "object"
       },
-      "InvoiceValidateRequest": {
-        "description": "Body for POST /v1/accounting/invoice-validate.",
-        "properties": {
-          "invoice_number": {
-            "description": "T + 13\u6841\u306e\u9069\u683c\u8acb\u6c42\u66f8\u767a\u884c\u4e8b\u696d\u8005\u767b\u9332\u756a\u53f7 (\u4f8b: T1234567890123)",
-            "maxLength": 14,
-            "minLength": 14,
-            "title": "Invoice Number",
-            "type": "string"
-          }
-        },
-        "required": [
-          "invoice_number"
-        ],
-        "title": "InvoiceValidateRequest",
-        "type": "object"
-      },
-      "InvoiceValidateResponse": {
-        "description": "Invoice validation result (future shape).",
-        "properties": {
-          "address": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Address"
-          },
-          "company_kana": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Company Kana"
-          },
-          "company_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Company Name"
-          },
-          "invoice_number": {
-            "title": "Invoice Number",
-            "type": "string"
-          },
-          "is_registered": {
-            "title": "Is Registered",
-            "type": "boolean"
-          },
-          "last_synced": {
-            "title": "Last Synced",
-            "type": "string"
-          },
-          "registration_date": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Registration Date"
-          }
-        },
-        "required": [
-          "invoice_number",
-          "is_registered",
-          "registration_date",
-          "company_name",
-          "company_kana",
-          "address",
-          "last_synced"
-        ],
-        "title": "InvoiceValidateResponse",
-        "type": "object"
-      },
       "KeyIssueRequest": {
         "properties": {
           "session_id": {
@@ -9338,50 +9261,6 @@
           "results"
         ],
         "title": "LawSearchResponse",
-        "type": "object"
-      },
-      "LegalItemResponse": {
-        "description": "Canonical legal article lookup result (future shape).",
-        "properties": {
-          "article_number": {
-            "title": "Article Number",
-            "type": "string"
-          },
-          "article_text": {
-            "title": "Article Text",
-            "type": "string"
-          },
-          "fetched_at": {
-            "title": "Fetched At",
-            "type": "string"
-          },
-          "law_name": {
-            "title": "Law Name",
-            "type": "string"
-          },
-          "law_number": {
-            "title": "Law Number",
-            "type": "string"
-          },
-          "revision_date": {
-            "title": "Revision Date",
-            "type": "string"
-          },
-          "source_url": {
-            "title": "Source Url",
-            "type": "string"
-          }
-        },
-        "required": [
-          "law_name",
-          "law_number",
-          "article_number",
-          "article_text",
-          "revision_date",
-          "source_url",
-          "fetched_at"
-        ],
-        "title": "LegalItemResponse",
         "type": "object"
       },
       "LoanProgram": {
@@ -14423,58 +14302,6 @@
           }
         },
         "summary": "Readyz"
-      }
-    },
-    "/v1/accounting/invoice-validate": {
-      "post": {
-        "operationId": "validate_invoice_v1_accounting_invoice_validate_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/InvoiceValidateRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InvoiceValidateResponse"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          },
-          "501": {
-            "content": {
-              "application/json": {
-                "example": {
-                  "detail": "endpoint under development, target W7",
-                  "eta": "2026-06-10"
-                }
-              }
-            },
-            "description": "Endpoint scaffolded, implementation pending."
-          }
-        },
-        "summary": "Validate Invoice",
-        "tags": [
-          "accounting (preview)"
-        ]
       }
     },
     "/v1/advisors/match": {
@@ -26757,93 +26584,6 @@
         "summary": "Get Related Programs",
         "tags": [
           "laws"
-        ]
-      }
-    },
-    "/v1/legal/items": {
-      "get": {
-        "operationId": "get_legal_item_v1_legal_items_get",
-        "parameters": [
-          {
-            "description": "\u6cd5\u4ee4\u540d (\u4f8b: \u52b4\u50cd\u57fa\u6e96\u6cd5)",
-            "in": "query",
-            "name": "law",
-            "required": true,
-            "schema": {
-              "description": "\u6cd5\u4ee4\u540d (\u4f8b: \u52b4\u50cd\u57fa\u6e96\u6cd5)",
-              "maxLength": 200,
-              "title": "Law",
-              "type": "string"
-            }
-          },
-          {
-            "description": "\u6761\u6587\u756a\u53f7 (\u4f8b: 15, 15-1)",
-            "in": "query",
-            "name": "article",
-            "required": true,
-            "schema": {
-              "description": "\u6761\u6587\u756a\u53f7 (\u4f8b: 15, 15-1)",
-              "maxLength": 40,
-              "title": "Article",
-              "type": "string"
-            }
-          },
-          {
-            "description": "\u4efb\u610f\u306e subject filter (\u4f8b: \u8cc3\u91d1)",
-            "in": "query",
-            "name": "subject",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "maxLength": 200,
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "\u4efb\u610f\u306e subject filter (\u4f8b: \u8cc3\u91d1)",
-              "title": "Subject"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LegalItemResponse"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          },
-          "501": {
-            "content": {
-              "application/json": {
-                "example": {
-                  "detail": "endpoint under development, target W6",
-                  "eta": "2026-05-27"
-                }
-              }
-            },
-            "description": "Endpoint scaffolded, implementation pending."
-          }
-        },
-        "summary": "Get Legal Item",
-        "tags": [
-          "legal (preview)"
         ]
       }
     },
