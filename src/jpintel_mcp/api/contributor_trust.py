@@ -25,7 +25,7 @@ import logging
 import sqlite3
 import threading
 import time
-from typing import Annotated, Any
+from typing import Annotated, Any, cast
 
 from fastapi import APIRouter, HTTPException
 from fastapi import Path as PathParam
@@ -133,7 +133,7 @@ def _fetch_row(conn: sqlite3.Connection, contributor_id: str) -> sqlite3.Row | N
             "FROM contributor_trust WHERE contributor_id = ?",
             (contributor_id,),
         )
-        return cur.fetchone()
+        return cast("sqlite3.Row | None", cur.fetchone())
     except sqlite3.OperationalError as exc:
         _log.warning("contributor_trust SELECT failed: %s", exc)
         return None

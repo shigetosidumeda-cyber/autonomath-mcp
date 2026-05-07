@@ -30,16 +30,14 @@ Widget requests have per-key origin allowlists and must reach
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from fastapi.responses import JSONResponse
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
 from jpintel_mcp.config import settings
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-
     from starlette.requests import Request
     from starlette.responses import Response
 
@@ -88,7 +86,7 @@ class OriginEnforcementMiddleware(BaseHTTPMiddleware):
     DB-touching handler).
     """
 
-    async def dispatch(self, request: Request, call_next: Callable[..., Any]) -> Response:
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         # Same-origin / non-browser callers omit Origin entirely. Pass.
         origin = request.headers.get("origin")
         if not origin:

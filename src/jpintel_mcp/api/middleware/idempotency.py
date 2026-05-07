@@ -60,12 +60,10 @@ import time
 from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, Any
 
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.responses import Response
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-
     from fastapi import Request
 
 logger = logging.getLogger("jpintel.idempotency")
@@ -586,7 +584,7 @@ class IdempotencyMiddleware(BaseHTTPMiddleware):
     """
 
     async def dispatch(
-        self, request: Request, call_next: Callable[..., Any]
+        self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
         # Only POST requests are eligible.
         if request.method != "POST":
@@ -860,7 +858,7 @@ class IdempotencyMiddleware(BaseHTTPMiddleware):
                 # Drain the streaming body so we can serialise + replay it,
                 # then re-attach a fresh body iterator.
                 resp_body = b""
-                async for chunk in response.body_iterator:
+                async for chunk in response.body_iterator:  # type: ignore[attr-defined]
                     resp_body += chunk
                 blob = _serialise_response(
                     response.status_code,

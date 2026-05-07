@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import contextlib
 import sqlite3
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any, Literal, cast
 
 from fastapi import APIRouter, Body, HTTPException, Path, Query, Request, status
 from fastapi.responses import JSONResponse
@@ -412,12 +412,15 @@ def _l4_get_or_compute_safe(
     routers don't grow a shared base module just for one helper.
     """
     try:
-        return get_or_compute(
-            cache_key=cache_key,
-            tool=tool,
-            params=params,
-            compute=compute,
-            ttl=ttl,
+        return cast(
+            "dict[str, Any]",
+            get_or_compute(
+                cache_key=cache_key,
+                tool=tool,
+                params=params,
+                compute=compute,
+                ttl=ttl,
+            ),
         )
     except sqlite3.OperationalError as exc:
         if "no such table" not in str(exc):
@@ -425,12 +428,15 @@ def _l4_get_or_compute_safe(
         from jpintel_mcp.api.stats import _ensure_l4_table
 
         _ensure_l4_table()
-        return get_or_compute(
-            cache_key=cache_key,
-            tool=tool,
-            params=params,
-            compute=compute,
-            ttl=ttl,
+        return cast(
+            "dict[str, Any]",
+            get_or_compute(
+                cache_key=cache_key,
+                tool=tool,
+                params=params,
+                compute=compute,
+                ttl=ttl,
+            ),
         )
 
 
@@ -533,10 +539,13 @@ def rest_search_tax_incentives(
             limit=limit,
             offset=offset,
         )
-        return _apply_envelope(
-            "search_tax_incentives",
-            result,
-            query=query or natural_query,
+        return cast(
+            "dict[str, Any]",
+            _apply_envelope(
+                "search_tax_incentives",
+                result,
+                query=query or natural_query,
+            ),
         )
 
     body = _l4_get_or_compute_safe(

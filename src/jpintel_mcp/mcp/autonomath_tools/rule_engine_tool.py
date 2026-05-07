@@ -171,8 +171,10 @@ def _is_pair_specific(
     pp = row["pair_program_id"]
     if pair_id is None:
         # caller asked about a single program; pair-specific = scope matches and pair is NULL
-        return sp == program_id and pp is None
-    return (sp == program_id and pp == pair_id) or (sp == pair_id and pp == program_id)
+        return bool(sp == program_id and pp is None)
+    return bool(
+        (sp == program_id and pp == pair_id) or (sp == pair_id and pp == program_id)
+    )
 
 
 def _evidence_row(
@@ -201,9 +203,13 @@ def _evidence_row(
         effect = "info"
     # Rule 2: when querying a specific pair, downgrade non-pair-specific
     # deny / allow / review verdicts so the pair-specific verdict wins.
-    if pair_id is not None and not _is_pair_specific(row, program_id, pair_id):
-        if raw_verdict in ("deny", "allow", "review", "unknown") and kind != "absolute":
-            effect = "info"
+    if (
+        pair_id is not None
+        and not _is_pair_specific(row, program_id, pair_id)
+        and raw_verdict in ("deny", "allow", "review", "unknown")
+        and kind != "absolute"
+    ):
+        effect = "info"
     return {
         "rule_id": row["rule_id"],
         "rule_kind": row["kind"],

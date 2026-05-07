@@ -249,9 +249,10 @@ def find_l4_params_for_digest(
     for (params_json,) in cur:
         if _params_digest_of(params_json) == params_digest:
             try:
-                return json.loads(params_json)
+                parsed = json.loads(params_json)
             except (TypeError, ValueError):
                 return None
+            return parsed if isinstance(parsed, dict) else None
     return None
 
 

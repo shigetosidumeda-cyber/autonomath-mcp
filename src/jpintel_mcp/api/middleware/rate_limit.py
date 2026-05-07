@@ -70,13 +70,11 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 from fastapi.responses import JSONResponse
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
 from jpintel_mcp.config import settings
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-
     from fastapi import Request
     from starlette.responses import Response
 
@@ -289,7 +287,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     """
 
     async def dispatch(
-        self, request: Request, call_next: Callable[..., Any]
+        self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
         # Whitelist: never throttle health probes, Stripe webhooks, or
         # CORS preflight. The Stripe webhook in particular sees bursts at

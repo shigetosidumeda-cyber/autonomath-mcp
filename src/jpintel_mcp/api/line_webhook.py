@@ -76,7 +76,7 @@ import json
 import logging
 import sqlite3  # noqa: TC003 (runtime: helpers below take sqlite3.Connection)
 from datetime import UTC, datetime, timedelta
-from typing import Annotated, Any
+from typing import Annotated, Any, cast
 
 import orjson
 from fastapi import APIRouter, Header, HTTPException, Request, status
@@ -183,7 +183,7 @@ def _ensure_line_user(
         (line_user_id,),
     ).fetchone()
     if row is not None:
-        return row
+        return cast("sqlite3.Row", row)
     now = datetime.now(UTC).isoformat()
     reset_at = _next_jst_month_reset(datetime.now(UTC))
     conn.execute(
@@ -194,10 +194,13 @@ def _ensure_line_user(
         (line_user_id, display_name, "ja", now, "free", 0, reset_at, now),
     )
     conn.commit()
-    return conn.execute(
-        "SELECT * FROM line_users WHERE line_user_id = ?",
-        (line_user_id,),
-    ).fetchone()
+    return cast(
+        "sqlite3.Row",
+        conn.execute(
+            "SELECT * FROM line_users WHERE line_user_id = ?",
+            (line_user_id,),
+        ).fetchone(),
+    )
 
 
 def _persist_flow_state(
@@ -287,7 +290,7 @@ def _redact_payload(event: dict[str, Any]) -> dict[str, Any]:
             return [_trunc(x) for x in v]
         return v
 
-    return _trunc(redacted)
+    return cast("dict[str, Any]", _trunc(redacted))
 
 
 def _log_event(

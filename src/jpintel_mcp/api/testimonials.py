@@ -34,12 +34,12 @@ from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, ConfigDict, Field
 
 from jpintel_mcp.api.admin import AdminAuthDep  # noqa: TC001 (FastAPI Depends)
-
-_log = logging.getLogger("jpintel.admin.testimonials")
 from jpintel_mcp.api.deps import (  # noqa: TC001 (FastAPI Depends resolution)
     ApiContextDep,
     DbDep,
 )
+
+_log = logging.getLogger("jpintel.admin.testimonials")
 
 # ---------------------------------------------------------------------------
 # Two routers: public list path and authed write/delete path. The admin

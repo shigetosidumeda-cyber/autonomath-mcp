@@ -123,7 +123,8 @@ def _build_prior(theta_size: int = THETA_SIZE_DEFAULT) -> np.ndarray:
     prior[0] = PRIOR_TEMPLATE_MASS
     prior[1:] = PRIOR_RESIDUAL_MASS / theta_size
     # Normalize defensively in case of floating-point drift.
-    return prior / prior.sum()
+    result: np.ndarray = prior / prior.sum()
+    return result
 
 
 def update_posterior(
@@ -177,7 +178,7 @@ def update_posterior(
 
     # Sequentially apply each observation
     for l_i in likelihoods:
-        l = float(max(1e-9, min(1.0 - 1e-9, l_i)))
+        l = float(max(1e-9, min(1.0 - 1e-9, l_i)))  # noqa: E741 (math notation: likelihood)
         # P(obs | θ_true) = l
         # P(obs | θ' ≠ θ_true) = (1 − l) / (|Θ| − 1) — symmetric spread
         not_true = (1.0 - l) / max(1, theta_dim - 1)

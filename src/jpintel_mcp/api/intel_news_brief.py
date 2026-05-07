@@ -147,7 +147,7 @@ def _fetch_fact_rows(
         for col in ("entity_id", "field_name", "field_value_text", "field_value_json", "source_url")
         if col in cols
     ]
-    for label, value in (
+    for _label, value in (
         ("program", payload.program),
         ("law", payload.law),
         ("industry", payload.industry),

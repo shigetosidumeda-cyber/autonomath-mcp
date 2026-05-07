@@ -41,7 +41,7 @@ import json
 import logging
 import sqlite3
 from datetime import UTC, datetime, timedelta
-from typing import Any
+from typing import Any, cast
 
 logger = logging.getLogger("jpintel.bg_task_queue")
 
@@ -196,7 +196,7 @@ def claim_next(conn: sqlite3.Connection) -> sqlite3.Row | None:
             (task_id,),
         ).fetchone()
         conn.execute("COMMIT")
-        return claimed
+        return cast("sqlite3.Row | None", claimed)
     except Exception:
         with contextlib.suppress(Exception):  # pragma: no cover — defensive
             conn.execute("ROLLBACK")

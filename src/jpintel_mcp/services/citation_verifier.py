@@ -425,7 +425,7 @@ class CitationVerifier:
             text = raw.decode("utf-8", errors="replace")
 
         self._cache[url] = (text, now + self._cache_ttl)
-        return text
+        return str(text)
 
     # ------------------------------------------------------------------
     # Internal helpers

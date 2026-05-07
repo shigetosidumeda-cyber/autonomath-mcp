@@ -115,7 +115,7 @@
       "@type": "DefinedTerm",
       "@id": "https://jpcite.com/en/glossary.html#term-tier",
       "name": "tier",
-      "description": "jpcite's per-program data-quality grade, populated from the actual completeness of fields and source-URL liveness. Tiers S/A/B/C are searchable; rows that fail the tier threshold (no amount, broken URL, aggregator-only source, ambiguous duplicate, etc.) are excluded from public search. Production breakdown: S=114, A=1,340, B=4,186, C=6,044; search-excluded rows: 2,788. All search endpoints exclude search-excluded rows by default.",
+      "description": "jpcite's per-program data-quality grade, populated from the actual completeness of fields and source-URL liveness. Tiers S/A/B/C are searchable; rows that fail the tier threshold (no amount, broken URL, aggregator-only source, ambiguous duplicate, etc.) are excluded from public search. Production breakdown: S=114, A=1,340, B=4,186, C=5,961; search-excluded rows: 2,788. All search endpoints exclude search-excluded rows by default.",
       "url": "https://jpcite.com/en/glossary.html#term-tier",
       "inDefinedTermSet": "https://jpcite.com/en/glossary.html#termset"
     },
@@ -350,7 +350,7 @@
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px 20px;">
  <dt id="term-subsidy" style="font-weight:700;font-size:20px;">Subsidy (補助金 / hojokin)</dt>
  <dd style="margin:10px 0 0;font-size:15px;line-height:1.75;">
- <p style="margin:0 0 12px;">A non-refundable financial grant from a Japanese government body (national ministry or local government) to a business, awarded to advance a policy goal &mdash; industrial promotion, regional revitalization, decarbonization, DX adoption, etc. <strong>Repayment is not required</strong>, but a results report (<em>jisseki houkokusho</em>) is mandatory; refunds may be ordered for misuse, fraud, or off-purpose spending. Funded by tax revenue, so a <strong>competitive screening</strong> (open call + selection) applies and acceptance rates range 30-80% depending on the program. Examples: <strong>Business Restructuring Subsidy</strong> (METI, up to ¥150M), <strong>Monozukuri Subsidy</strong> (SMRJ, up to ¥40M), <strong>IT Introduction Subsidy</strong> (SME Agency, up to ¥4.5M). Roughly 80% of jpcite's 11,684 searchable programs fall in this category.</p>
+ <p style="margin:0 0 12px;">A non-refundable financial grant from a Japanese government body (national ministry or local government) to a business, awarded to advance a policy goal &mdash; industrial promotion, regional revitalization, decarbonization, DX adoption, etc. <strong>Repayment is not required</strong>, but a results report (<em>jisseki houkokusho</em>) is mandatory; refunds may be ordered for misuse, fraud, or off-purpose spending. Funded by tax revenue, so a <strong>competitive screening</strong> (open call + selection) applies and acceptance rates range 30-80% depending on the program. Examples: <strong>Business Restructuring Subsidy</strong> (METI, up to ¥150M), <strong>Monozukuri Subsidy</strong> (SMRJ, up to ¥40M), <strong>IT Introduction Subsidy</strong> (SME Agency, up to ¥4.5M). Roughly 80% of jpcite's 11,601 searchable programs fall in this category.</p>
  <p style="margin:0 0 8px;color:var(--text-muted);font-size:13.5px;">
  <strong>Vs. Grant</strong>: Grant is requirements-met (no competition); Subsidy is competitive.<br>
  <strong>Vs. Loan</strong>: Loan requires repayment with interest; Subsidy is non-refundable but paid in arrears (bridge financing often needed).<br>
@@ -418,7 +418,7 @@
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px 20px;">
  <dt id="term-tier" style="font-weight:700;font-size:18px;"><code>tier</code></dt>
  <dd style="margin:8px 0 0;font-size:15px;line-height:1.75;">
- Per-program data-quality grade, populated from actual completeness of fields and source-URL liveness (not opinion). <strong>Tiers S / A / B / C are searchable</strong>; rows that fail the tier threshold (no amount, broken URL, aggregator-only source, ambiguous duplicate) are <strong>excluded from public search</strong>. Production breakdown: S=114, A=1,340, B=4,186, C=6,044; search-excluded rows: 2,788. <strong>All search endpoints exclude search-excluded rows by default.</strong> Excluded subcategories include <code>external_info_entry</code>, <code>no_amount_data</code>, <code>placeholder_url</code>, <code>dedup_ambiguous_resolved</code>.
+ Per-program data-quality grade, populated from actual completeness of fields and source-URL liveness (not opinion). <strong>Tiers S / A / B / C are searchable</strong>; rows that fail the tier threshold (no amount, broken URL, aggregator-only source, ambiguous duplicate) are <strong>excluded from public search</strong>. Production breakdown: S=114, A=1,340, B=4,186, C=5,961; search-excluded rows: 2,788. <strong>All search endpoints exclude search-excluded rows by default.</strong> Excluded subcategories include <code>external_info_entry</code>, <code>no_amount_data</code>, <code>placeholder_url</code>, <code>dedup_ambiguous_resolved</code>.
  </dd>
  </div>
 

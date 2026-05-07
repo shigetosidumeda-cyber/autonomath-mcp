@@ -40,7 +40,7 @@ import os
 import re
 import sqlite3
 from datetime import UTC, date, datetime, timedelta
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any, Literal, cast
 
 from pydantic import Field
 
@@ -126,9 +126,10 @@ def _safe_json_loads(s: str | None) -> dict[str, Any]:
     if not s:
         return {}
     try:
-        return json.loads(s)
+        parsed = json.loads(s)
     except json.JSONDecodeError:
         return {}
+    return parsed if isinstance(parsed, dict) else {}
 
 
 def _fts_escape(q: str) -> str:
@@ -2314,7 +2315,7 @@ def _resolve_seed_in_graph(seed_id: str) -> str | None:
         "SELECT canonical_id FROM am_entities WHERE canonical_id = ?", [seed_id]
     ).fetchone()
     if row:
-        return row["canonical_id"]
+        return cast(str, row["canonical_id"])
     # 2. exact primary_name
     row = aconn.execute(
         "SELECT canonical_id FROM am_entities WHERE primary_name = ? "
@@ -2322,7 +2323,7 @@ def _resolve_seed_in_graph(seed_id: str) -> str | None:
         [seed_id],
     ).fetchone()
     if row:
-        return row["canonical_id"]
+        return cast(str, row["canonical_id"])
     # 3. alias hit (am_alias may not exist on minimal builds — guard).
     try:
         row = aconn.execute(
@@ -2330,7 +2331,7 @@ def _resolve_seed_in_graph(seed_id: str) -> str | None:
             [seed_id],
         ).fetchone()
         if row:
-            return row["canonical_id"]
+            return cast(str, row["canonical_id"])
     except sqlite3.OperationalError:
         pass
     # 4. loose primary_name LIKE
@@ -2341,7 +2342,7 @@ def _resolve_seed_in_graph(seed_id: str) -> str | None:
         [f"%{esc}%"],
     ).fetchone()
     if row:
-        return row["canonical_id"]
+        return cast(str, row["canonical_id"])
     return None
 
 
@@ -2952,7 +2953,7 @@ _PERSONAS = Literal[
 ]
 
 
-def _reasoning_import():
+def _reasoning_import() -> tuple[Any, Any]:
     """Lazy import of the reasoning package so test harness and CI that
     don't have yaml installed can still load tools.py."""
     # Ensure infra root is on sys.path (same pattern as query_rewrite).

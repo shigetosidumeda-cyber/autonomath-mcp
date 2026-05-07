@@ -23,7 +23,6 @@ import json
 import logging
 import os
 import secrets
-import sqlite3
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Annotated, Any, Literal
@@ -64,6 +63,7 @@ from jpintel_mcp.db.session import connect as _db_connect
 from jpintel_mcp.email import get_client as _get_email_client
 
 if TYPE_CHECKING:
+    import sqlite3
     import types
 
 

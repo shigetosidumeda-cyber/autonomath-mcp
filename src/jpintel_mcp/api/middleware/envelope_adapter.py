@@ -36,15 +36,13 @@ the v2 flag still report ``v1``.
 from __future__ import annotations
 
 import contextlib
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
 from jpintel_mcp.api._envelope import wants_envelope_v2
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-
     from starlette.requests import Request
     from starlette.responses import Response
 
@@ -59,7 +57,7 @@ class EnvelopeAdapterMiddleware(BaseHTTPMiddleware):
     state stamp, not the response header which is added on the way out.
     """
 
-    async def dispatch(self, request: Request, call_next: Callable[..., Any]) -> Response:
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         # 1) Parse the opt-in once so individual routes don't re-parse
         #    the Accept header.
         try:

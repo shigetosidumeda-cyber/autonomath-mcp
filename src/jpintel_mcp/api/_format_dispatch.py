@@ -121,9 +121,11 @@ def _coerce_row(row: Any) -> dict[str, Any]:
     if isinstance(row, dict):
         return row
     if hasattr(row, "model_dump"):
-        return row.model_dump(mode="json")
+        result = row.model_dump(mode="json")
+        return result if isinstance(result, dict) else dict(result)
     if hasattr(row, "dict"):
-        return row.dict()
+        result = row.dict()
+        return result if isinstance(result, dict) else dict(result)
     raise HTTPException(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         detail=f"format dispatcher cannot serialize row of type {type(row).__name__}",

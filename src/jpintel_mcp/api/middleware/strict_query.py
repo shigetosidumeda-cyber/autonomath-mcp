@@ -63,12 +63,10 @@ import os
 from typing import TYPE_CHECKING, Any
 
 from fastapi.responses import JSONResponse
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.routing import Match
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-
     from fastapi import Request
     from starlette.responses import Response
 
@@ -134,7 +132,7 @@ class StrictQueryMiddleware(BaseHTTPMiddleware):
     See module docstring for rationale and design notes.
     """
 
-    async def dispatch(self, request: Request, call_next: Callable[..., Any]) -> Response:
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         if _is_disabled():
             return await call_next(request)
 

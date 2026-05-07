@@ -74,10 +74,11 @@ def _load_enriched(enriched_dir: Path, unified_id: str) -> dict[str, Any] | None
     if not p.is_file():
         return None
     try:
-        return json.loads(p.read_text(encoding="utf-8"))
+        parsed = json.loads(p.read_text(encoding="utf-8"))
     except json.JSONDecodeError:
         logger.warning("invalid_json enriched=%s", p)
         return None
+    return parsed if isinstance(parsed, dict) else None
 
 
 def _compute_source_checksum(enriched: dict[str, Any] | None, entry: dict[str, Any]) -> str:

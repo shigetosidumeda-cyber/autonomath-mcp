@@ -35,7 +35,7 @@ Constraints (CONSTITUTION 13.2 + `feedback_autonomath_no_api_use`):
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -184,7 +184,7 @@ def _am_tax_incentives_factory(params: dict[str, Any]) -> dict[str, Any] | None:
         # `_safe_tool` decoration in tools.py already returns an error
         # envelope on DB faults rather than raising — but be defensive
         # anyway so a tool refactor cannot crash the orchestrator.
-        return tools.search_tax_incentives(**kwargs)
+        return cast("dict[str, Any]", tools.search_tax_incentives(**kwargs))
     except Exception:  # noqa: BLE001
         return None
 

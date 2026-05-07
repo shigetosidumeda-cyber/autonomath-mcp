@@ -52,11 +52,13 @@ import os
 import secrets
 import sqlite3
 import zipfile
-from collections.abc import Iterator
 from datetime import UTC, datetime, timedelta
 from io import BytesIO
 from pathlib import Path
-from typing import Annotated, Any, Literal
+from typing import TYPE_CHECKING, Annotated, Any, Literal
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Query, Request, status
 from fastapi.responses import JSONResponse, StreamingResponse

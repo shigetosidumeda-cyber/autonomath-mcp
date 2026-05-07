@@ -26,7 +26,7 @@ import logging
 import os
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, cast, cast
 
 import httpx
 
@@ -218,7 +218,7 @@ class GbizRateLimitedClient:
         if hasattr(self._cache, "get_with_age"):
             item = self._cache.get_with_age(key)
             if item is not None:
-                return item
+                return cast("tuple[dict[str, Any], float | None]", item)
         try:
             item = self._cache.get(key, expire_time=True)
         except TypeError:

@@ -116,7 +116,7 @@
   "@context": "https://schema.org",
   "@type": "Dataset",
   "name": "jpcite — Japanese Public Programs Dataset",
-  "description": "14,472 subsidies + 2,286 adoption case studies + 108 loans + 1,185 enforcement records + 154 laws full-text + 9,484 law law metadata records + 50 tax rulesets + 2,065 court decisions + 362 bids + 13,801 invoice registrants + 503,930 entities + 6.12M facts.",
+  "description": "14,472 subsidies + 2,286 adoption case studies + 108 loans + 1,185 enforcement records + 6,493 laws full-text indexed + 9,484 law law metadata records + 50 tax rulesets + 2,065 court decisions + 362 bids + 13,801 invoice registrants + 503,930 entities + 6.12M facts.",
   "url": "https://jpcite.com/en/",
   "creator": {
     "@type": "Organization",
@@ -128,7 +128,7 @@
   "inLanguage": ["ja", "en"],
   "spatialCoverage": {"@type": "Country", "name": "Japan"},
   "variableMeasured": [
-    {"@type": "PropertyValue", "name": "subsidies", "value": 11684},
+    {"@type": "PropertyValue", "name": "subsidies", "value": 11601},
     {"@type": "PropertyValue", "name": "adoption case studies", "value": 2286},
     {"@type": "PropertyValue", "name": "loan programs", "value": 108},
     {"@type": "PropertyValue", "name": "enforcement records", "value": 1185},
@@ -226,11 +226,11 @@
  <p class="card-lead">9 datasets + structured entity facts, one query surface</p>
  <p>Programs, adoption case studies, loans, enforcement, laws, court decisions, tax rulesets, bids, invoice registrants — all under a unified schema. The entity-fact layer carries entities and facts across 12 record kinds. The full-text search index (3-gram) lets you query Japanese as written, no romanization required.</p>
  <ul class="card-list">
- <li>programs · 14,472 (11,684 searchable = Tier S 114 + A 1,340 + B 4,186 + C 6,044; 2,788 excluded from public search)</li>
+ <li>programs · 14,472 (11,601 searchable = Tier S 114 + A 1,340 + B 4,186 + C 5,961; 2,788 excluded from public search)</li>
  <li>case_studies · 2,286</li>
  <li>loan_programs · 108 (collateral / personal-guarantor / third-party-guarantor decomposed)</li>
  <li>enforcement_cases · 1,185</li>
- <li>laws · 154 full-text indexed + 9,484 law metadata records (e-Gov, CC-BY; full-text coverage varies by record, name resolver covers all 9,484)</li>
+ <li>laws · 6,493 full-text indexed + 9,484 law metadata records (e-Gov, CC-BY; full-text coverage varies by record, name resolver covers all 9,484)</li>
  <li>tax_rulesets · 50</li>
  <li>court_decisions · 2,065</li>
  <li>bids · 362</li>
@@ -499,7 +499,7 @@
  <section class="prescreen" aria-labelledby="ps-title" id="try">
  <div class="container">
  <h2 id="ps-title" class="section-title">Subsidy Prescreen — Top 5 in 3 questions</h2>
- <p class="prescreen-sub">Pick prefecture / business form / planned investment. We'll show the top 5 of <strong>11,684 active programs</strong> ranked by fit. Free, no signup, anonymous (3 requests/day/IP). One call to <code>/v1/programs/prescreen</code>.</p>
+ <p class="prescreen-sub">Pick prefecture / business form / planned investment. We'll show the top 5 of <strong>11,601 active programs</strong> ranked by fit. Free, no signup, anonymous (3 requests/day/IP). One call to <code>/v1/programs/prescreen</code>.</p>
  <style>
         /* prescreen a11y polish — scoped, additive only */
         .ps-field-help { display:block; margin-top:4px; font-size:0.85em; color:#5b6370; line-height:1.4; }
@@ -619,7 +619,7 @@
  <article class="card">
  <h3>Cross-dataset glue</h3>
  <p class="card-lead">One call: program → law → court decision → enforcement</p>
- <p>Expansion datasets are live: laws (e-Gov, CC-BY; 154 rows full-text indexed + 9,484 law metadata records, full-text coverage varies by record, name resolver covers all 9,484) + tax rulesets (invoice law / electronic-bookkeeping law; 50 rows) + NTA invoice registrants (PDL v1.0; 13,801 rows live delta) + court decisions (2,065 rows) + bids (362 rows). Plus structured entity facts (503,930 entities / 6.12M facts / 378,342 relations). The 139-tool MCP surface includes <code>trace_program_to_law</code> / <code>combined_compliance_check</code> / <code>search_tax_incentives</code> / <code>rule_engine_check</code> for cross-domain resolution.</p>
+ <p>Expansion datasets are live: laws (e-Gov, CC-BY; 6,493 rows full-text indexed + 9,484 law metadata records, full-text coverage varies by record, name resolver covers all 9,484) + tax rulesets (invoice law / electronic-bookkeeping law; 50 rows) + NTA invoice registrants (PDL v1.0; 13,801 rows live delta) + court decisions (2,065 rows) + bids (362 rows). Plus structured entity facts (503,930 entities / 6.12M facts / 378,342 relations). The 139-tool MCP surface includes <code>trace_program_to_law</code> / <code>combined_compliance_check</code> / <code>search_tax_incentives</code> / <code>rule_engine_check</code> for cross-domain resolution.</p>
  </article>
 
  </div>

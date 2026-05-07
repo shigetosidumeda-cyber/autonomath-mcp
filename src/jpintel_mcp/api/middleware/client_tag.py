@@ -37,13 +37,11 @@ from __future__ import annotations
 
 import logging
 import re
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-
     from fastapi import Request
     from starlette.responses import Response
 
@@ -93,7 +91,7 @@ class ClientTagMiddleware(BaseHTTPMiddleware):
     the contract is "this attribute always exists after the middleware".
     """
 
-    async def dispatch(self, request: Request, call_next: Callable[..., Any]) -> Response:
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         try:
             raw = request.headers.get("x-client-tag")
             request.state.client_tag = validate_client_tag(raw)

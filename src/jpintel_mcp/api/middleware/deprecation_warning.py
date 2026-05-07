@@ -67,14 +67,12 @@ indexes as a breadcrumb-class event with logger tag set to
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.routing import Match
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-
     from starlette.requests import Request
     from starlette.responses import Response
 
@@ -160,7 +158,7 @@ class DeprecationWarningMiddleware(BaseHTTPMiddleware):
     in non-prod environments aside from the structured log line.
     """
 
-    async def dispatch(self, request: Request, call_next: Callable[..., Any]) -> Response:
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         # Bypass: liveness probes + preflight. These are not "real" hits
         # for the purposes of the deprecation budget.
         if request.method == "OPTIONS":

@@ -190,7 +190,7 @@ def _normalise_page(page: str | None) -> str | None:
         raw_path = parsed.path or page
     # Strip query / fragment, redact path-param values (T-numbers, law IDs).
     redacted = redact_pii(raw_path)
-    return redacted[:_MAX_PAGE_LEN]
+    return str(redacted[:_MAX_PAGE_LEN])
 
 
 def _json_len(raw: object) -> int:

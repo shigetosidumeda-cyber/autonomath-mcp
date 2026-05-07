@@ -153,10 +153,8 @@ def _passes_confidence_gate(row: dict[str, Any]) -> bool:
     sentiment = row.get("sentiment")
     if isinstance(sentiment, str) and sentiment.lower() in POSITIVE_SENTIMENTS:
         return True
-    if sentiment is None and conf >= 0.97:
-        # Uncategorized but very high confidence — still allowed.
-        return True
-    return False
+    # Uncategorized but very high confidence — still allowed.
+    return sentiment is None and conf >= 0.97
 
 
 def _coerce_args(args: Any) -> dict[str, Any] | None:

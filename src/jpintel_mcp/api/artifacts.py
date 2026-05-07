@@ -13,7 +13,7 @@ import json
 import logging
 from collections import Counter
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, cast
 
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, ConfigDict, Field
@@ -2675,7 +2675,7 @@ def _create_company_public_artifact(
         quantity=1,
         result_count=len(sections),
     )
-    return body
+    return cast("dict[str, Any]", body)
 
 
 @router.post(

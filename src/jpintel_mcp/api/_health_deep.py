@@ -25,7 +25,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 from zoneinfo import ZoneInfo
 
 from jpintel_mcp.config import settings
@@ -360,7 +360,7 @@ def get_deep_health(force: bool = False) -> dict[str, object]:
     """
     now_mono = time.monotonic()
     if not force and _CACHE["doc"] is not None and now_mono - _CACHE["ts"] < _CACHE_TTL:
-        return _CACHE["doc"]
+        return cast("dict[str, object]", _CACHE["doc"])
 
     checks: dict[str, dict[str, Any]] = {}
     with ThreadPoolExecutor(max_workers=8) as ex:

@@ -175,7 +175,8 @@ def _load_registry_cached() -> dict[str, Any]:
     p = _registry_path()
     if not p.exists():
         raise FileNotFoundError(f"registry missing at {p}")
-    return json.loads(p.read_text(encoding="utf-8"))
+    parsed = json.loads(p.read_text(encoding="utf-8"))
+    return parsed if isinstance(parsed, dict) else {}
 
 
 def _load_enriched_lookup() -> dict[str, dict[str, Any]]:

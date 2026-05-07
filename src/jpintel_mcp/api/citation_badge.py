@@ -49,7 +49,7 @@ import os
 import re
 import sqlite3
 import uuid
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any, Literal, cast
 from urllib.parse import urlparse
 
 from fastapi import APIRouter, HTTPException, Query, Response, status
@@ -288,7 +288,7 @@ def _fetch_row(request_id: str) -> sqlite3.Row | None:
             (request_id.lower(),),
         ).fetchone()
         if row is not None:
-            return row
+            return cast("sqlite3.Row", row)
         # Try the alternate shape (dashed <-> hex).
         if "-" in request_id:
             alt = request_id.replace("-", "").lower()
@@ -301,7 +301,7 @@ def _fetch_row(request_id: str) -> sqlite3.Row | None:
             "FROM citation_log WHERE request_id = ?",
             (alt,),
         ).fetchone()
-        return row
+        return cast("sqlite3.Row | None", row)
     except sqlite3.Error as exc:
         logger.debug("citation_log fetch degraded: %s", exc)
         return None

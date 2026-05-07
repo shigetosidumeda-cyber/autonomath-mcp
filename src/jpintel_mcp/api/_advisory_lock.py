@@ -58,7 +58,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger("jpintel.advisory_lock")
 
 
-class LockNotAcquired(Exception):
+class LockNotAcquired(Exception):  # noqa: N818 (public name; rename touches cross-module callers)
     """Raised when the advisory lock could not be acquired after retries.
 
     Carries the key that was contended and the current holder (best-effort

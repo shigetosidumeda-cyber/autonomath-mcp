@@ -47,6 +47,7 @@
 <link rel="stylesheet" href="/styles.css?v=20260428a">
 
 <script defer src="analytics.js?v=20260503a"></script>
+<script defer src="/assets/public-counts.js?v=20260507a"></script>
 
 <script type="application/ld+json">
 {
@@ -68,7 +69,7 @@
   ],
   "featureList": [
     "制度 14,472 件 + 採択事例 2,286 件 + 融資 108 件 + 行政処分 1,185 件を 1 つの API で横断検索",
-    "申請可否を機械判定する排他・前提ルール 181 本",
+    "申請前に確認すべき排他・前提ルール 181 本を提示",
     "Evidence Packet: 出典 URL、取得時刻、データスナップショット ID、ライセンス、未取得領域 (known gaps) を LLM 入力向けにまとめたパケット",
     "比較基準トークン数を指定すると、Evidence Packet との差分から input-context estimates (入力文脈の削減率・break-even 判定) を返します",
     "MCP プロトコル 2025-06-18 対応、 139 ツールを Claude Desktop / Cursor から直接呼び出し可能",
@@ -150,7 +151,7 @@
     {
       "@type": "PropertyValue",
       "name": "制度件数",
-      "value": 11684
+      "value": 11601
     },
     {
       "@type": "PropertyValue",
@@ -288,10 +289,10 @@
 
  <section class="hero" aria-labelledby="hero-title">
  <div class="container">
- <h1 id="hero-title">あなたの AI に、出典付き根拠を。 verify 時間を月 50 時間取り戻す。</h1>
- <p class="hero-sub">jpcite は Evidence prefetch layer です。 長い PDF ・複数の官公庁ページ・検索結果を LLM に渡す前に、 <code>source_url</code> ・ <code>source_fetched_at</code> ・ <code>known_gaps</code> ・互換 / 排他ルール付きの小さい Evidence Packet を返します。 主な価値は <strong>(a) verify 時間の短縮</strong> (1 件あたり ~30 分 → ~3 分の人手裏取りに圧縮、12,000 req/月 で月 ~50h ≈ ¥400,000 相当) と <strong>(b) 監査可能な引用</strong> (JCRB-v1 で citation_ok ~0.40 → ~0.95) です。 入力文脈の削減見込みと採算ライン到達 (break-even) 判定は、呼び出し元が比較基準トークン数を指定したときに <strong>input-context estimates</strong> として参考表示します。 匿名 3 リクエスト/日、 登録不要ですぐ検証できます。</p>
+ <h1 id="hero-title">あなたの AI に、出典付き根拠を。</h1>
+ <p class="hero-sub">jpcite は Evidence prefetch layer です。 長い PDF ・複数の官公庁ページ・検索結果を LLM に渡す前に、 <code>source_url</code> ・ <code>source_fetched_at</code> ・ <code>known_gaps</code> ・互換 / 排他ルール付きの小さい Evidence Packet を返します。 主な価値は <strong>(a) 裏取り時間の短縮</strong> と <strong>(b) 監査可能な引用</strong> です。 JCRB-v1 の測定条件では citation_ok が ~0.40 → ~0.95 となった参考結果があります。 入力文脈の削減見込みと採算ライン到達 (break-even) 判定は、呼び出し元が比較基準トークン数を指定したときに <strong>input-context estimates</strong> として参考表示します。 時間・金額換算は利用量、業務フロー、確認粒度により変動します。 匿名 3 リクエスト/日、 登録不要ですぐ検証できます。</p>
 
- <p class="hero-example" style="margin:18px 0 14px;font-size:15px;line-height:1.7;color:var(--text-soft);">補助金 11,684 + 法令 9,484 + 税制 50 + 法人関連データ 167K + 行政処分 1,185 を REST + MCP から横断。 出典 URL + 取得時刻 + content_hash を機械が引用しやすい形で返し、 優先度の高い出典の再取得中央値は約 7 日。 Claude Desktop / Cursor / Cline は MCP、ChatGPT Custom GPT は OpenAPI Actions から呼び出して、 Evidence Packet・併用ルール・known gaps をまとめて取得できます。</p>
+ <p class="hero-example" style="margin:18px 0 14px;font-size:15px;line-height:1.7;color:var(--text-soft);">補助金 11,601 + 法令 9,484 + 税制 50 + 法人関連データ 167K + 行政処分 1,185 を REST + MCP から横断。 出典 URL + 取得時刻 + content_hash を機械が引用しやすい形で返し、 優先度の高い出典の再取得中央値は約 7 日。 Claude Desktop / Cursor / Cline は MCP、ChatGPT Custom GPT は OpenAPI Actions から呼び出して、 Evidence Packet・併用ルール・known gaps をまとめて取得できます。</p>
 
  <div class="cta-row">
  <a class="btn btn-primary" href="/playground.html?flow=evidence3" data-cta-variant="hero-evidence3-primary">3 回の無料ライブ検証を始める (Evidence Packet) →</a>
@@ -311,7 +312,7 @@
  </ul>
  <details class="trust-early-access" style="margin:8px 0 0;font-size:13px;color:var(--text-muted);">
  <summary style="cursor:pointer;color:var(--text);">登録不要で匿名 3 リクエスト/日まで利用できます</summary>
- <p style="margin:6px 0 0;">REST / MCP の匿名枠は今すぐ利用可能 (<a href="/docs/getting-started/">開発者向け 5 分クイックスタート</a>)。LINE bot は <a href="line.html">公開予定と早期アクセス</a> を案内しています。トライアルは <a href="#path-email-trial">メール認証 (14 日 / 200 req カード不要)</a>、 継続利用は <a href="pricing.html#api-paid">Pricing</a> で ¥3/リクエスト (税込 ¥3.30) の完全従量で API キーを発行できます (既存鍵の管理は <a href="dashboard.html">ダッシュボード</a>)。</p>
+ <p style="margin:6px 0 0;">REST / MCP の匿名枠は今すぐ利用可能 (<a href="/docs/getting-started/">開発者向け 5 分クイックスタート</a>)。LINE bot は <a href="line.html">提供状況と利用開始通知</a> を案内しています。トライアルは <a href="#path-email-trial">メール認証 (14 日 / 200 req カード不要)</a>、 継続利用は <a href="pricing.html#api-paid">Pricing</a> で ¥3/リクエスト (税込 ¥3.30) の完全従量で API キーを発行できます (既存鍵の管理は <a href="dashboard.html">ダッシュボード</a>)。</p>
  </details>
 
  <!-- §4.1 first-use path: 3 explicit channels with anchor links. Each card is a -->
@@ -416,10 +417,10 @@
 
  <article class="card" aria-labelledby="trust-counts">
  <h3 id="trust-counts">9 つのデータセットを 1 つの API で</h3>
- <p class="card-lead">制度 11,684 + 採択 + 融資 + 行政処分 + 法令 + 判例 + 税制 + 入札 + 適格事業者</p>
+ <p class="card-lead">制度 11,601 + 採択 + 融資 + 行政処分 + 法令 + 判例 + 税制 + 入札 + 適格事業者</p>
  <p>制度・採択事例・融資・行政処分が 1 軸目。法令・判例・税制ルールが 2 軸目。入札・適格請求書発行事業者が 3 軸目。すべてを統一フォーマットで返し、日本語の全文検索が裏で動きます。法人・個人事業主・業種・地域などで横断的に絞り込めます。</p>
  <ul class="card-list">
- <li>programs · 検索対象 <span data-fact="searchable_programs_total" data-stat-key="searchable_programs_total">11,684</span> (Tier S <span data-fact="tier_s_count" data-stat-key="tier_s_count">114</span> + A <span data-fact="tier_a_count" data-stat-key="tier_a_count">1,340</span> + B <span data-fact="tier_b_count" data-stat-key="tier_b_count">4,186</span> + C <span data-fact="tier_c_count" data-stat-key="tier_c_count">6,044</span>)</li>
+ <li>programs · 検索対象 <span data-fact="searchable_programs_total" data-stat-key="searchable_programs_total">11,601</span> (Tier S <span data-fact="tier_s_count" data-stat-key="tier_s_count">114</span> + A <span data-fact="tier_a_count" data-stat-key="tier_a_count">1,340</span> + B <span data-fact="tier_b_count" data-stat-key="tier_b_count">4,186</span> + C <span data-fact="tier_c_count" data-stat-key="tier_c_count">5,961</span>)</li>
  <li>case_studies · <span data-fact="case_studies_total" data-stat-key="case_studies_total">2,286</span></li>
  <li>loan_programs · <span data-fact="loan_programs_total" data-stat-key="loan_programs_total">108</span> (担保 / 個人保証人 / 第三者保証人 三軸分解)</li>
  <li>enforcement_cases · <span data-fact="enforcement_cases_total" data-stat-key="enforcement_cases_total">1,185</span></li>
@@ -435,7 +436,7 @@
  <article class="card" aria-labelledby="trust-lineage">
  <h3 id="trust-lineage">一次資料を追える</h3>
  <p class="card-lead">主要公開レコードに出典 URL と取得時刻を付与</p>
- <p>出典は省庁 (経産省、農水省、中小企業庁) と政府系金融 (日本政策金融公庫) と自治体の公式 URL のみ。二次情報源は最初から除外する設計。法改正の差分検知と再取得状況を継続的に追跡しています。</p>
+ <p>主要公開レコードでは、省庁 (経産省、農水省、中小企業庁)・政府系金融 (日本政策金融公庫)・自治体などの一次資料 URL を優先して付与します。補助金まとめサイトなどの二次情報源は出典扱いしない方針で、未取得・未確認領域は known_gaps や tier で表示します。</p>
  <ul class="card-list">
  <li>毎晩、出典 URL の生存確認を自動実行</li>
  <li>出典・更新日列を監査項目として保持</li>
@@ -443,9 +444,9 @@
  </article>
 
  <article class="card" aria-labelledby="trust-rules">
- <h3 id="trust-rules">併用不可・前提条件のルールを 181 本 機械判定</h3>
+ <h3 id="trust-rules">併用不可・前提条件のルールを 181 本提示</h3>
  <p class="card-lead">「補助金 A と B は併用不可」を AI に推論させずデータで返す</p>
- <p>制度 ID を渡すと併用失格・前提制度の不足を即時に検出します。AI の「それっぽい」推論ではなく、データ化済みのルールで判定するので、申請前に確認すべき併用リスクを見つけやすくします。</p>
+ <p>制度 ID を渡すと、登録済みルールの範囲で併用不可・前提制度不足の確認候補を返します。AI の「それっぽい」推論ではなく、データ化済みのルールで申請前に確認すべき併用リスクを見つけやすくします。最終的な申請可否・併用可否は一次資料と専門家確認を前提とします。</p>
  <ul class="card-list">
  <li>併用不可ルール 125 本 + 前提制度ルール 17 本</li>
  <li>絶対要件 15 本 + その他 24 本</li>
@@ -478,10 +479,10 @@
  <article class="card" aria-labelledby="pillar-line">
  <h3 id="pillar-line">LINE bot</h3>
  <p class="card-lead">中小企業経営者 / 士業</p>
- <p>公開後はスマホの LINE で補助金を自然言語で検索できます。REST / MCP を使わない利用者向けの入口です。</p>
+ <p>スマホの LINE で補助金を自然言語で検索する入口です。REST / MCP を使わない利用者向けに、提供状況と利用開始通知を案内しています。</p>
  <ul class="card-list">
- <li>1 通知 ¥3 (税込 ¥3.30)</li>
- <li>無料枠は 1 日 3 件まで</li>
+ <li>1 質問 ¥3 (税込 ¥3.30)</li>
+ <li>匿名無料枠は 1 日 3 質問まで</li>
  </ul>
  <p style="margin:14px 0 0;"><a href="line.html">LINE bot の案内を見る →</a></p>
  </article>
@@ -489,7 +490,7 @@
  <article class="card" aria-labelledby="pillar-alerts">
  <h3 id="pillar-alerts">法令改正アラート</h3>
  <p class="card-lead">士業 / 経理 / コンプラ担当</p>
- <p>インボイス・電帳法・労基法など、関心分野の法令改正を E メールで通知。見逃し事故を防ぐ。</p>
+ <p>インボイス・電帳法・労基法など、関心分野の法令改正を E メールで通知。検出済み差分に基づき、制度変更に気づきやすくします。</p>
  <ul class="card-list">
  <li>1 通知 ¥3 (税込 ¥3.30)</li>
  <li>通知ごとの完全従量</li>
@@ -559,8 +560,8 @@
 
  <article class="card audience-card" aria-labelledby="aud-tax">
  <h3 id="aud-tax">税理士事務所</h3>
- <p class="card-lead audience-context">顧問先一括処理 + 監査資料の自動生成</p>
- <p class="audience-pitch">顧問先 1 社あたり月 ¥30〜60 (月 10〜20 リクエスト) の従量制。 顧問先別の月次監査資料 (PDF + 配信フィード) と、 顧問先別 保存検索の一括実行を 1 アクションで回せます。</p>
+ <p class="card-lead audience-context">顧問先一括処理 + 根拠確認レポート下書き</p>
+ <p class="audience-pitch">顧問先 1 社あたり月 ¥30〜60 (月 10〜20 リクエスト) の従量制。 顧問先別の根拠確認レポート下書き (PDF + 配信フィード) と、 顧問先別 保存検索の一括実行を 1 アクションで回せます。</p>
  <ul class="card-list">
  <li>税制ルール <span data-fact="tax_rulesets_total" data-stat-key="tax_rulesets_total">50</span> 件 (措置法・通達リンク付き)</li>
  <li>顧問先 1 社あたり月 ¥30〜60 (顧問先数に応じてスケール)</li>
@@ -571,12 +572,12 @@
 
  <article class="card audience-card" aria-labelledby="aud-cpa">
  <h3 id="aud-cpa">公認会計士</h3>
- <p class="card-lead audience-context">月次の監査調書 + 法令引用の自動連結</p>
- <p class="audience-pitch">監査調書を 1 リクエストでまとめ生成。 法令から通達、 国税不服審判所 裁決事例までを引用チェーンとして自動連結します。 月次運用はクライアント規模に応じてスケール (例: 月 1,000〜2,000 リクエスト = ¥3,000〜6,000)。</p>
+ <p class="card-lead audience-context">確認用の根拠整理 + 法令引用の自動連結</p>
+ <p class="audience-pitch">監査人確認用の根拠整理・引用索引の下書きを生成。 法令から通達、 国税不服審判所 裁決事例までを引用チェーンとして自動連結します。 月次運用はクライアント規模に応じてスケール (例: 月 1,000〜2,000 リクエスト = ¥3,000〜6,000)。監査意見・監査証明・監査調書の完成物ではありません。</p>
  <ul class="card-list">
- <li>研究開発税制 + IT導入補助金の会計処理 (改訂版)</li>
+ <li>研究開発税制 + IT導入補助金の会計処理に関連する公表資料候補</li>
  <li>裁決事例 + 通達の引用チェーンを自動付与</li>
- <li>監査調書 PDF テンプレート同梱</li>
+ <li>根拠整理 PDF テンプレート同梱</li>
  </ul>
  <p style="margin:14px 0 0;"><a class="btn btn-primary" href="/audiences/tax-advisor.html">公認会計士向け →</a></p>
  </article>
@@ -646,7 +647,7 @@
  <p class="card-lead audience-context">REST + MCP、 139 機能、 SDK 不要</p>
  <p class="audience-pitch">上記すべての利用者層を、 1 つのサーバーから呼べます。 MCP プロトコル準拠、 uvx 1 行で起動。 Evidence Packet で事前に根拠を渡し、ヒット率・追加検索回数・トークン量への影響を自社ベンチマークで測定できます。</p>
  <ul class="card-list">
- <li>AI から呼べる機能 <span data-fact="mcp_tools_total" data-stat-key="mcp_tools_total">139</span> 個 / REST 公開 OpenAPI paths 221 本</li>
+ <li>AI から呼べる機能 <span data-fact="mcp_tools_total" data-stat-key="mcp_tools_total">139</span> 個 / REST 公開 OpenAPI paths 227 本</li>
  <li>uvx 1 行で起動 (SDK 不要)</li>
  <li>無料 3 リクエスト/日で動作確認 → 商用は ¥3/リクエスト 完全従量</li>
  </ul>
@@ -742,7 +743,7 @@
  <section class="prescreen" aria-labelledby="ps-title" id="try">
  <div class="container">
  <h2 id="ps-title" class="section-title">制度プレスクリーン — 3 問で 上位 5 件</h2>
- <p class="prescreen-sub">都道府県・事業形態・予定投資額を入れるだけで、<strong>11,684 制度</strong>から適合度の高い<strong>上位 5 件</strong>を表示します。無料・登録不要・匿名 3 リクエスト/日/IP。 入力 1 回で結果が返ります。</p>
+ <p class="prescreen-sub">都道府県・事業形態・予定投資額を入れるだけで、<strong>11,601 制度</strong>から適合度の高い<strong>上位 5 件</strong>を表示します。無料・登録不要・匿名 3 リクエスト/日/IP。 入力 1 回で結果が返ります。</p>
  <style>
         .ps-field-help { display:block; margin-top:4px; font-size:0.85em; color:#5b6370; line-height:1.4; }
         .ps-required-mark { color:#c0392b; margin-left:4px; font-weight:bold; }
@@ -833,8 +834,8 @@
 
  <article class="card">
  <h3>(a) 複数 DB を 1 コール で統合</h3>
- <p class="card-lead">補助金 11,684 + 法令 9,484 + 税制 50 + 法人 167K + 行政処分 1,185</p>
- <p>補助金 11,684 件・法令メタデータ 9,484 件 (本文 154 件)・税制ルールセット 50 件・国税庁適格事業者 13,801 件 (PDL v1.0 差分、月次フル取り込みは順次)・行政処分 1,185 件・判例 2,065 件・採択事例 2,286 件・融資 108 件 (担保 / 個人保証人 / 第三者保証人 三軸分解) を一つの API で横断検索。 関係抽出データベース 50 万件超エンティティ / 600 万件超ファクト / 17 万件超リレーションも 139 MCP ツールから呼び出せます。</p>
+ <p class="card-lead">補助金 11,601 + 法令 9,484 + 税制 50 + 法人 167K + 行政処分 1,185</p>
+ <p>補助金 11,601 件・法令メタデータ 9,484 件 (本文索引 6,493 件)・税制ルールセット 50 件・国税庁適格事業者 13,801 件 (PDL v1.0 差分、月次フル取り込みは順次)・行政処分 1,185 件・判例 2,065 件・採択事例 2,286 件・融資 108 件 (担保 / 個人保証人 / 第三者保証人 三軸分解) を一つの API で横断検索。 関係抽出データベース 50 万件超エンティティ / 600 万件超ファクト / 17 万件超リレーションも 139 MCP ツールから呼び出せます。</p>
  </article>
 
  <article class="card">
@@ -933,13 +934,13 @@
  </tr>
  <tr>
  <th scope="row">法令改正アラート</th>
- <td>なし</td>
+ <td>月次サマリー無料</td>
  <td>¥3 / 通知 (税別)</td>
  <td>¥3.30 / 通知</td>
  </tr>
  <tr>
  <th scope="row">埋込 ウィジェット</th>
- <td>-</td>
+ <td>匿名 3 検索/日まで</td>
  <td>¥3 / 検索 (税別)</td>
  <td>¥3.30 / 検索</td>
  </tr>

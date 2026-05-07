@@ -16,7 +16,7 @@ import asyncio
 import importlib
 import inspect
 import os
-from typing import TYPE_CHECKING, Annotated, Any
+from typing import TYPE_CHECKING, Annotated, Any, cast
 
 from pydantic import BaseModel, Field
 
@@ -91,7 +91,7 @@ def _find_callable(module: Any, suffix: str) -> Callable[..., Any] | None:
     for name in _callable_candidates(suffix):
         fn = getattr(module, name, None)
         if callable(fn):
-            return fn
+            return cast("Callable[..., Any]", fn)
     return None
 
 

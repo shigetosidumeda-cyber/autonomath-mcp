@@ -54,7 +54,7 @@ import contextlib
 import logging
 import os
 import sqlite3
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any, Literal, cast
 
 from pydantic import Field
 
@@ -780,7 +780,7 @@ def _intel_conflict_impl(
             jp_conn.close()
     body.setdefault("_disclaimer", _CONFLICT_DISCLAIMER)
     body.setdefault("_billing_unit", 1)
-    return body
+    return cast("dict[str, Any]", body)
 
 
 def _intel_why_excluded_impl(
@@ -815,7 +815,7 @@ def _intel_why_excluded_impl(
             am_conn.close()
     body.setdefault("_disclaimer", _WHY_DISCLAIMER)
     body.setdefault("_billing_unit", 1)
-    return body
+    return cast("dict[str, Any]", body)
 
 
 def _intel_peer_group_impl(
@@ -914,7 +914,7 @@ def _intel_regulatory_context_impl(
             jp_conn.close()
     body.setdefault("_disclaimer", _REG_DISCLAIMER)
     body.setdefault("_billing_unit", 1)
-    return body
+    return cast("dict[str, Any]", body)
 
 
 def _intel_bundle_optimal_impl(
@@ -1022,7 +1022,7 @@ def _intel_citation_pack_impl(
             jp_conn.close()
     body.setdefault("_disclaimer", _CITATION_PACK_DISCLAIMER)
     body.setdefault("_billing_unit", 1)
-    return body
+    return cast("dict[str, Any]", body)
 
 
 def _intel_risk_score_impl(

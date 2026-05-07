@@ -175,7 +175,7 @@ def _rate_limit_remaining(conn: sqlite3.Connection, ctx: Any) -> int | None:
         return None
     if limit_key is None:
         return None
-    daily_limit = getattr(settings, limit_key)
+    daily_limit: int = int(getattr(settings, limit_key))
     if ctx.key_hash is None:
         # Anonymous: no per-IP usage log to subtract against. Return the
         # ceiling — matches the spec intent ("computed from free-tier
@@ -186,7 +186,7 @@ def _rate_limit_remaining(conn: sqlite3.Connection, ctx: Any) -> int | None:
         "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND ts >= ?",
         (ctx.key_hash, bucket),
     ).fetchone()
-    return max(0, daily_limit - n)
+    return max(0, daily_limit - int(n))
 
 
 @router.get("/v1/ping", response_model=PingResponse, dependencies=[AnonIpLimitDep])

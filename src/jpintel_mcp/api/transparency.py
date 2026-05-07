@@ -230,8 +230,9 @@ async def data_freshness() -> dict[str, Any]:
         }
     """
     now_mono = time.monotonic()
-    if _CACHE["doc"] is not None and now_mono - _CACHE["ts"] < _CACHE_TTL:
-        return _CACHE["doc"]
+    cached = _CACHE["doc"]
+    if isinstance(cached, dict) and now_mono - _CACHE["ts"] < _CACHE_TTL:
+        return cached
     doc = _build_freshness_doc()
     _CACHE["ts"] = now_mono
     _CACHE["doc"] = doc

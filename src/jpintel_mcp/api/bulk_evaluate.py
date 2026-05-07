@@ -488,9 +488,10 @@ def _idem_lookup(conn: Any, key_hash: str, idem_key: str) -> dict[str, Any] | No
     except ValueError:
         return None
     try:
-        return json.loads(blob)
+        parsed = json.loads(blob)
     except (TypeError, ValueError):
         return None
+    return parsed if isinstance(parsed, dict) else None
 
 
 def _billing_idempotency_key_was_used(

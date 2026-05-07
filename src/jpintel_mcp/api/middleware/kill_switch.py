@@ -40,17 +40,15 @@ from __future__ import annotations
 import logging
 import os
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from fastapi.responses import JSONResponse
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
 from jpintel_mcp.api._audit_log import log_event
 from jpintel_mcp.api._error_envelope import make_error, safe_request_id
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-
     from fastapi import Request
     from starlette.responses import Response
 
@@ -142,7 +140,7 @@ class KillSwitchMiddleware(BaseHTTPMiddleware):
     """
 
     async def dispatch(
-        self, request: Request, call_next: Callable[..., Any]
+        self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
         if not _kill_switch_active():
             return await call_next(request)

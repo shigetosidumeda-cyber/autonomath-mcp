@@ -6,7 +6,7 @@ import time
 import unicodedata
 from collections import OrderedDict
 from threading import Lock
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any, Literal, cast
 
 from fastapi import APIRouter, Header, HTTPException, Query, Request, status
 from fastapi.responses import JSONResponse
@@ -200,12 +200,15 @@ def _l4_get_or_compute_safe(
     is the same single get_or_compute call.
     """
     try:
-        return get_or_compute(
-            cache_key=cache_key,
-            tool=tool,
-            params=params,
-            compute=compute,
-            ttl=ttl,
+        return cast(
+            "dict[str, Any]",
+            get_or_compute(
+                cache_key=cache_key,
+                tool=tool,
+                params=params,
+                compute=compute,
+                ttl=ttl,
+            ),
         )
     except sqlite3.OperationalError as exc:
         if "no such table" not in str(exc):
@@ -214,12 +217,15 @@ def _l4_get_or_compute_safe(
         from jpintel_mcp.api.stats import _ensure_l4_table
 
         _ensure_l4_table()
-        return get_or_compute(
-            cache_key=cache_key,
-            tool=tool,
-            params=params,
-            compute=compute,
-            ttl=ttl,
+        return cast(
+            "dict[str, Any]",
+            get_or_compute(
+                cache_key=cache_key,
+                tool=tool,
+                params=params,
+                compute=compute,
+                ttl=ttl,
+            ),
         )
 
 

@@ -33,7 +33,7 @@ import logging
 import os
 import sqlite3
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, cast
 
 from fastapi import HTTPException, status
 
@@ -77,7 +77,10 @@ def _fernet() -> Any:
 def encrypt_blob(payload: dict[str, Any]) -> bytes:
     """Encrypt a JSON-serializable dict to a Fernet ciphertext blob."""
     fernet = _fernet()
-    return fernet.encrypt(json.dumps(payload, ensure_ascii=False).encode("utf-8"))
+    return cast(
+        "bytes",
+        fernet.encrypt(json.dumps(payload, ensure_ascii=False).encode("utf-8")),
+    )
 
 
 def decrypt_blob(blob: bytes) -> dict[str, Any]:
@@ -98,13 +101,19 @@ def decrypt_blob(blob: bytes) -> dict[str, Any]:
             "(operator INTEGRATION_TOKEN_SECRET may have rotated)",
         ) from exc
     try:
-        return json.loads(plain.decode("utf-8"))
+        parsed = json.loads(plain.decode("utf-8"))
     except json.JSONDecodeError as exc:
         logger.error("integration_token_blob_corrupt")
         raise HTTPException(
             status.HTTP_503_SERVICE_UNAVAILABLE,
             "stored integration credential is corrupt",
         ) from exc
+    if not isinstance(parsed, dict):
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            "stored integration credential is corrupt",
+        )
+    return parsed
 
 
 def upsert_account(

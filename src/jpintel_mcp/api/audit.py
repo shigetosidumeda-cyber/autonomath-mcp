@@ -626,7 +626,9 @@ def _nta_open() -> sqlite3.Connection | None:
     """
     cached = getattr(_NTA_LOCAL, "conn", None)
     if cached is not None:
-        return cached
+        from typing import cast as _cast
+
+        return _cast("sqlite3.Connection | None", cached)
     try:
         from jpintel_mcp.mcp.autonomath_tools.db import (
             AUTONOMATH_DB_PATH,

@@ -60,11 +60,10 @@ from datetime import UTC, datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Any
 
 from fastapi.responses import JSONResponse
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
 if TYPE_CHECKING:
     import sqlite3
-    from collections.abc import Callable
 
     from fastapi import Request
     from starlette.responses import Response
@@ -464,7 +463,7 @@ class CustomerCapMiddleware(BaseHTTPMiddleware):
       * Sets Retry-After to seconds-until-JST-月初.
     """
 
-    async def dispatch(self, request: Request, call_next: Callable[..., Any]) -> Response:
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         # Always allow control-plane endpoints through, even at cap-reached:
         # the customer must be able to RAISE / REMOVE their cap, manage their
         # subscription, and rotate their key after hitting the cap. Without

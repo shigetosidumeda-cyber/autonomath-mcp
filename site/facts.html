@@ -86,7 +86,7 @@
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "サイトに表示されている数字 (例: 11,684 制度) の出典は?",
+      "name": "サイトに表示されている数字 (例: 11,601 制度) の出典は?",
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "本ファクトシート (https://jpcite.com/facts.html) を基準にしています。各値は /v1/meta API (https://api.jpcite.com/v1/meta) を一次出典とし、JST 更新日を併記しています。サイト内の各数字は <span data-fact=\"...\"> でマークアップされており、ファクトシート上の <dt id=\"fact-...\"> と 1:1 対応します。"
@@ -172,7 +172,7 @@
  <dl class="fact-list" style="display:grid;grid-template-columns:1fr;gap:18px;margin:0;padding:0;">
 
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
- <dt id="fact-searchable_programs_total" style="font-weight:600;font-size:18px;">検索対象 制度件数: 11,684</dt>
+ <dt id="fact-searchable_programs_total" style="font-weight:600;font-size:18px;">検索対象 制度件数: 11,601</dt>
  <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
  Tier S/A/B/C の合計。検索対象外の制度を除外した値で、API 検索結果に現れる母集団。<br>
  出典: <code>/v1/meta</code> の <code>tier_counts</code> sum (S+A+B+C) · 更新 2026-04-29 JST · 補助金・融資・税制・認定制度を含む
@@ -212,7 +212,7 @@
  </div>
 
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
- <dt id="fact-tier_c_count" style="font-weight:600;font-size:18px;">Tier C 件数: 6,044</dt>
+ <dt id="fact-tier_c_count" style="font-weight:600;font-size:18px;">Tier C 件数: 5,961</dt>
  <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
  実データ充足ベースの C ランク (検索可)。<br>
  出典: <code>/v1/meta.tier_counts.C</code> · 更新 2026-04-26 JST
@@ -391,7 +391,7 @@
  <section aria-labelledby="changelog-title" style="margin-top:40px;">
  <h2 id="changelog-title" class="section-title">更新履歴</h2>
  <ul style="margin:0;padding-left:20px;line-height:1.8;font-size:14px;">
- <li><strong>2026-04-26</strong> — 初版。 データセット 15 項目 + 主要データベース 5 項目 + 料金 4 項目を統計 API に紐付けて公開。 各サイトページの統計表示にも展開。</li>
+ <li><strong>2026-04-26</strong> — 初版。 公開件数 14 項目 + 主要データベース 5 項目 + 料金 3 項目を統計 API に紐付けて公開。 各サイトページの統計表示にも展開。</li>
  </ul>
  </section>
 
@@ -402,7 +402,7 @@
  <section aria-labelledby="faq" style="margin-top:48px;">
  <h2 id="faq" style="font-size:22px;margin:0 0 16px;">よくある質問</h2>
  <details style="margin:0 0 12px;border:1px solid var(--border);border-radius:8px;padding:16px 20px;">
- <summary style="font-weight:600;cursor:pointer;">サイトに表示されている数字 (例: 11,684 制度) の出典は?</summary>
+ <summary style="font-weight:600;cursor:pointer;">サイトに表示されている数字 (例: 11,601 制度) の出典は?</summary>
  <p style="margin:12px 0 0;line-height:1.8;color:var(--text-muted);">本ファクトシート (<a href="https://jpcite.com/facts.html">https://jpcite.com/facts.html</a>) を基準にしています。各値は <a href="https://api.jpcite.com/v1/meta"><code>/v1/meta</code> API</a> を一次出典とし、JST 更新日を併記しています。サイト内の各数字は <code>&lt;span data-fact="..."&gt;</code> でマークアップされており、ファクトシート上の <code>&lt;dt id="fact-..."&gt;</code> と 1:1 対応します。</p>
  </details>
  <details style="margin:0 0 12px;border:1px solid var(--border);border-radius:8px;padding:16px 20px;">

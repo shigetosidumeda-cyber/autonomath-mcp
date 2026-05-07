@@ -185,7 +185,7 @@ def _probe_db_empty(path: Path, *, table: str, floor: int) -> bool:
             if not row or row[0] == 0:
                 return True
             cnt = conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
-            return cnt < floor
+            return bool(cnt < floor)
     except sqlite3.DatabaseError:
         # Corrupt / partial file → treat as empty.
         return True

@@ -54,11 +54,9 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 from fastapi.responses import JSONResponse
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-
     from fastapi import Request
     from starlette.responses import Response
 
@@ -263,7 +261,7 @@ class CostCapMiddleware(BaseHTTPMiddleware):
     """
 
     async def dispatch(
-        self, request: Request, call_next: Callable[..., Any]
+        self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
         # CORS preflight always passes — don't gate OPTIONS.
         if request.method == "OPTIONS":

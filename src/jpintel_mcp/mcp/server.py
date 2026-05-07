@@ -4659,7 +4659,7 @@ def subsidy_combo_finder(
                 if not bn:
                     continue
                 if bn in candidate_name or candidate_name in bn:
-                    return bn
+                    return str(bn)
             return None
 
         # 2. Candidate loans — growth-oriented only. Drop distressed-company loans
@@ -9319,13 +9319,16 @@ if settings.autonomath_enabled:
         )
 
         eff_region = region or prefecture
-        return _search_acceptance_stats_am(
-            program_name=program_name,
-            year=year,
-            region=eff_region,
-            industry=industry,
-            limit=limit,
-            offset=offset,
+        return cast(
+            "dict[str, Any]",
+            _search_acceptance_stats_am(
+                program_name=program_name,
+                year=year,
+                region=eff_region,
+                industry=industry,
+                limit=limit,
+                offset=offset,
+            ),
         )
 
 

@@ -21,7 +21,7 @@ from __future__ import annotations
 import contextlib
 import sqlite3
 from datetime import UTC, datetime, timedelta
-from typing import TYPE_CHECKING, Annotated, Any
+from typing import TYPE_CHECKING, Annotated, Any, cast
 
 from fastapi import APIRouter, HTTPException, Path
 from fastapi.responses import RedirectResponse
@@ -118,23 +118,29 @@ def _cache_get_or_compute(key: str, compute: Callable[[], dict[str, Any]]) -> di
     params = {"key": key}
     cache_key = canonical_cache_key(_STATS_TOOL_NAME, params)
     try:
-        return get_or_compute(
-            cache_key=cache_key,
-            tool=_STATS_TOOL_NAME,
-            params=params,
-            compute=compute,
-            ttl=_CACHE_TTL_SECONDS,
+        return cast(
+            "dict[str, Any]",
+            get_or_compute(
+                cache_key=cache_key,
+                tool=_STATS_TOOL_NAME,
+                params=params,
+                compute=compute,
+                ttl=_CACHE_TTL_SECONDS,
+            ),
         )
     except sqlite3.OperationalError as exc:
         if "no such table" not in str(exc):
             raise
         _ensure_l4_table()
-        return get_or_compute(
-            cache_key=cache_key,
-            tool=_STATS_TOOL_NAME,
-            params=params,
-            compute=compute,
-            ttl=_CACHE_TTL_SECONDS,
+        return cast(
+            "dict[str, Any]",
+            get_or_compute(
+                cache_key=cache_key,
+                tool=_STATS_TOOL_NAME,
+                params=params,
+                compute=compute,
+                ttl=_CACHE_TTL_SECONDS,
+            ),
         )
 
 

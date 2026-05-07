@@ -46,9 +46,9 @@ import logging
 import sqlite3
 from datetime import UTC, datetime
 from time import monotonic
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
 from jpintel_mcp.api.anon_limit import _classify_user_agent, _client_ip
 from jpintel_mcp.api.deps import hash_api_key, hash_ip_for_telemetry
@@ -56,8 +56,6 @@ from jpintel_mcp.db.session import connect
 from jpintel_mcp.security.pii_redact import redact_pii
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-
     from fastapi import Request
     from starlette.responses import Response
 
@@ -301,7 +299,7 @@ class AnalyticsRecorderMiddleware(BaseHTTPMiddleware):
     so a CORS-rejected preflight doesn't generate a row).
     """
 
-    async def dispatch(self, request: Request, call_next: Callable[..., Any]) -> Response:
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         # Skip excluded paths immediately — saves 1-2ms per health probe
         # and keeps the table from being dominated by /healthz noise.
         path = request.url.path

@@ -33,7 +33,7 @@ import hashlib
 import json
 import logging
 import sqlite3
-from typing import Annotated, Any
+from typing import Annotated, Any, cast
 
 from pydantic import Field
 
@@ -116,15 +116,18 @@ def _lookup_cached_result(
     applicant_hash: str,
 ) -> sqlite3.Row | None:
     """Return the most recent cached evaluation row for this (rule, entity, hash)."""
-    return conn.execute(
-        "SELECT passed, message_ja, evaluated_at "
-        "  FROM am_validation_result "
-        " WHERE rule_id = ? "
-        "   AND ((entity_id IS NULL AND ? IS NULL) OR entity_id = ?) "
-        "   AND applicant_hash = ? "
-        " LIMIT 1",
-        (rule_id, entity_id, entity_id, applicant_hash),
-    ).fetchone()
+    return cast(
+        "sqlite3.Row | None",
+        conn.execute(
+            "SELECT passed, message_ja, evaluated_at "
+            "  FROM am_validation_result "
+            " WHERE rule_id = ? "
+            "   AND ((entity_id IS NULL AND ? IS NULL) OR entity_id = ?) "
+            "   AND applicant_hash = ? "
+            " LIMIT 1",
+            (rule_id, entity_id, entity_id, applicant_hash),
+        ).fetchone(),
+    )
 
 
 def _evaluate_one(

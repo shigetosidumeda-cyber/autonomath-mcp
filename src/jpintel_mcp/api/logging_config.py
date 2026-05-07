@@ -68,7 +68,9 @@ def setup_logging(level: str = "INFO", fmt: str = "json") -> None:
 
 
 def get_logger(name: str | None = None) -> structlog.stdlib.BoundLogger:
-    return structlog.get_logger(name)
+    from typing import cast
+
+    return cast("structlog.stdlib.BoundLogger", structlog.get_logger(name))
 
 
 def bind_api_key_context(key_hash: str | None, tier: str) -> None:

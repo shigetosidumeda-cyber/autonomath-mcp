@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>Getting started — jpcite</title>
-<meta name="description" content="Quick-start for jpcite: one curl + Claude Desktop MCP setup. Query 11,684 searchable Japanese public programs (subsidies, loans, tax, certifications) via 139 MCP tools.">
+<meta name="description" content="Quick-start for jpcite: one curl + Claude Desktop MCP setup. Query 11,601 searchable Japanese public programs (subsidies, loans, tax, certifications) via 139 MCP tools.">
 
 <meta property="og:title" content="Getting started — jpcite">
 <meta property="og:description" content="Five-minute quick-start: anonymous-allowance curl, API key, Claude Desktop MCP config.">
@@ -37,7 +37,7 @@
   "@context": "https://schema.org",
   "@type": "TechArticle",
   "headline": "Getting started — jpcite",
-  "description": "Five-minute quick-start for jpcite. Anonymous-allowance curl, API key setup, and Claude Desktop MCP configuration. Search 11,684 Japanese public programs via 139 MCP tools (protocol 2025-06-18).",
+  "description": "Five-minute quick-start for jpcite. Anonymous-allowance curl, API key setup, and Claude Desktop MCP configuration. Search 11,601 Japanese public programs via 139 MCP tools (protocol 2025-06-18).",
   "url": "https://jpcite.com/en/getting-started.html",
   "inLanguage": "en",
   "datePublished": "2026-04-23",
@@ -102,7 +102,7 @@
  <div class="container">
 
  <h1>Getting started</h1>
- <p class="lead">Five minutes from zero to a live query against 11,684 searchable Japanese public programs (tier S/A/B/C; plus 2,788 publication-review rows excluded from public search) — 2,286 case studies, 108 loan programs with three-axis risk decomposition, and 1,185 enforcement cases. Anonymous tier needs no API key (3 req/day per IP, JST <abbr title="Japan Standard Time, UTC+9">UTC+9</abbr> next-day reset); MCP setup below works with Claude Desktop, Cursor, Gemini, and any client speaking MCP protocol <code>2025-06-18</code>.</p>
+ <p class="lead">Five minutes from zero to a live query against 11,601 searchable Japanese public programs (tier S/A/B/C; plus 2,788 publication-review rows excluded from public search) — 2,286 case studies, 108 loan programs with three-axis risk decomposition, and 1,185 enforcement cases. Anonymous tier needs no API key (3 req/day per IP, JST <abbr title="Japan Standard Time, UTC+9">UTC+9</abbr> next-day reset); MCP setup below works with Claude Desktop, Cursor, Gemini, and any client speaking MCP protocol <code>2025-06-18</code>.</p>
 
  <h2>1. First request (no API key)</h2>
  <p>The anonymous daily allowance auto-issues a 3 calls/day per IP budget (resets at JST next-day 00:00). This curl works as-is:</p>
@@ -179,7 +179,7 @@ curl https://api.jpcite.com/healthz
 curl -L https://api.jpcite.com/v1/meta
 # =&gt; {
 # "total_programs": 14472,
-# "tier_counts": {"S": 114, "A": 1340, "B": 4186, "C": 6044, "X": 2788},
+# "tier_counts": {"S": 114, "A": 1340, "B": 4186, "C": 5961, "X": 2788},
 # "exclusion_rules_count": 181,
 # "last_ingested_at": "2026-04-29T10:30:00+09:00",
 # "data_as_of": "2026-04-29",

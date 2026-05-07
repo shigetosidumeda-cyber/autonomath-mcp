@@ -153,7 +153,7 @@
     </nav>
 
     <h1>jpcite vs jgrants-mcp-server (デジタル庁 OSS MCP): 機能・データ範囲・併用パターン (2026)</h1>
-    <p class="lead"><a href="https://github.com/digital-go-jp/jgrants-mcp-server" rel="noopener nofollow" target="_blank">digital-go-jp/jgrants-mcp-server</a> はデジタル庁が公開する jGrants 公式 API の OSS MCP wrapper です。jpcite は 11,684 制度 + 9,484 法令 + 2,286 採択事例 + 13,801 適格事業者 + 22,258 enforcement detail + 50 税制 + 2,065 判例 を横断する 139 tool MCP。両者は競合ではなく住み分け — <strong>jgrants-mcp は申請ポータル直結、jpcite は適合判定 + 横断引用</strong>。</p>
+    <p class="lead"><a href="https://github.com/digital-go-jp/jgrants-mcp-server" rel="noopener nofollow" target="_blank">digital-go-jp/jgrants-mcp-server</a> はデジタル庁が公開する jGrants 公式 API の OSS MCP wrapper です。jpcite は 11,601 制度 + 9,484 法令 + 2,286 採択事例 + 13,801 適格事業者 + 22,258 enforcement detail + 50 税制 + 2,065 判例 を横断する 139 tool MCP。両者は競合ではなく住み分け — <strong>jgrants-mcp は申請ポータル直結、jpcite は適合判定 + 横断引用</strong>。</p>
 
     <div class="compare-disclaimer">
       <strong>本ページは公開情報をもとに当社が作成しています。</strong>
@@ -195,7 +195,7 @@
 </tr>
 <tr>
 <th scope="row">4. Programs DB</th>
-<td class="col-us"><strong>11,684 件 pre-indexed</strong> (補助金 + 融資 + 税制 + 認定 横断 / SQLite FTS5 + sqlite-vec)。</td>
+<td class="col-us"><strong>11,601 件 pre-indexed</strong> (補助金 + 融資 + 税制 + 認定 横断 / SQLite FTS5 + sqlite-vec)。</td>
 <td>jGrants 公開公募。<strong>キャッシュ層なし</strong> — 毎回 live API call。</td>
 <td class="compare-note-cell">jpcite は事前索引、jgrants-mcp は live proxy。</td>
 </tr>

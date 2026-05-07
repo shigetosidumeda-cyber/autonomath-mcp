@@ -108,9 +108,10 @@ def _safe_json_loads(blob: Any) -> dict[str, Any]:
     if isinstance(blob, dict):
         return blob
     try:
-        return json.loads(blob)
+        parsed = json.loads(blob)
     except (TypeError, ValueError):
         return {}
+    return parsed if isinstance(parsed, dict) else {}
 
 
 def _foreign_employer_signals(extraction: dict[str, Any]) -> dict[str, bool]:

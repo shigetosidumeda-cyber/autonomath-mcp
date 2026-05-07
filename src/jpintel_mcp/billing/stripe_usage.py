@@ -84,7 +84,7 @@ def _is_metered_item(item: Any) -> bool:
     usage_type = _stripe_path(item, "price", "recurring", "usage_type")
     if usage_type is None:
         usage_type = _stripe_path(item, "plan", "usage_type")
-    return usage_type == "metered"
+    return bool(usage_type == "metered")
 
 
 def _metadata_text(metadata: Any) -> str:

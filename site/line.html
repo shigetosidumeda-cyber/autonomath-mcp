@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>LINE bot — jpcite</title>
-<meta name="description" content="jpcite の LINE bot — スマホで補助金・融資・税制を日本語で検索。匿名 3 件/日まで無料、以降は税別 ¥3/リクエスト (税込 ¥3.30)。月額固定なし、階層プランなし (2026-05-06 公開予定、先行登録受付中)。">
+<meta name="description" content="jpcite の LINE bot — スマホで補助金・融資・税制を日本語で検索。匿名 3 件/日まで無料、以降は税別 ¥3/質問 (税込 ¥3.30)。月額固定なし、階層プランなし。">
 
 <meta property="og:title" content="LINE bot — jpcite">
 <meta property="og:description" content="スマホで補助金・融資・税制を日本語で検索。公開準備中。">
@@ -142,7 +142,7 @@
  <div class="container">
  <h1>LINE bot</h1>
  <p class="lead">スマホ 1 台で、補助金・融資・税制・行政処分を日本語で検索。jpcite の REST API を LINE Messaging API で包んだ bot です。</p>
- <p style="color:var(--text-muted);margin-top:-8px;">公開準備中 (2026-05-06 予定)。早期アクセスをメールでお知らせします。</p>
+ <p style="color:var(--text-muted);margin-top:-8px;">提供状況と利用開始通知をこのページで案内しています。</p>
 
  <section aria-labelledby="what-title" style="margin-top:32px;">
  <h2 id="what-title" class="section-title">何ができる?</h2>
@@ -150,7 +150,7 @@
  <article class="card">
  <h3>自然文で検索</h3>
  <p class="card-lead">「東京都の飲食店で使える補助金」</p>
- <p>業種・都道府県・制度種別を自動抽出。補助金 11,684 件 + 採択事例 2,286 件 + 融資 108 + 行政処分 1,185 + 税制 50 から、公式 URL 付きで返答。</p>
+ <p>業種・都道府県・制度種別を自動抽出。補助金 11,601 件 + 採択事例 2,286 件 + 融資 108 + 行政処分 1,185 + 税制 50 から、一次資料 URL を優先して返答。</p>
  </article>
  <article class="card">
  <h3>締切リマインド</h3>
@@ -182,11 +182,11 @@
  <article class="price-card highlight">
  <h2>従量課金</h2>
 	 <p class="tier-desc">匿名無料枠の超過後は従量課金</p>
- <p class="price">¥3.30 <small style="font-size:14px;font-weight:500;color:var(--text-muted);">/ リクエスト (税込)</small></p>
+ <p class="price">¥3.30 <small style="font-size:14px;font-weight:500;color:var(--text-muted);">/ 質問 (税込)</small></p>
  <p class="price-unit">税別 ¥3 · 匿名 3 件/日まで無料 · 月額固定なし、階層プランなし</p>
  <ul class="feats">
-	 <li>匿名無料枠の超過後は税別 ¥3/リクエスト (税込 ¥3.30)</li>
-	 <li>支払い方法は公開時に案内</li>
+	 <li>匿名無料枠の超過後は税別 ¥3/質問 (税込 ¥3.30)</li>
+	 <li>支払い方法は決済画面で案内</li>
  <li>お気に入り + 締切通知</li>
  </ul>
  </article>
@@ -194,8 +194,8 @@
  </section>
 
  <section aria-labelledby="waitlist-title" style="margin-top:56px;">
- <h2 id="waitlist-title" class="section-title">早期アクセスに登録</h2>
- <p style="color:var(--text-muted);max-width:640px;">公開時にメール通知します。メール以外の情報は取得しません。解除はワンクリック。</p>
+ <h2 id="waitlist-title" class="section-title">利用開始通知に登録</h2>
+ <p style="color:var(--text-muted);max-width:640px;">利用開始時にメール通知します。メール以外の情報は取得しません。解除はワンクリック。</p>
  <form id="waitlist" style="display:flex;gap:8px;max-width:480px;flex-wrap:wrap;margin-top:16px;">
  <input type="email" name="email" required aria-required="true" placeholder="you@example.com"
  style="flex:1;min-width:240px;padding:12px;border:1px solid var(--border);border-radius:6px;font-size:15px;" aria-label="メールアドレス (必須)">
@@ -250,7 +250,7 @@ document.getElementById('waitlist').addEventListener('submit', async (e) => {
   const honey = e.target.company_url && e.target.company_url.value;
   const submitBtn = document.getElementById('waitlist-submit');
   const status = document.getElementById('waitlist-status');
-  if (honey) { status.textContent = '登録しました。公開時にメールでお知らせします。'; return; }
+  if (honey) { status.textContent = '登録しました。利用開始時にメールでお知らせします。'; return; }
   if (submitBtn) submitBtn.disabled = true;
   const email = e.target.email.value;
   status.textContent = '送信中...';
@@ -264,7 +264,7 @@ document.getElementById('waitlist').addEventListener('submit', async (e) => {
       signal: ctrl.signal
     });
     if (r.ok) {
-      status.textContent = '登録しました。公開時にメールでお知らせします。';
+      status.textContent = '登録しました。利用開始時にメールでお知らせします。';
       e.target.reset();
     } else {
       let detail = '';

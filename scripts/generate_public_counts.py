@@ -114,7 +114,17 @@ def collect_counts() -> dict[str, Any]:
             )
             counts["sources_total"] = _scalar(am, "SELECT COUNT(*) FROM am_source")
             counts["law_articles_total"] = _scalar(am, "SELECT COUNT(*) FROM am_law_article")
+            counts["laws_fulltext"] = _scalar(
+                am,
+                "SELECT COUNT(DISTINCT law_canonical_id) FROM am_law_article",
+                6493,
+            )
             counts["last_corpus_refresh"] = _scalar(am, "SELECT MAX(updated_at) FROM am_entities")
+
+    # Public fallback from the latest verified static snapshot.
+    # Keep the key populated so data-stat-key hydration never erases the
+    # fallback value on pages that disclose full-text law coverage.
+    counts.setdefault("laws_fulltext", 6493)
 
     # Hard-coded reference values that are not row-counts but still belong on
     # the public count surface (price + tool count + free quota). These are the
@@ -145,6 +155,7 @@ PUBLIC_CARD_LABELS: list[tuple[str, str]] = [
     ("loan_programs_total", "融資プログラム"),
     ("enforcement_cases_total", "行政処分"),
     ("laws_total", "法令 (e-Gov 連携)"),
+    ("laws_fulltext", "法令本文インデックス済み"),
     ("tax_rulesets_total", "税制ルール"),
     ("court_decisions_total", "判例"),
     ("bids_total", "入札"),

@@ -46,10 +46,9 @@ fails any anthropic / openai / google / claude_agent_sdk import.
 from __future__ import annotations
 
 import logging
-import sqlite3
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, timedelta, timezone
-from typing import Annotated, Any, Literal
+from typing import TYPE_CHECKING, Annotated, Any, Literal
 
 from fastapi import APIRouter, HTTPException, Query, Response, status
 from pydantic import BaseModel
@@ -58,6 +57,9 @@ from jpintel_mcp.api.deps import (  # noqa: TC001 (runtime for FastAPI Depends r
     ApiContextDep,
     DbDep,
 )
+
+if TYPE_CHECKING:
+    import sqlite3
 
 logger = logging.getLogger("jpintel.billing_breakdown")
 
