@@ -27,6 +27,7 @@ from jpintel_mcp.mcp.server import mcp as _mcp
 from . import (
     annotation_tools,  # noqa: F401  — V4 Phase 4: get_annotations (am_entity_annotation, migration 046)
     autonomath_wrappers,  # noqa: F401  — decorator side-effect (5 wrappers; sib_tool intentionally skipped — am_sib_contract has 35 rows from Wave 19 backfill but tool not yet stabilized)
+    benchmark_tools,  # noqa: F401  — R8 (2026-05-07): benchmark_cohort_average_am — 業種 × 規模 × 地域 cohort average + outlier (top 10%) over case_studies + jpi_adoption_records.
     citations_tools,  # noqa: F401  — 2026-04-30: verify_citations (api/citations.py companion). LR plan §28.2 verification path.
     cohort_match_tools,  # noqa: F401  — R8 (2026-05-07): case_cohort_match_am — 同業 (JSIC) × 同規模 (employees + revenue) × 同地域 (prefecture) cohort matcher over case_studies + jpi_adoption_records. AUTONOMATH_COHORT_MATCH_ENABLED gate (default ON). NO LLM, single ¥3/req billing event. §52 / §47条の2 / §1 envelope. REST companion at POST /v1/cases/cohort_match.
     compatibility_tools,  # noqa: F401  — R8 (2026-05-07): am_compat_matrix 43,966 row full surface. 2 tools (portfolio_optimize_am / program_compatibility_pair_am) over am_compat_matrix + am_funding_stack_empirical + am_program_eligibility_predicate + am_relation. AUTONOMATH_COMPATIBILITY_TOOLS_ENABLED gate (default ON). NO LLM, single ¥3/req billing event. §52/§1/§72 envelope. REST companion at POST /v1/programs/portfolio_optimize + GET /v1/programs/{a}/compatibility/{b}.

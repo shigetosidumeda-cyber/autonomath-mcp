@@ -9630,8 +9630,8 @@
         "additionalProperties": false,
         "properties": {
           "method": {
-            "const": "match_quality_then_success_count",
-            "default": "match_quality_then_success_count",
+            "const": "match_quality_then_registration_order",
+            "default": "match_quality_then_registration_order",
             "title": "Method",
             "type": "string"
           },
@@ -9667,7 +9667,15 @@
           },
           "known_gaps": {
             "items": {
-              "type": "string"
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "additionalProperties": true,
+                  "type": "object"
+                }
+              ]
             },
             "maxItems": 20,
             "title": "Known Gaps",
@@ -16654,7 +16662,7 @@
     },
     "/v1/advisors/{advisor_id}/dashboard-data": {
       "get": {
-        "description": "Self-serve dashboard backing data: referrals + earnings summary.\n\nAccess is limited to the advisor dashboard flow.",
+        "description": "Self-serve dashboard backing data: referrals + earnings summary.\n\nAuthentication: a signed HMAC ``?token=...`` is required. The token is\nissued in the Stripe Connect Express return URL (or a future magic-link\nemail) so the advisor can arrive from Stripe without an API key while\nkeeping dashboard data non-public.",
         "operationId": "dashboard_data_v1_advisors__advisor_id__dashboard_data_get",
         "parameters": [
           {
@@ -16664,6 +16672,24 @@
             "schema": {
               "title": "Advisor Id",
               "type": "integer"
+            }
+          },
+          {
+            "description": "signed advisor dashboard token",
+            "in": "query",
+            "name": "token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "signed advisor dashboard token",
+              "title": "Token"
             }
           }
         ],
