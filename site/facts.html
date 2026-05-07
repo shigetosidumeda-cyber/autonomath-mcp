@@ -252,9 +252,9 @@
  </div>
 
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
- <dt id="fact-laws_total" style="font-weight:600;font-size:18px;">法令 件数: 9,484 メタデータ / 154 本文完全索引 (飽和進行中)</dt>
+ <dt id="fact-laws_total" style="font-weight:600;font-size:18px;">法令 件数: 9,484 メタデータ / 6,493 本文インデックス</dt>
  <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
- e-Gov 法令 API より取得。CC-BY 4.0 ライセンス下で再配布。法令名検索は全 9,484 件 で動作。 本文を条文単位で完全索引した法令は <strong>154 件</strong> (現状 1.6%)。 直近のバルク取得は週 100 件 → 300 件 / バッチ に加速、 全件飽和試算は当初 7.5 ヶ月 → 数 ヶ月 短縮見込み (内部仮説)。 詳細は <a href="about.html#法令本文-飽和進行">about.html#法令本文-飽和進行</a>。<br>
+ e-Gov 法令 API より取得。CC-BY 4.0 ライセンス下で再配布。法令名・法令番号・所管などのメタデータ検索と、本文インデックス済み法令の条文検索に対応します。詳細は <a href="about.html#法令データの扱い">about.html#法令データの扱い</a>。<br>
  出典: e-Gov 法令検索 (https://elaws.e-gov.go.jp/) · 更新 2026-05-07 JST · ライセンス CC-BY 4.0
  </dd>
  </div>
@@ -326,7 +326,7 @@
  <dt id="fact-total_relations" style="font-weight:600;font-size:18px;">関係性 総数: 378,342</dt>
  <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
  15 種類の標準関係性で各レコード間を接続 (制度↔法令↔処分↔採択事例 など)。<br>
- 出典: 37.8 万件の関係性 集計 · 更新 2026-05-07 JST · R8_DATA_FIDELITY 再計測で 17.7 万件 → 37.8 万件 に補正
+ 出典: 37.8 万件の関係性 集計 · 更新 2026-05-07 JST
  </dd>
  </div>
 
@@ -413,7 +413,7 @@
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
  <dt id="combo-law-article" style="font-weight:600;font-size:16px;">8. 法令 × 条文改正 (am_law_article)</dt>
  <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
- 9,484 法令 × 353,278 条文行 × 改正版差分。 条文単位で 「現行版」 「改正前版」 を取得 (本文完全索引 154 件で先行提供、 残り順次)。<br>
+ 9,484 法令メタデータ × 353,278 条文行 × 改正版差分。 本文インデックス済み法令では、条文単位で「現行版」「改正前版」を取得できます。<br>
  サンプル query: <code>GET /v1/laws/{id}/articles</code> · <code>GET /v1/laws/{id}/articles/{article_no}/amendments</code>
  </dd>
  </div>
@@ -496,8 +496,8 @@
  <section aria-labelledby="changelog-title" style="margin-top:40px;">
  <h2 id="changelog-title" class="section-title">更新履歴</h2>
  <ul style="margin:0;padding-left:20px;line-height:1.8;font-size:14px;">
- <li><strong>2026-05-07</strong> — 法令 本文索引と完全本文収録を分ける honest framing に補正。 12 軸の価値ある組合せ section 追加。 R8_DATA_VALUE_GROW_FRAMING_2026-05-07 にて記録。</li>
- <li><strong>2026-05-07</strong> — R8_DATA_FIDELITY 再計測。 関係性 総数を 17.7 万件 → 37.8 万件 に補正 (am_relation 全件再カウント)。 v0.3.4 / 2026-05-07 SOT 反映。</li>
+ <li><strong>2026-05-07</strong> — 法令メタデータ、本文インデックス、条文行の表示を整理。 12 軸の価値ある組合せ section 追加。</li>
+ <li><strong>2026-05-07</strong> — 関係性 総数を 17.7 万件 → 37.8 万件 に補正。 v0.3.4 / 2026-05-07 反映。</li>
  <li><strong>2026-04-26</strong> — 初版。 公開件数 14 項目 + 主要データベース 5 項目 + 料金 3 項目を統計 API に紐付けて公開。 各サイトページの統計表示にも展開。</li>
  </ul>
  </section>

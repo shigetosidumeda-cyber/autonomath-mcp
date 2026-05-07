@@ -201,7 +201,7 @@
 </tr>
 <tr>
 <th scope="row">5. Laws / 法令</th>
-<td class="col-us">6,493 本文索引 + 9,484 catalog stub + <strong>28,201 law article rows</strong> (pre-indexed, クエリ即時応答)。</td>
+<td class="col-us">9,484 法令メタデータ + 6,493 本文インデックス済み法令 + <strong>28,201 law article rows</strong> (pre-indexed, クエリ即時応答)。</td>
 <td>e-Gov API live fetch + 24 主要税法 hardcoded 略称 (「所法」「措法」 等)。</td>
 <td class="compare-note-cell">jpcite は事前索引、tax-law-mcp は live API。</td>
 </tr>
@@ -221,7 +221,7 @@
 <th scope="row">8. 裁決事例</th>
 <td class="col-us">137 saiketsu (pre-indexed, 国税不服審判所) + 2,065 court decisions。</td>
 <td>1,950 saiketsu (KFS live scrape, 30-60s 初回 cache)。</td>
-<td class="compare-note-cell">tax-law-mcp は full corpus、jpcite は subset + court cross-ref。</td>
+<td class="compare-note-cell">tax-law-mcp は都度取得型、jpcite は収録済み裁決データと判例連携を提供。</td>
 </tr>
 <tr>
 <th scope="row">9. Latency / 応答性</th>
@@ -278,7 +278,7 @@
         <ul>
           <li><strong>ad-hoc lookups</strong>: 「所法 22 条」「措法 42 条の 4」のような<strong>略称ベースの単発問い合わせ</strong>を ergonomic prompt で即返したい (jpcite は法令 ID 起点)。</li>
           <li><strong>npx 1 行 install</strong> でゼロ env-var ゼロ API key で即起動 (<code>npx -y tax-law-mcp</code>)。</li>
-          <li><strong>KFS 裁決事例 1,950 件 full corpus</strong> を keyword 検索したい (jpcite は 137 件 subset)。</li>
+          <li><strong>KFS 裁決事例 1,950 件</strong> を都度 keyword 検索したい。</li>
           <li>Custom GPT Actions 用の <code>openapi.yaml</code> drop-in 配布あり。</li>
         </ul>
       </div>

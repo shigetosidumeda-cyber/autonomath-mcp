@@ -2300,6 +2300,35 @@
     updateUrlPreview();
   }
 
+  function applyQueryParamsToCurrentEndpoint(qs) {
+    if (!qs) return;
+    let touched = false;
+    for (const param of currentEndpoint.params) {
+      if (!qs.has(param.name)) continue;
+      const inputs = els.params.querySelectorAll('[data-name="' + param.name + '"]');
+      const input = inputs[0];
+      if (!input) continue;
+      const values = qs.getAll(param.name).map(function (v) { return String(v); });
+      if (param.type === 'multi') {
+        const wanted = new Set(values.flatMap(function (v) { return splitArrayValue(v); }));
+        for (const opt of input.options || []) {
+          opt.selected = wanted.has(opt.value);
+        }
+        touched = true;
+        continue;
+      }
+      if (param.type === 'checkbox') {
+        const raw = (values[values.length - 1] || '').trim().toLowerCase();
+        input.checked = !['', '0', 'false', 'no', 'off'].includes(raw);
+        touched = true;
+        continue;
+      }
+      input.value = values[values.length - 1] || '';
+      touched = true;
+    }
+    if (touched) updateUrlPreview();
+  }
+
   function updateUrlPreview() {
     const { url } = buildUrl();
     safeText(els.urlText, url);
@@ -2582,17 +2611,25 @@
   function init() {
     renderEndpointSelect();
     const qs = new URLSearchParams(window.location.search || '');
-    if (qs.get('flow') === 'evidence3') {
-      const idx = ENDPOINTS.findIndex(function(ep) {
+    const requestedEndpoint = (qs.get('endpoint') || qs.get('tool') || '').trim();
+    let idx = -1;
+    if (requestedEndpoint) {
+      idx = ENDPOINTS.findIndex(function(ep) {
+        return ep.id === requestedEndpoint || ep.path === requestedEndpoint;
+      });
+    }
+    if (idx < 0 && qs.get('flow') === 'evidence3') {
+      idx = ENDPOINTS.findIndex(function(ep) {
         return ep.id === 'intelligence.precomputed.query';
       });
-      if (idx >= 0) {
-        currentEndpoint = ENDPOINTS[idx];
-        els.endpoint.value = String(idx);
-        if (els.flowHint) els.flowHint.hidden = false;
-      }
+      if (idx >= 0 && els.flowHint) els.flowHint.hidden = false;
+    }
+    if (idx >= 0) {
+      currentEndpoint = ENDPOINTS[idx];
+      els.endpoint.value = String(idx);
     }
     renderParams();
+    applyQueryParamsToCurrentEndpoint(qs);
 
     els.endpoint.addEventListener('change', function() {
       currentEndpoint = ENDPOINTS[parseInt(els.endpoint.value, 10) || 0];

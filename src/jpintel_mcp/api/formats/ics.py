@@ -15,7 +15,7 @@ skipped — the caller should keep filtering to deadline-bearing endpoints).
 UID is ``sha256(unified_id || source_fetched_at || deadline_iso)`` so a
 re-export of the same calendar with the same row state produces the same
 UID — which keeps Apple Calendar / Google Calendar from creating duplicate
-events on every refresh. UID is suffixed ``@autonomath.ai`` per RFC 5545.
+events on every refresh. UID is suffixed ``@jpcite.com`` per RFC 5545.
 
 DTSTART / DTEND use ``TZID=Asia/Tokyo`` because every Japanese government
 deadline is JST-based; UTC would render the deadline a day off in Apple
@@ -154,7 +154,7 @@ def _fmt_dt_utc(d: _dt.datetime) -> str:
 
 def _uid(unified_id: str, fetched_at: str | None, deadline: _dt.datetime) -> str:
     raw = f"{unified_id}|{fetched_at or ''}|{deadline.isoformat()}".encode()
-    return hashlib.sha256(raw).hexdigest() + "@autonomath.ai"
+    return hashlib.sha256(raw).hexdigest() + "@jpcite.com"
 
 
 def render_ics(rows: list[dict[str, Any]], meta: dict[str, Any]) -> Response:
@@ -177,11 +177,11 @@ def render_ics(rows: list[dict[str, Any]], meta: dict[str, Any]) -> Response:
         ) from exc
 
     cal = Calendar()
-    cal.add("prodid", "-//Bookyou株式会社//AutonoMath//JA")
+    cal.add("prodid", "-//Bookyou株式会社//jpcite//JA")
     cal.add("version", "2.0")
     cal.add("calscale", "GREGORIAN")
     cal.add("method", "PUBLISH")
-    cal.add("x-wr-calname", meta.get("endpoint", "AutonoMath"))
+    cal.add("x-wr-calname", meta.get("endpoint", "jpcite"))
     cal.add("x-wr-caldesc", DISCLAIMER_JA + " | " + BRAND_FOOTER)
     cal.add("x-wr-timezone", "Asia/Tokyo")
 

@@ -66,5 +66,5 @@ for ts in r.json().get("results", []):
 ## 関連
 
 - [R01 顧問先別 補助金 weekly alert](r01-weekly-alert-per-client.md)
-- [R24 法令改正 timeline](#) (W2-6 outline; 別 wave で実装予定)
+- [法令改正の確認](../api-reference.md)
 - [API reference: /v1/tax_rulesets/search](../api-reference.md)

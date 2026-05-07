@@ -170,6 +170,7 @@ def test_agent_openapi_has_stable_operation_ids_and_stats_routes(
         ("get", "/v1/stats/freshness"): "getStatsFreshness",
         ("post", "/v1/citations/verify"): "verifyCitations",
         ("post", "/v1/cost/preview"): "previewCost",
+        ("get", "/v1/usage"): "getUsageStatus",
         ("get", "/v1/advisors/match"): "match_advisors_v1_advisors_match_get",
     }
 
@@ -185,6 +186,11 @@ def test_agent_openapi_has_stable_operation_ids_and_stats_routes(
         operation = body["paths"][path]["get"]
         assert operation["security"] == [{"ApiKeyAuth": []}, {}]
         assert operation["x-jpcite-auth"] == "optional_x_api_key_for_paid_volume"
+    usage_operation = body["paths"]["/v1/usage"]["get"]
+    assert usage_operation["x-jpcite-agent-priority"] == 1
+    assert usage_operation["x-jpcite-route-purpose"] == "usage_quota_preflight"
+    assert usage_operation["x-jpcite-free-preflight"] is True
+    assert usage_operation["x-jpcite-does-not-consume-anonymous-quota"] is True
 
 
 def test_agent_openapi_preserves_evidence_packet_value_guidance_schema(

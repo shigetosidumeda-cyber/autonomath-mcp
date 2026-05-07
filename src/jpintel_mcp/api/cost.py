@@ -209,6 +209,17 @@ _FUNDING_STACK_TOOL_NAMES: frozenset[str] = frozenset(
         "/v1/funding_stack/check",
     }
 )
+_COMPATIBILITY_TABLE_TOOL_NAMES: frozenset[str] = frozenset(
+    {
+        "artifacts.compatibility_table",
+        "compatibility_table",
+        "createCompatibilityTable",
+        "create_compatibility_table",
+        "create_compatibility_table_v1_artifacts_compatibility_table_post",
+        "v1.artifacts.compatibility_table",
+        "/v1/artifacts/compatibility_table",
+    }
+)
 _BULK_EVALUATE_TOOL_NAMES: frozenset[str] = frozenset(
     {
         "clients.bulk_evaluate",
@@ -553,7 +564,7 @@ def _billing_units_for_call(call: CostPreviewCall) -> float:
         return float(max(1, (n_profiles * n_rulesets + _AUDIT_BATCH_K - 1) // _AUDIT_BATCH_K))
     if tool in _AUDIT_SNAPSHOT_TOOL_NAMES:
         return float(_SNAPSHOT_ATTESTATION_UNITS)
-    if tool in _FUNDING_STACK_TOOL_NAMES:
+    if tool in _FUNDING_STACK_TOOL_NAMES or tool in _COMPATIBILITY_TABLE_TOOL_NAMES:
         n_programs = _dedupe_count(
             args.get("program_ids"),
             arg_name="program_ids",

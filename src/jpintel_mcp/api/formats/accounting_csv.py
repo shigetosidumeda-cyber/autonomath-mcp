@@ -226,7 +226,7 @@ def _stub_yayoi_row(row: dict[str, Any]) -> dict[str, Any]:
         "番号": "",
         "期日": "",
         "タイプ": "",
-        "生成元": "AutonoMath",
+        "生成元": "jpcite",
         "仕訳メモ": _bikou(row),
         "付箋1": "",
         "付箋2": "",

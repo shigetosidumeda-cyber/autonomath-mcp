@@ -52,12 +52,12 @@ from jpintel_mcp.api._format_dispatch import (
 # 行政書士法 §1 fence. Verbatim, no paraphrase — we want grep'able text.
 GYOSEISHOSHI_FENCE_JA = (
     "【重要・行政書士法 §1 注意事項】\n"
-    "本ファイルは「申請書のたたき台 (scaffold)」です。AutonoMath は\n"
+    "本ファイルは「申請書のたたき台 (scaffold)」です。jpcite は\n"
     "{{customer_name}} 等の placeholder を意図的に未記入のまま出力\n"
     "しています。官公署提出書類の作成・代理は行政書士法 §1 により\n"
     "行政書士の独占業務です。本ファイルを実際に提出する場合は、\n"
     "(1) お客様ご自身で記入する、または (2) 行政書士の確認・代行\n"
-    "を受けてください。AutonoMath / Bookyou株式会社は本書類の\n"
+    "を受けてください。jpcite / Bookyou株式会社は本書類の\n"
     "完成・提出について一切の責任を負いません。"
 )
 
@@ -132,7 +132,7 @@ def render_docx_application(rows: list[dict[str, Any]], meta: dict[str, Any]) ->
 
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    run = p.add_run(meta.get("endpoint", "AutonoMath export"))
+    run = p.add_run(meta.get("endpoint", "jpcite export"))
     run.bold = True
     run.font.size = Pt(14)
 
@@ -189,7 +189,7 @@ def render_docx_application(rows: list[dict[str, Any]], meta: dict[str, Any]) ->
     doc.save(buf)
     buf.seek(0)
 
-    filename = f"{meta.get('filename_stem', 'autonomath_export')}_scaffold.docx"
+    filename = f"{meta.get('filename_stem', 'jpcite_export')}_scaffold.docx"
     return Response(
         content=buf.read(),
         media_type=("application/vnd.openxmlformats-officedocument.wordprocessingml.document"),

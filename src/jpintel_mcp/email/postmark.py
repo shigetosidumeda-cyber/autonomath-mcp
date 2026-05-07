@@ -245,7 +245,7 @@ class PostmarkClient:
         `invoice.payment_failed` webhook in `api/billing.py`.
 
         Subject (template alias `dunning` in Postmark UI):
-            "[AutonoMath] お支払い更新のお願い"
+            "[jpcite] お支払い更新のお願い"
 
         TemplateModel keys:
             - customer_name (str | None) — greeting line override
@@ -294,7 +294,7 @@ class PostmarkClient:
         IP / User-Agent / key suffixes the harness saw at rotation time.
 
         Subject (template alias `key-rotated` in Postmark UI):
-            "[AutonoMath] API キーがローテーションされました"
+            "[jpcite] API キーがローテーションされました"
 
         TemplateModel keys (all required):
             - old_suffix (str) — last 4 chars of the revoked key

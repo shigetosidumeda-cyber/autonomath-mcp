@@ -10,7 +10,7 @@ category: incident
 **Owner**: 梅田茂利 (info@bookyou.net) — solo zero-touch
 **Operator**: Bookyou株式会社 (T8010001213708)
 **Last reviewed**: 2026-05-07
-**Related**: `docs/runbook/cloudflare_redirect.md` (the Cloudflare API token + Zone ID provisioning this runbook reuses), `docs/runbook/cors_setup.md` (CORS allowlist that interacts with WAF rules), `docs/runbook/sentry_alert_escalation.md` §4 (this runbook is the destination of `cloudflare_ddos_detected` + `cloudflare_abuse_pattern`), `docs/runbook/fly_machine_oom.md` (origin saturation symptom).
+**Related**: `docs/runbook/cloudflare_redirect.md` (the Cloudflare API token + Zone ID provisioning this runbook reuses), `docs/runbook/cors_setup.md` (CORS allowlist that interacts with WAF rules), `docs/runbook/sentry_alert_escalation.md` §4 (this runbook is the destination of `cloudflare_ddos_detected` + `cloudflare_abuse_pattern`), `docs/runbook/fly_machine_oom.md` (origin overload symptom).
 
 This runbook covers DDoS, scraping abuse, credential stuffing, and other
 high-volume malicious patterns that hit `api.jpcite.com` or
@@ -34,7 +34,7 @@ B. Sentry alert `cloudflare_abuse_pattern`
    (5xx surge or 429 surge from a single ASN / Cloudflare reports).
 C. Cloudflare dashboard → Analytics & Logs → Traffic shows a > 5x spike
    over baseline.
-D. Fly machine CPU saturation (> 80% sustained 5 min) — `flyctl metrics
+D. Fly machine CPU pressure (> 80% sustained 5 min) — `flyctl metrics
    cpu_used_seconds_total -a autonomath-api`.
 E. UptimeRobot 5xx surge for api.jpcite.com (3+ consecutive 60s checks).
 F. Operator-driven: noise spike in Sentry "anonymous_quota_exceeded" log

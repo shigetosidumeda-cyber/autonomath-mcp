@@ -91,7 +91,7 @@ the alert email finds the runbook.
 | `database_corruption_detected`  | `docs/runbook/db_corruption_recovery.md`         | Customer data integrity at risk; every minute the API serves on a corrupt DB compounds bad rows. |
 | `machine_oomkill`               | `docs/runbook/fly_machine_oom.md`                | API is dark until Fly auto-restart finishes.      |
 | `stripe_dispute_received`       | `docs/runbook/stripe_chargeback_response.md`     | 7-day SLA starts the moment the webhook fires.    |
-| `cloudflare_ddos_detected`      | `docs/runbook/cloudflare_abuse_mitigation.md`    | Origin (Fly) saturation imminent; CF protection in front but rate-limits unguarded. |
+| `cloudflare_ddos_detected`      | `docs/runbook/cloudflare_abuse_mitigation.md`    | Origin capacity pressure detected; CF protection in front but rate-limits unguarded. |
 | `boot_gate_fail`                | `docs/runbook/secret_rotation.md` Verify section | Production refusing connections post-deploy.      |
 | `sentry_dsn_dark`               | `docs/runbook/sentry_setup.md` Step 0            | Self-referential: this runbook is dark.           |
 

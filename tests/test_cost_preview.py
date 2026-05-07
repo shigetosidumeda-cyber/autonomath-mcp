@@ -111,6 +111,18 @@ def test_funding_stack_preview_uses_pair_quantity() -> None:
     assert yen == 9
 
 
+def test_compatibility_table_preview_uses_pair_quantity() -> None:
+    yen, units = _cost(
+        CostPreviewCall(
+            tool="/v1/artifacts/compatibility_table",
+            args={"program_ids": ["A", "B", "C", "D", "E", "A"]},
+        )
+    )
+
+    assert units == 10
+    assert yen == 30
+
+
 def test_known_fanout_preview_fails_closed_when_args_missing() -> None:
     with pytest.raises(CostPreviewArgsError, match="unified_ids list is required"):
         compute_predicted_cost([CostPreviewCall(tool="batch_get_programs")], 1)

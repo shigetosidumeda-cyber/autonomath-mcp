@@ -13,7 +13,7 @@ test mode → live mode. This is **legal contract activation** — Bookyou株式
 ownership against Stripe's KYC. Cannot be delegated to AI agents per
 `docs/_internal/stripe_tax_setup.md` §1.
 
-> Working hypothesis: jpcite metered billing already runs end-to-end in
+> Implementation note: jpcite metered billing already runs end-to-end in
 > test mode (`STRIPE_SECRET_KEY=sk_test_...`, webhook firing into
 > `/v1/billing/webhook`). Live activation flips the dashboard, then we
 > swap two Fly secrets (sk_test → sk_live, whsec_test → whsec_live) and

@@ -229,7 +229,7 @@ Within 24 h of recovery, write a one-page note to
 
 * trigger (Sentry issue ID, integrity_check stderr, df output)
 * RPO violation (snapshot age vs corruption time)
-* root cause hypothesis (volume hardware? deploy mid-write? VACUUM mid-run?)
+* root cause candidate (volume hardware? deploy mid-write? VACUUM mid-run?)
 * customer impact (rows lost, requests rejected, webhook delivery gap)
 * whether to widen `am_entities`/`programs` row-count alerts in
   `monitoring/sentry_alert_rules.yml`

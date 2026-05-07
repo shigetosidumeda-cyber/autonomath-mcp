@@ -21,6 +21,7 @@ AGENT_SAFE_PATHS: tuple[str, ...] = (
     "/v1/stats/freshness",
     "/v1/citations/verify",
     "/v1/cost/preview",
+    "/v1/usage",
     "/v1/laws/search",
     "/v1/laws/{unified_id}",
     "/v1/am/law_article",
@@ -50,6 +51,7 @@ AGENT_SAFE_PATHS: tuple[str, ...] = (
 
 _AGENT_PRIORITIES: dict[str, tuple[int, str]] = {
     "/v1/cost/preview": (1, "cost_transparency_preflight"),
+    "/v1/usage": (1, "usage_quota_preflight"),
     "/v1/intelligence/precomputed/query": (1, "compact_first_pass"),
     "/v1/artifacts/company_public_baseline": (1, "japanese_company_first_hop"),
     "/v1/artifacts/application_strategy_pack": (1, "public_support_application_strategy"),
@@ -85,6 +87,7 @@ _AGENT_OPERATION_IDS: dict[tuple[str, str], str] = {
     ("get", "/v1/stats/freshness"): "getStatsFreshness",
     ("post", "/v1/citations/verify"): "verifyCitations",
     ("post", "/v1/cost/preview"): "previewCost",
+    ("get", "/v1/usage"): "getUsageStatus",
     ("get", "/v1/laws/search"): "searchLaws",
     ("get", "/v1/laws/{unified_id}"): "getLaw",
     ("get", "/v1/am/law_article"): "getLawArticle",
@@ -169,6 +172,7 @@ _AGENT_PRICING_METADATA: dict[str, Any] = {
 _FREE_AGENT_PATHS: frozenset[str] = frozenset(
     {
         "/v1/cost/preview",
+        "/v1/usage",
         "/v1/meta/freshness",
         "/v1/stats/coverage",
         "/v1/stats/freshness",
@@ -567,6 +571,38 @@ _OPERATION_GUIDANCE: dict[str, dict[str, Any]] = {
         "x-jpcite-must-preserve-fields": _COST_PREVIEW_POLICY["must_preserve_fields"],
         "x-jpcite-must-not-claim": _COST_PREVIEW_POLICY["must_not_claim"],
         "x-jpcite-agent-output-guidance": _COST_PREVIEW_POLICY["agent_output_guidance"],
+    },
+    "/v1/usage": {
+        "x-jpcite-recommended-when": [
+            "before_anonymous_or_paid_agent_runs_when_quota_is_unclear",
+            "before_retrying_after_429_or_explaining_remaining_free_daily_calls",
+            "when_the_user_asks_how_many_jpcite_calls_are_left",
+        ],
+        "x-jpcite-not-recommended-when": [
+            "the_agent_already_has_a_fresh_usage_response",
+            "the_user_needs_source_evidence_rather_than_quota_status",
+        ],
+        "x-jpcite-free-preflight": True,
+        "x-jpcite-does-not-consume-anonymous-quota": True,
+        "x-jpcite-must-preserve-fields": [
+            "tier",
+            "limit",
+            "remaining",
+            "used",
+            "reset_at",
+            "reset_timezone",
+            "upgrade_url",
+        ],
+        "x-jpcite-must-not-claim": [
+            "usage_probe_consumes_free_quota",
+            "paid_volume_is_unlimited_without_customer_caps",
+            "quota_reset_time_is_local_without_checking_reset_timezone",
+        ],
+        "x-jpcite-agent-output-guidance": (
+            "Use this as a free quota/status preflight. Preserve reset_at and "
+            "reset_timezone exactly, and explain remaining calls before running "
+            "a larger jpcite plan."
+        ),
     },
     "/v1/evidence/packets/query": _EVIDENCE_PACKET_ROUTE_GUIDANCE,
     "/v1/evidence/packets/{subject_kind}/{subject_id}": _EVIDENCE_PACKET_ROUTE_GUIDANCE,

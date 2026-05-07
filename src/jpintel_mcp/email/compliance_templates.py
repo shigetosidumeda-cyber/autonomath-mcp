@@ -135,12 +135,12 @@ _env_text = Environment(
 # ---------------------------------------------------------------------------
 
 # Subject line — real-time daily alert vs monthly free digest.
-_SUBJECT_REALTIME = "【AutonoMath】法令改正アラート: {n}件の変更があります"
-_SUBJECT_DIGEST = "【AutonoMath】{ym} の制度変更まとめ ({n}件)"
-_SUBJECT_VERIFY = "【AutonoMath】法令改正アラートの登録確認"
+_SUBJECT_REALTIME = "【jpcite】法令改正アラート: {n}件の変更があります"
+_SUBJECT_DIGEST = "【jpcite】{ym} の制度変更まとめ ({n}件)"
+_SUBJECT_VERIFY = "【jpcite】法令改正アラートの登録確認"
 
 _FOOTER_TXT = """--
-AutonoMath — 法令改正アラート
+jpcite — 法令改正アラート
 このメールは {email} 宛に配信されています。
 配信を停止する: {unsubscribe_url}
 
@@ -155,7 +155,7 @@ AutonoMath — 法令改正アラート
 _FOOTER_HTML = """\
 <hr style="border:none;border-top:1px solid #e5e5e5;margin:32px 0 16px">
 <p style="font-size:12px;color:#555;line-height:1.7;margin:0 0 8px">
-  AutonoMath — 法令改正アラート<br>
+  jpcite — 法令改正アラート<br>
   このメールは <a href="mailto:{{ email }}" style="color:#555">{{ email }}</a> 宛に配信されています。<br>
   <a href="{{ unsubscribe_url }}" style="color:#1e3a8a">配信を停止する</a>
 </p>
@@ -199,7 +199,7 @@ _ALERT_HTML_TMPL = (
         <a href="{{ c.source_url }}" style="color:#1e3a8a;">一次資料を開く</a>
         {% if c.detail_url %}
         ・
-        <a href="{{ c.detail_url }}" style="color:#1e3a8a;">AutonoMath で詳細を見る</a>
+        <a href="{{ c.detail_url }}" style="color:#1e3a8a;">jpcite で詳細を見る</a>
         {% endif %}
       </div>
     </li>
@@ -232,7 +232,7 @@ _ALERT_TEXT_TMPL = (
 - {{ c.title }}
   {{ c.summary }}
   一次資料: {{ c.source_url }}
-{% if c.detail_url %}  AutonoMath: {{ c.detail_url }}
+{% if c.detail_url %}  jpcite: {{ c.detail_url }}
 {% endif %}
 {% endfor %}
 
@@ -256,7 +256,7 @@ _VERIFY_HTML_TMPL = (
 <body style="font-family: -apple-system, 'Hiragino Sans', 'Yu Gothic UI', sans-serif; color:#111; line-height:1.7; max-width:560px; margin:0 auto; padding:24px;">
   <h1 style="font-size:20px; font-weight:700; margin:0 0 12px;">ご登録ありがとうございます</h1>
   <p style="font-size:14px; color:#111; margin:0 0 16px;">
-    AutonoMath 法令改正アラートへのご登録を確認するため、下のボタンをクリックしてください。
+    jpcite 法令改正アラートへのご登録を確認するため、下のボタンをクリックしてください。
   </p>
   <p style="margin:24px 0;">
     <a href="{{ verify_url }}" style="display:inline-block; background:#1e3a8a; color:#fff; padding:12px 24px; border-radius:6px; font-weight:600; text-decoration:none;">登録を確認する</a>
@@ -282,7 +282,7 @@ _VERIFY_TEXT_TMPL = (
     """\
 ご登録ありがとうございます。
 
-AutonoMath 法令改正アラートへのご登録を確認するため、下記 URL を開いてください:
+jpcite 法令改正アラートへのご登録を確認するため、下記 URL を開いてください:
 
   {{ verify_url }}
 

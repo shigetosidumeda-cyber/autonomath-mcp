@@ -85,6 +85,11 @@
 /api         /docs/api-reference/  301
 /api/*       /docs/api-reference/  301
 
+# Legacy/guessed docs audience path. Audience guides live on the public
+# static audience surface, not under MkDocs getting-started.
+/docs/getting-started/audiences/  /audiences/  301
+/docs/getting-started/audiences   /audiences/  301
+
 # Auth-style aliases — we have no separate sign-in page; account / API key
 # management lives on the dashboard, which uses device-flow login.
 /sign-in     /dashboard  302

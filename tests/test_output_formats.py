@@ -183,7 +183,7 @@ def test_format_md_round_trip() -> None:
 
 
 # ---------------------------------------------------------------------------
-# 4. iCalendar — VEVENT per row, sha256 UID @autonomath.ai.
+# 4. iCalendar — VEVENT per row, sha256 UID @jpcite.com.
 # ---------------------------------------------------------------------------
 
 
@@ -205,7 +205,7 @@ def test_format_ics_round_trip() -> None:
     events = list(cal.walk("VEVENT"))
     assert len(events) == 2
 
-    uid_re = re.compile(r"^[0-9a-f]{64}@autonomath\.ai$")
+    uid_re = re.compile(r"^[0-9a-f]{64}@jpcite\.com$")
     for ev in events:
         uid = str(ev.get("UID"))
         assert uid_re.match(uid), f"unexpected UID format: {uid!r}"

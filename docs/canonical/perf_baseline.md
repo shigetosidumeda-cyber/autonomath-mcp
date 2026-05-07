@@ -50,7 +50,7 @@ lookup — scale identically: p50 ≈ 230–280ms, p95 ≈ 930–1210ms. That th
 point lookup (a single indexed `WHERE unified_id=?` row) degrades in lockstep
 with facet search rules out query-plan cost. The bottleneck is per-request.
 
-### Root cause: per-request connection setup + threadpool saturation
+### Root cause: per-request connection setup + threadpool capacity pressure
 
 `src/jpintel_mcp/api/deps.py:30` → `get_db()` calls `connect()` on every
 request. `connect()` at `src/jpintel_mcp/db/session.py:27-31` opens a fresh

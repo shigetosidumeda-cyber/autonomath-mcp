@@ -11,14 +11,14 @@ Operator-facing one-shot procedure for registering OAuth client IDs
 on Google Cloud Console and GitHub. AI agents cannot run developer
 console UIs — both registrations require operator-bound login + 2FA.
 
-> Working hypothesis (Google): jpcite already implements the Google
+> Implementation note (Google): jpcite already implements the Google
 > Sheets OAuth flow at `src/jpintel_mcp/api/integrations.py`
 > (`/v1/integrations/google/start` + `/google/callback`). The flow
 > stores Fernet-encrypted refresh tokens in `integration_accounts` and
 > fails closed (HTTP 503) when `GOOGLE_OAUTH_CLIENT_ID` is unset. This
 > runbook walks the operator through provisioning the missing client.
 >
-> Working hypothesis (GitHub): there is **no** GitHub OAuth login flow
+> Implementation note (GitHub): there is **no** GitHub OAuth login flow
 > in production source yet (`grep -rE 'github.*(oauth|client_id)'
 > src/` returns 0 hits as of 2026-05-07). The GitHub OAuth client is
 > being registered **proactively** to support a future "Sign in with

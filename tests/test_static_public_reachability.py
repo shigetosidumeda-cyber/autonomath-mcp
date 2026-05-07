@@ -18,6 +18,25 @@ PUBLIC_AI_AND_TOOL_SURFACES = [
     REPO_ROOT / "site" / "qa" / "mcp" / "what-can-jpcite-mcp-do.html",
     REPO_ROOT / "site" / "qa" / "llm-evidence" / "custom-gpt-japanese-subsidy-api.html",
 ]
+PUBLIC_LAW_COPY_SURFACES = [
+    REPO_ROOT / "site" / "index.html",
+    REPO_ROOT / "site" / "about.html",
+    REPO_ROOT / "site" / "facts.html",
+    REPO_ROOT / "site" / "trust.html",
+    REPO_ROOT / "site" / "compare.html",
+    REPO_ROOT / "site" / "compare" / "jgrants-mcp" / "index.html",
+    REPO_ROOT / "site" / "compare" / "tax-law-mcp" / "index.html",
+    REPO_ROOT / "site" / "press" / "index.html",
+    REPO_ROOT / "site" / "docs" / "index.html",
+    REPO_ROOT / "site" / "docs" / "honest_capabilities" / "index.html",
+    REPO_ROOT / "site" / "docs" / "examples" / "index.html",
+    REPO_ROOT / "docs" / "index.md",
+    REPO_ROOT / "docs" / "honest_capabilities.md",
+    REPO_ROOT / "docs" / "examples.md",
+    REPO_ROOT / "docs" / "press_kit.md",
+    REPO_ROOT / "docs" / "roadmap.md",
+    REPO_ROOT / "overrides" / "partials" / "index_jsonld.html",
+]
 
 
 def _redirect_sources() -> list[str]:
@@ -86,6 +105,62 @@ def test_redirects_do_not_shadow_existing_program_or_qa_html_pages() -> None:
         for path in samples:
             if _redirect_source_matches(source, path):
                 offenders.append((source, path))
+
+    assert offenders == []
+
+
+def test_common_docs_audience_guess_redirects_to_real_audience_page() -> None:
+    redirects = REDIRECTS.read_text(encoding="utf-8")
+
+    assert "/docs/getting-started/audiences/  /audiences/  301" in redirects
+    assert "/docs/getting-started/audiences   /audiences/  301" in redirects
+
+
+def test_404_search_form_routes_to_playground_search() -> None:
+    body = (REPO_ROOT / "site" / "404.html").read_text(encoding="utf-8")
+
+    assert 'form action="/playground" method="get" role="search"' in body
+    assert 'name="endpoint" value="programs.search"' in body
+    assert 'form action="/programs/"' not in body
+
+
+def test_playground_can_be_deep_linked_to_program_search_query() -> None:
+    body = (REPO_ROOT / "site" / "playground.html").read_text(encoding="utf-8")
+
+    assert "qs.get('endpoint')" in body
+    assert "applyQueryParamsToCurrentEndpoint(qs)" in body
+    assert "ep.id === requestedEndpoint || ep.path === requestedEndpoint" in body
+
+
+def test_public_law_count_copy_does_not_expose_internal_indexing_progress() -> None:
+    banned_terms = [
+        "154 件本文完全索引",
+        "154 本文完全索引",
+        "154 件 (率",
+        "完全本文索引",
+        "本文完全索引",
+        "saturation",
+        "飽和",
+        "内部仮説",
+        "本文ロード継続中",
+        "ロード継続中",
+        "still loading",
+        "R8_DATA",
+        "honest framing",
+        "catalog stub",
+        "subset + court cross-ref",
+        "full corpus",
+    ]
+
+    offenders: list[tuple[str, str]] = []
+    for path in PUBLIC_LAW_COPY_SURFACES:
+        if not path.exists():
+            continue
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        rel = path.relative_to(REPO_ROOT).as_posix()
+        for term in banned_terms:
+            if term in text:
+                offenders.append((rel, term))
 
     assert offenders == []
 
