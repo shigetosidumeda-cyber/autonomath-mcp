@@ -7,7 +7,7 @@ import secrets
 import sqlite3
 from collections.abc import Generator
 from datetime import UTC, datetime, timedelta
-from typing import Annotated, Any
+from typing import Annotated, Any, NoReturn
 
 from fastapi import BackgroundTasks, Depends, Header, HTTPException, Request, status
 
@@ -469,6 +469,34 @@ def _collect_tree_key_hashes(conn: sqlite3.Connection, ctx: ApiContext) -> list[
     return hashes
 
 
+def _daily_quota_used(conn: sqlite3.Connection, ctx: ApiContext) -> int:
+    tree_hashes = _collect_tree_key_hashes(conn, ctx)
+    if not tree_hashes:
+        return 0
+    bucket = _day_bucket()
+    if len(tree_hashes) == 1:
+        (used,) = conn.execute(
+            "SELECT COALESCE(SUM(COALESCE(quantity, 1)), 0) "
+            "FROM usage_events WHERE key_hash = ? AND ts >= ?",
+            (tree_hashes[0], bucket),
+        ).fetchone()
+    else:
+        placeholders = ",".join("?" * len(tree_hashes))
+        (used,) = conn.execute(
+            f"SELECT COALESCE(SUM(COALESCE(quantity, 1)), 0) FROM usage_events WHERE key_hash IN ({placeholders}) AND ts >= ?",  # noqa: S608 — placeholders only
+            (*tree_hashes, bucket),
+        ).fetchone()
+    return int(used or 0)
+
+
+def _raise_daily_limit_exceeded(ctx: ApiContext, daily_limit: int) -> NoReturn:
+    raise HTTPException(
+        status.HTTP_429_TOO_MANY_REQUESTS,
+        f"daily limit of {daily_limit} exceeded for tier={ctx.tier}",
+        headers={"Retry-After": str(_seconds_until_utc_midnight())},
+    )
+
+
 def _enforce_quota(conn: sqlite3.Connection, ctx: ApiContext) -> None:
     if ctx.key_hash is None:
         return
@@ -564,30 +592,8 @@ def _enforce_quota(conn: sqlite3.Connection, ctx: ApiContext) -> None:
         return
     daily_limit = getattr(settings, limit_key)
 
-    bucket = _day_bucket()
-    # Migration 086: aggregate across the parent/child tree so a SaaS
-    # partner cannot burst the daily-limit budget by spreading traffic
-    # across many child keys. For legacy rows (no id column) the helper
-    # returns [ctx.key_hash], preserving the historical single-row scope.
-    tree_hashes = _collect_tree_key_hashes(conn, ctx)
-    if len(tree_hashes) == 1:
-        (n,) = conn.execute(
-            "SELECT COALESCE(SUM(COALESCE(quantity, 1)), 0) "
-            "FROM usage_events WHERE key_hash = ? AND ts >= ?",
-            (tree_hashes[0], bucket),
-        ).fetchone()
-    else:
-        placeholders = ",".join("?" * len(tree_hashes))
-        (n,) = conn.execute(
-            f"SELECT COALESCE(SUM(COALESCE(quantity, 1)), 0) FROM usage_events WHERE key_hash IN ({placeholders}) AND ts >= ?",  # noqa: S608 — placeholders only
-            (*tree_hashes, bucket),
-        ).fetchone()
-    if n >= daily_limit:
-        raise HTTPException(
-            status.HTTP_429_TOO_MANY_REQUESTS,
-            f"daily limit of {daily_limit} exceeded for tier={ctx.tier}",
-            headers={"Retry-After": str(_seconds_until_utc_midnight())},
-        )
+    if _daily_quota_used(conn, ctx) >= daily_limit:
+        _raise_daily_limit_exceeded(ctx, daily_limit)
 
 
 def compute_params_digest(endpoint: str, params: dict[str, Any] | None) -> str | None:
@@ -690,6 +696,39 @@ def _metered_cap_final_check(
             with contextlib.suppress(Exception):
                 conn.execute("ROLLBACK")
         logger.exception("usage_cap_final_check_failed")
+        return False, False
+
+
+def _daily_quota_final_check(
+    conn: sqlite3.Connection,
+    ctx: ApiContext,
+    *,
+    status_code: int,
+    quantity: int,
+) -> tuple[bool, bool]:
+    """Reserve authenticated non-metered daily quota for the exact billable quantity."""
+    if ctx.key_hash is None or status_code >= 400:
+        return True, False
+    limit_key, metered = TIER_LIMITS.get(ctx.tier, (None, False))
+    if metered or limit_key is None or ctx.tier == "trial":
+        return True, False
+    daily_limit = getattr(settings, limit_key)
+    txn_started = False
+    try:
+        if not conn.in_transaction:
+            conn.execute("BEGIN IMMEDIATE")
+            txn_started = True
+        if _daily_quota_used(conn, ctx) + quantity <= daily_limit:
+            return True, txn_started
+        if txn_started:
+            conn.execute("ROLLBACK")
+            txn_started = False
+        return False, False
+    except Exception:  # noqa: BLE001
+        if txn_started:
+            with contextlib.suppress(Exception):
+                conn.execute("ROLLBACK")
+        logger.exception("daily_quota_final_check_failed")
         return False, False
 
 
@@ -988,7 +1027,21 @@ def log_usage(
                     },
                 ) from None
 
-    if background_tasks is not None and billing_key is None and not strict_metering:
+    limit_key, ctx_metered = TIER_LIMITS.get(ctx.tier, (None, False))
+    requires_inline_daily_quota = (
+        ctx.key_hash is not None
+        and status_code < 400
+        and not ctx_metered
+        and limit_key is not None
+        and ctx.tier != "trial"
+    )
+
+    if (
+        background_tasks is not None
+        and billing_key is None
+        and not strict_metering
+        and not requires_inline_daily_quota
+    ):
         # Hot path: defer all writes until after response flush. Requests
         # protected by HTTP Idempotency-Key write inline below so the usage row
         # is durable before the idempotency middleware caches a 2xx response.
@@ -1042,6 +1095,18 @@ def log_usage(
                     },
                 )
             return audit_seal
+        allowed, daily_quota_txn_started = _daily_quota_final_check(
+            conn,
+            ctx,
+            status_code=status_code,
+            quantity=quantity,
+        )
+        if daily_quota_txn_started:
+            usage_txn_started = True
+        if not allowed:
+            limit_key, _ = TIER_LIMITS.get(ctx.tier, (None, False))
+            daily_limit = getattr(settings, limit_key) if limit_key else 0
+            _raise_daily_limit_exceeded(ctx, daily_limit)
         try:
             usage_event_id, usage_event_inserted = _insert_usage_event(
                 conn,

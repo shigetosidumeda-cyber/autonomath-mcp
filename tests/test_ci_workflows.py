@@ -151,6 +151,51 @@ def test_deploy_runs_local_gates_before_fly_deploy() -> None:
     )
 
 
+def test_deploy_manual_dispatch_requires_expected_sha() -> None:
+    text = DEPLOY_WORKFLOW.read_text(encoding="utf-8")
+    checkout = _workflow_step_block(DEPLOY_WORKFLOW, "Checkout")
+    verify = _workflow_step_block(DEPLOY_WORKFLOW, "Resolve and verify deployment SHA")
+
+    assert "workflow_dispatch:" in text
+    assert "expected_sha:" in text
+    assert "required: true" in text[text.index("expected_sha:") : text.index("concurrency:")]
+    assert "github.event.inputs.expected_sha" in checkout
+    assert 'DEPLOY_SHA="$(git rev-parse HEAD)"' in verify
+    assert "EXPECTED_SHA=" in verify
+    assert 'if [ "$DEPLOY_SHA" != "$EXPECTED_SHA" ]; then' in verify
+    assert 'echo "sha=$DEPLOY_SHA"' in verify
+    assert 'echo "short=${DEPLOY_SHA::7}"' in verify
+
+
+def test_deploy_uses_resolved_sha_for_release_fly_labels_and_failure_notice() -> None:
+    version = _workflow_step_block(DEPLOY_WORKFLOW, "Extract release version from pyproject.toml")
+    deploy = _workflow_step_block(DEPLOY_WORKFLOW, "Deploy (remote builder)")
+    pre_probe = _workflow_step_block(DEPLOY_WORKFLOW, "Verify Fly machine state pre-probe")
+    notify = _workflow_step_block(DEPLOY_WORKFLOW, "Notify Slack on failure")
+
+    assert "steps.deploy-sha.outputs.short" in version
+    assert "GITHUB_SHA::7" not in version
+    assert "--label GH_SHA=${{ steps.deploy-sha.outputs.sha }}" in deploy
+    assert "--label org.opencontainers.image.revision=${{ steps.deploy-sha.outputs.sha }}" in deploy
+    assert (
+        "--image-label deployment-${{ steps.deploy-sha.outputs.short }}-${{ github.run_id }}"
+        in deploy
+    )
+    assert "flyctl image show -a autonomath-api --json" in pre_probe
+    assert 'os.environ["DEPLOY_SHA"]' in pre_probe
+    assert "Fly image SHA mismatch" in pre_probe
+    assert "steps.deploy-sha.outputs.short" in notify
+    assert "GITHUB_SHA::7" not in notify
+
+
+def test_deploy_preflight_missing_db_skip_is_limited_to_predeploy_step() -> None:
+    predeploy = _workflow_step_block(DEPLOY_WORKFLOW, "Run local pre-deploy verification")
+
+    assert 'JPCITE_PREFLIGHT_ALLOW_MISSING_DB: "1"' in predeploy
+    assert "python scripts/ops/pre_deploy_verify.py" in predeploy
+    assert predeploy.count('JPCITE_PREFLIGHT_ALLOW_MISSING_DB: "1"') == 1
+
+
 def test_required_pytest_targets_are_in_ci() -> None:
     assert set(_workflow_env_targets(TEST_WORKFLOW, "PYTEST_TARGETS")) >= (REQUIRED_PYTEST_TARGETS)
     assert set(_workflow_env_targets(RELEASE_WORKFLOW, "PYTEST_TARGETS")) >= (

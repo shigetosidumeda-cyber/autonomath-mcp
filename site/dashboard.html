@@ -362,7 +362,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <p class="sub" style="margin:0 0 6px;">ログイン中: <code>—</code></p>
  <p class="sub" style="font-size:13px;color:var(--text-muted);margin:0 0 14px;line-height:1.6;">
  このページは <strong>既存 API キーの管理 (利用量 / 請求 / 再発行 / 解約)</strong> 専用です。
- まだ API キーをお持ちでない方は <a href="pricing.html#api-paid">Pricing で発行 (¥3.30/req 従量)</a> または
+ まだ API キーをお持ちでない方は <a href="pricing.html#api-paid">Pricing で発行 (¥3.30/unit 従量)</a> または
  <a href="trial.html">メールでトライアル (14 日 / 200 req カード不要)</a> をご利用ください。
  </p>
  <nav class="dash-nav" aria-label="ダッシュボード">
@@ -531,7 +531,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <h2 class="dash-section-title"><span aria-hidden="true">📋 </span>法令改正・制度新設アラート</h2>
  <p class="stat-note" style="margin:0 0 12px;">
  法令改正・制度新設・行政処分などの差分を Webhook 通知 (HTTPS のみ) または メール で
- 先回り通知します。成功配信は ¥3/通知 (税込 ¥3.30) の完全従量です。
+ 先回り通知します。成功配信は税別 ¥3/通知 (税込 ¥3.30) の完全従量です。
  <code>filter_type</code> は <code>tool</code> / <code>law_id</code> / <code>program_id</code> /
  <code>industry_jsic</code> / <code>all</code> から選択、<code>min_severity</code> は
  <code>critical</code> (制度終了・適用条件 変更) / <code>important</code> (金額・対象変更) /
@@ -619,7 +619,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  検索条件 (q / 都道府県 / 対象事業者 / 金額帯など) を保存しておくと、
  毎日 06:00 JST に最新の制度差分を自動スキャンし、
  新着があった場合のみ <strong>ダイジェストメール</strong> を配信します。
- 各配信は <strong>¥3 (税込 ¥3.30) の従量課金</strong> です (登録自体は無料)。
+ 各配信は <strong>税別 ¥3/配信 (税込 ¥3.30) の従量課金</strong> です (登録自体は無料)。
  <strong>税理士法 §52 / 弁護士法 §72</strong> 該当の業務はおこないません — 配信内容は
  公開情報の検索結果であり、税務助言・法律判断は資格者にご確認ください。
  </p>
@@ -909,12 +909,12 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
       </script>
 
  <section id="dash2-webhooks" class="stat-card" style="margin:0 0 16px;display:none;">
- <h2 class="dash-section-title"><span aria-hidden="true">🔔 </span>Webhook 通知 (成功配信ごと ¥3)</h2>
+ <h2 class="dash-section-title"><span aria-hidden="true">🔔 </span>Webhook 通知 (成功配信ごと税別 ¥3)</h2>
  <p class="stat-note" style="margin:0 0 12px;">
  自社の HTTPS エンドポイントに、 <code>program.created</code> / <code>program.amended</code> /
  <code>enforcement.added</code> / <code>tax_ruleset.amended</code> /
  <code>invoice_registrant.matched</code> の各イベントを 署名検証 (SHA256) 付きで POST します。
- <strong>1 回成功配信 = ¥3/通知 課金</strong> です。失敗時の再試行は課金対象外です。
+ <strong>1 回成功配信 = 税別 ¥3/通知 (税込 ¥3.30)</strong> です。失敗時の再試行は課金対象外です。
  5 回連続で失敗すると、意図しない課金を防ぐため自動で無効化します。 詳細は
  <a href="/docs/webhooks/">Webhook 通知 docs</a>。
  </p>

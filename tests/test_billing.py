@@ -130,6 +130,7 @@ def _fake_multi_item_sub(
     *,
     sub_id: str = "sub_multi_item",
     status: str = "active",
+    metered_price_id: str = "price_metered_test",
 ) -> _FakeSubscription:
     return _FakeSubscription(
         {
@@ -145,7 +146,7 @@ def _fake_multi_item_sub(
                     },
                     {
                         "price": {
-                            "id": "price_metered_test",
+                            "id": metered_price_id,
                             "recurring": {"usage_type": "metered"},
                         }
                     },
@@ -655,6 +656,82 @@ def test_issue_from_checkout_uses_metered_item_not_first_subscription_item(
         c.close()
     assert row is not None
     assert row[0] == "paid"
+
+
+def test_issue_from_checkout_rejects_unknown_metered_subscription_item(
+    client, stripe_env, monkeypatch, seeded_db: Path
+):
+    from jpintel_mcp.api import billing as billing_mod
+
+    metadata = _checkout_state_metadata(client, billing_mod)
+
+    def _retrieve_session(_sid, **_):
+        return _FakeCheckoutSession(
+            payment_status="no_payment_required",
+            customer="cus_other_metered",
+            subscription="sub_other_metered",
+            cd_email="other-metered@example.com",
+            metadata=metadata,
+        )
+
+    monkeypatch.setattr(billing_mod.stripe.checkout.Session, "retrieve", _retrieve_session)
+    monkeypatch.setattr(
+        billing_mod.stripe.Subscription,
+        "retrieve",
+        lambda _sub_id, **_: _fake_multi_item_sub(
+            sub_id="sub_other_metered",
+            metered_price_id="price_other_metered",
+        ),
+    )
+
+    r = client.post("/v1/billing/keys/from-checkout", json={"session_id": "cs_other_metered"})
+    assert r.status_code == 402
+    assert "configured jpcite price" in r.json()["detail"]
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        (n,) = c.execute(
+            "SELECT COUNT(*) FROM api_keys WHERE stripe_subscription_id = ?",
+            ("sub_other_metered",),
+        ).fetchone()
+    finally:
+        c.close()
+    assert n == 0
+
+
+def test_issue_from_checkout_503_when_price_not_configured(
+    client, stripe_env, monkeypatch, seeded_db: Path
+):
+    from jpintel_mcp.api import billing as billing_mod
+    from jpintel_mcp.config import settings
+
+    metadata = _checkout_state_metadata(client, billing_mod)
+    monkeypatch.setattr(settings, "stripe_price_per_request", "", raising=False)
+
+    def _retrieve_session(_sid, **_):
+        return _FakeCheckoutSession(
+            payment_status="no_payment_required",
+            customer="cus_no_price_config",
+            subscription="sub_no_price_config",
+            cd_email="no-price-config@example.com",
+            metadata=metadata,
+        )
+
+    monkeypatch.setattr(billing_mod.stripe.checkout.Session, "retrieve", _retrieve_session)
+
+    r = client.post("/v1/billing/keys/from-checkout", json={"session_id": "cs_no_price_config"})
+    assert r.status_code == 503
+    assert "billing not configured" in r.json()["detail"]
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        (n,) = c.execute(
+            "SELECT COUNT(*) FROM api_keys WHERE stripe_subscription_id = ?",
+            ("sub_no_price_config",),
+        ).fetchone()
+    finally:
+        c.close()
+    assert n == 0
 
 
 def test_issue_from_checkout_still_returns_key_when_welcome_enqueue_fails(
@@ -1240,6 +1317,97 @@ def test_webhook_subscription_updated_uses_metered_item_not_first_item(
         row = c.execute(
             "SELECT tier FROM api_keys WHERE stripe_subscription_id = ?",
             ("sub_multi_upg",),
+        ).fetchone()
+    finally:
+        c.close()
+    assert row is not None
+    assert row[0] == "paid"
+
+
+def test_webhook_subscription_updated_missing_price_does_not_demote_active_key(
+    client, stripe_env, monkeypatch, seeded_db: Path
+):
+    c = sqlite3.connect(seeded_db)
+    c.row_factory = sqlite3.Row
+    issue_key(
+        c,
+        customer_id="cus_missing_price",
+        tier="paid",
+        stripe_subscription_id="sub_missing_price",
+    )
+    c.commit()
+    c.close()
+
+    event = {
+        "id": "evt_upd_missing_price",
+        "type": "customer.subscription.updated",
+        "data": {
+            "object": {
+                "id": "sub_missing_price",
+                "status": "active",
+                "items": {"data": []},
+            }
+        },
+    }
+    _patch_webhook_construct_event(monkeypatch, event)
+
+    r = client.post(
+        "/v1/billing/webhook",
+        content=json.dumps(event).encode("utf-8"),
+        headers={"stripe-signature": "t=1,v1=xx"},
+    )
+    assert r.status_code == 500, r.text
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        row = c.execute(
+            "SELECT tier FROM api_keys WHERE stripe_subscription_id = ?",
+            ("sub_missing_price",),
+        ).fetchone()
+    finally:
+        c.close()
+    assert row is not None
+    assert row[0] == "paid"
+
+
+def test_webhook_subscription_updated_unknown_metered_price_does_not_demote_active_key(
+    client, stripe_env, monkeypatch, seeded_db: Path
+):
+    c = sqlite3.connect(seeded_db)
+    c.row_factory = sqlite3.Row
+    issue_key(
+        c,
+        customer_id="cus_unknown_metered",
+        tier="paid",
+        stripe_subscription_id="sub_unknown_metered",
+    )
+    c.commit()
+    c.close()
+
+    event = {
+        "id": "evt_upd_unknown_metered",
+        "type": "customer.subscription.updated",
+        "data": {
+            "object": _fake_multi_item_sub(
+                sub_id="sub_unknown_metered",
+                metered_price_id="price_other_metered",
+            )
+        },
+    }
+    _patch_webhook_construct_event(monkeypatch, event)
+
+    r = client.post(
+        "/v1/billing/webhook",
+        content=json.dumps(event).encode("utf-8"),
+        headers={"stripe-signature": "t=1,v1=xx"},
+    )
+    assert r.status_code == 500, r.text
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        row = c.execute(
+            "SELECT tier FROM api_keys WHERE stripe_subscription_id = ?",
+            ("sub_unknown_metered",),
         ).fetchone()
     finally:
         c.close()

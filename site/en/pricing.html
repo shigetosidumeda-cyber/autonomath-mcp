@@ -206,7 +206,7 @@
  <!--
       Micro-CRO 2026-04-29: contextual entry banner. Mirrors /pricing.html.
       Triggered by ?from=429 (anonymous quota exhausted) or ?from=trial.
-      Same ¥3.30/req CTA — no tier SKU.
+      Same ¥3.30/unit CTA — no tier SKU.
     -->
  <aside id="from-banner" hidden role="status" aria-live="polite" style="margin:0 0 18px;padding:14px 18px;border-radius:8px;border:1px solid #d97706;background:#fff8e6;color:#7c2d12;font-size:14px;line-height:1.6;">
  <strong id="from-banner-title" style="display:block;font-size:14px;margin:0 0 4px;"></strong>
@@ -425,7 +425,7 @@
  <input type="checkbox" id="checkout-consent-en" style="margin-top:3px;flex-shrink:0;">
  <span>I agree to the <a href="tos.html" rel="noopener">Terms of Service</a>, <a href="privacy.html" rel="noopener">Privacy Policy</a>, and the Japanese statutory disclosure (<a href="tokushoho.html" rel="noopener">特商法表記</a>) before proceeding to checkout.</span>
  </label>
- <button class="btn btn-primary" type="button" id="checkout-btn-en" disabled aria-describedby="checkout-disabled-hint-en" data-cta-variant="api-key-issue">Issue API key → (¥3.30/req metered)</button>
+ <button class="btn btn-primary" type="button" id="checkout-btn-en" disabled aria-describedby="checkout-disabled-hint-en" data-cta-variant="api-key-issue">Issue API key → (¥3.30/unit metered)</button>
  <p id="checkout-disabled-hint-en" style="font-size:12px;color:var(--text-muted);margin:6px 0 0;">Confirm consent above to enable the button.</p>
  <p id="checkout-status-en" class="newsletter-status" role="status" aria-live="polite"></p>
  </article>
@@ -469,11 +469,11 @@
           var from = (params.get('from') || '').toLowerCase();
           if (from === '429') {
             titleEl.textContent = 'Anonymous daily allowance reached';
-            bodyEl.innerHTML = 'Issue an API key to resume immediately (¥0/month base, ¥3.30/req metered). Use the <strong>Issue API key</strong> button below.';
+            bodyEl.innerHTML = 'Issue an API key to resume immediately (¥0/month base, ¥3.30/unit metered). Use the <strong>Issue API key</strong> button below.';
             banner.hidden = false;
           } else if (from === 'trial') {
             titleEl.textContent = '14-day trial ended';
-            bodyEl.innerHTML = 'Thanks for trying it. To keep using the API, switch to the ¥3.30/req metered plan via the <strong>Issue API key</strong> button (¥0 in months you do not use it).';
+            bodyEl.innerHTML = 'Thanks for trying it. To keep using the API, switch to the ¥3.30/unit metered plan via the <strong>Issue API key</strong> button (¥0 in months you do not use it).';
             banner.hidden = false;
           } else if (params.get('cancelled') === '1') {
             titleEl.textContent = 'Checkout cancelled';

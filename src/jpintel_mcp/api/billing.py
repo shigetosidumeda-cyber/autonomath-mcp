@@ -120,35 +120,22 @@ def _price_id_from_item(item: Any) -> str | None:
     return str(price_id) if price_id else None
 
 
-def _is_metered_subscription_item(item: Any) -> bool:
-    price = _stripe_value(item, "price") or {}
-    recurring = _stripe_value(price, "recurring") or {}
-    usage_type = _stripe_value(recurring, "usage_type")
-    if usage_type is None:
-        plan = _stripe_value(item, "plan") or {}
-        usage_type = _stripe_value(plan, "usage_type")
-    return usage_type == "metered"
-
-
 def _select_tier_price_id(subscription: Any) -> str | None:
-    """Select the subscription item that should decide the jpcite key tier.
+    """Return the configured jpcite Stripe price from a subscription.
 
     Stripe subscriptions can contain a licensed base item plus a metered
-    overage item. The tier must follow the metered jpcite item, not whichever
-    item Stripe happens to return first.
+    jpcite item. The tier must follow the configured jpcite price, not
+    whichever item Stripe happens to return first and not an unrelated metered
+    price owned by a different product.
     """
     items = _subscription_items(subscription)
     configured_price = settings.stripe_price_per_request
-    if configured_price:
-        for item in items:
-            price_id = _price_id_from_item(item)
-            if price_id == configured_price:
-                return price_id
+    if not configured_price:
+        return None
     for item in items:
-        if _is_metered_subscription_item(item):
-            return _price_id_from_item(item)
-    if len(items) == 1:
-        return _price_id_from_item(items[0])
+        price_id = _price_id_from_item(item)
+        if price_id == configured_price:
+            return price_id
     return None
 
 
@@ -1049,6 +1036,11 @@ def issue_from_checkout(
 
     customer_id = session.customer
     sub_id = session.subscription
+    if not settings.stripe_price_per_request:
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            "billing not configured",
+        )
     sub = s.Subscription.retrieve(sub_id)
     sub_dict = dict(sub) if not isinstance(sub, dict) else sub
     sub_status = sub_dict.get("status")
@@ -1061,7 +1053,7 @@ def issue_from_checkout(
     if not price_id:
         raise HTTPException(
             status.HTTP_402_PAYMENT_REQUIRED,
-            "subscription has no metered jpcite price",
+            "subscription has no configured jpcite price",
         )
     tier = resolve_tier_from_price(price_id)
 
@@ -1506,13 +1498,14 @@ async def webhook(
             # Stripe can send subscription.updated for dunning states such as
             # past_due / unpaid with the same metered price. Price alone must
             # never re-promote a failing-card customer after payment_failed.
-            tier = (
-                resolve_tier_from_price(price_id)
-                if price_id and status_val in (None, "", "active", "trialing")
-                else "free"
-            )
-            if not price_id and tier == "free":
-                logger.warning("subscription.updated missing metered price sub=%s", sub_id)
+            if status_val in (None, "", "active", "trialing"):
+                if not price_id:
+                    raise ValueError(
+                        f"subscription.updated missing configured jpcite price sub={sub_id}"
+                    )
+                tier = resolve_tier_from_price(price_id)
+            else:
+                tier = "free"
             n = update_tier_by_subscription(conn, sub_id, tier)
             logger.info("tier-updated sub=%s tier=%s rows=%d", sub_id, tier, n)
             # Cache the new subscription state. The payload carries the

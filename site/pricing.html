@@ -257,7 +257,7 @@
 
  <div class="hero-cta" style="display:flex;flex-wrap:wrap;gap:12px;margin:0 0 18px;">
  <a class="btn btn-primary" href="/playground.html?flow=evidence3" data-cta-variant="hero-trial-c2" style="font-size:17px;padding:14px 24px;">3回の無料ライブ検証を始める →</a>
- <a class="btn btn-secondary" href="#api-paid" data-cta-variant="hero-key-issue-c2" style="font-size:17px;padding:14px 24px;">API キー発行 (¥3.30/req) →</a>
+ <a class="btn btn-secondary" href="#api-paid" data-cta-variant="hero-key-issue-c2" style="font-size:17px;padding:14px 24px;">API キー発行 (¥3.30/unit) →</a>
  </div>
  <p style="margin:-8px 0 18px;font-size:14px;color:var(--text-muted);">REST のお試し画面: <a href="playground.html">playground</a> · 月額シミュレーション: <a href="/calculator.html">calculator</a></p>
 
@@ -328,7 +328,7 @@
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:12px;padding:20px 22px;background:var(--bg,#fff);">
  <p style="font-size:13px;font-weight:600;color:var(--text-muted);margin:0 0 6px;letter-spacing:0.04em;">3. 鮮度 + コスト決定性</p>
  <p style="font-size:18px;font-weight:700;line-height:1.4;margin:0 0 10px;">再取得中央値は約 7 日</p>
- <p style="font-size:14px;line-height:1.7;margin:0;color:var(--text);">優先度の高い出典の再取得中央値は約 7 日です。 税込 ¥3.30/request は jpcite の billable API/MCP call 単価です。 外部 LLM 側の token / search / cache / tool cost は利用者のモデル設定に依存します。</p>
+ <p style="font-size:14px;line-height:1.7;margin:0;color:var(--text);">優先度の高い出典の再取得中央値は約 7 日です。 税込 ¥3.30/unit は jpcite の billable API/MCP call 単価です。通常 call は 1 unit です。 外部 LLM 側の token / search / cache / tool cost は利用者のモデル設定に依存します。</p>
  </div>
  </div>
  <p style="font-size:13px;line-height:1.7;margin:14px 0 0;color:var(--text-muted);">
@@ -479,7 +479,7 @@
  <article class="price-card highlight" aria-labelledby="api-paid">
  <h2 id="api-paid">従量</h2>
  <p class="price">¥<span data-fact="price_per_req_inc_tax">3.30</span> <small style="font-size:14px;font-weight:500;color:var(--text-muted);">/ unit (税込)</small></p>
- <p class="price-unit">通常検索・詳細取得は 1 unit。batch/export は事前表示の式で計算。月額固定なし。</p>
+ <p class="price-unit">通常検索・詳細取得は 1 unit。batch/export は事前表示の式で計算。監査 workpaper など固定 export fee を含む endpoint は実行前に内訳を表示します。月額固定なし。</p>
  <label for="checkout-consent" style="display:flex;gap:8px;align-items:flex-start;margin:0 0 12px;font-size:13px;color:var(--text);line-height:1.5;cursor:pointer;">
  <input type="checkbox" id="checkout-consent" style="margin-top:3px;flex-shrink:0;">
  <span><a href="tos.html" rel="noopener">利用規約</a> ・ <a href="privacy.html" rel="noopener">プライバシー</a> ・ <a href="tokushoho.html" rel="noopener">特商法表記</a> に同意したうえで決済に進みます。</span>
@@ -503,7 +503,7 @@
           var from = (params.get('from') || '').toLowerCase();
           if (from === '429') {
             titleEl.textContent = '匿名上限に達しました';
-            bodyEl.innerHTML = 'API キーを発行すれば即時再開できます (月 ¥0 から、 使った分だけ ¥3.30/req)。 下の <strong>API キーを発行</strong> ボタンへどうぞ。';
+            bodyEl.innerHTML = 'API キーを発行すれば即時再開できます (月 ¥0 から、 使った分だけ ¥3.30/unit)。 下の <strong>API キーを発行</strong> ボタンへどうぞ。';
             banner.hidden = false;
           } else if (from === 'evidence_packet') {
             titleEl.textContent = 'Evidence Packetから完成物化';

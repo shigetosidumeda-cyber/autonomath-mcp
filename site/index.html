@@ -68,7 +68,7 @@
     {"@type": "Offer", "name": "士業 案件紹介", "url": "https://jpcite.com/pricing.html", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"}
   ],
   "featureList": [
-    "制度 14,472 件 + 採択事例 2,286 件 + 融資 108 件 + 行政処分 1,185 件を 1 つの API で横断検索",
+    "検索対象制度 11,601 件 / 全カタログ 14,472 件 + 採択事例 2,286 件 + 融資 108 件 + 行政処分 1,185 件を 1 つの API で横断検索",
     "申請前に確認すべき排他・前提ルール 181 本を提示",
     "Evidence Packet: 出典 URL、取得時刻、データスナップショット ID、ライセンス、未取得領域 (known gaps) を LLM 入力向けにまとめたパケット",
     "比較基準トークン数を指定すると、Evidence Packet との差分から input-context estimates (入力文脈の削減率・break-even 判定) を返します",
@@ -137,7 +137,7 @@
   "@context": "https://schema.org",
   "@type": "Dataset",
   "name": "jpcite — 日本の制度データセット",
-  "description": "日本の公的制度 14,472 件 + 採択事例 2,286 + 融資 108 + 行政処分 1,185 の正規化データセット。主要公開レコードの多くに一次資料 URL + fetched_at を付与し、二次情報源を出典として扱わない設計。排他・前提ルール 181 本付き。",
+  "description": "日本の公的制度を検索対象 11,601 件 / 全カタログ 14,472 件として扱う正規化データセット。採択事例 2,286 + 融資 108 + 行政処分 1,185 も横断。主要公開レコードの多くに一次資料 URL + fetched_at を付与し、二次情報源を出典として扱わない設計。排他・前提ルール 181 本付き。",
   "url": "https://jpcite.com/",
   "creator": {"@id": "https://jpcite.com/#publisher"},
   "license": "https://jpcite.com/tos.html",
@@ -297,7 +297,7 @@
  <div class="cta-row">
  <a class="btn btn-primary" href="/playground.html?flow=evidence3" data-cta-variant="hero-evidence3-primary">3 回の無料ライブ検証を始める (Evidence Packet) →</a>
  <a href="/docs/getting-started/" data-cta-variant="hero-getting-started-secondary" style="align-self:center;font-size:15px;color:var(--text);text-decoration:underline;text-underline-offset:3px;">クイックスタート (curl → Playground → MCP) →</a>
- <a href="/pricing.html" data-cta-variant="hero-pricing-tertiary" style="align-self:center;font-size:14px;color:var(--text-muted);text-decoration:underline;text-underline-offset:3px;">料金 (¥3.30/req) →</a>
+ <a href="/pricing.html" data-cta-variant="hero-pricing-tertiary" style="align-self:center;font-size:14px;color:var(--text-muted);text-decoration:underline;text-underline-offset:3px;">料金 (¥3.30/unit) →</a>
  </div>
  <p class="hero-promise" style="margin:14px 0 0;font-size:13px;color:var(--text);line-height:1.7;">
  <span class="chip-success">匿名</span>curl で動作確認 (登録不要) ·
@@ -417,7 +417,7 @@
 
  <article class="card" aria-labelledby="trust-counts">
  <h3 id="trust-counts">9 つのデータセットを 1 つの API で</h3>
- <p class="card-lead">制度 11,601 + 採択 + 融資 + 行政処分 + 法令 + 判例 + 税制 + 入札 + 適格事業者</p>
+ <p class="card-lead">検索対象制度 11,601 / 全カタログ 14,472 + 採択 + 融資 + 行政処分 + 法令 + 判例 + 税制 + 入札 + 適格事業者</p>
  <p>制度・採択事例・融資・行政処分が 1 軸目。法令・判例・税制ルールが 2 軸目。入札・適格請求書発行事業者が 3 軸目。すべてを統一フォーマットで返し、日本語の全文検索が裏で動きます。法人・個人事業主・業種・地域などで横断的に絞り込めます。</p>
  <ul class="card-list">
  <li>programs · 検索対象 <span data-fact="searchable_programs_total" data-stat-key="searchable_programs_total">11,601</span> (Tier S <span data-fact="tier_s_count" data-stat-key="tier_s_count">114</span> + A <span data-fact="tier_a_count" data-stat-key="tier_a_count">1,340</span> + B <span data-fact="tier_b_count" data-stat-key="tier_b_count">4,186</span> + C <span data-fact="tier_c_count" data-stat-key="tier_c_count">5,961</span>)</li>

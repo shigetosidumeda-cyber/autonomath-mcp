@@ -12,7 +12,12 @@ on:
     workflows: ["test"]
     types: [completed]
     branches: [main]
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      expected_sha:
+        description: "Exact commit SHA to deploy"
+        required: true
+        type: string
 
 concurrency:
   # Serialize deploys: only one rollout at a time for the same branch.
@@ -40,8 +45,26 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           # For workflow_run events the triggering commit's SHA is in
-          # workflow_run.head_sha; for workflow_dispatch it is just GITHUB_SHA.
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          # workflow_run.head_sha; manual dispatch must pin the exact SHA.
+          ref: ${{ github.event.inputs.expected_sha || github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Resolve and verify deployment SHA
+        id: deploy-sha
+        run: |
+          set -euo pipefail
+          DEPLOY_SHA="$(git rev-parse HEAD)"
+          EXPECTED_SHA="${{ github.event.inputs.expected_sha || github.event.workflow_run.head_sha || github.sha }}"
+          if [ -z "${EXPECTED_SHA:-}" ]; then
+            echo "::error::Unable to resolve expected deployment SHA."
+            exit 1
+          fi
+          if [ "$DEPLOY_SHA" != "$EXPECTED_SHA" ]; then
+            echo "::error::Checkout SHA mismatch: expected $EXPECTED_SHA got $DEPLOY_SHA"
+            exit 1
+          fi
+          echo "sha=$DEPLOY_SHA" >> "$GITHUB_OUTPUT"
+          echo "short=${DEPLOY_SHA::7}" >> "$GITHUB_OUTPUT"
+          echo "Deploying SHA $DEPLOY_SHA"
 
       - name: Check Fly token
         id: fly-token
@@ -184,7 +207,7 @@ jobs:
         run: |
           set -euo pipefail
           PKG_VER=$(grep -E '^version\s*=' pyproject.toml | head -1 | sed -E 's/version\s*=\s*"([^"]+)"/\1/')
-          SHORT_SHA="${GITHUB_SHA::7}"
+          SHORT_SHA="${{ steps.deploy-sha.outputs.short }}"
           RELEASE="autonomath-mcp@${PKG_VER}+${SHORT_SHA}"
           echo "release=${RELEASE}" >> "$GITHUB_OUTPUT"
           echo "Computed SENTRY_RELEASE=${RELEASE}"
@@ -194,7 +217,12 @@ jobs:
         # --remote-only pushes the build to Fly's builder VM so local runner doesn't need docker.
         # -e SENTRY_RELEASE=... sets the env on the machine at deploy time;
         # complements the SENTRY_ENVIRONMENT already pinned in fly.toml.
-        run: flyctl deploy --remote-only -e SENTRY_RELEASE=${{ steps.version.outputs.release }}
+        run: |
+          flyctl deploy --remote-only \
+            -e SENTRY_RELEASE=${{ steps.version.outputs.release }} \
+            --label GH_SHA=${{ steps.deploy-sha.outputs.sha }} \
+            --label org.opencontainers.image.revision=${{ steps.deploy-sha.outputs.sha }} \
+            --image-label deployment-${{ steps.deploy-sha.outputs.short }}-${{ github.run_id }}
 
       - name: Verify Fly machine state pre-probe
         if: steps.fly-token.outputs.available == 'true'
@@ -211,6 +239,28 @@ jobs:
           flyctl status -a autonomath-api || {
             echo "::warning::flyctl status returned non-zero; continuing to smoke probes."
           }
+          flyctl image show -a autonomath-api --json > /tmp/fly_image.json
+          export DEPLOY_SHA="${{ steps.deploy-sha.outputs.sha }}"
+          python3 - <<'PY'
+          import json
+          import os
+          import sys
+
+          expected = os.environ["DEPLOY_SHA"]
+          payload = json.load(open("/tmp/fly_image.json", encoding="utf-8"))
+          image = payload[0] if isinstance(payload, list) and payload else payload
+          labels = image.get("Labels") or image.get("labels") or {}
+          if isinstance(labels, str):
+              labels = json.loads(labels)
+          actual = labels.get("GH_SHA") or labels.get("org.opencontainers.image.revision")
+          print(f"fly image GH_SHA={actual}")
+          if actual != expected:
+              print(
+                  f"::error::Fly image SHA mismatch: expected {expected} got {actual}",
+                  file=sys.stderr,
+              )
+              sys.exit(1)
+          PY
 
       - name: Post-deploy smoke (hard gate)
         if: steps.fly-token.outputs.available == 'true'
@@ -288,5 +338,5 @@ jobs:
             exit 0
           fi
           payload=$(printf '{"text":"autonomath-api deploy FAILED on %s (commit %s) — %s"}' \
-            "${GITHUB_REF_NAME}" "${GITHUB_SHA::7}" "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}")
+            "${GITHUB_REF_NAME}" "${{ steps.deploy-sha.outputs.short }}" "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}")
           curl -sS -X POST -H 'Content-Type: application/json' --data "$payload" "$SLACK_WEBHOOK_URL"
