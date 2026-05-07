@@ -463,13 +463,26 @@ def _sanitize_public_schema(node: Any) -> None:
     if isinstance(node, dict):
         tags = node.get("tags")
         if isinstance(tags, list):
-            node["tags"] = [
-                {
-                    "autonomath": "jpcite",
-                    "autonomath-health": "jpcite-health",
-                }.get(item, item)
-                for item in tags
-            ]
+            # Operation-level `tags` is a list of strings; root-level
+            # `tags` is a list of `{name, description}` dicts. Apply the
+            # legacy autonomath -> jpcite rename to both shapes.
+            _legacy_rename = {
+                "autonomath": "jpcite",
+                "autonomath-health": "jpcite-health",
+            }
+            new_tags: list[Any] = []
+            for item in tags:
+                if isinstance(item, str):
+                    new_tags.append(_legacy_rename.get(item, item))
+                elif isinstance(item, dict):
+                    name = item.get("name")
+                    if isinstance(name, str) and name in _legacy_rename:
+                        item = dict(item)
+                        item["name"] = _legacy_rename[name]
+                    new_tags.append(item)
+                else:
+                    new_tags.append(item)
+            node["tags"] = new_tags
         if node.get("title") == "WebhookResponse":
             properties = node.get("properties")
             if isinstance(properties, dict):

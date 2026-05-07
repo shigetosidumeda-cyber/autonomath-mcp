@@ -945,13 +945,27 @@ def _sanitize_openapi_public_schema(node: Any) -> None:
     if isinstance(node, dict):
         tags = node.get("tags")
         if isinstance(tags, list):
-            node["tags"] = [
-                {
-                    "autonomath": "jpcite",
-                    "autonomath-health": "jpcite-health",
-                }.get(item, item)
-                for item in tags
-            ]
+            # Operation-level `tags` is a list of strings; root-level
+            # `tags` is a list of `{name, description}` dicts. Apply the
+            # legacy autonomath -> jpcite rename to both shapes so the
+            # public schema stays consistent.
+            _legacy_rename = {
+                "autonomath": "jpcite",
+                "autonomath-health": "jpcite-health",
+            }
+            new_tags: list[Any] = []
+            for item in tags:
+                if isinstance(item, str):
+                    new_tags.append(_legacy_rename.get(item, item))
+                elif isinstance(item, dict):
+                    name = item.get("name")
+                    if isinstance(name, str) and name in _legacy_rename:
+                        item = dict(item)
+                        item["name"] = _legacy_rename[name]
+                    new_tags.append(item)
+                else:
+                    new_tags.append(item)
+            node["tags"] = new_tags
         if node.get("title") == "WebhookResponse":
             properties = node.get("properties")
             if isinstance(properties, dict):
@@ -1704,12 +1718,14 @@ def create_app() -> FastAPI:
     # R8 perf, 2026-05-07: Serve the MCP registry manifest (`mcp-server.json`)
     # at /v1/mcp-server.json so the URL referenced by `manifest_url` in that
     # very file resolves to a 200. Prior to this route the endpoint 404'd
-    # (R8_PERF_BASELINE_2026-05-07.md "Endpoint matrix" row). Reads the file
+    # (R8_PERF_BASELINE_2026-05-07.md row "Endpoint matrix"). Reads the file
     # from the repo root each request so a `mcp-publish`-style bump that
-    # rewrites the file in place is reflected without a process restart.
-    # Cache-Control header is added by StaticManifestCacheMiddleware (LIFO
-    # outer) so CF / browsers see the same `public, max-age=300, s-maxage=600`
-    # envelope as the OpenAPI manifests.
+    # rewrites the file in place is reflected without a process restart;
+    # in-process state cache via lru_cache(maxsize=1) keyed by mtime keeps
+    # the per-call I/O bounded. Cache-Control header is added by
+    # StaticManifestCacheMiddleware (LIFO outer) so CF / browsers see the
+    # same `public, max-age=300, s-maxage=600` envelope as the OpenAPI
+    # manifests.
     _mcp_server_manifest_path = Path(__file__).resolve().parents[3] / "mcp-server.json"
 
     @app.get("/v1/mcp-server.json", include_in_schema=False)
@@ -2313,6 +2329,420 @@ def create_app() -> FastAPI:
         schema["info"]["license"] = {
             "name": "Proprietary - see termsOfService",
         }
+        # Root-level tags block (R8_AI_CONSUMER_AUDIT recommended #1).
+        # Each tag carries a 2-line description so AI-side OpenAPI consumers
+        # (Stainless / ReDoc / Mintlify / Custom GPTs / MCP wrappers) can
+        # render human-readable section headings instead of raw slug labels.
+        # The vocabulary mirrors the operation-level tag values already
+        # emitted by individual routers — adding/changing operation tags
+        # requires adding an entry here too.
+        schema["tags"] = [
+            {
+                "name": "programs",
+                "description": (
+                    "Search and detail-lookup over the unified Japanese "
+                    "public-program corpus (補助金 / 助成金 / 融資 / 税制 / 認定). "
+                    "Primary discovery surface — most callers start here."
+                ),
+            },
+            {
+                "name": "jpcite",
+                "description": (
+                    "Unified `/v1/am/*` surface over the autonomath.db "
+                    "entity-fact corpus (税制特例 / 認定 / 法令照会 / 採択統計 / "
+                    "行政処分 / 融資 / 共済). Each response carries a "
+                    "`_disclaimer` envelope (税理士法 §52 fence)."
+                ),
+            },
+            {
+                "name": "jpcite-health",
+                "description": (
+                    "Heartbeat / deep-health probes for the jpcite surface. "
+                    "Unbilled and unrate-limited; safe for production uptime "
+                    "monitoring without consuming the anonymous quota."
+                ),
+            },
+            {
+                "name": "case-studies",
+                "description": (
+                    "採択事例 (real awarded grants / 認定 outcomes) for "
+                    "prior-art research. Backed by 2,286 indexed cases."
+                ),
+            },
+            {
+                "name": "loan-programs",
+                "description": (
+                    "融資商品 (108 products) decomposed across three "
+                    "independent risk axes: 担保 / 個人保証人 / 第三者保証人."
+                ),
+            },
+            {
+                "name": "enforcement-cases",
+                "description": (
+                    "行政処分 history (1,185 records). Pre-credit / "
+                    "pre-subsidy DD lookups by 法人番号 or party name."
+                ),
+            },
+            {
+                "name": "laws",
+                "description": (
+                    "e-Gov 法令 article lookup (CC-BY 4.0). 9,484 indexed "
+                    "law titles, 6,493 with full-text body searchable."
+                ),
+            },
+            {
+                "name": "tax_rulesets",
+                "description": (
+                    "Structured 税務判定ルールセット (50 rulesets) — 2割特例, "
+                    "経過措置, 電子帳簿保存法, 研究開発税制, IT導入会計処理. "
+                    "Evaluate caller-supplied 事業者プロファイル against rules."
+                ),
+            },
+            {
+                "name": "court-decisions",
+                "description": (
+                    "判例 corpus (2,065 decisions). Includes 国税不服審判所 "
+                    "裁決事例 + 通達 references on §52-relevant tax surfaces."
+                ),
+            },
+            {
+                "name": "bids",
+                "description": (
+                    "公共入札 案件 (362 records). Active 案件 by 発注機関 / industry / 締切 date."
+                ),
+            },
+            {
+                "name": "invoice_registrants",
+                "description": (
+                    "適格請求書発行事業者 (国税庁 PDL v1.0 mirror, ~13,801 "
+                    "delta rows; monthly 4M-row bulk via cron). Confirm a "
+                    "13-digit 法人番号 is registered. Attribution required."
+                ),
+            },
+            {
+                "name": "intelligence",
+                "description": (
+                    "Pre-computed compact evidence packets for AI workflows. "
+                    "Call before answer generation to retrieve source-linked "
+                    "context with optional baseline compression."
+                ),
+            },
+            {
+                "name": "evidence",
+                "description": (
+                    "Evidence-packet builder + value-guidance schema. "
+                    "Bundles retrieval results into citation-ready payloads."
+                ),
+            },
+            {
+                "name": "verify",
+                "description": (
+                    "Verifier endpoints — confidence scores, cross-source "
+                    "agreement, identity-confidence golden tests."
+                ),
+            },
+            {
+                "name": "trust",
+                "description": (
+                    "Trust infrastructure surface: SLA, corrections feed, "
+                    "cross-source agreement, stale-data tracking."
+                ),
+            },
+            {
+                "name": "transparency",
+                "description": (
+                    "Public methodology + source-license + audit-trail "
+                    "documentation. Read-only; no auth required."
+                ),
+            },
+            {
+                "name": "audit",
+                "description": (
+                    "税理士 / 会計士 monthly audit-seal pack endpoints. Authenticated keys only."
+                ),
+            },
+            {
+                "name": "audit-log",
+                "description": ("Append-only audit log + RSS feed regeneration."),
+            },
+            {
+                "name": "audit (会計士・監査法人)",
+                "description": (
+                    "監査法人 / 会計士 surface — companion seals, attestation "
+                    "exports, signed retrieval logs."
+                ),
+            },
+            {
+                "name": "billing",
+                "description": (
+                    "Stripe metered billing — Checkout, customer portal, "
+                    "billing breakdown, predictive cap alerts. ¥3/billable "
+                    "unit, 税込 ¥3.30, no tier SKUs."
+                ),
+            },
+            {
+                "name": "compliance",
+                "description": (
+                    "Compliance subscription + checkout for the enterprise "
+                    "compliance product (subscription billing, not metered)."
+                ),
+            },
+            {
+                "name": "advisors",
+                "description": (
+                    "Advisor signup + Stripe Connect onboarding + 法人番号 verification flow."
+                ),
+            },
+            {
+                "name": "subscribers",
+                "description": ("Newsletter / digest subscription opt-in + verification."),
+            },
+            {
+                "name": "signup",
+                "description": (
+                    "Trial signup + magic-link verification. Issues a "
+                    "single-use trial key; not connected to paid billing."
+                ),
+            },
+            {
+                "name": "device",
+                "description": ("OAuth device-flow endpoints for CLI / headless agents."),
+            },
+            {
+                "name": "me",
+                "description": (
+                    "Caller-self surface — current usage, key metadata, "
+                    "preferences. Requires API-key authentication."
+                ),
+            },
+            {
+                "name": "dashboard",
+                "description": (
+                    "Per-key dashboard views — usage history, quota, billing breakdown summary."
+                ),
+            },
+            {
+                "name": "usage",
+                "description": (
+                    "Anonymous + authenticated usage / quota probe. "
+                    "Surfaces remaining 3/日 anon allowance + reset window."
+                ),
+            },
+            {
+                "name": "saved-searches",
+                "description": (
+                    "User-defined saved searches with optional 顧問先 "
+                    "fan-out and email/Slack delivery cadence."
+                ),
+            },
+            {
+                "name": "client-profiles",
+                "description": (
+                    "顧問先 master records for the 税理士 / 補助金 consultant "
+                    "fan-out cohorts. Sub-API-key parent/child supported."
+                ),
+            },
+            {
+                "name": "courses",
+                "description": (
+                    "Recurring engagement substrate — Slack digest, email "
+                    "course, quarterly PDF generation cadence."
+                ),
+            },
+            {
+                "name": "recurring",
+                "description": (
+                    "Quarterly PDF + Slack webhook delivery for recurring "
+                    "engagement (税理士 / 会計士 cohorts)."
+                ),
+            },
+            {
+                "name": "alerts",
+                "description": (
+                    "Alert subscription endpoints — program updates, "
+                    "houjin watch, deadline calendar."
+                ),
+            },
+            {
+                "name": "customer_webhooks",
+                "description": (
+                    "Per-key outbound webhook registry. Signing secret "
+                    "returned once on creation; subsequent reads expose "
+                    "only a short signing-secret hint."
+                ),
+            },
+            {
+                "name": "customer_watches",
+                "description": (
+                    "Customer-defined watch lists (houjin / program / "
+                    "law amendment cadence triggers)."
+                ),
+            },
+            {
+                "name": "calendar",
+                "description": (
+                    "Deadline / 公募 calendar surface. Read-only feeds + "
+                    "post-award calendar wiring."
+                ),
+            },
+            {
+                "name": "exclusions",
+                "description": (
+                    "Exclusion / prerequisite rule lookup (181 rules). "
+                    "Pair with `/v1/programs/prescreen` for the full chain."
+                ),
+            },
+            {
+                "name": "feedback",
+                "description": (
+                    "User feedback intake — corrections, missing-program "
+                    "reports, content quality flags."
+                ),
+            },
+            {
+                "name": "contribute",
+                "description": (
+                    "Public contribution path for community-sourced "
+                    "corrections. Trust-scored, queue-moderated."
+                ),
+            },
+            {
+                "name": "corrections",
+                "description": ("Published corrections feed — what changed, when, why."),
+            },
+            {
+                "name": "discover",
+                "description": (
+                    "One-shot discovery wrappers (smb_starter_pack, "
+                    "subsidy_combo_finder, deadline_calendar, etc.)."
+                ),
+            },
+            {
+                "name": "stats",
+                "description": (
+                    "Public statistics surface — corpus counts, freshness, "
+                    "tier breakdown. Includes funnel-analytics export."
+                ),
+            },
+            {
+                "name": "meta",
+                "description": (
+                    "Spec metadata — server version, build hash, OpenAPI "
+                    "agent projection, source manifests."
+                ),
+            },
+            {
+                "name": "source_manifest",
+                "description": (
+                    "Per-source manifest — license, attribution, fetched_at, refresh cadence."
+                ),
+            },
+            {
+                "name": "houjin",
+                "description": (
+                    "法人番号 lookup + houjin_watch cohort surface (M&A deal-side cohort)."
+                ),
+            },
+            {
+                "name": "ma_dd",
+                "description": (
+                    "M&A due-diligence helpers — DD question matcher, "
+                    "decision insights, peer-group baselines."
+                ),
+            },
+            {
+                "name": "funding-stack",
+                "description": (
+                    "Funding-stack assembly + complementary-program search. "
+                    "Wave 21 composition tools."
+                ),
+            },
+            {
+                "name": "bulk-evaluate",
+                "description": (
+                    "Batch evaluation surface — apply a ruleset to many "
+                    "profiles in one call. Documents fan-out billing."
+                ),
+            },
+            {
+                "name": "integrations",
+                "description": (
+                    "Excel / kintone / freee / MF integration shims — "
+                    "tabular-output and email-reply variants."
+                ),
+            },
+            {
+                "name": "widget",
+                "description": (
+                    "Embeddable search widget surface — origin-locked, widget-key authenticated."
+                ),
+            },
+            {
+                "name": "artifacts",
+                "description": (
+                    "Generated artifact builders — company public packs, "
+                    "folder briefs, audit-pack PDFs."
+                ),
+            },
+            {
+                "name": "citations",
+                "description": (
+                    "Citation builder — turn corpus rows into "
+                    "citation-ready blocks for downstream LLM use."
+                ),
+            },
+            {
+                "name": "citation_badge",
+                "description": ("Embeddable citation badge / SVG endpoints."),
+            },
+            {
+                "name": "testimonials",
+                "description": (
+                    "Public testimonial submission + admin moderation + "
+                    "caller-self testimonial management."
+                ),
+            },
+            {
+                "name": "time_machine",
+                "description": (
+                    "Snapshot-as-of querying — replay corpus state at a "
+                    "given timestamp (`AUTONOMATH_SNAPSHOT_ENABLED` gate)."
+                ),
+            },
+            {
+                "name": "cost",
+                "description": (
+                    "Cost-cap header + billing-cap alerting. Header-driven "
+                    "X-Cost-Cap-JPY / Idempotency-Key contract."
+                ),
+            },
+            {
+                "name": "email",
+                "description": ("Inbound email parse + outbound transactional webhook callbacks."),
+            },
+            {
+                "name": "privacy",
+                "description": ("APPI deletion + disclosure request endpoints."),
+            },
+            {
+                "name": "sla",
+                "description": ("Published SLA telemetry + uptime metrics."),
+            },
+            {
+                "name": "staleness",
+                "description": (
+                    "Stale-data tracking — when each source was last "
+                    "verified vs the current snapshot."
+                ),
+            },
+            {
+                "name": "cross_source",
+                "description": (
+                    "Cross-source agreement audit — which sources agree "
+                    "vs disagree on a given 法人番号 / program."
+                ),
+            },
+        ]
         _normalize_openapi_component_schema_names(schema)
         _prune_openapi_public_paths(schema)
         _sanitize_openapi_public_schema(schema)

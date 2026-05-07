@@ -506,7 +506,28 @@ def _l4_get_or_compute_safe(
 def rest_search_tax_incentives(
     conn: DbDep,
     ctx: ApiContextDep,
-    query: Annotated[str | None, Query(max_length=200)] = None,
+    q: Annotated[
+        str | None,
+        Query(
+            max_length=200,
+            description=(
+                "Free-text keyword query. Unified `q` parameter naming across "
+                "all jpcite search endpoints (programs/laws/case-studies/etc.)."
+            ),
+        ),
+    ] = None,
+    query: Annotated[
+        str | None,
+        Query(
+            max_length=200,
+            deprecated=True,
+            description=(
+                "Deprecated. Use `q` instead. The legacy `query` alias is "
+                "still accepted for backward compatibility but will be removed "
+                "in a future release."
+            ),
+        ),
+    ] = None,
     authority: Annotated[_TAX_AUTHORITIES | None, Query()] = None,
     industry: Annotated[str | None, Query(max_length=100)] = None,
     target_year: Annotated[int | None, Query(ge=1988, le=2099)] = None,
@@ -520,11 +541,18 @@ def rest_search_tax_incentives(
     Every response carries a ``_disclaimer`` envelope key (税理士法 §52 fence)
     declaring the output information retrieval, NOT 税務助言. Mirrors the
     36協定 render pattern.
+
+    Accepts both `q` (canonical) and `query` (legacy alias) — `q` wins when
+    both are supplied so we never silently drop a caller's intent.
     """
+    # `q` is canonical (matches programs/laws/case-studies/...). `query` is
+    # the legacy parameter retained as a backward-compat deprecated alias —
+    # `q` wins on conflict.
+    effective_query = q if q is not None else query
     # L4 cache key — every user-visible param + ctx.tier (poisoning guard).
     # Wraps the FTS scan + envelope build; logging stays outside.
     _l4_params: dict[str, Any] = {
-        "query": query,
+        "query": effective_query,
         "authority": authority,
         "industry": industry,
         "target_year": target_year,
@@ -538,7 +566,7 @@ def rest_search_tax_incentives(
 
     def _do_search() -> dict[str, Any]:
         result = tools.search_tax_incentives(
-            query=query,
+            query=effective_query,
             authority=authority,
             industry=industry,
             target_year=target_year,
@@ -552,7 +580,7 @@ def rest_search_tax_incentives(
             _apply_envelope(
                 "search_tax_incentives",
                 result,
-                query=query or natural_query,
+                query=effective_query or natural_query,
             ),
         )
 
@@ -624,16 +652,45 @@ def rest_search_tax_incentives(
 def rest_search_certifications(
     conn: DbDep,
     ctx: ApiContextDep,
-    query: Annotated[str | None, Query(max_length=200)] = None,
+    q: Annotated[
+        str | None,
+        Query(
+            max_length=200,
+            description=(
+                "Free-text keyword query. Unified `q` parameter naming across "
+                "all jpcite search endpoints (programs/laws/case-studies/etc.)."
+            ),
+        ),
+    ] = None,
+    query: Annotated[
+        str | None,
+        Query(
+            max_length=200,
+            deprecated=True,
+            description=(
+                "Deprecated. Use `q` instead. The legacy `query` alias is "
+                "still accepted for backward compatibility but will be removed "
+                "in a future release."
+            ),
+        ),
+    ] = None,
     authority: Annotated[_CERT_AUTHORITIES | None, Query()] = None,
     size: Annotated[_SIZE_VALUES | None, Query()] = None,
     industry: Annotated[str | None, Query(max_length=100)] = None,
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
     offset: Annotated[int, Query(ge=0)] = 0,
 ) -> JSONResponse:
-    """認定・認証制度 (健康経営 / えるぼし / くるみん / SDGs / 経営革新 等) search."""
+    """認定・認証制度 (健康経営 / えるぼし / くるみん / SDGs / 経営革新 等) search.
+
+    Accepts both `q` (canonical) and `query` (legacy alias) — `q` wins when
+    both are supplied so we never silently drop a caller's intent.
+    """
+    # `q` is canonical (matches programs/laws/case-studies/...). `query` is
+    # the legacy parameter retained as a backward-compat deprecated alias —
+    # `q` wins on conflict.
+    effective_query = q if q is not None else query
     result = tools.search_certifications(
-        query=query,
+        query=effective_query,
         authority=authority,
         size=size,
         industry=industry,
@@ -645,7 +702,7 @@ def rest_search_certifications(
         content=_apply_envelope(
             "search_certifications",
             result,
-            query=query,
+            query=effective_query,
         )
     )
 

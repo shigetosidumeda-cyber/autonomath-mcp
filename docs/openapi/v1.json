@@ -15433,6 +15433,27 @@
         "operationId": "rest_search_certifications_v1_am_certifications_get",
         "parameters": [
           {
+            "description": "Free-text keyword query. Unified `q` parameter naming across all jpcite search endpoints (programs/laws/case-studies/etc.).",
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Free-text keyword query. Unified `q` parameter naming across all jpcite search endpoints (programs/laws/case-studies/etc.).",
+              "title": "Q"
+            }
+          },
+          {
+            "deprecated": true,
+            "description": "Deprecated. Use `q` instead. The legacy `query` alias is still accepted for backward compatibility but will be removed in a future release.",
             "in": "query",
             "name": "query",
             "required": false,
@@ -15446,6 +15467,8 @@
                   "type": "null"
                 }
               ],
+              "deprecated": true,
+              "description": "Deprecated. Use `q` instead. The legacy `query` alias is still accepted for backward compatibility but will be removed in a future release.",
               "title": "Query"
             }
           },
@@ -33693,6 +33716,252 @@
     {
       "description": "Production",
       "url": "https://api.jpcite.com"
+    }
+  ],
+  "tags": [
+    {
+      "description": "Search and detail-lookup over the unified Japanese public-program corpus (\u88dc\u52a9\u91d1 / \u52a9\u6210\u91d1 / \u878d\u8cc7 / \u7a0e\u5236 / \u8a8d\u5b9a). Primary discovery surface \u2014 most callers start here.",
+      "name": "programs"
+    },
+    {
+      "description": "Unified `/v1/am/*` surface over the extended corpus entity-fact corpus (\u7a0e\u5236\u7279\u4f8b / \u8a8d\u5b9a / \u6cd5\u4ee4\u7167\u4f1a / \u63a1\u629e\u7d71\u8a08 / \u884c\u653f\u51e6\u5206 / \u878d\u8cc7 / \u5171\u6e08). Each response carries a `_disclaimer` envelope (\u7a0e\u7406\u58eb\u6cd5 \u00a752 fence).",
+      "name": "jpcite"
+    },
+    {
+      "description": "Heartbeat / deep-health probes for the jpcite surface. Unbilled and unrate-limited; safe for production uptime monitoring without consuming the anonymous quota.",
+      "name": "jpcite-health"
+    },
+    {
+      "description": "\u63a1\u629e\u4e8b\u4f8b (real awarded grants / \u8a8d\u5b9a outcomes) for prior-art research. Backed by 2,286 indexed cases.",
+      "name": "case-studies"
+    },
+    {
+      "description": "\u878d\u8cc7\u5546\u54c1 (108 products) decomposed across three independent risk axes: \u62c5\u4fdd / \u500b\u4eba\u4fdd\u8a3c\u4eba / \u7b2c\u4e09\u8005\u4fdd\u8a3c\u4eba.",
+      "name": "loan-programs"
+    },
+    {
+      "description": "\u884c\u653f\u51e6\u5206 history (1,185 records). Pre-credit / pre-subsidy DD lookups by \u6cd5\u4eba\u756a\u53f7 or party name.",
+      "name": "enforcement-cases"
+    },
+    {
+      "description": "e-Gov \u6cd5\u4ee4 article lookup (CC-BY 4.0). 9,484 indexed law titles, 6,493 with full-text body searchable.",
+      "name": "laws"
+    },
+    {
+      "description": "Structured \u7a0e\u52d9\u5224\u5b9a\u30eb\u30fc\u30eb\u30bb\u30c3\u30c8 (50 rulesets) \u2014 2\u5272\u7279\u4f8b, \u7d4c\u904e\u63aa\u7f6e, \u96fb\u5b50\u5e33\u7c3f\u4fdd\u5b58\u6cd5, \u7814\u7a76\u958b\u767a\u7a0e\u5236, IT\u5c0e\u5165\u4f1a\u8a08\u51e6\u7406. Evaluate caller-supplied \u4e8b\u696d\u8005\u30d7\u30ed\u30d5\u30a1\u30a4\u30eb against rules.",
+      "name": "tax_rulesets"
+    },
+    {
+      "description": "\u5224\u4f8b corpus (2,065 decisions). Includes \u56fd\u7a0e\u4e0d\u670d\u5be9\u5224\u6240 \u88c1\u6c7a\u4e8b\u4f8b + \u901a\u9054 references on \u00a752-relevant tax surfaces.",
+      "name": "court-decisions"
+    },
+    {
+      "description": "\u516c\u5171\u5165\u672d \u6848\u4ef6 (362 records). Active \u6848\u4ef6 by \u767a\u6ce8\u6a5f\u95a2 / industry / \u7de0\u5207 date.",
+      "name": "bids"
+    },
+    {
+      "description": "\u9069\u683c\u8acb\u6c42\u66f8\u767a\u884c\u4e8b\u696d\u8005 (\u56fd\u7a0e\u5e81 PDL v1.0 mirror, ~13,801 delta records; monthly 4M-record bulk via scheduled job). Confirm a 13-digit \u6cd5\u4eba\u756a\u53f7 is registered. Attribution required.",
+      "name": "invoice registrant records"
+    },
+    {
+      "description": "Pre-computed compact evidence packets for AI workflows. Call before answer generation to retrieve source-linked context with optional baseline compression.",
+      "name": "intelligence"
+    },
+    {
+      "description": "Evidence-packet builder + value-guidance schema. Bundles retrieval results into citation-ready payloads.",
+      "name": "evidence"
+    },
+    {
+      "description": "Verifier endpoints \u2014 confidence scores, cross-source agreement, identity-confidence golden tests.",
+      "name": "verify"
+    },
+    {
+      "description": "Trust infrastructure surface: SLA, corrections feed, cross-source agreement, stale-data tracking.",
+      "name": "trust"
+    },
+    {
+      "description": "Public methodology + source-license + audit-trail documentation. Read-only; no auth required.",
+      "name": "transparency"
+    },
+    {
+      "description": "\u7a0e\u7406\u58eb / \u4f1a\u8a08\u58eb monthly audit-seal pack endpoints. Authenticated keys only.",
+      "name": "audit"
+    },
+    {
+      "description": "Append-only audit log + RSS feed regeneration.",
+      "name": "audit-log"
+    },
+    {
+      "description": "\u76e3\u67fb\u6cd5\u4eba / \u4f1a\u8a08\u58eb surface \u2014 companion seals, attestation exports, signed retrieval logs.",
+      "name": "audit (\u4f1a\u8a08\u58eb\u30fb\u76e3\u67fb\u6cd5\u4eba)"
+    },
+    {
+      "description": "Stripe metered billing \u2014 Checkout, customer portal, billing breakdown, predictive cap alerts. \u00a53/billable unit, \u7a0e\u8fbc \u00a53.30, no tier SKUs.",
+      "name": "billing"
+    },
+    {
+      "description": "Compliance subscription + checkout for the enterprise compliance product (subscription billing, not metered).",
+      "name": "compliance"
+    },
+    {
+      "description": "Advisor signup + Stripe Connect onboarding + \u6cd5\u4eba\u756a\u53f7 verification flow.",
+      "name": "advisors"
+    },
+    {
+      "description": "Newsletter / digest subscription opt-in + verification.",
+      "name": "subscribers"
+    },
+    {
+      "description": "Trial signup + magic-link verification. Issues a single-use trial key; not connected to paid billing.",
+      "name": "signup"
+    },
+    {
+      "description": "OAuth device-flow endpoints for CLI / headless agents.",
+      "name": "device"
+    },
+    {
+      "description": "Caller-self surface \u2014 current usage, key metadata, preferences. Requires API-key authentication.",
+      "name": "me"
+    },
+    {
+      "description": "Per-key dashboard datasets \u2014 usage history, quota, billing breakdown summary.",
+      "name": "dashboard"
+    },
+    {
+      "description": "Anonymous + authenticated usage / quota probe. Surfaces remaining 3/\u65e5 anon allowance + reset window.",
+      "name": "usage"
+    },
+    {
+      "description": "User-defined saved searches with optional \u9867\u554f\u5148 fan-out and email/Slack delivery cadence.",
+      "name": "saved-searches"
+    },
+    {
+      "description": "\u9867\u554f\u5148 master records for the \u7a0e\u7406\u58eb / \u88dc\u52a9\u91d1 consultant fan-out cohorts. Sub-API-key parent/child supported.",
+      "name": "client-profiles"
+    },
+    {
+      "description": "Recurring engagement substrate \u2014 Slack digest, email course, quarterly PDF generation cadence.",
+      "name": "courses"
+    },
+    {
+      "description": "Quarterly PDF + Slack webhook delivery for recurring engagement (\u7a0e\u7406\u58eb / \u4f1a\u8a08\u58eb cohorts).",
+      "name": "recurring"
+    },
+    {
+      "description": "Alert subscription endpoints \u2014 program updates, houjin watch, deadline calendar.",
+      "name": "alerts"
+    },
+    {
+      "description": "Per-key outbound webhook registry. Signing secret returned once on creation; subsequent reads expose only a short signing-secret hint.",
+      "name": "customer_webhooks"
+    },
+    {
+      "description": "Customer-defined watch lists (houjin / program / law amendment cadence triggers).",
+      "name": "customer_watches"
+    },
+    {
+      "description": "Deadline / \u516c\u52df calendar surface. Read-only feeds + post-award calendar wiring.",
+      "name": "calendar"
+    },
+    {
+      "description": "Exclusion / prerequisite rule lookup (181 rules). Pair with `/v1/programs/prescreen` for the full chain.",
+      "name": "exclusions"
+    },
+    {
+      "description": "User feedback intake \u2014 corrections, missing-program reports, content quality flags.",
+      "name": "feedback"
+    },
+    {
+      "description": "Public contribution path for community-sourced corrections. Trust-scored, queue-moderated.",
+      "name": "contribute"
+    },
+    {
+      "description": "Published corrections feed \u2014 what changed, when, why.",
+      "name": "corrections"
+    },
+    {
+      "description": "One-shot discovery wrappers (smb_starter_pack, subsidy_combo_finder, deadline_calendar, etc.).",
+      "name": "discover"
+    },
+    {
+      "description": "Public statistics surface \u2014 corpus counts, freshness, tier breakdown. Includes funnel-analytics export.",
+      "name": "stats"
+    },
+    {
+      "description": "Spec metadata \u2014 server version, build hash, OpenAPI agent projection, source manifests.",
+      "name": "meta"
+    },
+    {
+      "description": "Per-source manifest \u2014 license, attribution, fetched_at, refresh cadence.",
+      "name": "source_manifest"
+    },
+    {
+      "description": "\u6cd5\u4eba\u756a\u53f7 lookup + houjin_watch cohort surface (M&A deal-side cohort).",
+      "name": "houjin"
+    },
+    {
+      "description": "M&A due-diligence helpers \u2014 DD question matcher, decision insights, peer-group baselines.",
+      "name": "ma_dd"
+    },
+    {
+      "description": "Funding-stack assembly + complementary-program search. Current release composition tools.",
+      "name": "funding-stack"
+    },
+    {
+      "description": "Batch evaluation surface \u2014 apply a ruleset to many profiles in one call. Documents fan-out billing.",
+      "name": "bulk-evaluate"
+    },
+    {
+      "description": "Excel / kintone / freee / MF integration shims \u2014 tabular-output and email-reply variants.",
+      "name": "integrations"
+    },
+    {
+      "description": "Embeddable search widget surface \u2014 origin-locked, widget-key authenticated.",
+      "name": "widget"
+    },
+    {
+      "description": "Generated artifact builders \u2014 company public packs, folder briefs, audit-pack PDFs.",
+      "name": "artifacts"
+    },
+    {
+      "description": "Citation builder \u2014 turn corpus records into citation-ready blocks for downstream LLM use.",
+      "name": "citations"
+    },
+    {
+      "description": "Embeddable citation badge / SVG endpoints.",
+      "name": "citation_badge"
+    },
+    {
+      "description": "Public testimonial submission + admin moderation + caller-self testimonial management.",
+      "name": "testimonials"
+    },
+    {
+      "description": "Snapshot-as-of querying \u2014 replay corpus state at a given timestamp (`AUTONOMATH_SNAPSHOT_ENABLED` controlled).",
+      "name": "time_machine"
+    },
+    {
+      "description": "Cost-cap header + billing-cap alerting. Header-driven X-Cost-Cap-JPY / Idempotency-Key contract.",
+      "name": "cost"
+    },
+    {
+      "description": "Inbound email parse + outbound transactional webhook callbacks.",
+      "name": "email"
+    },
+    {
+      "description": "APPI deletion + disclosure request endpoints.",
+      "name": "privacy"
+    },
+    {
+      "description": "Published SLA telemetry + uptime metrics.",
+      "name": "sla"
+    },
+    {
+      "description": "Stale-data tracking \u2014 when each source was last verified vs the current snapshot.",
+      "name": "staleness"
+    },
+    {
+      "description": "Cross-source agreement audit \u2014 which sources agree vs disagree on a given \u6cd5\u4eba\u756a\u53f7 / program.",
+      "name": "cross_source"
     }
   ]
 }
