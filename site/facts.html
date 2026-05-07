@@ -252,10 +252,10 @@
  </div>
 
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
- <dt id="fact-laws_total" style="font-weight:600;font-size:18px;">法令 件数: 9,484 (本文インデックス継続拡充中)</dt>
+ <dt id="fact-laws_total" style="font-weight:600;font-size:18px;">法令 件数: 9,484 メタデータ / 154 本文完全索引 (飽和進行中)</dt>
  <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
- e-Gov 法令 API より取得。CC-BY 4.0 ライセンス下で再配布。法令名検索は全件で動作。本文の全文検索インデックスは継続的に拡充中。<br>
- 出典: e-Gov 法令検索 (https://elaws.e-gov.go.jp/) · 更新 2026-04-26 JST · ライセンス CC-BY 4.0
+ e-Gov 法令 API より取得。CC-BY 4.0 ライセンス下で再配布。法令名検索は全 9,484 件 で動作。 本文を条文単位で完全索引した法令は <strong>154 件</strong> (現状 1.6%)。 直近のバルク取得は週 100 件 → 300 件 / バッチ に加速、 全件飽和試算は当初 7.5 ヶ月 → 数 ヶ月 短縮見込み (内部仮説)。 詳細は <a href="about.html#法令本文-飽和進行">about.html#法令本文-飽和進行</a>。<br>
+ 出典: e-Gov 法令検索 (https://elaws.e-gov.go.jp/) · 更新 2026-05-07 JST · ライセンス CC-BY 4.0
  </dd>
  </div>
 
@@ -349,6 +349,111 @@
  </dl>
  </section>
 
+ <section aria-labelledby="combinations-title" style="margin-top:40px;">
+ <h2 id="combinations-title" class="section-title">価値ある データ 組合せ 12 軸</h2>
+ <p style="font-size:14px;color:var(--text-muted);margin:0 0 18px;">jpcite の本質的価値は単一テーブルの件数ではなく、 異なる一次資料を ID で繋ぐ <strong>クロスリファレンス</strong> にあります。 以下の 12 軸は、 サイロ化された省庁公開データを横断的に 1 つの問いに落とすための 標準的な 結合 パターンです。 各軸の組合せ件数 は 関係性総数 (378,342) の内訳から積算しています。</p>
+ <dl class="fact-list" style="display:grid;grid-template-columns:1fr;gap:14px;margin:0;padding:0;">
+
+ <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+ <dt id="combo-program-law" style="font-weight:600;font-size:16px;">1. 制度 × 法令 (program_law_refs)</dt>
+ <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+ 約 11,601 制度 × 9,484 法令 を結合。 「この補助金は何法 何条 に基づくか」 「この法律を根拠とする 制度群」 を 1 リクエストで取得。<br>
+ サンプル query: <code>GET /v1/programs/{id}/laws</code> · <code>GET /v1/laws/{id}/programs</code>
+ </dd>
+ </div>
+
+ <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+ <dt id="combo-program-case" style="font-weight:600;font-size:16px;">2. 制度 × 採択事例</dt>
+ <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+ 11,601 制度 × 2,286 採択事例。 「過去採択された企業の業種・所在地・採択額」 が制度ページから直接見える。<br>
+ サンプル query: <code>GET /v1/programs/{id}/case_studies</code>
+ </dd>
+ </div>
+
+ <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+ <dt id="combo-program-court" style="font-weight:600;font-size:16px;">3. 制度 × 判例 (取消・不交付・返還)</dt>
+ <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+ 11,601 制度 × 2,065 判例。 「補助金返還請求が認容/棄却された判決」 「不交付決定取消の判例」 を制度文脈で参照。<br>
+ サンプル query: <code>GET /v1/programs/{id}/court_decisions</code>
+ </dd>
+ </div>
+
+ <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+ <dt id="combo-program-enforcement" style="font-weight:600;font-size:16px;">4. 制度 × 行政処分</dt>
+ <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+ 11,601 制度 × 1,185 行政処分。 「補助金交付取消・返還命令」 「業務停止命令」 を 制度・法人横断で 検索。<br>
+ サンプル query: <code>GET /v1/programs/{id}/enforcement</code>
+ </dd>
+ </div>
+
+ <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+ <dt id="combo-program-exclusion" style="font-weight:600;font-size:16px;">5. 制度 × 排他ルール</dt>
+ <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+ 11,601 制度 × 181 排他ルール (排他 125 + 前提 17 + 絶対除外 15 + その他 24)。 制度 ID 群 を投げると 衝突を 構造判定。<br>
+ サンプル query: <code>POST /v1/eligibility/dynamic_check</code>
+ </dd>
+ </div>
+
+ <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+ <dt id="combo-program-amendment" style="font-weight:600;font-size:16px;">6. 制度 × 法改正 履歴</dt>
+ <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+ 11,601 制度 × 改正スナップショット 14,596 + diff 12,116。 「いつ要件が変わったか」 「直近の改正ポイント」 を版差分で 取得。<br>
+ サンプル query: <code>GET /v1/me/amendment_alerts</code> · <code>GET /v1/programs/{id}/amendments</code>
+ </dd>
+ </div>
+
+ <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+ <dt id="combo-program-region" style="font-weight:600;font-size:16px;">7. 制度 × 地域 (47 都道府県 + 1,966 市区町村)</dt>
+ <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+ 11,601 制度 × 1,966 地域コード。 「東京都中央区で 利用可能な 補助金」 を 5 桁 自治体コード で 直接 取得。<br>
+ サンプル query: <code>GET /v1/regions/{code}/coverage</code>
+ </dd>
+ </div>
+
+ <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+ <dt id="combo-law-article" style="font-weight:600;font-size:16px;">8. 法令 × 条文改正 (am_law_article)</dt>
+ <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+ 9,484 法令 × 353,278 条文行 × 改正版差分。 条文単位で 「現行版」 「改正前版」 を取得 (本文完全索引 154 件で先行提供、 残り順次)。<br>
+ サンプル query: <code>GET /v1/laws/{id}/articles</code> · <code>GET /v1/laws/{id}/articles/{article_no}/amendments</code>
+ </dd>
+ </div>
+
+ <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+ <dt id="combo-case-cohort" style="font-weight:600;font-size:16px;">9. 採択 × 業種規模 cohort</dt>
+ <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+ 採択 215,233 (am_entities) × JSIC 業種 37 分類 × 規模 (従業員数・資本金 帯)。 同業 同規模 の採択 cohort を 構造的に 抽出。<br>
+ サンプル query: <code>POST /v1/cases/cohort_match</code>
+ </dd>
+ </div>
+
+ <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+ <dt id="combo-counterparty-invoice" style="font-weight:600;font-size:16px;">10. 取引先 × 適格事業者 (T 番号)</dt>
+ <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+ 13,801 適格事業者 (PDL v1.0、 月次 4M 件 全件取込 cron 配備済) × 法人 166,969 × 行政処分 1,185。 取引先の T 番号 から 登録状態 + 処分 履歴 を 1 リクエスト で。<br>
+ サンプル query: <code>GET /v1/invoice_registrants/{tnum}/risk</code>
+ </dd>
+ </div>
+
+ <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+ <dt id="combo-bid-program" style="font-weight:600;font-size:16px;">11. 入札 × 制度 (公募 横断)</dt>
+ <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+ 362 入札 公告 × 11,601 制度。 公募と入札を 同一インターフェース で横断。 公募ステータス / 締切 で 統合 ソート。<br>
+ サンプル query: <code>GET /v1/programs?status=open&include_bids=1</code>
+ </dd>
+ </div>
+
+ <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
+ <dt id="combo-houjin-enforcement" style="font-weight:600;font-size:16px;">12. 法人 × 処分履歴 (houjin_360)</dt>
+ <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
+ 法人 166,969 × 処分 22,255 (am_enforcement_detail) × 採択 215,233。 法人番号 から 360 度ビュー (採択履歴 + 処分歴 + 請求書 登録状態) を 1 リクエスト で。<br>
+ サンプル query: <code>GET /v1/houjin/{houjin_bangou}/360</code>
+ </dd>
+ </div>
+
+ </dl>
+ <p style="font-size:13px;color:var(--text-muted);margin:18px 0 0;">12 軸はいずれも公開済みエンドポイント または ロードマップ上のエンドポイントの根拠データを示します。 ロードマップ上のエンドポイントが正式公開された時点で、 本ファクトシートの該当行を更新します。</p>
+ </section>
+
  <section aria-labelledby="pricing-title" style="margin-top:40px;">
  <h2 id="pricing-title" class="section-title">料金</h2>
  <dl class="fact-list" style="display:grid;grid-template-columns:1fr;gap:18px;margin:0;padding:0;">
@@ -391,6 +496,7 @@
  <section aria-labelledby="changelog-title" style="margin-top:40px;">
  <h2 id="changelog-title" class="section-title">更新履歴</h2>
  <ul style="margin:0;padding-left:20px;line-height:1.8;font-size:14px;">
+ <li><strong>2026-05-07</strong> — 法令 本文索引 表記を 6,493 件 → 完全本文 154 件 + 飽和進行中 へ honest framing に補正。 12 軸の 価値ある 組合せ section 追加。 R8_DATA_VALUE_GROW_FRAMING_2026-05-07 にて記録。</li>
  <li><strong>2026-05-07</strong> — R8_DATA_FIDELITY 再計測。 関係性 総数を 17.7 万件 → 37.8 万件 に補正 (am_relation 全件再カウント)。 v0.3.4 / 2026-05-07 SOT 反映。</li>
  <li><strong>2026-04-26</strong> — 初版。 公開件数 14 項目 + 主要データベース 5 項目 + 料金 3 項目を統計 API に紐付けて公開。 各サイトページの統計表示にも展開。</li>
  </ul>

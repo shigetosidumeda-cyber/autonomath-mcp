@@ -166,7 +166,7 @@
  <li><span class="num">2,286</span><span class="lbl">補助金 採択事例</span></li>
  <li><span class="num">108</span><span class="lbl">融資商品 (担保・保証人で分類)</span></li>
  <li><span class="num">1,185</span><span class="lbl">行政処分 公表記録</span></li>
- <li><span class="num">9,484</span><span class="lbl">法令 (うち本文索引 6,493 件)</span></li>
+ <li><span class="num">9,484</span><span class="lbl">法令メタデータ (本文完全索引 154 件 → 9,484 件 saturation 進行中)</span></li>
  <li><span class="num">139</span><span class="lbl">AI から呼べる MCP ツール</span></li>
  <li><span class="num">出典付き</span><span class="lbl">主要公開行に一次資料 URL を付与</span></li>
  </ul>
@@ -185,10 +185,40 @@
  <tr><th>採択事例</th><td>2,286</td></tr>
  <tr><th>融資プログラム</th><td>108</td></tr>
  <tr><th>行政処分</th><td>1,185</td></tr>
- <tr><th>法令</th><td>本文索引 6,493 件 + メタデータ 9,484 件</td></tr>
+ <tr><th>法令</th><td>メタデータ 9,484 件 (全件名検索可能) ・ 完全本文索引 154 件 → 9,484 件 飽和へ進行中</td></tr>
  <tr><th>判例</th><td>2,065</td></tr>
  <tr><th>税制ルールセット</th><td>50</td></tr>
  <tr><th>適格請求書発行事業者</th><td>13,801</td></tr>
+ </tbody>
+ </table>
+
+ <h2 id="法令本文-飽和進行">法令本文の飽和進行 (透明性表示)</h2>
+ <p>法令メタデータ 9,484 件は全件で名称検索 (e-Gov 法令検索 CC-BY 4.0) が可能ですが、本文を <em>完全に</em> インデックスし条文単位で全文検索できる状態のものは現在 <strong>154 件</strong> です。 残りは継続バルク取得で順次補完しています。 当初の取得ペースは週 100 件 / バッチでしたが、 直近のバルク投入で 300 件 / バッチへ加速しています。 完全飽和の試算は内部仮説に基づくものです。</p>
+ <table>
+ <thead>
+ <tr><th>時点</th><th>完全本文索引 件数</th></tr>
+ </thead>
+ <tbody>
+ <tr><th>現状 (2026-05-07)</th><td>154 件 (率 1.6%)</td></tr>
+ <tr><th>6 ヶ月後 目標</th><td>2,400 件 前後 (率 約 25%、 高頻度参照法令を優先)</td></tr>
+ <tr><th>全件飽和 試算</th><td>9,484 件 (試算 数 ヶ月 — 当初試算 7.5 ヶ月から、 直近のバッチ 加速で短縮見込み)</td></tr>
+ </tbody>
+ </table>
+ <p style="font-size:13px;color:var(--text-muted);">なお、 法令名・所管・施行日等のメタデータは 9,484 件 全件で利用可能です。 制度 ↔ 法令 のクロスリファレンス (program_law_refs) は本文索引の有無に依存しません。</p>
+
+ <h2 id="新-endpoint-面">新しい交差参照エンドポイント</h2>
+ <p>制度・法令・採択事例・行政処分・適格事業者・改正履歴を横断する深いリンクを、 順次以下のエンドポイントで提供します。 一部は段階提供。</p>
+ <table>
+ <thead>
+ <tr><th>エンドポイント</th><th>用途</th></tr>
+ </thead>
+ <tbody>
+ <tr><th><code>/v1/programs/{id}/full_context</code></th><td>制度 1 件に紐づく 法令条文・採択事例・排他ルール・改正履歴・対象地域 を 1 リクエストで返す深リンク</td></tr>
+ <tr><th><code>/v1/cases/cohort_match</code></th><td>同業種 同規模 の採択事例 cohort 照合 (申請傾向の手がかり)</td></tr>
+ <tr><th><code>/v1/eligibility/dynamic_check</code></th><td>排他ルール 181 件 連動の動的適格性チェック (制度 ID 群 → 衝突判定)</td></tr>
+ <tr><th><code>/v1/regions/{code}/coverage</code></th><td>地域コード単位の 制度・採択 カバレッジ (地理 cohort)</td></tr>
+ <tr><th><code>/v1/invoice_registrants/{tnum}/risk</code></th><td>取引先 (T 番号) の登録状態 + 行政処分 履歴 リスクサマリ</td></tr>
+ <tr><th><code>/v1/me/amendment_alerts</code></th><td>登録 制度・法令 群の改正アラート フィード (¥3 / 通知)</td></tr>
  </tbody>
  </table>
 
