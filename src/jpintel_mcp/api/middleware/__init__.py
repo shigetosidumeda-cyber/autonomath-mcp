@@ -80,6 +80,9 @@ from jpintel_mcp.api.middleware.rate_limit import (
 from jpintel_mcp.api.middleware.security_headers import (
     SecurityHeadersMiddleware,
 )
+from jpintel_mcp.api.middleware.static_cache_headers import (
+    StaticManifestCacheMiddleware,
+)
 from jpintel_mcp.api.middleware.strict_query import StrictQueryMiddleware
 
 __all__ = [
@@ -98,6 +101,7 @@ __all__ = [
     "PerIpEndpointLimitMiddleware",
     "RateLimitMiddleware",
     "SecurityHeadersMiddleware",
+    "StaticManifestCacheMiddleware",
     "StrictQueryMiddleware",
     "_reset_cap_cache_state",
     "_reset_kill_switch_state",

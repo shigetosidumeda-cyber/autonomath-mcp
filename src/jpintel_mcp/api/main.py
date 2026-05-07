@@ -11,6 +11,7 @@ from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime
 from importlib import import_module
+from pathlib import Path
 from typing import Any
 
 import uvicorn
@@ -1699,6 +1700,25 @@ def create_app() -> FastAPI:
     @app.get("/v1/openapi.agent.json", include_in_schema=False)
     def _openapi_agent() -> JSONResponse:
         return JSONResponse(content=build_agent_openapi_schema(app.openapi()))
+
+    # R8 perf, 2026-05-07: Serve the MCP registry manifest (`mcp-server.json`)
+    # at /v1/mcp-server.json so the URL referenced by `manifest_url` in that
+    # very file resolves to a 200. Prior to this route the endpoint 404'd
+    # (R8_PERF_BASELINE_2026-05-07.md "Endpoint matrix" row). Reads the file
+    # from the repo root each request so a `mcp-publish`-style bump that
+    # rewrites the file in place is reflected without a process restart.
+    # Cache-Control header is added by StaticManifestCacheMiddleware (LIFO
+    # outer) so CF / browsers see the same `public, max-age=300, s-maxage=600`
+    # envelope as the OpenAPI manifests.
+    _mcp_server_manifest_path = Path(__file__).resolve().parents[3] / "mcp-server.json"
+
+    @app.get("/v1/mcp-server.json", include_in_schema=False)
+    def _mcp_server_manifest() -> JSONResponse:
+        try:
+            text = _mcp_server_manifest_path.read_text(encoding="utf-8")
+        except FileNotFoundError as exc:  # pragma: no cover — defensive
+            raise HTTPException(status_code=404, detail="mcp-server.json not found") from exc
+        return JSONResponse(content=json.loads(text))
 
     # Router wiring. AnonIpLimitDep is attached only to routers whose
     # routes accept anonymous callers and should count toward the per-IP
