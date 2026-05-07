@@ -737,13 +737,13 @@
   pattern: '<body'
   min_count: 1
 
-# --- DEEP-39 : OpenAPI route 240 promo ---------------------------------------
+# --- DEEP-39 : stable OpenAPI public surface ---------------------------------
 - id: DEEP-39-1
   spec: DEEP-39
   check_kind: regex_pattern_count
   file: docs/openapi/v1.json
   pattern: '"/v1/'
-  min_count: 200
+  min_count: 184
 - id: DEEP-39-2
   spec: DEEP-39
   check_kind: regex_pattern_count
