@@ -54,6 +54,7 @@ from jpintel_mcp.api.billing import router as billing_router
 from jpintel_mcp.api.billing_breakdown import router as billing_breakdown_router
 from jpintel_mcp.api.bulk_evaluate import router as bulk_evaluate_router
 from jpintel_mcp.api.calendar import router as calendar_router
+from jpintel_mcp.api.case_cohort_match import router as case_cohort_match_router
 from jpintel_mcp.api.case_studies import router as case_studies_router
 from jpintel_mcp.api.citation_badge import router as citation_badge_router
 from jpintel_mcp.api.citations import router as citations_router
@@ -68,7 +69,6 @@ from jpintel_mcp.api.customer_webhooks import router as customer_webhooks_router
 from jpintel_mcp.api.dashboard import router as dashboard_router
 from jpintel_mcp.api.device_flow import router as device_router
 from jpintel_mcp.api.discover import router as discover_router
-from jpintel_mcp.api.eligibility_check import router as eligibility_check_router
 from jpintel_mcp.api.email_unsubscribe import router as email_unsubscribe_router
 from jpintel_mcp.api.email_webhook import router as email_webhook_router
 from jpintel_mcp.api.enforcement import router as enforcement_router
@@ -80,6 +80,12 @@ from jpintel_mcp.api.funnel_events import router as funnel_events_router
 from jpintel_mcp.api.houjin import router as houjin_router
 from jpintel_mcp.api.intelligence import router as intelligence_router
 from jpintel_mcp.api.invoice_registrants import router as invoice_registrants_router
+from jpintel_mcp.api.invoice_risk import (
+    houjin_invoice_router as invoice_risk_houjin_router,
+)
+from jpintel_mcp.api.invoice_risk import (
+    router as invoice_risk_router,
+)
 from jpintel_mcp.api.laws import router as laws_router
 from jpintel_mcp.api.legal import router as legal_router
 from jpintel_mcp.api.loan_programs import router as loan_programs_router
@@ -116,6 +122,7 @@ from jpintel_mcp.api.middleware.origin_enforcement import _MUST_INCLUDE
 from jpintel_mcp.api.openapi_agent import build_agent_openapi_schema
 from jpintel_mcp.api.prescreen import router as prescreen_router
 from jpintel_mcp.api.programs import router as programs_router
+from jpintel_mcp.api.regions import router as regions_router
 from jpintel_mcp.api.response_sanitizer import ResponseSanitizerMiddleware
 from jpintel_mcp.api.saved_searches import router as saved_searches_router
 from jpintel_mcp.api.signup import router as signup_router
@@ -1898,12 +1905,11 @@ def create_app() -> FastAPI:
     app.include_router(prescreen_router, dependencies=[AnonIpLimitDep])
     app.include_router(exclusions_router, dependencies=[AnonIpLimitDep])
     app.include_router(enforcement_router, dependencies=[AnonIpLimitDep])
-    # R8 (2026-05-07): dynamic eligibility check joining 行政処分 history
-    # (am_enforcement_detail, autonomath.db) with exclusion_rules
-    # (jpintel.db). Pure SQLite walk + static enforcement_kind→severity
-    # table — no LLM call. Anon-quota-gated like programs/exclusions.
-    app.include_router(eligibility_check_router, dependencies=[AnonIpLimitDep])
     app.include_router(case_studies_router, dependencies=[AnonIpLimitDep])
+    # R8 (2026-05-07): cohort matcher (POST /v1/cases/cohort_match) over
+    # case_studies (jpintel.db, 2,286) + jpi_adoption_records (autonomath.db,
+    # 201,845). Same anon quota gate as case_studies_router.
+    app.include_router(case_cohort_match_router, dependencies=[AnonIpLimitDep])
     app.include_router(loan_programs_router, dependencies=[AnonIpLimitDep])
     # 015_laws + 016_court_decisions: new statute / 判例 surfaces. No
     # preview gate — both are first-class from launch. Anon-quota-gated
@@ -1916,6 +1922,13 @@ def create_app() -> FastAPI:
     app.include_router(bids_router, dependencies=[AnonIpLimitDep])
     app.include_router(tax_rulesets_router, dependencies=[AnonIpLimitDep])
     app.include_router(invoice_registrants_router, dependencies=[AnonIpLimitDep])
+    # R8 invoice risk lookup (2026-05-07): /v1/invoice_registrants/{tnum}/risk
+    # + /v1/invoice_registrants/batch_risk + /v1/houjin/{bangou}/invoice_status.
+    # Composes invoice_registrants × houjin_master + registration-age heuristic
+    # into a 0-100 score + tax_credit_eligible boolean. Pure SQL + Python; NO
+    # LLM. PDL v1.0 attribution + §52 _disclaimer on every 2xx body.
+    app.include_router(invoice_risk_router, dependencies=[AnonIpLimitDep])
+    app.include_router(invoice_risk_houjin_router, dependencies=[AnonIpLimitDep])
     # /v1/evidence/packets/* — Evidence Packet composer (LLM-resilient
     # business plan §6). Bundles primary metadata + per-fact provenance +
     # compat-matrix rule verdicts into one envelope. ¥3/req metered;

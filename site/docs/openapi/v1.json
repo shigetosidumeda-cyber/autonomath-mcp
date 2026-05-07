@@ -1642,6 +1642,83 @@
         "title": "SubscribeRequest",
         "type": "object"
       },
+      "AlertsDeactivateResponse": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok",
+          "id"
+        ],
+        "title": "DeactivateResponse",
+        "type": "object"
+      },
+      "AmendmentAlertsDeactivateResponse": {
+        "properties": {
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "subscription_id": {
+            "title": "Subscription Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "ok",
+          "subscription_id"
+        ],
+        "title": "DeactivateResponse",
+        "type": "object"
+      },
+      "AmendmentAlertsSubscribeRequest": {
+        "properties": {
+          "watch": {
+            "items": {
+              "$ref": "#/components/schemas/WatchEntry"
+            },
+            "maxItems": 50,
+            "minItems": 1,
+            "title": "Watch",
+            "type": "array"
+          }
+        },
+        "required": [
+          "watch"
+        ],
+        "title": "SubscribeRequest",
+        "type": "object"
+      },
+      "AmendmentAlertsSubscribeResponse": {
+        "properties": {
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "subscription_id": {
+            "title": "Subscription Id",
+            "type": "integer"
+          },
+          "watch_count": {
+            "title": "Watch Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "subscription_id",
+          "watch_count",
+          "created_at"
+        ],
+        "title": "SubscribeResponse",
+        "type": "object"
+      },
       "ArtifactAgentRouting": {
         "additionalProperties": true,
         "description": "Agent guidance for when to use jpcite before broader research.",
@@ -2840,6 +2917,89 @@
           "profile"
         ],
         "title": "BatchProfileItem",
+        "type": "object"
+      },
+      "BatchRiskItemOut": {
+        "additionalProperties": false,
+        "description": "Per-item batch result. ``error`` is non-null iff lookup failed.",
+        "properties": {
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "invoice_registration_number": {
+            "title": "Invoice Registration Number",
+            "type": "string"
+          },
+          "risk": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RiskOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "invoice_registration_number"
+        ],
+        "title": "BatchRiskItemOut",
+        "type": "object"
+      },
+      "BatchRiskRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "tnums": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Tnums",
+            "type": "array"
+          }
+        },
+        "required": [
+          "tnums"
+        ],
+        "title": "BatchRiskRequest",
+        "type": "object"
+      },
+      "BatchRiskResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "attribution": {
+            "additionalProperties": true,
+            "title": "Attribution",
+            "type": "object"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/BatchRiskItemOut"
+            },
+            "title": "Results",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total",
+          "results",
+          "attribution"
+        ],
+        "title": "BatchRiskResponse",
         "type": "object"
       },
       "BidOut": {
@@ -4249,6 +4409,81 @@
           "updated_at"
         ],
         "title": "ClientProfileResponse",
+        "type": "object"
+      },
+      "CohortMatchBody": {
+        "description": "Request body for POST /v1/cases/cohort_match.",
+        "properties": {
+          "employee_count_range": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "maxItems": 2,
+                "minItems": 2,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "[low, high] inclusive employee-count band. Either bound may be null to leave it open. Filters case_studies.employees only \u2014 public dataset does not carry employee count.",
+            "title": "Employee Count Range"
+          },
+          "industry_jsic": {
+            "anyOf": [
+              {
+                "maxLength": 10,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "JSIC industry code prefix (e.g. 'A' for \u8fb2\u6797\u6c34\u7523\u696d \u5927\u5206\u985e, 'E29' for \u98df\u6599\u54c1\u88fd\u9020\u696d \u4e2d\u5206\u985e). Prefix-matches against both jpcite case_studies.industry_jsic and autonomath public dataset.industry_jsic_medium. Pass null to span all industries.",
+            "title": "Industry Jsic"
+          },
+          "limit": {
+            "default": 20,
+            "description": "Max records per side. Clamped to [1, 100]. Default 20.",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "prefecture": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "\u90fd\u9053\u5e9c\u770c exact match (e.g. '\u6771\u4eac\u90fd', '\u7fa4\u99ac\u770c'). Filters both sides. Pass null to span nationwide.",
+            "title": "Prefecture"
+          },
+          "revenue_yen_range": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "maxItems": 2,
+                "minItems": 2,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "[low, high] yen revenue band. Approximated via capital_yen on case_studies (no explicit revenue column). NULL-tolerant \u2014 records without capital_yen still pass when other axes match.",
+            "title": "Revenue Yen Range"
+          }
+        },
+        "title": "CohortMatchBody",
         "type": "object"
       },
       "CompanyPublicArtifactRequest": {
@@ -5771,24 +6006,6 @@
         "title": "DdExportRequest",
         "type": "object"
       },
-      "DeactivateResponse": {
-        "properties": {
-          "id": {
-            "title": "Id",
-            "type": "integer"
-          },
-          "ok": {
-            "title": "Ok",
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "ok",
-          "id"
-        ],
-        "title": "DeactivateResponse",
-        "type": "object"
-      },
       "DeadlineEntry": {
         "additionalProperties": false,
         "description": "One program whose submission window ends within the query horizon.",
@@ -6775,7 +6992,7 @@
       },
       "ErrorBody": {
         "additionalProperties": true,
-        "description": "Body of the canonical error envelope.\n\nRequired fields are ``code`` + ``message``. ``request_id`` is always\npresent in production (``make_error`` defaults to a freshly-minted\n``secrets.token_hex(8)`` value when no upstream id can be resolved)\nbut is marked optional here so SDK generators emit a nullable type.\n\nExtras (``retry_after``, ``suggested_paths``, ``field_errors``,\n``severity``, ``documentation``, ``user_message_en``) are tolerated via\n``extra=\"allow\"`` so the OpenAPI schema can stay a stable minimum\ncontract without needing to enumerate per-code keys.",
+        "description": "Body of the canonical error envelope.\n\nRequired fields are ``code`` + ``message``. ``request_id`` is always\npresent in production (``make_error`` defaults to a freshly-minted\n26-char Crockford-base32 ULID when no upstream id can be resolved)\nbut is marked optional here so SDK generators emit a nullable type.\n\nExtras (``retry_after``, ``suggested_paths``, ``field_errors``,\n``severity``, ``documentation``, ``user_message_en``) are tolerated via\n``extra=\"allow\"`` so the OpenAPI schema can stay a stable minimum\ncontract without needing to enumerate per-code keys.",
         "examples": [
           {
             "code": "no_matching_records",
@@ -8688,6 +8905,172 @@
           }
         },
         "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HoujinInvoiceStatusOut": {
+        "additionalProperties": false,
+        "description": "``/v1/houjin/{bangou}/invoice_status`` payload.",
+        "properties": {
+          "houjin_bangou": {
+            "title": "Houjin Bangou",
+            "type": "string"
+          },
+          "houjin_master_match": {
+            "$ref": "#/components/schemas/HoujinMasterMatch"
+          },
+          "invoice_registration_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invoice Registration Number"
+          },
+          "invoice_row": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RiskOut"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Full invoice-registrant risk record when the bangou resolves to a T-number. NULL when no T-number is on file."
+          },
+          "rationale": {
+            "title": "Rationale",
+            "type": "string"
+          },
+          "registered": {
+            "title": "Registered",
+            "type": "boolean"
+          },
+          "risk_band": {
+            "enum": [
+              "clear",
+              "caution",
+              "verify",
+              "block"
+            ],
+            "title": "Risk Band",
+            "type": "string"
+          },
+          "risk_score": {
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Risk Score",
+            "type": "integer"
+          },
+          "tax_credit_eligible": {
+            "title": "Tax Credit Eligible",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "houjin_bangou",
+          "invoice_registration_number",
+          "registered",
+          "risk_score",
+          "risk_band",
+          "tax_credit_eligible",
+          "rationale",
+          "houjin_master_match"
+        ],
+        "title": "HoujinInvoiceStatusOut",
+        "type": "object"
+      },
+      "HoujinInvoiceStatusResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "attribution": {
+            "additionalProperties": true,
+            "title": "Attribution",
+            "type": "object"
+          },
+          "result": {
+            "$ref": "#/components/schemas/HoujinInvoiceStatusOut"
+          }
+        },
+        "required": [
+          "result",
+          "attribution"
+        ],
+        "title": "HoujinInvoiceStatusResponse",
+        "type": "object"
+      },
+      "HoujinMasterMatch": {
+        "additionalProperties": false,
+        "description": "Subset of the houjin_master record used for verification.",
+        "properties": {
+          "close_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ISO date when the corporation was closed (NULL = still active).",
+            "title": "Close Date"
+          },
+          "corporation_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Corporation Type"
+          },
+          "houjin_bangou": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Houjin Bangou"
+          },
+          "matched": {
+            "description": "True iff the houjin_bangou resolved.",
+            "title": "Matched",
+            "type": "boolean"
+          },
+          "normalized_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Normalized Name"
+          },
+          "prefecture": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prefecture"
+          }
+        },
+        "required": [
+          "matched"
+        ],
+        "title": "HoujinMasterMatch",
         "type": "object"
       },
       "InvoiceRegistrantOut": {
@@ -11593,6 +11976,103 @@
         "title": "ReportConversionRequest",
         "type": "object"
       },
+      "RiskOut": {
+        "additionalProperties": false,
+        "description": "Single T-number risk result.",
+        "properties": {
+          "expired_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ISO date \u2014 soonest of revoked_date / expired_date when present.",
+            "title": "Expired At"
+          },
+          "houjin_master_match": {
+            "$ref": "#/components/schemas/HoujinMasterMatch"
+          },
+          "invoice_registration_number": {
+            "title": "Invoice Registration Number",
+            "type": "string"
+          },
+          "rationale": {
+            "description": "One-sentence rationale for the score (Japanese, \u2264200 chars).",
+            "title": "Rationale",
+            "type": "string"
+          },
+          "registered": {
+            "title": "Registered",
+            "type": "boolean"
+          },
+          "registered_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ISO date \u2014 NULL when registered=False.",
+            "title": "Registered At"
+          },
+          "risk_band": {
+            "enum": [
+              "clear",
+              "caution",
+              "verify",
+              "block"
+            ],
+            "title": "Risk Band",
+            "type": "string"
+          },
+          "risk_score": {
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Risk Score",
+            "type": "integer"
+          },
+          "tax_credit_eligible": {
+            "title": "Tax Credit Eligible",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "invoice_registration_number",
+          "registered",
+          "houjin_master_match",
+          "risk_score",
+          "risk_band",
+          "tax_credit_eligible",
+          "rationale"
+        ],
+        "title": "RiskOut",
+        "type": "object"
+      },
+      "RiskResponse": {
+        "additionalProperties": false,
+        "description": "200 response wrapper \u2014 RiskOut + attribution + disclaimer.",
+        "properties": {
+          "attribution": {
+            "additionalProperties": true,
+            "title": "Attribution",
+            "type": "object"
+          },
+          "result": {
+            "$ref": "#/components/schemas/RiskOut"
+          }
+        },
+        "required": [
+          "result",
+          "attribution"
+        ],
+        "title": "RiskResponse",
+        "type": "object"
+      },
       "RotateKeyResponse": {
         "properties": {
           "api_key": {
@@ -13843,6 +14323,32 @@
         "title": "VerifyResponse",
         "type": "object"
       },
+      "WatchEntry": {
+        "description": "Single watch entry inside a subscription's `watch` array.",
+        "properties": {
+          "id": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Id",
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "program_id",
+              "law_id",
+              "industry_jsic"
+            ],
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "id"
+        ],
+        "title": "WatchEntry",
+        "type": "object"
+      },
       "WatchRegisterRequest": {
         "properties": {
           "target_id": {
@@ -14317,7 +14823,7 @@
     },
     "/v1/advisors/match": {
       "get": {
-        "description": "Top ``limit`` advisors matching the supplied filters.\n\nReturns public advisor profile fields and a deterministic match score.",
+        "description": "Top ``limit`` advisors matching the supplied filters.\n\nRead-only advisor matching for cases where public-program evidence shows\nthe user may need qualified professional review. This is an optional next\nstep after evidence retrieval; jpcite does not provide legal, tax, labor,\nor grant-application advice.",
         "operationId": "match_advisors_v1_advisors_match_get",
         "parameters": [
           {
@@ -14659,7 +15165,7 @@
     },
     "/v1/advisors/{advisor_id}/dashboard-data": {
       "get": {
-        "description": "Self-serve dashboard backing data: referrals + earnings summary.\n\nAccess is limited to the advisor dashboard flow.",
+        "description": "Self-serve dashboard backing data: referrals + earnings summary.\n\nAuthentication: a signed HMAC ``?token=...`` is required. The token is\nissued in the Stripe Connect Express return URL (or a future magic-link\nemail) so the advisor can arrive from Stripe without an API key while\nkeeping dashboard data non-public.",
         "operationId": "dashboard_data_v1_advisors__advisor_id__dashboard_data_get",
         "parameters": [
           {
@@ -14669,6 +15175,24 @@
             "schema": {
               "title": "Advisor Id",
               "type": "integer"
+            }
+          },
+          {
+            "description": "Signed dashboard bearer token issued in the Stripe Connect return URL or a future magic-link email.",
+            "in": "query",
+            "name": "token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Signed dashboard bearer token issued in the Stripe Connect return URL or a future magic-link email.",
+              "title": "Token"
             }
           }
         ],
@@ -18366,6 +18890,51 @@
             }
           },
           {
+            "description": "Row shape. 'minimal' (default) returns compact records; 'full' also exposes name_en/body_en/name_ja when present.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "default": "minimal",
+              "description": "Row shape. 'minimal' (default) returns compact records; 'full' also exposes name_en/body_en/name_ja when present.",
+              "enum": [
+                "minimal",
+                "standard",
+                "full"
+              ],
+              "title": "Fields",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Response language. 'ja' (default) returns Japanese fields. 'en' uses name_en when present and falls back to ja with lang_resolved='ja' otherwise. Pass fields='full' to expose name_en / body_en / name_ja hooks.",
+            "in": "query",
+            "name": "lang",
+            "required": false,
+            "schema": {
+              "default": "ja",
+              "description": "Response language. 'ja' (default) returns Japanese fields. 'en' uses name_en when present and falls back to ja with lang_resolved='ja' otherwise. Pass fields='full' to expose name_en / body_en / name_ja hooks.",
+              "enum": [
+                "ja",
+                "en"
+              ],
+              "title": "Lang",
+              "type": "string"
+            }
+          },
+          {
+            "description": "When true, restricts the result set to records reachable to a foreign-owned KK when tax_measure raw_json carries foreign_capital_eligibility. The 'excluded' bucket is dropped; missing values are treated as 'silent'.",
+            "in": "query",
+            "name": "foreign_capital_eligibility",
+            "required": false,
+            "schema": {
+              "default": false,
+              "description": "When true, restricts the result set to records reachable to a foreign-owned KK when tax_measure raw_json carries foreign_capital_eligibility. The 'excluded' bucket is dropped; missing values are treated as 'silent'.",
+              "title": "Foreign Capital Eligibility",
+              "type": "boolean"
+            }
+          },
+          {
             "in": "header",
             "name": "X-API-Key",
             "required": false,
@@ -21309,6 +21878,161 @@
           }
         },
         "summary": "Get a single \u63a1\u629e\u4e8b\u4f8b case study by case_id",
+        "tags": [
+          "case-studies"
+        ]
+      }
+    },
+    "/v1/cases/cohort_match": {
+      "post": {
+        "description": "Returns the \u63a1\u629e cohort that matches the caller's 4-axis profile (industry / employees / revenue / prefecture), pulling case_studies (indexed corpus, 2,286 \u63a1\u629e\u4e8b\u4f8b) **and** public dataset (extended corpus, 201,845 current release-absorbed METI/MAFF \u63a1\u629e\u7d50\u679c). The response includes:\n\n- ``matched_case_studies`` \u2014 up to ``limit`` rich case records.\n- ``matched_adoption_records`` \u2014 up to ``limit`` thin current release records.\n- ``program_rollup`` \u2014 per-program count + average amount + cohort share + example case_ids.\n- ``summary`` \u2014 total cohort records, distinct programs, mean / median amount.\n- ``axes_applied`` \u2014 which filters were honored on each side (adoption_records side does not carry employee / revenue).\n- ``sparsity_notes`` \u2014 honest disclosure of which fields are thin (amount populated on ~1.9% of case_studies, 0% of adoption_records).\n\n**Single \u00a53/billable unit billing event.** No LLM call, no destructive write. \u00a752 / \u00a747\u6761\u306e2 / \u884c\u653f\u66f8\u58eb\u6cd5 \u00a71 disclaimer envelope on every result \u2014 output is information retrieval, not \u7533\u8acb\u4ee3\u7406 / \u7a0e\u52d9\u52a9\u8a00 / \u7d4c\u55b6\u5224\u65ad.",
+        "operationId": "cohort_match_v1_cases_cohort_match_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CohortMatchBody",
+                "description": "Cohort filter body. All four axes are optional \u2014 pass any subset; null fields are treated as 'span everything'."
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Cohort match envelope. ``total`` = combined record count, ``program_rollup`` is sorted by appearance_count DESC."
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Validation error \u2014 `code` \u2208 {invalid_enum, invalid_date_format, missing_required_arg, out_of_range, ambiguous_query}."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Authentication required \u2014 `code='auth_required'`. Send `X-API-Key`."
+          },
+          "402": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Cost cap exceeded \u2014 `code='cost_cap_exceeded'`. Raise `X-Cost-Cap-JPY` or reduce fan-out."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not found \u2014 `code` \u2208 {no_matching_records, seed_not_found, route_not_found}."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable entity \u2014 Pydantic validation failure (`code='invalid_enum'`)."
+          },
+          "428": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Precondition required \u2014 `code='idempotency_key_required'`. Send `Idempotency-Key` on paid fan-out requests."
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Rate limit \u2014 `code='rate_limit_exceeded'`. Honour `Retry-After`."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Server error \u2014 `code` \u2208 {service, internal_error, db_locked, db_unavailable}."
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Subsystem unavailable \u2014 `code` \u2208 {subsystem_unavailable, service_unavailable, cap_reached}."
+          }
+        },
+        "summary": "Cohort matcher (\u63a1\u629e\u4e8b\u4f8b \u00d7 \u696d\u7a2e \u00d7 \u898f\u6a21 \u00d7 \u5730\u57df)",
         "tags": [
           "case-studies"
         ]
@@ -24717,6 +25441,77 @@
         ]
       }
     },
+    "/v1/houjin/{bangou}/invoice_status": {
+      "get": {
+        "description": "Reverse lookup: take a 13-digit \u6cd5\u4eba\u756a\u53f7 and return the matching \u9069\u683c\u4e8b\u696d\u8005\u756a\u53f7 (if any) plus the same risk envelope as /v1/invoice registrant records/{tnum}/risk. Returns invoice_row=null + block when the corporation has never registered.",
+        "operationId": "get_houjin_invoice_status_v1_houjin__bangou__invoice_status_get",
+        "parameters": [
+          {
+            "description": "13-digit \u6cd5\u4eba\u756a\u53f7 (without 'T' prefix).",
+            "in": "path",
+            "name": "bangou",
+            "required": true,
+            "schema": {
+              "description": "13-digit \u6cd5\u4eba\u756a\u53f7 (without 'T' prefix).",
+              "pattern": "^\\d{13}$",
+              "title": "Bangou",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HoujinInvoiceStatusResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "bangou must be 13 digits."
+          }
+        },
+        "summary": "\u6cd5\u4eba\u756a\u53f7 \u2192 \u9069\u683c\u4e8b\u696d\u8005\u756a\u53f7 resolve + status",
+        "tags": [
+          "houjin"
+        ]
+      }
+    },
     "/v1/integrations/email/connect": {
       "post": {
         "description": "Record the calling key's preferred inbound email parse address. Final setup may require support assistance.",
@@ -25694,6 +26489,75 @@
         ]
       }
     },
+    "/v1/invoice_registrants/batch_risk": {
+      "post": {
+        "description": "Bulk lookup variant of /v1/invoice registrant records/{tnum}/risk. Body shape: `{ \"tnums\": [\"T...\", ...] }`, capped at 100 entries per call. Per-item ``error`` populates when a T-number is malformed; otherwise ``risk`` mirrors the single-lookup shape exactly. PDL v1.0 attribution + \u00a752 disclaimer are emitted ONCE at the response root.",
+        "operationId": "batch_invoice_risk_v1_invoice registrant records_batch_risk_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchRiskRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchRiskResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Batch shape invalid (empty / over cap)."
+          }
+        },
+        "summary": "Batch risk lookup (max 100 T-numbers)",
+        "tags": [
+          "invoice_registrants"
+        ]
+      }
+    },
     "/v1/invoice_registrants/search": {
       "get": {
         "description": "Look up registered Japanese \u9069\u683c\u8acb\u6c42\u66f8\u767a\u884c\u4e8b\u696d\u8005 (qualified invoice issuers under the \u30a4\u30f3\u30dc\u30a4\u30b9\u5236\u5ea6 / \u6d88\u8cbb\u7a0e\u4ed5\u5165\u7a0e\u984d\u63a7\u9664 regime) by name prefix, \u6cd5\u4eba\u756a\u53f7, prefecture, or registration date window. Mirror of NTA's official \u9069\u683c\u8acb\u6c42\u66f8\u767a\u884c\u4e8b\u696d\u8005\u516c\u8868\u30b5\u30a4\u30c8 bulk (13,801 delta records live; full 4M-record monthly bulk lands post-launch).\n\n**When to use:** verify whether a counterparty has issued a valid T-prefixed invoice number before claiming \u4ed5\u5165\u7a0e\u984d\u63a7\u9664. For exact T-number lookup (T + 13 digits), prefer `GET /v1/invoice registrant records/{invoice_registration_number}`.\n\n**Limits:** `q` requires 2+ chars and uses prefix name matching. Bulk dump is intentionally not supported; for full snapshots use NTA's official download URL in the `attribution.source_url`.\n\n**License:** every 2xx body carries a PDL v1.0 `attribution` block \u2014 \u516c\u5171\u30c7\u30fc\u30bf\u5229\u7528\u898f\u7d04 \u7b2c1.0\u7248 (\u51fa\u5178\u660e\u8a18 + \u7de8\u96c6\u30fb\u52a0\u5de5\u6ce8\u8a18). Do NOT strip on relay.",
@@ -26032,6 +26896,76 @@
           }
         },
         "summary": "Lookup adequate-invoice (\u9069\u683c\u8acb\u6c42\u66f8) registrant by T-number",
+        "tags": [
+          "invoice_registrants"
+        ]
+      }
+    },
+    "/v1/invoice_registrants/{invoice_registration_number}/risk": {
+      "get": {
+        "description": "Returns a 0-100 risk score and a tax_credit_eligible boolean for a \u9069\u683c\u4e8b\u696d\u8005\u756a\u53f7 (T + 13 digits). Composes invoice registrant records (NTA PDL v1.0) + houjin_master (NTA \u6cd5\u4eba\u756a\u53f7\u516c\u8868\u30b5\u30a4\u30c8) + registration-age heuristic.\n\nScore taxonomy (closed enum):\n  * 0   clear  \u2014 registered + master match + 1 \u5e74\u8d85\n  * 30  caution \u2014 registered + < 6 \u30f6\u6708 OR 6m-1y\n  * 50  verify  \u2014 registered + houjin_master \u4e0d\u4e00\u81f4\n  * 100 block   \u2014 \u672a\u767b\u9332 / \u5931\u52b9 / \u53d6\u6d88\n\n**\u00a752 fence:** the response carries a `_disclaimer` field \u2014 scoring is heuristic and never substitutes for \u7a0e\u7406\u58eb judgement on \u4ed5\u5165\u7a0e\u984d\u63a7\u9664 (\u6d88\u8cbb\u7a0e\u6cd5 \u00a730).",
+        "operationId": "get_invoice_risk_v1_invoice registrant records__invoice_registration_number__risk_get",
+        "parameters": [
+          {
+            "description": "\u9069\u683c\u4e8b\u696d\u8005\u756a\u53f7 (T + 13 \u6570\u5b57).",
+            "in": "path",
+            "name": "invoice_registration_number",
+            "required": true,
+            "schema": {
+              "description": "\u9069\u683c\u4e8b\u696d\u8005\u756a\u53f7 (T + 13 \u6570\u5b57).",
+              "title": "Invoice Registration Number",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiskResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "T-number must match '^T\\d{13}$'."
+          }
+        },
+        "summary": "Risk score lookup for \u9069\u683c\u4e8b\u696d\u8005 (T-number)",
         "tags": [
           "invoice_registrants"
         ]
@@ -27569,7 +28503,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DeactivateResponse"
+                  "$ref": "#/components/schemas/AlertsDeactivateResponse"
                 }
               }
             },
@@ -27589,6 +28523,251 @@
         "summary": "Deactivate Subscription",
         "tags": [
           "alerts"
+        ]
+      }
+    },
+    "/v1/me/amendment_alerts/feed": {
+      "get": {
+        "description": "Returns the calling key's matching `public change log` records from the last 90 days. Supports `format=json` (default, envelope with _disclaimer) or `format=atom` (RFC 4287 1.0 for RSS readers).\n\nEach item carries `matched_watch` so consumers can attribute the alert to the originating watch entry. Rows are ordered (detected_at DESC, diff_id DESC).\n\n**Honesty:** jpcite detects field-level diffs from public government sources via daily scheduled job. **\u691c\u51fa\u306e\u307f\u3067\u500b\u5225\u5224\u65ad\u306f\u884c\u3044\u307e\u305b\u3093\u3002**",
+        "operationId": "feed_v1_me_amendment_alerts_feed_get",
+        "parameters": [
+          {
+            "description": "Response format",
+            "in": "query",
+            "name": "format",
+            "required": false,
+            "schema": {
+              "default": "json",
+              "description": "Response format",
+              "enum": [
+                "json",
+                "atom"
+              ],
+              "title": "Format",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Max records (default 100)",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "description": "Max records (default 100)",
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "90-day rolling feed of public change log matches for the calling key",
+        "tags": [
+          "amendment-alerts"
+        ]
+      }
+    },
+    "/v1/me/amendment_alerts/subscribe": {
+      "post": {
+        "description": "Create a new amendment-alert subscription.\n\nBody shape:\n    {\"watch\": [{\"type\": \"program_id\", \"id\": \"UNI-...\"}, ...]}\n\nReturns the new `subscription_id` plus echo metadata. The fan-out scheduled job\n(`scheduled source refresh`) reads matching diffs from\nextended corpus `public change log` daily.",
+        "operationId": "subscribe_v1_me_amendment_alerts_subscribe_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AmendmentAlertsSubscribeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AmendmentAlertsSubscribeResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Subscribe to multi-watch amendment-diff alerts",
+        "tags": [
+          "amendment-alerts"
+        ]
+      }
+    },
+    "/v1/me/amendment_alerts/{subscription_id}": {
+      "delete": {
+        "description": "Mark the subscription deactivated. The record stays for audit trail.\n\n404 when the id does not belong to this key OR is already deactivated\n(so callers cannot probe other keys' id-space).",
+        "operationId": "deactivate_v1_me_amendment_alerts__subscription_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "subscription_id",
+            "required": true,
+            "schema": {
+              "title": "Subscription Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AmendmentAlertsDeactivateResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Soft-delete (deactivate) an amendment-alert subscription",
+        "tags": [
+          "amendment-alerts"
         ]
       }
     },
