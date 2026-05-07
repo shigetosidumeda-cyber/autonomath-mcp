@@ -74,13 +74,35 @@
       "@type": "Offer",
       "name": "API + MCP 従量",
       "price": "3",
-      "priceCurrency": "JPY"
+      "priceCurrency": "JPY",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "3",
+        "priceCurrency": "JPY",
+        "unitText": "billable unit",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": "1",
+          "unitText": "request"
+        }
+      }
     },
     {
       "@type": "Offer",
       "name": "法令改正アラート",
-      "price": "500",
-      "priceCurrency": "JPY"
+      "price": "3",
+      "priceCurrency": "JPY",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "3",
+        "priceCurrency": "JPY",
+        "unitText": "通知",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": "1",
+          "unitText": "notification"
+        }
+      }
     }
   ]
 }
