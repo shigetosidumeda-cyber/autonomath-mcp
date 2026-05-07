@@ -1,0 +1,152 @@
+# Direct Cloudflare Pages production deploy via GitHub Actions Linux runner.
+#
+# Why this workflow exists (2026-05-07):
+#   Local `npx wrangler pages deploy site/` from macOS stalled 4 retries in
+#   a row — the >100MB artifact upload hit Cloudflare Pages API rate-limit
+#   on retry/resume, leaving the wrangler process hung. GHA Linux runners
+#   have stable network paths and CF API rate-limit windows reset between
+#   runs, so we move the production push to CI to keep launch unblocked.
+#
+# Differences vs. existing pages workflows:
+#   - `pages-preview.yml` is the PR-preview / push-trigger flow that also
+#     pulls Fly data and rebuilds generated artifacts. Heavy.
+#   - `pages-regenerate.yml` regenerates per-program / per-prefecture
+#     pages from the live SQLite (≈8-12 min wall) on a nightly cron.
+#   - This file (`pages-deploy-main.yml`) is the lightweight "ship the
+#     committed `site/` tree as-is" path: no Fly fetch, no DB rebuild,
+#     no MkDocs rebuild — just rsync, JSON validate, and `wrangler pages
+#     deploy`. This is the CI equivalent of the operator workflow
+#     documented in `tools/offline/_inbox/HANDOFF_2026_05_07_FRONTEND_DEPLOY_STOP.md`.
+#
+# Required GitHub repository secrets (canonical names match the existing
+# pages-preview.yml / pages-regenerate.yml convention — DO NOT introduce
+# new `CLOUDFLARE_*` aliases, that would fragment secret management):
+#   CF_API_TOKEN   Cloudflare API token, scope:
+#                    Account → Cloudflare Pages → Edit
+#                  Create at https://dash.cloudflare.com/profile/api-tokens
+#   CF_ACCOUNT_ID  Cloudflare account ID (right sidebar of any CF dashboard).
+#
+# Project name: autonomath (CF Pages dashboard project, verified 2026-05-01).
+#   Domains: autonomath.pages.dev, jpcite.com, www.jpcite.com,
+#            zeimu-kaikei.ai, www.zeimu-kaikei.ai.
+#
+# Usage:
+#   - Push to main → auto-deploy committed site/ tree.
+#   - Manual: gh workflow run pages-deploy-main.yml.
+#
+# Constraint per CLAUDE.md: never push with --no-verify; pre-commit hooks
+# must pass before this file is committed.
+
+name: pages-deploy-main
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "site/**"
+      - ".github/workflows/pages-deploy-main.yml"
+  workflow_dispatch: {}
+
+concurrency:
+  group: pages-deploy-main
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  deploy:
+    name: Deploy committed site/ to Cloudflare Pages
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 1
+
+      - name: Check Cloudflare Pages secrets
+        id: cf-secrets
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CF_API_TOKEN:-}" ] || [ -z "${CF_ACCOUNT_ID:-}" ]; then
+            echo "::error::CF_API_TOKEN and/or CF_ACCOUNT_ID is not configured. See pages-deploy-main.yml header for setup instructions."
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+          echo "available=true" >> "$GITHUB_OUTPUT"
+
+      - name: Build static artifact (rsync site/ → dist/site/)
+        run: |
+          set -euo pipefail
+          rm -rf dist/site
+          mkdir -p dist
+          # Mirror the rsync filter from pages-preview.yml so the deployed
+          # surface stays byte-identical to the operator workflow documented
+          # in HANDOFF_2026_05_07_FRONTEND_DEPLOY_STOP.md.
+          rsync -a --delete \
+            --exclude '_templates/' \
+            --exclude '*.src.js' \
+            --exclude '*.src.css' \
+            --exclude '*.map' \
+            --include 'press/*.md' \
+            --include 'security/policy.md' \
+            --exclude '*.md' \
+            site/ dist/site/
+          echo "artifact size:"
+          du -sh dist/site
+          echo "file count:"
+          find dist/site -type f | wc -l
+
+      - name: Validate critical JSON manifests
+        run: |
+          set -euo pipefail
+          # The four public JSON surfaces that downstream consumers (MCP
+          # registries, OpenAPI clients, agent runtimes) hit on every deploy.
+          # If any is malformed the deploy must abort — past incident:
+          # invalid server.json broke the registry sync silently.
+          for f in \
+            dist/site/server.json \
+            dist/site/mcp-server.json \
+            dist/site/docs/openapi/v1.json \
+            dist/site/openapi.agent.json
+          do
+            echo "validating $f"
+            python3 -m json.tool "$f" > /dev/null
+          done
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@f0a1cd58cd66095dee69bfa18fa5efd1dde93bca # v1.5.0
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          projectName: autonomath
+          directory: dist/site
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          # main → production (apex jpcite.com / www.jpcite.com).
+          branch: main
+
+      - name: Post-deploy smoke (public JSON surface)
+        run: |
+          set -euo pipefail
+          # Pages takes a few seconds to flip the production alias after the
+          # action returns; small initial sleep keeps the first curl from
+          # hitting the previous build.
+          sleep 15
+          Q="deploy_check=$(date +%s)"
+          for url in \
+            "https://jpcite.com/server.json?$Q" \
+            "https://jpcite.com/mcp-server.json?$Q" \
+            "https://jpcite.com/docs/openapi/v1.json?$Q" \
+            "https://jpcite.com/openapi.agent.json?$Q"
+          do
+            echo "smoke: $url"
+            curl -fsSL --max-time 30 "$url" | python3 -m json.tool > /dev/null
+          done
+          echo "post-deploy smoke OK"
