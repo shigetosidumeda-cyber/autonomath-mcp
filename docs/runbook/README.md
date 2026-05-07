@@ -24,6 +24,7 @@ walk `docs/runbook/*.md` and group by `category`.
 |---|---|---|---|
 | [secret_rotation.md](secret_rotation.md) | Rotate / provision the 5 boot-gated production secrets (API_KEY_SALT, audit-seal HMAC, Stripe). | operator only | 2026-05-04 |
 | [cors_setup.md](cors_setup.md) | Maintain the `JPINTEL_CORS_ORIGINS` Fly secret + add/remove allowlisted hosts. | operator only | 2026-05-04 |
+| [ghta_r2_secrets.md](ghta_r2_secrets.md) | Mirror the four `R2_*` secrets into the GitHub repository secret store (Fly secret store ≠ GHA secret store) so nightly-backup / weekly-backup-autonomath / restore-drill-monthly workflows can talk to R2. | operator only | 2026-05-07 |
 
 ### deploy — service deployment + marketplace publishes
 
@@ -93,6 +94,10 @@ sentry_setup ──▶ stripe_meter_events_migration (`webhook_handler_exception
              ──▶ litestream_setup (`litestream_replication_lag` rule, post-cutover)
 
 cors_setup ──▶ secret_rotation (JPINTEL_CORS_ORIGINS rotation cadence = "永続" — modify on host changes only)
+
+ghta_r2_secrets ──▶ disaster_recovery §2 (same R2 token quartet — Fly side; this runbook is the GHA side)
+                ──▶ litestream_setup Step 2 (same R2 token quartet — single credential set across Fly + GHA)
+                ──▶ secret_rotation (90-day rotation cadence; rotate Fly + GHA in lockstep)
 ```
 
 ---
