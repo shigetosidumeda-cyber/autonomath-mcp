@@ -229,7 +229,7 @@
  <li><strong>週次</strong>: GitHub Actions <code>pip-audit</code> + Dependabot で CVE 監視 (public repo 化後に自動化)</li>
  <li><strong>Boot 時 invariant</strong>: <code>tests/test_no_llm_in_production.py</code> が anthropic / openai / google.generativeai / claude_agent_sdk の import を hard-fail。 prompt injection の入口を物理遮断</li>
  <li><strong>License audit</strong>: <code>pip-licenses</code> 結果を定例 cron で生成、license breakdown を開示予定 (現行: MIT 主体、Apache 2.0 / BSD 一部、GPL 採用なし)</li>
- <li><strong>SBOM</strong>: SPDX-2.3 形式で <code>/security/sbom.spdx.json</code> 公開予定 (cron 生成)</li>
+ <li><strong>SBOM</strong>: CycloneDX 1.4 形式 (8 shard) を <a href="/.well-known/sbom.json"><code>/.well-known/sbom.json</code></a> から公開、月次 cron (<code>.github/workflows/sbom-publish-monthly.yml</code>) で再生成</li>
  </ul>
 
  <h2 id="incident">8. インシデント対応 (Incident response)</h2>

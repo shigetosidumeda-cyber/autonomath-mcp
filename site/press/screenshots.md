@@ -29,5 +29,5 @@ Press-kit screenshots are provided on request so media outlets receive current p
 
 ## Requesting high-res press pack
 
-Email `hello@jpcite.com` with outlet + deadline.
+Email [info@bookyou.net](mailto:info@bookyou.net?subject=%5Bpress%5D%20jpcite%20screenshots) with outlet + deadline (subject prefix `[press]`).
 Response SLA: 24h JST business-day.
