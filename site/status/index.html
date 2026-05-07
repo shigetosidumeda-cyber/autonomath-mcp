@@ -379,7 +379,7 @@
  <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
  <td class="detail">—</td>
  </tr>
- <tr id="row-db-jpintel" data-key="programs_data_store">
+ <tr id="row-db-programs" data-key="programs_data_store">
  <td>Programs data</td>
  <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
  <td class="detail">—</td>
@@ -621,7 +621,7 @@
                 "am_entities_freshness", "license_coverage",
                 "wal_mode", "static_files_present"];
     var rowMap = {};
-    rowMap[programsKey] = "row-db-jpintel";
+    rowMap[programsKey] = "row-db-programs";
     rowMap[entityFactsKey] = "row-db-am";
     rowMap.am_entities_freshness = "row-freshness";
     rowMap.license_coverage = "row-license";
@@ -674,7 +674,7 @@
     var msg = err && err.message ? err.message : String(err);
     paintIndicator("ind-api", "down", "到達不能 / unreachable");
     paintRow("row-rest", "down", "停止中", msg.slice(0, 200));
-    paintRow("row-db-jpintel", "down", "確認不可", "API 不到達");
+    paintRow("row-db-programs", "down", "確認不可", "API 不到達");
     paintRow("row-db-am", "down", "確認不可", "API 不到達");
     paintRow("row-freshness", "down", "確認不可", "API 不到達");
     paintRow("row-license", "down", "確認不可", "API 不到達");
