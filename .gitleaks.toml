@@ -44,6 +44,12 @@ paths = [
   '''^docs/api-reference\.md$''',
   '''^docs/getting-started\.md$''',
   '''^docs/mcp-tools\.md$''',
+  # Search-console + IndexNow runbook ships the IndexNow public-by-design
+  # key as a literal (the IndexNow spec requires it to be public; it is
+  # served at https://jpcite.com/<KEY>.txt for Bing/Yandex domain
+  # validation, so committing it is operationally correct). Allowlisted
+  # 2026-05-07 after R8 deep security scan to silence generic-api-key noise.
+  '''^docs/runbook/search_console_setup\.md$''',
 
   # Smoke test deliberately uses sk_live_nonexistent_000 to exercise the
   # 401 path. Never a real key.
@@ -70,4 +76,12 @@ regexes = [
   '''jpintel_\.{3}''',
   '''sk_live_abc12345''',
   '''sk_live_nonexistent_000''',
+  # IndexNow protocol key. The IndexNow spec REQUIRES the key to be public
+  # (hosted at https://jpcite.com/<KEY>.txt for Bing/Yandex domain-ownership
+  # verification — see docs/runbook/search_console_setup.md §7). It is
+  # documented in the runbook and stored as a GH Action secret for cron use,
+  # so committing the literal in the runbook is by-design (operator copies
+  # it into site/<KEY>.txt manually post-deploy). Allowlisted 2026-05-07
+  # after R8 deep security scan flagged it as generic-api-key.
+  '''xqb3GHUXXtVxaLjNldSqFyxGgMITszJ_akOrgDTsDG4''',
 ]
