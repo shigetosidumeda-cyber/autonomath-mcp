@@ -6,10 +6,10 @@
 <meta name="theme-color" content="#ffffff">
 <meta name="color-scheme" content="light dark">
 <title>jpcite for foreign-invested entities — Japan tax-treaty + FDI subsidy + English law API</title>
-<meta name="description" content="English MCP wedge for foreign-invested entities operating in Japan. 700+ e-Gov-translated laws, 80-country tax-treaty schema (33 live), foreign-capital eligibility checker, and FDI-friendly subsidy finder. ¥3/billable unit metered, anonymous 3/day free, primary-source citations only.">
+<meta name="description" content="English MCP wedge for foreign-invested entities operating in Japan. e-Gov 英訳 law corpus (target 700+, body_en column live via migration 090; load incremental), 80-country tax-treaty schema (33 live), foreign-capital eligibility checker, and FDI-friendly subsidy finder. ¥3/billable unit metered, anonymous 3/day free, primary-source citations only.">
 
 <meta property="og:title" content="jpcite for foreign-invested entities — Japan FDI reference API">
-<meta property="og:description" content="700+ English-translated Japanese laws, 80-country tax-treaty schema, foreign-capital eligibility checker, FDI-friendly subsidy finder. ¥3/billable unit metered.">
+<meta property="og:description" content="e-Gov 英訳 law corpus (target 700+, incremental load), 80-country tax-treaty schema (33 live), foreign-capital eligibility checker, FDI-friendly subsidy finder. ¥3/billable unit metered.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/en/foreign-investor.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -36,10 +36,11 @@
   "@type": "Service",
   "serviceType": "Foreign Direct Investment (FDI) reference API for Japan — English MCP wedge",
   "name": "jpcite for foreign-invested entities",
-  "description": "5 English-first MCP tools (search_laws_en, get_law_article_en, get_tax_treaty, check_foreign_capital_eligibility, find_fdi_friendly_subsidies) over 700+ e-Gov 英訳 laws, 80-country tax-treaty schema (33 live), and per-program foreign-capital eligibility flags.",
+  "description": "5 English-first MCP tools (search_laws_en, get_law_article_en, get_tax_treaty, check_foreign_capital_eligibility, find_fdi_friendly_subsidies) over the e-Gov 英訳 law corpus (target 700+, body_en column shipped via migration 090; load incremental), 80-country tax-treaty schema (33 live), and per-program foreign-capital eligibility flags.",
   "provider": {
     "@type": "Organization",
-    "name": "Bookyou Inc.",
+    "name": "Bookyou株式会社",
+    "alternateName": "Bookyou K.K.",
     "url": "https://jpcite.com/en/"
   },
   "audience": {
@@ -66,11 +67,11 @@
   "@type": "FAQPage",
   "inLanguage": "en",
   "mainEntity": [
-    {"@type": "Question", "name": "Why a separate English wedge?", "acceptedAnswer": {"@type": "Answer", "text": "Foreign-invested entities operating in Japan need the same primary-source data Japanese consultants use, but the source documents are Japanese-only. The wedge surfaces 700+ e-Gov 英訳 (Japanese Ministry of Justice, CC-BY 4.0) law translations + 33-country bilateral tax treaty matrix + per-program foreign-capital eligibility flags so an LLM agent or DD pipeline can answer cross-border questions without manual translation."}},
+    {"@type": "Question", "name": "Why a separate English wedge?", "acceptedAnswer": {"@type": "Answer", "text": "Foreign-invested entities operating in Japan need the same primary-source data Japanese consultants use, but the source documents are Japanese-only. The wedge surfaces the e-Gov 英訳 corpus (Japanese Ministry of Justice, CC-BY 4.0; target 700+ laws, body_en column shipped via migration 090, load incremental) + 33-country bilateral tax treaty matrix + per-program foreign-capital eligibility flags so an LLM agent or DD pipeline can answer cross-border questions without manual translation."}},
     {"@type": "Question", "name": "Same price as the Japanese surface?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. ¥3/billable unit (税込 ¥3.30) flat, no tier, no FX uplift, no seat fees. The US SaaS pricing instinct says ¥10/req or $0.10/req for an English surface — we explicitly reject that. Solo + zero-touch operations means no sales call, no DPA negotiation, no premium tier; just the same metered surface in English."}},
     {"@type": "Question", "name": "What is the corpus license?", "acceptedAnswer": {"@type": "Answer", "text": "English law text comes from the e-Gov 日本法令外国語訳 corpus (japaneselawtranslation.go.jp) under CC-BY 4.0. Tax treaty rows are 政府標準利用規約 v2.0 (gov_standard) from the Ministry of Finance + National Tax Agency primary sources. The Japanese-language original of every law is the only legally authoritative version — the EN body is a courtesy translation."}},
     {"@type": "Question", "name": "Is there an LLM doing the translation?", "acceptedAnswer": {"@type": "Answer", "text": "No. The English text is the e-Gov hand-curated translation column (am_law_article.body_en, migration 090). jpcite never calls an LLM API — your LLM is the consumer. Every tool is pure SQL + Python over autonomath.db."}},
-    {"@type": "Question", "name": "Which jurisdictions are covered in the tax-treaty matrix?", "acceptedAnswer": {"@type": "Answer", "text": "33 countries are hand-curated as of 2026-05-05 (US, UK, Singapore, Hong Kong, Germany, France, Netherlands, China, Korea, Taiwan, Australia, Canada, India, Indonesia, Thailand, Vietnam, Malaysia, Philippines, plus 15 more). The schema seeds ~80 jurisdictions; the next 47 land via the same am_tax_treaty table without schema change. NULL in any wht_*_pct column means 'see treaty article (n/a in standard rate)' — distinct from 0.0 = exempt under treaty."}},
+    {"@type": "Question", "name": "Which jurisdictions are covered in the tax-treaty matrix?", "acceptedAnswer": {"@type": "Answer", "text": "33 countries are hand-curated as of 2026-05-07 (US, UK, Singapore, Hong Kong, Germany, France, Netherlands, China, Korea, Taiwan, Australia, Canada, India, Indonesia, Thailand, Vietnam, Malaysia, Philippines, plus 15 more). The schema seeds ~80 jurisdictions; the next 47 land via the same am_tax_treaty table without schema change. NULL in any wht_*_pct column means 'see treaty article (n/a in standard rate)' — distinct from 0.0 = exempt under treaty."}},
     {"@type": "Question", "name": "What does foreign_capital_eligibility return?", "acceptedAnswer": {"@type": "Answer", "text": "One of: eligible, eligible_with_caveat, excluded, silent (default), case_by_case. The default 'silent' means the program text does not address foreign capital — the Japanese statutory presumption is permissive, so most national programs do NOT exclude foreign-owned KKs unless they explicitly say so. The flag is per-program (am_subsidy_rule), not per-corp. Always verify with the program office before relying on this for a filing decision."}},
     {"@type": "Question", "name": "Is this legal or tax advice?", "acceptedAnswer": {"@type": "Answer", "text": "No. Every response carries a _disclaimer envelope declaring 税理士法 §52 / 弁護士法 §72 / 行政書士法 §1 / FDI 規制 fence. The output is information retrieval, not legal advice. For binding interpretation, consult a Japanese qualified attorney / 税理士 / 行政書士."}}
   ]
@@ -106,7 +107,7 @@ pre { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; paddin
 
 <section>
 <h2>Why this wedge exists</h2>
-<p>Japanese public-program data (subsidies, tax incentives, statutes, court decisions, regulatory enforcement) is overwhelmingly Japanese-only. JETRO publishes excellent narrative guides, but a foreign-invested entity that wants to wire Japanese eligibility checks into an LLM agent or DD pipeline still has to translate the source documents row by row. The English wedge solves that without involving an LLM in the translation loop: it surfaces the e-Gov 日本法令外国語訳 corpus (Japanese Ministry of Justice, CC-BY 4.0) plus the Ministry of Finance's bilateral tax-treaty matrix plus per-program foreign-capital eligibility flags, all keyed by the same primary-source URLs the Japanese surface uses.</p>
+<p>Japanese public-program data (subsidies, tax incentives, statutes, court decisions, regulatory enforcement) is overwhelmingly Japanese-only. JETRO publishes excellent narrative guides, but a foreign-invested entity that wants to wire Japanese eligibility checks into an LLM agent or DD pipeline still has to translate the source documents row by row. The English wedge solves that without involving an LLM in the translation loop: it surfaces the e-Gov 日本法令外国語訳 corpus (Japanese Ministry of Justice, CC-BY 4.0; target 700+ laws, body_en column shipped via migration 090, load incremental) plus the Ministry of Finance's bilateral tax-treaty matrix (am_tax_treaty, 33 of ~80 countries hand-curated) plus per-program foreign-capital eligibility flags, all keyed by the same primary-source URLs the Japanese surface uses.</p>
 <p><strong>Same operator constraints apply:</strong> ¥3/billable unit metered (税込 ¥3.30), no tier, no seat fees, no annual minimums, anonymous trial 3/day/IP, primary-source citations only, no aggregator. Solo + zero-touch ops means no sales calls, no DPA negotiation, no Slack Connect.</p>
 </section>
 
@@ -115,7 +116,7 @@ pre { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; paddin
 <table>
 <thead><tr><th>Tool</th><th>What it returns</th><th>Backed by</th></tr></thead>
 <tbody>
-<tr><td><code>search_laws_en</code></td><td>Keyword search over English-translated Japanese law articles. Returns EN excerpt + title + e-Gov source URL.</td><td><code>am_law_article.body_en</code> (migration 090, e-Gov CC-BY 4.0; 700+ laws targeted)</td></tr>
+<tr><td><code>search_laws_en</code></td><td>Keyword search over English-translated Japanese law articles. Returns EN excerpt + title + e-Gov source URL.</td><td><code>am_law_article.body_en</code> (migration 090, e-Gov CC-BY 4.0; target 700+ laws, incremental load)</td></tr>
 <tr><td><code>get_law_article_en</code></td><td>Exact (law_id, article_no) lookup. Returns EN body or graceful JP fallback with warning.</td><td><code>am_law_article</code> + <code>am_law</code> (canonical id resolver)</td></tr>
 <tr><td><code>get_tax_treaty</code></td><td>Bilateral DTA: WHT rates (dividend / interest / royalty / parent-sub), PE threshold, info-exchange status, MoAA arbitration flag.</td><td><code>am_tax_treaty</code> (migration 091, MoF + NTA primary source; 33 of ~80 countries live)</td></tr>
 <tr><td><code>check_foreign_capital_eligibility</code></td><td>Per-program flag (eligible / eligible_with_caveat / excluded / silent / case_by_case). Most-restrictive across rule_types.</td><td><code>am_subsidy_rule.foreign_capital_eligibility</code> (migration 092, heuristic + manual curation)</td></tr>
@@ -212,7 +213,7 @@ GET  /v1/en/fdi_subsidies?industry_jsic=E&amp;foreign_pct=100&amp;limit=20</pre>
 </main>
 
 <footer>
-<p>© Bookyou Inc. (適格請求書発行事業者番号 T8010001213708). info@bookyou.net.</p>
+<p>© Bookyou株式会社 (Bookyou K.K., 適格請求書発行事業者番号 T8010001213708). <a href="mailto:info@bookyou.net">info@bookyou.net</a>.</p>
 </footer>
 
 </body>
