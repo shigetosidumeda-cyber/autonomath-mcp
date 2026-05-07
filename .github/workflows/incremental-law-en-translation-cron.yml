@@ -1,0 +1,202 @@
+name: incremental-law-en-translation
+
+# Weekly incremental JLT (日本法令外国語訳) loader for am_law_article.body_en.
+# Lifts EN-translation coverage from 1 / 353,278 row (0.0003%) one batch at
+# a time, harvesting hand-translated bilingual article bodies from the
+# Ministry of Justice JLT system (https://www.japaneselawtranslation.go.jp,
+# CC-BY 4.0). Foreign FDI cohort enabler: even a few hundred populated rows
+# across the major commerce / corporate / FX / tax / antitrust laws unlocks
+# the foreign-FDI persona walk on the API/MCP side.
+#
+# This workflow is the e-Gov-translation sister of incremental-law-load.yml
+# (which loads JP body_text from the e-Gov 法令 API v2). It uses the
+# pre-existing scripts/etl/ingest_egov_law_translation.py — note that the
+# 2026-05-07 R8 audit found the CLAUDE.md reference to "batch_translate_corpus.py"
+# is a stale name; the live script is ingest_egov_law_translation.py.
+#
+# Pace
+# ----
+# JLT detail pages are HTML, ~50-150 KB each. With the script's polite
+# 3.0s per-request sleep + ~1.5s fetch, a 50-view batch finishes in
+# ~4 min. The catalog covers ~5,500 view_ids (verified 2026-05-05 in the
+# script docstring); at 50 views/week we cover the live range in ~110
+# weeks. JLT coverage is heavy on the major commerce / FX / antitrust /
+# tax laws (the FDI cohort target), so the early weeks generate the
+# highest-value rows.
+#
+# Pace bumps will follow the same playbook as incremental-law-load.yml:
+# observe stability, then raise the --max-view-id slice. Initial run
+# uses --max-view-id 60 (50 views slice from --resume next_view_id).
+#
+# Runs ON the Fly production machine via flyctl ssh — same pattern as
+# incremental-law-load.yml, so the DB write lands on the Fly volume
+# (which is the canonical autonomath.db).
+#
+# Required secrets:
+#   FLY_API_TOKEN
+# Optional secrets:
+#   SLACK_WEBHOOK_INGEST   notify on driver failure
+
+on:
+  schedule:
+    # 20:10 UTC Sunday == 05:10 JST Monday. Staggered AFTER incremental-law-load
+    # (19:50 UTC) so JP body_text loads first, then EN body_en backfills against
+    # the freshly-loaded am_law_article rows. Same Sunday-idle window logic.
+    - cron: "10 20 * * 0"
+  workflow_dispatch:
+    inputs:
+      max_view_id:
+        description: "Upper bound for --resume slice (default: bumps by 50 from current next_view_id)"
+        required: false
+        default: ""
+      dry_run:
+        description: "If true, fetch+parse only, no DB writes"
+        required: false
+        default: "false"
+
+concurrency:
+  group: incremental-law-en-translation
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  load:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60   # 50 views × ~4.5s fetch+sleep ≈ 4 min, generous headroom
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run JLT incremental loader on Fly machine
+        id: run
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          INPUT_MAX_VIEW_ID: ${{ github.event.inputs.max_view_id }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          DRY_FLAG=""
+          if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then
+            DRY_FLAG="--dry-run"
+          fi
+
+          # Default: walk the next 50 views from progress journal cursor.
+          # If max_view_id explicitly supplied, use that as the upper bound.
+          MAX_VIEW=""
+          if [ -n "${INPUT_MAX_VIEW_ID:-}" ]; then
+            MAX_VIEW="--max-view-id ${INPUT_MAX_VIEW_ID}"
+          else
+            # Read next_view_id from progress journal, slice +50.
+            NEXT=$(flyctl ssh console -a autonomath-api -C \
+              "/opt/venv/bin/python -c 'import json,os; p=\"/data/egov_law_translation/_progress.json\"; print(json.load(open(p)).get(\"next_view_id\",1)) if os.path.exists(p) else print(1)'" \
+              2>/dev/null | tr -d '\r' | tail -1)
+            NEXT="${NEXT:-1}"
+            MAX_VIEW="--max-view-id $((NEXT + 50))"
+          fi
+
+          set +e
+          flyctl ssh console -a autonomath-api -C \
+            "/opt/venv/bin/python /app/scripts/etl/ingest_egov_law_translation.py \
+              --resume \
+              ${MAX_VIEW} \
+              --auto-resolve \
+              --db /data/autonomath.db \
+              --sleep 3.0 \
+              ${DRY_FLAG}" \
+            | tee jlt_load.out
+          rc=$?
+          set -e
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          # rc == 0 success / rc == 2 = no rows in single-view smoke (n/a here).
+          if [ "$rc" -ne 0 ] && [ "$rc" -ne 2 ]; then
+            echo "::error::ingest_egov_law_translation.py exited $rc"
+            exit 1
+          fi
+
+      - name: Pull JLT progress journal off Fly machine
+        if: success()
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p tools/offline/_inbox/egov_law_translation
+          # Use rm -f then sftp-get to avoid the "refuses to overwrite" gotcha
+          # documented in CLAUDE.md (flyctl ssh sftp get refuses overwrites).
+          rm -f tools/offline/_inbox/egov_law_translation/_progress.json
+          flyctl ssh sftp get /data/egov_law_translation/_progress.json -a autonomath-api \
+            || echo "::warning::no /data/egov_law_translation/_progress.json yet"
+          if [ -f _progress.json ]; then
+            mv _progress.json tools/offline/_inbox/egov_law_translation/_progress.json
+          fi
+
+      - name: Detect progress diff
+        id: diff
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- tools/offline/_inbox/egov_law_translation/_progress.json 2>/dev/null; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open PR with JLT progress diff
+        if: steps.diff.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6.1.0
+        with:
+          commit-message: "chore(jlt-load): weekly EN-translation progress $(date -u +%Y-%m-%d)"
+          title: "JLT EN-translation weekly: $(date -u +%Y-%m-%d)"
+          body: |
+            Auto-generated by `.github/workflows/incremental-law-en-translation-cron.yml`.
+
+            This PR captures the per-run cursor + per-view stats appended to
+            `tools/offline/_inbox/egov_law_translation/_progress.json` after
+            the Fly volume's `autonomath.db` absorbed another JLT batch into
+            `am_law_article.body_en`.
+
+            Marketing copy ("body_en populated rows") should be updated when
+            the cumulative `stats.rows_written` figure crosses a round
+            milestone (50, 200, 500, 1000).
+
+            Source: 日本法令外国語訳DBシステム (CC-BY 4.0). Disclaimer that
+            EN translation is unofficial and JP is authoritative is
+            surfaced verbatim by every API/MCP response that exposes
+            body_en (see migration 090 docstring + `api/laws.py`).
+          branch: incremental-law-en-translation/${{ github.run_id }}
+          base: main
+          delete-branch: true
+          labels: |
+            ingest
+            law
+            i18n
+            automation
+          add-paths: |
+            tools/offline/_inbox/egov_law_translation/_progress.json
+
+      - name: Open issue on driver failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          BODY="Loader: \`scripts/etl/ingest_egov_law_translation.py\`\nRun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\nSHA: \`${{ github.sha }}\`\n\nLikely causes: JLT 5xx after 2 retries, network egress block, parse error on a malformed detail page, or \`autonomath.db\` lock contention on the Fly volume. See \`scripts/etl/ingest_egov_law_translation.py\` docstring.\n"
+          gh issue create \
+            --title "incremental-law-en-translation failed on $(date -u +%Y-%m-%d)" \
+            --label ingest-failure \
+            --label automation \
+            --body "$BODY"
+
+      - name: Slack notify on driver failure
+        if: failure() && env.SLACK_WEBHOOK_INGEST != ''
+        env:
+          SLACK_WEBHOOK_INGEST: ${{ secrets.SLACK_WEBHOOK_INGEST }}
+        run: |
+          set -euo pipefail
+          curl -fsS -X POST -H 'content-type: application/json' \
+            --data "{\"text\":\":warning: incremental-law-en-translation driver failure — ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}" \
+            "$SLACK_WEBHOOK_INGEST" || true
