@@ -51,7 +51,7 @@ a buggy gate is worse than over-serving a single batch). Logged through
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -199,7 +199,7 @@ def _has_customer_api_key(request: Request) -> bool:
     return auth.startswith("bearer ")
 
 
-def _build_missing_cap_body() -> dict:
+def _build_missing_cap_body() -> dict[str, Any]:
     return {
         "error": {
             "code": "cost_cap_required",
@@ -219,7 +219,7 @@ def _build_missing_cap_body() -> dict:
     }
 
 
-def _build_capped_body(state: CostCapState) -> dict:
+def _build_capped_body(state: CostCapState) -> dict[str, Any]:
     return {
         "error": {
             "code": "cost_cap_reached",
@@ -263,7 +263,7 @@ class CostCapMiddleware(BaseHTTPMiddleware):
     """
 
     async def dispatch(
-        self, request: Request, call_next: Callable
+        self, request: Request, call_next: Callable[..., Any]
     ) -> Response:
         # CORS preflight always passes — don't gate OPTIONS.
         if request.method == "OPTIONS":

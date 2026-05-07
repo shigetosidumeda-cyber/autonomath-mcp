@@ -30,7 +30,7 @@ Widget requests have per-key origin allowlists and must reach
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -88,7 +88,7 @@ class OriginEnforcementMiddleware(BaseHTTPMiddleware):
     DB-touching handler).
     """
 
-    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+    async def dispatch(self, request: Request, call_next: Callable[..., Any]) -> Response:
         # Same-origin / non-browser callers omit Origin entirely. Pass.
         origin = request.headers.get("origin")
         if not origin:

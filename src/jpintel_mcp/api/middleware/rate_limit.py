@@ -67,7 +67,7 @@ import os
 import threading
 import time
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -252,7 +252,7 @@ def _take_token(bucket_key: str, rate: float, burst: float) -> tuple[bool, float
         return False, retry_after
 
 
-def _build_throttled_body(retry_after_s: int, *, bucket: str) -> dict:
+def _build_throttled_body(retry_after_s: int, *, bucket: str) -> dict[str, Any]:
     """Render the 429 body. ``bucket`` is opaque ('paid' or 'anon-ip') so
     a caller can tell which limit they hit without revealing the raw
     key-hash or IP."""
@@ -289,7 +289,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     """
 
     async def dispatch(
-        self, request: Request, call_next: Callable
+        self, request: Request, call_next: Callable[..., Any]
     ) -> Response:
         # Whitelist: never throttle health probes, Stripe webhooks, or
         # CORS preflight. The Stripe webhook in particular sees bursts at

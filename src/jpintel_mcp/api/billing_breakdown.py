@@ -49,7 +49,7 @@ import logging
 import sqlite3
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, timedelta, timezone
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, HTTPException, Query, Response, status
 from pydantic import BaseModel
@@ -421,7 +421,7 @@ def get_client_tag_breakdown(
             description="json (default) または csv (Excel-Compatible UTF-8)",
         ),
     ] = "json",
-) -> Response | dict:
+) -> Response | dict[str, Any]:
     """Per-客先 (client_tag) breakdown of metered usage for the auth'd account.
 
     Returns one row per distinct `X-Client-Tag` value that appeared in

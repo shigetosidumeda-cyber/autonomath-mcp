@@ -26,7 +26,7 @@ concatenate them into the MATCH expression by hand.
 """
 
 import sqlite3
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, HTTPException, Query, status
 from fastapi.responses import JSONResponse
@@ -337,7 +337,7 @@ def search_bids(
     published first."""
 
     where: list[str] = []
-    params: list = []
+    params: list[Any] = []
     join_fts = False
 
     if q:

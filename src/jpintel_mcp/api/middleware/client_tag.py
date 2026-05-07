@@ -37,7 +37,7 @@ from __future__ import annotations
 
 import logging
 import re
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from starlette.middleware.base import BaseHTTPMiddleware
 
@@ -93,7 +93,7 @@ class ClientTagMiddleware(BaseHTTPMiddleware):
     the contract is "this attribute always exists after the middleware".
     """
 
-    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+    async def dispatch(self, request: Request, call_next: Callable[..., Any]) -> Response:
         try:
             raw = request.headers.get("x-client-tag")
             request.state.client_tag = validate_client_tag(raw)

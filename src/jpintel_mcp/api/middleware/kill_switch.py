@@ -40,7 +40,7 @@ from __future__ import annotations
 import logging
 import os
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -142,7 +142,7 @@ class KillSwitchMiddleware(BaseHTTPMiddleware):
     """
 
     async def dispatch(
-        self, request: Request, call_next: Callable
+        self, request: Request, call_next: Callable[..., Any]
     ) -> Response:
         if not _kill_switch_active():
             return await call_next(request)

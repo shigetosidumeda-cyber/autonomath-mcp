@@ -134,7 +134,7 @@ class StrictQueryMiddleware(BaseHTTPMiddleware):
     See module docstring for rationale and design notes.
     """
 
-    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+    async def dispatch(self, request: Request, call_next: Callable[..., Any]) -> Response:
         if _is_disabled():
             return await call_next(request)
 

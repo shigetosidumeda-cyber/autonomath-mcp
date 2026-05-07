@@ -22,6 +22,7 @@ event-specific lands in ``metadata`` as JSON.
 
 from __future__ import annotations
 
+import contextlib
 import json
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
@@ -59,20 +60,18 @@ def log_event(
         except Exception:
             ua = None
     md_json = json.dumps(metadata, ensure_ascii=False) if metadata else None
-    try:
+    # Audit logging must never break the user request. The webhook /
+    # session / rotate paths each have their own logger.exception
+    # instrumentation; an audit-write failure is logged via the row
+    # absence (forensics looks for missing entries) but the request
+    # itself proceeds.
+    with contextlib.suppress(Exception):
         db.execute(
             "INSERT INTO audit_log (ts, event_type, key_hash, key_hash_new, "
             "customer_id, ip, user_agent, metadata) "
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
             (ts, event_type, key_hash, key_hash_new, customer_id, ip, ua, md_json),
         )
-    except Exception:
-        # Audit logging must never break the user request. The webhook /
-        # session / rotate paths each have their own logger.exception
-        # instrumentation; an audit-write failure is logged via the row
-        # absence (forensics looks for missing entries) but the request
-        # itself proceeds.
-        pass
 
 
 __all__ = ["log_event"]

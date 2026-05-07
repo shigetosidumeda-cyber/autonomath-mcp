@@ -464,7 +464,7 @@ class CustomerCapMiddleware(BaseHTTPMiddleware):
       * Sets Retry-After to seconds-until-JST-月初.
     """
 
-    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+    async def dispatch(self, request: Request, call_next: Callable[..., Any]) -> Response:
         # Always allow control-plane endpoints through, even at cap-reached:
         # the customer must be able to RAISE / REMOVE their cap, manage their
         # subscription, and rotate their key after hitting the cap. Without

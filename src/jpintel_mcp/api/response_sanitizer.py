@@ -305,7 +305,7 @@ def _rebuild_response(
 class ResponseSanitizerMiddleware(BaseHTTPMiddleware):
     """Wraps JSON responses, sanitizes affirmative grant phrases (景表法)."""
 
-    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+    async def dispatch(self, request: Request, call_next: Callable[..., Any]) -> Response:
         response: Response = await call_next(request)
 
         # Only scan JSON bodies. SSE / openapi.json / plaintext / HTML pages

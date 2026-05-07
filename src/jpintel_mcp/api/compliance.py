@@ -42,7 +42,7 @@ import re
 import secrets
 import sqlite3
 from datetime import UTC, datetime
-from typing import Literal
+from typing import Any, Literal
 
 import stripe
 from fastapi import APIRouter, Header, HTTPException, Request, status
@@ -606,7 +606,7 @@ def stripe_checkout(payload: CheckoutRequest, conn: DbDep) -> CheckoutResponse:
     _configure_stripe()
     price_id = _get_alert_price_id()
 
-    extra: dict = {}
+    extra: dict[str, Any] = {}
     if settings.stripe_tax_enabled:
         extra["automatic_tax"] = {"enabled": True}
         extra["tax_id_collection"] = {"enabled": True}

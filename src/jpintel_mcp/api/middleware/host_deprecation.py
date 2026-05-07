@@ -62,7 +62,7 @@ Header reference
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from starlette.middleware.base import BaseHTTPMiddleware
 
@@ -135,7 +135,7 @@ class HostDeprecationMiddleware(BaseHTTPMiddleware):
     ``DeprecationWarningMiddleware`` flow) is never silently overridden.
     """
 
-    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+    async def dispatch(self, request: Request, call_next: Callable[..., Any]) -> Response:
         legacy = _is_legacy_host(request)
         response: Response = await call_next(request)
         if not legacy:

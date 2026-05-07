@@ -36,7 +36,7 @@ the v2 flag still report ``v1``.
 from __future__ import annotations
 
 import contextlib
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from starlette.middleware.base import BaseHTTPMiddleware
 
@@ -59,7 +59,7 @@ class EnvelopeAdapterMiddleware(BaseHTTPMiddleware):
     state stamp, not the response header which is added on the way out.
     """
 
-    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+    async def dispatch(self, request: Request, call_next: Callable[..., Any]) -> Response:
         # 1) Parse the opt-in once so individual routes don't re-parse
         #    the Accept header.
         try:

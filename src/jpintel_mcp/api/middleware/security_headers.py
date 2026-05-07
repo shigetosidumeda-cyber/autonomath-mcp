@@ -56,7 +56,7 @@ emits the in-band browser hints.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from starlette.middleware.base import BaseHTTPMiddleware
 
@@ -101,7 +101,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     a one-off integration) is never silently overridden.
     """
 
-    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+    async def dispatch(self, request: Request, call_next: Callable[..., Any]) -> Response:
         response: Response = await call_next(request)
         for name, value in _SECURITY_HEADERS.items():
             response.headers.setdefault(name, value)

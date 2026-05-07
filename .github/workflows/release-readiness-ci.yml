@@ -1,0 +1,87 @@
+# Release Readiness CI hard gate (jpcite v0.3.4)
+#
+# Triggers `scripts/ops/release_readiness.py` on every PR + push to main + tag.
+# The script is the canonical 9/9-check release gate (workflow_pytest_targets_synced,
+# workflow_ruff_targets_synced, workflow_targets_git_tracked, release_format_gate_present,
+# deploy_seed_gate_matches_entrypoint, deploy_preflight_gate_present,
+# cloudflare_waf_docs_present, preflight_script_exists, release_readiness_tests_exist).
+#
+# Existing CI integration was incomplete:
+#   - release.yml + test.yml: source file is in RUFF_TARGETS but the gate is
+#     never executed (lint-only).
+#   - check-workflow-target-sync.yml: runs --warn-only with continue-on-error,
+#     so a regression never blocks a PR.
+#
+# This workflow is the first hard-fail integration. Default exit-on-fail
+# (no --warn-only) means any non-PASS check fails the PR check / push run /
+# tag run, blocking the deploy.
+#
+# Constraints (CLAUDE.md):
+#   - Zero LLM API calls. Pure Python stdlib + pinned-SHA actions.
+#   - No paid plan. ubuntu-latest free runner only.
+#   - 5-minute timeout (real local run = ~0.4s; budget is 750x headroom).
+#   - Read-only. Script performs no mutations and no network.
+
+name: release-readiness-ci
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    tags:
+      - "v*"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-readiness-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release-readiness:
+    name: scripts/ops/release_readiness.py (hard gate)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - name: Checkout (full history for git ls-files target audits)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.12"
+
+      # No package install needed — release_readiness.py uses only Python
+      # stdlib (argparse, json, re, subprocess, dataclasses, datetime,
+      # pathlib). Skipping `pip install -e ".[dev]"` keeps the job under
+      # 30s wall time on the free runner.
+      - name: Show python version (sanity)
+        run: python --version
+
+      # Hard gate. Default exit code is non-zero on any FAIL check, which
+      # fails the PR / push / tag run. Output is JSON for log auditability.
+      - name: Run release readiness (hard gate, JSON to stdout + tee to file)
+        id: readiness
+        run: |
+          set -o pipefail
+          python scripts/ops/release_readiness.py | tee /tmp/release_readiness.json
+          python -c "import json; d=json.load(open('/tmp/release_readiness.json')); s=d.get('summary',{}); print(f\"summary: pass={s.get('pass')} fail={s.get('fail')} total={s.get('total')}\")"
+
+      # Surface the JSON as a workflow artifact so reviewers can inspect
+      # the per-check evidence without re-running locally. Tiny file
+      # (<10 KB) so 14-day retention is fine on the free plan.
+      - name: Upload release readiness JSON
+        if: always()
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: release-readiness-${{ github.run_id }}
+          path: /tmp/release_readiness.json
+          if-no-files-found: warn
+          retention-days: 14

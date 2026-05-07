@@ -463,7 +463,7 @@ def build_meta(
     status: str,
     query_echo: str,
     latency_ms: float,
-    results: list,
+    results: list[Any],
     legacy_extras: dict[str, Any] | None = None,
     kwargs: dict[str, Any] | None = None,
     api_key_created_at: str | None = None,

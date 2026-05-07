@@ -58,7 +58,7 @@ import logging
 import sqlite3
 import time
 from datetime import UTC, datetime, timedelta
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import Response
@@ -586,7 +586,7 @@ class IdempotencyMiddleware(BaseHTTPMiddleware):
     """
 
     async def dispatch(
-        self, request: Request, call_next: Callable
+        self, request: Request, call_next: Callable[..., Any]
     ) -> Response:
         # Only POST requests are eligible.
         if request.method != "POST":
@@ -648,7 +648,7 @@ class IdempotencyMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
 
         # Re-inject the buffered body so call_next() sees it.
-        async def _receive() -> dict:
+        async def _receive() -> dict[str, Any]:
             return {"type": "http.request", "body": body, "more_body": False}
 
         request._receive = _receive

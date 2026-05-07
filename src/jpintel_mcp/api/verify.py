@@ -24,6 +24,7 @@ Hard constraints (memory `feedback_no_operator_llm_api`)
 
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import json
 import logging
@@ -31,7 +32,7 @@ import os
 import sqlite3
 import time
 import uuid
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, HTTPException, Request, status
 from pydantic import BaseModel, Field
@@ -165,9 +166,9 @@ def _persist_log(
     request_id: str,
     answer_hash: str,
     score: int,
-    per_claim: list[dict],
-    sources: list,
-    boundaries: list,
+    per_claim: list[dict[str, Any]],
+    sources: list[Any],
+    boundaries: list[Any],
     language: str,
     api_key_id: int | None,
     client_ip_hash: str,
@@ -229,10 +230,8 @@ def _persist_log(
     except sqlite3.Error as exc:
         logger.debug("verify_log insert degraded: %s", exc)
     finally:
-        try:
+        with contextlib.suppress(Exception):  # noqa: BLE001
             conn.close()
-        except Exception:  # noqa: BLE001
-            pass
 
 
 # ---------------------------------------------------------------------------
@@ -280,7 +279,7 @@ async def verify_answer(
     conn = _open_autonomath_ro()
     try:
         claim_results: list[ClaimResult] = []
-        per_claim_payload: list[dict] = []
+        per_claim_payload: list[dict[str, Any]] = []
         all_signals: list[str] = []
         for c in claims:
             match = match_to_corpus(c, conn)
@@ -307,10 +306,8 @@ async def verify_answer(
             all_signals.extend(match.signals)
     finally:
         if conn is not None:
-            try:
+            with contextlib.suppress(Exception):  # noqa: BLE001
                 conn.close()
-            except Exception:  # noqa: BLE001
-                pass
 
     # 3. HEAD-fetch claimed_sources in parallel.
     sources = await check_source_alive(payload.claimed_sources)

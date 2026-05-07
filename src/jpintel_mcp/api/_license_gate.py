@@ -63,7 +63,7 @@ attribution stays in the body / file.
 
 from __future__ import annotations
 
-from typing import Final
+from typing import Any, Final
 
 __all__ = [
     "REDISTRIBUTABLE_LICENSES",
@@ -116,9 +116,9 @@ class LicenseGateError(Exception):
 
 
 def filter_redistributable(
-    rows: list[dict],
+    rows: list[dict[str, Any]],
     license_field: str = "license",
-) -> tuple[list[dict], list[dict]]:
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     """Split `rows` into (allowed, blocked) based on `REDISTRIBUTABLE_LICENSES`.
 
     A row is *allowed* iff `row[license_field]` is exactly equal to one of
@@ -144,8 +144,8 @@ def filter_redistributable(
         objects (the rows themselves are the same dict instances; we do
         not deep-copy).
     """
-    allowed: list[dict] = []
-    blocked: list[dict] = []
+    allowed: list[dict[str, Any]] = []
+    blocked: list[dict[str, Any]] = []
     for row in rows:
         # `dict.get` returns None on missing key; None is not in the
         # allow set so it falls through to `blocked`. This is exactly
@@ -159,7 +159,7 @@ def filter_redistributable(
 
 
 def assert_no_blocked(
-    rows: list[dict],
+    rows: list[dict[str, Any]],
     license_field: str = "license",
 ) -> None:
     """Raise `LicenseGateError` if any row is non-redistributable.
@@ -196,7 +196,7 @@ def assert_no_blocked(
     )
 
 
-def annotate_attribution(row: dict) -> dict:
+def annotate_attribution(row: dict[str, Any]) -> dict[str, Any]:
     """Add an `_attribution` field to a copy of `row`.
 
     The attribution string format is mandated by CC-BY 4.0 §3

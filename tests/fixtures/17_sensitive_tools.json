@@ -37,7 +37,18 @@
     "law_ids": ["showa_22_labor_standards_act", "showa_43_labor_consultant_act"],
     "fence": "draft requiring 社労士 supervision",
     "wave": "Phase A",
-    "sample_arguments": {"profile_key": "manufacturing_smb"},
+    "sample_arguments": {"fields": {
+      "company_name": "Bookyou株式会社",
+      "address": "東京都文京区小日向2-22-1",
+      "representative": "梅田茂利",
+      "industry": "情報通信業",
+      "employee_count": "1",
+      "agreement_period_start": "2026-04-01",
+      "agreement_period_end": "2027-03-31",
+      "max_overtime_hours_per_month": "45",
+      "max_overtime_hours_per_year": "360",
+      "holiday_work_days_per_month": "1"
+    }},
     "gated_off_expected": true,
     "gate_flag": "AUTONOMATH_36_KYOTEI_ENABLED"
   },

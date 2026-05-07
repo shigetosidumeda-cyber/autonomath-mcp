@@ -1387,7 +1387,7 @@ def _build_search_response(
     route used to construct inline. Side-effects belong to the caller.
     """
     where: list[str] = []
-    params: list = []
+    params: list[Any] = []
     join_fts = False
     raw_query: str | None = None  # original user query, for name-LIKE tiebreak
 
@@ -1503,7 +1503,7 @@ def _build_search_response(
         #   queries useful (e.g. `税` returns programs whose name begins
         #   with 税…) without the noise floor.
         #   See docs/performance.md for the perf audit that drove this.
-        def _like_clause_for(term: str) -> tuple[str, list]:
+        def _like_clause_for(term: str) -> tuple[str, list[Any]]:
             if len(term) == 1:
                 # Bug3: any 1-char query → narrow scan.
                 return (
@@ -1523,7 +1523,7 @@ def _build_search_response(
                 [f"%{term}%", f"%{term}%", f"%{term}%"],
             )
 
-        def _build_like_branch() -> tuple[str, list]:
+        def _build_like_branch() -> tuple[str, list[Any]]:
             """Build the LIKE OR-clause + its params for the current query.
 
             We have two stacking dimensions:
@@ -1534,7 +1534,7 @@ def _build_search_response(
                 never actually contain a literal space between the two
                 tokens, so it would match 0. (Bug1 fix)
             """
-            local_params: list = []
+            local_params: list[Any] = []
             per_candidate_clauses: list[str] = []
             for cand in search_terms:
                 if cand == q_clean and len(norm_tokens) > 1:
@@ -1722,7 +1722,7 @@ def _build_search_response(
     # Inner uses `programs.*` qualified refs (join site); outer uses flat
     # unqualified refs (subquery projection drops the qualifier).
     outer_order_parts: list[str] = []
-    name_match_params: list = []
+    name_match_params: list[Any] = []
     if raw_query:
         outer_order_parts.append("CASE WHEN primary_name LIKE ? THEN 0 ELSE 1 END")
         name_match_params.append(f"%{raw_query}%")

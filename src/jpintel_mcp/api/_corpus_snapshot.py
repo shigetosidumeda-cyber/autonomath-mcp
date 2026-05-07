@@ -36,6 +36,7 @@ from __future__ import annotations
 import hashlib
 import sqlite3
 import time
+from typing import Any
 
 # Process-local cache: { (cache_key,): (expiry_unix, snapshot_id, checksum) }.
 # `cache_key` is a 1-tuple of the connection's database file path — distinct
@@ -178,11 +179,11 @@ def compute_corpus_snapshot(
 
 
 def attach_corpus_snapshot(
-    body: dict,
+    body: dict[str, Any],
     conn: sqlite3.Connection,
     *,
     api_version: str = "v0.3.2",
-) -> dict:
+) -> dict[str, Any]:
     """Inject `corpus_snapshot_id` + `corpus_checksum` keys onto a response
     body in-place and return the same dict (for chaining).
 

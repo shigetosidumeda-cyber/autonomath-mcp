@@ -959,7 +959,7 @@ class WatchResponse(BaseModel):
     created_at: str
 
 
-def _row_to_watch(row: dict) -> WatchResponse:
+def _row_to_watch(row: dict[str, Any]) -> WatchResponse:
     return WatchResponse(
         id=row["id"],
         watch_kind=row["watch_kind"],

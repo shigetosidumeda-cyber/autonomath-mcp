@@ -58,7 +58,7 @@ import sqlite3
 import time
 from contextlib import suppress
 from datetime import UTC, datetime
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 from urllib.parse import urlparse
 
 import httpx
@@ -257,7 +257,7 @@ class DeliveryRow(BaseModel):
 # ---------------------------------------------------------------------------
 
 
-def _row_to_response(row: dict, *, include_secret: str | None = None) -> WebhookResponse:
+def _row_to_response(row: dict[str, Any], *, include_secret: str | None = None) -> WebhookResponse:
     secret_full = row.get("secret_hmac") or ""
     return WebhookResponse(
         id=row["id"],

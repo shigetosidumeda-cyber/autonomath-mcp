@@ -28,7 +28,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[4]
 DB_PATH = os.environ.get("AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db"))
 
 
-def _resolve_law(con: sqlite3.Connection, needle: str) -> dict | None:
+def _resolve_law(con: sqlite3.Connection, needle: str) -> dict[str, Any] | None:
     """Resolve a law name or canonical_id to {canonical_id, canonical_name}."""
     if not needle:
         return None
@@ -117,7 +117,7 @@ def _normalize_article_number(raw: str) -> list[str]:
     return list(dict.fromkeys(candidates))  # dedupe preserve order
 
 
-def _envelope_article(row: sqlite3.Row, law: dict) -> dict[str, Any]:
+def _envelope_article(row: sqlite3.Row, law: dict[str, Any]) -> dict[str, Any]:
     return {
         "found": True,
         "law": {
@@ -138,7 +138,7 @@ def _envelope_article(row: sqlite3.Row, law: dict) -> dict[str, Any]:
     }
 
 
-def _missing_arg_envelope(field: str, law_needle: str, article_number: str | None) -> dict:
+def _missing_arg_envelope(field: str, law_needle: str, article_number: str | None) -> dict[str, Any]:
     """Hard-error envelope for empty required args. Preserves queried metadata."""
     err = make_error(
         code="missing_required_arg",
@@ -173,7 +173,7 @@ def _no_match_envelope(
     law_canonical_id: str | None = None,
     law_canonical_name: str | None = None,
     field: str | None = None,
-) -> dict:
+) -> dict[str, Any]:
     """Soft-error envelope for valid query / no rows. ``code`` is one of
     ``seed_not_found`` (law not found) or ``no_matching_records`` (article
     missing under a resolved law)."""
@@ -208,7 +208,7 @@ def _no_match_envelope(
     }
 
 
-def get_law_article(law_name_or_canonical_id: str, article_number: str) -> dict:
+def get_law_article(law_name_or_canonical_id: str, article_number: str) -> dict[str, Any]:
     """Exact article lookup."""
     if not law_name_or_canonical_id:
         return _missing_arg_envelope(
@@ -268,7 +268,7 @@ def search_law_articles(
     law_name: str,
     keyword: str = "",
     limit: int = 20,
-) -> dict:
+) -> dict[str, Any]:
     """Keyword search within a single law."""
     if not law_name:
         return {"found": False, "reason": "law_name is required", "results": []}

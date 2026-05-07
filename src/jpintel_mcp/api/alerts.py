@@ -32,7 +32,7 @@ from __future__ import annotations
 
 import ipaddress
 from datetime import UTC, datetime
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 from urllib.parse import urlparse
 
 from fastapi import APIRouter, HTTPException, status
@@ -170,7 +170,7 @@ class DeactivateResponse(BaseModel):
 # ---------------------------------------------------------------------------
 
 
-def _row_to_response(row: dict) -> SubscriptionResponse:
+def _row_to_response(row: dict[str, Any]) -> SubscriptionResponse:
     return SubscriptionResponse(
         id=row["id"],
         filter_type=row["filter_type"],

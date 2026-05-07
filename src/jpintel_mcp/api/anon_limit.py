@@ -30,6 +30,7 @@ import hmac
 import logging
 import sqlite3
 from datetime import UTC, datetime, timedelta, timezone
+from typing import Any
 
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.responses import JSONResponse
@@ -88,7 +89,7 @@ class _AnonRateLimitExceeded(HTTPException):
     `.body_dict` and let the exception handler emit it directly.
     """
 
-    def __init__(self, body: dict, headers: dict[str, str]) -> None:
+    def __init__(self, body: dict[str, Any], headers: dict[str, str]) -> None:
         super().__init__(
             status.HTTP_429_TOO_MANY_REQUESTS,
             detail=body["detail"],

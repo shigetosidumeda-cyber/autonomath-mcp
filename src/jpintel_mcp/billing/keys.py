@@ -15,7 +15,7 @@ import contextlib
 import json
 import logging
 from datetime import UTC, datetime, timedelta
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from jpintel_mcp.api.deps import generate_api_key, hash_api_key, hash_api_key_bcrypt
 
@@ -390,7 +390,7 @@ def list_children(
     *,
     parent_key_hash: str,
     include_revoked: bool = False,
-) -> list[dict]:
+) -> list[dict[str, Any]]:
     """Return rows for every child of `parent_key_hash`.
 
     Each dict contains: id, label, key_hash_prefix (first 8 chars only —
@@ -422,7 +422,7 @@ def list_children(
     sql += "ORDER BY id ASC"
     rows = conn.execute(sql, params).fetchall()
 
-    out: list[dict] = []
+    out: list[dict[str, Any]] = []
     for r in rows:
         rk = r.keys() if hasattr(r, "keys") else []
         out.append(

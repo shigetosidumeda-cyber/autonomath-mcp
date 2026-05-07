@@ -67,6 +67,7 @@ Response shape
 
 from __future__ import annotations
 
+import contextlib
 import json
 import logging
 import sqlite3
@@ -227,10 +228,8 @@ def _program_abstract_structured_impl(program_id: str, audience: str) -> dict[st
             retry_with=["search_programs"],
         )
     finally:
-        try:
+        with contextlib.suppress(Exception):  # pragma: no cover
             conn.close()
-        except Exception:  # pragma: no cover
-            pass
 
     if row is None:
         return make_error(

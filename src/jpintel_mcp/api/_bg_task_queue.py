@@ -198,10 +198,8 @@ def claim_next(conn: sqlite3.Connection) -> sqlite3.Row | None:
         conn.execute("COMMIT")
         return claimed
     except Exception:
-        try:
+        with contextlib.suppress(Exception):  # pragma: no cover — defensive
             conn.execute("ROLLBACK")
-        except Exception:  # pragma: no cover — defensive
-            pass
         raise
 
 

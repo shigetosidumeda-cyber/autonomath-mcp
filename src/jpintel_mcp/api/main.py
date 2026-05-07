@@ -189,11 +189,11 @@ def _detect_lang(text: str) -> str:
     return "en"
 
 
-def _params_shape(request: Request) -> dict:
+def _params_shape(request: Request) -> dict[str, Any]:
     """Return {key: True} for every query param present (no values)."""
     # True values (not None) so downstream log consumers can tell param was
     # present vs absent without inspecting the value. C420 does not apply here.
-    shape: dict = {k: True for k in request.query_params}  # noqa: C420
+    shape: dict[str, Any] = {k: True for k in request.query_params}  # noqa: C420
     # Include q_len and q_lang when a free-text query is present.
     q = request.query_params.get("q")
     if q:
@@ -206,7 +206,7 @@ def _emit_query_log(
     *,
     channel: str,
     endpoint: str,
-    params_shape: dict,
+    params_shape: dict[str, Any],
     result_count: int,
     latency_ms: int,
     status: int | str,
@@ -447,7 +447,7 @@ _REQUEST_ID_RE = re.compile(r"^[A-Za-z0-9-]{8,64}$")
 
 
 class _RequestContextMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+    async def dispatch(self, request: Request, call_next: Callable[..., Any]) -> Response:
         inbound = request.headers.get("x-request-id", "")
         rid = inbound if _REQUEST_ID_RE.fullmatch(inbound) else secrets.token_hex(8)
         # Stash on request.state so downstream exception handlers can read
@@ -476,7 +476,7 @@ class _QueryTelemetryMiddleware(BaseHTTPMiddleware):
     Free-text `q` param reduced to length + language heuristic.
     """
 
-    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+    async def dispatch(self, request: Request, call_next: Callable[..., Any]) -> Response:
         t0 = time.monotonic()
         error_class: str | None = None
         status: int | str = "error"

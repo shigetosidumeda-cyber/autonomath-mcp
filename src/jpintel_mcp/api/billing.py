@@ -296,7 +296,7 @@ def _queue_welcome_email(
     )
 
 
-def _extract_subscription_state(obj: dict) -> tuple[str | None, int | None, bool | None]:
+def _extract_subscription_state(obj: dict[str, Any]) -> tuple[str | None, int | None, bool | None]:
     """Extract (status, current_period_end_epoch, cancel_at_period_end) from a Stripe subscription dict.
 
     Used by the webhook handler to populate api_keys.stripe_subscription_*
@@ -825,7 +825,7 @@ def create_checkout(
     #     buyer's country to pick JP 10% vs 輸出 0%.
     # Gated on STRIPE_TAX_ENABLED so pre-launch dev/CI without a live tax
     # registration can still exercise Checkout.
-    extra: dict = {}
+    extra: dict[str, Any] = {}
     if settings.stripe_tax_enabled:
         extra["automatic_tax"] = {"enabled": True}
         extra["tax_id_collection"] = {"enabled": True}

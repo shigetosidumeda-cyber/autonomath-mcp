@@ -46,7 +46,7 @@ import logging
 import sqlite3
 from datetime import UTC, datetime
 from time import monotonic
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from starlette.middleware.base import BaseHTTPMiddleware
 
@@ -301,7 +301,7 @@ class AnalyticsRecorderMiddleware(BaseHTTPMiddleware):
     so a CORS-rejected preflight doesn't generate a row).
     """
 
-    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+    async def dispatch(self, request: Request, call_next: Callable[..., Any]) -> Response:
         # Skip excluded paths immediately — saves 1-2ms per health probe
         # and keeps the table from being dominated by /healthz noise.
         path = request.url.path

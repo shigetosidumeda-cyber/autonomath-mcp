@@ -172,7 +172,7 @@ class ResourceMeta:
 # ---------------------------------------------------------------------------
 
 
-def _safe_query(sql: str, params: tuple = ()) -> list[tuple]:
+def _safe_query(sql: str, params: tuple[Any, ...] = ()) -> list[tuple[Any, ...]]:
     """Safe read-only query. Returns [] on any failure so a broken DB never
     breaks resource-read. Resources are advisory, not authoritative."""
     try:

@@ -70,7 +70,7 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import Response
@@ -307,7 +307,7 @@ class AnonQuotaHeaderMiddleware(BaseHTTPMiddleware):
     2026-04-29). See module docstring for body-injection rules.
     """
 
-    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+    async def dispatch(self, request: Request, call_next: Callable[..., Any]) -> Response:
         response: Response = await call_next(request)
 
         # Fast skip: authed callers don't get anon headers.

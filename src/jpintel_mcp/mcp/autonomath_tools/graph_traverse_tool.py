@@ -116,7 +116,7 @@ _DISCLAIMER = (
 )
 
 
-def _validate_edge_types(edge_types: list[str] | None) -> tuple[list[str] | None, dict | None]:
+def _validate_edge_types(edge_types: list[str] | None) -> tuple[list[str] | None, dict[str, Any] | None]:
     """Resolve edge_types arg to a concrete whitelist.
 
     Returns (whitelist, error_envelope_or_None). ``None`` whitelist means

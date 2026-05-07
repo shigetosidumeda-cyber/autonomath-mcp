@@ -57,6 +57,7 @@ provenance / non-substitution variant (no tax interpretation).
 from __future__ import annotations
 
 import base64
+import contextlib
 import logging
 import os
 import re
@@ -284,10 +285,8 @@ def get_audit_proof(
         all_leaves = _fetch_all_leaves(am_conn, daily_date)
         proof_path = _build_proof_path(all_leaves, leaf_index)
     finally:
-        try:
+        with contextlib.suppress(Exception):  # pragma: no cover
             am_conn.close()
-        except Exception:  # pragma: no cover
-            pass
 
     body: dict[str, Any] = {
         "epid": evidence_packet_id,

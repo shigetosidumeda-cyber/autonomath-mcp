@@ -48,6 +48,7 @@ Gating: respects ``settings.r8_versioning_enabled`` (env
 
 from __future__ import annotations
 
+import contextlib
 import datetime as _dt
 import logging
 import sqlite3
@@ -251,10 +252,8 @@ def query_at_snapshot(
             retry_with=["search_programs"],
         )
     finally:
-        try:
+        with contextlib.suppress(Exception):  # pragma: no cover
             conn.close()
-        except Exception:  # pragma: no cover
-            pass
 
     results = [dict(r) for r in rows]
     first = results[0] if results else {}

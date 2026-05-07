@@ -811,7 +811,7 @@ def _classify_exception(exc: BaseException) -> tuple[str, str]:
 # ---------------------------------------------------------------------------
 
 
-def _coerce_results(payload: Any) -> tuple[list, dict[str, Any]]:
+def _coerce_results(payload: Any) -> tuple[list[Any], dict[str, Any]]:
     """Accept either a bare list of results or the legacy envelope dict.
 
     Returns (results_list, extra_kv) where extra_kv holds {total, limit,
@@ -839,7 +839,7 @@ def _coerce_results(payload: Any) -> tuple[list, dict[str, Any]]:
     return [payload], {}
 
 
-def _count_evidence_sources(results: list) -> int:
+def _count_evidence_sources(results: list[Any]) -> int:
     """Count how many records cite a primary-source URL.
 
     A record is "primary-source cited" if it has a non-empty
@@ -887,7 +887,7 @@ def _count_evidence_sources(results: list) -> int:
     return count
 
 
-def _maybe_attach_uncertainty(results: list) -> dict[str, Any] | None:
+def _maybe_attach_uncertainty(results: list[Any]) -> dict[str, Any] | None:
     """Mutate `results` to add per-fact `_uncertainty` and return a summary.
 
     O8 default-injection rule (mirrors `pii_redact_response_enabled`):
@@ -1014,11 +1014,11 @@ def _maybe_attach_uncertainty(results: list) -> dict[str, Any] | None:
 def build_envelope(
     *,
     tool_name: str,
-    results: list,
+    results: list[Any],
     query_echo: str = "",
     latency_ms: float = 0.0,
-    legacy_extras: dict | None = None,
-    error: dict | None = None,
+    legacy_extras: dict[str, Any] | None = None,
+    error: dict[str, Any] | None = None,
     router_query: str | None = None,
     tool_kwargs: dict[str, Any] | None = None,
     api_key_created_at: str | None = None,

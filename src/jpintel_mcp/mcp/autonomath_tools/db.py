@@ -34,13 +34,14 @@ Design notes
 
 from __future__ import annotations
 
+import contextlib
 import logging
 import os
 import sqlite3
 import threading
 import time
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 logger = logging.getLogger("jpintel.mcp.new.db")
 
@@ -193,10 +194,8 @@ def connect_autonomath(
     conn_path = getattr(_local, "autonomath_path", None)
     if conn is None or conn_path != path:
         if conn is not None:
-            try:
+            with contextlib.suppress(Exception):  # pragma: no cover
                 conn.close()
-            except Exception:  # pragma: no cover
-                pass
         conn = _open_ro(path)
         _local.autonomath = conn
         _local.autonomath_path = path
@@ -217,10 +216,8 @@ def connect_graph(
     conn_path = getattr(_local, "graph_path", None)
     if conn is None or conn_path != path:
         if conn is not None:
-            try:
+            with contextlib.suppress(Exception):  # pragma: no cover
                 conn.close()
-            except Exception:  # pragma: no cover
-                pass
         conn = _open_ro(path)
         _local.graph = conn
         _local.graph_path = path
@@ -235,10 +232,8 @@ def close_all() -> None:
     for attr in ("autonomath", "graph"):
         conn = getattr(_local, attr, None)
         if conn is not None:
-            try:
+            with contextlib.suppress(Exception):  # pragma: no cover
                 conn.close()
-            except Exception:  # pragma: no cover
-                pass
             setattr(_local, attr, None)
             setattr(_local, f"{attr}_path", None)
 
@@ -251,7 +246,7 @@ def close_all() -> None:
 def execute_with_retry(
     conn: sqlite3.Connection,
     sql: str,
-    params: tuple | list = (),
+    params: tuple[Any, ...] | list[Any] = (),
 ) -> list[sqlite3.Row]:
     """Execute a SELECT and return rows, retrying on transient lock.
 

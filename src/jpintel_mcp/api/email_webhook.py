@@ -32,7 +32,7 @@ import hmac
 import logging
 import sqlite3
 from datetime import UTC, datetime
-from typing import Annotated
+from typing import Annotated, Any
 
 import orjson
 from fastapi import APIRouter, Header, HTTPException, Request, status
@@ -106,7 +106,7 @@ def _verify_signature(body: bytes, provided: str | None) -> bool:
     return hmac.compare_digest(expected, provided)
 
 
-def _extract_email(event: dict) -> str | None:
+def _extract_email(event: dict[str, Any]) -> str | None:
     """Return the normalised recipient email from a Postmark event.
 
     Bounce / SpamComplaint events put the recipient under `Email`; Delivery

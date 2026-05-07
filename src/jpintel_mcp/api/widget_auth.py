@@ -122,7 +122,7 @@ _JST = ZoneInfo("Asia/Tokyo")
 # In-memory rate limit
 # ---------------------------------------------------------------------------
 
-_rate_state: dict[str, deque] = {}
+_rate_state: dict[str, deque[float]] = {}
 _rate_lock = threading.Lock()
 
 
@@ -954,7 +954,7 @@ async def widget_stripe_webhook(
     return {"status": "received"}
 
 
-def _provision_widget_key(conn: sqlite3.Connection, session_obj: dict) -> None:
+def _provision_widget_key(conn: sqlite3.Connection, session_obj: dict[str, Any]) -> None:
     """Create the widget_keys row after Checkout completes."""
     sub_id = session_obj.get("subscription")
     customer_id = session_obj.get("customer")

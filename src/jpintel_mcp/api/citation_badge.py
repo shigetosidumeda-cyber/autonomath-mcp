@@ -42,13 +42,14 @@ agree on a single source of truth. Whitelisted (NOT redacted):
 
 from __future__ import annotations
 
+import contextlib
 import json
 import logging
 import os
 import re
 import sqlite3
 import uuid
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 from urllib.parse import urlparse
 
 from fastapi import APIRouter, HTTPException, Query, Response, status
@@ -305,10 +306,8 @@ def _fetch_row(request_id: str) -> sqlite3.Row | None:
         logger.debug("citation_log fetch degraded: %s", exc)
         return None
     finally:
-        try:
+        with contextlib.suppress(Exception):  # noqa: BLE001
             conn.close()
-        except Exception:  # noqa: BLE001
-            pass
 
 
 # ---------------------------------------------------------------------------
@@ -407,9 +406,9 @@ def render_citation_md(
     row: sqlite3.Row | None,
     language: str = "ja",
     identity_confidence: float | None = None,
-    amendment_lineage: list[dict] | None = None,
-    source_receipt: dict | None = None,
-    audit_seal: dict | None = None,
+    amendment_lineage: list[dict[str, Any]] | None = None,
+    source_receipt: dict[str, Any] | None = None,
+    audit_seal: dict[str, Any] | None = None,
 ) -> str:
     """Render the static MD page for `jpcite.com/citation/{request_id}`.
 

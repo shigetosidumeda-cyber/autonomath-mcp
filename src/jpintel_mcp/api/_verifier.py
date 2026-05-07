@@ -469,7 +469,7 @@ def tokenize_claims(answer_text: str, language: str = "ja") -> list[Claim]:
 # ---------------------------------------------------------------------------
 
 
-def _safe_query(conn: sqlite3.Connection, sql: str, params: tuple) -> list[sqlite3.Row]:
+def _safe_query(conn: sqlite3.Connection, sql: str, params: tuple[Any, ...]) -> list[sqlite3.Row]:
     """Execute SQL, returning [] on any sqlite error (missing table etc.).
 
     Tests run against a stripped-down autonomath.db; production runs

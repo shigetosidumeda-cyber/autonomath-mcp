@@ -42,7 +42,7 @@ import json
 import logging
 import sqlite3
 from datetime import UTC, datetime
-from typing import Annotated
+from typing import Annotated, Any
 from urllib.parse import urlsplit
 
 from fastapi import APIRouter, Header, HTTPException, Request, status
@@ -137,7 +137,7 @@ class FunnelEventIn(BaseModel):
             "into a single visit without persistent identifiers."
         ),
     )
-    properties: dict | None = Field(
+    properties: dict[str, Any] | None = Field(
         default=None,
         description="Optional discriminator object. JSON-encoded cap 512 chars.",
     )
@@ -197,7 +197,7 @@ def _json_len(raw: object) -> int:
     return len(json.dumps(raw, ensure_ascii=False, separators=(",", ":")).encode("utf-8"))
 
 
-def _normalise_properties(props: dict | None) -> str | None:
+def _normalise_properties(props: dict[str, Any] | None) -> str | None:
     if not props:
         return None
     try:
