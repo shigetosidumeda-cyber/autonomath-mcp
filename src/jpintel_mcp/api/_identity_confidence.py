@@ -206,9 +206,8 @@ def detect_axis(
     alias_only_flag = bool(candidate.get("alias_only"))
 
     # Axis 1: 13-digit on both sides + identical
-    if is_valid_houjin_bangou(q) and is_valid_houjin_bangou(cand_bangou):
-        if q == cand_bangou:
-            return "houjin_bangou_exact"
+    if is_valid_houjin_bangou(q) and is_valid_houjin_bangou(cand_bangou) and q == cand_bangou:
+        return "houjin_bangou_exact"
 
     # Axis 6: explicit alias_only flag
     if alias_only_flag:

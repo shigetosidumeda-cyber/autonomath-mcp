@@ -562,10 +562,9 @@ def discover_bunsho_entries(category: str, idx_no: str) -> list[str]:
             full = href
         else:
             continue
-        if "/index.htm" in full or full.endswith(".htm"):
-            if full not in seen:
-                seen.add(full)
-                out.append(full)
+        if ("/index.htm" in full or full.endswith(".htm")) and full not in seen:
+            seen.add(full)
+            out.append(full)
     return out
 
 

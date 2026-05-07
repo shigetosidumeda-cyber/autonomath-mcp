@@ -163,10 +163,7 @@ def update_posterior(
         vec[truth_index] = p_true
         # Guard against pathological all-zero
         s = vec.sum()
-        if s <= 0:
-            vec = _build_prior(theta_size)
-        else:
-            vec = vec / s
+        vec = _build_prior(theta_size) if s <= 0 else vec / s
         log_p = np.log(np.maximum(vec, 1e-300))
     else:
         vec = np.asarray(prior, dtype=np.float64).flatten()
@@ -175,10 +172,7 @@ def update_posterior(
             _log.warning("prior shape=%d != Theta=%d, rebuilding", vec.size, Theta)
             vec = _build_prior(theta_size)
         s = vec.sum()
-        if s <= 0:
-            vec = _build_prior(theta_size)
-        else:
-            vec = vec / s
+        vec = _build_prior(theta_size) if s <= 0 else vec / s
         log_p = np.log(np.maximum(vec, 1e-300))
 
     # Sequentially apply each observation

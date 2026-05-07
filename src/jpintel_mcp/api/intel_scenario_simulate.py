@@ -90,7 +90,7 @@ class ScenarioSimulateRequest(BaseModel):
         list[str],
         Field(default_factory=list, max_length=_MAX_PROGRAMS),
     ]
-    scenario: ScenarioNumbers = Field(default_factory=ScenarioNumbers)
+    scenario: ScenarioNumbers = Field(default_factory=ScenarioNumbers)  # type: ignore[arg-type]
 
 
 def _autonomath_db_path() -> Path:

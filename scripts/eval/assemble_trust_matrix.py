@@ -8,6 +8,7 @@ NO LLM CALL. Pure file IO + counting. Memory: feedback_no_operator_llm_api.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import datetime as dt
 import json
 from pathlib import Path
@@ -210,12 +211,10 @@ def main(argv: list[str] | None = None) -> int:
 
     snapshot_id = "unknown"
     if ANCHORS["practitioner"].exists():
-        try:
+        with contextlib.suppress(json.JSONDecodeError):
             snapshot_id = json.loads(ANCHORS["practitioner"].read_text(encoding="utf-8")).get(
                 "corpus_snapshot_id", "unknown"
             )
-        except json.JSONDecodeError:
-            pass
 
     payload = {
         "generated_at": dt.datetime.utcnow().isoformat() + "Z",

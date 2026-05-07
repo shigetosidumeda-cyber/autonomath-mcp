@@ -194,10 +194,7 @@ def scenario_3_local_db(db_path: str) -> dict[str, Any]:
     expected_sha = os.environ.get("AUTONOMATH_DB_SHA256", "")
     actual_sha = _sha256_of(p) or ""
     sha_ok: bool | None
-    if expected_sha and actual_sha:
-        sha_ok = expected_sha.lower() == actual_sha.lower()
-    else:
-        sha_ok = None
+    sha_ok = expected_sha.lower() == actual_sha.lower() if expected_sha and actual_sha else None
     try:
         with sqlite3.connect(f"file:{p}?mode=ro", uri=True) as conn:
             row = conn.execute("PRAGMA integrity_check").fetchone()

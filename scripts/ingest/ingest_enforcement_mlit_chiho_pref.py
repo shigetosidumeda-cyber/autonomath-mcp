@@ -554,10 +554,7 @@ def parse_hkd_pdf(text: str, source_url: str) -> list[EnfRow]:
     if pre_record:
         para = re.sub(r"\s+", " ", pre_record)
         # Remove header date lines.
-        if reason:
-            reason = (reason + " / " + para)[:1500]
-        else:
-            reason = para[:1500]
+        reason = (reason + " / " + para)[:1500] if reason else para[:1500]
 
     # Punishment 期間 + label
     raw_punish = "指名停止"

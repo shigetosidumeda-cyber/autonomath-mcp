@@ -41,6 +41,7 @@ CLI:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import json
 import logging
@@ -815,10 +816,8 @@ def run(
         for k, c in sorted(by_kind_inserted.items()):
             _LOG.info("  kind %s inserted: %d", k, c)
     except Exception:
-        try:
+        with contextlib.suppress(Exception):
             con.execute("ROLLBACK")
-        except Exception:
-            pass
         raise
     finally:
         con.close()

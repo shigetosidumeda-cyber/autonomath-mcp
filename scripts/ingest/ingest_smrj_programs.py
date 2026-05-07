@@ -1035,10 +1035,7 @@ def main() -> int:
     print(f"Probing {len(unique_urls)} unique SMRJ URLs at 1 req/s ...")
     for i, url in enumerate(unique_urls, 1):
         status, html = fetch(url)
-        if status == 200 and html:
-            meta = parse_meta(html)
-        else:
-            meta = (None, None)
+        meta = parse_meta(html) if status == 200 and html else (None, None)
         fetched[url] = (status, meta)
         ok = "OK" if status == 200 else f"HTTP {status}"
         print(f"  [{i:02d}/{len(unique_urls)}] {ok}  {url}")

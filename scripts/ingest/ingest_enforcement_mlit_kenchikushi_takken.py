@@ -89,6 +89,7 @@ CLI:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import datetime as dt
 import hashlib
 import json
@@ -878,10 +879,8 @@ def main(argv: list[str] | None = None) -> int:
     finally:
         http.close()
         if conn is not None:
-            try:
+            with contextlib.suppress(sqlite3.Error):
                 conn.commit()
-            except sqlite3.Error:
-                pass
             conn.close()
 
     print("=" * 70)

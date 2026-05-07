@@ -89,6 +89,8 @@ except ImportError as exc:  # pragma: no cover
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
+import contextlib
+
 from scripts.lib.http import HttpClient  # noqa: E402
 
 _LOG = logging.getLogger("autonomath.ingest.medical_pros")
@@ -836,10 +838,8 @@ def write_rows(
         conn.commit()
     except sqlite3.Error as exc:
         _LOG.error("BEGIN/commit failed: %s", exc)
-        try:
+        with contextlib.suppress(sqlite3.Error):
             conn.rollback()
-        except sqlite3.Error:
-            pass
     return inserted, dup_db, dup_batch
 
 
@@ -926,10 +926,8 @@ def main(argv: list[str] | None = None) -> int:
         now_iso=now_iso,
         max_insert=args.max_insert,
     )
-    try:
+    with contextlib.suppress(sqlite3.Error):
         conn.close()
-    except sqlite3.Error:
-        pass
     http.close()
 
     _LOG.info(

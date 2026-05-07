@@ -74,6 +74,7 @@ from __future__ import annotations
 
 import argparse
 import concurrent.futures
+import contextlib
 import hashlib
 import json
 import logging
@@ -954,10 +955,8 @@ def run(
         for k, v in sorted(by_auth.items(), key=lambda kv: -kv[1]):
             _LOG.info("  authority %s inserted: %d", k, v)
     except Exception:
-        try:
+        with contextlib.suppress(Exception):
             con.execute("ROLLBACK")
-        except Exception:
-            pass
         raise
     finally:
         con.close()

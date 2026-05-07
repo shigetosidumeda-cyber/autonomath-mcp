@@ -796,7 +796,8 @@ def _build_decision_support(body: dict[str, Any], sections: list[str]) -> dict[s
             },
         )
 
-    data_quality = body.get("data_quality") if isinstance(body.get("data_quality"), dict) else {}
+    _dq_raw = body.get("data_quality")
+    data_quality: dict[Any, Any] = _dq_raw if isinstance(_dq_raw, dict) else {}
     missing_substrate = data_quality.get("missing_substrate") or []
     if isinstance(missing_substrate, list):
         for substrate in sorted(s for s in missing_substrate if isinstance(s, str)):

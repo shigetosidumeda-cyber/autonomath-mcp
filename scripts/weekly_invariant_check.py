@@ -25,6 +25,7 @@ Usage
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import logging
 import os
@@ -567,10 +568,8 @@ def run_all() -> dict[str, Any]:
         if r.status == "fail":
             _alert_failure(r)
     if con is not None:
-        try:
+        with contextlib.suppress(Exception):
             con.close()
-        except Exception:
-            pass
     finished_at = datetime.now(UTC).isoformat()
     summary = {
         "started_at": started_at,

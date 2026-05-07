@@ -30,7 +30,7 @@ class ProvenanceBadge(BaseModel):
     client_visible: bool = True
     annotation: str | None = None  # short caveat for client display
 
-    @computed_field
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def color(self) -> str:
         return {

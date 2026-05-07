@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>jpcite production gate status (DEEP-58)</title>
+  <meta name="robots" content="index,follow">
+  <meta name="description" content="jpcite v0.3.4 production deploy gate status. 4 blocker + 8 ACK boolean + 33 spec implementation status, refreshed daily.">
+  <link rel="canonical" href="https://jpcite.com/transparency/production-gate.html">
+  <style>
+    :root {
+      --c-bg:#0d1117;--c-card:#161b22;--c-fg:#e6edf3;--c-muted:#8b949e;
+      --c-border:#30363d;
+      --c-blocked:#f85149;--c-partial:#d29922;--c-resolved:#3fb950;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; padding:0; font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif; background:var(--c-bg); color:var(--c-fg); line-height:1.55; }
+    main { max-width:1080px; margin:0 auto; padding:32px 20px 96px; }
+    h1 { font-size:1.65rem; margin:0 0 6px; }
+    h2 { font-size:1.15rem; margin:32px 0 12px; border-bottom:1px solid var(--c-border); padding-bottom:6px; }
+    p.lead { color:var(--c-muted); margin:0 0 24px; }
+    .meta { font-size:0.85rem; color:var(--c-muted); }
+    .meta code { background:var(--c-card); padding:2px 6px; border-radius:4px; }
+    .blocker-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
+    .card { background:var(--c-card); border:1px solid var(--c-border); border-radius:8px; padding:14px 16px; }
+    .badge { display:inline-block; padding:3px 10px; border-radius:12px; font-size:0.75rem; font-weight:600; letter-spacing:0.05em; }
+    .badge.BLOCKED { background:var(--c-blocked); color:#fff; }
+    .badge.PARTIAL { background:var(--c-partial); color:#000; }
+    .badge.RESOLVED { background:var(--c-resolved); color:#000; }
+    .ack-list { list-style:none; padding:0; margin:0; display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:8px; }
+    .ack-list li { background:var(--c-card); border:1px solid var(--c-border); border-radius:6px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; gap:10px; }
+    .ack-mark { font-size:1.05rem; font-weight:700; }
+    .ack-mark.BLOCKED { color:var(--c-blocked); }
+    .ack-mark.PARTIAL { color:var(--c-partial); }
+    .ack-mark.RESOLVED { color:var(--c-resolved); }
+    table { width:100%; border-collapse:collapse; font-size:0.9rem; }
+    table th, table td { padding:8px 10px; border-bottom:1px solid var(--c-border); text-align:left; vertical-align:top; }
+    table th { color:var(--c-muted); font-weight:600; font-size:0.78rem; letter-spacing:0.04em; text-transform:uppercase; }
+    a { color:#58a6ff; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    footer { margin-top:48px; padding-top:18px; border-top:1px solid var(--c-border); font-size:0.8rem; color:var(--c-muted); }
+    code.sha { font-family:ui-monospace,Menlo,monospace; font-size:0.78rem; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>jpcite production gate status</h1>
+  <p class="lead">jpcite v0.3.4 production deploy ゲートの自動収集ダッシュボード。4 blocker + 8 ACK boolean + 33 spec の状態を毎朝 06:00 JST に更新します。</p>
+  <p class="meta">
+    snapshot_date: <code>2026-05-06</code> /
+    last_update_utc: <code>2026-05-06T23:56:40+00:00</code> /
+    last_update_jst: <code>2026-05-07T08:56:40+09:00</code> /
+    git: <code class="sha">990c40a</code>
+  </p>
+
+  <h2>4 blocker</h2>
+  <div class="blocker-grid">
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+        <strong>dirty tree fingerprint</strong>
+        <span class="badge RESOLVED">RESOLVED</span>
+      </div>
+      <p class="meta" style="margin:6px 0 0;">
+        DEEP-56 &middot; <a href="tools/offline/operator_review/compute_dirty_fingerprint.py">tools/offline/operator_review/compute_dirty_fingerprint.py</a>
+<br>duration: 548 ms<br>sha256: <code class="sha">6134ec1c75fb…</code>      </p>
+    </div>
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+        <strong>workflow targets sync</strong>
+        <span class="badge RESOLVED">RESOLVED</span>
+      </div>
+      <p class="meta" style="margin:6px 0 0;">
+        DEEP-49 &middot; <a href="scripts/ops/sync_workflow_targets.py --check">scripts/ops/sync_workflow_targets.py --check</a>
+<br>duration: 270 ms<br>sha256: <code class="sha">a4a7a7117ddc…</code>      </p>
+    </div>
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+        <strong>operator ACK signoff</strong>
+        <span class="badge BLOCKED">BLOCKED</span>
+      </div>
+      <p class="meta" style="margin:6px 0 0;">
+        DEEP-51 &middot; <a href="tools/offline/operator_review/operator_ack_signoff.py --dry-run --json --yes --all">tools/offline/operator_review/operator_ack_signoff.py --dry-run --json --yes --all</a>
+<br>duration: 7595 ms<br>sha256: <code class="sha">01663722c101…</code>      </p>
+    </div>
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+        <strong>delivery strict (pre-deploy)</strong>
+        <span class="badge RESOLVED">RESOLVED</span>
+      </div>
+      <p class="meta" style="margin:6px 0 0;">
+        DEEP-50 &middot; <a href="scripts/ops/pre_deploy_verify.py --warn-only">scripts/ops/pre_deploy_verify.py --warn-only</a>
+<br>duration: 7985 ms<br>sha256: <code class="sha">7950da87407f…</code>      </p>
+    </div>
+  </div>
+
+  <h2>8 ACK boolean</h2>
+  <ul class="ack-list">
+    <li>
+      <span>
+        <strong>migration targets verified</strong><br>
+        <span class="meta">ACK_MIGRATION_TARGETS &middot; DEEP-52</span>
+      </span>
+      <span class="ack-mark PARTIAL">
+&middot;&middot;&middot;      </span>
+    </li>
+    <li>
+      <span>
+        <strong>dirty tree fingerprint clean</strong><br>
+        <span class="meta">ACK_FINGERPRINT_CLEAN &middot; DEEP-56</span>
+      </span>
+      <span class="ack-mark PARTIAL">
+&middot;&middot;&middot;      </span>
+    </li>
+    <li>
+      <span>
+        <strong>GHA workflows tracked</strong><br>
+        <span class="meta">ACK_WORKFLOWS_TRACKED &middot; DEEP-49</span>
+      </span>
+      <span class="ack-mark RESOLVED">
+&#10003;      </span>
+    </li>
+    <li>
+      <span>
+        <strong>delivery strict tests green</strong><br>
+        <span class="meta">ACK_DELIVERY_STRICT &middot; DEEP-50</span>
+      </span>
+      <span class="ack-mark PARTIAL">
+&middot;&middot;&middot;      </span>
+    </li>
+    <li>
+      <span>
+        <strong>smoke runbook executed</strong><br>
+        <span class="meta">ACK_SMOKE_RUNBOOK &middot; DEEP-61</span>
+      </span>
+      <span class="ack-mark BLOCKED">
+&#10007;      </span>
+    </li>
+    <li>
+      <span>
+        <strong>dual-CLI lane enforcer green</strong><br>
+        <span class="meta">ACK_LANE_ENFORCED &middot; DEEP-60</span>
+      </span>
+      <span class="ack-mark PARTIAL">
+&middot;&middot;&middot;      </span>
+    </li>
+    <li>
+      <span>
+        <strong>release readiness CI green</strong><br>
+        <span class="meta">ACK_RELEASE_READINESS &middot; DEEP-59</span>
+      </span>
+      <span class="ack-mark RESOLVED">
+&#10003;      </span>
+    </li>
+    <li>
+      <span>
+        <strong>prod deploy runbook signed</strong><br>
+        <span class="meta">ACK_PROD_RUNBOOK &middot; DEEP-57</span>
+      </span>
+      <span class="ack-mark PARTIAL">
+&middot;&middot;&middot;      </span>
+    </li>
+  </ul>
+
+  <h2>33 spec implementation</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>spec</th>
+        <th>status</th>
+        <th>last_check</th>
+        <th>evidence</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>DEEP-22</strong><br><span class="meta">DEEP-22 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-22_*.md">docs/_internal/DEEP-22_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-23</strong><br><span class="meta">DEEP-23 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-23_*.md">docs/_internal/DEEP-23_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-24</strong><br><span class="meta">DEEP-24 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-24_*.md">docs/_internal/DEEP-24_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-25</strong><br><span class="meta">DEEP-25 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-25_*.md">docs/_internal/DEEP-25_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-26</strong><br><span class="meta">DEEP-26 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-26_*.md">docs/_internal/DEEP-26_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-27</strong><br><span class="meta">DEEP-27 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-27_*.md">docs/_internal/DEEP-27_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-28</strong><br><span class="meta">DEEP-28 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-28_*.md">docs/_internal/DEEP-28_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-29</strong><br><span class="meta">DEEP-29 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-29_*.md">docs/_internal/DEEP-29_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-30</strong><br><span class="meta">DEEP-30 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-30_*.md">docs/_internal/DEEP-30_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-31</strong><br><span class="meta">DEEP-31 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-31_*.md">docs/_internal/DEEP-31_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-32</strong><br><span class="meta">DEEP-32 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-32_*.md">docs/_internal/DEEP-32_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-33</strong><br><span class="meta">DEEP-33 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-33_*.md">docs/_internal/DEEP-33_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-34</strong><br><span class="meta">DEEP-34 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-34_*.md">docs/_internal/DEEP-34_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-35</strong><br><span class="meta">DEEP-35 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-35_*.md">docs/_internal/DEEP-35_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-36</strong><br><span class="meta">DEEP-36 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-36_*.md">docs/_internal/DEEP-36_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-37</strong><br><span class="meta">DEEP-37 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-37_*.md">docs/_internal/DEEP-37_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-38</strong><br><span class="meta">DEEP-38 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-38_*.md">docs/_internal/DEEP-38_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-39</strong><br><span class="meta">DEEP-39 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-39_*.md">docs/_internal/DEEP-39_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-40</strong><br><span class="meta">DEEP-40 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-40_*.md">docs/_internal/DEEP-40_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-41</strong><br><span class="meta">DEEP-41 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-41_*.md">docs/_internal/DEEP-41_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-42</strong><br><span class="meta">DEEP-42 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-42_*.md">docs/_internal/DEEP-42_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-43</strong><br><span class="meta">DEEP-43 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-43_*.md">docs/_internal/DEEP-43_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-44</strong><br><span class="meta">DEEP-44 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-44_*.md">docs/_internal/DEEP-44_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-45</strong><br><span class="meta">DEEP-45 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-45_*.md">docs/_internal/DEEP-45_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-46</strong><br><span class="meta">DEEP-46 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-46_*.md">docs/_internal/DEEP-46_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-47</strong><br><span class="meta">DEEP-47 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-47_*.md">docs/_internal/DEEP-47_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-48</strong><br><span class="meta">DEEP-48 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-48_*.md">docs/_internal/DEEP-48_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-49</strong><br><span class="meta">DEEP-49 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-49_*.md">docs/_internal/DEEP-49_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-50</strong><br><span class="meta">DEEP-50 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-50_*.md">docs/_internal/DEEP-50_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-51</strong><br><span class="meta">DEEP-51 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-51_*.md">docs/_internal/DEEP-51_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-52</strong><br><span class="meta">DEEP-52 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-52_*.md">docs/_internal/DEEP-52_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-53</strong><br><span class="meta">DEEP-53 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-53_*.md">docs/_internal/DEEP-53_*.md</a></td>
+      </tr>
+      <tr>
+        <td><strong>DEEP-54</strong><br><span class="meta">DEEP-54 implementation</span></td>
+        <td><span class="badge PARTIAL">PARTIAL</span></td>
+        <td class="meta">—</td>
+        <td><a href="docs/_internal/DEEP-54_*.md">docs/_internal/DEEP-54_*.md</a></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <footer>
+    <p>
+      DEEP-58 production gate dashboard / DEEP-26 axis B (transparency = SEO uplift) 整合。
+      生成元: <code>scripts/cron/aggregate_production_gate_status.py</code> (LLM API import 0)。
+      schema: <code>deep58.v1</code>。
+      公開そのものを moat とする方針です — 詳細は spec
+      <a href="/docs/_internal/DEEP_58_production_gate_dashboard.html">DEEP-58</a> / <a href="/docs/_internal/DEEP_26_reverse_proxy.html">DEEP-26</a> を参照。
+    </p>
+    <p>operator: Bookyou株式会社 (T8010001213708) &middot; product: jpcite</p>
+  </footer>
+</main>
+</body>
+</html>

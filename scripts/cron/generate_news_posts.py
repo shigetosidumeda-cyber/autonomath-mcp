@@ -789,7 +789,7 @@ def run(
         buckets = _group_by_entity_and_jst_date(rows)
         counters["buckets"] = len(buckets)
 
-        entity_ids = sorted({k[0] for k in buckets.keys()})
+        entity_ids = sorted({k[0] for k in buckets})
         meta = _fetch_entity_meta(conn, entity_ids)
 
         # Process buckets in a stable order so logs / dry-run output are

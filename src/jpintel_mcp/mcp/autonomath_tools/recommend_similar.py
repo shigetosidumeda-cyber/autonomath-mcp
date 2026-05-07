@@ -46,6 +46,7 @@ NO LLM call inside any tool — pure SQLite + Python.
 
 from __future__ import annotations
 
+import contextlib
 import logging
 import os
 import sqlite3
@@ -281,10 +282,8 @@ def _resolve_program_seed(seed: str | int) -> int | None:
     except sqlite3.Error:
         return None
     finally:
-        try:
+        with contextlib.suppress(Exception):
             db.close()
-        except Exception:
-            pass
 
 
 def _resolve_case_seed(seed: str | int) -> int | None:
@@ -306,10 +305,8 @@ def _resolve_case_seed(seed: str | int) -> int | None:
     except sqlite3.Error:
         return None
     finally:
-        try:
+        with contextlib.suppress(Exception):
             db.close()
-        except Exception:
-            pass
 
 
 def _resolve_court_seed(seed: str | int) -> int | None:
@@ -331,10 +328,8 @@ def _resolve_court_seed(seed: str | int) -> int | None:
     except sqlite3.Error:
         return None
     finally:
-        try:
+        with contextlib.suppress(Exception):
             db.close()
-        except Exception:
-            pass
 
 
 # ---------------------------------------------------------------------------
@@ -545,10 +540,8 @@ def _recommend_similar_program_impl(
     try:
         rows = _resolve_rows(jp, _S_SPEC, rowids)
     finally:
-        try:
+        with contextlib.suppress(Exception):
             jp.close()
-        except Exception:
-            pass
 
     unified_ids = [
         rows[eid]["unified_id"] for eid in rowids if eid in rows and rows[eid].get("unified_id")
@@ -661,10 +654,8 @@ def _recommend_similar_case_impl(
     try:
         rows = _resolve_rows(jp, _C_SPEC, rowids)
     finally:
-        try:
+        with contextlib.suppress(Exception):
             jp.close()
-        except Exception:
-            pass
 
     ranked: list[dict[str, Any]] = []
     for eid, dist in neighbours:
@@ -765,10 +756,8 @@ def _recommend_similar_court_decision_impl(
     try:
         rows = _resolve_rows(jp, _J_SPEC, rowids)
     finally:
-        try:
+        with contextlib.suppress(Exception):
             jp.close()
-        except Exception:
-            pass
 
     ranked: list[dict[str, Any]] = []
     for eid, dist in neighbours:

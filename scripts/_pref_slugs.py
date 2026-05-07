@@ -61,7 +61,7 @@ PREFECTURES: list[tuple[str, str]] = [
     ("okinawa", "沖縄県"),
 ]
 
-SLUG_TO_JA: dict[str, str] = {slug: ja for slug, ja in PREFECTURES}
+SLUG_TO_JA: dict[str, str] = dict(PREFECTURES)
 JA_TO_SLUG: dict[str, str] = {ja: slug for slug, ja in PREFECTURES}
 
 # Region grouping for the index page (so 47 link grid is scannable, not flat).

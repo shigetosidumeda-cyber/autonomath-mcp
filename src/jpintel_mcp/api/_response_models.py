@@ -38,7 +38,7 @@ Design notes
 
 from __future__ import annotations
 
-from typing import Any, ClassVar, Generic, Literal, TypeVar
+from typing import Any, Generic, Literal, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -47,7 +47,7 @@ T = TypeVar("T")
 
 # Shared model_config — see module docstring for why every response model
 # tolerates extra keys. Defined once so the rule is grep-able.
-_ALLOW_EXTRA: ClassVar[ConfigDict] = ConfigDict(extra="allow")
+_ALLOW_EXTRA: ConfigDict = ConfigDict(extra="allow")
 
 EVIDENCE_PACKET_EXAMPLE: dict[str, Any] = {
     "packet_id": "evp_example",
@@ -1044,7 +1044,7 @@ class PrecomputedIntelligenceBundle(EvidencePacketEnvelope):
     precomputed_record_count: int
     precomputed: PrecomputedMetadata
     usage: PrecomputedUsage
-    agent_recommendation: PrecomputedAgentRecommendation
+    agent_recommendation: PrecomputedAgentRecommendation  # type: ignore[assignment]
 
 
 # ---------------------------------------------------------------------------

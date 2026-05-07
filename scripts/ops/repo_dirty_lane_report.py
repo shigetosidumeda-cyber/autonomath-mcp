@@ -9,14 +9,34 @@ lanes so release and cleanup work can happen without guessing.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import subprocess
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta, timezone
 from pathlib import Path
+from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUT = REPO_ROOT / "docs" / "_internal" / "repo_dirty_lanes_latest.md"
 JST = timezone(timedelta(hours=9))
+
+# Lanes that the production deploy gate flags as critical when dirty.
+# Kept in this module (the canonical lane-classification SOT) so gate and
+# operator-side CLIs share a single source.
+CRITICAL_DIRTY_LANES = (
+    "runtime_code",
+    "billing_auth_security",
+    "migrations",
+    "cron_etl_ops",
+    "workflows",
+    "root_release_files",
+)
+
+# Threshold above which a single working-tree file is excluded from the
+# rolling content_sha256 (its path is recorded in
+# `content_hash_skipped_large_files` so the operator can see what was elided).
+# The gate has historically used 64 MiB; we keep the gate value as the SOT.
+LARGE_FILE_CONTENT_HASH_THRESHOLD_BYTES = 64 * 1024 * 1024
 
 
 @dataclass(frozen=True)
@@ -127,6 +147,118 @@ def classify_path(path: str) -> str:
     if path.startswith(("examples/", "pypi-jpcite-meta/", "docs/en/")):
         return "public_docs"
     return "misc_review"
+
+
+def collect_status_lines(repo_root: Path) -> list[str]:
+    """Return raw `git status --porcelain=v1 --untracked-files=all` lines.
+
+    Single SOT for the porcelain stream both gate and operator-side CLI ingest.
+    Strips empty lines but preserves the porcelain XY status prefix and rename
+    " -> " arrows so callers can drive identical lane / hash logic.
+    """
+    out = _run_git(["status", "--porcelain=v1", "--untracked-files=all"], repo_root)
+    return [line for line in out.splitlines() if line.strip()]
+
+
+def head_sha(repo_root: Path) -> str | None:
+    """Return current HEAD commit sha (or ``None`` if git is unavailable)."""
+    text = _run_git(["rev-parse", "HEAD"], repo_root).strip()
+    return text or None
+
+
+def compute_canonical_dirty_fingerprint(
+    repo_root: Path,
+    lines: list[str] | None = None,
+) -> dict[str, Any]:
+    """Canonical 7-field dirty tree fingerprint (SOT for gate + ACK CLI).
+
+    Both ``scripts/ops/production_deploy_go_gate.py`` (consumer) and
+    ``tools/offline/operator_review/compute_dirty_fingerprint.py`` (producer)
+    must call into this helper so their output binds bit-for-bit. Drift
+    between the two stalls the operator at 4/5 PASS and forces re-signing.
+
+    Algorithm (kept identical to the gate's historical implementation):
+
+    1. Source = sorted raw porcelain lines from
+       ``git status --porcelain=v1 --untracked-files=all``.
+    2. Per line: status = ``raw[:2].strip() or raw[:2]``, path = ``raw[3:].strip()``.
+       Renames carry an ``old -> new`` arrow; both old and new contribute one
+       lane count each, status_counts is keyed by the raw porcelain XY.
+    3. Lane = :func:`classify_path` (16-lane SOT taxonomy).
+    4. ``path_sha256`` = sha256 of ``"\\n".join(sorted_raw_lines)`` utf-8.
+    5. ``content_sha256`` = streaming sha256 of, for each parsed entry in raw
+       order, ``f"{status}\\t{path}\\n" + (per-file size + sha256 hex)``. Files
+       above :data:`LARGE_FILE_CONTENT_HASH_THRESHOLD_BYTES` collapse to a
+       ``<content-skipped-large-file>`` marker and are added to
+       ``content_hash_skipped_large_files``. Deleted / unreadable files emit
+       a ``<deleted-or-not-file>`` / ``<read-unavailable>`` marker.
+
+    The returned dict carries ``critical_lanes_present`` for the gate's
+    review gating; the ACK CLI ignores that field.
+    """
+    if lines is None:
+        lines = collect_status_lines(repo_root)
+
+    lane_counts: dict[str, int] = {}
+    status_counts: dict[str, int] = {}
+    content_hash = hashlib.sha256()
+    content_hash_skipped_large_files: list[str] = []
+    parsed_entries: list[tuple[str, str, str | None, str]] = []
+
+    for raw in sorted(lines):
+        status = raw[:2].strip() or raw[:2]
+        path = raw[3:].strip()
+        old_path: str | None = None
+        if " -> " in path:
+            old_path, path = path.split(" -> ", 1)
+            old_lane = classify_path(old_path)
+            lane_counts[old_lane] = lane_counts.get(old_lane, 0) + 1
+        lane = classify_path(path)
+        lane_counts[lane] = lane_counts.get(lane, 0) + 1
+        status_counts[status] = status_counts.get(status, 0) + 1
+        parsed_entries.append((status, path, old_path, raw))
+
+    for status, path, _old_path, raw in parsed_entries:
+        content_hash.update(f"{status}\t{path}\n".encode("utf-8", errors="replace"))
+        disk_path = repo_root / path
+        if "D" in raw[:2] or not disk_path.is_file():
+            content_hash.update(b"<deleted-or-not-file>\n")
+            continue
+        try:
+            size = disk_path.stat().st_size
+        except OSError:
+            content_hash.update(b"<stat-unavailable>\n")
+            continue
+        content_hash.update(f"size={size}\n".encode("ascii"))
+        if size > LARGE_FILE_CONTENT_HASH_THRESHOLD_BYTES:
+            content_hash_skipped_large_files.append(path)
+            content_hash.update(b"<content-skipped-large-file>\n")
+            continue
+        file_hash = hashlib.sha256()
+        try:
+            with disk_path.open("rb") as handle:
+                for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                    file_hash.update(chunk)
+        except OSError:
+            content_hash.update(b"<read-unavailable>\n")
+            continue
+        content_hash.update(file_hash.hexdigest().encode("ascii"))
+        content_hash.update(b"\n")
+
+    critical_lanes_present = sorted(
+        lane for lane in CRITICAL_DIRTY_LANES if lane_counts.get(lane, 0) > 0
+    )
+
+    return {
+        "current_head": head_sha(repo_root),
+        "dirty_entries": len(lines),
+        "status_counts": dict(sorted(status_counts.items())),
+        "lane_counts": dict(sorted(lane_counts.items())),
+        "critical_lanes_present": critical_lanes_present,
+        "path_sha256": hashlib.sha256("\n".join(sorted(lines)).encode("utf-8")).hexdigest(),
+        "content_sha256": content_hash.hexdigest(),
+        "content_hash_skipped_large_files": content_hash_skipped_large_files,
+    }
 
 
 def parse_status_lines(lines: list[str]) -> list[DirtyEntry]:

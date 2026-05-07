@@ -35,6 +35,8 @@ os.environ.setdefault("API_KEY_SALT", "bench-salt-not-secret")
 os.environ["ANON_RATE_LIMIT_ENABLED"] = "false"
 
 # Import after env is set so Settings picks up JPINTEL_DB_PATH.
+import contextlib
+
 from jpintel_mcp.api.main import app  # noqa: E402  (import after env set)
 
 # ── Endpoint matrix ───────────────────────────────────────────────────────
@@ -91,10 +93,8 @@ def _percentile(data: list[float], pct: float) -> float:
 
 async def _warm_get(client: httpx.AsyncClient, path: str) -> None:
     for _ in range(WARMUP_N):
-        try:
+        with contextlib.suppress(Exception):
             await client.get(path)
-        except Exception:
-            pass
 
 
 async def _measure_get(client: httpx.AsyncClient, path: str) -> tuple[list[float], int]:
@@ -172,10 +172,8 @@ async def run_benchmark() -> list[dict]:
         path = "/v1/programs/prescreen"
         print(f"  warming  {label} ...", flush=True)
         for _ in range(WARMUP_N):
-            try:
+            with contextlib.suppress(Exception):
                 await client.post(path, json=PRESCREEN_BODY)
-            except Exception:
-                pass
         print(f"  measuring {label} ({MEASURE_N} reqs) ...", flush=True)
         latencies, errors = await _measure_post(client, path, PRESCREEN_BODY)
         s = _stats(latencies, errors)

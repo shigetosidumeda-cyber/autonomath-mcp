@@ -28,7 +28,7 @@ import re
 import sqlite3
 import sys
 from collections.abc import Iterable, Iterator
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -414,15 +414,11 @@ def dry_run(csv_path: str, auto_threshold: float) -> None:
     for r in rows:
         # Coerce numeric fields parsed from CSV strings.
         if r.get("trust_score") not in (None, ""):
-            try:
+            with suppress(ValueError):
                 r["trust_score"] = float(r["trust_score"])
-            except ValueError:
-                pass
         if r.get("outlier_sigma") not in (None, ""):
-            try:
+            with suppress(ValueError):
                 r["outlier_sigma"] = float(r["outlier_sigma"])
-            except ValueError:
-                pass
         decision, code = auto_decision(r, auto_threshold)
         if decision == "approve":
             auto_a += 1

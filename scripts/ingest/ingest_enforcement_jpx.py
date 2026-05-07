@@ -75,6 +75,7 @@ CLI:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import io
 import json
@@ -1324,10 +1325,8 @@ def write_rows(
         conn.commit()
     except sqlite3.Error as exc:
         _LOG.error("BEGIN/commit failed: %s", exc)
-        try:
+        with contextlib.suppress(sqlite3.Error):
             conn.rollback()
-        except sqlite3.Error:
-            pass
     return inserted, dup_db, dup_batch, dup_fine
 
 
@@ -1413,10 +1412,8 @@ def main(argv: list[str] | None = None) -> int:
         (now_iso,),
     )
     breakdown = cur.fetchall()
-    try:
+    with contextlib.suppress(sqlite3.Error):
         conn.close()
-    except sqlite3.Error:
-        pass
 
     print(
         f"JPX enforcement ingest: parsed={len(rows)} inserted={inserted} "

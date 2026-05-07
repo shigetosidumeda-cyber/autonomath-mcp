@@ -270,13 +270,13 @@ def test_idempotency_cache_dedup(jpintel_conn, mock_stripe_client, mock_postmark
     The placeholder uses the Stripe-side idempotency_key path; the cache layer
     proper is wired in src/jpintel_mcp/api/courses.py once codex integrates.
     """
-    sub_args = dict(
-        api_key_hash="hash_dedup",
-        course_slug="kaikei_pack_30day",
-        notify_email="user@example.com",
-        stripe_client=mock_stripe_client,
-        postmark=mock_postmark,
-    )
+    sub_args = {
+        "api_key_hash": "hash_dedup",
+        "course_slug": "kaikei_pack_30day",
+        "notify_email": "user@example.com",
+        "stripe_client": mock_stripe_client,
+        "postmark": mock_postmark,
+    }
     subscribe_course_pattern_a(jpintel_conn, **sub_args)
     # Second call with same (course × day) → Stripe returns False because of collision
     mock_stripe_client.idempotency_collision.add(

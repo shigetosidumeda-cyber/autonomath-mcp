@@ -44,6 +44,7 @@ NOT a tax-advice surface:
 from __future__ import annotations
 
 import base64
+import binascii
 import logging
 import sqlite3
 from datetime import datetime
@@ -96,7 +97,7 @@ def _decode_cursor(cursor: str) -> tuple[str, int]:
         raw = base64.urlsafe_b64decode(padded.encode("ascii")).decode("utf-8")
         ts, sid = raw.rsplit("|", 1)
         return ts, int(sid)
-    except (ValueError, UnicodeDecodeError, base64.binascii.Error) as exc:
+    except (ValueError, UnicodeDecodeError, binascii.Error) as exc:
         raise HTTPException(
             status_code=400,
             detail=f"invalid cursor: {exc}",

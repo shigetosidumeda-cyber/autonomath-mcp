@@ -335,14 +335,14 @@ def test_idempotency_per_quarter(
     jpintel_conn, mock_stripe_client, pdf_renderer, mock_r2_storage
 ) -> None:
     """Same (api_key × year × quarter) on a second call must NOT re-charge."""
-    args = dict(
-        api_key_hash="hash_idempotent",
-        year=2026,
-        quarter=2,
-        stripe_client=mock_stripe_client,
-        pdf_renderer=pdf_renderer,
-        r2_storage=mock_r2_storage,
-    )
+    args = {
+        "api_key_hash": "hash_idempotent",
+        "year": 2026,
+        "quarter": 2,
+        "stripe_client": mock_stripe_client,
+        "pdf_renderer": pdf_renderer,
+        "r2_storage": mock_r2_storage,
+    }
     first = get_quarterly_pdf_pattern_a(jpintel_conn, **args)
     assert first["status"] == "success"
     second = get_quarterly_pdf_pattern_a(jpintel_conn, **args)

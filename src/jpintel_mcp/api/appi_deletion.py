@@ -423,7 +423,7 @@ def submit_deletion_request(
         requester_email=payload.requester_email,
         requester_legal_name=payload.requester_legal_name,
         target_houjin_bangou=payload.target_houjin_bangou,
-        target_data_categories=payload.target_data_categories,
+        target_data_categories=list(payload.target_data_categories),
         identity_verification_method=payload.identity_verification_method,
         deletion_reason=payload.deletion_reason,
         received_at=received_at,

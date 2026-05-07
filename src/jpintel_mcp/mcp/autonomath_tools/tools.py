@@ -213,7 +213,7 @@ def _authority_domain_hints(authority: str | None) -> list[str]:
 
 
 def _row_to_dict(row: sqlite3.Row) -> dict[str, Any]:
-    return {k: row[k] for k in row.keys()}
+    return {k: row[k] for k in row}
 
 
 def _parse_iso_date(s: str | None) -> date | None:
@@ -635,7 +635,9 @@ def search_tax_incentives(
     rewrite_plan: dict[str, Any] | None = None
     if natural_query:
         try:
-            from query_rewrite.integrate import rewrite_natural_query
+            from query_rewrite.integrate import (
+                rewrite_natural_query,  # type: ignore[import-not-found]
+            )
 
             kwargs_in = {
                 "authority": authority,
@@ -1373,7 +1375,9 @@ def list_open_programs(
     rewrite_plan: dict[str, Any] | None = None
     if natural_query:
         try:
-            from query_rewrite.integrate import rewrite_natural_query
+            from query_rewrite.integrate import (
+                rewrite_natural_query,  # type: ignore[import-not-found]
+            )
 
             kwargs_in = {
                 "region": region,
@@ -2958,8 +2962,8 @@ def _reasoning_import():
     root = str(_Path(__file__).resolve().parent.parent)
     if root not in _sys.path:
         _sys.path.insert(0, root)
-    from reasoning import match as _match_mod  # noqa: F401
-    from reasoning import query_types as _qt_mod  # noqa: F401
+    from reasoning import match as _match_mod  # type: ignore[import-not-found]  # noqa: F401
+    from reasoning import query_types as _qt_mod  # type: ignore[import-not-found]  # noqa: F401
 
     return _match_mod, _qt_mod
 

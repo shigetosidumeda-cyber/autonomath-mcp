@@ -705,9 +705,7 @@ def title_matches_topic(title: str, topic_info: dict) -> bool:
     must_not_match = topic_info.get("title_must_not_match", ())
     if must_match and not any(kw in title_norm for kw in must_match):
         return False
-    if must_not_match and any(kw in title_norm for kw in must_not_match):
-        return False
-    return True
+    return not (must_not_match and any(kw in title_norm for kw in must_not_match))
 
 
 # ---------------------------------------------------------------------------

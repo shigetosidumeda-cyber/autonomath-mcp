@@ -56,6 +56,7 @@ target only the failed countries on the next invocation.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import io
 import json
@@ -455,10 +456,8 @@ def parse_treaty_text(text: str) -> dict[str, Any]:
 
     pm = _RE_PE_DAYS.search(text)
     if pm:
-        try:
+        with contextlib.suppress(ValueError):
             out["pe_days_threshold"] = int(pm.group("days"))
-        except ValueError:
-            pass
 
     def _pick_ymd(m: re.Match[str] | None) -> str | None:
         if m is None:

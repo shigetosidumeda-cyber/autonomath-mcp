@@ -43,6 +43,7 @@ CLI:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import logging
 import re
@@ -638,10 +639,8 @@ def run(
         con.commit()
     except sqlite3.Error as exc:
         _LOG.error("DB init failed: %s", exc)
-        try:
+        with contextlib.suppress(sqlite3.Error):
             con.close()
-        except sqlite3.Error:
-            pass
         return 2
 
     # 3. Walk listings, fetch detail, write per-entry transactions to keep
@@ -739,17 +738,13 @@ def run(
                 canonical_id,
                 exc,
             )
-            try:
+            with contextlib.suppress(sqlite3.Error):
                 con.rollback()
-            except sqlite3.Error:
-                pass
             continue
         except sqlite3.Error as exc:
             _LOG.error("DB error for %s: %s", canonical_id, exc)
-            try:
+            with contextlib.suppress(sqlite3.Error):
                 con.rollback()
-            except sqlite3.Error:
-                pass
             continue
 
         if ok:
@@ -790,10 +785,8 @@ def run(
     after_jftc = cur.fetchone()[0]
     cur.execute("SELECT COUNT(*) FROM am_enforcement_detail")
     after_total = cur.fetchone()[0]
-    try:
+    with contextlib.suppress(sqlite3.Error):
         con.close()
-    except sqlite3.Error:
-        pass
 
     _LOG.info(
         "done inserted=%d dup_db=%d dup_id=%d no_data=%d listings=%d",

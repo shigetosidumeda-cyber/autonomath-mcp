@@ -331,7 +331,7 @@ def send_freshness_alert(report: dict[str, Any]) -> dict[str, Any]:
         result: dict[str, Any] = {}
         if hasattr(client, "send_digest"):
             try:
-                result = client.send_digest(
+                result = client.send_digest(  # type: ignore[call-arg]
                     to="info@bookyou.net",
                     template_model={"freshness_report": payload},
                 )

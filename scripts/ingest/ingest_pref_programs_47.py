@@ -28,6 +28,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import json
 import logging
@@ -539,9 +540,7 @@ def _is_program_link(text: str, href: str) -> bool:
     if len(blob_text) < 4 or len(blob_text) > 200:
         return False
     # reject pure short navigational headers (just a category like "補助金")
-    if blob_text in ("補助金", "助成金", "支援金", "補助金等", "助成・補助金", "交付金"):
-        return False
-    return True
+    return blob_text not in ("補助金", "助成金", "支援金", "補助金等", "助成・補助金", "交付金")
 
 
 def _is_intra_pref(href: str, allowed_hosts: set[str], allowed_root_suffixes: set[str]) -> bool:
@@ -551,10 +550,7 @@ def _is_intra_pref(href: str, allowed_hosts: set[str], allowed_root_suffixes: se
     if p.netloc in allowed_hosts:
         return True
     # match by root domain suffix (e.g. metro.tokyo.lg.jp covers www. / sangyo-rodo. / zaimu. etc.)
-    for suf in allowed_root_suffixes:
-        if p.netloc.endswith("." + suf) or p.netloc == suf:
-            return True
-    return False
+    return any(p.netloc.endswith("." + suf) or p.netloc == suf for suf in allowed_root_suffixes)
 
 
 def _domain_root_suffix(netloc: str) -> str:
@@ -697,9 +693,8 @@ def harvest_pref(
                             "脱炭素",
                         )
                     )
-                ):
-                    if href not in visited:
-                        queue.append((href, depth + 1))
+                ) and href not in visited:
+                    queue.append((href, depth + 1))
 
         if len(found) >= max_links:
             break
@@ -838,13 +833,11 @@ def upsert_program(
                     now_iso,
                 ),
             )
-            try:
+            with contextlib.suppress(sqlite3.OperationalError):
                 con.execute(
                     "INSERT INTO programs_fts(unified_id, primary_name, aliases, enriched_text) VALUES (?,?,?,?)",
                     (uid, name, "", name),
                 )
-            except sqlite3.OperationalError:
-                pass
             con.execute("COMMIT")
             return "insert"
         if prev["excluded"]:

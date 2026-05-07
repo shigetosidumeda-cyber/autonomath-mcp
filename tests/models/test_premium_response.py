@@ -107,13 +107,13 @@ def test_adoption_score_boundary_exactly_0_50_is_borderline() -> None:
 
 
 def _sample_entry(**overrides: object) -> AuditLogEntry:
-    base = dict(
-        entry_id="evt_001",
-        timestamp_utc=datetime(2026, 4, 25, 12, 0, 0, tzinfo=UTC),
-        actor="api:anonymous",
-        action="validate",
-        payload={"endpoint": "/v1/am/validate", "ok": True},
-    )
+    base = {
+        "entry_id": "evt_001",
+        "timestamp_utc": datetime(2026, 4, 25, 12, 0, 0, tzinfo=UTC),
+        "actor": "api:anonymous",
+        "action": "validate",
+        "payload": {"endpoint": "/v1/am/validate", "ok": True},
+    }
     base.update(overrides)
     return AuditLogEntry(**base)  # type: ignore[arg-type]
 

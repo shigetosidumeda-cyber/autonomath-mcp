@@ -561,10 +561,10 @@ def stats_usage(conn: DbDep) -> dict[str, Any]:
         except sqlite3.OperationalError:
             rows = []
         per_day = {r["day"]: int(r["n"]) for r in rows} if rows else {}
-        daily = [{"date": d, "count": per_day.get(d, 0)} for d in buckets]
+        daily: list[dict[str, Any]] = [{"date": d, "count": per_day.get(d, 0)} for d in buckets]
         cumulative = 0
         for entry in daily:
-            cumulative += entry["count"]
+            cumulative += int(entry["count"])
             entry["cumulative"] = cumulative
         return {
             "window_days": 30,

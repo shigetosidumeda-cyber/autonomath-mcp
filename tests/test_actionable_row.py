@@ -10,6 +10,7 @@ round-trip:
 
 from __future__ import annotations
 
+import contextlib
 import json
 import sqlite3
 from datetime import date, timedelta
@@ -190,10 +191,8 @@ def seed_future_deadline(seeded_db: Path):
             "UPDATE programs SET application_window_json = NULL WHERE unified_id = ?",
             ("UNI-test-s-1",),
         )
-        try:
+        with contextlib.suppress(sqlite3.OperationalError):
             conn.execute("DELETE FROM l4_query_cache WHERE tool_name='api.programs.get'")
-        except sqlite3.OperationalError:
-            pass
         conn.commit()
     finally:
         conn.close()

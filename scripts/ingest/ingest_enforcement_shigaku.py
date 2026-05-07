@@ -71,6 +71,8 @@ except ImportError as exc:  # pragma: no cover
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
+import contextlib
+
 from scripts.lib.http import HttpClient  # noqa: E402
 
 _LOG = logging.getLogger("autonomath.ingest.shigaku")
@@ -847,17 +849,13 @@ def main(argv: list[str] | None = None) -> int:
     except sqlite3.Error as exc:
         _LOG.error("BEGIN/commit failed: %s", exc)
         if conn is not None:
-            try:
+            with contextlib.suppress(sqlite3.Error):
                 conn.rollback()
-            except sqlite3.Error:
-                pass
     finally:
         http.close()
         if conn is not None:
-            try:
+            with contextlib.suppress(sqlite3.Error):
                 conn.close()
-            except sqlite3.Error:
-                pass
 
     _LOG.info(
         "done pdfs_ok=%d pdfs_fail=%d parsed=%d inserted=%d updated=%d "

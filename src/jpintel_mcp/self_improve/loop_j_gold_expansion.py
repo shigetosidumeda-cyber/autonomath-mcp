@@ -257,10 +257,7 @@ def extract_candidates(
             continue
         source_url = derive_url(tool, args, top_id)
 
-        if source_url:
-            recommended = "accept"
-        else:
-            recommended = "review"
+        recommended = "accept" if source_url else "review"
 
         candidates.append(
             {

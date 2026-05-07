@@ -278,13 +278,12 @@ def _has_forbidden_imports(py_path: Path) -> list[str]:
                     hits.append(alias.name)
                 if alias.name.startswith("google.generativeai"):
                     hits.append(alias.name)
-        elif isinstance(node, ast.ImportFrom):
-            if node.module:
-                head = node.module.split(".")[0]
-                if head in _FORBIDDEN_LLM_HEADS:
-                    hits.append(node.module)
-                if node.module.startswith("google.generativeai"):
-                    hits.append(node.module)
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            head = node.module.split(".")[0]
+            if head in _FORBIDDEN_LLM_HEADS:
+                hits.append(node.module)
+            if node.module.startswith("google.generativeai"):
+                hits.append(node.module)
     return hits
 
 

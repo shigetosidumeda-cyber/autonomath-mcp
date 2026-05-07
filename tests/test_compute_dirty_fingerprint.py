@@ -47,14 +47,28 @@ REQUIRED_FIELDS = [
     "content_hash_skipped_large_files",
 ]
 
-EXPECTED_LANES = {
-    "billing_auth_security",
+# Lanes the canonical SOT classifier (16-lane taxonomy in
+# scripts/ops/repo_dirty_lane_report.classify_path) is allowed to emit. The
+# operator-side fingerprint must mirror the gate's lane vocabulary so the
+# `dirty_fingerprint_mismatch:lane_counts` issue stays at zero — see
+# tests/test_dirty_fingerprint_consistency.py for the bit-for-bit lock-in.
+ALLOWED_LANES = {
     "runtime_code",
+    "billing_auth_security",
     "migrations",
     "cron_etl_ops",
+    "tests",
     "workflows",
+    "generated_public_site",
+    "openapi_distribution",
+    "sdk_distribution",
+    "public_docs",
+    "internal_docs",
+    "operator_offline",
+    "benchmarks_monitoring",
+    "data_or_local_seed",
     "root_release_files",
-    "other",
+    "misc_review",
 }
 
 
@@ -107,7 +121,13 @@ def synthetic_repo(tmp_path: Path) -> Path:
 
 @pytest.fixture
 def synthetic_repo_with_large(tmp_path: Path) -> Path:
-    """Synthetic repo with one >10 MB untracked file."""
+    """Synthetic repo with one untracked file above the SOT skip threshold.
+
+    The canonical helper in ``scripts/ops/repo_dirty_lane_report`` uses
+    64 MiB as the threshold (matches the gate's
+    ``_dirty_tree_fingerprint``). We generate a 65 MiB sparse blob so the
+    skip branch fires.
+    """
     repo = tmp_path / "repo_large"
     repo.mkdir()
     _git(repo, "init", "-q")
@@ -118,9 +138,9 @@ def synthetic_repo_with_large(tmp_path: Path) -> Path:
     _git(repo, "commit", "-q", "-m", "seed")
 
     big = repo / "big_blob.bin"
-    # 11 MB sparse-style (just write 11 MB of zeros — fast on macOS)
+    # 65 MiB sparse-style — slightly above the 64 MiB SOT threshold.
     with big.open("wb") as fh:
-        fh.write(b"\x00" * (11 * 1024 * 1024))
+        fh.truncate(65 * 1024 * 1024)
 
     (repo / "small.txt").write_text("hi\n")
     return repo
@@ -147,20 +167,28 @@ def test_01_seven_field_coverage(synthetic_repo: Path) -> None:
 
 
 def test_02_lane_classification(synthetic_repo: Path) -> None:
-    """Each synthetic dirty path lands in the correct lane."""
+    """Each synthetic dirty path lands in the correct lane (canonical SOT)."""
     fp = cdf.compute_fingerprint(synthetic_repo)
 
-    # All 7 lanes present (counts may be 0)
-    assert set(fp["lane_counts"].keys()) == EXPECTED_LANES
+    # Every emitted lane must be in the SOT 16-lane vocabulary.
+    assert set(fp["lane_counts"].keys()).issubset(ALLOWED_LANES)
 
     # Sum equals dirty_entries
     assert sum(fp["lane_counts"].values()) == fp["dirty_entries"]
 
-    # Spot-check via classify_lane on individual paths
+    # Spot-check via classify_lane on individual paths. The SOT classifier
+    # only flags `billing_auth_security` for paths under
+    # `src/jpintel_mcp/api/` or `src/jpintel_mcp/mcp/` that include billing /
+    # auth / middleware keywords — `src/jpintel_mcp/billing/...` itself
+    # falls through to the generic `src/` rule and lands on `runtime_code`.
     cases = [
-        ("src/jpintel_mcp/billing/stripe.py", "billing_auth_security"),
-        ("src/jpintel_mcp/api/auth/oauth.py", "billing_auth_security"),
-        ("src/jpintel_mcp/middleware/cors.py", "billing_auth_security"),
+        ("src/jpintel_mcp/api/billing.py", "billing_auth_security"),
+        ("src/jpintel_mcp/api/anon_limit.py", "billing_auth_security"),
+        ("src/jpintel_mcp/api/origin_enforcement.py", "billing_auth_security"),
+        ("src/jpintel_mcp/api/idempotency.py", "billing_auth_security"),
+        ("src/jpintel_mcp/api/audit_seal.py", "billing_auth_security"),
+        ("src/jpintel_mcp/billing/stripe.py", "runtime_code"),
+        ("src/jpintel_mcp/middleware/cors.py", "runtime_code"),
         ("src/jpintel_mcp/api/routes.py", "runtime_code"),
         ("src/jpintel_mcp/mcp/server.py", "runtime_code"),
         ("src/jpintel_mcp/tools/foo.py", "runtime_code"),
@@ -169,37 +197,47 @@ def test_02_lane_classification(synthetic_repo: Path) -> None:
         ("scripts/migrations/123_add.sql", "migrations"),
         ("scripts/cron/refresh.py", "cron_etl_ops"),
         ("scripts/etl/translate.py", "cron_etl_ops"),
+        ("scripts/ops/refresh_sources.py", "cron_etl_ops"),
+        ("tests/test_things.py", "tests"),
         (".github/workflows/ci.yml", "workflows"),
         ("pyproject.toml", "root_release_files"),
-        ("server.json", "root_release_files"),
-        ("smithery.yaml", "root_release_files"),
-        ("dxt/manifest.json", "root_release_files"),
-        ("mcp-server.json", "root_release_files"),
-        ("CHANGELOG.md", "root_release_files"),
+        ("smithery.yaml", "sdk_distribution"),
+        ("dxt/manifest.json", "sdk_distribution"),
+        ("mcp-server.json", "sdk_distribution"),
+        ("server.json", "sdk_distribution"),
+        ("CHANGELOG.md", "misc_review"),
         ("uv.lock", "root_release_files"),
-        ("docs/anything.md", "other"),
-        ("data/snapshot.db", "other"),
-        ("README.md", "other"),
+        ("docs/_internal/notes.md", "internal_docs"),
+        ("docs/anything.md", "public_docs"),
+        ("data/snapshot.db", "data_or_local_seed"),
+        ("README.md", "root_release_files"),
     ]
     for path, expected in cases:
-        assert cdf.classify_lane(path) == expected, (
-            f"{path} -> {cdf.classify_lane(path)} != {expected}"
-        )
+        assert (
+            cdf.classify_lane(path) == expected
+        ), f"{path} -> {cdf.classify_lane(path)} != {expected}"
 
 
 def test_03_large_file_skip(synthetic_repo_with_large: Path) -> None:
-    """A >10 MB file lands in content_hash_skipped_large_files but stays in path_sha256."""
+    """A file above the SOT threshold lands in ``content_hash_skipped_large_files``.
+
+    ``path_sha256`` must still account for the file so the path manifest
+    stays exhaustive even when the content hash collapses to a marker.
+    """
     fp = cdf.compute_fingerprint(synthetic_repo_with_large)
     skipped = fp["content_hash_skipped_large_files"]
     assert "big_blob.bin" in skipped
     # small.txt is also dirty but must NOT be in the skip list
     assert "small.txt" not in skipped
 
-    # path_sha256 must still account for big_blob.bin — recompute manually
-    raw = cdf.git_status_porcelain_z(synthetic_repo_with_large)
-    paths_sorted = sorted({p for _, p in raw})
-    assert "big_blob.bin" in paths_sorted
-    expected_path_sha = hashlib.sha256("\n".join(paths_sorted).encode("utf-8")).hexdigest()
+    # path_sha256 = sha256 of "\n".join(sorted raw porcelain lines) per SOT.
+    import sys as _sys
+
+    _sys.path.insert(0, str(SCRIPT.parent.parent.parent / "scripts" / "ops"))
+    from repo_dirty_lane_report import collect_status_lines  # noqa: E402
+
+    raw_lines = collect_status_lines(synthetic_repo_with_large)
+    expected_path_sha = hashlib.sha256("\n".join(sorted(raw_lines)).encode("utf-8")).hexdigest()
     assert fp["path_sha256"] == expected_path_sha
 
 

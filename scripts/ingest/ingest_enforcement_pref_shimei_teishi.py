@@ -823,9 +823,7 @@ def is_company_name(s: str) -> bool:
     if re.fullmatch(r"[\d\s\.\-]+", s):
         return False
     # Reject 法令 references / column headers
-    if "別表" in s or "適用条項" in s or "概要" in s or "備考" in s:
-        return False
-    return True
+    return not ("別表" in s or "適用条項" in s or "概要" in s or "備考" in s)
 
 
 # ---------------------------------------------------------------------------
@@ -1495,10 +1493,7 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     selected_slugs = {s.strip() for s in args.prefectures.split(",") if s.strip()}
-    if selected_slugs:
-        sources = [s for s in SOURCES if s.slug in selected_slugs]
-    else:
-        sources = list(SOURCES)
+    sources = [s for s in SOURCES if s.slug in selected_slugs] if selected_slugs else list(SOURCES)
     if not sources:
         _LOG.error("no sources selected")
         return 2

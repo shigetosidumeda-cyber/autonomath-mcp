@@ -36,6 +36,7 @@ the FastAPI app.
 
 from __future__ import annotations
 
+import contextlib
 import json
 import logging
 import sqlite3
@@ -114,7 +115,7 @@ def enqueue(
         except sqlite3.OperationalError:
             # Older sqlite without RETURNING: fall through to the explicit
             # path so the conflict still short-circuits to existing id.
-            try:
+            with contextlib.suppress(sqlite3.IntegrityError):
                 conn.execute(
                     """INSERT INTO bg_task_queue
                            (kind, payload_json, status, attempts, max_attempts,
@@ -123,8 +124,6 @@ def enqueue(
                        ON CONFLICT(dedup_key) DO NOTHING""",
                     (kind, payload_str, max_attempts, now, next_at, dedup_key),
                 )
-            except sqlite3.IntegrityError:
-                pass
 
         existing = conn.execute(
             "SELECT id FROM bg_task_queue WHERE dedup_key = ?", (dedup_key,)

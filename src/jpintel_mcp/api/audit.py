@@ -1223,7 +1223,7 @@ def _render_pdf_weasyprint(
     raises so the caller's billing + log path stays uniform.
     """
     try:
-        from weasyprint import HTML  # type: ignore[import-not-found]
+        from weasyprint import HTML  # type: ignore[import-not-found,import-untyped]
     except ImportError:
         _log.info("workpaper_weasyprint_missing — falling back to PDF1.4 renderer")
         return False

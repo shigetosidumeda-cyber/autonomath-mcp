@@ -49,7 +49,7 @@ import os
 import threading
 import time
 from collections.abc import Iterator
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 from datetime import UTC, datetime, timedelta
 
 logger = logging.getLogger("jpintel.advisory_lock")
@@ -154,10 +154,8 @@ def advisory_lock(
             current_holder = row[0] if row else None
             conn.execute("ROLLBACK")
         except Exception:
-            try:
+            with suppress(Exception):
                 conn.execute("ROLLBACK")
-            except Exception:
-                pass
             raise
 
         if attempt < attempts - 1:

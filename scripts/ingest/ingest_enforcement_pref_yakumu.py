@@ -78,6 +78,8 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
+import contextlib
+
 from scripts.lib.http import HttpClient  # noqa: E402
 
 _LOG = logging.getLogger("autonomath.ingest.pref_yakumu")
@@ -351,22 +353,7 @@ def _is_valid_company_name(s: str) -> bool:
     # Reject "27薬局", "各薬局", "本薬局", "当薬局" — these are generic refs.
     if re.fullmatch(r"[0-9０-９]+(?:薬局|ドラッグ|薬店|店舗)", s):
         return False
-    if s in {
-        "各薬局",
-        "本薬局",
-        "当薬局",
-        "同薬局",
-        "他薬局",
-        "本店舗",
-        "当店舗",
-        "同店舗",
-        "他店舗",
-        "本店",
-        "当店",
-        "同店",
-    }:
-        return False
-    return True
+    return s not in {"各薬局", "本薬局", "当薬局", "同薬局", "他薬局", "本店舗", "当店舗", "同店舗", "他店舗", "本店", "当店", "同店"}
 
 
 def find_companies_in_text(text: str) -> list[str]:
@@ -407,9 +394,7 @@ def is_personal_name_only(s: str) -> bool:
         return False
     if "（株）" in s or "(株)" in s:
         return False
-    if PERSONAL_NAME_RE.match(s):
-        return True
-    return False
+    return bool(PERSONAL_NAME_RE.match(s))
 
 
 # ---------------------------------------------------------------------------
@@ -974,10 +959,8 @@ def write_rows(
             return inserted, dup_db, dup_batch
         except sqlite3.OperationalError as exc:
             last_err = exc
-            try:
+            with contextlib.suppress(sqlite3.Error):
                 conn.rollback()
-            except sqlite3.Error:
-                pass
             wait = 5 * (attempt + 1)
             _LOG.warning("write contention attempt=%d wait=%ds: %s", attempt, wait, exc)
             time.sleep(wait)
@@ -1117,10 +1100,8 @@ def main(argv: list[str] | None = None) -> int:
     ensure_tables(conn)
 
     inserted, dup_db, dup_batch = write_rows(conn, rows, now_iso=now_iso)
-    try:
+    with contextlib.suppress(sqlite3.Error):
         conn.close()
-    except sqlite3.Error:
-        pass
     http.close()
 
     _LOG.info(

@@ -473,7 +473,7 @@ def handle_tax_exempt_event(conn: sqlite3.Connection, etype: str, obj: dict[str,
         try:
             import stripe as _stripe_mod
 
-            _stripe_mod.Customer.modify(customer_id, tax_exempt=desired)
+            _stripe_mod.Customer.modify(customer_id, tax_exempt=desired)  # type: ignore[arg-type]
             logger.info(
                 "tax_exempt.applied customer=%s value=%s prior=%s",
                 customer_id,
@@ -776,7 +776,7 @@ def stripe_tax_with_fallback(
         # specific kwargs schema is exercised in the integration test.
         calc = _stripe_mod.tax.Calculation.create(
             currency=currency,
-            line_items=line_items,
+            line_items=line_items,  # type: ignore[arg-type]
             customer=customer_id,
         )
         # Pull the rate from the response. Stripe returns the tax_amount_exclusive

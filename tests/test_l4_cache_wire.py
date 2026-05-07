@@ -22,6 +22,7 @@ green on a CI runner without the 8.29 GB snapshot.
 
 from __future__ import annotations
 
+import contextlib
 import os
 import sqlite3
 from pathlib import Path
@@ -154,10 +155,8 @@ def _reset_l4_cache(seeded_db: Path):
         _L4_TOOL_GET,
         "api.am.tax_incentives",
     ):
-        try:
+        with contextlib.suppress(sqlite3.OperationalError):
             invalidate_tool(tool)
-        except sqlite3.OperationalError:
-            pass
 
 
 # ---------------------------------------------------------------------------

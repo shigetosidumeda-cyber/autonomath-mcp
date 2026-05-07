@@ -62,6 +62,8 @@ except ImportError as exc:  # pragma: no cover
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
+import contextlib
+
 from scripts.lib.http import HttpClient  # noqa: E402
 
 _LOG = logging.getLogger("autonomath.ingest.caa")
@@ -408,10 +410,8 @@ class HoujinLookup:
 
     def close(self) -> None:
         if self._conn:
-            try:
+            with contextlib.suppress(sqlite3.Error):
                 self._conn.close()
-            except sqlite3.Error:
-                pass
 
 
 # ---------------------------------------------------------------------------
@@ -751,10 +751,8 @@ def main(argv: list[str] | None = None) -> int:
             _commit()
     finally:
         if conn is not None:
-            try:
+            with contextlib.suppress(sqlite3.Error):
                 conn.close()
-            except sqlite3.Error:
-                pass
         http.close()
         houjin.close()
 

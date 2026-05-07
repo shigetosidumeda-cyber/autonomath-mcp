@@ -331,7 +331,7 @@ def _build_envelope(
         }
         amounts = dict.fromkeys(program_ids)
         timing = {pid: {"next_deadline": None, "window_status": "unknown"} for pid in program_ids}
-        compatibility, pairs = (dict.fromkeys(program_ids, "unknown"), [])
+        compatibility, pairs = (dict.fromkeys(program_ids, "unknown"), [])  # type: ignore[var-annotated]
     else:
         programs = _fetch_programs(conn, program_ids, missing)
         amounts = _amount_by_program(conn, program_ids, missing)
@@ -342,8 +342,9 @@ def _build_envelope(
     for pid in program_ids:
         prog = programs.get(pid, {"program_id": pid})
         amount = amounts.get(pid)
-        if amount is None and prog.get("amount_hint") is not None:
-            raw_amount = float(prog["amount_hint"])
+        amount_hint = prog.get("amount_hint")
+        if amount is None and amount_hint is not None:
+            raw_amount = float(amount_hint)
             amount = int(raw_amount * 10_000) if raw_amount < 1_000_000 else int(raw_amount)
         row_timing = timing.get(pid, {"next_deadline": None, "window_status": "unknown"})
         compat = compatibility.get(pid, "unknown")

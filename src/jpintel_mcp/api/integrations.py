@@ -593,7 +593,7 @@ async def email_inbound(
 
         client = get_client()
         html, text = _email_reply_bodies(query, rows, body_resp.get("total", 0))
-        client._send(  # type: ignore[attr-defined] — internal helper
+        client._send(  # type: ignore[attr-defined]
             to=from_email,
             template_alias="zeimukaikei-search-reply",
             template_model={

@@ -330,7 +330,7 @@ def run(src_path: Path, tgt_path: Path, batch: int, dry_run: bool) -> int:
 
     # recompute inserted_houjin vs pre
     initial_hb_count = len(
-        set(r[0] for r in tgt.execute("SELECT houjin_bangou FROM houjin_master LIMIT 0"))
+        {r[0] for r in tgt.execute("SELECT houjin_bangou FROM houjin_master LIMIT 0")}
     )
     # above is 0; use final - 0 since initial was 0 at start
     # (we'll report final_houjin which is clean)

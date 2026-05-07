@@ -57,6 +57,7 @@ Usage
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import logging
 import re
@@ -1381,10 +1382,8 @@ def render_index(domain: str, total_pages: int) -> str:
     # If existing file does not exist or markers are missing, fall back to a
     # full-page render that still contains the 12 audiences manually.
     existing = ""
-    try:
+    with contextlib.suppress(OSError):
         existing = DEFAULT_INDEX.read_text(encoding="utf-8")
-    except OSError:
-        pass
 
     matrix_html = f"""
 {EXISTING_INDEX_PRESERVED_MARKER}

@@ -222,10 +222,7 @@ def _normalize_list_json(raw: Any) -> list[Any]:
             return [text]
         if parsed is None:
             return []
-        if isinstance(parsed, list):
-            items = parsed
-        else:
-            items = [parsed]
+        items = parsed if isinstance(parsed, list) else [parsed]
     # sort+dedupe by stable string repr
     seen: set[str] = set()
     out: list[Any] = []

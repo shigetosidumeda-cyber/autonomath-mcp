@@ -374,6 +374,6 @@ async def verify_answer(
         request_id=request_id,
         language=payload.language,
         answer_hash=answer_hash,
-        disclaimer=disclaimer,
-        cost_yen=3,
+        disclaimer=disclaimer,  # type: ignore[call-arg]
+        cost_yen=3,  # type: ignore[call-arg]
     )

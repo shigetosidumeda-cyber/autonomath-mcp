@@ -54,7 +54,7 @@ import contextlib
 import logging
 import os
 import sqlite3
-from typing import Annotated, Any, Literal, cast
+from typing import Annotated, Any, Literal
 
 from pydantic import Field
 

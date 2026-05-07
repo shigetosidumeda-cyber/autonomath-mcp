@@ -10,7 +10,6 @@ does not read secret values, and never applies migrations.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import re
 import subprocess
@@ -391,63 +390,21 @@ def _lane_for_path(path: str) -> str:
 
 
 def _dirty_tree_fingerprint(repo_root: Path, lines: list[str]) -> dict[str, Any]:
-    lane_counts: dict[str, int] = {}
-    status_counts: dict[str, int] = {}
-    content_hash = hashlib.sha256()
-    content_hash_skipped_large_files: list[str] = []
-    parsed_entries: list[tuple[str, str, str | None, str]] = []
-    for raw in sorted(lines):
-        status = raw[:2].strip() or raw[:2]
-        path = raw[3:].strip()
-        old_path = None
-        if " -> " in path:
-            old_path, path = path.split(" -> ", 1)
-            old_lane = _lane_for_path(old_path)
-            lane_counts[old_lane] = lane_counts.get(old_lane, 0) + 1
-        lane = _lane_for_path(path)
-        lane_counts[lane] = lane_counts.get(lane, 0) + 1
-        status_counts[status] = status_counts.get(status, 0) + 1
-        parsed_entries.append((status, path, old_path, raw))
+    """Thin wrapper around the SOT helper in ``repo_dirty_lane_report``.
 
-    for status, path, _old_path, raw in parsed_entries:
-        content_hash.update(f"{status}\t{path}\n".encode("utf-8", errors="replace"))
-        disk_path = repo_root / path
-        if "D" in raw[:2] or not disk_path.is_file():
-            content_hash.update(b"<deleted-or-not-file>\n")
-            continue
-        try:
-            size = disk_path.stat().st_size
-        except OSError:
-            content_hash.update(b"<stat-unavailable>\n")
-            continue
-        content_hash.update(f"size={size}\n".encode("ascii"))
-        if size > 64 * 1024 * 1024:
-            content_hash_skipped_large_files.append(path)
-            content_hash.update(b"<content-skipped-large-file>\n")
-            continue
-        file_hash = hashlib.sha256()
-        try:
-            with disk_path.open("rb") as handle:
-                for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-                    file_hash.update(chunk)
-        except OSError:
-            content_hash.update(b"<read-unavailable>\n")
-            continue
-        content_hash.update(file_hash.hexdigest().encode("ascii"))
-        content_hash.update(b"\n")
-    critical_lanes_present = sorted(
-        lane for lane in CRITICAL_DIRTY_LANES if lane_counts.get(lane, 0) > 0
-    )
-    return {
-        "current_head": _git_head(repo_root),
-        "dirty_entries": len(lines),
-        "status_counts": dict(sorted(status_counts.items())),
-        "lane_counts": dict(sorted(lane_counts.items())),
-        "critical_lanes_present": critical_lanes_present,
-        "path_sha256": hashlib.sha256("\n".join(sorted(lines)).encode("utf-8")).hexdigest(),
-        "content_sha256": content_hash.hexdigest(),
-        "content_hash_skipped_large_files": content_hash_skipped_large_files,
-    }
+    The body lives in ``repo_dirty_lane_report.compute_canonical_dirty_fingerprint``
+    so the operator-side ACK CLI
+    (``tools/offline/operator_review/compute_dirty_fingerprint.py``) can call
+    the same algorithm. Any drift between the two would re-introduce the
+    4/5 PASS stall observed before this consolidation.
+    """
+    try:
+        from repo_dirty_lane_report import compute_canonical_dirty_fingerprint
+    except Exception:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from repo_dirty_lane_report import compute_canonical_dirty_fingerprint
+
+    return compute_canonical_dirty_fingerprint(repo_root, lines)
 
 
 def _dirty_fingerprint_matches(

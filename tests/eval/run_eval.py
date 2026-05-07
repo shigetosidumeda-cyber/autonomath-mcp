@@ -109,9 +109,7 @@ def score_refusal(resp: dict[str, Any]) -> bool:
     if resp.get("error"):
         return True
     data = resp.get("data") or resp.get("results") or resp.get("items")
-    if data is None or (isinstance(data, list) and len(data) == 0):
-        return True
-    return False
+    return bool(data is None or isinstance(data, list) and len(data) == 0)
 
 
 def _zero_div(num: float, den: float) -> float:

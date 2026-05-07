@@ -61,9 +61,7 @@ def _module_is_forbidden(module_name: str | None) -> bool:
     if head in {"anthropic", "openai", "claude_agent_sdk"}:
         return True
     # google.generativeai must match the dotted prefix.
-    if module_name == "google.generativeai" or module_name.startswith("google.generativeai."):
-        return True
-    return False
+    return bool(module_name == "google.generativeai" or module_name.startswith("google.generativeai."))
 
 
 def _scan_imports(py_file: pathlib.Path) -> list[str]:
@@ -82,9 +80,8 @@ def _scan_imports(py_file: pathlib.Path) -> list[str]:
             for alias in node.names:
                 if _module_is_forbidden(alias.name):
                     hits.append(f"import {alias.name}")
-        elif isinstance(node, ast.ImportFrom):
-            if _module_is_forbidden(node.module):
-                hits.append(f"from {node.module} import ...")
+        elif isinstance(node, ast.ImportFrom) and _module_is_forbidden(node.module):
+            hits.append(f"from {node.module} import ...")
     return hits
 
 

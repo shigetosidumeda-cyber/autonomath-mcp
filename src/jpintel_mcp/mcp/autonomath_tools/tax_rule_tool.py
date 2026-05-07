@@ -345,7 +345,7 @@ if __name__ == "__main__":  # pragma: no cover
         "存在しない税制XYZ",
     ]:
         print(f"\n=== query={q!r} ===")
-        res = get_am_tax_rule.fn(q)  # fn unwraps FastMCP decoration
+        res = get_am_tax_rule.fn(q)  # type: ignore[attr-defined]  # fn unwraps FastMCP decoration
         print(f"total={res['total']}")
         if res.get("error"):
             print(f"error.code={res['error']['code']} error.message={res['error']['message']}")

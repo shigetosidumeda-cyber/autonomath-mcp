@@ -657,10 +657,7 @@ def parse_pdf_records(
         # 法人番号 — that's the issuance date.
         first_h = houjin_positions[0]
         candidates = [m for m in raw_matches if m.start() < first_h]
-        if candidates:
-            matches = [max(candidates, key=lambda m: m.start())]
-        else:
-            matches = raw_matches[:1]
+        matches = [max(candidates, key=lambda m: m.start())] if candidates else raw_matches[:1]
     else:
         for m in raw_matches:
             after = text[m.end() : m.end() + 1]

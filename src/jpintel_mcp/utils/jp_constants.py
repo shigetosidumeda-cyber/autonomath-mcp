@@ -233,10 +233,7 @@ def is_niche_program(name: str) -> bool:
     """True iff ``name`` contains any niche-program keyword (substring match)."""
     if not name:
         return False
-    for kw in NICHE_PROGRAM_KEYWORDS:
-        if kw in name:
-            return True
-    return False
+    return any(kw in name for kw in NICHE_PROGRAM_KEYWORDS)
 
 
 def industry_relevance_keywords(industry: str) -> tuple[str, ...]:

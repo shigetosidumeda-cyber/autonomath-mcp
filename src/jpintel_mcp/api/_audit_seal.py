@@ -158,7 +158,7 @@ def _load_keys() -> list[dict[str, Any]]:
         if not isinstance(secret, str) or not secret:
             continue
         try:
-            version = int(version_raw)
+            version = int(version_raw)  # type: ignore[arg-type]
         except (TypeError, ValueError):
             version = fallback_version
         keys.append({"v": version, "s": secret, "retired_at": retired_at})
@@ -222,7 +222,7 @@ def verify(payload: bytes, seal: dict[str, Any] | str) -> bool:
         expected_sig = seal
         key_version = None
     elif isinstance(seal, dict):
-        expected_sig = seal.get("sig") or seal.get("hmac")
+        expected_sig = seal.get("sig") or seal.get("hmac") or ""
         key_version = seal.get("key_version")
     else:
         return False

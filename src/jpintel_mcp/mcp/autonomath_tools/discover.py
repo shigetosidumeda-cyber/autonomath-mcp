@@ -13,6 +13,7 @@ cap via the standard MCP gate.
 
 from __future__ import annotations
 
+import contextlib
 import logging
 import os
 import sqlite3
@@ -81,10 +82,8 @@ def _impl_discover_related(entity_id: str, k: int = 20) -> dict[str, Any]:
     try:
         jpintel_conn = sqlite3.connect(uri, uri=True, timeout=5.0, isolation_level=None)
         jpintel_conn.row_factory = sqlite3.Row
-        try:
+        with contextlib.suppress(sqlite3.OperationalError):
             jpintel_conn.execute("PRAGMA query_only=1")
-        except sqlite3.OperationalError:
-            pass
     except sqlite3.OperationalError as exc:
         return make_error(
             code="db_unavailable",
@@ -99,10 +98,8 @@ def _impl_discover_related(entity_id: str, k: int = 20) -> dict[str, Any]:
 
         body = _compose_discover_related(entity_id=eid, k=k_int, jpintel_conn=jpintel_conn)
     finally:
-        try:
+        with contextlib.suppress(sqlite3.Error):
             jpintel_conn.close()
-        except sqlite3.Error:
-            pass
     return body
 
 

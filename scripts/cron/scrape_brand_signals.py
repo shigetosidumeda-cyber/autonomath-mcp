@@ -486,10 +486,7 @@ async def run_async(sources: list[str], dry_run: bool, db_path: str) -> dict[str
             continue
         per_source[src] = {"ok": True, "rows": len(res)}
         all_rows.extend(res)
-    if dry_run:
-        inserted = dict.fromkeys(sources, 0)
-    else:
-        inserted = insert_rows(db_path, all_rows, allowlist)
+    inserted = dict.fromkeys(sources, 0) if dry_run else insert_rows(db_path, all_rows, allowlist)
     summary = {
         "started_at": started,
         "finished_at": datetime.now(UTC).isoformat(),

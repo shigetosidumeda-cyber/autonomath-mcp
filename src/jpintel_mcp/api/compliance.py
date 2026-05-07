@@ -615,7 +615,7 @@ def stripe_checkout(payload: CheckoutRequest, conn: DbDep) -> CheckoutResponse:
     success_url = validate_jpcite_service_redirect_url(payload.success_url, kind="success")
     cancel_url = validate_jpcite_service_redirect_url(payload.cancel_url, kind="cancel")
 
-    session = stripe.checkout.Session.create(
+    session = stripe.checkout.Session.create(  # type: ignore[call-arg]
         mode="subscription",
         line_items=[{"price": price_id, "quantity": 1}],
         success_url=success_url,

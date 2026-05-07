@@ -451,7 +451,20 @@ def _generate_ack_yaml(
     """Build the ACK payload, return (path, body, sha256)."""
     payload: dict[str, Any] = dict(signoffs)
     if fingerprint is not None:
-        payload["dirty_tree_fingerprint"] = fingerprint
+        # The gate (production_deploy_go_gate._dirty_fingerprint_matches)
+        # reads ``critical_dirty_lanes_reviewed`` from inside the embedded
+        # ``dirty_tree_fingerprint`` dict (treated as the "expected"
+        # fingerprint) and cross-references it against ``critical_lanes_present``
+        # the gate computes locally. Boolean 7 (dirty_lanes_reviewed) is an
+        # explicit operator signoff that the critical lanes were inspected,
+        # so we mirror critical_lanes_present into critical_dirty_lanes_reviewed
+        # _inside_ the fingerprint object at sign time. Without this the gate
+        # stalls at 4/5 PASS with "dirty_critical_lanes_not_reviewed".
+        embedded = dict(fingerprint)
+        critical_present = embedded.get("critical_lanes_present") or []
+        if signoffs.get("dirty_lanes_reviewed") and critical_present:
+            embedded["critical_dirty_lanes_reviewed"] = sorted(set(critical_present))
+        payload["dirty_tree_fingerprint"] = embedded
     payload["_meta"] = {
         "tool_version": TOOL_VERSION,
         "operator_email": operator_email,

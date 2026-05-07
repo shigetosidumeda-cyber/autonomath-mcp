@@ -60,6 +60,7 @@ CLI:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import html as html_module
 import json
@@ -493,9 +494,7 @@ def is_enforcement_anchor(anchor_text: str) -> bool:
     # Otherwise: must match enforcement keyword AND not an exclude keyword
     if not any(k in txt for k in ENFORCEMENT_KEYWORDS):
         return False
-    if any(e in txt for e in EXCLUDE_KEYWORDS):
-        return False
-    return True
+    return not any(e in txt for e in EXCLUDE_KEYWORDS)
 
 
 def extract_anchors(html: str, base_url: str) -> list[tuple[str, str]]:
@@ -1205,10 +1204,8 @@ def run(
         for k, v in sorted(by_law.items(), key=lambda kv: -kv[1]):
             _LOG.info("  %s: %d", k, v)
     except Exception:
-        try:
+        with contextlib.suppress(Exception):
             con.execute("ROLLBACK")
-        except Exception:
-            pass
         raise
     finally:
         con.close()

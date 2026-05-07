@@ -193,9 +193,8 @@ def _diff_predicates(
             out[CHANGE_KIND_REMOVED][k] = {"prev": p, "new": None}
         elif n_present and not p_present:
             out[CHANGE_KIND_ADDED][k] = {"prev": None, "new": n}
-        elif p_present and n_present:
-            if _canonical_json(p) != _canonical_json(n):
-                out[CHANGE_KIND_CHANGED][k] = {"prev": p, "new": n}
+        elif p_present and n_present and _canonical_json(p) != _canonical_json(n):
+            out[CHANGE_KIND_CHANGED][k] = {"prev": p, "new": n}
     # Drop empty kinds so callers can iterate non-empty change kinds only.
     return {kind: payload for kind, payload in out.items() if payload}
 

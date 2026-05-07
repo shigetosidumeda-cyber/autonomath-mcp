@@ -82,10 +82,7 @@ def parse_junit(path: Path) -> dict[str, str]:
     for tc in root.iter("testcase"):
         name = tc.attrib.get("name", "")
         # pytest emits ids like 'test_acceptance_criterion[DEEP-22-1-sql_syntax]'
-        if "[" in name and name.endswith("]"):
-            tid = name.split("[", 1)[1][:-1]
-        else:
-            tid = name
+        tid = name.split("[", 1)[1][:-1] if "[" in name and name.endswith("]") else name
         if tc.find("failure") is not None or tc.find("error") is not None:
             out[tid] = "failed"
         elif tc.find("skipped") is not None:

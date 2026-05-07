@@ -40,6 +40,8 @@ from pathlib import Path
 
 # Reuse the proven online backup helpers.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+import contextlib
+
 from backup import _gzip_file, _integrity_check, _online_backup, _write_sha256  # type: ignore
 from cron._r2_client import R2ConfigError, delete, list_keys, upload  # type: ignore
 
@@ -104,10 +106,8 @@ def _prune_r2(prefix: str, bucket: str | None, now: datetime) -> int:
             continue
         try:
             delete(key, bucket=bucket)
-            try:
+            with contextlib.suppress(Exception):
                 delete(key + ".sha256", bucket=bucket)
-            except Exception:
-                pass
             removed += 1
         except Exception as exc:
             _LOG.warning("prune_skip key=%s err=%s", key, exc)

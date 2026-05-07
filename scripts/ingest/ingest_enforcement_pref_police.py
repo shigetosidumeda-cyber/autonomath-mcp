@@ -100,6 +100,8 @@ except ImportError as exc:  # pragma: no cover
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
+import contextlib
+
 from scripts.lib.http import HttpClient  # noqa: E402
 
 _LOG = logging.getLogger("autonomath.ingest.pref_police")
@@ -2069,10 +2071,8 @@ def write_rows(
             conn.commit()
         except sqlite3.Error as exc:
             _LOG.error("BEGIN/commit failed chunk=%d: %s", chunk_idx, exc)
-            try:
+            with contextlib.suppress(sqlite3.Error):
                 conn.rollback()
-            except sqlite3.Error:
-                pass
     return inserted, dup_db, dup_batch
 
 
@@ -2155,10 +2155,8 @@ def main(argv: list[str] | None = None) -> int:
     for r in all_rows:
         auth_counts[r.issuing_authority] = auth_counts.get(r.issuing_authority, 0) + 1
         law_counts[r.related_law_ref] = law_counts.get(r.related_law_ref, 0) + 1
-    try:
+    with contextlib.suppress(sqlite3.Error):
         conn.close()
-    except sqlite3.Error:
-        pass
     http.close()
 
     _LOG.info(

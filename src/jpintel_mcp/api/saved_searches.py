@@ -550,7 +550,7 @@ def _run_saved_search_query(conn, query: dict[str, Any]) -> tuple[list[dict[str,
     body = _build_search_response(
         conn=conn,
         q=query.get("q"),
-        tier=_saved_query_list(query.get("tier")),
+        tier=_saved_query_list(query.get("tier")),  # type: ignore[arg-type]
         prefecture=query.get("prefecture"),
         authority_level=query.get("authority_level"),
         funding_purpose=_saved_query_list(query.get("funding_purpose")),

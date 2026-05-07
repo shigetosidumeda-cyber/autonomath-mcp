@@ -252,7 +252,7 @@ def _render_pdf_to(
         logger.error("jinja2_missing — quarterly_pdf cannot render")
         return False
     try:
-        from weasyprint import HTML  # type: ignore[import-not-found]
+        from weasyprint import HTML  # type: ignore[import-not-found,import-untyped]
     except ImportError:
         logger.error("weasyprint_missing — quarterly_pdf cannot render")
         return False

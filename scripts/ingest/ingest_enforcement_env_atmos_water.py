@@ -55,6 +55,7 @@ CLI:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import json
 import logging
@@ -937,10 +938,8 @@ def write_rows(
         conn.commit()
     except sqlite3.Error as exc:
         _LOG.error("BEGIN/commit failed: %s", exc)
-        try:
+        with contextlib.suppress(sqlite3.Error):
             conn.rollback()
-        except sqlite3.Error:
-            pass
     return inserted, dup_db, dup_batch
 
 
@@ -1012,10 +1011,8 @@ def main(argv: list[str] | None = None) -> int:
     ensure_tables(conn)
 
     inserted, dup_db, dup_batch = write_rows(conn, rows, now_iso=now_iso)
-    try:
+    with contextlib.suppress(sqlite3.Error):
         conn.close()
-    except sqlite3.Error:
-        pass
 
     _LOG.info(
         "done parsed=%d inserted=%d dup_db=%d dup_batch=%d",

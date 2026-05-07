@@ -160,10 +160,7 @@ def is_aggregator_url(url: str) -> bool:
         return True  # malformed = treat as banned (defensive)
     if not netloc:
         return True
-    for banned in AGGREGATOR_BANLIST:
-        if banned in netloc:
-            return True
-    return False
+    return any(banned in netloc for banned in AGGREGATOR_BANLIST)
 
 
 def is_allowed_municipality_url(url: str) -> bool:

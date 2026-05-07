@@ -872,9 +872,7 @@ def _is_address_line(line: str) -> bool:
     if line.startswith(_ADDRESS_PREFIXES):
         return True
     # Continuation address lines: digits/banchi/丁目/番地/号 only
-    if re.fullmatch(r"[\d０-９〇一二三四五六七八九十丁目番地号 　\-－]+", line):
-        return True
-    return False
+    return bool(re.fullmatch(r"[\d０-９〇一二三四五六七八九十丁目番地号 　\-－]+", line))
 
 
 def _is_punishment_line(line: str) -> bool:

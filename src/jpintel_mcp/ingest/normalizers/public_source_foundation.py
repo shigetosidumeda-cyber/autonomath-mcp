@@ -316,9 +316,9 @@ def _derive_urls_and_samples(row: dict[str, Any]) -> None:
                 sample_urls.append(value)
     sample_program = row.get("sample_program")
     if isinstance(sample_program, Mapping):
-        value = sample_program.get("url")
-        if _is_http_url(value) and value not in sample_urls:
-            sample_urls.append(value)
+        sp_value = sample_program.get("url")
+        if _is_http_url(sp_value) and sp_value not in sample_urls:
+            sample_urls.append(sp_value)
     if sample_urls:
         row["sample_urls"] = sample_urls
 

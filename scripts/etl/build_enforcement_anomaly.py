@@ -106,7 +106,7 @@ PREF_CODE_NAME: list[tuple[str, str]] = [
     ("47000", "沖縄県"),
 ]
 PREF_NAME_TO_CODE: dict[str, str] = {n: c for c, n in PREF_CODE_NAME}
-PREF_CODE_TO_NAME: dict[str, str] = {c: n for c, n in PREF_CODE_NAME}
+PREF_CODE_TO_NAME: dict[str, str] = dict(PREF_CODE_NAME)
 
 # 22 JSIC majors. A-T are the live JSU taxonomy (2014 revision, 20 codes).
 # U / V are reserved-future slots — populated as zero-cells so the matrix

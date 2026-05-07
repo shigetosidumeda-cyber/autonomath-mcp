@@ -310,15 +310,14 @@ def test_case_5_llm_zero_no_forbidden_imports():
                     bad_imports.append(f"import {alias.name}")
                 if alias.name == "google.generativeai":
                     bad_imports.append(f"import {alias.name}")
-        elif isinstance(node, ast.ImportFrom):
-            if node.module:
-                head = node.module.split(".")[0]
-                if head in {"anthropic", "openai", "claude_agent_sdk"}:
-                    bad_imports.append(f"from {node.module}")
-                if node.module == "google.generativeai" or node.module.startswith(
-                    "google.generativeai."
-                ):
-                    bad_imports.append(f"from {node.module}")
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            head = node.module.split(".")[0]
+            if head in {"anthropic", "openai", "claude_agent_sdk"}:
+                bad_imports.append(f"from {node.module}")
+            if node.module == "google.generativeai" or node.module.startswith(
+                "google.generativeai."
+            ):
+                bad_imports.append(f"from {node.module}")
     assert not bad_imports, f"forbidden LLM imports in cron: {bad_imports}"
     # Also assert no bare "anthropic"/"openai" string is wired as a real call
     # by checking the env vars list is not referenced as os.environ get.

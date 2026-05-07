@@ -14,6 +14,7 @@
 # Idempotent: re-running is a no-op (CREATE TABLE will fail; script aborts that table).
 
 import argparse
+import contextlib
 import shutil
 import sqlite3
 import sys
@@ -181,10 +182,8 @@ def main() -> int:
             elapsed = time.time() - t0
             print(f"  OK   {tbl} → {target} ({cnt} rows, {len(indexes)} idx, {elapsed:.1f}s)")
         except Exception as e:
-            try:
+            with contextlib.suppress(sqlite3.OperationalError):
                 conn.execute("ROLLBACK")
-            except sqlite3.OperationalError:
-                pass
             failures.append((tbl, str(e)))
             print(f"  FAIL {tbl}: {e}", file=sys.stderr)
 

@@ -521,7 +521,8 @@ def prescreen_programs(
     try:
         tier_dist: dict[str, int] = {}
         for m in result.results:
-            tier_dist[m.tier] = tier_dist.get(m.tier, 0) + 1
+            tier_key = m.tier or "unknown"
+            tier_dist[tier_key] = tier_dist.get(tier_key, 0) + 1
         caveat_count = sum(len(m.caveats) for m in result.results)
         profile_filled = sum(
             1

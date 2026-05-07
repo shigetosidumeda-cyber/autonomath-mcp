@@ -294,8 +294,8 @@ def _rebuild_response(
         if k.lower() not in (b"content-length", b"content-type")
     ] + preserved
     if extra_headers:
-        for k, v in extra_headers.items():
-            resp.headers[k] = v
+        for hk, hv in extra_headers.items():
+            resp.headers[hk] = hv
     if drop_content_length:
         # Rewrite content-length to the new body length.
         resp.headers["content-length"] = str(len(body))
@@ -355,7 +355,7 @@ class ResponseSanitizerMiddleware(BaseHTTPMiddleware):
         # StreamingResponse: read body iter into memory once. For typical
         # search responses (< 100 KB) this is essentially free.
         body = b""
-        async for chunk in response.body_iterator:
+        async for chunk in response.body_iterator:  # type: ignore[attr-defined]
             body += chunk
             if len(body) > _MAX_SCAN_BYTES:
                 # Punt: do not scan, do not block. Logging only.

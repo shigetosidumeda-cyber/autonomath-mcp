@@ -169,10 +169,7 @@ def parse_koubo_detail(html: bytes, *, url: str, anchor_text: str) -> dict[str, 
         h1_text = h1.get_text(strip=True)
         # NEDO h1 prefix patterns: "本公募「<NAME>」の公募について"
         m = re.search(r"[「『]([^」』]+)[」』]", h1_text)
-        if m:
-            name = m.group(1).strip()
-        else:
-            name = h1_text
+        name = m.group(1).strip() if m else h1_text
     # Strip excessive trailing 「の公募について」 if anchor was the source
     name = re.sub(r"の公募について(?:[（(][^）)]+[)）])?$", "", name).strip()
     name = name[:300]

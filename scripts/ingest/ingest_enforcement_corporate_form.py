@@ -57,6 +57,7 @@ CLI:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import datetime as dt
 import hashlib
 import json
@@ -677,10 +678,8 @@ def write_rows(
             return inserted, dup_db, dup_batch
         except sqlite3.OperationalError as exc:
             last_err = exc
-            try:
+            with contextlib.suppress(sqlite3.Error):
                 conn.rollback()
-            except sqlite3.Error:
-                pass
             wait = 5 * (attempt + 1)
             _LOG.warning("write contention attempt=%d wait=%ds: %s", attempt, wait, exc)
             time.sleep(wait)
@@ -775,10 +774,8 @@ def main(argv: list[str] | None = None) -> int:
     ensure_tables(conn)
 
     inserted, dup_db, dup_batch = write_rows(conn, rows, now_iso=now_iso)
-    try:
+    with contextlib.suppress(sqlite3.Error):
         conn.close()
-    except sqlite3.Error:
-        pass
 
     _LOG.info(
         "done parsed=%d inserted=%d dup_db=%d dup_batch=%d",

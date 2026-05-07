@@ -376,7 +376,7 @@ def report(db_path: Path) -> str:
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
 
-    pref_name = {c: n for c, n in PREF_CODES}
+    pref_name = dict(PREF_CODES)
     jsic_name: dict[str, str] = {}
     for r in conn.execute(
         "SELECT jsic_code, jsic_name_ja FROM am_industry_jsic WHERE jsic_level='major'"

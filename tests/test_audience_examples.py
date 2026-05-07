@@ -162,10 +162,7 @@ def test_audience_example_routes_resolve(client, audience, method, path):
       - 405 (method_not_allowed)     → wrong verb in the snippet
       - 5xx (server error)           → snippet trips a server bug
     """
-    if method == "GET":
-        r = client.get(path)
-    else:
-        r = client.post(path, json={})
+    r = client.get(path) if method == "GET" else client.post(path, json={})
     assert r.status_code != 404, f"{audience}/{method} {path} → 404 (broken example)"
     assert r.status_code != 405, f"{audience}/{method} {path} → 405 (wrong HTTP verb in snippet)"
     assert r.status_code < 500, f"{audience}/{method} {path} → {r.status_code} 5xx server error"

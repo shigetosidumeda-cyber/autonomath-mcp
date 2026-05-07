@@ -57,6 +57,7 @@ CLI:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import io
 import json
 import logging
@@ -928,10 +929,8 @@ def run(
         con.commit()
     except sqlite3.Error as exc:
         _LOG.error("DB init failed: %s", exc)
-        try:
+        with contextlib.suppress(sqlite3.Error):
             con.close()
-        except sqlite3.Error:
-            pass
         return 2
 
     # 3. Walk issues, parse pages, insert per-record
@@ -988,17 +987,13 @@ def run(
                     con.commit()
                 except sqlite3.IntegrityError as exc:
                     _LOG.debug("integrity error: %s", exc)
-                    try:
+                    with contextlib.suppress(sqlite3.Error):
                         con.rollback()
-                    except sqlite3.Error:
-                        pass
                     continue
                 except sqlite3.Error as exc:
                     _LOG.error("DB error: %s", exc)
-                    try:
+                    with contextlib.suppress(sqlite3.Error):
                         con.rollback()
-                    except sqlite3.Error:
-                        pass
                     continue
                 if ok:
                     inserted += 1
@@ -1046,10 +1041,8 @@ def run(
             after_total = cur.fetchone()[0]
         except sqlite3.Error:
             after_total = -1
-        try:
+        with contextlib.suppress(sqlite3.Error):
             con.close()
-        except sqlite3.Error:
-            pass
 
     _LOG.info(
         "done inserted=%d dup_db=%d dup_id=%d issues=%d",

@@ -677,7 +677,8 @@ async def _dispatch_event(conn: sqlite3.Connection, event: dict[str, Any]) -> No
         return
 
     next_state, messages = line_flow.advance(state, user_text, conn=conn)
-    _persist_flow_state(conn, line_user_id, next_state)
+    if line_user_id:
+        _persist_flow_state(conn, line_user_id, next_state)
 
     _log_event(
         conn,

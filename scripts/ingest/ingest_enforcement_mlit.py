@@ -397,10 +397,7 @@ def parse_list_page(html: str) -> tuple[int | None, list[dict[str, str]]]:
         target_name_raw = rm.group(1).strip()
         houjin_raw = (rm.group(2) or "").strip()
         houjin_digits = "".join(ch for ch in houjin_raw if ch.isdigit())
-        if len(houjin_digits) == 13:
-            houjin = houjin_digits
-        else:
-            houjin = ""
+        houjin = houjin_digits if len(houjin_digits) == 13 else ""
         address = rm.group(3).strip()
         date_ja = rm.group(4).strip()
         issuer = rm.group(5).strip()

@@ -918,7 +918,7 @@ def _maybe_attach_uncertainty(results: list) -> dict[str, Any] | None:
             else:
                 # Fall back to the SQL view.
                 conn = _conn()
-                if conn is not None and _o8_get_uncertainty_for_fact:
+                if conn is not None and _o8_get_uncertainty_for_fact is not None:
                     unc = _o8_get_uncertainty_for_fact(
                         int(row["fact_id"]),
                         conn,

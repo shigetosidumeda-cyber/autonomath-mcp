@@ -49,7 +49,7 @@ def program_static_slug(primary_name: str | None, unified_id: str) -> str:
     romaji = ""
     if _KKS is not None:
         try:
-            parts = _KKS.convert(primary_name or "")
+            parts = _KKS.convert(primary_name or "")  # type: ignore[attr-defined]
             romaji = " ".join(p.get("hepburn", "") for p in parts)
         except Exception:  # pragma: no cover — defensive
             romaji = ""

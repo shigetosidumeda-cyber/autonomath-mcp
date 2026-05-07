@@ -62,6 +62,7 @@ CLI:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import io
 import json
@@ -362,9 +363,8 @@ def _is_valid_target_name(name: str | None) -> bool:
             "(同)",
             "事業協同組合",
         )
-    ):
-        if re.fullmatch(r"[\d０-９年月日\s\.\-/平成令和元昭和大正]+", s):
-            return False
+    ) and re.fullmatch(r"[\d０-９年月日\s\.\-/平成令和元昭和大正]+", s):
+        return False
     return True
 
 
@@ -813,10 +813,8 @@ def run(args: argparse.Namespace) -> int:
         con.commit()
     except sqlite3.Error as exc:
         _LOG.error("DB init failed: %s", exc)
-        try:
+        with contextlib.suppress(sqlite3.Error):
             con.close()
-        except sqlite3.Error:
-            pass
         return 2
 
     inserted = 0
@@ -842,10 +840,8 @@ def run(args: argparse.Namespace) -> int:
         cur.execute("BEGIN IMMEDIATE")
     except sqlite3.Error as exc:
         _LOG.error("DB BEGIN failed: %s", exc)
-        try:
+        with contextlib.suppress(sqlite3.Error):
             con.close()
-        except sqlite3.Error:
-            pass
         return 2
 
     for r in all_rows:
@@ -903,10 +899,8 @@ def run(args: argparse.Namespace) -> int:
     post_titp = con.execute(
         "SELECT COUNT(*) FROM am_enforcement_detail WHERE related_law_ref LIKE '%技能実習法%'"
     ).fetchone()[0]
-    try:
+    with contextlib.suppress(sqlite3.Error):
         con.close()
-    except sqlite3.Error:
-        pass
 
     _LOG.info(
         "done parsed=%d inserted=%d dup_db=%d dup_id=%d dup_batch=%d invalid=%d",

@@ -286,6 +286,7 @@ def verify_citations(
         # else live-fetch the URL with the per-fetch cap. Either path may
         # produce None body → unknown.
         body: str | None
+        verification_basis: Literal["live_fetch", "caller_supplied_source_text", "none"]
         if c.source_text is not None:
             body = c.source_text
             verification_basis = "caller_supplied_source_text"

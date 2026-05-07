@@ -44,6 +44,7 @@ CLI:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import json
 import logging
@@ -469,10 +470,7 @@ def parse_press_release(html: str, source_url: str) -> dict[str, Any] | None:
     elif system == "E":
         law_ref = "犯罪による収益の移転の防止に関する法律"
     elif system == "H":
-        if "ガス" in title_text:
-            law_ref = "ガス事業法"
-        else:
-            law_ref = "電気事業法"
+        law_ref = "ガス事業法" if "ガス" in title_text else "電気事業法"
     elif system == "D":
         law_ref = "弁理士法"
     elif system == "A":
@@ -484,10 +482,8 @@ def parse_press_release(html: str, source_url: str) -> dict[str, Any] | None:
     amount = None
     m_amt = re.search(r"(納付金|不正受給額|課徴金|罰金)[^\d]{0,40}([0-9,]+)\s*円", body_text)
     if m_amt:
-        try:
+        with contextlib.suppress(ValueError):
             amount = int(m_amt.group(2).replace(",", ""))
-        except ValueError:
-            pass
 
     return {
         "system": system,
@@ -971,10 +967,8 @@ def run(
         for s, c in sorted(by_system.items()):
             _LOG.info("  system %s inserted: %d", s, c)
     except Exception:
-        try:
+        with contextlib.suppress(Exception):
             con.execute("ROLLBACK")
-        except Exception:
-            pass
         raise
     finally:
         con.close()

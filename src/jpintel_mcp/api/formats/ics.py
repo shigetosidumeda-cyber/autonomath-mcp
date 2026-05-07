@@ -169,7 +169,7 @@ def render_ics(rows: list[dict[str, Any]], meta: dict[str, Any]) -> Response:
     # behaviours — we still escape DESCRIPTION manually because we want
     # control over multi-line layout.
     try:
-        from icalendar import Calendar, Event
+        from icalendar import Calendar, Event  # type: ignore[import-untyped]
     except ImportError as exc:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -206,6 +206,7 @@ def render_ics(rows: list[dict[str, Any]], meta: dict[str, Any]) -> Response:
         # emit `DTSTART;TZID=Asia/Tokyo:YYYYMMDDTHHMMSS`. A naive datetime
         # would render as a "floating" time which Apple Calendar / Google
         # interpret in the viewer's local zone — wrong for JP deadlines.
+        _jst: Any
         try:
             from zoneinfo import ZoneInfo
 

@@ -66,6 +66,8 @@ except ImportError as exc:  # pragma: no cover
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
+import contextlib
+
 from scripts.lib.http import HttpClient  # noqa: E402
 
 _LOG = logging.getLogger("autonomath.ingest.kaigo_shogai")
@@ -822,10 +824,7 @@ def _entity_canonical_id(
     """Build canonical_id = AM-ENF-KAIGO-{pref-slug}-{seq} or AM-ENF-SHOGAI-{...}."""
     # Pref slug: roman or romaji-ish stub (best-effort: use authority hash).
     auth_slug = hashlib.sha1(authority.encode("utf-8")).hexdigest()[:6]
-    if law and "障害" in law:
-        prefix = "AM-ENF-SHOGAI"
-    else:
-        prefix = "AM-ENF-KAIGO"
+    prefix = "AM-ENF-SHOGAI" if law and "障害" in law else "AM-ENF-KAIGO"
     seq = _slug8(target_name, issuance_date)
     return f"{prefix}-{auth_slug}-{seq}"
 
@@ -1123,18 +1122,14 @@ def main(argv: list[str] | None = None) -> int:
             conn.commit()
         except sqlite3.Error as exc:
             _LOG.error("[%s] BEGIN/commit failed: %s", slug, exc)
-            try:
+            with contextlib.suppress(sqlite3.Error):
                 conn.rollback()
-            except sqlite3.Error:
-                pass
             continue
 
     http.close()
     if conn is not None:
-        try:
+        with contextlib.suppress(sqlite3.Error):
             conn.close()
-        except sqlite3.Error:
-            pass
 
     _LOG.info(
         "done sources_ok=%d sources_fail=%d parsed=%d inserted=%d dup_db=%d dup_batch=%d",

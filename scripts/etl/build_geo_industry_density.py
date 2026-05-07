@@ -115,7 +115,7 @@ PREF_CODE_NAME: list[tuple[str, str]] = [
     ("47000", "沖縄県"),
 ]
 PREF_NAME_TO_CODE: dict[str, str] = {n: c for c, n in PREF_CODE_NAME}
-PREF_CODE_TO_NAME: dict[str, str] = {c: n for c, n in PREF_CODE_NAME}
+PREF_CODE_TO_NAME: dict[str, str] = dict(PREF_CODE_NAME)
 JSIC_MAJORS: tuple[str, ...] = tuple("ABCDEFGHIJKLMNOPQRST")  # 20 majors
 
 # Per-major synonym fence for enforcement / loan keyword matching.

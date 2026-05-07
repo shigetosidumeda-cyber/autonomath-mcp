@@ -40,6 +40,7 @@ CLI:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import datetime as dt
 import hashlib
 import json
@@ -1870,16 +1871,12 @@ def main(argv: list[str] | None = None) -> int:
         conn.commit()
     except sqlite3.Error as exc:
         _LOG.error("BEGIN/commit failed: %s", exc)
-        try:
+        with contextlib.suppress(sqlite3.Error):
             conn.rollback()
-        except sqlite3.Error:
-            pass
         return 2
 
-    try:
+    with contextlib.suppress(sqlite3.Error):
         conn.close()
-    except sqlite3.Error:
-        pass
 
     _LOG.info(
         "done seed=%d inserted=%d dup_db=%d dup_batch=%d",

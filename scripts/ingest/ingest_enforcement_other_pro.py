@@ -139,6 +139,8 @@ except ImportError as exc:
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
+import contextlib
+
 from scripts.lib.http import HttpClient  # noqa: E402
 
 _LOG = logging.getLogger("autonomath.ingest_other_pro")
@@ -1025,16 +1027,12 @@ def write_rows(
             batch_keys.add(key)
         except sqlite3.IntegrityError as exc:
             _LOG.warning("integrity error %s: %s", canonical_id, exc)
-            try:
+            with contextlib.suppress(sqlite3.Error):
                 conn.rollback()
-            except sqlite3.Error:
-                pass
         except sqlite3.Error as exc:
             _LOG.error("DB error %s: %s", canonical_id, exc)
-            try:
+            with contextlib.suppress(sqlite3.Error):
                 conn.rollback()
-            except sqlite3.Error:
-                pass
         if inserted and inserted % 50 == 0:
             _LOG.info("progress inserted=%d (skipped_dup=%d)", inserted, skipped_dup)
     return inserted, skipped_dup
@@ -1180,10 +1178,8 @@ def main(argv: list[str] | None = None) -> int:
             max_insert=args.max_insert,
         )
     finally:
-        try:
+        with contextlib.suppress(sqlite3.Error):
             conn.close()
-        except sqlite3.Error:
-            pass
 
     by_prof_inserted: dict[str, int] = {}
     # Re-tally inserted breakdown by walking the same rows minus dedup

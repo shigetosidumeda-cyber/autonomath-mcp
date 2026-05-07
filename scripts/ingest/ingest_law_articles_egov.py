@@ -20,6 +20,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import logging
 import re
 import sqlite3
@@ -92,10 +93,8 @@ def article_num_to_sort(num_str: str) -> float:
         return 0.0
     sort_val = float(main)
     for i, p in enumerate(parts[1:]):
-        try:
+        with contextlib.suppress(ValueError):
             sort_val += int(p) * (10 ** (-3 * (i + 1)))
-        except ValueError:
-            pass
     return sort_val
 
 

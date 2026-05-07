@@ -570,7 +570,7 @@ def widget_search(
         q_effective = norm_industry
 
     try:
-        resp: JSONResponse = search_programs(
+        resp: JSONResponse = search_programs(  # type: ignore[call-arg]
             request=request,
             conn=conn,
             ctx=ctx,
@@ -766,7 +766,7 @@ def widget_signup(payload: WidgetSignupRequest) -> WidgetSignupResponse:
     success_url = validate_jpcite_service_redirect_url(payload.success_url, kind="success")
     cancel_url = validate_jpcite_service_redirect_url(payload.cancel_url, kind="cancel")
 
-    session = stripe.checkout.Session.create(
+    session = stripe.checkout.Session.create(  # type: ignore[call-arg]
         mode="subscription",
         line_items=[{"price": price_id, "quantity": 1}],
         success_url=success_url,

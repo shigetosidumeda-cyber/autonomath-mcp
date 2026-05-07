@@ -32,6 +32,7 @@ NO LLM, NO Anthropic API. Pure stdlib + sqlite3.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import logging
 import re
@@ -61,10 +62,8 @@ def article_num_to_sort(num_str: str) -> float:
     except (ValueError, IndexError):
         return 0.0
     for i, p in enumerate(parts[1:]):
-        try:
+        with contextlib.suppress(ValueError):
             sort_val += int(p) * (10 ** (-3 * (i + 1)))
-        except ValueError:
-            pass
     return sort_val
 
 
