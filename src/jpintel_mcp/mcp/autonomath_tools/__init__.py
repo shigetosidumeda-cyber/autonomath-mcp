@@ -62,6 +62,7 @@ from . import (
     static_resources_tool,  # noqa: F401  — Phase A: 4 tools (list/get static resources + example profiles)
     succession_tools,  # noqa: F401  — 2026-05-07: 2 tools (match_succession_am / succession_playbook_am) over jpintel.programs + laws. M&A pillar of cohort revenue model. AUTONOMATH_SUCCESSION_ENABLED gate (default ON). NO LLM, single ¥3/req billing event. §52 / §72 envelope. REST companion at POST /v1/succession/match + GET /v1/succession/playbook.
     sunset_tool,  # noqa: F401  — V1 feature #11 (dd_v4_05): list_tax_sunset_alerts
+    tax_chain_tools,  # noqa: F401  - 2026-05-07: tax_rule_full_chain (1 tool wrapping /v1/tax_rules/{rule_id}/full_chain - 税制 + 法令 + 通達 + 裁決 + 判例 + 改正履歴 chain). AUTONOMATH_TAX_CHAIN_ENABLED gate (default ON). NO LLM, single ¥3/req billing event. §52/§72/§47条の2 envelope.
     tax_rule_tool,  # noqa: F401  — decorator side-effect (1 tool)
     template_tool,  # noqa: F401  — Phase A: render_36_kyotei_am + get_36_kyotei_metadata_am
     time_machine_tools,  # noqa: F401  — DEEP-22 (2026-05-07): 2 tools (query_at_snapshot_v2 / query_program_evolution) over am_amendment_snapshot 14,596 captures + 144 definitive-dated. AUTONOMATH_SNAPSHOT_ENABLED gate (default ON post-DEEP-22). NO LLM, single ¥3/req billing.
