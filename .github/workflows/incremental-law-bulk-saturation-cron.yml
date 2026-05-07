@@ -1,0 +1,200 @@
+name: incremental-law-bulk-saturation-cron
+
+# Weekly *bulk* e-Gov full-text saturation push (1,000 laws/run).
+# This is the higher-cadence, resumable companion to
+# .github/workflows/incremental-law-load.yml (which runs at 600/run).
+# Together they push the unloaded eligible-law pool (~3,613 catalog
+# stubs as of 2026-05-07: 10,106 with e_gov_lawid minus 6,493 already
+# distinct in am_law_article) toward saturation in roughly 4-6 weeks.
+#
+# Cadence rationale
+# -----------------
+# * Weekly base load (incremental-law-load.yml): 600/run, single run.
+#   Saturation alone ~6 weeks. Stable, non-resumable inside one run.
+# * Weekly bulk push (this workflow): 10 sequential 100-law batches,
+#   resumable across batches via data/bulk_egov_law_progress.json.
+#   Together with the base load, weekly throughput becomes 1,600 laws.
+# * Sequential 100-law batches keep each Fly ssh exec under the
+#   ~60-min Fly cut threshold (100 laws × ~5s = ~8 min/batch <<60 min).
+#
+# Stagger
+# -------
+# Runs Sunday 18:50 UTC (03:50 JST Mon), 60 min before the base load
+# at 19:50 UTC. Both touch /data/autonomath.db on the same Fly
+# machine — back-to-back is fine because each run BEGIN IMMEDIATEs
+# its own UPSERT and the schema has UNIQUE(law_canonical_id,
+# article_number) so concurrent inserts of the same row are safe.
+#
+# Required secrets:
+#   FLY_API_TOKEN
+# Optional secrets:
+#   SLACK_WEBHOOK_INGEST   notify on driver failure
+
+on:
+  schedule:
+    # 18:50 UTC Sunday == 03:50 JST Monday. 60 min before
+    # incremental-law-load (19:50 UTC) so the bulk push lands first.
+    - cron: "50 18 * * 0"
+  workflow_dispatch:
+    inputs:
+      batch:
+        description: "Laws per ssh exec batch (default: 100)"
+        required: false
+        default: "100"
+      total:
+        description: "Total laws to push this run (sum of batches; default: 1000)"
+        required: false
+        default: "1000"
+      dry_run:
+        description: "If true, fetch+parse only, no DB writes"
+        required: false
+        default: "false"
+
+concurrency:
+  group: incremental-law-bulk-saturation
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  bulk-saturate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run bulk saturation loops on Fly machine
+        id: run
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          INPUT_BATCH: ${{ github.event.inputs.batch }}
+          INPUT_TOTAL: ${{ github.event.inputs.total }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          BATCH="${INPUT_BATCH:-100}"
+          TOTAL="${INPUT_TOTAL:-1000}"
+          DRY_FLAG=""
+          if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then
+            DRY_FLAG="--dry-run"
+          fi
+
+          # Loop sequential batches. We always start each batch at
+          # offset=0 because the script's progress file already
+          # excludes processed canonical_ids — re-running with offset 0
+          # naturally walks forward in priority order without us
+          # having to bookkeep numeric offsets here.
+          BATCHES=$(( (TOTAL + BATCH - 1) / BATCH ))
+          echo "::notice::bulk-saturate batches=$BATCHES batch=$BATCH dry_run=${INPUT_DRY_RUN:-false}"
+
+          rc_final=0
+          for i in $(seq 1 "$BATCHES"); do
+            echo "::group::bulk batch $i/$BATCHES"
+            set +e
+            flyctl ssh console -a autonomath-api -C \
+              "/opt/venv/bin/python -m scripts.etl.bulk_egov_law_fulltext \
+                --db /data/autonomath.db \
+                --progress /data/bulk_egov_law_progress.json \
+                --batch ${BATCH} \
+                --start 0 \
+                ${DRY_FLAG}" \
+              | tee -a bulk_load.out
+            rc=$?
+            set -e
+            echo "::endgroup::"
+            # rc == 2 means saturated: that's success — stop the loop.
+            if [ "$rc" -eq 2 ]; then
+              echo "::notice::saturation reached at batch $i/$BATCHES (rc=2)"
+              break
+            fi
+            if [ "$rc" -ne 0 ]; then
+              echo "::error::bulk batch $i exited $rc"
+              rc_final=$rc
+              break
+            fi
+          done
+
+          if [ "$rc_final" -ne 0 ]; then
+            exit "$rc_final"
+          fi
+
+      - name: Pull progress file off Fly machine
+        if: success()
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p data
+          flyctl ssh sftp get /data/bulk_egov_law_progress.json -a autonomath-api \
+            || echo "::warning::no /data/bulk_egov_law_progress.json yet"
+          if [ -f bulk_egov_law_progress.json ]; then
+            mv bulk_egov_law_progress.json data/bulk_egov_law_progress.json
+          fi
+
+      - name: Detect progress diff
+        id: diff
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- data/bulk_egov_law_progress.json 2>/dev/null; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open PR with bulk saturation progress diff
+        if: steps.diff.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6.1.0
+        with:
+          commit-message: "chore(law-load): weekly bulk saturation $(date -u +%Y-%m-%d)"
+          title: "Law bulk saturation: $(date -u +%Y-%m-%d)"
+          body: |
+            Auto-generated by `.github/workflows/incremental-law-bulk-saturation-cron.yml`.
+
+            This PR captures the per-batch summary appended to
+            `data/bulk_egov_law_progress.json` after the Fly volume's
+            `autonomath.db` absorbed N×100-law bulk batches of e-Gov
+            full-text laws. The DB itself stays on the Fly volume
+            (8.29 GB — never committed).
+
+            Coverage milestone copy in `CLAUDE.md` (currently
+            "6,493 full-text + 9,484 catalog stubs") should be bumped
+            once the cumulative `coverage_after` figure crosses a round
+            milestone (7,000 / 8,000 / 9,000 / 10,000).
+          branch: incremental-law-bulk-saturation/${{ github.run_id }}
+          base: main
+          delete-branch: true
+          labels: |
+            ingest
+            law
+            automation
+          add-paths: |
+            data/bulk_egov_law_progress.json
+
+      - name: Open issue on driver failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          BODY="Loader: \`scripts/etl/bulk_egov_law_fulltext.py\`\nRun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\nSHA: \`${{ github.sha }}\`\n\nLikely causes: e-Gov 5xx after MAX_RETRIES, network egress block, or \`autonomath.db\` lock contention. See module docstring + \`scripts/cron/incremental_law_fulltext.py\` for shared parser/upsert helpers.\n"
+          gh issue create \
+            --title "incremental-law-bulk-saturation failed on $(date -u +%Y-%m-%d)" \
+            --label ingest-failure \
+            --label automation \
+            --body "$BODY"
+
+      - name: Slack notify on driver failure
+        if: failure() && env.SLACK_WEBHOOK_INGEST != ''
+        env:
+          SLACK_WEBHOOK_INGEST: ${{ secrets.SLACK_WEBHOOK_INGEST }}
+        run: |
+          set -euo pipefail
+          curl -fsS -X POST -H 'content-type: application/json' \
+            --data "{\"text\":\":warning: incremental-law-bulk-saturation driver failure — ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}" \
+            "$SLACK_WEBHOOK_INGEST" || true
