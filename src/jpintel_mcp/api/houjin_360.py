@@ -989,6 +989,30 @@ def _build_houjin_360(
         dq = body.setdefault("data_quality", {})
         dq["missing_tables"] = sorted(set(missing))
 
+    # R8 BUGHUNT (2026-05-07): always-on substrate caveat so a 200 with a hot
+    # houjin_bangou still discloses the upstream gaps (357 orphans, 805 unknown
+    # license, 0% amount_granted_yen). Without this, an LLM consumer who never
+    # hits a missing-table branch could mistake the response for a
+    # fully-authoritative profile.
+    dq = body.setdefault("data_quality", {})
+    dq.setdefault(
+        "substrate_caveat",
+        (
+            "houjin_master / jpi_adoption_records / jpi_invoice_registrants / "
+            "am_enforcement_detail / bids / am_amendment_diff の併合結果。"
+            "jpi_adoption_records には 357 orphan houjin_bangou (houjin_master "
+            "未登録、gBiz delta 自己回復待ち) が残存。amount_granted_yen は "
+            "0/201,845 行 populated。am_source 97,272 行のうち 805 行は "
+            "license='unknown'。3 軸 score (risk / credit / compliance) は "
+            "公開コーパスに対する descriptive signal であり、与信 / 税務 / "
+            "法令適用 verdict ではない。"
+        ),
+    )
+    dq.setdefault("orphan_houjin_in_adoption_records", 357)
+    dq.setdefault("license_unknown_count", 805)
+    dq.setdefault("amount_granted_yen_populated", 0)
+    dq.setdefault("adoption_records_total", 201_845)
+
     body["_disclaimer"] = _DISCLAIMER
     body["_billing_unit"] = 1
     return body

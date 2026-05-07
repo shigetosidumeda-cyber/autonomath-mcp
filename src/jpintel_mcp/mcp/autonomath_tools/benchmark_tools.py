@@ -99,6 +99,29 @@ _SPARSITY_NOTES_BENCHMARK = [
 ]
 
 
+# R8 BUGHUNT (2026-05-07): canonical data_quality envelope for adoption-records-backed
+# endpoints. Discloses upstream substrate caveats audited live against
+# autonomath.db on 2026-05-07. Numbers are static-snapshot; re-probe before
+# launch if the substrate is rebuilt.
+_DATA_QUALITY_BENCHMARK: dict[str, Any] = {
+    "substrate": "jpi_adoption_records (201,845) + case_studies (2,286)",
+    "adoption_records_total": 201_845,
+    "case_studies_total": 2_286,
+    "amount_granted_yen_populated": 0,
+    "case_studies_amount_populated": 4,
+    "orphan_houjin_in_adoption_records": 357,
+    "license_unknown_pct": 0.83,
+    "license_unknown_count": 805,
+    "caveat": (
+        "jpi_adoption_records.amount_granted_yen is 0% populated; cohort 平均採択額 "
+        "leans on 4/2,286 case_studies rows. 357 distinct houjin_bangou in "
+        "jpi_adoption_records do not yet present in houjin_master (gBiz delta "
+        "self-heal pending). 805 / 97,272 am_source rows carry license='unknown'. "
+        "Treat aggregates as directional, not authoritative."
+    ),
+}
+
+
 def _today_iso() -> str:
     return datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).date().isoformat()
 
@@ -477,6 +500,7 @@ def benchmark_cohort_average_impl(
             "adoption_records_axes": ["industry_jsic_medium", "prefecture"],
         },
         "sparsity_notes": list(_SPARSITY_NOTES_BENCHMARK),
+        "data_quality": dict(_DATA_QUALITY_BENCHMARK),
         "as_of_jst": _today_iso(),
         "_disclaimer": _DISCLAIMER_BENCHMARK,
         "_next_calls": next_calls,
@@ -673,6 +697,7 @@ def benchmark_me_vs_industry_impl(
                 "lists the full cohort distinct-program set as a precaution."
             ),
         ],
+        "data_quality": dict(_DATA_QUALITY_BENCHMARK),
         "as_of_jst": cohort["as_of_jst"],
         "_disclaimer": _DISCLAIMER_BENCHMARK,
         "_next_calls": next_calls,

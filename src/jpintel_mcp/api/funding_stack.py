@@ -167,6 +167,27 @@ def check_funding_stack(
     result = checker.check_stack(program_ids)
     body = result.to_dict()
 
+    # R8 BUGHUNT (2026-05-07): am_compat_matrix substrate caveat. Same disclosure
+    # contract as POST /v1/programs/portfolio_optimize so downstream LLM
+    # consumers can not mistake heuristic edges for authoritative rulings.
+    body.setdefault("data_quality", {})
+    body["data_quality"].update(
+        {
+            "compat_matrix_total": 43_966,
+            "authoritative_pair_count": 4_300,
+            "authoritative_share_pct": 9.8,
+            "heuristic_inferred_only_count": 39_666,
+            "exclusion_rules_total": 181,
+            "caveat": (
+                "am_compat_matrix の 43,966 行のうち authoritative pair は 4,300 "
+                "(~9.8%)。残 39,666 行は inferred_only=1 の heuristic 推論で "
+                "compat_status='unknown' の case_by_case を含む。exclusion_rules は "
+                "別 tabel (181 行) で評価される。本 endpoint は機械的判定であり、"
+                "経費重複 / 適正化法 17 条 / 公募要領 例外条項は対象外。"
+            ),
+        }
+    )
+
     # ---- Billing: 1 unit per pair ----
     # check_stack already de-dupes program_ids; result.pairs reflects the
     # actual evaluated pair count (C(unique, 2)) which is what we bill.

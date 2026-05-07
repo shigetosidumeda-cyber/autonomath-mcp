@@ -38,6 +38,27 @@ logger = logging.getLogger("jpintel.api.time_machine")
 router = APIRouter(prefix="/v1/programs", tags=["time_machine"])
 
 
+# R8 BUGHUNT (2026-05-07): canonical data_quality envelope for am_amendment_snapshot
+# substrate. Numbers audited live on autonomath.db 2026-05-07. Re-probe on
+# substrate rebuild — eligibility_hash invariant is the load-bearing caveat
+# for any time-series interpretation.
+_DATA_QUALITY_TIME_MACHINE: dict[str, Any] = {
+    "substrate": "am_amendment_snapshot",
+    "snapshot_total": 14_596,
+    "with_effective_from": 140,
+    "distinct_eligibility_hash": 1_141,
+    "snapshot_source_legacy_v1_count": 14_596,
+    "caveat": (
+        "am_amendment_snapshot 14,596 行のうち effective_from 確定は 140 行のみ。"
+        "残 14,456 行は observed_at スタンプのみで時系列の正確性は保証されない。"
+        "eligibility_hash の distinct は 1,141/14,596 — v1 と v2 で hash が変わらない "
+        "row が大量にあり、'時系列の差分が常に意味を持つ' という前提は成立しない。"
+        "as_of 指定の replay は 'best-effort frozen view' であり、確定論的 eligibility "
+        "判定ではない。"
+    ),
+}
+
+
 @router.get(
     "/{program_id}/at",
     summary="DEEP-22 Time Machine — frozen-at-date eligibility / amount / deadline",
@@ -90,6 +111,9 @@ def query_at(
     t0 = time.perf_counter()
     body = _query_at_snapshot_impl(program_id=program_id, as_of=as_of)
     latency_ms = int((time.perf_counter() - t0) * 1000)
+
+    if isinstance(body, dict):
+        body.setdefault("data_quality", {}).update(_DATA_QUALITY_TIME_MACHINE)
 
     log_usage(
         conn,
@@ -158,6 +182,9 @@ def query_evolution(
     t0 = time.perf_counter()
     body = _query_program_evolution_impl(program_id=program_id, year=year)
     latency_ms = int((time.perf_counter() - t0) * 1000)
+
+    if isinstance(body, dict):
+        body.setdefault("data_quality", {}).update(_DATA_QUALITY_TIME_MACHINE)
 
     log_usage(
         conn,

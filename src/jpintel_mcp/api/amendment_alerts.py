@@ -49,7 +49,7 @@ from xml.sax.saxutils import escape as xml_escape
 
 from fastapi import APIRouter, HTTPException, Query, status
 from fastapi.responses import JSONResponse, Response
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from jpintel_mcp.api.deps import (  # noqa: TC001 (runtime for FastAPI Depends resolution)
     ApiContextDep,
@@ -124,12 +124,49 @@ class FeedItem(BaseModel):
 
 
 class FeedResponse(BaseModel):
+    # R8_BUGHUNT_DISCLAIMER_R2 (2026-05-07): populate_by_name=True so the
+    # route can pass disclaimer=... by attribute name even though the
+    # serialized key uses the leading-underscore "_disclaimer" alias.
+    model_config = ConfigDict(populate_by_name=True)
+
     subscription_count: int
     window_days: int
     results: list[FeedItem]
-    _disclaimer: str = (
-        "本フィードは公開された am_amendment_diff の差分情報のみを返します。"
-        "個別判断・税務助言は行いません。各 source_url の一次情報をご確認ください。"
+    # R8 BUGHUNT (2026-05-07): am_amendment_diff is cron-derived from
+    # am_amendment_snapshot. Snapshot caveats apply downstream — disclose
+    # them so a feed consumer cannot treat field-level diffs as authoritative
+    # eligibility-change notices.
+    data_quality: dict[str, Any] = Field(
+        default_factory=lambda: {
+            "substrate": "am_amendment_diff (12,116) ← am_amendment_snapshot (14,596)",
+            "snapshot_with_effective_from": 140,
+            "snapshot_distinct_eligibility_hash": 1_141,
+            "diff_total": 12_116,
+            "caveat": (
+                "am_amendment_diff is generated from am_amendment_snapshot — only "
+                "140/14,596 snapshots carry definitive effective_from dates and "
+                "1,141 distinct eligibility_hash values exist. A diff row therefore "
+                "reflects observed-at change, not a guaranteed legal-effective "
+                "transition. Treat alerts as detection signals, not verdicts."
+            ),
+        }
+    )
+    # R8_BUGHUNT_DISCLAIMER_R2 (2026-05-07): the previous shape declared this
+    # field as `_disclaimer: str = "..."`. Pydantic 2 treats leading-underscore
+    # attribute names as **private** and silently drops them from
+    # `model_dump()` / `model_dump_json()`, so the JSON `feed` path emitted
+    # **no** _disclaimer envelope on §52 / §72 / §1 sensitive output. The
+    # fix mirrors the alias + serialization_alias + populate_by_name pattern
+    # already used in api/eligibility_check.py + api/disaster.py — public
+    # attribute name `disclaimer`, alias `_disclaimer`, default text matches
+    # the original substantive content.
+    disclaimer: str = Field(
+        default=(
+            "本フィードは公開された am_amendment_diff の差分情報のみを返します。"
+            "個別判断・税務助言は行いません。各 source_url の一次情報をご確認ください。"
+        ),
+        alias="_disclaimer",
+        serialization_alias="_disclaimer",
     )
 
 
@@ -484,11 +521,14 @@ def feed(
                 media_type="application/atom+xml; charset=utf-8",
             )
         return JSONResponse(
+            # R8_BUGHUNT_DISCLAIMER_R2 (2026-05-07): by_alias=True so the
+            # `_disclaimer` envelope key reaches the JSON payload (the
+            # field uses serialization_alias="_disclaimer").
             FeedResponse(
                 subscription_count=0,
                 window_days=FEED_WINDOW_DAYS,
                 results=[],
-            ).model_dump()
+            ).model_dump(by_alias=True)
         )
 
     # Union the watches across all active subscriptions, dedup by (type, id).
@@ -510,11 +550,13 @@ def feed(
         )
 
     return JSONResponse(
+        # R8_BUGHUNT_DISCLAIMER_R2 (2026-05-07): by_alias=True ensures the
+        # _disclaimer envelope key reaches the JSON payload.
         FeedResponse(
             subscription_count=len(subscriptions),
             window_days=FEED_WINDOW_DAYS,
             results=[FeedItem(**r) for r in rows],
-        ).model_dump()
+        ).model_dump(by_alias=True)
     )
 
 

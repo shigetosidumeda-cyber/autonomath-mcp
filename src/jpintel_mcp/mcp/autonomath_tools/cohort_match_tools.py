@@ -463,6 +463,27 @@ _SPARSITY_NOTES = [
 ]
 
 
+# R8 BUGHUNT (2026-05-07): canonical data_quality envelope. Same upstream
+# substrate as benchmark_tools — values audited live on autonomath.db
+# 2026-05-07. Re-probe on substrate rebuild.
+_DATA_QUALITY_COHORT: dict[str, Any] = {
+    "substrate": "jpi_adoption_records (201,845) + case_studies (2,286)",
+    "adoption_records_total": 201_845,
+    "case_studies_total": 2_286,
+    "amount_granted_yen_populated": 0,
+    "case_studies_amount_populated": 4,
+    "orphan_houjin_in_adoption_records": 357,
+    "license_unknown_pct": 0.83,
+    "license_unknown_count": 805,
+    "caveat": (
+        "amount_granted_yen 0% populated (jpi_adoption_records side); 357 "
+        "houjin_bangou orphans pending gBiz delta self-heal; 805 / 97,272 "
+        "am_source rows still license='unknown'. Aggregates are directional, "
+        "not authoritative."
+    ),
+}
+
+
 def case_cohort_match_impl(
     industry_jsic: str | None = None,
     employee_count_range: list[int] | tuple[int, int] | None = None,
@@ -590,6 +611,7 @@ def case_cohort_match_impl(
         "summary": summary,
         "axes_applied": axes_applied,
         "sparsity_notes": list(_SPARSITY_NOTES),
+        "data_quality": dict(_DATA_QUALITY_COHORT),
         "as_of_jst": _today_iso(),
         "_disclaimer": _DISCLAIMER_COHORT_MATCH,
         "_next_calls": next_calls,
