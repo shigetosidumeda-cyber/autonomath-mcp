@@ -827,47 +827,18 @@
         { name: 'output_format', type: 'enum', label: 'output_format', in: 'query', options: ['json', 'csv', 'md'], defaultValue: 'json' },
       ],
     },
+    // NOTE: /v1/intel/match, /v1/intel/bundle/optimal, /v1/intel/houjin/{}/full
+    // are gated behind AUTONOMATH_EXPERIMENTAL_API_ENABLED and are not exposed
+    // on the live api.jpcite.com surface as of 2026-05-07. Listing them here
+    // would 404 for every visitor. Re-add when the gate is flipped on.
     {
-      id: 'intel.match',
-      method: 'POST',
-      path: '/v1/intel/match',
-      title: 'Intel / Smart matchmaking',
-      desc: '業種・都道府県・資本金・従業員数・キーワードから、候補制度と次の質問/書類準備を 1 回で返す。',
-      params: [
-        { name: 'industry_jsic_major', type: 'text', label: 'JSIC 大分類 (A-T)', in: 'body', required: true, placeholder: 'E', defaultValue: 'E' },
-        { name: 'prefecture_code', type: 'text', label: '都道府県コード (JIS X 0401)', in: 'body', required: true, placeholder: '13', defaultValue: '13' },
-        { name: 'capital_jpy', type: 'number', label: '資本金 (円)', in: 'body', placeholder: '50000000', defaultValue: '50000000' },
-        { name: 'employee_count', type: 'number', label: '従業員数', in: 'body', placeholder: '50', defaultValue: '50' },
-        { name: 'keyword', type: 'text', label: 'キーワード', in: 'body', placeholder: 'DX', defaultValue: 'DX' },
-        { name: 'limit', type: 'number', label: 'limit', in: 'body', defaultValue: '5' },
-      ],
-    },
-    {
-      id: 'intel.bundle.optimal',
-      method: 'POST',
-      path: '/v1/intel/bundle/optimal',
-      title: 'Intel / 併用候補 bundle 最適化',
-      desc: '法人番号または profile から、併用 conflict を避けた制度 bundle と runner-up、decision_support を返す。',
-      params: [
-        { name: 'houjin_id', type: 'text', label: 'houjin_id (法人番号)', in: 'body', required: true, placeholder: '1030001064965', defaultValue: '1030001064965' },
-        { name: 'bundle_size', type: 'number', label: 'bundle_size', in: 'body', defaultValue: '5' },
-        { name: 'objective', type: 'enum', label: 'objective', in: 'body', options: ['max_amount', 'max_count', 'min_overlap'], defaultValue: 'max_amount' },
-        { name: 'exclude_program_ids', type: 'array', label: 'exclude_program_ids (改行/カンマ区切り)', in: 'body', placeholder: 'UNI-...' },
-        { name: 'prefer_categories', type: 'array', label: 'prefer_categories (改行/カンマ区切り)', in: 'body', placeholder: 'E, subsidy' },
-        { name: 'compact', type: 'checkbox', label: 'compact envelope', in: 'query' },
-      ],
-    },
-    {
-      id: 'intel.houjin.full',
+      id: 'houjin.lookup',
       method: 'GET',
-      path: '/v1/intel/houjin/{houjin_id}/full',
-      title: 'Intel / 法人360 bundle',
-      desc: '法人番号 1 つで meta、採択履歴、行政処分、インボイス、peer、管轄、watch status をまとめて取得。',
+      path: '/v1/houjin/{bangou}',
+      title: '法人 360 lookup (gBizINFO + 採択 + 行政処分)',
+      desc: '法人番号 13 桁で 1 GET。 meta + adoption_history + enforcement + invoice_status を返す。',
       params: [
-        { name: 'houjin_id', type: 'text', label: 'houjin_id (法人番号)', isPath: true, required: true, placeholder: '1030001064965', defaultValue: '1030001064965' },
-        { name: 'include_sections', type: 'text', label: 'include_sections', placeholder: 'meta,invoice_status,enforcement' },
-        { name: 'max_per_section', type: 'number', label: 'max_per_section', defaultValue: '10' },
-        { name: 'compact', type: 'checkbox', label: 'compact envelope' },
+        { name: 'bangou', type: 'text', label: '法人番号 (13桁)', isPath: true, required: true, placeholder: '1180301018771', defaultValue: '1180301018771' },
       ],
     },
     {
