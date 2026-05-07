@@ -96,6 +96,16 @@ jobs:
           pip install -r docs-requirements.txt
           pip install -e ".[site]"
 
+      - name: Install CJK fonts for OG image renderer
+        if: steps.fly-token.outputs.available == 'true'
+        run: |
+          set -euo pipefail
+          # generate_og_images.py needs a CJK font for 補助金/制度/採択 glyphs.
+          # fonts-noto-cjk lays them down at /usr/share/fonts/opentype/noto/.
+          # fonts-dejavu-core ships DejaVuSans.ttf for the EN fallback path.
+          sudo apt-get update -y
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk fonts-dejavu-core
+
       - name: Install flyctl
         if: steps.fly-token.outputs.available == 'true'
         uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master

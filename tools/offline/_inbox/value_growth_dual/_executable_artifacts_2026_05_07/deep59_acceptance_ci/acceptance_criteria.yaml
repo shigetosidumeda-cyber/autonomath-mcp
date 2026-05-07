@@ -1,0 +1,366 @@
+# =============================================================================
+# acceptance_criteria.yaml
+# =============================================================================
+#
+# DEEP-59 source of truth for the 258 acceptance criteria distilled from the
+# 33 DEEP specs (see R8_ACCEPTANCE_CRITERIA_CI_GUARD.md).
+#
+# The seed sample below covers the principal criterion of each DEEP spec
+# (>= 30 rows; full 258-row matrix is generated incrementally as each spec
+# lands). Every row drives test_acceptance_criteria.py via pytest parametrize.
+#
+# Schema:
+#   id          - "DEEP-NN-K"  (K = ordinal within the spec)
+#   check_kind  - one of 12 core or 3 aux verifiers (see test module)
+#   spec        - DEEP spec id (rollup key for aggregate_acceptance.py)
+#   automation  - "auto" | "semi" | "manual"  (defaults to auto)
+#   <inputs>    - kind-specific inputs (path, query, file, pattern, ...)
+#
+# Constraints:
+# - LLM API call count = 0
+# - jpcite scope only
+# - Paths resolved relative to JPCITE_REPO_ROOT
+# =============================================================================
+
+# --- DEEP-22 : am_amendment_snapshot migration -------------------------------
+- id: DEEP-22-1
+  spec: DEEP-22
+  check_kind: file_existence
+  path: db/migrations/0144_am_amendment_snapshot.sql
+- id: DEEP-22-2
+  spec: DEEP-22
+  check_kind: sql_syntax
+  file: db/migrations/0144_am_amendment_snapshot.sql
+- id: DEEP-22-3
+  spec: DEEP-22
+  check_kind: migration_first_line_marker
+  file: db/migrations/0144_am_amendment_snapshot.sql
+- id: DEEP-22-4
+  spec: DEEP-22
+  automation: semi
+  check_kind: sql_count
+  query: "SELECT COUNT(*) FROM am_amendment_snapshot WHERE snapshot_at IS NOT NULL"
+  expected: ">= 144"
+
+# --- DEEP-23 : public spec repo visibility -----------------------------------
+- id: DEEP-23-1
+  spec: DEEP-23
+  automation: semi
+  check_kind: gh_api
+  command: "gh api repos/shigetosidumeda-cyber/jpcite-disclaimer-spec --jq .visibility"
+  expected: public
+- id: DEEP-23-2
+  spec: DEEP-23
+  check_kind: file_existence
+  path: docs/_internal/seo_geo_strategy.md
+
+# --- DEEP-24 : OpenAPI 178-route export --------------------------------------
+- id: DEEP-24-1
+  spec: DEEP-24
+  check_kind: file_existence
+  path: api/openapi.json
+- id: DEEP-24-2
+  spec: DEEP-24
+  check_kind: jsonschema
+  file: api/openapi.json
+  schema:
+    type: object
+    required: [openapi, info, paths]
+    properties:
+      openapi: { type: string, pattern: "^3\\." }
+
+# --- DEEP-25 : MCP tool catalog (120 tools) ----------------------------------
+- id: DEEP-25-1
+  spec: DEEP-25
+  check_kind: file_existence
+  path: mcp/catalog.json
+- id: DEEP-25-2
+  spec: DEEP-25
+  check_kind: regex_pattern_count
+  file: mcp/catalog.json
+  pattern: '"name"\s*:\s*"jpcite\.'
+  min_count: 120
+
+# --- DEEP-26 : migration ledger ----------------------------------------------
+- id: DEEP-26-1
+  spec: DEEP-26
+  check_kind: file_existence
+  path: db/MIGRATIONS.md
+- id: DEEP-26-2
+  spec: DEEP-26
+  check_kind: regex_pattern_count
+  file: db/MIGRATIONS.md
+  pattern: '\| 0\d{3}_'
+  min_count: 50
+
+# --- DEEP-27 : route 500 ZERO smoke ------------------------------------------
+- id: DEEP-27-1
+  spec: DEEP-27
+  check_kind: file_existence
+  path: tests/smoke/test_route_500_zero.py
+- id: DEEP-27-2
+  spec: DEEP-27
+  check_kind: python_compile
+  file: tests/smoke/test_route_500_zero.py
+
+# --- DEEP-28 : MCP tool LLM-import-free --------------------------------------
+- id: DEEP-28-1
+  spec: DEEP-28
+  check_kind: llm_api_import_zero
+  file: mcp/server.py
+- id: DEEP-28-2
+  spec: DEEP-28
+  check_kind: llm_api_import_zero
+  file: api/main.py
+
+# --- DEEP-29 : ETL operator API-free -----------------------------------------
+- id: DEEP-29-1
+  spec: DEEP-29
+  check_kind: llm_api_import_zero
+  file: operator/etl/run.py
+- id: DEEP-29-2
+  spec: DEEP-29
+  check_kind: python_compile
+  file: operator/etl/run.py
+
+# --- DEEP-30 : Fly deploy smoke ----------------------------------------------
+- id: DEEP-30-1
+  spec: DEEP-30
+  check_kind: file_existence
+  path: fly.toml
+- id: DEEP-30-2
+  spec: DEEP-30
+  check_kind: regex_pattern_count
+  file: fly.toml
+  pattern: 'grace_period\s*='
+  min_count: 1
+
+# --- DEEP-31 : daily GHA cron coverage ---------------------------------------
+- id: DEEP-31-1
+  spec: DEEP-31
+  check_kind: gha_yaml_syntax
+  file: .github/workflows/daily_etl.yml
+- id: DEEP-31-2
+  spec: DEEP-31
+  check_kind: regex_pattern_count
+  file: .github/workflows/daily_etl.yml
+  pattern: 'cron:\s*'
+  min_count: 1
+
+# --- DEEP-32 : weekly cron coverage ------------------------------------------
+- id: DEEP-32-1
+  spec: DEEP-32
+  check_kind: gha_yaml_syntax
+  file: .github/workflows/weekly_audit.yml
+
+# --- DEEP-33 : disclaimer marker matrix --------------------------------------
+- id: DEEP-33-1
+  spec: DEEP-33
+  check_kind: disclaimer_marker_present
+  file: site/index.html
+- id: DEEP-33-2
+  spec: DEEP-33
+  check_kind: html5_doctype_meta
+  file: site/index.html
+- id: DEEP-33-3
+  spec: DEEP-33
+  check_kind: schema_org_jsonld
+  file: site/index.html
+
+# --- DEEP-34 : citation footer marker ----------------------------------------
+- id: DEEP-34-1
+  spec: DEEP-34
+  check_kind: regex_pattern_count
+  file: site/index.html
+  pattern: '<footer[^>]*data-jpcite-cite="1"'
+  min_count: 1
+
+# --- DEEP-35 : sitemap.xml ---------------------------------------------------
+- id: DEEP-35-1
+  spec: DEEP-35
+  check_kind: file_existence
+  path: site/sitemap.xml
+- id: DEEP-35-2
+  spec: DEEP-35
+  check_kind: regex_pattern_count
+  file: site/sitemap.xml
+  pattern: '<loc>https://jpcite\.ai/'
+  min_count: 50
+
+# --- DEEP-36 : robots.txt ----------------------------------------------------
+- id: DEEP-36-1
+  spec: DEEP-36
+  check_kind: file_existence
+  path: site/robots.txt
+- id: DEEP-36-2
+  spec: DEEP-36
+  check_kind: regex_pattern_count
+  file: site/robots.txt
+  pattern: 'Sitemap:\s*https://jpcite\.ai/sitemap\.xml'
+  min_count: 1
+
+# --- DEEP-37 : public landing page (HTML5) -----------------------------------
+- id: DEEP-37-1
+  spec: DEEP-37
+  check_kind: html5_doctype_meta
+  file: site/landing.html
+
+# --- DEEP-38 : business-law disclaimer guard ---------------------------------
+- id: DEEP-38-1
+  spec: DEEP-38
+  check_kind: business_law_forbidden_phrases
+  file: site/landing.html
+- id: DEEP-38-2
+  spec: DEEP-38
+  check_kind: business_law_forbidden_phrases
+  file: site/index.html
+- id: DEEP-38-3
+  spec: DEEP-38
+  check_kind: business_law_forbidden_phrases
+  file: docs/_internal/seo_geo_strategy.md
+
+# --- DEEP-39 : OpenAPI route 240 promo ---------------------------------------
+- id: DEEP-39-1
+  spec: DEEP-39
+  check_kind: regex_pattern_count
+  file: api/openapi.json
+  pattern: '"/v1/'
+  min_count: 200
+
+# --- DEEP-40 : pricing page (¥3/req) -----------------------------------------
+- id: DEEP-40-1
+  spec: DEEP-40
+  check_kind: regex_pattern_count
+  file: site/pricing.html
+  pattern: '¥3\s*/\s*req'
+  min_count: 1
+- id: DEEP-40-2
+  spec: DEEP-40
+  check_kind: business_law_forbidden_phrases
+  file: site/pricing.html
+
+# --- DEEP-41 : terms-of-service ----------------------------------------------
+- id: DEEP-41-1
+  spec: DEEP-41
+  check_kind: file_existence
+  path: site/terms.html
+- id: DEEP-41-2
+  spec: DEEP-41
+  check_kind: html5_doctype_meta
+  file: site/terms.html
+
+# --- DEEP-42 : privacy policy ------------------------------------------------
+- id: DEEP-42-1
+  spec: DEEP-42
+  check_kind: file_existence
+  path: site/privacy.html
+- id: DEEP-42-2
+  spec: DEEP-42
+  check_kind: html5_doctype_meta
+  file: site/privacy.html
+
+# --- DEEP-43 : delivery strict tests -----------------------------------------
+- id: DEEP-43-1
+  spec: DEEP-43
+  check_kind: pytest_collect
+  file: tests/delivery_strict
+- id: DEEP-43-2
+  spec: DEEP-43
+  check_kind: file_existence
+  path: tests/delivery_strict/conftest.py
+
+# --- DEEP-44 : operator ack/signoff workflow ---------------------------------
+- id: DEEP-44-1
+  spec: DEEP-44
+  check_kind: file_existence
+  path: operator/ack/SIGNOFF.md
+- id: DEEP-44-2
+  spec: DEEP-44
+  check_kind: regex_pattern_count
+  file: operator/ack/SIGNOFF.md
+  pattern: '^- \[ \] '
+  min_count: 8
+
+# --- DEEP-45 : prod deploy runbook -------------------------------------------
+- id: DEEP-45-1
+  spec: DEEP-45
+  check_kind: file_existence
+  path: docs/runbook/prod_deploy.md
+- id: DEEP-45-2
+  spec: DEEP-45
+  check_kind: regex_pattern_count
+  file: docs/runbook/prod_deploy.md
+  pattern: '^## '
+  min_count: 5
+
+# --- DEEP-46 : release readiness CI ------------------------------------------
+- id: DEEP-46-1
+  spec: DEEP-46
+  check_kind: gha_yaml_syntax
+  file: .github/workflows/release_readiness.yml
+
+# --- DEEP-47 : sync workflow targets -----------------------------------------
+- id: DEEP-47-1
+  spec: DEEP-47
+  check_kind: gha_yaml_syntax
+  file: .github/workflows/sync_targets.yml
+
+# --- DEEP-48 : verify migration targets --------------------------------------
+- id: DEEP-48-1
+  spec: DEEP-48
+  check_kind: pytest_collect
+  file: tests/migrations/test_targets.py
+
+# --- DEEP-49 : compute dirty fingerprint -------------------------------------
+- id: DEEP-49-1
+  spec: DEEP-49
+  check_kind: python_compile
+  file: tools/offline/compute_dirty_fingerprint.py
+
+# --- DEEP-50 : DEEP-58 dashboard ---------------------------------------------
+- id: DEEP-50-1
+  spec: DEEP-50
+  check_kind: file_existence
+  path: site/dashboard/index.html
+- id: DEEP-50-2
+  spec: DEEP-50
+  check_kind: html5_doctype_meta
+  file: site/dashboard/index.html
+
+# --- DEEP-51 : DEEP-60 lane enforcer -----------------------------------------
+- id: DEEP-51-1
+  spec: DEEP-51
+  check_kind: python_compile
+  file: tools/offline/lane_enforcer.py
+
+# --- DEEP-52 : DEEP-61 smoke runbook -----------------------------------------
+- id: DEEP-52-1
+  spec: DEEP-52
+  check_kind: file_existence
+  path: docs/runbook/smoke.md
+- id: DEEP-52-2
+  spec: DEEP-52
+  check_kind: regex_pattern_count
+  file: docs/runbook/smoke.md
+  pattern: 'curl\s+'
+  min_count: 5
+
+# --- DEEP-53 : meta - acceptance criteria yaml integrity ---------------------
+- id: DEEP-53-1
+  spec: DEEP-53
+  check_kind: file_existence
+  path: tools/offline/_inbox/value_growth_dual/_executable_artifacts_2026_05_07/deep59_acceptance_ci/acceptance_criteria.yaml
+
+# --- DEEP-54 : citation index ------------------------------------------------
+- id: DEEP-54-1
+  spec: DEEP-54
+  check_kind: file_existence
+  path: data/citation_index.parquet
+- id: DEEP-54-2
+  spec: DEEP-54
+  check_kind: file_existence
+  path: db/migrations/0150_citation_index.sql
+- id: DEEP-54-3
+  spec: DEEP-54
+  check_kind: migration_first_line_marker
+  file: db/migrations/0150_citation_index.sql

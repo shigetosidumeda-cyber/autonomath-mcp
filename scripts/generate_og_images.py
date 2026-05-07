@@ -21,8 +21,34 @@ from PIL import Image, ImageDraw, ImageFont
 REPO = Path(__file__).resolve().parent.parent
 ASSETS = REPO / "site" / "assets"
 
-JP_FONT_PATH = "/System/Library/Fonts/Hiragino Sans GB.ttc"
-EN_FONT_PATH = "/Library/Fonts/Arial Unicode.ttf"
+# Font fallback chain: macOS dev paths first, then Linux/CI standard paths.
+# When neither is available, _resolve_font_path() falls back to PIL default
+# (still produces a render — albeit with US-ASCII glyphs only — instead of
+# crashing the pages-regenerate workflow).
+JP_FONT_CANDIDATES: tuple[str, ...] = (
+    "/System/Library/Fonts/Hiragino Sans GB.ttc",
+    "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+    "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
+    "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+)
+EN_FONT_CANDIDATES: tuple[str, ...] = (
+    "/Library/Fonts/Arial Unicode.ttf",
+    "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+    "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+    "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+)
+
+
+def _resolve_font_path(candidates: tuple[str, ...]) -> str | None:
+    """Return the first existing font path, or None if none match."""
+    for cand in candidates:
+        if Path(cand).exists():
+            return cand
+    return None
+
+
+JP_FONT_PATH = _resolve_font_path(JP_FONT_CANDIDATES)
+EN_FONT_PATH = _resolve_font_path(EN_FONT_CANDIDATES) or JP_FONT_PATH
 
 BG = (255, 255, 255)
 TEXT = (17, 17, 17)
@@ -31,8 +57,17 @@ ACCENT = (30, 58, 138)
 BORDER = (229, 229, 229)
 
 
-def _load_font(path: str, size: int) -> ImageFont.FreeTypeFont:
-    return ImageFont.truetype(path, size)
+def _load_font(path: str | None, size: int) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
+    """Load a TrueType font; fall back to PIL's bundled bitmap font if path is None
+    or unreadable. Lets pages-regenerate produce *some* output on minimal CI runners
+    that lack any system font installs (rather than hard-failing the entire workflow).
+    """
+    if path is None:
+        return ImageFont.load_default()
+    try:
+        return ImageFont.truetype(path, size)
+    except OSError:
+        return ImageFont.load_default()
 
 
 def _draw_brand_mark(draw: ImageDraw.ImageDraw, x: int, y: int, size: int) -> None:

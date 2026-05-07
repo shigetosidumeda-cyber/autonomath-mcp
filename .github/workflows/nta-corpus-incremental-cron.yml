@@ -87,9 +87,12 @@ jobs:
             DRY_FLAG="--dry-run"
           fi
 
+          # PYTHONPATH=/app required so transitively-imported `scripts.lib.*`
+          # modules resolve when the script is invoked by absolute path.
           set +e
           flyctl ssh console -a autonomath-api -C \
-            "/opt/venv/bin/python /app/scripts/cron/ingest_nta_corpus_incremental.py \
+            "env PYTHONPATH=/app \
+              /opt/venv/bin/python /app/scripts/cron/ingest_nta_corpus_incremental.py \
               --autonomath-db /data/autonomath.db \
               --jpintel-db /data/jpintel.db \
               --target ${TARGET} \

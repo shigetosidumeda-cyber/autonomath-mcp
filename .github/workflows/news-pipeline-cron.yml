@@ -135,8 +135,15 @@ jobs:
           set -euo pipefail
           FLAGS=""
           if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
+          # Pass DB paths explicitly: the script's REPO_ROOT-relative defaults
+          # resolve to /app/data/jpintel.db inside the container, but the live
+          # DB lives on the Fly volume at /data/jpintel.db. Same pattern for
+          # autonomath.db (mig 032 unified primary on the volume).
           flyctl ssh console -a autonomath-api -C \
-            "/opt/venv/bin/python /app/scripts/etl/generate_program_rss_feeds.py ${FLAGS}"
+            "/opt/venv/bin/python /app/scripts/etl/generate_program_rss_feeds.py \
+              --jpintel-db /data/jpintel.db \
+              --autonomath-db /data/autonomath.db \
+              ${FLAGS}"
 
       - name: Sentry alert on cron failure
         if: failure()

@@ -16,6 +16,7 @@ from __future__ import annotations
 import json
 import os
 import select
+import shutil
 import sqlite3
 import subprocess
 import time
@@ -33,7 +34,19 @@ AUTONOMATH_DB = REPO_ROOT / "autonomath.db"
 JPINTEL_DB = REPO_ROOT / "data" / "jpintel.db"
 HALLUCINATION_GUARD = REPO_ROOT / "data" / "hallucination_guard.yaml"
 SEED_DB = REPO_ROOT / "tests" / "eval" / "fixtures" / "seed.db"
-MCP_BINARY = REPO_ROOT / ".venv" / "bin" / "autonomath-mcp"
+
+
+def _resolve_mcp_binary() -> Path | None:
+    venv_path = REPO_ROOT / ".venv" / "bin" / "autonomath-mcp"
+    if venv_path.exists():
+        return venv_path
+    on_path = shutil.which("autonomath-mcp")
+    if on_path:
+        return Path(on_path)
+    return None
+
+
+MCP_BINARY = _resolve_mcp_binary()
 
 
 def _resolve_db(prod: Path) -> Path:
@@ -186,8 +199,8 @@ class MCPStdioClient:
 @pytest.fixture(scope="session")
 def mcp_stdio_client() -> Iterator[MCPStdioClient]:
     """Spawn autonomath-mcp subprocess. NEVER calls Anthropic API."""
-    if not MCP_BINARY.exists():
-        pytest.skip(f"missing {MCP_BINARY}; install with `pip install -e .[dev]`")
+    if MCP_BINARY is None or not MCP_BINARY.exists():
+        pytest.skip("missing autonomath-mcp; install with `pip install -e .[dev]`")
     env = os.environ.copy()
     env["AUTONOMATH_ENABLED"] = "1"
     env["AUTONOMATH_36_KYOTEI_ENABLED"] = "0"

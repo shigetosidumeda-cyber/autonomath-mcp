@@ -84,10 +84,14 @@ jobs:
           fi
 
           # Pass SENTRY_RELEASE through so ingest-side breadcrumbs link
-          # back to this commit.
+          # back to this commit. PYTHONPATH=/app is required so the script's
+          # `from scripts.lib.http import HttpClient` resolves — the Dockerfile
+          # copies scripts/ to /app/scripts/ but does not turn it into an
+          # installable package, and python's sys.path[0] on direct-script
+          # invocation is /app/scripts/, not /app/.
           set +e
           flyctl ssh console -a autonomath-api -C \
-            "env SENTRY_RELEASE=${SENTRY_RELEASE} \
+            "env SENTRY_RELEASE=${SENTRY_RELEASE} PYTHONPATH=/app \
               /opt/venv/bin/python /app/scripts/ingest_tier.py $ARGS" \
             | tee ingest.out
           rc=$?

@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -34,7 +35,26 @@ from tests.eval.tier_b_template import generate as generate_tier_b  # noqa: E402
 
 THIS_DIR = _HERE.parent
 HALLUCINATION_GUARD = REPO_ROOT / "data" / "hallucination_guard.yaml"
-MCP_BINARY = REPO_ROOT / ".venv" / "bin" / "autonomath-mcp"
+
+
+def _resolve_mcp_binary() -> Path | None:
+    """Resolve the autonomath-mcp console script across local-venv vs CI install layouts.
+
+    Local dev: .venv/bin/autonomath-mcp (created by `pip install -e .[dev]` inside .venv).
+    CI: pip install runs against the runner's system Python, so the binary lands on $PATH
+    (e.g. /opt/hostedtoolcache/Python/3.13.13/x64/bin/autonomath-mcp). Falls back to
+    shutil.which() so the eval workflow doesn't crash with `missing .venv/bin/...`.
+    """
+    venv_path = REPO_ROOT / ".venv" / "bin" / "autonomath-mcp"
+    if venv_path.exists():
+        return venv_path
+    on_path = shutil.which("autonomath-mcp")
+    if on_path:
+        return Path(on_path)
+    return None
+
+
+MCP_BINARY = _resolve_mcp_binary()
 
 THRESHOLDS = {
     "tier_a_precision_at_1": 0.85,
@@ -203,8 +223,11 @@ def assert_thresholds(a: dict[str, Any], b: dict[str, Any], c: dict[str, Any]) -
 
 
 def _spawn_client() -> MCPStdioClient:
-    if not MCP_BINARY.exists():
-        raise SystemExit(f"missing {MCP_BINARY} - run `pip install -e .[dev]` first")
+    if MCP_BINARY is None or not MCP_BINARY.exists():
+        raise SystemExit(
+            "missing autonomath-mcp binary - run `pip install -e .[dev]` first "
+            "(checked .venv/bin/ and $PATH)"
+        )
     env = os.environ.copy()
     env["AUTONOMATH_ENABLED"] = "1"
     env["AUTONOMATH_36_KYOTEI_ENABLED"] = "0"
