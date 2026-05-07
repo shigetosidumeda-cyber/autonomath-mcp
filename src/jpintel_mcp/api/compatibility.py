@@ -60,11 +60,13 @@ import re
 import sqlite3
 import time
 from itertools import combinations
-from collections.abc import Callable
-from typing import Annotated, Any
+from typing import TYPE_CHECKING, Annotated, Any
 
 from fastapi import APIRouter, Body, HTTPException, Path
 from pydantic import BaseModel, Field
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 from jpintel_mcp.api._audit_seal import attach_seal_to_body
 from jpintel_mcp.api._corpus_snapshot import attach_corpus_snapshot
@@ -503,15 +505,345 @@ def _programs_meta(
     return out
 
 
+def _bulk_matrix_rows(
+    am_conn: sqlite3.Connection | None,
+    program_ids: list[str],
+    missing: list[str],
+) -> dict[tuple[str, str], dict[str, Any]]:
+    """One-shot prefetch of am_compat_matrix rows touching any program in the set.
+
+    Replaces the per-pair `_matrix_row_for_pair` lookup so portfolio_optimize
+    issues 1 query instead of C(N,2). Result keyed by `_normalize_pair`.
+    """
+    out: dict[tuple[str, str], dict[str, Any]] = {}
+    if am_conn is None or not program_ids:
+        if am_conn is None:
+            _missing(missing, "am_compat_matrix")
+        return out
+    if not _table_exists(am_conn, "am_compat_matrix"):
+        _missing(missing, "am_compat_matrix")
+        return out
+    placeholders = ",".join("?" for _ in program_ids)
+    try:
+        rows = am_conn.execute(
+            "SELECT program_a_id, program_b_id, compat_status, combined_max_yen, "
+            "       conditions_text, rationale_short, evidence_relation, source_url, "
+            "       confidence, inferred_only "
+            f"  FROM am_compat_matrix "
+            f" WHERE program_a_id IN ({placeholders}) "
+            f"   AND program_b_id IN ({placeholders})",
+            (*program_ids, *program_ids),
+        ).fetchall()
+    except sqlite3.Error as exc:
+        logger.warning("am_compat_matrix bulk lookup failed: %s", exc)
+        return out
+    id_set = set(program_ids)
+    for row in rows:
+        a = row["program_a_id"] if isinstance(row, sqlite3.Row) else row[0]
+        b = row["program_b_id"] if isinstance(row, sqlite3.Row) else row[1]
+        if a not in id_set or b not in id_set or a == b:
+            continue
+        key = _normalize_pair(a, b)
+        # Keep the first row seen per pair — matrix should not duplicate.
+        if key in out:
+            continue
+        out[key] = {
+            "program_a": a,
+            "program_b": b,
+            "compat_status": row["compat_status"] if isinstance(row, sqlite3.Row) else row[2],
+            "combined_max_yen": (
+                row["combined_max_yen"] if isinstance(row, sqlite3.Row) else row[3]
+            ),
+            "conditions_text": (row["conditions_text"] if isinstance(row, sqlite3.Row) else row[4]),
+            "rationale_short": (row["rationale_short"] if isinstance(row, sqlite3.Row) else row[5]),
+            "evidence_relation": (
+                row["evidence_relation"] if isinstance(row, sqlite3.Row) else row[6]
+            ),
+            "source_url": row["source_url"] if isinstance(row, sqlite3.Row) else row[7],
+            "confidence": row["confidence"] if isinstance(row, sqlite3.Row) else row[8],
+            "inferred_only": bool(row["inferred_only"] if isinstance(row, sqlite3.Row) else row[9]),
+        }
+    return out
+
+
+def _bulk_empirical_rows(
+    am_conn: sqlite3.Connection | None,
+    program_ids: list[str],
+    missing: list[str],
+) -> dict[tuple[str, str], dict[str, Any]]:
+    """One-shot prefetch of am_funding_stack_empirical co-adoption rows."""
+    out: dict[tuple[str, str], dict[str, Any]] = {}
+    if am_conn is None or not program_ids:
+        if am_conn is None:
+            _missing(missing, "am_funding_stack_empirical")
+        return out
+    if not _table_exists(am_conn, "am_funding_stack_empirical"):
+        _missing(missing, "am_funding_stack_empirical")
+        return out
+    placeholders = ",".join("?" for _ in program_ids)
+    try:
+        rows = am_conn.execute(
+            "SELECT program_a_id, program_b_id, co_adoption_count, "
+            "       compat_matrix_says, conflict_flag "
+            f"  FROM am_funding_stack_empirical "
+            f" WHERE program_a_id IN ({placeholders}) "
+            f"   AND program_b_id IN ({placeholders})",
+            (*program_ids, *program_ids),
+        ).fetchall()
+    except sqlite3.Error as exc:
+        logger.warning("am_funding_stack_empirical bulk lookup failed: %s", exc)
+        return out
+    id_set = set(program_ids)
+    for row in rows:
+        a = row["program_a_id"] if isinstance(row, sqlite3.Row) else row[0]
+        b = row["program_b_id"] if isinstance(row, sqlite3.Row) else row[1]
+        if a not in id_set or b not in id_set or a == b:
+            continue
+        key = _normalize_pair(a, b)
+        if key in out:
+            continue
+        co = row["co_adoption_count"] if isinstance(row, sqlite3.Row) else row[2]
+        says = row["compat_matrix_says"] if isinstance(row, sqlite3.Row) else row[3]
+        cf = row["conflict_flag"] if isinstance(row, sqlite3.Row) else row[4]
+        out[key] = {
+            "co_adoption_count": int(co or 0),
+            "compat_matrix_says": says,
+            "conflict_flag": int(cf or 0),
+        }
+    return out
+
+
+def _bulk_predicate_rows(
+    am_conn: sqlite3.Connection | None,
+    program_ids: list[str],
+    missing: list[str],
+) -> list[dict[str, Any]]:
+    """One-shot prefetch of NOT_IN/!=/CONTAINS predicates owned by any program in the set."""
+    if am_conn is None or not program_ids:
+        if am_conn is None:
+            _missing(missing, "am_program_eligibility_predicate")
+        return []
+    if not _table_exists(am_conn, "am_program_eligibility_predicate"):
+        _missing(missing, "am_program_eligibility_predicate")
+        return []
+    placeholders = ",".join("?" for _ in program_ids)
+    try:
+        rows = am_conn.execute(
+            "SELECT program_unified_id, predicate_kind, operator, value_text, "
+            "       source_url, source_clause_quote "
+            f"  FROM am_program_eligibility_predicate "
+            f" WHERE program_unified_id IN ({placeholders}) "
+            f"   AND operator IN ('NOT_IN', '!=', 'CONTAINS') "
+            f"   AND value_text IS NOT NULL",
+            tuple(program_ids),
+        ).fetchall()
+    except sqlite3.Error as exc:
+        logger.warning("am_program_eligibility_predicate bulk lookup failed: %s", exc)
+        return []
+    out: list[dict[str, Any]] = []
+    for r in rows:
+        out.append(
+            {
+                "program_unified_id": (
+                    r["program_unified_id"] if isinstance(r, sqlite3.Row) else r[0]
+                ),
+                "predicate_kind": (r["predicate_kind"] if isinstance(r, sqlite3.Row) else r[1]),
+                "operator": r["operator"] if isinstance(r, sqlite3.Row) else r[2],
+                "value_text": (r["value_text"] if isinstance(r, sqlite3.Row) else r[3]) or "",
+                "source_url": r["source_url"] if isinstance(r, sqlite3.Row) else r[4],
+                "source_clause_quote": (
+                    r["source_clause_quote"] if isinstance(r, sqlite3.Row) else r[5]
+                ),
+            }
+        )
+    return out
+
+
+def _bulk_sequential_rows(
+    am_conn: sqlite3.Connection | None,
+    program_ids: list[str],
+    missing: list[str],
+) -> dict[tuple[str, str], dict[str, Any]]:
+    """One-shot prefetch of am_relation sequential edges between programs in the set.
+
+    Result keyed by ordered `(a, b)` (NOT normalized) so callers can detect
+    direction. The pair-level resolver normalizes when looking up.
+    """
+    out: dict[tuple[str, str], dict[str, Any]] = {}
+    if am_conn is None or not program_ids:
+        if am_conn is None:
+            _missing(missing, "am_relation")
+        return out
+    if not _table_exists(am_conn, "am_relation"):
+        _missing(missing, "am_relation")
+        return out
+    cols = _columns(am_conn, "am_relation")
+    src_col = "src_id" if "src_id" in cols else ("source_id" if "source_id" in cols else None)
+    dst_col = "dst_id" if "dst_id" in cols else ("target_id" if "target_id" in cols else None)
+    type_col = "relation_type" if "relation_type" in cols else ("type" if "type" in cols else None)
+    if not src_col or not dst_col or not type_col:
+        return out
+    placeholders = ",".join("?" for _ in program_ids)
+    try:
+        rows = am_conn.execute(
+            f"SELECT {src_col} AS src, {dst_col} AS dst, {type_col} AS rtype "
+            f"  FROM am_relation "
+            f" WHERE {src_col} IN ({placeholders}) "
+            f"   AND {dst_col} IN ({placeholders}) "
+            f"   AND {type_col} IN "
+            f"       ('requires_before','precedes','follows','sequential','superseded_by')",
+            (*program_ids, *program_ids),
+        ).fetchall()
+    except sqlite3.Error as exc:
+        logger.warning("am_relation bulk lookup failed: %s", exc)
+        return out
+    id_set = set(program_ids)
+    for r in rows:
+        src = r["src"] if isinstance(r, sqlite3.Row) else r[0]
+        dst = r["dst"] if isinstance(r, sqlite3.Row) else r[1]
+        rtype = r["rtype"] if isinstance(r, sqlite3.Row) else r[2]
+        if src not in id_set or dst not in id_set or src == dst:
+            continue
+        key = (src, dst)
+        if key in out:
+            continue
+        out[key] = {"from": src, "to": dst, "relation_type": rtype}
+    return out
+
+
+def _resolve_pair_from_bulk(
+    a: str,
+    b: str,
+    *,
+    matrix_by_pair: dict[tuple[str, str], dict[str, Any]],
+    empirical_by_pair: dict[tuple[str, str], dict[str, Any]],
+    predicate_rows: list[dict[str, Any]],
+    sequential_by_pair: dict[tuple[str, str], dict[str, Any]],
+) -> dict[str, Any]:
+    """Mirror of `_pair_compatibility` that reads from prefetched bulk maps.
+
+    Returns the same shape as `_pair_compatibility`; never queries the DB.
+    """
+    pair_norm = _normalize_pair(a, b)
+
+    matrix = matrix_by_pair.get(pair_norm)
+    empirical = empirical_by_pair.get(pair_norm)
+
+    # Predicate filtering happens in Python over the prefetched list — same
+    # logic as `_predicate_for_pair`, just without re-issuing SQL.
+    predicate: dict[str, Any] | None = None
+    for row in predicate_rows:
+        owner = row.get("program_unified_id")
+        if owner not in (a, b):
+            continue
+        other = b if owner == a else a
+        vt = (row.get("value_text") or "").strip()
+        if not vt:
+            continue
+        hit = vt == other or other in vt.split(",") or other in vt
+        if hit:
+            predicate = {
+                "owning_program": owner,
+                "kind": row.get("predicate_kind"),
+                "operator": row.get("operator"),
+                "value_text": vt,
+                "source_url": row.get("source_url"),
+                "source_clause_quote": row.get("source_clause_quote"),
+            }
+            break
+
+    sequential = sequential_by_pair.get((a, b)) or sequential_by_pair.get((b, a))
+
+    verdict = "unknown"
+    rationale_parts: list[str] = []
+    evidence: dict[str, Any] = {}
+
+    if predicate is not None:
+        verdict = "mutually_exclusive"
+        rationale_parts.append(
+            f"legal predicate: {predicate['owning_program']} "
+            f"declares {predicate['kind']} {predicate['operator']} "
+            f"against the counterparty"
+        )
+        evidence["legal_predicate"] = predicate
+    elif empirical and empirical.get("conflict_flag"):
+        verdict = "mutually_exclusive"
+        rationale_parts.append(
+            "empirical stack conflict: matrix says "
+            f"{empirical.get('compat_matrix_says')!r}, "
+            f"co_adoption_count={empirical.get('co_adoption_count')}"
+        )
+        evidence["empirical"] = empirical
+    elif matrix is not None and matrix.get("compat_status") == "incompatible":
+        verdict = "mutually_exclusive"
+        rationale_parts.append("am_compat_matrix marks pair 'incompatible' (rule-based)")
+        evidence["matrix"] = matrix
+    elif matrix is not None and matrix.get("compat_status") == "compatible":
+        verdict = "compatible"
+        rationale_parts.append("am_compat_matrix marks pair 'compatible'")
+        evidence["matrix"] = matrix
+    elif matrix is not None and matrix.get("compat_status") == "case_by_case":
+        verdict = "compatible"
+        rationale_parts.append("am_compat_matrix marks pair 'case_by_case' — verify 公募要領")
+        evidence["matrix"] = matrix
+    elif sequential is not None:
+        verdict = "sequential"
+        rationale_parts.append(
+            f"am_relation: {sequential['relation_type']} edge "
+            f"({sequential['from']} → {sequential['to']})"
+        )
+        evidence["sequential"] = sequential
+
+    if matrix is not None and "matrix" not in evidence:
+        evidence["matrix"] = matrix
+    if empirical is not None and "empirical" not in evidence:
+        evidence["empirical"] = empirical
+    if sequential is not None and "sequential" not in evidence:
+        evidence["sequential"] = sequential
+
+    inferred_only = bool(matrix.get("inferred_only")) if matrix else False
+    if verdict == "unknown" and matrix is not None:
+        rationale_parts.append(
+            f"am_compat_matrix compat_status={matrix.get('compat_status')!r}; treated as unknown"
+        )
+
+    return {
+        "compatibility": verdict,
+        "rationale": "; ".join(rationale_parts)
+        if rationale_parts
+        else ("no matrix / empirical / predicate / relation row found for pair"),
+        "evidence": evidence,
+        "inferred_only": inferred_only,
+    }
+
+
 def _all_pair_verdicts(
     am_conn: sqlite3.Connection | None,
     program_ids: list[str],
     missing: list[str],
 ) -> dict[tuple[str, str], dict[str, Any]]:
-    """Resolve every n-choose-2 pair into a verdict dict."""
+    """Resolve every n-choose-2 pair into a verdict dict.
+
+    Issues 4 bulk prefetch queries (matrix / empirical / predicate /
+    sequential) over the entire `program_ids` set, then resolves each pair
+    in pure Python. This replaces the previous N+1 path that fired 4
+    queries per pair (4 × C(N,2) = up to 1,740 queries at N=30).
+    """
+    matrix_by_pair = _bulk_matrix_rows(am_conn, program_ids, missing)
+    empirical_by_pair = _bulk_empirical_rows(am_conn, program_ids, missing)
+    predicate_rows = _bulk_predicate_rows(am_conn, program_ids, missing)
+    sequential_by_pair = _bulk_sequential_rows(am_conn, program_ids, missing)
+
     out: dict[tuple[str, str], dict[str, Any]] = {}
     for a, b in combinations(program_ids, 2):
-        out[_normalize_pair(a, b)] = _pair_compatibility(am_conn, a, b, missing)
+        out[_normalize_pair(a, b)] = _resolve_pair_from_bulk(
+            a,
+            b,
+            matrix_by_pair=matrix_by_pair,
+            empirical_by_pair=empirical_by_pair,
+            predicate_rows=predicate_rows,
+            sequential_by_pair=sequential_by_pair,
+        )
     return out
 
 
@@ -886,7 +1218,22 @@ def get_pair_compatibility(
         "rationale": info["rationale"],
         "inferred_only": info["inferred_only"],
         "evidence": info["evidence"],
-        "data_quality": {"missing_tables": sorted(set(missing))},
+        # R8 BUGHUNT (2026-05-07): mirror portfolio_optimize disclosure shape
+        # so a downstream LLM consumer cannot mistake heuristic edges for
+        # authoritative rulings.
+        "data_quality": {
+            "missing_tables": sorted(set(missing)),
+            "compat_matrix_total": 43_966,
+            "authoritative_pair_count": 4_300,
+            "authoritative_share_pct": 9.8,
+            "heuristic_inferred_only_count": 39_666,
+            "caveat": (
+                "am_compat_matrix の 43,966 行のうち authoritative pair は 4,300 "
+                "(~9.8%)。inferred_only=true のエッジは heuristic 推論で、"
+                "compat_status='unknown' の case_by_case を含む。経費重複 + "
+                "適正化法 17 条 + 個別 公募要領 例外条項は本 endpoint の対象外。"
+            ),
+        },
         "_disclaimer": _DISCLAIMER,
         "_billing_unit": 1,
     }

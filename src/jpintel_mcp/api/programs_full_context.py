@@ -141,8 +141,7 @@ def _open_autonomath_ro() -> sqlite3.Connection | None:
 def _table_exists(conn: sqlite3.Connection, name: str) -> bool:
     try:
         row = conn.execute(
-            "SELECT 1 FROM sqlite_master "
-            "WHERE type IN ('table','view') AND name = ? LIMIT 1",
+            "SELECT 1 FROM sqlite_master WHERE type IN ('table','view') AND name = ? LIMIT 1",
             (name,),
         ).fetchone()
         return row is not None
@@ -617,9 +616,17 @@ def _section_enforcement(
                 (f"%{program_name}%", max_per_section),
             ).fetchall()
             _emit_rows(rows)
-        for law_id in law_unified_ids:
-            if len(out) >= max_per_section:
-                break
+        # R8 BUGHUNT (2026-05-07): collapsed per-law_id N+1 LIKE loop into a
+        # single OR-joined batch query (was firing one SELECT per
+        # law_unified_id under a 200ms-per-row LIKE plan; now fires once).
+        if law_unified_ids and len(out) < max_per_section:
+            # Bound the OR list to keep the LIKE plan from exploding on
+            # pathological law_refs lengths. 16 is the same depth cap used
+            # for the law-supersession chain walker above.
+            bounded = law_unified_ids[:16]
+            like_clauses = ["COALESCE(legal_basis,'') LIKE ?" for _ in bounded]
+            params: list[Any] = [f"%{lid}%" for lid in bounded]
+            params.append(max_per_section - len(out))
             rows = conn.execute(
                 "SELECT case_id, event_type, program_name_hint, recipient_name, "
                 "       recipient_houjin_bangou, is_sole_proprietor, prefecture, "
@@ -627,10 +634,10 @@ def _section_enforcement(
                 "       reason_excerpt, legal_basis, source_url, disclosed_date, "
                 "       confidence "
                 "  FROM enforcement_cases "
-                " WHERE COALESCE(legal_basis,'') LIKE ? "
+                f" WHERE {' OR '.join(like_clauses)} "
                 " ORDER BY disclosed_date DESC NULLS LAST, case_id ASC "
                 " LIMIT ?",
-                (f"%{law_id}%", max_per_section - len(out)),
+                tuple(params),
             ).fetchall()
             _emit_rows(rows)
     except sqlite3.Error as exc:
@@ -661,9 +668,7 @@ def _section_exclusions(
 
     name = program_meta.get("primary_name") if program_meta else None
     params: list[Any] = [program_id, program_id]
-    where = (
-        "(COALESCE(program_a_uid, '') = ? OR COALESCE(program_b_uid, '') = ?"
-    )
+    where = "(COALESCE(program_a_uid, '') = ? OR COALESCE(program_b_uid, '') = ?"
     if name:
         where += " OR program_a = ? OR program_b = ?"
         params.extend([name, name])
@@ -747,8 +752,11 @@ def _build_full_context(
     try:
         law_basis: dict[str, Any] | None = None
         law_unified_ids: list[str] = []
-        if "law_basis" in include_sections or "court_decisions" in include_sections \
-           or "enforcement_cases" in include_sections:
+        if (
+            "law_basis" in include_sections
+            or "court_decisions" in include_sections
+            or "enforcement_cases" in include_sections
+        ):
             law_basis = _section_law_basis(
                 conn,
                 am_conn,
@@ -838,8 +846,7 @@ def _build_full_context(
         200: {"description": "Cross-reference envelope."},
         404: {
             "description": (
-                "Program not found in jpintel programs. Verify via "
-                "/v1/programs/search."
+                "Program not found in jpintel programs. Verify via /v1/programs/search."
             )
         },
         422: {"description": "Invalid include_sections / max_per_section."},
@@ -849,9 +856,7 @@ def get_program_full_context(
     program_id: Annotated[
         str,
         PathParam(
-            description=(
-                "Program canonical id (UNI-... form on jpintel.programs)."
-            ),
+            description=("Program canonical id (UNI-... form on jpintel.programs)."),
             min_length=1,
             max_length=200,
         ),
@@ -876,8 +881,7 @@ def get_program_full_context(
             ge=1,
             le=50,
             description=(
-                "Per-section row cap (1..50, default 10). Applies to every "
-                "list-shaped section."
+                "Per-section row cap (1..50, default 10). Applies to every list-shaped section."
             ),
         ),
     ] = 10,
@@ -949,8 +953,7 @@ def get_program_full_context(
         raise HTTPException(
             status_code=404,
             detail=(
-                f"program_id={pid!r} not found in jpintel programs. "
-                "Verify via /v1/programs/search."
+                f"program_id={pid!r} not found in jpintel programs. Verify via /v1/programs/search."
             ),
         )
 
@@ -1085,10 +1088,7 @@ def get_law_related_programs(
     if ref_kind is not None and ref_kind not in allowed_kinds:
         raise HTTPException(
             status_code=422,
-            detail=(
-                f"ref_kind must be one of {sorted(allowed_kinds)}, "
-                f"got {ref_kind!r}"
-            ),
+            detail=(f"ref_kind must be one of {sorted(allowed_kinds)}, got {ref_kind!r}"),
         )
 
     # Walk supersession chain both ways. We stop at depth 16 to bound
@@ -1133,7 +1133,7 @@ def get_law_related_programs(
         params.append(ref_kind)
     where_sql = " AND ".join(where_parts)
 
-    histogram: dict[str, int] = {k: 0 for k in allowed_kinds}
+    histogram: dict[str, int] = dict.fromkeys(allowed_kinds, 0)
     try:
         for r in conn.execute(
             f"SELECT plr.ref_kind, COUNT(*) AS n "
@@ -1328,9 +1328,7 @@ def get_cases_by_industry_size_pref(
     is_sole_proprietor: Annotated[
         bool | None,
         Query(
-            description=(
-                "Filter to (or exclude) 個人事業主 rows. None = ignore."
-            ),
+            description=("Filter to (or exclude) 個人事業主 rows. None = ignore."),
         ),
     ] = None,
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
@@ -1341,16 +1339,10 @@ def get_cases_by_industry_size_pref(
     if not _table_exists(conn, "case_studies"):
         raise HTTPException(status_code=503, detail="case_studies table missing.")
 
-    if (
-        min_employees is not None
-        and max_employees is not None
-        and min_employees > max_employees
-    ):
+    if min_employees is not None and max_employees is not None and min_employees > max_employees:
         raise HTTPException(
             status_code=422,
-            detail=(
-                f"min_employees ({min_employees}) > max_employees ({max_employees})."
-            ),
+            detail=(f"min_employees ({min_employees}) > max_employees ({max_employees})."),
         )
     if (
         min_capital_yen is not None
@@ -1359,10 +1351,7 @@ def get_cases_by_industry_size_pref(
     ):
         raise HTTPException(
             status_code=422,
-            detail=(
-                f"min_capital_yen ({min_capital_yen}) > max_capital_yen "
-                f"({max_capital_yen})."
-            ),
+            detail=(f"min_capital_yen ({min_capital_yen}) > max_capital_yen ({max_capital_yen})."),
         )
 
     where: list[str] = []
