@@ -114,7 +114,11 @@
         <td>${incl ? "OK" : "FAIL"}</td>
         <td>${ngClm ? "OK" : "FAIL"}</td>
         <td>${bnd ? "OK" : "FAIL"}</td>
-        <td><a href="/practitioner-eval/${p.persona_slug}.html">詳細</a></td>`;
+        <td data-detail-cell></td>`;
+     const detail = document.createElement("a");
+     detail.href = `/practitioner-eval/${p.persona_slug}.html`;
+     detail.textContent = "詳細";
+     tr.querySelector("[data-detail-cell]").appendChild(detail);
      tbody.appendChild(tr);
    }
  }).catch(e => {
