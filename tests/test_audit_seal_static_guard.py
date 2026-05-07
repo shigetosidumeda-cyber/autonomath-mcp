@@ -32,6 +32,7 @@ _REVIEWED_DIRECT_ATTACH_SEAL_CALL_MAX_COUNTS = {
     "src/jpintel_mcp/api/intelligence.py": 1,
     "src/jpintel_mcp/api/ma_dd.py": 2,
     "src/jpintel_mcp/api/narrative.py": 1,
+    "src/jpintel_mcp/api/programs_full_context.py": 3,
     "src/jpintel_mcp/api/time_machine.py": 2,
 }
 
