@@ -257,7 +257,7 @@ def main() -> int:
     plan: list[tuple[str, str, str, list[dict]]] = []
     skipped: list[tuple[str, str]] = []
 
-    for i, (cid, cname, lid, kind) in enumerate(candidates, 1):
+    for i, (cid, _cname, lid, kind) in enumerate(candidates, 1):
         t0 = time.time()
         articles, status = fetch_and_parse(cid, lid, kind)
         dt = time.time() - t0

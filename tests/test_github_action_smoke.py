@@ -43,9 +43,9 @@ def test_action_yml_required_top_keys() -> None:
 
 def test_action_yml_is_composite() -> None:
     data = _load(ACTION_YML)
-    assert (
-        data["runs"]["using"] == "composite"
-    ), "must be a composite action (no Docker / no JS bundle)"
+    assert data["runs"]["using"] == "composite", (
+        "must be a composite action (no Docker / no JS bundle)"
+    )
     steps = data["runs"]["steps"]
     assert isinstance(steps, list) and steps, "composite action needs >=1 step"
     # constraint: keep entrypoint trivial — only shell steps allowed
@@ -61,9 +61,9 @@ def test_action_description_length_budget() -> None:
     data = _load(ACTION_YML)
     desc = data["description"]
     assert isinstance(desc, str)
-    assert (
-        20 <= len(desc) <= 125
-    ), f"description must be 20-125 chars (Marketplace tile budget); got {len(desc)}"
+    assert 20 <= len(desc) <= 125, (
+        f"description must be 20-125 chars (Marketplace tile budget); got {len(desc)}"
+    )
 
 
 def test_action_inputs_contract() -> None:

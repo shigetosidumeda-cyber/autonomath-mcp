@@ -63,7 +63,7 @@ https://jpcite.com/docs/
 ### Short description (~160 chars)
 
 ```
-Search 11,684 subsidies + 154 laws + 2,065 court decisions + 13,801 invoice registrants from Cursor. 139 MCP tools, primary-source URLs, ¥3/req (¥3.30 tax-incl), 3/day free anon.
+Search 11,601 subsidies + 6,493 laws full-text indexed + 2,065 court decisions + 13,801 invoice registrants from Cursor. 139 MCP tools, primary-source URLs, ¥3/req (¥3.30 tax-incl), 3/day free anon.
 ```
 
 ### Long description
@@ -71,7 +71,7 @@ Search 11,684 subsidies + 154 laws + 2,065 court decisions + 13,801 invoice regi
 ```
 AutonoMath exposes Japanese institutional public data via 139 MCP tools at default gates (protocol 2025-06-18, stdio). Drop it into Cursor and ask: 「東京都の農業 DX 補助金を期日順に教えて」or「houjin_bangou=… の DD プロファイルと適格事業者登録を確認して」.
 
-Coverage: 11,684 searchable programs (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 loan products with 3-axis guarantor decomposition (担保 / 個人保証人 / 第三者保証人) + 1,185 行政処分 + 154 laws indexed full-text + 9,484 law catalog stubs (e-Gov CC-BY) + 2,065 court decisions + 362 bids + 50 tax rulesets + 13,801 国税庁 qualified-invoice registrants (PDL v1.0) + 4,300 sourced compatibility pairs + 181 exclusion / prerequisite rules. Cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check.
+Coverage: 11,601 searchable programs (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 loan products with 3-axis guarantor decomposition (担保 / 個人保証人 / 第三者保証人) + 1,185 行政処分 + 6,493 laws full-text indexed + 9,484 law metadata records (e-Gov CC-BY) + 2,065 court decisions + 362 bids + 50 tax rulesets + 13,801 国税庁 qualified-invoice registrants (PDL v1.0) + 4,300 sourced compatibility pairs + 181 exclusion / prerequisite rules. Cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check.
 
 Major public rows carry source_url + fetched_at; aggregator domains are banned. ¥3/req tax-exclusive (¥3.30 tax-inclusive) fully metered, first 3 requests/day per IP free (anonymous, JST next-day reset), no tier SKUs.
 

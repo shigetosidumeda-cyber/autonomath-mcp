@@ -78,21 +78,21 @@ def test_practitioner_output_acceptance_jsonl_shape() -> None:
         for key in ("must_include", "must_not_claim", "data_join_needed"):
             assert isinstance(row[key], list), f"line {line_no} {key} must be a list"
             assert row[key], f"line {line_no} {key} must not be empty"
-            assert all(
-                isinstance(item, str) and item.strip() for item in row[key]
-            ), f"line {line_no} {key} must contain non-empty strings"
+            assert all(isinstance(item, str) and item.strip() for item in row[key]), (
+                f"line {line_no} {key} must contain non-empty strings"
+            )
 
 
 def test_must_not_claim_blocks_professional_substitution_and_assertions() -> None:
     for line_no, row in enumerate(_load_rows(), 1):
         joined = " ".join(row["must_not_claim"])
-        assert any(
-            term in joined for term in PROFESSIONAL_JUDGMENT_OR_ASSERTION_NG
-        ), f"line {line_no} must_not_claim lacks judgment/definitive-claim guard"
+        assert any(term in joined for term in PROFESSIONAL_JUDGMENT_OR_ASSERTION_NG), (
+            f"line {line_no} must_not_claim lacks judgment/definitive-claim guard"
+        )
 
 
 def test_queries_do_not_request_price_or_free_tier_changes() -> None:
     for line_no, row in enumerate(_load_rows(), 1):
-        assert (
-            PRICE_OR_FREE_TIER_CHANGE_REQUEST.search(row["query"]) is None
-        ), f"line {line_no} query must not request price/free tier changes"
+        assert PRICE_OR_FREE_TIER_CHANGE_REQUEST.search(row["query"]) is None, (
+            f"line {line_no} query must not request price/free tier changes"
+        )

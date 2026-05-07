@@ -87,10 +87,10 @@ Run through these **30 minutes before the HN submission**. If any fail, abort an
 
 All public posts cite these numbers — verify any one of them on the live API matches the draft text:
 
-- [ ] `programs` count ≈ 11,684 (off by ≤50 OK)
+- [ ] `programs` count ≈ 11,601 (off by ≤50 OK)
 - [ ] `laws` count ≈ 9,484
 - [ ] `court_decisions` count ≈ 2,065
-- [ ] `tax_rulesets` count = 35
+- [ ] `tax_rulesets` count = 50
 - [ ] `invoice_registrants` count ≈ 13,801
 - [ ] `case_studies` ≈ 2,286
 - [ ] `enforcement_cases` ≈ 1,185

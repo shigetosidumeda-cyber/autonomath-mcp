@@ -736,13 +736,13 @@ def test_reason_answer_skeleton_rollback_flag_returns_raw_tokens(monkeypatch):
     # If the binder reported missing keys, the raw token MUST be present in
     # the skeleton (rollback fidelity). Same for precompute gaps.
     for key in missing_data:
-        assert (
-            f"<<<missing:{key}>>>" in skeleton
-        ), f"flag-off path lost raw <<<missing:{key}>>> token"
+        assert f"<<<missing:{key}>>>" in skeleton, (
+            f"flag-off path lost raw <<<missing:{key}>>> token"
+        )
     for gap in precompute_gaps:
-        assert (
-            f"<<<precompute gap: {gap}>>>" in skeleton
-        ), f"flag-off path lost raw <<<precompute gap: {gap}>>> token"
+        assert f"<<<precompute gap: {gap}>>>" in skeleton, (
+            f"flag-off path lost raw <<<precompute gap: {gap}>>> token"
+        )
     # And the strip substitutions must NOT have been applied by the flag-off
     # path (they could legitimately appear in raw skeleton template literals,
     # so we only check this when the binder reported gaps that would have

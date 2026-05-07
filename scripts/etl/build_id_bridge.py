@@ -59,8 +59,11 @@ import argparse
 import sqlite3
 import sys
 import time
-from collections.abc import Iterable
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 try:
     from rapidfuzz import fuzz, process

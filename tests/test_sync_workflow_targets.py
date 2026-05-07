@@ -161,9 +161,9 @@ def test_no_llm_api_imports() -> None:
         # Match only on real code lines, not the regex literal that the
         # CI guard itself uses to grep for these strings (we have none
         # in this script, but keeping the comment policy explicit).
-        assert not re.search(
-            rf"(?<!#).*\b{re.escape(term)}\b", text
-        ), f"forbidden token {term!r} present in {SCRIPT_PATH.name}"
+        assert not re.search(rf"(?<!#).*\b{re.escape(term)}\b", text), (
+            f"forbidden token {term!r} present in {SCRIPT_PATH.name}"
+        )
 
 
 def test_no_import_side_effects(repo: Path) -> None:

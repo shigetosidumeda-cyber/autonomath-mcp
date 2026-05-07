@@ -150,7 +150,7 @@ def fetch(url: str) -> tuple[int, str, str | None]:
     """Return (http_status, body_text, error_message_or_none)."""
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     try:
-        with urllib.request.urlopen(req, timeout=TIMEOUT_S, context=_SSL_CTX) as resp:
+        with urllib.request.urlopen(req, timeout=TIMEOUT_S, context=_SSL_CTX) as resp:  # nosec B310 - operator-config https registry URLs only
             raw = resp.read()
             text = raw.decode("utf-8", errors="replace") if raw else ""
             return resp.status, text, None

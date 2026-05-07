@@ -769,7 +769,7 @@ def collect_shindanshi_rows(
     if skip_download:
         # Only use what's already cached
         cache_dir.mkdir(parents=True, exist_ok=True)
-        for date_iso, rel in (
+        for _date_iso, rel in (
             SHINDANSHI_PDFS[:only_first_n] if only_first_n is not None else SHINDANSHI_PDFS
         ):
             local = cache_dir / rel.split("/")[-1]
@@ -1088,7 +1088,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap.add_argument(
         "--pdf-cache",
         type=Path,
-        default=Path("/tmp/shindan_pdfs"),
+        default=Path("/tmp/shindan_pdfs"),  # nosec B108 - operator-run cache; CLI override expected in cron use
         help="Directory to cache chusho 消除 PDFs",
     )
     return ap.parse_args(argv)
@@ -1181,7 +1181,6 @@ def main(argv: list[str] | None = None) -> int:
         with contextlib.suppress(sqlite3.Error):
             conn.close()
 
-    by_prof_inserted: dict[str, int] = {}
     # Re-tally inserted breakdown by walking the same rows minus dedup
     # (best-effort; precise tally not stored).
 

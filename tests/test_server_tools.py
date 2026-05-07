@@ -16,7 +16,7 @@ from __future__ import annotations
 import json
 import sqlite3
 from datetime import UTC, datetime, timedelta
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -26,6 +26,9 @@ from jpintel_mcp.mcp.server import (
     regulatory_prep_pack,
     subsidy_roadmap_3yr,
 )
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def _today_jst() -> str:

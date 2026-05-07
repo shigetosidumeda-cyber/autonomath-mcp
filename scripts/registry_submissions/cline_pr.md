@@ -34,7 +34,7 @@ Locate the marketplace index file (typically `mcps.json`, `servers.json`, or `in
 {
   "name": "autonomath-mcp",
   "displayName": "AutonoMath — 日本の制度 MCP",
-  "description": "Search Japanese institutional data: 11,684 subsidies + 154 laws full-text + 9,484 law catalog stubs + 2,065 court decisions + 50 tax rulesets + 13,801 invoice registrants + 2,286 adoption cases + 1,185 enforcement records. 139 MCP tools at default gates (4 additional tools gated off pending fix). Primary-source URLs on major public rows.",
+  "description": "Search Japanese institutional data: 11,601 subsidies + 6,493 laws full-text indexed + 9,484 law metadata records + 2,065 court decisions + 50 tax rulesets + 13,801 invoice registrants + 2,286 adoption cases + 1,185 enforcement records. 139 MCP tools at default gates (4 additional tools gated off pending fix). Primary-source URLs on major public rows.",
   "repository": "https://github.com/shigetosidumeda-cyber/autonomath-mcp",
   "homepage": "https://jpcite.com",
   "license": "MIT",
@@ -118,15 +118,15 @@ A single-server entry for **AutonoMath** (`autonomath-mcp` on PyPI), an MCP serv
 
 | Dataset | Count |
 |---|---|
-| Searchable subsidy/loan/tax/certification programs | 11,684 |
+| Searchable subsidy/loan/tax/certification programs | 11,601 |
 | Adoption case studies (採択事例) | 2,286 |
 | Loan products (3-axis 担保 / 個人保証人 / 第三者保証人 decomposition) | 108 |
 | Enforcement records (行政処分) | 1,185 |
 | Court decisions | 2,065 |
 | Bids (GEPS + 47 都道府県) | 362 |
-| Laws — full text indexed | 154 |
-| Law catalog stubs (name resolver only, full-text load incremental) | 9,484 |
-| Tax rulesets (インボイス + 電帳法) | 35 |
+| Laws — full text indexed | 6,493 |
+| Law metadata records (name resolver) | 9,484 |
+| Tax rulesets (インボイス + 電帳法) | 50 |
 | Qualified-invoice issuer registrants (国税庁 PDL v1.0 delta) | 13,801 |
 | Sourced compatibility pairs (am_compat_matrix status='confirmed') | 4,300 |
 | Exclusion / prerequisite rules | 181 |

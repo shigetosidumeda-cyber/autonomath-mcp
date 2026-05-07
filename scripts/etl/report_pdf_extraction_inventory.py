@@ -35,8 +35,8 @@ TEXT_PARSER_SCRIPT = "scripts/cron/extract_program_facts.py"
 DEFAULT_SHARDS = 4
 DEFAULT_SAMPLE_LIMIT = 25
 DEFAULT_PER_HOST_DELAY_SEC = 1.0
-DEFAULT_CACHE_DIR = Path("/tmp/jpcite_pdf_cache")
-DEFAULT_TEMP_DB_DIR = Path("/tmp")
+DEFAULT_CACHE_DIR = Path("/tmp/jpcite_pdf_cache")  # nosec B108 - operator-run inventory script default; --cache-dir overrides
+DEFAULT_TEMP_DB_DIR = Path("/tmp")  # nosec B108 - default for ephemeral DB shards; overridable via CLI
 
 PARSER_PROFILE = "grant_env_content"
 PARSER_FIELDS = ("deadline", "subsidy_rate", "required_docs", "contact", "max_amount")

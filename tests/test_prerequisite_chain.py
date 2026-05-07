@@ -149,9 +149,9 @@ def test_prerequisite_chain_outside_coverage_surfaces_caveat():
     res = _prerequisite_chain_impl(target_program_id=pid, depth=3)
 
     # No hard error — empty chain is a valid result.
-    assert (
-        res.get("error") is None
-    ), f"empty chain must not be a hard error envelope; got {res.get('error')}"
+    assert res.get("error") is None, (
+        f"empty chain must not be a hard error envelope; got {res.get('error')}"
+    )
 
     # Chain itself is empty.
     assert res["prerequisite_chain"] == []
@@ -164,9 +164,9 @@ def test_prerequisite_chain_outside_coverage_surfaces_caveat():
     # "no prerequisites required".
     dq = res["data_quality"]
     assert dq["coverage_pct"] == _COVERAGE_PCT
-    assert (
-        dq["coverage_pct"] == 1.6
-    ), f"coverage_pct must remain 1.6% until bundle expansion; got {dq['coverage_pct']}"
+    assert dq["coverage_pct"] == 1.6, (
+        f"coverage_pct must remain 1.6% until bundle expansion; got {dq['coverage_pct']}"
+    )
     # caveat field is present on empty results to make the gap explicit.
     assert "caveat" in dq
     assert "1.6" in dq["caveat"] or "coverage" in dq["caveat"].lower()

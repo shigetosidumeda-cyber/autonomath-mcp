@@ -189,7 +189,7 @@
  <li><strong>匿名 3 req/日 無料</strong> で小規模な確認に利用できます (IP ベース、JST 翌日 00:00 リセット)</li>
  <li>各レコードに <strong>出典 URL + content_hash + fetched_at</strong> を付与 — 「裏取り」用エビデンスとして記事内引用可能</li>
  <li>大手新聞契約の <strong>TDB / TSR と並走</strong> — 商業 DB の置き換えではなく公的一次資料を補完</li>
- <li>個人情報・取引履歴・財務情報は<strong>含まない</strong> (公的に開示された一次資料のみ)</li>
+ <li>個人情報・取引履歴・財務情報は<strong>含まない</strong> (公的に開示された一次資料を中心に扱います)</li>
  <li>API + MCP (¥3/リクエスト 完全従量、月額固定・席数課金なし)</li>
  </ul>
 
@@ -246,7 +246,7 @@
  <li><strong>行政処分 22,258 件は「官報全件」ではありません。</strong>政府公表記録のサブセット (各省庁・自治体公表分の現時点累計) です。官報全件には到達していません。</li>
  <li><strong>データ更新頻度は tier 別:</strong> S = 日次、A = 日次、B = 週次、C = 月次。各レコードに <code>fetched_at</code> を付与しています。最新性が要件の取材では <code>fetched_at</code> を確認してください。</li>
  <li><strong>jpcite はサーバー側で LLM API を呼びません。</strong>AI クライアント (Claude Desktop / Cursor 等) が jpcite の MCP サーバを呼び出す構成です。jpcite は一次資料 URL と構造化データを返します。</li>
- <li>個人情報・取引履歴・財務情報は<strong>含みません</strong>。公的に開示された一次資料のみを扱います。与信・財務分析は TDB / TSR 等の商業 DB が適切です。</li>
+ <li>個人情報・取引履歴・財務情報は<strong>含みません</strong>。公的に開示された一次資料を中心に扱います。与信・財務分析は TDB / TSR 等の商業 DB が適切です。</li>
  <li>記者・調査会社の取材判断は人間の責任です。jpcite は事実関係の <strong>裏取り補助</strong>であって、記事内容の保証や編集判断の代行はしません。</li>
  </ul>
  <p class="legal-note" style="font-size:13px;color:var(--text-muted);margin:20px 0 0;">

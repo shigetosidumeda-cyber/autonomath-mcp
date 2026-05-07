@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 import sqlite3
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from jpintel_mcp.api.intel_refund_risk import router
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 _HOUJIN = "1234567890123"
 

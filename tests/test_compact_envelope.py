@@ -200,9 +200,9 @@ def test_compact_round_trip() -> None:
     assert expanded.get("records") == full["records"], "records mismatched on round-trip"
 
     # Disclaimer reference id resolves back to the original Japanese text.
-    assert (
-        expanded["_disclaimer"] == full["_disclaimer"]["note"]
-    ), "disclaimer text not recovered from reference id"
+    assert expanded["_disclaimer"] == full["_disclaimer"]["note"], (
+        "disclaimer text not recovered from reference id"
+    )
 
     # known_gaps come back as the canonical reference-table text (NOT the
     # original verbose sentence — that's the lossy bit; the canonical text
@@ -236,12 +236,12 @@ def test_compact_disclaimer_id_resolves() -> None:
     the verbose payload."""
     # Every published id must resolve to a non-empty Japanese string.
     for ref_id, text in DISCLAIMER_TABLE.items():
-        assert isinstance(ref_id, str) and ref_id.startswith(
-            "disc_"
-        ), f"disclaimer reference id {ref_id!r} doesn't follow `disc_*` convention"
-        assert (
-            isinstance(text, str) and len(text) >= 30
-        ), f"disclaimer text for {ref_id!r} is suspiciously short (≤ 30 chars)"
+        assert isinstance(ref_id, str) and ref_id.startswith("disc_"), (
+            f"disclaimer reference id {ref_id!r} doesn't follow `disc_*` convention"
+        )
+        assert isinstance(text, str) and len(text) >= 30, (
+            f"disclaimer text for {ref_id!r} is suspiciously short (≤ 30 chars)"
+        )
 
     # End-to-end: full envelope → compact → expansion → original text.
     full = _full_program_envelope()

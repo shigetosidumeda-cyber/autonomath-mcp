@@ -118,7 +118,7 @@ def http_get(url: str, throttle: HostThrottle) -> str:
     """Fetch `url` as text, respecting per-host throttling. Raises on error."""
     throttle.wait(url)
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-    with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT_S, context=_SSL_CTX) as resp:
+    with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT_S, context=_SSL_CTX) as resp:  # nosec B310 - operator-config https endpoint, no file:/ schemes
         raw = resp.read()
     # JFC pages are utf-8 in the live tree; fall back to shift_jis on legacy mirrors.
     for enc in ("utf-8", "shift_jis", "cp932"):
@@ -621,7 +621,7 @@ def smoke_one_association(
     try:
         throttle.wait(assoc.homepage_url)
         req = urllib.request.Request(assoc.homepage_url, headers={"User-Agent": USER_AGENT})
-        with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT_S, context=_SSL_CTX) as resp:
+        with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT_S, context=_SSL_CTX) as resp:  # nosec B310 - operator-config https endpoint, no file:/ schemes
             assoc.smoke_status = "ok"
             assoc.smoke_http_code = str(resp.status)
     except urllib.error.HTTPError as e:

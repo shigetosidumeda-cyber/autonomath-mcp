@@ -264,7 +264,7 @@ def _http_get(url: str) -> bytes:
     host = urlparse(url).hostname or ""
     _throttle(host)
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-    with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT_S, context=_SSL_CTX) as resp:
+    with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT_S, context=_SSL_CTX) as resp:  # nosec B310 - operator-config https endpoint, no file:/ schemes
         return resp.read()
 
 

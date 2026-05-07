@@ -118,7 +118,7 @@ def parse_articles(xml_bytes: bytes) -> list[dict]:
       - 施行令/施行規則: same pattern
       - 附則: SupplProvision > Article
     """
-    root = ET.fromstring(xml_bytes)
+    root = ET.fromstring(xml_bytes)  # nosec B314 - input is trusted gov-source XML; not user-supplied
     articles: list[dict] = []
     seen_nums: set[str] = set()
     for art in root.iter("Article"):
@@ -127,7 +127,6 @@ def parse_articles(xml_bytes: bytes) -> list[dict]:
             continue
         # Some addendum (附則) blocks repeat Num across separate SupplProvision
         # contexts. Track ancestor SupplProvision to disambiguate.
-        suppl = ""
         # If inside SupplProvision, suffix article_number with _suppl<idx>
         # heuristic: walk ancestors via XPath-like (lxml not avail), so we
         # look for a closest SupplProvision attribute match using ET parent map.

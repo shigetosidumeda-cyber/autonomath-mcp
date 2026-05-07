@@ -25,10 +25,13 @@ Skips:
 from __future__ import annotations
 
 import re
-from collections.abc import Iterator
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 try:
     from bs4 import BeautifulSoup  # type: ignore
@@ -192,6 +195,6 @@ def test_no_aggregator_hosts_in_examples():
             url_surfaces.append(code.get_text("\n", strip=False))
         haystack = "\n".join(url_surfaces)
         for needle in banned:
-            assert (
-                needle not in haystack
-            ), f"{html_path.name} cites banned aggregator '{needle}' in a link / code surface"
+            assert needle not in haystack, (
+                f"{html_path.name} cites banned aggregator '{needle}' in a link / code surface"
+            )

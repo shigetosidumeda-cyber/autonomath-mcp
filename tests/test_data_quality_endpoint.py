@@ -25,10 +25,13 @@ import json
 import sqlite3
 import time
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+
+if TYPE_CHECKING:
+    import pytest
 
 # ---------------------------------------------------------------------------
 # Helpers — minimal autonomath fixture (faithful to migrations 049 + 069).

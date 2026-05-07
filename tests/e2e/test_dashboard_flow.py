@@ -72,9 +72,9 @@ async def test_dashboard_usage_chart_renders_bars_with_seeded_events(
     # We seeded non-zero events, so the peak branch should fire.
     title_text = await chart_title.text_content()
     assert title_text is not None
-    assert (
-        "peak" in title_text
-    ), f"expected peak-annotation after seeding events; got {title_text!r}"
+    assert "peak" in title_text, (
+        f"expected peak-annotation after seeding events; got {title_text!r}"
+    )
 
     # SVG rects exist
     rects = page.locator(".chart-svg rect")
@@ -126,9 +126,9 @@ async def test_rotate_key_invalidates_old_key(
         await page.locator("#dash-signin-key").fill(seeded_api_key["raw_key"])
         await page.locator("#dash-signin-submit").click()
     old_resp = await old_resp_info.value
-    assert (
-        old_resp.status == 401
-    ), f"expected 401 when signing in with the rotated-out key; got {old_resp.status}"
+    assert old_resp.status == 401, (
+        f"expected 401 when signing in with the rotated-out key; got {old_resp.status}"
+    )
 
 
 @pytest.mark.asyncio
@@ -195,9 +195,9 @@ async def test_logout_clears_session_cookie(
 
     # Cookie present
     cookies_before = await page.context.cookies()
-    assert any(
-        c["name"] == "jpintel_session" for c in cookies_before
-    ), "jpintel_session cookie should be set after sign-in"
+    assert any(c["name"] == "jpintel_session" for c in cookies_before), (
+        "jpintel_session cookie should be set after sign-in"
+    )
 
     await page.locator("#dash-logout-link").click()
 
@@ -209,6 +209,6 @@ async def test_logout_clears_session_cookie(
     jp_cookie = [c for c in cookies_after if c["name"] == "jpintel_session"]
     # Cookie is either gone or value emptied — accept both outcomes (FastAPI
     # set-cookie with delete() sends an expiry in the past).
-    assert not jp_cookie or not jp_cookie[0].get(
-        "value"
-    ), f"jpintel_session cookie should be cleared; got {jp_cookie!r}"
+    assert not jp_cookie or not jp_cookie[0].get("value"), (
+        f"jpintel_session cookie should be cleared; got {jp_cookie!r}"
+    )

@@ -345,7 +345,7 @@ def _is_valid_target_name(name: str | None) -> bool:
         return False
     if re.fullmatch(r"[\d\-\.]+", s):
         return False
-    if (
+    return not (
         re.search(r"年.*月.*日", s)
         and not any(
             kw in s
@@ -366,9 +366,7 @@ def _is_valid_target_name(name: str | None) -> bool:
             )
         )
         and re.fullmatch(r"[\d０-９年月日\s\.\-/平成令和元昭和大正]+", s)
-    ):
-        return False
-    return True
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -511,7 +509,7 @@ def _classify_target_excel(
         # non-empty. Subsequent rows with only perm-id columns belong to
         # the previous entity (collect perm count + secondary perm ids).
         current: EnfRow | None = None
-        for r_i, row in enumerate(ws.iter_rows(min_row=2, values_only=True), 2):
+        for _r_i, row in enumerate(ws.iter_rows(min_row=2, values_only=True), 2):
             cells = list(row)
             if len(cells) <= max(name_idx, date_idx):
                 continue

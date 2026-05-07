@@ -63,10 +63,12 @@ import os
 import sqlite3
 import sys
 import time
-from collections.abc import Iterator
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_AUTONOMATH_DB = REPO_ROOT / "autonomath.db"

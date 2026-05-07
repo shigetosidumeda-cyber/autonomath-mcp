@@ -15,11 +15,14 @@ routes correctly, and returns the documented roadmap response.
 from __future__ import annotations
 
 import sys
-from collections.abc import Iterator
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 from fastapi.testclient import TestClient
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 _REPO = Path(__file__).resolve().parent.parent
 _SRC = _REPO / "src"

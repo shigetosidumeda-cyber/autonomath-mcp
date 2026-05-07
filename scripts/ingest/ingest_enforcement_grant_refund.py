@@ -327,7 +327,7 @@ class Fetcher:
             self._pace()
             req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
             try:
-                with urllib.request.urlopen(req, timeout=20, context=_SSL_CTX) as resp:  # noqa: S310
+                with urllib.request.urlopen(req, timeout=20, context=_SSL_CTX) as resp:  # noqa: S310  # nosec B310 - operator-config https endpoint, no file:/ schemes
                     body = resp.read().decode("utf-8", errors="replace")
                     self._last_t = time.monotonic()
                     return resp.status, body
@@ -353,10 +353,10 @@ def probe_valid_ids(year_code: str, max_id: int = 800, workers: int = 30) -> lis
 
     def _probe(nid: int) -> str | None:
         url = f"{base}{nid:04d}-0.htm"
-        for attempt in range(3):
+        for _attempt in range(3):
             try:
                 req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-                with urllib.request.urlopen(req, timeout=12, context=_SSL_CTX) as resp:  # noqa: S310
+                with urllib.request.urlopen(req, timeout=12, context=_SSL_CTX) as resp:  # noqa: S310  # nosec B310 - operator-config https endpoint, no file:/ schemes
                     if resp.status == 200:
                         return f"{nid:04d}"
                     return None
@@ -764,7 +764,7 @@ def run(
     )
     now_iso = datetime.now(tz=UTC).isoformat(timespec="seconds")
 
-    fetcher = Fetcher(qps=10.0)
+    Fetcher(qps=10.0)
 
     # 1. Discover valid IDs (from cache file if available, else probe).
     valid_by_year: dict[str, list[str]] = {}
@@ -979,7 +979,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument(
         "--cached-id-dir",
         type=Path,
-        default=Path("/tmp"),
+        default=Path("/tmp"),  # nosec B108 - id-list cache fallback default; CLI flag override expected in cron
         help="directory holding {yc}_ids.txt cache files",
     )
     ap.add_argument("--dry-run", action="store_true")

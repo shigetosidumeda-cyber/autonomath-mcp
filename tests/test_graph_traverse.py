@@ -155,9 +155,9 @@ def test_cycle_suppression_no_repeated_targets_within_path() -> None:
         max_results=200,
     )
 
-    assert (
-        res["traversed_count"] >= 1
-    ), f"hub seed should expand at depth 3; got 0 edges. error={res.get('error')}"
+    assert res["traversed_count"] >= 1, (
+        f"hub seed should expand at depth 3; got 0 edges. error={res.get('error')}"
+    )
 
     # No self-loops (src == tgt) — the CTE seed already filters
     # target_entity_id NOT NULL, and the cycle-suppression instr() check

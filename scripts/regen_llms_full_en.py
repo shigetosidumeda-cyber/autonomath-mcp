@@ -264,7 +264,7 @@ def _section_header(programs: int, laws: int, cases: int, generated_at: str) -> 
     return [
         "# jpcite - Japanese public-program database (English LLM index)",
         "",
-        f"> Evidence pre-fetch index for Japanese public programs: {programs:,} normalized LLM-index program rows + {laws:,} laws + {cases:,} adoption case studies. The public search surface has 11,684 searchable program rows; rows whose source title looks like page chrome, attachments, or navigation text are excluded from this compact LLM index.",
+        f"> Evidence pre-fetch index for Japanese public programs: {programs:,} normalized LLM-index program rows + {laws:,} laws + {cases:,} adoption case studies. The public search surface has 11,601 searchable program rows; rows whose source title looks like page chrome, attachments, or navigation text are excluded from this compact LLM index.",
         "> Use this before answer generation to retrieve cited facts, source URLs, fetched_at metadata, provenance, and compatibility-rule context. It is not an answer generator.",
         "> Token and cost impact is workload-dependent; jpcite API pricing is fixed at ¥3 per billable unit. Normal search/detail calls are 1 unit.",
         "> Program names, law titles, and case fields stay in Japanese where applicable.",
@@ -332,7 +332,7 @@ def _section_coverage(programs: int, laws: int, cases: int) -> list[str]:
     return [
         "## Coverage statistics",
         "",
-        f"- Programs: {programs:,} normalized LLM-index rows. Public search exposes 11,684 searchable program rows.",
+        f"- Programs: {programs:,} normalized LLM-index rows. Public search exposes 11,601 searchable program rows.",
         f"- Laws: {laws:,} rows in the laws table (e-Gov / ministry primary sources, current + superseded + repealed).",
         f"- Case studies: {cases:,} adoption case studies (採択事例). Each row is a real adopting entity, with 法人番号 when public.",
         "- Loans: 108 rows in loan_programs (担保 / 個人保証人 / 第三者保証人 split into three independent enumerations).",

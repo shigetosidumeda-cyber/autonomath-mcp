@@ -48,10 +48,13 @@ import re
 import sqlite3
 import sys
 from collections import Counter, defaultdict
-from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
+from typing import TYPE_CHECKING
 from urllib.parse import urlparse
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 # ---------------------------------------------------------------------------
 # Static data: prefecture aliases, romaji map for URL signal, ward alias rules.
@@ -464,8 +467,7 @@ def iter_programs(db_path: Path, only_missing: bool, limit: int | None) -> Itera
             )
         if limit:
             sql += f" LIMIT {int(limit)}"
-        for row in con.execute(sql):
-            yield row
+        yield from con.execute(sql)
     finally:
         con.close()
 

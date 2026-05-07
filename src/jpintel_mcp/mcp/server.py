@@ -78,7 +78,7 @@ mcp = FastMCP(
         "instead of pasting long PDFs, pages, or search results. Context-size estimates "
         "use caller-supplied baselines for input-context comparison.\n\n"
         "Coverage:\n"
-        "- 11,684 searchable programs (国 + 47 都道府県 + 市区町村; non-public rows are not exposed)\n"
+        "- 11,601 searchable programs (国 + 47 都道府県 + 市区町村; non-public rows are not exposed)\n"
         "- 2,286 採択事例 (real recipient profiles paired with programs received)\n"
         "- 108 融資 programs on 3-axis risk (担保 / 個人保証人 / 第三者保証人)\n"
         "- 1,185 会計検査院 enforcement_cases (不当請求 / 目的外使用 etc.)\n"
@@ -1181,9 +1181,9 @@ def search_programs(
         ),
     ] = "today",
 ) -> dict[str, Any]:
-    """DISCOVER: Search 11,547 Japanese public programs (subsidies/loans/tax incentives/certifications) with Tier-graded data quality.
+    """DISCOVER: Search 11,601 Japanese public programs (subsidies/loans/tax incentives/certifications) with Tier-graded data quality.
 
-    補助金・助成金・融資・税制優遇・認定制度を横断検索する (国 + 47 都道府県 + 市区町村). Returns program **definitions** (policy text, not recipients) with tier-graded quality labels and primary-source URL + fetched_at on every row — no aggregator sources. Jグランツ 公開 API does not support this cross-ministry / cross-prefecture discovery with quality ranking; this is the canonical entrypoint for "what 補助金 can X use?" questions.
+    補助金・助成金・融資・税制優遇・認定制度を横断検索する (国 + 47 都道府県 + 市区町村). Returns program **definitions** (policy text, not recipients) with tier-graded quality labels and primary-source URL + fetched_at where available; aggregator domains are excluded by policy. Jグランツ 公開 API does not support this cross-ministry / cross-prefecture discovery with quality ranking; this is the canonical entrypoint for candidate-discovery questions about Japanese public programs.
 
     Use this for program **definitions** (eligibility, amount, window, authority).
     To find **real recipients** of a program ("businesses like mine actually
@@ -1191,7 +1191,7 @@ def search_programs(
     profiles, not policy text.
 
     Typical queries:
-      - "この事業に使える補助金は?" / "What subsidies does X business qualify for?"
+      - "この事業で確認すべき補助金候補は?" / "Which subsidy candidates should this business review?"
       - "東京都の小規模事業者向け、上限 300 万円以下の補助金は?"
       - "設備投資に使える税制優遇・税額控除は?"
       - "農林水産省管轄で 認定新規就農者向けの助成金を一覧"
@@ -4117,7 +4117,7 @@ def smb_starter_pack(
         "source": {
             "generated_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
             "coverage": (
-                "補助金 11,684 + 融資 108 + 税制 50 + 行政処分 1,185 から "
+                "補助金 11,601 + 融資 108 + 税制 50 + 行政処分 1,185 から "
                 "プロファイルに沿った top N を 1 call で。"
                 "併用可否は check_exclusions、詳細は get_program で深掘り。"
             ),

@@ -1210,8 +1210,8 @@ def create_app() -> FastAPI:
             "MCP exposes 139 tools in the standard configuration.\n\n"
             "---\n\n"
             "## 日本語要約 (JP summary)\n\n"
-            "jpcite は **11,684 件の検索可能な補助金 / 融資 / 税制 / 認定** "
-            "(全 14,472 件を追跡し、11,684 件を通常検索で公開)、**2,286 件の"
+            "jpcite は **11,601 件の検索可能な補助金 / 融資 / 税制 / 認定** "
+            "(全 14,472 件を追跡し、11,601 件を通常検索で公開)、**2,286 件の"
             "採択事例**、**108 件の融資商品** (担保 / 個人保証人 / 第三者保証人 "
             "三軸分解)、**1,185 件の行政処分**、**9,484 件の法令** (e-Gov / "
             "CC-BY 4.0)、**50 件の税務判定ルールセット**、**2,065 件の判例**、"
@@ -2257,7 +2257,7 @@ def run() -> None:
     # means a desynced subscription state in SQLite.
     uvicorn.run(
         "jpintel_mcp.api.main:app",
-        host="0.0.0.0",
+        host="0.0.0.0",  # nosec B104 - intentional bind on Fly.io container; ingress is fronted by Fly proxy
         port=8080,
         reload=False,
         log_config=None,

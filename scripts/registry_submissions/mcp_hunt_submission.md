@@ -37,7 +37,7 @@ AutonoMath
 ### Description (paragraph)
 
 ```
-AutonoMath exposes Japanese institutional public data via 139 MCP tools at default gates (protocol 2025-06-18, stdio): 11,684 searchable programs (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 loan products with 3-axis 担保 / 個人保証人 / 第三者保証人 decomposition + 1,185 行政処分 + 154 laws indexed full-text + 9,484 law catalog stubs (e-Gov CC-BY) + 2,065 court decisions + 362 bids + 50 tax rulesets + 13,801 国税庁 qualified-invoice registrants (PDL v1.0) + 4,300 sourced compatibility pairs + 181 exclusion / prerequisite rules. Cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check. Major public rows carry source_url + fetched_at; aggregator domains are banned. ¥3/req tax-exclusive (¥3.30 tax-inclusive) fully metered, first 3 requests/day per IP free (anonymous, JST next-day reset), no tier SKUs.
+AutonoMath exposes Japanese institutional public data via 139 MCP tools at default gates (protocol 2025-06-18, stdio): 11,601 searchable programs (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 loan products with 3-axis 担保 / 個人保証人 / 第三者保証人 decomposition + 1,185 行政処分 + 6,493 laws full-text indexed + 9,484 law metadata records (e-Gov CC-BY) + 2,065 court decisions + 362 bids + 50 tax rulesets + 13,801 国税庁 qualified-invoice registrants (PDL v1.0) + 4,300 sourced compatibility pairs + 181 exclusion / prerequisite rules. Cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check. Major public rows carry source_url + fetched_at; aggregator domains are banned. ¥3/req tax-exclusive (¥3.30 tax-inclusive) fully metered, first 3 requests/day per IP free (anonymous, JST next-day reset), no tier SKUs.
 
 Disclaimer (税理士法 §52 fence): information retrieval only. Does not perform 税務代理 (税理士法 §52), 法律事務 (弁護士法 §72), 申請代理 (行政書士法 §1), or 労務判断 (社労士法). Verify primary-source URLs and consult licensed professionals.
 ```
@@ -167,7 +167,7 @@ OG: site/static/og/autonomath-og-1200x630.png (1200×630)
 ```
 Honest figures verified 2026-04-29 (v0.3.2):
 - 139 tools at default gates (4 broken tools gated off pending fix)
-- 154 laws full-text + 9,484 catalog stubs (incremental full-text load)
+- 6,493 laws full-text indexed + 9,484 law metadata records (incremental full-text load)
 - 4,300 sourced compatibility pairs (heuristic 44,515 inferences flagged status='unknown' and not surfaced as truth)
 - major public rows carry source_url + fetched_at
 - aggregator domains (noukaweb, hojyokin-portal, biz.stayway) banned from source_url

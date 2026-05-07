@@ -29,14 +29,16 @@ import contextlib
 import json
 import logging
 import os
-import sqlite3
 import sys
 import traceback
-from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    import sqlite3
+    from collections.abc import Callable
 
 # Allow running as a script without `pip install -e .`.
 _REPO = Path(__file__).resolve().parent.parent

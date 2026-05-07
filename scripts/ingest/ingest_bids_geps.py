@@ -74,7 +74,7 @@ _LOG = logging.getLogger("jpintel.ingest_bids_geps")
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_DB = REPO_ROOT / "data" / "jpintel.db"
-CACHE_DIR = Path("/tmp/jpintel_geps_cache")
+CACHE_DIR = Path("/tmp/jpintel_geps_cache")  # nosec B108 - operator-host cache for bulk ingest; mode 0700 created on first use
 LOG_DIR = REPO_ROOT / "data"
 
 USER_AGENT = (

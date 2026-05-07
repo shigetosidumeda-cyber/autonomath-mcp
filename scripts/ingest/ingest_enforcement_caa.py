@@ -639,7 +639,7 @@ def main(argv: list[str] | None = None) -> int:
         if conn is not None:
             _begin()
         batch_n = 0
-        for idx, (eid, url, _title) in enumerate(all_entries, start=1):
+        for _idx, (eid, url, _title) in enumerate(all_entries, start=1):
             stats["entries_walked"] += 1
             try:
                 res = http.get(url)

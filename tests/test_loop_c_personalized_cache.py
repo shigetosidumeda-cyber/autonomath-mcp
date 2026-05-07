@@ -12,9 +12,12 @@ cross-customer leakage boundary both depend on this isolation.
 
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from jpintel_mcp.self_improve import loop_c_personalized_cache as loop_c
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def _fake_query_log_rows() -> list[dict[str, object]]:

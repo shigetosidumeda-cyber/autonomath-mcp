@@ -545,7 +545,7 @@ def parse_hkd_pdf(text: str, source_url: str) -> list[EnfRow]:
     if sub:
         reason = sub.group(1).strip()
     # Also collect a longer reason from the body paragraph.
-    body_para = re.search(
+    re.search(
         r"(?:１|1)[\s.．、]+指名停止措置業者名[\s\S]+?(?=記\s*\n)",
         text,
     )
@@ -674,7 +674,6 @@ def parse_cbr_detail(html: str, source_url: str) -> list[EnfRow]:
         or fields.get("違反事実")
     )
     law_ref = fields.get("根拠法令") or fields.get("関係法令") or "建設業法"
-    period: str | None = None
     period_start: str | None = None
     period_end: str | None = None
     if "営業停止" in punishment or "停止" in punishment:

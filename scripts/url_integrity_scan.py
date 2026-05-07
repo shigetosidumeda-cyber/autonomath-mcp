@@ -68,7 +68,7 @@ SYNTHETIC_HOSTS: frozenset[str] = frozenset(
 SENTINEL_IPS: frozenset[str] = frozenset(
     {
         "127.0.0.1",
-        "0.0.0.0",
+        "0.0.0.0",  # nosec B104 - sentinel string literal for placeholder detection, no bind
         "::1",
     }
 )

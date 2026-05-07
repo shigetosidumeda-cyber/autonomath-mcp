@@ -407,17 +407,17 @@ def test_bundle_optimal_excludes_listed_program_ids(
     body = resp.json()
 
     bundle_ids = {row["program_id"] for row in body["bundle"]}
-    assert not (
-        set(excluded) & bundle_ids
-    ), f"excluded ids leaked into bundle: {bundle_ids & set(excluded)}"
+    assert not (set(excluded) & bundle_ids), (
+        f"excluded ids leaked into bundle: {bundle_ids & set(excluded)}"
+    )
 
     # Runner-ups must also honor the exclusion (they are derived from the
     # same candidate pool that already had the excludes filtered out).
     for ru in body["runner_up_bundles"]:
         ru_ids = set(ru["bundle"])
-        assert not (
-            set(excluded) & ru_ids
-        ), f"excluded ids leaked into runner_up: {ru_ids & set(excluded)}"
+        assert not (set(excluded) & ru_ids), (
+            f"excluded ids leaked into runner_up: {ru_ids & set(excluded)}"
+        )
 
     # Without A in the pool, the conflict edge (A, B) is moot, so B *can*
     # appear (no longer blocked by A).
@@ -452,9 +452,9 @@ def test_bundle_optimal_max_count_returns_more_or_equal_programs(
 
     n_amount = len(r_amount.json()["bundle"])
     n_count = len(r_count.json()["bundle"])
-    assert (
-        n_count >= n_amount
-    ), f"max_count returned fewer programs ({n_count}) than max_amount ({n_amount}) — should be >="
+    assert n_count >= n_amount, (
+        f"max_count returned fewer programs ({n_count}) than max_amount ({n_amount}) — should be >="
+    )
 
     # max_amount always returns the highest-amount candidate first.
     body_amount = r_amount.json()

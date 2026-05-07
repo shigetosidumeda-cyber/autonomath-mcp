@@ -29,10 +29,12 @@ from __future__ import annotations
 import json
 import sqlite3
 from datetime import UTC, datetime
-from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 @pytest.fixture()
@@ -275,26 +277,26 @@ def _assert_snapshot_fields(
     matching the live snapshot computed at test-start.
     """
     assert isinstance(body, dict), f"{where}: body must be a dict, got {type(body)!r}"
-    assert (
-        "corpus_snapshot_id" in body
-    ), f"{where}: corpus_snapshot_id missing — body keys={list(body.keys())}"
-    assert (
-        "corpus_checksum" in body
-    ), f"{where}: corpus_checksum missing — body keys={list(body.keys())}"
+    assert "corpus_snapshot_id" in body, (
+        f"{where}: corpus_snapshot_id missing — body keys={list(body.keys())}"
+    )
+    assert "corpus_checksum" in body, (
+        f"{where}: corpus_checksum missing — body keys={list(body.keys())}"
+    )
     snap_id = body["corpus_snapshot_id"]
     checksum = body["corpus_checksum"]
-    assert (
-        isinstance(snap_id, str) and snap_id
-    ), f"{where}: corpus_snapshot_id must be a non-empty string, got {snap_id!r}"
-    assert (
-        isinstance(checksum, str) and checksum
-    ), f"{where}: corpus_checksum must be a non-empty string, got {checksum!r}"
-    assert (
-        snap_id == expected_snapshot_id
-    ), f"{where}: corpus_snapshot_id drift — got {snap_id!r} vs live {expected_snapshot_id!r}"
-    assert (
-        checksum == expected_checksum
-    ), f"{where}: corpus_checksum drift — got {checksum!r} vs live {expected_checksum!r}"
+    assert isinstance(snap_id, str) and snap_id, (
+        f"{where}: corpus_snapshot_id must be a non-empty string, got {snap_id!r}"
+    )
+    assert isinstance(checksum, str) and checksum, (
+        f"{where}: corpus_checksum must be a non-empty string, got {checksum!r}"
+    )
+    assert snap_id == expected_snapshot_id, (
+        f"{where}: corpus_snapshot_id drift — got {snap_id!r} vs live {expected_snapshot_id!r}"
+    )
+    assert checksum == expected_checksum, (
+        f"{where}: corpus_checksum drift — got {checksum!r} vs live {expected_checksum!r}"
+    )
 
 
 def test_corpus_snapshot_coverage_all_11_routers(client, snapshot_seed, paid_key):

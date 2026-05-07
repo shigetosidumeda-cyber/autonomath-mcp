@@ -8,9 +8,12 @@ an alias candidate.
 from __future__ import annotations
 
 import sqlite3
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from jpintel_mcp.self_improve import loop_e_alias_expansion as loop_e
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def _seed_min_db(db_path: Path) -> None:

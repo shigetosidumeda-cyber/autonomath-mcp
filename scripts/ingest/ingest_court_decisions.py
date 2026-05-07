@@ -154,7 +154,7 @@ _LOG = logging.getLogger("autonomath.ingest.court_decisions")
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_DB = REPO_ROOT / "data" / "jpintel.db"
-DEFAULT_CACHE_DIR = Path("/tmp/autonomath_han_cache")
+DEFAULT_CACHE_DIR = Path("/tmp/autonomath_han_cache")  # nosec B108 - operator-host cache; --cache-dir overrides
 
 SEARCH_ENTRY_URL = "https://www.courts.go.jp/app/hanrei_jp/search1"
 ALLOWED_HOSTS: frozenset[str] = frozenset({"www.courts.go.jp"})

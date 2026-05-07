@@ -6,9 +6,12 @@ the loop, which clusters by pattern_id and writes a proposals YAML.
 
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from jpintel_mcp.self_improve import loop_g_invariant_expansion as loop_g
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def _fake_log_lines() -> list[str]:

@@ -235,7 +235,7 @@ def main() -> int:
         try:
             con.execute("BEGIN IMMEDIATE")
             with fp.open(encoding="utf-8") as fh:
-                for line_no, line in enumerate(fh, start=1):
+                for _line_no, line in enumerate(fh, start=1):
                     line = line.strip()
                     if not line:
                         continue

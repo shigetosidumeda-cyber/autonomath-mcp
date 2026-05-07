@@ -10,12 +10,14 @@ from __future__ import annotations
 
 import datetime as dt
 import json
-from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
 from jpintel_mcp.self_improve import loop_i_doc_freshness as loop_i
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 class _FakeResponse:

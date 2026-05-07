@@ -33,12 +33,14 @@ import os
 import subprocess
 import sys
 import time
-from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import httpx
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 # ---------------------------------------------------------------------------
 # LLM API import guard (mirror of tests/test_no_llm_in_production.py)

@@ -175,9 +175,9 @@ def test_jcrb_question_count_floor_per_domain() -> None:
     missing = expected_domains - by_domain.keys()
     assert not missing, f"verified questions missing domains: {missing}"
     underfilled = {d: n for d, n in by_domain.items() if d in expected_domains and n < 20}
-    assert (
-        not underfilled
-    ), f"verified question count under floor per domain (need >= 20): {underfilled}"
+    assert not underfilled, (
+        f"verified question count under floor per domain (need >= 20): {underfilled}"
+    )
 
 
 def test_jcrb_verified_submission_count_is_queryable_from_public_results() -> None:

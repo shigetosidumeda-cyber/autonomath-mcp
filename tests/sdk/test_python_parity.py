@@ -21,11 +21,8 @@ from __future__ import annotations
 
 import inspect
 import sys
-from collections.abc import Callable
 from pathlib import Path
-from typing import Any
-
-import pytest
+from typing import TYPE_CHECKING, Any
 
 # Allow ``import autonomath`` from the staging SDK without installing it.
 _SDK_ROOT = Path(__file__).resolve().parents[2] / "autonomath_staging" / "sdk" / "python"
@@ -40,6 +37,11 @@ from autonomath import (  # noqa: E402
     UsageStatus,
     __version__,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    import pytest
 
 
 # ---------------------------------------------------------------------------

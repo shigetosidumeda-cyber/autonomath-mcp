@@ -69,7 +69,7 @@ def bench_table(conn: sqlite3.Connection, table: str, iters: int, k: int, dim: i
     for _ in range(iters):
         q = random_unit_vec(dim, rng)
         t0 = time.perf_counter_ns()
-        rows = list(cur.execute(sql, (q,)))
+        list(cur.execute(sql, (q,)))
         elapsed_ms = (time.perf_counter_ns() - t0) / 1e6
         samples_ms.append(elapsed_ms)
     samples_ms.sort()

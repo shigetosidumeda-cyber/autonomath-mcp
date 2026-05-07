@@ -19,12 +19,14 @@ import select
 import sqlite3
 import subprocess
 import time
-from collections.abc import Iterator
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 import yaml
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 AUTONOMATH_DB = REPO_ROOT / "autonomath.db"

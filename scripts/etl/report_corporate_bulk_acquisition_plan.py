@@ -25,7 +25,7 @@ DEFAULT_AUTONOMATH_DB = REPO_ROOT / "autonomath.db"
 DEFAULT_PREFLIGHT = REPO_ROOT / "analysis_wave18" / "corporate_bulk_preflight_2026-05-01.json"
 DEFAULT_OUTPUT = REPO_ROOT / "analysis_wave18" / "corporate_bulk_acquisition_plan_2026-05-01.json"
 DEFAULT_GBIZ_JSONL = Path("/Users/shigetoumeda/Autonomath/data/runtime/gbiz_enrichment.jsonl")
-DEFAULT_INVOICE_CACHE_DIR = Path("/tmp/jpintel_invoice_registrants_cache")
+DEFAULT_INVOICE_CACHE_DIR = Path("/tmp/jpintel_invoice_registrants_cache")  # nosec B108 - shared cache path with cron pipeline (same path on operator host)
 DEFAULT_ARTIFACT_ROOT = REPO_ROOT / "data" / "bulk"
 
 REPORT_DATE = "2026-05-01"

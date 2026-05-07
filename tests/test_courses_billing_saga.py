@@ -16,10 +16,12 @@ Constraints:
 
 from __future__ import annotations
 
-import sqlite3
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
+
+if TYPE_CHECKING:
+    import sqlite3
 
 # Pull DEEP-46/47/48 shared fixtures (jpintel_conn, autonomath_conn,
 # mock_stripe_client, mock_postmark, mock_r2_storage, synthetic_event_factory,

@@ -213,9 +213,9 @@ def _parse_date(text: str) -> str | None:
 # ---------------------------------------------------------------------------
 
 DEFAULT_CACHE_ROOTS = (
-    Path("/tmp/maff_wb_html"),
-    Path("/tmp/maff_wb_v2"),
-    Path("/tmp/maff_case_html"),
+    Path("/tmp/maff_wb_html"),  # nosec B108 - operator-host MAFF web-archive cache root
+    Path("/tmp/maff_wb_v2"),  # nosec B108 - operator-host MAFF web-archive cache root
+    Path("/tmp/maff_case_html"),  # nosec B108 - operator-host MAFF case cache root
 )
 
 
@@ -509,7 +509,7 @@ def parse_zyui_page(html: str, source_url: str) -> list[ZyuiCase]:
             sm = ZYUI_NUMBERED_CASE_RE.search(sec)
             if not sm:
                 continue
-            seq = int(sm.group(1))
+            int(sm.group(1))
             # Pull case description = next ~600 chars
             tail = sec[sm.end() : sm.end() + 800]
             # Extract 事件の概要

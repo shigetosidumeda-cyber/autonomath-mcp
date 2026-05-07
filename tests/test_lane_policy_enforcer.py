@@ -216,6 +216,40 @@ class LanePolicyTest(unittest.TestCase):
         self.assertEqual(rows[-1][3], "session_a")
         self.assertEqual(rows[-1][5], "0")
 
+    # 9. solo lane allows all paths (R8_LANE_GUARD_DESIGN additive shape B)
+    def test_solo_lane_allows_all_paths(self) -> None:
+        repo = _make_fake_repo(self.tmp)
+        # mix paths that would be forbidden in BOTH session_a and codex lanes
+        # to prove the 'solo' lane truly has no constraints
+        paths = [
+            repo / "src/jpcite_api/x.py",
+            repo / "scripts/foo.py",
+            repo / "tools/offline/_inbox/value_growth_dual/note.md",
+            repo / ".github/workflows/sample.yml",
+            repo / "site/index.html",
+        ]
+        for f in paths:
+            f.parent.mkdir(parents=True, exist_ok=True)
+            f.write_text("# solo lane test", encoding="utf-8")
+            _git(repo, "add", str(f.relative_to(repo)))
+        cp = _run_enforcer(repo, "--check", "--lane", "solo", "--session", "solo_run")
+        self.assertEqual(cp.returncode, 0, cp.stdout + cp.stderr)
+        self.assertIn("OK", cp.stdout)
+        ledger = repo / "tools/offline/_inbox/value_growth_dual/AGENT_LEDGER.csv"
+        self.assertTrue(ledger.exists())
+        with ledger.open(encoding="utf-8") as fh:
+            rows = list(csv.reader(fh))
+        # last row should record lane=solo with 0 violations
+        self.assertEqual(rows[-1][3], "solo")
+        self.assertEqual(rows[-1][5], "0")
+        # also verify policy schema bumped to 1.1.0 + solo lane present
+        with POLICY.open(encoding="utf-8") as fh:
+            data = json.load(fh)
+        self.assertEqual(data["$schema_version"], "1.1.0")
+        self.assertIn("solo", data["lanes"])
+        self.assertEqual(data["lanes"]["solo"]["allowed_paths"], ["**"])
+        self.assertEqual(data["lanes"]["solo"]["forbidden_paths"], [])
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

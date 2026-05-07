@@ -53,7 +53,7 @@ def fetch_revisions(law_id: str) -> list[dict]:
     """Fetch revisions list for one law_id. Returns list of revision dicts."""
     try:
         url = f"{EGOV_API_BASE}/law_revisions/{law_id}"
-        with urllib.request.urlopen(url, timeout=15, context=_SSL_CTX) as resp:
+        with urllib.request.urlopen(url, timeout=15, context=_SSL_CTX) as resp:  # nosec B310 - operator-config https endpoint, no file:/ schemes
             data = json.loads(resp.read())
         return data.get("revisions", [])
     except Exception as e:

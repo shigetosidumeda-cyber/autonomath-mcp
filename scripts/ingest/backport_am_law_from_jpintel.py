@@ -182,7 +182,7 @@ def title_to_slug(title: str, max_tokens: int = 3) -> str:
     # tokenise via pykakasi
     tokens: list[str] = []
     for tok in _KKS.convert(t):
-        orig = tok["orig"]
+        tok["orig"]
         heb = tok["hepburn"].lower()
         if not heb or not heb.isascii():
             continue
@@ -314,7 +314,7 @@ def find_egov_digit_fixes(
     """).fetchall()
     # build lookup: (normalized_law_number, title) -> egov_id
     title_num_to_id: dict[tuple[str, str], str] = {}
-    for uid, title, lno, url in jp_rows:
+    for _uid, title, lno, url in jp_rows:
         egov = extract_egov_id(url)
         if not egov:
             continue
@@ -322,7 +322,7 @@ def find_egov_digit_fixes(
         title_num_to_id[(nlno, title)] = egov
     # also pure-title lookup for fallback
     title_only: dict[str, list[str]] = {}
-    for uid, title, lno, url in jp_rows:
+    for _uid, title, lno, url in jp_rows:
         egov = extract_egov_id(url)
         if egov:
             title_only.setdefault(title, []).append(egov)

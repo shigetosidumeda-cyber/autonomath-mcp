@@ -414,7 +414,7 @@ def parse_mhlw_kokukaisyu(html: str, source_url: str) -> list[EnfRow]:
     soup = BeautifulSoup(html, "html.parser")
     # Each entry is typically a <li> or a <p> containing year, company,
     # and an <a href="..."> to the houdou detail.
-    text = soup.get_text("\n", strip=True)
+    soup.get_text("\n", strip=True)
     # Walk anchor list — prefer structured.
     for a in soup.find_all("a"):
         href = (a.get("href") or "").strip()

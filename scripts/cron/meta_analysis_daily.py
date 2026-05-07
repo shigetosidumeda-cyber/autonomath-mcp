@@ -387,7 +387,7 @@ def _post_slack(webhook: str, payload: dict[str, Any]) -> bool:
         method="POST",
     )
     try:
-        with urllib.request.urlopen(req, timeout=10) as resp:  # noqa: S310
+        with urllib.request.urlopen(req, timeout=10) as resp:  # noqa: S310  # nosec B310 - operator-config https endpoint, no file:/ schemes
             ok = 200 <= resp.status < 300
             if not ok:
                 logger.warning("slack post non-2xx: %s", resp.status)

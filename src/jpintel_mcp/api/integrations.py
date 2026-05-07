@@ -933,7 +933,7 @@ async def google_oauth_callback(
         headers={"Content-Type": "application/x-www-form-urlencoded"},
     )
     try:
-        with urllib.request.urlopen(req, timeout=10) as resp:
+        with urllib.request.urlopen(req, timeout=10) as resp:  # nosec B310 - operator-config https endpoint, no file:/ schemes
             import json as _json
 
             tok = _json.loads(resp.read().decode("utf-8"))
@@ -1212,7 +1212,7 @@ async def kintone_sync(
                     "X-Cybozu-API-Token": api_token,
                 },
             )
-            with urllib.request.urlopen(req, timeout=20) as resp:
+            with urllib.request.urlopen(req, timeout=20) as resp:  # nosec B310 - operator-config https endpoint, no file:/ schemes
                 if 200 <= resp.status < 300:
                     posted = len(records)
                 else:

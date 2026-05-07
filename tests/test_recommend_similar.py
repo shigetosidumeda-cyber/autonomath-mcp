@@ -251,15 +251,15 @@ def test_envelope_carries_disclaimer():
         strict = disclaimer_for(tool_name, "strict")
         assert isinstance(std, str) and len(std) >= 40, f"{tool_name}: standard too short"
         assert isinstance(mini, str) and len(mini) >= 20, f"{tool_name}: minimal too short"
-        assert isinstance(strict, str) and len(strict) > len(
-            std
-        ), f"{tool_name}: strict ({len(strict)}) <= standard ({len(std)})"
+        assert isinstance(strict, str) and len(strict) > len(std), (
+            f"{tool_name}: strict ({len(strict)}) <= standard ({len(std)})"
+        )
         assert len(mini) < len(std), f"{tool_name}: minimal ({len(mini)}) >= standard ({len(std)})"
         # 行政書士法 §1 / 弁護士法 §72 / 税理士法 §52 — at least one of
         # these must surface in every disclaimer (audit trace).
-        assert any(
-            phrase in std for phrase in ("行政書士法", "弁護士法", "税理士法")
-        ), f"{tool_name}: standard missing 業法 reference"
+        assert any(phrase in std for phrase in ("行政書士法", "弁護士法", "税理士法")), (
+            f"{tool_name}: standard missing 業法 reference"
+        )
 
     # (a) impl-level _disclaimer on graceful-empty path (always reachable).
     rp = impls["program"](program_id="UNI-nonexistent-12345", k=10)

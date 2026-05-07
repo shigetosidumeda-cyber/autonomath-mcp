@@ -9,9 +9,12 @@ YAML for operator review.
 
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from jpintel_mcp.self_improve import loop_j_gold_expansion as loop_j
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def _fake_query_log_rows() -> list[dict[str, object]]:

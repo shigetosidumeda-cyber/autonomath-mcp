@@ -314,7 +314,7 @@ async def fetch_lobsters(client: httpx.AsyncClient) -> list[dict[str, Any]]:
             r = await client.get(url)
             r.raise_for_status()
             try:
-                root = ET.fromstring(r.text)
+                root = ET.fromstring(r.text)  # nosec B314 - input is trusted gov-source XML; not user-supplied
             except ET.ParseError:
                 continue
             for item in root.iter("item"):

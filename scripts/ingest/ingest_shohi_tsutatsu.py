@@ -30,9 +30,12 @@ import logging
 import re
 import sqlite3
 import sys
-from collections.abc import Iterator
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 try:
     from bs4 import BeautifulSoup, NavigableString, Tag
@@ -45,7 +48,7 @@ _LOG = logging.getLogger("ingest_shohi_tsutatsu")
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_DB = REPO_ROOT / "autonomath.db"
-DEFAULT_CACHE = Path("/tmp/shohi_walk")
+DEFAULT_CACHE = Path("/tmp/shohi_walk")  # nosec B108 - operator-run ingest cache; --cache flag overrides
 
 LAW_CANONICAL_ID = "law:shohi-zei-tsutatsu"
 ARTICLE_KIND = "tsutatsu"

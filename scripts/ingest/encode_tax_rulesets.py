@@ -66,7 +66,7 @@ _LOG = logging.getLogger("jpintel.encode_tax_rulesets")
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_DB = REPO_ROOT / "data" / "jpintel.db"
 DEFAULT_SEED = REPO_ROOT / "scripts" / "ingest" / "tax_rulesets_seed.json"
-DEFAULT_PREVIEW = Path("/tmp/autonomath_tax_rulesets_preview.jsonl")
+DEFAULT_PREVIEW = Path("/tmp/autonomath_tax_rulesets_preview.jsonl")  # nosec B108 - dev-time preview output, --preview overrides
 
 # Source URL whitelist — mirrors migration 018 header.
 ALLOWED_SOURCE_HOSTS: frozenset[str] = frozenset(

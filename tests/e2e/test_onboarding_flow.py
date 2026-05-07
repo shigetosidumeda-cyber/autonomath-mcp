@@ -61,9 +61,9 @@ async def test_step01_landing_hero_renders(page: Page, url_for) -> None:
     h1 = page.locator("h1").first
     await expect(h1).to_be_visible()
     text = (await h1.inner_text()).strip()
-    assert (
-        "公的制度" in text or "AutonoMath" in text
-    ), f"landing h1 missing expected anchor copy: {text!r}"
+    assert "公的制度" in text or "AutonoMath" in text, (
+        f"landing h1 missing expected anchor copy: {text!r}"
+    )
 
 
 # --------------------------------------------------------------------------- #
@@ -134,9 +134,9 @@ async def test_step05_api_search_returns_results(page: Page, base_url: str) -> N
     assert resp.ok, f"GET {api_url} → {resp.status}"
     data = await resp.json()
     assert isinstance(data.get("results"), list), f"missing results list: {data}"
-    assert (
-        data.get("total", 0) >= 1
-    ), f"expected ≥1 hit for 持続化補助金, got total={data.get('total')}"
+    assert data.get("total", 0) >= 1, (
+        f"expected ≥1 hit for 持続化補助金, got total={data.get('total')}"
+    )
 
 
 # --------------------------------------------------------------------------- #

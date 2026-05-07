@@ -232,7 +232,7 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument(
         "--cache-dir",
         type=Path,
-        default=Path("/tmp/jpcite_pdf_cache"),
+        default=Path("/tmp/jpcite_pdf_cache"),  # nosec B108 - operator default for batch run; CLI override supported
         help="local PDF cache (preferred over network when present)",
     )
     parser.add_argument(

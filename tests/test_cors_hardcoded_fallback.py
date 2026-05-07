@@ -14,11 +14,12 @@ apex/www and 403'd the entire browser surface; the hardcoded fallback in
 from __future__ import annotations
 
 from importlib import reload
-from typing import Any
-
-import pytest
+from typing import TYPE_CHECKING, Any
 
 import jpintel_mcp.config as config_module
+
+if TYPE_CHECKING:
+    import pytest
 
 _MUST_INCLUDE = {
     "https://jpcite.com",

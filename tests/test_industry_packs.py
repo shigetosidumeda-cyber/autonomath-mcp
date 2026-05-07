@@ -210,13 +210,13 @@ def test_pack_construction_happy_path() -> None:
     _assert_envelope_shape(res, expected_pack_key="construction", expected_jsic="D")
 
     # Programs ≥ 5 (corpus has 36 construction programs per industries/D/index.html)
-    assert (
-        len(res["programs"]) >= 5
-    ), f"construction pack returned only {len(res['programs'])} programs, expected ≥5"
+    assert len(res["programs"]) >= 5, (
+        f"construction pack returned only {len(res['programs'])} programs, expected ≥5"
+    )
     # 通達 ≥ 1 (法基通 / 消基通 corpus is rich enough for this)
-    assert (
-        len(res["tsutatsu_references"]) >= 1
-    ), "construction pack returned 0 tsutatsu — corpus too thin or filter mis-configured"
+    assert len(res["tsutatsu_references"]) >= 1, (
+        "construction pack returned 0 tsutatsu — corpus too thin or filter mis-configured"
+    )
     # saiketsu_citations: thin construction corpus (~21 法人税/消費税 saiketsu),
     # so we cannot gate on count. Instead assert the field is a list (shape only).
     assert isinstance(res["saiketsu_citations"], list)
@@ -231,16 +231,16 @@ def test_pack_manufacturing_happy_path() -> None:
     _assert_envelope_shape(res, expected_pack_key="manufacturing", expected_jsic="E")
 
     # Programs ≥ 5 (corpus has 71 manufacturing programs per industries/E/)
-    assert (
-        len(res["programs"]) >= 5
-    ), f"manufacturing pack returned only {len(res['programs'])} programs, expected ≥5"
+    assert len(res["programs"]) >= 5, (
+        f"manufacturing pack returned only {len(res['programs'])} programs, expected ≥5"
+    )
     # 通達 ≥ 1
     assert len(res["tsutatsu_references"]) >= 1, "manufacturing pack returned 0 tsutatsu"
     # saiketsu ≥ 1 — manufacturing keywords (省エネ/事業再構築/設備) consistently
     # match the 法人税 saiketsu corpus.
-    assert (
-        len(res["saiketsu_citations"]) >= 1
-    ), "manufacturing pack returned 0 saiketsu — investigate keyword fence"
+    assert len(res["saiketsu_citations"]) >= 1, (
+        "manufacturing pack returned 0 saiketsu — investigate keyword fence"
+    )
 
 
 def test_pack_real_estate_happy_path() -> None:
@@ -254,9 +254,9 @@ def test_pack_real_estate_happy_path() -> None:
     # Programs ≥ 5 — note JSIC K corpus shows 9 in industries/K/, but the
     # name-keyword fence (住宅 / 空き家 / 不動産) overlaps with JSIC D corpus
     # (housing-related), giving ≥10 hits in practice.
-    assert (
-        len(res["programs"]) >= 5
-    ), f"real_estate pack returned only {len(res['programs'])} programs, expected ≥5"
+    assert len(res["programs"]) >= 5, (
+        f"real_estate pack returned only {len(res['programs'])} programs, expected ≥5"
+    )
     # 通達 ≥ 1 (所基通 + 相基通 corpus has 住宅借入金特別控除・不動産関連)
     assert len(res["tsutatsu_references"]) >= 1, "real_estate pack returned 0 tsutatsu"
     # saiketsu ≥ 1 — 所得税・相続税 corpus is rich (54 rows combined).

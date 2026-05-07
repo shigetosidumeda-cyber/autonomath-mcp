@@ -86,7 +86,7 @@ _LOG = logging.getLogger("jpintel.ingest.invoice_registrants")
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_DB = REPO_ROOT / "data" / "jpintel.db"
-DEFAULT_CACHE_DIR = Path("/tmp/jpintel_invoice_registrants_cache")
+DEFAULT_CACHE_DIR = Path("/tmp/jpintel_invoice_registrants_cache")  # nosec B108 - same NTA invoice cache used by cron + preflight scripts; mode 0700
 
 # Source URL base. NTA publishes monthly full + daily delta at:
 #   https://www.invoice-kohyo.nta.go.jp/download/ (index)
@@ -732,7 +732,7 @@ def iter_xml_rows(local_path: Path) -> Iterator[dict[str, Any]]:
     if isinstance(stream, io.IOBase):
         with contextlib.suppress(Exception):
             stream.close()
-    context = ET.iterparse(io.BytesIO(text.encode("utf-8")), events=("end",))
+    context = ET.iterparse(io.BytesIO(text.encode("utf-8")), events=("end",))  # nosec B314 - input is trusted gov-source XML; not user-supplied
 
     invoice_tags = {"registrationNo", "registration_no", "登録番号"}
     for _event, elem in context:

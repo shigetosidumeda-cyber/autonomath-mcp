@@ -49,9 +49,9 @@ def test_attribution_block_carries_pii_notice():
     assert "_pii_notice" in attribution, "_ATTRIBUTION missing _pii_notice"
     pii = attribution["_pii_notice"]
     assert isinstance(pii, dict)
-    assert (
-        isinstance(pii.get("ja"), str) and len(pii["ja"]) >= 50
-    ), "_pii_notice.ja must be a non-empty Japanese notice string"
+    assert isinstance(pii.get("ja"), str) and len(pii["ja"]) >= 50, (
+        "_pii_notice.ja must be a non-empty Japanese notice string"
+    )
     # 個人情報保護法 §17/§21 wording is mandatory per §L2 spec.
     assert "個人情報保護法" in pii["ja"]
     assert "§17" in pii["ja"] or "17" in pii["ja"]

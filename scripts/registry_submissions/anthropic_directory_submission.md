@@ -39,7 +39,7 @@ MCP server (external)
 ### Short description (160 characters max)
 
 ```
-Search Japanese institutional data: 11,684 subsidies + 154 laws + 2,065 court decisions + 13,801 invoice registrants. 139 MCP tools. ¥3/req (¥3.30 tax-incl). 3/day free anon.
+Search Japanese institutional data: 11,601 subsidies + 6,493 laws full-text indexed + 2,065 court decisions + 13,801 invoice registrants. 139 MCP tools. ¥3/req (¥3.30 tax-incl). 3/day free anon.
 ```
 
 (Length: 156 characters.)
@@ -47,7 +47,7 @@ Search Japanese institutional data: 11,684 subsidies + 154 laws + 2,065 court de
 ### Long description (500–800 characters)
 
 ```
-AutonoMath exposes Japanese institutional public data via 139 MCP tools at default gates (39 core + 50 autonomath at runtime, protocol 2025-06-18, stdio): 11,684 searchable programs (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 融資 (担保 / 個人保証人 / 第三者保証人 三軸分解) + 1,185 行政処分 + 154 laws full-text + 9,484 law catalog stubs (e-Gov CC-BY) + 2,065 court decisions + 362 bids + 50 tax rulesets + 13,801 国税庁 適格事業者 (PDL v1.0) + 4,300 sourced compatibility pairs + 181 exclusion / prerequisite rules. Cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check. Major public rows carry source_url + fetched_at; no aggregators. ¥3/req tax-exclusive (¥3.30 tax-inclusive), 3 req/day per IP free (anonymous, JST next-day reset). Information retrieval only — not 税務代理 (税理士法 §52), 法律事務 (弁護士法 §72), 申請代理 (行政書士法 §1), or 労務判断 (社労士法).
+AutonoMath exposes Japanese institutional public data via 139 MCP tools at default gates (39 core + 50 autonomath at runtime, protocol 2025-06-18, stdio): 11,601 searchable programs (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 融資 (担保 / 個人保証人 / 第三者保証人 三軸分解) + 1,185 行政処分 + 6,493 laws full-text indexed + 9,484 law metadata records (e-Gov CC-BY) + 2,065 court decisions + 362 bids + 50 tax rulesets + 13,801 国税庁 適格事業者 (PDL v1.0) + 4,300 sourced compatibility pairs + 181 exclusion / prerequisite rules. Cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check. Major public rows carry source_url + fetched_at; no aggregators. ¥3/req tax-exclusive (¥3.30 tax-inclusive), 3 req/day per IP free (anonymous, JST next-day reset). Information retrieval only — not 税務代理 (税理士法 §52), 法律事務 (弁護士法 §72), 申請代理 (行政書士法 §1), or 労務判断 (社労士法).
 ```
 
 ### Repository URL

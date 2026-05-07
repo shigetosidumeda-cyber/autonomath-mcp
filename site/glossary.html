@@ -370,7 +370,7 @@
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
  <dt id="faq-combine" style="font-weight:600;font-size:16px;">Q. 補助金と助成金は複数併用できますか?</dt>
  <dd style="margin:8px 0 0;font-size:14.5px;line-height:1.7;color:var(--text-muted);">
- 原則として併用可能ですが、<strong>同一経費の重複計上は禁止</strong>です (「経費の二重計上」は不正受給扱い)。さらに制度ごとに「他の補助金との併用不可」条項が設定されている場合があります。jpcite は <strong>181 本の排他ルール</strong> (排他 125 + 前提 17 + 絶対 15 + その他 24) で衝突を機械判定するため、 制度の組合せを投げれば即座に判定が返ります。
+ 原則として併用可能ですが、<strong>同一経費の重複計上は禁止</strong>です (「経費の二重計上」は不正受給扱い)。さらに制度ごとに「他の補助金との併用不可」条項が設定されている場合があります。jpcite は <strong>181 本の排他ルール</strong> (排他 125 + 前提 17 + 絶対 15 + その他 24) に照らして、登録済みルールに該当する衝突候補を返します。最終的な併用可否は一次資料と窓口確認が前提です。
  </dd>
  </div>
 

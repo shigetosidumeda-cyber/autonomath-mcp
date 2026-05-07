@@ -597,7 +597,7 @@ def extract_records(
         return []
     chunks = split_records_by_section(text)
     out: list[Record] = []
-    for i, (sec_token, start, end) in enumerate(chunks):
+    for i, (sec_token, _start, end) in enumerate(chunks):
         if sec_token not in SECTION_MAP:
             continue
         canonical_section, enf_kind, law_basis = SECTION_MAP[sec_token]

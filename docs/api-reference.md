@@ -809,8 +809,8 @@ curl -X POST -H "X-API-Key: am_..." \
 
 ```json
 {
-  "total_programs": 11684,
-  "tier_counts": {"S": 114, "A": 1340, "B": 4186, "C": 6044},
+  "total_programs": 11601,
+  "tier_counts": {"S": 114, "A": 1340, "B": 4186, "C": 5961},
   "prefecture_counts": {"青森県": 42, "_none": 4311, "...": "..."},
   "exclusion_rules_count": 181,
   "last_ingested_at": "2026-04-25T17:25:00Z",
@@ -822,7 +822,7 @@ curl -X POST -H "X-API-Key: am_..." \
 }
 ```
 
-- `total_programs` は公開検索対象件数 (tier S/A/B/C 11,684)。検索対象外・審査保留行は含めません
+- `total_programs` は公開検索対象件数 (tier S/A/B/C 11,601)。検索対象外・審査保留行は含めません
 - `tier_counts` は公開検索対象の tier 別件数。**検索対象外の制度は search / batch / MCP では常に除外**
 - `prefecture_counts` の `_none` は prefecture=null (全国制度または未ラベル) のバケット
 - `exclusion_rules_count` は登録済みの併用チェックルール数

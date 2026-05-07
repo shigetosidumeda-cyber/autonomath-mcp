@@ -62,15 +62,17 @@ import subprocess
 import sys
 import time
 import urllib.parse
-from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
 from scripts.lib.http import HttpClient  # noqa: E402
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 try:
     import xlrd  # type: ignore
@@ -1064,7 +1066,6 @@ def _parse_period_block_pdf(text: str, source: Source) -> list[PrefRow]:
         r"[\s\S]{0,100}?"
         r"(R\s*\d+\s*\.\s*\d+\s*\.\s*\d+)"
     )
-    period_re3 = period_re  # alias retained for legacy reference
     rows: list[PrefRow] = []
     # Pre-compute all company match positions globally so we can pick the
     # CLOSEST one to each period anchor (instead of the first-in-window).

@@ -33,9 +33,9 @@ sr = _load_module()
 def test_list_static_resources_returns_at_least_six():
     items = sr.list_static_resources()
     assert isinstance(items, list)
-    assert (
-        len(items) >= 6
-    ), f"expected ≥6 static resources on disk, got {len(items)}: {[i['id'] for i in items]}"
+    assert len(items) >= 6, (
+        f"expected ≥6 static resources on disk, got {len(items)}: {[i['id'] for i in items]}"
+    )
     for item in items:
         assert "id" in item
         assert "filename" in item
@@ -66,9 +66,9 @@ def test_get_static_resource_unknown_raises():
 def test_list_example_profiles_returns_at_least_four():
     items = sr.list_example_profiles()
     assert isinstance(items, list)
-    assert (
-        len(items) >= 4
-    ), f"expected ≥4 example profiles, got {len(items)}: {[i['id'] for i in items]}"
+    assert len(items) >= 4, (
+        f"expected ≥4 example profiles, got {len(items)}: {[i['id'] for i in items]}"
+    )
     for item in items:
         assert "id" in item
         assert "filename" in item

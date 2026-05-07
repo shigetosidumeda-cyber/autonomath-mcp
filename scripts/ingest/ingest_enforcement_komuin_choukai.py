@@ -2200,9 +2200,12 @@ def parse_sapporo_edu_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
             if url_m:
                 pass  # skip 0423 etc — fallback to body parsing only
     # Strip zero-width + bidi-override chars FIRST (Sapporo PDFs heavily use
-    # ZWSP/ZWNJ/ZWJ + LRO/RLO/LRE/RLE/PDF/LRI/RLI/FSI/PDI bidi-override chars)
+    # ZWSP/ZWNJ/ZWJ + LRO/RLO/LRE/RLE/PDF/LRI/RLI/FSI/PDI bidi-override chars).
+    # The regex character class on the next line intentionally contains the
+    # bidirectional characters that we want to strip from input PDFs; they are
+    # data targets, not executable code, and are unreachable as identifiers.
     cleaned = re.sub(
-        r"[​-‏‪-‮⁦-⁩]",
+        r"[​-‏‪-‮⁦-⁩]",  # nosec B613 - target characters for stripping, not code
         "",
         pdf_text,
     )

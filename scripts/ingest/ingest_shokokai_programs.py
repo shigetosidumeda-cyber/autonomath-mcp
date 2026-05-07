@@ -497,7 +497,7 @@ def _mk_unified_id(seed: str) -> str:
 
 
 def _coverage_json(filled: dict[str, bool]) -> str:
-    base = {f"{k}_": False for k in "ABCDEFGHIJ"}
+    {f"{k}_": False for k in "ABCDEFGHIJ"}
     out = {
         "A_basic": filled.get("A", False),
         "B_money": filled.get("B", False),
@@ -514,11 +514,11 @@ def _coverage_json(filled: dict[str, bool]) -> str:
 
 
 def build_portal_row(rec: PortalRecord, prb: FetchProbe) -> dict[str, Any]:
-    tier = classify_tier(rec)
+    classify_tier(rec)
     if prb.status == 0 or (prb.status >= 400 and prb.status not in (404,)):
         # If portal completely unreachable, drop tier
         if not rec.archive:
-            tier = "C"
+            pass
     now = dt.datetime.now(dt.UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
     aliases = [rec.short_alias]
     if rec.short_alias != rec.primary_name:

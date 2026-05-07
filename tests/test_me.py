@@ -976,9 +976,9 @@ def test_p01_concurrent_rotation_only_creates_one_new_key(client, paid_key, seed
     # Critical: at most ONE successful rotation per old key — no two
     # threads produced a new key (which would mean the txn wasn't
     # atomic w.r.t. the revoked-at gate).
-    assert (
-        successes <= 1
-    ), f"expected ≤1 successful rotation, got {successes}; results={results}, new_keys={new_keys}"
+    assert successes <= 1, (
+        f"expected ≤1 successful rotation, got {successes}; results={results}, new_keys={new_keys}"
+    )
 
 
 def test_billing_portal_stripe_error_returns_subsystem_unavailable(client, paid_key, monkeypatch):

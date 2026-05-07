@@ -170,9 +170,9 @@ def test_charge_refunded_revokes_all_customer_keys_and_audits(
             ("cus_refund_target",),
         ).fetchall()
         assert len(target_rows) == 2
-        assert all(
-            r[0] is not None for r in target_rows
-        ), "every active key for the refunded customer must be revoked"
+        assert all(r[0] is not None for r in target_rows), (
+            "every active key for the refunded customer must be revoked"
+        )
 
         # Foreign key untouched.
         (foreign_revoked,) = c.execute(
@@ -190,9 +190,9 @@ def test_charge_refunded_revokes_all_customer_keys_and_audits(
     finally:
         c.close()
 
-    assert (
-        len(audit_rows) == 2
-    ), f"expected 2 key_revoke audit rows (one per key), got {len(audit_rows)}"
+    assert len(audit_rows) == 2, (
+        f"expected 2 key_revoke audit rows (one per key), got {len(audit_rows)}"
+    )
     for kh, cid, md_json in audit_rows:
         assert kh, "key_revoke audit row must carry the revoked key_hash"
         assert cid == "cus_refund_target"

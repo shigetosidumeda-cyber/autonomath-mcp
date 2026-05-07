@@ -20,7 +20,7 @@ import json
 import sqlite3
 import threading
 from datetime import UTC, datetime, timedelta
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 # The conftest already sets JPINTEL_DB_PATH for the integration suite,
 # but for these focused unit tests we want a clean per-test DB. We build
@@ -37,6 +37,9 @@ from jpintel_mcp.api._bg_task_worker import (
     run_worker_loop,
 )
 from jpintel_mcp.db.session import SCHEMA_PATH
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def _fresh_db(tmp_path: Path) -> sqlite3.Connection:

@@ -55,7 +55,7 @@ JST 00:00).
 | ------------------------------- | -------------------------------------- | ---------------------------------- |
 | `client.healthz()`                  | `GET /healthz`                         | Free liveness check                |
 | `client.meta()`                     | `GET /meta`                            | Catalog totals                     |
-| `client.searchPrograms(params)`     | `GET /v1/programs/search`              | 11,684 補助金/助成金/認定        |
+| `client.searchPrograms(params)`     | `GET /v1/programs/search`              | 11,601 補助金/助成金/認定        |
 | `client.getProgram(id)`             | `GET /v1/programs/{id}`                | Full enriched detail               |
 | `client.searchLoans(params)`        | `GET /v1/loan-programs/search`         | 三軸 collateral/guarantor 分解   |
 | `client.getLoan(id)`                | `GET /v1/loan-programs/{id}`           |                                    |

@@ -186,7 +186,10 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Path to source SQLite DB (default: JPINTEL_DB_PATH or ./data/jpintel.db)",
     )
     p.add_argument(
-        "--out", type=Path, default=Path("/tmp/jpintel-backups"), help="Output directory"
+        "--out",
+        type=Path,
+        default=Path("/tmp/jpintel-backups"),  # nosec B108 - default output dir for operator-run backup CLI; overridden by --out
+        help="Output directory",
     )
     p.add_argument("--keep", type=int, default=14, help="Retention in days (prune older files)")
     p.add_argument("--gzip", action="store_true", help="Gzip the .db after backup")

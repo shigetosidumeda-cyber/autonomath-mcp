@@ -21,7 +21,7 @@ Tests:
 from __future__ import annotations
 
 import sqlite3
-from collections.abc import Iterator
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -30,6 +30,9 @@ from jpintel_mcp.ingest.plain_japanese_dict import (
     replace_plain_japanese,
 )
 from jpintel_mcp.mcp.autonomath_tools import wave24_tools_first_half as w24a
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 # --------------------------------------------------------------------------- #
 # In-memory autonomath.db fixture (just am_program_narrative).

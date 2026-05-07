@@ -73,7 +73,7 @@ _LOG = logging.getLogger("jpintel.ingest_external")
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_DB = REPO_ROOT / "data" / "jpintel.db"
-DEFAULT_DATA_DIR = Path("/tmp/autonomath_data_collection_2026-04-23/")
+DEFAULT_DATA_DIR = Path("/tmp/autonomath_data_collection_2026-04-23/")  # nosec B108 - one-shot historical data dir; --data-dir overrides
 LOG_DIR = REPO_ROOT / "data"
 
 # Directories we skip — these carry aggregate stats / distributions / FAQs

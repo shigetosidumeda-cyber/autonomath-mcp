@@ -234,9 +234,9 @@ def test_second_pass_with_real_regression_emits_one_correction_log(
     # Step 3: run again. Baseline flag is now 1 → normal regression
     # detection → exactly one correction_log row.
     out = drv._run(fresh_db)
-    assert (
-        out["baseline_mode"] == 0
-    ), "second run must NOT be in baseline mode; state already complete"
+    assert out["baseline_mode"] == 0, (
+        "second run must NOT be in baseline mode; state already complete"
+    )
     assert out["regressions"] == 1, out
     assert out["logged"] == 1, out
 
@@ -303,9 +303,9 @@ def test_migration_107_first_line_marks_target_db_autonomath() -> None:
     again — silently and at production scale."""
     assert MIGRATION_107.is_file(), "migration 107 missing"
     first_line = MIGRATION_107.read_text(encoding="utf-8").splitlines()[0]
-    assert (
-        first_line.strip() == "-- target_db: autonomath"
-    ), f"migration 107 first line must be '-- target_db: autonomath', got: {first_line!r}"
+    assert first_line.strip() == "-- target_db: autonomath", (
+        f"migration 107 first line must be '-- target_db: autonomath', got: {first_line!r}"
+    )
 
 
 def test_migration_107_is_idempotent_via_create_if_not_exists() -> None:

@@ -385,7 +385,7 @@ def _fetch_html(
     last_err: str | None = None
     for attempt in range(1, _RETRIES + 2):
         try:
-            with urllib.request.urlopen(req, timeout=timeout) as resp:
+            with urllib.request.urlopen(req, timeout=timeout) as resp:  # nosec B310 - operator-config https endpoint, no file:/ schemes
                 status = resp.status
                 resolved = resp.geturl()
                 body = resp.read().decode("utf-8", errors="replace")

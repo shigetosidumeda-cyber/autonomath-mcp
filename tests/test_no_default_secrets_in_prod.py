@@ -105,9 +105,9 @@ def test_no_default_secrets_in_production_env_files() -> None:
 def test_forbidden_salts_constant_is_complete() -> None:
     """`_FORBIDDEN_SALTS` must include the historical placeholders."""
     expected = {"dev-salt", "change-this-salt-in-prod", "test-salt", ""}
-    assert expected.issubset(
-        _FORBIDDEN_SALTS
-    ), f"_FORBIDDEN_SALTS must cover at least {expected}; got {_FORBIDDEN_SALTS}"
+    assert expected.issubset(_FORBIDDEN_SALTS), (
+        f"_FORBIDDEN_SALTS must cover at least {expected}; got {_FORBIDDEN_SALTS}"
+    )
 
 
 def test_env_example_is_intentionally_excluded() -> None:

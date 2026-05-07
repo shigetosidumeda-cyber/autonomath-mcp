@@ -116,7 +116,7 @@ def parse_sitemap(path: Path) -> list[str]:
         LOG.warning("shard missing: %s", path.name)
         return []
     try:
-        tree = ET.parse(path)
+        tree = ET.parse(path)  # nosec B314 - input is trusted gov-source XML; not user-supplied
     except ET.ParseError as exc:
         LOG.error("shard parse error: %s — %s", path.name, exc)
         return []

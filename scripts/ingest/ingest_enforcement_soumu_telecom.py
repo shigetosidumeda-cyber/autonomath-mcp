@@ -417,7 +417,7 @@ class Fetcher:
             self._pace()
             req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
             try:
-                with urllib.request.urlopen(req, timeout=20) as resp:  # noqa: S310
+                with urllib.request.urlopen(req, timeout=20) as resp:  # noqa: S310  # nosec B310 - operator-config https endpoint, no file:/ schemes
                     raw = resp.read()
                     self._last_t = time.monotonic()
                     # try Shift_JIS first; fall back to utf-8 if obvious garbage
@@ -1106,7 +1106,6 @@ def run(
     # --- write to DB with batched BEGIN IMMEDIATE ---
     inserted = 0
     skipped_dup = 0
-    skipped_constraint = 0
     by_kind: dict[str, int] = {}
     by_region: dict[str, int] = {}
     by_law: dict[str, int] = {}

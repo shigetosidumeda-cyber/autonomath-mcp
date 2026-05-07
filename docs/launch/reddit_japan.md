@@ -10,7 +10,7 @@ Posting because this might be useful for r/japan readers running businesses or f
 
 I built jpcite — a search API over Japanese institutional public data:
 
-- 11,684 subsidy programs across all 47 prefectures (national + local)
+- 11,601 subsidy programs across all 47 prefectures (national + local)
 - 9,484 laws from e-Gov (CC-BY)
 - 2,065 court decisions
 - 50 tax rulesets (角度税制, 中小企業投資促進税制, etc.)

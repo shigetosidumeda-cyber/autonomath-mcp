@@ -8,7 +8,7 @@
 
 ## Body
 
-Just shipped jpcite — a REST + MCP search API over Japanese institutional public data (11,684 subsidies, 9,484 laws, 2,065 court decisions, 13,801 invoice registrants, 50 tax rulesets, 2,286 adoption cases). Posting here for the architecture-curious; the technical choices are unusual enough that I think they're worth a discussion.
+Just shipped jpcite — a REST + MCP search API over Japanese institutional public data (11,601 subsidies, 9,484 laws, 2,065 court decisions, 13,801 invoice registrants, 50 tax rulesets, 2,286 adoption cases). Posting here for the architecture-curious; the technical choices are unusual enough that I think they're worth a discussion.
 
 ## Architecture
 

@@ -110,7 +110,7 @@ except ImportError as exc:
 _LOG = logging.getLogger("autonomath.cron.ingest_nta_invoice_bulk")
 
 _DEFAULT_DB = _REPO_ROOT / "data" / "jpintel.db"
-_DEFAULT_CACHE_DIR = Path("/tmp/jpintel_invoice_registrants_cache")
+_DEFAULT_CACHE_DIR = Path("/tmp/jpintel_invoice_registrants_cache")  # nosec B108 - cron-owned cache, mode 0700 created on first use; default overridable via CLI
 _DEFAULT_LOG_FILE = _REPO_ROOT / "data" / "invoice_load_log.jsonl"
 _DEFAULT_BATCH_SIZE = 10_000  # 10K per chunk per spec; ingest script clamps to >=100
 

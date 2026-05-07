@@ -18,10 +18,13 @@ import importlib
 import json
 import sqlite3
 import sys
-from collections.abc import Iterator
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 # Allow importing scripts/cron/refresh_amendment_diff_history.py without
 # needing `pip install -e .` to expose it.

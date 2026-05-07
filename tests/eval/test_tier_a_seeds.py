@@ -46,13 +46,13 @@ def test_tier_a_gold_sql_matches_gold_value(seed: dict, autonomath_db_ro, jpinte
     # Numeric coercion: SQLite REAL columns surface as float (e.g. 240.0),
     # but YAML ints stay int. Compare numerically when both look numeric.
     if isinstance(actual, (int, float)) and isinstance(expected, (int, float)):
-        assert float(actual) == float(
-            expected
-        ), f"{seed['id']}: expected {seed['gold_field']}={expected!r}, got {actual!r}"
+        assert float(actual) == float(expected), (
+            f"{seed['id']}: expected {seed['gold_field']}={expected!r}, got {actual!r}"
+        )
     else:
-        assert str(actual) == str(
-            expected
-        ), f"{seed['id']}: expected {seed['gold_field']}={expected!r}, got {actual!r}"
+        assert str(actual) == str(expected), (
+            f"{seed['id']}: expected {seed['gold_field']}={expected!r}, got {actual!r}"
+        )
 
 
 def test_tier_a_seed_count_minimum() -> None:

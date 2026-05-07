@@ -351,9 +351,9 @@ def test_zero_llm_api_imports_in_verifier_modules():
         assert fp.exists(), f"missing module: {fp}"
         content = fp.read_text(encoding="utf-8")
         for bad in forbidden:
-            assert (
-                bad not in content
-            ), f"{fp.name} must not contain `{bad}` (memory feedback_no_operator_llm_api)"
+            assert bad not in content, (
+                f"{fp.name} must not contain `{bad}` (memory feedback_no_operator_llm_api)"
+            )
 
     # Also confirm the modules import cleanly without dragging in any
     # LLM SDK as a transitive symbol (e.g. via re-exports).

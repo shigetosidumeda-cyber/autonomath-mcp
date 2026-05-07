@@ -28,7 +28,7 @@ from __future__ import annotations
 import json
 import sqlite3
 from datetime import UTC, datetime
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -38,6 +38,9 @@ from jpintel_mcp.mcp.autonomath_tools.multilingual_abstract_tool import (
     _AUDIENCE_VALUES,
     _program_abstract_structured_impl,
 )
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 _SAMPLE_PROGRAM_ID = "UNI-16b8d86302"
 _SAMPLE_NAME = "人材確保等支援助成金（外国人労働者就労環境整備助成コース）"

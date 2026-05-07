@@ -78,7 +78,6 @@ def _parse_yaml(path: pathlib.Path) -> dict:
     """Minimal yaml parser sufficient for our flat schema (id / channel / cohort / etc.)."""
     text = path.read_text(encoding="utf-8")
     out: dict = {"_path": str(path)}
-    cur_key: str | None = None
     cur_list: list[str] | None = None
     for raw in text.splitlines():
         if not raw.strip() or raw.strip().startswith("#"):
@@ -97,13 +96,11 @@ def _parse_yaml(path: pathlib.Path) -> dict:
             key = key.strip()
             val = val.strip()
             if val == "":
-                cur_key = key
                 cur_list = []
                 out[key] = cur_list
             else:
                 out[key] = val.strip('"')
                 cur_list = None
-                cur_key = None
     return out
 
 

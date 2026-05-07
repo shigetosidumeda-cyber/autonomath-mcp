@@ -2000,7 +2000,7 @@ def parse_generic_fire_html(
         for r in rows[1:]:
             if len(r) < 2:
                 continue
-            joined = " ".join(r)
+            " ".join(r)
             if "名称" in r[0] or r[0] == "建物" or r[0] == "対象物":
                 continue
             name = r[0]

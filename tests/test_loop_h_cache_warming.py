@@ -158,9 +158,9 @@ def test_loop_h_warms_hot_query_into_l4_cache(tmp_path: Path):
     assert result["loop"] == "loop_h_cache_warming"
     # Two distinct (endpoint, digest) pairs were inserted.
     assert result["scanned"] == 2
-    assert (
-        result["actions_executed"] >= 1
-    ), f"expected at least one warmed row, got {result['actions_executed']}"
+    assert result["actions_executed"] >= 1, (
+        f"expected at least one warmed row, got {result['actions_executed']}"
+    )
 
     # Verify the warmed row is in the cache with the new payload.
     conn = sqlite3.connect(db_path)

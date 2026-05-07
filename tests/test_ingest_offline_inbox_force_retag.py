@@ -224,15 +224,15 @@ def test_cli_early_exits_on_missing_113b(tmp_path):
     # Need to monkeypatch INBOX_ROOT to point at our tmp inbox.
     # Easiest path: invoke via -c with a pre-patched module.
     code = (
-        "import sys; sys.path.insert(0, %r); "
+        "import sys; sys.path.insert(0, {!r}); "
         "import importlib, ingest_offline_inbox as m; "
         "from pathlib import Path; "
-        "m.INBOX_ROOT = Path(%r); "
-        "m.QUARANTINE_ROOT = Path(%r); "
+        "m.INBOX_ROOT = Path({!r}); "
+        "m.QUARANTINE_ROOT = Path({!r}); "
         "sys.argv = ['x', '--tool', 'jsic_tags', "
-        "'--autonomath-db', %r, '--jpintel-db', %r]; "
+        "'--autonomath-db', {!r}, '--jpintel-db', {!r}]; "
         "raise SystemExit(m.main())"
-    ) % (
+    ).format(
         str(REPO_ROOT / "scripts" / "cron"),
         str(tmp_path / "_inbox"),
         str(tmp_path / "_quarantine"),

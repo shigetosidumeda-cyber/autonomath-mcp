@@ -1612,7 +1612,7 @@ def http_head_or_get(url: str) -> int:
         },
     )
     try:
-        with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT_S, context=_SSL_CTX) as resp:
+        with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT_S, context=_SSL_CTX) as resp:  # nosec B310 - operator-config https endpoint, no file:/ schemes
             _last_request_at[host] = time.time()
             return resp.getcode()
     except urllib.error.HTTPError as e:
@@ -1624,7 +1624,7 @@ def http_head_or_get(url: str) -> int:
                     url,
                     headers={"User-Agent": USER_AGENT, "Accept": "text/html"},
                 )
-                with urllib.request.urlopen(req_g, timeout=HTTP_TIMEOUT_S, context=_SSL_CTX) as r2:
+                with urllib.request.urlopen(req_g, timeout=HTTP_TIMEOUT_S, context=_SSL_CTX) as r2:  # nosec B310 - operator-config https endpoint, no file:/ schemes
                     _last_request_at[host] = time.time()
                     return r2.getcode()
             except Exception:

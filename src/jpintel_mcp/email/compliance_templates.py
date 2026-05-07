@@ -119,8 +119,10 @@ _env = Environment(
 )
 
 # Plain-text env — no autoescape (HTML entities in a text body look broken).
+# nosec B701 - this Environment renders text/plain emails only; HTML escaping
+# would render literal `&amp;` sequences in the recipient's mail client.
 _env_text = Environment(
-    autoescape=False,
+    autoescape=False,  # nosec B701
     trim_blocks=True,
     lstrip_blocks=True,
     undefined=StrictUndefined,

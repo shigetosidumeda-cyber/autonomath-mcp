@@ -986,7 +986,7 @@ def _row_to_program_detail(row: sqlite3.Row, fields: FieldsLevel) -> dict[str, A
     summary="Search 補助金 / 助成金 / 融資 / 税制 / 認定 programs",
     description=(
         "Discover candidate Japanese public-funding programs by free-text + "
-        "structured filters across **11,684 searchable source-linked rows**. "
+        "structured filters across **11,601 searchable source-linked rows**. "
         "Records outside the public publication criteria are excluded from search. Filters include "
         "prefecture, authority level, target type, funding purpose, and amount band.\n\n"
         "**When to use this endpoint:** the caller has a topic / region / "

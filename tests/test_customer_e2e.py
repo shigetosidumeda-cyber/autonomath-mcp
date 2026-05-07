@@ -649,9 +649,9 @@ def test_customer_agent_e2e_happy_path(
         f"This route is on the deploy-gate; failure means main.py "
         f"include_router stack regressed."
     )
-    assert (
-        r1.status_code == 200
-    ), f"step1 search unexpected status {r1.status_code}: {_short(r1.text)}"
+    assert r1.status_code == 200, (
+        f"step1 search unexpected status {r1.status_code}: {_short(r1.text)}"
+    )
     # 2. No step that IS mounted may 5xx (503 acceptable — autonomath.db
     #    can be detached in CI).
     for row in trace:

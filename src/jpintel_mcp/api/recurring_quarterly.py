@@ -415,7 +415,7 @@ def _send_slack_test_message(channel_url: str) -> tuple[bool, str | None]:
         headers={"Content-Type": "application/json"},
     )
     try:
-        with urllib.request.urlopen(req, timeout=10) as resp:
+        with urllib.request.urlopen(req, timeout=10) as resp:  # nosec B310 - operator-config https endpoint, no file:/ schemes
             if 200 <= resp.status < 300:
                 return True, None
             return False, f"http_{resp.status}"

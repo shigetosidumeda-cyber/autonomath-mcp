@@ -148,7 +148,6 @@ def run(src_path: Path, tgt_path: Path, batch: int, dry_run: bool) -> int:
     inserted_adoption = 0
     inserted_houjin = 0
     skipped_bad_hb = 0
-    skipped_missing = 0
     errors = 0
 
     # target prepared statements
@@ -226,7 +225,7 @@ def run(src_path: Path, tgt_path: Path, batch: int, dry_run: bool) -> int:
                 pref = corp.get("prefecture")
                 muni = corp.get("municipality")
                 ctype = corp.get("corporation_type")
-                hm_src_url = corp.get("source_url") or ""
+                corp.get("source_url") or ""
                 hm_fetched = corp.get("fetched_at") or now_ts
                 src_tag = "autonomath:corporate_entity"
             else:
@@ -235,7 +234,7 @@ def run(src_path: Path, tgt_path: Path, batch: int, dry_run: bool) -> int:
                 pref = j.get("prefecture")
                 muni = j.get("municipality")
                 ctype = None
-                hm_src_url = j.get("source_url") or src_source_url or ""
+                j.get("source_url") or src_source_url or ""
                 hm_fetched = j.get("fetched_at") or src_fetched_at or now_ts
                 src_tag = "autonomath:adoption"
             hm_batch.append(
@@ -329,9 +328,7 @@ def run(src_path: Path, tgt_path: Path, batch: int, dry_run: bool) -> int:
     )  # placeholder; computed below
 
     # recompute inserted_houjin vs pre
-    initial_hb_count = len(
-        {r[0] for r in tgt.execute("SELECT houjin_bangou FROM houjin_master LIMIT 0")}
-    )
+    len({r[0] for r in tgt.execute("SELECT houjin_bangou FROM houjin_master LIMIT 0")})
     # above is 0; use final - 0 since initial was 0 at start
     # (we'll report final_houjin which is clean)
 

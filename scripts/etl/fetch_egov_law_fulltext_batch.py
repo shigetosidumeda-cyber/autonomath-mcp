@@ -258,7 +258,7 @@ def parse_egov_xml(xml_bytes: bytes) -> dict[str, Any]:
     well-formed XML; raises ET.ParseError on malformed input so the
     caller can record a parse_error status.
     """
-    root = ET.fromstring(xml_bytes)
+    root = ET.fromstring(xml_bytes)  # nosec B314 - input is trusted gov-source XML; not user-supplied
 
     # Concatenate every <Article> body. Collapsing intra-article
     # whitespace keeps the CSV one-row-per-law without embedded

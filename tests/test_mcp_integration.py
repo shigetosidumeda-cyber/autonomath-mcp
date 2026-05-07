@@ -254,13 +254,13 @@ def mcp():
 # ----- handshake ------------------------------------------------------
 def test_initialize_reports_server_info(mcp: MCPClient) -> None:
     assert mcp.server_info is not None, "initialize() did not capture serverInfo"
-    assert (
-        mcp.server_info.get("name") == "autonomath"
-    ), f"serverInfo.name must be 'autonomath', got {mcp.server_info}"
+    assert mcp.server_info.get("name") == "autonomath", (
+        f"serverInfo.name must be 'autonomath', got {mcp.server_info}"
+    )
     version = mcp.server_info.get("version")
-    assert (
-        isinstance(version, str) and version
-    ), f"serverInfo.version must be non-empty string, got {version!r}"
+    assert isinstance(version, str) and version, (
+        f"serverInfo.version must be non-empty string, got {version!r}"
+    )
 
 
 def test_list_tools_covers_all_handlers(mcp: MCPClient) -> None:
@@ -376,16 +376,16 @@ def test_get_program_unknown_id_returns_error_envelope(mcp: MCPClient) -> None:
     # surfaces that as a normal (non-isError) success response whose
     # payload carries the envelope. Clients still get an actionable
     # signal — just via the payload, not JSON-RPC -32603.
-    assert not is_error_response(
-        resp
-    ), f"tool unexpectedly raised; envelope contract regressed: {resp}"
+    assert not is_error_response(resp), (
+        f"tool unexpectedly raised; envelope contract regressed: {resp}"
+    )
     payload = extract_tool_payload(resp)
     assert isinstance(payload, dict), f"expected dict envelope, got {payload!r}"
     assert payload.get("code") == "no_matching_records", payload
     err_text = str(payload.get("error", "")).lower()
-    assert (
-        "not found" in err_text or "nonexistent" in err_text.lower()
-    ), f"error message did not mention the missing id: {payload}"
+    assert "not found" in err_text or "nonexistent" in err_text.lower(), (
+        f"error message did not mention the missing id: {payload}"
+    )
     assert "hint" in payload, f"missing hint in error envelope: {payload}"
 
 
@@ -399,9 +399,9 @@ def test_batch_get_programs_round_trip(mcp: MCPClient) -> None:
     payload = extract_tool_payload(resp)
     assert set(payload.keys()) >= {"results", "not_found"}
     returned = {r["unified_id"] for r in payload["results"]}
-    assert returned == set(
-        uids
-    ), f"batch dropped/added ids. asked={uids} got={returned} not_found={payload['not_found']}"
+    assert returned == set(uids), (
+        f"batch dropped/added ids. asked={uids} got={returned} not_found={payload['not_found']}"
+    )
     # Batch contract: full shape always carries these keys.
     for row in payload["results"]:
         for k in ("enriched", "source_mentions", "source_url"):
@@ -419,9 +419,9 @@ def test_batch_get_programs_over_limit_errors(mcp: MCPClient) -> None:
     )
     err_msg = (resp.get("error") or {}).get("message", "")
     combined = (text_blob + " " + err_msg).lower()
-    assert (
-        "50" in combined or "cap" in combined or "limit" in combined
-    ), f"validation error did not cite the 50-id cap: {resp}"
+    assert "50" in combined or "cap" in combined or "limit" in combined, (
+        f"validation error did not cite the 50-id cap: {resp}"
+    )
 
 
 # ----- list_exclusion_rules ------------------------------------------
@@ -471,13 +471,13 @@ def test_check_exclusions_known_conflict(mcp: MCPClient) -> None:
     assert not is_error_response(resp), f"tool errored: {resp}"
     payload = extract_tool_payload(resp)
     assert payload["checked_rules"] >= _EXCLUSION_RULES_FLOOR
-    assert payload[
-        "hits"
-    ], f"expected at least one hit for the known agri mutex pair, got {payload}"
+    assert payload["hits"], (
+        f"expected at least one hit for the known agri mutex pair, got {payload}"
+    )
     hit_rules = {h["rule_id"] for h in payload["hits"]}
-    assert any(
-        "keiei-kaishi" in r and "koyo-shuno" in r for r in hit_rules
-    ), f"known mutex rule not among hits: {hit_rules}"
+    assert any("keiei-kaishi" in r and "koyo-shuno" in r for r in hit_rules), (
+        f"known mutex rule not among hits: {hit_rules}"
+    )
 
 
 def test_check_exclusions_no_conflict(mcp: MCPClient) -> None:
@@ -500,9 +500,9 @@ def test_get_meta_shape(mcp: MCPClient) -> None:
     resp = mcp.call_tool("get_meta", {})
     assert not is_error_response(resp), f"tool errored: {resp}"
     payload = extract_tool_payload(resp)
-    assert (
-        payload["total_programs"] > 5000
-    ), f"total_programs suspiciously low: {payload['total_programs']}"
+    assert payload["total_programs"] > 5000, (
+        f"total_programs suspiciously low: {payload['total_programs']}"
+    )
     assert "tier_counts" in payload
     tier_keys = set(payload["tier_counts"].keys())
     # S/A/B/C must all be represented in the real dataset.
@@ -512,9 +512,9 @@ def test_get_meta_shape(mcp: MCPClient) -> None:
     # last_ingested_at must be an ISO-8601 timestamp.
     last = payload.get("last_ingested_at")
     assert isinstance(last, str) and last, f"last_ingested_at missing/empty: {last}"
-    assert "T" in last and (
-        "Z" in last or "+" in last or "-" in last[10:]
-    ), f"last_ingested_at does not look ISO-8601: {last!r}"
+    assert "T" in last and ("Z" in last or "+" in last or "-" in last[10:]), (
+        f"last_ingested_at does not look ISO-8601: {last!r}"
+    )
 
 
 # ----- protocol error handling ---------------------------------------

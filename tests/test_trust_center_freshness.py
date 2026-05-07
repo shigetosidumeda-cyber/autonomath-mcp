@@ -83,6 +83,6 @@ def test_trust_matrix_required_row_ids_present() -> None:
         ("acceptance", "acceptance_contract_pass"),
     }
     for alts in required_seeds:
-        assert any(
-            a in ids for a in alts
-        ), f"none of {alts} found in trust matrix row ids {sorted(ids)}"
+        assert any(a in ids for a in alts), (
+            f"none of {alts} found in trust matrix row ids {sorted(ids)}"
+        )

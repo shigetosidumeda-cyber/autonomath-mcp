@@ -22,7 +22,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_JPINTEL_DB = REPO_ROOT / "data" / "jpintel.db"
 DEFAULT_AUTONOMATH_DB = REPO_ROOT / "autonomath.db"
 DEFAULT_GBIZ_JSONL = Path("/Users/shigetoumeda/Autonomath/data/runtime/gbiz_enrichment.jsonl")
-DEFAULT_INVOICE_CACHE_DIR = Path("/tmp/jpintel_invoice_registrants_cache")
+DEFAULT_INVOICE_CACHE_DIR = Path("/tmp/jpintel_invoice_registrants_cache")  # nosec B108 - shared with cron ingest_nta_invoice_bulk; same operator-managed cache
 DEFAULT_OUTPUT = REPO_ROOT / "analysis_wave18" / "corporate_bulk_preflight_2026-05-01.json"
 
 MIN_FREE_BYTES = 2 * 1024 * 1024 * 1024

@@ -42,11 +42,14 @@ jobs:
             BRANCH="${GITHUB_REF_NAME}"
           fi
           # convention: branches starting with 'session-a/' or commit msg [lane:session_a]
+          # R8_LANE_GUARD_DESIGN additive: commit msg [lane:solo] resolves to solo lane
+          # (operator-explicit; never auto-detected from process count).
           LANE="codex"
           if [[ "${BRANCH}" == session-a/* ]]; then LANE="session_a"; fi
           MSG="$(git log -1 --pretty=%B)"
           if echo "${MSG}" | grep -q '\[lane:session_a\]'; then LANE="session_a"; fi
           if echo "${MSG}" | grep -q '\[lane:codex\]'; then LANE="codex"; fi
+          if echo "${MSG}" | grep -q '\[lane:solo\]'; then LANE="solo"; fi
           echo "lane=${LANE}" >> "$GITHUB_OUTPUT"
           echo "[lane-enforcer-ci] resolved lane: ${LANE} (branch=${BRANCH})"
 

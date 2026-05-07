@@ -274,9 +274,9 @@ def test_deep38_detector_overlap_with_inline_boundary_check():
     from jpintel_mcp.api._verifier import _COMPILED_JA
 
     inline_law_universe = {law for law, _, _, _ in _COMPILED_JA}
-    assert seven_keys_inline.issubset(
-        inline_law_universe
-    ), f"verifier inline catalog missing 業法 keys: {seven_keys_inline - inline_law_universe}"
+    assert seven_keys_inline.issubset(inline_law_universe), (
+        f"verifier inline catalog missing 業法 keys: {seven_keys_inline - inline_law_universe}"
+    )
 
     d38_universe = {
         h["law"]
@@ -285,9 +285,9 @@ def test_deep38_detector_overlap_with_inline_boundary_check():
             "特許出願代行。社会保険手続代行。監査証明します。"
         )
     }
-    assert seven_keys_d38.issubset(
-        d38_universe
-    ), f"DEEP-38 catalog missing 業法 keys: {seven_keys_d38 - d38_universe}"
+    assert seven_keys_d38.issubset(d38_universe), (
+        f"DEEP-38 catalog missing 業法 keys: {seven_keys_d38 - d38_universe}"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -346,9 +346,9 @@ def test_zero_llm_api_imports_after_deepening():
         assert fp.exists(), f"missing module: {fp}"
         content = fp.read_text(encoding="utf-8")
         for bad in forbidden:
-            assert (
-                bad not in content
-            ), f"{fp.name} must not contain `{bad}` (memory feedback_no_operator_llm_api)"
+            assert bad not in content, (
+                f"{fp.name} must not contain `{bad}` (memory feedback_no_operator_llm_api)"
+            )
 
     sys.modules.pop("jpintel_mcp.api._verifier", None)
     importlib.import_module("jpintel_mcp.api._verifier")

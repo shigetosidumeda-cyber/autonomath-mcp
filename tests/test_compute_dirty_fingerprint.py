@@ -213,9 +213,9 @@ def test_02_lane_classification(synthetic_repo: Path) -> None:
         ("README.md", "root_release_files"),
     ]
     for path, expected in cases:
-        assert (
-            cdf.classify_lane(path) == expected
-        ), f"{path} -> {cdf.classify_lane(path)} != {expected}"
+        assert cdf.classify_lane(path) == expected, (
+            f"{path} -> {cdf.classify_lane(path)} != {expected}"
+        )
 
 
 def test_03_large_file_skip(synthetic_repo_with_large: Path) -> None:

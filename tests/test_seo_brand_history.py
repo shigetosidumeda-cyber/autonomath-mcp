@@ -37,9 +37,9 @@ def test_llms_file_mentions_legacy_brand(fname: str) -> None:
     text = path.read_text(encoding="utf-8")
     head = "\n".join(text.splitlines()[:6])
     # H1 area must carry a brand-history bridge marker.
-    assert re.search(
-        r"(formerly|previously|旧称)", head, re.IGNORECASE
-    ), f"{fname} head lacks 'formerly/previously/旧称' marker:\n{head}"
+    assert re.search(r"(formerly|previously|旧称)", head, re.IGNORECASE), (
+        f"{fname} head lacks 'formerly/previously/旧称' marker:\n{head}"
+    )
     for term in LEGACY_TERMS:
         assert term in head, f"{fname} head missing legacy term {term!r}:\n{head}"
 
@@ -83,21 +83,21 @@ def test_index_html_jsonld_carries_legacy_brand() -> None:
     assert len(alt) >= 4, f"WebSite.alternateName needs >=4 entries (jpcite + 3 legacy), got {alt}"
 
     same_as = website.get("sameAs") or []
-    assert (
-        "https://zeimu-kaikei.ai" in same_as
-    ), f"WebSite.sameAs missing zeimu-kaikei.ai: {same_as}"
+    assert "https://zeimu-kaikei.ai" in same_as, (
+        f"WebSite.sameAs missing zeimu-kaikei.ai: {same_as}"
+    )
 
     org = _find_block(blocks, "Organization")
     org_alt = org.get("alternateName") or []
     for term in LEGACY_TERMS:
         assert term in org_alt, f"Organization.alternateName missing {term!r}: {org_alt}"
     org_same = org.get("sameAs") or []
-    assert (
-        "https://zeimu-kaikei.ai" in org_same
-    ), f"Organization.sameAs missing zeimu-kaikei.ai: {org_same}"
-    assert any(
-        "autonomath-mcp" in s for s in org_same
-    ), f"Organization.sameAs missing autonomath-mcp PyPI/GitHub link: {org_same}"
-    assert any(
-        "project/jpcite" in s for s in org_same
-    ), f"Organization.sameAs missing jpcite PyPI link: {org_same}"
+    assert "https://zeimu-kaikei.ai" in org_same, (
+        f"Organization.sameAs missing zeimu-kaikei.ai: {org_same}"
+    )
+    assert any("autonomath-mcp" in s for s in org_same), (
+        f"Organization.sameAs missing autonomath-mcp PyPI/GitHub link: {org_same}"
+    )
+    assert any("project/jpcite" in s for s in org_same), (
+        f"Organization.sameAs missing jpcite PyPI link: {org_same}"
+    )

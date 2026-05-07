@@ -31,10 +31,13 @@ from __future__ import annotations
 import inspect
 import os
 import re
-import sqlite3
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
+
+if TYPE_CHECKING:
+    import sqlite3
 
 
 # ---------------------------------------------------------------------------
@@ -128,9 +131,9 @@ def test_inv09_quarantine_count_within_budget():
             pytest.skip(f"programs row count too low ({total}) for share check")
         x_count = con.execute("SELECT COUNT(*) FROM programs WHERE tier='X'").fetchone()[0]
     share = x_count / total if total else 0.0
-    assert (
-        share < 0.30
-    ), f"Quarantine share too high: tier='X' {x_count}/{total} = {share:.2%} (>= 30%)"
+    assert share < 0.30, (
+        f"Quarantine share too high: tier='X' {x_count}/{total} = {share:.2%} (>= 30%)"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -153,9 +156,9 @@ def test_inv10_source_fetched_at_not_null():
             "SELECT COUNT(*) FROM programs WHERE excluded=0 AND source_fetched_at IS NULL"
         ).fetchone()[0]
     null_share = nulls / total if total else 0.0
-    assert (
-        null_share < 0.01
-    ), f"source_fetched_at NULL share too high: {nulls}/{total} = {null_share:.2%} (>= 1%)"
+    assert null_share < 0.01, (
+        f"source_fetched_at NULL share too high: {nulls}/{total} = {null_share:.2%} (>= 1%)"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -179,9 +182,9 @@ def test_inv18_search_response_envelope_shape():
 
     # BatchGetProgramsResponse must expose `results` at minimum
     batch_actual = set(BatchGetProgramsResponse.model_fields.keys())
-    assert (
-        "results" in batch_actual
-    ), f"BatchGetProgramsResponse missing 'results' (got {batch_actual})"
+    assert "results" in batch_actual, (
+        f"BatchGetProgramsResponse missing 'results' (got {batch_actual})"
+    )
 
 
 def test_inv18_meta_endpoint_envelope_present():
@@ -459,6 +462,6 @@ def test_tier2_invariant_count():
     doc = inspect.getmodule(test_tier2_invariant_count).__doc__ or ""
     documented = re.findall(r"^\s*INV-\d+", doc, flags=re.MULTILINE)
     # 13 unique invariant IDs covered in the module
-    assert (
-        len(documented) >= 13
-    ), f"expected >=13 INV-* references in module docstring, got {len(documented)}"
+    assert len(documented) >= 13, (
+        f"expected >=13 INV-* references in module docstring, got {len(documented)}"
+    )

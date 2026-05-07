@@ -3489,7 +3489,7 @@ def _spec_pages() -> list[QAPage]:
                 ),
                 (
                     "出典はどの程度入っていますか?",
-                    "公開ファクトシート上の最新値では、検索対象 11,684 制度、50 税務ルールセット、139 MCP tools を掲示しています。一次資料URLと取得時刻は主要な公開行で保持し、欠落や保留行は正本側で明示します。",
+                    "公開ファクトシート上の最新値では、検索対象 11,601 制度、50 税務ルールセット、139 MCP tools を掲示しています。一次資料URLと取得時刻は主要な公開行で保持し、欠落や保留行は正本側で明示します。",
                 ),
                 (
                     "LLMに渡す文脈をどう整理しますか?",
@@ -3498,7 +3498,7 @@ def _spec_pages() -> list[QAPage]:
             ],
             facts=[
                 ("役割", "回答生成ではなく Evidence Layer"),
-                ("検索対象制度", "11,684"),
+                ("検索対象制度", "11,601"),
                 ("MCP tools", "139"),
                 ("匿名評価", "3 req/日 per IP"),
             ],
@@ -3621,7 +3621,7 @@ def _http_head_or_get(url: str, timeout: int = 10) -> int:
     def _attempt(method: str) -> int:
         req = urllib.request.Request(url, method=method, headers=headers)
         try:
-            with urllib.request.urlopen(req, timeout=timeout, context=ctx) as resp:
+            with urllib.request.urlopen(req, timeout=timeout, context=ctx) as resp:  # nosec B310 - operator-config https endpoint, no file:/ schemes
                 return resp.status
         except urllib.error.HTTPError as e:
             return e.code

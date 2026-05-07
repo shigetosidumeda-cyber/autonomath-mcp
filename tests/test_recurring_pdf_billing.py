@@ -25,11 +25,13 @@ from __future__ import annotations
 # delivery-strict fixtures must be opted in explicitly via pytest_plugins.
 pytest_plugins = ["tests.conftest_delivery_strict"]
 
-import sqlite3
 from datetime import UTC, datetime, timedelta
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
+
+if TYPE_CHECKING:
+    import sqlite3
 
 # ---------------------------------------------------------------------------
 # Surrogate implementation

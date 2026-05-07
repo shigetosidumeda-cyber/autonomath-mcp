@@ -392,8 +392,8 @@ def _score_houjin(
     `reason_dict` is the structure stored in `reason_json` so the request-
     time tool can echo back per-signal contributions.
     """
-    h_major = houjin["jsic_major"] if "jsic_major" in houjin else None
-    h_middle = houjin["jsic_middle"] if "jsic_middle" in houjin else None
+    h_major = houjin.get("jsic_major", None)
+    h_middle = houjin.get("jsic_middle", None)
     h_pref = houjin["prefecture"]
 
     scored: list[tuple[str, float, str | None, str, dict[str, object]]] = []

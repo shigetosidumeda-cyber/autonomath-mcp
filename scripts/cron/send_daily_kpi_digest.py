@@ -328,7 +328,7 @@ def send_email(
         method="POST",
     )
     try:
-        with urllib.request.urlopen(req, timeout=15) as resp:
+        with urllib.request.urlopen(req, timeout=15) as resp:  # nosec B310 - operator-config https endpoint, no file:/ schemes
             return resp.status, resp.read().decode("utf-8", errors="replace")[:300]
     except urllib.error.HTTPError as exc:
         return exc.code, exc.read().decode("utf-8", errors="replace")[:300]

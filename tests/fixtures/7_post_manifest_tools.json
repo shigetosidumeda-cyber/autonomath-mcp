@@ -1,0 +1,118 @@
+[
+  {
+    "name": "query_at_snapshot_v2",
+    "spec": "DEEP-22 Time Machine — single point-in-time replay",
+    "module": "src/jpintel_mcp/mcp/autonomath_tools/time_machine_tools.py",
+    "impl": "_query_at_snapshot_impl",
+    "law": "§52 / §47条の2",
+    "law_ids": ["showa_26_tax_attorney_act", "showa_23_cpa_act"],
+    "fence": "factual replay only (am_amendment_snapshot 14,596 captures, 144 definitive-dated). NOT 採択 prediction; NO LLM",
+    "wave": "DEEP-22",
+    "manifest_state": "post-manifest (hold-at-139)",
+    "gate_flag": "AUTONOMATH_SNAPSHOT_ENABLED",
+    "sample_arguments": {
+      "program_id": "program:IT_DOUNYUU_HOJOKIN",
+      "as_of": "2024-06-01"
+    }
+  },
+  {
+    "name": "query_program_evolution",
+    "spec": "DEEP-22 Time Machine — 12-month evolution grid",
+    "module": "src/jpintel_mcp/mcp/autonomath_tools/time_machine_tools.py",
+    "impl": "_query_program_evolution_impl",
+    "law": "§52 / §47条の2",
+    "law_ids": ["showa_26_tax_attorney_act", "showa_23_cpa_act"],
+    "fence": "factual replay only — 12 month-end pivots in one ¥3 metered call; surfaces change_months for diligence walks",
+    "wave": "DEEP-22",
+    "manifest_state": "post-manifest (hold-at-139)",
+    "gate_flag": "AUTONOMATH_SNAPSHOT_ENABLED",
+    "sample_arguments": {
+      "program_id": "program:IT_DOUNYUU_HOJOKIN",
+      "year": 2024
+    }
+  },
+  {
+    "name": "shihoshoshi_dd_pack_am",
+    "spec": "DEEP-30 司法書士 cohort dedicated DD pack",
+    "module": "src/jpintel_mcp/mcp/autonomath_tools/shihoshoshi_tools.py",
+    "impl": "_shihoshoshi_dd_pack_impl",
+    "law": "司法書士法§3 / §52 / §72 / 行政書士法§1",
+    "law_ids": ["showa_25_judicial_scrivener_act", "showa_26_tax_attorney_act", "showa_24_lawyer_act", "showa_26_administrative_writer_act"],
+    "fence": "1-call compound (商業登記前 360° + cross_check_jurisdiction + 反社相当 enforcement + 業務 boundary 警告). Scaffold + 一次資料 URL only; §3 fence — NEVER 登記/供託/簡裁訴訟代理",
+    "wave": "DEEP-30",
+    "manifest_state": "post-manifest (hold-at-139)",
+    "gate_flag": "AUTONOMATH_SHIHOSHOSHI_PACK_ENABLED",
+    "sample_arguments": {
+      "houjin_bangou": "8010001213708"
+    }
+  },
+  {
+    "name": "search_kokkai_utterance",
+    "spec": "DEEP-39 国会会議録 keyword + date filter",
+    "module": "src/jpintel_mcp/mcp/autonomath_tools/kokkai_tools.py",
+    "impl": "_search_kokkai_utterance_impl",
+    "law": "§52 / §47条の2 / §72 / 司法書士法§3",
+    "law_ids": ["showa_26_tax_attorney_act", "showa_23_cpa_act", "showa_24_lawyer_act", "showa_25_judicial_scrivener_act"],
+    "fence": "answer-rendering only (kokkai_utterance corpus). 3-axis citation (source_url + retrieved_at + sha256). Sensitive — disclaimer envelope mandatory",
+    "wave": "DEEP-39",
+    "manifest_state": "post-manifest (hold-at-139)",
+    "gate_flag": "AUTONOMATH_KOKKAI_ENABLED",
+    "sample_arguments": {
+      "law_keyword": "税理士法",
+      "date_from": "2023-01-01",
+      "date_to": "2024-12-31",
+      "limit": 10
+    }
+  },
+  {
+    "name": "search_shingikai_minutes",
+    "spec": "DEEP-39 審議会 議事録 keyword filter",
+    "module": "src/jpintel_mcp/mcp/autonomath_tools/kokkai_tools.py",
+    "impl": "_search_shingikai_minutes_impl",
+    "law": "§52 / §47条の2 / §72",
+    "law_ids": ["showa_26_tax_attorney_act", "showa_23_cpa_act", "showa_24_lawyer_act"],
+    "fence": "answer-rendering only (shingikai_minutes corpus). 3-axis citation. Sensitive — disclaimer envelope mandatory",
+    "wave": "DEEP-39",
+    "manifest_state": "post-manifest (hold-at-139)",
+    "gate_flag": "AUTONOMATH_KOKKAI_ENABLED",
+    "sample_arguments": {
+      "council": "税制調査会",
+      "agenda_keyword": "適格請求書",
+      "limit": 5
+    }
+  },
+  {
+    "name": "search_municipality_subsidies",
+    "spec": "DEEP-44 自治体 1,741 補助金 page diff cron 1次資料 listing",
+    "module": "src/jpintel_mcp/mcp/autonomath_tools/municipality_tools.py",
+    "impl": "_search_municipality_subsidies_impl",
+    "law": "(NOT §52/§47条の2/§72/§3 sensitive — pure listing)",
+    "law_ids": [],
+    "fence": "1次資料 URL listing only. 政府著作物 §13 source_attribution per row. NO LLM",
+    "wave": "DEEP-44",
+    "manifest_state": "post-manifest (hold-at-139)",
+    "gate_flag": "AUTONOMATH_MUNICIPALITY_ENABLED",
+    "sample_arguments": {
+      "pref": "東京都",
+      "muni_name": "文京区",
+      "keyword": "中小企業",
+      "limit": 10
+    }
+  },
+  {
+    "name": "get_pubcomment_status",
+    "spec": "DEEP-45 e-Gov パブコメ 公示 follow",
+    "module": "src/jpintel_mcp/mcp/autonomath_tools/pubcomment_tools.py",
+    "impl": "_get_pubcomment_status_impl",
+    "law": "§52 / §47条の2 / §72 / 行政書士法§1",
+    "law_ids": ["showa_26_tax_attorney_act", "showa_23_cpa_act", "showa_24_lawyer_act", "showa_26_administrative_writer_act"],
+    "fence": "公示中 + 直近 90 日終了 案件 listing with cohort_impact rollup. Lead time 30-60 日. Sensitive — disclaimer envelope mandatory",
+    "wave": "DEEP-45",
+    "manifest_state": "post-manifest (hold-at-139)",
+    "gate_flag": "AUTONOMATH_PUBCOMMENT_ENABLED",
+    "sample_arguments": {
+      "law_keyword": "適格請求書",
+      "limit": 10
+    }
+  }
+]

@@ -34,9 +34,11 @@ import re
 import sqlite3
 import sys
 import time
-from collections.abc import Iterable, Sequence
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
 
 # sqlglot is OPTIONAL at import-time so --check still runs in environments
 # where sqlglot isn't installed; SQL body parsing degrades to a regex walk

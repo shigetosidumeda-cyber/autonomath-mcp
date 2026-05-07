@@ -464,7 +464,6 @@ def _parse_reasons(reasons_blob: str) -> list[tuple[str, int]]:
     blob = unicodedata.normalize("NFKC", reasons_blob)
     # Drop leading separators.
     blob = blob.lstrip("、, 　")
-    pos = 0
     for m in _REASON_ENTRY_RE.finditer(blob):
         raw_reason = m.group("reason")
         n_str = m.group("n")
@@ -480,7 +479,7 @@ def _parse_reasons(reasons_blob: str) -> list[tuple[str, int]]:
         if not cleaned or len(cleaned) > 400:
             continue
         out.append((cleaned, n))
-        pos = m.end()
+        m.end()
     if not out:
         # No N件 markers — treat the whole blob as one event count=1.
         token = _clean_reason_token(blob)

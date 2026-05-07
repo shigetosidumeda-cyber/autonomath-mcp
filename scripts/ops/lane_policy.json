@@ -1,9 +1,16 @@
 {
-  "$schema_version": "1.0.0",
-  "spec_origin": "DEEP_59_to_65_gap_sketches.md / DEEP-60",
-  "purpose": "dual-CLI lane enforcement for jpcite (session_a vs codex)",
+  "$schema_version": "1.1.0",
+  "spec_origin": "DEEP_59_to_65_gap_sketches.md / DEEP-60 + R8_LANE_GUARD_DESIGN solo additive",
+  "purpose": "dual-CLI lane enforcement for jpcite (session_a vs codex), with optional 1-CLI solo lane",
   "llm_api_calls": 0,
   "lanes": {
+    "solo": {
+      "owner_role": "1-CLI solo operator mode, all paths allowed; remove this lane to restore strict 2-CLI policy",
+      "allowed_paths": ["**"],
+      "forbidden_paths": [],
+      "description": "1-CLI solo operator mode, all paths allowed; remove this lane to restore strict 2-CLI policy",
+      "violation_severity": "block_commit"
+    },
     "session_a": {
       "owner_role": "session A (audit / housekeeping / inbox draft)",
       "allowed_paths": [

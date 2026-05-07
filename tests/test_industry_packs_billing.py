@@ -111,9 +111,9 @@ def _assert_billing_unit(res: dict, tool_name: str) -> None:
         "pipeline will silently bill 0 requests"
     )
     val = res["_billing_unit"]
-    assert isinstance(val, int) and not isinstance(
-        val, bool
-    ), f"{tool_name}: _billing_unit must be int (got {type(val).__name__}={val!r})"
+    assert isinstance(val, int) and not isinstance(val, bool), (
+        f"{tool_name}: _billing_unit must be int (got {type(val).__name__}={val!r})"
+    )
     assert val >= 1, f"{tool_name}: _billing_unit must be ≥1 (got {val})"
 
 
@@ -275,6 +275,6 @@ def test_envelope_wrapper_preserves_billing_unit_with_value_2() -> None:
         }
 
     out = fake_two(query="probe")
-    assert (
-        out.get("_billing_unit") == 2
-    ), f"envelope_wrapper coerced _billing_unit (expected 2, got {out.get('_billing_unit')!r})"
+    assert out.get("_billing_unit") == 2, (
+        f"envelope_wrapper coerced _billing_unit (expected 2, got {out.get('_billing_unit')!r})"
+    )

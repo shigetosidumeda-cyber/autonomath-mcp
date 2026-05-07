@@ -32,10 +32,13 @@ import sys
 import time
 import urllib.parse
 import urllib.request
-from collections.abc import Sequence
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from bs4 import BeautifulSoup, NavigableString, Tag
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 try:
     import certifi
@@ -109,7 +112,7 @@ def fetch(url: str, *, retries: int = 3, delay: float = 0.8) -> str:
     for attempt in range(retries):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": UA})
-            with urllib.request.urlopen(req, timeout=30, context=_SSL_CTX) as resp:
+            with urllib.request.urlopen(req, timeout=30, context=_SSL_CTX) as resp:  # nosec B310 - operator-config https endpoint, no file:/ schemes
                 raw = resp.read()
             return raw.decode("shift_jis", errors="replace")
         except Exception as exc:  # noqa: BLE001

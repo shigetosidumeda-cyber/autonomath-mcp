@@ -71,7 +71,7 @@ def _push_records(
                 "X-Cybozu-API-Token": api_token,
             },
         )
-        with urllib.request.urlopen(req, timeout=20) as resp:
+        with urllib.request.urlopen(req, timeout=20) as resp:  # nosec B310 - operator-config https endpoint, no file:/ schemes
             if 200 <= resp.status < 300:
                 return len(records), None
             return 0, f"http_{resp.status}"

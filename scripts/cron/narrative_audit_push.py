@@ -177,7 +177,7 @@ def _telegram_push(text: str, *, callback_data_yes: str, callback_data_no: str) 
         method="POST",
     )
     try:
-        with urllib.request.urlopen(req, timeout=10) as resp:
+        with urllib.request.urlopen(req, timeout=10) as resp:  # nosec B310 - operator-config https endpoint, no file:/ schemes
             return resp.status == 200
     except (urllib.error.URLError, TimeoutError) as exc:
         logger.warning("audit_telegram_push_failed err=%s", str(exc)[:160])

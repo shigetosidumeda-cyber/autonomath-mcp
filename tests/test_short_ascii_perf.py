@@ -204,15 +204,15 @@ def test_short_ascii_query_returns_results(client: TestClient, seeded_for_perf: 
     assert r.status_code == 200
     body = r.json()
     names = [row["primary_name"] for row in body["results"]]
-    assert (
-        "IT導入補助金(テスト)" in names
-    ), f"q=IT did not return the primary_name hit; names={names}"
+    assert "IT導入補助金(テスト)" in names, (
+        f"q=IT did not return the primary_name hit; names={names}"
+    )
     # Enriched-blob-only noise rows must NOT appear (relevance guard —
     # this is the second half of the perf fix).
     for name in names:
-        assert not name.startswith(
-            "テスト英文ノイズ行"
-        ), f"enriched-only row leaked into q=IT result set: {name}"
+        assert not name.startswith("テスト英文ノイズ行"), (
+            f"enriched-only row leaked into q=IT result set: {name}"
+        )
 
 
 def test_short_ascii_query_p95_under_150ms(client: TestClient, seeded_for_perf: Path) -> None:
@@ -233,9 +233,9 @@ def test_short_ascii_query_p95_under_150ms(client: TestClient, seeded_for_perf: 
         assert r.status_code == 200
 
     p95 = _percentile(samples, 95)
-    assert (
-        p95 < 150.0
-    ), f"q=IT P95={p95:.1f} ms (target <150 ms). All samples (ms): {[f'{s:.1f}' for s in samples]}"
+    assert p95 < 150.0, (
+        f"q=IT P95={p95:.1f} ms (target <150 ms). All samples (ms): {[f'{s:.1f}' for s in samples]}"
+    )
 
 
 def test_short_japanese_query_still_covers_enriched(
@@ -262,6 +262,6 @@ def test_short_japanese_query_still_covers_enriched(
     assert r.status_code == 200
     body = r.json()
     names = [row["primary_name"] for row in body["results"]]
-    assert (
-        "テスト控除対象事業(本文のみ)" in names
-    ), f"2-char kanji '税額' failed to match enriched_text; names={names}"
+    assert "テスト控除対象事業(本文のみ)" in names, (
+        f"2-char kanji '税額' failed to match enriched_text; names={names}"
+    )

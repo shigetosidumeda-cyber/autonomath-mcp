@@ -425,9 +425,9 @@ def test_returns_5_axis(client: TestClient) -> None:
     # via_law_ref should populate from the seeded jpintel.db rows
     # (UNI-test-s-1 ↔ UNI-disc-plr2 via LAW-disc-shared).
     law_ref_ids = {r["entity_id"] for r in related["via_law_ref"]}
-    assert (
-        "UNI-disc-plr2" in law_ref_ids
-    ), "via_law_ref should include the partner program seeded in jpintel.db"
+    assert "UNI-disc-plr2" in law_ref_ids, (
+        "via_law_ref should include the partner program seeded in jpintel.db"
+    )
 
     # Per-axis cap is hard at 5 even when k > 5.
     for axis_name, rows in related.items():
@@ -521,16 +521,16 @@ def test_mcp_rest_parity(client: TestClient, fixture_db: Path) -> None:
     for axis_name in rest_body["related"]:
         rest_rows = rest_body["related"][axis_name]
         mcp_rows = mcp_body["related"][axis_name]
-        assert len(rest_rows) == len(
-            mcp_rows
-        ), f"axis {axis_name} drift: REST={len(rest_rows)} MCP={len(mcp_rows)}"
+        assert len(rest_rows) == len(mcp_rows), (
+            f"axis {axis_name} drift: REST={len(rest_rows)} MCP={len(mcp_rows)}"
+        )
         # Compare the entity_id sets — the row order is determined by SQL
         # ORDER BY which is identical between the two paths.
         rest_ids = [r.get("entity_id") for r in rest_rows]
         mcp_ids = [r.get("entity_id") for r in mcp_rows]
-        assert (
-            rest_ids == mcp_ids
-        ), f"axis {axis_name} entity_id ordering drift: REST={rest_ids} MCP={mcp_ids}"
+        assert rest_ids == mcp_ids, (
+            f"axis {axis_name} entity_id ordering drift: REST={rest_ids} MCP={mcp_ids}"
+        )
 
     # Both share the same disclaimer + billing_unit + corpus_snapshot_id.
     assert rest_body["_disclaimer"] == mcp_body["_disclaimer"]

@@ -130,24 +130,24 @@ def _assert_canonical_envelope(res: dict, tool_name: str) -> None:
     offset = res["offset"]
     results = res["results"]
 
-    assert isinstance(total, int) and not isinstance(
-        total, bool
-    ), f"{tool_name}: total must be int (got {type(total).__name__}={total!r})"
-    assert isinstance(limit, int) and not isinstance(
-        limit, bool
-    ), f"{tool_name}: limit must be int (got {type(limit).__name__}={limit!r})"
-    assert isinstance(offset, int) and not isinstance(
-        offset, bool
-    ), f"{tool_name}: offset must be int (got {type(offset).__name__}={offset!r})"
-    assert isinstance(
-        results, list
-    ), f"{tool_name}: results must be list (got {type(results).__name__})"
+    assert isinstance(total, int) and not isinstance(total, bool), (
+        f"{tool_name}: total must be int (got {type(total).__name__}={total!r})"
+    )
+    assert isinstance(limit, int) and not isinstance(limit, bool), (
+        f"{tool_name}: limit must be int (got {type(limit).__name__}={limit!r})"
+    )
+    assert isinstance(offset, int) and not isinstance(offset, bool), (
+        f"{tool_name}: offset must be int (got {type(offset).__name__}={offset!r})"
+    )
+    assert isinstance(results, list), (
+        f"{tool_name}: results must be list (got {type(results).__name__})"
+    )
 
     assert total >= 0, f"{tool_name}: total must be ≥0 (got {total})"
     assert limit >= 0, f"{tool_name}: limit must be ≥0 (got {limit})"
-    assert (
-        offset == 0
-    ), f"{tool_name}: offset must be 0 for unpaginated pack envelope (got {offset})"
+    assert offset == 0, (
+        f"{tool_name}: offset must be 0 for unpaginated pack envelope (got {offset})"
+    )
     assert total == len(results), (
         f"{tool_name}: total ({total}) must equal len(results) "
         f"({len(results)}) on unpaginated envelope"
@@ -155,12 +155,12 @@ def _assert_canonical_envelope(res: dict, tool_name: str) -> None:
 
     # Each result row must be a dict carrying a ``kind`` discriminator.
     for i, row in enumerate(results):
-        assert isinstance(
-            row, dict
-        ), f"{tool_name}: results[{i}] is not a dict ({type(row).__name__})"
-        assert (
-            row.get("kind") in _VALID_KINDS
-        ), f"{tool_name}: results[{i}].kind={row.get('kind')!r} not in {_VALID_KINDS}"
+        assert isinstance(row, dict), (
+            f"{tool_name}: results[{i}] is not a dict ({type(row).__name__})"
+        )
+        assert row.get("kind") in _VALID_KINDS, (
+            f"{tool_name}: results[{i}].kind={row.get('kind')!r} not in {_VALID_KINDS}"
+        )
 
     # --- Legacy 3-list fields (back-compat) -------------------------------
     for key in ("programs", "saiketsu_citations", "tsutatsu_references"):
@@ -187,9 +187,9 @@ def _assert_canonical_envelope(res: dict, tool_name: str) -> None:
     # --- Billing + envelope completeness ---------------------------------
     assert "_billing_unit" in res, f"{tool_name}: _billing_unit missing"
     bu = res["_billing_unit"]
-    assert (
-        isinstance(bu, int) and not isinstance(bu, bool) and bu >= 1
-    ), f"{tool_name}: _billing_unit must be int ≥1 (got {bu!r})"
+    assert isinstance(bu, int) and not isinstance(bu, bool) and bu >= 1, (
+        f"{tool_name}: _billing_unit must be int ≥1 (got {bu!r})"
+    )
     assert "_next_calls" in res, f"{tool_name}: _next_calls missing"
     assert "_disclaimer" in res, f"{tool_name}: _disclaimer missing"
 

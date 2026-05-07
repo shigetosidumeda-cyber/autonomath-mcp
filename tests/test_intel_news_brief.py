@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import sqlite3
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 from fastapi import FastAPI
@@ -9,6 +9,9 @@ from fastapi.testclient import TestClient
 
 from jpintel_mcp.api.deps import get_db
 from jpintel_mcp.api.intel_news_brief import router
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 @pytest.fixture()

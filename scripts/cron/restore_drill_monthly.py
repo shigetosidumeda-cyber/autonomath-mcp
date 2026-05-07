@@ -478,7 +478,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     p.add_argument(
         "--tmp-dir",
-        default=os.environ.get("RESTORE_DRILL_TMP_DIR") or os.environ.get("TMPDIR") or "/tmp",
+        default=os.environ.get("RESTORE_DRILL_TMP_DIR") or os.environ.get("TMPDIR") or "/tmp",  # nosec B108 - last-resort fallback after RESTORE_DRILL_TMP_DIR + $TMPDIR; per-run scratch only
     )
     p.add_argument(
         "--expected-json",

@@ -101,13 +101,11 @@ def fetch(client: httpx.Client, url: str, host_clock: dict[str, float]) -> bytes
         if wait > 0:
             time.sleep(wait)
 
-    last_err: Exception | None = None
     for attempt in range(1, MAX_RETRIES + 1):
         host_clock[host] = time.monotonic()
         try:
             r = client.get(url)
         except httpx.HTTPError as exc:
-            last_err = exc
             _LOG.warning("fetch_err url=%s attempt=%d err=%s", url, attempt, exc)
             if attempt == MAX_RETRIES:
                 return None

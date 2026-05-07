@@ -324,9 +324,9 @@ def test_check_exclusions_dual_key_unified_id_hits_name_keyed_rule(client, seede
     same unified_id, so a hit must surface (no silent miss)."""
     res = check_exclusions(["UNI-test-s-1", "UNI-test-b-1"])
     hits_ids = {h["rule_id"] for h in res["hits"]}
-    assert (
-        "excl-test-uid-mutex" in hits_ids
-    ), f"unified_id input failed to resolve name-keyed rule via _uid: hits={hits_ids}"
+    assert "excl-test-uid-mutex" in hits_ids, (
+        f"unified_id input failed to resolve name-keyed rule via _uid: hits={hits_ids}"
+    )
 
 
 def test_check_exclusions_dual_key_primary_name_hits_uid_keyed_rule(client, seeded_db):
@@ -339,9 +339,9 @@ def test_check_exclusions_dual_key_primary_name_hits_uid_keyed_rule(client, seed
         ]
     )
     hits_ids = {h["rule_id"] for h in res["hits"]}
-    assert (
-        "excl-test-uid-mutex" in hits_ids
-    ), f"primary_name input failed to resolve uid-keyed rule: hits={hits_ids}"
+    assert "excl-test-uid-mutex" in hits_ids, (
+        f"primary_name input failed to resolve uid-keyed rule: hits={hits_ids}"
+    )
 
 
 # ---------------------------------------------------------------------------

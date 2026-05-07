@@ -32,7 +32,10 @@ import pathlib
 import subprocess
 import sys
 import uuid
-from collections.abc import Iterable
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 POLICY_FILENAME = "lane_policy.json"
 LEDGER_REL_DEFAULT = "tools/offline/_inbox/value_growth_dual/AGENT_LEDGER.csv"
@@ -107,7 +110,13 @@ def working_paths(repo_root: pathlib.Path) -> list[str]:
 
 
 def _path_matches(path: str, prefix: str) -> bool:
-    """Path-prefix match. Treats trailing '/' as directory; bare files match exact."""
+    """Path-prefix match. Treats trailing '/' as directory; bare files match exact.
+
+    Special case: '**' is a wildcard matching every path (used by the optional
+    'solo' lane in schema 1.1.0+).
+    """
+    if prefix == "**":
+        return True
     if prefix.endswith("/"):
         return path.startswith(prefix) or path == prefix.rstrip("/")
     return path == prefix or path.startswith(prefix + "/")
@@ -289,8 +298,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--lane",
         required=True,
-        choices=("session_a", "codex"),
-        help="which lane this run belongs to",
+        choices=("session_a", "codex", "solo"),
+        help="which lane this run belongs to ('solo' = 1-CLI mode, all paths allowed)",
     )
     p.add_argument(
         "--session",

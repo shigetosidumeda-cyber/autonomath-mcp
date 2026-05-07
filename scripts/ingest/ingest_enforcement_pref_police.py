@@ -697,11 +697,6 @@ def parse_nara_daiko_html(html: str, source_url: str) -> list[EnfRow]:
     text = _normalize(text)
 
     # Find each section header and the slice up to the next section / end.
-    sections = [
-        ("認定取消", "license_revoke"),
-        ("営業停止", "business_improvement"),
-        ("指示処分", "business_improvement"),
-    ]
     # Use canonical section header strings present in HTML
     header_map = {
         "認定取消処分がなされた自動車運転代行業者": "license_revoke",
@@ -879,7 +874,6 @@ def parse_saitama_daiko_html(html: str, source_url: str) -> list[EnfRow]:
         date_iso = _parse_date(date_text)
         if not date_iso:
             continue
-        kind_text = "処分（詳細はPDF参照）"
         kind = "business_improvement"
         # Try to recover PDF link if any.
         pdf_url = None
@@ -1780,7 +1774,9 @@ def _fetch_with_ssl_bypass(url: str) -> tuple[int, bytes, dict[str, str]]:
     import httpx
 
     headers = {"User-Agent": USER_AGENT, "Accept-Language": "ja,en;q=0.5"}
-    r = httpx.get(url, verify=False, follow_redirects=True, timeout=15.0, headers=headers)
+    # nosec B501 - bypass restricted to SSL_BYPASS_HOSTS allowlist (gov pref police
+    # site with broken intermediate cert). Only public HTML is read; no creds sent.
+    r = httpx.get(url, verify=False, follow_redirects=True, timeout=15.0, headers=headers)  # nosec B501
     return r.status_code, r.content, dict(r.headers)
 
 

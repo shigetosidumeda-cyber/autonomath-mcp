@@ -132,9 +132,9 @@ def test_get_valid_houjin_returns_expected_envelope(client: TestClient) -> None:
 
     # corp_facts EAV — at least one corp.* field must round-trip.
     assert isinstance(body["corp_facts"], dict)
-    assert any(
-        k.startswith("corp.") for k in body["corp_facts"]
-    ), "corp_facts has no corp.* entries — EAV pull regressed"
+    assert any(k.startswith("corp.") for k in body["corp_facts"]), (
+        "corp_facts has no corp.* entries — EAV pull regressed"
+    )
     # Every entry carries the (value, unit, kind) shape per docstring.
     for fname, fobj in body["corp_facts"].items():
         assert "value" in fobj, f"corp_facts[{fname}] missing 'value'"
@@ -349,6 +349,6 @@ def test_anon_over_quota_returns_429(client: TestClient, monkeypatch: pytest.Mon
         f"/v1/houjin/{_SAMPLE_BANGOU}",
         headers={"x-forwarded-for": ip},
     )
-    assert (
-        r2.status_code == 429
-    ), f"second anon call should 429 at limit=1; got {r2.status_code} {r2.text}"
+    assert r2.status_code == 429, (
+        f"second anon call should 429 at limit=1; got {r2.status_code} {r2.text}"
+    )

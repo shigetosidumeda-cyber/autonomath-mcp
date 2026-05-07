@@ -23,11 +23,14 @@ from __future__ import annotations
 import importlib
 import sqlite3
 import sys
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 
 from jpintel_mcp.billing.keys import issue_key
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 # ---------------------------------------------------------------------------
 # helpers
@@ -80,9 +83,9 @@ def test_bcrypt_new_key_writes_bcrypt_column_and_authenticates(client, seeded_db
 
     assert row is not None, "issued key not found"
     assert row["key_hash_bcrypt"], "new key MUST carry a non-NULL bcrypt hash"
-    assert row["key_hash_bcrypt"].startswith(
-        "$2"
-    ), "bcrypt hash should start with $2 (bcrypt format)"
+    assert row["key_hash_bcrypt"].startswith("$2"), (
+        "bcrypt hash should start with $2 (bcrypt format)"
+    )
     # End-to-end: the key authenticates against `/v1/me` via X-API-Key
     # which routes through require_key + bcrypt verify.
     r = client.get("/v1/programs/search?q=test", headers={"X-API-Key": raw})
@@ -115,9 +118,9 @@ def test_bcrypt_legacy_key_with_null_bcrypt_still_authenticates(client, seeded_d
     conn.close()
 
     r = client.get("/v1/programs/search?q=test", headers={"X-API-Key": raw})
-    assert (
-        r.status_code != 401
-    ), f"legacy NULL-bcrypt key rejected (backwards-compat broken): {r.text[:200]}"
+    assert r.status_code != 401, (
+        f"legacy NULL-bcrypt key rejected (backwards-compat broken): {r.text[:200]}"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -150,9 +153,9 @@ def test_csrf_billing_portal_rejects_missing_token(signed_in_client):
     """POST /v1/me/billing-portal without X-CSRF-Token -> 403."""
     client, _csrf = signed_in_client
     r = client.post("/v1/me/billing-portal")
-    assert (
-        r.status_code == 403
-    ), f"CSRF check missed; expected 403 got {r.status_code}: {r.text[:200]}"
+    assert r.status_code == 403, (
+        f"CSRF check missed; expected 403 got {r.status_code}: {r.text[:200]}"
+    )
 
 
 def test_csrf_billing_portal_rejects_mismatched_token(signed_in_client):
@@ -211,9 +214,9 @@ def test_cors_origin_not_on_whitelist_returns_403(client, monkeypatch):
         raising=False,
     )
     r = client.get("/v1/meta", headers={"Origin": "https://evil.example.com"})
-    assert (
-        r.status_code == 403
-    ), f"non-whitelist Origin not blocked; expected 403 got {r.status_code}: {r.text[:200]}"
+    assert r.status_code == 403, (
+        f"non-whitelist Origin not blocked; expected 403 got {r.status_code}: {r.text[:200]}"
+    )
     body = r.json()
     assert body.get("error") == "origin_not_allowed"
 

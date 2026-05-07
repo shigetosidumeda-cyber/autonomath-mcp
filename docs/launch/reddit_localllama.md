@@ -10,7 +10,7 @@ If you're building agents that need to reason about Japanese institutional data 
 
 **Coverage** (public rows include primary-source URLs where available — no aggregators):
 
-- 11,684 subsidy programs across 47 prefectures
+- 11,601 subsidy programs across 47 prefectures
 - 9,484 laws (e-Gov, CC-BY)
 - 2,065 court decisions
 - 50 tax rulesets

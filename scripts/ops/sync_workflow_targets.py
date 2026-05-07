@@ -39,8 +39,11 @@ import argparse
 import re
 import subprocess
 import sys
-from collections.abc import Iterable
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 # --- repo layout ---------------------------------------------------------
 

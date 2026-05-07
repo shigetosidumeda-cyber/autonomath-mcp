@@ -27,11 +27,13 @@ import os
 import re
 import sqlite3
 import sys
-from collections.abc import Iterable, Iterator
 from contextlib import contextmanager, suppress
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Iterator
 
 # --------------------------------------------------------------------------
 # Constants

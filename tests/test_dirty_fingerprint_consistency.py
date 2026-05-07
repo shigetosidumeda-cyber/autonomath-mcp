@@ -117,9 +117,9 @@ def _compare(fp_a: dict, fp_b: dict) -> None:
     for field in GATE_REQUIRED_FIELDS:
         assert field in fp_a, f"missing field {field} on left"
         assert field in fp_b, f"missing field {field} on right"
-        assert (
-            fp_a[field] == fp_b[field]
-        ), f"fingerprint drift on {field}: {fp_a[field]!r} != {fp_b[field]!r}"
+        assert fp_a[field] == fp_b[field], (
+            f"fingerprint drift on {field}: {fp_a[field]!r} != {fp_b[field]!r}"
+        )
 
 
 # ---------------------------------------------------------------------------

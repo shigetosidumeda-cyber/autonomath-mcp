@@ -293,7 +293,7 @@ def parse_atom(xml_bytes: bytes) -> list[dict[str, Any]]:
     """Parse /rss/bosyu.xml Atom feed."""
     out: list[dict[str, Any]] = []
     try:
-        root = ET.fromstring(xml_bytes)
+        root = ET.fromstring(xml_bytes)  # nosec B314 - input is trusted gov-source XML; not user-supplied
     except ET.ParseError as exc:
         _LOG.warning("atom parse err: %s", exc)
         return []

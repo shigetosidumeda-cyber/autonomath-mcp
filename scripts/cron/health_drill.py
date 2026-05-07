@@ -87,7 +87,7 @@ def scenario_1_vm_probe(health_url: str, *, attempts: int = 3) -> dict[str, Any]
                 health_url,
                 headers={"User-Agent": "AutonoMath-DR-Drill/1.0"},
             )
-            with urllib.request.urlopen(req, timeout=10) as resp:
+            with urllib.request.urlopen(req, timeout=10) as resp:  # nosec B310 - health_url is operator-config https endpoint
                 last_status = resp.status
                 if 200 <= resp.status < 300:
                     successes += 1
@@ -148,7 +148,7 @@ def scenario_2_r2_precond() -> dict[str, Any]:
             method="HEAD",
             headers={"User-Agent": "AutonoMath-DR-Drill/1.0"},
         )
-        with urllib.request.urlopen(req, timeout=15) as resp:
+        with urllib.request.urlopen(req, timeout=15) as resp:  # nosec B310 - db_url is operator-config R2 https endpoint
             if 200 <= resp.status < 300:
                 size = resp.headers.get("Content-Length", "?")
                 return {

@@ -58,7 +58,7 @@ key 不要)。Bookyou 株式会社 / info@bookyou.net。
 jpcite — MCP server (139 tools, protocol 2025-06-18) over Japanese public-program
 data: 14,472 programs (subsidy / loan / tax / certification) + 2,286 acceptance cases +
 108 loans (3-axis: collateral / individual guarantor / third-party guarantor) +
-1,185 enforcement actions + 154 laws full-text + 9,484 law law metadata records (e-Gov, CC-BY) + 50 tax rulesets
+1,185 enforcement actions + 6,493 laws full-text indexed + 9,484 law metadata records (e-Gov, CC-BY) + 50 tax rulesets
 (invoice / electronic-bookkeeping) + 13,801 invoice registrants (NTA, PDL v1.0) +
 503,930 entities + 6.12M facts + 177,381 relations + 335k aliases.
 181 exclusion / prerequisite rules; cross-dataset glue: trace_program_to_law /

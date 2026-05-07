@@ -14,9 +14,12 @@ NO Anthropic API call. NO DB writes. The endpoint is pure arithmetic.
 
 from __future__ import annotations
 
-from fastapi.testclient import TestClient
+from typing import TYPE_CHECKING
 
 from jpintel_mcp.api import calculator as calc
+
+if TYPE_CHECKING:
+    from fastapi.testclient import TestClient
 
 
 def test_returns_valid_envelope(client: TestClient) -> None:

@@ -435,12 +435,12 @@ def test_q_zeigaku_kojo_returns_tax_credit_rows_not_furusato(
     top = body["results"][0]
     # Top must be the genuine tax-credit row (in primary_name), not the
     # furusato decoy whose only mention is in enriched_text.
-    assert (
-        "税額控除" in top["primary_name"]
-    ), f"top result missing 税額控除 in primary_name: {top['primary_name']!r}"
-    assert (
-        "ふるさと納税" not in top["primary_name"]
-    ), f"top result is the trigram false-positive: {top['primary_name']!r}"
+    assert "税額控除" in top["primary_name"], (
+        f"top result missing 税額控除 in primary_name: {top['primary_name']!r}"
+    )
+    assert "ふるさと納税" not in top["primary_name"], (
+        f"top result is the trigram false-positive: {top['primary_name']!r}"
+    )
 
 
 def test_q_gx_compound_returns_gx_subsidies(
@@ -460,9 +460,9 @@ def test_q_gx_compound_returns_gx_subsidies(
     body = r.json()
     assert body["total"] >= 1
     names = [row["primary_name"] for row in body["results"]]
-    assert any(
-        "GX" in n and "補助金" in n for n in names
-    ), f"GX 補助金 query missed compound match; names={names}"
+    assert any("GX" in n and "補助金" in n for n in names), (
+        f"GX 補助金 query missed compound match; names={names}"
+    )
 
 
 def test_q_chusho_kigyo_returns_smb_rows(
@@ -511,9 +511,9 @@ def test_q_user_quoted_dx_preserved(
     # specific compound. We DO assert the request didn't 500 / didn't
     # surface a parser error — and that the seeded fixture row hits.
     names = [row["primary_name"] for row in body["results"]]
-    assert (
-        "テストDX製造業向け補助金" in names
-    ), f"user-quoted '\"DX\"' broke the AND match; names={names}"
+    assert "テストDX製造業向け補助金" in names, (
+        f"user-quoted '\"DX\"' broke the AND match; names={names}"
+    )
 
 
 def test_q_empty_returns_empty_not_corpus_dump(client: TestClient) -> None:
@@ -603,9 +603,9 @@ def test_q_mixed_punctuation_separates_tokens(
     assert r.status_code == 200
     body = r.json()
     names = [row["primary_name"] for row in body["results"]]
-    assert (
-        "テスト中小企業向け製造業支援金" in names
-    ), f"comma-separated query missed AND match; names={names}"
+    assert "テスト中小企業向け製造業支援金" in names, (
+        f"comma-separated query missed AND match; names={names}"
+    )
 
 
 def test_q_number_kanji_compound_works(

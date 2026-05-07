@@ -270,9 +270,9 @@ def test_restore_refuses_corrupted_backup(
         text=True,
         timeout=60,
     )
-    assert (
-        proc.returncode != 0
-    ), f"restore.py accepted a truncated backup (rc=0). stdout={proc.stdout} stderr={proc.stderr}"
+    assert proc.returncode != 0, (
+        f"restore.py accepted a truncated backup (rc=0). stdout={proc.stdout} stderr={proc.stderr}"
+    )
     # Either checksum mismatch or decompression error must surface in logs.
     combined = (proc.stderr + proc.stdout).lower()
     assert any(

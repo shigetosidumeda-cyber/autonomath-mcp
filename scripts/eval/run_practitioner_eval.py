@@ -164,7 +164,7 @@ def call_jpcite(
     req.add_header("X-Api-Key", api_key)
     req.add_header("User-Agent", USER_AGENT)
     try:
-        with urlrequest.urlopen(req, body, timeout=timeout) as resp:
+        with urlrequest.urlopen(req, body, timeout=timeout) as resp:  # nosec B310 - operator-config https endpoint, no file:/ schemes
             return resp.getcode(), resp.read().decode("utf-8", errors="replace")
     except HTTPError as e:
         return e.code, e.read().decode("utf-8", errors="replace")
@@ -220,7 +220,7 @@ def fetch_corpus_snapshot_id(api_base: str, api_key: str) -> str:
     req.add_header("X-Api-Key", api_key)
     req.add_header("User-Agent", USER_AGENT)
     try:
-        with urlrequest.urlopen(req, timeout=10.0) as resp:
+        with urlrequest.urlopen(req, timeout=10.0) as resp:  # nosec B310 - operator-config https endpoint, no file:/ schemes
             j = json.loads(resp.read().decode("utf-8"))
             return j.get("corpus_snapshot_id", "unknown")
     except (HTTPError, URLError, json.JSONDecodeError):

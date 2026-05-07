@@ -29,14 +29,14 @@ Value proposition note: Evidence Pre-fetch / precomputed intelligence means sour
 
 ### Honest data counts
 
-- **Programs**: 11,684 searchable (tier S=114 / A=1,340 / B=3,292 / C=6,044). Full table incl. tier X quarantine = 14,472.
+- **Programs**: 11,601 searchable (tier S=114 / A=1,340 / B=4,186 / C=5,961). Full table incl. tier X quarantine = 14,472.
 - **Adoption case studies**: 2,286
 - **Loan products**: 108 (with 3-axis 担保 / 個人保証人 / 第三者保証人 decomposition)
 - **Enforcement records (行政処分)**: 1,185
-- **Laws**: 154 full-text indexed + 9,484 catalog stubs (e-Gov CC-BY; full-text load incremental, name resolver covers all 9,484)
+- **Laws**: 6,493 full-text indexed + 9,484 law metadata records (e-Gov CC-BY; name resolver covers all 9,484)
 - **Court decisions**: 2,065
 - **Bids**: 362
-- **Tax rulesets**: 35
+- **Tax rulesets**: 50
 - **Invoice registrants (国税庁 PDL v1.0 delta)**: 13,801
 - **Sourced compatibility pairs**: 4,300 (status='confirmed'). 44,515 heuristic inferences are flagged status='unknown' and never surfaced as truth — do **not** quote 48,815 as a sourced count.
 - **Exclusion / prerequisite rules**: 181
@@ -85,7 +85,7 @@ After submit, watch wall-clock for review responses runs from 1 day (MCP Hunt) t
 1. **Repo public**: `gh repo view shigetosidumeda-cyber/autonomath-mcp --json visibility -q .visibility` returns `PUBLIC`. (Per launch readiness, repo creation is currently pending — every entry points at this URL.)
 2. **PyPI package live**: `pip install autonomath-mcp==0.3.2` succeeds.
 3. **MCP Official Registry entry live**: `mcp publish server.json` completed; PulseMCP / Glama auto-ingest will start propagating within ~24 h.
-4. **README.md authoritative numbers**: matches the canonical facts above (139 tools, 154 laws full-text, 9,484 stubs, 4,300 sourced compat pairs, ¥3/req tax-exclusive (¥3.30 tax-inclusive) metered).
+4. **README.md authoritative numbers**: matches the canonical facts above (139 tools, 6,493 laws full-text indexed, 9,484 law metadata records, 4,300 sourced compat pairs, ¥3/req tax-exclusive (¥3.30 tax-inclusive) metered).
 5. **Disclaimer text matches the fence above** in README, /tos, /privacy, /tokushoho, /legal.
 6. **DXT bundle live**: `https://jpcite.com/downloads/autonomath-mcp.mcpb` returns 200.
 7. **Logos exist**:

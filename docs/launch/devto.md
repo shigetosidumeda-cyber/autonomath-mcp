@@ -10,7 +10,7 @@
 
 ## TL;DR
 
-I shipped jpcite (`autonomath-mcp` on PyPI) — a REST + MCP search API over 11,684 Japanese subsidies, 9,484 laws, 2,065 court decisions, 13,801 invoice-registry entries, 50 tax rulesets, and 2,286 adoption cases. Returned public rows are designed to include a primary-source URL. Pricing is ¥3 per request metered with 3/day free anonymously. No subscription tiers. No signup for the free path.
+I shipped jpcite (`autonomath-mcp` on PyPI) — a REST + MCP search API over 11,601 Japanese subsidies, 9,484 laws, 2,065 court decisions, 13,801 invoice-registry entries, 50 tax rulesets, and 2,286 adoption cases. Returned public rows are designed to include a primary-source URL. Pricing is ¥3 per request metered with 3/day free anonymously. No subscription tiers. No signup for the free path.
 
 ```bash
 curl "https://api.jpcite.com/v1/programs/search?q=農業&prefecture=東京都"
@@ -124,7 +124,7 @@ That dropped my "active programs" count by ~30%, which was painful. But the rema
 
 ### 2. Source-URL rot is constant
 
-About 8% of source URLs decay per year as ministries rotate CMSes. I run a nightly checker against the `source_url + fetched_at` columns and route 404s into a public-hold bucket (2,788 rows currently). The user-facing `programs` count (11,684) excludes the public-hold rows.
+About 8% of source URLs decay per year as ministries rotate CMSes. I run a nightly checker against the `source_url + fetched_at` columns and route 404s into a public-hold bucket (2,788 rows currently). The user-facing `programs` count (11,601) excludes the public-hold rows.
 
 ### 3. Primary sources disagree with themselves
 
@@ -171,7 +171,7 @@ Things I'm explicitly **not** doing (per Bookyou株式会社 strategy):
 
 Things I'm working on:
 
-- More tax rulesets (35 → ~150 target)
+- More tax rulesets (50 → ~150 target)
 - e-Gov full law coverage (9,484 → ~14k once monthly snapshots catch up)
 - Better adoption-case grounding for "what actually got funded"
 - A `provenance` MCP tool that returns the full source chain for any fact

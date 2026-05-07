@@ -536,9 +536,9 @@ def test_refund_not_allowed(client, stripe_env, autonomath_db_path, admin_header
     # Module surface — no refund helper exported.
     from jpintel_mcp.billing import credit_pack as cp_mod
 
-    assert not hasattr(
-        cp_mod, "refund_credit_pack"
-    ), "credit_pack module must not export a refund helper (ToS §19の4 non-refundable)"
+    assert not hasattr(cp_mod, "refund_credit_pack"), (
+        "credit_pack module must not export a refund helper (ToS §19の4 non-refundable)"
+    )
     # Schema CHECK accepts 'refunded' as an OPERATOR-only manual override
     # state, but no automated path produces it. Confirm the allowlist.
     assert "refunded" not in {"pending", "paid", "expired"}  # documentation guard

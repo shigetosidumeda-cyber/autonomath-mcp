@@ -197,7 +197,7 @@ def fetch(url: str, *, retries: int = 2) -> tuple[int, str, str | None, bytes | 
     for attempt in range(retries + 1):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": UA})
-            with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT, context=_SSL_CTX) as resp:
+            with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT, context=_SSL_CTX) as resp:  # nosec B310 - operator-config https endpoint, no file:/ schemes
                 ctype = resp.headers.get("Content-Type", "")
                 ctype_lower = ctype.lower()
                 is_pdf = "application/pdf" in ctype_lower or (
@@ -255,7 +255,7 @@ class RobotsCache:
             try:
                 _LIMITER.wait(parsed.hostname)
                 req = urllib.request.Request(robots_url, headers={"User-Agent": UA})
-                with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT, context=_SSL_CTX) as resp:
+                with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT, context=_SSL_CTX) as resp:  # nosec B310 - operator-config https endpoint, no file:/ schemes
                     if resp.status == 200:
                         rp.parse(resp.read().decode("utf-8", errors="replace").splitlines())
                     else:
@@ -982,7 +982,7 @@ def main() -> int:
         conn.execute("PRAGMA journal_mode = WAL")
 
     try:
-        for pref, kind, seed in seeds:
+        for pref, _kind, seed in seeds:
             seed_url = seed["url"]
             log = runlog[pref]
             log["seeds"] = int(log["seeds"]) + 1

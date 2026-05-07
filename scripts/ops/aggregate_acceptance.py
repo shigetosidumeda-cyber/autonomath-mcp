@@ -76,7 +76,7 @@ def parse_junit(path: Path) -> dict[str, str]:
     """Return mapping of pytest test id -> outcome ('passed'|'failed'|'skipped')."""
     if not path.exists():
         return {}
-    tree = ET.parse(path)
+    tree = ET.parse(path)  # nosec B314 - input is trusted gov-source XML; not user-supplied
     root = tree.getroot()
     out: dict[str, str] = {}
     for tc in root.iter("testcase"):

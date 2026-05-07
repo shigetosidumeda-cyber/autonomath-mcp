@@ -20,9 +20,12 @@ These tests pin the schema contract so the regression cannot recur:
 from __future__ import annotations
 
 import sqlite3
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 # ----- helpers --------------------------------------------------------------
 

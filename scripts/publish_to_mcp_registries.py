@@ -42,10 +42,12 @@ import os
 import ssl
 import urllib.error
 import urllib.request
-from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 try:
     import certifi  # type: ignore
@@ -85,7 +87,7 @@ def _http(
         hdr.update(headers)
     req = urllib.request.Request(url, data=data, headers=hdr, method=method)
     try:
-        with urllib.request.urlopen(req, timeout=timeout, context=_SSL_CTX) as resp:
+        with urllib.request.urlopen(req, timeout=timeout, context=_SSL_CTX) as resp:  # nosec B310 - operator-config https endpoint, no file:/ schemes
             text = resp.read().decode("utf-8", errors="replace")
             try:
                 return resp.status, json.loads(text)

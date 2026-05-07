@@ -753,7 +753,7 @@ def parse_negainf_list(html: str) -> tuple[list[NegaInfRow], int]:
     rows: list[NegaInfRow] = []
     if not html:
         return rows, 1
-    pages = NEGAINF_NO_RE.findall(html)  # not actually pages; placeholder
+    NEGAINF_NO_RE.findall(html)  # not actually pages; placeholder
     page_nums = re.findall(r"page=(\d+)", html)
     max_page = max((int(p) for p in page_nums), default=1)
     for tr_match in NEGAINF_ROW_RE.finditer(html):

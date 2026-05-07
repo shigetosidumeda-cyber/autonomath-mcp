@@ -18,15 +18,18 @@ import pathlib
 import re
 import sys
 
-import pytest
-
 # Ensure CLI module importable: module lives in tools/offline/operator_review/
 _HERE = pathlib.Path(__file__).resolve().parent
 _REPO_ROOT = _HERE.parent
 _MODULE_DIR = _REPO_ROOT / "tools" / "offline" / "operator_review"
 sys.path.insert(0, str(_MODULE_DIR))
 
+from typing import TYPE_CHECKING
+
 import operator_ack_signoff as oas  # noqa: E402
+
+if TYPE_CHECKING:
+    import pytest
 
 # ----------------------------------------------------------------------
 # helpers

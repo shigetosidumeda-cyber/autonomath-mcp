@@ -185,7 +185,7 @@ def parse_mhlw_food_xlsx(
             food = _normalize(raw[4])
             agent = _normalize(raw[5])
             facility = _normalize(raw[6])
-            ate = raw[7]
+            raw[7]
             patients = raw[8]
             dead = raw[9]
             if not pref or not date_iso:

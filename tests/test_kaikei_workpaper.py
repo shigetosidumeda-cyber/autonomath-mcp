@@ -349,9 +349,9 @@ def test_workpaper_pdf_contains_47_2_wording(client, kaikei_key):
     # hand-rolled PDF1.4 fallback emits "Sec.47-2 boundary" / "Sec.47-2".
     has_kanji = "§47条の2" in text or "公認会計士法" in text
     has_ascii = "Sec.47-2" in text or "47-2" in text
-    assert (
-        has_kanji or has_ascii
-    ), "PDF must carry §47条の2 wording (WeasyPrint) or Sec.47-2 ASCII shim (PDF1.4 fallback)"
+    assert has_kanji or has_ascii, (
+        "PDF must carry §47条の2 wording (WeasyPrint) or Sec.47-2 ASCII shim (PDF1.4 fallback)"
+    )
     # Disclaimer envelope is also surfaced JSON-side so MCP / curl
     # consumers see it without parsing the PDF.
     assert "47条の2" in body["_disclaimer"]

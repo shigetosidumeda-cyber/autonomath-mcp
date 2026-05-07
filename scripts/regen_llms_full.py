@@ -240,7 +240,7 @@ def _sanitize_preserved_prefix(prefix: str) -> str:
         "GET /meta": "GET /v1/meta",
         "`/healthz`, `/meta`, `/v1` prefix を持たない utility 系": "`/healthz`, `/v1/meta`, `/v1` prefix を持たない utility 系",
         "- `/meta` は aggregate stats (total_programs, last_updated 等) を返すが、field 追加・削除・意味変更が発生しうる": "- `/v1/meta` は公開検索対象の aggregate stats (total_programs, last_ingested_at 等) を返します",
-        '"total_programs": 13578': '"total_programs": 11684',
+        '"total_programs": 13578': '"total_programs": 11601',
         "[pricing.md](./pricing.md) — tier 別制限": "[pricing.md](./pricing.md) — 料金・匿名枠・従量課金条件",
         '"tier=X の理由が見えづらい"': '"検索対象外判定の理由が見えづらい"',
         "`/meta`, `/v1/ping`, `/v1/programs/*`, `/v1/exclusions/*`, `/v1/feedback`": "`/v1/meta`, `/v1/ping`, `/v1/programs/*`, `/v1/exclusions/*`, `/v1/feedback`",
@@ -255,18 +255,19 @@ def _sanitize_preserved_prefix(prefix: str) -> str:
     prefix = prefix.replace("¥3 / req", "¥3/billable unit")
     prefix = prefix.replace(
         '"tier_counts": {"S": 46, "A": 468, "B": 3174, "C": 6310, "X": 1213}',
-        '"tier_counts": {"S": 114, "A": 1340, "B": 4186, "C": 6044}',
+        '"tier_counts": {"S": 114, "A": 1340, "B": 4186, "C": 5961}',
     )
     prefix = prefix.replace(
         "**¥3 / billable unit 税別 (税込 ¥3.30)**",
         "**¥3/billable unit 税別 (税込 ¥3.30)**",
     )
-    prefix = prefix.replace(
-        "`search_programs` — discover by keyword + region + amount across 11,684 制度 "
-        "(tier S/A/B/C). 一次資料 URL 付き. **Use first** for any 制度 query.",
-        "`search_programs` — discover by keyword + region + amount across 11,684 制度 "
+    prefix = re.sub(
+        r"`search_programs` — discover by keyword \+ region \+ amount across [\d,]+ 制度 "
+        r"\(tier S/A/B/C\)\. 一次資料 URL 付き\. \*\*Use first\*\* for any 制度 query\.",
+        "`search_programs` — discover by keyword + region + amount across 11,601 制度 "
         "(tier S/A/B/C). 一次資料 URL 付き. 広い回答生成では先に "
         "`/v1/intelligence/precomputed/query`、実在する `unified_id` が必要な時に使う。",
+        prefix,
     )
     prefix = re.sub(
         r"The five highest-leverage endpoints for agent flows: `GET /v1/programs/search`.*?"

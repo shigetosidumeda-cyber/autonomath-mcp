@@ -175,7 +175,7 @@ def _send_slack_sunset(
         headers={"Content-Type": "application/json"},
     )
     try:
-        with urllib.request.urlopen(req, timeout=10) as resp:
+        with urllib.request.urlopen(req, timeout=10) as resp:  # nosec B310 - operator-config https endpoint, no file:/ schemes
             return 200 <= resp.status < 300
     except (urllib.error.HTTPError, Exception):  # noqa: BLE001
         logger.warning("sunset.slack.send_failed entity=%s", entity_id)

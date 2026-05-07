@@ -35,8 +35,10 @@ Four cases (per S7 spec) + S7 false-positive fix (2026-04-25):
 from __future__ import annotations
 
 import importlib
+from typing import TYPE_CHECKING
 
-import pytest
+if TYPE_CHECKING:
+    import pytest
 
 
 def _reload_sanitizer():

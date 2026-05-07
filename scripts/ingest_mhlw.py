@@ -387,7 +387,7 @@ def fetch(url: str, *, retries: int = 2) -> tuple[int, str]:
     for attempt in range(retries + 1):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": UA})
-            with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT, context=_SSL_CTX) as resp:
+            with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT, context=_SSL_CTX) as resp:  # nosec B310 - operator-config https endpoint, no file:/ schemes
                 raw = resp.read()
                 # PDF responses: skip text decode, return placeholder
                 ctype = resp.headers.get_content_type() or ""

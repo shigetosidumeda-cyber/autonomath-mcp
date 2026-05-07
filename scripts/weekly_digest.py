@@ -303,7 +303,7 @@ def send_email(subject: str, body: str) -> None:
         method="POST",
     )
     try:
-        with urllib.request.urlopen(req, timeout=15) as resp:
+        with urllib.request.urlopen(req, timeout=15) as resp:  # nosec B310 - operator-config https endpoint, no file:/ schemes
             status = resp.status
     except Exception as exc:
         print(f"[error] email send failed: {exc}", file=sys.stderr)

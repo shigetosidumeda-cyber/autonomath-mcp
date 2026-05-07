@@ -305,7 +305,10 @@ def _render_rss(
         from jinja2 import Environment
     except ImportError as exc:  # pragma: no cover — jinja2 is in [docs] extras
         raise SystemExit(f"jinja2 missing: pip install jinja2 — {exc}") from exc
-    env = Environment(autoescape=False, trim_blocks=False, lstrip_blocks=False)
+    # nosec B701 - RSS XML template applies explicit `| e` escaping on every
+    # variable expansion (see _RSS_TEMPLATE above). Autoescape would double-encode
+    # angle brackets in the static RSS skeleton.
+    env = Environment(autoescape=False, trim_blocks=False, lstrip_blocks=False)  # nosec B701
     tpl = env.from_string(_RSS_TEMPLATE)
     return tpl.render(
         title=title,

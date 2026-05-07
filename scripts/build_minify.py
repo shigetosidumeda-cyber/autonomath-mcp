@@ -258,7 +258,8 @@ def fetch_noto_sans_jp() -> list[Path]:
     ua = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     req = urllib.request.Request(css_url, headers={"User-Agent": ua})
     try:
-        with urllib.request.urlopen(req, timeout=20, context=_SSL_CTX) as resp:
+        # nosec B310 - css_url is the constant CSS_URL hardcoded at top of file (https://fonts.googleapis.com/...)
+        with urllib.request.urlopen(req, timeout=20, context=_SSL_CTX) as resp:  # nosec B310
             css_text = resp.read().decode("utf-8")
     except (urllib.error.URLError, urllib.error.HTTPError) as exc:
         LOG.warning("fonts fetch FAILED — %s. Skipping self-host.", exc)
@@ -280,7 +281,8 @@ def fetch_noto_sans_jp() -> list[Path]:
             saved.append(out)
             continue
         try:
-            with urllib.request.urlopen(
+            # nosec B310 - url is filtered above to fonts.gstatic.com https only
+            with urllib.request.urlopen(  # nosec B310
                 urllib.request.Request(url, headers={"User-Agent": ua}),
                 timeout=30,
                 context=_SSL_CTX,

@@ -73,6 +73,6 @@ async def test_pricing_cta_click_initiates_checkout_request(
     async with page.expect_navigation():
         await cta.click()
 
-    assert (
-        seen_requests
-    ), "no request to /v1/billing/checkout* was observed after clicking the primary CTA"
+    assert seen_requests, (
+        "no request to /v1/billing/checkout* was observed after clicking the primary CTA"
+    )

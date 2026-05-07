@@ -156,7 +156,7 @@ def fetch(url: str, *, retries: int = 3) -> str:
     for attempt in range(retries):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": UA})
-            with urllib.request.urlopen(req, timeout=30, context=_SSL_CTX) as resp:
+            with urllib.request.urlopen(req, timeout=30, context=_SSL_CTX) as resp:  # nosec B310 - operator-config https endpoint, no file:/ schemes
                 raw = resp.read()
                 # Sniff encoding from <meta charset> if possible
                 head = raw[:512].lower()

@@ -190,7 +190,7 @@ def _post_json(url: str, payload: dict[str, Any], timeout: float) -> tuple[int, 
         },
     )
     try:
-        with urllib_request.urlopen(req, timeout=timeout) as resp:
+        with urllib_request.urlopen(req, timeout=timeout) as resp:  # nosec B310 - operator-config https endpoint, no file:/ schemes
             raw = resp.read().decode("utf-8", errors="replace")
             return resp.status, _loads_safe(raw)
     except urllib_error.HTTPError as exc:

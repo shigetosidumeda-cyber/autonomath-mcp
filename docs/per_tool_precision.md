@@ -17,7 +17,7 @@
 | Tool | Gold queries | min p@10 (worst-case gate) | min p@10 (median gate) | Notes |
 |---|---:|---:|---:|---|
 | `search_programs` | 33 | 0.0 (edge cases) | 0.7 | Core 全文検索インデックス (3-gram) search. Precision gate ranges 0.0 (edge) → 0.8 (mfg_001 ものづくり). |
-| `search_tax_rules` | 4 | 0.1 | 0.35 | Small index (35 rows). Precision floor is shallow because total hits is often ≤ 5. |
+| `search_tax_rules` | 4 | 0.1 | 0.35 | Small index (50 rows). Precision floor is shallow because total hits is often ≤ 5. |
 | `search_loan_programs` | 3 | 0.3 | 0.3 | 108 loan rows. 三軸分解 (担保 / 個人保証人 / 第三者保証人) filter combos. |
 | `search_case_studies` | 3 | 0.7 | 0.7 | mirasapo 採択事例 2,286 rows. Precision stable at 0.7 (industry × prefecture). |
 | `search_enforcement_cases` | 1 | 0.7 | 0.7 | jbaudit 令和5年度 1,185 rows. Precision is publication-date-stable. |

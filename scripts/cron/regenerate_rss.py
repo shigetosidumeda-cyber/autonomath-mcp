@@ -41,7 +41,6 @@ import html as html_lib
 import logging
 import re
 import sys
-from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from email.utils import format_datetime
@@ -53,7 +52,12 @@ _REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 _SRC = _REPO_ROOT / "src"
 if _SRC.is_dir() and str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
+from typing import TYPE_CHECKING
+
 from jpintel_mcp.observability import heartbeat  # noqa: E402
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 _DEFAULT_NEWS = _REPO_ROOT / "site" / "news"
 _DEFAULT_OUT_JA = _REPO_ROOT / "site" / "rss.xml.new"

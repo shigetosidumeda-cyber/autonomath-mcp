@@ -144,9 +144,9 @@ def test_duplicate_replay_short_circuits(client, stripe_env, monkeypatch, seeded
         r2 = _post_webhook(client, event)
 
     assert r2.status_code == 200, r2.text
-    assert r2.json() == {
-        "status": "duplicate_ignored"
-    }, f"expected duplicate_ignored on replay, got {r2.json()}"
+    assert r2.json() == {"status": "duplicate_ignored"}, (
+        f"expected duplicate_ignored on replay, got {r2.json()}"
+    )
     mock_apply.assert_not_called()
 
     # Database invariants: still exactly 1 dedup row + 1 api_keys row.

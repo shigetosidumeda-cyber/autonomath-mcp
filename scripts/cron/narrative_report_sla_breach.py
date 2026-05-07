@@ -82,7 +82,7 @@ def _push_telegram(text: str) -> bool:
         method="POST",
     )
     try:
-        with urllib.request.urlopen(req, timeout=10) as resp:
+        with urllib.request.urlopen(req, timeout=10) as resp:  # nosec B310 - operator-config https endpoint, no file:/ schemes
             ok = resp.status == 200
             if not ok:
                 logger.warning("telegram_push_non_200 status=%d", resp.status)

@@ -6,10 +6,10 @@
 <meta name="theme-color" content="#ffffff">
 <meta name="color-scheme" content="light dark">
 <title>補助金コンサルタント・認定支援機関 向け jpcite — 顧問先一括処理を ¥3/req 完全従量で</title>
-<meta name="description" content="中小企業診断士・FP・無資格 補助金コンサルタント・認定支援機関 向け jpcite。 顧問先 1 社あたり月 ¥30 (10 query × ¥3) で従量、 顧問先数に応じてスケール。 一次資料 99% 以上、 排他ルール 181 本、 MCP / Slack webhook で agent 自動化。 navit ¥1K/月 の 6.6× だが API 自動化で時間短縮。">
+<meta name="description" content="中小企業診断士・FP・無資格 補助金コンサルタント・認定支援機関 向け jpcite。 顧問先 1 社あたり月 ¥30 (10 query × ¥3) で従量、 顧問先数に応じてスケール。 一次資料 URL を優先する制度抽出、排他ルール 181 本、 MCP / Slack webhook で agent 自動化。 navit ¥1K/月 の 6.6× だが API 自動化で時間短縮。">
 
 <meta property="og:title" content="補助金コンサルタント・認定支援機関 向け jpcite">
-<meta property="og:description" content="顧問先 1 社あたり月 ¥30 (10 query × ¥3) で従量、 顧問先数に応じてスケール。 一次資料 99% 以上 / 排他ルール 181 / MCP+Slack webhook で agent 自動化。">
+<meta property="og:description" content="顧問先 1 社あたり月 ¥30 (10 query × ¥3) で従量、 顧問先数に応じてスケール。 一次資料 URL を優先 / 排他ルール 181 / MCP+Slack webhook で agent 自動化。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/audiences/subsidy-consultant.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -73,7 +73,7 @@
   "@type": "Service",
   "serviceType": "補助金コンサルタント業務支援 API",
   "name": "jpcite for Subsidy Consultants",
-  "description": "中小企業診断士・FP・補助金コンサルタント・認定支援機関 向けの jpcite 活用。 顧問先一括処理向けの 一次資料 99% 以上 の制度抽出、 排他ルール 181 本、 MCP / Slack webhook で agent 自動化。",
+  "description": "中小企業診断士・FP・補助金コンサルタント・認定支援機関 向けの jpcite 活用。 顧問先一括処理向けの一次資料 URL を優先する制度抽出、 排他ルール 181 本、 MCP / Slack webhook で agent 自動化。",
   "provider": {
     "@id": "https://jpcite.com/#publisher"
   },
@@ -159,7 +159,7 @@
  <div class="container">
  <ul class="card-list" style="font-size:16px;line-height:2;">
  <li>顧問先プロファイル × 都道府県 × 締切で 1 リクエスト検索</li>
- <li>排他ルールで併用失格を事前検出</li>
+ <li>排他ルールで併用不可候補・前提不足候補を事前確認</li>
  <li>保存検索 + Slack Webhook 通知で月次スクリーニング自動化</li>
  <li>採択率は公表値のある制度のみ表示 (推測値は出さない)</li>
  <li>API + MCP (¥3/リクエスト 完全従量)、月額固定 0</li>

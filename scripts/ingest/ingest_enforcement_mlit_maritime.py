@@ -1935,7 +1935,6 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         for hub in hubs:
-            key = f"{hub.region_code}:{hub.url}"
             cs = stats.setdefault(
                 hub.region_code,
                 {

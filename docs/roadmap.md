@@ -33,7 +33,7 @@ zero-touch / solo 運営のため、フィードバック窓口はメール (`in
   endpoint mount。
 - **NTA 適格事業者 PDL v1.0 license bulk fill** — 87,251 rows に license 付与
   完了。NULL license ratio < 1% を達成。
-- **e-Gov 法令 154 件本文インデックス + 9,484 件 catalog** — 本文ロードは継続中、
+- **e-Gov 法令 6,493 件本文インデックス + 9,484 件 catalog** — 本文ロードは継続中、
   法令名 resolver は 9,484 件全件で稼働。
 - **Email-only trial signup** — magic-link で 14 日 / 200 req のカード不要試用。
   evaluator email を bounce 前に補足。

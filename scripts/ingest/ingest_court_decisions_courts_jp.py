@@ -77,12 +77,15 @@ import sys
 import time
 import unicodedata
 import urllib.parse
-from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import httpx
 from bs4 import BeautifulSoup  # type: ignore[import-untyped]
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 # ---------------------------------------------------------------------------
 # Constants

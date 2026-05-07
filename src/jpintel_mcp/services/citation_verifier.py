@@ -402,7 +402,7 @@ class CitationVerifier:
             },
         )
         try:
-            with urllib.request.urlopen(req, timeout=timeout) as resp:  # noqa: S310 — http(s) scheme guarded above
+            with urllib.request.urlopen(req, timeout=timeout) as resp:  # noqa: S310 — http(s) scheme guarded above  # nosec B310 - operator-config https endpoint, no file:/ schemes
                 if 400 <= resp.status < 600:
                     return None
                 raw = resp.read(5 * 1024 * 1024)  # 5 MiB cap

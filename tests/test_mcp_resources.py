@@ -149,9 +149,9 @@ def test_taxonomies_use_json_mime(fresh_mcp):
     res = _list_resources(fresh_mcp)
     for r in res:
         if str(r.uri).startswith("autonomath://taxonomies/"):
-            assert (
-                r.mimeType == "application/json"
-            ), f"{r.uri} has mimeType={r.mimeType!r}, expected application/json"
+            assert r.mimeType == "application/json", (
+                f"{r.uri} has mimeType={r.mimeType!r}, expected application/json"
+            )
 
 
 def test_example_profiles_use_json_mime(fresh_mcp):

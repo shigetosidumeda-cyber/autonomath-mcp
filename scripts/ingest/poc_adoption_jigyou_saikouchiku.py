@@ -51,7 +51,7 @@ except ImportError as exc:
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DATA_DIR = REPO_ROOT / "data"
-CACHE_DIR = Path("/tmp/jpintel_adoption_cache")
+CACHE_DIR = Path("/tmp/jpintel_adoption_cache")  # nosec B108 - operator-run PoC cache; not run on multi-tenant host
 DB_PATH = DATA_DIR / "jpintel.db"
 OUT_PATH = DATA_DIR / "adoption_jigyou_saikouchiku.jsonl"
 
