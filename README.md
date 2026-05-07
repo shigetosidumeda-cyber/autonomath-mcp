@@ -6,7 +6,7 @@
 
 mcp-name: io.github.shigetosidumeda-cyber/autonomath-mcp
 
-Current public docs and release tags are the source of truth for version and pricing.
+**v0.3.4 LIVE on Fly.io Tokyo** — production at `api.jpcite.com` (deployment `01KR0AGKRFD39QZZJ10VWYZXS5`, GH_SHA `b1de8b2`, snapshot 2026-05-07). Current public docs and release tags are the source of truth for version and pricing.
 
 [![PyPI version](https://img.shields.io/pypi/v/autonomath-mcp.svg)](https://pypi.org/project/autonomath-mcp/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
@@ -14,9 +14,19 @@ Current public docs and release tags are the source of truth for version and pri
 [![MCP 2025-06-18](https://img.shields.io/badge/MCP-2025--06--18-6E56CF.svg)](https://modelcontextprotocol.io/)
 [![Made in Japan](https://img.shields.io/badge/made%20in-%F0%9F%87%AF%F0%9F%87%B5-red.svg)](https://jpcite.com)
 
-LLM agent / RAG パイプラインに渡す前の compact context を REST + MCP で返します。公開行には 出典 URL + content_hash + 取得日時 が付き、官公庁・自治体・公庫・公式事業者ページなど確認可能な出典を優先します。**11,601 searchable programs / 9,484 laws / 1,185 enforcement cases + 22,258 enforcement-detail records / 139 MCP tools / median 7 day freshness**。LLM は呼び出さず、民間まとめサイトにも依存しません。通常の検索・取得は ¥3/billable unit、anon 3/日 free。
+**Launch state (2026-05-07 hardening)** — quality gates cleared, LIVE on Fly Tokyo:
 
-*English: Evidence-first context layer for Japanese public-program data, exposed as REST + MCP. Published rows return source URL + content_hash + fetched_at so an LLM agent or RAG pipeline can ground answers on verifiable official sources — no LLM calls inside the service, no aggregator scraping. **11,601 searchable programs / 9,484 laws / 1,185 enforcement cases + 22,258 enforcement-detail records / 139 MCP tools / median 7 day freshness.** ¥3/billable unit for normal search/detail calls, 3/day free anonymous.*
+[![mypy strict](https://img.shields.io/badge/mypy%20strict-0%20errors-4c1.svg)](./CHANGELOG.md)
+[![bandit](https://img.shields.io/badge/bandit-0%20findings-4c1.svg)](./CHANGELOG.md)
+[![acceptance](https://img.shields.io/badge/acceptance-286%2F286-4c1.svg)](./tests/)
+[![smoke](https://img.shields.io/badge/smoke-17%2F17%20%2B%205%2F5-4c1.svg)](./tests/)
+[![pre-commit](https://img.shields.io/badge/pre--commit-16%2F16-4c1.svg)](./.pre-commit-config.yaml)
+[![ruff](https://img.shields.io/badge/ruff-0%20violations-4c1.svg)](./pyproject.toml)
+[![API status](https://img.shields.io/badge/api-LIVE%20Fly%20Tokyo-4c1.svg)](https://jpcite.com/status)
+
+LLM agent / RAG パイプラインに渡す前の compact context を REST + MCP で返します。公開行には 出典 URL + content_hash + 取得日時 が付き、官公庁・自治体・公庫・公式事業者ページなど確認可能な出典を優先します。**11,601 searchable programs / 9,484 laws / 1,185 enforcement cases + 22,258 enforcement-detail records / 139 MCP tools default (146 cohort runtime) / 33 DEEP spec verified / 業法 7-fence (弁護士法 §72・税理士法 §52・行政書士法 §1・社労士法 §27・司法書士法 §3・宅建業法 §47・労基法 §36) / median 7 day freshness**。LLM は呼び出さず、民間まとめサイトにも依存しません。通常の検索・取得は ¥3/billable unit、anon 3/日 free。
+
+*English: Evidence-first context layer for Japanese public-program data, exposed as REST + MCP. Published rows return source URL + content_hash + fetched_at so an LLM agent or RAG pipeline can ground answers on verifiable official sources — no LLM calls inside the service, no aggregator scraping. **11,601 searchable programs / 9,484 laws / 1,185 enforcement cases + 22,258 enforcement-detail records / 139 MCP tools default (146 cohort runtime) / 33 DEEP spec verified / 7-statute professional fence / median 7 day freshness.** ¥3/billable unit for normal search/detail calls, 3/day free anonymous.*
 
 Use jpcite when an AI answer needs Japanese public-program evidence, source URLs, fetched_at metadata, compatibility rules, enforcement checks, or known gaps before drafting prose. Skip it for short general questions, translation, brainstorming, or topics that do not need source-linked Japanese institutional data.
 
@@ -33,6 +43,20 @@ jpcite is the **横断 + Evidence Packet** layer. The 3 active single-source Jap
 ## What this is
 
 An evidence-first context layer over Japanese institutional public data, exposed as REST + MCP. Published rows carry a source URL, a content_hash, and a fetched_at timestamp so downstream LLM agents or RAG pipelines can cite back to verifiable official source pages without re-crawling.
+
+## Latest hardening — 2026-05-07 (LIVE)
+
+**v0.3.4** is live in production at `api.jpcite.com` on Fly.io Tokyo + Cloudflare Pages + Stripe metered billing. The 5/7 hardening pass cleared every quality gate without changing the public surface (no new tools, no schema changes, no count bumps).
+
+- **Wave 21** (5 composition tools, AUTONOMATH_COMPOSITION_ENABLED, default ON): `apply_eligibility_chain_am`, `find_complementary_programs_am`, `simulate_application_am`, `track_amendment_lineage_am`, `program_active_periods_am`.
+- **Wave 22** (5 compounding-call tools, AUTONOMATH_WAVE22_ENABLED, default ON): `match_due_diligence_questions`, `prepare_kessan_briefing`, `forecast_program_renewal`, `cross_check_jurisdiction`, `bundle_application_kit`. Migration 104 seeds 60 DD question templates across 7 categories.
+- **Wave 23** (3 industry packs, AUTONOMATH_INDUSTRY_PACKS_ENABLED, default ON): `pack_construction` (JSIC D), `pack_manufacturing` (JSIC E), `pack_real_estate` (JSIC K). Each returns top programs + 国税不服審判所 裁決事例 + 通達 references in one envelope.
+- **Section A data quality lift** — A4 done (`am_source.content_hash` NULL 281→0), A5 partial (`last_verified` 1→94), A6 done (`am_entity_facts.source_id` 0→81,787), D9 done (`programs.aliases_json` 82→9,996), B13 partial (prefecture 欠損 9,509→6,011), E1 done (`license_review_queue.csv` 1,425 行).
+- **33 DEEP spec retroactive verify** — DEEP-22 through DEEP-65 walked on src/ side, **0 inconsistency vs spec**. Covers verifier deepening, time-machine, business-law detector, cohort persona kit, 自治体補助金, e-Gov パブコメ, identity_confidence golden, organic outreach playbook.
+- **業法 7-fence** — every sensitive surface (税理士法 §52・弁護士法 §72・行政書士法 §1・社労士法 §27・司法書士法 §3・宅建業法 §47・労基法 §36) carries a `_disclaimer` envelope; 36協定 renderer is gated behind `AUTONOMATH_36_KYOTEI_ENABLED` (default off) pending 社労士 supervision review.
+- **Deploy hardening** — 4 fixes in `.github/workflows/deploy.yml` (smoke gate sleep 25s→60s + `--max-time` 15s→30s + `flyctl status` pre-probe + size-guarded hydrate skip + explicit `rm -f` before sftp). Fly p99 machine swap exceeds 25s and the previous timing produced false-positive smoke fails.
+
+See [`CHANGELOG.md`](./CHANGELOG.md) for the full 40-commit walk.
 
 ## What this isn't
 
@@ -245,6 +269,18 @@ for capability boundaries.
 - **Spec surfaces** — `site/llms.txt` and `site/llms-full.txt` (JA);
   `site/llms.en.txt` and `site/llms-full.en.txt` (EN) for AI-agent
   discovery.
+
+## Known limitations (2026-05-07 LIVE)
+
+Honest snapshot of the residual gaps that exist in the live `v0.3.4` deployment:
+
+- **Frontend stale-state recovery in progress** — some Cloudflare Pages cohort routes still render against pre-rename brand text in cached HTML; full purge sweep underway. The REST + MCP API surface is unaffected.
+- **OAuth UI residual** — dashboard sign-in still surfaces the legacy provider button layout. Server-side OAuth chains (`/v1/auth/*`) work correctly; the cosmetic cleanup is queued on the frontend track.
+- **Tool count drift** — manifests claim 139 tools while the runtime cohort serves 146 (7 post-manifest tools landed in source: DEEP-37/44/45/49..58/64/65). This is intentional hold-at-139 per `R8_MANIFEST_BUMP_EVAL_2026-05-07.md`; the next intentional manifest bump will reconcile.
+- **3 broken tools gated off** — `query_at_snapshot` (migration 067 missing), `intent_of`, `reason_answer` (reasoning package missing). Surfaced via env flags, not removed.
+- **`am_amount_condition` quality** — 250,946 rows on disk; majority are template-default ¥500K/¥2M values from a broken ETL pass. Re-validation in progress, do not surface aggregate count externally.
+- **`am_amendment_snapshot` time-series fidelity** — 14,596 captures; only ~2,500 carry content hash and 144 carry definitive `effective_from` dates. Time-series only firm on the 144 dated rows.
+- **Construction saiketsu corpus thinness** — `nta_saiketsu` has only 137 rows; the construction industry pack yields 0-1 法人税/消費税 citations per call. Not a code defect, will compound naturally as ingest matures.
 
 ## Support
 

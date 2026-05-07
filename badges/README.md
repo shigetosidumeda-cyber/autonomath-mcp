@@ -8,11 +8,11 @@ Offline copies of the README badges. Useful when:
 
 | File | Subject | Notes |
 | --- | --- | --- |
-| `pypi-version.svg`   | PyPI version (v0.3.0)  | Update on release. |
+| `pypi-version.svg`   | PyPI version (v0.3.4)  | Update on release. |
 | `pypi-downloads.svg` | PyPI downloads / month | Static placeholder; live version uses shields.io. |
 | `license-mit.svg`    | License: MIT           | Repo is MIT-licensed. |
 | `mcp-version.svg`    | MCP protocol 2025-06-18 | Update when upgrading the MCP protocol target. |
-| `api-status.svg`     | API status placeholder  | Live page lives at `https://zeimu-kaikei.ai/status`. |
+| `api-status.svg`     | API status placeholder  | Live page lives at `https://jpcite.com/status`. |
 
 The live README links shields.io URLs first; the local copies here are
 linked as backup. To regenerate after a version bump, edit the SVG
