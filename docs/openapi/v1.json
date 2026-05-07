@@ -6446,6 +6446,139 @@
         "title": "DisclosureResponse",
         "type": "object"
       },
+      "DynamicCheckRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "exclude_history_years": {
+            "default": 5,
+            "description": "Look-back window in years. Default 5 mirrors most \u88dc\u52a9\u91d1 \u516c\u52df\u8981\u9818 (\u904e\u53bb5\u5e74\u306b\u88dc\u52a9\u91d1\u306e\u4e0d\u6b63\u53d7\u7d66\u7b49\u304c\u306a\u3044\u8005\u2026).",
+            "maximum": 20.0,
+            "minimum": 1.0,
+            "title": "Exclude History Years",
+            "type": "integer"
+          },
+          "houjin_bangou": {
+            "description": "13-digit \u6cd5\u4eba\u756a\u53f7. T-prefix and hyphens accepted; the API normalises to the bare 13-digit form. Sole proprietors should use the dedicated GET surface \u2014 this endpoint requires a \u6cd5\u4eba.",
+            "maxLength": 32,
+            "minLength": 13,
+            "title": "Houjin Bangou",
+            "type": "string"
+          },
+          "industry_jsic": {
+            "anyOf": [
+              {
+                "maxLength": 2,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional JSIC major letter (A..T) used to narrow program candidates before the rule walk. When omitted, every program in indexed corpus is considered.",
+            "title": "Industry Jsic"
+          },
+          "program_id_hint": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 200,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional pre-filter on linked program identifier. When present, the rule walk only enumerates these programs \u2014 useful when the consultant already knows the candidate set.",
+            "title": "Program Id Hint"
+          }
+        },
+        "required": [
+          "houjin_bangou"
+        ],
+        "title": "DynamicCheckRequest",
+        "type": "object"
+      },
+      "DynamicCheckResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "_disclaimer": {
+            "default": "Dynamic eligibility check is a deterministic join of public \u884c\u653f\u51e6\u5206 records and exclusion rules. Coverage is bounded by published \u4e00\u6b21\u8cc7\u6599 and is not legal clearance. \u6700\u7d42\u7684\u306a\u53d7\u7d66\u53ef\u5426\u306f\u6240\u7ba1\u5b98\u5e81\u306e\u516c\u52df\u8981\u9818 + \u7a0e\u7406\u58eb\u6cd5 \u00a752 / \u884c\u653f\u66f8\u58eb\u6cd5 \u00a71 \u306b\u57fa\u3065\u304f\u5c02\u9580\u5bb6\u78ba\u8a8d\u3092\u7d4c\u3066\u304f\u3060\u3055\u3044\u3002",
+            "title": "Disclaimer",
+            "type": "string"
+          },
+          "blocked_programs": {
+            "items": {
+              "$ref": "#/components/schemas/ProgramVerdict"
+            },
+            "title": "Blocked Programs",
+            "type": "array"
+          },
+          "borderline_programs": {
+            "items": {
+              "$ref": "#/components/schemas/ProgramVerdict"
+            },
+            "title": "Borderline Programs",
+            "type": "array"
+          },
+          "checked_program_count": {
+            "title": "Checked Program Count",
+            "type": "integer"
+          },
+          "checked_rule_count": {
+            "title": "Checked Rule Count",
+            "type": "integer"
+          },
+          "eligible_programs": {
+            "items": {
+              "$ref": "#/components/schemas/ProgramVerdict"
+            },
+            "title": "Eligible Programs",
+            "type": "array"
+          },
+          "enforcement_hits": {
+            "items": {
+              "$ref": "#/components/schemas/EnforcementHit"
+            },
+            "title": "Enforcement Hits",
+            "type": "array"
+          },
+          "exclude_history_years": {
+            "title": "Exclude History Years",
+            "type": "integer"
+          },
+          "houjin_bangou": {
+            "title": "Houjin Bangou",
+            "type": "string"
+          },
+          "industry_jsic": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Industry Jsic"
+          }
+        },
+        "required": [
+          "houjin_bangou",
+          "industry_jsic",
+          "exclude_history_years",
+          "enforcement_hits",
+          "blocked_programs",
+          "borderline_programs",
+          "eligible_programs",
+          "checked_program_count",
+          "checked_rule_count"
+        ],
+        "title": "DynamicCheckResponse",
+        "type": "object"
+      },
       "EmailConnectRequest": {
         "properties": {
           "reply_from": {
@@ -6988,6 +7121,107 @@
           "offset"
         ],
         "title": "EnforcementDetailSearchResponse",
+        "type": "object"
+      },
+      "EnforcementHit": {
+        "additionalProperties": false,
+        "properties": {
+          "enforcement_id": {
+            "title": "Enforcement Id",
+            "type": "integer"
+          },
+          "enforcement_kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enforcement Kind"
+          },
+          "exclusion_end": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exclusion End"
+          },
+          "exclusion_start": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exclusion Start"
+          },
+          "issuance_date": {
+            "title": "Issuance Date",
+            "type": "string"
+          },
+          "issuing_authority": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issuing Authority"
+          },
+          "reason_summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason Summary"
+          },
+          "severity_bucket": {
+            "enum": [
+              "blocking",
+              "warning",
+              "informational"
+            ],
+            "title": "Severity Bucket",
+            "type": "string"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          }
+        },
+        "required": [
+          "enforcement_id",
+          "enforcement_kind",
+          "issuing_authority",
+          "issuance_date",
+          "exclusion_start",
+          "exclusion_end",
+          "reason_summary",
+          "severity_bucket",
+          "source_url"
+        ],
+        "title": "EnforcementHit",
         "type": "object"
       },
       "ErrorBody": {
@@ -8877,6 +9111,85 @@
         "title": "FundingStackPair",
         "type": "object"
       },
+      "FundingStageMatchBody": {
+        "description": "Request body for ``POST /v1/programs/by_funding_stage``.",
+        "properties": {
+          "annual_revenue_yen": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "\u5e74\u5546 (yen). None = \u958b\u793a\u3057\u306a\u3044 (matcher \u306f revenue \u5e2f\u3092\u7de9\u548c)\u3002",
+            "title": "Annual Revenue Yen"
+          },
+          "employee_count": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "\u5f93\u696d\u54e1\u6570\u3002None = \u958b\u793a\u3057\u306a\u3044\u3002",
+            "title": "Employee Count"
+          },
+          "incorporation_year": {
+            "anyOf": [
+              {
+                "maximum": 2100.0,
+                "minimum": 1900.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "\u8a2d\u7acb\u5e74 (\u897f\u66a6)\u3002None = \u958b\u793a\u3057\u306a\u3044\u3002\u5e74\u9f62\u306f (\u73fe\u5e74 - incorporation_year) \u3067\u7b97\u51fa\u3057 stage \u306e age band \u306b\u5f53\u3066\u8fbc\u3080\u3002",
+            "title": "Incorporation Year"
+          },
+          "limit": {
+            "default": 20,
+            "description": "\u8fd4\u5374\u3059\u308b programs \u306e\u6700\u5927\u4ef6\u6570\u3002Clamped to [1, 100]\u3002Default 20\u3002",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "prefecture": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "\u90fd\u9053\u5e9c\u770c exact match (\u4f8b: '\u6771\u4eac\u90fd')\u3002None = \u5168\u56fd\u30b9\u30b3\u30fc\u30d7\u3002\u56fd/\u90fd\u9053\u5e9c\u770c/\u5e02\u753a\u6751 \u3059\u3079\u3066\u306e programs \u3092\u542b\u3080 (national + prefecture + \u4ed6\u770c\u306e\u5236\u5ea6\u3092\u9664\u5916)\u3002",
+            "title": "Prefecture"
+          },
+          "stage": {
+            "description": "Funding stage slug \u2014 one of ``seed`` / ``early`` / ``growth`` / ``ipo`` / ``succession``. See ``GET /v1/funding_stages/catalog`` for definitions.",
+            "examples": [
+              "growth"
+            ],
+            "title": "Stage",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stage"
+        ],
+        "title": "FundingStageMatchBody",
+        "type": "object"
+      },
       "GetResponse": {
         "additionalProperties": false,
         "properties": {
@@ -10295,6 +10608,34 @@
         "title": "PingResponse",
         "type": "object"
       },
+      "PolicyUpstreamWatchRequest": {
+        "description": "POST body for ``/v1/policy_upstream/watch``.\n\nMirrors the MCP ``policy_upstream_watch`` signature so the two\nsurfaces stay schema-aligned. The ``watch_period_days`` upper bound\nis 365 (1 year); the keyword list cap is 20 entries.",
+        "properties": {
+          "keywords": {
+            "description": "1..20 \u696d\u6cd5 / \u5236\u5ea6 keyword (e.g. ['DX','GX','\u4e8b\u696d\u627f\u7d99']). Substring match against kokkai_utterance.body / shingikai_minutes.{agenda,body_text} / pubcomment_announcement.{target_law,summary_text} / public change log.",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "minItems": 1,
+            "title": "Keywords",
+            "type": "array"
+          },
+          "watch_period_days": {
+            "default": 90,
+            "description": "Window length in days (1..365, default 90).",
+            "maximum": 365.0,
+            "minimum": 1.0,
+            "title": "Watch Period Days",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "keywords"
+        ],
+        "title": "PolicyUpstreamWatchRequest",
+        "type": "object"
+      },
       "PortalRequest": {
         "properties": {
           "customer_id": {
@@ -10317,6 +10658,34 @@
           "return_url"
         ],
         "title": "PortalRequest",
+        "type": "object"
+      },
+      "PortfolioOptimizeRequest": {
+        "description": "POST body for /v1/programs/portfolio_optimize.",
+        "properties": {
+          "candidate_program_ids": {
+            "description": "List of 2-30 candidate program ids (UNI-... or canonical program:* / certification:* / loan:*). Order is irrelevant; duplicates are de-duplicated server-side.",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 30,
+            "minItems": 2,
+            "title": "Candidate Program Ids",
+            "type": "array"
+          },
+          "target_axes": {
+            "description": "Optimization axes: 'coverage' (max distinct program kinds), 'amount' (max combined \u00a5), 'risk' (min weighted tier risk). Unknown axes are ignored; empty list collapses to amount.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Target Axes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "candidate_program_ids"
+        ],
+        "title": "PortfolioOptimizeRequest",
         "type": "object"
       },
       "PrecomputedAgentRecommendation": {
@@ -11738,6 +12107,58 @@
         "title": "SearchResponse",
         "type": "object"
       },
+      "ProgramVerdict": {
+        "additionalProperties": false,
+        "properties": {
+          "program_id": {
+            "title": "Program Id",
+            "type": "string"
+          },
+          "program_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Program Name"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reasons",
+            "type": "array"
+          },
+          "rule_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Rule Ids",
+            "type": "array"
+          },
+          "verdict": {
+            "enum": [
+              "blocked",
+              "borderline",
+              "eligible"
+            ],
+            "title": "Verdict",
+            "type": "string"
+          }
+        },
+        "required": [
+          "program_id",
+          "program_name",
+          "verdict",
+          "rule_ids",
+          "reasons"
+        ],
+        "title": "ProgramVerdict",
+        "type": "object"
+      },
       "RefundRequest": {
         "properties": {
           "amount_yen": {
@@ -12398,6 +12819,76 @@
           "query"
         ],
         "title": "SheetsRequest",
+        "type": "object"
+      },
+      "SingleProgramVerdict": {
+        "additionalProperties": false,
+        "properties": {
+          "_disclaimer": {
+            "default": "Dynamic eligibility check is a deterministic join of public \u884c\u653f\u51e6\u5206 records and exclusion rules. Coverage is bounded by published \u4e00\u6b21\u8cc7\u6599 and is not legal clearance. \u6700\u7d42\u7684\u306a\u53d7\u7d66\u53ef\u5426\u306f\u6240\u7ba1\u5b98\u5e81\u306e\u516c\u52df\u8981\u9818 + \u7a0e\u7406\u58eb\u6cd5 \u00a752 / \u884c\u653f\u66f8\u58eb\u6cd5 \u00a71 \u306b\u57fa\u3065\u304f\u5c02\u9580\u5bb6\u78ba\u8a8d\u3092\u7d4c\u3066\u304f\u3060\u3055\u3044\u3002",
+            "title": "Disclaimer",
+            "type": "string"
+          },
+          "enforcement_hits": {
+            "items": {
+              "$ref": "#/components/schemas/EnforcementHit"
+            },
+            "title": "Enforcement Hits",
+            "type": "array"
+          },
+          "houjin_bangou": {
+            "title": "Houjin Bangou",
+            "type": "string"
+          },
+          "program_id": {
+            "title": "Program Id",
+            "type": "string"
+          },
+          "program_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Program Name"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reasons",
+            "type": "array"
+          },
+          "rule_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Rule Ids",
+            "type": "array"
+          },
+          "verdict": {
+            "enum": [
+              "blocked",
+              "borderline",
+              "eligible"
+            ],
+            "title": "Verdict",
+            "type": "string"
+          }
+        },
+        "required": [
+          "houjin_bangou",
+          "program_id",
+          "program_name",
+          "verdict",
+          "rule_ids",
+          "reasons",
+          "enforcement_hits"
+        ],
+        "title": "SingleProgramVerdict",
         "type": "object"
       },
       "SlaResponse": {
@@ -14823,7 +15314,7 @@
     },
     "/v1/advisors/match": {
       "get": {
-        "description": "Top ``limit`` advisors matching the supplied filters.\n\nRead-only advisor matching for cases where public-program evidence shows\nthe user may need qualified professional review. This is an optional next\nstep after evidence retrieval; jpcite does not provide legal, tax, labor,\nor grant-application advice.",
+        "description": "Top ``limit`` advisors matching the supplied filters.\n\nReturns public advisor profile fields and a deterministic match score.",
         "operationId": "match_advisors_v1_advisors_match_get",
         "parameters": [
           {
@@ -15165,7 +15656,7 @@
     },
     "/v1/advisors/{advisor_id}/dashboard-data": {
       "get": {
-        "description": "Self-serve dashboard backing data: referrals + earnings summary.\n\nAuthentication: a signed HMAC ``?token=...`` is required. The token is\nissued in the Stripe Connect Express return URL (or a future magic-link\nemail) so the advisor can arrive from Stripe without an API key while\nkeeping dashboard data non-public.",
+        "description": "Self-serve dashboard backing data: referrals + earnings summary.\n\nAccess is limited to the advisor dashboard flow.",
         "operationId": "dashboard_data_v1_advisors__advisor_id__dashboard_data_get",
         "parameters": [
           {
@@ -15175,24 +15666,6 @@
             "schema": {
               "title": "Advisor Id",
               "type": "integer"
-            }
-          },
-          {
-            "description": "Signed dashboard bearer token issued in the Stripe Connect return URL or a future magic-link email.",
-            "in": "query",
-            "name": "token",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Signed dashboard bearer token issued in the Stripe Connect return URL or a future magic-link email.",
-              "title": "Token"
             }
           }
         ],
@@ -18887,51 +19360,6 @@
               "minimum": 0,
               "title": "Offset",
               "type": "integer"
-            }
-          },
-          {
-            "description": "Row shape. 'minimal' (default) returns compact records; 'full' also exposes name_en/body_en/name_ja when present.",
-            "in": "query",
-            "name": "fields",
-            "required": false,
-            "schema": {
-              "default": "minimal",
-              "description": "Row shape. 'minimal' (default) returns compact records; 'full' also exposes name_en/body_en/name_ja when present.",
-              "enum": [
-                "minimal",
-                "standard",
-                "full"
-              ],
-              "title": "Fields",
-              "type": "string"
-            }
-          },
-          {
-            "description": "Response language. 'ja' (default) returns Japanese fields. 'en' uses name_en when present and falls back to ja with lang_resolved='ja' otherwise. Pass fields='full' to expose name_en / body_en / name_ja hooks.",
-            "in": "query",
-            "name": "lang",
-            "required": false,
-            "schema": {
-              "default": "ja",
-              "description": "Response language. 'ja' (default) returns Japanese fields. 'en' uses name_en when present and falls back to ja with lang_resolved='ja' otherwise. Pass fields='full' to expose name_en / body_en / name_ja hooks.",
-              "enum": [
-                "ja",
-                "en"
-              ],
-              "title": "Lang",
-              "type": "string"
-            }
-          },
-          {
-            "description": "When true, restricts the result set to records reachable to a foreign-owned KK when tax_measure raw_json carries foreign_capital_eligibility. The 'excluded' bucket is dropped; missing values are treated as 'silent'.",
-            "in": "query",
-            "name": "foreign_capital_eligibility",
-            "required": false,
-            "schema": {
-              "default": false,
-              "description": "When true, restricts the result set to records reachable to a foreign-owned KK when tax_measure raw_json carries foreign_capital_eligibility. The 'excluded' bucket is dropped; missing values are treated as 'silent'.",
-              "title": "Foreign Capital Eligibility",
-              "type": "boolean"
             }
           },
           {
@@ -23256,6 +23684,344 @@
         ]
       }
     },
+    "/v1/eligibility/dynamic_check": {
+      "post": {
+        "description": "Triage every program in indexed corpus against this \u6cd5\u4eba's \u884c\u653f\u51e6\u5206 history.",
+        "operationId": "dynamic_check_v1_eligibility_dynamic_check_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DynamicCheckRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DynamicCheckResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Validation error \u2014 `code` \u2208 {invalid_enum, invalid_date_format, missing_required_arg, out_of_range, ambiguous_query}."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Authentication required \u2014 `code='auth_required'`. Send `X-API-Key`."
+          },
+          "402": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Cost cap exceeded \u2014 `code='cost_cap_exceeded'`. Raise `X-Cost-Cap-JPY` or reduce fan-out."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not found \u2014 `code` \u2208 {no_matching_records, seed_not_found, route_not_found}."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable entity \u2014 Pydantic validation failure (`code='invalid_enum'`)."
+          },
+          "428": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Precondition required \u2014 `code='idempotency_key_required'`. Send `Idempotency-Key` on paid fan-out requests."
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Rate limit \u2014 `code='rate_limit_exceeded'`. Honour `Retry-After`."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Server error \u2014 `code` \u2208 {service, internal_error, db_locked, db_unavailable}."
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "extended corpus (am_enforcement_detail) unavailable on this deployment \u2014 eligibility verdict cannot be produced."
+          }
+        },
+        "summary": "Dynamic eligibility check joining \u884c\u653f\u51e6\u5206 history with exclusion rules",
+        "tags": [
+          "eligibility-check"
+        ]
+      }
+    },
+    "/v1/eligibility/programs/{program_id}/eligibility_for/{houjin_bangou}": {
+      "get": {
+        "description": "Resolve eligibility for one (program, \u6cd5\u4eba) pair.",
+        "operationId": "eligibility_for_v1_eligibility_programs__program_id__eligibility_for__houjin_bangou__get",
+        "parameters": [
+          {
+            "description": "linked program identifier \u2014 discoverable via /v1/programs/search.",
+            "in": "path",
+            "name": "program_id",
+            "required": true,
+            "schema": {
+              "description": "linked program identifier \u2014 discoverable via /v1/programs/search.",
+              "maxLength": 64,
+              "minLength": 4,
+              "title": "Program Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "13-digit \u6cd5\u4eba\u756a\u53f7. T-prefix / hyphens accepted.",
+            "in": "path",
+            "name": "houjin_bangou",
+            "required": true,
+            "schema": {
+              "description": "13-digit \u6cd5\u4eba\u756a\u53f7. T-prefix / hyphens accepted.",
+              "maxLength": 32,
+              "minLength": 13,
+              "title": "Houjin Bangou",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "exclude_history_years",
+            "required": false,
+            "schema": {
+              "default": 5,
+              "title": "Exclude History Years",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SingleProgramVerdict"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Validation error \u2014 `code` \u2208 {invalid_enum, invalid_date_format, missing_required_arg, out_of_range, ambiguous_query}."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Authentication required \u2014 `code='auth_required'`. Send `X-API-Key`."
+          },
+          "402": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Cost cap exceeded \u2014 `code='cost_cap_exceeded'`. Raise `X-Cost-Cap-JPY` or reduce fan-out."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "program_id unknown \u2014 verify via /v1/programs/search."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable entity \u2014 Pydantic validation failure (`code='invalid_enum'`)."
+          },
+          "428": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Precondition required \u2014 `code='idempotency_key_required'`. Send `Idempotency-Key` on paid fan-out requests."
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Rate limit \u2014 `code='rate_limit_exceeded'`. Honour `Retry-After`."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Server error \u2014 `code` \u2208 {service, internal_error, db_locked, db_unavailable}."
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "am_enforcement_detail corpus unavailable."
+          }
+        },
+        "summary": "Single-program eligibility for one \u6cd5\u4eba (deterministic verdict)",
+        "tags": [
+          "eligibility-check"
+        ]
+      }
+    },
     "/v1/email/unsubscribe": {
       "get": {
         "description": "HTML variant \u2014 clicked from a footer link.\n\nMail clients and corporate scanners pre-fetch GET links to scan for\nmalware. To keep that from auto-unsubscribing, we ONLY honour the\nGET when the token verifies AND the user explicitly hits the page.\nToken verification is the same HMAC check as POST so a bot-fetch with\na stolen-but-real token would still unsubscribe \u2014 that's by design;\na real token implies real user intent.",
@@ -25292,6 +26058,30 @@
         ]
       }
     },
+    "/v1/funding_stages/catalog": {
+      "get": {
+        "description": "5 \u30b9\u30c6\u30fc\u30b8 (seed / early / growth / ipo / succession) \u306e\u5b9a\u7fa9 + indicative \u5e2f (age / capital / revenue) + keyword fence + jpcite \u30d7\u30ed\u30b0\u30e9\u30e0\u304b\u3089\u62bd\u51fa\u3057\u305f \u4ee3\u8868\u5236\u5ea6 \u30ea\u30b9\u30c8\u3092\u8fd4\u3059\u3002no request charge \u8def\u3002",
+        "operationId": "get_funding_stages_catalog_v1_funding_stages_catalog_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Funding Stages Catalog V1 Funding Stages Catalog Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "\u8cc7\u91d1\u8abf\u9054\u30b9\u30c6\u30fc\u30b8\u30ab\u30bf\u30ed\u30b0 (5 stage \u5b9a\u7fa9 + \u4ee3\u8868\u5236\u5ea6)",
+        "tags": [
+          "funding-stage"
+        ]
+      }
+    },
     "/v1/health/data": {
       "get": {
         "description": "Public data health summary for core datasets.\n\nReturns one entry per core dataset. status:\n- \"ok\" \u2014 record count meets `expected_min_rows`\n- \"below_threshold\" \u2014 records present but under the floor\n- \"empty\" \u2014 dataset reachable, 0 records\n- \"missing\" \u2014 dataset or DB file unreachable\n\nAggregate `status` rolls up:\n- \"unhealthy\" if any check is \"missing\" OR \"empty\" with floor > 0\n- \"degraded\" if any check is \"below_threshold\"\n- \"ok\" otherwise\n\nThis health endpoint is suitable for uptime monitors and uses a\n30-second response short-lived response reuse.",
@@ -25507,6 +26297,105 @@
           }
         },
         "summary": "\u6cd5\u4eba\u756a\u53f7 \u2192 \u9069\u683c\u4e8b\u696d\u8005\u756a\u53f7 resolve + status",
+        "tags": [
+          "houjin"
+        ]
+      }
+    },
+    "/v1/houjin/{houjin_bangou}/360": {
+      "get": {
+        "description": "One \u6cd5\u4eba\u756a\u53f7 \u2192 all public-corpus surfaces in a single GET. Joins houjin_master + public dataset + am_enforcement_detail + bids + public dataset + public change log + customer_watches and projects a deterministic 3-axis scoring block (risk_score / credit_score / compliance_score).\n\n**Pricing:** \u00a53 / call (1 unit) regardless of `limit`.\n\n**Sections** (always returned): `master`, `adoption_records`, `enforcement_cases`, `bids_won`, `invoice_registrant_status`, `recent_news`, `watch_alerts`, `scores`.\n\nPure SQL + Python projection. NO LLM call. Sensitive: \u00a752 / \u00a772 / \u00a71 fence on the disclaimer envelope. The 3-axis scores are *descriptive* signals over the public corpus \u2014 never a \u4e0e\u4fe1 / \u7a0e\u52d9 / \u6cd5\u4ee4\u9069\u7528 verdict.",
+        "operationId": "get_houjin_360_v1_houjin__houjin_bangou__360_get",
+        "parameters": [
+          {
+            "description": "13-digit \u6cd5\u4eba\u756a\u53f7 (NTA canonical), with or without 'T' prefix.",
+            "in": "path",
+            "name": "houjin_bangou",
+            "required": true,
+            "schema": {
+              "description": "13-digit \u6cd5\u4eba\u756a\u53f7 (NTA canonical), with or without 'T' prefix.",
+              "maxLength": 14,
+              "minLength": 13,
+              "title": "Houjin Bangou",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Cap per list-shaped section (adoption_records, enforcement_cases, bids_won, recent_news, watch_alerts.recent_alerts). Hard cap = 50.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "description": "Cap per list-shaped section (adoption_records, enforcement_cases, bids_won, recent_news, watch_alerts.recent_alerts). Hard cap = 50.",
+              "maximum": 50,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Return the compact envelope projection. Also supported via X-JPCite-Compact: 1.",
+            "in": "query",
+            "name": "compact",
+            "required": false,
+            "schema": {
+              "default": false,
+              "description": "Return the compact envelope projection. Also supported via X-JPCite-Compact: 1.",
+              "title": "Compact",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Unified houjin 360 envelope."
+          },
+          "404": {
+            "description": "houjin_bangou not found in any joined substrate."
+          },
+          "422": {
+            "description": "Malformed houjin_bangou (must be 13 digits)."
+          }
+        },
+        "summary": "Unified houjin 360 \u2014 master + adoption + enforcement + bids_won + invoice + recent_news + watch_alerts + 3-axis scoring",
         "tags": [
           "houjin"
         ]
@@ -32017,6 +32906,189 @@
         ]
       }
     },
+    "/v1/policy_upstream/watch": {
+      "post": {
+        "description": "Per-keyword cross-axis upstream signal rollup.\n\nReturns one record per keyword with kokkai (\u56fd\u4f1a) / shingikai (\u5be9\u8b70\u4f1a) /\npubcomment (\u30d1\u30d6\u30b3\u30e1) / amendment (public change log) / programs\ncounts within the window, plus the most-recent evidence URL on\neach axis. Sort: signal_strength DESC. NO LLM, single \u00a53/billable unit\nbilling event.",
+        "operationId": "policy_upstream_watch_v1_policy_upstream_watch_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PolicyUpstreamWatchRequest",
+                "examples": [
+                  {
+                    "keywords": [
+                      "DX",
+                      "GX",
+                      "\u4e8b\u696d\u627f\u7d99"
+                    ],
+                    "watch_period_days": 90
+                  }
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Policy Upstream Watch V1 Policy Upstream Watch Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Cross-axis upstream signal rollup over kokkai + shingikai + pubcomment",
+        "tags": [
+          "policy-upstream"
+        ]
+      }
+    },
+    "/v1/policy_upstream/{topic}/timeline": {
+      "get": {
+        "description": "Single-topic chain across 5 stages, ASC by date.\n\nEach event carries a ``stage`` literal (``kokkai`` / ``shingikai`` /\n``pubcomment`` / ``law_amendment`` / ``program_launch``) plus\n3-axis citation when available (source_url + retrieved_at +\nsha256). NO LLM, single \u00a53/billable unit billing event.",
+        "operationId": "policy_upstream_timeline_v1_policy_upstream__topic__timeline_get",
+        "parameters": [
+          {
+            "description": "Single \u696d\u6cd5 / \u5236\u5ea6 keyword (e.g. '\u4e8b\u696d\u627f\u7d99' / '\u9069\u683c\u8acb\u6c42\u66f8' / 'AI\u898f\u5236').",
+            "in": "path",
+            "name": "topic",
+            "required": true,
+            "schema": {
+              "description": "Single \u696d\u6cd5 / \u5236\u5ea6 keyword (e.g. '\u4e8b\u696d\u627f\u7d99' / '\u9069\u683c\u8acb\u6c42\u66f8' / 'AI\u898f\u5236').",
+              "maxLength": 120,
+              "minLength": 1,
+              "title": "Topic",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Max merged events (1..200, default 50).",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "description": "Max merged events (1..200, default 50).",
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Policy Upstream Timeline V1 Policy Upstream  Topic  Timeline Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Single-topic timeline across kokkai \u2192 shingikai \u2192 pubcomment \u2192 \u6539\u6b63 \u2192 \u5236\u5ea6",
+        "tags": [
+          "policy-upstream"
+        ]
+      }
+    },
     "/v1/privacy/deletion_request": {
       "post": {
         "description": "Intake for deletion requests under the Act on the Protection of Personal Information (\u500b\u4eba\u60c5\u5831\u306e\u4fdd\u8b77\u306b\u95a2\u3059\u308b\u6cd5\u5f8b / APPI), Article 33. This endpoint only records the request and notifies the support team (jpcite support team) \u2014 the actual deletion is performed within 30 days after support team-side identity verification (\u00a733-3 statutory ceiling). Personal data itself is **never** returned or mutated in this response; the body carries only the receipt number, expected response window, and the support team contact (jpcite support).\n\n**Use this when** a data subject wants their record removed from our mirror of NTA invoice-registrant data, gbiz corporate facts, or audit-log artefacts that contain their identifiers. Pass `target_data_categories[]` to scope the request (a closed enum covers the categories we hold). The support team may decline with a reason code under \u00a733-1 (e.g. statutory retention obligation).\n\n(\u500b\u4eba\u60c5\u5831\u306e\u4fdd\u8b77\u306b\u95a2\u3059\u308b\u6cd5\u5f8b \u7b2c33\u6761 \u306b\u57fa\u3065\u304f\u524a\u9664\u8acb\u6c42\u3092\u53d7\u4ed8\u3051\u307e\u3059\u3002\u53d7\u4ed8\u756a\u53f7\u306e\u767a\u884c\u3068\u904b\u55b6\u5b9b\u901a\u77e5\u306e\u307f\u3092\u884c\u3044\u3001\u5b9f\u969b\u306e\u524a\u9664\u306f 30 \u65e5\u4ee5\u5185\u306b\u904b\u55b6\u5074\u3067\u672c\u4eba\u78ba\u8a8d\u306e\u4e0a\u3067\u5225\u9014\u5bfe\u5fdc\u3057\u307e\u3059 (\u00a733-3 \u6cd5\u5b9a\u4e0a\u9650)\u3002\u500b\u4eba\u60c5\u5831\u305d\u306e\u3082\u306e\u306f\u3053\u306e\u30ec\u30b9\u30dd\u30f3\u30b9\u3067\u306f\u8fd4\u5374\u30fb\u64cd\u4f5c\u3057\u307e\u305b\u3093\u3002)",
@@ -32358,6 +33430,85 @@
         ]
       }
     },
+    "/v1/programs/by_funding_stage": {
+      "post": {
+        "description": "5 \u30b9\u30c6\u30fc\u30b8 (seed / early / growth / ipo / succession) \u306e\u3044\u305a\u308c\u304b\u3092 \u6307\u5b9a\u3059\u308b\u3068\u3001stage \u306e keyword fence + \u5e74\u9f62/\u8cc7\u672c\u91d1/\u58f2\u4e0a\u5e2f + \u4efb\u610f\u306e\u90fd\u9053\u5e9c\u770c \u3067 programs \u3092\u7be9\u3044\u3001`amount_max_man_yen \u00d7 likelihood` \u9806\u306b sort \u3057\u3066 \u8fd4\u3059\u3002\n\n* 1 \u30ea\u30af\u30a8\u30b9\u30c8 = 1 \u8ab2\u91d1\u5358\u4f4d (\u00a53/billable unit)\n* anonymous tier \u306f 3 req/\u65e5 IP \u5236\u9650\u3092\u5171\u6709\n* `_disclaimer` \u30d5\u30a3\u30fc\u30eb\u30c9\u306f\u5fc5\u9808 \u2014 stage \u5224\u5b9a\u306f heuristic\n* `axes_applied` \u306f\u5b9f\u969b\u306b honored \u3057\u305f\u30d5\u30a3\u30eb\u30bf\u8ef8\u3092\u8fd4\u3059",
+        "operationId": "match_programs_by_funding_stage_v1_programs_by_funding_stage_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FundingStageMatchBody",
+                "description": "Funding stage + 4-axis \u8efd\u91cf\u30d7\u30ed\u30d5\u30a1\u30a4\u30eb"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Match Programs By Funding Stage V1 Programs By Funding Stage Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "\u8cc7\u91d1\u8abf\u9054\u30b9\u30c6\u30fc\u30b8\u5225 program \u30de\u30c3\u30c1\u30e3\u30fc",
+        "tags": [
+          "funding-stage"
+        ]
+      }
+    },
     "/v1/programs/by_region/{region_code}": {
       "get": {
         "description": "Given a 5-digit \u5168\u56fd\u5730\u65b9\u516c\u5171\u56e3\u4f53\u30b3\u30fc\u30c9 (e.g. `13105` for \u6587\u4eac\u533a, `13000` for \u6771\u4eac\u90fd, `00000` for \u5168\u56fd), return every applicable program split into three buckets:\n\n- `national` \u2014 programs with `authority_level IN ('national','\u56fd')`.   Always included (\u56fd\u30ec\u30d9\u30eb applies uniformly).\n- `prefecture` \u2014 programs whose `prefecture` matches the region's   parent prefecture, with empty `municipality` (i.e. true \u90fd\u9053\u5e9c\u770c   programs, not \u5e02\u533a\u753a\u6751-level rolled up by mistake).\n- `municipality` \u2014 programs whose `municipality` matches the region   (only populated when the region itself is a \u81ea\u6cbb\u4f53).\n\nDesignated wards (e.g. \u672d\u5e4c\u5e02\u4e2d\u592e\u533a = `01101`) walk one hop up: ward \u2192 designated_city \u2192 prefecture, so \u6587\u4eac\u533a's prefecture bucket is \u6771\u4eac\u90fd's prefecture-level records.\n\nTier filter: only S/A/B/C; quarantined (X) and excluded records skipped. Limit per bucket capped at 100.",
@@ -32537,6 +33688,84 @@
         "summary": "Programs hit-map for a 5-digit \u5168\u56fd\u5730\u65b9\u516c\u5171\u56e3\u4f53\u30b3\u30fc\u30c9",
         "tags": [
           "regions"
+        ]
+      }
+    },
+    "/v1/programs/portfolio_optimize": {
+      "post": {
+        "description": "Single-call portfolio optimizer over am_compat_matrix (43,966 records; 4,300 sourced + heuristic inferences flagged status='unknown'). Returns the recommended portfolio (greedy max-IS), duplicate / mutually-exclusive risk pairs, axis-weighted scores per requested target_axis, and the top-3 recommended mixes relevance-ordered by score.\n\n**Pricing:** \u00a53 / call (1 unit total) regardless of candidate_program_ids cardinality.\n\n**Cross-join:** am_compat_matrix + am_funding_stack_empirical + am_program_eligibility_predicate + relationship graph. Pure persistent storage + Python greedy walk. NO LLM, deterministic.\n\n**Sensitive:** \u00a752 / \u00a71 / \u00a772 fence \u2014 portfolio decisions are a machine signal, not a \u7533\u8acb\u53ef\u5426 / \u4f75\u7528\u53ef\u5426 \u5224\u65ad.",
+        "operationId": "post_portfolio_optimize_v1_programs_portfolio_optimize_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PortfolioOptimizeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Post Portfolio Optimize V1 Programs Portfolio Optimize Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "\u5236\u5ea6\u30dd\u30fc\u30c8\u30d5\u30a9\u30ea\u30aa\u6700\u9069\u5316 + \u91cd\u8907/\u6392\u4ed6 risk + \u63a8\u5968 mix (NO LLM, \u00a53 / call)",
+        "tags": [
+          "programs"
         ]
       }
     },
@@ -33078,6 +34307,96 @@
           }
         },
         "summary": "Search \u88dc\u52a9\u91d1 / \u52a9\u6210\u91d1 / \u878d\u8cc7 / \u7a0e\u5236 / \u8a8d\u5b9a programs",
+        "tags": [
+          "programs"
+        ]
+      }
+    },
+    "/v1/programs/{a}/compatibility/{b}": {
+      "get": {
+        "description": "GET pair compatibility verdict between two programs. Resolves am_compat_matrix + am_funding_stack_empirical + am_program_eligibility_predicate + relationship graph into one of four buckets:\n\n* **compatible** \u2014 matrix says compatible OR case_by_case\n* **mutually_exclusive** \u2014 legal predicate / empirical conflict / matrix incompatible\n* **sequential** \u2014 relationship graph declares temporal precedence (requires_before / precedes / follows / superseded_by) without an explicit incompatibility\n* **unknown** \u2014 no record in any of the four sources\n\n**Pricing:** \u00a53 / call.\n\n**Sensitive:** \u00a752 / \u00a71 / \u00a772 fence \u2014 verdict is a machine signal.",
+        "operationId": "get_pair_compatibility_v1_programs__a__compatibility__b__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "a",
+            "required": true,
+            "schema": {
+              "maxLength": 200,
+              "minLength": 1,
+              "title": "A",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "b",
+            "required": true,
+            "schema": {
+              "maxLength": 200,
+              "minLength": 1,
+              "title": "B",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Pair Compatibility V1 Programs  A  Compatibility  B  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "2 \u5236\u5ea6\u9593\u306e\u4e92\u63db\u6027 (compatible / mutually_exclusive / unknown / sequential)",
         "tags": [
           "programs"
         ]

@@ -68,6 +68,7 @@ from jpintel_mcp.api.court_decisions import router as court_decisions_router
 from jpintel_mcp.api.customer_webhooks import router as customer_webhooks_router
 from jpintel_mcp.api.dashboard import router as dashboard_router
 from jpintel_mcp.api.device_flow import router as device_router
+from jpintel_mcp.api.disaster import router as disaster_router
 from jpintel_mcp.api.discover import router as discover_router
 from jpintel_mcp.api.eligibility_check import router as eligibility_check_router
 from jpintel_mcp.api.email_unsubscribe import router as email_unsubscribe_router
@@ -77,6 +78,7 @@ from jpintel_mcp.api.evidence import router as evidence_router
 from jpintel_mcp.api.exclusions import router as exclusions_router
 from jpintel_mcp.api.feedback import router as feedback_router
 from jpintel_mcp.api.funding_stack import router as funding_stack_router
+from jpintel_mcp.api.funding_stage import router as funding_stage_router
 from jpintel_mcp.api.funnel_events import router as funnel_events_router
 from jpintel_mcp.api.houjin import router as houjin_router
 from jpintel_mcp.api.intelligence import router as intelligence_router
@@ -121,6 +123,7 @@ from jpintel_mcp.api.middleware import (
 )
 from jpintel_mcp.api.middleware.origin_enforcement import _MUST_INCLUDE
 from jpintel_mcp.api.openapi_agent import build_agent_openapi_schema
+from jpintel_mcp.api.policy_upstream import router as policy_upstream_router
 from jpintel_mcp.api.prescreen import router as prescreen_router
 from jpintel_mcp.api.programs import router as programs_router
 from jpintel_mcp.api.regions import router as regions_router
@@ -131,6 +134,8 @@ from jpintel_mcp.api.source_manifest import router as source_manifest_router
 from jpintel_mcp.api.stats import router as stats_router
 from jpintel_mcp.api.stats_funnel import router as stats_funnel_router
 from jpintel_mcp.api.subscribers import router as subscribers_router
+from jpintel_mcp.api.succession import router as succession_router
+from jpintel_mcp.api.tax_chain import router as tax_chain_router
 from jpintel_mcp.api.tax_rulesets import router as tax_rulesets_router
 from jpintel_mcp.api.testimonials import (
     admin_router as testimonials_admin_router,
@@ -1889,6 +1894,13 @@ def create_app() -> FastAPI:
     # runway it's meant to report on. See api/usage.py docstring.
     app.include_router(usage_router)
     app.include_router(programs_router, dependencies=[AnonIpLimitDep])
+    # R8 (2026-05-07): am_compat_matrix 43,966 rows full-surface.
+    # POST /v1/programs/portfolio_optimize + GET /v1/programs/{a}/compatibility/{b}.
+    # Pure SQLite + Python over am_compat_matrix + am_funding_stack_empirical +
+    # am_program_eligibility_predicate + am_relation.
+    from jpintel_mcp.api.compatibility import router as compatibility_router
+
+    app.include_router(compatibility_router, dependencies=[AnonIpLimitDep])
     # R8 GEO REGION API (2026-05-07): 47都道府県 × 1,724市区町村 hit-map.
     # /v1/programs/by_region/{code}, /v1/regions/{code}/coverage, /v1/regions/search.
     app.include_router(regions_router, dependencies=[AnonIpLimitDep])
@@ -1920,6 +1932,10 @@ def create_app() -> FastAPI:
     # 201,845). Same anon quota gate as case_studies_router.
     app.include_router(case_cohort_match_router, dependencies=[AnonIpLimitDep])
     app.include_router(loan_programs_router, dependencies=[AnonIpLimitDep])
+    # 2026-05-07 (R8): 災害復興 × 特例制度 surface — three endpoints under
+    # /v1/disaster/* projecting the existing programs corpus through a
+    # disaster-keyword + prefecture lens. No new schema; pure read.
+    app.include_router(disaster_router, dependencies=[AnonIpLimitDep])
     # 015_laws + 016_court_decisions: new statute / 判例 surfaces. No
     # preview gate — both are first-class from launch. Anon-quota-gated
     # like programs/enforcement/etc. so the 3/day per-IP cap applies.
@@ -2137,6 +2153,12 @@ def create_app() -> FastAPI:
     )
     # /v1/funding_stack/check — pure rule engine over compat_matrix + exclusion_rules.
     app.include_router(funding_stack_router, dependencies=[AnonIpLimitDep])
+    # /v1/funding_stages/catalog (FREE) + /v1/programs/by_funding_stage (¥3/req).
+    # Stage-aware program matcher. Pure SQL over jpintel.programs with a closed
+    # 5-stage enum (seed / early / growth / ipo / succession). Catalog path is
+    # constant data and never billed; matcher path is metered + anon-quota-gated
+    # so the 3/日 IP limit composes with the rest of the discovery surfaces.
+    app.include_router(funding_stage_router, dependencies=[AnonIpLimitDep])
     # /v1/artifacts/compatibility_table — same rule engine wrapped as a
     # copy-paste-ready artifact envelope. The artifact backend is shipped as
     # its own packet, so a hardening-only checkout must still boot without it.
@@ -2170,10 +2192,37 @@ def create_app() -> FastAPI:
     # am_entity_facts corp.*). Same anon-quota posture as the other
     # discovery surfaces — 3/日 per-IP cap applies.
     app.include_router(houjin_router, dependencies=[AnonIpLimitDep])
+    # /v1/succession/* — M&A / 事業承継 制度 matcher.
+    # Surfaces the 事業承継 chain (経営承継円滑化法 + 事業承継税制 +
+    # 事業承継・引継ぎ補助金 + M&A補助金 + 都道府県融資 + 政策金融公庫融資).
+    # Pure SQL + Python, NO LLM. ¥3/req metered (1 unit per call).
+    # Anonymous tier shares the 3/日 IP cap. M&A pillar of the
+    # cohort revenue model — pairs with houjin_watch (mig 088).
+    app.include_router(succession_router, dependencies=[AnonIpLimitDep])
+    # /v1/houjin/{houjin_bangou}/360 — R8 unified houjin 360 surface
+    # (master + adoption_records + enforcement_cases + bids_won +
+    # invoice_registrant_status + recent_news + watch_alerts + 3-axis
+    # scoring). Cross-joins houjin_master + jpi_adoption_records +
+    # am_enforcement_detail + bids + jpi_invoice_registrants +
+    # am_amendment_diff + customer_watches. Pure SQL + Python; NO LLM.
+    # Sensitive: §52 / §72 / §1 fence on the disclaimer envelope.
+    from jpintel_mcp.api.houjin_360 import router as houjin_360_router
+
+    app.include_router(houjin_360_router, dependencies=[AnonIpLimitDep])
     # /v1/calendar/deadlines is live (activated from preview 2026-04-24).
     # Previously gated behind enable_preview_endpoints; now a first-class
     # discovery surface, so it mounts unconditionally.
     app.include_router(calendar_router, dependencies=[AnonIpLimitDep])
+    # R8 (2026-05-07): /v1/programs/{id}/timeline + /v1/cases/timeline_trend
+    # + /v1/me/upcoming_rounds_for_my_profile. Annual adoption rollup over
+    # jpi_adoption_records (201,845) + next_round (am_application_round
+    # 1,256, 422 open / 493 upcoming) + per-profile fan-out match against
+    # client_profiles. Pure SQLite + Python — NO LLM. ¥3 / call flat.
+    # §52 / §47条の2 / §1 fence on the trend surfaces; §1 only on the
+    # upcoming-rounds list (pure schedule data).
+    from jpintel_mcp.api.timeline_trend import router as timeline_trend_router
+
+    app.include_router(timeline_trend_router, dependencies=[AnonIpLimitDep])
     app.include_router(billing_router)
     # /v1/billing/client_tag_breakdown — authenticated control-plane read.
     # It is never billable and must not consume the public anonymous free
@@ -2343,6 +2392,13 @@ def create_app() -> FastAPI:
         "jpintel_mcp.api.wave24_endpoints",
         dependencies=[AnonIpLimitDep],
     )
+    # DEEP-46 政策 上流 signal 統合 (2 endpoints: POST /watch + GET
+    # /{topic}/timeline). Cross-axis rollup over kokkai_utterance +
+    # shingikai_minutes + pubcomment_announcement + am_amendment_diff +
+    # jpi_programs. NO LLM, single ¥3/req billing per call. Mounted
+    # with AnonIpLimitDep so the 3/日 per-IP quota applies; paid keys
+    # bypass the anon ceiling and bill normally.
+    app.include_router(policy_upstream_router, dependencies=[AnonIpLimitDep])
     # M&A pillar bundle (Wave 22 / 2026-04-29):
     #   POST /v1/am/dd_batch     — 1..200 法人 batch DD (¥3 per id)
     #   GET  /v1/am/group_graph  — 2-hop part_of traversal (¥3 per call)
