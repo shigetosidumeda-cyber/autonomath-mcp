@@ -132,6 +132,35 @@ Cache Rule overriding `_headers`. Inspect via dashboard
 (Caching → Cache Rules) before reverting; do not weaken `_headers`
 to force a DYNAMIC bypass.
 
+### 2026-05-07 verify status: BLOCKED ON OPERATOR
+
+Run `25487203368` (this commit `771f5507`) and the two prior runs all failed
+at the `Publish to Cloudflare Pages` step with:
+
+```
+Cloudflare API returned non-200: 401
+{"success":false,"errors":[{"code":10000,"message":"Authentication error"}]}
+```
+
+Live verify still shows `cf-cache-status: DYNAMIC` because **CF Pages has
+not deployed any commit since 2026-05-07 ~07:00 JST** — the
+`CLOUDFLARE_API_TOKEN` GitHub secret used by `pages-deploy-main.yml`
+is revoked, expired, or scope-stripped.
+
+**Operator action required** (out of scope of this commit):
+
+1. Cloudflare dashboard → My Profile → API Tokens → create token with:
+   - `Account.Cloudflare Pages: Edit` on jpcite project
+   - `User.User Details: Read`
+2. GH repo settings → Secrets → update `CLOUDFLARE_API_TOKEN`.
+3. `gh workflow run pages-deploy-main.yml` to re-trigger deploy.
+4. Re-run the verify curl loop above; expect `MISS → HIT` flip.
+
+The `_headers` change in this commit is correct; it cannot be live-verified
+until the auth blocker is cleared. This is consistent with the prior 2
+commits (`5154e380`, `748232a9`) which also pushed valid changes that
+have not deployed.
+
 ---
 
 ## 4. Origin-offload math
