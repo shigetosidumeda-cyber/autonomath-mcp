@@ -177,9 +177,11 @@ _ADMIN_KEY = "test-admin-cron-secret"
 
 @pytest.fixture()
 def admin_enabled(monkeypatch):
+    from jpintel_mcp.api import admin as admin_mod
     from jpintel_mcp.config import settings
 
-    monkeypatch.setattr(settings, "admin_api_key", _ADMIN_KEY, raising=False)
+    for settings_obj in (settings, admin_mod.settings):
+        monkeypatch.setattr(settings_obj, "admin_api_key", _ADMIN_KEY, raising=False)
     yield _ADMIN_KEY
 
 
@@ -268,9 +270,11 @@ def test_admin_cron_runs_401_without_key(client, admin_enabled):
 
 
 def test_admin_cron_runs_503_when_admin_key_disabled(client, monkeypatch):
+    from jpintel_mcp.api import admin as admin_mod
     from jpintel_mcp.config import settings
 
-    monkeypatch.setattr(settings, "admin_api_key", "", raising=False)
+    for settings_obj in (settings, admin_mod.settings):
+        monkeypatch.setattr(settings_obj, "admin_api_key", "", raising=False)
     r = client.get("/v1/admin/cron_runs", headers={"X-API-Key": "anything"})
     assert r.status_code == 503
     assert "disabled" in r.json()["detail"].lower()
