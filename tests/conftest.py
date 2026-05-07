@@ -156,6 +156,17 @@ def _reset_autonomath_state() -> None:
         # not reset (search returns stale rowcounts in test_email order).
         ("jpintel_mcp.api.meta", "_reset_meta_cache", "call"),
         ("jpintel_mcp.api.programs", "_clear_program_cache", "call"),
+        # R8 round 3 — `mcp.autonomath_tools.evidence_packet_tools` carries
+        # a paths-keyed `_composer` singleton built lazily; tests that
+        # monkeypatch jpintel/autonomath db paths before exercising the
+        # MCP tool (test_evidence_packet, test_evidence_batch) get a stale
+        # composer instance from a prior test's paths. Clear after every
+        # test so the next call rebuilds against the current paths.
+        (
+            "jpintel_mcp.mcp.autonomath_tools.evidence_packet_tools",
+            "_reset_composer",
+            "call",
+        ),
     )
 
     for module_name, attr_name, kind in targets:

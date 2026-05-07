@@ -8,13 +8,20 @@ from __future__ import annotations
 
 import sqlite3
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING, Annotated, Any
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Body, HTTPException
 from pydantic import BaseModel, Field
 
-if TYPE_CHECKING:
-    from jpintel_mcp.api.deps import DbDep
+from jpintel_mcp.api import deps as api_deps
+
+# DbDep MUST be imported at module-load time, not under TYPE_CHECKING:
+# `from __future__ import annotations` lifts the route handler's `conn:
+# DbDep` annotation into a string forward-reference. FastAPI resolves
+# annotations at route registration; if the symbol isn't real, it falls
+# back to treating `conn` as a normal Query parameter and every request
+# 422s with `{"loc":["query","conn"],"msg":"Field required"}`.
+DbDep = api_deps.DbDep
 
 router = APIRouter(prefix="/v1/intel", tags=["intel"])
 

@@ -1,15 +1,20 @@
-# Cloudflare WAF + Rate-Limit rules for jpcite
+# Cloudflare edge rules for jpcite
 # ====================================================================
 #
 # This file is OPERATOR-ONLY and is NOT consumed by the application.
-# It documents the rules to apply via the Cloudflare API or dashboard
-# (Security → WAF → Custom Rules / Rate Limiting Rules) for the zone
-# that hosts api.jpcite.com and jpcite.com.
+# It documents the Redirect Rules, WAF rules, and Rate Limiting rules to
+# apply via the Cloudflare API or dashboard for the zones that host
+# jpcite.com, www.jpcite.com, api.jpcite.com, and the legacy brand host.
 #
-# Apply procedure (manual, no automation by design):
-#   1. Open Cloudflare dashboard → Security → WAF → Custom Rules
+# Redirect Rules apply procedure:
+#   Preferred: bash scripts/ops/cloudflare_redirect.sh --dry-run
+#              bash scripts/ops/cloudflare_redirect.sh
+#   Manual:    Cloudflare dashboard → Rules → Redirect Rules.
+#
+# WAF / Rate Limiting apply procedure (manual, no automation by design):
+#   1. Open Cloudflare dashboard → Security → WAF → Custom Rules.
 #   2. Create each `custom_rules` entry below in the order given.
-#   3. Open Security → WAF → Rate Limiting Rules
+#   3. Open Security → WAF → Rate Limiting Rules.
 #   4. Create each `rate_limiting_rules` entry.
 #   5. Set them all to "Deploy" status (not "Log only") for prod.
 #
@@ -19,17 +24,93 @@
 # memory: prefer manual apply for security gates that rarely change.
 #
 # Edge defense layers (top-down):
-#   1. Cloudflare WAF — these rules. Block known-bad UAs / abusive paths.
-#   2. Cloudflare Rate Limiting — coarse zone-wide ceilings.
-#   3. App middleware (api/middleware/rate_limit.py) — per-key/IP burst.
-#   4. App router dep (api/anon_limit.py) — anonymous 3 req/日 quota.
-#   5. App middleware (api/middleware/customer_cap.py) — per-key spend cap.
+#   1. Cloudflare Redirect Rules — host canonicalization before Pages.
+#   2. Cloudflare WAF — these rules. Block known-bad UAs / abusive paths.
+#   3. Cloudflare Rate Limiting — coarse zone-wide ceilings.
+#   4. App middleware (api/middleware/rate_limit.py) — per-key/IP burst.
+#   5. App router dep (api/anon_limit.py) — anonymous 3 req/日 quota.
+#   6. App middleware (api/middleware/customer_cap.py) — per-key spend cap.
 #
 # Memory references:
 #   * project_autonomath_business_model — ¥3/req metered, anon 3 req/日
 #   * feedback_autonomath_no_api_use     — abuse cost is direct ¥, must
 #                                          shed before reaching app code
 #   * project_jpintel_trademark_intel_risk — legacy name posture
+
+# --------------------------------------------------------------------
+# Redirect Rules (Cloudflare Single Redirects / Rulesets API)
+# --------------------------------------------------------------------
+# Pages `_redirects` cannot match on host names, so `www.jpcite.com`
+# canonicalization must live at the zone level. These rules run before the
+# Pages origin serves HTML and prevent apex/www GEO signal split.
+redirect_rules:
+  - name: jpcite_www_to_apex
+    ref: jpcite_www_to_apex
+    zone: jpcite.com
+    phase: http_request_dynamic_redirect
+    description: Canonicalize www.jpcite.com to apex jpcite.com before Pages serves HTML.
+    expression: 'http.host eq "www.jpcite.com"'
+    action: redirect
+    enabled: true
+    action_parameters:
+      from_value:
+        target_url:
+          expression: 'concat("https://jpcite.com", http.request.uri.path)'
+        status_code: 301
+        preserve_query_string: true
+
+  - name: zeimu_kaikei_indexnow_key_legacy
+    ref: zeimu_kaikei_indexnow_key_legacy
+    zone: zeimu-kaikei.ai
+    phase: http_request_dynamic_redirect
+    description: Redirect legacy IndexNow key files to the apex jpcite host.
+    expression: '(http.host eq "zeimu-kaikei.ai" or http.host eq "www.zeimu-kaikei.ai") and (http.request.uri.path matches "^/[A-Za-z0-9_-]{32,}\\.txt$")'
+    action: redirect
+    enabled: true
+    action_parameters:
+      from_value:
+        target_url:
+          expression: 'concat("https://jpcite.com", http.request.uri.path)'
+        status_code: 301
+        preserve_query_string: true
+
+  - name: zeimu_kaikei_to_jpcite_apex
+    ref: zeimu_kaikei_to_jpcite_apex
+    zone: zeimu-kaikei.ai
+    phase: http_request_dynamic_redirect
+    description: Redirect legacy zeimu-kaikei.ai hosts to apex jpcite.com with path and query preserved.
+    expression: '(http.host eq "zeimu-kaikei.ai" or http.host eq "www.zeimu-kaikei.ai")'
+    action: redirect
+    enabled: true
+    action_parameters:
+      from_value:
+        target_url:
+          expression: 'concat("https://jpcite.com", http.request.uri.path)'
+        status_code: 301
+        preserve_query_string: true
+
+# --------------------------------------------------------------------
+# Cache Rules (Cloudflare Rulesets API)
+# --------------------------------------------------------------------
+# JSON discovery surfaces are public, deploy-stamped, and safe to cache at
+# the edge. Cloudflare may otherwise classify JSON as DYNAMIC even when
+# `_headers` emits Cache-Control / CDN-Cache-Control.
+cache_rules:
+  - name: jpcite_json_discovery_cache
+    ref: jpcite_json_discovery_cache
+    zone: jpcite.com
+    phase: http_request_cache_settings
+    description: Cache public AI/MCP/OpenAPI discovery JSON at the edge for 10 minutes.
+    expression: '(http.host eq "jpcite.com" and http.request.method eq "GET" and (http.request.uri.path in {"/server.json" "/mcp-server.json" "/mcp-server.full.json" "/openapi.agent.json" "/v1/openapi.json" "/v1/openapi.agent.json" "/v1/mcp-server.json" "/.well-known/mcp.json" "/.well-known/trust.json" "/.well-known/sbom.json"} or starts_with(http.request.uri.path, "/.well-known/sbom/") or starts_with(http.request.uri.path, "/docs/openapi/")))'
+    action: set_cache_settings
+    enabled: true
+    action_parameters:
+      cache: true
+      edge_ttl:
+        mode: override_origin
+        default: 600
+      browser_ttl:
+        mode: respect_origin
 
 # --------------------------------------------------------------------
 # WAF Custom Rules (block / challenge based on request shape)

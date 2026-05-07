@@ -1,69 +1,88 @@
 ---
-title: Cloudflare 301 Redirect Setup
+title: Cloudflare Redirect Rules Setup
 updated: 2026-05-07
 operator_only: true
 category: brand
 ---
 
-# Cloudflare 301 Redirect Setup (zeimu-kaikei.ai → jpcite.com)
+# Cloudflare Redirect Rules Setup
 
-zeimu-kaikei.ai 配下の全 URL を jpcite.com の同一パスへ 301 永続リダイレクトする。
-SEO 認証 (PageRank / E-E-A-T) を移行するため status code は必ず `301`。
+Canonical public host is `https://jpcite.com`. The `www.jpcite.com` host and
+legacy `zeimu-kaikei.ai` hosts must return HTTP 301 before Cloudflare Pages
+serves duplicate HTML.
 
-## 1. 必要な API Token
+Source of truth: `cloudflare-rules.yaml` → `redirect_rules`.
 
-Cloudflare ダッシュボード → Profile → API Tokens で以下 scope の Custom Token を発行。
+## Required API Token
 
-- **Zone.DNS:Edit** — DNS レコード確認用
-- **Zone.Page Rules:Edit** — 本 script の対象操作
+Cloudflare dashboard → Profile → API Tokens で Custom Token を発行。
 
-取得元: https://dash.cloudflare.com/profile/api-tokens
+Required permission:
 
-## 2. Zone ID 取得
+- **Dynamic URL Redirects:Write** for the target zones
 
-1. Cloudflare ダッシュボード にログイン
-2. `zeimu-kaikei.ai` zone を選択
-3. 右下 **Overview** ペインの "Zone ID" をコピー
+Zones:
 
-## 3. Secrets 配置
+- `jpcite.com`
+- `zeimu-kaikei.ai`
 
-`~/.jpcite_secrets.env` に以下を追記 (権限 `chmod 600` 必須)。
+## Secrets
+
+`~/.jpcite_secrets.env` に以下を置く。値はログに出力しない。
 
 ```bash
 export CLOUDFLARE_API_TOKEN="..."
+export CLOUDFLARE_ZONE_ID_JPCITE_COM="..."
 export CLOUDFLARE_ZONE_ID_ZEIMU_KAIKEI="..."
 ```
 
-## 4. 実行
+`CF_API_TOKEN` / `CF_ZONE_ID` も jpcite.com zone の fallback 名として利用可。
+
+## Apply
 
 ```bash
+bash scripts/ops/cloudflare_redirect.sh --dry-run
 bash scripts/ops/cloudflare_redirect.sh
 ```
 
-成功時 stdout に Cloudflare API レスポンス JSON 2 件 + `[OK] 301 redirect rules created`。
+The script uses the Rulesets API phase `http_request_dynamic_redirect`. It
+updates only rules whose `ref` matches `cloudflare-rules.yaml` and preserves
+unmanaged rules in the same phase.
 
-## 5. 検証
+## Expected Rules
+
+- `www.jpcite.com/*` → `https://jpcite.com/$path` (`301`, query preserved)
+- `zeimu-kaikei.ai/*` → `https://jpcite.com/$path` (`301`, query preserved)
+- `www.zeimu-kaikei.ai/*` → `https://jpcite.com/$path` (`301`, query preserved)
+
+## Verify
 
 ```bash
+curl -I https://www.jpcite.com/
+# Expected: HTTP/2 301
+#           location: https://jpcite.com/
+
+curl -I "https://www.jpcite.com/pricing?utm_source=test"
+# Expected: location: https://jpcite.com/pricing?utm_source=test
+
 curl -I https://zeimu-kaikei.ai/test
-# 期待: HTTP/2 301
-#       location: https://jpcite.com/test
+# Expected: HTTP/2 301
+#           location: https://jpcite.com/test
 
 curl -I https://www.zeimu-kaikei.ai/foo/bar
-# 期待: HTTP/2 301
-#       location: https://jpcite.com/foo/bar
+# Expected: HTTP/2 301
+#           location: https://jpcite.com/foo/bar
 ```
 
-`HTTP/2 301` + `location: https://jpcite.com/...` (パス保持) を確認できれば完了。
+`HTTP/2 301` + apex `location` + path/query preservation を確認できれば完了。
 
-## 6. ロールバック
+## Rollback
 
-Cloudflare ダッシュボード → zeimu-kaikei.ai → Rules → Page Rules で
-当該 2 ルールを **Disable** または **Delete**。即時反映 (≦ 30 秒)。
+Cloudflare dashboard → target zone → Rules → Redirect Rules で対象 rule を
+Disable または Delete。反映は通常 30 秒以内。
 
-## 7. 注意
+## Notes
 
-- Page Rules は free plan で 3 個上限。本 script 実行で 2 個消費する点に留意
-- 既に同一 target の Page Rule があると API は 409 を返す → 先に dashboard で削除してから再実行
-- `$2` は `*` wildcard キャプチャの 2 番目を指す (1 番目はホスト wildcard)
-- DNS レコード (A/AAAA/CNAME) は別途 Cloudflare proxy 経由 (orange cloud) でないと Page Rule が機能しない
+- Do not implement host redirects in `site/_redirects`; Cloudflare Pages
+  `_redirects` sources are path-only and cannot match `www.jpcite.com`.
+- Single Redirects require the source hostname to be proxied by Cloudflare.

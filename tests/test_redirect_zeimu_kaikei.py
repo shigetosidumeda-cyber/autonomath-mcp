@@ -1,13 +1,11 @@
-"""Verify cloudflare-rules.yaml encodes a 301 redirect from the legacy
-zeimu-kaikei.ai zone to jpcite.com that preserves both the request path
-and the query string.
+"""Verify cloudflare-rules.yaml encodes Cloudflare Single Redirects for
+canonical public hosts.
 
 Why a structural test (not an HTTP test):
   - cloudflare-rules.yaml is operator-applied via the Cloudflare
-    dashboard; the file is the source of truth, and a real HTTP probe
-    against zeimu-kaikei.ai depends on the operator having applied
-    those rules to the live zone (which is precisely the manual step
-    the rebrand runbook covers).
+    dashboard or scripts/ops/cloudflare_redirect.sh; the file is the
+    source of truth, and a real HTTP probe depends on the operator having
+    applied those rules to the live zone.
   - Asserting on the YAML structure catches regressions where a future
     edit drops `preserve_query_string`, drops a 301 -> 302 downgrade, or
     accidentally removes the `concat("https://jpcite.com", path)`
@@ -20,6 +18,7 @@ operators an opt-in way to run it locally (`pytest -k 'live_redirect' --runxfail
 
 Memory references:
   - project_jpcite_rename — 6-month redirect window, target jpcite.com
+  - apex/www GEO split — www.jpcite.com must be a 301 source only
   - feedback_no_trademark_registration — rename-only, no TM filing
 """
 
@@ -52,6 +51,33 @@ def test_redirect_rules_block_exists(rules_doc: dict) -> None:
     )
     assert isinstance(rules_doc["redirect_rules"], list)
     assert len(rules_doc["redirect_rules"]) >= 1
+
+
+def test_jpcite_www_rule_is_301_to_apex(rules_doc: dict) -> None:
+    """www.jpcite.com must not serve duplicate static HTML.
+
+    The apex host is the canonical URL in JSON-LD, sitemaps, and robots.txt.
+    Keeping www as a 200 splits SEO/GEO signals, so the zone-level redirect
+    must preserve path/query and point every request to apex.
+    """
+    rule = next(
+        (
+            r
+            for r in rules_doc["redirect_rules"]
+            if r.get("zone") == "jpcite.com" and r.get("name") == "jpcite_www_to_apex"
+        ),
+        None,
+    )
+    assert rule is not None, (
+        "jpcite_www_to_apex rule is missing — www.jpcite.com must 301 to "
+        "apex before Cloudflare Pages serves duplicate HTML."
+    )
+    assert rule["action"] == "redirect"
+    assert rule["expression"] == 'http.host eq "www.jpcite.com"'
+    params = rule["action_parameters"]["from_value"]
+    assert params["status_code"] == 301
+    assert params["preserve_query_string"] is True
+    assert params["target_url"]["expression"] == 'concat("https://jpcite.com", http.request.uri.path)'
 
 
 def test_zeimu_kaikei_apex_rule_is_301_to_jpcite(rules_doc: dict) -> None:
@@ -111,6 +137,37 @@ def test_zeimu_kaikei_indexnow_legacy_rule(rules_doc: dict) -> None:
     assert "{32," in rule["expression"], (
         "IndexNow keys are 32+ char URL-safe tokens; pattern must reflect that"
     )
+
+
+def test_jpcite_json_discovery_cache_rule(rules_doc: dict) -> None:
+    """Public AI discovery JSON should be explicitly eligible for edge cache."""
+    rule = next(
+        (
+            r
+            for r in rules_doc.get("cache_rules", [])
+            if r.get("zone") == "jpcite.com" and r.get("name") == "jpcite_json_discovery_cache"
+        ),
+        None,
+    )
+    assert rule is not None, "jpcite_json_discovery_cache rule is missing"
+    assert rule["phase"] == "http_request_cache_settings"
+    assert rule["action"] == "set_cache_settings"
+    expression = rule["expression"]
+    for needle in (
+        'http.host eq "jpcite.com"',
+        'http.request.method eq "GET"',
+        '"/server.json"',
+        '"/mcp-server.json"',
+        '"/openapi.agent.json"',
+        '"/v1/mcp-server.json"',
+        '"/.well-known/mcp.json"',
+        'starts_with(http.request.uri.path, "/docs/openapi/")',
+    ):
+        assert needle in expression
+    params = rule["action_parameters"]
+    assert params["cache"] is True
+    assert params["edge_ttl"] == {"mode": "override_origin", "default": 600}
+    assert params["browser_ttl"] == {"mode": "respect_origin"}
 
 
 @pytest.mark.skip(

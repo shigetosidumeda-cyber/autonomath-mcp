@@ -27,8 +27,11 @@
 #   CF_ACCOUNT_ID  Cloudflare account ID (right sidebar of any CF dashboard).
 #
 # Project name: autonomath (CF Pages dashboard project, verified 2026-05-01).
-#   Domains: autonomath.pages.dev, jpcite.com, www.jpcite.com,
-#            zeimu-kaikei.ai, www.zeimu-kaikei.ai.
+#   Canonical domain: jpcite.com.
+#   Redirect-source domains: www.jpcite.com, zeimu-kaikei.ai,
+#                            www.zeimu-kaikei.ai.
+#   Pages may list redirect-source hosts as custom domains, but Cloudflare
+#   Redirect Rules must 301 them to apex before duplicate HTML is served.
 #
 # Usage:
 #   - Push to main → auto-deploy committed site/ tree.
@@ -123,6 +126,14 @@ jobs:
             python3 -m json.tool "$f" > /dev/null
           done
 
+      - name: GEO readiness guard
+        if: steps.cf-secrets.outputs.available == 'true'
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          set -euo pipefail
+          python3 scripts/check_geo_readiness.py
+
       - name: Publish to Cloudflare Pages
         if: steps.cf-secrets.outputs.available == 'true'
         uses: cloudflare/pages-action@f0a1cd58cd66095dee69bfa18fa5efd1dde93bca # v1.5.0
@@ -132,7 +143,7 @@ jobs:
           projectName: autonomath
           directory: dist/site
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          # main → production (apex jpcite.com / www.jpcite.com).
+          # main → production canonical host (apex jpcite.com).
           branch: main
 
       - name: Post-deploy smoke (public JSON surface)

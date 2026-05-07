@@ -106,7 +106,6 @@ Cross-references:
 3. Name: `jpcite-prod`.
 4. Authorized JavaScript origins (one per line):
    - `https://jpcite.com`
-   - `https://www.jpcite.com`
    - `https://api.jpcite.com`
 5. Authorized redirect URIs (one per line — must match
    `_google_oauth_redirect_uri()` in

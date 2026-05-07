@@ -4,7 +4,7 @@
 Strategy (per launch persona walk 2026-04-30):
 1. URL replacements globally:
    - https://zeimu-kaikei.ai            → https://jpcite.com
-   - https://www.zeimu-kaikei.ai        → https://www.jpcite.com
+   - https://www.zeimu-kaikei.ai        → https://jpcite.com
    - https://api.zeimu-kaikei.ai        → https://api.jpcite.com
    - bare "zeimu-kaikei.ai" (no scheme) → "jpcite.com" (covers docstrings,
      log strings, etc.). Must run AFTER the scheme'd variants so we don't
@@ -34,11 +34,11 @@ SRC = ROOT / "src"
 # doesn't double-rewrite things like "https://jpcite.com.kaikei.ai".
 URL_REPLACEMENTS: list[tuple[str, str]] = [
     ("https://api.zeimu-kaikei.ai", "https://api.jpcite.com"),
-    ("https://www.zeimu-kaikei.ai", "https://www.jpcite.com"),
+    ("https://www.zeimu-kaikei.ai", "https://jpcite.com"),
     ("https://zeimu-kaikei.ai", "https://jpcite.com"),
     # Bare domain (in docstrings, log lines, User-Agent strings, etc.)
     ("api.zeimu-kaikei.ai", "api.jpcite.com"),
-    ("www.zeimu-kaikei.ai", "www.jpcite.com"),
+    ("www.zeimu-kaikei.ai", "jpcite.com"),
     ("zeimu-kaikei.ai", "jpcite.com"),
     # Email defaults.
     ("noreply@jpcite.com", "noreply@jpcite.com"),  # noop, see below

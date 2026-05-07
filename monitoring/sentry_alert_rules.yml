@@ -90,15 +90,15 @@ rules:
     environment: production
     condition_type: metric
     what_it_detects: |
-      Sentry issue events tagged with logger:autonomath.billing.webhook OR
-      logger:autonomath.email.postmark, level:error or above, in production.
+      Sentry issue events tagged with logger:jpintel.billing OR
+      logger:jpintel.email, level:error or above, in production.
       A single misroute (signing-key drift, schema change, expired secret)
       can burn through the Stripe retry budget and cause silent revenue loss
       or unsynced invoices. R3 from Stripe audit: see
       docs/_internal/breach_notification_sop.md and
       scripts/cron/webhook_health.py.
     filter:
-      query: 'logger:[autonomath.billing.webhook,autonomath.email.postmark] level:[error,fatal]'
+      query: 'logger:[jpintel.billing,jpintel.email] level:[error,fatal]'
       aggregate: count()
     threshold: 5
     window: 1h
@@ -222,7 +222,7 @@ rules:
       or fail-closed (block all anonymous → reputation hit, GEO citation
       drop). Either way we want eyes on it within an hour.
     filter:
-      query: 'logger:autonomath.api.anon_quota level:[error,fatal]'
+      query: 'logger:jpintel.anon_quota_header level:[error,fatal]'
       aggregate: count()
     threshold: 10
     window: 10m
@@ -283,7 +283,7 @@ rules:
       Both block the disaster_recovery RTO of 30m/2h. R1+R2+R3 all assume
       backups are restorable.
     filter:
-      query: 'logger:autonomath.cron.backup level:[error,fatal]'
+      query: 'logger:jpintel.backup_hourly level:[error,fatal]'
       aggregate: count()
     threshold: 1
     window: 24h

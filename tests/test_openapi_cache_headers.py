@@ -21,10 +21,14 @@ read GETs.
 
 from __future__ import annotations
 
+import json
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from fastapi.testclient import TestClient
+    from pytest import MonkeyPatch
 
 
 _EXPECTED_CACHE_CONTROL = "public, max-age=300, s-maxage=600"
@@ -61,6 +65,31 @@ def test_mcp_server_manifest_returns_registry_payload(client: TestClient) -> Non
     assert body["protocol"].startswith("mcp-")
     # The very URL we are serving from must round-trip in the body.
     assert "/mcp-server.json" in body.get("manifest_url", "")
+
+
+def test_mcp_server_manifest_honors_runtime_path_override(
+    client: TestClient,
+    tmp_path: Path,
+    monkeypatch: MonkeyPatch,
+) -> None:
+    """Docker can place the registry manifest outside the Python package tree."""
+    manifest_path = tmp_path / "mcp-server.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "name": "autonomath-mcp-runtime",
+                "protocol": "mcp-2025-06-18",
+                "manifest_url": "https://jpcite.com/mcp-server.json",
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("MCP_SERVER_MANIFEST_PATH", str(manifest_path))
+
+    response = client.get("/v1/mcp-server.json")
+
+    assert response.status_code == 200, response.text
+    assert response.json()["name"] == "autonomath-mcp-runtime"
 
 
 def test_non_manifest_paths_do_not_get_cache_control_from_middleware(

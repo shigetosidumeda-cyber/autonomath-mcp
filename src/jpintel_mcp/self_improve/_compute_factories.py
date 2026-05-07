@@ -159,6 +159,8 @@ _TAX_INCENTIVES_PASSTHROUGH_KEYS = (
     "natural_query",
     "limit",
     "offset",
+    "lang",
+    "foreign_capital_eligibility",
 )
 
 

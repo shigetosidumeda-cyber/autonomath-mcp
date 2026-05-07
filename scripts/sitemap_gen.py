@@ -4,7 +4,8 @@
 The site has multiple sitemaps:
 - sitemap.xml (hand-maintained static URLs: home, /docs, /pricing, etc.)
 - sitemap-programs.xml (per-program HTML, auto-generated)
-- sitemap-prefectures.xml / sitemap-cross.xml / sitemap-industries.xml (GEO pages)
+- sitemap-prefectures.xml / sitemap-cross*.xml / sitemap-industries*.xml
+  / sitemap-cities.xml (GEO pages)
 - sitemap-audiences.xml / sitemap-qa.xml / sitemap-pages.xml (content pages)
 - sitemap-enforcement.xml (administrative action detail pages)
 - docs/sitemap.xml (MkDocs output)
@@ -54,10 +55,13 @@ KNOWN_BASENAMES = (
     "sitemap-audiences.xml",
     "sitemap-prefectures.xml",
     "sitemap-cross.xml",
+    "sitemap-cross-detail.xml",
     "sitemap-industries.xml",
+    "sitemap-industries-detail.xml",
     "sitemap-pages.xml",
     "sitemap-qa.xml",
     "sitemap-enforcement.xml",
+    "sitemap-cities.xml",
     "docs/sitemap.xml",
 )
 

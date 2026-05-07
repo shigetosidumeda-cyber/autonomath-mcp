@@ -5,7 +5,8 @@
 
 ## ゴール
 1. `jpcite.com` を本番ドメインとして既存 Cloudflare Pages project (`autonomath`) で配信
-2. `zeimu-kaikei.ai/*` → `jpcite.com/$1` に **301 でパス保持リダイレクト**
+2. `www.jpcite.com/*` → `jpcite.com/$1` に **301 でパス保持リダイレクト**
+3. `zeimu-kaikei.ai/*` → `jpcite.com/$1` に **301 でパス保持リダイレクト**
 
 ---
 
@@ -15,7 +16,7 @@
 - 既存 Pages project 名: **`autonomath`** / 既存 custom domain: `zeimu-kaikei.ai`
 - `site/_headers` / `site/_redirects` は **既に jpcite.com 前提** で記述済 → 変更不要
   - `_headers` の CSP `connect-src` は `https://api.jpcite.com` を許可済
-  - `_redirects` には zeimu-kaikei.ai → jpcite.com を入れない (Pages の `_redirects` は cross-domain 不可。zone 側 Redirect Rules が正しい層)
+  - `_redirects` には `www.jpcite.com` / `zeimu-kaikei.ai` の host redirect を入れない (Pages の `_redirects` source は path-only。zone 側 Redirect Rules が正しい層)
 - **Cloudflare Page Rules ではなく Redirect Rules (新システム) を使う** — Page Rules は zone あたり 3 件無料の旧課金、Redirect Rules は無料 plan で 10 ルールまで・edge eval が速い
 
 ---
@@ -27,11 +28,11 @@ wrangler login
 ```
 
 ブラウザで承認 → token 保存。
-※ 以降の Step 2-5 は Cloudflare web dash 上のクリック操作のみで完結 (wrangler は使わない)。
+※ 以降の Step は Cloudflare web dash 上のクリック操作で完結できる。repo の `scripts/ops/cloudflare_redirect.sh` から Redirect Rules を適用する場合は wrangler ではなく Cloudflare API token を使う。
 
 ---
 
-## Step 2: Pages project に `jpcite.com` を custom domain として追加
+## Step 2: Pages project に apex `jpcite.com` を custom domain として追加
 
 1. https://dash.cloudflare.com/pages を開く
 2. project **`autonomath`** をクリック
@@ -40,11 +41,39 @@ wrangler login
 5. ドメイン欄に `jpcite.com` → **「Continue」**
 6. 確認画面で **「Activate domain」**
 7. SSL プロビジョニング完了 (~1 分) を待つ → 状態が **「Active」** になれば OK
-8. (任意) `www.jpcite.com` も同じ手順 5-7 で追加
+8. `www.jpcite.com` は canonical 配信ホストにしない。既に Custom domains に存在していても Step 3 の zone-level 301 が先に評価されれば可。
 
 ---
 
-## Step 3: `zeimu-kaikei.ai` に 301 redirect rule を追加
+## Step 3: `jpcite.com` zone に www → apex の 301 redirect rule を追加
+
+1. https://dash.cloudflare.com/ を開く
+2. **「Websites」** から zone **`jpcite.com`** を選択
+3. 左ナビ **「Rules」** → **「Redirect Rules」**
+4. **「Create rule」** をクリック
+5. 以下を入力:
+
+   | フィールド | 値 |
+   |---|---|
+   | Rule name | `Canonicalize www.jpcite.com to apex` |
+   | When incoming requests match... | Custom filter expression: `http.host eq "www.jpcite.com"` |
+   | Type | **Dynamic** |
+   | Expression (URL) | `concat("https://jpcite.com", http.request.uri.path)` |
+   | Status code | **301** |
+   | Preserve query string | **ON** |
+
+6. **「Save and deploy」**
+
+CLI 適用する場合は repo の source of truth から反映する:
+
+```bash
+bash scripts/ops/cloudflare_redirect.sh --dry-run
+bash scripts/ops/cloudflare_redirect.sh
+```
+
+---
+
+## Step 4: `zeimu-kaikei.ai` に 301 redirect rule を追加
 
 1. https://dash.cloudflare.com/ を開く
 2. **「Websites」** から zone **`zeimu-kaikei.ai`** を選択
@@ -68,7 +97,7 @@ wrangler login
 
 ---
 
-## Step 4: `jpcite.com` の DNS 確認
+## Step 5: `jpcite.com` の DNS 確認
 
 Step 2 を実行すると Cloudflare Pages が CNAME を自動で打つが念のため確認:
 
@@ -79,30 +108,35 @@ Step 2 を実行すると Cloudflare Pages が CNAME を自動で打つが念の
    | Type | Name | Content | Proxy |
    |---|---|---|---|
    | CNAME | `@` | `autonomath.pages.dev` | Proxied (orange) |
-   | CNAME | `www` | `autonomath.pages.dev` | Proxied (orange) |
+   | CNAME | `www` | `autonomath.pages.dev` | Proxied (orange, redirect source only) |
 
 > apex への CNAME は Cloudflare の CNAME flattening で安全に動く。
 
 ---
 
-## Step 5: 動作検証
+## Step 6: 動作検証
 
 ```bash
 # (a) jpcite.com が配信中
 curl -I https://jpcite.com/
 # → HTTP/2 200, server: cloudflare
 
-# (b) zeimu-kaikei.ai が 301
+# (b) www.jpcite.com が apex へ 301
+curl -I https://www.jpcite.com/
+# → HTTP/2 301
+# → location: https://jpcite.com/
+
+# (c) zeimu-kaikei.ai が 301
 curl -I https://zeimu-kaikei.ai/
 # → HTTP/2 301
 # → location: https://jpcite.com/
 
-# (c) パス保持で実追従
+# (d) パス保持で実追従
 curl -L -I https://zeimu-kaikei.ai/pricing
 # → 1段目: 301 → location: https://jpcite.com/pricing
 # → 2段目: 200
 
-# (d) クエリ保持
+# (e) クエリ保持
 curl -I "https://zeimu-kaikei.ai/dashboard?utm_source=test"
 # → location: https://jpcite.com/dashboard?utm_source=test
 ```
@@ -124,4 +158,4 @@ curl -I "https://zeimu-kaikei.ai/dashboard?utm_source=test"
 
 - `zeimu-kaikei.ai` の zone は **削除しない**。301 を稼働させ続けるため最低 12 ヶ月維持 (Google が canonical 移行を再評価するまで)
 - `api.jpcite.com` (Fly.io 向け) は本ドキュメントの範囲外 → `docs/_internal/autonomath_com_dns_runbook.md` 参照
-- `site/_redirects` に cross-domain redirect を **書き加えない** (Cloudflare Pages の `_redirects` は同一 origin のパス書き換え専用、zone 越えは無効化)
+- `site/_redirects` に host redirect を **書き加えない** (Cloudflare Pages の `_redirects` source は path-only。`www` / legacy host の正規化は zone 側 Redirect Rules)

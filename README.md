@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://jpcite.com"><img src="https://www.jpcite.com/assets/github-social-card.png" alt="jpcite — Evidence-first context layer for Japanese public-program data" width="800"></a>
+  <a href="https://jpcite.com"><img src="https://jpcite.com/assets/github-social-card.png" alt="jpcite — Evidence-first context layer for Japanese public-program data" width="800"></a>
 </p>
 
 # jpcite — Evidence-first context layer for Japanese public-program data

@@ -535,6 +535,8 @@ def rest_search_tax_incentives(
     natural_query: Annotated[str | None, Query(max_length=500)] = None,
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
     offset: Annotated[int, Query(ge=0)] = 0,
+    lang: Annotated[Literal["ja", "en"], Query()] = "ja",
+    foreign_capital_eligibility: Annotated[bool, Query()] = False,
 ) -> JSONResponse:
     """税制特例 (特別償却 / 税額控除 / 繰越欠損金 / 非課税措置) search across ~285 rows.
 
@@ -560,6 +562,8 @@ def rest_search_tax_incentives(
         "natural_query": natural_query,
         "limit": limit,
         "offset": offset,
+        "lang": lang,
+        "foreign_capital_eligibility": foreign_capital_eligibility,
         "ctx_tier": ctx.tier,
     }
     _l4_key = canonical_cache_key(_L4_TOOL_AM_TAX_INCENTIVES, _l4_params)
@@ -574,6 +578,8 @@ def rest_search_tax_incentives(
             natural_query=natural_query,
             limit=limit,
             offset=offset,
+            lang=lang,
+            foreign_capital_eligibility=foreign_capital_eligibility,
         )
         return cast(
             "dict[str, Any]",

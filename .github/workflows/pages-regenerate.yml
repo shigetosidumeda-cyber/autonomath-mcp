@@ -182,6 +182,14 @@ jobs:
           mkdocs build --strict
           python scripts/sitemap_gen.py --site-dir site --domain jpcite.com
 
+      - name: GEO readiness guard
+        if: steps.fly-token.outputs.available == 'true'
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          set -euo pipefail
+          python scripts/check_geo_readiness.py
+
       - name: Prepare public artifact
         if: steps.fly-token.outputs.available == 'true'
         run: |

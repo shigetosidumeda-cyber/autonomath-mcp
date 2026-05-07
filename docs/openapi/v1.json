@@ -20405,6 +20405,30 @@
             }
           },
           {
+            "in": "query",
+            "name": "lang",
+            "required": false,
+            "schema": {
+              "default": "ja",
+              "enum": [
+                "ja",
+                "en"
+              ],
+              "title": "Lang",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "foreign_capital_eligibility",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Foreign Capital Eligibility",
+              "type": "boolean"
+            }
+          },
+          {
             "in": "header",
             "name": "X-API-Key",
             "required": false,

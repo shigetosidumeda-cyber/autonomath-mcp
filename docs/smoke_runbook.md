@@ -17,7 +17,7 @@ Before kicking off the smoke:
 1. `fly deploy` completed and the new machine reports `status=passing` in `fly status`.
 2. `entrypoint.sh` boot log shows: `autonomath self-heal migrations: applied=N skipped=M` (no `error=` lines).
 3. `pyproject.toml` and `server.json` versions match (e.g. both `0.3.4`).
-4. CORS allowlist contains `https://jpcite.com`, `https://www.jpcite.com`, `https://api.jpcite.com` (regression caught 2026-04-29).
+4. CORS allowlist contains `https://jpcite.com`, `https://www.jpcite.com`, `https://api.jpcite.com` (regression caught 2026-04-29). `www.jpcite.com` is redirect-source only, but remains allowed until the 301 has been live long enough to age out cached browser sessions.
 5. The smoke laptop has the project venv active (`autonomath-mcp` binary on PATH) **or** the operator passes `--mcp-cmd` pointing to a remote stdio bridge.
 6. No Anthropic / OpenAI / Gemini env vars set in the shell. The smoke script aborts at import if an LLM SDK is loaded.
 

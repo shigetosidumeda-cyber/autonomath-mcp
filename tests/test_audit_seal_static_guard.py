@@ -34,6 +34,17 @@ _REVIEWED_DIRECT_ATTACH_SEAL_CALL_MAX_COUNTS = {
     "src/jpintel_mcp/api/narrative.py": 1,
     "src/jpintel_mcp/api/programs_full_context.py": 3,
     "src/jpintel_mcp/api/time_machine.py": 2,
+    # R8 grow surfaces (2026-05-07): 22-axis cross-reference cohort
+    # endpoints landed with paid JSON envelopes that intentionally
+    # attach_seal_to_body for the 税理士 audit-seal pack contract.
+    # Each call site reviewed; new shippable surfaces are added here
+    # as part of the same commit that introduces them.
+    "src/jpintel_mcp/api/compatibility.py": 2,
+    "src/jpintel_mcp/api/corporate_form.py": 2,
+    "src/jpintel_mcp/api/funding_stage.py": 1,
+    "src/jpintel_mcp/api/houjin_360.py": 1,
+    "src/jpintel_mcp/api/succession.py": 2,
+    "src/jpintel_mcp/api/timeline_trend.py": 3,
 }
 
 

@@ -311,7 +311,7 @@ def main(since: str | None = None):
 
 ## 6. ホスティング + 配信 (Hosting + distribution)
 
-- **ホスト先**: Cloudflare Pages project `autonomath` (`jpcite.com` / `www.jpcite.com`)
+- **ホスト先**: Cloudflare Pages project `autonomath` (`jpcite.com`; `www.jpcite.com` は 301 redirect source)
 - API は Fly.io `autonomath-api`、静的サイトは Cloudflare Pages
 - **Content-Type**: `.jsonld` は `application/ld+json` (Pages の `_headers` で明示)
 - **sitemap**: `site/sitemap-index.xml` から `site/sitemap-structured.xml` を `<sitemapindex>` で参照

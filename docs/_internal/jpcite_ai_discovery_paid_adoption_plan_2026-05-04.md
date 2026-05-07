@@ -13,7 +13,7 @@
 - 5 trust surfaces: `site/trust/purchasing.html` + `site/security/index.html` + `site/data-licensing.html` + `site/legal-fence.html` + `site/.well-known/trust.json`
 - 12-recipe Cookbook under `docs/cookbook/` (税理士 daily / Claude Desktop install / Cursor / GPT Custom GPT / Gemini extension / OpenAI Agents / 法人 360 / pref heatmap / 採択事例 / 行政処分 watch / 顧問先 alert / 月次 invoice verify) with mkdocs nav
 - Manifest descriptions front-loaded with generic keywords (server.json + mcp-server.json + site/mcp-server.json + dxt/manifest.json + smithery.yaml + pyproject.toml keywords 13→26)
-- README hero image (https://www.jpcite.com/assets/github-social-card.png) for OG fallback on LinkedIn / Twitter / Slack
+- README hero image (https://jpcite.com/assets/github-social-card.png) for OG fallback on LinkedIn / Twitter / Slack
 - GitHub repo: 20 topics + homepage `https://jpcite.com` + description rewritten
 - Registry submissions actually pushed: punkpeye/awesome-mcp-servers PR #5818 + cline/mcp-marketplace Issue #1500 + wong2/mcpservers.org form (id=1903 pending)
 - Registry submissions blocked: appcypher/awesome-mcp-servers PR (GitHub anti-spam, account <90 days). 3 retry routines scheduled at 2026-05-18 / 05-25 / 06-01 (`trig_01XnhDbNVbtPry1EDtFMu1qb` / `trig_01M6iVX46rKoLMGrSRZZnvkR` / `trig_012NgUMgJCKUUBLKE2pbu6Hq`)

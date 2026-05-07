@@ -551,6 +551,30 @@ def search_tax_incentives(
             ),
         ),
     ] = "minimal",
+    lang: Annotated[
+        Literal["ja", "en"],
+        Field(
+            description=(
+                "Response language. 'ja' (default) returns 日本語 fields. "
+                "'en' resolves `name` to `name_en` (raw_json) when available, "
+                "else falls back gracefully to 日本語 (`lang_resolved` per row). "
+                "fields='full' surfaces name_en / body_en / name_ja explicitly. "
+                "W3-12 UC5 (foreign FDI cohort)."
+            ),
+        ),
+    ] = "ja",
+    foreign_capital_eligibility: Annotated[
+        bool,
+        Field(
+            description=(
+                "Filter rows by foreign-capital eligibility. False (default) "
+                "= no filter. True = drop rows whose raw_json carries "
+                "foreign_capital_eligibility='excluded' (the only fence-out "
+                "marker; 'silent' rows are kept per Japanese statutory "
+                "non-discrimination default). W3-12 UC5."
+            ),
+        ),
+    ] = False,
 ) -> dict[str, Any]:
     """DISCOVER (Tax): Search 50 Japanese tax rulesets — corporate deductions (減価償却/試験研究費), tax credits (雇用/エネルギー/DX), special measures (租税特別措置).
 
@@ -630,6 +654,8 @@ def search_tax_incentives(
             "limit": limit,
             "offset": offset,
             "fields": fields,
+            "lang": lang,
+            "foreign_capital_eligibility": foreign_capital_eligibility,
         }
         return http_call(
             "/v1/am/tax_incentives",
@@ -732,6 +758,14 @@ def search_tax_incentives(
     )
     params.append(as_of_iso)
 
+    # W3-12 UC5: foreign FDI cohort filter — drop rows fenced out via
+    # raw_json.foreign_capital_eligibility='excluded'. NULL / 'silent' rows
+    # are kept (Japanese statutory non-discrimination default).
+    if foreign_capital_eligibility:
+        where.append(
+            "COALESCE(json_extract(e.raw_json,'$.foreign_capital_eligibility'), 'silent') != 'excluded'"
+        )
+
     where_sql = " AND ".join(where)
 
     if use_fts:
@@ -776,12 +810,36 @@ def search_tax_incentives(
 
     results = [_trim_tax_fields(_row_to_tax(r), fields) for r in rows]
 
+    # W3-12 UC5: lang resolution + EN field surfacing.
+    # When lang='en' and raw_json carries name_en/body_en, expose them and
+    # resolve `name` -> name_en. Otherwise gracefully fall back to ja.
+    if lang == "en" or fields == "full":
+        for row, record in zip(rows, results, strict=False):
+            raw = _safe_json_loads(row["raw_json"])
+            name_en = raw.get("name_en")
+            body_en = raw.get("body_en")
+            name_ja = raw.get("name_ja") or row["primary_name"]
+            resolved = "en" if name_en else "ja"
+            if lang == "en":
+                record["lang_resolved"] = resolved
+                if name_en:
+                    record["name"] = name_en
+            if fields == "full":
+                record["name_en"] = name_en
+                record["body_en"] = body_en
+                record["name_ja"] = name_ja
+                record["lang"] = lang
+
     payload: dict[str, Any] = {
         "total": int(total),
         "limit": limit,
         "offset": offset,
         "results": results,
-        "meta": {"data_as_of": as_of_iso},
+        "meta": {
+            "data_as_of": as_of_iso,
+            "lang": lang,
+            "foreign_capital_eligibility_filter": bool(foreign_capital_eligibility),
+        },
         "retrieval_note": (
             f"Filtered for tax measures effective as of {as_of_iso} JST "
             "(rows with no application_period_to are kept as 恒久措置)."

@@ -32,6 +32,35 @@ def _redirect_sources() -> list[str]:
     return sources
 
 
+def test_redirects_file_syntax_is_cloudflare_pages_compatible() -> None:
+    """Keep site/_redirects parseable by Cloudflare Pages.
+
+    Host-level canonicalization belongs in Cloudflare Redirect Rules, not in
+    Pages `_redirects`, because Pages sources are path-only.
+    """
+    allowed_statuses = {"200", "301", "302", "303", "307", "308", "404"}
+    offenders: list[str] = []
+    for lineno, line in enumerate(REDIRECTS.read_text(encoding="utf-8").splitlines(), start=1):
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        parts = stripped.split()
+        if len(parts) not in (2, 3):
+            offenders.append(f"{lineno}: expected 2 or 3 fields")
+            continue
+        source = parts[0]
+        if not source.startswith("/"):
+            offenders.append(f"{lineno}: source must be a path")
+        if "://" in source or source.startswith("//"):
+            offenders.append(f"{lineno}: source must not be host-level")
+        if len(parts) == 3 and parts[2] not in allowed_statuses:
+            offenders.append(f"{lineno}: unsupported status {parts[2]}")
+        if "www.jpcite.com" in stripped:
+            offenders.append(f"{lineno}: www canonicalization belongs in Cloudflare Redirect Rules")
+
+    assert offenders == []
+
+
 def _redirect_source_matches(source: str, path: str) -> bool:
     escaped = re.escape(source)
     escaped = escaped.replace(r"\*", r".*")

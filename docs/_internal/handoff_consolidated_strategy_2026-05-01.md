@@ -482,7 +482,7 @@ SELECT AVG(complete) FROM packet_check;
 
 - Cloudflare Pages production deploy 完了
   - project: `autonomath`
-  - custom domains: `jpcite.com`, `www.jpcite.com`
+  - custom domains: `jpcite.com`; `www.jpcite.com` is redirect-source only
   - preview/deploy URL: `https://135e63c9.autonomath.pages.dev`
   - `site/` deploy 前に secret scan / `site/docs/_internal` 混入確認 OK
 - Fly API production deploy 完了

@@ -29,6 +29,7 @@ REQUIRED_FILES = [
     "site/.well-known/trust.json",
     "site/openapi.agent.json",
     "docs/openapi/agent.json",
+    "cloudflare-rules.yaml",
 ]
 
 PUBLIC_ROOT_SURFACES = [
@@ -106,6 +107,33 @@ REDIRECTS_FORBIDDEN_PATTERNS = [
     r"(?m)^/terms(?:-of-service)?\s+/tos\.html\s+30[128]\b",
     r"(?m)^/privacy(?:-policy)?\s+/privacy\.html\s+30[128]\b",
     r"(?m)^/legal\s+/legal-fence\.html\s+30[128]\b",
+]
+
+REDIRECTS_ALLOWED_STATUS_CODES = {"200", "301", "302", "303", "307", "308", "404"}
+
+JPCITE_WWW_REDIRECT_REQUIRED_TOKENS = [
+    "redirect_rules:",
+    "name: jpcite_www_to_apex",
+    "zone: jpcite.com",
+    'expression: \'http.host eq "www.jpcite.com"\'',
+    'expression: \'concat("https://jpcite.com", http.request.uri.path)\'',
+    "status_code: 301",
+    "preserve_query_string: true",
+]
+
+JPCITE_JSON_CACHE_REQUIRED_TOKENS = [
+    "cache_rules:",
+    "name: jpcite_json_discovery_cache",
+    "phase: http_request_cache_settings",
+    "action: set_cache_settings",
+    '"/server.json"',
+    '"/mcp-server.json"',
+    '"/openapi.agent.json"',
+    '"/v1/mcp-server.json"',
+    '"/.well-known/mcp.json"',
+    'starts_with(http.request.uri.path, "/docs/openapi/")',
+    "mode: override_origin",
+    "default: 600",
 ]
 
 INDEX_REQUIRED_TOKENS = [
@@ -287,16 +315,70 @@ def _failures_for_index_legacy_bridge(html: str, json_ld: list[Any]) -> list[str
 def _failures_for_canonical_urls() -> list[str]:
     failures: list[str] = []
     canonical_re = re.compile(r'<link rel="canonical"[^>]+https://jpcite\.com/[^">]+\.html')
+    canonical_href_re = re.compile(
+        r'<link\s+[^>]*rel=["\']canonical["\'][^>]*href=["\']([^"\']+)["\']'
+        r'|<link\s+[^>]*href=["\']([^"\']+)["\'][^>]*rel=["\']canonical["\']',
+        re.I,
+    )
     site_dir = ROOT / "site"
+    program_dir = site_dir / "programs"
+    reserved_program_pages = {"index.html", "share.html"}
     for path in site_dir.rglob("*.html"):
         rel = str(path.relative_to(ROOT))
         text = path.read_text(encoding="utf-8", errors="replace")
         if canonical_re.search(text):
             failures.append(f"{rel} canonical must be extensionless")
+        if path.parent == program_dir and path.name not in reserved_program_pages:
+            match = canonical_href_re.search(text)
+            href = (match.group(1) or match.group(2)) if match else ""
+            expected = f"https://jpcite.com/programs/{path.stem}"
+            if href != expected:
+                failures.append(f"{rel} canonical must be {expected}")
 
     sitemap = _read("site/sitemap.xml")
     if re.search(r"https://jpcite\.com/[^ <\"]+\.html", sitemap):
         failures.append("site/sitemap.xml contains .html canonical URLs")
+    return failures
+
+
+def _failures_for_redirects_syntax(text: str) -> list[str]:
+    failures: list[str] = []
+    for lineno, line in enumerate(text.splitlines(), start=1):
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        parts = stripped.split()
+        if len(parts) not in (2, 3):
+            failures.append(f"site/_redirects:{lineno} must have 2 or 3 fields")
+            continue
+        source = parts[0]
+        status = parts[2] if len(parts) == 3 else None
+        if not source.startswith("/"):
+            failures.append(f"site/_redirects:{lineno} source must be a path")
+        if "://" in source or source.startswith("//"):
+            failures.append(f"site/_redirects:{lineno} source must not be a domain-level rule")
+        if status is not None and status not in REDIRECTS_ALLOWED_STATUS_CODES:
+            failures.append(f"site/_redirects:{lineno} unsupported status:{status}")
+        if "www.jpcite.com" in stripped:
+            failures.append(
+                f"site/_redirects:{lineno} must not contain www.jpcite.com; "
+                "host canonicalization belongs in Cloudflare Redirect Rules"
+            )
+    return failures
+
+
+def _failures_for_agent_openapi(rel: str) -> list[str]:
+    failures: list[str] = []
+    agent = _load_json(rel)
+    paths = set(agent.get("paths", {}))
+    for path in AGENT_OPENAPI_REQUIRED_PATHS:
+        if path not in paths:
+            failures.append(f"{rel} missing path:{path}")
+    info = agent.get("info", {})
+    if not info.get("x-jpcite-first-hop-policy"):
+        failures.append(f"{rel} missing x-jpcite-first-hop-policy")
+    if not info.get("x-jpcite-evidence-to-expert-handoff-policy"):
+        failures.append(f"{rel} missing x-jpcite-evidence-to-expert-handoff-policy")
     return failures
 
 
@@ -331,10 +413,27 @@ def check() -> list[str]:
     failures.extend(_failures_for_required(headers, HEADERS_REQUIRED_TOKENS, "site/_headers"))
 
     redirects = _read("site/_redirects")
+    failures.extend(_failures_for_redirects_syntax(redirects))
     for pattern in REDIRECTS_FORBIDDEN_PATTERNS:
         if re.search(pattern, redirects):
             failures.append(f"site/_redirects contains loop-prone rule:{pattern}")
     failures.extend(_failures_for_canonical_urls())
+
+    cloudflare_rules = _read("cloudflare-rules.yaml")
+    failures.extend(
+        _failures_for_required(
+            cloudflare_rules,
+            JPCITE_WWW_REDIRECT_REQUIRED_TOKENS,
+            "cloudflare-rules.yaml",
+        )
+    )
+    failures.extend(
+        _failures_for_required(
+            cloudflare_rules,
+            JPCITE_JSON_CACHE_REQUIRED_TOKENS,
+            "cloudflare-rules.yaml",
+        )
+    )
 
     index = _read("site/index.html")
     failures.extend(_failures_for_required(index, INDEX_REQUIRED_TOKENS, "site/index.html"))
@@ -361,18 +460,8 @@ def check() -> list[str]:
         if not mcp_discovery.get(key):
             failures.append(f"site/.well-known/mcp.json missing:{key}")
 
-    agent = _load_json("docs/openapi/agent.json")
-    paths = set(agent.get("paths", {}))
-    for path in AGENT_OPENAPI_REQUIRED_PATHS:
-        if path not in paths:
-            failures.append(f"docs/openapi/agent.json missing path:{path}")
-    info = agent.get("info", {})
-    if not info.get("x-jpcite-first-hop-policy"):
-        failures.append("docs/openapi/agent.json missing x-jpcite-first-hop-policy")
-    if not info.get("x-jpcite-evidence-to-expert-handoff-policy"):
-        failures.append(
-            "docs/openapi/agent.json missing x-jpcite-evidence-to-expert-handoff-policy"
-        )
+    for rel in ("docs/openapi/agent.json", "site/openapi.agent.json"):
+        failures.extend(_failures_for_agent_openapi(rel))
 
     return failures
 

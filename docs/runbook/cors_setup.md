@@ -33,13 +33,13 @@ webhook, Anthropic relay) are **not** affected.
 
 ## Required origins (production)
 
-Apex AND www must both be listed. Cloudflare Pages serves the marketing
-site canonically at apex, but `www` is also accessible (CNAME flatten) and
-some clients will hit it. The API host (`api.jpcite.com`) is also
-included for the dashboard / audit-log subdomain self-referential calls.
-Both `jpcite.com` and `autonomath.ai` are kept while the brand
-crossover lasts (autonomath.ai redirects to jpcite.com but is still
-a registered marketing host).
+Apex must be listed. `www.jpcite.com` is redirect-source only and should
+301 to apex before Pages serves HTML, but it remains in the API allowlist
+until cached browser sessions and old bookmarks have aged out. The API host
+(`api.jpcite.com`) is also included for dashboard / audit-log
+self-referential calls. Both `jpcite.com` and `autonomath.ai` are kept while
+the brand crossover lasts (autonomath.ai redirects to jpcite.com but is
+still a registered marketing host).
 
 ```
 https://jpcite.com

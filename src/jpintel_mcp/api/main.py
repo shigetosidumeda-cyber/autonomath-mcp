@@ -160,6 +160,32 @@ from jpintel_mcp.security.pii_redact import redact_pii
 
 artifacts_router: Any | None = None
 
+
+def _resolve_mcp_server_manifest_path() -> Path | None:
+    """Find the registry manifest in both source-tree and Docker layouts."""
+    candidates: list[Path] = []
+    env_path = os.getenv("MCP_SERVER_MANIFEST_PATH")
+    if env_path:
+        candidates.append(Path(env_path))
+    candidates.extend(
+        [
+            Path("/app/mcp-server.json"),
+            Path.cwd() / "mcp-server.json",
+            Path(__file__).resolve().parents[3] / "mcp-server.json",
+        ]
+    )
+
+    seen: set[Path] = set()
+    for candidate in candidates:
+        resolved = candidate.expanduser()
+        if resolved in seen:
+            continue
+        seen.add(resolved)
+        if resolved.is_file():
+            return resolved
+    return None
+
+
 # ── Query telemetry ────────────────────────────────────────────────────────
 # Structured JSON lines emitted to stdout via "autonomath.query" logger.
 # No PII: only keys (not values) are logged; free-text is reduced to length
@@ -1811,23 +1837,19 @@ def create_app() -> FastAPI:
 
     # R8 perf, 2026-05-07: Serve the MCP registry manifest (`mcp-server.json`)
     # at /v1/mcp-server.json so the URL referenced by `manifest_url` in that
-    # very file resolves to a 200. Prior to this route the endpoint 404'd
-    # (R8_PERF_BASELINE_2026-05-07.md row "Endpoint matrix"). Reads the file
-    # from the repo root each request so a `mcp-publish`-style bump that
-    # rewrites the file in place is reflected without a process restart;
-    # in-process state cache via lru_cache(maxsize=1) keyed by mtime keeps
-    # the per-call I/O bounded. Cache-Control header is added by
+    # very file resolves to a 200. Reads the file from the Docker runtime
+    # layout first (`/app/mcp-server.json`), then falls back to source-tree
+    # locations so local tests still work. Cache-Control header is added by
     # StaticManifestCacheMiddleware (LIFO outer) so CF / browsers see the
     # same `public, max-age=300, s-maxage=600` envelope as the OpenAPI
     # manifests.
-    _mcp_server_manifest_path = Path(__file__).resolve().parents[3] / "mcp-server.json"
 
     @app.get("/v1/mcp-server.json", include_in_schema=False)
     def _mcp_server_manifest() -> JSONResponse:
-        try:
-            text = _mcp_server_manifest_path.read_text(encoding="utf-8")
-        except FileNotFoundError as exc:  # pragma: no cover — defensive
-            raise HTTPException(status_code=404, detail="mcp-server.json not found") from exc
+        manifest_path = _resolve_mcp_server_manifest_path()
+        if manifest_path is None:  # pragma: no cover — defensive
+            raise HTTPException(status_code=404, detail="mcp-server.json not found")
+        text = manifest_path.read_text(encoding="utf-8")
         return JSONResponse(content=json.loads(text))
 
     # Router wiring. AnonIpLimitDep is attached only to routers whose

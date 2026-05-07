@@ -89,7 +89,7 @@ Confirm they're set before §3:
 
 ```bash
 source ~/.jpcite_secrets.env
-echo "${CLOUDFLARE_API_TOKEN:0:8}***  zone:$CLOUDFLARE_ZONE_ID_JPCITE_COM"
+test -n "${CLOUDFLARE_API_TOKEN:-}" && test -n "${CLOUDFLARE_ZONE_ID_JPCITE_COM:-}"
 ```
 
 ## 3. Mitigation: DDoS / scraping flood

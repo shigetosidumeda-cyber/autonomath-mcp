@@ -45,6 +45,17 @@ import contextlib
 from backup import _gzip_file, _integrity_check, _online_backup, _write_sha256  # type: ignore
 from cron._r2_client import R2ConfigError, delete, list_keys, upload  # type: ignore
 
+# Sentry route — backup_integrity_failure rule (monitoring/sentry_alert_rules.yml)
+# fires on logger=jpintel.backup_hourly + level=error. stdlib logging alone is
+# invisible to Sentry; safe_capture_exception forwards to the Sentry SDK
+# (no-op when SENTRY_DSN is unset, so dev/CI runs don't fail closed).
+try:
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "src"))
+    from jpintel_mcp.observability import safe_capture_exception  # type: ignore
+except Exception:  # pragma: no cover — defensive: never block the backup on import errors
+    def safe_capture_exception(exc: BaseException, **scope: object) -> None:  # type: ignore[no-redef]
+        return
+
 _LOG = logging.getLogger("jpintel.backup_hourly")
 _KEY_RE = re.compile(r"^jpintel-(\d{8})-(\d{6})\.db\.gz$")
 
@@ -152,6 +163,7 @@ def main() -> int:
         _integrity_check(staged)
     except Exception as exc:
         _LOG.exception("snapshot_failed err=%s", exc)
+        safe_capture_exception(exc, stage="snapshot", db_path=str(db_path))
         return 2
 
     gz = _gzip_file(staged)
@@ -163,9 +175,11 @@ def main() -> int:
         upload(sha, f"{prefix.rstrip('/')}/{sha.name}", bucket=bucket)
     except R2ConfigError as exc:
         _LOG.error("r2_config_error err=%s", exc)
+        safe_capture_exception(exc, stage="r2_config")
         return 1
     except Exception as exc:
         _LOG.exception("upload_failed err=%s", exc)
+        safe_capture_exception(exc, stage="upload", artifact=str(gz))
         return 3
 
     try:

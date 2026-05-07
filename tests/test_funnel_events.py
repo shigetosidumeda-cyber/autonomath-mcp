@@ -72,7 +72,7 @@ def test_funnel_event_accepts_text_plain_beacon(client, seeded_db: Path) -> None
         content=json.dumps(
             {
                 "event": "pricing_view",
-                "page": "https://www.jpcite.com/pricing.html?utm_source=chatgpt",
+                "page": "https://jpcite.com/pricing.html?utm_source=chatgpt",
                 "session_id": "sid-text-plain",
                 "properties": {"source": "sendBeacon"},
             }

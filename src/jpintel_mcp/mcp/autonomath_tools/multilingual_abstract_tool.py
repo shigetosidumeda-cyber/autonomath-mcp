@@ -246,8 +246,18 @@ def _program_abstract_structured_impl(program_id: str, audience: str) -> dict[st
     meta = enriched.get("_meta") or {}
     basic = extraction.get("basic") or {}
 
-    target_types = _safe_json_loads(row["target_types_json"]) if row["target_types_json"] else []
-    if not isinstance(target_types, list):
+    # `target_types_json` is a JSON LIST like `["corporation"]`, but
+    # `_safe_json_loads` strictly returns `{}` for non-dict payloads —
+    # which silently maps every list to `[]`. Parse directly with
+    # `json.loads` + isinstance gate so the list shape is preserved.
+    raw_tt = row["target_types_json"]
+    if raw_tt:
+        try:
+            parsed_tt = json.loads(raw_tt) if isinstance(raw_tt, (str, bytes)) else raw_tt
+        except (TypeError, ValueError):
+            parsed_tt = []
+        target_types = parsed_tt if isinstance(parsed_tt, list) else []
+    else:
         target_types = []
 
     eligibility: dict[str, Any] = {"business_type_enum": list(target_types)}

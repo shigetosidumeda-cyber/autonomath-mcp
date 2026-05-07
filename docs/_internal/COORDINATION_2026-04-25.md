@@ -20,7 +20,7 @@
 
 ### Cloudflare Pages
 - **Project**: `autonomath` (NOT `autonomath-fallback`)
-- **Domains**: jpcite.com / www.jpcite.com / autonomath.pages.dev
+- **Domains**: jpcite.com / www.jpcite.com (301 source) / autonomath.pages.dev
 - **Latest deploy**: 7ab7530a (2026-04-25 ~09:38Z)
 - **Files**: 11,186 (excluding site/structured/* which is 10,951 .jsonld files left aside due to 20k limit)
 
