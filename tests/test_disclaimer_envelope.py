@@ -199,3 +199,139 @@ def test_non_sensitive_tools_omit_disclaimer():
         assert "_disclaimer" not in merged, (
             f"{tool_name}: leaked _disclaimer={merged.get('_disclaimer')!r}"
         )
+
+
+# ---------------------------------------------------------------------------
+# 4. REST `_apply_envelope` surfaces `_disclaimer` for the 4 sensitive REST
+#    routes — R8_DISCLAIMER_LIVE_VERIFY (2026-05-07).
+#
+# Pre-fix bug: `src/jpintel_mcp/api/autonomath.py:_apply_envelope` additive
+# tuple omitted the `_disclaimer` key, so /v1/am/{acceptance_stats,
+# enforcement, loans, mutual_plans} dropped the disclaimer on the way back
+# to REST clients. MCP path (`mcp/server.py:_envelope_merge`) carried it
+# correctly — but Custom GPT-style consumers do not transit MCP, so the
+# 業法 fence (行政書士法 §1 / 貸金業法 §3 / 弁護士法 §72 / 保険業法 §3)
+# was bypassed silently.
+#
+# These tests guard the additive tuple AND the tool_name string the route
+# actually hands to `_apply_envelope` (acceptance_stats was passing
+# "search_acceptance_stats" without the `_am` suffix, which falls outside
+# SENSITIVE_TOOLS — so even with the additive fix the disclaimer never
+# resolves until the name is corrected).
+# ---------------------------------------------------------------------------
+
+
+def _import_apply_envelope():
+    from jpintel_mcp.api.autonomath import _apply_envelope
+
+    return _apply_envelope
+
+
+def test_rest_apply_envelope_surfaces_disclaimer_on_4_sensitive_routes():
+    """REST `_apply_envelope` must surface `_disclaimer` for the 4 sensitive routes.
+
+    The 4 routes (acceptance_stats / enforcement / loans / mutual_plans) sit
+    in distinct 業法 fences and MUST emit a non-empty `_disclaimer` so that
+    REST AI consumers (Custom GPT, OpenAPI plugin clients) receive the same
+    fence text MCP clients already do.
+    """
+    _apply_envelope = _import_apply_envelope()
+
+    # Tool name strings exactly as the route passes them today (post-fix).
+    # Any drift here means a REST route stopped resolving the disclaimer.
+    sensitive_tool_names = (
+        "search_acceptance_stats_am",
+        "search_loans_am",
+        "check_enforcement_am",
+        "search_mutual_plans_am",
+    )
+
+    for tool_name in sensitive_tool_names:
+        raw_result: dict = {
+            "results": [{"id": "x"}],
+            "total": 1,
+            "limit": 20,
+            "offset": 0,
+        }
+        merged = _apply_envelope(tool_name, raw_result, query="probe")
+        assert isinstance(merged, dict), f"{tool_name}: _apply_envelope dropped dict shape"
+        d = merged.get("_disclaimer")
+        assert isinstance(d, str), (
+            f"{tool_name}: REST `_apply_envelope` did not surface `_disclaimer` "
+            f"(business-law fence breach). merged keys = {sorted(merged.keys())}"
+        )
+        assert len(d) >= 20, f"{tool_name}: `_disclaimer` too short ({len(d)} chars)"
+
+
+def test_rest_apply_envelope_route_callsite_uses_canonical_tool_names():
+    """The 4 routes must call `_apply_envelope` with the canonical `_am`-suffixed
+    tool name so the SENSITIVE_TOOLS lookup hits.
+
+    Reads `src/jpintel_mcp/api/autonomath.py` source and asserts each route's
+    `_apply_envelope(...)` invocation hands one of the four canonical names.
+    A drop back to the un-suffixed form (e.g. "search_acceptance_stats")
+    would silently re-introduce the pre-fix bug.
+    """
+    src = (
+        Path(__file__).resolve().parent.parent / "src" / "jpintel_mcp" / "api" / "autonomath.py"
+    ).read_text(encoding="utf-8")
+
+    # Each canonical name MUST appear at least once as the first positional
+    # argument of an `_apply_envelope(` callsite. We assert presence rather
+    # than parse the AST so the test is resilient to formatting churn.
+    for canonical in (
+        '"search_acceptance_stats_am"',
+        '"search_loans_am"',
+        '"check_enforcement_am"',
+        '"search_mutual_plans_am"',
+    ):
+        assert canonical in src, (
+            f"REST autonomath.py lost canonical tool name {canonical} — "
+            "_apply_envelope callsite likely reverted to a non-_am form, "
+            "which would break the SENSITIVE_TOOLS lookup."
+        )
+
+    # Anti-regression: the un-suffixed form must NOT be passed as a tool name
+    # in any `_apply_envelope(...)` call.
+    assert '_apply_envelope(\n            "search_acceptance_stats"' not in src, (
+        "REST acceptance_stats route is calling _apply_envelope with the "
+        "un-suffixed tool name — disclaimer envelope will silently drop."
+    )
+
+
+def test_rest_apply_envelope_disclaimer_matches_mcp_envelope_merge():
+    """REST `_apply_envelope` and MCP `_envelope_merge` MUST produce the same
+    `_disclaimer` string for the 4 sensitive routes.
+
+    Drift between the two transports is itself a 業法-fence regression — the
+    AI consumer should not get a different warning depending on which API
+    surface they hit.
+    """
+    _apply_envelope = _import_apply_envelope()
+    _envelope_merge = _import_envelope_merge()
+
+    for tool_name in (
+        "search_acceptance_stats_am",
+        "search_loans_am",
+        "check_enforcement_am",
+        "search_mutual_plans_am",
+    ):
+        raw_result: dict = {
+            "results": [{"id": "x"}],
+            "total": 1,
+            "limit": 20,
+            "offset": 0,
+        }
+        rest_merged = _apply_envelope(tool_name, dict(raw_result), query="probe")
+        mcp_merged = _envelope_merge(
+            tool_name=tool_name,
+            result=dict(raw_result),
+            kwargs={},
+            latency_ms=1.0,
+        )
+        assert isinstance(rest_merged, dict) and isinstance(mcp_merged, dict)
+        assert rest_merged.get("_disclaimer") == mcp_merged.get("_disclaimer"), (
+            f"{tool_name}: REST vs MCP disclaimer drift "
+            f"(REST={rest_merged.get('_disclaimer')!r}, "
+            f"MCP={mcp_merged.get('_disclaimer')!r})"
+        )
