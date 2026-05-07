@@ -159,7 +159,7 @@ def _patch_webhook_construct_event(monkeypatch, event: dict) -> None:
     monkeypatch.setattr(
         billing_mod.stripe.Webhook,
         "construct_event",
-        lambda body, sig, secret: event,
+        lambda body, sig, secret, **_kwargs: event,
     )
 
 

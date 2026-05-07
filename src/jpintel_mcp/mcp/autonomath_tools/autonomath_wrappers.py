@@ -49,13 +49,21 @@ def _safe_envelope(retry_with: list[str]) -> Callable[[Callable[..., Any]], Call
     canonical autonomath envelope with hint + retry_with. Agents 7/10 finding:
     bare `raise` made LLMs give up on 1 error; envelopes let them retry with
     an alternative tool.
+
+    Per MASTER_PLAN §I every response (success OR error) must carry the four
+    canonical envelope keys: ``total`` / ``results`` / ``_billing_unit`` /
+    ``_next_calls``. Error path emits ``_billing_unit=0`` (we never bill on
+    failure) and ``_next_calls=[]``. Success path defaults ``_billing_unit=1``
+    + ``_next_calls=[]`` only when the wrapped tool did not set them itself
+    (existing tools that already populate either key are passed through
+    untouched — `setdefault` semantics).
     """
 
     def deco(fn: Callable[..., Any]) -> Callable[..., Any]:
         @functools.wraps(fn)
         def _wrap(*args: Any, **kwargs: Any) -> Any:
             try:
-                return fn(*args, **kwargs)
+                result = fn(*args, **kwargs)
             except sqlite3.OperationalError as e:
                 # SQLite OperationalError messages can include table/column
                 # names, SQL snippets, and file paths — all are internal
@@ -65,6 +73,8 @@ def _safe_envelope(retry_with: list[str]) -> Callable[[Callable[..., Any]], Call
                 return {
                     "total": 0,
                     "results": [],
+                    "_billing_unit": 0,
+                    "_next_calls": [],
                     "error": {
                         "code": "db_unavailable",
                         "message": msg,
@@ -87,6 +97,8 @@ def _safe_envelope(retry_with: list[str]) -> Callable[[Callable[..., Any]], Call
                 return {
                     "total": 0,
                     "results": [],
+                    "_billing_unit": 0,
+                    "_next_calls": [],
                     "error": {
                         "code": "invalid_enum",
                         "message": f"{type(e).__name__}: {raw}",
@@ -94,6 +106,12 @@ def _safe_envelope(retry_with: list[str]) -> Callable[[Callable[..., Any]], Call
                         "retry_with": retry_with,
                     },
                 }
+            # Success path — backfill canonical envelope keys without
+            # clobbering anything the wrapped tool already set.
+            if isinstance(result, dict):
+                result.setdefault("_billing_unit", 1)
+                result.setdefault("_next_calls", [])
+            return result
 
         return _wrap
 
