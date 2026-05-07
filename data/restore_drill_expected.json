@@ -1,0 +1,41 @@
+{
+  "_meta": {
+    "purpose": "Top-10 table COUNT(*) baseline for monthly R2 restore drill (DEEP-62, scripts/cron/restore_drill_monthly.py).",
+    "tolerance": "+/-10% per table (lo=int(exp*0.9), hi=int(exp*1.1)); see _top10_count_diff().",
+    "skip_semantics": "Missing file -> status='skip' silent degrade (defect C of R8_BACKUP_RESTORE_DRILL_AUDIT). This file resolves that.",
+    "snapshot_date": "2026-05-07",
+    "snapshot_source": {
+      "autonomath": "/Users/shigetoumeda/jpcite/autonomath.db (12.38 GB, repo root canonical)",
+      "jpintel": "/Users/shigetoumeda/jpcite/data/jpintel.db (446 MB)"
+    },
+    "extraction_method": "sqlite3 SELECT COUNT(*) FROM <tbl>; read-only against local snapshot, production DB write 0.",
+    "tables_authority": "TOP10 lists hard-coded in restore_drill_monthly.py (_TOP10_AUTONOMATH + _TOP10_JPINTEL).",
+    "rotation": "Even months -> autonomath sample, odd months -> jpintel sample (cron rotates by month parity).",
+    "next_scheduled_drill": "2026-05-15 03:00 JST (odd month -> jpintel)",
+    "review_cadence": "Refresh after major migrations; growth >10% requires bumping baseline to avoid false drift alerts."
+  },
+  "autonomath": {
+    "am_entities": 503930,
+    "am_entity_facts": 6124990,
+    "am_relation": 378342,
+    "am_alias": 335605,
+    "am_amendment_snapshot": 14596,
+    "am_application_round": 1256,
+    "am_law_article": 353278,
+    "am_enforcement_detail": 22258,
+    "am_amount_condition": 250946,
+    "am_industry_jsic": 37
+  },
+  "jpintel": {
+    "programs": 14472,
+    "case_studies": 2286,
+    "loan_programs": 108,
+    "enforcement_cases": 1185,
+    "laws": 9484,
+    "tax_rulesets": 50,
+    "court_decisions": 2065,
+    "bids": 362,
+    "invoice_registrants": 13801,
+    "exclusion_rules": 181
+  }
+}
