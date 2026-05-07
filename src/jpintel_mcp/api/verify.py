@@ -48,6 +48,7 @@ from jpintel_mcp.api._verifier import (
     match_to_corpus,
     tokenize_claims,
 )
+from jpintel_mcp.api.deps import ApiContextDep, DbDep, log_usage
 
 logger = logging.getLogger("jpintel.api.verify")
 
@@ -243,6 +244,8 @@ def _persist_log(
 async def verify_answer(
     payload: VerifyAnswerRequest,
     request: Request,
+    conn: DbDep,
+    ctx: ApiContextDep,
 ) -> VerifyAnswerResponse:
     """Verify an LLM-generated answer against the jpcite corpus.
 
@@ -253,6 +256,11 @@ async def verify_answer(
     Errors:
       * 400 too_many_claims when tokenize yields >5 atomic claims.
       * 422 from pydantic when answer_text empty or language invalid.
+
+    R8 BUGHUNT 2026-05-07: ¥3 metering wired here. Pre-fix the
+    endpoint advertised ``cost_yen: 3`` in the response but never
+    called ``log_usage`` — authenticated callers were billed ¥0,
+    burning revenue per call. AnonIpLimitDep was the only gate.
     """
     started = time.monotonic()
     request_id = uuid.uuid4().hex
@@ -329,7 +337,7 @@ async def verify_answer(
         sources=sources,
         boundaries=boundaries,
         language=payload.language,
-        api_key_id=None,
+        api_key_id=ctx.key_id,
         client_ip_hash=_ip_hash(request),
     )
 
@@ -341,6 +349,23 @@ async def verify_answer(
         len(claim_results),
         len(boundaries),
         elapsed_ms,
+    )
+
+    # R8 BUGHUNT 2026-05-07: bill ¥3 / call for authenticated keys.
+    # Anonymous callers (key_hash is None) are silently skipped by
+    # log_usage and are already gated by AnonIpLimitDep at 3/IP/day.
+    log_usage(
+        conn,
+        ctx,
+        "verify.answer",
+        latency_ms=elapsed_ms,
+        result_count=len(claim_results),
+        params={
+            "language": payload.language,
+            "claim_count": len(claim_results),
+            "claimed_sources_count": len(payload.claimed_sources),
+        },
+        strict_metering=True,
     )
 
     disclaimer = DISCLAIMER_EN if payload.language == "en" else DISCLAIMER_JA
