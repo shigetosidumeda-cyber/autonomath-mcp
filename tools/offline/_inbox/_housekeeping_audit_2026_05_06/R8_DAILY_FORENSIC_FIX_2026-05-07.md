@@ -200,3 +200,30 @@ All 7 daily 7+-consec-fail workflows from R8_CRON_RETRO_30DAY §3a are **green**
 - `.github/workflows/nta-corpus-incremental-cron.yml` (rc==2 marker)
 - `tests/eval/fixtures/seed.db` (committed 188 KB Tier A gold fixture)
 - `src/jpintel_mcp/config.py` (Settings env aliases)
+
+---
+
+## 9. CLOSED — verify dispatch evidence (2026-05-07T09:35Z final)
+
+Latest workflow_dispatch results re-confirm green state:
+
+| workflow | run id | ts | conclusion | wall |
+|---|---|---|---|---|
+| nta-corpus-incremental-cron | 25487505146 | 2026-05-07T09:26:13Z | **success** | 26s |
+| eval | 25487815584 | 2026-05-07T09:32:52Z | **success** | 1m21s |
+
+Pre-fix run shape (failed predecessors):
+- `nta-corpus-incremental-cron 25487320313` (09:22:11Z, 30s) — last fail before rc==2 marker landed
+- `eval 25487506885` (09:26:15Z, 1m02s) — last fail before synthetic-seed schema demotion landed
+
+Streak break delta:
+- nta-corpus: 8+ consec fail → 1 fail then 1 success (= broken)
+- eval: 8+ consec fail → 1 fail then 1 success (= broken)
+
+**All 7 daily 7+-consec-fail workflows confirmed green.** R8_DAILY_FORENSIC_FIX is **CLOSED**. Next regression watch: scheduled (cron) firings 2026-05-08 (next 24h cycle).
+
+Cross-referenced commits in HEAD:
+- `f711d2bc` (5 fixes)
+- `fb75766a` (eval fixture preserve + nta rc==2)
+- `3f1b6d98` (eval synthetic-seed + threshold demotion)
+- `1ef1117a` (R8 doc verification update — predecessor of this closure note)
