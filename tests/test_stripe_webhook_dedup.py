@@ -45,7 +45,7 @@ def _patch_construct_event(monkeypatch, event: dict) -> None:
     """Replace stripe.Webhook.construct_event with a stub returning `event`."""
     from jpintel_mcp.api import billing as billing_mod
 
-    def _construct(_body, _sig, _secret):
+    def _construct(_body, _sig, _secret, **_kwargs):
         return event
 
     monkeypatch.setattr(billing_mod.stripe.Webhook, "construct_event", _construct)

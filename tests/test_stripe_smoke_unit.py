@@ -130,7 +130,7 @@ def test_webhook_roundtrip_subscription_created(client, monkeypatch, seeded_db: 
         },
     }
 
-    def _construct(_body, _sig, _secret):
+    def _construct(_body, _sig, _secret, **_kwargs):
         return event
 
     with patch.object(billing_mod.stripe.Webhook, "construct_event", _construct):
@@ -193,7 +193,7 @@ def test_webhook_roundtrip_payment_failed_demotes_tier(client, monkeypatch, seed
         },
     }
 
-    def _construct(_body, _sig, _secret):
+    def _construct(_body, _sig, _secret, **_kwargs):
         return event
 
     with patch.object(billing_mod.stripe.Webhook, "construct_event", _construct):

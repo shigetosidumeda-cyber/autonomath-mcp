@@ -158,7 +158,7 @@ def widget_stripe_env(monkeypatch):
 def _patch_widget_construct_event(monkeypatch, event: dict) -> None:
     import stripe
 
-    def _construct(_body, _sig, _secret):
+    def _construct(_body, _sig, _secret, **_kwargs):
         return event
 
     monkeypatch.setattr(stripe.Webhook, "construct_event", _construct)

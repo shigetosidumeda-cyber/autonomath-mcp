@@ -66,6 +66,58 @@ def test_db_lock_returns_429_not_200(client: TestClient, monkeypatch: pytest.Mon
     )
 
 
+def test_connect_failure_returns_429_not_200(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """If the limiter DB cannot be opened, anon traffic must fail closed."""
+    from jpintel_mcp.db import session
+
+    def _raise_connect(*_args, **_kwargs):
+        raise sqlite3.OperationalError("unable to open database file")
+
+    monkeypatch.setattr(session, "connect", _raise_connect)
+
+    r = client.get("/meta", headers={"x-forwarded-for": "203.0.113.82"})
+    assert r.status_code == 429
+    body = r.json()
+    assert body.get("code") == "rate_limit_unavailable"
+    assert body.get("reason") == "rate_limit_unavailable"
+
+
+def test_api_key_validation_failure_returns_429_not_200(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A broken api_keys lookup must not uncap bogus-key anonymous calls."""
+    from jpintel_mcp.api.middleware import customer_cap
+    from jpintel_mcp.db import session
+
+    class FailingConn:
+        closed = False
+
+        def execute(self, *_args, **_kwargs):
+            raise sqlite3.OperationalError("api_keys lookup failed")
+
+        def close(self):
+            self.closed = True
+
+    conn = FailingConn()
+    monkeypatch.setattr(customer_cap, "_extract_raw_key", lambda _request: None)
+    monkeypatch.setattr(session, "connect", lambda: conn)
+
+    r = client.get(
+        "/meta",
+        headers={
+            "x-forwarded-for": "203.0.113.83",
+            "X-API-Key": "am_bogus_not_a_real_key",
+        },
+    )
+    assert r.status_code == 429
+    body = r.json()
+    assert body.get("code") == "rate_limit_unavailable"
+    assert body.get("reason") == "rate_limit_unavailable"
+    assert conn.closed is True
+
+
 def test_db_lock_envelope_has_unavailable_reason(
     client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:

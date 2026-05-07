@@ -126,6 +126,35 @@ def _fake_sub(
     )
 
 
+def _fake_multi_item_sub(
+    *,
+    sub_id: str = "sub_multi_item",
+    status: str = "active",
+) -> _FakeSubscription:
+    return _FakeSubscription(
+        {
+            "id": sub_id,
+            "status": status,
+            "items": {
+                "data": [
+                    {
+                        "price": {
+                            "id": "price_base_seat",
+                            "recurring": {"usage_type": "licensed"},
+                        }
+                    },
+                    {
+                        "price": {
+                            "id": "price_metered_test",
+                            "recurring": {"usage_type": "metered"},
+                        }
+                    },
+                ]
+            },
+        }
+    )
+
+
 def _checkout_state_metadata(client, billing_mod, state: str = "checkout-state-test") -> dict:
     client.cookies.set(billing_mod._CHECKOUT_STATE_COOKIE, state, path="/v1/billing")
     return {"checkout_state_hash": billing_mod._checkout_state_hash(state)}
@@ -585,6 +614,47 @@ def test_issue_from_checkout_returns_raw_key_once_and_persists_hash(
     assert row[1] == "cus_happy"
     assert row[2] == "sub_happy"
     assert row[3] is None
+
+
+def test_issue_from_checkout_uses_metered_item_not_first_subscription_item(
+    client, stripe_env, monkeypatch, seeded_db: Path
+):
+    """Base + metered subscriptions must resolve tier from the metered item."""
+    from jpintel_mcp.api import billing as billing_mod
+
+    metadata = _checkout_state_metadata(client, billing_mod)
+
+    def _retrieve_session(_sid, **_):
+        return _FakeCheckoutSession(
+            payment_status="no_payment_required",
+            customer="cus_multi_item",
+            subscription="sub_multi_item",
+            cd_email="multi@example.com",
+            metadata=metadata,
+        )
+
+    monkeypatch.setattr(billing_mod.stripe.checkout.Session, "retrieve", _retrieve_session)
+    monkeypatch.setattr(
+        billing_mod.stripe.Subscription,
+        "retrieve",
+        lambda _sub_id, **_: _fake_multi_item_sub(sub_id="sub_multi_item"),
+    )
+
+    r = client.post("/v1/billing/keys/from-checkout", json={"session_id": "cs_multi_item"})
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["tier"] == "paid"
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        row = c.execute(
+            "SELECT tier FROM api_keys WHERE stripe_subscription_id = ?",
+            ("sub_multi_item",),
+        ).fetchone()
+    finally:
+        c.close()
+    assert row is not None
+    assert row[0] == "paid"
 
 
 def test_issue_from_checkout_still_returns_key_when_welcome_enqueue_fails(
@@ -1139,6 +1209,41 @@ def test_webhook_subscription_updated_flips_tier_on_existing_keys(
         ).fetchone()
     finally:
         c.close()
+    assert row[0] == "paid"
+
+
+def test_webhook_subscription_updated_uses_metered_item_not_first_item(
+    client, stripe_env, monkeypatch, seeded_db: Path
+):
+    c = sqlite3.connect(seeded_db)
+    c.row_factory = sqlite3.Row
+    issue_key(c, customer_id="cus_multi_upg", tier="free", stripe_subscription_id="sub_multi_upg")
+    c.commit()
+    c.close()
+
+    event = {
+        "id": "evt_upd_multi_item",
+        "type": "customer.subscription.updated",
+        "data": {"object": _fake_multi_item_sub(sub_id="sub_multi_upg")},
+    }
+    _patch_webhook_construct_event(monkeypatch, event)
+
+    r = client.post(
+        "/v1/billing/webhook",
+        content=json.dumps(event).encode("utf-8"),
+        headers={"stripe-signature": "t=1,v1=xx"},
+    )
+    assert r.status_code == 200, r.text
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        row = c.execute(
+            "SELECT tier FROM api_keys WHERE stripe_subscription_id = ?",
+            ("sub_multi_upg",),
+        ).fetchone()
+    finally:
+        c.close()
+    assert row is not None
     assert row[0] == "paid"
 
 

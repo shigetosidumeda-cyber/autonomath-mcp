@@ -572,13 +572,14 @@ def _enforce_quota(conn: sqlite3.Connection, ctx: ApiContext) -> None:
     tree_hashes = _collect_tree_key_hashes(conn, ctx)
     if len(tree_hashes) == 1:
         (n,) = conn.execute(
-            "SELECT COUNT(*) FROM usage_events WHERE key_hash = ? AND ts >= ?",
+            "SELECT COALESCE(SUM(COALESCE(quantity, 1)), 0) "
+            "FROM usage_events WHERE key_hash = ? AND ts >= ?",
             (tree_hashes[0], bucket),
         ).fetchone()
     else:
         placeholders = ",".join("?" * len(tree_hashes))
         (n,) = conn.execute(
-            f"SELECT COUNT(*) FROM usage_events WHERE key_hash IN ({placeholders}) AND ts >= ?",  # noqa: S608 — placeholders only
+            f"SELECT COALESCE(SUM(COALESCE(quantity, 1)), 0) FROM usage_events WHERE key_hash IN ({placeholders}) AND ts >= ?",  # noqa: S608 — placeholders only
             (*tree_hashes, bucket),
         ).fetchone()
     if n >= daily_limit:

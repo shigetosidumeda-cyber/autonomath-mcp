@@ -17,9 +17,10 @@ resolves dependencies inside the handler call, which is after the outer
 middleware stack — so x-request-id is always bound in structlog context
 by the time we log a 429.
 
-Fail-open posture: if the DB write fails we log and let the request through.
-A broken rate limiter must not become a self-DoS vector; over-serving is
-strictly better than 500s on every anon call.
+Fail-closed posture: if the rate-limit backend cannot connect, validate a
+provided key, or increment the anon bucket, return a typed 429
+(`rate_limit_unavailable`). A broken limiter must not become an unlimited free
+path or a 500 storm.
 """
 
 from __future__ import annotations
@@ -30,7 +31,7 @@ import hmac
 import logging
 import sqlite3
 from datetime import UTC, datetime, timedelta, timezone
-from typing import Any
+from typing import Any, NoReturn
 
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.responses import JSONResponse
@@ -152,6 +153,56 @@ def _jst_next_day_iso(now: datetime | None = None) -> str:
         now = now.replace(tzinfo=UTC)
     now_jst = now.astimezone(_JST)
     return _next_jst_day_start(now_jst).isoformat()
+
+
+def _raise_rate_limit_unavailable(request: Request, limit: int) -> NoReturn:
+    """Fail closed with the same 429 contract as a normal anon quota refusal."""
+    resets_at = _jst_next_day_iso()
+    retry_after = _seconds_until_jst_day_start()
+    with contextlib.suppress(Exception):
+        request.state.anon_quota = {
+            "remaining": 0,
+            "limit": limit,
+            "reset_at_jst": resets_at,
+        }
+    raise _AnonRateLimitExceeded(
+        body={
+            "code": "rate_limit_unavailable",
+            "reason": "rate_limit_unavailable",
+            "detail": (
+                "レート制限のバックエンドが一時的に利用できません。"
+                "数分後に再試行してください。X-API-Key を設定すれば即解除されます。"
+            ),
+            "detail_en": (
+                "Anonymous rate-limit backend is temporarily unavailable. "
+                "Retry in a few minutes. Provide X-API-Key for immediate uncapping."
+            ),
+            "retry_after": retry_after,
+            "reset_at_jst": resets_at,
+            "limit": limit,
+            "resets_at": resets_at,
+            "upgrade_url": UPGRADE_URL_FROM_429,
+            "direct_checkout_url": PRICING_DIRECT_URL_FROM_429,
+            "cta_text_ja": CTA_TEXT_JA,
+            "cta_text_en": CTA_TEXT_EN,
+            "trial_signup_url": TRIAL_SIGNUP_URL_FROM_429,
+            "trial_cta_text_ja": TRIAL_CTA_TEXT_JA,
+            "trial_cta_text_en": TRIAL_CTA_TEXT_EN,
+            "trial_terms": {
+                "duration_days": 14,
+                "request_cap": 200,
+                "card_required": False,
+            },
+        },
+        headers={
+            "Retry-After": str(retry_after),
+            "X-Anon-Quota-Remaining": "0",
+            "X-Anon-Quota-Reset": resets_at,
+            "X-Anon-Upgrade-Url": UPGRADE_URL_FROM_429,
+            "X-Anon-Direct-Checkout-Url": PRICING_DIRECT_URL_FROM_429,
+            "X-Anon-Trial-Url": TRIAL_SIGNUP_URL_FROM_429,
+        },
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -521,11 +572,12 @@ async def enforce_anon_ip_limit(request: Request) -> None:
     # dep-resolution injection tangle. Still uses the same config path.
     from jpintel_mcp.db.session import connect
 
+    limit = settings.anon_rate_limit_per_day
     try:
         anon_conn = connect()
     except Exception:  # pragma: no cover — connect() is extremely reliable
-        _log.exception("anon_rate_limit: connect() failed; failing open")
-        return
+        _log.exception("anon_rate_limit: connect() failed; failing CLOSED")
+        _raise_rate_limit_unavailable(request, limit)
 
     if raw_key:
         key_hash = hmac.new(
@@ -539,16 +591,15 @@ async def enforce_anon_ip_limit(request: Request) -> None:
                 (key_hash,),
             ).fetchone()
         except sqlite3.Error:
-            _log.exception("anon_rate_limit: key validation failed; failing open")
+            _log.exception("anon_rate_limit: key validation failed; failing CLOSED")
             with contextlib.suppress(Exception):
                 anon_conn.close()
-            return
+            _raise_rate_limit_unavailable(request, limit)
         if row is not None:
             with contextlib.suppress(Exception):
                 anon_conn.close()
             return
 
-    limit = settings.anon_rate_limit_per_day
     ip = _client_ip(request)
     # Fingerprint-aware hash: combines normalized IP with UA-class +
     # Accept-Language + HTTP version + JA3 so CGNAT / VPN rotation that
@@ -581,52 +632,7 @@ async def enforce_anon_ip_limit(request: Request) -> None:
         # Fail-CLOSED: surface the same upgrade / Retry-After / bilingual
         # contract as a real over-quota event so existing client retry
         # logic keeps working — only the `reason` is different.
-        resets_at = _jst_next_day_iso()
-        retry_after = _seconds_until_jst_day_start()
-        with contextlib.suppress(Exception):
-            request.state.anon_quota = {
-                "remaining": 0,
-                "limit": limit,
-                "reset_at_jst": resets_at,
-            }
-        raise _AnonRateLimitExceeded(
-            body={
-                "code": "rate_limit_unavailable",
-                "reason": "rate_limit_unavailable",
-                "detail": (
-                    "レート制限のバックエンドが一時的に利用できません。"
-                    "数分後に再試行してください。X-API-Key を設定すれば即解除されます。"
-                ),
-                "detail_en": (
-                    "Anonymous rate-limit backend is temporarily unavailable. "
-                    "Retry in a few minutes. Provide X-API-Key for immediate uncapping."
-                ),
-                "retry_after": retry_after,
-                "reset_at_jst": resets_at,
-                "limit": limit,
-                "resets_at": resets_at,
-                "upgrade_url": UPGRADE_URL_FROM_429,
-                "direct_checkout_url": PRICING_DIRECT_URL_FROM_429,
-                "cta_text_ja": CTA_TEXT_JA,
-                "cta_text_en": CTA_TEXT_EN,
-                "trial_signup_url": TRIAL_SIGNUP_URL_FROM_429,
-                "trial_cta_text_ja": TRIAL_CTA_TEXT_JA,
-                "trial_cta_text_en": TRIAL_CTA_TEXT_EN,
-                "trial_terms": {
-                    "duration_days": 14,
-                    "request_cap": 200,
-                    "card_required": False,
-                },
-            },
-            headers={
-                "Retry-After": str(retry_after),
-                "X-Anon-Quota-Remaining": "0",
-                "X-Anon-Quota-Reset": resets_at,
-                "X-Anon-Upgrade-Url": UPGRADE_URL_FROM_429,
-                "X-Anon-Direct-Checkout-Url": PRICING_DIRECT_URL_FROM_429,
-                "X-Anon-Trial-Url": TRIAL_SIGNUP_URL_FROM_429,
-            },
-        )
+        _raise_rate_limit_unavailable(request, limit)
 
     # Defensive — only reached when the DB error path returned cleanly,
     # which the explicit raise above prevents. Kept so a future refactor

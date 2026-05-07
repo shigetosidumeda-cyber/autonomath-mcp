@@ -102,6 +102,56 @@ def _stripe_obj_id(obj: Any) -> str:
     return str(obj.id)
 
 
+def _stripe_value(obj: Any, key: str) -> Any:
+    if isinstance(obj, dict):
+        return obj.get(key)
+    return getattr(obj, key, None)
+
+
+def _subscription_items(subscription: Any) -> list[Any]:
+    items = _stripe_value(subscription, "items") or {}
+    data = _stripe_value(items, "data") or []
+    return list(data) if isinstance(data, (list, tuple)) else []
+
+
+def _price_id_from_item(item: Any) -> str | None:
+    price = _stripe_value(item, "price") or {}
+    price_id = _stripe_value(price, "id")
+    return str(price_id) if price_id else None
+
+
+def _is_metered_subscription_item(item: Any) -> bool:
+    price = _stripe_value(item, "price") or {}
+    recurring = _stripe_value(price, "recurring") or {}
+    usage_type = _stripe_value(recurring, "usage_type")
+    if usage_type is None:
+        plan = _stripe_value(item, "plan") or {}
+        usage_type = _stripe_value(plan, "usage_type")
+    return usage_type == "metered"
+
+
+def _select_tier_price_id(subscription: Any) -> str | None:
+    """Select the subscription item that should decide the jpcite key tier.
+
+    Stripe subscriptions can contain a licensed base item plus a metered
+    overage item. The tier must follow the metered jpcite item, not whichever
+    item Stripe happens to return first.
+    """
+    items = _subscription_items(subscription)
+    configured_price = settings.stripe_price_per_request
+    if configured_price:
+        for item in items:
+            price_id = _price_id_from_item(item)
+            if price_id == configured_price:
+                return price_id
+    for item in items:
+        if _is_metered_subscription_item(item):
+            return _price_id_from_item(item)
+    if len(items) == 1:
+        return _price_id_from_item(items[0])
+    return None
+
+
 # Sentry capture is best-effort: tests / CI without sentry_sdk installed
 # must still exercise the webhook path. Guarding the import here keeps
 # `_capture` callable even when the SDK is absent so handler bodies stay
@@ -1007,7 +1057,12 @@ def issue_from_checkout(
             status.HTTP_402_PAYMENT_REQUIRED,
             f"subscription is not active (status={sub_status or 'unknown'})",
         )
-    price_id = sub["items"]["data"][0]["price"]["id"]
+    price_id = _select_tier_price_id(sub_dict)
+    if not price_id:
+        raise HTTPException(
+            status.HTTP_402_PAYMENT_REQUIRED,
+            "subscription has no metered jpcite price",
+        )
     tier = resolve_tier_from_price(price_id)
 
     # D+0 welcome. Email comes from Checkout's customer_details; fall back
@@ -1447,15 +1502,17 @@ async def webhook(
             #      strictly worse than letting it execute under the
             #      regular SQLite writer-serialization.
             status_val, cpe_int, cancel_bool = _extract_subscription_state(obj)
-            price_id = obj["items"]["data"][0]["price"]["id"]
+            price_id = _select_tier_price_id(obj)
             # Stripe can send subscription.updated for dunning states such as
             # past_due / unpaid with the same metered price. Price alone must
             # never re-promote a failing-card customer after payment_failed.
             tier = (
                 resolve_tier_from_price(price_id)
-                if status_val in (None, "", "active", "trialing")
+                if price_id and status_val in (None, "", "active", "trialing")
                 else "free"
             )
+            if not price_id and tier == "free":
+                logger.warning("subscription.updated missing metered price sub=%s", sub_id)
             n = update_tier_by_subscription(conn, sub_id, tier)
             logger.info("tier-updated sub=%s tier=%s rows=%d", sub_id, tier, n)
             # Cache the new subscription state. The payload carries the
