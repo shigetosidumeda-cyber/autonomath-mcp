@@ -1092,7 +1092,7 @@ def render_page(
             f"の制度は jpcite データベース上では <strong>確認できていません</strong> "
             "(該当する制度なし)。これは制度カバレッジの未到達領域、もしくは {pref} 限定で "
             "該当業種特化の制度が薄いことを示します。"
-            f'代わりに <a href="/prefectures/{pref_slug}.html">{_esc(pref_ja)} 全業種の '
+            f'代わりに <a href="/prefectures/{pref_slug}">{_esc(pref_ja)} 全業種の '
             "制度一覧</a> をご覧ください。</p>"
         ).format(pref=pref_ja)
 
@@ -1473,20 +1473,23 @@ def write_sitemap(
 ) -> None:
     """`entries` is a list of (loc_url, lastmod_iso). The 12 existing
     audience pages are preserved alongside the 1,034 new ones."""
+    # Extensionless URLs — Cloudflare Pages auto-strips .html and 308's the
+    # legacy form. Emitting extensionless avoids the 1-hop redirect that
+    # search engines down-weight (R8 SEO drift fix, 2026-05-07).
     existing_legacy = [
         ("/audiences/", "0.85"),
-        ("/audiences/tax-advisor.html", "0.8"),
-        ("/audiences/admin-scrivener.html", "0.8"),
-        ("/audiences/subsidy-consultant.html", "0.8"),
-        ("/audiences/smb.html", "0.8"),
-        ("/audiences/vc.html", "0.8"),
-        ("/audiences/dev.html", "0.8"),
-        ("/audiences/construction.html", "0.8"),
-        ("/audiences/manufacturing.html", "0.8"),
-        ("/audiences/real_estate.html", "0.8"),
-        ("/audiences/journalist.html", "0.8"),
-        ("/audiences/shinkin.html", "0.8"),
-        ("/audiences/shokokai.html", "0.8"),
+        ("/audiences/tax-advisor", "0.8"),
+        ("/audiences/admin-scrivener", "0.8"),
+        ("/audiences/subsidy-consultant", "0.8"),
+        ("/audiences/smb", "0.8"),
+        ("/audiences/vc", "0.8"),
+        ("/audiences/dev", "0.8"),
+        ("/audiences/construction", "0.8"),
+        ("/audiences/manufacturing", "0.8"),
+        ("/audiences/real_estate", "0.8"),
+        ("/audiences/journalist", "0.8"),
+        ("/audiences/shinkin", "0.8"),
+        ("/audiences/shokokai", "0.8"),
     ]
     today = _today_jst_iso()
     lines = [

@@ -3725,7 +3725,8 @@ def validate_sources(
 
 def _build_json_ld(p: QAPage, domain: str) -> dict[str, Any]:
     """schema.org @graph: Organization + BreadcrumbList + FAQPage + (optional) GovernmentService."""
-    page_url = f"https://{domain}/qa/{p.topic_slug}/{p.slug}.html"
+    # Extensionless — CF Pages auto-strips .html (R8 SEO drift fix, 2026-05-07).
+    page_url = f"https://{domain}/qa/{p.topic_slug}/{p.slug}"
     org_node = {
         "@type": "Organization",
         "@id": "https://jpcite.com/#publisher",
@@ -4187,7 +4188,7 @@ def render_topic_index(
     topic_slug: str, topic_label: str, pages_in_topic: list[QAPage], domain: str
 ) -> str:
     items = "\n          ".join(
-        f'<li class="related-card"><a href="/qa/{topic_slug}/{p.slug}.html">{p.h1}</a></li>'
+        f'<li class="related-card"><a href="/qa/{topic_slug}/{p.slug}">{p.h1}</a></li>'
         for p in pages_in_topic
     )
     breadcrumb = (
@@ -4283,8 +4284,7 @@ def render_llms_full_appendix(pages: list[QAPage], domain: str) -> str:
         for p in plist:
             srcs = ", ".join(s.org for s in p.sources[:3])
             lines.append(
-                f"- [{p.h1}](https://{domain}/qa/{p.topic_slug}/{p.slug}.html) — "
-                f"{p.tldr} (出典: {srcs})"
+                f"- [{p.h1}](https://{domain}/qa/{p.topic_slug}/{p.slug}) — {p.tldr} (出典: {srcs})"
             )
         lines.append("")
     return "\n".join(lines)
@@ -4312,10 +4312,10 @@ def render_sitemap(pages: list[QAPage], domain: str) -> str:
             f"<lastmod>{today}</lastmod><changefreq>weekly</changefreq>"
             f"<priority>0.7</priority></url>"
         )
-    # Per-page
+    # Per-page (extensionless — CF Pages auto-strip integration, R8 fix 2026-05-07)
     for p in pages:
         lines.append(
-            f"  <url><loc>https://{domain}/qa/{p.topic_slug}/{p.slug}.html</loc>"
+            f"  <url><loc>https://{domain}/qa/{p.topic_slug}/{p.slug}</loc>"
             f"<lastmod>{today}</lastmod><changefreq>monthly</changefreq>"
             f"<priority>0.8</priority></url>"
         )
@@ -4366,7 +4366,7 @@ def main() -> int:
 
     if args.dry_run:
         for p in kept:
-            print(f"  /qa/{p.topic_slug}/{p.slug}.html  -- {p.h1}")
+            print(f"  /qa/{p.topic_slug}/{p.slug}  -- {p.h1}")
         print(f"\nTotal: {len(kept)} pages")
         if dropped:
             print(f"\nDropped: {len(dropped)}")

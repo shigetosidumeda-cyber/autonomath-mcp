@@ -630,7 +630,7 @@ def _render_index(
         parts.append(
             "<tr>"
             f"<td>{_esc(_format_iso(r.issuance_date))}</td>"
-            f'<td><a href="/enforcement/{r.slug}.html">{_esc(r.target_name)}</a></td>'
+            f'<td><a href="/enforcement/{r.slug}">{_esc(r.target_name)}</a></td>'
             f"<td>{_esc(kind_ja)}</td>"
             f"<td>{_esc(r.issuing_authority)}</td>"
             f"<td>{_esc(_yen(r.amount_yen))}</td>"
@@ -687,7 +687,7 @@ def _render_detail(
         title=_esc(title),
         description=_esc(desc),
         domain=domain,
-        canonical_path=f"/enforcement/{row.slug}.html",
+        canonical_path=f"/enforcement/{row.slug}",
         robots="index, follow, max-image-preview:large",
     )
     parts = [head]
@@ -804,7 +804,9 @@ def _render_sitemap(
     for r in detail_rows:
         lastmod = _format_iso(r.source_fetched_at) or today_iso
         parts.append("  <url>")
-        parts.append(f"    <loc>https://{domain}/enforcement/{r.slug}.html</loc>")
+        # Extensionless — CF Pages auto-strips .html and 308's legacy form;
+        # emitting extensionless avoids 1-hop redirect (R8 SEO drift, 2026-05-07).
+        parts.append(f"    <loc>https://{domain}/enforcement/{r.slug}</loc>")
         parts.append(f"    <lastmod>{lastmod}</lastmod>")
         parts.append("    <changefreq>monthly</changefreq>")
         parts.append("    <priority>0.5</priority>")
