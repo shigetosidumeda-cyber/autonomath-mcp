@@ -85,7 +85,7 @@
   "@type": "Organization",
   "@id": "https://jpcite.com/#publisher",
   "name": "Bookyou株式会社",
-  "alternateName": ["jpcite"],
+  "alternateName": ["jpcite", "税務会計AI", "AutonoMath", "zeimu-kaikei.ai"],
   "url": "https://jpcite.com/",
   "logo": "https://jpcite.com/assets/logo-v2.svg",
   "email": "info@bookyou.net",
@@ -107,7 +107,11 @@
     "availableLanguage": ["ja", "en"]
   },
   "sameAs": [
-    "https://www.bookyou.net/"
+    "https://www.bookyou.net/",
+    "https://zeimu-kaikei.ai",
+    "https://pypi.org/project/autonomath-mcp/",
+    "https://pypi.org/project/jpcite/",
+    "https://github.com/Bookyou/autonomath-mcp"
   ]
 }
 </script>
@@ -117,7 +121,8 @@
   "@context": "https://schema.org",
   "@type": "WebSite",
   "name": "jpcite",
-  "alternateName": ["jpcite"],
+  "alternateName": ["jpcite", "税務会計AI", "AutonoMath", "zeimu-kaikei.ai"],
+  "sameAs": ["https://zeimu-kaikei.ai"],
   "url": "https://jpcite.com/",
   "publisher": {"@id": "https://jpcite.com/#publisher"},
   "potentialAction": {
@@ -587,7 +592,7 @@
  <p class="card-lead audience-context">e-Gov 法令の英訳 + 租税条約</p>
  <p class="audience-pitch">e-Gov の英訳法令と各国との租税条約を 1 つの API で。 海外子会社・投資ファンドの日本側コンプライアンスを一括処理。 外資規制のかかる制度はフラグ付きで絞り込めます。</p>
  <ul class="card-list">
- <li>e-Gov 英訳 </li>
+ <li>e-Gov 英訳 (<code>law_articles.body_en</code> 列)</li>
  <li>租税条約・国際課税の参照導線</li>
  <li>外資規制フラグ付きの制度フィルタ</li>
  </ul>
@@ -835,7 +840,7 @@
  <article class="card">
  <h3>(a) 複数 DB を 1 コール で統合</h3>
  <p class="card-lead">補助金 11,601 + 法令 9,484 + 税制 50 + 法人 167K + 行政処分 1,185</p>
- <p>補助金 11,601 件・法令メタデータ 9,484 件 (本文索引 6,493 件)・税制ルールセット 50 件・国税庁適格事業者 13,801 件 (PDL v1.0 差分、月次フル取り込みは順次)・行政処分 1,185 件・判例 2,065 件・採択事例 2,286 件・融資 108 件 (担保 / 個人保証人 / 第三者保証人 三軸分解) を一つの API で横断検索。 関係抽出データベース 50 万件超エンティティ / 600 万件超ファクト / 17 万件超リレーションも 139 MCP ツールから呼び出せます。</p>
+ <p>補助金 11,601 件・法令メタデータ 9,484 件 (本文索引 6,493 件)・税制ルールセット 50 件・国税庁適格事業者 13,801 件 (PDL v1.0 差分、月次フル取り込みは順次)・行政処分 1,185 件・判例 2,065 件・採択事例 2,286 件・融資 108 件 (担保 / 個人保証人 / 第三者保証人 三軸分解) を一つの API で横断検索。 関係抽出データベース 50 万件超エンティティ / 600 万件超ファクト / 37 万件超リレーションも 139 MCP ツールから呼び出せます。</p>
  </article>
 
  <article class="card">
@@ -964,7 +969,7 @@
  <article class="card">
  <h3>製品の変更履歴 (Changelog)</h3>
  <p>API / MCP / SDK のバージョン更新内容。Keep a Changelog 1.1.0 + Semantic Versioning 2.0.0 準拠、 BREAKING: の接頭辞で互換性破壊を明示。</p>
- <p style="margin:0;"></p>
+ <p style="margin:0;"><a href="/changelog/">Changelog を見る →</a></p>
  </article>
  <article class="card">
  <h3>制度変更検出フィード</h3>

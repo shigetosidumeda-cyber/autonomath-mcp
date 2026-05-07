@@ -590,8 +590,8 @@ Auth value: …</pre>
       if (keyEl) keyEl.textContent = rawKey;
 
       // tier field intentionally not rendered. Business model is fully metered
-      // ¥3/billable unit — no tier SKUs are exposed to users. The API still emits a
-      // legacy `tier` is kept for API compatibility only.
+      // ¥3/billable unit — no tier SKUs are exposed to users. The API still emits
+      // a legacy `tier` field that is kept for API compatibility only.
 
       var custEl = $('meta-customer');
       if (custEl) custEl.textContent = customerId;
