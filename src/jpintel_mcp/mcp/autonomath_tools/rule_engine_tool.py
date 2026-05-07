@@ -172,9 +172,7 @@ def _is_pair_specific(
     if pair_id is None:
         # caller asked about a single program; pair-specific = scope matches and pair is NULL
         return bool(sp == program_id and pp is None)
-    return bool(
-        (sp == program_id and pp == pair_id) or (sp == pair_id and pp == program_id)
-    )
+    return bool((sp == program_id and pp == pair_id) or (sp == pair_id and pp == program_id))
 
 
 def _evidence_row(

@@ -4,6 +4,7 @@ Pure-mock: every jpcite API call is intercepted via ``httpx.MockTransport``
 so the suite never hits the paid endpoint and never requires a live
 Slack workspace.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -149,9 +150,7 @@ def test_fetch_houjin_routes_to_v1_houjin():
         )
 
     with _client_for(handler) as client:
-        payload = fetch_houjin(
-            "8010001213708", api_key="jpcite_sk_test", client=client
-        )
+        payload = fetch_houjin("8010001213708", api_key="jpcite_sk_test", client=client)
     assert payload["name"] == "テスト株式会社"
     assert "/v1/houjin/8010001213708" in seen["url"]
     assert seen["x_api_key"] == "jpcite_sk_test"
@@ -175,9 +174,7 @@ def test_fetch_programs_filters_aggregator_rows():
         )
 
     with _client_for(handler) as client:
-        rows = fetch_programs(
-            "東京都 設備投資", api_key="k", limit=5, client=client
-        )
+        rows = fetch_programs("東京都 設備投資", api_key="k", limit=5, client=client)
     assert len(rows) == 2
     assert rows[0]["name"] == "良"
 
@@ -232,9 +229,7 @@ def test_handle_slash_command_empty_text_returns_help():
     out = handle_slash_command(command=cmd, api_key="k")
     assert out["response_type"] == "ephemeral"
     blocks_text = "".join(
-        b.get("text", {}).get("text", "")
-        for b in out["blocks"]
-        if isinstance(b.get("text"), dict)
+        b.get("text", {}).get("text", "") for b in out["blocks"] if isinstance(b.get("text"), dict)
     )
     assert "/jpcite" in blocks_text
 
@@ -255,9 +250,7 @@ def test_handle_slash_command_404_renders_error():
         out = handle_slash_command(command=cmd, api_key="k", client=client)
     assert out["response_type"] == "ephemeral"
     blocks_text = "".join(
-        b.get("text", {}).get("text", "")
-        for b in out["blocks"]
-        if isinstance(b.get("text"), dict)
+        b.get("text", {}).get("text", "") for b in out["blocks"] if isinstance(b.get("text"), dict)
     )
     assert "見つかりません" in blocks_text
 
@@ -333,6 +326,6 @@ def test_no_llm_imports_in_module_body():
         "claude_agent_sdk",
         "google.generativeai",
     ):
-        assert forbidden not in body, (
-            f"slack_bot.py must not embed {forbidden!r} — LLM-API ban (CLAUDE.md)"
-        )
+        assert (
+            forbidden not in body
+        ), f"slack_bot.py must not embed {forbidden!r} — LLM-API ban (CLAUDE.md)"

@@ -32,6 +32,7 @@ Usage:
         --out benchmarks/jcrb_v1/results/token_savings.csv \\
         --report benchmarks/jcrb_v1/token_savings_report.md
 """
+
 from __future__ import annotations
 
 import argparse
@@ -51,7 +52,6 @@ from token_estimator import (  # noqa: E402  (after sys.path mutation)
     estimate_closed_book_tokens,
     estimate_with_jpcite_tokens,
     jpcite_response_to_context_block,
-    savings,
 )
 
 try:
@@ -162,9 +162,7 @@ def run_benchmark(
             ctx_tokens = with_jp.input_tokens - closed.input_tokens
             output_saved = closed.output_tokens - with_jp.output_tokens
             usd_saved = closed.cost_usd - with_jp.cost_usd
-            usd_pct = (
-                (usd_saved / closed.cost_usd * 100.0) if closed.cost_usd else 0.0
-            )
+            usd_pct = (usd_saved / closed.cost_usd * 100.0) if closed.cost_usd else 0.0
 
             rows.append(
                 {
@@ -202,8 +200,7 @@ def run_benchmark(
             )
         n += 1
         print(
-            f"[{n:3d}] {qid} ctx={ctx_tokens}tok | "
-            + " | ".join(per_question_summary),
+            f"[{n:3d}] {qid} ctx={ctx_tokens}tok | " + " | ".join(per_question_summary),
             file=sys.stderr,
         )
 
@@ -256,9 +253,7 @@ def write_report(rows: list[dict[str, Any]], report_path: pathlib.Path) -> None:
             by_model[m]["with_out"].append(r["output_tokens"])
             by_model[m]["with_usd"].append(float(r["cost_usd"]))
 
-    n_questions = (
-        len({r["question_id"] for r in rows}) if rows else 0
-    )
+    n_questions = len({r["question_id"] for r in rows}) if rows else 0
 
     lines: list[str] = [
         "# JCRB-v1 Token Savings Report",
@@ -312,8 +307,7 @@ def write_report(rows: list[dict[str, Any]], report_path: pathlib.Path) -> None:
             "## Aggregate",
             "",
             f"- Total (model, question) pairs scored: **{overall_count}**",
-            f"- Output tokens saved (sum across pairs): "
-            f"**{overall_output_saved:+,.0f}**",
+            f"- Output tokens saved (sum across pairs): " f"**{overall_output_saved:+,.0f}**",
             f"- USD saved (sum across pairs): **${overall_saved_usd:+.4f}**",
             f"- Avg USD saved per (model, question) pair: "
             f"**${overall_saved_usd / overall_count:+.6f}**",
@@ -370,9 +364,7 @@ def main(argv: list[str] | None = None) -> int:
         help="Comma-separated model IDs (e.g. claude-opus-4-7,gpt-5,gemini-2.5-pro)",
     )
     p.add_argument("--limit", type=int, default=None, help="Run only first N questions")
-    p.add_argument(
-        "--jpcite-api-key", default=os.environ.get("JPCITE_API_KEY"), help="Optional"
-    )
+    p.add_argument("--jpcite-api-key", default=os.environ.get("JPCITE_API_KEY"), help="Optional")
     p.add_argument(
         "--out",
         type=pathlib.Path,
@@ -386,9 +378,11 @@ def main(argv: list[str] | None = None) -> int:
     args = p.parse_args(argv)
 
     models = [m.strip() for m in args.models.split(",") if m.strip()]
-    unknown = [m for m in models if m not in MODEL_PRICING and not any(
-        m.startswith(k.split("-")[0]) for k in MODEL_PRICING
-    )]
+    unknown = [
+        m
+        for m in models
+        if m not in MODEL_PRICING and not any(m.startswith(k.split("-")[0]) for k in MODEL_PRICING)
+    ]
     if unknown:
         print(
             f"warn: unknown models {unknown}; pricing fallback to Sonnet-tier",

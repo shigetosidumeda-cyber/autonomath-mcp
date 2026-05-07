@@ -23,11 +23,9 @@ from typing import Any
 from urllib.parse import urlencode
 
 import httpx
+from config import Settings
 from fastapi import APIRouter, HTTPException, Query, Request, Response, status
 from fastapi.responses import RedirectResponse
-
-from config import Settings
-
 
 router = APIRouter(prefix="/oauth", tags=["oauth"])
 
@@ -37,7 +35,7 @@ router = APIRouter(prefix="/oauth", tags=["oauth"])
 
 def _basic_auth_header(client_id: str, client_secret: str) -> str:
     """RFC6749 §2.3.1 Authorization: Basic ..."""
-    raw = f"{client_id}:{client_secret}".encode("utf-8")
+    raw = f"{client_id}:{client_secret}".encode()
     return "Basic " + base64.b64encode(raw).decode("ascii")
 
 
@@ -109,9 +107,7 @@ async def callback(
         "redirect_uri": settings.redirect_uri,
     }
     headers = {
-        "Authorization": _basic_auth_header(
-            settings.mf_client_id, settings.mf_client_secret
-        ),
+        "Authorization": _basic_auth_header(settings.mf_client_id, settings.mf_client_secret),
         "Accept": "application/json",
         "Content-Type": "application/x-www-form-urlencoded",
     }
@@ -205,9 +201,7 @@ async def refresh_access_token(settings: Settings, refresh_token: str) -> dict[s
     """access_token 期限切れ時に呼ぶ。proxy_endpoints から使用。"""
     body = {"grant_type": "refresh_token", "refresh_token": refresh_token}
     headers = {
-        "Authorization": _basic_auth_header(
-            settings.mf_client_id, settings.mf_client_secret
-        ),
+        "Authorization": _basic_auth_header(settings.mf_client_id, settings.mf_client_secret),
         "Accept": "application/json",
         "Content-Type": "application/x-www-form-urlencoded",
     }

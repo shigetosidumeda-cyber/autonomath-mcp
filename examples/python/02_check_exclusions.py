@@ -33,6 +33,7 @@ expected output:
 
     total hits: 4 / rules_checked: 35
 """
+
 from __future__ import annotations
 
 import os
@@ -64,7 +65,10 @@ def check_exclusions(program_ids: list[str]) -> dict:
         print("ERROR: 401 — invalid key", file=sys.stderr)
         sys.exit(1)
     if resp.status_code == 429:
-        print(f"ERROR: 429 rate limit, retry after {resp.headers.get('Retry-After', '?')}s", file=sys.stderr)
+        print(
+            f"ERROR: 429 rate limit, retry after {resp.headers.get('Retry-After', '?')}s",
+            file=sys.stderr,
+        )
         sys.exit(1)
     if resp.status_code >= 500:
         print(f"ERROR: server {resp.status_code}", file=sys.stderr)
@@ -77,10 +81,10 @@ def main() -> None:
     # Realistic agri case: a new farmer eyeing all 4 major funding tracks at
     # once. Running this before applying prevents rejection for co-claiming.
     candidates = [
-        "keiei-kaishi-shikin",    # 経営開始資金 (agency of new-farmer grant)
-        "koyo-shuno-shikin",      # 雇用就農資金 (employed-new-farmer grant)
-        "seinen-shuno-shikin",    # 青年等就農資金 (young-farmer loan, requires cert)
-        "super-L-shikin",         # スーパーL資金 (large-scale loan, requires cert)
+        "keiei-kaishi-shikin",  # 経営開始資金 (agency of new-farmer grant)
+        "koyo-shuno-shikin",  # 雇用就農資金 (employed-new-farmer grant)
+        "seinen-shuno-shikin",  # 青年等就農資金 (young-farmer loan, requires cert)
+        "super-L-shikin",  # スーパーL資金 (large-scale loan, requires cert)
     ]
 
     print(f"Checking {len(candidates)} programs: {', '.join(candidates)}")

@@ -458,9 +458,7 @@ def parse_shokuhin_page(
 # 獣医師業務停止 parsing
 ZYUI_HEADER_RE = re.compile(r"獣医師\s*(\d+)\s*名")
 ZYUI_NUMBERED_CASE_RE = re.compile(
-    r"[（\(]\s*(\d+)\s*[）\)]\s*"
-    r"([^（\(\n]+?)\s*"
-    r"[（\(]\s*([^（\(\n]+?)\s*[）\)]"
+    r"[（\(]\s*(\d+)\s*[）\)]\s*" r"([^（\(\n]+?)\s*" r"[（\(]\s*([^（\(\n]+?)\s*[）\)]"
 )
 # Single-case form (no "(1)" prefix)
 ZYUI_SINGLE_CASE_RE = re.compile(

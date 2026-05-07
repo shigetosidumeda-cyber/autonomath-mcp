@@ -20,11 +20,11 @@ Pricing table is the public list price as of 2026-05-05. Update the
 ``MODEL_PRICING`` dict when providers re-price; the rest of the module
 recomputes USD on every call.
 """
+
 from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from typing import Literal
 
 try:
     import tiktoken  # type: ignore[import-untyped]
@@ -236,11 +236,7 @@ def jpcite_response_to_context_block(jpcite_response: dict | list | str) -> str:
         if not isinstance(h, dict):
             continue
         name = (
-            h.get("primary_name")
-            or h.get("name")
-            or h.get("title")
-            or h.get("ruleset_name")
-            or ""
+            h.get("primary_name") or h.get("name") or h.get("title") or h.get("ruleset_name") or ""
         )
         url = h.get("source_url") or h.get("official_url") or h.get("url") or ""
         snippet = h.get("snippet") or h.get("summary") or ""
@@ -252,9 +248,7 @@ def jpcite_response_to_context_block(jpcite_response: dict | list | str) -> str:
     return "\n".join(lines)
 
 
-def savings(
-    closed: TokenEstimate, with_jp: TokenEstimate
-) -> dict[str, float | int]:
+def savings(closed: TokenEstimate, with_jp: TokenEstimate) -> dict[str, float | int]:
     """Return the (closed - with_jpcite) delta + percent saved."""
     tok_saved = closed.total_tokens - with_jp.total_tokens
     usd_saved = closed.cost_usd - with_jp.cost_usd

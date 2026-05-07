@@ -80,7 +80,9 @@ def _module_is_forbidden(module_name: str | None) -> bool:
     if head in {"anthropic", "openai", "claude_agent_sdk"}:
         return True
     # google.generativeai must match the dotted prefix.
-    return bool(module_name == "google.generativeai" or module_name.startswith("google.generativeai."))
+    return bool(
+        module_name == "google.generativeai" or module_name.startswith("google.generativeai.")
+    )
 
 
 def _scan_imports(py_file: pathlib.Path) -> list[str]:
@@ -271,9 +273,7 @@ def _scan_workflow_python_regions(yaml_text: str) -> list[str]:
             if em:
                 # Map back to YAML line number.
                 yaml_line = yaml_text.count("\n", 0, offset) + lineno_in_body
-                hits.append(
-                    f"line {yaml_line}: {em.group(1)} (inside python region)"
-                )
+                hits.append(f"line {yaml_line}: {em.group(1)} (inside python region)")
     return hits
 
 

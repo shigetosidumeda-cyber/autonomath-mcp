@@ -87,9 +87,9 @@ def test_generate_for_name_emits_kana_variants(gen_aliases_mod):
     assert "kata" in methods
     # Abbrev rule should fire on 経済産業省 → 経産省 OR
     # 中小企業庁 → 中企庁 OR 小規模事業者持続化補助金 → 持続化補助金.
-    assert "abbrev" in methods, (
-        f"expected abbrev rule to fire, methods={methods!r}, aliases={aliases!r}"
-    )
+    assert (
+        "abbrev" in methods
+    ), f"expected abbrev rule to fire, methods={methods!r}, aliases={aliases!r}"
     # Cap is honoured.
     assert len(aliases) <= gen_aliases_mod.MAX_ALIASES
     # Aliases are deduplicated.

@@ -136,9 +136,9 @@ def test_protected_fields_always_included() -> None:
         "audit_seal",
         "_billing_unit",
     ):
-        assert protected_key in out, (
-            f"protected key {protected_key!r} must survive partial projection"
-        )
+        assert (
+            protected_key in out
+        ), f"protected key {protected_key!r} must survive partial projection"
 
     # Confirm the protected set in the helper's source matches the one
     # the test pins — the helper is the single source of truth.

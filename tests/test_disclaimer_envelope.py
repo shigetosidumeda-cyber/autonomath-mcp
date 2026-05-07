@@ -132,9 +132,9 @@ def test_disclaimer_level_minimal_is_shorter():
         strict = disclaimer_for(tool_name, "strict")
         assert std and mini and strict
         assert len(mini) < len(std), f"{tool_name}: minimal ({len(mini)}) >= standard ({len(std)})"
-        assert len(strict) > len(std), (
-            f"{tool_name}: strict ({len(strict)}) <= standard ({len(std)})"
-        )
+        assert len(strict) > len(
+            std
+        ), f"{tool_name}: strict ({len(strict)}) <= standard ({len(std)})"
 
     # End-to-end via build_envelope: minimal level reaches the envelope
     # field intact.
@@ -180,9 +180,9 @@ def test_non_sensitive_tools_omit_disclaimer():
             tool_name=tool_name,
             results=[{"id": "x"}],
         )
-        assert "_disclaimer" not in env, (
-            f"{tool_name}: unexpected _disclaimer={env.get('_disclaimer')!r}"
-        )
+        assert (
+            "_disclaimer" not in env
+        ), f"{tool_name}: unexpected _disclaimer={env.get('_disclaimer')!r}"
 
         # _envelope_merge must not inject one either.
         merged = _envelope_merge(
@@ -196,6 +196,6 @@ def test_non_sensitive_tools_omit_disclaimer():
             kwargs={},
             latency_ms=1.0,
         )
-        assert "_disclaimer" not in merged, (
-            f"{tool_name}: leaked _disclaimer={merged.get('_disclaimer')!r}"
-        )
+        assert (
+            "_disclaimer" not in merged
+        ), f"{tool_name}: leaked _disclaimer={merged.get('_disclaimer')!r}"

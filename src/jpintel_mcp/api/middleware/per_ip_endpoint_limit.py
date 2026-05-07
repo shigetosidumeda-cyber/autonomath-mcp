@@ -228,9 +228,7 @@ class PerIpEndpointLimitMiddleware(BaseHTTPMiddleware):
     gate (rate_limit.py) and the monthly anon quota (anon_limit.py).
     """
 
-    async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
-    ) -> Response:
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         if _is_disabled():
             return await call_next(request)
         if request.method == "OPTIONS":

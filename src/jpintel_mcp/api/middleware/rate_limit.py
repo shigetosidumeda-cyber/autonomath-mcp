@@ -286,9 +286,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     must not appear in usage_events at all.
     """
 
-    async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
-    ) -> Response:
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         # Whitelist: never throttle health probes, Stripe webhooks, or
         # CORS preflight. The Stripe webhook in particular sees bursts at
         # batch-charge time that would otherwise trip the anon-IP bucket

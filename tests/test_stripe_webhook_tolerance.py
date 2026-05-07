@@ -160,9 +160,9 @@ def test_in_tolerance_succeeds(client, stripe_env, seeded_db: Path):
         f"In-tolerance delivery (age=200s, window=300s) must return 200; "
         f"got {r.status_code}: {r.text}"
     )
-    assert _count_dedup_rows(seeded_db, event_id) == 1, (
-        "stripe_webhook_events row must be inserted on first accepted delivery"
-    )
+    assert (
+        _count_dedup_rows(seeded_db, event_id) == 1
+    ), "stripe_webhook_events row must be inserted on first accepted delivery"
     audit_after = _count_audit_stale(seeded_db)
     assert audit_after == audit_before, (
         "No stripe_webhook_stale_signature audit_log row must be emitted "
@@ -193,9 +193,9 @@ def test_out_of_tolerance_rejected(client, stripe_env, seeded_db: Path):
         f"Out-of-tolerance delivery (age=400s, window=300s) must return 400; "
         f"got {r.status_code}: {r.text}"
     )
-    assert _count_dedup_rows(seeded_db, event_id) == 0, (
-        "Rejected stale-signature delivery must NOT insert into stripe_webhook_events"
-    )
+    assert (
+        _count_dedup_rows(seeded_db, event_id) == 0
+    ), "Rejected stale-signature delivery must NOT insert into stripe_webhook_events"
     # Note: audit_log emission is part of the DD-02 implementation
     # (construct_event_or_audit helper). Until that helper lands the count
     # may stay at 0; this assertion is intentionally one-sided so it does
@@ -225,9 +225,9 @@ def test_replay_within_window_idempotent(client, stripe_env, seeded_db: Path):
     assert r1.status_code == 200, f"First delivery must succeed; got {r1.text}"
 
     rows_after_first = _count_dedup_rows(seeded_db, event_id)
-    assert rows_after_first == 1, (
-        f"First delivery must insert exactly one stripe_webhook_events row; got {rows_after_first}"
-    )
+    assert (
+        rows_after_first == 1
+    ), f"First delivery must insert exactly one stripe_webhook_events row; got {rows_after_first}"
 
     # Second delivery: now-50s (still in window, fresh signature, same event_id)
     body2 = _make_event_body(event_id)
@@ -239,9 +239,9 @@ def test_replay_within_window_idempotent(client, stripe_env, seeded_db: Path):
     )
 
     rows_after_second = _count_dedup_rows(seeded_db, event_id)
-    assert rows_after_second == 1, (
-        f"Replay must NOT insert a second stripe_webhook_events row; got {rows_after_second}"
-    )
+    assert (
+        rows_after_second == 1
+    ), f"Replay must NOT insert a second stripe_webhook_events row; got {rows_after_second}"
 
     # Optional shape assertion: handler signals the duplicate with a
     # status string. Be tolerant of envelope variations across handler
@@ -291,9 +291,9 @@ def test_replay_beyond_window_rejected(client, stripe_env, seeded_db: Path):
 
     # The dedup table still has exactly one row from the first delivery.
     rows = _count_dedup_rows(seeded_db, event_id)
-    assert rows == 1, (
-        f"Stale-timestamp replay must NOT touch stripe_webhook_events; got {rows} rows"
-    )
+    assert (
+        rows == 1
+    ), f"Stale-timestamp replay must NOT touch stripe_webhook_events; got {rows} rows"
 
 
 # ---------------------------------------------------------------------------
@@ -318,9 +318,9 @@ def test_invalid_signature_rejected(client, stripe_env, seeded_db: Path):
         f"Invalid-HMAC delivery must return 400 even with a fresh "
         f"timestamp; got {r.status_code}: {r.text}"
     )
-    assert _count_dedup_rows(seeded_db, event_id) == 0, (
-        "Rejected bad-HMAC delivery must NOT insert into stripe_webhook_events"
-    )
+    assert (
+        _count_dedup_rows(seeded_db, event_id) == 0
+    ), "Rejected bad-HMAC delivery must NOT insert into stripe_webhook_events"
 
 
 # ---------------------------------------------------------------------------

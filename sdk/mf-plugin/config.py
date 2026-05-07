@@ -19,7 +19,6 @@ import os
 from dataclasses import dataclass
 from typing import Final
 
-
 # MF アプリポータル / 認可サーバー側の既定エンドポイント (env で上書き可)。
 # 公式ドキュメントが path 名のみ公開しているため、host は app.biz.moneyforward.com
 # を既定とし、運用中に変更があれば env で差し替える。
@@ -102,10 +101,7 @@ def load_settings() -> Settings:
     if not _first_env("JPCITE_API_KEY", "ZEIMU_KAIKEI_API_KEY"):
         missing.append("JPCITE_API_KEY (or legacy ZEIMU_KAIKEI_API_KEY)")
     if missing:
-        raise RuntimeError(
-            f"missing required env vars: {', '.join(missing)}. "
-            "see .env.example"
-        )
+        raise RuntimeError(f"missing required env vars: {', '.join(missing)}. " "see .env.example")
     session_secret = os.environ["SESSION_SECRET"]
     if len(session_secret) < 32:
         raise RuntimeError("SESSION_SECRET must be >= 32 chars (use openssl rand -hex 32)")
@@ -117,9 +113,7 @@ def load_settings() -> Settings:
         mf_token_url=os.environ.get("MF_TOKEN_URL", DEFAULT_MF_TOKEN_URL),
         mf_revoke_url=os.environ.get("MF_REVOKE_URL", DEFAULT_MF_REVOKE_URL),
         mf_scope=os.environ.get("MF_SCOPE", DEFAULT_MF_SCOPE),
-        jpcite_api_base=_first_env(
-            "JPCITE_API_BASE", "ZEIMU_KAIKEI_BASE_URL"
-        )
+        jpcite_api_base=_first_env("JPCITE_API_BASE", "ZEIMU_KAIKEI_BASE_URL")
         or DEFAULT_JPCITE_API_BASE,
         jpcite_api_key=_first_env("JPCITE_API_KEY", "ZEIMU_KAIKEI_API_KEY") or "",
         plugin_base_url=os.environ["PLUGIN_BASE_URL"],

@@ -79,8 +79,7 @@ PYTEST_FILENAME_RE = re.compile(r"^test_[A-Za-z0-9_]+\.py$")
 # Same regex shapes as DEEP-49 — anchored on the YAML folded scalar
 # block format release_readiness.py also greps on.
 ENV_BLOCK_RE = re.compile(
-    r"^  (?P<name>RUFF_TARGETS|PYTEST_TARGETS): >-\n"
-    r"(?P<body>(?:    .+\n)+)",
+    r"^  (?P<name>RUFF_TARGETS|PYTEST_TARGETS): >-\n" r"(?P<body>(?:    .+\n)+)",
     re.MULTILINE,
 )
 RELEASE_RUFF_LINT_RE = re.compile(

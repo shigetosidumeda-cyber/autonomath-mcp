@@ -317,9 +317,9 @@ def test_dd_export_zip_filters_proprietary_row(
         # blocked houjin's data anywhere.
         for hj in (_FIVE_HOUJIN[0], _FIVE_HOUJIN[1]):
             data = zf.read(f"profiles/{hj}.jsonl").decode("utf-8")
-            assert _FIVE_HOUJIN[2] not in data, (
-                "proprietary houjin's bangou must NEVER leak into an allowed profile's JSONL"
-            )
+            assert (
+                _FIVE_HOUJIN[2] not in data
+            ), "proprietary houjin's bangou must NEVER leak into an allowed profile's JSONL"
 
     # gate_summary mirror is consistent with the body.
     assert gate_summary["allowed_count"] == 2

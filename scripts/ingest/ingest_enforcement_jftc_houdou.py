@@ -115,8 +115,7 @@ KIND_LABEL = {
 
 # Date / number / 法人番号 patterns
 WAREKI_RE = re.compile(
-    r"(令和|平成)\s*(元|[0-9０-９]+)\s*年\s*"
-    r"([0-9０-９]+)\s*月\s*([0-9０-９]+)\s*日"
+    r"(令和|平成)\s*(元|[0-9０-９]+)\s*年\s*" r"([0-9０-９]+)\s*月\s*([0-9０-９]+)\s*日"
 )
 HOUJIN_RE = re.compile(r"\b([0-9]{13})\b")
 AMOUNT_RE = re.compile(r"課徴金(?:の)?額[^\d]{0,30}?([0-9,０-９，]{2,20})\s*円")

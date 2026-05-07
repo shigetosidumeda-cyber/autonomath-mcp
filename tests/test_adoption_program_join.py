@@ -253,12 +253,12 @@ def test_match_bucket_counts(seeded_dbs):
     out = _cron.run(jpintel_db=j, autonomath_db=a)
     assert out["rows_scanned"] == 20
     assert out["exact_matched"] == 8, f"expected 8 exact, got {out['exact_matched']}; out={out}"
-    assert out["fuzzy_high_matched"] == 4, (
-        f"expected 4 fuzzy_high, got {out['fuzzy_high_matched']}; out={out}"
-    )
-    assert out["fuzzy_med_matched"] == 3, (
-        f"expected 3 fuzzy_med, got {out['fuzzy_med_matched']}; out={out}"
-    )
+    assert (
+        out["fuzzy_high_matched"] == 4
+    ), f"expected 4 fuzzy_high, got {out['fuzzy_high_matched']}; out={out}"
+    assert (
+        out["fuzzy_med_matched"] == 3
+    ), f"expected 3 fuzzy_med, got {out['fuzzy_med_matched']}; out={out}"
     assert out["unmatched"] == 5, f"expected 5 unmatched, got {out['unmatched']}; out={out}"
     # elapsed_s should be present and non-negative.
     assert isinstance(out["elapsed_s"], float)

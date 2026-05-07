@@ -70,9 +70,9 @@ def test_inv21_no_pii_in_query_log():
         ).fetchall()
         for (q,) in rows:
             for p in PII_PATTERNS:
-                assert not p.search(q), (
-                    f"PII pattern {p.pattern} found in query_log_v2.query_normalized: {q[:60]}"
-                )
+                assert not p.search(
+                    q
+                ), f"PII pattern {p.pattern} found in query_log_v2.query_normalized: {q[:60]}"
 
 
 def test_inv21_redactor_strips_pii():
@@ -193,9 +193,10 @@ def test_inv25_pepper_not_default_in_prod():
     if env != "prod":
         pytest.skip(f"JPINTEL_ENV={env!r}; prod-only check skipped")
     pepper = os.getenv("AUTONOMATH_API_HASH_PEPPER", "")
-    assert pepper not in ("", "dev-pepper-change-me"), (
-        "PEPPER must be rotated in prod (got default or empty)"
-    )
+    assert pepper not in (
+        "",
+        "dev-pepper-change-me",
+    ), "PEPPER must be rotated in prod (got default or empty)"
 
 
 # ---------------------------------------------------------------------------

@@ -15,8 +15,8 @@ not an LLM provider key.
 
 from __future__ import annotations
 
-import os
 import json
+import os
 from typing import Any
 
 import requests
@@ -45,8 +45,11 @@ def _search_programs(query: str) -> str:
     if resp.status_code == 429:
         retry = resp.headers.get("Retry-After", "?")
         return json.dumps(
-            {"error": "rate_limited", "retry_after_sec": retry,
-             "hint": "anonymous tier 3 req/day — set JPCITE_API_KEY for ¥3/req metered access"},
+            {
+                "error": "rate_limited",
+                "retry_after_sec": retry,
+                "hint": "anonymous tier 3 req/day — set JPCITE_API_KEY for ¥3/req metered access",
+            },
             ensure_ascii=False,
         )
     if resp.status_code >= 400:

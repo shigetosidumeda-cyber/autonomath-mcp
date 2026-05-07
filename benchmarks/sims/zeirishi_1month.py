@@ -29,6 +29,7 @@ Usage:
         --queries-per-month 6000 \
         --report benchmarks/sims/zeirishi_1month_report.md
 """
+
 from __future__ import annotations
 
 import argparse
@@ -49,7 +50,6 @@ from token_estimator import (  # noqa: E402
     jpcite_response_to_context_block,
 )
 
-
 # ---------------------------------------------------------------------------
 # Workflow constants
 # ---------------------------------------------------------------------------
@@ -57,16 +57,16 @@ from token_estimator import (  # noqa: E402
 # Map workflow query categories to jcrb-v1 domains in the 50q pool.
 # 決算ブリーフィング closest match in jcrb-v1 = tax_application.
 QUERY_MIX: dict[str, dict[str, Any]] = {
-    "subsidy_match":   {"share": 0.30, "domains": ["subsidy_eligibility"]},
-    "law_reasoning":   {"share": 0.25, "domains": ["law_citation"]},
+    "subsidy_match": {"share": 0.30, "domains": ["subsidy_eligibility"]},
+    "law_reasoning": {"share": 0.25, "domains": ["law_citation"]},
     "adoption_review": {"share": 0.20, "domains": ["adoption_statistics"]},
-    "antisocial_check":{"share": 0.10, "domains": ["enforcement_risk"]},
+    "antisocial_check": {"share": 0.10, "domains": ["enforcement_risk"]},
     "kessan_briefing": {"share": 0.15, "domains": ["tax_application"]},
 }
 assert abs(sum(c["share"] for c in QUERY_MIX.values()) - 1.0) < 1e-9
 
 JPCITE_PRICE_JPY_INC_TAX = 3.30  # ¥/req 税込
-JPY_PER_USD = 150.0              # ¥150 = $1 (2026-05 spot)
+JPY_PER_USD = 150.0  # ¥150 = $1 (2026-05 spot)
 JPCITE_PRICE_USD = JPCITE_PRICE_JPY_INC_TAX / JPY_PER_USD  # ≈ $0.022
 
 # Time the 税理士 spends hand-verifying a reasoning chain when there's no
@@ -78,6 +78,7 @@ TAX_ACCOUNTANT_HOURLY_JPY = 8000.0  # standard 税理士 billable rate
 # ---------------------------------------------------------------------------
 # Synthetic jpcite context (NO network) — same shape as jcrb-v1 fallback.
 # ---------------------------------------------------------------------------
+
 
 def _synthetic_jpcite(question: str) -> dict:
     """Deterministic 5-row context, sized to mirror live /v1/search output."""
@@ -100,6 +101,7 @@ def _synthetic_jpcite(question: str) -> dict:
 # ---------------------------------------------------------------------------
 # Question-pool indexing
 # ---------------------------------------------------------------------------
+
 
 def load_pool(path: pathlib.Path) -> list[dict]:
     out: list[dict] = []
@@ -145,9 +147,7 @@ def sample_workflow(
         for d in domains:
             candidates.extend(pool_by_domain.get(d, []))
         if not candidates:
-            raise RuntimeError(
-                f"no questions in pool for category={cat} domains={domains}"
-            )
+            raise RuntimeError(f"no questions in pool for category={cat} domains={domains}")
         for _ in range(n):
             out.append((cat, rng.choice(candidates)))
     rng.shuffle(out)
@@ -157,6 +157,7 @@ def sample_workflow(
 # ---------------------------------------------------------------------------
 # Simulation
 # ---------------------------------------------------------------------------
+
 
 def simulate(
     workflow: list[tuple[str, dict]],
@@ -183,18 +184,19 @@ def simulate(
             with_jp = estimate_with_jpcite_tokens(qtext, ctx_block, model=m)
             a = agg[m]
             a["n"] += 1
-            a["closed_in_tok"]  += closed.input_tokens
+            a["closed_in_tok"] += closed.input_tokens
             a["closed_out_tok"] += closed.output_tokens
-            a["with_in_tok"]    += with_jp.input_tokens
-            a["with_out_tok"]   += with_jp.output_tokens
-            a["closed_usd"]     += closed.cost_usd
-            a["with_usd"]       += with_jp.cost_usd
+            a["with_in_tok"] += with_jp.input_tokens
+            a["with_out_tok"] += with_jp.output_tokens
+            a["closed_usd"] += closed.cost_usd
+            a["with_usd"] += with_jp.cost_usd
     return agg
 
 
 # ---------------------------------------------------------------------------
 # Report
 # ---------------------------------------------------------------------------
+
 
 def write_report(
     agg: dict[str, dict[str, float]],
@@ -236,8 +238,7 @@ def write_report(
     lines += [
         f"- jpcite price: **¥{JPCITE_PRICE_JPY_INC_TAX:.2f}/req** (税込)"
         f" ≈ ${JPCITE_PRICE_USD:.4f}/req at ¥{JPY_PER_USD:.0f}=$1",
-        f"- jpcite total cost / month: **¥{jpcite_total_jpy:,.0f}** "
-        f"(${jpcite_total_usd:,.2f})",
+        f"- jpcite total cost / month: **¥{jpcite_total_jpy:,.0f}** " f"(${jpcite_total_usd:,.2f})",
         "",
         "## Per-model rollup (1 month, all 6,000 queries)",
         "",
@@ -284,9 +285,7 @@ def write_report(
         "|---|---:|",
     ]
     for r in rows_for_caller:
-        lines.append(
-            f"| {r['model']} | ${r['saving_per_client_usd']:+,.2f} |"
-        )
+        lines.append(f"| {r['model']} | ${r['saving_per_client_usd']:+,.2f} |")
 
     lines += [
         "",
@@ -350,12 +349,8 @@ def write_report(
         overall["time_value_usd"] = round(time_value_usd, 2)
         overall["headline_with_time_usd_per_month"] = round(opus_with_time, 2)
         overall["headline_with_time_jpy_per_month"] = round(opus_with_time_jpy, 0)
-        overall["headline_with_time_usd_per_client"] = round(
-            opus_with_time / n_clients, 2
-        )
-        overall["roi_multiple_with_time"] = round(
-            opus_with_time_jpy / jpcite_total_jpy, 2
-        )
+        overall["headline_with_time_usd_per_client"] = round(opus_with_time / n_clients, 2)
+        overall["roi_multiple_with_time"] = round(opus_with_time_jpy / jpcite_total_jpy, 2)
 
     lines += [
         "",
@@ -382,6 +377,7 @@ def write_report(
 # ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
+
 
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description="税理士 1-month workflow simulation.")
@@ -415,8 +411,7 @@ def main(argv: list[str] | None = None) -> int:
     unknown = [
         m
         for m in models
-        if m not in MODEL_PRICING
-        and not any(m.startswith(k.split("-")[0]) for k in MODEL_PRICING)
+        if m not in MODEL_PRICING and not any(m.startswith(k.split("-")[0]) for k in MODEL_PRICING)
     ]
     if unknown:
         print(

@@ -208,9 +208,9 @@ def test_unsubscribe_url_present_in_day1():
         # include an unsubscribe placeholder. Guards against accidental copy.
     for fname in ("onboarding_day0.html", "onboarding_day0.txt"):
         raw = _read(fname)
-        assert "{{unsubscribe_url}}" not in raw, (
-            f"{fname}: transactional receipt should not have unsubscribe_url"
-        )
+        assert (
+            "{{unsubscribe_url}}" not in raw
+        ), f"{fname}: transactional receipt should not have unsubscribe_url"
 
     # Code-side helper includes unsubscribe_url in the TemplateModel so
     # the Postmark server-side render can resolve it.
@@ -278,9 +278,9 @@ def test_day0_and_day1_scheduled_after_key_issue(conn: sqlite3.Connection):
     ).fetchall()
     kinds = {r["kind"] for r in rows}
     assert "day1" in kinds, "D+1 row missing from email_schedule"
-    assert "day0" not in kinds, (
-        "D+0 must NOT be scheduled — it is delivered synchronously from billing"
-    )
+    assert (
+        "day0" not in kinds
+    ), "D+0 must NOT be scheduled — it is delivered synchronously from billing"
 
     # D+1 send_at is base + 1 day.
     day1_row = next(r for r in rows if r["kind"] == "day1")

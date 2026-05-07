@@ -647,7 +647,7 @@ def _host_of(url: str) -> str:
         return ""
 
 
-async def _head_one(client, url: str) -> SourceLiveness:
+async def _head_one(client: Any, url: str) -> SourceLiveness:
     host = _host_of(url)
 
     if not host:

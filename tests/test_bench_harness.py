@@ -68,9 +68,9 @@ def test_emit_generates_three_lines_per_query() -> None:
     )
     assert res.returncode == 0, res.stderr
     lines = [ln for ln in res.stdout.splitlines() if ln.strip()]
-    assert len(lines) == 3 * n_queries, (
-        f"expected {3 * n_queries} instruction lines, got {len(lines)}"
-    )
+    assert (
+        len(lines) == 3 * n_queries
+    ), f"expected {3 * n_queries} instruction lines, got {len(lines)}"
 
     # Per-line schema check
     arms_seen_per_query: dict[int, set[str]] = {}

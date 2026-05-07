@@ -85,9 +85,9 @@ def test_each_entry_documents_must_include_must_not_claim_human_review() -> None
                 missing.append(klass)
         if missing:
             bad.append((str(p.relative_to(REPO)), missing))
-    assert not bad, (
-        f'{len(bad)} entries missing required <dl class="..."> blocks (first 5): {bad[:5]}'
-    )
+    assert (
+        not bad
+    ), f'{len(bad)} entries missing required <dl class="..."> blocks (first 5): {bad[:5]}'
 
 
 def test_each_entry_shows_pass_or_fail_not_just_shipped() -> None:

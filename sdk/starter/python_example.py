@@ -5,10 +5,10 @@ Run:
     python python_example.py
 """
 
-import os
 import json
-import urllib.request
+import os
 import urllib.parse
+import urllib.request
 
 API_BASE = os.environ.get("JPCITE_API_BASE") or os.environ.get(
     "AUTONOMATH_API_BASE", "https://api.jpcite.com"

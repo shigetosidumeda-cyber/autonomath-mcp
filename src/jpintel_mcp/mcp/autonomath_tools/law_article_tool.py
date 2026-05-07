@@ -138,7 +138,9 @@ def _envelope_article(row: sqlite3.Row, law: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _missing_arg_envelope(field: str, law_needle: str, article_number: str | None) -> dict[str, Any]:
+def _missing_arg_envelope(
+    field: str, law_needle: str, article_number: str | None
+) -> dict[str, Any]:
     """Hard-error envelope for empty required args. Preserves queried metadata."""
     err = make_error(
         code="missing_required_arg",

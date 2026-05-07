@@ -119,25 +119,25 @@ from jpintel_mcp.mcp.autonomath_tools.wave24_tools_second_half import (  # noqa:
 def _assert_snapshot_pair(out: dict, *, where: str) -> None:
     """Pin the corpus_snapshot_id + corpus_checksum contract."""
     assert isinstance(out, dict), f"{where}: result is not a dict ({type(out)})"
-    assert "corpus_snapshot_id" in out, (
-        f"{where}: corpus_snapshot_id missing — keys={sorted(out.keys())[:20]}"
-    )
-    assert "corpus_checksum" in out, (
-        f"{where}: corpus_checksum missing — keys={sorted(out.keys())[:20]}"
-    )
+    assert (
+        "corpus_snapshot_id" in out
+    ), f"{where}: corpus_snapshot_id missing — keys={sorted(out.keys())[:20]}"
+    assert (
+        "corpus_checksum" in out
+    ), f"{where}: corpus_checksum missing — keys={sorted(out.keys())[:20]}"
     snap_id = out["corpus_snapshot_id"]
     checksum = out["corpus_checksum"]
-    assert isinstance(snap_id, str) and snap_id, (
-        f"{where}: corpus_snapshot_id must be non-empty string, got {snap_id!r}"
-    )
-    assert isinstance(checksum, str) and checksum, (
-        f"{where}: corpus_checksum must be non-empty string, got {checksum!r}"
-    )
+    assert (
+        isinstance(snap_id, str) and snap_id
+    ), f"{where}: corpus_snapshot_id must be non-empty string, got {snap_id!r}"
+    assert (
+        isinstance(checksum, str) and checksum
+    ), f"{where}: corpus_checksum must be non-empty string, got {checksum!r}"
     # Either a live "sha256:" prefix OR the deterministic fallback —
     # both satisfy the auditor reproducibility contract.
-    assert checksum.startswith("sha256:"), (
-        f"{where}: corpus_checksum must look like 'sha256:<hex>', got {checksum!r}"
-    )
+    assert checksum.startswith(
+        "sha256:"
+    ), f"{where}: corpus_checksum must look like 'sha256:<hex>', got {checksum!r}"
 
 
 @pytest.fixture(autouse=True)

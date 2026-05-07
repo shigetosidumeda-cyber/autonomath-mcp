@@ -72,7 +72,7 @@ except Exception:  # pragma: no cover - yaml optional at import time
 try:
     import pykakasi
 except Exception:  # pragma: no cover - pykakasi optional at import time
-    pykakasi = None
+    pykakasi = None  # type: ignore[assignment]
 
 from jpintel_mcp.security.pii_redact import redact_text
 
@@ -104,7 +104,7 @@ def _kakasi() -> Any:
     generator in scripts/generate_program_pages.py)."""
     if pykakasi is None:
         return None
-    return pykakasi.kakasi()
+    return pykakasi.kakasi()  # type: ignore[no-untyped-call]
 
 
 def tokenize_query(text: str) -> dict[str, str]:

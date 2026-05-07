@@ -17,6 +17,7 @@ so we instead verify that:
   4. The branding / cost copy is consistent with the operator-side rules
      (¥3/req metered, jpcite brand, Bookyou株式会社 T8010001213708).
 """
+
 from __future__ import annotations
 
 import json
@@ -54,6 +55,7 @@ def manifest() -> dict:
 
 # ---- manifest schema --------------------------------------------------------
 
+
 def test_manifest_required_keys(manifest: dict) -> None:
     missing = REQUIRED_TOP_KEYS - manifest.keys()
     assert not missing, f"manifest.json missing required keys: {sorted(missing)}"
@@ -63,9 +65,9 @@ def test_manifest_version_shape(manifest: dict) -> None:
     v = manifest["version"]
     assert isinstance(v, str), "version must be a string"
     parts = v.split(".")
-    assert len(parts) == 3 and all(p.isdigit() for p in parts), (
-        f"version must be MAJOR.MINOR.PATCH (got {v!r})"
-    )
+    assert len(parts) == 3 and all(
+        p.isdigit() for p in parts
+    ), f"version must be MAJOR.MINOR.PATCH (got {v!r})"
 
 
 def test_manifest_type_is_app(manifest: dict) -> None:
@@ -90,9 +92,7 @@ def test_manifest_uploaded_files_cover_references(manifest: dict) -> None:
         for path in cfg.get(kind, []):
             referenced.add(path)
     missing = referenced - listed
-    assert not missing, (
-        f"uploaded_files is missing referenced files: {sorted(missing)}"
-    )
+    assert not missing, f"uploaded_files is missing referenced files: {sorted(missing)}"
 
 
 def test_manifest_required_params(manifest: dict) -> None:
@@ -101,6 +101,7 @@ def test_manifest_required_params(manifest: dict) -> None:
 
 
 # ---- runtime parity ---------------------------------------------------------
+
 
 def test_runtime_files_share_event_hook() -> None:
     """Both ``index.js`` (developer entry) and ``js/jpcite.js`` (packed
@@ -112,9 +113,9 @@ def test_runtime_files_share_event_hook() -> None:
 
 def test_runtime_targets_jpcite_api_base() -> None:
     body = RUNTIME_JS.read_text(encoding="utf-8")
-    assert EXPECTED_API_BASE in body, (
-        "runtime must call api.jpcite.com — never a hard-coded staging URL"
-    )
+    assert (
+        EXPECTED_API_BASE in body
+    ), "runtime must call api.jpcite.com — never a hard-coded staging URL"
     assert "/v1/houjin/" in body
 
 
@@ -126,6 +127,7 @@ def test_runtime_no_llm_imports() -> None:
 
 
 # ---- config screen ----------------------------------------------------------
+
 
 def test_config_html_has_both_inputs() -> None:
     body = CONFIG_HTML.read_text(encoding="utf-8")
@@ -139,6 +141,7 @@ def test_config_js_persists_via_kintone_setconfig() -> None:
 
 
 # ---- copy hygiene -----------------------------------------------------------
+
 
 @pytest.mark.parametrize("path", [README, CONFIG_HTML])
 def test_brand_and_cost_disclaimers_present(path: Path) -> None:

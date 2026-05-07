@@ -26,7 +26,7 @@ from __future__ import annotations
 
 import functools
 import sqlite3
-from typing import TYPE_CHECKING, Annotated, Any, Literal, cast
+from typing import TYPE_CHECKING, Annotated, Any, Literal
 
 from pydantic import Field
 
@@ -371,13 +371,10 @@ def check_enforcement_am(
 
     0 件の場合は `hint` (再検索の提案) と `retry_with` (関連 tool 候補) を返します。
     """
-    return cast(
-        "dict[str, Any]",
-        enforcement_tool.check_enforcement(
-            houjin_bangou=houjin_bangou,
-            target_name=target_name,
-            as_of_date=as_of_date,
-        ),
+    return enforcement_tool.check_enforcement(
+        houjin_bangou=houjin_bangou,
+        target_name=target_name,
+        as_of_date=as_of_date,
     )
 
 

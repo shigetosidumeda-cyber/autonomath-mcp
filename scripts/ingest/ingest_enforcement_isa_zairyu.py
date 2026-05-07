@@ -206,8 +206,7 @@ _LOG = logging.getLogger("autonomath.ingest_isa_zairyu")
 # ---------------------------------------------------------------------------
 
 WAREKI_RE = re.compile(
-    r"(令和|平成|昭和|R|H|S)\s*(元|[0-9０-９]+)\s*年\s*"
-    r"([0-9０-９]+)\s*月\s*([0-9０-９]+)\s*日"
+    r"(令和|平成|昭和|R|H|S)\s*(元|[0-9０-９]+)\s*年\s*" r"([0-9０-９]+)\s*月\s*([0-9０-９]+)\s*日"
 )
 SEIREKI_RE = re.compile(r"(20[0-9]{2})\s*[年\-/]\s*([0-9]+)\s*[月\-/]\s*([0-9]+)\s*日?")
 
@@ -346,24 +345,28 @@ def _is_valid_target_name(name: str | None) -> bool:
         return False
     if re.fullmatch(r"[\d\-\.]+", s):
         return False
-    if re.search(r"年.*月.*日", s) and not any(
-        kw in s
-        for kw in (
-            "株式会社",
-            "有限会社",
-            "合同会社",
-            "合資会社",
-            "合名会社",
-            "協同組合",
-            "協会",
-            "組合",
-            "(株)",
-            "(有)",
-            "(合)",
-            "(同)",
-            "事業協同組合",
+    if (
+        re.search(r"年.*月.*日", s)
+        and not any(
+            kw in s
+            for kw in (
+                "株式会社",
+                "有限会社",
+                "合同会社",
+                "合資会社",
+                "合名会社",
+                "協同組合",
+                "協会",
+                "組合",
+                "(株)",
+                "(有)",
+                "(合)",
+                "(同)",
+                "事業協同組合",
+            )
         )
-    ) and re.fullmatch(r"[\d０-９年月日\s\.\-/平成令和元昭和大正]+", s):
+        and re.fullmatch(r"[\d０-９年月日\s\.\-/平成令和元昭和大正]+", s)
+    ):
         return False
     return True
 

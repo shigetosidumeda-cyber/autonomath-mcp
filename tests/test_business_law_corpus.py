@@ -141,12 +141,12 @@ def test_per_law_coverage_seven_axes(corpus):
                 per_law_clean[mapped] += 1
 
     for law in EXPECTED_LAWS:
-        assert per_law_violation[law] >= 7, (
-            f"{law}: only {per_law_violation[law]} violation samples (need >= 7)"
-        )
-        assert per_law_clean[law] >= 7, (
-            f"{law}: only {per_law_clean[law]} clean samples (need >= 7)"
-        )
+        assert (
+            per_law_violation[law] >= 7
+        ), f"{law}: only {per_law_violation[law]} violation samples (need >= 7)"
+        assert (
+            per_law_clean[law] >= 7
+        ), f"{law}: only {per_law_clean[law]} clean samples (need >= 7)"
 
 
 # ---------------------------------------------------------------------------
@@ -212,9 +212,9 @@ def test_overall_true_positive_rate_above_95pct(corpus):
     expected_violations = overall["tp"] + overall["fn"]
     assert expected_violations == 50, f"violation cohort changed: {expected_violations}"
     rate = overall["tp"] / expected_violations
-    assert rate > TP_RATE_FLOOR, (
-        f"TP rate {rate:.2%} below floor {TP_RATE_FLOOR:.0%} (missed: {cm['miss_ids']})"
-    )
+    assert (
+        rate > TP_RATE_FLOOR
+    ), f"TP rate {rate:.2%} below floor {TP_RATE_FLOOR:.0%} (missed: {cm['miss_ids']})"
 
 
 def test_overall_false_positive_rate_below_5pct(corpus):
@@ -223,9 +223,9 @@ def test_overall_false_positive_rate_below_5pct(corpus):
     expected_cleans = overall["fp"] + overall["tn"]
     assert expected_cleans == 50, f"clean cohort changed: {expected_cleans}"
     rate = overall["fp"] / expected_cleans
-    assert rate < FP_RATE_CEILING, (
-        f"FP rate {rate:.2%} above ceiling {FP_RATE_CEILING:.0%} (false hits: {cm['fp_ids']})"
-    )
+    assert (
+        rate < FP_RATE_CEILING
+    ), f"FP rate {rate:.2%} above ceiling {FP_RATE_CEILING:.0%} (false hits: {cm['fp_ids']})"
 
 
 def test_per_law_no_false_negative_storm(corpus):
@@ -302,8 +302,8 @@ def test_each_sample_matches_expectation(sample):
         assert result, f"FN {sample['id']}: expected hit on laws={sample['laws']}"
         detected_laws = {v["law"] for v in result}
         # At least one expected law should match (don't gate on superset).
-        assert detected_laws & set(sample["laws"]), (
-            f"FN {sample['id']}: detected={detected_laws}, expected one of {sample['laws']}"
-        )
+        assert detected_laws & set(
+            sample["laws"]
+        ), f"FN {sample['id']}: detected={detected_laws}, expected one of {sample['laws']}"
     else:
         assert not result, f"FP {sample['id']}: unexpected hits {result}"

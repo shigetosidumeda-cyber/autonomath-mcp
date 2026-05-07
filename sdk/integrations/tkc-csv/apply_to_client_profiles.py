@@ -31,7 +31,6 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
-
 DEFAULT_API_BASE = "https://api.jpcite.com"
 
 
@@ -73,9 +72,7 @@ def _records_to_csv_text(records: list[dict[str, Any]]) -> str:
     return buf.getvalue()
 
 
-def _build_multipart(
-    csv_text: str, *, upsert: bool
-) -> tuple[bytes, str]:
+def _build_multipart(csv_text: str, *, upsert: bool) -> tuple[bytes, str]:
     """multipart/form-data 本文と Content-Type を組み立てる。
 
     依存追加なし (urllib stdlib のみ) で動かすため手書き。
@@ -86,29 +83,29 @@ def _build_multipart(
     parts: list[bytes] = []
 
     # CSV file part
-    parts.append(f"--{boundary}{crlf}".encode("utf-8"))
+    parts.append(f"--{boundary}{crlf}".encode())
     parts.append(
         (
             'Content-Disposition: form-data; name="file"; '
-            'filename="tkc_fx2.csv"'
-            + crlf
-            + "Content-Type: text/csv; charset=utf-8"
-            + crlf + crlf
+            'filename="tkc_fx2.csv"' + crlf + "Content-Type: text/csv; charset=utf-8" + crlf + crlf
         ).encode("utf-8")
     )
     parts.append(csv_text.encode("utf-8"))
     parts.append(crlf.encode("utf-8"))
 
     # upsert flag (Form() field)
-    parts.append(f"--{boundary}{crlf}".encode("utf-8"))
+    parts.append(f"--{boundary}{crlf}".encode())
     parts.append(
         (
             'Content-Disposition: form-data; name="upsert"'
-            + crlf + crlf + ("true" if upsert else "false") + crlf
+            + crlf
+            + crlf
+            + ("true" if upsert else "false")
+            + crlf
         ).encode("utf-8")
     )
 
-    parts.append(f"--{boundary}--{crlf}".encode("utf-8"))
+    parts.append(f"--{boundary}--{crlf}".encode())
     body = b"".join(parts)
     content_type = f"multipart/form-data; boundary={boundary}"
     return body, content_type
@@ -137,13 +134,14 @@ def post_bulk_import(
     """`/v1/me/client_profiles/bulk_import` に POST して JSON 応答を返す。"""
 
     if not api_key:
-        raise ValueError(
-            "api_key is required (jpcite REST 側 require_key で 401)"
-        )
+        raise ValueError("api_key is required (jpcite REST 側 require_key で 401)")
     if not records:
         return {
-            "imported": 0, "updated": 0, "skipped": 0,
-            "errors": [], "total_after_import": 0,
+            "imported": 0,
+            "updated": 0,
+            "skipped": 0,
+            "errors": [],
+            "total_after_import": 0,
             "_note": "no records sent",
         }
 
@@ -188,15 +186,13 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument(
         "input_json",
         type=Path,
-        help="path to JSON written by import_tkc_fx2.py "
-        "(or any list/{records:[]})",
+        help="path to JSON written by import_tkc_fx2.py " "(or any list/{records:[]})",
     )
     p.add_argument(
         "--api-base",
         type=str,
         default=os.environ.get("JPCITE_API_BASE", DEFAULT_API_BASE),
-        help="jpcite REST base (default: env JPCITE_API_BASE or "
-        f"{DEFAULT_API_BASE})",
+        help="jpcite REST base (default: env JPCITE_API_BASE or " f"{DEFAULT_API_BASE})",
     )
     p.add_argument(
         "--api-key",
@@ -221,14 +217,18 @@ def main(argv: list[str] | None = None) -> int:
     args = _parse_args(argv)
     records = _load_records(args.input_json)
     if args.dry_run:
-        print(json.dumps(
-            {"would_post": len(records),
-             "api_base": args.api_base,
-             "upsert": not args.no_upsert,
-             "first_record": records[0] if records else None},
-            ensure_ascii=False,
-            indent=2,
-        ))
+        print(
+            json.dumps(
+                {
+                    "would_post": len(records),
+                    "api_base": args.api_base,
+                    "upsert": not args.no_upsert,
+                    "first_record": records[0] if records else None,
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
         return 0
     result = post_bulk_import(
         api_base=args.api_base,

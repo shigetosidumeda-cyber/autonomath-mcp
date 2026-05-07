@@ -108,9 +108,9 @@ def test_zeimu_kaikei_indexnow_legacy_rule(rules_doc: dict) -> None:
     assert params["status_code"] == 301
     assert params["preserve_query_string"] is True
     # Path matcher should target the IndexNow key-file naming convention
-    assert "{32," in rule["expression"], (
-        "IndexNow keys are 32+ char URL-safe tokens; pattern must reflect that"
-    )
+    assert (
+        "{32," in rule["expression"]
+    ), "IndexNow keys are 32+ char URL-safe tokens; pattern must reflect that"
 
 
 @pytest.mark.skip(

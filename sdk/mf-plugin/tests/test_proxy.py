@@ -71,7 +71,11 @@ def test_proxy_forwards_api_key_not_token(monkeypatch):
         captured["url"] = str(request.url)
         return httpx.Response(
             200,
-            json={"items": [{"title": "テスト補助金", "tier": "S", "source_url": "https://example.gov.jp/x"}]},
+            json={
+                "items": [
+                    {"title": "テスト補助金", "tier": "S", "source_url": "https://example.gov.jp/x"}
+                ]
+            },
         )
 
     transport = httpx.MockTransport(handler)

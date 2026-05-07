@@ -1918,9 +1918,9 @@ def test_mcp_and_rest_emit_identical_envelopes(fixture_db: Path, client: TestCli
     ):
         rest_env.pop(k, None)
         mcp_env.pop(k, None)
-    assert rest_env == mcp_env, (
-        f"MCP and REST envelope drift (rest={list(rest_env.keys())}, mcp={list(mcp_env.keys())})"
-    )
+    assert (
+        rest_env == mcp_env
+    ), f"MCP and REST envelope drift (rest={list(rest_env.keys())}, mcp={list(mcp_env.keys())})"
 
 
 # ---------------------------------------------------------------------------

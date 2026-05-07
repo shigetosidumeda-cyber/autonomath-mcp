@@ -26,7 +26,7 @@ _KKS: object | None
 try:  # pragma: no cover — exercised via integration only
     import pykakasi
 
-    _KKS = pykakasi.kakasi()
+    _KKS = pykakasi.kakasi()  # type: ignore[no-untyped-call]
 except ImportError:  # pragma: no cover — fallback path
     _KKS = None
 

@@ -77,9 +77,9 @@ def test_high_severity_phrase_gets_stripped() -> None:
     resp = client.get("/echo")
     assert resp.status_code == 200
     body = resp.json()
-    assert phrase not in body["answer"], (
-        f"high-severity phrase {phrase!r} must be stripped from response body"
-    )
+    assert (
+        phrase not in body["answer"]
+    ), f"high-severity phrase {phrase!r} must be stripped from response body"
     assert "[出典未確認のため削除]" in body["answer"]
 
 
@@ -94,9 +94,9 @@ def test_x_hallucination_guard_hits_header_set() -> None:
     assert resp.status_code == 200
     # Starlette / httpx normalize header names case-insensitively.
     hits_header = resp.headers.get("X-Hallucination-Guard-Hits")
-    assert hits_header is not None, (
-        "X-Hallucination-Guard-Hits header missing on a body that contains a known YAML phrase"
-    )
+    assert (
+        hits_header is not None
+    ), "X-Hallucination-Guard-Hits header missing on a body that contains a known YAML phrase"
     assert int(hits_header) >= 1
     # Generic content-sanitized flag should also be present.
     assert resp.headers.get("x-content-sanitized") == "1"

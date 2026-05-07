@@ -121,9 +121,9 @@ def _insert_row(
 
 def test_migration_applies_idempotently(tmp_path):
     sql = MIG_FORWARD.read_text(encoding="utf-8")
-    assert sql.splitlines()[0].strip() == "-- target_db: autonomath", (
-        "first line must be the target_db marker"
-    )
+    assert (
+        sql.splitlines()[0].strip() == "-- target_db: autonomath"
+    ), "first line must be the target_db marker"
 
     db_path = tmp_path / "am.db"
     conn = sqlite3.connect(str(db_path))

@@ -63,9 +63,9 @@ def _load_tracker_module():
 def test_32_template_yaml_load():
     """1. 32 yaml templates load + minimum required fields per template."""
     yaml_files = sorted(TEMPLATES_DIR.glob("*.yaml"))
-    assert len(yaml_files) == 32, (
-        f"expected 32 yaml templates, found {len(yaml_files)}: {[p.name for p in yaml_files]}"
-    )
+    assert (
+        len(yaml_files) == 32
+    ), f"expected 32 yaml templates, found {len(yaml_files)}: {[p.name for p in yaml_files]}"
     mod = _load_tracker_module()
     templates = mod._load_yaml_templates()
     assert len(templates) == 32
@@ -160,17 +160,17 @@ def test_kpi_aggregation_shape():
     assert "per_channel_status" in kpi
     # 4 channel x 8 cohort = 32 templates, so each channel has 8, each cohort has 4
     for ch in EXPECTED_CHANNELS:
-        assert kpi["per_channel_template_count"].get(ch, 0) == 8, (
-            f"channel {ch} expected 8, got {kpi['per_channel_template_count'].get(ch, 0)}"
-        )
+        assert (
+            kpi["per_channel_template_count"].get(ch, 0) == 8
+        ), f"channel {ch} expected 8, got {kpi['per_channel_template_count'].get(ch, 0)}"
     cohort_counts = list(kpi["per_cohort_template_count"].values())
     assert len(cohort_counts) == 8
     assert all(c == 4 for c in cohort_counts), f"per-cohort counts: {cohort_counts}"
     # violation check end-to-end
     violations = mod._violation_check(templates)
-    assert sum(violations.values()) == 0, (
-        f"forbidden tokens leaked outside forbidden_phrases: {violations}"
-    )
+    assert (
+        sum(violations.values()) == 0
+    ), f"forbidden tokens leaked outside forbidden_phrases: {violations}"
 
 
 def test_no_llm_api_imports_in_outreach_surface():
@@ -189,9 +189,9 @@ def test_no_llm_api_imports_in_outreach_surface():
             if isinstance(node, ast.Import):
                 for alias in node.names:
                     head = alias.name.split(".")[0]
-                    assert head not in FORBIDDEN_LLM_MODULES, (
-                        f"{path}: forbidden LLM import {alias.name!r}"
-                    )
+                    assert (
+                        head not in FORBIDDEN_LLM_MODULES
+                    ), f"{path}: forbidden LLM import {alias.name!r}"
                     if alias.name == "google.generativeai" or alias.name.startswith(
                         "google.generativeai."
                     ):

@@ -148,9 +148,9 @@ def test_legacy_path_preserves_existing_shape_when_no_candidate_ids():
     # Tool name varies through envelope wrapper; we accept either dict path.
     assert isinstance(res, dict)
     # The three new sections MUST be absent on the legacy path.
-    assert "compat_matrix" not in res, (
-        f"legacy call (no candidate_program_ids) leaked compat_matrix key: {res.keys()}"
-    )
+    assert (
+        "compat_matrix" not in res
+    ), f"legacy call (no candidate_program_ids) leaked compat_matrix key: {res.keys()}"
     assert "combo_calculator" not in res
     assert "data_quality" not in res
     # The existing keys remain.
@@ -203,9 +203,9 @@ def test_candidate_program_ids_triggers_compat_matrix_lookup():
         top_bids=0,
         candidate_program_ids=[pa, pb],
     )
-    assert "compat_matrix" in res, (
-        f"candidate_program_ids=[a,b] should surface compat_matrix; got {res.keys()}"
-    )
+    assert (
+        "compat_matrix" in res
+    ), f"candidate_program_ids=[a,b] should surface compat_matrix; got {res.keys()}"
     cm = res["compat_matrix"]
     # Must be a dict with the design's required keys.
     for k in (
@@ -219,9 +219,9 @@ def test_candidate_program_ids_triggers_compat_matrix_lookup():
     # Exactly one pair was passed (binomial(2,2)=1) so pairs[] has exactly one
     # entry on a hit, zero if missing. The compat lookup MUST succeed for a
     # known compatible pair sourced from the live matrix.
-    assert cm["missing_count"] == 0, (
-        f"known-compatible pair reported missing — lookup logic regression: {cm}"
-    )
+    assert (
+        cm["missing_count"] == 0
+    ), f"known-compatible pair reported missing — lookup logic regression: {cm}"
     assert len(cm["pairs"]) == 1, (
         f"expected exactly 1 pair entry for binomial(2,2), got {len(cm['pairs'])}; "
         f"cm={cm!r}; test_db={_DB_PATH}; runtime_db={_am_db.AUTONOMATH_DB_PATH}; "
@@ -266,15 +266,15 @@ def test_unknown_bucket_pct_is_honestly_surfaced():
         candidate_program_ids=[pa, pb],
     )
     # data_quality must be present and carry the honesty surface.
-    assert "data_quality" in res, (
-        f"candidate_program_ids ≥ 2 must surface data_quality; got {res.keys()}"
-    )
+    assert (
+        "data_quality" in res
+    ), f"candidate_program_ids ≥ 2 must surface data_quality; got {res.keys()}"
     dq = res["data_quality"]
     assert "compat_unknown_bucket_pct" in dq
     pct = dq["compat_unknown_bucket_pct"]
-    assert isinstance(pct, (int, float)), (
-        f"compat_unknown_bucket_pct must be numeric, got {type(pct).__name__}"
-    )
+    assert isinstance(
+        pct, (int, float)
+    ), f"compat_unknown_bucket_pct must be numeric, got {type(pct).__name__}"
     # 4,849 / 48,815 ≈ 9.93%. Allow a small tolerance band so the test stays
     # green as the matrix grows. We require a strictly positive non-trivial
     # value — silent zero would be the failure mode the test guards against.
@@ -292,9 +292,9 @@ def test_unknown_bucket_pct_is_honestly_surfaced():
     # We don't compare exact id strings (the MCP envelope's 景表法 sanitizer
     # may rewrite 6-digit substrings); status-driven assertion is sufficient.
     cm = res["compat_matrix"]
-    assert cm["missing_count"] == 0, (
-        f"known-unknown-bucket pair reported missing — lookup regression: {cm}"
-    )
+    assert (
+        cm["missing_count"] == 0
+    ), f"known-unknown-bucket pair reported missing — lookup regression: {cm}"
     assert len(cm["pairs"]) == 1
     assert cm["pairs"][0]["compat_status"] == "unknown"
     # And the unknown_count summary must reflect ≥1.

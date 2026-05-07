@@ -24,7 +24,6 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
-
 HERE = Path(__file__).resolve().parent
 
 ACCENT = (15, 111, 255)
@@ -149,7 +148,9 @@ def _result_card(
             color_bg = TIER_S_BG if text == "S" else TIER_A_BG
             color_fg = TIER_S_FG if text == "S" else TIER_A_FG
             tw = 70
-            draw.rounded_rectangle((mx, y + 40, mx + tw, y + 60), radius=4, fill=color_bg, outline=LINE)
+            draw.rounded_rectangle(
+                (mx, y + 40, mx + tw, y + 60), radius=4, fill=color_bg, outline=LINE
+            )
             draw.text(
                 (mx + tw / 2, y + 50),
                 f"Tier {text}",
@@ -185,19 +186,28 @@ def screenshot_subsidy() -> None:
     # Result cards
     cy = 220
     cy = _result_card(
-        draw, 40, cy, w - 80,
+        draw,
+        40,
+        cy,
+        w - 80,
         "省エネルギー投資促進支援事業費補助金",
         [("tier", "S"), ("text", "経産省"), ("text", "全国")],
         "出典を確認 (https://sii.or.jp/) · jpciteで詳細",
     )
     cy = _result_card(
-        draw, 40, cy, w - 80,
+        draw,
+        40,
+        cy,
+        w - 80,
         "東京都中小企業 設備投資緊急支援事業",
         [("tier", "A"), ("text", "東京都産業労働局"), ("text", "東京都")],
         "出典を確認 · jpciteで詳細",
     )
     cy = _result_card(
-        draw, 40, cy, w - 80,
+        draw,
+        40,
+        cy,
+        w - 80,
         "ものづくり補助金 (一般型 / 省エネ枠)",
         [("tier", "S"), ("text", "中小企業庁"), ("text", "全国")],
         "出典を確認 · jpciteで詳細",
@@ -220,19 +230,28 @@ def screenshot_tax() -> None:
 
     cy = 220
     cy = _result_card(
-        draw, 40, cy, w - 80,
+        draw,
+        40,
+        cy,
+        w - 80,
         "中小企業向け 賃上げ促進税制",
         [("text", "租税特別措置法 第42条の12の5"), ("text", "適用期間: 令和 6.4.1 〜 令和 9.3.31")],
         "条文・告示を確認 (https://elaws.e-gov.go.jp/)",
     )
     cy = _result_card(
-        draw, 40, cy, w - 80,
+        draw,
+        40,
+        cy,
+        w - 80,
         "中小企業 経営強化税制",
         [("text", "租税特別措置法 第42条の12の4"), ("text", "適用期間: 令和 7.4.1 〜 令和 9.3.31")],
         "条文・告示を確認",
     )
     cy = _result_card(
-        draw, 40, cy, w - 80,
+        draw,
+        40,
+        cy,
+        w - 80,
         "DX 投資促進税制",
         [("text", "租税特別措置法 第42条の12の7"), ("text", "適用期間: 令和 3.8.2 〜 令和 7.3.31")],
         "条文・告示を確認",
@@ -261,7 +280,12 @@ def screenshot_invoice() -> None:
 
     # Status pill
     pill_x = w - 200
-    draw.rounded_rectangle((pill_x, cy + 18, pill_x + 100, cy + 44), radius=4, fill=(230, 255, 240), outline=(135, 232, 174))
+    draw.rounded_rectangle(
+        (pill_x, cy + 18, pill_x + 100, cy + 44),
+        radius=4,
+        fill=(230, 255, 240),
+        outline=(135, 232, 174),
+    )
     draw.text((pill_x + 50, cy + 31), "有効", font=find_jp_font(16), fill=(0, 128, 60), anchor="mm")
 
     draw.text(
@@ -389,7 +413,9 @@ def screenshot_disclaimer() -> None:
 
     # Highlight: shown in UI footer + every API response
     box_y = 440
-    draw.rounded_rectangle((100, box_y, w - 100, box_y + 100), radius=10, fill=WARN_BG, outline=(255, 213, 145))
+    draw.rounded_rectangle(
+        (100, box_y, w - 100, box_y + 100), radius=10, fill=WARN_BG, outline=(255, 213, 145)
+    )
     draw.text(
         (w / 2, box_y + 35),
         "プラグイン UI フッターに 常時表示",

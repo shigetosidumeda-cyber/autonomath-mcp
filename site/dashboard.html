@@ -508,7 +508,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <button type="button" id="dash2-billing-csv" class="btn-ghost">CSV ダウンロード</button>
  <button type="button" id="dash2-billing-json" class="btn-ghost">JSON ダウンロード</button>
  </div>
- <p class="stat-note" style="margin:10px 0 0;"><a href="/v1/billing/client_tag_breakdown?format=csv">顧問先別 client_tag 利用明細 (CSV)</a> &mdash; X-Client-Tag で集計した当月分の 1 件あたり ¥3 内訳。</p>
+ <p class="stat-note" style="margin:10px 0 0;"><a href="https://api.jpcite.com/v1/billing/client_tag_breakdown?format=csv">顧問先別 client_tag 利用明細 (CSV)</a> &mdash; X-Client-Tag で集計した当月分の 1 件あたり ¥3 内訳。</p>
  </section>
 
  <section id="dash2-recommend" class="stat-card" style="margin:0 0 16px;display:none;">
@@ -531,7 +531,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <h2 class="dash-section-title"><span aria-hidden="true">📋 </span>法令改正・制度新設アラート</h2>
  <p class="stat-note" style="margin:0 0 12px;">
  法令改正・制度新設・行政処分などの差分を Webhook 通知 (HTTPS のみ) または メール で
- 先回り通知します。通知配信は ¥3/リクエスト (税込 ¥3.30) の完全従量です。
+ 先回り通知します。成功配信は ¥3/通知 (税込 ¥3.30) の完全従量です。
  <code>filter_type</code> は <code>tool</code> / <code>law_id</code> / <code>program_id</code> /
  <code>industry_jsic</code> / <code>all</code> から選択、<code>min_severity</code> は
  <code>critical</code> (制度終了・適用条件 変更) / <code>important</code> (金額・対象変更) /
@@ -703,7 +703,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  </form>
  <p class="stat-note" style="margin:10px 0 0;color:var(--text-muted);">
  q / 都道府県 / 対象事業者 / amount_max のいずれか最低 1 つが必須。
- 配信は ¥3/リクエスト の従量課金、登録は最大 50 件/key。
+ 配信は成功通知 1 件あたり ¥3 の従量課金、登録は最大 50 件/key。
  </p>
  </section>
 
@@ -914,7 +914,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  自社の HTTPS エンドポイントに、 <code>program.created</code> / <code>program.amended</code> /
  <code>enforcement.added</code> / <code>tax_ruleset.amended</code> /
  <code>invoice_registrant.matched</code> の各イベントを 署名検証 (SHA256) 付きで POST します。
- <strong>1 回成功配信 = ¥3/リクエスト 課金</strong> です。失敗時の再試行は課金対象外です。
+ <strong>1 回成功配信 = ¥3/通知 課金</strong> です。失敗時の再試行は課金対象外です。
  5 回連続で失敗すると、意図しない課金を防ぐため自動で無効化します。 詳細は
  <a href="/docs/webhooks/">Webhook 通知 docs</a>。
  </p>

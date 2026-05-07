@@ -192,6 +192,6 @@ def test_no_aggregator_hosts_in_examples():
             url_surfaces.append(code.get_text("\n", strip=False))
         haystack = "\n".join(url_surfaces)
         for needle in banned:
-            assert needle not in haystack, (
-                f"{html_path.name} cites banned aggregator '{needle}' in a link / code surface"
-            )
+            assert (
+                needle not in haystack
+            ), f"{html_path.name} cites banned aggregator '{needle}' in a link / code surface"

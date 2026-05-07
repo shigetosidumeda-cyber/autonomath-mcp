@@ -477,9 +477,9 @@ def test_get_source_manifest_full_provenance(client: TestClient) -> None:
     assert body["program_id"] == "program:test:p1"
     assert body["primary_name"] == "テスト P1 補助金"
     assert isinstance(body["fact_provenance"], list)
-    assert len(body["fact_provenance"]) == 5, (
-        f"expected 5 fact_provenance rows, got {len(body['fact_provenance'])}"
-    )
+    assert (
+        len(body["fact_provenance"]) == 5
+    ), f"expected 5 fact_provenance rows, got {len(body['fact_provenance'])}"
     # All five known field names round-trip.
     fnames = {row["field_name"] for row in body["fact_provenance"]}
     assert fnames == set(_PROGRAM_FACT_FIELDS)
@@ -691,9 +691,9 @@ def test_mcp_tool_returns_same_envelope_as_rest(
         "fact_provenance",
         "summary",
     ):
-        assert mcp.get(key) == rest.get(key), (
-            f"MCP/REST divergence on {key!r}: mcp={mcp.get(key)!r} rest={rest.get(key)!r}"
-        )
+        assert mcp.get(key) == rest.get(
+            key
+        ), f"MCP/REST divergence on {key!r}: mcp={mcp.get(key)!r} rest={rest.get(key)!r}"
     assert "_disclaimer" in mcp
 
 

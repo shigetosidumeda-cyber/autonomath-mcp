@@ -374,9 +374,9 @@ def test_digest_endpoint_is_relative_path_not_full_packet(weekly_db: Path):
             assert url == f"/v1/evidence/packets/program/{hit['unified_id']}"
             # The hit dict must NOT carry the full packet (that would be
             # too big — the brief explicitly forbids inlining).
-            assert "evidence_packet" not in hit, (
-                "digest must emit URL reference only, not inlined packet"
-            )
+            assert (
+                "evidence_packet" not in hit
+            ), "digest must emit URL reference only, not inlined packet"
     finally:
         conn.close()
 
@@ -660,9 +660,9 @@ def test_webhook_program_created_payload_carries_evidence_endpoint(
     assert "corpus_snapshot_id" in data
 
     # The full packet body MUST NOT be inlined.
-    assert "evidence_packet" not in data, (
-        "webhook payload must emit URL reference only, not the inlined packet"
-    )
+    assert (
+        "evidence_packet" not in data
+    ), "webhook payload must emit URL reference only, not the inlined packet"
 
     # HMAC still matches over the augmented body.
     expected_sig = "hmac-sha256=" + hmac.new(secret.encode(), sent_body, hashlib.sha256).hexdigest()

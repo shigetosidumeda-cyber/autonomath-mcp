@@ -345,32 +345,34 @@ async def verify_answer(
 
     disclaimer = DISCLAIMER_EN if payload.language == "en" else DISCLAIMER_JA
 
-    return VerifyAnswerResponse(
-        verifiability_score=score,
-        per_claim=[
-            PerClaimResponse(
-                claim=p["claim"],
-                sources_match=p["sources_match"],
-                sources_relevant=p["sources_relevant"],
-                matched_jpcite_record=p["matched_jpcite_record"],
-                confidence=p["confidence"],
-                signals=p["signals"],
-            )
-            for p in per_claim_payload
-        ],
-        boundary_violations=[
-            BoundaryViolationResponse(
-                law=b.law,
-                section=b.section,
-                phrase=b.phrase,
-                severity=b.severity,
-            )
-            for b in boundaries
-        ],
-        hallucination_signals=sorted(set(all_signals)),
-        request_id=request_id,
-        language=payload.language,
-        answer_hash=answer_hash,
-        disclaimer=disclaimer,
-        cost_yen=3,
+    return VerifyAnswerResponse.model_validate(
+        {
+            "verifiability_score": score,
+            "per_claim": [
+                PerClaimResponse(
+                    claim=p["claim"],
+                    sources_match=p["sources_match"],
+                    sources_relevant=p["sources_relevant"],
+                    matched_jpcite_record=p["matched_jpcite_record"],
+                    confidence=p["confidence"],
+                    signals=p["signals"],
+                )
+                for p in per_claim_payload
+            ],
+            "boundary_violations": [
+                BoundaryViolationResponse(
+                    law=b.law,
+                    section=b.section,
+                    phrase=b.phrase,
+                    severity=b.severity,
+                )
+                for b in boundaries
+            ],
+            "hallucination_signals": sorted(set(all_signals)),
+            "request_id": request_id,
+            "language": payload.language,
+            "answer_hash": answer_hash,
+            "disclaimer": disclaimer,
+            "cost_yen": 3,
+        }
     )

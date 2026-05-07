@@ -415,9 +415,9 @@ def test_citation_status_verified_case(fixture_db: Path, fixture_jpintel: Path) 
     env = composer.compose_for_program("UNI-cv-verified")
     assert env is not None
     cit = _find_citation(env, "https://www.maff.go.jp/cv-verified.html")
-    assert cit is not None, (
-        f"missing citation row, citations={env['evidence_value'].get('citations')}"
-    )
+    assert (
+        cit is not None
+    ), f"missing citation row, citations={env['evidence_value'].get('citations')}"
     assert cit["verification_status"] == "verified"
     assert cit["matched_form"] == "1,000,000円"
     assert cit["source_checksum"] == "sha256:verified-checksum"

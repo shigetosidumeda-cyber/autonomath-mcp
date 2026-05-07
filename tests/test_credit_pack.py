@@ -528,16 +528,17 @@ def test_refund_not_allowed(client, stripe_env, autonomath_db_path, admin_header
             "/v1/billing/credit/refund",
             headers=admin_headers,
         )
-        assert r.status_code in (404, 405), (
-            f"verb={verb} status={r.status_code} body={r.text} — refund surface must not exist"
-        )
+        assert r.status_code in (
+            404,
+            405,
+        ), f"verb={verb} status={r.status_code} body={r.text} — refund surface must not exist"
 
     # Module surface — no refund helper exported.
     from jpintel_mcp.billing import credit_pack as cp_mod
 
-    assert not hasattr(cp_mod, "refund_credit_pack"), (
-        "credit_pack module must not export a refund helper (ToS §19の4 non-refundable)"
-    )
+    assert not hasattr(
+        cp_mod, "refund_credit_pack"
+    ), "credit_pack module must not export a refund helper (ToS §19の4 non-refundable)"
     # Schema CHECK accepts 'refunded' as an OPERATOR-only manual override
     # state, but no automated path produces it. Confirm the allowlist.
     assert "refunded" not in {"pending", "paid", "expired"}  # documentation guard

@@ -37,10 +37,9 @@ import csv
 import io
 import json
 import sys
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
-
 
 # --- 列名マッピング (TKC FX2 export 既定) ---------------------------------
 
@@ -161,9 +160,7 @@ def convert_row(
         jsic = jsic[:4]
 
     pref_raw = normalized.get("prefecture")
-    prefecture = (
-        (str(pref_raw).strip() or None) if pref_raw is not None else None
-    )
+    prefecture = (str(pref_raw).strip() or None) if pref_raw is not None else None
 
     emp = _coerce_int(normalized.get("employee_count"))
 
@@ -198,8 +195,7 @@ def convert_csv_text(
     errors: list[dict[str, Any]] = []
     for idx, raw in enumerate(reader, start=1):
         if idx > max_rows:
-            errors.append({"row_index": idx, "error": "exceeded_row_cap",
-                           "cap": max_rows})
+            errors.append({"row_index": idx, "error": "exceeded_row_cap", "cap": max_rows})
             break
         rec = convert_row(raw, column_map=column_map)
         if rec is None:
@@ -240,8 +236,7 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--encoding",
         type=str,
         default=None,
-        help="force decode encoding (utf-8-sig / cp932 / utf-8). "
-        "default: auto-detect.",
+        help="force decode encoding (utf-8-sig / cp932 / utf-8). " "default: auto-detect.",
     )
     p.add_argument(
         "--max-rows",

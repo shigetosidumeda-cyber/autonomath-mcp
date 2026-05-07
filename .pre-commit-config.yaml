@@ -32,7 +32,10 @@ repos:
     hooks:
       - id: distribution-manifest-drift
         name: distribution manifest drift
-        entry: python scripts/check_distribution_manifest_drift.py
+        # Use `python3` — macOS only ships `python3` by default; the bare
+        # `python` alias is unavailable on stock systems and broke this hook
+        # for fresh clones until 2026-05-07.
+        entry: python3 scripts/check_distribution_manifest_drift.py
         language: system
         pass_filenames: false
         always_run: true
@@ -49,7 +52,11 @@ repos:
         args: ["--maxkb=500"]
       - id: check-yaml
         # Allow multi-doc YAML (GitHub Actions occasionally uses it).
-        args: ["--allow-multiple-documents"]
+        # `--unsafe` lets the parser tolerate custom Python-object tags such
+        # as `!!python/object/apply:pymdownx.slugs.slugify` in mkdocs.yml,
+        # which the standard SafeLoader rejects. Validation still flags
+        # syntactically-broken YAML; only the constructor tag is whitelisted.
+        args: ["--allow-multiple-documents", "--unsafe"]
       - id: check-json
       - id: check-toml
       - id: check-merge-conflict
@@ -109,8 +116,21 @@ repos:
     hooks:
       - id: mypy
         name: mypy (src/jpintel_mcp)
-        files: ^src/jpintel_mcp/
-        args: ["--strict", "--ignore-missing-imports", "--no-implicit-reexport"]
+        # `_archive/` is intentionally filtered both at the file selector
+        # AND via `--exclude`. Pre-commit-mypy runs in an isolated venv
+        # that does not auto-honor `[tool.mypy]` from pyproject.toml; the
+        # archive tree contains dated dir names with hyphens (e.g.
+        # `embedding_2026-04-25/`) that mypy rejects as invalid dotted
+        # package names even with `__init__.py` present, which used to
+        # fatal-out the walk before any type errors could surface.
+        files: ^src/jpintel_mcp/(?!_archive/).*\.py$
+        exclude: ^src/jpintel_mcp/_archive/
+        args:
+          - "--strict"
+          - "--ignore-missing-imports"
+          - "--no-implicit-reexport"
+          - "--exclude"
+          - "^src/jpintel_mcp/_archive/"
         additional_dependencies:
           - pydantic>=2.9
           - pydantic-settings>=2.6

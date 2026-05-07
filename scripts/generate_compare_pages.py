@@ -96,7 +96,7 @@ PAGES["tsr"] = {
     "us_strengths": [
         "<strong>API/MCP 必須の自動化用途</strong>。139 tools + OpenAPI 3.1 で LLM Agent から直接呼べます。"
         "TSR の API/MCP の公開仕様は 2026-04 時点で公開情報なし。",
-        "<strong>11,684 制度 + 2,065 判例 + 9,484 法令 + 1,185 行政処分</strong>の横断検索。TSR の対象外領域。",
+        "<strong>11,601 検索可制度 + 2,065 判例 + 9,484 法令 + 1,185 行政処分</strong>の横断検索。TSR の対象外領域。",
         "<strong>¥3/billable unit 完全従量</strong>。年間契約・代理店経由不要、匿名 3 requests/日/IP 無料で評価可能。",
     ],
     "them_strengths": [
@@ -170,7 +170,7 @@ PAGES["jgrants"] = {
         "「申請を電子化する」なら jGrants、「申請前の探索を自動化する」なら当社、両方使うのが標準的です。"
     ),
     "us_strengths": [
-        "<strong>API + MCP で横断検索</strong>。11,684 制度 (補助金 + 融資 + 税制 + 認定) を一括で扱える。"
+        "<strong>API + MCP で横断検索</strong>。11,601 検索可制度 (補助金 + 融資 + 税制 + 認定) を一括で扱える。"
         "jGrants は 2026-04 時点で公開 API なし、検索 UI のみ。",
         "<strong>適合判定ロジック</strong> (target_types / 業種 / 売上規模 / 都道府県) を query で指定可能。"
         "jGrants の検索はキーワード + カテゴリ中心。",
@@ -243,7 +243,7 @@ PAGES["moneyforward"] = {
         "「自社の会計を回したい」なら MF、「制度・法令を AI Agent から自動探索したい」なら当社。"
     ),
     "us_strengths": [
-        "<strong>制度 DB API/MCP</strong>。11,684 検索可制度 + 50 税制 ruleset + 2,065 判例 + 9,484 法令メタデータの横断検索。"
+        "<strong>制度 DB API/MCP</strong>。11,601 検索可制度 + 50 税制 ruleset + 2,065 判例 + 9,484 法令メタデータの横断検索。"
         "MF は会計 SaaS のため、制度 DB の API は提供せず。",
         "<strong>API/MCP 提供</strong>。当社の API は LLM Agent 連携が主用途。"
         "MF API は会計 SaaS の顧客向けで、制度 DB アクセスとは別レイヤー。",

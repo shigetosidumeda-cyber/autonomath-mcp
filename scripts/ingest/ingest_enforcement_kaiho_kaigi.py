@@ -372,8 +372,7 @@ RIYU_RE = re.compile(r"理\s*由")
 # Per-defendant disposition lines after 主文. Each typically begins with
 # "受審人{a/b/...}" and ends with "する。" / "停止する。" / "懲戒しない。".
 DEFENDANT_LINE_RE = re.compile(
-    r"受\s*審\s*人\s*([ａ-ｚa-z0-9０-９１２]{1,4})\s*"
-    r"([^。\n]*?[。．])"
+    r"受\s*審\s*人\s*([ａ-ｚa-z0-9０-９１２]{1,4})\s*" r"([^。\n]*?[。．])"
 )
 
 # 受審人 block in heading: 受 審 人 a / 職 名 X船長 / (海技|操縦)免許 …
@@ -407,8 +406,7 @@ CASE_TITLE_RE = re.compile(r"裁\s*決\s*\n+\s*(?:（[第１２一二]）)?\s*([
 # Top-of-doc 言渡日 marker (used as fallback if we cannot read it from
 # the index page). Format: 令和X年M月D日 followed by tribunal name.
 ISSUE_DATE_RE = re.compile(
-    r"(令和[０-９\d元]+年[０-９\d]+月[０-９\d]+日)\s*\n+\s*"
-    r"([^\n]*海難審判所[^\n]*)"
+    r"(令和[０-９\d元]+年[０-９\d]+月[０-９\d]+日)\s*\n+\s*" r"([^\n]*海難審判所[^\n]*)"
 )
 
 # Case number at top: "令和7年横審第25号"

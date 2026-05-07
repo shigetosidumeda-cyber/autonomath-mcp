@@ -396,8 +396,7 @@ LINK_RE = re.compile(
 TITLE_RE = re.compile(r'<h2\s+class="title">(.*?)</h2>', re.DOTALL)
 DATE_BODY_RE = re.compile(r'<p\s+class="date(?:\s+mb20)?">\s*(.*?)\s*</p>', re.DOTALL)
 BODY_RE = re.compile(
-    r'<div\s+class="clearfix">\s*<p\s+class="date(?:\s+mb20)?">.*?</p>'
-    r"\s*<p>(.*?)</p>",
+    r'<div\s+class="clearfix">\s*<p\s+class="date(?:\s+mb20)?">.*?</p>' r"\s*<p>(.*?)</p>",
     re.DOTALL,
 )
 

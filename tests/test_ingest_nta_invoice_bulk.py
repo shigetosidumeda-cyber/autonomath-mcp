@@ -120,9 +120,9 @@ def test_workflow_file_uses_jpintel_db_path_and_120_min_timeout() -> None:
         "workflow MUST NOT point --db at autonomath.db"
     )
     # Timeout: 120 min for the 25-40 min CSV ingest + 2x headroom.
-    assert "timeout-minutes: 120" in wf, (
-        "monthly bulk needs 120 min to absorb a 4M-row CSV with cold cache"
-    )
+    assert (
+        "timeout-minutes: 120" in wf
+    ), "monthly bulk needs 120 min to absorb a 4M-row CSV with cold cache"
 
 
 def test_zenken_date_picks_first_of_month() -> None:

@@ -64,4 +64,3 @@ Each lane packet is ready only when it names:
 - public/private boundary and redaction needs
 - value asset created or deliberately not created
 - release decision and owner
-

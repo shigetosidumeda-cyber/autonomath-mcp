@@ -311,9 +311,9 @@ def test_reingest_is_idempotent(scratch_db: Path, data_dir: Path) -> None:
     ext.run_ingest(data_dir=data_dir, db_path=scratch_db, dry_run=False)
 
     counts_after = {t: _count(scratch_db, t) for t in counts_before}
-    assert counts_before == counts_after, (
-        f"idempotent re-ingest grew the DB: {counts_before} -> {counts_after}"
-    )
+    assert (
+        counts_before == counts_after
+    ), f"idempotent re-ingest grew the DB: {counts_before} -> {counts_after}"
 
 
 def test_existing_program_source_excerpt_only_updated(scratch_db: Path, data_dir: Path) -> None:

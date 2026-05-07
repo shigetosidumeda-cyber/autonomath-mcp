@@ -44,9 +44,9 @@ def test_cors_methods_restricted(client: TestClient) -> None:
     )
     allow = resp.headers.get("access-control-allow-methods", "")
     # The middleware should not advertise PATCH (or "*") for our surface.
-    assert "PATCH" not in allow.upper().split(", "), (
-        f"PATCH leaked into Access-Control-Allow-Methods: {allow!r}"
-    )
+    assert "PATCH" not in allow.upper().split(
+        ", "
+    ), f"PATCH leaked into Access-Control-Allow-Methods: {allow!r}"
     assert "*" not in allow, f"Wildcard method leaked into Access-Control-Allow-Methods: {allow!r}"
 
 

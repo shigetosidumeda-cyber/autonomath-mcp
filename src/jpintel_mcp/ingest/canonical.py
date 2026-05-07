@@ -13,6 +13,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import sqlite3
 import sys
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
@@ -123,7 +124,7 @@ def _extract_source_url(enriched: dict[str, Any] | None, entry: dict[str, Any]) 
     return None
 
 
-def _ingest_programs(conn, registry: dict[str, Any], enriched_dir: Path) -> int:
+def _ingest_programs(conn: sqlite3.Connection, registry: dict[str, Any], enriched_dir: Path) -> int:
     programs = registry.get("programs", {})
     if not programs:
         raise RuntimeError("unified_registry.json has no 'programs' dict")
@@ -239,7 +240,7 @@ def _ingest_programs(conn, registry: dict[str, Any], enriched_dir: Path) -> int:
     return inserted
 
 
-def _ingest_exclusion_rules(conn, rules_path: Path) -> int:
+def _ingest_exclusion_rules(conn: sqlite3.Connection, rules_path: Path) -> int:
     if not rules_path.is_file():
         logger.warning("exclusion_rules.json not found at %s", rules_path)
         return 0
@@ -290,7 +291,12 @@ def _ingest_exclusion_rules(conn, rules_path: Path) -> int:
     return inserted
 
 
-def _write_meta(conn, programs_count: int, rules_count: int, data_as_of: str | None) -> None:
+def _write_meta(
+    conn: sqlite3.Connection,
+    programs_count: int,
+    rules_count: int,
+    data_as_of: str | None,
+) -> None:
     now = datetime.now(UTC).isoformat()
     rows = [
         ("total_programs", str(programs_count)),

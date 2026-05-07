@@ -74,8 +74,7 @@ def _extract_ids(tool_name: str, results: list[dict[str, Any]]) -> list[str]:
         return [str(r.get("case_id")) for r in results]
     if tool_name == "search_invoice_registrants":
         return [
-            str(r.get("houjin_bangou") or r.get("invoice_registration_number"))
-            for r in results
+            str(r.get("houjin_bangou") or r.get("invoice_registration_number")) for r in results
         ]
     # search_programs, prescreen_programs, search_tax_rules,
     # search_laws, search_court_decisions, etc. — all use unified_id.
@@ -164,9 +163,7 @@ def evaluate_query(query: dict[str, Any]) -> dict[str, Any]:
     # shape — the runner reports it, but doesn't gate pass/fail on it.
     extra: dict[str, Any] = {}
     if payload.get("input_warnings"):
-        extra["input_warnings_codes"] = [
-            w.get("code") for w in payload["input_warnings"]
-        ]
+        extra["input_warnings_codes"] = [w.get("code") for w in payload["input_warnings"]]
 
     return {
         "id": qid,
@@ -196,7 +193,7 @@ def _print_table(rows: list[dict[str, Any]]) -> None:
     widths[1] = max(widths[1], 22)
 
     def _fmt(values: list[str]) -> str:
-        return "  ".join(v.ljust(w) for v, w in zip(values, widths))
+        return "  ".join(v.ljust(w) for v, w in zip(values, widths, strict=False))
 
     print(_fmt(headers))
     print(_fmt(["-" * w for w in widths]))

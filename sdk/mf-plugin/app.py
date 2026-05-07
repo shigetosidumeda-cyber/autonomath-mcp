@@ -14,15 +14,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from config import MF_FRAME_ANCESTORS, load_settings
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
-from starlette.middleware.sessions import SessionMiddleware
-
-from config import MF_FRAME_ANCESTORS, load_settings
 from oauth_callback import router as oauth_router
 from proxy_endpoints import router as proxy_router
-
+from starlette.middleware.sessions import SessionMiddleware
 
 HERE = Path(__file__).parent
 FRONTEND_DIR = HERE / "frontend"

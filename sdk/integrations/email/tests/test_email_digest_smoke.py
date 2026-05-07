@@ -4,6 +4,7 @@ Pure-mock: every jpcite REST call routes through ``httpx.MockTransport``;
 no SendGrid / SES / Mailchimp request is ever issued (the transport
 stubs only construct payloads).
 """
+
 from __future__ import annotations
 
 import datetime as _dt
@@ -330,9 +331,7 @@ def test_no_llm_imports():
         "claude_agent_sdk",
         "google.generativeai",
     ):
-        assert forbidden not in body, (
-            f"email_digest.py must not embed {forbidden!r} (CLAUDE.md)"
-        )
+        assert forbidden not in body, f"email_digest.py must not embed {forbidden!r} (CLAUDE.md)"
 
 
 def test_readme_brand_disclaimers_present():

@@ -33,9 +33,9 @@ def _assert_not_422(response, *, path: str) -> None:
     just sent). Anything else — including 200 with empty rows or 503
     when autonomath.db is unmounted — is acceptable for this contract.
     """
-    assert response.status_code != 422, (
-        f"{path} → 422 (params not accepted by FastAPI). body={response.text}"
-    )
+    assert (
+        response.status_code != 422
+    ), f"{path} → 422 (params not accepted by FastAPI). body={response.text}"
 
 
 def test_tax_incentives_accepts_foreign_capital_eligibility(client):

@@ -158,9 +158,9 @@ def test_authenticated_response_omits_anon_headers(
     assert r.status_code == 200, r.text
 
     # NONE of the anon-tier headers should appear on an authed response.
-    assert "X-Anon-Quota-Remaining" not in r.headers, (
-        f"authed response leaked anon header: {r.headers}"
-    )
+    assert (
+        "X-Anon-Quota-Remaining" not in r.headers
+    ), f"authed response leaked anon header: {r.headers}"
     assert "X-Anon-Quota-Reset" not in r.headers
     assert "X-Anon-Upgrade-Url" not in r.headers
 
@@ -199,13 +199,13 @@ def test_soft_warning_body_injection_at_80pct(
     assert r5.status_code == 200, r5.text
     assert r5.headers.get("X-Anon-Quota-Remaining") == "0"
     body5 = r5.json()
-    assert isinstance(body5.get("_meta"), dict), (
-        f"call 5 (remaining 0) missing _meta; body keys={list(body5)}"
-    )
+    assert isinstance(
+        body5.get("_meta"), dict
+    ), f"call 5 (remaining 0) missing _meta; body keys={list(body5)}"
     hint5 = body5["_meta"].get("upgrade_hint")
-    assert isinstance(hint5, str) and hint5, (
-        f"call 5 missing upgrade_hint string; _meta={body5['_meta']}"
-    )
+    assert (
+        isinstance(hint5, str) and hint5
+    ), f"call 5 missing upgrade_hint string; _meta={body5['_meta']}"
     assert "残 0 req" in hint5, f"hint missing remaining count; hint={hint5!r}"
     assert "jpcite.com/upgrade" in hint5, f"hint missing upgrade URL; hint={hint5!r}"
     assert "JST" in hint5 and "reset" in hint5, f"hint missing JST reset cue; hint={hint5!r}"
@@ -216,9 +216,9 @@ def test_soft_warning_body_injection_at_80pct(
     # injecting").
     cl = r5.headers.get("content-length")
     if cl is not None:
-        assert int(cl) == len(r5.content), (
-            f"content-length mismatch after injection: header={cl}, body={len(r5.content)}"
-        )
+        assert int(cl) == len(
+            r5.content
+        ), f"content-length mismatch after injection: header={cl}, body={len(r5.content)}"
 
 
 def test_soft_warning_skipped_when_above_threshold(
@@ -242,9 +242,9 @@ def test_soft_warning_skipped_when_above_threshold(
     # _meta may not exist at all, OR it may exist for unrelated reasons,
     # but it must NOT carry our upgrade_hint key.
     if isinstance(body.get("_meta"), dict):
-        assert "upgrade_hint" not in body["_meta"], (
-            f"upgrade_hint leaked at remaining=49; _meta={body['_meta']}"
-        )
+        assert (
+            "upgrade_hint" not in body["_meta"]
+        ), f"upgrade_hint leaked at remaining=49; _meta={body['_meta']}"
 
 
 def test_soft_warning_body_omitted_for_authed(
@@ -284,6 +284,6 @@ def test_soft_warning_body_omitted_for_authed(
     assert r.status_code == 200, r.text
     body = r.json()
     if isinstance(body.get("_meta"), dict):
-        assert "upgrade_hint" not in body["_meta"], (
-            f"authed response leaked upgrade_hint; _meta={body['_meta']}"
-        )
+        assert (
+            "upgrade_hint" not in body["_meta"]
+        ), f"authed response leaked upgrade_hint; _meta={body['_meta']}"

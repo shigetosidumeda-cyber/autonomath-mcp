@@ -193,9 +193,9 @@ def test_gbiz_new_field_names_present_in_facts(db_conn):
     # Some field branches may have produced 0 rows because the source dump
     # carried no value (e.g. corp.close_cause is rare). We tolerate up to 5
     # missing so this is not flake-prone, but never the majority.
-    assert len(missing) <= 5, (
-        f"too many gbiz field_names missing from facts ({len(missing)}/21): {missing}"
-    )
+    assert (
+        len(missing) <= 5
+    ), f"too many gbiz field_names missing from facts ({len(missing)}/21): {missing}"
 
 
 # --- jpi_* mirrored tables present -----------------------------------------
@@ -220,6 +220,6 @@ def test_jpi_corporate_entity_count_consistency(db_conn):
     ).fetchone()[0]
     # Floor of 80k (the new gbiz batch alone). If the column drops below this
     # the ingest regressed; if it ranges far above we extend the upper bound.
-    assert actual >= 80_000, (
-        f"corporate_entity count below gbiz floor (got {actual}, expected ≥80k)"
-    )
+    assert (
+        actual >= 80_000
+    ), f"corporate_entity count below gbiz floor (got {actual}, expected ≥80k)"

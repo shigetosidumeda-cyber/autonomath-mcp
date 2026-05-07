@@ -353,7 +353,20 @@ def _is_valid_company_name(s: str) -> bool:
     # Reject "27薬局", "各薬局", "本薬局", "当薬局" — these are generic refs.
     if re.fullmatch(r"[0-9０-９]+(?:薬局|ドラッグ|薬店|店舗)", s):
         return False
-    return s not in {"各薬局", "本薬局", "当薬局", "同薬局", "他薬局", "本店舗", "当店舗", "同店舗", "他店舗", "本店", "当店", "同店"}
+    return s not in {
+        "各薬局",
+        "本薬局",
+        "当薬局",
+        "同薬局",
+        "他薬局",
+        "本店舗",
+        "当店舗",
+        "同店舗",
+        "他店舗",
+        "本店",
+        "当店",
+        "同店",
+    }
 
 
 def find_companies_in_text(text: str) -> list[str]:

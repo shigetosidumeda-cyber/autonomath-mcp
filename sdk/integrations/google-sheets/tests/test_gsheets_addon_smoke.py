@@ -15,6 +15,7 @@ runtime, so we verify the file as text:
 We use a tiny hand-rolled JS function-signature parser so the suite runs
 on stock CPython without bringing in `esprima` / `tree-sitter-js`.
 """
+
 from __future__ import annotations
 
 import json
@@ -76,28 +77,22 @@ def test_each_public_function_carries_customfunction_tag(code_text: str) -> None
         if "@customfunction" in match.group("doc"):
             annotated.add(match.group("name"))
     missing = EXPECTED_FUNCTIONS - annotated
-    assert not missing, (
-        f"functions missing @customfunction tag: {sorted(missing)}"
-    )
+    assert not missing, f"functions missing @customfunction tag: {sorted(missing)}"
 
 
 def test_excel_office_addin_function_ids_match() -> None:
     """If the Excel function set drifts, this guard fires so the
     consultant-facing surface stays consistent."""
-    excel_manifest = (
-        PLUGIN_ROOT.parent / "excel" / "office-addin" / "src" / "functions.json"
-    )
-    assert excel_manifest.exists(), (
-        "Excel manifest missing — google-sheets parity guard relies on it"
-    )
+    excel_manifest = PLUGIN_ROOT.parent / "excel" / "office-addin" / "src" / "functions.json"
+    assert (
+        excel_manifest.exists()
+    ), "Excel manifest missing — google-sheets parity guard relies on it"
     excel = json.loads(excel_manifest.read_text(encoding="utf-8"))
     excel_ids = {f["id"] for f in excel["functions"]}
-    expected_excel_ids = {
-        name.removeprefix("JPCITE_") for name in EXPECTED_FUNCTIONS
-    }
-    assert excel_ids == expected_excel_ids, (
-        "Excel function id set drifted from Google Sheets surface"
-    )
+    expected_excel_ids = {name.removeprefix("JPCITE_") for name in EXPECTED_FUNCTIONS}
+    assert (
+        excel_ids == expected_excel_ids
+    ), "Excel function id set drifted from Google Sheets surface"
 
 
 def test_api_base_is_production_jpcite(code_text: str) -> None:
@@ -112,9 +107,7 @@ def test_no_llm_imports(code_text: str) -> None:
         "google.generativeai",
         "GenerativeAI",
     ):
-        assert forbidden not in code_text, (
-            f"Code.gs must not embed {forbidden} reference"
-        )
+        assert forbidden not in code_text, f"Code.gs must not embed {forbidden} reference"
 
 
 # ---- manifest -------------------------------------------------------------
@@ -130,9 +123,9 @@ def test_addon_manifest_runtime_is_v8(addon_manifest: dict) -> None:
 
 def test_addon_manifest_url_whitelist(addon_manifest: dict) -> None:
     wl = addon_manifest.get("urlFetchWhitelist", [])
-    assert wl == ["https://api.jpcite.com/"], (
-        f"urlFetchWhitelist must be exactly [https://api.jpcite.com/] (got {wl})"
-    )
+    assert wl == [
+        "https://api.jpcite.com/"
+    ], f"urlFetchWhitelist must be exactly [https://api.jpcite.com/] (got {wl})"
 
 
 def test_addon_manifest_oauth_scopes_minimal(addon_manifest: dict) -> None:
@@ -149,9 +142,9 @@ def test_addon_manifest_oauth_scopes_minimal(addon_manifest: dict) -> None:
         "https://mail.google.com/",
     }
     assert required <= scopes, f"missing required scopes: {sorted(required - scopes)}"
-    assert not (scopes & forbidden), (
-        f"manifest leaks excessive scopes: {sorted(scopes & forbidden)}"
-    )
+    assert not (
+        scopes & forbidden
+    ), f"manifest leaks excessive scopes: {sorted(scopes & forbidden)}"
 
 
 def test_project_manifest_advertises_addon_homepage_trigger() -> None:

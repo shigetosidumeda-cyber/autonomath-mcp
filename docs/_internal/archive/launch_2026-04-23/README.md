@@ -16,4 +16,3 @@ launch 当日で 役割を終えたため ここに archive. 内容は **histori
 - **決定事項 時系列**: 同 doc の「Decision Log」
 - **Post-launch plan**: `docs/POST_DEPLOY_PLAN_W5_W8.md`
 - **Launch 後の roadmap**: memory `project_autonomath_deploy_2026_04_23` + `research/data_expansion_design.md` §11
-

@@ -70,18 +70,18 @@ def _assert_envelope_shape(res: dict, *, expect_disclaimer_keyword: str | None =
     # Disclaimer envelope is mandatory on every response (sensitive surface).
     assert "_disclaimer" in res, "missing _disclaimer key"
     assert isinstance(res["_disclaimer"], str)
-    assert len(res["_disclaimer"]) > 50, (
-        f"disclaimer too short ({len(res['_disclaimer'])} chars) — check envelope wiring"
-    )
+    assert (
+        len(res["_disclaimer"]) > 50
+    ), f"disclaimer too short ({len(res['_disclaimer'])} chars) — check envelope wiring"
     if expect_disclaimer_keyword is not None:
-        assert expect_disclaimer_keyword in res["_disclaimer"], (
-            f"disclaimer missing keyword {expect_disclaimer_keyword!r}: {res['_disclaimer'][:120]}"
-        )
+        assert (
+            expect_disclaimer_keyword in res["_disclaimer"]
+        ), f"disclaimer missing keyword {expect_disclaimer_keyword!r}: {res['_disclaimer'][:120]}"
 
     # Billing contract: 1 unit per call (single ¥3 event).
-    assert res.get("_billing_unit") == 1, (
-        f"_billing_unit must be 1 (got {res.get('_billing_unit')!r})"
-    )
+    assert (
+        res.get("_billing_unit") == 1
+    ), f"_billing_unit must be 1 (got {res.get('_billing_unit')!r})"
 
     # Compounding mechanism.
     assert isinstance(res.get("_next_calls"), list), "_next_calls must be list"
@@ -159,9 +159,9 @@ def test_get_tax_treaty_returns_country_pair() -> None:
 
     # Source URL must point at a primary government domain.
     assert treaty["source_url"].startswith("https://")
-    assert "mof.go.jp" in treaty["source_url"] or "nta.go.jp" in treaty["source_url"], (
-        f"source_url should be mof/nta primary source: {treaty['source_url']}"
-    )
+    assert (
+        "mof.go.jp" in treaty["source_url"] or "nta.go.jp" in treaty["source_url"]
+    ), f"source_url should be mof/nta primary source: {treaty['source_url']}"
 
 
 def test_get_tax_treaty_japan_japan_rejects() -> None:
@@ -264,9 +264,10 @@ def test_envelope_carries_law_article_en_field() -> None:
     # The canonical envelope from law_article_tool always sets ``lang``
     # ('en' was requested) and ``lang_resolved`` (actual resolution).
     assert res.get("lang") == "en"
-    assert res.get("lang_resolved") in ("en", "ja"), (
-        f"lang_resolved must be 'en' or 'ja' (got {res.get('lang_resolved')!r})"
-    )
+    assert res.get("lang_resolved") in (
+        "en",
+        "ja",
+    ), f"lang_resolved must be 'en' or 'ja' (got {res.get('lang_resolved')!r})"
 
     if res["lang_resolved"] == "en":
         # EN body present — must carry e-Gov source URL + license.

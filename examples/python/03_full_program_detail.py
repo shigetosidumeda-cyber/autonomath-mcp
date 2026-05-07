@@ -46,6 +46,7 @@ expected output (real, unified_id=UNI-0e2daaa865):
 
     source_mentions: 1 entry, master_kb=MUN-NW01457-1457
 """
+
 from __future__ import annotations
 
 import os
@@ -74,7 +75,10 @@ def get_program(unified_id: str) -> dict:
         print("ERROR: 401 — invalid key", file=sys.stderr)
         sys.exit(1)
     if resp.status_code == 429:
-        print(f"ERROR: 429 rate limit, retry after {resp.headers.get('Retry-After', '?')}s", file=sys.stderr)
+        print(
+            f"ERROR: 429 rate limit, retry after {resp.headers.get('Retry-After', '?')}s",
+            file=sys.stderr,
+        )
         sys.exit(1)
     if resp.status_code >= 500:
         print(f"ERROR: server {resp.status_code}", file=sys.stderr)

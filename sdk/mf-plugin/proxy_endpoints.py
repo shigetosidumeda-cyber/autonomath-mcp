@@ -25,8 +25,7 @@ import re
 from typing import Any
 
 import httpx
-from fastapi import APIRouter, Body, HTTPException, Request, status
-
+from fastapi import APIRouter, Body, HTTPException, Request
 
 router = APIRouter(prefix="/mf-plugin", tags=["proxy"])
 

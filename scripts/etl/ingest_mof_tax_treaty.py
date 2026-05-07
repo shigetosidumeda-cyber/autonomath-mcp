@@ -353,8 +353,7 @@ def extract_pdf_text(pdf_bytes: bytes) -> str:
 # 配当 — captures both 一般 (general) and 親子間 (parent-sub) %
 # Tolerates half-width / full-width digits and varied ordering.
 _RE_DIVIDEND = re.compile(
-    r"(?:第\s*10\s*条|配当)[\s\S]{0,800}?"
-    r"(?P<rate1>\d{1,2}(?:\.\d{1,2})?)\s*[%％]",
+    r"(?:第\s*10\s*条|配当)[\s\S]{0,800}?" r"(?P<rate1>\d{1,2}(?:\.\d{1,2})?)\s*[%％]",
     re.MULTILINE,
 )
 # The reduced parent-sub rate appears AFTER the holding-threshold clause:
@@ -368,16 +367,14 @@ _RE_DIVIDEND_PARENT = re.compile(
     r"(?P<rate>\d{1,2}(?:\.\d{1,2})?)\s*[%％]",
 )
 _RE_INTEREST = re.compile(
-    r"(?:第\s*11\s*条|利子)[\s\S]{0,800}?"
-    r"(?P<rate>\d{1,2}(?:\.\d{1,2})?)\s*[%％]",
+    r"(?:第\s*11\s*条|利子)[\s\S]{0,800}?" r"(?P<rate>\d{1,2}(?:\.\d{1,2})?)\s*[%％]",
 )
 _RE_ROYALTY = re.compile(
     r"(?:第\s*12\s*条|使用料|ロイヤリティ)[\s\S]{0,800}?"
     r"(?P<rate>\d{1,2}(?:\.\d{1,2})?)\s*[%％]",
 )
 _RE_PE_DAYS = re.compile(
-    r"(?:第\s*5\s*条|恒久的施設|PE)[\s\S]{0,1200}?"
-    r"(?P<days>\d{2,3})\s*(?:日|か月|箇月|月)",
+    r"(?:第\s*5\s*条|恒久的施設|PE)[\s\S]{0,1200}?" r"(?P<days>\d{2,3})\s*(?:日|か月|箇月|月)",
 )
 # Bidirectional date regex: matches either
 #   「2003年11月6日に署名された」  (date BEFORE keyword)

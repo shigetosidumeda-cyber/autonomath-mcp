@@ -184,7 +184,7 @@
     },
     {
       "name": "resolve_citation_chain",
-      "description": "[KAIKEI] tax_ruleset → 法令 article → 通達 → 質疑応答 → 文書回答 の citation chain を auto-resolve する。国税庁・法令・判例の公表情報をつなぎ、監査調書の索引に貼りやすい tree を返す。¥3 / call。§47条の2 + §52 sensitive — 税務助言ではなく出典確認用。"
+      "description": "[KAIKEI] tax_ruleset → 法令 article → 通達 → 質疑応答 → 文書回答 の citation chain を auto-resolve する。国税庁・法令・判例の公表情報をつなぎ、監査人確認用の引用索引に貼りやすい tree を返す。¥3 / call。§47条の2 + §52 sensitive — 税務助言ではなく出典確認用。"
     },
     {
       "name": "search_invoice_registrants",

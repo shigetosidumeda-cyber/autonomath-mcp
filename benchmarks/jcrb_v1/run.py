@@ -40,6 +40,7 @@ The runner DOES NOT score. Scoring is decoupled so anyone can re-grade
 the same predictions.jsonl against an updated questions.jsonl without
 re-paying for inference.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -129,7 +130,9 @@ def _call_gemini(model: str, system: str, prompt: str) -> str:
     key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
     if not key:
         raise RuntimeError("GEMINI_API_KEY not set")
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}"
+    url = (
+        f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}"
+    )
     r = httpx.post(  # type: ignore[union-attr]
         url,
         json={
@@ -149,7 +152,13 @@ def _call_shell(cmd: str, system: str, prompt: str) -> str:
     """Generic stdin/stdout plugin: customer can wrap any model."""
     payload = json.dumps({"system": system, "prompt": prompt}, ensure_ascii=False)
     p = subprocess.run(
-        cmd, shell=True, input=payload, capture_output=True, text=True, check=True, timeout=120,
+        cmd,
+        shell=True,
+        input=payload,
+        capture_output=True,
+        text=True,
+        check=True,
+        timeout=120,
     )
     return p.stdout
 
@@ -189,7 +198,9 @@ def _jpcite_context(question: str, api_key: str | None) -> str:
         return f"[jpcite context unavailable: {e}]"
     lines = ["[jpcite primary-source context]"]
     for i, h in enumerate(hits, 1):
-        name = h.get("primary_name") or h.get("name") or h.get("title") or h.get("ruleset_name") or ""
+        name = (
+            h.get("primary_name") or h.get("name") or h.get("title") or h.get("ruleset_name") or ""
+        )
         url = h.get("source_url") or h.get("official_url") or h.get("url") or ""
         lines.append(f"{i}. {name} — {url}")
     return "\n".join(lines)
@@ -216,8 +227,11 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--mode", choices=["without_jpcite", "with_jpcite"], default="without_jpcite")
     p.add_argument("--out", type=pathlib.Path, required=True)
     p.add_argument("--jpcite-api-key", default=os.environ.get("JPCITE_API_KEY"))
-    p.add_argument("--provider-cmd", default=None,
-                   help="When --provider shell, the command to invoke (stdin=JSON, stdout=text)")
+    p.add_argument(
+        "--provider-cmd",
+        default=None,
+        help="When --provider shell, the command to invoke (stdin=JSON, stdout=text)",
+    )
     p.add_argument("--limit", type=int, default=None, help="Run only first N questions (debug)")
     p.add_argument("--sleep-s", type=float, default=0.5, help="Delay between requests")
     args = p.parse_args(argv)

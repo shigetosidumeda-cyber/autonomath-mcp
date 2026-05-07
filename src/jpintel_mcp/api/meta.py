@@ -256,7 +256,7 @@ def _count_or_error(db_file_path: str | Path, table: str) -> tuple[int | None, s
     Opens read-only via URI so a typo'd path can't accidentally create an
     empty file on disk. 2-second timeout matches `_health_deep._open_ro`.
     """
-    if not db_file_path.exists():
+    if not Path(db_file_path).exists():
         return None, f"db missing: {db_file_path}"
     try:
         uri = f"file:{db_file_path}?mode=ro"

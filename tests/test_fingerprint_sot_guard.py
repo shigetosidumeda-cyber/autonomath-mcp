@@ -44,9 +44,7 @@ import pathlib
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 GATE_PATH = REPO_ROOT / "scripts" / "ops" / "production_deploy_go_gate.py"
-CLI_PATH = (
-    REPO_ROOT / "tools" / "offline" / "operator_review" / "compute_dirty_fingerprint.py"
-)
+CLI_PATH = REPO_ROOT / "tools" / "offline" / "operator_review" / "compute_dirty_fingerprint.py"
 SOT_PATH = REPO_ROOT / "scripts" / "ops" / "repo_dirty_lane_report.py"
 
 CANONICAL_HELPER_NAME = "compute_canonical_dirty_fingerprint"

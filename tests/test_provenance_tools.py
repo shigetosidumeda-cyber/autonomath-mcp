@@ -63,8 +63,7 @@ _VALID_LICENSES = {
 
 # ISO-8601 — accept date-only or full timestamp variants the DB carries.
 _ISO8601_RE = re.compile(
-    r"^\d{4}-\d{2}-\d{2}"
-    r"([ T]\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:?\d{2})?)?$"
+    r"^\d{4}-\d{2}-\d{2}" r"([ T]\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:?\d{2})?)?$"
 )
 
 

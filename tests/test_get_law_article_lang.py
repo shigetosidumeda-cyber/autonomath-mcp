@@ -191,9 +191,9 @@ def test_lang_en_on_jp_only_article_falls_back_with_warning():
     # Fallback must surface SOMETHING from the JP source — text_full or
     # text_summary (text_full is NULL on many catalog stubs that only carry
     # the summary; both are upstream concerns, not lang-routing concerns).
-    assert res.get("text_full") or res.get("text_summary"), (
-        "fallback must surface the JP body (text_full or text_summary)"
-    )
+    assert res.get("text_full") or res.get(
+        "text_summary"
+    ), "fallback must surface the JP body (text_full or text_summary)"
     # disclaimer is only attached when body_en is actually returned.
     assert "disclaimer" not in res
 

@@ -140,9 +140,9 @@ def test_tool_count_reaches_120_when_wave24_loaded() -> None:
     assert expected == 24, f"WAVE24 lists must total 24 tools, got {expected}"
 
     tools = _list_registered_tools()
-    assert len(tools) >= 120, (
-        f"Total tool count must reach 120 once wave24 is loaded; got {len(tools)}"
-    )
+    assert (
+        len(tools) >= 120
+    ), f"Total tool count must reach 120 once wave24 is loaded; got {len(tools)}"
 
 
 # --------------------------------------------------------------------------- #

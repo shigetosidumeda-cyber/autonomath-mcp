@@ -657,7 +657,7 @@ async def stripe_webhook(
         raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "webhook secret unset")
     body = await request.body()
     try:
-        event = stripe.Webhook.construct_event(
+        event = stripe.Webhook.construct_event(  # type: ignore[no-untyped-call]
             body,
             stripe_signature or "",
             settings.stripe_webhook_secret,

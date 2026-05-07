@@ -45,6 +45,7 @@ import logging
 import os
 import re
 import secrets
+import sqlite3
 import urllib.parse
 import urllib.request
 from datetime import UTC, datetime
@@ -58,6 +59,7 @@ from fastapi import (
     HTTPException,
     Query,
     Request,
+    Response,
     status,
 )
 from fastapi.responses import JSONResponse, PlainTextResponse, RedirectResponse
@@ -118,7 +120,7 @@ _PLUS_ADDR_RE = re.compile(r"^[^+@\s]+\+(am_[A-Za-z0-9_-]{16,80})@", re.IGNORECA
 # ---------------------------------------------------------------------------
 
 
-def _resolve_key_to_ctx(db, raw_key: str | None) -> ApiContext:
+def _resolve_key_to_ctx(db: sqlite3.Connection, raw_key: str | None) -> ApiContext:
     """Same row-resolution logic as ``deps.require_key`` but synchronous.
 
     Used by the integration routes that take ``?key=`` or
@@ -155,7 +157,7 @@ def _resolve_key_to_ctx(db, raw_key: str | None) -> ApiContext:
 
 def _run_search(
     *,
-    db,
+    db: sqlite3.Connection,
     q: str | None,
     prefecture: str | None = None,
     target_type: list[str] | None = None,
@@ -211,7 +213,7 @@ def _row_summary(row: dict[str, Any]) -> dict[str, str]:
 
 def _bill_one_call(
     *,
-    db,
+    db: sqlite3.Connection,
     ctx: ApiContext,
     background_tasks: BackgroundTasks | None,
     request: Request,
@@ -611,7 +613,7 @@ async def email_inbound(
     return JSONResponse(content={"status": "ok", "matched": len(rows)})
 
 
-def _email_whitelist_for_key(db, key_hash: str) -> set[str]:
+def _email_whitelist_for_key(db: sqlite3.Connection, key_hash: str) -> set[str]:
     """Return the per-key allowed `from` email set.
 
     Reads from ``api_key_email_whitelist`` (created by the future
@@ -892,7 +894,7 @@ async def google_oauth_callback(
     db: DbDep,
     code: Annotated[str, Query()],
     state: Annotated[str, Query()],
-):  # response is RedirectResponse on success; FastAPI cannot validate the
+) -> Response:  # response is RedirectResponse on success; FastAPI cannot validate the
     # union (RedirectResponse + JSONResponse), so we drop the annotation.
     client_id = os.environ.get("GOOGLE_OAUTH_CLIENT_ID")
     client_secret = os.environ.get("GOOGLE_OAUTH_CLIENT_SECRET")

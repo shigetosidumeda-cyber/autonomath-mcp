@@ -39,8 +39,9 @@ import logging
 import os
 import re
 import sqlite3
+from collections.abc import Callable
 from datetime import UTC, date, datetime, timedelta
-from typing import Annotated, Any, Literal, cast
+from typing import Annotated, Any, Literal, TypeVar, cast
 
 from pydantic import Field
 
@@ -292,7 +293,10 @@ def _db_error(
     )
 
 
-def _safe_tool(func):
+_F = TypeVar("_F", bound=Callable[..., Any])
+
+
+def _safe_tool(func: _F) -> _F:
     """Decorator: catch DB / file errors at the tool boundary.
 
     Every ``@mcp.tool`` body can raise ``sqlite3.OperationalError`` via
@@ -309,7 +313,7 @@ def _safe_tool(func):
     """
 
     @functools.wraps(func)
-    def _wrapper(*args, **kwargs):
+    def _wrapper(*args: Any, **kwargs: Any) -> Any:
         try:
             return func(*args, **kwargs)
         except sqlite3.Error as exc:
@@ -334,7 +338,7 @@ def _safe_tool(func):
                 hint=("Retry once with backoff; if persistent, fall back to an alternative tool."),
             )
 
-    return _wrapper
+    return cast("_F", _wrapper)
 
 
 # ---------------------------------------------------------------------------
@@ -2315,7 +2319,7 @@ def _resolve_seed_in_graph(seed_id: str) -> str | None:
         "SELECT canonical_id FROM am_entities WHERE canonical_id = ?", [seed_id]
     ).fetchone()
     if row:
-        return cast(str, row["canonical_id"])
+        return cast("str", row["canonical_id"])
     # 2. exact primary_name
     row = aconn.execute(
         "SELECT canonical_id FROM am_entities WHERE primary_name = ? "
@@ -2323,7 +2327,7 @@ def _resolve_seed_in_graph(seed_id: str) -> str | None:
         [seed_id],
     ).fetchone()
     if row:
-        return cast(str, row["canonical_id"])
+        return cast("str", row["canonical_id"])
     # 3. alias hit (am_alias may not exist on minimal builds — guard).
     try:
         row = aconn.execute(
@@ -2331,7 +2335,7 @@ def _resolve_seed_in_graph(seed_id: str) -> str | None:
             [seed_id],
         ).fetchone()
         if row:
-            return cast(str, row["canonical_id"])
+            return cast("str", row["canonical_id"])
     except sqlite3.OperationalError:
         pass
     # 4. loose primary_name LIKE
@@ -2342,7 +2346,7 @@ def _resolve_seed_in_graph(seed_id: str) -> str | None:
         [f"%{esc}%"],
     ).fetchone()
     if row:
-        return cast(str, row["canonical_id"])
+        return cast("str", row["canonical_id"])
     return None
 
 

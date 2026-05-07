@@ -22,6 +22,7 @@ expected output (real, against live stub with 6,771 programs):
     | A | 青森 スマート農業機械導入支援事業 | 1250.0 | 都道府県 |
     total matches: 3
 """
+
 from __future__ import annotations
 
 import os
@@ -48,20 +49,28 @@ def fetch_top_programs(prefecture: str, amount_min: float, limit: int = 10) -> l
     ]
 
     try:
-        resp = httpx.get(f"{API_BASE}/v1/programs/search", headers=headers, params=params, timeout=15.0)
+        resp = httpx.get(
+            f"{API_BASE}/v1/programs/search", headers=headers, params=params, timeout=15.0
+        )
     except httpx.HTTPError as exc:
         print(f"ERROR: transport failure contacting {API_BASE}: {exc}", file=sys.stderr)
         sys.exit(2)
 
     if resp.status_code == 401:
-        print("ERROR: 401 Unauthorized — set JPINTEL_API_KEY or omit it for free tier", file=sys.stderr)
+        print(
+            "ERROR: 401 Unauthorized — set JPINTEL_API_KEY or omit it for free tier",
+            file=sys.stderr,
+        )
         sys.exit(1)
     if resp.status_code == 429:
         retry = resp.headers.get("Retry-After", "?")
         print(f"ERROR: 429 rate limit — retry after {retry}s", file=sys.stderr)
         sys.exit(1)
     if resp.status_code >= 500:
-        print(f"ERROR: server {resp.status_code} — try again or check {API_BASE}/healthz", file=sys.stderr)
+        print(
+            f"ERROR: server {resp.status_code} — try again or check {API_BASE}/healthz",
+            file=sys.stderr,
+        )
         sys.exit(1)
     resp.raise_for_status()
 

@@ -79,12 +79,12 @@ def test_small_response_minimum_size_gate_configured(client: TestClient) -> None
     matches = [m for m in app.user_middleware if m.cls is _G]
     assert matches, "GZipMiddleware not wired into the app"
     # user_middleware entry kwargs carry the constructor args.
-    assert matches[0].kwargs.get("minimum_size") == 1024, (
-        f"expected minimum_size=1024, got {matches[0].kwargs.get('minimum_size')!r}"
-    )
-    assert matches[0].kwargs.get("compresslevel") == 6, (
-        f"expected compresslevel=6, got {matches[0].kwargs.get('compresslevel')!r}"
-    )
+    assert (
+        matches[0].kwargs.get("minimum_size") == 1024
+    ), f"expected minimum_size=1024, got {matches[0].kwargs.get('minimum_size')!r}"
+    assert (
+        matches[0].kwargs.get("compresslevel") == 6
+    ), f"expected compresslevel=6, got {matches[0].kwargs.get('compresslevel')!r}"
 
 
 def test_disclaimer_preserved_after_gzip(client: TestClient) -> None:

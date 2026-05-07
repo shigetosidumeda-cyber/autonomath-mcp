@@ -28,7 +28,6 @@ from freee_to_autonomath import (  # noqa: E402
     recommend,
 )
 
-
 # ----- helpers ------------------------------------------------------------
 
 FREEE_COMPANY_PAYLOAD = {

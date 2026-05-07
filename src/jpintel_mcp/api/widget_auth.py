@@ -598,7 +598,7 @@ def widget_search(
 
     # Re-wrap the body to include widget-level branding + quota state.
     try:
-        body = json.loads(resp.body)
+        body = json.loads(bytes(resp.body))
     except (json.JSONDecodeError, AttributeError):
         body = {"total": 0, "results": [], "limit": limit, "offset": 0}
 
@@ -810,7 +810,7 @@ async def widget_stripe_webhook(
     stripe.api_key = settings.stripe_secret_key
     body = await request.body()
     try:
-        event = stripe.Webhook.construct_event(
+        event = stripe.Webhook.construct_event(  # type: ignore[no-untyped-call]
             body,
             stripe_signature or "",
             settings.stripe_webhook_secret,

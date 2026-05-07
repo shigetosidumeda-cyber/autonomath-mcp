@@ -123,9 +123,9 @@ def test_corpus_per_axis_count(corpus: list[dict[str, Any]]) -> None:
     for e in corpus:
         counts[e["axis"]] += 1
     expected_axes = set(AXIS_SCORE.keys())
-    assert set(counts.keys()) == expected_axes, (
-        f"axis set mismatch: {set(counts.keys())} vs {expected_axes}"
-    )
+    assert (
+        set(counts.keys()) == expected_axes
+    ), f"axis set mismatch: {set(counts.keys())} vs {expected_axes}"
     for axis, c in counts.items():
         assert c == PER_AXIS_TARGET, f"axis {axis} has {c}, expected {PER_AXIS_TARGET}"
 
@@ -146,9 +146,9 @@ def test_corpus_schema_keys(corpus: list[dict[str, Any]]) -> None:
         missing = required - set(e.keys())
         assert not missing, f"entry {e.get('id')} missing keys {missing}"
         # Each entry must have at least one candidate_* identifier
-        assert "candidate_houjin_bangou" in e or "candidate_houjin_name" in e, (
-            f"entry {e['id']} has no candidate_* field"
-        )
+        assert (
+            "candidate_houjin_bangou" in e or "candidate_houjin_name" in e
+        ), f"entry {e['id']} has no candidate_* field"
 
 
 def test_expected_ranges_match_axis_table(corpus: list[dict[str, Any]]) -> None:
@@ -239,9 +239,9 @@ def test_overall_accuracy_above_90_percent(corpus: list[dict[str, Any]]) -> None
     total = sum(b["total"] for b in res["per_axis"].values())
     in_range = sum(b["in_range"] for b in res["per_axis"].values())
     accuracy = in_range / total
-    assert accuracy >= OVERALL_ACCURACY_FLOOR, (
-        f"overall accuracy {accuracy:.4f} below floor {OVERALL_ACCURACY_FLOOR}"
-    )
+    assert (
+        accuracy >= OVERALL_ACCURACY_FLOOR
+    ), f"overall accuracy {accuracy:.4f} below floor {OVERALL_ACCURACY_FLOOR}"
 
 
 # ---------------------------------------------------------------------------

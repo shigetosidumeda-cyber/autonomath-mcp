@@ -281,8 +281,7 @@ _ASCII_TERM_RE = re.compile(r"[A-Za-z0-9]{2,}")
 _CORPORATE_NUMBER_RE = re.compile(r"T?([0-9０-９]{13})")
 _FALLBACK_SPLIT_RE = re.compile(r"[\s、。,.?？!！/／・:：（）()「」『』【】\[\]]+")
 _FALLBACK_PARTICLE_RE = re.compile(
-    r"^(?:の|は|を|に|で|と|が|から|まで)+|"
-    r"(?:について|教えてください|ください|ですか)+$"
+    r"^(?:の|は|を|に|で|と|が|から|まで)+|" r"(?:について|教えてください|ください|ですか)+$"
 )
 _NON_PROGRAM_INTENT_RE = re.compile(
     r"法人番号|適格請求書|行政処分|業務停止|営業停止|免許取消|業務改善命令|"

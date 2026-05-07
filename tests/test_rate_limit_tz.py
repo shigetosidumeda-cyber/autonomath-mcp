@@ -126,14 +126,16 @@ def test_anon_4th_request_is_429_with_jst_reset(
 
     # Must be the next JST day.
     expected_date = (start_jst + timedelta(days=1)).date()
-    assert resets_at.date() == expected_date, (
-        f"resets_at date must be next JST day {expected_date}, got {resets_at.date()}"
-    )
+    assert (
+        resets_at.date() == expected_date
+    ), f"resets_at date must be next JST day {expected_date}, got {resets_at.date()}"
 
     # Must be at 00:00:00.
-    assert (resets_at.hour, resets_at.minute, resets_at.second) == (0, 0, 0), (
-        f"resets_at time must be 00:00:00 JST, got {resets_at.time()}"
-    )
+    assert (resets_at.hour, resets_at.minute, resets_at.second) == (
+        0,
+        0,
+        0,
+    ), f"resets_at time must be 00:00:00 JST, got {resets_at.time()}"
 
     # Must be in the future relative to now (JST).
     now_jst = datetime.now(_JST)

@@ -121,9 +121,9 @@ def test_boundary_phrases_have_at_least_one_per_sensitive_persona() -> None:
         "industry_pack_real_estate",
     ]
     for slug in sensitive_personas:
-        assert _persona_index.BOUNDARY_PHRASES_BY_PERSONA.get(slug), (
-            f"{slug} missing boundary phrases"
-        )
+        assert _persona_index.BOUNDARY_PHRASES_BY_PERSONA.get(
+            slug
+        ), f"{slug} missing boundary phrases"
 
 
 def test_persona_index_exactly_15() -> None:
@@ -155,9 +155,9 @@ def test_dry_run_emits_15x3_results(tmp_path: Path) -> None:
     payload = json.loads((out_dir / "results_latest.json").read_text(encoding="utf-8"))
     assert len(payload["persona_results"]) == 15
     for p in payload["persona_results"]:
-        assert len(p["queries"]) == 3, (
-            f"persona {p['persona_slug']} has {len(p['queries'])} queries (want 3)"
-        )
+        assert (
+            len(p["queries"]) == 3
+        ), f"persona {p['persona_slug']} has {len(p['queries'])} queries (want 3)"
 
 
 def test_judge_substring_default() -> None:

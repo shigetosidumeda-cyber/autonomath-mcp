@@ -31,6 +31,7 @@ Scoring contract:
 The aggregator computes per-domain and overall accuracy from these
 fields and writes a CSV + JSON report to ``--out``.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -42,7 +43,7 @@ import re
 import sys
 import unicodedata
 from collections import defaultdict
-from typing import Iterable
+from collections.abc import Iterable
 
 # ---------------------------------------------------------------------------
 # Normalizers — kept tiny on purpose so reviewers can audit behaviour.
@@ -113,6 +114,7 @@ def _host_match(expected: str, observed_hosts: Iterable[str]) -> bool:
 # Scoring
 # ---------------------------------------------------------------------------
 
+
 @dataclasses.dataclass
 class Question:
     id: str
@@ -125,7 +127,7 @@ class Question:
     scoring_rubric: str
 
     @classmethod
-    def from_jsonl(cls, line: str) -> "Question":
+    def from_jsonl(cls, line: str) -> Question:
         d = json.loads(line)
         return cls(
             id=d["id"],
@@ -149,7 +151,9 @@ def score_one(q: Question, output: str, factual_judge=None) -> dict:
 
     # citation
     hosts = _hosts_in(out)
-    citation_ok = 1 if (q.expected_source_host and _host_match(q.expected_source_host, hosts)) else 0
+    citation_ok = (
+        1 if (q.expected_source_host and _host_match(q.expected_source_host, hosts)) else 0
+    )
 
     # exact_match: substring match on normalized expected_value
     exp_norm = _normalize_text(_man_yen_to_yen(_wareki_to_iso(q.expected_value)))
@@ -204,16 +208,34 @@ def aggregate(rows: list[dict]) -> dict:
 # CLI
 # ---------------------------------------------------------------------------
 
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description="Score JCRB-v1 model outputs.")
-    p.add_argument("--questions", type=pathlib.Path, default=pathlib.Path(__file__).parent / "questions.jsonl")
-    p.add_argument("--predictions", type=pathlib.Path, required=True,
-                   help="JSONL of {id, output} rows produced by run.py")
-    p.add_argument("--out", type=pathlib.Path, default=pathlib.Path("jcrb_v1_results"),
-                   help="Output prefix (writes <out>.csv and <out>.json)")
+    p.add_argument(
+        "--questions", type=pathlib.Path, default=pathlib.Path(__file__).parent / "questions.jsonl"
+    )
+    p.add_argument(
+        "--predictions",
+        type=pathlib.Path,
+        required=True,
+        help="JSONL of {id, output} rows produced by run.py",
+    )
+    p.add_argument(
+        "--out",
+        type=pathlib.Path,
+        default=pathlib.Path("jcrb_v1_results"),
+        help="Output prefix (writes <out>.csv and <out>.json)",
+    )
     args = p.parse_args(argv)
 
-    qs = {q.id: q for q in (Question.from_jsonl(line) for line in args.questions.read_text(encoding="utf-8").splitlines() if line.strip())}
+    qs = {
+        q.id: q
+        for q in (
+            Question.from_jsonl(line)
+            for line in args.questions.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        )
+    }
     preds = {}
     for line in args.predictions.read_text(encoding="utf-8").splitlines():
         if not line.strip():
@@ -231,7 +253,17 @@ def main(argv: list[str] | None = None) -> int:
     # CSV per-question
     csv_path = args.out.with_suffix(".csv")
     with csv_path.open("w", encoding="utf-8", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=["id", "domain", "exact_match", "exact_match_value_only", "citation_ok", "factual_correctness"])
+        w = csv.DictWriter(
+            f,
+            fieldnames=[
+                "id",
+                "domain",
+                "exact_match",
+                "exact_match_value_only",
+                "citation_ok",
+                "factual_correctness",
+            ],
+        )
         w.writeheader()
         w.writerows(rows)
 

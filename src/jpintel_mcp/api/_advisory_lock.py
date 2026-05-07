@@ -46,6 +46,7 @@ from __future__ import annotations
 
 import logging
 import os
+import sqlite3
 import threading
 import time
 from contextlib import contextmanager, suppress
@@ -93,7 +94,7 @@ def _expires_iso(ttl_s: int) -> str:
 
 @contextmanager
 def advisory_lock(
-    conn,
+    conn: sqlite3.Connection,
     key: str,
     *,
     ttl_s: int = 30,

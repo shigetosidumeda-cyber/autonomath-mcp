@@ -45,10 +45,11 @@ from __future__ import annotations
 
 import json
 import logging
+import sqlite3
 from datetime import UTC, datetime
 from typing import Annotated, Any, Literal
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, HTTPException, Query, Response, status
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from jpintel_mcp.api.deps import (  # noqa: TC001 (runtime for FastAPI Depends resolution)
@@ -522,7 +523,7 @@ def delete_saved_search(
 # tolerates both pre- and post-migration schemas via _has_sheet_id_column.
 
 
-def _has_sheet_id_column(conn) -> bool:
+def _has_sheet_id_column(conn: sqlite3.Connection) -> bool:
     """Return True iff migration 105 has run (saved_searches has sheet_id)."""
     try:
         cols = {row[1] for row in conn.execute("PRAGMA table_info(saved_searches)")}
@@ -543,7 +544,9 @@ def _saved_query_list(value: Any) -> list[str] | None:
     return [text] if text else None
 
 
-def _run_saved_search_query(conn, query: dict[str, Any]) -> tuple[list[dict[str, Any]], int]:
+def _run_saved_search_query(
+    conn: sqlite3.Connection, query: dict[str, Any]
+) -> tuple[list[dict[str, Any]], int]:
     """Replay a saved search with identical filters for every output format."""
     from jpintel_mcp.api.programs import _build_search_response
 
@@ -672,7 +675,7 @@ def saved_search_results(
             pattern=r"^(json|csv|xlsx|ics)$",
         ),
     ] = "json",
-):
+) -> Response:
     """Run the saved-search query and return the results in chosen format.
 
     Re-uses ``_build_search_response`` so the result shape is identical to
@@ -769,7 +772,7 @@ def saved_search_results_xlsx(
     saved_id: int,
     ctx: ApiContextDep,
     conn: DbDep,
-):
+) -> Response:
     """Stream the saved-search results as XLSX.
 
     Re-uses the same _build_search_response + xlsx renderer as the rest of

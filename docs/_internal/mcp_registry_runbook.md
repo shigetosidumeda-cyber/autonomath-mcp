@@ -49,4 +49,3 @@ GH_TOKEN=<token> .venv/bin/python scripts/publish_to_mcp_registries.py --only mc
 
 # Result JSON is also written to scripts/mcp_publish_result.json
 ```
-

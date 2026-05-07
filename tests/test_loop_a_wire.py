@@ -52,9 +52,9 @@ def test_forbidden_phrase_detected() -> None:
     _, hits = sanitize_response_text(text)
     # The phrase itself should not be 景表法-rewritten (test stays focused
     # on layer 3) — assert the loop_a prefix appears with the right severity.
-    assert f"loop_a-{severity}" in hits, (
-        f"expected loop_a-{severity} hit for phrase {phrase!r}, got {hits!r}"
-    )
+    assert (
+        f"loop_a-{severity}" in hits
+    ), f"expected loop_a-{severity} hit for phrase {phrase!r}, got {hits!r}"
 
 
 def test_legitimate_text_preserved() -> None:
@@ -86,6 +86,6 @@ def test_env_disabled_skips_layer(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(rs.settings, "hallucination_guard_enabled", False)
 
     _, hits = rs.sanitize_response_text(f"参考: {phrase}")
-    assert not any(h.startswith("loop_a-") for h in hits), (
-        f"layer 3 should be inert when disabled, got {hits!r}"
-    )
+    assert not any(
+        h.startswith("loop_a-") for h in hits
+    ), f"layer 3 should be inert when disabled, got {hits!r}"

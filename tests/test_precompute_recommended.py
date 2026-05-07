@@ -238,9 +238,9 @@ def test_score_in_unit_interval_and_sorted_desc(am_db: Path, cron_module):
     for hb, items in by_h.items():
         items.sort()
         scores = [s for _r, s in items]
-        assert scores == sorted(scores, reverse=True), (
-            f"score not sorted DESC by rank for {hb}: {scores}"
-        )
+        assert scores == sorted(
+            scores, reverse=True
+        ), f"score not sorted DESC by rank for {hb}: {scores}"
 
 
 def test_reason_json_carries_all_signals_and_weights_sum_to_one(am_db: Path, cron_module):

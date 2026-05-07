@@ -265,6 +265,6 @@ class TestShihoshoshiToolCount:
         from jpintel_mcp.mcp.server import mcp as _mcp
 
         tool_names = {t.name for t in _mcp._tool_manager.list_tools()}
-        assert "shihoshoshi_dd_pack_am" in tool_names, (
-            "shihoshoshi_dd_pack_am not registered at default gates"
-        )
+        assert (
+            "shihoshoshi_dd_pack_am" in tool_names
+        ), "shihoshoshi_dd_pack_am not registered at default gates"

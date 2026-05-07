@@ -80,14 +80,14 @@ def test_rule_engine_compat_pair_resolution_incompatible():
 
     # No error envelope expected (this is a clean DENY, not a conflict).
     assert res.get("error") is None or res["error"].get("code") != "rules_conflict"
-    assert res["judgment"] == "deny", (
-        f"expected judgment=deny for incompatible pair {pa!r}+{pb!r}, got {res['judgment']!r}"
-    )
+    assert (
+        res["judgment"] == "deny"
+    ), f"expected judgment=deny for incompatible pair {pa!r}+{pb!r}, got {res['judgment']!r}"
     # Evidence must include at least one am_compat_matrix row.
     sources = {ev["source"] for ev in res["evidence"]}
-    assert "am_compat_matrix" in sources, (
-        f"expected am_compat_matrix in evidence sources, got {sources}"
-    )
+    assert (
+        "am_compat_matrix" in sources
+    ), f"expected am_compat_matrix in evidence sources, got {sources}"
     # confidence high for deny verdicts.
     assert res["confidence"] == 1.0
     # data_quality must surface the partial-coverage number.
@@ -109,9 +109,10 @@ def test_rule_engine_compat_pair_resolution_compatible():
     # The pair could be 'compatible' in compat_matrix yet 'case_by_case' in another
     # row of the same matrix for an inverse direction, but since PK is (a,b),
     # the lookup for our specific pair stabilises on 'compatible'.
-    assert res["judgment"] in ("allow", "review"), (
-        f"expected allow/review for compatible pair, got {res['judgment']!r}"
-    )
+    assert res["judgment"] in (
+        "allow",
+        "review",
+    ), f"expected allow/review for compatible pair, got {res['judgment']!r}"
     sources = {ev["source"] for ev in res["evidence"]}
     assert "am_compat_matrix" in sources
 
@@ -184,12 +185,12 @@ def test_rule_engine_rules_conflict_returns_explicit_error():
     assert res.get("judgment") == "conflict"
     # Both rule_ids must be present in the evidence — never silently merged.
     rule_ids = {ev["rule_id"] for ev in res.get("evidence", [])}
-    assert "exclusion:fake-deny-001" in rule_ids, (
-        f"deny rule_id missing from conflict evidence: {rule_ids}"
-    )
-    assert "compat:fake-allow-001" in rule_ids, (
-        f"allow rule_id missing from conflict evidence: {rule_ids}"
-    )
+    assert (
+        "exclusion:fake-deny-001" in rule_ids
+    ), f"deny rule_id missing from conflict evidence: {rule_ids}"
+    assert (
+        "compat:fake-allow-001" in rule_ids
+    ), f"allow rule_id missing from conflict evidence: {rule_ids}"
     # _disclaimer must mention 景表法 or 人 review.
     assert "_disclaimer" in res
     msg = res["_disclaimer"]
@@ -214,13 +215,13 @@ def test_rule_engine_unknown_bucket_returns_unknown_with_reason():
         # Acceptable: subsystem_unavailable / db_unavailable; never rules_conflict here.
         assert err.get("code") != "rules_conflict"
 
-    assert res["judgment"] == "unknown", (
-        f"expected unknown for compat:unknown pair, got {res['judgment']!r}"
-    )
+    assert (
+        res["judgment"] == "unknown"
+    ), f"expected unknown for compat:unknown pair, got {res['judgment']!r}"
     # reason must be present and explicit (not empty / not None).
-    assert res.get("reason"), (
-        f"unknown verdict must surface reason, got reason={res.get('reason')!r}"
-    )
+    assert res.get(
+        "reason"
+    ), f"unknown verdict must surface reason, got reason={res.get('reason')!r}"
     # confidence is low for unknown.
     assert res["confidence"] <= 0.5
     # The unknown evidence row must be in the trace.

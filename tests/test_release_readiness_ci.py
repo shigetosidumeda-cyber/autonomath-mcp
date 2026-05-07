@@ -78,9 +78,9 @@ def test_check_workflow_yaml_syntax_valid() -> None:
     text = CHECK_YAML.read_text(encoding="utf-8")
     assert text.startswith("# DEEP-57"), "leading spec banner missing"
     assert "name: check-workflow-target-sync" in text
-    assert re.search(r"^on:\n  pull_request:\n    paths:", text, re.MULTILINE), (
-        "pull_request trigger with paths filter not found"
-    )
+    assert re.search(
+        r"^on:\n  pull_request:\n    paths:", text, re.MULTILINE
+    ), "pull_request trigger with paths filter not found"
     # Expected path filters
     assert ".github/workflows/**" in text
     assert "tests/**" in text
@@ -94,9 +94,9 @@ def test_check_workflow_yaml_syntax_valid() -> None:
     assert "self-hosted" not in text
     # Read-only permissions on PR side. Tolerate interleaved comments.
     assert re.search(r"^permissions:", text, re.MULTILINE)
-    assert re.search(r"^\s+contents:\s*read\s*$", text, re.MULTILINE), (
-        "permissions: contents: read missing on PR-side workflow"
-    )
+    assert re.search(
+        r"^\s+contents:\s*read\s*$", text, re.MULTILINE
+    ), "permissions: contents: read missing on PR-side workflow"
 
 
 # --- 2. Monthly cron schedule ------------------------------------------

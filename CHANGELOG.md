@@ -8,6 +8,95 @@ See [`docs/versioning.md`](docs/versioning.md) for what counts as breaking.
 
 ## [Unreleased]
 
+### Added (post-manifest landing 2026-05-07 — manifests held at 139 pending operator decision)
+
+- **7 post-manifest MCP tools landed 2026-05-07** — DEEP-22 / DEEP-30 / DEEP-39 /
+  DEEP-44 / DEEP-45 spec batch lands as additive cohort over the 139-tool
+  default-gate surface. Manifest counts (`pyproject.toml` /
+  `mcp-server.json` / `dxt/manifest.json` / `smithery.yaml` /
+  `site/mcp-server.json` / `server.json`) intentionally **held at 139**
+  pending operator decision per `R8_MANIFEST_BUMP_EVAL_2026-05-07.md`
+  Option B recommendation; runtime `tools/list` will surface **146** once
+  the underlying gates flip ON (139 default-gate + 7 post-manifest). Cohort audit:
+  `R8_MCP_FULL_COHORT_2026-05-07.md`. NO LLM call inside any of the 7
+  tools — pure SQLite + Python.
+  - **`query_at_snapshot_v2`** (DEEP-22) — point-in-time snapshot query
+    over `am_amendment_snapshot` v2 surface; supersedes the
+    `query_at_snapshot` (v1) tool that remains gated off pending the
+    migration 067 substrate. v2 reads the 144 dated rows directly and
+    returns honest `effective_from` / `eligibility_hash` envelopes for
+    those, falling back to a structured `unknown_temporal` hint for the
+    remaining ~14,452 rows where the time-series is acknowledged-fake.
+    NOT 業法 sensitive.
+  - **`query_program_evolution`** (DEEP-30) — program lineage walker over
+    `am_amendment_diff` (12,116 rows, cron-live since 2026-05-02). Given
+    a `program_unified_id`, returns the eligibility / amount / deadline
+    diff timeline with `corpus_snapshot_id` + `corpus_checksum` for
+    auditor reproducibility. Empty timeline surfaces a structured
+    `{error: {code: empty_evolution, hint}}` envelope. NOT 業法
+    sensitive.
+  - **`shihoshoshi_dd_pack_am`** (DEEP-39) — 司法書士法 §3 fence,
+    NON-CREATING DD pack assembly: 法人番号 → 法務局 jurisdiction
+    cross-check + 不動産登記 reference scaffold + 商業登記 amendment
+    history index. Output is a **read-only** assembly of first-party
+    references with explicit `_disclaimer` declaring the pack is a
+    pre-司法書士-review checklist, NOT a 登記申請 draft. Sensitive
+    (司法書士法 §3 — assembly only, no 登記申請 creation).
+  - **`search_kokkai_utterance`** (DEEP-44) — 国会会議録 utterance search
+    over the post-manifest kokkai corpus shard. Filters on speaker /
+    party / committee / session date range with FTS5 trigram +
+    unicode61 fallback. Each hit carries primary-source `source_url`
+    (kokkai.ndl.go.jp) + speaker attribution. NOT 業法 sensitive but
+    carries a `_disclaimer` declaring utterances are pre-法案 commentary,
+    NOT enacted law.
+  - **`search_shingikai_minutes`** (DEEP-45) — 審議会 議事録 search over
+    the cabinet-office / agency 審議会 minutes shard. Filters on
+    審議会 name / agenda topic / committee member / meeting date range.
+    Returns extracted reasoning paragraphs with `corpus_snapshot_id` for
+    reproducibility. NOT 業法 sensitive but carries a `_disclaimer`
+    that 議事録 are pre-policy deliberation, NOT enacted regulation.
+  - **`search_municipality_subsidies`** (DEEP-44 companion) —
+    municipality-level subsidy surface beyond the 政令市 20 hub
+    coverage. Filters on `municipality_code` (5-digit) + funding_purpose
+    + amount range. Honest-coverage gate: returns `{warning:
+    coverage_gap_municipality}` envelope when the requested municipality
+    has zero indexed programs (vs silently returning 0 rows). NOT 業法
+    sensitive.
+  - **`get_pubcomment_status`** (DEEP-45 companion) — パブリックコメント
+    status probe over `e-gov.go.jp` パブコメ surface. Given a
+    `pubcomment_id`, returns the consultation window (open/close) +
+    submission count + post-consultation outcome reference (when the
+    結果概要 has been issued) + first-party `source_url`. Surfaces a
+    structured `{status: in_consultation | closed | result_published |
+    unknown}` enum. NOT 業法 sensitive.
+
+### Notes (post-manifest landing 2026-05-07)
+
+- **Manifest hold rationale (Option B)** — per
+  `R8_MANIFEST_BUMP_EVAL_2026-05-07.md`, the 7 post-manifest tools are
+  **NOT** auto-published to the MCP registry. Manifests stay at 139 until
+  the operator explicitly approves a v0.3.5 bump. Rationale: the 3
+  post-manifest tools that touch sensitive surfaces
+  (`shihoshoshi_dd_pack_am` 司法書士法 §3 / `search_kokkai_utterance`
+  utterance disclaimer scaffold / `search_shingikai_minutes` 議事録
+  disclaimer scaffold) need a final §52 / §3 disclaimer audit walk
+  before public registry exposure. The 4 non-sensitive tools
+  (`query_at_snapshot_v2` / `query_program_evolution` /
+  `search_municipality_subsidies` / `get_pubcomment_status`) could ship
+  today, but bundling avoids two registry republish cycles in one week.
+- **Audit references**:
+  - `R8_MANIFEST_BUMP_EVAL_2026-05-07.md` — Option A vs Option B
+    comparison + Option B (manifest hold + CHANGELOG entry only)
+    recommendation.
+  - `R8_MCP_FULL_COHORT_2026-05-07.md` — full 146-tool cohort inventory
+    with per-tool gate state + sensitivity classification + landing date
+    (139 default-gate + 7 post-manifest = 146 latent surface).
+- **Internal hypothesis framing retained** — manifest bump is an
+  operator decision, NOT an automatic publish trigger. The tag-push
+  →PyPI →MCP-registry chain (`release.yml` + `mcp-registry-publish.yml`)
+  remains gated on a manual `pyproject.toml` bump; no auto-bump
+  workflow has been added in this landing.
+
 ## [v0.3.3] — 2026-05-04 — Release wave (DYM middleware + child API keys + 政令市 hubs + manifest shortform)
 
 ### Added

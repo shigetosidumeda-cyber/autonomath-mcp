@@ -116,9 +116,9 @@ def test_default_disabled_tools_absent():
     out = _run_with_env("0", _list_tools_snippet())
     names = set(out["tools"])
     for t in _GATED_TOOLS:
-        assert t not in names, (
-            f"{t} leaked into the registry with the gate disabled — the launch gate is broken."
-        )
+        assert (
+            t not in names
+        ), f"{t} leaked into the registry with the gate disabled — the launch gate is broken."
 
 
 def test_default_disabled_other_tools_present():
@@ -128,12 +128,12 @@ def test_default_disabled_other_tools_present():
     names = set(out["tools"])
     # Surrounding Phase A tools must still register — i.e. we did not
     # accidentally break the package import.
-    assert "deep_health_am" in names, (
-        f"deep_health_am missing — package import may be broken. Got: {sorted(names)}"
-    )
-    assert "list_static_resources_am" in names, (
-        f"list_static_resources_am missing — package import may be broken. Got: {sorted(names)}"
-    )
+    assert (
+        "deep_health_am" in names
+    ), f"deep_health_am missing — package import may be broken. Got: {sorted(names)}"
+    assert (
+        "list_static_resources_am" in names
+    ), f"list_static_resources_am missing — package import may be broken. Got: {sorted(names)}"
 
 
 # ----------------------------------------------------------------------
@@ -146,9 +146,9 @@ def test_enabled_tools_present():
     out = _run_with_env("1", _list_tools_snippet())
     names = set(out["tools"])
     for t in _GATED_TOOLS:
-        assert t in names, (
-            f"{t} missing with gate enabled — registration is broken. Got: {sorted(names)}"
-        )
+        assert (
+            t in names
+        ), f"{t} missing with gate enabled — registration is broken. Got: {sorted(names)}"
 
 
 def test_enabled_render_returns_disclaimer():
@@ -181,9 +181,9 @@ def test_gate_toggles_exactly_two_tools():
     disabled = set(_run_with_env("0", _list_tools_snippet())["tools"])
     enabled = set(_run_with_env("1", _list_tools_snippet())["tools"])
     diff = enabled - disabled
-    assert diff == set(_GATED_TOOLS), (
-        f"gate flipped unexpected tools. expected diff={set(_GATED_TOOLS)}, got diff={diff}"
-    )
+    assert diff == set(
+        _GATED_TOOLS
+    ), f"gate flipped unexpected tools. expected diff={set(_GATED_TOOLS)}, got diff={diff}"
     # No tool should disappear when the gate flips on.
     regression = disabled - enabled
     assert regression == set(), f"tools disappeared when gate enabled (regression): {regression}"

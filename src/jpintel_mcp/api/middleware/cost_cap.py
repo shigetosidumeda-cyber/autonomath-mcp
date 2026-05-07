@@ -260,9 +260,7 @@ class CostCapMiddleware(BaseHTTPMiddleware):
         out enforcement).
     """
 
-    async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
-    ) -> Response:
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         # CORS preflight always passes — don't gate OPTIONS.
         if request.method == "OPTIONS":
             return await call_next(request)

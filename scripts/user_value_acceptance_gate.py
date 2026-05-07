@@ -100,8 +100,7 @@ NEGATED_COST_CLAIM_TERMS = (
 )
 
 LLM_IMPORT_RE = re.compile(
-    r"^\s*(?:from|import)\s+"
-    r"(?:anthropic|openai|google\.generativeai|claude_agent_sdk)\b",
+    r"^\s*(?:from|import)\s+" r"(?:anthropic|openai|google\.generativeai|claude_agent_sdk)\b",
     re.MULTILINE,
 )
 

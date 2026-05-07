@@ -44,4 +44,3 @@
 - Wall clock: real round-trip when the live API returned 200; otherwise calibrated fallback (140 ms/naive call, 180 ms/composite). Composite endpoints `/v1/intel/program/{id}/full` + `/v1/intel/citation_pack/{id}` are not yet wired in production; their bodies are size-calibrated synthesis. `/v1/houjin/{bangou}` IS the real composite (`api/houjin.py`).
 - Output token model: naive must re-quote per facet (110 + 32/facet); composite emits one consolidated quote (130 + 8/facet).
 - Pricing: Opus 4.7 list ($15/M input, $75/M output) per `token_estimator.MODEL_PRICING`.
-

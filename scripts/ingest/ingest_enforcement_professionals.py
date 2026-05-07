@@ -493,8 +493,7 @@ def parse_fsa_disciplinary(html: str, source_url: str) -> list[EnfRow]:
         # Find disciplinary action sentences for CPAs.
         # Look at "公認会計士" sections and take effective date from 業務停止X月（令和...）
         cpa_sentences = re.findall(
-            r"公認会計士[\s　]*[^。\n]{0,400}?(?:業務停止|登録抹消|戒告)"
-            r"[^。\n]{0,400}?。",
+            r"公認会計士[\s　]*[^。\n]{0,400}?(?:業務停止|登録抹消|戒告)" r"[^。\n]{0,400}?。",
             plain,
         )
         # Cap to cpa_count
@@ -620,8 +619,7 @@ def parse_pref_gyosei(html: str, source_url: str, pref: str) -> list[EnfRow]:
     # 都 style where stripped HTML loses the inner space.
     if not name_candidates:
         compact_re = re.compile(
-            r"([一-龥々〆ヶ]{2,5})"
-            r"[（(]([ぁ-ん]{1,8})[\s　]+([ぁ-ん]{1,12})[）)]"
+            r"([一-龥々〆ヶ]{2,5})" r"[（(]([ぁ-ん]{1,8})[\s　]+([ぁ-ん]{1,12})[）)]"
         )
         for m in compact_re.finditer(plain):
             cand = m.group(1).strip()
@@ -634,10 +632,7 @@ def parse_pref_gyosei(html: str, source_url: str, pref: str) -> list[EnfRow]:
     # (登録番号 / 事務所 / 氏名 / 行政処分 / 処分年月日) within ±200 chars to
     # exclude page mascots like "都星人（とせいじん）".
     if not name_candidates:
-        compact_nospace_re = re.compile(
-            r"([一-龥々〆ヶ]{2,5})"
-            r"[（(]([ぁ-ん]{4,12})[）)]"
-        )
+        compact_nospace_re = re.compile(r"([一-龥々〆ヶ]{2,5})" r"[（(]([ぁ-ん]{4,12})[）)]")
         anchor_re = re.compile(
             r"(氏名|事務所|登録番号|処分年月日|処分の年月日|行政処分|行政書士法)"
         )
@@ -664,8 +659,7 @@ def parse_pref_gyosei(html: str, source_url: str, pref: str) -> list[EnfRow]:
     # Fallback to colon-anchored pattern if nothing found
     if not name_candidates:
         for pat in (
-            r"氏[\s　]*名[\s　]*[：:][\s　]*"
-            r"([一-龥々〆ヶ]{1,5}[\s　]*[一-龥々〆ヶぁ-ん]{1,8})",
+            r"氏[\s　]*名[\s　]*[：:][\s　]*" r"([一-龥々〆ヶ]{1,5}[\s　]*[一-龥々〆ヶぁ-ん]{1,8})",
         ):
             for m in re.finditer(pat, plain):
                 cand = m.group(1).strip()

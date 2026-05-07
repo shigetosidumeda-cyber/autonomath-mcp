@@ -116,9 +116,9 @@ def test_half_year_bucketing_collapses_to_fiscal_halves() -> None:
     # Japanese fiscal year convention.
     bucket_labels = {b["period"] for b in res["calendar"]}
     allowed = {"2026-H1", "2026-H2"}
-    assert bucket_labels.issubset(allowed), (
-        f"unexpected half_year bucket labels: {bucket_labels - allowed}"
-    )
+    assert bucket_labels.issubset(
+        allowed
+    ), f"unexpected half_year bucket labels: {bucket_labels - allowed}"
 
     # Spot-check the bucket boundaries directly via _bucket_key.
     import datetime
@@ -136,18 +136,18 @@ def test_half_year_bucketing_collapses_to_fiscal_halves() -> None:
     for bucket in res["calendar"]:
         for ev in bucket["events"]:
             d = _dt.date.fromisoformat(ev["date"])
-            assert _bucket_key(d, "half_year") == bucket["period"], (
-                f"event {ev['title']} ({ev['date']}) misplaced in bucket {bucket['period']}"
-            )
+            assert (
+                _bucket_key(d, "half_year") == bucket["period"]
+            ), f"event {ev['title']} ({ev['date']}) misplaced in bucket {bucket['period']}"
 
     # The tax_sunset インボイス 2割特例 (2026-09-30) must land in 2026-H1.
     matches = [e for e in res["results"] if "2割特例" in e["title"]]
     assert matches, "2割特例 sunset missing under half_year bucketing"
     h1 = [b for b in res["calendar"] if b["period"] == "2026-H1"][0]
     titles_h1 = {e["title"] for e in h1["events"]}
-    assert any("2割特例" in t for t in titles_h1), (
-        f"2割特例 should be in 2026-H1 bucket; got {titles_h1}"
-    )
+    assert any(
+        "2割特例" in t for t in titles_h1
+    ), f"2割特例 should be in 2026-H1 bucket; got {titles_h1}"
 
 
 # ---------------------------------------------------------------------------

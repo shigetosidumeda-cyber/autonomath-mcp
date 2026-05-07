@@ -552,8 +552,7 @@ SOURCES: list[Source] = [
 # ---------------------------------------------------------------------------
 
 WAREKI_RE = re.compile(
-    r"(令和|平成|R|H)\s*(\d+|元)\s*[年.\-．／/]\s*"
-    r"(\d{1,2})\s*[月.\-．／/]\s*(\d{1,2})\s*日?"
+    r"(令和|平成|R|H)\s*(\d+|元)\s*[年.\-．／/]\s*" r"(\d{1,2})\s*[月.\-．／/]\s*(\d{1,2})\s*日?"
 )
 SEIREKI_RE = re.compile(r"(20\d{2})\s*[年.\-／/]\s*(\d{1,2})\s*[月.\-／/]\s*(\d{1,2})")
 ERA_OFFSET = {"令和": 2018, "R": 2018, "平成": 1988, "H": 1988}
@@ -1180,8 +1179,7 @@ def parse_meti_quarterly_html(html: str, source_url: str) -> list[EnfRow]:
             continue
         # Position / dept
         dept_m = re.search(
-            r"(本省|資源エネルギー庁|特許庁|中小企業庁|"
-            r"[一-鿿]{2,8}局|[一-鿿]{2,8}庁)",
+            r"(本省|資源エネルギー庁|特許庁|中小企業庁|" r"[一-鿿]{2,8}局|[一-鿿]{2,8}庁)",
             block_norm,
         )
         dept = dept_m.group(0) if dept_m else "経済産業省"
@@ -1417,8 +1415,7 @@ def parse_saitama_edu_singlepdf(pdf_text: str, source_url: str) -> list[EnfRow]:
     """
     text = _normalize(pdf_text)
     kind_m = re.search(
-        r"処\s*分\s*内\s*容\s+(懲戒免職[^\n]*|諭旨退職|免職|停職[^\n]*|"
-        r"減給[^\n]*|戒告|訓告)",
+        r"処\s*分\s*内\s*容\s+(懲戒免職[^\n]*|諭旨退職|免職|停職[^\n]*|" r"減給[^\n]*|戒告|訓告)",
         text,
     )
     if not kind_m:
@@ -1968,8 +1965,7 @@ def parse_miyagi_edu_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
         kanri = kanri_m.group(1) if kanri_m else "一般職"
         # 事件・事故の概要 — multi-line, may contain name. ANONYMIZE.
         gaiyou_m = re.search(
-            r"事\s*件\s*・\s*事\s*故\s*の\s*概\s*要\s*\n+(.+?)"
-            r"(?=処\s*分\s*内\s*容|\Z)",
+            r"事\s*件\s*・\s*事\s*故\s*の\s*概\s*要\s*\n+(.+?)" r"(?=処\s*分\s*内\s*容|\Z)",
             block,
             re.S,
         )
@@ -2106,8 +2102,7 @@ def parse_saitama_edu_multipdf(pdf_text: str, source_url: str) -> list[EnfRow]:
         school = _normalize(area_m.group(1)) if area_m else "公立学校"
         # 6 事件・事故の概要 — multi-line, may contain name
         gaiyou_m = re.search(
-            r"事\s*件\s*・\s*事\s*故\s*の\s*概\s*要\s*\n+(.+?)"
-            r"(?=【\s*処\s*分|\Z)",
+            r"事\s*件\s*・\s*事\s*故\s*の\s*概\s*要\s*\n+(.+?)" r"(?=【\s*処\s*分|\Z)",
             block,
             re.S,
         )
@@ -2337,8 +2332,7 @@ def parse_sapporo_edu_pdf(pdf_text: str, source_url: str) -> list[EnfRow]:
             subject = "札幌市立学校 職員"
         # 事案概要
         gaiyou_m = re.search(
-            r"事\s*案\s*概\s*要\s*\n*(.+?)"
-            r"(?=被\s*処\s*分\s*者|\Z|\n\s*[\d１-９]\s*\n)",
+            r"事\s*案\s*概\s*要\s*\n*(.+?)" r"(?=被\s*処\s*分\s*者|\Z|\n\s*[\d１-９]\s*\n)",
             block,
             re.S,
         )

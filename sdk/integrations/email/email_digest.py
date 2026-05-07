@@ -32,6 +32,7 @@ A consultant fanning to 100 顧問先 × 4 saved searches monthly =
 SendGrid / SES costs for the actual send are the customer's
 responsibility on their plan.
 """
+
 from __future__ import annotations
 
 import dataclasses
@@ -70,6 +71,7 @@ FOOTER_TEXT = (
 class SavedSearch:
     """One row out of `GET /v1/me/saved_searches` reduced to the columns
     this digest cares about."""
+
     id: str
     name: str
     endpoint: str
@@ -79,6 +81,7 @@ class SavedSearch:
 @dataclasses.dataclass(frozen=True)
 class DigestSection:
     """Rendered block for one saved search."""
+
     saved_search: SavedSearch
     items: Sequence[Mapping[str, Any]]
     error_code: str | None = None
@@ -87,6 +90,7 @@ class DigestSection:
 @dataclasses.dataclass(frozen=True)
 class RenderedDigest:
     """A ready-to-send digest. Both HTML + plain-text bodies are produced."""
+
     subject: str
     html_body: str
     text_body: str
@@ -97,6 +101,7 @@ class RenderedDigest:
 class PreparedSend:
     """Result of a transport-stub call. The caller (or the customer's
     cron wrapper) issues the actual HTTPS POST."""
+
     transport: str
     url: str
     method: str
@@ -135,10 +140,7 @@ def _api_get(
     cli, owned = _http_client(client)
     try:
         # Drop empty params for cleaner URLs in tests.
-        clean = (
-            {k: v for k, v in (params or {}).items() if v not in (None, "")}
-            or None
-        )
+        clean = {k: v for k, v in (params or {}).items() if v not in (None, "")} or None
         res = cli.get(url, headers=headers, params=clean, timeout=timeout_s)
         res.raise_for_status()
         return res.json()
@@ -166,17 +168,13 @@ def fetch_saved_searches(
             continue
         sid = str(row.get("id") or row.get("saved_search_id") or "").strip()
         name = str(row.get("name") or row.get("title") or "").strip()
-        endpoint = str(
-            row.get("endpoint") or row.get("path") or "/v1/programs/search"
-        ).strip()
+        endpoint = str(row.get("endpoint") or row.get("path") or "/v1/programs/search").strip()
         params = row.get("params") or row.get("query") or {}
         if not isinstance(params, Mapping):
             params = {}
         if not sid or not name:
             continue
-        out.append(
-            SavedSearch(id=sid, name=name, endpoint=endpoint, params=dict(params))
-        )
+        out.append(SavedSearch(id=sid, name=name, endpoint=endpoint, params=dict(params)))
     return out
 
 
@@ -191,9 +189,7 @@ def execute_saved_search(
     params: MutableMapping[str, Any] = dict(saved.params)
     params.setdefault("limit", limit)
     try:
-        payload = _api_get(
-            saved.endpoint, api_key=api_key, params=params, client=client
-        )
+        payload = _api_get(saved.endpoint, api_key=api_key, params=params, client=client)
     except httpx.HTTPStatusError as e:
         status = e.response.status_code if e.response is not None else 0
         if status in (401, 403):
@@ -217,8 +213,7 @@ def execute_saved_search(
     cleaned = [
         row
         for row in items
-        if isinstance(row, dict)
-        and (row.get("source_url") or row.get("authority"))
+        if isinstance(row, dict) and (row.get("source_url") or row.get("authority"))
     ]
     return DigestSection(saved, cleaned[:limit])
 
@@ -259,9 +254,7 @@ def render_digest(
     }
     html_body = env.get_template(template_html).render(**context)
     text_body = env.get_template(template_txt).render(**context)
-    subject = (
-        f"[jpcite] 月次サマリ — {now.strftime('%Y-%m')} ({customer_name})"
-    )
+    subject = f"[jpcite] 月次サマリ — {now.strftime('%Y-%m')} ({customer_name})"
     return RenderedDigest(
         subject=subject,
         html_body=html_body,
@@ -398,9 +391,7 @@ def build_digest_for_customer(
     """Single-call helper: list saved searches, run them, render."""
     saved_list = fetch_saved_searches(api_key=api_key, client=client)
     sections = [
-        execute_saved_search(
-            s, api_key=api_key, client=client, limit=limit_per_search
-        )
+        execute_saved_search(s, api_key=api_key, client=client, limit=limit_per_search)
         for s in saved_list
     ]
     return render_digest(
@@ -426,9 +417,7 @@ if __name__ == "__main__":  # pragma: no cover
     logging.basicConfig(level=logging.INFO)
     api_key_env = os.environ.get("JPCITE_API_KEY", "")
     customer = os.environ.get("JPCITE_CUSTOMER_NAME", "テスト顧客")
-    digest = build_digest_for_customer(
-        customer_name=customer, api_key=api_key_env
-    )
+    digest = build_digest_for_customer(customer_name=customer, api_key=api_key_env)
     # Print the prepared HTML body to stdout. The customer wraps this
     # script with their own SendGrid / SES / Mailchimp credentials.
     print(digest.subject)

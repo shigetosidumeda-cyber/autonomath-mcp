@@ -89,4 +89,3 @@
 1. Fail release on hard drift.
 2. Review soft drift when counts, pricing, free tier, tool limitations, or routing language differ.
 3. Keep DXT resource differences intentional and documented.
-

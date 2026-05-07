@@ -135,6 +135,6 @@ def test_invalid_date_format_returns_422(client: TestClient):
     bad_inputs = ["2026-13-99", "yesterday"]
     for bad in bad_inputs:
         r = client.get("/v1/programs/search", params={"as_of_date": bad})
-        assert r.status_code == 422, (
-            f"expected 422 for as_of_date={bad!r}, got {r.status_code}: {r.text}"
-        )
+        assert (
+            r.status_code == 422
+        ), f"expected 422 for as_of_date={bad!r}, got {r.status_code}: {r.text}"

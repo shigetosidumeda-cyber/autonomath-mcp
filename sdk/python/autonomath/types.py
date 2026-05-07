@@ -350,9 +350,7 @@ class IntelBundleOptimalResponse(IntelEnvelope):
     optimization_log: dict[str, Any] = Field(default_factory=dict)
     runner_up_bundles: list[dict[str, Any]] = Field(default_factory=list)
     data_quality: dict[str, Any] = Field(default_factory=dict)
-    decision_support: IntelBundleDecisionSupport = Field(
-        default_factory=IntelBundleDecisionSupport
-    )
+    decision_support: IntelBundleDecisionSupport = Field(default_factory=IntelBundleDecisionSupport)
 
 
 class IntelHoujinDecisionSupport(BaseModel):
@@ -376,9 +374,7 @@ class IntelHoujinFullResponse(IntelEnvelope):
     jurisdiction_breakdown: dict[str, Any] = Field(default_factory=dict)
     watch_status: dict[str, Any] = Field(default_factory=dict)
     data_quality: dict[str, Any] = Field(default_factory=dict)
-    decision_support: IntelHoujinDecisionSupport = Field(
-        default_factory=IntelHoujinDecisionSupport
-    )
+    decision_support: IntelHoujinDecisionSupport = Field(default_factory=IntelHoujinDecisionSupport)
 
 
 class FundingStackCheckRequest(BaseModel):

@@ -615,8 +615,7 @@ def extract_target_name(title: str, body: str) -> str:
 
     # Strategy 2: anonymised individual (電波法違反 typical pattern)
     m2 = re.search(
-        r"([一-龥]{2,5}[県府都道][一-龥ぁ-んァ-ヶー]{0,30}在住の?)\s*"
-        r"([0-9０-９]+)\s*歳",
+        r"([一-龥]{2,5}[県府都道][一-龥ぁ-んァ-ヶー]{0,30}在住の?)\s*" r"([0-9０-９]+)\s*歳",
         body,
     )
     if m2:

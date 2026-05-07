@@ -301,9 +301,10 @@ def test_customer_agent_e2e_happy_path(
             )
         # Programs.search always carries x-corpus-snapshot-id even when
         # results[] is empty (seeded_db has no 'ものづくり' rows by default).
-        assert r1.status_code in (200, 422), (
-            f"step1 unexpected status {r1.status_code}: {_short(r1.text)}"
-        )
+        assert r1.status_code in (
+            200,
+            422,
+        ), f"step1 unexpected status {r1.status_code}: {_short(r1.text)}"
     candidates: list[dict[str, Any]] = list(body_1.get("results") or [])
     trace.append(
         {
@@ -648,9 +649,9 @@ def test_customer_agent_e2e_happy_path(
         f"This route is on the deploy-gate; failure means main.py "
         f"include_router stack regressed."
     )
-    assert r1.status_code == 200, (
-        f"step1 search unexpected status {r1.status_code}: {_short(r1.text)}"
-    )
+    assert (
+        r1.status_code == 200
+    ), f"step1 search unexpected status {r1.status_code}: {_short(r1.text)}"
     # 2. No step that IS mounted may 5xx (503 acceptable — autonomath.db
     #    can be detached in CI).
     for row in trace:

@@ -649,7 +649,7 @@ def get_me(me: CurrentMeDep, conn: DbDep) -> MeResponse:
 _USAGE_UNIT_PRICE_YEN: int = 3
 
 
-def _resolve_tree_key_hashes(conn, key_hash: str) -> list[str]:
+def _resolve_tree_key_hashes(conn: sqlite3.Connection, key_hash: str) -> list[str]:
     """Return every key_hash in the tree containing `key_hash`.
 
     Migration 086: the dashboard caller's session is bound to the parent
@@ -683,7 +683,7 @@ def _resolve_tree_key_hashes(conn, key_hash: str) -> list[str]:
 
 
 def _aggregate_by_client_tag(
-    conn, tree_hashes: list[str], start_iso: str
+    conn: sqlite3.Connection, tree_hashes: list[str], start_iso: str
 ) -> list[UsageByClientTag]:
     """SUM usage_events grouped by client_tag for the given tree + window.
 
@@ -861,7 +861,7 @@ def get_me_usage_csv(
 # IP / User-Agent / key suffixes the harness saw at rotation time.
 
 
-def _lookup_subscriber_email(conn, key_hash: str) -> str | None:
+def _lookup_subscriber_email(conn: sqlite3.Connection, key_hash: str) -> str | None:
     """Best-effort lookup of the email associated with a rotating api_key.
 
     The canonical source is `email_schedule.email`, which `billing.keys.

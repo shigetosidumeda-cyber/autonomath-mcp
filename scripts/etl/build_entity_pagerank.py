@@ -184,7 +184,7 @@ def pearson_correlation(xs: list[float], ys: list[float]) -> float:
     num = 0.0
     den_x = 0.0
     den_y = 0.0
-    for x, y in zip(xs, ys):
+    for x, y in zip(xs, ys, strict=False):
         dx = x - mean_x
         dy = y - mean_y
         num += dx * dy

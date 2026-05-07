@@ -78,9 +78,9 @@ def _assert_graceful_empty_envelope(out: dict) -> None:
     """All four covered tools must satisfy the W7-5/6 graceful-empty contract."""
     assert isinstance(out, dict), f"expected dict, got {type(out).__name__}"
     # Not an error envelope
-    assert "error" not in out, (
-        f"graceful empty path must NOT return error envelope; got keys={list(out)[:8]}"
-    )
+    assert (
+        "error" not in out
+    ), f"graceful empty path must NOT return error envelope; got keys={list(out)[:8]}"
     # Required pagination shape
     assert "results" in out and isinstance(out["results"], list)
     assert out["results"] == [], f"results must be [] on empty path, got {out['results']!r}"
@@ -88,9 +88,9 @@ def _assert_graceful_empty_envelope(out: dict) -> None:
     assert "limit" in out and isinstance(out["limit"], int)
     assert "offset" in out and isinstance(out["offset"], int)
     # Billing must be charged exactly 1 unit (graceful empty is still a query)
-    assert out.get("_billing_unit") == 1, (
-        f"_billing_unit must be 1 on graceful empty, got {out.get('_billing_unit')!r}"
-    )
+    assert (
+        out.get("_billing_unit") == 1
+    ), f"_billing_unit must be 1 on graceful empty, got {out.get('_billing_unit')!r}"
     # _next_calls must exist (may be empty list)
     assert "_next_calls" in out and isinstance(out["_next_calls"], list)
     # data_quality.caveat must explain why the envelope is empty

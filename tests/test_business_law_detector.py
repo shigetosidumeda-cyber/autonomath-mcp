@@ -448,9 +448,9 @@ def test_false_positive_rate_below_threshold():
     assert len(_NEUTRAL_CORPUS) >= 100
     triggered = sum(1 for t in _NEUTRAL_CORPUS if bld.detect_violations(t))
     rate = triggered / len(_NEUTRAL_CORPUS)
-    assert rate <= 0.05, (
-        f"FP rate too high: {rate:.2%} (triggered {triggered}/{len(_NEUTRAL_CORPUS)})"
-    )
+    assert (
+        rate <= 0.05
+    ), f"FP rate too high: {rate:.2%} (triggered {triggered}/{len(_NEUTRAL_CORPUS)})"
 
 
 # ---------------------------------------------------------------------------

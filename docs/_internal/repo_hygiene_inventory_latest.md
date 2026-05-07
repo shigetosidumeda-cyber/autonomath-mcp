@@ -51,4 +51,3 @@
 3. Move future offline loop outputs into a single ignored artifact root or keep them under `tools/offline/_inbox/` with a manifest.
 4. Keep `DIRECTORY.md` as the human navigation map and this report as the machine-generated inventory.
 5. Before deploy, inspect Docker context and git dirty tree by lane: runtime code, migrations, generated public, docs, SDK, operator research.
-

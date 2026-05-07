@@ -89,4 +89,3 @@ with-jpcite ~125 tok) outweighs the input-side context cost on every
 matrix. A regression would require a degenerate question — extremely short
 input + the model already willing to answer in a single sentence — at
 which point input-side context tokens dominate.
-

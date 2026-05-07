@@ -158,8 +158,9 @@
       ベンチマークは <a href="/benchmark/">JCRB-v1 50 問</a>、 エンドポイントは <code>/v1/calculator/savings</code>。
     </p>
     <p class="lead" style="margin-top:-12px;font-size:14px;">
-      ※ <strong>真の価値は verify 時間 (1 件 ~30 分 → ~3 分) と citation_ok lift (~0.40 → ~0.95)</strong> です。
-      raw token math だけでは jpcite ¥3/req を償却できないケースがあるのが honest answer。
+      ※ <strong>参考指標は verify 時間の推定短縮と citation_ok lift</strong> です。
+      JCRB-v1 の測定条件に基づく試算であり、個別の削減時間・費用対効果を保証しません。
+      raw token math だけでは jpcite ¥3/req を償却できないケースがあります。
       生 token spend 削減を目当てに使うサービスではありません。
       詳細は <a href="/qa/llm-evidence/context-savings.html">context savings の説明</a> をご参照ください。
     </p>
@@ -221,7 +222,7 @@
             <dd id="out-time-saved" class="savings">— h<span class="secondary" id="out-time-saved-jpy">¥— 相当 (¥8,000/h × 0.45h/件 想定、 税理士 内部単価)</span></dd>
           </div>
           <div>
-            <dt>② 監査可能引用 (citation_ok lift)</dt>
+            <dt>② 監査可能引用 (citation_ok lift / 参考値)</dt>
             <dd id="out-citation-lift" class="savings">~0.40 → ~0.95<span class="secondary">JCRB-v1 50Q seed (claude-opus-4-7)。 出典 URL + 取得時刻 + content_hash 機械可読</span></dd>
           </div>
           <div>

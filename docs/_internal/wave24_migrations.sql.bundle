@@ -2215,4 +2215,3 @@ SELECT
   LEFT JOIN report_sla rs           USING (iso_week)
   LEFT JOIN rollback_per_week rb    USING (iso_week)
  ORDER BY w.iso_week DESC;
-

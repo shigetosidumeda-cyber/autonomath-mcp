@@ -84,9 +84,9 @@ def test_disclaimer_mentions_law():
     for tool in SENSITIVE_TOOLS:
         d = disclaimer_for(tool, "standard")
         assert d, f"{tool}: missing disclaimer"
-        assert any(law in d for law in laws), (
-            f"{tool}: disclaimer doesn't reference any covered law: {d!r}"
-        )
+        assert any(
+            law in d for law in laws
+        ), f"{tool}: disclaimer doesn't reference any covered law: {d!r}"
 
 
 def test_disclaimer_no_advice_promise():

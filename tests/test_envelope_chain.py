@@ -80,9 +80,9 @@ def test_am_endpoint_zero_result_emits_envelope_hint(client):
         and len(body.get("suggested_actions") or []) > 0
     )
     has_status = body.get("status") in ("empty", "ok")
-    assert has_meta_suggestions or has_actions or has_status, (
-        f"empty /v1/am/tax_incentives produced no envelope hint: keys={sorted(body.keys())}"
-    )
+    assert (
+        has_meta_suggestions or has_actions or has_status
+    ), f"empty /v1/am/tax_incentives produced no envelope hint: keys={sorted(body.keys())}"
 
 
 # ---------------------------------------------------------------------------
@@ -216,9 +216,9 @@ def test_envelope_minimal_opt_out_skips_meta_block_unit():
             "tips",
             "token_estimate",
         }
-        assert not (envelope_only & set(meta.keys())), (
-            f"minimal opt-out leaked envelope meta keys: {sorted(meta.keys())}"
-        )
+        assert not (
+            envelope_only & set(meta.keys())
+        ), f"minimal opt-out leaked envelope meta keys: {sorted(meta.keys())}"
 
 
 def test_tool_level_fields_minimal_keeps_envelope_meta():
@@ -235,9 +235,9 @@ def test_tool_level_fields_minimal_keeps_envelope_meta():
     )
     meta = out.get("meta") or {}
     # On empty result, meta.suggestions must still surface.
-    assert "suggestions" in meta, (
-        f"tool-level fields=minimal incorrectly skipped envelope meta: keys={sorted(meta.keys())}"
-    )
+    assert (
+        "suggestions" in meta
+    ), f"tool-level fields=minimal incorrectly skipped envelope meta: keys={sorted(meta.keys())}"
 
 
 # ---------------------------------------------------------------------------

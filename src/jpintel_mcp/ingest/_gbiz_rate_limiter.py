@@ -26,7 +26,7 @@ import logging
 import os
 import time
 from pathlib import Path
-from typing import Any, cast, cast
+from typing import Any, cast
 
 import httpx
 
@@ -106,8 +106,8 @@ def _get_cache_dir() -> Path:
 # ---------------------------------------------------------------------------
 if _HAS_RATELIMIT:
 
-    @sleep_and_retry
-    @limits(calls=GBIZ_RATE_LIMIT_RPS, period=1)
+    @sleep_and_retry  # type: ignore[untyped-decorator]
+    @limits(calls=GBIZ_RATE_LIMIT_RPS, period=1)  # type: ignore[untyped-decorator]
     def _rate_limit_gate() -> None:
         """1 rps token bucket — auto-sleeps on overflow."""
         return None

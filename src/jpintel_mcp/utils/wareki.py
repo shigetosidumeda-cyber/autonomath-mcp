@@ -67,10 +67,7 @@ _DATE_DOT = re.compile(
     r"(?P<m>\d+)[.\-/]"
     r"(?P<d>\d+)$"
 )
-_YEAR_ONLY = re.compile(
-    r"^(?P<era>令和|平成|昭和|大正|明治|[RHSTMrhstm])"
-    r"(?P<y>\d+)年?$"
-)
+_YEAR_ONLY = re.compile(r"^(?P<era>令和|平成|昭和|大正|明治|[RHSTMrhstm])" r"(?P<y>\d+)年?$")
 
 
 def parse_wareki_date(s: str) -> datetime.date:

@@ -26,6 +26,7 @@ Constraints (per CLAUDE.md):
   - **¥3/req metered**: every successful slash command costs ¥3 (税込
     ¥3.30) on the jpcite side. The bot adds no markup.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -51,6 +52,7 @@ SLACK_SIGNING_VERSION = "v0"
 
 # ---- request parsing --------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class SlashCommand:
     """Parsed Slack slash-command POST body.
@@ -58,6 +60,7 @@ class SlashCommand:
     Slack's slash-command payload is ``application/x-www-form-urlencoded``;
     we accept either a parsed mapping or the raw form body.
     """
+
     command: str
     text: str
     team_id: str
@@ -93,15 +96,14 @@ def classify_query(text: str) -> tuple[str, str]:
     digits = "".join(ch for ch in stripped if ch.isdigit())
     # If every non-digit character is whitespace or '-' AND we have
     # exactly 13 digits, treat it as a 法人番号. Otherwise free text.
-    non_digit_chars = "".join(
-        ch for ch in stripped if not ch.isdigit()
-    )
+    non_digit_chars = "".join(ch for ch in stripped if not ch.isdigit())
     if len(digits) == 13 and all(ch in " -" for ch in non_digit_chars):
         return "houjin", digits
     return "programs", stripped
 
 
 # ---- signature verification -------------------------------------------------
+
 
 def verify_slack_signature(
     *,
@@ -127,14 +129,13 @@ def verify_slack_signature(
     if abs(now - ts) > SLACK_TIMESTAMP_MAX_SKEW_S:
         return False
     base = f"{SLACK_SIGNING_VERSION}:{ts}:".encode() + request_body
-    digest = hmac.new(
-        signing_secret.encode("utf-8"), base, hashlib.sha256
-    ).hexdigest()
+    digest = hmac.new(signing_secret.encode("utf-8"), base, hashlib.sha256).hexdigest()
     expected = f"{SLACK_SIGNING_VERSION}={digest}"
     return hmac.compare_digest(expected, signature)
 
 
 # ---- jpcite REST client -----------------------------------------------------
+
 
 def _api_url(path: str, query: dict[str, Any] | None = None) -> str:
     base = JPCITE_API_BASE if JPCITE_API_BASE.endswith("/") else JPCITE_API_BASE + "/"
@@ -203,9 +204,7 @@ def fetch_programs(
         items = []
     out: list[dict[str, Any]] = []
     for row in items:
-        if isinstance(row, dict) and (
-            row.get("source_url") or row.get("authority")
-        ):
+        if isinstance(row, dict) and (row.get("source_url") or row.get("authority")):
             out.append(row)
     return out[:capped]
 
@@ -229,9 +228,7 @@ _FOOTER_BLOCK = {
 def render_houjin_message(bangou: str, payload: dict[str, Any]) -> dict[str, Any]:
     name = payload.get("name") or payload.get("houjin_name") or "(名称不明)"
     address = payload.get("address") or payload.get("houjin_address") or ""
-    qualified = (
-        f"登録あり (T{bangou})" if payload.get("qualified_invoice") else "登録なし"
-    )
+    qualified = f"登録あり (T{bangou})" if payload.get("qualified_invoice") else "登録なし"
     enf_count = int(payload.get("enforcement_count") or 0)
     enf = f"該当 {enf_count} 件" if enf_count else "該当なし"
     adopt = int(payload.get("adoption_count") or 0)
@@ -270,9 +267,7 @@ def render_houjin_message(bangou: str, payload: dict[str, Any]) -> dict[str, Any
     }
 
 
-def render_programs_message(
-    query: str, items: list[dict[str, Any]]
-) -> dict[str, Any]:
+def render_programs_message(query: str, items: list[dict[str, Any]]) -> dict[str, Any]:
     if not items:
         return {
             "response_type": "in_channel",
@@ -292,12 +287,7 @@ def render_programs_message(
         }
     lines: list[str] = [f"*jpcite 制度検索* — `{query}` 上位 {len(items)} 件"]
     for i, row in enumerate(items, start=1):
-        title = (
-            row.get("name")
-            or row.get("title")
-            or row.get("primary_name")
-            or "(名称不明)"
-        )
+        title = row.get("name") or row.get("title") or row.get("primary_name") or "(名称不明)"
         authority = row.get("authority") or row.get("authority_level") or ""
         url = row.get("source_url") or ""
         line = f"{i}. <{url}|{title}>" if url else f"{i}. {title}"
@@ -362,6 +352,7 @@ def render_error_message(code: str, detail: str = "") -> dict[str, Any]:
 
 # ---- top-level dispatcher --------------------------------------------------
 
+
 def handle_slash_command(
     *,
     command: SlashCommand,
@@ -394,6 +385,7 @@ def handle_slash_command(
 
 
 # ---- optional Flask wiring --------------------------------------------------
+
 
 def build_flask_app() -> Any:  # pragma: no cover — exercised via README
     """Return a configured Flask app. Imported lazily so the smoke test

@@ -472,7 +472,7 @@ def populate_facet(
     t0 = time.perf_counter()
     conn.execute("BEGIN IMMEDIATE")
     try:
-        for cid, vec in zip(todo_cids, vecs):
+        for cid, vec in zip(todo_cids, vecs, strict=False):
             cur = conn.execute(
                 f"INSERT INTO {table}(embedding) VALUES (?)",
                 (serialize_f32(vec),),

@@ -41,6 +41,7 @@ expected output:
                    新事業活動促進資金（中小企業事業）            144000.0
              事業承継・集約・活性化支援資金（中小企業事業）            144000.0
 """
+
 from __future__ import annotations
 
 import os
@@ -97,7 +98,9 @@ def fetch_all(query: str) -> list[dict]:
         total = data["total"]
         all_rows.extend(results)
 
-        print(f"page {page_num}: {len(results)} rows" + (f" (total={total})" if page_num == 1 else ""))
+        print(
+            f"page {page_num}: {len(results)} rows" + (f" (total={total})" if page_num == 1 else "")
+        )
 
         if not results or len(all_rows) >= total:
             break

@@ -583,9 +583,7 @@ class IdempotencyMiddleware(BaseHTTPMiddleware):
     `log_usage`, so replays are ¥0 metered.
     """
 
-    async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
-    ) -> Response:
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         # Only POST requests are eligible.
         if request.method != "POST":
             return await call_next(request)

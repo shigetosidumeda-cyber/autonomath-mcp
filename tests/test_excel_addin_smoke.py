@@ -60,9 +60,9 @@ def test_required_file_exists(path: Path) -> None:
 
 def test_vba_module_attribute() -> None:
     text = VBA_FILE.read_text(encoding="utf-8")
-    assert text.startswith('Attribute VB_Name = "JPCITE"'), (
-        "jpcite.bas must start with VBE module attribute (so Import File works)"
-    )
+    assert text.startswith(
+        'Attribute VB_Name = "JPCITE"'
+    ), "jpcite.bas must start with VBE module attribute (so Import File works)"
 
 
 @pytest.mark.parametrize("name", EXPECTED_FUNCTIONS)
@@ -95,9 +95,9 @@ def test_vba_uses_x_api_key_header() -> None:
 def test_vba_no_hardcoded_api_key() -> None:
     """API keys are jpc_live_/jpc_test_ prefixed; module must never embed one."""
     text = VBA_FILE.read_text(encoding="utf-8")
-    assert not re.search(r"jpc_(live|test)_[A-Za-z0-9]{8,}", text), (
-        "VBA module must not embed an API key"
-    )
+    assert not re.search(
+        r"jpc_(live|test)_[A-Za-z0-9]{8,}", text
+    ), "VBA module must not embed an API key"
 
 
 def test_vba_volatile_disabled() -> None:
@@ -108,9 +108,9 @@ def test_vba_volatile_disabled() -> None:
     public_funcs = re.findall(r"^Public Function JPCITE_\w+", text, flags=re.M)
     volatile_marks = re.findall(r"Application\.Volatile\s+False", text)
     assert len(public_funcs) == len(EXPECTED_FUNCTIONS)
-    assert len(volatile_marks) >= len(public_funcs), (
-        "every public UDF must call Application.Volatile False"
-    )
+    assert len(volatile_marks) >= len(
+        public_funcs
+    ), "every public UDF must call Application.Volatile False"
 
 
 # --- Office Add-in manifest --------------------------------------------------
@@ -144,9 +144,9 @@ def test_manifest_id_is_uuid() -> None:
     el = root.find(f"{ns}Id")
     assert el is not None, "manifest missing <Id>"
     val = el.text or ""
-    assert re.fullmatch(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}", val), (
-        f"manifest <Id> must be a UUID; got {val!r}"
-    )
+    assert re.fullmatch(
+        r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}", val
+    ), f"manifest <Id> must be a UUID; got {val!r}"
 
 
 def test_manifest_provider_is_bookyou() -> None:
@@ -225,9 +225,9 @@ def test_functions_json_help_urls_point_to_jpcite() -> None:
         data = json.load(fh)
     for fn in data["functions"]:
         url = fn.get("helpUrl", "")
-        assert url.startswith("https://jpcite.com/"), (
-            f"helpUrl must be jpcite.com domain; got {url!r}"
-        )
+        assert url.startswith(
+            "https://jpcite.com/"
+        ), f"helpUrl must be jpcite.com domain; got {url!r}"
 
 
 # --- functions.ts ------------------------------------------------------------
@@ -236,9 +236,9 @@ def test_functions_json_help_urls_point_to_jpcite() -> None:
 @pytest.mark.parametrize("name", EXPECTED_FUNCTIONS)
 def test_functions_ts_associates_each_id(name: str) -> None:
     text = FUNCTIONS_TS.read_text(encoding="utf-8")
-    assert f'CustomFunctions.associate("{name}"' in text, (
-        f"functions.ts missing CustomFunctions.associate({name!r}, ...)"
-    )
+    assert (
+        f'CustomFunctions.associate("{name}"' in text
+    ), f"functions.ts missing CustomFunctions.associate({name!r}, ...)"
 
 
 def test_functions_ts_uses_jpcite_api_base() -> None:
@@ -266,9 +266,9 @@ def test_readme_documents_5_step_install() -> None:
 @pytest.mark.parametrize("name", EXPECTED_FUNCTIONS)
 def test_readme_documents_each_function(name: str) -> None:
     text = README.read_text(encoding="utf-8")
-    assert f"JPCITE_{name}" in text or f"JPCITE.{name}" in text, (
-        f"README must mention JPCITE_{name} or JPCITE.{name}"
-    )
+    assert (
+        f"JPCITE_{name}" in text or f"JPCITE.{name}" in text
+    ), f"README must mention JPCITE_{name} or JPCITE.{name}"
 
 
 def test_readme_warns_about_recalc_storm() -> None:

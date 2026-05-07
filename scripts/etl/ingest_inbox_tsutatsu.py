@@ -64,8 +64,7 @@ SEP_CHARS = "−－‐‑-"
 CODE_RE = re.compile(rf"(\d+(?:[{SEP_CHARS}]\d+){{1,4}})")
 # Capture (title in parens) followed by code body
 ARTICLE_RE = re.compile(
-    rf"[（(]([^（）()]{{1,80}})[）)]\s*"
-    rf"(\d+(?:[{SEP_CHARS}]\d+){{1,4}})\s*"
+    rf"[（(]([^（）()]{{1,80}})[）)]\s*" rf"(\d+(?:[{SEP_CHARS}]\d+){{1,4}})\s*"
 )
 
 

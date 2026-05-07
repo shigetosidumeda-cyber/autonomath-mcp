@@ -178,9 +178,9 @@ def test_chain_s1_search_programs_to_check_exclusions(client, chain_seed):
     )
     # Confirm the rule_id is the one we seeded.
     rule_ids = {h.get("rule_id") for h in hits}
-    assert "excl-test-uid-mutex" in rule_ids, (
-        f"expected excl-test-uid-mutex among hits, got {rule_ids}"
-    )
+    assert (
+        "excl-test-uid-mutex" in rule_ids
+    ), f"expected excl-test-uid-mutex among hits, got {rule_ids}"
 
 
 def test_chain_s1_check_exclusions_accepts_legacy_name(client, chain_seed):

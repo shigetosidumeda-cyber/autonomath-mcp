@@ -381,7 +381,7 @@ def make_error(
     return {"error": err}
 
 
-def safe_request_id(request) -> str:
+def safe_request_id(request: Any) -> str:
     """Pull a stable request id off a Starlette request.
 
     Order of preference:

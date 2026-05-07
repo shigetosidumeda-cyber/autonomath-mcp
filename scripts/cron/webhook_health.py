@@ -450,7 +450,7 @@ def _run_once(
         # An empty DB across 7 days yields 0 baseline_days_present so the
         # σ branch correctly degrades to the warning path.
         report.baseline_days_present = sum(
-            1 for s, i in zip(sub_baseline, inv_baseline) if (s + i) > 0
+            1 for s, i in zip(sub_baseline, inv_baseline, strict=False) if (s + i) > 0
         )
 
         if sub_baseline:

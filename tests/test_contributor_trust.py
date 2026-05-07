@@ -116,9 +116,9 @@ def test_cluster_spillover_count() -> None:
             {"cluster_value": 1},
             am_amount_condition_conn=conn,
         )
-        assert len(ids) >= 20_000, (
-            f"spillover row count={len(ids)} < 20K; spec §4 acceptance criterion #4"
-        )
+        assert (
+            len(ids) >= 20_000
+        ), f"spillover row count={len(ids)} < 20K; spec §4 acceptance criterion #4"
         # Confirm the UPDATE actually mutated quality_flag for cluster 1
         n_partial = conn.execute(
             "SELECT COUNT(*) FROM am_amount_condition "

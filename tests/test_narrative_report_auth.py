@@ -376,9 +376,9 @@ def test_auto_severity_whitelist_unit():
         "eligibility.industry",
         "eligibility.size_band",
     ):
-        assert auto_severity(field_path=fp, evidence_url=None, claimed_correct=None) == "P0", (
-            f"{fp} should be P0"
-        )
+        assert (
+            auto_severity(field_path=fp, evidence_url=None, claimed_correct=None) == "P0"
+        ), f"{fp} should be P0"
 
     # Substring-style attacks no longer escalate.
     for fp in (

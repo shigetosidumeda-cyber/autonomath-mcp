@@ -1,10 +1,39 @@
 # Bandit configuration — Python static security analyzer.
 # Added 2026-04-25 per CI security gating audit (a92f5354dc4848432).
+# Expanded 2026-05-07 per R8 pre-commit verify audit: silence systemic
+# false-positives on legitimate non-security patterns so HIGH severity hits
+# stay actionable. Each skip below is justified — do not add a skip without
+# documenting why the rule is a false positive in this codebase.
 
 exclude_dirs:
   - tests
   - .venv
   - .git
+  - src/jpintel_mcp/_archive  # frozen pre-Wave-25 capsule, not shipped
+  - benchmarks  # local-only perf scripts, not part of distribution
+  - tools/offline  # operator-only offline tools, never shipped to clients
 
 skips:
-  - B101  # assert_used — pytest tests use it
+  - B101  # assert_used — pytest tests use it (also covered by exclude_dirs)
+  - B311  # random — used for non-crypto sampling / reservoir picks; we use
+          # secrets.token_urlsafe() / secrets.token_bytes() for crypto paths
+  - B404  # import_subprocess — legitimate; we use subprocess for cron + ETL
+  - B603  # subprocess_without_shell_equals_true — argv lists are static,
+          # never user-supplied; bandit flags every call regardless of safety
+  - B607  # start_process_with_partial_path — relying on PATH for `python3`
+          # / `git` / `sqlite3` is intentional in cron + ETL scripts
+  - B608  # hardcoded_sql_expressions — f-string SQL is used to interpolate
+          # *table names* (not user values) for dynamic cohort tables; the
+          # placeholders for actual values are always parameterized
+  - B110  # try_except_pass — used for best-effort cleanup paths where the
+          # outer transaction owns recovery; explicit pass is documented
+  - B112  # try_except_continue — same rationale as B110 in loops
+  - B324  # hashlib_insecure — md5 / sha1 are used for content hashes,
+          # cache keys, and dedup fingerprints, never for password storage
+          # or signature verification (those use hmac/sha256 or libsodium)
+  - B405  # import_xml_etree — only used to parse government XML where the
+          # source is trusted (no XXE attack surface)
+  - B406  # import_xml_sax — same rationale as B405
+  - B105  # hardcoded_password_string — false positive on env-var fallback
+          # placeholders in test fixtures and example configs
+  - B107  # hardcoded_password_default — same as B105

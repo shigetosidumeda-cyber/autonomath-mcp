@@ -359,8 +359,7 @@ def _slice_after_head(text: str) -> str:
 
 
 _PROFESSION_SECTION_RE = re.compile(
-    r"[（(]?\s*(医師|歯科医師|看護師|保健師|助産師|准看護師|薬剤師)\s*[）)]?\s*"
-    r"\d+\s*件"
+    r"[（(]?\s*(医師|歯科医師|看護師|保健師|助産師|准看護師|薬剤師)\s*[）)]?\s*" r"\d+\s*件"
 )
 
 
@@ -436,8 +435,7 @@ _REASON_ENTRY_RE = re.compile(
     # capture everything (including nested parens, embedded 、) up to the
     # NEXT N件 terminator. Entries are separated by N件 itself, then an
     # optional 、 + space.
-    r"(?P<reason>(?:[^（）()]|（[^（）]*）|\([^()]*\))+?)"
-    r"(?P<n>\d+)\s*件"
+    r"(?P<reason>(?:[^（）()]|（[^（）]*）|\([^()]*\))+?)" r"(?P<n>\d+)\s*件"
 )
 
 

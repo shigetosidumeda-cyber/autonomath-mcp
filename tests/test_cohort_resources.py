@@ -173,9 +173,9 @@ def test_no_llm_imports_in_cohort_module():
             # the cause — read its source and assert no actual import statement.
             src = _TARGET.read_text(encoding="utf-8")
             for token in forbidden:
-                assert f"import {token}" not in src and f"from {token}" not in src, (
-                    f"cohort_resources imports forbidden LLM SDK: {token}"
-                )
+                assert (
+                    f"import {token}" not in src and f"from {token}" not in src
+                ), f"cohort_resources imports forbidden LLM SDK: {token}"
 
 
 # ---------------------------------------------------------------------------

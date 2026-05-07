@@ -745,7 +745,9 @@ async def stripe_connect_webhook(request: Request, conn: DbDep) -> JSONResponse:
         # to config.py alongside the main signing secret when wiring live.
         secret = getattr(settings, "stripe_connect_webhook_secret", "") or ""
         if secret:
-            event = stripe.Webhook.construct_event(payload, sig, secret, tolerance=300)
+            event = stripe.Webhook.construct_event(  # type: ignore[no-untyped-call]
+                payload, sig, secret, tolerance=300
+            )
         else:
             # Dev fallback — skip signature verification only when no secret
             # is configured (CI / offline). In prod the setting must be set.

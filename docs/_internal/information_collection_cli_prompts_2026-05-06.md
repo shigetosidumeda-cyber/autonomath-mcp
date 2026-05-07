@@ -125,4 +125,3 @@ CLI-A の `schema_backlog.md` は、本体側で migration / ETL / source regist
 CLI-B の `artifact_catalog.md` と `benchmark_design.md` は、本体側で artifact API / response schema / eval harness に分解する。
 
 公開サイトやREADMEの数字は、情報収集が進み、件数のSOTが固まった後でまとめて更新する。
-

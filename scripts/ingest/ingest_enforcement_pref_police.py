@@ -340,8 +340,7 @@ SOURCES: list[Source] = [
 
 
 WAREKI_RE = re.compile(
-    r"(令和|平成|R|H)\s*(\d+|元)\s*[年.\-．／/]\s*"
-    r"(\d{1,2})\s*[月.\-．／/]\s*(\d{1,2})\s*日?"
+    r"(令和|平成|R|H)\s*(\d+|元)\s*[年.\-．／/]\s*" r"(\d{1,2})\s*[月.\-．／/]\s*(\d{1,2})\s*日?"
 )
 SEIREKI_RE = re.compile(r"(20\d{2})\s*[年.\-／/]\s*(\d{1,2})\s*[月.\-／/]\s*(\d{1,2})")
 ERA_OFFSET = {"令和": 2018, "R": 2018, "平成": 1988, "H": 1988}
@@ -594,8 +593,7 @@ def parse_chiba_keibi_html(html: str, source_url: str) -> list[EnfRow]:
 
 
 _SHIZUOKA_ANCHOR_RE = re.compile(
-    r"(令和\s*\d+\s*年\s*\d+\s*月\s*\d+\s*日)"
-    r"(.+?)(?:\s*（PDF.*)?$"
+    r"(令和\s*\d+\s*年\s*\d+\s*月\s*\d+\s*日)" r"(.+?)(?:\s*（PDF.*)?$"
 )
 
 
@@ -1223,8 +1221,7 @@ def parse_kyoto_daiko_html(html: str, source_url: str) -> list[EnfRow]:
 
 
 _FUKUOKA_DAIKO_RE = re.compile(
-    r"(令和\s*\d+\s*年\s*\d+\s*月\s*\d+\s*日)?\s*"
-    r"(.+?代行|.*?運転代行)?"
+    r"(令和\s*\d+\s*年\s*\d+\s*月\s*\d+\s*日)?\s*" r"(.+?代行|.*?運転代行)?"
 )
 
 

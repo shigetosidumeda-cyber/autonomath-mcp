@@ -614,4 +614,3 @@ This is why the highest-value work is not a prettier homepage. The highest-value
 - cheap to try
 - easy to connect
 - visibly better than raw LLM browsing for evidence-heavy Japanese public-data tasks
-

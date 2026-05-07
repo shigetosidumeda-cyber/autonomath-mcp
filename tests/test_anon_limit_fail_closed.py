@@ -62,9 +62,9 @@ def test_db_lock_returns_429_not_200(client: TestClient, monkeypatch: pytest.Mon
     monkeypatch.setattr(anon, "_try_increment", _raise_locked)
 
     r = client.get("/meta", headers={"x-forwarded-for": "203.0.113.77"})
-    assert r.status_code == 429, (
-        f"expected fail-CLOSED 429 on DB lock, got {r.status_code}: {r.text[:200]}"
-    )
+    assert (
+        r.status_code == 429
+    ), f"expected fail-CLOSED 429 on DB lock, got {r.status_code}: {r.text[:200]}"
 
 
 def test_db_lock_envelope_has_unavailable_reason(
@@ -82,12 +82,12 @@ def test_db_lock_envelope_has_unavailable_reason(
     r = client.get("/meta", headers={"x-forwarded-for": "203.0.113.78"})
     assert r.status_code == 429
     body = r.json()
-    assert body.get("code") == "rate_limit_unavailable", (
-        f"missing or wrong code in fail-closed envelope: {body}"
-    )
-    assert body.get("reason") == "rate_limit_unavailable", (
-        f"missing or wrong reason in fail-closed envelope: {body}"
-    )
+    assert (
+        body.get("code") == "rate_limit_unavailable"
+    ), f"missing or wrong code in fail-closed envelope: {body}"
+    assert (
+        body.get("reason") == "rate_limit_unavailable"
+    ), f"missing or wrong reason in fail-closed envelope: {body}"
     # Contract: bilingual copy, limit + resets_at + Retry-After header
     # all present so existing client retry logic still works.
     assert "limit" in body
@@ -115,12 +115,12 @@ def test_real_quota_exceed_carries_distinct_reason(
     r = client.get("/meta", headers={"x-forwarded-for": ip})
     assert r.status_code == 429
     body = r.json()
-    assert body.get("code") == "rate_limit_exceeded", (
-        f"real over-quota envelope must carry code=rate_limit_exceeded, got {body}"
-    )
-    assert body.get("reason") == "rate_limit_exceeded", (
-        f"real over-quota envelope must carry reason=rate_limit_exceeded, got {body}"
-    )
+    assert (
+        body.get("code") == "rate_limit_exceeded"
+    ), f"real over-quota envelope must carry code=rate_limit_exceeded, got {body}"
+    assert (
+        body.get("reason") == "rate_limit_exceeded"
+    ), f"real over-quota envelope must carry reason=rate_limit_exceeded, got {body}"
     # Sanity: NOT the unavailable reason.
     assert body["reason"] != "rate_limit_unavailable"
 

@@ -85,8 +85,7 @@ PYTEST_FILENAME_RE = re.compile(r"^test_[A-Za-z0-9_]+\.py$")
 # YAML folded scalar block, 2-space outer indent + 4-space body indent,
 # matching the format release_readiness.py:80 already grep-anchors on.
 ENV_BLOCK_RE = re.compile(
-    r"^  (?P<name>RUFF_TARGETS|PYTEST_TARGETS): >-\n"
-    r"(?P<body>(?:    .+\n)+)",
+    r"^  (?P<name>RUFF_TARGETS|PYTEST_TARGETS): >-\n" r"(?P<body>(?:    .+\n)+)",
     re.MULTILINE,
 )
 

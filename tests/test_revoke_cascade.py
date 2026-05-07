@@ -112,9 +112,9 @@ def test_revoke_subscription_cascades_to_children(conn):
 
     post = _all_rows(conn, sub_id)
     assert len(post) == 4
-    assert all(row["revoked_at"] is not None for row in post), (
-        "every parent + child row must carry revoked_at after cascade"
-    )
+    assert all(
+        row["revoked_at"] is not None for row in post
+    ), "every parent + child row must carry revoked_at after cascade"
 
 
 def test_revoke_subscription_unknown_sub_returns_zero(conn):
@@ -258,9 +258,9 @@ def test_revoke_child_notifies_stripe_proration(conn, monkeypatch):
     while time.monotonic() < deadline and not captured:
         time.sleep(0.01)
 
-    assert len(captured) == 1, (
-        f"expected 1 SubscriptionItem.modify call within 1s, got {len(captured)}"
-    )
+    assert (
+        len(captured) == 1
+    ), f"expected 1 SubscriptionItem.modify call within 1s, got {len(captured)}"
     call = captured[0]
     assert call["si_id"] == "si_m3_metered_test"
     assert call["kwargs"].get("proration_behavior") == "create_prorations", (

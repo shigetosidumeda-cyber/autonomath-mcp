@@ -209,9 +209,9 @@ def test_kana_expansion(client: TestClient, db_conn: sqlite3.Connection) -> None
     )
     # Top result must contain the kanji form (the whole point of expansion).
     top = body["results"][0]
-    assert "農業" in top["primary_name"], (
-        f"first result does not contain 農業: {top['primary_name']!r}"
-    )
+    assert (
+        "農業" in top["primary_name"]
+    ), f"first result does not contain 農業: {top['primary_name']!r}"
 
 
 # ---------------------------------------------------------------------------
@@ -250,12 +250,12 @@ def test_phrase_match_no_false_positive(client: TestClient, db_conn: sqlite3.Con
     body = r.json()
     assert body["total"] >= 1
     top = body["results"][0]
-    assert "税額控除" in top["primary_name"], (
-        f"top result does not contain the literal phrase 税額控除: {top['primary_name']!r}"
-    )
-    assert "ふるさと納税" not in top["primary_name"], (
-        f"top result is the 税-overlap false-positive: {top['primary_name']!r}"
-    )
+    assert (
+        "税額控除" in top["primary_name"]
+    ), f"top result does not contain the literal phrase 税額控除: {top['primary_name']!r}"
+    assert (
+        "ふるさと納税" not in top["primary_name"]
+    ), f"top result is the 税-overlap false-positive: {top['primary_name']!r}"
 
 
 # ---------------------------------------------------------------------------
@@ -348,9 +348,9 @@ def test_short_query_enriched(client: TestClient, db_conn: sqlite3.Connection) -
     assert r.status_code == 200
     body = r.json()
     names = [row["primary_name"] for row in body["results"]]
-    assert "テスト詳細本文検索対象" in names, (
-        f"2-char query '税額' missed the enriched_json match; names={names}"
-    )
+    assert (
+        "テスト詳細本文検索対象" in names
+    ), f"2-char query '税額' missed the enriched_json match; names={names}"
 
 
 def test_short_query_ascii_skips_enriched(client: TestClient, db_conn: sqlite3.Connection) -> None:
@@ -389,6 +389,6 @@ def test_short_query_ascii_skips_enriched(client: TestClient, db_conn: sqlite3.C
     body = r.json()
     names = [row["primary_name"] for row in body["results"]]
     assert "QZ導入支援事業" in names, f"short ASCII query missed primary_name hit; names={names}"
-    assert "テストASCII短文デコイ対象" not in names, (
-        "short ASCII query leaked enriched_json-only match; the perf-fix narrowing is not active"
-    )
+    assert (
+        "テストASCII短文デコイ対象" not in names
+    ), "short ASCII query leaked enriched_json-only match; the perf-fix narrowing is not active"

@@ -481,4 +481,3 @@ End of L+M series complete signal.
 
 - 84 (今) → 96-99 over 1y、~210h work over 6 months (solo 6h/wk = 35 weeks)
 - **100/100 publicly 約束は景表法 fence で禁止** (実 data ギャップ: 採択額 NULL / muni 18% coverage / am_compat_matrix dark / `am_amendment_snapshot` time-series fake)
-

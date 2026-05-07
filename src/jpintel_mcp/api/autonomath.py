@@ -951,7 +951,10 @@ def rest_related_programs(
     """Graph walk over am_relation (prerequisite / compatible / incompatible / replaces / amends / related / references_law etc.)."""
     result = tools.related_programs(
         program_id=program_id,
-        relation_types=relation_types,
+        relation_types=cast(
+            "list[Literal['prerequisite', 'compatible', 'incompatible', 'successor', 'predecessor', 'similar']] | None",
+            relation_types,
+        ),
         depth=depth,
         max_edges=max_edges,
     )
@@ -1048,7 +1051,13 @@ def rest_reason_answer(
     """Return a citation-backed answer skeleton for downstream drafting."""
     if not settings.autonomath_reasoning_enabled:
         raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "reasoning tools disabled")
-    result = tools.reason_answer(query=query, persona=persona)
+    result = tools.reason_answer(
+        query=query,
+        persona=cast(
+            "Literal['sme_owner', 'tax_advisor', 'agri_corp', 'consultant', 'ma_advisor', 'municipality', 'generic'] | None",
+            persona,
+        ),
+    )
     log_usage(conn, ctx, "am.reason", strict_metering=True)
     return JSONResponse(
         content=_apply_envelope(

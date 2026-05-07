@@ -164,7 +164,7 @@
 
 **観測**: legacy migration 番号 (032, 046-104) は CLAUDE.md と migration index 整合。Wave 24 計画番号 (MASTER_PLAN 105-113, 140-142) は **wave24_ prefix で実在確認済** (e.g. wave24_105_audit_seal_key_version, wave24_140_am_narrative_extracted_entities)。
 
-**推奨**: 
+**推奨**:
 - MASTER_PLAN の「migration 105 (=wave24_105)」記法を全箇所で統一。"migration 105" 単独表記は legacy 105_integrations.sql と混同のリスクあり。
 - wave24_ 番号系列の最終 manifest (どの番号が actual 実在 / どの論理番号がスキップ)を `docs/_internal/W24_MIGRATION_MANIFEST.md` (新規) で固定化を別 wave で実施。
 

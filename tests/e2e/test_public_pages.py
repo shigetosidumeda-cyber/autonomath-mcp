@@ -74,6 +74,6 @@ async def test_press_about_returns_200(page: Page, url_for) -> None:
     body_text = await page.locator("body").text_content()
     assert body_text is not None
     # Matches the canonical opening line or its English counterpart.
-    assert re.search(r"(プレスキット|Press Kit|jpintel)", body_text), (
-        f"press/about content doesn't look right: {body_text[:200]!r}"
-    )
+    assert re.search(
+        r"(プレスキット|Press Kit|jpintel)", body_text
+    ), f"press/about content doesn't look right: {body_text[:200]!r}"

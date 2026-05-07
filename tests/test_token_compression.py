@@ -64,9 +64,9 @@ def test_pure_japanese_chars_per_token_within_10_percent() -> None:
     # (mixed because URLs add some ASCII).
     chars = len(text)
     chars_per_token = chars / tokens
-    assert 2.3 <= chars_per_token <= 3.8, (
-        f"Pure-JP text should land near 2.5-3.0 chars/token, got {chars_per_token:.2f}"
-    )
+    assert (
+        2.3 <= chars_per_token <= 3.8
+    ), f"Pure-JP text should land near 2.5-3.0 chars/token, got {chars_per_token:.2f}"
 
     # Tight upper-bound sanity: must be within 10% of the closed-form
     # heuristic prediction.
@@ -87,9 +87,9 @@ def test_pure_english_chars_per_token_within_10_percent() -> None:
 
     chars_per_token = len(text) / tokens
     # English is ~4.0 chars/token by definition of our weight; allow ±10%.
-    assert 3.6 <= chars_per_token <= 4.4, (
-        f"Pure-EN text should land near 4.0 chars/token, got {chars_per_token:.2f}"
-    )
+    assert (
+        3.6 <= chars_per_token <= 4.4
+    ), f"Pure-EN text should land near 4.0 chars/token, got {chars_per_token:.2f}"
 
 
 def test_mixed_jp_en_falls_between() -> None:
@@ -105,9 +105,9 @@ def test_mixed_jp_en_falls_between() -> None:
     # Mixed density must lie between the two pure-language densities.
     low = min(jp_density, en_density)
     high = max(jp_density, en_density)
-    assert low <= mixed_density <= high, (
-        f"Mixed density {mixed_density:.2f} should lie in [{low:.2f}, {high:.2f}]"
-    )
+    assert (
+        low <= mixed_density <= high
+    ), f"Mixed density {mixed_density:.2f} should lie in [{low:.2f}, {high:.2f}]"
 
 
 def test_source_basis_unknown_returns_none() -> None:
@@ -216,9 +216,9 @@ def test_compose_no_price_omits_cost_savings() -> None:
         pdf_pages=10,
         input_price_jpy_per_1m=None,
     )
-    assert "cost_savings_estimate" not in result, (
-        "Plan §9.1 demands omission when price unknown — never fabricate a price."
-    )
+    assert (
+        "cost_savings_estimate" not in result
+    ), "Plan §9.1 demands omission when price unknown — never fabricate a price."
     # Other fields still present.
     assert result["estimate_method"] == ESTIMATE_METHOD
     assert result["source_tokens_estimate"] == 7000

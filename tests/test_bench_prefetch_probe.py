@@ -163,9 +163,9 @@ def _canonical_query_rows() -> list[dict[str, str]]:
 
 
 def test_probe_script_exists_at_operator_path() -> None:
-    assert PROBE_PATH.exists(), (
-        "expected offline prefetch probe script at tools/offline/bench_prefetch_probe.py"
-    )
+    assert (
+        PROBE_PATH.exists()
+    ), "expected offline prefetch probe script at tools/offline/bench_prefetch_probe.py"
 
 
 def test_probe_reads_canonical_queries_and_writes_summary_and_rows(
@@ -460,9 +460,9 @@ def test_probe_does_not_treat_output_source_tokens_estimate_as_input_baseline(
 
 
 def test_probe_file_has_no_llm_or_network_imports() -> None:
-    assert PROBE_PATH.exists(), (
-        "expected offline prefetch probe script at tools/offline/bench_prefetch_probe.py"
-    )
+    assert (
+        PROBE_PATH.exists()
+    ), "expected offline prefetch probe script at tools/offline/bench_prefetch_probe.py"
     tree = ast.parse(PROBE_PATH.read_text(encoding="utf-8"))
     forbidden_modules = {
         "anthropic",
@@ -493,6 +493,6 @@ def test_probe_file_has_no_llm_or_network_imports() -> None:
             )
         ):
             hits.append(f"from {node.module} import ...")
-    assert not hits, (
-        f"bench_prefetch_probe.py must stay offline and LLM-free; forbidden imports found: {hits}"
-    )
+    assert (
+        not hits
+    ), f"bench_prefetch_probe.py must stay offline and LLM-free; forbidden imports found: {hits}"

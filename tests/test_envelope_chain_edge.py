@@ -377,9 +377,9 @@ def test_tool_fields_minimal_distinct_from_envelope_fields_minimal():
         latency_ms=2.0,
     )
     meta_a = merged_tool_minimal.get("meta") or {}
-    assert isinstance(meta_a.get("suggestions"), list), (
-        "fields='minimal' (row trim) MUST NOT strip the envelope meta block"
-    )
+    assert isinstance(
+        meta_a.get("suggestions"), list
+    ), "fields='minimal' (row trim) MUST NOT strip the envelope meta block"
     assert len(meta_a["suggestions"]) > 0
 
     # (b) envelope-level __envelope_fields__=minimal → meta block GONE.
@@ -390,15 +390,15 @@ def test_tool_fields_minimal_distinct_from_envelope_fields_minimal():
         latency_ms=2.0,
     )
     meta_b = merged_env_minimal.get("meta")
-    assert meta_b is None or "suggestions" not in (meta_b or {}), (
-        "__envelope_fields__='minimal' MUST drop the meta block"
-    )
+    assert meta_b is None or "suggestions" not in (
+        meta_b or {}
+    ), "__envelope_fields__='minimal' MUST drop the meta block"
 
     # Final invariant: the two kwargs produce DIFFERENT meta states given
     # otherwise identical inputs. If a future regression makes them aliases,
     # this assertion fails loudly.
     a_has_meta = isinstance(meta_a.get("suggestions"), list) and meta_a["suggestions"]
     b_has_meta = isinstance((merged_env_minimal.get("meta") or {}).get("suggestions"), list)
-    assert a_has_meta and not b_has_meta, (
-        "fields=minimal and __envelope_fields__=minimal must remain distinct signals"
-    )
+    assert (
+        a_has_meta and not b_has_meta
+    ), "fields=minimal and __envelope_fields__=minimal must remain distinct signals"

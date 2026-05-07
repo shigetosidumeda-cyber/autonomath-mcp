@@ -82,9 +82,9 @@ def test_anon_search_records_one_analytics_row(client: TestClient, seeded_db: Pa
     finally:
         c.close()
 
-    assert len(rows) == 1, (
-        f"Expected exactly 1 analytics_events row, got {len(rows)}: {[dict(r) for r in rows]}"
-    )
+    assert (
+        len(rows) == 1
+    ), f"Expected exactly 1 analytics_events row, got {len(rows)}: {[dict(r) for r in rows]}"
     row = rows[0]
     assert row["method"] == "GET"
     assert row["path"] == "/v1/programs/search"

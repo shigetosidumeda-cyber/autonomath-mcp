@@ -60,7 +60,16 @@ from typing import TYPE_CHECKING, Annotated, Any, Literal
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Query, Request, status
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Header,
+    HTTPException,
+    Query,
+    Request,
+    Response,
+    status,
+)
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
@@ -300,7 +309,7 @@ def _open_autonomath_ro() -> sqlite3.Connection | None:
         return None
 
 
-def contextlib_suppress(*exc):
+def contextlib_suppress(*exc: type[BaseException]) -> Any:
     """Tiny inline contextlib.suppress so we don't import the stdlib
     module just for one line. Mirrors stdlib semantics exactly."""
     import contextlib
@@ -735,7 +744,7 @@ def post_dd_batch(
             description="Required for paid batch calls to prevent duplicate billing on retries.",
         ),
     ] = None,
-) -> JSONResponse:
+) -> Response:
     require_metered_api_key(ctx, "dd_batch")
 
     # 1. Normalize + dedup (preserve order). Reject the request if any

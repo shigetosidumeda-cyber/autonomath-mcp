@@ -164,15 +164,15 @@ def test_real_estate_stub_returns_not_implemented(fn_name: str, call: str) -> No
         "print(repr(res))"
     )
     out = _run_in_subprocess(snippet, env_flag="1")
-    assert "'status': 'not_implemented_until_T+200d'" in out, (
-        f"stub {fn_name!r} did not return sentinel envelope: {out}"
-    )
-    assert "'launch_target': '2026-11-22'" in out, (
-        f"stub {fn_name!r} sentinel must carry launch_target: {out}"
-    )
-    assert "'filter_applied':" in out, (
-        f"stub {fn_name!r} sentinel must echo filter_applied for traceability: {out}"
-    )
+    assert (
+        "'status': 'not_implemented_until_T+200d'" in out
+    ), f"stub {fn_name!r} did not return sentinel envelope: {out}"
+    assert (
+        "'launch_target': '2026-11-22'" in out
+    ), f"stub {fn_name!r} sentinel must carry launch_target: {out}"
+    assert (
+        "'filter_applied':" in out
+    ), f"stub {fn_name!r} sentinel must echo filter_applied for traceability: {out}"
 
 
 # ---------------------------------------------------------------------------
@@ -204,9 +204,9 @@ def test_real_estate_paginated_stub_envelope(fn_name: str, call: str) -> None:
     )
     out = _run_in_subprocess(snippet, env_flag="1")
     assert "'total': 0" in out, f"paginated stub {fn_name!r} must report total=0: {out}"
-    assert "'results': []" in out, (
-        f"paginated stub {fn_name!r} must return empty results list: {out}"
-    )
+    assert (
+        "'results': []" in out
+    ), f"paginated stub {fn_name!r} must return empty results list: {out}"
 
 
 # ---------------------------------------------------------------------------
@@ -274,9 +274,9 @@ def test_real_estate_stub_schema_shape(fn_name: str) -> None:
     # Every parameter must be type-annotated (Annotated[..., Field(...)])
     # — the Field carries the schema description used by FastMCP.
     for pname, p in sig.parameters.items():
-        assert p.annotation is not inspect.Parameter.empty, (
-            f"{fn_name}.{pname} has no type annotation"
-        )
+        assert (
+            p.annotation is not inspect.Parameter.empty
+        ), f"{fn_name}.{pname} has no type annotation"
     # Docstring must be non-empty (FastMCP uses it as the tool description
     # when the decorator is bare).
     assert (inspect.getdoc(fn) or "").strip(), f"{fn_name} has empty docstring"

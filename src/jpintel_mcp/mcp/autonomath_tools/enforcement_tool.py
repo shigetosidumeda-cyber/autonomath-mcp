@@ -116,9 +116,11 @@ def _as_date(value: Any) -> str:
     return str(value)
 
 
-def _err_envelope(code: str, message: str, hint: str | None = None, retry_with: list[str] | None = None) -> dict[str, Any]:
+def _err_envelope(
+    code: str, message: str, hint: str | None = None, retry_with: list[str] | None = None
+) -> dict[str, Any]:
     """Canonical error envelope matching the rest of the am tool surface."""
-    env = {"code": code, "message": message}
+    env: dict[str, Any] = {"code": code, "message": message}
     if hint:
         env["hint"] = hint
     if retry_with:
@@ -133,7 +135,11 @@ def _err_envelope(code: str, message: str, hint: str | None = None, retry_with: 
     }
 
 
-def check_enforcement(houjin_bangou=None, target_name=None, as_of_date="today"):
+def check_enforcement(
+    houjin_bangou: str | None = None,
+    target_name: str | None = None,
+    as_of_date: str = "today",
+) -> dict[str, Any]:
     """Query enforcement history for a company.
 
     Either houjin_bangou or target_name must be supplied.
@@ -287,7 +293,6 @@ def check_enforcement(houjin_bangou=None, target_name=None, as_of_date="today"):
 
 # ======== Tests ========
 def _run_tests() -> None:
-
     # Test 1: no input -> error
     r = check_enforcement()
     assert "error" in r, f"test1 failed: {r}"
@@ -333,7 +338,6 @@ def _run_tests() -> None:
         assert k in r, f"test7 missing key {k}"
 
     print("[enforcement_tool] ALL TESTS PASS")
-    return True
 
 
 if __name__ == "__main__":

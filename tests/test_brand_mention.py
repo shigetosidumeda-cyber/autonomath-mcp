@@ -240,9 +240,9 @@ def test_case_3_classify_self_vs_other_accuracy_95(tmp_path):
         if got == expected:
             correct += 1
     accuracy = correct / len(labeled)
-    assert accuracy >= 0.95, (
-        f"classify accuracy {accuracy:.2%} < 95% (correct={correct}/{len(labeled)})"
-    )
+    assert (
+        accuracy >= 0.95
+    ), f"classify accuracy {accuracy:.2%} < 95% (correct={correct}/{len(labeled)})"
 
 
 # ---------------------------------------------------------------------------
@@ -345,9 +345,9 @@ def test_case_6_dashboard_json_schema_valid():
     assert required.issubset(payload.keys()), f"missing keys: {required - payload.keys()}"
     # Source counts must cover all 10 sources
     sc = payload["source_counts"]
-    assert set(sc.keys()) >= set(sbs.ALL_SOURCES), (
-        f"source_counts missing: {set(sbs.ALL_SOURCES) - set(sc.keys())}"
-    )
+    assert set(sc.keys()) >= set(
+        sbs.ALL_SOURCES
+    ), f"source_counts missing: {set(sbs.ALL_SOURCES) - set(sc.keys())}"
     for src, count in sc.items():
         assert isinstance(count, int) and count >= 0, f"bad count for {src}: {count!r}"
     # self_vs_other shape
