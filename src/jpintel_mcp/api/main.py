@@ -32,6 +32,7 @@ from jpintel_mcp.api.admin import router as admin_router
 from jpintel_mcp.api.admin_kpi import router as admin_kpi_router
 from jpintel_mcp.api.advisors import router as advisors_router
 from jpintel_mcp.api.alerts import router as alerts_router
+from jpintel_mcp.api.amendment_alerts import router as amendment_alerts_router
 from jpintel_mcp.api.anon_limit import (
     AnonIpLimitDep,
     _AnonRateLimitExceeded,
@@ -2201,6 +2202,14 @@ def create_app() -> FastAPI:
     # subscription is FREE (no ¥3/req surcharge) — retention feature, not a
     # metered surface. Anonymous callers are 401'd inside the router itself.
     app.include_router(alerts_router)
+    # R8 amendment-alert subscription feed (jpcite v0.3.4). Multi-watch
+    # subscription surface joined against am_amendment_diff (autonomath.db).
+    # Subscriptions + feed read are FREE retention features (no ¥3/req
+    # surcharge). Distinct from alerts_router (legacy single-filter form)
+    # — this surface speaks watch:[{type,id}] arrays from day one. Mounted
+    # under /v1/me/amendment_alerts. Anonymous callers are 401'd inside the
+    # router itself; no AnonIpLimitDep wrapper needed.
+    app.include_router(amendment_alerts_router)
     # Customer-side outbound webhooks (¥3/req metered, HMAC required).
     # Distinct from alerts_router (FREE retention surface). The dispatcher
     # cron (scripts/cron/dispatch_webhooks.py) emits Stripe usage records
