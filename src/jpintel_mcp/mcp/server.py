@@ -18,7 +18,7 @@ import logging
 import sqlite3
 import time
 import unicodedata
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Annotated, Any, Literal, cast
 
 from mcp.server.fastmcp import FastMCP
@@ -9200,6 +9200,410 @@ def regulatory_prep_pack(
     if input_warnings:
         payload["input_warnings"] = input_warnings
     return payload
+
+
+# ---------------------------------------------------------------------------
+# 災害復興 × 特例制度 — MCP tool surface (mirrors REST /v1/disaster/*).
+# Pure SQLite walk over `programs` (jpintel.db) — no LLM, no network. The
+# REST handler in api/disaster.py owns the validation contract; we mirror
+# the keyword fence here so MCP callers stay offline-first.
+# ---------------------------------------------------------------------------
+
+
+@mcp.tool(annotations=_READ_ONLY)
+@_with_mcp_telemetry
+def list_active_disaster_programs(
+    window_months: Annotated[
+        int,
+        Field(
+            description=("Look-back window in months (1–60, default 12)."),
+            ge=1,
+            le=60,
+        ),
+    ] = 12,
+    prefecture: Annotated[
+        str | None,
+        Field(
+            description=(
+                "JP prefecture name ('石川県' / '熊本県' / …). Pass '全国' "
+                "for nationwide rows. Omit for all."
+            ),
+        ),
+    ] = None,
+    disaster_type: Annotated[
+        Literal[
+            "flood",
+            "earthquake",
+            "typhoon",
+            "fire",
+            "snow",
+            "landslide",
+            "tsunami",
+            "volcanic",
+            "any",
+        ]
+        | None,
+        Field(
+            description=("Filter by disaster category. Omit / 'any' for all disaster rows."),
+        ),
+    ] = None,
+    program_kind: Annotated[
+        str | None,
+        Field(description="subsidy | loan | grant | tax_deduction | …"),
+    ] = None,
+    limit: Annotated[int, Field(ge=1, le=200)] = 50,
+) -> dict[str, Any]:
+    """DISASTER: 過去 12 ヶ月の災害復興・特例制度を 1 コールで surface する (list disaster-recovery programs surfaced in the rolling N-month window). Use as the 発災後 immediate-surface entry point — a 都道府県 LP team can call it within minutes of 災害指定 and get back the union of (subsidy + loan + tax特例 + セーフティネット保証) rows that now apply."""
+    _fb = _fallback_call(
+        "list_active_disaster_programs",
+        rest_path="/v1/disaster/active_programs",
+        params={
+            "window_months": window_months,
+            "prefecture": prefecture,
+            "disaster_type": disaster_type,
+            "program_kind": program_kind,
+            "limit": limit,
+        },
+    )
+    if _fb is not None:
+        return _fb
+
+    from jpintel_mcp.api.disaster import (
+        _DISASTER_KEYWORDS,
+        _classify_row_disaster_types,
+        _disaster_keyword_clause,
+    )
+
+    dtype_for_clause = disaster_type or "any"
+    if dtype_for_clause not in _DISASTER_KEYWORDS:
+        return {
+            "error": {
+                "code": "invalid_enum",
+                "message": f"disaster_type must be one of {sorted(_DISASTER_KEYWORDS)}",
+                "hint": "Pass disaster_type=None or 'any' to surface every disaster row.",
+                "retry_with": ["list_active_disaster_programs"],
+            },
+            "results": [],
+            "total": 0,
+        }
+    cutoff = (datetime.now(UTC) - timedelta(days=30 * window_months)).isoformat()
+    fence_sql, fence_params = _disaster_keyword_clause(dtype_for_clause)
+    where = [
+        "excluded = 0",
+        "(tier IS NULL OR tier <> 'X')",
+        fence_sql,
+        "(valid_from IS NULL OR valid_from >= ?)",
+    ]
+    params: list[Any] = [*fence_params, cutoff]
+    if prefecture:
+        where.append("(COALESCE(prefecture, '') = ? OR COALESCE(prefecture, '') = '全国')")
+        params.append(prefecture)
+    if program_kind:
+        where.append("program_kind = ?")
+        params.append(program_kind)
+    where_sql = " AND ".join(where)
+
+    conn = connect()
+    try:
+        (total,) = conn.execute(
+            f"SELECT COUNT(*) FROM programs WHERE {where_sql}", params
+        ).fetchone()
+        rows = conn.execute(
+            f"""SELECT unified_id, primary_name, prefecture, program_kind,
+                       tier, authority_level, authority_name,
+                       amount_max_man_yen, official_url, source_url,
+                       valid_from, valid_until
+                FROM programs
+                WHERE {where_sql}
+                ORDER BY
+                    CASE tier
+                        WHEN 'S' THEN 0 WHEN 'A' THEN 1
+                        WHEN 'B' THEN 2 WHEN 'C' THEN 3
+                        ELSE 9 END,
+                    COALESCE(amount_max_man_yen, 0) DESC,
+                    primary_name
+                LIMIT ?""",
+            [*params, limit],
+        ).fetchall()
+        results = [
+            {
+                **{k: row[k] for k in row.keys()},  # noqa: SIM118 — sqlite3.Row needs .keys()
+                "matched_disaster_types": _classify_row_disaster_types(
+                    row["primary_name"] or ""
+                ),
+            }
+            for row in rows
+        ]
+        return {
+            "total": int(total),
+            "window_months": window_months,
+            "as_of": datetime.now(UTC).isoformat(),
+            "results": results,
+        }
+    finally:
+        conn.close()
+
+
+@mcp.tool(annotations=_READ_ONLY)
+@_with_mcp_telemetry
+def match_disaster_programs(
+    prefecture_code: Annotated[
+        str,
+        Field(
+            description="JIS X 0401 two-digit prefecture code (01–47).",
+            min_length=2,
+            max_length=2,
+        ),
+    ],
+    disaster_type: Annotated[
+        Literal[
+            "flood",
+            "earthquake",
+            "typhoon",
+            "fire",
+            "snow",
+            "landslide",
+            "tsunami",
+            "volcanic",
+            "any",
+        ],
+        Field(description="Disaster category (closed enum)."),
+    ],
+    incident_date: Annotated[
+        str,
+        Field(
+            description=("ISO-8601 — 'YYYY-MM-DD' or full timestamp."),
+            min_length=8,
+            max_length=32,
+        ),
+    ],
+    limit: Annotated[int, Field(ge=1, le=100)] = 30,
+) -> dict[str, Any]:
+    """DISASTER: 発災後 prefecture+災害種別+日付 から該当制度を一括返却 (match every applicable subsidy / loan / tax特例 for a given disaster instance). Returns buckets keyed on program_kind, tier-sorted (S→A→B→C). Use this when the caller already knows the disaster facts and wants a one-shot 'what can my client apply for' answer."""
+    _fb = _fallback_call(
+        "match_disaster_programs",
+        rest_path="/v1/disaster/match",
+        method="POST",
+        json_body={
+            "prefecture": prefecture_code,
+            "disaster_type": disaster_type,
+            "incident_date": incident_date,
+            "limit": limit,
+        },
+    )
+    if _fb is not None:
+        return _fb
+
+    from jpintel_mcp.api.disaster import (
+        _DISASTER_KEYWORDS,
+        _PREFECTURE_CODE_TO_NAME,
+        _classify_row_disaster_types,
+        _disaster_keyword_clause,
+    )
+
+    pref_name = _PREFECTURE_CODE_TO_NAME.get(prefecture_code)
+    if not pref_name:
+        return {
+            "error": {
+                "code": "invalid_enum",
+                "message": f"prefecture_code must be JIS X 0401 (01–47), got {prefecture_code!r}",
+                "hint": "Pass a two-digit code, e.g. '13' for 東京都, '17' for 石川県.",
+                "retry_with": ["match_disaster_programs"],
+            },
+            "buckets": [],
+            "total": 0,
+        }
+    if disaster_type not in _DISASTER_KEYWORDS:
+        return {
+            "error": {
+                "code": "invalid_enum",
+                "message": f"disaster_type must be one of {sorted(_DISASTER_KEYWORDS)}",
+                "hint": "Use 'any' to match every disaster keyword.",
+                "retry_with": ["match_disaster_programs"],
+            },
+            "buckets": [],
+            "total": 0,
+        }
+    fence_sql, fence_params = _disaster_keyword_clause(disaster_type)
+    where = [
+        "excluded = 0",
+        "(tier IS NULL OR tier <> 'X')",
+        fence_sql,
+        "(COALESCE(prefecture, '') = ? OR COALESCE(prefecture, '') IN ('全国', ''))",
+    ]
+    params: list[Any] = [*fence_params, pref_name]
+    where_sql = " AND ".join(where)
+
+    conn = connect()
+    try:
+        rows = conn.execute(
+            f"""SELECT unified_id, primary_name, prefecture, program_kind,
+                       tier, authority_level, authority_name,
+                       amount_max_man_yen, official_url, source_url,
+                       valid_from, valid_until
+                FROM programs
+                WHERE {where_sql}
+                ORDER BY
+                    CASE tier
+                        WHEN 'S' THEN 0 WHEN 'A' THEN 1
+                        WHEN 'B' THEN 2 WHEN 'C' THEN 3
+                        ELSE 9 END,
+                    COALESCE(amount_max_man_yen, 0) DESC,
+                    primary_name
+                LIMIT ?""",
+            [*params, limit],
+        ).fetchall()
+        buckets: dict[str, list[dict[str, Any]]] = {}
+        for row in rows:
+            kind = row["program_kind"] or "unspecified"
+            matched = _classify_row_disaster_types(row["primary_name"] or "")
+            if disaster_type != "any" and disaster_type not in matched:
+                matched = [*matched, disaster_type]
+            item = {k: row[k] for k in row.keys()}  # noqa: SIM118 — sqlite3.Row needs .keys()
+            item["matched_disaster_types"] = matched
+            buckets.setdefault(kind, []).append(item)
+        bucket_models = [
+            {"program_kind": k, "count": len(v), "items": v}
+            for k, v in sorted(buckets.items(), key=lambda kv: (-len(kv[1]), kv[0]))
+        ]
+        total = sum(len(v) for v in buckets.values())
+        return {
+            "prefecture": pref_name,
+            "prefecture_code": prefecture_code,
+            "disaster_type": disaster_type,
+            "incident_date": incident_date,
+            "total": total,
+            "buckets": bucket_models,
+        }
+    finally:
+        conn.close()
+
+
+@mcp.tool(annotations=_READ_ONLY)
+@_with_mcp_telemetry
+def disaster_catalog(
+    years: Annotated[
+        int,
+        Field(
+            description="Look-back horizon in years (1–10, default 5).",
+            ge=1,
+            le=10,
+        ),
+    ] = 5,
+    sample_per_event: Annotated[int, Field(ge=1, le=20)] = 5,
+) -> dict[str, Any]:
+    """DISASTER: 過去 N 年の災害指定 history を programs.primary_name から再構成 (walk programs.primary_name for 「令和N年…豪雨」 / 「令和N年…地震」 patterns and surface one event row per detected disaster). Useful for retrospective comparison: 能登半島地震 / 山形豪雨 / 熊本豪雨 / 令和2年7月豪雨 etc., each with up to 5 sample programs."""
+    _fb = _fallback_call(
+        "disaster_catalog",
+        rest_path="/v1/disaster/catalog",
+        params={"years": years, "sample_per_event": sample_per_event},
+    )
+    if _fb is not None:
+        return _fb
+
+    from jpintel_mcp.api.disaster import (
+        _DISASTER_TITLE_RE,
+        _REIWA_TO_YEAR,
+        _classify_row_disaster_types,
+    )
+
+    now = datetime.now(UTC)
+    min_year = now.year - years
+
+    conn = connect()
+    try:
+        rows = conn.execute(
+            """SELECT unified_id, primary_name, prefecture, program_kind, tier,
+                      authority_level, authority_name, amount_max_man_yen,
+                      official_url, source_url, valid_from, valid_until
+               FROM programs
+               WHERE excluded = 0
+                 AND (tier IS NULL OR tier <> 'X')
+                 AND primary_name LIKE '%令和%'
+                 AND (
+                    primary_name LIKE '%豪雨%'
+                    OR primary_name LIKE '%地震%'
+                    OR primary_name LIKE '%台風%'
+                    OR primary_name LIKE '%大雪%'
+                    OR primary_name LIKE '%豪雪%'
+                    OR primary_name LIKE '%火災%'
+                    OR primary_name LIKE '%津波%'
+                    OR primary_name LIKE '%水害%'
+                    OR primary_name LIKE '%大雨%'
+                 )
+               LIMIT 5000"""
+        ).fetchall()
+    finally:
+        conn.close()
+
+    suffixes = (
+        "豪雨",
+        "地震",
+        "台風",
+        "大雪",
+        "豪雪",
+        "火災",
+        "津波",
+        "水害",
+        "大雨",
+        "噴火",
+    )
+    inferred_for: dict[str, str] = {
+        "豪雨": "flood",
+        "水害": "flood",
+        "大雨": "flood",
+        "地震": "earthquake",
+        "台風": "typhoon",
+        "大雪": "snow",
+        "豪雪": "snow",
+        "火災": "fire",
+        "津波": "tsunami",
+        "噴火": "volcanic",
+    }
+    counts: dict[tuple[str, int, str], int] = {}
+    samples: dict[tuple[str, int, str], list[dict[str, Any]]] = {}
+    for row in rows:
+        name = row["primary_name"] or ""
+        m = _DISASTER_TITLE_RE.search(name)
+        if not m:
+            continue
+        era_token = m.group(1).translate(str.maketrans("０１２３４５６７８９", "0123456789"))
+        year = _REIWA_TO_YEAR.get(era_token)
+        if year is None or year < min_year:
+            continue
+        keyword = m.group(2)
+        for suffix in suffixes:
+            if keyword.endswith(suffix):
+                keyword = suffix
+                break
+        key = (era_token, year, keyword)
+        counts[key] = counts.get(key, 0) + 1
+        bucket = samples.setdefault(key, [])
+        if len(bucket) < sample_per_event:
+            item = {k: row[k] for k in row.keys()}  # noqa: SIM118 — sqlite3.Row needs .keys()
+            item["matched_disaster_types"] = _classify_row_disaster_types(name)
+            bucket.append(item)
+    events: list[dict[str, Any]] = []
+    for key, sample_list in samples.items():
+        era_label, year, keyword = key
+        events.append(
+            {
+                "label": f"{era_label}{keyword}",
+                "year": year,
+                "era_label": era_label,
+                "disaster_keyword": keyword,
+                "inferred_type": inferred_for.get(keyword, "any"),
+                "program_count": counts.get(key, len(sample_list)),
+                "sample_programs": sample_list,
+            }
+        )
+    events.sort(key=lambda e: (-e["year"], e["disaster_keyword"], e["era_label"]))
+    return {
+        "years": years,
+        "as_of": now.isoformat(),
+        "total_events": len(events),
+        "events": events,
+    }
 
 
 def _init_sentry_mcp() -> None:

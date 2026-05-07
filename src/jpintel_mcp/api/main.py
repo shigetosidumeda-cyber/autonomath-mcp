@@ -50,6 +50,7 @@ from jpintel_mcp.api.autonomath import (
     router as autonomath_router,
 )
 from jpintel_mcp.api.bids import router as bids_router
+from jpintel_mcp.api.benchmark import router as benchmark_router
 from jpintel_mcp.api.billing import router as billing_router
 from jpintel_mcp.api.billing_breakdown import router as billing_breakdown_router
 from jpintel_mcp.api.bulk_evaluate import router as bulk_evaluate_router
@@ -62,6 +63,7 @@ from jpintel_mcp.api.client_profiles import router as client_profiles_router
 from jpintel_mcp.api.compliance import router as compliance_router
 from jpintel_mcp.api.confidence import router as confidence_router
 from jpintel_mcp.api.contribute import router as contribute_router
+from jpintel_mcp.api.corporate_form import router as corporate_form_router
 from jpintel_mcp.api.cost import router as cost_router
 from jpintel_mcp.api.courses import router as courses_router
 from jpintel_mcp.api.court_decisions import router as court_decisions_router
@@ -1893,6 +1895,19 @@ def create_app() -> FastAPI:
     # must be free to make repeatedly, otherwise the probe burns the
     # runway it's meant to report on. See api/usage.py docstring.
     app.include_router(usage_router)
+    # M02 (2026-05-07): 法人格 × 制度 matrix surface — registered BEFORE
+    # programs_router so the more-specific paths
+    # `/v1/programs/by_corporate_form` and
+    # `/v1/programs/{unified_id}/eligibility_by_form` win the strict-query
+    # middleware's first-FULL-match walk against the catchall
+    # `/v1/programs/{unified_id}` route in programs_router.
+    # GET /v1/programs/by_corporate_form?form=<form>&industry_jsic=<axis> +
+    # GET /v1/programs/{unified_id}/eligibility_by_form. Pivots
+    # am_target_profile (43 法人格 buckets) + am_program_eligibility_predicate_json
+    # ($.target_entity_types axis) so callers can narrow by 株式会社 / 合同会社 /
+    # NPO / 一般社団 / 学校 / 医療 / 個人事業主 etc. Pure SQLite + Python — NO LLM.
+    # Inherits the same 3/日 anon-IP cap as programs_router.
+    app.include_router(corporate_form_router, dependencies=[AnonIpLimitDep])
     app.include_router(programs_router, dependencies=[AnonIpLimitDep])
     # R8 (2026-05-07): am_compat_matrix 43,966 rows full-surface.
     # POST /v1/programs/portfolio_optimize + GET /v1/programs/{a}/compatibility/{b}.
@@ -1931,6 +1946,7 @@ def create_app() -> FastAPI:
     # case_studies (jpintel.db, 2,286) + jpi_adoption_records (autonomath.db,
     # 201,845). Same anon quota gate as case_studies_router.
     app.include_router(case_cohort_match_router, dependencies=[AnonIpLimitDep])
+    app.include_router(benchmark_router, dependencies=[AnonIpLimitDep])
     app.include_router(loan_programs_router, dependencies=[AnonIpLimitDep])
     # 2026-05-07 (R8): 災害復興 × 特例制度 surface — three endpoints under
     # /v1/disaster/* projecting the existing programs corpus through a
@@ -1946,6 +1962,11 @@ def create_app() -> FastAPI:
     # like the other discovery surfaces.
     app.include_router(bids_router, dependencies=[AnonIpLimitDep])
     app.include_router(tax_rulesets_router, dependencies=[AnonIpLimitDep])
+    # /v1/tax_rules/{rule_id}/full_chain — 税制 + 法令 + 通達 + 裁決 + 判例 +
+    # 改正履歴 in 1 call. Pure SQLite over jpintel.db (tax_rulesets / laws /
+    # court_decisions) + autonomath.db (nta_tsutatsu_index / nta_saiketsu).
+    # Sensitive: 税理士法 §52 / 弁護士法 §72 / 公認会計士法 §47条の2 disclaimer.
+    app.include_router(tax_chain_router, dependencies=[AnonIpLimitDep])
     app.include_router(invoice_registrants_router, dependencies=[AnonIpLimitDep])
     # R8 invoice risk lookup (2026-05-07): /v1/invoice_registrants/{tnum}/risk
     # + /v1/invoice_registrants/batch_risk + /v1/houjin/{bangou}/invoice_status.

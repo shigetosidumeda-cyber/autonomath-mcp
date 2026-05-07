@@ -49,6 +49,9 @@ _PARAMS_DIGEST_WHITELIST: frozenset[str] = frozenset(
         "invoice_registrants.get",
         "houjin.get",
         "calendar.deadlines",
+        "disaster.active_programs",
+        "disaster.match",
+        "disaster.catalog",
         "meta",
         "ping",
     }
