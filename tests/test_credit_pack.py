@@ -58,12 +58,20 @@ def autonomath_db_path(monkeypatch) -> Path:
 @pytest.fixture()
 def stripe_env(monkeypatch):
     """Hydrate Stripe settings so _stripe() doesn't 503."""
+    from jpintel_mcp.api import admin as admin_mod
+    from jpintel_mcp.api import billing as billing_mod
     from jpintel_mcp.config import settings
 
-    monkeypatch.setattr(settings, "stripe_secret_key", "sk_test_dummy", raising=False)
-    monkeypatch.setattr(settings, "stripe_webhook_secret", "whsec_dummy", raising=False)
-    monkeypatch.setattr(settings, "stripe_price_per_request", "price_metered_test", raising=False)
-    monkeypatch.setattr(settings, "admin_api_key", "admin_test_key", raising=False)
+    for settings_obj in (settings, billing_mod.settings, admin_mod.settings):
+        monkeypatch.setattr(settings_obj, "stripe_secret_key", "sk_test_dummy", raising=False)
+        monkeypatch.setattr(settings_obj, "stripe_webhook_secret", "whsec_dummy", raising=False)
+        monkeypatch.setattr(
+            settings_obj,
+            "stripe_price_per_request",
+            "price_metered_test",
+            raising=False,
+        )
+        monkeypatch.setattr(settings_obj, "admin_api_key", "admin_test_key", raising=False)
     yield settings
 
 
@@ -214,13 +222,15 @@ def test_create_invoice_503_when_admin_key_disabled(
     client, stripe_env, autonomath_db_path, admin_headers, monkeypatch
 ):
     """Empty ADMIN_API_KEY disables the operator-only credit purchase route."""
+    from jpintel_mcp.api import admin as admin_mod
     from jpintel_mcp.api import billing as billing_mod
     from jpintel_mcp.config import settings
 
     def _should_not_be_called(**kwargs):
         raise AssertionError("Stripe must not be hit when admin endpoints are disabled")
 
-    monkeypatch.setattr(settings, "admin_api_key", "", raising=False)
+    for settings_obj in (settings, billing_mod.settings, admin_mod.settings):
+        monkeypatch.setattr(settings_obj, "admin_api_key", "", raising=False)
     monkeypatch.setattr(billing_mod.stripe.InvoiceItem, "create", _should_not_be_called)
     monkeypatch.setattr(billing_mod.stripe.Invoice, "create", _should_not_be_called)
 
