@@ -14,6 +14,17 @@
 > `R8_FLY_DEPLOY_ALTERNATIVE_2026-05-07.md` (alt-path matrix, depot=false rationale),
 > `R8_GHA_DEPLOY_PATH_2026-05-07.md` (workflow_dispatch path A wiring).
 
+> **Follow-up correction (2026-05-07 12:55 JST):** run `25474923802` did **not**
+> deploy `c3b6e57`. `gh run view 25474923802` reports
+> `headSha=f3679d6926d8654e106544523283fc04a729ea51`, because local `main`
+> was 31 commits ahead of `origin/main` and had not been pushed. `flyctl image
+> show -a autonomath-api` now reports a newer Fly image tag
+> `deployment-01KR08RKZW3CGDCNJQER4QV728`, but its label is still
+> `GH_SHA=f3679d6926d8654e106544523283fc04a729ea51`. Therefore attempt 5
+> re-deployed the old remote-main image; 5/7 hardening remains unshipped.
+> Treat any later wording below that calls `c3b6e57` the attempt-5 target as
+> superseded by this correction.
+
 ## 1. Attempt timeline (5 attempts, 02:50–03:50 UTC)
 
 | # | Time (UTC) | Method | Outcome | Error / signal |

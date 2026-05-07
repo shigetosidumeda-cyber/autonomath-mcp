@@ -173,25 +173,43 @@ jobs:
         # complements the SENTRY_ENVIRONMENT already pinned in fly.toml.
         run: flyctl deploy --remote-only -e SENTRY_RELEASE=${{ steps.version.outputs.release }}
 
+      - name: Verify Fly machine state pre-probe
+        if: steps.fly-token.outputs.available == 'true'
+        # Double-check after flyctl deploy returns: list the app's machines and
+        # surface their state so we have a deterministic record of which
+        # release/version was live when the smoke probes ran. This is purely
+        # observational — flyctl deploy itself already gates on machine health,
+        # but the post-deploy probe race (run 25474923802 false-positive on
+        # 2026-05-07) showed that surfacing the state up-front makes the cause
+        # of any subsequent probe failure unambiguous in the GHA log.
+        run: |
+          set -euo pipefail
+          echo "== flyctl status (pre-probe machine state) =="
+          flyctl status -a autonomath-api || {
+            echo "::warning::flyctl status returned non-zero; continuing to smoke probes."
+          }
+
       - name: Post-deploy smoke (hard gate)
         if: steps.fly-token.outputs.available == 'true'
         # Hard gate AFTER flyctl deploy completes. We re-run the same probes
         # operators run manually (scripts/smoke_test.sh) but treat any
         # "WARN" (deep_health.status != "ok", programs total <= 0) as a HARD
         # FAIL so a green deploy with degraded data never silently ships.
-        # The sleep gives Fly's machine ~25s to swap traffic to the new
-        # release machine before we probe — Fly's `--strategy=immediate`
-        # in fly.toml makes this brief.
+        # The sleep gives Fly's machine up to ~60s to swap traffic to the new
+        # release machine before we probe — observed Fly p99 machine swap is in
+        # the 60–90s range, so 25s caused a race-condition false-positive on
+        # run 25474923802 (2026-05-07). 60s clears p99 with margin while still
+        # well under the 20-minute job timeout.
         env:
           BASE_URL: https://api.jpcite.com
         run: |
           set -euo pipefail
-          sleep 25
+          sleep 60
 
           echo "== Post-deploy hard gate =="
 
           # Probe 1: /healthz must be HTTP 200.
-          status=$(curl -fsS -o /dev/null -w '%{http_code}' --max-time 15 "$BASE_URL/healthz" || echo 000)
+          status=$(curl -fsS -o /dev/null -w '%{http_code}' --max-time 30 "$BASE_URL/healthz" || echo 000)
           echo "GET /healthz -> $status"
           if [ "$status" != "200" ]; then
             echo "::error::POST-DEPLOY FAIL: /healthz expected 200 got $status"

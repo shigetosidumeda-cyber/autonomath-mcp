@@ -73,7 +73,7 @@ so the `if:` guard short-circuited.
 Two operator paths are wired:
 
 ```bash
-# Path A — bypass workflow_run guard, deploy current main HEAD
+# Path A — bypass workflow_run guard, deploy GitHub's remote main HEAD
 gh workflow run deploy.yml --ref main
 
 # Path B — re-run the failed run with the same SHA (old image; see caution below)
@@ -92,7 +92,9 @@ Both honor the `if:` guard:
 `7ee0b08`, while failed run `25433013183` targets `f3679d69`. Therefore Path B is
 effectively an old-SHA redeploy / rollback path unless the operator explicitly
 wants that exact commit. For normal forward deployment, use Path A after the
-current reviewed tree is committed and the ACK fingerprint is current.
+current reviewed tree is committed, pushed to GitHub `main`, and the ACK
+fingerprint is current. `gh workflow run deploy.yml --ref main` does **not**
+deploy local unpushed commits; it deploys `origin/main`.
 
 `release.yml` `workflow_dispatch` path is also wired (`gh workflow run release.yml
 --ref vX.Y.Z`) but it's PyPI-only and won't help with the Fly rollout.
@@ -117,7 +119,7 @@ with twine.
 | Situation | Action |
 |---|---|
 | Need same-commit redeploy, healthcheck transient | `gh run rerun 25433013183 --failed` only if `f3679d69` is still the intended target; otherwise this is an old-SHA rollback |
-| Need re-deploy of newer main HEAD | `gh workflow run deploy.yml --ref main` (rebuilds via remote builder) |
+| Need re-deploy of newer main HEAD | Commit and push the reviewed tree first, then `gh workflow run deploy.yml --ref main` (rebuilds GitHub's remote main via remote builder) |
 | Need to publish a missed PyPI tag | `gh workflow run release.yml --ref v0.3.4` |
 | Need to debug seed-hydrate failure | run hydrate locally from same flyctl version + check `/data/jpintel.db` quick_check on prod machine |
 | Builder really did time out | Path A — `--remote-only` retries on Fly's builder VM, not depot |
@@ -140,10 +142,12 @@ with twine.
 
 ## 8. Read-only conclusion (no triggers fired)
 
-GHA-side automated Fly deploy IS wired and the path to deploy current main is
-`gh workflow run deploy.yml --ref main`. `gh run rerun 25433013183 --failed` is
-valid only for intentionally re-deploying the older `f3679d69` SHA. The most
-recent failure was at the post-deploy smoke gate, not the builder — operator
-should verify `api.jpcite.com/healthz` reachability and Fly machine state BEFORE
-retrying, otherwise the same smoke probe will fail again without surfacing a new
-signal. Trigger is OUT OF SCOPE for this audit.
+GHA-side automated Fly deploy IS wired and the path to deploy GitHub's current
+remote main is `gh workflow run deploy.yml --ref main`. If the local repository is
+ahead of `origin/main`, push first; otherwise GHA will redeploy the old remote
+SHA. `gh run rerun 25433013183 --failed` is valid only for intentionally
+re-deploying the older `f3679d69` SHA. The most recent failure was at the
+post-deploy smoke gate, not the builder — operator should verify
+`api.jpcite.com/healthz` reachability and Fly machine state BEFORE retrying,
+otherwise the same smoke probe will fail again without surfacing a new signal.
+Trigger is OUT OF SCOPE for this audit.

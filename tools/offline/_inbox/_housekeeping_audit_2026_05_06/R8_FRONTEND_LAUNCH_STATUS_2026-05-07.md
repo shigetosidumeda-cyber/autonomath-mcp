@@ -4,6 +4,13 @@
 
 Internal-hypothesis framing kept: "frontend live" means the Pages artifact reflects 5/7 hardening (¥3/billable_unit copy + link-checker fix + rsync-safe artifact); the API axis live-ness is independently tracked in `R8_LAUNCH_LIVE_STATUS_2026-05-07.md`.
 
+**Follow-up correction (2026-05-07 12:55 JST):** the later GHA deploy attempt
+re-deployed GitHub remote `main` at `f3679d6926...`, because local `main` was 31
+commits ahead of `origin/main` and had not been pushed. `flyctl image show -a
+autonomath-api` now reports image tag `deployment-01KR08RKZW3CGDCNJQER4QV728`,
+but the label is still `GH_SHA=f3679d6926...`. Therefore the API axis is healthy
+but still on the 5/6 code image; 5/7 hardening is not live on Fly.
+
 ## §1 Inherited context (from `HANDOFF_2026_05_07_FRONTEND_DEPLOY_STOP.md`)
 
 **Stop-condition snapshot** (151-line handoff, 11:51 JST):
@@ -26,7 +33,7 @@ Internal-hypothesis framing kept: "frontend live" means the Pages artifact refle
 
 | axis | state | source-of-truth |
 |---|---|---|
-| **Fly api (autonomath-api)** | LIVE on 5/6 image (`f3679d6`, deployment `01KQZVPD9RSEM5M06XJXME2N9K`) — 5/7 image rolling deploy in flight (`flyctl deploy ... --strategy rolling`, task `bt7hj34lj`, started 2026-05-07T02:51 UTC). `/healthz` 200, `/readyz` 200, `/v1/am/health/deep` 10/10 ok. Anonymous rate-limit live (4th `/v1/meta` call returns `rate_limit_exceeded limit=3`). | `R8_LAUNCH_LIVE_STATUS_2026-05-07.md` §1, §6 |
+| **Fly api (autonomath-api)** | LIVE and healthy, but still serving remote-main `f3679d6` code. A later GHA run produced a newer Fly image tag, yet its `GH_SHA` label remains `f3679d6`; local 5/7 hardening was not pushed to GitHub and therefore was not deployed by GHA. `/healthz` 200. | `R8_DEPLOY_ATTEMPT_AUDIT_2026-05-07.md` correction + follow-up `flyctl image show` |
 | **Cloudflare Pages (autonomath project)** | **STALE — pre-handoff baseline.** Previous codex CLI built and validated `/tmp/jpcite-pages.ziTFoZ` but did NOT execute `wrangler pages deploy`. Live `jpcite.com` does not yet carry: (a) `/docs/integrations/ai-recommendation-template.md` link fix, (b) `server.json` `billable_unit` rename, (c) `/practitioner-eval/index.html` template-literal-link fix. | `HANDOFF_2026_05_07_FRONTEND_DEPLOY_STOP.md` §Status + §Notes |
 | **DNS** | Cutover already complete. `jpcite.com` apex → Cloudflare (104.21.14.100, 172.67.158.158). `api.jpcite.com` → CNAME `568j9g9.autonomath-api.fly.dev`. CF TTL ≤ 5 min. Legacy `zeimu-kaikei.ai` apex retained on CF for 301 redirect runway. | `R8_LAUNCH_LIVE_STATUS_2026-05-07.md` §3 |
 | **Stripe** | Live keys deployed (`STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET` + `STRIPE_PRICE_PER_REQUEST` + `STRIPE_BILLING_PORTAL_CONFIG_ID` + `STRIPE_TAX_ENABLED`). Live activation confirmed indirectly via anonymous rate-limit returning `limit:3` on `/v1/meta` (paid path runtime live). Operator UI confirmation step (Dashboard "Activate live mode" 1-click) may already be done. | `R8_LAUNCH_LIVE_STATUS_2026-05-07.md` §1 row 7 + §7 row 3 |
@@ -97,7 +104,11 @@ These are 5–15 min UI tasks each. Cannot be performed by AI; purely physical-a
 - "Frontend deploy" is the **single AI-executable** step remaining on the launch checklist; the AI should execute it without escalation.
 - "OAuth client registration" is **not** AI-doable — the AI is not authorized to log into `console.cloud.google.com` or `github.com/settings/developers` as the operator. The next CLI should not propose to "automate" those steps; they are operator-only by physical-access gating, not by policy preference.
 - "Live frontend" does not collapse into "live revenue surface" — Stripe live activation is independent (already done by indirect signal). The Pages deploy alone updates copy/JSON manifests; it does not flip a payment gate.
-- The 5/7 hardening wave (mypy 0 / bandit 0 / ruff 0 / pre-commit 16/16 / acceptance 286/286 / 33 DEEP spec resolved) is already on the API axis via the rolling Fly deploy in flight; the Pages deploy is the **mirror** for static surfaces (server.json, openapi.json, integration template doc, practitioner-eval link fix) so consumers do not see brand/copy drift between API and frontend.
+- The 5/7 hardening wave is **not** on the API axis yet. GHA deploys GitHub's
+  remote `main`, not local unpushed commits; push/commit discipline must happen
+  before using `gh workflow run deploy.yml --ref main` as a forward deploy path.
+  The Pages deploy can still update static surfaces from a local artifact, but
+  that would not imply the API image has the same 5/7 source.
 - "Verify before bump" applies to OpenAPI paths: 186 is current truth, 227 is stale. Do not restore 227 without re-running the exporter/guard.
 
 ## §6 Cross-references
@@ -115,4 +126,8 @@ These are 5–15 min UI tasks each. Cannot be performed by AI; purely physical-a
 
 **Frontend axis: 1 deploy command from live.** The artifact is validated, rsync rules are stable, link checker is 0 broken, JSON manifests parse clean. The next CLI should rebuild a fresh `/tmp/jpcite-pages.XXXXXX`, re-validate, then deploy from either a clean committed tree or a freshly acknowledged dirty fingerprint. Post-deploy smoke greps for the stale strings the hardening wave removed; if any reappear, rollback is `wrangler pages deployment list` + redeploy the previous successful build.
 
-**Combined launch state after frontend deploy lands**: code-side LIVE (Fly 5/7 image rolling) + frontend LIVE (Pages 5/7 hardening) + Stripe live (paid path confirmed) + DNS cutover done = production fully reflects 5/7 hardening, with only OAuth client registration remaining as operator-UI residual (≤15 min total).
+**Combined launch state after frontend deploy lands**: frontend LIVE (Pages 5/7
+static hardening) + Stripe live (paid path confirmed) + DNS cutover done, while
+Fly remains healthy on the 5/6 `f3679d6` code image until reviewed local commits
+are pushed and deployed. OAuth client registration remains operator-UI residual
+(≤15 min total).
