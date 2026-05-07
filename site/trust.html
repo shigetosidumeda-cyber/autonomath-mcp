@@ -351,6 +351,20 @@
  </p>
  </article>
 
+ <article class="trust-panel" role="listitem" aria-labelledby="panel-sbom-h">
+ <p class="panel-label">サプライチェーン / SBOM</p>
+ <h2 id="panel-sbom-h" class="panel-value"><span class="ok">CycloneDX 1.4</span></h2>
+ <p class="panel-detail">月次 (1 日 cron) で CycloneDX 1.4 形式の SBOM を再生成し、 <code>/.well-known/sbom.json</code> に公開。 依存ライブラリの脆弱性開示は <code>/.well-known/security.txt</code> に従ってください。</p>
+ <ul>
+ <li>形式: CycloneDX 1.4 / JSON</li>
+ <li>更新: 月次 (.github/workflows/sbom-publish-monthly.yml)</li>
+ </ul>
+ <p class="panel-foot">
+ <span>機械可読</span>
+ <a href="/.well-known/sbom.json">/.well-known/sbom.json →</a>
+ </p>
+ </article>
+
  </div>
 
  <h2 style="font-size:20px;margin:32px 0 12px;">運営者</h2>

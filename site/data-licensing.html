@@ -157,7 +157,7 @@
  </nav>
 
  <h1>データソース・ライセンス開示</h1>
- <p class="lead">jpcite が収録する 16 dataset の <strong>出典機関 / license / 商用配信可否 / 出典表示要件 / 更新頻度</strong> を 1 表で開示します。 法人購買・法務部 reviewer の license review をこの 1 page で完了できる構成です。 各 record の <code>am_source.license</code> 列は 97,270 / 97,272 が分類済 (805 件は <code>license_review_queue.csv</code> で個別追跡中)。</p>
+ <p class="lead">jpcite が収録する 16 dataset の <strong>出典機関 / license / 商用配信可否 / 出典表示要件 / 更新頻度</strong> を 1 表で開示します。 法人購買・法務部 reviewer の license review をこの 1 page で完了できる構成です。 各 record の <code>am_source.license</code> 列は 96,467 / 97,272 が分類済 (805 件は <code>license_review_queue.csv</code> で個別追跡中)。</p>
 
  <h2 id="legend">凡例</h2>
  <ul>
@@ -353,7 +353,7 @@
  <ul>
  <li>jpcite は API response 内に <code>license</code>, <code>source_url</code>, <code>fetched_at</code>, <code>attribution_text</code> の 4 field を返します</li>
  <li>顧客はこの 4 field を「同等の文字列」で表示すれば license 義務 (CC BY 4.0 attribution、PDL v1.0 表示要件、政府標準利用規約 v2.0 出典明示) を満たせます</li>
- <li><code>am_source.license</code> 列は 97,270 / 97,272 record で分類済。 残り 805 件は <code>license_review_queue.csv</code> で個別追跡し、確認できない record は API response から除外しています</li>
+ <li><code>am_source.license</code> 列は 96,467 / 97,272 record で分類済。 残り 805 件は <code>license_review_queue.csv</code> で個別追跡し、確認できない record は API response から除外しています</li>
  <li>AI agent が response を要約・引用する場合も、同等 attribution の継承を推奨 (利用規約 §5.3.1)</li>
  </ul>
 
@@ -382,7 +382,7 @@
  <li><a href="/trust/purchasing.html">/trust/purchasing.html</a> — 法人購買 1-screen summary</li>
  </ul>
 
- <p class="dl-foot">本一覧は <code>am_source.license</code> 列 (97,270 / 97,272 分類済) と <code>license_review_queue.csv</code> (1,425 行) を一次資料とし、出典機関の利用規約改訂時に随時更新します。 齟齬・誤りを発見した場合は <a href="mailto:info@bookyou.net">info@bookyou.net</a> までご連絡ください。 機械可読 manifest: <a href="/.well-known/trust.json">/.well-known/trust.json</a>。</p>
+ <p class="dl-foot">本一覧は <code>am_source.license</code> 列 (96,467 / 97,272 分類済) と <code>license_review_queue.csv</code> (1,425 行) を一次資料とし、出典機関の利用規約改訂時に随時更新します。 齟齬・誤りを発見した場合は <a href="mailto:info@bookyou.net">info@bookyou.net</a> までご連絡ください。 機械可読 manifest: <a href="/.well-known/trust.json">/.well-known/trust.json</a>。</p>
 
  </div>
 </main>

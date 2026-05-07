@@ -66,7 +66,7 @@
   "isAccessibleForFree": true,
   "inLanguage": "ja",
   "datePublished": "2026-04-26",
-  "dateModified": "2026-04-30",
+  "dateModified": "2026-05-07",
   "spatialCoverage": {
     "@type": "Country",
     "name": "日本"
@@ -152,7 +152,7 @@
  <p class="lead">jpcite のサイト・ドキュメント・営業資料に登場する数値の基準ページです。各値は <code>/v1/meta</code> API を一次出典とし、更新日 (JST) を明記しています。サイト内の各数字は <code>&lt;span data-fact=&quot;ID&quot;&gt;</code> でマークアップされ、本ページの <code>&lt;dt id=&quot;fact-ID&quot;&gt;</code> に 1:1 で対応します。</p>
 
  <p style="margin:0 0 24px;color:var(--text-muted);font-size:14px;">
- 最終更新: <time datetime="2026-04-30">2026-04-30 JST</time> ·
+ 最終更新: <time datetime="2026-05-07">2026-05-07 JST</time> ·
  一次出典: <a href="https://api.jpcite.com/v1/meta" rel="external"><code>GET /v1/meta</code></a> ·
  ライセンス: <a href="tos.html">利用規約</a> 準拠 (各データセットの元ライセンスは出典欄を参照)
  </p>
@@ -323,10 +323,10 @@
  </div>
 
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
- <dt id="fact-total_relations" style="font-weight:600;font-size:18px;">関係性 総数: 177,381</dt>
+ <dt id="fact-total_relations" style="font-weight:600;font-size:18px;">関係性 総数: 378,342</dt>
  <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
  15 種類の標準関係性で各レコード間を接続 (制度↔法令↔処分↔採択事例 など)。<br>
- 出典: 17.7 万件の関係性 集計 · 更新 2026-04-29 JST
+ 出典: 37.8 万件の関係性 集計 · 更新 2026-05-07 JST · R8_DATA_FIDELITY 再計測で 17.7 万件 → 37.8 万件 に補正
  </dd>
  </div>
 
@@ -342,7 +342,7 @@
  <dt id="fact-mcp_tools_total" style="font-weight:600;font-size:18px;">MCP 機能数: 139</dt>
  <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
  既定で 139 機能 (制度横断検索 + 採択事例 + 法令 + 行政処分 + 適格請求書 + 業種パック等)。MCP の標準プロトコルに準拠。<br>
- 出典: 実行時の機能一覧 · 更新 2026-04-29 JST · v0.3.2
+ 出典: 実行時の機能一覧 · 更新 2026-05-07 JST · v0.3.4 (manifest hold-at-139, runtime cohort=146)
  </dd>
  </div>
 
@@ -391,6 +391,7 @@
  <section aria-labelledby="changelog-title" style="margin-top:40px;">
  <h2 id="changelog-title" class="section-title">更新履歴</h2>
  <ul style="margin:0;padding-left:20px;line-height:1.8;font-size:14px;">
+ <li><strong>2026-05-07</strong> — R8_DATA_FIDELITY 再計測。 関係性 総数を 17.7 万件 → 37.8 万件 に補正 (am_relation 全件再カウント)。 v0.3.4 / 2026-05-07 SOT 反映。</li>
  <li><strong>2026-04-26</strong> — 初版。 公開件数 14 項目 + 主要データベース 5 項目 + 料金 3 項目を統計 API に紐付けて公開。 各サイトページの統計表示にも展開。</li>
  </ul>
  </section>
