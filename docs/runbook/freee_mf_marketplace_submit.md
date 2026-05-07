@@ -131,3 +131,35 @@ push → Pages 自動デプロイ。
 
 両 marketplace 通過後、`site/index.html` の対応バッジ (freee app store / MF
 連携) を有効化。`site/llms.txt` の sameAs にもストア URL を追加。
+
+## 8. Rollback
+
+公開後に重大障害 (顧客データ流出疑い / OAuth scope 違反指摘 / 業法
+抵触クレーム等) で marketplace から取り下げる場合の手順。
+
+| Step | freee | MoneyForward |
+|------|-------|--------------|
+| アプリ非公開化 | 開発者ポータル → 該当アプリ → 「公開停止」 | アプリポータル → 該当アプリ → 「公開停止」 |
+| OAuth client 無効化 | client_id を一時 disable (削除はせず疎通停止) | 同上 |
+| Fly app 停止 | `fly scale count 0 -a jpcite-freee-plugin` | `fly scale count 0 -a jpcite-mf-plugin` |
+| Cloudflare DNS | freee-plugin / mf-plugin CNAME を proxy OFF or 削除 | 同上 |
+| Site バッジ取り下げ | `site/index.html` のバッジ + `site/llms.txt` の sameAs から URL を撤去 | 同上 |
+
+非公開化は両 marketplace とも即時反映 (≦数分)。再公開には再審査が必要な
+ケースが多いため、原因が明確化するまで永続停止前提で扱うこと。
+
+## 9. Verify (本番疎通)
+
+```bash
+# OAuth callback 200 を確認 (5xx だと plugin 起動不能)
+curl -I https://freee-plugin.jpcite.com/healthz   # => 200
+curl -I https://mf-plugin.jpcite.com/healthz      # => 200
+
+# OAuth client_id が plugin Fly secret に投入されているか
+fly secrets list -a jpcite-freee-plugin | grep -E "(FREEE_CLIENT_ID|FREEE_CLIENT_SECRET)"
+fly secrets list -a jpcite-mf-plugin | grep -E "(MF_CLIENT_ID|MF_CLIENT_SECRET)"
+
+# CSP frame-ancestors が両 marketplace を含むか (一致しないと iframe で blank)
+curl -sI https://freee-plugin.jpcite.com/ | grep -i content-security-policy
+curl -sI https://mf-plugin.jpcite.com/ | grep -i content-security-policy
+```

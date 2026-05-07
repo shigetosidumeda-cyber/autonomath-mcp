@@ -1,3 +1,10 @@
+---
+title: Disaster Recovery Runbook
+updated: 2026-05-07
+operator_only: true
+category: dr
+---
+
 # Disaster Recovery Runbook -- jpcite
 
 **Owner**: 梅田茂利 (info@bookyou.net) -- solo zero-touch

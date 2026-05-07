@@ -105,3 +105,37 @@ fly logs -a autonomath-api | grep -E "(production secret gate passed|BOOT FAIL)"
 * **Do NOT** weaken the boot gate to "warn but continue" — every production
   outage in the secret-rotation history was a silent placeholder propagating
   to the hashing layer.
+
+## Rollback
+
+If a rotation triggered a `[BOOT FAIL]` line on the next Fly machine and the
+service is now refusing connections, roll the affected secret back to its
+previous value from the operator keystore (1Password). `fly secrets set`
+triggers a rolling restart on each call, so the rollback takes ~10 s once
+the previous value is in hand.
+
+```bash
+# 1. Pull the previous value from 1Password (Fly does NOT echo secret values).
+PREV_VAL="<paste from operator keystore>"
+
+# 2. Re-set the affected secret. Replace SECRET_NAME with the one rolled.
+fly secrets set SECRET_NAME="$PREV_VAL" -a autonomath-api
+
+# 3. Verify boot succeeds.
+fly logs -a autonomath-api | grep -E "(production secret gate passed|BOOT FAIL)" | tail -5
+```
+
+Special case — `JPINTEL_AUDIT_SEAL_KEYS` partial rollback: if the new
+key landed but verification of older seals started failing, append the
+previous key back to the comma-separated list (do NOT replace) so both
+are accepted during the rotation window:
+
+```bash
+fly secrets set JPINTEL_AUDIT_SEAL_KEYS="$NEW_KEY,$PREV_KEY" -a autonomath-api
+```
+
+For `STRIPE_WEBHOOK_SECRET` rollback: Stripe accepts both old + new for
+~24h after a roll, so re-setting the previous `whsec_…` is safe within
+that window. Past 24h, signatures from the old secret start rejecting
+and rollback is no longer possible — the only recovery is a forward roll
+on the Stripe Dashboard side.

@@ -1,3 +1,10 @@
+---
+title: Social profile setup runbook (LinkedIn / X / GitHub Org)
+updated: 2026-05-07
+operator_only: true
+category: brand
+---
+
 # Social profile setup runbook (LinkedIn / X / GitHub Org)
 
 Trust-by-search work depends on the canonical Bookyou株式会社
@@ -193,3 +200,49 @@ function.
 Maintaining 4.5/5 (Wikidata) needs one ~20 min review cycle every
 12 months. Skip Wikidata until 月商 ¥100k — the time is better spent
 elsewhere until then.
+
+---
+
+## Verify
+
+After landing each profile, smoke the cross-link in a clean browser
+session (signed-out, fresh DNS resolve so cached redirects do not
+mislead):
+
+```bash
+# LinkedIn — Company Page must list jpcite.com under "Website"
+curl -sL "https://www.linkedin.com/company/<slug>/" | grep -E "jpcite\.com"
+
+# X — bio link in profile JSON
+curl -sL "https://twitter.com/<handle>" | grep -E "jpcite\.com"
+
+# GitHub Org — public profile sidebar
+curl -sL "https://api.github.com/orgs/<org>" | grep -E "blog.*jpcite"
+
+# Site-side sameAs — apex Organization JSON-LD must list each profile
+curl -sL https://jpcite.com/ | grep -oE 'sameAs"[^]]*' | head -1
+```
+
+Each must show the canonical jpcite.com URL on the social side and the
+real social URL on the site side; placeholder strings (e.g. literal
+`shigetosidumeda-cyber`) indicate a missed callsite.
+
+## Rollback
+
+If a social profile must come down (handle squatted, account
+compromised, brand-conflict claim from another party), reverse the
+cross-links so the Knowledge Graph does not keep advertising a dead
+identity.
+
+1. Mark the profile private / take it down on the social platform.
+2. Replace the dead URL in `site/index.html`, `site/about.html`,
+   `site/pricing.html`, `site/audit-log.html`, `site/dashboard.html`,
+   `site/integrations/*.html`, `site/compare/*/index.html` with the
+   previous placeholder (search for the dead URL to find every
+   callsite).
+3. Re-deploy Cloudflare Pages (auto on `main` push). Knowledge Graph
+   re-crawl latency is ~1-2 weeks.
+4. If LinkedIn or X is the affected profile, the entity-binding strength
+   drops by ~1 ordinal step (see table above) until a replacement
+   profile lands. No site-side error state — the Organization JSON-LD
+   simply lists fewer `sameAs` entries.

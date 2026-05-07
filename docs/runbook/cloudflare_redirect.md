@@ -1,3 +1,10 @@
+---
+title: Cloudflare 301 Redirect Setup
+updated: 2026-05-07
+operator_only: true
+category: brand
+---
+
 # Cloudflare 301 Redirect Setup (zeimu-kaikei.ai → jpcite.com)
 
 zeimu-kaikei.ai 配下の全 URL を jpcite.com の同一パスへ 301 永続リダイレクトする。

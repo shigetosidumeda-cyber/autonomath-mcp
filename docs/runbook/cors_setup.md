@@ -1,3 +1,10 @@
+---
+title: CORS Setup Runbook — JPINTEL_CORS_ORIGINS
+updated: 2026-05-07
+operator_only: true
+category: secret
+---
+
 # CORS Setup Runbook — `JPINTEL_CORS_ORIGINS`
 
 > **Status**: One-time Fly secret + redeploy each time the marketing host
@@ -113,3 +120,28 @@ export JPINTEL_CORS_ORIGINS="http://localhost:3000,http://localhost:8080,https:/
 
 The `Origin` header from `localhost:3000` would otherwise be 403'd by the
 production-default list.
+
+## Rollback
+
+If a new `JPINTEL_CORS_ORIGINS` value broke browser-side traffic
+(spike of HTTP 403 `origin_not_allowed` in `fly logs -a autonomath-api`),
+roll back to the last known-good value:
+
+```bash
+# 1. Recover the previous value from Fly secret history (operator keystore /
+#    1Password should also carry it). Fly does NOT echo secret values, so
+#    this must come from the operator's offline note, not flyctl.
+LAST_GOOD="https://jpcite.com,https://www.jpcite.com,https://api.jpcite.com,https://autonomath.ai,https://www.autonomath.ai"
+
+# 2. Re-set and trigger rolling restart.
+flyctl secrets set JPINTEL_CORS_ORIGINS="$LAST_GOOD" -a autonomath-api
+
+# 3. Verify with the curl block in "Verify (live)" above. Both jpcite.com
+#    and any newly added partner origin must return 200; an unknown origin
+#    must return 403.
+flyctl ssh console -a autonomath-api -C "printenv JPINTEL_CORS_ORIGINS"
+```
+
+Recovery time is ~10 s (Fly hot restart). The `OriginEnforcementMiddleware`
+short-circuits at request-arrival time, so the rolled-back value takes
+effect on the very next request — no cache invalidation required.

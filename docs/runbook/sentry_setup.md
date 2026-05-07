@@ -1,3 +1,10 @@
+---
+title: Sentry Setup Runbook
+updated: 2026-05-07
+operator_only: true
+category: monitoring
+---
+
 # Sentry Setup Runbook — Apply Alert Rules + Dashboard
 
 > **Status**: Manual UI procedure. Sentry's API and Terraform provider exist
