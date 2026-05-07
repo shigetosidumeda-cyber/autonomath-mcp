@@ -50,7 +50,7 @@ from typing import Any
 
 
 @lru_cache(maxsize=1)
-def _beta_dist():
+def _beta_dist() -> Any:
     """Lazy-load scipy.stats.beta — saves ~2.5s on API boot.
 
     scipy is the dominant import cost in the API process (perf audit
@@ -58,7 +58,7 @@ def _beta_dist():
     The first call to confidence_interval() pays the import cost (~200ms);
     subsequent calls hit the lru_cache and are free.
     """
-    from scipy.stats import beta as beta_dist  # type: ignore[import-untyped]
+    from scipy.stats import beta as beta_dist
 
     return beta_dist
 

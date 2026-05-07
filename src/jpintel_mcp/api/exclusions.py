@@ -1,5 +1,6 @@
 import json
 import sqlite3
+from typing import Any
 
 from fastapi import APIRouter, HTTPException, Query, status
 
@@ -15,7 +16,7 @@ router = APIRouter(prefix="/v1/exclusions", tags=["exclusions"])
 
 
 def _row_to_rule(row: sqlite3.Row) -> ExclusionRule:
-    def j(col: str, default):
+    def j(col: str, default: Any) -> Any:
         raw = row[col]
         if not raw:
             return default

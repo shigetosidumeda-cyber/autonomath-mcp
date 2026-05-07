@@ -21,6 +21,7 @@ import sqlite3
 import unicodedata
 from datetime import date
 from pathlib import Path
+from typing import Any
 
 from .error_envelope import make_error
 
@@ -62,7 +63,7 @@ _HOUJIN_SUFFIXES = (
 )
 
 
-def _normalize_houjin(value):
+def _normalize_houjin(value: Any) -> str | None:
     """Strip any non-digit (incl. the インボイス 'T' prefix, hyphens, 全角→半角 via regex)
     and return the 13-digit canonical form. Returns None if the resulting digit
     string is not exactly 13 chars.
@@ -80,7 +81,7 @@ def _normalize_houjin(value):
     return digits if len(digits) == 13 else None
 
 
-def _normalize_name(value):
+def _normalize_name(value: Any) -> str | None:
     """Loose-compare normalization: NFKC + 法人格 strip + whitespace fold + casefold.
 
     Handles (1) full-width → half-width via NFKC (`ｅａｓｅ` → `ease`),
@@ -107,7 +108,7 @@ def _normalize_name(value):
     return s.casefold() if s else s
 
 
-def _as_date(value):
+def _as_date(value: Any) -> str:
     if value in (None, "", "today"):
         from datetime import UTC, datetime, timedelta
 
@@ -115,7 +116,7 @@ def _as_date(value):
     return str(value)
 
 
-def _err_envelope(code, message, hint=None, retry_with=None):
+def _err_envelope(code: str, message: str, hint: str | None = None, retry_with: list[str] | None = None) -> dict[str, Any]:
     """Canonical error envelope matching the rest of the am tool surface."""
     env = {"code": code, "message": message}
     if hint:
@@ -285,7 +286,7 @@ def check_enforcement(houjin_bangou=None, target_name=None, as_of_date="today"):
 
 
 # ======== Tests ========
-def _run_tests():
+def _run_tests() -> None:
 
     # Test 1: no input -> error
     r = check_enforcement()

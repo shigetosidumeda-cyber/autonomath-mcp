@@ -36,11 +36,13 @@ from __future__ import annotations
 
 import sqlite3
 import time
-from collections.abc import Iterable
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from urllib.parse import urlparse
 
 from jpintel_mcp.config import settings
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 # Process-local cache for the (domain → license) mapping. 5-minute TTL.
 _LICENSE_MAP_CACHE: dict[str, str] | None = None

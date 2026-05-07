@@ -1353,7 +1353,6 @@ def _infer_invoice_buyer_seller_impl(
             },
         )
 
-    where_clauses: list[str] = []
     union_blocks: list[str] = []
     params_count: list[Any] = []
     params_select: list[Any] = []

@@ -671,7 +671,7 @@ _PROGRAM_CACHE_MAX = 2048
 
 
 def _build_program(row: sqlite3.Row) -> Program:
-    def j(col: str, default):
+    def j(col: str, default: Any) -> Any:
         raw = row[col]
         if not raw:
             return default

@@ -46,6 +46,7 @@ fails any anthropic / openai / google / claude_agent_sdk import.
 from __future__ import annotations
 
 import logging
+import sqlite3
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, timedelta, timezone
 from typing import Annotated, Literal
@@ -166,7 +167,7 @@ def _first_of_month_jst(d: date) -> date:
     return d.replace(day=1)
 
 
-def _resolve_tree_key_hashes(conn, key_hash: str) -> list[str]:
+def _resolve_tree_key_hashes(conn: sqlite3.Connection, key_hash: str) -> list[str]:
     """Return the key hashes the caller is allowed to inspect.
 
     Parent keys see their children for consolidated billing. Child keys see
@@ -243,7 +244,7 @@ def _parse_iso_date(s: str | None, *, fallback: date) -> date:
 
 
 def _aggregate(
-    conn,
+    conn: sqlite3.Connection,
     *,
     tree_hashes: list[str],
     period_start: date,
@@ -360,7 +361,7 @@ def _aggregate(
     )
 
 
-def _resolve_account_id(conn, key_hash: str) -> str | None:
+def _resolve_account_id(conn: sqlite3.Connection, key_hash: str) -> str | None:
     """Resolve the Stripe customer_id (== account_id for billing purposes).
 
     For the breakdown the "account" is whatever Stripe will invoice under —

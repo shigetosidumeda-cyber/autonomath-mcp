@@ -157,7 +157,7 @@ def _send_day_n_now(
 
     try:
         client = get_client()
-        return client._send(  # type: ignore[attr-defined]
+        return client._send(
             to=to,
             template_alias=template_alias,
             template_model={

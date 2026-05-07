@@ -154,7 +154,7 @@ def redact_response_text(s: str) -> tuple[str, list[str]]:
     # cases that monkeypatch ``settings.pii_redact_houjin_bangou`` see the
     # latest value without forcing a redact_response_text reload.
     try:
-        from jpintel_mcp.config import settings as _settings  # type: ignore
+        from jpintel_mcp.config import settings as _settings
 
         _redact_houjin = bool(getattr(_settings, "pii_redact_houjin_bangou", False))
     except Exception:

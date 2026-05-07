@@ -24,7 +24,7 @@ import re
 
 _KKS: object | None
 try:  # pragma: no cover — exercised via integration only
-    import pykakasi  # type: ignore[import-untyped]
+    import pykakasi
 
     _KKS = pykakasi.kakasi()
 except ImportError:  # pragma: no cover — fallback path

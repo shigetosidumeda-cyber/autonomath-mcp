@@ -124,7 +124,7 @@ def _write_fallback_token(token: str) -> None:
 def get_stored_token() -> str | None:
     """Return the saved api_key, or None if never set / unavailable."""
     try:
-        import keyring  # type: ignore[import-not-found]
+        import keyring
 
         tok = keyring.get_password(SERVICE, KEY_NAME)
         if tok:
@@ -137,7 +137,7 @@ def get_stored_token() -> str | None:
 def set_stored_token(token: str) -> None:
     """Persist the api_key in the system keychain (preferred) or file."""
     try:
-        import keyring  # type: ignore[import-not-found]
+        import keyring
 
         keyring.set_password(SERVICE, KEY_NAME, token)
         return
@@ -153,7 +153,7 @@ def set_stored_token(token: str) -> None:
 def clear_stored_token() -> None:
     """Remove the stored token (both keychain and fallback). Best-effort."""
     try:
-        import keyring  # type: ignore[import-not-found]
+        import keyring
 
         # Nothing to delete is fine; also tolerate keyring backend errors
         # (CI boxes without Secret Service, etc.).

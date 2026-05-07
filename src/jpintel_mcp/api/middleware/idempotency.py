@@ -585,7 +585,7 @@ class IdempotencyMiddleware(BaseHTTPMiddleware):
     `log_usage`, so replays are ¥0 metered.
     """
 
-    async def dispatch(  # type: ignore[override]
+    async def dispatch(
         self, request: Request, call_next: Callable
     ) -> Response:
         # Only POST requests are eligible.
@@ -651,7 +651,7 @@ class IdempotencyMiddleware(BaseHTTPMiddleware):
         async def _receive() -> dict:
             return {"type": "http.request", "body": body, "more_body": False}
 
-        request._receive = _receive  # type: ignore[attr-defined]
+        request._receive = _receive
 
         api_key_hash = _api_key_hash_for(request)
         cache_key = _compute_cache_key(api_key_hash, path, body, idempotency_key)

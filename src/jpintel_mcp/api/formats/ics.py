@@ -169,7 +169,7 @@ def render_ics(rows: list[dict[str, Any]], meta: dict[str, Any]) -> Response:
     # behaviours — we still escape DESCRIPTION manually because we want
     # control over multi-line layout.
     try:
-        from icalendar import Calendar, Event  # type: ignore[import-untyped]
+        from icalendar import Calendar, Event
     except ImportError as exc:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,

@@ -243,7 +243,7 @@ def _row_to_response(row: dict[str, Any]) -> SavedSearchResponse:
     channel_format = "email"
     channel_url: str | None = None
     try:
-        if "channel_format" in row:  # type: ignore[operator]
+        if "channel_format" in row:
             channel_format = row["channel_format"] or "email"
             channel_url = row["channel_url"]
     except (KeyError, AttributeError):

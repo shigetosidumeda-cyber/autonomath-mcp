@@ -556,7 +556,7 @@ def unsubscribe(unsubscribe_token: str, conn: DbDep) -> HTMLResponse:
         if row["plan"] == "paid" and sub_id:
             try:
                 _configure_stripe()
-                stripe.Subscription.delete(sub_id)  # type: ignore[arg-type]
+                stripe.Subscription.delete(sub_id)
             except Exception:  # noqa: BLE001 — local cancel still applies
                 logger.warning(
                     "compliance.unsubscribe.stripe_cancel_failed sub=%s", sub_id, exc_info=True

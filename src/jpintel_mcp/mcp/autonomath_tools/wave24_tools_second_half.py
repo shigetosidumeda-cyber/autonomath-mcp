@@ -1192,7 +1192,7 @@ def _find_complementary_subsidies_impl(
 def _try_mecab_tokenize(text: str) -> list[str]:
     """Best-effort Japanese tokenize (MeCab if available, naive split otherwise)."""
     try:
-        import MeCab  # type: ignore
+        import MeCab
     except Exception:
         # Naive fallback: 2-char window over CJK + ascii words.
         out: list[str] = []

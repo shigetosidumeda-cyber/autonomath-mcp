@@ -34,14 +34,16 @@ import logging
 import re
 import sqlite3
 from datetime import UTC, datetime
-from pathlib import Path
-from typing import Annotated, Any
+from typing import TYPE_CHECKING, Annotated, Any
 from urllib.parse import urlparse
 
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
 
 from jpintel_mcp.config import settings
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 _log = logging.getLogger("jpintel.api.contribute")
 

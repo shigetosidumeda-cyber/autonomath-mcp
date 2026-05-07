@@ -254,6 +254,15 @@ SENSITIVE_TOOLS: frozenset[str] = frozenset(
         # both REST and MCP names so wrapper/telemetry paths resolve the fence.
         "intel.risk_score",
         "intel_risk_score",
+        # R8 post-deploy smoke wiring fix (2026-05-07): 4 baseline _am tools
+        # that surface 採択 / 与信 / 融資 / 共済 indices. Each sits in a
+        # distinct 業法 fence — promoted to SENSITIVE_TOOLS so the
+        # `_disclaimer` envelope auto-wires through `_envelope_merge` on
+        # every tools/call response (success and error paths alike).
+        "search_acceptance_stats_am",  # 行政書士法 §1 — 採択指南 territory
+        "search_loans_am",  # 貸金業法 §3 — 担保/保証/利率 territory
+        "search_mutual_plans_am",  # 保険業法 §3 — 共済/年金 solicitation territory
+        "check_enforcement_am",  # 弁護士法 §72 — 与信/反社 territory
     }
 )
 
@@ -447,6 +456,42 @@ _DISCLAIMER_STANDARD: dict[str, str] = {
         "申請判断 (行政書士法 §1) の代替ではありません。各判例の source_url で "
         "原典を確認し、法解釈は資格を有する弁護士に必ずご相談ください。"
     ),
+    # --- R8 post-deploy smoke wiring fix (2026-05-07): baseline _am tools ----
+    # Four tools that surface 採択 / 与信 / 融資 / 共済 indices. Each sits
+    # adjacent to a 業法 boundary — the response is information retrieval
+    # only, never advice. Disclaimer framing is internal-hypothesis: we
+    # decline 採択指南 / 与信 / 信用情報 / 保険勧誘 territory verbatim.
+    "search_acceptance_stats_am": (
+        "本 response は am_entities (record_kind='adoption'/'statistic') の "
+        "METI / MAFF 公表 採択統計 (応募数 / 採択数 / 採択率 / 予算額) の "
+        "機械的検索 aggregation で、採択指南・申請代理 (行政書士法 §1) ・"
+        "経営助言ではありません。集計値は heuristic 由来の rate 計算と公表値の "
+        "突合せを含み、業務判断には公募要領一次資料を必ずご確認ください。"
+        "確定判断は資格を有する行政書士・中小企業診断士に必ずご相談ください。"
+    ),
+    "search_loans_am": (
+        "本 response は am_loan_product の 3 軸 (担保 / 個人保証人 / 第三者保証人) "
+        "filtering 検索結果で、貸金業法 §3 に基づく信用情報・与信判断・利率交渉・"
+        "個別融資斡旋ではありません。limit_yen / interest_rate_* は公表時点の "
+        "公庫・自治体・商工中金 一次資料 から抽出した値で、実際の貸付条件は "
+        "申込時点で個別審査されます。融資判断は資格を有する金融機関・税理士に "
+        "必ずご相談ください。"
+    ),
+    "search_mutual_plans_am": (
+        "本 response は am_insurance_mutual の 共済 / 年金 / 労災 plan index "
+        "検索結果で、保険業法 §3 に基づく保険勧誘・保険募集・個別契約助言では "
+        "ありません。premium_min/max_yen / 給付内容 は公表時点の制度公表値で、"
+        "実際の加入条件は提供主体の規約に従います。共済加入・年金設計の確定判断は "
+        "資格を有する税理士・社労士・FP に必ずご相談ください。"
+    ),
+    "check_enforcement_am": (
+        "本 response は am_enforcement_detail (1,185 行 corpus) の 法人番号 / "
+        "企業名 lookup で、信用調査・反社チェック・与信判断 (弁護士法 §72) ・"
+        "労務 due diligence (社労士法) ・税務助言 (税理士法 §52) の代替では "
+        "ありません。Coverage は 補助金 排除期間 中心で、absence of records は "
+        "clean record を担保しません。確定判断は資格を有する弁護士・社労士・"
+        "信用調査会社に必ずご相談ください。"
+    ),
 }
 
 _DISCLAIMER_MINIMAL: dict[str, str] = {
@@ -559,6 +604,23 @@ _DISCLAIMER_MINIMAL: dict[str, str] = {
     "recommend_similar_court_decision": (
         "vec k-NN 検索結果のみ。判例の意味類似のみ、法解釈 (弁護士法 §72) ・"
         "申請判断 (行政書士法 §1) の代替不可。"
+    ),
+    # --- R8 post-deploy smoke wiring fix (2026-05-07) -----------------------
+    "search_acceptance_stats_am": (
+        "公表 採択統計 検索 aggregation のみ。採択指南・申請代理 "
+        "(行政書士法 §1) の代替不可。一次資料確認必須。"
+    ),
+    "search_loans_am": (
+        "融資 product index 検索のみ。信用情報・与信判断・個別斡旋 (貸金業法 §3) ・"
+        "税務助言 (税理士法 §52) の代替不可。"
+    ),
+    "search_mutual_plans_am": (
+        "共済/年金 plan index 検索のみ。保険勧誘・保険募集 (保険業法 §3) ・"
+        "税務助言 (税理士法 §52) の代替不可。"
+    ),
+    "check_enforcement_am": (
+        "行政処分 corpus lookup のみ。信用調査・反社・与信 (弁護士法 §72) の "
+        "代替不可。absence of records は clean を担保しない。"
     ),
 }
 
@@ -715,7 +777,7 @@ def _router_explain(query: str | None) -> str | None:
     if not query or not isinstance(query, str) or not query.strip():
         return None
     try:
-        from reasoning.query_route import route  # type: ignore
+        from reasoning.query_route import route
     except Exception:  # pragma: no cover - soft dependency
         return None
     try:
@@ -1187,7 +1249,7 @@ def with_envelope(
             )
 
         # Expose the bare function for tests that want to bypass wrapping.
-        wrapped.__wrapped__ = fn  # type: ignore[attr-defined]
+        wrapped.__wrapped__ = fn
         wrapped.tool_name = tool_name  # type: ignore[attr-defined]
         return wrapped
 

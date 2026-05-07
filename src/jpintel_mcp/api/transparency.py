@@ -35,13 +35,15 @@ from __future__ import annotations
 import datetime as _dt
 import sqlite3
 import time
-from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from fastapi import APIRouter, HTTPException
 from fastapi import Path as PathParam
 
 from jpintel_mcp.config import settings
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 router = APIRouter(prefix="/v1/am", tags=["transparency", "trust"])
 

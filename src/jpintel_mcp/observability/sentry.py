@@ -94,7 +94,7 @@ def safe_capture_exception(exc: BaseException, **scope: Any) -> None:
     try:
         import sentry_sdk
 
-        with sentry_sdk.push_scope() as s:  # type: ignore[attr-defined]
+        with sentry_sdk.push_scope() as s:
             for k, v in scope.items():
                 s.set_tag(k, str(v))
             sentry_sdk.capture_exception(exc)
@@ -119,7 +119,7 @@ def safe_capture_message(
     try:
         import sentry_sdk
 
-        with sentry_sdk.push_scope() as s:  # type: ignore[attr-defined]
+        with sentry_sdk.push_scope() as s:
             for k, v in scope.items():
                 s.set_tag(k, str(v))
             sentry_sdk.capture_message(message, level=level)  # type: ignore[arg-type]

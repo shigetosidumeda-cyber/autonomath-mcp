@@ -201,7 +201,7 @@ async def probe_unscanned_rows(
     if client_factory is None:
         # Lazy import so unit tests with `client_factory` provided do not
         # need httpx installed at import time.
-        import httpx  # type: ignore
+        import httpx
 
         def _default_factory() -> Any:
             return httpx.AsyncClient(
@@ -322,7 +322,7 @@ def send_freshness_alert(report: dict[str, Any]) -> dict[str, Any]:
         "per_tier": report.get("per_tier", {}),
     }
     try:
-        from jpintel_mcp.email.postmark import get_client  # type: ignore
+        from jpintel_mcp.email.postmark import get_client
 
         client = get_client()
         # Use the digest helper as transport — same operator inbox, same

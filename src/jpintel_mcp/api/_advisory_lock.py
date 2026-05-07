@@ -48,9 +48,12 @@ import logging
 import os
 import threading
 import time
-from collections.abc import Iterator
 from contextlib import contextmanager, suppress
 from datetime import UTC, datetime, timedelta
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 logger = logging.getLogger("jpintel.advisory_lock")
 

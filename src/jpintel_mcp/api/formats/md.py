@@ -85,9 +85,9 @@ def render_md(rows: list[dict[str, Any]], meta: dict[str, Any]) -> Response:
     # otherwise the MD reads "> **税理士法 §52**: 税理士法 §52: …" which is
     # the legal text twice.
     _disclaimer_body = DISCLAIMER_JA
-    _LEAD = "税理士法 §52: "
-    if _disclaimer_body.startswith(_LEAD):
-        _disclaimer_body = _disclaimer_body[len(_LEAD) :]
+    _lead = "税理士法 §52: "
+    if _disclaimer_body.startswith(_lead):
+        _disclaimer_body = _disclaimer_body[len(_lead) :]
     lines.append(f"> **税理士法 §52**: {_disclaimer_body}")
     lines.append(">")
     lines.append(f"> _出典: {meta.get('license_summary', '')} / {BRAND_FOOTER}_")

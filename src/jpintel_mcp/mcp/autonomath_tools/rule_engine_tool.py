@@ -303,7 +303,7 @@ def _rule_engine_check_impl(
             sp = ev.get("scope_program_id")
             pp = ev.get("pair_program_id")
             if sp and pp:
-                return tuple(sorted([sp, pp]))  # type: ignore[return-value]
+                return tuple(sorted([sp, pp]))
             return None
 
         deny_pairs = {p for p in (_pair_key(e) for e in deny_rules) if p}

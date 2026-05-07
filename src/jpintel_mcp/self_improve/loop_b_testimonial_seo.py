@@ -75,7 +75,7 @@ from typing import Any
 try:
     import yaml  # type: ignore
 except Exception:  # pragma: no cover - yaml optional at import time
-    yaml = None  # type: ignore
+    yaml = None
 
 from jpintel_mcp.security.pii_redact import redact_text
 

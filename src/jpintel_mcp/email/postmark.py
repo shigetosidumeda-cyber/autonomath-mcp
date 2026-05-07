@@ -397,7 +397,7 @@ def _redact_email(addr: str) -> str:
 def _report_sentry(exc: Exception, *, template_alias: str) -> None:
     """Forward to Sentry if configured, silently no-op otherwise."""
     try:
-        import sentry_sdk  # type: ignore[import-not-found]
+        import sentry_sdk
     except ImportError:
         return
     try:
@@ -405,12 +405,12 @@ def _report_sentry(exc: Exception, *, template_alias: str) -> None:
         # on older releases so we stay compatible with either version.
         new_scope = getattr(sentry_sdk, "new_scope", None)
         if new_scope is not None:
-            with new_scope() as scope:  # type: ignore[misc]
+            with new_scope() as scope:
                 scope.set_tag("component", "email.postmark")
                 scope.set_tag("template_alias", template_alias)
                 sentry_sdk.capture_exception(exc)
         else:
-            with sentry_sdk.push_scope() as scope:  # type: ignore[attr-defined]
+            with sentry_sdk.push_scope() as scope:
                 scope.set_tag("component", "email.postmark")
                 scope.set_tag("template_alias", template_alias)
                 sentry_sdk.capture_exception(exc)

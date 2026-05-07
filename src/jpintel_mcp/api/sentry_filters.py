@@ -85,7 +85,7 @@ def sentry_before_send_transaction(event: Event, hint: dict[str, Any]) -> Event 
     txn = event.get("transaction") or ""
     if txn.startswith("/billing"):
         for span in event.get("spans") or []:  # type: ignore[union-attr]  # Event.spans is a typed union not a dict-accessor
-            data = cast("dict[str, Any]", span.get("data") or {})  # type: ignore[union-attr]  # span is dict at runtime
+            data = cast("dict[str, Any]", span.get("data") or {})  # span is dict at runtime
             data.pop("http.request.body", None)
             data.pop("http.response.body", None)
     return event

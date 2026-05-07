@@ -59,23 +59,25 @@ from __future__ import annotations
 
 import os
 import sqlite3
-from collections.abc import Iterable
 from difflib import SequenceMatcher
 from functools import lru_cache
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 try:
     import yaml  # type: ignore
 except Exception:  # pragma: no cover - yaml optional at import time
-    yaml = None  # type: ignore
+    yaml = None
 
 try:
-    import pykakasi  # type: ignore
+    import pykakasi
 except Exception:  # pragma: no cover - pykakasi optional at import time
-    pykakasi = None  # type: ignore
+    pykakasi = None
 
 from jpintel_mcp.security.pii_redact import redact_text
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 # Repo layout: src/jpintel_mcp/self_improve/loop_e_alias_expansion.py
 # climb four parents to reach the repo root.
@@ -97,7 +99,7 @@ MAX_CANDIDATES_PER_QUERY = 5
 
 
 @lru_cache(maxsize=1)
-def _kakasi():
+def _kakasi() -> Any:
     """Lazy pykakasi handle (single-instance per process, like the slug
     generator in scripts/generate_program_pages.py)."""
     if pykakasi is None:

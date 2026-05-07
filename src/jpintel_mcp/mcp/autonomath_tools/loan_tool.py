@@ -11,9 +11,11 @@ from __future__ import annotations
 import json
 import os
 import sqlite3
-from collections.abc import Iterable
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 _REPO_ROOT = Path(__file__).resolve().parents[4]
 DB_PATH = Path(

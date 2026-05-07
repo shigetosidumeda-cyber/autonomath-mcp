@@ -48,7 +48,7 @@ _HOUR_SECONDS = 3600.0
 # behaviour (1 rps + 24h cache) at slightly lower performance.
 # ---------------------------------------------------------------------------
 try:
-    from ratelimit import limits, sleep_and_retry  # type: ignore[import-untyped,import-not-found]
+    from ratelimit import limits, sleep_and_retry
 
     _HAS_RATELIMIT = True
 except ImportError:  # pragma: no cover — deps not yet installed
@@ -58,7 +58,7 @@ except ImportError:  # pragma: no cover — deps not yet installed
     _HAS_RATELIMIT = False
 
 try:
-    from diskcache import Cache  # type: ignore[import-not-found]
+    from diskcache import Cache
 
     _HAS_DISKCACHE = True
 except ImportError:  # pragma: no cover — deps not yet installed
@@ -106,8 +106,8 @@ def _get_cache_dir() -> Path:
 # ---------------------------------------------------------------------------
 if _HAS_RATELIMIT:
 
-    @sleep_and_retry  # type: ignore[misc]
-    @limits(calls=GBIZ_RATE_LIMIT_RPS, period=1)  # type: ignore[misc]
+    @sleep_and_retry
+    @limits(calls=GBIZ_RATE_LIMIT_RPS, period=1)
     def _rate_limit_gate() -> None:
         """1 rps token bucket — auto-sleeps on overflow."""
         return None

@@ -306,6 +306,12 @@ def _envelope_has_disclaimer(envelope: dict[str, Any]) -> bool:
     return False
 
 
+def _gate_flag_enabled(flag: str) -> bool:
+    """Return True iff env var `flag` is set to a truthy value (1/true/yes/on)."""
+    raw = os.environ.get(flag, "")
+    return raw.strip().lower() in ("1", "true", "yes", "on")
+
+
 @_timed
 def module_disclaimer_emit_17(args: argparse.Namespace) -> ModuleResult:
     sensitive = _load_sensitive_tools()
@@ -319,8 +325,22 @@ def module_disclaimer_emit_17(args: argparse.Namespace) -> ModuleResult:
     server_cmd = args.mcp_cmd.split() if args.mcp_cmd else ["autonomath-mcp"]
     misses: list[str] = []
     hits: list[str] = []
+    skipped_gated: list[str] = []
+    mandatory_total = 0
     for entry in sensitive:
         name = entry["name"]
+        # Gated-off-expected: tool is intentionally muted unless its env flag
+        # is flipped on (e.g. 36協定 needs 社労士 review). When the flag is
+        # OFF and the entry is marked `gated_off_expected`, the smoke gate
+        # treats the tool as PASS-by-design rather than counting it as a
+        # missing _disclaimer envelope. Flipping the flag ON re-promotes the
+        # tool to mandatory in the same run.
+        gate_flag = entry.get("gate_flag")
+        gated_off_expected = bool(entry.get("gated_off_expected"))
+        if gated_off_expected and gate_flag and not _gate_flag_enabled(gate_flag):
+            skipped_gated.append(name)
+            continue
+        mandatory_total += 1
         sample_args = entry.get("sample_arguments", {})
         try:
             envelope = _call_mcp_tool(server_cmd, name, sample_args, timeout_s=args.mcp_timeout)
@@ -334,16 +354,25 @@ def module_disclaimer_emit_17(args: argparse.Namespace) -> ModuleResult:
 
     ok = not misses
     summary = (
-        "17/17 sensitive tools emit _disclaimer"
+        f"{len(hits)}/{mandatory_total} mandatory emit _disclaimer (gated_off={len(skipped_gated)})"
         if ok
-        else f"{len(hits)}/17 emit OK, {len(misses)} missing first={misses[:3]}"
+        else (
+            f"{len(hits)}/{mandatory_total} emit OK, {len(misses)} missing "
+            f"first={misses[:3]} (gated_off={len(skipped_gated)})"
+        )
     )
     return ModuleResult(
         name="disclaimer_emit_17",
         ok=ok,
         elapsed_s=0.0,
         summary=summary,
-        detail={"hits": hits, "misses": misses},
+        detail={
+            "hits": hits,
+            "misses": misses,
+            "skipped_gated": skipped_gated,
+            "mandatory_total": mandatory_total,
+            "table_size": len(sensitive),
+        },
     )
 
 

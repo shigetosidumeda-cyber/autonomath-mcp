@@ -52,6 +52,7 @@ import os
 import secrets
 import sqlite3
 import zipfile
+from collections.abc import Iterator
 from datetime import UTC, datetime, timedelta
 from io import BytesIO
 from pathlib import Path
@@ -871,7 +872,7 @@ def post_dd_batch(
             "coverage_scope": _COVERAGE_SCOPE,
         }
 
-        def _ndjson_iter():
+        def _ndjson_iter() -> Iterator[bytes]:
             for p in profiles:
                 yield json.dumps(p, ensure_ascii=False).encode("utf-8") + b"\n"
             yield json.dumps(meta, ensure_ascii=False).encode("utf-8") + b"\n"

@@ -40,7 +40,7 @@ from fastapi import HTTPException, status
 logger = logging.getLogger("jpintel.integrations.tokens")
 
 
-def _fernet():
+def _fernet() -> Any:
     """Return a Fernet / MultiFernet instance using the operator secret.
 
     ``INTEGRATION_TOKEN_SECRET`` may be a single 32-byte url-safe base64

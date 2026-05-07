@@ -39,7 +39,7 @@ from typing import Any
 try:
     import yaml  # type: ignore
 except Exception:  # pragma: no cover - yaml is optional at import-time
-    yaml = None  # type: ignore
+    yaml = None
 
 # data/hallucination_guard.yaml lives at repo root; this file lives at
 # src/jpintel_mcp/self_improve/loop_a_hallucination_guard.py — climb four

@@ -50,8 +50,8 @@ logger = logging.getLogger("jpintel.api._verifier")
 _sudachi_tokenizer: Any | None = None
 _SUDACHI_AVAILABLE = False
 try:  # pragma: no cover — environment-dependent
-    from sudachipy import dictionary as _sudachi_dict  # type: ignore[import-not-found]
-    from sudachipy import tokenizer as _sudachi_tok_mod  # type: ignore[import-not-found]
+    from sudachipy import dictionary as _sudachi_dict
+    from sudachipy import tokenizer as _sudachi_tok_mod
 
     _sudachi_tokenizer = _sudachi_dict.Dictionary().create()
     _SUDACHI_MODE = _sudachi_tok_mod.Tokenizer.SplitMode.C
@@ -64,7 +64,7 @@ except Exception:  # pragma: no cover — sudachipy/sudachidict_core missing
 _spacy_nlp: Any | None = None
 _SPACY_AVAILABLE = False
 try:  # pragma: no cover — environment-dependent
-    import spacy as _spacy_mod  # type: ignore[import]
+    import spacy as _spacy_mod
 
     try:
         _spacy_nlp = _spacy_mod.load("ja_ginza")
@@ -719,7 +719,7 @@ async def check_source_alive(urls: list[str]) -> list[SourceLiveness]:
         return []
 
     try:
-        import httpx  # type: ignore[import]
+        import httpx
     except ImportError:
         # No httpx available (e.g. minimal test env). Return all None-alive
         # with proprietary_skipped — caller should not 500.

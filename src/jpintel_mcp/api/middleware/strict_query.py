@@ -60,13 +60,17 @@ from __future__ import annotations
 
 import logging
 import os
-from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
 
-from fastapi import Request
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.responses import Response
 from starlette.routing import Match
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from fastapi import Request
+    from starlette.responses import Response
 
 _log = logging.getLogger("jpintel.strict_query")
 
@@ -78,7 +82,7 @@ def _is_disabled() -> bool:
     return os.getenv(ENV_DISABLE, "").strip() == "1"
 
 
-def _walk_routes(routes, scope):
+def _walk_routes(routes: Any, scope: Any) -> Any:
     """Recursively find the first FULL-matching route in a router tree.
 
     Returns the matching route or ``None``. Walks both top-level
@@ -104,7 +108,7 @@ def _walk_routes(routes, scope):
     return None
 
 
-def _declared_query_param_names(route) -> set[str] | None:
+def _declared_query_param_names(route: Any) -> set[str] | None:
     """Return the closed set of declared query param names for a route.
 
     Includes the parameter alias if set (FastAPI exposes the alias as

@@ -8,12 +8,13 @@ from __future__ import annotations
 
 import sqlite3
 from datetime import UTC, datetime
-from typing import Annotated, Any
+from typing import TYPE_CHECKING, Annotated, Any
 
 from fastapi import APIRouter, Body, HTTPException
 from pydantic import BaseModel, Field
 
-from jpintel_mcp.api.deps import DbDep
+if TYPE_CHECKING:
+    from jpintel_mcp.api.deps import DbDep
 
 router = APIRouter(prefix="/v1/intel", tags=["intel"])
 

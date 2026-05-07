@@ -64,6 +64,10 @@
   file: docs/_internal/MIGRATION_INDEX.md
   pattern: 'wave24_106_'
   min_count: 1
+- id: DEEP-22-9
+  spec: DEEP-22
+  check_kind: business_law_forbidden_phrases
+  file: scripts/migrations/wave24_106_am_amendment_snapshot_rebuild.sql
 
 # --- DEEP-23 : public spec repo visibility -----------------------------------
 - id: DEEP-23-1
@@ -222,6 +226,10 @@
   spec: DEEP-26
   check_kind: python_compile
   file: scripts/migrate.py
+- id: DEEP-26-9
+  spec: DEEP-26
+  check_kind: llm_api_import_zero
+  file: scripts/migrate.py
 
 # --- DEEP-27 : route 500 ZERO smoke ------------------------------------------
 - id: DEEP-27-1
@@ -292,6 +300,12 @@
   spec: DEEP-28
   check_kind: file_existence
   path: tests/test_no_llm_in_production.py
+- id: DEEP-28-9
+  spec: DEEP-28
+  check_kind: regex_pattern_count
+  file: src/jpintel_mcp/mcp/server.py
+  pattern: '@mcp\.tool'
+  min_count: 30
 
 # --- DEEP-29 : ETL operator API-free -----------------------------------------
 - id: DEEP-29-1
@@ -326,6 +340,12 @@
   spec: DEEP-29
   check_kind: python_compile
   file: scripts/etl/generate_program_rss_feeds.py
+- id: DEEP-29-9
+  spec: DEEP-29
+  check_kind: regex_pattern_count
+  file: scripts/etl/auto_tag_program_jsic.py
+  pattern: 'def '
+  min_count: 1
 
 # --- DEEP-30 : Fly deploy smoke ----------------------------------------------
 - id: DEEP-30-1
@@ -368,6 +388,10 @@
   spec: DEEP-30
   check_kind: python_compile
   file: src/jpintel_mcp/api/main.py
+- id: DEEP-30-9
+  spec: DEEP-30
+  check_kind: llm_api_import_zero
+  file: src/jpintel_mcp/api/main.py
 
 # --- DEEP-31 : daily GHA cron coverage ---------------------------------------
 - id: DEEP-31-1
@@ -406,6 +430,10 @@
   spec: DEEP-31
   check_kind: gha_yaml_syntax
   file: .github/workflows/precompute-data-quality-daily.yml
+- id: DEEP-31-9
+  spec: DEEP-31
+  check_kind: business_law_forbidden_phrases
+  file: .github/workflows/ingest-daily.yml
 
 # --- DEEP-32 : weekly cron coverage ------------------------------------------
 - id: DEEP-32-1
@@ -438,6 +466,10 @@
   spec: DEEP-32
   check_kind: gha_yaml_syntax
   file: .github/workflows/weekly-backup-autonomath.yml
+- id: DEEP-32-8
+  spec: DEEP-32
+  check_kind: business_law_forbidden_phrases
+  file: .github/workflows/incremental-law-load.yml
 
 # --- DEEP-33 : disclaimer marker matrix --------------------------------------
 - id: DEEP-33-1
@@ -526,6 +558,14 @@
   file: site/data-licensing.html
   pattern: '<footer'
   min_count: 1
+- id: DEEP-34-9
+  spec: DEEP-34
+  check_kind: file_existence
+  path: site/index.html
+- id: DEEP-34-10
+  spec: DEEP-34
+  check_kind: business_law_forbidden_phrases
+  file: site/index.html
 
 # --- DEEP-35 : sitemap.xml ---------------------------------------------------
 - id: DEEP-35-1
@@ -608,6 +648,10 @@
   spec: DEEP-36
   check_kind: python_compile
   file: scripts/generate_industry_hub_pages.py
+- id: DEEP-36-9
+  spec: DEEP-36
+  check_kind: business_law_forbidden_phrases
+  file: site/robots.txt
 
 # --- DEEP-37 : public landing page (HTML5) -----------------------------------
 - id: DEEP-37-1
@@ -638,6 +682,16 @@
   spec: DEEP-37
   check_kind: html5_doctype_meta
   file: site/sla.html
+- id: DEEP-37-8
+  spec: DEEP-37
+  check_kind: regex_pattern_count
+  file: site/about.html
+  pattern: '<title'
+  min_count: 1
+- id: DEEP-37-9
+  spec: DEEP-37
+  check_kind: business_law_forbidden_phrases
+  file: site/about.html
 
 # --- DEEP-38 : business-law disclaimer guard ---------------------------------
 - id: DEEP-38-1
@@ -672,6 +726,16 @@
   spec: DEEP-38
   check_kind: business_law_forbidden_phrases
   file: site/getting-started.html
+- id: DEEP-38-9
+  spec: DEEP-38
+  check_kind: file_existence
+  path: site/legal-fence.html
+- id: DEEP-38-10
+  spec: DEEP-38
+  check_kind: regex_pattern_count
+  file: site/legal-fence.html
+  pattern: '<body'
+  min_count: 1
 
 # --- DEEP-39 : OpenAPI route 240 promo ---------------------------------------
 - id: DEEP-39-1
@@ -722,6 +786,14 @@
   file: docs/openapi/v1.json
   pattern: '"schemas"'
   min_count: 1
+- id: DEEP-39-9
+  spec: DEEP-39
+  check_kind: file_existence
+  path: docs/openapi/v1.json
+- id: DEEP-39-10
+  spec: DEEP-39
+  check_kind: business_law_forbidden_phrases
+  file: docs/openapi/v1.json
 
 # --- DEEP-40 : pricing page (¥3/req) -----------------------------------------
 - id: DEEP-40-1
@@ -878,6 +950,12 @@
   spec: DEEP-43
   check_kind: python_compile
   file: tests/test_acceptance_criteria.py
+- id: DEEP-43-9
+  spec: DEEP-43
+  check_kind: regex_pattern_count
+  file: tests/test_acceptance_criteria.py
+  pattern: 'def\s+test_'
+  min_count: 3
 
 # --- DEEP-44 : operator ack/signoff workflow ---------------------------------
 - id: DEEP-44-1
@@ -988,6 +1066,16 @@
   spec: DEEP-46
   check_kind: gha_yaml_syntax
   file: .github/workflows/eval.yml
+- id: DEEP-46-8
+  spec: DEEP-46
+  check_kind: regex_pattern_count
+  file: .github/workflows/acceptance_criteria_ci.yml
+  pattern: 'pytest'
+  min_count: 1
+- id: DEEP-46-9
+  spec: DEEP-46
+  check_kind: business_law_forbidden_phrases
+  file: .github/workflows/acceptance_criteria_ci.yml
 
 # --- DEEP-47 : sync workflow targets -----------------------------------------
 - id: DEEP-47-1
@@ -1018,6 +1106,16 @@
   spec: DEEP-47
   check_kind: gha_yaml_syntax
   file: .github/workflows/health-drill-monthly.yml
+- id: DEEP-47-8
+  spec: DEEP-47
+  check_kind: regex_pattern_count
+  file: .github/workflows/sync-workflow-targets-monthly.yml
+  pattern: 'cron:\s*'
+  min_count: 1
+- id: DEEP-47-9
+  spec: DEEP-47
+  check_kind: business_law_forbidden_phrases
+  file: .github/workflows/sync-workflow-targets-monthly.yml
 
 # --- DEEP-48 : verify migration targets --------------------------------------
 - id: DEEP-48-1
@@ -1095,6 +1193,12 @@
   spec: DEEP-49
   check_kind: file_existence
   path: scripts/ops/lane_policy_enforcer.py
+- id: DEEP-49-9
+  spec: DEEP-49
+  check_kind: regex_pattern_count
+  file: tools/offline/operator_review/compute_dirty_fingerprint.py
+  pattern: 'def\s+'
+  min_count: 1
 
 # --- DEEP-50 : DEEP-58 dashboard ---------------------------------------------
 - id: DEEP-50-1
@@ -1167,6 +1271,12 @@
   spec: DEEP-51
   check_kind: llm_api_import_zero
   file: tools/offline/operator_review/compute_dirty_fingerprint.py
+- id: DEEP-51-9
+  spec: DEEP-51
+  check_kind: regex_pattern_count
+  file: scripts/ops/lane_policy_enforcer.py
+  pattern: 'def\s+'
+  min_count: 1
 
 # --- DEEP-52 : DEEP-61 smoke runbook -----------------------------------------
 - id: DEEP-52-1
@@ -1233,6 +1343,12 @@
   spec: DEEP-53
   check_kind: gha_yaml_syntax
   file: .github/workflows/acceptance_criteria_ci.yml
+- id: DEEP-53-8
+  spec: DEEP-53
+  check_kind: regex_pattern_count
+  file: tests/fixtures/acceptance_criteria.yaml
+  pattern: '- id: DEEP-'
+  min_count: 200
 
 # --- DEEP-54 : citation index ------------------------------------------------
 - id: DEEP-54-1
@@ -1274,3 +1390,7 @@
   file: scripts/migrations/wave24_163_am_citation_network.sql
   pattern: 'IF NOT EXISTS'
   min_count: 1
+- id: DEEP-54-9
+  spec: DEEP-54
+  check_kind: business_law_forbidden_phrases
+  file: scripts/migrations/wave24_163_am_citation_network.sql

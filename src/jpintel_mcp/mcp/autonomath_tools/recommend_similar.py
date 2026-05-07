@@ -176,7 +176,7 @@ def _ensure_vec_loaded(conn: sqlite3.Connection) -> bool:
     # Try sqlite_vec.load() as a fallback (dev machines without
     # /opt/vec0.so baked in).
     try:
-        import sqlite_vec  # type: ignore
+        import sqlite_vec
 
         conn.enable_load_extension(True)
         sqlite_vec.load(conn)

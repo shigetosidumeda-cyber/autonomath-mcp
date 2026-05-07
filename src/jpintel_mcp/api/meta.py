@@ -1,6 +1,8 @@
 import sqlite3
 import time
 from datetime import UTC, datetime
+from pathlib import Path
+from typing import Any
 
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse, RedirectResponse
@@ -27,7 +29,7 @@ def _reset_meta_cache() -> None:
     _meta_cache = None
 
 
-def _programs_has_column(conn, column: str) -> bool:
+def _programs_has_column(conn: sqlite3.Connection, column: str) -> bool:
     return any(row["name"] == column for row in conn.execute("PRAGMA table_info(programs)"))
 
 
@@ -159,7 +161,7 @@ class PingResponse(BaseModel):
     rate_limit_remaining: int | None
 
 
-def _rate_limit_remaining(conn, ctx) -> int | None:
+def _rate_limit_remaining(conn: sqlite3.Connection, ctx: Any) -> int | None:
     """Return remaining daily allowance for this caller.
 
     - Authed metered tier (paid): None (no hard cap).
@@ -248,7 +250,7 @@ _DATA_HEALTH_CACHE: dict[str, object] = {"ts": 0.0, "doc": None}
 _DATA_HEALTH_CACHE_TTL: float = 30.0
 
 
-def _count_or_error(db_file_path, table: str) -> tuple[int | None, str | None]:
+def _count_or_error(db_file_path: str | Path, table: str) -> tuple[int | None, str | None]:
     """Return (row_count, error_detail). row_count=None when missing/error.
 
     Opens read-only via URI so a typo'd path can't accidentally create an
@@ -298,7 +300,7 @@ def data_health() -> JSONResponse:
         and isinstance(cached_ts, float)
         and (now_mono - cached_ts) < _DATA_HEALTH_CACHE_TTL
     ):
-        return JSONResponse(content=cached_doc)  # type: ignore[arg-type]
+        return JSONResponse(content=cached_doc)
 
     checks: list[dict[str, object]] = []
     has_unhealthy = False

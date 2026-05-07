@@ -750,7 +750,7 @@ async def stripe_connect_webhook(request: Request, conn: DbDep) -> JSONResponse:
             # Dev fallback — skip signature verification only when no secret
             # is configured (CI / offline). In prod the setting must be set.
             event = json.loads(payload.decode("utf-8"))
-    except stripe.SignatureVerificationError as e:  # type: ignore[attr-defined]
+    except stripe.SignatureVerificationError as e:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, f"bad signature: {e}") from e
     except Exception as e:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, f"webhook parse: {e}") from e

@@ -1,0 +1,91 @@
+name: fingerprint-sot-guard
+
+# Structural CI guard for the dirty-tree fingerprint SOT helper.
+#
+# Pairs with tests/test_fingerprint_sot_guard.py and the runtime
+# bit-for-bit verifier tests/test_dirty_fingerprint_consistency.py.
+#
+# Why this exists
+# ----------------
+# Before consolidation, ``scripts/ops/production_deploy_go_gate.py`` and
+# ``tools/offline/operator_review/compute_dirty_fingerprint.py`` each
+# carried their own copy of the dirty-tree fingerprint algorithm. Their
+# output drifted on lane taxonomy, path_sha256 input shape,
+# content_sha256 algorithm, status_counts keying, and the
+# ``--untracked-files=all`` flag. The production deploy gate then rejected
+# the operator's ACK YAML with ``dirty_fingerprint_mismatch`` issues,
+# stalling launch at 4/5 PASS.
+#
+# The 2026-05-07 ACK fix moved the algorithm into the canonical SOT
+# helper ``scripts/ops/repo_dirty_lane_report.compute_canonical_dirty_fingerprint``
+# and made the gate + the operator-side CLI thin wrappers around it.
+# This workflow guards against future regressions that re-inline the
+# algorithm into either caller. Runtime equality is covered by
+# tests/test_dirty_fingerprint_consistency.py (5 synthetic dirty trees,
+# already exercised by the broader pytest suite).
+#
+# Constraints (per CLAUDE.md / feedback_no_operator_llm_api):
+#   - LLM API call count: 0 (pure stdlib AST walk inside pytest).
+#   - paid API call count: 0.
+#   - ubuntu-latest free runner only.
+#   - No network calls beyond actions/checkout + actions/setup-python.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "scripts/ops/repo_dirty_lane_report.py"
+      - "scripts/ops/production_deploy_go_gate.py"
+      - "tools/offline/operator_review/compute_dirty_fingerprint.py"
+      - "tests/test_fingerprint_sot_guard.py"
+      - "tests/test_dirty_fingerprint_consistency.py"
+      - ".github/workflows/fingerprint-sot-guard.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: fingerprint-sot-guard-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fingerprint-sot-guard:
+    name: pytest fingerprint SOT guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      JPCITE_OFFLINE: "1"
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install pytest only
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest
+
+      # Guard test 1: structural — the 4 AST checks in
+      # tests/test_fingerprint_sot_guard.py. Fails if a future PR
+      # re-inlines classify_path or hashlib.sha256 into either caller,
+      # or drops the import of compute_canonical_dirty_fingerprint.
+      - name: Run fingerprint SOT structural guard
+        run: |
+          python -m pytest tests/test_fingerprint_sot_guard.py -v --tb=short
+
+      # Guard test 2: runtime — bit-for-bit equality on 5 synthetic
+      # dirty trees. Belt-and-suspenders against the structural guard
+      # passing while semantics still drifted.
+      - name: Run fingerprint runtime consistency suite
+        run: |
+          python -m pytest tests/test_dirty_fingerprint_consistency.py -v --tb=short

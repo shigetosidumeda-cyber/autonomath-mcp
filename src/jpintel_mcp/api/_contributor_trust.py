@@ -150,7 +150,7 @@ def update_posterior(
     Returns:
         posterior P(θ_true | obs_1..obs_n) ∈ [0,1].
     """
-    Theta = theta_size + 1  # total state count
+    theta_dim = theta_size + 1  # total state count
 
     # Build prior vector
     if prior is None:
@@ -158,8 +158,8 @@ def update_posterior(
     elif isinstance(prior, (int, float)):
         # Scalar prior: treat as P(θ_true), uniform-spread the rest.
         p_true = float(max(0.0, min(1.0, prior)))
-        rest = (1.0 - p_true) / max(1, Theta - 1)
-        vec = np.full(Theta, rest, dtype=np.float64)
+        rest = (1.0 - p_true) / max(1, theta_dim - 1)
+        vec = np.full(theta_dim, rest, dtype=np.float64)
         vec[truth_index] = p_true
         # Guard against pathological all-zero
         s = vec.sum()
@@ -167,9 +167,9 @@ def update_posterior(
         log_p = np.log(np.maximum(vec, 1e-300))
     else:
         vec = np.asarray(prior, dtype=np.float64).flatten()
-        if vec.size != Theta:
+        if vec.size != theta_dim:
             # Shape mismatch: rebuild default and warn.
-            _log.warning("prior shape=%d != Theta=%d, rebuilding", vec.size, Theta)
+            _log.warning("prior shape=%d != theta_dim=%d, rebuilding", vec.size, theta_dim)
             vec = _build_prior(theta_size)
         s = vec.sum()
         vec = _build_prior(theta_size) if s <= 0 else vec / s
@@ -180,8 +180,8 @@ def update_posterior(
         l = float(max(1e-9, min(1.0 - 1e-9, l_i)))
         # P(obs | θ_true) = l
         # P(obs | θ' ≠ θ_true) = (1 − l) / (|Θ| − 1) — symmetric spread
-        not_true = (1.0 - l) / max(1, Theta - 1)
-        log_lik = np.full(Theta, math.log(not_true), dtype=np.float64)
+        not_true = (1.0 - l) / max(1, theta_dim - 1)
+        log_lik = np.full(theta_dim, math.log(not_true), dtype=np.float64)
         log_lik[truth_index] = math.log(l)
         log_p = log_p + log_lik
         # Normalize in log-space (numerically stable)
@@ -239,10 +239,10 @@ def cluster_spillover(
         return row_ids
 
     # Bulk UPDATE — chunk to keep SQLite parameter list under 999.
-    CHUNK = 500
+    chunk_size = 500
     try:
-        for i in range(0, len(row_ids), CHUNK):
-            batch = row_ids[i : i + CHUNK]
+        for i in range(0, len(row_ids), chunk_size):
+            batch = row_ids[i : i + chunk_size]
             placeholders = ",".join(["?"] * len(batch))
             am_amount_condition_conn.execute(
                 f"UPDATE am_amount_condition "

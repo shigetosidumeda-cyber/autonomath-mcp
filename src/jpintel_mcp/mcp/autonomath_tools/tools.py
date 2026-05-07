@@ -636,7 +636,7 @@ def search_tax_incentives(
     if natural_query:
         try:
             from query_rewrite.integrate import (
-                rewrite_natural_query,  # type: ignore[import-not-found]
+                rewrite_natural_query,
             )
 
             kwargs_in = {
@@ -1376,7 +1376,7 @@ def list_open_programs(
     if natural_query:
         try:
             from query_rewrite.integrate import (
-                rewrite_natural_query,  # type: ignore[import-not-found]
+                rewrite_natural_query,
             )
 
             kwargs_in = {
@@ -2962,8 +2962,8 @@ def _reasoning_import():
     root = str(_Path(__file__).resolve().parent.parent)
     if root not in _sys.path:
         _sys.path.insert(0, root)
-    from reasoning import match as _match_mod  # type: ignore[import-not-found]  # noqa: F401
-    from reasoning import query_types as _qt_mod  # type: ignore[import-not-found]  # noqa: F401
+    from reasoning import match as _match_mod  # noqa: F401
+    from reasoning import query_types as _qt_mod  # noqa: F401
 
     return _match_mod, _qt_mod
 
@@ -3267,7 +3267,7 @@ def reason_answer(
         }
 
     # Translate match.py slots to a stable user-facing schema
-    _SLOT_ALIAS = {
+    _slot_alias = {
         "prefecture": "region",
         "jsic_industry": "industry",
         "business_size": "size",
@@ -3276,7 +3276,7 @@ def reason_answer(
     for k, v in (result.slots or {}).items():
         if v is None:
             continue
-        filters_extracted[_SLOT_ALIAS.get(k, k)] = v
+        filters_extracted[_slot_alias.get(k, k)] = v
 
     # Extract <<<missing:KEY>>> tokens — these are the placeholders the
     # binder could not fill. Customer LLMs MUST NOT fabricate values here.

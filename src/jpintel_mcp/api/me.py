@@ -917,7 +917,7 @@ def _send_key_rotated_safe(
         )
     except Exception as exc:
         try:
-            import sentry_sdk  # type: ignore[import-not-found]
+            import sentry_sdk
 
             sentry_sdk.capture_exception(exc)
         except Exception:  # pragma: no cover — no Sentry installed

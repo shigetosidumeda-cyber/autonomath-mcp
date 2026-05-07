@@ -23,9 +23,10 @@ import json
 import logging
 import os
 import secrets
+import sqlite3
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, Annotated, Literal
+from typing import TYPE_CHECKING, Annotated, Any, Literal
 from urllib.parse import urlparse
 
 import stripe
@@ -75,7 +76,7 @@ def _credit_pack_db_path() -> Path:
     return Path(os.environ.get("AUTONOMATH_DB_PATH", str(settings.autonomath_db_path)))
 
 
-def _ensure_credit_pack_table(conn) -> None:
+def _ensure_credit_pack_table(conn: sqlite3.Connection) -> None:
     conn.execute(
         """
         CREATE TABLE IF NOT EXISTS am_credit_pack_purchase (
@@ -95,7 +96,7 @@ def _ensure_credit_pack_table(conn) -> None:
     )
 
 
-def _stripe_obj_id(obj) -> str:
+def _stripe_obj_id(obj: Any) -> str:
     if isinstance(obj, dict):
         return str(obj["id"])
     return str(obj.id)
@@ -135,7 +136,7 @@ def _capture(exc: BaseException) -> None:
 
 def _send_dunning_safe(
     *,
-    conn,
+    conn: sqlite3.Connection,
     to: str | None,
     sub_id: str | None,
     attempt_count: int,
@@ -248,7 +249,7 @@ def _send_welcome_safe(*, to: str | None, raw_key: str, tier: str) -> None:
 
 
 def _queue_welcome_email(
-    conn,
+    conn: sqlite3.Connection,
     *,
     sub_id: str,
     to: str | None,
@@ -310,7 +311,7 @@ def _extract_subscription_state(obj: dict) -> tuple[str | None, int | None, bool
     return status_val, cpe_int, cancel_bool
 
 
-def _refresh_subscription_status_from_stripe(conn, sub_id: str) -> None:
+def _refresh_subscription_status_from_stripe(conn: sqlite3.Connection, sub_id: str) -> None:
     """Best-effort live-fetch of a Stripe Subscription to refresh the cache.
 
     Called from invoice.paid where the payload itself does not carry the

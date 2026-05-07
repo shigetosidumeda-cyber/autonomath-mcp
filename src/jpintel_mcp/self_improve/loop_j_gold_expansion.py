@@ -83,16 +83,18 @@ from __future__ import annotations
 import json
 import re
 from collections import defaultdict
-from collections.abc import Callable
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 try:
     import yaml  # type: ignore
 except Exception:  # pragma: no cover - yaml optional at import time
-    yaml = None  # type: ignore
+    yaml = None
 
 from jpintel_mcp.security.pii_redact import redact_text
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 # Repo layout: src/jpintel_mcp/self_improve/loop_j_gold_expansion.py
 # climb four parents to reach repo root.

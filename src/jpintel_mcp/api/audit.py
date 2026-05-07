@@ -1223,7 +1223,7 @@ def _render_pdf_weasyprint(
     raises so the caller's billing + log path stays uniform.
     """
     try:
-        from weasyprint import HTML  # type: ignore[import-not-found,import-untyped]
+        from weasyprint import HTML
     except ImportError:
         _log.info("workpaper_weasyprint_missing — falling back to PDF1.4 renderer")
         return False
@@ -1285,7 +1285,7 @@ def _audit_period_token(payload_period: str | None) -> str:
     return raw
 
 
-def _api_key_id_redacted(ctx: ApiContextDep) -> str:  # type: ignore[valid-type]
+def _api_key_id_redacted(ctx: ApiContextDep) -> str:
     """Stable, non-secret identifier for the api_key. Falls back to 'anon'."""
     if ctx.key_hash is None:
         return "anon"

@@ -247,12 +247,12 @@ def _render_pdf_to(
     try:
         # Lazy-import jinja2 + weasyprint so a missing optional dep at
         # import time (test env) does not break the whole api package.
-        from jinja2 import Template  # type: ignore[import-not-found]
+        from jinja2 import Template
     except ImportError:
         logger.error("jinja2_missing — quarterly_pdf cannot render")
         return False
     try:
-        from weasyprint import HTML  # type: ignore[import-not-found,import-untyped]
+        from weasyprint import HTML
     except ImportError:
         logger.error("weasyprint_missing — quarterly_pdf cannot render")
         return False

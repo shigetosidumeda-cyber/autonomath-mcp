@@ -251,7 +251,7 @@ def to_compact(envelope: dict[str, Any]) -> dict[str, Any]:
     Never raises. Always returns a new dict (input is never mutated).
     """
     if not isinstance(envelope, dict):
-        return envelope  # type: ignore[return-value]
+        return envelope
 
     out: dict[str, Any] = {}
 
@@ -363,7 +363,7 @@ def from_compact(
     disclaimer text, _nx→next tool names) is recoverable.
     """
     if not isinstance(compact, dict):
-        return compact  # type: ignore[return-value]
+        return compact
     d_table = disclaimer_table or DISCLAIMER_TABLE
     g_table = known_gaps_table or KNOWN_GAPS_TABLE
 

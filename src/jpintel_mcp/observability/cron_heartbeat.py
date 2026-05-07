@@ -48,10 +48,12 @@ import json
 import logging
 import os
 import sqlite3
-from collections.abc import Iterator
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 logger = logging.getLogger("autonomath.observability.cron_heartbeat")
 

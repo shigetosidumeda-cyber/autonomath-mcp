@@ -59,8 +59,8 @@ def _safe_cell(v: Any) -> Any:
 
 def render_xlsx(rows: list[dict[str, Any]], meta: dict[str, Any]) -> Response:
     try:
-        from openpyxl import Workbook  # type: ignore[import-untyped]
-        from openpyxl.styles import Alignment, Font  # type: ignore[import-untyped]
+        from openpyxl import Workbook
+        from openpyxl.styles import Alignment, Font
     except ImportError as exc:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -81,7 +81,7 @@ def render_xlsx(rows: list[dict[str, Any]], meta: dict[str, Any]) -> Response:
     # auto-adjusts to ~3 lines).
     bold_warn = Font(bold=True, color="9C0006")
     wrap = Alignment(wrap_text=True, vertical="top")
-    from openpyxl.cell import WriteOnlyCell  # type: ignore[import-untyped]
+    from openpyxl.cell import WriteOnlyCell
 
     banner_cell = WriteOnlyCell(data_ws, value=DISCLAIMER_JA)
     banner_cell.font = bold_warn

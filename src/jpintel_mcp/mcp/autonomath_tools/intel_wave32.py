@@ -16,14 +16,16 @@ import asyncio
 import importlib
 import inspect
 import os
-from collections.abc import Callable
-from typing import Annotated, Any
+from typing import TYPE_CHECKING, Annotated, Any
 
 from pydantic import BaseModel, Field
 
 from jpintel_mcp.config import settings
 from jpintel_mcp.mcp.autonomath_tools.error_envelope import make_error
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 _ENABLED = (
     os.environ.get("AUTONOMATH_INTEL_COMPOSITE_ENABLED", "1") == "1"

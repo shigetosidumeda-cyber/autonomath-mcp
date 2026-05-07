@@ -9266,7 +9266,7 @@ if settings.autonomath_enabled:
             # function with `_envelope_wired` so re-entry is a no-op.
             if not getattr(fn, "_envelope_wired", False):
                 fn = _with_mcp_telemetry(fn)
-                fn._envelope_wired = True  # type: ignore[attr-defined]
+                fn._envelope_wired = True
             return decorator(fn)
 
         return _outer
@@ -9346,7 +9346,7 @@ if settings.healthcare_enabled:
         def _outer(fn: Any) -> Any:
             if not getattr(fn, "_envelope_wired", False):
                 fn = _with_mcp_telemetry(fn)
-                fn._envelope_wired = True  # type: ignore[attr-defined]
+                fn._envelope_wired = True
             return decorator(fn)
 
         return _outer
@@ -9374,7 +9374,7 @@ if settings.real_estate_enabled:
         def _outer(fn: Any) -> Any:
             if not getattr(fn, "_envelope_wired", False):
                 fn = _with_mcp_telemetry(fn)
-                fn._envelope_wired = True  # type: ignore[attr-defined]
+                fn._envelope_wired = True
             return decorator(fn)
 
         return _outer

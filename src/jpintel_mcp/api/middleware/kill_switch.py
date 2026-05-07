@@ -141,7 +141,7 @@ class KillSwitchMiddleware(BaseHTTPMiddleware):
     middlewares.
     """
 
-    async def dispatch(  # type: ignore[override]
+    async def dispatch(
         self, request: Request, call_next: Callable
     ) -> Response:
         if not _kill_switch_active():

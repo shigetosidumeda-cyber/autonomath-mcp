@@ -288,7 +288,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     must not appear in usage_events at all.
     """
 
-    async def dispatch(  # type: ignore[override]
+    async def dispatch(
         self, request: Request, call_next: Callable
     ) -> Response:
         # Whitelist: never throttle health probes, Stripe webhooks, or
