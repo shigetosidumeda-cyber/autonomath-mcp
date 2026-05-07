@@ -146,6 +146,51 @@ _DEFAULT_USER_MESSAGE: dict[ErrorCode, str] = {
     ),
 }
 
+#: English mirror of `_DEFAULT_USER_MESSAGE` for the 9 canonical codes.
+#: Strings are NOT new prose — every entry reuses the existing English copy
+#: from `api/_error_envelope.py:ERROR_CODES.user_message_en` (mapped via
+#: `LEGACY_ERROR_CODE_TO_CANONICAL`) or the structural docstring text on the
+#: corresponding StandardError.<class_method> below. This keeps the en/ja
+#: parity invariant (every code has both languages) without introducing any
+#: machine-translated content. The R8 i18n audit (2026-05-07) flagged the
+#: `_DEFAULT_USER_MESSAGE_EN` gap as the highest-impact trivial fix in the
+#: error envelope path.
+_DEFAULT_USER_MESSAGE_EN: dict[ErrorCode, str] = {
+    "RATE_LIMITED": (
+        "Rate limit exceeded. Wait the seconds shown in the Retry-After header before retrying. "
+        "Anonymous callers can lift the limit by issuing an X-API-Key."
+    ),
+    "UNAUTHORIZED": (
+        "API key required or invalid. Issue/re-issue one at https://jpcite.com/dashboard and "
+        "send it via the X-API-Key header."
+    ),
+    "FORBIDDEN": (
+        "Action not permitted with the current API key. Check the subscription plan or key scope."
+    ),
+    "NOT_FOUND": (
+        "No matching records. Try broaden_query (loosen filters) or try_alias (alternate spellings)."
+    ),
+    "VALIDATION_ERROR": (
+        "Bad request — body, signature, or required header is malformed. "
+        "See `detail` for the specific cause and `documentation` for recovery steps."
+    ),
+    "LICENSE_GATE_BLOCKED": (
+        "Source domain carries a non-redistributable license; drop the row or rerun with "
+        "?license=proprietary explicit."
+    ),
+    "QUOTA_EXCEEDED": (
+        "Monthly metered cap reached. Raise the cap via me/cap or wait for the reset at "
+        "00:00 JST on the 1st."
+    ),
+    "INTEGRITY_ERROR": (
+        "Data integrity check failed. Retry the same request in a few seconds."
+    ),
+    "INTERNAL_ERROR": (
+        "Internal error. Retry the same request in a few seconds. If it persists, email "
+        "info@bookyou.net with error.request_id."
+    ),
+}
+
 #: Default `retryable` flag per code — agents branch on this to decide
 #: whether to back off and retry vs. hard-fail.
 _DEFAULT_RETRYABLE: dict[ErrorCode, bool] = {
@@ -250,6 +295,38 @@ class Citation(BaseModel):
     citation_markdown: str | None = Field(
         default=None, description="Markdown citation suitable for docs / report bodies."
     )
+
+
+def default_user_message_for(code: ErrorCode, request: Any = None) -> str:
+    """Pick the language-resolved default user_message copy for a code.
+
+    Reads ``request.state.lang`` (set by ``LanguageResolverMiddleware``)
+    when ``request`` is supplied. Falls back to Japanese for any of:
+
+      * No ``request`` argument (legacy / unit-test call sites).
+      * ``request.state.lang`` missing or unrecognised.
+      * Catalog gap (the en mirror is hand-curated; if a future code
+        lands ja-only, callers transparently degrade to ja rather than
+        emitting the bare error code as text).
+
+    Used by the ``StandardError.<class_method>`` constructors to pick
+    between :data:`_DEFAULT_USER_MESSAGE` and :data:`_DEFAULT_USER_MESSAGE_EN`
+    based on the caller's resolved language. Public so tests can assert
+    the resolution table directly.
+    """
+    lang = "ja"
+    if request is not None:
+        try:
+            stamped = getattr(request.state, "lang", None)
+            if stamped in ("ja", "en"):
+                lang = str(stamped)
+        except Exception:  # pragma: no cover — defensive
+            lang = "ja"
+    if lang == "en":
+        en_copy = _DEFAULT_USER_MESSAGE_EN.get(code)
+        if en_copy:
+            return en_copy
+    return _DEFAULT_USER_MESSAGE[code]
 
 
 class ResponseMeta(BaseModel):

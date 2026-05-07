@@ -320,12 +320,31 @@ ERROR_CODES: dict[str, dict[str, str]] = {
 }
 
 
+def safe_request_lang(request: Any) -> str:
+    """Read ``request.state.lang`` set by ``LanguageResolverMiddleware``.
+
+    Returns ``"ja"`` | ``"en"``. Defaults to ``"ja"`` whenever the
+    attribute is missing (e.g. exception handlers that fire BEFORE the
+    middleware ran, or unit tests that build a bare ``Request`` without
+    middleware). Mirrors :func:`safe_request_id`'s defensive posture so
+    callers never have to guard against an unset attribute.
+    """
+    try:
+        lang = getattr(request.state, "lang", None)
+        if lang in ("ja", "en"):
+            return str(lang)
+    except Exception:  # pragma: no cover — defensive
+        pass
+    return "ja"
+
+
 def make_error(
     code: str,
     user_message: str | None = None,
     *,
     user_message_en: str | None = None,
     request_id: str | None = None,
+    request: Any = None,
     **extras: Any,
 ) -> dict[str, Any]:
     """Build the canonical REST error envelope.
@@ -351,6 +370,16 @@ def make_error(
         MUST still pass ``safe_request_id(request)`` so the envelope id
         matches the response ``x-request-id`` header and the structured
         log lines for the same request.
+    request
+        Optional Starlette ``Request`` — when present, the resolved
+        ``request.state.lang`` (set by ``LanguageResolverMiddleware``)
+        chooses which language gets surfaced in the ``user_message``
+        field. The other language is still emitted under the
+        per-language sibling field (``user_message_en`` when ``lang=ja``,
+        ``user_message_ja`` when ``lang=en``). Both fields are present on
+        the wire so older consumers reading either key keep working —
+        only the **primary** ``user_message`` flips. Default behavior
+        (no request, or ``lang=ja``) is byte-identical to pre-R8.
     **extras
         Arbitrary per-code fields merged into ``error``: e.g.
         ``retry_after=30`` for 503, ``field_errors=[...]`` for 422,
@@ -368,10 +397,21 @@ def make_error(
         code = "internal_error"
 
     spec = ERROR_CODES[code]
+
+    # Resolve final ja/en text up front so the lang switch is one-place.
+    text_ja = (user_message or spec["user_message_ja"]).strip()
+    text_en_raw = (user_message_en or spec.get("user_message_en") or "").strip()
+    text_en = text_en_raw or None
+
+    # Pick which language wins the primary `user_message` slot. Default
+    # to "ja" (backward-compatible). When the resolver middleware stamped
+    # an explicit "en" onto request.state.lang, surface English as the
+    # primary copy and keep Japanese under `user_message_ja` for legacy
+    # consumers that still read either key.
+    primary_lang = safe_request_lang(request) if request is not None else "ja"
+
     err: dict[str, Any] = {
         "code": code,
-        "user_message": (user_message or spec["user_message_ja"]).strip(),
-        "user_message_en": ((user_message_en or spec.get("user_message_en") or "").strip() or None),
         # Defensive fallback: callers SHOULD pass ``safe_request_id(request)``,
         # but a unit-test or programmatic consumer can still call
         # ``make_error`` with no request context. Mint a real id rather than
@@ -380,6 +420,22 @@ def make_error(
         "severity": spec.get("severity", "hard"),
         "documentation": f"{DOC_URL}#{code}",
     }
+
+    if primary_lang == "en" and text_en:
+        # English-primary path: caller signaled lang=en (header / query).
+        err["user_message"] = text_en
+        err["user_message_en"] = text_en
+        err["user_message_ja"] = text_ja
+    else:
+        # Japanese-primary path (default + every legacy caller).
+        err["user_message"] = text_ja
+        if text_en is not None:
+            err["user_message_en"] = text_en
+        # NOTE: we deliberately do NOT add `user_message_ja` on the
+        # ja-primary path — pre-R8 wire shape did not carry it, and
+        # adding it unconditionally would balloon every error body for
+        # zero new info (it would equal `user_message` exactly).
+
     # Drop None values so the wire shape is compact.
     if err.get("user_message_en") is None:
         err.pop("user_message_en", None)

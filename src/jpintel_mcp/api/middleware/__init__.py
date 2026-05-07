@@ -66,6 +66,10 @@ from jpintel_mcp.api.middleware.kill_switch import (
     KillSwitchMiddleware,
     _reset_kill_switch_state,
 )
+from jpintel_mcp.api.middleware.language_resolver import (
+    LanguageResolverMiddleware,
+    resolve_lang,
+)
 from jpintel_mcp.api.middleware.origin_enforcement import (
     OriginEnforcementMiddleware,
 )
@@ -97,6 +101,7 @@ __all__ = [
     "HostDeprecationMiddleware",
     "IdempotencyMiddleware",
     "KillSwitchMiddleware",
+    "LanguageResolverMiddleware",
     "OriginEnforcementMiddleware",
     "PerIpEndpointLimitMiddleware",
     "RateLimitMiddleware",
@@ -109,5 +114,6 @@ __all__ = [
     "_reset_rate_limit_buckets",
     "invalidate_cap_cache",
     "invalidate_cap_cache_for_tree",
+    "resolve_lang",
     "validate_client_tag",
 ]
