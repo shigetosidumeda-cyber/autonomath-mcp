@@ -69,6 +69,7 @@ from jpintel_mcp.api.customer_webhooks import router as customer_webhooks_router
 from jpintel_mcp.api.dashboard import router as dashboard_router
 from jpintel_mcp.api.device_flow import router as device_router
 from jpintel_mcp.api.discover import router as discover_router
+from jpintel_mcp.api.eligibility_check import router as eligibility_check_router
 from jpintel_mcp.api.email_unsubscribe import router as email_unsubscribe_router
 from jpintel_mcp.api.email_webhook import router as email_webhook_router
 from jpintel_mcp.api.enforcement import router as enforcement_router
@@ -1908,6 +1909,11 @@ def create_app() -> FastAPI:
     app.include_router(prescreen_router, dependencies=[AnonIpLimitDep])
     app.include_router(exclusions_router, dependencies=[AnonIpLimitDep])
     app.include_router(enforcement_router, dependencies=[AnonIpLimitDep])
+    # R8 (2026-05-07): dynamic eligibility check joining 行政処分 history
+    # (am_enforcement_detail, autonomath.db) with exclusion_rules
+    # (jpintel.db). Pure SQLite walk + static enforcement_kind→severity
+    # table — no LLM call. Anon-quota-gated like programs/exclusions.
+    app.include_router(eligibility_check_router, dependencies=[AnonIpLimitDep])
     app.include_router(case_studies_router, dependencies=[AnonIpLimitDep])
     # R8 (2026-05-07): cohort matcher (POST /v1/cases/cohort_match) over
     # case_studies (jpintel.db, 2,286) + jpi_adoption_records (autonomath.db,

@@ -172,6 +172,117 @@ def extract_prefecture_from_url(url: str | None) -> str | None:
     return None
 
 
+# R8 GEO REGION API extension (2026-05-07): mine a romaji-host → muni map
+# from rows where both URL host and municipality are populated, then use it
+# to resolve hosts on rows whose prefecture is missing. Empirical (not a
+# canonical romaji table) but high-recall on the existing corpus because
+# the ingest pipeline already canonical-cased many city/town/village rows.
+def build_host_to_municipality(
+    conn: sqlite3.Connection,
+) -> dict[str, str]:
+    """Return romaji_host → kanji municipality map from existing rows.
+
+    Only takes consistent (URL host, municipality) pairs — if a single
+    host maps to ≥2 distinct municipalities (e.g. cross-prefecture name
+    collision), the host is dropped. Idempotent and cheap (single SELECT).
+    """
+    sql = """
+        SELECT official_url, municipality
+          FROM programs
+         WHERE official_url IS NOT NULL
+           AND COALESCE(TRIM(municipality), '') != ''
+           AND (
+             official_url LIKE '%.city.%' OR
+             official_url LIKE '%.town.%' OR
+             official_url LIKE '%.village.%' OR
+             official_url LIKE '%.ward.%'
+           )
+    """
+    accumulator: dict[str, set[str]] = {}
+    for row in conn.execute(sql):
+        try:
+            host = (urllib.parse.urlparse(row["official_url"]).hostname or "").lower()
+        except (ValueError, AttributeError):
+            continue
+        if not host:
+            continue
+        labels = host.split(".")
+        # Find the romaji label following 'city'/'town'/'village'/'ward'.
+        muni_label: str | None = None
+        for idx, label in enumerate(labels):
+            if label in {"city", "town", "village", "ward"} and idx + 1 < len(labels):
+                muni_label = labels[idx + 1]
+                break
+        if not muni_label:
+            continue
+        muni_kanji = str(row["municipality"]).strip()
+        if not muni_kanji:
+            continue
+        accumulator.setdefault(muni_label, set()).add(muni_kanji)
+    # Drop ambiguous hosts.
+    return {host: next(iter(names)) for host, names in accumulator.items() if len(names) == 1}
+
+
+def extract_municipality_from_url_host(
+    url: str | None,
+    *,
+    host_to_municipality: dict[str, str],
+) -> str | None:
+    """Resolve city.<romaji>.lg.jp hosts via the mined romaji→muni map."""
+    if not url:
+        return None
+    try:
+        host = (urllib.parse.urlparse(url).hostname or "").lower()
+    except ValueError:
+        return None
+    labels = host.split(".")
+    for idx, label in enumerate(labels):
+        if label in {"city", "town", "village", "ward"} and idx + 1 < len(labels):
+            muni = host_to_municipality.get(labels[idx + 1])
+            if muni:
+                return muni
+    return None
+
+
+# R8 GEO REGION API extension (2026-05-07): walk the URL path (decoded) for
+# any municipality name in our master list. ``city.<romaji>.lg.jp`` hosts
+# rarely carry the ja-name in the host (the romaji label is the muni, not
+# the prefecture), but the *path* and query-string fragments often contain
+# the kanji name (e.g. ``.../南相馬市/sangyo/...`` or
+# ``.../tambasasayama_subsidy.html``). When a unique municipality match
+# exists in the URL path, we resolve to the prefecture via muni_to_pref.
+def extract_municipality_from_url(
+    url: str | None,
+    *,
+    municipality_names: list[str],
+) -> str | None:
+    """Return a unique municipality name appearing in the URL path, or None.
+
+    Uses the same longest-match-wins heuristic as
+    ``extract_municipality_from_text`` so a URL containing both
+    ``南相馬市`` and ``相馬市`` resolves to the longer (more specific)
+    name. Requires a unique top-length hit; ambiguous URLs return None.
+    """
+    if not url:
+        return None
+    try:
+        parsed = urllib.parse.urlparse(url)
+    except ValueError:
+        return None
+    # Decode percent-encoded path so '%E5%8D%97%E7%9B%B8%E9%A6%AC%E5%B8%82'
+    # → '南相馬市'.
+    try:
+        path = urllib.parse.unquote(parsed.path or "")
+    except (UnicodeDecodeError, ValueError):
+        path = parsed.path or ""
+    try:
+        query = urllib.parse.unquote(parsed.query or "")
+    except (UnicodeDecodeError, ValueError):
+        query = parsed.query or ""
+    haystack = f"{path} {query}"
+    return extract_municipality_from_text(haystack, municipality_names=municipality_names)
+
+
 def _override_prefecture(
     unified_id: str,
     overrides: dict[str, dict[str, Any]],
@@ -197,6 +308,7 @@ def resolve_locality_update(
     muni_to_pref: dict[str, str],
     municipality_names: list[str],
     overrides: dict[str, dict[str, Any]],
+    host_to_municipality: dict[str, str] | None = None,
 ) -> LocalityUpdate | None:
     unified_id = str(row["unified_id"])
     primary_name = str(row["primary_name"] or "")
@@ -218,6 +330,39 @@ def resolve_locality_update(
             new_muni = found_muni
             muni_method = "primary_name_municipality"
             evidence_parts.append(f"municipality={found_muni}")
+
+    # R8 GEO REGION API (2026-05-07): URL path walk catches the ~236 city.X
+    # URLs whose host romaji label is the muni (not the prefecture) — those
+    # were skipped by the prefecture host walk. We try official_url first,
+    # then source_url, taking the first unique muni hit.
+    if new_muni is None:
+        for field in ("official_url", "source_url"):
+            url_val = row[field] if field in row.keys() else None  # noqa: SIM118
+            url_muni = extract_municipality_from_url(
+                url_val,
+                municipality_names=municipality_names,
+            )
+            if url_muni:
+                new_muni = url_muni
+                muni_method = f"{field}_path_municipality"
+                evidence_parts.append(f"{field}_muni={url_muni}")
+                break
+
+    # R8 GEO REGION API (2026-05-07): empirical romaji→muni map mined from
+    # the corpus. Catches city.<romaji>.lg.jp hosts where the path has no
+    # kanji.
+    if new_muni is None and host_to_municipality:
+        for field in ("official_url", "source_url"):
+            url_val = row[field] if field in row.keys() else None  # noqa: SIM118
+            host_muni = extract_municipality_from_url_host(
+                url_val,
+                host_to_municipality=host_to_municipality,
+            )
+            if host_muni:
+                new_muni = host_muni
+                muni_method = f"{field}_host_municipality"
+                evidence_parts.append(f"{field}_host_muni={host_muni}")
+                break
 
     if new_pref is None and new_muni in muni_to_pref:
         new_pref = muni_to_pref[new_muni]
@@ -272,7 +417,10 @@ def collect_locality_updates(
     muni_to_pref: dict[str, str],
     municipality_names: list[str],
     overrides: dict[str, dict[str, Any]],
+    host_to_municipality: dict[str, str] | None = None,
 ) -> list[LocalityUpdate]:
+    if host_to_municipality is None:
+        host_to_municipality = build_host_to_municipality(conn)
     rows = conn.execute(
         """SELECT unified_id, primary_name, authority_name, prefecture, municipality,
                   official_url, source_url
@@ -288,6 +436,7 @@ def collect_locality_updates(
             muni_to_pref=muni_to_pref,
             municipality_names=municipality_names,
             overrides=overrides,
+            host_to_municipality=host_to_municipality,
         )
         if update is not None:
             updates.append(update)

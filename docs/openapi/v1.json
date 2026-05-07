@@ -32358,6 +32358,188 @@
         ]
       }
     },
+    "/v1/programs/by_region/{region_code}": {
+      "get": {
+        "description": "Given a 5-digit \u5168\u56fd\u5730\u65b9\u516c\u5171\u56e3\u4f53\u30b3\u30fc\u30c9 (e.g. `13105` for \u6587\u4eac\u533a, `13000` for \u6771\u4eac\u90fd, `00000` for \u5168\u56fd), return every applicable program split into three buckets:\n\n- `national` \u2014 programs with `authority_level IN ('national','\u56fd')`.   Always included (\u56fd\u30ec\u30d9\u30eb applies uniformly).\n- `prefecture` \u2014 programs whose `prefecture` matches the region's   parent prefecture, with empty `municipality` (i.e. true \u90fd\u9053\u5e9c\u770c   programs, not \u5e02\u533a\u753a\u6751-level rolled up by mistake).\n- `municipality` \u2014 programs whose `municipality` matches the region   (only populated when the region itself is a \u81ea\u6cbb\u4f53).\n\nDesignated wards (e.g. \u672d\u5e4c\u5e02\u4e2d\u592e\u533a = `01101`) walk one hop up: ward \u2192 designated_city \u2192 prefecture, so \u6587\u4eac\u533a's prefecture bucket is \u6771\u4eac\u90fd's prefecture-level records.\n\nTier filter: only S/A/B/C; quarantined (X) and excluded records skipped. Limit per bucket capped at 100.",
+        "operationId": "programs_by_region_v1_programs_by_region__region_code__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "region_code",
+            "required": true,
+            "schema": {
+              "title": "Region Code",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "municipality": [],
+                  "national": [],
+                  "prefecture": [],
+                  "region": {
+                    "name_ja": "\u6587\u4eac\u533a",
+                    "prefecture_code": "13000",
+                    "prefecture_name": "\u6771\u4eac\u90fd",
+                    "region_code": "13105",
+                    "region_level": "municipality"
+                  },
+                  "totals": {
+                    "municipality": 1,
+                    "national": 2868,
+                    "prefecture": 30
+                  }
+                },
+                "schema": {}
+              }
+            },
+            "description": "Hierarchical program list grouped by `national` / `prefecture` / `municipality`, with the resolved region metadata."
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Validation error \u2014 `code` \u2208 {invalid_enum, invalid_date_format, missing_required_arg, out_of_range, ambiguous_query}."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Authentication required \u2014 `code='auth_required'`. Send `X-API-Key`."
+          },
+          "402": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Cost cap exceeded \u2014 `code='cost_cap_exceeded'`. Raise `X-Cost-Cap-JPY` or reduce fan-out."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "region_code unknown \u2014 `error.code='no_matching_records'`."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable entity \u2014 Pydantic validation failure (`code='invalid_enum'`)."
+          },
+          "428": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Precondition required \u2014 `code='idempotency_key_required'`. Send `Idempotency-Key` on paid fan-out requests."
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Rate limit \u2014 `code='rate_limit_exceeded'`. Honour `Retry-After`."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Server error \u2014 `code` \u2208 {service, internal_error, db_locked, db_unavailable}."
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Subsystem unavailable \u2014 `code` \u2208 {subsystem_unavailable, service_unavailable, cap_reached}."
+          }
+        },
+        "summary": "Programs hit-map for a 5-digit \u5168\u56fd\u5730\u65b9\u516c\u5171\u56e3\u4f53\u30b3\u30fc\u30c9",
+        "tags": [
+          "regions"
+        ]
+      }
+    },
     "/v1/programs/prescreen": {
       "post": {
         "description": "Profile-oriented match: given a caller's `prefecture` / `industry_jsic` / `is_sole_proprietor` / `employee_count` / `planned_investment_man_yen` / declared `held_certifications`, return relevance-ordered candidate programs with per-record `reasons[]` and `caveats[]`.\n\n**When to use prescreen vs search:** `/v1/programs/search` answers 'which programs mention X?' (keyword discovery). Prescreen answers 'which programs could *I* plausibly apply to, and why?' (fit judgment). LLM agents building 'help this SMB find support' flows should prefer prescreen \u2014 it cuts the keyword-guessing round-trips.\n\n**Scope (v1):** \u4e8b\u696d\u8005\u533a\u5206\u3001\u4e8b\u696d\u898f\u6a21\u3001\u4e88\u5b9a\u6295\u8cc7\u984d\u3001\u4fdd\u6709\u8a8d\u5b9a\u3001\u5730\u57df\u3092\u3082\u3068\u306b\u3001\u5019\u88dc\u7406\u7531\u3068\u6ce8\u610f\u70b9\u3092\u8fd4\u3057\u307e\u3059\u3002",
@@ -33327,6 +33509,269 @@
         "summary": "Get a single program by unified_id (UNI-*)",
         "tags": [
           "programs"
+        ]
+      }
+    },
+    "/v1/regions/search": {
+      "get": {
+        "description": "Fuzzy substring search over `am_region.name_ja` so consumers can map a free-text \u6cd5\u4eba\u6240\u5728\u5730 string (e.g. '\u6587\u4eac\u533a') to a canonical 5-digit \u5168\u56fd\u5730\u65b9\u516c\u5171\u56e3\u4f53\u30b3\u30fc\u30c9. Default limit 20, max 100.\n\nFilter by `level` to restrict to one of `nation` / `prefecture` / `designated_city` / `designated_ward` / `municipality`.\n\nSort: exact match first, then prefix match, then substring match, all alphabetical within a tier.",
+        "operationId": "regions_search_v1_regions_search_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "maxLength": 80,
+              "minLength": 1,
+              "title": "Q",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "level",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "nation",
+                    "prefecture",
+                    "designated_city",
+                    "designated_ward",
+                    "municipality"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Level"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Free-text search over am_region (\u81ea\u6cbb\u4f53\u540d lookup)",
+        "tags": [
+          "regions"
+        ]
+      }
+    },
+    "/v1/regions/{region_code}/coverage": {
+      "get": {
+        "description": "Return the per-level program hit count for a region plus a `coverage_gap` boolean flagging ingest \u672a\u7740\u624b \u81ea\u6cbb\u4f53 (defined as `prefecture==0 AND municipality==0` for non-nation regions). The `national` bucket is always nonzero in production and is intended as a sanity baseline.\n\nUsed by the support team data-quality dashboard to surface \u5e02\u533a\u753a\u6751 with no indexed corpus records mapped \u2014 those are the \u81ea\u6cbb\u4f53 to prioritise in the next ingest pass.",
+        "operationId": "region_coverage_v1_regions__region_code__coverage_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "region_code",
+            "required": true,
+            "schema": {
+              "title": "Region Code",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Validation error \u2014 `code` \u2208 {invalid_enum, invalid_date_format, missing_required_arg, out_of_range, ambiguous_query}."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Authentication required \u2014 `code='auth_required'`. Send `X-API-Key`."
+          },
+          "402": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Cost cap exceeded \u2014 `code='cost_cap_exceeded'`. Raise `X-Cost-Cap-JPY` or reduce fan-out."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "region_code unknown."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable entity \u2014 Pydantic validation failure (`code='invalid_enum'`)."
+          },
+          "428": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Precondition required \u2014 `code='idempotency_key_required'`. Send `Idempotency-Key` on paid fan-out requests."
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Rate limit \u2014 `code='rate_limit_exceeded'`. Honour `Retry-After`."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Server error \u2014 `code` \u2208 {service, internal_error, db_locked, db_unavailable}."
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Subsystem unavailable \u2014 `code` \u2208 {subsystem_unavailable, service_unavailable, cap_reached}."
+          }
+        },
+        "summary": "Program-coverage gap detection for a region",
+        "tags": [
+          "regions"
         ]
       }
     },
