@@ -106,6 +106,7 @@ from jpintel_mcp.api.middleware import (
     PerIpEndpointLimitMiddleware,
     RateLimitMiddleware,
     SecurityHeadersMiddleware,
+    StaticManifestCacheMiddleware,
     StrictQueryMiddleware,
 )
 from jpintel_mcp.api.middleware.origin_enforcement import _MUST_INCLUDE
@@ -1131,6 +1132,20 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
     _bg_stop = asyncio.Event()
     _bg_task = asyncio.create_task(run_worker_loop(_bg_stop), name="bg_task_worker")
 
+    # ── Boot-time SQLite cold-start warmup (R8_PERF_BASELINE #3) ────────
+    # First /v1/am/health/deep hit on a freshly-booted Fly machine
+    # measured at 30.92s (Fly proxy ceiling) because the 9.4 GB
+    # autonomath.db has zero pages in the OS page cache. Second hit
+    # <400ms once cached. We fire-and-forget cheap SELECT COUNT(*) +
+    # LIMIT 1 probes against the hottest tables in a background task so
+    # the page cache fills concurrently with the first inbound traffic.
+    # The task NEVER raises (see `_db_warmup.py` for the swallowed-error
+    # contract) and is bounded by an outer 30s budget so it can't keep
+    # the worker alive past Fly's 60s grace.
+    from jpintel_mcp.api._db_warmup import schedule_warmup
+
+    _warmup_task = schedule_warmup()
+
     _ready = True
     try:
         yield
@@ -1146,6 +1161,17 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
             _bg_task.cancel()
         except Exception:  # pragma: no cover — defensive
             logger.exception("bg_task_worker_shutdown_error")
+        # Warmup is fire-and-forget; if it's still running on shutdown
+        # cancel it cleanly so asyncio doesn't log a "task was destroyed
+        # but it is pending" warning.
+        if not _warmup_task.done():
+            _warmup_task.cancel()
+            try:
+                await asyncio.wait_for(_warmup_task, timeout=2.0)
+            except (TimeoutError, asyncio.CancelledError):
+                pass
+            except Exception:  # pragma: no cover — defensive
+                logger.exception("db_warmup_shutdown_error")
 
 
 def create_app() -> FastAPI:
@@ -1258,6 +1284,16 @@ def create_app() -> FastAPI:
     # hstspreload.org), tracked in
     # docs/_internal/autonomath_com_dns_runbook.md.
     app.add_middleware(SecurityHeadersMiddleware)
+    # R8 perf, 2026-05-07: Cache-Control on static-ish JSON manifests so
+    # Cloudflare / SDK generators / Stainless-style introspectors don't
+    # re-fetch 539 KB / 252 KB / 386 B blobs that only change on deploy.
+    # Stamps `public, max-age=300, s-maxage=600` on /v1/openapi.json,
+    # /v1/openapi.agent.json, /v1/mcp-server.json — see
+    # api/middleware/static_cache_headers.py docstring. Added EARLY so
+    # it runs LATE on the response (after the manifest body has been
+    # serialized). Idempotent setdefault — any future per-route override
+    # (e.g. `no-store` on a customer-state surface) wins.
+    app.add_middleware(StaticManifestCacheMiddleware)
     # Legacy host deprecation (api.zeimu-kaikei.ai → api.jpcite.com).
     # Stamps RFC 8594 `Deprecation: true` + RFC 9745 `Sunset: <date>` +
     # RFC 8288 `Link: <successor>; rel="successor-version"` on every
@@ -1569,7 +1605,18 @@ def create_app() -> FastAPI:
         status_code = exc.status_code
 
         # Map status -> code; default falls through to a generic shape.
-        if status_code == 401:
+        if status_code == 400:
+            # R8-ERR-1 (P0) fix: Stripe webhook + other 400 callers used to
+            # leak a bare `{"detail":"bad signature"}` (26 bytes, no
+            # request_id, no documentation anchor). Wrap 400 in the
+            # canonical envelope under `bad_request` while preserving the
+            # original `detail` (string OR dict) at the top level so every
+            # existing pattern-match in tests + customer agents keeps
+            # firing. Router authors that already shape `detail` as a
+            # rich dict (e.g. `{"error":"...","code":"..."}`) still get
+            # the merged envelope: extras pull through dict keys verbatim.
+            code = "bad_request"
+        elif status_code == 401:
             code = "auth_required"
         elif status_code == 403:
             code = "auth_invalid"
@@ -1584,8 +1631,9 @@ def create_app() -> FastAPI:
         else:
             # Pass non-mapped HTTPException bodies through unchanged so
             # we don't steamroll richly-shaped 4xx bodies emitted from
-            # individual routers (e.g. Stripe webhook 400, prescreen
-            # validation). The router author already chose a body shape.
+            # individual routers (e.g. prescreen validation 422 paths
+            # that already carry their own envelope). The router author
+            # already chose a body shape.
             return JSONResponse(
                 status_code=status_code,
                 content={"detail": exc.detail},
@@ -2094,6 +2142,16 @@ def create_app() -> FastAPI:
     from jpintel_mcp.api.integrations import router as integrations_router
 
     app.include_router(integrations_router, dependencies=[AnonIpLimitDep])
+    # GitHub OAuth sign-in surface (R8 audit gap — ``/v1/auth/github/*``
+    # was 404 in production after Fly secrets ``GITHUB_OAUTH_CLIENT_ID``
+    # / ``GITHUB_OAUTH_CLIENT_SECRET`` were deployed but the router was
+    # never mounted). Pre-auth: caller does NOT need an API key to begin
+    # OAuth — anon IP rate limit applies so brute-force state probes are
+    # capped at 3/日 per IP. Scopes are read-only (``read:user
+    # user:email``); no GitHub-side credentials are persisted.
+    from jpintel_mcp.api.auth_github import router as auth_github_router
+
+    app.include_router(auth_github_router, dependencies=[AnonIpLimitDep])
     # LINE Messaging API webhook receiver — second product surface for
     # 中小企業 cohort (CLAUDE.md cohort #6). Deterministic state machine,
     # NO LLM call, billing inherits the existing programs.search ¥3
