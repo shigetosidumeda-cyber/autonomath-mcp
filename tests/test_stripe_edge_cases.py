@@ -47,7 +47,7 @@ def stripe_env(monkeypatch):
 def _patch_construct_event(monkeypatch, event: dict) -> None:
     from jpintel_mcp.api import billing as billing_mod
 
-    def _construct(_body, _sig, _secret):
+    def _construct(_body, _sig, _secret, **_kwargs):
         return event
 
     monkeypatch.setattr(billing_mod.stripe.Webhook, "construct_event", _construct)

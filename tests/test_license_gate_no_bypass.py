@@ -92,13 +92,6 @@ _KNOWN_UNWIRED_EXPORTS: frozenset[tuple[str, str, str]] = frozenset(
             "license attribution is the customer's, not ours; gate-wiring "
             "still pending the row-schema change to carry source license.",
         ),
-        (
-            "saved_searches.py",
-            "saved_search_results_xlsx",
-            "saved search Excel export — pre-§24 path, scheduled for "
-            "license-gate wiring once each saved search result row carries "
-            "source-side license attribution.",
-        ),
     }
 )
 

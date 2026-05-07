@@ -138,14 +138,22 @@ def _usage_count(db: Path, endpoint: str) -> int:
         c.close()
 
 
-def test_results_xlsx_replays_saved_filters_before_billing(
+def test_results_xlsx_replays_saved_filters_and_bills_after_success(
     client, saved_search_key, seeded_db: Path, monkeypatch
 ):
     captured: dict[str, object] = {}
 
     def _fake_build_search_response(**kwargs):
         captured["build_kwargs"] = kwargs
-        return {"total": 12, "results": [{"unified_id": "UNI-saved-filter"}]}
+        return {
+            "total": 12,
+            "results": [
+                {
+                    "unified_id": "UNI-saved-filter",
+                    "source_url": "https://www.meti.go.jp/policy/saved-filter.html",
+                }
+            ],
+        }
 
     def _fake_render_xlsx(rows, meta):
         captured["rows"] = rows
@@ -160,6 +168,10 @@ def test_results_xlsx_replays_saved_filters_before_billing(
 
     monkeypatch.setattr(programs_mod, "_build_search_response", _fake_build_search_response)
     monkeypatch.setattr(xlsx_mod, "render_xlsx", _fake_render_xlsx)
+    monkeypatch.setattr(
+        "jpintel_mcp.api._universal_envelope.license_for_url",
+        lambda url: "gov_standard_v2.0" if url else "unknown",
+    )
 
     r0 = client.post(
         "/v1/me/saved_searches",
@@ -208,20 +220,21 @@ def test_results_xlsx_replays_saved_filters_before_billing(
     assert _usage_count(seeded_db, "saved_searches.results_xlsx") == before + 1
 
 
-def test_results_xlsx_renderer_failure_charges_first_per_pattern_a(
+def test_results_xlsx_renderer_failure_does_not_bill(
     client, saved_search_key, seeded_db: Path, monkeypatch
 ):
-    """DEEP-48 Pattern A — charge BEFORE render.
-
-    Replaces the legacy "render-fail = no bill" path: under the charge-first
-    fence, a renderer crash AFTER successful billing leaves a +1 usage row
-    behind. The cap-exceeded path (final_cap_failure test below) is the
-    correct fail-closed branch; this test pins the charge-first invariant
-    so a future refactor that re-orders charge after render is caught.
-    """
+    """A renderer crash must not create a metered usage row."""
 
     def _fake_build_search_response(**kwargs):
-        return {"total": 1, "results": [{"unified_id": "UNI-render-fails"}]}
+        return {
+            "total": 1,
+            "results": [
+                {
+                    "unified_id": "UNI-render-fails",
+                    "source_url": "https://www.meti.go.jp/policy/render-fails.html",
+                }
+            ],
+        }
 
     def _boom(rows, meta):
         raise RuntimeError("xlsx renderer failed")
@@ -231,6 +244,10 @@ def test_results_xlsx_renderer_failure_charges_first_per_pattern_a(
 
     monkeypatch.setattr(programs_mod, "_build_search_response", _fake_build_search_response)
     monkeypatch.setattr(xlsx_mod, "render_xlsx", _boom)
+    monkeypatch.setattr(
+        "jpintel_mcp.api._universal_envelope.license_for_url",
+        lambda url: "gov_standard_v2.0" if url else "unknown",
+    )
 
     r0 = client.post(
         "/v1/me/saved_searches",
@@ -251,9 +268,7 @@ def test_results_xlsx_renderer_failure_charges_first_per_pattern_a(
             f"/v1/me/saved_searches/{saved_id}/results.xlsx",
             headers={"X-API-Key": saved_search_key},
         )
-    # Pattern A: charge happened pre-render, so the renderer crash leaves
-    # a usage row behind. Reconcile cron handles the rare refund path.
-    assert _usage_count(seeded_db, "saved_searches.results_xlsx") == before + 1
+    assert _usage_count(seeded_db, "saved_searches.results_xlsx") == before
 
 
 def test_results_paid_final_cap_failure_returns_503_without_usage_event(

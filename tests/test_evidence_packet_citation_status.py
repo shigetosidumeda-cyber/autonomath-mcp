@@ -370,6 +370,7 @@ def _override_paths(
     fixture_db: Path,
     fixture_jpintel: Path,
     monkeypatch: pytest.MonkeyPatch,
+    _reset_anon_rate_limit: None,
 ) -> Iterator[None]:
     """Point composer at fixture DBs, reset caches."""
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(fixture_db))

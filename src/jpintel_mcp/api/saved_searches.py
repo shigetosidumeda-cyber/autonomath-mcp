@@ -708,20 +708,16 @@ def saved_search_results(
     rows, total = _run_saved_search_query(conn, query)
     snapshot_id, checksum = compute_corpus_snapshot(conn)
 
-    # DEEP-48 Pattern A — charge BEFORE rendering the deliverable. If the
-    # cap final-check rejects, log_usage raises and the renderer never
-    # runs, so the customer never receives an unbilled body. Same hash key
-    # in the strict-metering path serves as the idempotent dedup fence —
-    # the middleware idempotency_cache (mig 087) already covers replay,
-    # and here the saved_search_id + format fingerprint scopes the charge.
-    log_usage(
-        conn,
-        ctx,
-        "saved_searches.results",
-        params={"saved_search_id": saved_id, "format": format},
-        result_count=len(rows),
-        strict_metering=True,
-    )
+    def _record_success_usage() -> None:
+        log_usage(
+            conn,
+            ctx,
+            "saved_searches.results",
+            params={"saved_search_id": saved_id, "format": format},
+            result_count=len(rows),
+            response_body={"results": rows},
+            strict_metering=True,
+        )
 
     if format == "json":
         from fastapi.responses import JSONResponse
@@ -733,6 +729,7 @@ def saved_search_results(
             "corpus_snapshot_id": snapshot_id,
             "corpus_checksum": checksum,
         }
+        _record_success_usage()
         return JSONResponse(
             content=envelope,
             headers={
@@ -742,6 +739,7 @@ def saved_search_results(
         )
 
     from jpintel_mcp.api._format_dispatch import render
+    from jpintel_mcp.api.programs import _attach_export_lineage
 
     meta = {
         "filename_stem": f"jpcite_saved_{saved_id}",
@@ -751,9 +749,11 @@ def saved_search_results(
         "corpus_snapshot_id": snapshot_id,
         "corpus_checksum": checksum,
     }
-    resp = render(rows, format, meta)
+    export_rows = _attach_export_lineage(conn, {"results": rows})["results"]
+    resp = render(export_rows, format, meta)
     resp.headers["X-Corpus-Snapshot-Id"] = snapshot_id
     resp.headers["X-Corpus-Checksum"] = checksum
+    _record_success_usage()
     return resp
 
 
@@ -795,25 +795,37 @@ def saved_search_results_xlsx(
     except json.JSONDecodeError:
         query = {}
 
-    from jpintel_mcp.api.formats.xlsx import render_xlsx
+    from jpintel_mcp.api._corpus_snapshot import compute_corpus_snapshot
+    from jpintel_mcp.api._format_dispatch import render
+    from jpintel_mcp.api._license_gate import assert_no_blocked
+    from jpintel_mcp.api.programs import _attach_export_lineage
 
     rows, total = _run_saved_search_query(conn, query)
-    # DEEP-48 Pattern A — charge BEFORE rendering the workbook so a
-    # cap-exceeded customer never gets an unbilled .xlsx body back.
+    snapshot_id, checksum = compute_corpus_snapshot(conn)
+    meta = {
+        "filename_stem": f"jpcite_saved_{saved_id}",
+        "endpoint": "saved_searches.results_xlsx",
+        "saved_search_id": saved_id,
+        "total": total,
+        "corpus_snapshot_id": snapshot_id,
+        "corpus_checksum": checksum,
+        "license": "jpcite evidence export",
+    }
+    export_rows = _attach_export_lineage(conn, {"results": rows})["results"]
+    assert_no_blocked(export_rows)
+    resp = render(export_rows, "xlsx", meta)
+    resp.headers["X-Corpus-Snapshot-Id"] = snapshot_id
+    resp.headers["X-Corpus-Checksum"] = checksum
     log_usage(
         conn,
         ctx,
         "saved_searches.results_xlsx",
         params={"saved_search_id": saved_id, "format": "xlsx"},
         result_count=len(rows),
+        response_body={"results": rows},
         strict_metering=True,
     )
-    meta = {
-        "saved_search_id": saved_id,
-        "total": total,
-        "license": "jpcite evidence export",
-    }
-    return render_xlsx(rows, meta)
+    return resp
 
 
 __all__ = [

@@ -11,6 +11,7 @@ from typing import Annotated, Any, NoReturn
 
 from fastapi import BackgroundTasks, Depends, Header, HTTPException, Request, status
 
+from jpintel_mcp.api.token_savings import estimate_tokens_saved
 from jpintel_mcp.config import settings
 from jpintel_mcp.db.session import connect
 
@@ -178,6 +179,7 @@ def _insert_usage_event(
     client_tag: str | None,
     quantity: int,
     billing_idempotency_key: str | None,
+    tokens_saved_estimated: int | None,
 ) -> tuple[int | None, bool]:
     """Insert usage_events, de-duping logical Idempotency-Key retries.
 
@@ -186,48 +188,21 @@ def _insert_usage_event(
     the same idempotency key, but must not advance local caps again.
     """
     ts = datetime.now(UTC).isoformat()
-    if billing_idempotency_key:
-        try:
-            cur = conn.execute(
-                "INSERT INTO usage_events("
-                "  key_hash, endpoint, ts, status, metered, params_digest,"
-                "  latency_ms, result_count, client_tag, quantity,"
-                "  billing_idempotency_key"
-                ") VALUES (?,?,?,?,?,?,?,?,?,?,?)",
-                (
-                    key_hash,
-                    endpoint,
-                    ts,
-                    status_code,
-                    1 if metered else 0,
-                    digest,
-                    latency_ms,
-                    result_count,
-                    client_tag,
-                    quantity,
-                    billing_idempotency_key,
-                ),
-            )
-            return cur.lastrowid, True
-        except sqlite3.IntegrityError:
-            row = conn.execute(
-                "SELECT id FROM usage_events "
-                "WHERE key_hash = ? AND billing_idempotency_key = ? "
-                "ORDER BY id ASC LIMIT 1",
-                (key_hash, billing_idempotency_key),
-            ).fetchone()
-            return (int(row[0]) if row else None), False
-        except sqlite3.OperationalError as exc:
-            if "billing_idempotency_key" not in str(exc):
-                raise
-            # Older local DB before migration 122; fall through to legacy insert.
 
-    cur = conn.execute(
-        "INSERT INTO usage_events("
-        "  key_hash, endpoint, ts, status, metered, params_digest,"
-        "  latency_ms, result_count, client_tag, quantity"
-        ") VALUES (?,?,?,?,?,?,?,?,?,?)",
-        (
+    def _execute_insert(*, include_billing_key: bool, include_tokens_saved: bool):
+        columns = [
+            "key_hash",
+            "endpoint",
+            "ts",
+            "status",
+            "metered",
+            "params_digest",
+            "latency_ms",
+            "result_count",
+            "client_tag",
+            "quantity",
+        ]
+        values: list[Any] = [
             key_hash,
             endpoint,
             ts,
@@ -238,9 +213,47 @@ def _insert_usage_event(
             result_count,
             client_tag,
             quantity,
-        ),
-    )
-    return cur.lastrowid, True
+        ]
+        if include_billing_key:
+            columns.append("billing_idempotency_key")
+            values.append(billing_idempotency_key)
+        if include_tokens_saved:
+            columns.append("tokens_saved_estimated")
+            values.append(tokens_saved_estimated)
+        placeholders = ",".join("?" for _ in columns)
+        return conn.execute(
+            f"INSERT INTO usage_events({','.join(columns)}) VALUES ({placeholders})",  # noqa: S608
+            values,
+        )
+
+    include_billing_key = billing_idempotency_key is not None
+    include_tokens_saved = tokens_saved_estimated is not None
+    while True:
+        try:
+            cur = _execute_insert(
+                include_billing_key=include_billing_key,
+                include_tokens_saved=include_tokens_saved,
+            )
+            return cur.lastrowid, True
+        except sqlite3.IntegrityError:
+            if not include_billing_key:
+                raise
+            row = conn.execute(
+                "SELECT id FROM usage_events "
+                "WHERE key_hash = ? AND billing_idempotency_key = ? "
+                "ORDER BY id ASC LIMIT 1",
+                (key_hash, billing_idempotency_key),
+            ).fetchone()
+            return (int(row[0]) if row else None), False
+        except sqlite3.OperationalError as exc:
+            message = str(exc)
+            if include_tokens_saved and "tokens_saved_estimated" in message:
+                include_tokens_saved = False
+                continue
+            if include_billing_key and "billing_idempotency_key" in message:
+                include_billing_key = False
+                continue
+            raise
 
 
 def _existing_usage_event_for_billing_key(
@@ -746,6 +759,7 @@ def _record_usage_async(
     quantity: int = 1,
     audit_seal: dict[str, Any] | None = None,
     billing_idempotency_key: str | None = None,
+    tokens_saved_estimated: int | None = None,
 ) -> None:
     """Deferred body of ``log_usage`` — runs after the response is flushed.
 
@@ -829,6 +843,7 @@ def _record_usage_async(
                     client_tag=client_tag,
                     quantity=quantity,
                     billing_idempotency_key=billing_idempotency_key,
+                    tokens_saved_estimated=tokens_saved_estimated,
                 )
                 if usage_event_inserted:
                     conn.execute(
@@ -1027,6 +1042,12 @@ def log_usage(
                     },
                 ) from None
 
+    tokens_saved_estimated = (
+        estimate_tokens_saved(params, response_body)
+        if status_code < 400 and params is not None and response_body is not None
+        else None
+    )
+
     limit_key, ctx_metered = TIER_LIMITS.get(ctx.tier, (None, False))
     requires_inline_daily_quota = (
         ctx.key_hash is not None
@@ -1060,6 +1081,7 @@ def log_usage(
             quantity,
             audit_seal,
             billing_key,
+            tokens_saved_estimated,
         )
         return audit_seal
 
@@ -1120,6 +1142,7 @@ def log_usage(
                 client_tag=client_tag,
                 quantity=quantity,
                 billing_idempotency_key=billing_key,
+                tokens_saved_estimated=tokens_saved_estimated,
             )
             if usage_event_inserted:
                 conn.execute(

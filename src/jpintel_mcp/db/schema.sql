@@ -248,6 +248,10 @@ CREATE TABLE IF NOT EXISTS usage_events (
     -- Idempotency-Key. Prevents duplicate usage_events / Stripe increments
     -- when a 2xx handler records usage but response-cache finalization fails.
     billing_idempotency_key TEXT,
+    -- Migration 165: estimated LLM input tokens avoided by serving this
+    -- answer from jpcite's structured corpus rather than asking a general
+    -- LLM to rediscover the same public-source context.
+    tokens_saved_estimated INTEGER,
     FOREIGN KEY(key_hash) REFERENCES api_keys(key_hash)
 );
 

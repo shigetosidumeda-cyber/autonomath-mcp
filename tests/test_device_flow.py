@@ -20,12 +20,14 @@ GRANT_TYPE = "urn:ietf:params:oauth:grant-type:device_code"
 @pytest.fixture()
 def stripe_env(monkeypatch):
     """Hydrate Stripe settings so device_flow._stripe_ready() doesn't 503."""
+    from jpintel_mcp.api import device_flow as device_mod
     from jpintel_mcp.config import settings
 
-    monkeypatch.setattr(settings, "stripe_secret_key", "sk_test_dummy", raising=False)
-    monkeypatch.setattr(settings, "stripe_webhook_secret", "whsec_dummy", raising=False)
-    monkeypatch.setattr(settings, "stripe_price_per_request", PRICE_ID, raising=False)
-    monkeypatch.setattr(settings, "env", "dev", raising=False)
+    for target in (settings, device_mod.settings):
+        monkeypatch.setattr(target, "stripe_secret_key", "sk_test_dummy", raising=False)
+        monkeypatch.setattr(target, "stripe_webhook_secret", "whsec_dummy", raising=False)
+        monkeypatch.setattr(target, "stripe_price_per_request", PRICE_ID, raising=False)
+        monkeypatch.setattr(target, "env", "dev", raising=False)
     yield settings
 
 

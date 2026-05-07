@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import logging
 import os
+from pathlib import Path
 from typing import Annotated, Any
 
 from pydantic import Field
@@ -40,22 +41,32 @@ _ENABLED = os.environ.get("AUTONOMATH_EVIDENCE_PACKET_ENABLED", "1") == "1"
 # is cheap (no DB open). Tests use ``_reset_composer`` after monkeypatching
 # the DB paths.
 _composer: EvidencePacketComposer | None = None
+_composer_paths: tuple[str, str] | None = None
+
+
+def _current_composer_paths() -> tuple[str, str]:
+    jpintel_db = Path(os.environ.get("JPINTEL_DB_PATH") or settings.db_path)
+    autonomath_db = Path(os.environ.get("AUTONOMATH_DB_PATH") or settings.autonomath_db_path)
+    return (str(jpintel_db), str(autonomath_db))
 
 
 def _get_composer() -> EvidencePacketComposer | None:
-    global _composer
-    if _composer is None:
+    global _composer, _composer_paths
+    paths = _current_composer_paths()
+    if _composer is None or _composer_paths != paths:
+        jpintel_db, autonomath_db = (Path(p) for p in paths)
         try:
             _composer = EvidencePacketComposer(
-                jpintel_db=settings.db_path,
-                autonomath_db=settings.autonomath_db_path,
+                jpintel_db=jpintel_db,
+                autonomath_db=autonomath_db,
             )
+            _composer_paths = paths
         except FileNotFoundError as exc:
             logger.warning(
                 "evidence_packet composer init failed: %s (jpintel=%s, autonomath=%s)",
                 exc,
-                settings.db_path,
-                settings.autonomath_db_path,
+                jpintel_db,
+                autonomath_db,
             )
             return None
     return _composer
@@ -63,8 +74,9 @@ def _get_composer() -> EvidencePacketComposer | None:
 
 def _reset_composer() -> None:
     """Drop the cached composer. Tests call this after monkeypatching paths."""
-    global _composer
+    global _composer, _composer_paths
     _composer = None
+    _composer_paths = None
 
 
 def _impl_get_evidence_packet(

@@ -435,7 +435,11 @@ def fixture_db(tmp_path_factory: pytest.TempPathFactory) -> Path:
 
 
 @pytest.fixture(autouse=True)
-def _override_autonomath_path(fixture_db: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
+def _override_autonomath_path(
+    fixture_db: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    _reset_anon_rate_limit: None,
+) -> Iterator[None]:
     """Point both the REST handler and the MCP tool's connection helper
     at the fixture autonomath.db.
 
@@ -445,6 +449,9 @@ def _override_autonomath_path(fixture_db: Path, monkeypatch: pytest.MonkeyPatch)
     thread-local connection — we must reset both.
     """
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(fixture_db))
+    from jpintel_mcp.config import settings
+
+    monkeypatch.setattr(settings, "autonomath_db_path", fixture_db)
 
     # Reset the MCP per-thread cached connection (different DB this
     # session). We close the prior conn so the next call re-opens against

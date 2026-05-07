@@ -470,19 +470,19 @@ _DISCLAIMER_STANDARD: dict[str, str] = {
         "確定判断は資格を有する行政書士・中小企業診断士に必ずご相談ください。"
     ),
     "search_loans_am": (
-        "本 response は am_loan_product の 3 軸 (担保 / 個人保証人 / 第三者保証人) "
+        "本 response は am_loan_product の 3 軸 (担保 / 代表者関与 / 第三者関与) "
         "filtering 検索結果で、貸金業法 §3 に基づく信用情報・与信判断・利率交渉・"
         "個別融資斡旋ではありません。limit_yen / interest_rate_* は公表時点の "
         "公庫・自治体・商工中金 一次資料 から抽出した値で、実際の貸付条件は "
-        "申込時点で個別審査されます。融資判断は資格を有する金融機関・税理士に "
+        "申込時点で個別審査されます。融資判断・税務判断 (税理士法 §52) は資格を有する金融機関・税理士に "
         "必ずご相談ください。"
     ),
     "search_mutual_plans_am": (
         "本 response は am_insurance_mutual の 共済 / 年金 / 労災 plan index "
         "検索結果で、保険業法 §3 に基づく保険勧誘・保険募集・個別契約助言では "
         "ありません。premium_min/max_yen / 給付内容 は公表時点の制度公表値で、"
-        "実際の加入条件は提供主体の規約に従います。共済加入・年金設計の確定判断は "
-        "資格を有する税理士・社労士・FP に必ずご相談ください。"
+        "実際の加入条件は提供主体の規約に従います。共済加入・年金設計・労務判断 "
+        "(税理士法 §52 / 社労士法) の確定判断は資格を有する税理士・社労士・FP に必ずご相談ください。"
     ),
     "check_enforcement_am": (
         "本 response は am_enforcement_detail (1,185 行 corpus) の 法人番号 / "
@@ -491,6 +491,24 @@ _DISCLAIMER_STANDARD: dict[str, str] = {
         "ありません。Coverage は 補助金 排除期間 中心で、absence of records は "
         "clean record を担保しません。確定判断は資格を有する弁護士・社労士・"
         "信用調査会社に必ずご相談ください。"
+    ),
+    "intel.citation_pack": (
+        "本 response は公開制度情報・引用元 URL・取得時点メタデータの citation pack で、"
+        "申請書面作成 (行政書士法 §1) ・税務助言 (税理士法 §52) ・法律判断 "
+        "(弁護士法 §72) ・監査意見の代替ではありません。引用文脈は一次資料で確認し、"
+        "確定判断は資格を有する士業に必ずご相談ください。"
+    ),
+    "intel.risk_score": (
+        "本 response は公開法人情報・採択履歴・行政処分等の機械的 aggregation による "
+        "risk score で、信用調査・与信判断・反社チェック (弁護士法 §72) ・労務 DD "
+        "(社労士法) ・税務助言 (税理士法 §52) の代替ではありません。"
+        "absence of records は安全性を担保せず、確定判断は資格を有する士業に必ずご相談ください。"
+    ),
+    "intel_risk_score": (
+        "本 response は公開法人情報・採択履歴・行政処分等の機械的 aggregation による "
+        "risk score で、信用調査・与信判断・反社チェック (弁護士法 §72) ・労務 DD "
+        "(社労士法) ・税務助言 (税理士法 §52) の代替ではありません。"
+        "absence of records は安全性を担保せず、確定判断は資格を有する士業に必ずご相談ください。"
     ),
 }
 
@@ -508,7 +526,7 @@ _DISCLAIMER_MINIMAL: dict[str, str] = {
     ),
     "rule_engine_check": (
         "公開コーパス検索照合のみ。heuristic rule を含む。"
-        "業法 4 法 (弁護士・税理士・行政書士・社労士) の判断は対象外。"
+        "弁護士法 §72 / 税理士法 §52 / 行政書士法 §1 / 社労士法の判断は対象外。"
     ),
     "predict_subsidy_outcome": (
         "統計的 score のみ。採択を担保せず、heuristic 含む。"
@@ -518,8 +536,12 @@ _DISCLAIMER_MINIMAL: dict[str, str] = {
         "公開処分ベース検索 score。与信・反社 (弁護士法 §72) ・労務 DD (社労士法) "
         "の代替不可。一次資料確認必須。"
     ),
-    "intent_of": ("intent 分類のみ。業法 4 法 (弁護士・税理士・行政書士・社労士) の判断は対象外。"),
-    "reason_answer": ("決定論 pipeline 検索出力のみ。業法 4 法の判断は対象外、確定判断は士業へ。"),
+    "intent_of": (
+        "intent 分類のみ。弁護士法 §72 / 税理士法 §52 / 行政書士法 §1 / 社労士法の判断は対象外。"
+    ),
+    "reason_answer": (
+        "決定論 pipeline 検索出力のみ。弁護士法 §72 / 税理士法 §52 / 行政書士法 §1 / 社労士法の判断は対象外。"
+    ),
     "search_tax_incentives": (
         "国税庁・財務省 由来の税制措置検索のみ。税務助言ではない (税理士法 §52)。"
         "rate/sunset 改正可能。個別判断は税理士へ。"
@@ -562,10 +584,12 @@ _DISCLAIMER_MINIMAL: dict[str, str] = {
         "監査調書 (公認会計士法 §47条の2) の代替不可。一次資料確認必須。"
     ),
     "get_houjin_360_am": (
-        "公開法人情報の機械的 join のみ。与信・反社・税務/法律判断の代替不可。一次資料確認必須。"
+        "公開法人情報の機械的 join のみ。与信・反社 (弁護士法 §72) ・税務判断 "
+        "(税理士法 §52) の代替不可。一次資料確認必須。"
     ),
     "search_invoice_by_houjin_partial": (
-        "国税庁公表データの検索のみ。仕入税額控除の確定判断・税務助言ではない。国税庁原典確認必須。"
+        "国税庁公表データの検索のみ。仕入税額控除の確定判断・税務助言 "
+        "(税理士法 §52) ではない。国税庁原典確認必須。"
     ),
     # --- Wave 21 composition tools ---------------------------------------
     "apply_eligibility_chain_am": (
@@ -621,6 +645,18 @@ _DISCLAIMER_MINIMAL: dict[str, str] = {
     "check_enforcement_am": (
         "行政処分 corpus lookup のみ。信用調査・反社・与信 (弁護士法 §72) の "
         "代替不可。absence of records は clean を担保しない。"
+    ),
+    "intel.citation_pack": (
+        "citation pack 検索のみ。申請書面作成 (行政書士法 §1) ・税務助言 "
+        "(税理士法 §52) ・法律判断 (弁護士法 §72) の代替不可。一次資料確認必須。"
+    ),
+    "intel.risk_score": (
+        "公開データ aggregation score のみ。与信・反社 (弁護士法 §72) ・労務 DD "
+        "(社労士法) ・税務助言 (税理士法 §52) の代替不可。"
+    ),
+    "intel_risk_score": (
+        "公開データ aggregation score のみ。与信・反社 (弁護士法 §72) ・労務 DD "
+        "(社労士法) ・税務助言 (税理士法 §52) の代替不可。"
     ),
 }
 

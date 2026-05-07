@@ -377,6 +377,9 @@ def test_ics_caps_at_500_events(
     id_map = [("UNI-test-s-1", "program:test:s1")]
     _build_autonomath_fixture(am_path, rounds=rounds, id_map=id_map)
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(am_path))
+    from jpintel_mcp.config import settings
+
+    monkeypatch.setattr(settings, "autonomath_db_path", am_path)
     for mod in list(sys.modules):
         if mod.startswith("jpintel_mcp.mcp.autonomath_tools.db"):
             del sys.modules[mod]

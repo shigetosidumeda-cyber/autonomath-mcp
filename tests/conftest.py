@@ -1,3 +1,4 @@
+import contextlib
 import os
 import sys
 import tempfile
@@ -74,6 +75,7 @@ def _restore_autonomath_paths() -> None:
         from jpintel_mcp.config import settings
 
         settings.autonomath_db_path = Path(_AUTONOMATH_DB_PATH)
+        _sync_imported_settings_singleton(settings)
     except Exception:
         pass
     module = sys.modules.get("jpintel_mcp.mcp.autonomath_tools.db")
@@ -86,21 +88,145 @@ def _restore_autonomath_paths() -> None:
 
 
 def _reset_autonomath_state() -> None:
-    for module_name, func_name in (
-        ("jpintel_mcp.mcp.autonomath_tools.db", "close_all"),
-        ("jpintel_mcp.api.evidence", "reset_composer"),
-        ("jpintel_mcp.services.evidence_packet", "_reset_cache_for_tests"),
-        ("jpintel_mcp.api.funding_stack", "reset_checker"),
-        ("jpintel_mcp.mcp.autonomath_tools.funding_stack_tools", "_reset_checker"),
-    ):
+    """Drop every known process-local cache surface so tests don't bleed.
+
+    R8 deep audit (2026-05-07) profiled ~85 collection-order failures whose
+    in-isolation runs PASS. Root cause was distributed: each surface kept its
+    own dict/lru_cache/lock-guarded bucket, and the prior reset list only hit
+    5 of them. Pollution chains looked like:
+
+      test_X monkeypatches settings → test_Y inherits stale lru_cache →
+      _load_*_cached returns wrong path → row count drift → assertion fail.
+
+    The list below is the full, audited set. Each entry is best-effort:
+    a missing module or a not-yet-imported reset helper is silently skipped
+    so the fixture stays cheap. Adding a new in-memory cache to the codebase?
+    Append the (module, callable) pair here and pollution stays bounded.
+
+    Tuple shape:
+        (module_name, attr_name, kind)
+    where kind ∈ {"call" — invoke as ()-arity reset, "cache_clear" — call
+    .cache_clear() on the attr (lru_cache surfaces)}.
+    """
+    targets: tuple[tuple[str, str, str], ...] = (
+        # Autonomath-side caches (already covered pre-hardening).
+        ("jpintel_mcp.mcp.autonomath_tools.db", "close_all", "call"),
+        ("jpintel_mcp.api.evidence", "reset_composer", "call"),
+        ("jpintel_mcp.services.evidence_packet", "_reset_cache_for_tests", "call"),
+        ("jpintel_mcp.api.funding_stack", "reset_checker", "call"),
+        ("jpintel_mcp.mcp.autonomath_tools.funding_stack_tools", "_reset_checker", "call"),
+        # Snapshot helper (DEEP-22 / Wave 22 — corpus_snapshot_id must
+        # re-derive after a test mutates the underlying corpus).
+        ("jpintel_mcp.mcp.autonomath_tools.snapshot_helper", "_reset_cache_for_tests", "call"),
+        ("jpintel_mcp.api._corpus_snapshot", "_reset_cache_for_tests", "call"),
+        ("jpintel_mcp.api._audit_seal", "_reset_corpus_snapshot_cache_for_tests", "call"),
+        # Wave 24 tool resolver — caches importlib.import_module() results,
+        # so a test that monkeypatches a wave24 module before run #2 silently
+        # re-runs the un-patched callable from the cache.
+        ("jpintel_mcp.api.wave24_endpoints", "_reset_wave24_tool_cache", "call"),
+        # Confidence / stats / cost / dashboard / contribute caches (each
+        # holds its own dict + Lock; un-cleared bleed shows up as stale
+        # row counts, stale Stripe billing previews, or stale rate-limit
+        # buckets refusing legit retries).
+        ("jpintel_mcp.api.confidence", "_reset_confidence_cache", "call"),
+        ("jpintel_mcp.api.stats", "_reset_stats_cache", "call"),
+        ("jpintel_mcp.api.cost", "_reset_preview_rate_state", "call"),
+        ("jpintel_mcp.api.dashboard", "_reset_billing_cache_state", "call"),
+        ("jpintel_mcp.api.contribute", "_reset_rate_limit_store", "call"),
+        ("jpintel_mcp.api.subscribers", "_reset_rate_limit_state", "call"),
+        # me.py session + billing-portal rate-limit deques.
+        ("jpintel_mcp.api.me", "_reset_session_rate_limit_state", "call"),
+        ("jpintel_mcp.api.me", "_reset_billing_portal_rate_limit_state", "call"),
+        # Middleware caches not already in _reset_anon_rate_limit (the
+        # autouse fixture below covers rate_limit + per_ip_endpoint; here
+        # we add cap_cache + kill_switch which weren't in the original list).
+        ("jpintel_mcp.api.middleware.customer_cap", "_reset_cap_cache_state", "call"),
+        ("jpintel_mcp.api.middleware.kill_switch", "_reset_kill_switch_state", "call"),
+        # business_law_detector — module exposes reload_catalog() which
+        # cache_clears the two lru_cache loaders.
+        ("jpintel_mcp.api._business_law_detector", "reload_catalog", "call"),
+        # billing.stripe_usage — _get_subscription_item_id is lru_cache(4096),
+        # exposed via _clear_subscription_item_cache(). A monkeypatched stripe
+        # SDK in test_credit_pack / test_stripe_* would otherwise stick.
+        ("jpintel_mcp.billing.stripe_usage", "_clear_subscription_item_cache", "call"),
+        # R8 round 2 — additional cache surfaces missing from the round-1
+        # list. `api/meta.py:_reset_meta_cache` is the meta endpoint
+        # surface (search + freshness reads) and `api/programs.py:_clear_program_cache`
+        # is the program-detail dict cache. Both bleed across tests when
+        # not reset (search returns stale rowcounts in test_email order).
+        ("jpintel_mcp.api.meta", "_reset_meta_cache", "call"),
+        ("jpintel_mcp.api.programs", "_clear_program_cache", "call"),
+    )
+
+    for module_name, attr_name, kind in targets:
         module = sys.modules.get(module_name)
         if module is None:
             continue
         try:
-            reset = getattr(module, func_name)
-            reset()
+            target = getattr(module, attr_name, None)
+            if target is None:
+                continue
+            if kind == "call":
+                target()
+            elif kind == "cache_clear":
+                clear = getattr(target, "cache_clear", None)
+                if clear is not None:
+                    clear()
         except Exception:
+            # Reset hooks are best-effort. A failure here MUST NOT mask
+            # the test under inspection — we'd rather a downstream test
+            # see slightly-stale state than turn the whole suite red.
             pass
+
+    # Drop any direct lru_cache surfaces that don't expose a public reset
+    # helper. Only modules that have already been imported are touched —
+    # importing them here would change boot order and break tests that
+    # rely on lazy import side effects (e.g. _no_llm_in_production guard).
+    cache_clear_targets: tuple[tuple[str, str], ...] = (
+        ("jpintel_mcp.api.meta_freshness", "_load_registry_cached"),
+        ("jpintel_mcp.mcp.autonomath_tools.static_resources", "_load_json"),
+        ("jpintel_mcp.mcp.autonomath_tools.tools", "_enum_values_cached"),
+        ("jpintel_mcp.db.id_translator", "program_unified_to_canonical"),
+        ("jpintel_mcp.db.id_translator", "program_canonical_to_unified"),
+    )
+    for module_name, attr_name in cache_clear_targets:
+        module = sys.modules.get(module_name)
+        if module is None:
+            continue
+        attr = getattr(module, attr_name, None)
+        if attr is None:
+            continue
+        clear = getattr(attr, "cache_clear", None)
+        if clear is None:
+            continue
+        with contextlib.suppress(Exception):
+            clear()
+
+
+def _sync_imported_settings_singleton(current_settings) -> None:
+    """Re-bind modules that imported ``settings`` before config reloads.
+
+    Some boot-gate tests intentionally reload ``jpintel_mcp.config``. After
+    that, tests that patch ``jpintel_mcp.config.settings`` can miss modules
+    that already did ``from jpintel_mcp.config import settings``. Keep all
+    imported app modules on the canonical singleton at the start of each test.
+    """
+    current_log_usage = None
+    deps_module = sys.modules.get("jpintel_mcp.api.deps")
+    if deps_module is not None:
+        current_log_usage = getattr(deps_module, "log_usage", None)
+    for module_name, module in tuple(sys.modules.items()):
+        if not module_name.startswith("jpintel_mcp."):
+            continue
+        with contextlib.suppress(Exception):
+            if hasattr(module, "settings"):
+                module.settings = current_settings
+            if (
+                current_log_usage is not None
+                and module_name != "jpintel_mcp.api.deps"
+                and hasattr(module, "log_usage")
+            ):
+                module.log_usage = current_log_usage
 
 
 @pytest.fixture(scope="session")
@@ -109,7 +235,7 @@ def tmp_db_path() -> Path:
 
 
 @pytest.fixture(scope="session")
-def seeded_db(tmp_db_path: Path) -> Path:
+def jpintel_seeded_db(tmp_db_path: Path) -> Path:
     from jpintel_mcp.db.session import init_db
 
     init_db(tmp_db_path)
@@ -281,8 +407,13 @@ def seeded_db(tmp_db_path: Path) -> Path:
     return tmp_db_path
 
 
+@pytest.fixture(scope="session")
+def seeded_db(jpintel_seeded_db: Path) -> Path:
+    return jpintel_seeded_db
+
+
 @pytest.fixture(autouse=True)
-def _reset_anon_rate_limit(seeded_db: Path):
+def _reset_anon_rate_limit(jpintel_seeded_db: Path):
     """Zero the anon_rate_limit table between tests.
 
     The default anon quota is 3/day. Without this, the /v1 tests that
@@ -303,15 +434,16 @@ def _reset_anon_rate_limit(seeded_db: Path):
     # Some modules temporarily point settings.db_path / JPINTEL_DB_PATH at a
     # specialized fixture DB. Reset both before every test so API auth,
     # funnel, feedback, and anon quota checks all hit the seeded integration DB.
-    os.environ["JPINTEL_DB_PATH"] = str(seeded_db)
+    os.environ["JPINTEL_DB_PATH"] = str(jpintel_seeded_db)
     try:
         from jpintel_mcp.config import settings
 
-        settings.db_path = seeded_db
+        settings.db_path = jpintel_seeded_db
+        _sync_imported_settings_singleton(settings)
     except ImportError:
         pass
 
-    c = sqlite3.connect(seeded_db)
+    c = sqlite3.connect(jpintel_seeded_db)
     try:
         c.execute("DELETE FROM anon_rate_limit")
         c.commit()
@@ -357,7 +489,7 @@ def _reset_anon_rate_limit(seeded_db: Path):
 
 
 @pytest.fixture(autouse=True)
-def _sync_bg_task_queue(seeded_db: Path, monkeypatch):
+def _sync_bg_task_queue(jpintel_seeded_db: Path, monkeypatch):
     """Run bg_task_queue handlers inline in tests, and unify all
     `_get_email_client` / `get_client` resolution paths so a test patch
     on any one of them is observed by every handler.
@@ -473,14 +605,14 @@ def _sync_bg_task_queue(seeded_db: Path, monkeypatch):
 
 
 @pytest.fixture()
-def client(seeded_db: Path) -> TestClient:
+def client(jpintel_seeded_db: Path) -> TestClient:
     from jpintel_mcp.api.main import create_app
 
     return TestClient(create_app())
 
 
 @pytest.fixture()
-def paid_key(seeded_db: Path) -> str:
+def paid_key(jpintel_seeded_db: Path) -> str:
     """A metered ("paid") API key. Use when exercising fields=full / batch /
     metered paths.
 
@@ -489,7 +621,7 @@ def paid_key(seeded_db: Path) -> str:
     """
     from jpintel_mcp.billing.keys import issue_key
 
-    c = sqlite3.connect(seeded_db)
+    c = sqlite3.connect(jpintel_seeded_db)
     c.row_factory = sqlite3.Row
     import uuid
 

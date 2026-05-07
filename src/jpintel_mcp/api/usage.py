@@ -40,6 +40,12 @@ from jpintel_mcp.api.anon_limit import (
     hash_ip,
 )
 from jpintel_mcp.api.deps import ApiContextDep, DbDep  # noqa: TC001
+from jpintel_mcp.api.token_savings import (
+    estimate_tokens as _estimate_tokens,
+)
+from jpintel_mcp.api.token_savings import (
+    estimate_tokens_saved as _estimate_tokens_saved,
+)
 from jpintel_mcp.config import settings
 
 router = APIRouter(tags=["usage"])
@@ -68,6 +74,8 @@ class UsageStatus(BaseModel):
     reset_timezone: str  # "JST" for anonymous, "UTC" for authed
     upgrade_url: str | None = None
     note: str | None = None
+    tokens_saved_estimated_total: int = 0
+    tokens_saved_estimated_per_call: int = 0
 
 
 def _utc_next_month_iso(now: datetime | None = None) -> str:
@@ -105,6 +113,29 @@ def _utc_month_start_iso() -> str:
     return now.replace(day=1, hour=0, minute=0, second=0, microsecond=0).isoformat()
 
 
+def _tokens_saved_rollup(
+    conn: sqlite3.Connection,
+    key_hash: str,
+    since_iso: str,
+) -> tuple[int, int]:
+    try:
+        total, calls = conn.execute(
+            "SELECT COALESCE(SUM(tokens_saved_estimated), 0), "
+            "       COUNT(tokens_saved_estimated) "
+            "  FROM usage_events "
+            " WHERE key_hash = ? AND ts >= ? "
+            "   AND status < 400 "
+            "   AND tokens_saved_estimated IS NOT NULL",
+            (key_hash, since_iso),
+        ).fetchone()
+    except sqlite3.OperationalError:
+        return 0, 0
+    total_int = max(0, int(total or 0))
+    calls_int = max(0, int(calls or 0))
+    per_call = int(total_int / calls_int) if calls_int else 0
+    return total_int, per_call
+
+
 def _anonymous_status(request: Request, conn: sqlite3.Connection) -> dict[str, Any]:
     """READ-ONLY anon quota lookup — never increments the counter.
 
@@ -140,6 +171,8 @@ def _anonymous_status(request: Request, conn: sqlite3.Connection) -> dict[str, A
         "reset_at": _jst_next_day_iso(),
         "reset_timezone": "JST",
         "upgrade_url": UPGRADE_URL_BASE,
+        "tokens_saved_estimated_total": 0,
+        "tokens_saved_estimated_per_call": 0,
         "note": (
             f"匿名 tier は IP+fingerprint 単位で {limit} req/日。"
             "JST 翌日 00:00 にリセット。X-API-Key で paid (¥3/req) に切替可能。"
@@ -149,12 +182,14 @@ def _anonymous_status(request: Request, conn: sqlite3.Connection) -> dict[str, A
 
 def _paid_status(conn: sqlite3.Connection, key_hash: str) -> dict[str, Any]:
     """Metered ("paid") tier — month-to-date billed units, no upper cap."""
+    month_start = _utc_month_start_iso()
     (used,) = conn.execute(
         "SELECT COALESCE(SUM(COALESCE(quantity, 1)), 0) FROM usage_events "
         "WHERE key_hash = ? AND ts >= ? "
         "AND metered = 1 AND status < 400",
-        (key_hash, _utc_month_start_iso()),
+        (key_hash, month_start),
     ).fetchone()
+    tokens_total, tokens_per_call = _tokens_saved_rollup(conn, key_hash, month_start)
     return {
         "tier": "paid",
         "limit": None,
@@ -163,6 +198,8 @@ def _paid_status(conn: sqlite3.Connection, key_hash: str) -> dict[str, Any]:
         "reset_at": _utc_next_month_iso(),
         "reset_timezone": "UTC",
         "upgrade_url": None,
+        "tokens_saved_estimated_total": tokens_total,
+        "tokens_saved_estimated_per_call": tokens_per_call,
         "note": (
             "Paid tier は metered ¥3/req 税別 (税込 ¥3.30)。"
             "月次集計は UTC 月初 00:00 リセット。"
@@ -181,6 +218,7 @@ def _free_authed_status(conn: sqlite3.Connection, key_hash: str) -> dict[str, An
         (key_hash, bucket),
     ).fetchone()
     used_int = int(used)
+    tokens_total, tokens_per_call = _tokens_saved_rollup(conn, key_hash, bucket)
     return {
         "tier": "free",
         "limit": daily_limit,
@@ -189,6 +227,8 @@ def _free_authed_status(conn: sqlite3.Connection, key_hash: str) -> dict[str, An
         "reset_at": _utc_next_midnight_iso(),
         "reset_timezone": "UTC",
         "upgrade_url": UPGRADE_URL_BASE,
+        "tokens_saved_estimated_total": tokens_total,
+        "tokens_saved_estimated_per_call": tokens_per_call,
         "note": (
             f"Free (dunning) tier — daily cap {daily_limit} req。"
             "UTC 翌日 00:00 リセット。請求情報を更新すると paid tier に復帰。"
@@ -217,4 +257,10 @@ def get_usage(
     return UsageStatus(**_free_authed_status(conn, ctx.key_hash))
 
 
-__all__ = ["get_usage", "router", "UsageStatus"]
+__all__ = [
+    "UsageStatus",
+    "_estimate_tokens",
+    "_estimate_tokens_saved",
+    "get_usage",
+    "router",
+]

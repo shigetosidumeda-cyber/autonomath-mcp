@@ -6,7 +6,6 @@ import pytest
 from fastapi import BackgroundTasks, HTTPException
 
 from jpintel_mcp.api import deps
-from jpintel_mcp.config import settings
 
 
 def _conn_with_usage(rows: list[tuple[str, int | None]]) -> sqlite3.Connection:
@@ -58,7 +57,7 @@ def _usage_units(conn: sqlite3.Connection, key_hash: str) -> int:
 
 
 def test_free_tier_daily_quota_counts_billable_units(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(settings, "rate_limit_free_per_day", 3)
+    monkeypatch.setattr(deps.settings, "rate_limit_free_per_day", 3)
     conn = _conn_with_usage([("kh_free", 2), ("kh_free", 1)])
     ctx = deps.ApiContext(key_hash="kh_free", tier="free", customer_id="cus_free")
 
@@ -71,7 +70,7 @@ def test_free_tier_daily_quota_counts_billable_units(monkeypatch: pytest.MonkeyP
 def test_free_tier_daily_quota_treats_null_quantity_as_one(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr(settings, "rate_limit_free_per_day", 2)
+    monkeypatch.setattr(deps.settings, "rate_limit_free_per_day", 2)
     conn = _conn_with_usage([("kh_free", None), ("kh_free", 1)])
     ctx = deps.ApiContext(key_hash="kh_free", tier="free", customer_id="cus_free")
 
@@ -84,7 +83,7 @@ def test_free_tier_daily_quota_treats_null_quantity_as_one(
 def test_free_tier_daily_quota_allows_when_units_below_limit(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr(settings, "rate_limit_free_per_day", 3)
+    monkeypatch.setattr(deps.settings, "rate_limit_free_per_day", 3)
     conn = _conn_with_usage([("kh_free", 2)])
     ctx = deps.ApiContext(key_hash="kh_free", tier="free", customer_id="cus_free")
 
@@ -94,7 +93,7 @@ def test_free_tier_daily_quota_allows_when_units_below_limit(
 def test_free_tier_final_quota_counts_current_multi_unit_request(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr(settings, "rate_limit_free_per_day", 3)
+    monkeypatch.setattr(deps.settings, "rate_limit_free_per_day", 3)
     conn = _conn_with_usage([("kh_free", 2)])
     ctx = deps.ApiContext(key_hash="kh_free", tier="free", customer_id="cus_free")
 
@@ -115,7 +114,7 @@ def test_free_tier_final_quota_counts_current_multi_unit_request(
 def test_free_tier_final_quota_inlines_allowed_multi_unit_request(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr(settings, "rate_limit_free_per_day", 3)
+    monkeypatch.setattr(deps.settings, "rate_limit_free_per_day", 3)
     conn = _conn_with_usage([("kh_free", 1)])
     ctx = deps.ApiContext(key_hash="kh_free", tier="free", customer_id="cus_free")
 
@@ -133,7 +132,7 @@ def test_free_tier_final_quota_inlines_allowed_multi_unit_request(
 def test_free_tier_final_quota_counts_parent_child_tree(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr(settings, "rate_limit_free_per_day", 3)
+    monkeypatch.setattr(deps.settings, "rate_limit_free_per_day", 3)
     conn = _conn_with_usage([("kh_parent", 2)])
     conn.execute(
         "INSERT INTO api_keys(id, key_hash, parent_key_id) VALUES (?, ?, ?)",

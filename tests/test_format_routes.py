@@ -59,7 +59,7 @@ def fmt_key(seeded_db: Path) -> str:
 
 
 @pytest.fixture(autouse=True)
-def _seed_deadline_and_saved_search(seeded_db: Path):
+def _seed_deadline_and_saved_search(seeded_db: Path, monkeypatch: pytest.MonkeyPatch):
     """Seed a deadline-bearing program + saved_searches table.
 
     The default conftest fixture seeds 4 programs but none has a
@@ -89,15 +89,23 @@ def _seed_deadline_and_saved_search(seeded_db: Path):
         # api/programs.py) — we seed a future end_date so the ICS
         # renderer sees a valid VEVENT-bearing row.
         c.execute(
-            "UPDATE programs SET application_window_json = ? WHERE unified_id = ?",
+            "UPDATE programs "
+            "SET application_window_json = ?, source_url = ?, source_fetched_at = ? "
+            "WHERE unified_id = ?",
             (
                 json.dumps({"end_date": "2026-12-31"}, ensure_ascii=False),
+                "https://www.meti.go.jp/policy/test-program.html",
+                "2026-05-07T00:00:00+00:00",
                 "UNI-test-s-1",
             ),
         )
         c.commit()
     finally:
         c.close()
+    monkeypatch.setattr(
+        "jpintel_mcp.api._universal_envelope.license_for_url",
+        lambda url: "gov_standard_v2.0" if url else "unknown",
+    )
     yield
 
 

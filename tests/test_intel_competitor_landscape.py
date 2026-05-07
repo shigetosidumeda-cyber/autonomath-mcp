@@ -4,7 +4,7 @@ import sqlite3
 from typing import TYPE_CHECKING
 
 import pytest
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.testclient import TestClient
 
 from jpintel_mcp.api.deps import get_db, hash_api_key
@@ -51,14 +51,24 @@ def test_competitor_landscape_paid_final_cap_failure_returns_503_without_usage_e
     paid_key: str,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    def _reject_final_cap(*_args: object, **_kwargs: object) -> tuple[bool, bool]:
-        return False, False
+    import jpintel_mcp.api.intel_competitor_landscape as landscape_mod
 
-    import jpintel_mcp.api.deps as deps
+    def _reject_log_usage(*_args: object, **kwargs: object) -> None:
+        assert kwargs.get("strict_metering") is True
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "code": "billing_cap_final_check_failed",
+                "message": (
+                    "This paid response was not delivered because the final "
+                    "billing-cap check rejected the metered charge."
+                ),
+            },
+        )
 
     endpoint = "intel.competitor_landscape"
     key_hash = hash_api_key(paid_key)
-    monkeypatch.setattr(deps, "_metered_cap_final_check", _reject_final_cap)
+    monkeypatch.setattr(landscape_mod, "log_usage", _reject_log_usage)
 
     conn = sqlite3.connect(seeded_db)
     try:

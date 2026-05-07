@@ -375,7 +375,11 @@ def fixture_db(tmp_path_factory: pytest.TempPathFactory) -> Path:
 
 
 @pytest.fixture(autouse=True)
-def _override_paths(fixture_db: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
+def _override_paths(
+    fixture_db: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    _reset_anon_rate_limit: None,
+) -> Iterator[None]:
     """Point both REST + MCP composers at the fixture autonomath.db, and
     reset their module-level singletons + cache.
     """

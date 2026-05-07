@@ -981,6 +981,44 @@ def _row_to_program_detail(row: sqlite3.Row, fields: FieldsLevel) -> dict[str, A
     return _trim_to_fields(base, fields)
 
 
+def _attach_export_lineage(
+    conn: sqlite3.Connection,
+    response_body: dict[str, Any],
+) -> dict[str, Any]:
+    """Add source/license fields needed by non-JSON export renderers.
+
+    Normal search rows intentionally stay lean. CSV/XLSX/DOCX-style exports
+    leave our perimeter, so they must carry redistributable license metadata
+    before the shared license gate runs.
+    """
+    from jpintel_mcp.api import _universal_envelope as universal_envelope
+
+    export_body = dict(response_body)
+    export_rows: list[dict[str, Any]] = []
+    for raw in list(response_body.get("results") or []):
+        row = dict(raw) if isinstance(raw, dict) else {}
+        uid = row.get("unified_id")
+        if isinstance(uid, str) and uid:
+            db_row = conn.execute("SELECT * FROM programs WHERE unified_id = ?", (uid,)).fetchone()
+            if db_row is not None:
+                detail = _row_to_program_detail(db_row, "full")
+                merged = dict(detail)
+                for key, value in row.items():
+                    if (
+                        key in {"source_url", "source_fetched_at", "source_checksum", "license"}
+                        and (value is None or value == "")
+                    ):
+                        continue
+                    merged[key] = value
+                row = merged
+        source_url = row.get("source_url")
+        if not row.get("license") or row.get("license") == "unknown":
+            row["license"] = universal_envelope.license_for_url(source_url)
+        export_rows.append(row)
+    export_body["results"] = export_rows
+    return export_body
+
+
 @router.get(
     "/search",
     summary="Search 補助金 / 助成金 / 融資 / 税制 / 認定 programs",
@@ -1234,6 +1272,7 @@ def search_programs(
             },
             latency_ms=_latency_ms,
             result_count=total,
+            response_body=response_body,
             strict_metering=True,
         )
 
@@ -1282,7 +1321,8 @@ def search_programs(
             "corpus_snapshot_id": snapshot_id,
             "corpus_checksum": checksum,
         }
-        resp = render(response_body, format, meta_out)
+        export_body = _attach_export_lineage(conn, response_body)
+        resp = render(export_body, format, meta_out)
         # Mirror the snapshot pair as response headers so downstream
         # auditors can grep request logs without parsing the body.
         resp.headers["X-Corpus-Snapshot-Id"] = snapshot_id
@@ -2304,6 +2344,7 @@ def get_program(
             ctx,
             "programs.get",
             params={"unified_id": unified_id},
+            response_body=body,
             strict_metering=True,
         )
 
@@ -2324,8 +2365,11 @@ def get_program(
             "corpus_checksum": checksum,
         }
         # Wrap the single row as a list — the dispatcher accepts both
-        # list[Row] and {"results": [...]} envelopes.
-        resp = render([body], format, meta_out)
+        # list[Row] and {"results": [...]} envelopes. License lineage is
+        # attached before rendering so paid exports fail closed when the
+        # source license is unknown.
+        export_body = _attach_export_lineage(conn, {"results": [body]})
+        resp = render(export_body["results"], format, meta_out)
         resp.headers["X-Corpus-Snapshot-Id"] = snapshot_id
         resp.headers["X-Corpus-Checksum"] = checksum
         _record_success_usage()

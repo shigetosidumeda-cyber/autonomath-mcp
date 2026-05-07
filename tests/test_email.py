@@ -292,9 +292,11 @@ def _sign(body: bytes, secret: str = WEBHOOK_SECRET) -> str:
 @pytest.fixture()
 def webhook_client(client, monkeypatch):
     """Force the webhook secret on so the endpoint doesn't 503."""
+    from jpintel_mcp.api import email_webhook as email_webhook_mod
     from jpintel_mcp.config import settings as _s
 
-    monkeypatch.setattr(_s, "postmark_webhook_secret", WEBHOOK_SECRET, raising=False)
+    for target in (_s, email_webhook_mod.settings):
+        monkeypatch.setattr(target, "postmark_webhook_secret", WEBHOOK_SECRET, raising=False)
     return client
 
 

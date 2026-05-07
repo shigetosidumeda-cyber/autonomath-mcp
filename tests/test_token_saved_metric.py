@@ -118,6 +118,7 @@ def test_rollup_surfaces_seeded_row_in_usage_envelope(
 
     key_hash = hash_api_key(paid_key)
     c = sqlite3.connect(seeded_db)
+    c.row_factory = sqlite3.Row
     try:
         # Seed two metered, successful rows for the current month.
         # The rollup only counts status<400 + non-NULL tokens_saved_estimated.
@@ -148,3 +149,38 @@ def test_rollup_surfaces_seeded_row_in_usage_envelope(
     assert body["tokens_saved_estimated_total"] == 1500
     # 2 calls → mean = floor(1500 / 2) = 750.
     assert body["tokens_saved_estimated_per_call"] == 750
+
+
+def test_log_usage_persists_tokens_saved_estimate(seeded_db: Path, paid_key: str) -> None:
+    """``log_usage`` must write the metric, not only expose seeded rows."""
+    from jpintel_mcp.api.deps import ApiContext, hash_api_key, log_usage
+    from jpintel_mcp.api.usage import _estimate_tokens_saved
+
+    key_hash = hash_api_key(paid_key)
+    params = {"q": "a" * 100}
+    response_body = {"results": ["x" * 25]}
+    expected = _estimate_tokens_saved(params, response_body)
+    assert expected > 0
+
+    c = sqlite3.connect(seeded_db)
+    c.row_factory = sqlite3.Row
+    try:
+        log_usage(
+            c,
+            ApiContext(key_hash=key_hash, tier="paid", customer_id="cus_test_paid"),
+            "programs.search",
+            params=params,
+            response_body=response_body,
+        )
+        c.commit()
+        row = c.execute(
+            "SELECT tokens_saved_estimated FROM usage_events "
+            "WHERE key_hash = ? AND endpoint = ? "
+            "ORDER BY id DESC LIMIT 1",
+            (key_hash, "programs.search"),
+        ).fetchone()
+    finally:
+        c.close()
+
+    assert row is not None
+    assert row[0] == expected

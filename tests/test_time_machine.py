@@ -205,7 +205,7 @@ def tmp_autonomath_db(tmp_path_factory) -> Path:
 
 
 @pytest.fixture(autouse=True)
-def _wire_env_to_tmp_db(tmp_autonomath_db: Path):
+def _wire_env_to_tmp_db(tmp_autonomath_db: Path, _reset_anon_rate_limit: None):
     """Point AUTONOMATH_DB_PATH at the tmp DB BEFORE each test runs.
 
     Function-scoped + autouse so this overrides the conftest
@@ -219,6 +219,7 @@ def _wire_env_to_tmp_db(tmp_autonomath_db: Path):
     os.environ["AUTONOMATH_DB_PATH"] = str(tmp_autonomath_db)
     os.environ["AUTONOMATH_SNAPSHOT_ENABLED"] = "1"
     os.environ["AUTONOMATH_ENABLED"] = "1"
+    prev_settings_path = None
 
     # Override settings.autonomath_db_path on the live singleton so
     # consumers that did `from jpintel_mcp.config import settings` see
@@ -226,6 +227,7 @@ def _wire_env_to_tmp_db(tmp_autonomath_db: Path):
     try:
         from jpintel_mcp.config import settings as _live_settings
 
+        prev_settings_path = _live_settings.autonomath_db_path
         _live_settings.autonomath_db_path = tmp_autonomath_db
     except Exception:
         pass
@@ -254,6 +256,13 @@ def _wire_env_to_tmp_db(tmp_autonomath_db: Path):
         os.environ.pop("AUTONOMATH_DB_PATH", None)
     else:
         os.environ["AUTONOMATH_DB_PATH"] = prev
+    if prev_settings_path is not None:
+        try:
+            from jpintel_mcp.config import settings as _live_settings
+
+            _live_settings.autonomath_db_path = prev_settings_path
+        except Exception:
+            pass
     try:
         from jpintel_mcp.mcp.autonomath_tools import db as _autonomath_db_module
 
