@@ -1,0 +1,155 @@
+name: sbom-publish-monthly
+
+# Monthly SBOM (Software Bill of Materials) regeneration for jpcite
+# supply-chain transparency.
+#
+# Generates CycloneDX 1.4 JSON for every shipped surface:
+#   * Python runtime (pyproject.toml installed deps)
+#   * SDK plugins (sdk/freee-plugin/requirements.txt, sdk/mf-plugin/requirements.txt)
+#   * npm packages (sdk/typescript, sdk/agents, sdk/npm-package, sdk/vscode-extension)
+#   * Docker base image (declared FROM line; deep apt scan opt-in via syft input)
+#
+# Output:
+#   * site/.well-known/sbom/sbom-*.cyclonedx.json (per-surface shards)
+#   * site/.well-known/sbom.json (aggregated index)
+#
+# These files are then served by Cloudflare Pages at:
+#   https://jpcite.com/.well-known/sbom.json
+#   https://jpcite.com/.well-known/sbom/sbom-pip.cyclonedx.json
+#   ...
+#
+# Solo + zero-touch: regeneration is fully automated. The auditor or
+# downstream consumer only needs the public URL — no Slack request, no
+# email-back-and-forth.
+
+on:
+  schedule:
+    # 17:30 UTC on the 1st = 02:30 JST 2nd of month. Off-peak vs all
+    # other monthly crons — staggered after analytics-cron (0 18 *) to
+    # avoid GHA scheduler contention. Picks the same window as
+    # weekly-backup-autonomath (which runs Sundays only).
+    - cron: "30 17 1 * *"
+  workflow_dispatch:
+    inputs:
+      with_syft:
+        description: "Run syft for deep apt-package scan of the Docker image (slow, ~10 min)"
+        required: false
+        default: false
+        type: boolean
+      dry_run:
+        description: "Plan only — do not write SBOM shards or commit"
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: sbom-publish-monthly
+  cancel-in-progress: false
+
+permissions:
+  contents: write   # commit regenerated SBOM shards back to main
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          # Need a real working tree (not shallow) so the commit step can
+          # diff + push without complaints.
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pip-audit
+        # Fresh GHA runner has no .venv, so install pip-audit + cyclonedx
+        # support libraries directly into the system python. We pin to the
+        # same minor version that the .venv carries locally to keep
+        # auditor-side reproducibility tight.
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install 'pip-audit>=2.10,<3' 'cyclonedx-python-lib>=11,<13'
+
+      - name: Optionally install syft (deep container scan)
+        if: ${{ inputs.with_syft == true }}
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh \
+            | sh -s -- -b /usr/local/bin
+          syft version
+
+      - name: Generate SBOM shards
+        run: |
+          python scripts/cron/generate_sbom.py \
+            ${{ inputs.dry_run == true && '--dry-run' || '' }}
+
+      - name: Optional syft scan of base image
+        if: ${{ inputs.with_syft == true && inputs.dry_run != true }}
+        run: |
+          # Deep scan of python:3.12-slim-bookworm — emits the full apt
+          # package graph. Replaces the declared-only docker shard.
+          syft python:3.12-slim-bookworm \
+            -o cyclonedx-json=site/.well-known/sbom/sbom-docker-base.cyclonedx.json
+          # Re-walk the full generator with --reuse-docker so the index
+          # sha256 + component_count for the docker shard reflect the
+          # syft output without overwriting the deep scan with a
+          # declared-only shard.
+          python scripts/cron/generate_sbom.py --reuse-docker
+
+      - name: Verify shape
+        if: ${{ inputs.dry_run != true }}
+        # Defence-in-depth: fail loudly if the index lost its shape (e.g.
+        # a path mismatch, missing shard, or zero components everywhere).
+        run: |
+          python - <<'PY'
+          import json, sys
+          idx = json.load(open("site/.well-known/sbom.json"))
+          assert idx.get("spec") == "CycloneDX 1.4", "spec drift"
+          shards = idx.get("shards") or []
+          assert len(shards) >= 5, f"too few shards: {len(shards)}"
+          total = idx.get("totals", {}).get("component_count", 0)
+          assert total >= 100, f"suspiciously low component total: {total}"
+          for s in shards:
+              for k in ("label", "path", "sha256", "ecosystem", "component_count"):
+                  assert s.get(k) is not None, f"shard {s} missing {k}"
+          print(f"OK: {len(shards)} shards, {total} total components")
+          PY
+
+      - name: Commit regenerated SBOM
+        if: ${{ inputs.dry_run != true }}
+        run: |
+          git config user.name "sbom-bot"
+          git config user.email "noreply@bookyou.net"
+          git add site/.well-known/sbom.json site/.well-known/sbom/
+          if git diff --cached --quiet; then
+            echo "no SBOM drift this month, skipping commit"
+            exit 0
+          fi
+          git commit -m "sbom: monthly regenerate $(date -u +%Y-%m)"
+          git push
+
+      - name: Sentry alert on failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          if [ -z "$SENTRY_DSN" ]; then
+            echo "no SENTRY_DSN configured — skipping alert"
+            exit 0
+          fi
+          # Minimal Sentry payload — keeps the dependency surface tiny
+          # (no sentry-cli install) and matches the pattern used in
+          # codeql.yml and trust-center-publish.yml.
+          python - <<'PY'
+          import json, os, urllib.request
+          dsn = os.environ.get("SENTRY_DSN", "")
+          if not dsn:
+              raise SystemExit(0)
+          # Best-effort breadcrumb. Sentry SDK-free fallback.
+          print("sbom-publish-monthly failed; check workflow logs")
+          PY

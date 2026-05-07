@@ -1,0 +1,98 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.4.schema.json",
+  "bomFormat": "CycloneDX",
+  "components": [
+    {
+      "name": "@types/node",
+      "properties": [
+        {
+          "name": "scope",
+          "value": "devDependencies"
+        },
+        {
+          "name": "version_constraint",
+          "value": "^22.0.0"
+        }
+      ],
+      "purl": "pkg:npm/@types%2Fnode@22.0.0",
+      "type": "library",
+      "version": "22.0.0"
+    },
+    {
+      "name": "@types/vscode",
+      "properties": [
+        {
+          "name": "scope",
+          "value": "devDependencies"
+        },
+        {
+          "name": "version_constraint",
+          "value": "^1.85.0"
+        }
+      ],
+      "purl": "pkg:npm/@types%2Fvscode@1.85.0",
+      "type": "library",
+      "version": "1.85.0"
+    },
+    {
+      "name": "@vscode/vsce",
+      "properties": [
+        {
+          "name": "scope",
+          "value": "devDependencies"
+        },
+        {
+          "name": "version_constraint",
+          "value": "^3.0.0"
+        }
+      ],
+      "purl": "pkg:npm/@vscode%2Fvsce@3.0.0",
+      "type": "library",
+      "version": "3.0.0"
+    },
+    {
+      "name": "typescript",
+      "properties": [
+        {
+          "name": "scope",
+          "value": "devDependencies"
+        },
+        {
+          "name": "version_constraint",
+          "value": "^5.4.0"
+        }
+      ],
+      "purl": "pkg:npm/typescript@5.4.0",
+      "type": "library",
+      "version": "5.4.0"
+    }
+  ],
+  "metadata": {
+    "component": {
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "name": "jpcite",
+      "supplier": {
+        "name": "Bookyou株式会社"
+      },
+      "type": "application",
+      "version": "0.1.0"
+    },
+    "timestamp": "2026-05-07T09:27:06Z",
+    "tools": [
+      {
+        "name": "jpcite-sbom-generator",
+        "vendor": "Bookyou株式会社",
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "serialNumber": "urn:uuid:13ec9f02-c82a-4410-8f5d-3ae7a6d8adbd",
+  "specVersion": "1.4",
+  "version": 1
+}

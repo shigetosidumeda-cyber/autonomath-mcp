@@ -1,0 +1,82 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.4.schema.json",
+  "bomFormat": "CycloneDX",
+  "components": [
+    {
+      "name": "@types/node",
+      "properties": [
+        {
+          "name": "scope",
+          "value": "devDependencies"
+        },
+        {
+          "name": "version_constraint",
+          "value": "^22.0.0"
+        }
+      ],
+      "purl": "pkg:npm/@types%2Fnode@22.0.0",
+      "type": "library",
+      "version": "22.0.0"
+    },
+    {
+      "name": "typescript",
+      "properties": [
+        {
+          "name": "scope",
+          "value": "devDependencies"
+        },
+        {
+          "name": "version_constraint",
+          "value": "^5.4.0"
+        }
+      ],
+      "purl": "pkg:npm/typescript@5.4.0",
+      "type": "library",
+      "version": "5.4.0"
+    },
+    {
+      "name": "vitest",
+      "properties": [
+        {
+          "name": "scope",
+          "value": "devDependencies"
+        },
+        {
+          "name": "version_constraint",
+          "value": "^2.1.0"
+        }
+      ],
+      "purl": "pkg:npm/vitest@2.1.0",
+      "type": "library",
+      "version": "2.1.0"
+    }
+  ],
+  "metadata": {
+    "component": {
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "name": "@bookyou/jpcite",
+      "supplier": {
+        "name": "Bookyou株式会社"
+      },
+      "type": "application",
+      "version": "0.1.0"
+    },
+    "timestamp": "2026-05-07T09:27:06Z",
+    "tools": [
+      {
+        "name": "jpcite-sbom-generator",
+        "vendor": "Bookyou株式会社",
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "serialNumber": "urn:uuid:51c7ec3a-6381-4ffe-83d9-dff1cd073963",
+  "specVersion": "1.4",
+  "version": 1
+}

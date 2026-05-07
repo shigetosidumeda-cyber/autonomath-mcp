@@ -1,0 +1,80 @@
+{
+  "generated_at": "2026-05-07T09:27:06Z",
+  "license": "CC0-1.0 (this index file)",
+  "operator": "Bookyou株式会社",
+  "policy": {
+    "regeneration_cadence": "monthly (1st of month, GHA workflow)",
+    "regeneration_workflow": ".github/workflows/sbom-publish-monthly.yml",
+    "report_disclosure_url": "https://jpcite.com/.well-known/security.txt",
+    "scope_container": "Dockerfile FROM (declared); deep apt scan opt-in via syft",
+    "scope_npm": "@autonomath/sdk, @jpcite/agents, @bookyou/jpcite, vscode-extension",
+    "scope_python": "main pyproject + sdk/freee-plugin + sdk/mf-plugin",
+    "vulnerability_audit_tool": "pip-audit (PyPI advisory DB + OSV)"
+  },
+  "product": "jpcite",
+  "product_version": "0.3.4",
+  "schema": "jpcite_sbom_index_v1",
+  "shards": [
+    {
+      "component_count": 203,
+      "ecosystem": "python",
+      "label": "pip-main",
+      "path": "site/.well-known/sbom/sbom-pip.cyclonedx.json",
+      "sha256": "6a7c411ba35ab06f8eab2a6fa1796597d6944c9db3d16cf9e0677e60f69ff880"
+    },
+    {
+      "component_count": 11,
+      "ecosystem": "python",
+      "label": "sdk-freee",
+      "path": "site/.well-known/sbom/sbom-sdk-freee.cyclonedx.json",
+      "sha256": "37a15c101650dfe82513a48143a377741d3593fba372c9a741c338c14826ec38"
+    },
+    {
+      "component_count": 24,
+      "ecosystem": "python",
+      "label": "sdk-mf",
+      "path": "site/.well-known/sbom/sbom-sdk-mf.cyclonedx.json",
+      "sha256": "e4cf24dfc0a3791938cdeab7d5ed938538fa6975e1fc3bbb01cf7c75727cda6b"
+    },
+    {
+      "component_count": 2,
+      "ecosystem": "npm",
+      "label": "npm-typescript",
+      "path": "site/.well-known/sbom/sbom-npm-typescript.cyclonedx.json",
+      "sha256": "9b8d66ff89118fe63e59f6aab2e9103a6d8a3274c72f3d4fabd9c16db94f9df6"
+    },
+    {
+      "component_count": 4,
+      "ecosystem": "npm",
+      "label": "npm-agents",
+      "path": "site/.well-known/sbom/sbom-npm-agents.cyclonedx.json",
+      "sha256": "d470cff47c268a24ebcb8b687c4f1661fabc5c62f6805970ef767abad4c76ca7"
+    },
+    {
+      "component_count": 3,
+      "ecosystem": "npm",
+      "label": "npm-jpcite",
+      "path": "site/.well-known/sbom/sbom-npm-jpcite.cyclonedx.json",
+      "sha256": "33ffc33f98f1fbaf9fc365b1bd4446222c5cfdfa665b0ea20624a8126ec054d7"
+    },
+    {
+      "component_count": 4,
+      "ecosystem": "npm",
+      "label": "npm-vscode-extension",
+      "path": "site/.well-known/sbom/sbom-npm-vscode-extension.cyclonedx.json",
+      "sha256": "319430094400e3050e6cb185b1a17d07eaade4d6b3e6cee04fe7351f45cbd7ed"
+    },
+    {
+      "component_count": 1,
+      "ecosystem": "container",
+      "label": "docker-base",
+      "path": "site/.well-known/sbom/sbom-docker-base.cyclonedx.json",
+      "sha256": "355e013014a2a204d3bce15b73005dcd105b3c010430209e25d098a278120c54"
+    }
+  ],
+  "spec": "CycloneDX 1.4",
+  "totals": {
+    "component_count": 252,
+    "shard_count": 8
+  }
+}

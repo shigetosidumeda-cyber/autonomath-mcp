@@ -1,0 +1,66 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.4.schema.json",
+  "bomFormat": "CycloneDX",
+  "components": [
+    {
+      "name": "@types/node",
+      "properties": [
+        {
+          "name": "scope",
+          "value": "devDependencies"
+        },
+        {
+          "name": "version_constraint",
+          "value": "^22.0.0"
+        }
+      ],
+      "purl": "pkg:npm/@types%2Fnode@22.0.0",
+      "type": "library",
+      "version": "22.0.0"
+    },
+    {
+      "name": "typescript",
+      "properties": [
+        {
+          "name": "scope",
+          "value": "devDependencies"
+        },
+        {
+          "name": "version_constraint",
+          "value": "^5.4.0"
+        }
+      ],
+      "purl": "pkg:npm/typescript@5.4.0",
+      "type": "library",
+      "version": "5.4.0"
+    }
+  ],
+  "metadata": {
+    "component": {
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "name": "@autonomath/sdk",
+      "supplier": {
+        "name": "Bookyou株式会社"
+      },
+      "type": "application",
+      "version": "0.3.2"
+    },
+    "timestamp": "2026-05-07T09:27:06Z",
+    "tools": [
+      {
+        "name": "jpcite-sbom-generator",
+        "vendor": "Bookyou株式会社",
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "serialNumber": "urn:uuid:e1584474-9998-42cf-890e-1593cad3ce51",
+  "specVersion": "1.4",
+  "version": 1
+}

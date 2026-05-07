@@ -1,0 +1,54 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.4.schema.json",
+  "bomFormat": "CycloneDX",
+  "components": [
+    {
+      "name": "python:3.12-slim-bookworm",
+      "properties": [
+        {
+          "name": "platform",
+          "value": "linux/amd64"
+        },
+        {
+          "name": "registry",
+          "value": "docker.io"
+        },
+        {
+          "name": "image_path",
+          "value": "library/python"
+        },
+        {
+          "name": "scan_depth",
+          "value": "declared_only (run with --with-syft for layer scan)"
+        }
+      ],
+      "purl": "pkg:docker/python@3.12-slim-bookworm?repository_url=docker.io%2Flibrary",
+      "supplier": {
+        "name": "Python Software Foundation / Docker Hub library"
+      },
+      "type": "container",
+      "version": "3.12-slim-bookworm"
+    }
+  ],
+  "metadata": {
+    "component": {
+      "name": "jpcite-runtime",
+      "supplier": {
+        "name": "Bookyou株式会社"
+      },
+      "type": "container",
+      "version": "0.3.4"
+    },
+    "timestamp": "2026-05-07T09:27:06Z",
+    "tools": [
+      {
+        "name": "jpcite-sbom-generator",
+        "vendor": "Bookyou株式会社",
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "serialNumber": "urn:uuid:ef35682a-732a-426b-9908-c6f2ef424e72",
+  "specVersion": "1.4",
+  "version": 1
+}
