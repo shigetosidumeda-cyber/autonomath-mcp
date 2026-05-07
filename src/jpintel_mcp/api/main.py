@@ -1888,6 +1888,9 @@ def create_app() -> FastAPI:
     # runway it's meant to report on. See api/usage.py docstring.
     app.include_router(usage_router)
     app.include_router(programs_router, dependencies=[AnonIpLimitDep])
+    # R8 GEO REGION API (2026-05-07): 47都道府県 × 1,724市区町村 hit-map.
+    # /v1/programs/by_region/{code}, /v1/regions/{code}/coverage, /v1/regions/search.
+    app.include_router(regions_router, dependencies=[AnonIpLimitDep])
     # W29-9 fix: customer-agent e2e flow needs the narrative + eligibility
     # predicate caches reachable over HTTP (Wave 24 / W26-6 shipped them
     # MCP-only). Both routes share `/v1/programs/{id}/...` prefix so they
@@ -2005,6 +2008,24 @@ def create_app() -> FastAPI:
     _include_experimental_router(
         app,
         "jpintel_mcp.api.intel_regulatory_context",
+        dependencies=[AnonIpLimitDep],
+    )
+    # R8 cross-reference deep link API (2026-05-07).
+    _include_experimental_router(
+        app,
+        "jpintel_mcp.api.programs_full_context",
+        dependencies=[AnonIpLimitDep],
+    )
+    _include_experimental_router(
+        app,
+        "jpintel_mcp.api.programs_full_context",
+        attr="laws_cross_router",
+        dependencies=[AnonIpLimitDep],
+    )
+    _include_experimental_router(
+        app,
+        "jpintel_mcp.api.programs_full_context",
+        attr="cases_cross_router",
         dependencies=[AnonIpLimitDep],
     )
     # /v1/intel/timeline/{program_id} — annual cross-substrate event timeline
