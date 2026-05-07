@@ -21,6 +21,7 @@ REQUIRED_FILES = [
     "site/en/llms.txt",
     "site/_headers",
     "site/_redirects",
+    "site/sitemap.xml",
     "site/robots.txt",
     "site/server.json",
     "site/mcp-server.json",
@@ -100,6 +101,7 @@ HEADERS_REQUIRED_TOKENS = [
 ]
 
 REDIRECTS_FORBIDDEN_PATTERNS = [
+    r"(?m)^/[^\s]+\s+/[^\s]*\.html(?:[?\s]|$)",
     r"(?m)^/tos\s+/tos\.html\s+30[128]\b",
     r"(?m)^/terms(?:-of-service)?\s+/tos\.html\s+30[128]\b",
     r"(?m)^/privacy(?:-policy)?\s+/privacy\.html\s+30[128]\b",
@@ -193,7 +195,9 @@ def _iter_json_ld_nodes(blocks: list[Any]) -> list[dict[str, Any]]:
     return nodes
 
 
-def _legacy_json_ld_occurrences(value: Any, path: tuple[str, ...]) -> list[tuple[tuple[str, ...], str]]:
+def _legacy_json_ld_occurrences(
+    value: Any, path: tuple[str, ...]
+) -> list[tuple[tuple[str, ...], str]]:
     occurrences: list[tuple[tuple[str, ...], str]] = []
     if isinstance(value, str):
         for token in LEGACY_BRIDGE_TOKENS:
@@ -219,9 +223,7 @@ def _is_allowed_index_legacy_json_ld_path(
         return False
     if path[0] == "alternateName":
         return True
-    if path[0] == "sameAs" and token == "zeimu-kaikei.ai":
-        return True
-    return False
+    return path[0] == "sameAs" and token == "zeimu-kaikei.ai"
 
 
 def _failures_for_llms_legacy_bridge(rel: str, text: str) -> list[str]:
@@ -282,6 +284,22 @@ def _failures_for_index_legacy_bridge(html: str, json_ld: list[Any]) -> list[str
     return failures
 
 
+def _failures_for_canonical_urls() -> list[str]:
+    failures: list[str] = []
+    canonical_re = re.compile(r'<link rel="canonical"[^>]+https://jpcite\.com/[^">]+\.html')
+    site_dir = ROOT / "site"
+    for path in site_dir.rglob("*.html"):
+        rel = str(path.relative_to(ROOT))
+        text = path.read_text(encoding="utf-8", errors="replace")
+        if canonical_re.search(text):
+            failures.append(f"{rel} canonical must be extensionless")
+
+    sitemap = _read("site/sitemap.xml")
+    if re.search(r"https://jpcite\.com/[^ <\"]+\.html", sitemap):
+        failures.append("site/sitemap.xml contains .html canonical URLs")
+    return failures
+
+
 def check() -> list[str]:
     failures: list[str] = []
 
@@ -316,6 +334,7 @@ def check() -> list[str]:
     for pattern in REDIRECTS_FORBIDDEN_PATTERNS:
         if re.search(pattern, redirects):
             failures.append(f"site/_redirects contains loop-prone rule:{pattern}")
+    failures.extend(_failures_for_canonical_urls())
 
     index = _read("site/index.html")
     failures.extend(_failures_for_required(index, INDEX_REQUIRED_TOKENS, "site/index.html"))

@@ -47,8 +47,8 @@
 # requests get rewritten — slug-shaped /programs/{slug}-hash.html static
 # files match an actual file on disk first and CF Pages serves them
 # directly (file-system match wins over _redirects rules).
-/programs/UNI-:uid.html  /programs/share.html?ids=UNI-:uid  302
-/programs/UNI-:uid       /programs/share.html?ids=UNI-:uid  302
+/programs/UNI-:uid.html  /programs/share?ids=UNI-:uid  302
+/programs/UNI-:uid       /programs/share?ids=UNI-:uid  302
 
 # NOTE: pretty URL rewrites removed — CF Pages auto-strips .html
 # extension, so /pricing → site/pricing.html works natively. The
@@ -63,12 +63,12 @@
 # entry point. Originally pointed at /go, but /go.html is the device-flow
 # activation page that REQUIRES a user_code (e.g. ABCD-1234) — a 429-bouncer
 # arriving from a curl/browser has no code, so they bounced. Now redirected
-# to /upgrade.html which explains the 3 req/日 cap, points at pricing
+# to /upgrade which explains the 3 req/日 cap, points at pricing
 # (#api-paid), and offers the device-flow path as a tertiary link for
 # people who got there with a code. Query string is preserved by CF for
 # funnel attribution.
-/go/upgrade /upgrade.html  302
-/go/:code /go.html?code=:code  302
+/go/upgrade /upgrade  302
+/go/:code /go?code=:code  302
 
 # ─────────────────────────────────────────────────────────────────────────
 # Common-broken inbound paths — catch-all redirects so external links from
@@ -87,20 +87,20 @@
 
 # Auth-style aliases — we have no separate sign-in page; account / API key
 # management lives on the dashboard, which uses device-flow login.
-/sign-in     /dashboard.html  302
-/signin      /dashboard.html  302
-/login       /dashboard.html  302
-/log-in      /dashboard.html  302
-/signup      /dashboard.html  302
-/sign-up     /dashboard.html  302
-/register    /dashboard.html  302
+/sign-in     /dashboard  302
+/signin      /dashboard  302
+/login       /dashboard  302
+/log-in      /dashboard  302
+/signup      /dashboard  302
+/sign-up     /dashboard  302
+/register    /dashboard  302
 
 # Contact aliases route users to the public support page. Do not send
 # plain contact/support traffic to the MCP device-flow page; it requires a
 # user_code and reads as broken for normal visitors and crawlers.
-/contact     /support.html  302
-/contact-us  /support.html  302
-/support     /support.html  302
+/contact     /support  302
+/contact-us  /support  302
+/support     /support  302
 
 # Common-language legal aliases. Cloudflare Pages strips `.html` from
 # public URLs, so redirect aliases to extensionless documents. Redirecting
@@ -123,8 +123,8 @@
 
 # Dashboard convenience — bare /dashboard works via CF .html stripping,
 # but /dash and /account are common shortcuts users try.
-/dash        /dashboard.html  302
-/account     /dashboard.html  302
+/dash        /dashboard  302
+/account     /dashboard  302
 
 # ─────────────────────────────────────────────────────────────────────────
 # Jinja2 source-template leak guard.
