@@ -189,7 +189,7 @@ def _notify_refund_request(
             "既課金分は自動取消しされません — 手動 refund + 顧客連絡が必要です。\n"
         )
         requester_text = (
-            "AutonoMath (運営: Bookyou株式会社) です。\n\n"
+            "jpcite (運営: Bookyou株式会社) です。\n\n"
             "返金請求を受付けました。\n\n"
             f"  受付番号: {request_id}\n"
             f"  受付日時: {received_at}\n\n"
@@ -212,13 +212,13 @@ def _notify_refund_request(
             for to_addr, subject, body, tag in (
                 (
                     "info@bookyou.net",
-                    f"[AutonoMath] 返金請求 受付 ({request_id})",
+                    f"[jpcite] 返金請求 受付 ({request_id})",
                     operator_text,
                     "refund-request-operator",
                 ),
                 (
                     requester_email,
-                    "[AutonoMath] 返金請求の受付確認",
+                    "[jpcite] 返金請求の受付確認",
                     requester_text,
                     "refund-request-requester",
                 ),
@@ -602,7 +602,7 @@ def _notify_operator_currency_edge(
         payload = {
             "From": settings.postmark_from_transactional,
             "To": "info@bookyou.net",
-            "Subject": f"[AutonoMath] 非 JPY 通貨検知 ({currency.upper()})",
+            "Subject": f"[jpcite] 非 JPY 通貨検知 ({currency.upper()})",
             "TextBody": body,
             "MessageStream": STREAM_TRANSACTIONAL,
             "Tag": "stripe-currency-edge",
