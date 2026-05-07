@@ -57,39 +57,64 @@
   Content-Type: text/markdown; charset=utf-8
   Cache-Control: public, max-age=3600
 
+# JSON manifests — explicit edge cache via s-maxage + CDN-Cache-Control.
+# 2026-05-07: R8_LOAD_TEST_AUDIT detected cf-cache-status: DYNAMIC on every
+# /server.json, /mcp-server.json, /docs/openapi/v1.json, /openapi.agent.json
+# request → 100% of crawler/MCP-discovery traffic was hitting Fly origin and
+# bottlenecking the single Tokyo machine (HN spike OOM risk). Cloudflare Pages
+# does not cache application/json by default extension match; only an explicit
+# s-maxage directive (or CDN-Cache-Control) makes the edge participate.
+# max-age=300 keeps browsers re-validating quickly so version bumps reach
+# clients within 5 min; s-maxage=600 + CDN-Cache-Control=600 hands the edge
+# a 10-min TTL that absorbs HN/X spike bursts. Verified live with
+# `curl -sI https://jpcite.com/server.json | grep cf-cache-status` flipping
+# from DYNAMIC → MISS → HIT after redeploy.
 /openapi/*.json
   Content-Type: application/json; charset=utf-8
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=300, s-maxage=600
+  CDN-Cache-Control: public, max-age=600
   Access-Control-Allow-Origin: *
 
 /v1/openapi*.json
   Content-Type: application/json; charset=utf-8
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=300, s-maxage=600
+  CDN-Cache-Control: public, max-age=600
   Access-Control-Allow-Origin: *
 
 /docs/openapi/*.json
   Content-Type: application/json; charset=utf-8
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=300, s-maxage=600
+  CDN-Cache-Control: public, max-age=600
+  Access-Control-Allow-Origin: *
+
+/openapi.agent.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=300, s-maxage=600
+  CDN-Cache-Control: public, max-age=600
   Access-Control-Allow-Origin: *
 
 /server.json
   Content-Type: application/json; charset=utf-8
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=300, s-maxage=600
+  CDN-Cache-Control: public, max-age=600
   Access-Control-Allow-Origin: *
 
 /mcp-server.json
   Content-Type: application/json; charset=utf-8
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=300, s-maxage=600
+  CDN-Cache-Control: public, max-age=600
   Access-Control-Allow-Origin: *
 
 /.well-known/mcp.json
   Content-Type: application/json; charset=utf-8
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=300, s-maxage=600
+  CDN-Cache-Control: public, max-age=600
   Access-Control-Allow-Origin: *
 
 /bench/*.json
   Content-Type: application/json; charset=utf-8
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=300, s-maxage=600
+  CDN-Cache-Control: public, max-age=600
   Access-Control-Allow-Origin: *
 
 /llms-full.txt
