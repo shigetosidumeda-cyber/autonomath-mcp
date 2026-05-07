@@ -45,6 +45,7 @@ _PARAMS_DIGEST_WHITELIST: frozenset[str] = frozenset(
         "tax_rulesets.search",
         "tax_rulesets.get",
         "tax_rulesets.evaluate",
+        "tax_rules.full_chain",
         "invoice_registrants.search",
         "invoice_registrants.get",
         "houjin.get",
