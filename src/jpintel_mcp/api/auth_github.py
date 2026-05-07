@@ -55,7 +55,7 @@ import os
 import secrets
 import urllib.parse
 import urllib.request
-from typing import Annotated, Any
+from typing import Annotated, Any, cast
 
 from fastapi import APIRouter, HTTPException, Query, Request, Response, status
 from fastapi.responses import JSONResponse, RedirectResponse
@@ -219,7 +219,7 @@ def _exchange_code(code: str, client_id: str, client_secret: str) -> dict[str, A
         },
     )
     with urllib.request.urlopen(req, timeout=10) as resp:  # nosec B310 - operator-config https endpoint
-        return _parse_json_payload(resp.read())
+        return cast(dict[str, Any], _parse_json_payload(resp.read()))
 
 
 def _fetch_identity(access_token: str) -> dict[str, Any]:

@@ -60,6 +60,7 @@ import re
 import sqlite3
 import time
 from itertools import combinations
+from collections.abc import Callable
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Body, HTTPException, Path
@@ -537,7 +538,7 @@ def _duplicate_risk(
 def _greedy_max_independent_set(
     program_ids: list[str],
     exclude_pairs: set[tuple[str, str]],
-    sort_key,
+    sort_key: Callable[[str], Any],
 ) -> list[str]:
     """Greedy MIS keyed by `sort_key` — drops any candidate that conflicts
     with the already-accepted set."""
@@ -565,7 +566,7 @@ def _axis_score(
         return 0.0
     if axis == "amount":
         # Normalise against an arbitrary 1B yen ceiling to keep [0, 1] friendly.
-        total = sum(meta[p]["amount_yen"] for p in bundle if p in meta)
+        total = sum(float(meta[p]["amount_yen"]) for p in bundle if p in meta)
         return min(1.0, round(total / 1_000_000_000, 4))
     if axis == "coverage":
         kinds = {meta[p].get("program_kind") for p in bundle if p in meta}

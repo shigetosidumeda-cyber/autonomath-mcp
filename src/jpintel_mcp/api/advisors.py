@@ -1,12 +1,12 @@
-"""REST handlers for the 士業 (certified advisor) affiliate matching surface.
+"""REST handlers for the advisor matching and Evidence-to-Expert Handoff surface.
 
-Backed by migration 024's ``advisors`` + ``advisor_referrals`` tables.
-Different revenue stream from the ¥3/req metered API core:
+Backed by migration 024's ``advisors`` + ``advisor_referrals`` tables and
+migration 195's handoff ledger. The public product position is:
 
-    API core: USER pays us per request.
-    Advisors: ADVISOR pays us per converted referral.
-              Default ¥3,000 flat (commission_model='flat'); percent model
-              is capped at 30% at the schema level.
+    API core: users and AI agents fetch evidence packets per request.
+    Advisors: users can carry an evidence brief to a qualified professional.
+              Non-lawyer advisor categories may use a tracked referral flow;
+              lawyer categories are excluded from success-fee tracking.
 
 Flow:
     1. Advisor discovers /advisors.html landing, clicks signup.
@@ -15,31 +15,29 @@ Flow:
        stash stripe_connect_account_id. POST /v1/advisors/verify-houjin/{id}
        then confirms the 法人番号 against invoice_registrants and provisionally
        flips verified_at.
-    4. Search surface (/v1/programs/search?include_advisors=true) calls
+    4. Search surface (/v1/programs/search?include_advisors=true) and
+       /v1/advisors/handoffs/preview call
        query_matching_advisors() to attach up to 3 matches.
-    5. User clicks an advisor → /v1/advisors/track mints a single-use
+    5. User explicitly consents to contact an eligible advisor, then
+       /v1/advisors/track mints a single-use
        referral_token, returns a redirect URL.
     6. Advisor reports conversion → /v1/advisors/report-conversion sets
        converted_at + commission_yen.
     7. Payout cron (future) runs Stripe Transfer, sets commission_paid_at.
 
 Compliance notes:
-    * 士業法 — each profession restricts commercial referrals differently
-      (税理士法 §33-2 prohibits name-lending etc.). The signup flow surfaces
-      a disclaimer; enforcement is on the advisor side. We stay a matching
-      platform, not an introducer-of-record.
+    * 士業法 — each profession restricts commercial referrals differently.
+      The signup and tracking paths keep lawyer success-fee flows out of
+      self-serve referral tracking.
     * 景表法 — ranking methodology disclosed (/advisors.html §ranking).
     * APPI — houjin_bangou is public for incorporated entities. No 個人番号.
       ip_hash (salted sha256), not raw IP, on referral rows.
-
-Scope boundary: this router is NOT wired into api/main.py per the task
-spec. Importers can ``from jpintel_mcp.api.advisors import router`` and
-mount explicitly when the product is ready to launch.
 """
 
 from __future__ import annotations
 
 import hashlib
+import hmac
 import json
 import logging
 import re
@@ -54,7 +52,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field, HttpUrl, field_vali
 
 from jpintel_mcp.api._response_models import AdvisorDashboardResponse
 from jpintel_mcp.api.deps import ApiContextDep, DbDep, log_usage
-from jpintel_mcp.api.vocab import _normalize_prefecture
+from jpintel_mcp.api.vocab import _is_known_prefecture, _normalize_prefecture
 from jpintel_mcp.config import settings
 
 router = APIRouter(prefix="/v1/advisors", tags=["advisors"])
@@ -118,6 +116,11 @@ CommissionModel = Literal["flat", "percent"]
 
 _HOUJIN_BANGOU_RE = re.compile(r"^\d{13}$")
 _REFERRAL_TOKEN_RE = re.compile(r"^[0-9a-f]{32}$")
+_DASHBOARD_TOKEN_RE = re.compile(r"^[0-9a-f]{64}$")
+_HANDOFF_PROFESSIONAL_BOUNDARY = (
+    "このプレビューは士業候補への情報連携案です。個別の税務・法務・労務判断ではなく、"
+    "最終判断と顧客への助言は有資格者または担当専門家の確認を前提とします。"
+)
 
 
 def _now_iso() -> str:
@@ -135,6 +138,61 @@ def _hash_ip(ip: str | None) -> str | None:
     if not ip:
         return None
     return hashlib.sha256((settings.api_key_salt + ip).encode("utf-8")).hexdigest()
+
+
+def _advisor_dashboard_token(advisor_id: int, contact_email: str | None = None) -> str:
+    """Stable signed bearer token for the advisor self-serve dashboard URL."""
+    message = f"advisor-dashboard|{advisor_id}|{contact_email or ''}".encode()
+    return hmac.new(
+        settings.api_key_salt.encode(),
+        message,
+        hashlib.sha256,
+    ).hexdigest()
+
+
+def _verify_advisor_dashboard_token(
+    advisor_id: int,
+    contact_email: str | None,
+    token: str | None,
+) -> bool:
+    if token is None or not _DASHBOARD_TOKEN_RE.match(token):
+        return False
+    expected = _advisor_dashboard_token(advisor_id, contact_email)
+    return hmac.compare_digest(token, expected)
+
+
+def _normalize_industry_or_422(industry: str | None) -> str | None:
+    industry_norm = _INDUSTRY_ALIASES.get(industry, industry) if industry else None
+    if industry_norm is not None and industry_norm not in _CANONICAL_INDUSTRIES:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            f"unsupported industry: {industry}",
+        )
+    return industry_norm
+
+
+def _known_gap_summary(gap: str | dict[str, Any]) -> str | None:
+    if isinstance(gap, str):
+        return gap
+    for key in ("message_ja", "message", "gap_id", "section"):
+        value = gap.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    return "structured_gap"
+
+
+def _build_handoff_summary(payload: HandoffPreviewRequest) -> str:
+    lines = [payload.summary]
+    gap_summaries = [
+        summary
+        for gap in payload.known_gaps
+        if (summary := _known_gap_summary(gap)) is not None
+    ]
+    if gap_summaries:
+        lines.append("未確認事項: " + " / ".join(gap_summaries))
+    lines.append("人手レビュー: " + ("必要" if payload.human_review_required else "不要"))
+    lines.append(f"根拠レシート: {len(payload.source_receipts)}件")
+    return "\n".join(lines)
 
 
 # ---------------------------------------------------------------------------
@@ -175,10 +233,10 @@ class MatchResponse(BaseModel):
     results: list[AdvisorOut]
     ranking: dict[str, str] = Field(
         default_factory=lambda: {
-            "method": "practice area, industry/region fit, and prior completed introductions",
+            "method": "practice area, industry, region, and deterministic registration tie-break",
             "disclosure": (
-                "本リストは広告ではありません。専門性と実績のマッチングで並べ替えています。"
-                "(景品表示法 対応)"
+                "候補表示順は掲載費、成約額、受任額、成約件数では上下しません。"
+                "地域・業種・支援領域の一致度で並べ替えています。"
             ),
         }
     )
@@ -253,6 +311,14 @@ class TrackRequest(BaseModel):
     advisor_id: int
     source_query_hash: str | None = None
     source_program_id: str | None = Field(default=None, max_length=120)
+    consent_granted: bool = Field(
+        default=False,
+        description=(
+            "Must be true after the user explicitly agrees to leave the evidence "
+            "handoff surface and contact this advisor. No referral token is minted "
+            "before consent."
+        ),
+    )
 
 
 class TrackResponse(BaseModel):
@@ -275,6 +341,71 @@ class ReportConversionRequest(BaseModel):
         if not _REFERRAL_TOKEN_RE.match(v):
             raise ValueError("referral_token must be 32 hex chars")
         return v
+
+
+class HandoffPreviewRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    prefecture: str = Field(..., min_length=1, max_length=40)
+    industry: str | None = Field(default=None, max_length=80)
+    specialty: Specialty | None = None
+    known_gaps: list[str | dict[str, Any]] = Field(default_factory=list, max_length=20)
+    human_review_required: bool = False
+    source_receipts: list[dict[str, Any]] = Field(default_factory=list, max_length=20)
+    summary: str = Field(..., min_length=1, max_length=2000)
+
+    @field_validator("industry", mode="before")
+    @classmethod
+    def _blank_industry_to_none(cls, v: Any) -> Any:
+        if isinstance(v, str) and not v.strip():
+            return None
+        return v
+
+    @field_validator("known_gaps")
+    @classmethod
+    def _clean_known_gaps(cls, v: list[str | dict[str, Any]]) -> list[str | dict[str, Any]]:
+        cleaned: list[str | dict[str, Any]] = []
+        for item in v:
+            if isinstance(item, str):
+                text = item.strip()
+                if text:
+                    cleaned.append(text)
+            else:
+                cleaned.append(item)
+        too_long = [
+            item
+            for item in cleaned
+            if isinstance(item, str) and len(item) > 240
+        ]
+        if too_long:
+            raise ValueError("known_gaps items must be 240 characters or fewer")
+        return cleaned
+
+    @field_validator("summary")
+    @classmethod
+    def _clean_summary(cls, v: str) -> str:
+        summary = v.strip()
+        if not summary:
+            raise ValueError("summary must not be blank")
+        return summary
+
+
+class HandoffDisplayOrder(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    paid_influence: Literal[False] = False
+    method: Literal["match_quality_then_registration_order"] = (
+        "match_quality_then_registration_order"
+    )
+
+
+class HandoffPreviewResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    handoff_summary: str
+    professional_boundary: str
+    matched_advisors: list[AdvisorOut]
+    display_order: HandoffDisplayOrder = Field(default_factory=HandoffDisplayOrder)
 
 
 # ---------------------------------------------------------------------------
@@ -335,8 +466,7 @@ def query_matching_advisors(
         1. prefecture exact match
         2. industry appears in industries_json
         3. specialty appears in specialties_json
-        4. success_count desc
-        5. id asc (deterministic tie-break)
+        4. id asc (deterministic tie-break)
 
     Soft-match semantics: a NULL filter dimension contributes 0 to the score.
     We deliberately return fewer than ``limit`` rows rather than widening
@@ -394,7 +524,7 @@ def query_matching_advisors(
     sql = (
         f"SELECT *, ({score_sql}) AS _score FROM advisors "
         f"WHERE {' AND '.join(where_parts)} "
-        f"ORDER BY _score DESC, success_count DESC, id ASC "
+        f"ORDER BY _score DESC, id ASC "
         f"LIMIT ?"
     )
     params.append(limit)
@@ -435,12 +565,7 @@ def match_advisors(
 
     Returns public advisor profile fields and a deterministic match score.
     """
-    industry_norm = _INDUSTRY_ALIASES.get(industry, industry) if industry else None
-    if industry_norm is not None and industry_norm not in _CANONICAL_INDUSTRIES:
-        raise HTTPException(
-            status.HTTP_422_UNPROCESSABLE_ENTITY,
-            f"unsupported industry: {industry}",
-        )
+    industry_norm = _normalize_industry_or_422(industry)
     results = query_matching_advisors(
         conn,
         prefecture=prefecture,
@@ -454,14 +579,49 @@ def match_advisors(
             "total": len(results),
             "results": results,
             "ranking": {
-                "method": ("practice area, industry/region fit, and prior completed introductions"),
+                "method": (
+                    "practice area, industry, region, and deterministic registration tie-break"
+                ),
                 "disclosure": (
-                    "本リストは広告ではありません。専門性と実績のマッチングで "
-                    "並べ替えています。(景品表示法 対応)"
+                    "候補表示順は掲載費、成約額、受任額、成約件数では上下しません。"
+                    "地域・業種・支援領域の一致度で並べ替えています。"
                 ),
             },
         }
     )
+
+
+@router.post(
+    "/handoffs/preview",
+    response_model=HandoffPreviewResponse,
+)
+def preview_advisor_handoff(
+    payload: HandoffPreviewRequest,
+    conn: DbDep,
+) -> JSONResponse:
+    """Preview an advisor handoff without creating referrals or stored records.
+
+    This is a read-only handoff draft surface: it uses the existing advisor
+    matcher, but intentionally does not mint referral tokens, store source
+    receipts, write usage events, or persist caller-provided summary text.
+    """
+    if not _is_known_prefecture(payload.prefecture):
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "prefecture unrecognized")
+    pref_canon = _normalize_prefecture(payload.prefecture)
+
+    matched = query_matching_advisors(
+        conn,
+        prefecture=pref_canon,
+        industry=_normalize_industry_or_422(payload.industry),
+        specialty=payload.specialty,
+        limit=3,
+    )
+    body = HandoffPreviewResponse(
+        handoff_summary=_build_handoff_summary(payload),
+        professional_boundary=_HANDOFF_PROFESSIONAL_BOUNDARY,
+        matched_advisors=[AdvisorOut.model_validate(m) for m in matched],
+    ).model_dump(mode="json")
+    return JSONResponse(content=body)
 
 
 @router.post(
@@ -482,13 +642,23 @@ def track_click(
     dependent) is resolved at conversion time, not click time.
     """
     row = conn.execute(
-        "SELECT id, contact_url, verified_at, active FROM advisors WHERE id = ?",
+        "SELECT id, contact_url, firm_type, verified_at, active FROM advisors WHERE id = ?",
         (payload.advisor_id,),
     ).fetchone()
     if row is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "advisor not found")
     if row["verified_at"] is None or row["active"] != 1:
         raise HTTPException(status.HTTP_409_CONFLICT, "advisor not active or not verified")
+    if row["firm_type"] == "弁護士":
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            "弁護士カテゴリでは成果課金型のreferral trackingを利用できません",
+        )
+    if not payload.consent_granted:
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            "advisor referral tracking requires explicit user consent",
+        )
 
     token = secrets.token_hex(16)  # 32 hex chars
     ip = request.client.host if request.client else None
@@ -540,6 +710,11 @@ def signup_advisor(
     pref_canon = _normalize_prefecture(payload.prefecture)
     if pref_canon is None:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "prefecture unrecognized")
+    if payload.firm_type == "弁護士" and payload.commission_model == "percent":
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            "弁護士案件では受任報酬比の手数料モデルをセルフサーブで選択できません",
+        )
 
     existing = conn.execute(
         "SELECT id FROM advisors WHERE houjin_bangou = ?",
@@ -576,7 +751,7 @@ def signup_advisor(
             payload.commission_rate_pct,
             payload.commission_yen_per_intro,
             payload.commission_model,
-            "https://jpcite.com/advisors-signup.html",
+            "https://jpcite.com/advisors.html",
             now,
             now,
             now,
@@ -634,8 +809,12 @@ def _create_stripe_connect_onboarding(advisor_id: int, email: str) -> str | None
 
         link = stripe.AccountLink.create(
             account=acct.id,
-            refresh_url="https://jpcite.com/advisors-signup.html?stripe=refresh",
-            return_url=(f"https://jpcite.com/advisors-dashboard.html?acct={acct.id}"),
+            refresh_url=f"https://jpcite.com/advisors.html?stripe=refresh&advisor_id={advisor_id}",
+            return_url=(
+                "https://jpcite.com/advisors.html"
+                f"?dashboard=1&advisor_id={advisor_id}&acct={acct.id}"
+                f"&token={_advisor_dashboard_token(advisor_id, email)}"
+            ),
             type="account_onboarding",
         )
         # Connection between advisor row and Stripe account is established
@@ -814,7 +993,7 @@ def report_conversion(
     The ``referral_token`` is a single-referral bearer credential.
     """
     row = conn.execute(
-        "SELECT r.id, r.advisor_id, r.converted_at, a.commission_model,"
+        "SELECT r.id, r.advisor_id, r.converted_at, a.firm_type, a.commission_model,"
         "       a.commission_rate_pct, a.commission_yen_per_intro"
         " FROM advisor_referrals r JOIN advisors a ON a.id = r.advisor_id"
         " WHERE r.referral_token = ?",
@@ -824,6 +1003,11 @@ def report_conversion(
         raise HTTPException(status.HTTP_404_NOT_FOUND, "referral_token unknown")
     if row["converted_at"] is not None:
         raise HTTPException(status.HTTP_409_CONFLICT, "referral already marked as converted")
+    if row["firm_type"] == "弁護士":
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            "弁護士カテゴリでは紹介料・成約手数料・受任報酬連動手数料を記録できません",
+        )
 
     # Commission computation. Flat = fixed yen. Percent = rate_pct * value,
     # requires conversion_value_yen. The 30% cap is schema-enforced.
@@ -872,15 +1056,14 @@ def report_conversion(
 def dashboard_data(
     advisor_id: int,
     conn: DbDep,
+    token: Annotated[str | None, Query(description="signed advisor dashboard token")] = None,
 ) -> JSONResponse:
     """Self-serve dashboard backing data: referrals + earnings summary.
 
-    Authentication: intentionally light today — the dashboard HTML is
-    expected to be reached via the Stripe Connect Express portal return
-    URL (or via magic-link email). Adding API-key auth here would block
-    the simplest flow where the advisor arrives from Stripe's own
-    dashboard. If this becomes abused, add a signed HMAC
-    ``?token=...`` in the URL and verify here.
+    Authentication: a signed HMAC ``?token=...`` is required. The token is
+    issued in the Stripe Connect Express return URL (or a future magic-link
+    email) so the advisor can arrive from Stripe without an API key while
+    keeping dashboard data non-public.
     """
     a = conn.execute(
         "SELECT * FROM advisors WHERE id = ?",
@@ -888,6 +1071,8 @@ def dashboard_data(
     ).fetchone()
     if a is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "advisor not found")
+    if not _verify_advisor_dashboard_token(advisor_id, a["contact_email"], token):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "advisor dashboard token required")
 
     refs = conn.execute(
         "SELECT id, referral_token, source_program_id, clicked_at, converted_at,"
@@ -912,9 +1097,13 @@ def dashboard_data(
         (advisor_id,),
     ).fetchone()
 
+    advisor = _row_to_advisor(a).model_dump()
+    advisor["contact_email"] = "<email-redacted>" if advisor.get("contact_email") else None
+    advisor["contact_phone"] = "<phone-redacted>" if advisor.get("contact_phone") else None
+
     return JSONResponse(
         content={
-            "advisor": _row_to_advisor(a).model_dump(),
+            "advisor": advisor,
             "summary": {
                 "clicks": summary["clicks"] or 0,
                 "conversions": summary["conversions"] or 0,

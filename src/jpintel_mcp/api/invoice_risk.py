@@ -73,7 +73,7 @@ import datetime
 import re
 import sqlite3
 import time
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any, Literal, cast
 
 from fastapi import APIRouter, Body, HTTPException, Request, status
 from fastapi import Path as PathParam
@@ -350,10 +350,13 @@ def _classify_risk(
 
 def _fetch_invoice_row(conn: sqlite3.Connection, tnum: str) -> sqlite3.Row | None:
     """Single-row T-number lookup. Returns None on miss."""
-    return conn.execute(
-        "SELECT * FROM invoice_registrants WHERE invoice_registration_number = ?",
-        (tnum,),
-    ).fetchone()
+    return cast(
+        "sqlite3.Row | None",
+        conn.execute(
+            "SELECT * FROM invoice_registrants WHERE invoice_registration_number = ?",
+            (tnum,),
+        ).fetchone(),
+    )
 
 
 def _fetch_houjin_master(
@@ -365,14 +368,17 @@ def _fetch_houjin_master(
     if not houjin_bangou:
         return None
     try:
-        return conn.execute(
-            (
-                "SELECT houjin_bangou, normalized_name, corporation_type, "
-                "       prefecture, close_date "
-                "  FROM houjin_master WHERE houjin_bangou = ? LIMIT 1"
-            ),
-            (houjin_bangou,),
-        ).fetchone()
+        return cast(
+            "sqlite3.Row | None",
+            conn.execute(
+                (
+                    "SELECT houjin_bangou, normalized_name, corporation_type, "
+                    "       prefecture, close_date "
+                    "  FROM houjin_master WHERE houjin_bangou = ? LIMIT 1"
+                ),
+                (houjin_bangou,),
+            ).fetchone(),
+        )
     except sqlite3.OperationalError:
         # Table missing in this fixture — treat as no match (the score
         # logic already handles the not-matched branch).
@@ -383,13 +389,16 @@ def _fetch_invoice_by_houjin(
     conn: sqlite3.Connection, houjin_bangou: str
 ) -> sqlite3.Row | None:
     """Reverse lookup: 法人番号 → first matching T-number row."""
-    return conn.execute(
-        (
-            "SELECT * FROM invoice_registrants WHERE houjin_bangou = ? "
-            "ORDER BY registered_date DESC LIMIT 1"
-        ),
-        (houjin_bangou,),
-    ).fetchone()
+    return cast(
+        "sqlite3.Row | None",
+        conn.execute(
+            (
+                "SELECT * FROM invoice_registrants WHERE houjin_bangou = ? "
+                "ORDER BY registered_date DESC LIMIT 1"
+            ),
+            (houjin_bangou,),
+        ).fetchone(),
+    )
 
 
 # ---------------------------------------------------------------------------
