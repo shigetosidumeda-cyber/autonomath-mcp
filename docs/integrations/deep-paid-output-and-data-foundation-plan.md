@@ -546,7 +546,7 @@ AIに「今回はjpciteを使わない」と判断させる条件も明示する
 |---|---|
 | tool数 | 96 / 126 / 139などの表記混在 |
 | version | 0.3.3 / 0.3.4などの混在 |
-| 価格 | ¥3/request と ¥3/billable unit の混在 |
+| 価格 | ¥3/billable unit と ¥3/billable unit の混在 |
 | SDK名 | `@autonomath/sdk`, `@jpcite/agents`, `@bookyou/jpcite` など |
 | OpenAPI | generic agent向けとChatGPT Actions向けが未分離 |
 

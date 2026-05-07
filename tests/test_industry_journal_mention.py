@@ -229,9 +229,11 @@ def test_self_vs_other_ratio(cron_module, tmp_path):
         "]}]}"
     )
 
-    with patch.object(cron_module, "_safe_get", return_value=cinii_payload):
-        with patch.object(cron_module.time, "sleep", return_value=None):
-            counters = cron_module.run(db_path, months_back=1, sleep_sec=0.0, dry_run=False)
+    with (
+        patch.object(cron_module, "_safe_get", return_value=cinii_payload),
+        patch.object(cron_module.time, "sleep", return_value=None),
+    ):
+        counters = cron_module.run(db_path, months_back=1, sleep_sec=0.0, dry_run=False)
 
     # CiNii pass alone — TOC + jstage 経路は real network なので _safe_get patch で全 None
     assert counters["mentions_inserted"] >= 2

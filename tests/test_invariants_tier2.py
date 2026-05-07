@@ -89,7 +89,7 @@ def test_inv04_weekly_recheck_aggregator_ban():
     """Re-run banned-aggregator scan. Tier 1 covers the same surface; the
     weekly recheck catches a freshly-ingested row that a same-day Tier 1
     run might have missed (race between cron-mid and ingest-end)."""
-    BANNED = [
+    BANNED = [  # noqa: N806  (local CONST sentinel, not loop-mut)
         "noukaweb",
         "hojyokin-portal",
         "biz.stayway",
@@ -305,7 +305,7 @@ def test_inv24_keyword_block_in_user_docs():
       - site/docs/compliance/ : the rendered HTML mirror of the above.
     """
     repo = Path(__file__).resolve().parent.parent
-    EXCLUDED_PARTS = {"_internal", "compliance"}
+    EXCLUDED_PARTS = {"_internal", "compliance"}  # noqa: N806  (local CONST sentinel, not loop-mut)
     candidates: list[Path] = []
     docs = repo / "docs"
     if docs.is_dir():

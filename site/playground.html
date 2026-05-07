@@ -562,7 +562,7 @@
     "@type": "Offer",
     "price": "0",
     "priceCurrency": "JPY",
-    "description": "匿名 3 req/日 per IP まで無料。超過後は ¥3.30/req (税込) 完全従量。"
+    "description": "匿名 3 req/日 per IP まで無料。超過後は ¥3/billable unit 税別 (税込 ¥3.30) 完全従量。"
   }
 }
 </script>
@@ -611,7 +611,7 @@
  <p class="pg-lead">
  ブラウザから直接 <code>https://api.jpcite.com/v1/*</code> を叩いて、
  レスポンス形状・<strong>専門業務ではないことの注意書き</strong>・出典 URL を確認できます。
- <strong>登録不要・API キー不要</strong>。 匿名 <span data-fact="anonymous_quota_per_day">3</span> req/日 (per IP) まで無料、 超過後は API キー発行で ¥<span data-fact="price_per_req_inc_tax">3.30</span>/リクエスト (税込) 完全従量。
+ <strong>登録不要・API キー不要</strong>。 匿名 <span data-fact="anonymous_quota_per_day">3</span> req/日 (per IP) まで無料、 超過後は API キー発行で ¥<span data-fact="price_per_req_inc_tax">3.30</span>/課金単位 (税込) 完全従量。
  <a href="/docs/api-reference/">API リファレンス</a> · <a href="pricing.html">料金</a> · <a href="/dashboard">ダッシュボード</a>
  </p>
 
@@ -978,7 +978,7 @@
       id: 'laws.search',
       method: 'GET',
       path: '/v1/laws/search',
-      title: '法令検索 (e-Gov 9,484 メタデータ + 154 全文)',
+      title: '法令検索 (e-Gov 9,484 メタデータ + 6,493 本文索引)',
       desc: 'CC-BY 4.0 (e-Gov)。 法令本文・改正情報・施行日。',
       params: [
         { name: 'q',                       type: 'text',   label: 'キーワード',     placeholder: '消費税', defaultValue: '消費税' },

@@ -25,10 +25,10 @@ from __future__ import annotations
 # delivery-strict fixtures must be opted in explicitly via pytest_plugins.
 pytest_plugins = ["tests.conftest_delivery_strict"]
 
-from datetime import UTC, datetime, timedelta
-from typing import TYPE_CHECKING, Any
+from datetime import UTC, datetime, timedelta  # noqa: E402  (sys.path manipulation precedes)
+from typing import TYPE_CHECKING, Any  # noqa: E402  (sys.path manipulation precedes)
 
-import pytest
+import pytest  # noqa: E402  (sys.path manipulation precedes)
 
 if TYPE_CHECKING:
     import sqlite3

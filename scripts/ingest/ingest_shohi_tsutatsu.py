@@ -38,7 +38,11 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
 
 try:
-    from bs4 import BeautifulSoup, NavigableString, Tag
+    from bs4 import (  # noqa: F401  (NavigableString re-exported for downstream typing)
+        BeautifulSoup,
+        NavigableString,
+        Tag,
+    )
 except ImportError as exc:
     print(f"missing dep: {exc}. pip install beautifulsoup4", file=sys.stderr)
     sys.exit(1)
@@ -172,8 +176,8 @@ def parse_leaf(
                 break
             # Strip outer parens (full-width or half-width).
             clean = title_text
-            for l, r in [("（", "）"), ("(", ")")]:
-                if clean.startswith(l) and clean.endswith(r):
+            for left, right in [("（", "）"), ("(", ")")]:
+                if clean.startswith(left) and clean.endswith(right):
                     clean = clean[1:-1]
                     break
             flush()

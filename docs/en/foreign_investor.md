@@ -36,7 +36,7 @@ Same as every other surface on jpcite:
 
 - **¥3 per billable unit** (税込 ¥3.30), metered, no tier
 - Anonymous trial: 3 requests/day per IP, JST 翌日 00:00 reset
-- Paid keys: ¥3/req metered, no seat fee, no annual minimum
+- Paid keys: ¥3/billable unit metered, no seat fee, no annual minimum
 
 The US SaaS instinct to charge `$0.10/req` or `¥10/req` for an
 English-language API is **explicitly rejected**. Solo + zero-touch

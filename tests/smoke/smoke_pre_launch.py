@@ -56,9 +56,9 @@ _query_log.addHandler(_telemetry_handler)
 _query_log.setLevel(logging.DEBUG)
 
 # ── Now import the app ──────────────────────────────────────────────────────
-from fastapi.testclient import TestClient
+from fastapi.testclient import TestClient  # noqa: E402  (sys.path manipulation precedes)
 
-from jpintel_mcp.api.main import create_app
+from jpintel_mcp.api.main import create_app  # noqa: E402  (sys.path manipulation precedes)
 
 app = create_app()
 client = TestClient(app, raise_server_exceptions=False)
@@ -456,7 +456,9 @@ _rconn.execute("DELETE FROM anon_rate_limit WHERE ip_hash != 'smoke-permanent-fi
 _rconn.commit()
 _rconn.close()
 
-from jpintel_mcp.config import settings as _live_settings
+from jpintel_mcp.config import (  # noqa: E402  (rate-limit fixture setup precedes)
+    settings as _live_settings,
+)
 
 _anon_enabled_orig = _live_settings.anon_rate_limit_enabled
 _live_settings.anon_rate_limit_enabled = True
@@ -465,7 +467,7 @@ _live_settings.anon_rate_limit_enabled = True
 RATE_TEST_IP = "10.99.88.77"
 try:
     with TestClient(app, raise_server_exceptions=False) as rl_client:
-        for i in range(3):
+        for _i in range(3):
             rl_client.get(
                 "/v1/programs/search",
                 params={"limit": 1},
@@ -584,8 +586,8 @@ with TestClient(app, raise_server_exceptions=False) as tel_client:
 
 telem_lines = [rec for rec in _telemetry_handler.records if rec.strip()]
 
-for i, endpoint in enumerate(["/v1/programs/search", "/v1/meta", "/v1/enforcement/search"]):
-    matching = [l for l in telem_lines if endpoint in l]
+for _i, endpoint in enumerate(["/v1/programs/search", "/v1/meta", "/v1/enforcement/search"]):
+    matching = [line for line in telem_lines if endpoint in line]
     if not matching:
         telemetry_results.append(
             {

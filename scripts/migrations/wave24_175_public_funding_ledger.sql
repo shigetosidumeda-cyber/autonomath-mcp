@@ -35,7 +35,7 @@
 --
 -- Relationship to existing tables
 -- -------------------------------
---   * `programs` (jpintel.db, 11,684 searchable) is the eligibility-search
+--   * `programs` (jpintel.db, 11,601 searchable) is the eligibility-search
 --     master. This ledger is the recipient-side history pair.
 --   * `case_studies` / `jpi_adoption_records` (autonomath, 201,845 rows
 --     post Phase A) is the采択事例 corpus; this ledger projects it onto

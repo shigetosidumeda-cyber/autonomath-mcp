@@ -1,6 +1,6 @@
 # Partnership — Money Forward (MF Cloud)
 
-> **要約 (summary):** Money Forward Cloud (国内中堅企業中心、20 万社) の API integration として **jpcite REST + MCP** を組込。ME (経費精算 / 会計) ユーザーが自社の科目データを context に補助金 / 税制を発見。¥3/req metered。月次売上の 10% を MF に referral 還元。
+> **要約 (summary):** Money Forward Cloud (国内中堅企業中心、20 万社) の API integration として **jpcite REST + MCP** を組込。ME (経費精算 / 会計) ユーザーが自社の科目データを context に補助金 / 税制を発見。¥3/billable unit metered。月次売上の 10% を MF に referral 還元。
 
 ## ターゲットと規模
 
@@ -35,13 +35,13 @@ MF Cloud 給与 / 会計を使う社労士 / 経理 が自社の AI チャット
 
 | 項目 | 金額 / 比率 |
 |------|------------|
-| ユーザー単価 | ¥3 / req (税別、税込 ¥3.30) |
+| ユーザー単価 | ¥3 / unit (税別、税込 ¥3.30) |
 | MF referral fee | metered 売上の 10% |
 | 払出 cycle | 月末締め、翌月末日 Stripe Connect Transfer |
 | 適格請求書 | T8010001213708 で jpcite が MF 宛に発行 |
 | 最低金額 | なし (MF referral 経由で 0 req の月は ¥0 払出) |
 
-discount は **しない**: referral 経由でも ¥3/req 固定 (memory `project_autonomath_business_model`)。
+discount は **しない**: referral 経由でも ¥3/billable unit 固定 (memory `project_autonomath_business_model`)。
 
 ## 申請内容
 

@@ -69,7 +69,7 @@ Locate the marketplace index file (typically `mcps.json`, `servers.json`, or `in
     "税制"
   ],
   "tools_count": 139,
-  "pricing": "¥3/request tax-exclusive (¥3.30 tax-inclusive, fully metered) · first 3 requests/day per IP free (anonymous, JST next-day reset) · no tier SKUs, no seat fees, no annual minimums",
+  "pricing": "¥3/billable unit tax-exclusive (¥3.30 tax-inclusive, fully metered) · first 3 requests/day per IP free (anonymous, JST next-day reset) · no tier SKUs, no seat fees, no annual minimums",
   "operator": {
     "name": "Bookyou株式会社",
     "invoice_registration_number": "T8010001213708",
@@ -160,9 +160,9 @@ Evidence Pre-fetch / precomputed intelligence means source URLs, fetched timesta
 
 ## Pricing
 
-- **¥3 per request** (税込 ¥3.30) — fully metered via Stripe
+- **¥3 per billable unit** (税込 ¥3.30) — fully metered via Stripe
 - **First 3 requests/day free** per IP (anonymous, JST 翌日リセット)
-- **No tier SKUs**, no seat fees, no annual minimums, no signup required
+- **No tier SKUs**, no seat fees, no annual minimums, no signup required for anonymous checks
 
 ## Disclaimer (税理士法 §52 fence)
 

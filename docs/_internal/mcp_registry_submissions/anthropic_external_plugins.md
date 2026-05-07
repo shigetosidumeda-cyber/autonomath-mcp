@@ -34,7 +34,7 @@ directory verifies `pip show` / `uvx` resolves before listing goes live.
 | Supported clients | Claude Desktop (primary), Cursor, ChatGPT (MCP), Gemini |
 | MCP protocol version | `2025-06-18` |
 | Install command | `uvx autonomath-mcp` |
-| Pricing model | Free tier 3 req/day per IP (JST next-day reset), ¥3/req tax-exclusive (¥3.30 tax-inclusive) metered beyond |
+| Pricing model | Free tier 3 req/day per IP (JST next-day reset), ¥3/billable unit tax-exclusive (¥3.30 tax-inclusive) metered beyond |
 | Icon (256×256 PNG) | `https://jpcite.com/assets/mcp_preview_1.png` (fallback: favicon) |
 | Tile image (1200×630) | `https://jpcite.com/assets/mcp_preview_1.png` |
 | Wide tile (1600×900) | `https://jpcite.com/assets/mcp_preview_2.png` |
@@ -61,7 +61,7 @@ batch_get、181 件の排他/前提条件ルール、meta) を直接呼び出せ
 - **一次資料 lineage**: 全行に `source_url` + `fetched_at`。MAFF / METI /
   日本政策金融公庫 / 47 都道府県公報 / 会計検査院 を primary source
   とし、aggregator URL は banned
-- **無料枠 3 req/day per IP (登録不要、JST 翌日リセット)**、¥3/req 税別 / ¥3.30 税込 従量 (Stripe 従量請求)
+- **無料枠 3 req/day per IP (登録不要、JST 翌日リセット)**、¥3/billable unit 税別 / ¥3.30 税込 従量 (Stripe 従量請求)
 
 ## Long description (English)
 
@@ -75,7 +75,7 @@ co-application conflicts. Every row carries primary-source URL + fetched_at;
 aggregators are banned.
 
 93 tools over MCP protocol `2025-06-18`, FastMCP stdio. Anonymous 3 req/day
-per IP free (JST next-day reset); ¥3/req tax-exclusive (¥3.30
+per IP free (JST next-day reset); ¥3/billable unit tax-exclusive (¥3.30
 tax-inclusive) metered thereafter. Self-serve — no sales, no tiers.
 
 Evidence Pre-fetch / precomputed intelligence means source URLs, fetched timestamps,

@@ -28,7 +28,7 @@ jpcite launch: 日本制度を 1 query で AI に聞く
 ## Preheader (preview text)
 
 ```
-本日 launch。日本の公的制度データを REST + MCP で呼び出せます。¥3/req 完全従量、匿名 3 req/日 per IP は無料です。
+本日 launch。日本の公的制度データを REST + MCP で呼び出せます。¥3/billable unit 完全従量、匿名 3 req/日 per IP は無料です。
 ```
 
 ---
@@ -58,7 +58,7 @@ Bookyou株式会社の梅田です。
 - VC / DD: 法人番号 1 つで処分歴 + 採択歴 + 適格事業者 を一括取得
 
 ▼ 価格
-¥3/req 税別 (税込 ¥3.30) 完全従量。tier / seat / 年間最低額なし。
+¥3/billable unit 税別 (税込 ¥3.30) 完全従量。tier / seat / 年間最低額なし。
 匿名 3 req/日 per IP は無料 (JST 翌日 00:00 リセット、API key 不要)。
 
 ▼ 始め方

@@ -100,7 +100,7 @@ L0 Storage 4 項目 (integrity / FK 0 / 3 indexes / cache schema) が **全て P
 - [ ] `/v1/am/*` 16 endpoint の OpenAPI export を確認 (まだ main.py で mount されていない場合は launch ブロッカーに昇格)
 - [ ] envelope v2 (`token_estimate` + `confidence` + `source_attribution` + `cache_hint`) が全 tool に wired
 - [ ] 5 critical invariants Tier 1 (INV-04 / INV-21 / INV-22 / INV-23 / INV-25) active 確認
-- [ ] Stripe metered live mode の `STRIPE_PRICE_PER_REQUEST` 設定確認 (¥3 / req)
+- [ ] Stripe metered live mode の `STRIPE_PRICE_PER_REQUEST` 設定確認 (¥3 / unit)
 - [ ] `scripts/mcp_smoke.py` PASS
 
 ### 中間確認

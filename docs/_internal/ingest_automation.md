@@ -309,7 +309,7 @@ reconcile, KPI digest, DR drill 等)。**全 cron は heartbeat 行を
 | refresh-sources              | `17 18 * * *`     | 03:17 JST 毎日     | `scripts/refresh_sources.py`           | URL 整合性 |
 | amendment-alert-cron         | `30 20 * * *`     | 05:30 JST 毎日     | `amendment_alert.py`                   | 改正 fan-out (FREE) |
 | billing-health-cron          | `0 20 * * *`      | 05:00 JST 毎日     | `stripe_reconcile.py` + `stripe_usage_backfill.py` + `predictive_billing_alert.py` + `stripe_cost_alert.py` | Stripe 4 連 |
-| dispatch-webhooks-cron       | `*/10 * * * *`    | 10 分毎           | `dispatch_webhooks.py`                 | 顧客 webhook (¥3/req) |
+| dispatch-webhooks-cron       | `*/10 * * * *`    | 10 分毎           | `dispatch_webhooks.py`                 | 顧客 webhook (¥3/billable unit) |
 | eval                         | `30 19 * * *`     | 04:30 JST 毎日     | `scripts/eval/*`                       | retrieval QA |
 | data-integrity               | `30 19 * * *`     | 04:30 JST 毎日     | `scripts/url_integrity_scan.py`        | URL 詐称検出 |
 | ingest-daily                 | `0 19 * * *`      | 04:00 JST 毎日     | `scripts/ingest_tier.py daily`         | Tier 1 ingest |
@@ -479,6 +479,6 @@ math says we eat the latency.
 ### Cost note
 
 `cross_source_check.py` is internal data normalization — it does NOT
-emit a `usage_events` row and does NOT count against the `¥3/req`
+emit a `usage_events` row and does NOT count against the `¥3/billable unit`
 metering. The cron is operator-side observability, not a billable
 customer surface.

@@ -73,8 +73,8 @@ async def _proxy_get(request: Request, upstream_path: str, params: dict[str, Any
         raise HTTPException(status_code=429, detail="rate_limited")
     try:
         body = resp.json()
-    except ValueError:
-        raise HTTPException(status_code=502, detail="upstream_non_json")
+    except ValueError as err:
+        raise HTTPException(status_code=502, detail="upstream_non_json") from err
     return _attach_disclaimer(body), resp.status_code
 
 

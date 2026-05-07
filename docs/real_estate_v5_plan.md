@@ -3,7 +3,7 @@
 **期間**: 2026-04-25 → 2026-11-11 (T+200d、実働 4 週)
 **対象 cohort**: 不動産 開発 (デベロッパー) / 賃貸管理 (PM 業者) /
 不動産 M&A (仲介業者) / 建築設計事務所 / 不動産 SaaS 開発者
-**Path**: jpcite コア (¥3/req metered) を **不動産・建築・登記**
+**Path**: jpcite コア (¥3/billable unit metered) を **不動産・建築・登記**
 領域へ拡張する第 5 波 (V3 Healthcare の B5 pattern を踏襲)。
 **判定基準**: launch 直後 30d で 50+ paid request / day を 1 件以上の
 cohort 顧客から確認できれば **継続**、未達なら sunset。

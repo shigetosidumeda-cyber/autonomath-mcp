@@ -102,7 +102,7 @@
  <div class="container">
 
  <h1>Getting started</h1>
- <p class="lead">Five minutes from zero to a live query against 11,601 searchable Japanese public programs (tier S/A/B/C; plus 2,788 publication-review rows excluded from public search) — 2,286 case studies, 108 loan programs with three-axis risk decomposition, and 1,185 enforcement cases. Anonymous tier needs no API key (3 req/day per IP, JST <abbr title="Japan Standard Time, UTC+9">UTC+9</abbr> next-day reset); MCP setup below works with Claude Desktop, Cursor, Gemini, and any client speaking MCP protocol <code>2025-06-18</code>.</p>
+ <p class="lead">Five minutes from zero to a live query against 11,601 searchable Japanese public programs (tier S/A/B/C; plus 2,871 publication-review rows excluded from public search) — 2,286 case studies, 108 loan programs with three-axis risk decomposition, and 1,185 enforcement cases. Anonymous tier needs no API key (3 req/day per IP, JST <abbr title="Japan Standard Time, UTC+9">UTC+9</abbr> next-day reset); MCP setup below works with Claude Desktop, Cursor, Gemini, and any client speaking MCP protocol <code>2025-06-18</code>.</p>
 
  <h2>1. First request (no API key)</h2>
  <p>The anonymous daily allowance auto-issues a 3 calls/day per IP budget (resets at JST next-day 00:00). This curl works as-is:</p>
@@ -110,7 +110,7 @@
  <p>Response is JSON: <code>{total, limit, offset, results: [{unified_id, primary_name, tier, amount_max_man_yen, prefecture, official_url, source_url, source_fetched_at, ...}]}</code>. Names and descriptions are Japanese; leave them as UTF-8.</p>
  <p>Hitting the limit returns 429 with <code>{"limit": 3, "resets_at": "..."}</code> — wait until JST 翌日 reset (00:00 next-day) or upgrade in §2. Transient 5xx (e.g. 503) returns a JSON <code>detail</code> body — retry with backoff.</p>
 
- <h2>2. Get an API key (Paid · ¥3/req, ¥3.30 incl. tax)</h2>
+ <h2>2. Get an API key (Paid · ¥3/billable unit, ¥3.30 incl. tax)</h2>
  <p>To remove the 3 req/day per IP cap, create a Stripe Checkout session. Billing is pay-per-request — add a card, pay only for what you use (tax exclusive; 10% JCT added at invoice):</p>
  <pre class="code-block" aria-label="billing checkout"><code>curl -X POST https://api.jpcite.com/v1/billing/checkout \
  -H "Content-Type: application/json" \
@@ -179,7 +179,7 @@ curl https://api.jpcite.com/healthz
 curl -L https://api.jpcite.com/v1/meta
 # =&gt; {
 # "total_programs": 14472,
-# "tier_counts": {"S": 114, "A": 1340, "B": 4186, "C": 5961, "X": 2788},
+# "tier_counts": {"S": 114, "A": 1340, "B": 4186, "C": 5961, "X": 2871},
 # "exclusion_rules_count": 181,
 # "last_ingested_at": "2026-04-29T10:30:00+09:00",
 # "data_as_of": "2026-04-29",

@@ -164,7 +164,7 @@ MCP tools:
 - `find_amendments_for_law_am(law_id)`
 - 既存 `forecast_program_renewal_am` に signal #5 (パブコメ予兆) 追加
 
-**期待**: ¥250-400K/月 (¥3/req only 制約遵守、税理士/コンプラ/業種団体 cohort)
+**期待**: ¥250-400K/月 (¥3/billable unit only 制約遵守、税理士/コンプラ/業種団体 cohort)
 
 #### TIER A (高 ROI、月 ¥1.97-2.55M uplift)
 
@@ -558,7 +558,7 @@ A_ext2 都道府県条例: 完全独立、Tokyo のみ (mig 134)
 - LLM API を一切呼ばない (`anthropic`/`openai`/`google.generativeai`/`claude_agent_sdk`、CI guard `tests/test_no_llm_in_production.py`)
 - agg サイト (noukaweb/hojyokin-portal/biz.stayway) を `source_url` に書かない
 - robots.txt + 1 sec/host throttle
-- ¥3/req metered 単一料金、tier SKU / 月額 SKU 提案禁止
+- ¥3/billable unit metered 単一料金、tier SKU / 月額 SKU 提案禁止
 - `_archive/` 触らない
 - 「工数」「priority」「phase」「まず」「次」「MVP」「stage」言葉禁止 (出力 / コミットメッセージ / docs)
 - 営業電話 / sales call / DPA / 採用 / 広告 禁止

@@ -8,7 +8,7 @@ runbook (see docs/_internal/hf_publish_runbook.md).
 
 Filter rules:
   - programs: only excluded=0 AND tier IN ('S','A','B','C') (the canonical
-    "11,547 programs" view per CLAUDE.md). Quarantine tier 'X' and excluded
+    "11,601 searchable programs" view per CLAUDE.md). Quarantine tier 'X' and excluded
     rows are dropped — they are not safe for public consumption.
   - laws: full dump (9,484 rows).
   - case_studies: full dump (2,286 rows).
@@ -47,7 +47,7 @@ DEFAULT_DB = REPO_ROOT / "data" / "jpintel.db"
 DEFAULT_OUTPUT = REPO_ROOT / "dist" / "hf-dataset"
 
 # Canonical public-program filter. See CLAUDE.md:
-#   "11,547 programs (補助金・融資・税制・認定, tier S/A/B/C excluded=0)".
+#   "11,601 searchable programs (補助金・融資・税制・認定, tier S/A/B/C excluded=0)".
 # Quarantine tier 'X' and excluded=1 rows are not safe to redistribute —
 # they are either ambiguous, low-confidence, or aggregator-sourced.
 PROGRAMS_FILTER = "excluded = 0 AND tier IN ('S', 'A', 'B', 'C')"

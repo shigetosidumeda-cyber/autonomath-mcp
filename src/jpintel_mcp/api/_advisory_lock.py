@@ -46,7 +46,6 @@ from __future__ import annotations
 
 import logging
 import os
-import sqlite3
 import threading
 import time
 from contextlib import contextmanager, suppress
@@ -54,6 +53,7 @@ from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    import sqlite3
     from collections.abc import Iterator
 
 logger = logging.getLogger("jpintel.advisory_lock")

@@ -309,10 +309,8 @@ def harvest_npo(
                             # rotating session. Rewind end_block
                             # bookkeeping.
                             pg = cur
-                            try:
+                            with contextlib.suppress(Exception):
                                 browser.close()
-                            except Exception:  # noqa: BLE001
-                                pass
                             time.sleep(3)
                             break
                         else:
@@ -329,10 +327,8 @@ def harvest_npo(
                         _LOG.info("[npo] progress %d/%d total_rows=%d", cur, total_pages, len(out))
                 else:
                     pg = end_block + 1
-                try:
+                with contextlib.suppress(Exception):
                     browser.close()
-                except Exception:  # noqa: BLE001
-                    pass
         except Exception as exc:
             _LOG.warning(
                 "[npo] rotation block start=%d err=%s, sleeping 8s and retrying",

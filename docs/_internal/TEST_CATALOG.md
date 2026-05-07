@@ -28,7 +28,7 @@ Generated 2026-05-05. Read-only audit. **No `.pytest_cache` durations available*
 | tests/test_programs_batch.py | 13 | `/v1/programs:batch` envelope |
 | tests/test_usage_billing_idempotency.py | 8 | usage→Stripe idempotency keys |
 | tests/test_self_cap.py | 12 | per-customer self-imposed spending cap |
-| tests/test_cost_preview.py | 15 | `/v1/cost-preview` for ¥3/req calc |
+| tests/test_cost_preview.py | 15 | `/v1/cost-preview` for ¥3/billable unit calc |
 | tests/test_trial_signup.py | 16 | `/v1/auth/signup` trial path |
 | tests/test_device_flow.py | 5 | OAuth-style device flow |
 

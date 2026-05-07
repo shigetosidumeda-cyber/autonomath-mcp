@@ -906,7 +906,7 @@ KPIは「売上を大きく見せる数字」ではなく、jpcite が public ev
 | Sensitive gate | 税務/法律/監査/融資/申請/登記/労務 | `_disclaimer` と `human_review_required` 100% | 該当tool/presetを gate off |
 | Source gate | `sources` | アグリゲータ host 0件、一次資料host優先、link-only対象の本文転載なし | ETL quarantine、公開停止、source profile修正 |
 | Benchmark gate | 3-arm評価 | manifest、corpus_snapshot_id、tool log、review note が保存されている | benchmarkを公表しない |
-| Billing gate | anon -> paid | 明示同意なし課金0件、¥3/req 税込¥3.30を明記 | Stripe導線停止、課金文言修正 |
+| Billing gate | anon -> paid | 明示同意なし課金0件、¥3/billable unit 税込¥3.30を明記 | Stripe導線停止、課金文言修正 |
 
 ## 10. NG表現
 

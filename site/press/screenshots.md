@@ -8,7 +8,7 @@ Press-kit screenshots are provided on request so media outlets receive current p
 |---|---|---|
 | `ux_index.png` | 217 KB | Landing hero + features + demo |
 | `ux_index_newsletter.png` | 130 KB | Newsletter section close-up |
-| `ux_pricing.png` | 161 KB | Pricing page (¥3/request metered) |
+| `ux_pricing.png` | 161 KB | Pricing page (¥3/billable unit metered) |
 | `ux_privacy.png` | 322 KB | Privacy policy full page |
 | `ux_tos.png` | 410 KB | Terms of service full page |
 | `ux_tos_tall.png` | 418 KB | ToS tall viewport |

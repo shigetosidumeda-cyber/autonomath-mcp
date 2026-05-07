@@ -1,6 +1,6 @@
 # r/Entrepreneur (or r/SaaS)
 
-**Title**: `Launched a Japanese regtech B2B SaaS today — ¥3/req metered, no subscription tiers, solo founder. Here's why I picked that pricing model.`
+**Title**: `Launched a Japanese regtech B2B SaaS today — ¥3/billable unit metered, no subscription tiers, solo founder. Here's why I picked that pricing model.`
 
 ---
 
@@ -8,9 +8,9 @@
 
 Today I launched jpcite — a search API + MCP server over Japanese institutional data (subsidies, laws, court decisions, invoice registry, tax rulesets, enforcement records). Target users: AI/dev teams building agents that need to reason about Japanese regulation, plus accounting / consulting firms that want clean machine-readable lookups.
 
-I'm posting here mostly to explain why I chose **fully metered ¥3/req** instead of the usual SaaS tier playbook, since that's been the most-asked question from people who've previewed it.
+I'm posting here mostly to explain why I chose **fully metered ¥3/billable unit** instead of the usual SaaS tier playbook, since that's been the most-asked question from people who've previewed it.
 
-## Why ¥3/req metered, not Free/Pro/Enterprise
+## Why ¥3/billable unit metered, not Free/Pro/Enterprise
 
 **1. Solo + zero-touch.** I'm one person. Bookyou株式会社 (T8010001213708). No CS team, no sales, no DPA negotiation, no Slack Connect, no onboarding calls. The only way that math works is if every single feature is self-service. Tier SKUs require sales conversations to land Enterprise customers — I can't do that, and I don't want to.
 
@@ -27,7 +27,7 @@ I'm posting here mostly to explain why I chose **fully metered ¥3/req** instead
 - 11,601 subsidies + 9,484 laws + 2,065 court decisions + 13,801 invoice registrants + 50 tax rulesets + 1,185 enforcement records + 2,286 adoption cases
 - Returned public rows are designed to include a primary-source URL (ministry / prefecture / 国税庁 / 公庫). Aggregators banned.
 - REST API + MCP server (139 tools at default gates, protocol 2025-06-18)
-- ¥3/req (税込 ¥3.30), 3 req/日 free anonymously, no signup
+- ¥3/billable unit (税込 ¥3.30), 3 req/日 free anonymously, no signup
 
 ## Honest positioning
 

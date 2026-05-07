@@ -46,7 +46,7 @@ Architecture choices that I think are interesting:
   maintain across clients.
 - SQLite 全文検索インデックス (3-gram) for Japanese compound-word search; ベクトル検索
   for the 504k-entity vec layer (gradual activation).
-- Pure metered ¥3/req (~$0.02). No tier SKUs, no seat fees, no annual
+- Pure metered ¥3/billable unit (~$0.02). No tier SKUs, no seat fees, no annual
   minimums. Anonymous 3 req/day free per IP.
 - Aggregator sources are explicitly banned. Every program cites a
   primary government URL.

@@ -23,7 +23,7 @@
 
 ご質問の bulk discount につきまして、現状のご案内です。
 
-- jpcite は ¥3/request (税込 ¥3.30) の完全従量制で運用しております
+- jpcite は ¥3/billable unit (税込 ¥3.30) の完全従量制で運用しております
 - 数量割引・年契約割引・seat ライセンスは設けておりません
 - 理由は 100% organic acquisition + solo ops の構造上、個別交渉に
   リソースを割けない点と、価格を 1 本化することで請求の透明性を
@@ -64,7 +64,7 @@ jpcite は tier (プラン) を切り替える仕組みではなく、
 
 1. https://jpcite.com/dashboard へログイン
 2. 「お支払い情報」より Stripe の card 登録
-3. 登録完了後、その月の 51 リクエスト目以降が ¥3/request
+3. 登録完了後、その月の 51 リクエスト目以降が ¥3/billable unit
    (税込 ¥3.30) で課金されます
 4. 翌日 (JST 00:00) に Free 枠 3 req は再度付与されます
 
@@ -644,7 +644,7 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
   をいただければ、内容に応じて返信いたします
 - 製品 demo: 公開ドキュメント (https://jpcite.com/docs/) と
   Free 3 req/日 でお試しいただけます
-- 価格交渉: ¥3/req (税込 ¥3.30) 一律のため、call による交渉は
+- 価格交渉: ¥3/billable unit (税込 ¥3.30) 一律のため、call による交渉は
   実施しておりません
 
 zero-touch を維持することで、料金を低位に保てております。
@@ -664,7 +664,7 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
 
 年契約・enterprise tier のご検討、ありがとうございます。
 
-恐れ入りますが、jpcite は ¥3/request (税込 ¥3.30) の完全
+恐れ入りますが、jpcite は ¥3/billable unit (税込 ¥3.30) の完全
 従量制のみで運用しており、下記の形態はご提供しておりません。
 
 - 年契約 / 月固定 / seat ライセンス
@@ -673,7 +673,7 @@ Bookyou株式会社 (T8010001213708) - info@bookyou.net
 
 代わりにご検討いただけるアプローチ:
 
-1. card 登録のうえ metered で運用 (Free 3/日 + 超過分のみ ¥3/req)
+1. card 登録のうえ metered で運用 (Free 3/日 + 超過分のみ ¥3/billable unit)
 2. cache hit 80% 程度を見込めるワークロードでは実質単価が
    ¥0.6 - ¥1.5 程度に下がるケースが多くなっています
 3. 月次の予算上限は dashboard の Self-cap 機能で設定可能です

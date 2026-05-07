@@ -2,7 +2,7 @@
 <!--
   Coverage explorer (2026-04-30 リフレーム). 「削減時間 / saving 推定 /
   AI コスト x% 削減」 系のフレームは撤去。 圧縮率 0.59 / 削減 ¥0.01/req
-  という実測のもと、 ¥3/req 課金は trick ではなく 「複数 DB を 1 リクエスト
+  という実測のもと、 ¥3/billable unit 課金は trick ではなく 「複数 DB を 1 リクエスト
   で join + 一次資料の出典付き + 鮮度 SLO」 に対する従量料金として開示。
 
   顧問先数 / 月の確認 件数 を入力すると、 月額 API コスト (¥3 × N 税別、
@@ -18,11 +18,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>カバレッジ試算 — jpcite</title>
-<meta name="description" content="jpcite カバレッジ試算。顧問先数 / 月次 確認 件数 を入力すると、月額 API コスト (¥3/リクエスト 税別、税込 ¥3.30) と、1 リクエストで join される DB 数・出典本数・鮮度日数を即提示。トークン量や AI コストの増減は workload 依存のため本ツールでは扱いません。Pure JS、LLM 呼び出しなし。">
+<meta name="description" content="jpcite カバレッジ試算。顧問先数 / 月次 確認 件数 を入力すると、月額 API コスト (¥3/課金単位 税別、税込 ¥3.30) と、1 リクエストで join される DB 数・出典本数・鮮度日数を即提示。トークン量や AI コストの増減は workload 依存のため本ツールでは扱いません。Pure JS、LLM 呼び出しなし。">
 <meta name="robots" content="index, follow">
 
 <meta property="og:title" content="カバレッジ試算 — jpcite">
-<meta property="og:description" content="¥3/リクエスト で何が join されるか — 複数 DB + 出典 + 鮮度の内訳を即提示。トークン量や AI コストの増減は workload 依存のため本ツールでは扱いません。">
+<meta property="og:description" content="¥3/課金単位 で何が join されるか — 複数 DB + 出典 + 鮮度の内訳を即提示。トークン量や AI コストの増減は workload 依存のため本ツールでは扱いません。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/calculator.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -33,7 +33,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="カバレッジ試算 — jpcite">
-<meta name="twitter:description" content="¥3/リクエスト で何が join されるか — 複数 DB + 出典 + 鮮度の内訳を即提示。">
+<meta name="twitter:description" content="¥3/課金単位 で何が join されるか — 複数 DB + 出典 + 鮮度の内訳を即提示。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/calculator.html">
@@ -52,7 +52,7 @@
 <!-- SoftwareApplication JSON-LD: coverage explorer は client-side で
      動く application なので Google が「ツール」として理解できるよう
      SoftwareApplication + applicationCategory: BusinessApplication を
-     宣言。 offers は ¥3/req に pin、 operatingSystem は browser. -->
+     宣言。 offers は ¥3/billable unit に pin、 operatingSystem は browser. -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -62,7 +62,7 @@
   "applicationSubCategory": "TaxAccountingTool",
   "operatingSystem": "Web Browser",
   "url": "https://jpcite.com/calculator.html",
-  "description": "税理士・会計士・補助金 consultant 向けのカバレッジ試算ツール。顧問先数 / 月次 確認 件数 から jpcite API (¥3/req 税別、税込 ¥3.30) の月額コストを client-side で算定し、1 リクエストで join される複数 DB / 出典本数 / 鮮度日数の内訳を提示する。",
+  "description": "税理士・会計士・補助金 consultant 向けのカバレッジ試算ツール。顧問先数 / 月次 確認 件数 から jpcite API (¥3/billable unit 税別、税込 ¥3.30) の月額コストを client-side で算定し、1 リクエストで join される複数 DB / 出典本数 / 鮮度日数の内訳を提示する。",
   "browserRequirements": "JavaScript",
   "isAccessibleForFree": true,
   "publisher": {
@@ -303,7 +303,7 @@
 
  <h1>カバレッジ試算</h1>
  <p class="lead">
- jpcite API は ¥3/リクエスト 税別 (税込 ¥<span data-fact="price_per_req_inc_tax">3.30</span>) の従量料金です。
+ jpcite API は ¥3/課金単位 税別 (税込 ¥<span data-fact="price_per_req_inc_tax">3.30</span>) の従量料金です。
  顧問先数 / 月次 確認 件数 を入力すると、 月額 API コストと、
  <strong>1 リクエストで実際に join される複数 DB ・出典本数・鮮度日数</strong> を <strong>ブラウザ内で</strong> 提示します。
  入力値はブラウザから外に出ません (送信なし、 LLM 呼び出しなし)。
@@ -371,7 +371,7 @@
  <!-- Plain-language summary -->
  <div class="calc-summary" aria-live="polite">
  <p id="summary-line">入力に応じて要約が更新されます。</p>
- <p>※ ¥3/リクエストの内訳: <strong class="coverage-figure" id="summary-coverage">— DB join</strong> + 出典付き返却 + 鮮度 SLO。 トークン量や AI 全体コストの増減は <a href="/qa/llm-evidence/context-savings.html">context savings の説明</a> をご参照ください。</p>
+ <p>※ ¥3/課金単位の内訳: <strong class="coverage-figure" id="summary-coverage">— DB join</strong> + 出典付き返却 + 鮮度 SLO。 トークン量や AI 全体コストの増減は <a href="/qa/llm-evidence/context-savings.html">context savings の説明</a> をご参照ください。</p>
  </div>
 
  <!-- Assumption disclosure -->
@@ -420,7 +420,7 @@
  </table>
 
  <div class="calc-cta">
- <a class="btn btn-primary" href="/pricing.html#api-paid">¥3/リクエスト 従量 で始める</a>
+ <a class="btn btn-primary" href="/pricing.html#api-paid">¥3/課金単位 従量 で始める</a>
  <a class="btn btn-secondary" href="/docs/getting-started/">API クイックスタート</a>
  <a class="btn btn-secondary" href="/stats.html">公開統計を確認</a>
  </div>

@@ -190,7 +190,7 @@ def main() -> int:
 
     # legit: same name with multiple distinct prefectures (per-pref variants)
     legit_groups = 0
-    for name, group in by_name.items():
+    for _name, group in by_name.items():
         prefs = {r.get("prefecture") or "" for r in group}
         if len(prefs) > 1:
             legit_groups += 1
@@ -222,7 +222,7 @@ def main() -> int:
     cur = conn.cursor()
     cur.execute("BEGIN")
     try:
-        for (name, pref, url), nrows in noise_clusters.items():
+        for (_name, _pref, _url), nrows in noise_clusters.items():
             winner = pick_winner(nrows)
             losers = [r for r in nrows if r["unified_id"] != winner["unified_id"]]
             loser_uids = sorted(r["unified_id"] for r in losers)

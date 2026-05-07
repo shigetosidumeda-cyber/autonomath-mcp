@@ -552,14 +552,14 @@ def search_tax_incentives(
         ),
     ] = "minimal",
 ) -> dict[str, Any]:
-    """DISCOVER (Tax): Search 35 Japanese tax incentives — corporate deductions (減価償却/試験研究費), tax credits (雇用/エネルギー/DX), special measures (租税特別措置).
+    """DISCOVER (Tax): Search 50 Japanese tax rulesets — corporate deductions (減価償却/試験研究費), tax credits (雇用/エネルギー/DX), special measures (租税特別措置).
 
     WHEN TO USE: User asks about 税額控除 / 租税特別措置 / 法人税 / 所得税 deductions or credits.
     WHEN NOT: For broader subsidies/grants → use search_programs. For specific tax rule lookup → use get_am_tax_rule.
 
     Returns rulesets with eligibility, applicable years, citation to NTA / 国税通達 / 措置法.
 
-    [DISCOVER-TAX] Returns matching tax_measure records from the am_entities table with primary source URL. ~271 structured rows across 法人税 / 所得税 / 地方税 / 消費税. ¥3/req metered.
+    [DISCOVER-TAX] Returns matching tax_measure records from the am_entities table with primary source URL. ~271 structured rows across 法人税 / 所得税 / 地方税 / 消費税. ¥3/billable unit metered.
     Search Japanese tax incentives across 法人税 / 所得税 / 地方税 / 消費税 with structured amount_or_rate, root_law, application_period, prerequisite_certification.
 
     WHAT: ~271 structured records in `am_entities` where record_kind='tax_measure'
@@ -2879,7 +2879,7 @@ def search_acceptance_stats_am(
     if total == 0:
         # Empty-hit envelope: echo what the caller filtered on +
         # nearest-broader queries so the agent doesn't burn another
-        # ¥3/req on a near-miss retry. Coverage is METI/MAFF biased,
+        # ¥3/billable unit on a near-miss retry. Coverage is METI/MAFF biased,
         # so dropping `year` or `region` is the most common fix.
         filters_applied = {
             k: v

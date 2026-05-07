@@ -97,7 +97,7 @@ Monitor legacy-host traffic share weekly via the existing
 the middleware via the Fly request log). Cutover criterion:
 
 > Legacy-host share **< 5% of total requests** for **4 consecutive
-> weeks**, AND the top-3 legacy-host customers (by ¥3/req billable
+> weeks**, AND the top-3 legacy-host customers (by ¥3/billable unit billable
 > volume) have either migrated or been emailed twice with no response
 > within 30 days.
 

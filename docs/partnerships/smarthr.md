@@ -1,6 +1,6 @@
 # Partnership — SmartHR
 
-> **要約 (summary):** SmartHR (60,000 社、人事 / 労務 SaaS) のダッシュボード内に **jpcite widget** を embed。雇用関係助成金 (キャリアアップ / 雇用調整 / 両立支援) の候補を社員データから自動抽出。¥3/req metered。月次売上の 10% を SmartHR に referral 還元。
+> **要約 (summary):** SmartHR (60,000 社、人事 / 労務 SaaS) のダッシュボード内に **jpcite widget** を embed。雇用関係助成金 (キャリアアップ / 雇用調整 / 両立支援) の候補を社員データから自動抽出。¥3/billable unit metered。月次売上の 10% を SmartHR に referral 還元。
 
 ## ターゲットと規模
 
@@ -61,12 +61,12 @@ referral:
 
 | 項目 | 金額 / 比率 |
 |------|------------|
-| ユーザー単価 | ¥3 / req (税別) |
+| ユーザー単価 | ¥3 / unit (税別) |
 | SmartHR referral | metered 売上の 10% |
 | 払出 cycle | 月末締め、翌月末日 Stripe Connect Transfer |
 | 最低金額 | なし |
 
-discount NG。referral 経由でも ¥3/req 固定。
+discount NG。referral 経由でも ¥3/billable unit 固定。
 
 ## 申請内容
 

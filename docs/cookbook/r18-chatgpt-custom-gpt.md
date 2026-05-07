@@ -5,11 +5,11 @@ ChatGPT の Custom GPT (GPT-Builder) の Actions に jpcite の **agent-safe Ope
 - **Audience (cohort)**: All cohorts (ChatGPT エンドユーザー / 顧問先共有 GPT 配布)
 - **Use case**: 顧問先に「補助金を聞ける GPT」をリンクで配る、社内ナレッジ GPT に補助金 fact tool を追加
 - **Disclaimer**: 行政書士法 §1 / 税理士法 §52 / 弁護士法 §72 (各レスポンスに `_disclaimer` envelope が自動付与)
-- **Cost**: ¥0 GPT 設定 + ¥3/call (jpcite 側) + ChatGPT Plus / Team 料金 (OpenAI 側)
+- **Cost**: ¥0 GPT 設定 + ¥3/billable unit (jpcite 側) + ChatGPT Plus / Team 料金 (OpenAI 側)
 
 ## TL;DR
 
-完全 OpenAPI (`/v1/openapi.json`) は 187 ops で ChatGPT Actions の上限を超える。Agent-safe subset (`/v1/openapi.agent.json`) を import すれば GPT が選択しやすい 5-10 ops に絞られる。
+完全 OpenAPI (`/v1/openapi.json`) は ChatGPT Actions には広すぎる。Agent-safe subset (`/v1/openapi.agent.json`) を import すれば GPT が選択しやすい操作面に絞られる。
 
 ## Sample (GPT-Builder)
 

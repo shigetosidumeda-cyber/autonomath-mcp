@@ -14,7 +14,7 @@
 - [ ] **Bank account (JPY payout + prenote)** — 円口座登録、Stripe が ¥1 prenote 送信し 2-3 営業日で確認。Settings → Payouts / owner: you
 - [ ] **Identity verification** — マイナンバーカード / 運転免許証 / パスポートのいずれかを KYC に提出。Settings → Verifications / owner: you
 - [ ] **Tax ID (インボイス T-号)** — 取得後 Settings → Tax → Tax IDs に `jp_trn` で追加。未取得なら国税庁 e-Tax `https://www.nta.go.jp/taxes/shiraberu/zeimokubetsu/shohi/keigenzeiritsu/invoice.htm` から申請、通常 2 週間リード。未取得なら §3 フォールバック参照 / owner: you
-- [ ] **Products & prices — 1 metered price** — `AutonoMath per-request` product 配下に ¥3/req, `tax_behavior=exclusive`, `recurring.usage_type=metered`, `aggregate_usage=sum`, `lookup_key=per_request_v3` で作成。price ID を `STRIPE_PRICE_PER_REQUEST` env に投入 (`config.py`)。旧 3-tier (`plus/pro/business`) Price + legacy `per_request_v1` (¥0.5) / `per_request_v2` (¥1) は archive 済 / owner: you
+- [ ] **Products & prices — 1 metered price** — `AutonoMath per-request` product 配下に ¥3/billable unit, `tax_behavior=exclusive`, `recurring.usage_type=metered`, `aggregate_usage=sum`, `lookup_key=per_request_v3` で作成。price ID を `STRIPE_PRICE_PER_REQUEST` env に投入 (`config.py`)。旧 3-tier (`plus/pro/business`) Price + legacy `per_request_v1` (¥0.5) / `per_request_v2` (¥1) は archive 済 / owner: you
 - [ ] **Customer Portal** — subscription update / cancel / payment method update / invoice history 全 ON。TOS・Privacy URL を Business info に登録し config ID を `STRIPE_BILLING_PORTAL_CONFIG_ID` へ (`config.py:34`)。Settings → Billing → Customer portal / owner: you
 - [ ] **Webhook endpoint** — `https://jpcite.com/v1/billing/webhook` に 5 event (`customer.subscription.created` / `invoice.paid` / `invoice.payment_failed` / `customer.subscription.updated` / `customer.subscription.deleted`) を購読。signing secret を `STRIPE_WEBHOOK_SECRET` に投入。`stripe-signature` 検証は `api/billing.py` 実装済 / owner: you
 - [ ] **Radar baseline** — CVC / 住所 / 3DS2 既定ルールが有効かを確認、変更しない / owner: you
@@ -31,7 +31,7 @@
 - [ ] 所在地 (line 69) — 「請求あり次第、遅滞なく開示」特例は個人事業主で可。ただし **Stripe live account 登録住所と整合必須**。バーチャルオフィス採用なら実受取テストを 1 回。
 - [ ] 電話番号 (line 73) — 同開示特例可。請求から 3 営業日以内の応答運用を整える。
 - [ ] DRAFT バナー (line 44) 撤去
-- [ ] 販売価格整合性 (line 80-88) — §1 の metered ¥3/req と完全一致していること (税別明記)
+- [ ] 販売価格整合性 (line 80-88) — §1 の metered ¥3/billable unit と完全一致していること (税別明記)
 - [ ] tos.html `[管轄裁判所 — 要確定]` (`tos.html:104`) — 個人事業主なら住所所在地裁判所を記載
 - [ ] **lawyer レビュー** — 32 条必須 8 項目 (事業者名 / 住所 / 電話 / 販売価格 / 支払方法 / 引渡時期 / 返品特約 / 連絡先メール) テンプレは全部存在。launch 前 1 時間の法律相談を通す / owner: lawyer
 
@@ -103,4 +103,4 @@ owner: you, target 全工程 10 min 以内。
 
 1. **商標リブランド (DOMAIN 未決定)** — `jpcite.com` は Intel 著名商標衝突懸念 (`project_jpintel_trademark_intel_risk.md`)。AutonoMath へのリネームを採用済だが、`site/*.html`、`tls-check.yml`、mailto、meta og:url の一括置換が残存する可能性あり。2026-04-23 時点で `jpcite.com` へ大部分移行済、grep で `jpcite.com` 参照が残っていないか最終確認。
 2. **T-号 (適格請求書) 確認** — Bookyou 株式会社 **T8010001213708** (令和7年5月12日登録済) を使用。残タスクは Stripe Dashboard に登録 + `tokushoho.html` / `privacy.html` / invoice footer への記載反映のみ。
-3. **Pivot 後の pricing 整合性** — 2026-04-25 v3 改訂: 3-tier (`plus/pro/business`) → pure metered (¥3/req 税別) へ。`site/pricing.html` / `tokushoho.html` / `docs/pricing.md` 更新済。Stripe 側は `STRIPE_PRICE_PER_REQUEST` (`lookup_key=per_request_v3`, live `price_1TPw8sL3qgB3rEtw4GyG4DHi`, `tax_behavior=exclusive`, metered) 1 本のみ live 登録、旧 Price (`per_request_v1` ¥0.5 / `per_request_v2` ¥1) は archive。
+3. **Pivot 後の pricing 整合性** — 2026-04-25 v3 改訂: 3-tier (`plus/pro/business`) → pure metered (¥3/billable unit 税別) へ。`site/pricing.html` / `tokushoho.html` / `docs/pricing.md` 更新済。Stripe 側は `STRIPE_PRICE_PER_REQUEST` (`lookup_key=per_request_v3`, live `price_1TPw8sL3qgB3rEtw4GyG4DHi`, `tax_behavior=exclusive`, metered) 1 本のみ live 登録、旧 Price (`per_request_v1` ¥0.5 / `per_request_v2` ¥1) は archive。

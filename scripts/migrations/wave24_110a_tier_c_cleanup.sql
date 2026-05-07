@@ -1,6 +1,6 @@
 -- target_db: jpintel
 -- migration wave24_110a_tier_c_cleanup
---   (MASTER_PLAN_v1 章 3 §M6 — tier C 6,044 行のうち重複名 668 とゴミ名を
+--   (MASTER_PLAN_v1 章 3 §M6 — tier C 5,961 行のうち重複名 668 とゴミ名を
 --    一括 quarantine する)
 --
 -- Why this exists:

@@ -232,13 +232,12 @@ def write_report(
         n = cat_counter.get(cat, 0)
         share_pct = meta["share"] * 100
         lines.append(
-            f"  - {cat} — {share_pct:.0f}% (n={n:,}) "
-            f"→ jcrb-v1 domain: {', '.join(meta['domains'])}"
+            f"  - {cat} — {share_pct:.0f}% (n={n:,}) → jcrb-v1 domain: {', '.join(meta['domains'])}"
         )
     lines += [
         f"- jpcite price: **¥{JPCITE_PRICE_JPY_INC_TAX:.2f}/req** (税込)"
         f" ≈ ${JPCITE_PRICE_USD:.4f}/req at ¥{JPY_PER_USD:.0f}=$1",
-        f"- jpcite total cost / month: **¥{jpcite_total_jpy:,.0f}** " f"(${jpcite_total_usd:,.2f})",
+        f"- jpcite total cost / month: **¥{jpcite_total_jpy:,.0f}** (${jpcite_total_usd:,.2f})",
         "",
         "## Per-model rollup (1 month, all 6,000 queries)",
         "",
@@ -292,8 +291,7 @@ def write_report(
         "## 時間節約 (citation_ok 0.40 → 0.95)",
         "",
         f"- Per-query verify time saved: **{SECS_SAVED_PER_QUERY_WITH_CITATION:.0f} 秒**",
-        f"- Total verify time saved / month: **{hours_saved:,.1f} 時間** "
-        f"({secs_saved:,.0f} 秒)",
+        f"- Total verify time saved / month: **{hours_saved:,.1f} 時間** ({secs_saved:,.0f} 秒)",
         f"- Implied 税理士 hourly value @ ¥{TAX_ACCOUNTANT_HOURLY_JPY:,.0f}/h: "
         f"**¥{time_value_jpy:,.0f}/月** "
         f"(${time_value_jpy / JPY_PER_USD:,.2f})",

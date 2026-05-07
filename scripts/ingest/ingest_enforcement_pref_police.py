@@ -100,7 +100,7 @@ except ImportError as exc:  # pragma: no cover
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-import contextlib
+import contextlib  # noqa: E402  (sys.path manipulation precedes)
 
 from scripts.lib.http import HttpClient  # noqa: E402
 
@@ -1536,7 +1536,7 @@ def parse_ibaraki_daiko_html(html: str, source_url: str) -> list[EnfRow]:
     out: list[EnfRow] = []
     seen: set[tuple[str, str, str]] = set()
     # 処分年月 may be 令和7年12月 (no day) — accept that form too.
-    YM_RE = re.compile(r"令和\s*(\d+|元)\s*年\s*(\d{1,2})\s*月")
+    YM_RE = re.compile(r"令和\s*(\d+|元)\s*年\s*(\d{1,2})\s*月")  # noqa: N806  (local CONST sentinel, not loop-mut)
     for tr in soup.find_all("tr"):
         cells = tr.find_all(["td", "th"])
         cell_texts = [_normalize(c.get_text(" ", strip=True)) for c in cells]

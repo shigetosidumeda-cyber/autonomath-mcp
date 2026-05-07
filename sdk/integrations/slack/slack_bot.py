@@ -277,8 +277,7 @@ def render_programs_message(query: str, items: list[dict[str, Any]]) -> dict[str
                     "text": {
                         "type": "mrkdwn",
                         "text": (
-                            f"*jpcite 制度検索* — `{query}`\n"
-                            "該当する制度が見つかりませんでした。"
+                            f"*jpcite 制度検索* — `{query}`\n該当する制度が見つかりませんでした。"
                         ),
                     },
                 },
@@ -421,4 +420,5 @@ def build_flask_app() -> Any:  # pragma: no cover — exercised via README
 
 if __name__ == "__main__":  # pragma: no cover
     logging.basicConfig(level=logging.INFO)
-    build_flask_app().run(host="0.0.0.0", port=int(os.environ.get("PORT", "8080")))
+    # nosec B104 — local Slack bot runner intentionally binds 0.0.0.0 inside the operator-managed container.
+    build_flask_app().run(host="0.0.0.0", port=int(os.environ.get("PORT", "8080")))  # nosec B104

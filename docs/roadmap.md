@@ -18,7 +18,7 @@ zero-touch / solo 運営のため、フィードバック窓口はメール (`in
 
 - **ブランド改名 (jpintel → jpcite / jpcite)** — Intel との著名商標衝突
   リスクを回避するため、user-facing 全面でリネーム。法人は Bookyou株式会社のまま。
-- **¥3/req 完全従量モデル確定** — tier SKU / 階層プラン / 無料枠 SKU 等を完全廃止。
+- **¥3/billable unit 完全従量モデル確定** — tier SKU / 階層プラン / 無料枠 SKU 等を完全廃止。
   匿名 3 req/日 per IP のみ無料。pricing UI から階層的な表記を削除。
 - **freee 助成金AI 比較ページ追加** — `/compare/freee/` 含む 10 競合との honest
   comparison。13-15 軸の matrix + "when to choose us / them" を全 page に。
@@ -95,7 +95,7 @@ zero-touch / solo 運営のため、フィードバック窓口はメール (`in
   polished SaaS UI ビルドは AI agents 単独では難しく、その方向の機能拡張は
   しない。dashboard は bearer-auth の最小限の usage / billing 表示のみ維持。
 - **tier 制 SKU の復活** — Free tier / Starter / Pro / Enterprise は永久禁止。
-  ¥3/req 完全従量 1 本のみ。anonymous 3/日だけが無料。
+  ¥3/billable unit 完全従量 1 本のみ。anonymous 3/日だけが無料。
 - **DPA / MSA / SOW の人手交渉** — solo + zero-touch なので個別契約調整は
   しない。標準 ToS / Privacy / 特商法のみ。
 - **電話サポート / Slack Connect / 専用 onboarding call** — 全て self-service。

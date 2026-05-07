@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>jpcite for VC / M&amp;A advisors — corporate-number due diligence (5y enforcement + 10y adoption)</title>
-<meta name="description" content="jpcite for VC and M&A advisors. One query by corporate number returns enforcement history, adoption track record, invoice-registrant status, related subsidies, and loan terms. Drop into your DD pipeline at enterprise scale. ¥3/req metered.">
+<meta name="description" content="jpcite for VC and M&A advisors. One query by corporate number returns enforcement history, adoption track record, invoice-registrant status, related subsidies, and loan terms. Drop into your DD pipeline at enterprise scale. ¥3/billable unit metered.">
 
 <meta property="og:title" content="jpcite for VC / M&amp;A advisors">
 <meta property="og:description" content="Corporate-number due diligence: 5 years of enforcement, 10 years of adoption history. DD-pipeline ready.">
@@ -83,11 +83,11 @@
   "@type": "FAQPage",
   "inLanguage": "en",
   "mainEntity": [
-    {"@type": "Question", "name": "Can I run a 100-target DD pipeline in parallel?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. ¥3/req metered with budget caps and rate limits apply. 100 targets × 5 endpoints = 500 req → ¥1,500 (tax exclusive) per batch."}},
+    {"@type": "Question", "name": "Can I run a 100-target DD pipeline in parallel?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. ¥3/billable unit metered with budget caps and rate limits apply. 100 targets × 5 endpoints = 500 req → ¥1,500 (tax exclusive) per batch."}},
     {"@type": "Question", "name": "How far back does enforcement history go?", "acceptedAnswer": {"@type": "Answer", "text": "1,185 enforcement_cases (construction-business law, real-estate brokerage law, waste-disposal law, financial instruments law, telecom-business law, etc.). Five years by default; some municipal disclosures use different lookback windows. Each row carries source_url + fetched_at."}},
     {"@type": "Question", "name": "How do I pull adoption history?", "acceptedAnswer": {"@type": "Answer", "text": "Query the 2,286 case_studies (publicly disclosed subsidy adoptions) by corporate number or name. About 10 years of lookback is available, varying by program. search_acceptance_stats_am also returns industry- and region-level adoption rates."}},
     {"@type": "Question", "name": "Can I check qualified-invoice (invoice-system) registration?", "acceptedAnswer": {"@type": "Answer", "text": "13,801 invoice_registrants are live as a delta-only mirror under PDL v1.0 attribution (the NTA monthly bulk is pending). Look up registration, registration date, and category by corporate number — essential for invoice-system DD."}},
-    {"@type": "Question", "name": "Are there scale limits?", "acceptedAnswer": {"@type": "Answer", "text": "Even at enterprise scale the price is ¥3/req metered (¥3.30 tax inclusive). No fixed monthly fee, seat fee, or annual minimum. Unit price doesn't change at 1M req/month. Stripe metered billing keeps ops scalable."}},
+    {"@type": "Question", "name": "Are there scale limits?", "acceptedAnswer": {"@type": "Answer", "text": "Even at enterprise scale the price is ¥3/billable unit metered (¥3.30 tax inclusive). No fixed monthly fee, seat fee, or annual minimum. Unit price doesn't change at 1M req/month. Stripe metered billing keeps ops scalable."}},
     {"@type": "Question", "name": "Are PII or transaction histories included?", "acceptedAnswer": {"@type": "Answer", "text": "jpcite only handles publicly disclosed primary sources (enforcement disclosures, adoption announcements, NTA invoice-registrant data under PDL v1.0). No personal PII, no transaction histories, no financial statements. Pair with commercial databases for that side."}},
     {"@type": "Question", "name": "Can I plug this into automated DD reports?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Wire the MCP server directly into Claude / GPT, and integrate REST endpoints into in-house RAG. dd_profile_am returns the standard DD package for one corporate number."}}
   ]
@@ -124,7 +124,7 @@
  </nav>
  <h1 id="hero-title">jpcite for VC / M&amp;A advisors</h1>
  <p class="hero-sub">By corporate number, pull 5 years of enforcement, 10 years of adoption history, and qualified-invoice registration in a single cross-source query. Drop into your DD pipeline.</p>
- <p class="hero-tag">Submit the corporate number of an investment or acquisition target and pull from enforcement (1,185), case_studies (2,286), invoice_registrants (13,801), and programs (14,472) in one call. ¥3/req fully metered, budget caps and rate limits apply, Stripe metered billing reconciled monthly.</p>
+ <p class="hero-tag">Submit the corporate number of an investment or acquisition target and pull from enforcement (1,185), case_studies (2,286), invoice_registrants (13,801), and programs (14,472) in one call. ¥3/billable unit fully metered, budget caps and rate limits apply, Stripe metered billing reconciled monthly.</p>
  <div class="cta-row">
  <a class="btn btn-primary" href="#quickstart">Start in 5 minutes &rarr;</a>
  <a class="btn btn-secondary" href="../pricing.html">See pricing</a>
@@ -151,7 +151,7 @@
  </article>
 
  <article class="card">
- <h3>No scale limit, ¥3/req flat</h3>
+ <h3>No scale limit, ¥3/billable unit flat</h3>
  <p class="card-lead">No fixed monthly fee, no seats</p>
  <p>Even at 1M req/month the unit price stays ¥3 (¥3.30 tax inclusive). No minimums, no annual contracts, no seat fees. Stripe metered billing keeps ops scalable; qualified invoices are issued automatically.</p>
  </article>
@@ -208,7 +208,7 @@ as_of_date=2026-05-01'</code></pre>
  </article>
 
  <article class="card">
- <h3>Python batch (commercial, ¥3/req)</h3>
+ <h3>Python batch (commercial, ¥3/billable unit)</h3>
  <pre class="code-block"><code># pip install httpx
 import httpx, asyncio
 
@@ -262,7 +262,7 @@ asyncio.run(main)</code></pre>
  <section class="pricing-preview" aria-labelledby="pricing-title">
  <div class="container">
  <h2 id="pricing-title" class="section-title">VC / M&amp;A pricing</h2>
- <p class="demo-lead" style="margin:-16px 0 24px;">¥3/req metered (¥3.30 tax inclusive). No fixed monthly fee, no seat fee, no annual minimum.</p>
+ <p class="demo-lead" style="margin:-16px 0 24px;">¥3/billable unit metered (¥3.30 tax inclusive). No fixed monthly fee, no seat fee, no annual minimum.</p>
  <div class="table-wrap">
  <table class="pricing-table">
  <caption class="visually-hidden">VC / M&amp;A pricing examples</caption>
@@ -290,7 +290,7 @@ asyncio.run(main)</code></pre>
  <div class="container">
  <h2 id="faq-title" class="section-title">FAQ (VC / M&amp;A advisors)</h2>
  <h3 style="font-size:16px;margin:18px 0 6px;">Can I run a 100-target DD pipeline in parallel?</h3>
- <p>Yes. ¥3/req metered with budget caps and rate limits apply. 100 targets &times; 5 endpoints = 500 req &rarr; ¥1,500 (tax exclusive) per batch.</p>
+ <p>Yes. ¥3/billable unit metered with budget caps and rate limits apply. 100 targets &times; 5 endpoints = 500 req &rarr; ¥1,500 (tax exclusive) per batch.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">How far back does enforcement history go?</h3>
  <p>1,185 enforcement_cases (construction-business law, real-estate brokerage law, waste-disposal law, financial instruments law, telecom-business law, etc.). Five years by default; some municipal disclosures use different lookback windows. Each row carries source_url + fetched_at.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">How do I pull adoption history?</h3>
@@ -298,7 +298,7 @@ asyncio.run(main)</code></pre>
  <h3 style="font-size:16px;margin:18px 0 6px;">Can I check qualified-invoice registration?</h3>
  <p>13,801 invoice_registrants live as a delta-only mirror under PDL v1.0 attribution (NTA monthly bulk pending). Look up registration, registration date, and category by corporate number — essential for invoice-system DD.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">Are there scale limits?</h3>
- <p>Even at enterprise scale, ¥3/req metered. No fixed monthly fee, seat fee, or annual minimum. Unit price stays at ¥3 even at 1M req/month. Stripe metered billing keeps ops scalable.</p>
+ <p>Even at enterprise scale, ¥3/billable unit metered. No fixed monthly fee, seat fee, or annual minimum. Unit price stays at ¥3 even at 1M req/month. Stripe metered billing keeps ops scalable.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">Are PII or transaction histories included?</h3>
  <p>jpcite handles only publicly disclosed primary sources (enforcement disclosures, adoption announcements, NTA invoice-registrant data under PDL v1.0). No personal PII, no transaction histories, no financial statements. Pair with commercial DBs for that side.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">Can I plug this into automated DD reports?</h3>
@@ -318,7 +318,7 @@ asyncio.run(main)</code></pre>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/#programs"><strong>REST API: /v1/programs/search</strong></a> &mdash; Pull related subsidies and adoption history for any corporate number. Pagination and filters for batch workloads.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/mcp-tools/"><strong>MCP tools index (139 tools)</strong></a> &mdash; <code>dd_profile_am</code> + <code>check_enforcement_am</code> + <code>search_acceptance_stats_am</code> and more, ready to plug into your DD pipeline.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/openapi/v1.json"><strong>OpenAPI 3.1 spec (JSON)</strong></a> &mdash; Source for client SDK auto-generation when integrating into in-house DD tools. Stoplight / Postman / Insomnia compatible.</li>
- <li style="padding:10px 0;"><a href="../pricing.html"><strong>Enterprise-scale pricing</strong></a> &mdash; ¥3/req at any scale, no seat fees. 100-target batch DD = ¥1,500 per run; 5,000 req/month = ¥15,000. Stripe metered billing.</li>
+ <li style="padding:10px 0;"><a href="../pricing.html"><strong>Enterprise-scale pricing</strong></a> &mdash; ¥3/billable unit at any scale, no seat fees. 100-target batch DD = ¥1,500 per run; 5,000 req/month = ¥15,000. Stripe metered billing.</li>
  </ul>
  </div>
  </section>

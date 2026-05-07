@@ -326,6 +326,6 @@ def test_no_llm_imports_in_module_body():
         "claude_agent_sdk",
         "google.generativeai",
     ):
-        assert (
-            forbidden not in body
-        ), f"slack_bot.py must not embed {forbidden!r} — LLM-API ban (CLAUDE.md)"
+        assert forbidden not in body, (
+            f"slack_bot.py must not embed {forbidden!r} — LLM-API ban (CLAUDE.md)"
+        )

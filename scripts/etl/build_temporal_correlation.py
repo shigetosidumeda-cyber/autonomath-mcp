@@ -242,11 +242,8 @@ def build(db_path: Path) -> dict[str, int]:
             pre90 = count_window(adoptions, eff_date, 90, post=False)
             post90 = count_window(adoptions, eff_date, 90, post=True)
 
-            ratio: float | None
-            if pre30 == 0 and post30 == 0:
-                ratio = None  # no signal
-            else:
-                ratio = post30 / max(pre30, 1)
+            # no signal when both windows are empty
+            ratio: float | None = None if pre30 == 0 and post30 == 0 else post30 / max(pre30, 1)
 
             if program_id:
                 programs_joined += 1

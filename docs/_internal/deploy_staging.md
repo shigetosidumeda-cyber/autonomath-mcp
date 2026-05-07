@@ -11,7 +11,7 @@ ordered checklist.
 - [ ] `flyctl version` — recent CLI.
 - [ ] Secrets staged locally (do NOT commit): `STRIPE_SECRET_KEY` (test),
       `STRIPE_WEBHOOK_SECRET` (staging endpoint), `STRIPE_PRICE_PER_REQUEST`
-      (the single metered price id, ¥3/req tax-exclusive, lookup_key=`per_request_v3`), `STRIPE_METER_ID`,
+      (the single metered price id, ¥3/billable unit tax-exclusive, lookup_key=`per_request_v3`), `STRIPE_METER_ID`,
       `STRIPE_BILLING_PORTAL_CONFIG_ID`, `API_KEY_SALT`
       (from `openssl rand -hex 32`), `SENTRY_DSN`, `JPINTEL_CORS_ORIGINS`.
 - [ ] Stripe dashboard: create a STAGING webhook endpoint pointing at

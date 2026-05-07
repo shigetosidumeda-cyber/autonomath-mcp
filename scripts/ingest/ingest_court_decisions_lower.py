@@ -50,6 +50,7 @@ Exit codes:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import datetime as _dt
 import hashlib
 import logging
@@ -599,7 +600,7 @@ class CourtRow:
     updated_at: str
 
 
-def walk_keyword(
+def walk_keyword(  # noqa: N803  (courtCaseType matches courts.go.jp API query param)
     client: CourtsClient,
     *,
     endpoint: str,
@@ -988,10 +989,8 @@ def main(argv: list[str] | None = None) -> int:
             conn.commit()
         except sqlite3.Error as exc:
             _LOG.error("DB write failed: %s", exc)
-            try:
+            with contextlib.suppress(Exception):
                 conn.rollback()
-            except Exception:  # noqa: BLE001
-                pass
             return 1
         finally:
             conn.close()

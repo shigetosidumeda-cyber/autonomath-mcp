@@ -179,7 +179,7 @@ ads, no cold outreach (organic-only principle).
 - Do **not** create English-only support / sales channels.
   Zero-touch principle holds.
 - Do **not** add an English tier badge or English-only price tier.
-  The pricing model stays ¥3/req metered, language-agnostic.
+  The pricing model stays ¥3/billable unit metered, language-agnostic.
 - Do **not** rename internal `jpintel_mcp` paths to add `_en` suffixes.
   PyPI package and import path stay legacy.
 
@@ -187,7 +187,7 @@ ads, no cold outreach (organic-only principle).
 
 - Memory: `feedback_autonomath_no_ui` — value lives in API/MCP/static docs.
 - Memory: `feedback_zero_touch_solo` — no English sales / CS team.
-- Memory: `project_autonomath_business_model` — ¥3/req metered, no tiers.
+- Memory: `project_autonomath_business_model` — ¥3/billable unit metered, no tiers.
 - Source: `src/jpintel_mcp/i18n/__init__.py` — catalog scaffolding.
 - Source: `docs/i18n_style_guide.md` — English tone + bilingual conventions.
 - Source: `src/jpintel_mcp/mcp/autonomath_tools/envelope_wrapper.py`

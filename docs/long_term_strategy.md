@@ -2,7 +2,7 @@
 
 **Audience**: jpcite operator (Bookyou株式会社, BDFL solo). Quarterly review document.
 **Status**: Y0 launch is 2026-05-06. This file covers Y1-Y5 (2026-05 → 2031-05).
-**Pricing baseline**: ¥3/req tax-excluded (税込 ¥3.30), 3 req/日 anonymous free per IP, 100% organic acquisition, solo + zero-touch ops. No tier SKUs, no seat fees, no annual minimums. See `pricing.md`.
+**Pricing baseline**: ¥3/billable unit tax-excluded (税込 ¥3.30), 3 req/日 anonymous free per IP, 100% organic acquisition, solo + zero-touch ops. No tier SKUs, no seat fees, no annual minimums. See `pricing.md`.
 
 This document encodes the BDFL solo + zero-touch + organic-only constraints from `feedback_zero_touch_solo`, `feedback_organic_only_no_ads`, and `project_autonomath_business_model`. Any decision that violates those constraints (e.g. hiring a CS team, running paid ads, signing DPA negotiations) should be challenged against this doc before action.
 
@@ -18,7 +18,7 @@ This document encodes the BDFL solo + zero-touch + organic-only constraints from
 
 **Why probabilities, not promises**. Past projections that promised ¥1B Y1 inflated investor / partner expectations and led to over-investment in directions that didn't compound. Probabilities force us to plan for the median, not the brochure.
 
-### Y1-Y5 ARR projection (3 scenarios, ¥3/req full metered)
+### Y1-Y5 ARR projection (3 scenarios, ¥3/billable unit full metered)
 
 ```
             Y1 (2027)      Y2 (2028)        Y3 (2029)         Y4 (2030)        Y5 (2031)
@@ -27,7 +27,7 @@ Base 50%  : ¥30 - 45M  →  ¥90 - 150M   →  ¥150 - 300M  →  ¥240 - 450M 
 Down 20%  : ¥18 - 30M  →  ¥30 - 60M    →  ¥30 - 60M    →  ¥30 - 60M     →  ¥30 - 60M
 ```
 
-Y1 lower bound is anchored on (a) ¥3/req unit economics, (b) 100% organic = no marketing burn, (c) launch-day MAU of 5-10k and 12-month MAU growth to 15-25k authenticated + 100k+ anonymous, (d) average authenticated user @ 200-400 paid req/month, (e) stripe metered billing only — no contracts, no retention obligation. The math: 15k auth × 300 req/mo × ¥3 × 12 = ¥162M would be best-case Y1; we discount to ¥30-45M base because the curve is back-weighted (most users join in months 6-12 after SEO crawl).
+Y1 lower bound is anchored on (a) ¥3/billable unit unit economics, (b) 100% organic = no marketing burn, (c) launch-day MAU of 5-10k and 12-month MAU growth to 15-25k authenticated + 100k+ anonymous, (d) average authenticated user @ 200-400 paid req/month, (e) stripe metered billing only — no contracts, no retention obligation. The math: 15k auth × 300 req/mo × ¥3 × 12 = ¥162M would be best-case Y1; we discount to ¥30-45M base because the curve is back-weighted (most users join in months 6-12 after SEO crawl).
 
 Best-case Y5 (¥750M-1.5B) requires a 5x5 matrix maturity (5 verticals × 5 surfaces). It is **not** the current commitment — see Section 6.
 
@@ -214,11 +214,11 @@ But none of V2-V5 are **launch gates** for 2026-05-06. The launch gate is V1 onl
 
 ## 8. References
 
-- [`docs/pricing.md`](pricing.md) — ¥3/req business model
+- [`docs/pricing.md`](pricing.md) — ¥3/billable unit business model
 - [`evals/gold.yaml`](https://github.com/shigetosidumeda-cyber/autonomath-mcp/blob/main/evals/gold.yaml) — 79-query precision baseline
 - [`docs/per_tool_precision.md`](per_tool_precision.md) — per-tool gate table
 - [`analysis_wave18/audit_full/00_smart_merge_plan.md`](https://github.com/shigetosidumeda-cyber/autonomath-mcp/tree/main/analysis_wave18) (private) — launch plan + post-launch P5-P6
-- `CLAUDE.md` — non-negotiable constraints (¥3/req metered, no tiers, organic only, solo)
+- `CLAUDE.md` — non-negotiable constraints (¥3/billable unit metered, no tiers, organic only, solo)
 
 ---
 

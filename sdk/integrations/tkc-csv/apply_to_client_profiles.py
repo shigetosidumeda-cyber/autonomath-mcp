@@ -162,7 +162,8 @@ def post_bulk_import(
         },
     )
     try:
-        with urllib.request.urlopen(req, timeout=timeout_sec) as resp:
+        # nosec B310 — req URL is constructed from the operator-supplied API_BASE constant; never user input.
+        with urllib.request.urlopen(req, timeout=timeout_sec) as resp:  # nosec B310
             data = resp.read()
             return json.loads(data.decode("utf-8"))
     except urllib.error.HTTPError as exc:
@@ -186,13 +187,13 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument(
         "input_json",
         type=Path,
-        help="path to JSON written by import_tkc_fx2.py " "(or any list/{records:[]})",
+        help="path to JSON written by import_tkc_fx2.py (or any list/{records:[]})",
     )
     p.add_argument(
         "--api-base",
         type=str,
         default=os.environ.get("JPCITE_API_BASE", DEFAULT_API_BASE),
-        help="jpcite REST base (default: env JPCITE_API_BASE or " f"{DEFAULT_API_BASE})",
+        help=f"jpcite REST base (default: env JPCITE_API_BASE or {DEFAULT_API_BASE})",
     )
     p.add_argument(
         "--api-key",

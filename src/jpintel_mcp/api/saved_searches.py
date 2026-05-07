@@ -45,9 +45,8 @@ from __future__ import annotations
 
 import json
 import logging
-import sqlite3
 from datetime import UTC, datetime
-from typing import Annotated, Any, Literal
+from typing import TYPE_CHECKING, Annotated, Any, Literal
 
 from fastapi import APIRouter, HTTPException, Query, Response, status
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
@@ -57,6 +56,9 @@ from jpintel_mcp.api.deps import (  # noqa: TC001 (runtime for FastAPI Depends r
     DbDep,
     log_usage,
 )
+
+if TYPE_CHECKING:
+    import sqlite3
 
 router = APIRouter(prefix="/v1/me/saved_searches", tags=["saved-searches"])
 

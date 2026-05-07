@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <meta name="color-scheme" content="light dark">
-<title>信用金庫向け jpcite — 補助金検索 + Evidence Packet で 顧問先別 alert (¥3/req)</title>
-<meta name="description" content="全国 254 信用金庫 + 中央会 + 認定経営革新等支援機関 向け jpcite。 取引先 SMB の補助金候補 + マル経推薦 + 信用保証協会 連動を 1 リクエストで横断、 顧問先別 Evidence Packet を Slack / email に alert。 ¥3/req 完全従量、 1 担当者 月 100 lookup = 月 ¥330 (税込)。 LLM API 不使用、 一次資料 source_url 必須。">
+<title>信用金庫向け jpcite — 補助金検索 + Evidence Packet で 顧問先別 alert (¥3/billable unit)</title>
+<meta name="description" content="全国 254 信用金庫 + 中央会 + 認定経営革新等支援機関 向け jpcite。 取引先 SMB の補助金候補 + マル経推薦 + 信用保証協会 連動を 1 リクエストで横断、 顧問先別 Evidence Packet を Slack / email に alert。 ¥3/billable unit 完全従量、 1 担当者 月 100 lookup = 月 ¥330 (税込)。 LLM API 不使用、 一次資料 source_url 必須。">
 
 <meta property="og:title" content="信用金庫向け jpcite — 補助金検索 + Evidence Packet で 顧問先別 alert">
-<meta property="og:description" content="信金 254 行 + 中央会 + 認定支援機関 向け。 取引先 1 社の業種 × 都道府県 × 設備投資計画から補助金 / 融資 / 税制特例を 30 秒で抽出。 ¥3/req 純従量、 月額固定 0。">
+<meta property="og:description" content="信金 254 行 + 中央会 + 認定支援機関 向け。 取引先 1 社の業種 × 都道府県 × 設備投資計画から補助金 / 融資 / 税制特例を 30 秒で抽出。 ¥3/billable unit 純従量、 月額固定 0。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://jpcite.com/audiences/shinkin.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -20,7 +20,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="信用金庫向け jpcite (信金 254 + 中央会 + 認定支援機関)">
-<meta name="twitter:description" content="取引先 SMB 補助金マッチング + マル経連動 + 47 信用保証協会 corpus + Evidence Packet。¥3/req 従量。">
+<meta name="twitter:description" content="取引先 SMB 補助金マッチング + マル経連動 + 47 信用保証協会 corpus + Evidence Packet。¥3/billable unit 従量。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/audiences/shinkin.html">
@@ -73,7 +73,7 @@
   "@type": "Service",
   "serviceType": "信用金庫向け 取引先 補助金マッチング API + Evidence Packet",
   "name": "jpcite for 信用金庫・信用組合",
-  "description": "全国 254 信用金庫 + 信金中央金庫 + 信用組合 + 認定経営革新等支援機関ロールの信金担当者向け。 取引先 SMB の業種 × 都道府県 × 設備投資計画から補助金 / 融資 / 税制特例 / マル経推薦 / 47 信用保証協会連動を 1 リクエストで抽出、 顧問先別 Evidence Packet を Slack / email に alert。 ¥3/リクエスト 完全従量。",
+  "description": "全国 254 信用金庫 + 信金中央金庫 + 信用組合 + 認定経営革新等支援機関ロールの信金担当者向け。 取引先 SMB の業種 × 都道府県 × 設備投資計画から補助金 / 融資 / 税制特例 / マル経推薦 / 47 信用保証協会連動を 1 リクエストで抽出、 顧問先別 Evidence Packet を Slack / email に alert。 ¥3/課金単位 完全従量。",
   "provider": {
     "@id": "https://jpcite.com/#publisher"
   },
@@ -181,7 +181,7 @@
  <span aria-current="page">信用金庫向け</span>
  </nav>
  <h1 id="hero-title">信用金庫向け 補助金検索 — Evidence Packet で 顧問先別 alert</h1>
- <p class="hero-sub">全国 <strong>254 信用金庫</strong> + 信金中央金庫 + 信用組合 + 認定経営革新等支援機関ロールの信金担当者向け。 取引先 SMB の業種 × 都道府県 × 設備投資計画から、 補助金 / 融資 / 税制特例 / 商工会議所マル経 / 47 信用保証協会連動を 1 リクエストで抽出。 顧問先別の Evidence Packet (一次資料 URL + 排他ルール根拠) を Slack / email に alert。 営業 cold call 一切なし、 ¥3/req 完全従量。</p>
+ <p class="hero-sub">全国 <strong>254 信用金庫</strong> + 信金中央金庫 + 信用組合 + 認定経営革新等支援機関ロールの信金担当者向け。 取引先 SMB の業種 × 都道府県 × 設備投資計画から、 補助金 / 融資 / 税制特例 / 商工会議所マル経 / 47 信用保証協会連動を 1 リクエストで抽出。 顧問先別の Evidence Packet (一次資料 URL + 排他ルール根拠) を Slack / email に alert。 営業 cold call 一切なし、 ¥3/billable unit 完全従量。</p>
  </div>
  </section>
 
@@ -242,7 +242,7 @@ uvx autonomath-mcp --src=audience_shinkin</code></pre>
 
  <h2 class="section-title" style="margin-top:32px;">次のステップ</h2>
  <div class="cta-row" style="margin-top:16px;flex-wrap:wrap;gap:12px;">
- <a class="btn btn-primary" href="../pricing.html">料金 (¥3/req 従量) &rarr;</a>
+ <a class="btn btn-primary" href="../pricing.html">料金 (¥3/billable unit 従量) &rarr;</a>
  <a class="btn btn-secondary" href="../dashboard.html">API キー発行</a>
  <a class="btn btn-secondary" href="/integrations/claude-desktop.html">Claude Desktop / MCP 設定</a>
  <a class="btn btn-secondary" href="../alerts.html">保存検索 + Slack/Email Webhook</a>

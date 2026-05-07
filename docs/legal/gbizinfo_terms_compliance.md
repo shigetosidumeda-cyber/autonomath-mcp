@@ -26,11 +26,11 @@ DEEP-01 spec reference: `tools/offline/_inbox/value_growth_dual/_deep_plan/DEEP_
 | 所在地 | 東京都文京区小日向2-22-1 |
 | 連絡先 | info@bookyou.net |
 | 申請日 | 2026-05-06 |
-| 利用目的 | 自社運営の jpcite-api / jpcite-mcp バックエンドデータソース。AI agent / 士業 / BPO 顧客に対し ¥3/req metered API として再配布。エンドユーザーは gBizINFO へ直接アクセスせず、Bookyou 名義 token で集約する。 |
+| 利用目的 | 自社運営の jpcite-api / jpcite-mcp バックエンドデータソース。AI agent / 士業 / BPO 顧客に対し ¥3/billable unit metered API として再配布。エンドユーザーは gBizINFO へ直接アクセスせず、Bookyou 名義 token で集約する。 |
 | Token 保管 | `/Users/shigetoumeda/jpcite/.env.local` (chmod 600, git-ignored) + Fly secret `GBIZINFO_API_TOKEN` (`fly secrets set GBIZINFO_API_TOKEN=... -a autonomath-api`) |
 | 環境変数名 | `GBIZINFO_API_TOKEN` (この 1 つのみ。alias 禁止) |
 
-**価格**: ¥3/req (税込 ¥3.30)、anonymous tier は IP 単位 3 req/日 (JST 翌日 00:00 リセット)。tier SKU や seat 課金は無し。本ドキュメント内で価格変更は提案しない (`feedback_no_priority_question` + `project_autonomath_business_model` 準拠)。
+**価格**: ¥3/billable unit (税込 ¥3.30)、anonymous tier は IP 単位 3 req/日 (JST 翌日 00:00 リセット)。tier SKU や seat 課金は無し。本ドキュメント内で価格変更は提案しない (`feedback_no_priority_question` + `project_autonomath_business_model` 準拠)。
 
 **運用方針**: Solo + zero-touch。手動 onboarding call、DPA 個別交渉、Slack Connect、phone support は提供しない (`feedback_zero_touch_solo` 準拠)。
 
@@ -128,7 +128,7 @@ DEEP-01 spec reference: `tools/offline/_inbox/value_growth_dual/_deep_plan/DEEP_
     - `cache_dir = /data/.cache/jpintel/gbiz/` (Fly volume 永続)
     - cache key = `path + "?" + sorted(params)`
   - 同一 houjin_bangou への重複呼出は cache hit でショートサーキット (debounce)
-  - 顧客 ¥3/req は jpcite 内部 cache hit でも課金 (gBizINFO 側 0 req)
+  - 顧客 ¥3/billable unit は jpcite 内部 cache hit でも課金 (gBizINFO 側 0 req)
 
 - **検証方法**:
   - `tests/test_gbizinfo_rate_limit.py::test_rate_limit_enforced`
@@ -228,7 +228,7 @@ DEEP-01 spec reference: `tools/offline/_inbox/value_growth_dual/_deep_plan/DEEP_
     - procurement_v2 → 調達ポータル (政府標準利用規約 2.0) + KKJ 官公需 (中企庁)
     - bulk_jsonl_monthly → 上記 5 系統 + 厚生労働省 職場情報総合サイト (しょくばらぼ)
   - jpcite-api 利用規約 (`docs/legal/jpcite_terms.md` 別途) に「gBizINFO 由来データに関する第三者権利クレームは、原典 (各省庁/独立行政法人/民間 DB) の利用条件に従い、利用顧客の責任で確認・処理する」旨を明記
-  - raw ZIP / mark base64 の再配布は禁止 (条件 6 と連動)、derived facts の編集加工 + ¥3/req metered のみ
+  - raw ZIP / mark base64 の再配布は禁止 (条件 6 と連動)、derived facts の編集加工 + ¥3/billable unit metered のみ
 
 - **検証方法**:
   - `tests/test_gbizinfo_upstream_source.py::test_every_record_has_upstream`
@@ -386,7 +386,7 @@ API ToS §2 (4999421139102) は具体的な利用上限値を **規約上 非開
 5. **顧客向け開示**:
    - 切替の事実と影響範囲を `docs/api-reference.md` + status page に告知
    - 該当 endpoint を `_disclaimer` で 「データ source 切替中、覆面 stale あり」と明示
-   - 顧客 SLA は ¥3/req metered のため、refund 義務は無し (anonymous 3 req/日無料 tier も維持)
+   - 顧客 SLA は ¥3/billable unit metered のため、refund 義務は無し (anonymous 3 req/日無料 tier も維持)
 
 ### 5.2 撤退前の事前準備 (継続的な運用)
 
@@ -466,7 +466,7 @@ Bookyou株式会社 代表
 
 - audit_log_section52 は無期限保持 (mig 101 で TTL 列なし)
 - weekly RSS dump で `audit/section52.rss` (Cloudflare Pages) に publish
-- 操作の trace 性確保 (¥3/req metered API の信頼基盤として、5 年以上の retention を solo ops 範囲で維持)
+- 操作の trace 性確保 (¥3/billable unit metered API の信頼基盤として、5 年以上の retention を solo ops 範囲で維持)
 
 ---
 

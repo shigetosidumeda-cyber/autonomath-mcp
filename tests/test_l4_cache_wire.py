@@ -60,7 +60,8 @@ def _force_expire_all(tool: str) -> None:
 
     conn = connect()
     try:
-        try:
+        # Table missing — nothing to expire. Fine.
+        with contextlib.suppress(sqlite3.OperationalError):
             conn.execute(
                 # Backdate created_at so created_at + ttl_seconds is firmly
                 # in the past (ttl_seconds may be 86400 for default rows;
@@ -70,9 +71,6 @@ def _force_expire_all(tool: str) -> None:
                 "WHERE tool_name = ?",
                 (tool,),
             )
-        except sqlite3.OperationalError:
-            # Table missing — nothing to expire. Fine.
-            pass
     finally:
         conn.close()
 
@@ -143,12 +141,10 @@ def _reset_l4_cache(seeded_db: Path):
         _L4_TOOL_GET,
         "api.am.tax_incentives",
     ):
-        try:
+        # Table not yet created on this volume — fine, miss path will
+        # self-heal via _l4_get_or_compute_safe.
+        with contextlib.suppress(sqlite3.OperationalError):
             invalidate_tool(tool)
-        except sqlite3.OperationalError:
-            # Table not yet created on this volume — fine, miss path will
-            # self-heal via _l4_get_or_compute_safe.
-            pass
     yield
     for tool in (
         _L4_TOOL_SEARCH,

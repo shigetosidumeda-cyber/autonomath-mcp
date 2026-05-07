@@ -68,7 +68,7 @@ import time
 from datetime import UTC, datetime
 
 UTC = UTC
-from pathlib import Path
+from pathlib import Path  # noqa: E402  (sys.path manipulation precedes)
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = REPO_ROOT / "autonomath.db"

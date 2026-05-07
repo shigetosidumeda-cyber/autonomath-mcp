@@ -1,6 +1,6 @@
 # lobste.rs
 
-**Title**: `Building a Japanese institutional-data API: SQLite 全文検索 + ベクトル検索, FastMCP, ¥3/req metered`
+**Title**: `Building a Japanese institutional-data API: SQLite 全文検索 + ベクトル検索, FastMCP, ¥3/billable unit metered`
 
 **Tags**: `api`, `databases`, `python`, `show`
 
@@ -44,7 +44,7 @@ Three reasons:
 }
 ```
 
-The PyPI wheel doesn't ship the 8.29 GB DB — it auto-detects empty local DB and HTTP-falls-back to `api.jpcite.com`. First 3 req/day per IP are free, no signup. After that, ¥3/req metered.
+The PyPI wheel doesn't ship the 8.29 GB DB — it auto-detects empty local DB and HTTP-falls-back to `api.jpcite.com`. First 3 req/day per IP are free, no signup. After that, ¥3/billable unit metered.
 
 ## Honest framing
 

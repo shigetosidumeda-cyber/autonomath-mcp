@@ -14,7 +14,7 @@ Idempotent. Safe to run repeatedly.
 History
 -------
 2026-04-25 first run: -2,031 leaked + 293 added + 21 orphans removed → exact
-parity (11,547 fts == 11,547 searchable).
+parity against the then-current searchable corpus.
 """
 
 from __future__ import annotations

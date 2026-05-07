@@ -136,10 +136,9 @@ def enumerate_subpages(entry_html: str, law_key: str) -> list[str]:
         path = href.split("#", 1)[0]
         # skip entry page itself / menu pages
         last = path.rsplit("/", 1)[-1]
-        if last in ("01.htm",):
-            # top-level entry itself. 00/01.htm (前文) is fine: path contains "/00/"
-            if path == prefix + "01.htm":
-                continue
+        # top-level entry itself. 00/01.htm (前文) is fine: path contains "/00/"
+        if last in ("01.htm",) and path == prefix + "01.htm":
+            continue
         if path in seen:
             continue
         seen.add(path)

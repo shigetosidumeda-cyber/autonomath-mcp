@@ -68,6 +68,7 @@ Exit codes:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import datetime as _dt
 import hashlib
 import logging
@@ -253,11 +254,9 @@ def parse_wareki_date(text: str) -> str | None:
     base = dict(_GENGO).get(era)
     if base is None:
         return None
-    if era in ("令和", "平成", "昭和", "大正", "明治"):
-        # 令和元年 = 2019 (base=2018, +1).  Same convention for 平成元 etc.
-        gy = base + yi
-    else:
-        gy = base + yi
+    # 令和元年 = 2019 (base=2018, +1). Same convention for 平成元 etc.
+    # Both branches identical today; preserved for future era-specific overrides.
+    gy = base + yi if era in ("令和", "平成", "昭和", "大正", "明治") else base + yi
     try:
         return f"{gy:04d}-{moi:02d}-{di:02d}"
     except Exception:
@@ -942,10 +941,8 @@ def main(argv: list[str] | None = None) -> int:
             conn.commit()
         except sqlite3.Error as exc:
             _LOG.error("DB write failed: %s", exc)
-            try:
+            with contextlib.suppress(Exception):
                 conn.rollback()
-            except Exception:  # noqa: BLE001
-                pass
             return 1
         finally:
             conn.close()

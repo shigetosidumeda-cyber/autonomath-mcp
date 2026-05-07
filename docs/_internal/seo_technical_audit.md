@@ -33,7 +33,7 @@
 
 **所見**
 - 日本語文字数は全て 120 JP 文字以内、Google SERP truncation line (~80-120 全角) 以内に収まっている。
-- `pricing.html` の description は 28 文字と短く、AI 要約取込時に物足りない。`10,790 件の制度 API の料金。Free 50 req/月 (IP) + Paid ¥3/req 従量、Stripe self-serve、MCP + REST 両対応。` のように具体化を推奨 (下段 quick wins に計上)。
+- `pricing.html` の description は 28 文字と短く、AI 要約取込時に物足りない。`10,790 件の制度 API の料金。Free 50 req/月 (IP) + Paid ¥3/billable unit 従量、Stripe self-serve、MCP + REST 両対応。` のように具体化を推奨 (下段 quick wins に計上)。
 - 全ページ `<html lang="ja">`、`<meta charset="UTF-8">`、viewport も正しい。
 
 ---

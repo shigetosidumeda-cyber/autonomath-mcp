@@ -101,7 +101,7 @@ def load_settings() -> Settings:
     if not _first_env("JPCITE_API_KEY", "ZEIMU_KAIKEI_API_KEY"):
         missing.append("JPCITE_API_KEY (or legacy ZEIMU_KAIKEI_API_KEY)")
     if missing:
-        raise RuntimeError(f"missing required env vars: {', '.join(missing)}. " "see .env.example")
+        raise RuntimeError(f"missing required env vars: {', '.join(missing)}. see .env.example")
     session_secret = os.environ["SESSION_SECRET"]
     if len(session_secret) < 32:
         raise RuntimeError("SESSION_SECRET must be >= 32 chars (use openssl rand -hex 32)")

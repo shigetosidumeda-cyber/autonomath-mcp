@@ -122,7 +122,7 @@ except ImportError as exc:  # pragma: no cover
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-import contextlib
+import contextlib  # noqa: E402  (sys.path manipulation precedes)
 
 from scripts.lib.http import HttpClient  # noqa: E402
 
@@ -432,9 +432,10 @@ def parse_shokuhin_page(
             sent = sent.strip()
             if not sent:
                 continue
-            if "事実と異なる" in sent or "不適正" in sent or "確認しました" in sent:
-                if len(sent) < 400:
-                    reason_chunks.append(sent + "。")
+            if ("事実と異なる" in sent or "不適正" in sent or "確認しました" in sent) and len(
+                sent
+            ) < 400:
+                reason_chunks.append(sent + "。")
             if len(reason_chunks) >= 2:
                 break
         reason = " ".join(reason_chunks).strip() or title
@@ -1142,10 +1143,7 @@ def main(argv: list[str] | None = None) -> int:
         format="%(asctime)s %(levelname)s %(name)s %(message)s",
     )
 
-    if args.skip_live:
-        http = _NullHttp()  # type: ignore[assignment]
-    else:
-        http = HttpClient(user_agent=USER_AGENT)
+    http = _NullHttp() if args.skip_live else HttpClient(user_agent=USER_AGENT)  # type: ignore[assignment]
     cache_roots = tuple(args.cache_root or DEFAULT_CACHE_ROOTS)
     cache_index = _scan_cache(cache_roots)
     _LOG.info(

@@ -1,6 +1,6 @@
 # r/programming
 
-**Title**: `Built a Japanese tax / subsidy data API for LLM agents — SQLite 全文検索 + ベクトル検索, ¥3/req metered`
+**Title**: `Built a Japanese tax / subsidy data API for LLM agents — SQLite 全文検索 + ベクトル検索, ¥3/billable unit metered`
 
 ---
 
@@ -18,7 +18,7 @@ The existing access surface for this data is genuinely bad — government portal
 - 8.29 GB unified DB, 503,930 entities + 6.12M facts in EAV
 - Fly.io Tokyo single-region deploy, Cloudflare Pages for the static site, Stripe metered billing
 
-**Pricing**: ¥3/req metered (~$0.02). 3/day free anonymously, no signup. No subscription tiers — I'm a solo founder running zero-touch ops, so the whole thing has to be self-service.
+**Pricing**: ¥3/billable unit metered (~$0.02). 3/day free anonymously, no signup. No subscription tiers — I'm a solo founder running zero-touch ops, so the whole thing has to be self-service.
 
 **Honest framing**: it's information lookup, not tax advice. Not a substitute for a 税理士 (税理士法 §52). Verify primary sources before any business decision.
 

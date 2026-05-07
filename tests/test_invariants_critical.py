@@ -18,7 +18,7 @@ import pytest
 # ---------------------------------------------------------------------------
 def test_inv04_no_banned_aggregator_in_programs():
     """No banned aggregator domain may appear in programs.source_url."""
-    BANNED = [
+    BANNED = [  # noqa: N806  (local CONST sentinel, not loop-mut)
         "noukaweb",
         "hojyokin-portal",
         "biz.stayway",
@@ -140,7 +140,7 @@ def test_inv22_no_misleading_keywords_in_docstrings():
     Use phrase patterns rather than bare characters so the trust-sense
     「保証」 (e.g. "信用保証協会") doesn't false-positive.
     """
-    BANNED_KEYWORDS = [
+    BANNED_KEYWORDS = [  # noqa: N806  (local CONST sentinel, not loop-mut)
         "必ず採択",
         "絶対に",
         "保証します",

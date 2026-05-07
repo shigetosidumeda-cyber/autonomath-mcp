@@ -14,9 +14,9 @@ Current public docs and release tags are the source of truth for version and pri
 [![MCP 2025-06-18](https://img.shields.io/badge/MCP-2025--06--18-6E56CF.svg)](https://modelcontextprotocol.io/)
 [![Made in Japan](https://img.shields.io/badge/made%20in-%F0%9F%87%AF%F0%9F%87%B5-red.svg)](https://jpcite.com)
 
-LLM agent / RAG パイプラインに渡す前の compact context を REST + MCP で返します。公開行には 出典 URL + content_hash + 取得日時 が付き、官公庁・自治体・公庫・公式事業者ページなど確認可能な出典を優先します。**11,684 programs / 9,484 laws / 1,185 enforcement cases + 22,258 enforcement-detail records / 139 MCP tools / median 7 day freshness**。LLM は呼び出さず、民間まとめサイトにも依存しません。通常の検索・取得は ¥3/billable unit、anon 3/日 free。
+LLM agent / RAG パイプラインに渡す前の compact context を REST + MCP で返します。公開行には 出典 URL + content_hash + 取得日時 が付き、官公庁・自治体・公庫・公式事業者ページなど確認可能な出典を優先します。**11,601 searchable programs / 9,484 laws / 1,185 enforcement cases + 22,258 enforcement-detail records / 139 MCP tools / median 7 day freshness**。LLM は呼び出さず、民間まとめサイトにも依存しません。通常の検索・取得は ¥3/billable unit、anon 3/日 free。
 
-*English: Evidence-first context layer for Japanese public-program data, exposed as REST + MCP. Published rows return source URL + content_hash + fetched_at so an LLM agent or RAG pipeline can ground answers on verifiable official sources — no LLM calls inside the service, no aggregator scraping. **11,684 programs / 9,484 laws / 1,185 enforcement cases + 22,258 enforcement-detail records / 139 MCP tools / median 7 day freshness.** ¥3/billable unit for normal search/detail calls, 3/day free anonymous.*
+*English: Evidence-first context layer for Japanese public-program data, exposed as REST + MCP. Published rows return source URL + content_hash + fetched_at so an LLM agent or RAG pipeline can ground answers on verifiable official sources — no LLM calls inside the service, no aggregator scraping. **11,601 searchable programs / 9,484 laws / 1,185 enforcement cases + 22,258 enforcement-detail records / 139 MCP tools / median 7 day freshness.** ¥3/billable unit for normal search/detail calls, 3/day free anonymous.*
 
 Use jpcite when an AI answer needs Japanese public-program evidence, source URLs, fetched_at metadata, compatibility rules, enforcement checks, or known gaps before drafting prose. Skip it for short general questions, translation, brainstorming, or topics that do not need source-linked Japanese institutional data.
 
@@ -45,9 +45,9 @@ An evidence-first context layer over Japanese institutional public data, exposed
 ## Coverage
 
 - **Source-linked records** — most published rows include `source_url`, `content_hash`, and `source_fetched_at`; known source gaps are surfaced. Known second-tier aggregator pages are excluded from citation sources where detected.
-- **11,684 searchable programs** across 47 prefectures + national (補助金・融資・税制・認定; tier S=114 / A=1,340 / B=4,186 / C=6,044; full catalog = 14,472, 2,788 publication-review rows)
+- **11,601 searchable programs** across 47 prefectures + national (補助金・融資・税制・認定; tier S=114 / A=1,340 / B=4,186 / C=5,961; full catalog = 14,472, 2,871 publication-review rows)
 - **2,286 採択事例 + 108 融資 (担保・個人保証人・第三者保証人 三軸分解) + 1,185 行政処分 + 22,258 enforcement-detail records + 2,065 court decisions + 362 bids**
-- **154 laws full-text indexed + 9,484 law metadata records** (e-Gov CC-BY; full-text coverage is incremental — name resolver covers all 9,484, body text 154) **+ 50 tax rulesets + 13,801 invoice registrants (PDL v1.0 delta)**
+- **6,493 laws full-text indexed + 9,484 law metadata records** (e-Gov CC-BY; full-text coverage is incremental — name resolver covers all 9,484, body text index covers 6,493) **+ 50 tax rulesets + 13,801 invoice registrants (PDL v1.0 delta)**
 - **181 exclusion / prerequisite rules** (125 exclude + 17 prerequisite + 15 absolute + 24 other) — surfaced as structured eligibility predicates, not free-text
 - **139 MCP tools** in the standard public configuration, protocol 2025-06-18, stdio. See [`docs/mcp-tools.md`](./docs/mcp-tools.md) for the current public tool catalogue and arguments. Optional labor-agreement tools are disabled unless explicitly enabled.
 - **REST API** — endpoints under `/v1/programs/*`, `/v1/laws/*`, `/v1/tax_rulesets/*`, `/v1/case-studies/*`, `/v1/loan-programs/*`, `/v1/enforcement-cases/*`, `/v1/exclusions/*`, `/v1/am/*`. OpenAPI: [`docs/openapi/v1.json`](./docs/openapi/v1.json)

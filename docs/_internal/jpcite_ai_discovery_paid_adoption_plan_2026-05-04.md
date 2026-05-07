@@ -6,7 +6,7 @@
 
 - v0.3.3 PyPI published (`pypi-AgEIcHlwaS...` legacy token via twine; OIDC trusted publisher pre-req still outstanding for next bumps)
 - v0.3.3 GitHub Release published with sdist + wheel
-- MCP Registry 0.3.3 entry live with new English description (`Japan public-program MCP — subsidies, loans, tax, law, invoice, corp. 93 tools, ¥3/req metered`)
+- MCP Registry 0.3.3 entry live with new English description (`Japan public-program MCP — subsidies, loans, tax, law, invoice, corp. 93 tools, ¥3/billable unit metered`)
 - Cloudflare Pages: 22,896 → 12,016 file (structured/ JSON-LD shards retired in favor of inline `<script type="application/ld+json">`)
 - Fly.io v62 image live: `did_you_mean` middleware + `/v1/me/keys/children` REST + `saved_searches.profile_ids` fan-out + `houjin_watch.watch_kind` dispatcher filter + `schema_guard` `skip_quick_check` for autonomath profile
 - 政令市 20 hub pages (cities/{札幌〜熊本}/index.html) with title `<市> の補助金 一覧 2026 — 中小企業・創業・ものづくり 主要 N 件`

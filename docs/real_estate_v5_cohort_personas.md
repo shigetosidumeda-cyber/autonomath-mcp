@@ -2,7 +2,7 @@
 
 **目的**: 2026-11-11 launch (T+200d) 前の MCP / API ツール設計と
 blog 記事のペルソナ整合チェック。各 persona は **1 cohort = 1 SaaS /
-1 ユースケース** を仮定し、**¥3/req metered + zero-touch + organic**
+1 ユースケース** を仮定し、**¥3/billable unit metered + zero-touch + organic**
 の制約を満たすかを明示する。
 
 > 想定総母数: 不動産業者 約 13 万社 / 一級建築士事務所 約 4 万社 /
@@ -31,7 +31,7 @@ blog 記事のペルソナ整合チェック。各 persona は **1 cohort = 1 Sa
     1-shot dump。
 - **流入想定**: blog 「デベロッパーが用地仕入れ判断を 30 分で固める
   MCP setup」。
-- **解像度確認**: ¥3/req × 月 200 call = ¥600。建築士外注 1 案件 ¥300k 比で
+- **解像度確認**: ¥3/billable unit × 月 200 call = ¥600。建築士外注 1 案件 ¥300k 比で
   zero-touch 整合。
 
 ## 2. 賃貸管理 (PM 業者)
@@ -53,7 +53,7 @@ blog 記事のペルソナ整合チェック。各 persona は **1 cohort = 1 Sa
   - `get_zoning_overlay` で物件の zoning を即時参照、賃借人説明資料に直結。
 - **流入想定**: blog 「賃貸管理会社が借地借家法改正に
   追従する MCP / Claude setup」。
-- **解像度確認**: ¥3/req × 月 300 call = ¥900。判例追跡サービス
+- **解像度確認**: ¥3/billable unit × 月 300 call = ¥900。判例追跡サービス
   ¥30k/月 比較で 30 倍コスト効率。
 
 ## 3. 不動産 M&A (仲介業者 / 不動産仲介)
@@ -77,7 +77,7 @@ blog 記事のペルソナ整合チェック。各 persona は **1 cohort = 1 Sa
     信頼性が二次情報経由より圧倒的に高い。
 - **流入想定**: blog 「商業不動産 M&A の DD を 1 日に短縮する
   jpcite setup」。
-- **解像度確認**: ¥3/req × 月 500 call = ¥1,500。DD 外注 1 案件 ¥500k
+- **解像度確認**: ¥3/billable unit × 月 500 call = ¥1,500。DD 外注 1 案件 ¥500k
   比較で初年度回収。
 
 ## 4. 建築設計事務所
@@ -100,7 +100,7 @@ blog 記事のペルソナ整合チェック。各 persona は **1 cohort = 1 Sa
     与え、自社設計 review に組み込み。
 - **流入想定**: blog 「建築設計事務所が確認申請を 1 日短縮する
   MCP / Claude setup」。
-- **解像度確認**: ¥3/req × 月 250 call = ¥750。設計補助スタッフ
+- **解像度確認**: ¥3/billable unit × 月 250 call = ¥750。設計補助スタッフ
   人件費 ¥300k/月 比較で 400 倍コスト効率。
 
 ## 5. 不動産 SaaS 開発者
@@ -123,14 +123,14 @@ blog 記事のペルソナ整合チェック。各 persona は **1 cohort = 1 Sa
     自然言語クエリ。
 - **流入想定**: blog 「不動産 SaaS に 1 日で zoning + 補助を組み込む
   (jpcite REST + MCP)」。
-- **解像度確認**: ¥3/req × エンドユーザ 1,000 call/日 = ¥3,000/日 = ¥90k/月。
+- **解像度確認**: ¥3/billable unit × エンドユーザ 1,000 call/日 = ¥3,000/日 = ¥90k/月。
   自前構築 6 人月 ¥6M+ 比較で初年度即回収。
 
 ---
 
 ## 整合チェック (5 personas 横断)
 
-- **¥3/req metered で全 persona ROI 黒字** — tier SKU 不要を再確認。
+- **¥3/billable unit metered で全 persona ROI 黒字** — tier SKU 不要を再確認。
 - **zero-touch 整合** — 5 persona いずれも DPA / Slack Connect / phone を
   必要としない。SaaS 開発者は技術 docs + REST/MCP のみで完結、
   デベロッパー / M&A / 建築士 / PM 業者は一次情報の構造化 API のみで

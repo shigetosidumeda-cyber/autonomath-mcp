@@ -45,7 +45,7 @@
   <item>
     <title>Qualified-invoice registrants delta added (PDL v1.0, 13,801 rows)</title>
     <link>https://jpcite.com/facts.html#changelog-title</link>
-    <description>Imported the National Tax Agency qualified-invoice issuer publication site as invoice_registrants under PDL v1.0 (13,801 rows, with source attribution and edit notes). The 4M-row monthly full bulk is scheduled for a later update. Downstream redistribution via the ¥3/req API is licensed under PDL v1.0.</description>
+    <description>Imported the National Tax Agency qualified-invoice issuer publication site as invoice_registrants under PDL v1.0 (13,801 rows, with source attribution and edit notes). The 4M-row monthly full bulk is scheduled for a later update. Downstream redistribution via the ¥3/billable unit API is licensed under PDL v1.0.</description>
     <guid isPermaLink="false">jpcite:dataset:invoice-registrants-pdl:2026-04-24</guid>
     <pubDate>Fri, 24 Apr 2026 12:00:00 +0000</pubDate>
   </item>

@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>jpcite v0.3.4 — 5 つの新機能 (2026-05-05)</title>
-<meta name="description" content="jpcite v0.3.4 リリース: 100 件まとめて引ける Bulk endpoint、Stripe クレジット前払、Merkle 監査チェーン、英訳法令、Reference agent npm の 5 機能を追加。料金は ¥3/req のまま (税込 ¥3.30)。">
+<meta name="description" content="jpcite v0.3.4 リリース: 100 件まとめて引ける Bulk endpoint、Stripe クレジット前払、Merkle 監査チェーン、英訳法令、Reference agent npm の 5 機能を追加。料金は ¥3/billable unit のまま (税込 ¥3.30)。">
 <meta name="author" content="jpcite">
 <meta name="publisher" content="jpcite">
 <meta name="robots" content="index, follow, max-image-preview:large">
 
 <meta property="og:title" content="jpcite v0.3.4 — 5 つの新機能 (2026-05-05)">
-<meta property="og:description" content="Bulk endpoint / Stripe クレジット前払 / Merkle 監査チェーン / 英訳法令 / Reference agent npm を追加。料金 ¥3/req のまま。">
+<meta property="og:description" content="Bulk endpoint / Stripe クレジット前払 / Merkle 監査チェーン / 英訳法令 / Reference agent npm を追加。料金 ¥3/billable unit のまま。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://jpcite.com/blog/v0.3.4-release.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -27,7 +27,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="jpcite v0.3.4 — 5 つの新機能">
-<meta name="twitter:description" content="Bulk endpoint / Stripe クレジット前払 / Merkle 監査 / 英訳法令 / Reference agent npm。料金は ¥3/req のまま。">
+<meta name="twitter:description" content="Bulk endpoint / Stripe クレジット前払 / Merkle 監査 / 英訳法令 / Reference agent npm。料金は ¥3/billable unit のまま。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/blog/v0.3.4-release.html">
@@ -44,7 +44,7 @@
   "@context": "https://schema.org",
   "@type": "TechArticle",
   "headline": "jpcite v0.3.4 — 5 つの新機能",
-  "description": "Bulk endpoint / Stripe クレジット前払 / Merkle 監査チェーン / 英訳法令 / Reference agent npm の 5 機能を追加。料金は ¥3/req のまま (税込 ¥3.30)。",
+  "description": "Bulk endpoint / Stripe クレジット前払 / Merkle 監査チェーン / 英訳法令 / Reference agent npm の 5 機能を追加。料金は ¥3/billable unit のまま (税込 ¥3.30)。",
   "datePublished": "2026-05-05",
   "dateModified": "2026-05-05",
   "inLanguage": "ja",
@@ -73,7 +73,7 @@
       "@type": "Offer",
       "price": "3.30",
       "priceCurrency": "JPY",
-      "description": "¥3/request 純従量 (税込 ¥3.30)。匿名 3 req/日 無料、tier なし。"
+      "description": "¥3/billable unit 純従量 (税込 ¥3.30)。匿名 3 req/日 無料、tier なし。"
     }
   }
 }
@@ -163,7 +163,7 @@
  <article>
  <p class="release-meta">リリース・2026-05-05</p>
  <h1>jpcite v0.3.4 — 5 つの新機能</h1>
- <p class="lead">エージェント運用・経理稟議・第三者監査・国際展開・OSS 拡張の 5 領域で機能追加。 主な評価軸は <strong>verify 時間の推定短縮</strong> と <strong>監査可能引用の正確性</strong> (citation_ok ~0.40 → ~0.95、 JCRB-v1 seed) です。測定条件に基づく参考値であり、個別の削減時間・費用対効果を保証しません。 token 削減は副次効果で、 raw token math だけでは ¥3/req を償却できないケースがあります。 料金は ¥3/req のまま据え置き、tier なし。</p>
+ <p class="lead">エージェント運用・経理稟議・第三者監査・国際展開・OSS 拡張の 5 領域で機能追加。 主な評価軸は <strong>verify 時間の推定短縮</strong> と <strong>監査可能引用の正確性</strong> (citation_ok ~0.40 → ~0.95、 JCRB-v1 seed) です。測定条件に基づく参考値であり、個別の削減時間・費用対効果を保証しません。 token 削減は副次効果で、 raw token math だけでは ¥3/billable unit を償却できないケースがあります。 料金は ¥3/billable unit のまま据え置き、tier なし。</p>
 
  <div class="cta-row" style="margin:0 0 16px;">
  <a class="btn btn-primary" href="/docs/getting-started/">スタートガイド →</a>
@@ -209,7 +209,7 @@
 
  <h2>料金は不変</h2>
  <div class="price-box">
- <strong>¥3/request 純従量 (税込 ¥3.30)、tier なし、匿名 3 req/日 無料 (IP 単位、JST 翌日 00:00 リセット)。</strong> v0.3.4 でもこの料金体系は変更ありません。前払クレジット購入は同じ ¥3/req レートを前払で確保するもので、単価は同一です。
+ <strong>¥3/billable unit 純従量 (税込 ¥3.30)、tier なし、匿名 3 req/日 無料 (IP 単位、JST 翌日 00:00 リセット)。</strong> v0.3.4 でもこの料金体系は変更ありません。前払クレジット購入は同じ billable unit レートを前払で確保するもので、単価は同一です。
  </div>
 
  <p style="margin-top:24px;">

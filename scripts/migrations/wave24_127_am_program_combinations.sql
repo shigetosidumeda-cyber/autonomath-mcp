@@ -5,7 +5,7 @@
 -- Why this exists:
 --   `find_combinable_programs` (#98) and `find_complementary_subsidies`
 --   (#115) need to answer "given program A, can it be combined with
---   program B" without scanning the full Cartesian (11,684 ^ 2 ≈
+--   program B" without scanning the full Cartesian (11,601 ^ 2 ≈
 --   136M pair) at request time. The classification is computed
 --   offline by `scripts/etl/precompute_program_combinations.py`
 --   from the existing `am_compat_matrix` (43,966 rows, sourced +

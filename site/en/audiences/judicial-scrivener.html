@@ -6,10 +6,10 @@
 <meta name="theme-color" content="#ffffff">
 <meta name="color-scheme" content="light dark">
 <title>jpcite for judicial scriveners (司法書士) — pre-filing corporate DD + jurisdiction cross-check, FDI inbound</title>
-<meta name="description" content="Foreign-investor (FDI) inbound playbook for Japan judicial scrivener (司法書士) workflows. Pre-commercial-registration corporate 360°, real estate registration jurisdiction cross-check, pre-small-claims litigation entity verify, and adult guardianship program mapping — all fact-search only, with Judicial Scrivener Act §3 (司法書士法 §3) exclusive-work boundary respected. ¥3/req metered, anonymous 3 req/day free.">
+<meta name="description" content="Foreign-investor (FDI) inbound playbook for Japan judicial scrivener (司法書士) workflows. Pre-commercial-registration corporate 360°, real estate registration jurisdiction cross-check, pre-small-claims litigation entity verify, and adult guardianship program mapping — all fact-search only, with Judicial Scrivener Act §3 (司法書士法 §3) exclusive-work boundary respected. ¥3/billable unit metered, anonymous 3 req/day free.">
 
 <meta property="og:title" content="jpcite for judicial scriveners (司法書士) — FDI inbound corporate DD + jurisdiction cross-check">
-<meta property="og:description" content="Pre-filing fact-finding for commercial registration, real estate registration, and small claims litigation prep. §3 exclusive-work boundary respected. ¥3/req metered.">
+<meta property="og:description" content="Pre-filing fact-finding for commercial registration, real estate registration, and small claims litigation prep. §3 exclusive-work boundary respected. ¥3/billable unit metered.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/en/audiences/judicial-scrivener.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -127,7 +127,7 @@
  </nav>
  <h1 id="hero-title">Japan judicial scrivener (<span lang="ja">司法書士</span>) services with AI assistance</h1>
  <p class="hero-sub">jpcite supports fact-finding for commercial registration, real estate registration, and small claims litigation prep — while respecting Judicial Scrivener Act §3 (<span lang="ja">司法書士法</span> §3) exclusive-work boundary. For foreign investors entering Japan.</p>
- <p class="hero-tag">Built for foreign direct investment (FDI) inbound teams whose Japan entry triggers commercial registration, real estate registration, and (for amounts up to ¥1.4M) summary court representation. jpcite is the fact-search layer your Japan-side licensed <span lang="ja">司法書士</span> uses before they prepare filings — corporate amendment history, jurisdiction cross-check between head office and property location, enforcement-history surface for counterparties, and adult guardianship program mapping. Anonymous 3 req/day free per IP, no signup. ¥3/req metered after that.</p>
+ <p class="hero-tag">Built for foreign direct investment (FDI) inbound teams whose Japan entry triggers commercial registration, real estate registration, and (for amounts up to ¥1.4M) summary court representation. jpcite is the fact-search layer your Japan-side licensed <span lang="ja">司法書士</span> uses before they prepare filings — corporate amendment history, jurisdiction cross-check between head office and property location, enforcement-history surface for counterparties, and adult guardianship program mapping. Anonymous 3 req/day free per IP, no signup. ¥3/billable unit metered after that.</p>
  <div class="cta-row">
  <a class="btn btn-primary" href="#quickstart">Get started &rarr;</a>
  <a class="btn btn-secondary" href="#quickstart">Try anonymous 3 req/day free</a>
@@ -228,7 +228,7 @@ curl 'https://api.jpcite.com/v1/am/cross_check_jurisdiction?houjin_bangou=123456
  </article>
 
  <article class="card">
- <h3>Python (commercial, ¥3/req)</h3>
+ <h3>Python (commercial, ¥3/billable unit)</h3>
  <pre class="code-block"><code>import httpx
 H = {"X-API-Key": "am_..."}
 
@@ -250,7 +250,7 @@ r2 = httpx.get(
  headers=H)
 for row in r2.json()["items"]:
  print(row["name"], row["source_url"])</code></pre>
- <p class="demo-note">Issue API keys from your dashboard. Stripe-backed metered billing. ¥3/req (¥3.30 tax inclusive). No tier SKUs.</p>
+ <p class="demo-note">Issue API keys from your dashboard. Stripe-backed metered billing. ¥3/billable unit (¥3.30 tax inclusive). No tier SKUs.</p>
  </article>
 
  <article class="card">
@@ -310,7 +310,7 @@ for row in r2.json()["items"]:
  <section class="pricing-preview" aria-labelledby="pricing-title">
  <div class="container">
  <h2 id="pricing-title" class="section-title">Pricing for the <span lang="ja">司法書士</span> &times; FDI workflow</h2>
- <p class="demo-lead" style="margin:-16px 0 24px;">¥3/req metered (¥3.30 tax inclusive, JCT applied). Anonymous trial: 3 req/day per IP, no signup, JST midnight reset.</p>
+ <p class="demo-lead" style="margin:-16px 0 24px;">¥3/billable unit metered (¥3.30 tax inclusive, JCT applied). Anonymous trial: 3 req/day per IP, no signup, JST midnight reset.</p>
  <div class="table-wrap">
  <table class="pricing-table">
  <caption class="visually-hidden">Judicial scrivener cohort recommended interface pricing</caption>
@@ -323,10 +323,10 @@ for row in r2.json()["items"]:
  </tr>
  </thead>
  <tbody>
- <tr><th scope="row">REST API + MCP</th><td>3 req/day per IP</td><td>¥3 / req</td><td>¥3.30 / req</td></tr>
- <tr><th scope="row"><code>shihoshoshi_dd_pack_am</code> (unified)</th><td>3 req/day per IP</td><td>¥3 / req</td><td>¥3.30 / req</td></tr>
- <tr><th scope="row"><code>cross_check_jurisdiction</code></th><td>3 req/day per IP</td><td>¥3 / req</td><td>¥3.30 / req</td></tr>
- <tr><th scope="row">Civil Code §7&ndash;§876 (EN)</th><td>3 req/day per IP</td><td>¥3 / req</td><td>¥3.30 / req</td></tr>
+ <tr><th scope="row">REST API + MCP</th><td>3 req/day per IP</td><td>¥3 / unit</td><td>¥3.30 / unit</td></tr>
+ <tr><th scope="row"><code>shihoshoshi_dd_pack_am</code> (unified)</th><td>3 req/day per IP</td><td>¥3 / unit</td><td>¥3.30 / unit</td></tr>
+ <tr><th scope="row"><code>cross_check_jurisdiction</code></th><td>3 req/day per IP</td><td>¥3 / unit</td><td>¥3.30 / unit</td></tr>
+ <tr><th scope="row">Civil Code §7&ndash;§876 (EN)</th><td>3 req/day per IP</td><td>¥3 / unit</td><td>¥3.30 / unit</td></tr>
  </tbody>
  </table>
  </div>

@@ -35,7 +35,7 @@ os.environ.setdefault("API_KEY_SALT", "bench-salt-not-secret")
 os.environ["ANON_RATE_LIMIT_ENABLED"] = "false"
 
 # Import after env is set so Settings picks up JPINTEL_DB_PATH.
-import contextlib
+import contextlib  # noqa: E402  (sys.path manipulation precedes)
 
 from jpintel_mcp.api.main import app  # noqa: E402  (import after env set)
 

@@ -65,7 +65,7 @@ When you `uvx autonomath-mcp`, the wheel doesn't ship the 8.29 GB DB — it auto
 
 ## Pricing
 
-¥3/request metered, 税込 ¥3.30. 3/day free anonymously. No tiers, no minimums. Solo founder + zero-touch ops — has to be self-service.
+¥3/billable unit metered, 税込 ¥3.30. 3/day free anonymously. No tiers, no minimums. Solo founder + zero-touch ops — has to be self-service.
 
 ## Honest disclaimer
 

@@ -214,7 +214,7 @@ Retry-After: <seconds-until-daily-reset>
 ## 関連
 
 - API reference: [api-reference.md](api-reference.md)
-- Pricing + free tier: [pricing.md](pricing.md)
+- Pricing + anonymous free use: [pricing.md](pricing.md)
 - SLA: [sla.md](sla.md)
 - Privacy + APPI § 31/§ 33: [compliance/privacy_policy.md](compliance/privacy_policy.md)
 - 不在の場合: 特商法ページの連絡先へお問い合わせください。

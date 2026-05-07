@@ -43,6 +43,7 @@ CLI:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import json
 import logging
@@ -407,14 +408,13 @@ def upsert_program(
                 now_iso,
             ),
         )
-        try:
+        # FTS table may not exist in some setups
+        with contextlib.suppress(sqlite3.OperationalError):
             conn.execute(
                 "INSERT INTO programs_fts(unified_id, primary_name, aliases, enriched_text) "
                 "VALUES (?,?,?,?)",
                 (uid, name, "", name),
             )
-        except sqlite3.OperationalError:
-            pass  # FTS table may not exist in some setups
         return "insert"
 
     if row[0]:

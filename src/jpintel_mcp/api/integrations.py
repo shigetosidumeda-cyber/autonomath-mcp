@@ -45,11 +45,10 @@ import logging
 import os
 import re
 import secrets
-import sqlite3
 import urllib.parse
 import urllib.request
 from datetime import UTC, datetime
-from typing import Annotated, Any
+from typing import TYPE_CHECKING, Annotated, Any
 
 from fastapi import (
     APIRouter,
@@ -80,6 +79,9 @@ from jpintel_mcp.api.deps import (
 )
 from jpintel_mcp.api.programs import _build_search_response
 from jpintel_mcp.api.tax_rulesets import _TAX_DISCLAIMER
+
+if TYPE_CHECKING:
+    import sqlite3
 
 logger = logging.getLogger("jpintel.integrations")
 

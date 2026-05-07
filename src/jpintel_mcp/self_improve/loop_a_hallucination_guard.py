@@ -37,9 +37,9 @@ from pathlib import Path
 from typing import Any
 
 try:
-    import yaml  # type: ignore
+    import yaml  # type: ignore[import-untyped,unused-ignore]
 except Exception:  # pragma: no cover - yaml is optional at import-time
-    yaml = None
+    yaml = None  # type: ignore[assignment]
 
 # data/hallucination_guard.yaml lives at repo root; this file lives at
 # src/jpintel_mcp/self_improve/loop_a_hallucination_guard.py — climb four

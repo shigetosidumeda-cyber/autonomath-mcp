@@ -1,6 +1,6 @@
 ---
-title: "日本の補助金・融資データ 14,472 件を 1 本の REST API にまとめた話"
-description: "jpcite ローンチ記事 (Article 1 of 2) — 補助金・融資・税制・認定制度 14,472 件、採択事例 2,286 件、融資 108 件、排他ルール 181 本を 1 本の REST API で提供する設計背景。"
+title: "日本の公的制度データを 1 本の REST API にまとめた話"
+description: "jpcite ローンチ記事 (Article 1 of 2) — 検索対象制度 11,601 件 (登録総数 14,472)、採択事例 2,286 件、融資詳細 108 件、排他ルール 181 本を 1 本の REST API で提供する設計背景。"
 tags:
   - api
   - python
@@ -114,7 +114,7 @@ curl -s "https://api.jpcite.com/v1/programs/search?q=クラウド&limit=5" \
   | python3 -m json.tool
 ```
 
-料金は **¥3/リクエスト（税別）、税込 ¥3.30**。
+料金は **¥3/billable unit（税別）、税込 ¥3.30**。
 Tier なし、座席課金なし、年次契約なし。
 
 ---
@@ -138,12 +138,12 @@ Bookyou株式会社です。
 ```
 FastAPI (REST /v1/*)
  └── SQLite 全文検索 (3-gram 分割)
-      ├── programs         (14,472 件)
+      ├── programs         (14,472 件 total / 11,601 件 searchable)
       ├── case_studies     (2,286 件)
       ├── loan_programs    (108 件, 三軸担保分解)
       ├── enforcement_cases (1,185 件)
       ├── exclusion_rules  (181 本)
-      ├── laws             (6,850+ 件 e-Gov CC-BY — 継続ロード中)
+      ├── laws             (6,493 本文索引 + 9,484 メタデータ e-Gov CC-BY — 継続ロード中)
       ├── tax_rulesets     (50 件 インボイス/電帳法 — live)
       └── court_decisions / bids / invoice_registrants (スキーマ構築済み、データロード準備中)
 ```
@@ -203,7 +203,7 @@ HTTP 429 のレスポンスには次のリセット日時が入ります。
 
 ## 今後の展開
 
-2026-04-24 拡張では法令 (e-Gov CC-BY, 6,850+ 件・継続ロード中) と税務ルールセット (インボイス+電帳法, 50 件)
+2026-04-24 以降の拡張では法令 (e-Gov CC-BY, 本文索引 6,493 件 + メタデータ 9,484 件・継続ロード中) と税務ルールセット (インボイス+電帳法, 50 件)
 をライブ追加しました。判例・入札・国税庁適格事業者はスキーマと取込インフラが完成しており、
 データロードはローンチ後に追って公開します。
 
@@ -211,9 +211,9 @@ HTTP 429 のレスポンスには次のリセット日時が入ります。
 
 ## まとめ
 
-- 14,472 件の一次資料補助金データが `curl` 1 本で取れる
+- 11,601 件の検索対象制度 (登録総数 14,472) を `curl` 1 本で確認できる
 - 181 本の排他ルールを POST 1 本で確認候補として返せる
-- ¥3/req 税別（税込 ¥3.30）、匿名 3 req/日 per IP 無料
+- ¥3/billable unit 税別（税込 ¥3.30）、匿名 3 req/日 per IP 無料
 - 主要な公開行に `source_url` + `fetched_at` を付与
 
 **jpcite: https://jpcite.com**

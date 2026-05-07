@@ -1,7 +1,7 @@
 [project]
 name = "autonomath-mcp"
 version = "0.3.4"
-description = "REST + MCP search over Japanese institutional data: 11,684 searchable subsidies (14,472 total), 154 laws full-text + 9,484 law catalog stubs, 2,065 court decisions, 50 tax rulesets, 13,801 invoice registrants, 2,286 adoptions, 1,185 enforcements, 108 loans, 362 bids. 139 MCP tools (protocol 2025-06-18). 3 yen/req metered (3.30 tax-incl), anonymous 3/day per IP free."
+description = "REST + MCP search over Japanese institutional data: 11,601 searchable programs (14,472 total), 6,493 laws full-text indexed + 9,484 law catalog stubs, 2,065 court decisions, 50 tax rulesets, 13,801 invoice registrants, 2,286 adoptions, 1,185 enforcements, 108 loans, 362 bids. 139 MCP tools (protocol 2025-06-18). 3 yen/billable unit metered (3.30 tax-incl), anonymous 3/day per IP free."
 license = { text = "MIT" }
 authors = [
     { name = "Bookyou株式会社", email = "info@bookyou.net" },
@@ -210,6 +210,32 @@ extend-exclude = ["src/jpintel_mcp/_archive"]
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "N", "UP", "B", "A", "C4", "SIM", "TCH"]
 ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+# FastAPI Body() / Depends() in defaults is canonical idiom — B008 is a false positive there.
+"src/jpintel_mcp/api/wave24_endpoints.py" = ["B008"]
+"sdk/mf-plugin/proxy_endpoints.py" = ["B008"]
+# `format` arg name matches the public MCP tool param contract (output format).
+"src/jpintel_mcp/mcp/autonomath_tools/intel_wave31.py" = ["A002"]
+# JSON / API surface field names from upstream (courts.go.jp, METI 行政文書) preserve original camelCase.
+"scripts/ingest/ingest_court_decisions_lower.py" = ["N803"]
+"scripts/ingest/ingest_enforcement_meti.py" = ["N802"]
+"scripts/ops/verify_migration_targets.py" = ["N806"]
+# numeric counters in benchmarks / ETL inner loops — enumerate() rewrites are noisier than the original.
+"benchmarks/jcrb_v1/run_token_benchmark.py" = ["SIM113"]
+"scripts/etl/build_entity_density_score.py" = ["SIM113"]
+"scripts/etl/build_entity_pagerank.py" = ["SIM113"]
+# multi-clause if/else carries comments and divergent paths — ternary collapses readability.
+"scripts/etl/build_temporal_correlation.py" = ["SIM108"]
+"scripts/ingest/ingest_court_decisions_courts_jp.py" = ["SIM108"]
+"scripts/ingest/ingest_enforcement_maff.py" = ["SIM108"]
+# nested `with` patches are intentional — combining changes mock teardown order.
+"sdk/freee-plugin/tests/test_freee_glue.py" = ["SIM117"]
+"tests/test_industry_journal_mention.py" = ["SIM117"]
+# Test-only patterns: GZipMiddleware alias, lambda-in-loop fake_results, sys.path manipulation before imports.
+"tests/test_gzip_middleware.py" = ["N814"]
+"tests/test_post_deploy_smoke.py" = ["B023"]
+"tests/smoke/smoke_pre_launch.py" = ["E402"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

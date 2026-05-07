@@ -322,7 +322,7 @@ def find_egov_digit_fixes(
         title_num_to_id[(nlno, title)] = egov
     # also pure-title lookup for fallback
     title_only: dict[str, list[str]] = {}
-    for _uid, title, lno, url in jp_rows:
+    for _uid, title, _lno, url in jp_rows:
         egov = extract_egov_id(url)
         if egov:
             title_only.setdefault(title, []).append(egov)
@@ -512,7 +512,7 @@ def run_egov_fix(dry_run: bool) -> tuple[int, int]:
     try:
         am.execute("BEGIN IMMEDIATE")
         fixed = 0
-        for cid, title, wrong, correct in mismatches:
+        for cid, _title, wrong, correct in mismatches:
             am.execute(
                 "UPDATE am_law SET e_gov_lawid = ? WHERE canonical_id = ? AND e_gov_lawid = ?",
                 (correct, cid, wrong),

@@ -89,7 +89,7 @@ def hash_api_key_bcrypt(raw_key: str) -> str:
     """
     import bcrypt
 
-    return bcrypt.hashpw(raw_key.encode("utf-8"), bcrypt.gensalt(_BCRYPT_COST)).decode("ascii")
+    return str(bcrypt.hashpw(raw_key.encode("utf-8"), bcrypt.gensalt(_BCRYPT_COST)).decode("ascii"))
 
 
 def verify_api_key_bcrypt(raw_key: str, stored_bcrypt_hash: str) -> bool:
@@ -104,7 +104,7 @@ def verify_api_key_bcrypt(raw_key: str, stored_bcrypt_hash: str) -> bool:
     try:
         import bcrypt
 
-        return bcrypt.checkpw(raw_key.encode("utf-8"), stored_bcrypt_hash.encode("ascii"))
+        return bool(bcrypt.checkpw(raw_key.encode("utf-8"), stored_bcrypt_hash.encode("ascii")))
     except (ValueError, TypeError):
         return False
 

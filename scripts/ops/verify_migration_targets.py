@@ -256,7 +256,7 @@ def extract_body_tables(sql: str) -> list[str]:
                 target = node[0] if isinstance(node, tuple) else node
                 # sqlglot ≥ 25 renamed AlterTable → Alter; both names are
                 # supported here so the verifier survives a future bump.
-                AlterCls = getattr(sqlglot_exp, "AlterTable", None) or getattr(
+                AlterCls = getattr(sqlglot_exp, "AlterTable", None) or getattr(  # noqa: N806  (class binding mirroring sqlglot symbol name)
                     sqlglot_exp, "Alter", None
                 )
                 if (

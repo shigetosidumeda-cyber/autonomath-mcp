@@ -1,13 +1,13 @@
 -- target_db: autonomath
 -- migration wave24_110_am_entities_vec_v2 (MASTER_PLAN_v1 章 10.1.a — vector
--- 拡張 v2: 全 11,684 program に embed)
+-- 拡張 v2: 全 11,601 searchable program に embed)
 --
 -- Why this exists:
 --   Migration 120 (drop_dead_vec_unifts) GC'd the 1.25 GB legacy
 --   am_vec_tier_a / am_vec_tier_b_* sqlite-vec families that were
 --   never wired into production routes. The Wave 24 hybrid search
 --   path (BM25 + cosine) needs ONE clean, production-shaped vec
---   table covering all 11,684 searchable programs (not just tier S/A
+--   table covering all 11,601 searchable programs (not just tier S/A
 --   like the previous experiment). This migration declares that
 --   table.
 --

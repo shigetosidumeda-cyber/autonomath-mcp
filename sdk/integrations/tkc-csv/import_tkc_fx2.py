@@ -236,7 +236,7 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--encoding",
         type=str,
         default=None,
-        help="force decode encoding (utf-8-sig / cp932 / utf-8). " "default: auto-detect.",
+        help="force decode encoding (utf-8-sig / cp932 / utf-8). default: auto-detect.",
     )
     p.add_argument(
         "--max-rows",

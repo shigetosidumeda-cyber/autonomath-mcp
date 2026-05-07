@@ -11,7 +11,7 @@ Just shipped jpcite: a search API + MCP server over Japanese institutional data.
 
 11,601 subsidies / 9,484 laws / 2,065 court decisions / 13,801 invoice registrants / 50 tax rulesets — public rows include primary-source URLs where available.
 
-¥3/req metered. 3/day free anonymously, no signup.
+¥3/billable unit metered. 3/day free anonymously, no signup.
 
 🧵
 
@@ -43,7 +43,7 @@ Stack:
 
 ## Tweet 4/6 — pricing
 
-¥3/req metered (税込 ¥3.30). 3 req/日 anonymous free.
+¥3/billable unit metered (税込 ¥3.30). 3 req/日 anonymous free.
 
 No tiers. No minimums. No subscription. No annual contracts.
 

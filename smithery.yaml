@@ -13,7 +13,7 @@ configSchema:
         Optional jpcite API key from https://jpcite.com/pricing. This is sent to
         api.jpcite.com as X-API-Key and is not an LLM provider key. Anonymous tier
         is 3 req/day per IP (JST next-day reset) and works without a key; metered
-        paid tier (¥3/req tax-exclusive, ¥3.30 tax-inclusive) requires one.
+        paid tier (¥3/billable unit tax-exclusive, ¥3.30 tax-inclusive) requires one.
     jpciteApiBase:
       type: string
       default: "https://api.jpcite.com"
@@ -45,8 +45,8 @@ metadata:
   displayName: "jpcite — Japanese public-program evidence MCP"
   description: >-
     Japan public-program MCP — subsidies, loans, tax, law, invoice & corporate
-    data. 11,684 補助金 + 9,484 e-Gov laws + 1,185 行政処分 + 22,258 detail records + 13,801 適格事業者
-    + 166K corporate entities. ¥3/request, 3 free/day per IP. Evidence Packet
+    data. 11,601 searchable programs + 9,484 e-Gov laws + 1,185 行政処分 + 22,258 detail records + 13,801 適格事業者
+    + 166K corporate entities. ¥3/billable unit, 3 free/day per IP. Evidence Packet
     with source_url + source_fetched_at + known gaps + 互換/排他 rules. 139 tools.
   icon: "https://jpcite.com/assets/mark.svg"
   iconUrl: "https://jpcite.com/assets/favicon-v2.svg"

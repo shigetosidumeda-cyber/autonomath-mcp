@@ -401,10 +401,10 @@
  <article class="price-card highlight" aria-labelledby="api-paid">
  <h2 id="api-paid">Metered</h2>
  <p class="tier-desc">Production / large RAG / agents</p>
- <p class="price">¥<span data-fact="price_per_req_inc_tax">3.30</span> <small style="font-size:14px;font-weight:500;color:var(--text-muted);">/ req (tax incl.)</small></p>
+ <p class="price">¥<span data-fact="price_per_req_inc_tax">3.30</span> <small style="font-size:14px;font-weight:500;color:var(--text-muted);">/ unit (tax incl.)</small></p>
  <p class="price-unit">¥<span data-fact="price_per_req">3</span>.00 tax exclusive + 10% JCT, Stripe metered</p>
  <ul class="feats">
- <li><strong>No published paid daily quota.</strong> Protective rate limits may apply during abnormal bursts; sustained high-volume use remains billed at the public ¥3/req rate unless otherwise announced.</li>
+ <li><strong>No published paid daily quota.</strong> Protective rate limits may apply during abnormal bursts; sustained high-volume use remains billed at the public ¥3/billable unit rate unless otherwise announced.</li>
  <li><strong>Self-set monthly spend cap.</strong> Set <code>monthly_cap_yen</code> in the Customer Portal or via <code>POST /v1/me/cap</code>. Once hit, the API returns 503 with <code>cap_reached</code> until the next JST monthly billing cycle. Default = uncapped.</li>
  <li>fields=full (enriched + source_mentions + lineage)</li>
  <li>Months with 0 req cost ¥0</li>

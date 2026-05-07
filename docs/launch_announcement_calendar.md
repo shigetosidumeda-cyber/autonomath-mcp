@@ -12,7 +12,7 @@
 
 - 100% organic (memory `feedback_organic_only_no_ads`): 営業 / 広告 / 紹介費なし
 - Zero-touch (memory `feedback_zero_touch_solo`): 電話・対面なし、メール 1 窓口
-- ¥3/req 完全従量 (memory `project_autonomath_business_model`)
+- ¥3/billable unit 完全従量 (memory `project_autonomath_business_model`)
 - 動作確認 → publish の順 (memory `feedback_validate_before_apply`)
 
 各日付は **JST**。

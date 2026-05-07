@@ -43,7 +43,10 @@ import re
 import sys
 import unicodedata
 from collections import defaultdict
-from collections.abc import Iterable
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 # ---------------------------------------------------------------------------
 # Normalizers — kept tiny on purpose so reviewers can audit behaviour.
@@ -104,10 +107,7 @@ def _registrable(host: str) -> str:
 
 def _host_match(expected: str, observed_hosts: Iterable[str]) -> bool:
     exp = _registrable(expected)
-    for h in observed_hosts:
-        if _registrable(h).endswith(exp):
-            return True
-    return False
+    return any(_registrable(h).endswith(exp) for h in observed_hosts)
 
 
 # ---------------------------------------------------------------------------

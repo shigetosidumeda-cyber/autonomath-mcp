@@ -73,7 +73,9 @@ from typing import Any
 
 try:
     import requests  # type: ignore
-    from bs4 import BeautifulSoup  # type: ignore
+    from bs4 import (
+        BeautifulSoup,  # type: ignore  # noqa: F401  (availability check; used dynamically below)
+    )
 except ImportError as exc:
     print(
         f"missing dep: {exc}. pip install requests beautifulsoup4",

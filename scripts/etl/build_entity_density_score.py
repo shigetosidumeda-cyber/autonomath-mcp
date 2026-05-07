@@ -264,9 +264,7 @@ def populate_table(
     ranked: list[tuple] = []
     last_score = None
     rank = 0
-    dense = 0
-    for r in rows:
-        dense += 1
+    for dense, r in enumerate(rows, start=1):
         if r[8] != last_score:
             rank = dense
             last_score = r[8]

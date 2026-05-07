@@ -25,7 +25,7 @@ Japanese subsidy info is genuinely scattered across hundreds of prefecture / cit
 
 1. Pay a 行政書士 / 中小企業診断士 to find programs (¥30,000+ per consultation) — the high-quality path
 2. Spend 10+ hours a month manually checking ministry portals — accurate but exhausting
-3. Use this API for ¥3/req with primary-source URLs, then verify with a licensed professional before applying
+3. Use this API for ¥3/billable unit with primary-source URLs, then verify with a licensed professional before applying
 
 I'm not trying to replace path #1 — see disclaimer below. I'm trying to make path #3 a viable preliminary research step.
 

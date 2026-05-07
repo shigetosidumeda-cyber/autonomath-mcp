@@ -173,7 +173,7 @@ ls -la analysis_wave18/invariant_runs/$(date -u +%Y-%m-%d).json
 
 - 当週で hit した実 customer 質問 (匿名化)
 - 当週の制度更新 (法改正 / 新規 program)
-- ¥3/req economics の透明性 post
+- ¥3/billable unit economics の透明性 post
 
 ### 4.4 週次 ritual 終了条件
 

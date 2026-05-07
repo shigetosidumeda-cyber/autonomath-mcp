@@ -1305,10 +1305,12 @@ def write_rows(
             # FSA #21, skip JPX 上場契約違約金 record. (Defensive — JPX violation
             # money is paid to TSE, FSA fine to government, but same listed
             # company name would be the same enforcement event window.)
-            if r.enforcement_kind == "fine":
-                if (r.issuance_date, r.target_name, r.amount_yen) in fine_keys:
-                    dup_fine += 1
-                    continue
+            if (
+                r.enforcement_kind == "fine"
+                and (r.issuance_date, r.target_name, r.amount_yen) in fine_keys
+            ):
+                dup_fine += 1
+                continue
             batch_keys.add(key)
             try:
                 upsert_entity_and_enforcement(conn, r, inserted, now_iso)

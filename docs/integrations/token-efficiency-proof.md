@@ -96,7 +96,7 @@ Per `docs/_internal/token_reduction_effect_2026-05-02.md`:
 
 Secondary axis (citation accuracy): JCRB-v1 +44 pp exact_match / +52 pp citation_ok lift (§5) prevents bad-cite incidents whose downstream cost (顧問先 trust loss, 監督官庁 inquiry, 行政書士法 §1 fence breach) is far larger than any monthly fee delta — but un-quantifiable per-incident, so we lead on time, not on this.
 
-Tertiary axis (token spend): per W28-4 sim, at typical Anthropic / OpenAI list pricing the raw input-token saving on a 12,000 req/month workload is **-$94 to -$122 / month net of the ¥3/req fee** (i.e., a small loss on token math alone). Do **not** sell on token compression as a primary number.
+Tertiary axis (token spend): per W28-4 sim, at typical Anthropic / OpenAI list pricing the raw input-token saving on a 12,000 req/month workload is **-$94 to -$122 / month net of the ¥3/billable unit fee** (i.e., a small loss on token math alone). Do **not** sell on token compression as a primary number.
 
 ---
 
@@ -104,10 +104,10 @@ Tertiary axis (token spend): per W28-4 sim, at typical Anthropic / OpenAI list p
 
 - **Never** lead with "AIコスト◯◯%削減" or "token X% 削減" as a headline — that is the secondary axis and on raw token math alone is a net loss at typical workloads (W28-4). Lead with **verify time + citation accuracy**.
 - Never use absolute language like "絶対 token 削減" / "必ず削減" / "削減を保証" — token outcome is workload-dependent.
-- Acceptable wording for the secondary axis: "当社指定ベンチでは中央値X%低下 (model / date / query set 明示)" + "raw token math だけでは ¥3/req を償却できないケースあり (honest caveat)".
+- Acceptable wording for the secondary axis: "当社指定ベンチでは中央値X%低下 (model / date / query set 明示)" + "raw token math だけでは ¥3/billable unit を償却できないケースあり (honest caveat)".
 - All §3 numbers are **estimates** at list-price snapshots (2026-04-30). Provider pricing changes without versioned changelog; refresh before any pricing-sensitive release.
 - Output / reasoning / cache / 為替 / web-search tool fees are **excluded** from §3. The customer's real bill may move differently — direct them to `docs/bench_methodology.md` for the full 3-arm protocol.
-- jpcite's own service is `¥3/req metered (税込 ¥3.30)`, no tier SKU, no seat fee, anonymous 3 req/day/IP free (JST 翌日 00:00 リセット). See `docs/pricing.md`.
+- jpcite's own service is `¥3/billable unit metered (税込 ¥3.30)`, no tier SKU, no seat fee, anonymous 3 req/day/IP free (JST 翌日 00:00 リセット). See `docs/pricing.md`.
 
 ---
 

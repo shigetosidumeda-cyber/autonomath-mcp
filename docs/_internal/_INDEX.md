@@ -14,7 +14,7 @@ Lightweight curation layer over the comprehensive [`INDEX.md`](./INDEX.md). Use 
 
 The 3 must-know strategy / operations entry points:
 
-1. **`llm_resilient_business_plan_2026-04-30.md`** — Primary strategy doc. LLM-resilient Evidence-Layer execution plan, ¥3/req metered, 8-cohort revenue model. Updated 2026-04-30.
+1. **`llm_resilient_business_plan_2026-04-30.md`** — Primary strategy doc. LLM-resilient Evidence-Layer execution plan, ¥3/billable unit metered, 8-cohort revenue model. Updated 2026-04-30.
 2. **`seo_geo_strategy.md`** — SEO + GEO posture under the `jpcite` brand (post 税務会計AI rename). 301 redirect strategy from `zeimu-kaikei.ai`.
 3. **`INDEX.md`** — Comprehensive runbook directory (75+ files in 10 categories: incident, billing, data, deploy, observability, perf, growth, launch, UX, ops continuity).
 

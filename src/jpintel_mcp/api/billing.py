@@ -25,7 +25,7 @@ import os
 import secrets
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, Annotated, Any, Literal
+from typing import TYPE_CHECKING, Annotated, Any, Literal, cast
 from urllib.parse import urlparse
 
 import stripe
@@ -331,8 +331,11 @@ def _refresh_subscription_status_from_stripe(conn: sqlite3.Connection, sub_id: s
     try:
         with advisory_lock(conn, f"subscription:{sub_id}", ttl_s=30):
             sub = stripe.Subscription.retrieve(sub_id)
-            # Stripe SDK objects behave like dicts.
-            sub_dict = dict(sub) if not isinstance(sub, dict) else sub
+            # Stripe StripeObject is a `dict` subclass at runtime; the public
+            # type stubs hide that. Cast through `Any` so mypy treats `sub`
+            # as a Mapping for `dict()`-coercion (vs the `[call-overload]`
+            # error against Subscription's typed `__iter__`).
+            sub_dict = cast("dict[str, Any]", dict(cast("Any", sub)))
             status_val, cpe_int, cancel_bool = _extract_subscription_state(sub_dict)
             if status_val:
                 update_subscription_status(

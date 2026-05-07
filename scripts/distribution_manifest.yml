@@ -5,9 +5,10 @@
 # scripts/probe_runtime_distribution.py. It intentionally records canonical
 # values only; downstream distribution surfaces must be edited separately.
 #
-# Last verified on 2026-05-06 JST:
+# Last verified on 2026-05-07 JST:
 # - Public distribution surfaces use the 139-tool standard configuration.
-# - Runtime route count is 269 and generated OpenAPI path count is 227.
+# - Runtime route count is 226 and generated OpenAPI path count is 186
+#   (with --include-preview; 4 preview routes for legal/accounting/calendar).
 # - Pricing/free-tier language is consistent: JPY 3 per billable unit or
 #   request, tax-included JPY 3.30 where expanded, anonymous 3/day free.
 
@@ -24,8 +25,15 @@ canonical_api_env:
 
 pyproject_version: "0.3.4"
 tool_count_default_gates: 139  # runtime len(mcp._tool_manager.list_tools()), verified 2026-05-05 JST
-route_count: 269              # runtime len(app.routes), verified 2026-05-06 JST
-openapi_path_count: 227       # docs/openapi/v1.json .paths length, verified 2026-05-06 JST
+route_count: 226              # runtime len(app.routes), verified 2026-05-07 JST
+openapi_path_count: 186       # docs/openapi/v1.json .paths length, verified 2026-05-07 JST (--include-preview, 4 preview routes)
+searchable_programs_total: 11601
+total_programs: 14472
+tier_c_count: 5961
+publication_review_rows: 2871
+laws_fulltext_indexed: 6493
+laws_metadata: 9484
+tax_rulesets_total: 50
 
 pricing_unit_jpy_ex_tax: 3
 pricing_unit_jpy_tax_included: "3.30"
@@ -148,12 +156,87 @@ forbidden_tokens:
   - jpintel-mcp
   - zeimu-kaikei.ai
   - 税務会計AI
+  - "11,684"
+  - "11684"
+  - "11,547"
+  - "11547"
+  - "6,044"
+  - "6044"
+  - "2,788"
+  - "2788"
+  - "本文 154"
+  - "154 law full"
+  - "154 laws"
+  - "154 全文"
+  - "full-text search covers the 154"
+  - "Search 35 Japanese tax"
+  - "10,000 req included"
+  - "¥3/request"
+  - "¥3/req"
+  - "¥3/リクエスト"
+  - "¥3 / req"
+  - "¥3.30 / req"
+  - "¥3 / request"
+  - "3 yen/req"
+  - "JPY 3/req"
+  - "1リクエスト税別3円"
+  - "227 public paths"
+  - "227 paths"
+  - "235 operations"
+  - "OpenAPI paths 227"
+  - "aggregator domains are banned"
+  - "no aggregators"
+  - "一次資料 99%"
+  - "見逃さない"
+  - "never miss"
+
+public_count_guard_paths:
+  - README.md
+  - pyproject.toml
+  - mkdocs.yml
+  - overrides/partials/index_jsonld.html
+  - server.json
+  - site/server.json
+  - mcp-server.json
+  - mcp-server.full.json
+  - mcp-server.core.json
+  - mcp-server.composition.json
+  - site/mcp-server.json
+  - site/mcp-server.full.json
+  - dxt/manifest.json
+  - smithery.yaml
+  - docs/index.md
+  - docs/examples.md
+  - docs/honest_capabilities.md
+  - docs/press_kit.md
+  - docs/partnerships/anthropic_directory.md
+  - site/llms.txt
+  - site/llms.en.txt
+  - site/en/llms.txt
+
+public_count_guard_globs:
+  - site/*.html
+  - site/*.md
+  - site/*.txt
+  - site/en/*.html
+  - site/en/*.txt
+  - site/en/audiences/*.html
+  - site/audiences/*.html
+  - site/blog/*.html
+  - site/press/*.md
+  - site/assets/*.js
+  - docs/blog/*.md
+  - docs/cookbook/*.md
+  - scripts/registry_submissions/*.md
 
 forbidden_token_exclude_paths:
   - CLAUDE.md
   - CHANGELOG.md
   - HANDOFF_
+  - scripts/registry_submissions/mcp_so_submission.md
   - site/_redirects
+  - site/programs/
+  - site/llms-full
   - docs/_internal/
   - analysis_wave18/
   - analysis_value/

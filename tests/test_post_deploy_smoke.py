@@ -113,7 +113,9 @@ def test_exit_code_0_when_all_modules_pass():
         mod.ModuleResult(name="stripe_webhook", ok=True, elapsed_s=2.0, summary="ok"),
     ]
     with mock.patch.object(
-        mod, "select_modules", return_value=[lambda args: r for r in fake_results]
+        mod,
+        "select_modules",
+        return_value=[lambda args, r=r: r for r in fake_results],  # noqa: B023  (default-arg binds r per iteration)
     ):
         # patch select_modules to return a list of zero-arg lambdas that return the canned results
         # easier: patch each MODULE entry directly

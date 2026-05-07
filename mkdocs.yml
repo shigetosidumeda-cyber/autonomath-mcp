@@ -8,7 +8,7 @@
 # together from a single `site/` upload).
 
 site_name: jpcite
-site_description: jpcite — 日本の制度 (補助金 / 融資 / 税制 / 認定制度) 11,684件 + 採択事例 2,286 + 融資 108 + 行政処分 1,185 を一次資料付きで返す REST + MCP API。現在の公開料金と匿名枠はPricingに掲載。
+site_description: jpcite — 日本の制度 (補助金 / 融資 / 税制 / 認定制度) 11,601件検索対象 (登録総数14,472) + 採択事例 2,286 + 融資 108 + 行政処分 1,185 を出典付きで返す REST + MCP API。現在の公開料金と匿名枠はPricingに掲載。
 site_author: jpcite
 site_url: "https://jpcite.com/docs/"
 copyright: "© 2026 jpcite"
@@ -198,7 +198,9 @@ exclude_docs: |
   organic_outreach_templates.md
   rollback_runbook.md
   security_posture.md
+  smoke_runbook.md
   solo_ops_handoff.md
+  legal/gbizinfo_terms_compliance.md
   runbook/
   assets/*.jsonld
   overrides/

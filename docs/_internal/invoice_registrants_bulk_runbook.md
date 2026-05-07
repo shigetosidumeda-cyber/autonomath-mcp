@@ -17,7 +17,7 @@ handler, and the contract test `tests/test_invoice_registrants_404.py`).
 The longer-term fix — full population coverage — is the monthly bulk
 ingest documented below. **Schedule: T+30d post-launch (≈2026-06-05)**.
 Doing this on launch day is explicitly out of scope: the launch CLI is
-running ¥3/req traffic and a 4M-row UPSERT during that window risks WAL
+running ¥3/billable unit traffic and a 4M-row UPSERT during that window risks WAL
 checkpoint stalls on the writer lock.
 
 ## Source contract

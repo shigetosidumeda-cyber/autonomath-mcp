@@ -55,7 +55,7 @@ MCP protocol:       2025-06-18
 Transport:          stdio
 Install:            uvx autonomath-mcp
 Tool count:         139 at default gates
-Pricing:            ¥3/request tax-exclusive (¥3.30 tax-inclusive, fully metered via Stripe); first 3 requests/day per IP free (anonymous, JST next-day reset); no tier SKUs, no seat fees, no annual minimums, no signup required for the free tier.
+Pricing:            ¥3/billable unit tax-exclusive (¥3.30 tax-inclusive, fully metered via Stripe); first 3 requests/day per IP free (anonymous, JST next-day reset); no tier SKUs, no seat fees, no annual minimums, no signup required for anonymous checks.
 Operator:           Bookyou株式会社 (T8010001213708) — 代表 梅田茂利 — info@bookyou.net
 
 ----- What it does -----

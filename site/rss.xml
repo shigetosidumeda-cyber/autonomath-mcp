@@ -45,7 +45,7 @@
   <item>
     <title>適格事業者データ追加 (PDL v1.0 delta、13,801 件)</title>
     <link>https://jpcite.com/facts.html#changelog-title</link>
-    <description>国税庁適格請求書発行事業者公表サイトの PDL v1.0 delta を invoice_registrants に取り込み (13,801 件、出典明記 + 編集注記付き)。月次フルバルク 4M 行は今後追加予定。¥3/req API 下流提供は PDL v1.0 で許諾済み。</description>
+    <description>国税庁適格請求書発行事業者公表サイトの PDL v1.0 delta を invoice_registrants に取り込み (13,801 件、出典明記 + 編集注記付き)。月次フルバルク 4M 行は今後追加予定。¥3/billable unit API 下流提供は PDL v1.0 で許諾済み。</description>
     <guid isPermaLink="false">jpcite:dataset:invoice-registrants-pdl:2026-04-24</guid>
     <pubDate>Fri, 24 Apr 2026 12:00:00 +0000</pubDate>
   </item>

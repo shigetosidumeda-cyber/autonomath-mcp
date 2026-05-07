@@ -115,7 +115,7 @@
       "@type": "DefinedTerm",
       "@id": "https://jpcite.com/en/glossary.html#term-tier",
       "name": "tier",
-      "description": "jpcite's per-program data-quality grade, populated from the actual completeness of fields and source-URL liveness. Tiers S/A/B/C are searchable; rows that fail the tier threshold (no amount, broken URL, aggregator-only source, ambiguous duplicate, etc.) are excluded from public search. Production breakdown: S=114, A=1,340, B=4,186, C=5,961; search-excluded rows: 2,788. All search endpoints exclude search-excluded rows by default.",
+      "description": "jpcite's per-program data-quality grade, populated from the actual completeness of fields and source-URL liveness. Tiers S/A/B/C are searchable; rows that fail the tier threshold (no amount, broken URL, aggregator-only source, ambiguous duplicate, etc.) are excluded from public search. Production breakdown: S=114, A=1,340, B=4,186, C=5,961; search-excluded rows: 2,871. All search endpoints exclude search-excluded rows by default.",
       "url": "https://jpcite.com/en/glossary.html#term-tier",
       "inDefinedTermSet": "https://jpcite.com/en/glossary.html#termset"
     },
@@ -418,7 +418,7 @@
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:18px 20px;">
  <dt id="term-tier" style="font-weight:700;font-size:18px;"><code>tier</code></dt>
  <dd style="margin:8px 0 0;font-size:15px;line-height:1.75;">
- Per-program data-quality grade, populated from actual completeness of fields and source-URL liveness (not opinion). <strong>Tiers S / A / B / C are searchable</strong>; rows that fail the tier threshold (no amount, broken URL, aggregator-only source, ambiguous duplicate) are <strong>excluded from public search</strong>. Production breakdown: S=114, A=1,340, B=4,186, C=5,961; search-excluded rows: 2,788. <strong>All search endpoints exclude search-excluded rows by default.</strong> Excluded subcategories include <code>external_info_entry</code>, <code>no_amount_data</code>, <code>placeholder_url</code>, <code>dedup_ambiguous_resolved</code>.
+ Per-program data-quality grade, populated from actual completeness of fields and source-URL liveness (not opinion). <strong>Tiers S / A / B / C are searchable</strong>; rows that fail the tier threshold (no amount, broken URL, aggregator-only source, ambiguous duplicate) are <strong>excluded from public search</strong>. Production breakdown: S=114, A=1,340, B=4,186, C=5,961; search-excluded rows: 2,871. <strong>All search endpoints exclude search-excluded rows by default.</strong> Excluded subcategories include <code>external_info_entry</code>, <code>no_amount_data</code>, <code>placeholder_url</code>, <code>dedup_ambiguous_resolved</code>.
  </dd>
  </div>
 
@@ -527,7 +527,7 @@
  <h2 id="next-title" class="section-title">Read next</h2>
  <ul style="margin:0;padding-left:20px;line-height:2;font-size:15px;">
  <li><a href="getting-started.html">Getting started</a> &mdash; from API key to first call</li>
- <li><a href="pricing.html">Pricing</a> &mdash; ¥3/request metered, anonymous 3/day/IP free</li>
+ <li><a href="pricing.html">Pricing</a> &mdash; ¥3/billable unit metered, anonymous 3/day/IP free</li>
  <li><a href="facts.html">Facts</a> &mdash; sources for every number on this site (program counts, entities, facts)</li>
  <li><a href="products.html">Products</a> &mdash; REST + MCP surface overview</li>
  <li><a href="../glossary.html" hreflang="ja">Japanese glossary</a> &mdash; the original 用語集 with 5-term comparison table</li>

@@ -373,7 +373,7 @@ uv run python scripts/etl/reconcile_adoption_to_program.py \
 - **LLM API を一切呼ばない**。`anthropic` / `openai` / `google.generativeai` / `claude_agent_sdk` を src/cron/etl/tests に絶対 import しない。CI guard `tests/test_no_llm_in_production.py` がある
 - **agg サイト (noukaweb / hojyokin-portal / biz.stayway) を `source_url` に絶対書かない**
 - **robots.txt と Crawl-Delay を守る**。1 ドメインあたり ≤ 1 req/sec
-- **¥3/req メータード単一モデル** を変えない (tier SKU 提案禁止、月額 SKU 提案禁止)
+- **¥3/billable unit メータード単一モデル** を変えない (tier SKU 提案禁止、月額 SKU 提案禁止)
 - **新規 SaaS UI を作らない** (memory `feedback_autonomath_no_ui`、既存 dashboard.html 改善は OK)
 - **migration ファイルの番号を後から変えない** (immutable history)
 - **license=unknown / proprietary は HF 公開対象から除外**

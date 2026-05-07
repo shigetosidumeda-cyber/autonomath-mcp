@@ -1,6 +1,6 @@
 # LINE bot operator setup runbook
 
-The LINE bot is the second product surface alongside the ¥3/req REST+MCP API
+The LINE bot is the second product surface alongside the ¥3/billable unit REST+MCP API
 (CLAUDE.md cohort #6 「中小企業 LINE」). The Python webhook handler in
 `src/jpintel_mcp/api/line_webhook.py` and the deterministic state machine in
 `src/jpintel_mcp/line/flow.py` ship as code. The four operator-side actions

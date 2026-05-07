@@ -5,7 +5,7 @@
   domain_mix). It is INTENTIONALLY separate from /calculator.html (the
   coverage explorer): that page deliberately avoids saving framing, this
   page surfaces saving framing WITH the honest caveat that raw token math
-  does not amortise the ¥3/req metering.
+  does not amortise the ¥3/billable unit metering.
 
   Pure JS + fetch. No dependencies. Endpoint is unmetered (free).
 -->
@@ -15,7 +15,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>ROI 試算 (β) — jpcite (verify time + citation lift first)</title>
-<meta name="description" content="jpcite ROI 試算ツール。verify 時間節約 (h/月) + 監査可能引用 lift + 月次 net 損益 の 3 軸を主指標として表示。token saving は raw figure 参考表示のみ。raw token math だけでは ¥3/req を償却できないケースあり (honest)。">
+<meta name="description" content="jpcite ROI 試算ツール。verify 時間節約 (h/月) + 監査可能引用 lift + 月次 net 損益 の 3 軸を主指標として表示。token saving は raw figure 参考表示のみ。raw token math だけでは ¥3/billable unit を償却できないケースあり (honest)。">
 <meta name="robots" content="index, follow">
 
 <meta property="og:title" content="ROI 試算 (β) — jpcite">
@@ -160,7 +160,7 @@
     <p class="lead" style="margin-top:-12px;font-size:14px;">
       ※ <strong>参考指標は verify 時間の推定短縮と citation_ok lift</strong> です。
       JCRB-v1 の測定条件に基づく試算であり、個別の削減時間・費用対効果を保証しません。
-      raw token math だけでは jpcite ¥3/req を償却できないケースがあります。
+      raw token math だけでは jpcite ¥3/billable unit を償却できないケースがあります。
       生 token spend 削減を目当てに使うサービスではありません。
       詳細は <a href="/qa/llm-evidence/context-savings.html">context savings の説明</a> をご参照ください。
     </p>
@@ -235,7 +235,7 @@
           </div>
           <div>
             <dt>(参考) token 節約 raw figure</dt>
-            <dd id="out-savings-usd" class="savings" style="font-size:18px;">$ —<span class="secondary" id="out-savings-jpy">¥— (FX 換算)。 raw token math だけでは ¥3/req を償却できないケースあり (honest)</span></dd>
+            <dd id="out-savings-usd" class="savings" style="font-size:18px;">$ —<span class="secondary" id="out-savings-jpy">¥— (FX 換算)。 raw token math だけでは ¥3/billable unit を償却できないケースあり (honest)</span></dd>
           </div>
           <div>
             <dt>(参考) ROI % (token 節約 / jpcite コスト)</dt>
@@ -379,7 +379,7 @@
   function render(data) {
     $("out-savings-usd").firstChild.nodeValue = fmtUsd(data.estimated_monthly_savings_usd);
     $("out-savings-jpy").textContent =
-      fmtYen(data.estimated_monthly_savings_jpy) + " (FX " + data.methodology.fx_rate_jpy_per_usd + ")。 raw token math だけでは ¥3/req を償却できないケースあり (honest)";
+      fmtYen(data.estimated_monthly_savings_jpy) + " (FX " + data.methodology.fx_rate_jpy_per_usd + ")。 raw token math だけでは ¥3/billable unit を償却できないケースあり (honest)";
 
     $("out-jpcite-cost").firstChild.nodeValue = fmtYen(data.jpcite_cost_jpy);
 

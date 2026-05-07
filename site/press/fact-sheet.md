@@ -53,7 +53,7 @@
 | 項目 | 値 |
 |---|---|
 | 課金モデル | 完全従量制 (no tier SKU, no seat fee, no annual minimum) |
-| 単価 (税別) | ¥3 / request |
+| 単価 (税別) | ¥3 / unituest |
 | 単価 (税込) | ¥3.30 |
 | 無料枠 | 匿名 3 req/日 per IP |
 | 無料枠リセット | JST 翌日 00:00 |

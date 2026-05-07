@@ -27,7 +27,7 @@ mkdocs build からは exclude 済み。値は秘匿 (実値は 1Password に保
 | `STRIPE_SECRET_KEY` | Stripe Secret API key | 1P: `op://Bookyou/AutonoMath/stripe_secret_key_live` (prod) / `..._test` (staging) |
 | `STRIPE_PUBLISHABLE_KEY` | Stripe Publishable key | 1P: `op://Bookyou/AutonoMath/stripe_publishable_key_live` |
 | `STRIPE_WEBHOOK_SECRET` | webhook 署名検証 secret | 1P: `op://Bookyou/AutonoMath/stripe_webhook_secret_live` |
-| `STRIPE_PRICE_PER_REQUEST` | metered Price ID (¥3/req, 税込¥3.30) | 1P: `op://Bookyou/AutonoMath/stripe_price_per_request_live` |
+| `STRIPE_PRICE_PER_REQUEST` | metered Price ID (¥3/billable unit, 税込¥3.30) | 1P: `op://Bookyou/AutonoMath/stripe_price_per_request_live` |
 | `STRIPE_METER_ID` | usage meter ID | 1P: `op://Bookyou/AutonoMath/stripe_meter_id_live` |
 
 ### C. 監視 / 観測

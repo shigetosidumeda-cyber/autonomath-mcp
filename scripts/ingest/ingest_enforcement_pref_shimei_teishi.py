@@ -1304,12 +1304,11 @@ def parse_gunma_html(body: bytes, source: Source) -> list[PrefRow]:
             if cand:
                 target = cand
                 break
-        if not target:
-            # 2nd column heuristic for tables that put the name there.
-            if len(cells) >= 2:
-                cand = clean_target_name(cells[1])
-                if is_company_name(cand) and not _ADDR_PREFIX.match(cand):
-                    target = cand
+        # 2nd column heuristic for tables that put the name there.
+        if not target and len(cells) >= 2:
+            cand = clean_target_name(cells[1])
+            if is_company_name(cand) and not _ADDR_PREFIX.match(cand):
+                target = cand
         if not target:
             continue
         # Reason cell — last cell typically.
@@ -1596,7 +1595,7 @@ def main(argv: list[str] | None = None) -> int:
             try:
                 conn.execute("BEGIN IMMEDIATE")
                 batch_inserted = 0
-                for cat_key, cat_stats, r in pending:
+                for _cat_key, cat_stats, r in pending:
                     try:
                         verdict = upsert_pref_row(conn, r, fetched_at)
                     except sqlite3.Error as exc:

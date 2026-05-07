@@ -52,7 +52,7 @@ All compare pages dated `2026-04-29`. Fetched competitor canonical URLs same day
 
 **Reality (verified 2026-04-29)**: Homepage explicitly displays **¥1,000/月 paid membership** with searchable database of **147,976 national/local cases + 9,939 foundation cases** (current as of 2026-04-28 per their counter). Source: <https://www.navit-j.com/service/joseikin-now/>.
 
-**Recommended copy edit**: 「同社公開: ¥1,000/月、147,976 件 + 9,939 件 (2026-04-28 時点)。当社 ¥3/req 完全従量との比較は利用ボリューム次第 — 月 333 req 未満なら同社が安い、それ以上なら当社、という単純な break-even ¥1,000 / ¥3 = 333 リクエスト/月。」
+**Recommended copy edit**: 「同社公開: ¥1,000/月、147,976 件 + 9,939 件 (2026-04-28 時点)。当社 ¥3/billable unit 完全従量との比較は利用ボリューム次第 — 月 333 req 未満なら同社が安い、それ以上なら当社、という単純な break-even ¥1,000 / ¥3 = 333 リクエスト/月。」
 
 **Severity**: HIGH — calling visible price "公開情報なし" is the most dangerous flavor of stale claim because a reader who clicks through immediately sees we were sloppy. Fix before launch.
 

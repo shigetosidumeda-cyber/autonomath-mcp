@@ -1,6 +1,6 @@
 # Partner Referral Mechanism
 
-> **要約 (summary):** jpcite の partnership は **referral_code 1 個** で trace。発生する metered 売上の **10%** を月末締め翌月末日に Stripe Connect Transfer で payout。discount は永久 NG (¥3/req 固定)。referral 0 でも ¥0 払出。
+> **要約 (summary):** jpcite の partnership は **referral_code 1 個** で trace。発生する metered 売上の **10%** を月末締め翌月末日に Stripe Connect Transfer で payout。discount は永久 NG (¥3/billable unit 固定)。referral 0 でも ¥0 払出。
 
 ## なぜ 1 つのメカニズムにまとめるか
 
@@ -98,7 +98,7 @@ share_jpy     = floor(charged_jpy × share_percent / 100)
 | 30% 超の share | LTV 圧迫、unit economics 破綻 |
 | 個別 partner ごとに異なる share% | zero-touch ops 違反 (memory `feedback_zero_touch_solo`) |
 | 期間限定 boost (例: 初年度 20%) | discount 同等の不健全インセンティブ |
-| referral 経由 user に discount 適用 | ¥3/req 完全均一 (memory `project_autonomath_business_model`) |
+| referral 経由 user に discount 適用 | ¥3/billable unit 完全均一 (memory `project_autonomath_business_model`) |
 | 紙の覚書 / 押印契約 | 全 partner self-serve、Stripe 標準 ToS のみ |
 | call / Zoom での price 交渉 | 営業活動 NG (memory `feedback_organic_only_no_ads`) |
 

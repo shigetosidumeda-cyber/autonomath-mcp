@@ -89,7 +89,7 @@ except ImportError as exc:  # pragma: no cover
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-import contextlib
+import contextlib  # noqa: E402  (sys.path manipulation precedes)
 
 from scripts.lib.http import HttpClient  # noqa: E402
 
@@ -304,10 +304,9 @@ def _detect_section(line: str, feed: str) -> str | None:
     """Identify a section header line for profession breakdown."""
     s = _normalize(line)
     # 医道: '（医師）11件' / '（歯科医師）6件' or '医師　12件'
-    if "医師" in s and "歯科" not in s and re.search(r"\d+\s*件", s):
-        # Only when at start of line / before count
-        if "歯科医師" not in s:
-            return "医師"
+    # Only when at start of line / before count
+    if "医師" in s and "歯科" not in s and re.search(r"\d+\s*件", s) and "歯科医師" not in s:
+        return "医師"
     if "歯科医師" in s and re.search(r"\d+\s*件", s):
         return "歯科医師"
     # 看護: section headers often missing — treat default = 看護師

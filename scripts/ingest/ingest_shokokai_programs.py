@@ -515,10 +515,9 @@ def _coverage_json(filled: dict[str, bool]) -> str:
 
 def build_portal_row(rec: PortalRecord, prb: FetchProbe) -> dict[str, Any]:
     classify_tier(rec)
-    if prb.status == 0 or (prb.status >= 400 and prb.status not in (404,)):
-        # If portal completely unreachable, drop tier
-        if not rec.archive:
-            pass
+    # If portal completely unreachable, drop tier
+    if (prb.status == 0 or (prb.status >= 400 and prb.status not in (404,))) and not rec.archive:
+        pass
     now = dt.datetime.now(dt.UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
     aliases = [rec.short_alias]
     if rec.short_alias != rec.primary_name:
@@ -915,7 +914,7 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     # Portals where round-level rows are meaningful.
-    ROUND_EXPAND_URLS = {
+    ROUND_EXPAND_URLS = {  # noqa: N806  (local CONST sentinel, not loop-mut)
         "https://www.jizokukanb.com/jizokuka_r6h/",
         "https://r6.kyodokyogyohojokin.info/",
         "https://r6.jizokukahojokin.info/sogyo/",

@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#ffffff">
 <meta name="color-scheme" content="light dark">
 <title>jpcite for administrative scriveners (gyoseishoshi) — subsidies + loans + permits in one query</title>
-<meta name="description" content="An administrative-scrivener (gyoseishoshi) playbook for jpcite. For construction, eldercare, freight, and waste-disposal license cases, pull related subsidies, loans, and enforcement history in a single call. Filter by region × industry × deadline. Cut proposal time to five minutes. ¥3/req metered.">
+<meta name="description" content="An administrative-scrivener (gyoseishoshi) playbook for jpcite. For construction, eldercare, freight, and waste-disposal license cases, pull related subsidies, loans, and enforcement history in a single call. Filter by region × industry × deadline. Cut proposal time to five minutes. ¥3/billable unit metered.">
 
 <meta property="og:title" content="jpcite for administrative scriveners — subsidies + loans + permits in one query">
 <meta property="og:description" content="One call returns related subsidies, loans, and enforcement history for license cases. 181 exclusion rules prevent stacking failures.">
@@ -210,7 +210,7 @@ limit=10'</code></pre>
  </article>
 
  <article class="card">
- <h3>Python (commercial, ¥3/req)</h3>
+ <h3>Python (commercial, ¥3/billable unit)</h3>
  <pre class="code-block"><code>import httpx
 # unified_id or program name both work (dual-key supported)
 r = httpx.post(
@@ -244,7 +244,7 @@ print(r.json["conflicts"])</code></pre>
  <section class="pricing-preview" aria-labelledby="pricing-title">
  <div class="container">
  <h2 id="pricing-title" class="section-title">Administrative-scrivener pricing</h2>
- <p class="demo-lead" style="margin:-16px 0 24px;">¥3/req metered (¥3.30 tax inclusive). 3 req/day anonymous and free.</p>
+ <p class="demo-lead" style="margin:-16px 0 24px;">¥3/billable unit metered (¥3.30 tax inclusive). 3 req/day anonymous and free.</p>
  <div class="table-wrap">
  <table class="pricing-table">
  <caption class="visually-hidden">Recommended interface pricing for administrative scriveners</caption>
@@ -257,7 +257,7 @@ print(r.json["conflicts"])</code></pre>
  </tr>
  </thead>
  <tbody>
- <tr><th scope="row">API + MCP</th><td>3 req/day per IP</td><td>¥3 / req</td><td>¥3.30 / req</td></tr>
+ <tr><th scope="row">API + MCP</th><td>3 req/day per IP</td><td>¥3 / unit</td><td>¥3.30 / unit</td></tr>
  <tr><th scope="row">Professional-advisor affiliate (optional)</th><td>Free signup</td><td>¥3,000 / closed intro</td><td>¥3,300 / closed intro</td></tr>
 <tr><th scope="row">Embedded widget (optional)</th><td>3 req/day per IP</td><td>¥3 / search</td><td>¥3.30 / search</td></tr>
  </tbody>
@@ -294,7 +294,7 @@ print(r.json["conflicts"])</code></pre>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="smb.html"><strong>SMB owner page (understand the inquiring party)</strong></a> &mdash; See how clients themselves use jpcite. LINE-bot-driven referrals registered as advisor &rarr; steady inbound channel.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/#programs"><strong>REST API: /v1/programs/search</strong></a> &mdash; Pull related subsidies for permit cases in one call. Filter by target_types + prefecture + industry; 181 exclusion rules pre-detect incompatible combinations.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/#enforcement-cases"><strong>REST API: /v1/enforcement-cases/search (1,185 rows)</strong></a> &mdash; Look up enforcement history (construction-business law, real-estate brokerage law, waste-disposal law, etc.) by corporate number. Useful for permit-succession DD too.</li>
- <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../pricing.html"><strong>Pricing (¥3/req fully metered)</strong></a> &mdash; About 10-20 req per case; 30 cases/month = ¥900-1,800 (tax excl.). Zero monthly minimums.</li>
+ <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../pricing.html"><strong>Pricing (¥3/billable unit fully metered)</strong></a> &mdash; About 10-20 req per case; 30 cases/month = ¥900-1,800 (tax excl.). Zero monthly minimums.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../widget.html"><strong>Embed on your firm site (widget)</strong></a> &mdash; Drop the prescreen on your firm LP to capture inquiries. One-line script tag, white-label OK.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../advisors.html"><strong>Register on the professional-advisor affiliate</strong></a> &mdash; Become the side that takes SMB inquiries from the LINE bot. Free signup, ¥3,000 (tax excl.) per closed introduction. Profile by region &times; industry &times; specialty.</li>
  <li style="padding:10px 0;"><a href="/docs/getting-started/"><strong>5-minute quickstart</strong></a> &mdash; Shortest path from API key to first query. Anonymous 3 req/day is available for evaluation.</li>

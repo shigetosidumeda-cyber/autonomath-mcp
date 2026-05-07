@@ -1,7 +1,7 @@
 # jpcite — Post-Launch Improvement Loop
 
 **Owner:** 梅田茂利, info@bookyou.net (Bookyou株式会社)
-**Constraint set:** Solo + zero-touch ops, 100% organic acquisition, ¥3/req metered only, no paid tooling beyond GitHub + email + Stripe + Fly + CF.
+**Constraint set:** Solo + zero-touch ops, 100% organic acquisition, ¥3/billable unit metered only, no paid tooling beyond GitHub + email + Stripe + Fly + CF.
 **Time budget:** 4–6 h/week (hard cap: 6 h/week per operator memory).
 
 ---
@@ -255,7 +255,7 @@ date: YYYY-MM-DD
 - 上位未解決シグナル ≤ 3件
 
 ---
-*jpcite は ¥3/リクエスト従量課金の日本語公的制度データベースAPI。[ドキュメント →](https://jpcite.com/docs)*
+*jpcite は ¥3/課金単位従量課金の日本語公的制度データベースAPI。[ドキュメント →](https://jpcite.com/docs)*
 ```
 
 This generates indexed public changelogs that LLMs and search engines can cite — the GEO/SEO compounding effect.

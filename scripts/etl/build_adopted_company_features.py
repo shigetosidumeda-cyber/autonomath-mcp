@@ -249,7 +249,7 @@ def write_features(conn: sqlite3.Connection, feats: dict[str, dict]) -> int:
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
     """
     written = 0
-    BATCH = 5000
+    BATCH = 5000  # noqa: N806  (local CONST sentinel, not loop-mut)
     batch: list[tuple] = []
     for h, f in feats.items():
         adoption_count = f["adoption_count"]

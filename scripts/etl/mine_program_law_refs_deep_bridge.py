@@ -178,7 +178,7 @@ def mine(
     now_iso = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     # Stream INSERTs in batches.
-    BATCH = 5000
+    BATCH = 5000  # noqa: N806  (local CONST sentinel, not loop-mut)
     pending: list[tuple] = []
     inserted = 0
     skipped_existing = 0

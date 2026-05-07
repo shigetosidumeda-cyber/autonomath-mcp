@@ -131,10 +131,7 @@ def pretty_print(d: dict) -> None:
         row("C_schedule", None)
 
     docs = extraction.get("documents") or {}
-    if isinstance(docs, dict):
-        n = len(docs.get("__legacy__") or [])
-    else:
-        n = len(docs) if docs else 0
+    n = len(docs.get("__legacy__") or []) if isinstance(docs, dict) else len(docs) if docs else 0
     print(f"{'D_documents':22s} {'OK' if n else 'NULL'}   items={n}")
 
     row("E_application_plan", extraction.get("application_plan"))

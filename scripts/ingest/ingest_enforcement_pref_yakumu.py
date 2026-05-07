@@ -78,7 +78,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-import contextlib
+import contextlib  # noqa: E402  (sys.path manipulation precedes)
 
 from scripts.lib.http import HttpClient  # noqa: E402
 

@@ -63,7 +63,7 @@ https://jpcite.com/docs/
 ### Short description (~160 chars)
 
 ```
-Search 11,601 subsidies + 6,493 laws full-text indexed + 2,065 court decisions + 13,801 invoice registrants from Cursor. 139 MCP tools, primary-source URLs, ¥3/req (¥3.30 tax-incl), 3/day free anon.
+Search 11,601 subsidies + 6,493 laws full-text indexed + 2,065 court decisions + 13,801 invoice registrants from Cursor. 139 MCP tools, primary-source URLs, ¥3/billable unit (¥3.30 tax-incl), 3/day free anon.
 ```
 
 ### Long description
@@ -73,7 +73,7 @@ AutonoMath exposes Japanese institutional public data via 139 MCP tools at defau
 
 Coverage: 11,601 searchable programs (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 loan products with 3-axis guarantor decomposition (担保 / 個人保証人 / 第三者保証人) + 1,185 行政処分 + 6,493 laws full-text indexed + 9,484 law metadata records (e-Gov CC-BY) + 2,065 court decisions + 362 bids + 50 tax rulesets + 13,801 国税庁 qualified-invoice registrants (PDL v1.0) + 4,300 sourced compatibility pairs + 181 exclusion / prerequisite rules. Cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check.
 
-Major public rows carry source_url + fetched_at; aggregator domains are banned. ¥3/req tax-exclusive (¥3.30 tax-inclusive) fully metered, first 3 requests/day per IP free (anonymous, JST next-day reset), no tier SKUs.
+Major public rows carry source_url + fetched_at where available; known aggregator sources are excluded where detected. ¥3/billable unit tax-exclusive (¥3.30 tax-inclusive) fully metered, first 3 requests/day per IP free (anonymous, JST next-day reset), no tier SKUs.
 
 Disclaimer (税理士法 §52 fence): information retrieval only. Does not perform 税務代理 (税理士法 §52), 法律事務 (弁護士法 §72), 申請代理 (行政書士法 §1), or 労務判断 (社労士法).
 ```
@@ -145,7 +145,7 @@ stdio
 ### Pricing
 
 ```
-¥3/request tax-exclusive (¥3.30 tax-inclusive, fully metered). First 3 requests/day per IP free (anonymous, JST next-day reset). No tier SKUs, no seat fees, no annual minimums, no signup required for the free tier.
+¥3/billable unit tax-exclusive (¥3.30 tax-inclusive, fully metered). First 3 requests/day per IP free (anonymous, JST next-day reset). No tier SKUs, no seat fees, no annual minimums, no signup required for anonymous checks.
 ```
 
 ### Author / publisher

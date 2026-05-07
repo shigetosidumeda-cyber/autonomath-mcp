@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>jpcite for AI agent developers — MCP / REST + Claude Desktop + 139 tools</title>
-<meta name="description" content="jpcite for AI agent developers. An MCP server for Japanese subsidy / tax / loan / law data. stdio transport for Claude Desktop / Cursor / Cline, OpenAPI Actions for ChatGPT. 139 MCP tools at standard configuration, protocol 2025-06-18. 3 req/day free to evaluate, then ¥3/req metered.">
+<meta name="description" content="jpcite for AI agent developers. An MCP server for Japanese subsidy / tax / loan / law data. stdio transport for Claude Desktop / Cursor / Cline, OpenAPI Actions for ChatGPT. 139 MCP tools at standard configuration, protocol 2025-06-18. 3 req/day free to evaluate, then ¥3/billable unit metered.">
 
 <meta property="og:title" content="jpcite for AI agent developers">
 <meta property="og:description" content="MCP / REST + Claude Desktop ready + 139 tools.">
@@ -86,10 +86,10 @@
     {"@type": "Question", "name": "Is stdio the only MCP transport?", "acceptedAnswer": {"@type": "Answer", "text": "stdio is the primary transport (the default for Claude Desktop and Cursor). SSE / WebSocket support is planned for late 2026. The REST API exposes equivalent functionality, so use that if your environment is HTTP-only."}},
     {"@type": "Question", "name": "Where can I see the full list of the 139 tools?", "acceptedAnswer": {"@type": "Answer", "text": "The authoritative full list and tool schemas are published at /docs/mcp-tools/. Use that index as the source of truth instead of a static breakdown on this page."}},
     {"@type": "Question", "name": "Does this work with Claude Desktop, Cursor, and ChatGPT?", "acceptedAnswer": {"@type": "Answer", "text": "Claude Desktop has native MCP support — drop-in. Cursor accepts MCP config. ChatGPT calls the REST API via GPTs Actions. Sample configs are in the quickstart section."}},
-    {"@type": "Question", "name": "What are the rate limits?", "acceptedAnswer": {"@type": "Answer", "text": "Anonymous traffic is 3 req/day per IP, reset at JST next-day 00:00. Authenticated API keys are metered at ¥3/request and can set a monthly budget cap from the dashboard."}},
+    {"@type": "Question", "name": "What are the rate limits?", "acceptedAnswer": {"@type": "Answer", "text": "Anonymous traffic is 3 req/day per IP, reset at JST next-day 00:00. Authenticated API keys are metered at ¥3/billable unit and can set a monthly budget cap from the dashboard."}},
     {"@type": "Question", "name": "Where's the OpenAPI spec?", "acceptedAnswer": {"@type": "Answer", "text": "/docs/openapi/v1.json publishes an OpenAPI 3.1-compliant spec, auto-generated from FastAPI. Imports cleanly into Stoplight, Postman, Insomnia, etc."}},
     {"@type": "Question", "name": "Is there a PyPI / npm package?", "acceptedAnswer": {"@type": "Answer", "text": "PyPI: autonomath-mcp (run via uvx, compatibility package name). No npm package is required for MCP; uvx / pipx is the standard launcher."}},
-    {"@type": "Question", "name": "How does billing work when I embed this in my own SaaS?", "acceptedAnswer": {"@type": "Answer", "text": "Run all requests through one of your API keys, billed at ¥3/req metered. Reselling to end users is allowed; you have no obligation to display the jpcite brand (white-label is fine)."}}
+    {"@type": "Question", "name": "How does billing work when I embed this in my own SaaS?", "acceptedAnswer": {"@type": "Answer", "text": "Run traffic through one of your API keys, billed at ¥3/billable unit metered. Reselling to end users is allowed; you have no obligation to display the jpcite brand (white-label is fine)."}}
   ]
 }
 </script>
@@ -124,7 +124,7 @@
  </nav>
  <h1 id="hero-title">jpcite for AI agent developers</h1>
  <p class="hero-sub">An MCP server for Japanese subsidy / tax / loan / law data. ChatGPT and Claude write the answer; jpcite supplies the evidence layer before generation.</p>
- <p class="hero-tag">139 MCP tools at standard configuration (protocol 2025-06-18). 14,472 programs + 2,286 case studies + 108 loans + 1,185 enforcement + 6,493 laws full-text indexed + 9,484 law metadata records + 50 tax rulesets + 13,801 invoice registrants + structured entity facts (503,930 entities / 6.12M facts / 378,342 relations / 335,605 aliases). 3 req/day free to evaluate, ¥3/req commercial.</p>
+ <p class="hero-tag">139 MCP tools at standard configuration (protocol 2025-06-18). 14,472 programs + 2,286 case studies + 108 loans + 1,185 enforcement + 6,493 laws full-text indexed + 9,484 law metadata records + 50 tax rulesets + 13,801 invoice registrants + structured entity facts (503,930 entities / 6.12M facts / 378,342 relations / 335,605 aliases). 3 req/day free to evaluate, ¥3/billable unit commercial.</p>
  <div class="cta-row">
  <a class="btn btn-primary" href="#quickstart">Start in 5 minutes &rarr;</a>
  <a class="btn btn-secondary" href="/docs/mcp-tools/">All 139 tools</a>
@@ -151,9 +151,9 @@
  </article>
 
  <article class="card">
- <h3>Predictable ¥3/req</h3>
+ <h3>Predictable ¥3/billable unit</h3>
  <p class="card-lead">Retrieval cost is fixed</p>
- <p>Anonymous traffic gets 3 req/day per IP. Commercial pricing is ¥3/req (¥3.30 tax inclusive), no monthly fixed fee, with Stripe metered billing.</p>
+ <p>Anonymous traffic gets 3 req/day per IP. Commercial pricing is ¥3/billable unit (¥3.30 tax inclusive), no monthly fixed fee, with Stripe metered billing.</p>
  </article>
 
  </div>
@@ -182,7 +182,7 @@
 
  <article class="card">
  <h3>4. Compliance feature inside your own SaaS</h3>
- <p>Add "applicable subsidies", "invoice-system status", and "enforcement check" features to accounting / sales / legal SaaS. ¥3/req metered scales linearly with end-user count, with no fixed cost. White-label is fine.</p>
+ <p>Add "applicable subsidies", "invoice-system status", and "enforcement check" features to accounting / sales / legal SaaS. ¥3/billable unit metered scales linearly with end-user count, with no fixed cost. White-label is fine.</p>
  </article>
 
  <article class="card">
@@ -210,7 +210,7 @@ curl https://api.jpcite.com/v1/openapi.json</code></pre>
  </article>
 
  <article class="card">
- <h3>Python + httpx (commercial, ¥3/req)</h3>
+ <h3>Python + httpx (commercial, ¥3/billable unit)</h3>
  <pre class="code-block"><code># pip install httpx
 import httpx
 client = httpx.Client(
@@ -300,7 +300,7 @@ for p in r.json["items"]:
  <section class="pricing-preview" aria-labelledby="pricing-title">
  <div class="container">
  <h2 id="pricing-title" class="section-title">Developer pricing</h2>
- <p class="demo-lead" style="margin:-16px 0 24px;">¥3/req metered (¥3.30 tax inclusive). 3 anonymous req/day per IP for evaluation, no key needed.</p>
+ <p class="demo-lead" style="margin:-16px 0 24px;">¥3/billable unit metered (¥3.30 tax inclusive). 3 anonymous req/day per IP for evaluation, no key needed.</p>
  <div class="table-wrap">
  <table class="pricing-table">
  <caption class="visually-hidden">Pricing for AI agent developers</caption>
@@ -314,8 +314,8 @@ for p in r.json["items"]:
  </thead>
  <tbody>
  <tr><th scope="row">Anonymous (no key)</th><td>3 req/day per IP</td><td>-</td><td>-</td></tr>
- <tr><th scope="row">Authenticated (API key)</th><td>-</td><td>¥3 / req</td><td>¥3.30 / req</td></tr>
- <tr><th scope="row">Embedded in your SaaS</th><td>-</td><td>¥3 / req (white-label OK)</td><td>¥3.30 / req</td></tr>
+ <tr><th scope="row">Authenticated (API key)</th><td>-</td><td>¥3 / unit</td><td>¥3.30 / unit</td></tr>
+ <tr><th scope="row">Embedded in your SaaS</th><td>-</td><td>¥3 / unit (white-label OK)</td><td>¥3.30 / unit</td></tr>
  </tbody>
  </table>
  </div>
@@ -333,13 +333,13 @@ for p in r.json["items"]:
  <h3 style="font-size:16px;margin:18px 0 6px;">Does this work with Claude Desktop, Cursor, and ChatGPT?</h3>
  <p>Claude Desktop has native MCP support — drop-in. Cursor accepts MCP config. ChatGPT calls the REST API through GPTs Actions. Sample configs are in the quickstart.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">What are the rate limits?</h3>
- <p>Anonymous traffic is 3 req/day per IP, reset at JST next-day 00:00. Authenticated API keys are metered at ¥3/request and can set a monthly budget cap from the dashboard. The API is designed for normal agent bursts across MCP and HTTP.</p>
+ <p>Anonymous traffic is 3 req/day per IP, reset at JST next-day 00:00. Authenticated API keys are metered at ¥3/billable unit and can set a monthly budget cap from the dashboard. The API is designed for normal agent bursts across MCP and HTTP.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">Where's the OpenAPI spec?</h3>
  <p>/docs/openapi/v1.json publishes the OpenAPI 3.1 spec, auto-generated from FastAPI. Imports into Stoplight, Postman, Insomnia, etc.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">PyPI / npm?</h3>
  <p>PyPI: autonomath-mcp (uvx-runnable, compatibility package name). No npm package is required for MCP; uvx / pipx is the standard launcher.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">How does billing work when I embed in my own SaaS?</h3>
- <p>Run all requests through one of your API keys, ¥3/req metered. Reselling is allowed; there's no requirement to display the jpcite brand (white-label is fine).</p>
+ <p>Run all requests through one of your API keys, ¥3/billable unit metered. Reselling is allowed; there's no requirement to display the jpcite brand (white-label is fine).</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">Related audiences?</h3>
  <p>Same MCP/REST seen from other angles: <a href="vc.html">VC / M&amp;A advisor</a> (DD automation), <a href="tax-advisor.html">tax advisors</a> (tax ruleset queries), <a href="admin-scrivener.html">administrative scriveners</a> (permit batch queries), <a href="smb.html">SMB owners</a> (LINE-bot end users). <a href="index.html">Compare all 5 audiences</a>.</p>
  </div>

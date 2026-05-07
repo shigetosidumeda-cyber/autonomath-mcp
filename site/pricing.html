@@ -169,7 +169,7 @@
   "mainEntity": [
     {"@type": "Question", "name": "階層プランはないんですか?", "acceptedAnswer": {"@type": "Answer", "text": "ありません。通常の検索・詳細取得は ¥3 / billable unit の完全従量のみ。batch/export は ID 件数や bundle size に応じた式を事前に表示します。"}},
     {"@type": "Question", "name": "適格請求書 (インボイス) はもらえますか?", "acceptedAnswer": {"@type": "Answer", "text": "はい。 月初に自動発行し、 ダッシュボードからダウンロードできます。 適格請求書制度に対応した請求書を発行します。"}},
-    {"@type": "Question", "name": "解約手続きは?", "acceptedAnswer": {"@type": "Answer", "text": "ダッシュボードから Stripe Customer Portal を開いてキャンセルできます。キャンセル後も当月末までは API アクセス可能で、当月利用分のみ ¥3/req 従量請求が発生します。次月以降の課金は停止します。解約違約金・最低利用期間はありません。"}},
+    {"@type": "Question", "name": "解約手続きは?", "acceptedAnswer": {"@type": "Answer", "text": "ダッシュボードから Stripe Customer Portal を開いてキャンセルできます。キャンセル後も当月末までは API アクセス可能で、当月利用分のみ ¥3/billable unit 従量請求が発生します。次月以降の課金は停止します。解約違約金・最低利用期間はありません。"}},
     {"@type": "Question", "name": "返金はありますか?", "acceptedAnswer": {"@type": "Answer", "text": "従量課金のためすでに呼び出した分の返金はありません。 サービス障害による誤課金の可能性がある場合は info@bookyou.net で確認し、必要に応じて返金します。"}},
     {"@type": "Question", "name": "予算上限を設定できますか?", "acceptedAnswer": {"@type": "Answer", "text": "はい。 ダッシュボードで月額上限を任意の円額で設定可能。 設定額に達した場合、次の JST 月次請求サイクルまで API は cap_reached で停止します。 初期状態では利用量に応じて請求されます。"}}
   ]
@@ -608,7 +608,7 @@
  </details>
  <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
  <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">解約手続きは?</summary>
- <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">ダッシュボードから Stripe Customer Portal を開いてキャンセルできます。キャンセル後も当月末までは API アクセス可能で、当月利用分のみ ¥3/req 従量請求が発生します。次月以降の課金は停止します。解約違約金・最低利用期間はありません。</p>
+ <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">ダッシュボードから Stripe Customer Portal を開いてキャンセルできます。キャンセル後も当月末までは API アクセス可能で、当月利用分のみ ¥3/billable unit 従量請求が発生します。次月以降の課金は停止します。解約違約金・最低利用期間はありません。</p>
  </details>
  <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
  <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">返金はありますか?</summary>

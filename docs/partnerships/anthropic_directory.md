@@ -32,7 +32,7 @@ API key 不要 (anonymous IP-based 3 req/日 free)、有料化は本人が Strip
 ## referral fee なし
 
 - Anthropic は **registry 運営者** であり、referral partner ではない
-- jpcite は **直接** ユーザーに ¥3/req を課金
+- jpcite は **直接** ユーザーに ¥3/billable unit を課金
 - Anthropic API / claude CLI / SDK は **jpcite サーバー側で呼ばない** (memory `feedback_autonomath_no_api_use`) — 推論はユーザー側 Claude Desktop の subagent が実行
 - discount は永久 NG
 
@@ -43,12 +43,12 @@ API key 不要 (anonymous IP-based 3 req/日 free)、有料化は本人が Strip
 ```
 jpcite — 日本の制度情報 MCP サーバー (139 tools, protocol 2025-06-18)。
 14,472 プログラム (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 融資 (担保 /
-個人保証人 / 第三者保証人 三軸分解) + 1,185 行政処分 + 法令 e-Gov 本文 154 + メタデータ 9,484 行 +
-税制 ruleset (インボイス / 電帳法) 35 行 + 適格請求書事業者 13,801 行 (PDL v1.0) +
+個人保証人 / 第三者保証人 三軸分解) + 1,185 行政処分 + 法令 e-Gov 本文索引 6,493 + メタデータ 9,484 行 +
+税制 ruleset (インボイス / 電帳法) 50 行 + 適格請求書事業者 13,801 行 (PDL v1.0) +
 503,930 entity + 6.12M facts + 177,381 relations + 335k aliases。
 181 件の排他ルール、cross-dataset glue (trace_program_to_law / find_cases_by_law /
-combined_compliance_check)。major public rows: source_url + fetched_at、集約サイト不使用。
-¥3/req (税別、税込 ¥3.30) フル従量、IP ベース 3 req/日 無料 (JST 翌日 00:00 リセット、
+combined_compliance_check)。major public rows: source_url + fetched_at where available、検出済み集約サイトは除外。
+¥3/billable unit (税別、税込 ¥3.30) フル従量、IP ベース 3 req/日 無料 (JST 翌日 00:00 リセット、
 key 不要)。Bookyou 株式会社 / info@bookyou.net。
 ```
 
@@ -63,7 +63,8 @@ data: 14,472 programs (subsidy / loan / tax / certification) + 2,286 acceptance 
 503,930 entities + 6.12M facts + 177,381 relations + 335k aliases.
 181 exclusion / prerequisite rules; cross-dataset glue: trace_program_to_law /
 find_cases_by_law / combined_compliance_check. major public rows ship source_url +
-fetched_at; no aggregators. ¥3/req fully metered (¥3.30 incl. tax); 3 req/day
+fetched_at where available; known aggregator sources are excluded where detected.
+¥3/billable unit fully metered (¥3.30 incl. tax); 3 req/day
 per IP free (resets JST midnight, no key required). Bookyou Inc. / info@bookyou.net.
 ```
 
@@ -71,12 +72,12 @@ per IP free (resets JST midnight, no key required). Bookyou Inc. / info@bookyou.
 
 JP:
 ```
-日本の制度情報 (補助金 / 融資 / 税制 / 認定) を 139 ツールで横断検索。181 排他ルール、3 軸融資リスク、出典付き。¥3/req、3 req/日 free。
+日本の制度情報 (補助金 / 融資 / 税制 / 認定) を 139 ツールで横断検索。181 排他ルール、3 軸融資リスク、出典付き。¥3/billable unit、3 req/日 free。
 ```
 
 EN:
 ```
-139-tool MCP over Japanese public programs (subsidy/loan/tax) with 181 exclusion rules, 3-axis loan risk, primary-source citations. ¥3/req; 3 req/day free.
+139-tool MCP over Japanese public programs (subsidy/loan/tax) with 181 exclusion rules, 3-axis loan risk, source citations. ¥3/billable unit; 3 req/day free.
 ```
 
 ## 申請手順

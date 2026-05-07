@@ -180,7 +180,7 @@ README で約束した 188 法令 / 116 勘定 / 122 calendar を read-only で�
 ### 4.5 Growth experiments A/B (free-tier limits, conversion UX) (~40h, owner: Claude 本体)
 
 - [ ] **Free tier limit 実測** (10h): 現 50 req/月 (JST) → 25 / 50 / 100 の 3 pool 分割、14 日で Paid 転換率比較
-- [ ] **Paid unit price 感度** (15h): ¥2/req vs ¥3/req vs ¥5/req の 3 landing variant (Stripe Price の `lookup_key` 切替)。**既存契約者は影響なし** (grandfathered, 旧 Price は active subscription 維持)
+- [ ] **Paid unit price 感度** (15h): ¥2/req vs ¥3/billable unit vs ¥5/req の 3 landing variant (Stripe Price の `lookup_key` 切替)。**既存契約者は影響なし** (grandfathered, 旧 Price は active subscription 維持)
 - [ ] **Onboarding credit A/B** (10h): signup 時 ¥0 vs ¥500 (1,000 req 分) の無料 credit 付与で 30 日転換率比較
 - [ ] **結果 decision** (5h): `research/growth_experiments/w7_summary.md` に stat sig + 採用変更
 

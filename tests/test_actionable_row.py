@@ -171,11 +171,9 @@ def seed_future_deadline(seeded_db: Path):
         # test_get_program_detail_has_required_documents_key call cached the
         # null-deadline body, so without this DELETE the next read returns
         # stale JSON and next_deadline stays None. See Wave 24 diagnosis.
-        try:
+        # Table may not exist in minimal test schemas — defensive no-op.
+        with contextlib.suppress(sqlite3.OperationalError):
             conn.execute("DELETE FROM l4_query_cache WHERE tool_name='api.programs.get'")
-        except sqlite3.OperationalError:
-            # Table may not exist in minimal test schemas — defensive no-op.
-            pass
         conn.commit()
     finally:
         conn.close()

@@ -1,19 +1,20 @@
-# Performance baseline (2026-04-24, pre-launch — refresh snapshot)
+# Performance baseline (2026-04-24, pre-launch historical snapshot)
 
-> **Refresh note (2026-04-24, later same day).** Re-run against the laws table
-> as ingestion progressed from 6,850 → 8,704 rows (+27%). Methodology unchanged
-> (same script at `tests/bench/baseline_2026_04_24.py`, same host, same warm-up
-> + 500-request window). Delta section at bottom flags every endpoint where
-> P95 shifted ≥ 2× vs the first run. The ASCII 2-char `q=IT` outlier remains
-> and is being worked on in parallel — do not let the revised P95 mask that
-> investigation.
+> **Historical note.** This page preserves the 2026-04-24 pre-launch latency
+> run. It is not the current public coverage sheet; current coverage counts
+> are published in `facts.html`, `docs/index.md`, and `site/_data/public_counts.json`.
+> Re-run against a historical laws table as ingestion progressed from 6,850 to
+> 8,704 rows. Methodology unchanged (same script at
+> `tests/bench/baseline_2026_04_24.py`, same host, same warm-up + 500-request
+> window). Delta section at bottom flags every endpoint where P95 shifted at
+> least 2x vs the first run.
 
 ## Methodology
 
 - In-process `httpx.AsyncClient` via `ASGITransport` — measures app logic, zero network overhead
 - 10 warm-up requests per endpoint (SQLite page cache heated), then 500 sequential requests
 - Single process, single SQLite file, FTS5 trigram tokenizer
-- Real `data/jpintel.db` (14,472 active programs tier S/A/B/C, 12,038 total rows incl. X-tier quarantine, 2,286 case studies, 8,704 laws — up from 6,850 in the morning snapshot, 50 tax rulesets)
+- Historical `data/jpintel.db` snapshot (12,038 program rows including X-tier quarantine, 2,286 case studies, 8,704 law rows in that pre-launch run, 50 tax rulesets)
 - Host: macOS 25.3.0 (operator laptop, M-series Apple Silicon)
 - **NOT a load test** — sequential baseline for alert-threshold derivation
 
@@ -77,7 +78,7 @@ Concurrent capacity estimate (sequential throughput): ~1.5 RPS sustained on `/v1
 
 ## Delta vs morning snapshot (same day, 2026-04-24)
 
-Laws table grew 6,850 → 8,704 rows (+27%) during the day's ingest. Below are
+The historical laws table grew from 6,850 to 8,704 rows during the day's ingest. Below are
 the endpoints whose measured P95 shifted materially between runs.
 
 | Endpoint | Morning P95 | Refresh P95 | Δ | Notes |
@@ -108,6 +109,6 @@ three sample IDs — noise-band.
   higher latency due to SQLite write-lock contention on `usage_events` inserts.
 - Anonymous callers bypass `usage_events` writes, so concurrency penalty is
   lower than authed callers for the same endpoint.
-- FTS5 trigram searches on 14,472-row `programs` and 8,704-row `laws` tables
+- FTS5 trigram searches on the historical `programs` and 8,704-row `laws` tables
   are the bottleneck. Phrase-quoting workaround is active in `programs.py`
   for ≥2-char kanji queries.

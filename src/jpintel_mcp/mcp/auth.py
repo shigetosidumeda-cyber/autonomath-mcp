@@ -128,7 +128,7 @@ def get_stored_token() -> str | None:
 
         tok = keyring.get_password(SERVICE, KEY_NAME)
         if tok:
-            return tok
+            return str(tok)
     except Exception:
         logger.warning("keyring_read_failed; trying file fallback", exc_info=True)
     return _read_fallback_token()

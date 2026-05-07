@@ -52,7 +52,7 @@ _REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 _SRC = _REPO_ROOT / "src"
 if _SRC.is_dir() and str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING  # noqa: E402  (sys.path manipulation precedes)
 
 from jpintel_mcp.observability import heartbeat  # noqa: E402
 

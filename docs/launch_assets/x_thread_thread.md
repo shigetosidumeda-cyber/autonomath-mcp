@@ -22,7 +22,7 @@ jpcite、本日 launch しました。
 日本の公的制度データ (補助金・融資・税制・認定・法令・処分・適格事業者) を、
 AI エージェントが 1 query で呼び出せる REST + MCP API です。
 
-solo 開発、¥3/req 完全従量、匿名 3 req/日 per IP 無料。
+solo 開発、¥3/billable unit 完全従量、匿名 3 req/日 per IP 無料。
 
 https://jpcite.com
 

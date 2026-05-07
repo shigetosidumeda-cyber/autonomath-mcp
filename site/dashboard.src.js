@@ -38,7 +38,7 @@
     return h;
   }
 
-  // Authenticated users are 100% metered ¥3/req (税込 ¥3.30) with no daily
+  // Authenticated users are 100% metered ¥3/billable unit (税込 ¥3.30) with no daily
   // cap. The 100/day floor below is *only* surfaced when a Stripe
   // subscription enters dunning recovery (past_due / unpaid / incomplete) —
   // it is not a tier and there is no "free plan" at the authenticated layer.
@@ -343,7 +343,7 @@
 
   function renderMe(me) {
     _lastMe = me;
-    // "signed in as <prefix…>" — no tier label; everyone is metered ¥3/req.
+    // "signed in as <prefix…>" — no tier label; everyone is metered ¥3/billable unit.
     const sub = document.querySelector('.dash .sub');
     if (sub) {
       const prefix = me.key_hash_prefix || '—';
@@ -367,7 +367,7 @@
   }
 
   // Surface the current Stripe billing period end ("今月の請求期間: YYYY-MM-DD
-  // まで") so users see when the next ¥3/req invoice will close. Reads from
+  // まで") so users see when the next ¥3/billable unit invoice will close. Reads from
   // /v1/me.subscription_current_period_end (ISO 8601 UTC) and renders the
   // YYYY-MM-DD slice. Hidden when the value is null (free / pre-billing).
   function renderPeriodEnd(iso) {
@@ -519,13 +519,13 @@
       : null;
     let headline;
     if (status === 'active' || status === 'trialing' || status === null) {
-      headline = '¥3 / req <span class="unit">(税込 ¥3.30) — metered, no cap</span>';
+      headline = '¥3 / unit <span class="unit">(税込 ¥3.30) — metered, no cap</span>';
     } else if (DUNNING_STATUSES.has(status)) {
-      headline = '¥3 / req <span class="unit">(税込 ¥3.30) — payment recovery in progress</span>';
+      headline = '¥3 / unit <span class="unit">(税込 ¥3.30) — payment recovery in progress</span>';
     } else if (status === 'canceled') {
-      headline = '¥3 / req <span class="unit">(税込 ¥3.30) — canceled, access ends month-end</span>';
+      headline = '¥3 / unit <span class="unit">(税込 ¥3.30) — canceled, access ends month-end</span>';
     } else {
-      headline = '¥3 / req <span class="unit">(税込 ¥3.30) — metered</span>';
+      headline = '¥3 / unit <span class="unit">(税込 ¥3.30) — metered</span>';
     }
     val.innerHTML = headline;
   }
@@ -555,7 +555,7 @@
       (acc, x) => (x.calls > acc.calls ? x : acc),
       { calls: -1, date: '' }
     );
-    // No tier-based daily limit. Authenticated users are metered ¥3/req
+    // No tier-based daily limit. Authenticated users are metered ¥3/billable unit
     // with no cap; only dunning-demoted users see the 100/day floor.
     const dailyLimit = isDunningDemoted(_lastMe) ? DUNNING_DEMOTE_DAILY : 0;
 
@@ -582,7 +582,7 @@
         const remaining = Math.max(0, dailyLimit - today.calls);
         note.textContent = dailyLimit > 0
           ? `dunning 緊急枠 (UTC 00:00 reset)。 ${remaining.toLocaleString()} remaining today — restore billing to lift the cap.`
-          : 'Metered ¥3/req (税込 ¥3.30) — no daily cap.';
+          : 'Metered ¥3/billable unit (税込 ¥3.30) — no daily cap.';
       }
     }
     // Last-7 card
@@ -603,7 +603,7 @@
   // ------------------------------------------------------------------
   // P0 fix #3 — Monthly usage projection
   // Linear extrapolation: sum month-to-date calls, divide by elapsed days,
-  // multiply by total days in month. Cost shown at ¥3/req (the only SKU).
+  // multiply by total days in month. Cost shown at ¥3/billable unit (the only SKU).
   // Edge case: if today is the 1st-2nd, hide the projection (insufficient
   // data) and show "今月始まりました" — same DOM slot.
   // We rely on the JST month boundary loosely (server buckets by UTC date
@@ -675,7 +675,7 @@
     el.textContent =
       `今月のペース: 〜${projected.toLocaleString()} req` +
       `${pctTxt}` +
-      `  ·  推定 ¥${yenCost.toLocaleString()} (¥3/req)`;
+      `  ·  推定 ¥${yenCost.toLocaleString()} (¥3/billable unit)`;
   }
 
   // --------------------------------------------------------------------
@@ -990,9 +990,9 @@
       const body = err && err.body;
       const inner = body && (body.detail && typeof body.detail === 'object' ? body.detail : body);
       if ((err.status === 404 || err.status === 400) && inner && inner.status === 'no_customer') {
-        setAlert(inner.message || 'Stripe カスタマーが未作成です。¥3/req の従量課金は使用後に自動作成されます。');
+        setAlert(inner.message || 'Stripe カスタマーが未作成です。¥3/billable unit の従量課金は使用後に自動作成されます。');
       } else if (err.status === 404 || err.status === 400) {
-        setAlert('Stripe カスタマーが未作成です。¥3/req の従量課金は使用後に自動作成されます。');
+        setAlert('Stripe カスタマーが未作成です。¥3/billable unit の従量課金は使用後に自動作成されます。');
       } else {
         setAlert(err.message || 'billing portal を開けませんでした。');
       }

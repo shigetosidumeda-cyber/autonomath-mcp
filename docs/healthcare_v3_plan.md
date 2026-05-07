@@ -2,7 +2,7 @@
 
 **期間**: 2026-04-25 → 2026-08-04 (T+90d)
 **対象 cohort**: 医療法人 (3-5k 法人) / 介護施設 (50k+) / 薬局 (60k+) / 訪問介護
-**Path**: jpcite コア (¥3/req metered) を医療・介護・薬局領域へ拡張する第3波。
+**Path**: jpcite コア (¥3/billable unit metered) を医療・介護・薬局領域へ拡張する第3波。
 **判定基準**: launch 直後 30d で 50+ paid request / day 流入を 1 件以上の cohort 顧客から確認できれば **継続**、未達なら sunset。
 
 ---

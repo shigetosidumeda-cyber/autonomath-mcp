@@ -329,7 +329,7 @@
       });
       if (resp.status === 429) {
         showRichError(
-          'Anonymous limit reached (3 req/day per IP). <a href="/dashboard.html">Issue an API key</a> (Free 3 req/day; overage ¥3/req, ¥3.30 tax incl.).'
+          'Anonymous limit reached (3 req/day per IP). <a href="/dashboard.html">Issue an API key</a> (Free 3 req/day; overage ¥3/billable unit, ¥3.30 tax incl.).'
         );
         return;
       }

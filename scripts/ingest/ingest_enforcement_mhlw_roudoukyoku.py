@@ -78,7 +78,7 @@ except ImportError as exc:  # pragma: no cover
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-import contextlib
+import contextlib  # noqa: E402  (sys.path manipulation precedes)
 
 from scripts.lib.http import HttpClient  # noqa: E402
 
@@ -667,10 +667,12 @@ def find_pdf_links(html: str, page_url: str) -> list[str]:
         parent = a.parent
         ctx = parent.get_text(" ", strip=True) if parent else ""
         haystack = f"{text} {ctx}"
-        if any(k in haystack for k in ("労働基準", "公表事案", "送検", "違反")):
-            if absurl not in seen:
-                seen.add(absurl)
-                out.append(absurl)
+        if (
+            any(k in haystack for k in ("労働基準", "公表事案", "送検", "違反"))
+            and absurl not in seen
+        ):
+            seen.add(absurl)
+            out.append(absurl)
     return out
 
 

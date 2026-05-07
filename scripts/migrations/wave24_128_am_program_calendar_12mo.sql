@@ -11,7 +11,7 @@
 --   (program × month) and let the read path SELECT directly.
 --
 --   Recompute cadence: nightly 02:30 JST, full rebuild. With
---   11,684 programs × 12 months = 140,208 rows, the table fits
+--   11,601 programs × 12 months = 139,212 rows, the table fits
 --   comfortably in memory.
 --
 -- Schema:

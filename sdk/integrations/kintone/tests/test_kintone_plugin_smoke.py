@@ -65,9 +65,9 @@ def test_manifest_version_shape(manifest: dict) -> None:
     v = manifest["version"]
     assert isinstance(v, str), "version must be a string"
     parts = v.split(".")
-    assert len(parts) == 3 and all(
-        p.isdigit() for p in parts
-    ), f"version must be MAJOR.MINOR.PATCH (got {v!r})"
+    assert len(parts) == 3 and all(p.isdigit() for p in parts), (
+        f"version must be MAJOR.MINOR.PATCH (got {v!r})"
+    )
 
 
 def test_manifest_type_is_app(manifest: dict) -> None:
@@ -113,9 +113,9 @@ def test_runtime_files_share_event_hook() -> None:
 
 def test_runtime_targets_jpcite_api_base() -> None:
     body = RUNTIME_JS.read_text(encoding="utf-8")
-    assert (
-        EXPECTED_API_BASE in body
-    ), "runtime must call api.jpcite.com — never a hard-coded staging URL"
+    assert EXPECTED_API_BASE in body, (
+        "runtime must call api.jpcite.com — never a hard-coded staging URL"
+    )
     assert "/v1/houjin/" in body
 
 

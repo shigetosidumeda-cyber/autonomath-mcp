@@ -73,9 +73,9 @@ from pathlib import Path
 from typing import Any
 
 try:
-    import yaml  # type: ignore
+    import yaml  # type: ignore[import-untyped,unused-ignore]
 except Exception:  # pragma: no cover - yaml optional at import time
-    yaml = None
+    yaml = None  # type: ignore[assignment]
 
 from jpintel_mcp.security.pii_redact import redact_text
 

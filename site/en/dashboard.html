@@ -229,7 +229,7 @@
  <div>
  <h2 id="checkout-title">Start using the metered API</h2>
  <p>
- Pay-as-you-go at ¥3/req tax exclusive (¥3.30 incl.). No tier, no
+ Pay-as-you-go at ¥3/billable unit tax exclusive (¥3.30 incl.). No tier, no
  seat fee, no minimum. Stripe Checkout issues your API key on
  successful payment.
  </p>
@@ -265,7 +265,7 @@
  <p class="stat-label">This month</p>
  <p class="stat-value">— <span class="unit">calls</span></p>
  <div class="quota-bar" aria-hidden="true"><div class="quota-fill" style="width:0%"></div></div>
- <p class="stat-note">Loading… Usage is metered ¥3/req (¥3.30 incl.). No monthly cap.</p>
+ <p class="stat-note">Loading… Usage is metered ¥3/billable unit (¥3.30 incl.). No monthly cap.</p>
  </div>
  <div class="stat-card">
  <p class="stat-label">Last 7 days</p>
@@ -298,11 +298,11 @@
  <div class="stat-card" id="billing-section" style="margin:0 0 16px">
  <p class="stat-label">Billing</p>
  <p class="stat-value" style="font-size:20px" data-billing-headline>Loading…</p>
- <p class="stat-note" style="margin:8px 0 14px">Pay-as-you-go: ¥3/req tax exclusive (¥3.30 incl.). No fixed monthly fee, no minimum, no tier. Qualified invoices download from the Stripe Customer Portal.</p>
+ <p class="stat-note" style="margin:8px 0 14px">Pay-as-you-go: ¥3/billable unit tax exclusive (¥3.30 incl.). No fixed monthly fee, no minimum, no tier. Qualified invoices download from the Stripe Customer Portal.</p>
  <a class="btn btn-primary" id="dash-billing-btn" href="#" role="button" style="min-height:44px;display:inline-flex;align-items:center;">Open Stripe Customer Portal &rarr;</a>
  <p class="stat-note" style="margin:14px 0 0;color:var(--text-muted);">
  When you no longer need the service, <strong>cancel the subscription</strong> via the Stripe Customer Portal.
- API access remains valid through the end of the current month, with usage that month billed at ¥3/req.
+ API access remains valid through the end of the current month, with usage that month billed at ¥3/billable unit.
  </p>
  </div>
 
@@ -407,7 +407,7 @@
  <p class="stat-note" style="margin:0 0 12px;">
  Proactive Webhook (HTTPS only) or Email notifications on law revisions, new
  programs, and enforcement actions. Subscriptions are <strong>free</strong>
- (no add-on charge on top of ¥3/req; available with or without a paid plan).
+ (no add-on charge on top of ¥3/billable unit; available with or without a paid plan).
  <code>filter_type</code>: <code>tool</code> / <code>law_id</code> / <code>program_id</code> /
  <code>industry_jsic</code> / <code>all</code>. <code>min_severity</code>:
  <code>critical</code> (program ended / eligibility changed) /

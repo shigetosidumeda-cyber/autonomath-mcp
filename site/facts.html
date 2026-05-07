@@ -13,7 +13,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>jpcite ファクトシート | 統計の出典</title>
-<meta name="description" content="jpcite が公表する統計 (制度件数・レコード数・属性データ・¥3/req 等) の出典を一覧化したファクトシート。/v1/meta API を一次出典とし、JST 更新日を併記。">
+<meta name="description" content="jpcite が公表する統計 (制度件数・レコード数・属性データ・¥3/billable unit 等) の出典を一覧化したファクトシート。/v1/meta API を一次出典とし、JST 更新日を併記。">
 
 <meta property="og:title" content="jpcite ファクトシート | 統計の出典">
 <meta property="og:description" content="制度件数・レコード数・属性データ・料金など、サイト全体で引用される統計の出典を一次資料に紐付けて開示。">
@@ -220,7 +220,7 @@
  </div>
 
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
- <dt id="fact-non_public_program_count" style="font-weight:600;font-size:18px;">検索対象外の制度 件数: 2,788</dt>
+ <dt id="fact-non_public_program_count" style="font-weight:600;font-size:18px;">検索対象外の制度 件数: 2,871</dt>
  <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
  充足度不足のため検索除外。一次資料は保持しているが、品質基準を満たさず検索対象外 (内容確認中)。<br>
  出典: <code>/v1/meta.tier_counts.X</code> · 更新 2026-04-26 JST
@@ -362,7 +362,7 @@
  </div>
 
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
- <dt id="fact-price_per_req_inc_tax" style="font-weight:600;font-size:18px;">API 単価 (税込): ¥3.30 / req</dt>
+ <dt id="fact-price_per_req_inc_tax" style="font-weight:600;font-size:18px;">API 単価 (税込): ¥3.30 / billable unit</dt>
  <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
  税別 ¥3 + 消費税 10%。Stripe Tax で自動計算。<br>
  出典: <a href="pricing.html#api-paid">料金ページ</a> · 更新 2026-04-26 JST

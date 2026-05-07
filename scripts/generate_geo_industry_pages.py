@@ -1099,10 +1099,10 @@ def render_page(
     # ---- laws section ----
     if laws:
         law_items = []
-        for l in laws:
-            t = _esc(l.get("law_title") or "")
-            ministry = _esc(l.get("ministry") or "")
-            url = l.get("full_text_url") or l.get("source_url") or ""
+        for law in laws:
+            t = _esc(law.get("law_title") or "")
+            ministry = _esc(law.get("ministry") or "")
+            url = law.get("full_text_url") or law.get("source_url") or ""
             link = (
                 f'<a href="{_esc(url)}" rel="external nofollow noopener">e-Gov 全文</a>'
                 if url

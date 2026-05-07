@@ -9,7 +9,7 @@ Brand: **jpcite** (PyPI dist: `autonomath-mcp`, import: `jpintel_mcp`) — launc
 
 ## 1. エレベーターピッチ
 
-日本の公的制度 (補助金・税制・法令・融資・採択事例) を **REST API + MCP server** で提供する Japanese public-program search platform。¥3/req 完全従量、anonymous 3 req/日 free、solo + zero-touch + 100% organic acquisition。
+日本の公的制度 (補助金・税制・法令・融資・採択事例) を **REST API + MCP server** で提供する Japanese public-program search platform。¥3/billable unit 完全従量、anonymous 3 req/日 free、solo + zero-touch + 100% organic acquisition。
 
 ---
 
@@ -20,7 +20,7 @@ Brand: **jpcite** (PyPI dist: `autonomath-mcp`, import: `jpintel_mcp`) — launc
 | REST API | [`src/jpintel_mcp/api/`](../src/jpintel_mcp/api/) | FastAPI, ~80 router files, mounted `/v1/*` (≈194-240 paths post Wave 21-23) |
 | MCP server | [`src/jpintel_mcp/mcp/`](../src/jpintel_mcp/mcp/) | FastMCP stdio, **139 tools** at default gates |
 | DB layer | [`src/jpintel_mcp/db/`](../src/jpintel_mcp/db/) | `schema.sql`, `session.py`, `id_translator.py` |
-| Billing | [`src/jpintel_mcp/billing/`](../src/jpintel_mcp/billing/) | Stripe metered ¥3/req |
+| Billing | [`src/jpintel_mcp/billing/`](../src/jpintel_mcp/billing/) | Stripe metered ¥3/billable unit |
 | Primary DB | [`autonomath.db`](../autonomath.db) (~11 GB) + [`jpintel.db`](../jpintel.db) (~1.6 MB live) | unified post mig 032; `data/jpintel.db` ~352 MB |
 | Cron | [`scripts/cron/`](../scripts/cron/) | 57 scripts (precompute, backups, ingest, RSS, KPI, webhooks) |
 | ETL | [`scripts/etl/`](../scripts/etl/) | translate corpus, harvest relations, repromote amounts |

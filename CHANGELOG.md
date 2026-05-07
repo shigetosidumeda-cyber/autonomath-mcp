@@ -97,6 +97,106 @@ See [`docs/versioning.md`](docs/versioning.md) for what counts as breaking.
   remains gated on a manual `pyproject.toml` bump; no auto-bump
   workflow has been added in this landing.
 
+## [v0.3.5] - planned post-launch (operator gate)
+
+> **Internal hypothesis framing — NOT a scheduled release.** v0.3.5 is the
+> intended container for the manifest bump that surfaces the 7
+> post-manifest tools (DEEP-22 / DEEP-30 / DEEP-39 / DEEP-44 / DEEP-45)
+> currently held at 139 per the Option B recommendation in
+> `R8_MANIFEST_BUMP_EVAL_2026-05-07.md`. This section is a **migration
+> roadmap**, not a commitment. The manifest bump fires only when the
+> operator explicitly approves, after the §52 / §3 / 議事録 disclaimer
+> audit walk for the 3 sensitive post-manifest tools clears. No
+> auto-bump workflow has been added.
+
+### Manifest sync (7 tools + 5 manifest files)
+
+The 7 post-manifest tools currently landed in source but not surfaced
+through any manifest:
+
+- `query_at_snapshot_v2` (DEEP-22) — point-in-time snapshot v2
+- `query_program_evolution` (DEEP-30) — program lineage walker
+- `shihoshoshi_dd_pack_am` (DEEP-39) — 司法書士法 §3 fence DD pack
+- `search_kokkai_utterance` (DEEP-44) — 国会会議録 utterance search
+- `search_shingikai_minutes` (DEEP-45) — 審議会 議事録 search
+- `search_municipality_subsidies` (DEEP-44 companion) — municipality subsidy
+- `get_pubcomment_status` (DEEP-45 companion) — パブリックコメント status
+
+The 5 manifest files that must move in lockstep (any drift between them
+is CI fail-closed via `tests/test_distribution_manifest.py`):
+
+- `pyproject.toml::version` + `[project.urls]`
+- `mcp-server.json::version` + `tool_count` + `tools[]` array
+- `dxt/manifest.json::version` + `long_description` tool count
+- `smithery.yaml::version`
+- `site/mcp-server.json::version` + `tool_count`
+- `server.json::version` + `_meta.publisher-provided` (registry-bound,
+  100-char description cap still applies)
+
+### Migration steps (operator step list)
+
+1. **Compose `sample_arguments` for the 7 tools** — pull canonical
+   happy-path args from `tests/fixtures/7_post_manifest_tools.json`
+   (already prepared during the post-manifest landing batch); each
+   tool's `sample_arguments` block becomes part of the
+   `mcp-server.json::tools[]` entry. Verify each fixture against
+   the live `tools/list` response shape before writing it into the
+   manifest.
+2. **Edit the 5 manifest files in one atomic commit** — bump version
+   `0.3.4` → `0.3.5`, bump `tool_count` `139` → `146`, append the 7
+   tool entries to `mcp-server.json::tools[]` /
+   `site/mcp-server.json::tools[]` / `dxt/manifest.json` long
+   description count. Keep `server.json::description` under the
+   100-char registry cap (use the variant D shortform from the
+   A1-RETRY audit).
+3. **Republish to registries** — Smithery pulls from the GitHub repo
+   directly on tag push, MCP registry republish fires via
+   `mcp-registry-publish.yml` (OIDC, no PAT needed) once PyPI 0.3.5
+   is live, dxt republish via `tools/build_dxt.sh` + GitHub Releases
+   asset upload.
+4. **Bump PyPI** — tag `v0.3.5` → `release.yml` → test → build →
+   PyPI publish via `secrets.PYPI_API_TOKEN`. After PyPI 0.3.5 is
+   live (~2-5 min), the registry mirror catches up.
+5. **Bump npm SDK plugins** — `sdk/freee-plugin/package.json` and
+   `sdk/mf-plugin/package.json` carry their own version tracks per
+   `feedback_no_priority_question` memory note; bump them only if
+   the 7 new tools surface through plugin-level wrappers (otherwise
+   leave the npm SDK on its independent track).
+
+### Verify (post-bump)
+
+- `len(await mcp.list_tools()) == 146` with all default gates ON.
+- `tests/test_distribution_manifest.py` passes (route_count + tool_count
+  parity across the 5 manifest files + runtime probe).
+- `tests/test_no_llm_in_production.py` still green — none of the 7
+  post-manifest tools introduce LLM imports (verified during
+  post-manifest landing 2026-05-07).
+- MCP registry shows the 7 new tools after the publish workflow
+  completes; smithery search returns the 146-tool surface.
+
+### Risk
+
+- **Manifest drift** — if any of the 5 manifest files is missed during
+  the bump, CI fail-closes on `test_distribution_manifest` and the
+  release tag publish blocks. Recovery: revert the version bump,
+  re-sync, retag.
+- **Registry republish double-cycle** — bundling all 7 tools avoids
+  two registry republish cycles in one week; if a 8th tool lands
+  before this bump fires, fold it into the same v0.3.5 manifest sync
+  rather than splitting into v0.3.5 + v0.3.6.
+- **Sensitive-tool disclaimer regression** — the 3 sensitive
+  post-manifest tools (`shihoshoshi_dd_pack_am` 司法書士法 §3 /
+  `search_kokkai_utterance` 議事録 disclaimer scaffold /
+  `search_shingikai_minutes` 議事録 disclaimer scaffold) must each
+  carry a `_disclaimer` envelope that survives the manifest publish.
+  Verify per-tool envelope contract via the acceptance suite before
+  cutting the tag.
+- **Operator-LLM-API-call regression** — the manifest bump itself
+  must not trigger any LLM API call from operator code paths
+  (`feedback_no_operator_llm_api`); the tag-push workflow chain is
+  pure `python -m build` + `twine upload` + GitHub Actions, no
+  Claude Code SDK imports anywhere in the publish path.
+
 ## [v0.3.3] — 2026-05-04 — Release wave (DYM middleware + child API keys + 政令市 hubs + manifest shortform)
 
 ### Added
@@ -749,6 +849,7 @@ Dual ESM + CJS output with bundled `.d.ts`. Exponential backoff on
 ---
 
 [Unreleased]: {{REPO_URL}}/compare/v0.3.3...HEAD
+[v0.3.5]: {{REPO_URL}}/compare/v0.3.4...v0.3.5
 [v0.3.3]: {{REPO_URL}}/compare/v0.3.2...v0.3.3
 [v0.3.2]: {{REPO_URL}}/compare/v0.3.1...v0.3.2
 [0.3.1]: {{REPO_URL}}/compare/v0.3.0...v0.3.1

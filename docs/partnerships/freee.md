@@ -1,6 +1,6 @@
 # Partnership — freee 会計
 
-> **要約 (summary):** freee 会計 (国内 SMB 25 万社) の Marketplace に **jpcite MCP plugin** として申請。`AI assistant` カテゴリ。月次 ¥3/req メーター売上の **10% を referral fee** として freee に分配。¥0 営業 / self-serve only。
+> **要約 (summary):** freee 会計 (国内 SMB 25 万社) の Marketplace に **jpcite MCP plugin** として申請。`AI assistant` カテゴリ。月次 ¥3/billable unit メーター売上の **10% を referral fee** として freee に分配。¥0 営業 / self-serve only。
 
 ## ターゲットと規模 (Audience & ceiling)
 
@@ -31,15 +31,15 @@ freee 会計のユーザー (会計担当 / 経営者) が、**Claude Desktop** 
 - freee Marketplace カテゴリ: **「AI アシスタント / 業務効率化」**
 - 配布物: PyPI `autonomath-mcp` (既存) + freee 認証 wrapper (新規、`src/jpintel_mcp/integrations/freee.py` で OAuth2 受け取り → `target_employees` / `industry` を query parameter に注入)
 - ユーザー導線: freee Marketplace → 「インストール」→ freee OAuth → jpcite が API key を発行 → Claude Desktop に server.json を配信
-- **Plugin glue layer published at `sdk/freee-plugin/`** (MIT, stateless, ~250 LOC + tests). freee アプリストア に出す plugin 実装者はこの glue を vendor して `recommend(...)` を呼ぶだけで jpcite ¥3/req メーター API に接続できる。token (freee OAuth + jpcite API key) は plugin 実装者側で管理、Bookyou は預からない (`feedback_zero_touch_solo`)。
+- **Plugin glue layer published at `sdk/freee-plugin/`** (MIT, stateless, ~250 LOC + tests). freee アプリストア に出す plugin 実装者はこの glue を vendor して `recommend(...)` を呼ぶだけで jpcite ¥3/billable unit メーター API に接続できる。token (freee OAuth + jpcite API key) は plugin 実装者側で管理、Bookyou は預からない (`feedback_zero_touch_solo`)。
 
 ## 売上 split / referral
 
-- 課金形態: **jpcite が直接ユーザー課金 (¥3/req)**。freee は決済を中継しない。
+- 課金形態: **jpcite が直接ユーザー課金 (¥3/billable unit)**。freee は決済を中継しない。
 - referral fee: jpcite が freee に **月次 metered 売上の 10%** を支払う (Stripe Connect Transfer or 銀行振込)
 - 計算式: `referral_fee = SUM(charged_requests_via_freee_referral_code) × ¥3 × 0.10`
 - 月末締め / 翌月末払い、Stripe 適格請求書 (T8010001213708) 発行
-- **business model check**: 「discount NG (¥3/req 固定)」は厳守。referral 経由ユーザーも **同じ ¥3/req** を支払う。10% は jpcite 側コストとして処理 — discount ではない (memory `project_autonomath_business_model`)
+- **business model check**: 「discount NG (¥3/billable unit 固定)」は厳守。referral 経由ユーザーも **同じ ¥3/billable unit** を支払う。10% は jpcite 側コストとして処理 — discount ではない (memory `project_autonomath_business_model`)
 
 ## 申請内容 (Application draft)
 
@@ -55,7 +55,7 @@ URL (Marketplace 開発者): https://developer.freee.co.jp/
 製品概要: 14,472 件の日本制度 (補助金 / 融資 / 税制 / 認定) を MCP サーバーで横断検索。
         freee 会計の決算データを context として、ユーザーの会計事務所 / SMB に
         最適な制度組合せを Claude / 自社 AI から自然言語で取得可能。
-契約形態: Marketplace plugin (¥0 月額) + 従量 ¥3/req (税別) は jpcite が直接課金
+契約形態: Marketplace plugin (¥0 月額) + 従量 ¥3/billable unit (税別) は jpcite が直接課金
 referral 還元: 月次売上の 10% を freee に Stripe Connect Transfer で還元
 法令対応: 適格請求書発行事業者 (T8010001213708) / 個人情報保護法 / 電帳法 対応済
 ```

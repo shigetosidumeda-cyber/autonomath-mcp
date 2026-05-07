@@ -89,7 +89,7 @@ except ImportError as exc:  # pragma: no cover
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-import contextlib
+import contextlib  # noqa: E402  (sys.path manipulation precedes)
 
 from scripts.lib.http import HttpClient  # noqa: E402
 
@@ -416,9 +416,9 @@ def _parse_hyogo_order_pdf_fields(text: str) -> tuple[str | None, str | None]:
     )
     law = None
     if law_m:
-        l = law_m.group(1)
-        l = re.sub(r"\s+", " ", l).strip()
-        law = l[:300]
+        law_text = law_m.group(1)
+        law_text = re.sub(r"\s+", " ", law_text).strip()
+        law = law_text[:300]
     return reason, law
 
 

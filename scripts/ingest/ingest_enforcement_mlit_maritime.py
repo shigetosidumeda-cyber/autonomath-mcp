@@ -1617,7 +1617,7 @@ def parse_tabular_no_houjin(
     window (~700 chars).
     """
     records: list[MaritimeRecord] = []
-    NAME_RE = re.compile(
+    NAME_RE = re.compile(  # noqa: N806  (local CONST sentinel, not loop-mut)
         r"([一-鿿ぁ-んァ-ヶ々ヶー（）()・\s]{2,50}?"
         r"(?:株式会社|有限会社|合同会社|協同組合|（株）|\(株\)))"
     )

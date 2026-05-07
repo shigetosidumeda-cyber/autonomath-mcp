@@ -66,9 +66,13 @@ def _extract_field(resp: dict[str, Any], field: str) -> Any:
         return resp[field]
     for container_key in ("data", "results", "items", "rows"):
         container = resp.get(container_key)
-        if isinstance(container, list) and container and isinstance(container[0], dict):
-            if field in container[0]:
-                return container[0][field]
+        if (
+            isinstance(container, list)
+            and container
+            and isinstance(container[0], dict)
+            and field in container[0]
+        ):
+            return container[0][field]
     return None
 
 

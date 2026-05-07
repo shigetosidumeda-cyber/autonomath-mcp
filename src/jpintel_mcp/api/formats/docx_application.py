@@ -151,7 +151,7 @@ def render_docx_application(rows: list[dict[str, Any]], meta: dict[str, Any]) ->
 
     # ----- Per-program sections.
     for i, row in enumerate(rows):
-        doc.add_page_break()  # type: ignore[no-untyped-call]
+        doc.add_page_break()  # type: ignore[no-untyped-call,unused-ignore]
         doc.add_heading(f"{i + 1}. {_row_title(row)}", level=1)
 
         # Lineage table.
@@ -177,7 +177,7 @@ def render_docx_application(rows: list[dict[str, Any]], meta: dict[str, Any]) ->
             p.add_run(placeholder)
 
     # ----- Final fence reprint.
-    doc.add_page_break()  # type: ignore[no-untyped-call]
+    doc.add_page_break()  # type: ignore[no-untyped-call,unused-ignore]
     doc.add_heading("注意事項 (再掲)", level=1)
     doc.add_paragraph(GYOSEISHOSHI_FENCE_JA)
     doc.add_paragraph()

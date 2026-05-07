@@ -19,13 +19,15 @@ from __future__ import annotations
 
 import base64
 import secrets
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from urllib.parse import urlencode
 
 import httpx
-from config import Settings
 from fastapi import APIRouter, HTTPException, Query, Request, Response, status
 from fastapi.responses import RedirectResponse
+
+if TYPE_CHECKING:
+    from config import Settings
 
 router = APIRouter(prefix="/oauth", tags=["oauth"])
 

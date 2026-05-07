@@ -112,7 +112,7 @@ limit=3):
 ## Pricing posture
 
 `fields_partial` does **not** change the per-request charge
-(¥3 / request, 税込 ¥3.30 — see the pricing page). It only changes the
+(¥3 / unituest, 税込 ¥3.30 — see the pricing page). It only changes the
 response payload size. The intent is to reduce *your* downstream LLM
 input-token cost, not to discount jpcite billing.
 

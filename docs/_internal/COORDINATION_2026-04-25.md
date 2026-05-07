@@ -43,8 +43,8 @@
 
 ### Stripe
 - **Mode**: LIVE (sk_live_)
-- **Product**: prod_UNw8GLSOHXkfd7 ("AutonoMath API"、description=¥3/req 反映済)
-- **Price**: price_1TPw8sL3qgB3rEtw4GyG4DHi (¥3/req metered、lookup_key=per_request_v3)
+- **Product**: prod_UNw8GLSOHXkfd7 ("AutonoMath API"、description=¥3/billable unit 反映済)
+- **Price**: price_1TPw8sL3qgB3rEtw4GyG4DHi (¥3/billable unit metered、lookup_key=per_request_v3)
 - **Webhook (active)**: we_1TQ1sML3qgB3rEtw9wlLYGUs (新 secret、whsec_DB...)
 - **Webhook (deleted)**: we_1TPAGjL3qgB3rEtw1fh7QHjV (漏洩旧 secret、F2 で zero-downtime rotate + delete 完了)
 

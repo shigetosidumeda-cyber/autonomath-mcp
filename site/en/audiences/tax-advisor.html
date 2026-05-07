@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#ffffff">
 <meta name="color-scheme" content="light dark">
 <title>jpcite for tax advisors (zeirishi) — Special Measures Act, tax incentives, filing-season PR</title>
-<meta name="description" content="A tax-advisor (zeirishi) playbook for jpcite. Search the Special Measures Act, surface tax incentives (DX investment promotion, wage-increase promotion), receive law-revision alerts (e-bookkeeping / invoice system), and add a filing-season widget to your firm site. ¥3/req metered + ¥3/notification law-revision alerts.">
+<meta name="description" content="A tax-advisor (zeirishi) playbook for jpcite. Search the Special Measures Act, surface tax incentives (DX investment promotion, wage-increase promotion), receive law-revision alerts (e-bookkeeping / invoice system), and add a filing-season widget to your firm site. ¥3/billable unit metered + ¥3/notification law-revision alerts.">
 
 <meta property="og:title" content="jpcite for tax advisors — Special Measures Act + tax incentives + filing-season PR">
 <meta property="og:description" content="Answer 'which special measures apply this year?' in 30 seconds with Claude + jpcite. 50 tax_rulesets + Special Measures Act + circular cross-links.">
@@ -91,7 +91,7 @@
   "inLanguage": "en",
   "mainEntity": [
     {"@type": "Question", "name": "What's the request volume for a firm with 80 clients (60 corporate / 20 individual)?", "acceptedAnswer": {"@type": "Answer", "text": "Roughly 5-10 inquiries per client per month &rarr; 400-800 req/month &rarr; ¥1,200-¥2,400 (tax exclusive). The March filing season spikes; budget ¥3-5,000/month as the upper bound."}},
-    {"@type": "Question", "name": "How much tax law is covered?", "acceptedAnswer": {"@type": "Answer", "text": "tax_rulesets are 50 entries as of 2026-04 (centered on invoice and e-bookkeeping rules) and growing. The laws table holds 6,493 full-text-indexed laws + 9,484 law metadata records (full-text coverage varies by record; name resolver covers all 9,484, full-text search covers the 154). See the API reference for details."}},
+    {"@type": "Question", "name": "How much tax law is covered?", "acceptedAnswer": {"@type": "Answer", "text": "tax_rulesets are 50 entries as of 2026-04 (centered on invoice and e-bookkeeping rules) and growing. The laws table holds 6,493 full-text-indexed laws + 9,484 law metadata records; body coverage varies by record and the name resolver covers all 9,484. See the API reference for details."}},
     {"@type": "Question", "name": "Are circulars and Q&A precedents available?", "acceptedAnswer": {"@type": "Answer", "text": "For now, statute text (e-Gov, CC-BY) and tax rulesets (NTA primary source) are available. Circulars and Q&A precedents have the schema in place but are still being loaded."}},
     {"@type": "Question", "name": "How detailed are the law-revision alerts?", "acceptedAnswer": {"@type": "Answer", "text": "Statute name, revised article, effective date, and related program IDs are delivered by email and RSS. Monthly digests are free; real-time notifications are ¥3/notification. Bodies are summaries only — primary-source URLs are always attached."}},
     {"@type": "Question", "name": "Can I take inquiries via the professional-advisor affiliate?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Advisor signup is free; you only pay ¥3,000 per closed introduction (tax exclusive). List your specialty, region, and rate card in the profile, and SMB inquiries route in via the LINE bot."}},
@@ -224,7 +224,7 @@
  </article>
 
  <article class="card">
- <h3>Python (commercial, ¥3/req)</h3>
+ <h3>Python (commercial, ¥3/billable unit)</h3>
  <pre class="code-block"><code>import httpx
 H = {"X-API-Key": "am_..."}
 # 1. Search NTA-sourced tax rulesets
@@ -267,7 +267,7 @@ for row in r2.json["items"]:
  <section class="pricing-preview" aria-labelledby="pricing-title">
  <div class="container">
  <h2 id="pricing-title" class="section-title">Tax-advisor pricing</h2>
- <p class="demo-lead" style="margin:-16px 0 24px;">¥3/req metered (¥3.30 tax inclusive). The only fixed-fee item is the law-revision alert.</p>
+ <p class="demo-lead" style="margin:-16px 0 24px;">¥3/billable unit metered (¥3.30 tax inclusive). The only fixed-fee item is the law-revision alert.</p>
  <div class="table-wrap">
  <table class="pricing-table">
  <caption class="visually-hidden">Tax-advisor recommended interface pricing</caption>
@@ -280,7 +280,7 @@ for row in r2.json["items"]:
  </tr>
  </thead>
  <tbody>
- <tr><th scope="row">API + MCP</th><td>3 req/day per IP</td><td>¥3 / req</td><td>¥3.30 / req</td></tr>
+ <tr><th scope="row">API + MCP</th><td>3 req/day per IP</td><td>¥3 / unit</td><td>¥3.30 / unit</td></tr>
 <tr><th scope="row">Law-revision alerts</th><td>Monthly digest</td><td>¥3 / notification</td><td>¥3.30 / notification</td></tr>
 <tr><th scope="row">Embedded widget (optional)</th><td>3 req/day per IP</td><td>¥3 / search</td><td>¥3.30 / search</td></tr>
  <tr><th scope="row">Professional-advisor affiliate (optional)</th><td>Free signup</td><td>¥3,000 / closed intro</td><td>¥3,300 / closed intro</td></tr>
@@ -297,7 +297,7 @@ for row in r2.json["items"]:
  <h3 style="font-size:16px;margin:18px 0 6px;">What's the request volume for a firm with 80 clients (60 corporate / 20 individual)?</h3>
  <p>Roughly 5-10 inquiries per client per month &rarr; 400-800 req/month &rarr; ¥1,200-¥2,400 (tax exclusive). The March filing season can spike; use the spend cap if you want a hard ceiling.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">How much tax law is covered?</h3>
- <p>tax_rulesets are 50 entries as of 2026-04 (centered on invoice and e-bookkeeping rules) and growing. The laws table holds 6,493 full-text-indexed laws + 9,484 law metadata records (full-text coverage varies by record; name resolver covers all 9,484, full-text search covers the 154). See the API reference.</p>
+ <p>tax_rulesets are 50 entries as of 2026-04 (centered on invoice and e-bookkeeping rules) and growing. The laws table holds 6,493 full-text-indexed laws + 9,484 law metadata records; body coverage varies by record and the name resolver covers all 9,484. See the API reference.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">Are circulars and Q&amp;A precedents available?</h3>
  <p>For now, statute text (e-Gov, CC-BY) and tax rulesets (NTA primary source) are available. Circulars and Q&amp;A precedents have the schema in place; data load is in progress.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">How detailed are the law-revision alerts?</h3>
@@ -318,7 +318,7 @@ for row in r2.json["items"]:
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="smb.html"><strong>SMB owner page (understand the client)</strong></a> &mdash; See how clients use jpcite themselves. LINE-bot self-research &rarr; tax-advisor consultation is the natural inbound path.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="admin-scrivener.html"><strong>Administrative scrivener page (collaborator)</strong></a> &mdash; Useful when partnering with scriveners on permit cases. Tax + permit-succession DD overlap on M&amp;A and business succession.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/#tax-rulesets"><strong>REST API: /v1/tax_rulesets/search (50 rows)</strong></a> &mdash; Query NTA-primary tax incentives (wage-hike, income-expansion, business-strengthening, etc.). Conditions and applicability checked mechanically.</li>
- <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/#laws"><strong>REST API: /v1/laws/search (6,493 full-text indexed + 9,484 law metadata records, full-text coverage varies by record)</strong></a> &mdash; e-Gov CC-BY statute search. Full-text search covers 154 currently; the rest serve as a name / 法令番号 / e-Gov-link resolver.</li>
+ <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/#laws"><strong>REST API: /v1/laws/search (6,493 full-text indexed + 9,484 law metadata records, full-text coverage varies by record)</strong></a> &mdash; e-Gov CC-BY statute search. Body-text coverage varies by record; the rest serve as a name / 法令番号 / e-Gov-link resolver.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../alerts.html"><strong>Subscribe to revision alerts</strong></a> &mdash; Statute name, revised article, effective date by email + RSS. Monthly digest free; real-time ¥3/notification. Summaries with primary-source URLs.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../advisors.html"><strong>Register on the professional-advisor affiliate</strong></a> &mdash; Become the side that takes SMB inquiries from the LINE bot. Free signup, ¥3,000 (tax excl.) per closed introduction.</li>
  <li style="padding:10px 0;"><a href="/docs/getting-started/"><strong>5-minute quickstart</strong></a> &mdash; Shortest path from API key to first query. Anonymous 3 req/day is available for evaluation.</li>

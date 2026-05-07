@@ -172,6 +172,20 @@ def _manifest_paths(manifest: dict[str, Any], key: str, default: list[str]) -> l
     return [REPO_ROOT / str(value) for value in values]
 
 
+def _manifest_glob_paths(manifest: dict[str, Any], key: str) -> list[Path]:
+    values = manifest.get(key, [])
+    if not isinstance(values, list):
+        return []
+
+    paths: list[Path] = []
+    for value in values:
+        pattern = str(value)
+        if not pattern:
+            continue
+        paths.extend(path for path in REPO_ROOT.glob(pattern) if path.is_file())
+    return paths
+
+
 def _read(path: Path) -> str:
     try:
         return path.read_text(encoding="utf-8", errors="replace")
@@ -579,9 +593,18 @@ def _scan_forbidden_tokens(manifest: dict[str, Any]) -> list[DriftRow]:
     if not isinstance(forbidden, list) or not isinstance(excludes, list):
         return rows
 
-    for path in _manifest_paths(
-        manifest, "distribution_surface_paths", DEFAULT_DISTRIBUTION_SURFACES
-    ):
+    paths = []
+    paths.extend(
+        _manifest_paths(manifest, "distribution_surface_paths", DEFAULT_DISTRIBUTION_SURFACES)
+    )
+    paths.extend(_manifest_paths(manifest, "public_count_guard_paths", []))
+    paths.extend(_manifest_glob_paths(manifest, "public_count_guard_globs"))
+
+    seen: set[Path] = set()
+    for path in paths:
+        if path in seen:
+            continue
+        seen.add(path)
         rel = _rel(path)
         if any(str(fragment) in rel for fragment in excludes):
             continue

@@ -1,6 +1,6 @@
 ---
 title: "jpcite launch — 1 query で AI に聞く"
-description: "jpcite ローンチ — 14,472 件の補助金・融資・税制・認定を REST + MCP 139 ツールで横断検索。¥3/req 完全従量、3 req/日 per IP 無料。"
+description: "jpcite ローンチ — 14,472 件の補助金・融資・税制・認定を REST + MCP 139 ツールで横断検索。¥3/billable unit 完全従量、3 req/日 per IP 無料。"
 tags:
   - api
   - mcp
@@ -84,7 +84,7 @@ curl -sS https://api.jpcite.com/v1/programs/search \
 
 ## 価格
 
-- **¥3/request** 税抜 (税込 ¥3.30) — 完全従量
+- **¥3/billable unit** 税抜 (税込 ¥3.30) — 完全従量
 - **匿名 3 req/日 per IP** — JST 翌日 00:00 リセット、API key 不要
 - 月額固定 / シート / 年間最低なし
 

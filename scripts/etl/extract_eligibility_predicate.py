@@ -583,7 +583,7 @@ def main() -> int:
     """
 
     batch: list[tuple[str, str, float, str]] = []
-    BATCH_SIZE = 500
+    BATCH_SIZE = 500  # noqa: N806  (local CONST sentinel, not loop-mut)
 
     t0 = time.time()
     for i, row in enumerate(rows, 1):

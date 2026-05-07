@@ -304,7 +304,7 @@
  <span class="chip-success">Playground</span>Evidence Packet 確認 ·
  <span class="chip-success">MCP</span>Claude Desktop / Cursor / Cline に接続 · ChatGPT は OpenAPI Actions
  </p>
- <p class="hero-note">匿名で <span data-fact="anonymous_quota_per_day" data-stat-key="anonymous_quota_per_day">3</span> リクエスト/日まで無料。 継続利用、LINE、法令アラート、ウィジェットは ¥3/リクエスト (税込 ¥3.30) の完全従量。 最低金額・契約期間なし、 いつでも解約可能。</p>
+ <p class="hero-note">匿名で <span data-fact="anonymous_quota_per_day" data-stat-key="anonymous_quota_per_day">3</span> リクエスト/日まで無料。 継続利用、LINE、法令アラート、ウィジェットは ¥3/課金単位 (税込 ¥3.30) の完全従量。 最低金額・契約期間なし、 いつでも解約可能。</p>
  <ul class="trust-strip-blocks" aria-label="出典の信頼指標">
  <li>出典は省庁・自治体・公庫などの一次資料を優先 (補助金まとめサイトは出典扱いしません)</li>
  <li>専門業務・申請代行ではないことを API レスポンスで明示</li>
@@ -312,7 +312,7 @@
  </ul>
  <details class="trust-early-access" style="margin:8px 0 0;font-size:13px;color:var(--text-muted);">
  <summary style="cursor:pointer;color:var(--text);">登録不要で匿名 3 リクエスト/日まで利用できます</summary>
- <p style="margin:6px 0 0;">REST / MCP の匿名枠は今すぐ利用可能 (<a href="/docs/getting-started/">開発者向け 5 分クイックスタート</a>)。LINE bot は <a href="line.html">提供状況と利用開始通知</a> を案内しています。トライアルは <a href="#path-email-trial">メール認証 (14 日 / 200 req カード不要)</a>、 継続利用は <a href="pricing.html#api-paid">Pricing</a> で ¥3/リクエスト (税込 ¥3.30) の完全従量で API キーを発行できます (既存鍵の管理は <a href="dashboard.html">ダッシュボード</a>)。</p>
+ <p style="margin:6px 0 0;">REST / MCP の匿名枠は今すぐ利用可能 (<a href="/docs/getting-started/">開発者向け 5 分クイックスタート</a>)。LINE bot は <a href="line.html">提供状況と利用開始通知</a> を案内しています。トライアルは <a href="#path-email-trial">メール認証 (14 日 / 200 req カード不要)</a>、 継続利用は <a href="pricing.html#api-paid">Pricing</a> で ¥3/課金単位 (税込 ¥3.30) の完全従量で API キーを発行できます (既存鍵の管理は <a href="dashboard.html">ダッシュボード</a>)。</p>
  </details>
 
  <!-- §4.1 first-use path: 3 explicit channels with anchor links. Each card is a -->
@@ -347,7 +347,7 @@
 
  <article id="path-paid" class="card" aria-labelledby="path-paid-title" style="padding:18px 20px;">
  <h3 id="path-paid-title" style="font-size:16px;margin:0 0 6px;">3. 有料 API キーを発行</h3>
- <p class="card-lead" style="font-size:13px;color:var(--text-muted);margin:0 0 8px;">¥3 / req 税別 (税込 ¥3.30)</p>
+ <p class="card-lead" style="font-size:13px;color:var(--text-muted);margin:0 0 8px;">¥3 / unit 税別 (税込 ¥3.30)</p>
  <p style="font-size:13px;line-height:1.65;margin:0 0 10px;">Stripe Checkout で即時発行。 完全従量、 月額固定・最低利用期間・解約違約金なし。</p>
  <p style="margin:0;"><a class="btn btn-primary" href="pricing.html#api-paid" style="font-size:13px;padding:8px 14px;">Pricing で発行 →</a></p>
  </article>
@@ -469,7 +469,7 @@
  <p class="card-lead">AI 開発者 / 大規模 RAG 用途</p>
  <p><span data-fact="mcp_tools_total" data-stat-key="mcp_tools_total">139</span> MCP ツール を AI から直接呼び出し。回答生成前に一次資料 URL 付き Evidence Packet を先読みできます。</p>
  <ul class="card-list">
- <li>¥<span data-fact="price_per_req" data-stat-key="price_per_req">3</span>/リクエスト 税別 (税込 ¥<span data-fact="price_per_req_inc_tax" data-stat-key="price_per_req_inc_tax">3.30</span>)</li>
+ <li>¥<span data-fact="price_per_req" data-stat-key="price_per_req">3</span>/課金単位 税別 (税込 ¥<span data-fact="price_per_req_inc_tax" data-stat-key="price_per_req_inc_tax">3.30</span>)</li>
  <li>匿名 <span data-fact="anonymous_quota_per_day" data-stat-key="anonymous_quota_per_day">3</span> リクエスト/日 (IP 単位) 無料</li>
  <li>Claude Desktop / Cursor は MCP、ChatGPT は Actions 対応</li>
  </ul>
@@ -505,7 +505,7 @@
  <p>自社サイトに 1 行 (&lt;script&gt; タグ) で補助金検索を追加。来訪者が自社サイト内で相談先を絞れる。</p>
  <ul class="card-list">
  <li>1 検索 ¥3 (サイト訪問者の検索ごと従量)</li>
- <li>超過分 ¥3/リクエスト</li>
+ <li>超過分 ¥3/課金単位</li>
  <li>ホワイトラベル版もご相談可能</li>
  </ul>
  <p style="margin:14px 0 0;"><a href="widget.html">ウィジェットを埋め込む →</a></p>
@@ -647,9 +647,9 @@
  <p class="card-lead audience-context">REST + MCP、 139 機能、 SDK 不要</p>
  <p class="audience-pitch">上記すべての利用者層を、 1 つのサーバーから呼べます。 MCP プロトコル準拠、 uvx 1 行で起動。 Evidence Packet で事前に根拠を渡し、ヒット率・追加検索回数・トークン量への影響を自社ベンチマークで測定できます。</p>
  <ul class="card-list">
- <li>AI から呼べる機能 <span data-fact="mcp_tools_total" data-stat-key="mcp_tools_total">139</span> 個 / REST 公開 OpenAPI paths 227 本</li>
+ <li>AI から呼べる機能 <span data-fact="mcp_tools_total" data-stat-key="mcp_tools_total">139</span> 個 / REST 公開 OpenAPI spec</li>
  <li>uvx 1 行で起動 (SDK 不要)</li>
- <li>無料 3 リクエスト/日で動作確認 → 商用は ¥3/リクエスト 完全従量</li>
+ <li>無料 3 リクエスト/日で動作確認 → 商用は ¥3/課金単位 完全従量</li>
  </ul>
  <p style="margin:14px 0 0;"><a class="btn btn-primary" href="/audiences/dev.html">開発者向け詳細 →</a> · <a href="/docs/mcp-tools/">機能一覧</a></p>
  </article>
@@ -828,7 +828,7 @@
 
  <section class="code-demo" aria-labelledby="why-title">
  <div class="container">
- <h2 id="why-title" class="section-title">なぜ jpcite か — ¥3/リクエストの中身</h2>
+ <h2 id="why-title" class="section-title">なぜ jpcite か — ¥3/課金単位の中身</h2>
  <p class="demo-lead" style="margin:-16px 0 28px;">1 リクエスト ¥3 (税込 ¥3.30) は、 (a) 複数 DB の横断取得 + (b) 一次資料エビデンス + (c) 鮮度メタデータ をワンコールで提供する対価です。 自前で同等のものを組むと、 公開サイトのスクレイピング・正規化・差分検出・出典管理を継続運用する必要があります。</p>
  <div class="cards" style="grid-template-columns:repeat(3,1fr);">
 
@@ -851,8 +851,8 @@
  </article>
 
  <article class="card">
- <h3>排他ルールを機械判定 (¥3 に同梱)</h3>
- <p class="card-lead">181 本の 併用不可 / 前提制度 / 絶対要件 を機械判定</p>
+ <h3>排他ルールを機械照合 (¥3 に同梱)</h3>
+ <p class="card-lead">181 本の 併用不可 / 前提制度 / 絶対要件 を機械照合</p>
  <p>制度 ID 一覧を投げた時点で、 併用不可候補・前提不足候補を返却。 AI の「それっぽい」推論ではなく、 構造化済みルール 181 本 (併用不可 125 + 前提 17 + 絶対要件 15 + その他 24) に照らして確認候補を示します。申請前に確認すべき併用リスクを見つけやすくします。</p>
  </article>
 
@@ -865,7 +865,7 @@
  <article class="card">
  <h3>自前運用を減らす</h3>
  <p class="card-lead">スクレイパ・正規化・差分検出・出典管理</p>
- <p>同等のデータ層を自前で組むには、 省庁・自治体・公庫の公開ページのスクレイパ運用、 スキーマ正規化、 法令改正の差分検出、 出典 URL の生存監視、 集約サイト誤掲載の排除を、 継続して維持する必要があります。 jpcite は ¥3/リクエスト の従量で、 開発・運用工数を肩代わりします。</p>
+ <p>同等のデータ層を自前で組むには、 省庁・自治体・公庫の公開ページのスクレイパ運用、 スキーマ正規化、 法令改正の差分検出、 出典 URL の生存監視、 集約サイト誤掲載の排除を、 継続して維持する必要があります。 jpcite は ¥3/課金単位 の従量で、 開発・運用工数を肩代わりします。</p>
  </article>
 
  </div>
@@ -880,7 +880,7 @@
  <article class="card" aria-labelledby="who-dev">
  <h3 id="who-dev">開発者 / AI エンジニア</h3>
  <p class="card-lead">推奨: API + MCP</p>
- <p>AI・RAG・SaaS に組み込みたい。OpenAPI 3.1、stdio 接続 (MCP)、¥3/リクエスト 従量、登録不要の 3 リクエスト/日 で評価できる。</p>
+ <p>AI・RAG・SaaS に組み込みたい。OpenAPI 3.1、stdio 接続 (MCP)、¥3/課金単位 従量、登録不要の 3 リクエスト/日 で評価できる。</p>
  </article>
 
  <article class="card" aria-labelledby="who-sme">
@@ -923,8 +923,8 @@
  <tr>
  <th scope="row">API + MCP</th>
  <td><span data-fact="anonymous_quota_per_day" data-stat-key="anonymous_quota_per_day">3</span> req/日 per IP</td>
- <td>¥<span data-fact="price_per_req" data-stat-key="price_per_req">3</span> / req (税別)</td>
- <td>¥<span data-fact="price_per_req_inc_tax" data-stat-key="price_per_req_inc_tax">3.30</span> / req</td>
+ <td>¥<span data-fact="price_per_req" data-stat-key="price_per_req">3</span> / billable unit (税別)</td>
+ <td>¥<span data-fact="price_per_req_inc_tax" data-stat-key="price_per_req_inc_tax">3.30</span> / billable unit</td>
  </tr>
  <tr>
  <th scope="row">LINE bot</th>

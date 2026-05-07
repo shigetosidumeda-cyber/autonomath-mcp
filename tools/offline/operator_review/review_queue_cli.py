@@ -110,11 +110,9 @@ COHORT_DEFAULT_TRUST = {
 
 def setup_logger() -> logging.Logger:
     if LOG_DIR.parent.exists():
-        try:
+        # Fallback below still gives stderr logging on read-only hosts.
+        with suppress(OSError):
             LOG_DIR.mkdir(parents=True, exist_ok=True)
-        except OSError:
-            # Fallback below still gives stderr logging on read-only hosts.
-            pass
     log_path = LOG_DIR / f"review_{datetime.now().strftime('%Y%m')}.log"
     logger = logging.getLogger("jpcite.review")
     logger.setLevel(logging.INFO)

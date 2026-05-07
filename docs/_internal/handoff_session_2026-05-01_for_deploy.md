@@ -292,7 +292,7 @@ dataset manifest audit 後に operator-only。
 - LLM API を一切呼ばない (`anthropic`/`openai`/`google.generativeai`/`claude_agent_sdk`)
 - agg サイト (noukaweb/hojyokin-portal/biz.stayway) を `source_url` に書かない
 - robots.txt + 1 sec/host throttle
-- ¥3/req metered 単一料金、tier SKU / 月額 SKU 提案禁止
+- ¥3/billable unit metered 単一料金、tier SKU / 月額 SKU 提案禁止
 - `_archive/` 触らない
 - 「工数」「priority」「phase」「MVP」「stage」言葉禁止
 - 営業電話 / sales call / DPA / 採用 / 広告 禁止

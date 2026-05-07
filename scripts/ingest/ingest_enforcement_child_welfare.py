@@ -77,7 +77,7 @@ except ImportError as exc:  # pragma: no cover
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-import contextlib
+import contextlib  # noqa: E402  (sys.path manipulation precedes)
 
 from scripts.lib.http import HttpClient  # noqa: E402
 
@@ -585,18 +585,17 @@ def _extract_law_ref(text: str, default_law: str | None) -> str | None:
         if m.group(2):
             art += m.group(2)
         parts.append(art)
-    if not parts:
-        if default_law and ("保育" in s or "児童" in s or "こども" in s or "子ども" in s):
-            m = ARTICLE_NEAR_RE.search(s)
-            if m:
-                art = f"{default_law} 第{m.group(1)}条"
-                if m.group(2):
-                    art += m.group(2)
-                if m.group(3):
-                    art += f"第{m.group(3)}項"
-                if m.group(4):
-                    art += f"第{m.group(4)}号"
-                parts.append(art)
+    if not parts and default_law and ("保育" in s or "児童" in s or "こども" in s or "子ども" in s):
+        m = ARTICLE_NEAR_RE.search(s)
+        if m:
+            art = f"{default_law} 第{m.group(1)}条"
+            if m.group(2):
+                art += m.group(2)
+            if m.group(3):
+                art += f"第{m.group(3)}項"
+            if m.group(4):
+                art += f"第{m.group(4)}号"
+            parts.append(art)
     if parts:
         return " / ".join(parts)
     return default_law
@@ -820,10 +819,13 @@ def parse_press_pdf(
     # Build target_name with facility suffix to avoid collisions when same 法人
     # has multiple 事業所 in the same announcement (saitama MOM example).
     final_name = target_name
-    if facility_name and len(target_name) + len(facility_name) <= 180:
-        # Only append if facility_name distinct enough (not contained in target).
-        if facility_name not in target_name:
-            final_name = f"{target_name} / {facility_name}"
+    # Only append if facility_name distinct enough (not contained in target).
+    if (
+        facility_name
+        and len(target_name) + len(facility_name) <= 180
+        and facility_name not in target_name
+    ):
+        final_name = f"{target_name} / {facility_name}"
 
     return [
         EnfRow(

@@ -234,4 +234,4 @@ Manual sample of "other" 7,809: all are legitimate short statutory clauses (e.g.
 
 ---
 
-**Audit summary**: 8/8 audits executed. Corpus is **honest at the source-host layer** (zero aggregator hits) and **fresh at the law-article layer** (97.6% ≤7d). Top gaps are: empty `body_en` corpus, single-mode `ref_kind`, and below-target cross-source verification. No HIGH defects are launch-blockers for the v0.3.2 ¥3/req surface but all three constrain cohort #4 (Foreign FDI) and the §52 advisory disclaimers.
+**Audit summary**: 8/8 audits executed. Corpus is **honest at the source-host layer** (zero aggregator hits) and **fresh at the law-article layer** (97.6% ≤7d). Top gaps are: empty `body_en` corpus, single-mode `ref_kind`, and below-target cross-source verification. No HIGH defects are launch-blockers for the v0.3.2 ¥3/billable unit surface but all three constrain cohort #4 (Foreign FDI) and the §52 advisory disclaimers.

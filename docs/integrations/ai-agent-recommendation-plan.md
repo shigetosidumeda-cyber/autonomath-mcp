@@ -427,7 +427,7 @@ Pass criteria:
 | package name | `autonomath-mcp`, `@autonomath/sdk`, `@jpcite/sdk` が混在 | 製品名 `jpcite`、MCP package `autonomath-mcp` を明記 |
 | env var | `JPINTEL_API_KEY` と `JPCITE_API_KEY` | 新規 docs は `JPCITE_API_KEY`、旧名は deprecated alias |
 | endpoint path | enforcement 系で `/enforcements` と `/enforcement-cases` が混在 | OpenAPI を正本に SDK 修正 |
-| pricing | `¥3/request` と `¥3/billable unit` | `¥3/billable unit` に統一 |
+| pricing | `¥3/billable unit` と `¥3/billable unit` | `¥3/billable unit` に統一 |
 | ChatGPT spec | agent spec が 28 paths で多い | `openapi.actions.json` を 7-10 operations に縮小 |
 
 CI に追加する検査:

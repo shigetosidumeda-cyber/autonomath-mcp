@@ -24,7 +24,7 @@ are listed verbatim with the URL, required field list, and the canonical reply t
 |-------|-------|
 | Display name | `AutonoMath` |
 | Slug | `autonomath-mcp` |
-| Tagline (≤200 chars) | `Japanese public-program MCP — 11,684 searchable / 14,472 total programs (補助金/融資/税制/認定) + 採択事例 + 融資三軸 + 行政処分 + 法令/税/インボイス, 181 exclusion rules. ¥3/req, 3/日 free.` |
+| Tagline (≤200 chars) | `Japanese public-program MCP — 11,684 searchable / 14,472 total programs (補助金/融資/税制/認定) + 採択事例 + 融資三軸 + 行政処分 + 法令/税/インボイス, 181 exclusion rules. ¥3/billable unit, 3/日 free.` |
 | Long description (≤500) | See `/Users/shigetoumeda/jpintel-mcp/scripts/mcp_registries_submission.json` → `server.description_long` |
 | Repo URL | `https://github.com/shigetosidumeda-cyber/autonomath-mcp` |
 | Homepage | `https://jpcite.com` |
@@ -39,7 +39,7 @@ are listed verbatim with the URL, required field list, and the canonical reply t
 | Contact email | `info@bookyou.net` |
 | Categories | `government, legal, finance` |
 | Tags | `japan, japanese, government, subsidies, grants, loans, tax-incentives, certifications, enforcement, case-studies, exclusion-rules, mcp-server, stdio, python, 補助金, 助成金, 融資, 採択事例, 行政処分, jgrants, e-gov, invoice, mcp-2025-06-18` |
-| Pricing | `50 req/月 per IP free (JST 月初 reset, no key) · ¥3/req tax-excl (¥3.30 incl) metered · no tier SKU · no seat fee` |
+| Pricing | `50 req/月 per IP free (JST 月初 reset, no key) · ¥3/billable unit tax-excl (¥3.30 incl) metered · no tier SKU · no seat fee` |
 
 ---
 
@@ -146,7 +146,7 @@ are listed verbatim with the URL, required field list, and the canonical reply t
 ### Entry text (committed to PR)
 
 ```
-- [AutonoMath/autonomath-mcp](https://github.com/shigetosidumeda-cyber/autonomath-mcp) 🐍 ☁️ 🍎 🪟 🐧 - AutonoMath: 93-tool MCP (39 core + 30 autonomath entity-fact DB at default gates) over Japanese primary-gov data — 11,684 searchable / 14,472 total programs (補助金/融資/税制/認定) + 2,286 採択事例 + 108 融資 (担保/個人保証人/第三者保証人 三軸分解) + 1,185 行政処分 + 503,930 entities + 6.12M facts + laws (e-Gov CC-BY) + tax rulesets (インボイス/電帳法) + 国税庁 invoice registrants. 181 exclusion/prerequisite rules, primary-source lineage, no aggregators. ¥3/req metered (¥3.30 incl. tax); 3 req/日 free per IP. `uvx autonomath-mcp`.
+- [AutonoMath/autonomath-mcp](https://github.com/shigetosidumeda-cyber/autonomath-mcp) 🐍 ☁️ 🍎 🪟 🐧 - AutonoMath: 93-tool MCP (39 core + 30 autonomath entity-fact DB at default gates) over Japanese primary-gov data — 11,684 searchable / 14,472 total programs (補助金/融資/税制/認定) + 2,286 採択事例 + 108 融資 (担保/個人保証人/第三者保証人 三軸分解) + 1,185 行政処分 + 503,930 entities + 6.12M facts + laws (e-Gov CC-BY) + tax rulesets (インボイス/電帳法) + 国税庁 invoice registrants. 181 exclusion/prerequisite rules, primary-source lineage, no aggregators. ¥3/billable unit metered (¥3.30 incl. tax); 3 req/日 free per IP. `uvx autonomath-mcp`.
 ```
 
 ### F7 status: DRAFT PR RAISED 2026-04-25
@@ -194,7 +194,7 @@ are listed verbatim with the URL, required field list, and the canonical reply t
    - Contact: `info@bookyou.net`
    - License: `MIT`
    - Install command: `uvx autonomath-mcp`
-   - Pricing: `Free 50 req/month per IP (JST first-of-month reset); ¥3/req tax-exclusive (¥3.30 tax-inclusive) metered. No tier SKUs, no seat fees.`
+   - Pricing: `Free 50 req/month per IP (JST first-of-month reset); ¥3/billable unit tax-exclusive (¥3.30 tax-inclusive) metered. No tier SKUs, no seat fees.`
    - Tags: paste tag list above
 3. Provide the `.cursor/mcp.json` snippet (Cursor users copy this into project root):
 

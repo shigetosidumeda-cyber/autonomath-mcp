@@ -153,7 +153,7 @@ Subject: [jpcite] サービス障害のお知らせ (YYYY-MM-DD)
 
 YYYY-MM-DD HH:MM JST より、API サービスに障害が発生し、HH:MM JST に復旧いたしました。
 影響時間: <分>。原因: <一行>。対策: <一行>。
-ご請求は障害時間中の利用分を除外して調整いたします (¥3/req metered のため、停止時間中は自動的に課金されません)。
+ご請求は障害時間中の利用分を除外して調整いたします (¥3/billable unit metered のため、停止時間中は自動的に課金されません)。
 
 ご迷惑をおかけし申し訳ございません。詳細は https://status.jpcite.com/postmortem/<id> に掲載いたします。
 

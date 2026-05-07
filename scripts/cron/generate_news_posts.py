@@ -374,7 +374,7 @@ def _group_by_entity_and_jst_date(
         jst = _to_jst(r.detected_at_utc).date().isoformat()
         key = (r.entity_id, jst)
         buckets.setdefault(key, []).append(r)
-    for key, lst in buckets.items():
+    for _key, lst in buckets.items():
         lst.sort(key=lambda x: (x.field_name, x.diff_id))
     return buckets
 

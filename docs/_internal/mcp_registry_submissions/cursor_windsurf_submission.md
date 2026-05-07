@@ -34,7 +34,7 @@ https://cursor.directory/plugins (Submit button)
 | Contact email | `info@bookyou.net` |
 | License | MIT |
 | Install command | `uvx autonomath-mcp` |
-| Pricing | Free 3 req/day per IP (JST next-day reset); ¥3/req tax-exclusive (¥3.30 tax-inclusive) metered |
+| Pricing | Free 3 req/day per IP (JST next-day reset); ¥3/billable unit tax-exclusive (¥3.30 tax-inclusive) metered |
 | Tags | `japan, japanese, subsidy, 補助金, grant, loan, tax, certification, government, mcp, stdio, 2025-06-18` |
 
 ### Cursor `.cursor/mcp.json` snippet (users copy into project)

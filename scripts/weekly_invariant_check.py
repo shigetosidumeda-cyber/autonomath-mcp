@@ -122,7 +122,7 @@ def inv03_no_fk_violations(con: sqlite3.Connection) -> InvariantResult:
 
 
 def inv04_aggregator_ban(con: sqlite3.Connection) -> InvariantResult:
-    BANNED = [
+    BANNED = [  # noqa: N806  (local CONST sentinel, not loop-mut)
         "noukaweb",
         "hojyokin-portal",
         "biz.stayway",
@@ -338,13 +338,13 @@ def inv23_b2b_tax_id(_: sqlite3.Connection) -> InvariantResult:
 
 
 def inv24_keyword_block_docs(_: sqlite3.Connection) -> InvariantResult:
-    BANNED = ["必ず採択", "絶対に", "保証します", "確実に", "間違いなく"]
+    BANNED = ["必ず採択", "絶対に", "保証します", "確実に", "間違いなく"]  # noqa: N806  (local CONST sentinel, not loop-mut)
     # Exclude:
     #   _internal: operator-only runbooks may quote phrases as counter-examples
     #   compliance: legal disclaimers MUST quote 景表法 NG phrases as the
     #               documented "do not claim X" list — this is required, not
     #               a regression.
-    EXCLUDED_PARTS = {"_internal", "compliance"}
+    EXCLUDED_PARTS = {"_internal", "compliance"}  # noqa: N806  (local CONST sentinel, not loop-mut)
     candidates: list[Path] = []
     docs = _REPO / "docs"
     if docs.is_dir():

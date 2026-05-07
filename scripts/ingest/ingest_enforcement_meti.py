@@ -694,7 +694,7 @@ def upsert_record(
 # ----------------------- crawl orchestration -----------------------
 
 
-def crawl_system_I(fetcher: HeadedFetcher) -> list[dict[str, Any]]:
+def crawl_system_I(fetcher: HeadedFetcher) -> list[dict[str, Any]]:  # noqa: N802  (I = METI 不正受給 system code)
     """COVID 不正受給 — single master page, 608+ rows."""
     url = "https://www.meti.go.jp/covid-19/fusei_nintei.html"
     _LOG.info("[I] fetch master list: %s", url)
@@ -755,7 +755,7 @@ def crawl_press_archive(
     return out
 
 
-def crawl_system_G(fetcher: HeadedFetcher) -> list[dict[str, Any]]:
+def crawl_system_G(fetcher: HeadedFetcher) -> list[dict[str, Any]]:  # noqa: N802  (G = METI 指名停止 system code)
     """Fetch shimeiteishi.pdf and parse current 指名停止 list."""
     url = "https://www.meti.go.jp/information_2/downloadfiles/shimeiteishi.pdf"
     _LOG.info("[G] fetch shimeiteishi.pdf")
@@ -902,7 +902,7 @@ def run(
                 time.sleep(0.5 + random.random() * 1.5)
         raise RuntimeError(f"BEGIN IMMEDIATE failed after 600s: {last_err}")
 
-    BATCH = 100
+    BATCH = 100  # noqa: N806  (local CONST sentinel, not loop-mut)
     con = _open_conn()
     try:
         # snapshot existing dedup keys (read-only — outside any tx)

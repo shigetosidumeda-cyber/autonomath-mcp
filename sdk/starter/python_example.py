@@ -20,5 +20,6 @@ req = urllib.request.Request(f"{API_BASE}/v1/programs/search?{params}")
 if API_KEY:
     req.add_header("X-API-Key", API_KEY)
 
-with urllib.request.urlopen(req, timeout=10) as r:
+# nosec B310 — example script targets the documented public API_BASE; URL is operator-controlled.
+with urllib.request.urlopen(req, timeout=10) as r:  # nosec B310
     print(json.dumps(json.loads(r.read()), ensure_ascii=False, indent=2))

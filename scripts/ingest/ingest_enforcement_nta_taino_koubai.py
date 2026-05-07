@@ -733,7 +733,7 @@ def run(
                 time.sleep(0.5 + random.random() * 1.5)
         raise RuntimeError(f"BEGIN IMMEDIATE failed after 600s: {last_err}")
 
-    BATCH = 50
+    BATCH = 50  # noqa: N806  (local CONST sentinel, not loop-mut)
     con = _open_conn()
     try:
         cur = con.cursor()

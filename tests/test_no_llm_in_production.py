@@ -134,9 +134,13 @@ def _scan_env_vars(py_file: pathlib.Path, in_meta_allowlist: bool) -> list[str]:
 
     string_spans: list[tuple[int, int]] = []
     for node in ast.walk(tree):
-        if isinstance(node, ast.Constant) and isinstance(node.value, str):
-            if hasattr(node, "lineno") and hasattr(node, "end_lineno"):
-                string_spans.append((node.lineno, node.end_lineno or node.lineno))
+        if (
+            isinstance(node, ast.Constant)
+            and isinstance(node.value, str)
+            and hasattr(node, "lineno")
+            and hasattr(node, "end_lineno")
+        ):
+            string_spans.append((node.lineno, node.end_lineno or node.lineno))
 
     hits: list[str] = []
     for lineno, line in enumerate(src.splitlines(), start=1):
@@ -212,9 +216,12 @@ def test_offline_dir_is_not_imported_from_production() -> None:
                     for alias in node.names:
                         if any(s in alias.name for s in forbidden_substrings):
                             violations.append(f"{rel}: import {alias.name}")
-                elif isinstance(node, ast.ImportFrom):
-                    if node.module and any(s in node.module for s in forbidden_substrings):
-                        violations.append(f"{rel}: from {node.module} import ...")
+                elif (
+                    isinstance(node, ast.ImportFrom)
+                    and node.module
+                    and any(s in node.module for s in forbidden_substrings)
+                ):
+                    violations.append(f"{rel}: from {node.module} import ...")
     assert not violations, "Production code imports from tools/offline/:\n  - " + "\n  - ".join(
         violations
     )

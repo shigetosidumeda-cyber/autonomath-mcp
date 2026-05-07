@@ -1,6 +1,6 @@
 # dev.to — long-form launch article
 
-**Title**: `Building a Japanese institutional-data API for AI agents (and why ¥3/req metered beats subscription tiers)`
+**Title**: `Building a Japanese institutional-data API for AI agents (and why ¥3/billable unit metered beats subscription tiers)`
 
 **Tags**: `api`, `ai`, `python`, `showdev`
 
@@ -106,7 +106,7 @@ OpenAPI lives at `https://api.jpcite.com/v1/openapi.json`.
 
 Restart Claude Desktop. Ask 「農業に使える東京都の補助金を教えて」. Claude calls `search_programs`, gets back rows with primary-source URLs, and cites them.
 
-The wheel on PyPI doesn't ship the DB (8.29 GB is too big for a wheel). Instead it auto-detects empty local DB and HTTP-falls-back to `api.jpcite.com`. The first 3 req/day per IP are free, no signup. Past that, ¥3/req metered with an API key.
+The wheel on PyPI doesn't ship the DB (8.29 GB is too big for a wheel). Instead it auto-detects empty local DB and HTTP-falls-back to `api.jpcite.com`. The first 3 req/day per IP are free, no signup. Past that, ¥3/billable unit metered with an API key.
 
 If you want full local-mode MCP, clone the repo, fetch the DB tarball, run `autonomath-mcp` against the local file. No network.
 
@@ -124,7 +124,7 @@ That dropped my "active programs" count by ~30%, which was painful. But the rema
 
 ### 2. Source-URL rot is constant
 
-About 8% of source URLs decay per year as ministries rotate CMSes. I run a nightly checker against the `source_url + fetched_at` columns and route 404s into a public-hold bucket (2,788 rows currently). The user-facing `programs` count (11,601) excludes the public-hold rows.
+About 8% of source URLs decay per year as ministries rotate CMSes. I run a nightly checker against the `source_url + fetched_at` columns and route 404s into a public-hold bucket (2,871 rows currently). The user-facing `programs` count (11,601) excludes the public-hold rows.
 
 ### 3. Primary sources disagree with themselves
 
@@ -136,7 +136,7 @@ I initially tried to track law amendments in real time. Then I realized e-Gov up
 
 ---
 
-## Why ¥3/req metered, not Free/Pro/Enterprise
+## Why ¥3/billable unit metered, not Free/Pro/Enterprise
 
 I get this question more than any other, so here's the long version.
 
@@ -148,9 +148,9 @@ I get this question more than any other, so here's the long version.
 
 **4. Removing risk > capturing value.** No subscription = no cancel friction = no annual lock-in = lower bar to try. My acquisition strategy is 100% organic, so reducing friction beats capturing higher LTV.
 
-**5. The DB cost is a roughly known function of req volume.** ¥3/req has comfortable margin over my Fly.io + Stripe + bandwidth costs. It scales linearly. I can drop the price later if volume justifies.
+**5. The DB cost is a roughly known function of billable usage volume.** ¥3/billable unit has comfortable margin over my Fly.io + Stripe + bandwidth costs. It scales linearly. I can drop the price later if volume justifies.
 
-The free tier is intentional and aggressive: **3 req/day per IP, no signup**. I want devs to be able to type a curl command into a terminal and see real data back without filling out a form. Most agent prototypes won't exceed 3 req/day anyway, so the free path is genuinely usable.
+The anonymous free allowance is intentional and aggressive: **3 req/day per IP, no signup**. I want devs to be able to type a curl command into a terminal and see real data back without filling out a form. Most agent prototypes won't exceed 3 req/day anyway, so the free path is genuinely usable.
 
 ```bash
 # This works, no key needed
@@ -165,7 +165,7 @@ Things I'm explicitly **not** doing (per Bookyou株式会社 strategy):
 
 - No paid ads. 100% organic acquisition.
 - No sales team. Solo + zero-touch.
-- No tier SKUs. Pure ¥3/req metered, forever.
+- No tier SKUs. Pure ¥3/billable unit metered, forever.
 - No DPA negotiation. Public terms only.
 - No Slack Connect / private support. Public docs + GitHub issues only.
 

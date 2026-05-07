@@ -102,11 +102,11 @@ privacy-safe な anon session cookie (`jpintel_sid`, 32-byte random, `SameSite=L
 |---|---|---|---|---|---|---|
 | 1 | **Success URL で key + curl を即表示** | Stripe 完了後 dashboard にリダイレクト、key は別画面 | `/billing/success?session_id=...` で `/v1/billing/keys/from-checkout` を即 call、key と `curl` snippet を copy ボタン付で表示 | 高 (+10-15pt on first_call) | 4h | P0 |
 | 2 | **Pricing page に curl snippet 常設** | pricing.html に curl なし、`docs/getting-started.md` まで遷移が必要 | Pricing ページ hero 下に「30 秒で叩く」 curl block (free tier key 不要) | 高 (+3-5pt on CTA) | 1h | P0 |
-| 3 | **Free-tier 残枠の soft upgrade prompt** | 50 req/月 超過で 429 のみ | 40 req 到達時に `Warning: X-Upgrade-Hint` header と dashboard banner で Paid (¥3/req) 誘導 | 中 (+5pt on paid) | 6h | P1 |
+| 3 | **Free-tier 残枠の soft upgrade prompt** | 50 req/月 超過で 429 のみ | 40 req 到達時に `Warning: X-Upgrade-Hint` header と dashboard banner で Paid (¥3/billable unit) 誘導 | 中 (+5pt on paid) | 6h | P1 |
 | 4 | **Stripe Checkout locale=ja + JPY 明示** | Checkout Session の locale 未指定 (英語 fallback) | `locale: "ja"`, `currency: "jpy"`, `customer_creation: "always"` を `billing.py` で強制 | 高 (+5-10pt on paid) | 1h | P0 |
 | 5 | **CTA 文言 A/B "5秒で始める" vs "無料で試す" vs "API key を取得"** | 現行「5 秒で始める」1種 | 3 variant rotate、`cta_click` event で bucketing | 中 (+2-4pt on CTA) | 3h | P1 |
 | 6 | **Hero に社会的証明 counter** | `6,658 programs` 静的表示のみ | `6,658 programs / 日次更新 / 47 都道府県 100% 網羅` の counter (live meta fetch) | 中 (+1-3pt on CTA) | 2h | P2 |
-| 7 | **Pricing card の CTA 文言 A/B** | 現行「カードを登録して開始」 | "従量 ¥3/req で開始" / "1,000 req ≒ ¥3,000 から試す" 等で説得力比較 | 中 (±3pt on ARPU) | 1h | P1 |
+| 7 | **Pricing card の CTA 文言 A/B** | 現行「カードを登録して開始」 | "従量 ¥3/billable unit で開始" / "1,000 req ≒ ¥3,000 から試す" 等で説得力比較 | 中 (±3pt on ARPU) | 1h | P1 |
 | 8 | **Onboarding email: key 発行 + 24h 後の tip** | email 無し | key 発行時 + 24h 後に「3 つの use-case + curl」 drip mail (transactional 扱い、opt-out 付) | 中 (+5-8pt on D+7) | 8h | P1 |
 | 9 | **Dashboard 初回ログインで 3-step checklist** | dashboard 即データ画面 | 初回訪問で「key copy / curl 実行 / MCP 連携」 3-step modal | 中 (+3-5pt on D+7) | 6h | P2 |
 | 10 | **月次 usage 予測表示** | 現在までの消化しか見えない | dashboard で "今月の usage 線形予測 ¥X,XXX" と「今月の使用量 top 10 endpoint」を表示し、upsell を自然誘発 | 中 (+2-4pt on LTV) | 5h | P1 |

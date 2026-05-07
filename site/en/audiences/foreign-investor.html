@@ -6,10 +6,10 @@
 <meta name="theme-color" content="#ffffff">
 <meta name="color-scheme" content="light dark">
 <title>jpcite for foreign investors — Japan tax treaty (33 countries), WHT rates, FDI subsidy lookup API</title>
-<meta name="description" content="Foreign-investor (FDI) playbook for jpcite. Look up Japan tax-treaty WHT rates for 33 partner countries, surface FDI-relevant subsidies (METI 対日直接投資, JETRO IBSC), check 外為法 prior-notification sectors, and access English law full text. ¥3/req metered, anonymous 3/day free, primary-source citations only.">
+<meta name="description" content="Foreign-investor (FDI) playbook for jpcite. Look up Japan tax-treaty WHT rates for 33 partner countries, surface FDI-relevant subsidies (METI 対日直接投資, JETRO IBSC), check 外為法 prior-notification sectors, and access English law full text. ¥3/billable unit metered, anonymous 3/day free, primary-source citations only.">
 
 <meta property="og:title" content="jpcite for foreign investors — Japan tax treaty + FDI subsidy + WHT lookup API">
-<meta property="og:description" content="33-country tax-treaty matrix (MoF primary source), FDI-relevant Japanese subsidies, English law full text. ¥3/req metered.">
+<meta property="og:description" content="33-country tax-treaty matrix (MoF primary source), FDI-relevant Japanese subsidies, English law full text. ¥3/billable unit metered.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/en/audiences/foreign-investor.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -88,7 +88,7 @@
     {"@type": "Question", "name": "Are the WHT rates statutory or treaty rates?", "acceptedAnswer": {"@type": "Answer", "text": "Treaty rates (the in-force rate after the most recent protocol). Statutory rates can be higher; the treaty rate is the one that applies once Form 17 (Application Form for Income Tax Convention) is filed. NULL in any wht_*_pct column means 'see treaty article' (distinct from 0.0 = exempt under treaty)."}},
     {"@type": "Question", "name": "Which Japanese subsidies are open to foreign-owned KKs?", "acceptedAnswer": {"@type": "Answer", "text": "Japan's subsidy permissive default is 'silent' on foreign capital — most national programs are open unless explicitly restricted. The high-priority FDI-targeted programs include METI 対日直接投資促進事業費補助金, JETRO Invest Japan Business Support Center (IBSC) services, J-Bridge (cross-border M&A), and Global Acceleration Hub. Lookup via search_programs() with foreign-capital-eligibility filter."}},
     {"@type": "Question", "name": "How does this differ from JETRO's own materials?", "acceptedAnswer": {"@type": "Answer", "text": "JETRO publishes excellent narrative guides; jpcite returns machine-queryable rows. Use JETRO IBSC (https://www.jetro.go.jp/en/invest/ibsc/) for handholding and policy context; use jpcite when an LLM agent or DD pipeline needs structured tax-treaty / subsidy / law data with primary-source URLs attached. Both surfaces are first-party government data — they should agree."}},
-    {"@type": "Question", "name": "Is there an English-language API spec?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The OpenAPI spec at /docs/openapi/v1.json carries English descriptions on every route. The MCP manifest (server.json) is English-first. Anonymous trial: 3 req/day per IP, no signup. Commercial: ¥3/req metered (¥3.30 incl. tax), Stripe-backed."}},
+    {"@type": "Question", "name": "Is there an English-language API spec?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The OpenAPI spec at /docs/openapi/v1.json carries English descriptions on every route. The MCP manifest (server.json) is English-first. Anonymous trial: 3 req/day per IP, no signup. Commercial: ¥3/billable unit metered (¥3.30 incl. tax), Stripe-backed."}},
     {"@type": "Question", "name": "What about 外為法 prior notification?", "acceptedAnswer": {"@type": "Answer", "text": "Foreign-Exchange-and-Foreign-Trade Act (Gaitamehou) prior-notification sectors are tracked in am_industry_jsic with FDI flags. The 155-sector designated list (2024 revision, MoF source) is mapped to JSIC codes so a foreign acquirer can check sector eligibility before the 30-day filing window. See the 外為法 section below for direct URLs."}}
   ]
 }
@@ -122,7 +122,7 @@
  <a href="../index.html">Home</a> &raquo; <a href="index.html">Audiences</a> &raquo; <span aria-current="page">Foreign investors</span>
  </nav>
  <h1 id="hero-title">jpcite for foreign investors (FDI)</h1>
- <p class="hero-sub">Japan tax-treaty matrix (33 countries) + FDI-relevant subsidies + 外為法 prior notification + English law full text — primary-source citations on every row, ¥3/req metered.</p>
+ <p class="hero-sub">Japan tax-treaty matrix (33 countries) + FDI-relevant subsidies + 外為法 prior notification + English law full text — primary-source citations on every row, ¥3/billable unit metered.</p>
  <p class="hero-tag">Built for foreign corporate development teams, in-house counsel, JETRO consultants, and cross-border tax advisors. When your LLM agent or DD pipeline needs Japan-side withholding-tax rates, sector-based 外為法 filing thresholds, or which METI / JETRO subsidies a foreign-owned KK can apply for — jpcite returns structured rows with the MoF / NTA / METI / JETRO source URL attached. Anonymous 3 req/day free per IP, no signup.</p>
  <div class="cta-row">
  <a class="btn btn-primary" href="#quickstart">Start in 5 minutes &rarr;</a>
@@ -282,7 +282,7 @@ curl 'https://api.jpcite.com/v1/programs/search?q=対日直接投資&amp;limit=5
  </article>
 
  <article class="card">
- <h3>Python (commercial, ¥3/req)</h3>
+ <h3>Python (commercial, ¥3/billable unit)</h3>
  <pre class="code-block"><code>import httpx
 H = {"X-API-Key": "am_..."}
 
@@ -361,7 +361,7 @@ for row in r2.json["items"]:
  <section class="pricing-preview" aria-labelledby="pricing-title">
  <div class="container">
  <h2 id="pricing-title" class="section-title">Foreign-investor pricing</h2>
- <p class="demo-lead" style="margin:-16px 0 24px;">¥3/req metered (¥3.30 tax inclusive, JCT applied). Anonymous trial: 3 req/day per IP, no signup.</p>
+ <p class="demo-lead" style="margin:-16px 0 24px;">¥3/billable unit metered (¥3.30 tax inclusive, JCT applied). Anonymous trial: 3 req/day per IP, no signup.</p>
  <div class="table-wrap">
  <table class="pricing-table">
  <caption class="visually-hidden">Foreign-investor recommended interface pricing</caption>
@@ -374,10 +374,10 @@ for row in r2.json["items"]:
  </tr>
  </thead>
  <tbody>
- <tr><th scope="row">REST API + MCP</th><td>3 req/day per IP</td><td>¥3 / req</td><td>¥3.30 / req</td></tr>
- <tr><th scope="row">Tax-treaty lookup</th><td>3 req/day per IP</td><td>¥3 / req</td><td>¥3.30 / req</td></tr>
- <tr><th scope="row">FDI subsidy search</th><td>3 req/day per IP</td><td>¥3 / req</td><td>¥3.30 / req</td></tr>
- <tr><th scope="row">Houjin 360 (DD pipeline)</th><td>3 req/day per IP</td><td>¥3 / req</td><td>¥3.30 / req</td></tr>
+ <tr><th scope="row">REST API + MCP</th><td>3 req/day per IP</td><td>¥3 / unit</td><td>¥3.30 / unit</td></tr>
+ <tr><th scope="row">Tax-treaty lookup</th><td>3 req/day per IP</td><td>¥3 / unit</td><td>¥3.30 / unit</td></tr>
+ <tr><th scope="row">FDI subsidy search</th><td>3 req/day per IP</td><td>¥3 / unit</td><td>¥3.30 / unit</td></tr>
+ <tr><th scope="row">Houjin 360 (DD pipeline)</th><td>3 req/day per IP</td><td>¥3 / unit</td><td>¥3.30 / unit</td></tr>
  </tbody>
  </table>
  </div>

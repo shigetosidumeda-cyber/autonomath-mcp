@@ -71,7 +71,9 @@ def test_small_response_minimum_size_gate_configured(client: TestClient) -> None
     assertion against the upstream Starlette + BaseHTTPMiddleware
     interaction.
     """
-    from starlette.middleware.gzip import GZipMiddleware as _G
+    from starlette.middleware.gzip import (
+        GZipMiddleware as _G,  # noqa: N814  (test-local short alias for class identity check)
+    )
 
     from jpintel_mcp.api.main import create_app
 

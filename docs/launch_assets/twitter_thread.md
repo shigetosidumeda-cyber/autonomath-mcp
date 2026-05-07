@@ -22,7 +22,7 @@ A REST + MCP API exposing Japanese public-program data — subsidies, loans,
 tax incentives, laws, enforcement, invoice registrants — to AI agents in
 one call.
 
-Built solo. Metered ¥3/req. 3/day free per IP.
+Built solo. Metered ¥3/billable unit. 3/day free per IP.
 
 https://jpcite.com
 

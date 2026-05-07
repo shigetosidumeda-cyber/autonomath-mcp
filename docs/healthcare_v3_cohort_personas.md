@@ -2,7 +2,7 @@
 
 **目的**: 2026-08-04 launch 前の MCP / API ツール設計と blog 記事の
 ペルソナ整合チェック。各 persona は **1 cohort = 1 SaaS / 1 ユースケース**
-を仮定し、**¥3/req metered + zero-touch + organic** の制約を満たすかを
+を仮定し、**¥3/billable unit metered + zero-touch + organic** の制約を満たすかを
 明示する。
 
 > 想定総母数: 医療法人 3-5k 法人 / 介護施設 50k+ / 薬局 60k+ / 訪問介護 30k+。
@@ -26,7 +26,7 @@
   - `dd_medical_institution_am(canonical_id)` で自院の
     cert + 行政処分歴 + 制度適用可否を 1-shot dump。
 - **流入想定**: blog 「医療法人 理事長が 5 分で県補助を網羅する MCP 設定」。
-- **解像度確認**: ¥3/req × 月 100 call = ¥300。社労士 1 時間 ¥15,000 比で
+- **解像度確認**: ¥3/billable unit × 月 100 call = ¥300。社労士 1 時間 ¥15,000 比で
   zero-touch 整合。
 
 ## 2. 介護施設 オーナー
@@ -45,7 +45,7 @@
     行政処分事例 → 内部監査 checklist の自動更新。
 - **流入想定**: blog 「介護施設 オーナーが加算取り逃しゼロにする
   3 ステップ (MCP / Claude)」。
-- **解像度確認**: ¥3/req × 月 200 call = ¥600。年間取り逃し ¥3M 比較で
+- **解像度確認**: ¥3/billable unit × 月 200 call = ¥600。年間取り逃し ¥3M 比較で
   圧倒的に低コスト。
 
 ## 3. 薬局 経営者
@@ -63,8 +63,8 @@
     1 call で取得 (添付文書 url 含む)。
   - `search_care_subsidies(law_basis='薬機法')` で薬局向け補助を一覧。
   - `dd_medical_institution_am` で自薬局の認定 / 加算届出履歴 dump。
-- **流入想定**: blog 「薬局経営者が薬機法改定を見逃さない MCP setup」。
-- **解像度確認**: ¥3/req × 月 150 call = ¥450。認定取り逃し 1 件 ¥1M 級
+- **流入想定**: blog 「薬局経営者が薬機法改定に気づきやすくする MCP setup」。
+- **解像度確認**: ¥3/billable unit × 月 150 call = ¥450。認定取り逃し 1 件 ¥1M 級
   → 比較にならない。
 
 ## 4. 医療 SaaS 開発者
@@ -84,7 +84,7 @@
     与え、自社 UI から自然言語クエリ。
 - **流入想定**: blog 「医療 SaaS に 1 日で制度情報を組み込む
   (jpcite REST + MCP)」。
-- **解像度確認**: ¥3/req × エンドユーザ 1,000 call/日 = ¥3,000/日 = ¥90k/月。
+- **解像度確認**: ¥3/billable unit × エンドユーザ 1,000 call/日 = ¥3,000/日 = ¥90k/月。
   自前構築 6 人月 ¥6M+ 比較で初年度即回収。
 
 ## 5. 介護 SaaS 開発者
@@ -103,14 +103,14 @@
     cert + 加算届出履歴を都度参照、SaaS 側のマスタ管理を縮小。
 - **流入想定**: blog 「介護 SaaS の改定対応コストを 1/10 にする
   jpcite 連携」。
-- **解像度確認**: ¥3/req × エンドユーザ 500 call/日 = ¥1,500/日 = ¥45k/月。
+- **解像度確認**: ¥3/billable unit × エンドユーザ 500 call/日 = ¥1,500/日 = ¥45k/月。
   改定対応 1 サイクル ¥3M 比較で 5+ 年分の budget。
 
 ---
 
 ## 整合チェック (5 personas 横断)
 
-- **¥3/req metered で全 persona ROI 黒字** — tier SKU 不要を再確認。
+- **¥3/billable unit metered で全 persona ROI 黒字** — tier SKU 不要を再確認。
 - **zero-touch 整合** — 5 persona いずれも DPA / Slack Connect / phone を
   必要としない。SaaS 開発者 2 名は技術 docs + REST/MCP のみで完結。
 - **organic 整合** — 5 persona × blog 1 本 = 計 5 記事で SEO 入口。

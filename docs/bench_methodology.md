@@ -189,7 +189,7 @@ add extras but cannot drop these.
 | `reasoning_tokens` | int | LLM provider response | 0 if provider doesn't expose |
 | `web_searches` | int | LLM provider response | count of web_search tool invocations |
 | `jpcite_requests` | int | harness | 0 for `direct_web`, ≥1 for jpcite arms |
-| `yen_cost_per_answer` | float | operator-computed | LLM token cost (¥) + jpcite ¥3/req × jpcite_requests |
+| `yen_cost_per_answer` | float | operator-computed | LLM token cost (¥) + jpcite ¥3/billable unit × jpcite_requests |
 | `latency_seconds` | float | wall-clock | round-trip from query send to final answer |
 | `citation_rate` | float | operator-rated | fraction of factual claims with a `source_url` |
 | `hallucination_rate` | float | operator-rated | fraction of factual claims unsupported by source |

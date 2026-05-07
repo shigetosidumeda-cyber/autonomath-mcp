@@ -34,7 +34,7 @@
 ### Title (max 300 chars, keep pithy)
 
 ```
-[Show] jpcite: MCP server for 11k+ Japanese government subsidy/loan/tax data, ¥3/req metered
+[Show] jpcite: MCP server for 11k+ Japanese government subsidy/loan/tax data, ¥3/billable unit metered
 ```
 
 ### Body
@@ -68,7 +68,7 @@ ChatGPT, Gemini) in a single call.
 
 **Pricing:**
 
-¥3/req (~$0.02), pure metered. No tiers, no seats. Anonymous gets 50
+¥3/billable unit (~$0.02), pure metered. No tiers, no seats. Anonymous gets 50
 req/month free per IP. Stripe metered + Stripe Tax for JP invoice
 compliance.
 
@@ -100,7 +100,7 @@ data scale.
 ### Title
 
 ```
-Launching a metered-only B2B API today (¥3/req, no tiers, no seats) — feedback wanted
+Launching a metered-only B2B API today (¥3/billable unit, no tiers, no seats) — feedback wanted
 ```
 
 ### Body
@@ -112,7 +112,7 @@ laws, enforcement, invoice registrants) to AI agents.
 
 I went pure metered, deliberately:
 
-- ¥3/req (~$0.02), no tier SKU, no seat fees, no annual minimum
+- ¥3/billable unit (~$0.02), no tier SKU, no seat fees, no annual minimum
 - Anonymous 3 req/day free per IP, JST daily reset
 - Stripe metered billing + Stripe Tax for JP invoice compliance
 

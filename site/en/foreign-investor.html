@@ -6,10 +6,10 @@
 <meta name="theme-color" content="#ffffff">
 <meta name="color-scheme" content="light dark">
 <title>jpcite for foreign-invested entities — Japan tax-treaty + FDI subsidy + English law API</title>
-<meta name="description" content="English MCP wedge for foreign-invested entities operating in Japan. 700+ e-Gov-translated laws, 80-country tax-treaty schema (33 live), foreign-capital eligibility checker, and FDI-friendly subsidy finder. ¥3/req metered, anonymous 3/day free, primary-source citations only.">
+<meta name="description" content="English MCP wedge for foreign-invested entities operating in Japan. 700+ e-Gov-translated laws, 80-country tax-treaty schema (33 live), foreign-capital eligibility checker, and FDI-friendly subsidy finder. ¥3/billable unit metered, anonymous 3/day free, primary-source citations only.">
 
 <meta property="og:title" content="jpcite for foreign-invested entities — Japan FDI reference API">
-<meta property="og:description" content="700+ English-translated Japanese laws, 80-country tax-treaty schema, foreign-capital eligibility checker, FDI-friendly subsidy finder. ¥3/req metered.">
+<meta property="og:description" content="700+ English-translated Japanese laws, 80-country tax-treaty schema, foreign-capital eligibility checker, FDI-friendly subsidy finder. ¥3/billable unit metered.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/en/foreign-investor.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -20,7 +20,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="jpcite for foreign-invested entities">
-<meta name="twitter:description" content="Japan tax-treaty + FDI subsidy + English law full text in one MCP / REST API. ¥3/req metered.">
+<meta name="twitter:description" content="Japan tax-treaty + FDI subsidy + English law full text in one MCP / REST API. ¥3/billable unit metered.">
 
 <link rel="canonical" href="https://jpcite.com/en/foreign-investor.html">
 <link rel="alternate" hreflang="en" href="https://jpcite.com/en/foreign-investor.html">
@@ -67,7 +67,7 @@
   "inLanguage": "en",
   "mainEntity": [
     {"@type": "Question", "name": "Why a separate English wedge?", "acceptedAnswer": {"@type": "Answer", "text": "Foreign-invested entities operating in Japan need the same primary-source data Japanese consultants use, but the source documents are Japanese-only. The wedge surfaces 700+ e-Gov 英訳 (Japanese Ministry of Justice, CC-BY 4.0) law translations + 33-country bilateral tax treaty matrix + per-program foreign-capital eligibility flags so an LLM agent or DD pipeline can answer cross-border questions without manual translation."}},
-    {"@type": "Question", "name": "Same price as the Japanese surface?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. ¥3/req (税込 ¥3.30) flat, no tier, no FX uplift, no seat fees. The US SaaS pricing instinct says ¥10/req or $0.10/req for an English surface — we explicitly reject that. Solo + zero-touch operations means no sales call, no DPA negotiation, no premium tier; just the same metered surface in English."}},
+    {"@type": "Question", "name": "Same price as the Japanese surface?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. ¥3/billable unit (税込 ¥3.30) flat, no tier, no FX uplift, no seat fees. The US SaaS pricing instinct says ¥10/req or $0.10/req for an English surface — we explicitly reject that. Solo + zero-touch operations means no sales call, no DPA negotiation, no premium tier; just the same metered surface in English."}},
     {"@type": "Question", "name": "What is the corpus license?", "acceptedAnswer": {"@type": "Answer", "text": "English law text comes from the e-Gov 日本法令外国語訳 corpus (japaneselawtranslation.go.jp) under CC-BY 4.0. Tax treaty rows are 政府標準利用規約 v2.0 (gov_standard) from the Ministry of Finance + National Tax Agency primary sources. The Japanese-language original of every law is the only legally authoritative version — the EN body is a courtesy translation."}},
     {"@type": "Question", "name": "Is there an LLM doing the translation?", "acceptedAnswer": {"@type": "Answer", "text": "No. The English text is the e-Gov hand-curated translation column (am_law_article.body_en, migration 090). jpcite never calls an LLM API — your LLM is the consumer. Every tool is pure SQL + Python over autonomath.db."}},
     {"@type": "Question", "name": "Which jurisdictions are covered in the tax-treaty matrix?", "acceptedAnswer": {"@type": "Answer", "text": "33 countries are hand-curated as of 2026-05-05 (US, UK, Singapore, Hong Kong, Germany, France, Netherlands, China, Korea, Taiwan, Australia, Canada, India, Indonesia, Thailand, Vietnam, Malaysia, Philippines, plus 15 more). The schema seeds ~80 jurisdictions; the next 47 land via the same am_tax_treaty table without schema change. NULL in any wht_*_pct column means 'see treaty article (n/a in standard rate)' — distinct from 0.0 = exempt under treaty."}},
@@ -107,7 +107,7 @@ pre { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; paddin
 <section>
 <h2>Why this wedge exists</h2>
 <p>Japanese public-program data (subsidies, tax incentives, statutes, court decisions, regulatory enforcement) is overwhelmingly Japanese-only. JETRO publishes excellent narrative guides, but a foreign-invested entity that wants to wire Japanese eligibility checks into an LLM agent or DD pipeline still has to translate the source documents row by row. The English wedge solves that without involving an LLM in the translation loop: it surfaces the e-Gov 日本法令外国語訳 corpus (Japanese Ministry of Justice, CC-BY 4.0) plus the Ministry of Finance's bilateral tax-treaty matrix plus per-program foreign-capital eligibility flags, all keyed by the same primary-source URLs the Japanese surface uses.</p>
-<p><strong>Same operator constraints apply:</strong> ¥3/req metered (税込 ¥3.30), no tier, no seat fees, no annual minimums, anonymous trial 3/day/IP, primary-source citations only, no aggregator. Solo + zero-touch ops means no sales calls, no DPA negotiation, no Slack Connect.</p>
+<p><strong>Same operator constraints apply:</strong> ¥3/billable unit metered (税込 ¥3.30), no tier, no seat fees, no annual minimums, anonymous trial 3/day/IP, primary-source citations only, no aggregator. Solo + zero-touch ops means no sales calls, no DPA negotiation, no Slack Connect.</p>
 </section>
 
 <section>
@@ -136,7 +136,7 @@ GET  /v1/en/fdi_subsidies?industry_jsic=E&amp;foreign_pct=100&amp;limit=20</pre>
 
 <section>
 <h2>Pricing</h2>
-<p><strong>¥3 per billable unit (税込 ¥3.30).</strong> Metered, no tier, no seat fee. Anonymous trial without signup: 3 requests per day per IP, JST 翌日 00:00 reset. Paid keys (¥3/req) bypass the anonymous ceiling.</p>
+<p><strong>¥3 per billable unit (税込 ¥3.30).</strong> Metered, no tier, no seat fee. Anonymous trial without signup: 3 requests per day per IP, JST 翌日 00:00 reset. Paid keys (¥3/billable unit) bypass the anonymous ceiling.</p>
 <p>This is the same price as every other surface on jpcite. The US SaaS instinct to charge $0.10/req or ¥10/req for an English-language API is explicitly rejected — solo + zero-touch ops means no premium tier and no FX uplift.</p>
 </section>
 

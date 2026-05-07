@@ -62,21 +62,21 @@
 
 ```html
 <h1>料金</h1>
-<p class="lead">¥0 の Free で叩いて、欲しくなったら ¥3/req の従量へ。決済 → API キー発行まで 30 秒、SDK 不要で即 curl。</p>
+<p class="lead">¥0 の Free で叩いて、欲しくなったら ¥3/billable unit の従量へ。決済 → API キー発行まで 30 秒、SDK 不要で即 curl。</p>
 ```
 
 ### Variant C — trust-first
 
 ```html
 <h1>料金</h1>
-<p class="lead">tier 分岐なし、契約・最低金額なし。Free 50 req/月 (JST) + Paid ¥3/req 従量。使わない月は ¥0。</p>
+<p class="lead">tier 分岐なし、契約・最低金額なし。Free 50 req/月 (JST) + Paid ¥3/billable unit 従量。使わない月は ¥0。</p>
 ```
 
 ### Variant D — price-first
 
 ```html
 <h1>¥0 から、使った分だけ</h1>
-<p class="lead">Free 50 req/月 (JST) → Paid ¥3/req (税別、hard cap なし)。1,000 req = ¥3,000、10,000 req = ¥30,000。self-serve、年額契約なし。</p>
+<p class="lead">Free 50 req/月 (JST) → Paid ¥3/billable unit (税別、hard cap なし)。1,000 req = ¥3,000、10,000 req = ¥30,000。self-serve、年額契約なし。</p>
 ```
 
 ---

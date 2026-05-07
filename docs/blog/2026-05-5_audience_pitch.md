@@ -156,7 +156,7 @@ const r = await c.programs.search({ q: "DX 中小企業", prefecture: "大阪" }
 
 ### 開発者 向け価格
 
-- ¥3/req tax-excl (¥3.30 incl)
+- ¥3/billable unit tax-excl (¥3.30 incl)
 - 匿名 3/日 free per IP
 - API key 取得は self-serve: <https://jpcite.com/dashboard.html>
 

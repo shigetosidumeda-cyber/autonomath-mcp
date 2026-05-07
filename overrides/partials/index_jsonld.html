@@ -3,7 +3,7 @@
   structured data discovery. Types used:
     - SoftwareApplication  (the jpcite API/MCP service)
     - WebSite              (the docs root)
-    - Dataset              (the underlying 11,684-program corpus)
+    - Dataset              (the underlying 11,601-searchable / 14,472-total program corpus)
     - WebAPI               (the REST + MCP API surface)
   Source strategy: per-program GovernmentService / LoanOrCredit JSON-LD is
   generated separately at site/structured/*.jsonld, not inlined here.
@@ -14,7 +14,7 @@
   swap domains post-launch, edit `extra.domain` in mkdocs.yml.
 
   Count invariants (must match landing page + pricing + server.json):
-    - programs           11,684  (searchable; full table incl. 公開保留 = 14,472)
+    - programs           11,601  (searchable; full table incl. 公開保留 = 14,472)
     - case_studies       2,286
     - loan_programs      108  (三軸分解)
     - enforcement_cases  1,185
@@ -34,7 +34,7 @@
       "applicationCategory": "DeveloperApplication",
       "applicationSubCategory": "API",
       "operatingSystem": "any",
-      "description": "日本の制度データ (補助金・融資・税制・認定制度) 11,684 件 + 採択事例 2,286 + 融資 108 + 行政処分 1,185 を横断検索できる REST + MCP API。Claude Desktop / Cursor / Cline などの MCP クライアント、または ChatGPT Custom GPT の OpenAPI Actions から利用可能。",
+      "description": "日本の制度データ (補助金・融資・税制・認定制度) 11,601 件検索対象 (登録総数 14,472) + 採択事例 2,286 + 融資 108 + 行政処分 1,185 を横断検索できる REST + MCP API。Claude Desktop / Cursor / Cline などの MCP クライアント、または ChatGPT Custom GPT の OpenAPI Actions から利用可能。",
       "inLanguage": "ja",
       "offers": [
         {"@type": "Offer", "name": "Free",           "price": "0", "priceCurrency": "JPY", "description": "3 req/日 per IP, 登録不要 (JST 翌日リセット)"},
@@ -42,7 +42,7 @@
          "priceSpecification": {"@type": "UnitPriceSpecification", "price": "3", "priceCurrency": "JPY", "unitText": "billable unit", "valueAddedTaxIncluded": false}}
       ],
       "featureList": [
-        "11,684 programs + 2,286 採択事例 + 108 融資 + 1,185 行政処分 を横断検索",
+        "11,601 searchable programs (14,472 total) + 2,286 採択事例 + 108 融資 + 1,185 行政処分 を横断検索",
         "181 排他・前提ルール (exclude 125 + prerequisite 17 + absolute 15 + その他 24)",
         "MCP ネイティブ (標準構成で 139 tools)",
         "出典確認状況に基づく品質ラベル",
@@ -71,7 +71,7 @@
       "@id": "{{ config.extra.domain }}/docs/#dataset",
       "name": "jpcite — 日本の制度データセット",
       "alternateName": "jpcite 日本の公的制度データセット",
-      "description": "日本の公的制度 (補助金・助成金・融資・税制優遇・認定) 11,684 件 + 採択事例 2,286 + 融資 108 (担保・個人保証人・第三者保証人の三軸分解) + 行政処分 1,185 件 の正規化データセット。経済産業省・農林水産省・中小企業庁・日本政策金融公庫・都道府県・市町村の一次資料から収集し、集約サイト由来の情報は採用しません。各レコードには出典 URL と取得日を付与し、181 本の併用チェックルールを提供します。法令データ (e-Gov CC-BY) も継続的にロード中です。",
+      "description": "日本の公的制度 (補助金・助成金・融資・税制優遇・認定) 11,601 件検索対象 (登録総数 14,472) + 採択事例 2,286 + 融資 108 (担保・個人保証人・第三者保証人の三軸分解) + 行政処分 1,185 件 の正規化データセット。経済産業省・農林水産省・中小企業庁・日本政策金融公庫・都道府県・市町村の公開資料から収集し、検出済み集約サイト由来の情報は除外します。主要公開レコードには出典 URL と取得日を付与し、181 本の併用チェックルールを提供します。法令データ (e-Gov CC-BY) も継続的にロード中です。",
       "url": "{{ config.extra.domain }}/docs/",
       "sameAs": ["{{ config.extra.domain }}/", "https://pypi.org/project/autonomath-mcp/"],
       "keywords": [
@@ -91,7 +91,7 @@
       "inLanguage": "ja",
       "spatialCoverage": {"@type": "Country", "name": "日本"},
       "variableMeasured": [
-        {"@type": "PropertyValue", "name": "制度件数 (programs, searchable)", "value": 11684},
+        {"@type": "PropertyValue", "name": "制度件数 (programs, searchable)", "value": 11601},
         {"@type": "PropertyValue", "name": "採択事例件数 (case_studies)", "value": 2286},
         {"@type": "PropertyValue", "name": "融資プログラム件数 (loan_programs)", "value": 108},
         {"@type": "PropertyValue", "name": "行政処分件数 (enforcement_cases)", "value": 1185},

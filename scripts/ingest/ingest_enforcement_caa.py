@@ -62,7 +62,7 @@ except ImportError as exc:  # pragma: no cover
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-import contextlib
+import contextlib  # noqa: E402  (sys.path manipulation precedes)
 
 from scripts.lib.http import HttpClient  # noqa: E402
 
@@ -625,7 +625,7 @@ def main(argv: list[str] | None = None) -> int:
     _LOG.info("total unique entries queued: %d", len(all_entries))
 
     # -- 2. Walk each entry + commit in batches ---------------------------
-    BATCH_SIZE = 25
+    BATCH_SIZE = 25  # noqa: N806  (local CONST sentinel, not loop-mut)
 
     def _begin() -> None:
         if conn is not None:

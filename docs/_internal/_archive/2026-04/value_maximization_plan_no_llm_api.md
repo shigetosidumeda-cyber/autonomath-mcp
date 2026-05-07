@@ -83,7 +83,7 @@
 
 対象: SaaS開発者、自社業務システム、士業事務所の内製担当  
 価値: REST/MCPで制度、法人、法令、インボイス、採択、処分、調達を引ける  
-課金: `¥3/request` を基本に、月capを `¥3,300` / `¥33,000` / `¥110,000` のように提示する  
+課金: `¥3/billable unit` を基本に、月capを `¥3,300` / `¥33,000` / `¥110,000` のように提示する  
 実装要点:
 
 - API hostを1つに固定する。
@@ -95,7 +95,7 @@
 
 対象: 税理士、行政書士、認定支援機関、補助金コンサル  
 価値: 顧問先や見込み客リストをCSVで一括照合し、候補制度、締切、除外理由、根拠URLを返す  
-課金: `¥3/request` + 顧問先別cap。月商目標は1社あたり `¥10,000-¥30,000`  
+課金: `¥3/billable unit` + 顧問先別cap。月商目標は1社あたり `¥10,000-¥30,000`  
 実装要点:
 
 - `X-Client-Tag` を顧問先IDとして明示利用する。
@@ -112,7 +112,7 @@
   - `deal` → 1,000 units (≈¥3,000) — 案件ZIP  
   - `case` → 3,333 units (≈¥10,000) — フルケースZIP  
 
-これは tier SKU ではなく、`bulk_evaluate` の `row_count` と同じく **artifact-size の量乗数** であり `project_autonomath_business_model` (¥3/req metered ONLY) を維持する。Stripe usage_records は `quantity = bundle_units` の1行として記録される。  
+これは tier SKU ではなく、`bulk_evaluate` の `row_count` と同じく **artifact-size の量乗数** であり `project_autonomath_business_model` (¥3/billable unit metered ONLY) を維持する。Stripe usage_records は `quantity = bundle_units` の1行として記録される。  
 実装要点:
 
 - `ma_dd.py` のDD batch/exportを商品導線の中心にする。`bundle_class` enum (`standard|deal|case`) で量乗数を決める。固定¥30フィーは廃止。
@@ -120,7 +120,7 @@
 - R2署名URL、期限、再取得、監査ログを堅くする。
 - 行政処分は誤結合リスクがあるため、法人番号確定と名称・住所推定を分けて表示する。
 - `log_usage(quantity=N)` は `_QUANTITY_MAX = 100,000` で hard-clamp され、典型的タイポ (¥3 → ¥30M) を遮断する。
-- `site/pricing.html` は `¥3/req` 単純表記のまま (bundle_class は API 仕様の internal detail)。
+- `site/pricing.html` は `¥3/billable unit` 単純表記のまま (bundle_class は API 仕様の internal detail)。
 
 ### 4.4 Saved Search / Alerts / Webhook
 
@@ -138,7 +138,7 @@
 
 対象: 会計事務所、内部監査、補助金申請支援会社  
 価値: 顧問先ごとに、候補制度、除外理由、必要書類、締切、根拠URL、取得日時を1ファイル化する  
-課金: `¥3/request` + ZIP/PDF export最低料金  
+課金: `¥3/billable unit` + ZIP/PDF export最低料金  
 実装要点:
 
 - `bulk_evaluate`、`calendar/deadlines`、`exclusions/check`、`program_documents` を束ねる。
@@ -598,13 +598,13 @@ KPI:
 
 ### 基本方針
 
-`¥3/request` は裏側の課金メーターとして残す。ただし、表の商品は「1リクエスト」ではなく「業務成果物」で見せる。
+`¥3/billable unit` は裏側の課金メーターとして残す。ただし、表の商品は「1リクエスト」ではなく「業務成果物」で見せる。
 
 ### 初期価格
 
 | 商品 | 価格案 |
 |---|---:|
-| REST/MCP API | `¥3/request` |
+| REST/MCP API | `¥3/billable unit` |
 | 月cap preset | `¥3,300` / `¥33,000` / `¥110,000` |
 | Agency Pack | 顧問先別cap、月 `¥10,000-¥30,000` 目標 |
 | Saved Search delivery | `¥3/delivery` |
@@ -618,7 +618,7 @@ KPI:
 ### 売上仮説
 
 - P0解除後: 30社が月 `¥10,000-¥30,000` cap運用、5社が高頻度API利用で月商 `¥600,000-¥1,500,000` を狙う。
-- P1: DD/export最低料金でARPAを上げる。M&A/与信は `¥3/request` だけでは価値を取り切れない。
+- P1: DD/export最低料金でARPAを上げる。M&A/与信は `¥3/billable unit` だけでは価値を取り切れない。
 - P2: Saved Search、Digest、Webhookで継続利用を作る。
 - P3: Data Licenseと代理店運用で、従量だけでは届かない大口契約を作る。
 
@@ -863,7 +863,7 @@ GA条件:
 
 ## 20. Revenue Packaging: `¥3/unit` を内部メーターにする
 
-`¥3/request` は残す。ただし、公開主力価格ではなく内部消費単位として扱う。
+`¥3/billable unit` は残す。ただし、公開主力価格ではなく内部消費単位として扱う。
 
 公開パッケージは、最低料金、月額枠、年契約、成果物単位で設計する。
 

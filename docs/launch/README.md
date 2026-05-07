@@ -76,7 +76,7 @@ Run through these **30 minutes before the HN submission**. If any fail, abort an
 ### Content polish
 
 - [ ] GitHub README first paragraph matches the value-prop in `hn.md` (no contradiction in counts)
-- [ ] `https://jpcite.com/docs/pricing/` clearly states "¥3/req, 3/日 free anonymously, no tiers"
+- [ ] `https://jpcite.com/docs/pricing/` clearly states "¥3/billable unit, 3/日 free anonymously, no tiers"
 - [ ] `https://jpcite.com/about.html` shows Bookyou株式会社 + T8010001213708 + 梅田茂利 (legal display compliance)
 - [ ] Disclaimer page (`/compliance/landing_disclaimer/`) lists 税理士法 §52, 弁護士法 §72, 行政書士法 §1
 - [ ] PyPI page for `autonomath-mcp` shows `0.3.0` as latest (not `0.2.0`)

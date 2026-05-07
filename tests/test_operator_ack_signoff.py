@@ -24,7 +24,7 @@ _REPO_ROOT = _HERE.parent
 _MODULE_DIR = _REPO_ROOT / "tools" / "offline" / "operator_review"
 sys.path.insert(0, str(_MODULE_DIR))
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING  # noqa: E402  (sys.path manipulation precedes)
 
 import operator_ack_signoff as oas  # noqa: E402
 

@@ -18,14 +18,14 @@
 ## Title (78 chars)
 
 ```
-Show HN: jpcite – Japanese public-program API for AI agents (¥3/req)
+Show HN: jpcite – Japanese public-program API for AI agents (¥3/billable unit)
 ```
 
 Note: HN title length max 80 chars. Above is 73 chars (counting the leading
 "Show HN: ", title body 64 chars). En-dash variant kept; ASCII-only fallback:
 
 ```
-Show HN: jpcite - Japanese public-program API for AI agents (3 yen/req)
+Show HN: jpcite - Japanese public-program API for AI agents (3 yen/billable unit)
 ```
 
 ---
@@ -74,7 +74,7 @@ compound-word search) + ベクトル検索 for the entity-fact layer. Hosted on
 Fly.io Tokyo. Stripe metered + Stripe Tax for JP invoice compliance.
 
 Pricing:
-Pure metered ¥3/request (~$0.02). No tiers, no seat fees, no annual
+Pure metered ¥3/billable unit (~$0.02). No tiers, no seat fees, no annual
 minimums. Anonymous gets 3 req/day free per IP, JST daily reset.
 
 Data:

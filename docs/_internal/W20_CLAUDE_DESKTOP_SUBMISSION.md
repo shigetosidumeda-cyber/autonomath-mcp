@@ -41,7 +41,7 @@ side; Anthropic's dxt validator rejects them).
   - Manifest parity confirmed (`names_manifest == names_runtime`).
 - **description**: refreshed from `120 tools.` → `126 tools.`
 - **Operator**: Bookyou株式会社, info@bookyou.net, 適格事業者 T8010001213708
-- **Pricing**: ¥3/req metered (税込 ¥3.30), 3 req/day anonymous (IP-based, JST 翌日 00:00 リセット)
+- **Pricing**: ¥3/billable unit metered (税込 ¥3.30), 3 req/day anonymous (IP-based, JST 翌日 00:00 リセット)
 
 ## Tool delta (96 → 126, +30)
 
@@ -128,7 +128,7 @@ npx --yes @anthropic-ai/dxt pack . /Users/shigetoumeda/jpcite/dist/jpcite-0.3.4.
    - **Short description**: 1 line from manifest `description`
      (subsidies, loans, tax, law, invoice & corporate data — 126 tools).
    - **Long description**: paste manifest `long_description` verbatim
-     (covers ¥3/req pricing, 3 req/day free, evidence packet contract,
+     (covers ¥3/billable unit pricing, 3 req/day free, evidence packet contract,
      非弁・非税理士業務 disclaimer).
    - **Homepage**: <https://jpcite.com>
    - **Documentation**: <https://jpcite.com/docs/>

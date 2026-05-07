@@ -214,19 +214,22 @@ def _rotate_cursor_backward(target: str) -> bool:
             return True
         except (ValueError, IndexError):
             return False
-    if target in ("shitsugi", "bunsho"):
-        # "partial:cat:url" → "partial:cat:" forces re-discovery of the cat
-        if cur.startswith("partial:") and ":" in cur[len("partial:") :]:
-            head, _, _ = cur.rpartition(":")
-            new_cur = head + ":"
-            _nta.write_cursor(target, new_cur)
-            _LOG.warning(
-                "cursor_rotated target=%s old=%s new=%s",
-                target,
-                cur,
-                new_cur,
-            )
-            return True
+    # "partial:cat:url" → "partial:cat:" forces re-discovery of the cat
+    if (
+        target in ("shitsugi", "bunsho")
+        and cur.startswith("partial:")
+        and ":" in cur[len("partial:") :]
+    ):
+        head, _, _ = cur.rpartition(":")
+        new_cur = head + ":"
+        _nta.write_cursor(target, new_cur)
+        _LOG.warning(
+            "cursor_rotated target=%s old=%s new=%s",
+            target,
+            cur,
+            new_cur,
+        )
+        return True
     return False
 
 

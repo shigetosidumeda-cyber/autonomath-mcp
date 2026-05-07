@@ -94,7 +94,8 @@ def run() -> None:  # pragma: no cover
     import uvicorn
 
     settings = load_settings()
-    uvicorn.run("app:app", host="0.0.0.0", port=settings.port, reload=False)
+    # nosec B104 — Fly.io app inside the operator-managed container intentionally binds 0.0.0.0.
+    uvicorn.run("app:app", host="0.0.0.0", port=settings.port, reload=False)  # nosec B104
 
 
 if __name__ == "__main__":  # pragma: no cover

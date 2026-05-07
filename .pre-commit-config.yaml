@@ -73,7 +73,11 @@ repos:
   # [dev] extras (ruff>=0.8). Update with `pre-commit autoupdate`.
   # ---------------------------------------------------------------------
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.4
+    # Bumped 2026-05-07: v0.8.4 enforced UP038 (deprecated in 0.15.x);
+    # the rule fired on intentional `isinstance(x, (int, float))` patterns
+    # that the per-file-ignores in pyproject.toml don't otherwise exempt.
+    # Pin matches the local .venv ruff to keep CI parity.
+    rev: v0.15.11
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -112,7 +116,10 @@ repos:
   # 2026-04-25 CI security gating audit (a92f5354dc4848432).
   # ---------------------------------------------------------------------
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.13.0
+    # Bumped 2026-05-07 to match local .venv mypy 1.20.x. Older v1.13.0 flagged
+    # 28 newer "Unused type: ignore" comments and surfaced 12 sqlite Row /
+    # pydantic v2 boundary cases that mypy 1.20 reasons about correctly.
+    rev: v1.20.0
     hooks:
       - id: mypy
         name: mypy (src/jpintel_mcp)
@@ -136,6 +143,24 @@ repos:
           - pydantic-settings>=2.6
           - fastapi>=0.115
           - types-requests
+          # `mcp` (FastMCP SDK) types are required so the @mcp.tool decorator
+          # is treated as typed; without this 174 of 226 errors collapse to
+          # `[misc] Untyped decorator makes function untyped`. 2026-05-07.
+          - mcp>=1.27
+          # `ratelimit` shadows mypy untyped-decorator on the gbiz limiter.
+          - ratelimit
+          # Polars + pandas appear in ETL boundary functions.
+          - pandas-stubs
+          # Match the local .venv resolution so `# type: ignore` suppressors
+          # are not flagged as unused-ignore in the isolated pre-commit venv.
+          # 2026-05-07: 25 mypy errors collapsed once these resolved imports
+          # against real types instead of the implicit `Any` fallback.
+          - sentry-sdk>=2.58
+          - stripe>=12.5
+          - httpx>=0.28
+          - anyio>=4.13
+          - pykakasi>=2.3
+          - types-pyyaml
 
   # ---------------------------------------------------------------------
   # bandit — Python static security analyzer (CWE-style checks). Added

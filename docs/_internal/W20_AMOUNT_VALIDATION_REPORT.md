@@ -11,7 +11,7 @@
 `am_amount_condition` holds 250,946 rows; the majority were filled by a
 broken ETL pass that copied the program ceiling into every per-record
 row (¥500K / ¥2M / and 6 other round-number buckets). Surfacing those
-values via the ¥3/req metered API would create 詐欺 risk under
+values via the ¥3/billable unit metered API would create 詐欺 risk under
 景表法 / 消費者契約法. Migration 150 added a 3-tier `quality_tier`
 column. This script reclassifies every row by:
 

@@ -249,7 +249,7 @@ def write_buckets(
                 flags.get((ym, mj)),
             )
         )
-    BATCH = 5000
+    BATCH = 5000  # noqa: N806  (local CONST sentinel, not loop-mut)
     written = 0
     for i in range(0, len(rows), BATCH):
         chunk = rows[i : i + BATCH]
@@ -315,13 +315,13 @@ def report(conn: sqlite3.Connection) -> None:
 
     print("  Top 5 increasing JSIC majors (last 6 mo vs prior 6 mo):")
     print(f"  {'rank':>4}  {'jsic':<5}  {'prev6':>7}  {'last6':>7}  {'delta%':>9}")
-    for i, (mj, p, l, d) in enumerate(deltas_inc[:5], start=1):
-        print(f"  {i:>4}  {mj:<5}  {p:>7,}  {l:>7,}  {d:>+9.1f}%")
+    for i, (mj, p, last, d) in enumerate(deltas_inc[:5], start=1):
+        print(f"  {i:>4}  {mj:<5}  {p:>7,}  {last:>7,}  {d:>+9.1f}%")
     print()
     print("  Top 5 decreasing JSIC majors (last 6 mo vs prior 6 mo):")
     print(f"  {'rank':>4}  {'jsic':<5}  {'prev6':>7}  {'last6':>7}  {'delta%':>9}")
-    for i, (mj, p, l, d) in enumerate(deltas_dec[:5], start=1):
-        print(f"  {i:>4}  {mj:<5}  {p:>7,}  {l:>7,}  {d:>+9.1f}%")
+    for i, (mj, p, last, d) in enumerate(deltas_dec[:5], start=1):
+        print(f"  {i:>4}  {mj:<5}  {p:>7,}  {last:>7,}  {d:>+9.1f}%")
     print()
 
     # Monthly total chart over last 12 months (cross-major sum).
@@ -331,7 +331,7 @@ def report(conn: sqlite3.Connection) -> None:
             if ym in monthly_total:
                 monthly_total[ym] += c
     peak = max(monthly_total.values()) if monthly_total else 0
-    BAR_WIDTH = 40
+    BAR_WIDTH = 40  # noqa: N806  (local CONST sentinel, not loop-mut)
     print("  Monthly total adoption count (cross-industry, last 12 mo):")
     print(f"  {'YYYY-MM':<8}  {'count':>7}  bar")
     for ym in last12:

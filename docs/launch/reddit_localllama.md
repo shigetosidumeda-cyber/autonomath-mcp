@@ -1,6 +1,6 @@
 # r/LocalLLaMA
 
-**Title**: `MCP server for Japanese tax/subsidy/law data — works with any local agent (Claude Desktop, Cline, custom), 139 tools, ¥3/req`
+**Title**: `MCP server for Japanese tax/subsidy/law data — works with any local agent (Claude Desktop, Cline, custom), 139 tools, ¥3/billable unit`
 
 ---
 
@@ -8,7 +8,7 @@
 
 If you're building agents that need to reason about Japanese institutional data (subsidies, laws, court decisions, tax rulesets), you can now plug in jpcite as an MCP server.
 
-**Coverage** (public rows include primary-source URLs where available — no aggregators):
+**Coverage** (public rows include primary-source URLs where available — aggregator-only sources are excluded from public sourcing):
 
 - 11,601 subsidy programs across 47 prefectures
 - 9,484 laws (e-Gov, CC-BY)
@@ -37,7 +37,7 @@ If you're building agents that need to reason about Japanese institutional data 
 }
 ```
 
-When you `uvx autonomath-mcp`, the wheel doesn't ship the 8.29 GB DB — it auto-detects and falls back to HTTP against `api.jpcite.com`. The first 3 req/day per IP are free anonymous, no signup. Past that it's ¥3/req metered. If you want full local DB performance, clone the repo.
+When you `uvx autonomath-mcp`, the wheel doesn't ship the 8.29 GB DB — it auto-detects and falls back to HTTP against `api.jpcite.com`. The first 3 req/day per IP are free anonymous, no signup. Past that it's ¥3/billable unit metered. If you want full local DB performance, clone the repo.
 
 **Local-only path**: clone the repo, pull the DB tarball, run `autonomath-mcp` against the local SQLite. No network calls. The README has the steps.
 

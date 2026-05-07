@@ -75,7 +75,7 @@ chmod 600 ~/.jpcite_secrets.env
 
 | # | 判断 | yes/no |
 |---|---|---|
-| 1 | Stripe Credit prepay 仕組み (¥300K/¥1M/¥3M 一括前払 → ¥3/req 引き落とし、tier 不要で稟議通る) | __ |
+| 1 | Stripe Credit prepay 仕組み (¥300K/¥1M/¥3M 一括前払 → ¥3/billable unit 引き落とし、tier 不要で稟議通る) | __ |
 | 2 | bulk endpoint `/v1/evidence/packets/batch` (1 req で 100 lookup ¥300) | __ |
 | 3 | Reference agent npm `@jpcite/agents` を本気で publish (W19-4 で既に skeleton 作成中) | __ |
 | 4 | English MCP wedge を切り出して foreign investor 向けに ¥10/req 帯で展開 | __ |

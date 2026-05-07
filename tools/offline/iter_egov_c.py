@@ -196,7 +196,7 @@ def main() -> int:
 
     with ThreadPoolExecutor(max_workers=10) as ex:
         futures = []
-        for ai, lawnums in enumerate(agents, start=1):
+        for _ai, lawnums in enumerate(agents, start=1):
             for ln in lawnums:
                 futures.append(ex.submit(fetch_one, ln))
         for fut in as_completed(futures):

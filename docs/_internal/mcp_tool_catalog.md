@@ -183,13 +183,13 @@ Backed by `autonomath.db` (+ migration 104 `dd_question_templates` = 60 seeded D
 
 ## Wave 23 industry packs (3)
 
-Backed by `autonomath.db`. JSIC-keyed cohort packs that bundle top 10 programs + up to 5 国税不服審判所 裁決事例 + up to 3 通達 references in 1 ¥3/req call. Sensitive: 税理士法 §52 + 公認会計士法 §47条の2. AUTONOMATH_INDUSTRY_PACKS_ENABLED gate (default ON).
+Backed by `autonomath.db`. JSIC-keyed cohort packs that bundle top 10 programs + up to 5 国税不服審判所 裁決事例 + up to 3 通達 references in 1 ¥3/billable unit call. Sensitive: 税理士法 §52 + 公認会計士法 §47条の2. AUTONOMATH_INDUSTRY_PACKS_ENABLED gate (default ON).
 
 | Tool | DB | Sensitive | Gate | Default | Description |
 |---|---|---|---|---|---|
-| `pack_construction` | autonomath.db | §47条の2, §52 | `AUTONOMATH_INDUSTRY_PACKS_ENABLED` | ON | 建設業 (JSIC D) cohort pack: top 10 programs (建設・住宅・耐震・改修 fence) + up to 5 国税不服審判所 裁決事例 (法人税・消費税) + up to 3 通達 references (法基通・消基通). Single ¥3/req. NO LLM. §52/§47条の2 sensitive — information retrieval, not 税務助言. Compounds via _next_calls. |
-| `pack_manufacturing` | autonomath.db | §47条の2, §52 | `AUTONOMATH_INDUSTRY_PACKS_ENABLED` | ON | 製造業 (JSIC E) cohort pack: top 10 programs (ものづくり・設備投資・省エネ・GX・事業再構築 fence) + up to 5 国税不服審判所 裁決事例 (法人税・所得税) + up to 3 通達 references (法基通). Single ¥3/req. NO LLM. §52/§47条の2 sensitive — information retrieval, not 税務助言. |
-| `pack_real_estate` | autonomath.db | §47条の2, §52 | `AUTONOMATH_INDUSTRY_PACKS_ENABLED` | ON | 不動産業 (JSIC K) cohort pack: top 10 programs (不動産・空き家・住宅・賃貸 fence) + up to 5 国税不服審判所 裁決事例 (所得税・相続税・法人税) + up to 3 通達 references (所基通・相基通). Single ¥3/req. NO LLM. §52/§47条の2 sensitive — information retrieval, not 税務助言. |
+| `pack_construction` | autonomath.db | §47条の2, §52 | `AUTONOMATH_INDUSTRY_PACKS_ENABLED` | ON | 建設業 (JSIC D) cohort pack: top 10 programs (建設・住宅・耐震・改修 fence) + up to 5 国税不服審判所 裁決事例 (法人税・消費税) + up to 3 通達 references (法基通・消基通). Single ¥3/billable unit. NO LLM. §52/§47条の2 sensitive — information retrieval, not 税務助言. Compounds via _next_calls. |
+| `pack_manufacturing` | autonomath.db | §47条の2, §52 | `AUTONOMATH_INDUSTRY_PACKS_ENABLED` | ON | 製造業 (JSIC E) cohort pack: top 10 programs (ものづくり・設備投資・省エネ・GX・事業再構築 fence) + up to 5 国税不服審判所 裁決事例 (法人税・所得税) + up to 3 通達 references (法基通). Single ¥3/billable unit. NO LLM. §52/§47条の2 sensitive — information retrieval, not 税務助言. |
+| `pack_real_estate` | autonomath.db | §47条の2, §52 | `AUTONOMATH_INDUSTRY_PACKS_ENABLED` | ON | 不動産業 (JSIC K) cohort pack: top 10 programs (不動産・空き家・住宅・賃貸 fence) + up to 5 国税不服審判所 裁決事例 (所得税・相続税・法人税) + up to 3 通達 references (所基通・相基通). Single ¥3/billable unit. NO LLM. §52/§47条の2 sensitive — information retrieval, not 税務助言. |
 
 ## Broken tools (gated OFF — 3)
 

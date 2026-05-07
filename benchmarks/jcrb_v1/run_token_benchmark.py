@@ -307,7 +307,7 @@ def write_report(rows: list[dict[str, Any]], report_path: pathlib.Path) -> None:
             "## Aggregate",
             "",
             f"- Total (model, question) pairs scored: **{overall_count}**",
-            f"- Output tokens saved (sum across pairs): " f"**{overall_output_saved:+,.0f}**",
+            f"- Output tokens saved (sum across pairs): **{overall_output_saved:+,.0f}**",
             f"- USD saved (sum across pairs): **${overall_saved_usd:+.4f}**",
             f"- Avg USD saved per (model, question) pair: "
             f"**${overall_saved_usd / overall_count:+.6f}**",

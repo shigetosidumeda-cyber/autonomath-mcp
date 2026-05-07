@@ -65,9 +65,9 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 try:
-    import yaml  # type: ignore
+    import yaml  # type: ignore[import-untyped,unused-ignore]
 except Exception:  # pragma: no cover - yaml optional at import time
-    yaml = None
+    yaml = None  # type: ignore[assignment]
 
 try:
     import pykakasi

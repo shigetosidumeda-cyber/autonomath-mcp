@@ -318,7 +318,7 @@
       });
       if (resp.status === 429) {
         showRichError(
-          '匿名上限 (3 req/日 per IP) に達しました。<a href="/dashboard.html">API キーを発行</a> (Free 3 req/日、追加は ¥3/req 税込 ¥3.30)。'
+          '匿名上限 (3 req/日 per IP) に達しました。<a href="/dashboard.html">API キーを発行</a> (Free 3 req/日、追加は ¥3/billable unit 税込 ¥3.30)。'
         );
         return;
       }

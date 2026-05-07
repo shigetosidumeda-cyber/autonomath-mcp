@@ -1,6 +1,6 @@
 # Partnership — kintone (Cybozu Marketplace)
 
-> **要約 (summary):** kintone Marketplace に **jpcite JS plugin** を出品。kintone レコード上で「補助金候補」テーブルを inline 表示。kintone 顧客 (Cybozu 公開ベースで 30,000 社、ライセンス換算 18.75 万 user 想定) を self-serve で取込。¥3/req metered。月次売上の 10% を Cybozu に referral 還元。
+> **要約 (summary):** kintone Marketplace に **jpcite JS plugin** を出品。kintone レコード上で「補助金候補」テーブルを inline 表示。kintone 顧客 (Cybozu 公開ベースで 30,000 社、ライセンス換算 18.75 万 user 想定) を self-serve で取込。¥3/billable unit metered。月次売上の 10% を Cybozu に referral 還元。
 
 ## ターゲットと規模
 
@@ -50,12 +50,12 @@ kintone.events.on('app.record.detail.show', async (event) => {
 
 | 項目 | 金額 / 比率 |
 |------|------------|
-| ユーザー単価 | ¥3 / req (税別) |
+| ユーザー単価 | ¥3 / unit (税別) |
 | Cybozu / kintone Marketplace referral | metered 売上の 10% |
 | 払出 cycle | 月末締め、翌月末日 銀行振込 (Cybozu が Stripe Connect 不要なら振込) |
 | 最低金額 | なし |
 
-discount NG。referral 経由でも ¥3/req 固定 (memory)。
+discount NG。referral 経由でも ¥3/billable unit 固定 (memory)。
 
 ## 申請内容
 

@@ -1131,7 +1131,7 @@ def run(
                 time.sleep(0.5 + random.random() * 1.5)
         raise RuntimeError(f"BEGIN IMMEDIATE failed: {last_err}")
 
-    BATCH = 100
+    BATCH = 100  # noqa: N806  (local CONST sentinel, not loop-mut)
     con = _open_conn()
     try:
         cur = con.cursor()

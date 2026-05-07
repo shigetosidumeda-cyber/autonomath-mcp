@@ -18,7 +18,7 @@ realistic threat surface is therefore narrow:
 | Threat | Vector | Why it matters |
 | --- | --- | --- |
 | **Scraping / bulk export** | Anonymous burst over /v1/programs/search | Devalues the API as a paid product. The data IS public, but normalised + tiered + cited form is our differentiator. |
-| **Cost DDoS** | Burst against authed key (paid) | At ¥3/req metered, a runaway agent loop or stolen key directly costs the operator (Anthropic / Stripe pass-through is asymmetric). |
+| **Cost DDoS** | Burst against authed key (paid) | At ¥3/billable unit metered, a runaway agent loop or stolen key directly costs the operator (Anthropic / Stripe pass-through is asymmetric). |
 | **Fuzzer probing** | Loop hitting unhandled paths | Generates Sentry noise, masks real incidents. |
 | **PII exfiltration** | None at rest; query params could carry T-numbers / 法人番号 | Mitigated via `INV-21 redact_pii` middleware on the query telemetry log. |
 | **Aggregator contamination** | Banned-domain rows leaking into `programs.source_url` | Hard-fail boot via `INV-04` on lifespan startup. Past incident → 詐欺 risk. |
@@ -72,7 +72,7 @@ the Tbps scale (Cloudflare absorbs), insider threat (solo ops).
                                  │
             ┌─────────────────────────────────────────────────────┐
             │ 6. Stripe metered billing                            │
-            │    – ¥3/req (税込 ¥3.30) only after status<400          │
+            │    – ¥3/billable unit (税込 ¥3.30) only after status<400          │
             │    – 4xx/5xx are NEVER billed                         │
             │    billing/                                            │
             └─────────────────────────────────────────────────────┘

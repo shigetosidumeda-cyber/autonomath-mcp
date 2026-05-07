@@ -13,7 +13,6 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
-import sqlite3
 import sys
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
@@ -25,6 +24,7 @@ from jpintel_mcp.config import settings
 from jpintel_mcp.db.session import connect, init_db
 
 if TYPE_CHECKING:
+    import sqlite3
     from pathlib import Path
 
 logger = logging.getLogger("jpintel.ingest")
@@ -36,8 +36,8 @@ def _json_dump(v: Any) -> str | None:
     if isinstance(v, (list, dict)):
         if not v:
             return None
-        return orjson.dumps(v).decode("utf-8")
-    return orjson.dumps(v).decode("utf-8")
+        return str(orjson.dumps(v).decode("utf-8"))
+    return str(orjson.dumps(v).decode("utf-8"))
 
 
 def _flatten_enriched_text(enriched: dict[str, Any]) -> str:

@@ -2,7 +2,7 @@
 
 **Owner:** 梅田茂利, info@bookyou.net (Bookyou株式会社)
 **Status:** scaffolding (T+30d for real ML wiring); dry-run only at launch.
-**Constraint:** zero LLM. Local e5-small + DBSCAN + SQL only. See operator memory `feedback_autonomath_no_api_use` — calling Anthropic / OpenAI / Gemini from these loops is a regression that breaks ¥3/req economics.
+**Constraint:** zero LLM. Local e5-small + DBSCAN + SQL only. See operator memory `feedback_autonomath_no_api_use` — calling Anthropic / OpenAI / Gemini from these loops is a regression that breaks ¥3/billable unit economics.
 
 ---
 

@@ -84,7 +84,7 @@ Notes:
 
 Status: not committed. `tests/test_widget_billing.py` passes, but the code still
 contains a widget-specific included-requests / overage model. Do not commit until
-the pricing model conflict with public `¥3/req` posture is resolved.
+the pricing model conflict with public `¥3/billable unit` posture is resolved.
 
 Separate from core billing even though it shares Stripe helpers.
 

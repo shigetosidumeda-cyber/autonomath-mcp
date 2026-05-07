@@ -23,6 +23,7 @@ Optional:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import datetime
 import os
 import re
@@ -329,10 +330,8 @@ def main() -> None:
     con = _build_db(paths)
     row_count = 0
     if paths:
-        try:
+        with contextlib.suppress(duckdb.Error):
             row_count = con.execute("SELECT COUNT(*) FROM telemetry").fetchone()[0]  # type: ignore[index]
-        except duckdb.Error:
-            pass
 
     _repl(con, int(row_count), date_span)
     con.close()
