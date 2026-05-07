@@ -439,6 +439,8 @@ def test_upcoming_rounds_for_my_profile_with_seeded_profile_matches(
     first = matches[0]
     assert first["profile_name_label"] == "テスト顧問先"
     assert first["round_label"] == "第2回"
-    assert "prefecture_match" in first["match_reasons"] \
+    assert (
+        "prefecture_match" in first["match_reasons"]
         or "target_types_overlap" in first["match_reasons"]
+    )
     assert body["summary_stats"]["profiles_with_match"] == 1

@@ -170,9 +170,7 @@ def _trend_flag(values: list[int]) -> str:
 # ---------------------------------------------------------------------------
 
 
-def _resolve_program_aliases(
-    am_conn: sqlite3.Connection, program_id: str
-) -> set[str]:
+def _resolve_program_aliases(am_conn: sqlite3.Connection, program_id: str) -> set[str]:
     """Return the set of equivalent canonical_ids the autonomath side knows.
 
     Walks entity_id_map both directions. Always includes program_id.
@@ -577,9 +575,7 @@ def _build_cases_trend(
     summary_stats = {
         "total_adoption_count": sum(b["adoption_count"] for b in yearly),
         "total_distinct_houjin": sum(b["distinct_houjin_count"] for b in yearly),
-        "total_distinct_program_count": sum(
-            b["distinct_program_count"] for b in yearly
-        ),
+        "total_distinct_program_count": sum(b["distinct_program_count"] for b in yearly),
         "total_amount_yen": sum(b["total_amount_yen"] for b in yearly),
         "years_with_data": sum(1 for b in yearly if b["adoption_count"] > 0),
         "trend_flag": trend_flag,
@@ -606,9 +602,7 @@ def _build_cases_trend(
 # ---------------------------------------------------------------------------
 
 
-def _fetch_profiles(
-    conn: sqlite3.Connection, key_hash: str
-) -> list[dict[str, Any]]:
+def _fetch_profiles(conn: sqlite3.Connection, key_hash: str) -> list[dict[str, Any]]:
     """Pull the calling key's client_profiles. Empty list = no profiles."""
     try:
         rows = conn.execute(
@@ -664,10 +658,7 @@ def _fetch_upcoming_rounds(
         "ORDER BY application_close_date ASC, round_id ASC"
     )
     try:
-        rounds = [
-            dict(r)
-            for r in am_conn.execute(rounds_sql, (today_iso, horizon_iso)).fetchall()
-        ]
+        rounds = [dict(r) for r in am_conn.execute(rounds_sql, (today_iso, horizon_iso)).fetchall()]
     except sqlite3.Error as exc:
         logger.warning("upcoming rounds fetch failed: %s", exc)
         return [], {}
@@ -677,9 +668,7 @@ def _fetch_upcoming_rounds(
             for r in am_conn.execute(
                 "SELECT jpi_unified_id, am_canonical_id FROM entity_id_map"
             ).fetchall():
-                am_to_jpi.setdefault(r["am_canonical_id"], []).append(
-                    r["jpi_unified_id"]
-                )
+                am_to_jpi.setdefault(r["am_canonical_id"], []).append(r["jpi_unified_id"])
         except sqlite3.Error as exc:
             logger.warning("entity_id_map dump failed: %s", exc)
     return rounds, am_to_jpi
@@ -815,9 +804,7 @@ def _build_upcoming_rounds_for_profile(
             if not _table_exists(am_conn, "am_application_round"):
                 missing.append("am_application_round")
             else:
-                rounds, am_to_jpi = _fetch_upcoming_rounds(
-                    am_conn, today_iso, horizon_iso
-                )
+                rounds, am_to_jpi = _fetch_upcoming_rounds(am_conn, today_iso, horizon_iso)
     finally:
         if am_conn is not None:
             with contextlib.suppress(sqlite3.Error):
@@ -1015,9 +1002,7 @@ def get_cases_timeline_trend(
     prefecture: Annotated[
         str | None,
         Query(
-            description=(
-                "都道府県 exact match (e.g. '東京都', '大阪府'). None = nationwide."
-            ),
+            description=("都道府県 exact match (e.g. '東京都', '大阪府'). None = nationwide."),
             max_length=20,
         ),
     ] = None,
@@ -1027,8 +1012,7 @@ def get_cases_timeline_trend(
             ge=1,
             le=20,
             description=(
-                "Number of past years (inclusive of current year). Default 5. "
-                "Bounded [1, 20]."
+                "Number of past years (inclusive of current year). Default 5. Bounded [1, 20]."
             ),
         ),
     ] = 5,
@@ -1092,9 +1076,7 @@ def get_upcoming_rounds_for_my_profile(
         Query(
             ge=1,
             le=180,
-            description=(
-                "Lookahead window in days (JST). Default 60. Bounded [1, 180]."
-            ),
+            description=("Lookahead window in days (JST). Default 60. Bounded [1, 180]."),
         ),
     ] = 60,
 ) -> JSONResponse:
@@ -1104,8 +1086,7 @@ def get_upcoming_rounds_for_my_profile(
             detail={
                 "error": "auth_required",
                 "message": (
-                    "upcoming_rounds_for_my_profile requires an authenticated "
-                    "API key (X-API-Key)."
+                    "upcoming_rounds_for_my_profile requires an authenticated API key (X-API-Key)."
                 ),
             },
         )

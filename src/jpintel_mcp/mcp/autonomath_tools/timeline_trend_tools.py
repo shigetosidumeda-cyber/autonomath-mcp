@@ -70,7 +70,7 @@ def program_timeline_impl(program_id: str, years: int = 5) -> dict[str, Any]:
     pid = (program_id or "").strip()
     if not pid:
         return make_error(
-            code="invalid_argument",
+            code="missing_required_arg",
             message="program_id must be non-empty.",
             field="program_id",
         )
@@ -215,10 +215,7 @@ if _ENABLED and settings.autonomath_enabled:
         prefecture: Annotated[
             str | None,
             Field(
-                description=(
-                    "都道府県 exact match (e.g. '東京都', '大阪府'). None = "
-                    "nationwide."
-                ),
+                description=("都道府県 exact match (e.g. '東京都', '大阪府'). None = nationwide."),
                 max_length=20,
             ),
         ] = None,
@@ -228,8 +225,7 @@ if _ENABLED and settings.autonomath_enabled:
                 ge=1,
                 le=20,
                 description=(
-                    "Number of past years (inclusive of current year). "
-                    "Default 5. Bounded [1, 20]."
+                    "Number of past years (inclusive of current year). Default 5. Bounded [1, 20]."
                 ),
             ),
         ] = 5,
@@ -259,10 +255,7 @@ if _ENABLED and settings.autonomath_enabled:
             Field(
                 ge=1,
                 le=180,
-                description=(
-                    "Lookahead window in days (JST). Default 60. Bounded "
-                    "[1, 180]."
-                ),
+                description=("Lookahead window in days (JST). Default 60. Bounded [1, 180]."),
             ),
         ] = 60,
     ) -> dict[str, Any]:
