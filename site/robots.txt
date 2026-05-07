@@ -128,7 +128,7 @@ Crawl-delay: 1
 # Sitemaps
 # Primary: sitemap-index.xml references all shards
 # (sitemap.xml + sitemap-programs.xml + sitemap-prefectures.xml +
-#  sitemap-audiences.xml + sitemap-cross*.xml + sitemap-industries*.xml +
+#  sitemap-audiences.xml + sitemap-cross.xml + sitemap-industries.xml +
 #  sitemap-cities.xml + sitemap-qa.xml + sitemap-pages.xml +
 #  sitemap-enforcement.xml + docs/sitemap.xml).
 # Detail / industries / qa / pages / cities are listed inline as a fallback
@@ -140,9 +140,7 @@ Sitemap: https://jpcite.com/sitemap-programs.xml
 Sitemap: https://jpcite.com/sitemap-prefectures.xml
 Sitemap: https://jpcite.com/sitemap-audiences.xml
 Sitemap: https://jpcite.com/sitemap-cross.xml
-Sitemap: https://jpcite.com/sitemap-cross-detail.xml
 Sitemap: https://jpcite.com/sitemap-industries.xml
-Sitemap: https://jpcite.com/sitemap-industries-detail.xml
 Sitemap: https://jpcite.com/sitemap-qa.xml
 Sitemap: https://jpcite.com/sitemap-pages.xml
 Sitemap: https://jpcite.com/sitemap-enforcement.xml
