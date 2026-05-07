@@ -38,6 +38,8 @@ AUTONOMATH_DB_CANDIDATES = [
 SITE_DATA_DIR = REPO_ROOT / "site" / "_data"
 PUBLIC_COUNTS_JSON = SITE_DATA_DIR / "public_counts.json"
 STATS_HTML = REPO_ROOT / "site" / "stats.html"
+STATS_CANONICAL_URL = "https://jpcite.com/stats"
+STATS_EN_CANONICAL_URL = "https://jpcite.com/en/stats"
 
 
 def _autonomath_db() -> Path | None:
@@ -210,7 +212,7 @@ def render_stats_html(counts: dict[str, Any]) -> str:
         "@context": "https://schema.org",
         "@type": "ItemList",
         "name": "jpcite public counts",
-        "url": "https://jpcite.com/stats.html",
+        "url": STATS_CANONICAL_URL,
         "dateModified": counts.get("generated_at"),
         "itemListElement": jsonld_items,
     }
@@ -232,7 +234,7 @@ def render_stats_html(counts: dict[str, Any]) -> str:
 <meta property="og:title" content="公開件数 | jpcite Stats">
 <meta property="og:description" content="補助金・法令・税制・適格事業者・行政処分・出典の公開件数と最終更新日。サイト内の数字はこのページが基準。">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://jpcite.com/stats.html">
+<meta property="og:url" content="{STATS_CANONICAL_URL}">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -244,10 +246,10 @@ def render_stats_html(counts: dict[str, Any]) -> str:
 <meta name="twitter:description" content="補助金・法令・税制・適格事業者・行政処分・出典の公開件数と最終更新日。サイト内の数字はこのページが基準。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
-<link rel="canonical" href="https://jpcite.com/stats.html">
-<link rel="alternate" hreflang="ja" href="https://jpcite.com/stats.html">
-<link rel="alternate" hreflang="en" href="https://jpcite.com/en/stats.html">
-<link rel="alternate" hreflang="x-default" href="https://jpcite.com/stats.html">
+<link rel="canonical" href="{STATS_CANONICAL_URL}">
+<link rel="alternate" hreflang="ja" href="{STATS_CANONICAL_URL}">
+<link rel="alternate" hreflang="en" href="{STATS_EN_CANONICAL_URL}">
+<link rel="alternate" hreflang="x-default" href="{STATS_CANONICAL_URL}">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
@@ -261,7 +263,7 @@ def render_stats_html(counts: dict[str, Any]) -> str:
   "@context": "https://schema.org",
   "@type": "WebPage",
   "name": "公開件数 | jpcite Stats",
-  "url": "https://jpcite.com/stats.html",
+  "url": "{STATS_CANONICAL_URL}",
   "description": "jpcite の公開件数ダッシュボード。データセット件数と最終更新日。",
   "isPartOf": {{
     "@type": "WebSite",
@@ -403,9 +405,9 @@ def render_stats_html(counts: dict[str, Any]) -> str:
  </ul>
  </details>
  <span class="lang-switch" role="group" aria-label="Language / 言語">
- <a href="/stats.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ <a href="/stats" lang="ja" hreflang="ja" aria-current="page">JP</a>
  <span class="sep" aria-hidden="true">/</span>
- <a href="/en/stats.html" lang="en" hreflang="en">EN</a>
+ <a href="/en/stats" lang="en" hreflang="en">EN</a>
  </span>
  </nav>
  </div>
@@ -450,10 +452,10 @@ def render_stats_html(counts: dict[str, Any]) -> str:
  <!-- Freshness ----------------------------------------------------------- -->
  <section class="stats-section" aria-labelledby="freshness-h">
  <h2 id="freshness-h">鮮度 — 出典の取得時期</h2>
- <p class="desc">各データセットの更新日の最古・最新・行間平均インターバル。古いほど鮮度が下がり、平均インターバルが大きいほど更新頻度が低いことを示します。</p>
+ <p class="desc">各データセットを jpcite が出典から取り込んだ日付の最古・最新・行間平均インターバル。古いほど鮮度が下がり、平均インターバルが大きいほど取得頻度が低いことを示します (景表法・消費者契約法の観点から「最終更新」と表記せず「出典取得」を用います)。</p>
  <table class="fresh" aria-describedby="freshness-h">
  <thead>
- <tr><th scope="col">出典</th><th scope="col" class="num">件数</th><th scope="col">最古更新日</th><th scope="col">最新更新日</th><th scope="col" class="num">平均間隔 (日)</th></tr>
+ <tr><th scope="col">出典</th><th scope="col" class="num">件数</th><th scope="col">最古取得日</th><th scope="col">最新取得日</th><th scope="col" class="num">平均間隔 (日)</th></tr>
  </thead>
  <tbody id="freshness-body">
  <tr><td colspan="5" class="muted">読み込み中…</td></tr>

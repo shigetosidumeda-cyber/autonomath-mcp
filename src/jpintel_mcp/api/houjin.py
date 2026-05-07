@@ -466,7 +466,15 @@ def get_houjin_360(
         )
 
     try:
-        body = _build_houjin_360(am_conn, norm)
+        try:
+            body = _build_houjin_360(am_conn, norm)
+        except sqlite3.OperationalError as exc:
+            if "no such table" in str(exc).lower():
+                raise HTTPException(
+                    status.HTTP_503_SERVICE_UNAVAILABLE,
+                    "autonomath.db schema unavailable",
+                ) from exc
+            raise
     finally:
         am_conn.close()
 
