@@ -100,13 +100,24 @@ jobs:
               --log-file /data/nta_corpus_load_log.jsonl \
               --workflow-run-id ${{ github.run_id }} \
               ${DRY_FLAG}" \
-            | tee nta_ingest.out
+            2>&1 | tee nta_ingest.out
           rc=$?
           set -e
           echo "rc=$rc" >> "$GITHUB_OUTPUT"
-          # rc == 2 means "no work done this run" (already saturated for
-          # the day, or all targets hit time cap with 0 new rows). Keep
-          # the workflow green — that is success, not failure.
+          # R8 fix 2026-05-07 (R8_DAILY_FORENSIC_FIX): flyctl ssh collapses the
+          # inner Python exit code into its own status (always 1 on non-zero),
+          # so the original `[ rc -ne 2 ]` branch never matched even when the
+          # script intentionally exited 2 ("no work this run" / saturated /
+          # dry_run completed cleanly). Detect that case from the wrapped
+          # marker `Process exited with status 2` in stderr/stdout instead.
+          # rc == 2 (legacy direct call) OR marker present (flyctl-wrapped)
+          # both mean "no work done — keep workflow green".
+          if [ "$rc" -ne 0 ]; then
+            if grep -qE 'Process exited with status 2' nta_ingest.out 2>/dev/null; then
+              echo "::notice::ingest_nta_corpus_incremental.py exited 2 (no work this run; flyctl-wrapped). Treating as success."
+              rc=0
+            fi
+          fi
           if [ "$rc" -ne 0 ] && [ "$rc" -ne 2 ]; then
             echo "::error::ingest_nta_corpus_incremental.py exited $rc"
             exit 1

@@ -20,9 +20,31 @@ DEST_DIR="tests/eval/fixtures"
 DEST="${DEST_DIR}/seed.db"
 
 mkdir -p "${DEST_DIR}"
-rm -f "${DEST}" "${DEST}-shm" "${DEST}-wal"
 
+# R8 fix 2026-05-07 (R8_DAILY_FORENSIC_FIX): when source DBs are missing
+# (e.g. fresh CI checkout where the 8.29 GB autonomath.db is gitignored),
+# preserve the committed pre-baked seed.db at tests/eval/fixtures/seed.db
+# instead of wiping it for an empty stub. The pre-baked fixture (~190 KB,
+# verified to carry the 5 Tier A gold rows: 第12回 budget+close, 2割特例
+# effective_until, 80%控除 effective_until, 雇用就農資金 240) makes Tier A
+# precision@1 hit the 0.85 floor on CI without dragging the 8.29 GB blob
+# through the runner.
+#
+# The previous behaviour created an empty schema-only stub which caused the
+# eval gate to red 8 nights running with `Tier A precision@1=0.000 < 0.85`.
 if [[ ! -f "${SRC_AM}" && ! -f "${SRC_JP}" ]]; then
+    if [[ -f "${DEST}" ]]; then
+        # Quick sanity probe — must contain at least one Tier A gold row, else
+        # treat the on-disk fixture as broken and fall back to empty stub.
+        ta001_rows="$(sqlite3 "${DEST}" "SELECT COUNT(*) FROM am_application_round WHERE round_label='第12回' AND budget_yen=150000000000;" 2>/dev/null || echo 0)"
+        if [[ "${ta001_rows}" -ge 1 ]]; then
+            bytes="$(wc -c < "${DEST}" | tr -d ' ')"
+            echo "[bootstrap_eval_db] no source DBs found - using committed fallback fixture ${DEST} (${bytes} bytes, TA001 row OK)"
+            exit 0
+        fi
+        echo "[bootstrap_eval_db] committed fixture present but TA001 row missing - rebuilding empty stub" >&2
+        rm -f "${DEST}" "${DEST}-shm" "${DEST}-wal"
+    fi
     echo "[bootstrap_eval_db] no source DBs found - initialising empty seed.db" >&2
     sqlite3 "${DEST}" <<'SQL'
 CREATE TABLE IF NOT EXISTS am_application_round (
@@ -60,6 +82,9 @@ SQL
     echo "[bootstrap_eval_db] empty seed.db created at ${DEST}"
     exit 0
 fi
+
+# Source DBs exist - rebuild fresh slice from them.
+rm -f "${DEST}" "${DEST}-shm" "${DEST}-wal"
 
 echo "[bootstrap_eval_db] building ${DEST} from ${SRC_AM} + ${SRC_JP}"
 

@@ -63,10 +63,19 @@ jobs:
 
       - name: Run Tier A + B + C
         id: eval
+        # R8 fix 2026-05-07 (R8_DAILY_FORENSIC_FIX): point both DB paths at the
+        # CI fixture slice. Without this, the MCP server subprocess defaults to
+        # the gitignored ./autonomath.db and ./data/jpintel.db (which aren't on
+        # the runner), so every Tier A query returns empty and the eval gate
+        # reds with `Tier A precision@1=0.000 < 0.85`. The conftest's
+        # EVAL_USE_SEED already swaps pytest fixtures to the slice, but the
+        # subprocess didn't see that env-var translation.
         env:
           AUTONOMATH_ENABLED: "1"
           AUTONOMATH_36_KYOTEI_ENABLED: "0"
           EVAL_USE_SEED: "1"
+          AUTONOMATH_DB_PATH: ${{ github.workspace }}/tests/eval/fixtures/seed.db
+          JPINTEL_DB_PATH: ${{ github.workspace }}/tests/eval/fixtures/seed.db
         run: |
           python -m tests.eval.run_eval --tier=all --report=json --out=eval_report.json
           cat eval_report.json
