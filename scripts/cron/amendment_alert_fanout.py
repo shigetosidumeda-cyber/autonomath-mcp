@@ -113,13 +113,9 @@ def _scan_window_floor(last_fanout_at: str | None) -> str:
     (now - FEED_WINDOW_DAYS) so a long-dormant subscription does not
     re-deliver the entire 90-day backlog on its first fan-out tick.
     """
-    cap = (datetime.now(UTC) - timedelta(days=FEED_WINDOW_DAYS)).strftime(
-        "%Y-%m-%dT%H:%M:%S+00:00"
-    )
+    cap = (datetime.now(UTC) - timedelta(days=FEED_WINDOW_DAYS)).strftime("%Y-%m-%dT%H:%M:%S+00:00")
     if last_fanout_at is None:
-        floor = (datetime.now(UTC) - timedelta(hours=24)).strftime(
-            "%Y-%m-%dT%H:%M:%S+00:00"
-        )
+        floor = (datetime.now(UTC) - timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%S+00:00")
         return max(floor, cap)
     return max(last_fanout_at, cap)
 
@@ -356,8 +352,7 @@ def run(*, dry_run: bool = False) -> dict[str, Any]:
                 # window (otherwise the same scan re-runs every tick).
                 if not dry_run:
                     jpintel_db.execute(
-                        "UPDATE amendment_alert_subscriptions SET last_fanout_at = ? "
-                        "WHERE id = ?",
+                        "UPDATE amendment_alert_subscriptions SET last_fanout_at = ? WHERE id = ?",
                         (run_started_at, sub["id"]),
                     )
             if not dry_run:

@@ -58,11 +58,11 @@ _log = logging.getLogger("jpintel.funnel_events")
 router = APIRouter(prefix="/v1/funnel", tags=["funnel"], include_in_schema=False)
 
 
-# Closed enum of accepted event names. Mirrors §4-E item 3 exactly +
+# Closed enum of accepted event names. Mirrors §4-E item 3 +
 # §4.6 (jpcite_ai_discovery_paid_adoption_plan_2026-05-04.md) AI-mediated
-# detection events. Adding a new event requires editing this set AND
-# landing the corresponding client-side fire site (Playground / pricing /
-# MCP install / etc.).
+# detection events + /advisors Evidence-to-Expert Handoff funnel events.
+# Adding a new event requires editing this set AND landing the corresponding
+# client-side fire site (Playground / pricing / MCP install / advisors / etc.).
 _ALLOWED_EVENTS: frozenset[str] = frozenset(
     {
         "pricing_view",
@@ -91,6 +91,18 @@ _ALLOWED_EVENTS: frozenset[str] = frozenset(
         "ai_client_install_detected",
         "mcp_device_flow_completed",
         "openapi_actions_setup_completed",
+        # /advisors Evidence-to-Expert Handoff funnel.
+        "advisor_handoff_view",
+        "advisor_handoff_started",
+        "advisor_handoff_created",
+        "advisor_match_rendered",
+        "advisor_candidate_clicked",
+        "advisor_referral_consent_started",
+        "advisor_referral_consent_granted",
+        "advisor_contact_click",
+        "advisor_conversion_reported",
+        "advisor_handoff_declined",
+        "advisor_handoff_complaint",
     }
 )
 
@@ -120,8 +132,8 @@ class FunnelEventIn(BaseModel):
     event: str = Field(
         ...,
         description=(
-            "One of the 13 accepted event names (10 §4-E web funnel + 3 "
-            "§4.6 AI-mediated detection events)."
+            "One of the accepted event names (web funnel, AI-mediated "
+            "detection, or /advisors Evidence-to-Expert Handoff events)."
         ),
     )
     page: str | None = Field(

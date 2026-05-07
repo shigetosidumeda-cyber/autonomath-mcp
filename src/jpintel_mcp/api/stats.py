@@ -759,8 +759,7 @@ def _read_data_quality_snapshot(am_conn: sqlite3.Connection) -> dict[str, Any] |
     """
     try:
         row = am_conn.execute(
-            "SELECT * FROM am_data_quality_snapshot "
-            "ORDER BY snapshot_at DESC LIMIT 1"
+            "SELECT * FROM am_data_quality_snapshot ORDER BY snapshot_at DESC LIMIT 1"
         ).fetchone()
     except sqlite3.OperationalError:
         return None

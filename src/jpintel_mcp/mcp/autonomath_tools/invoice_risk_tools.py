@@ -89,7 +89,11 @@ def _open_db() -> sqlite3.Connection | dict[str, Any]:
 
 def _import_compose() -> Any:
     """Lazy import to keep MCP import-time cheap and avoid circular ref."""
-    from jpintel_mcp.api.invoice_risk import (
+    # `--no-implicit-reexport` mypy mode rejects underscored names crossing
+    # module boundaries unless re-exported via `__all__`. We deliberately
+    # depend on internal helpers here (single-source-of-truth for the risk
+    # taxonomy + regex) — silencing per-line is the smallest patch.
+    from jpintel_mcp.api.invoice_risk import (  # type: ignore[attr-defined]
         _DISCLAIMER_RISK,
         _REG_NUMBER_RE,
         _compose_risk,
@@ -269,9 +273,7 @@ def _houjin_status_impl(bangou: str) -> dict[str, Any]:
                     "args": {"tnum": invoice_row["invoice_registration_number"]}
                     if invoice_row is not None
                     else {},
-                    "rationale": (
-                        "T 番号レベルで再 lookup し、risk_score の根拠を再確認。"
-                    ),
+                    "rationale": ("T 番号レベルで再 lookup し、risk_score の根拠を再確認。"),
                     "compound_mult": 1.3,
                 }
             ]
@@ -294,9 +296,7 @@ if _ENABLED and settings.autonomath_enabled:
         tnum: Annotated[
             str,
             Field(
-                description=(
-                    "適格事業者番号 (T + 13 数字). 例 'T8010001213708'."
-                ),
+                description=("適格事業者番号 (T + 13 数字). 例 'T8010001213708'."),
                 pattern=r"^T\d{13}$",
             ),
         ],
@@ -309,9 +309,7 @@ if _ENABLED and settings.autonomath_enabled:
         tnums: Annotated[
             list[str],
             Field(
-                description=(
-                    f"List of 適格事業者番号 (T + 13 数字), max {_BATCH_MAX} per call."
-                ),
+                description=(f"List of 適格事業者番号 (T + 13 数字), max {_BATCH_MAX} per call."),
                 min_length=1,
                 max_length=_BATCH_MAX,
             ),

@@ -6,4 +6,4 @@ Contact: mailto:info@bookyou.net
 Expires: 2027-04-26T00:00:00Z
 Preferred-Languages: ja, en
 Canonical: https://jpcite.com/.well-known/security.txt
-Policy: https://jpcite.com/privacy.html
+Policy: https://jpcite.com/security/policy

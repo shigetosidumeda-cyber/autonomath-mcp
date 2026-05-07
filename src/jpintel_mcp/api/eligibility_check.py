@@ -159,7 +159,9 @@ class DynamicCheckResponse(BaseModel):
     eligible_programs: list[ProgramVerdict]
     checked_program_count: int
     checked_rule_count: int
-    disclaimer: str = Field(default=_DISCLAIMER, alias="_disclaimer", serialization_alias="_disclaimer")
+    disclaimer: str = Field(
+        default=_DISCLAIMER, alias="_disclaimer", serialization_alias="_disclaimer"
+    )
 
 
 class SingleProgramVerdict(BaseModel):
@@ -172,7 +174,9 @@ class SingleProgramVerdict(BaseModel):
     rule_ids: list[str]
     reasons: list[str]
     enforcement_hits: list[EnforcementHit]
-    disclaimer: str = Field(default=_DISCLAIMER, alias="_disclaimer", serialization_alias="_disclaimer")
+    disclaimer: str = Field(
+        default=_DISCLAIMER, alias="_disclaimer", serialization_alias="_disclaimer"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -373,8 +377,7 @@ def _walk_eligibility(
             if has_blocking and kind in {"exclude", "absolute", "entity_scope_restriction"}:
                 matched_rule_ids.append(rule["rule_id"])
                 reasons.append(
-                    f"rule={rule['rule_id']} kind={kind} severity={severity}: "
-                    f"{description}"
+                    f"rule={rule['rule_id']} kind={kind} severity={severity}: {description}"
                 )
             elif has_warning and severity == "critical":
                 matched_rule_ids.append(rule["rule_id"])

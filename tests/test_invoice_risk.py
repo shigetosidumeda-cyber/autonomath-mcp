@@ -240,9 +240,9 @@ def test_get_risk_422_on_malformed_tnum(client, invoice_seeded_db):
 def test_batch_risk_mixed_known_unknown_malformed(client, invoice_seeded_db):
     payload = {
         "tnums": [
-            _BOOKYOU_T,                # known → clear/verify
-            "T9999999999999",          # unknown → block
-            "T1",                      # malformed → error
+            _BOOKYOU_T,  # known → clear/verify
+            "T9999999999999",  # unknown → block
+            "T1",  # malformed → error
         ]
     }
     r = client.post("/v1/invoice_registrants/batch_risk", json=payload)

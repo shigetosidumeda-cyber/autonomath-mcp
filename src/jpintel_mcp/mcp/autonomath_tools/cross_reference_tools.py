@@ -141,8 +141,7 @@ def _program_full_context_impl(
         return make_error(
             code="not_found",
             message=(
-                f"program_id={pid!r} not found in jpintel programs. "
-                "Verify via search_programs."
+                f"program_id={pid!r} not found in jpintel programs. Verify via search_programs."
             ),
             field="program_id",
         )
@@ -183,10 +182,7 @@ def _law_related_programs_cross_impl(
     if ref_kind is not None and ref_kind not in allowed_kinds:
         return make_error(
             code="invalid_input",
-            message=(
-                f"ref_kind must be one of {sorted(allowed_kinds)}, "
-                f"got {ref_kind!r}"
-            ),
+            message=(f"ref_kind must be one of {sorted(allowed_kinds)}, got {ref_kind!r}"),
             field="ref_kind",
         )
     capped_limit = max(1, min(int(limit or 50), 200))
@@ -249,7 +245,7 @@ def _law_related_programs_cross_impl(
             params.append(ref_kind)
         where_sql = " AND ".join(where_parts)
 
-        histogram: dict[str, int] = {k: 0 for k in allowed_kinds}
+        histogram: dict[str, int] = dict.fromkeys(allowed_kinds, 0)
         try:
             for r in conn.execute(
                 f"SELECT plr.ref_kind, COUNT(*) AS n "
@@ -373,16 +369,10 @@ def _cases_by_industry_size_pref_impl(
         _truncate,
     )
 
-    if (
-        min_employees is not None
-        and max_employees is not None
-        and min_employees > max_employees
-    ):
+    if min_employees is not None and max_employees is not None and min_employees > max_employees:
         return make_error(
             code="invalid_input",
-            message=(
-                f"min_employees ({min_employees}) > max_employees ({max_employees})."
-            ),
+            message=(f"min_employees ({min_employees}) > max_employees ({max_employees})."),
             field="min_employees",
         )
     if (
@@ -392,10 +382,7 @@ def _cases_by_industry_size_pref_impl(
     ):
         return make_error(
             code="invalid_input",
-            message=(
-                f"min_capital_yen ({min_capital_yen}) > max_capital_yen "
-                f"({max_capital_yen})."
-            ),
+            message=(f"min_capital_yen ({min_capital_yen}) > max_capital_yen ({max_capital_yen})."),
             field="min_capital_yen",
         )
 
@@ -520,9 +507,7 @@ if _ENABLED and settings.autonomath_enabled:
             Field(
                 min_length=1,
                 max_length=200,
-                description=(
-                    "Program canonical id (UNI-...) on jpintel.programs."
-                ),
+                description=("Program canonical id (UNI-...) on jpintel.programs."),
             ),
         ],
         include_sections: Annotated[

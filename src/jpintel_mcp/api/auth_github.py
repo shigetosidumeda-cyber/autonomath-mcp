@@ -219,7 +219,7 @@ def _exchange_code(code: str, client_id: str, client_secret: str) -> dict[str, A
         },
     )
     with urllib.request.urlopen(req, timeout=10) as resp:  # nosec B310 - operator-config https endpoint
-        return cast(dict[str, Any], _parse_json_payload(resp.read()))
+        return cast("dict[str, Any]", _parse_json_payload(resp.read()))
 
 
 def _fetch_identity(access_token: str) -> dict[str, Any]:
@@ -256,9 +256,7 @@ def _fetch_identity(access_token: str) -> dict[str, Any]:
         "name": user.get("name"),
         "avatar_url": user.get("avatar_url"),
         "email": primary or user.get("email"),
-        "emails": [
-            {"email": e.get("email"), "verified": bool(e.get("verified"))} for e in emails
-        ],
+        "emails": [{"email": e.get("email"), "verified": bool(e.get("verified"))} for e in emails],
     }
 
 
@@ -388,10 +386,7 @@ async def github_oauth_callback(
     # no PII beyond the public username) so the front-end can prompt
     # for next-step linking against an existing api_key or sign-up.
     login = identity.get("login") or ""
-    redirect_target = (
-        f"{_dashboard_url()}#github_login="
-        f"{urllib.parse.quote(str(login), safe='')}"
-    )
+    redirect_target = f"{_dashboard_url()}#github_login={urllib.parse.quote(str(login), safe='')}"
     return RedirectResponse(url=redirect_target, status_code=status.HTTP_302_FOUND)
 
 

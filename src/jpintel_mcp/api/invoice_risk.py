@@ -251,9 +251,7 @@ def _parse_iso(value: str | None) -> datetime.date | None:
 
 def _today_jst() -> datetime.date:
     """Today in JST. Computed at call time so long-running processes don't freeze."""
-    return (
-        datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).date()
-    )
+    return datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).date()
 
 
 def _classify_risk(
@@ -359,9 +357,7 @@ def _fetch_invoice_row(conn: sqlite3.Connection, tnum: str) -> sqlite3.Row | Non
     )
 
 
-def _fetch_houjin_master(
-    conn: sqlite3.Connection, houjin_bangou: str | None
-) -> sqlite3.Row | None:
+def _fetch_houjin_master(conn: sqlite3.Connection, houjin_bangou: str | None) -> sqlite3.Row | None:
     """Optional houjin_master fetch. Tolerates missing table for fixture
     DBs that did not run migration 014 (some test fixtures only seed
     programs + invoice_registrants)."""
@@ -385,9 +381,7 @@ def _fetch_houjin_master(
         return None
 
 
-def _fetch_invoice_by_houjin(
-    conn: sqlite3.Connection, houjin_bangou: str
-) -> sqlite3.Row | None:
+def _fetch_invoice_by_houjin(conn: sqlite3.Connection, houjin_bangou: str) -> sqlite3.Row | None:
     """Reverse lookup: 法人番号 → first matching T-number row."""
     return cast(
         "sqlite3.Row | None",
@@ -556,7 +550,7 @@ def get_invoice_risk(
     summary="Batch risk lookup (max 100 T-numbers)",
     description=(
         "Bulk lookup variant of /v1/invoice_registrants/{tnum}/risk. "
-        "Body shape: `{ \"tnums\": [\"T...\", ...] }`, capped at "
+        'Body shape: `{ "tnums": ["T...", ...] }`, capped at '
         f"{_BATCH_MAX} entries per call. Per-item ``error`` populates "
         "when a T-number is malformed; otherwise ``risk`` mirrors the "
         "single-lookup shape exactly. PDL v1.0 attribution + §52 "

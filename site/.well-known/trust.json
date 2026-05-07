@@ -1,6 +1,6 @@
 {
   "schema_version": "jpcite_trust_v1",
-  "generated_at": "2026-05-04",
+  "generated_at": "2026-05-07",
   "operator": {
     "legal_name": "Bookyou株式会社",
     "legal_name_en": "Bookyou Inc.",
@@ -29,17 +29,17 @@
     "site_url": "https://jpcite.com",
     "api_url": "https://api.jpcite.com",
     "docs_url": "https://jpcite.com/docs/",
-    "purchasing_summary_url": "https://jpcite.com/trust/purchasing.html",
-    "trust_center_url": "https://jpcite.com/trust.html",
+    "purchasing_summary_url": "https://jpcite.com/trust/purchasing",
+    "trust_center_url": "https://jpcite.com/trust",
     "security_overview_url": "https://jpcite.com/security/",
-    "legal_fence_url": "https://jpcite.com/legal-fence.html",
-    "data_licensing_url": "https://jpcite.com/data-licensing.html"
+    "legal_fence_url": "https://jpcite.com/legal-fence",
+    "data_licensing_url": "https://jpcite.com/data-licensing"
   },
   "legal": {
-    "tos_url": "https://jpcite.com/tos.html",
-    "privacy_url": "https://jpcite.com/privacy.html",
-    "tokushoho_url": "https://jpcite.com/tokushoho.html",
-    "data_subject_rights_url": "https://jpcite.com/data_subject_rights.html",
+    "tos_url": "https://jpcite.com/tos",
+    "privacy_url": "https://jpcite.com/privacy",
+    "tokushoho_url": "https://jpcite.com/tokushoho",
+    "data_subject_rights_url": "https://jpcite.com/docs/compliance/data_subject_rights/",
     "governing_law": "Japan",
     "jurisdiction": "Tokyo District Court (専属的合意管轄)",
     "currency": "JPY",
@@ -54,24 +54,24 @@
     "p95_latency_ms_target": 1500,
     "5xx_rate_target": 0.005,
     "live_endpoint": "https://api.jpcite.com/v1/health/sla?window=7d",
-    "status_page": "https://jpcite.com/status.html",
-    "sla_page": "https://jpcite.com/sla.html",
+    "status_page": "https://jpcite.com/status/",
+    "sla_page": "https://jpcite.com/sla",
     "rpo_hours": 24,
     "rto_hours": 4,
     "planned_maintenance_lead_time_hours": 48,
     "sunset_lead_time_days": 90,
     "credit_policy": "tokushoho_serious_nonconformity_clause",
-    "credit_policy_url": "https://jpcite.com/tokushoho.html"
+    "credit_policy_url": "https://jpcite.com/tokushoho"
   },
   "data_provenance": {
     "all_publish_records_have_source_url": true,
     "freshness_endpoint": "https://api.jpcite.com/v1/staleness",
-    "freshness_page": "https://jpcite.com/data-freshness.html",
+    "freshness_page": "https://jpcite.com/data-freshness",
     "corrections_feed": "https://api.jpcite.com/v1/corrections?days=90",
-    "audit_log_html": "https://jpcite.com/audit-log.html",
+    "audit_log_html": "https://jpcite.com/audit-log",
     "audit_log_rss": "https://jpcite.com/audit-log.rss",
-    "license_inventory_url": "https://jpcite.com/data-licensing.html",
-    "sources_catalog_url": "https://jpcite.com/sources.html",
+    "license_inventory_url": "https://jpcite.com/data-licensing",
+    "sources_catalog_url": "https://jpcite.com/sources",
     "license_review_queue_size": 805,
     "license_classified_count": 97270,
     "license_total_count": 97272,
@@ -119,7 +119,7 @@
       {"law": "司法書士法", "section": "3", "professional": "司法書士", "scope_excluded": "登記申請・登記書類作成", "directory": "https://www.shiho-shoshi.or.jp/"},
       {"law": "社会保険労務士法", "section": "27", "professional": "社労士", "scope_excluded": "36協定生成 (gated off)・就業規則作成・助成金申請代行", "directory": "https://www.shakaihokenroumushi.jp/"}
     ],
-    "page": "https://jpcite.com/legal-fence.html",
+    "page": "https://jpcite.com/legal-fence",
     "disclaimer_in_response": true,
     "sensitive_tool_branches": [
       "get_am_tax_rule",
@@ -139,7 +139,7 @@
   },
   "privacy": {
     "framework": "APPI (Act on the Protection of Personal Information)",
-    "policy_url": "https://jpcite.com/privacy.html",
+    "policy_url": "https://jpcite.com/privacy",
     "data_subject_rights_url": "https://jpcite.com/docs/compliance/data_subject_rights/",
     "data_subject_rights_response_window_days": 14,
     "pii_at_rest_fields": ["customers.email", "api_keys.key_hash"],
@@ -163,7 +163,7 @@
   "security": {
     "overview_url": "https://jpcite.com/security/",
     "vuln_disclosure_rfc9116": "https://jpcite.com/.well-known/security.txt",
-    "vuln_disclosure_policy": "https://jpcite.com/security/policy.html",
+    "vuln_disclosure_policy": "https://jpcite.com/security/policy",
     "vuln_ack_window_hours": 72,
     "vuln_fix_target_days": 14,
     "responsible_disclosure_window_days": 90,
@@ -176,8 +176,8 @@
     "soc2_status": "not_pursued_solo_zero_touch",
     "soc2_alternatives": [
       {"name": "OpenSSF Best Practices Badge", "status": "in_preparation", "verification_url_after_award": "https://www.bestpractices.dev/projects/<id>"},
-      {"name": "OWASP ASVS Level 1 self-assessment", "status": "in_progress", "verification_url_after_award": "https://jpcite.com/security/asvs.html"},
-      {"name": "CSA STAR CAIQ (self Level 1)", "status": "in_progress", "verification_url_after_award": "https://jpcite.com/security/caiq.html"},
+      {"name": "OWASP ASVS Level 1 self-assessment", "status": "in_progress", "verification_url_after_award": "https://jpcite.com/security/asvs"},
+      {"name": "CSA STAR CAIQ (self Level 1)", "status": "in_progress", "verification_url_after_award": "https://jpcite.com/security/caiq"},
       {"name": "Cloudflare Trust Hub (subprocessor)", "status": "available", "verification_url_after_award": "https://www.cloudflare.com/trust-hub/"}
     ],
     "incident_notification_window_hours": 24,
@@ -191,7 +191,7 @@
     "client_ai_runtime_use": "permitted",
     "training_data_use": "prohibited",
     "ai_response_disclaimer_recommended": true,
-    "ai_response_disclaimer_reference": "https://jpcite.com/legal-fence.html",
+    "ai_response_disclaimer_reference": "https://jpcite.com/legal-fence",
     "tool_count_default_gates": 139,
     "mcp_protocol_version": "2025-06-18"
   },

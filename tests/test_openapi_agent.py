@@ -41,9 +41,42 @@ def test_agent_openapi_exposes_only_evidence_safe_paths(client: TestClient) -> N
     assert first_hop["first_call"] == "createCompanyPublicBaseline"
     assert "source_url" in first_hop["must_preserve_fields"]
     assert "known_gaps" in first_hop["web_search_after_jpcite_only_for"]
+    call_order = body["info"]["x-jpcite-agent-call-order-policy"]
+    ordered_calls = [step["call"] for step in call_order["first_call_order"]]
+    assert ordered_calls.index("previewCost") < ordered_calls.index("createCompanyPublicBaseline")
+    assert ordered_calls.index("createCompanyPublicBaseline") < ordered_calls.index(
+        "queryEvidencePacket"
+    )
+    assert ordered_calls.index("queryEvidencePacket") < ordered_calls.index(
+        "match_advisors_v1_advisors_match_get"
+    )
+    assert "cost_savings_guaranteed" in call_order["global_must_not_claim"]
+    assert (
+        "external_llm_cost_reduction_guaranteed" in body["info"]["x-jpcite-global-must-not-claim"]
+    )
+    evidence_policy = body["info"]["x-jpcite-evidence-packet-policy"]
+    assert evidence_policy["current_calls"] == ["queryEvidencePacket", "getEvidencePacket"]
+    assert "decision_insights" in evidence_policy["must_preserve_fields"]
+    cost_policy = body["info"]["x-jpcite-cost-preview-policy"]
+    assert cost_policy["current_call"] == "previewCost"
+    assert "metered" in cost_policy["must_preserve_fields"]
     assert (
         body["paths"]["/v1/intelligence/precomputed/query"]["get"]["x-jpcite-agent-priority"] == 1
     )
+    assert operation["x-jpcite-route-purpose"] == "source_linked_evidence_packet"
+    assert "decision_insights" in operation["x-jpcite-must-preserve-fields"]
+    assert "answer_included_by_jpcite" in operation["x-jpcite-must-not-claim"]
+    packet_get = body["paths"]["/v1/evidence/packets/{subject_kind}/{subject_id}"]["get"]
+    assert packet_get["x-jpcite-agent-priority"] == 2
+    assert packet_get["x-jpcite-route-purpose"] == "source_linked_evidence_packet"
+    assert "quality.known_gaps" in packet_get["x-jpcite-web-search-after"]
+    cost_operation = body["paths"]["/v1/cost/preview"]["post"]
+    assert cost_operation["x-jpcite-agent-priority"] == 1
+    assert cost_operation["x-jpcite-route-purpose"] == "cost_transparency_preflight"
+    assert cost_operation["x-jpcite-free-preflight"] is True
+    assert cost_operation["x-jpcite-does-not-execute-planned-calls"] is True
+    assert "predicted_total_yen" in cost_operation["x-jpcite-must-preserve-fields"]
+    assert "preview_executes_or_pays_for_planned_calls" in cost_operation["x-jpcite-must-not-claim"]
     company_operation = body["paths"]["/v1/artifacts/company_public_baseline"]["post"]
     assert company_operation["x-jpcite-agent-priority"] == 1
     assert company_operation["x-jpcite-route-purpose"] == "japanese_company_first_hop"
@@ -61,6 +94,28 @@ def test_agent_openapi_exposes_only_evidence_safe_paths(client: TestClient) -> N
         in strategy_operation["x-jpcite-recommended-when"]
     )
     assert "subsidy_or_loan_approved" in strategy_operation["x-jpcite-must-not-claim"]
+    audit_operation = body["paths"]["/v1/artifacts/company_public_audit_pack"]["post"]
+    assert audit_operation["x-jpcite-route-purpose"] == "public_record_audit_followup"
+    assert audit_operation["x-jpcite-public-record-scope"] is True
+    assert "createCompanyPublicBaseline" in audit_operation["x-jpcite-trigger-after-calls"]
+    assert "source_receipts" in audit_operation["x-jpcite-must-preserve-fields"]
+    assert (
+        "public_record_audit_equals_statutory_audit" in audit_operation["x-jpcite-must-not-claim"]
+    )
+    handoff_policy = body["info"]["x-jpcite-evidence-to-expert-handoff-policy"]
+    assert handoff_policy["future_agent_tool_candidate"] == "triageEvidenceToExpertHandoff"
+    assert handoff_policy["current_call"] == "match_advisors_v1_advisors_match_get"
+    assert "queryEvidencePacket" in handoff_policy["trigger_after_calls"]
+    assert "known_gaps" in handoff_policy["handoff_packet_should_include"]
+    advisor_operation = body["paths"]["/v1/advisors/match"]["get"]
+    assert advisor_operation["operationId"] == "match_advisors_v1_advisors_match_get"
+    assert advisor_operation["x-jpcite-agent-priority"] == 3
+    assert advisor_operation["x-jpcite-route-purpose"] == "evidence_to_expert_handoff"
+    assert advisor_operation["x-jpcite-handoff-role"] == "evidence_to_expert_handoff"
+    assert advisor_operation["x-jpcite-future-policy-candidate"] == "triageEvidenceToExpertHandoff"
+    assert "ranking.disclosure" in advisor_operation["x-jpcite-must-preserve-fields"]
+    assert "known_gaps" in advisor_operation["x-jpcite-handoff-packet-should-include"]
+    assert "tax_or_legal_judgment_complete" in advisor_operation["x-jpcite-must-not-claim"]
     prescreen_operation = body["paths"]["/v1/programs/prescreen"]["post"]
     assert prescreen_operation["x-jpcite-agent-priority"] == 2
     assert prescreen_operation["x-jpcite-route-purpose"] == "program_candidate_prescreen"
@@ -115,6 +170,7 @@ def test_agent_openapi_has_stable_operation_ids_and_stats_routes(
         ("get", "/v1/stats/freshness"): "getStatsFreshness",
         ("post", "/v1/citations/verify"): "verifyCitations",
         ("post", "/v1/cost/preview"): "previewCost",
+        ("get", "/v1/advisors/match"): "match_advisors_v1_advisors_match_get",
     }
 
     seen: list[str] = []
@@ -174,6 +230,18 @@ def test_agent_openapi_omits_first_hop_policy_when_artifact_backend_is_absent() 
     )
 
     assert "x-jpcite-first-hop-policy" not in schema["info"]
+    assert "x-jpcite-evidence-to-expert-handoff-policy" not in schema["info"]
+    assert "x-jpcite-cost-preview-policy" not in schema["info"]
+    assert schema["info"]["x-jpcite-evidence-packet-policy"]["current_calls"] == [
+        "queryEvidencePacket"
+    ]
     assert "createCompanyPublicBaseline" not in schema["info"]["description"]
+    assert "triageEvidenceToExpertHandoff" not in schema["info"]["description"]
+    ordered_calls = [
+        step["call"]
+        for step in schema["info"]["x-jpcite-agent-call-order-policy"]["first_call_order"]
+    ]
+    assert ordered_calls == ["queryEvidencePacket"]
     assert "/v1/evidence/packets/query" in schema["paths"]
     assert not any(path.startswith("/v1/artifacts/") for path in schema["paths"])
+    assert "/v1/advisors/match" not in schema["paths"]

@@ -184,9 +184,7 @@ def _known_gap_summary(gap: str | dict[str, Any]) -> str | None:
 def _build_handoff_summary(payload: HandoffPreviewRequest) -> str:
     lines = [payload.summary]
     gap_summaries = [
-        summary
-        for gap in payload.known_gaps
-        if (summary := _known_gap_summary(gap)) is not None
+        summary for gap in payload.known_gaps if (summary := _known_gap_summary(gap)) is not None
     ]
     if gap_summaries:
         lines.append("未確認事項: " + " / ".join(gap_summaries))
@@ -372,11 +370,7 @@ class HandoffPreviewRequest(BaseModel):
                     cleaned.append(text)
             else:
                 cleaned.append(item)
-        too_long = [
-            item
-            for item in cleaned
-            if isinstance(item, str) and len(item) > 240
-        ]
+        too_long = [item for item in cleaned if isinstance(item, str) and len(item) > 240]
         if too_long:
             raise ValueError("known_gaps items must be 240 characters or fewer")
         return cleaned

@@ -27,9 +27,12 @@ import logging
 import os
 import sqlite3
 from itertools import combinations
-from typing import Annotated, Any
+from typing import TYPE_CHECKING, Annotated, Any
 
 from pydantic import Field
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 from jpintel_mcp.config import settings
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
@@ -370,7 +373,11 @@ def _programs_meta(conn: sqlite3.Connection, program_ids: list[str]) -> dict[str
     return out
 
 
-def _greedy_mis(program_ids: list[str], exclude: set[tuple[str, str]], sort_key) -> list[str]:
+def _greedy_mis(
+    program_ids: list[str],
+    exclude: set[tuple[str, str]],
+    sort_key: Callable[[str], Any],
+) -> list[str]:
     accepted: list[str] = []
     accepted_set: set[str] = set()
     for pid in sorted(program_ids, key=sort_key):
@@ -389,7 +396,7 @@ def _axis_score(bundle: list[str], meta: dict[str, dict[str, Any]], axis: str) -
     if not bundle:
         return 0.0
     if axis == "amount":
-        total = sum(meta[p]["amount_yen"] for p in bundle if p in meta)
+        total: float = float(sum(meta[p]["amount_yen"] for p in bundle if p in meta))
         return min(1.0, round(total / 1_000_000_000, 4))
     if axis == "coverage":
         kinds = {meta[p].get("program_kind") for p in bundle if p in meta}
@@ -435,7 +442,7 @@ def portfolio_optimize_impl(
             seen.add(pid)
     if len(program_ids) < 2:
         return make_error(
-            code="insufficient_candidate_program_ids",
+            code="invalid_input",
             message=(
                 "After de-dup, candidate_program_ids must contain >= 2 ids "
                 f"(got {len(program_ids)})."

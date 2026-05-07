@@ -61,11 +61,11 @@
   "url": "https://jpcite.com/",
   "inLanguage": "ja",
   "offers": [
-    {"@type": "Offer", "name": "API + MCP", "url": "https://jpcite.com/pricing.html", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
-    {"@type": "Offer", "name": "LINE bot", "url": "https://jpcite.com/pricing.html", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
-    {"@type": "Offer", "name": "法令改正アラート", "url": "https://jpcite.com/pricing.html", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
-    {"@type": "Offer", "name": "埋込ウィジェット", "url": "https://jpcite.com/pricing.html", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
-    {"@type": "Offer", "name": "士業 案件紹介", "url": "https://jpcite.com/pricing.html", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"}
+    {"@type": "Offer", "name": "API + MCP", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
+    {"@type": "Offer", "name": "LINE bot", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
+    {"@type": "Offer", "name": "法令改正アラート", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
+    {"@type": "Offer", "name": "埋込ウィジェット", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
+    {"@type": "Offer", "name": "Evidence-to-Expert Handoff", "url": "https://jpcite.com/advisors", "description": "根拠付き相談パックを専門家レビュー前の evidence brief として渡す導線"}
   ],
   "featureList": [
     "検索対象制度 11,601 件 / 全カタログ 14,472 件 + 採択事例 2,286 件 + 融資 108 件 + 行政処分 1,185 件を 1 つの API で横断検索",
@@ -73,7 +73,7 @@
     "Evidence Packet: 出典 URL、取得時刻、データスナップショット ID、ライセンス、未取得領域 (known gaps) を LLM 入力向けにまとめたパケット",
     "比較基準トークン数を指定すると、Evidence Packet との差分から input-context estimates (入力文脈の削減率・break-even 判定) を返します",
     "MCP プロトコル 2025-06-18 対応、 139 ツールを Claude Desktop / Cursor から直接呼び出し可能",
-    "日本語の高速全文検索",
+    "日本語の全文検索と法令名 resolver",
     "主要公開レコードの多くに一次資料 URL と取得時刻を付与し、省庁・自治体・公庫の公式ページに直リンク"
   ]
 }
@@ -109,9 +109,8 @@
   "sameAs": [
     "https://www.bookyou.net/",
     "https://zeimu-kaikei.ai",
-    "https://pypi.org/project/autonomath-mcp/",
     "https://pypi.org/project/jpcite/",
-    "https://github.com/Bookyou/autonomath-mcp"
+    "https://pypi.org/project/autonomath-mcp/"
   ]
 }
 </script>
@@ -122,14 +121,14 @@
   "@type": "WebSite",
   "name": "jpcite",
   "alternateName": ["jpcite", "税務会計AI", "AutonoMath", "zeimu-kaikei.ai"],
-  "sameAs": ["https://zeimu-kaikei.ai"],
+  "sameAs": ["https://www.bookyou.net/", "https://zeimu-kaikei.ai"],
   "url": "https://jpcite.com/",
   "publisher": {"@id": "https://jpcite.com/#publisher"},
   "potentialAction": {
     "@type": "SearchAction",
     "target": {
       "@type": "EntryPoint",
-      "urlTemplate": "https://jpcite.com/playground.html?endpoint=programs.search&q={search_term_string}"
+      "urlTemplate": "https://jpcite.com/playground?endpoint=programs.search&q={search_term_string}"
     },
     "query-input": "required name=search_term_string"
   },
@@ -145,7 +144,7 @@
   "description": "日本の公的制度を検索対象 11,601 件 / 全カタログ 14,472 件として扱う正規化データセット。採択事例 2,286 + 融資 108 + 行政処分 1,185 も横断。主要公開レコードの多くに一次資料 URL + fetched_at を付与し、二次情報源を出典として扱わない設計。排他・前提ルール 181 本付き。",
   "url": "https://jpcite.com/",
   "creator": {"@id": "https://jpcite.com/#publisher"},
-  "license": "https://jpcite.com/tos.html",
+  "license": "https://jpcite.com/tos",
   "isAccessibleForFree": true,
   "inLanguage": "ja",
   "spatialCoverage": {
@@ -194,7 +193,7 @@
   "name": "jpcite REST + MCP API",
   "description": "日本の公的制度データの REST + MCP API。AI が回答を書く前に出典 URL・取得時刻・既知の欠落を取得する Evidence prefetch layer。",
   "documentation": "https://jpcite.com/docs/",
-  "termsOfService": "https://jpcite.com/tos.html",
+  "termsOfService": "https://jpcite.com/tos",
   "provider": {"@id": "https://jpcite.com/#publisher"},
   "endpointURL": "https://api.jpcite.com/v1/",
   "endpointDescription": "https://api.jpcite.com/v1/openapi.agent.json",
@@ -202,7 +201,7 @@
   "isAccessibleForFree": true,
   "offers": {
     "@type": "Offer",
-    "url": "https://jpcite.com/pricing.html",
+    "url": "https://jpcite.com/pricing",
     "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"
   }
 }
@@ -218,39 +217,39 @@
       "description": "139 MCP ツール + REST API。AI 開発者向け。stdio 接続、SDK 不要。",
       "brand": {"@type": "Brand", "name": "jpcite"},
       "url": "https://jpcite.com/docs/getting-started/",
-      "offers": {"@type": "Offer", "url": "https://jpcite.com/pricing.html", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"}
+      "offers": {"@type": "Offer", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"}
     },
     {
       "@type": "Product",
       "name": "jpcite LINE bot",
       "description": "LINE 上で補助金・融資を自然言語検索。SME 経営者 / 士業向け。",
       "brand": {"@type": "Brand", "name": "jpcite"},
-      "url": "https://jpcite.com/line.html",
-      "offers": {"@type": "Offer", "url": "https://jpcite.com/pricing.html", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"}
+      "url": "https://jpcite.com/line",
+      "offers": {"@type": "Offer", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"}
     },
     {
       "@type": "Product",
       "name": "jpcite 法令改正アラート",
       "description": "インボイス・電帳法等の法令改正を E メールで通知。士業 / 経理担当向け。",
       "brand": {"@type": "Brand", "name": "jpcite"},
-      "url": "https://jpcite.com/alerts.html",
-      "offers": {"@type": "Offer", "url": "https://jpcite.com/pricing.html", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"}
+      "url": "https://jpcite.com/alerts",
+      "offers": {"@type": "Offer", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"}
     },
     {
       "@type": "Product",
       "name": "jpcite 埋込 Widget",
       "description": "自社サイトに 1 行で補助金検索を埋め込み。税理士 HP / 商工会議所 / 士業事務所向け。",
       "brand": {"@type": "Brand", "name": "jpcite"},
-      "url": "https://jpcite.com/widget.html",
-      "offers": {"@type": "Offer", "url": "https://jpcite.com/pricing.html", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"}
+      "url": "https://jpcite.com/widget",
+      "offers": {"@type": "Offer", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"}
     },
     {
       "@type": "Product",
-      "name": "jpcite 士業 案件紹介",
-      "description": "認定支援機関 / 税理士 / 社労士 / 中小企業診断士が案件紹介を受ける marketplace。",
+      "name": "jpcite Evidence-to-Expert Handoff",
+      "description": "一次資料 URL・取得時刻・known gaps 付きの evidence brief を、専門家レビュー前の相談パックとして渡す導線。",
       "brand": {"@type": "Brand", "name": "jpcite"},
-      "url": "https://jpcite.com/advisors.html",
-      "offers": {"@type": "Offer", "url": "https://jpcite.com/pricing.html", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"}
+      "url": "https://jpcite.com/advisors",
+      "offers": {"@type": "Offer", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"}
     }
   ]
 }
@@ -429,7 +428,7 @@
  <li>case_studies · <span data-fact="case_studies_total" data-stat-key="case_studies_total">2,286</span></li>
  <li>loan_programs · <span data-fact="loan_programs_total" data-stat-key="loan_programs_total">108</span> (担保 / 個人保証人 / 第三者保証人 三軸分解)</li>
  <li>enforcement_cases · <span data-fact="enforcement_cases_total" data-stat-key="enforcement_cases_total">1,185</span></li>
- <li>laws · <span data-fact="laws_fulltext" data-stat-key="laws_fulltext">6,493</span> 件本文索引 + <span data-fact="laws_total" data-stat-key="laws_total">9,484</span> 件メタデータ (e-Gov CC-BY、本文ロード継続中、 法令名 resolver は 9,484 件全件で稼働)</li>
+ <li>laws · 154 件本文完全索引 + <span data-fact="laws_total" data-stat-key="laws_total">9,484</span> 件メタデータ (e-Gov CC-BY、本文ロード継続中、 法令名 resolver は 9,484 件全件で稼働)</li>
  <li>tax_rulesets · <span data-fact="tax_rulesets_total" data-stat-key="tax_rulesets_total">50</span></li>
  <li>court_decisions · <span data-fact="court_decisions_total" data-stat-key="court_decisions_total">2,065</span></li>
  <li>bids · <span data-fact="bids_total" data-stat-key="bids_total">362</span></li>
@@ -517,16 +516,16 @@
  </article>
 
  <article class="card" aria-labelledby="pillar-advisors">
- <h3 id="pillar-advisors">士業紹介</h3>
- <p class="card-lead">認定支援機関 / 税理士 / 社労士 / 診断士</p>
- <p><strong>SME 側</strong>: 合う認定支援機関を無料で紹介。</p>
- <p><strong>専門家 側</strong>: 成約時のみ ¥3,300 (税込)。 月額固定なし。</p>
+ <h3 id="pillar-advisors">根拠付き相談パック</h3>
+ <p class="card-lead">Evidence-to-Expert Handoff</p>
+ <p><strong>相談者側</strong>: 一次資料 URL・取得時刻・known gaps・質問リストを相談前に整理。</p>
+ <p><strong>専門家側</strong>: 自然候補の表示順は掲載費・成約額に非連動。弁護士カテゴリでは成果課金なし。</p>
  <ul class="card-list">
- <li>利用者は無料</li>
- <li>専門家が税別 ¥3,000/成約 支払い</li>
- <li>月額固定なし</li>
+ <li>相談前の evidence brief を作成</li>
+ <li>専門家候補には表示根拠を付与</li>
+ <li>専門業務・申請代行の最終判断は対象外</li>
  </ul>
- <p style="margin:14px 0 0;"><a href="advisors.html">専門家として登録 →</a></p>
+ <p style="margin:14px 0 0;"><a href="advisors.html">Handoff を見る →</a></p>
  </article>
 
  <article class="card" aria-labelledby="pillar-cta" style="background:var(--bg-alt);border-color:var(--accent);">
@@ -840,7 +839,7 @@
  <article class="card">
  <h3>(a) 複数 DB を 1 コール で統合</h3>
  <p class="card-lead">補助金 11,601 + 法令 9,484 + 税制 50 + 法人 167K + 行政処分 1,185</p>
- <p>補助金 11,601 件・法令メタデータ 9,484 件 (本文索引 6,493 件)・税制ルールセット 50 件・国税庁適格事業者 13,801 件 (PDL v1.0 差分、月次フル取り込みは順次)・行政処分 1,185 件・判例 2,065 件・採択事例 2,286 件・融資 108 件 (担保 / 個人保証人 / 第三者保証人 三軸分解) を一つの API で横断検索。 関係抽出データベース 50 万件超エンティティ / 600 万件超ファクト / 37 万件超リレーションも 139 MCP ツールから呼び出せます。</p>
+ <p>補助金 11,601 件・法令メタデータ 9,484 件 (完全本文索引 154 件、残りは飽和進行中)・税制ルールセット 50 件・国税庁適格事業者 13,801 件 (PDL v1.0 差分、月次フル取り込みは順次)・行政処分 1,185 件・判例 2,065 件・採択事例 2,286 件・融資 108 件 (担保 / 個人保証人 / 第三者保証人 三軸分解) を一つの API で横断検索。 関係抽出データベース 50 万件超エンティティ / 600 万件超ファクト / 37 万件超リレーションも 139 MCP ツールから呼び出せます。</p>
  </article>
 
  <article class="card">
@@ -890,8 +889,8 @@
 
  <article class="card" aria-labelledby="who-sme">
  <h3 id="who-sme">中小企業経営者</h3>
- <p class="card-lead">推奨: LINE bot + 士業 案件紹介</p>
- <p>自社が使える補助金を知りたい、申請まで相談したい。LINE で発見 → 合う認定支援機関/税理士に繋ぐ。無料枠は 1 日 3 件まで、4 件目以降は 1 質問 ¥3 (税込 ¥3.30)、月額固定なし。</p>
+ <p class="card-lead">推奨: LINE bot + 根拠付き相談パック</p>
+ <p>自社が使える補助金を知りたい、申請まで相談したい。LINE で候補を見つけ、一次資料・未確認点・専門家への質問を整理して相談へ進む。無料枠は 1 日 3 件まで、4 件目以降は 1 質問 ¥3 (税込 ¥3.30)、月額固定なし。</p>
  </article>
 
  <article class="card" aria-labelledby="who-shigyo">
@@ -950,9 +949,9 @@
  <td>¥3.30 / 検索</td>
  </tr>
  <tr>
- <th scope="row">士業 案件紹介</th>
- <td>利用無料</td>
- <td>¥3,000 / 成約 (専門家 払い)</td>
+ <th scope="row">根拠付き相談パック</th>
+ <td>相談者は利用無料</td>
+ <td>¥3,000 / 成約 (専門家払い、弁護士カテゴリ除く)</td>
  <td>¥3,300 / 成約</td>
  </tr>
  </tbody>

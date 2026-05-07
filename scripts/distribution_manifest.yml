@@ -9,7 +9,7 @@
 # - Public distribution surfaces use the 139-tool manifest floor.
 #   Runtime may exceed this while post-manifest tools are held for the next
 #   intentional manifest bump.
-# - Runtime route count is 229 and generated stable OpenAPI path count is 186
+# - Runtime route count is 262 and generated stable OpenAPI path count is 219
 #   (preview/legal/accounting routes are intentionally excluded from the
 #   committed public OpenAPI artifact).
 # - Pricing/free-tier language is consistent: JPY 3 per billable unit /
@@ -28,7 +28,7 @@ canonical_api_env:
 
 pyproject_version: "0.3.4"
 tool_count_default_gates: 139  # public manifest floor; runtime may be higher with post-manifest tools
-route_count: 229              # runtime len(app.routes), verified 2026-05-07 JST
+route_count: 262              # runtime len(app.routes), verified 2026-05-07 JST
 openapi_path_count: 219       # docs/openapi/v1.json stable .paths length, verified 2026-05-07 JST (incl. /v1/tax_rules/{rule_id}/full_chain)
 searchable_programs_total: 11601
 total_programs: 14472

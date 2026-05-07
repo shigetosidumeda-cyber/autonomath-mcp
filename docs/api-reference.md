@@ -406,7 +406,7 @@ IP は raw 保存せず `HMAC-SHA256(ip, api_key_salt)` で hash 化。詳細は
 - `compression.cost_savings_estimate.break_even_met` — 入力文脈量の参考比較 (`provider_billing_not_guaranteed=true` 同梱)
 - `agent_recommendation.cost_savings_decision` — `supported_by_caller_baseline` / `not_supported_by_caller_baseline` / `needs_caller_baseline` / `needs_input_token_price`
 
-3 回到達して全項目が想定通りなら、税込概算 ¥3.30/billable unit で「データ統合 + 一次出典 + 鮮度 + 入力文脈削減見込み」が得られるかを判断できます。ブラウザで順に検証する場合は <https://jpcite.com/playground.html?flow=evidence3>。個別 field の詳細仕様は [Context Compression 章](#context-compression-workload-dependent-estimate) と [pricing.md `break_even_met` の正しい読み方](./pricing.md) を参照。
+3 回到達して全項目が想定通りなら、税込概算 ¥3.30/billable unit で「データ統合 + 一次出典 + 鮮度 + 入力文脈削減見込み」が得られるかを判断できます。ブラウザで順に検証する場合は <https://jpcite.com/playground?flow=evidence3>。個別 field の詳細仕様は [Context Compression 章](#context-compression-workload-dependent-estimate) と [pricing.md `break_even_met` の正しい読み方](./pricing.md) を参照。
 
 ---
 
@@ -2034,9 +2034,9 @@ Creates a checkout session for a verified paid subscriber.
 
 ```json
 {
-  "cancel_url": "https://jpcite.com/alerts.html?status=canceled",
+  "cancel_url": "https://jpcite.com/alerts?status=canceled",
   "subscriber_id": 0,
-  "success_url": "https://jpcite.com/alerts.html?status=ok"
+  "success_url": "https://jpcite.com/alerts?status=ok"
 }
 ```
 
@@ -2055,7 +2055,7 @@ Creates a checkout session for a verified paid subscriber.
 curl -X POST "https://api.jpcite.com/v1/compliance/stripe-checkout" \
   -H "X-API-Key: am_..." \
   -H "Content-Type: application/json" \
-  -d '{"cancel_url": "https://jpcite.com/alerts.html?status=canceled", "subscriber_id": 0, "success_url": "https://jpcite.com/alerts.html?status=ok"}'
+  -d '{"cancel_url": "https://jpcite.com/alerts?status=canceled", "subscriber_id": 0, "success_url": "https://jpcite.com/alerts?status=ok"}'
 ```
 
 ---
@@ -2501,7 +2501,7 @@ curl -X POST "https://api.jpcite.com/v1/advisors/signup" \
 
 ### `POST /v1/advisors/track`
 
-Record a referral click and return a referral redirect URL. Any referral fee is resolved at conversion time.
+Record a referral click and return a referral redirect URL after explicit user consent. Any referral fee is resolved at conversion time.
 
 **認証:** 任意 (未認証は匿名扱い)
 
@@ -2511,7 +2511,8 @@ Record a referral click and return a referral redirect URL. Any referral fee is 
 {
   "advisor_id": 0,
   "source_program_id": "string",
-  "source_query_hash": "string"
+  "source_query_hash": "string",
+  "consent_granted": true
 }
 ```
 
@@ -2530,7 +2531,7 @@ Record a referral click and return a referral redirect URL. Any referral fee is 
 curl -X POST "https://api.jpcite.com/v1/advisors/track" \
   -H "X-API-Key: am_..." \
   -H "Content-Type: application/json" \
-  -d '{"advisor_id": 0, "source_program_id": "string", "source_query_hash": "string"}'
+  -d '{"advisor_id": 0, "source_program_id": "string", "source_query_hash": "string", "consent_granted": true}'
 ```
 
 ---

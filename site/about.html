@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>jpcite とは</title>
-<meta name="description" content="jpcite は、日本の公的制度の出典付き検証 API + MCP サービス。AI が書く。jpcite が裏取りする。一次資料に限定 (主要公開行に一次資料 URL を付与、取得日: 2026-04-30)。">
+<meta name="description" content="jpcite は、日本の公的制度を AI から使うための出典付き Evidence API + MCP。一次資料 URL、取得時刻、known gaps を返し、匿名 3 リクエスト/日で検証できます。">
 
 <meta property="og:title" content="jpcite とは">
 <meta property="og:description" content="なぜ作ったか、どの出典に限定しているか、AI からどう使えるか。">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://jpcite.com/about.html">
+<meta property="og:url" content="https://jpcite.com/about">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -22,10 +22,10 @@
 <meta name="twitter:description" content="なぜ作ったか・一次資料原則・AI から使える検索 API / MCP。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
-<link rel="canonical" href="https://jpcite.com/about.html">
-<link rel="alternate" hreflang="ja" href="https://jpcite.com/about.html">
-<link rel="alternate" hreflang="en" href="https://jpcite.com/en/about.html">
-<link rel="alternate" hreflang="x-default" href="https://jpcite.com/about.html">
+<link rel="canonical" href="https://jpcite.com/about">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/about">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/about">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/about">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
@@ -74,8 +74,8 @@
   "@context": "https://schema.org",
   "@type": "AboutPage",
   "name": "jpcite とは",
-  "description": "jpcite は、日本の公的制度 11,601 件の API + MCP サービス。主要公開行に一次資料、データ正規化は AI で自動化。",
-  "url": "https://jpcite.com/about.html",
+  "description": "jpcite は、日本の公的制度 11,601 件を AI から使うための API + MCP サービス。主要公開行に一次資料 URL、取得時刻、known gaps を付与し、公開数値はファクトシートで確認できます。",
+  "url": "https://jpcite.com/about",
   "inLanguage": "ja",
   "isPartOf": {
     "@type": "WebSite",
@@ -153,12 +153,17 @@
  </nav>
 
  <h1>jpcite とは</h1>
- <p class="lead">日本の制度を AI から検索できるサービス。</p>
+ <p class="lead">日本の制度根拠を AI へ渡す Evidence API + MCP サービス。</p>
 
  <div class="cta-row" style="margin:0 0 24px;">
  <a class="btn btn-primary" href="index.html#trial" data-cta-variant="about-trial">サービスを試す →</a>
  <a href="pricing.html" style="align-self:center;font-size:15px;color:var(--text-muted);text-decoration:underline;text-underline-offset:3px;">料金 →</a>
  </div>
+
+ <section aria-labelledby="ai-layer-title" style="margin:0 0 28px;">
+ <h2 id="ai-layer-title">AI が使うレイヤー</h2>
+ <p>jpcite は回答文を生成するサービスではありません。AI が回答を書く前に、<code>source_url</code>、<code>source_fetched_at</code>、<code>known_gaps</code>、互換 / 排他ルールを小さい Evidence Packet として返す前処理レイヤーです。登録不要の匿名枠は <a href="pricing.html#api-free">3 リクエスト/日 per IP</a>、継続利用は <a href="pricing.html#api-paid">¥3/課金単位 (税込 ¥3.30)</a> です。</p>
+ </section>
 
  <!-- Above-fold trust strip. -->
  <ul class="trust-stats" aria-label="jpcite 主要数値">
@@ -225,7 +230,7 @@
  <h2>提供形態</h2>
  <ul>
  <li>REST API + MCP サーバー</li>
- <li>LINE bot · 法令改正アラート · 埋込ウィジェット · 士業案件紹介</li>
+ <li>LINE bot · 法令改正アラート · 埋込ウィジェット · 根拠付き相談パック / Evidence-to-Expert Handoff</li>
  </ul>
 
  <h2>連絡先</h2>

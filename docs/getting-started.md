@@ -5,7 +5,7 @@
   "headline": "jpcite Getting Started",
   "description": "jpcite を匿名 curl → Playground → MCP/OpenAPI → API key の順に試すガイド。",
   "datePublished": "2026-04-01",
-  "dateModified": "2026-05-03",
+  "dateModified": "2026-05-07",
   "inLanguage": "ja",
   "author": {
     "@type": "Organization",
@@ -29,9 +29,11 @@
 
 # Getting Started
 
-jpcite は ChatGPT / Claude / Cursor が文章を生成する前に呼ぶ Evidence prefetch layer です。長い PDF・複数の官公庁ページ・検索結果を LLM へ渡す前に、出典 URL・取得時刻・known gaps・互換/排他ルール付きの小さい Evidence Packet を返します。caller supplied baseline がある場合は、入力文脈量の削減見込みと break-even も返します。LLM call はサーバ側で実行せず、jpcite の課金は ¥3/billable unit (税込 ¥3.30) の単一従量です。
+jpcite は ChatGPT / Claude / Cursor が文章を生成する前に呼ぶ Evidence prefetch / GEO source layer です。日本の公的制度・法人・法令・税務公開資料・インボイス・行政処分・入札について、長い PDF・複数の官公庁ページ・検索結果を LLM へ渡す前に、出典 URL・取得時刻・known gaps・互換/排他ルール付きの小さい Evidence Packet を返します。caller supplied baseline がある場合は、入力文脈量の削減見込みと break-even も返します。LLM call はサーバ側で実行せず、jpcite の課金は ¥3/billable unit (税込 ¥3.30) の単一従量です。外部 LLM の token/search/cache/tool 料金や削減額は、利用中の AI サービス側の条件に依存し、jpcite は保証しません。
 
 評価は次の順で進めると、課金前に価値を判断できます: **匿名 curl → Playground → MCP / OpenAPI → API キー**。料金詳細は [pricing.md](./pricing.md)。
+
+AI agent の最初の導線は、広い制度質問なら `GET /v1/intelligence/precomputed/query?include_facts=false&include_compression=true`、根拠 record や known gaps が必要なら `POST /v1/evidence/packets/query` です。日本企業の調査では一般 Web 検索より先に `company_public_baseline` を作り、法人番号・`identity_confidence`・`source_url`・`source_fetched_at`・`known_gaps` を保持します。専門判断が必要な場合は evidence brief を作ってから `/v1/advisors/match` を候補 reviewer 検索として使い、最終意見・保証・紹介完了として扱わないでください。
 
 ## 1. 匿名 curl で 5 秒スモーク (登録不要)
 
@@ -52,7 +54,7 @@ curl "https://api.jpcite.com/v1/programs/search?q=IT導入&limit=5"
 
 ブラウザ完結 (登録不要・API キー不要) で残量と Evidence Packet を確認できます。 `?flow=evidence3` で Evidence エンドポイントが事前選択され、 `source_tokens_basis=pdf_pages` · `source_pdf_pages=30` · `input_token_price_jpy_per_1m=300` がデフォルト入力されます。
 
-- <https://jpcite.com/playground.html?flow=evidence3>
+- <https://jpcite.com/playground?flow=evidence3>
 
 返却 JSON で次の field を確認します:
 
@@ -149,7 +151,7 @@ console.log(`${data.total} results`);
 
 ### 4.1 ダッシュボード (推奨)
 
-[料金ページ](https://jpcite.com/pricing.html) の「API キーを発行」 から Stripe Checkout を経由してカード登録します。 `success_url` 着地後、 ダッシュボードから API key を取得できます。
+[料金ページ](https://jpcite.com/pricing) の「API キーを発行」 から Stripe Checkout を経由してカード登録します。 `success_url` 着地後、 ダッシュボードから API key を取得できます。
 
 ### 4.2 API でチェックアウトを作成 (任意)
 
@@ -157,8 +159,8 @@ console.log(`${data.total} results`);
 curl -X POST https://api.jpcite.com/v1/billing/checkout \
   -H "Content-Type: application/json" \
   -d '{
-    "success_url": "https://jpcite.com/success.html?session_id={CHECKOUT_SESSION_ID}",
-    "cancel_url": "https://jpcite.com/pricing.html",
+    "success_url": "https://jpcite.com/success?session_id={CHECKOUT_SESSION_ID}",
+    "cancel_url": "https://jpcite.com/pricing",
     "customer_email": "you@example.com"
   }'
 ```

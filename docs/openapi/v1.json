@@ -6419,6 +6419,10 @@
       },
       "DisasterActiveProgramsResponse": {
         "properties": {
+          "_disclaimer": {
+            "title": "Disclaimer",
+            "type": "string"
+          },
           "as_of": {
             "title": "As Of",
             "type": "string"
@@ -6450,6 +6454,10 @@
       },
       "DisasterCatalogResponse": {
         "properties": {
+          "_disclaimer": {
+            "title": "Disclaimer",
+            "type": "string"
+          },
           "as_of": {
             "title": "As Of",
             "type": "string"
@@ -6602,6 +6610,10 @@
       },
       "DisasterMatchResponse": {
         "properties": {
+          "_disclaimer": {
+            "title": "Disclaimer",
+            "type": "string"
+          },
           "buckets": {
             "items": {
               "$ref": "#/components/schemas/DisasterMatchBucket"
@@ -38916,8 +38928,42 @@
     },
     "/v1/verify/answer": {
       "post": {
-        "description": "Verify an LLM-generated answer against the jpcite corpus.\n\nReturns 0-100 verifiability score, per-claim match breakdown,\nboundary_violations (\u7a0e\u7406\u58eb\u6cd5 \u00a752 etc.), and the 17-token\nsensitive disclaimer.\n\nErrors:\n  * 400 too_many_claims when tokenize yields >5 atomic claims.\n  * 422 from pydantic when answer_text empty or language invalid.",
+        "description": "Verify an LLM-generated answer against the jpcite corpus.\n\nReturns 0-100 verifiability score, per-claim match breakdown,\nboundary_violations (\u7a0e\u7406\u58eb\u6cd5 \u00a752 etc.), and the 17-token\nsensitive disclaimer.\n\nErrors:\n  * 400 too_many_claims when tokenize yields >5 atomic claims.\n  * 422 from pydantic when answer_text empty or language invalid.\n\nR8 BUGHUNT 2026-05-07: \u00a53 metering wired here. Pre-fix the\nendpoint advertised ``cost_yen: 3`` in the response but never\ncalled ``log_usage`` \u2014 authenticated callers were billed \u00a50,\nburning revenue per call. AnonIpLimitDep was the only controlled.",
         "operationId": "verify_answer_v1_verify_answer_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {

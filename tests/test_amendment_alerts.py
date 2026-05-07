@@ -49,12 +49,7 @@ def _ensure_amendment_alert_subscriptions_table(seeded_db: Path):
     production schema (CHECK constraints, defaults, indexes).
     """
     repo = Path(__file__).resolve().parent.parent
-    sql_path = (
-        repo
-        / "scripts"
-        / "migrations"
-        / "wave24_194_amendment_alert_subscriptions.sql"
-    )
+    sql_path = repo / "scripts" / "migrations" / "wave24_194_amendment_alert_subscriptions.sql"
     sql = sql_path.read_text(encoding="utf-8")
 
     c = sqlite3.connect(seeded_db)
@@ -280,8 +275,7 @@ def test_cron_dry_run_smoke(seeded_db, monkeypatch, feed_key):
 
         key_hash = hash_api_key(feed_key)
         c.execute(
-            "INSERT INTO amendment_alert_subscriptions(api_key_hash, watch_json) "
-            "VALUES (?, ?)",
+            "INSERT INTO amendment_alert_subscriptions(api_key_hash, watch_json) VALUES (?, ?)",
             (
                 key_hash,
                 json.dumps([{"type": "program_id", "id": "UNI-test-s-1"}]),

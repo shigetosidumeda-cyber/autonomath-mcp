@@ -386,8 +386,7 @@ if _ENABLED and settings.autonomath_enabled:
             str,
             Field(
                 description=(
-                    "programs.unified_id. Discover via search_programs / "
-                    "list_open_programs."
+                    "programs.unified_id. Discover via search_programs / list_open_programs."
                 ),
                 min_length=4,
                 max_length=64,
@@ -396,9 +395,7 @@ if _ENABLED and settings.autonomath_enabled:
         houjin_bangou: Annotated[
             str,
             Field(
-                description=(
-                    "13-digit 法人番号. T-prefix / hyphens accepted."
-                ),
+                description=("13-digit 法人番号. T-prefix / hyphens accepted."),
                 min_length=13,
                 max_length=32,
             ),

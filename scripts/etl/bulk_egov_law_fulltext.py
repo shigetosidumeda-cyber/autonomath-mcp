@@ -345,9 +345,7 @@ def _load_one(
     inserted = 0
     failed = 0
     for art in articles:
-        source_url = (
-            f"https://laws.e-gov.go.jp/law/{egov_id}#Mp-At_{art['article_number']}"
-        )
+        source_url = f"https://laws.e-gov.go.jp/law/{egov_id}#Mp-At_{art['article_number']}"
         try:
             _eg.upsert_article(
                 con,

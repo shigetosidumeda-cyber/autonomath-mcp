@@ -613,6 +613,8 @@ def _scan_forbidden_tokens(manifest: dict[str, Any]) -> list[DriftRow]:
         for line_no, line in enumerate(_read(path).splitlines(), 1):
             for token in forbidden:
                 if token and str(token) in line:
+                    if _is_allowed_legacy_brand_bridge(rel, line_no, line, str(token)):
+                        continue
                     rows.append(
                         DriftRow(
                             field=f"forbidden:{token}",
@@ -625,6 +627,27 @@ def _scan_forbidden_tokens(manifest: dict[str, Any]) -> list[DriftRow]:
                         )
                     )
     return rows
+
+
+def _is_allowed_legacy_brand_bridge(rel: str, line_no: int, line: str, token: str) -> bool:
+    """Allow old-name discovery bridges without reviving old brand copy.
+
+    W14-8 requires a tiny bridge from cached legacy names to the current
+    jpcite brand. The bridge is allowed only in the llms.txt header and in
+    index.html JSON-LD alternateName/sameAs fields.
+    """
+    if token not in {"zeimu-kaikei.ai", "税務会計AI"}:
+        return False
+    if rel in {"site/llms.txt", "site/llms.en.txt", "site/en/llms.txt"}:
+        return line_no <= 6 and "Brand history" in line and "jpcite" in line
+    if rel == "site/index.html":
+        stripped = line.strip()
+        return (
+            '"alternateName"' in line
+            or '"sameAs"' in line
+            or stripped in {'"https://zeimu-kaikei.ai",', '"https://zeimu-kaikei.ai"'}
+        )
+    return False
 
 
 def _format_table(rows: list[DriftRow]) -> str:

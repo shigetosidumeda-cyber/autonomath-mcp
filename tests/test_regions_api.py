@@ -272,9 +272,7 @@ def test_regions_search_substring(seeded_regions_client) -> None:
 
 
 def test_regions_search_level_filter(seeded_regions_client) -> None:
-    r = seeded_regions_client.get(
-        "/v1/regions/search", params={"q": "京", "level": "prefecture"}
-    )
+    r = seeded_regions_client.get("/v1/regions/search", params={"q": "京", "level": "prefecture"})
     assert r.status_code == 200, r.text
     body = r.json()
     levels = {row["region_level"] for row in body["results"]}

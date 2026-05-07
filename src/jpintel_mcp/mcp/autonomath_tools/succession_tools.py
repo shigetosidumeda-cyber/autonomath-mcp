@@ -81,7 +81,7 @@ def _match_succession_impl(
 
     if scenario not in _SCENARIOS:
         return make_error(
-            code="invalid_argument",
+            code="invalid_enum",
             message=(
                 f"scenario must be one of: {', '.join(sorted(_SCENARIOS))}; got {scenario!r}."
             ),

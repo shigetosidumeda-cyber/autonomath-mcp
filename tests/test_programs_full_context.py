@@ -566,7 +566,8 @@ def test_law_related_programs_no_chain_walk(cross_ref_client: TestClient) -> Non
     # (UNI-test-a-1); both must be present, and the seeded test program
     # must NOT have an eligibility ref to LAW-aaaaa01a0a directly.
     fixture_rows = [
-        r for r in body["results"]
+        r
+        for r in body["results"]
         if r["program_unified_id"] in {"UNI-test-s-1", "UNI-test-a-1"}
         and r["law_unified_id"] == "LAW-aaaaa01a0a"
     ]

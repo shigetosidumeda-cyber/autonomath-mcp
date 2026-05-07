@@ -1004,10 +1004,12 @@ def _attach_export_lineage(
                 detail = _row_to_program_detail(db_row, "full")
                 merged = dict(detail)
                 for key, value in row.items():
-                    if (
-                        key in {"source_url", "source_fetched_at", "source_checksum", "license"}
-                        and (value is None or value == "")
-                    ):
+                    if key in {
+                        "source_url",
+                        "source_fetched_at",
+                        "source_checksum",
+                        "license",
+                    } and (value is None or value == ""):
                         continue
                     merged[key] = value
                 row = merged

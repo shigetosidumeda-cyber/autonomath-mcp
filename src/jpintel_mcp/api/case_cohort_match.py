@@ -151,9 +151,7 @@ def cohort_match(
     )
     _latency_ms = int((time.perf_counter() - _t0) * 1000)
 
-    result_count = (
-        len(result.get("results", [])) if isinstance(result.get("results"), list) else 0
-    )
+    result_count = len(result.get("results", [])) if isinstance(result.get("results"), list) else 0
     log_usage(
         conn,
         ctx,

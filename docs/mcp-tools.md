@@ -5,7 +5,7 @@
   "headline": "jpcite MCP Tools",
   "description": "jpcite の MCP ツールは、日本の公的制度・法令・税務公開資料・法人情報を AI クライアントから検索するための出典付きデータ取得レイヤーです。",
   "datePublished": "2026-04-01",
-  "dateModified": "2026-05-01",
+  "dateModified": "2026-05-07",
   "inLanguage": "ja",
   "author": {
     "@type": "Organization",
@@ -29,15 +29,17 @@
 
 # MCP Tools
 
-jpcite は、AI クライアントから日本の公的制度データを検索するための **139 個の MCP ツール**を提供します。補助金・助成金・融資・税制・法令・採択事例・行政処分・適格請求書発行事業者などを、一次資料 URL 付きで取得できます。
+jpcite は、AI クライアントから日本の公的制度・法人・法令データを検索するための **139 個の MCP ツール**を提供します。補助金・助成金・融資・税制・法令・判例・採択事例・行政処分・入札・適格請求書発行事業者などを、一次資料 URL 付きで取得できます。
 
-ChatGPT / Claude / Cursor では、jpcite を回答生成前の evidence retrieval / provenance pre-fetch レイヤーとして使います。各ツールは制度名、対象地域、金額、締切、併用ルール、`source_url`、`source_fetched_at` などを構造化して返し、AI クライアントが引用可能な根拠を持って説明できるようにします。
+ChatGPT / Claude / Cursor では、jpcite を回答生成前の evidence retrieval / provenance pre-fetch / GEO source レイヤーとして使います。各ツールは制度名、対象地域、金額、締切、併用ルール、`source_url`、`source_fetched_at` などを構造化して返し、AI クライアントが引用可能な根拠を持って説明できるようにします。
 
 jpcite サーバーは外部 LLM API を呼びません。生成、要約、翻訳、推論は利用中の AI クライアント側で行われます。AI クライアント側の送信・保持の扱いは、各サービスの設定と規約に従います。
 
+AI agent の first call は、OpenAPI / REST では広い制度質問なら `GET /v1/intelligence/precomputed/query`、根拠 record・known gaps・caller-baseline の入力文脈比較が必要なら `POST /v1/evidence/packets/query` です。MCP だけで使う場合は、該当する検索ツールで実在 ID を取り、`get_evidence_packet` で source-linked packet を作ります。日本企業の会社フォルダ、取引先確認、監査/DD、営業先調査では、一般 Web 検索の前に OpenAPI / REST の `createCompanyPublicBaseline` / `/v1/artifacts/company_public_baseline` を使い、`identity_confidence`、`source_url`、`source_fetched_at`、`known_gaps` を回答まで保持してください。法務・税務・補助金申請・融資・監査など専門判断が必要な場合は evidence brief を作ってから `/v1/advisors/match` を候補 reviewer 検索として使い、最終意見・保証・紹介完了として扱わないでください。
+
 ## 料金
 
-MCP ツールの呼び出しは REST API と同じ課金単位です。現在の公開料金、匿名枠、月次上限の考え方は [pricing.md](./pricing.md) を参照してください。
+MCP ツールの呼び出しは REST API と同じ課金単位です。匿名枠は 1 IP あたり 3 req/日 (JST 翌日 00:00 リセット)、通常の検索・詳細取得は ¥3/billable unit (税込 ¥3.30) です。これは jpcite API/MCP の料金であり、外部 LLM の token/search/cache/tool 料金や削減額は jpcite では保証しません。月次上限の考え方は [pricing.md](./pricing.md) を参照してください。
 
 ## セットアップ
 

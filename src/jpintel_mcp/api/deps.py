@@ -193,7 +193,7 @@ def _insert_usage_event(
     """
     ts = datetime.now(UTC).isoformat()
 
-    def _execute_insert(*, include_billing_key: bool, include_tokens_saved: bool):
+    def _execute_insert(*, include_billing_key: bool, include_tokens_saved: bool) -> sqlite3.Cursor:
         columns = [
             "key_hash",
             "endpoint",

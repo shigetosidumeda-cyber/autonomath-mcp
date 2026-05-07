@@ -102,18 +102,14 @@
 /contact-us  /support.html  302
 /support     /support.html  302
 
-# Common-language legal aliases. Site footers + JSON-LD use the literal
-# filenames (tos.html / privacy.html / legal-fence.html / tokushoho.html),
-# but visitors and AI crawlers commonly guess `/terms`, `/disclaimer`,
-# `/legal`, `/privacy` from English convention. Bouncing them to the
-# canonical document avoids a 404 dead-end during the discover step of
-# the customer journey (R8 audit 2026-05-07 F1).
-/terms       /tos.html          301
-/terms-of-service  /tos.html    301
-/tos         /tos.html          301
-/disclaimer  /legal-fence.html  301
-/legal       /legal-fence.html  301
-/privacy-policy  /privacy.html  301
+# Common-language legal aliases. Cloudflare Pages strips `.html` from
+# public URLs, so redirect aliases to extensionless documents. Redirecting
+# /tos -> /tos.html loops with the platform's /tos.html -> /tos canonicalizer.
+/terms       /tos          301
+/terms-of-service  /tos    301
+/disclaimer  /legal-fence  301
+/legal       /legal-fence  301
+/privacy-policy  /privacy  301
 
 # Human-rights / security aliases used by trust.json and purchasing pages.
 /data_subject_rights.html  /docs/compliance/data_subject_rights/  301

@@ -32,7 +32,6 @@ from jpintel_mcp.api.middleware.language_resolver import (
     resolve_lang,
 )
 
-
 # ---------------------------------------------------------------------------
 # Pure-function tests (no app, no fixtures)
 # ---------------------------------------------------------------------------
@@ -210,22 +209,16 @@ def test_query_param_lang_ja_wins(lang_client: TestClient) -> None:
 
 def test_query_param_overrides_accept_language(lang_client: TestClient) -> None:
     """`?lang=en` beats `Accept-Language: ja` (and vice-versa)."""
-    res = lang_client.get(
-        "/lang_probe?lang=en", headers={"Accept-Language": "ja-JP,ja;q=0.9"}
-    )
+    res = lang_client.get("/lang_probe?lang=en", headers={"Accept-Language": "ja-JP,ja;q=0.9"})
     assert res.json() == {"lang": "en"}
 
-    res = lang_client.get(
-        "/lang_probe?lang=ja", headers={"Accept-Language": "en-US,en;q=0.9"}
-    )
+    res = lang_client.get("/lang_probe?lang=ja", headers={"Accept-Language": "en-US,en;q=0.9"})
     assert res.json() == {"lang": "ja"}
 
 
 def test_accept_language_en_us_ja(lang_client: TestClient) -> None:
     """`Accept-Language: en-US,ja` → en (en-US has implicit q=1.0)."""
-    res = lang_client.get(
-        "/lang_probe", headers={"Accept-Language": "en-US,ja"}
-    )
+    res = lang_client.get("/lang_probe", headers={"Accept-Language": "en-US,ja"})
     assert res.json() == {"lang": "en"}
 
 
@@ -240,9 +233,7 @@ def test_accept_language_japanese_browser(lang_client: TestClient) -> None:
 
 def test_accept_language_unsupported_falls_back_to_ja(lang_client: TestClient) -> None:
     """`Accept-Language: fr,de` → no supported tags → default ``"ja"``."""
-    res = lang_client.get(
-        "/lang_probe", headers={"Accept-Language": "fr,de,es"}
-    )
+    res = lang_client.get("/lang_probe", headers={"Accept-Language": "fr,de,es"})
     assert res.json() == {"lang": "ja"}
 
 
@@ -254,9 +245,7 @@ def test_unsupported_query_lang_silently_dropped(lang_client: TestClient) -> Non
     assert res.json() == {"lang": "ja"}
 
     # With Accept-Language: en — header wins.
-    res = lang_client.get(
-        "/lang_probe?lang=fr", headers={"Accept-Language": "en"}
-    )
+    res = lang_client.get("/lang_probe?lang=fr", headers={"Accept-Language": "en"})
     assert res.json() == {"lang": "en"}
 
 
@@ -322,9 +311,7 @@ def test_make_error_lang_ja_explicit_matches_default() -> None:
     body_with = make_error(
         "rate_limit_exceeded", request=fake_request, request_id="01TESTREQID00000000000000"
     )
-    body_without = make_error(
-        "rate_limit_exceeded", request_id="01TESTREQID00000000000000"
-    )
+    body_without = make_error("rate_limit_exceeded", request_id="01TESTREQID00000000000000")
     assert body_with == body_without
 
 

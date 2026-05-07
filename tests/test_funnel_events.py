@@ -164,6 +164,44 @@ def test_funnel_event_large_properties_remain_valid_json(client, seeded_db: Path
     assert len(raw.encode("utf-8")) <= 512
 
 
+def test_funnel_event_accepts_advisor_handoff_events(client, seeded_db: Path) -> None:
+    _clear_funnel_events(seeded_db)
+
+    response = client.post(
+        "/v1/funnel/event",
+        json={
+            "event": "advisor_handoff_created",
+            "page": "/advisors.html?handoff_token=hpkt_secret",
+            "session_id": "advisor-handoff-session",
+            "properties": {
+                "handoff_stage": "created",
+                "has_known_gaps": True,
+            },
+        },
+    )
+
+    assert response.status_code == 202, response.text
+
+    conn = sqlite3.connect(seeded_db)
+    conn.row_factory = sqlite3.Row
+    try:
+        row = conn.execute(
+            "SELECT event_name, page, session_id, properties_json "
+            "FROM funnel_events ORDER BY id DESC LIMIT 1"
+        ).fetchone()
+    finally:
+        conn.close()
+
+    assert row is not None
+    assert row["event_name"] == "advisor_handoff_created"
+    assert row["page"] == "/advisors.html"
+    assert row["session_id"] == "advisor-handoff-session"
+    assert json.loads(row["properties_json"]) == {
+        "handoff_stage": "created",
+        "has_known_gaps": True,
+    }
+
+
 def test_funnel_event_rejects_oversized_body(client, seeded_db: Path) -> None:
     _clear_funnel_events(seeded_db)
 

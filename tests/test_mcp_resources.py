@@ -4,6 +4,7 @@ Verifies that:
   - `mcp.list_resources()` returns the expected count
   - all 8 taxonomies are addressable via `autonomath://taxonomies/{slug}`
   - all 5 example profiles are addressable via `autonomath://example_profiles/{slug}`
+  - all 9 cohort persona-kit resources are addressable via `autonomath://cohort/...`
   - the 36協定 template resource is gated by AUTONOMATH_36_KYOTEI_ENABLED
   - AUTONOMATH_ENABLED=0 hides every autonomath:// resource
 
@@ -26,9 +27,11 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
-# 8 taxonomies + 5 example profiles + 15 pre-existing schema/policy/list
-# resources = 28 baseline (gate OFF). With AUTONOMATH_36_KYOTEI_ENABLED=1
-# the saburoku template adds one more → 29.
+# 15 schema/policy/list + 8 taxonomies + 5 example profiles + 9 cohort-kit
+# resources = 37 baseline (gate OFF). With AUTONOMATH_36_KYOTEI_ENABLED=1
+# the saburoku template adds one more -> 38.
+EXPECTED_DEFAULT_RESOURCE_COUNT = 37
+EXPECTED_SABUROKU_RESOURCE_COUNT = 38
 EXPECTED_TAXONOMIES = {
     "seido",
     "glossary",
@@ -45,6 +48,17 @@ EXPECTED_PROFILES = {
     "new_corp",
     "dairy_100head",
     "minimal",
+}
+EXPECTED_COHORT_RESOURCES = {
+    "autonomath://cohort/foreign_fdi.yaml",
+    "autonomath://cohort/index.json",
+    "autonomath://cohort/industry_pack.yaml",
+    "autonomath://cohort/kaikeishi.yaml",
+    "autonomath://cohort/ma_dd.yaml",
+    "autonomath://cohort/shihoshoshi.yaml",
+    "autonomath://cohort/smb_line.yaml",
+    "autonomath://cohort/subsidy_consultant.yaml",
+    "autonomath://cohort/tax_advisor.yaml",
 }
 
 
@@ -103,17 +117,20 @@ def _autonomath_uris(resources) -> set[str]:
 
 
 def test_resource_count_default(fresh_mcp):
-    """Default gate (saburoku off): 15 base + 8 taxonomies + 5 profiles = 28."""
+    """Default gate: 15 base + 8 taxonomies + 5 profiles + 9 cohorts = 37."""
     res = _list_resources(fresh_mcp)
     auton = _autonomath_uris(res)
-    assert len(auton) == 28, f"expected 28 autonomath resources, got {len(auton)}: {sorted(auton)}"
+    assert len(auton) == EXPECTED_DEFAULT_RESOURCE_COUNT, (
+        f"expected {EXPECTED_DEFAULT_RESOURCE_COUNT} autonomath resources, "
+        f"got {len(auton)}: {sorted(auton)}"
+    )
 
 
 def test_resource_count_saburoku_on(fresh_mcp_saburoku_on):
-    """With AUTONOMATH_36_KYOTEI_ENABLED=1: 28 + saburoku = 29."""
+    """With AUTONOMATH_36_KYOTEI_ENABLED=1: 37 + saburoku = 38."""
     res = _list_resources(fresh_mcp_saburoku_on)
     auton = _autonomath_uris(res)
-    assert len(auton) == 29
+    assert len(auton) == EXPECTED_SABUROKU_RESOURCE_COUNT
     assert "autonomath://templates/saburoku_kyotei" in auton
 
 
@@ -143,6 +160,13 @@ def test_all_example_profiles_registered(fresh_mcp):
     expected = {f"autonomath://example_profiles/{s}" for s in EXPECTED_PROFILES}
     missing = expected - uris
     assert not missing, f"missing example profile resources: {missing}"
+
+
+def test_all_cohort_resources_registered(fresh_mcp):
+    res = _list_resources(fresh_mcp)
+    uris = _autonomath_uris(res)
+    missing = EXPECTED_COHORT_RESOURCES - uris
+    assert not missing, f"missing cohort resources: {missing}"
 
 
 def test_taxonomies_use_json_mime(fresh_mcp):

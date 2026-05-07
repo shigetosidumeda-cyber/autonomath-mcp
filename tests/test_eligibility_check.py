@@ -172,9 +172,7 @@ def test_dynamic_check_warning_path(client, seeded_enforcement_for_eligibility):
     assert len(body["eligible_programs"]) >= 1
 
 
-def test_dynamic_check_history_window_filters_old_rows(
-    client, seeded_enforcement_for_eligibility
-):
+def test_dynamic_check_history_window_filters_old_rows(client, seeded_enforcement_for_eligibility):
     """A 2010 enforcement row falls outside the default 5-year window."""
 
     r = client.post(
@@ -193,9 +191,7 @@ def test_dynamic_check_history_window_filters_old_rows(
     assert len(body["eligible_programs"]) >= 1
 
 
-def test_dynamic_check_history_window_can_be_widened(
-    client, seeded_enforcement_for_eligibility
-):
+def test_dynamic_check_history_window_can_be_widened(client, seeded_enforcement_for_eligibility):
     """Widening the look-back window pulls the 2010 row back in."""
 
     r = client.post(
@@ -220,9 +216,7 @@ def test_dynamic_check_invalid_houjin(client, seeded_enforcement_for_eligibility
     assert r.status_code == 422
 
 
-def test_dynamic_check_unknown_houjin_returns_eligible(
-    client, seeded_enforcement_for_eligibility
-):
+def test_dynamic_check_unknown_houjin_returns_eligible(client, seeded_enforcement_for_eligibility):
     """A houjin with no enforcement history at all → every candidate is
     eligible (deterministic clean-room verdict)."""
 
@@ -257,12 +251,8 @@ def test_dynamic_check_program_id_hint_narrows_candidates(
 # ---------------------------------------------------------------------------
 
 
-def test_single_program_eligibility_blocked(
-    client, seeded_enforcement_for_eligibility
-):
-    r = client.get(
-        "/v1/eligibility/programs/UNI-test-s-1/eligibility_for/1111111111111"
-    )
+def test_single_program_eligibility_blocked(client, seeded_enforcement_for_eligibility):
+    r = client.get("/v1/eligibility/programs/UNI-test-s-1/eligibility_for/1111111111111")
     assert r.status_code == 200, r.text
     body = r.json()
     assert body["program_id"] == "UNI-test-s-1"
@@ -273,33 +263,21 @@ def test_single_program_eligibility_blocked(
     assert len(body["enforcement_hits"]) == 1
 
 
-def test_single_program_eligibility_clean_houjin(
-    client, seeded_enforcement_for_eligibility
-):
-    r = client.get(
-        "/v1/eligibility/programs/UNI-test-s-1/eligibility_for/9999999999999"
-    )
+def test_single_program_eligibility_clean_houjin(client, seeded_enforcement_for_eligibility):
+    r = client.get("/v1/eligibility/programs/UNI-test-s-1/eligibility_for/9999999999999")
     assert r.status_code == 200
     body = r.json()
     assert body["verdict"] == "eligible"
     assert body["enforcement_hits"] == []
 
 
-def test_single_program_eligibility_unknown_program(
-    client, seeded_enforcement_for_eligibility
-):
-    r = client.get(
-        "/v1/eligibility/programs/UNI-does-not-exist/eligibility_for/1111111111111"
-    )
+def test_single_program_eligibility_unknown_program(client, seeded_enforcement_for_eligibility):
+    r = client.get("/v1/eligibility/programs/UNI-does-not-exist/eligibility_for/1111111111111")
     assert r.status_code == 404
 
 
-def test_single_program_eligibility_invalid_bangou(
-    client, seeded_enforcement_for_eligibility
-):
-    r = client.get(
-        "/v1/eligibility/programs/UNI-test-s-1/eligibility_for/12345"
-    )
+def test_single_program_eligibility_invalid_bangou(client, seeded_enforcement_for_eligibility):
+    r = client.get("/v1/eligibility/programs/UNI-test-s-1/eligibility_for/12345")
     assert r.status_code == 422
 
 
@@ -309,9 +287,7 @@ def test_single_program_eligibility_invalid_bangou(
 # ---------------------------------------------------------------------------
 
 
-def test_mcp_dynamic_eligibility_check_impl(
-    client, seeded_enforcement_for_eligibility
-):
+def test_mcp_dynamic_eligibility_check_impl(client, seeded_enforcement_for_eligibility):
     from jpintel_mcp.mcp.autonomath_tools.eligibility_tools import (
         _dynamic_check_impl,
     )
@@ -329,9 +305,7 @@ def test_mcp_dynamic_eligibility_check_impl(
     assert out["_disclaimer"]
 
 
-def test_mcp_program_eligibility_for_houjin_impl(
-    client, seeded_enforcement_for_eligibility
-):
+def test_mcp_program_eligibility_for_houjin_impl(client, seeded_enforcement_for_eligibility):
     from jpintel_mcp.mcp.autonomath_tools.eligibility_tools import (
         _single_program_impl,
     )

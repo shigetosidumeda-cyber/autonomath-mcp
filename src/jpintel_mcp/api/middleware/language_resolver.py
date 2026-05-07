@@ -108,7 +108,11 @@ def _parse_query_lang(query_string: bytes | str) -> LangCode | None:
     """
     if not query_string:
         return None
-    qs = query_string.decode("ascii", errors="replace") if isinstance(query_string, bytes) else query_string
+    qs = (
+        query_string.decode("ascii", errors="replace")
+        if isinstance(query_string, bytes)
+        else query_string
+    )
     # Cheap scan: split on '&' / look for 'lang=' prefix on each segment.
     for segment in qs.split("&"):
         if not segment:

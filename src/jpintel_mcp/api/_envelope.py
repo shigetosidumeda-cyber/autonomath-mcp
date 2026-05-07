@@ -182,9 +182,7 @@ _DEFAULT_USER_MESSAGE_EN: dict[ErrorCode, str] = {
         "Monthly metered cap reached. Raise the cap via me/cap or wait for the reset at "
         "00:00 JST on the 1st."
     ),
-    "INTEGRITY_ERROR": (
-        "Data integrity check failed. Retry the same request in a few seconds."
-    ),
+    "INTEGRITY_ERROR": ("Data integrity check failed. Retry the same request in a few seconds."),
     "INTERNAL_ERROR": (
         "Internal error. Retry the same request in a few seconds. If it persists, email "
         "info@bookyou.net with error.request_id."

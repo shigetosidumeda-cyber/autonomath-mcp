@@ -65,7 +65,6 @@ import argparse
 import datetime as dt
 import hashlib
 import json
-import os
 import subprocess
 import sys
 import uuid
@@ -93,9 +92,7 @@ NPM_TARGETS = [
 
 # Base image — declared (not deep-scanned) component.
 DOCKER_BASE_IMAGE = "python:3.12-slim-bookworm"
-DOCKER_BASE_PURL = (
-    "pkg:docker/python@3.12-slim-bookworm?repository_url=docker.io%2Flibrary"
-)
+DOCKER_BASE_PURL = "pkg:docker/python@3.12-slim-bookworm?repository_url=docker.io%2Flibrary"
 
 CYCLONEDX_SPEC = "1.4"
 SCHEMA_URL = "http://cyclonedx.org/schema/bom-1.4.schema.json"
@@ -107,13 +104,10 @@ TOOL_VERSION = "1.0.0"
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def utc_now() -> str:
     """Return RFC 3339 UTC timestamp with seconds resolution."""
-    return (
-        dt.datetime.now(dt.timezone.utc)
-        .replace(microsecond=0)
-        .strftime("%Y-%m-%dT%H:%M:%SZ")
-    )
+    return dt.datetime.now(dt.UTC).replace(microsecond=0).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -179,6 +173,7 @@ def read_pyproject_version() -> str:
 # Python / pip surface
 # ---------------------------------------------------------------------------
 
+
 def run_pip_audit(extra_args: list[str], out_path: Path, dry_run: bool) -> str:
     """Invoke pip-audit and return SHA256 of resulting JSON.
 
@@ -239,6 +234,7 @@ def emit_pip_sub(req_relpath: str, label: str, dry_run: bool) -> tuple[str, int]
 # npm surface
 # ---------------------------------------------------------------------------
 
+
 def emit_npm(pkg_relpath: str, label: str, dry_run: bool) -> tuple[str, int]:
     """Parse package.json into a CycloneDX 1.4 envelope.
 
@@ -258,14 +254,21 @@ def emit_npm(pkg_relpath: str, label: str, dry_run: bool) -> tuple[str, int]:
     for section in ("dependencies", "devDependencies", "peerDependencies", "optionalDependencies"):
         for name, ver in (manifest.get(section) or {}).items():
             ver_str = ver if isinstance(ver, str) else ""
-            ver_clean = ver_str.lstrip("^~>=<= ")
+            # Strip semver-range prefix characters individually; lstrip
+            # treats its arg as a *set* but B005 flags multi-char literals
+            # as misleading, so we walk the leading chars explicitly.
+            ver_clean = ver_str
+            while ver_clean and ver_clean[0] in "^~>=<= ":
+                ver_clean = ver_clean[1:]
             purl_name = name if "/" not in name else "%2F".join(name.split("/", 1))
             components.append(
                 {
                     "type": "library",
                     "name": name,
                     "version": ver_clean,
-                    "purl": f"pkg:npm/{purl_name}@{ver_clean}" if ver_clean else f"pkg:npm/{purl_name}",
+                    "purl": f"pkg:npm/{purl_name}@{ver_clean}"
+                    if ver_clean
+                    else f"pkg:npm/{purl_name}",
                     "properties": [
                         {"name": "scope", "value": section},
                         {"name": "version_constraint", "value": ver_str},
@@ -288,6 +291,7 @@ def emit_npm(pkg_relpath: str, label: str, dry_run: bool) -> tuple[str, int]:
 # ---------------------------------------------------------------------------
 # Docker surface
 # ---------------------------------------------------------------------------
+
 
 def emit_docker(dry_run: bool) -> tuple[str, int]:
     """Record the Dockerfile FROM image as a single declared component.
@@ -329,6 +333,7 @@ def emit_docker(dry_run: bool) -> tuple[str, int]:
 # Aggregated index (public)
 # ---------------------------------------------------------------------------
 
+
 def write_index(entries: list[dict], dry_run: bool) -> None:
     """Write the public aggregated index at site/.well-known/sbom.json.
 
@@ -365,6 +370,7 @@ def write_index(entries: list[dict], dry_run: bool) -> None:
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
+
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="Generate SBOMs for jpcite supply chain")

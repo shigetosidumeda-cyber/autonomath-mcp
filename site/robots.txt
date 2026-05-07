@@ -35,12 +35,19 @@ Allow: /llms-full.txt
 Allow: /llms-full.en.txt
 Allow: /facts.html
 Allow: /en/facts.html
-Allow: /openapi.json
 Allow: /openapi.agent.json
+Allow: /openapi/v1.json
+Allow: /openapi/agent.json
+Allow: /v1/openapi.json
+Allow: /v1/openapi.agent.json
 Allow: /docs/openapi/v1.json
 Allow: /docs/openapi/agent.json
 Allow: /mcp-server.json
 Allow: /server.json
+Allow: /.well-known/mcp.json
+Allow: /.well-known/trust.json
+Allow: /.well-known/security.txt
+Allow: /.well-known/sbom.json
 Allow: /.well-known/
 Disallow: /admin/
 Disallow: /_internal/
@@ -89,8 +96,11 @@ Allow: /llms-full.txt
 Allow: /llms-full.en.txt
 Allow: /facts.html
 Allow: /en/facts.html
-Allow: /openapi.json
 Allow: /openapi.agent.json
+Allow: /openapi/v1.json
+Allow: /openapi/agent.json
+Allow: /v1/openapi.json
+Allow: /v1/openapi.agent.json
 Allow: /docs/openapi/v1.json
 Allow: /docs/openapi/agent.json
 # API host canonical:
@@ -99,6 +109,10 @@ Allow: /docs/openapi/agent.json
 Allow: /mcp-server.json
 Allow: /server.json
 Allow: /v1/healthz
+Allow: /.well-known/mcp.json
+Allow: /.well-known/trust.json
+Allow: /.well-known/security.txt
+Allow: /.well-known/sbom.json
 Allow: /.well-known/
 Disallow: /admin/
 Disallow: /_internal/

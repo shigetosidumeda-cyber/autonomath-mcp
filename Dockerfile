@@ -109,6 +109,9 @@ ENV TRANSFORMERS_CACHE=/models \
 # are available to the entrypoint.
 COPY src/ /app/src/
 COPY scripts/ /app/scripts/
+# API discovery endpoint `/v1/mcp-server.json` reads this root manifest at
+# runtime so AI/MCP importers can discover jpcite from api.jpcite.com too.
+COPY mcp-server.json /app/mcp-server.json
 
 # -- baked seed data (jpintel.db + unified_registry.json) --
 # /seed/jpintel.db (~330 MB) and /seed/unified_registry.json (~54 MB) are

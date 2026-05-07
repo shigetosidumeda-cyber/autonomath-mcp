@@ -284,13 +284,16 @@ async def verify_answer(
         )
 
     # 2. Match each claim against the corpus.
-    conn = _open_autonomath_ro()
+    # Use a separate variable for the read-only autonomath connection so we
+    # don't shadow the `conn: DbDep` parameter (which `log_usage` needs at
+    # the bottom of this function). 2026-05-07 R8 mypy bughunt.
+    autonomath_conn: sqlite3.Connection | None = _open_autonomath_ro()
     try:
         claim_results: list[ClaimResult] = []
         per_claim_payload: list[dict[str, Any]] = []
         all_signals: list[str] = []
         for c in claims:
-            match = match_to_corpus(c, conn)
+            match = match_to_corpus(c, autonomath_conn)
             sources_match = match.matched_jpcite_record is not None
             cr = ClaimResult(
                 claim=c.text,
@@ -313,9 +316,9 @@ async def verify_answer(
             )
             all_signals.extend(match.signals)
     finally:
-        if conn is not None:
+        if autonomath_conn is not None:
             with contextlib.suppress(Exception):  # noqa: BLE001
-                conn.close()
+                autonomath_conn.close()
 
     # 3. HEAD-fetch claimed_sources in parallel.
     sources = await check_source_alive(payload.claimed_sources)

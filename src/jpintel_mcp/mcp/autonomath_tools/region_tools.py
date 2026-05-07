@@ -196,8 +196,7 @@ def _fetch_municipality(
             "LIMIT ?"
         )
         return [
-            _row_to_program(r)
-            for r in conn.execute(sql, (pref_name, muni_name, limit)).fetchall()
+            _row_to_program(r) for r in conn.execute(sql, (pref_name, muni_name, limit)).fetchall()
         ]
     sql = (  # nosec B608
         f"SELECT {_select_cols()} FROM programs "
@@ -237,9 +236,7 @@ def _count_prefecture(conn: sqlite3.Connection, pref_name: str) -> int:
     return int(row["n"]) if row else 0
 
 
-def _count_municipality(
-    conn: sqlite3.Connection, pref_name: str | None, muni_name: str
-) -> int:
+def _count_municipality(conn: sqlite3.Connection, pref_name: str | None, muni_name: str) -> int:
     if pref_name:
         row = conn.execute(
             "SELECT COUNT(*) AS n FROM programs "
@@ -305,8 +302,7 @@ def _impl_programs_by_region(region_code: str, limit: int = 20) -> dict[str, Any
             "prefecture": _count_prefecture(db, pref_name) if pref_name else 0,
             "municipality": (
                 _count_municipality(db, pref_name, region["name_ja"])
-                if region["region_level"]
-                in ("municipality", "designated_city", "designated_ward")
+                if region["region_level"] in ("municipality", "designated_city", "designated_ward")
                 else 0
             ),
         }
@@ -351,8 +347,7 @@ def _impl_region_coverage(region_code: str) -> dict[str, Any]:
             "prefecture": _count_prefecture(db, pref_name) if pref_name else 0,
             "municipality": (
                 _count_municipality(db, pref_name, region["name_ja"])
-                if region["region_level"]
-                in ("municipality", "designated_city", "designated_ward")
+                if region["region_level"] in ("municipality", "designated_city", "designated_ward")
                 else 0
             ),
         }

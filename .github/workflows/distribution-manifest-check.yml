@@ -48,6 +48,13 @@ jobs:
         run: |
           .venv/bin/python scripts/check_distribution_manifest_drift.py
 
+      - name: GEO readiness guard
+        # Pure static scan of public AI-agent discovery surfaces.
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          .venv/bin/python scripts/check_geo_readiness.py
+
       - name: Runtime distribution probe
         # Imports jpintel_mcp.api.main:app + jpintel_mcp.mcp.server:mcp and
         # verifies len(app.routes) + len(mcp._tool_manager.list_tools())

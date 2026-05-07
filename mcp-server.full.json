@@ -674,6 +674,276 @@
     "meti",
     "jfc"
   ],
+  "resources": [
+    {
+      "uri": "autonomath://schema/data_model",
+      "name": "Data Model",
+      "description": "Canonical DB schema overview (tables, columns, relationships).",
+      "mimeType": "text/markdown",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://schema/record_kinds",
+      "name": "record_kind enum",
+      "description": "Discriminator values for am_entities.record_kind.",
+      "mimeType": "text/markdown",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://schema/envelope",
+      "name": "Response envelope schema (v2)",
+      "description": "Canonical JSON envelope shape every tool returns.",
+      "mimeType": "text/markdown",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://policy/primary_source",
+      "name": "Primary-Source Policy",
+      "description": "Rule that every fact must trace to a government primary source.",
+      "mimeType": "text/markdown",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://policy/no_hallucination",
+      "name": "Evidence Grounding Policy",
+      "description": "Hard rules the client LLM must follow when speaking on top of jpcite data.",
+      "mimeType": "text/markdown",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://list/authorities",
+      "name": "Authority canonical list",
+      "description": "All authority_canonical values in the DB, refreshed daily.",
+      "mimeType": "text/markdown",
+      "updateFrequency": "daily"
+    },
+    {
+      "uri": "autonomath://list/prefectures",
+      "name": "47 Prefectures",
+      "description": "JIS X 0401 two-digit prefecture codes and names.",
+      "mimeType": "text/markdown",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://list/program_kinds",
+      "name": "program_kind enum",
+      "description": "Sub-type vocabulary for record_kind=program.",
+      "mimeType": "text/markdown",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://list/intent_types",
+      "name": "Intent types (i01–i10)",
+      "description": "The 10 pre-mapped query intents.",
+      "mimeType": "text/markdown",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://list/graph_edge_types",
+      "name": "Graph edge types",
+      "description": "The 11 edge types in am_relation.",
+      "mimeType": "text/markdown",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://list/certification_kinds",
+      "name": "Certification kinds",
+      "description": "Observed distribution of certification sub-kinds.",
+      "mimeType": "text/markdown",
+      "updateFrequency": "daily"
+    },
+    {
+      "uri": "autonomath://list/target_profiles",
+      "name": "Target profile vocabulary",
+      "description": "Observed target_types values (drifting vocabulary — use ALIAS).",
+      "mimeType": "text/markdown",
+      "updateFrequency": "daily"
+    },
+    {
+      "uri": "autonomath://stats/freshness",
+      "name": "Freshness snapshot",
+      "description": "Row counts and last updated_at across record_kind.",
+      "mimeType": "text/markdown",
+      "updateFrequency": "hourly"
+    },
+    {
+      "uri": "autonomath://schema/tool_manifest",
+      "name": "Tool manifest (summary)",
+      "description": "Quick reference for the 23 tools; full manifest is at docs/mcp_tool_manifest.json.",
+      "mimeType": "text/markdown",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://policy/tos_excerpt",
+      "name": "Terms of Service excerpt",
+      "description": "Key ToS clauses relevant to LLM clients.",
+      "mimeType": "text/markdown",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://taxonomies/seido",
+      "name": "Taxonomy: seido",
+      "description": "制度 master taxonomy (補助金 / 助成金 / 融資 / 税制 / 認定制度 codes + parent groupings). Static reference data served by jpcite.",
+      "mimeType": "application/json",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://taxonomies/glossary",
+      "name": "Taxonomy: glossary",
+      "description": "用語 glossary — Japanese subsidy / loan / tax terminology with canonical labels. Static reference data served by jpcite.",
+      "mimeType": "application/json",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://taxonomies/money_types",
+      "name": "Taxonomy: money_types",
+      "description": "助成区分 enum — 補助金 / 助成金 / 交付金 / 融資 / 保証 / 税制 etc. with sub-types. Static reference data served by jpcite.",
+      "mimeType": "application/json",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://taxonomies/obligations",
+      "name": "Taxonomy: obligations",
+      "description": "Post-award 義務 catalog (報告 / 取得財産管理 / 返還事由 etc.) keyed by 制度 code. Static reference data served by jpcite.",
+      "mimeType": "application/json",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://taxonomies/dealbreakers",
+      "name": "Taxonomy: dealbreakers",
+      "description": "Dealbreaker rules — disqualifying conditions per 制度 (税滞納 / 暴排 / 倒産 etc.). Static reference data served by jpcite.",
+      "mimeType": "application/json",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://taxonomies/sector_combos",
+      "name": "Taxonomy: sector_combos",
+      "description": "Sector-combination matrix — which 制度 combine cleanly across industry / size axes. Static reference data served by jpcite.",
+      "mimeType": "application/json",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://taxonomies/crop_library",
+      "name": "Taxonomy: crop_library",
+      "description": "一次産業 crop library — 品目コード + 標準収量 + 標準作期 + 制度マッピング. Static reference data served by jpcite.",
+      "mimeType": "application/json",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://taxonomies/exclusion_rules",
+      "name": "Taxonomy: exclusion_rules",
+      "description": "制度併用ルール — 制度間の併給制限 / 重複申請禁止 / 排他条件. Static reference data served by jpcite.",
+      "mimeType": "application/json",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://example_profiles/ichigo_20a",
+      "name": "Example profile: ichigo_20a",
+      "description": "Type A: 新規就農個人 — いちご 20a 施設栽培 (埼玉). Reference shape for 個人事業主 intake. PII-clean reference payload — copy-paste seed for prescreen / DD / eligibility tools.",
+      "mimeType": "application/json",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://example_profiles/rice_200a",
+      "name": "Example profile: rice_200a",
+      "description": "Type D: 集落営農 — 水稲 200a + 大豆輪作 (新潟). Reference shape for 大規模法人 intake. PII-clean reference payload — copy-paste seed for prescreen / DD / eligibility tools.",
+      "mimeType": "application/json",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://example_profiles/new_corp",
+      "name": "Example profile: new_corp",
+      "description": "Type C: 法人参入 — 設立 5 年以内 / 施設トマト 40a (千葉). Reference shape for 新設法人 intake. PII-clean reference payload — copy-paste seed for prescreen / DD / eligibility tools.",
+      "mimeType": "application/json",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://example_profiles/dairy_100head",
+      "name": "Example profile: dairy_100head",
+      "description": "Type B: 既存農家 — フリーストール 100 頭酪農拡張 (北海道). Reference shape for 既存事業者 intake. PII-clean reference payload — copy-paste seed for prescreen / DD / eligibility tools.",
+      "mimeType": "application/json",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://example_profiles/minimal",
+      "name": "Example profile: minimal",
+      "description": "Minimal viable baseline — required-only fields. Use for null / edge-case testing. PII-clean reference payload — copy-paste seed for prescreen / DD / eligibility tools.",
+      "mimeType": "application/json",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://cohort/tax_advisor.yaml",
+      "name": "Cohort kit: 税理士事務所",
+      "description": "DEEP-34 persona kit for 税理士事務所 (税理士法 §52). System prompt + few-shot + tool_routing + disclaimer envelope.",
+      "mimeType": "application/yaml",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://cohort/kaikeishi.yaml",
+      "name": "Cohort kit: 公認会計士",
+      "description": "DEEP-34 persona kit for 公認会計士 (公認会計士法 §47条の2). System prompt + few-shot + tool_routing + disclaimer envelope.",
+      "mimeType": "application/yaml",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://cohort/shihoshoshi.yaml",
+      "name": "Cohort kit: 司法書士",
+      "description": "DEEP-34 persona kit for 司法書士 (司法書士法 §3). System prompt + few-shot + tool_routing + disclaimer envelope.",
+      "mimeType": "application/yaml",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://cohort/subsidy_consultant.yaml",
+      "name": "Cohort kit: 補助金 consultant",
+      "description": "DEEP-34 persona kit for 補助金 consultant (行政書士法 §1). System prompt + few-shot + tool_routing + disclaimer envelope.",
+      "mimeType": "application/yaml",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://cohort/ma_dd.yaml",
+      "name": "Cohort kit: M&A デューデリ",
+      "description": "DEEP-34 persona kit for M&A デューデリ (弁護士法 §72). System prompt + few-shot + tool_routing + disclaimer envelope.",
+      "mimeType": "application/yaml",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://cohort/foreign_fdi.yaml",
+      "name": "Cohort kit: FDI",
+      "description": "DEEP-34 persona kit for FDI (外国法事務弁護士 boundary). System prompt + few-shot + tool_routing + disclaimer envelope.",
+      "mimeType": "application/yaml",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://cohort/smb_line.yaml",
+      "name": "Cohort kit: 中小 LINE",
+      "description": "DEEP-34 persona kit for 中小 LINE (景表法 §5). System prompt + few-shot + tool_routing + disclaimer envelope.",
+      "mimeType": "application/yaml",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://cohort/industry_pack.yaml",
+      "name": "Cohort kit: 建設/製造/不動産",
+      "description": "DEEP-34 persona kit for 建設/製造/不動産 (業法 cohort 特化なし (横断 §52 / §47条の2)). System prompt + few-shot + tool_routing + disclaimer envelope.",
+      "mimeType": "application/yaml",
+      "updateFrequency": "static"
+    },
+    {
+      "uri": "autonomath://cohort/index.json",
+      "name": "Cohort kit index (8 cohorts)",
+      "description": "DEEP-34 cohort meta. 8 slugs + 1 line description + version.",
+      "mimeType": "application/json",
+      "updateFrequency": "static"
+    }
+  ],
+  "resources_gated": [
+    {
+      "uri": "autonomath://templates/saburoku_kyotei",
+      "name": "36協定 template (時間外労働・休日労働協定届)",
+      "description": "36協定 (労基法 §36) draft template. The output is a draft requiring qualified professional confirmation; do not file as-is.",
+      "mimeType": "text/plain",
+      "updateFrequency": "static"
+    }
+  ],
   "_meta": {
     "io.modelcontextprotocol.registry/publisher-provided": {
       "program_count_searchable": 11601,

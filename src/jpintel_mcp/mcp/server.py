@@ -9328,9 +9328,7 @@ def list_active_disaster_programs(
         results = [
             {
                 **{k: row[k] for k in row.keys()},  # noqa: SIM118 — sqlite3.Row needs .keys()
-                "matched_disaster_types": _classify_row_disaster_types(
-                    row["primary_name"] or ""
-                ),
+                "matched_disaster_types": _classify_row_disaster_types(row["primary_name"] or ""),
             }
             for row in rows
         ]
