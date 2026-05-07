@@ -15,6 +15,17 @@ Sister narrative case study: `docs/integrations/composite-vs-multicall.md`.
 > returned 200; otherwise calibrated fallback (140 ms / naive call,
 > 180 ms / composite, derived from Wave 21 launch-walk p50).
 
+Machine-readable row provenance:
+
+```yaml
+real_calls_total: 1
+synthesized_count: 49
+result_kind_breakdown:
+  real: 1
+  synth: 20
+  fallback: 29
+```
+
 ---
 
 ## 1. Executive summary
