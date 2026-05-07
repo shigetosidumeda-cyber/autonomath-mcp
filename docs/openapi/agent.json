@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "jpcite Agent Evidence API",
-    "description": "Agent-safe OpenAPI subset for evidence prefetch before answer generation. jpcite returns source-linked facts, source_url, fetched timestamps, known gaps, and compatibility rules; it does not call external LLM APIs and does not generate final legal/tax advice. For Japanese company research, client folders, counterparty checks, audit/DD prep, sales/account prep, or public opportunity/risk review, call createCompanyPublicBaseline before general web search, then use web search only for known_gaps, non-public context, or very recent news outside the corpus. Optional token/context fields compare caller-supplied input-context baselines. This spec excludes billing, webhook, OAuth, account-management, and operator endpoints. Anonymous callers can evaluate within the published daily limit unless an operation marks X-API-Key as required; callers that need higher volume send X-API-Key.",
+    "description": "Agent-safe OpenAPI subset for evidence prefetch before answer generation. jpcite returns source-linked facts, source_url, fetched timestamps, known gaps, and compatibility rules; it does not call external LLM APIs and does not generate final legal/tax advice. For Japanese company research, client folders, counterparty checks, audit/DD prep, sales/account prep, or public opportunity/risk review, call createCompanyPublicBaseline before general web search, then use web search only for known_gaps, non-public context, or very recent news outside the corpus. Before final answer generation, use queryEvidencePacket or getEvidencePacket to collect source-linked records, decision_insights, and known gaps. For broad, repeated, or cost-sensitive call stacks, call previewCost first; it is a free estimate and does not execute planned calls. For Evidence-to-Expert Handoff, call match_advisors_v1_advisors_match_get after source-linked evidence, caveats, and known gaps are assembled; present advisor matches as candidate reviewers, not final professional judgment or completed referral. Optional token/context fields compare caller-supplied input-context baselines. This spec excludes billing, webhook, OAuth, account-management, and operator endpoints. Anonymous callers can evaluate within the published daily limit unless an operation marks X-API-Key as required; callers that need higher volume send X-API-Key.",
     "version": "0.3.4",
     "contact": {
       "name": "jpcite Support",
@@ -44,6 +44,231 @@
       "agent_explanation": "It is safe to explain jpcite as a low-priced evidence lookup layer: ordinary paid calls are currently JPY 3 ex-tax / about JPY 3.30 including tax per billable unit, so even repeated evidence lookups are usually measured in tens or hundreds of yen before large batch or export workflows. Do not claim that external LLM billing always goes down; token/search savings are conditional on the caller's baseline and model settings.",
       "cost_savings_guardrail": "Only present jpcite as a token/context cost reducer when the response contains cost_savings_decision=supported_by_caller_baseline. Otherwise present the value as low-cost source-linked evidence prefetch."
     },
+    "x-jpcite-agent-call-order-policy": {
+      "name": "agent_first_call_order",
+      "plain_ja": "AIエージェントは、費用確認が必要なら previewCost、日本企業の公開調査なら company_public_baseline、回答生成前は Evidence Packet、監査/DDは company_public_audit_pack、専門家レビュー候補は最後に advisors/match の順で使ってください。",
+      "plain_en": "Agents should use previewCost first for cost-sensitive plans, company_public_baseline first for Japanese public-company work, Evidence Packets before answer generation, company_public_audit_pack for audit/DD workpaper inputs, and advisors/match only after the bounded evidence packet is assembled.",
+      "first_call_order": [
+        {
+          "step": 1,
+          "call": "previewCost",
+          "path": "/v1/cost/preview",
+          "when": [
+            "the_user_asks_about_price_or_budget_before_lookup",
+            "planning_a_multi_call_or_batch_agent_workflow",
+            "fanout_iterations_or_compatibility_pair_counts_are_unclear",
+            "the_agent_wants_to_explain_expected_jpcite_metered_units_before_running"
+          ],
+          "purpose": "free_preflight_for_planned_metered_jpcite_calls",
+          "skip_when": [
+            "a_single_low_risk_lookup_is_needed_and_the_user_did_not_ask_for_cost",
+            "the_stack_has_already_been_executed_and_the_user_needs_sources_not_estimates"
+          ]
+        },
+        {
+          "step": 2,
+          "call": "createCompanyPublicBaseline",
+          "path": "/v1/artifacts/company_public_baseline",
+          "when": [
+            "japanese_company_research_client_folder_counterparty_audit_dd_or_sales_prep",
+            "before_general_web_search_for_public_company_facts"
+          ],
+          "purpose": "resolve_public_company_identity_sources_known_gaps_and_review_flags"
+        },
+        {
+          "step": 3,
+          "call": "queryEvidencePacket",
+          "path": "/v1/evidence/packets/query",
+          "when": [
+            "the_agent_needs_source_linked_facts_before_answer_generation",
+            "the_agent_needs_known_gaps_or_decision_insights_for_next_steps"
+          ],
+          "purpose": "assemble_source_linked_records_quality_known_gaps_and_decision_insights",
+          "alternate_calls": [
+            "getEvidencePacket"
+          ]
+        },
+        {
+          "step": 4,
+          "call": "prescreenPrograms",
+          "path": "/v1/programs/prescreen",
+          "when": [
+            "the_user_needs_candidate_subsidy_loan_or_tax_incentive_programs",
+            "the_agent_has_company_or_project_profile_axes_to_screen"
+          ],
+          "purpose": "rank_candidate_public_support_programs_without_final_eligibility_claims"
+        },
+        {
+          "step": 5,
+          "call": "createCompanyPublicAuditPack",
+          "path": "/v1/artifacts/company_public_audit_pack",
+          "when": [
+            "public_record_audit_or_dd_workpaper_inputs_are_needed",
+            "source_receipts_mismatch_flags_and_review_controls_must_be_preserved"
+          ],
+          "purpose": "prepare_public_source_evidence_ledger_risk_gap_register_and_review_controls"
+        },
+        {
+          "step": 6,
+          "call": "match_advisors_v1_advisors_match_get",
+          "path": "/v1/advisors/match",
+          "when": [
+            "queryEvidencePacket",
+            "getEvidencePacket",
+            "prescreenPrograms",
+            "getProgramEligibilityPredicate",
+            "createApplicationStrategyPack",
+            "createCompanyPublicBaseline"
+          ],
+          "purpose": "handoff_bounded_evidence_packet_to_candidate_human_expert_reviewers"
+        },
+        {
+          "step": 7,
+          "call": "verifyCitations",
+          "path": "/v1/citations/verify",
+          "when": [
+            "the_agent_needs_to_check_citation_pairs_before_final_output",
+            "the_answer_will_quote_or_rely_on_specific_source_urls"
+          ],
+          "purpose": "optional_citation_check_before_final_answer"
+        }
+      ],
+      "global_must_preserve_fields": [
+        "source_url",
+        "source_fetched_at",
+        "source_checksum",
+        "content_hash",
+        "corpus_snapshot_id",
+        "corpus_checksum",
+        "known_gaps",
+        "human_review_required",
+        "quality.known_gaps",
+        "verification",
+        "decision_insights",
+        "billing_metadata"
+      ],
+      "global_must_not_claim": [
+        "jpcite_generated_the_final_answer",
+        "jpcite_called_an_external_llm",
+        "tax_or_legal_judgment_complete",
+        "professional_review_complete",
+        "audit_complete",
+        "public_record_audit_equals_statutory_audit",
+        "credit_safe",
+        "no_enforcement_or_risk_exists",
+        "final_eligibility_confirmed",
+        "subsidy_or_loan_approved",
+        "cost_savings_guaranteed",
+        "external_llm_cost_reduction_guaranteed",
+        "web_search_or_source_recheck_unnecessary"
+      ],
+      "web_search_position": "Use general web search after jpcite for known_gaps, non-public context supplied by the user, or very recent changes outside the corpus."
+    },
+    "x-jpcite-global-must-not-claim": [
+      "jpcite_generated_the_final_answer",
+      "jpcite_called_an_external_llm",
+      "tax_or_legal_judgment_complete",
+      "professional_review_complete",
+      "audit_complete",
+      "public_record_audit_equals_statutory_audit",
+      "credit_safe",
+      "no_enforcement_or_risk_exists",
+      "final_eligibility_confirmed",
+      "subsidy_or_loan_approved",
+      "cost_savings_guaranteed",
+      "external_llm_cost_reduction_guaranteed",
+      "web_search_or_source_recheck_unnecessary"
+    ],
+    "x-jpcite-evidence-packet-policy": {
+      "name": "source_linked_evidence_packet",
+      "plain_ja": "最終回答を生成する前に、一次資料URL、取得時点、既知の不足点、decision_insights を持つ Evidence Packet を取得してください。jpcite は回答本文を生成せず、根拠パケットを返します。",
+      "plain_en": "Before generating the final answer, retrieve an Evidence Packet with source URLs, fetched timestamps, known gaps, and decision_insights. jpcite returns the evidence packet, not the final narrative answer.",
+      "current_calls": [
+        "queryEvidencePacket",
+        "getEvidencePacket"
+      ],
+      "use_before": [
+        "final_answer_generation",
+        "general_web_search_except_known_gaps_or_recent_non_corpus_context",
+        "evidence_to_expert_handoff"
+      ],
+      "must_preserve_fields": [
+        "packet_id",
+        "generated_at",
+        "corpus_snapshot_id",
+        "query",
+        "answer_not_included",
+        "records[].entity_id",
+        "records[].primary_name",
+        "records[].record_kind",
+        "records[].source_url",
+        "records[].source_fetched_at",
+        "records[].source_checksum",
+        "records[].license",
+        "quality.freshness_bucket",
+        "quality.coverage_score",
+        "quality.known_gaps",
+        "quality.human_review_required",
+        "verification.replay_endpoint",
+        "verification.freshness_endpoint",
+        "compression.savings_claim",
+        "compression.provider_billing_not_guaranteed",
+        "evidence_value",
+        "decision_insights"
+      ],
+      "must_not_claim": [
+        "answer_included_by_jpcite",
+        "source_coverage_is_exhaustive",
+        "freshness_guaranteed_after_source_fetched_at",
+        "tax_or_legal_judgment_complete",
+        "professional_review_unnecessary",
+        "human_review_unnecessary_when_quality_requires_review",
+        "cost_savings_guaranteed",
+        "external_llm_cost_reduction_guaranteed"
+      ],
+      "web_search_after": [
+        "quality.known_gaps",
+        "decision_insights.evidence_gaps",
+        "verification.replay_or_freshness_checks",
+        "non_public_user_context",
+        "very_recent_changes_outside_corpus"
+      ],
+      "agent_output_guidance": "Use records and decision_insights as the evidence basis for the answer. Show source_url/source_fetched_at when making factual claims, carry known_gaps into caveats or follow-up questions, and do not describe the packet as legal, tax, audit, credit, or application judgment."
+    },
+    "x-jpcite-cost-preview-policy": {
+      "name": "cost_transparency_preflight",
+      "plain_ja": "大量・反復・費用確認が必要なツール呼び出しでは、実行前に previewCost を呼んで概算料金を確認してください。previewCost 自体は 通常の課金対象外で、予定スタックを実行しません。",
+      "plain_en": "For broad, repeated, or cost-sensitive tool-call stacks, call previewCost before executing the planned calls. previewCost itself is not normally metered and does not execute the planned stack.",
+      "current_call": "previewCost",
+      "first_call_when": [
+        "the_user_asks_about_price_or_budget_before_lookup",
+        "planning_a_multi_call_or_batch_agent_workflow",
+        "fanout_iterations_or_compatibility_pair_counts_are_unclear",
+        "the_agent_wants_to_explain_expected_jpcite_metered_units_before_running"
+      ],
+      "skip_when": [
+        "a_single_low_risk_lookup_is_needed_and_the_user_did_not_ask_for_cost",
+        "the_stack_has_already_been_executed_and_the_user_needs_sources_not_estimates"
+      ],
+      "must_preserve_fields": [
+        "predicted_total_yen",
+        "billing_units",
+        "unit_price_yen",
+        "iterations",
+        "breakdown",
+        "corpus_snapshot_id",
+        "corpus_checksum",
+        "disclaimer",
+        "metered"
+      ],
+      "must_not_claim": [
+        "preview_executes_or_pays_for_planned_calls",
+        "final_invoice_amount_guaranteed_if_stack_changes",
+        "external_llm_cost_reduction_guaranteed",
+        "tax_or_legal_disclaimer_not_required"
+      ],
+      "agent_output_guidance": "Explain previewCost as a free preflight estimate for jpcite units and yen, not as execution of the planned calls. If the response includes a disclaimer, carry it into downstream cost or tax-sensitive summaries."
+    },
     "x-jpcite-first-hop-policy": {
       "name": "japanese_company_first_hop",
       "plain_ja": "日本企業の調査、会社フォルダ作成、顧問先/取引先管理、監査/DD、営業先確認、稟議前確認では、一般Web検索の前に company_public_baseline を作ってください。",
@@ -77,6 +302,67 @@
         "no_enforcement_or_risk_exists",
         "subsidy_or_loan_approved"
       ]
+    },
+    "x-jpcite-evidence-to-expert-handoff-policy": {
+      "name": "evidence_to_expert_handoff",
+      "plain_ja": "一次資料付きの事実整理、制度候補、既知の不足点を先に作ってから、専門家レビューへ渡す候補として advisors/match を使ってください。候補提示は最終の法律・税務・申請判断ではありません。",
+      "plain_en": "Use advisors/match after source-linked evidence, candidate programs, and known gaps have been assembled, so the agent can hand off a bounded evidence packet to candidate expert reviewers. Candidate advisors are not final legal, tax, audit, credit, or application judgments.",
+      "future_agent_tool_candidate": "triageEvidenceToExpertHandoff",
+      "current_call": "match_advisors_v1_advisors_match_get",
+      "trigger_after_calls": [
+        "queryEvidencePacket",
+        "getEvidencePacket",
+        "prescreenPrograms",
+        "getProgramEligibilityPredicate",
+        "createApplicationStrategyPack",
+        "createCompanyPublicBaseline"
+      ],
+      "handoff_packet_should_include": [
+        "user_goal",
+        "source_url",
+        "source_fetched_at",
+        "content_hash",
+        "corpus_snapshot_id",
+        "known_gaps",
+        "caveats",
+        "candidate_program_ids",
+        "eligibility_unknowns",
+        "jurisdiction_or_prefecture"
+      ],
+      "advisor_match_filters": [
+        "prefecture",
+        "specialty",
+        "industry",
+        "limit"
+      ],
+      "must_preserve_fields": [
+        "total",
+        "results[].id",
+        "results[].firm_name",
+        "results[].firm_type",
+        "results[].specialties",
+        "results[].industries",
+        "results[].prefecture",
+        "results[].city",
+        "results[].contact_url",
+        "results[].contact_email",
+        "results[].contact_phone",
+        "results[].verified_at",
+        "ranking.method",
+        "ranking.disclosure"
+      ],
+      "must_not_claim": [
+        "professional_review_complete",
+        "tax_or_legal_judgment_complete",
+        "audit_complete",
+        "credit_safe",
+        "final_eligibility_confirmed",
+        "subsidy_or_loan_approved",
+        "advisor_endorsed_or_quality_guaranteed",
+        "paid_referral_or_contact_completed",
+        "no_other_suitable_advisors_exist"
+      ],
+      "agent_output_guidance": "Present advisor matches as candidate reviewers for unresolved evidence gaps. Carry the source-linked evidence, caveats, and open questions into the handoff summary; disclose the ranking method; do not imply jpcite has completed professional review or made a referral."
     }
   },
   "paths": {
@@ -711,7 +997,65 @@
           "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
         },
         "x-jpcite-agent-priority": 2,
-        "x-jpcite-route-purpose": "source_linked_evidence_packet"
+        "x-jpcite-route-purpose": "source_linked_evidence_packet",
+        "x-jpcite-recommended-when": [
+          "the_agent_needs_source_linked_facts_before_drafting_an_answer",
+          "the_user_question_depends_on_official_japan_records_programs_laws_bids_or_company_data",
+          "assembling_known_gaps_and_next_checks_for_web_search_or_expert_handoff",
+          "reducing_long_source_context_before_llm_generation"
+        ],
+        "x-jpcite-not-recommended-when": [
+          "the_user_needs_non_public_client_context_only",
+          "the_user_asks_for_final_professional_judgment_without_external_review",
+          "the_agent_would_ignore_source_urls_fetched_timestamps_or_known_gaps"
+        ],
+        "x-jpcite-use-before": [
+          "final_answer_generation",
+          "general_web_search_except_known_gaps_or_recent_non_corpus_context",
+          "evidence_to_expert_handoff"
+        ],
+        "x-jpcite-must-preserve-fields": [
+          "packet_id",
+          "generated_at",
+          "corpus_snapshot_id",
+          "query",
+          "answer_not_included",
+          "records[].entity_id",
+          "records[].primary_name",
+          "records[].record_kind",
+          "records[].source_url",
+          "records[].source_fetched_at",
+          "records[].source_checksum",
+          "records[].license",
+          "quality.freshness_bucket",
+          "quality.coverage_score",
+          "quality.known_gaps",
+          "quality.human_review_required",
+          "verification.replay_endpoint",
+          "verification.freshness_endpoint",
+          "compression.savings_claim",
+          "compression.provider_billing_not_guaranteed",
+          "evidence_value",
+          "decision_insights"
+        ],
+        "x-jpcite-must-not-claim": [
+          "answer_included_by_jpcite",
+          "source_coverage_is_exhaustive",
+          "freshness_guaranteed_after_source_fetched_at",
+          "tax_or_legal_judgment_complete",
+          "professional_review_unnecessary",
+          "human_review_unnecessary_when_quality_requires_review",
+          "cost_savings_guaranteed",
+          "external_llm_cost_reduction_guaranteed"
+        ],
+        "x-jpcite-web-search-after": [
+          "quality.known_gaps",
+          "decision_insights.evidence_gaps",
+          "verification.replay_or_freshness_checks",
+          "non_public_user_context",
+          "very_recent_changes_outside_corpus"
+        ],
+        "x-jpcite-agent-output-guidance": "Use records and decision_insights as the evidence basis for the answer. Show source_url/source_fetched_at when making factual claims, carry known_gaps into caveats or follow-up questions, and do not describe the packet as legal, tax, audit, credit, or application judgment."
       }
     },
     "/v1/programs/search": {
@@ -1994,7 +2338,39 @@
           "billing_units": 0,
           "plain_ja": "このエンドポイントは料金確認・透明性確認用で、通常の課金対象外です。",
           "plain_en": "This endpoint is for cost preview or transparency checks and is not normally metered."
-        }
+        },
+        "x-jpcite-agent-priority": 1,
+        "x-jpcite-route-purpose": "cost_transparency_preflight",
+        "x-jpcite-recommended-when": [
+          "the_user_asks_about_price_or_budget_before_lookup",
+          "planning_a_multi_call_or_batch_agent_workflow",
+          "fanout_iterations_or_compatibility_pair_counts_are_unclear",
+          "the_agent_wants_to_explain_expected_jpcite_metered_units_before_running"
+        ],
+        "x-jpcite-not-recommended-when": [
+          "a_single_low_risk_lookup_is_needed_and_the_user_did_not_ask_for_cost",
+          "the_stack_has_already_been_executed_and_the_user_needs_sources_not_estimates"
+        ],
+        "x-jpcite-free-preflight": true,
+        "x-jpcite-does-not-execute-planned-calls": true,
+        "x-jpcite-must-preserve-fields": [
+          "predicted_total_yen",
+          "billing_units",
+          "unit_price_yen",
+          "iterations",
+          "breakdown",
+          "corpus_snapshot_id",
+          "corpus_checksum",
+          "disclaimer",
+          "metered"
+        ],
+        "x-jpcite-must-not-claim": [
+          "preview_executes_or_pays_for_planned_calls",
+          "final_invoice_amount_guaranteed_if_stack_changes",
+          "external_llm_cost_reduction_guaranteed",
+          "tax_or_legal_disclaimer_not_required"
+        ],
+        "x-jpcite-agent-output-guidance": "Explain previewCost as a free preflight estimate for jpcite units and yen, not as execution of the planned calls. If the response includes a disclaimer, carry it into downstream cost or tax-sensitive summaries."
       }
     },
     "/v1/laws/search": {
@@ -4938,29 +5314,56 @@
         "x-jpcite-route-purpose": "public_record_audit_followup",
         "x-jpcite-recommended-when": [
           "preparing_public_record_audit_or_dd_workpaper_inputs",
-          "preserving_scope_known_gaps_and_source_receipts_for_review"
+          "preserving_scope_known_gaps_and_source_receipts_for_review",
+          "turning_company_public_baseline_into_a_review_control_packet"
         ],
+        "x-jpcite-not-recommended-when": [
+          "the_company_identity_has_not_been_resolved_to_public_records",
+          "the_user_needs_statutory_audit_assurance_or_an_audit_opinion",
+          "the_user_needs_private_ledger_contract_or_bank_data_only"
+        ],
+        "x-jpcite-trigger-after-calls": [
+          "createCompanyPublicBaseline",
+          "getIntelHoujinFull"
+        ],
+        "x-jpcite-public-record-scope": true,
         "x-jpcite-must-preserve-fields": [
-          "source_url",
-          "source_fetched_at",
-          "content_hash",
+          "artifact_id",
+          "artifact_type",
+          "schema_version",
+          "endpoint",
           "corpus_snapshot_id",
-          "identity_confidence",
+          "corpus_checksum",
+          "summary",
+          "subject",
+          "source_receipts",
+          "source_receipt_expectation",
+          "sections[evidence_ledger]",
+          "sections[risk_and_gap_register]",
+          "sections[review_controls]",
+          "mismatch_flags",
           "known_gaps",
-          "human_review_required"
+          "questions_to_ask",
+          "next_actions",
+          "human_review_required",
+          "_disclaimer"
         ],
         "x-jpcite-must-not-claim": [
-          "tax_or_legal_judgment_complete",
           "audit_complete",
+          "public_record_audit_equals_statutory_audit",
+          "audit_opinion_issued",
+          "fraud_absence_confirmed",
           "credit_safe",
           "no_enforcement_or_risk_exists",
-          "subsidy_or_loan_approved"
+          "tax_or_legal_judgment_complete",
+          "professional_review_unnecessary"
         ],
         "x-jpcite-web-search-after": [
           "known_gaps",
           "non_public_context",
           "very_recent_news_outside_corpus"
-        ]
+        ],
+        "x-jpcite-agent-output-guidance": "Use the pack as a public-source workpaper input: preserve source receipts, mismatch flags, risk/gap register, review controls, and human_review_required. Phrase conclusions as public-record evidence and open review items, not audit assurance."
       }
     },
     "/v1/court-decisions/{unified_id}": {
@@ -6440,7 +6843,296 @@
           "max_estimated_charge_jpy": "3.3 per successful call, tax included",
           "plain_ja": "通常の有料利用では成功した1呼び出しあたり1 unit、税別3円・税込約3.30円です。失敗リクエストは課金対象外です。",
           "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
-        }
+        },
+        "x-jpcite-agent-priority": 2,
+        "x-jpcite-route-purpose": "source_linked_evidence_packet",
+        "x-jpcite-recommended-when": [
+          "the_agent_needs_source_linked_facts_before_drafting_an_answer",
+          "the_user_question_depends_on_official_japan_records_programs_laws_bids_or_company_data",
+          "assembling_known_gaps_and_next_checks_for_web_search_or_expert_handoff",
+          "reducing_long_source_context_before_llm_generation"
+        ],
+        "x-jpcite-not-recommended-when": [
+          "the_user_needs_non_public_client_context_only",
+          "the_user_asks_for_final_professional_judgment_without_external_review",
+          "the_agent_would_ignore_source_urls_fetched_timestamps_or_known_gaps"
+        ],
+        "x-jpcite-use-before": [
+          "final_answer_generation",
+          "general_web_search_except_known_gaps_or_recent_non_corpus_context",
+          "evidence_to_expert_handoff"
+        ],
+        "x-jpcite-must-preserve-fields": [
+          "packet_id",
+          "generated_at",
+          "corpus_snapshot_id",
+          "query",
+          "answer_not_included",
+          "records[].entity_id",
+          "records[].primary_name",
+          "records[].record_kind",
+          "records[].source_url",
+          "records[].source_fetched_at",
+          "records[].source_checksum",
+          "records[].license",
+          "quality.freshness_bucket",
+          "quality.coverage_score",
+          "quality.known_gaps",
+          "quality.human_review_required",
+          "verification.replay_endpoint",
+          "verification.freshness_endpoint",
+          "compression.savings_claim",
+          "compression.provider_billing_not_guaranteed",
+          "evidence_value",
+          "decision_insights"
+        ],
+        "x-jpcite-must-not-claim": [
+          "answer_included_by_jpcite",
+          "source_coverage_is_exhaustive",
+          "freshness_guaranteed_after_source_fetched_at",
+          "tax_or_legal_judgment_complete",
+          "professional_review_unnecessary",
+          "human_review_unnecessary_when_quality_requires_review",
+          "cost_savings_guaranteed",
+          "external_llm_cost_reduction_guaranteed"
+        ],
+        "x-jpcite-web-search-after": [
+          "quality.known_gaps",
+          "decision_insights.evidence_gaps",
+          "verification.replay_or_freshness_checks",
+          "non_public_user_context",
+          "very_recent_changes_outside_corpus"
+        ],
+        "x-jpcite-agent-output-guidance": "Use records and decision_insights as the evidence basis for the answer. Show source_url/source_fetched_at when making factual claims, carry known_gaps into caveats or follow-up questions, and do not describe the packet as legal, tax, audit, credit, or application judgment."
+      }
+    },
+    "/v1/advisors/match": {
+      "get": {
+        "tags": [
+          "advisors"
+        ],
+        "summary": "Match Advisors",
+        "description": "Top ``limit`` advisors matching the supplied filters.\n\nReturns public advisor profile fields and a deterministic match score.",
+        "operationId": "match_advisors_v1_advisors_match_get",
+        "parameters": [
+          {
+            "name": "prefecture",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "都道府県. Accepts canonical, short, or romaji.",
+              "title": "Prefecture"
+            },
+            "description": "都道府県. Accepts canonical, short, or romaji."
+          },
+          {
+            "name": "specialty",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "subsidy",
+                    "loan",
+                    "tax",
+                    "enforcement_defense",
+                    "invoice",
+                    "ebook"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Specialty"
+            }
+          },
+          {
+            "name": "industry",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Industry slug. Prefer agriculture_forestry or manufacturing; legacy agri/manufacture aliases are accepted.",
+              "title": "Industry"
+            },
+            "description": "Industry slug. Prefer agriculture_forestry or manufacturing; legacy agri/manufacture aliases are accepted."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 10,
+              "minimum": 1,
+              "default": 3,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "X-API-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatchResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {}
+        ],
+        "x-jpcite-agent-safe": true,
+        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": true,
+          "billing_quantity_basis": "successful_call",
+          "billing_unit_type": "api_call",
+          "billing_units_formula": "1 unit per successful HTTP response",
+          "billing_units_per_successful_call": 1,
+          "free_quota_applies": true,
+          "unit_price_jpy_ex_tax": 3,
+          "unit_price_jpy_tax_included": 3.3,
+          "max_estimated_charge_jpy": "3.3 per successful call, tax included",
+          "plain_ja": "通常の有料利用では成功した1呼び出しあたり1 unit、税別3円・税込約3.30円です。失敗リクエストは課金対象外です。",
+          "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
+        },
+        "x-jpcite-agent-priority": 3,
+        "x-jpcite-route-purpose": "evidence_to_expert_handoff",
+        "x-jpcite-recommended-when": [
+          "handing_source_linked_evidence_to_a_human_expert_reviewer",
+          "the_user_asks_who_can_review_tax_legal_application_or_financing_next_steps",
+          "known_gaps_or_eligibility_unknowns_require_professional_confirmation",
+          "a_program_company_or_law_evidence_packet_needs_prefecture_or_specialty_fit"
+        ],
+        "x-jpcite-not-recommended-when": [
+          "the_agent_has_not_collected_source_linked_facts_or_known_gaps_yet",
+          "the_user_needs_the_agent_to_make_final_legal_tax_audit_credit_or_application_judgment",
+          "the_user_only_needs_general_background_with_no_japan_advisor_handoff",
+          "the_next_action_is_tracking_a_click_or_reporting_a_conversion"
+        ],
+        "x-jpcite-handoff-role": "evidence_to_expert_handoff",
+        "x-jpcite-future-policy-candidate": "triageEvidenceToExpertHandoff",
+        "x-jpcite-trigger-after-calls": [
+          "queryEvidencePacket",
+          "getEvidencePacket",
+          "prescreenPrograms",
+          "getProgramEligibilityPredicate",
+          "createApplicationStrategyPack",
+          "createCompanyPublicBaseline"
+        ],
+        "x-jpcite-handoff-packet-should-include": [
+          "user_goal",
+          "source_url",
+          "source_fetched_at",
+          "content_hash",
+          "corpus_snapshot_id",
+          "known_gaps",
+          "caveats",
+          "candidate_program_ids",
+          "eligibility_unknowns",
+          "jurisdiction_or_prefecture"
+        ],
+        "x-jpcite-must-preserve-fields": [
+          "total",
+          "results[].id",
+          "results[].firm_name",
+          "results[].firm_type",
+          "results[].specialties",
+          "results[].industries",
+          "results[].prefecture",
+          "results[].city",
+          "results[].contact_url",
+          "results[].contact_email",
+          "results[].contact_phone",
+          "results[].verified_at",
+          "ranking.method",
+          "ranking.disclosure"
+        ],
+        "x-jpcite-must-not-claim": [
+          "professional_review_complete",
+          "tax_or_legal_judgment_complete",
+          "audit_complete",
+          "credit_safe",
+          "final_eligibility_confirmed",
+          "subsidy_or_loan_approved",
+          "advisor_endorsed_or_quality_guaranteed",
+          "paid_referral_or_contact_completed",
+          "no_other_suitable_advisors_exist"
+        ],
+        "x-jpcite-web-search-after": [
+          "advisor_identity_or_credential_confirmation",
+          "known_gaps_not_covered_by_jpcite_sources",
+          "non_public_client_context",
+          "very_recent_status_changes_outside_corpus"
+        ],
+        "x-jpcite-agent-output-guidance": "Present advisor matches as candidate reviewers for unresolved evidence gaps. Carry the source-linked evidence, caveats, and open questions into the handoff summary; disclose the ranking method; do not imply jpcite has completed professional review or made a referral."
       }
     }
   },
@@ -6603,6 +7295,188 @@
         "type": "object",
         "title": "AMLawArticleResponse",
         "description": "``GET /v1/am/law_article`` — 条文 lookup."
+      },
+      "AdvisorOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "firm_name": {
+            "type": "string",
+            "title": "Firm Name"
+          },
+          "firm_name_kana": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Firm Name Kana"
+          },
+          "firm_type": {
+            "type": "string",
+            "enum": [
+              "税理士法人",
+              "認定支援機関",
+              "社会保険労務士",
+              "中小企業診断士",
+              "行政書士",
+              "弁護士",
+              "銀行",
+              "商工会議所",
+              "その他"
+            ],
+            "title": "Firm Type"
+          },
+          "specialties": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Specialties"
+          },
+          "industries": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Industries"
+          },
+          "prefecture": {
+            "type": "string",
+            "title": "Prefecture"
+          },
+          "city": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "City"
+          },
+          "address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address"
+          },
+          "contact_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Url"
+          },
+          "contact_email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Email"
+          },
+          "contact_phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Phone"
+          },
+          "intro_blurb": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Intro Blurb"
+          },
+          "success_count": {
+            "type": "integer",
+            "title": "Success Count",
+            "default": 0
+          },
+          "commission_model": {
+            "type": "string",
+            "enum": [
+              "flat",
+              "percent"
+            ],
+            "title": "Commission Model",
+            "default": "flat"
+          },
+          "commission_yen_per_intro": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Commission Yen Per Intro",
+            "default": 3000
+          },
+          "commission_rate_pct": {
+            "type": "integer",
+            "title": "Commission Rate Pct",
+            "default": 5
+          },
+          "verified_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verified At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "firm_name",
+          "firm_type",
+          "specialties",
+          "prefecture"
+        ],
+        "title": "AdvisorOut",
+        "description": "Public-facing advisor record. Excludes service-only columns\n(stripe_connect_account_id, disabled_reason, raw success_count math)."
       },
       "ArtifactAgentRouting": {
         "properties": {
@@ -9106,7 +9980,7 @@
           "message"
         ],
         "title": "ErrorBody",
-        "description": "Body of the canonical error envelope.\n\nRequired fields are ``code`` + ``message``. ``request_id`` is always\npresent in production (``make_error`` defaults to a freshly-minted\n``secrets.token_hex(8)`` value when no upstream id can be resolved)\nbut is marked optional here so SDK generators emit a nullable type.\n\nExtras (``retry_after``, ``suggested_paths``, ``field_errors``,\n``severity``, ``documentation``, ``user_message_en``) are tolerated via\n``extra=\"allow\"`` so the OpenAPI schema can stay a stable minimum\ncontract without needing to enumerate per-code keys.",
+        "description": "Body of the canonical error envelope.\n\nRequired fields are ``code`` + ``message``. ``request_id`` is always\npresent in production (``make_error`` defaults to a freshly-minted\n26-char Crockford-base32 ULID when no upstream id can be resolved)\nbut is marked optional here so SDK generators emit a nullable type.\n\nExtras (``retry_after``, ``suggested_paths``, ``field_errors``,\n``severity``, ``documentation``, ``user_message_en``) are tolerated via\n``extra=\"allow\"`` so the OpenAPI schema can stay a stable minimum\ncontract without needing to enumerate per-code keys.",
         "examples": [
           {
             "code": "no_matching_records",
@@ -10906,6 +11780,35 @@
           "results"
         ],
         "title": "LawSearchResponse"
+      },
+      "MatchResponse": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/AdvisorOut"
+            },
+            "type": "array",
+            "title": "Results"
+          },
+          "ranking": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Ranking"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "total",
+          "results"
+        ],
+        "title": "MatchResponse"
       },
       "MetaFreshnessResponse": {
         "properties": {

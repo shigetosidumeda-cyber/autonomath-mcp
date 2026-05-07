@@ -28,6 +28,28 @@ Quality bar lift; no new public tools, no schema changes, no count bumps. Archit
 - **Production gate**: 4/5 green at session close (last gate = manifest bump, intentionally deferred per launch CLI plan).
 - **Lint**: ruff 138 manual-fix + 232 file batch format; SIM105 zero; 14 → 5 residual (all `noqa`-justified).
 
+## Wave hardening 2026-05-07 (post-Wave-23 + 22 軸 grow, additive snapshot)
+
+> Snapshot framing: numbers below are **internal probe-time hypotheses**, not authoritative claims. Re-probe with `len(await mcp.list_tools())` + `scripts/probe_runtime_distribution.py` before bumping any manifest. Architecture-snapshot counts in §Overview remain authoritative; rows in this section reflect Round 2 R8 cohort grow + post-manifest source landings observed during the 2026-05-07 session.
+
+- **MCP runtime cohort drift**: `len(await mcp.list_tools())` now reads **136 at default gates / 140 with all 4 fix-gates ON** (probed 2026-05-07 via `.venv/bin/python` against `mcp.server`; Wave hardening (post-Wave-23 quality lift) section above asserts 139 / 146 — preserved as last intentional manifest snapshot, not re-asserted here). Gap is benign: source landings between probes are intentional (DEEP-37/44/45/49..58/64/65 plus R8 cohort matchers); manifest **hold-at-139** is unchanged. Treat the next manifest bump as the moment to re-reconcile both numbers.
+- **OpenAPI path drift**: `docs/openapi/v1.json` `.paths` length = **219** at 2026-05-07 probe (canonical `scripts/distribution_manifest.yml: openapi_path_count: 219` matches; `tests/test_distribution_manifest.py: EXPECTED_OPENAPI_PATH_COUNT = 186` is **stale** and will trip the manifest test). Architecture §Overview previously cited 184; the 219 figure includes the R8 grow surface (cohort matcher / houjin 360 / compatibility / tax chain / succession / policy upstream / case cohort / amendment alerts / cross-reference deep links). Treat as hypothesis snapshot until the next intentional manifest bump rev's the test constant.
+- **Route count**: live `app.routes` = **262** at 2026-05-07 probe; canonical manifest pinned at 229 (`scripts/distribution_manifest.yml: route_count: 229`). Delta is mostly health/static probe routes outside `/v1/*` — not user-facing. Re-probe before reconciling.
+- **22 axis cross-reference cohort (12 base + 10 R8 grow)**: `site/facts.html` lists the 12 base combination axes (制度 × 法令 / 採択 / 判例 / 行政処分 / 排他ルール / 法改正 / 地域、法令 × 条文改正、採択 × 業種規模、取引先 × 適格事業者、入札 × 制度、法人 × 処分履歴). R8 grow on 2026-05-07 added 10 additional cohort surfaces, each backed by an endpoint shipped today:
+  1. **採択事例 × 業種 × 規模 × 地域 cohort matcher** (`api/case_cohort_match.py`, `POST /v1/cases/cohort_match`).
+  2. **法人格 × 制度 matrix** (`api/compatibility.py` adjunct + M02 commit `493c000c`).
+  3. **税制 chain** (`api/tax_chain.py`, `GET /v1/tax_rules/{rule_id}/full_chain`).
+  4. **M&A / 事業承継 制度 matcher** (`api/succession.py`).
+  5. **災害復興 × 特例制度 surface** (commit `e1c53ebe`).
+  6. **policy upstream signal** (`api/policy_upstream.py`, DEEP-46).
+  7. **法人 unified houjin 360 (3-axis scoring)** (`api/houjin_360.py`).
+  8. **am_compat_matrix portfolio_optimize + pair compatibility** (`api/compatibility.py`).
+  9. **cross-reference deep link** (`programs full_context` + `laws related_programs` + `cases narrow`).
+  10. **dynamic eligibility check (行政処分 × 排他ルール)** + **amendment-alert subscription feed** + **industry benchmark / 取りこぼし制度** (paired R8 grow shipped same day).
+- **MCP server.py test coverage**: R8_TEST_COVERAGE_DEEP (commit `26e7397c`) added `tests/test_mcp_server_coverage.py` (184 tests). Coverage on `src/jpintel_mcp/mcp/server.py` lifted from audit-reported **19% baseline → 50% in isolation / 63% combined** with existing `test_mcp_tools.py` + `test_server_tools.py`. Targets _envelope_merge / _walk_and_sanitize_mcp / 11 _empty_*_hint branches / DB-backed tool surface / row builders.
+- **Production readiness loop handoff**: see `docs/_internal/PRODUCTION_READINESS_LOOP_HANDOFF_2026-05-07.md` + `PRODUCTION_DEPLOY_OPERATOR_ACK_DRAFT_2026-05-07.md` + `PRODUCTION_DEPLOY_PACKET_MANIFEST_2026-05-07.md` for the deploy gate state at session close.
+- **Honest gap**: this section is **additive** — historical strings (`11,547 programs`, `416,375 entities`, prior 139/146 / 184 figures, EXPECTED_OPENAPI_PATH_COUNT = 186) are deliberately untouched as historical-state markers per the CLAUDE.md SOT note. Use this section to read live state for new development; use §Overview / pre-existing Wave hardening for the last intentional manifest snapshot.
+
 ## Wave 23 changelog (2026-04-29 industry packs)
 
 3 new MCP tools shipped at the cohort revenue model's "Industry packs" pillar (cohort #8). Tool count 86 → **89**. New file: `src/jpintel_mcp/mcp/autonomath_tools/industry_packs.py` (gated by `AUTONOMATH_INDUSTRY_PACKS_ENABLED`, default ON). NO migration needed — `am_industry_jsic` (37 rows — JSIC major+partial medium post-dedup) already covers JSIC majors A-T; the wrappers filter `programs` by JSIC major + name keyword union and pull citations from `nta_saiketsu` + `nta_tsutatsu_index` (migration 103, ~140 saiketsu / 3,221 tsutatsu).

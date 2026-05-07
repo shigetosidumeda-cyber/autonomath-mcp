@@ -15217,6 +15217,12 @@
             "title": "Advisor Id",
             "type": "integer"
           },
+          "consent_granted": {
+            "default": false,
+            "description": "Must be true after the user explicitly agrees to leave the evidence handoff surface and contact this advisor. No referral token is minted before consent.",
+            "title": "Consent Granted",
+            "type": "boolean"
+          },
           "source_program_id": {
             "anyOf": [
               {
