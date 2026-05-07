@@ -199,6 +199,136 @@ def test_404_known_id_lookup_passes_through(seeded_db, client):
 
 
 # ---------------------------------------------------------------------------
+# 400 HTTPException integration (R8-ERR-1 P0 fix)
+# ---------------------------------------------------------------------------
+
+
+def test_400_carries_canonical_error_envelope(seeded_db):
+    """R8-ERR-1 (P0) regression guard.
+
+    Before this fix, every ``HTTPException(400, ...)`` (including the
+    Stripe webhook bad-signature path) leaked a bare
+    ``{"detail":"bad signature"}`` body — no ``code`` for branch logic,
+    no ``request_id`` for log correlation, no ``documentation`` anchor
+    for recovery. The 400 branch must now produce the same canonical
+    envelope shape as 401 / 404 / 405 / 429 / 503 while preserving
+    ``detail`` at the top level for back-compat parsers.
+    """
+    from fastapi import HTTPException, status
+
+    from jpintel_mcp.api.main import create_app
+
+    app = create_app()
+
+    def _bad() -> None:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "bad signature")
+
+    app.router.add_api_route("/_test_bad_request_envelope", _bad, methods=["GET"])
+    c = TestClient(app, raise_server_exceptions=False)
+    r = c.get("/_test_bad_request_envelope")
+    assert r.status_code == 400
+    body = r.json()
+    # Back-compat: top-level `detail` survives unchanged so existing
+    # `"signature" in r.json()["detail"]` patterns keep firing.
+    assert body["detail"] == "bad signature"
+    err = body["error"]
+    assert err["code"] == "bad_request"
+    # Canonical envelope contract: closed-enum code, plain-JA message,
+    # request_id correlated to the response header, documentation anchor.
+    assert err["user_message"]
+    assert err["user_message_en"]
+    assert err["request_id"]
+    assert err["request_id"] not in ("unset", "unknown")
+    assert err["request_id"] == r.headers["x-request-id"]
+    assert err["documentation"].endswith("#bad_request")
+    # `detail` is also preserved inside the envelope's extras for
+    # consumers that read `error.detail` exclusively.
+    assert err.get("detail") == "bad signature"
+
+
+def test_400_dict_detail_preserves_inner_keys(seeded_db):
+    """When a router emits ``HTTPException(400, {"error":"x","reason":"y"})``,
+    the inner-dict keys are merged into the envelope as extras, while
+    the original dict survives at the top-level ``detail`` for
+    back-compat. Mirrors the pattern routers like
+    ``api/billing.py`` use for richer 4xx bodies.
+    """
+    from fastapi import HTTPException, status
+
+    from jpintel_mcp.api.main import create_app
+
+    app = create_app()
+
+    def _bad_dict() -> None:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            {"error": "invalid_signature", "reason": "Stripe-Signature mismatch"},
+        )
+
+    app.router.add_api_route("/_test_bad_request_dict_envelope", _bad_dict, methods=["GET"])
+    c = TestClient(app, raise_server_exceptions=False)
+    r = c.get("/_test_bad_request_dict_envelope")
+    assert r.status_code == 400
+    body = r.json()
+    # Top-level detail keeps the original dict shape.
+    assert body["detail"] == {
+        "error": "invalid_signature",
+        "reason": "Stripe-Signature mismatch",
+    }
+    err = body["error"]
+    assert err["code"] == "bad_request"
+    # Inner dict keys are pulled through into the envelope as extras.
+    assert err["error"] == "invalid_signature"
+    assert err["reason"] == "Stripe-Signature mismatch"
+    assert err["request_id"] == r.headers["x-request-id"]
+
+
+def test_400_envelope_shape_uniform_with_other_4xx(seeded_db, client):
+    """All mapped 4xx / 5xx statuses (400 / 401 / 404 / 405 / 422 / 429 /
+    500 / 503) MUST emit ``error.code`` + ``error.request_id`` +
+    ``error.documentation``. This is the audit's "envelope shape
+    uniformity" axis (R8-ERR-1 closed when 400 joins the set).
+    """
+    from fastapi import HTTPException, status
+
+    from jpintel_mcp.api.main import create_app
+
+    app = create_app()
+
+    def _bad() -> None:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "bad signature")
+
+    app.router.add_api_route("/_test_uniform_400", _bad, methods=["GET"])
+    c = TestClient(app, raise_server_exceptions=False)
+
+    # 400
+    r400 = c.get("/_test_uniform_400")
+    assert r400.status_code == 400
+    e400 = r400.json()["error"]
+
+    # 404 (unknown route)
+    r404 = c.get("/v1/totally/unknown/route")
+    assert r404.status_code == 404
+    e404 = r404.json()["error"]
+
+    # 422 (limit out of range)
+    r422 = client.get("/v1/programs/search?limit=99999")
+    assert r422.status_code == 422
+    e422 = r422.json()["error"]
+
+    # All envelopes share the same required keys.
+    required_keys = {"code", "user_message", "request_id", "documentation"}
+    for env in (e400, e404, e422):
+        assert required_keys.issubset(env.keys()), (env.keys(), env)
+        # Closed-enum code, never blank.
+        assert env["code"]
+        # request_id is never the legacy `unset` / `unknown` sentinel.
+        assert env["request_id"] not in ("unset", "unknown")
+        # Documentation anchor matches the code.
+        assert env["documentation"].endswith(f"#{env['code']}")
+
+
+# ---------------------------------------------------------------------------
 # 422 RequestValidationError integration
 # ---------------------------------------------------------------------------
 

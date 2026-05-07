@@ -123,6 +123,17 @@ DOC_URL = "https://jpcite.com/docs/error_handling"
 #: forgets to pass an override message.
 ERROR_CODES: dict[str, dict[str, str]] = {
     # --- Input validation (4xx) ------------------------------------
+    "bad_request": {
+        "severity": "hard",
+        "user_message_ja": (
+            "リクエスト形式が不正です。署名・必須ヘッダ・JSON ボディを確認し、"
+            "詳細は detail を、復旧手順は documentation を参照してください。"
+        ),
+        "user_message_en": (
+            "Bad request — body, signature, or required header is malformed. "
+            "See `detail` for the specific cause and `documentation` for recovery steps."
+        ),
+    },
     "missing_required_arg": {
         "severity": "hard",
         "user_message_ja": (
@@ -479,6 +490,7 @@ ErrorCode = Literal[
     "subsystem_unavailable",
     "internal",
     # --- REST-layer envelope codes (used by api.main exception handlers) ---
+    "bad_request",
     "unknown_query_parameter",
     "auth_required",
     "auth_invalid",
