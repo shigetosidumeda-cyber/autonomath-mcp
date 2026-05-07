@@ -492,7 +492,7 @@ IP は raw 保存せず `HMAC-SHA256(ip, api_key_salt)` で hash 化。詳細は
   "offset": 0,
   "results": [
     {
-      "unified_id": "UNI-UNI-71f6029070",
+      "unified_id": "UNI-71f6029070",
       "primary_name": "経営開始資金",
       "tier": "S",
       "prefecture": null,
@@ -594,7 +594,7 @@ curl -H "X-API-Key: am_..." \
 
 ```json
 {
-  "unified_ids": ["UNI-UNI-71f6029070", "UNI-71f6029070", "UNI-test-a-1"],
+  "unified_ids": ["UNI-71f6029070", "UNI-185c08e0c1", "UNI-test-a-1"],
   "max_cost_jpy": 9
 }
 ```
@@ -616,7 +616,7 @@ curl -H "X-API-Key: am_..." \
 {
   "results": [
     {
-      "unified_id": "UNI-UNI-71f6029070",
+      "unified_id": "UNI-71f6029070",
       "primary_name": "経営開始資金",
       "tier": "S",
       "enriched": {"A_basics": {"...": "..."}},
@@ -660,7 +660,7 @@ curl -X POST https://api.jpcite.com/v1/programs/batch \
   -H "Idempotency-Key: 01HX..." \
   -H "X-Cost-Cap-JPY: 6" \
   -H "Content-Type: application/json" \
-  -d '{"unified_ids":["UNI-UNI-71f6029070","UNI-71f6029070"]}'
+  -d '{"unified_ids":["UNI-71f6029070","UNI-185c08e0c1"]}'
 ```
 
 ```python
