@@ -72,6 +72,26 @@ router = APIRouter(prefix="/v1/invoice_registrants", tags=["invoice_registrants"
 # ---------------------------------------------------------------------------
 
 
+_PII_NOTICE: dict[str, str] = {
+    "ja": (
+        "本APIの適格請求書発行事業者データには、個人事業主の公表情報など個人情報保護法"
+        "§17/§21 の利用目的通知・開示請求対応に関わる情報が含まれる場合があります。"
+        "利用目的、訂正・利用停止・開示請求窓口は https://jpcite.com/privacy および "
+        "info@bookyou.net を確認してください。"
+    ),
+    "en": (
+        "This API may relay publicly disclosed qualified-invoice registrant data, "
+        "including sole-proprietor information. For APPI purpose-of-use notices, "
+        "disclosure/correction requests, and contact details, see "
+        "https://jpcite.com/privacy or contact info@bookyou.net."
+    ),
+}
+
+_REDISTRIBUTION_TERMS: dict[str, bool] = {
+    "downstream_must_carry_attribution": True,
+    "downstream_must_relay_pii_notice": True,
+}
+
 _ATTRIBUTION: dict[str, Any] = {
     "source": "国税庁適格請求書発行事業者公表サイト（国税庁）",
     "source_url": "https://www.invoice-kohyo.nta.go.jp/",
@@ -81,7 +101,15 @@ _ATTRIBUTION: dict[str, Any] = {
         "本データは国税庁公表データを編集加工したものであり、原データと完全には一致しません。"
         "公表データは本API経由ではなく、発行元サイトで最新のものを確認してください。"
     ),
+    "_pii_notice": _PII_NOTICE,
+    "_redistribution_terms": _REDISTRIBUTION_TERMS,
 }
+
+
+def _inject_attribution(body: dict[str, Any]) -> dict[str, Any]:
+    """Attach the relay-required attribution block without overwriting callers."""
+    body.setdefault("_attribution", _ATTRIBUTION)
+    return body
 
 
 # 'T' + 13 digits, 14 chars total. The DB CHECK constraint enforces this

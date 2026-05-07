@@ -503,6 +503,16 @@ def get_law_article_am(
             description="条番号 — '第41条の19' / '41の19' / '41-19' 等。空白除去後に canonical 形へ正規化。",
         ),
     ],
+    lang: Annotated[
+        Literal["ja", "en"],
+        Field(
+            description=(
+                "Response language. 'ja' returns the Japanese source text; "
+                "'en' returns body_en when the e-Gov courtesy translation is available, "
+                "otherwise falls back to Japanese with a warning."
+            ),
+        ),
+    ] = "ja",
 ) -> dict[str, Any]:
     """[LAW-ARTICLE] Returns the article text from am_law_article for a (law name, article number) pair. Accepts natural notation like '租税特別措置法 第41条の19' and normalizes to canonical form. Includes last_amended + source_url. Output is search-derived; verify primary source (e-Gov) for legal interpretation.
 
@@ -532,4 +542,5 @@ def get_law_article_am(
     return law_article_tool.get_law_article(
         law_name_or_canonical_id=law_name_or_canonical_id,
         article_number=article_number,
+        lang=lang,
     )

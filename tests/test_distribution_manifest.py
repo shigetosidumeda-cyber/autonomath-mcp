@@ -38,8 +38,8 @@ DRIFT_SCRIPT = SCRIPTS_DIR / "check_distribution_manifest_drift.py"
 PROBE_SCRIPT = SCRIPTS_DIR / "probe_runtime_distribution.py"
 
 EXPECTED_TOOL_COUNT_DEFAULT_GATES = 139
-EXPECTED_ROUTE_COUNT = 269
-EXPECTED_OPENAPI_PATH_COUNT = 227
+EXPECTED_ROUTE_COUNT = 226
+EXPECTED_OPENAPI_PATH_COUNT = 186
 
 EXPECTED_WAVE6_P0_CANDIDATES = {
     "server.json",
@@ -309,7 +309,7 @@ def test_synthetic_drift_detected(tmp_path: Path) -> None:
     # clean tmp run is genuinely drift-free under the current checker.
     surface_sentence = (
         f"https://jpcite.com - autonomath-mcp exposes {expected_tool_count} "
-        "MCP tools at default gates. JPY 3/req, 3 free/day. "
+        "MCP tools at default gates. JPY 3 per billable unit, 3 free/day. "
         "github.com/shigetosidumeda-cyber/autonomath-mcp"
     )
     json_surface = {

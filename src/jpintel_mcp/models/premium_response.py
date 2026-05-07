@@ -3,13 +3,11 @@ Inspired by Autonomath's models/{adoption,client}.py + knowledge_base/provenance
 
 from __future__ import annotations
 
+from datetime import datetime  # noqa: TC003 - Pydantic resolves postponed annotations at runtime.
 from hashlib import sha256
-from typing import TYPE_CHECKING, Literal
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, computed_field, model_validator
-
-if TYPE_CHECKING:
-    from datetime import datetime
 
 QualityGrade = Literal["S", "A", "B", "C", "D"]
 ProvenanceTier = Literal["canonical", "researched", "modeled", "mock"]

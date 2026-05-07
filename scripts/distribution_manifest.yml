@@ -6,11 +6,13 @@
 # values only; downstream distribution surfaces must be edited separately.
 #
 # Last verified on 2026-05-07 JST:
-# - Public distribution surfaces use the 139-tool standard configuration.
+# - Public distribution surfaces use the 139-tool manifest floor.
+#   Runtime may exceed this while post-manifest tools are held for the next
+#   intentional manifest bump.
 # - Runtime route count is 226 and generated OpenAPI path count is 186
 #   (with --include-preview; 4 preview routes for legal/accounting/calendar).
-# - Pricing/free-tier language is consistent: JPY 3 per billable unit or
-#   request, tax-included JPY 3.30 where expanded, anonymous 3/day free.
+# - Pricing/free-tier language is consistent: JPY 3 per billable unit /
+#   ¥3 per 課金単位, tax-included JPY 3.30 where expanded, anonymous 3/day free.
 
 product: jpcite
 canonical_domains:
@@ -24,7 +26,7 @@ canonical_api_env:
   api_base: JPCITE_API_BASE
 
 pyproject_version: "0.3.4"
-tool_count_default_gates: 139  # runtime len(mcp._tool_manager.list_tools()), verified 2026-05-05 JST
+tool_count_default_gates: 139  # public manifest floor; runtime may be higher with post-manifest tools
 route_count: 226              # runtime len(app.routes), verified 2026-05-07 JST
 openapi_path_count: 186       # docs/openapi/v1.json .paths length, verified 2026-05-07 JST (--include-preview, 4 preview routes)
 searchable_programs_total: 11601
@@ -41,7 +43,7 @@ pricing_model: "metered billable unit; no subscription tiers, seat fees, or annu
 free_tier_requests_per_day: 3
 free_tier_scope: anonymous per IP
 free_tier_reset_timezone: JST
-tagline_ja: "日本の制度 139-tool MCP — 補助金/法令/判例/税制/適格事業者/法人/採択事例/行政処分/入札/融資。JPY 3/req、anon 3/day free"
+tagline_ja: "日本の制度 139-tool MCP — 補助金/法令/判例/税制/適格事業者/法人/採択事例/行政処分/入札/融資。税別 ¥3/課金単位、匿名 3回/日無料"
 
 # Read-only drift checker surfaces. Pricing/free-tier scans are intentionally
 # narrower than version/tool-count scans because some public docs link to

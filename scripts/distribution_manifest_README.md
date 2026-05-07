@@ -27,7 +27,7 @@ Pinned attributes:
 | `canonical_repo`                 | `shigetosidumeda-cyber/autonomath-mcp`     |
 | `canonical_api_env.api_key`      | `JPCITE_API_KEY`                           |
 | `canonical_api_env.api_base`     | `JPCITE_API_BASE`                          |
-| `tool_count_default_gates`       | runtime `len(mcp._tool_manager.list_tools())` |
+| `tool_count_default_gates`       | public manifest floor for `len(mcp._tool_manager.list_tools())` |
 | `route_count`                    | runtime `len(app.routes)`                  |
 | `pyproject_version`              | `pyproject.toml [project] version`         |
 | `tagline_ja`                     | the canonical 1-line Japanese tagline      |
@@ -45,8 +45,9 @@ Pinned attributes:
 
 2. **Runtime probe** — `scripts/probe_runtime_distribution.py`
    Imports `jpintel_mcp.api.main:app` + `jpintel_mcp.mcp.server:mcp` and
-   confirms the live tool / route counts match the manifest. Slow (~6 s
-   cold) because it boots the FastAPI app and FastMCP server in-process.
+   confirms the live route count matches the manifest and the live tool count
+   is at least the manifest floor. Slow (~6 s cold) because it boots the
+   FastAPI app and FastMCP server in-process.
 
 The two are paired in CI (`.github/workflows/distribution-manifest-check.yml`)
 and run on every push + PR.
@@ -59,7 +60,7 @@ surfaces are then updated to match.
 | trigger                             | fields to update                                           |
 |-------------------------------------|------------------------------------------------------------|
 | Release tag (e.g. `v0.3.2`)         | `pyproject_version`                                        |
-| New tool added at default gates     | `tool_count_default_gates` (and `tagline_ja` if mentions tools) |
+| New public manifest-floor tool bump | `tool_count_default_gates` (and `tagline_ja` if mentions tools) |
 | New route added                     | `route_count`                                              |
 | Domain change                       | `canonical_domains.site` / `canonical_domains.api`         |
 | Package rename                      | `canonical_mcp_package` / `canonical_pypi_package`         |
@@ -107,8 +108,8 @@ fresh count). A naive replace would corrupt the document.
 | symptom                                                  | likely cause                                                  | fix                                                                                                              |
 |----------------------------------------------------------|---------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|
 | `manifest not found`                                     | running from outside the repo root                            | run from `$REPO_ROOT` or pass `--manifest /abs/path`                                                             |
-| `tool_count_default_gates` drift on every surface        | runtime gained or lost a tool without a manifest bump         | bump the manifest, then update the surfaces                                                                      |
-| `tool_count_default_gates` drift on the runtime probe    | `verify_citations` or another gated tool flipped state        | re-verify the gate envs; cold-boot probe in a fresh shell                                                        |
+| `tool_count_default_gates` drift on every surface        | public copy disagrees with the manifest floor                 | bump the manifest, then update the surfaces                                                                      |
+| `tool_count_default_gates` drift on the runtime probe    | runtime fell below the manifest floor                         | re-verify the gate envs; cold-boot probe in a fresh shell                                                        |
 | `route_count` drifts non-deterministically               | import order matters — `api.main` before `mcp.server` adds extra side-effect tools | always probe with MCP-first order (the probe enforces this)               |
 | forbidden token in a file you intentionally added        | new file references the legacy brand                          | either rewrite the file with the canonical brand, or add the path prefix to `forbidden_token_exclude_paths`      |
 | static check passes but probe fails                      | docs/manifests are consistent with each other but stale       | bump the manifest to the runtime values; re-run the static check; fix the surfaces                              |

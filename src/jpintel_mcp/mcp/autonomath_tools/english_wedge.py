@@ -320,6 +320,7 @@ def _get_law_article_en_impl(law_id: str, article_no: str) -> dict[str, Any]:
     payload = get_law_article(
         law_name_or_canonical_id=law_id,
         article_number=article_no,
+        lang="en",
     )
 
     next_calls: list[dict[str, Any]] = [

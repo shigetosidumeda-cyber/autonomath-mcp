@@ -7,6 +7,8 @@ scope: 5/6-5/7 session A 全成果統合 + 5/7 後半 33 spec implementation 完
 禁止事項: BC666/agri/blueberry/WTC legacy 混入禁止、 paid plan / 商標出願 / 工数 phase / LLM API 直叩き 全部 NG
 ---
 
+> **Superseded deploy note (2026-05-07 12:45 JST):** この file は 5/7 夕方時点の統合サマリで、deploy 判定については後続の `tools/offline/_inbox/_housekeeping_audit_2026_05_06/R8_LAUNCH_LIVE_STATUS_2026-05-07.md` と `R8_FRONTEND_LAUNCH_STATUS_2026-05-07.md` を優先する。特に、この file 内の `Production deploy status: NO-GO`、`¥3/req`、`227 paths`、古い dirty-tree/ACK 記述は deploy の source of truth として使わない。
+
 > **Production deploy status: NO-GO.** この summary 内の「deploy 完了 / deploy 済み」は、OSS repo / site file / operator tools の配置・反映を指し、jpcite 本体の production deploy 完了を意味しない。 5/7 夕 hardening wave 後の唯一の真の残 blocker は **operator interactive sign (ACK YAML 経由)** のみで、 dirty tree は 4/5 PASS gate 達成、 mypy 0、 acceptance 261/261 PASS、 automation_ratio 0.9922 まで accretive に到達 (内部仮説 / 検証前 framing)。
 
 ## 5/7 夕 status (8 並列 iteration hardening wave 完走)

@@ -20,12 +20,18 @@ from __future__ import annotations
 import os
 import sqlite3
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from .error_envelope import make_error
 
 _REPO_ROOT = Path(__file__).resolve().parents[4]
 DB_PATH = os.environ.get("AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db"))
+Lang = Literal["ja", "en"]
+_EN_BODY_DISCLAIMER = (
+    "Translations of Japanese laws on this page are courtesy translations. "
+    "Only the original Japanese texts of laws and regulations have legal effect. "
+    "English text is sourced from the Japanese Law Translation Database where available."
+)
 
 
 def _resolve_law(con: sqlite3.Connection, needle: str) -> dict[str, Any] | None:
@@ -117,8 +123,11 @@ def _normalize_article_number(raw: str) -> list[str]:
     return list(dict.fromkeys(candidates))  # dedupe preserve order
 
 
-def _envelope_article(row: sqlite3.Row, law: dict[str, Any]) -> dict[str, Any]:
-    return {
+def _envelope_article(
+    row: sqlite3.Row, law: dict[str, Any], *, lang: Lang = "ja"
+) -> dict[str, Any]:
+    body_en = row["body_en"]
+    payload = {
         "found": True,
         "law": {
             "canonical_id": law["canonical_id"],
@@ -135,6 +144,48 @@ def _envelope_article(row: sqlite3.Row, law: dict[str, Any]) -> dict[str, Any]:
         "last_amended": row["last_amended"],
         "source_url": row["source_url"],
         "source_fetched_at": row["source_fetched_at"],
+        "lang": lang,
+        "lang_resolved": "ja",
+    }
+    if lang == "en":
+        if body_en:
+            payload["text_full"] = body_en
+            payload["lang_resolved"] = "en"
+            payload["disclaimer"] = _EN_BODY_DISCLAIMER
+            payload["body_en_source_url"] = row["body_en_source_url"]
+            payload["body_en_fetched_at"] = row["body_en_fetched_at"]
+            payload["body_en_license"] = row["body_en_license"] or "cc_by_4.0"
+        else:
+            payload["warning"] = "english_translation_unavailable; returned Japanese source text"
+    return payload
+
+
+def _invalid_lang_envelope(
+    lang: str, law_needle: str, article_number: str | None
+) -> dict[str, Any]:
+    err = make_error(
+        code="invalid_enum",
+        message=f"unsupported lang: {lang!r}",
+        hint="Use lang='ja' or lang='en'.",
+        retry_with=["get_law_article"],
+        field="lang",
+        extra={
+            "queried": {
+                "law_name_or_canonical_id": law_needle,
+                "article_number": article_number,
+                "lang": lang,
+            },
+        },
+    )
+    return {
+        "found": False,
+        "law": {"canonical_id": None, "canonical_name": None},
+        "article_number": article_number,
+        "title": None,
+        "text_summary": None,
+        "source_url": None,
+        "lang": lang,
+        "error": err["error"],
     }
 
 
@@ -210,8 +261,12 @@ def _no_match_envelope(
     }
 
 
-def get_law_article(law_name_or_canonical_id: str, article_number: str) -> dict[str, Any]:
+def get_law_article(
+    law_name_or_canonical_id: str, article_number: str, lang: Lang = "ja"
+) -> dict[str, Any]:
     """Exact article lookup."""
+    if lang not in ("ja", "en"):
+        return _invalid_lang_envelope(str(lang), law_name_or_canonical_id, article_number)
     if not law_name_or_canonical_id:
         return _missing_arg_envelope(
             "law_name_or_canonical_id",
@@ -243,15 +298,19 @@ def get_law_article(law_name_or_canonical_id: str, article_number: str) -> dict[
                 """
                 SELECT article_id, article_number, article_number_sort, title,
                        text_summary, text_full, effective_from, effective_until,
-                       last_amended, source_url, source_fetched_at
+                       last_amended, source_url, source_fetched_at,
+                       body_en, body_en_source_url, body_en_fetched_at,
+                       body_en_license
                   FROM am_law_article
                  WHERE law_canonical_id = ? AND article_number = ?
+                 ORDER BY CASE WHEN body_en IS NOT NULL THEN 0 ELSE 1 END,
+                          article_id ASC
                  LIMIT 1
                 """,
                 (law["canonical_id"], cand),
             ).fetchone()
             if row:
-                return _envelope_article(row, law)
+                return _envelope_article(row, law, lang=lang)
 
         return _no_match_envelope(
             "no_matching_records",
