@@ -29,7 +29,7 @@ canonical_api_env:
 pyproject_version: "0.3.4"
 tool_count_default_gates: 139  # public manifest floor; runtime may be higher with post-manifest tools
 route_count: 229              # runtime len(app.routes), verified 2026-05-07 JST
-openapi_path_count: 186       # docs/openapi/v1.json stable .paths length, verified 2026-05-07 JST
+openapi_path_count: 219       # docs/openapi/v1.json stable .paths length, verified 2026-05-07 JST (incl. /v1/tax_rules/{rule_id}/full_chain)
 searchable_programs_total: 11601
 total_programs: 14472
 tier_c_count: 5961
