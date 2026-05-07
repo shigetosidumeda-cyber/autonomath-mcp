@@ -36,6 +36,22 @@ from jpintel_mcp.mcp.autonomath_tools.policy_upstream_tools import (
 router = APIRouter(prefix="/v1/policy_upstream", tags=["policy-upstream"])
 
 
+# R8_BUGHUNT_DISCLAIMER_R2 (2026-05-07): policy upstream は kokkai_utterance +
+# shingikai_minutes + pubcomment_announcement + am_amendment_diff + programs を
+# 機械的に keyword fence + JOIN した signal rollup。topic に「事業承継」「適格"
+# 請求書」「AI規制」等の 制度・法令 改正に直結する keyword を渡せるため、
+# 業法 fence (税理士法 §52 / 弁護士法 §72 / 行政書士法 §1) を明示する。
+_DISCLAIMER_POLICY_UPSTREAM = (
+    "本 policy upstream rollup は kokkai_utterance + shingikai_minutes + "
+    "pubcomment_announcement + am_amendment_diff + programs を機械的に "
+    "keyword fence で集計した **公開情報の signal rollup** であり、"
+    "税理士法 §52 (税務代理) ・弁護士法 §72 (法律事務) ・行政書士法 §1 "
+    "(申請代理) のいずれにも該当しません。signal_strength は 5 軸の加重和で "
+    "あり、LLM 推論は含まれない。法令改正・制度変更の確定判断は各 source_url "
+    "の一次資料 (国会・所管庁・e-Gov) を必ずご確認ください。"
+)
+
+
 class PolicyUpstreamWatchRequest(BaseModel):
     """POST body for ``/v1/policy_upstream/watch``.
 
@@ -107,6 +123,10 @@ def policy_upstream_watch(
         result_count=result_count,
         strict_metering=True,
     )
+    # R8_BUGHUNT_DISCLAIMER_R2 (2026-05-07): 業法 fence — additive only,
+    # never overwrite an impl-supplied _disclaimer.
+    if isinstance(body, dict) and "_disclaimer" not in body:
+        body["_disclaimer"] = _DISCLAIMER_POLICY_UPSTREAM
     return body
 
 
@@ -156,4 +176,8 @@ def policy_upstream_timeline(
         result_count=result_count,
         strict_metering=True,
     )
+    # R8_BUGHUNT_DISCLAIMER_R2 (2026-05-07): 業法 fence — additive only,
+    # never overwrite an impl-supplied _disclaimer.
+    if isinstance(body, dict) and "_disclaimer" not in body:
+        body["_disclaimer"] = _DISCLAIMER_POLICY_UPSTREAM
     return body

@@ -40,7 +40,7 @@ from typing import TYPE_CHECKING, Annotated, Any, Literal
 
 from fastapi import APIRouter, HTTPException, Query, Request, status
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 if TYPE_CHECKING:
     import sqlite3
@@ -204,10 +204,23 @@ class DisasterProgramRef(BaseModel):
 
 
 class DisasterActiveProgramsResponse(BaseModel):
+    # R8_BUGHUNT_DISCLAIMER_R2 (2026-05-07): populate_by_name=True so the route
+    # can pass disclaimer=... via the Python-attribute name (the "_disclaimer"
+    # alias has a leading underscore which Python forbids as a kwarg).
+    model_config = ConfigDict(populate_by_name=True)
+
     total: int
     window_months: int
     as_of: str
     results: list[DisasterProgramRef]
+    # R8_BUGHUNT_DISCLAIMER_R2 (2026-05-07): 災害特例 surface — 税理士法 §52 /
+    # 行政書士法 §1 / 中小企業診断士 fence. serialization_alias mirrors
+    # api/eligibility_check.py so FastAPI emits "_disclaimer".
+    disclaimer: str = Field(
+        default_factory=lambda: _DISCLAIMER_DISASTER,
+        alias="_disclaimer",
+        serialization_alias="_disclaimer",
+    )
 
 
 class DisasterMatchRequest(BaseModel):
@@ -244,12 +257,23 @@ class DisasterMatchBucket(BaseModel):
 
 
 class DisasterMatchResponse(BaseModel):
+    # R8_BUGHUNT_DISCLAIMER_R2 (2026-05-07): populate_by_name=True so the route
+    # can pass disclaimer=... via the Python-attribute name.
+    model_config = ConfigDict(populate_by_name=True)
+
     prefecture: str
     prefecture_code: str
     disaster_type: str
     incident_date: str
     total: int
     buckets: list[DisasterMatchBucket]
+    # R8_BUGHUNT_DISCLAIMER_R2 (2026-05-07): 災害特例 surface — 税理士法 §52 /
+    # 行政書士法 §1 / 中小企業診断士 fence.
+    disclaimer: str = Field(
+        default_factory=lambda: _DISCLAIMER_DISASTER,
+        alias="_disclaimer",
+        serialization_alias="_disclaimer",
+    )
 
 
 class DisasterEvent(BaseModel):
@@ -265,10 +289,37 @@ class DisasterEvent(BaseModel):
 
 
 class DisasterCatalogResponse(BaseModel):
+    # R8_BUGHUNT_DISCLAIMER_R2 (2026-05-07): populate_by_name=True so the route
+    # can pass disclaimer=... via the Python-attribute name.
+    model_config = ConfigDict(populate_by_name=True)
+
     years: int
     as_of: str
     total_events: int
     events: list[DisasterEvent]
+    # R8_BUGHUNT_DISCLAIMER_R2 (2026-05-07): 災害特例 surface — 税理士法 §52 /
+    # 行政書士法 §1 / 中小企業診断士 fence.
+    disclaimer: str = Field(
+        default_factory=lambda: _DISCLAIMER_DISASTER,
+        alias="_disclaimer",
+        serialization_alias="_disclaimer",
+    )
+
+
+# ---------------------------------------------------------------------------
+# R8_BUGHUNT_DISCLAIMER_R2 (2026-05-07): 業法 fence — 災害特例 surface 全 endpoint で
+# 補助金・融資・税特例 を列挙するため、税理士法 §52 (税務代理) ・行政書士法 §1 (申請代理) ・
+# 中小企業診断士の経営助言の代替ではないことを明示する。/v1/disaster/active_programs +
+# /v1/disaster/match + /v1/disaster/catalog の 3 endpoint で missing 検出 → fix。
+# ---------------------------------------------------------------------------
+_DISCLAIMER_DISASTER = (
+    "本 disaster surface は 災害特例 として programs corpus (jpintel.db) の "
+    "primary_name keyword fence で抽出した 補助金 / 融資 / 税特例 / "
+    "セーフティネット保証 の機械的列挙であり、税理士法 §52 (税務代理) ・"
+    "行政書士法 §1 (申請代理) ・中小企業診断士の経営助言の代替ではない。"
+    "個別案件の適用可否は各 source_url の一次情報 (中小企業庁・国税庁・"
+    "都道府県・日本政策金融公庫 等) を必ずご確認ください。"
+)
 
 
 # ---------------------------------------------------------------------------
@@ -491,6 +542,10 @@ def list_active_disaster_programs(
             ip=request.client.host if request.client else None,
         )
 
+    # R8_BUGHUNT_DISCLAIMER_R2 (2026-05-07): the model's `disclaimer` field
+    # default_factory pulls _DISCLAIMER_DISASTER at construction so the
+    # envelope is emitted on every 200 — no kwarg needed (the `_disclaimer`
+    # alias has a leading underscore that Python forbids as a kwarg name).
     return DisasterActiveProgramsResponse(
         total=total,
         window_months=window_months,
@@ -612,6 +667,8 @@ def match_disaster_programs(
             ip=request.client.host if request.client else None,
         )
 
+    # R8_BUGHUNT_DISCLAIMER_R2 (2026-05-07): default_factory binds
+    # _DISCLAIMER_DISASTER at construction; no kwarg needed.
     return DisasterMatchResponse(
         prefecture=pref_name,
         prefecture_code=payload.prefecture,
@@ -789,6 +846,8 @@ def disaster_catalog(
         )
     event_models.sort(key=lambda e: (-e.year, e.disaster_keyword, e.era_label))
 
+    # R8_BUGHUNT_DISCLAIMER_R2 (2026-05-07): default_factory binds
+    # _DISCLAIMER_DISASTER at construction; no kwarg needed.
     body_model = DisasterCatalogResponse(
         years=years,
         as_of=now.isoformat(),
@@ -806,6 +865,8 @@ def disaster_catalog(
         strict_metering=True,
     )
 
-    body = body_model.model_dump(mode="json")
+    # R8_BUGHUNT_DISCLAIMER_R2 (2026-05-07): by_alias=True so the
+    # _disclaimer envelope key emits as "_disclaimer" (not "disclaimer").
+    body = body_model.model_dump(mode="json", by_alias=True)
     attach_corpus_snapshot(body, conn)
     return JSONResponse(content=body, headers=snapshot_headers(conn))
