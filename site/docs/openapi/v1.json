@@ -6806,6 +6806,7 @@
               "db_locked",
               "db_unavailable",
               "subsystem_unavailable",
+              "bad_request",
               "unknown_query_parameter",
               "auth_required",
               "auth_invalid",
@@ -13543,6 +13544,16 @@
             "title": "Tier",
             "type": "string"
           },
+          "tokens_saved_estimated_per_call": {
+            "default": 0,
+            "title": "Tokens Saved Estimated Per Call",
+            "type": "integer"
+          },
+          "tokens_saved_estimated_total": {
+            "default": 0,
+            "title": "Tokens Saved Estimated Total",
+            "type": "integer"
+          },
           "upgrade_url": {
             "anyOf": [
               {
@@ -18164,6 +18175,27 @@
         "operationId": "rest_search_tax_incentives_v1_am_tax_incentives_get",
         "parameters": [
           {
+            "description": "Free-text keyword query. Unified `q` parameter naming across all jpcite search endpoints (programs/laws/case-studies/etc.).",
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Free-text keyword query. Unified `q` parameter naming across all jpcite search endpoints (programs/laws/case-studies/etc.).",
+              "title": "Q"
+            }
+          },
+          {
+            "deprecated": true,
+            "description": "Deprecated. Use `q` instead. The legacy `query` alias is still accepted for backward compatibility but will be removed in a future release.",
             "in": "query",
             "name": "query",
             "required": false,
@@ -18177,6 +18209,8 @@
                   "type": "null"
                 }
               ],
+              "deprecated": true,
+              "description": "Deprecated. Use `q` instead. The legacy `query` alias is still accepted for backward compatibility but will be removed in a future release.",
               "title": "Query"
             }
           },
@@ -19573,6 +19607,136 @@
         "summary": "Render a per-client audit work-paper (PDF/CSV/MD/DOCX).",
         "tags": [
           "audit (\u4f1a\u8a08\u58eb\u30fb\u76e3\u67fb\u6cd5\u4eba)"
+        ]
+      }
+    },
+    "/v1/auth/github/callback": {
+      "get": {
+        "description": "GitHub redirects here after the user grants consent. Exchanges the ``code`` for a short-lived access token, fetches the GitHub identity (login + email), discards the access token (no persistence), and redirects to the dashboard with the GitHub login as a query param. JSON-mode (``?format=json``) returns the identity payload directly.",
+        "operationId": "github_oauth_callback_v1_auth_github_callback_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "code",
+            "required": true,
+            "schema": {
+              "title": "Code",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "state",
+            "required": true,
+            "schema": {
+              "title": "State",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "error",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Error"
+            }
+          },
+          {
+            "in": "query",
+            "name": "format",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Format"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "GitHub OAuth callback",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/v1/auth/github/start": {
+      "get": {
+        "description": "Generates a one-time ``state`` nonce + stores it server-side, then issues a redirect to GitHub's ``/login/oauth/authorize``. Caller pass ``Accept: application/json`` to receive the URL as JSON instead of a 302 (e.g. dashboard JS that wants to render the link in a button). Requires no API key \u2014 this is the pre-auth sign-in surface.",
+        "operationId": "github_oauth_start_v1_auth_github_start_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "format",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Format"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Begin GitHub OAuth sign-in",
+        "tags": [
+          "auth"
         ]
       }
     },
