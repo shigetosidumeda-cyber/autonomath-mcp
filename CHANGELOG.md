@@ -75,6 +75,14 @@ hardening is pure type / lint / test / fixture / workflow work.
   small dev fixture in-place between runs, causing stale-data
   surprises. Now explicitly removed before the production sftp fetch.
   (Commit `b1de8b2`.)
+- See
+  [`tools/offline/_inbox/_housekeeping_audit_2026_05_06/R8_DEPLOY_ATTEMPT_AUDIT_2026-05-07.md`](tools/offline/_inbox/_housekeeping_audit_2026_05_06/R8_DEPLOY_ATTEMPT_AUDIT_2026-05-07.md)
+  for the 5/7 02:50–03:50 UTC deploy-attempt timeline + per-attempt
+  root-cause hypotheses,
+  [`R8_FLY_DEPLOY_READINESS_2026-05-07.md`](tools/offline/_inbox/_housekeeping_audit_2026_05_06/R8_FLY_DEPLOY_READINESS_2026-05-07.md)
+  for the 4/4 readiness gate, and
+  [`R8_FLY_DEPLOY_ALTERNATIVE_2026-05-07.md`](tools/offline/_inbox/_housekeeping_audit_2026_05_06/R8_FLY_DEPLOY_ALTERNATIVE_2026-05-07.md)
+  for the alt-path matrix (depot=false rationale).
 
 #### Launch ops + billing + lane policy
 
@@ -82,7 +90,10 @@ hardening is pure type / lint / test / fixture / workflow work.
   fail-closes on every error path (was previously fail-open on a
   subset of webhook race conditions). Aligned with the
   zero-touch-solo invariant where any silent billing pass is a
-  detection failure. (Commit `83b1fb3`.)
+  detection failure. (Commit `83b1fb3`.) See
+  [`tools/offline/_inbox/_housekeeping_audit_2026_05_06/R8_BILLING_FAIL_CLOSED_VERIFY.md`](tools/offline/_inbox/_housekeeping_audit_2026_05_06/R8_BILLING_FAIL_CLOSED_VERIFY.md)
+  for the 4-修正点 strict-metering verify (usage_events.status / cap
+  final-check / 19+54 test pass).
 - **Lane policy: solo lane** — `scripts/ops/lane_policy.json` updated
   to declare a single solo lane, removing the dual-CLI lane-claim
   scaffolding. The dual-CLI atomic claim mechanism (`mkdir` exclusive
@@ -94,6 +105,41 @@ hardening is pure type / lint / test / fixture / workflow work.
   CI guard. Duplicated `hashlib.sha256(...)` ACK call sites are now
   lint-flagged as drift. Eliminates the cross-script fingerprint
   divergence risk. (Commit `1b13d4a`.)
+- **Sentry observability — DSN runbook** — `monitoring/` carries 8
+  alert rules + 12 widget dashboard as **design-only assets**;
+  `SENTRY_DSN` Fly secret is required to flip them from
+  draft → live. `/v1/am/health/deep` exposes `sentry_active` for
+  operator probing. (Commit `f4a5bff`.) See
+  [`tools/offline/_inbox/_housekeeping_audit_2026_05_06/R8_OBSERVABILITY_LIVE_2026-05-07.md`](tools/offline/_inbox/_housekeeping_audit_2026_05_06/R8_OBSERVABILITY_LIVE_2026-05-07.md)
+  for the SENTRY_DSN setup runbook + design-vs-applied boundary
+  rule.
+- **Backup pipeline — `flyctl ssh -C` shell-wrap fix** — 3
+  consecutive nights of RED nightly-backup (5/4 + 5/5 + 5/6) caused by
+  `ls -1t ... | head -1` running argv-style under `flyctl ssh -C` (no
+  shell interpretation). Wrapped pipes in `sh -c` so the pipeline
+  executes; restores the off-site R2 mirror path. (Commit `4606232`.)
+  See
+  [`tools/offline/_inbox/_housekeeping_audit_2026_05_06/R8_BACKUP_FIX_2026-05-07.md`](tools/offline/_inbox/_housekeeping_audit_2026_05_06/R8_BACKUP_FIX_2026-05-07.md)
+  for Defect A diff + verification, and
+  [`R8_BACKUP_RESTORE_DRILL_AUDIT_2026-05-07.md`](tools/offline/_inbox/_housekeeping_audit_2026_05_06/R8_BACKUP_RESTORE_DRILL_AUDIT_2026-05-07.md)
+  for the broader DR-readiness audit (3 workflow inventory +
+  retention + status).
+- **Restore drill — first manual run** — `restore-drill-monthly.yml`
+  fired once via `workflow_dispatch` against R2 (`jpintel/` prefix
+  cold; audit row landed; expected JSON baseline shipped). DR claim
+  upgraded **aspirational → partial-evidence**. (Commit `5d189e1` +
+  `fbf3ab0`.) See
+  [`tools/offline/_inbox/_housekeeping_audit_2026_05_06/R8_RESTORE_DRILL_FIRST_RUN_2026-05-07.md`](tools/offline/_inbox/_housekeeping_audit_2026_05_06/R8_RESTORE_DRILL_FIRST_RUN_2026-05-07.md)
+  for the 11-step contract verify + `data/restore_drill_expected.json`
+  20-table baseline.
+- **GHA R2 secrets mirror runbook** — Fly secret store ≠ GHA secret
+  store; the R2 quartet (`R2_ACCESS_KEY_ID` /
+  `R2_SECRET_ACCESS_KEY` / `R2_ENDPOINT` / `R2_BUCKET`) must be
+  mirrored to GHA repository secrets via `gh secret set` for the
+  nightly upload step to succeed. Runbook landed at
+  `docs/runbook/ghta_r2_secrets.md`. (Commit `66d7cdc`.) See
+  [`tools/offline/_inbox/_housekeeping_audit_2026_05_06/R8_GHA_R2_SECRETS_OPERATOR_2026-05-07.md`](tools/offline/_inbox/_housekeeping_audit_2026_05_06/R8_GHA_R2_SECRETS_OPERATOR_2026-05-07.md)
+  for the 4 `gh secret set` commands + Fly↔GHA gap diagnosis.
 
 #### Frontend prep
 
@@ -102,7 +148,29 @@ hardening is pure type / lint / test / fixture / workflow work.
   local stall workaround. Triggers on `main` push when site/ files
   change. Companion to the existing `pages-deploy.yml`; two paths now
   exist so a stuck wrangler session no longer blocks site deploys.
-  (Commit `aa44193`.)
+  (Commit `aa44193`.) See
+  [`tools/offline/_inbox/_housekeeping_audit_2026_05_06/R8_PAGES_DEPLOY_GHA_2026-05-07.md`](tools/offline/_inbox/_housekeeping_audit_2026_05_06/R8_PAGES_DEPLOY_GHA_2026-05-07.md)
+  for the wrangler-stall diagnosis (4 retries / 22 MB / 22 k files /
+  3 orphaned PIDs) + GHA secret state + workflow wiring rationale,
+  and
+  [`R8_FRONTEND_LAUNCH_STATUS_2026-05-07.md`](tools/offline/_inbox/_housekeeping_audit_2026_05_06/R8_FRONTEND_LAUNCH_STATUS_2026-05-07.md)
+  for the post-fix CF Pages launch readiness verify.
+
+#### R8 audit doc index (operator one-click traversal)
+
+For operators who land on this CHANGELOG entry first, the full R8
+audit doc set covering the 2026-05-07 launch ops window is at
+[`tools/offline/_inbox/_housekeeping_audit_2026_05_06/`](tools/offline/_inbox/_housekeeping_audit_2026_05_06/).
+Top-level entry points:
+
+- [`R8_INDEX_FINAL_2026-05-07.md`](tools/offline/_inbox/_housekeeping_audit_2026_05_06/R8_INDEX_FINAL_2026-05-07.md)
+  — full R8 doc index with per-doc one-line descriptors.
+- [`R8_LAUNCH_OPS_TIMELINE_2026-05-07.md`](tools/offline/_inbox/_housekeeping_audit_2026_05_06/R8_LAUNCH_OPS_TIMELINE_2026-05-07.md)
+  — 02:50 → 04:20 UTC ops timeline narrative.
+- [`R8_CLOSURE_FINAL_2026-05-07.md`](tools/offline/_inbox/_housekeeping_audit_2026_05_06/R8_CLOSURE_FINAL_2026-05-07.md)
+  — session closure + remaining open items.
+- [`R8_LIVE_FINAL_VERIFY_2026-05-07.md`](tools/offline/_inbox/_housekeeping_audit_2026_05_06/R8_LIVE_FINAL_VERIFY_2026-05-07.md)
+  — final live-state verify (curl + healthz).
 
 ### Added (post-manifest landing 2026-05-07 — manifests held at 139 pending operator decision)
 
