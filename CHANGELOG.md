@@ -8,6 +8,102 @@ See [`docs/versioning.md`](docs/versioning.md) for what counts as breaking.
 
 ## [Unreleased]
 
+### Hardening — 2026-05-07 (40-commit quality lift, no surface change)
+
+40 commits landed across **2026-05-06 → 2026-05-07** lifting the quality
+bar on the 139-tool default-gate surface without introducing any new
+public tool, schema change, or count bump. Architecture-snapshot counts
+elsewhere in this CHANGELOG remain authoritative; nothing in this
+section is a feature add. **NO LLM API call introduced anywhere** —
+hardening is pure type / lint / test / fixture / workflow work.
+
+#### Type + lint + security gates (cleared)
+
+- **mypy --strict**: 348 → **0** errors across `src/jpintel_mcp/`.
+  Residual legacy `models.py` Optional + Pydantic v1/v2 boundary cases
+  resolved in the 250 → 172 → 69 → 0 walk-down. New strict errors are
+  now treated as red (CI gate).
+- **bandit**: 932 → **0** findings (low+medium+high). Subprocess
+  argument hardening + crypto primitive review + SQL injection
+  whitelist completed.
+- **ruff (`src/`)**: residual 14 → **5** (all `noqa`-justified with
+  inline rationale).
+- **ruff (wider repo)**: 238 → 109 → **0** across the wider
+  `scripts/` + `tools/offline/` + `tests/` surfaces.
+- **pre-commit**: **16/16 hooks PASS** (was 13/16 mid-walk).
+- **SIM105**: zero across the repo (suppress-with-pass usage cleaned).
+
+#### Test gates (all green)
+
+- **acceptance suite**: **286/286 PASS** (target 0.79 → **0.99** met).
+  Suite now gates DEEP-22..65 retroactive coverage with 0 inconsistency
+  vs spec.
+- **smoke tests**: **17/17 mandatory** + 5-module surface (api / mcp /
+  billing / cron / etl) **5/5 ALL GREEN**. Fixture layout = 15 runtime
+  + 2 boot probes; CI gate at `release.yml`.
+- **MCP cohort runtime**: `len(await mcp.list_tools())` == **148** with
+  all default gates ON (139 manifest-claimed + 7 post-manifest +
+  industry packs delta verified during R8 audit). Manifests intentionally
+  **held at 139** per Option B recommendation in
+  `R8_MANIFEST_BUMP_EVAL_2026-05-07.md`.
+- **33-spec retroactive verify**: DEEP-22 through DEEP-65 src/ side
+  walk, **0 inconsistency** found vs spec. Covers verifier deepening,
+  time-machine, business-law detector, cohort persona kit, delivery
+  strict Pattern A mitigation, 自治体補助金, e-Gov パブコメ,
+  identity_confidence golden, organic outreach playbook,
+  company_public_pack routes, production-gate scripts + tests + GHA
+  workflows.
+
+#### Deploy workflow fixes (4 — all in `.github/workflows/deploy.yml`)
+
+- **Smoke gate sleep race** — `post-deploy smoke gate` was failing on
+  cold-start because the curl probe fired before Fly's release machine
+  had finished swapping. Sleep raised **25s → 60s**, `--max-time`
+  raised **15s → 30s**, and a `flyctl status` pre-probe added so the
+  smoke gate only fires after the machine reports `started`.
+  (Commit `6e3307c`.)
+- **`pre_deploy_verify` CI tolerance for missing `autonomath.db`** —
+  the 9.7 GB autonomath.db is not on GHA runners, but the
+  `pre_deploy_verify` step was hard-failing on its absence. Now
+  tolerates missing path with a structured warning; the actual DB
+  hydration runs on the Fly machine post-deploy. (Commit `6e0afd1`.)
+- **Hydrate step size-guarded skip** — the dev fixture (1.3 MB) was
+  masking the production seed (352 MB+) sftp fetch because the size
+  guard ran in the wrong order. Now the fixture skip-gate fires only
+  when the on-disk DB exceeds the dev-fixture ceiling. (Commit `f65af3e`.)
+- **`rm-sftp` safety override** — `flyctl ssh sftp` was leaving the
+  small dev fixture in-place between runs, causing stale-data
+  surprises. Now explicitly removed before the production sftp fetch.
+  (Commit `b1de8b2`.)
+
+#### Launch ops + billing + lane policy
+
+- **Billing fail-closed reinforcement** — Stripe checkout flow now
+  fail-closes on every error path (was previously fail-open on a
+  subset of webhook race conditions). Aligned with the
+  zero-touch-solo invariant where any silent billing pass is a
+  detection failure. (Commit `83b1fb3`.)
+- **Lane policy: solo lane** — `scripts/ops/lane_policy.json` updated
+  to declare a single solo lane, removing the dual-CLI lane-claim
+  scaffolding. The dual-CLI atomic claim mechanism (`mkdir` exclusive
+  + `AGENT_LEDGER` append-only) is retained for emergency recovery,
+  but routine commits go through the single solo lane. (Commit
+  `e419f61`.)
+- **Fingerprint SOT helper unification** — ACK fingerprint
+  computation centralized into a single helper (`scripts/_acks/`) +
+  CI guard. Duplicated `hashlib.sha256(...)` ACK call sites are now
+  lint-flagged as drift. Eliminates the cross-script fingerprint
+  divergence risk. (Commit `1b13d4a`.)
+
+#### Frontend prep
+
+- **`.github/workflows/pages-deploy-main.yml`** — direct CF Pages
+  deploy via GHA Linux runner as an alternative path to the wrangler
+  local stall workaround. Triggers on `main` push when site/ files
+  change. Companion to the existing `pages-deploy.yml`; two paths now
+  exist so a stuck wrangler session no longer blocks site deploys.
+  (Commit `aa44193`.)
+
 ### Added (post-manifest landing 2026-05-07 — manifests held at 139 pending operator decision)
 
 - **7 post-manifest MCP tools landed 2026-05-07** — DEEP-22 / DEEP-30 / DEEP-39 /
@@ -133,15 +229,33 @@ is CI fail-closed via `tests/test_distribution_manifest.py`):
 - `server.json::version` + `_meta.publisher-provided` (registry-bound,
   100-char description cap still applies)
 
+### Pre-flight done (as of 2026-05-07)
+
+The following prerequisites for the v0.3.5 manifest bump have already
+landed during the 5/7 hardening wave; the bump itself remains gated on
+the operator's §52 / §3 / 議事録 disclaimer audit walk for the 3
+sensitive post-manifest tools.
+
+- **Sample arguments fixture prepared** —
+  `tests/fixtures/7_post_manifest_tools.json` carries canonical
+  happy-path `sample_arguments` blocks for all 7 tools, validated
+  against the live `tools/list` response shape (matched the runtime
+  Pydantic schema during the R8 cohort audit).
+- **Test publish dry-run COMPLETE** — `R8_PYPI_PUBLISH_DRY` walked
+  the full `release.yml` chain end-to-end on the test PyPI index
+  (`twine upload --repository testpypi`) without errors. Wheel
+  metadata + sdist surface verified against the 0.3.4 baseline; the
+  0.3.5 retag will reuse the same workflow with no expected drift.
+
 ### Migration steps (operator step list)
 
 1. **Compose `sample_arguments` for the 7 tools** — pull canonical
    happy-path args from `tests/fixtures/7_post_manifest_tools.json`
-   (already prepared during the post-manifest landing batch); each
-   tool's `sample_arguments` block becomes part of the
-   `mcp-server.json::tools[]` entry. Verify each fixture against
-   the live `tools/list` response shape before writing it into the
-   manifest.
+   (already prepared during the post-manifest landing batch — see
+   "Pre-flight done" above); each tool's `sample_arguments` block
+   becomes part of the `mcp-server.json::tools[]` entry. Verify each
+   fixture against the live `tools/list` response shape before writing
+   it into the manifest.
 2. **Edit the 5 manifest files in one atomic commit** — bump version
    `0.3.4` → `0.3.5`, bump `tool_count` `139` → `146`, append the 7
    tool entries to `mcp-server.json::tools[]` /
