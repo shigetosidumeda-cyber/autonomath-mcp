@@ -102,6 +102,7 @@ from jpintel_mcp.api.middleware import (
     HostDeprecationMiddleware,
     IdempotencyMiddleware,
     KillSwitchMiddleware,
+    LanguageResolverMiddleware,
     OriginEnforcementMiddleware,
     PerIpEndpointLimitMiddleware,
     RateLimitMiddleware,
@@ -341,8 +342,16 @@ def _assert_production_secrets() -> None:
       * AUDIT_SEAL_SECRET placeholder/missing AND no valid
         JPINTEL_AUDIT_SEAL_KEYS rotation list set →
         SystemExit("[BOOT FAIL] AUDIT_SEAL ...").
-      * CLOUDFLARE_TURNSTILE_SECRET empty while APPI intake is enabled →
+      * CLOUDFLARE_TURNSTILE_SECRET empty while APPI intake is enabled AND
+        AUTONOMATH_APPI_REQUIRE_TURNSTILE != "0" →
         SystemExit("[BOOT FAIL] CLOUDFLARE_TURNSTILE_SECRET ...").
+        Setting AUTONOMATH_APPI_REQUIRE_TURNSTILE=0 lets the operator
+        activate the APPI router without a Turnstile secret. The router
+        gracefully bypasses Turnstile verification at request time when
+        the secret is unset (`_verify_turnstile_token` short-circuits on
+        empty secret); abuse is rate-limited by the anonymous IP cap and
+        the 14/30-day manual-review SLA. See
+        docs/runbook/privacy_router_activation.md.
       * STRIPE_WEBHOOK_SECRET empty → SystemExit("[BOOT FAIL] STRIPE_WEBHOOK_SECRET ...").
       * STRIPE_SECRET_KEY empty/test-mode → SystemExit("[BOOT FAIL] STRIPE_SECRET_KEY ...").
 
@@ -389,10 +398,21 @@ def _assert_production_secrets() -> None:
         "false",
         "False",
     }
-    if appi_enabled and not os.getenv("CLOUDFLARE_TURNSTILE_SECRET", "").strip():
+    require_turnstile = os.getenv("AUTONOMATH_APPI_REQUIRE_TURNSTILE", "1") not in {
+        "0",
+        "false",
+        "False",
+    }
+    if (
+        appi_enabled
+        and require_turnstile
+        and not os.getenv("CLOUDFLARE_TURNSTILE_SECRET", "").strip()
+    ):
         raise SystemExit(
             "[BOOT FAIL] CLOUDFLARE_TURNSTILE_SECRET must be set in production "
-            "when APPI intake is enabled."
+            "when APPI intake is enabled. Set "
+            "AUTONOMATH_APPI_REQUIRE_TURNSTILE=0 to opt out (honor system + "
+            "manual review). See docs/runbook/privacy_router_activation.md."
         )
 
     if not (getattr(settings, "stripe_webhook_secret", "") or "").strip():
@@ -1401,6 +1421,15 @@ def create_app() -> FastAPI:
     # forward-attribute its cap-reached telemetry (none today, but the
     # ordering keeps options open).
     app.add_middleware(ClientTagMiddleware)
+    # R8 i18n: resolve `?lang=` (override) → Accept-Language q-value → "ja"
+    # default and stash onto request.state.lang. Pure pass-through, no DB
+    # read, ~80 LOC. Sits after CORS / rate-limit (registered LATER in this
+    # function; Starlette LIFO means CORS executes first) so a 429 path
+    # never spends cycles on language parsing, and before all envelope
+    # helpers + route handlers that read request.state.lang to pick
+    # ja vs en user_message copy. See api/middleware/language_resolver.py
+    # for full resolution logic and rationale.
+    app.add_middleware(LanguageResolverMiddleware)
     # Per-request budget guard for authenticated bulk/batch routes.
     # Missing X-Cost-Cap-JPY on paid bulk requests should fail before the
     # handler fans out into billable work. Anonymous evaluation calls are not

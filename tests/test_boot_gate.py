@@ -7,6 +7,9 @@ Verifies `_assert_production_secrets()` in `api/main.py`:
   * prod env hard-fails when API_KEY_SALT is < 32 chars
   * prod env hard-fails on missing audit-seal secret
   * prod env hard-fails on missing Cloudflare Turnstile secret when APPI is enabled
+  * prod env allows missing Turnstile secret when AUTONOMATH_APPI_REQUIRE_TURNSTILE=0
+    (honor-system fallback for the APPI §31/§33 router; see
+    docs/runbook/privacy_router_activation.md)
   * prod env hard-fails on missing Stripe webhook secret
   * prod env hard-fails on missing or test-mode Stripe secret key
   * prod env passes when every secret is set to a unique 32+ char value
@@ -38,6 +41,7 @@ _ENV_KEYS = (
     "AUDIT_SEAL_SECRET",
     "JPINTEL_AUDIT_SEAL_KEYS",
     "AUTONOMATH_APPI_ENABLED",
+    "AUTONOMATH_APPI_REQUIRE_TURNSTILE",
     "CLOUDFLARE_TURNSTILE_SECRET",
     "STRIPE_WEBHOOK_SECRET",
     "STRIPE_SECRET_KEY",
@@ -246,6 +250,32 @@ def test_prod_allows_missing_turnstile_secret_when_appi_disabled(
         API_KEY_SALT=GOOD_SALT,
         AUDIT_SEAL_SECRET=GOOD_AUDIT_KEY,
         AUTONOMATH_APPI_ENABLED="0",
+        STRIPE_WEBHOOK_SECRET="whsec_live",
+        STRIPE_SECRET_KEY="sk_live_xxx",
+    )
+    main_module._assert_production_secrets()
+
+
+def test_prod_allows_missing_turnstile_secret_when_require_turnstile_off(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Operator escape hatch: APPI router enabled without Turnstile secret.
+
+    Setting ``AUTONOMATH_APPI_REQUIRE_TURNSTILE=0`` lets the operator
+    activate /v1/privacy/{disclosure,deletion}_request even when no
+    Cloudflare Turnstile secret is wired. The router itself short-circuits
+    Turnstile verification at request time when the secret is empty
+    (``_verify_turnstile_token`` returns immediately on empty secret) —
+    abuse risk is bounded by the anonymous IP cap and the manual-review
+    SLA on the operator side. See docs/runbook/privacy_router_activation.md.
+    """
+    _reset_settings(
+        monkeypatch,
+        JPINTEL_ENV="prod",
+        API_KEY_SALT=GOOD_SALT,
+        AUDIT_SEAL_SECRET=GOOD_AUDIT_KEY,
+        AUTONOMATH_APPI_ENABLED="1",
+        AUTONOMATH_APPI_REQUIRE_TURNSTILE="0",
         STRIPE_WEBHOOK_SECRET="whsec_live",
         STRIPE_SECRET_KEY="sk_live_xxx",
     )
