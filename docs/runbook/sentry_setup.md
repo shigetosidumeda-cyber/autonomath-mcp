@@ -27,6 +27,36 @@ curl -s https://api.jpcite.com/v1/am/health/deep | jq .sentry_active
 # True  → already wired.
 ```
 
+### Step 0-pre — (optional) placeholder-DSN boot test (5 min, AI-doable)
+
+Before creating a Sentry.io account, the operator can verify "the production
+machine actually invokes `_init_sentry()` and the deep-health probe surfaces
+`sentry_active=true`" by injecting a *deliberately invalid* DSN. This works
+because (a) the SDK's transport quietly swallows network failures (proven by
+`tests/test_sentry_init.py::test_ensure_init_dummy_dsn_in_prod_initialises_gracefully`)
+and (b) `sentry.io/1` is a Sentry-reserved demo project ID, so events that
+hypothetically reached it would not be visible to any organization.
+
+```bash
+# Inject placeholder DSN — events black-hole at the Sentry edge, init succeeds.
+flyctl secrets set SENTRY_DSN="https://invalid@sentry.io/1" -a autonomath-api
+
+# Wait ~60s for redeploy, then verify the two-gate fired init successfully.
+curl -s https://api.jpcite.com/v1/am/health/deep | jq .sentry_active
+# Expect: true
+
+# Confirm transport drops harmlessly (no PII leak — before_send scrubber on,
+# include_local_variables=False, no API keys / Stripe sigs in the SDK frames).
+flyctl logs -a autonomath-api | grep -iE "sentry"
+# Expect: init OK + periodic transport "name resolution" failures, no panics.
+```
+
+When the operator is ready with a real DSN, `flyctl secrets set` overwrites
+in place — no need to unset placeholder first.
+
+R8 audit doc with full path comparison + safety rationale:
+`tools/offline/_inbox/_housekeeping_audit_2026_05_06/R8_SENTRY_DSN_PATH_2026-05-07.md`.
+
 1. **Create / log in to Sentry account**
    - Open <https://sentry.io/signup/> in a browser. Sign up with
      `info@bookyou.net` (the operator address — invoices and billing email
@@ -333,3 +363,57 @@ Sentry stores events, not dashboard layouts.
   by the cron emitters referenced above
 - `src/jpintel_mcp/api/sentry_filters.py` — PII scrubbing rules; if a rule
   starts firing on PII-rich content, the scrubber needs an extension
+- `tools/offline/_inbox/_housekeeping_audit_2026_05_06/R8_SENTRY_DSN_PATH_2026-05-07.md`
+  — DSN path A/B/C comparison + placeholder-DSN safety rationale
+
+## Appendix — alt DSN providers (path B / C, contingency only)
+
+The runbook above assumes path A (Sentry.io public Developer free tier,
+50k events/month). Path A is the recommended default — `monitoring/`
+assets, `sentry_alert_rules.yml` filter syntax, and `sentry_setup.md` are
+all written against the public Sentry product. The two alt paths below are
+recorded for the case where Sentry's free tier shrinks or the operator
+moves to a private-data posture; **do not adopt them by default**.
+
+### Path B — GlitchTip (Sentry-compatible OSS)
+
+GlitchTip implements the Sentry 8.x ingestion protocol, so the same
+`sentry_sdk` Python package and the same DSN format work unchanged. Two
+flavors exist: **managed** (free tier 1k events/month at glitchtip.com,
+roughly 20× tighter than Sentry's free tier) and **self-host** (Docker,
+~512 MB RAM minimum). When to consider: Sentry free tier exhausted
+mid-month and an immediate fall-back is needed.
+
+Compatibility caveats:
+- Alert rule filter `query` syntax: ~80% compatible, advanced triggers
+  like z-score and percentile aggregates are not in v3.x.
+- Dashboard JSON spec: not ingested; widgets must be recreated by hand.
+- Sentry CLI release tracking + Source maps: partial (basic ingestion
+  works, but `sentry-cli releases` finalize semantics differ).
+
+DSN swap:
+```bash
+flyctl secrets set SENTRY_DSN="https://<key>@<glitchtip-host>/<project>" -a autonomath-api
+# Code change: zero. Two-gate semantics unchanged.
+```
+
+### Path C — Sentry self-hosted (`getsentry/self-hosted`)
+
+Full Sentry feature parity but operationally heavy: 21 Docker services,
+4 GB RAM minimum, separate Postgres + Redis + ClickHouse. Requires its own
+Fly app or external VPS, plus a "second-tier Sentry" to monitor the
+self-hosted Sentry itself. Adopt only if a private-data classification
+forbids sending events to a third-party SaaS.
+
+DSN swap is identical to path B — only the host portion changes.
+
+### Picking between A / B / C
+
+| Trigger                                            | Path |
+|----------------------------------------------------|------|
+| Default; no policy / volume change                 | A    |
+| Sentry free tier policy shrinks; need same-day swap| B managed |
+| Private-data classification (no third-party SaaS)  | C    |
+| Self-host complexity exceeds CS team-of-one budget | A (revert) |
+
+The R8 audit doc above carries the full path comparison + decision matrix.
