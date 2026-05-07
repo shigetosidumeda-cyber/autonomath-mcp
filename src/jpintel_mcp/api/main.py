@@ -3,7 +3,6 @@ import json
 import logging
 import os
 import re
-import secrets
 import sys
 import time
 import unicodedata
@@ -213,6 +212,7 @@ def _emit_query_log(
     latency_ms: int,
     status: int | str,
     error_class: str | None,
+    request_id: str | None = None,
 ) -> None:
     try:
         # INV-21: Defense-in-depth PII redaction. `params_shape` is supposed
@@ -222,7 +222,7 @@ def _emit_query_log(
         # also passed through `redact_pii` because path params can carry
         # T-numbers (e.g. /v1/invoice_registrants/T8010001213708).
         # See `feedback_no_fake_data` + `analysis_wave18/.../INV-21`.
-        record = {
+        record: dict[str, Any] = {
             "ts": datetime.now(UTC).isoformat(),
             "channel": channel,
             "endpoint": redact_pii(endpoint),
@@ -232,6 +232,13 @@ def _emit_query_log(
             "status": status,
             "error_class": error_class,
         }
+        # R8 audit-log deep audit (2026-05-07): include request_id so the
+        # query telemetry JSON line can be joined to the response header,
+        # the structured log lines under the same request, the
+        # `error.request_id` envelope, and the Sentry tag — single id
+        # threads forensic reconstruction during an incident.
+        if request_id:
+            record["request_id"] = request_id
         _query_log.info(json.dumps(record, ensure_ascii=False))
     except Exception:
         # Never block the response on telemetry failure.
@@ -450,8 +457,19 @@ _REQUEST_ID_RE = re.compile(r"^[A-Za-z0-9-]{8,64}$")
 
 class _RequestContextMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next: Callable[..., Any]) -> Response:
+        # R8 audit-log deep audit (2026-05-07): unify the happy-path mint with
+        # the error-path mint. Pre-fix the happy path used `secrets.token_hex(8)`
+        # (16 hex chars) while `_error_envelope._mint_request_id()` produced a
+        # 26-char Crockford-base32 ULID — same regex window but different
+        # shapes, so log search by id-length filter would split the same
+        # request across two formats. Switch to the ULID mint so the response
+        # `x-request-id` header, the structured-log `request_id` contextvar,
+        # and the `error.request_id` envelope all share one shape (26-char
+        # ULID; lexicographically time-sortable for forensic windowing).
+        from jpintel_mcp.api._error_envelope import _mint_request_id
+
         inbound = request.headers.get("x-request-id", "")
-        rid = inbound if _REQUEST_ID_RE.fullmatch(inbound) else secrets.token_hex(8)
+        rid = inbound if _REQUEST_ID_RE.fullmatch(inbound) else _mint_request_id()
         # Stash on request.state so downstream exception handlers can read
         # the SAME id that was generated here. Reading
         # `request.headers["x-request-id"]` in the 5xx handler returns
@@ -464,6 +482,20 @@ class _RequestContextMiddleware(BaseHTTPMiddleware):
             path=request.url.path,
             method=request.method,
         )
+        # R8 audit-log deep audit (2026-05-07): forward request_id as a Sentry
+        # tag so issue-search and triage can pivot on the same id that
+        # appears in `x-request-id`, the JSON log line, and the
+        # `error.request_id` envelope. Sentry SDK auto-attaches the
+        # x-request-id HEADER to event.request, but the value is buried in a
+        # request blob — without an explicit tag the search filter
+        # `request_id:01KR0Q...` returns zero hits. No-op when Sentry is not
+        # initialised (dev / non-prod) — `set_tag` is safe on a stub hub.
+        try:
+            import sentry_sdk
+
+            sentry_sdk.set_tag("request_id", rid)
+        except Exception:  # noqa: BLE001 — observability never raises on the hot path
+            pass
         response: Response = await call_next(request)
         response.headers["x-request-id"] = rid
         return response
@@ -491,6 +523,15 @@ class _QueryTelemetryMiddleware(BaseHTTPMiddleware):
             raise
         finally:
             latency_ms = int((time.monotonic() - t0) * 1000)
+            # R8 audit-log deep audit (2026-05-07): pull the rid stamped onto
+            # request.state by `_RequestContextMiddleware` so the query log
+            # line carries the same correlation id as the response header
+            # and the structlog contextvar.
+            rid_for_log: str | None = None
+            try:
+                rid_for_log = getattr(request.state, "request_id", None)
+            except Exception:  # noqa: BLE001 — telemetry never raises
+                rid_for_log = None
             _emit_query_log(
                 channel="rest",
                 endpoint=request.url.path,
@@ -498,6 +539,7 @@ class _QueryTelemetryMiddleware(BaseHTTPMiddleware):
                 result_count=0,  # REST: result count not available in middleware
                 latency_ms=latency_ms,
                 status=status,
+                request_id=rid_for_log,
                 error_class=error_class,
             )
         return response
@@ -1481,7 +1523,9 @@ def create_app() -> FastAPI:
         """
         rid = safe_request_id(request)
         if rid == "unset":
-            rid = secrets.token_hex(8)
+            from jpintel_mcp.api._error_envelope import _mint_request_id
+
+            rid = _mint_request_id()
         path_str = str(request.url.path)
         is_am = path_str.startswith("/v1/am/")
         _log.warning(
@@ -1517,8 +1561,12 @@ def create_app() -> FastAPI:
             # Last-ditch: synthesise so the user has SOMETHING actionable
             # even if every upstream layer failed. This branch is only hit
             # when the request bypassed _RequestContextMiddleware (very
-            # rare — typically a startup-error raise).
-            rid = secrets.token_hex(8)
+            # rare — typically a startup-error raise). Use the same ULID
+            # mint as the request-context middleware so the id shape stays
+            # uniform across log search.
+            from jpintel_mcp.api._error_envelope import _mint_request_id
+
+            rid = _mint_request_id()
         _log.exception("unhandled exception request_id=%s path=%s", rid, request.url.path)
         # Back-compat shape: keep "detail" + "request_id" at the root for
         # callers that already pattern-match on those keys (test_error_handler

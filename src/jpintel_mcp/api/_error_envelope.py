@@ -27,7 +27,7 @@ shape:
         "code": "<closed-enum>",
         "user_message": "<plain-Japanese, ≤200 chars>",
         "user_message_en": "<English, optional>",
-        "request_id": "<always a real 16-hex token; minted when missing>",
+        "request_id": "<always a real 26-char ULID; minted when missing>",
         "documentation": "https://jpcite.com/docs/...",
         ... (per-code extras: retry_after, retry_with, field_errors)
       }
@@ -342,13 +342,15 @@ def make_error(
         English mirror, optional. Falls back to default English copy.
     request_id
         Echoed under ``error.request_id``. ``None`` falls back to a
-        freshly-minted ``secrets.token_hex(8)`` value so the wire shape
-        always carries a usable correlation id. Pre-fix this fell back
-        to the literal ``"unset"`` (and earlier the literal ``"unknown"``
-        — J5), which gave callers no actionable handle. Production
-        handlers MUST still pass ``safe_request_id(request)`` so the
-        envelope id matches the response ``x-request-id`` header and
-        the structured log lines for the same request.
+        freshly-minted 26-char Crockford-base32 ULID (see
+        :func:`_mint_request_id`) so the wire shape always carries a
+        usable correlation id and lexicographic order matches creation
+        time for log-window forensics. Pre-fix this fell back to the
+        literal ``"unset"`` (and earlier the literal ``"unknown"`` — J5),
+        which gave callers no actionable handle. Production handlers
+        MUST still pass ``safe_request_id(request)`` so the envelope id
+        matches the response ``x-request-id`` header and the structured
+        log lines for the same request.
     **extras
         Arbitrary per-code fields merged into ``error``: e.g.
         ``retry_after=30`` for 503, ``field_errors=[...]`` for 422,
@@ -400,10 +402,13 @@ def safe_request_id(request: Any) -> str:
       2. ``x-request-id`` header (caller-supplied) — only when it matches
          ``_REQUEST_ID_RE`` so a malicious caller cannot inject SQL, log-
          injection sequences, or absurdly long strings into our logs.
-      3. A freshly-minted ``secrets.token_hex(8)`` value, ALSO stamped onto
-         ``request.state.request_id`` so subsequent calls on the same
-         request return the SAME id (envelope, response header,
-         downstream log lines all match).
+      3. A freshly-minted 26-char ULID (see :func:`_mint_request_id`),
+         ALSO stamped onto ``request.state.request_id`` so subsequent
+         calls on the same request return the SAME id (envelope,
+         response header, downstream log lines all match). Post-R8
+         (2026-05-07) this matches the happy-path mint in
+         ``_RequestContextMiddleware`` — both surfaces produce the same
+         ULID shape so log search filters can pivot on one regex.
 
     The pre-fix fallback was the literal string ``"unset"`` (J5 / current
     bug): every 422 emitted from ``StrictQueryMiddleware`` (which runs
@@ -430,8 +435,10 @@ def safe_request_id(request: Any) -> str:
         hdr = request.headers.get("x-request-id")
     except Exception:  # pragma: no cover — defensive
         hdr = None
-    # 3. Mint. ``secrets.token_hex(8)`` mirrors the context-middleware
-    #    fallback so log search treats both id streams uniformly.
+    # 3. Mint. The 26-char ULID mint mirrors the context-middleware
+    #    fallback (post-R8 2026-05-07) so log search treats both id
+    #    streams uniformly — one regex, one length, one creation-order
+    #    sort key.
     rid_val = hdr if hdr and _REQUEST_ID_RE.fullmatch(hdr) else _mint_request_id()
 
     # Stamp onto request.state so anyone else who calls safe_request_id on
@@ -508,7 +515,7 @@ class ErrorBody(BaseModel):
 
     Required fields are ``code`` + ``message``. ``request_id`` is always
     present in production (``make_error`` defaults to a freshly-minted
-    ``secrets.token_hex(8)`` value when no upstream id can be resolved)
+    26-char Crockford-base32 ULID when no upstream id can be resolved)
     but is marked optional here so SDK generators emit a nullable type.
 
     Extras (``retry_after``, ``suggested_paths``, ``field_errors``,
