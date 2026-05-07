@@ -32,6 +32,8 @@ These values are a 2026-05-06 local snapshot and must be re-probed before public
 
 Rule: prose counts are historical unless they came from the current probe or manifest. Do not bulk-replace old counts inside archived reports.
 
+> 2026-05-07 re-probe (R8 data fidelity deep audit, see `tools/offline/_inbox/_housekeeping_audit_2026_05_06/R8_DATA_FIDELITY_DEEP_2026-05-07.md`): committed `docs/openapi/v1.json` v0.3.4 holds **186 paths / 194 method-operations**; `docs/openapi/agent.json` v0.3.4 holds **32 paths**. The 227 / 39 above remain the 2026-05-06 snapshot per the "do not bulk-replace" rule, but live REST count post `feat(openapi): root tags block + q/query alias unified` (commit f3977762) and post path-deduplication is **186 paths / 32 agent paths**. Any future manifest bump or public copy edit MUST re-probe and use the 186 / 32 actuals, not the 227 / 39 snapshot.
+
 ## Canonical Pointers
 
 | topic | current pointer |
