@@ -49,8 +49,8 @@ from jpintel_mcp.api.autonomath import (
 from jpintel_mcp.api.autonomath import (
     router as autonomath_router,
 )
-from jpintel_mcp.api.bids import router as bids_router
 from jpintel_mcp.api.benchmark import router as benchmark_router
+from jpintel_mcp.api.bids import router as bids_router
 from jpintel_mcp.api.billing import router as billing_router
 from jpintel_mcp.api.billing_breakdown import router as billing_breakdown_router
 from jpintel_mcp.api.bulk_evaluate import router as bulk_evaluate_router
