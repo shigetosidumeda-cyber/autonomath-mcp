@@ -15,7 +15,7 @@ Outputs:
 Run:
     python scripts/generate_public_counts.py
 
-The script reads from the live SQLite databases (data/jpintel.db plus the
+The script reads from the live SQLite databases (primary corpus DB plus the
 unified autonomath.db at the repo root); it does not call any external API or
 LLM. Counts that cannot be sourced fall through as ``null`` in the JSON.
 """
@@ -30,7 +30,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-JPINTEL_DB = REPO_ROOT / "data" / "jpintel.db"
+PRIMARY_CORPUS_DB = REPO_ROOT / "data" / "jpintel.db"
 AUTONOMATH_DB_CANDIDATES = [
     REPO_ROOT / "autonomath.db",
     REPO_ROOT / "data" / "autonomath.db",
@@ -69,8 +69,8 @@ def collect_counts() -> dict[str, Any]:
     """
     counts: dict[str, Any] = {}
 
-    if JPINTEL_DB.exists():
-        with sqlite3.connect(f"file:{JPINTEL_DB}?mode=ro", uri=True) as jp:
+    if PRIMARY_CORPUS_DB.exists():
+        with sqlite3.connect(f"file:{PRIMARY_CORPUS_DB}?mode=ro", uri=True) as jp:
             counts["searchable_programs_total"] = _scalar(
                 jp,
                 "SELECT COUNT(*) FROM programs WHERE excluded=0 AND tier IN ('S','A','B','C')",
@@ -98,7 +98,9 @@ def collect_counts() -> dict[str, Any]:
                 jp, "SELECT COUNT(*) FROM enforcement_cases"
             )
             counts["exclusion_rules_total"] = _scalar(jp, "SELECT COUNT(*) FROM exclusion_rules")
-            counts["laws_total"] = _scalar(jp, "SELECT COUNT(*) FROM laws")
+            laws_metadata = _scalar(jp, "SELECT COUNT(*) FROM laws")
+            counts["laws_metadata"] = laws_metadata
+            counts["laws_total"] = laws_metadata
             counts["tax_rulesets_total"] = _scalar(jp, "SELECT COUNT(*) FROM tax_rulesets")
             counts["court_decisions_total"] = _scalar(jp, "SELECT COUNT(*) FROM court_decisions")
             counts["bids_total"] = _scalar(jp, "SELECT COUNT(*) FROM bids")
@@ -116,17 +118,15 @@ def collect_counts() -> dict[str, Any]:
             )
             counts["sources_total"] = _scalar(am, "SELECT COUNT(*) FROM am_source")
             counts["law_articles_total"] = _scalar(am, "SELECT COUNT(*) FROM am_law_article")
-            counts["laws_fulltext"] = _scalar(
-                am,
-                "SELECT COUNT(DISTINCT law_canonical_id) FROM am_law_article",
-                6493,
-            )
             counts["last_corpus_refresh"] = _scalar(am, "SELECT MAX(updated_at) FROM am_entities")
 
     # Public fallback from the latest verified static snapshot.
-    # Keep the key populated so data-stat-key hydration never erases the
-    # fallback value on pages that disclose full-text law coverage.
-    counts.setdefault("laws_fulltext", 6493)
+    # Law coverage is disclosed as metadata + text references, not internal
+    # full-text indexing progress.
+    if counts.get("laws_metadata") is None:
+        counts["laws_metadata"] = 9484
+    if counts.get("laws_total") is None:
+        counts["laws_total"] = counts["laws_metadata"]
 
     # Hard-coded reference values that are not row-counts but still belong on
     # the public count surface (price + tool count + free quota). These are the
@@ -156,8 +156,7 @@ PUBLIC_CARD_LABELS: list[tuple[str, str]] = [
     ("case_studies_total", "採択事例"),
     ("loan_programs_total", "融資プログラム"),
     ("enforcement_cases_total", "行政処分"),
-    ("laws_total", "法令 (e-Gov 連携)"),
-    ("laws_fulltext", "法令本文インデックス済み"),
+    ("laws_metadata", "法令メタデータ・本文参照"),
     ("tax_rulesets_total", "税制ルール"),
     ("court_decisions_total", "判例"),
     ("bids_total", "入札"),
@@ -493,7 +492,7 @@ def render_stats_html(counts: dict[str, Any]) -> str:
  <div class="container footer-inner">
  <div class="footer-col">
  <p class="footer-brand">jpcite</p>
- <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ <p class="footer-tag">日本の公的制度を、根拠付き成果物に。</p>
  </div>
  <nav class="footer-nav" aria-label="フッター">
  <a href="about.html">運営について</a>
@@ -523,7 +522,7 @@ def render_stats_html(counts: dict[str, Any]) -> str:
     ["loan_programs", "loan_programs (融資)"],
     ["enforcement_cases", "enforcement_cases (行政処分)"],
     ["exclusion_rules", "exclusion_rules (排他)"],
-    ["laws_jpintel", "laws (法令)"],
+    ["laws", "laws (法令)"],
     ["tax_rulesets", "tax_rulesets (税制)"],
     ["court_decisions", "court_decisions (判例)"],
     ["bids", "bids (入札)"],

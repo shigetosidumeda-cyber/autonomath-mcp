@@ -43,7 +43,7 @@ API key 不要 (anonymous IP-based 3 req/日 free)、有料化は本人が Strip
 ```
 jpcite — 日本の制度情報 MCP サーバー (139 tools, protocol 2025-06-18)。
 14,472 プログラム (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 融資 (担保 /
-個人保証人 / 第三者保証人 三軸分解) + 1,185 行政処分 + 法令 e-Gov 本文索引 6,493 + メタデータ 9,484 行 +
+個人保証人 / 第三者保証人 三軸分解) + 1,185 行政処分 + e-Gov 法令メタデータ・条文参照 (record により coverage は異なる) +
 税制 ruleset (インボイス / 電帳法) 50 行 + 適格請求書事業者 13,801 行 (PDL v1.0) +
 503,930 entity + 6.12M facts + 177,381 relations + 335k aliases。
 181 件の排他ルール、cross-dataset glue (trace_program_to_law / find_cases_by_law /
@@ -58,7 +58,7 @@ key 不要)。Bookyou 株式会社 / info@bookyou.net。
 jpcite — MCP server (139 tools, protocol 2025-06-18) over Japanese public-program
 data: 14,472 programs (subsidy / loan / tax / certification) + 2,286 acceptance cases +
 108 loans (3-axis: collateral / individual guarantor / third-party guarantor) +
-1,185 enforcement actions + 6,493 laws full-text indexed + 9,484 law metadata records (e-Gov, CC-BY) + 50 tax rulesets
+1,185 enforcement actions + e-Gov law metadata and article references (coverage varies by record) + 50 tax rulesets
 (invoice / electronic-bookkeeping) + 13,801 invoice registrants (NTA, PDL v1.0) +
 503,930 entities + 6.12M facts + 177,381 relations + 335k aliases.
 181 exclusion / prerequisite rules; cross-dataset glue: trace_program_to_law /

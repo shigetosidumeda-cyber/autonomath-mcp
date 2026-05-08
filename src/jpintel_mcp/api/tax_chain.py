@@ -6,7 +6,9 @@ primary-source citation surface that interprets the same tax measure:
     1. **税制 (rule)**         — ``tax_rulesets`` (jpintel.db, 50 rows live)
     2. **根拠条文 (laws)**     — ``laws`` joined via the ruleset's
                                   ``related_law_ids_json`` (jpintel.db,
-                                  9,484 catalog stubs / 6,493 full-text)
+                                  9,484 metadata records; article references
+                                  where available, body/article coverage
+                                  varies by record)
     3. **通達 (tsutatsu)**     — ``nta_tsutatsu_index`` (autonomath.db,
                                   ~3,221 rows)
     4. **裁決事例 (saiketsu)** — ``nta_saiketsu`` (autonomath.db, ~140 rows

@@ -5566,7 +5566,7 @@
             "title": "Invoice Registrants",
             "type": "integer"
           },
-          "laws_jpintel": {
+          "laws": {
             "default": 0,
             "description": "Law metadata records in the public jpcite corpus.",
             "title": "Laws",
@@ -6182,7 +6182,7 @@
       },
       "DeepHealthResponse": {
         "additionalProperties": true,
-        "description": "``GET /v1/am/health/deep`` \u2014 10-check aggregate + Sentry probe.\n\n``sentry_active`` (read-only) reflects whether ``_init_sentry`` succeeded\nat lifespan startup. False when ``SENTRY_DSN`` is unset or the two-controlled\n(DSN \u2227 ``JPINTEL_ENV=prod``) was not satisfied. Aggregate ``status`` is\nintentionally unaffected \u2014 Sentry being dark is a meta-signal for the\nsupport team, not a fail/warn for the API itself.",
+        "description": "``GET /v1/am/health/deep`` \u2014 10-check aggregate + Sentry probe.\n\n``sentry_active`` (read-only) reflects whether ``_init_sentry`` succeeded\nat lifespan startup. False when Sentry is not configured or the production\nruntime controlled was not satisfied. Aggregate ``status`` is\nintentionally unaffected \u2014 Sentry being dark is a meta-signal for the\nsupport team, not a fail/warn for the API itself.",
         "properties": {
           "checks": {
             "additionalProperties": true,
@@ -29777,7 +29777,7 @@
     },
     "/v1/laws/search": {
       "get": {
-        "description": "Search the e-Gov \u6cd5\u4ee4 catalog (9,484 metadata records; 6,493 laws with article body index) across `law_title + law_short_title + law_number + summary`. Filter by `law_type` (constitution / act / cabinet_order / imperial_order / ministerial_ordinance / rule / notice / guideline), \u6240\u7ba1\u5e9c\u7701 (`ministry`), revision_status, and promulgated / enforced date windows.\n\n**License:** e-Gov \u6cd5\u4ee4\u30c7\u30fc\u30bf is **CC-BY 4.0** (attribution required, redistribution permitted with attribution). The `source_url` on each record points to the canonical e-Gov \u6cd5\u4ee4\u691c\u7d22 permalink \u2014 relay it.\n\n**Search note:** Japanese legal phrases are normalized. For very short terms, structured filters or longer phrases are more reliable.\n\nPair with `GET /v1/laws/{unified_id}/related-programs` to trace which \u88dc\u52a9\u91d1 cite a given statute as authority / eligibility / exclusion / penalty.",
+        "description": "Search the e-Gov \u6cd5\u4ee4 catalog (9,484 metadata records with article references where available; body/article coverage varies by record) across `law_title + law_short_title + law_number + summary`. Filter by `law_type` (constitution / act / cabinet_order / imperial_order / ministerial_ordinance / rule / notice / guideline), \u6240\u7ba1\u5e9c\u7701 (`ministry`), revision_status, and promulgated / enforced date windows.\n\n**License:** e-Gov \u6cd5\u4ee4\u30c7\u30fc\u30bf is **CC-BY 4.0** (attribution required, redistribution permitted with attribution). The `source_url` on each record points to the canonical e-Gov \u6cd5\u4ee4\u691c\u7d22 permalink \u2014 relay it.\n\n**Search note:** Japanese legal phrases are normalized. For very short terms, structured filters or longer phrases are more reliable.\n\nPair with `GET /v1/laws/{unified_id}/related-programs` to trace which \u88dc\u52a9\u91d1 cite a given statute as authority / eligibility / exclusion / penalty.",
         "operationId": "search_laws_v1_laws_search_get",
         "parameters": [
           {
@@ -36822,7 +36822,7 @@
             "description": "Validation Error"
           }
         },
-        "summary": "DEEP-22 Time Machine \u2014 frozen-at-date eligibility / amount / deadline",
+        "summary": "Time Machine \u2014 frozen-at-date eligibility / amount / deadline",
         "tags": [
           "time_machine"
         ]
@@ -36922,7 +36922,7 @@
             "description": "Validation Error"
           }
         },
-        "summary": "DEEP-22 Time Machine \u2014 12-month evolution grid",
+        "summary": "Time Machine \u2014 12-month evolution grid",
         "tags": [
           "time_machine"
         ]
@@ -39472,7 +39472,7 @@
       "name": "enforcement-cases"
     },
     {
-      "description": "e-Gov \u6cd5\u4ee4 article lookup (CC-BY 4.0). 9,484 indexed law titles, 6,493 with full-text body searchable.",
+      "description": "e-Gov \u6cd5\u4ee4 lookup (CC-BY 4.0). 9,484 metadata records with article references where available; body/article coverage varies by record.",
       "name": "laws"
     },
     {

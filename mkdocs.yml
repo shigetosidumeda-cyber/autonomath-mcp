@@ -69,6 +69,7 @@ extra_css:
 extra_javascript:
   - assets/feedback-widget.js
   - assets/feedback-init.js
+  - assets/search-input-patch.js
 
 markdown_extensions:
   - admonition

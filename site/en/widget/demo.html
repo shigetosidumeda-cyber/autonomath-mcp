@@ -143,13 +143,13 @@
  <p class="lead">
  This page shows static widget examples across themes and configurations. To use it
  in production, sign up on the
- <a href="../widget.html">Widget product page</a> and embed the
- <code>wgt_live_...</code> key on your origin-allowlisted site.
+ <a href="../widget.html">Widget product page</a> and embed your issued
+ widget key on your origin-allowlisted site.
  </p>
 
  <h2>Light theme (default, English UI)</h2>
  <div class="panel">
- <div class="static-widget-preview" data-jpcite-preview data-example-key="wgt_live_YOUR_KEY">
+ <div class="static-widget-preview" data-jpcite-preview data-example-key="wgt_demo_STATIC_ONLY">
  <strong>Tokyo / restaurant / equipment investment</strong>
  Example output includes source URLs, fetched timestamps, deadline candidates, and prescreen questions.
  </div>
@@ -160,7 +160,7 @@
 
  <h2>Dark theme (English UI)</h2>
  <div class="panel dark">
- <div class="static-widget-preview" data-jpcite-preview data-example-key="wgt_live_YOUR_KEY">
+ <div class="static-widget-preview" data-jpcite-preview data-example-key="wgt_demo_STATIC_ONLY">
  <strong>Manufacturing / energy-saving investment</strong>
  Dark theme uses the same evidence-linked candidate-card structure.
  </div>
@@ -168,7 +168,7 @@
 
  <h2>Prefecture filter only (compact)</h2>
  <div class="panel">
- <div class="static-widget-preview" data-jpcite-preview data-example-key="wgt_live_YOUR_KEY">
+ <div class="static-widget-preview" data-jpcite-preview data-example-key="wgt_demo_STATIC_ONLY">
  <strong>Prefecture-only filter</strong>
  Compact example for small consultation pages.
  </div>
@@ -176,7 +176,7 @@
 
  <h2>Japanese UI (language=ja)</h2>
  <div class="panel">
- <div class="static-widget-preview" data-jpcite-preview data-example-key="wgt_live_YOUR_KEY">
+ <div class="static-widget-preview" data-jpcite-preview data-example-key="wgt_demo_STATIC_ONLY">
  <strong>Japanese UI</strong>
  Japanese labels with source-linked program cards.
  </div>
@@ -191,7 +191,7 @@
 
  <pre><code>new Jpcite.Widget({
  container: '#programmatic-target',
- key: 'wgt_live_YOUR_KEY',
+ key: 'YOUR_WIDGET_KEY',
  filters: ['industry', 'prefecture'],
  theme: 'light',
  language: 'en',
@@ -201,7 +201,7 @@
 
  <h2>Embed snippet (two lines)</h2>
  <pre><code>&lt;script src="https://jpcite.com/widget/jpcite.js"&gt;&lt;/script&gt;
-&lt;div data-jpcite-widget data-key="wgt_live_YOUR_KEY"&gt;&lt;/div&gt;</code></pre>
+&lt;div data-jpcite-widget data-key="YOUR_WIDGET_KEY"&gt;&lt;/div&gt;</code></pre>
 
  <p class="note">
  A single snippet produces the search UI, results list, primary-source
@@ -218,7 +218,7 @@
   if (!window.Jpcite || !window.Jpcite.Widget) return;
   new Jpcite.Widget({
     container: "#programmatic-target",
-    key: "wgt_live_YOUR_KEY",
+    key: "YOUR_WIDGET_KEY",
     filters: ["industry", "prefecture"],
     theme: "light",
     language: "en",

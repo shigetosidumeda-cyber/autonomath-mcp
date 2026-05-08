@@ -1,6 +1,6 @@
 """Public stats endpoint (P5-ι, brand 5-pillar transparent + anti-aggregator).
 
-GET /v1/stats/coverage   — dataset row counts (jpintel.db only)
+GET /v1/stats/coverage   — dataset row counts (primary corpus DB only)
 GET /v1/stats/freshness  — per-source min / max / avg fetch interval
 GET /v1/stats/usage      — past-30-day anonymous request count (cumulative)
 
@@ -415,7 +415,7 @@ _COVERAGE_TABLES: list[tuple[str, str]] = [
     ("loan_programs", "loan_programs"),
     ("enforcement_cases", "enforcement_cases"),
     ("exclusion_rules", "exclusion_rules"),
-    ("laws", "laws_jpintel"),
+    ("laws", "laws"),
     ("tax_rulesets", "tax_rulesets"),
     ("court_decisions", "court_decisions"),
     ("bids", "bids"),
@@ -631,7 +631,7 @@ def _open_autonomath_conn() -> sqlite3.Connection | None:
     """Open a short-lived sqlite3 handle on autonomath.db.
 
     The O8 view (`am_uncertainty_view`) lives on autonomath.db; the
-    request-scoped `DbDep` points at jpintel.db. We open + close
+    request-scoped `DbDep` points at the primary corpus DB. We open + close
     inline to avoid bleeding a second handle into the request context.
     """
     try:

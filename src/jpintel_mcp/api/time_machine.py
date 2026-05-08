@@ -1,4 +1,4 @@
-"""DEEP-22 Regulatory Time Machine REST endpoints.
+"""Regulatory Time Machine REST endpoints.
 
 Two routes that surface the `time_machine_tools` MCP wrappers as HTTP:
 
@@ -61,7 +61,7 @@ _DATA_QUALITY_TIME_MACHINE: dict[str, Any] = {
 
 @router.get(
     "/{program_id}/at",
-    summary="DEEP-22 Time Machine — frozen-at-date eligibility / amount / deadline",
+    summary="Time Machine — frozen-at-date eligibility / amount / deadline",
     description=(
         "Replay the program's eligibility / amount / deadline as it was "
         "live on ``as_of``. Pivots off ``am_amendment_snapshot`` "
@@ -137,7 +137,7 @@ def query_at(
 
 @router.get(
     "/{program_id}/evolution/{year}",
-    summary="DEEP-22 Time Machine — 12-month evolution grid",
+    summary="Time Machine — 12-month evolution grid",
     description=(
         "Run ``query_at_snapshot`` at every month-end of ``year`` in one "
         "call (single ¥3 metered event, 11 cached reads). Surfaces "

@@ -92,7 +92,7 @@
     {"@type": "Question", "name": "Is adult guardianship support possible?", "acceptedAnswer": {"@type": "Answer", "text": "Information lookup yes — jpcite surfaces adult guardianship program timelines (中核機関整備, 任意後見, 市民後見人養成) and Civil Code §7-§876 article text via search_programs and get_law_article_en. Court filing drafts no — guardianship petitions and filing documents remain the exclusive work of licensed 司法書士 / 弁護士 under §3 / Lawyers Act §72."}},
     {"@type": "Question", "name": "What is a reasonable substitute for 反社 (organized crime) checks?", "acceptedAnswer": {"@type": "Answer", "text": "Enforcement-history lookup yes — am_enforcement_detail returns fines, grant refunds, and subsidy exclusion records by 法人番号 (corporate number). Personal credit information no — APPI (個人情報保護法) compliance fences personal PII out of the surface. The licensed 司法書士 makes the final 反社 determination using their own protocol; jpcite contributes only the corporate-side enforcement signal."}},
     {"@type": "Question", "name": "What is the pricing?", "acceptedAnswer": {"@type": "Answer", "text": "¥3 per request fully metered (税込 ¥3.30 ≈ $0.022). Anonymous 3 req/day per IP free, JST midnight reset. No tier SKUs, no seat fees, no annual minimums, no Pro / Starter plan. The only free path is the IP-based anonymous quota."}},
-    {"@type": "Question", "name": "How does this differ from your tax advisor or CPA cohort?", "acceptedAnswer": {"@type": "Answer", "text": "Cohort-specific persona kits (DEEP-34) inject the relevant exclusive-work boundaries dynamically. The 司法書士 cohort fences Judicial Scrivener Act §3 (registration / deposit / summary court representation). The 税理士 cohort fences Tax Accountants Act §52 (tax representation / tax document preparation). The 公認会計士 cohort fences Certified Public Accountants Act §47条の2 (statutory audit). Same corpus, different fence — the boundary text is loaded from cohort_shihoshoshi.yaml at request time and surfaced in every _disclaimer field."}}
+    {"@type": "Question", "name": "How does this differ from your tax advisor or CPA cohort?", "acceptedAnswer": {"@type": "Answer", "text": "Cohort-specific persona kits inject the relevant exclusive-work boundaries dynamically. The 司法書士 cohort fences Judicial Scrivener Act §3 (registration / deposit / summary court representation). The 税理士 cohort fences Tax Accountants Act §52 (tax representation / tax document preparation). The 公認会計士 cohort fences Certified Public Accountants Act §47条の2 (statutory audit). Same corpus, different fence — the boundary text is loaded from cohort_shihoshoshi.yaml at request time and surfaced in every _disclaimer field."}}
   ]
 }
 </script>
@@ -199,7 +199,7 @@
 
  <article class="card">
  <h3>3. Pre-small-claims-litigation entity verify</h3>
- <p class="card-lead">tool: <code>shihoshoshi_dd_pack_am</code> (DEEP-30, new)</p>
+ <p class="card-lead">tool: <code>shihoshoshi_dd_pack_am</code> (new)</p>
  <p><strong>Sample call:</strong> "Recent credit + bankruptcy risk + 反社 (organized crime) equivalent check for counterparty entity X."</p>
  <p>Returns unified envelope of (a) commercial registration snapshot, (b) jurisdiction breakdown, (c) enforcement history (fine / grant_refund / subsidy_exclude), (d) tax / lawyer / admin-scrivener boundary warnings (any §52 / §72 / §1 keyword hit on enforcement description). Cost: ¥3 (¥3.30 tax inclusive) for the unified pack. Personal credit information is APPI-fenced out &mdash; only corporate-side signals appear. The licensed <span lang="ja">司法書士</span> determines whether the ¥1.4M small-claims threshold applies and whether to accept representation.</p>
  </article>
@@ -361,7 +361,7 @@ for row in r2.json()["items"]:
 
  <article class="card">
  <h3>Q5. How does this differ from your tax advisor or CPA cohort?</h3>
- <p><strong>A.</strong> Cohort-specific persona kits (DEEP-34) inject the relevant exclusive-work boundaries dynamically. The <span lang="ja">司法書士</span> cohort fences Judicial Scrivener Act §3 (registration / deposit / summary court representation). The <span lang="ja">税理士</span> cohort fences Tax Accountants Act §52 (tax representation / tax document preparation). The <span lang="ja">公認会計士</span> cohort fences Certified Public Accountants Act §47条の2 (statutory audit). Same corpus, different fence &mdash; the boundary text is loaded from <code>cohort_shihoshoshi.yaml</code> at request time and surfaced in every <code>_disclaimer</code> field.</p>
+ <p><strong>A.</strong> Cohort-specific persona kits inject the relevant exclusive-work boundaries dynamically. The <span lang="ja">司法書士</span> cohort fences Judicial Scrivener Act §3 (registration / deposit / summary court representation). The <span lang="ja">税理士</span> cohort fences Tax Accountants Act §52 (tax representation / tax document preparation). The <span lang="ja">公認会計士</span> cohort fences Certified Public Accountants Act §47条の2 (statutory audit). Same corpus, different fence &mdash; the boundary text is loaded from <code>cohort_shihoshoshi.yaml</code> at request time and surfaced in every <code>_disclaimer</code> field.</p>
  </article>
 
  </div>

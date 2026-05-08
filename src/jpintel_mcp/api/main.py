@@ -2617,8 +2617,9 @@ def create_app() -> FastAPI:
             {
                 "name": "laws",
                 "description": (
-                    "e-Gov 法令 article lookup (CC-BY 4.0). 9,484 indexed "
-                    "law titles, 6,493 with full-text body searchable."
+                    "e-Gov 法令 lookup (CC-BY 4.0). 9,484 metadata records "
+                    "with article references where available; body/article "
+                    "coverage varies by record."
                 ),
             },
             {

@@ -252,9 +252,9 @@
  </div>
 
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
- <dt id="fact-laws_total" style="font-weight:600;font-size:18px;">法令 件数: 9,484 メタデータ / 6,493 本文インデックス</dt>
+ <dt id="fact-laws_total" style="font-weight:600;font-size:18px;">法令 件数: 9,484 法令メタデータ・本文参照</dt>
  <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
- e-Gov 法令 API より取得。CC-BY 4.0 ライセンス下で再配布。法令名・法令番号・所管などのメタデータ検索と、本文インデックス済み法令の条文検索に対応します。詳細は <a href="about.html#法令データの扱い">about.html#法令データの扱い</a>。<br>
+ e-Gov 法令 API より取得。CC-BY 4.0 ライセンス下で再配布。法令名・法令番号・所管などのメタデータ検索と、e-Gov 法令メタデータ・条文参照に対応します。詳細は <a href="about.html#法令データの扱い">about.html#法令データの扱い</a>。<br>
  出典: e-Gov 法令検索 (https://elaws.e-gov.go.jp/) · 更新 2026-05-07 JST · ライセンス CC-BY 4.0
  </dd>
  </div>
@@ -357,7 +357,7 @@
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
  <dt id="combo-program-law" style="font-weight:600;font-size:16px;">1. 制度 × 法令 (program_law_refs)</dt>
  <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
- 約 11,601 制度 × 9,484 法令 を結合。 「この補助金は何法 何条 に基づくか」 「この法律を根拠とする 制度群」 を 1 リクエストで取得。<br>
+ 約 11,601 制度 × 9,484 法令メタデータ・本文参照 を結合。 「この補助金は何法 何条 に基づくか」 「この法律を根拠とする 制度群」 を 1 リクエストで取得。<br>
  サンプル query: <code>GET /v1/programs/{id}/laws</code> · <code>GET /v1/laws/{id}/programs</code>
  </dd>
  </div>
@@ -413,7 +413,7 @@
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
  <dt id="combo-law-article" style="font-weight:600;font-size:16px;">8. 法令 × 条文改正 (am_law_article)</dt>
  <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
- 9,484 法令メタデータ × 353,278 条文行 × 改正版差分。 本文インデックス済み法令では、条文単位で「現行版」「改正前版」を取得できます。<br>
+ 9,484 法令メタデータ × 353,278 条文行 × 改正版差分。 条文参照では、条文単位で「現行版」「改正前版」を取得できます。<br>
  サンプル query: <code>GET /v1/laws/{id}/articles</code> · <code>GET /v1/laws/{id}/articles/{article_no}/amendments</code>
  </dd>
  </div>
@@ -496,7 +496,7 @@
  <section aria-labelledby="changelog-title" style="margin-top:40px;">
  <h2 id="changelog-title" class="section-title">更新履歴</h2>
  <ul style="margin:0;padding-left:20px;line-height:1.8;font-size:14px;">
- <li><strong>2026-05-07</strong> — 法令メタデータ、本文インデックス、条文行の表示を整理。 12 軸の価値ある組合せ section 追加。</li>
+ <li><strong>2026-05-07</strong> — 法令メタデータ、条文参照、条文行の表示を整理。 12 軸の価値ある組合せ section 追加。</li>
  <li><strong>2026-05-07</strong> — 関係性 総数を 17.7 万件 → 37.8 万件 に補正。 v0.3.4 / 2026-05-07 反映。</li>
  <li><strong>2026-04-26</strong> — 初版。 公開件数 14 項目 + 主要データベース 5 項目 + 料金 3 項目を統計 API に紐付けて公開。 各サイトページの統計表示にも展開。</li>
  </ul>
@@ -532,7 +532,7 @@
  <div class="container footer-inner">
  <div class="footer-col">
  <p class="footer-brand">jpcite</p>
- <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ <p class="footer-tag">日本の公的制度を、根拠付き成果物に。</p>
  </div>
  <nav class="footer-nav" aria-label="フッター">
  <a href="about.html">運営について</a>

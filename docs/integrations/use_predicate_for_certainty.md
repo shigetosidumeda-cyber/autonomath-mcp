@@ -76,7 +76,7 @@ For 100-program fan-outs (営業 funnel pre-screen), the gap compounds: predicat
 
 **Use `get_program_narrative` when:**
 
-- You will surface the explanation to a human user (LINE bot, dashboard tooltip, email).
+- You will surface the explanation to a human user (LINE notifications, dashboard tooltip, email).
 - You need application flow / pitfalls / overview prose, NOT just eligibility.
 - The customer asked "なぜこの制度が当社に合っているのか?" — predicate cannot answer "why".
 

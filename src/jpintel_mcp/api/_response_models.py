@@ -1260,7 +1260,7 @@ class CoverageResponse(BaseModel):
     loan_programs: int = 0
     enforcement_cases: int = 0
     exclusion_rules: int = 0
-    laws_jpintel: int = Field(
+    laws: int = Field(
         0,
         title="Laws",
         description="Law metadata records in the public jpcite corpus.",
@@ -1467,8 +1467,8 @@ class DeepHealthResponse(BaseModel):
     """``GET /v1/am/health/deep`` — 10-check aggregate + Sentry probe.
 
     ``sentry_active`` (read-only) reflects whether ``_init_sentry`` succeeded
-    at lifespan startup. False when ``SENTRY_DSN`` is unset or the two-gate
-    (DSN ∧ ``JPINTEL_ENV=prod``) was not satisfied. Aggregate ``status`` is
+    at lifespan startup. False when Sentry is not configured or the production
+    runtime gate was not satisfied. Aggregate ``status`` is
     intentionally unaffected — Sentry being dark is a meta-signal for the
     operator, not a fail/warn for the API itself.
     """

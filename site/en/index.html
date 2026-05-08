@@ -116,7 +116,7 @@
   "@context": "https://schema.org",
   "@type": "Dataset",
   "name": "jpcite — Japanese Public Programs Dataset",
-  "description": "14,472 public-program records (11,601 searchable) + 2,286 adoption case studies + 108 loans + 1,185 enforcement records + 6,493 laws full-text indexed + 9,484 law metadata records + 50 tax rulesets + 2,065 court decisions + 362 bids + 13,801 invoice registrants + 503,930 entities + 6.12M facts.",
+  "description": "14,472 public-program records (11,601 searchable) + 2,286 adoption case studies + 108 loans + 1,185 enforcement records + law records with metadata, searchable references, and e-Gov provenance + 50 tax rulesets + 2,065 court decisions + 362 bids + 13,801 invoice registrants + 503,930 entities + 6.12M facts.",
   "url": "https://jpcite.com/en/",
   "creator": {
     "@type": "Organization",
@@ -224,13 +224,13 @@
  <article class="card" aria-labelledby="trust-counts">
  <h3 id="trust-counts">503,930 entities + 6.12M facts</h3>
  <p class="card-lead">9 datasets + structured entity facts, one query surface</p>
- <p>Programs, adoption case studies, loans, enforcement, laws, court decisions, tax rulesets, bids, invoice registrants — all under a unified schema. The entity-fact layer carries entities and facts across 12 record kinds. The full-text search index (3-gram) lets you query Japanese as written, no romanization required.</p>
+ <p>Programs, adoption case studies, loans, enforcement, laws, court decisions, tax rulesets, bids, invoice registrants — all under a unified schema. The entity-fact layer carries entities and facts across 12 record kinds. Japanese search lets you query terms as written, no romanization required.</p>
  <ul class="card-list">
  <li>programs · 14,472 (11,601 searchable = Tier S 114 + A 1,340 + B 4,186 + C 5,961; 2,871 excluded from public search)</li>
  <li>case_studies · 2,286</li>
  <li>loan_programs · 108 (collateral / personal-guarantor / third-party-guarantor decomposed)</li>
  <li>enforcement_cases · 1,185</li>
- <li>laws · 6,493 full-text indexed + 9,484 law metadata records (e-Gov, CC-BY; full-text coverage varies by record, name resolver covers all 9,484)</li>
+ <li>laws · metadata, searchable references, and e-Gov provenance for compliance lookup</li>
  <li>tax_rulesets · 50</li>
  <li>court_decisions · 2,065</li>
  <li>bids · 362</li>
@@ -267,8 +267,8 @@
 
  <section class="features" aria-labelledby="pillars-title">
  <div class="container">
- <h2 id="pillars-title" class="section-title">Five interfaces</h2>
- <p class="demo-lead" style="margin:-16px 0 28px;">One backend, five ways to deliver it. Pick what fits the audience.</p>
+ <h2 id="pillars-title" class="section-title">What each path returns</h2>
+ <p class="demo-lead" style="margin:-16px 0 28px;">Start from the user's input: a natural-language query, corporate number, saved topic, or website visitor form. jpcite returns source-linked candidates, rules, alerts, or handoff context.</p>
  <div class="cards" style="grid-template-columns:repeat(3,1fr);">
 
  <article class="card" aria-labelledby="pillar-api">
@@ -284,15 +284,15 @@
  </article>
 
  <article class="card" aria-labelledby="pillar-line">
- <h3 id="pillar-line"><span aria-hidden="true">💬</span> LINE bot</h3>
+ <h3 id="pillar-line"><span aria-hidden="true">💬</span> LINE notifications</h3>
  <p class="card-lead">SMB owners / professional advisors</p>
- <p>Discover subsidies in 30 seconds, in plain Japanese, on the LINE app you already have. Add as a friend, no app install.</p>
+ <p>LINE is being prepared for saved-search notifications, deadline reminders, and consultation-pack updates after a prescreen is created through the web, API, or widget.</p>
  <ul class="card-list">
- <li>¥3/notification tax exclusive (¥3.30 tax inclusive)</li>
- <li>Anonymous 3 questions/day free</li>
- <li>Apple Pay / Google Pay supported</li>
+ <li>Input: saved search or consultation pack</li>
+ <li>Output: availability notice, deadline reminder, handoff update</li>
+ <li>Paid questioning is not live</li>
  </ul>
- <p style="margin:14px 0 0;"><a href="line.html">Use the LINE bot &rarr;</a></p>
+ <p style="margin:14px 0 0;"><a href="line.html">Check LINE availability &rarr;</a></p>
  </article>
 
  <article class="card" aria-labelledby="pillar-alerts">
@@ -334,13 +334,13 @@
  <article class="card" aria-labelledby="pillar-cta" style="background:var(--bg-alt);border-color:var(--accent);">
  <h3 id="pillar-cta">Not sure which fits?</h3>
  <p class="card-lead">Comparison table + decision tree</p>
- <p>Individual / corporate / developer / advisor — a 5-question decision tree picks the right interface for you. Typical use cases and setup time line up side by side.</p>
+ <p>Individual / corporate / developer / advisor — a short decision tree maps your input to the result you need. Typical use cases and setup time line up side by side.</p>
  <ul class="card-list">
- <li>Five-interface comparison table</li>
+ <li>Input-to-output comparison table</li>
  <li>Decision tree per audience</li>
- <li>Combo recommendations (e.g. MCP + LINE)</li>
+ <li>Recommended paths by workflow</li>
  </ul>
- <p style="margin:14px 0 0;"><a href="../products.html">See the comparison &rarr;</a></p>
+ <p style="margin:14px 0 0;"><a href="products.html">See the comparison &rarr;</a></p>
  </article>
 
  </div>
@@ -380,13 +380,13 @@
  <article class="card audience-card" aria-labelledby="aud-smb">
  <h3 id="aud-smb"><span aria-hidden="true">📱</span> SMB owners</h3>
  <p class="card-lead audience-context">Small business — owner, spouse, one bookkeeper</p>
- <p class="audience-pitch">Just ask on LINE: "are there subsidies for my industry?" Anonymous 3 questions/day free, ¥3 per question after that. Zero setup.</p>
+ <p class="audience-pitch">Run a web prescreen for "subsidies for my industry", keep the source URLs and open questions, then use LINE availability notices for reminders when the channel launches.</p>
  <ul class="card-list">
- <li>LINE bot — add as friend, that's it</li>
- <li>Anonymous 3 questions/day free</li>
- <li>¥3 per question (tax exclusive) after</li>
+ <li>Input: prefecture, industry, planned investment</li>
+ <li>Output: candidate programs, source URLs, handoff notes</li>
+ <li>LINE notifications are in preparation</li>
  </ul>
- <p style="margin:14px 0 0;"><a href="audiences/smb.html">SMB details &rarr;</a> · <a href="line.html">LINE bot</a></p>
+ <p style="margin:14px 0 0;"><a href="audiences/smb.html">SMB details &rarr;</a> · <a href="line.html">LINE notifications</a></p>
  </article>
 
  <article class="card audience-card" aria-labelledby="aud-vc">
@@ -419,7 +419,7 @@
  <p>Labor consultants, SMB consultants, accounting SaaS, chambers of commerce, municipal officers — the decision tree finds them too. Compare typical use cases, combo recommendations, and setup time side by side.</p>
  <ul class="card-list">
  <li>5-question decision tree</li>
- <li>Combo recommendations (MCP + LINE etc.)</li>
+ <li>Recommended paths by workflow</li>
  <li>Typical use cases lined up</li>
  </ul>
  <p style="margin:14px 0 0;"><a href="../products.html">Audience comparison &rarr;</a></p>
@@ -619,7 +619,7 @@
  <article class="card">
  <h3>Cross-dataset glue</h3>
  <p class="card-lead">One call: program → law → court decision → enforcement</p>
- <p>Expansion datasets are live: laws (e-Gov, CC-BY; 6,493 rows full-text indexed + 9,484 law metadata records, full-text coverage varies by record, name resolver covers all 9,484) + tax rulesets (invoice law / electronic-bookkeeping law; 50 rows) + NTA invoice registrants (PDL v1.0; 13,801 rows live delta) + court decisions (2,065 rows) + bids (362 rows). Plus structured entity facts (503,930 entities / 6.12M facts / 378,342 relations). The 139-tool MCP surface includes <code>trace_program_to_law</code> / <code>combined_compliance_check</code> / <code>search_tax_incentives</code> / <code>rule_engine_check</code> for cross-domain resolution.</p>
+ <p>Cross-dataset lookups cover laws (e-Gov, CC-BY; metadata, searchable references, and provenance), tax rulesets (invoice law / electronic-bookkeeping law), NTA invoice registrants, court decisions, bids, and structured entity facts. The MCP surface includes <code>trace_program_to_law</code> / <code>combined_compliance_check</code> / <code>search_tax_incentives</code> / <code>rule_engine_check</code> for cross-domain resolution.</p>
  </article>
 
  </div>
@@ -639,8 +639,8 @@
 
  <article class="card" aria-labelledby="who-sme">
  <h3 id="who-sme">SMB owners</h3>
- <p class="card-lead">Recommended: LINE bot + advisor affiliate</p>
- <p>Want to know what your business is eligible for, and to be routed to someone who can file it. Discover via LINE, get matched with a certified support institution or licensed tax advisor. Anonymous 3 questions/day are free; ¥3/question tax exclusive (¥3.30 tax inclusive) thereafter — no fixed monthly fee.</p>
+ <p class="card-lead">Recommended: LINE notifications + advisor affiliate</p>
+ <p>Want to know what your business is eligible for, and to be routed to someone who can file it. Run a web or API prescreen, keep source URLs and open questions, then receive LINE availability notices for reminders and handoff updates when the channel launches.</p>
  </article>
 
  <article class="card" aria-labelledby="who-shigyo">
@@ -664,7 +664,7 @@
  <h2 id="pricing-summary-title" class="section-title">Pricing summary</h2>
  <div class="table-wrap">
  <table class="pricing-table">
- <caption class="visually-hidden">Pricing summary for the five interfaces.</caption>
+ <caption class="visually-hidden">Pricing and availability summary by access path.</caption>
  <thead>
  <tr>
  <th scope="col">Interface</th>
@@ -681,10 +681,10 @@
  <td>¥3.30 / unit</td>
  </tr>
  <tr>
- <th scope="row">LINE bot</th>
- <td>3 questions/day per IP</td>
- <td>¥3 / question (tax excl.)</td>
- <td>¥3.30 / question</td>
+ <th scope="row">LINE notifications</th>
+ <td>Availability notice</td>
+ <td>Not live for paid questioning</td>
+ <td>Terms shown before launch</td>
  </tr>
 <tr>
 <th scope="row">Law-amendment alerts</th>

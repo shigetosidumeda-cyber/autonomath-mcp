@@ -99,7 +99,7 @@ def test_coverage_returns_per_dataset_counts(client, seeded_db: Path):
         "loan_programs",
         "enforcement_cases",
         "exclusion_rules",
-        "laws_jpintel",
+        "laws",
         "tax_rulesets",
         "court_decisions",
         "bids",

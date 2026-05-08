@@ -94,7 +94,8 @@ def _row_to_law(row: sqlite3.Row) -> Law:
     response_model=LawSearchResponse,
     summary="Search Japanese laws (法令): 憲法 / 法律 / 政令 / 省令 / 告示",
     description=(
-        "Search the e-Gov 法令 catalog (9,484 metadata rows; 6,493 laws with article body index) "
+        "Search the e-Gov 法令 catalog (9,484 metadata records with article references where available; "
+        "body/article coverage varies by record) "
         "across `law_title + law_short_title + law_number + summary`. "
         "Filter by `law_type` (constitution / act / cabinet_order / "
         "imperial_order / ministerial_ordinance / rule / notice / "

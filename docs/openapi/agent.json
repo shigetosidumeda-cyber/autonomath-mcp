@@ -2538,7 +2538,7 @@
           "citations"
         ],
         "summary": "Verify Citations",
-        "description": "Verify a batch of up to 10 citations against their primary sources.\n\nPer call:\n  * 1 billable unit (¥3) — billed regardless of per-citation verdict.\n  * Up to 30 seconds wall clock.\n  * Up to 10 citations.\n\nPer citation:\n  * Up to 5 seconds for the URL fetch.\n  * Verdict ∈ {verified, inferred, stale, unknown}. (``stale`` is not\n    emitted by the current pipeline; callers should still handle it.)\n\nErrors:\n  * 401 if the API key header is missing or invalid.\n  * 422 if more than 10 citations OR if an ``excerpt`` exceeds 500\n    chars. The validation message identifies the offending index so\n    the developer can fix the call without binary-searching the batch.",
+        "description": "Verify a batch of up to 10 citations against their primary sources.\n\nPer call:\n  * 1 billable unit (¥3) — billed regardless of per-citation verdict.\n  * Up to 30 seconds wall clock.\n  * Up to 10 citations.\n\nPer citation:\n  * Up to 5 seconds for the URL fetch.\n  * Verdict ∈ {verified, inferred, stale, unknown}. (``stale`` is\n    reserved for future drift detection — current pipeline returns\n    verified/inferred/unknown only.)\n\nErrors:\n  * 401 if the API key header is missing or invalid.\n  * 422 if more than 10 citations OR if an ``excerpt`` exceeds 500\n    chars. The validation message identifies the offending index so\n    the developer can fix the call without binary-searching the batch.",
         "operationId": "verifyCitations",
         "parameters": [
           {
@@ -2904,7 +2904,7 @@
           "laws"
         ],
         "summary": "Search Japanese laws (法令): 憲法 / 法律 / 政令 / 省令 / 告示",
-        "description": "Search the e-Gov 法令 catalog (9,484 metadata records; 6,493 laws with article body index) across `law_title + law_short_title + law_number + summary`. Filter by `law_type` (constitution / act / cabinet_order / imperial_order / ministerial_ordinance / rule / notice / guideline), 所管府省 (`ministry`), revision_status, and promulgated / enforced date windows.\n\n**License:** e-Gov 法令データ is **CC-BY 4.0** (attribution required, redistribution permitted with attribution). The `source_url` on each record points to the canonical e-Gov 法令検索 permalink — relay it.\n\n**Search note:** Japanese legal phrases are normalized. For very short terms, structured filters or longer phrases are more reliable.\n\nPair with `GET /v1/laws/{unified_id}/related-programs` to trace which 補助金 cite a given statute as authority / eligibility / exclusion / penalty.",
+        "description": "Search the e-Gov 法令 catalog (9,484 metadata records with article references where available; body/article coverage varies by record) across `law_title + law_short_title + law_number + summary`. Filter by `law_type` (constitution / act / cabinet_order / imperial_order / ministerial_ordinance / rule / notice / guideline), 所管府省 (`ministry`), revision_status, and promulgated / enforced date windows.\n\n**License:** e-Gov 法令データ is **CC-BY 4.0** (attribution required, redistribution permitted with attribution). The `source_url` on each record points to the canonical e-Gov 法令検索 permalink — relay it.\n\n**Search note:** Japanese legal phrases are normalized. For very short terms, structured filters or longer phrases are more reliable.\n\nPair with `GET /v1/laws/{unified_id}/related-programs` to trace which 補助金 cite a given statute as authority / eligibility / exclusion / penalty.",
         "operationId": "searchLaws",
         "parameters": [
           {
@@ -4950,7 +4950,7 @@
           "invoice_registrants"
         ],
         "summary": "Search 適格請求書発行事業者 (NTA invoice registrants)",
-        "description": "Look up registered Japanese 適格請求書発行事業者 (qualified invoice issuers under the インボイス制度 / 消費税仕入税額控除 regime) by name prefix, 法人番号, prefecture, or registration date window. Mirror of NTA's official 適格請求書発行事業者公表サイト bulk (13,801 delta records in the current mirror; use NTA's official site for full-registry confirmation).\n\n**When to use:** verify whether a counterparty has issued a valid T-prefixed invoice number before claiming 仕入税額控除. For exact T-number lookup (T + 13 digits), prefer `GET /v1/invoice registrant records/{invoice_registration_number}`.\n\n**Limits:** `q` requires 2+ chars and uses prefix name matching. Bulk dump is intentionally not supported; for full snapshots use NTA's official download URL in the `attribution.source_url`.\n\n**License:** every 2xx body carries a PDL v1.0 `attribution` block — 公共データ利用規約 第1.0版 (出典明記 + 編集・加工注記). Do NOT strip on relay.",
+        "description": "Look up registered Japanese 適格請求書発行事業者 (qualified invoice issuers under the インボイス制度 / 消費税仕入税額控除 regime) by name prefix, 法人番号, prefecture, or registration date window. Mirror of NTA's official 適格請求書発行事業者公表サイト bulk (13,801 delta records live; full 4M-record monthly bulk lands post-launch).\n\n**When to use:** verify whether a counterparty has issued a valid T-prefixed invoice number before claiming 仕入税額控除. For exact T-number lookup (T + 13 digits), prefer `GET /v1/invoice registrant records/{invoice_registration_number}`.\n\n**Limits:** `q` requires 2+ chars and uses prefix name matching. Bulk dump is intentionally not supported; for full snapshots use NTA's official download URL in the `attribution.source_url`.\n\n**License:** every 2xx body carries a PDL v1.0 `attribution` block — 公共データ利用規約 第1.0版 (出典明記 + 編集・加工注記). Do NOT strip on relay.",
         "operationId": "searchInvoiceRegistrants",
         "parameters": [
           {
@@ -10366,7 +10366,7 @@
             "maxItems": 500,
             "minItems": 1,
             "title": "Stack Or Calls",
-            "description": "Planned tool-call stack. Each entry counts toward billing_units. The 500-entry cap protects service availability for large preview payloads."
+            "description": "Planned tool-call stack. Each entry counts toward billing_units. The 500-entry cap is a safety net — preview is free but a 100k-entry stack would still occupy server memory."
           },
           "iterations": {
             "type": "integer",
@@ -10713,7 +10713,7 @@
             "title": "Exclusion Rules",
             "default": 0
           },
-          "laws_jpintel": {
+          "laws": {
             "type": "integer",
             "title": "Laws",
             "description": "Law metadata records in the public jpcite corpus.",
@@ -15496,7 +15496,7 @@
     },
     {
       "name": "laws",
-      "description": "e-Gov 法令 article lookup (CC-BY 4.0). 9,484 indexed law titles, 6,493 with full-text body searchable."
+      "description": "e-Gov 法令 lookup (CC-BY 4.0). 9,484 metadata records with article references where available; body/article coverage varies by record."
     },
     {
       "name": "tax_rulesets",

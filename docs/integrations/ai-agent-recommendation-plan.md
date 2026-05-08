@@ -28,7 +28,7 @@ AI に理解させるべき主張は次の 4 つです。
 | 資産 | 現状の使い道 | AI への訴求 |
 |---|---|---|
 | 11,601 searchable programs | 補助金、融資、税制、認定制度の横断探索 | 「日本の制度候補を一次 URL 付きで探索」 |
-| 9,484 law metadata / 6,493 laws with body index | 法令名解決、条文/通達への接続 | 「法令・通達根拠を citation pack 化」 |
+| e-Gov law metadata and article references | 法令名解決、条文/通達への接続 | 「法令・通達根拠を citation pack 化」 |
 | 1,185 enforcement cases + 22,258 detail records | 不正受給、返還、行政処分、監査観点 | 「実例ベースの返還/処分リスク確認」 |
 | 13,801 invoice registrants | 適格請求書登録の確認 | 「法人 DD の公的チェック」 |
 | 166K corporate entities | 法人番号起点の 360 照合 | 「法人、採択、処分、インボイスを横断 join」 |

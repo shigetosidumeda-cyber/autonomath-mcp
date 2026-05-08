@@ -1,4 +1,4 @@
-"""DEEP-34 cohort persona kit MCP resources.
+"""Cohort persona kit MCP resources.
 
 Ships 8 cohort-specific persona kits as MCP `resources/list` entries so that
 an AI agent connecting to jpcite-mcp can issue
@@ -56,7 +56,7 @@ _COHORT_DIR = _STATIC_DIR / "cohorts"
 
 _INDEX_FILE = _COHORT_DIR / "index.json"
 
-# Canonical 8 cohorts shipped at v0.3.5 (DEEP-34). Order matches index.json.
+# Canonical 8 cohorts shipped at v0.3.5. Order matches index.json.
 COHORT_SLUGS: tuple[str, ...] = (
     "tax_advisor",
     "kaikeishi",
@@ -68,7 +68,7 @@ COHORT_SLUGS: tuple[str, ...] = (
     "industry_pack",
 )
 
-# Required schema keys per cohort yaml (DEEP-34 §1 Resource shape).
+# Required schema keys per cohort yaml.
 REQUIRED_KEYS: frozenset[str] = frozenset(
     {
         "cohort",
@@ -278,7 +278,7 @@ def _kit_resource_meta(slug: str) -> CohortResourceMeta:
     return CohortResourceMeta(
         uri=f"autonomath://cohort/{slug}.yaml",
         name=f"Cohort kit: {cohort}",
-        description=f"DEEP-34 persona kit for {cohort} ({fence}). System prompt + few-shot + tool_routing + disclaimer envelope.",
+        description=f"Cohort persona kit for {cohort} ({fence}). System prompt + few-shot + tool_routing + disclaimer envelope.",
     )
 
 
@@ -286,7 +286,7 @@ def _index_resource_meta() -> CohortResourceMeta:
     return CohortResourceMeta(
         uri="autonomath://cohort/index.json",
         name="Cohort kit index (8 cohorts)",
-        description="DEEP-34 cohort meta. 8 slugs + 1 line description + version.",
+        description="Cohort kit meta. 8 slugs + 1 line description + version.",
         mime_type="application/json",
     )
 

@@ -95,8 +95,8 @@
     {"@type": "Question", "name": "What kinds of questions can I ask?", "acceptedAnswer": {"@type": "Answer", "text": "Natural-language phrases work: \"subsidies for restaurants in Tokyo\", \"tax incentives for IT in manufacturing\", \"grants for retailers with 5 employees\". Including prefecture and industry improves accuracy."}},
     {"@type": "Question", "name": "When am I billed?", "acceptedAnswer": {"@type": "Answer", "text": "LINE paid questioning is not live. Current API / Playground pricing is listed on Pricing, and any LINE usage terms will be shown before launch."}},
     {"@type": "Question", "name": "Are answers AI-generated?", "acceptedAnswer": {"@type": "Answer", "text": "jpcite returns matching programs from its database (14,472 programs) using rules — no creative writing, no embellishment. Source URLs are always attached."}},
-    {"@type": "Question", "name": "Who do I talk to about actually filing?", "acceptedAnswer": {"@type": "Answer", "text": "Tap \"I'd like to consult\" in LINE and we send a list of certified support organizations, tax advisors, and administrative scriveners that match your region and industry. You contract with the advisor directly (the advisor sets the price)."}},
-    {"@type": "Question", "name": "How do I cancel?", "acceptedAnswer": {"@type": "Answer", "text": "Send \"cancel\" in LINE, or remove the card from your Stripe portal. No termination fees, and you can resume anytime."}},
+    {"@type": "Question", "name": "Who do I talk to about actually filing?", "acceptedAnswer": {"@type": "Answer", "text": "Use the prescreen result and handoff notes to contact a certified support organization, tax advisor, or administrative scrivener that matches your region and industry. You contract with the advisor directly (the advisor sets the price)."}},
+    {"@type": "Question", "name": "How do I stop LINE notices?", "acceptedAnswer": {"@type": "Answer", "text": "LINE notices are not live yet. Availability and opt-out terms will be shown before launch."}},
     {"@type": "Question", "name": "Does this work for sole proprietors?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Both incorporated SMBs and sole proprietors are supported. Filter target_type=sole_proprietor and you'll see income-tax filing programs and the small-business sustainability subsidy first."}}
   ]
 }
@@ -175,7 +175,7 @@
 
  <article class="card">
  <h3>1. Restaurant owner: "What subsidies are available in Tokyo?"</h3>
- <p>Send prefecture and industry to LINE. You'll see Tokyo SME Promotion Public Corporation grants, the small-business sustainability subsidy, and IT-introduction subsidies (POS / order systems), each with the source URL and application deadline.</p>
+ <p>Enter prefecture and industry in the web prescreen. You'll see Tokyo SME Promotion Public Corporation grants, the small-business sustainability subsidy, and IT-introduction subsidies (POS / order systems), each with the source URL and application deadline.</p>
  </article>
 
  <article class="card">
@@ -195,7 +195,7 @@
 
  <article class="card">
  <h3>5. From application question to professional advisor</h3>
- <p>Send "I'd like help filing" in LINE and we return a list of advisors that match your region and industry. Compare profiles, specialties, and rate cards, then contact directly.</p>
+ <p>Use the prescreen result as a consultation pack, then contact an advisor that matches your region and industry. Compare profiles, specialties, and rate cards before contracting directly.</p>
  </article>
 
  </div>
@@ -237,7 +237,7 @@ in 2026.</code></pre>
  <p class="demo-lead" style="margin:-16px 0 24px;">Use the API / Playground pricing path now. LINE is a notification channel in preparation, not a live per-question payment surface.</p>
  <div class="table-wrap">
  <table class="pricing-table">
- <caption class="visually-hidden">SMB owner LINE bot pricing</caption>
+ <caption class="visually-hidden">SMB owner LINE notifications pricing</caption>
  <thead>
  <tr>
  <th scope="col">Usage</th>
@@ -311,9 +311,9 @@ Source: jpcite (Bookyou株式会社, 適格請求書発行事業者番号 T80100
  <h3 style="font-size:16px;margin:18px 0 6px;">Are answers AI-generated?</h3>
  <p>jpcite returns matching programs from its database (14,472 programs) using rules — no creative writing, no embellishment. Source URLs are always attached.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">Who do I talk to about actually filing?</h3>
- <p>Tap "I'd like to consult" in LINE and we send a list of certified support organizations, tax advisors, and administrative scriveners that match your region and industry. Direct contracting with the advisor (the advisor sets the price).</p>
- <h3 style="font-size:16px;margin:18px 0 6px;">How do I cancel?</h3>
- <p>Send "cancel" in LINE, or remove the card from your Stripe portal. No termination fees, and you can resume anytime.</p>
+ <p>Use the prescreen result and handoff notes to contact certified support organizations, tax advisors, and administrative scriveners that match your region and industry. Direct contracting with the advisor (the advisor sets the price).</p>
+ <h3 style="font-size:16px;margin:18px 0 6px;">How do I stop LINE notices?</h3>
+ <p>LINE notices are not live yet. Availability and opt-out terms will be shown before launch.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">Does this work for sole proprietors?</h3>
  <p>Yes. Both incorporated SMBs and sole proprietors are supported. Filter target_type=sole_proprietor and you'll see income-tax filing programs and the small-business sustainability subsidy first.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">Related audiences?</h3>
@@ -325,8 +325,8 @@ Source: jpcite (Bookyou株式会社, 適格請求書発行事業者番号 T80100
  <div class="container">
  <h2 id="resources-title" class="section-title">SMB owner resources</h2>
  <ul class="resource-list" style="list-style:none;padding:0;margin:0;">
- <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../index.html#demo"><strong>30-second program prescreen (widget)</strong></a> &mdash; Just pick prefecture / industry / employee count. No signup, anonymous 3 queries/day free.</li>
- <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../pricing.html"><strong>Pricing (¥3/billable unit fully metered)</strong></a> &mdash; Zero monthly minimums, no termination fees. 30 questions/month is ¥90 (tax excl.) &mdash; less than one lunch.</li>
+ <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../index.html#demo"><strong>30-second program prescreen (widget)</strong></a> &mdash; Just pick prefecture / industry / employee count. No signup, API evaluation path available.</li>
+ <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../pricing.html"><strong>Pricing (¥3/billable unit fully metered)</strong></a> &mdash; Zero monthly minimums, no termination fees. Current API / Playground usage is listed on Pricing.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="admin-scrivener.html"><strong>Find an administrative scrivener (gyoseishoshi) to file</strong></a> &mdash; Permit-heavy cases (construction, care, transport, waste) often pair with subsidies. Narrow with jpcite first, then engage to cut hours.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="tax-advisor.html"><strong>Consult your tax advisor (zeirishi)</strong></a> &mdash; Wage-hike, IT-introduction, and business-strengthening tax incentives are zeirishi territory. Introducing jpcite also raises their engagement value.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../advisors.html"><strong>Full professional-advisor directory</strong></a> &mdash; Certified support orgs, tax advisors, scriveners, and labor-law attorneys nationwide. Filter by region &times; industry &times; specialty.</li>

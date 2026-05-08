@@ -5123,7 +5123,7 @@
             "type": "integer"
           },
           "stack_or_calls": {
-            "description": "Planned tool-call stack. Each entry counts toward billing_units. The 500-entry cap protects service availability for large preview payloads.",
+            "description": "Planned tool-call stack. Each entry counts toward billing_units. The 500-entry cap is a safety net \u2014 preview is free but a 100k-entry stack would still occupy server memory.",
             "items": {
               "$ref": "#/components/schemas/CostPreviewCall"
             },
@@ -5566,7 +5566,7 @@
             "title": "Invoice Registrants",
             "type": "integer"
           },
-          "laws_jpintel": {
+          "laws": {
             "default": 0,
             "description": "Law metadata records in the public jpcite corpus.",
             "title": "Laws",
@@ -6182,7 +6182,7 @@
       },
       "DeepHealthResponse": {
         "additionalProperties": true,
-        "description": "``GET /v1/am/health/deep`` \u2014 aggregate health + monitoring probe.\n\n``sentry_active`` (read-only) reflects whether the monitoring integration\nis active at startup. False when monitoring is not configured for the\ncurrent environment. Aggregate ``status`` is intentionally unaffected;\nmonitoring being dark is a meta-signal, not a fail/warn for the API itself.",
+        "description": "``GET /v1/am/health/deep`` \u2014 10-check aggregate + Sentry probe.\n\n``sentry_active`` (read-only) reflects whether ``_init_sentry`` succeeded\nat lifespan startup. False when Sentry is not configured or the production\nruntime controlled was not satisfied. Aggregate ``status`` is\nintentionally unaffected \u2014 Sentry being dark is a meta-signal for the\nsupport team, not a fail/warn for the API itself.",
         "properties": {
           "checks": {
             "additionalProperties": true,
@@ -23805,7 +23805,7 @@
     },
     "/v1/citations/verify": {
       "post": {
-        "description": "Verify a batch of up to 10 citations against their primary sources.\n\nPer call:\n  * 1 billable unit (\u00a53) \u2014 billed regardless of per-citation verdict.\n  * Up to 30 seconds wall clock.\n  * Up to 10 citations.\n\nPer citation:\n  * Up to 5 seconds for the URL fetch.\n  * Verdict \u2208 {verified, inferred, stale, unknown}. (``stale`` is not\n    emitted by the current pipeline; callers should still handle it.)\n\nErrors:\n  * 401 if the API key header is missing or invalid.\n  * 422 if more than 10 citations OR if an ``excerpt`` exceeds 500\n    chars. The validation message identifies the offending index so\n    the developer can fix the call without binary-searching the batch.",
+        "description": "Verify a batch of up to 10 citations against their primary sources.\n\nPer call:\n  * 1 billable unit (\u00a53) \u2014 billed regardless of per-citation verdict.\n  * Up to 30 seconds wall clock.\n  * Up to 10 citations.\n\nPer citation:\n  * Up to 5 seconds for the URL fetch.\n  * Verdict \u2208 {verified, inferred, stale, unknown}. (``stale`` is\n    reserved for future drift detection \u2014 current pipeline returns\n    verified/inferred/unknown only.)\n\nErrors:\n  * 401 if the API key header is missing or invalid.\n  * 422 if more than 10 citations OR if an ``excerpt`` exceeds 500\n    chars. The validation message identifies the offending index so\n    the developer can fix the call without binary-searching the batch.",
         "operationId": "verify_citations_v1_citations_verify_post",
         "parameters": [
           {
@@ -29364,7 +29364,7 @@
     },
     "/v1/invoice_registrants/search": {
       "get": {
-        "description": "Look up registered Japanese \u9069\u683c\u8acb\u6c42\u66f8\u767a\u884c\u4e8b\u696d\u8005 (qualified invoice issuers under the \u30a4\u30f3\u30dc\u30a4\u30b9\u5236\u5ea6 / \u6d88\u8cbb\u7a0e\u4ed5\u5165\u7a0e\u984d\u63a7\u9664 regime) by name prefix, \u6cd5\u4eba\u756a\u53f7, prefecture, or registration date window. Mirror of NTA's official \u9069\u683c\u8acb\u6c42\u66f8\u767a\u884c\u4e8b\u696d\u8005\u516c\u8868\u30b5\u30a4\u30c8 bulk (13,801 delta records in the current mirror; use NTA's official site for full-registry confirmation).\n\n**When to use:** verify whether a counterparty has issued a valid T-prefixed invoice number before claiming \u4ed5\u5165\u7a0e\u984d\u63a7\u9664. For exact T-number lookup (T + 13 digits), prefer `GET /v1/invoice registrant records/{invoice_registration_number}`.\n\n**Limits:** `q` requires 2+ chars and uses prefix name matching. Bulk dump is intentionally not supported; for full snapshots use NTA's official download URL in the `attribution.source_url`.\n\n**License:** every 2xx body carries a PDL v1.0 `attribution` block \u2014 \u516c\u5171\u30c7\u30fc\u30bf\u5229\u7528\u898f\u7d04 \u7b2c1.0\u7248 (\u51fa\u5178\u660e\u8a18 + \u7de8\u96c6\u30fb\u52a0\u5de5\u6ce8\u8a18). Do NOT strip on relay.",
+        "description": "Look up registered Japanese \u9069\u683c\u8acb\u6c42\u66f8\u767a\u884c\u4e8b\u696d\u8005 (qualified invoice issuers under the \u30a4\u30f3\u30dc\u30a4\u30b9\u5236\u5ea6 / \u6d88\u8cbb\u7a0e\u4ed5\u5165\u7a0e\u984d\u63a7\u9664 regime) by name prefix, \u6cd5\u4eba\u756a\u53f7, prefecture, or registration date window. Mirror of NTA's official \u9069\u683c\u8acb\u6c42\u66f8\u767a\u884c\u4e8b\u696d\u8005\u516c\u8868\u30b5\u30a4\u30c8 bulk (13,801 delta records live; full 4M-record monthly bulk lands post-launch).\n\n**When to use:** verify whether a counterparty has issued a valid T-prefixed invoice number before claiming \u4ed5\u5165\u7a0e\u984d\u63a7\u9664. For exact T-number lookup (T + 13 digits), prefer `GET /v1/invoice registrant records/{invoice_registration_number}`.\n\n**Limits:** `q` requires 2+ chars and uses prefix name matching. Bulk dump is intentionally not supported; for full snapshots use NTA's official download URL in the `attribution.source_url`.\n\n**License:** every 2xx body carries a PDL v1.0 `attribution` block \u2014 \u516c\u5171\u30c7\u30fc\u30bf\u5229\u7528\u898f\u7d04 \u7b2c1.0\u7248 (\u51fa\u5178\u660e\u8a18 + \u7de8\u96c6\u30fb\u52a0\u5de5\u6ce8\u8a18). Do NOT strip on relay.",
         "operationId": "search_invoice registrant records_v1_invoice registrant records_search_get",
         "parameters": [
           {
@@ -29777,7 +29777,7 @@
     },
     "/v1/laws/search": {
       "get": {
-        "description": "Search the e-Gov \u6cd5\u4ee4 catalog (9,484 metadata records; 6,493 laws with article body index) across `law_title + law_short_title + law_number + summary`. Filter by `law_type` (constitution / act / cabinet_order / imperial_order / ministerial_ordinance / rule / notice / guideline), \u6240\u7ba1\u5e9c\u7701 (`ministry`), revision_status, and promulgated / enforced date windows.\n\n**License:** e-Gov \u6cd5\u4ee4\u30c7\u30fc\u30bf is **CC-BY 4.0** (attribution required, redistribution permitted with attribution). The `source_url` on each record points to the canonical e-Gov \u6cd5\u4ee4\u691c\u7d22 permalink \u2014 relay it.\n\n**Search note:** Japanese legal phrases are normalized. For very short terms, structured filters or longer phrases are more reliable.\n\nPair with `GET /v1/laws/{unified_id}/related-programs` to trace which \u88dc\u52a9\u91d1 cite a given statute as authority / eligibility / exclusion / penalty.",
+        "description": "Search the e-Gov \u6cd5\u4ee4 catalog (9,484 metadata records with article references where available; body/article coverage varies by record) across `law_title + law_short_title + law_number + summary`. Filter by `law_type` (constitution / act / cabinet_order / imperial_order / ministerial_ordinance / rule / notice / guideline), \u6240\u7ba1\u5e9c\u7701 (`ministry`), revision_status, and promulgated / enforced date windows.\n\n**License:** e-Gov \u6cd5\u4ee4\u30c7\u30fc\u30bf is **CC-BY 4.0** (attribution required, redistribution permitted with attribution). The `source_url` on each record points to the canonical e-Gov \u6cd5\u4ee4\u691c\u7d22 permalink \u2014 relay it.\n\n**Search note:** Japanese legal phrases are normalized. For very short terms, structured filters or longer phrases are more reliable.\n\nPair with `GET /v1/laws/{unified_id}/related-programs` to trace which \u88dc\u52a9\u91d1 cite a given statute as authority / eligibility / exclusion / penalty.",
         "operationId": "search_laws_v1_laws_search_get",
         "parameters": [
           {
@@ -36730,7 +36730,7 @@
     },
     "/v1/programs/{program_id}/at": {
       "get": {
-        "description": "Replay the program's eligibility / amount / deadline as it was live on ``as_of``. Pivots off ``historical snapshot`` (14,596 captures + 144 definitive-dated records) on the snapshot spine.\n\n**Pricing:** \u00a53/call (1 unit). Anonymous tier shares the 3/\u65e5 IP cap.\n\n**SENSITIVE (\u00a752 / \u00a747\u6761\u306e2):** factual replay only \u2014 NOT \u63a1\u629e prediction (use ``forecast_program_renewal`` for that).",
+        "description": "Replay the program's eligibility / amount / deadline as it was live on ``as_of``. Pivots off ``historical snapshot`` (14,596 captures + 144 definitive-dated records) on the autonomath spine \u2014 NO jpcite-side dataset versioning required.\n\n**Pricing:** \u00a53/call (1 unit). Anonymous tier shares the 3/\u65e5 IP cap.\n\n**SENSITIVE (\u00a752 / \u00a747\u6761\u306e2):** factual replay only \u2014 NOT \u63a1\u629e prediction (use ``forecast_program_renewal`` for that).",
         "operationId": "query_at_v1_programs__program_id__at_get",
         "parameters": [
           {
@@ -39472,7 +39472,7 @@
       "name": "enforcement-cases"
     },
     {
-      "description": "e-Gov \u6cd5\u4ee4 article lookup (CC-BY 4.0). 9,484 indexed law titles, 6,493 with full-text body searchable.",
+      "description": "e-Gov \u6cd5\u4ee4 lookup (CC-BY 4.0). 9,484 metadata records with article references where available; body/article coverage varies by record.",
       "name": "laws"
     },
     {

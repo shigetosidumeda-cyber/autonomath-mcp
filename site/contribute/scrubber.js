@@ -1,4 +1,4 @@
-// DEEP-31 contribution form client-side scrubber.
+// Contribution form client-side scrubber.
 // Vanilla JS, no framework, no build step. Loaded by site/contribute/index.html.
 // Mirrors src/jpintel_mcp/api/contribute.py server-side gates so genuine
 // users don't reach the network round-trip with reject-shape data.
@@ -29,13 +29,13 @@
     banchi: /\d+丁目\d+番/g
   };
 
-  // -- forbidden phrases (DEEP-23 envelope; static fallback if CDN fails).
+  // -- forbidden phrases (static fallback if CDN fails).
   // CDN load is best-effort; baseline list always works offline.
   var FORBIDDEN_PHRASES = [
     "採択保証", "確実に採択", "絶対通る", "認可", "100% 採択", "完全合法"
   ];
 
-  // -- 業法 boundary by cohort (DEEP-31 §4)
+  // -- 業法 boundary by cohort
   var BOUNDARY = {
     "税理士":              "税理士法 §52: 観察された事実のみ — 税務判断 / 助言は税理士のみ",
     "公認会計士":          "公認会計士法 §47条の2: 監査・証明業務は公認会計士のみ",

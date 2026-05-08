@@ -311,14 +311,14 @@
  <div class="code-block" id="snippet-pre">
 <span><!-- 1. Paste these two lines into your site's HTML. --></span>
 <span>&lt;script async src="https://jpcite.com/widget/jpcite.js"&gt;&lt;/script&gt;</span>
-<span>&lt;div data-jpcite-widget data-key="wgt_live_YOUR_KEY"&gt;&lt;/div&gt;</span>
+<span>&lt;div data-jpcite-widget data-key="YOUR_WIDGET_KEY"&gt;&lt;/div&gt;</span>
  <button class="copy-btn" type="button" id="copy-btn" aria-label="Copy snippet">Copy</button>
  </div>
  </section>
 
  <section class="demo-wrap container">
  <h2>Static example (no API call)</h2>
- <div class="feature" data-jpcite-preview data-example-key="wgt_live_YOUR_KEY">
+ <div class="feature" data-jpcite-preview data-example-key="wgt_demo_STATIC_ONLY">
  <h3>Tokyo / restaurant / equipment investment</h3>
  <p>
  Example output includes source URLs, fetched timestamps, deadline candidates,
@@ -410,8 +410,8 @@
  <h2 id="signup-title">Sign-up form</h2>
  <p style="color:var(--text-muted);font-size:14px;">
  Fill in the fields below and click "Continue to checkout" — you'll be
- redirected to Stripe Checkout. Once payment completes, your
- <code>wgt_live_...</code> key is issued via the dashboard.
+ redirected to Stripe Checkout. Once payment completes, your production
+ widget key is issued via the dashboard.
  </p>
  <form id="signup-form">
  <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
@@ -493,7 +493,7 @@
     btn.addEventListener("click", function () {
       var text = [
         '<script async src="https://jpcite.com/widget/jpcite.js"><\/script>',
-        '<div data-jpcite-widget data-key="wgt_live_YOUR_KEY"><\/div>'
+        '<div data-jpcite-widget data-key="YOUR_WIDGET_KEY"><\/div>'
       ].join("\n");
       if (navigator.clipboard) {
         navigator.clipboard.writeText(text).then(function () {

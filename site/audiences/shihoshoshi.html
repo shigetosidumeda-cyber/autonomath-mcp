@@ -175,7 +175,7 @@ cross_check_jurisdiction({"houjin_bangou": "1234567890123"})</code></pre>
  <h3>3. 簡裁訴訟代理前 法人実態 verify</h3>
  <p>相手方 (140 万円以下) の与信・反社相当・倒産 signal (am_amendment_snapshot 受給途絶) を時系列で確認。訴額判定と代理可否は司法書士本人判断。</p>
  <p style="font-size:14px;color:var(--text-muted);"><strong>example query</strong>: 「法人 X の 直近 与信 + 倒産 risk + 反社チェック 相当」</p>
- <p style="font-size:14px;color:var(--text-muted);"><strong>推奨 tool</strong>: <code>shihoshoshi_dd_pack_am</code> (新 tool、DEEP-30)</p>
+ <p style="font-size:14px;color:var(--text-muted);"><strong>推奨 tool</strong>: <code>shihoshoshi_dd_pack_am</code> (新 tool)</p>
  <pre style="background:var(--bg-code,#f5f5f5);padding:12px;border-radius:4px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;"><code>// MCP sample call (¥3)
 shihoshoshi_dd_pack_am({"houjin_bangou": "1234567890123"})</code></pre>
  </article>
@@ -247,7 +247,7 @@ get_law_article_am({"law_id": "minpou", "article_range": "7-876"})</code></pre>
 
  <details style="margin-bottom:12px;padding:16px;border:1px solid var(--border);border-radius:6px;">
  <summary style="font-weight:600;cursor:pointer;">Q5. 他の sensitive cohort (税理士・公認会計士・補助金 consultant) との違いは?</summary>
- <p style="margin-top:12px;line-height:1.8;">各 cohort 専用の persona prompt と tool routing が分かれています (DEEP-34 既 spec)。司法書士向けは登記・供託・簡裁訴訟代理 (司法書士法 §3) を fence、税理士向けは税務代理・税務相談 (税理士法 §52) を fence、公認会計士向けは監査・会計参与 (公認会計士法 §47条の2) を fence、補助金 consultant 向けは行政書士法 §1 業務範囲を fence します。</p>
+ <p style="margin-top:12px;line-height:1.8;">各 cohort 専用の persona prompt と tool routing が分かれています。司法書士向けは登記・供託・簡裁訴訟代理 (司法書士法 §3) を fence、税理士向けは税務代理・税務相談 (税理士法 §52) を fence、公認会計士向けは監査・会計参与 (公認会計士法 §47条の2) を fence、補助金 consultant 向けは行政書士法 §1 業務範囲を fence します。</p>
  </details>
 
  </div>
@@ -275,7 +275,7 @@ get_law_article_am({"law_id": "minpou", "article_range": "7-876"})</code></pre>
  <div class="container footer-inner">
  <div class="footer-col">
  <p class="footer-brand">jpcite</p>
- <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ <p class="footer-tag">日本の公的制度を、根拠付き成果物に。</p>
  </div>
  <nav class="footer-nav" aria-label="フッター">
  <a href="../about.html">運営について</a>

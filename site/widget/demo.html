@@ -112,7 +112,7 @@
 
   <h2>Light theme (default)</h2>
   <div class="panel">
-    <div class="static-widget-preview" data-jpcite-preview data-example-key="wgt_live_YOUR_KEY">
+    <div class="static-widget-preview" data-jpcite-preview data-example-key="wgt_demo_STATIC_ONLY">
       <strong>東京都 / 飲食店 / 設備投資</strong>
       一次資料 URL、取得時刻、締切候補、相談前に確認する質問を表示する想定です。
     </div>
@@ -124,7 +124,7 @@
 
   <h2>Dark theme</h2>
   <div class="panel dark">
-    <div class="static-widget-preview" data-jpcite-preview data-example-key="wgt_live_YOUR_KEY">
+    <div class="static-widget-preview" data-jpcite-preview data-example-key="wgt_demo_STATIC_ONLY">
       <strong>製造業 / 省エネ投資</strong>
       ダークテーマでも同じ根拠付き候補カードを表示する想定です。
     </div>
@@ -132,7 +132,7 @@
 
   <h2>Prefecture filter のみ (コンパクト版)</h2>
   <div class="panel">
-    <div class="static-widget-preview" data-jpcite-preview data-example-key="wgt_live_YOUR_KEY">
+    <div class="static-widget-preview" data-jpcite-preview data-example-key="wgt_demo_STATIC_ONLY">
       <strong>都道府県だけで絞り込み</strong>
       小さな相談ページに置くコンパクト表示の例です。
     </div>
@@ -140,7 +140,7 @@
 
   <h2>English UI (language=en)</h2>
   <div class="panel">
-    <div class="static-widget-preview" data-jpcite-preview data-example-key="wgt_live_YOUR_KEY">
+    <div class="static-widget-preview" data-jpcite-preview data-example-key="wgt_demo_STATIC_ONLY">
       <strong>English UI</strong>
       English labels can be used while preserving Japanese primary-source links.
     </div>
@@ -155,7 +155,7 @@
 
   <pre><code>new Jpcite.Widget({
   container: '#programmatic-target',
-  key: 'wgt_live_YOUR_KEY',
+  key: 'YOUR_WIDGET_KEY',
   filters: ['industry', 'prefecture'],
   theme: 'light',
   language: 'ja',
@@ -165,7 +165,7 @@
 
   <h2>埋め込みスニペット (2 行)</h2>
   <pre><code>&lt;script src="https://jpcite.com/widget/jpcite.js"&gt;&lt;/script&gt;
-&lt;div data-jpcite-widget data-key="wgt_live_YOUR_KEY"&gt;&lt;/div&gt;</code></pre>
+&lt;div data-jpcite-widget data-key="YOUR_WIDGET_KEY"&gt;&lt;/div&gt;</code></pre>
 
   <p class="note">
     スニペット 1 枚で検索 UI + 結果リスト + 一次資料リンク + 「powered by jpcite」
@@ -179,7 +179,7 @@
   if (!window.Jpcite || !window.Jpcite.Widget) return;
   new Jpcite.Widget({
     container: "#programmatic-target",
-    key: "wgt_live_YOUR_KEY",
+    key: "YOUR_WIDGET_KEY",
     filters: ["industry", "prefecture"],
     theme: "light",
     language: "ja",

@@ -391,7 +391,7 @@
 
  <div class="code-block" id="snippet-pre">
 <span>&lt;script async src="https://jpcite.com/widget/jpcite.js"&gt;&lt;/script&gt;</span>
-<span>&lt;div data-jpcite-widget data-key="wgt_live_YOUR_KEY"&gt;&lt;/div&gt;</span>
+<span>&lt;div data-jpcite-widget data-key="YOUR_WIDGET_KEY"&gt;&lt;/div&gt;</span>
  <button class="copy-btn" type="button" id="copy-btn" aria-label="コピー">コピー</button>
  </div>
  </section>
@@ -459,7 +459,7 @@
  <div class="feature">
  <h3>セルフサーブ・完全従量</h3>
  <p>
- サイト運営者の <code>wgt_live_...</code> key 利用分だけを
+ サイト運営者の <code>wgt_live_...</code> key に紐づく成功検索だけを
  ¥3/課金単位で従量課金。サイト訪問者へ jpcite から直接請求しません。
  </p>
  </div>
@@ -470,7 +470,7 @@
  <h2 id="plan-title" style="text-align:center;margin:40px 0 6px;">料金プラン</h2>
  <p style="text-align:center;color:var(--text-muted);">
  Widget は公開API/Playgroundの匿名評価枠とは別です。
- 発行された <code>wgt_live_...</code> key の利用分をサイト運営者に請求します。
+ 発行された <code>wgt_live_...</code> key に紐づく成功検索をサイト運営者に請求します。
  </p>
 
  <div class="plan-grid">
@@ -480,7 +480,7 @@
  <p class="unit">税別 ¥3、月額固定なし。サイト訪問者への直接請求なし</p>
  <ul>
  <li>税理士事務所・支援機関の HP 向け</li>
- <li>Widget owner の <code>wgt_live_...</code> key 利用分に課金</li>
+ <li>Widget owner の <code>wgt_live_...</code> key に紐づく成功検索に課金</li>
  <li>公開API/Playgroundの匿名評価枠とは別枠</li>
  <li>利用分は Stripe usage-based で自動請求</li>
  <li>「powered by jpcite」フッターを表示</li>
@@ -502,7 +502,7 @@
  <strong><code>wgt_live_...</code> はブラウザ用の widget key です。</strong>
  HTML に置く前提の key で、登録した origin からの <code>/v1/widget/*</code>
  呼び出しだけに使います。サーバー/API 用の <code>am_...</code> key とは別物です。
- 課金はサイト訪問者ではなく、申し込んだ widget owner の利用分として計上されます。
+ 課金はサイト訪問者ではなく、申し込んだ widget owner の key に紐づく成功検索として計上されます。
  </div>
  <form id="signup-form">
  <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
@@ -518,7 +518,7 @@
  <select id="signup-plan">
  <option value="metered">従量課金 (¥3/課金単位)</option>
  </select>
- <p class="field-help">公開API/Playgroundの匿名評価枠とは別です。Widget は発行済み <code>wgt_live_...</code> key の利用分を widget owner に請求します。</p>
+ <p class="field-help">公開API/Playgroundの匿名評価枠とは別です。Widget は発行済み <code>wgt_live_...</code> key に紐づく成功検索を widget owner に請求します。</p>
  </div>
  <div class="field">
  <label for="signup-origins">許可 origin (1 行 1 件、https:// 付き) <span aria-hidden="true" style="color:var(--danger)">*</span></label>
@@ -564,7 +564,7 @@
  <div class="container footer-inner">
  <div class="footer-col">
  <p class="footer-brand">jpcite</p>
- <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ <p class="footer-tag">日本の公的制度を、成果物として。</p>
  </div>
  <nav class="footer-nav" aria-label="フッター">
  <a href="about.html">運営について</a>
@@ -589,7 +589,7 @@
     btn.addEventListener("click", function() {
       var text = [
         '<script async src="https://jpcite.com/widget/jpcite.js"><\/script>',
-        '<div data-jpcite-widget data-key="wgt_live_YOUR_KEY"><\/div>'
+        '<div data-jpcite-widget data-key="YOUR_WIDGET_KEY"><\/div>'
       ].join("\n");
       if (navigator.clipboard) {
         navigator.clipboard.writeText(text).then(function() {

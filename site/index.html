@@ -222,7 +222,7 @@
     {
       "@type": "Product",
       "name": "jpcite 相談前プレ診断 LINE入口",
-      "description": "LINE 上で補助金・融資を自然言語検索。SME 経営者 / 士業向け。",
+      "description": "保存検索、締切リマインド、相談パック更新の通知チャネル。SME 経営者 / 士業向け。",
       "brand": {"@type": "Brand", "name": "jpcite"},
       "url": "https://jpcite.com/line",
       "offers": {"@type": "Offer", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"}
@@ -428,7 +428,7 @@
  <li>case_studies · <span data-fact="case_studies_total" data-stat-key="case_studies_total">2,286</span></li>
  <li>loan_programs · <span data-fact="loan_programs_total" data-stat-key="loan_programs_total">108</span> (担保 / 個人保証人 / 第三者保証人 三軸分解)</li>
  <li>enforcement_cases · <span data-fact="enforcement_cases_total" data-stat-key="enforcement_cases_total">1,185</span></li>
- <li>laws · <span data-fact="laws_total" data-stat-key="laws_total">9,484</span> 件の法令検索対象 + <span data-fact="laws_fulltext" data-stat-key="laws_fulltext">6,493</span> 件の本文対応レコード (e-Gov CC-BY)</li>
+ <li>laws · e-Gov CC-BY の法令メタデータと本文対応レコード</li>
  <li>tax_rulesets · <span data-fact="tax_rulesets_total" data-stat-key="tax_rulesets_total">50</span></li>
  <li>court_decisions · <span data-fact="court_decisions_total" data-stat-key="court_decisions_total">2,065</span></li>
  <li>bids · <span data-fact="bids_total" data-stat-key="bids_total">362</span></li>
@@ -837,7 +837,7 @@
  <article class="card">
  <h3>(a) 複数 DB を 1 コール で統合</h3>
  <p class="card-lead">補助金 11,601 + 法令 9,484 + 税制 50 + 法人 167K + 行政処分 1,185</p>
- <p>補助金 11,601 件・法令メタデータ 9,484 件・本文インデックス済み法令 6,493 件・税制ルールセット 50 件・国税庁適格事業者 13,801 件・行政処分 1,185 件・判例 2,065 件・採択事例 2,286 件・融資 108 件 (担保 / 個人保証人 / 第三者保証人 三軸分解) を一つの API で横断検索。 関係抽出データベース 50 万件超エンティティ / 600 万件超ファクト / 37 万件超リレーションも 139 MCP ツールから呼び出せます。</p>
+ <p>補助金・法令メタデータと法令本文・税制ルールセット・国税庁適格事業者・行政処分・判例・採択事例・融資情報を一つの API で横断検索。 関係抽出データベースも MCP ツールから呼び出せます。</p>
  </article>
 
  <article class="card">
@@ -942,9 +942,9 @@
  </tr>
  <tr>
  <th scope="row">相談前プレ診断 (Widget入口)</th>
- <td>匿名 3 検索/日まで</td>
- <td>¥3 / 検索 (税別)</td>
- <td>¥3.30 / 検索</td>
+ <td>Widget は公開APIの匿名枠とは別</td>
+ <td>¥3 / 成功検索 (税別)</td>
+ <td>¥3.30 / 成功検索</td>
  </tr>
  <tr>
  <th scope="row">根拠付き相談パック</th>

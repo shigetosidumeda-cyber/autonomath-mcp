@@ -94,7 +94,7 @@ The 5x5 matrix (5 verticals × 5 surfaces) requires:
 | V4 English-language surface | T+150d | 6-12m | Y2 |
 | V5 Korean / Chinese surfaces | Y2-Y3 deferred | 6-12m each | Y3-Y4 |
 
-Surface variants (5): REST API, MCP stdio, LINE bot, embedded widget, 士業 案件紹介. Each is wired today and can multiply into V2-V5 schemas at marginal cost (schema migrations 013+).
+Surface variants (5): REST API, MCP stdio, LINE notifications with web handoff, embedded widget, 士業 案件紹介. Each is wired today and can multiply into V2-V5 schemas at marginal cost (schema migrations 013+).
 
 **Note**: V2-V5 are not Y1 commitments. They appear here so a Y2 review can decide go/no-go with a written baseline.
 
