@@ -12,6 +12,9 @@
 # Canonical trailing-slash for docs
 /docs  /docs/  301
 
+# Browser default favicon probe.
+/favicon.ico  /assets/favicon-32.png  301
+
 # Admin surfaces are API-only and must not be exposed as static pages.
 /admin/*  /404  404
 

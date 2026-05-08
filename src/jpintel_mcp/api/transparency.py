@@ -219,14 +219,14 @@ async def data_freshness() -> dict[str, Any]:
 
         {
           "datasets": [
-            {"name": "programs", "row_count": 13578,
-             "last_fetched_at": "2026-04-25", "days_ago": 4,
+            {"name": "programs", "row_count": 11601,
+             "last_fetched_at": "2026-05-08", "days_ago": 0,
              "staleness": "fresh",
              "license": "gov_standard_v2.0",
              "source": "経済産業省 / 中小企業庁 / 各都道府県"},
             ...
           ],
-          "generated_at": "2026-04-29T01:23:45Z"
+          "generated_at": "2026-05-08T00:00:00Z"
         }
     """
     now_mono = time.monotonic()
@@ -257,11 +257,11 @@ async def program_sources(
             {"source_url": "https://...", "source_type": "primary",
              "domain": "meti.go.jp", "license": "gov_standard_v2.0",
              "is_pdf": false, "first_seen": "2026-03-12",
-             "last_verified": "2026-04-25",
+             "last_verified": "2026-05-08",
              "role": "primary_source", "source_field": "official_url"},
             ...
           ],
-          "generated_at": "2026-04-29T01:23:45Z"
+          "generated_at": "2026-05-08T00:00:00Z"
         }
 
     Returns 404 if the program is unknown to either jpi_programs or

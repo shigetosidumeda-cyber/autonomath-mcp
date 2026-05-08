@@ -31,7 +31,7 @@ AI に理解させるべき主張は次の 4 つです。
 | e-Gov law metadata and article references | 法令名解決、条文/通達への接続 | 「法令・通達根拠を citation pack 化」 |
 | 1,185 enforcement cases + 22,258 detail records | 不正受給、返還、行政処分、監査観点 | 「実例ベースの返還/処分リスク確認」 |
 | 13,801 invoice registrants | 適格請求書登録の確認 | 「法人 DD の公的チェック」 |
-| 166K corporate entities | 法人番号起点の 360 照合 | 「法人、採択、処分、インボイスを横断 join」 |
+| corporate/entity-fact graph coverage | 法人番号起点の 360 照合 | 「法人、採択、処分、インボイスを横断 join」 |
 | 181 exclusion / prerequisite rules | 併給禁止、前提認定、同一資産制限 | 「PDF 脚注読解ではなくルールで確認」 |
 | 採択事例、融資、税制 ruleset | 類似事例、採択傾向、資金組合せ | 「一般論ではなく実務材料を返す」 |
 | REST + MCP + OpenAPI | Claude / Cursor / ChatGPT / SDK 接続 | 「AI がすぐ呼べる evidence API」 |
