@@ -301,6 +301,40 @@ def test_widget_signup_rejects_offsite_stripe_redirects(client, widget_stripe_en
     assert called == []
 
 
+def test_widget_signup_invalid_origin_returns_validation_envelope(
+    client,
+    widget_stripe_env,
+    monkeypatch,
+):
+    import stripe
+
+    monkeypatch.setenv("STRIPE_PRICE_WIDGET_METERED", "price_widget_metered")
+    called: list[dict] = []
+
+    def _create(**kwargs):  # pragma: no cover - regression guard
+        called.append(kwargs)
+        raise AssertionError("Stripe checkout created with invalid origin")
+
+    monkeypatch.setattr(stripe.checkout.Session, "create", _create)
+
+    response = client.post(
+        "/v1/widget/signup",
+        json={
+            "email": "owner@example.com",
+            "origins": ["https://example.com?bad=1"],
+            "plan": "metered",
+            "success_url": "https://jpcite.com/widget/success.html?session_id={CHECKOUT_SESSION_ID}",
+            "cancel_url": "https://jpcite.com/widget.html?cancelled=1",
+        },
+    )
+
+    assert response.status_code == 422
+    body = response.json()
+    assert body["error"]["code"] == "invalid_enum"
+    assert "invalid origin pattern" in str(body["detail"])
+    assert called == []
+
+
 def _insert_widget_key(
     db_path: Path,
     *,

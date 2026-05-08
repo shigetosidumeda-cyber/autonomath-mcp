@@ -1693,7 +1693,17 @@ def create_app() -> FastAPI:
 
     @app.exception_handler(RequestValidationError)
     async def _validation_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
-        errors_en = exc.errors()
+        def _json_safe_error(error: dict[str, object]) -> dict[str, object]:
+            safe = dict(error)
+            ctx = safe.get("ctx")
+            if isinstance(ctx, dict):
+                safe["ctx"] = {
+                    str(k): v if isinstance(v, (str, int, float, bool)) or v is None else str(v)
+                    for k, v in ctx.items()
+                }
+            return safe
+
+        errors_en = [_json_safe_error(e) for e in exc.errors()]
         errors_ja = [{**e, "msg_ja": _msg_ja.get(e.get("type"), e.get("msg"))} for e in errors_en]
         # δ2: attach the canonical {"error": {...}} envelope alongside the
         # back-compat `detail` / `detail_summary_ja` keys so tooling can
