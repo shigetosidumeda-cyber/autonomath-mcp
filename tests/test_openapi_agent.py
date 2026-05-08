@@ -8,6 +8,14 @@ if TYPE_CHECKING:
     from fastapi.testclient import TestClient
 
 
+def _header_names(operation: dict) -> set[str]:
+    return {
+        str(param.get("name"))
+        for param in operation.get("parameters", [])
+        if isinstance(param, dict) and param.get("in") == "header"
+    }
+
+
 def test_agent_openapi_exposes_only_evidence_safe_paths(client: TestClient) -> None:
     response = client.get("/v1/openapi.agent.json")
     assert response.status_code == 200, response.text
@@ -60,6 +68,20 @@ def test_agent_openapi_exposes_only_evidence_safe_paths(client: TestClient) -> N
     cost_policy = body["info"]["x-jpcite-cost-preview-policy"]
     assert cost_policy["current_call"] == "previewCost"
     assert "metered" in cost_policy["must_preserve_fields"]
+    recurring_policy = body["info"]["x-jpcite-recurring-agent-workflow-policy"]
+    assert recurring_policy["name"] == "recurring_agent_workflows"
+    workflow_by_id = {item["id"]: item for item in recurring_policy["workflows"]}
+    assert workflow_by_id["company_folder_intake"]["first_paid_call"] == (
+        "createCompanyPublicBaseline"
+    )
+    assert workflow_by_id["monthly_client_review"]["first_paid_call"] == "queryEvidencePacket"
+    assert workflow_by_id["counterparty_dd_and_audit_prep"]["first_paid_call"] == (
+        "createCompanyPublicBaseline"
+    )
+    assert "X-Client-Tag" in " ".join(recurring_policy["agent_rules"])
+    assert "Idempotency-Key" in " ".join(recurring_policy["agent_rules"])
+    assert "X-Cost-Cap-JPY" in " ".join(recurring_policy["agent_rules"])
+    assert recurring_policy["first_paid_activation_path"][-1] == "track_usage_with_X_Client_Tag"
     assert (
         body["paths"]["/v1/intelligence/precomputed/query"]["get"]["x-jpcite-agent-priority"] == 1
     )
@@ -77,12 +99,21 @@ def test_agent_openapi_exposes_only_evidence_safe_paths(client: TestClient) -> N
     assert cost_operation["x-jpcite-does-not-execute-planned-calls"] is True
     assert "predicted_total_yen" in cost_operation["x-jpcite-must-preserve-fields"]
     assert "preview_executes_or_pays_for_planned_calls" in cost_operation["x-jpcite-must-not-claim"]
+    usage_operation = body["paths"]["/v1/usage"]["get"]
+    assert "tokens_saved_estimated_total" in usage_operation["x-jpcite-must-preserve-fields"]
+    assert "tokens_saved_estimated_per_call" in usage_operation["x-jpcite-must-preserve-fields"]
     company_operation = body["paths"]["/v1/artifacts/company_public_baseline"]["post"]
     assert company_operation["x-jpcite-agent-priority"] == 1
     assert company_operation["x-jpcite-route-purpose"] == "japanese_company_first_hop"
     assert "source_url" in company_operation["x-jpcite-must-preserve-fields"]
     assert "credit_safe" in company_operation["x-jpcite-must-not-claim"]
     assert "known_gaps" in company_operation["x-jpcite-web-search-after"]
+    company_headers = _header_names(company_operation)
+    assert {"X-Client-Tag", "Idempotency-Key", "X-Cost-Cap-JPY"} <= company_headers
+    assert company_operation["x-jpcite-safe-paid-execution"]["preflight_sequence"] == [
+        "getUsageStatus",
+        "previewCost",
+    ]
     strategy_operation = body["paths"]["/v1/artifacts/application_strategy_pack"]["post"]
     assert strategy_operation["x-jpcite-agent-priority"] == 1
     assert strategy_operation["x-jpcite-route-purpose"] == "public_support_application_strategy"
@@ -94,6 +125,8 @@ def test_agent_openapi_exposes_only_evidence_safe_paths(client: TestClient) -> N
         in strategy_operation["x-jpcite-recommended-when"]
     )
     assert "subsidy_or_loan_approved" in strategy_operation["x-jpcite-must-not-claim"]
+    strategy_headers = _header_names(strategy_operation)
+    assert {"X-Client-Tag", "Idempotency-Key", "X-Cost-Cap-JPY"} <= strategy_headers
     audit_operation = body["paths"]["/v1/artifacts/company_public_audit_pack"]["post"]
     assert audit_operation["x-jpcite-route-purpose"] == "public_record_audit_followup"
     assert audit_operation["x-jpcite-public-record-scope"] is True
@@ -103,7 +136,9 @@ def test_agent_openapi_exposes_only_evidence_safe_paths(client: TestClient) -> N
         "public_record_audit_equals_statutory_audit" in audit_operation["x-jpcite-must-not-claim"]
     )
     handoff_policy = body["info"]["x-jpcite-evidence-to-expert-handoff-policy"]
-    assert handoff_policy["future_agent_tool_candidate"] == "triageEvidenceToExpertHandoff"
+    assert handoff_policy["recommended_handoff_operation_candidate"] == (
+        "triageEvidenceToExpertHandoff"
+    )
     assert handoff_policy["current_call"] == "match_advisors_v1_advisors_match_get"
     assert "queryEvidencePacket" in handoff_policy["trigger_after_calls"]
     assert "known_gaps" in handoff_policy["handoff_packet_should_include"]
@@ -112,7 +147,7 @@ def test_agent_openapi_exposes_only_evidence_safe_paths(client: TestClient) -> N
     assert advisor_operation["x-jpcite-agent-priority"] == 3
     assert advisor_operation["x-jpcite-route-purpose"] == "evidence_to_expert_handoff"
     assert advisor_operation["x-jpcite-handoff-role"] == "evidence_to_expert_handoff"
-    assert advisor_operation["x-jpcite-future-policy-candidate"] == "triageEvidenceToExpertHandoff"
+    assert advisor_operation["x-jpcite-handoff-policy"] == "triageEvidenceToExpertHandoff"
     assert "ranking.disclosure" in advisor_operation["x-jpcite-must-preserve-fields"]
     assert "known_gaps" in advisor_operation["x-jpcite-handoff-packet-should-include"]
     assert "tax_or_legal_judgment_complete" in advisor_operation["x-jpcite-must-not-claim"]
@@ -238,6 +273,7 @@ def test_agent_openapi_omits_first_hop_policy_when_artifact_backend_is_absent() 
     assert "x-jpcite-first-hop-policy" not in schema["info"]
     assert "x-jpcite-evidence-to-expert-handoff-policy" not in schema["info"]
     assert "x-jpcite-cost-preview-policy" not in schema["info"]
+    assert "x-jpcite-recurring-agent-workflow-policy" in schema["info"]
     assert schema["info"]["x-jpcite-evidence-packet-policy"]["current_calls"] == [
         "queryEvidencePacket"
     ]
@@ -251,3 +287,25 @@ def test_agent_openapi_omits_first_hop_policy_when_artifact_backend_is_absent() 
     assert "/v1/evidence/packets/query" in schema["paths"]
     assert not any(path.startswith("/v1/artifacts/") for path in schema["paths"])
     assert "/v1/advisors/match" not in schema["paths"]
+
+
+def test_agent_openapi_drops_unavailable_application_strategy_call() -> None:
+    schema = build_agent_openapi_schema(
+        {
+            "openapi": "3.1.0",
+            "info": {"title": "full", "version": "test"},
+            "paths": {
+                "/v1/cost/preview": {"post": {"responses": {"200": {"description": "OK"}}}},
+                "/v1/programs/prescreen": {"post": {"responses": {"200": {"description": "OK"}}}},
+                "/v1/artifacts/company_public_baseline": {
+                    "post": {"responses": {"200": {"description": "OK"}}}
+                },
+            },
+        }
+    )
+
+    rendered = str(schema["info"])
+    assert "createApplicationStrategyPack" not in rendered
+    assert "getProgramEligibilityPredicate" not in rendered
+    assert "getIntelHoujinFull" not in rendered
+    assert "/v1/artifacts/application_strategy_pack" not in schema["paths"]

@@ -33,7 +33,7 @@ jpcite は ChatGPT / Claude / Cursor が文章を生成する前に呼ぶ Eviden
 
 評価は次の順で進めると、課金前に価値を判断できます: **匿名 curl → Playground → MCP / OpenAPI → API キー**。料金詳細は [pricing.md](./pricing.md)。
 
-AI agent の最初の導線は、広い制度質問なら `GET /v1/intelligence/precomputed/query?include_facts=false&include_compression=true`、根拠 record や known gaps が必要なら `POST /v1/evidence/packets/query` です。日本企業の調査では一般 Web 検索より先に `company_public_baseline` を作り、法人番号・`identity_confidence`・`source_url`・`source_fetched_at`・`known_gaps` を保持します。専門判断が必要な場合は evidence brief を作ってから `/v1/advisors/match` を候補 reviewer 検索として使い、最終意見・保証・紹介完了として扱わないでください。
+AI agent の最初の導線は、広い制度質問なら `GET /v1/intelligence/precomputed/query?include_facts=false&include_compression=true`、根拠 record や known gaps が必要なら `POST /v1/evidence/packets/query` です。日本企業の調査では一般 Web 検索より先に `company_public_baseline` を作り、法人番号・`identity_confidence`・`source_url`・`source_fetched_at`・`known_gaps` を保持します。専門判断が必要な場合は evidence brief を作ってから `GET /v1/advisors/match` を候補 reviewer 検索として使い、最終意見・保証・紹介完了として扱わないでください。
 
 ## 1. 匿名 curl で 5 秒スモーク (登録不要)
 
@@ -145,15 +145,41 @@ const data = await res.json();
 console.log(`${data.total} results`);
 ```
 
-## 4. API キー発行 (継続利用)
+## 4. 単発呼び出しを反復ワークフローにする
+
+API キー発行後は、単発 curl をそのまま増やすのではなく、顧客・案件・会社フォルダ単位の workflow として固定します。
+
+最小パターン:
+
+1. `/v1/cost/preview` で予定 workflow の billable units と予測金額を確認
+2. 顧客・案件・会社フォルダ単位で `X-Client-Tag` を固定
+3. POST / batch / export / fanout では `Idempotency-Key` を付けて再試行時の二重実行を防止
+4. 広い有料 POST では `X-Cost-Cap-JPY` を付け、予測額が上限を超える場合は実行前に止める
+5. dashboard で client_tag 別の利用量と月次上限を確認
+
+例:
+
+```bash
+curl -X POST "https://api.jpcite.com/v1/evidence/packets/query" \
+  -H "X-API-Key: am_xxxxxxxxxxxxxxxx" \
+  -H "X-Client-Tag: client-acme-2026" \
+  -H "Idempotency-Key: client-acme-2026-monthly-review-001" \
+  -H "X-Cost-Cap-JPY: 300" \
+  -H "Content-Type: application/json" \
+  -d '{"query_text":"東京都 製造業 省力化 補助金", "limit": 10}'
+```
+
+この形にすると、BPO / 士業 / AI agent が「誰のために何 units 使ったか」を後で説明しやすくなります。
+
+## 5. API キー発行 (継続利用)
 
 匿名 3 req/日 を超える、 または毎日同じ IP からの呼び出しを安定させたい場合は API キーを発行します。
 
-### 4.1 ダッシュボード (推奨)
+### 5.1 ダッシュボード (推奨)
 
 [料金ページ](https://jpcite.com/pricing) の「API キーを発行」 から Stripe Checkout を経由してカード登録します。 `success_url` 着地後、 ダッシュボードから API key を取得できます。
 
-### 4.2 API でチェックアウトを作成 (任意)
+### 5.2 API でチェックアウトを作成 (任意)
 
 ```bash
 curl -X POST https://api.jpcite.com/v1/billing/checkout \
@@ -176,7 +202,7 @@ curl -X POST https://api.jpcite.com/v1/billing/keys/from-checkout \
 
 **API key は発行時 1 回だけ返る** — 紛失時は Stripe Customer Portal で解約 → 再発行。
 
-### 4.3 認証付きで呼ぶ
+### 5.3 認証付きで呼ぶ
 
 ```bash
 curl -H "X-API-Key: am_xxxxxxxxxxxxxxxx" \

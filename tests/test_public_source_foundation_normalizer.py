@@ -60,6 +60,82 @@ def test_normalizer_maps_aliases_and_empty_list_defaults():
     assert row.known_gaps == []
     assert row.join_keys == []
     assert row.artifact_outputs_enabled == []
+    assert row.target_artifacts == []
+    assert row.artifact_sections_filled == []
+    assert row.known_gaps_reduced == []
+    assert row.new_known_gaps_created == []
+    assert row.license_boundary == "full_fact"
+    assert row.refresh_frequency == "daily"
+
+
+def test_normalizer_maps_legacy_artifact_outputs_to_target_artifacts():
+    raw = {
+        "source": "procurement_portal",
+        "url": "https://www.p-portal.go.jp/",
+        "name": "調達ポータル",
+        "license": "政府標準利用規約2.0",
+        "robots": "allowed",
+        "as_of": "2026-05-06",
+        "artifact_outputs_enabled": [
+            "company_public_baseline",
+            "company_public_audit_pack",
+        ],
+        "artifact_sections": ["public_revenue", "evidence_ledger"],
+        "known_gaps_if_present": ["procurement_source_not_connected"],
+        "known_gaps_if_missing": ["source_license_unknown"],
+        **_required_fields(),
+    }
+
+    row = SourceProfileRow.model_validate(normalize_source_profile_row(raw))
+
+    assert row.target_artifacts == [
+        "company_public_baseline",
+        "company_public_audit_pack",
+    ]
+    assert row.artifact_outputs_enabled == row.target_artifacts
+    assert row.artifact_sections_filled == ["public_revenue", "evidence_ledger"]
+    assert row.known_gaps_reduced == ["procurement_source_not_connected"]
+    assert row.new_known_gaps_created == ["source_license_unknown"]
+    assert row.license_boundary == "full_fact"
+    assert row.refresh_frequency == "daily"
+
+
+def test_source_profile_row_accepts_target_artifacts_without_legacy_alias():
+    raw = {
+        "source_id": "company_public_spine",
+        "priority": "P0",
+        "official_owner": "国税庁",
+        "source_url": "https://www.houjin-bangou.nta.go.jp/",
+        "source_type": "api",
+        "data_objects": ["corporate_identity"],
+        "acquisition_method": "REST API",
+        "robots_policy": "allowed",
+        "license_or_terms": "政府標準利用規約2.0",
+        "redistribution_risk": "low",
+        "refresh_frequency": "daily",
+        "join_keys": ["houjin_bangou"],
+        "target_tables": ["houjin_master"],
+        "target_artifacts": ["company_public_baseline"],
+        "artifact_sections_filled": "identity",
+        "known_gaps_reduced": "identifier_bridge_missing",
+        "new_known_gaps_created": "invoice_history_missing",
+        "license_boundary": "full",
+        "sample_urls": [],
+        "sample_fields": [],
+        "known_gaps": [],
+        "checked_at": "2026-05-06T00:00:00+09:00",
+    }
+
+    row = SourceProfileRow.model_validate(raw)
+
+    assert row.update_frequency == "daily"
+    assert row.refresh_frequency == "daily"
+    assert row.target_artifacts == ["company_public_baseline"]
+    assert row.artifact_outputs_enabled == ["company_public_baseline"]
+    assert row.artifact_sections_filled == ["identity"]
+    assert row.known_gaps_reduced == ["identifier_bridge_missing"]
+    assert row.new_known_gaps_created == ["invoice_history_missing"]
+    assert row.license_boundary == "full_fact"
 
 
 def test_normalizer_unwraps_observation_payload_and_uses_host_source_id():

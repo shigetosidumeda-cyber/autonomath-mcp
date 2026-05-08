@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>あなたのサイトに補助金検索を 1 行で — jpcite Widget</title>
-<meta name="description" content="税理士事務所・商工会議所・中小企業支援サイト向け。HTMLに1行足すだけで補助金検索UIが表示される組み込み型JS widget。匿名 3 件/日まで無料、以降は ¥3/課金単位 (税込 ¥3.30) 完全従量。">
+<meta name="description" content="税理士事務所・商工会議所・中小企業支援サイト向け。HTMLに1行足すだけで補助金検索UIを埋め込めるJS widget。ブラウザ用の wgt_live key は origin 制限付きで、利用分はサイト運営者に従量課金されます。">
 
 <meta property="og:title" content="jpcite Widget — 1 行で組み込める補助金検索">
-<meta property="og:description" content="税理士・支援機関のサイトに&lt;script&gt;1行で補助金検索 widget を埋め込み。匿名 3 件/日まで無料、以降は ¥3/課金単位完全従量。">
+<meta property="og:description" content="税理士・支援機関のサイトに&lt;script&gt;1行で補助金検索 widget を埋め込み。wgt_live key は origin 制限付き、利用分はサイト運営者に従量課金。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/widget.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -19,7 +19,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="jpcite Widget — 1 行で組み込める補助金検索">
-<meta name="twitter:description" content="HTMLに1行足すだけで補助金検索UIを表示。匿名 3 件/日まで無料、以降は ¥3/課金単位 (税込 ¥3.30) 完全従量。">
+<meta name="twitter:description" content="HTMLに1行足すだけで補助金検索UIを表示。wgt_live key は origin 制限付き、利用分はサイト運営者に従量課金。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/widget">
@@ -40,7 +40,7 @@
   "@context": "https://schema.org",
   "@type": "Product",
   "name": "jpcite Widget",
-  "description": "税理士・支援機関のサイトに <script> 1 行で埋め込める補助金検索 widget。匿名 3 件/日まで無料、以降は ¥3/課金単位 (税込 ¥3.30) 完全従量。",
+  "description": "税理士・支援機関のサイトに <script> 1 行で埋め込める補助金検索 widget。ブラウザ用の wgt_live key は origin 制限付きで、利用分はサイト運営者に従量課金されます。",
   "brand": {"@type": "Brand", "name": "jpcite"},
   "url": "https://jpcite.com/widget.html",
   "inLanguage": "ja",
@@ -50,7 +50,7 @@
       "name": "Metered",
       "price": "3",
       "priceCurrency": "JPY",
-      "description": "¥3/課金単位 税別 (税込 ¥3.30)。匿名 3 件/日まで無料",
+      "description": "サイト運営者の widget key 利用分を ¥3/課金単位 税別 (税込 ¥3.30) で従量課金。公開APIの匿名評価枠とは別。",
       "url": "https://jpcite.com/widget.html",
       "availability": "https://schema.org/InStock",
       "seller": {
@@ -141,6 +141,54 @@
     letter-spacing: 0.08em;
     color: var(--text-muted);
     margin: 0 0 14px;
+  }
+  .mock-widget {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .mock-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    margin: 0 0 14px;
+  }
+  .mock-select {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    background: var(--bg-alt);
+  }
+  .mock-select span {
+    display: block;
+    color: var(--text-muted);
+    font-size: 11px;
+    margin: 0 0 2px;
+  }
+  .mock-select strong {
+    font-size: 14px;
+  }
+  .mock-result {
+    border-top: 1px solid var(--border);
+    padding: 14px 0 0;
+  }
+  .mock-result h3 {
+    font-size: 17px;
+    margin: 6px 0;
+  }
+  .mock-result p {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin: 0 0 8px;
+  }
+  .mock-pill {
+    display: inline-block;
+    border-radius: 999px;
+    background: var(--bg-alt);
+    color: var(--text-muted);
+    font-size: 12px;
+    padding: 3px 8px;
   }
   .feature-grid {
     display: grid;
@@ -268,6 +316,27 @@
   }
   .signup .status.err { color: var(--danger); }
   .signup .status.ok { color: #3fb950; }
+  .field-help {
+    margin: 6px 0 0;
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .field-help code {
+    font-size: 12px;
+  }
+  .info-note {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    padding: 12px 14px;
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .info-note strong {
+    color: var(--text);
+  }
   .tokushoho-note {
     font-size: 12px;
     color: var(--text-muted);
@@ -327,17 +396,25 @@
  </div>
  </section>
 
- <section class="demo-wrap container">
- <h2>ライブデモ (本番と同じ JS)</h2>
- <div data-jpcite-widget
- data-key="wgt_live_00000000000000000000000000000000"
- data-theme="light"
- data-filters="prefecture,industry,target"
- data-limit="5"></div>
+ <section class="demo-wrap container" aria-labelledby="demo-title">
+ <h2 id="demo-title">表示例 (静的mock)</h2>
+ <div class="mock-widget" aria-label="jpcite widget 表示例">
+ <div class="mock-controls" aria-hidden="true">
+ <div class="mock-select"><span>都道府県</span><strong>東京都</strong></div>
+ <div class="mock-select"><span>業種</span><strong>飲食店</strong></div>
+ <div class="mock-select"><span>目的</span><strong>設備投資</strong></div>
+ </div>
+ <div class="mock-result">
+ <span class="mock-pill">補助金候補</span>
+ <h3>省力化投資向け制度候補</h3>
+ <p>一次資料 URL、取得時刻、締切候補、相談前に確認する質問を表示します。</p>
+ <a href="/docs/" aria-label="widget ドキュメントを見る">一次資料と実装手順を見る</a>
+ </div>
+ </div>
  <p class="tokushoho-note">
- ※ 上記は表示例です。許可された origin を登録した本番キーでは
- お客様のサイト上で正常に結果が表示されます。
- 詳細は <a href="/widget/demo.html">ドキュメント</a> をご覧ください。
+ ※ 上記は静的な表示例です。ここでは <code>wgt_live_...</code> key や
+ <code>/v1/widget/*</code> を使わず、実APIへのリクエストも発生しません。
+ 実サイトでは発行済み key と許可 origin が一致した場合だけ結果が返ります。
  </p>
  </section>
 
@@ -354,14 +431,14 @@
  <div class="feature">
  <h3>取得時刻を表示</h3>
  <p>
- jpcite 本体の検索対象制度 11,601 件 (登録総数 14,472 件) を参照。
- 一次資料リンク、取得時刻、締切候補を widget に反映します。
+ jpcite の公開データを参照し、一次資料リンク、取得時刻、
+ 締切候補を widget に反映します。
  </p>
  </div>
  <div class="feature">
  <h3>Origin 制限で安全</h3>
  <p>
- キーは登録した URL からのみ使用可能。広告のクリックボムや
+ キーは登録した origin からのみ使用可能。広告のクリックボムや
  第三者サイトでの無断流用を防ぎます。
  </p>
  </div>
@@ -382,8 +459,8 @@
  <div class="feature">
  <h3>セルフサーブ・完全従量</h3>
  <p>
- 匿名 3 件/日まで無料、以降は ¥3/課金単位。お問い合わせ不要で
- Stripe Checkout 完了後、すぐキー発行されます。
+ サイト運営者の <code>wgt_live_...</code> key 利用分だけを
+ ¥3/課金単位で従量課金。サイト訪問者へ jpcite から直接請求しません。
  </p>
  </div>
  </div>
@@ -392,18 +469,20 @@
  <section class="container" aria-labelledby="plan-title">
  <h2 id="plan-title" style="text-align:center;margin:40px 0 6px;">料金プラン</h2>
  <p style="text-align:center;color:var(--text-muted);">
- API と同じく、匿名 3 件/日まで無料。以降は税込 ¥3.30/リクエストの完全従量です。
+ Widget は公開API/Playgroundの匿名評価枠とは別です。
+ 発行された <code>wgt_live_...</code> key の利用分をサイト運営者に請求します。
  </p>
 
  <div class="plan-grid">
  <article class="plan highlight" aria-labelledby="plan-business">
  <h3 id="plan-business">従量課金</h3>
- <p class="price">¥3.30 <span style="font-size:14px;font-weight:400;color:var(--text-muted);">/ リクエスト (税込)</span></p>
- <p class="unit">匿名 3 件/日まで無料。税別 ¥3、月額固定なし</p>
+ <p class="price">¥3.30 <span style="font-size:14px;font-weight:400;color:var(--text-muted);">/ 課金単位 (税込)</span></p>
+ <p class="unit">税別 ¥3、月額固定なし。サイト訪問者への直接請求なし</p>
  <ul>
  <li>税理士事務所・支援機関の HP 向け</li>
- <li>匿名 3 件/日まで無料</li>
- <li>超過は税込 ¥3.30/リクエストを Stripe usage-based で自動請求</li>
+ <li>Widget owner の <code>wgt_live_...</code> key 利用分に課金</li>
+ <li>公開API/Playgroundの匿名評価枠とは別枠</li>
+ <li>利用分は Stripe usage-based で自動請求</li>
  <li>「powered by jpcite」フッターを表示</li>
  <li>複数 origin (本番 + staging 等) 登録可</li>
  <li>適格請求書 を Stripe が自動発行</li>
@@ -419,6 +498,12 @@
  下記を記入して「決済に進む」を押すと Stripe Checkout に遷移します。
  決済完了後、<code>wgt_live_...</code> キーが管理ダッシュボード経由で発行されます。
  </p>
+ <div class="info-note">
+ <strong><code>wgt_live_...</code> はブラウザ用の widget key です。</strong>
+ HTML に置く前提の key で、登録した origin からの <code>/v1/widget/*</code>
+ 呼び出しだけに使います。サーバー/API 用の <code>am_...</code> key とは別物です。
+ 課金はサイト訪問者ではなく、申し込んだ widget owner の利用分として計上されます。
+ </div>
  <form id="signup-form">
  <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
  <label for="company_url">Company URL (leave blank)</label>
@@ -433,10 +518,16 @@
  <select id="signup-plan">
  <option value="metered">従量課金 (¥3/課金単位)</option>
  </select>
+ <p class="field-help">公開API/Playgroundの匿名評価枠とは別です。Widget は発行済み <code>wgt_live_...</code> key の利用分を widget owner に請求します。</p>
  </div>
  <div class="field">
  <label for="signup-origins">許可 origin (1 行 1 件、https:// 付き) <span aria-hidden="true" style="color:var(--danger)">*</span></label>
- <textarea id="signup-origins" required aria-required="true" placeholder="https://example.com&#10;https://*.example.com"></textarea>
+ <textarea id="signup-origins" required aria-required="true" aria-describedby="origin-help" placeholder="https://example.com&#10;https://www.example.com&#10;https://*.example.com"></textarea>
+ <p class="field-help" id="origin-help">
+ Origin は <code>https://example.com</code> のような scheme + host + 任意の port です。
+ path、query、末尾 slash は不可です。<code>https://*.example.com</code> はサブドメイン用で、
+ <code>https://example.com</code> 自体は含みません。本番、www、staging は必要に応じて別行で登録してください。
+ </p>
  </div>
  <div class="field">
  <label for="signup-label">ラベル (任意、ダッシュボードで表示)</label>

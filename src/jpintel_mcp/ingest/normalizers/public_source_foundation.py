@@ -108,11 +108,60 @@ _ALIAS_GROUPS: dict[str, tuple[str, ...]] = {
         "update_frequency",
         "update_cadence",
         "refresh_cadence",
+        "refresh_frequency",
+        "koushi_freq",
+        "update_freq",
+    ),
+    "refresh_frequency": (
+        "refresh_frequency",
+        "update_frequency",
+        "update_cadence",
+        "refresh_cadence",
         "koushi_freq",
         "update_freq",
     ),
     "data_objects": ("data_objects",),
     "target_tables": ("target_tables", "downstream_targets"),
+    "target_artifacts": (
+        "target_artifacts",
+        "artifact_outputs_enabled",
+        "artifact_outputs",
+        "artifact_targets",
+        "artifact_dependencies",
+    ),
+    "artifact_sections_filled": (
+        "artifact_sections_filled",
+        "artifact_sections",
+        "sections_filled",
+        "artifact_output_sections",
+    ),
+    "known_gaps_reduced": (
+        "known_gaps_reduced",
+        "known_gap_reductions",
+        "known_gaps_closed",
+        "known_gaps_if_present",
+    ),
+    "new_known_gaps_created": (
+        "new_known_gaps_created",
+        "known_gaps_created",
+        "known_gaps_if_missing",
+        "known_gaps_introduced",
+    ),
+    "license_boundary": (
+        "license_boundary",
+        "license_export_boundary",
+        "source_boundary",
+        "source_license_boundary",
+        "redistribution_boundary",
+        "raw_storage_policy",
+    ),
+}
+
+_CONTRACT_LIST_FIELDS = {
+    "target_artifacts",
+    "artifact_sections_filled",
+    "known_gaps_reduced",
+    "new_known_gaps_created",
 }
 
 _EMPTY_LIST_DEFAULTS = (
@@ -121,6 +170,10 @@ _EMPTY_LIST_DEFAULTS = (
     "known_gaps",
     "join_keys",
     "artifact_outputs_enabled",
+    "target_artifacts",
+    "artifact_sections_filled",
+    "known_gaps_reduced",
+    "new_known_gaps_created",
 )
 
 _SOURCE_ID_ALIASES = ("source", "source_id", "id", "slug", "aggregator")
@@ -205,8 +258,10 @@ def normalize_source_profile_row(obj: Any) -> Any:
             row[target] = _normalize_robots_policy(value)
         elif target in {"license_or_terms", "acquisition_method", "update_frequency"}:
             row[target] = _stringify_if_structured(value)
-        elif target in {"data_objects", "target_tables"}:
+        elif target in {"data_objects", "target_tables"} | _CONTRACT_LIST_FIELDS:
             row[target] = _listify(value)
+        elif target == "license_boundary":
+            row[target] = _normalize_license_boundary(value)
         elif target == "source_type" and not isinstance(value, str):
             continue
         else:
@@ -223,6 +278,7 @@ def normalize_source_profile_row(obj: Any) -> Any:
             row["source_id"] = source_id
 
     _apply_conservative_defaults(row, notes)
+    _sync_source_contract_fields(row, notes)
 
     for key in _EMPTY_LIST_DEFAULTS:
         if row.get(key) is None:
@@ -409,6 +465,39 @@ def _apply_conservative_defaults(row: dict[str, Any], notes: list[str]) -> None:
         row["target_tables"] = _listify(row["target_tables"])
 
 
+def _sync_source_contract_fields(row: dict[str, Any], notes: list[str]) -> None:
+    target_artifacts = _compact_string_list(row.get("target_artifacts"))
+    legacy_artifacts = _compact_string_list(row.get("artifact_outputs_enabled"))
+    if target_artifacts:
+        row["target_artifacts"] = target_artifacts
+        if not legacy_artifacts:
+            row["artifact_outputs_enabled"] = list(target_artifacts)
+            _add_note(notes, "mirrored target_artifacts to artifact_outputs_enabled")
+    elif legacy_artifacts:
+        row["target_artifacts"] = list(legacy_artifacts)
+        row["artifact_outputs_enabled"] = legacy_artifacts
+        _add_note(notes, "mapped artifact_outputs_enabled to target_artifacts")
+
+    for key in (
+        "artifact_sections_filled",
+        "known_gaps_reduced",
+        "new_known_gaps_created",
+    ):
+        row[key] = _compact_string_list(row.get(key))
+
+    if not _has_value(row.get("license_boundary")):
+        row["license_boundary"] = _infer_license_boundary(row)
+        _add_note(notes, f"defaulted license_boundary={row['license_boundary']}")
+    else:
+        row["license_boundary"] = _normalize_license_boundary(row["license_boundary"])
+
+    if not _has_value(row.get("refresh_frequency")) and _has_value(row.get("update_frequency")):
+        row["refresh_frequency"] = row["update_frequency"]
+        _add_note(notes, "defaulted refresh_frequency from update_frequency")
+    elif _has_value(row.get("refresh_frequency")):
+        row["refresh_frequency"] = _stringify_if_structured(row["refresh_frequency"])
+
+
 def _priority_from_recommendation(value: Any) -> str | None:
     if isinstance(value, str):
         value = value.strip().upper().removeprefix("P")
@@ -469,6 +558,39 @@ def _infer_redistribution_risk(row: Mapping[str, Any]) -> str:
     return "medium_review_required"
 
 
+def _infer_license_boundary(row: Mapping[str, Any]) -> str:
+    text = _row_text(row)
+    if any(
+        token in text
+        for token in (
+            "robots disallow",
+            "robots_disallowed",
+            "commercial_use denied",
+            "no_collect",
+            "do_not_collect",
+        )
+    ):
+        return "no_collect"
+    if any(
+        token in text
+        for token in (
+            "redistribution_risk high",
+            "high_review_required",
+            "proprietary",
+            "転載不可",
+            "再配布不可",
+            "link_only",
+            "link-only",
+        )
+    ):
+        return "metadata_only"
+    if any(token in text for token in ("low", "pdl", "cc-by", "cc_by", "政府標準利用規約")):
+        return "full_fact"
+    if any(token in text for token in ("conditional", "medium", "unknown_review_required")):
+        return "derived_fact"
+    return "metadata_only"
+
+
 def _infer_target_tables(row: Mapping[str, Any]) -> list[str]:
     objects = _infer_data_objects(row)
     if "program_listing" in objects:
@@ -494,6 +616,10 @@ def _dedupe_strings(values: list[Any]) -> list[str]:
         seen.add(text)
         result.append(text)
     return result
+
+
+def _compact_string_list(value: Any) -> list[str]:
+    return _dedupe_strings([item for item in _listify(value) if _has_value(item)])
 
 
 def _is_http_url(value: Any) -> bool:
@@ -604,6 +730,31 @@ def _normalize_robots_policy(value: Any) -> str:
     if isinstance(value, (Mapping, list, tuple, set)):
         return json_dumps_compact(value)
     return str(value)
+
+
+def _normalize_license_boundary(value: Any) -> str:
+    raw = _stringify_if_structured(value).strip().lower()
+    normalized = re.sub(r"[^a-z0-9]+", "_", raw).strip("_")
+    aliases = {
+        "full": "full_fact",
+        "raw": "full_fact",
+        "raw_fact": "full_fact",
+        "raw_facts": "full_fact",
+        "full_fact": "full_fact",
+        "derived": "derived_fact",
+        "derived_only": "derived_fact",
+        "derived_fact": "derived_fact",
+        "metadata": "metadata_only",
+        "metadata_only": "metadata_only",
+        "link": "link_only",
+        "deep_link": "link_only",
+        "link_only": "link_only",
+        "none": "no_collect",
+        "no": "no_collect",
+        "do_not_collect": "no_collect",
+        "no_collect": "no_collect",
+    }
+    return aliases.get(normalized, normalized or "metadata_only")
 
 
 def json_dumps_compact(value: Any) -> str:

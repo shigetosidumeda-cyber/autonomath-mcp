@@ -37,6 +37,33 @@ PUBLIC_LAW_COPY_SURFACES = [
     REPO_ROOT / "docs" / "roadmap.md",
     REPO_ROOT / "overrides" / "partials" / "index_jsonld.html",
 ]
+PUBLIC_SALES_SURFACE_PATHS = [
+    REPO_ROOT / "site" / "index.html",
+    REPO_ROOT / "site" / "about.html",
+    REPO_ROOT / "site" / "products.html",
+    REPO_ROOT / "site" / "pricing.html",
+    REPO_ROOT / "site" / "trial.html",
+    REPO_ROOT / "site" / "upgrade.html",
+    REPO_ROOT / "site" / "line.html",
+    REPO_ROOT / "site" / "widget.html",
+    REPO_ROOT / "site" / "widget" / "demo.html",
+    REPO_ROOT / "site" / "llms.txt",
+    REPO_ROOT / "site" / "llms-full.txt",
+    REPO_ROOT / "site" / "llms-full.en.txt",
+]
+PUBLIC_SALES_SURFACE_GLOBS = [
+    "site/audiences/*.html",
+    "site/en/audiences/*.html",
+    "site/compare/*.html",
+    "site/compare/*/index.html",
+]
+LINE_PUBLIC_SURFACES = [
+    REPO_ROOT / "site" / "line.html",
+    REPO_ROOT / "site" / "index.html",
+    REPO_ROOT / "site" / "audiences" / "smb.html",
+    REPO_ROOT / "site" / "en" / "audiences" / "index.html",
+    REPO_ROOT / "site" / "en" / "audiences" / "smb.html",
+]
 
 
 def _redirect_sources() -> list[str]:
@@ -77,7 +104,7 @@ def test_redirects_file_syntax_is_cloudflare_pages_compatible() -> None:
         if "www.jpcite.com" in stripped:
             offenders.append(f"{lineno}: www canonicalization belongs in Cloudflare Redirect Rules")
 
-    assert offenders == []
+    assert offenders == [], "\n".join(offenders)
 
 
 def _redirect_source_matches(source: str, path: str) -> bool:
@@ -94,6 +121,13 @@ def _first_static_path(pattern: str, fallback: str) -> str:
     return "/" + sample.relative_to(REPO_ROOT / "site").as_posix()
 
 
+def _public_sales_surfaces() -> list[Path]:
+    paths = set(PUBLIC_SALES_SURFACE_PATHS)
+    for pattern in PUBLIC_SALES_SURFACE_GLOBS:
+        paths.update(REPO_ROOT.glob(pattern))
+    return sorted(path for path in paths if path.exists())
+
+
 def test_redirects_do_not_shadow_existing_program_or_qa_html_pages() -> None:
     samples = [
         _first_static_path("programs/*.html", "/programs/sample-program.html"),
@@ -106,14 +140,26 @@ def test_redirects_do_not_shadow_existing_program_or_qa_html_pages() -> None:
             if _redirect_source_matches(source, path):
                 offenders.append((source, path))
 
-    assert offenders == []
+    assert offenders == [], "\n".join(offenders)
 
 
-def test_common_docs_audience_guess_redirects_to_real_audience_page() -> None:
+def test_common_docs_audience_page_is_real_not_redirected() -> None:
     redirects = REDIRECTS.read_text(encoding="utf-8")
 
-    assert "/docs/getting-started/audiences/  /audiences/  301" in redirects
-    assert "/docs/getting-started/audiences   /audiences/  301" in redirects
+    assert (REPO_ROOT / "site" / "docs" / "getting-started" / "audiences" / "index.html").exists()
+    assert "/docs/getting-started/audiences/  /audiences/  301" not in redirects
+    assert "/docs/getting-started/audiences   /audiences/  301" not in redirects
+
+
+def test_common_docs_audience_page_keeps_mkdocs_search_runtime() -> None:
+    body = (
+        REPO_ROOT / "site" / "docs" / "getting-started" / "audiences" / "index.html"
+    ).read_text(encoding="utf-8")
+
+    assert 'data-md-component="search-query"' in body
+    assert '"search": "../../assets/javascripts/workers/search' in body
+    assert (REPO_ROOT / "site" / "docs" / "search" / "search_index.json").exists()
+    assert any((REPO_ROOT / "site" / "docs" / "assets" / "javascripts" / "workers").glob("search.*.min.js"))
 
 
 def test_404_search_form_routes_to_playground_search() -> None:
@@ -132,6 +178,101 @@ def test_playground_can_be_deep_linked_to_program_search_query() -> None:
     assert "ep.id === requestedEndpoint || ep.path === requestedEndpoint" in body
 
 
+def test_widget_page_uses_static_demo_and_clear_owner_billing_copy() -> None:
+    body = (REPO_ROOT / "site" / "widget.html").read_text(encoding="utf-8")
+
+    assert "wgt_live_00000000000000000000000000000000" not in body
+    assert 'data-key="wgt_live_000' not in body
+    assert "表示例 (静的mock)" in body
+    assert "ここでは <code>wgt_live_...</code> key や" in body
+    assert "<code>/v1/widget/*</code> を使わず" in body
+    assert not re.search(r"(?m)^\s*<div\s+data-jpcite-widget\b", body)
+    assert "サーバー/API 用の <code>am_...</code> key とは別物です" in body
+    assert "課金はサイト訪問者ではなく" in body
+    assert "公開API/Playgroundの匿名評価枠とは別" in body
+    assert "path、query、末尾 slash は不可" in body
+    assert "https://*.example.com</code> はサブドメイン用" in body
+    assert "匿名 3 件/日" not in body
+
+
+def test_phase_1a_public_sales_surfaces_do_not_expose_internal_progress_or_dummy_keys() -> None:
+    forbidden_patterns = [
+        ("dummy widget key", re.compile(r"wgt_live_000")),
+        (
+            "law full-text indexing progress",
+            re.compile(r"本文完全索引|完全本文索引|154\s*件\s*本文|154\s*本文"),
+        ),
+        ("law full-text count progress", re.compile(r"うち本文索引\s*\d|本文索引\s*\d")),
+        ("saturation jargon", re.compile(r"\bsaturation\b", re.IGNORECASE)),
+        ("internal validation id", re.compile(r"\bDEEP-[A-Z0-9][A-Z0-9_-]*\b")),
+        (
+            "internal source coverage field",
+            re.compile(r"\b(?:source_profile|artifact_coverage_delta|license_boundary)\b"),
+        ),
+    ]
+
+    offenders: list[str] = []
+    for path in _public_sales_surfaces():
+        rel = path.relative_to(REPO_ROOT).as_posix()
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        for lineno, line in enumerate(text.splitlines(), start=1):
+            for label, pattern in forbidden_patterns:
+                if pattern.search(line):
+                    offenders.append(f"{rel}:L{lineno}:{label}: {line.strip()[:180]}")
+
+    assert offenders == [], "\n".join(offenders)
+
+
+def test_phase_1a_line_waitlist_surfaces_do_not_assert_live_paid_usage() -> None:
+    line_page = (REPO_ROOT / "site" / "line.html").read_text(encoding="utf-8", errors="ignore")
+    waitlist_or_prelaunch = any(
+        marker in line_page for marker in ["公開準備中", "提供状況", "利用開始通知"]
+    )
+    if not waitlist_or_prelaunch:
+        return
+
+    paid_assertions = [
+        ("schema says LINE offer is in stock", re.compile(r"https://schema\.org/InStock")),
+        (
+            "per-question LINE charge",
+            re.compile(
+                r"¥3(?:\.30)?\s*/\s*(?:質問|question)|"
+                r"¥3\s+per\s+question|¥3/question|1\s*質問\s*=\s*1\s*課金単位",
+                re.IGNORECASE,
+            ),
+        ),
+        (
+            "post-free LINE charge",
+            re.compile(
+                r"(?:4\s*件目以降|4件目以降|匿名無料枠の超過後|超えたら|"
+                r"beyond that|after the daily allowance).*?(?:課金|¥3|bill|pay)",
+                re.IGNORECASE,
+            ),
+        ),
+        (
+            "live LINE friend-add claim",
+            re.compile(
+                r"友だち追加のみ|Add the LINE bot as a friend|Just add as a friend",
+                re.IGNORECASE,
+            ),
+        ),
+        ("LINE payment rail claim", re.compile(r"LINE Pay|Apple Pay|Google Pay", re.IGNORECASE)),
+    ]
+
+    offenders: list[str] = []
+    for path in LINE_PUBLIC_SURFACES:
+        if not path.exists():
+            continue
+        rel = path.relative_to(REPO_ROOT).as_posix()
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        for lineno, line in enumerate(text.splitlines(), start=1):
+            for label, pattern in paid_assertions:
+                if pattern.search(line):
+                    offenders.append(f"{rel}:L{lineno}:{label}: {line.strip()[:180]}")
+
+    assert offenders == [], "\n".join(offenders)
+
+
 def test_public_law_count_copy_does_not_expose_internal_indexing_progress() -> None:
     banned_terms = [
         "154 件本文完全索引",
@@ -140,6 +281,7 @@ def test_public_law_count_copy_does_not_expose_internal_indexing_progress() -> N
         "完全本文索引",
         "本文完全索引",
         "saturation",
+        "登録総数",
         "飽和",
         "内部仮説",
         "本文ロード継続中",

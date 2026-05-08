@@ -61,8 +61,8 @@
   "url": "https://jpcite.com/",
   "inLanguage": "ja",
   "offers": [
-    {"@type": "Offer", "name": "API + MCP", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
-    {"@type": "Offer", "name": "LINE bot", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
+    {"@type": "Offer", "name": "成果物作成 (API/MCP入口)", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
+    {"@type": "Offer", "name": "相談前プレ診断 (LINE入口)", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
     {"@type": "Offer", "name": "法令改正アラート", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
     {"@type": "Offer", "name": "埋込ウィジェット", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
     {"@type": "Offer", "name": "Evidence-to-Expert Handoff", "url": "https://jpcite.com/advisors", "description": "根拠付き相談パックを専門家レビュー前の evidence brief として渡す導線"}
@@ -213,7 +213,7 @@
   "@graph": [
     {
       "@type": "Product",
-      "name": "jpcite API + MCP",
+      "name": "jpcite 成果物API/MCP",
       "description": "139 MCP ツール + REST API。AI 開発者向け。stdio 接続、SDK 不要。",
       "brand": {"@type": "Brand", "name": "jpcite"},
       "url": "https://jpcite.com/docs/getting-started/",
@@ -221,7 +221,7 @@
     },
     {
       "@type": "Product",
-      "name": "jpcite LINE bot",
+      "name": "jpcite 相談前プレ診断 LINE入口",
       "description": "LINE 上で補助金・融資を自然言語検索。SME 経営者 / 士業向け。",
       "brand": {"@type": "Brand", "name": "jpcite"},
       "url": "https://jpcite.com/line",
@@ -293,22 +293,22 @@
 
  <section class="hero" aria-labelledby="hero-title">
  <div class="container">
- <h1 id="hero-title">あなたの AI に、出典付き根拠を。</h1>
- <p class="hero-sub">jpcite は Evidence prefetch layer です。 長い PDF ・複数の官公庁ページ・検索結果を LLM に渡す前に、 <code>source_url</code> ・ <code>source_fetched_at</code> ・ <code>known_gaps</code> ・互換 / 排他ルール付きの小さい Evidence Packet を返します。 主な価値は <strong>(a) 裏取り時間の短縮</strong> と <strong>(b) 監査可能な引用</strong> です。 JCRB-v1 の測定条件では citation_ok が ~0.40 → ~0.95 となった参考結果があります。 入力文脈の削減見込みと採算ライン到達 (break-even) 判定は、呼び出し元が比較基準トークン数を指定したときに <strong>input-context estimates</strong> として参考表示します。 時間・金額換算は利用量、業務フロー、確認粒度により変動します。 匿名 3 リクエスト/日、 登録不要ですぐ検証できます。</p>
+	 <h1 id="hero-title">顧問先・案件・取引先に、出典付きの成果物を。</h1>
+	 <p class="hero-sub">jpcite は Evidence prefetch layer です。 長い PDF ・複数の官公庁ページ・検索結果を読む前に、 <code>source_url</code> ・ <code>source_fetched_at</code> ・ <code>known_gaps</code> ・互換 / 排他ルール付きの根拠を取得し、顧問先月次レビュー、申請戦略パック、公開情報DDパック、相談前プレ診断票に使える形で返します。 入力文脈の削減見込みは、呼び出し元が比較基準を指定したときだけ <strong>input-context estimates</strong> として参考表示します。 匿名 3 リクエスト/日、 登録不要ですぐ検証できます。</p>
 
  <p class="hero-example" style="margin:18px 0 14px;font-size:15px;line-height:1.7;color:var(--text-soft);">補助金 11,601 + 法令 9,484 + 税制 50 + 法人関連データ 167K + 行政処分 1,185 を REST + MCP から横断。 出典 URL + 取得時刻 + content_hash を機械が引用しやすい形で返し、 優先度の高い出典の再取得中央値は約 7 日。 Claude Desktop / Cursor / Cline は MCP、ChatGPT Custom GPT は OpenAPI Actions から呼び出して、 Evidence Packet・併用ルール・known gaps をまとめて取得できます。</p>
 
  <div class="cta-row">
- <a class="btn btn-primary" href="/playground.html?flow=evidence3" data-cta-variant="hero-evidence3-primary">3 回の無料ライブ検証を始める (Evidence Packet) →</a>
- <a href="/docs/getting-started/" data-cta-variant="hero-getting-started-secondary" style="align-self:center;font-size:15px;color:var(--text);text-decoration:underline;text-underline-offset:3px;">クイックスタート (curl → Playground → MCP) →</a>
+	 <a class="btn btn-primary" href="/playground.html?flow=evidence3" data-cta-variant="hero-evidence3-primary">3 回で成果物プレビューを見る →</a>
+	 <a href="/products.html" data-cta-variant="hero-products-secondary" style="align-self:center;font-size:15px;color:var(--text);text-decoration:underline;text-underline-offset:3px;">成果物カタログを見る →</a>
  <a href="/pricing.html" data-cta-variant="hero-pricing-tertiary" style="align-self:center;font-size:14px;color:var(--text-muted);text-decoration:underline;text-underline-offset:3px;">料金 (¥3.30/unit) →</a>
  </div>
  <p class="hero-promise" style="margin:14px 0 0;font-size:13px;color:var(--text);line-height:1.7;">
  <span class="chip-success">匿名</span>curl で動作確認 (登録不要) ·
- <span class="chip-success">Playground</span>Evidence Packet 確認 ·
- <span class="chip-success">MCP</span>Claude Desktop / Cursor / Cline に接続 · ChatGPT は OpenAPI Actions
+	 <span class="chip-success">Playground</span>成果物プレビュー確認 ·
+	 <span class="chip-success">自動化</span>API/MCP は月次レビュー・DD・BPO一括処理の実行手段
  </p>
- <p class="hero-note">匿名で <span data-fact="anonymous_quota_per_day" data-stat-key="anonymous_quota_per_day">3</span> リクエスト/日まで無料。 継続利用、LINE、法令アラート、ウィジェットは ¥3/課金単位 (税込 ¥3.30) の完全従量。 最低金額・契約期間なし、 いつでも解約可能。</p>
+	 <p class="hero-note">匿名で <span data-fact="anonymous_quota_per_day" data-stat-key="anonymous_quota_per_day">3</span> リクエスト/日まで無料。 継続利用は通常 call 1 unit = ¥3/課金単位 (税込 ¥3.30) の完全従量。 最低金額・契約期間なし、 いつでも解約可能。</p>
  <ul class="trust-strip-blocks" aria-label="出典の信頼指標">
  <li>出典は省庁・自治体・公庫などの一次資料を優先 (補助金まとめサイトは出典扱いしません)</li>
  <li>専門業務・申請代行ではないことを API レスポンスで明示</li>
@@ -316,7 +316,7 @@
  </ul>
  <details class="trust-early-access" style="margin:8px 0 0;font-size:13px;color:var(--text-muted);">
  <summary style="cursor:pointer;color:var(--text);">登録不要で匿名 3 リクエスト/日まで利用できます</summary>
- <p style="margin:6px 0 0;">REST / MCP の匿名枠は今すぐ利用可能 (<a href="/docs/getting-started/">開発者向け 5 分クイックスタート</a>)。LINE bot は <a href="line.html">提供状況と利用開始通知</a> を案内しています。トライアルは <a href="#path-email-trial">メール認証 (14 日 / 200 req カード不要)</a>、 継続利用は <a href="pricing.html#api-paid">Pricing</a> で ¥3/課金単位 (税込 ¥3.30) の完全従量で API キーを発行できます (既存鍵の管理は <a href="dashboard.html">ダッシュボード</a>)。</p>
+ <p style="margin:6px 0 0;">REST / MCP の匿名枠は今すぐ利用可能 (<a href="/docs/getting-started/">開発者向け 5 分クイックスタート</a>)。LINE 入口は <a href="line.html">提供状況と利用開始通知</a> を案内しています。トライアルは <a href="#path-email-trial">メール認証 (14 日 / 200 req カード不要)</a>、 継続利用は <a href="pricing.html#api-paid">Pricing</a> で ¥3/課金単位 (税込 ¥3.30) の完全従量で API キーを発行できます (既存鍵の管理は <a href="dashboard.html">ダッシュボード</a>)。</p>
  </details>
 
  <!-- §4.1 first-use path: 3 explicit channels with anchor links. Each card is a -->
@@ -428,11 +428,11 @@
  <li>case_studies · <span data-fact="case_studies_total" data-stat-key="case_studies_total">2,286</span></li>
  <li>loan_programs · <span data-fact="loan_programs_total" data-stat-key="loan_programs_total">108</span> (担保 / 個人保証人 / 第三者保証人 三軸分解)</li>
  <li>enforcement_cases · <span data-fact="enforcement_cases_total" data-stat-key="enforcement_cases_total">1,185</span></li>
- <li>laws · <span data-fact="laws_total" data-stat-key="laws_total">9,484</span> 件メタデータ + <span data-fact="laws_fulltext" data-stat-key="laws_fulltext">6,493</span> 件本文インデックス (e-Gov CC-BY)</li>
+ <li>laws · <span data-fact="laws_total" data-stat-key="laws_total">9,484</span> 件の法令検索対象 + <span data-fact="laws_fulltext" data-stat-key="laws_fulltext">6,493</span> 件の本文対応レコード (e-Gov CC-BY)</li>
  <li>tax_rulesets · <span data-fact="tax_rulesets_total" data-stat-key="tax_rulesets_total">50</span></li>
  <li>court_decisions · <span data-fact="court_decisions_total" data-stat-key="court_decisions_total">2,065</span></li>
  <li>bids · <span data-fact="bids_total" data-stat-key="bids_total">362</span></li>
- <li>invoice_registrants · <span data-fact="invoice_registrants_total" data-stat-key="invoice_registrants_total">13,801</span> (PDL v1.0 差分、月次フル取り込みは順次)</li>
+ <li>invoice_registrants · <span data-fact="invoice_registrants_total" data-stat-key="invoice_registrants_total">13,801</span> (PDL v1.0、出典付き)</li>
  <li>関係抽出データベース (法人・制度・法令の関係を構造化) · 50 万件超のエンティティ + 600 万件超の事実情報</li>
  </ul>
  </article>
@@ -464,56 +464,54 @@
 
  <section class="features" aria-labelledby="pillars-title">
  <div class="container">
- <h2 id="pillars-title" class="section-title">5 つのインターフェース</h2>
- <p class="demo-lead" style="margin:-16px 0 28px;">同じバックエンド、違う届け方。利用者層に合わせて選ぶ。</p>
+	 <h2 id="pillars-title" class="section-title">成果物主語で選ぶ</h2>
+	 <p class="demo-lead" style="margin:-16px 0 28px;">API/MCP、Widget、LINE は入口です。実務では、顧問先・案件・取引先ごとに保存できる成果物として使います。</p>
  <div class="cards" style="grid-template-columns:repeat(3,1fr);">
 
- <article class="card" aria-labelledby="pillar-api">
- <h3 id="pillar-api">API + MCP</h3>
- <p class="card-lead">AI 開発者 / 大規模 RAG 用途</p>
- <p><span data-fact="mcp_tools_total" data-stat-key="mcp_tools_total">139</span> MCP ツール を AI から直接呼び出し。回答生成前に一次資料 URL 付き Evidence Packet を先読みできます。</p>
- <ul class="card-list">
- <li>¥<span data-fact="price_per_req" data-stat-key="price_per_req">3</span>/課金単位 税別 (税込 ¥<span data-fact="price_per_req_inc_tax" data-stat-key="price_per_req_inc_tax">3.30</span>)</li>
- <li>匿名 <span data-fact="anonymous_quota_per_day" data-stat-key="anonymous_quota_per_day">3</span> リクエスト/日 (IP 単位) 無料</li>
- <li>Claude Desktop / Cursor は MCP、ChatGPT は Actions 対応</li>
- </ul>
- <p style="margin:14px 0 0;"><a href="/docs/getting-started/">ドキュメントを読む →</a> · <a href="/intel/">Composite intelligence →</a></p>
- </article>
+	 <article class="card" aria-labelledby="pillar-api">
+	 <h3 id="pillar-api">会社フォルダ作成パック</h3>
+	 <p class="card-lead">顧問先 / 取引先 / BPO 一次調査</p>
+	 <p>法人番号・T番号・会社名から、法人同定、インボイス、採択履歴、行政処分候補、known gaps、次に聞く質問を会社フォルダに貼りやすい形で整理します。</p>
+	 <ul class="card-list">
+	 <li>会社フォルダ README / CRM メモ / 顧問先質問票に転記</li>
+	 <li>匿名 <span data-fact="anonymous_quota_per_day" data-stat-key="anonymous_quota_per_day">3</span> リクエスト/日 (IP 単位) 無料</li>
+	 <li>継続運用では <code>X-Client-Tag</code> で会社・案件別に集計</li>
+	 </ul>
+	 <p style="margin:14px 0 0;"><a href="/docs/getting-started/audiences/">会社調査の始め方 →</a> · <a href="/pricing.html">費用例 →</a></p>
+	 </article>
 
- <article class="card" aria-labelledby="pillar-line">
- <h3 id="pillar-line">LINE bot</h3>
- <p class="card-lead">中小企業経営者 / 士業</p>
- <p>スマホの LINE で補助金を自然言語で検索する入口です。REST / MCP を使わない利用者向けに、提供状況と利用開始通知を案内しています。</p>
- <ul class="card-list">
- <li>1 質問 ¥3 (税込 ¥3.30)</li>
- <li>匿名無料枠は 1 日 3 質問まで</li>
- </ul>
- <p style="margin:14px 0 0;"><a href="line.html">LINE bot の案内を見る →</a></p>
- </article>
+	 <article class="card" aria-labelledby="pillar-line">
+	 <h3 id="pillar-line">顧問先月次レビュー</h3>
+	 <p class="card-lead">税理士 / 社労士 / 診断士 / BPO</p>
+	 <p>顧問先ごとに、税制・補助金・助成金・融資候補、締切、変更点、known gaps、顧問先に送る確認文面を月次でまとめます。</p>
+	 <ul class="card-list">
+	 <li>決算前確認、助成金ヒアリング、保存検索の反復運用</li>
+	 <li>月次上限と顧客別タグで原価管理</li>
+	 </ul>
+	 <p style="margin:14px 0 0;"><a href="pricing.html">月次レビューの費用例 →</a></p>
+	 </article>
 
- <article class="card" aria-labelledby="pillar-alerts">
- <h3 id="pillar-alerts">法令改正アラート</h3>
- <p class="card-lead">士業 / 経理 / コンプラ担当</p>
- <p>インボイス・電帳法・労基法など、関心分野の法令改正を E メールで通知。検出済み差分に基づき、制度変更に気づきやすくします。</p>
- <ul class="card-list">
- <li>1 通知 ¥3 (税込 ¥3.30)</li>
- <li>通知ごとの完全従量</li>
- <li>最低金額・契約期間なし</li>
- </ul>
- <p style="margin:14px 0 0;"><a href="alerts.html">アラートを設定 →</a></p>
- </article>
+	 <article class="card" aria-labelledby="pillar-alerts">
+	 <h3 id="pillar-alerts">申請戦略パック</h3>
+	 <p class="card-lead">行政書士 / 診断士 / 補助金BPO</p>
+	 <p>地域・業種・投資額・資金使途から、候補制度、併用注意、必要資料、申請前に聞く質問を提案前の下書きとして整理します。</p>
+	 <ul class="card-list">
+	 <li>採択・受給の保証ではなく、申請前確認の根拠整理</li>
+	 <li>除外条件と known gaps を必ず分けて表示</li>
+	 </ul>
+	 <p style="margin:14px 0 0;"><a href="/playground.html?flow=evidence3">3回でプレビュー →</a></p>
+	 </article>
 
- <article class="card" aria-labelledby="pillar-widget">
- <h3 id="pillar-widget">埋込 ウィジェット</h3>
- <p class="card-lead">税理士 HP / 商工会議所 / 士業事務所</p>
- <p>自社サイトに 1 行 (&lt;script&gt; タグ) で補助金検索を追加。来訪者が自社サイト内で相談先を絞れる。</p>
- <ul class="card-list">
- <li>1 検索 ¥3 (サイト訪問者の検索ごと従量)</li>
- <li>超過分 ¥3/課金単位</li>
- <li>ホワイトラベル版もご相談可能</li>
- </ul>
- <p style="margin:14px 0 0;"><a href="widget.html">ウィジェットを埋め込む →</a></p>
- </article>
+	 <article class="card" aria-labelledby="pillar-widget">
+	 <h3 id="pillar-widget">相談前プレ診断票</h3>
+	 <p class="card-lead">事務所サイト / LINE / 相談入口</p>
+	 <p>来訪者の地域・業種・投資予定を、候補制度、根拠URL、known gaps、専門家に聞く質問付きの相談票に変換します。</p>
+	 <ul class="card-list">
+	 <li>Widget/LINE は検索UIではなく、相談前パックの入口</li>
+	 <li>相談者と専門家の双方にコピーできる質問票を出力</li>
+	 </ul>
+	 <p style="margin:14px 0 0;"><a href="widget.html">診断入口を見る →</a></p>
+	 </article>
 
  <article class="card" aria-labelledby="pillar-advisors">
  <h3 id="pillar-advisors">根拠付き相談パック</h3>
@@ -529,16 +527,16 @@
  </article>
 
  <article class="card" aria-labelledby="pillar-cta" style="background:var(--bg-alt);border-color:var(--accent);">
- <h3 id="pillar-cta">迷ったら</h3>
- <p class="card-lead">比較表と決定木</p>
- <p>個人 / 法人 / 開発者 / 士業、利用者層別に「あなたに合うのは？」を 5 問で診断。典型ユースケース・設定時間も横並びで比較。</p>
- <ul class="card-list">
- <li>5 つのインターフェースの比較表</li>
- <li>利用者層別 決定木</li>
- <li>組合せ推奨 (MCP + LINE 等)</li>
- </ul>
- <p style="margin:14px 0 0;"><a href="products.html">比較ページを見る →</a></p>
- </article>
+	 <h3 id="pillar-cta">自動化実行</h3>
+	 <p class="card-lead">AI agent / BPO / 社内システム</p>
+	 <p>上記の成果物を、OpenAPI / MCP / batch / webhook から繰り返し作成します。実行前見積もり、月次上限、顧客別タグで運用できます。</p>
+	 <ul class="card-list">
+	 <li>cost preview で事前見積もり</li>
+	 <li><code>X-Client-Tag</code> で顧客・案件別に集計</li>
+	 <li>通常 call 1 unit = ¥3 税別</li>
+	 </ul>
+	 <p style="margin:14px 0 0;"><a href="products.html">成果物カタログを見る →</a></p>
+	 </article>
 
  </div>
  </div>
@@ -553,7 +551,7 @@
  <article class="card audience-card" aria-labelledby="aud-vc">
  <h3 id="aud-vc">M&amp;A / VC 専門家</h3>
  <p class="card-lead audience-context">投資先デューデリ + 法人ウォッチ</p>
- <p class="audience-pitch">投資・買収候補の法人番号 1 件で、行政処分歴・補助金採択歴・適格請求書発行事業者登録・関連制度を一括取得。 API のレート制限内でまとめて処理できます (例: 100 件まとめて = 500 リクエスト = ¥1,500 税別)。 法人情報の変更は Webhook で通知できます。</p>
+ <p class="audience-pitch">投資・買収候補の法人番号 1 件で、行政処分歴・補助金採択歴・適格請求書発行事業者登録・関連制度を一括取得。 API のレート制限内でまとめて処理できます (例: 100 件まとめて = 500 units = ¥1,500 税別)。 法人情報の変更は Webhook で通知できます。</p>
  <ul class="card-list">
  <li>行政処分 <span data-fact="enforcement_cases_total" data-stat-key="enforcement_cases_total">1,185</span> + 採択 <span data-fact="case_studies_total" data-stat-key="case_studies_total">2,286</span> + 適格事業者 <span data-fact="invoice_registrants_total" data-stat-key="invoice_registrants_total">13,801</span></li>
  <li>1 案件あたり ¥15〜50、 並列規模に応じてスケール (例: 50 件 = ¥1,500)</li>
@@ -565,7 +563,7 @@
  <article class="card audience-card" aria-labelledby="aud-tax">
  <h3 id="aud-tax">税理士事務所</h3>
  <p class="card-lead audience-context">顧問先一括処理 + 根拠確認レポート下書き</p>
- <p class="audience-pitch">顧問先 1 社あたり月 ¥30〜60 (月 10〜20 リクエスト) の従量制。 顧問先別の根拠確認レポート下書き (PDF + 配信フィード) と、 顧問先別 保存検索の一括実行を 1 アクションで回せます。</p>
+ <p class="audience-pitch">顧問先 1 社あたり月 ¥30〜60 (通常 call 換算で月 10〜20 units) の従量制。 顧問先別の根拠確認レポート下書き (PDF + 配信フィード) と、 顧問先別 保存検索の一括実行を 1 アクションで回せます。</p>
  <ul class="card-list">
  <li>税制ルール <span data-fact="tax_rulesets_total" data-stat-key="tax_rulesets_total">50</span> 件 (措置法・通達リンク付き)</li>
  <li>顧問先 1 社あたり月 ¥30〜60 (顧問先数に応じてスケール)</li>
@@ -577,7 +575,7 @@
  <article class="card audience-card" aria-labelledby="aud-cpa">
  <h3 id="aud-cpa">公認会計士</h3>
  <p class="card-lead audience-context">確認用の根拠整理 + 法令引用の自動連結</p>
- <p class="audience-pitch">監査人確認用の根拠整理・引用索引の下書きを生成。 法令から通達、 国税不服審判所 裁決事例までを引用チェーンとして自動連結します。 月次運用はクライアント規模に応じてスケール (例: 月 1,000〜2,000 リクエスト = ¥3,000〜6,000)。監査意見・監査証明・監査調書の完成物ではありません。</p>
+ <p class="audience-pitch">監査人確認用の根拠整理・引用索引の下書きを生成。 法令から通達、 国税不服審判所 裁決事例までを引用チェーンとして自動連結します。 月次運用はクライアント規模に応じてスケール (例: 月 1,000〜2,000 units = ¥3,000〜6,000)。監査意見・監査証明・監査調書の完成物ではありません。</p>
  <ul class="card-list">
  <li>研究開発税制 + IT導入補助金の会計処理に関連する公表資料候補</li>
  <li>裁決事例 + 通達の引用チェーンを自動付与</li>
@@ -601,9 +599,9 @@
  <article class="card audience-card" aria-labelledby="aud-consultant">
  <h3 id="aud-consultant">補助金コンサルタント</h3>
  <p class="card-lead audience-context">顧問先 横展開 + 採択後の進捗追跡</p>
- <p class="audience-pitch">顧問先 1 社 &times; 月 10 リクエスト &times; ¥3 = <strong>¥30/社/月</strong>。 顧問先数に応じてスケール (例: 200 社 ¥6,000/月 + 事前リサーチ ¥600 = ¥6,600/月)。 API + Slack Webhook で既存の業務フローに連携でき、採択後の日程通知フローにも組み込めます。</p>
+ <p class="audience-pitch">顧問先 1 社 &times; 月 10 units &times; ¥3 = <strong>¥30/社/月</strong>。 顧問先数に応じてスケール (例: 200 社 ¥6,000/月 + 事前リサーチ ¥600 = ¥6,600/月)。 API + Slack Webhook で既存の業務フローに連携でき、採択後の日程通知フローにも組み込めます。</p>
  <ul class="card-list">
- <li>1 顧問先 = ¥30/月 (10 リクエスト × ¥3)</li>
+ <li>1 顧問先 = ¥30/月 (10 units × ¥3)</li>
  <li>併用ルール <span data-fact="exclusion_rules_total" data-stat-key="exclusion_rules_total">181</span> 本で申請前の確認リスクを機械検出</li>
  <li>CSV 一括判定 + 保存検索の月次自動実行</li>
  </ul>
@@ -611,13 +609,13 @@
  </article>
 
  <article class="card audience-card" aria-labelledby="aud-smb">
- <h3 id="aud-smb">中小企業 (LINE)</h3>
- <p class="card-lead audience-context">スマホ LINE で自然言語</p>
- <p class="audience-pitch">小規模事業向け LINE bot。無料枠は 1 日 3 件まで、4 件目以降は 1 質問 ¥3 (税込 ¥3.30)。アプリ不要・設定不要で、合う認定支援機関に繋ぐ機能も付いています。</p>
+ <h3 id="aud-smb">中小企業 (相談前プレ診断)</h3>
+ <p class="card-lead audience-context">Web で確認、LINE は通知チャネル</p>
+ <p class="audience-pitch">小規模事業向けの相談前プレ診断。今すぐ使う導線は Playground / API、LINE は保存検索・締切リマインド・相談パック更新の利用開始通知として準備中です。</p>
  <ul class="card-list">
- <li>友だち追加のみ、 アプリ不要</li>
- <li>無料枠は 1 日 3 件まで (JST 翌日リセット)</li>
- <li>4 件目以降 1 質問 ¥<span data-fact="price_per_req" data-stat-key="price_per_req">3</span> (税別)</li>
+ <li>一次資料・未確認点・専門家への質問を整理</li>
+ <li>LINE は保存検索と締切通知のチャネルとして準備中</li>
+ <li>現行の無料枠と料金は Pricing で確認</li>
  </ul>
  <p style="margin:14px 0 0;"><a class="btn btn-primary" href="/audiences/smb.html">中小企業 向け詳細 →</a></p>
  </article>
@@ -629,7 +627,7 @@
  <ul class="card-list">
  <li>制度の品質ラベル: S 厳選 <span data-fact="tier_s_count" data-stat-key="tier_s_count">114</span> 件 + A 高品質 <span data-fact="tier_a_count" data-stat-key="tier_a_count">1,340</span> 件</li>
  <li>融資商品 <span data-fact="loan_programs_total" data-stat-key="loan_programs_total">108</span> 件 (担保・個人保証人・第三者保証人で分類)</li>
- <li>勉強会用の検索ウィジェット 埋込 (1 検索 ¥3 税別 / 税込 ¥3.30、 サイト訪問者の検索ごと従量)</li>
+ <li>勉強会用の検索ウィジェット 埋込 (通常 1 検索 = 1 課金単位、税別 ¥3 / 税込 ¥3.30、 サイト訪問者の検索ごと従量)</li>
  </ul>
  <p style="margin:14px 0 0;"><a class="btn btn-primary" href="/audiences/admin-scrivener.html">信金・商工会向け →</a></p>
  </article>
@@ -637,7 +635,7 @@
  <article class="card audience-card" aria-labelledby="aud-industry">
  <h3 id="aud-industry">業種別パック (建設 / 製造 / 不動産)</h3>
  <p class="card-lead audience-context">日本標準産業分類で絞り込み、 1 リクエストにまとめ取得</p>
- <p class="audience-pitch">建設業・製造業・不動産業に特化したまとめ取得。 業種別の補助金・通達・国税不服審判所 裁決事例を 1 リクエスト ¥3 でまとめて更新します。 業界誌の特集ページや、 士業のクライアント提案資料が 30 秒で揃います。</p>
+ <p class="audience-pitch">建設業・製造業・不動産業に特化したまとめ取得。 業種別の補助金・通達・国税不服審判所 裁決事例を通常 1 call = 1 課金単位でまとめて更新します。 業界誌の特集ページや、 士業のクライアント提案資料が短時間で揃います。</p>
  <ul class="card-list">
  <li>建設業 36 件 + 製造業 71 件 + 不動産業 9 件</li>
  <li>1 リクエストで 補助金 上位 10 件 + 裁決事例 5 件 + 通達 3 件</li>
@@ -833,7 +831,7 @@
  <section class="code-demo" aria-labelledby="why-title">
  <div class="container">
  <h2 id="why-title" class="section-title">なぜ jpcite か — ¥3/課金単位の中身</h2>
- <p class="demo-lead" style="margin:-16px 0 28px;">1 リクエスト ¥3 (税込 ¥3.30) は、 (a) 複数 DB の横断取得 + (b) 一次資料エビデンス + (c) 鮮度メタデータ をワンコールで提供する対価です。 自前で同等のものを組むと、 公開サイトのスクレイピング・正規化・差分検出・出典管理を継続運用する必要があります。</p>
+ <p class="demo-lead" style="margin:-16px 0 28px;">通常 1 call = 1 課金単位、税込 ¥3.30 は、 (a) 複数 DB の横断取得 + (b) 一次資料エビデンス + (c) 鮮度メタデータ をワンコールで提供する対価です。 自前で同等のものを組むと、 公開サイトのスクレイピング・正規化・差分検出・出典管理を継続運用する必要があります。</p>
  <div class="cards" style="grid-template-columns:repeat(3,1fr);">
 
  <article class="card">
@@ -845,7 +843,7 @@
  <article class="card">
  <h3>(b) 出典 URL + 取得時刻 + content_hash 付エビデンス</h3>
  <p class="card-lead">主要公開レコードに一次資料 URL と取得時刻を付与</p>
- <p>出典は省庁・都道府県・政府系金融機関・商工会などの一次 URL を優先します。 二次集約サイトは出典に登録しません。 出典 URL + 取得時刻 + content_hash がそろうため、 「なぜこの制度がヒットしたか」を顧客・監督官庁・相手方に客観的に示せる監査ログが生成できます。 未接続の根拠は known gaps として明示します。 詳細は <a href="/transparency.html">透明性レポート</a>。</p>
+ <p>出典は省庁・都道府県・政府系金融機関・商工会などの一次 URL を優先します。 二次集約サイトは出典に登録しません。 出典 URL + 取得時刻 + content_hash がそろうため、 「なぜこの制度がヒットしたか」を顧客・監督官庁・相手方に客観的に説明する記録へ転記しやすくなります。 未接続の根拠は known gaps として明示します。 詳細は <a href="/transparency.html">透明性レポート</a>。</p>
  </article>
 
  <article class="card">
@@ -883,19 +881,19 @@
 
  <article class="card" aria-labelledby="who-dev">
  <h3 id="who-dev">開発者 / AI エンジニア</h3>
- <p class="card-lead">推奨: API + MCP</p>
+ <p class="card-lead">推奨: 会社フォルダ / Evidence成果物</p>
  <p>AI・RAG・SaaS に組み込みたい。OpenAPI 3.1、stdio 接続 (MCP)、¥3/課金単位 従量、登録不要の 3 リクエスト/日 で評価できる。</p>
  </article>
 
  <article class="card" aria-labelledby="who-sme">
  <h3 id="who-sme">中小企業経営者</h3>
- <p class="card-lead">推奨: LINE bot + 根拠付き相談パック</p>
- <p>自社が使える補助金を知りたい、申請まで相談したい。LINE で候補を見つけ、一次資料・未確認点・専門家への質問を整理して相談へ進む。無料枠は 1 日 3 件まで、4 件目以降は 1 質問 ¥3 (税込 ¥3.30)、月額固定なし。</p>
+ <p class="card-lead">推奨: 相談前プレ診断票 + 根拠付き相談パック</p>
+ <p>自社が使える補助金を知りたい、申請まで相談したい。Playground / API で候補を見つけ、一次資料・未確認点・専門家への質問を整理して相談へ進む。LINE は保存検索と締切通知の提供状況を案内中。</p>
  </article>
 
  <article class="card" aria-labelledby="who-shigyo">
  <h3 id="who-shigyo">士業 (税理士 / 社労士 / 診断士)</h3>
- <p class="card-lead">推奨: 法令改正アラート + 埋込 ウィジェット + 専門家 登録</p>
+ <p class="card-lead">推奨: 法令改正アラート + 相談前プレ診断票 + 専門家登録</p>
  <p>法改正に気づきやすくする、事務所サイトで集客、jpcite 経由で案件を受ける。 アラート・ウィジェットは 1 通知/検索ごと ¥3 従量、 専門家は成約時のみ支払い。</p>
  </article>
 
@@ -914,10 +912,10 @@
  <h2 id="pricing-summary-title" class="section-title">料金サマリー</h2>
  <div class="table-wrap">
  <table class="pricing-table">
- <caption class="visually-hidden">5 つのインターフェースの料金サマリー</caption>
+ <caption class="visually-hidden">成果物と入口チャネルの料金サマリー</caption>
  <thead>
  <tr>
- <th scope="col">インターフェース</th>
+ <th scope="col">成果物/入口</th>
  <th scope="col">無料枠</th>
  <th scope="col">有料</th>
  <th scope="col">税込</th>
@@ -925,16 +923,16 @@
  </thead>
  <tbody>
  <tr>
- <th scope="row">API + MCP</th>
+ <th scope="row">成果物作成 (API/MCP入口)</th>
  <td><span data-fact="anonymous_quota_per_day" data-stat-key="anonymous_quota_per_day">3</span> req/日 per IP</td>
  <td>¥<span data-fact="price_per_req" data-stat-key="price_per_req">3</span> / billable unit (税別)</td>
  <td>¥<span data-fact="price_per_req_inc_tax" data-stat-key="price_per_req_inc_tax">3.30</span> / billable unit</td>
  </tr>
  <tr>
- <th scope="row">LINE bot</th>
- <td>1 日 3 件まで</td>
- <td>¥3 / 質問 (税別)</td>
- <td>¥3.30 / 質問</td>
+ <th scope="row">LINE通知チャネル</th>
+ <td>利用開始通知</td>
+ <td>提供開始時に明示</td>
+ <td>提供開始時に明示</td>
  </tr>
  <tr>
  <th scope="row">法令改正アラート</th>
@@ -943,7 +941,7 @@
  <td>¥3.30 / 通知</td>
  </tr>
  <tr>
- <th scope="row">埋込 ウィジェット</th>
+ <th scope="row">相談前プレ診断 (Widget入口)</th>
  <td>匿名 3 検索/日まで</td>
  <td>¥3 / 検索 (税別)</td>
  <td>¥3.30 / 検索</td>
@@ -995,7 +993,7 @@
  <div class="container footer-inner">
  <div class="footer-col">
  <p class="footer-brand">jpcite</p>
- <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ <p class="footer-tag">日本の公的制度を、成果物として。</p>
  </div>
  <nav class="footer-nav" aria-label="フッター">
  <a href="about.html">運営について</a>

@@ -264,9 +264,9 @@ def _section_header(programs: int, laws: int, cases: int, generated_at: str) -> 
     return [
         "# jpcite - Japanese public-program database (English LLM index)",
         "",
-        f"> Evidence pre-fetch index for Japanese public programs: {programs:,} normalized LLM-index program rows + {laws:,} laws + {cases:,} adoption case studies. The public search surface has 11,601 searchable program rows; rows whose source title looks like page chrome, attachments, or navigation text are excluded from this compact LLM index.",
+        f"> Evidence pre-fetch index for Japanese public programs: {programs:,} compact public program rows + {laws:,} laws + {cases:,} adoption case studies. The public search surface has 11,601 searchable program rows; this compact LLM index excludes rows that are not useful for answer generation.",
         "> Use this before answer generation to retrieve cited facts, source URLs, fetched_at metadata, provenance, and compatibility-rule context. It is not an answer generator.",
-        "> Token and cost impact is workload-dependent; jpcite API pricing is fixed at ¥3 per billable unit. Normal search/detail calls are 1 unit.",
+        "> Token and cost impact is workload-dependent. Current public self-serve pricing is ¥3 per billable unit; normal search/detail calls are 1 unit. See Pricing for the latest terms.",
         "> Program names, law titles, and case fields stay in Japanese where applicable.",
         "> Publisher: jpcite / Canonical: https://jpcite.com",
         f"> Generated: {generated_at}",
@@ -301,6 +301,7 @@ def _section_pricing() -> list[str]:
         "",
         "- Anonymous tier: 3 requests per day per IP, free. Resets at JST next-day 00:00.",
         "- Authenticated tier: ¥3 per billable unit, billed monthly via Stripe. Monthly budget caps and protective rate limits may apply.",
+        "- Authenticated AI agents may send `X-API-Key` or `Authorization: Bearer`, plus `X-Client-Tag` for customer/project attribution. Use `Idempotency-Key` on POST retries and `X-Cost-Cap-JPY` for batch or fanout budget caps.",
         "- jpcite returns source-linked, compact evidence and precomputed decision support so callers can spend fewer steps collecting and normalizing Japanese public-program data.",
         "- Support and enterprise terms are described in the public documentation.",
         "",
@@ -319,7 +320,7 @@ def _section_audiences() -> list[str]:
         "",
         "1. Tax accountants (税理士) - Claude Desktop + jpcite API. Primary tools: search_tax_incentives, evaluate_tax_applicability, list_tax_sunset_alerts.",
         "2. Certified administrative scriveners (行政書士) - one MCP call resolves subsidy + loan + permit eligibility. Primary tools: search_programs, search_loans_am, search_certifications.",
-        "3. SMB owners (中小企業経営者) - LINE chatbot frontends and internal assistants. Anonymous usage is limited to 3 requests per day per IP; authenticated usage is ¥3 per billable unit.",
+        "3. SMB owners (中小企業経営者) - web/API-assisted subsidy, loan, tax, and public-record checks through internal assistants. LINE is currently a waitlist and notification channel; use web/API workflows for metered searches.",
         "4. VC and M&A advisors - one query by 法人番号 returns enforcement history + adoption track record + invoice-registrant status. Primary tools: search_enforcement_cases, search_acceptance_stats_am, search_invoice_registrants.",
         "5. AI agent developers - 139 MCP tools, ¥3 per billable unit, 3 anonymous requests per day. Primary tools: full surface area; see https://jpcite.com/docs/mcp-tools/.",
         "",
@@ -350,7 +351,7 @@ def _section_programs(rows: list[sqlite3.Row]) -> list[str]:
     """Compact pipe-delimited program inventory. Japanese names preserved."""
     count = len(rows)
     out: list[str] = [
-        f"## All Programs ({count:,} normalized LLM-index program rows, compact)",
+        f"## All Programs ({count:,} compact public program rows)",
         "",
         "Generated from the current public jpcite dataset.",
         "Format: <unified_id> | <primary_name> | <program_kind> | <amount_max_man_yen> | <source_url> | <source_fetched_at>",

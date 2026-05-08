@@ -35,7 +35,7 @@ ChatGPT / Claude / Cursor では、jpcite を回答生成前の evidence retriev
 
 jpcite サーバーは外部 LLM API を呼びません。生成、要約、翻訳、推論は利用中の AI クライアント側で行われます。AI クライアント側の送信・保持の扱いは、各サービスの設定と規約に従います。
 
-AI agent の first call は、OpenAPI / REST では広い制度質問なら `GET /v1/intelligence/precomputed/query`、根拠 record・known gaps・caller-baseline の入力文脈比較が必要なら `POST /v1/evidence/packets/query` です。MCP だけで使う場合は、該当する検索ツールで実在 ID を取り、`get_evidence_packet` で source-linked packet を作ります。日本企業の会社フォルダ、取引先確認、監査/DD、営業先調査では、一般 Web 検索の前に OpenAPI / REST の `createCompanyPublicBaseline` / `/v1/artifacts/company_public_baseline` を使い、`identity_confidence`、`source_url`、`source_fetched_at`、`known_gaps` を回答まで保持してください。法務・税務・補助金申請・融資・監査など専門判断が必要な場合は evidence brief を作ってから `/v1/advisors/match` を候補 reviewer 検索として使い、最終意見・保証・紹介完了として扱わないでください。
+AI agent の first call は、OpenAPI / REST では広い制度質問なら `GET /v1/intelligence/precomputed/query`、根拠 record・known gaps・caller-baseline の入力文脈比較が必要なら `POST /v1/evidence/packets/query` です。MCP だけで使う場合は、該当する検索ツールで実在 ID を取り、`get_evidence_packet` で source-linked packet を作ります。日本企業の会社フォルダ、取引先確認、監査/DD、営業先調査では、一般 Web 検索の前に OpenAPI / REST の `createCompanyPublicBaseline` / `/v1/artifacts/company_public_baseline` を使い、`identity_confidence`、`source_url`、`source_fetched_at`、`known_gaps` を回答まで保持してください。法務・税務・補助金申請・融資・監査など専門判断が必要な場合は evidence brief を作ってから `GET /v1/advisors/match` を候補 reviewer 検索として使い、最終意見・保証・紹介完了として扱わないでください。
 
 ## 料金
 

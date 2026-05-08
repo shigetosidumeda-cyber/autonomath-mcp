@@ -71,6 +71,20 @@
     color: var(--muted);
     margin: 6px 0 0;
   }
+  .static-widget-preview {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #fff;
+    padding: 14px;
+  }
+  .panel.dark .static-widget-preview {
+    border-color: #334155;
+    background: #111827;
+  }
+  .static-widget-preview strong {
+    display: block;
+    margin: 0 0 4px;
+  }
 </style>
 <meta property="og:title" content="jpcite Embed Widget — Demo">
 <meta property="og:description" content="jpcite 補助金検索 widget のスタンドアロンデモ。light / dark / カスタムテーマを並べて表示します。">
@@ -98,54 +112,50 @@
 
   <h2>Light theme (default)</h2>
   <div class="panel">
-    <div data-jpcite-widget
-         data-key="wgt_live_00000000000000000000000000000000"
-         data-theme="light"
-         data-filters="prefecture,industry,target"
-         data-limit="5"></div>
+    <div class="static-widget-preview" data-jpcite-preview data-example-key="wgt_live_YOUR_KEY">
+      <strong>東京都 / 飲食店 / 設備投資</strong>
+      一次資料 URL、取得時刻、締切候補、相談前に確認する質問を表示する想定です。
+    </div>
     <p class="note">
-      上の widget はデモキーで動作しています。実 API へのリクエストは
-      origin 一致チェックで拒否される想定です。実データが出ない場合、
-      本番キーでは期待通り表示されます。
+      このページは静的な表示例です。実 API へのリクエストは発生しません。
+      実サイトでは発行済み key と許可 origin が一致した場合だけ結果が返ります。
     </p>
   </div>
 
   <h2>Dark theme</h2>
   <div class="panel dark">
-    <div data-jpcite-widget
-         data-key="wgt_live_00000000000000000000000000000000"
-         data-theme="dark"
-         data-filters="prefecture,industry,target"
-         data-limit="5"></div>
+    <div class="static-widget-preview" data-jpcite-preview data-example-key="wgt_live_YOUR_KEY">
+      <strong>製造業 / 省エネ投資</strong>
+      ダークテーマでも同じ根拠付き候補カードを表示する想定です。
+    </div>
   </div>
 
   <h2>Prefecture filter のみ (コンパクト版)</h2>
   <div class="panel">
-    <div data-jpcite-widget
-         data-key="wgt_live_00000000000000000000000000000000"
-         data-theme="light"
-         data-filters="prefecture"
-         data-limit="3"></div>
+    <div class="static-widget-preview" data-jpcite-preview data-example-key="wgt_live_YOUR_KEY">
+      <strong>都道府県だけで絞り込み</strong>
+      小さな相談ページに置くコンパクト表示の例です。
+    </div>
   </div>
 
   <h2>English UI (language=en)</h2>
   <div class="panel">
-    <div data-jpcite-widget
-         data-key="wgt_live_00000000000000000000000000000000"
-         data-theme="light"
-         data-language="en"
-         data-filters="prefecture,industry,target"
-         data-limit="5"></div>
+    <div class="static-widget-preview" data-jpcite-preview data-example-key="wgt_live_YOUR_KEY">
+      <strong>English UI</strong>
+      English labels can be used while preserving Japanese primary-source links.
+    </div>
   </div>
 
   <h2>Programmatic (JS API)</h2>
   <div class="panel">
-    <div id="programmatic-target"></div>
+    <div id="programmatic-target" class="static-widget-preview">
+      Programmatic mount point example. Paste the code below into your own allowlisted origin.
+    </div>
   </div>
 
   <pre><code>new Jpcite.Widget({
   container: '#programmatic-target',
-  key: 'wgt_live_00000000000000000000000000000000',
+  key: 'wgt_live_YOUR_KEY',
   filters: ['industry', 'prefecture'],
   theme: 'light',
   language: 'ja',
@@ -163,13 +173,13 @@
   </p>
 </div>
 
-<script src="jpcite.js"></script>
+<!-- This demo page is static; it intentionally does not load jpcite.js. -->
 <script>
 (function () {
   if (!window.Jpcite || !window.Jpcite.Widget) return;
   new Jpcite.Widget({
     container: "#programmatic-target",
-    key: "wgt_live_00000000000000000000000000000000",
+    key: "wgt_live_YOUR_KEY",
     filters: ["industry", "prefecture"],
     theme: "light",
     language: "ja",

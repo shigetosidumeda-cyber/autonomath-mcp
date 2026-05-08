@@ -317,18 +317,19 @@
  </section>
 
  <section class="demo-wrap container">
- <h2>Live demo (production JS, language=en)</h2>
- <div data-jpcite-widget
- data-key="wgt_live_00000000000000000000000000000000"
- data-theme="light"
- data-language="en"
- data-filters="prefecture,industry,target"
- data-limit="5"></div>
+ <h2>Static example (no API call)</h2>
+ <div class="feature" data-jpcite-preview data-example-key="wgt_live_YOUR_KEY">
+ <h3>Tokyo / restaurant / equipment investment</h3>
+ <p>
+ Example output includes source URLs, fetched timestamps, deadline candidates,
+ and prescreen questions. This page does not call <code>/v1/widget/*</code>.
+ </p>
+ </div>
  <p class="tokushoho-note">
- The above is a demo render. With a production key whose origin is allowlisted,
- live results render on your site. See the
+ With a production key whose origin is allowlisted, live results render on your site.
+ See the
  <a href="../widget/demo.html">widget demo page</a> for additional themes
- (light / dark / programmatic).
+ (static light / dark / programmatic examples).
  </p>
  </section>
 

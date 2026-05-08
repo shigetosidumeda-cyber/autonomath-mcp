@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>中小企業 経営者向け jpcite — LINE で 1 日 3 件 free + ¥3/質問</title>
-<meta name="description" content="SMB (中小企業) 経営者向け jpcite。LINE bot で「うちの業種の補助金ある?」と聞くだけ、設定なし、アプリ不要。無料枠は 1 日 3 件まで、超えても 1 質問 ¥3 (税別)。合う認定支援機関・税理士に繋ぐ機能あり。">
+<title>中小企業 経営者向け jpcite — 相談前プレ診断とLINE通知</title>
+<meta name="description" content="SMB (中小企業) 経営者向け jpcite。Playground / API で補助金・融資候補を根拠付きで確認し、LINE は保存検索・締切リマインド・相談パック更新の通知チャネルとして準備中です。">
 
-<meta property="og:title" content="SMB 経営者向け jpcite — LINE bot · 1 日 3 件まで無料 · ¥3/質問">
-<meta property="og:description" content="LINE bot で補助金検索、1 日 3 件まで無料。合う士業に繋ぐ。">
+<meta property="og:title" content="SMB 経営者向け jpcite — 相談前プレ診断とLINE通知">
+<meta property="og:description" content="補助金・融資候補を根拠付きで確認し、LINE通知の提供状況も確認できます。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/audiences/smb">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -19,7 +19,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="SMB 経営者向け jpcite">
-<meta name="twitter:description" content="LINE bot · 1 日 3 件まで無料 · ¥3/質問。">
+<meta name="twitter:description" content="相談前プレ診断とLINE通知の提供状況。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/audiences/smb">
@@ -53,9 +53,9 @@
 {
   "@context": "https://schema.org",
   "@type": "Service",
-  "serviceType": "中小企業向け補助金検索 LINE bot",
+  "serviceType": "中小企業向け相談前プレ診断",
   "name": "jpcite for SMB Owners",
-  "description": "SMB 経営者向けの jpcite LINE bot。設定なし、アプリ不要、自然言語で補助金・融資を発見。無料枠は 1 日 3 件まで、超えても 1 質問 ¥3。合う認定支援機関・税理士に繋ぐ。",
+  "description": "SMB 経営者向けの jpcite 相談前プレ診断。補助金・融資候補を根拠付きで確認し、LINE は保存検索・締切リマインド・相談パック更新の通知チャネルとして準備中。",
   "provider": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
@@ -71,17 +71,17 @@
   "offers": [
     {
       "@type": "Offer",
-      "name": "LINE bot Free",
+      "name": "相談前プレ診断 評価枠",
       "price": "0",
       "priceCurrency": "JPY",
-      "description": "1 日 3 件まで無料"
+      "description": "現行の評価枠は Pricing に掲載"
     },
     {
       "@type": "Offer",
-      "name": "LINE bot 従量",
-      "price": "3",
+      "name": "LINE通知チャネル",
+      "price": "0",
       "priceCurrency": "JPY",
-      "description": "1 質問 ¥3 (税別)"
+      "description": "利用開始通知を受付中"
     }
   ]
 }
@@ -92,8 +92,8 @@
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    {"@type": "Question", "name": "登録は必要ですか?", "acceptedAnswer": {"@type": "Answer", "text": "LINE 友だち追加だけ。1 日 3 件まではカード登録不要。"}},
-    {"@type": "Question", "name": "4 件目から課金されますか?", "acceptedAnswer": {"@type": "Answer", "text": "はい。1 日 4 件目以降は 1 質問 ¥3 (税込 ¥3.30)。"}},
+    {"@type": "Question", "name": "登録は必要ですか?", "acceptedAnswer": {"@type": "Answer", "text": "Playground / API の評価導線を利用できます。LINE は利用開始通知を受け付けています。"}},
+    {"@type": "Question", "name": "LINEで有料質問できますか?", "acceptedAnswer": {"@type": "Answer", "text": "現時点の LINE は通知チャネルとして準備中です。検索や成果物作成は Playground / API 側をご利用ください。"}},
     {"@type": "Question", "name": "申請まで誰に頼めばいいですか?", "acceptedAnswer": {"@type": "Answer", "text": "「相談したい」を選ぶと、地域・業種に合う認定支援機関・税理士・行政書士のリストが届きます。"}}
   ]
 }
@@ -142,7 +142,7 @@
  <span aria-current="page">中小企業経営者向け</span>
  </nav>
  <h1 id="hero-title">中小企業経営者向け</h1>
- <p class="hero-sub">LINE で「うちの業種の補助金ある?」と聞くだけ。無料枠は 1 日 3 件まで、4 件目以降は 1 質問 ¥3 (税込 ¥3.30)。</p>
+ <p class="hero-sub">補助金・融資候補を根拠付きで確認し、相談前に専門家へ渡す質問まで整理。LINE は保存検索・締切リマインドの通知チャネルとして準備中です。</p>
  </div>
  </section>
 
@@ -150,13 +150,13 @@
  <div class="container">
  <h2 id="features-title" class="visually-hidden">中小企業経営者向け 主要機能</h2>
  <ul class="card-list" style="font-size:16px;line-height:2;">
- <li>LINE 友だち追加だけ。アプリ・メール登録 不要</li>
+ <li>Playground / API で相談前プレ診断を確認</li>
  <li>都道府県・業種で適合制度を抽出、出典 URL と申請期限付き</li>
  <li>合う認定支援機関・税理士・行政書士に繋ぐ機能</li>
- <li>無料枠は 1 日 3 件まで、超えたら 1 質問 ¥3 (税込 ¥3.30)</li>
+ <li>LINE は保存検索・締切リマインド・相談パック更新の通知として準備中</li>
  </ul>
  <div class="cta-row" style="margin-top:24px;">
- <a class="btn btn-primary" href="../line.html?src=audiences_smb">LINE bot の提供状況を見る <span aria-hidden="true">&rarr;</span></a>
+ <a class="btn btn-primary" href="../line.html?src=audiences_smb">LINE通知の提供状況を見る <span aria-hidden="true">&rarr;</span></a>
  <a class="btn btn-secondary" href="../pricing.html?src=audiences_smb">料金</a>
  </div>
  </div>
@@ -168,7 +168,7 @@
  <div class="container footer-inner">
  <div class="footer-col">
  <p class="footer-brand">jpcite</p>
- <p class="footer-tag">日本の公的制度を、5 つのインターフェースで。</p>
+ <p class="footer-tag">日本の公的制度を、根拠付き成果物に。</p>
  </div>
  <nav class="footer-nav" aria-label="フッター">
  <a href="../about.html">運営について</a>

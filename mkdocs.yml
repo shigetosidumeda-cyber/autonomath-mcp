@@ -8,7 +8,7 @@
 # together from a single `site/` upload).
 
 site_name: jpcite
-site_description: jpcite — 日本の制度 (補助金 / 融資 / 税制 / 認定制度) 11,601件検索対象 (登録総数14,472) + 採択事例 2,286 + 融資 108 + 行政処分 1,185 を出典付きで返す REST + MCP API。現在の公開料金と匿名枠はPricingに掲載。
+site_description: jpcite — 日本の公的制度・法人・法令・行政処分データを、出典URLと取得時点付きのEvidence Packetとして返す REST + MCP API。現在の公開料金と匿名枠はPricingに掲載。
 site_author: jpcite
 site_url: "https://jpcite.com/docs/"
 copyright: "© 2026 jpcite"
@@ -274,6 +274,7 @@ nav:
 
   - 入門:
       - はじめに: getting-started.md
+      - 利用者別の始め方: getting-started/audiences.md
       - 料金: pricing.md
       - FAQ: faq.md
       - 正直な能力と限界: honest_capabilities.md
