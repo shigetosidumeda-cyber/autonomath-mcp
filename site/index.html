@@ -57,12 +57,12 @@
   "alternateName": "jpcite",
   "description": "GPT/Claude/Cursor が回答を書く前に、日本の公的制度・法令・判例・税務情報を一次資料 URL・取得時刻付き Evidence Packet として取得する REST + MCP API。source_url・source_fetched_at・known_gaps と条件付きの input-context estimates で、回答前の根拠確認と入力文脈設計を支援します。",
   "applicationCategory": "BusinessApplication",
-  "operatingSystem": "Cross-platform (REST API, MCP stdio, LINE, Web, Email)",
+  "operatingSystem": "Cross-platform (REST API, MCP stdio, Web, Email)",
   "url": "https://jpcite.com/",
   "inLanguage": "ja",
   "offers": [
     {"@type": "Offer", "name": "成果物作成 (API/MCP入口)", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
-    {"@type": "Offer", "name": "相談前プレ診断 (LINE入口)", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
+    {"@type": "Offer", "name": "相談前プレ診断", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
     {"@type": "Offer", "name": "法令改正アラート", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
     {"@type": "Offer", "name": "埋込ウィジェット", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
     {"@type": "Offer", "name": "Evidence-to-Expert Handoff", "url": "https://jpcite.com/advisors", "description": "根拠付き相談パックを専門家レビュー前の evidence brief として渡す導線"}
@@ -221,7 +221,7 @@
     },
     {
       "@type": "Product",
-      "name": "jpcite 相談前プレ診断 LINE入口",
+      "name": "jpcite 相談前プレ診断",
       "description": "保存検索、締切リマインド、相談パック更新の通知チャネル。SME 経営者 / 士業向け。",
       "brand": {"@type": "Brand", "name": "jpcite"},
       "url": "https://jpcite.com/line",
@@ -238,7 +238,7 @@
     {
       "@type": "Product",
       "name": "jpcite 埋込 Widget",
-      "description": "自社サイトに 1 行で補助金検索を埋め込み。税理士 HP / 商工会議所 / 士業事務所向け。",
+      "description": "自社サイトに相談前プレ診断入口を設置。税理士 HP / 商工会議所 / 士業事務所向け。",
       "brand": {"@type": "Brand", "name": "jpcite"},
       "url": "https://jpcite.com/widget",
       "offers": {"@type": "Offer", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"}
@@ -316,7 +316,7 @@
  </ul>
  <details class="trust-early-access" style="margin:8px 0 0;font-size:13px;color:var(--text-muted);">
  <summary style="cursor:pointer;color:var(--text);">登録不要で匿名 3 リクエスト/日まで利用できます</summary>
- <p style="margin:6px 0 0;">REST / MCP の匿名枠は今すぐ利用可能 (<a href="/docs/getting-started/">開発者向け 5 分クイックスタート</a>)。LINE 入口は <a href="line.html">提供状況と利用開始通知</a> を案内しています。トライアルは <a href="#path-email-trial">メール認証 (14 日 / 200 req カード不要)</a>、 継続利用は <a href="pricing.html#api-paid">Pricing</a> で ¥3/課金単位 (税込 ¥3.30) の完全従量で API キーを発行できます (既存鍵の管理は <a href="dashboard.html">ダッシュボード</a>)。</p>
+ <p style="margin:6px 0 0;">REST / MCP の匿名枠は今すぐ利用可能 (<a href="/docs/getting-started/">開発者向け 5 分クイックスタート</a>)。通知チャネルは <a href="line.html">保存検索・締切リマインド</a> を案内しています。トライアルは <a href="#path-email-trial">メール認証 (14 日 / 200 req カード不要)</a>、 継続利用は <a href="pricing.html#api-paid">Pricing</a> で ¥3/課金単位 (税込 ¥3.30) の完全従量で API キーを発行できます (既存鍵の管理は <a href="dashboard.html">ダッシュボード</a>)。</p>
  </details>
 
  <!-- §4.1 first-use path: 3 explicit channels with anchor links. Each card is a -->
@@ -465,7 +465,7 @@
  <section class="features" aria-labelledby="pillars-title">
  <div class="container">
 	 <h2 id="pillars-title" class="section-title">成果物主語で選ぶ</h2>
-	 <p class="demo-lead" style="margin:-16px 0 28px;">API/MCP、Widget、LINE は入口です。実務では、顧問先・案件・取引先ごとに保存できる成果物として使います。</p>
+	 <p class="demo-lead" style="margin:-16px 0 28px;">API/MCP、Widget、通知は入口です。実務では、顧問先・案件・取引先ごとに保存できる成果物として使います。</p>
  <div class="cards" style="grid-template-columns:repeat(3,1fr);">
 
 	 <article class="card" aria-labelledby="pillar-api">
@@ -504,10 +504,10 @@
 
 	 <article class="card" aria-labelledby="pillar-widget">
 	 <h3 id="pillar-widget">相談前プレ診断票</h3>
-	 <p class="card-lead">事務所サイト / LINE / 相談入口</p>
+	 <p class="card-lead">事務所サイト / 相談入口</p>
 	 <p>来訪者の地域・業種・投資予定を、候補制度、根拠URL、known gaps、専門家に聞く質問付きの相談票に変換します。</p>
 	 <ul class="card-list">
-	 <li>Widget/LINE は検索UIではなく、相談前パックの入口</li>
+	 <li>Widget は検索だけで終わらせず、相談前パックの入口として使う</li>
 	 <li>相談者と専門家の双方にコピーできる質問票を出力</li>
 	 </ul>
 	 <p style="margin:14px 0 0;"><a href="widget.html">診断入口を見る →</a></p>
@@ -610,11 +610,11 @@
 
  <article class="card audience-card" aria-labelledby="aud-smb">
  <h3 id="aud-smb">中小企業 (相談前プレ診断)</h3>
- <p class="card-lead audience-context">Web で確認、LINE は通知チャネル</p>
- <p class="audience-pitch">小規模事業向けの相談前プレ診断。今すぐ使う導線は Playground / API、LINE は保存検索・締切リマインド・相談パック更新の利用開始通知として準備中です。</p>
+ <p class="card-lead audience-context">Web で確認、通知はメールで受け取る</p>
+ <p class="audience-pitch">小規模事業向けの相談前プレ診断。今すぐ使う導線は Playground / API / Widget です。保存検索・締切リマインド・相談パック更新はメール通知から始められます。</p>
  <ul class="card-list">
  <li>一次資料・未確認点・専門家への質問を整理</li>
- <li>LINE は保存検索と締切通知のチャネルとして準備中</li>
+ <li>保存検索と締切通知はメールで受け取れる</li>
  <li>現行の無料枠と料金は Pricing で確認</li>
  </ul>
  <p style="margin:14px 0 0;"><a class="btn btn-primary" href="/audiences/smb.html">中小企業 向け詳細 →</a></p>
@@ -888,13 +888,13 @@
  <article class="card" aria-labelledby="who-sme">
  <h3 id="who-sme">中小企業経営者</h3>
  <p class="card-lead">推奨: 相談前プレ診断票 + 根拠付き相談パック</p>
- <p>自社が使える補助金を知りたい、申請まで相談したい。Playground / API で候補を見つけ、一次資料・未確認点・専門家への質問を整理して相談へ進む。LINE は保存検索と締切通知の提供状況を案内中。</p>
+ <p>自社が使える補助金を知りたい、申請まで相談したい。Playground / API で候補を見つけ、一次資料・未確認点・専門家への質問を整理して相談へ進む。保存検索と締切通知はメールで受け取れる。</p>
  </article>
 
  <article class="card" aria-labelledby="who-shigyo">
  <h3 id="who-shigyo">士業 (税理士 / 社労士 / 診断士)</h3>
  <p class="card-lead">推奨: 法令改正アラート + 相談前プレ診断票 + 専門家登録</p>
- <p>法改正に気づきやすくする、事務所サイトで集客、jpcite 経由で案件を受ける。 アラート・ウィジェットは 1 通知/検索ごと ¥3 従量、 専門家は成約時のみ支払い。</p>
+ <p>法改正に気づきやすくする、事務所サイトで集客、jpcite 経由で案件を受ける。 アラートは 1 通知ごと、ウィジェットは正常処理された検索リクエストごとに ¥3 従量。専門家は弁護士カテゴリを除き成約時のみ支払い。</p>
  </article>
 
  <article class="card" aria-labelledby="who-biz">
@@ -929,10 +929,10 @@
  <td>¥<span data-fact="price_per_req_inc_tax" data-stat-key="price_per_req_inc_tax">3.30</span> / billable unit</td>
  </tr>
  <tr>
- <th scope="row">LINE通知チャネル</th>
- <td>利用開始通知</td>
- <td>提供開始時に明示</td>
- <td>提供開始時に明示</td>
+ <th scope="row">メール通知チャネル</th>
+ <td>保存検索・締切リマインド</td>
+ <td>無料枠内または通常従量</td>
+ <td>通知内容により表示</td>
  </tr>
  <tr>
  <th scope="row">法令改正アラート</th>
@@ -943,12 +943,12 @@
  <tr>
  <th scope="row">相談前プレ診断 (Widget入口)</th>
  <td>Widget は公開APIの匿名枠とは別</td>
- <td>¥3 / 成功検索 (税別)</td>
- <td>¥3.30 / 成功検索</td>
+ <td>¥3 / 正常処理された検索リクエスト (税別)</td>
+ <td>¥3.30 / 正常処理された検索リクエスト</td>
  </tr>
  <tr>
  <th scope="row">根拠付き相談パック</th>
- <td>相談者は利用無料</td>
+ <td>相談者は直接課金なし</td>
  <td>¥3,000 / 成約 (専門家払い、弁護士カテゴリ除く)</td>
  <td>¥3,300 / 成約</td>
  </tr>

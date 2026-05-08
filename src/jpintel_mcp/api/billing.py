@@ -507,7 +507,9 @@ _SERVICE_CHECKOUT_REDIRECT_PATHS = frozenset(
         "/pricing.html",
         "/en/pricing.html",
         "/widget.html",
+        "/widget/success.html",
         "/en/widget.html",
+        "/en/widget/success.html",
         "/alerts.html",
         "/en/alerts.html",
     }

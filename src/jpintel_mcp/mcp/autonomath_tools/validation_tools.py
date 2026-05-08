@@ -321,32 +321,31 @@ def validate(
         Field(
             default="intake",
             description=(
-                "Rule applies_to scope. Default 'intake' selects the 6 "
-                "generic predicates ported from autonomath.intake_consistency_rules."
+                "Rule applies_to scope. Default 'intake' selects the configured "
+                "generic validation predicates."
             ),
         ),
     ] = "intake",
 ) -> dict[str, Any]:
     """[VALIDATE] applicant_data を am_validation_rule の active 述語で評価し、
-    rule 単位の passed/failed/deferred を返す (deferred = jpintel 内で評価できない外部依存述語).
+    rule 単位の passed/failed/deferred を返す (deferred = jpcite で評価できない外部依存述語).
 
     WHAT:
       ``am_validation_rule`` の active=1 / effective window 有効 / scope 適合 rule を選び、
-      python_dispatch 述語のうち ``autonomath.intake.<known>`` のものはローカル再実装で評価、
+      python_dispatch 述語のうち既知の intake validation 述語はローカル実装で評価、
       それ以外 (sql_expr / json_logic / 未登録 dispatch) は ``passed=null`` で deferred 返却。
       評価結果は ``am_validation_result`` に ``INSERT OR IGNORE``、同 (rule, entity, applicant_hash)
       は SELECT-first で cache 返却。
 
     WHEN:
       - LLM が "この applicant_data に sanity 違反がないか" 一括 check したい
-      - operator console に出す前段で training_hours/work_days/weekly_hours の桁ミス除去
+      - 画面やワークフローに出す前段で training_hours/work_days/weekly_hours の桁ミス除去
       - 申請額 50 億超 / 開始年 ±20/+10 範囲外 / 生年-自己申告年齢 1y 以上ずれ の検出
 
     WHEN NOT:
       - 制度個別の eligibility 判定 → check_exclusions / search_programs
       - 文書粒度の fact-check → 別 tool
-      - sql_expr / json_logic 述語が登録されたら本 tool では deferred 返却なので
-        jpcite operator workflow 経由が必要
+      - sql_expr / json_logic 述語が登録されたら本 tool では deferred 返却
 
     RETURNS (envelope):
       {

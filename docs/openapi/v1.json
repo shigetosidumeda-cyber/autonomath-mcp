@@ -6182,7 +6182,7 @@
       },
       "DeepHealthResponse": {
         "additionalProperties": true,
-        "description": "``GET /v1/am/health/deep`` \u2014 10-check aggregate + Sentry probe.\n\n``sentry_active`` (read-only) reflects whether ``_init_sentry`` succeeded\nat lifespan startup. False when Sentry is not configured or the production\nruntime controlled was not satisfied. Aggregate ``status`` is\nintentionally unaffected \u2014 Sentry being dark is a meta-signal for the\nsupport team, not a fail/warn for the API itself.",
+        "description": "``GET /v1/am/health/deep`` \u2014 10-check aggregate + Sentry probe.\n\n``sentry_active`` (read-only) reflects whether ``_init_sentry`` succeeded\nat lifespan startup. False when Sentry is not configured or the production\nruntime controlled was not satisfied. Aggregate ``status`` is\nintentionally unaffected because error reporting availability is\nseparate from data/API health.",
         "properties": {
           "checks": {
             "additionalProperties": true,
@@ -6209,7 +6209,7 @@
                 "type": "null"
               }
             ],
-            "description": "True iff Sentry SDK initialised at API lifespan startup.",
+            "description": "True when error reporting was initialised at API startup.",
             "title": "Sentry Active"
           },
           "status": {
@@ -15986,6 +15986,63 @@
         "title": "WebhookResponse",
         "type": "object"
       },
+      "WidgetKeyIssueRequest": {
+        "properties": {
+          "session_id": {
+            "maxLength": 255,
+            "minLength": 3,
+            "title": "Session Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "session_id"
+        ],
+        "title": "WidgetKeyIssueRequest",
+        "type": "object"
+      },
+      "WidgetKeyIssueResponse": {
+        "properties": {
+          "allowed_origins": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Allowed Origins",
+            "type": "array"
+          },
+          "customer_id": {
+            "title": "Customer Id",
+            "type": "string"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "plan": {
+            "title": "Plan",
+            "type": "string"
+          },
+          "widget_key": {
+            "title": "Widget Key",
+            "type": "string"
+          }
+        },
+        "required": [
+          "widget_key",
+          "plan",
+          "allowed_origins",
+          "customer_id"
+        ],
+        "title": "WidgetKeyIssueResponse",
+        "type": "object"
+      },
       "WidgetSignupRequest": {
         "properties": {
           "cancel_url": {
@@ -17927,7 +17984,7 @@
     },
     "/v1/am/enforcement": {
       "get": {
-        "description": "Compliance / DD lookup: is this entity currently barred from \u88dc\u52a9\u91d1 / \u52a9\u6210\u91d1 receipt under \u88dc\u52a9\u91d1\u7b49\u9069\u6b63\u5316\u6cd5 \u00a717 / \u5165\u672d\u53c2\u52a0\u8cc7\u683c \u505c\u6b62 / \u305d\u306e\u4ed6 \u884c\u653f\u51e6\u5206? Query by 13-digit `houjin_bangou` (preferred \u2014 exact match) or `target_name` (fallback matching match against the published \u5bfe\u8c61\u4e8b\u696d\u8005\u540d). Pass `as_of_date='YYYY-MM-DD'` to check status as of a historical date \u2014 \u6392\u9664\u671f\u9593 windows are time-bounded so 'today' vs '2024-06-01' can give different verdicts.\n\n**Backed by:** 1,185 \u884c\u653f\u51e6\u5206 cases (\u4f1a\u8a08\u691c\u67fb\u9662 + ministry \u516c\u8868) + `am_enforcement_detail` (22,258 records; grant_refund / subsidy_exclude / fine breakdown).\n\n**Use this BEFORE awarding subsidies, before extending credit, before contracting with a vendor.** A clear-status response (`is_currently_barred=false`) lists past closed cases for reference; an active match returns the disclosed_until (\u6392\u9664\u671f\u9593 \u7d42\u4e86\u65e5) so the caller can plan timing.",
+        "description": "Compliance / DD lookup: is this entity currently barred from \u88dc\u52a9\u91d1 / \u52a9\u6210\u91d1 receipt under \u88dc\u52a9\u91d1\u7b49\u9069\u6b63\u5316\u6cd5 \u00a717 / \u5165\u672d\u53c2\u52a0\u8cc7\u683c \u505c\u6b62 / \u305d\u306e\u4ed6 \u884c\u653f\u51e6\u5206? Query by 13-digit `houjin_bangou` (preferred \u2014 exact match) or `target_name` (fallback matching match against the published \u5bfe\u8c61\u4e8b\u696d\u8005\u540d). Pass `as_of_date='YYYY-MM-DD'` to check status as of a historical date \u2014 \u6392\u9664\u671f\u9593 windows are time-bounded so 'today' vs '2024-06-01' can give different verdicts.\n\n**Backed by:** 1,185 \u884c\u653f\u51e6\u5206 cases (\u4f1a\u8a08\u691c\u67fb\u9662 + ministry \u516c\u8868) with structured detail records for grant_refund / subsidy_exclude / fine breakdown.\n\n**Use this BEFORE awarding subsidies, before extending credit, before contracting with a vendor.** A clear-status response (`is_currently_barred=false`) lists past closed cases for reference; an active match returns the disclosed_until (\u6392\u9664\u671f\u9593 \u7d42\u4e86\u65e5) so the caller can plan timing.",
         "operationId": "rest_check_enforcement_v1_am_enforcement_get",
         "parameters": [
           {
@@ -20700,7 +20757,7 @@
     },
     "/v1/artifacts/company_folder_brief": {
       "post": {
-        "description": "\u65e2\u5b58 `/v1/intel/houjin/{houjin_id}/full` \u3068\u540c\u3058\u516c\u958b\u60c5\u5831\u7d20\u6750\u3092\u53d6\u5f97\u3057\u3001\u793e\u5185\u30d5\u30a9\u30eb\u30c0\u3078\u8cbc\u308c\u308b\u4f1a\u793e\u6982\u8981\u3001DD snapshot\u3001\u78ba\u8a8d\u30c1\u30a7\u30c3\u30af\u30ea\u30b9\u30c8\u3092 artifact envelope \u3068\u3057\u3066\u8fd4\u3059\u3002NO LLM\u3002",
+        "description": "\u6cd5\u4eba\u756a\u53f7\u30fb\u30a4\u30f3\u30dc\u30a4\u30b9\u30fb\u884c\u653f\u51e6\u5206\u30fb\u63a1\u629e\u5c65\u6b74\u306a\u3069\u306e\u516c\u958b\u60c5\u5831\u7d20\u6750\u3092\u53d6\u5f97\u3057\u3001\u793e\u5185\u30d5\u30a9\u30eb\u30c0\u3078\u8cbc\u308c\u308b\u4f1a\u793e\u6982\u8981\u3001DD snapshot\u3001\u78ba\u8a8d\u30c1\u30a7\u30c3\u30af\u30ea\u30b9\u30c8\u3092 artifact envelope \u3068\u3057\u3066\u8fd4\u3059\u3002NO LLM\u3002",
         "operationId": "create_company_folder_brief_v1_artifacts_company_folder_brief_post",
         "parameters": [
           {
@@ -20776,7 +20833,7 @@
     },
     "/v1/artifacts/company_public_audit_pack": {
       "post": {
-        "description": "\u65e2\u5b58 `/v1/intel/houjin/{houjin_id}/full` \u3068\u540c\u3058\u516c\u958b\u60c5\u5831\u7d20\u6750\u3092\u53d6\u5f97\u3057\u3001\u76e3\u67fb\u30fb\u30ec\u30d3\u30e5\u30fc\u5411\u3051\u306e\u5bfe\u8c61\u3001\u6839\u62e0\u53f0\u5e33\u3001risk/gap register\u3001review controls \u3092 artifact envelope \u3068\u3057\u3066\u8fd4\u3059\u3002NO LLM\u3002",
+        "description": "\u6cd5\u4eba\u756a\u53f7\u30fb\u30a4\u30f3\u30dc\u30a4\u30b9\u30fb\u884c\u653f\u51e6\u5206\u30fb\u63a1\u629e\u5c65\u6b74\u306a\u3069\u306e\u516c\u958b\u60c5\u5831\u7d20\u6750\u3092\u53d6\u5f97\u3057\u3001\u76e3\u67fb\u30fb\u30ec\u30d3\u30e5\u30fc\u5411\u3051\u306e\u5bfe\u8c61\u3001\u6839\u62e0\u53f0\u5e33\u3001risk/gap register\u3001review controls \u3092 artifact envelope \u3068\u3057\u3066\u8fd4\u3059\u3002NO LLM\u3002",
         "operationId": "create_company_public_audit_pack_v1_artifacts_company_public_audit_pack_post",
         "parameters": [
           {
@@ -20852,7 +20909,7 @@
     },
     "/v1/artifacts/company_public_baseline": {
       "post": {
-        "description": "\u65e2\u5b58 `/v1/intel/houjin/{houjin_id}/full` \u3068\u540c\u3058\u516c\u958b\u60c5\u5831\u7d20\u6750\u3092\u53d6\u5f97\u3057\u3001\u4f1a\u793e\u306e\u516c\u958b\u60c5\u5831\u30d9\u30fc\u30b9\u30e9\u30a4\u30f3\u3001\u6839\u62e0URL\u3001known gaps\u3001\u6b21\u30a2\u30af\u30b7\u30e7\u30f3\u3092 artifact envelope \u3068\u3057\u3066\u8fd4\u3059\u3002NO LLM\u3002",
+        "description": "\u6cd5\u4eba\u756a\u53f7\u30fb\u30a4\u30f3\u30dc\u30a4\u30b9\u30fb\u884c\u653f\u51e6\u5206\u30fb\u63a1\u629e\u5c65\u6b74\u306a\u3069\u306e\u516c\u958b\u60c5\u5831\u7d20\u6750\u3092\u53d6\u5f97\u3057\u3001\u4f1a\u793e\u306e\u516c\u958b\u60c5\u5831\u30d9\u30fc\u30b9\u30e9\u30a4\u30f3\u3001\u6839\u62e0URL\u3001known gaps\u3001\u6b21\u30a2\u30af\u30b7\u30e7\u30f3\u3092 artifact envelope \u3068\u3057\u3066\u8fd4\u3059\u3002NO LLM\u3002",
         "operationId": "create_company_public_baseline_v1_artifacts_company_public_baseline_post",
         "parameters": [
           {
@@ -24051,7 +24108,7 @@
     },
     "/v1/contribute/eligibility_observation": {
       "post": {
-        "description": "Persist one community-contributed eligibility observation.\n\nThe API intentionally does NOT pull the FastAPI ``Request`` into\nits signature \u2014 the IP-based rate limit reads from the global\nin-process store keyed on the body-supplied client tag (X-Forwarded-For\nis read upstream by the AnonIpLimitDep router-level dep). Tests may\ncall ``_reset_rate_limit_store()`` to clear the bucket.",
+        "description": "Persist one community-contributed eligibility observation.\n\nThe API records a bounded, source-linked observation and applies the\npublic contribution rate limit outside the request body.",
         "operationId": "submit_eligibility_observation_v1_contribute_eligibility_observation_post",
         "requestBody": {
           "content": {
@@ -29364,7 +29421,7 @@
     },
     "/v1/invoice_registrants/search": {
       "get": {
-        "description": "Look up registered Japanese \u9069\u683c\u8acb\u6c42\u66f8\u767a\u884c\u4e8b\u696d\u8005 (qualified invoice issuers under the \u30a4\u30f3\u30dc\u30a4\u30b9\u5236\u5ea6 / \u6d88\u8cbb\u7a0e\u4ed5\u5165\u7a0e\u984d\u63a7\u9664 regime) by name prefix, \u6cd5\u4eba\u756a\u53f7, prefecture, or registration date window. Mirror of NTA's official \u9069\u683c\u8acb\u6c42\u66f8\u767a\u884c\u4e8b\u696d\u8005\u516c\u8868\u30b5\u30a4\u30c8 bulk (13,801 delta records live; full 4M-record monthly bulk lands post-launch).\n\n**When to use:** verify whether a counterparty has issued a valid T-prefixed invoice number before claiming \u4ed5\u5165\u7a0e\u984d\u63a7\u9664. For exact T-number lookup (T + 13 digits), prefer `GET /v1/invoice registrant records/{invoice_registration_number}`.\n\n**Limits:** `q` requires 2+ chars and uses prefix name matching. Bulk dump is intentionally not supported; for full snapshots use NTA's official download URL in the `attribution.source_url`.\n\n**License:** every 2xx body carries a PDL v1.0 `attribution` block \u2014 \u516c\u5171\u30c7\u30fc\u30bf\u5229\u7528\u898f\u7d04 \u7b2c1.0\u7248 (\u51fa\u5178\u660e\u8a18 + \u7de8\u96c6\u30fb\u52a0\u5de5\u6ce8\u8a18). Do NOT strip on relay.",
+        "description": "Look up registered Japanese \u9069\u683c\u8acb\u6c42\u66f8\u767a\u884c\u4e8b\u696d\u8005 (qualified invoice issuers under the \u30a4\u30f3\u30dc\u30a4\u30b9\u5236\u5ea6 / \u6d88\u8cbb\u7a0e\u4ed5\u5165\u7a0e\u984d\u63a7\u9664 regime) by name prefix, \u6cd5\u4eba\u756a\u53f7, prefecture, or registration date window. Mirror of NTA's official \u9069\u683c\u8acb\u6c42\u66f8\u767a\u884c\u4e8b\u696d\u8005\u516c\u8868\u30b5\u30a4\u30c8 data (13,801 current mirror records live; scheduled source refresh).\n\n**When to use:** verify whether a counterparty has issued a valid T-prefixed invoice number before claiming \u4ed5\u5165\u7a0e\u984d\u63a7\u9664. For exact T-number lookup (T + 13 digits), prefer `GET /v1/invoice registrant records/{invoice_registration_number}`.\n\n**Limits:** `q` requires 2+ chars and uses prefix name matching. Bulk dump is intentionally not supported; for full snapshots use NTA's official download URL in the `attribution.source_url`.\n\n**License:** every 2xx body carries a PDL v1.0 `attribution` block \u2014 \u516c\u5171\u30c7\u30fc\u30bf\u5229\u7528\u898f\u7d04 \u7b2c1.0\u7248 (\u51fa\u5178\u660e\u8a18 + \u7de8\u96c6\u30fb\u52a0\u5de5\u6ce8\u8a18). Do NOT strip on relay.",
         "operationId": "search_invoice registrant records_v1_invoice registrant records_search_get",
         "parameters": [
           {
@@ -32686,7 +32743,7 @@
         ]
       },
       "post": {
-        "description": "Issue a new child API key under the caller's parent key.\n\nWires the `issue_child_key` helper (billing/keys.py, schema update)\ninto the REST surface. The raw child key is returned ONCE in the\nresponse body; subsequent reads only ever surface the\n`key_hash_prefix` (first 8 chars) for identification.\n\nConstraints enforced upstream:\n  * Caller must be the parent (children cannot spawn grandchildren \u2014\n    the helper rejects with `nesting_forbidden`).\n  * Per-parent cap is MAX_CHILDREN_PER_PARENT (1,000) NON-revoked\n    children \u2014 `child_cap_exceeded` once exhausted. Revoked siblings\n    free up slots.\n  * Label is required, \u226464 chars, no control characters.",
+        "description": "Issue a new child API key under the caller's parent key.\n\nWires the `issue_child_key` helper (billing/keys.py, schema update)\ninto the REST surface. The raw child key is returned ONCE in the\nresponse body; subsequent reads only ever surface the\n`key_hash_prefix` (first 8 chars) for identification.\n\nConstraints enforced upstream:\n  * Caller must be the parent (children cannot spawn grandchildren \u2014\n    the helper rejects with `nesting_forbidden`).\n  * Per-parent cap applies to active child keys; the API returns\n    `child_cap_exceeded` once exhausted. Revoked siblings free up slots.\n  * Label is required, \u226464 chars, no control characters.",
         "operationId": "issue_child_key_route_v1_me_keys_children_post",
         "parameters": [
           {
@@ -32762,7 +32819,7 @@
     },
     "/v1/me/keys/children/{child_id}": {
       "delete": {
-        "description": "Revoke a single child key by id, scoped to the caller's parent.\n\nThe parent_key_hash controlled inside the helper is critical: without it\na stolen child id alone would let any caller revoke any child\n(rowids are guessable). Returns `{\"revoked\": true}` when a record was\nflipped, or 404 with `child_not_found` when the id is unknown to\nthis parent (already revoked, never existed, or belongs to a\ndifferent parent).",
+        "description": "Revoke a single child key by id, scoped to the caller's parent.\n\nThe parent_key_hash controlled inside the helper scopes the requested child\nid to the caller's parent account. Returns `{\"revoked\": true}` when a\nrecord was flipped, or 404 with `child_not_found` when the id is unknown\nto this parent (already revoked, never existed, or belongs to a\ndifferent parent).",
         "operationId": "revoke_child_key_route_v1_me_keys_children__child_id__delete",
         "parameters": [
           {
@@ -38886,7 +38943,7 @@
     },
     "/v1/usage": {
       "get": {
-        "description": "Probe the caller's current quota state without consuming a slot.\n\nThe API is *not* attached to ``AnonIpLimitDep`` so anonymous\ncallers can call it freely \u2014 the whole point of the tool is to\navoid burning the bucket while checking it.",
+        "description": "Probe the caller's current quota state without consuming a slot.\n\nThis usage probe is free so anonymous callers can check remaining\nallowance without decrementing it.",
         "operationId": "get_usage_v1_usage_get",
         "parameters": [
           {
@@ -38952,7 +39009,7 @@
     },
     "/v1/verify/answer": {
       "post": {
-        "description": "Verify an LLM-generated answer against the jpcite corpus.\n\nReturns 0-100 verifiability score, per-claim match breakdown,\nboundary_violations (\u7a0e\u7406\u58eb\u6cd5 \u00a752 etc.), and the 17-token\nsensitive disclaimer.\n\nErrors:\n  * 400 too_many_claims when tokenize yields >5 atomic claims.\n  * 422 from pydantic when answer_text empty or language invalid.\n\nR8 BUGHUNT 2026-05-07: \u00a53 metering wired here. Pre-fix the\nendpoint advertised ``cost_yen: 3`` in the response but never\ncalled ``log_usage`` \u2014 authenticated callers were billed \u00a50,\nburning revenue per call. AnonIpLimitDep was the only controlled.",
+        "description": "Verify an LLM-generated answer against the jpcite corpus.\n\nReturns 0-100 verifiability score, per-claim match breakdown,\nboundary_violations (\u7a0e\u7406\u58eb\u6cd5 \u00a752 etc.), and the 17-token\nsensitive disclaimer.\n\nErrors:\n  * 400 too_many_claims when tokenize yields >5 atomic claims.\n  * 422 from pydantic when answer_text empty or language invalid.\n\nAuthenticated calls are metered using the standard billing unit.",
         "operationId": "verify_answer_v1_verify_answer_post",
         "parameters": [
           {
@@ -39086,6 +39143,48 @@
           }
         },
         "summary": "Widget Enum Values",
+        "tags": [
+          "widget"
+        ]
+      }
+    },
+    "/v1/widget/keys/from-checkout": {
+      "post": {
+        "description": "Reveal or provision a widget key after Stripe Checkout.\n\nWidget keys are browser-visible and origin-locked, so this page can show\nthe key directly after a completed Checkout session. The webhook remains\nthe durable path; this endpoint covers the normal post-payment screen when\nStripe's webhook arrives a few seconds later than the browser redirect.",
+        "operationId": "widget_key_from_checkout_v1_widget_keys_from_checkout_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WidgetKeyIssueRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WidgetKeyIssueResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Widget Key From Checkout",
         "tags": [
           "widget"
         ]
@@ -39488,7 +39587,7 @@
       "name": "bids"
     },
     {
-      "description": "\u9069\u683c\u8acb\u6c42\u66f8\u767a\u884c\u4e8b\u696d\u8005 (\u56fd\u7a0e\u5e81 PDL v1.0 mirror, ~13,801 delta records; monthly 4M-record bulk via scheduled job). Confirm a 13-digit \u6cd5\u4eba\u756a\u53f7 is registered. Attribution required.",
+      "description": "\u9069\u683c\u8acb\u6c42\u66f8\u767a\u884c\u4e8b\u696d\u8005 (\u56fd\u7a0e\u5e81 PDL v1.0 mirror, 13,801 current mirror records; scheduled source refresh). Confirm a 13-digit \u6cd5\u4eba\u756a\u53f7 is registered. Attribution required.",
       "name": "invoice registrant records"
     },
     {

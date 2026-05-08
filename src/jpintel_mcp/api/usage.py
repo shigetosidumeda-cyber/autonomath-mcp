@@ -244,9 +244,8 @@ def get_usage(
 ) -> UsageStatus:
     """Probe the caller's current quota state without consuming a slot.
 
-    The handler is *not* attached to ``AnonIpLimitDep`` so anonymous
-    callers can call it freely — the whole point of the tool is to
-    avoid burning the bucket while checking it.
+    This usage probe is free so anonymous callers can check remaining
+    allowance without decrementing it.
     """
     if ctx.key_hash is None:
         # Anonymous — IP+fingerprint based.

@@ -125,7 +125,7 @@ COPY data/unified_registry.json /seed/unified_registry.json
 # entrypoint.sh copies /seed/autonomath_static/ → /data/autonomath_static/ if MANIFEST.md missing.
 COPY data/autonomath_static/ /seed/autonomath_static/
 # Update this when the baked seed changes, so entrypoint.sh re-copies on next boot.
-ENV DATA_SEED_VERSION=2026-04-26-v4
+ENV DATA_SEED_VERSION=2026-05-08-v1
 
 # -- entrypoint: created by separate agent. Performs:
 #       1. R2 download of autonomath.db -> /data/autonomath.db (if absent)

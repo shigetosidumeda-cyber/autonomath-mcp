@@ -8047,7 +8047,7 @@ def search_invoice_registrants(
       - Do NOT append name-matching logic on top — sole-proprietor rows are only present because ingest pre-filtered to NTA's consent model.
 
     LIMITATIONS:
-      - DATA AVAILABILITY: 13,801 rows loaded as of 2026-04-25 — **delta only** (増分 mirror since 2025-10). Pre-2025 registrations and the full 4M-row NTA bulk are pending post-launch; a `total=0` response does NOT mean "not registered", it may mean "out of the current mirror window". Always point the user at 国税庁 適格事業者公表サイト (https://www.invoice-kohyo.nta.go.jp/) for the 確定 lookup.
+      - Coverage: 13,801 current mirror rows are loaded. A `total=0` response is not a final registration verdict. Always point the user at 国税庁 適格事業者公表サイト (https://www.invoice-kohyo.nta.go.jp/) for the 確定 lookup.
       - 法人 rows carry houjin_bangou; sole-proprietors do NOT (soft-FK to houjin_master).
       - `active_only=True` hides revoked/expired; required for "is this invoice number currently valid?".
       - `q` is prefix LIKE on normalized_name, NOT FTS — kana variants are not synthesized at the MCP layer.

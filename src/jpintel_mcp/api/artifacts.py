@@ -2913,7 +2913,7 @@ def create_application_strategy_pack(
     response_model_exclude_unset=True,
     summary="法人DD pack artifact (public-source corporate diligence — no LLM)",
     description=(
-        "既存 `/v1/intel/houjin/{houjin_id}/full` の公開情報名寄せ結果を、"
+        "法人番号・インボイス・行政処分・採択履歴などの公開情報名寄せ結果を、"
         "稟議・DDメモへ貼りやすい artifact envelope に変換する。法人番号、"
         "インボイス、行政処分、採択履歴、所在地整合、監視状態、known gaps、"
         "確認質問を1つの完成物として返す。NO LLM。"

@@ -24,7 +24,7 @@ Press-kit screenshots are provided on request so media outlets receive current p
 ## Press-use guidance
 
 - Preferred width: 1440-1880 px (Retina-safe, CLI-safe).
-- No dark-mode variants yet; requests accepted post-launch.
+- Dark-mode screenshots are tracked separately.
 - Crop/edit at will — logo must not be altered (see `logos.zip`).
 
 ## Requesting high-res press pack

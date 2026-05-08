@@ -44,7 +44,7 @@
 | entity-fact relations | 378,342 | relation table |
 | entity-fact aliases | 335,605 | 別名・略称 index |
 | 法令条文 index | 28,048 | e-Gov 法令データ提供システム |
-| 行政処分 詳細 records | 22,258 | 各官庁の公表行政処分 |
+| 行政処分 cases | 1,185 | 各官庁の公表行政処分 |
 | 排他ルール | 181 | 公開要綱に基づき整理 |
 | `source_url` / 鮮度 | 主要な公開レコードに付与 | 鮮度・broken URL は Data Freshness で確認 |
 

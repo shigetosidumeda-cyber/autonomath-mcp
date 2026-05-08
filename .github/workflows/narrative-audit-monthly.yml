@@ -74,13 +74,13 @@ jobs:
           if [ "${DRY_RUN}" = "true" ]; then
             FLAGS="${FLAGS} --dry-run"
           fi
-          # Forward TG_* secrets one-shot to the Fly machine via the
-          # `flyctl ssh console` env stanza. AUTONOMATH_DB_PATH is read
-          # from the Fly secret store on the machine itself.
+          # Forward TG_* secrets one-shot without `flyctl ssh -e` because
+          # current flyctl no longer supports that flag on `ssh console`.
+          # AUTONOMATH_DB_PATH is read from the Fly secret store on the machine itself.
+          TG_BOT_TOKEN_B64="$(printf '%s' "${TG_BOT_TOKEN:-}" | base64 -w0)"
+          TG_CHAT_ID_B64="$(printf '%s' "${TG_CHAT_ID:-}" | base64 -w0)"
           flyctl ssh console -a autonomath-api \
-            -e TG_BOT_TOKEN="${TG_BOT_TOKEN:-}" \
-            -e TG_CHAT_ID="${TG_CHAT_ID:-}" \
-            -C "/opt/venv/bin/python /app/scripts/cron/narrative_audit_push.py ${FLAGS}"
+            -C "export TG_BOT_TOKEN=\$(printf '%s' '${TG_BOT_TOKEN_B64}' | base64 -d); export TG_CHAT_ID=\$(printf '%s' '${TG_CHAT_ID_B64}' | base64 -d); /opt/venv/bin/python /app/scripts/cron/narrative_audit_push.py ${FLAGS}"
 
       - name: Sentry alert on cron failure
         if: failure()

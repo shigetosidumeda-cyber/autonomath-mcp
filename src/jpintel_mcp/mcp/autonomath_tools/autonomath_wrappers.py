@@ -304,9 +304,9 @@ def search_loans_am(
       - 「中小企業庁 セーフティネット 4号 の限度額」
 
     WHEN NOT:
-      - prod search_loan_programs (jpintel.loan_programs 108 rows) covers a
-        different subset — the am table is broader (公庫 + 自治体制度融資 +
-        商工中金) but overlaps。迷ったら両方叩いて diff 見て OK.
+      - search_loan_programs covers the curated public loan catalog; this
+        tool is broader (公庫 + 自治体制度融資 + 商工中金) and may overlap.
+        When precision matters, compare both result sets and cite sources.
 
     RETURN: {result_count, results[{canonical_id, primary_name, lender_entity_id,
              loan_program_kind, limit_yen, limit_yen_special, interest_rate_base_pct,

@@ -183,14 +183,14 @@ def test_widget_page_uses_static_demo_and_clear_owner_billing_copy() -> None:
 
     assert "wgt_live_00000000000000000000000000000000" not in body
     assert 'data-key="wgt_live_000' not in body
-    assert "表示例 (静的mock)" in body
-    assert "ここでは <code>wgt_live_...</code> key や" in body
+    assert "相談前プレ診断の表示例" in body
+    assert "ここではブラウザ用キー (<code>wgt_live_...</code>) や" in body
     assert "<code>/v1/widget/*</code> を使わず" in body
     assert not re.search(r"(?m)^\s*<div\s+data-jpcite-widget\b", body)
     assert "サーバー/API 用の <code>am_...</code> key とは別物です" in body
     assert "課金はサイト訪問者ではなく" in body
     assert "公開API/Playgroundの匿名評価枠とは別" in body
-    assert "path、query、末尾 slash は不可" in body
+    assert "path、query、末尾 slash は不要" in body
     assert "https://*.example.com</code> はサブドメイン用" in body
     assert "匿名 3 件/日" not in body
 

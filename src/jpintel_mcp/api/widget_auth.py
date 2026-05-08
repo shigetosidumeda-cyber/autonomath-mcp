@@ -10,7 +10,7 @@ Widget keys look like `wgt_live_{32 hex}` (41 chars total). They sit in
 
   * Widget keys are by design visible in the browser (script tag). Their
     only security comes from (a) Origin header matching, (b) per-key
-    rate limit, (c) monthly quota. Leaking one is bounded — it can only
+    abuse rate limit, (c) billing/payment state. Leaking one is bounded — it can only
     be used from the whitelisted origins.
   * Widget keys only reach `/v1/widget/*`. They can't call /v1/programs,
     /v1/billing, etc. Full separation at the routing layer.
@@ -21,8 +21,9 @@ Widget keys look like `wgt_live_{32 hex}` (41 chars total). They sit in
 Endpoints (all under /v1/widget)
 --------------------------------
   GET  /search         proxies to programs search logic (library import)
-  GET  /enum_values    enum dropdowns for the widget filter UI
+  GET  /enum_values    enum dropdowns for the widget filter UI (not billable)
   POST /signup         creates Stripe Checkout URL (Widget metered plan)
+  POST /keys/from-checkout reveals/provisions the browser widget key
   POST /stripe-webhook Stripe subscription lifecycle (widget plan)
   GET  /{key_id}/usage lightweight JSON for owners (stubbed — key hash gate)
   OPTIONS routes are handled by the FastAPI CORS middleware we mount on the
@@ -48,6 +49,7 @@ import threading
 import time
 from collections import deque
 from datetime import UTC, datetime
+from urllib.parse import urlparse
 from typing import Annotated, Any
 from zoneinfo import ZoneInfo
 
@@ -129,7 +131,7 @@ _rate_lock = threading.Lock()
 def _check_rate_limit(key_id: str) -> None:
     """100 req/min/key abuse gate. Raises 429 on breach.
 
-    Separate from the monthly quota (which is billed). This one exists to
+    Separate from billing usage. This one exists to
     stop a runaway script on a customer's site from burning thousands of
     reqs/min before their Cloudflare / origin-side caching kicks in.
     """
@@ -160,12 +162,11 @@ def _check_rate_limit(key_id: str) -> None:
 # origin ("https://example.com") or a wildcard subdomain pattern
 # ("https://*.example.com"). Wildcard is limited to the leftmost label —
 # this keeps the match surface small and unambiguous. No path, no query,
-# scheme required.
+# scheme required. Public widget signup accepts HTTPS origins only.
 # ---------------------------------------------------------------------------
 
-_ORIGIN_RE = re.compile(r"^https?://[A-Za-z0-9\-._~:/?#\[\]@!$&'()*+,;=%]+$")
 _WILDCARD_ALLOWED_RE = re.compile(
-    r"^(?P<scheme>https?)://\*\.(?P<host>[A-Za-z0-9\-]+(?:\.[A-Za-z0-9\-]+)+)$"
+    r"^(?P<scheme>https)://\*\.(?P<host>[A-Za-z0-9\-]+(?:\.[A-Za-z0-9\-]+)+)$"
 )
 
 
@@ -211,10 +212,16 @@ def _validate_origin_pattern(entry: str) -> bool:
     if _WILDCARD_ALLOWED_RE.match(entry):
         return True
     # Exact origin: scheme://host(:port)? no trailing slash, no path.
-    if not _ORIGIN_RE.match(entry):
+    parsed = urlparse(entry)
+    if parsed.scheme != "https" or not parsed.hostname:
         return False
-    # Reject anything with a path — must be pure origin.
-    return entry.count("/") == 2
+    if parsed.username or parsed.password:
+        return False
+    try:
+        parsed.port
+    except ValueError:
+        return False
+    return not (parsed.path or parsed.params or parsed.query or parsed.fragment)
 
 
 # ---------------------------------------------------------------------------
@@ -494,6 +501,39 @@ def _authorize(
 # ---------------------------------------------------------------------------
 
 
+def _attach_widget_result_context(conn: sqlite3.Connection, body: dict[str, Any]) -> None:
+    """Add compact evidence context that makes widget cards useful in practice."""
+    results = body.get("results")
+    if not isinstance(results, list) or not results:
+        return
+    ids = [
+        str(item.get("unified_id"))
+        for item in results
+        if isinstance(item, dict) and item.get("unified_id")
+    ]
+    if not ids:
+        return
+    placeholders = ",".join("?" for _ in ids)
+    rows = conn.execute(
+        f"SELECT unified_id, source_url, source_fetched_at FROM programs "
+        f"WHERE unified_id IN ({placeholders})",
+        ids,
+    ).fetchall()
+    by_id = {row["unified_id"]: row for row in rows}
+    for item in results:
+        if not isinstance(item, dict):
+            continue
+        row = by_id.get(str(item.get("unified_id") or ""))
+        if row is None:
+            continue
+        item.setdefault("source_url", row["source_url"])
+        item.setdefault("source_fetched_at", row["source_fetched_at"])
+        item["prescreen_questions"] = [
+            "所在地・業種・申請者区分が最新の募集要項に合うか",
+            "対象経費、締切、他制度との併用可否を一次資料で確認したか",
+        ]
+
+
 @router.options("/search", include_in_schema=False)
 @router.options("/enum_values", include_in_schema=False)
 async def _preflight(
@@ -596,12 +636,13 @@ def widget_search(
             {"error": "search_failed", "detail": "widget search failed"},
         ) from e
 
-    # Re-wrap the body to include widget-level branding + quota state.
+    # Re-wrap the body to include widget-level branding + usage state.
     try:
         body = json.loads(bytes(resp.body))
     except (json.JSONDecodeError, AttributeError):
         body = {"total": 0, "results": [], "limit": limit, "offset": 0}
 
+    _attach_widget_result_context(conn, body)
     _enforce_quota_and_increment(conn, wk)
     body["widget"] = {
         "plan": wk.plan,
@@ -625,7 +666,6 @@ def widget_enum_values(
     """Return filter enum vocab for widget dropdowns — prefectures, industries,
     authority_levels, and a short target_types list drawn from programs."""
     wk, origin = _authorize(conn, request, key, x_widget_key)
-    _enforce_quota_and_increment(conn, wk)
 
     prefectures = [
         {"code": canonical, "label_ja": canonical}
@@ -711,6 +751,18 @@ class WidgetSignupResponse(BaseModel):
     session_id: str
 
 
+class WidgetKeyIssueRequest(BaseModel):
+    session_id: str = Field(..., min_length=3, max_length=255)
+
+
+class WidgetKeyIssueResponse(BaseModel):
+    widget_key: str
+    plan: str
+    allowed_origins: list[str]
+    label: str | None = None
+    customer_id: str
+
+
 @router.post("/signup", response_model=WidgetSignupResponse)
 def widget_signup(payload: WidgetSignupRequest) -> WidgetSignupResponse:
     """Create a Stripe Checkout session for the widget plan.
@@ -765,6 +817,18 @@ def widget_signup(payload: WidgetSignupRequest) -> WidgetSignupResponse:
 
     success_url = validate_jpcite_service_redirect_url(payload.success_url, kind="success")
     cancel_url = validate_jpcite_service_redirect_url(payload.cancel_url, kind="cancel")
+    checkout_locale = "en" if urlparse(success_url).path.startswith("/en/") else "ja"
+    submit_message = (
+        "By registering, you agree to the Terms of Service "
+        "(https://jpcite.com/en/tos.html) and Privacy Policy "
+        "(https://jpcite.com/en/privacy.html)."
+        if checkout_locale == "en"
+        else (
+            "ご登録により利用規約 (https://jpcite.com/tos.html) "
+            "およびプライバシーポリシー (https://jpcite.com/privacy.html) "
+            "に同意したものとみなされます。"
+        )
+    )
 
     session = stripe.checkout.Session.create(  # type: ignore[call-arg,unused-ignore]
         mode="subscription",
@@ -773,22 +837,111 @@ def widget_signup(payload: WidgetSignupRequest) -> WidgetSignupResponse:
         cancel_url=cancel_url,
         customer_email=str(payload.email),
         allow_promotion_codes=True,
-        locale="ja",
+        locale=checkout_locale,
         branding_settings={"display_name": "jpcite"},
         subscription_data={"metadata": metadata},
         metadata=metadata,
         custom_text={
-            "submit": {
-                "message": (
-                    "ご登録により利用規約 (https://jpcite.com/tos.html) "
-                    "およびプライバシーポリシー (https://jpcite.com/privacy.html) "
-                    "に同意したものとみなされます。"
-                )
-            }
+            "submit": {"message": submit_message}
         },
         **extra,
     )
     return WidgetSignupResponse(checkout_url=session.url or "", session_id=session.id)
+
+
+def _stripe_object_get(obj: Any, key: str, default: Any = None) -> Any:
+    if isinstance(obj, dict):
+        return obj.get(key, default)
+    return getattr(obj, key, default)
+
+
+def _plain_stripe_mapping(obj: Any) -> dict[str, Any]:
+    if isinstance(obj, dict):
+        return dict(obj)
+    with contextlib.suppress(Exception):
+        return dict(obj)
+    data: dict[str, Any] = {}
+    for key in ("id", "subscription", "customer", "customer_email", "metadata", "customer_details"):
+        value = getattr(obj, key, None)
+        if value is not None:
+            data[key] = value
+    return data
+
+
+@router.post("/keys/from-checkout", response_model=WidgetKeyIssueResponse)
+def widget_key_from_checkout(
+    payload: WidgetKeyIssueRequest,
+    conn: DbDep,
+) -> WidgetKeyIssueResponse:
+    """Reveal or provision a widget key after Stripe Checkout.
+
+    Widget keys are browser-visible and origin-locked, so this page can show
+    the key directly after a completed Checkout session. The webhook remains
+    the durable path; this endpoint covers the normal post-payment screen when
+    Stripe's webhook arrives a few seconds later than the browser redirect.
+    """
+    if not settings.stripe_secret_key:
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            {"error": "stripe_unconfigured", "detail": "Stripe not configured"},
+        )
+
+    import stripe
+
+    stripe.api_key = settings.stripe_secret_key
+    if settings.stripe_api_version:
+        stripe.api_version = settings.stripe_api_version
+
+    session = stripe.checkout.Session.retrieve(payload.session_id)
+    md = _stripe_object_get(session, "metadata", {}) or {}
+    if not isinstance(md, dict):
+        md = dict(md)
+    if md.get("autonomath_product") != "widget":
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "checkout session is not widget")
+    if _stripe_object_get(session, "status") != "complete":
+        raise HTTPException(status.HTTP_402_PAYMENT_REQUIRED, "checkout session incomplete")
+    if _stripe_object_get(session, "mode") != "subscription":
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "checkout session is not a subscription")
+    session_livemode = bool(_stripe_object_get(session, "livemode", False))
+    if session_livemode != (settings.env == "prod"):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "checkout livemode mismatch")
+    if _stripe_object_get(session, "payment_status") not in ("paid", "no_payment_required"):
+        raise HTTPException(status.HTTP_402_PAYMENT_REQUIRED, "checkout session not paid")
+
+    sub_id = str(_stripe_object_get(session, "subscription", "") or "")
+    customer_id = str(_stripe_object_get(session, "customer", "") or "")
+    if not sub_id or not customer_id:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "checkout session missing subscription")
+
+    existing = conn.execute(
+        "SELECT * FROM widget_keys WHERE stripe_subscription_id = ? LIMIT 1",
+        (sub_id,),
+    ).fetchone()
+    if existing is None:
+        session_obj = _plain_stripe_mapping(session)
+        session_obj["metadata"] = md
+        session_obj["subscription"] = sub_id
+        session_obj["customer"] = customer_id
+        _provision_widget_key(conn, session_obj=session_obj)
+        existing = conn.execute(
+            "SELECT * FROM widget_keys WHERE stripe_subscription_id = ? LIMIT 1",
+            (sub_id,),
+        ).fetchone()
+
+    if existing is None:
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            "widget key provisioning is still pending; retry in a few seconds",
+        )
+
+    wk = WidgetKeyRow(existing)
+    return WidgetKeyIssueResponse(
+        widget_key=wk.key_id,
+        plan=wk.plan,
+        allowed_origins=json.loads(wk.allowed_origins_json or "[]"),
+        label=wk.label,
+        customer_id=wk.stripe_customer_id,
+    )
 
 
 @router.post("/stripe-webhook")

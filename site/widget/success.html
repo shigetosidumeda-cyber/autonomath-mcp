@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Widget key 発行 - jpcite</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="icon" href="/assets/favicon-32.png" sizes="32x32">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .wrap{max-width:860px;margin:56px auto;padding:0 20px}
+    .panel{border:1px solid #e5e7eb;border-radius:8px;padding:24px;background:#fff}
+    .status{margin:16px 0;padding:12px 14px;border-radius:6px;background:#f8fafc;color:#334155}
+    .status.err{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+    .keybox{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;background:#0f172a;color:#f8fafc;border-radius:6px;padding:14px;overflow:auto}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;border:1px solid #111827;border-radius:6px;padding:10px 14px;background:#111827;color:#fff;text-decoration:none;font-weight:700}
+    .btn.secondary{background:#fff;color:#111827}
+    .grid{display:grid;gap:14px;margin-top:18px}
+    @media (min-width:720px){.grid{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <p><a href="/widget">← Widget に戻る</a></p>
+    <section class="panel">
+      <h1>Widget key を発行しています</h1>
+      <p>
+        決済が完了した Checkout session を確認し、登録したサイトURLだけで使える
+        ブラウザ用 key を表示します。
+      </p>
+      <div id="status" class="status" role="status" aria-live="polite">Stripe Checkout を確認中...</div>
+      <div id="result" hidden>
+        <h2>埋め込みコード</h2>
+        <pre class="keybox" id="snippet"></pre>
+        <div class="actions">
+          <button class="btn" type="button" id="copy">コピー</button>
+          <a class="btn secondary" href="/widget/demo">表示例を見る</a>
+        </div>
+        <div class="grid">
+          <div>
+            <h3>登録済みサイトURL</h3>
+            <ul id="origins"></ul>
+          </div>
+          <div>
+            <h3>使い方</h3>
+            <p>
+              上の 2 行を登録済みサイトURLの HTML に貼ると相談前プレ診断 UI が表示されます。
+              プルダウン取得は無料、正常に処理された検索リクエストだけ widget の使用量として計上します。
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+<script>
+(function () {
+  var API_BASE = "https://api.jpcite.com";
+  var params = new URLSearchParams(location.search);
+  var sessionId = params.get("session_id");
+  var status = document.getElementById("status");
+  var result = document.getElementById("result");
+  var snippet = document.getElementById("snippet");
+  var origins = document.getElementById("origins");
+  var copy = document.getElementById("copy");
+
+  function fail(msg) {
+    status.className = "status err";
+    status.textContent = msg;
+  }
+
+  if (!sessionId) {
+    fail("session_id が見つかりません。Widget ページからもう一度お申し込みください。");
+    return;
+  }
+
+  fetch(API_BASE + "/v1/widget/keys/from-checkout", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({session_id: sessionId})
+  }).then(function (r) {
+    return r.json().then(function (body) { return {ok: r.ok, body: body}; });
+  }).then(function (res) {
+    if (!res.ok) {
+      var detail = res.body && (res.body.detail || res.body.error);
+      fail(typeof detail === "string" ? detail : "Widget key を発行できませんでした。数秒後に再読み込みしてください。");
+      return;
+    }
+    var key = res.body.widget_key;
+    var code = [
+      '<script async src="https://jpcite.com/widget/jpcite.js"><\\/script>',
+      '<div data-jpcite-widget data-key="' + key + '"></div>'
+    ].join("\n");
+    snippet.textContent = code;
+    (res.body.allowed_origins || []).forEach(function (origin) {
+      var li = document.createElement("li");
+      li.textContent = origin;
+      origins.appendChild(li);
+    });
+    status.textContent = "発行しました。この key は登録済みサイトURLからの widget 呼び出しだけに使えます。";
+    result.hidden = false;
+    copy.addEventListener("click", function () {
+      if (!navigator.clipboard) {
+        fail("ブラウザのコピー機能を使えません。埋め込みコードを選択してコピーしてください。");
+        return;
+      }
+      navigator.clipboard.writeText(code).then(function () {
+        copy.textContent = "コピー済";
+        setTimeout(function () { copy.textContent = "コピー"; }, 1500);
+      });
+    });
+  }).catch(function () {
+    fail("通信エラーです。数秒後に再読み込みしてください。");
+  });
+})();
+</script>
+</body>
+</html>

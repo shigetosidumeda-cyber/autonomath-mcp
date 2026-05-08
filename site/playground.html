@@ -827,10 +827,7 @@
         { name: 'output_format', type: 'enum', label: 'output_format', in: 'query', options: ['json', 'csv', 'md'], defaultValue: 'json' },
       ],
     },
-    // NOTE: /v1/intel/match, /v1/intel/bundle/optimal, /v1/intel/houjin/{}/full
-    // are gated behind AUTONOMATH_EXPERIMENTAL_API_ENABLED and are not exposed
-    // on the live api.jpcite.com surface as of 2026-05-07. Listing them here
-    // would 404 for every visitor. Re-add when the gate is flipped on.
+    // Keep this page limited to routes exposed by the public OpenAPI surface.
     {
       id: 'houjin.lookup',
       method: 'GET',
@@ -1191,7 +1188,7 @@
     watch: '監視',
     ready: '準備済み',
     missing: '不足',
-    pending: '準備中',
+    pending: '未開始',
     unknown: '未確認',
     not_ready: '未準備',
     partial: '一部準備',

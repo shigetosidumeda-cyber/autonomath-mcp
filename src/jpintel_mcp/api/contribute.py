@@ -344,11 +344,8 @@ def submit_eligibility_observation(
 ) -> ContributionSubmitResponse:
     """Persist one community-contributed eligibility observation.
 
-    The handler intentionally does NOT pull the FastAPI ``Request`` into
-    its signature — the IP-based rate limit reads from the global
-    in-process store keyed on the body-supplied client tag (X-Forwarded-For
-    is read upstream by the AnonIpLimitDep router-level dep). Tests may
-    call ``_reset_rate_limit_store()`` to clear the bucket.
+    The API records a bounded, source-linked observation and applies the
+    public contribution rate limit outside the request body.
     """
     # 1. Pydantic already enforced length/range. Add semantic checks.
     _validate_observed_year(payload.observed_year)

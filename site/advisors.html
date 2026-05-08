@@ -268,7 +268,7 @@
 
  <section aria-labelledby="signup-title" style="margin-top:56px;">
  <h2 id="signup-title" class="section-title">専門家として登録する</h2>
- <p style="color:var(--text-muted);max-width:720px;">根拠付き相談パックを受け取れる専門家・支援機関向けの下部導線です。送信後、Stripe 振込先登録 (簡易版) のオンボーディング URL に遷移します。法人番号の確認は自動で実施されます。</p>
+ <p style="color:var(--text-muted);max-width:720px;">根拠付き相談パックを受け取れる専門家・支援機関向けの登録導線です。送信後、請求先と本人確認を設定する Stripe のオンボーディング URL に遷移します。法人番号の確認は自動で実施されます。</p>
 
  <div class="pricing-grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:24px;">
  <article class="price-card">
@@ -289,19 +289,19 @@
  <p class="price-unit">税別 ¥3,000 · 月額固定なし</p>
  <ul class="feats">
  <li>未成約月は ¥0</li>
- <li>成約時のみ請求 (Stripe 振込)</li>
+ <li>成約時のみ請求 (Stripe 経由)</li>
  <li>弁護士カテゴリは成果課金対象外</li>
  </ul>
  </article>
  <article class="price-card">
- <h2>歩合</h2>
- <p class="tier-desc">非推奨・限定用途</p>
- <p class="price">1〜30% <small style="font-size:14px;font-weight:500;color:var(--text-muted);">(受任報酬比)</small></p>
- <p class="price-unit">上限 30%</p>
+ <h2>表示順</h2>
+ <p class="tier-desc">広告順位ではありません</p>
+ <p class="price">非連動 <small style="font-size:14px;font-weight:500;color:var(--text-muted);">/ 報酬額</small></p>
+ <p class="price-unit">登録無料 · 成約時のみ請求</p>
  <ul class="feats">
- <li>大型補助金など弁護士以外の限定用途</li>
- <li>受任額・報酬額は表示順に非連動</li>
- <li>弁護士カテゴリでは選択対象外</li>
+ <li>表示順は支払額や受任額に連動しません</li>
+ <li>ユーザーの課題、対応領域、地域、公開プロフィールを重視</li>
+ <li>弁護士カテゴリは成果課金対象外</li>
  </ul>
  </article>
  </div>
@@ -399,7 +399,7 @@
  </span>
  </label>
  </div>
- <button type="submit" class="btn btn-primary" style="padding:14px 24px;font-size:16px;">登録して Stripe 振込先登録 へ進む</button>
+ <button type="submit" class="btn btn-primary" style="padding:14px 24px;font-size:16px;">登録して Stripe 設定へ進む</button>
  <p id="signup-status" role="status" aria-live="polite" style="color:var(--text-muted);font-size:14px;"></p>
  </form>
  </section>

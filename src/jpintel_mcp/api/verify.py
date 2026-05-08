@@ -257,10 +257,7 @@ async def verify_answer(
       * 400 too_many_claims when tokenize yields >5 atomic claims.
       * 422 from pydantic when answer_text empty or language invalid.
 
-    R8 BUGHUNT 2026-05-07: ¥3 metering wired here. Pre-fix the
-    endpoint advertised ``cost_yen: 3`` in the response but never
-    called ``log_usage`` — authenticated callers were billed ¥0,
-    burning revenue per call. AnonIpLimitDep was the only gate.
+    Authenticated calls are metered using the standard billing unit.
     """
     started = time.monotonic()
     request_id = uuid.uuid4().hex

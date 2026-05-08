@@ -144,23 +144,23 @@
  This page shows static widget examples across themes and configurations. To use it
  in production, sign up on the
  <a href="../widget.html">Widget product page</a> and embed your issued
- widget key on your origin-allowlisted site.
+ widget key on your registered site URL.
  </p>
 
  <h2>Light theme (default, English UI)</h2>
  <div class="panel">
- <div class="static-widget-preview" data-jpcite-preview data-example-key="wgt_demo_STATIC_ONLY">
+ <div class="static-widget-preview" data-jpcite-preview data-example-key="static-preview">
  <strong>Tokyo / restaurant / equipment investment</strong>
  Example output includes source URLs, fetched timestamps, deadline candidates, and prescreen questions.
  </div>
  <p class="note">
- This page does not call the live API. On your site, results render only when an issued key and allowlisted origin match.
+ This page does not call the live API. On your site, results render only when an issued key and registered site URL match.
  </p>
  </div>
 
  <h2>Dark theme (English UI)</h2>
  <div class="panel dark">
- <div class="static-widget-preview" data-jpcite-preview data-example-key="wgt_demo_STATIC_ONLY">
+ <div class="static-widget-preview" data-jpcite-preview data-example-key="static-preview">
  <strong>Manufacturing / energy-saving investment</strong>
  Dark theme uses the same evidence-linked candidate-card structure.
  </div>
@@ -168,7 +168,7 @@
 
  <h2>Prefecture filter only (compact)</h2>
  <div class="panel">
- <div class="static-widget-preview" data-jpcite-preview data-example-key="wgt_demo_STATIC_ONLY">
+ <div class="static-widget-preview" data-jpcite-preview data-example-key="static-preview">
  <strong>Prefecture-only filter</strong>
  Compact example for small consultation pages.
  </div>
@@ -176,7 +176,7 @@
 
  <h2>Japanese UI (language=ja)</h2>
  <div class="panel">
- <div class="static-widget-preview" data-jpcite-preview data-example-key="wgt_demo_STATIC_ONLY">
+ <div class="static-widget-preview" data-jpcite-preview data-example-key="static-preview">
  <strong>Japanese UI</strong>
  Japanese labels with source-linked program cards.
  </div>
@@ -185,13 +185,13 @@
  <h2>Programmatic (JS API)</h2>
  <div class="panel">
  <div id="programmatic-target" class="static-widget-preview">
- Programmatic mount point example. Paste the code below into your own allowlisted origin.
+ Programmatic mount point example. Paste the code below into your own registered site URL.
  </div>
  </div>
 
  <pre><code>new Jpcite.Widget({
  container: '#programmatic-target',
- key: 'YOUR_WIDGET_KEY',
+ key: 'issued-widget-key',
  filters: ['industry', 'prefecture'],
  theme: 'light',
  language: 'en',
@@ -201,7 +201,7 @@
 
  <h2>Embed snippet (two lines)</h2>
  <pre><code>&lt;script src="https://jpcite.com/widget/jpcite.js"&gt;&lt;/script&gt;
-&lt;div data-jpcite-widget data-key="YOUR_WIDGET_KEY"&gt;&lt;/div&gt;</code></pre>
+&lt;div data-jpcite-widget data-key="issued-widget-key"&gt;&lt;/div&gt;</code></pre>
 
  <p class="note">
  A single snippet produces the search UI, results list, primary-source
@@ -218,7 +218,7 @@
   if (!window.Jpcite || !window.Jpcite.Widget) return;
   new Jpcite.Widget({
     container: "#programmatic-target",
-    key: "YOUR_WIDGET_KEY",
+    key: "issued-widget-key",
     filters: ["industry", "prefecture"],
     theme: "light",
     language: "en",

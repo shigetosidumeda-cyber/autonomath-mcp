@@ -307,7 +307,7 @@
 
   // Resolve API base. Production = api.jpcite.com; preview / local fall
   // back to relative ('/v1/...') so the page works under `python -m http.server`.
-  // Cloudflare Pages → api.jpcite.com is CORS-allowed (see CORS gotchas in CLAUDE.md).
+  // Cloudflare Pages → api.jpcite.com is CORS-allowed (see CORS allowlist).
   var API_BASE =
     (location.host.indexOf("jpcite.com") >= 0)
       ? "https://api.jpcite.com"

@@ -2,10 +2,10 @@
 //
 // 1. Plausible injection (consent-free, no cookies).
 //
-//    Activate by setting window.JPINTEL_ANALYTICS before this script loads,
+//    Activate by setting window.JPCITE_ANALYTICS before this script loads,
 //    e.g. via a small inline tag in index.html / pricing.html:
 //
-//      <script>window.JPINTEL_ANALYTICS = { domain: "jpcite.com" };</script>
+//      <script>window.JPCITE_ANALYTICS = { domain: "jpcite.com" };</script>
 //
 //    If unset this block is a no-op and no external request is made.
 //
@@ -24,7 +24,7 @@
 //      jpciteTrack('quickstart_copy', { snippet: 'curl-search' });
 //
 //    Defaults:
-//      - API base: window.JPCITE_API_BASE || window.JPINTEL_API_BASE ||
+//      - API base: window.JPCITE_API_BASE ||
 //        'https://api.jpcite.com'
 //      - Endpoint: <base>/v1/funnel/event (POST JSON payload)
 //      - Transport: navigator.sendBeacon when available (survives nav),
@@ -34,13 +34,13 @@
 //      - Session id: random 128-bit hex stored in sessionStorage so events
 //        within the same tab can be chained without persistent identifiers.
 //      - Page: location.pathname (query string stripped).
-//      - Authorisation: included as Bearer when window.JPINTEL_API_KEY is
+//      - Authorisation: included as Bearer when window.JPCITE_API_KEY is
 //        set (dashboard pages); otherwise omitted (anon).
 //      - All exceptions swallowed — analytics MUST NOT break the page.
 (function () {
   // ----- 1. Plausible injection -------------------------------------------
   try {
-    var cfg = window.JPINTEL_ANALYTICS;
+    var cfg = window.JPCITE_ANALYTICS;
     if (cfg && cfg.domain) {
       var s = document.createElement('script');
       s.defer = true;
@@ -84,7 +84,7 @@
   }
 
   function apiBase() {
-    var base = window.JPCITE_API_BASE || window.JPINTEL_API_BASE;
+    var base = window.JPCITE_API_BASE;
     if (typeof base === 'string' && base.length > 0) return base;
     return 'https://api.jpcite.com';
   }
@@ -100,7 +100,7 @@
         properties: properties && typeof properties === 'object' ? properties : null,
       });
 
-      var apiKey = window.JPINTEL_API_KEY;
+      var apiKey = window.JPCITE_API_KEY;
       var hasApiKey = typeof apiKey === 'string' && apiKey.length > 0;
       var headers = {
         'Content-Type': hasApiKey
@@ -174,7 +174,7 @@
       || p === '/en/pricing'
       || p === '/en/pricing.html'
     ) {
-      // Defer to the next tick so any inline JPINTEL_API_KEY assignment
+      // Defer to the next tick so any inline JPCITE_API_KEY assignment
       // gets to run before we check for it.
       setTimeout(function () {
         send('pricing_view', p.indexOf('/en/') === 0 ? { locale: 'en' } : null);

@@ -1469,8 +1469,8 @@ class DeepHealthResponse(BaseModel):
     ``sentry_active`` (read-only) reflects whether ``_init_sentry`` succeeded
     at lifespan startup. False when Sentry is not configured or the production
     runtime gate was not satisfied. Aggregate ``status`` is
-    intentionally unaffected — Sentry being dark is a meta-signal for the
-    operator, not a fail/warn for the API itself.
+    intentionally unaffected because error reporting availability is
+    separate from data/API health.
     """
 
     model_config = _ALLOW_EXTRA
@@ -1479,7 +1479,7 @@ class DeepHealthResponse(BaseModel):
     checks: dict[str, Any] = Field(default_factory=dict)
     sentry_active: bool | None = Field(
         default=None,
-        description="True iff Sentry SDK initialised at API lifespan startup.",
+        description="True when error reporting was initialised at API startup.",
     )
     generated_at: str | None = None
 

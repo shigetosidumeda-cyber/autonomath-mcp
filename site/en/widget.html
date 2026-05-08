@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <meta name="color-scheme" content="light dark">
-<title>Embed Japanese-subsidy search in one line — jpcite Widget</title>
-<meta name="description" content="A drop-in JavaScript widget that adds Japanese-subsidy search to advisor firm sites, chambers of commerce, and SMB-support portals. Two lines of HTML, no build step. ¥3/search tax exclusive (¥3.30 tax inclusive), no fixed monthly fee.">
+<title>Add a prescreen intake to your site — jpcite Widget</title>
+<meta name="description" content="A drop-in JavaScript widget for advisor firm sites, chambers of commerce, and SMB-support portals. Add script plus div to show candidate programs, primary-source URLs, fetched timestamps, and prescreen questions. ¥3 per completed search request tax exclusive (¥3.30 tax inclusive), no fixed monthly fee.">
 
-<meta property="og:title" content="jpcite Widget — embed subsidy search in one line">
-<meta property="og:description" content="A drop-in JS widget for Japanese-subsidy search. Origin-locked keys, primary-source links, no build step.">
+<meta property="og:title" content="jpcite Widget — prescreen intake for advisor sites">
+<meta property="og:description" content="A drop-in JS widget for candidate programs, primary-source links, fetched timestamps, and prescreen questions. Keys are limited to your registered site URLs. No build step.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/en/widget.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -19,8 +19,8 @@
 <meta property="og:locale:alternate" content="ja_JP">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="jpcite Widget — embed subsidy search in one line">
-<meta name="twitter:description" content="Drop-in subsidy search for advisor sites with origin-locked keys and primary-source links.">
+<meta name="twitter:title" content="jpcite Widget — prescreen intake for advisor sites">
+<meta name="twitter:description" content="Drop-in prescreen results for advisor sites with site-URL-limited keys and primary-source links.">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/en/widget">
@@ -52,7 +52,7 @@
   "@context": "https://schema.org",
   "@type": "Product",
   "name": "jpcite Widget",
-  "description": "A drop-in JavaScript widget that lets advisor firms and SMB-support sites embed Japanese-subsidy search with one script tag. ¥3/search tax exclusive (¥3.30 tax inclusive), no fixed monthly fee.",
+  "description": "A drop-in JavaScript widget that lets advisor firms and SMB-support sites show candidate programs, primary-source URLs, fetched timestamps, and prescreen questions. ¥3 per completed search request tax exclusive (¥3.30 tax inclusive), no fixed monthly fee.",
   "brand": {"@type": "Brand", "name": "jpcite"},
   "url": "https://jpcite.com/en/widget.html",
   "inLanguage": "en",
@@ -62,7 +62,7 @@
       "name": "Metered widget",
       "price": "3",
       "priceCurrency": "JPY",
-      "description": "¥3/search metered tax exclusive (¥3.30 tax inclusive). No fixed monthly fee.",
+      "description": "¥3 per completed search request metered tax exclusive (¥3.30 tax inclusive). No fixed monthly fee.",
       "url": "https://jpcite.com/en/widget.html",
       "availability": "https://schema.org/InStock",
       "seller": {
@@ -300,25 +300,25 @@
  <nav aria-label="Breadcrumb" style="font-size:13px;color:var(--text-muted);text-align:left;margin-bottom:16px;">
  <a href="index.html">Home</a> &raquo; <a href="products.html">Products</a> &raquo; <span aria-current="page">Widget</span>
  </nav>
- <h1>Add Japanese-subsidy search<br>to your site in one line</h1>
+ <h1>Add a prescreen intake<br>to your site</h1>
  <p class="lead">
  A drop-in JavaScript widget for advisor firms, chambers of commerce, and SMB-support
  portals. Paste a <code>&lt;script&gt;</code> tag plus a single <code>&lt;div&gt;</code>;
- filters, results, and primary-source links render automatically — no build step,
- no React/Vue dependency.
+ candidate programs, primary-source links, fetched timestamps, and prescreen questions
+ render automatically — no build step, no React/Vue dependency.
  </p>
 
  <div class="code-block" id="snippet-pre">
 <span><!-- 1. Paste these two lines into your site's HTML. --></span>
 <span>&lt;script async src="https://jpcite.com/widget/jpcite.js"&gt;&lt;/script&gt;</span>
-<span>&lt;div data-jpcite-widget data-key="YOUR_WIDGET_KEY"&gt;&lt;/div&gt;</span>
+<span>&lt;div data-jpcite-widget data-key="[issued-widget-key]"&gt;&lt;/div&gt;</span>
  <button class="copy-btn" type="button" id="copy-btn" aria-label="Copy snippet">Copy</button>
  </div>
  </section>
 
  <section class="demo-wrap container">
  <h2>Static example (no API call)</h2>
- <div class="feature" data-jpcite-preview data-example-key="wgt_demo_STATIC_ONLY">
+ <div class="feature" data-jpcite-preview data-example-key="static-preview">
  <h3>Tokyo / restaurant / equipment investment</h3>
  <p>
  Example output includes source URLs, fetched timestamps, deadline candidates,
@@ -326,7 +326,7 @@
  </p>
  </div>
  <p class="tokushoho-note">
- With a production key whose origin is allowlisted, live results render on your site.
+ With a production key registered to your site URL, live results render on your site.
  See the
  <a href="../widget/demo.html">widget demo page</a> for additional themes
  (static light / dark / programmatic examples).
@@ -337,7 +337,7 @@
  <h2 style="text-align:center;margin:36px 0 8px;">Why teams ship the widget</h2>
  <div class="feature-grid">
  <div class="feature">
- <h3>One-line install</h3>
+ <h3>Script plus div install</h3>
  <p>
  Just a script tag and a div. Works in plain HTML — no React/Vue,
  no build pipeline. Drops into existing CMS pages.
@@ -351,9 +351,9 @@
  </p>
  </div>
  <div class="feature">
- <h3>Origin-locked keys</h3>
- <p>
- Each key is bound to allowlisted origins, blocking click-bombs and
+ <h3>Limited to your site URLs</h3>
+<p>
+ Each key is bound to registered site URLs, blocking click-bombs and
  unauthorized third-party reuse.
  </p>
  </div>
@@ -374,8 +374,8 @@
  <div class="feature">
  <h3>Self-serve metered billing</h3>
  <p>
- Keys are issued automatically via Stripe Checkout. Every successful
- widget search is billed at the same ¥3/search API price.
+	 Keys are issued automatically via Stripe Checkout. Every completed
+	 widget search request is billed at ¥3 tax exclusive (¥3.30 tax inclusive).
  </p>
  </div>
  </div>
@@ -384,24 +384,24 @@
  <section class="container" aria-labelledby="plan-title">
  <h2 id="plan-title" style="text-align:center;margin:40px 0 6px;">Widget pricing</h2>
  <p style="text-align:center;color:var(--text-muted);">
- The widget uses the same fixed metered price as the API: ¥3/search tax
- exclusive (¥3.30 tax inclusive), with no seat fee or monthly minimum.
+	 The widget uses fixed metered pricing: ¥3 per completed search request tax
+	 exclusive (¥3.30 tax inclusive), with no seat fee or monthly minimum.
  </p>
 
  <div class="plan-grid">
  <article class="plan highlight" aria-labelledby="plan-business">
  <h3 id="plan-business">Metered widget</h3>
- <p class="price">¥3 <span style="font-size:14px;font-weight:400;color:var(--text-muted);">/ search (tax excl.)</span></p>
- <p class="unit">¥3.30/search tax incl.; no fixed monthly fee</p>
+ <p class="price">¥3 <span style="font-size:14px;font-weight:400;color:var(--text-muted);">/ completed search request (tax excl.)</span></p>
+ <p class="unit">¥3.30/completed search request tax incl.; no fixed monthly fee</p>
  <ul>
  <li>Designed for advisor firms and SMB-support sites</li>
- <li>Every successful search returns primary-source links</li>
- <li>Usage is billed automatically via Stripe at ¥3.30/search tax incl.</li>
+ <li>Completed search requests return primary-source links when a matching record is found</li>
+ <li>Usage is billed automatically via Stripe at ¥3.30/completed search request tax incl.</li>
  <li>"Powered by jpcite" footer is shown</li>
- <li>Multiple origins per key (prod + staging, etc.)</li>
+ <li>Multiple site URLs per key (prod + www, etc.)</li>
  <li>Qualified invoice issued automatically by Stripe</li>
  </ul>
- <button type="button" class="btn" data-plan="business" id="cta-business">Sign up for metered widget</button>
+ <button type="button" class="btn" data-plan="metered" id="cta-business">Sign up for metered widget</button>
  </article>
  </div>
  </section>
@@ -410,8 +410,8 @@
  <h2 id="signup-title">Sign-up form</h2>
  <p style="color:var(--text-muted);font-size:14px;">
  Fill in the fields below and click "Continue to checkout" — you'll be
- redirected to Stripe Checkout. Once payment completes, your production
- widget key is issued via the dashboard.
+ redirected to Stripe Checkout. Once payment completes, this browser shows
+ your browser widget key and paste-ready snippet.
  </p>
  <form id="signup-form">
  <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
@@ -425,11 +425,11 @@
  <div class="field">
  <label for="signup-plan">Plan</label>
  <select id="signup-plan">
- <option value="business">Metered widget — ¥3/search tax excl.</option>
+ <option value="metered">Metered widget — ¥3/completed search request tax excl.</option>
  </select>
  </div>
  <div class="field">
- <label for="signup-origins">Allowed origins (one per line, include https://) <span aria-hidden="true" style="color:var(--danger)">*</span></label>
+ <label for="signup-origins">Site URLs where the widget will be installed (one per line, include https://) <span aria-hidden="true" style="color:var(--danger)">*</span></label>
  <textarea id="signup-origins" required aria-required="true" placeholder="https://example.com&#10;https://*.example.com"></textarea>
  </div>
  <div class="field">
@@ -487,13 +487,15 @@
 <script src="../widget/jpcite.js"></script>
 <script>
 (function () {
+  var API_BASE = "https://api.jpcite.com";
+
   // Copy button
   var btn = document.getElementById("copy-btn");
   if (btn) {
     btn.addEventListener("click", function () {
       var text = [
         '<script async src="https://jpcite.com/widget/jpcite.js"><\/script>',
-        '<div data-jpcite-widget data-key="YOUR_WIDGET_KEY"><\/div>'
+        '<div data-jpcite-widget data-key="[issued-widget-key]"><\/div>'
       ].join("\n");
       if (navigator.clipboard) {
         navigator.clipboard.writeText(text).then(function () {
@@ -549,7 +551,15 @@
 
     if (origins.length === 0) {
       status.className = "status err";
-      status.textContent = "Specify at least one allowed origin.";
+      status.textContent = "Specify at least one site URL.";
+      return;
+    }
+    var invalidOrigin = origins.find(function (origin) {
+      return !/^https:\/\/[^/]+$/.test(origin) && !/^https:\/\/\*\.[^/]+$/.test(origin);
+    });
+    if (invalidOrigin) {
+      status.className = "status err";
+      status.textContent = "Use a site URL like https://example.com or https://*.example.com.";
       return;
     }
 
@@ -559,7 +569,7 @@
     var ctrl = new AbortController();
     var timer = setTimeout(function () { ctrl.abort(); }, 15000);
 
-    fetch("/v1/widget/signup", {
+    fetch(API_BASE + "/v1/widget/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -567,7 +577,7 @@
         plan: plan,
         label: label || null,
         origins: origins,
-        success_url: "https://jpcite.com/success.html?session_id={CHECKOUT_SESSION_ID}",
+        success_url: "https://jpcite.com/en/widget/success.html?session_id={CHECKOUT_SESSION_ID}",
         cancel_url: "https://jpcite.com/en/widget.html?cancelled=1"
       }),
       signal: ctrl.signal

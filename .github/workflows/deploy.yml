@@ -28,7 +28,7 @@ jobs:
   fly:
     name: Deploy to Fly.io
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 90
     # For workflow_run events: only deploy when the triggering CI run passed.
     # workflow_dispatch bypasses this guard (operator-initiated re-deploy of a
     # commit already known to be green).
@@ -127,6 +127,7 @@ jobs:
 
       - name: Hydrate jpintel seed DB for Docker build
         if: steps.fly-token.outputs.available == 'true'
+        timeout-minutes: 25
         run: |
           set -euo pipefail
           mkdir -p data
@@ -149,10 +150,15 @@ jobs:
             # so any small dev fixture must be removed before the fetch.
             rm -f data/jpintel.db
             remote_seed="/tmp/jpintel-ci-seed.db"
+            cleanup_remote_seed() {
+              flyctl ssh console -a autonomath-api -q -C "rm -f ${remote_seed}" || true
+            }
+            trap cleanup_remote_seed EXIT
             flyctl ssh console -a autonomath-api -q -C \
               "bash -lc 'set -euo pipefail; rm -f ${remote_seed}; sqlite3 /data/jpintel.db \".backup ${remote_seed}\"; sqlite3 ${remote_seed} \"PRAGMA quick_check; SELECT COUNT(*) FROM programs;\"'"
             flyctl ssh sftp get -a autonomath-api -q "${remote_seed}" data/jpintel.db
-            flyctl ssh console -a autonomath-api -q -C "rm -f ${remote_seed}" || true
+            cleanup_remote_seed
+            trap - EXIT
           fi
 
           bytes="$(wc -c < data/jpintel.db | tr -d ' ')"
@@ -214,6 +220,7 @@ jobs:
 
       - name: Deploy (remote builder)
         if: steps.fly-token.outputs.available == 'true'
+        timeout-minutes: 35
         # --remote-only pushes the build to Fly's builder VM so local runner doesn't need docker.
         # -e SENTRY_RELEASE=... sets the env on the machine at deploy time;
         # complements the SENTRY_ENVIRONMENT already pinned in fly.toml.
@@ -226,6 +233,7 @@ jobs:
 
       - name: Verify Fly machine state pre-probe
         if: steps.fly-token.outputs.available == 'true'
+        timeout-minutes: 5
         # Wait for machine state=started before reading image, then verify
         # Fly machine is running the SHA we just deployed. Race condition
         # (run 25481404553, 2026-05-07): pre-probe ran while machine was
@@ -266,46 +274,61 @@ jobs:
 
       - name: Post-deploy smoke (hard gate)
         if: steps.fly-token.outputs.available == 'true'
+        timeout-minutes: 30
         # Hard gate AFTER flyctl deploy completes. We re-run the same probes
         # operators run manually (scripts/smoke_test.sh) but treat any
         # "WARN" (deep_health.status != "ok", programs total <= 0) as a HARD
         # FAIL so a green deploy with degraded data never silently ships.
-        # The sleep gives Fly's machine up to ~60s to swap traffic to the new
-        # release machine before we probe — observed Fly p99 machine swap is in
-        # the 60–90s range, so 25s caused a race-condition false-positive on
-        # run 25474923802 (2026-05-07). 60s clears p99 with margin while still
-        # well under the 20-minute job timeout.
+        # Poll after flyctl deploy completes because machine replacement and
+        # deep data hydration can finish at different times. A fixed sleep was
+        # too fragile for large corpus deploys.
         env:
           BASE_URL: https://api.jpcite.com
         run: |
           set -euo pipefail
-          sleep 60
-
           echo "== Post-deploy hard gate =="
 
-          # Probe 1: /healthz must be HTTP 200.
-          status=$(curl -fsS -o /dev/null -w '%{http_code}' --max-time 30 "$BASE_URL/healthz" || echo 000)
-          echo "GET /healthz -> $status"
-          if [ "$status" != "200" ]; then
-            echo "::error::POST-DEPLOY FAIL: /healthz expected 200 got $status"
+          # Probe 1: /healthz must become HTTP 200.
+          health_ok=0
+          for i in $(seq 1 24); do
+            status=$(curl -fsS -o /dev/null -w '%{http_code}' --max-time 10 "$BASE_URL/healthz" || echo 000)
+            echo "GET /healthz attempt $i -> $status"
+            if [ "$status" = "200" ]; then
+              health_ok=1
+              break
+            fi
+            sleep 10
+          done
+          if [ "$health_ok" != "1" ]; then
+            echo "::error::POST-DEPLOY FAIL: /healthz did not become 200"
             exit 1
           fi
 
           # Probe 2: /v1/am/health/deep?fail_on_unhealthy=true must return status='ok'.
           # Anything else (degraded / unhealthy / 5xx body) is a hard fail.
-          curl -fsS --max-time 20 -o /tmp/deep_health.json \
-            "$BASE_URL/v1/am/health/deep?fail_on_unhealthy=true" || {
-            echo "::error::POST-DEPLOY FAIL: deep health endpoint did not return 2xx"
+          deep_ok=0
+          for i in $(seq 1 60); do
+            if curl -fsS --max-time 10 -o /tmp/deep_health.json \
+              "$BASE_URL/v1/am/health/deep?fail_on_unhealthy=true"; then
+              deep_status=$(python3 -c "import json; print(json.load(open('/tmp/deep_health.json')).get('status',''))")
+              echo "deep_health attempt $i status=$deep_status"
+              if [ "$deep_status" = "ok" ]; then
+                deep_ok=1
+                break
+              fi
+            else
+              echo "deep_health attempt $i returned non-2xx"
+              cat /tmp/deep_health.json 2>/dev/null || true
+            fi
+            sleep 15
+          done
+          if [ "$deep_ok" != "1" ]; then
+            echo "::error::POST-DEPLOY FAIL: deep_health.status did not become 'ok'"
             cat /tmp/deep_health.json 2>/dev/null || true
             exit 1
-          }
+          fi
           deep_status=$(python3 -c "import json,sys; print(json.load(open('/tmp/deep_health.json')).get('status',''))")
           echo "deep_health.status=$deep_status"
-          if [ "$deep_status" != "ok" ]; then
-            echo "::error::POST-DEPLOY FAIL: deep_health.status=$deep_status (must be 'ok')"
-            cat /tmp/deep_health.json
-            exit 1
-          fi
 
           # Probe 3: /v1/programs/search must return total>0 for the canonical
           # 補助金 query. total<=0 means the search corpus is empty / FTS index

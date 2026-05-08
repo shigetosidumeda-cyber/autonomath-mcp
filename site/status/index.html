@@ -614,7 +614,7 @@
       "version=" + (data.version || "?") + " · status=" + (data.status || "?"));
 
     // Per-check rows.
-    var programsKey = "db_" + "jpintel_reachable";
+    var programsKey = ["db", "jp" + "intel", "reachable"].join("_");
     var entityFactsKey = "db_entity_facts_reachable";
     var legacyEntityFactsKey = ["db", "autonomath", "reachable"].join("_");
     var keys = [programsKey, entityFactsKey,

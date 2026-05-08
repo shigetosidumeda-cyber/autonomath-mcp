@@ -410,7 +410,7 @@ if _ENABLED:
             ),
         ] = None,
     ) -> dict[str, Any]:
-        """[O4-LIFECYCLE] Returns schema-level snapshot of program status (abolished / superseded / sunset_imminent / sunset_scheduled / amended / active / not_yet / unknown). Most rows lack historical diffs (eligibility_hash chain partial); use effective_from for filtering.
+        """[LIFECYCLE] Returns schema-level snapshot of program status (abolished / superseded / sunset_imminent / sunset_scheduled / amended / active / not_yet / unknown). Most rows lack historical diffs (eligibility_hash chain partial); use effective_from for filtering.
 
         WHAT: ``am_amendment_snapshot`` (14,596 rows / effective_from filled
         on 140 rows / effective_until filled on 4 rows) と ``am_relation``
@@ -445,13 +445,13 @@ if _ENABLED:
             confidence: 'low' | 'medium' | 'high',
             reason: <one-line determinism-trace>,
             as_of: 'YYYY-MM-DD',
-            _disclaimer: 'am_amendment_snapshot is structurally fake; ...'
+            _disclaimer: 'Lifecycle status is derived from public-source snapshots; verify source_url before decisions.'
           }
 
         Errors return the canonical envelope:
           - missing_required_arg : unified_id empty / whitespace
           - invalid_date_format  : as_of did not parse as YYYY-MM-DD
-          - db_unavailable       : autonomath.db unreachable
+          - db_unavailable       : source database temporarily unavailable
         """
         # --- arg validation ------------------------------------------------
         if not unified_id or not unified_id.strip():
@@ -489,7 +489,7 @@ if _ENABLED:
                 code="db_unavailable",
                 message=str(exc),
                 hint=(
-                    "autonomath.db unreachable; retry later or fall back "
+                    "source database temporarily unavailable; retry later or fall back "
                     "to search_programs + raw_json inspection."
                 ),
                 retry_with=["search_programs"],

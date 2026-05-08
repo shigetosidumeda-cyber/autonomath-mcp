@@ -19,7 +19,7 @@ logger = logging.getLogger("jpintel.mcp.am.health")
 
 @mcp.tool(annotations=_READ_ONLY)
 def deep_health_am() -> dict[str, object]:
-    """Aggregate health: 10 checks across both DBs + static bundle.
+    """Aggregate health: corpus stores + static bundle.
 
     Status is ``ok`` / ``degraded`` / ``unhealthy``. Always returns a document —
     never raises — so callers can use it as a heartbeat. Mirrors the REST
@@ -28,7 +28,7 @@ def deep_health_am() -> dict[str, object]:
 
     Example:
         deep_health_am()
-        → {"status": "ok", "checks": [{"name": "jpintel_db", "ok": true, ...}, ...]}
+        → {"status": "ok", "checks": [{"name": "primary_corpus_db", "ok": true, ...}, ...]}
 
     When NOT to call:
         - As a substitute for real data tools — health says "DB reachable",

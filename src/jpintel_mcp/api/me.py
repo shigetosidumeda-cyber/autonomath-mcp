@@ -1091,8 +1091,8 @@ def rotate_key(
 # Child API keys (migration 086 — sub-API-key SaaS B2B fan-out)
 # ---------------------------------------------------------------------------
 #
-# A parent paid key can issue up to MAX_CHILDREN_PER_PARENT (1,000) child
-# keys, one per 顧問先 (税理士 fan-out cohort #2 in CLAUDE.md). Each child
+# A parent paid key can issue a bounded number of child keys, one per 顧問先.
+# Each child
 # inherits the parent's tier, monthly_cap_yen, and stripe_subscription_id
 # verbatim — Stripe sees only the parent subscription, so no separate
 # Checkout / cancel flow is needed for children.
@@ -1169,9 +1169,8 @@ def issue_child_key_route(
     Constraints enforced upstream:
       * Caller must be the parent (children cannot spawn grandchildren —
         the helper rejects with `nesting_forbidden`).
-      * Per-parent cap is MAX_CHILDREN_PER_PARENT (1,000) NON-revoked
-        children — `child_cap_exceeded` once exhausted. Revoked siblings
-        free up slots.
+      * Per-parent cap applies to active child keys; the API returns
+        `child_cap_exceeded` once exhausted. Revoked siblings free up slots.
       * Label is required, ≤64 chars, no control characters.
     """
     parent_hash, _tier = me
@@ -1266,11 +1265,10 @@ def revoke_child_key_route(
 ) -> dict[str, object]:
     """Revoke a single child key by id, scoped to the caller's parent.
 
-    The parent_key_hash gate inside the helper is critical: without it
-    a stolen child id alone would let any caller revoke any child
-    (rowids are guessable). Returns `{"revoked": true}` when a row was
-    flipped, or 404 with `child_not_found` when the id is unknown to
-    this parent (already revoked, never existed, or belongs to a
+    The parent_key_hash gate inside the helper scopes the requested child
+    id to the caller's parent account. Returns `{"revoked": true}` when a
+    row was flipped, or 404 with `child_not_found` when the id is unknown
+    to this parent (already revoked, never existed, or belongs to a
     different parent).
     """
     parent_hash, _tier = me

@@ -208,7 +208,7 @@
  <ul>
  <li><strong>RPO (Recovery Point Objective)</strong>: 24 時間。 Cloudflare R2 weekly backup + Fly.io volume snapshot daily</li>
  <li><strong>RTO (Recovery Time Objective)</strong>: 4 時間。 Fly.io 別 region (HND fallback) + 最新 R2 backup から restore</li>
- <li><strong>Backup スクリプト</strong>: <code>scripts/cron/backup_autonomath.py</code> + <code>scripts/cron/backup_jpintel.py</code> + <code>scripts/cron/r2_backup.sh</code> を GitHub Actions <code>weekly-backup-autonomath.yml</code> で実行</li>
+	 <li><strong>Backup スクリプト</strong>: API DB backup と R2 backup を GitHub Actions の定期ジョブで実行</li>
  <li><strong>Restore drill</strong>: 四半期 1 回、別 region に R2 backup から restore して boot 確認</li>
  <li><strong>Backup 暗号化</strong>: R2 server-side encryption (AES-256)、key は Cloudflare 管理</li>
  </ul>
@@ -246,7 +246,7 @@
  <table>
  <thead><tr><th>代替表明</th><th>状態</th><th>検証 URL (取得後)</th></tr></thead>
  <tbody>
- <tr><td>OpenSSF Best Practices Badge (passing → silver → gold)</td><td><span class="sec-pill note">申請準備中</span></td><td>https://www.bestpractices.dev/projects/&lt;id&gt; (取得後追記)</td></tr>
+ <tr><td>OpenSSF Best Practices Badge (passing → silver → gold)</td><td><span class="sec-pill note">申請予定</span></td><td>https://www.bestpractices.dev/projects/&lt;id&gt; (取得後追記)</td></tr>
  <tr><td>OWASP ASVS Level 1 self-assessment</td><td><span class="sec-pill note">作業中</span></td><td><a href="/security/asvs.html">/security/asvs.html</a> (公開後)</td></tr>
  <tr><td>CSA STAR CAIQ (self-assessment Level 1)</td><td><span class="sec-pill note">作業中</span></td><td><a href="/security/caiq.html">/security/caiq.html</a> (公開後)</td></tr>
  <tr><td>Cloudflare Trust Hub (CF 側 control)</td><td><span class="sec-pill ok">参照可</span></td><td><a href="https://www.cloudflare.com/trust-hub/" rel="noopener">cloudflare.com/trust-hub/ →</a></td></tr>
@@ -263,7 +263,7 @@
  <li><strong>連絡先</strong>: <a href="mailto:info@bookyou.net">info@bookyou.net</a> (件名先頭に <code>[security]</code> を付すとセキュリティ報告として優先処理)</li>
  </ul>
 
- <p class="sec-foot">本 page は外部公開向けの security overview です。 内部 operator 専用の詳細 (具体的 secret 管理 procedure、incident war room 手順、boot invariant 完全リスト) は <code>docs/security_posture.md</code> (operator-only) を別途管理しています。 関連 page: <a href="/trust/purchasing.html">法人購買 1-screen</a> · <a href="/security/policy.html">脆弱性開示ポリシー</a> · <a href="/.well-known/security.txt">security.txt (RFC 9116)</a> · <a href="/.well-known/trust.json">trust.json (machine-readable)</a> · <a href="/legal-fence.html">法令フェンス</a></p>
+	 <p class="sec-foot">本 page は外部公開向けの security overview です。 詳細な運用手順や具体的な secret 管理手順は公開範囲から外しています。 関連 page: <a href="/trust/purchasing.html">法人購買 1-screen</a> · <a href="/security/policy.html">脆弱性開示ポリシー</a> · <a href="/.well-known/security.txt">security.txt (RFC 9116)</a> · <a href="/.well-known/trust.json">trust.json (machine-readable)</a> · <a href="/legal-fence.html">法令フェンス</a></p>
 
  </div>
 </main>

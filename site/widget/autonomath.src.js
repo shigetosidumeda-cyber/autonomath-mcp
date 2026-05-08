@@ -59,7 +59,8 @@
       searching: "検索中...",
       no_results: "該当する制度が見つかりませんでした。",
       error_origin: "このサイトはこのキーで許可されていません。",
-      error_quota: "リクエスト上限に達しました。匿名枠は JST の日次枠で管理されます。",
+      error_quota: "この widget key の請求状態を確認できません。サイト運営者へお問い合わせください。",
+      error_billing: "利用量を記録できませんでした。少し時間を置いて再度お試しください。",
       error_rate: "短時間にリクエストが多すぎます。しばらくお待ちください。",
       error_network: "通信エラーが発生しました。",
       error_invalid_key: "widget key が無効です。",
@@ -71,6 +72,8 @@
       freetext_placeholder: "例: IT導入補助金 / 省エネ",
       amount_label: "上限金額",
       deadline_label: "締切",
+      fetched_label: "出典取得",
+      questions_label: "相談前の確認",
       view_detail: "詳細を見る",
       source_label: "一次資料",
       powered_by: "Powered by jpcite",
@@ -81,7 +84,8 @@
       searching: "Searching...",
       no_results: "No matching programs found.",
       error_origin: "This origin is not allowed for this key.",
-      error_quota: "Daily allowance exceeded (3 req/day). Resets at JST 00:00 next day.",
+      error_quota: "This widget key's billing state could not be confirmed. Contact the site owner.",
+      error_billing: "Usage could not be recorded. Please try again shortly.",
       error_rate: "Too many requests. Please wait a moment.",
       error_network: "Network error.",
       error_invalid_key: "Invalid widget key.",
@@ -93,6 +97,8 @@
       freetext_placeholder: "e.g. IT subsidy",
       amount_label: "Max amount",
       deadline_label: "Deadline",
+      fetched_label: "Source fetched",
+      questions_label: "Before consultation",
       view_detail: "View details",
       source_label: "Source",
       powered_by: "Powered by jpcite",
@@ -150,6 +156,8 @@
     ".autonomath-widget__amount{font-weight:600;color:#111827}",
     ".autonomath-widget--dark .autonomath-widget__amount{color:#f8fafc}",
     ".autonomath-widget__actions{margin-top:6px;display:flex;gap:12px;flex-wrap:wrap;font-size:13px}",
+    ".autonomath-widget__questions{margin:6px 0 0;padding-left:18px;font-size:12px;color:#4b5563}",
+    ".autonomath-widget--dark .autonomath-widget__questions{color:#cbd5e1}",
     ".autonomath-widget__link{color:#4f46e5;text-decoration:none;font-weight:500}",
     ".autonomath-widget__link:hover{text-decoration:underline}",
     ".autonomath-widget--dark .autonomath-widget__link{color:#a5b4fc}",
@@ -473,29 +481,43 @@
     if (program.next_deadline) {
       meta.appendChild(h("span", {}, [t(lang, "deadline_label") + ": " + program.next_deadline]));
     }
+    if (program.source_fetched_at) {
+      meta.appendChild(h("span", {}, [
+        t(lang, "fetched_label") + ": " + String(program.source_fetched_at).slice(0, 10)
+      ]));
+    }
 
     var actions = h("div", { className: "autonomath-widget__actions" });
-    var detailUrl = PROGRAM_PAGE_BASE + encodeURIComponent(program.unified_id || "") + ".html";
+    var detailUrl = program.static_url || program.public_url ||
+      (PROGRAM_PAGE_BASE + encodeURIComponent(program.unified_id || ""));
     actions.appendChild(h("a", {
       className: "autonomath-widget__link",
       href: detailUrl,
       target: "_blank",
       rel: "noopener"
     }, [t(lang, "view_detail")]));
-    if (program.official_url) {
+    var sourceUrl = program.official_url || program.source_url;
+    if (sourceUrl) {
       actions.appendChild(h("a", {
         className: "autonomath-widget__link",
-        href: program.official_url,
+        href: sourceUrl,
         target: "_blank",
         rel: "noopener"
       }, [t(lang, "source_label")]));
     }
 
-    return h("li", { className: "autonomath-widget__item" }, [
+    var children = [
       h("p", { className: "autonomath-widget__name" }, [program.primary_name || program.unified_id || ""]),
       meta,
       actions
-    ]);
+    ];
+    var qs = program.prescreen_questions || program.next_questions || [];
+    if (qs && qs.length) {
+      children.splice(2, 0, h("ul", { className: "autonomath-widget__questions" },
+        [h("li", {}, [t(lang, "questions_label") + ": " + String(qs[0])])]
+      ));
+    }
+    return h("li", { className: "autonomath-widget__item" }, children);
   };
 
   Widget.prototype._handleFetchError = function (err) {
@@ -515,6 +537,8 @@
       msg = t(lang, "error_rate");
     } else if (err.status === 402) {
       msg = t(lang, "error_quota");
+    } else if (err.status === 503 && err.body && err.body.error === "billing_queue_unavailable") {
+      msg = t(lang, "error_billing");
     } else {
       msg = t(lang, "error_network");
     }

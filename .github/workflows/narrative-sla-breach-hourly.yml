@@ -67,10 +67,10 @@ jobs:
           if [ "${DRY_RUN}" = "true" ]; then
             FLAGS="${FLAGS} --dry-run"
           fi
+          TG_BOT_TOKEN_B64="$(printf '%s' "${TG_BOT_TOKEN:-}" | base64 -w0)"
+          TG_CHAT_ID_B64="$(printf '%s' "${TG_CHAT_ID:-}" | base64 -w0)"
           flyctl ssh console -a autonomath-api \
-            -e TG_BOT_TOKEN="${TG_BOT_TOKEN:-}" \
-            -e TG_CHAT_ID="${TG_CHAT_ID:-}" \
-            -C "/opt/venv/bin/python /app/scripts/cron/narrative_report_sla_breach.py ${FLAGS}"
+            -C "export TG_BOT_TOKEN=\$(printf '%s' '${TG_BOT_TOKEN_B64}' | base64 -d); export TG_CHAT_ID=\$(printf '%s' '${TG_CHAT_ID_B64}' | base64 -d); /opt/venv/bin/python /app/scripts/cron/narrative_report_sla_breach.py ${FLAGS}"
 
       - name: Sentry alert on cron failure
         if: failure()

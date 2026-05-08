@@ -4,8 +4,10 @@ import json
 import sqlite3
 from datetime import UTC, datetime
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
+from pydantic import ValidationError
 
 
 def test_usage_reporter_prefers_metered_overage_subscription_item(monkeypatch):
@@ -192,6 +194,83 @@ def test_widget_signup_plan_accepts_metered_and_legacy_alias():
 
     assert current.plan == PLAN_BUSINESS
     assert legacy.plan == PLAN_BUSINESS
+
+
+def test_widget_signup_rejects_http_origin_patterns():
+    from jpintel_mcp.api.widget_auth import WidgetSignupRequest
+
+    with pytest.raises(ValidationError):
+        WidgetSignupRequest(
+            email="owner@example.com",
+            origins=["http://example.com"],
+            plan="metered",
+            success_url="https://jpcite.com/widget/success.html",
+            cancel_url="https://jpcite.com/widget.html?cancelled=1",
+        )
+    with pytest.raises(ValidationError):
+        WidgetSignupRequest(
+            email="owner@example.com",
+            origins=["https://example.com?utm=bad"],
+            plan="metered",
+            success_url="https://jpcite.com/widget/success.html",
+            cancel_url="https://jpcite.com/widget.html?cancelled=1",
+        )
+    with pytest.raises(ValidationError):
+        WidgetSignupRequest(
+            email="owner@example.com",
+            origins=["https://example.com/path"],
+            plan="metered",
+            success_url="https://jpcite.com/widget/success.html",
+            cancel_url="https://jpcite.com/widget.html?cancelled=1",
+        )
+
+
+def test_widget_signup_creates_checkout_with_widget_metadata(
+    client,
+    widget_stripe_env,
+    monkeypatch,
+):
+    import stripe
+
+    monkeypatch.setenv("STRIPE_PRICE_WIDGET_METERED", "price_widget_metered")
+    created: list[dict] = []
+
+    def _create(**kwargs):
+        created.append(kwargs)
+        return SimpleNamespace(url="https://checkout.stripe.test/cs_widget", id="cs_widget")
+
+    monkeypatch.setattr(stripe.checkout.Session, "create", _create)
+
+    response = client.post(
+        "/v1/widget/signup",
+        json={
+            "email": "owner@example.com",
+            "origins": ["https://example.com", "https://*.example.com"],
+            "plan": "metered",
+            "label": "Main site",
+            "success_url": "https://jpcite.com/widget/success.html?session_id={CHECKOUT_SESSION_ID}",
+            "cancel_url": "https://jpcite.com/widget.html?cancelled=1",
+        },
+    )
+
+    assert response.status_code == 200, response.text
+    assert response.json() == {
+        "checkout_url": "https://checkout.stripe.test/cs_widget",
+        "session_id": "cs_widget",
+    }
+    assert len(created) == 1
+    kwargs = created[0]
+    assert kwargs["mode"] == "subscription"
+    assert kwargs["line_items"] == [{"price": "price_widget_metered", "quantity": 1}]
+    assert kwargs["customer_email"] == "owner@example.com"
+    assert kwargs["success_url"].startswith("https://jpcite.com/widget/success.html")
+    metadata = kwargs["metadata"]
+    assert metadata["autonomath_product"] == "widget"
+    assert json.loads(metadata["autonomath_origins"]) == [
+        "https://example.com",
+        "https://*.example.com",
+    ]
+    assert metadata["autonomath_label"] == "Main site"
 
 
 def test_widget_signup_rejects_offsite_stripe_redirects(client, widget_stripe_env, monkeypatch):
@@ -511,6 +590,87 @@ def test_widget_origin_enforcement_defers_to_widget_allowlist(
     assert response.status_code == 200, response.text
     assert response.headers["access-control-allow-origin"] == "https://example.com"
     assert response.json()["widget"]["reqs_used_mtd"] == 1
+
+
+def test_widget_enum_values_is_not_billable(
+    client,
+    widget_schema,
+    seeded_db: Path,
+):
+    key_id = _insert_widget_key(seeded_db, allowed_origins=["https://example.com"])
+
+    response = client.get(
+        "/v1/widget/enum_values",
+        params={"key": key_id},
+        headers={"origin": "https://example.com"},
+    )
+
+    assert response.status_code == 200, response.text
+    assert response.json()["widget"]["reqs_used_mtd"] == 0
+    conn = sqlite3.connect(seeded_db)
+    try:
+        row = conn.execute(
+            "SELECT reqs_used_mtd, reqs_total FROM widget_keys WHERE key_id = ?",
+            (key_id,),
+        ).fetchone()
+    finally:
+        conn.close()
+    assert row == (0, 0)
+
+
+def test_widget_key_from_checkout_provisions_and_reveals_key(
+    client,
+    widget_schema,
+    widget_stripe_env,
+    monkeypatch,
+    seeded_db: Path,
+):
+    import stripe
+
+    session = {
+        "id": "cs_widget_success",
+        "status": "complete",
+        "mode": "subscription",
+        "payment_status": "no_payment_required",
+        "livemode": False,
+        "subscription": "sub_widget_success",
+        "customer": "cus_widget_success",
+        "customer_email": "owner@example.com",
+        "customer_details": {"email": "owner@example.com"},
+        "metadata": {
+            "autonomath_product": "widget",
+            "autonomath_plan": "metered",
+            "autonomath_origins": json.dumps(["https://example.com"]),
+            "autonomath_label": "Office widget",
+        },
+    }
+    monkeypatch.setattr(stripe.checkout.Session, "retrieve", lambda _sid: session)
+
+    response = client.post(
+        "/v1/widget/keys/from-checkout",
+        json={"session_id": "cs_widget_success"},
+    )
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["widget_key"].startswith("wgt_live_")
+    assert body["allowed_origins"] == ["https://example.com"]
+    assert body["label"] == "Office widget"
+
+    conn = sqlite3.connect(seeded_db)
+    try:
+        stored = conn.execute(
+            "SELECT key_id, stripe_customer_id, stripe_subscription_id, reqs_used_mtd "
+            "FROM widget_keys WHERE stripe_subscription_id = ?",
+            ("sub_widget_success",),
+        ).fetchone()
+    finally:
+        conn.close()
+    assert stored is not None
+    assert stored[0] == body["widget_key"]
+    assert stored[1] == "cus_widget_success"
+    assert stored[2] == "sub_widget_success"
+    assert stored[3] == 0
 
 
 def test_widget_overage_uses_unique_idempotency_key(

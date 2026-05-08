@@ -2646,8 +2646,8 @@ def create_app() -> FastAPI:
             {
                 "name": "invoice_registrants",
                 "description": (
-                    "適格請求書発行事業者 (国税庁 PDL v1.0 mirror, ~13,801 "
-                    "delta rows; monthly 4M-row bulk via cron). Confirm a "
+                    "適格請求書発行事業者 (国税庁 PDL v1.0 mirror, 13,801 "
+                    "current mirror rows; scheduled source refresh). Confirm a "
                     "13-digit 法人番号 is registered. Attribution required."
                 ),
             },

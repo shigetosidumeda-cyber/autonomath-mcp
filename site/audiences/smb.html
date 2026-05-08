@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>中小企業 経営者向け jpcite — 相談前プレ診断とLINE通知</title>
-<meta name="description" content="SMB (中小企業) 経営者向け jpcite。Playground / API で補助金・融資候補を根拠付きで確認し、LINE は保存検索・締切リマインド・相談パック更新の通知チャネルとして準備中です。">
+<title>中小企業 経営者向け jpcite — 相談前プレ診断とメール通知</title>
+<meta name="description" content="SMB (中小企業) 経営者向け jpcite。Playground / API で補助金・融資候補を根拠付きで確認し、保存検索・締切リマインド・相談パック更新をメール通知で受け取れます。">
 
-<meta property="og:title" content="SMB 経営者向け jpcite — 相談前プレ診断とLINE通知">
-<meta property="og:description" content="補助金・融資候補を根拠付きで確認し、LINE通知の提供状況も確認できます。">
+<meta property="og:title" content="SMB 経営者向け jpcite — 相談前プレ診断とメール通知">
+<meta property="og:description" content="補助金・融資候補を根拠付きで確認し、保存検索・締切リマインドをメールで受け取れます。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/audiences/smb">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -19,7 +19,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="SMB 経営者向け jpcite">
-<meta name="twitter:description" content="相談前プレ診断とLINE通知の提供状況。">
+<meta name="twitter:description" content="相談前プレ診断とメール通知。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/audiences/smb">
@@ -55,7 +55,7 @@
   "@type": "Service",
   "serviceType": "中小企業向け相談前プレ診断",
   "name": "jpcite for SMB Owners",
-  "description": "SMB 経営者向けの jpcite 相談前プレ診断。補助金・融資候補を根拠付きで確認し、LINE は保存検索・締切リマインド・相談パック更新の通知チャネルとして準備中。",
+  "description": "SMB 経営者向けの jpcite 相談前プレ診断。補助金・融資候補を根拠付きで確認し、保存検索・締切リマインド・相談パック更新をメール通知で受け取れます。",
   "provider": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
@@ -78,7 +78,7 @@
     },
     {
       "@type": "Offer",
-      "name": "LINE通知チャネル",
+      "name": "メール通知チャネル",
       "price": "0",
       "priceCurrency": "JPY",
       "description": "利用開始通知を受付中"
@@ -92,8 +92,8 @@
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    {"@type": "Question", "name": "登録は必要ですか?", "acceptedAnswer": {"@type": "Answer", "text": "Playground / API の評価導線を利用できます。LINE は利用開始通知を受け付けています。"}},
-    {"@type": "Question", "name": "LINEで有料質問できますか?", "acceptedAnswer": {"@type": "Answer", "text": "現時点の LINE は通知チャネルとして準備中です。検索や成果物作成は Playground / API 側をご利用ください。"}},
+    {"@type": "Question", "name": "登録は必要ですか?", "acceptedAnswer": {"@type": "Answer", "text": "Playground / API の評価導線を利用できます。保存検索・締切リマインドはメール通知で受け取れます。"}},
+    {"@type": "Question", "name": "メールで有料質問できますか?", "acceptedAnswer": {"@type": "Answer", "text": "メール通知は検索機能ではなく、保存検索・締切・相談パック更新のリマインドです。検索や成果物作成は Playground / API 側をご利用ください。"}},
     {"@type": "Question", "name": "申請まで誰に頼めばいいですか?", "acceptedAnswer": {"@type": "Answer", "text": "「相談したい」を選ぶと、地域・業種に合う認定支援機関・税理士・行政書士のリストが届きます。"}}
   ]
 }
@@ -142,7 +142,7 @@
  <span aria-current="page">中小企業経営者向け</span>
  </nav>
  <h1 id="hero-title">中小企業経営者向け</h1>
- <p class="hero-sub">補助金・融資候補を根拠付きで確認し、相談前に専門家へ渡す質問まで整理。LINE は保存検索・締切リマインドの通知チャネルとして準備中です。</p>
+ <p class="hero-sub">補助金・融資候補を根拠付きで確認し、相談前に専門家へ渡す質問まで整理。保存検索・締切リマインドはメール通知で受け取れます。</p>
  </div>
  </section>
 
@@ -153,10 +153,10 @@
  <li>Playground / API で相談前プレ診断を確認</li>
  <li>都道府県・業種で適合制度を抽出、出典 URL と申請期限付き</li>
  <li>合う認定支援機関・税理士・行政書士に繋ぐ機能</li>
- <li>LINE は保存検索・締切リマインド・相談パック更新の通知として準備中</li>
+ <li>保存検索・締切リマインド・相談パック更新をメール通知で受け取れる</li>
  </ul>
  <div class="cta-row" style="margin-top:24px;">
- <a class="btn btn-primary" href="../line.html?src=audiences_smb">LINE通知の提供状況を見る <span aria-hidden="true">&rarr;</span></a>
+ <a class="btn btn-primary" href="../line.html?src=audiences_smb">メール通知を受け取る <span aria-hidden="true">&rarr;</span></a>
  <a class="btn btn-secondary" href="../pricing.html?src=audiences_smb">料金</a>
  </div>
  </div>
