@@ -5123,7 +5123,7 @@
             "type": "integer"
           },
           "stack_or_calls": {
-            "description": "Planned tool-call stack. Each entry counts toward billing_units. The 500-entry cap is a safety net \u2014 preview is free but a 100k-entry stack would still occupy server memory.",
+            "description": "Planned tool-call stack. Each entry counts toward billing_units. The 500-entry cap protects service availability for large preview payloads.",
             "items": {
               "$ref": "#/components/schemas/CostPreviewCall"
             },
@@ -23862,7 +23862,7 @@
     },
     "/v1/citations/verify": {
       "post": {
-        "description": "Verify a batch of up to 10 citations against their primary sources.\n\nPer call:\n  * 1 billable unit (\u00a53) \u2014 billed regardless of per-citation verdict.\n  * Up to 30 seconds wall clock.\n  * Up to 10 citations.\n\nPer citation:\n  * Up to 5 seconds for the URL fetch.\n  * Verdict \u2208 {verified, inferred, stale, unknown}. (``stale`` is\n    reserved for future drift detection \u2014 current pipeline returns\n    verified/inferred/unknown only.)\n\nErrors:\n  * 401 if the API key header is missing or invalid.\n  * 422 if more than 10 citations OR if an ``excerpt`` exceeds 500\n    chars. The validation message identifies the offending index so\n    the developer can fix the call without binary-searching the batch.",
+        "description": "Verify a batch of up to 10 citations against their primary sources.\n\nPer call:\n  * 1 billable unit (\u00a53) \u2014 billed regardless of per-citation verdict.\n  * Up to 30 seconds wall clock.\n  * Up to 10 citations.\n\nPer citation:\n  * Up to 5 seconds for the URL fetch.\n  * Verdict \u2208 {verified, inferred, stale, unknown}. (``stale`` is not\n    emitted by the current pipeline; callers should still handle it.)\n\nErrors:\n  * 401 if the API key header is missing or invalid.\n  * 422 if more than 10 citations OR if an ``excerpt`` exceeds 500\n    chars. The validation message identifies the offending index so\n    the developer can fix the call without binary-searching the batch.",
         "operationId": "verify_citations_v1_citations_verify_post",
         "parameters": [
           {
@@ -36787,7 +36787,7 @@
     },
     "/v1/programs/{program_id}/at": {
       "get": {
-        "description": "Replay the program's eligibility / amount / deadline as it was live on ``as_of``. Pivots off ``historical snapshot`` (14,596 captures + 144 definitive-dated records) on the autonomath spine \u2014 NO jpcite-side dataset versioning required.\n\n**Pricing:** \u00a53/call (1 unit). Anonymous tier shares the 3/\u65e5 IP cap.\n\n**SENSITIVE (\u00a752 / \u00a747\u6761\u306e2):** factual replay only \u2014 NOT \u63a1\u629e prediction (use ``forecast_program_renewal`` for that).",
+        "description": "Replay the program's eligibility / amount / deadline as it was live on ``as_of``. Pivots off ``historical snapshot`` (14,596 captures + 144 definitive-dated records) on the snapshot spine.\n\n**Pricing:** \u00a53/call (1 unit). Anonymous tier shares the 3/\u65e5 IP cap.\n\n**SENSITIVE (\u00a752 / \u00a747\u6761\u306e2):** factual replay only \u2014 NOT \u63a1\u629e prediction (use ``forecast_program_renewal`` for that).",
         "operationId": "query_at_v1_programs__program_id__at_get",
         "parameters": [
           {

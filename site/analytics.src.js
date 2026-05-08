@@ -33,7 +33,8 @@
 //        an application/json preflight finishing in time.
 //      - Session id: random 128-bit hex stored in sessionStorage so events
 //        within the same tab can be chained without persistent identifiers.
-//      - Page: location.pathname (query string stripped).
+//      - Page: location.pathname + location.search so src attribution
+//        survives anonymous page events without storing the full URL.
 //      - Authorisation: included as Bearer when window.JPCITE_API_KEY is
 //        set (dashboard pages); otherwise omitted (anon).
 //      - All exceptions swallowed — analytics MUST NOT break the page.
@@ -89,15 +90,30 @@
     return 'https://api.jpcite.com';
   }
 
+  function currentPage() {
+    var path = location.pathname || '/';
+    var query = location.search || '';
+    return (path + query).slice(0, 256);
+  }
+
+  function currentSrc() {
+    try {
+      return new URLSearchParams(location.search || '').get('src');
+    } catch (_e) {
+      return null;
+    }
+  }
+
   function send(eventName, properties) {
     try {
       if (!ALLOWED_EVENTS[eventName]) return;
       var url = apiBase().replace(/\/$/, '') + '/v1/funnel/event';
       var body = JSON.stringify({
         event: eventName,
-        page: (location.pathname || '/').slice(0, 256),
+        page: currentPage(),
         session_id: getOrCreateSessionId(),
         properties: properties && typeof properties === 'object' ? properties : null,
+        src: currentSrc(),
       });
 
       var apiKey = window.JPCITE_API_KEY;

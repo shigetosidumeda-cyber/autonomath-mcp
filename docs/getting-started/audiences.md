@@ -2,6 +2,12 @@
 
 jpcite は、AI が回答を書く前に日本の公的情報を取りに行くための Evidence Pre-fetch Layer です。ここでは、利用者ごとに最初に試す endpoint と、課金利用へ移る時の使い方だけを整理します。
 
+| まずやること | 使い方 | 課金への移り方 |
+| --- | --- | --- |
+| 匿名で確認 | 登録不要で 3 API/MCP 呼び出し/日まで無料。`GET /v1/usage` と `POST /v1/cost/preview` は確認用で、匿名 3 回枠を消費しません。 | 反復利用する場合は API キーを発行します。 |
+| トライアル | メール認証だけで 14 日 / 200 req。カード不要。 | 期間後または上限到達後、同じ workflow を有料キーで継続します。 |
+| 業務利用 | 通常 1 API/MCP 呼び出し = 1 billable unit = 税込 ¥3.30。 | `X-Client-Tag` と `X-Cost-Cap-JPY` で顧客・案件別に原価管理します。 |
+
 ## AI agent / BPO チーム
 
 最初は `GET /v1/usage` で残り回数を確認し、`POST /v1/cost/preview` で想定費用を確認します。実行は `POST /v1/evidence/packets/query` または `POST /v1/artifacts/company_public_baseline` から始めるのが安全です。

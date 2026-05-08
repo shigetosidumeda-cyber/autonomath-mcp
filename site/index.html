@@ -294,7 +294,7 @@
  <section class="hero" aria-labelledby="hero-title">
  <div class="container">
 	 <h1 id="hero-title">顧問先・案件・取引先に、出典付きの成果物を。</h1>
-	 <p class="hero-sub">jpcite は Evidence prefetch layer です。 長い PDF ・複数の官公庁ページ・検索結果を読む前に、 <code>source_url</code> ・ <code>source_fetched_at</code> ・ <code>known_gaps</code> ・互換 / 排他ルール付きの根拠を取得し、顧問先月次レビュー、申請戦略パック、公開情報DDパック、相談前プレ診断票に使える形で返します。 入力文脈の削減見込みは、呼び出し元が比較基準を指定したときだけ <strong>input-context estimates</strong> として参考表示します。 匿名 3 リクエスト/日、 登録不要ですぐ検証できます。</p>
+	 <p class="hero-sub">会社調査メモ、顧問先月次レビュー、申請前チェックリスト、公開情報DDパックを、一次資料 URL・取得時刻・既知の未確認点付きで作るための REST + MCP API です。GPT / Claude / Cursor が文章を書く前に、長い PDF・官公庁ページ・検索結果の代わりに、根拠パケットを短い JSON で渡せます。匿名 3 リクエスト/日、登録不要ですぐ検証できます。</p>
 
  <p class="hero-example" style="margin:18px 0 14px;font-size:15px;line-height:1.7;color:var(--text-soft);">補助金 11,601 + 法令 9,484 + 税制 50 + 法人関連データ 167K + 行政処分 1,185 を REST + MCP から横断。 出典 URL + 取得時刻 + content_hash を機械が引用しやすい形で返し、 優先度の高い出典の再取得中央値は約 7 日。 Claude Desktop / Cursor / Cline は MCP、ChatGPT Custom GPT は OpenAPI Actions から呼び出して、 Evidence Packet・併用ルール・known gaps をまとめて取得できます。</p>
 
@@ -308,7 +308,7 @@
 	 <span class="chip-success">Playground</span>成果物プレビュー確認 ·
 	 <span class="chip-success">自動化</span>API/MCP は月次レビュー・DD・BPO一括処理の実行手段
  </p>
-	 <p class="hero-note">匿名で <span data-fact="anonymous_quota_per_day" data-stat-key="anonymous_quota_per_day">3</span> リクエスト/日まで無料。 継続利用は通常 call 1 unit = ¥3/課金単位 (税込 ¥3.30) の完全従量。 最低金額・契約期間なし、 いつでも解約可能。</p>
+	 <p class="hero-note">匿名で <span data-fact="anonymous_quota_per_day" data-stat-key="anonymous_quota_per_day">3</span> API/MCP 呼び出し/日まで無料。通常の 1 API/MCP 呼び出し = 1 billable unit = 税込 ¥3.30。最低金額・契約期間なし、いつでも解約可能。</p>
  <ul class="trust-strip-blocks" aria-label="出典の信頼指標">
  <li>出典は省庁・自治体・公庫などの一次資料を優先 (補助金まとめサイトは出典扱いしません)</li>
  <li>専門業務・申請代行ではないことを API レスポンスで明示</li>
@@ -316,7 +316,7 @@
  </ul>
  <details class="trust-early-access" style="margin:8px 0 0;font-size:13px;color:var(--text-muted);">
  <summary style="cursor:pointer;color:var(--text);">登録不要で匿名 3 リクエスト/日まで利用できます</summary>
- <p style="margin:6px 0 0;">REST / MCP の匿名枠は今すぐ利用可能 (<a href="/docs/getting-started/">開発者向け 5 分クイックスタート</a>)。通知チャネルは <a href="line.html">保存検索・締切リマインド</a> を案内しています。トライアルは <a href="#path-email-trial">メール認証 (14 日 / 200 req カード不要)</a>、 継続利用は <a href="pricing.html#api-paid">Pricing</a> で ¥3/課金単位 (税込 ¥3.30) の完全従量で API キーを発行できます (既存鍵の管理は <a href="dashboard.html">ダッシュボード</a>)。</p>
+ <p style="margin:6px 0 0;">REST / MCP の匿名枠は今すぐ利用可能 (<a href="/docs/getting-started/">開発者向け 5 分クイックスタート</a>)。通知チャネルは <a href="notifications.html">保存検索・締切リマインド</a> を案内しています。トライアルは <a href="#path-email-trial">メール認証 (14 日 / 200 req カード不要)</a>、継続利用は <a href="pricing.html#api-paid">Pricing</a> で税込 ¥3.30 / billable unit の完全従量で API キーを発行できます (既存鍵の管理は <a href="dashboard.html">ダッシュボード</a>)。</p>
  </details>
 
  <!-- §4.1 first-use path: 3 explicit channels with anchor links. Each card is a -->
@@ -351,7 +351,7 @@
 
  <article id="path-paid" class="card" aria-labelledby="path-paid-title" style="padding:18px 20px;">
  <h3 id="path-paid-title" style="font-size:16px;margin:0 0 6px;">3. 有料 API キーを発行</h3>
- <p class="card-lead" style="font-size:13px;color:var(--text-muted);margin:0 0 8px;">¥3 / unit 税別 (税込 ¥3.30)</p>
+ <p class="card-lead" style="font-size:13px;color:var(--text-muted);margin:0 0 8px;">税込 ¥3.30 / billable unit</p>
  <p style="font-size:13px;line-height:1.65;margin:0 0 10px;">Stripe Checkout で即時発行。 完全従量、 月額固定・最低利用期間・解約違約金なし。</p>
  <p style="margin:0;"><a class="btn btn-primary" href="pricing.html#api-paid" style="font-size:13px;padding:8px 14px;">Pricing で発行 →</a></p>
  </article>
@@ -533,7 +533,7 @@
 	 <ul class="card-list">
 	 <li>cost preview で事前見積もり</li>
 	 <li><code>X-Client-Tag</code> で顧客・案件別に集計</li>
-	 <li>通常 call 1 unit = ¥3 税別</li>
+	 <li>通常 1 API/MCP 呼び出し = 1 billable unit = 税込 ¥3.30</li>
 	 </ul>
 	 <p style="margin:14px 0 0;"><a href="products.html">成果物カタログを見る →</a></p>
 	 </article>
@@ -551,10 +551,10 @@
  <article class="card audience-card" aria-labelledby="aud-vc">
  <h3 id="aud-vc">M&amp;A / VC 専門家</h3>
  <p class="card-lead audience-context">投資先デューデリ + 法人ウォッチ</p>
- <p class="audience-pitch">投資・買収候補の法人番号 1 件で、行政処分歴・補助金採択歴・適格請求書発行事業者登録・関連制度を一括取得。 API のレート制限内でまとめて処理できます (例: 100 件まとめて = 500 units = ¥1,500 税別)。 法人情報の変更は Webhook で通知できます。</p>
+ <p class="audience-pitch">投資・買収候補の法人番号 1 件で、行政処分歴・補助金採択歴・適格請求書発行事業者登録・関連制度を一括取得。 API のレート制限内でまとめて処理できます (例: 100 件まとめて = 500 units = 税込 ¥1,650)。 法人情報の変更は Webhook で通知できます。</p>
  <ul class="card-list">
  <li>行政処分 <span data-fact="enforcement_cases_total" data-stat-key="enforcement_cases_total">1,185</span> + 採択 <span data-fact="case_studies_total" data-stat-key="case_studies_total">2,286</span> + 適格事業者 <span data-fact="invoice_registrants_total" data-stat-key="invoice_registrants_total">13,801</span></li>
- <li>1 案件あたり ¥15〜50、 並列規模に応じてスケール (例: 50 件 = ¥1,500)</li>
+ <li>1 案件あたり税込 ¥16.50〜¥55 程度、並列規模に応じてスケール (例: 50 件 = 税込 ¥1,650)</li>
  <li>月額固定なし、必要な分だけ利用</li>
  </ul>
  <p style="margin:14px 0 0;"><a class="btn btn-primary" href="/audiences/vc.html">M&amp;A / VC 向け詳細 →</a></p>
@@ -651,7 +651,7 @@
  <ul class="card-list">
  <li>AI から呼べる機能 <span data-fact="mcp_tools_total" data-stat-key="mcp_tools_total">139</span> 個 / REST 公開 OpenAPI spec</li>
  <li>uvx 1 行で起動 (SDK 不要)</li>
- <li>無料 3 リクエスト/日で動作確認 → 商用は ¥3/課金単位 完全従量</li>
+ <li>無料 3 リクエスト/日で動作確認 → 商用は税込 ¥3.30 / billable unit の完全従量</li>
  </ul>
  <p style="margin:14px 0 0;"><a class="btn btn-primary" href="/audiences/dev.html">開発者向け詳細 →</a> · <a href="/docs/mcp-tools/">機能一覧</a></p>
  </article>
@@ -830,7 +830,7 @@
 
  <section class="code-demo" aria-labelledby="why-title">
  <div class="container">
- <h2 id="why-title" class="section-title">なぜ jpcite か — ¥3/課金単位の中身</h2>
+ <h2 id="why-title" class="section-title">なぜ jpcite か — 税込 ¥3.30/unit の中身</h2>
  <p class="demo-lead" style="margin:-16px 0 28px;">通常 1 call = 1 課金単位、税込 ¥3.30 は、 (a) 複数 DB の横断取得 + (b) 一次資料エビデンス + (c) 鮮度メタデータ をワンコールで提供する対価です。 自前で同等のものを組むと、 公開サイトのスクレイピング・正規化・差分検出・出典管理を継続運用する必要があります。</p>
  <div class="cards" style="grid-template-columns:repeat(3,1fr);">
 

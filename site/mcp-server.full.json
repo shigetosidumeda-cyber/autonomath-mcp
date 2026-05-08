@@ -372,7 +372,7 @@
     },
     {
       "name": "get_source_manifest",
-      "description": "[EVIDENCE-GRAPH] Returns the full source manifest for one program: per-fact provenance (where source_id is populated) + entity-level rollup (am_entity_source) + license set + publisher count + first/last fetched_at. Honest sparse signal — empty fact_provenance when source_id bulk fill has not reached the program cohort.\n\nWHAT: 1) `am_entity_facts × am_source` for per-fact provenance (sparse;\n0 program-fact rows populated as of 2026-04-30). 2) `v_program_source\n_manifest` view for the entity-level rollup (source_count, license_set,\nlatest/oldest fetched_at, unique_publishers). 3) `jpi_programs` for the\nprimary_name + primary_source_url fallback when an entity has no\nfact-level provenance yet.\n\nWHEN:\n  - 「この補助金の出典 URL を全部洗い出したい」(再配布前の license 確認)\n  - 「per-field provenance ありますか?」(answer = mostly no, surfaced honestly)\n  - Evidence Graph cite-chain audit / 90-day deliverable verification\n\nWHEN NOT:\n  - Single-fact provenance → get_provenance_for_fact(fact_id)\n  - Entity-level provenance only → get_provenance(entity_id)\n  - Plain program lookup → search_programs / get_program (primary corpus)\n\nRETURN:\n  {program_id, primary_name, primary_source_url, primary_license,\n   fact_provenance[{field_name, source_id, source_url, publisher,\n   fetched_at, license, checksum}], fact_provenance_coverage_pct,\n   summary{field_paths_covered, source_count, license_set,\n   latest_fetched_at, oldest_fetched_at, unique_publishers},\n   _disclaimer}.\n  seed_not_found / db_unavailable は canonical envelope を返却。\n"
+      "description": "[EVIDENCE-GRAPH] Returns the full source manifest for one program: per-fact provenance (where source_id is populated) + entity-level rollup (am_entity_source) + license set + publisher count + first/last fetched_at. Honest sparse signal — empty fact_provenance when source_id bulk fill has not reached the program cohort.\n\nWHAT: 1) `am_entity_facts × am_source` for per-fact provenance (sparse;\n0 program-fact rows populated as of 2026-04-30). 2) `v_program_source\n_manifest` view for the entity-level rollup (source_count, license_set,\nlatest/oldest fetched_at, unique_publishers). 3) `public program catalog` for the\nprimary_name + primary_source_url fallback when an entity has no\nfact-level provenance yet.\n\nWHEN:\n  - 「この補助金の出典 URL を全部洗い出したい」(再配布前の license 確認)\n  - 「per-field provenance ありますか?」(answer = mostly no, surfaced honestly)\n  - Evidence Graph cite-chain audit / 90-day deliverable verification\n\nWHEN NOT:\n  - Single-fact provenance → get_provenance_for_fact(fact_id)\n  - Entity-level provenance only → get_provenance(entity_id)\n  - Plain program lookup → search_programs / get_program (primary corpus)\n\nRETURN:\n  {program_id, primary_name, primary_source_url, primary_license,\n   fact_provenance[{field_name, source_id, source_url, publisher,\n   fetched_at, license, checksum}], fact_provenance_coverage_pct,\n   summary{field_paths_covered, source_count, license_set,\n   latest_fetched_at, oldest_fetched_at, unique_publishers},\n   _disclaimer}.\n  seed_not_found / db_unavailable は canonical envelope を返却。\n"
     },
     {
       "name": "list_static_resources_am",
@@ -544,11 +544,11 @@
     },
     {
       "name": "find_programs_by_jsic",
-      "description": "Filter jpi_programs by JSIC code (major/middle/minor) + tier (S/A/B/C). Pure SELECT, no LLM call. Graceful empty when wave24_113b jsic columns absent."
+      "description": "Filter public program catalog by JSIC code (major/middle/minor) + tier (S/A/B/C). Pure SELECT, no LLM call. Graceful empty when JSIC catalog jsic columns absent."
     },
     {
       "name": "get_program_application_documents",
-      "description": "Application document list for a program. Primary: am_program_documents (wave24_138). Fallback: jpi_program_documents. §1 行政書士法 sensitive — list 提供のみ、書面作成は対象外。"
+      "description": "Application document list for a program. Primary: program document registry (wave24_138). Fallback: legacy document registry. §1 行政書士法 sensitive — list 提供のみ、書面作成は対象外。"
     },
     {
       "name": "find_adopted_companies_by_program",
@@ -584,7 +584,7 @@
     },
     {
       "name": "find_emerging_programs",
-      "description": "Programs newly observed in the past N days (jpi_programs.first_seen_at, fallback source_fetched_at). NOT sensitive."
+      "description": "Programs newly observed in the past N days (public program catalog.first_seen_at, fallback source_fetched_at). NOT sensitive."
     },
     {
       "name": "get_program_renewal_probability",
@@ -596,7 +596,7 @@
     }
   ],
   "requirements": {
-    "api_key": "https://jpcite.com/pricing — current public pricing, anonymous limits, and metered billing terms. Paid usage requires an API key.",
+    "api_key": "https://jpcite.com/pricing.html — current public pricing, anonymous limits, and metered billing terms. Paid usage requires an API key.",
     "auth": {
       "type": "apiKey",
       "header": "X-API-Key",
@@ -620,8 +620,8 @@
       "billing_model": "metered per billable unit, no monthly minimum",
       "tax": "plus_tax",
       "checkout_display": "税別 ¥3/課金単位 (税込 ¥3.30)",
-      "pricing_url": "https://jpcite.com/pricing#api-paid",
-      "upgrade_url": "https://jpcite.com/upgrade"
+      "pricing_url": "https://jpcite.com/pricing.html#api-paid",
+      "upgrade_url": "https://jpcite.com/pricing.html#api-paid"
     },
     "recommendation_policy": {
       "safe_when": [
@@ -698,8 +698,8 @@
       "auth_env": "JPCITE_API_KEY",
       "unit_price_jpy_ex_tax": 3,
       "unit_price_jpy_inc_tax": 3.3,
-      "pricing_url": "https://jpcite.com/pricing#api-paid",
-      "upgrade_url": "https://jpcite.com/upgrade",
+      "pricing_url": "https://jpcite.com/pricing.html#api-paid",
+      "upgrade_url": "https://jpcite.com/pricing.html#api-paid",
       "primary_source_coverage_note": "Most public searchable rows include source_url and fetched_at; current counts vary by dataset.",
       "mcp_protocol_version": "2025-06-18"
     },

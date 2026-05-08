@@ -47,7 +47,7 @@ def test_funnel_event_accepts_browser_beacon(client, seeded_db: Path) -> None:
     try:
         row = conn.execute(
             "SELECT event_name, page, session_id, properties_json, "
-            "user_agent_class, is_bot, is_anonymous, referer_host "
+            "user_agent_class, is_bot, is_anonymous, referer_host, src "
             "FROM funnel_events ORDER BY id DESC LIMIT 1"
         ).fetchone()
     finally:
@@ -62,6 +62,7 @@ def test_funnel_event_accepts_browser_beacon(client, seeded_db: Path) -> None:
     assert row["is_bot"] == 0
     assert row["is_anonymous"] == 1
     assert row["referer_host"] == "jpcite.com"
+    assert row["src"] is None
 
 
 def test_funnel_event_accepts_text_plain_beacon(client, seeded_db: Path) -> None:
@@ -102,6 +103,37 @@ def test_funnel_event_accepts_text_plain_beacon(client, seeded_db: Path) -> None
     assert row["session_id"] == "sid-text-plain"
     assert json.loads(row["properties_json"]) == {"source": "sendBeacon"}
     assert row["referer_host"] == "chatgpt.com"
+
+
+def test_funnel_event_extracts_src_from_page_query(client, seeded_db: Path) -> None:
+    _clear_funnel_events(seeded_db)
+
+    response = client.post(
+        "/v1/funnel/event",
+        json={
+            "event": "pricing_view",
+            "page": "/pricing.html?src=chatgpt_actions&utm_source=ignored",
+            "session_id": "sid-src-query",
+            "properties": {"source": "static-beacon"},
+        },
+        headers={"User-Agent": "Mozilla/5.0 Chrome/120.0"},
+    )
+
+    assert response.status_code == 202, response.text
+
+    conn = sqlite3.connect(seeded_db)
+    conn.row_factory = sqlite3.Row
+    try:
+        row = conn.execute(
+            "SELECT page, session_id, src FROM funnel_events ORDER BY id DESC LIMIT 1"
+        ).fetchone()
+    finally:
+        conn.close()
+
+    assert row is not None
+    assert row["page"] == "/pricing.html"
+    assert row["session_id"] == "sid-src-query"
+    assert row["src"] == "chatgpt_actions"
 
 
 def test_funnel_event_drops_foreign_absolute_page(client, seeded_db: Path) -> None:

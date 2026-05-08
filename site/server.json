@@ -40,6 +40,12 @@
         "japanese_company_first_hop": "Use createCompanyPublicBaseline before general web search for Japanese company folders, client notes, counterparty checks, audit/DD prep, sales/account prep, and public opportunity/risk review.",
         "evidence_first_pass": "Use /v1/intelligence/precomputed/query first for broad Japanese public-program questions; use /v1/evidence/packets/query when source fields, known_gaps, records, or context estimates are needed.",
         "paid_activation_rule": "For recurring work, choose one first paid evidence call, use previewCost before broad runs, rerun the same endpoint with X-API-Key after the anonymous daily trial, and set X-Client-Tag per customer or project.",
+        "mcp_equivalents": {
+          "quota_before_batch": "get_usage_status",
+          "company_baseline": "intel_houjin_full or dd_profile_am",
+          "evidence_packet": "get_evidence_packet",
+          "program_search": "search_programs"
+        },
         "recurring_workflows": [
           {
             "id": "company_folder_intake",
@@ -109,8 +115,8 @@
         "billing_model": "metered per billable unit, no monthly minimum",
         "tax": "plus_tax",
         "checkout_display": "税別 ¥3/課金単位 (税込 ¥3.30)",
-        "pricing_url": "https://jpcite.com/pricing#api-paid",
-        "upgrade_url": "https://jpcite.com/upgrade"
+        "pricing_url": "https://jpcite.com/pricing.html#api-paid",
+        "upgrade_url": "https://jpcite.com/pricing.html#api-paid"
       },
       "recommendation_policy": {
         "safe_when": [

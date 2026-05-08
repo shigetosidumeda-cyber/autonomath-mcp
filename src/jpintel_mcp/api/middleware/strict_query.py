@@ -75,6 +75,21 @@ _log = logging.getLogger("jpintel.strict_query")
 #: Env var name. Set to "1" to disable the middleware at runtime.
 ENV_DISABLE = "JPINTEL_STRICT_QUERY_DISABLED"
 
+# Public discovery JSON is often shared with tracking query strings from
+# AI clients, docs, or registry pages. These keys must not change the
+# manifest body, but rejecting them breaks ChatGPT Actions import flows.
+_DISCOVERY_QUERY_OK_PATHS: frozenset[str] = frozenset(
+    {
+        "/openapi.json",
+        "/v1/openapi.json",
+        "/v1/openapi.agent.json",
+        "/v1/mcp-server.json",
+    }
+)
+_DISCOVERY_QUERY_OK_KEYS: frozenset[str] = frozenset(
+    {"src", "utm_source", "utm_medium", "utm_campaign", "utm_content"}
+)
+
 
 def _is_disabled() -> bool:
     return os.getenv(ENV_DISABLE, "").strip() == "1"
@@ -163,6 +178,8 @@ class StrictQueryMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
 
         actual = set(request.query_params.keys())
+        if request.url.path in _DISCOVERY_QUERY_OK_PATHS:
+            actual -= _DISCOVERY_QUERY_OK_KEYS
         unknown = actual - declared
         if not unknown:
             return await call_next(request)

@@ -36,22 +36,20 @@ def get_source_manifest(
             min_length=1,
             max_length=200,
             description=(
-                "Program identifier — either a unified_id (UNI-...) found "
-                "in jpi_programs, or an am_canonical_id (program:...) from "
-                "am_entities. The tool resolves both to the underlying "
-                "entity via entity_id_map."
+                "Program identifier — either a public unified_id (UNI-...) "
+                "or a stable legacy canonical id (program:...). The tool "
+                "resolves both to the underlying record."
             ),
         ),
     ],
 ) -> dict[str, Any]:
     """[EVIDENCE-GRAPH] Returns the full source manifest for one program: per-fact provenance (where source_id is populated) + entity-level rollup (am_entity_source) + license set + publisher count + first/last fetched_at. Honest sparse signal — empty fact_provenance when source_id bulk fill has not reached the program cohort.
 
-    WHAT: 1) `am_entity_facts × am_source` for per-fact provenance (sparse;
-    0 program-fact rows populated as of 2026-04-30). 2) `v_program_source
-    _manifest` view for the entity-level rollup (source_count, license_set,
-    latest/oldest fetched_at, unique_publishers). 3) `jpi_programs` for the
-    primary_name + primary_source_url fallback when an entity has no
-    fact-level provenance yet.
+    WHAT: 1) per-fact provenance rows where available (sparse; many
+    programs still have no field-level provenance). 2) entity-level
+    rollup (source_count, license_set, latest/oldest fetched_at,
+    unique_publishers). 3) public program metadata fallback when an entity
+    has no fact-level provenance yet.
 
     WHEN:
       - 「この補助金の出典 URL を全部洗い出したい」(再配布前の license 確認)

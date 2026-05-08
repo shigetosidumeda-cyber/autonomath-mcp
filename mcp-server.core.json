@@ -196,7 +196,7 @@
     }
   ],
   "requirements": {
-    "api_key": "https://jpcite.com/pricing — current public pricing, anonymous limits, and metered billing terms. Paid usage requires an API key.",
+    "api_key": "https://jpcite.com/pricing.html — current public pricing, anonymous limits, and metered billing terms. Paid usage requires an API key.",
     "auth": {
       "type": "apiKey",
       "header": "X-API-Key",
@@ -220,8 +220,8 @@
       "billing_model": "metered per billable unit, no monthly minimum",
       "tax": "plus_tax",
       "checkout_display": "税別 ¥3/課金単位 (税込 ¥3.30)",
-      "pricing_url": "https://jpcite.com/pricing#api-paid",
-      "upgrade_url": "https://jpcite.com/upgrade"
+      "pricing_url": "https://jpcite.com/pricing.html#api-paid",
+      "upgrade_url": "https://jpcite.com/pricing.html#api-paid"
     },
     "recommendation_policy": {
       "safe_when": [
@@ -298,8 +298,8 @@
       "auth_env": "JPCITE_API_KEY",
       "unit_price_jpy_ex_tax": 3,
       "unit_price_jpy_inc_tax": 3.3,
-      "pricing_url": "https://jpcite.com/pricing#api-paid",
-      "upgrade_url": "https://jpcite.com/upgrade",
+      "pricing_url": "https://jpcite.com/pricing.html#api-paid",
+      "upgrade_url": "https://jpcite.com/pricing.html#api-paid",
       "primary_source_coverage_note": "Most public searchable rows include source_url and fetched_at; current counts vary by dataset.",
       "mcp_protocol_version": "2025-06-18"
     },

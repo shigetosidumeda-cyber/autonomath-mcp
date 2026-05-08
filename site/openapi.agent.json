@@ -2538,7 +2538,7 @@
           "citations"
         ],
         "summary": "Verify Citations",
-        "description": "Verify a batch of up to 10 citations against their primary sources.\n\nPer call:\n  * 1 billable unit (¥3) — billed regardless of per-citation verdict.\n  * Up to 30 seconds wall clock.\n  * Up to 10 citations.\n\nPer citation:\n  * Up to 5 seconds for the URL fetch.\n  * Verdict ∈ {verified, inferred, stale, unknown}. (``stale`` is\n    reserved for future drift detection — current pipeline returns\n    verified/inferred/unknown only.)\n\nErrors:\n  * 401 if the API key header is missing or invalid.\n  * 422 if more than 10 citations OR if an ``excerpt`` exceeds 500\n    chars. The validation message identifies the offending index so\n    the developer can fix the call without binary-searching the batch.",
+        "description": "Verify a batch of up to 10 citations against their primary sources.\n\nPer call:\n  * 1 billable unit (¥3) — billed regardless of per-citation verdict.\n  * Up to 30 seconds wall clock.\n  * Up to 10 citations.\n\nPer citation:\n  * Up to 5 seconds for the URL fetch.\n  * Verdict ∈ {verified, inferred, stale, unknown}. (``stale`` is not\n    emitted by the current pipeline; callers should still handle it.)\n\nErrors:\n  * 401 if the API key header is missing or invalid.\n  * 422 if more than 10 citations OR if an ``excerpt`` exceeds 500\n    chars. The validation message identifies the offending index so\n    the developer can fix the call without binary-searching the batch.",
         "operationId": "verifyCitations",
         "parameters": [
           {
@@ -10366,7 +10366,7 @@
             "maxItems": 500,
             "minItems": 1,
             "title": "Stack Or Calls",
-            "description": "Planned tool-call stack. Each entry counts toward billing_units. The 500-entry cap is a safety net — preview is free but a 100k-entry stack would still occupy server memory."
+            "description": "Planned tool-call stack. Each entry counts toward billing_units. The 500-entry cap protects service availability for large preview payloads."
           },
           "iterations": {
             "type": "integer",

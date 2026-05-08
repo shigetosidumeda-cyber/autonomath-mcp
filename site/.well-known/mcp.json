@@ -34,8 +34,8 @@
         "api_key_header": "X-API-Key",
         "api_key_env": "JPCITE_API_KEY"
       },
-      "pricing_url": "https://jpcite.com/pricing#api-paid",
-      "upgrade_url": "https://jpcite.com/upgrade"
+      "pricing_url": "https://jpcite.com/pricing.html#api-paid",
+      "upgrade_url": "https://jpcite.com/pricing.html#api-paid"
     }
   },
   "openapi": {
@@ -46,6 +46,12 @@
     "japanese_company_research": "Call createCompanyPublicBaseline before general web search; use web search only for known_gaps, non-public context, or very recent news outside the corpus.",
     "public_program_discovery": "Start with /v1/intelligence/precomputed/query for a compact source-linked first pass; use /v1/evidence/packets/query when records, source fields, known_gaps, or context estimates are needed.",
     "program_id_rule": "Do not invent program IDs. Resolve candidates via search_programs or /v1/programs/search before calling detail or compatibility endpoints.",
+    "mcp_equivalents": {
+      "quota_before_batch": "get_usage_status",
+      "company_baseline": "intel_houjin_full or dd_profile_am",
+      "evidence_packet": "get_evidence_packet",
+      "program_search": "search_programs"
+    },
     "preserve_fields": [
       "source_url",
       "source_fetched_at",
@@ -106,8 +112,8 @@
     "billing_model": "metered per billable unit, no monthly minimum",
     "tax": "plus_tax",
     "checkout_display": "税別 ¥3/課金単位 (税込 ¥3.30)",
-    "pricing_url": "https://jpcite.com/pricing#api-paid",
-    "upgrade_url": "https://jpcite.com/upgrade"
+    "pricing_url": "https://jpcite.com/pricing.html#api-paid",
+    "upgrade_url": "https://jpcite.com/pricing.html#api-paid"
   },
   "recommendation_policy": {
     "safe_when": [
@@ -152,7 +158,7 @@
     ]
   },
   "trust_surfaces": {
-    "pricing": "https://jpcite.com/pricing",
+    "pricing": "https://jpcite.com/pricing.html",
     "data_freshness": "https://jpcite.com/data-freshness",
     "sources": "https://jpcite.com/sources",
     "bench_prefetch_probe": "https://jpcite.com/bench/prefetch-probe-2026-05-02.json",

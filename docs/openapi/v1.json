@@ -4424,7 +4424,7 @@
                 "type": "null"
               }
             ],
-            "description": "JSIC industry code prefix (e.g. 'D' for \u5efa\u8a2d\u696d, 'E29' for \u4e2d\u5206\u985e \u98df\u6599\u54c1\u88fd\u9020\u696d). Prefix-matches both jpcite case_studies.industry_jsic and autonomath public dataset.industry_jsic_medium. NULL spans all majors.",
+            "description": "JSIC industry code prefix (e.g. 'D' for \u5efa\u8a2d\u696d, 'E29' for \u4e2d\u5206\u985e \u98df\u6599\u54c1\u88fd\u9020\u696d). Prefix-matches both jpcite case_studies.industry_jsic and the public adoption dataset industry_jsic_medium. NULL spans all majors.",
             "title": "Industry Jsic"
           },
           "prefecture": {
@@ -4487,7 +4487,7 @@
                 "type": "null"
               }
             ],
-            "description": "JSIC industry code prefix (e.g. 'A' for \u8fb2\u6797\u6c34\u7523\u696d \u5927\u5206\u985e, 'E29' for \u98df\u6599\u54c1\u88fd\u9020\u696d \u4e2d\u5206\u985e). Prefix-matches against both jpcite case_studies.industry_jsic and autonomath public dataset.industry_jsic_medium. Pass null to span all industries.",
+            "description": "JSIC industry code prefix (e.g. 'A' for \u8fb2\u6797\u6c34\u7523\u696d \u5927\u5206\u985e, 'E29' for \u98df\u6599\u54c1\u88fd\u9020\u696d \u4e2d\u5206\u985e). Prefix-matches against both jpcite case_studies.industry_jsic and the public adoption dataset industry_jsic_medium. Pass null to span all industries.",
             "title": "Industry Jsic"
           },
           "limit": {
@@ -5123,7 +5123,7 @@
             "type": "integer"
           },
           "stack_or_calls": {
-            "description": "Planned tool-call stack. Each entry counts toward billing_units. The 500-entry cap is a safety net \u2014 preview is free but a 100k-entry stack would still occupy server memory.",
+            "description": "Planned tool-call stack. Each entry counts toward billing_units. The 500-entry cap protects service availability for large preview payloads.",
             "items": {
               "$ref": "#/components/schemas/CostPreviewCall"
             },
@@ -23862,7 +23862,7 @@
     },
     "/v1/citations/verify": {
       "post": {
-        "description": "Verify a batch of up to 10 citations against their primary sources.\n\nPer call:\n  * 1 billable unit (\u00a53) \u2014 billed regardless of per-citation verdict.\n  * Up to 30 seconds wall clock.\n  * Up to 10 citations.\n\nPer citation:\n  * Up to 5 seconds for the URL fetch.\n  * Verdict \u2208 {verified, inferred, stale, unknown}. (``stale`` is\n    reserved for future drift detection \u2014 current pipeline returns\n    verified/inferred/unknown only.)\n\nErrors:\n  * 401 if the API key header is missing or invalid.\n  * 422 if more than 10 citations OR if an ``excerpt`` exceeds 500\n    chars. The validation message identifies the offending index so\n    the developer can fix the call without binary-searching the batch.",
+        "description": "Verify a batch of up to 10 citations against their primary sources.\n\nPer call:\n  * 1 billable unit (\u00a53) \u2014 billed regardless of per-citation verdict.\n  * Up to 30 seconds wall clock.\n  * Up to 10 citations.\n\nPer citation:\n  * Up to 5 seconds for the URL fetch.\n  * Verdict \u2208 {verified, inferred, stale, unknown}. (``stale`` is not\n    emitted by the current pipeline; callers should still handle it.)\n\nErrors:\n  * 401 if the API key header is missing or invalid.\n  * 422 if more than 10 citations OR if an ``excerpt`` exceeds 500\n    chars. The validation message identifies the offending index so\n    the developer can fix the call without binary-searching the batch.",
         "operationId": "verify_citations_v1_citations_verify_post",
         "parameters": [
           {
@@ -25559,7 +25559,7 @@
     },
     "/v1/discover/related/{entity_id}": {
       "get": {
-        "description": "Return up to 5 axes \u00d7 5 records of related entities for the given entity in one call.\n\n**Pricing:** \u00a53/call (1 unit total). Anonymous callers share the 3/\u65e5 per-IP cap (JST \u7fcc\u65e5 00:00 \u30ea\u30bb\u30c3\u30c8).\n\n**entity_id** accepts a unified_id (`UNI-...`) or an autonomath canonical id (`program:...`, `law:...`, etc.).\n\n**Axes returned:**\n* `via_law_ref` \u2014 programs sharing \u6839\u62e0\u6cd5 (program_law_refs).\n* `via_vector` \u2014 k-NN over sqlite-vec embeddings (per-tier).\n* `via_co_adoption` \u2014 empirical co-adoption pairs from   am_funding_stack_empirical.\n* `via_density_neighbors` \u2014 same record_kind neighbours by   density_rank.\n* `via_5hop` \u2014 pre-computed 5-hop graph destinations.\n\nEach axis is fail-open: missing datasets / empty corpora yield an empty axis list rather than a 5xx.",
+        "description": "Return up to 5 axes \u00d7 5 records of related entities for the given entity in one call.\n\n**Pricing:** \u00a53/call (1 unit total). Anonymous callers share the 3/\u65e5 per-IP cap (JST \u7fcc\u65e5 00:00 \u30ea\u30bb\u30c3\u30c8).\n\n**entity_id** accepts a unified_id (`UNI-...`) or a stable legacy id (`program:...`, `law:...`, etc.).\n\n**Axes returned:**\n* `via_law_ref` \u2014 programs sharing \u6839\u62e0\u6cd5 (program_law_refs).\n* `via_vector` \u2014 k-NN over sqlite-vec embeddings (per-tier).\n* `via_co_adoption` \u2014 empirical co-adoption pairs from   am_funding_stack_empirical.\n* `via_density_neighbors` \u2014 same record_kind neighbours by   density_rank.\n* `via_5hop` \u2014 pre-computed 5-hop graph destinations.\n\nEach axis is fail-open: missing datasets / empty corpora yield an empty axis list rather than a 5xx.",
         "operationId": "discover_related_v1_discover_related__entity_id__get",
         "parameters": [
           {
@@ -36787,7 +36787,7 @@
     },
     "/v1/programs/{program_id}/at": {
       "get": {
-        "description": "Replay the program's eligibility / amount / deadline as it was live on ``as_of``. Pivots off ``historical snapshot`` (14,596 captures + 144 definitive-dated records) on the autonomath spine \u2014 NO jpcite-side dataset versioning required.\n\n**Pricing:** \u00a53/call (1 unit). Anonymous tier shares the 3/\u65e5 IP cap.\n\n**SENSITIVE (\u00a752 / \u00a747\u6761\u306e2):** factual replay only \u2014 NOT \u63a1\u629e prediction (use ``forecast_program_renewal`` for that).",
+        "description": "Replay the program's eligibility / amount / deadline as it was live on ``as_of``. Pivots off ``historical snapshot`` (14,596 captures + 144 definitive-dated records) on the snapshot spine.\n\n**Pricing:** \u00a53/call (1 unit). Anonymous tier shares the 3/\u65e5 IP cap.\n\n**SENSITIVE (\u00a752 / \u00a747\u6761\u306e2):** factual replay only \u2014 NOT \u63a1\u629e prediction (use ``forecast_program_renewal`` for that).",
         "operationId": "query_at_v1_programs__program_id__at_get",
         "parameters": [
           {
@@ -36991,12 +36991,12 @@
         "operationId": "get_program_timeline_v1_programs__program_id__timeline_get",
         "parameters": [
           {
-            "description": "Program canonical id. Accepts either jpcite `UNI-...` or autonomath `program:...` form; stable identifier map bridges both.",
+            "description": "Program canonical id. Accepts either jpcite `UNI-...` or legacy `program:...` form; stable identifier map bridges both.",
             "in": "path",
             "name": "program_id",
             "required": true,
             "schema": {
-              "description": "Program canonical id. Accepts either jpcite `UNI-...` or autonomath `program:...` form; stable identifier map bridges both.",
+              "description": "Program canonical id. Accepts either jpcite `UNI-...` or legacy `program:...` form; stable identifier map bridges both.",
               "maxLength": 200,
               "minLength": 1,
               "title": "Program Id",
@@ -39763,7 +39763,7 @@
       "name": "testimonials"
     },
     {
-      "description": "Snapshot-as-of querying \u2014 replay corpus state at a given timestamp (`AUTONOMATH_SNAPSHOT_ENABLED` controlled).",
+      "description": "Snapshot-as-of querying \u2014 replay corpus state at a given timestamp when the snapshot feature flag is enabled.",
       "name": "time_machine"
     },
     {

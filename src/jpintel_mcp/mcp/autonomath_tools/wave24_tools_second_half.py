@@ -1946,7 +1946,7 @@ if _ENABLED and settings.autonomath_enabled:
         limit: Annotated[int, Field(ge=1, le=100, description="Page size.")] = 20,
         offset: Annotated[int, Field(ge=0, description="Page offset.")] = 0,
     ) -> dict[str, Any]:
-        """Filter jpi_programs by JSIC code (major/middle/minor) + tier (S/A/B/C). Pure SELECT, NO LLM. """
+        """Filter the public program catalog by JSIC code (major/middle/minor) + tier (S/A/B/C). Pure SELECT, NO LLM."""
         return _find_programs_by_jsic_impl(
             jsic_major=jsic_major,
             jsic_middle=jsic_middle,
@@ -1967,7 +1967,7 @@ if _ENABLED and settings.autonomath_enabled:
         limit: Annotated[int, Field(ge=1, le=100, description="Page size.")] = 50,
         offset: Annotated[int, Field(ge=0, description="Page offset.")] = 0,
     ) -> dict[str, Any]:
-        """Application document list for a program. Primary: am_program_documents. Fallback: jpi_program_documents. §1 行政書士法 sensitive — list 提供のみ、書面作成は対象外。"""
+        """Application document list for a program. Returns known document metadata only; §1 行政書士法 sensitive — list 提供のみ、書面作成は対象外。"""
         return _get_program_application_documents_impl(
             program_id=program_id,
             limit=limit,
@@ -2116,7 +2116,7 @@ if _ENABLED and settings.autonomath_enabled:
         limit: Annotated[int, Field(ge=1, le=100, description="Page size.")] = 20,
         offset: Annotated[int, Field(ge=0, description="Page offset.")] = 0,
     ) -> dict[str, Any]:
-        """Programs newly observed in the past N days (jpi_programs.first_seen_at, fallback source_fetched_at). NOT sensitive."""
+        """Programs newly observed in the past N days using first_seen_at or source_fetched_at. NOT sensitive."""
         return _find_emerging_programs_impl(
             days=days,
             tier=tier,

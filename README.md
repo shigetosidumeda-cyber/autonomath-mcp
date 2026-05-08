@@ -143,7 +143,8 @@ curl "https://api.jpcite.com/v1/programs/search?q=設備投資&prefecture=東京
   -H "Authorization: Bearer am_xxx"
 ```
 
-Get an API key at <https://jpcite.com/dashboard>.
+Get an API key at <https://jpcite.com/pricing.html#api-paid>. Manage existing
+keys, usage, and billing at <https://jpcite.com/dashboard>.
 
 ### Output sample
 

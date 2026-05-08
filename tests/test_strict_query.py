@@ -163,3 +163,15 @@ def test_envelope_carries_path_and_method(seeded_db):
     err = r.json()["error"]
     assert err["path"] == "/v1/programs/search"
     assert err["method"] == "GET"
+
+
+def test_discovery_manifests_accept_tracking_query(seeded_db):
+    c = _build_client()
+
+    r = c.get("/v1/openapi.agent.json?src=chatgpt_actions&utm_source=ai")
+    assert r.status_code == 200, r.text
+    assert r.json()["info"]["title"]
+
+    r = c.get("/v1/mcp-server.json?src=llmstxt")
+    assert r.status_code == 200, r.text
+    assert r.json()["name"]
