@@ -401,7 +401,7 @@ def _shihoshoshi_dd_pack_impl(houjin_bangou: str) -> dict[str, Any]:
             "enforcement_corpus_total": 22258,
             "houjin_corpus_total": 166765,
             "caveat": (
-                "本 tool は 司法書士 cohort 専用の DEEP-30 unified envelope。"
+                "本 tool は司法書士 cohort 専用の unified envelope。"
                 "登記申請・供託・簡裁訴訟代理は §3 司法書士独占業務であり、本 "
                 "tool は scaffold + 一次資料 URL のみ surface します。"
             ),

@@ -178,17 +178,21 @@ def mrr_for_window(conn: sqlite3.Connection, start_iso: str, end_iso: str | None
     if not has_table(conn, "usage_events"):
         return 0
     has_metered = has_column(conn, "usage_events", "metered")
+    has_quantity = has_column(conn, "usage_events", "quantity")
+    has_status = has_column(conn, "usage_events", "status")
     where_metered = "AND ue.metered = 1" if has_metered else ""
+    where_success = "AND (ue.status IS NULL OR ue.status < 400)" if has_status else ""
+    quantity_expr = "COALESCE(ue.quantity, 1)" if has_quantity else "1"
     upper = "AND ue.ts < ?" if end_iso else ""
     sql = (
-        f"SELECT COUNT(*) AS n FROM usage_events ue "
+        f"SELECT COALESCE(SUM({quantity_expr}), 0) AS units FROM usage_events ue "
         f"JOIN api_keys ak ON ak.key_hash = ue.key_hash "
-        f"WHERE ue.ts >= ? {upper} {where_metered} "
+        f"WHERE ue.ts >= ? {upper} {where_metered} {where_success} "
         f"AND ak.revoked_at IS NULL"
     )
     params: tuple = (start_iso, end_iso) if end_iso else (start_iso,)
     row = conn.execute(sql, params).fetchone()
-    return int(row["n"] or 0) * YEN_PER_REQUEST
+    return int(row["units"] or 0) * YEN_PER_REQUEST
 
 
 def mrr(conn: sqlite3.Connection) -> int:
@@ -231,14 +235,25 @@ def cap_usage(conn: sqlite3.Connection) -> tuple[int, int]:
     cap_reached = 0
     if has_table(conn, "usage_events"):
         month_iso = jst_month_start_iso()
+        quantity_expr = (
+            "COALESCE(ue.quantity, 1)" if has_column(conn, "usage_events", "quantity") else "1"
+        )
+        status_filter = (
+            "AND (ue.status IS NULL OR ue.status < 400)"
+            if has_column(conn, "usage_events", "status")
+            else ""
+        )
+        metered_filter = "AND ue.metered = 1" if has_column(conn, "usage_events", "metered") else ""
         rows = conn.execute(
-            """
+            f"""
             SELECT ak.key_hash, ak.monthly_cap_yen,
-                   COUNT(ue.id) AS n_calls
+                   COALESCE(SUM({quantity_expr}), 0) AS units
               FROM api_keys ak
               LEFT JOIN usage_events ue
                      ON ue.key_hash = ak.key_hash
                     AND ue.ts >= ?
+                    {status_filter}
+                    {metered_filter}
              WHERE ak.revoked_at IS NULL
                AND ak.monthly_cap_yen IS NOT NULL
              GROUP BY ak.key_hash
@@ -246,7 +261,7 @@ def cap_usage(conn: sqlite3.Connection) -> tuple[int, int]:
             (month_iso,),
         ).fetchall()
         for r in rows:
-            spend = int(r["n_calls"] or 0) * YEN_PER_REQUEST
+            spend = int(r["units"] or 0) * YEN_PER_REQUEST
             if spend >= int(r["monthly_cap_yen"] or 0):
                 cap_reached += 1
     return cap_set, cap_reached
@@ -306,6 +321,186 @@ def unsynced_metered_events(conn: sqlite3.Connection) -> int:
     )
     row = conn.execute(sql, (cutoff,)).fetchone()
     return int(row["n"] or 0)
+
+
+def unsynced_metered_units(conn: sqlite3.Connection) -> int:
+    if not has_table(conn, "usage_events"):
+        return 0
+    if not has_column(conn, "usage_events", "stripe_synced_at"):
+        return 0
+    if not has_column(conn, "usage_events", "metered"):
+        return 0
+    quantity_expr = "COALESCE(quantity, 1)" if has_column(conn, "usage_events", "quantity") else "1"
+    cutoff = utc_iso_offset(hours=1)
+    sql = (
+        f"SELECT COALESCE(SUM({quantity_expr}), 0) AS units FROM usage_events "
+        "WHERE metered = 1 "
+        "AND stripe_synced_at IS NULL "
+        "AND ts < ?"
+    )
+    row = conn.execute(sql, (cutoff,)).fetchone()
+    return int(row["units"] or 0)
+
+
+# ---------------------------------------------------------------------------
+# Demand-shape metrics — these answer whether the "100k units/day" target is
+# forming as repeatable agent/BPO workflow demand rather than manual search.
+# ---------------------------------------------------------------------------
+def billable_units_since(conn: sqlite3.Connection, since_iso: str) -> int:
+    if not has_table(conn, "usage_events"):
+        return 0
+    has_metered = has_column(conn, "usage_events", "metered")
+    has_quantity = has_column(conn, "usage_events", "quantity")
+    has_status = has_column(conn, "usage_events", "status")
+    where_metered = "AND metered = 1" if has_metered else ""
+    where_success = "AND (status IS NULL OR status < 400)" if has_status else ""
+    quantity_expr = "COALESCE(quantity, 1)" if has_quantity else "1"
+    row = conn.execute(
+        f"SELECT COALESCE(SUM({quantity_expr}), 0) AS units "
+        "FROM usage_events "
+        f"WHERE ts >= ? {where_metered} {where_success}",
+        (since_iso,),
+    ).fetchone()
+    return int(row["units"] or 0)
+
+
+def billable_keys_since(conn: sqlite3.Connection, since_iso: str) -> int:
+    if not has_table(conn, "usage_events"):
+        return 0
+    has_metered = has_column(conn, "usage_events", "metered")
+    has_status = has_column(conn, "usage_events", "status")
+    where_metered = "AND metered = 1" if has_metered else ""
+    where_success = "AND (status IS NULL OR status < 400)" if has_status else ""
+    row = conn.execute(
+        "SELECT COUNT(DISTINCT key_hash) AS n FROM usage_events "
+        f"WHERE ts >= ? {where_metered} {where_success}",
+        (since_iso,),
+    ).fetchone()
+    return int(row["n"] or 0)
+
+
+def client_tag_demand_30d(conn: sqlite3.Connection) -> tuple[int, int, int, float]:
+    """Return ``(tagged_units, total_units, active_tag_pairs, pct)``.
+
+    `X-Client-Tag` is the clearest signal that jpcite is being embedded
+    into customer/project/company-folder workflows.  A low rate means
+    usage is still mostly single-shot exploration, even if traffic grows.
+    """
+    if not has_column(conn, "usage_events", "client_tag"):
+        return 0, 0, 0, 0.0
+    since = utc_iso_offset(days=30)
+    has_metered = has_column(conn, "usage_events", "metered")
+    has_quantity = has_column(conn, "usage_events", "quantity")
+    has_status = has_column(conn, "usage_events", "status")
+    where_metered = "AND metered = 1" if has_metered else ""
+    where_success = "AND (status IS NULL OR status < 400)" if has_status else ""
+    quantity_expr = "COALESCE(quantity, 1)" if has_quantity else "1"
+    row = conn.execute(
+        f"""
+        SELECT
+          COALESCE(SUM({quantity_expr}), 0) AS total_units,
+          COALESCE(SUM(CASE
+              WHEN client_tag IS NOT NULL AND client_tag != '' THEN {quantity_expr}
+              ELSE 0 END), 0) AS tagged_units,
+          COUNT(DISTINCT CASE
+              WHEN client_tag IS NOT NULL AND client_tag != ''
+              THEN key_hash || ':' || client_tag END) AS tag_pairs
+        FROM usage_events
+        WHERE ts >= ? {where_metered} {where_success}
+        """,
+        (since,),
+    ).fetchone()
+    total_units = int(row["total_units"] or 0)
+    tagged_units = int(row["tagged_units"] or 0)
+    tag_pairs = int(row["tag_pairs"] or 0)
+    pct = (tagged_units / total_units * 100.0) if total_units else 0.0
+    return tagged_units, total_units, tag_pairs, pct
+
+
+def top_key_share_30d_pct(conn: sqlite3.Connection) -> float:
+    """Return the largest key's share of 30d billable units.
+
+    100k/day is healthier when it comes from many integrations and
+    customer-tagged workflows.  A high share is not bad by itself, but it
+    means the revenue projection depends on one integration staying active.
+    """
+    if not has_table(conn, "usage_events"):
+        return 0.0
+    since = utc_iso_offset(days=30)
+    has_metered = has_column(conn, "usage_events", "metered")
+    has_quantity = has_column(conn, "usage_events", "quantity")
+    has_status = has_column(conn, "usage_events", "status")
+    where_metered = "AND metered = 1" if has_metered else ""
+    where_success = "AND (status IS NULL OR status < 400)" if has_status else ""
+    quantity_expr = "COALESCE(quantity, 1)" if has_quantity else "1"
+    rows = conn.execute(
+        f"""
+        SELECT key_hash, COALESCE(SUM({quantity_expr}), 0) AS units
+          FROM usage_events
+         WHERE ts >= ? {where_metered} {where_success}
+         GROUP BY key_hash
+        """,
+        (since,),
+    ).fetchall()
+    units = [int(r["units"] or 0) for r in rows]
+    total = sum(units)
+    return (max(units) / total * 100.0) if total else 0.0
+
+
+def cost_preview_requests_7d(conn: sqlite3.Connection) -> int:
+    if not has_table(conn, "analytics_events"):
+        return 0
+    since = utc_iso_offset(days=7)
+    status_filter = "AND status < 400" if has_column(conn, "analytics_events", "status") else ""
+    row = conn.execute(
+        "SELECT COUNT(*) AS n FROM analytics_events "
+        "WHERE ts >= ? AND path = '/v1/cost/preview' "
+        f"{status_filter}",
+        (since,),
+    ).fetchone()
+    return int(row["n"] or 0)
+
+
+def cost_preview_to_billable_7d_pct(conn: sqlite3.Connection) -> float:
+    """Key-level conversion from preview use to any billable use in 7d."""
+    if not has_table(conn, "analytics_events") or not has_table(conn, "usage_events"):
+        return 0.0
+    if not has_column(conn, "analytics_events", "key_hash"):
+        return 0.0
+    since = utc_iso_offset(days=7)
+    preview_rows = conn.execute(
+        """
+        SELECT DISTINCT key_hash
+          FROM analytics_events
+         WHERE ts >= ?
+           AND path = '/v1/cost/preview'
+           AND key_hash IS NOT NULL
+           AND (status IS NULL OR status < 400)
+        """,
+        (since,),
+    ).fetchall()
+    preview_keys = {str(r["key_hash"]) for r in preview_rows if r["key_hash"]}
+    if not preview_keys:
+        return 0.0
+
+    placeholders = ",".join("?" for _ in preview_keys)
+    has_metered = has_column(conn, "usage_events", "metered")
+    has_status = has_column(conn, "usage_events", "status")
+    where_metered = "AND metered = 1" if has_metered else ""
+    where_success = "AND (status IS NULL OR status < 400)" if has_status else ""
+    rows = conn.execute(
+        f"""
+        SELECT DISTINCT key_hash
+          FROM usage_events
+         WHERE ts >= ?
+           AND key_hash IN ({placeholders})
+           {where_metered}
+           {where_success}
+        """,
+        (since, *tuple(preview_keys)),
+    ).fetchall()
+    converted = {str(r["key_hash"]) for r in rows if r["key_hash"]}
+    return (len(converted) / len(preview_keys) * 100.0) if preview_keys else 0.0
 
 
 # ---------------------------------------------------------------------------
@@ -501,7 +696,7 @@ def classify(payload: dict) -> dict[str, str]:
     else:
         out["past_due_count"] = "ok"
 
-    us = payload.get("unsynced_metered_events", 0)
+    us = payload.get("unsynced_metered_units", payload.get("unsynced_metered_events", 0))
     if us >= 100:
         out["unsynced_metered_events"] = "critical"
     elif us >= 1:
@@ -532,6 +727,11 @@ def classify(payload: dict) -> dict[str, str]:
     else:
         out["mrr_wow_pct"] = "ok"
 
+    # A single integration can legitimately dominate early, but above
+    # 80% the 100k/day path is fragile enough to show as warn.
+    top_share = payload.get("top_key_30d_billable_units_share_pct", 0.0)
+    out["top_key_30d_billable_units_share_pct"] = "warn" if top_share >= 80 else "ok"
+
     return out
 
 
@@ -543,6 +743,9 @@ def collect_payload(conn: sqlite3.Connection) -> dict:
     this_week, last_week, wow_pct = mrr_wow_delta(conn)
     drift_pct, drift_file = reconcile_drift()
     geo_pct, geo_total, geo_file = geo_citation_rate()
+    units_24h = billable_units_since(conn, utc_iso_offset(hours=24))
+    keys_24h = billable_keys_since(conn, utc_iso_offset(hours=24))
+    tagged_units_30d, billable_units_30d, tag_pairs_30d, tag_pct_30d = client_tag_demand_30d(conn)
 
     payload: dict = {
         "generated_at": utc_now_iso(),
@@ -558,6 +761,16 @@ def collect_payload(conn: sqlite3.Connection) -> dict:
         "mrr_wow_last_week_yen": last_week,
         "mrr_wow_delta_yen": this_week - last_week,
         "mrr_wow_pct": round(wow_pct, 2),
+        "billable_units_24h": units_24h,
+        "billable_keys_24h": keys_24h,
+        "daily_100k_goal_progress_pct": round((units_24h / 100_000) * 100.0, 2),
+        "billable_units_30d": billable_units_30d,
+        "client_tagged_units_30d": tagged_units_30d,
+        "client_tag_usage_rate_30d_pct": round(tag_pct_30d, 2),
+        "active_client_tag_pairs_30d": tag_pairs_30d,
+        "top_key_30d_billable_units_share_pct": round(top_key_share_30d_pct(conn), 2),
+        "cost_preview_requests_7d": cost_preview_requests_7d(conn),
+        "cost_preview_to_billable_7d_pct": round(cost_preview_to_billable_7d_pct(conn), 2),
         # Caps
         "cap_set": cap_set,
         "cap_reached": cap_reached,
@@ -565,6 +778,7 @@ def collect_payload(conn: sqlite3.Connection) -> dict:
         "churn_7d": churn_7d(conn),
         "past_due_count": past_due_count(conn),
         "unsynced_metered_events": unsynced_metered_events(conn),
+        "unsynced_metered_units": unsynced_metered_units(conn),
         "reconcile_drift_pct": drift_pct,
         "reconcile_source_file": drift_file,
         # Trial funnel
@@ -592,6 +806,24 @@ def render_text(payload: dict) -> str:
     delta = payload["mrr_wow_delta_yen"]
     lines.append(f"MRR WoW Δ: {fmt_yen_signed(delta)} ({payload['mrr_wow_pct']:+.1f}%)")
     lines.append(f"¥/customer avg: {fmt_yen(payload['mrr_per_customer_yen'])}")
+    lines.append(
+        "100k/day progress: "
+        f"{payload['billable_units_24h']:,} units / "
+        f"{payload['billable_keys_24h']} keys "
+        f"({payload['daily_100k_goal_progress_pct']:.2f}%)"
+    )
+    lines.append(
+        "Workflow signal (30d): "
+        f"{payload['client_tagged_units_30d']:,}/{payload['billable_units_30d']:,} "
+        f"units tagged ({payload['client_tag_usage_rate_30d_pct']:.1f}%), "
+        f"{payload['active_client_tag_pairs_30d']} active tags, "
+        f"top key {payload['top_key_30d_billable_units_share_pct']:.1f}%"
+    )
+    lines.append(
+        "Cost preview (7d): "
+        f"{payload['cost_preview_requests_7d']} calls / "
+        f"{payload['cost_preview_to_billable_7d_pct']:.1f}% key-level billable conversion"
+    )
     lines.append(
         f"Cap usage: {payload['cap_set']} customers cap-set, {payload['cap_reached']} cap-reached"
     )

@@ -256,7 +256,7 @@ def test_checkout_rejects_nonstandard_jpcite_port(client, stripe_env):
     assert "success_url" in r.json()["detail"]
 
 
-def test_checkout_allows_english_redirect_paths(client, stripe_env, monkeypatch):
+def test_checkout_allows_english_redirect_paths(client, stripe_env, monkeypatch, seeded_db: Path):
     """English pricing page must be able to create Checkout sessions."""
     from jpintel_mcp.api import billing as billing_mod
 
@@ -286,6 +286,24 @@ def test_checkout_allows_english_redirect_paths(client, stripe_env, monkeypatch)
     assert captured[0]["cancel_url"].startswith("https://jpcite.com/en/pricing.html")
     assert captured[0]["locale"] == "en"
     assert captured[0]["branding_settings"] == {"display_name": "jpcite"}
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        row = c.execute(
+            "SELECT event_name, page, user_agent_class, properties_json "
+            "FROM funnel_events WHERE event_name = ? ORDER BY id DESC LIMIT 1",
+            ("checkout_session_created",),
+        ).fetchone()
+    finally:
+        c.close()
+    assert row is not None
+    assert row[0] == "checkout_session_created"
+    assert row[1] == "/en/pricing.html"
+    assert row[2] == "server"
+    props = json.loads(row[3])
+    assert props["session_id"] == "cs_en_ok"
+    assert props["locale"] == "en"
+    assert props["success_path"] == "/en/success.html"
 
 
 def test_checkout_attaches_pending_device_user_code_metadata(client, stripe_env, monkeypatch):
@@ -615,6 +633,28 @@ def test_issue_from_checkout_returns_raw_key_once_and_persists_hash(
     assert row[1] == "cus_happy"
     assert row[2] == "sub_happy"
     assert row[3] is None
+
+    c = sqlite3.connect(seeded_db)
+    try:
+        events = c.execute(
+            "SELECT event_name, key_hash, user_agent_class, is_anonymous, properties_json "
+            "FROM funnel_events WHERE event_name IN (?, ?) ORDER BY id ASC",
+            ("checkout_completed", "key_issued"),
+        ).fetchall()
+    finally:
+        c.close()
+    assert [event[0] for event in events[-2:]] == ["checkout_completed", "key_issued"]
+    assert events[-2][1] is None
+    assert events[-2][2] == "server"
+    assert events[-2][3] == 1
+    assert events[-1][1] == _hash_api_key(raw_key)
+    assert events[-1][2] == "server"
+    assert events[-1][3] == 0
+    checkout_props = json.loads(events[-2][4])
+    key_props = json.loads(events[-1][4])
+    assert checkout_props["session_id"] == "cs_happy"
+    assert checkout_props["subscription_id"] == "sub_happy"
+    assert key_props["key_last4"] == raw_key[-4:]
 
 
 def test_issue_from_checkout_uses_metered_item_not_first_subscription_item(

@@ -899,6 +899,10 @@ def _sanitize_openapi_public_text(text: str) -> str:
         (r"metadata\.autonomath_product", "metadata.product"),
         (r"autonomath\.intake_consistency_rules", "jpcite validation rules"),
         (r"autonomath\.intake\.", "jpcite.validation."),
+        (r"\bAUTONOMATH_SNAPSHOT_ENABLED\b", "snapshot feature flag"),
+        (r"\bautonomath public dataset\b", "public adoption dataset"),
+        (r"\bautonomath canonical id\b", "stable legacy id"),
+        (r"\bautonomath spine\b", "historical snapshot index"),
         (r"\bunified autonomath dataset\b", "unified jpcite dataset"),
         (r"\bAutonoMath\b", "jpcite"),
         (r"\bautonomath dataset\b", "jpcite dataset"),
@@ -2948,7 +2952,7 @@ def create_app() -> FastAPI:
                 "name": "time_machine",
                 "description": (
                     "Snapshot-as-of querying — replay corpus state at a "
-                    "given timestamp (`AUTONOMATH_SNAPSHOT_ENABLED` gate)."
+                    "given timestamp when the snapshot feature flag is enabled."
                 ),
             },
             {

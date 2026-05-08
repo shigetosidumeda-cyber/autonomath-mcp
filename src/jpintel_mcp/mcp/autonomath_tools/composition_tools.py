@@ -1358,7 +1358,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ] = 4,
     ) -> dict[str, Any]:
-        """[WAVE21-COMPOSE] Multi-step eligibility orchestration over prerequisite_chain → rule_engine_check → exclusion_rules → am_compat_matrix per program. Returns per-program verdict (eligible / partial / ineligible) + reasoning_steps + cite chain. Heuristic; verify primary source. §52 sensitive."""
+        """Multi-step eligibility orchestration over prerequisite_chain → rule_engine_check → exclusion_rules → am_compat_matrix per program. Returns per-program verdict (eligible / partial / ineligible) + reasoning_steps + cite chain. Heuristic; verify primary source. §52 sensitive."""
         return _apply_eligibility_chain_impl(
             profile=profile,
             program_ids=program_ids,
@@ -1391,7 +1391,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ] = True,
     ) -> dict[str, Any]:
-        """[WAVE21-COMPOSE] Seed program → am_compat_matrix compatible edges → portfolio with combined_ceiling_yen + conflicts. authoritative_share_pct surfaced. inferred_only=true edges are heuristic. §52 sensitive — verify 経費重複 + 適正化法 17 条 before stacking."""
+        """Seed program → am_compat_matrix compatible edges → portfolio with combined_ceiling_yen + conflicts. authoritative_share_pct surfaced. inferred_only=true edges are heuristic. §52 sensitive — verify 経費重複 + 適正化法 17 条 before stacking."""
         return _find_complementary_impl(
             seed_program_id=seed_program_id,
             top_n=top_n,
@@ -1422,7 +1422,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ] = "next",
     ) -> dict[str, Any]:
-        """[WAVE21-COMPOSE] Pure-SQL mock walkthrough: am_application_steps + am_prerequisite_bundle + am_application_round + am_law_article. Returns document_checklist + certifications + est_review_days + completeness_score. NO LLM. §52 sensitive — not a substitute for 行政書士 §1 申請代理."""
+        """Pure-SQL mock walkthrough: am_application_steps + am_prerequisite_bundle + am_application_round + am_law_article. Returns document_checklist + certifications + est_review_days + completeness_score. NO LLM. §52 sensitive — not a substitute for 行政書士 §1 申請代理."""
         return _simulate_application_impl(
             program_id=program_id,
             profile=profile,
@@ -1451,7 +1451,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ] = None,
     ) -> dict[str, Any]:
-        """[WAVE21-COMPOSE] am_amendment_snapshot time-series for a target (14,596 rows; only 140 carry effective_from). Returns timeline + strict_count (with effective_from) + hash_only_count + warnings. eligibility_hash is uniform sha256-of-empty on 82.3% — time-series fence surfaced."""
+        """am_amendment_snapshot time-series for a target (14,596 rows; only 140 carry effective_from). Returns timeline + strict_count (with effective_from) + hash_only_count + warnings. eligibility_hash is uniform sha256-of-empty on 82.3% — time-series fence surfaced."""
         return _track_amendment_lineage_impl(
             target_kind=target_kind,
             target_id=target_id,
@@ -1474,7 +1474,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ] = False,
     ) -> dict[str, Any]:
-        """[WAVE21-COMPOSE] am_application_round (1,256 rows) per-program rounds + days_to_close + sunset_warning. Returns open_count / upcoming_count / closed_count + soonest_close_date. sunset_warning fires when only closed rounds exist OR close < 14 days away."""
+        """am_application_round (1,256 rows) per-program rounds + days_to_close + sunset_warning. Returns open_count / upcoming_count / closed_count + soonest_close_date. sunset_warning fires when only closed rounds exist OR close < 14 days away."""
         return _program_active_periods_impl(
             program_id=program_id,
             future_only=future_only,

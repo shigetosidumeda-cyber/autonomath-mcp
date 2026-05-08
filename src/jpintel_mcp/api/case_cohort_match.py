@@ -53,8 +53,8 @@ class CohortMatchBody(BaseModel):
         description=(
             "JSIC industry code prefix (e.g. 'A' for 農林水産業 大分類, 'E29' "
             "for 食料品製造業 中分類). Prefix-matches against both jpintel "
-            "case_studies.industry_jsic and autonomath "
-            "jpi_adoption_records.industry_jsic_medium. Pass null to span "
+            "case_studies.industry_jsic and the public adoption dataset "
+            "industry_jsic_medium. Pass null to span "
             "all industries."
         ),
     )

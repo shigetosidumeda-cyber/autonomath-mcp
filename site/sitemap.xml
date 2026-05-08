@@ -14,9 +14,9 @@
   also added on the JP /products.html, /widget.html, /alerts.html entries.
   /en/widget/demo.html and /en/dashboard.html stay out of the sitemap
   (demo.html and dashboard.html are noindex).
-  Updated 2026-04-26: EN /en/line.html, /en/advisors.html, and
+  Updated 2026-04-26: EN /en/notifications.html, /en/advisors.html, and
   /en/facts.html added with hreflang pairs to JP; reciprocal EN hreflang
-  also added on the JP /line.html, /advisors.html, /facts.html entries.
+  also added on the JP /notifications.html, /advisors.html, /facts.html entries.
   Updated 2026-04-26: EN /en/confidence.html added with hreflang
   pair to JP; reciprocal EN hreflang added on JP /confidence.html.
   /alerts-unsubscribe.html and /en/alerts-unsubscribe.html stay out of the
@@ -354,13 +354,13 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/widget"/>
   </url>
   <url>
-    <loc>https://jpcite.com/line</loc>
+    <loc>https://jpcite.com/notifications</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/line"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/line"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/line"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/notifications"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/notifications"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/notifications"/>
   </url>
   <url>
     <loc>https://jpcite.com/alerts</loc>
@@ -462,13 +462,13 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/advisors"/>
   </url>
   <url>
-    <loc>https://jpcite.com/en/line</loc>
+    <loc>https://jpcite.com/en/notifications</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/line"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/line"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/line"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/notifications"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/notifications"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/notifications"/>
   </url>
   <url>
     <loc>https://jpcite.com/en/advisors</loc>

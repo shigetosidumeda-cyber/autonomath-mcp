@@ -66,7 +66,7 @@ _DATA_QUALITY_TIME_MACHINE: dict[str, Any] = {
         "Replay the program's eligibility / amount / deadline as it was "
         "live on ``as_of``. Pivots off ``am_amendment_snapshot`` "
         "(14,596 captures + 144 definitive-dated rows) on the "
-        "autonomath spine — NO jpintel-side dataset versioning required.\n\n"
+        "snapshot spine.\n\n"
         "**Pricing:** ¥3/call (1 unit). Anonymous tier shares the 3/日 IP "
         "cap.\n\n"
         "**SENSITIVE (§52 / §47条の2):** factual replay only — NOT 採択 "

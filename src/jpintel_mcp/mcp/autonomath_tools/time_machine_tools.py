@@ -1,4 +1,4 @@
-"""DEEP-22 Regulatory Time Machine — past-eligibility replay (no LLM).
+"""Regulatory Time Machine — past-eligibility replay (no LLM).
 
 Two MCP tools that pivot off the autonomath spine
 (`am_amendment_snapshot.effective_from` + 144 definitive-dated rows + 14,596
@@ -14,7 +14,7 @@ Pure SQLite + Python.
   * Single ¥3/req billing event per tool call (the evolution variant
     runs 12 monthly pivots inside one call but still bills as 1 unit).
 
-Quality flag taxonomy (DEEP-22 §4)
+Quality flag taxonomy
 ----------------------------------
 
   definitive       effective_from IS NOT NULL — date verified at ingest.
@@ -493,7 +493,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ],
     ) -> dict[str, Any]:
-        """[AUDIT, SENSITIVE — §52 / §47条の2] DEEP-22 Time Machine. Returns the program's eligibility / amount / deadline frozen at as_of, with 3-axis citation (source_url + source_fetched_at + source_sha256). Pivots off am_amendment_snapshot (14,596 captures, 144 definitive-dated). NOT 採択 prediction; factual replay only."""
+        """[AUDIT, SENSITIVE — §52 / §47条の2] Time Machine. Returns the program's eligibility / amount / deadline frozen at as_of, with 3-axis citation (source_url + source_fetched_at + source_sha256). Pivots off am_amendment_snapshot (14,596 captures, 144 definitive-dated). NOT 採択 prediction; factual replay only."""
         return _query_at_snapshot_impl(program_id=program_id, as_of=as_of)
 
     @mcp.tool(annotations=_READ_ONLY)
@@ -515,7 +515,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ],
     ) -> dict[str, Any]:
-        """[AUDIT, SENSITIVE — §52 / §47条の2] DEEP-22 Time Machine — 12-month evolution grid. Runs query_at_snapshot at every month-end of `year` in one call (single ¥3 metered event, 11 cached reads). Surfaces change_months for diligence walks. NOT 採択 prediction; factual replay only."""
+        """[AUDIT, SENSITIVE — §52 / §47条の2] Time Machine — 12-month evolution grid. Runs query_at_snapshot at every month-end of `year` in one call (single ¥3 metered event, 11 cached reads). Surfaces change_months for diligence walks. NOT 採択 prediction; factual replay only."""
         return _query_program_evolution_impl(program_id=program_id, year=year)
 
 

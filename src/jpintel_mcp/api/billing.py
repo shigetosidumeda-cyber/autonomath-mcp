@@ -40,6 +40,7 @@ from jpintel_mcp.api.deps import (  # noqa: TC001 (runtime for FastAPI Depends r
     ApiContextDep,
     DbDep,
 )
+from jpintel_mcp.api.funnel_events import record_server_funnel_event
 from jpintel_mcp.billing.credit_pack import (
     CREDIT_PACK_METADATA_KIND,
     CreditPackPurchaseRequest,
@@ -51,6 +52,7 @@ from jpintel_mcp.billing.credit_pack import (
     metadata_kind,
 )
 from jpintel_mcp.billing.keys import (
+    hash_api_key,
     issue_key,
     resolve_tier_from_price,
     revoke_subscription,
@@ -888,7 +890,14 @@ def create_checkout(
         "en" if urlparse(success_url).path.startswith("/en/") else "ja"
     )
     checkout_state = secrets.token_urlsafe(32)
-    metadata = {"checkout_state_hash": _checkout_state_hash(checkout_state)}
+    success_path = urlparse(success_url).path or "/success.html"
+    cancel_path = urlparse(cancel_url).path or "/pricing.html"
+    metadata = {
+        "checkout_state_hash": _checkout_state_hash(checkout_state),
+        "success_path": success_path,
+        "cancel_path": cancel_path,
+        "checkout_locale": checkout_locale,
+    }
     if payload.user_code:
         row = conn.execute(
             "SELECT device_code, user_code, status FROM device_codes WHERE user_code = ?",
@@ -927,6 +936,20 @@ def create_checkout(
         **extra,
     )
     _set_checkout_state_cookie(request, response, checkout_state)
+    record_server_funnel_event(
+        conn=conn,
+        event_name="checkout_session_created",
+        page=cancel_path,
+        properties={
+            "session_id": getattr(session, "id", None),
+            "price_id": price_id,
+            "locale": checkout_locale,
+            "has_customer_email": bool(payload.customer_email),
+            "has_user_code": bool(payload.user_code),
+            "success_path": success_path,
+            "cancel_path": cancel_path,
+        },
+    )
     return CheckoutResponse(url=session.url, session_id=session.id)
 
 
@@ -1147,6 +1170,33 @@ def issue_from_checkout(
             customer_id,
             exc_info=True,
         )
+    issued_key_hash = hash_api_key(raw)
+    success_path = session_metadata.get("success_path") or "/success.html"
+    record_server_funnel_event(
+        conn=conn,
+        event_name="checkout_completed",
+        page=success_path,
+        properties={
+            "session_id": payload.session_id,
+            "subscription_id": sub_id,
+            "customer_id": customer_id,
+            "tier": tier,
+            "payment_status": session.payment_status,
+        },
+    )
+    record_server_funnel_event(
+        conn=conn,
+        event_name="key_issued",
+        page=success_path,
+        key_hash=issued_key_hash,
+        properties={
+            "session_id": payload.session_id,
+            "subscription_id": sub_id,
+            "customer_id": customer_id,
+            "tier": tier,
+            "key_last4": raw[-4:] if raw else None,
+        },
+    )
     response.delete_cookie(_CHECKOUT_STATE_COOKIE, path="/v1/billing")
     return KeyIssueResponse(api_key=raw, tier=tier, customer_id=customer_id)
 

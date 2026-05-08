@@ -264,6 +264,14 @@ Authorization: Bearer am_xxxxxxxxxxxxxxxx
 
 API key 不在は匿名扱い、無効 key は `401 Unauthorized`。
 
+AI agent / BPO / 士業システムが継続利用する場合は、次の任意 header も併用する:
+
+| Header | 用途 |
+|---|---|
+| `X-Client-Tag` | paid key 利用時に、顧客・会社フォルダ・案件単位で使用量を分けて追うための 32 文字以内タグ |
+| `Idempotency-Key` | 同じ POST を再試行する時の二重実行・二重課金防止。batch / fanout 系では必須になる場合がある |
+| `X-Cost-Cap-JPY` | billable POST の予算上限。`/v1/cost/preview` の `predicted_total_yen` 以上を指定すると、想定外の広がりを止められる |
+
 ## Rate limit
 
 | 区分 | 上限 |
@@ -407,6 +415,8 @@ IP は raw 保存せず `HMAC-SHA256(ip, api_key_salt)` で hash 化。詳細は
 - `agent_recommendation.cost_savings_decision` — `supported_by_caller_baseline` / `not_supported_by_caller_baseline` / `needs_caller_baseline` / `needs_input_token_price`
 
 3 回到達して全項目が想定通りなら、税込概算 ¥3.30/billable unit で「データ統合 + 一次出典 + 鮮度 + 入力文脈削減見込み」が得られるかを判断できます。ブラウザで順に検証する場合は <https://jpcite.com/playground?flow=evidence3>。個別 field の詳細仕様は [Context Compression 章](#context-compression-workload-dependent-estimate) と [pricing.md `break_even_met` の正しい読み方](./pricing.md) を参照。
+
+継続利用に移る場合は、同じ endpoint を `X-API-Key` または `Authorization: Bearer` 付きで呼び、案件単位の `X-Client-Tag` を固定する。POST の再試行では `Idempotency-Key`、広い batch / fanout では `X-Cost-Cap-JPY` を付ける。
 
 ---
 

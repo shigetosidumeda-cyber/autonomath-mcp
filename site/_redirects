@@ -125,6 +125,12 @@
 /jpintel.html   /  301
 /jpintel/*      /  301
 
+# Former mobile-chat marketing path now points at the broader notification channel.
+/line           /notifications  301
+/line.html      /notifications  301
+/en/line        /en/notifications  301
+/en/line.html   /en/notifications  301
+
 # Dashboard convenience — bare /dashboard works via CF .html stripping,
 # but /dash and /account are common shortcuts users try.
 /dash        /dashboard  302

@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>Claude Desktop と連携する — jpcite</title>
-<meta name="description" content="Claude Desktop の設定ファイルに 1 行追記すれば、jpcite のツールが利用できます。">
+<meta name="description" content="Claude Desktop から補助金・公的制度の根拠検索を使い、公式 URL や取得時点を添えた回答づくりに活用できます。">
 
 <meta property="og:title" content="Claude Desktop と連携する — jpcite">
-<meta property="og:description" content="Claude Desktop の設定ファイルに 1 行追記すれば、jpcite のツールが利用できます。">
+<meta property="og:description" content="Claude Desktop から補助金・公的制度の根拠検索を使い、公式 URL や取得時点を添えた回答づくりに活用できます。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://jpcite.com/integrations/claude-desktop.html">
 <meta property="og:locale" content="ja_JP">
@@ -101,7 +101,7 @@
 <span aria-current="page">Claude Desktop</span>
 </nav>
 <h1 style="margin-bottom:0.2em;">Claude Desktop と連携する</h1>
-<p>Claude Desktop には文章化や比較を任せ、jpcite には一次資料ベースの検索と根拠取得を任せます。長い募集要項 PDF を都度 Claude に読ませる前に、MCP tool から制度 metadata、併給制限、出典 URL、取得時点を短く返せます。少ない文脈量で確認可能な回答を作れる場合がありますが、効果は質問内容、モデル、キャッシュ、検索設定によって変わります。</p>
+<p>Claude Desktop には文章化や比較を任せ、jpcite には一次資料ベースの検索と根拠取得を任せます。長い募集要項 PDF を都度読み込ませる前に、制度の対象条件、併給制限、出典 URL、取得時点を確認し、根拠付きの回答づくりに使えます。</p>
 
 <h2 id="install">インストール</h2>
 <div class="code-block" data-code="uvx autonomath-mcp">
@@ -142,15 +142,14 @@
 
 <figure style="margin:16px 0;border:1px solid #ddd;border-radius:8px;padding:12px;background:#fafafa;text-align:center;">
 <img src="/assets/og.png" alt="Claude Desktop ハンマーアイコン" width="1200" height="750" style="max-width:100%;height:auto;border-radius:4px;aspect-ratio:1200/750;" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
-<div style="display:none;padding:24px;color:#525252;font-size:0.9em;">[screenshot placeholder]</div>
+<div style="display:none;padding:24px;color:#525252;font-size:0.9em;">画像を表示できない場合も、入力欄左下のツールアイコンから jpcite が選べれば接続完了です。</div>
 </figure>
 
-<h2 id="first-prompt">Evidence prefetch の最初のプロンプト</h2>
-<div class="code-block" data-code="東京都の設備投資補助金を探す前に、jpcite MCPでsearch_programsを実行し、候補が出たらget_evidence_packetでsource_url、source_fetched_at、corpus_snapshot_idを取得してください。回答ではその3点を併記してください。">
-<pre><code>東京都の設備投資補助金を探す前に、jpcite MCPで search_programs を実行し、
-候補が出たら get_evidence_packet で source_url、source_fetched_at、
-corpus_snapshot_id を取得してください。
-回答ではその3点を併記してください。</code></pre>
+<h2 id="first-prompt">最初のプロンプト</h2>
+<div class="code-block" data-code="東京都の設備投資補助金を探し、候補ごとに対象者、対象経費、締切、出典URL、取得時点を確認して比較してください。根拠が不足する項目は不足と明記してください。">
+<pre><code>東京都の設備投資補助金を探し、候補ごとに対象者、対象経費、締切、
+出典URL、取得時点を確認して比較してください。
+根拠が不足する項目は不足と明記してください。</code></pre>
 <button class="copy-btn" type="button" aria-label="コピー">Copy</button>
 </div>
 

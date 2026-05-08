@@ -74,6 +74,12 @@ _ALLOWED_EVENTS: frozenset[str] = frozenset(
         "openapi_import_click",
         "mcp_install_copy",
         "checkout_start",
+        # Server-side billing lifecycle events. These close the gap between
+        # front-end CTA clicks and revenue-bearing API usage.
+        "checkout_session_created",
+        "checkout_completed",
+        "key_issued",
+        "first_billable",
         "dashboard_signin_success",
         # §4.6 — AI-mediated detection events. Server-side fire sites:
         #   * `ai_client_install_detected` — analytics_recorder /
@@ -350,6 +356,48 @@ def _record(
     conn.commit()
 
 
+def record_server_funnel_event(
+    *,
+    conn: sqlite3.Connection,
+    event_name: str,
+    page: str | None = None,
+    properties: dict[str, Any] | None = None,
+    key_hash: str | None = None,
+    src: str | None = None,
+) -> bool:
+    """Best-effort server-side funnel breadcrumb.
+
+    Browser beacons miss critical billing transitions when users block JS,
+    navigate away, or complete Checkout through an embedded agent workflow.
+    This helper lets server paths record those transitions without making
+    billing depend on analytics availability.
+    """
+    event = event_name.strip().lower()
+    if event not in _ALLOWED_EVENTS:
+        _log.warning("server funnel event rejected unknown_event=%s", event)
+        return False
+    try:
+        _record(
+            conn=conn,
+            ts=datetime.now(UTC).isoformat(),
+            event_name=event,
+            page=_normalise_page(page),
+            properties_json=_normalise_properties(properties),
+            anon_ip_hash=None,
+            session_id=None,
+            key_hash=key_hash,
+            user_agent_class="server",
+            is_bot=False,
+            is_anonymous=key_hash is None,
+            referer_host=None,
+            src=_classify_src(src),
+        )
+    except sqlite3.OperationalError as exc:
+        _log.warning("server funnel event skipped event=%s error=%s", event, exc)
+        return False
+    return True
+
+
 @router.post(
     "/event",
     response_model=FunnelEventResponse,
@@ -437,4 +485,4 @@ async def post_event(
     )
 
 
-__all__ = ["router"]
+__all__ = ["record_server_funnel_event", "router"]

@@ -199,28 +199,53 @@ def test_kill_switch_writes_audit_log_on_block(
 
 
 def test_per_ip_endpoint_search_cap_31st_returns_429(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch, paid_key: str
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """30 req/min cap on /v1/programs/search → the 31st within 60s is
-    429 with bucket label ``per-ip:search_programs``.
+    """30 req/min anonymous IP cap on /v1/programs/search → the 31st
+    within 60s is 429 with bucket label ``per-ip:search_programs``.
 
     The conftest's ``RATE_LIMIT_BURST_DISABLED=1`` is left in place so
     the per-second burst gate doesn't 429 us first.
     """
+    from jpintel_mcp.config import settings
+
+    monkeypatch.setattr(settings, "anon_rate_limit_per_day", 100)
+
     # Fire 30 — all should pass under the per-IP cap.
-    headers = {"X-API-Key": paid_key}
     for i in range(30):
-        r = client.get("/v1/programs/search?q=test", headers=headers)
+        r = client.get("/v1/programs/search?q=test")
         assert r.status_code != 429, f"hit per-ip 429 unexpectedly at request {i + 1}: {r.text}"
 
     # 31st must be 429 from PerIpEndpointLimitMiddleware.
-    r = client.get("/v1/programs/search?q=test", headers=headers)
+    r = client.get("/v1/programs/search?q=test")
     assert r.status_code == 429, r.text
     body = r.json()
     assert body["error"]["code"] == "rate_limited"
     assert body["error"]["bucket"].startswith("per-ip:")
     assert body["error"]["limit_per_minute"] == 30
     assert int(r.headers["Retry-After"]) >= 1
+
+
+def test_per_ip_endpoint_paid_key_uses_higher_key_bucket(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch, paid_key: str
+) -> None:
+    """Paid API-key traffic must not be capped at the anonymous 30/min/IP
+    ceiling, otherwise one NAT or agent platform cannot scale.
+    """
+    headers = {"X-API-Key": paid_key}
+    for i in range(31):
+        r = client.get("/v1/programs/search?q=test", headers=headers)
+        assert r.status_code != 429, f"paid key hit anonymous cap at request {i + 1}: {r.text}"
+
+
+def test_per_ip_endpoint_bearer_key_uses_higher_key_bucket(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch, paid_key: str
+) -> None:
+    """Authorization: Bearer is equivalent to X-API-Key for agent clients."""
+    headers = {"Authorization": f"Bearer {paid_key}"}
+    for i in range(31):
+        r = client.get("/v1/programs/search?q=test", headers=headers)
+        assert r.status_code != 429, f"bearer key hit anonymous cap at request {i + 1}: {r.text}"
 
 
 def test_per_ip_endpoint_cap_disabled_via_env(

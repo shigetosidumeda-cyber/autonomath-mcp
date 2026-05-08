@@ -115,8 +115,8 @@ JPCITE_WWW_REDIRECT_REQUIRED_TOKENS = [
     "redirect_rules:",
     "name: jpcite_www_to_apex",
     "zone: jpcite.com",
-    'expression: \'http.host eq "www.jpcite.com"\'',
-    'expression: \'concat("https://jpcite.com", http.request.uri.path)\'',
+    "expression: 'http.host eq \"www.jpcite.com\"'",
+    "expression: 'concat(\"https://jpcite.com\", http.request.uri.path)'",
     "status_code: 301",
     "preserve_query_string: true",
 ]
@@ -357,6 +357,8 @@ def _failures_for_redirects_syntax(text: str) -> list[str]:
             failures.append(f"site/_redirects:{lineno} source must be a path")
         if "://" in source or source.startswith("//"):
             failures.append(f"site/_redirects:{lineno} source must not be a domain-level rule")
+        if len(parts) == 3 and source == parts[1] and status != "200":
+            failures.append(f"site/_redirects:{lineno} must not redirect a path to itself")
         if status is not None and status not in REDIRECTS_ALLOWED_STATUS_CODES:
             failures.append(f"site/_redirects:{lineno} unsupported status:{status}")
         if "www.jpcite.com" in stripped:
@@ -379,6 +381,21 @@ def _failures_for_agent_openapi(rel: str) -> list[str]:
         failures.append(f"{rel} missing x-jpcite-first-hop-policy")
     if not info.get("x-jpcite-evidence-to-expert-handoff-policy"):
         failures.append(f"{rel} missing x-jpcite-evidence-to-expert-handoff-policy")
+    recurring = info.get("x-jpcite-recurring-agent-workflow-policy")
+    if not recurring:
+        failures.append(f"{rel} missing x-jpcite-recurring-agent-workflow-policy")
+    else:
+        workflow_ids = {
+            item.get("id") for item in recurring.get("workflows", []) if isinstance(item, dict)
+        }
+        for workflow_id in (
+            "company_folder_intake",
+            "monthly_client_review",
+            "counterparty_dd_and_audit_prep",
+            "agent_evidence_prefetch_before_answer",
+        ):
+            if workflow_id not in workflow_ids:
+                failures.append(f"{rel} missing recurring workflow:{workflow_id}")
     return failures
 
 

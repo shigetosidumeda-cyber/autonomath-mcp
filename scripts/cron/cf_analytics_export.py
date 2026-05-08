@@ -35,6 +35,7 @@ import os
 import sys
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from urllib.parse import urlparse
 
 import httpx
 
@@ -132,7 +133,7 @@ query ($zone:String!,$since:Time!,$until:Time!,$limit:Int!){
       filter:{datetime_geq:$since, datetime_lt:$until}
     ){
       sum{ requests }
-      dimensions{ refererHost }
+      dimensions{ clientRequestReferer }
     }
   }}
 }
@@ -145,12 +146,20 @@ query ($zone:String!,$since:Time!,$until:Time!,$limit:Int!){
 # means UA buckets in the JSONL won't match the buckets stored in
 # `analytics_events.user_agent_class`.
 _UA_PATTERNS: tuple[tuple[str, str], ...] = (
+    # Internal verification traffic. Keep these out of growth/bot reads.
+    ("internal:codex-review", "codex read-only consistency review"),
+    ("internal:codex-audit", "codex audit"),
+    ("internal:tlm-audit-scanner", "tlm-audit-scanner"),
+    ("internal:early-hints", "nginx-ssl early hints"),
     # Bots / crawlers (highest priority — these dominate CF raw PV).
+    ("bot:chatgpt-user", "chatgpt-user"),
+    ("bot:oai-searchbot", "oai-searchbot"),
     ("bot:googlebot", "googlebot"),
     ("bot:bingbot", "bingbot"),
     ("bot:gptbot", "gptbot"),
     ("bot:claudebot", "claudebot"),
     ("bot:perplexity", "perplexitybot"),
+    ("bot:amazonbot", "amazonbot"),
     ("bot:facebook", "facebookexternalhit"),
     ("bot:twitter", "twitterbot"),
     ("bot:applebot", "applebot"),
@@ -192,11 +201,11 @@ _UA_PATTERNS: tuple[tuple[str, str], ...] = (
 def classify_user_agent(ua: str | None) -> str:
     """Map a User-Agent string to a stable class label.
 
-    Returns one of: ``bot:*``, ``claude-desktop``, ``claude-code``,
-    ``chatgpt``, ``cursor``, ``zed``, ``cline``, ``continue``,
-    ``anthropic-sdk``, ``openai-sdk``, ``google-genai``, ``mcp-client``,
-    ``curl``, ``wget``, ``httpx``, ``requests``, ``axios``,
-    ``browser:firefox``, ``browser:safari``, ``browser:edge``,
+    Returns one of: ``internal:*``, ``bot:*``, ``claude-desktop``,
+    ``claude-code``, ``chatgpt``, ``cursor``, ``zed``, ``cline``,
+    ``continue``, ``anthropic-sdk``, ``openai-sdk``, ``google-genai``,
+    ``mcp-client``, ``curl``, ``wget``, ``httpx``, ``requests``,
+    ``axios``, ``browser:firefox``, ``browser:safari``, ``browser:edge``,
     ``browser:chrome``, ``unknown`` (no UA), or ``other`` (no rule hit).
     """
     if not ua:
@@ -206,6 +215,18 @@ def classify_user_agent(ua: str | None) -> str:
         if needle in ua_low:
             return label
     return "other"
+
+
+def _referer_host(value: str | None) -> str:
+    """Normalize a CF referer dimension value to a stable lower-case host."""
+    if not value:
+        return ""
+    raw = value.strip()
+    if not raw or raw in {"-", "(direct)", "direct", "unknown"}:
+        return ""
+    parsed = urlparse(raw if "://" in raw else f"//{raw}")
+    host = parsed.hostname or ""
+    return host.lower().rstrip(".")
 
 
 def _existing_keys(path: Path) -> set[tuple[str, str]]:
@@ -494,22 +515,28 @@ def main() -> int:
                     "zone": zone,
                     "since": since_time,
                     "until": until_time,
-                    "limit": _TOP_N,
+                    # CF exposes the full referer URL on this plan, not the
+                    # host bucket. Pull a wider sample and collapse by host
+                    # client-side so one search page path does not dominate.
+                    "limit": _TOP_N * 4,
                 },
             )
-            items = []
+            buckets: dict[str, int] = {}
             for g in _extract_groups(top_referers_payload, "httpRequestsAdaptiveGroups"):
                 dims = g.get("dimensions") or {}
                 sums = g.get("sum") or {}
-                ref = dims.get("refererHost") or ""
+                ref = _referer_host(dims.get("clientRequestReferer") or "")
                 if not ref:
                     continue
-                items.append(
-                    {
-                        "referer_host": ref,
-                        "requests": int(sums.get("requests", 0) or 0),
-                    }
-                )
+                buckets[ref] = buckets.get(ref, 0) + int(sums.get("requests", 0) or 0)
+            items = [
+                {"referer_host": ref, "requests": requests}
+                for ref, requests in sorted(
+                    buckets.items(),
+                    key=lambda item: item[1],
+                    reverse=True,
+                )[:_TOP_N]
+            ]
             rows.append(
                 {
                     "date": date_str,

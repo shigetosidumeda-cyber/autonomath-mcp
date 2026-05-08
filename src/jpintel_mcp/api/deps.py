@@ -284,6 +284,56 @@ def _existing_usage_event_for_billing_key(
     return int(row[0]) if row else None
 
 
+def _record_first_billable_event_once(
+    *,
+    key_hash: str | None,
+    endpoint: str,
+    quantity: int,
+    usage_event_id: int | None,
+) -> None:
+    if not key_hash or usage_event_id is None:
+        return
+    conn: sqlite3.Connection | None = None
+    try:
+        conn = connect()
+        row = conn.execute(
+            "SELECT COUNT(*) AS n FROM usage_events "
+            "WHERE key_hash = ? "
+            "AND metered = 1 "
+            "AND (status IS NULL OR status < 400)",
+            (key_hash,),
+        ).fetchone()
+        if int(row["n"] if isinstance(row, sqlite3.Row) else row[0] or 0) != 1:
+            return
+        with contextlib.suppress(sqlite3.OperationalError):
+            existing = conn.execute(
+                "SELECT 1 FROM funnel_events "
+                "WHERE event_name = 'first_billable' AND key_hash = ? "
+                "LIMIT 1",
+                (key_hash,),
+            ).fetchone()
+            if existing is not None:
+                return
+        from jpintel_mcp.api.funnel_events import record_server_funnel_event
+
+        record_server_funnel_event(
+            conn=conn,
+            event_name="first_billable",
+            key_hash=key_hash,
+            properties={
+                "endpoint": endpoint,
+                "quantity": quantity,
+                "usage_event_id": usage_event_id,
+            },
+        )
+    except Exception:  # noqa: BLE001
+        return
+    finally:
+        if conn is not None:
+            with contextlib.suppress(Exception):
+                conn.close()
+
+
 def _day_bucket(ts: datetime | None = None) -> str:
     ts = ts or datetime.now(UTC)
     return ts.strftime("%Y-%m-%d")
@@ -889,6 +939,13 @@ def _record_usage_async(
             status_code=status_code,
             quantity=quantity,
         )
+        if metered and status_code < 400:
+            _record_first_billable_event_once(
+                key_hash=key_hash,
+                endpoint=endpoint,
+                quantity=quantity,
+                usage_event_id=usage_event_id,
+            )
     if metered and status_code < 400 and stripe_subscription_id and usage_event_id is not None:
         try:
             from jpintel_mcp.billing.stripe_usage import report_usage_async
@@ -1222,6 +1279,13 @@ def log_usage(
             status_code=status_code,
             quantity=quantity,
         )
+        if ctx.metered and status_code < 400:
+            _record_first_billable_event_once(
+                key_hash=ctx.key_hash,
+                endpoint=endpoint,
+                quantity=quantity,
+                usage_event_id=usage_event_id,
+            )
     return audit_seal
 
 

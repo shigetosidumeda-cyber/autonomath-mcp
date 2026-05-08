@@ -24,8 +24,8 @@ Hard constraints (memory feedback_no_operator_llm_api)
 
   * Tool body never imports anthropic / openai / google.generativeai.
   * Tool body never calls an LLM API. SELECT only.
-  * Pre-computed narratives originate from the operator-side Claude Code
-    subagent batch (§10.6) and land in `am_program_narrative` via cron;
+  * Pre-computed narratives originate from an offline service-side
+    enrichment batch and land in `am_program_narrative` via cron;
     here we read them back, never generate them.
 
 Migration table-presence is best-effort
@@ -94,7 +94,7 @@ def _finalize(body: dict[str, Any]) -> dict[str, Any]:
 logger = logging.getLogger("jpintel.mcp.autonomath.wave24a")
 
 # Env-gated registration (default on). Flip to "0" for one-flag rollback
-# if a regression surfaces post-launch.
+# if a regression surfaces.
 _ENABLED = os.environ.get("AUTONOMATH_WAVE24_FIRST_HALF_ENABLED", "1") == "1"
 
 
@@ -1719,8 +1719,7 @@ def _get_program_narrative_impl(
 
     `section='all'` returns up to 4 rows (overview / eligibility /
     application_flow / pitfalls); a specific section returns a single
-    row. Pre-generation lives in the operator-side Claude Code subagent
-    batch (§10.6) — this tool only SELECTs.
+    row. Narratives are pre-computed; this tool only SELECTs.
 
     `reading_level='plain'` (W3-12 UC7 LINE 中小企業向け) post-processes
     `body_text` through a rule-based 平易日本語 dictionary
@@ -2208,7 +2207,7 @@ if _ENABLED and settings.autonomath_enabled:
             Field(ge=0, description="Pagination offset. Default 0."),
         ] = 0,
     ) -> dict[str, Any]:
-        """[WAVE24-#97] TOP-N recommended programs for a 法人 from am_recommended_programs (pre-computed via §10.3 ETL). Returns score + rank + decoded reason JSON. SENSITIVE — §52 / §72 fence; the LLM should treat the score as guidance, not a 採択 forecast."""
+        """TOP-N recommended programs for a 法人 from am_recommended_programs (pre-computed). Returns score + rank + decoded reason JSON. SENSITIVE — §52 / §72 fence; the LLM should treat the score as guidance, not a 採択 forecast."""
         return _recommend_programs_for_houjin_impl(
             houjin_bangou=houjin_bangou,
             limit=limit,
@@ -2236,7 +2235,7 @@ if _ENABLED and settings.autonomath_enabled:
             Field(ge=0, description="Pagination offset. Default 0."),
         ] = 0,
     ) -> dict[str, Any]:
-        """[WAVE24-#98] Combinable-program list from am_program_combinations. Both directions UNIONed under the (program_a < program_b) CHECK. visibility='public' (default) surfaces only sourced rows; 'internal' adds heuristic. SENSITIVE — §52/§1 fence — combinability is heuristic, not a promise."""
+        """Combinable-program list from am_program_combinations. Both directions UNIONed under the (program_a < program_b) CHECK. visibility='public' (default) surfaces only sourced rows; other modes may include heuristic rows. SENSITIVE — §52/§1 fence — combinability is heuristic, not a promise."""
         return _find_combinable_programs_impl(
             program_id=program_id,
             visibility=visibility,
@@ -2261,7 +2260,7 @@ if _ENABLED and settings.autonomath_enabled:
             Field(ge=0, description="Pagination offset. Default 0."),
         ] = 0,
     ) -> dict[str, Any]:
-        """[WAVE24-#99] 12-month per-program calendar from am_program_calendar_12mo (pre-computed). Returns is_open + deadline + round_label per month. NOT sensitive — calendar facts. Use after recommend_programs_for_houjin or search_programs to time the application."""
+        """12-month per-program calendar from am_program_calendar_12mo (pre-computed). Returns is_open + deadline + round_label per month. NOT sensitive — calendar facts. Use after recommend_programs_for_houjin or search_programs to time the application."""
         return _get_program_calendar_12mo_impl(
             program_id=program_id,
             limit=limit,
@@ -2289,7 +2288,7 @@ if _ENABLED and settings.autonomath_enabled:
             Field(ge=0, description="Pagination offset. Default 0."),
         ] = 0,
     ) -> dict[str, Any]:
-        """[WAVE24-#100] enforcement × JSIC × region 横展開 risk from am_enforcement_industry_risk. propagation_probability is a 5-year statistical forecast, not a legal opinion. SENSITIVE — 弁護士法 §72 / 社労士法 §27. The customer LLM must surface the disclaimer envelope."""
+        """enforcement × JSIC × region 横展開 risk from am_enforcement_industry_risk. propagation_probability is a 5-year statistical forecast, not a legal opinion. SENSITIVE — 弁護士法 §72 / 社労士法 §27. The customer LLM must surface the disclaimer envelope."""
         return _forecast_enforcement_risk_impl(
             jsic_major=jsic_major,
             region_code=region_code,
@@ -2312,7 +2311,7 @@ if _ENABLED and settings.autonomath_enabled:
             Field(ge=0, description="Pagination offset. Default 0."),
         ] = 0,
     ) -> dict[str, Any]:
-        """[WAVE24-#101] Top-N similar 採択事例 from am_case_study_similarity (pre-computed pairwise feature similarity, PK case_a < case_b — UNIONed both directions). NOT sensitive — facts about past adoptions, not advice. Use to find 'companies like mine' before drafting an application."""
+        """Top-N similar 採択事例 from am_case_study_similarity (pre-computed pairwise feature similarity). NOT sensitive — facts about past adoptions, not advice. Use to find 'companies like mine' before drafting an application."""
         return _find_similar_case_studies_impl(
             case_id=case_id,
             limit=limit,
@@ -2334,7 +2333,7 @@ if _ENABLED and settings.autonomath_enabled:
             Field(ge=0, description="Pagination offset. Default 0."),
         ] = 0,
     ) -> dict[str, Any]:
-        """[WAVE24-#102] Past N monthly snapshots (latest first) from am_houjin_360_snapshot, with per-row delta_from_prev computed by JSON diff in Python. SENSITIVE — 信用情報法 / 個人情報保護法 fence. NOT a credit / 反社 substitute; the LLM must surface the disclaimer envelope."""
+        """Past N monthly snapshots (latest first) from am_houjin_360_snapshot, with per-row delta_from_prev computed by JSON diff in Python. SENSITIVE — 信用情報法 / 個人情報保護法 fence. NOT a credit / 反社 substitute; the LLM must surface the disclaimer envelope."""
         return _get_houjin_360_snapshot_history_impl(
             houjin_bangou=houjin_bangou,
             months=months,
@@ -2356,7 +2355,7 @@ if _ENABLED and settings.autonomath_enabled:
             Field(ge=0, description="Pagination offset. Default 0."),
         ] = 0,
     ) -> dict[str, Any]:
-        """[WAVE24-#103] Per-ruleset amendment history from am_tax_amendment_history + cycle_stats (min/max/mean/median gap days, computed in Python). SENSITIVE — 税理士法 §52. The cycle is a past-tense pattern; future amendments are not guaranteed. Disclaimer auto-injected."""
+        """Per-ruleset amendment history from am_tax_amendment_history + cycle_stats (min/max/mean/median gap days, computed in Python). SENSITIVE — 税理士法 §52. The cycle is a past-tense pattern; future amendments are not guaranteed. Disclaimer auto-injected."""
         return _get_tax_amendment_cycle_impl(
             tax_ruleset_id=tax_ruleset_id,
             limit=limit,
@@ -2382,7 +2381,7 @@ if _ENABLED and settings.autonomath_enabled:
             Field(ge=0, description="Pagination offset. Default 0."),
         ] = 0,
     ) -> dict[str, Any]:
-        """[WAVE24-#104] Inferred trading partners from am_invoice_buyer_seller_graph. CHECK seller != buyer. direction filters which side the input plays. SENSITIVE — 信用情報法 / 個人情報保護法. Inferences are heuristic; not a substitute for credit checks."""
+        """Inferred trading partners from am_invoice_buyer_seller_graph. CHECK seller != buyer. direction filters which side the input plays. SENSITIVE — 信用情報法 / 個人情報保護法. Inferences are heuristic; not a substitute for credit checks."""
         return _infer_invoice_buyer_seller_impl(
             houjin_bangou=houjin_bangou,
             direction=direction,
@@ -2409,7 +2408,7 @@ if _ENABLED and settings.autonomath_enabled:
             Field(ge=0, description="Pagination offset. Default 0."),
         ] = 0,
     ) -> dict[str, Any]:
-        """[WAVE24-#105] capital_yen → canonical band (lt_1m / 1m_10m / ... / gte_5b) → SELECT from am_capital_band_program_match. Optional jsic_major narrows. NOT sensitive — adoption stats by band are facts. Pair with score_application_probability for full read."""
+        """capital_yen → canonical band (lt_1m / 1m_10m / ... / gte_5b) → SELECT from am_capital_band_program_match. Optional jsic_major narrows. NOT sensitive — adoption stats by band are facts. Pair with score_application_probability for full read."""
         return _match_programs_by_capital_impl(
             capital_yen=capital_yen,
             jsic_major=jsic_major,
@@ -2434,7 +2433,7 @@ if _ENABLED and settings.autonomath_enabled:
             Field(ge=0, description="Pagination offset. Default 0."),
         ] = 0,
     ) -> dict[str, Any]:
-        """[WAVE24-#106] Per-FY adoption stats (count / rate / avg amount / industry & region distribution JSON-decoded) from am_program_adoption_stats. NOT sensitive — facts. Pair with find_adopted_companies_by_program for the underlying corpus."""
+        """Per-FY adoption stats (count / rate / avg amount / industry & region distribution JSON-decoded) from am_program_adoption_stats. NOT sensitive — facts. Pair with find_adopted_companies_by_program for the underlying corpus."""
         return _get_program_adoption_stats_impl(
             program_id=program_id,
             limit=limit,
@@ -2466,7 +2465,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ] = "standard",
     ) -> dict[str, Any]:
-        """[WAVE24-#107] Pre-computed program narrative from am_program_narrative (operator-side Claude Code subagent batch §10.6 — NOT generated here). section='all' returns up to 4 rows; specific section returns 1. reading_level='plain' post-processes body_text via rule-based dict (jpcite LLM call禁止). SENSITIVE — 行政書士法 §1 + LLM 由来明示 — not 申請代理."""
+        """Pre-computed program narrative from am_program_narrative (pre-computed corpus). section='all' returns up to 4 rows; specific section returns 1. reading_level='plain' post-processes body_text via rule-based dict (no request-time LLM call). SENSITIVE — 行政書士法 §1 + LLM 由来明示 — not 申請代理."""
         return _get_program_narrative_impl(
             program_id=program_id,
             section=section,
@@ -2485,7 +2484,7 @@ if _ENABLED and settings.autonomath_enabled:
             Field(description="Target FY (April-March). Default = current FY."),
         ] = None,
     ) -> dict[str, Any]:
-        """[WAVE24-#108] 措置法 §42-4 R&D tax credit estimate from am_houjin_360_snapshot (rd_expense_yen) × am_tax_amendment_history (headline_rate). Pure Python multiplication. billing_unit=2 (compound). SENSITIVE — 税理士法 §52. Heuristic — does NOT model incremental / volume split / 14% cap."""
+        """措置法 §42-4 R&D tax credit estimate from am_houjin_360_snapshot (rd_expense_yen) × am_tax_amendment_history (headline_rate). Pure Python multiplication. billing_unit=2 (compound). SENSITIVE — 税理士法 §52. Heuristic — does NOT model incremental / volume split / 14% cap."""
         return _predict_rd_tax_credit_impl(
             houjin_bangou=houjin_bangou,
             fiscal_year=fiscal_year,

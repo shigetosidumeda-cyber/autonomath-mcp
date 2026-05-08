@@ -707,8 +707,8 @@ def _kessan_briefing_impl(
         "saved_searches_tracked": saved_searches_tracked,
         "data_quality": {
             "amendment_diff_corpus_caveat": (
-                "am_amendment_diff is populated by the post-launch cron. "
-                "If 0 results, the cron has not yet run for this window — "
+                "am_amendment_diff is populated by the scheduled source refresh. "
+                "If 0 results, the refresh may not have run for this window — "
                 "fall back to am_amendment_snapshot for time-series."
             ),
         },
@@ -1577,7 +1577,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ] = 40,
     ) -> dict[str, Any]:
-        """[WAVE22-COMPOSE] DD question deck (30-60 items) tailored to industry × program portfolio × 与信 risk by joining dd_question_templates (60 rows, migration 102) with houjin / adoption / enforcement / invoice corpora. Pure pattern-match, NO LLM. §52/§72 sensitive — checklist, not advice."""
+        """DD question deck (30-60 items) tailored to industry × program portfolio × 与信 risk by joining dd_question_templates (60 rows, migration 102) with houjin / adoption / enforcement / invoice corpora. Pure pattern-match, NO LLM. §52/§72 sensitive — checklist, not advice."""
         return _match_dd_questions_impl(
             houjin_bangou=houjin_bangou,
             deck_size=deck_size,
@@ -1604,7 +1604,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ] = "monthly",
     ) -> dict[str, Any]:
-        """[WAVE22-COMPOSE] 月次 / 四半期 summary of program-eligibility changes since last 決算 by joining am_amendment_diff + jpi_tax_rulesets within the FY window. Compounds saved_searches digest cadence. §52 sensitive — 決算 territory, briefing only, not 税務代理."""
+        """月次 / 四半期 summary of program-eligibility changes since last 決算 by joining am_amendment_diff + jpi_tax_rulesets within the FY window. Compounds saved_searches digest cadence. §52 sensitive — 決算 territory, briefing only, not 税務代理."""
         return _kessan_briefing_impl(
             houjin_bangou=houjin_bangou,
             fiscal_year=fiscal_year,
@@ -1624,7 +1624,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ] = None,
     ) -> dict[str, Any]:
-        """[WAVE22-COMPOSE] Probability + window of program renewal in next FY based on historical am_application_round cadence + am_amendment_snapshot density. 4-signal weighted average (frequency / recency / pipeline / snapshot). NOT sensitive — statistical, not advice."""
+        """Probability + window of program renewal in next FY based on historical am_application_round cadence + am_amendment_snapshot density. 4-signal weighted average (frequency / recency / pipeline / snapshot). NOT sensitive — statistical, not advice."""
         return _forecast_renewal_impl(
             program_id=program_id,
             horizon_fy=horizon_fy,
@@ -1647,7 +1647,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ] = None,
     ) -> dict[str, Any]:
-        """[WAVE22-COMPOSE] Registered (法務局) vs invoice (NTA) vs operational (交付) jurisdiction breakdown. Detects 不一致 for 税理士 onboarding — flags prefecture mismatches between houjin_master / invoice_registrants / adoption_records. §52/§72 sensitive — heuristic detection, not 税務代理."""
+        """Registered (法務局) vs invoice (NTA) vs operational (交付) jurisdiction breakdown. Detects 不一致 for 税理士 onboarding — flags prefecture mismatches between houjin_master / invoice_registrants / adoption_records. §52/§72 sensitive — heuristic detection, not 税務代理."""
         return _cross_check_jurisdiction_impl(
             houjin_bangou=houjin_bangou,
             shogo=shogo,
@@ -1668,7 +1668,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ] = {},  # noqa: B006 — pydantic Field tolerates the empty default
     ) -> dict[str, Any]:
-        """[WAVE22-COMPOSE] Complete downloadable kit assembly: program metadata + cover letter scaffold + 必要書類 checklist + similar 採択例 list. Pure file assembly, NO LLM, NO DOCX generation. §1 sensitive — 申請書面作成は行政書士の独占業務、当社は scaffold + 一次 URL のみ提供."""
+        """Complete downloadable kit assembly: program metadata + cover letter scaffold + 必要書類 checklist + similar 採択例 list. Pure file assembly, NO LLM, NO DOCX generation. §1 sensitive — 申請書面作成は行政書士の独占業務、当社は scaffold + 一次 URL のみ提供."""
         return _bundle_application_kit_impl(
             program_id=program_id,
             profile=profile,

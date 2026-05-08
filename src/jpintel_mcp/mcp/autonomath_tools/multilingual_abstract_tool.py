@@ -1,10 +1,9 @@
 """program_abstract_structured — R7 multilingual abstract MCP tool.
 
 Returns a closed-vocabulary, audience-targeted abstract of a single
-``programs`` row in **the original Japanese only**. Translation is the
-**customer LLM's job** — we never call the Anthropic API ourselves
-(memory: ``feedback_autonomath_no_api_use`` — ¥1/req economics break the
-moment we burn API budget on translation).
+``programs`` row in **the original Japanese only**. Translation is handled by
+the caller's LLM or translation pipeline; this tool does not perform
+request-time translation.
 
 Why structured + Japanese-only
 ------------------------------
@@ -332,7 +331,7 @@ def program_abstract_structured(
         ),
     ] = "foreign_employer",
 ) -> dict[str, Any]:
-    """[I18N] R7 — Returns audience-targeted, closed-vocab Japanese abstract for a single program. Translation is the customer LLM's job; we never call Anthropic API. official_name_ja + legal_id must stay verbatim (i18n_hints.official_name_must_keep_ja=true). Output is search-derived; verify primary source (source_urls) for application use.
+    """I18N — Returns audience-targeted, closed-vocab Japanese abstract for a single program. Translation is the customer LLM's job; we never call Anthropic API. official_name_ja + legal_id must stay verbatim (i18n_hints.official_name_must_keep_ja=true). Output is search-derived; verify primary source (source_urls) for application use.
 
     WHAT: Reshapes ``programs.enriched_json`` into a 5-audience-aware,
     ISO-style closed-vocab JSON. Returns only original Japanese
@@ -346,8 +345,7 @@ def program_abstract_structured(
 
     WHEN NOT:
       - 単純な検索 → search_programs (this tool returns 1 record only)
-      - 翻訳済テキストが欲しい → customer LLM の責務 (memory:
-        feedback_autonomath_no_api_use)
+      - 翻訳済テキストが欲しい → 呼び出し元側の LLM / 翻訳処理で実施
       - 制度の as-of 履歴 → query_at_snapshot
 
     Args:

@@ -143,7 +143,7 @@ if _ENABLED and settings.autonomath_enabled:
         ``program_law_refs`` (jpintel.db), ``am_entities_vec_*``
         (sqlite-vec k-NN), ``am_funding_stack_empirical`` (co-adoption),
         ``am_entity_density_score`` (graph-density neighbours), and
-        ``am_5hop_graph`` (Wave 24 §152 mat-view). Each axis is fail-open:
+        ``am_5hop_graph`` (precomputed multi-hop graph). Each axis is fail-open:
         a missing/empty table yields an empty list, never a 5xx.
 
         WHEN:

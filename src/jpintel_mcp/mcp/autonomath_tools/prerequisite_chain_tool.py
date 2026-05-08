@@ -424,7 +424,7 @@ if settings.prerequisite_chain_enabled:
         no curated bundle yet. The tool ALWAYS surfaces
         ``data_quality.coverage_pct`` so an empty chain is never read as
         authoritative — silent miss is forbidden under 景表法 / 消費者
-        契約法 fences (see feedback_no_fake_data).
+        契約法 fences.
 
         CHAIN:
           ← `search_programs` supplies target_program_id.

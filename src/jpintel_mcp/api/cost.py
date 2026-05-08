@@ -327,8 +327,8 @@ class CostPreviewRequest(BaseModel):
         max_length=500,
         description=(
             "Planned tool-call stack. Each entry counts toward "
-            "billing_units. The 500-entry cap is a safety net — preview is "
-            "free but a 100k-entry stack would still occupy server memory."
+            "billing_units. The 500-entry cap protects service availability "
+            "for large preview payloads."
         ),
     )
     iterations: int = Field(

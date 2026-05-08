@@ -15688,7 +15688,7 @@
     },
     {
       "name": "time_machine",
-      "description": "Snapshot-as-of querying — replay corpus state at a given timestamp (`AUTONOMATH_SNAPSHOT_ENABLED` controlled)."
+      "description": "Snapshot-as-of querying — replay corpus state at a given timestamp when the snapshot feature flag is enabled."
     },
     {
       "name": "cost",

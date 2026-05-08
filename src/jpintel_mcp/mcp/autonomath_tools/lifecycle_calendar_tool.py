@@ -10,10 +10,9 @@ Schema sources (autonomath.db, all read-only):
                                           → kind = ``tax_sunset``
   am_amendment_snapshot.effective_*     — 14,596 row, 4 filled (effective_until)
                                           + 140 filled (effective_from). NOTE:
-                                          eligibility_hash never changes between
-                                          v1/v2 → time-series is FAKE per
-                                          CLAUDE.md, so the snapshot surface is
-                                          marked honestly with a ``data_quality``
+                                          eligibility_hash is stable across many
+                                          rows, so the snapshot surface is
+                                          marked with a ``data_quality``
                                           warning. We restrict to ISO YYYY-MM-DD
                                           dates only — non-ISO strings like
                                           "2032年頃（期間満了順次）" are dropped.
@@ -42,8 +41,8 @@ Memory alignment (verified before write):
   - feedback_no_fake_data            → ISO date filter on snapshot.effective_*
                                        drops the corrupt time-series strings;
                                        coverage caveat surfaced honestly.
-  - feedback_autonomath_no_api_use   → pure SQL UNION ALL, no Anthropic calls.
-  - feedback_zero_touch_solo         → ¥3/req metered only, no tier SKU.
+  - no request-time LLM call         → pure SQL UNION ALL, no Anthropic calls.
+  - feedback_zero_touch_solo         → ¥3/billable unit metered only, no tier SKU.
   - feedback_completion_gate_minimal → 3 mandatory test cases, not 40+.
   - O4 design doc                    → analysis_wave18/_o4_lifecycle_2026-04-25.md
                                        §6.1 unified_lifecycle_calendar(start, end, kinds)
@@ -91,7 +90,7 @@ _DISCLAIMER = (
     "(4 ISO sunsets / 14,592 corrupt time-series 除外済) + am_application_round "
     "(394 close dates) + am_law_article (101 parseable last_amended) を "
     "merge した結果です。am_amendment_snapshot は eligibility_hash が v1/v2 "
-    "間で不変 (time-series fake per CLAUDE.md) のため、ISO YYYY-MM-DD 形式の "
+    "間で不変の行が多いため、ISO YYYY-MM-DD 形式の "
     "effective_until のみ採用しています。最終判断は一次資料 (source_url) と "
     "専門家確認を優先してください。"
 )
@@ -198,8 +197,8 @@ def _query_program_sunsets(
 ) -> list[dict[str, Any]]:
     """am_amendment_snapshot.effective_until — ISO YYYY-MM-DD only.
 
-    Per CLAUDE.md, am_amendment_snapshot is corrupt time-series (eligibility
-    hash never changes). Of 14,596 rows, only 4 carry a non-NULL
+    am_amendment_snapshot has sparse lifecycle dates and many stable
+    eligibility hashes. Of 14,596 rows, only 4 carry a non-NULL
     effective_until and not all are ISO-formatted. We restrict to strict
     ISO date strings — non-ISO ("2032年頃（期間満了順次）" / "2026-03") are
     dropped; we cannot honestly assign a calendar bucket to those.
@@ -520,10 +519,9 @@ def _unified_lifecycle_calendar_impl(
         "sources_used": sources_used,
         "data_quality": {
             "amendment_snapshot_caveat": (
-                "am_amendment_snapshot は CLAUDE.md 記載の通り "
-                "eligibility_hash 不変 (time-series fake)。"
-                "ISO YYYY-MM-DD effective_* のみ採用、非 ISO 文字列は "
-                "calendar に出ません。"
+                "am_amendment_snapshot は effective_* が ISO YYYY-MM-DD "
+                "として読める行だけを calendar に採用します。非 ISO 文字列は "
+                "calendar には出ません。"
             ),
             "law_amendment_coverage": (
                 "am_law_article.last_amended は 28,048 行中 ISO parseable "
@@ -592,7 +590,7 @@ if _ENABLED:
             ),
         ] = "month",
     ) -> dict[str, Any]:
-        """[O4-LIFECYCLE-CALENDAR] Returns merged calendar of tax sunset + program sunset + application close + law cliff events. Output is search-derived from public-source data; verify primary source (source_url) for business decisions.
+        """Returns merged calendar of tax sunset + program sunset + application close + law cliff events. Output is search-derived from public-source data; verify primary source (source_url) for business decisions.
 
         WHAT: 4 source (am_tax_rule.effective_until / am_amendment_snapshot
         .effective_* (ISO のみ) / am_application_round.application_close_date /
@@ -609,7 +607,7 @@ if _ENABLED:
         WHEN NOT:
           - 税制のみ + 大綱 cliff bucket → list_tax_sunset_alerts
           - 申請可能な program list → list_open_programs / active_programs_at
-          - 単一 program の lifecycle 履歴 → 設計中 program_lifecycle (P2)
+          - 単一 program の lifecycle 履歴 → evaluate_program_lifecycle
 
         RETURNS (envelope):
           {
@@ -630,9 +628,8 @@ if _ENABLED:
             _disclaimer: str,
           }
 
-        DATA QUALITY HONESTY: am_amendment_snapshot は CLAUDE.md 記載通り
-        eligibility_hash 不変 (time-series fake)。本 tool は ISO YYYY-MM-DD
-        の effective_* のみ採用し、非 ISO 文字列を calendar に出さない。
+        DATA QUALITY HONESTY: am_amendment_snapshot は ISO YYYY-MM-DD
+        として読める effective_* のみ採用し、非 ISO 文字列を calendar に出さない。
         am_law_article.last_amended も 28,048 中 ISO parseable は 101 行のみ。
         残り (raw 改正履歴 string) は本 tool 範囲外。
 

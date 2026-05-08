@@ -36,7 +36,7 @@ Conflict semantics:
 Coverage honesty:
   exclusion_rules.program_a uses human Japanese names ("IT導入補助金2025…")
   while am_compat_matrix uses "program:…" canonical IDs. The join is
-  currently 0/60 (P0.2 manual mapping pending). The response surfaces
+  partial. The response surfaces
   data_quality.exclusion_join_coverage_pct so callers see the partial
   recall transparently rather than receiving silent misses (this is the
   exact failure mode flagged in feedback_no_fake_data).
@@ -389,7 +389,7 @@ def _rule_engine_check_impl(
             reason = (
                 f"No matching rule across 49,247 rows. "
                 f"exclusion_join_coverage_pct={coverage_pct}% — partial "
-                f"recall, manual ID mapping pending (P0.2)."
+                f"recall; inspect data_quality.exclusion_join_coverage_pct."
             )
 
     out: dict[str, Any] = {
@@ -500,8 +500,7 @@ if settings.rule_engine_enabled:
             ],
             confidence: 0.0-1.0,
             data_quality: {
-              exclusion_join_coverage_pct: float (0-100, currently 0% pending
-                                                   P0.2 manual mapping),
+              exclusion_join_coverage_pct: float (0-100, partial mapping; inspect coverage_pct),
               rules_evaluated: int,
               rules_total_corpus: 49247
             },

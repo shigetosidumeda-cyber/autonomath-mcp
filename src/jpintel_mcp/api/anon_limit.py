@@ -73,9 +73,9 @@ CTA_TEXT_EN = "Get an API key to remove the limit"
 # also surface the email-only trial. An evaluator who hit the anon cap and
 # isn't ready to drop a card has a one-click alternative that captures their
 # email so we can remarket / rescue / learn (vs the prior 100% silent bounce).
-# The homepage form is the entry point for the trial; the anchor #trial
-# scrolls them straight to it.
-TRIAL_SIGNUP_URL_FROM_429 = "https://jpcite.com/?from=429#trial"
+# The homepage form is the entry point for the trial; #path-email-trial is
+# the live static anchor used by the homepage form.
+TRIAL_SIGNUP_URL_FROM_429 = "https://jpcite.com/?from=429#path-email-trial"
 TRIAL_CTA_TEXT_JA = "カードなしで試す (14 日 / 200 req)"
 TRIAL_CTA_TEXT_EN = "Try without a card (14 days / 200 requests)"
 

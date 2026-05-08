@@ -100,7 +100,7 @@
   <span class="pill">v1.0.0</span>
   <span class="pill">100 設問 / 5 ドメイン</span>
   <span class="pill">CC-BY 4.0</span>
-  <span class="pill" data-result-kind="seed" hidden>100% 再現可能 (顧客 CLI)</span>
+	  <span class="pill" data-result-kind="seed" hidden>顧客 CLI で再現手順を公開</span>
   <span class="pill">採点無料 (Pure Python)</span>
 </p>
 
@@ -159,7 +159,7 @@
 <p><em>without_jpcite</em> 条件は素の質問文のみを LLM に投げる closed-book 評価。<em>with_jpcite</em> 条件は同じ質問の前に、jpcite REST API <code>/v1/search</code> から取得した上位 5 件の <code>(primary_name, source_url)</code> をコンテキストとして付与してから投げます。プロンプト本体は両条件で同一。</p>
 
 <h3>4. オペレータは LLM を呼ばない</h3>
-<p>jpcite 運営 (Bookyou株式会社) は <strong>顧客の代わりに LLM API を呼びません</strong>。顧客が <code>benchmarks/jcrb_v1/run.py</code> を自分のハードウェアで実行し、結果サマリ JSON を <code>benchmarks/jcrb_v1/submissions/</code> に PR / POST で送る — 運営 cron <code>scripts/cron/jcrb_publish_results.py</code> はそれを集約してこのページに publish するだけです。これは <em>jpcite の本業務 (¥3/billable unit メータリング) と同じ no-LLM-on-operator-side 原則</em>に従います。</p>
+<p>jpcite 運営 (Bookyou株式会社) は <strong>顧客の代わりに LLM API を呼びません</strong>。顧客が <code>benchmarks/jcrb_v1/run.py</code> を自分のハードウェアで実行し、結果サマリ JSON を <code>benchmarks/jcrb_v1/submissions/</code> に PR / POST で送る — 運営 cron <code>scripts/cron/jcrb_publish_results.py</code> はそれを集約してこのページに publish するだけです。これは <em>jpcite の本業務 (¥3/billable unit メータリング) と同じ no request-time LLM call 原則</em>に従います。</p>
 
 <h2>再現手順 (Reproduce)</h2>
 
@@ -205,7 +205,7 @@ python benchmarks/jcrb_v1/scoring.py \
 <details>
   <summary>FAQ</summary>
   <p><strong>Q. なぜ closed-book LLM は低スコアになるのですか?</strong><br>
-  日本の補助金・税制は <strong>(a) 一次資料が省庁ごとに分散</strong>、<strong>(b) アグリゲータの誤転載が学習データに混入</strong>、<strong>(c) 経過措置 / 改正で日付が頻繁に変わる</strong> — 3 点が重なるため、frontier LLM でも素の prompt では exact_match 0.15-0.25 程度に留まります。jpcite はこの 3 点を <strong>一次資料 URL に必ず紐付ける</strong>ことで解消します。</p>
+	  日本の補助金・税制は <strong>(a) 一次資料が省庁ごとに分散</strong>、<strong>(b) アグリゲータの誤転載が学習データに混入</strong>、<strong>(c) 経過措置 / 改正で日付が頻繁に変わる</strong> — 3 点が重なるため、公開ベンチ条件では素の prompt の exact_match が低くなる傾向があります。jpcite は source_url 付き evidence を返し、出典欠落や確認漏れの低減を支援します。最終確認は一次資料で行ってください。</p>
 
   <p><strong>Q. jpcite が自分の corpus で測ったら有利では?</strong><br>
   全設問の <code>expected_value</code> は <strong>政府サイト (e-gov / nta / maff / meti / mhlw 等) の公開ページから誰でも検証できる</strong>事実のみで構成されています。jpcite に独自の真値はありません。questions.jsonl の各行に <code>expected_source_host</code> が記載されており、そのホストにアクセスして手動検証可能です。</p>

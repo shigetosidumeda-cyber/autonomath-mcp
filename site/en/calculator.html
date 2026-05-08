@@ -33,11 +33,13 @@
 <link rel="stylesheet" href="../styles.css?v=20260428a">
 
 <style>
-  .stub-page { padding: 48px 0 64px; }
-  .stub-page h1 { font-size: 30px; margin: 0 0 8px; font-weight: 800; letter-spacing: -0.01em; }
-  .stub-page .lead { font-size: 17px; color: var(--text-muted); margin: 0 0 24px; max-width: 720px; }
-  .stub-page p { max-width: 720px; }
-  .stub-page .placeholder { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; max-width: 720px; }
+  .brief-page { padding: 48px 0 64px; }
+  .brief-page h1 { font-size: 30px; margin: 0 0 8px; font-weight: 800; letter-spacing: -0.01em; }
+  .brief-page .lead { font-size: 17px; color: var(--text-muted); margin: 0 0 24px; max-width: 720px; }
+  .brief-page p, .brief-page ul { max-width: 720px; line-height: 1.75; }
+  .brief-page .quick-panel { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; max-width: 720px; }
+  .brief-page .quick-panel h2 { font-size: 18px; margin: 0 0 8px; }
+  .brief-page .quick-panel ul { margin: 0; padding-left: 20px; }
 </style>
 
 <script defer src="../analytics.js?v=20260503a"></script>
@@ -65,14 +67,19 @@
  </div>
 </header>
 
-<main id="main" class="stub-page">
+<main id="main" class="brief-page">
  <div class="container">
 
  <h1>Coverage calculator</h1>
- <p class="lead">English-language placeholder page. The Japanese-language original is the authoritative version.</p>
+ <p class="lead">Estimate monthly API usage under the metered &yen;3 per billable unit model before production rollout.</p>
 
- <div class="placeholder">
- <p>Full English translation is pending. For the live page in Japanese, see <a href="https://jpcite.com/calculator.html" hreflang="ja">the Japanese page</a>. For an English overview of jpcite for foreign-invested entities, see <a href="foreign-investor.html">jpcite for foreign-invested entities</a>.</p>
+ <div class="quick-panel">
+ <h2>What it estimates</h2>
+ <ul>
+ <li>Model expected request volume from client count, monthly checks, and paid API usage.</li>
+ <li>The calculator focuses on jpcite billable units; LLM token cost varies by workload and is not estimated here.</li>
+ <li>For the live Japanese calculator, see <a href="https://jpcite.com/calculator.html" hreflang="ja">the Japanese page</a>. For English FDI examples, see <a href="foreign-investor.html">jpcite for foreign-invested entities</a>.</li>
+ </ul>
  </div>
 
  </div>

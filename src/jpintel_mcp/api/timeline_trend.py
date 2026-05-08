@@ -917,8 +917,8 @@ def get_program_timeline(
             min_length=1,
             max_length=200,
             description=(
-                "Program canonical id. Accepts either jpintel `UNI-...` or "
-                "autonomath `program:...` form; entity_id_map bridges both."
+                "Program canonical id. Accepts either jpcite `UNI-...` or "
+                "legacy `program:...` form; stable identifier map bridges both."
             ),
         ),
     ],

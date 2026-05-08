@@ -203,7 +203,7 @@ if _ENABLED and settings.autonomath_enabled:
             Field(description="Request body for POST /v1/intel/scenario_simulate."),
         ],
     ) -> dict[str, Any]:
-        """[INTEL-COMPOSITE W32] Scenario simulation wrapper. Delegates lazily to the REST pure helper or endpoint module when present. Pure in-process call; no HTTP roundtrip."""
+        """Scenario simulation wrapper. Delegates lazily to the REST pure helper or endpoint module when present. Pure in-process call; no HTTP roundtrip."""
         return _delegate("intel_scenario_simulate", payload)
 
     @mcp.tool(annotations=_READ_ONLY)
@@ -213,7 +213,7 @@ if _ENABLED and settings.autonomath_enabled:
             Field(description="Request body for POST /v1/intel/competitor_landscape."),
         ],
     ) -> dict[str, Any]:
-        """[INTEL-COMPOSITE W32] Competitor landscape wrapper. Delegates lazily to the REST pure helper or endpoint module when present. Pure in-process call; no HTTP roundtrip."""
+        """Competitor landscape wrapper. Delegates lazily to the REST pure helper or endpoint module when present. Pure in-process call; no HTTP roundtrip."""
         return _delegate("intel_competitor_landscape", payload)
 
     @mcp.tool(annotations=_READ_ONLY)
@@ -223,7 +223,7 @@ if _ENABLED and settings.autonomath_enabled:
             Field(description="Request body for POST /v1/intel/portfolio_heatmap."),
         ],
     ) -> dict[str, Any]:
-        """[INTEL-COMPOSITE W32] Portfolio heatmap wrapper. Delegates lazily to the REST pure helper or endpoint module when present. Pure in-process call; no HTTP roundtrip."""
+        """Portfolio heatmap wrapper. Delegates lazily to the REST pure helper or endpoint module when present. Pure in-process call; no HTTP roundtrip."""
         return _delegate("intel_portfolio_heatmap", payload)
 
     @mcp.tool(annotations=_READ_ONLY)
@@ -233,7 +233,7 @@ if _ENABLED and settings.autonomath_enabled:
             Field(description="Request body for POST /v1/intel/news_brief."),
         ],
     ) -> dict[str, Any]:
-        """[INTEL-COMPOSITE W32] News brief wrapper. Delegates lazily to the REST pure helper or endpoint module when present. Pure in-process call; no HTTP roundtrip."""
+        """News brief wrapper. Delegates lazily to the REST pure helper or endpoint module when present. Pure in-process call; no HTTP roundtrip."""
         return _delegate("intel_news_brief", payload)
 
     @mcp.tool(annotations=_READ_ONLY)
@@ -243,7 +243,7 @@ if _ENABLED and settings.autonomath_enabled:
             Field(description="Request body for POST /v1/intel/onboarding_brief."),
         ],
     ) -> dict[str, Any]:
-        """[INTEL-COMPOSITE W32] Onboarding brief wrapper. Delegates lazily to the REST pure helper or endpoint module when present. Pure in-process call; no HTTP roundtrip."""
+        """Onboarding brief wrapper. Delegates lazily to the REST pure helper or endpoint module when present. Pure in-process call; no HTTP roundtrip."""
         return _delegate("intel_onboarding_brief", payload)
 
     @mcp.tool(annotations=_READ_ONLY)
@@ -253,7 +253,7 @@ if _ENABLED and settings.autonomath_enabled:
             Field(description="Request body for POST /v1/intel/refund_risk."),
         ],
     ) -> dict[str, Any]:
-        """[INTEL-COMPOSITE W32] Refund risk wrapper. Delegates lazily to the REST pure helper or endpoint module when present. Pure in-process call; no HTTP roundtrip."""
+        """Refund risk wrapper. Delegates lazily to the REST pure helper or endpoint module when present. Pure in-process call; no HTTP roundtrip."""
         return _delegate("intel_refund_risk", payload)
 
     @mcp.tool(annotations=_READ_ONLY)
@@ -263,5 +263,5 @@ if _ENABLED and settings.autonomath_enabled:
             Field(description="Request body for POST /v1/intel/cross_jurisdiction."),
         ],
     ) -> dict[str, Any]:
-        """[INTEL-COMPOSITE W32] Cross-jurisdiction wrapper. Delegates lazily to the REST pure helper or endpoint module when present. Pure in-process call; no HTTP roundtrip."""
+        """Cross-jurisdiction wrapper. Delegates lazily to the REST pure helper or endpoint module when present. Pure in-process call; no HTTP roundtrip."""
         return _delegate("intel_cross_jurisdiction", payload)

@@ -403,7 +403,7 @@ def _row_to_tax(row: sqlite3.Row) -> dict[str, Any]:
     }
 
 
-# Token-shaping helpers (dd_v3_09 / v8 P3-K). Each row builder returns the
+# Token-shaping helpers. Each row builder returns the
 # legacy "full" shape; these trim down to {minimal,standard} for list
 # rendering. Default = minimal so unannotated callers get the smallest
 # payload (~120 B/row vs ~700 B/row full). The full shape preserves the
@@ -518,9 +518,8 @@ def search_tax_incentives(
         int,
         Field(
             description=(
-                "Max rows. Token-shaping cap = 20 (dd_v3_09 / v8 P3-K); "
-                "values above 20 are silently capped with input_warnings. "
-                "Default 20."
+                "Max rows. Token-shaping cap = 20; values above 20 are "
+                "silently capped with input_warnings. Default 20."
             ),
             ge=1,
             le=100,
@@ -545,9 +544,8 @@ def search_tax_incentives(
                 "'full': existing complete row including raw_json-derived "
                 "fields (root_law, eligible_assets, compatible_with, "
                 "tax_credit_rate_*, prerequisite_certification, etc.). "
-                "Default switched to 'minimal' under dd_v3_09 / v8 P3-K "
-                "token shaping; pass fields='full' when callers need the "
-                "wider shape."
+                "Default is 'minimal' for compact list rendering; pass "
+                "fields='full' when callers need the wider shape."
             ),
         ),
     ] = "minimal",
@@ -587,9 +585,8 @@ def search_tax_incentives(
     Search Japanese tax incentives across 法人税 / 所得税 / 地方税 / 消費税 with structured amount_or_rate, root_law, application_period, prerequisite_certification.
 
     WHAT: ~271 structured records in `am_entities` where record_kind='tax_measure'
-    (aggregated from 12_tax_incentives, 139_invoice_consumption_tax,
-    140_income_tax_individual_deep, 149_corporate_tax_deep, 150_local_taxes_detail,
-    26_agri_tax_incentives). Key columns: `amount_or_rate` (即時償却 vs 税額控除% vs
+    (aggregated from invoice, income tax, corporate tax, local tax, and
+    agriculture-related tax source groups). Key columns: `amount_or_rate` (即時償却 vs 税額控除% vs
     非課税率), `root_law`, `application_period_from/to`, `prerequisite_certification`,
     `eligible_assets`. Every row cites 国税庁 / e-Gov / 財務省主税局 primary source.
 
@@ -921,7 +918,7 @@ def _row_to_cert(row: sqlite3.Row) -> dict[str, Any]:
     }
 
 
-# Token-shaping for certifications (dd_v3_09 / v8 P3-K). The full shape
+# Token-shaping for certifications. The full shape
 # preserves linked_subsidies / linked_tax_incentives / requirements which
 # are the load-bearing columns for "what does this cert unlock?" callers
 # — pass fields="full" explicitly when needed.
@@ -1004,9 +1001,8 @@ def search_certifications(
         int,
         Field(
             description=(
-                "Max rows. Token-shaping cap = 20 (dd_v3_09 / v8 P3-K); "
-                "values above 20 are silently capped with input_warnings. "
-                "Default 20."
+                "Max rows. Token-shaping cap = 20; values above 20 are "
+                "silently capped with input_warnings. Default 20."
             ),
             ge=1,
             le=100,
@@ -1031,9 +1027,9 @@ def search_certifications(
                 "'full': existing complete row including linked_subsidies, "
                 "linked_tax_incentives, benefits_after_certification, "
                 "requirements, target_industries, application_fee_yen, "
-                "processing_days_median. Default switched to 'minimal' "
-                "under dd_v3_09 / v8 P3-K token shaping; pass fields='full' "
-                "to restore the legacy wide shape (the load-bearing fields "
+                "processing_days_median. Default is 'minimal' for compact "
+                "list rendering; pass fields='full' to restore the wide shape "
+                "(the load-bearing fields "
                 "for 'what does this cert unlock')."
             ),
         ),
@@ -2446,8 +2442,8 @@ def related_programs(
     """[DISCOVER-GRAPH] Returns related programs along 6 relation axes (prerequisite / compatible / incompatible / successor / predecessor / similar), 1-2 hops from a seed program / tax / cert. Walks am_relation (18,489 edges / ~13K nodes). Output is search-derived; verify primary source for compatibility decisions.
     Graph walk over am_relation (18,489 edges) seeded on one program/tax/cert, returning up to 6 relation axes and 2-hop neighbors.
 
-    WHAT: `graph.sqlite::am_relation` — 18,489 directed edges across ~13K nodes.
-    External vocab → internal relation_type:
+    WHAT: relation graph store — 18,489 directed edges across ~13K nodes.
+    Public relation axis → canonical relation label:
       prerequisite → prerequisite
       compatible → compatible
       incompatible → incompatible

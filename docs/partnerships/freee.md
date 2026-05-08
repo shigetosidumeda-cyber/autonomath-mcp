@@ -5,8 +5,8 @@
 ## ターゲットと規模 (Audience & ceiling)
 
 - freee 会計 SMB 顧客: 約 250,000 社 (2026 Q1 公開データ)
-- 想定到達率: 1% (= 2,500 社) × 月平均 30,000 req × ¥3 = **¥225,000,000 / 年 ARR 上限** (10-30% realized = ¥22.5M-67.5M / 年)
-- 受注経路: freee Marketplace 内 self-serve。営業電話・個別契約は **永久 NG** (memory `feedback_organic_only_no_ads` / `feedback_zero_touch_solo`)
+- 参考シナリオ: 到達率 1% (= 2,500 社) × 月平均 30,000 billable units × ¥3 = **¥225,000,000 / 年 ARR 上限**。実売上は利用頻度・継続率・Marketplace 導線で大きく変動するため、公開時は「上限シナリオ」として扱う。
+- 受注経路: freee Marketplace 内 self-serve。営業電話・個別契約に依存しない。
 
 ## 連携シナリオ (Use case)
 

@@ -285,7 +285,7 @@
 
     <h2>移行 / 併用ガイド</h2>
     <div class="compare-migration">
-      <p><strong>買って始め、作るかは後で判断</strong>: まず当社 API で MVP を組んで需要を確かめてから、本当にデータの一部だけが必要 (例: 自社業種の補助金 50 件分だけ) と分かった段階で、そのスライスだけ自前で crawl する、というハイブリッド戦略が現実的です。当社の OpenAPI 3.1 spec は <a href="/docs/api-reference/">API リファレンス</a> 経由で公開、MCP tool 仕様も <a href="/docs/mcp-tools/">MCP tools</a> で読めるため、後から自前に切り替える際の移植も比較的容易です。</p><p><strong>license の落とし穴</strong>: 自前 crawler の最大の罠は<strong>出典管理</strong>です。集約サイト (noukaweb / hojyokin-portal / biz.stayway 等) を <code>source_url</code> にすると古い金額・終了済み制度を孫引きしてしまい、景表法 / 善管注意義務リスクが顕在化します。当社は「集約サイトを出典にしない」方針を公開し、主要な公開行に<code>source_url</code> + <code>fetched_at</code> + <code>license</code> を持たせています。この運用を自前で再現するのは技術より<strong>規律の問題</strong>で、「とりあえず動くもの」と「本番に出せるもの」の差が大きい領域です。</p>
+      <p><strong>買って始め、作るかは後で判断</strong>: まず当社 API で小さく検証し、必要なデータ範囲を確認してから、本当にデータの一部だけが必要 (例: 自社業種の補助金 50 件分だけ) と分かった段階で、そのスライスだけ自前で crawl する、というハイブリッド戦略が現実的です。当社の OpenAPI 3.1 spec は <a href="/docs/api-reference/">API リファレンス</a> 経由で公開、MCP tool 仕様も <a href="/docs/mcp-tools/">MCP tools</a> で読めるため、後から自前に切り替える際の移植も比較的容易です。</p><p><strong>license の落とし穴</strong>: 自前 crawler の最大の罠は<strong>出典管理</strong>です。集約サイト (noukaweb / hojyokin-portal / biz.stayway 等) を <code>source_url</code> にすると古い金額・終了済み制度を孫引きしてしまい、景表法 / 善管注意義務リスクが顕在化します。当社は「集約サイトを出典にしない」方針を公開し、主要な公開行に<code>source_url</code> + <code>fetched_at</code> + <code>license</code> を持たせています。この運用を自前で再現するのは技術より<strong>規律の問題</strong>で、「とりあえず動くもの」と「本番に出せるもの」の差が大きい領域です。</p>
     </div>
 
     <h2>関連ページ</h2>

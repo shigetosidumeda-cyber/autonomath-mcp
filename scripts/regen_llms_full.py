@@ -249,6 +249,22 @@ def _sanitize_preserved_prefix(prefix: str) -> str:
     }
     for old, new in replacements.items():
         prefix = prefix.replace(old, new)
+    prefix = prefix.replace(
+        "# jpcite — Full Docs (llms-full.txt) (formerly 税務会計AI / zeimu-kaikei.ai)",
+        "# jpcite — Full Docs (llms-full.txt)",
+    )
+    prefix = prefix.replace(
+        "Brand history: 2026-04-30 から jpcite に統一 (旧称: 税務会計AI / AutonoMath / zeimu-kaikei.ai)",
+        "Current brand: jpcite. Legacy package/API names may appear only where compatibility requires them.",
+    )
+    prefix = prefix.replace(
+        "PyPI: autonomath-mcp (legacy name) / pip install jpcite (new alias)",
+        "PyPI package: autonomath-mcp (compatibility package name).",
+    )
+    prefix = prefix.replace("法令本文索引 6,493 + 法令メタデータ 9,484", "本文対応法令レコード 6,493 + 法令検索対象 9,484")
+    prefix = prefix.replace("1000 req/月", "1,000 billable units/月")
+    prefix = prefix.replace("1 万 req/月", "1 万 billable units/月")
+    prefix = prefix.replace("10 万 req/月", "10 万 billable units/月")
     prefix = prefix.replace("¥3/request", "¥3/billable unit")
     prefix = prefix.replace("¥3/req", "¥3/billable unit")
     prefix = prefix.replace("¥3 / request", "¥3/billable unit")

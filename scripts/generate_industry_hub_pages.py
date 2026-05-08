@@ -101,10 +101,32 @@ WHERE excluded = 0
 """
 
 _PUBLIC_ID_PREFIX_RE = re.compile(r"^(?:MUN-\d{2,6}-\d{3}|PREF-\d{2,6}-\d{3})[_\s]+")
+_PREPARING_TITLE_PREFIX_RE = re.compile(
+    r"^\s*(?:"
+    r"【\s*準備中\s*】|［\s*準備中\s*］|\[\s*準備中\s*\]|"
+    r"（\s*準備中\s*）|\(\s*準備中\s*\)"
+    r")\s*"
+)
+_PREPARING_STATUS_LABEL = "要綱未公表"
 
 
 def _public_program_name(name: str | None) -> str:
     return _PUBLIC_ID_PREFIX_RE.sub("", (name or "").strip())
+
+
+def _public_program_display_parts(name: str | None) -> tuple[str, str | None]:
+    public_name = _public_program_name(name)
+    display_name, replacements = _PREPARING_TITLE_PREFIX_RE.subn("", public_name, count=1)
+    if replacements:
+        return (display_name.strip() or public_name, _PREPARING_STATUS_LABEL)
+    return (public_name, None)
+
+
+def _public_program_jsonld_name(name: str | None) -> str:
+    display_name, status_label = _public_program_display_parts(name)
+    if status_label:
+        return f"{display_name}（{status_label}）"
+    return display_name
 
 
 def _today_jst_iso() -> str:
@@ -240,8 +262,12 @@ def _render_hub(
         kind = KIND_JA.get(r.get("program_kind") or "subsidy", "公的支援制度")
         amt = _amount_line(r.get("amount_max_man_yen"), r.get("amount_min_man_yen"))
         tier = (r.get("tier") or "A").upper()
-        public_name = _public_program_name(r["primary_name"] or "")
+        public_name, status_label = _public_program_display_parts(r["primary_name"] or "")
         name_esc = html.escape(public_name)
+        status_html = ""
+        if status_label:
+            status_esc = html.escape(status_label)
+            status_html = f'        <span class="industry-program-status">{status_esc}</span>\n'
         src = html.escape(r.get("source_url") or "")
         # Tier S/A still have a static SSG page (post 2026-04-29 reduction);
         # tier B fell back to dynamic search by unified_id so we never link
@@ -256,6 +282,7 @@ def _render_hub(
         lis.append(
             '      <li class="industry-program">\n'
             f'        <a class="industry-program-name" href="{program_href}">{name_esc}</a>\n'
+            f"{status_html}"
             f'        <span class="industry-program-meta">tier {tier} ・ {kind} ・ {amt}</span>\n'
             f'        <a class="industry-program-source" href="{src}" rel="noopener noreferrer">出典ページを開く</a>\n'
             "      </li>"
@@ -305,7 +332,7 @@ def _render_hub(
                     {
                         "@type": "ListItem",
                         "position": i + 1,
-                        "name": _public_program_name(r["primary_name"] or ""),
+                        "name": _public_program_jsonld_name(r["primary_name"] or ""),
                         "url": (
                             f"https://{domain}/programs/{program_static_slug(r['primary_name'] or '', r['unified_id'])}.html"
                             if (r.get("tier") or "").upper() in ("S", "A")

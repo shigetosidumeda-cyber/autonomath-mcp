@@ -13,13 +13,16 @@ per-endpoint sliding-minute cap aimed at heavy / financial endpoints.
 
 Limits (all per-IP, per-minute)
 -------------------------------
-* **Heavy search endpoints** — 30 req/min per IP:
+* **Heavy search endpoints** — 30 req/min per anonymous IP, 300 req/min
+  per API key:
   - ``GET /v1/programs/search``
   - ``GET /v1/case_studies/search``
-* **Read-only single-record endpoints** — 60 req/min per IP:
+* **Read-only single-record endpoints** — 60 req/min per anonymous IP,
+  600 req/min per API key:
   - ``GET /v1/programs/{id}``
   - ``GET /v1/case_studies/{id}``
-* **Financial endpoints** — 10 req/min per IP:
+* **Financial endpoints** — 10 req/min per anonymous IP, 30 req/min per
+  API key:
   - ``POST /v1/checkout/start``
   - ``POST /v1/me/billing-portal``
   - ``POST /v1/billing/checkout``
@@ -40,9 +43,9 @@ workers needs Redis and is deferred until QPS scaling justifies it.
 
 Identity is the canonicalised client IP (Fly-Client-IP > XFF first hop
 > request.client.host), normalised to /64 for IPv6 to match
-``anon_limit`` and ``rate_limit``. Authed callers are still throttled
-because abuse can come from a stolen / leaked key behind a single
-hosting NAT.
+``anon_limit`` and ``rate_limit``. API-key callers use a keyed bucket so
+one corporate NAT or agent platform is not capped at the anonymous IP
+limit; they remain throttled by the per-key paid cap.
 
 Fail-open posture: any internal error returns ``call_next`` immediately.
 A broken throttle MUST NOT become self-DoS.
@@ -50,6 +53,7 @@ A broken throttle MUST NOT become self-DoS.
 
 from __future__ import annotations
 
+import hashlib
 import logging
 import os
 import re
@@ -72,14 +76,16 @@ logger = logging.getLogger("jpintel.per_ip_endpoint_limit")
 @dataclass(frozen=True)
 class _Rule:
     """One bucket-spec: ``method`` + ``path_pattern`` (compiled regex) +
-    ``cap`` per minute. ``label`` is the bucket key fragment used to
-    keep separate counters for endpoints that share an IP.
+    ``cap`` per minute. ``paid_cap`` is used when a plausible API key is
+    present. ``label`` is the bucket key fragment used to keep separate
+    counters for endpoints that share an IP/key.
     """
 
     label: str
     method: str
     path_re: re.Pattern[str]
     cap: int
+    paid_cap: int | None = None
 
 
 # Window length in seconds. 60s gives "30 req/min" the obvious meaning.
@@ -96,12 +102,14 @@ _RULES: tuple[_Rule, ...] = (
         method="GET",
         path_re=re.compile(r"^/v1/programs/search/?$"),
         cap=30,
+        paid_cap=300,
     ),
     _Rule(
         label="search_case_studies",
         method="GET",
         path_re=re.compile(r"^/v1/case_studies/search/?$"),
         cap=30,
+        paid_cap=300,
     ),
     # Financial — 10 req/min per IP. Two path families because both
     # ``/v1/checkout/start`` and ``/v1/billing/checkout`` exist as
@@ -111,18 +119,21 @@ _RULES: tuple[_Rule, ...] = (
         method="POST",
         path_re=re.compile(r"^/v1/checkout/start/?$"),
         cap=10,
+        paid_cap=30,
     ),
     _Rule(
         label="billing_checkout",
         method="POST",
         path_re=re.compile(r"^/v1/billing/checkout/?$"),
         cap=10,
+        paid_cap=30,
     ),
     _Rule(
         label="billing_portal",
         method="POST",
         path_re=re.compile(r"^/v1/(?:me/)?billing[-_]portal/?$"),
         cap=10,
+        paid_cap=30,
     ),
     # Read-only single-record endpoints — 60 req/min per IP.
     # Matches /v1/programs/<anything-without-slash>, but the static
@@ -132,12 +143,14 @@ _RULES: tuple[_Rule, ...] = (
         method="GET",
         path_re=re.compile(r"^/v1/programs/(?!search)[^/]+/?$"),
         cap=60,
+        paid_cap=600,
     ),
     _Rule(
         label="single_case_study",
         method="GET",
         path_re=re.compile(r"^/v1/case_studies/(?!search)[^/]+/?$"),
         cap=60,
+        paid_cap=600,
     ),
 )
 
@@ -192,6 +205,48 @@ def _match_rule(method: str, path: str) -> _Rule | None:
     return None
 
 
+def _plausible_api_key(value: str | None) -> str | None:
+    if not value:
+        return None
+    key = value.strip()
+    if not key:
+        return None
+    # Do not validate here; auth dependencies do that later. This just
+    # keeps anonymous traffic from opting into paid buckets with junk.
+    if not (key.startswith("am_") or key.startswith("jpcite_")):
+        return None
+    if len(key) < 12:
+        return None
+    return key
+
+
+def _candidate_api_key(request: Request) -> str | None:
+    raw = request.headers.get("x-api-key")
+    if not raw:
+        authorization = request.headers.get("authorization")
+        if authorization:
+            parts = authorization.split(None, 1)
+            if len(parts) == 2 and parts[0].lower() == "bearer":
+                raw = parts[1].strip()
+    return _plausible_api_key(raw)
+
+
+def _bucket_identity_and_cap(request: Request, rule: _Rule) -> tuple[str, int, str]:
+    api_key = _candidate_api_key(request)
+    if api_key and rule.paid_cap:
+        digest = hashlib.sha256(api_key.encode("utf-8")).hexdigest()[:16]
+        return f"key:{digest}", rule.paid_cap, "per-key"
+    ip = _normalize_ip_to_prefix(_client_ip(request))
+    return f"ip:{ip}", rule.cap, "per-ip"
+
+
+def _auth_ip_guard(request: Request, rule: _Rule) -> tuple[str, int, str] | None:
+    if not rule.paid_cap or _candidate_api_key(request) is None:
+        return None
+    ip = _normalize_ip_to_prefix(_client_ip(request))
+    return f"auth-ip:{ip}", rule.paid_cap, "per-auth-ip"
+
+
 def _take(bucket_key: str, cap: int) -> tuple[bool, int]:
     """Return ``(allowed, retry_after_s)``.
 
@@ -243,9 +298,19 @@ class PerIpEndpointLimitMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
 
         try:
-            ip = _normalize_ip_to_prefix(_client_ip(request))
-            bucket_key = f"{ip}|{rule.label}"
-            allowed, retry_after = _take(bucket_key, rule.cap)
+            identity, cap, bucket_kind = _bucket_identity_and_cap(request, rule)
+            bucket_key = f"{identity}|{rule.label}"
+            allowed, retry_after = _take(bucket_key, cap)
+            auth_ip_guard = _auth_ip_guard(request, rule)
+            if allowed and auth_ip_guard is not None:
+                guard_identity, guard_cap, guard_kind = auth_ip_guard
+                guard_key = f"{guard_identity}|{rule.label}"
+                guard_allowed, guard_retry_after = _take(guard_key, guard_cap)
+                if not guard_allowed:
+                    allowed = False
+                    retry_after = guard_retry_after
+                    cap = guard_cap
+                    bucket_kind = guard_kind
         except Exception:  # pragma: no cover — defensive
             logger.exception("per_ip_endpoint_limit_take_failed")
             return await call_next(request)
@@ -266,8 +331,8 @@ class PerIpEndpointLimitMiddleware(BaseHTTPMiddleware):
                         f"Too many requests for this endpoint. Retry after {retry_after}s."
                     ),
                     "retry_after": retry_after,
-                    "bucket": f"per-ip:{rule.label}",
-                    "limit_per_minute": rule.cap,
+                    "bucket": f"{bucket_kind}:{rule.label}",
+                    "limit_per_minute": cap,
                 }
             },
             headers={"Retry-After": str(retry_after)},

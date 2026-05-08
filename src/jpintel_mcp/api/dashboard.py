@@ -329,8 +329,20 @@ def get_usage_by_tool(
         )
         for r in rows
     ]
-    total_calls = sum(r.calls for r in top)
-    total_amount = sum(r.amount_yen for r in top)
+    total_row = conn.execute(
+        """SELECT COUNT(*) AS n,
+                  SUM(
+                      CASE
+                        WHEN metered=1 AND status<400 THEN COALESCE(quantity, 1)
+                        ELSE 0
+                      END
+                  ) AS billable
+             FROM usage_events
+            WHERE key_hash = ? AND ts >= ?""",
+        (key_hash, start),
+    ).fetchone()
+    total_calls = int(total_row["n"] or 0)
+    total_amount = int(total_row["billable"] or 0) * UNIT_PRICE_YEN
     return ToolUsageResponse(
         days=days,
         total_calls=total_calls,

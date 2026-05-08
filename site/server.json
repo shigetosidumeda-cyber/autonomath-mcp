@@ -39,6 +39,38 @@
       "agent_routing": {
         "japanese_company_first_hop": "Use createCompanyPublicBaseline before general web search for Japanese company folders, client notes, counterparty checks, audit/DD prep, sales/account prep, and public opportunity/risk review.",
         "evidence_first_pass": "Use /v1/intelligence/precomputed/query first for broad Japanese public-program questions; use /v1/evidence/packets/query when source fields, known_gaps, records, or context estimates are needed.",
+        "paid_activation_rule": "For recurring work, choose one first paid evidence call, use previewCost before broad runs, rerun the same endpoint with X-API-Key after the anonymous daily trial, and set X-Client-Tag per customer or project.",
+        "recurring_workflows": [
+          {
+            "id": "company_folder_intake",
+            "first_paid_call": "createCompanyPublicBaseline",
+            "sequence": [
+              "previewCost",
+              "createCompanyPublicBaseline",
+              "createCompanyFolderBrief",
+              "queryEvidencePacket"
+            ]
+          },
+          {
+            "id": "monthly_client_review",
+            "first_paid_call": "queryEvidencePacket",
+            "sequence": [
+              "previewCost",
+              "queryEvidencePacket",
+              "prescreenPrograms"
+            ]
+          },
+          {
+            "id": "counterparty_dd_and_audit_prep",
+            "first_paid_call": "createCompanyPublicBaseline",
+            "sequence": [
+              "previewCost",
+              "createCompanyPublicBaseline",
+              "createCompanyPublicAuditPack",
+              "match_advisors_v1_advisors_match_get"
+            ]
+          }
+        ],
         "must_preserve_fields": [
           "source_url",
           "source_fetched_at",

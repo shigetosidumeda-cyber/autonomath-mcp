@@ -273,6 +273,31 @@ def test_usage_by_tool_amount_uses_billed_quantity(client, fresh_paid_key, seede
     assert body["total_amount_yen"] == 9 * 3
 
 
+def test_usage_by_tool_totals_include_rows_outside_top_limit(client, fresh_paid_key, seeded_db):
+    kh = hash_api_key(fresh_paid_key)
+    _seed_usage(seeded_db, kh, endpoint="top.endpoint", count=10)
+    _seed_usage(
+        seeded_db,
+        kh,
+        endpoint="batch.endpoint",
+        count=1,
+        metered=1,
+        status=200,
+        quantity=20,
+    )
+    _seed_usage(seeded_db, kh, endpoint="small.endpoint", count=2)
+
+    r = client.get(
+        "/v1/me/usage_by_tool?days=30&limit=1",
+        headers={"X-API-Key": fresh_paid_key},
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert len(body["top"]) == 1
+    assert body["total_calls"] == 13
+    assert body["total_amount_yen"] == (10 + 20 + 2) * 3
+
+
 def test_usage_by_tool_excludes_other_keys(client, fresh_paid_key, seeded_db):
     """Telemetry isolation: another key's usage MUST NOT leak into the response."""
     kh = hash_api_key(fresh_paid_key)

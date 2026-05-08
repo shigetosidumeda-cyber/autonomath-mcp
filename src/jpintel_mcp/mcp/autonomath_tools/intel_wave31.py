@@ -1205,7 +1205,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ] = None,
     ) -> dict[str, Any]:
-        """[INTEL-COMPOSITE W30-8] probability_estimate (NOT forecast) + same-industry adoption rate + mean award + ROI for (program × houjin) in 1 call. Pure SQLite, NO LLM. §52/§1 行政書士法 fence — output is statistical estimate, NOT 採択保証. Replaces 5+ legacy fan-out calls."""
+        """probability_estimate (NOT forecast) + same-industry adoption rate + mean award + ROI for (program × houjin) in 1 call. Pure SQLite, NO LLM. §52/§1 行政書士法 fence — output is statistical estimate, NOT 採択保証. Replaces 5+ legacy fan-out calls."""
         return _intel_probability_radar_impl(
             program_id=program_id,
             houjin_bangou=houjin_bangou,
@@ -1224,7 +1224,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ],
     ) -> dict[str, Any]:
-        """[INTEL-COMPOSITE W30-9] Composite Merkle proof + sources + 5-step verify chain in 1 call. Replaces 3-call audit fan-out (/v1/audit/proof + /v1/audit/seals + /v1/am/provenance). Auditor pastes booleans directly into 監査調書. ¥3/req. §47条の2 / §52 fence — cryptographic provenance only, NOT 監査意見."""
+        """Composite Merkle proof + sources + 5-step verify chain in 1 call. Replaces 3-call audit fan-out (/v1/audit/proof + /v1/audit/seals + /v1/am/provenance). Auditor pastes booleans directly into 監査調書. ¥3/billable unit. §47条の2 / §52 fence — cryptographic provenance only, NOT 監査意見."""
         return _intel_audit_chain_impl(evidence_packet_id=evidence_packet_id)
 
     @mcp.tool(annotations=_READ_ONLY)
@@ -1264,7 +1264,7 @@ if _ENABLED and settings.autonomath_enabled:
             Field(5, ge=1, le=20, description="Cap on matched_programs[] length. Hard cap = 20."),
         ] = 5,
     ) -> dict[str, Any]:
-        """[INTEL-COMPOSITE W30-4] Smart matchmaking: top-N programs with documents, similar adopters, laws, tsutatsu, audit proof, plus next_questions, eligibility_gaps, and document_readiness to plan follow-up and application prep. Pure SQLite ranking. §52/§1 fence."""
+        """Smart matchmaking: top-N programs with documents, similar adopters, laws, tsutatsu, audit proof, plus next_questions, eligibility_gaps, and document_readiness to plan follow-up and application prep. Pure SQLite ranking. §52/§1 fence."""
         return _intel_match_impl(
             industry_jsic_major=industry_jsic_major,
             prefecture_code=prefecture_code,
@@ -1295,7 +1295,7 @@ if _ENABLED and settings.autonomath_enabled:
             int, Field(5, ge=1, le=20, description="Per-section row cap (1..20).")
         ] = 5,
     ) -> dict[str, Any]:
-        """[INTEL-COMPOSITE W30-2] Composite per-program bundle in 1 call: program_meta + eligibility_predicate + amendments_recent + adoptions_top + similar_programs + citations + audit_proof. Replaces 8+ naive single-program calls. ¥3/req. §52/§1/§72 fence."""
+        """Composite per-program bundle in 1 call: program_meta + eligibility_predicate + amendments_recent + adoptions_top + similar_programs + citations + audit_proof. Replaces 8+ naive single-program calls. ¥3/billable unit. §52/§1/§72 fence."""
         return _intel_program_full_impl(
             program_id=program_id,
             include_sections=include_sections,
@@ -1323,7 +1323,7 @@ if _ENABLED and settings.autonomath_enabled:
             int, Field(5, ge=1, le=50, description="Per-list-section row cap.")
         ] = 5,
     ) -> dict[str, Any]:
-        """[INTEL-COMPOSITE W30-3] Composite houjin 360-degree bundle in 1 call: meta + adoption_history + enforcement + invoice_status + peer_summary + jurisdiction + watch_status + decision_support.{risk_summary,decision_insights,next_actions,known_gaps}. Replaces 5+ legacy fan-out reads. ¥3/req. §52/§72/§1 fence."""
+        """Composite houjin 360-degree bundle in 1 call: meta + adoption_history + enforcement + invoice_status + peer_summary + jurisdiction + watch_status + decision_support.{risk_summary,decision_insights,next_actions,known_gaps}. Replaces 5+ legacy fan-out reads. ¥3/billable unit. §52/§72/§1 fence."""
         return _intel_houjin_full_impl(
             houjin_id=houjin_id,
             include_sections=include_sections,
@@ -1343,7 +1343,7 @@ if _ENABLED and settings.autonomath_enabled:
             int, Field(2, ge=1, le=3, description="Neighbourhood depth (1..3) for am_5hop_graph.")
         ] = 2,
     ) -> dict[str, Any]:
-        """[INTEL-COMPOSITE W31-1] Composite entity diff (M&A DD): shared_attrs + unique_to_a + unique_to_b + conflict_points across primary table + am_5hop_graph + am_program_eligibility_predicate + am_id_bridge. Pure SQLite + Python set arithmetic, NO LLM. ¥3/req. §52/§72/§1/§3/§47条の2 fence — descriptive, NOT prescriptive."""
+        """Composite entity diff (M&A DD): shared_attrs + unique_to_a + unique_to_b + conflict_points across primary table + am_5hop_graph + am_program_eligibility_predicate + am_id_bridge. Pure SQLite + Python set arithmetic, NO LLM. ¥3/billable unit. §52/§72/§1/§3/§47条の2 fence — descriptive, NOT prescriptive."""
         return _intel_diff_impl(a=a, b=b, depth=depth)
 
     @mcp.tool(annotations=_READ_ONLY)
@@ -1370,7 +1370,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ] = None,
     ) -> dict[str, Any]:
-        """[INTEL-COMPOSITE W31-2] 5-hop bidirectional BFS reasoning chain between 2 entities in 1 call. Returns shortest_path + up to 3 alternates so customer LLM can visualise the citation chain. Walks am_5hop_graph + am_citation_network + am_id_bridge. ¥3/req. §52/§72/§1 fence."""
+        """5-hop bidirectional BFS reasoning chain between 2 entities in 1 call. Returns shortest_path + up to 3 alternates so customer LLM can visualise the citation chain. Walks am_5hop_graph + am_citation_network + am_id_bridge. ¥3/billable unit. §52/§72/§1 fence."""
         return _intel_path_impl(
             from_entity=from_entity,
             to_entity=to_entity,
@@ -1405,7 +1405,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ] = None,
     ) -> dict[str, Any]:
-        """[INTEL-COMPOSITE W31-3] Annual cross-substrate event timeline for 1 program in 1 call. Cross-joins am_amendment_diff + am_adoption_trend_monthly + am_enforcement_anomaly + am_adopted_company_features + am_program_narrative_full. NO LLM. §52/§1/§72 fence."""
+        """Annual cross-substrate event timeline for 1 program in 1 call. Cross-joins am_amendment_diff + am_adoption_trend_monthly + am_enforcement_anomaly + am_adopted_company_features + am_program_narrative_full. NO LLM. §52/§1/§72 fence."""
         return _intel_timeline_impl(program_id=program_id, year=year, include_types=include_types)
 
     @mcp.tool(annotations=_READ_ONLY)
@@ -1425,7 +1425,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ],
     ) -> dict[str, Any]:
-        """[INTEL-COMPOSITE W31-4] Combo conflict detector: pairwise check across am_compat_matrix + jpi_exclusion_rules + 適正化法 17 conditions, returns conflict_pairs + alternative_bundles. ¥3/req. §52/§1 fence — flagging compatibility, NOT 申請可否判定."""
+        """Combo conflict detector: pairwise check across am_compat_matrix + jpi_exclusion_rules + 適正化法 17 conditions, returns conflict_pairs + alternative_bundles. ¥3/billable unit. §52/§1 fence — flagging compatibility, NOT 申請可否判定."""
         return _intel_conflict_impl(program_ids=program_ids, houjin_id=houjin_id)
 
     @mcp.tool(annotations=_READ_ONLY)
@@ -1445,7 +1445,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ],
     ) -> dict[str, Any]:
-        """[INTEL-COMPOSITE W31-5] Eligibility-failure reasoning: returns predicate_violations + remediation_steps + suggested_alternative_programs in 1 call. Walks am_program_eligibility_predicate + am_relation. NO LLM. §52/§1 fence — heuristic remediation, NOT 申請代理."""
+        """Eligibility-failure reasoning: returns predicate_violations + remediation_steps + suggested_alternative_programs in 1 call. Walks am_program_eligibility_predicate + am_relation. NO LLM. §52/§1 fence — heuristic remediation, NOT 申請代理."""
         return _intel_why_excluded_impl(program_id=program_id, houjin=houjin)
 
     @mcp.tool(annotations=_READ_ONLY)
@@ -1477,7 +1477,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ] = None,
     ) -> dict[str, Any]:
-        """[INTEL-COMPOSITE W31-6] 同業他社 N peers in 1 call: Jaccard similarity on (jsic × prefecture × capital × employee bucket) + per-axis comparison envelope. NO LLM. §52/§72 fence — peer benchmarking, NOT 信用調査."""
+        """同業他社 N peers in 1 call: Jaccard similarity on (jsic × prefecture × capital × employee bucket) + per-axis comparison envelope. NO LLM. §52/§72 fence — peer benchmarking, NOT 信用調査."""
         return _intel_peer_group_impl(
             houjin_id=houjin_id,
             houjin_attributes=houjin_attributes,
@@ -1505,7 +1505,7 @@ if _ENABLED and settings.autonomath_enabled:
             Field(None, description="ISO 8601 (YYYY-MM-DD) lower bound on document date."),
         ] = None,
     ) -> dict[str, Any]:
-        """[INTEL-COMPOSITE W31-7] Full regulatory bundle for 1 program in 1 call: 法令 + 通達 + 裁決 + 判例 + 行政処分. Replaces 5+ axis-specific fan-out calls. ¥3/req. §72/§52/§1 fence — primary-source pointers, NOT 法解釈."""
+        """Full regulatory bundle for 1 program in 1 call: 法令 + 通達 + 裁決 + 判例 + 行政処分. Replaces 5+ axis-specific fan-out calls. ¥3/billable unit. §72/§52/§1 fence — primary-source pointers, NOT 法解釈."""
         return _intel_regulatory_context_impl(
             program_id=program_id,
             include=include,
@@ -1536,7 +1536,7 @@ if _ENABLED and settings.autonomath_enabled:
             Field(None, description="Soft-bias categories (JSIC majors / program_kind)."),
         ] = None,
     ) -> dict[str, Any]:
-        """[INTEL-COMPOSITE W31-8] Houjin → 最適 program bundle in 1 call: greedy weighted optimizer over am_recommended_programs + am_compat_matrix + jpi_exclusion_rules. Returns bundle + total_expected_amount + conflict graph + alternative bundles + decision_support.{why_this_matters,decision_insights,next_actions}. ¥3/req. §52/§1 fence."""
+        """Houjin → 最適 program bundle in 1 call: greedy weighted optimizer over am_recommended_programs + am_compat_matrix + jpi_exclusion_rules. Returns bundle + total_expected_amount + conflict graph + alternative bundles + decision_support.{why_this_matters,decision_insights,next_actions}. ¥3/billable unit. §52/§1 fence."""
         return _intel_bundle_optimal_impl(
             houjin_id=houjin_id,
             bundle_size=bundle_size,
@@ -1564,7 +1564,7 @@ if _ENABLED and settings.autonomath_enabled:
             Literal["footnote", "inline"], Field("footnote", description="Citation marker style.")
         ] = "footnote",
     ) -> dict[str, Any]:
-        """[INTEL-COMPOSITE W31-9] Citation pack — every primary-source citation surface (法令+通達+裁決+判例+行政処分+採択) bundled as markdown (default) or JSON in 1 call. ¥3/req. §52/§47条の2/§1/§72 fence — citation pack can be re-quoted into 申請書面/提案書 territory."""
+        """Citation pack — every primary-source citation surface (法令+通達+裁決+判例+行政処分+採択) bundled as markdown (default) or JSON in 1 call. ¥3/billable unit. §52/§47条の2/§1/§72 fence — citation pack can be re-quoted into 申請書面/提案書 territory."""
         return _intel_citation_pack_impl(
             program_id=program_id,
             format=format,
@@ -1597,7 +1597,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ] = None,
     ) -> dict[str, Any]:
-        """[INTEL-COMPOSITE W32-3] Multi-axis houjin risk score: enforcement + refund + invoice + adoption revocation + jurisdiction drift in 1 call. Rules-based public-data score, NO LLM. ¥3/req. NOT a credit rating; §72/§52/§1 fence."""
+        """Multi-axis houjin risk score: enforcement + refund + invoice + adoption revocation + jurisdiction drift in 1 call. Rules-based public-data score, NO LLM. ¥3/billable unit. NOT a credit rating; §72/§52/§1 fence."""
         return _intel_risk_score_impl(
             houjin_id=houjin_id,
             include_axes=include_axes,
@@ -1627,7 +1627,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ] = 10,
     ) -> dict[str, Any]:
-        """[R8] Unified houjin 360 in 1 call: master + adoption_records + enforcement_cases + bids_won + invoice_registrant_status + recent_news + watch_alerts + 3-axis scores (risk_score / credit_score / compliance_score). Joins houjin_master + jpi_adoption_records + am_enforcement_detail + bids + jpi_invoice_registrants + am_amendment_diff + customer_watches. Pure SQL, NO LLM. ¥3/req. §52/§72/§1 fence — descriptive signals, never a 与信/税務/法令適用 verdict."""
+        """[R8] Unified houjin 360 in 1 call: master + adoption_records + enforcement_cases + bids_won + invoice_registrant_status + recent_news + watch_alerts + 3-axis scores (risk_score / credit_score / compliance_score). Joins houjin_master + jpi_adoption_records + am_enforcement_detail + bids + jpi_invoice_registrants + am_amendment_diff + customer_watches. Pure SQL, NO LLM. ¥3/billable unit. §52/§72/§1 fence — descriptive signals, never a 与信/税務/法令適用 verdict."""
         return _houjin_360_impl(houjin_bangou=houjin_bangou, limit=limit)
 
 

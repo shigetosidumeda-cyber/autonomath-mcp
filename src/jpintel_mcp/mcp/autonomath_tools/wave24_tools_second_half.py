@@ -46,7 +46,7 @@ Tools shipped here
       naive word split)。billing=1, NOT sensitive。
 
   #117 get_industry_program_density
-      am_region_program_density (wave24_139) → 業種 × 地域密度。
+      am_region_program_density → 業種 × 地域密度。
       billing=1, NOT sensitive。
 
   #118 find_emerging_programs
@@ -1381,7 +1381,7 @@ def _get_industry_program_density_impl(
     limit: int = 20,
     offset: int = 0,
 ) -> dict[str, Any]:
-    """SELECT from am_region_program_density (wave24_139)."""
+    """SELECT from am_region_program_density."""
     if not (jsic_major or region_code):
         return make_error(
             code="missing_required_arg",
@@ -1946,7 +1946,7 @@ if _ENABLED and settings.autonomath_enabled:
         limit: Annotated[int, Field(ge=1, le=100, description="Page size.")] = 20,
         offset: Annotated[int, Field(ge=0, description="Page offset.")] = 0,
     ) -> dict[str, Any]:
-        """[WAVE24-SECOND-HALF #109] Filter jpi_programs by JSIC code (major/middle/minor) + tier (S/A/B/C). Pure SELECT, NO LLM. Graceful empty when wave24_113b jsic columns absent."""
+        """Filter jpi_programs by JSIC code (major/middle/minor) + tier (S/A/B/C). Pure SELECT, NO LLM. """
         return _find_programs_by_jsic_impl(
             jsic_major=jsic_major,
             jsic_middle=jsic_middle,
@@ -1967,7 +1967,7 @@ if _ENABLED and settings.autonomath_enabled:
         limit: Annotated[int, Field(ge=1, le=100, description="Page size.")] = 50,
         offset: Annotated[int, Field(ge=0, description="Page offset.")] = 0,
     ) -> dict[str, Any]:
-        """[WAVE24-SECOND-HALF #110] Application document list for a program. Primary: am_program_documents (wave24_138). Fallback: jpi_program_documents. §1 行政書士法 sensitive — list 提供のみ、書面作成は対象外。"""
+        """Application document list for a program. Primary: am_program_documents. Fallback: jpi_program_documents. §1 行政書士法 sensitive — list 提供のみ、書面作成は対象外。"""
         return _get_program_application_documents_impl(
             program_id=program_id,
             limit=limit,
@@ -1989,7 +1989,7 @@ if _ENABLED and settings.autonomath_enabled:
         limit: Annotated[int, Field(ge=1, le=100, description="Page size.")] = 20,
         offset: Annotated[int, Field(ge=0, description="Page offset.")] = 0,
     ) -> dict[str, Any]:
-        """[WAVE24-SECOND-HALF #111] Adopted-company list for a program (jpi_adoption_records, 201,845 rows). 個人情報保護法 / 信用情報法 sensitive — public 採択 list のみ、与信判断には流用しない。"""
+        """Adopted-company list for a program (jpi_adoption_records, 201,845 rows). 個人情報保護法 / 信用情報法 sensitive — public 採択 list のみ、与信判断には流用しない。"""
         return _find_adopted_companies_by_program_impl(
             program_id=program_id,
             program_name_partial=program_name_partial,
@@ -2010,7 +2010,7 @@ if _ENABLED and settings.autonomath_enabled:
             ),
         ],
     ) -> dict[str, Any]:
-        """[WAVE24-SECOND-HALF #112] 採択者プロファイル類似度 score (similarity)。本 score は採択確率 (probability) の予測ではない。output field 名は `score`。景表法違反リスクのため広告・営業利用禁止。3 軸 join: am_recommended_programs + am_capital_band_program_match + am_program_adoption_stats。billing=2 単位、行政書士法 §1 sensitive。"""
+        """採択者プロファイル類似度 score (similarity)。本 score は採択確率 (probability) の予測ではない。output field 名は `score`。景表法違反リスクのため広告・営業利用禁止。3 軸 join: am_recommended_programs + am_capital_band_program_match + am_program_adoption_stats。billing=2 単位、行政書士法 §1 sensitive。"""
         return _score_application_probability_impl(
             houjin_bangou=houjin_bangou,
             program_id=program_id,
@@ -2023,7 +2023,7 @@ if _ENABLED and settings.autonomath_enabled:
             Field(description="13-digit 法人番号 (with or without 'T' prefix)."),
         ],
     ) -> dict[str, Any]:
-        """[WAVE24-SECOND-HALF #113] Compliance score derived from am_houjin_360_snapshot.derived_attrs_json.compliance_score. 信用情報法 / 弁護士法 §72 / 名誉毀損 sensitive — heuristic, 与信代替不可。"""
+        """Compliance score derived from am_houjin_360_snapshot.derived_attrs_json.compliance_score. 信用情報法 / 弁護士法 §72 / 名誉毀損 sensitive — heuristic, 与信代替不可。"""
         return _get_compliance_risk_score_impl(houjin_bangou=houjin_bangou)
 
     @mcp.tool(annotations=_READ_ONLY)
@@ -2037,7 +2037,7 @@ if _ENABLED and settings.autonomath_enabled:
             Field(description="Fiscal year (April-March). Default = current FY."),
         ] = None,
     ) -> dict[str, Any]:
-        """[WAVE24-SECOND-HALF #114] Tax-amendment impact simulation: am_houjin_360_snapshot.applicable_tax_rulesets × am_tax_amendment_history within FY window. billing=2 単位、税理士法 §52 sensitive — 試算のみ、税務代理は対象外。"""
+        """Tax-amendment impact simulation: am_houjin_360_snapshot.applicable_tax_rulesets × am_tax_amendment_history within FY window. billing=2 単位、税理士法 §52 sensitive — 試算のみ、税務代理は対象外。"""
         return _simulate_tax_change_impact_impl(
             houjin_bangou=houjin_bangou,
             fiscal_year=fiscal_year,
@@ -2058,7 +2058,7 @@ if _ENABLED and settings.autonomath_enabled:
         limit: Annotated[int, Field(ge=1, le=100, description="Page size.")] = 20,
         offset: Annotated[int, Field(ge=0, description="Page offset.")] = 0,
     ) -> dict[str, Any]:
-        """[WAVE24-SECOND-HALF #115] Complementary subsidies via 2-step join: am_program_combinations × am_program_calendar_12mo + 時系列 overlap calc. 行政書士法 §1 sensitive."""
+        """Complementary subsidies via 2-step join: am_program_combinations × am_program_calendar_12mo + 時系列 overlap calc. 行政書士法 §1 sensitive."""
         return _find_complementary_subsidies_impl(
             program_id=program_id,
             months_window=months_window,
@@ -2076,7 +2076,7 @@ if _ENABLED and settings.autonomath_enabled:
         ],
         top_k: Annotated[int, Field(ge=1, le=100, description="Top K keywords.")] = 30,
     ) -> dict[str, Any]:
-        """[WAVE24-SECOND-HALF #116] Per-program keyword cloud. Source: am_program_keyword_cache (TF-IDF pre-computed) preferred, MeCab live tokenize over am_program_narrative as fallback (naive 2-char window when MeCab absent). NOT sensitive."""
+        """Per-program keyword cloud. Source: am_program_keyword_cache (TF-IDF pre-computed) preferred, MeCab live tokenize over am_program_narrative as fallback (naive 2-char window when MeCab absent). NOT sensitive."""
         return _get_program_keyword_analysis_impl(
             program_id=program_id,
             top_k=top_k,
@@ -2095,7 +2095,7 @@ if _ENABLED and settings.autonomath_enabled:
         limit: Annotated[int, Field(ge=1, le=100, description="Page size.")] = 20,
         offset: Annotated[int, Field(ge=0, description="Page offset.")] = 0,
     ) -> dict[str, Any]:
-        """[WAVE24-SECOND-HALF #117] Per-industry × region program density (am_region_program_density, wave24_139). Fallback: industry_program_density / jpi_industry_program_density. NOT sensitive."""
+        """Per-industry × region program density (am_region_program_density). Fallback: industry_program_density / jpi_industry_program_density. NOT sensitive."""
         return _get_industry_program_density_impl(
             jsic_major=jsic_major,
             region_code=region_code,
@@ -2116,7 +2116,7 @@ if _ENABLED and settings.autonomath_enabled:
         limit: Annotated[int, Field(ge=1, le=100, description="Page size.")] = 20,
         offset: Annotated[int, Field(ge=0, description="Page offset.")] = 0,
     ) -> dict[str, Any]:
-        """[WAVE24-SECOND-HALF #118] Programs newly observed in the past N days (jpi_programs.first_seen_at, fallback source_fetched_at). NOT sensitive."""
+        """Programs newly observed in the past N days (jpi_programs.first_seen_at, fallback source_fetched_at). NOT sensitive."""
         return _find_emerging_programs_impl(
             days=days,
             tier=tier,
@@ -2137,7 +2137,7 @@ if _ENABLED and settings.autonomath_enabled:
             Field(ge=1, le=60, description="Forecast horizon (months)."),
         ] = 12,
     ) -> dict[str, Any]:
-        """[WAVE24-SECOND-HALF #119] 更新後の制度内容変化予測 (eligibility predicate diff 系列予測)。Wave22 既存 forecast_program_renewal (更新確率) とは異軸。重複ではない。output field 名は `predicate_diff_forecast`。am_amendment_diff の eligibility predicate field のみを集計、horizon_months に scale。NOT sensitive (statistical)."""
+        """更新後の制度内容変化予測 (eligibility predicate diff 系列予測)。output field 名は `predicate_diff_forecast`。am_amendment_diff の eligibility predicate field のみを集計、horizon_months に scale。NOT sensitive (statistical)."""
         return _get_program_renewal_probability_impl(
             program_id=program_id,
             horizon_months=horizon_months,
@@ -2156,7 +2156,7 @@ if _ENABLED and settings.autonomath_enabled:
         limit: Annotated[int, Field(ge=1, le=200, description="Page size.")] = 50,
         offset: Annotated[int, Field(ge=0, description="Page offset.")] = 0,
     ) -> dict[str, Any]:
-        """[WAVE24-SECOND-HALF #120] 法人別補助金交付履歴 (jpi_adoption_records, houjin_bangou + since_year filter, total_amount_granted_yen 含む). 個人情報保護法 / 信用情報法 sensitive — 公表交付決定 list 由来、与信判断には流用しない。"""
+        """法人別補助金交付履歴 (jpi_adoption_records, houjin_bangou + since_year filter, total_amount_granted_yen 含む). 個人情報保護法 / 信用情報法 sensitive — 公表交付決定 list 由来、与信判断には流用しない。"""
         return _get_houjin_subsidy_history_impl(
             houjin_bangou=houjin_bangou,
             since_year=since_year,

@@ -118,6 +118,16 @@ class KpiResponse(BaseModel):
     mrr_wow_last_week_yen: int = 0
     mrr_wow_delta_yen: int = 0
     mrr_wow_pct: float = 0.0
+    billable_units_24h: int = 0
+    billable_keys_24h: int = 0
+    daily_100k_goal_progress_pct: float = 0.0
+    billable_units_30d: int = 0
+    client_tagged_units_30d: int = 0
+    client_tag_usage_rate_30d_pct: float = 0.0
+    active_client_tag_pairs_30d: int = 0
+    top_key_30d_billable_units_share_pct: float = 0.0
+    cost_preview_requests_7d: int = 0
+    cost_preview_to_billable_7d_pct: float = 0.0
 
     # Caps
     cap_set: int = 0
@@ -127,6 +137,7 @@ class KpiResponse(BaseModel):
     churn_7d: int = 0
     past_due_count: int = 0
     unsynced_metered_events: int = 0
+    unsynced_metered_units: int = 0
     reconcile_drift_pct: float | None = None
     reconcile_source_file: str | None = None
 

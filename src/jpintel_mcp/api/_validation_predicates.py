@@ -119,7 +119,7 @@ def _check_desired_amount_sanity_upper(data: dict[str, Any]) -> bool:
 # Keyed by the trailing function-name segment of ``predicate_ref`` (i.e.
 # everything after ``autonomath.intake.``). When a rule's predicate_ref does
 # NOT live in this registry the dispatcher returns passed=null with
-# ``message_ja`` = "external dispatch deferred — use jpcite operator workflow".
+# ``message_ja`` = "external dispatch deferred — use manual review workflow".
 # ---------------------------------------------------------------------------
 
 PREDICATE_PREFIX = "autonomath.intake."

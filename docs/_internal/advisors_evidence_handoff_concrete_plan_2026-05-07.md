@@ -47,7 +47,7 @@
 
 - `src/jpintel_mcp/api/openapi_agent.py`
   - `GET /v1/advisors/match` は agent-safe に出ている。
-  - ただし AI の初手はまだ `/v1/advisors/match` ではなく、Evidence 後の optional route 扱い。
+  - ただし AI の初手はまだ `GET /v1/advisors/match` ではなく、Evidence 後の optional route 扱い。
 
 - Evidence / artifact layer
   - `company_public_baseline`
@@ -160,7 +160,7 @@ CTA:
 CTA:
 
 - `POST /v1/agent/triage`
-- `POST /v1/advisors/match`
+- `GET /v1/advisors/match`
 - `POST /v1/advisors/referral-consents`
 
 ## 4. 新しい中心リソース
@@ -304,11 +304,11 @@ GET /v1/advisors/match
 operationId: matchAdvisors
 ```
 
-追加:
+Evidence Handoff から使う既存ルート:
 
 ```http
-POST /v1/advisors/match
-operationId: matchAdvisorsForEvidenceHandoff
+GET /v1/advisors/match
+operationId: match_advisors_v1_advisors_match_get
 ```
 
 役割:
@@ -793,7 +793,7 @@ KPI:
 検証:
 
 - `pytest tests/test_openapi_agent.py tests/test_advisors_security.py`
-- `/v1/advisors/match` smoke
+- `GET /v1/advisors/match` smoke
 - JSON-LD parse
 - static link check
 
@@ -804,7 +804,7 @@ KPI:
 1. `195_advisor_handoffs.sql`
 2. `POST /v1/advisors/handoffs/preview`
 3. `POST /v1/advisors/handoffs`
-4. `POST /v1/advisors/match` を追加
+4. 既存 `GET /v1/advisors/match` を Handoff 後の候補 reviewer 検索として使う
 5. `POST /v1/advisors/referral-consents`
 6. `track` に `handoff_token` を追加
 7. `/advisors.html?handoff_token=...` 表示
@@ -898,7 +898,7 @@ Files:
 
 Change:
 
-- `/v1/advisors/match` は optional route。
+- `GET /v1/advisors/match` は optional route。
 - 将来 `triageEvidenceToExpertHandoff` を first-hop として追加。
 - `requires_user_confirmation` と PII方針を明記。
 
@@ -958,7 +958,7 @@ Change:
 
 最も良い案は、`/advisors` を「士業案件紹介」から「根拠付き案件化」に変えること。
 
-短期では、既存 `/v1/advisors/match` と artifact layer を使って、DB migrationなしで Handoff 体験を見せられる。
+短期では、既存 `GET /v1/advisors/match` と artifact layer を使って、DB migrationなしで Handoff 体験を見せられる。
 
 中期では、`advisor_handoffs` を作り、Evidence Packet / known gaps / source receipts / consent / referral を1本につなぐ。
 

@@ -270,17 +270,13 @@ for capability boundaries.
   `site/llms.en.txt` and `site/llms-full.en.txt` (EN) for AI-agent
   discovery.
 
-## Known limitations (2026-05-07 LIVE)
+## Known limitations
 
-Honest snapshot of the residual gaps that exist in the live `v0.3.4` deployment:
-
-- **Frontend stale-state recovery in progress** — some Cloudflare Pages cohort routes still render against pre-rename brand text in cached HTML; full purge sweep underway. The REST + MCP API surface is unaffected.
-- **OAuth UI residual** — dashboard sign-in still surfaces the legacy provider button layout. Server-side OAuth chains (`/v1/auth/*`) work correctly; the cosmetic cleanup is queued on the frontend track.
-- **Tool count drift** — manifests claim 139 tools while the runtime cohort serves 146 (7 post-manifest tools landed in source: DEEP-37/44/45/49..58/64/65). This is intentional hold-at-139 per `R8_MANIFEST_BUMP_EVAL_2026-05-07.md`; the next intentional manifest bump will reconcile.
-- **3 broken tools gated off** — `query_at_snapshot` (migration 067 missing), `intent_of`, `reason_answer` (reasoning package missing). Surfaced via env flags, not removed.
-- **`am_amount_condition` quality** — 250,946 rows on disk; majority are template-default ¥500K/¥2M values from a broken ETL pass. Re-validation in progress, do not surface aggregate count externally.
-- **`am_amendment_snapshot` time-series fidelity** — 14,596 captures; only ~2,500 carry content hash and 144 carry definitive `effective_from` dates. Time-series only firm on the 144 dated rows.
-- **Construction saiketsu corpus thinness** — `nta_saiketsu` has only 137 rows; the construction industry pack yields 0-1 法人税/消費税 citations per call. Not a code defect, will compound naturally as ingest matures.
+jpcite is a public-record evidence layer, not a legal, tax, audit,
+credit, or filing decision service. Corpus coverage, source freshness, and
+field-level provenance vary by source family. Responses include
+`source_url`, `source_fetched_at`, `known_gaps`, and disclaimers where
+applicable so callers can verify primary sources before business decisions.
 
 ## Support
 

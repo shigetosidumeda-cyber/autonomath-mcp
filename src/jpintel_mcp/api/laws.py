@@ -1,8 +1,9 @@
 """REST handlers for laws (e-Gov 法令 catalog).
 
 Backed by migration 015's `laws` + `laws_fts` + `program_law_refs` tables.
-Exposes ~3,400 rows of 憲法 / 法律 / 政令 / 勅令 / 府省令 / 規則 / 告示 /
-ガイドライン harvested from e-Gov 法令 API V2 (CC-BY 4.0). Primary
+Exposes 9,484 metadata records and 6,493 full-text indexed records across
+憲法 / 法律 / 政令 / 勅令 / 府省令 / 規則 / 告示 / ガイドライン harvested
+from e-Gov 法令 API V2 (CC-BY 4.0). Primary
 surface for "what is the 根拠法 of this 補助金" and "which programs cite
 this statute" lookups.
 

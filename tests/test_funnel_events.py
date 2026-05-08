@@ -238,3 +238,42 @@ def test_funnel_event_rejects_unknown_event(client, seeded_db: Path) -> None:
     finally:
         conn.close()
     assert count == 0
+
+
+def test_record_server_funnel_event_records_billing_lifecycle(seeded_db: Path) -> None:
+    from jpintel_mcp.api.funnel_events import record_server_funnel_event
+
+    _clear_funnel_events(seeded_db)
+    conn = sqlite3.connect(seeded_db)
+    conn.row_factory = sqlite3.Row
+    try:
+        accepted = record_server_funnel_event(
+            conn=conn,
+            event_name="checkout_completed",
+            page="https://jpcite.com/success.html?session_id=cs_secret",
+            key_hash="kh_test",
+            properties={
+                "session_id": "cs_test_123",
+                "subscription_id": "sub_test_123",
+                "tier": "paid",
+            },
+        )
+        row = conn.execute(
+            "SELECT event_name, page, key_hash, user_agent_class, is_anonymous, "
+            "properties_json FROM funnel_events ORDER BY id DESC LIMIT 1"
+        ).fetchone()
+    finally:
+        conn.close()
+
+    assert accepted is True
+    assert row is not None
+    assert row["event_name"] == "checkout_completed"
+    assert row["page"] == "/success.html"
+    assert row["key_hash"] == "kh_test"
+    assert row["user_agent_class"] == "server"
+    assert row["is_anonymous"] == 0
+    assert json.loads(row["properties_json"]) == {
+        "session_id": "cs_test_123",
+        "subscription_id": "sub_test_123",
+        "tier": "paid",
+    }

@@ -149,10 +149,10 @@
     document.addEventListener('click', function (e) {
       try {
         var target = e.target;
-        var el = target && target.closest && target.closest('[data-cta-variant]');
+        var el = target && target.closest && target.closest('[data-cta-variant],[data-cta]');
         if (!el) return;
         send('cta_click', {
-          cta_variant: el.getAttribute('data-cta-variant'),
+          cta_variant: el.getAttribute('data-cta-variant') || el.getAttribute('data-cta'),
           href: el.getAttribute('href') || null,
         });
       } catch (_e) { /* no-op */ }

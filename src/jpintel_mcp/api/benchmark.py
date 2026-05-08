@@ -45,8 +45,8 @@ class CohortAverageBody(BaseModel):
         description=(
             "JSIC industry code prefix (e.g. 'D' for 建設業, 'E29' for "
             "中分類 食料品製造業). Prefix-matches both jpintel "
-            "case_studies.industry_jsic and autonomath "
-            "jpi_adoption_records.industry_jsic_medium. NULL spans all majors."
+            "case_studies.industry_jsic and the public adoption dataset "
+            "industry_jsic_medium. NULL spans all majors."
         ),
     )
     size_band: str | None = Field(

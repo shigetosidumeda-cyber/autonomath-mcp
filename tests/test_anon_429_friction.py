@@ -107,6 +107,7 @@ def test_429_body_includes_upgrade_url_and_bilingual_cta(
     # Sanity: JP CTA contains 制限/解除 cue, EN contains 'API key'.
     assert "API key" in body["cta_text_ja"] or "制限" in body["cta_text_ja"]
     assert "API key" in body["cta_text_en"]
+    assert body["trial_signup_url"].endswith("#path-email-trial")
 
     # Pre-existing 429 fields still present (back-compat).
     assert body.get("limit") == 2
@@ -116,6 +117,7 @@ def test_429_body_includes_upgrade_url_and_bilingual_cta(
     # Headers on 429 (parallel to the body).
     assert r.headers.get("X-Anon-Quota-Remaining") == "0"
     assert r.headers.get("X-Anon-Upgrade-Url", "").startswith("https://jpcite.com/upgrade.html")
+    assert r.headers.get("X-Anon-Trial-Url", "").endswith("#path-email-trial")
     assert r.headers.get("X-Anon-Quota-Reset", "").startswith(("20", "21"))
     assert r.headers.get("Retry-After") is not None
 

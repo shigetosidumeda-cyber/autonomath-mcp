@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>Composite Intelligence — jpcite</title>
-<meta name="description" content="jpcite の Composite Intelligence landing。OpenAPI に掲載済みの composite endpoints と planned/private W32 surface を分けて整理します。">
+<meta name="description" content="制度・法人・根拠・リスク信号をまとめて確認し、AI や担当者が根拠付きの調査結果を作りやすくする jpcite の Composite Intelligence。">
 
 <meta property="og:title" content="Composite Intelligence — jpcite">
-<meta property="og:description" content="制度、法人、法令、採択、行政処分、出典監査を複数回の検索に分けず、composite endpoint でまとめて取得。">
+<meta property="og:description" content="制度、法人、法令、採択、行政処分、出典確認をまとめて取得し、根拠付きの調査・比較・説明資料づくりに使えます。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/intel/">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -18,7 +18,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Composite Intelligence — jpcite">
-<meta name="twitter:description" content="制度・法人・根拠・リスク信号を 1 call にまとめる jpcite の intelligence layer。W32 surface は public REST path 未公開です。">
+<meta name="twitter:description" content="制度・法人・根拠・リスク信号をまとめて確認し、根拠付きの調査・比較・説明資料づくりに使える jpcite の Composite Intelligence。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/intel/">
@@ -73,8 +73,8 @@
  <span aria-current="page">Composite Intelligence</span>
  </nav>
  <h1 id="hero-title">Composite Intelligence</h1>
- <p class="hero-sub">複数の検索・根拠取得・照合を、AI が扱いやすい 1 call の evidence bundle にまとめる layer です。</p>
- <p class="hero-example" style="margin:18px 0 14px;font-size:15px;line-height:1.7;color:var(--text-soft);">現在の公開 OpenAPI には、17 本の <code>/v1/intel/*</code> endpoint が掲載されています。W32 の scenario simulation、competitor landscape、portfolio heatmap、news brief、onboarding brief、refund risk、cross jurisdiction は planned/private surface で、public REST path は not yet public です。</p>
+ <p class="hero-sub">制度調査、法人確認、リスク確認に必要な根拠をまとめ、AI や担当者がそのまま確認・比較・説明に使える形で返します。</p>
+ <p class="hero-example" style="margin:18px 0 14px;font-size:15px;line-height:1.7;color:var(--text-soft);">補助金候補の比較、顧問先の確認、採択・行政処分の裏取り、出典 URL と取得時点の記録までを一連の調査として扱えます。</p>
  <div class="cta-row">
  <a class="btn btn-primary" href="/playground.html?flow=evidence3">Playground で試す →</a>
  <a class="btn btn-secondary" href="/pricing.html">料金を見る →</a>
@@ -87,46 +87,42 @@
  <h2 id="use-title" class="section-title">何をまとめるか</h2>
  <div class="cards">
  <article class="card">
- <h3>Program intelligence</h3>
+ <h3>制度調査の下準備</h3>
  <p class="card-lead">制度単位の根拠束ね</p>
- <p>制度 metadata、適格性 predicate、改正履歴、採択事例、類似制度、引用根拠、監査 proof を 1 つの束として取得します。</p>
+ <p>制度の対象者、対象経費、締切、改正履歴、採択事例、類似制度、公式出典をまとめて確認します。</p>
  </article>
  <article class="card">
- <h3>Houjin intelligence</h3>
+ <h3>法人確認</h3>
  <p class="card-lead">法人単位の確認材料</p>
- <p>法人番号を起点に、採択履歴、行政処分、invoice status、peer summary、管轄、watch status をまとめて確認します。</p>
+ <p>法人番号を起点に、採択履歴、行政処分、適格請求書登録状況、関連する管轄や注意信号をまとめて確認します。</p>
  </article>
  <article class="card">
- <h3>Risk and conflict signals</h3>
- <p class="card-lead">判断ではなく機械信号</p>
- <p>併用 conflict、why excluded、bundle optimal、peer group、risk_score を返します。信用格付け、申請可否判断、法務・税務助言ではありません。</p>
+ <h3>リスクと併用制限</h3>
+ <p class="card-lead">判断ではなく確認材料</p>
+ <p>制度の併用制限、対象外になり得る条件、類似案件との違いを確認材料として返します。信用格付け、申請可否判断、法務・税務助言ではありません。</p>
  </article>
  </div>
  </div>
  </section>
 
- <section class="code-demo" aria-labelledby="endpoints-title">
+ <section class="features" aria-labelledby="scenarios-title">
  <div class="container">
- <h2 id="endpoints-title" class="section-title">Composite surface</h2>
- <p class="demo-lead">現在の OpenAPI に存在する public REST surface のみを列挙します。</p>
- <div class="code-block"><pre><code>POST /v1/intel/actionable/lookup
-GET  /v1/intel/actionable/{cache_key}
-POST /v1/intel/audit_chain
-POST /v1/intel/bundle/optimal
-GET  /v1/intel/citation_pack/{program_id}
-POST /v1/intel/conflict
-POST /v1/intel/diff
-GET  /v1/intel/houjin/{houjin_id}/full
-POST /v1/intel/match
-POST /v1/intel/path
-POST /v1/intel/peer_group
-POST /v1/intel/probability_radar
-GET  /v1/intel/program/{program_id}/full
-GET  /v1/intel/regulatory_context/{program_id}
-POST /v1/intel/risk_score
-GET  /v1/intel/timeline/{program_id}
-POST /v1/intel/why_excluded</code></pre></div>
- <p class="demo-note">上記は公開 OpenAPI に掲載済みの endpoint です。W32 7 surface は planned/private であり、OpenAPI に掲載されるまで public REST URL として呼び出さないでください。</p>
+ <h2 id="scenarios-title" class="section-title">使いどころ</h2>
+ <p class="demo-lead">調査の入り口で根拠を先に揃え、AI への質問、社内レビュー、顧客説明へ渡しやすくします。</p>
+ <div class="cards">
+ <article class="card">
+ <h3>候補制度の比較</h3>
+ <p>複数の補助金・助成金について、対象条件、締切、対象経費、公式出典を同じ粒度で並べます。</p>
+ </article>
+ <article class="card">
+ <h3>顧問先の確認</h3>
+ <p>法人番号から採択履歴や行政処分などを確認し、提案前のリスク確認や面談準備に使えます。</p>
+ </article>
+ <article class="card">
+ <h3>回答の根拠添付</h3>
+ <p>AI が作る要約や比較表に、出典 URL、取得時点、不足している根拠を添えて確認しやすくします。</p>
+ </article>
+ </div>
  </div>
  </section>
 
@@ -135,19 +131,19 @@ POST /v1/intel/why_excluded</code></pre></div>
  <h2 id="guardrails-title" class="section-title">ガードレール</h2>
  <div class="cards">
  <article class="card">
- <h3>No LLM call</h3>
- <p class="card-lead">生成ではなく構造化取得</p>
- <p>composite endpoint はデータベースとルールを組み合わせた evidence prefetch layer です。文章化は利用者側の AI に任せます。</p>
+ <h3>根拠を先に揃える</h3>
+ <p class="card-lead">生成回答の前に確認材料を返す</p>
+ <p>jpcite は一次情報と確認材料を揃えます。文章化や最終判断は、利用者の AI、担当者、専門家の確認フローに渡します。</p>
  </article>
  <article class="card">
- <h3>Known gaps</h3>
- <p class="card-lead">未接続を隠さない</p>
- <p>根拠が不足する領域は known gaps として扱います。W32 7 surface は OpenAPI 未掲載の planned/private surface として説明し、公開 endpoint と混ぜません。</p>
+ <h3>不足情報の明示</h3>
+ <p class="card-lead">分からない項目を隠さない</p>
+ <p>根拠が足りない項目は不足として示します。確認できた情報と未確認の情報を分けることで、追加調査の範囲を判断しやすくします。</p>
  </article>
  <article class="card">
- <h3>Professional boundary</h3>
+ <h3>専門判断との境界</h3>
  <p class="card-lead">助言・代行ではない</p>
- <p>行政書士法、税理士法、弁護士法、与信判断に関わる領域では disclaimer を前提に、確認材料として利用します。</p>
+ <p>行政書士法、税理士法、弁護士法、与信判断に関わる領域では、専門判断の代替ではなく確認材料として利用します。</p>
  </article>
  </div>
  </div>

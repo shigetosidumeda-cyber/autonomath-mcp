@@ -205,9 +205,8 @@ def verify_citations(
 
     Per citation:
       * Up to 5 seconds for the URL fetch.
-      * Verdict ∈ {verified, inferred, stale, unknown}. (``stale`` is
-        reserved for future drift detection — current pipeline returns
-        verified/inferred/unknown only.)
+      * Verdict ∈ {verified, inferred, stale, unknown}. (``stale`` is not
+        emitted by the current pipeline; callers should still handle it.)
 
     Errors:
       * 401 if the API key header is missing or invalid.
