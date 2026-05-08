@@ -25,7 +25,7 @@
 #     + vec0.so 100 KB + app code / scripts ~5 MB).
 # ------------------------------------------------------------------
 
-FROM --platform=linux/amd64 python:3.12-slim-bookworm AS builder
+FROM --platform=linux/amd64 python:3.14-slim-bookworm AS builder
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -66,7 +66,7 @@ ignore_patterns=['*.onnx', '*.msgpack', 'flax_model.*', 'tf_model.*', 'rust_mode
     && du -sh /models/e5-small
 
 # ------------------------------------------------------------------
-FROM --platform=linux/amd64 python:3.12-slim-bookworm AS runtime
+FROM --platform=linux/amd64 python:3.14-slim-bookworm AS runtime
 
 LABEL org.opencontainers.image.title="AutonoMath API"
 LABEL org.opencontainers.image.vendor="Bookyou株式会社"
