@@ -1,0 +1,83 @@
+{
+  "generated_at": "2026-05-09T19:39:31.419432Z",
+  "corpus_snapshot_id": "unknown",
+  "rows": [
+    {
+      "id": "jcrb",
+      "label": "JCRB benchmark",
+      "status": "NO DATA",
+      "status_class": "yellow",
+      "last_refreshed": "never",
+      "verified_count_real": 0,
+      "synth_count": 0,
+      "anchor_file": "analytics/jcrb_summary_latest.json",
+      "detail": "4-arm A/B/C/D / 16 metrics — first run pending"
+    },
+    {
+      "id": "practitioner_eval",
+      "label": "Practitioner eval (15 personas × 3 queries)",
+      "status": "NO DATA",
+      "status_class": "red",
+      "last_refreshed": "never",
+      "verified_count_real": 0,
+      "synth_count": 0,
+      "anchor_file": "site/practitioner-eval/_data/results_latest.json",
+      "detail": "must_include / must_not_claim / boundary"
+    },
+    {
+      "id": "composite_benchmark_latest",
+      "label": "Composite benchmark",
+      "status": "NO DATA",
+      "status_class": "red",
+      "last_refreshed": "never",
+      "verified_count_real": 0,
+      "synth_count": 0,
+      "anchor_file": "monitoring/composite_benchmark_latest.jsonl",
+      "detail": "real/synth split visible"
+    },
+    {
+      "id": "source_receipts_coverage",
+      "label": "Source receipts coverage",
+      "status": "NO DATA",
+      "status_class": "red",
+      "last_refreshed": "never",
+      "verified_count_real": 0,
+      "synth_count": 0,
+      "anchor_file": "monitoring/source_receipts_coverage.jsonl",
+      "detail": "% of paid responses with non-empty _source_receipts"
+    },
+    {
+      "id": "known_gaps_display",
+      "label": "Known gaps display rate",
+      "status": "NO DATA",
+      "status_class": "red",
+      "last_refreshed": "never",
+      "verified_count_real": 0,
+      "synth_count": 0,
+      "anchor_file": "monitoring/known_gaps_display.jsonl",
+      "detail": "% of responses showing _known_gaps"
+    },
+    {
+      "id": "audit_seal_roundtrip",
+      "label": "Anchor verify success rate",
+      "status": "NO DATA",
+      "status_class": "red",
+      "last_refreshed": "never",
+      "verified_count_real": 0,
+      "synth_count": 0,
+      "anchor_file": "monitoring/audit_seal_roundtrip.jsonl",
+      "detail": "audit seal verify roundtrip"
+    },
+    {
+      "id": "acceptance_contract_pass",
+      "label": "Acceptance contract pass rate",
+      "status": "NO DATA",
+      "status_class": "red",
+      "last_refreshed": "never",
+      "verified_count_real": 0,
+      "synth_count": 0,
+      "anchor_file": "monitoring/acceptance_contract_pass.jsonl",
+      "detail": "paid artifact min contract"
+    }
+  ]
+}
