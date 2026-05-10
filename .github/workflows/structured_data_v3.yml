@@ -1,0 +1,17 @@
+name: structured_data_v3
+on:
+  pull_request:
+    branches: [main, "v3/**"]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install
+        run: pip install -e ".[dev]"
+      - name: Validate JSON-LD blocks
+        run: python scripts/validate_jsonld.py

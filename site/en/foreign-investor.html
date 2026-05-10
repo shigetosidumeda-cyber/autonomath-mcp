@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <meta name="color-scheme" content="light dark">
 <title>jpcite for foreign-invested entities — Japan tax-treaty + FDI subsidy + English law API</title>
@@ -92,6 +91,11 @@ pre { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; paddin
 .skip-link { position: absolute; left: -9999px; }
 .skip-link:focus { left: 1rem; top: 1rem; }
 </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-jpcite-a11y="baseline">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
 </head>
 <body>
 
@@ -161,6 +165,64 @@ GET  /v1/en/fdi_subsidies?industry_jsic=E&amp;foreign_pct=100&amp;limit=20</pre>
     }
   ],
   "_disclaimer": "The English text returned here is a courtesy translation ...",
+  "_billing_unit": 1,
+  "_next_calls": [...]
+}</pre>
+</section>
+
+<section>
+<h2>Sample call (get_tax_treaty)</h2>
+<pre>$ curl 'https://api.jpcite.com/v1/en/tax_treaty/US?country_b=JPN'
+{
+  "found": true,
+  "treaty": {
+    "country_a": "US",
+    "country_b": "JP",
+    "country_iso": "US",
+    "country_name_en": "United States",
+    "treaty_kind": "comprehensive",
+    "dta_in_force_date": "2004-03-30",
+    "withholding_tax_pct": {
+      "dividend_general": 10.0,
+      "dividend_parent_subsidiary": 5.0,
+      "interest": 10.0,
+      "royalty": 0.0
+    },
+    "info_exchange": "standard",
+    "moaa_arbitration": true,
+    "source_url": "https://www.mof.go.jp/tax_policy/summary/international/tax_convention/usa.htm",
+    "license": "gov_standard"
+  },
+  "_disclaimer": "本 response は am_tax_treaty (国税庁・財務省 一次資料 ...) ..."
+}</pre>
+</section>
+
+<section>
+<h2>Disclaimer (important)</h2>
+<div class="disclaimer">
+<p><strong>This is not legal advice or tax advice.</strong> Every response carries a <code>_disclaimer</code> envelope declaring the surface 税理士法 §52 (tax advice fence) / 弁護士法 §72 (legal advice fence) / 行政書士法 §1 (FDI 申請 代理 fence) / 国際課税 / FDI 規制 fence. The output is information retrieval. Translation text is from the e-Gov 日本法令外国語訳 corpus under CC-BY 4.0; the Japanese-language original is the only legally authoritative version. For binding interpretation, consult a Japanese qualified attorney / 税理士 / 行政書士.</p>
+</div>
+</section>
+
+<section>
+<h2>Documentation</h2>
+<ul>
+<li><a href="/en/audiences/foreign-investor.html">Full English wedge guide (docs/en/foreign_investor.md)</a></li>
+<li><a href="/en/audiences/foreign-investor.html">Foreign-investor audience page (deeper FAQ + 外為法 prior-notification context)</a></li>
+<li><a href="https://api.jpcite.com/v1/openapi.json">Full OpenAPI spec (English descriptions on every route)</a></li>
+<li><a href="/server.json">MCP server manifest</a></li>
+</ul>
+</section>
+
+</main>
+
+<footer>
+<p>© Bookyou株式会社 (Bookyou K.K., 適格請求書発行事業者番号 T8010001213708). <a href="mailto:info@bookyou.net">info@bookyou.net</a>.</p>
+</footer>
+
+</body>
+</html>
+imer": "The English text returned here is a courtesy translation ...",
   "_billing_unit": 1,
   "_next_calls": [...]
 }</pre>

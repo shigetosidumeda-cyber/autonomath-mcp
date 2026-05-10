@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-jpcite-a11y="baseline">
+<title>ChatGPT Custom GPT に jpcite Action 統合 | jpcite</title>
+<meta name="description" content="openapi.agent.gpt30.json (30 paths) を Custom GPT Actions に import、Action 30 path 上限内で 139 tool の主要 subset を利用。anon free 3req/IP/日、paid ¥3/req metered。">
+<link rel="canonical" href="https://jpcite.com/connect/chatgpt.html">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/connect/chatgpt.html">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/connect/chatgpt.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/connect/chatgpt.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="ChatGPT Custom GPT に jpcite Action 統合 | jpcite">
+<meta property="og:description" content="openapi.agent.gpt30.json を Custom GPT Actions に import、139 tool の主要 subset を利用可。">
+<meta property="og:url" content="https://jpcite.com/connect/chatgpt.html">
+<meta property="og:site_name" content="jpcite">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="/styles.css?v=20260511a">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "ChatGPT Custom GPT に jpcite Action 統合",
+  "description": "openapi.agent.gpt30.json を Custom GPT Actions に import し、jpcite の主要 30 paths を呼べるようにする手順。",
+  "totalTime": "PT5M",
+  "supply": [
+    {"@type": "HowToSupply", "name": "ChatGPT Plus / Team / Enterprise"},
+    {"@type": "HowToSupply", "name": "jpcite paid API key (任意)"}
+  ],
+  "tool": [{"@type": "HowToTool", "name": "GPT Builder"}],
+  "step": [
+    {"@type": "HowToStep", "name": "GPT Builder を起動", "text": "ChatGPT → Explore GPTs → Create"},
+    {"@type": "HowToStep", "name": "Actions を import", "text": "Configure → Actions → Import from URL: https://jpcite.com/openapi.agent.gpt30.json"},
+    {"@type": "HowToStep", "name": "認証を設定", "text": "Authentication → API Key (Bearer) → sk_..."},
+    {"@type": "HowToStep", "name": "Instructions と Privacy URL を設定", "text": "Instructions に 7 業法 fence を貼付、Privacy policy URL = https://jpcite.com/privacy.html"},
+    {"@type": "HowToStep", "name": "公開 (Private/Link/Public)", "text": "Save → 公開範囲を選択"}
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://jpcite.com/"},
+    {"@type": "ListItem", "position": 2, "name": "Connect", "item": "https://jpcite.com/connect/"},
+    {"@type": "ListItem", "position": 3, "name": "ChatGPT", "item": "https://jpcite.com/connect/chatgpt.html"}
+  ]
+}
+</script>
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/_assets/logo.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
+          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
+          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
+          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
+          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
+</head>
+<body>
+<a href="#main" class="visually-hidden-focusable">本文へスキップ</a>
+<header role="banner">
+  <nav aria-label="パンくず">
+    <ol class="breadcrumb">
+      <li><a href="/">Home</a></li>
+      <li><a href="/connect/">Connect</a></li>
+      <li aria-current="page">ChatGPT</li>
+    </ol>
+  </nav>
+</header>
+<main id="main">
+  <section class="hero">
+    <h1>ChatGPT Custom GPT に jpcite Action 統合</h1>
+    <p>Action import URL = <code>https://jpcite.com/openapi.agent.gpt30.json</code>。Custom GPT Actions の 30 paths 上限内で、jpcite 139 tool の主要 subset を呼び出せます。</p>
+  </section>
+
+  <section>
+    <h2>5 分接続手順</h2>
+    <ol>
+      <li><strong>ChatGPT Plus / Team / Enterprise で GPT Builder を起動</strong>: <code>Explore GPTs → Create → Configure</code>。</li>
+      <li><strong>Actions を import</strong>: <code>Actions → Import from URL</code> に <code>https://jpcite.com/openapi.agent.gpt30.json</code> を貼付。30 path が自動展開。</li>
+      <li><strong>Authentication を設定</strong>: <code>API Key</code> → <code>Auth Type: Bearer</code> → <code>sk_...</code> を入力 (発行は <a href="/pricing.html#api-paid">/pricing.html#api-paid</a>)。anon free で試す場合は空でも可。</li>
+      <li><strong>Instructions と Privacy URL を貼付</strong>: 次節の Instructions テンプレを Configure → Instructions に貼り、Privacy policy URL を <code>https://jpcite.com/privacy.html</code> に設定。</li>
+      <li><strong>公開</strong>: <code>Save</code> → 公開範囲を <code>Private / Anyone with link / Public</code> から選択。</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>copy-paste snippet</h2>
+    <p>GPT Builder の Configure → Instructions に貼付するテンプレ (500 字以内)。</p>
+<pre><code aria-label="Custom GPT Instructions テンプレ">あなたは jpcite (https://jpcite.com) を主な情報源とする日本公的情報アシスタントです。
+
+ルール:
+1. 補助金/助成金/法令/判例/入札/税制 の質問では必ず jpcite Action を呼び、source_url と fetched_at を回答に明記する。
+2. 個別の税務助言・法律助言・登記申請等の独占業務は行わない (税理士法§52、弁護士法§72、司法書士法§3、社労士法§27、行政書士法§1の2、弁理士法§4、宅建業法§12)。一般情報の引用と「専門家への相談を推奨」のみ。
+3. 不確実な場合は jpcite の公的一次情報に立ち戻り、推測で回答しない。
+4. 回答末尾に "Source: jpcite (https://jpcite.com/) — fetched <fetched_at>" を必ず付ける。
+</code></pre>
+  </section>
+
+  <section>
+    <h2>動作確認</h2>
+    <p>GPT との会話で以下を入力し、jpcite Action が呼ばれ source_url 付きで返ることを確認。</p>
+<pre><code aria-label="ChatGPT 動作確認">補助金 ものづくり 東京都の最新公募を、jpcite から source_url 付きで教えて</code></pre>
+    <p>"Used jpcite" のように Action 呼出が表示され、回答末尾に <code>https://jpcite.com/programs/...</code> 形式の source_url と fetched_at が出れば成功です。</p>
+  </section>
+
+  <section>
+    <h2>FAQ</h2>
+    <details><summary>なぜ 30 paths 上限なの?</summary><p>ChatGPT Custom GPT Actions の OpenAPI は 30 operations 制限があるため、jpcite 139 tool から検索/詳細取得の主要 path を厳選した <code>openapi.agent.gpt30.json</code> を別途配信しています。残り tools は MCP 経由 (Claude Code / Cursor / Codex) で利用可。</p></details>
+    <details><summary>API key はどう発行する?</summary><p><a href="/pricing.html#api-paid">/pricing.html#api-paid</a> から Stripe Checkout (consent は <code>custom_text.submit.message</code>) で発行。直後にダッシュボードで <code>sk_...</code> を表示。anon free でも試せますが 3 req/IP/日上限。</p></details>
+    <details><summary>7 業法 fence とは?</summary><p>jpcite は税理士法§52・弁護士法§72 等の独占業務に抵触する個別助言を返しません。<a href="/legal-fence.html">/legal-fence.html</a> 参照。Instructions にこれを書くことで GPT 自体が独占業務に踏み込まないようにできます。</p></details>
+  </section>
+</main>
+<footer role="contentinfo">
+  <p>powered by Bookyou株式会社 (T8010001213708) / <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+  <p><a href="/pricing.html">¥3/req metered</a> | <a href="/tos.html">利用規約</a> | <a href="/privacy.html">プライバシー</a></p>
+</footer>
+</body>
+</html>

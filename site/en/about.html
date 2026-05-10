@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>About — jpcite</title>
 <meta name="description" content="jpcite: REST + MCP API over Japanese public programs (subsidies, loans, tax measures, certifications). Built for evidence-backed AI agent workflows.">
@@ -67,6 +66,11 @@
 </style>
 
 <script defer src="../analytics.js?v=20260503a"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-jpcite-a11y="baseline">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
 </head>
 <body>
 
@@ -121,6 +125,57 @@
  <tr><th>Case studies (採択事例)</th><td>2,286</td></tr>
  <tr><th>Loan programs (detailed)</th><td>108 (with three-axis collateral / guarantor decomposition)</td></tr>
  <tr><th>Enforcement cases</th><td>1,185</td></tr>
+ <tr><th>Laws (e-Gov CC-BY)</th><td>e-Gov law metadata and article references; coverage varies by record.</td></tr>
+ <tr><th>Tax rulesets</th><td>50</td></tr>
+ <tr><th>Court decisions</th><td>2,065</td></tr>
+ <tr><th>Bids</th><td>362</td></tr>
+ <tr><th>Invoice registrants</th><td>13,801 (PDL v1.0 delta-only; full ~4M monthly bulk pending)</td></tr>
+ <tr><th>Entity-fact DB entities</th><td>503,930 (across 12 record_kinds)</td></tr>
+ <tr><th>Entity-fact DB facts</th><td>6.12M</td></tr>
+ <tr><th>Entity-fact DB relations</th><td>177,381 (15 canonical relation types)</td></tr>
+ <tr><th>Primary-source coverage</th><td>Most public rows carry source_url + fetched_at; gaps are flagged instead of backfilled</td></tr>
+ <tr><th>Exclusion rules</th><td>181 (125 exclude + 17 prerequisite + 15 absolute + 24 other)</td></tr>
+ <tr><th>MCP tools</th><td>139 at standard configuration, protocol 2025-06-18 (program / case-study / loan / enforcement search, source-backed context packets, metadata tools, and DD-support tools)</td></tr>
+ <tr><th>MCP protocol</th><td>2025-06-18</td></tr>
+ <tr><th>Region</th><td>Japan</td></tr>
+ <tr><th>Launch</th><td>2026-05-06</td></tr>
+ </tbody>
+ </table>
+
+ <h2>Contact</h2>
+ <p>Email: <a href="mailto:info@bookyou.net">info@bookyou.net</a>. For press, the full kit is at <a href="../press/about.md">/press/about.md</a>. For Japanese legal disclosures (特定商取引法), see <a href="../tokushoho.html">the JP tokushoho page</a>.</p>
+
+ </div>
+</main>
+
+<div class="container">
+</div>
+
+
+<footer class="site-footer" role="contentinfo">
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">Japanese public-program API</p>
+ </div>
+ <nav class="footer-nav" aria-label="Footer">
+ <a href="about.html">About</a>
+ <a href="getting-started.html">Getting started</a>
+ <a href="pricing.html">Pricing</a>
+ <a href="sources.html">Data sources</a>
+ <a href="tokushoho.html">Legal (JP)</a>
+ <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+ </nav>
+ <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
+ </div>
+</footer>
+
+<script src="/assets/trust-strip.en.js" defer></script>
+
+</body>
+</html>
+td></tr>
  <tr><th>Laws (e-Gov CC-BY)</th><td>e-Gov law metadata and article references; coverage varies by record.</td></tr>
  <tr><th>Tax rulesets</th><td>50</td></tr>
  <tr><th>Court decisions</th><td>2,065</td></tr>

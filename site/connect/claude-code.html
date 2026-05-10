@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-jpcite-a11y="baseline">
+<title>Claude Code から jpcite を 30 秒で接続 | jpcite</title>
+<meta name="description" content="Claude Code CLI (anthropics/claude-code) に jpcite MCP server を 1 行で統合。139 tool で日本公的情報横断、anon 3req/IP/日無料、paid ¥3/req metered。">
+<link rel="canonical" href="https://jpcite.com/connect/claude-code.html">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/connect/claude-code.html">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/connect/claude-code.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/connect/claude-code.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Claude Code から jpcite を 30 秒で接続 | jpcite">
+<meta property="og:description" content="Claude Code CLI に jpcite MCP server を 1 行で統合。139 tool で日本公的情報横断、anon 3req/IP/日無料、paid ¥3/req metered。">
+<meta property="og:url" content="https://jpcite.com/connect/claude-code.html">
+<meta property="og:site_name" content="jpcite">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="/styles.css?v=20260511a">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "Claude Code から jpcite を 30 秒で接続",
+  "description": "Claude Code CLI に jpcite MCP server を統合する手順。139 tool 即解禁。",
+  "totalTime": "PT5M",
+  "supply": [
+    {"@type": "HowToSupply", "name": "macOS / Linux / Windows (WSL)"},
+    {"@type": "HowToSupply", "name": "Claude Code CLI 最新版"}
+  ],
+  "tool": [{"@type": "HowToTool", "name": "uvx (Astral uv)"}],
+  "step": [
+    {"@type": "HowToStep", "name": "uvx install", "text": "curl -LsSf https://astral.sh/uv/install.sh | sh"},
+    {"@type": "HowToStep", "name": "jpcite を MCP server に登録", "text": "claude mcp add jpcite -- uvx autonomath-mcp"},
+    {"@type": "HowToStep", "name": "接続確認", "text": "claude mcp list | grep jpcite"},
+    {"@type": "HowToStep", "name": "(任意) API key を設定", "text": "export JPCITE_API_KEY=sk_... (/pricing.html#api-paid で発行)"}
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://jpcite.com/"},
+    {"@type": "ListItem", "position": 2, "name": "Connect", "item": "https://jpcite.com/connect/"},
+    {"@type": "ListItem", "position": 3, "name": "Claude Code", "item": "https://jpcite.com/connect/claude-code.html"}
+  ]
+}
+</script>
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/_assets/logo.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
+          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
+          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
+          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
+          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
+</head>
+<body>
+<a href="#main" class="visually-hidden-focusable">本文へスキップ</a>
+<header role="banner">
+  <nav aria-label="パンくず">
+    <ol class="breadcrumb">
+      <li><a href="/">Home</a></li>
+      <li><a href="/connect/">Connect</a></li>
+      <li aria-current="page">Claude Code</li>
+    </ol>
+  </nav>
+</header>
+<main id="main">
+  <section class="hero">
+    <h1>Claude Code から jpcite を 30 秒で接続</h1>
+    <p><code>claude mcp add jpcite -- uvx autonomath-mcp</code> 1 行で 139 tool 解禁。anonymous は 3 req/IP/日まで無料、paid は ¥3/req metered。</p>
+  </section>
+
+  <section>
+    <h2>5 分接続手順</h2>
+    <ol>
+      <li><strong>uvx をインストール</strong>: <code>curl -LsSf https://astral.sh/uv/install.sh | sh</code> を実行し、シェルを再起動。</li>
+      <li><strong>jpcite を MCP server に登録</strong>: <code>claude mcp add jpcite -- uvx autonomath-mcp</code> (PyPI 名は legacy 維持で <code>autonomath-mcp</code>、ブランドは jpcite)。</li>
+      <li><strong>接続確認</strong>: <code>claude mcp list | grep jpcite</code> が緑表示なら成功。</li>
+      <li><strong>(任意) API key を設定</strong>: 3 req/日上限を外す場合は <code>export JPCITE_API_KEY=sk_...</code>。発行は <a href="/pricing.html#api-paid">/pricing.html#api-paid</a> から。</li>
+      <li><strong>動作確認</strong>: 次節の verification コマンドで 139 tool が見えるか確認。</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>copy-paste snippet</h2>
+    <p><code>~/.claude.json</code> に直接書く場合は以下を MCP servers ブロックに追加。</p>
+<pre><code aria-label="Claude Code MCP 設定 (~/.claude.json)">{
+  "mcpServers": {
+    "jpcite": {
+      "command": "uvx",
+      "args": ["autonomath-mcp"],
+      "env": {
+        "JPCITE_API_KEY": "sk_xxxxx"
+      }
+    }
+  }
+}</code></pre>
+    <p>API key 不要 (anon free 3 req/IP/日) の場合は <code>env</code> ブロック自体を省略可能。</p>
+  </section>
+
+  <section>
+    <h2>動作確認</h2>
+    <p>下記コマンドで 139 が返れば接続完了。</p>
+<pre><code aria-label="動作確認コマンド">claude mcp call jpcite list_tools 2&gt;&amp;1 | jq '.tools | length'</code></pre>
+    <p>期待値: <code>139</code> (default gates 有効時。<code>AUTONOMATH_36_KYOTEI_ENABLED=false</code> がデフォルトで、競艇 tools は含まれません)。</p>
+  </section>
+
+  <section>
+    <h2>FAQ</h2>
+    <details><summary>anonymous と paid の違いは?</summary><p>anon は IP ベースで 3 req/日 (AnonIpLimit)、API key 無し。paid は ¥3/req metered で上限なし、<code>JPCITE_API_KEY</code> 経由でカウント。</p></details>
+    <details><summary>API key はどう発行する?</summary><p><a href="/pricing.html#api-paid">/pricing.html#api-paid</a> から Stripe Checkout (consent は <code>custom_text.submit.message</code> で表示) で発行。発行直後にダッシュボードで <code>sk_...</code> を表示。</p></details>
+    <details><summary>7 業法 fence とは?</summary><p>jpcite は税理士法§52・弁護士法§72 等の独占業務に抵触する個別助言を返しません。<a href="/legal-fence.html">/legal-fence.html</a> 参照。</p></details>
+  </section>
+</main>
+<footer role="contentinfo">
+  <p>powered by Bookyou株式会社 (T8010001213708) / <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+  <p><a href="/pricing.html">¥3/req metered</a> | <a href="/tos.html">利用規約</a> | <a href="/privacy.html">プライバシー</a></p>
+</footer>
+</body>
+</html>

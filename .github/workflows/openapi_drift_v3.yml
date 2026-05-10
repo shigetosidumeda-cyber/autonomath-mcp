@@ -1,0 +1,16 @@
+name: openapi_drift_v3
+on:
+  pull_request:
+    branches: [main, "v3/**"]
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install
+        run: pip install -e ".[dev]"
+      - name: Check OpenAPI drift vs facts_registry
+        run: python scripts/check_openapi_drift.py

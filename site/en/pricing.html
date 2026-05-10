@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>Pricing — ¥3/billable unit — jpcite</title>
 <meta name="description" content="jpcite pricing — ¥3 per billable unit (normal search/detail calls are 1 unit; ¥3.30 tax inclusive). No tiers, no fixed monthly, no contracts, no cancellation fee. 3 req/day per IP free. Stripe billing + qualified Japanese invoice.">
@@ -169,6 +168,11 @@
 <link rel="stylesheet" href="../styles.css?v=20260429a">
 
 <script defer src="../analytics.js?v=20260503a"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-jpcite-a11y="baseline">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
 </head>
 <body>
 
@@ -658,6 +662,51 @@
  <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
  <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">Data coverage?</summary>
  <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">As of April 2026: <span data-fact="total_programs">14,472</span> Japanese public programs (<span data-fact="searchable_programs_total">11,601</span> searchable), <span data-fact="case_studies_total">2,286</span> adoption case studies, <span data-fact="loan_programs_total">108</span> loan programs (three-axis risk decomposition), <span data-fact="enforcement_cases_total">1,185</span> enforcement actions, e-Gov law metadata and article references (coverage varies by record), 2,065 court decisions, 362 public bids, 13,801 invoice registrants, 50 tax rulesets. Most public rows carry primary-source URL + fetched_at metadata; known aggregator pages are excluded from source fields where detected. All figures are sourced on the <a href="facts.html">fact sheet</a>.</p>
+ </details>
+ </div>
+ </section>
+
+ <section aria-labelledby="bottom-cta-title" style="margin-top:56px;padding:32px 24px;border:1px solid var(--accent);border-radius:12px;background:var(--accent-soft,#ecfdf5);">
+ <h2 id="bottom-cta-title" class="section-title" style="margin:0 0 12px;">30 seconds to API key, 5 minutes to first call, no fixed monthly</h2>
+ <p style="margin:0 0 18px;color:var(--text);font-size:16px;line-height:1.7;max-width:680px;">
+ ¥3 per billable unit (¥3.30 tax incl.) fully metered. First 3 req/day per IP free. Months you do not use cost ¥0. To cancel, delete the API key in the dashboard — no fee.
+ </p>
+ <div style="display:flex;flex-wrap:wrap;gap:12px;">
+ <a class="btn btn-primary" href="#api-paid" data-cta-variant="bottom-issue-key" style="font-size:16px;padding:13px 22px;">Issue API key</a>
+ <a class="btn btn-secondary" href="../playground.html" data-cta-variant="bottom-playground" style="font-size:16px;padding:13px 22px;">Open Japanese REST playground</a>
+ </div>
+ </section>
+
+ </div>
+</main>
+
+<div class="container">
+</div>
+
+
+<footer class="site-footer" role="contentinfo">
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">Japanese public-program platform — ¥3 per billable unit.</p>
+ </div>
+ <nav class="footer-nav" aria-label="Footer">
+ <a href="about.html">About</a>
+ <a href="getting-started.html">Getting started</a>
+ <a href="pricing.html">Pricing</a>
+ <a href="tokushoho.html">Legal (JP)</a>
+ <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+ </nav>
+ <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
+ </div>
+</footer>
+
+<script src="/assets/trust-strip.en.js" defer></script>
+
+</body>
+</html>
+ee-axis risk decomposition), <span data-fact="enforcement_cases_total">1,185</span> enforcement actions, e-Gov law metadata and article references (coverage varies by record), 2,065 court decisions, 362 public bids, 13,801 invoice registrants, 50 tax rulesets. Most public rows carry primary-source URL + fetched_at metadata; known aggregator pages are excluded from source fields where detected. All figures are sourced on the <a href="facts.html">fact sheet</a>.</p>
  </details>
  </div>
  </section>

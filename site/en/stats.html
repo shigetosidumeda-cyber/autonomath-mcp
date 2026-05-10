@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>Stats — jpcite</title>
 <meta name="description" content="jpcite transparency dashboard: dataset row counts, source freshness, and 30-day API usage. Every number is a primary-source-backed live count from /v1/stats.">
@@ -122,6 +121,11 @@
     .stats-page { padding: 32px 0 48px; }
   }
 </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-jpcite-a11y="baseline">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
 </head>
 <body>
 
@@ -342,6 +346,70 @@
         var body = document.getElementById("freshness-body");
         if (body) body.innerHTML = "";
         showErr(document.getElementById("freshness-err"), e, loadFreshness);
+      })
+      .then(function () { clearTimeout(timer); });
+  }
+
+  function renderUsage(daily, total, since, until) {
+    var svg = document.getElementById("usage-svg");
+    if (!svg) return;
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var W = 600, H = 120, pad = 4;
+    var max = 0;
+    daily.forEach(function (d) { if (d.count > max) max = d.count; });
+    if (max < 1) max = 1;
+    var bw = (W - pad * 2) / daily.length;
+    daily.forEach(function (d, i) {
+      var h = (d.count / max) * (H - pad * 2);
+      var x = pad + i * bw;
+      var y = H - pad - h;
+      var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      rect.setAttribute("x", x.toFixed(2));
+      rect.setAttribute("y", y.toFixed(2));
+      rect.setAttribute("width", Math.max(1, bw - 1).toFixed(2));
+      rect.setAttribute("height", Math.max(0, h).toFixed(2));
+      rect.setAttribute("fill", "#1e3a8a");
+      var title = document.createElementNS("http://www.w3.org/2000/svg", "title");
+      title.textContent = d.date + ": " + d.count + " calls (cumulative " + d.cumulative + ")";
+      rect.appendChild(title);
+      svg.appendChild(rect);
+    });
+    var fr = document.getElementById("usage-axis-from");
+    var to = document.getElementById("usage-axis-to");
+    if (fr) fr.textContent = since;
+    if (to) to.textContent = until;
+    var t = document.getElementById("usage-total");
+    if (t) t.textContent = "Total: " + fmtNum(total) + " calls (past 30 days)";
+  }
+
+  function loadUsage() {
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { ctrl.abort(); }, 15000);
+    fetch(BASE + "/v1/stats/usage", { signal: ctrl.signal })
+      .then(function (r) {
+        if (!r.ok) throw new Error("usage fetch failed: " + r.status);
+        return r.json();
+      })
+      .then(function (data) {
+        renderUsage(data.daily, data.total, data.since, data.until);
+      })
+      .catch(function (e) {
+        showErr(document.getElementById("usage-err"), e, loadUsage);
+      })
+      .then(function () { clearTimeout(timer); });
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    loadCoverage();
+    loadFreshness();
+    loadUsage();
+  });
+})();
+</script>
+
+</body>
+</html>
+Err(document.getElementById("freshness-err"), e, loadFreshness);
       })
       .then(function () { clearTimeout(timer); });
   }

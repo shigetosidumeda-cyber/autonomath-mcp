@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-jpcite-a11y="baseline">
+<title>OpenAI Codex CLI / Agents SDK から jpcite 1 import | jpcite</title>
+<meta name="description" content="openai-agents SDK の hosted_mcp で https://api.jpcite.com/mcp を 1 行 import、139 tool 即時利用、anon free 3req/IP/日、paid ¥3/req metered。">
+<link rel="canonical" href="https://jpcite.com/connect/codex.html">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/connect/codex.html">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/connect/codex.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/connect/codex.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="OpenAI Codex CLI / Agents SDK から jpcite 1 import | jpcite">
+<meta property="og:description" content="openai-agents SDK の hosted_mcp で https://api.jpcite.com/mcp を 1 行 import、139 tool 即時利用。">
+<meta property="og:url" content="https://jpcite.com/connect/codex.html">
+<meta property="og:site_name" content="jpcite">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="/styles.css?v=20260511a">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "OpenAI Codex CLI / Agents SDK から jpcite を 1 import で接続",
+  "description": "openai-agents SDK の hosted_mcp で jpcite の MCP endpoint を Agent に直接バインドする手順。",
+  "totalTime": "PT5M",
+  "supply": [
+    {"@type": "HowToSupply", "name": "Python 3.10+"},
+    {"@type": "HowToSupply", "name": "OpenAI API key"}
+  ],
+  "tool": [{"@type": "HowToTool", "name": "openai-agents"}],
+  "step": [
+    {"@type": "HowToStep", "name": "openai-agents をインストール", "text": "pip install openai-agents"},
+    {"@type": "HowToStep", "name": "hosted_mcp で jpcite を接続", "text": "from agents import Agent, hosted_mcp; mcp = hosted_mcp(server_url='https://api.jpcite.com/mcp')"},
+    {"@type": "HowToStep", "name": "Agent を構築", "text": "Agent(name='jp_subsidy', tools=mcp.list_tools())"},
+    {"@type": "HowToStep", "name": "(任意) API key を渡す", "text": "hosted_mcp(server_url='https://api.jpcite.com/mcp', headers={'X-API-Key': 'sk_...'})"}
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://jpcite.com/"},
+    {"@type": "ListItem", "position": 2, "name": "Connect", "item": "https://jpcite.com/connect/"},
+    {"@type": "ListItem", "position": 3, "name": "Codex / Agents SDK", "item": "https://jpcite.com/connect/codex.html"}
+  ]
+}
+</script>
+</head>
+<body>
+<a href="#main" class="visually-hidden-focusable">本文へスキップ</a>
+<header role="banner">
+  <nav aria-label="パンくず">
+    <ol class="breadcrumb">
+      <li><a href="/">Home</a></li>
+      <li><a href="/connect/">Connect</a></li>
+      <li aria-current="page">Codex / Agents SDK</li>
+    </ol>
+  </nav>
+</header>
+<main id="main">
+  <section class="hero">
+    <h1>OpenAI Codex CLI / Agents SDK から jpcite 1 import</h1>
+    <p><code>from agents import Agent, hosted_mcp; mcp = hosted_mcp(server_url='https://api.jpcite.com/mcp')</code> 1 行で 139 tool 即時利用。anon free 3 req/IP/日、paid は ¥3/req metered。</p>
+  </section>
+
+  <section>
+    <h2>5 分接続手順</h2>
+    <ol>
+      <li><strong>openai-agents をインストール</strong>: <code>pip install openai-agents</code> (Python 3.10+)。</li>
+      <li><strong>hosted_mcp で jpcite を接続</strong>: <code>mcp = hosted_mcp(server_url='https://api.jpcite.com/mcp')</code> を 1 行で記述。</li>
+      <li><strong>Agent を構築</strong>: <code>Agent(name='jp_subsidy', tools=mcp.list_tools())</code> で 139 tool を Agent に bind。</li>
+      <li><strong>(任意) API key を渡す</strong>: <code>hosted_mcp(server_url='https://api.jpcite.com/mcp', headers={'X-API-Key': 'sk_...'})</code> で metered モードへ昇格。anon free のままなら省略可。</li>
+      <li><strong>動作確認</strong>: 次節のサンプルで 139 tools が読まれることを確認。</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>copy-paste snippet</h2>
+    <p>Agent 定義 + search_programs 呼出までを含む 30 行サンプル。</p>
+<pre><code aria-label="OpenAI Agents SDK サンプル (Python)">import os
+from agents import Agent, Runner, hosted_mcp
+
+# 1) MCP endpoint = jpcite hosted MCP
+mcp = hosted_mcp(
+    server_url="https://api.jpcite.com/mcp",
+    headers={
+        # anon free なら丸ごと省略可 (3 req/IP/日)
+        "X-API-Key": os.environ.get("JPCITE_API_KEY", ""),
+    },
+)
+
+# 2) Agent に jpcite tools を bind
+agent = Agent(
+    name="jp_subsidy",
+    instructions=(
+        "あなたは日本の補助金/法令/税制 アシスタントです。"
+        "jpcite tools を必ず呼び、source_url と fetched_at を回答に明記してください。"
+        "個別の税務/法律助言 (税理士法§52、弁護士法§72 等) は行わず、"
+        "一般情報の引用と専門家への相談推奨のみ。"
+    ),
+    tools=mcp.list_tools(),
+)
+
+# 3) 実行例
+result = Runner.run_sync(
+    agent,
+    input="東京都のものづくり補助金で、製造業向けの最新公募を 3 件、source_url 付きで",
+)
+print(result.final_output)
+</code></pre>
+  </section>
+
+  <section>
+    <h2>動作確認</h2>
+    <p>tools 一覧の長さが 139 になることを確認 (<code>AUTONOMATH_36_KYOTEI_ENABLED=false</code> がデフォルト)。</p>
+<pre><code aria-label="tools length 動作確認">python -c "from agents import hosted_mcp; m = hosted_mcp(server_url='https://api.jpcite.com/mcp'); print(len(m.list_tools()))" 2&gt;&amp;1 | tail -n 1</code></pre>
+    <p>期待値: <code>139</code></p>
+  </section>
+
+  <section>
+    <h2>FAQ</h2>
+    <details><summary>REST 直叩き vs MCP どちらが良い?</summary><p>Agent ループに組み込むなら MCP (hosted_mcp) を推奨。tools schema が自動で SDK 側に展開され、Agent の関数呼出と互換になります。スクリプト型処理なら REST 直叩き (<code>https://api.jpcite.com/v1/...</code>) でも構いません。</p></details>
+    <details><summary>API key はどう発行する?</summary><p><a href="/pricing.html#api-paid">/pricing.html#api-paid</a> から Stripe Checkout (consent は <code>custom_text.submit.message</code> 経由) で発行。anon free は IP ベース 3 req/日上限、paid は ¥3/req metered で上限なし。</p></details>
+    <details><summary>7 業法 fence とは?</summary><p>jpcite は税理士法§52・弁護士法§72 等の独占業務に抵触する個別助言を返しません。<a href="/legal-fence.html">/legal-fence.html</a> 参照。Agent の instructions にも明記してください。</p></details>
+  </section>
+</main>
+<footer role="contentinfo">
+  <p>powered by Bookyou株式会社 (T8010001213708) / <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+  <p><a href="/pricing.html">¥3/req metered</a> | <a href="/tos.html">利用規約</a> | <a href="/privacy.html">プライバシー</a></p>
+</footer>
+</body>
+</html>

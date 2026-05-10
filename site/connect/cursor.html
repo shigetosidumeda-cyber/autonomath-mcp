@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-jpcite-a11y="baseline">
+<title>Cursor MCP に jpcite を 30 秒で接続 | jpcite</title>
+<meta name="description" content=".cursor/mcp.json 1 file で 139 tool 即解禁、Cursor 0.42+ 対応、anon free 3req/IP/日、paid ¥3/req metered で日本公的情報横断。">
+<link rel="canonical" href="https://jpcite.com/connect/cursor.html">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/connect/cursor.html">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/connect/cursor.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/connect/cursor.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Cursor MCP に jpcite を 30 秒で接続 | jpcite">
+<meta property="og:description" content=".cursor/mcp.json 1 file で 139 tool 即解禁、Cursor 0.42+ 対応、anon free 3req/IP/日。">
+<meta property="og:url" content="https://jpcite.com/connect/cursor.html">
+<meta property="og:site_name" content="jpcite">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="/styles.css?v=20260511a">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "Cursor MCP に jpcite を 30 秒で接続",
+  "description": "Cursor IDE に jpcite MCP server を統合する手順。.cursor/mcp.json 1 file で 139 tool 即解禁。",
+  "totalTime": "PT5M",
+  "supply": [
+    {"@type": "HowToSupply", "name": "Cursor 0.42 以降"},
+    {"@type": "HowToSupply", "name": "uvx (Astral uv)"}
+  ],
+  "tool": [{"@type": "HowToTool", "name": "curl"}],
+  "step": [
+    {"@type": "HowToStep", "name": "Cursor のバージョン確認", "text": "Cursor 0.42 以降であることを確認 (Settings → About)"},
+    {"@type": "HowToStep", "name": ".cursor/mcp.json を配置", "text": "プロジェクト root で mkdir -p .cursor && curl -o .cursor/mcp.json https://jpcite.com/.cursor/mcp.example.json"},
+    {"@type": "HowToStep", "name": "Cursor を再起動", "text": "Settings → MCP → jpcite が緑 dot で表示される"},
+    {"@type": "HowToStep", "name": "チャットから利用", "text": "@jpcite search_programs q=\"ものづくり補助金\""}
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://jpcite.com/"},
+    {"@type": "ListItem", "position": 2, "name": "Connect", "item": "https://jpcite.com/connect/"},
+    {"@type": "ListItem", "position": 3, "name": "Cursor", "item": "https://jpcite.com/connect/cursor.html"}
+  ]
+}
+</script>
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/_assets/logo.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
+          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
+          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
+          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
+          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
+</head>
+<body>
+<a href="#main" class="visually-hidden-focusable">本文へスキップ</a>
+<header role="banner">
+  <nav aria-label="パンくず">
+    <ol class="breadcrumb">
+      <li><a href="/">Home</a></li>
+      <li><a href="/connect/">Connect</a></li>
+      <li aria-current="page">Cursor</li>
+    </ol>
+  </nav>
+</header>
+<main id="main">
+  <section class="hero">
+    <h1>Cursor MCP に jpcite を 30 秒で接続</h1>
+    <p><code>curl -o .cursor/mcp.json https://jpcite.com/.cursor/mcp.example.json</code> 1 行で 139 tool 即解禁。Cursor 0.42+ 必須、anon free 3 req/IP/日。</p>
+  </section>
+
+  <section>
+    <h2>5 分接続手順</h2>
+    <ol>
+      <li><strong>Cursor 0.42 以降を確認</strong>: <code>Cursor → Settings → About</code>。0.41 以下は MCP 未対応のため要更新。</li>
+      <li><strong>uvx を準備</strong>: <code>curl -LsSf https://astral.sh/uv/install.sh | sh</code> でインストール (既存ユーザはスキップ)。</li>
+      <li><strong>プロジェクト root に <code>.cursor/mcp.json</code> を配置</strong>: <code>mkdir -p .cursor && curl -o .cursor/mcp.json https://jpcite.com/.cursor/mcp.example.json</code></li>
+      <li><strong>Cursor を再起動</strong>: <code>Settings → MCP</code> を開き、<code>jpcite</code> が緑 dot で出ているか確認。</li>
+      <li><strong>(任意) API key を埋め込み</strong>: <code>env.JPCITE_API_KEY</code> を <code>sk_...</code> に置換。anon free のままなら省略可。</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>copy-paste snippet</h2>
+    <p><code>.cursor/mcp.json</code> をプロジェクト root に作成。</p>
+<pre><code aria-label="Cursor MCP 設定 (.cursor/mcp.json)">{
+  "mcpServers": {
+    "jpcite": {
+      "command": "uvx",
+      "args": ["autonomath-mcp"],
+      "env": {
+        "JPCITE_API_KEY": "sk_xxxxx"
+      }
+    }
+  }
+}</code></pre>
+    <p>グローバルに設定する場合は <code>~/.cursor/mcp.json</code> に同一内容を配置。</p>
+  </section>
+
+  <section>
+    <h2>動作確認</h2>
+    <p>Cursor のチャットで以下を入力。jpcite が呼ばれ、source_url 付きの結果が返れば成功。</p>
+<pre><code aria-label="Cursor 動作確認">@jpcite search_programs q="ものづくり補助金" prefecture="東京都"</code></pre>
+    <p>Settings → MCP → jpcite の右側に tools count: 139 が表示される (<code>AUTONOMATH_36_KYOTEI_ENABLED=false</code> がデフォルト)。</p>
+  </section>
+
+  <section>
+    <h2>FAQ</h2>
+    <details><summary>anonymous と paid の違いは?</summary><p>anon は IP ベースで 3 req/日 (AnonIpLimit)、API key 無し。paid は ¥3/req metered で上限なし、<code>JPCITE_API_KEY</code> 経由でカウント。</p></details>
+    <details><summary>API key はどう発行する?</summary><p><a href="/pricing.html#api-paid">/pricing.html#api-paid</a> から Stripe Checkout (consent は <code>custom_text.submit.message</code>) で発行。直後にダッシュボードで <code>sk_...</code> を表示。</p></details>
+    <details><summary>7 業法 fence とは?</summary><p>jpcite は税理士法§52・弁護士法§72 等の独占業務に抵触する個別助言を返しません。<a href="/legal-fence.html">/legal-fence.html</a> 参照。</p></details>
+  </section>
+</main>
+<footer role="contentinfo">
+  <p>powered by Bookyou株式会社 (T8010001213708) / <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+  <p><a href="/pricing.html">¥3/req metered</a> | <a href="/tos.html">利用規約</a> | <a href="/privacy.html">プライバシー</a></p>
+</footer>
+</body>
+</html>
