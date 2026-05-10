@@ -8,6 +8,51 @@ See [`docs/versioning.md`](docs/versioning.md) for what counts as breaking.
 
 ## [Unreleased]
 
+### v3 wave 1-4 batch — 2026-05-11 (AI discovery / GEO / paywall / SOT seed / a11y baseline)
+
+PR #20 (`v3/wave-1-batch`) で 4 commit (`69592619` → `274cb976` → `66963947` → `a382239a`)、723 file 変更 + 59K insertions。AUTO 102 task (Wave 1=9 lane + Wave 2-4=11 lane) を 20+ 並列 subagent で実装。USER 24 task は `ops/USER_RUNBOOK.md` (CLI 9 + WEB 15)、後続作業は `ops/V3_WAVE5_BACKLOG.md` (10 項目)。
+
+#### AI 流入導線 (Wave 1 ABCE / Wave 2 D)
+- `site/llms.txt` + `site/llms.en.txt`: Pricing 直 URL + Do-not-call 業法 10 行 + Cost 5 例 + Call order 3 variant + Fence-aware quote 規約
+- `site/.well-known/mcp.json`: schema_version + authentication (X-API-Key + anon fallback) + pricing (5 cost_examples) + quota_hint + contact (Bookyou T8010001213708) + resources (facts/fence) を top-level に追加、jq normalize で重複 key 解消
+- `site/.well-known/ai-plugin.json` (ChatGPT plugin manifest) + `site/.well-known/agents.json` (future AI discovery 標準)
+- `site/claude_desktop_config.example.json` + `site/.cursor/mcp.example.json` + `site/.mcp.json` (5min 接続 sample)
+- `site/openapi.agent.gpt30.json` (30 paths slim、ChatGPT GPT Actions 30 上限対応、size 487KB)
+- `site/connect/{claude-code,cursor,chatgpt,codex}.html` 各 136-188 行 (HowTo+BreadcrumbList JSON-LD、5min 接続手順、copy-paste snippet、FAQ 3、skip-link、footer Bookyou明記)
+
+#### SOT (Wave 1 G)
+- `data/facts_registry.json` (24 fact、guards.banned_terms + numeric_ranges + fence_count_canonical=7)
+- `data/fence_registry.json` (7 業法 SOT: 税理士/弁護士/司法書士/行政書士/社労士/中小企業診断士/弁理士)
+
+#### Schema.org + a11y + PWA (Wave 2 HM)
+- `site/_assets/jsonld/{_common,dataset_programs,dataset_corporates,dataset_invoices}.json` (Org+WebSite+Service+UnitPrice+3 Dataset)
+- `scripts/inject_jsonld.py` で 12,510 HTML に共通 `@graph` JSON-LD 注入 (PDL v1.0 / CC-BY-4.0 license 明示)
+- `site/manifest.webmanifest` (PWA、minimal-ui、theme_color)
+- `site/assets/css/a11y.css` (focus-visible / skip-link / touch 44px / reduced-motion)
+- `scripts/inject_a11y_baseline.py` で 12,425 HTML に viewport + manifest + theme-color + apple-touch-icon 注入
+- `tests/test_a11y_baseline.py` 24/24 pass
+
+#### CI gate (Wave 2 G-CI、現状 workflow_dispatch only、Wave 5 で PR gate 化)
+- `.github/workflows/{publish_text_guard,facts_registry_drift_v3,openapi_drift_v3,mcp_drift_v3,structured_data_v3,sitemap_freshness_v3,fence_count_drift_v3}.yml`
+- `scripts/{check_publish_text,scan_publish_surface,check_openapi_drift,check_mcp_drift,validate_jsonld,check_sitemap_freshness,check_fence_count}.py` (pure stdlib、LLM API import ゼロ、CLAUDE.md "What NOT to do" 遵守)
+
+#### redirect + robots (Wave 1 R)
+- `site/_redirects`: `/openapi.public.json` → `/openapi/v1.json`、`/.well-known/mcp` → `/.well-known/mcp.json`、他 4 redirect 追加
+- `site/robots.txt`: stale `/v1/healthz` alias 削除
+
+#### docs (Wave 2 P / Wave 3 J / Wave 4 Q)
+- `docs/_internal/mcp_registry_submissions/{awesome-mcp-pr,modelcontextprotocol-servers-pr,smithery-submission,lobehub-plugin-manifest,openai-custom-gpt-template}-v3.md` (5 submission draft)
+- `site/docs/recipes/{r01..r30}/index.md` 各 80-86 行 (業種別 15 + AI agent 経路 8 + 横串 7、front-matter + 12 見出し固定 + 業法 fence)
+- `docs/announce/{zenn_jpcite_mcp,note_jpcite_mcp,prtimes_jpcite_release}.md` (Zenn 5,226 / note 3,874 / PRTIMES 2,947 字、Bookyou T8010001213708 明記)
+- `ops/USER_RUNBOOK.md` (173 行、24 USER task = CLI 9 + WEB 15、5 Phase 構造)
+- `ops/V3_WAVE5_BACKLOG.md` (109 行、後続 10 項目)
+
+#### pre-existing fix
+- `scripts/regen_llms_full.py` を ruff format で reformat (test.yml RUFF_TARGETS check が main で持続失敗していた由)
+
+#### 設計図
+- `/Users/shigetoumeda/Desktop/jpcite_100点化計画.md` (3,723 行、v1+v2+v2 AUDIT+v3+v4 実行ログ統合)
+
 ### Hardening — 2026-05-07 (40-commit quality lift, no surface change)
 
 40 commits landed across **2026-05-06 → 2026-05-07** lifting the quality
