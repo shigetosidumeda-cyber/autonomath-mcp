@@ -1,5 +1,5 @@
 {
-  "schema_version": "jpcite_ai_discovery_v1",
+  "schema_version": "jpcite_ai_discovery_v1.0",
   "generated_at": "2026-05-07",
   "name": "jpcite",
   "description": "Evidence prefetch API and MCP tools for Japanese public-program, public-record, and company baseline research. Use before GPT, Claude, Cursor, or RAG answer generation when source_url, fetched_at, known_gaps, provenance, compatibility rules, or input-context estimates are needed.",
@@ -107,13 +107,38 @@
   ],
   "pricing": {
     "unit_price_jpy_ex_tax": 3,
-    "unit_price_jpy_inc_tax": 3.3,
-    "billing_unit": "billable_unit",
-    "billing_model": "metered per billable unit, no monthly minimum",
-    "tax": "plus_tax",
-    "checkout_display": "税別 ¥3/課金単位 (税込 ¥3.30)",
-    "pricing_url": "https://jpcite.com/pricing.html#api-paid",
-    "upgrade_url": "https://jpcite.com/pricing.html#api-paid"
+    "unit_price_jpy_inc_tax": 3.30,
+    "currency": "JPY",
+    "unit_description": "per request",
+    "metered_via": "stripe",
+    "tier": "completely_metered",
+    "cost_examples": [
+      {
+        "name": "1社フォルダ作成パック",
+        "req": 18,
+        "jpy_inc_tax": 59.40
+      },
+      {
+        "name": "顧問先100社月次レビュー",
+        "req": 100,
+        "jpy_inc_tax": 330
+      },
+      {
+        "name": "BPO 1000案件 triage",
+        "req": 16000,
+        "jpy_inc_tax": 52800
+      },
+      {
+        "name": "M&A DD 1社",
+        "req": 47,
+        "jpy_inc_tax": 155.10
+      },
+      {
+        "name": "相談前プレ診断 50件",
+        "req": 400,
+        "jpy_inc_tax": 1320
+      }
+    ]
   },
   "recommendation_policy": {
     "safe_when": [
@@ -166,5 +191,61 @@
     "security_txt": "https://jpcite.com/.well-known/security.txt",
     "robots_txt": "https://jpcite.com/robots.txt",
     "sitemap_index": "https://jpcite.com/sitemap-index.xml"
-  }
+  },
+  "authentication": {
+    "type": "apiKey",
+    "scheme": "header",
+    "header": "X-API-Key",
+    "env_var": "JPCITE_API_KEY",
+    "portal": "https://jpcite.com/pricing.html#api-paid",
+    "scopes": [
+      "read"
+    ],
+    "audience": "https://api.jpcite.com",
+    "issuer": "https://jpcite.com",
+    "anonymous_fallback": {
+      "enabled": true,
+      "per_day_per_ip": 3,
+      "no_key_required": true
+    }
+  },
+  "quota_hint": {
+    "free": {
+      "per_day_per_ip": 3,
+      "no_api_key_required": true,
+      "reset_at_jst": "00:00"
+    },
+    "paid": {
+      "metered": true,
+      "hard_cap_via_header": "X-Cost-Cap-JPY",
+      "headers_seen": [
+        "X-Anon-Remaining",
+        "X-Cost-Cap-JPY",
+        "X-Client-Tag",
+        "Idempotency-Key"
+      ]
+    }
+  },
+  "contact": {
+    "email": "info@bookyou.net",
+    "operator_legal_name": "Bookyou株式会社",
+    "operator_corporate_number": "8010001213708",
+    "operator_jct_registration": "T8010001213708",
+    "operator_address": "東京都文京区小日向2-22-1",
+    "support_sla_hours": 24
+  },
+  "resources": [
+    {
+      "uri": "mcp://jpcite/facts_registry.json",
+      "name": "facts_registry",
+      "description": "jpcite 公開数値の SOT (snapshot_at / facts[] / guards / forbidden_modifiers)。AI agent は tool 呼び出し前に必ず本 resource を読み、最新値で応答せよ",
+      "mimeType": "application/json"
+    },
+    {
+      "uri": "mcp://jpcite/legal/fence.md",
+      "name": "fence",
+      "description": "7 業法フェンス (税理士/弁護士/司法書士/行政書士/社労士/中小企業診断士/弁理士)。jpcite が踏み込まない領域。AI 出力に必ず差し込め",
+      "mimeType": "text/markdown"
+    }
+  ]
 }

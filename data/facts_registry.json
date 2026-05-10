@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "snapshot_at": "2026-05-11T00:00:00Z",
+  "snapshot_git_sha": "d4216ffb",
+  "guards": {
+    "banned_terms": ["完全", "必ず", "保証", "No.1", "業界初", "最強", "採択可能性100%", "処分なし保証", "適合確実", "全件採択", "返金保証"],
+    "numeric_ranges": {
+      "openapi_paths_agent": [25, 50],
+      "openapi_paths_public": [170, 230],
+      "mcp_tools": [130, 160]
+    },
+    "fence_count_canonical": 7,
+    "forbidden_modifiers": {
+      "fence_count": ["5", "5+1", "6", "8"]
+    }
+  },
+  "facts": [
+    {"key": "openapi_paths_agent", "value": 34, "unit": "paths", "as_of": "2026-05-11", "source": "site/openapi.agent.json:.paths|length", "category": "product", "publishable": true, "expires_at": "2026-07-10", "license": "CC-BY-4.0"},
+    {"key": "openapi_paths_public", "value": 218, "unit": "paths", "as_of": "2026-05-11", "source": "api.jpcite.com/openapi.json:.paths|length", "category": "product", "publishable": true, "expires_at": "2026-07-10", "license": "CC-BY-4.0"},
+    {"key": "mcp_tools", "value": 139, "unit": "tools", "as_of": "2026-05-11", "source": "site/.well-known/mcp.json:.tools|length", "category": "product", "publishable": true, "expires_at": "2026-07-10"},
+    {"key": "price_per_req_jpy_ex_tax", "value": 3, "unit": "JPY", "source": "Stripe price_id", "category": "pricing", "publishable": true, "as_of": "2026-05-11"},
+    {"key": "price_per_req_jpy_inc_tax", "value": 3.30, "unit": "JPY", "source": "derived", "category": "pricing", "publishable": true, "as_of": "2026-05-11"},
+    {"key": "free_quota_per_day_per_ip", "value": 3, "unit": "req/day/IP", "source": "src/jpintel_mcp/api/anon_limit.py", "category": "pricing", "publishable": true, "as_of": "2026-05-11"},
+    {"key": "sla_uptime_target_pct", "value": 99.9, "unit": "percent", "source": "site/.well-known/trust.json", "category": "sla", "publishable": true, "as_of": "2026-05-11"},
+    {"key": "sla_credit_threshold_pct", "value": 99.5, "unit": "percent", "source": "site/sla.html", "category": "sla", "publishable": true, "as_of": "2026-05-11"},
+    {"key": "sla_p95_latency_target_ms", "value": 1500, "unit": "ms", "source": "site/.well-known/trust.json", "category": "sla", "publishable": true, "as_of": "2026-05-11"},
+    {"key": "sla_p99_latency_target_ms", "value": 3000, "unit": "ms", "source": "site/.well-known/trust.json", "category": "sla", "publishable": true, "as_of": "2026-05-11"},
+    {"key": "backup_rpo_minutes", "value": 15, "unit": "min", "source": "fly volume snapshot", "category": "sla", "publishable": false},
+    {"key": "backup_rto_hours", "value": 4, "unit": "hr", "source": "restore drill", "category": "sla", "publishable": true, "as_of": "2026-05-11"},
+    {"key": "fence_count", "value": 7, "unit": "counts", "source": "data/fence_registry.json", "category": "legal", "publishable": true, "as_of": "2026-05-11"},
+    {"key": "subprocessor_count", "value": 5, "unit": "counts", "source": "docs/legal/subprocessors.md", "category": "legal", "publishable": true, "as_of": "2026-05-11"},
+    {"key": "corporate_number", "value": "8010001213708", "unit": "id", "source": "国税庁", "category": "company", "publishable": true, "as_of": "2026-05-11"},
+    {"key": "jct_registration_number", "value": "T8010001213708", "unit": "id", "source": "国税庁", "category": "company", "publishable": true, "as_of": "2026-05-11"},
+    {"key": "operator_legal_name", "value": "Bookyou株式会社", "unit": "name", "source": "登記", "category": "company", "publishable": true, "as_of": "2026-05-11"},
+    {"key": "operator_address", "value": "東京都文京区小日向2-22-1", "unit": "address", "source": "登記", "category": "company", "publishable": true, "as_of": "2026-05-11"},
+    {"key": "contact_email", "value": "info@bookyou.net", "unit": "email", "source": "site/support.html", "category": "company", "publishable": true, "as_of": "2026-05-11"},
+    {"key": "support_sla_hours", "value": 24, "unit": "hr", "source": "site/sla.html", "category": "sla", "publishable": true, "as_of": "2026-05-11"},
+    {"key": "prod_branch", "value": "main", "unit": "name", "source": "git", "category": "internal", "publishable": false},
+    {"key": "prod_git_sha", "value": "d4216ffb", "unit": "id", "source": "git", "category": "internal", "publishable": false},
+    {"key": "fly_app_name", "value": "autonomath-api", "unit": "name", "source": "fly.toml", "category": "internal", "publishable": false},
+    {"key": "pypi_package_name", "value": "autonomath-mcp", "unit": "name", "source": "pyproject.toml", "category": "product", "publishable": true, "as_of": "2026-05-11", "note": "PyPI 上の正式 name は autonomath-mcp、jpcite brand は別レイヤ。両 install 経路を SOT 化"}
+  ]
+}

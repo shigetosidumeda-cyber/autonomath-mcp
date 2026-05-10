@@ -188,3 +188,11 @@
 /industries/:jsic/:slug/            /industries/:jsic/  302
 /industries/:jsic/:slug.html        /industries/:jsic/  302
 /industries/:jsic/:slug             /industries/:jsic/  302
+
+# v3 (2026-05-11) — AI discovery / GPT Actions alias / external doc compat
+/openapi.public.json /openapi/v1.json 301
+/.well-known/mcp /.well-known/mcp.json 301
+/mcp /.well-known/mcp.json 301
+/facts_registry.json /.well-known/facts_registry.json 301
+/fence.md /.well-known/fence.md 301
+/.well-known/facts_registry.json /facts_registry.json 200

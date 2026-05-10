@@ -1,0 +1,22 @@
+{
+  "schema_version": "agents.json/draft-01",
+  "operator": "Bookyou株式会社",
+  "operator_corporate_number": "8010001213708",
+  "mcp_endpoint": "https://api.jpcite.com/mcp",
+  "rest_openapi": "https://api.jpcite.com/openapi.public.json",
+  "agent_openapi": "https://jpcite.com/openapi.agent.json",
+  "agent_openapi_slim_gpt30": "https://jpcite.com/openapi.agent.gpt30.json",
+  "llms_txt": "https://jpcite.com/llms.txt",
+  "llms_full_txt": "https://jpcite.com/llms-full.txt",
+  "glossary": "https://jpcite.com/glossary.json",
+  "facts_registry": "https://jpcite.com/.well-known/facts_registry.json",
+  "fence_md": "https://jpcite.com/.well-known/fence.md",
+  "policy_url": "https://jpcite.com/tos.html",
+  "privacy_url": "https://jpcite.com/privacy.html",
+  "rate_limit": {"free_per_day_per_ip": 3, "paid_per_minute": 60},
+  "pricing": {"unit_price_jpy_ex_tax": 3, "currency": "JPY"},
+  "contact_email": "info@bookyou.net",
+  "support_sla_hours": 24,
+  "geo_eligibility": "Japan-only (Stripe customer billing_address_country=JP required)",
+  "data_licenses": ["PDL_v1.0", "CC-BY-4.0", "政府標準利用規約v2.0"]
+}

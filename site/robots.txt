@@ -108,7 +108,6 @@ Allow: /docs/openapi/agent.json
 # https://api.jpcite.com/v1/openapi.agent.json
 Allow: /mcp-server.json
 Allow: /server.json
-Allow: /v1/healthz
 Allow: /.well-known/mcp.json
 Allow: /.well-known/trust.json
 Allow: /.well-known/security.txt

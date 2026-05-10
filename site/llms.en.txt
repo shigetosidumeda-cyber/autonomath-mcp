@@ -14,9 +14,12 @@ Brand history: formerly discovered as 税務会計AI / AutonoMath / zeimu-kaikei
 
 This file follows the emerging llms.txt convention (https://llmstxt.org/) —
 a curated, plaintext index of canonical documents for LLM indexers.
+Canonical: https://jpcite.com/llms.txt (Japanese authoritative; sections in this file mirror it 1:1)
 The Japanese-language sibling lives at https://jpcite.com/llms.txt.
 Concatenated full docs: https://jpcite.com/llms-full.en.txt
 Canonical domain: https://jpcite.com.
+hreflang: ja → https://jpcite.com/llms.txt / en → https://jpcite.com/llms.en.txt / x-default → https://jpcite.com/llms.txt
+Translation rule: prose framing is English; schema names, JSON keys/values, program names, law titles, and case-study fields stay verbatim Japanese.
 
 Program names, law titles, and case-study fields are kept verbatim in
 Japanese because machine translation can create inaccurate names. The
@@ -105,6 +108,7 @@ Route choice:
 Billing caveat:
 - Treat `compression.cost_savings_estimate.break_even_met` as an input-context reference based on the caller-supplied source-token baseline.
 - Paid usage is easy to explain in round numbers: ordinary successful lookups are usually 1 billable unit, currently JPY 3 ex-tax / about JPY 3.30 including tax. 10 calls are about JPY 33, 100 calls are about JPY 330, and 1,000 calls are about JPY 3,300. Use `/v1/cost/preview` for planned stacks and batch/export workflows.
+- API key issuance: https://jpcite.com/pricing.html#api-paid (Stripe Checkout, 1 minute, email-free, card only)
 - High-volume usage is an automation workflow pattern, not a claim that humans will manually search that often. For recurring AI agent / BPO / professional-service workflows, use `/v1/cost/preview`, monthly caps, `X-Cost-Cap-JPY`, `Idempotency-Key`, and `X-Client-Tag` to control budget and attribute usage by customer or project.
 
 ICP route matrix:
@@ -172,6 +176,25 @@ Example natural-language prompts for MCP tools. ChatGPT Custom GPTs should call 
 - [ChatGPT / Claude vs jpcite](https://jpcite.com/qa/llm-evidence/chatgpt-vs-jpcite) — jpcite as evidence layer, not answer generator.
 - [Source verification workflow](https://jpcite.com/qa/llm-evidence/source-verification) — how agents attach source_url + fetched_at.
 - [What can jpcite MCP do?](https://jpcite.com/qa/mcp/what-can-jpcite-mcp-do) — 139 tools via MCP stdio.
+
+## Do not call when (professional-services fences; each line is a domain jpcite does not enter)
+- Individual tax calculation / tax-savings advice → Tax Accountant Law §52
+- Individual legal consultation / contract review / dispute representation → Lawyer Law §72
+- Individual application drafting / filing as agent → Administrative Scrivener Law §1
+- Individual registration filing / agent representation → Judicial Scrivener Law §73
+- 36 agreement / work rules drafting / social-insurance filing as agent → Labor and Social Security Attorney Law §27
+- Individual management diagnosis / certified support institution work as agent → SME Diagnostician Registration Rules
+- Trademark / patent application as agent / appraisal → Patent Attorney Law §75
+- Investment advice / financial-product recommendation → Financial Instruments Law §29
+- Final anti-social-force determination / credit-score determination → Credit Information Law
+- Bulk personal-address doxing → Personal Information Protection Law
+
+## Cost example (5 cases, tax included)
+- 1-company folder creation pack (18 req): ¥59.40
+- 100-client monthly review (100 req): ¥330
+- BPO 1,000-case triage (16,000 req): ¥52,800
+- M&A public-information DD for 1 company (47 req): ¥155.10
+- Pre-consultation prescreen for 50 cases (400 req): ¥1,320
 
 ## Optional
 
