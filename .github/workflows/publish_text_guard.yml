@@ -1,7 +1,7 @@
 name: publish_text_guard
 on:
-  pull_request:
-    branches: [main, "v3/**"]
+  workflow_dispatch: {}
+
 jobs:
   guard:
     runs-on: ubuntu-latest

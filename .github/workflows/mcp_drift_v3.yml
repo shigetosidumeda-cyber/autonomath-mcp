@@ -1,7 +1,7 @@
 name: mcp_drift_v3
 on:
-  pull_request:
-    branches: [main, "v3/**"]
+  workflow_dispatch: {}
+
 jobs:
   drift:
     runs-on: ubuntu-latest
