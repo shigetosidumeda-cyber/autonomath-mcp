@@ -1,0 +1,30 @@
+{
+  "wave": "wave41_agent_f",
+  "generated_at": "2026-05-11T22:07:15Z",
+  "total": 10264,
+  "by_status": {
+    "404": 10264
+  },
+  "ok": 0,
+  "non_ok": 10264,
+  "sample_404": [
+    "https://jpcite.com/cases/mirasapo_case_647.md",
+    "https://jpcite.com/enforcement/act-13874.md",
+    "https://jpcite.com/laws/kokuritsuken-kyu-kaihatsuho_6.md",
+    "https://jpcite.com/laws/hitsuji-fukuin-nado.md",
+    "https://jpcite.com/cases/mirasapo_case_649.md",
+    "https://jpcite.com/laws/senpaku-shokuin-ho.md",
+    "https://jpcite.com/laws/hitsuji-kikan-mono.md",
+    "https://jpcite.com/cases/mirasapo_case_648.md",
+    "https://jpcite.com/laws/kokuritsuken-kyu-kaihatsuho_63.md",
+    "https://jpcite.com/enforcement/act-13875.md"
+  ],
+  "root_cause_finding": "CF Pages git-integration deployment (project=autonomath, deploy_id=b569ff21-2915-449b-b61d-c44fab03d66e, commit=18abbb0a) contains 10,161 files: 9,632 .html but only 7 .md files (the 7 are press/security only). The 10,257 companion .md files under site/cases, site/laws, site/enforcement are present in the git tree but NOT in the deployed manifest. Sitemap is correctly aligned with the on-disk 10,264-file inventory (verified via /v1/audit/sitemap endpoint). Cache purge attempted via /accounts/{id}/pages/projects/autonomath/purge_build_cache and returned success=True, but the cache is not the cause - the files are absent from the upstream deployment. Fix path: switch chunked .md directories from CF Pages git-integration auto-deploy to wrangler-direct-upload, or add `_redirects` rule mapping {url}.md -> /v1/companion/{url}.md proxy on api.jpcite.com.",
+  "cache_purge_attempt": {
+    "endpoint": "POST /accounts/{CF_ACCOUNT_ID}/pages/projects/autonomath/purge_build_cache",
+    "result_success": true,
+    "performed_at": "2026-05-11T22:08:30Z",
+    "note": "Returned success but cannot fix absent files - purge only clears edge cache, not the deployment manifest."
+  },
+  "verification_endpoint": "/v1/audit/sitemap?type=companion-md (live, returns 200 with sitemap_url_count=10264 / on_disk_md_count=10264 / gap=0)"
+}
