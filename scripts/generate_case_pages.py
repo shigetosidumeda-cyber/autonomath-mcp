@@ -24,7 +24,6 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
-from urllib.parse import quote as urlquote
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = REPO_ROOT / "data" / "jpintel.db"
@@ -189,48 +188,6 @@ def build_jsonld(row: dict[str, Any], programs: list[str], outcomes: list[str]) 
         obj["about"] = about
     if outcomes:
         obj["mentions"] = [{"@type": "Thing", "name": o[:140]} for o in outcomes[:5]]
-
-    # Per-record SearchAction: AI agents can pivot from this case to
-    # (1) generic case-study full-text, (2) same-prefecture narrowed
-    # search, (3) ReadAction to retrieve this exact record by case_id.
-    case_actions: list[dict[str, Any]] = [
-        {
-            "@type": "SearchAction",
-            "target": {
-                "@type": "EntryPoint",
-                "urlTemplate": "https://api.jpcite.com/v1/cases/search?q={search_term_string}",
-            },
-            "query-input": "required name=search_term_string",
-        }
-    ]
-    if pref:
-        case_actions.append(
-            {
-                "@type": "SearchAction",
-                "target": {
-                    "@type": "EntryPoint",
-                    "urlTemplate": (
-                        "https://api.jpcite.com/v1/cases/search"
-                        f"?prefecture={urlquote(str(pref))}&q={{search_term_string}}"
-                    ),
-                },
-                "query-input": "required name=search_term_string",
-                "name": f"同じ{pref}内の他事例を検索",
-            }
-        )
-    case_actions.append(
-        {
-            "@type": "ReadAction",
-            "target": {
-                "@type": "EntryPoint",
-                "urlTemplate": (
-                    f"https://api.jpcite.com/v1/cases/{urlquote(str(case_id))}"
-                ),
-            },
-            "name": "この採択事例の構造化レコードを取得",
-        }
-    )
-    obj["potentialAction"] = case_actions
     return json.dumps(obj, ensure_ascii=False, indent=2)
 
 
@@ -409,19 +366,7 @@ def render_page(row: dict[str, Any]) -> str:
       "name": "jpcite",
       "url": "https://jpcite.com",
       "inLanguage": "ja",
-      "publisher": {"@id": "https://jpcite.com/#org"},
-      "potentialAction": [
-        {
-          "@type": "SearchAction",
-          "target": {"@type": "EntryPoint", "urlTemplate": "https://api.jpcite.com/v1/cases/search?q={search_term_string}"},
-          "query-input": "required name=search_term_string"
-        },
-        {
-          "@type": "SearchAction",
-          "target": {"@type": "EntryPoint", "urlTemplate": "https://api.jpcite.com/v1/programs/search?q={search_term_string}"},
-          "query-input": "required name=search_term_string"
-        }
-      ]
+      "publisher": {"@id": "https://jpcite.com/#org"}
     }
   ]
 }</script>"""

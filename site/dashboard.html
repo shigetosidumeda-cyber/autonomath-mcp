@@ -99,10 +99,6 @@
 
 <script defer src="dashboard.js"></script>
 <script defer src="dashboard_v2.js"></script>
-<!-- Wave 15 C7: inline JS extracted to /assets/dashboard.bundle.js for CWV LCP -->
-<!-- + CSP unsafe-inline removal. Original inline blocks below are commented -->
-<!-- out keep-for-audit; canonical runtime = the external bundle. -->
-<script src="/assets/dashboard.bundle.js" defer></script>
 <style>
   .dash { padding: 48px 0 64px; }
   .dash h1 { font-size: 28px; margin: 0 0 4px; font-weight: 800; letter-spacing: -0.01em; }
@@ -197,18 +193,11 @@
       "url": "https://jpcite.com",
       "inLanguage": "ja",
       "publisher": {"@id": "https://jpcite.com/#org"},
-      "potentialAction": [
-        {
-          "@type": "SearchAction",
-          "target": {"@type": "EntryPoint", "urlTemplate": "https://api.jpcite.com/v1/programs/search?q={search_term_string}"},
-          "query-input": "required name=search_term_string"
-        },
-        {
-          "@type": "SearchAction",
-          "target": {"@type": "EntryPoint", "urlTemplate": "https://jpcite.com/search?q={search_term_string}"},
-          "query-input": "required name=search_term_string"
-        }
-      ]
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
     },
     {
       "@type": "Service",
@@ -395,7 +384,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
           .qs-tab { padding:12px 16px;min-height:44px; }
         }
       </style>
- <script type="text/x-jpcite-extracted-keep-for-audit">
+ <script>
         (function() {
           'use strict';
           var QS_PLACEHOLDER = 'jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
@@ -531,7 +520,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <p id="login-status" class="stat-note" style="margin:10px 0 0;color:var(--text-muted);font-size:12px;line-height:1.5;"></p>
  </section>
 
- <script type="text/x-jpcite-extracted-keep-for-audit">
+ <script>
  (function() {
  'use strict';
  var API_BASE = (function() {
@@ -985,7 +974,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  </p>
  </section>
 
- <script type="text/x-jpcite-extracted-keep-for-audit">
+ <script>
         (function() {
           'use strict';
           var API_BASE = (function() {
@@ -1311,7 +1300,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  </table>
  </section>
 
- <script type="text/x-jpcite-extracted-keep-for-audit">
+ <script>
         (function() {
           var ROOT = document.getElementById('dash2-webhooks');
           if (!ROOT) return;
@@ -1781,7 +1770,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  </div>
 </section>
 
-<script type="text/x-jpcite-extracted-keep-for-audit">
+<script>
 (function () {
  'use strict';
  var API_BASE = (function () {

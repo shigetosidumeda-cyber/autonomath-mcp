@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="theme-color" content="#ffffff">
+<title>RUM (Real User Monitoring) — jpcite</title>
+<meta name="description" content="jpcite の実ユーザ計測 (Core Web Vitals)。LCP / INP / CLS / TTFB / FCP の 7 日間トレンドを公開しています。">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://jpcite.com/status/rum.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/status/rum.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/status/rum.html">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<script defer src="/assets/rum.js?v=20260511a"></script>
+
+<style>
+  :root {
+    --accent: #1e3a8a;
+    --text: #111111;
+    --text-muted: #555555;
+    --border: #e5e5e5;
+    --bg: #ffffff;
+    --bg-alt: #f7f7f8;
+    --ok: #15803d;
+    --warn: #b45309;
+    --down: #b91c1c;
+    --grid: #d4d4d8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue",
+      "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 920px; margin: 0 auto; padding: 48px 20px 64px; }
+  .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+  .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--text); font-weight: 700; text-decoration: none; font-size: 16px; }
+  .nav-back { color: var(--accent); font-size: 14px; text-decoration: none; }
+  .nav-back:hover { text-decoration: underline; }
+  h1 { font-size: 28px; letter-spacing: -0.01em; margin: 0 0 8px; font-weight: 800; }
+  .lead { color: var(--text-muted); margin: 0 0 28px; font-size: 15px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 0 0 24px; }
+  .card { border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; background: var(--bg); }
+  .card-label { font-size: 13px; color: var(--text-muted); margin: 0 0 6px; letter-spacing: 0.02em; text-transform: uppercase; }
+  .card-value { font-size: 28px; font-weight: 800; line-height: 1.1; margin: 0; }
+  .card-value.ok { color: var(--ok); }
+  .card-value.warn { color: var(--warn); }
+  .card-value.down { color: var(--down); }
+  .card-unit { font-size: 14px; color: var(--text-muted); margin-left: 4px; font-weight: 500; }
+  .card-meta { font-size: 12px; color: var(--text-muted); margin: 8px 0 0; }
+  .threshold-line { display: flex; gap: 14px; font-size: 11px; margin: 6px 0 0; }
+  .threshold-line .ok { color: var(--ok); }
+  .threshold-line .warn { color: var(--warn); }
+  .threshold-line .down { color: var(--down); }
+  .chart-section { border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; background: var(--bg); margin: 0 0 18px; }
+  .chart-section h2 { font-size: 16px; font-weight: 700; margin: 0 0 12px; }
+  .chart-svg { display: block; width: 100%; height: 180px; }
+  .chart-axis { font-size: 10px; fill: var(--text-muted); }
+  .chart-grid { stroke: var(--grid); stroke-width: 1; stroke-dasharray: 2 2; }
+  .chart-line { fill: none; stroke: var(--accent); stroke-width: 2; }
+  .chart-area { fill: var(--accent); opacity: 0.08; }
+  .chart-dot { fill: var(--accent); }
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 14px; }
+  .empty-state h2 { font-size: 18px; margin: 0 0 8px; color: var(--text); }
+  footer { text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); }
+  .footer-brand { font-weight: 700; color: var(--text); margin: 0 0 4px; font-size: 14px; }
+  .footer-brand img { vertical-align: middle; margin-right: 8px; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; background: var(--bg-alt); padding: 2px 6px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="top-bar">
+    <a href="/" class="brand">
+      <img src="/assets/brand/jpcite-mark.svg" alt="" width="24" height="24" loading="lazy" decoding="async" style="height:24px;width:24px;">
+      jpcite
+    </a>
+    <a href="/status/" class="nav-back">← /status/ に戻る</a>
+  </div>
+
+  <h1>RUM — Real User Monitoring</h1>
+  <p class="lead">
+    実ブラウザから収集した Core Web Vitals。<code>/assets/rum.js</code> が
+    各ページから <code>POST /v1/rum/beacon</code> で送信し、日次で集約します。
+    p75 が Google の "Good" 閾値に収まっているかが指標。
+  </p>
+
+  <div id="latest-grid" class="grid">
+    <div class="card"><p class="card-label">LCP (p75)</p><p class="card-value" id="kpi-lcp">—<span class="card-unit">ms</span></p><p class="threshold-line"><span class="ok">≤2500</span><span class="warn">≤4000</span><span class="down">&gt;4000</span></p></div>
+    <div class="card"><p class="card-label">INP (p75)</p><p class="card-value" id="kpi-inp">—<span class="card-unit">ms</span></p><p class="threshold-line"><span class="ok">≤200</span><span class="warn">≤500</span><span class="down">&gt;500</span></p></div>
+    <div class="card"><p class="card-label">CLS (p75)</p><p class="card-value" id="kpi-cls">—</p><p class="threshold-line"><span class="ok">≤0.1</span><span class="warn">≤0.25</span><span class="down">&gt;0.25</span></p></div>
+    <div class="card"><p class="card-label">TTFB (p75)</p><p class="card-value" id="kpi-ttfb">—<span class="card-unit">ms</span></p><p class="threshold-line"><span class="ok">≤800</span><span class="warn">≤1800</span><span class="down">&gt;1800</span></p></div>
+    <div class="card"><p class="card-label">FCP (p75)</p><p class="card-value" id="kpi-fcp">—<span class="card-unit">ms</span></p><p class="threshold-line"><span class="ok">≤1800</span><span class="warn">≤3000</span><span class="down">&gt;3000</span></p></div>
+    <div class="card"><p class="card-label">サンプル数 (7d)</p><p class="card-value" id="kpi-samples">—</p><p class="card-meta">うちボット除外済み (UA filter)。</p></div>
+  </div>
+
+  <div id="charts-root"></div>
+
+  <footer>
+    <p class="footer-brand"><img src="/assets/brand/jpcite-mark.svg" alt="" width="20" height="20" loading="lazy" decoding="async">jpcite</p>
+    <p>計測スクリプト: <code>/assets/rum.js</code> — 集約: <code>scripts/ops/rum_aggregator.py</code></p>
+    <p>データソース: <code>/status/rum.json</code> (日次更新)</p>
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // Threshold table — keep in sync with web.dev Core Web Vitals targets.
+  var THRESHOLDS = {
+    lcp:  { ok: 2500, warn: 4000, unit: "ms" },
+    inp:  { ok: 200,  warn: 500,  unit: "ms" },
+    cls:  { ok: 0.1,  warn: 0.25, unit: "" },
+    ttfb: { ok: 800,  warn: 1800, unit: "ms" },
+    fcp:  { ok: 1800, warn: 3000, unit: "ms" }
+  };
+
+  function gradeClass(metric, v) {
+    if (v == null) return "";
+    var t = THRESHOLDS[metric]; if (!t) return "";
+    if (v <= t.ok) return "ok";
+    if (v <= t.warn) return "warn";
+    return "down";
+  }
+
+  function fmt(metric, v) {
+    if (v == null || isNaN(v)) return "—";
+    return metric === "cls" ? v.toFixed(3) : Math.round(v).toString();
+  }
+
+  function setKpi(metric, v) {
+    var el = document.getElementById("kpi-" + metric);
+    if (!el) return;
+    el.className = "card-value " + gradeClass(metric, v);
+    var unit = THRESHOLDS[metric] ? THRESHOLDS[metric].unit : "";
+    el.innerHTML = fmt(metric, v) + (unit ? '<span class="card-unit">' + unit + '</span>' : "");
+  }
+
+  // Build an inline SVG line chart for 7-day rolling p75.
+  function buildChart(metric, days) {
+    var W = 880, H = 180, PAD_L = 44, PAD_R = 12, PAD_T = 18, PAD_B = 28;
+    var pts = days.map(function (d) { return d[metric]; });
+    var maxV = pts.reduce(function (a, b) { return b != null && b > a ? b : a; }, 0);
+    if (maxV === 0) maxV = (THRESHOLDS[metric] || { warn: 100 }).warn;
+    var minV = 0;
+    var dx = (W - PAD_L - PAD_R) / Math.max(1, days.length - 1);
+    var path = "", area = "", dots = "";
+    days.forEach(function (d, i) {
+      var v = d[metric];
+      if (v == null) return;
+      var x = PAD_L + dx * i;
+      var y = H - PAD_B - ((v - minV) / (maxV - minV || 1)) * (H - PAD_T - PAD_B);
+      path += (path ? " L " : "M ") + x.toFixed(1) + " " + y.toFixed(1);
+      dots += '<circle class="chart-dot" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="3"/>';
+    });
+    if (path) {
+      area = path + " L " + (PAD_L + dx * (days.length - 1)).toFixed(1) + " " + (H - PAD_B) + " L " + PAD_L + " " + (H - PAD_B) + " Z";
+    }
+    var grid = "", labels = "";
+    for (var g = 0; g <= 4; g++) {
+      var gy = PAD_T + (H - PAD_T - PAD_B) * (g / 4);
+      var gv = maxV - (maxV - minV) * (g / 4);
+      grid += '<line class="chart-grid" x1="' + PAD_L + '" y1="' + gy.toFixed(1) + '" x2="' + (W - PAD_R) + '" y2="' + gy.toFixed(1) + '"/>';
+      labels += '<text class="chart-axis" x="' + (PAD_L - 6) + '" y="' + (gy + 3).toFixed(1) + '" text-anchor="end">' + (metric === "cls" ? gv.toFixed(2) : Math.round(gv)) + '</text>';
+    }
+    days.forEach(function (d, i) {
+      var x = PAD_L + dx * i;
+      var label = (d.date || "").slice(5);
+      labels += '<text class="chart-axis" x="' + x.toFixed(1) + '" y="' + (H - 10) + '" text-anchor="middle">' + label + '</text>';
+    });
+    return '<svg class="chart-svg" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" role="img" aria-label="' + metric + ' 7-day trend">'
+      + grid + (area ? '<path class="chart-area" d="' + area + '"/>' : "")
+      + (path ? '<path class="chart-line" d="' + path + '"/>' : "")
+      + dots + labels + '</svg>';
+  }
+
+  function renderCharts(days) {
+    var root = document.getElementById("charts-root");
+    if (!root) return;
+    if (!days.length) {
+      root.innerHTML = '<div class="empty-state"><h2>計測データなし</h2>'
+        + '<p>RUM ビーコンは <code>/assets/rum.js</code> がページに読み込まれた瞬間から収集されます。'
+        + '初回集約は <code>scripts/ops/rum_aggregator.py</code> 実行後に <code>/status/rum.json</code> へ書き出されます。</p></div>';
+      return;
+    }
+    ["lcp", "inp", "cls", "ttfb", "fcp"].forEach(function (m) {
+      var section = document.createElement("section");
+      section.className = "chart-section";
+      section.innerHTML = "<h2>" + m.toUpperCase() + " (p75, 過去 " + days.length + " 日)</h2>" + buildChart(m, days);
+      root.appendChild(section);
+    });
+  }
+
+  fetch("/status/rum.json", { credentials: "omit", cache: "no-cache" })
+    .then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    })
+    .then(function (data) {
+      var days = (data && data.days) || [];
+      var latest = days.length ? days[days.length - 1] : {};
+      ["lcp", "inp", "cls", "ttfb", "fcp"].forEach(function (m) { setKpi(m, latest[m]); });
+      var samplesEl = document.getElementById("kpi-samples");
+      if (samplesEl) {
+        var sum = days.reduce(function (a, b) { return a + (b.samples || 0); }, 0);
+        samplesEl.textContent = sum.toLocaleString();
+      }
+      renderCharts(days);
+    })
+    .catch(function () {
+      renderCharts([]);
+    });
+})();
+</script>
+</body>
+</html>

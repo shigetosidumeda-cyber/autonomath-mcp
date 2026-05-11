@@ -1,0 +1,105 @@
+name: common-crawl-monthly
+
+# Wave 16 B1 — Common Crawl coverage audit for jpcite.com.
+#
+# What this does
+# --------------
+# Once a month (5th @ 05:00 UTC == 14:00 JST on the 5th) we hit the
+# Common Crawl CDX index for the 3 most-recent CC-MAIN-* snapshots and
+# dump per-snapshot capture coverage (URLs captured, unique paths, depth
+# distribution, freshest/stalest timestamps, sample paths) to
+# `analytics/common_crawl_coverage_<DATE>.jsonl`. This lets us watch jpcite.com's
+# discoverability in the canonical web archive that downstream LLMs train on.
+#
+# LLM call: 0. Public CDX index only, no auth. Network errors per snapshot
+# are best-effort logged and the next month picks them up.
+#
+# Cadence
+# -------
+# `0 5 5 * *` — UTC 05:00 on the 5th of every month. Common Crawl's monthly
+# snapshot typically lands by the 1st-3rd, so the 5th gives buffer for the
+# index slug to settle.
+#
+# Output
+# ------
+# `analytics/common_crawl_coverage_<YYYY-MM-DD>.jsonl` — committed back to
+# main via `peter-evans/create-pull-request` (auto-merged downstream by
+# the analytics-cron auto-merge job, if present; otherwise stays as a PR
+# for review).
+
+on:
+  schedule:
+    # 05:00 UTC on the 5th == 14:00 JST same day.
+    - cron: "0 5 5 * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry-run (print summary, do not write file)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+concurrency:
+  group: common-crawl-monthly
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    # 3 snapshots × stream up to 2000 URLs each ≈ 1-3 min in practice.
+    # 15 min is generous headroom for slow CC index responses.
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install runtime deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install httpx>=0.27
+
+      - name: Run Common Crawl audit
+        env:
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          python scripts/cron/audit_common_crawl.py
+
+      - name: Commit + PR
+        if: github.event.inputs.dry_run != 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "chore(analytics): common crawl coverage audit ${{ github.run_id }}"
+          title: "chore(analytics): common crawl coverage audit"
+          body: |
+            Automated monthly Common Crawl coverage audit for jpcite.com.
+
+            See `scripts/cron/audit_common_crawl.py` + `.github/workflows/common-crawl-monthly.yml`.
+          branch: chore/cc-audit-${{ github.run_id }}
+          delete-branch: true
+          add-paths: |
+            analytics/common_crawl_coverage_*.jsonl
+
+      - name: Open issue on driver failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          BODY="Loader: \`scripts/cron/audit_common_crawl.py\`\nRun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\nSHA: \`${{ github.sha }}\`\n\nLikely causes: Common Crawl CDX 5xx, collinfo.json schema shift, or transient network. Re-run after 24h."
+          gh issue create \
+            --title "common-crawl-monthly failed on $(date -u +%Y-%m-%d)" \
+            --label automation \
+            --body "$BODY"

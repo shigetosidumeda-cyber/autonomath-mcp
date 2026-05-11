@@ -91,10 +91,6 @@
 </script>
 
 <script defer src="analytics.js?v=20260503a"></script>
-<!-- Wave 15 C8: inline JS extracted to /assets/playground.bundle.js for CWV LCP -->
-<!-- + CSP unsafe-inline removal. Original inline block below is commented -->
-<!-- out keep-for-audit; canonical runtime = the external bundle. -->
-<script src="/assets/playground.bundle.js" defer></script>
 
 <style>
   /* Page-scoped styles — kept inline to avoid a second style.css fetch.
@@ -857,18 +853,11 @@
       "url": "https://jpcite.com",
       "inLanguage": "ja",
       "publisher": {"@id": "https://jpcite.com/#org"},
-      "potentialAction": [
-        {
-          "@type": "SearchAction",
-          "target": {"@type": "EntryPoint", "urlTemplate": "https://api.jpcite.com/v1/programs/search?q={search_term_string}"},
-          "query-input": "required name=search_term_string"
-        },
-        {
-          "@type": "SearchAction",
-          "target": {"@type": "EntryPoint", "urlTemplate": "https://jpcite.com/search?q={search_term_string}"},
-          "query-input": "required name=search_term_string"
-        }
-      ]
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
     },
     {
       "@type": "Service",
@@ -1219,7 +1208,7 @@
  </div>
 </footer>
 
-<script type="text/x-jpcite-extracted-keep-for-audit">
+<script>
 /*
   playground.html — vanilla JS controller.
 

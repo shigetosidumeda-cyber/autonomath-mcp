@@ -1,0 +1,98 @@
+{
+  "generated_at": "2026-05-11T10:58:04.821655+00:00",
+  "window_days": 7,
+  "p75_thresholds": {
+    "lcp": {
+      "ok": 2500,
+      "warn": 4000
+    },
+    "inp": {
+      "ok": 200,
+      "warn": 500
+    },
+    "cls": {
+      "ok": 0.1,
+      "warn": 0.25
+    },
+    "ttfb": {
+      "ok": 800,
+      "warn": 1800
+    },
+    "fcp": {
+      "ok": 1800,
+      "warn": 3000
+    }
+  },
+  "days": [
+    {
+      "date": "2026-05-05",
+      "samples": 0,
+      "lcp": null,
+      "inp": null,
+      "cls": null,
+      "ttfb": null,
+      "fcp": null,
+      "source": "empty"
+    },
+    {
+      "date": "2026-05-06",
+      "samples": 0,
+      "lcp": null,
+      "inp": null,
+      "cls": null,
+      "ttfb": null,
+      "fcp": null,
+      "source": "empty"
+    },
+    {
+      "date": "2026-05-07",
+      "samples": 0,
+      "lcp": null,
+      "inp": null,
+      "cls": null,
+      "ttfb": null,
+      "fcp": null,
+      "source": "empty"
+    },
+    {
+      "date": "2026-05-08",
+      "samples": 0,
+      "lcp": null,
+      "inp": null,
+      "cls": null,
+      "ttfb": null,
+      "fcp": null,
+      "source": "empty"
+    },
+    {
+      "date": "2026-05-09",
+      "samples": 0,
+      "lcp": null,
+      "inp": null,
+      "cls": null,
+      "ttfb": null,
+      "fcp": null,
+      "source": "empty"
+    },
+    {
+      "date": "2026-05-10",
+      "samples": 0,
+      "lcp": null,
+      "inp": null,
+      "cls": null,
+      "ttfb": null,
+      "fcp": null,
+      "source": "empty"
+    },
+    {
+      "date": "2026-05-11",
+      "samples": 0,
+      "lcp": null,
+      "inp": null,
+      "cls": null,
+      "ttfb": null,
+      "fcp": null,
+      "source": "empty"
+    }
+  ]
+}

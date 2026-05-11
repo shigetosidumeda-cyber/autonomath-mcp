@@ -50,7 +50,6 @@ from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
-from urllib.parse import quote as urlquote
 from urllib.parse import urlparse
 
 # JST = UTC+9. Sitemap <lastmod> is dated in JST so the operator timezone
@@ -1134,56 +1133,6 @@ def _service_node(
     mod = _normalize_iso_date(row.get("updated_at"))
     if mod:
         node["dateModified"] = mod
-
-    # Per-record SearchAction: AI agents can pivot from this program to
-    # related searches via api.jpcite.com (REST + MCP shared surface).
-    # We expose: (1) generic full-text on programs, (2) same-prefecture
-    # narrowed search when a prefecture exists, (3) ReadAction to retrieve
-    # this exact record by unified_id.
-    search_actions: list[dict[str, Any]] = [
-        {
-            "@type": "SearchAction",
-            "target": {
-                "@type": "EntryPoint",
-                "urlTemplate": (
-                    f"https://api.jpcite.com/v1/programs/search?q={{search_term_string}}"
-                ),
-            },
-            "query-input": "required name=search_term_string",
-        }
-    ]
-    pref = row.get("prefecture")
-    if pref:
-        pref_q = urlquote(str(pref))
-        search_actions.append(
-            {
-                "@type": "SearchAction",
-                "target": {
-                    "@type": "EntryPoint",
-                    "urlTemplate": (
-                        f"https://api.jpcite.com/v1/programs/search"
-                        f"?prefecture={pref_q}&q={{search_term_string}}"
-                    ),
-                },
-                "query-input": "required name=search_term_string",
-                "name": f"同じ{pref}内の他制度を検索",
-            }
-        )
-    unified_id = row.get("unified_id")
-    if unified_id:
-        search_actions.append(
-            {
-                "@type": "ReadAction",
-                "target": {
-                    "@type": "EntryPoint",
-                    "urlTemplate": (
-                        f"https://api.jpcite.com/v1/programs/{urlquote(str(unified_id))}"
-                    ),
-                },
-                "name": "この制度の構造化レコードを取得",
-            }
-        )
-    node["potentialAction"] = search_actions
 
     return node
 

@@ -266,60 +266,6 @@
       "name": "fence",
       "description": "7 業法フェンス (税理士/弁護士/司法書士/行政書士/社労士/中小企業診断士/弁理士)。jpcite が踏み込まない領域。AI 出力に必ず差し込め",
       "mimeType": "text/markdown"
-    },
-    {
-      "uri": "mcp://jpcite/glossary.json",
-      "name": "glossary",
-      "description": "jpcite 用語集 (補助金/助成金/融資/税制/認定制度) — plain-Japanese + technical + legal explanation + canonical aliases。customer-facing 言い回しはここから引くこと",
-      "mimeType": "application/json"
-    },
-    {
-      "uri": "mcp://jpcite/license_matrix.json",
-      "name": "license_matrix",
-      "description": "8-row license inventory (PDL v1.0 / CC-BY 4.0 / 政府著作物 §13 / PROPRIETARY_QUOTE_OK)。agent は再配布 / 引用範囲を判断する際の SOT として使用すること",
-      "mimeType": "application/json"
-    },
-    {
-      "uri": "mcp://jpcite/sources_catalog.json",
-      "name": "sources_catalog",
-      "description": "14 一次資料 catalog (primary_url + refresh_cadence + ingest_method)。aggregator (noukaweb / hojyokin-portal) からの引用は禁止、本 catalog の primary_url を SOT として使用すること",
-      "mimeType": "application/json"
     }
-  ],
-  "resource_count": 5,
-  "prompts": [
-    {
-      "name": "company_folder_intake",
-      "description": "1 社の新規フォルダ intake (18 req, ¥59.40 税込)。previewCost → createCompanyPublicBaseline → createCompanyFolderBrief → queryEvidencePacket",
-      "arguments": [
-        {"name": "company_houjin_bangou", "description": "13-digit 国税庁 法人番号", "required": true},
-        {"name": "client_tag", "description": "X-Client-Tag header 用の顧問先 slug", "required": true}
-      ]
-    },
-    {
-      "name": "monthly_client_review",
-      "description": "顧問先 1 社の月次レビュー (100 req, ¥330 税込)。previewCost → queryEvidencePacket → prescreenPrograms",
-      "arguments": [
-        {"name": "client_tag", "description": "顧問先 slug (X-Client-Tag header)", "required": true},
-        {"name": "target_month", "description": "対象月 YYYY-MM (例: 2026-05)", "required": true},
-        {"name": "client_profile_summary", "description": "顧問先プロファイル 1 行要約 (業種 JSIC + 都道府県 + 規模 + 直近投資計画)", "required": true}
-      ]
-    },
-    {
-      "name": "counterparty_dd",
-      "description": "取引先 / 買収候補 1 社の DD prep (47 req, ¥155.10 税込)。previewCost → createCompanyPublicBaseline → createCompanyPublicAuditPack → match_advisors",
-      "arguments": [
-        {"name": "counterparty_houjin_bangou", "description": "取引先 13-digit 法人番号", "required": true},
-        {"name": "deal_context", "description": "DD context (例: 株式譲渡 / 事業承継 / 与信再評価 / 取引開始前 KYC)", "required": true},
-        {"name": "client_tag", "description": "X-Client-Tag (deal slug)", "required": true}
-      ]
-    }
-  ],
-  "prompt_count": 3,
-  "capabilities": {
-    "tools": true,
-    "resources": true,
-    "prompts": true,
-    "logging": false
-  }
+  ]
 }
