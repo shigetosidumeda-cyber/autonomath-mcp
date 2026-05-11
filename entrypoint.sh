@@ -219,38 +219,93 @@ write_trusted_stamp() {
 }
 
 # 2. R2 bootstrap: download autonomath.db if missing or SHA mismatch.
+#
+# §2 boot gate strategy (re-shaped 2026-05-11 after the 30+ min prod outage
+# caused by image-stamped AUTONOMATH_DB_SHA256 drifting from the live volume
+# DB — autonomath.db is mutated in-place by cron-driven ETL/migrations, so a
+# hardcoded image SHA goes stale immediately. The legacy logic then forced a
+# full R2 re-download on every boot, which on a 9 GB DB with intermittent R2
+# connectivity could loop indefinitely):
+#
+#   1. Default: SIZE-BASED gate. If the existing volume DB is already at
+#      production scale (>= AUTONOMATH_DB_MIN_PRODUCTION_BYTES, default 5 GB),
+#      we trust the volume copy as-is and skip both full-file SHA256 hashing
+#      AND R2 download. PRAGMA integrity_check in §4 below is still the
+#      authoritative health probe — SHA256 of a cron-mutated DB is structurally
+#      meaningless. Boot becomes O(few seconds) instead of O(re-download 9 GB).
+#
+#   2. Opt-in legacy: set BOOT_ENFORCE_DB_SHA=1 (and supply
+#      AUTONOMATH_DB_SHA256) to restore the strict SHA256 path. Intended for
+#      DR drills / restore-from-snapshot scenarios where the SHA actually
+#      matches a known snapshot, not for routine boots.
+#
+#   3. New volume / missing DB: still bootstraps from R2 exactly once
+#      (foreground or background mode per AUTONOMATH_BOOTSTRAP_MODE), with
+#      SHA256 verification of the downloaded artifact retained inside
+#      bootstrap_autonomath_db_snapshot() — that hash IS meaningful because
+#      it gates the freshly-downloaded blob, not the long-lived volume.
+#
+# Knobs (all optional, sane defaults):
+#   AUTONOMATH_DB_MIN_PRODUCTION_BYTES   default 5000000000 (~5 GB)
+#   BOOT_ENFORCE_DB_SHA                  default 0 (skip volume SHA check)
 needs_download=0
 missing_db=0
 sha_mismatch_db=0
+existing_sha=""
+AUTONOMATH_DB_MIN_PRODUCTION_BYTES="${AUTONOMATH_DB_MIN_PRODUCTION_BYTES:-5000000000}"
+BOOT_ENFORCE_DB_SHA="${BOOT_ENFORCE_DB_SHA:-0}"
 if [ ! -s "$DB_PATH" ]; then
   log "no existing DB at $DB_PATH"
   needs_download=1
   missing_db=1
-elif [ -n "$DB_SHA256" ]; then
-  if sha_stamp_matches "$DB_PATH" "$DB_SHA256"; then
-    log "SHA256 stamp match for existing $DB_PATH — skipping full-file hash"
-  elif trusted_stamp_matches "$DB_PATH" "$DB_SHA256"; then
-    log "trusted DB stamp match for existing $DB_PATH — skipping full-file hash"
-  else
-    legacy_stamp="$(sha_stamp_path "$DB_PATH")"
-    if [ -f "$legacy_stamp" ] && grep -q "^trusted " "$legacy_stamp" 2>/dev/null; then
-      log "legacy trusted stamp found at $legacy_stamp — ignoring and forcing full-file hash"
-      rm -f "$legacy_stamp"
-    fi
-    log "checking SHA256 of existing $DB_PATH against AUTONOMATH_DB_SHA256"
-    existing_sha="$(compute_sha256 "$DB_PATH")"
-    if [ "$existing_sha" = "$DB_SHA256" ]; then
-      write_sha_stamp "$DB_PATH" "$DB_SHA256"
-      log "SHA256 match — stamp written; skipping download"
-    else
-      rm -f "$(sha_stamp_path "$DB_PATH")"
-      log "SHA256 mismatch (have=$existing_sha want=$DB_SHA256) — re-downloading"
-      needs_download=1
-      sha_mismatch_db=1
-    fi
-  fi
 else
-  log "existing DB at $DB_PATH (no AUTONOMATH_DB_SHA256 set; skipping verification)"
+  existing_db_size="$(file_size "$DB_PATH")"
+  size_ok=0
+  if [ "$existing_db_size" != "unknown" ] && [ "$existing_db_size" -ge "$AUTONOMATH_DB_MIN_PRODUCTION_BYTES" ] 2>/dev/null; then
+    size_ok=1
+  fi
+  if [ "$size_ok" = "1" ] && [ "$BOOT_ENFORCE_DB_SHA" != "1" ]; then
+    # PRIMARY PATH (post 2026-05-11): the volume DB is production-sized, so
+    # accept it as authoritative without hashing or re-downloading. The
+    # autonomath profile schema_guard + PRAGMA integrity_check in §4 below
+    # remain the structural correctness gate; SHA256 against a baked image
+    # value would be a false signal because cron ETL mutates the DB.
+    log "existing DB at $DB_PATH is production-sized ($existing_db_size bytes >= $AUTONOMATH_DB_MIN_PRODUCTION_BYTES) — trusting volume, skipping SHA256 + R2 (set BOOT_ENFORCE_DB_SHA=1 to override)"
+  elif [ -n "$DB_SHA256" ]; then
+    # LEGACY PATH retained behind a gate so DR drills / smaller-DB envs / the
+    # tests/test_entrypoint_vec0_boot_gate.py SHA-mismatch contract keep
+    # working. Sub-threshold DBs naturally fall into this branch too, which
+    # is fine — small files are cheap to hash.
+    if [ "$BOOT_ENFORCE_DB_SHA" = "1" ]; then
+      log "BOOT_ENFORCE_DB_SHA=1 — verifying SHA256 of existing $DB_PATH against AUTONOMATH_DB_SHA256 (size=$existing_db_size)"
+    else
+      log "existing DB at $DB_PATH below production-size threshold (size=$existing_db_size < $AUTONOMATH_DB_MIN_PRODUCTION_BYTES) — falling back to SHA256 verification"
+    fi
+    if sha_stamp_matches "$DB_PATH" "$DB_SHA256"; then
+      log "SHA256 stamp match for existing $DB_PATH — skipping full-file hash"
+    elif trusted_stamp_matches "$DB_PATH" "$DB_SHA256"; then
+      log "trusted DB stamp match for existing $DB_PATH — skipping full-file hash"
+    else
+      legacy_stamp="$(sha_stamp_path "$DB_PATH")"
+      if [ -f "$legacy_stamp" ] && grep -q "^trusted " "$legacy_stamp" 2>/dev/null; then
+        log "legacy trusted stamp found at $legacy_stamp — ignoring and forcing full-file hash"
+        rm -f "$legacy_stamp"
+      fi
+      log "checking SHA256 of existing $DB_PATH against AUTONOMATH_DB_SHA256"
+      existing_sha="$(compute_sha256 "$DB_PATH")"
+      if [ "$existing_sha" = "$DB_SHA256" ]; then
+        write_sha_stamp "$DB_PATH" "$DB_SHA256"
+        log "SHA256 match — stamp written; skipping download"
+      else
+        rm -f "$(sha_stamp_path "$DB_PATH")"
+        log "SHA256 mismatch (have=$existing_sha want=$DB_SHA256) — re-downloading"
+        needs_download=1
+        sha_mismatch_db=1
+      fi
+    fi
+  else
+    log "existing DB at $DB_PATH (size=$existing_db_size; no AUTONOMATH_DB_SHA256 set; skipping verification)"
+  fi
 fi
 
 bootstrap_autonomath_db_snapshot() {
