@@ -7,3 +7,14 @@
 # boot-time application. Prefer offline/manual migration review for new schema
 # changes, especially files with DROP/DELETE, vec0 virtual tables, or
 # -- boot_time: manual.
+
+# 2026-05-12 Wave 40 production recovery — schema_guard FAIL detected
+# required migrations missing from schema_migrations after Wave 22 baked-seed
+# rollover. These 5 are pure additive (CREATE IF NOT EXISTS / ALTER ADD COLUMN
+# / CREATE VIEW IF NOT EXISTS), boot-time safe, and required by the autonomath
+# schema_guard profile baseline. Approved for boot-time application.
+049_provenance_strengthen.sql
+075_am_amendment_diff.sql
+090_law_article_body_en.sql
+115_source_manifest_view.sql
+121_jpi_programs_subsidy_rate_text_column.sql
