@@ -71,6 +71,9 @@ from jpintel_mcp.api.corporate_form import router as corporate_form_router
 from jpintel_mcp.api.cost import router as cost_router
 from jpintel_mcp.api.courses import router as courses_router
 from jpintel_mcp.api.court_decisions import router as court_decisions_router
+from jpintel_mcp.api.court_decisions_v2 import (  # Wave 43.1.10
+    router as court_decisions_v2_router,
+)
 from jpintel_mcp.api.customer_webhooks import router as customer_webhooks_router
 from jpintel_mcp.api.dashboard import router as dashboard_router
 from jpintel_mcp.api.device_flow import router as device_router

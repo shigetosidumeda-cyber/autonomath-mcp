@@ -19,6 +19,15 @@
 115_source_manifest_view.sql
 121_jpi_programs_subsidy_rate_text_column.sql
 
+# 2026-05-12 Wave 43.1.2 — foreign FDI cohort surface (JETRO / METI / JBIC / NEXI).
+# Pure additive (CREATE TABLE/INDEX/VIEW IF NOT EXISTS); idempotent on every boot.
+249_program_overseas_jetro.sql
+
+# 2026-05-12 Wave 43.1.1 — 市町村 1,700+ subsidy v2 bridge (+5,000 programs).
+# Pure additive (CREATE TABLE IF NOT EXISTS + CREATE INDEX IF NOT EXISTS).
+# autonomath-target; boot-time safe; idempotent on every boot.
+248_program_source_municipality_v2.sql
+
 # 2026-05-12 Wave 43.1.3 — 民間助成財団 2,000+ grant programs (+2,000 programs).
 # 公益財団 / 一般財団 / NPO / 業界団体 助成プログラム コーポラ.
 # Pure additive (CREATE TABLE/INDEX/VIEW IF NOT EXISTS). boot-time safe.
