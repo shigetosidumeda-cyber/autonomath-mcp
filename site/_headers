@@ -369,10 +369,17 @@
   CDN-Cache-Control: public, max-age=60
   Vary: Accept, Authorization, X-API-Key
 
+# /llms.txt is the AI-bot canonical landing surface (also served by
+# functions/aeo_redirect.ts for AI-bot UAs on /). 3600s edge cache is
+# safe: llms.txt regeneration is nightly via scripts/regen_llms_full.py.
+# Already cached at 3600s above — duplicated explicit rule here documents
+# the AEO contract.
+
 # Sitemap XML — 86400s edge cache.
 # Sitemaps are regenerated on every deploy and never change between
 # deploys; a 1-day cache cuts crawler bandwidth without staleness.
-# Lifts the edge cache to 24h while keeping browser revalidation at 1h.
+# Already cached at 3600s above; explicit rule for /sitemap-*.xml lifts
+# the edge cache to 24h while keeping browser revalidation at 1h.
 /sitemap-*.xml
   Content-Type: application/xml; charset=utf-8
   Cache-Control: public, max-age=3600, s-maxage=86400

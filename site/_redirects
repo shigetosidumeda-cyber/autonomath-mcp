@@ -219,3 +219,10 @@
 # で `/connect/claude-code` → `site/connect/claude-code.html` が serve される
 # ので explicit rewrite は不要。404 の真因は別 (mkdocs nav warning + CF secret 空)
 # で既に解消済 (commit 9e93ceef + secret set 2026-05-11T04:14)。
+
+# v4 (Wave 24, 2026-05-12) — CDN routing optimization
+# /api/* paths are handled by functions/api_proxy.ts (Pages Function);
+# the function takes precedence over a 301 redirect would because it
+# does an at-edge fetch + CORS injection + rate-limit-hint emission.
+# Do NOT add a `/api/* /v1/* 301` rule here — the Function path is
+# canonical and serves the response inline.
