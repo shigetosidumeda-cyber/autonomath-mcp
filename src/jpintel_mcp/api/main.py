@@ -61,6 +61,7 @@ from jpintel_mcp.api.case_studies import router as case_studies_router
 from jpintel_mcp.api.citation_badge import router as citation_badge_router
 from jpintel_mcp.api.citations import router as citations_router
 from jpintel_mcp.api.client_profiles import router as client_profiles_router
+from jpintel_mcp.api.cohort import router as cohort_router
 from jpintel_mcp.api.compliance import router as compliance_router
 from jpintel_mcp.api.confidence import router as confidence_router
 from jpintel_mcp.api.contribute import router as contribute_router
@@ -2056,6 +2057,11 @@ def create_app() -> FastAPI:
     # case_studies (jpintel.db, 2,286) + jpi_adoption_records (autonomath.db,
     # 201,845). Same anon quota gate as case_studies_router.
     app.include_router(case_cohort_match_router, dependencies=[AnonIpLimitDep])
+    # Wave 33 Axis 2a/2b/2c (2026-05-12): 5d cohort matcher + program risk
+    # 4d + supplier chain — all served from daily-refreshed precompute
+    # tables (am_cohort_5d / am_program_risk_4d / am_supplier_chain). NO
+    # LLM, NO full-scan op against the 9.7GB autonomath.db at request time.
+    app.include_router(cohort_router, dependencies=[AnonIpLimitDep])
     app.include_router(benchmark_router, dependencies=[AnonIpLimitDep])
     app.include_router(loan_programs_router, dependencies=[AnonIpLimitDep])
     # 2026-05-07 (R8): 災害復興 × 特例制度 surface — three endpoints under
