@@ -28,8 +28,8 @@ canonical_api_env:
 
 pyproject_version: "0.3.4"
 tool_count_default_gates: 139  # public manifest floor; runtime may be higher with post-manifest tools
-route_count: 263              # runtime len(app.routes), verified 2026-05-08 JST
-openapi_path_count: 220       # docs/openapi/v1.json stable .paths length, verified 2026-05-08 JST (incl. /v1/widget/keys/from-checkout)
+route_count: 282              # runtime len(app.routes), verified 2026-05-11 JST (Wave 19 +19 routes: federation/oauth_device/graphql)
+openapi_path_count: 238       # docs/openapi/v1.json stable .paths length, verified 2026-05-11 JST (Wave 19 added federation/oauth_device/graphql)
 searchable_programs_total: 11601
 total_programs: 14472
 tier_c_count: 5961

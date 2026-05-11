@@ -1,6 +1,196 @@
 {
   "components": {
     "schemas": {
+      "A2ACancelPayload": {
+        "properties": {
+          "reason": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "state_token": {
+            "title": "State Token",
+            "type": "string"
+          }
+        },
+        "required": [
+          "state_token"
+        ],
+        "title": "A2ACancelPayload",
+        "type": "object"
+      },
+      "A2AResumePayload": {
+        "properties": {
+          "state_token": {
+            "description": "Token minted at task creation.",
+            "title": "State Token",
+            "type": "string"
+          },
+          "turn": {
+            "additionalProperties": true,
+            "description": "Next-turn payload appended to the task transcript.",
+            "title": "Turn",
+            "type": "object"
+          }
+        },
+        "required": [
+          "state_token"
+        ],
+        "title": "A2AResumePayload",
+        "type": "object"
+      },
+      "A2ATaskCreate": {
+        "description": "Inbound delegation request from a remote agent.",
+        "properties": {
+          "correlation_id": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Caller-side trace id; echoed back on every poll.",
+            "title": "Correlation Id"
+          },
+          "inputs": {
+            "additionalProperties": true,
+            "description": "Skill-specific input payload (JSON object).",
+            "title": "Inputs",
+            "type": "object"
+          },
+          "push_url": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional HTTPS webhook the receiver will POST status updates to (see ``api/customer_webhooks.py`` for the sign envelope).",
+            "title": "Push Url"
+          },
+          "skill": {
+            "description": "Skill identifier from the Agent Card (e.g. 'search_programs', 'verify_answer', 'compose_evidence_packet').",
+            "maxLength": 128,
+            "title": "Skill",
+            "type": "string"
+          }
+        },
+        "required": [
+          "skill"
+        ],
+        "title": "A2ATaskCreate",
+        "type": "object"
+      },
+      "A2ATaskState": {
+        "description": "Outbound task descriptor returned by every endpoint in this router.",
+        "properties": {
+          "correlation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Correlation Id"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "disclaimer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Disclaimer"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "progress": {
+            "default": 0.0,
+            "title": "Progress",
+            "type": "number"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result"
+          },
+          "skill": {
+            "title": "Skill",
+            "type": "string"
+          },
+          "state_token": {
+            "title": "State Token",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "pending",
+              "running",
+              "succeeded",
+              "failed",
+              "cancelled"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "task_id": {
+            "title": "Task Id",
+            "type": "string"
+          },
+          "updated_at": {
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "task_id",
+          "state_token",
+          "status",
+          "skill",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "A2ATaskState",
+        "type": "object"
+      },
       "AMActiveAtResponse": {
         "additionalProperties": true,
         "description": "``GET /v1/am/active_at`` \u2014 paginated list with the snapshot date.",
@@ -3625,6 +3815,76 @@
         "title": "Body_bulk_import_client_profiles_v1_me_client_profiles_bulk_import_post",
         "type": "object"
       },
+      "Body_device_approve_v1_oauth_device_approve_post": {
+        "properties": {
+          "api_key": {
+            "title": "Api Key",
+            "type": "string"
+          },
+          "user_code": {
+            "title": "User Code",
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_code",
+          "api_key"
+        ],
+        "title": "Body_device_approve_v1_oauth_device_approve_post",
+        "type": "object"
+      },
+      "Body_device_code_v1_oauth_device_code_post": {
+        "properties": {
+          "client_id": {
+            "default": "anonymous",
+            "title": "Client Id",
+            "type": "string"
+          },
+          "scope": {
+            "default": "default",
+            "title": "Scope",
+            "type": "string"
+          }
+        },
+        "title": "Body_device_code_v1_oauth_device_code_post",
+        "type": "object"
+      },
+      "Body_device_deny_v1_oauth_device_deny_post": {
+        "properties": {
+          "user_code": {
+            "title": "User Code",
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_code"
+        ],
+        "title": "Body_device_deny_v1_oauth_device_deny_post",
+        "type": "object"
+      },
+      "Body_device_token_v1_oauth_device_token_post": {
+        "properties": {
+          "client_id": {
+            "default": "anonymous",
+            "title": "Client Id",
+            "type": "string"
+          },
+          "device_code": {
+            "title": "Device Code",
+            "type": "string"
+          },
+          "grant_type": {
+            "title": "Grant Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "grant_type",
+          "device_code"
+        ],
+        "title": "Body_device_token_v1_oauth_device_token_post",
+        "type": "object"
+      },
       "Body_rest_validate_v1_am_validate_post": {
         "properties": {
           "applicant_data": {
@@ -6415,6 +6675,45 @@
           "created_at"
         ],
         "title": "DeliveryRow",
+        "type": "object"
+      },
+      "DeviceCodeResponse": {
+        "description": "RFC 8628 \u00a73.2 Device Authorization Response.",
+        "properties": {
+          "device_code": {
+            "title": "Device Code",
+            "type": "string"
+          },
+          "expires_in": {
+            "title": "Expires In",
+            "type": "integer"
+          },
+          "interval": {
+            "title": "Interval",
+            "type": "integer"
+          },
+          "user_code": {
+            "title": "User Code",
+            "type": "string"
+          },
+          "verification_uri": {
+            "title": "Verification Uri",
+            "type": "string"
+          },
+          "verification_uri_complete": {
+            "title": "Verification Uri Complete",
+            "type": "string"
+          }
+        },
+        "required": [
+          "device_code",
+          "user_code",
+          "verification_uri",
+          "verification_uri_complete",
+          "expires_in",
+          "interval"
+        ],
+        "title": "DeviceCodeResponse",
         "type": "object"
       },
       "DisasterActiveProgramsResponse": {
@@ -16351,6 +16650,216 @@
         "summary": "Readyz"
       }
     },
+    "/v1/a2a/agent_card": {
+      "get": {
+        "operationId": "agent_card_v1_a2a_agent_card_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Agent Card V1 A2A Agent Card Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Agent Card",
+        "tags": [
+          "a2a"
+        ]
+      }
+    },
+    "/v1/a2a/task": {
+      "post": {
+        "operationId": "create_task_v1_a2a_task_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/A2ATaskCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/A2ATaskState"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Task",
+        "tags": [
+          "a2a"
+        ]
+      }
+    },
+    "/v1/a2a/task/{task_id}": {
+      "get": {
+        "operationId": "poll_task_v1_a2a_task__task_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "task_id",
+            "required": true,
+            "schema": {
+              "title": "Task Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/A2ATaskState"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Poll Task",
+        "tags": [
+          "a2a"
+        ]
+      }
+    },
+    "/v1/a2a/task/{task_id}/cancel": {
+      "post": {
+        "operationId": "cancel_task_v1_a2a_task__task_id__cancel_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "task_id",
+            "required": true,
+            "schema": {
+              "title": "Task Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/A2ACancelPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/A2ATaskState"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Cancel Task",
+        "tags": [
+          "a2a"
+        ]
+      }
+    },
+    "/v1/a2a/task/{task_id}/resume": {
+      "post": {
+        "operationId": "resume_task_v1_a2a_task__task_id__resume_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "task_id",
+            "required": true,
+            "schema": {
+              "title": "Task Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/A2AResumePayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/A2ATaskState"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Resume Task",
+        "tags": [
+          "a2a"
+        ]
+      }
+    },
     "/v1/advisors/handoffs/preview": {
       "post": {
         "description": "Preview an advisor handoff without creating referrals or stored records.\n\nThis is a read-only handoff draft surface: it uses the existing advisor\nmatcher, but intentionally does not mint referral tokens, store source\nreceipts, write usage events, or persist caller-provided summary text.",
@@ -21878,6 +22387,150 @@
           }
         },
         "summary": "Begin GitHub OAuth sign-in",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/v1/auth/google/callback": {
+      "get": {
+        "description": "Google redirects here after the user grants consent. Exchanges the ``code`` for a short-lived id_token + access_token, decodes the id_token payload to read the Google identity (sub + email + name), validates ``aud`` against our client_id, sets a 24h ``jpcite_session`` JWT cookie, and 302-redirects to the dashboard. JSON-mode (``?format=json``) returns the identity payload directly.",
+        "operationId": "google_oauth_callback_v1_auth_google_callback_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "code",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Code"
+            }
+          },
+          {
+            "in": "query",
+            "name": "state",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          },
+          {
+            "in": "query",
+            "name": "error",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Error"
+            }
+          },
+          {
+            "in": "query",
+            "name": "format",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Format"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Google OAuth callback",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/v1/auth/google/start": {
+      "get": {
+        "description": "Generates a one-time ``state`` nonce + stores it server-side, then issues a redirect to Google's ``/o/oauth2/v2/auth``. Caller pass ``Accept: application/json`` to receive the URL as JSON instead of a 302. Requires no API key \u2014 this is the pre-auth sign-in surface.",
+        "operationId": "google_oauth_start_v1_auth_google_start_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "format",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Format"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Begin Google OAuth sign-in",
         "tags": [
           "auth"
         ]
@@ -28051,6 +28704,64 @@
         "summary": "\u8cc7\u91d1\u8abf\u9054\u30b9\u30c6\u30fc\u30b8\u30ab\u30bf\u30ed\u30b0 (5 stage \u5b9a\u7fa9 + \u4ee3\u8868\u5236\u5ea6)",
         "tags": [
           "funding-stage"
+        ]
+      }
+    },
+    "/v1/graphql/": {
+      "get": {
+        "operationId": "graphql_unavailable_get_v1_graphql__get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Graphql Unavailable Get",
+        "tags": [
+          "graphql"
+        ]
+      },
+      "post": {
+        "operationId": "graphql_unavailable_post_v1_graphql__post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Graphql Unavailable Post",
+        "tags": [
+          "graphql"
+        ]
+      }
+    },
+    "/v1/graphql/_sdl": {
+      "get": {
+        "description": "Return the SDL (Schema Definition Language) for tooling.",
+        "operationId": "graphql_sdl_v1_graphql__sdl_get",
+        "responses": {
+          "200": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Graphql Sdl",
+        "tags": [
+          "graphql"
         ]
       }
     },
@@ -35038,6 +35749,30 @@
         ]
       }
     },
+    "/v1/meta/federation": {
+      "get": {
+        "description": "Return the federation compatibility declaration.\n\nAllied MCP servers can fetch this once per workflow boot to\ndetermine which jpcite tools they can chain. The schema_fingerprint\nfield on each tool lets partners short-lived response reuse-invalidate when our envelope\ncontract changes.",
+        "operationId": "get_federation_manifest_v1_meta_federation_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Federation Manifest V1 Meta Federation Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "MCP federation discovery manifest",
+        "tags": [
+          "federation"
+        ]
+      }
+    },
     "/v1/meta/freshness": {
       "get": {
         "operationId": "meta_freshness_v1_meta_freshness_get",
@@ -35103,6 +35838,284 @@
         "tags": [
           "meta",
           "transparency"
+        ]
+      }
+    },
+    "/v1/meta/prompts": {
+      "get": {
+        "description": "Return registered MCP Prompts catalogue.\n\nCurrent release AX surface: lets an agent enumerate the prompts catalogue\nvia REST without speaking the MCP protocol. Shape mirrors\n``/v1/meta/resources``.",
+        "operationId": "list_prompts_v1_meta_prompts_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List MCP Prompts catalogue (no request charge, anon-allowed)",
+        "tags": [
+          "meta"
+        ]
+      }
+    },
+    "/v1/meta/resources": {
+      "get": {
+        "description": "Return registered MCP Resources catalogue.\n\nCurrent release AX surface: lets an agent enumerate the resources catalogue\nvia REST without speaking the MCP protocol. Cached process-locally\nafter first call \u2014 the registry is computed once at import time.\nShape: ``{\"count\": N, \"resources\": [{uri, name, description, ...}]}``.",
+        "operationId": "list_resources_v1_meta_resources_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List MCP Resources catalogue (no request charge, anon-allowed)",
+        "tags": [
+          "meta"
+        ]
+      }
+    },
+    "/v1/meta/transports": {
+      "get": {
+        "description": "Return advertised MCP transport protocols.\n\nCurrent release AX surface anchored to ``mcp-server.json._meta.transports``.\nShape: ``{\"transports\": [\"stdio\", \"sse\", \"streamable_http\"], ...}``.",
+        "operationId": "list_transports_v1_meta_transports_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Advertised MCP transport protocols (no request charge, anon-allowed)",
+        "tags": [
+          "meta"
+        ]
+      }
+    },
+    "/v1/oauth/device/approve": {
+      "post": {
+        "description": "Support team approval endpoint, called by the verification page.\n\nThe verification page (``site/oauth/device.html``) collects the\n8-char user_code + an existing API key from the support team (or mints\na new one via the dashboard issuance flow), then POSTs here to\nbind the API key to the pending device_code.\n\nReturns 200 with status='approved'.",
+        "operationId": "device_approve_v1_oauth_device_approve_post",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_device_approve_v1_oauth_device_approve_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Device Approve V1 Oauth Device Approve Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Device Approve",
+        "tags": [
+          "oauth_device"
+        ]
+      }
+    },
+    "/v1/oauth/device/code": {
+      "post": {
+        "description": "RFC 8628 \u00a73.1 Device Authorization Request.\n\nBrowser-less agent calls this to start the flow. Returns the codes\n+ verification URL. Support team visits the URL, types ``user_code``,\nand approves.",
+        "operationId": "device_code_v1_oauth_device_code_post",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_device_code_v1_oauth_device_code_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceCodeResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Device Code",
+        "tags": [
+          "oauth_device"
+        ]
+      }
+    },
+    "/v1/oauth/device/deny": {
+      "post": {
+        "description": "Support team-initiated denial. Marks the flow as denied; the next\npoll returns ``access_denied``.",
+        "operationId": "device_deny_v1_oauth_device_deny_post",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_device_deny_v1_oauth_device_deny_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Device Deny V1 Oauth Device Deny Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Device Deny",
+        "tags": [
+          "oauth_device"
+        ]
+      }
+    },
+    "/v1/oauth/device/status/{user_code}": {
+      "get": {
+        "description": "Status probe for the verification UI (no auth).",
+        "operationId": "device_status_v1_oauth_device_status__user_code__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_code",
+            "required": true,
+            "schema": {
+              "title": "User Code",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Device Status V1 Oauth Device Status  User Code  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Device Status",
+        "tags": [
+          "oauth_device"
+        ]
+      }
+    },
+    "/v1/oauth/device/token": {
+      "post": {
+        "description": "RFC 8628 \u00a73.4 Device Access Token Request.\n\nAgent polls this every ``interval`` seconds. Until support team approves\nwe return ``authorization_pending``. On approval we return the\nbound API key as the access_token.\n\ngrant_type MUST be ``urn:ietf:params:oauth:grant-type:device_code``.",
+        "operationId": "device_token_v1_oauth_device_token_post",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_device_token_v1_oauth_device_token_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Device Token V1 Oauth Device Token Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Device Token",
+        "tags": [
+          "oauth_device"
         ]
       }
     },
@@ -35361,6 +36374,22 @@
         "parameters": [
           {
             "in": "header",
+            "name": "X-Browser-Spam-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Browser-Spam-Token"
+            }
+          },
+          {
+            "in": "header",
             "name": "CF-Turnstile-Token",
             "required": false,
             "schema": {
@@ -35373,6 +36402,38 @@
                 }
               ],
               "title": "Cf-Turnstile-Token"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "User-Agent",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "User-Agent"
             }
           }
         ],
@@ -35421,6 +36482,22 @@
         "parameters": [
           {
             "in": "header",
+            "name": "X-Browser-Spam-Token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Browser-Spam-Token"
+            }
+          },
+          {
+            "in": "header",
             "name": "CF-Turnstile-Token",
             "required": false,
             "schema": {
@@ -35433,6 +36510,38 @@
                 }
               ],
               "title": "Cf-Turnstile-Token"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-API-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "in": "header",
+            "name": "User-Agent",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "User-Agent"
             }
           }
         ],

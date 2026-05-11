@@ -105,6 +105,9 @@ from jpintel_mcp.api.ma_dd import (
 from jpintel_mcp.api.me import router as me_router
 from jpintel_mcp.api.meta import router as meta_router
 from jpintel_mcp.api.meta_freshness import router as meta_freshness_router
+from jpintel_mcp.api.graphql import router as graphql_router  # Wave 19 §F2
+from jpintel_mcp.api.oauth_device import router as oauth_device_router  # Wave 19 §A8
+from jpintel_mcp.mcp.federation import router as federation_router  # Wave 19 §A5
 from jpintel_mcp.api.middleware import (
     AnalyticsRecorderMiddleware,
     AnonQuotaHeaderMiddleware,
@@ -1947,6 +1950,16 @@ def create_app() -> FastAPI:
     # AnonIpLimitDep — same posture as /healthz; serves aggregated freshness
     # stats so customers/agents can verify data is fresh enough for purpose.
     app.include_router(meta_freshness_router)
+    # Wave 19 §A5 — MCP server-to-server federation discovery
+    # (/v1/meta/federation). Public manifest of allied servers + workflow
+    # handoff patterns. Static declaration, no auth, no quota — agents
+    # use this to compose tool chains across servers without prior contact.
+    app.include_router(federation_router)
+    # Wave 19 §F2 — GraphQL cross-domain query surface (/v1/graphql).
+    # Sister to REST; same SQL fetchers, GraphQL-shaped schema. Returns 501
+    # with install hint when strawberry-graphql is not installed (guarded
+    # import inside graphql.py). Anon-quota applied per POST.
+    app.include_router(graphql_router)
     # Trust-signal pages backend (/v1/am/data-freshness +
     # /v1/am/programs/{id}/sources). Same public posture as
     # meta_freshness_router — these are anti-詐欺 transparency surfaces
@@ -2355,6 +2368,11 @@ def create_app() -> FastAPI:
     # the authorize endpoint is the entry point for new callers who don't yet
     # have a key. Rate limiting is handled inside device_flow.py (poll cap).
     app.include_router(device_router)
+    # Wave 19 §A8 — OAuth 2.1 Device Authorization Flow for headless agents.
+    # New surface at /v1/oauth/device/* (distinct from legacy device_flow.py).
+    # RFC 8628 compliant: device_code + user_code + polling + slow_down signal.
+    # Not anon-quota-gated — same entry-point posture as device_router.
+    app.include_router(oauth_device_router)
     # Postmark delivery/bounce/spam webhook. Signature-verified inside the
     # handler; unauthenticated callers never touch the DB.
     app.include_router(email_webhook_router)
