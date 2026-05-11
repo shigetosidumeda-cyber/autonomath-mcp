@@ -39,6 +39,12 @@ class Check:
     missing: str = ""
 
 
+# Wave 41 — 6 checks per pillar × 4 pillars = 24 cells; per-check weight
+# +2.0 so PILLAR_MAX = 12.0, total possible = 48.0 (was 40.0).
+PILLAR_MAX = 12.0
+CHECK_WEIGHT = 2.0
+
+
 @dataclass
 class Pillar:
     name: str
@@ -46,7 +52,7 @@ class Pillar:
 
     @property
     def score(self) -> float:
-        return round(sum(2.0 for c in self.checks if c.passed), 2)
+        return round(sum(CHECK_WEIGHT for c in self.checks if c.passed), 2)
 
     @property
     def evidence(self) -> list[str]:
@@ -201,6 +207,29 @@ def access_pillar() -> Pillar:
         )
     )
 
+    # 6. Wave 41 — OAuth Device Flow polling response live
+    oauth_device_text = _read(SRC_API / "oauth_device.py")
+    required_cases = ("authorization_pending", "slow_down", "expired_token", "access_denied")
+    cases_present = all(c in oauth_device_text for c in required_cases)
+    has_introspect = "/poll_introspect" in oauth_device_text and "_POLL_RESPONSE_FIXTURES" in oauth_device_text
+    has_spec_endpoint = "/poll_response_spec" in oauth_device_text
+    mounted_in_main = "oauth_device_router" in main_py and "include_router(oauth_device_router" in main_py
+    passed = cases_present and has_introspect and has_spec_endpoint and mounted_in_main
+    p.checks.append(
+        Check(
+            "device_flow_polling_live",
+            passed,
+            evidence=(
+                "RFC 8628 §3.5 4 error cases + success wired, "
+                "/poll_introspect + /poll_response_spec live, mounted in main.py"
+            ) if passed else "",
+            missing=(
+                f"cases={cases_present}, introspect={has_introspect}, "
+                f"spec={has_spec_endpoint}, mounted={mounted_in_main}"
+            ) if not passed else "",
+        )
+    )
+
     return p
 
 
@@ -292,6 +321,57 @@ def context_pillar() -> Pillar:
             missing=f"only {len(md_companions)} .html.md siblings (need >= 6)"
             if not passed
             else "",
+        )
+    )
+
+    # 6. Wave 41 — Schema.org Dataset JSON-LD with hasPart sub-dataset linkage
+    data_root = SITE / "_data"
+    expected_payloads = {
+        "dataset_jsonld_programs.json": "https://jpcite.com/#dataset-programs",
+        "dataset_jsonld_laws.json": "https://jpcite.com/#dataset-laws",
+        "dataset_jsonld_cases.json": "https://jpcite.com/#dataset-cases",
+        "dataset_jsonld_enforcement.json": "https://jpcite.com/#dataset-enforcement",
+        "dataset_jsonld_aggregate.json": "https://jpcite.com/#dataset-aggregate",
+    }
+    payload_hits: list[str] = []
+    aria_marker_count = 0
+    has_part_count = 0
+    for filename, expected_id in expected_payloads.items():
+        p_path = data_root / filename
+        if not p_path.exists():
+            continue
+        try:
+            payload = json.loads(p_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if payload.get("@id") != expected_id or payload.get("@type") != "Dataset":
+            continue
+        payload_hits.append(filename)
+        for prop in payload.get("additionalProperty", []) or []:
+            if prop.get("name") == "ariaDescribedBy":
+                aria_marker_count += 1
+        if "hasPart" in payload:
+            has_part_count = len(payload.get("hasPart", []))
+    has_emitter = (REPO_ROOT / "scripts" / "generate_jsonld_dataset.py").exists()
+    passed = (
+        len(payload_hits) == 5
+        and has_part_count >= 4
+        and aria_marker_count >= 4
+        and has_emitter
+    )
+    p.checks.append(
+        Check(
+            "dataset_metadata_jsonld_live",
+            passed,
+            evidence=(
+                f"{len(payload_hits)}/5 Dataset JSON-LD payloads in site/_data/, "
+                f"aggregate hasPart={has_part_count}, ariaDescribedBy markers={aria_marker_count}, "
+                f"emitter present"
+            ) if passed else "",
+            missing=(
+                f"payloads={len(payload_hits)}/5, has_part={has_part_count} (need >=4), "
+                f"aria_markers={aria_marker_count} (need >=4), emitter={has_emitter}"
+            ) if not passed else "",
         )
     )
 
@@ -444,6 +524,45 @@ def tools_pillar() -> Pillar:
             )
             if not passed
             else "",
+        )
+    )
+
+    # 6. Wave 41 — MCP Resource subscribe/unsubscribe + polling integration
+    subscriber_path = SRC_MCP / "resource_subscriber.py"
+    subscriber_present = subscriber_path.exists() and subscriber_path.stat().st_size > 1024
+    subscriber_text = _read(subscriber_path) if subscriber_present else ""
+    required_api = (
+        "class ResourceSubscriberRegistry",
+        "def subscribe(",
+        "def unsubscribe(",
+        "def publish(",
+        "def poll(",
+        "handle_subscribe_request",
+        "handle_unsubscribe_request",
+        "emit_notification_loop",
+    )
+    api_hits = [m for m in required_api if m in subscriber_text]
+    has_notification_kind = "notifications/resources/updated" in subscriber_text
+    has_registry_singleton = "get_registry" in subscriber_text
+    passed = (
+        subscriber_present
+        and len(api_hits) == len(required_api)
+        and has_notification_kind
+        and has_registry_singleton
+    )
+    p.checks.append(
+        Check(
+            "mcp_resource_polling_live",
+            passed,
+            evidence=(
+                f"resource_subscriber.py present (size={subscriber_path.stat().st_size if subscriber_present else 0}B), "
+                f"{len(api_hits)}/{len(required_api)} API surfaces present, "
+                f"notifications/resources/updated wired, get_registry singleton"
+            ) if passed else "",
+            missing=(
+                f"present={subscriber_present}, api={len(api_hits)}/{len(required_api)}, "
+                f"notification_kind={has_notification_kind}, singleton={has_registry_singleton}"
+            ) if not passed else "",
         )
     )
 
@@ -602,6 +721,44 @@ def orchestration_pillar() -> Pillar:
         )
     )
 
+    # 6. Wave 41 — A2A skill negotiation + capability advertisement
+    has_skills_endpoint = '@router.get("/skills")' in a2a_text
+    has_skill_get = '@router.get("/skills/{skill_name}")' in a2a_text
+    has_negotiate = '@router.post("/skills/negotiate")' in a2a_text
+    has_catalog = "SKILL_CATALOG" in a2a_text and "_normalise_skill_card" in a2a_text
+    has_negotiation_model = "A2ASkillNegotiation" in a2a_text
+    skill_category_hits = re.findall(r'"category":\s*"[^"]+"', a2a_text)
+    skill_count = len(skill_category_hits)
+    has_tags = '"tags":' in a2a_text and "requested_tags" in a2a_text
+    has_input_schema = '"input_schema":' in a2a_text and '"output_schema":' in a2a_text
+    passed = (
+        has_skills_endpoint
+        and has_skill_get
+        and has_negotiate
+        and has_catalog
+        and has_negotiation_model
+        and skill_count >= 5
+        and has_tags
+        and has_input_schema
+    )
+    p.checks.append(
+        Check(
+            "a2a_skill_negotiation_live",
+            passed,
+            evidence=(
+                f"/v1/a2a/skills + /skills/{{name}} + /skills/negotiate wired, "
+                f"SKILL_CATALOG ({skill_count} skills) + tags + input/output schema present, "
+                f"A2ASkillNegotiation model wired"
+            ) if passed else "",
+            missing=(
+                f"skills_endpoint={has_skills_endpoint}, skill_get={has_skill_get}, "
+                f"negotiate={has_negotiate}, catalog={has_catalog}, "
+                f"model={has_negotiation_model}, skill_count={skill_count} (need >=5), "
+                f"tags={has_tags}, schemas={has_input_schema}"
+            ) if not passed else "",
+        )
+    )
+
     return p
 
 
@@ -616,17 +773,28 @@ def run_audit() -> dict:
         orchestration_pillar(),
     ]
     total = round(sum(p.score for p in pillars), 2)
+    max_total = round(PILLAR_MAX * len(pillars), 2)
     average = round(total / len(pillars), 2)
+    green_threshold = PILLAR_MAX * 0.8
+    yellow_threshold = PILLAR_MAX * 0.6
     return {
         "axis": "ax_4pillars",
         "framework": "Biilmann Access/Context/Tools/Orchestration",
         "total_score": total,
         "average_score": average,
-        "max_score": 40.0,
-        "verdict": "green" if average >= 8.0 else ("yellow" if average >= 6.0 else "red"),
+        "max_score": max_total,
+        "pillar_max": PILLAR_MAX,
+        "cell_count": sum(len(p.checks) for p in pillars),
+        "verdict": (
+            "green"
+            if average >= green_threshold
+            else ("yellow" if average >= yellow_threshold else "red")
+        ),
         "pillars": {
             p.name: {
                 "score": p.score,
+                "max": PILLAR_MAX,
+                "cells": len(p.checks),
                 "evidence": p.evidence,
                 "missing_items": p.missing_items,
             }
@@ -692,9 +860,16 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     # Brief stdout summary.
-    print(f"AX 4 Pillars total={result['total_score']:.2f}/40 average={result['average_score']:.2f}/10 verdict={result['verdict']}")
+    print(
+        f"AX 4 Pillars total={result['total_score']:.2f}/{result['max_score']:.0f} "
+        f"average={result['average_score']:.2f}/{result.get('pillar_max', PILLAR_MAX):.0f} "
+        f"cells={result.get('cell_count', 0)} verdict={result['verdict']}"
+    )
     for name, body in result["pillars"].items():
-        print(f"  - {name}: {body['score']:.2f}/10")
+        print(
+            f"  - {name}: {body['score']:.2f}/{body.get('max', PILLAR_MAX):.0f}"
+            f" ({body.get('cells', '-')} cells)"
+        )
     return 0
 
 

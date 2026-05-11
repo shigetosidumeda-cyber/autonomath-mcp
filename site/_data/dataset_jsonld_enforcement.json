@@ -1,0 +1,62 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "@id": "https://jpcite.com/#dataset-enforcement",
+  "name": "jpcite — 行政処分・取消事例 データセット",
+  "description": "補助金交付決定取消 / 業務停止 / 業務改善命令 等 1,185 件。",
+  "url": "https://jpcite.com/enforcement/",
+  "identifier": "jpcite-enforcement",
+  "keywords": [
+    "行政処分",
+    "enforcement",
+    "Japan"
+  ],
+  "isAccessibleForFree": true,
+  "license": "https://jpcite.com/data-licensing",
+  "publisher": {
+    "@type": "Organization",
+    "@id": "https://jpcite.com/#publisher",
+    "name": "Bookyou株式会社",
+    "url": "https://jpcite.com/",
+    "identifier": "T8010001213708"
+  },
+  "creator": {
+    "@id": "https://jpcite.com/#publisher"
+  },
+  "spatialCoverage": {
+    "@type": "Country",
+    "name": "日本"
+  },
+  "inLanguage": [
+    "ja"
+  ],
+  "datePublished": "2025-12-01",
+  "dateModified": "2026-05-11T22:23:07.431063+00:00",
+  "variableMeasured": [
+    {
+      "@type": "PropertyValue",
+      "name": "enforcement_cases",
+      "value": 1185
+    }
+  ],
+  "distribution": [
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "application/json",
+      "contentUrl": "https://api.jpcite.com/v1/enforcement",
+      "description": "REST API"
+    }
+  ],
+  "additionalProperty": [
+    {
+      "@type": "PropertyValue",
+      "name": "ariaDescribedBy",
+      "value": "enforcement-main"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "agentReadable",
+      "value": true
+    }
+  ]
+}

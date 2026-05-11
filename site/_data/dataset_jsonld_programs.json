@@ -1,0 +1,71 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "@id": "https://jpcite.com/#dataset-programs",
+  "name": "jpcite — 日本の補助金・融資・税制・認定 制度データセット",
+  "description": "日本の公的制度 11,601 件 / カタログ 14,472 件。一次資料 URL + fetched_at 付き。",
+  "url": "https://jpcite.com/programs/",
+  "identifier": "jpcite-programs",
+  "keywords": [
+    "補助金",
+    "融資",
+    "税制",
+    "認定",
+    "subsidy",
+    "Japan"
+  ],
+  "isAccessibleForFree": true,
+  "license": "https://jpcite.com/data-licensing",
+  "publisher": {
+    "@type": "Organization",
+    "@id": "https://jpcite.com/#publisher",
+    "name": "Bookyou株式会社",
+    "url": "https://jpcite.com/",
+    "identifier": "T8010001213708"
+  },
+  "creator": {
+    "@id": "https://jpcite.com/#publisher"
+  },
+  "spatialCoverage": {
+    "@type": "Country",
+    "name": "日本"
+  },
+  "inLanguage": [
+    "ja",
+    "en"
+  ],
+  "datePublished": "2025-12-01",
+  "dateModified": "2026-05-11T22:23:07.425090+00:00",
+  "variableMeasured": [
+    {
+      "@type": "PropertyValue",
+      "name": "searchable_programs",
+      "value": 11601
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "total_programs",
+      "value": 14472
+    }
+  ],
+  "distribution": [
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "application/json",
+      "contentUrl": "https://api.jpcite.com/v1/programs",
+      "description": "REST API"
+    }
+  ],
+  "additionalProperty": [
+    {
+      "@type": "PropertyValue",
+      "name": "ariaDescribedBy",
+      "value": "programs-main"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "agentReadable",
+      "value": true
+    }
+  ]
+}
