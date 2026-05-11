@@ -7,6 +7,7 @@ Public surface (site/) is already covered by check_publish_text.py; this script
 applies the same canonical check to docs/ as well, so internal handoff copy
 does not contradict the registry.
 """
+
 from __future__ import annotations
 
 import json
@@ -52,7 +53,9 @@ def main() -> int:
                 token = f"{n}業法"
             if n != canon:
                 ctx = text[max(0, m.start() - 20) : m.end() + 20].replace("\n", " ")
-                drifts.append(f"{rel}:{m.start()} FENCE {token} != canonical {canon}業法 ctx={ctx!r}")
+                drifts.append(
+                    f"{rel}:{m.start()} FENCE {token} != canonical {canon}業法 ctx={ctx!r}"
+                )
 
     if drifts:
         for d in drifts[:50]:

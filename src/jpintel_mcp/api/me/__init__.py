@@ -15,6 +15,7 @@ caller that bound to the module path.
 New magic-link auth code lives in `login_request.py` + `login_verify.py`
 inside this package and is exported alongside the legacy surface.
 """
+
 from __future__ import annotations
 
 import importlib.util as _ilu

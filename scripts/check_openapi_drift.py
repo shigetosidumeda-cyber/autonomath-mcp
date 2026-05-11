@@ -6,6 +6,7 @@ LLM 呼出ゼロ。Targets:
 - site/openapi.agent.gpt30.json -> openapi_paths_agent range
 - docs/openapi/v1.json -> openapi_paths_public range
 """
+
 from __future__ import annotations
 
 import json

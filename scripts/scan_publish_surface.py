@@ -6,6 +6,7 @@ scan site/**/*.html for occurrences of <key><non-digit><number>, and if any
 occurrence's value disagrees with the registry value AND falls outside the
 declared numeric_range, report a drift.
 """
+
 from __future__ import annotations
 
 import json

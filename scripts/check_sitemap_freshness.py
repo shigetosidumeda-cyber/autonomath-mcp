@@ -2,6 +2,7 @@
 """check_sitemap_freshness: compare max <lastmod> across site/sitemap-*.xml against
 data/facts_registry.json snapshot_at. WARN (exit 0 with stderr) if delta >24h.
 """
+
 from __future__ import annotations
 
 import datetime as dt
@@ -62,7 +63,9 @@ def main() -> int:
         return 0
 
     delta = abs((snap - max_lastmod).total_seconds()) / 3600.0
-    print(f"snapshot_at={snap.isoformat()} max_lastmod={max_lastmod.isoformat()} delta_hours={delta:.2f}")
+    print(
+        f"snapshot_at={snap.isoformat()} max_lastmod={max_lastmod.isoformat()} delta_hours={delta:.2f}"
+    )
     if delta > 24.0:
         print(f"WARN: sitemap lastmod drift {delta:.2f}h > 24h", file=sys.stderr)
     else:

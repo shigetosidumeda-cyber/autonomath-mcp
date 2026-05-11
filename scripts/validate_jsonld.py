@@ -2,6 +2,7 @@
 """validate_jsonld: extract <script type="application/ld+json"> blocks from site/**/*.html
 and verify each is parseable JSON. Reports invalid blocks; exits 1 if any invalid.
 """
+
 from __future__ import annotations
 
 import json

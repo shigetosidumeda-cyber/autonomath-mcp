@@ -7,6 +7,7 @@ Generates social card images for each site/*.html page based on:
   - Page slug for branding line
 Output: site/og/{slug}.png
 """
+
 from __future__ import annotations
 import pathlib
 import re
@@ -16,6 +17,7 @@ import sys
 def _try_pillow():
     try:
         from PIL import Image, ImageDraw, ImageFont
+
         return Image, ImageDraw, ImageFont
     except ImportError:
         return None, None, None
@@ -35,7 +37,9 @@ def extract_meta(html_path: pathlib.Path) -> tuple[str, str]:
     return title[:60], desc[:120]
 
 
-def make_og(slug: str, title: str, desc: str, out: pathlib.Path, Image, ImageDraw, ImageFont) -> None:
+def make_og(
+    slug: str, title: str, desc: str, out: pathlib.Path, Image, ImageDraw, ImageFont
+) -> None:
     img = Image.new("RGB", (1200, 630), color=(255, 255, 255))
     draw = ImageDraw.Draw(img)
     try:
@@ -48,13 +52,20 @@ def make_og(slug: str, title: str, desc: str, out: pathlib.Path, Image, ImageDra
         brand_font = ImageFont.load_default()
     # Brand bar (top, blue)
     draw.rectangle((0, 0, 1200, 80), fill=(10, 77, 140))
-    draw.text((40, 24), "jpcite — 日本公的制度 Evidence API/MCP", fill=(255, 255, 255), font=brand_font)
+    draw.text(
+        (40, 24), "jpcite — 日本公的制度 Evidence API/MCP", fill=(255, 255, 255), font=brand_font
+    )
     # Title (wrap to 2 lines max)
     draw.text((40, 140), title, fill=(15, 23, 42), font=title_font)
     # Description (wrap)
     draw.text((40, 300), desc, fill=(100, 116, 139), font=desc_font)
     # Footer
-    draw.text((40, 540), "Bookyou株式会社 / T8010001213708 / jpcite.com", fill=(100, 116, 139), font=desc_font)
+    draw.text(
+        (40, 540),
+        "Bookyou株式会社 / T8010001213708 / jpcite.com",
+        fill=(100, 116, 139),
+        font=desc_font,
+    )
     out.parent.mkdir(parents=True, exist_ok=True)
     img.save(out, "PNG", optimize=True)
 

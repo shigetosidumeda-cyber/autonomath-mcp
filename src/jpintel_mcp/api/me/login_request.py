@@ -1,4 +1,5 @@
 """magic-link login request: email → 6 digit code → mail."""
+
 from __future__ import annotations
 import os
 import secrets
@@ -40,7 +41,9 @@ def _ensure_table(conn: sqlite3.Connection) -> None:
         consumed INTEGER NOT NULL DEFAULT 0,
         PRIMARY KEY (email, issued_at)
     )""")
-    conn.execute("CREATE INDEX IF NOT EXISTS idx_mlc_email_active ON magic_link_codes(email, consumed, expires_at)")
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_mlc_email_active ON magic_link_codes(email, consumed, expires_at)"
+    )
     conn.commit()
 
 
@@ -58,11 +61,14 @@ def login_request(req: LoginRequest) -> LoginRequestResponse:
         (email, now),
     ).fetchone()
     if row:
-        return LoginRequestResponse(sent=False, expires_in_seconds=row["expires_at"] - now, reuse_existing_code=True)
+        return LoginRequestResponse(
+            sent=False, expires_in_seconds=row["expires_at"] - now, reuse_existing_code=True
+        )
     # Generate new 6-digit code
     code = f"{secrets.randbelow(1_000_000):06d}"
     # Hash code with email salt (bcrypt-like)
     import hashlib
+
     code_hash = hashlib.sha256(f"{email}:{code}".encode()).hexdigest()
     conn.execute(
         "INSERT INTO magic_link_codes (email, code_hash, issued_at, expires_at) VALUES (?, ?, ?, ?)",

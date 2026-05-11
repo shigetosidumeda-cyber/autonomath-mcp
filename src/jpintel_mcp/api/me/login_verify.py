@@ -1,4 +1,5 @@
 """magic-link verify: email + 6 digit code → JWT 24h."""
+
 from __future__ import annotations
 import hashlib
 import hmac
@@ -59,13 +60,22 @@ def login_verify(req: LoginVerifyRequest, response: Response) -> LoginVerifyResp
     exp = now + 86400
     header = {"alg": "HS256", "typ": "JWT"}
     payload = {"sub": email, "iat": now, "exp": exp}
-    h_b64 = urlsafe_b64encode(json.dumps(header, separators=(",", ":")).encode()).rstrip(b"=").decode()
-    p_b64 = urlsafe_b64encode(json.dumps(payload, separators=(",", ":")).encode()).rstrip(b"=").decode()
+    h_b64 = (
+        urlsafe_b64encode(json.dumps(header, separators=(",", ":")).encode()).rstrip(b"=").decode()
+    )
+    p_b64 = (
+        urlsafe_b64encode(json.dumps(payload, separators=(",", ":")).encode()).rstrip(b"=").decode()
+    )
     sig = hmac.new(secret.encode(), f"{h_b64}.{p_b64}".encode(), hashlib.sha256).digest()
     sig_b64 = urlsafe_b64encode(sig).rstrip(b"=").decode()
     jwt = f"{h_b64}.{p_b64}.{sig_b64}"
     response.set_cookie(
-        key="jpcite_session", value=jwt, max_age=86400,
-        httponly=True, secure=True, samesite="lax", path="/",
+        key="jpcite_session",
+        value=jwt,
+        max_age=86400,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        path="/",
     )
     return LoginVerifyResponse(ok=True, jwt=jwt, expires_at=exp)

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """check_mcp_drift: assert tools count in MCP manifests vs facts_registry mcp_tools range."""
+
 from __future__ import annotations
 
 import json

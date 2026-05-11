@@ -24,7 +24,9 @@ async def test_request_then_verify(app):
         assert r1.status_code == 200
         assert r1.json()["sent"] is True
         # Wrong code
-        r2 = await c.post("/v1/me/login_verify", json={"email": "user@example.com", "code": "000000"})
+        r2 = await c.post(
+            "/v1/me/login_verify", json={"email": "user@example.com", "code": "000000"}
+        )
         assert r2.status_code == 401
         # Bad format
         r3 = await c.post("/v1/me/login_verify", json={"email": "user@example.com", "code": "abc"})

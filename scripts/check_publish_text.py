@@ -5,6 +5,7 @@ LLM 呼出ゼロ。pure static analysis over site/**/*.html + site/**/*.txt + RE
 Reads guards from data/facts_registry.json.
 Exits 1 on any violation (CI BLOCK).
 """
+
 from __future__ import annotations
 
 import json
@@ -109,24 +110,18 @@ def main() -> int:
                 reason = item.get("reason", "banned")
             for m in re.finditer(pattern, text):
                 ctx = text[max(0, m.start() - 30) : m.end() + 30].replace("\n", " ")
-                violations.append(
-                    f"{rel}:{m.start()} BANNED[{reason}] {m.group(0)!r} ctx={ctx!r}"
-                )
+                violations.append(f"{rel}:{m.start()} BANNED[{reason}] {m.group(0)!r} ctx={ctx!r}")
 
         for key, (lo, hi) in ranges.items():
             for m in re.finditer(rf"{re.escape(key)}\D{{0,8}}(\d[\d,]+)", text):
                 v = int(m.group(1).replace(",", ""))
                 if not lo <= v <= hi:
-                    violations.append(
-                        f"{rel}:{m.start()} NUMERIC {key}={v} not in [{lo},{hi}]"
-                    )
+                    violations.append(f"{rel}:{m.start()} NUMERIC {key}={v} not in [{lo},{hi}]")
 
         for m in re.finditer(r"([5-8])\s*業法", text):
             n = int(m.group(1))
             if n != fence_canon:
-                violations.append(
-                    f"{rel}:{m.start()} FENCE {n}業法 != canonical {fence_canon}"
-                )
+                violations.append(f"{rel}:{m.start()} FENCE {n}業法 != canonical {fence_canon}")
 
         # do_not_provide / data_quality gates run on first-party copy only.
         # Third-party-record paths (enforcement, programs, compare) carry
@@ -165,12 +160,9 @@ def main() -> int:
                     window = text[max(0, m.start() - 80) : m.end() + 80]
                     if re.search(DISCLAIMER_MARKERS, window):
                         continue
-                    ctx = text[max(0, m.start() - 30) : m.end() + 50].replace(
-                        "\n", " "
-                    )
+                    ctx = text[max(0, m.start() - 30) : m.end() + 50].replace("\n", " ")
                     violations.append(
-                        f"{rel}:{m.start()} DO_NOT_PROVIDE[{cat}] "
-                        f"{m.group(0)!r} ctx={ctx!r}"
+                        f"{rel}:{m.start()} DO_NOT_PROVIDE[{cat}] {m.group(0)!r} ctx={ctx!r}"
                     )
 
         # data_quality_publishable_false gate: aggregate-context surfacing
@@ -180,12 +172,9 @@ def main() -> int:
         if "am_amount_condition" in data_quality_block:
             for pattern, label in DATA_QUALITY_AGGREGATE_PATTERNS:
                 for m in re.finditer(pattern, text):
-                    ctx = text[max(0, m.start() - 30) : m.end() + 30].replace(
-                        "\n", " "
-                    )
+                    ctx = text[max(0, m.start() - 30) : m.end() + 30].replace("\n", " ")
                     violations.append(
-                        f"{rel}:{m.start()} DATA_QUALITY[{label}] "
-                        f"{m.group(0)!r} ctx={ctx!r}"
+                        f"{rel}:{m.start()} DATA_QUALITY[{label}] {m.group(0)!r} ctx={ctx!r}"
                     )
 
     if violations:

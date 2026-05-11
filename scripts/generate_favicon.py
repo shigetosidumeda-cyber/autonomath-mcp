@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """favicon set + Apple touch icon + maskable PWA icon 生成 (minimal SVG → PNG multi-size)."""
+
 from __future__ import annotations
 import pathlib
 import sys
@@ -8,6 +9,7 @@ import sys
 def _try_pillow():
     try:
         from PIL import Image, ImageDraw, ImageFont
+
         return Image, ImageDraw, ImageFont
     except ImportError:
         return None, None, None

@@ -115,7 +115,16 @@
         ".github/workflows/mcp_drift_v3.yml",
         ".github/workflows/structured_data_v3.yml",
         ".github/workflows/sitemap_freshness_v3.yml",
-        ".github/workflows/fence_count_drift_v3.yml"
+        ".github/workflows/fence_count_drift_v3.yml",
+        "functions/",
+        "functions/artifacts/",
+        "pdf-app/",
+        "src/jpintel_mcp/api/me/",
+        "src/jpintel_mcp/api/playground_stream.py",
+        "tests/test_playground_stream.py",
+        "tests/test_me_auth.py",
+        "scripts/ops/status_probe.py",
+        ".github/workflows/status_update.yml"
       ],
       "forbidden_paths": [
         "tools/offline/_inbox/value_growth_dual/",

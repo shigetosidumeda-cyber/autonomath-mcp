@@ -50,6 +50,7 @@ env:
     scripts/ops/repo_dirty_lane_report.py
     scripts/ops/repo_hygiene_inventory.py
     scripts/ops/repo_value_asset_report.py
+    scripts/ops/status_probe.py
     scripts/ops/sync_workflow_targets.py
     scripts/ops/sync_workflow_targets_verify.py
     scripts/ops/verify_migration_targets.py
@@ -362,6 +363,7 @@ env:
     tests/test_mcp_server_coverage.py
     tests/test_mcp_tools.py
     tests/test_me.py
+    tests/test_me_auth.py
     tests/test_me_subscription_status.py
     tests/test_meta_freshness.py
     tests/test_metered_delivery.py
@@ -386,6 +388,7 @@ env:
     tests/test_perf_smoke.py
     tests/test_pii_redactor_response.py
     tests/test_ping.py
+    tests/test_playground_stream.py
     tests/test_policy_upstream.py
     tests/test_populate_calendar.py
     tests/test_post_deploy_smoke.py
@@ -578,6 +581,7 @@ jobs:
             scripts/ops/repo_dirty_lane_report.py \
             scripts/ops/repo_hygiene_inventory.py \
             scripts/ops/repo_value_asset_report.py \
+            scripts/ops/status_probe.py \
             scripts/ops/sync_workflow_targets.py \
             scripts/ops/sync_workflow_targets_verify.py \
             scripts/ops/verify_migration_targets.py \
