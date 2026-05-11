@@ -288,6 +288,8 @@ def query_at_snapshot(
 # separate AUTONOMATH_LEGACY_SNAPSHOT_ENABLED flag so it stays off by
 # default — operators flip it on only if they really need the legacy
 # behaviour after writing migration 067.
+# Late import (E402): legacy-gate read happens here, after the canonical
+# tool surface above; module-top imports remain grouped for the canonical surface.
 import os as _os  # noqa: E402
 
 _LEGACY_ENABLED = _os.environ.get("AUTONOMATH_LEGACY_SNAPSHOT_ENABLED", "0") in (

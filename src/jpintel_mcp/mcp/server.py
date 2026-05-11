@@ -9675,7 +9675,10 @@ if settings.autonomath_enabled:
 
     mcp.tool = _mcp_tool_with_envelope  # type: ignore[method-assign]
     try:
-        from jpintel_mcp.mcp import autonomath_tools  # noqa: E402,F401
+        # Late import (E402): gated on settings.autonomath_enabled at module entry;
+        # must run AFTER the envelope-wrapper assignment above. F401 side-effect-only
+        # (registers tools via decorator on import).
+        from jpintel_mcp.mcp import autonomath_tools  # noqa: E402, F401
     finally:
         mcp.tool = _orig_mcp_tool  # type: ignore[method-assign]
     # provenance_tools is auto-registered transitively via the package
@@ -9758,7 +9761,9 @@ if settings.healthcare_enabled:
 
     mcp.tool = _mcp_tool_with_envelope_hc  # type: ignore[method-assign]
     try:
-        from jpintel_mcp.mcp import healthcare_tools  # noqa: E402,F401
+        # Late import (E402): gated on settings.healthcare_enabled. Must run AFTER
+        # envelope-wrapper assignment above. F401 side-effect-only registration.
+        from jpintel_mcp.mcp import healthcare_tools  # noqa: E402, F401
     finally:
         mcp.tool = _orig_mcp_tool  # type: ignore[method-assign]
 
@@ -9786,7 +9791,9 @@ if settings.real_estate_enabled:
 
     mcp.tool = _mcp_tool_with_envelope_re  # type: ignore[method-assign]
     try:
-        from jpintel_mcp.mcp import real_estate_tools  # noqa: E402,F401
+        # Late import (E402): gated on settings.real_estate_enabled. Must run AFTER
+        # envelope-wrapper assignment above. F401 side-effect-only registration.
+        from jpintel_mcp.mcp import real_estate_tools  # noqa: E402, F401
     finally:
         mcp.tool = _orig_mcp_tool  # type: ignore[method-assign]
 
