@@ -139,6 +139,24 @@
         "name": "相談前プレ診断 50件",
         "req": 400,
         "jpy_inc_tax": 1320
+      },
+      {
+        "name": "法令 cohort cross-reference (am_amendment_diff 月次走査)",
+        "req": 12,
+        "jpy_inc_tax": 39.60,
+        "note": "法令改正 cohort を 12 軸 (制度×法令 / 採択 / 判例 / 行政処分 / 排他ルール / 地域 等) で 1 回ずつ cross-reference。月次サブスクライブ用途"
+      },
+      {
+        "name": "行政処分 RSS subscribe (houjin_watch webhook 1 件/月 × 12 ヶ月)",
+        "req": 12,
+        "jpy_inc_tax": 39.60,
+        "note": "am_enforcement_detail + houjin_watch を年間で fire させた場合の累計。webhook delivery は別途課金なし"
+      },
+      {
+        "name": "認定支援機関 月次伴走 1 client (100 req/月)",
+        "req": 100,
+        "jpy_inc_tax": 330,
+        "note": "1 顧問先 × 月 100 req (prescreen + saved_searches + recurring_engagement digest)。client_tag 単位での attribution 用途"
       }
     ]
   },

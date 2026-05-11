@@ -13,7 +13,7 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="OpenAI Codex CLI / Agents SDK から jpcite 1 import | jpcite">
 <meta property="og:description" content="openai-agents SDK の HostedMCPTool で https://api.jpcite.com/mcp を 1 行 import、139 tool 即時利用。">
-<meta property="og:url" content="https://jpcite.com/connect/codex.html">
+<meta property="og:url" content="https://jpcite.com/connect/codex">
 <meta property="og:site_name" content="jpcite">
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
@@ -45,8 +45,33 @@
   "itemListElement": [
     {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://jpcite.com/"},
     {"@type": "ListItem", "position": 2, "name": "Connect", "item": "https://jpcite.com/connect/"},
-    {"@type": "ListItem", "position": 3, "name": "Codex / Agents SDK", "item": "https://jpcite.com/connect/codex.html"}
+    {"@type": "ListItem", "position": 3, "name": "Codex / Agents SDK", "item": "https://jpcite.com/connect/codex"}
   ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "jpcite OpenAI Codex CLI / Agents SDK 接続データセット",
+  "description": "openai-agents SDK の HostedMCPTool で https://api.jpcite.com/mcp を 1 行 import するための設定情報。X-API-Key 認証で 139 tools 利用可能。",
+  "url": "https://jpcite.com/connect/codex",
+  "creator": {"@id": "https://jpcite.com/#publisher"},
+  "provider": {"@id": "https://jpcite.com/#publisher"},
+  "license": "https://jpcite.com/tos",
+  "isAccessibleForFree": true,
+  "inLanguage": "ja",
+  "keywords": ["OpenAI", "Codex", "Agents SDK", "HostedMCPTool", "Python"],
+  "distribution": [
+    {"@type": "DataDownload", "encodingFormat": "text/html", "contentUrl": "https://jpcite.com/connect/codex"},
+    {"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": "https://api.jpcite.com/mcp"}
+  ],
+  "variableMeasured": [
+    {"@type": "PropertyValue", "name": "mcp_tools_total", "value": 139},
+    {"@type": "PropertyValue", "name": "python_min_version", "value": "3.10"},
+    {"@type": "PropertyValue", "name": "auth_header", "value": "X-API-Key"}
+  ],
+  "citation": "https://jpcite.com/connect/codex"
 }
 </script>
 </head>

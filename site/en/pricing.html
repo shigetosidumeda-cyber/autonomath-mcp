@@ -9,7 +9,7 @@
 <meta property="og:title" content="Pricing — ¥3/billable unit — jpcite">
 <meta property="og:description" content="¥3 per billable unit (normal search/detail calls are 1 unit; ¥3.30 tax inclusive). No tiers, no fixed monthly, no cancellation fee. 3 req/day per IP free.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://jpcite.com/en/pricing.html">
+<meta property="og:url" content="https://jpcite.com/en/pricing">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -22,9 +22,9 @@
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/en/pricing">
-<link rel="alternate" hreflang="ja" href="https://jpcite.com/pricing.html">
-<link rel="alternate" hreflang="en" href="https://jpcite.com/en/pricing.html">
-<link rel="alternate" hreflang="x-default" href="https://jpcite.com/pricing.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/pricing">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/pricing">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/pricing">
 
 <script type="application/ld+json">
 {
@@ -33,7 +33,7 @@
   "name": "Pricing — ¥3/billable unit — jpcite",
   "description": "jpcite API + MCP pricing: ¥3 per billable unit (normal search/detail calls are 1 unit; ¥3.30 tax inclusive). No tiers, no fixed monthly. 3 req/day per IP free.",
   "inLanguage": "en",
-  "url": "https://jpcite.com/en/pricing.html",
+  "url": "https://jpcite.com/en/pricing",
   "isPartOf": {
     "@type": "WebSite",
     "name": "jpcite",
@@ -58,7 +58,7 @@
       "@type": "Offer",
       "name": "jpcite API + MCP — fully metered",
       "description": "REST + MCP. ¥3 per billable unit tax exclusive (¥3.30 tax inclusive, 10% JCT added at invoice). Normal search/detail calls are 1 unit; batch/export formulas are shown before use. 3 req/day per IP anonymous daily allowance with JST next-day 00:00 reset, no signup. No minimum term, no cancellation fee.",
-      "url": "https://jpcite.com/en/pricing.html#api-paid",
+      "url": "https://jpcite.com/en/pricing#api-paid",
       "category": "API access",
       "availability": "https://schema.org/InStock",
       "businessFunction": "https://schema.org/Sell",
@@ -107,7 +107,7 @@
       "price": "0",
       "priceCurrency": "JPY",
       "description": "3 req/day per IP free; resets at JST next-day 00:00.",
-      "url": "https://jpcite.com/en/pricing.html#api-free",
+      "url": "https://jpcite.com/en/pricing#api-free",
       "category": "API access",
       "availability": "https://schema.org/InStock",
       "inLanguage": "en",
@@ -553,7 +553,7 @@
 	                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
 	                body: JSON.stringify({
 	                  success_url: 'https://jpcite.com/en/success.html?session_id={CHECKOUT_SESSION_ID}',
-	                  cancel_url: 'https://jpcite.com/en/pricing.html?cancelled=1',
+	                  cancel_url: 'https://jpcite.com/en/pricing?cancelled=1',
 	                  locale: 'en'
                 }),
                 signal: ctrl.signal

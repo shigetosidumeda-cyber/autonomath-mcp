@@ -2,6 +2,7 @@
 <!-- Static API playground. Requests are sent directly from the browser. -->
 <html lang="ja">
 <head>
+<!-- CWV-HARDENED -->
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
 <title>API Playground — jpcite を今すぐ試す</title>
@@ -10,7 +11,7 @@
 <meta property="og:title" content="API Playground — jpcite">
 <meta property="og:description" content="登録不要、API キー不要、ブラウザ完結。主要エンドポイントを今すぐ試す。匿名 3 req/日 無料。">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://jpcite.com/playground.html">
+<meta property="og:url" content="https://jpcite.com/playground">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -22,20 +23,72 @@
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/playground">
-<link rel="alternate" hreflang="ja" href="https://jpcite.com/playground.html">
-<link rel="alternate" hreflang="en" href="https://jpcite.com/en/playground.html">
-<link rel="alternate" hreflang="x-default" href="https://jpcite.com/playground.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/playground">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/playground">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/playground">
 <!-- Preconnect to API origin: the playground always sends at least one
      request, so warming the TLS handshake during HTML parse pays off. -->
 <link rel="preconnect" href="https://api.jpcite.com" crossorigin>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="preload" as="font" type="font/woff2" href="/static/fonts/noto-sans-jp-3e6b27914d.woff2" crossorigin>
+<link rel="stylesheet" href="/static/fonts/noto-sans-jp.css">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="stylesheet" href="/styles.css?v=20260429b">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": "https://jpcite.com/playground#page",
+  "name": "API Playground — jpcite",
+  "url": "https://jpcite.com/playground",
+  "description": "ブラウザから直接 https://api.jpcite.com/v1/* を叩ける対話型 playground。匿名 3 req/日 まで無料、API キーなしで起動。",
+  "inLanguage": "ja",
+  "isPartOf": {"@type": "WebSite", "@id": "https://jpcite.com/#site", "name": "jpcite", "url": "https://jpcite.com/"},
+  "publisher": {"@type": "Organization", "name": "Bookyou株式会社", "url": "https://jpcite.com/"},
+  "primaryImageOfPage": {"@type": "ImageObject", "url": "https://jpcite.com/assets/og.png"}
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "jpcite", "item": "https://jpcite.com/"},
+    {"@type": "ListItem", "position": 2, "name": "Playground", "item": "https://jpcite.com/playground"}
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "jpcite Playground 対話可能 endpoint データセット",
+  "description": "jpcite REST + MCP API を匿名 3 req/日 で対話的に叩ける playground のメタデータ。3-step Evidence wizard と endpoint catalog を含む。",
+  "url": "https://jpcite.com/playground",
+  "creator": {"@id": "https://jpcite.com/#publisher"},
+  "provider": {"@id": "https://jpcite.com/#publisher"},
+  "license": "https://jpcite.com/tos",
+  "isAccessibleForFree": true,
+  "inLanguage": "ja",
+  "keywords": ["playground", "REST", "MCP", "evidence packet", "anonymous"],
+  "distribution": [
+    {"@type": "DataDownload", "encodingFormat": "text/html", "contentUrl": "https://jpcite.com/playground"},
+    {"@type": "DataDownload", "encodingFormat": "application/openapi+json", "contentUrl": "https://api.jpcite.com/v1/openapi.json"},
+    {"@type": "DataDownload", "encodingFormat": "application/openapi+json", "contentUrl": "https://api.jpcite.com/v1/openapi.agent.json"}
+  ],
+  "variableMeasured": [
+    {"@type": "PropertyValue", "name": "wizard_steps", "value": 3},
+    {"@type": "PropertyValue", "name": "anonymous_free_quota_per_day_per_ip", "value": 3},
+    {"@type": "PropertyValue", "name": "endpoint_catalog_paths", "value": 219},
+    {"@type": "PropertyValue", "name": "mcp_tools", "value": 139}
+  ],
+  "citation": "https://jpcite.com/sources"
+}
+</script>
 
 <script defer src="analytics.js?v=20260503a"></script>
 
@@ -848,7 +901,7 @@
 <header class="site-header" role="banner">
  <div class="container header-inner">
  <a class="brand" href="/" aria-label="jpcite ホーム">
- <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
  </a>
  <nav class="site-nav" aria-label="主要ナビゲーション">
  <a href="about.html">運営について</a>
@@ -1137,7 +1190,7 @@
 <footer class="site-footer" role="contentinfo">
  <div class="container footer-inner">
  <div class="footer-col">
- <p class="footer-brand">jpcite</p>
+ <p class="footer-brand"><img src="/assets/brand/jpcite-mark.svg" alt="" width="20" height="20" loading="lazy" decoding="async" style="height:20px;width:20px;vertical-align:middle;margin-right:8px;display:inline-block;">jpcite</p>
  <p class="footer-tag">日本の公的制度を、成果物として。</p>
  </div>
  <nav class="footer-nav" aria-label="フッター">

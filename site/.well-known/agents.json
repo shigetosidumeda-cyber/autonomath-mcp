@@ -1,22 +1,92 @@
 {
-  "schema_version": "agents.json/draft-01",
+  "schema_version": "agents.json/draft-02",
   "operator": "Bookyou株式会社",
   "operator_corporate_number": "8010001213708",
+  "operator_jct_registration": "T8010001213708",
+  "product": "jpcite",
+  "description": "Japanese public-program / public-record evidence API and MCP server. Source-linked retrieval for subsidies, loans, licenses, administrative dispositions, qualified-invoice registrants, laws, and court decisions. Corpus snapshot 2026-05-07: 503,930 entities, 6.12M facts, 11,601 searchable programs across 47 prefectures, 9,484 law catalog stubs (6,493 full-text indexed), 50 tax_rulesets, 2,065 court_decisions, 1,185 enforcement_cases, 13,801 invoice_registrants (monthly 4M-row zenken bulk wired). MCP runtime cohort = 146 tools (manifest hold-at-139 default-gate count until next intentional bump).",
   "mcp_endpoint": "https://api.jpcite.com/mcp",
   "rest_openapi": "https://api.jpcite.com/openapi.public.json",
   "agent_openapi": "https://jpcite.com/openapi.agent.json",
   "agent_openapi_slim_gpt30": "https://jpcite.com/openapi.agent.gpt30.json",
   "llms_txt": "https://jpcite.com/llms.txt",
   "llms_full_txt": "https://jpcite.com/llms-full.txt",
-  "glossary": "https://jpcite.com/glossary.json",
-  "facts_registry": "https://jpcite.com/.well-known/facts_registry.json",
-  "fence_md": "https://jpcite.com/.well-known/fence.md",
   "policy_url": "https://jpcite.com/tos.html",
   "privacy_url": "https://jpcite.com/privacy.html",
+  "tools_count": {
+    "runtime_cohort": 146,
+    "manifest_hold_at": 139,
+    "note": "CLAUDE.md SOT: runtime cohort = 146 as of 2026-05-07. Manifests (pyproject.toml / server.json / dxt/manifest.json / smithery.yaml / mcp-server.json) intentionally hold at 139 until the next intentional bump. Verify with len(await mcp.list_tools())."
+  },
+  "corpus_scale": {
+    "entities": 503930,
+    "facts": 6120000,
+    "searchable_programs": 11601,
+    "law_catalog_stubs": 9484,
+    "law_full_text_indexed": 6493,
+    "tax_rulesets": 50,
+    "court_decisions": 2065,
+    "enforcement_cases": 1185,
+    "invoice_registrants_delta": 13801,
+    "snapshot_at": "2026-05-07"
+  },
   "rate_limit": {"free_per_day_per_ip": 3, "paid_per_second": 10, "paid_burst": 20},
-  "pricing": {"unit_price_jpy_ex_tax": 3, "currency": "JPY"},
+  "pricing": {"unit_price_jpy_ex_tax": 3, "unit_price_jpy_inc_tax": 3.30, "currency": "JPY", "tier": "completely_metered"},
   "contact_email": "info@bookyou.net",
   "support_sla_hours": 24,
   "geo_eligibility": "Japan-only (Stripe customer billing_address_country=JP required)",
-  "data_licenses": ["PDL_v1.0", "CC-BY-4.0", "政府標準利用規約v2.0"]
+  "data_licenses": ["PDL_v1.0", "CC-BY-4.0", "政府標準利用規約v2.0"],
+  "recurring_agent_workflows": {
+    "activation_rule": "Choose one first paid evidence call, use previewCost before broad runs, rerun with X-API-Key after the anonymous daily trial, and set X-Client-Tag for customer or project attribution.",
+    "workflows": [
+      {
+        "id": "company_folder_intake",
+        "description": "1法人の公開ベースライン作成 (createCompanyPublicBaseline + folder brief + evidence packet).",
+        "first_paid_call": "createCompanyPublicBaseline",
+        "sequence": ["previewCost", "createCompanyPublicBaseline", "createCompanyFolderBrief", "queryEvidencePacket"],
+        "approx_req": 18,
+        "approx_jpy_inc_tax": 59.40
+      },
+      {
+        "id": "monthly_client_review",
+        "description": "顧問先 N 社の月次 evidence packet 再取得 + prescreen 走査.",
+        "first_paid_call": "queryEvidencePacket",
+        "sequence": ["previewCost", "queryEvidencePacket", "prescreenPrograms"],
+        "approx_req_per_client": 1,
+        "approx_jpy_inc_tax_per_client": 3.30
+      },
+      {
+        "id": "counterparty_dd_and_audit_prep",
+        "description": "M&A 相手先 / 監査前準備の DD pack + audit pack + 専門家ハンドオフ.",
+        "first_paid_call": "createCompanyPublicBaseline",
+        "sequence": ["previewCost", "createCompanyPublicBaseline", "createCompanyPublicAuditPack", "match_advisors_v1_advisors_match_get"],
+        "approx_req": 47,
+        "approx_jpy_inc_tax": 155.10
+      },
+      {
+        "id": "law_amendment_cross_reference_monitor",
+        "description": "法令改正 cohort cross-reference monitor (am_amendment_diff + 制度影響 surface). 月次で 12 cohort を回す.",
+        "first_paid_call": "queryEvidencePacket",
+        "sequence": ["previewCost", "queryEvidencePacket", "track_amendment_lineage_am", "cross_check_jurisdiction"],
+        "approx_req_per_month": 12,
+        "approx_jpy_inc_tax_per_month": 39.60
+      },
+      {
+        "id": "adoption_case_cohort_compare",
+        "description": "採択事例 cohort 比較 (業種 × 規模 × 地域). 1 顧問先につき pack_construction / pack_manufacturing / pack_real_estate のいずれかを cohort matcher で回す.",
+        "first_paid_call": "case_cohort_match",
+        "sequence": ["previewCost", "case_cohort_match", "match_due_diligence_questions"],
+        "approx_req_per_compare": 6,
+        "approx_jpy_inc_tax_per_compare": 19.80
+      },
+      {
+        "id": "enforcement_watch_rss",
+        "description": "行政処分 watch (am_enforcement_detail RSS subscribe + houjin_watch webhook). 月 1 回の subscribe rerun + webhook fire.",
+        "first_paid_call": "queryEvidencePacket",
+        "sequence": ["previewCost", "queryEvidencePacket", "check_enforcement_am"],
+        "approx_req_per_month": 12,
+        "approx_jpy_inc_tax_per_month": 39.60
+      }
+    ]
+  }
 }

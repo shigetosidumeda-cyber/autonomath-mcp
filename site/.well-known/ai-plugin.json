@@ -13,7 +13,7 @@
     "url": "https://jpcite.com/openapi.agent.gpt30.json",
     "is_user_authenticated": false
   },
-  "logo_url": "https://jpcite.com/logo.svg",
+  "logo_url": "https://jpcite.com/assets/logo.svg",
   "contact_email": "info@bookyou.net",
   "legal_info_url": "https://jpcite.com/tos.html"
 }

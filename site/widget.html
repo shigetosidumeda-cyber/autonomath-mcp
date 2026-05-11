@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+<!-- CWV-HARDENED -->
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
 <title>あなたのサイトに相談前プレ診断入口を設置 — jpcite Widget</title>
@@ -9,7 +10,7 @@
 <meta property="og:title" content="jpcite Widget — 相談前プレ診断入口">
 <meta property="og:description" content="税理士・支援機関のサイトに、候補制度・一次資料・相談前質問を出す widget を設置。ブラウザ用キーは設置サイトURLで制限、利用分はサイト運営者に従量課金。">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://jpcite.com/widget.html">
+<meta property="og:url" content="https://jpcite.com/widget">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -22,16 +23,15 @@
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/widget">
-<link rel="alternate" hreflang="ja" href="https://jpcite.com/widget.html">
-<link rel="alternate" hreflang="en" href="https://jpcite.com/en/widget.html">
-<link rel="alternate" hreflang="x-default" href="https://jpcite.com/widget.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/widget">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/widget">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/widget">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="preload" as="font" type="font/woff2" href="/static/fonts/noto-sans-jp-3e6b27914d.woff2" crossorigin>
+<link rel="stylesheet" href="/static/fonts/noto-sans-jp.css">
 <link rel="stylesheet" href="styles.css?v=20260428a">
 
 <script type="application/ld+json">
@@ -41,7 +41,7 @@
   "name": "jpcite Widget",
   "description": "税理士・支援機関のサイトに、候補制度・一次資料・相談前質問を表示する widget。ブラウザ用キーは設置サイトURLで制限され、利用分はサイト運営者に従量課金されます。",
   "brand": {"@type": "Brand", "name": "jpcite"},
-  "url": "https://jpcite.com/widget.html",
+  "url": "https://jpcite.com/widget",
   "inLanguage": "ja",
   "offers": [
     {
@@ -50,7 +50,7 @@
       "price": "3",
       "priceCurrency": "JPY",
       "description": "サイト運営者のブラウザ用キーで正常処理された検索リクエストを ¥3/件 税別 (税込 ¥3.30) で従量課金。公開APIの匿名評価枠とは別。",
-      "url": "https://jpcite.com/widget.html",
+      "url": "https://jpcite.com/widget",
       "availability": "https://schema.org/InStock",
       "seller": {
         "@type": "Organization",
@@ -427,7 +427,7 @@
 <header class="site-header" role="banner">
  <div class="container header-inner">
  <a class="brand" href="index.html" aria-label="jpcite ホーム">
- <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
  </a>
  <nav class="site-nav" aria-label="主要ナビゲーション">
  <a href="about.html">運営について</a>
@@ -638,7 +638,7 @@
 <footer class="site-footer" role="contentinfo">
  <div class="container footer-inner">
  <div class="footer-col">
- <p class="footer-brand">jpcite</p>
+ <p class="footer-brand"><img src="/assets/brand/jpcite-mark.svg" alt="" width="20" height="20" loading="lazy" decoding="async" style="height:20px;width:20px;vertical-align:middle;margin-right:8px;display:inline-block;">jpcite</p>
  <p class="footer-tag">日本の公的制度を、成果物として。</p>
  </div>
  <nav class="footer-nav" aria-label="フッター">
@@ -746,7 +746,7 @@
         label: label || null,
         origins: origins,
         success_url: "https://jpcite.com/widget/success.html?session_id={CHECKOUT_SESSION_ID}",
-        cancel_url: "https://jpcite.com/widget.html?cancelled=1"
+        cancel_url: "https://jpcite.com/widget?cancelled=1"
       }),
       signal: ctrl.signal
     })

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+<!-- CWV-HARDENED -->
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
 <title>データ鮮度 — jpcite</title>
@@ -25,9 +26,8 @@
 <link rel="alternate" hreflang="en" href="https://jpcite.com/en/data-freshness">
 <link rel="alternate" hreflang="x-default" href="https://jpcite.com/data-freshness">
 <link rel="preconnect" href="https://api.jpcite.com" crossorigin>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="preload" as="font" type="font/woff2" href="/static/fonts/noto-sans-jp-3e6b27914d.woff2" crossorigin>
+<link rel="stylesheet" href="/static/fonts/noto-sans-jp.css">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
@@ -175,7 +175,7 @@
 <header class="site-header" role="banner">
  <div class="container header-inner">
  <a class="brand" href="/" aria-label="jpcite ホーム">
- <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
  </a>
  <nav class="site-nav" aria-label="主要ナビゲーション">
  <a href="about.html">運営について</a>
@@ -287,7 +287,7 @@
 <footer class="site-footer" role="contentinfo">
  <div class="container footer-inner">
  <div class="footer-col">
- <p class="footer-brand">jpcite</p>
+ <p class="footer-brand"><img src="/assets/brand/jpcite-mark.svg" alt="" width="20" height="20" loading="lazy" decoding="async" style="height:20px;width:20px;vertical-align:middle;margin-right:8px;display:inline-block;">jpcite</p>
  <p class="footer-tag">日本の公的制度を、根拠付き成果物に。</p>
  </div>
  <nav class="footer-nav" aria-label="フッター">

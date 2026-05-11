@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+<!-- CWV-HARDENED -->
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
 <title>既存 API キーを管理 — jpcite ダッシュボード</title>
@@ -10,7 +11,7 @@
 <meta property="og:title" content="既存 API キーを管理 — jpcite ダッシュボード">
 <meta property="og:description" content="既存 jpcite API キーの管理画面 (利用量・請求・解約)。新規発行は Pricing から。">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://jpcite.com/dashboard.html">
+<meta property="og:url" content="https://jpcite.com/dashboard">
 <meta property="og:image" content="https://jpcite.com/assets/og-square.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -23,13 +24,12 @@
 <meta name="twitter:image" content="https://jpcite.com/assets/og-square.png">
 
 <link rel="canonical" href="https://jpcite.com/dashboard">
-<link rel="alternate" hreflang="ja" href="https://jpcite.com/dashboard.html">
-<link rel="alternate" hreflang="en" href="https://jpcite.com/en/dashboard.html">
-<link rel="alternate" hreflang="x-default" href="https://jpcite.com/dashboard.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/dashboard">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/dashboard">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/dashboard">
 <link rel="preconnect" href="https://api.jpcite.com" crossorigin>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="preload" as="font" type="font/woff2" href="/static/fonts/noto-sans-jp-3e6b27914d.woff2" crossorigin>
+<link rel="stylesheet" href="/static/fonts/noto-sans-jp.css">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
@@ -67,6 +67,33 @@
   "sameAs": [
     "https://www.bookyou.net/"
   ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "jpcite API キー / 利用量 / 課金 ダッシュボード 計測項目",
+  "description": "ログイン user の API キー管理、利用量メトリクス、Stripe 請求書、保存条件、Webhook 配信、audit-seal、parent/child キー fan-out の公開計測項目。",
+  "url": "https://jpcite.com/dashboard",
+  "creator": {"@id": "https://jpcite.com/#publisher"},
+  "provider": {"@id": "https://jpcite.com/#publisher"},
+  "license": "https://jpcite.com/tos",
+  "isAccessibleForFree": false,
+  "inLanguage": "ja",
+  "keywords": ["dashboard", "API key", "usage metering", "Stripe billing", "saved searches", "webhooks"],
+  "distribution": [
+    {"@type": "DataDownload", "encodingFormat": "text/html", "contentUrl": "https://jpcite.com/dashboard"},
+    {"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": "https://api.jpcite.com/v1/me/usage"}
+  ],
+  "variableMeasured": [
+    {"@type": "PropertyValue", "name": "api_keys.count_per_user", "value": "1+"},
+    {"@type": "PropertyValue", "name": "usage_window", "value": "rolling 30 days"},
+    {"@type": "PropertyValue", "name": "anonymous_quota_per_day_per_ip", "value": 3},
+    {"@type": "PropertyValue", "name": "dashboard_widgets", "value": 9}
+  ],
+  "citation": "https://jpcite.com/tos"
 }
 </script>
 
@@ -214,7 +241,7 @@
 <header class="site-header" role="banner">
  <div class="container header-inner">
  <a class="brand" href="/" aria-label="jpcite ホーム">
- <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
  </a>
  <nav class="site-nav" aria-label="主要ナビゲーション">
  <a href="about.html">運営について</a>
@@ -258,6 +285,8 @@
  <button type="button" id="dash-newkey-copy" class="btn-ghost" style="margin-right:6px;">キーをコピー</button>
  <button type="button" id="dash-newkey-dismiss" class="btn-ghost">表示を閉じる</button>
  </div>
+
+ <h1 style="margin:0 0 8px;">既存 user 向け — API キー / 利用状況 / 請求 ダッシュボード</h1>
 
  <section id="quickstart" aria-labelledby="quickstart-title" class="stat-card"
  style="margin:0 0 24px;padding:22px 24px;border:1px solid var(--accent,#0066cc);background:var(--accent-soft,#f6fbff);">
@@ -434,7 +463,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
         })();
       </script>
 
- <h1>既存 user 向け — API キー / 利用状況 / 請求 ダッシュボード</h1>
+ <h2 id="dash-user-section-title" style="font-size:22px;font-weight:800;margin:0 0 8px;letter-spacing:-0.01em;">既存 user 向け — API キー / 利用状況 / 請求 ダッシュボード</h2>
  <p class="sub" style="margin:0 0 6px;">ログイン中: <code>—</code></p>
  <p class="sub" style="font-size:13px;color:var(--text-muted);margin:0 0 14px;line-height:1.6;">
  このページは <strong>既存 user 専用</strong> です — API キー list、利用量、Stripe billing portal link が下に並びます。
@@ -1547,7 +1576,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
   <p class="w9-note">
    <span class="w9-key-pill jc">jc_</span> 現行発行 (Stripe Checkout)
    <span class="w9-key-pill sk">sk_</span> 過去発行 (互換)
-   <span class="w9-key-pill am">am_</span> AutonoMath 互換
+   <span class="w9-key-pill am">am_</span> 互換 prefix
    いずれも HMAC-SHA256 hash で照合され、 GET /v1/me/api_keys で list 取得します。 新規キーは Stripe Checkout 経由のみ発行可能。
   </p>
   <table class="w9-table" id="w9-keys-table">
@@ -2094,7 +2123,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
 <footer class="site-footer" role="contentinfo">
  <div class="container footer-inner">
  <div class="footer-col">
- <p class="footer-brand">jpcite</p>
+ <p class="footer-brand"><img src="/assets/brand/jpcite-mark.svg" alt="" width="20" height="20" loading="lazy" decoding="async" style="height:20px;width:20px;vertical-align:middle;margin-right:8px;display:inline-block;">jpcite</p>
  <p class="footer-tag">日本の制度 API</p>
  </div>
  <nav class="footer-nav" aria-label="フッター">

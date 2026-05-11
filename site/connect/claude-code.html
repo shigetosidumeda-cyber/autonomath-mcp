@@ -13,7 +13,7 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="Claude Code から jpcite を 30 秒で接続 | jpcite">
 <meta property="og:description" content="Claude Code CLI に jpcite MCP server を 1 行で統合。139 tool で日本公的情報横断、anon 3req/IP/日無料、paid ¥3/req metered。">
-<meta property="og:url" content="https://jpcite.com/connect/claude-code.html">
+<meta property="og:url" content="https://jpcite.com/connect/claude-code">
 <meta property="og:site_name" content="jpcite">
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
@@ -45,8 +45,33 @@
   "itemListElement": [
     {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://jpcite.com/"},
     {"@type": "ListItem", "position": 2, "name": "Connect", "item": "https://jpcite.com/connect/"},
-    {"@type": "ListItem", "position": 3, "name": "Claude Code", "item": "https://jpcite.com/connect/claude-code.html"}
+    {"@type": "ListItem", "position": 3, "name": "Claude Code", "item": "https://jpcite.com/connect/claude-code"}
   ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "jpcite Claude Code (Anthropic CLI) MCP 接続データセット",
+  "description": "Anthropic Claude Code CLI から jpcite MCP server を呼ぶための .mcp.json 設定と動作確認手順。stdio transport 経由で 139 tools 利用可能。",
+  "url": "https://jpcite.com/connect/claude-code",
+  "creator": {"@id": "https://jpcite.com/#publisher"},
+  "provider": {"@id": "https://jpcite.com/#publisher"},
+  "license": "https://jpcite.com/tos",
+  "isAccessibleForFree": true,
+  "inLanguage": "ja",
+  "keywords": ["Claude Code", "Anthropic", "MCP", "stdio", "integration"],
+  "distribution": [
+    {"@type": "DataDownload", "encodingFormat": "text/html", "contentUrl": "https://jpcite.com/connect/claude-code"},
+    {"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": "https://jpcite.com/server.json"}
+  ],
+  "variableMeasured": [
+    {"@type": "PropertyValue", "name": "mcp_tools_total", "value": 139},
+    {"@type": "PropertyValue", "name": "transport", "value": "stdio"},
+    {"@type": "PropertyValue", "name": "protocol_version", "value": "2025-06-18"}
+  ],
+  "citation": "https://jpcite.com/connect/claude-code"
 }
 </script>
   <script type="application/ld+json" data-jpcite-jsonld="common">{

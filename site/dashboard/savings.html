@@ -47,6 +47,7 @@
 -->
 <html lang="ja">
 <head>
+<!-- CWV-HARDENED -->
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
 <title>Savings — jpcite ダッシュボード</title>
@@ -62,9 +63,8 @@
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://api.jpcite.com" crossorigin>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="preload" as="font" type="font/woff2" href="/static/fonts/noto-sans-jp-3e6b27914d.woff2" crossorigin>
+<link rel="stylesheet" href="/static/fonts/noto-sans-jp.css">
 <link rel="stylesheet" href="/critical.css?v=20260428a">
 <link rel="preload" href="/styles.css?v=20260428a" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="/styles.css?v=20260428a"></noscript>
@@ -335,7 +335,7 @@
 <footer class="site-footer" role="contentinfo">
  <div class="container footer-inner">
   <div class="footer-col">
-   <p class="footer-brand">jpcite</p>
+   <p class="footer-brand"><img src="/assets/brand/jpcite-mark.svg" alt="" width="20" height="20" loading="lazy" decoding="async" style="height:20px;width:20px;vertical-align:middle;margin-right:8px;display:inline-block;">jpcite</p>
    <p class="footer-tag" data-i18n="footer_tag">日本の制度 API</p>
   </div>
   <nav class="footer-nav" aria-label="footer">
