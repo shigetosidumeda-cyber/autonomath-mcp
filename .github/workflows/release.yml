@@ -520,7 +520,11 @@ jobs:
   test:
     name: Test suite (release gate)
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # 30 → 50 minutes: full PYTEST_TARGETS list (~500 files) exceeded 30m on the
+    # v0.3.5 dispatch (run 25676951395 cancelled at 30:33, evidence in CLAUDE.md
+    # Wave 24). The Trusted Publishing OIDC flow has a hard ceiling on retries
+    # per tag, so silently re-tripping the timeout wastes the publish window.
+    timeout-minutes: 50
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
