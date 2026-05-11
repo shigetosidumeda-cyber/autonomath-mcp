@@ -46,7 +46,31 @@
     <lastmod>2026-05-04</lastmod>
   </sitemap>
   <sitemap>
+    <loc>https://jpcite.com/sitemap-cases.xml</loc>
+    <lastmod>2026-05-11</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://jpcite.com/sitemap-enforcement-cases.xml</loc>
+    <lastmod>2026-05-11</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://jpcite.com/sitemap-laws.xml</loc>
+    <lastmod>2026-05-11</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://jpcite.com/sitemap-laws-en.xml</loc>
+    <lastmod>2026-05-11</lastmod>
+  </sitemap>
+  <sitemap>
     <loc>https://jpcite.com/docs/sitemap.xml</loc>
     <lastmod>2026-05-06</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://jpcite.com/feed.atom</loc>
+    <lastmod>2026-05-11</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://jpcite.com/feed.rss</loc>
+    <lastmod>2026-05-11</lastmod>
   </sitemap>
 </sitemapindex>

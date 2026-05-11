@@ -10,7 +10,7 @@
 <meta property="og:title" content="jpcite Widget — prescreen intake for advisor sites">
 <meta property="og:description" content="A drop-in JS widget for candidate programs, primary-source links, fetched timestamps, and prescreen questions. Keys are limited to your registered site URLs. No build step.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://jpcite.com/en/widget.html">
+<meta property="og:url" content="https://jpcite.com/en/widget">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -23,9 +23,9 @@
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/en/widget">
-<link rel="alternate" hreflang="ja" href="https://jpcite.com/widget.html">
-<link rel="alternate" hreflang="en" href="https://jpcite.com/en/widget.html">
-<link rel="alternate" hreflang="x-default" href="https://jpcite.com/widget.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/widget">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/widget">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/widget">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
@@ -41,7 +41,7 @@
   "itemListElement": [
     {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://jpcite.com/en/"},
     {"@type": "ListItem", "position": 2, "name": "Products", "item": "https://jpcite.com/en/products.html"},
-    {"@type": "ListItem", "position": 3, "name": "Widget", "item": "https://jpcite.com/en/widget.html"}
+    {"@type": "ListItem", "position": 3, "name": "Widget", "item": "https://jpcite.com/en/widget"}
   ]
 }
 </script>
@@ -53,7 +53,7 @@
   "name": "jpcite Widget",
   "description": "A drop-in JavaScript widget that lets advisor firms and SMB-support sites show candidate programs, primary-source URLs, fetched timestamps, and prescreen questions. ¥3 per completed search request tax exclusive (¥3.30 tax inclusive), no fixed monthly fee.",
   "brand": {"@type": "Brand", "name": "jpcite"},
-  "url": "https://jpcite.com/en/widget.html",
+  "url": "https://jpcite.com/en/widget",
   "inLanguage": "en",
   "offers": [
     {
@@ -62,7 +62,7 @@
       "price": "3",
       "priceCurrency": "JPY",
       "description": "¥3 per completed search request metered tax exclusive (¥3.30 tax inclusive). No fixed monthly fee.",
-      "url": "https://jpcite.com/en/widget.html",
+      "url": "https://jpcite.com/en/widget",
       "availability": "https://schema.org/InStock",
       "seller": {
         "@type": "Organization",
@@ -582,7 +582,7 @@
         label: label || null,
         origins: origins,
         success_url: "https://jpcite.com/en/widget/success.html?session_id={CHECKOUT_SESSION_ID}",
-        cancel_url: "https://jpcite.com/en/widget.html?cancelled=1"
+        cancel_url: "https://jpcite.com/en/widget?cancelled=1"
       }),
       signal: ctrl.signal
     })
@@ -653,7 +653,7 @@ lean);
         label: label || null,
         origins: origins,
         success_url: "https://jpcite.com/en/widget/success.html?session_id={CHECKOUT_SESSION_ID}",
-        cancel_url: "https://jpcite.com/en/widget.html?cancelled=1"
+        cancel_url: "https://jpcite.com/en/widget?cancelled=1"
       }),
       signal: ctrl.signal
     })

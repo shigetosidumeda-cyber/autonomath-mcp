@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+<!-- CWV-HARDENED -->
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
 <title>ステータス / Status — jpcite</title>
@@ -371,6 +372,33 @@
     }
   ]
 }</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "jpcite サービス稼働ステータス データセット",
+  "description": "jpcite の REST API / ランディング / MCP サーバ / DB / Stripe 決済 5 コンポーネントの公開稼働指標。リアルタイム probe 結果と過去 90 日 SLA。",
+  "url": "https://jpcite.com/status/",
+  "creator": {"@id": "https://jpcite.com/#publisher"},
+  "provider": {"@id": "https://jpcite.com/#publisher"},
+  "license": "https://jpcite.com/tos",
+  "isAccessibleForFree": true,
+  "inLanguage": "ja",
+  "keywords": ["status", "uptime", "SLA", "incident", "probe"],
+  "distribution": [
+    {"@type": "DataDownload", "encodingFormat": "text/html", "contentUrl": "https://jpcite.com/status/"},
+    {"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": "https://jpcite.com/status/status.json"},
+    {"@type": "DataDownload", "encodingFormat": "image/svg+xml", "contentUrl": "https://jpcite.com/status/badge.svg"},
+    {"@type": "DataDownload", "encodingFormat": "application/rss+xml", "contentUrl": "https://jpcite.com/status/rss.xml"}
+  ],
+  "variableMeasured": [
+    {"@type": "PropertyValue", "name": "components_monitored", "value": 5},
+    {"@type": "PropertyValue", "name": "probe_interval_minutes", "value": 5},
+    {"@type": "PropertyValue", "name": "sla_window_days", "value": 90}
+  ],
+  "citation": "https://jpcite.com/status/"
+}
+</script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-jpcite-a11y="baseline">
   <link rel="manifest" href="/manifest.webmanifest">
   <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
@@ -543,7 +571,7 @@
  <p class="meta-row" id="probe-meta">
  <span>cron snapshot: <code id="probe-snapshot-at">—</code></span>
  <span>overall: <code id="probe-overall">—</code></span>
- <span><img src="/status/badge.svg" alt="status badge" id="probe-badge" style="vertical-align:middle;height:20px;border-radius:3px;"></span>
+ <span><img src="/status/badge.svg" alt="status badge" id="probe-badge" style="vertical-align:middle;height:20px;border-radius:3px;" loading="lazy" decoding="async"></span>
  </p>
 
  <p class="meta-row">
@@ -582,7 +610,7 @@
 
 <footer class="site-footer" role="contentinfo">
  <div class="footer-inner">
- <p class="footer-brand">jpcite</p>
+ <p class="footer-brand"><img src="/assets/brand/jpcite-mark.svg" alt="" width="20" height="20" loading="lazy" decoding="async" style="height:20px;width:20px;vertical-align:middle;margin-right:8px;display:inline-block;">jpcite</p>
  <p class="footer-tag">日本の制度 API + MCP サーバ</p>
  <nav class="footer-nav" aria-label="フッター">
  <a href="/tos.html">利用規約</a>

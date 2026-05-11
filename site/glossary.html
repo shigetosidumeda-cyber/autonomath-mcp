@@ -7,6 +7,7 @@
 -->
 <html lang="ja">
 <head>
+<!-- CWV-HARDENED -->
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
 <meta name="color-scheme" content="light dark">
@@ -16,7 +17,7 @@
 <meta property="og:title" content="用語集 — 公的支援 5 用語の違い (補助金 / 助成金 / 融資 / 税制優遇 / 認定制度)">
 <meta property="og:description" content="補助金と助成金の違い、融資・税制優遇・認定制度の位置付けを 1 ページで整理。jpcite API 経路 と紐付け。">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://jpcite.com/glossary.html">
+<meta property="og:url" content="https://jpcite.com/glossary">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -29,16 +30,15 @@
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/glossary">
-<link rel="alternate" hreflang="ja" href="https://jpcite.com/glossary.html">
-<link rel="alternate" hreflang="en" href="https://jpcite.com/en/glossary.html">
-<link rel="alternate" hreflang="x-default" href="https://jpcite.com/glossary.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/glossary">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/glossary">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/glossary">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="preload" as="font" type="font/woff2" href="/static/fonts/noto-sans-jp-3e6b27914d.woff2" crossorigin>
+<link rel="stylesheet" href="/static/fonts/noto-sans-jp.css">
 <link rel="stylesheet" href="styles.css?v=20260428a">
 
 <script defer src="analytics.js?v=20260503a"></script>
@@ -47,10 +47,10 @@
 {
   "@context": "https://schema.org",
   "@type": "DefinedTermSet",
-  "@id": "https://jpcite.com/glossary.html#termset",
+  "@id": "https://jpcite.com/glossary#termset",
   "name": "jpcite 公的支援 用語集",
   "description": "日本の公的支援制度を理解するための基礎 5 用語 (補助金 / 助成金 / 融資 / 税制優遇 / 認定制度) の定義と違い。",
-  "url": "https://jpcite.com/glossary.html",
+  "url": "https://jpcite.com/glossary",
   "inLanguage": "ja",
   "creator": {
     "@type": "Organization",
@@ -68,63 +68,63 @@
   "hasDefinedTerm": [
     {
       "@type": "DefinedTerm",
-      "@id": "https://jpcite.com/glossary.html#term-subsidy",
+      "@id": "https://jpcite.com/glossary#term-subsidy",
       "name": "補助金",
       "alternateName": [
         "Subsidy",
         "Hojokin"
       ],
       "description": "国・自治体が政策目的達成のため事業者に給付する資金。返還不要 (但し成果報告必須、目的外使用や虚偽申請は返還命令対象)。代表例は事業再構築補助金・ものづくり補助金。原資は税金。競争審査が伴うため公募・採択倍率が存在する。",
-      "url": "https://jpcite.com/glossary.html#term-subsidy",
-      "inDefinedTermSet": "https://jpcite.com/glossary.html#termset"
+      "url": "https://jpcite.com/glossary#term-subsidy",
+      "inDefinedTermSet": "https://jpcite.com/glossary#termset"
     },
     {
       "@type": "DefinedTerm",
-      "@id": "https://jpcite.com/glossary.html#term-grant",
+      "@id": "https://jpcite.com/glossary#term-grant",
       "name": "助成金",
       "alternateName": [
         "Grant",
         "Joseikin"
       ],
       "description": "補助金とほぼ同義だが、特に厚生労働省管轄 (雇用・労働関連) で使われる。要件を満たせば原則受給可 (補助金は競争審査有り)。代表例はキャリアアップ助成金・人材開発支援助成金。原資は雇用保険二事業。",
-      "url": "https://jpcite.com/glossary.html#term-grant",
-      "inDefinedTermSet": "https://jpcite.com/glossary.html#termset"
+      "url": "https://jpcite.com/glossary#term-grant",
+      "inDefinedTermSet": "https://jpcite.com/glossary#termset"
     },
     {
       "@type": "DefinedTerm",
-      "@id": "https://jpcite.com/glossary.html#term-loan",
+      "@id": "https://jpcite.com/glossary#term-loan",
       "name": "融資",
       "alternateName": [
         "Loan",
         "Yuushi"
       ],
       "description": "公的金融機関 (日本政策金融公庫、商工中金、信用保証協会保証付き民間融資) からの貸付。返還必須・利息有り。代表例は公庫マル経融資・新規開業資金・農業経営基盤強化資金 (スーパーL)。担保 / 個人保証人 / 第三者保証人の 3 軸で条件が変わる。",
-      "url": "https://jpcite.com/glossary.html#term-loan",
-      "inDefinedTermSet": "https://jpcite.com/glossary.html#termset"
+      "url": "https://jpcite.com/glossary#term-loan",
+      "inDefinedTermSet": "https://jpcite.com/glossary#termset"
     },
     {
       "@type": "DefinedTerm",
-      "@id": "https://jpcite.com/glossary.html#term-tax",
+      "@id": "https://jpcite.com/glossary#term-tax",
       "name": "税制優遇",
       "alternateName": [
         "Tax incentive",
         "Zeisei yuugu"
       ],
       "description": "法人税 / 所得税 / 固定資産税 / 消費税の軽減・特別償却・税額控除。代表例は中小企業投資促進税制・研究開発税制・賃上げ促進税制。減免額が即 資金繰り 改善に直結し、補助金と異なり申請不採択リスクが無い (要件充足主義)。",
-      "url": "https://jpcite.com/glossary.html#term-tax",
-      "inDefinedTermSet": "https://jpcite.com/glossary.html#termset"
+      "url": "https://jpcite.com/glossary#term-tax",
+      "inDefinedTermSet": "https://jpcite.com/glossary#termset"
     },
     {
       "@type": "DefinedTerm",
-      "@id": "https://jpcite.com/glossary.html#term-certification",
+      "@id": "https://jpcite.com/glossary#term-certification",
       "name": "認定制度",
       "alternateName": [
         "Certification",
         "Nintei seido"
       ],
       "description": "経営革新計画・地域未来牽引企業・健康経営優良法人・経営力向上計画など、行政が事業者を「認定」する制度群。直接の 現金給付 は無いが、補助金加点 / 融資条件優遇 / 公的入札加点等の土台となる。",
-      "url": "https://jpcite.com/glossary.html#term-certification",
-      "inDefinedTermSet": "https://jpcite.com/glossary.html#termset"
+      "url": "https://jpcite.com/glossary#term-certification",
+      "inDefinedTermSet": "https://jpcite.com/glossary#termset"
     }
   ]
 }
@@ -185,7 +185,7 @@
   "@type": "BreadcrumbList",
   "itemListElement": [
     {"@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://jpcite.com/"},
-    {"@type": "ListItem", "position": 2, "name": "用語集", "item": "https://jpcite.com/glossary.html"}
+    {"@type": "ListItem", "position": 2, "name": "用語集", "item": "https://jpcite.com/glossary"}
   ]
 }
 </script>
@@ -273,7 +273,7 @@
 <header class="site-header" role="banner">
  <div class="container header-inner">
  <a class="brand" href="index.html" aria-label="jpcite ホーム">
- <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
  </a>
  <nav class="site-nav" aria-label="主要ナビゲーション">
  <a href="about.html">運営について</a>
@@ -501,7 +501,7 @@
 <footer class="site-footer" role="contentinfo">
  <div class="container footer-inner">
  <div class="footer-col">
- <p class="footer-brand">jpcite</p>
+ <p class="footer-brand"><img src="/assets/brand/jpcite-mark.svg" alt="" width="20" height="20" loading="lazy" decoding="async" style="height:20px;width:20px;vertical-align:middle;margin-right:8px;display:inline-block;">jpcite</p>
  <p class="footer-tag">日本の公的制度を、根拠付き成果物に。</p>
  </div>
  <nav class="footer-nav" aria-label="フッター">

@@ -13,7 +13,7 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="Cursor MCP に jpcite を 30 秒で接続 | jpcite">
 <meta property="og:description" content=".cursor/mcp.json 1 file で 139 tool 即解禁、Cursor 0.42+ 対応、anon free 3req/IP/日。">
-<meta property="og:url" content="https://jpcite.com/connect/cursor.html">
+<meta property="og:url" content="https://jpcite.com/connect/cursor">
 <meta property="og:site_name" content="jpcite">
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
@@ -45,8 +45,34 @@
   "itemListElement": [
     {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://jpcite.com/"},
     {"@type": "ListItem", "position": 2, "name": "Connect", "item": "https://jpcite.com/connect/"},
-    {"@type": "ListItem", "position": 3, "name": "Cursor", "item": "https://jpcite.com/connect/cursor.html"}
+    {"@type": "ListItem", "position": 3, "name": "Cursor", "item": "https://jpcite.com/connect/cursor"}
   ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "jpcite Cursor MCP 接続設定データセット",
+  "description": "Cursor 0.42 以降から jpcite MCP server を呼び出す .cursor/mcp.json 設定および動作確認手順。stdio transport 経由で 139 tools 利用可能。",
+  "url": "https://jpcite.com/connect/cursor",
+  "creator": {"@id": "https://jpcite.com/#publisher"},
+  "provider": {"@id": "https://jpcite.com/#publisher"},
+  "license": "https://jpcite.com/tos",
+  "isAccessibleForFree": true,
+  "inLanguage": "ja",
+  "keywords": ["Cursor", "MCP", "stdio", "uvx", "integration"],
+  "distribution": [
+    {"@type": "DataDownload", "encodingFormat": "text/html", "contentUrl": "https://jpcite.com/connect/cursor"},
+    {"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": "https://jpcite.com/.cursor/mcp.example.json"},
+    {"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": "https://jpcite.com/server.json"}
+  ],
+  "variableMeasured": [
+    {"@type": "PropertyValue", "name": "mcp_tools_total", "value": 139},
+    {"@type": "PropertyValue", "name": "min_cursor_version", "value": "0.42"},
+    {"@type": "PropertyValue", "name": "transport", "value": "stdio"}
+  ],
+  "citation": "https://jpcite.com/connect/cursor"
 }
 </script>
   <script type="application/ld+json" data-jpcite-jsonld="common">{

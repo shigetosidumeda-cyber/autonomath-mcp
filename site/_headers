@@ -4,7 +4,8 @@
 
 # Security headers for the static site. Review CSP changes before deploy.
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://api.jpcite.com https://pypi.org https://plausible.io https://cloudflareinsights.com; frame-src 'none'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com https://billing.stripe.com
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.jpcite.com https://pypi.org https://plausible.io https://cloudflareinsights.com; frame-src 'none'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com https://billing.stripe.com
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'sha256-0LkrXXIDvlJXDyiVMzXgmEl9qUbtOjoKDx3IC87K8bY=' 'sha256-1TFHSaz1uwUQa0945e71hEHJEzuJjt/CNaWnWsvpSvo=' 'sha256-AJtTnpCPsluvn5R8eQuYalW6heCXkU6dk1zmth/oITQ=' 'sha256-otI9BoZyeDx91z2i6bqiMURDUX1T5yXR+T7rTExOD3w=' 'sha256-oz2/C7uS96S5tB0l5gMxl8QG2Dfc7vQde6m+gn5CjZM=' 'sha256-sJV/8gAIT9L3t693bKuhv84h/vMPAT/WmmgGKWpwEH0=' https://plausible.io https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.jpcite.com https://pypi.org https://plausible.io https://cloudflareinsights.com; frame-src 'none'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com https://billing.stripe.com
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
@@ -279,3 +280,40 @@
 # burst when a new tutorial drops on Hacker News / X / Zenn.
 /integrations/*
   Cache-Control: public, max-age=3600, s-maxage=86400
+
+# ------------------------------------------------------------------
+# 2026-05-11 Wave 14 GEO group α: index-discovery directories.
+# /cases/*, /laws/*, /enforcement/* are per-row SEO surfaces (2,286 case
+# studies + 6,493 law full-text + 1,185 行政処分). They are the densest
+# citation substrate for answer engines, but Cloudflare Pages does not
+# emit X-Robots-Tag by default — without an explicit "index, follow"
+# header the per-row HTML can drop out of Bing / DuckAssist / GPT search
+# indexes if a CDN-injected header collides. The header below is belt-
+# and-suspenders to the in-page <meta name="robots" content="index,
+# follow"> already present in the row templates.
+# Cache profile (browser 1 day / edge 1 week) matches the rest of the
+# per-row SEO cohort and is conservative enough that any copy fix
+# (citation tooltip, primary-source URL fix, 公的機関 name update)
+# propagates to readers within 24h without smashing the origin under
+# crawler bursts.
+# ------------------------------------------------------------------
+/cases/*
+  X-Robots-Tag: index, follow
+  Cache-Control: public, max-age=86400
+  CDN-Cache-Control: public, max-age=604800
+
+/laws/*
+  X-Robots-Tag: index, follow
+  Cache-Control: public, max-age=86400
+  CDN-Cache-Control: public, max-age=604800
+
+/enforcement/*
+  X-Robots-Tag: index, follow
+  Cache-Control: public, max-age=86400
+  CDN-Cache-Control: public, max-age=604800
+
+# AI-surface sitemap (16-URL llmstxt/openapi/mcp/well-known cohort).
+# Served as XML; lifespan matches the rest of the sitemap-* cohort.
+/sitemap-llms.xml
+  Content-Type: application/xml; charset=utf-8
+  Cache-Control: public, max-age=3600

@@ -1,12 +1,21 @@
-"""W14-8 SEO brand-history audit.
+"""SEO brand-history audit (revised 2026-05-11 per Wave 14 seo_health_audit).
 
-Ensures all 4 llms.txt variants and index.html JSON-LD carry the legacy
-brand names (税務会計AI / AutonoMath / zeimu-kaikei.ai) so AI agents can
-bridge from old citations to the new jpcite brand.
+Policy split between two surface tiers, per memory ``feedback_legacy_brand_marker``:
 
-Background: W14-8 audit found AI cited 0/60 because the 4 llms files +
-index.html lacked any mention of the prior brand, so LLMs that had cached
-the legacy name could not connect it back to the renamed product.
+1. **llms.txt 系 (SEO citation bridge for AI crawlers)** — MUST carry the
+   legacy brand names (税務会計AI / AutonoMath / zeimu-kaikei.ai) in the
+   H1 head so LLMs that cached the prior brand can bridge to jpcite.
+2. **Visible HTML + Schema.org JSON-LD** — MUST NOT contain any legacy
+   brand string. Schema.org alternateName/sameAs leaks into Google
+   Knowledge Graph permanently; leaving 税務会計AI / AutonoMath /
+   zeimu-kaikei.ai in those fields freezes the legacy name in the KG and
+   undermines the rename to jpcite (Wave 14 seo_health_audit critical
+   leak finding, FIXED in audit).
+
+Originally (W14-8) the test enforced that index.html JSON-LD ALSO carried
+the legacy brand. That policy was reversed by ``feedback_legacy_brand_marker``
+because Schema.org markup is a permanent Knowledge Graph signal and the
+bridge purpose is better served by llms.txt only.
 """
 
 from __future__ import annotations
@@ -67,37 +76,50 @@ def _find_block(blocks: list[dict], type_name: str) -> dict:
     raise AssertionError(f"No JSON-LD block with @type={type_name!r}")
 
 
-def test_index_html_jsonld_carries_legacy_brand() -> None:
-    """index.html WebSite + Organization JSON-LD must list every legacy name."""
+def test_index_html_jsonld_excludes_legacy_brand() -> None:
+    """index.html WebSite + Organization JSON-LD must NOT carry legacy brand.
+
+    Schema.org markup permanently feeds Google Knowledge Graph; legacy brand
+    names there would freeze 税務会計AI/AutonoMath/zeimu-kaikei.ai as
+    alternateName forever. The SEO citation bridge purpose is served by
+    llms.txt 系 (above); Schema.org must be jpcite-only.
+    """
     html = (SITE_DIR / "index.html").read_text(encoding="utf-8")
     blocks = _extract_jsonld_blocks(html)
     assert blocks, "no JSON-LD blocks parsed from index.html"
 
     website = _find_block(blocks, "WebSite")
     alt = website.get("alternateName") or []
-    assert isinstance(alt, list), "WebSite.alternateName must be a list"
-    for term in LEGACY_TERMS:
-        assert term in alt, f"WebSite.alternateName missing {term!r}: {alt}"
+    if isinstance(alt, str):
+        alt = [alt]
     assert "jpcite" in alt, "WebSite.alternateName must keep canonical 'jpcite'"
-    # 4 entries minimum (jpcite + 3 legacy).
-    assert len(alt) >= 4, f"WebSite.alternateName needs >=4 entries (jpcite + 3 legacy), got {alt}"
+    for term in LEGACY_TERMS:
+        assert term not in alt, (
+            f"WebSite.alternateName must NOT contain legacy term {term!r} "
+            f"(Schema.org → Knowledge Graph permanent residue): {alt}"
+        )
 
     same_as = website.get("sameAs") or []
-    assert "https://zeimu-kaikei.ai" in same_as, (
-        f"WebSite.sameAs missing zeimu-kaikei.ai: {same_as}"
-    )
+    for legacy_url in ("https://zeimu-kaikei.ai", "https://autonomath.ai"):
+        assert legacy_url not in same_as, (
+            f"WebSite.sameAs must NOT contain legacy URL {legacy_url!r}: {same_as}"
+        )
+    for term in LEGACY_TERMS:
+        for s in same_as:
+            assert term not in s, (
+                f"WebSite.sameAs entry {s!r} contains legacy term {term!r}"
+            )
 
     org = _find_block(blocks, "Organization")
     org_alt = org.get("alternateName") or []
+    if isinstance(org_alt, str):
+        org_alt = [org_alt]
     for term in LEGACY_TERMS:
-        assert term in org_alt, f"Organization.alternateName missing {term!r}: {org_alt}"
+        assert term not in org_alt, (
+            f"Organization.alternateName must NOT contain legacy term {term!r}: {org_alt}"
+        )
     org_same = org.get("sameAs") or []
-    assert "https://zeimu-kaikei.ai" in org_same, (
-        f"Organization.sameAs missing zeimu-kaikei.ai: {org_same}"
-    )
-    assert any("autonomath-mcp" in s for s in org_same), (
-        f"Organization.sameAs missing autonomath-mcp PyPI/GitHub link: {org_same}"
-    )
-    assert any("project/jpcite" in s for s in org_same), (
-        f"Organization.sameAs missing jpcite PyPI link: {org_same}"
-    )
+    for legacy_url in ("https://zeimu-kaikei.ai", "https://autonomath.ai"):
+        assert legacy_url not in org_same, (
+            f"Organization.sameAs must NOT contain legacy URL {legacy_url!r}: {org_same}"
+        )
