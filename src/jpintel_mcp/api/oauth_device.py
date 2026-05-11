@@ -337,12 +337,8 @@ def device_status(user_code: str) -> dict[str, Any]:
 
 
 # ---- Wave 41 — polling response enhancements ---------------------------------
-#
-# RFC 8628 §3.5 defines four polling-error responses that the spec
-# REQUIRES servers to surface in normalised form. Wave 41 adds a
-# dedicated *poll-introspect* endpoint plus a structured polling-response
-# builder so client libraries and the audit script can verify all four
-# cases without minting a real device code first.
+# RFC 8628 §3.5 polling-error responses + introspect endpoint for client SDK
+# fuzz tests and the AX 4-pillars audit ``device_flow_polling_live`` cell.
 
 
 _POLL_RESPONSE_FIXTURES: dict[str, dict[str, Any]] = {

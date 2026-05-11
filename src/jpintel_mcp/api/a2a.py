@@ -443,6 +443,182 @@ def _disclaimer_for_skill(skill: str) -> str | None:
     return _DISCLAIMER_BY_SKILL.get(skill)
 
 
+# ---------------------------------------------------------------------------
+# Wave 41 — A2A skill negotiation + capability advertisement
+# ---------------------------------------------------------------------------
+
+
+SKILL_CATALOG: dict[str, dict[str, Any]] = {
+    "search_programs": {
+        "category": "search",
+        "tags": ["read", "corpus_query", "primary_source"],
+        "description": "Free-text + faceted search across 11,601 制度.",
+        "input_schema": {"type": "object", "properties": {"q": {"type": "string"}, "limit": {"type": "integer"}}, "required": ["q"]},
+        "output_schema": {"type": "object", "properties": {"results": {"type": "array"}}},
+        "typical_latency_ms": 120,
+        "sensitive": False,
+    },
+    "search_tax_incentives": {
+        "category": "tax",
+        "tags": ["read", "tax", "sensitive"],
+        "description": "Search 50 税制 rulesets with sunset alerts.",
+        "input_schema": {"type": "object", "properties": {"q": {"type": "string"}}},
+        "output_schema": {"type": "object", "properties": {"results": {"type": "array"}}},
+        "typical_latency_ms": 160,
+        "sensitive": True,
+        "sensitive_law": "税理士法 §52",
+    },
+    "search_loans": {
+        "category": "loan",
+        "tags": ["read", "loan", "三軸_dasshou"],
+        "description": "108 融資プログラム + 担保/保証人 三軸分解.",
+        "input_schema": {"type": "object", "properties": {"q": {"type": "string"}}},
+        "output_schema": {"type": "object", "properties": {"results": {"type": "array"}}},
+        "typical_latency_ms": 140,
+        "sensitive": False,
+    },
+    "list_open_programs": {
+        "category": "search",
+        "tags": ["read", "deadline_aware"],
+        "description": "Programs with open application windows.",
+        "input_schema": {"type": "object"},
+        "output_schema": {"type": "object", "properties": {"results": {"type": "array"}}},
+        "typical_latency_ms": 80,
+        "sensitive": False,
+    },
+    "verify_answer": {
+        "category": "verify",
+        "tags": ["verify", "no_inference"],
+        "description": "Fact-verification against the live corpus.",
+        "input_schema": {"type": "object", "properties": {"claim": {"type": "string"}}, "required": ["claim"]},
+        "output_schema": {"type": "object", "properties": {"verdict": {"type": "string"}}},
+        "typical_latency_ms": 200,
+        "sensitive": True,
+        "sensitive_law": "全般",
+    },
+    "compose_evidence_packet": {
+        "category": "compose",
+        "tags": ["write", "packet_assembly", "primary_source"],
+        "description": "Assemble evidence packets with primary-source citations.",
+        "input_schema": {"type": "object", "properties": {"program_ids": {"type": "array"}}},
+        "output_schema": {"type": "object", "properties": {"packet_uri": {"type": "string"}}},
+        "typical_latency_ms": 1200,
+        "sensitive": False,
+    },
+    "graph_traverse": {
+        "category": "graph",
+        "tags": ["read", "graph", "cross_corpus"],
+        "description": "Multi-hop traversal across 503,930 entities + 6.12M facts.",
+        "input_schema": {"type": "object", "properties": {"start": {"type": "string"}, "depth": {"type": "integer"}}},
+        "output_schema": {"type": "object", "properties": {"path": {"type": "array"}}},
+        "typical_latency_ms": 320,
+        "sensitive": False,
+    },
+    "tax_rule_full_chain": {
+        "category": "tax",
+        "tags": ["read", "tax", "chain", "sensitive"],
+        "description": "Resolve full chain 法令→省令→通達→Q&A for a tax rule.",
+        "input_schema": {"type": "object", "properties": {"rule_id": {"type": "string"}}},
+        "output_schema": {"type": "object", "properties": {"chain": {"type": "array"}}},
+        "typical_latency_ms": 280,
+        "sensitive": True,
+        "sensitive_law": "税理士法 §52 / 公認会計士法 §47条の2",
+    },
+    "cohort_match_cases": {
+        "category": "cohort",
+        "tags": ["read", "cohort", "采択事例"],
+        "description": "Match 採択事例 to a target profile.",
+        "input_schema": {"type": "object", "properties": {"industry_jsic": {"type": "string"}, "employee_count": {"type": "integer"}}},
+        "output_schema": {"type": "object", "properties": {"matches": {"type": "array"}}},
+        "typical_latency_ms": 240,
+        "sensitive": False,
+    },
+}
+
+
+def _normalise_skill_card(name: str, body: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "skill": name,
+        "category": body.get("category"),
+        "tags": body.get("tags", []),
+        "description": body.get("description"),
+        "input_schema": body.get("input_schema"),
+        "output_schema": body.get("output_schema"),
+        "typical_latency_ms": body.get("typical_latency_ms"),
+        "sensitive": body.get("sensitive", False),
+        "sensitive_law": body.get("sensitive_law"),
+        "disclaimer": _disclaimer_for_skill(name),
+    }
+
+
+@router.get("/skills")
+async def list_skills(
+    tag: str | None = None,
+    category: str | None = None,
+    sensitive: bool | None = None,
+) -> dict[str, Any]:
+    """A2A skill negotiation + capability advertisement (Wave 41)."""
+    skills: list[dict[str, Any]] = []
+    for name, body in SKILL_CATALOG.items():
+        if tag and tag not in body.get("tags", []):
+            continue
+        if category and body.get("category") != category:
+            continue
+        if sensitive is not None and bool(body.get("sensitive", False)) != bool(sensitive):
+            continue
+        skills.append(_normalise_skill_card(name, body))
+    return {
+        "schema_version": "0.2",
+        "agent_name": "jpcite",
+        "skill_count": len(skills),
+        "total_skill_count": len(SKILL_CATALOG),
+        "categories": sorted({body.get("category", "") for body in SKILL_CATALOG.values() if body.get("category")}),
+        "tags": sorted({t for body in SKILL_CATALOG.values() for t in body.get("tags", [])}),
+        "skills": skills,
+    }
+
+
+@router.get("/skills/{skill_name}")
+async def get_skill(skill_name: str) -> dict[str, Any]:
+    body = SKILL_CATALOG.get(skill_name)
+    if not body:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"error": "skill_not_found", "skill": skill_name, "valid_skills": sorted(SKILL_CATALOG.keys())},
+        )
+    return _normalise_skill_card(skill_name, body)
+
+
+class A2ASkillNegotiation(BaseModel):
+    requested_skills: list[str] = Field(default_factory=list)
+    requested_tags: list[str] = Field(default_factory=list)
+    requested_categories: list[str] = Field(default_factory=list)
+    max_latency_ms: int | None = None
+    accept_sensitive: bool = True
+
+
+@router.post("/skills/negotiate")
+async def negotiate_skills(payload: A2ASkillNegotiation) -> dict[str, Any]:
+    matched: list[dict[str, Any]] = []
+    for name, body in SKILL_CATALOG.items():
+        if payload.requested_skills and name not in payload.requested_skills:
+            continue
+        if payload.requested_tags and not any(t in body.get("tags", []) for t in payload.requested_tags):
+            continue
+        if payload.requested_categories and body.get("category") not in payload.requested_categories:
+            continue
+        if payload.max_latency_ms is not None and body.get("typical_latency_ms", 0) > payload.max_latency_ms:
+            continue
+        if not payload.accept_sensitive and body.get("sensitive", False):
+            continue
+        matched.append(_normalise_skill_card(name, body))
+    return {
+        "matched_count": len(matched),
+        "skills": matched,
+        "negotiation_request": payload.model_dump(),
+    }
+
+
 def _swap_to_durable_store() -> None:  # pragma: no cover - migration stub
     """Future swap to `_bg_task_queue` durable store. Not wired yet.
 

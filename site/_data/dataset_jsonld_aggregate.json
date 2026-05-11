@@ -1,0 +1,89 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "@id": "https://jpcite.com/#dataset-aggregate",
+  "name": "jpcite — 日本の制度データセット (aggregate)",
+  "description": "補助金・融資・税制・認定・採択事例・判例・行政処分を統合した AI agent 向け一次資料データセット。",
+  "url": "https://jpcite.com/",
+  "identifier": "jpcite-aggregate",
+  "keywords": [
+    "Japan",
+    "AI-agent-context",
+    "primary-source-citation"
+  ],
+  "isAccessibleForFree": true,
+  "license": "https://jpcite.com/data-licensing",
+  "publisher": {
+    "@type": "Organization",
+    "@id": "https://jpcite.com/#publisher",
+    "name": "Bookyou株式会社",
+    "url": "https://jpcite.com/",
+    "identifier": "T8010001213708"
+  },
+  "creator": {
+    "@id": "https://jpcite.com/#publisher"
+  },
+  "spatialCoverage": {
+    "@type": "Country",
+    "name": "日本"
+  },
+  "inLanguage": [
+    "ja",
+    "en"
+  ],
+  "datePublished": "2025-12-01",
+  "dateModified": "2026-05-11T22:23:07.431211+00:00",
+  "hasPart": [
+    {
+      "@id": "https://jpcite.com/#dataset-programs"
+    },
+    {
+      "@id": "https://jpcite.com/#dataset-laws"
+    },
+    {
+      "@id": "https://jpcite.com/#dataset-cases"
+    },
+    {
+      "@id": "https://jpcite.com/#dataset-enforcement"
+    }
+  ],
+  "variableMeasured": [
+    {
+      "@type": "PropertyValue",
+      "name": "searchable_programs",
+      "value": 11601
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "laws_fulltext",
+      "value": 6493
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "case_studies",
+      "value": 2286
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "enforcement_cases",
+      "value": 1185
+    }
+  ],
+  "additionalProperty": [
+    {
+      "@type": "PropertyValue",
+      "name": "ariaDescribedBy",
+      "value": "main-content"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "agentReadable",
+      "value": true
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "subDatasetCount",
+      "value": 4
+    }
+  ]
+}

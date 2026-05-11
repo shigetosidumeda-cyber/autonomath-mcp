@@ -1,0 +1,69 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "@id": "https://jpcite.com/#dataset-laws",
+  "name": "jpcite — e-Gov 法令全文 + カタログ データセット",
+  "description": "e-Gov 由来の法令全文 6,493 本 + カタログ 9,484 本。",
+  "url": "https://jpcite.com/laws/",
+  "identifier": "jpcite-laws",
+  "keywords": [
+    "法令",
+    "e-Gov",
+    "law",
+    "Japan"
+  ],
+  "isAccessibleForFree": true,
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "publisher": {
+    "@type": "Organization",
+    "@id": "https://jpcite.com/#publisher",
+    "name": "Bookyou株式会社",
+    "url": "https://jpcite.com/",
+    "identifier": "T8010001213708"
+  },
+  "creator": {
+    "@id": "https://jpcite.com/#publisher"
+  },
+  "spatialCoverage": {
+    "@type": "Country",
+    "name": "日本"
+  },
+  "inLanguage": [
+    "ja",
+    "en"
+  ],
+  "datePublished": "2025-12-01",
+  "dateModified": "2026-05-11T22:23:07.430390+00:00",
+  "variableMeasured": [
+    {
+      "@type": "PropertyValue",
+      "name": "laws_fulltext",
+      "value": 6493
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "laws_catalog",
+      "value": 9484
+    }
+  ],
+  "distribution": [
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "application/json",
+      "contentUrl": "https://api.jpcite.com/v1/laws",
+      "description": "REST API"
+    }
+  ],
+  "additionalProperty": [
+    {
+      "@type": "PropertyValue",
+      "name": "ariaDescribedBy",
+      "value": "laws-main"
+    },
+    {
+      "@type": "PropertyValue",
+      "name": "agentReadable",
+      "value": true
+    }
+  ]
+}
