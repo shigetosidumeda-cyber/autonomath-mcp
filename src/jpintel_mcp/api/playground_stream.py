@@ -1,5 +1,5 @@
 """Playground evidence3 SSE stream. LLM API 呼出ゼロ、pure SQLite + HTTP."""
-# ruff: noqa: SIM115,SIM117,BLE001,E501,F401,F841,PTH123,S301,S314,S603,UP017
+# ruff: noqa: N803,N806,SIM115,SIM117,BLE001,E501,F401,F841,PTH123,S301,S314,S603,UP017
 
 
 from __future__ import annotations

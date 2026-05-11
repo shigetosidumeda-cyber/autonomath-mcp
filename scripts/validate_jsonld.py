@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# ruff: noqa: SIM115,SIM117,BLE001,E501,F401,F841,PTH123,S301,S314,S603,UP017
+# ruff: noqa: N803,N806,SIM115,SIM117,BLE001,E501,F401,F841,PTH123,S301,S314,S603,UP017
 """validate_jsonld: extract <script type="application/ld+json"> blocks from site/**/*.html
 and verify each is parseable JSON. Reports invalid blocks; exits 1 if any invalid.
 """

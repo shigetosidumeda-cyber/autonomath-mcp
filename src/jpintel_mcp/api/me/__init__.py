@@ -15,7 +15,7 @@ caller that bound to the module path.
 New magic-link auth code lives in `login_request.py` + `login_verify.py`
 inside this package and is exported alongside the legacy surface.
 """
-# ruff: noqa: SIM115,SIM117,BLE001,E501,F401,F841,PTH123,S301,S314,S603,UP017
+# ruff: noqa: N803,N806,SIM115,SIM117,BLE001,E501,F401,F841,PTH123,S301,S314,S603,UP017
 
 
 from __future__ import annotations

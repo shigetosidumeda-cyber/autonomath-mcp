@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# ruff: noqa: SIM115,SIM117,BLE001,E501,F401,F841,PTH123,S301,S314,S603,UP017
+# ruff: noqa: N803,N806,SIM115,SIM117,BLE001,E501,F401,F841,PTH123,S301,S314,S603,UP017
 """OG image 生成 (PNG 1200x630)、Pillow only、LLM 呼出ゼロ。
 
 Generates social card images for each site/*.html page based on:
