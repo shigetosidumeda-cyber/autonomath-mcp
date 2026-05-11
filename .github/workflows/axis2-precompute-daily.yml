@@ -3,13 +3,13 @@ name: axis2-precompute-daily
 # Wave 33 Axis 2a/2b/2c: daily pre-compute of am_cohort_5d (mig 231),
 # am_program_risk_4d (mig 232), and am_supplier_chain (mig 233).
 #
-# Schedule:
-#   `45 18 * * *` UTC == 03:45 JST daily.
-#   Lands 45 min after the daily ingest at 03:00 JST (ingest writes the
-#   upstream programs / amendment_diff / enforcement / invoice corpora
-#   the 3 precompute scripts read) and 15 min after the actionable Q/A
-#   precompute (03:30 JST) so the autonomath.db single-writer queue is
-#   not contended at the cohort job's start.
+# Schedule (Wave 37 rebalance):
+#   `45 20 * * *` UTC == 05:45 JST daily.
+#   Moved out of Lane A (03:00-05:00 JST ETL window) into Lane B
+#   (05:00-07:00 JST precompute) per docs/runbook/cron_schedule_master.md
+#   so the autonomath.db single-writer queue does not contend with the
+#   Lane A ingest crons. ax-metrics-daily picks up at 06:15 JST, 30 min
+#   after this job typically finishes (~22 min avg).
 #
 # 3 jobs run in parallel inside the matrix; each acquires its own
 # writable connection on autonomath.db and serializes inserts via
@@ -29,7 +29,7 @@ name: axis2-precompute-daily
 
 on:
   schedule:
-    - cron: "45 18 * * *"
+    - cron: "45 20 * * *"
   workflow_dispatch:
     inputs:
       dry_run:

@@ -4,15 +4,16 @@ name: jpo-patents-daily
 #
 # Daily JPO 特許/実用新案 ingest cron.
 #
-# Schedule: 23:00 UTC = 08:00 JST.
+# Schedule (Wave 37 rebalance): 23:30 UTC = 08:30 JST.
 # J-PlatPat 公開・登録公報の更新は AM 中に完了するので、
-# 朝 08:00 JST に前日分を取りに行く。
+# 朝 08:00 JST 前後に前日分を取りに行く。Was 23:00 UTC, collided with
+# budget-subsidy-chain-daily; staggered +30 min into Lane C's middle slot.
 #
 # LLM call count: 0. Pure lxml + httpx + sqlite3.
 
 on:
   schedule:
-    - cron: "0 23 * * *"
+    - cron: "30 23 * * *"
   workflow_dispatch:
     inputs:
       days:

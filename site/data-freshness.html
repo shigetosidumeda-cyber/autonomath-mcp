@@ -48,14 +48,37 @@
   "description": "jpcite の source_fetched_at とデータ鮮度を確認するページ。主要公開行の一次資料 URL、取得時刻、known gaps の確認導線を説明します。",
   "url": "https://jpcite.com/data-freshness",
   "inLanguage": "ja",
-  "dateModified": "2026-05-07",
+  "dateModified": "2026-05-12",
   "isPartOf": {
     "@type": "WebSite",
     "name": "jpcite",
     "url": "https://jpcite.com/"
   },
   "primaryImageOfPage": {"@type": "ImageObject", "url": "https://jpcite.com/assets/og.png"},
-  "about": ["source_fetched_at", "source_url", "known_gaps", "data freshness"]
+  "about": ["source_fetched_at", "source_url", "known_gaps", "data freshness", "cron freshness", "SLA breach"]
+}
+</script>
+
+<!-- Wave 37: agent-readable cron freshness dataset (JSON snapshot at /analytics/freshness_rollup_latest.json). -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "jpcite cron freshness rollup (daily)",
+  "description": "19 axis-cohort cron workflows × last_run_at / next_run_at / 24h success_rate / SLA breach status. Snapshot regenerated at 10:00 JST daily via freshness-rollup-daily.yml.",
+  "url": "https://jpcite.com/data-freshness",
+  "distribution": {
+    "@type": "DataDownload",
+    "encodingFormat": "application/json",
+    "contentUrl": "https://jpcite.com/analytics/freshness_rollup_latest.json"
+  },
+  "creator": {"@type": "Organization", "name": "Bookyou株式会社", "url": "https://jpcite.com"},
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "isAccessibleForFree": true,
+  "variableMeasured": [
+    "workflow", "cron_utc", "lane", "sla_hours", "last_run.created_at",
+    "last_run.conclusion", "next_run_at_utc", "success_rate_24h_pct"
+  ]
 }
 </script>
 
@@ -224,6 +247,48 @@
  </div>
 
  <p class="trust">主要な公開行に一次資料 URL と取得時刻を付与。個別応答では <code>source_url</code>、<code>source_fetched_at</code>、<code>known_gaps</code> を確認できます。</p>
+
+ <!-- Wave 37: 19-cron freshness heatmap (server-rendered semantic HTML, no JS). -->
+ <section id="cron-heatmap" aria-labelledby="cron-heatmap-title" style="margin-top:40px;border-top:1px solid var(--border);padding-top:28px;">
+   <h2 id="cron-heatmap-title" style="font-size:24px;margin:0 0 8px;font-weight:700;">cron 鮮度ヒートマップ (19 軸 6 系列)</h2>
+   <p style="color:var(--text-muted);margin:0 0 16px;max-width:720px;line-height:1.75;">採択 RSS・法令 e-Gov・行政処分・市町村補助金・特許・EDINET・適格事業者など 19 系列の日次 / 週次 / 月次 cron を <strong>4 レーン (ETL / 精算 / 監視 / 週末)</strong> に配置し、毎日 10:00 JST にロールアップしています。データは <a href="/analytics/freshness_rollup_latest.json"><code>/analytics/freshness_rollup_latest.json</code></a> から JSON で取得可能 (Schema.org Dataset 付与済)。</p>
+   <table style="width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums;">
+     <caption style="text-align:left;color:var(--text-muted);margin-bottom:8px;">SLA = 24h 以内に最新 run、failure/timeout 無し、24h success_rate ≥ 50%。SLA 超過は Telegram 通知。</caption>
+     <thead>
+       <tr style="text-align:left;border-bottom:1px solid var(--border);">
+         <th style="padding:8px 6px;">レーン</th>
+         <th style="padding:8px 6px;">cron</th>
+         <th style="padding:8px 6px;">UTC</th>
+         <th style="padding:8px 6px;">JST</th>
+         <th style="padding:8px 6px;">SLA (h)</th>
+         <th style="padding:8px 6px;">対象 DB</th>
+         <th style="padding:8px 6px;">用途</th>
+       </tr>
+     </thead>
+     <tbody>
+       <tr><td>A</td><td><code>knowledge-graph-vec-embed</code></td><td>0 17 * * *</td><td>02:00</td><td>24</td><td>autonomath</td><td>知識グラフ vec 埋込</td></tr>
+       <tr><td>A</td><td><code>portfolio-optimize-daily</code></td><td>30 17 * * *</td><td>02:30</td><td>24</td><td>autonomath</td><td>制度ポートフォリオ最適化</td></tr>
+       <tr><td>A</td><td><code>houjin-risk-score-daily</code></td><td>0 18 * * *</td><td>03:00</td><td>24</td><td>autonomath</td><td>法人リスク score 更新</td></tr>
+       <tr><td>A</td><td><code>edinet-daily</code></td><td>30 19 * * *</td><td>04:30</td><td>24</td><td>jpintel</td><td>EDINET 開示取込</td></tr>
+       <tr><td>A</td><td><code>adoption-rss-daily</code></td><td>0 20 * * *</td><td>05:00</td><td>24</td><td>jpintel</td><td>採択 RSS 取込</td></tr>
+       <tr><td>B</td><td><code>axis2-precompute-daily</code></td><td>45 20 * * *</td><td>05:45</td><td>24</td><td>autonomath</td><td>cohort 5d / risk 4d / supplier</td></tr>
+       <tr><td>B</td><td><code>egov-amendment-daily</code></td><td>0 21 * * *</td><td>06:00</td><td>24</td><td>jpintel</td><td>e-Gov 法令改正</td></tr>
+       <tr><td>B</td><td><code>ax-metrics-daily</code></td><td>15 21 * * *</td><td>06:15</td><td>24</td><td>autonomath</td><td>AX 集計 metrics</td></tr>
+       <tr><td>B</td><td><code>enforcement-press-daily</code></td><td>0 22 * * *</td><td>07:00</td><td>24</td><td>jpintel</td><td>行政処分 press</td></tr>
+       <tr><td>C</td><td><code>budget-subsidy-chain-daily</code></td><td>0 23 * * *</td><td>08:00</td><td>24</td><td>autonomath</td><td>予算 → 補助金 chain</td></tr>
+       <tr><td>C</td><td><code>jpo-patents-daily</code></td><td>30 23 * * *</td><td>08:30</td><td>24</td><td>jpintel</td><td>JPO 特許公開</td></tr>
+       <tr><td>C</td><td><code>invoice-diff-daily</code></td><td>0 0 * * *</td><td>09:00</td><td>24</td><td>jpintel</td><td>適格事業者差分</td></tr>
+       <tr><td>D</td><td><code>municipality-subsidy-weekly</code></td><td>0 18 * * 0</td><td>Sun 03:00</td><td>168</td><td>jpintel</td><td>47 都道府県市町村</td></tr>
+       <tr><td>D</td><td><code>axis2def-promote-weekly</code></td><td>0 18 * * 4</td><td>Thu 03:00</td><td>168</td><td>autonomath</td><td>定義昇格 promote</td></tr>
+       <tr><td>D</td><td><code>alliance-opportunity-weekly</code></td><td>0 20 * * 0</td><td>Sun 05:00</td><td>168</td><td>autonomath</td><td>提携機会精算</td></tr>
+       <tr><td>D</td><td><code>multilingual-weekly</code></td><td>0 4 * * 0</td><td>Sun 13:00</td><td>168</td><td>jpintel</td><td>EN / KO / ZH fill</td></tr>
+       <tr><td>D</td><td><code>extended-corpus-weekly</code></td><td>0 2 * * 2</td><td>Tue 11:00</td><td>168</td><td>jpintel</td><td>国会 / 審議会 / brand</td></tr>
+       <tr><td>D</td><td><code>axis6-output-monthly</code></td><td>0 21 1 * *</td><td>Day1 06:00</td><td>744</td><td>autonomath</td><td>月次 6 軸 PDF</td></tr>
+       <tr><td>D</td><td><code>subsidy-30yr-forecast-monthly</code></td><td>0 19 4 * *</td><td>Day4 04:00</td><td>744</td><td>autonomath</td><td>30 年補助金 cycle 予測</td></tr>
+     </tbody>
+   </table>
+   <p style="margin-top:12px;color:var(--text-muted);font-size:13px;">レーン定義: A = ETL 取込 (03–05 JST) / B = 精算 (05–07 JST) / C = 監視 (07–09 JST) / D = 週末・月次。詳細は <a href="/docs/runbook/cron_schedule_master.md"><code>docs/runbook/cron_schedule_master.md</code></a>。</p>
+ </section>
 
  <section aria-labelledby="ai-read-title" style="margin-top:40px;border-top:1px solid var(--border);padding-top:28px;">
    <h2 id="ai-read-title" style="font-size:24px;margin:0 0 8px;font-weight:700;">AI / RAG での読み方</h2>
