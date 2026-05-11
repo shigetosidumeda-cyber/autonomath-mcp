@@ -77,10 +77,10 @@ PROBE_TIMEOUT = 10.0
 
 # Dataset SLA windows (seconds). Used by probe_data_freshness.
 # Tight = operator-visible breach. Loose = informational.
-SLA_PROGRAMS = 86_400          # 1d   — programs.updated_at
+SLA_PROGRAMS = 86_400  # 1d   — programs.updated_at
 SLA_AMENDMENT_DIFF = 7 * 86_400  # 7d  — am_amendment_diff.detected_at (cron)
-SLA_INVOICE_REGS = 30 * 86_400   # 30d — invoice_registrants.fetched_at (monthly bulk)
-SLA_CASE_STUDIES = 30 * 86_400   # 30d — case_studies.fetched_at
+SLA_INVOICE_REGS = 30 * 86_400  # 30d — invoice_registrants.fetched_at (monthly bulk)
+SLA_CASE_STUDIES = 30 * 86_400  # 30d — case_studies.fetched_at
 
 # Expected runtime cohort. 139 = current default-gate manifest figure
 # (`mcp-server.json` tool_count). Probe degrades if drift > 5 either way.
@@ -222,8 +222,7 @@ def probe_mcp(base: str) -> dict[str, Any]:
     recurring_count = len(recurring) if isinstance(recurring, list) else 0
 
     tool_drift = (
-        tools_count is None
-        or abs(tools_count - EXPECTED_TOOL_COUNT) > TOOL_COUNT_TOLERANCE
+        tools_count is None or abs(tools_count - EXPECTED_TOOL_COUNT) > TOOL_COUNT_TOLERANCE
     )
     workflow_short = recurring_count < EXPECTED_RECURRING_WORKFLOWS
 
@@ -291,7 +290,9 @@ def probe_billing() -> dict[str, Any]:
             created={"gte": cutoff},
             limit=100,
         )
-        evlist = events.get("data", []) if isinstance(events, dict) else list(events.auto_paging_iter())
+        evlist = (
+            events.get("data", []) if isinstance(events, dict) else list(events.auto_paging_iter())
+        )
         failed_count = len(evlist)
         # Stripe event request status is best-effort: not every event carries
         # a status field. Count only those that explicitly report 5xx.
@@ -469,7 +470,7 @@ def probe_dashboard(site_base: str, api_base: str) -> dict[str, Any]:
     has_billing_anchor = False
     if body:
         try:
-            has_billing_anchor = b"id=\"billing\"" in body or b"#billing" in body
+            has_billing_anchor = b'id="billing"' in body or b"#billing" in body
         except Exception:
             has_billing_anchor = False
 
@@ -555,9 +556,9 @@ def build_snapshot(api_base: str, site_base: str) -> dict[str, Any]:
 # shields.io-ish color tokens. Brightgreen for ok so the badge visually
 # matches the status page header dot; yellow + red follow CSS convention.
 _BADGE_COLORS = {
-    STATUS_OK: "#4c1",          # brightgreen
+    STATUS_OK: "#4c1",  # brightgreen
     STATUS_DEGRADED: "#dfb317",  # yellow
-    STATUS_DOWN: "#e05d44",     # red
+    STATUS_DOWN: "#e05d44",  # red
 }
 
 _BADGE_LABEL = "jpcite"
@@ -585,17 +586,17 @@ def render_badge_svg(status: str) -> str:
         f'<svg xmlns="http://www.w3.org/2000/svg" '
         f'width="{total_w}" height="20" role="img" '
         f'aria-label="{_BADGE_LABEL}: {status_text}">'
-        f'<title>{_BADGE_LABEL}: {status_text}</title>'
+        f"<title>{_BADGE_LABEL}: {status_text}</title>"
         f'<linearGradient id="s" x2="0" y2="100%">'
         f'<stop offset="0" stop-color="#bbb" stop-opacity=".1"/>'
         f'<stop offset="1" stop-opacity=".1"/>'
-        f'</linearGradient>'
+        f"</linearGradient>"
         f'<clipPath id="r"><rect width="{total_w}" height="20" rx="3" fill="#fff"/></clipPath>'
         f'<g clip-path="url(#r)">'
         f'<rect width="{label_w}" height="20" fill="#555"/>'
         f'<rect x="{label_w}" width="{status_w}" height="20" fill="{color}"/>'
         f'<rect width="{total_w}" height="20" fill="url(#s)"/>'
-        f'</g>'
+        f"</g>"
         f'<g fill="#fff" text-anchor="middle" '
         f'font-family="Verdana,Geneva,DejaVu Sans,sans-serif" '
         f'text-rendering="geometricPrecision" font-size="110">'
@@ -607,7 +608,7 @@ def render_badge_svg(status: str) -> str:
         f'transform="scale(.1)" textLength="{(status_w - 12) * 10}">{status_text}</text>'
         f'<text x="{status_mid * 10}" y="140" transform="scale(.1)" '
         f'textLength="{(status_w - 12) * 10}">{status_text}</text>'
-        f'</g></svg>\n'
+        f"</g></svg>\n"
     )
 
 
@@ -621,19 +622,26 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         description="jpcite 5-component status probe (JSON + optional SVG badge).",
     )
     p.add_argument(
-        "--pretty", action="store_true",
+        "--pretty",
+        action="store_true",
         help="Indent JSON output with 2 spaces (default: file pretty, stdout compact).",
     )
     p.add_argument(
-        "--out", type=Path, default=None,
+        "--out",
+        type=Path,
+        default=None,
         help="Write JSON snapshot to this path (default: site/status/status.json).",
     )
     p.add_argument(
-        "--badge-out", type=Path, default=None,
+        "--badge-out",
+        type=Path,
+        default=None,
         help="Write shields.io-style SVG badge to this path.",
     )
     p.add_argument(
-        "--ax-dashboard-out", type=Path, default=None,
+        "--ax-dashboard-out",
+        type=Path,
+        default=None,
         help=(
             "Wave 20 C2: write derived AX-dashboard JSON to this path "
             "(default: site/status/status_components.json). The derived "
@@ -642,19 +650,25 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         ),
     )
     p.add_argument(
-        "--stdout", action="store_true",
+        "--stdout",
+        action="store_true",
         help="Also write JSON snapshot to stdout (default unless --quiet).",
     )
     p.add_argument(
-        "--quiet", action="store_true",
+        "--quiet",
+        action="store_true",
         help="Suppress stdout output (file-only mode).",
     )
     p.add_argument(
-        "--base-url", type=str, default=None,
+        "--base-url",
+        type=str,
+        default=None,
         help=f"API base URL (default: env JPCITE_API_BASE or {DEFAULT_API_BASE}).",
     )
     p.add_argument(
-        "--site-url", type=str, default=None,
+        "--site-url",
+        type=str,
+        default=None,
         help=f"Site origin URL (default: env JPCITE_SITE_BASE or {DEFAULT_SITE_BASE}).",
     )
     return p.parse_args(argv)
@@ -690,23 +704,25 @@ def derive_ax_dashboard_snapshot(snapshot: dict[str, Any]) -> dict[str, Any]:
     snapshot_at = snapshot.get("snapshot_at", "")
 
     labels = {
-        "api":             "API",
-        "mcp":             "MCP",
-        "billing":         "Billing (Stripe)",
-        "data-freshness":  "データ鮮度",
-        "dashboard":       "ダッシュボード",
+        "api": "API",
+        "mcp": "MCP",
+        "billing": "Billing (Stripe)",
+        "data-freshness": "データ鮮度",
+        "dashboard": "ダッシュボード",
     }
 
     derived: list[dict[str, Any]] = []
     for cid in COMPONENT_IDS:
         cdata = base_components.get(cid, {}) or {}
-        derived.append({
-            "id": cid,
-            "label": labels.get(cid, cid),
-            "status": cdata.get("status", STATUS_DOWN),
-            "last_check": snapshot_at,
-            "latency_ms": int(cdata.get("latency_ms", 0) or 0),
-        })
+        derived.append(
+            {
+                "id": cid,
+                "label": labels.get(cid, cid),
+                "status": cdata.get("status", STATUS_DOWN),
+                "last_check": snapshot_at,
+                "latency_ms": int(cdata.get("latency_ms", 0) or 0),
+            }
+        )
 
     return {
         "snapshot_at": snapshot_at,
@@ -724,19 +740,13 @@ def main(argv: list[str] | None = None) -> int:
         or os.environ.get("JPINTEL_API_BASE")
         or DEFAULT_API_BASE
     )
-    site_base = (
-        args.site_url
-        or os.environ.get("JPCITE_SITE_BASE")
-        or DEFAULT_SITE_BASE
-    )
+    site_base = args.site_url or os.environ.get("JPCITE_SITE_BASE") or DEFAULT_SITE_BASE
 
     snapshot = build_snapshot(api_base, site_base)
 
     # File output (default: site/status/status.json). Always pretty in file
     # so the static site can serve it directly without re-formatting.
-    out_path = args.out or Path(
-        os.environ.get("STATUS_JSON_OUT", "site/status/status.json")
-    )
+    out_path = args.out or Path(os.environ.get("STATUS_JSON_OUT", "site/status/status.json"))
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(
         json.dumps(snapshot, indent=2, ensure_ascii=False, sort_keys=False) + "\n",

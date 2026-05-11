@@ -256,9 +256,16 @@ forbidden_token_exclude_paths:
   # price phrase here (税込 ¥3.30 expanded in body copy). The forbidden
   # token list catches stale legacy strings (¥3/request, ¥3/リクエスト,
   # JPY 3/req, 3 yen/req) that need to converge on the canonical
-  # "¥3/req" form; the 5 pricing surfaces below are by-design hits.
+  # "¥3/req" form; the pricing surfaces below are by-design hits.
   - site/pricing.html
   - site/playground.html
   - site/manifest.webmanifest
   - site/ai-plugin.json
   - docs/cookbook/cookbook_v3_2026_05_11.md
+  # Server manifest + WebMCP wiring carry the canonical "¥3/req" phrase
+  # by design — `server.json` is the MCP registry description seen by
+  # ChatGPT / Claude.ai / Cursor; `webmcp_init.js` declares the cost
+  # contract for browser-resident tool delegation. Both must surface
+  # the canonical phrase so downstream agents see consistent pricing.
+  - server.json
+  - site/assets/webmcp_init.js
