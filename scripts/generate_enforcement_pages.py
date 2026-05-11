@@ -307,6 +307,29 @@ def build_json_ld(row: dict, domain: str, slug: str, laws: list[dict], programs:
             }
         )
 
+    # AEO Wave 18: explicit citation field on the GovernmentService node so
+    # AI agents (Schema.org-aware crawlers) see both the primary public
+    # record URL and the jpcite canonical URL where this fact is served.
+    src_url = row.get("source_url") or ""
+    citation_list: list[dict] = []
+    if src_url:
+        citation_list.append(
+            {
+                "@type": "CreativeWork",
+                "name": "一次公的記録",
+                "url": src_url,
+            }
+        )
+    citation_list.append(
+        {
+            "@type": "WebPage",
+            "name": "jpcite 機械可読化レイヤー",
+            "url": url,
+        }
+    )
+    if citation_list:
+        graph[0]["citation"] = citation_list
+
     payload = {"@context": "https://schema.org", "@graph": [g for g in graph if g]}
     # Drop None-valued keys for cleaner output.
     cleaned: list = []
@@ -463,6 +486,27 @@ def page_html(row: dict, domain: str, slug: str, laws: list[dict], programs: lis
 
     canonical = f"https://{domain}/enforcement/{slug}"
 
+    # AEO Wave 18: explicit "Cite this in AI" block for the rendered HTML body.
+    cite_url_short = f"{domain}/enforcement/{slug}"
+    cite_in_ai_html = (
+        '<section aria-labelledby="cite-title" class="cite-this-section">'
+        '<h2 id="cite-title">Cite this in AI / 引用</h2>'
+        '<p>AI 回答に本処分記録を引用させる時の canonical URL です。出典 (jpcite) の明記をお願いします。'
+        + (f'一次資料は <a href="{esc(src)}" rel="external nofollow noopener">公的公表記録</a>。' if src else '')
+        + '</p>'
+        '<pre class="code-block cite-block"><code>'
+        f"&gt; {esc(actor)} — {esc(label)} "
+        f"(出典: https://{esc(cite_url_short)}、jpcite が政府公表記録を機械可読化)"
+        '</code></pre>'
+        '<p class="muted">'
+        f'<button type="button" class="copy-cite-btn" data-cite-url="https://{esc(cite_url_short)}" '
+        f"onclick=\"navigator.clipboard&amp;&amp;navigator.clipboard.writeText('https://{esc(cite_url_short)}')\">"
+        'URL をコピー</button> '
+        f'<a href="https://{esc(cite_url_short)}">https://{esc(cite_url_short)}</a>'
+        '</p>'
+        '</section>'
+    )
+
     return f"""<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -538,6 +582,7 @@ def page_html(row: dict, domain: str, slug: str, laws: list[dict], programs: lis
  "https://api.{esc(domain)}/v1/enforcement/cases/{esc(row.get('case_id') or '')}"</code></pre>
 <p class="api-cta-line">公的記録 1,185 件をプログラムから検索: <a href="/docs/">ドキュメント</a> · <a href="/dashboard.html">API キー発行</a></p>
 </section>
+{cite_in_ai_html}
 <p class="disclaimer">本ページは自動生成された公開記録の要約であり、法的助言・税務助言・信用調査・コンプライアンス判断を構成するものではありません。個別の判断は弁護士・税理士・公認会計士・行政書士等の有資格者にご相談ください。処分の現況・撤回情報は所管官公庁にお問い合わせください。</p>
 </article>
  </div>

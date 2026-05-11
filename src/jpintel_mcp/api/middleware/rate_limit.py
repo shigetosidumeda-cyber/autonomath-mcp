@@ -253,16 +253,57 @@ def _take_token(bucket_key: str, rate: float, burst: float) -> tuple[bool, float
 def _build_throttled_body(retry_after_s: int, *, bucket: str) -> dict[str, Any]:
     """Render the 429 body. ``bucket`` is opaque ('paid' or 'anon-ip') so
     a caller can tell which limit they hit without revealing the raw
-    key-hash or IP."""
+    key-hash or IP.
+
+    The body matches the canonical envelope used by ``_error_envelope.py``:
+    ``{code, message, retry_after, docs_url, bucket}``. Agent-facing
+    callers branch on ``code`` rather than parsing ``message`` (Wave 18 AX
+    Recovery step contract).
+    """
     return {
         "error": {
-            "code": "rate_limited",
+            "code": "rate_limit_exceeded",
             "message": ("リクエストが多すぎます。少し待ってから再試行してください。"),
             "message_en": ("Too many requests. Please slow down and retry."),
             "retry_after": retry_after_s,
+            "docs_url": "https://jpcite.com/docs/errors.html#rate_limit_exceeded",
             "bucket": bucket,
         }
     }
+
+
+def _build_rate_limit_headers(
+    *,
+    bucket: str,
+    limit: int,
+    remaining: int,
+    retry_after: int | None,
+) -> dict[str, str]:
+    """Return the RFC-7231-style rate-limit response headers.
+
+    Includes both the per-bucket ``X-RateLimit-Limit`` /
+    ``X-RateLimit-Remaining`` / ``X-RateLimit-Reset`` triplet AND a
+    ``Retry-After`` header when ``retry_after`` is set (only on 429
+    refusals). Stamped on every response by the dispatch path so a
+    customer agent can pace itself without ever triggering the 429.
+
+    The ``Reset`` value is a Unix epoch (seconds) representing the next
+    full second when the bucket is guaranteed to have at least one
+    fresh token. Cheap heuristic: ``now + max(1, retry_after_or_60)``.
+    """
+    import time as _t
+
+    headers: dict[str, str] = {
+        "X-RateLimit-Limit": str(limit),
+        "X-RateLimit-Remaining": str(max(0, remaining)),
+        "X-RateLimit-Bucket": bucket,
+    }
+    # Reset window: when retry_after is known use it, else conservative 60s.
+    reset_in = retry_after if retry_after else 60
+    headers["X-RateLimit-Reset"] = str(int(_t.time()) + max(1, int(reset_in)))
+    if retry_after is not None:
+        headers["Retry-After"] = str(int(retry_after))
+    return headers
 
 
 def _is_disabled() -> bool:
@@ -313,7 +354,12 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 return JSONResponse(
                     status_code=429,
                     content=_build_throttled_body(ra_int, bucket="auth-ip"),
-                    headers={"Retry-After": str(ra_int)},
+                    headers=_build_rate_limit_headers(
+                        bucket="auth-ip",
+                        limit=int(_AUTH_IP_BURST),
+                        remaining=0,
+                        retry_after=ra_int,
+                    ),
                 )
 
         try:
@@ -328,15 +374,37 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             logger.exception("rate_limit_take_failed")
             return await call_next(request)
 
-        if allowed:
-            return await call_next(request)
-
         bucket_label = "paid" if bucket_key.startswith("k:") else "anon-ip"
+
+        if allowed:
+            # Stamp X-RateLimit-Limit / X-RateLimit-Remaining /
+            # X-RateLimit-Reset on the success path so customer agents
+            # can pace themselves WITHOUT triggering the 429 — the AX
+            # Access pillar (Biilmann 4-pillar) requires these headers
+            # on every response, not just the throttled one.
+            response = await call_next(request)
+            with _buckets_lock:
+                b = _buckets.get(bucket_key)
+                remaining = int(b.tokens) if b is not None else int(burst)
+            for k, v in _build_rate_limit_headers(
+                bucket=bucket_label,
+                limit=int(burst),
+                remaining=max(0, remaining),
+                retry_after=None,
+            ).items():
+                response.headers.setdefault(k, v)
+            return response
+
         ra_int = max(1, int(retry_after_s + 0.999))
         return JSONResponse(
             status_code=429,
             content=_build_throttled_body(ra_int, bucket=bucket_label),
-            headers={"Retry-After": str(ra_int)},
+            headers=_build_rate_limit_headers(
+                bucket=bucket_label,
+                limit=int(burst),
+                remaining=0,
+                retry_after=ra_int,
+            ),
         )
 
 

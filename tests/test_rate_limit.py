@@ -67,12 +67,21 @@ def test_anon_burst_over_limit_returns_429(client: TestClient) -> None:
     r = client.get("/v1/meta")
     assert r.status_code == 429, r.text
     body = r.json()
-    assert body["error"]["code"] == "rate_limited"
+    # Wave 18 AX Recovery contract: canonical error envelope uses the
+    # `rate_limit_exceeded` code (matches ``_error_envelope.ERROR_CODES``),
+    # plus `retry_after` (seconds, int), `docs_url`, and the bucket label.
+    assert body["error"]["code"] == "rate_limit_exceeded"
     assert body["error"]["bucket"] == "anon-ip"
     assert body["error"]["retry_after"] >= 1
+    assert body["error"]["docs_url"].endswith("#rate_limit_exceeded")
     # RFC 7231: Retry-After integer seconds.
     assert "Retry-After" in r.headers
     assert int(r.headers["Retry-After"]) >= 1
+    # Wave 18 AX Access pillar: every rate-limited response also carries
+    # the X-RateLimit-* triplet so callers can pace themselves.
+    assert "X-RateLimit-Limit" in r.headers
+    assert "X-RateLimit-Remaining" in r.headers
+    assert "X-RateLimit-Reset" in r.headers
 
 
 def test_anon_429_does_not_burn_daily_quota(client: TestClient) -> None:

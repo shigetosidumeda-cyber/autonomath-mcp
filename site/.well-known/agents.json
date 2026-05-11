@@ -9,8 +9,11 @@
   "rest_openapi": "https://api.jpcite.com/openapi.public.json",
   "agent_openapi": "https://jpcite.com/openapi.agent.json",
   "agent_openapi_slim_gpt30": "https://jpcite.com/openapi.agent.gpt30.json",
+  "openapi_discovery": "https://jpcite.com/.well-known/openapi-discovery.json",
   "llms_txt": "https://jpcite.com/llms.txt",
   "llms_full_txt": "https://jpcite.com/llms-full.txt",
+  "companion_md_sitemap": "https://jpcite.com/sitemap-companion-md.xml",
+  "role_separation_note": "agents.json (this file) is a machine-readable AI-capability spec; llms.txt is the narrative site description for AI + human readers. They are intentionally non-overlapping: agents.json carries machine-readable tool counts, corpus scale, workflow IDs, pricing primitives; llms.txt carries first-call sequences, route guidance, and operator copy. Cross-link both ways via the `llms_txt` field above and the `## Agent-side capability spec` section of llms.txt.",
   "policy_url": "https://jpcite.com/tos.html",
   "privacy_url": "https://jpcite.com/privacy.html",
   "tools_count": {

@@ -356,41 +356,92 @@ def tools_pillar() -> Pillar:
         )
     )
 
-    # 4. MCP Resources + Prompts (Wave 15 landed 42 resources + 15 prompts)
-    has_resources = (SRC_MCP / "jpcite_resources.py").exists() or any(
-        (SRC_MCP / "autonomath_tools").glob("*resources*.py")
+    # 4. MCP Resources + Prompts (Wave 18 strictening — require manifest count
+    # markers AND list-fn surfaces in repo). Counts come from
+    # `mcp-server.json._meta.{resource,prompt}_count` so the audit follows the
+    # canonical manifest, not aspirational doc strings.
+    mcp_manifest = _read(REPO_ROOT / "mcp-server.json")
+    res_match = re.search(r'"resource_count"\s*:\s*(\d+)', mcp_manifest)
+    pr_match = re.search(r'"prompt_count"\s*:\s*(\d+)', mcp_manifest)
+    res_count = int(res_match.group(1)) if res_match else 0
+    pr_count = int(pr_match.group(1)) if pr_match else 0
+    has_resources_module = (SRC_MCP / "jpcite_resources.py").exists() and (
+        SRC_MCP / "cohort_resources.py"
+    ).exists()
+    has_prompts_module = (SRC_MCP / "jpcite_prompts.py").exists() and (
+        SRC_MCP / "autonomath_tools" / "prompts.py"
+    ).exists()
+    # REST surfaces let an agent enumerate without speaking MCP.
+    has_meta_resources_route = bool(_grep_files(SRC_API, r"/v1/meta/resources"))
+    has_meta_prompts_route = bool(_grep_files(SRC_API, r"/v1/meta/prompts"))
+    passed = (
+        has_resources_module
+        and has_prompts_module
+        and res_count >= 5
+        and pr_count >= 15
+        and has_meta_resources_route
+        and has_meta_prompts_route
     )
-    has_prompts = bool((SRC_MCP / "autonomath_tools" / "prompts.py").exists()) or bool(
-        _grep_files(SRC_MCP, r"@mcp\.prompt|list_prompts")
-    )
-    passed = has_resources and has_prompts
     p.checks.append(
         Check(
             "mcp_resources_prompts",
             passed,
-            evidence=f"resources={has_resources}, prompts={has_prompts}"
+            evidence=(
+                f"manifest resource_count={res_count} + prompt_count={pr_count}, "
+                f"modules present, /v1/meta/{{resources,prompts}} routes wired"
+            )
             if passed
             else "",
-            missing=f"resources={has_resources}, prompts={has_prompts}"
+            missing=(
+                f"res_module={has_resources_module}, pr_module={has_prompts_module}, "
+                f"resource_count={res_count}, prompt_count={pr_count}, "
+                f"meta_resources_route={has_meta_resources_route}, "
+                f"meta_prompts_route={has_meta_prompts_route}"
+            )
             if not passed
             else "",
         )
     )
 
-    # 5. WebMCP early preview (Wave 17 target, not yet implemented — expect 0)
-    webmcp_hits = _grep_files(REPO_ROOT, r"navigator\.modelContext|WebMCP|webmcp|toolname=", glob="**/*.html")
-    webmcp_doc = _grep_files(REPO_ROOT / "docs", r"WebMCP|webmcp", glob="**/*.md")
-    passed = bool(webmcp_hits) or bool(webmcp_doc)
+    # 5. WebMCP early preview (Wave 18 strictening — file delivery + 4 registerTool).
+    #
+    # Strict criterion (Wave 18): polyfill JS file present AND defines at least
+    # 4 distinct tools registered via `navigator.modelContext.registerTool`.
+    # Counting `name:` keys inside the TOOLS array is robust to whitespace
+    # variation and avoids relying on filename heuristics.
+    polyfill_path = SITE / "assets" / "webmcp_init.js"
+    polyfill_present = polyfill_path.exists() and polyfill_path.stat().st_size > 256
+    polyfill_text = _read(polyfill_path) if polyfill_present else ""
+    has_register_call = "navigator.modelContext.registerTool" in polyfill_text or (
+        "modelContext" in polyfill_text and "registerTool" in polyfill_text
+    )
+    # Count tool names — match `name: '...'` blocks inside the catalogue array.
+    tool_name_hits = re.findall(r"name:\s*['\"]([a-z_][a-z0-9_]*)['\"]", polyfill_text)
+    distinct_tools = sorted(set(tool_name_hits))
+    # Confirm the script tag is wired on at least one site root so production
+    # delivery is real, not just a checked-in file.
+    site_script_hits = _grep_files(SITE, r'webmcp_init\.js', glob="*.html")
+    passed = (
+        polyfill_present
+        and has_register_call
+        and len(distinct_tools) >= 4
+        and bool(site_script_hits)
+    )
     p.checks.append(
         Check(
             "webmcp_preview",
             passed,
             evidence=(
-                f"WebMCP markers: html_hits={len(webmcp_hits)}, doc_hits={len(webmcp_doc)}"
+                f"polyfill={polyfill_present} (size={polyfill_path.stat().st_size if polyfill_present else 0}B), "
+                f"registerTool=yes, tools={len(distinct_tools)} ({','.join(distinct_tools[:6])}), "
+                f"script_tag_wired_on={len(site_script_hits)} site root(s)"
             )
             if passed
             else "",
-            missing="no WebMCP markers in site/*.html or docs/**/*.md (Wave 17 deferred)"
+            missing=(
+                f"polyfill={polyfill_present}, registerTool={has_register_call}, "
+                f"tools={len(distinct_tools)} (need >=4), script_tags={len(site_script_hits)}"
+            )
             if not passed
             else "",
         )
@@ -439,15 +490,23 @@ def orchestration_pillar() -> Pillar:
         )
     )
 
-    # 3. Interrupt / resume session design (idempotency_cache + session token)
+    # 3. Interrupt / resume session design (idempotency_cache + session/state token).
+    #
+    # Wave 18 widening: `state_token` (HMAC) in the A2A receiver counts as a
+    # resume primitive — it is the durable identifier a remote agent re-presents
+    # to continue a delegated task. Keep the legacy session_token / resume_token
+    # / continuation_token tokens too for back-compat.
     idem_cache = list(REPO_ROOT.glob("scripts/migrations/087_*"))
-    sess_hits = _grep_files(SRC_API, r"session_token|resume_token|continuation_token")
+    sess_hits = _grep_files(
+        SRC_API,
+        r"session_token|resume_token|continuation_token|state_token",
+    )
     passed = bool(idem_cache) and bool(sess_hits)
     p.checks.append(
         Check(
             "interrupt_resume_session",
             passed,
-            evidence=f"mig_087 idempotency_cache + {len(sess_hits)} resume-token grep hits"
+            evidence=f"mig_087 idempotency_cache + {len(sess_hits)} session/state-token grep hits"
             if passed
             else "",
             missing=f"idem_cache_mig={bool(idem_cache)}, session_hits={len(sess_hits)}"
@@ -456,39 +515,88 @@ def orchestration_pillar() -> Pillar:
         )
     )
 
-    # 4. A2A receiver endpoint (Wave 17 deferred — expect 0)
-    a2a_hits = _grep_files(REPO_ROOT, r"A2A|agent-to-agent|a2a_endpoint|/v1/a2a", glob="**/*.py")
-    a2a_doc = _grep_files(REPO_ROOT / "docs", r"A2A|agent-to-agent", glob="**/*.md")
-    passed = bool(a2a_hits) or bool(a2a_doc)
+    # 4. A2A receiver endpoint (Wave 18 strictening — file + agent_card route
+    # + 5 lifecycle endpoints + state_token HMAC 24h TTL all present).
+    a2a_file = SRC_API / "a2a.py"
+    a2a_text = _read(a2a_file)
+    has_router_prefix = "APIRouter(prefix=\"/v1/a2a\"" in a2a_text or 'prefix="/v1/a2a"' in a2a_text
+    # All 5 lifecycle paths from the brief: agent_card / task POST / task GET /
+    # resume / cancel.
+    expected_routes = [
+        '@router.get("/agent_card"',
+        '@router.post("/task"',
+        '@router.get("/task/{task_id}"',
+        '@router.post("/task/{task_id}/resume"',
+        '@router.post("/task/{task_id}/cancel"',
+    ]
+    routes_present = [r for r in expected_routes if r in a2a_text]
+    has_state_token = "state_token" in a2a_text and "_mint_state_token" in a2a_text
+    has_hmac_24h = "hmac" in a2a_text.lower() and ("hours=24" in a2a_text or "24h" in a2a_text or "24" in a2a_text)
+    mounted_in_main = "include_router(a2a_router" in _read(SRC_API / "main.py")
+    passed = (
+        a2a_file.exists()
+        and has_router_prefix
+        and len(routes_present) >= 5
+        and has_state_token
+        and has_hmac_24h
+        and mounted_in_main
+    )
     p.checks.append(
         Check(
             "a2a_receiver",
             passed,
-            evidence=f"A2A markers: py={len(a2a_hits)}, doc={len(a2a_doc)}"
+            evidence=(
+                f"a2a.py present (router=/v1/a2a, {len(routes_present)}/5 routes), "
+                f"state_token+HMAC 24h, mounted in main.py"
+            )
             if passed
             else "",
-            missing="no A2A markers in repo (Wave 17 deferred)"
+            missing=(
+                f"file={a2a_file.exists()}, router_prefix={has_router_prefix}, "
+                f"routes={len(routes_present)}/5, state_token={has_state_token}, "
+                f"hmac_24h={has_hmac_24h}, mounted={mounted_in_main}"
+            )
             if not passed
             else "",
         )
     )
 
-    # 5. Streamable HTTP transport (Wave 16 A8 landed)
+    # 5. Streamable HTTP transport (Wave 18 strictening — manifest advertises
+    # 3 transports + repo carries source / doc markers).
     streamable_hits = _grep_files(
         SRC_MCP, r"streamable_http|StreamableHTTP|Streamable HTTP|streamable-http"
     )
     streamable_doc = _grep_files(
         REPO_ROOT / "docs", r"Streamable HTTP|streamable_http|streamable-http", glob="**/*.md"
     )
-    passed = bool(streamable_hits) or bool(streamable_doc)
+    mcp_manifest = _read(REPO_ROOT / "mcp-server.json")
+    has_transports_meta = (
+        '"transports"' in mcp_manifest
+        and '"streamable_http"' in mcp_manifest
+        and '"sse"' in mcp_manifest
+        and '"stdio"' in mcp_manifest
+    )
+    a2a_text = _read(SRC_API / "a2a.py")
+    has_transport_advertisement = (
+        '"mcp_stdio"' in a2a_text and '"mcp_streamable_http"' in a2a_text
+    )
+    passed = has_transports_meta and (bool(streamable_hits) or bool(streamable_doc)) and has_transport_advertisement
     p.checks.append(
         Check(
             "streamable_http",
             passed,
-            evidence=f"Streamable HTTP markers: src={len(streamable_hits)}, doc={len(streamable_doc)}"
+            evidence=(
+                f"mcp-server.json _meta.transports=3 values, "
+                f"a2a agent_card advertises stdio+streamable_http, "
+                f"src/doc markers={len(streamable_hits)}/{len(streamable_doc)}"
+            )
             if passed
             else "",
-            missing="no Streamable HTTP markers — Wave 16 A8 expected to have landed"
+            missing=(
+                f"transports_meta={has_transports_meta}, "
+                f"a2a_advert={has_transport_advertisement}, "
+                f"src_hits={len(streamable_hits)}, doc_hits={len(streamable_doc)}"
+            )
             if not passed
             else "",
         )

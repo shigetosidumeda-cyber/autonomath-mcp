@@ -108,6 +108,22 @@ dependencies = [
     # in the runtime deps (not just [dev]). 2026-05-07 R8: nta-corpus-
     # incremental-cron crashed nightly with `ModuleNotFoundError: bs4`.
     "beautifulsoup4>=4.12,<5",
+    # Wave 18 E2 (2026-05-11): OpenTelemetry distributed tracing for the
+    # REST API. Pure stdlib-shaped surface — OTLP HTTP exporter only, no
+    # gRPC dependency (keeps the wheel small + sidesteps the protobuf
+    # version churn). The instrumentation auto-wraps every FastAPI
+    # request handler in a server span; `observability/otel.py` is the
+    # two-gate init (env: OTEL_EXPORTER_OTLP_ENDPOINT + package
+    # importability). When the endpoint is unset the entire surface
+    # short-circuits to no-op so dev / CI runs are not slowed down.
+    # ~9 MB wheel footprint combined; smaller than weasyprint / pyarrow.
+    # NOT an LLM SDK — this is production telemetry, allowed by the
+    # `feedback_no_operator_llm_api` rule (OTLP HTTP is bounded-cost
+    # span export, not generative inference).
+    "opentelemetry-api>=1.27,<2",
+    "opentelemetry-sdk>=1.27,<2",
+    "opentelemetry-exporter-otlp-proto-http>=1.27,<2",
+    "opentelemetry-instrumentation-fastapi>=0.48b0,<1",
 ]
 
 [project.optional-dependencies]

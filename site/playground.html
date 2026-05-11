@@ -3581,5 +3581,51 @@
 })();
 </script>
 
+<!-- ====================================================================== -->
+<!-- WebMCP declarative API (Chrome 145+).                                  -->
+<!-- The `toolname` / `tooldescription` attributes turn a plain HTML form   -->
+<!-- into a 1-call agent surface. Native browsers expose this through       -->
+<!-- navigator.modelContext.listTools(); the polyfill in webmcp_init.js     -->
+<!-- mirrors the same descriptors into window.__jpcite_webmcp_tools so      -->
+<!-- pre-145 agents see an identical catalogue. Token cost: 89% lower than  -->
+<!-- screenshot-driven scraping (~2000 -> 20-100 tokens per turn).          -->
+<!-- ====================================================================== -->
+<section id="webmcp-surface" aria-label="WebMCP agent tool surface" hidden style="margin:0;padding:0;">
+ <form toolname="search_jpcite_programs"
+       tooldescription="日本の公的制度 (補助金・融資・税制・認定) を一次資料 URL 付き Evidence Packet で検索する。匿名 3 req/日 無料 / 認証時 ¥3/req 従量。"
+       action="https://api.jpcite.com/v1/programs/search"
+       method="get"
+       data-webmcp-decl="1">
+  <label>q<input name="q" type="text" required></label>
+  <label>tier<select name="tier"><option value="">(any)</option><option>S</option><option>A</option><option>B</option><option>C</option></select></label>
+  <label>prefecture<input name="prefecture" type="text"></label>
+  <label>limit<input name="limit" type="number" min="1" max="50" value="10"></label>
+ </form>
+ <form toolname="lookup_houjin_360"
+       tooldescription="13 桁法人番号から 法人 360 (登記・適格事業者・処分・採択履歴) を 1 call で取得する。"
+       action="https://api.jpcite.com/v1/houjin/lookup"
+       method="get"
+       data-webmcp-decl="1">
+  <label>houjin_bangou<input name="houjin_bangou" type="text" pattern="[0-9]{13}" required></label>
+ </form>
+ <form toolname="search_invoice_registrants"
+       tooldescription="国税庁 適格請求書発行事業者 (T 番号) を法人番号 / 登録番号から検索する。PDL v1.0 出典明記。"
+       action="https://api.jpcite.com/v1/invoice_registrants/lookup"
+       method="get"
+       data-webmcp-decl="1">
+  <label>t_number<input name="t_number" type="text" placeholder="T + 13 桁"></label>
+  <label>houjin_bangou<input name="houjin_bangou" type="text" pattern="[0-9]{13}"></label>
+ </form>
+ <form toolname="search_enforcement_cases"
+       tooldescription="行政処分 (1,185 件) を法人名・処分庁・年で横断検索する。一次資料 URL 付き。"
+       action="https://api.jpcite.com/v1/enforcement/search"
+       method="get"
+       data-webmcp-decl="1">
+  <label>q<input name="q" type="text"></label>
+  <label>authority<input name="authority" type="text"></label>
+  <label>year<input name="year" type="number" min="2010" max="2030"></label>
+ </form>
+</section>
+
 </body>
 </html>

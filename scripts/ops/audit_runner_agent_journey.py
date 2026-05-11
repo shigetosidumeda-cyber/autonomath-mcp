@@ -329,17 +329,31 @@ def step3_authentication() -> StepScore:
 def step4_execution() -> StepScore:
     findings: list[str] = []
     failure: list[str] = []
+    # Canonical full spec; site/openapi.agent.json is the slim gpt30 profile.
     path_count = 0
-    openapi_path = SITE / "openapi.agent.json"
-    if openapi_path.exists():
+    full_openapi = REPO_ROOT / "docs" / "openapi" / "v1.json"
+    slim_openapi = SITE / "openapi.agent.json"
+    slim_count = 0
+    if full_openapi.exists():
         try:
-            doc = json.loads(openapi_path.read_text(encoding="utf-8"))
+            doc = json.loads(full_openapi.read_text(encoding="utf-8"))
             path_count = len(doc.get("paths") or {})
         except json.JSONDecodeError:
-            failure.append("openapi.agent.json failed to parse")
+            failure.append("docs/openapi/v1.json failed to parse")
     else:
-        failure.append("openapi.agent.json missing")
-    findings.append(f"openapi paths: {path_count} (floor {OPENAPI_PATHS_FLOOR})")
+        failure.append("docs/openapi/v1.json missing")
+    if slim_openapi.exists():
+        try:
+            slim_doc = json.loads(slim_openapi.read_text(encoding="utf-8"))
+            slim_count = len(slim_doc.get("paths") or {})
+        except json.JSONDecodeError:
+            failure.append("site/openapi.agent.json failed to parse")
+    else:
+        failure.append("site/openapi.agent.json (slim gpt30 profile) missing")
+    findings.append(
+        f"openapi paths: full={path_count} slim_gpt30={slim_count} "
+        f"(floor {OPENAPI_PATHS_FLOOR})"
+    )
     if path_count >= OPENAPI_PATHS_FLOOR:
         path_pts = 5.0
     else:

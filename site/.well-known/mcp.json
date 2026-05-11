@@ -258,8 +258,16 @@
     {
       "uri": "mcp://jpcite/facts_registry.json",
       "name": "facts_registry",
-      "description": "jpcite 公開数値の SOT (snapshot_at / facts[] / guards / forbidden_modifiers)。AI agent は tool 呼び出し前に必ず本 resource を読み、最新値で応答せよ",
-      "mimeType": "application/json"
+      "description": "jpcite 公開数値の SOT (snapshot_at / facts[] / guards / forbidden_modifiers)。AI agent は tool 呼び出し前に必ず本 resource を読み、最新値で応答せよ。さらに index[] (21k+ entity の entity_id + kind + primary_name のみの軽量版) を含み、AI agent が 1 fetch で jpcite 配下 program / law / case_study / enforcement の存在をすべて把握できる",
+      "mimeType": "application/json",
+      "https_url": "https://jpcite.com/data/facts_registry.json"
+    },
+    {
+      "uri": "mcp://jpcite/facts_registry_full.json",
+      "name": "facts_registry_full",
+      "description": "facts_registry の完全版。各 entity に primary_name に加え source_url / source_url_domain / last_verified / authority / confidence / category も含む。fetch は optional (個別 entity の citation 検証に使う)。月次再生成、Wave 18 B6 GEO 強化で導入",
+      "mimeType": "application/json",
+      "https_url": "https://jpcite.com/data/facts_registry_full.json"
     },
     {
       "uri": "mcp://jpcite/legal/fence.md",

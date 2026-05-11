@@ -1,0 +1,51 @@
+{
+  "schema_version": "openapi-discovery/draft-01",
+  "product": "jpcite",
+  "operator": "Bookyou株式会社",
+  "operator_corporate_number": "8010001213708",
+  "operator_jct_registration": "T8010001213708",
+  "description": "Hierarchy declaration for jpcite's 3 OpenAPI surface tiers (full 220 path superset, agent-safe 34 path subset, gpt30 30 path slim). Each tier is a strict subset of the next; a client that consumes the slim profile MUST resolve any unknown operationId by walking up to the next-larger profile.",
+  "snapshot_at": "2026-05-11",
+  "tiers": [
+    {
+      "tier": "full",
+      "description": "Complete REST surface used by the FastAPI runtime + SDK generators (Postman / OpenAPI Generator / openapi-python-client). Includes account, billing, webhooks, and admin paths intentionally excluded from the AI-agent profiles.",
+      "url": "https://api.jpcite.com/openapi.public.json",
+      "mirror_url": "https://jpcite.com/openapi/v1.json",
+      "path_count": 220,
+      "size_bytes": 1250091,
+      "sha256_prefix": "4b3649b64d42424f",
+      "audience": ["developer", "sdk_generator"]
+    },
+    {
+      "tier": "agent",
+      "description": "Agent-safe subset for Claude tools, Cursor MCP store, and ChatGPT plugin-style integrations. Excludes account creation, billing modification, and admin endpoints; preserves all evidence + search + retrieval surfaces.",
+      "url": "https://jpcite.com/openapi.agent.json",
+      "path_count": 34,
+      "size_bytes": 543891,
+      "sha256_prefix": "552351f2133b57e3",
+      "audience": ["claude_tools", "cursor_mcp_store", "anthropic_claude_project", "cline"],
+      "parent_tier": "full"
+    },
+    {
+      "tier": "gpt30",
+      "description": "ChatGPT Custom GPT 30-path slim profile. OpenAI's Custom GPT Actions builder caps at 30 paths per spec; this profile is the curated minimum-viable evidence + search surface for that constraint.",
+      "url": "https://jpcite.com/openapi.agent.gpt30.json",
+      "path_count": 30,
+      "size_bytes": 379285,
+      "sha256_prefix": "8e9c4676aa495558",
+      "audience": ["chatgpt_custom_gpt", "openai_actions"],
+      "parent_tier": "agent"
+    }
+  ],
+  "hierarchy_invariant": "Each tier MUST be a strict subset of its parent_tier. CI check: `scripts/ops/check_openapi_drift.py` walks operationId membership across the 3 profiles and fails the build if gpt30 introduces an operationId not present in agent, or agent not present in full.",
+  "cross_references": {
+    "agents_json": "https://jpcite.com/.well-known/agents.json",
+    "llms_txt": "https://jpcite.com/llms.txt",
+    "mcp_server": "https://jpcite.com/mcp-server.json",
+    "sitemap_companion_md": "https://jpcite.com/sitemap-companion-md.xml"
+  },
+  "openapi_version": "3.1.0",
+  "license": "https://jpcite.com/data-licensing.html",
+  "contact_email": "info@bookyou.net"
+}

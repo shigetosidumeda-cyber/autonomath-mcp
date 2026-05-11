@@ -170,11 +170,21 @@ def build_jsonld(row: dict[str, Any], programs: list[str], outcomes: list[str]) 
         obj["dateModified"] = fetched
     if src:
         obj["isBasedOn"] = src
-        obj["citation"] = {
-            "@type": "CreativeWork",
-            "name": "中小企業庁 jirei-navi",
-            "url": src,
-        }
+        # AEO Wave 18: expand citation to a list so AI agents see both the
+        # primary source (jirei-navi) and the canonical jpcite URL where
+        # this fact is machine-readable.
+        obj["citation"] = [
+            {
+                "@type": "CreativeWork",
+                "name": "中小企業庁 jirei-navi (一次資料)",
+                "url": src,
+            },
+            {
+                "@type": "WebPage",
+                "name": "jpcite 機械可読化レイヤー",
+                "url": case_url(row.get("case_id") or ""),
+            },
+        ]
     about: list[dict[str, Any]] = []
     if company:
         about.append({"@type": "Organization", "name": company})
@@ -326,6 +336,34 @@ def render_page(row: dict[str, Any]) -> str:
         "<a href='/dashboard.html'>API キー発行</a></p>"
         "</section>"
     )
+
+    # AEO Wave 18: explicit "Cite this in AI" block so AI agents pick the
+    # canonical jpcite URL when surfacing this fact in a generated answer.
+    cite_url_short = f"{DOMAIN}/cases/{case_id}"
+    cite_url_full = canonical
+    cite_block_html = (
+        "<section aria-labelledby='cite-title' class='cite-this-section'>"
+        "<h2 id='cite-title'>Cite this in AI / 引用</h2>"
+        "<p>AI に本事例を引用させる時の canonical URL です。"
+        f"出典 (jpcite) の明記をお願いします。一次資料は "
+        f"{'<a href=' + chr(39) + safe_html(src_url) + chr(39) + ' rel=' + chr(39) + 'external nofollow noopener' + chr(39) + '>中小企業庁 jirei-navi</a>' if src_url else '中小企業庁 jirei-navi'}"
+        "。</p>"
+        "<pre class='code-block cite-block'><code>"
+        f"&gt; {safe_html(title_h1)} "
+        f"(出典: https://{safe_html(cite_url_short)}、jpcite が中小企業庁 jirei-navi 一次資料を機械可読化)"
+        "</code></pre>"
+        "<p class='muted'>"
+        f"<button type='button' class='copy-cite-btn' data-cite-url='https://{safe_html(cite_url_short)}' "
+        f"onclick=\"navigator.clipboard&amp;&amp;navigator.clipboard.writeText('https://{safe_html(cite_url_short)}')\">"
+        "URL をコピー</button> "
+        f"<a href='https://{safe_html(cite_url_short)}'>https://{safe_html(cite_url_short)}</a>"
+        "</p>"
+        "</section>"
+    )
+
+    # Append cite block onto api_html so both surfaces (developer +
+    # citation) appear together in the rendered article.
+    api_html = api_html + cite_block_html
 
     breadcrumb_pref = ""
     if pref:

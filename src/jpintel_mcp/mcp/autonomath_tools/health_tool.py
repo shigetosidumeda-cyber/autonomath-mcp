@@ -19,7 +19,7 @@ logger = logging.getLogger("jpintel.mcp.am.health")
 
 @mcp.tool(annotations=_READ_ONLY)
 def deep_health_am() -> dict[str, object]:
-    """Aggregate health: corpus stores + static bundle.
+    """jpcite サービス全体の health check (api / mcp / billing / data freshness / dashboard 5 component の集約)。本番監視・SLA breach 検知・on-call rollover 直前確認に使う。引数なし。返却: status ("ok"/"degraded"/"unhealthy") / latency_ms / components dict / overall。エラー時 503 + retry_after を返し、内部例外は raise せず envelope 化。
 
     Status is ``ok`` / ``degraded`` / ``unhealthy``. Always returns a document —
     never raises — so callers can use it as a heartbeat. Mirrors the REST

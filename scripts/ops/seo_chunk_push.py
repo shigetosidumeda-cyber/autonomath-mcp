@@ -2,9 +2,17 @@
 """SEO page chunk push wrapper.
 
 Stage a directory of pre-split chunk files (each containing absolute
-``site/{cases,laws,enforcement}/*.html`` paths, one per line, ~200 paths
-per chunk), and incrementally commit + push each chunk on its own commit so
-that 50K+ SEO pages can be landed in safe ~200-page batches.
+``site/{cases,laws,enforcement}/*.html`` or ``*.md`` paths, one per line,
+~200 paths per chunk), and incrementally commit + push each chunk on its
+own commit so that 50K+ SEO pages (HTML + Wave 17 AX companion-Markdown)
+can be landed in safe ~200-page batches.
+
+Wave 17 AX extension
+--------------------
+HTML chunk prefixes (original):       cases_chunk_ / laws_chunk_ / enf_chunk_
+                                       → updates site/sitemap-cases.xml etc.
+Companion-Markdown chunk prefixes:    md_cases_chunk_ / md_laws_chunk_ / md_enf_chunk_
+                                       → updates site/sitemap-companion-md.xml
 
 Chunks are enumerated in deterministic sort order across the chunk directory
 and addressed by integer index (``--start``/``--end``). The naming convention
@@ -50,9 +58,18 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 CATEGORY_PREFIXES = {
+    # HTML SEO page chunks (original Wave 12 surface).
     "cases_chunk_": ("cases", "site/sitemap-cases.xml", "site/cases/"),
     "laws_chunk_": ("laws", "site/sitemap-laws.xml", "site/laws/"),
     "enf_chunk_": ("enforcement", "site/sitemap-enforcement-cases.xml", "site/enforcement/"),
+    # Companion-Markdown chunks (Wave 17 AX). Each chunk file lists absolute
+    # site/{cat}/{slug}.md paths; the dedicated `sitemap-companion-md.xml`
+    # collects all 3 cohorts in one urlset (cases/laws/enforcement md_url
+    # combined per generate_sitemap_companion_md.py). Same 200-page-per-chunk
+    # cadence and HTTP/1.1 retry strategy applies.
+    "md_cases_chunk_": ("cases_md", "site/sitemap-companion-md.xml", "site/cases/"),
+    "md_laws_chunk_": ("laws_md", "site/sitemap-companion-md.xml", "site/laws/"),
+    "md_enf_chunk_": ("enforcement_md", "site/sitemap-companion-md.xml", "site/enforcement/"),
 }
 
 SITE_HOST = "https://jpcite.com"

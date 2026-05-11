@@ -196,6 +196,12 @@ def _raise_rate_limit_unavailable(request: Request, limit: int) -> NoReturn:
         },
         headers={
             "Retry-After": str(retry_after),
+            # Per RFC 6585 §4: surface the structured rate-limit triple so
+            # agents can back off without parsing the human-readable body.
+            "X-RateLimit-Limit": "3",  # daily anon cap (JST reset)
+            "X-RateLimit-Remaining": "0",
+            "X-RateLimit-Reset": resets_at,
+            # Legacy alias kept for backwards-compat with the dashboard UI.
             "X-Anon-Quota-Remaining": "0",
             "X-Anon-Quota-Reset": resets_at,
             "X-Anon-Upgrade-Url": UPGRADE_URL_FROM_429,
@@ -700,6 +706,10 @@ async def enforce_anon_ip_limit(request: Request) -> None:
             },
             headers={
                 "Retry-After": str(retry_after),
+                # RFC 6585 §4 rate-limit triple — see fail-open branch above.
+                "X-RateLimit-Limit": "3",
+                "X-RateLimit-Remaining": "0",
+                "X-RateLimit-Reset": resets_at,
                 # Mirror the body fields onto headers so HTTP-only clients
                 # (curl scripts, monitoring) still see the upgrade hint.
                 "X-Anon-Quota-Remaining": "0",

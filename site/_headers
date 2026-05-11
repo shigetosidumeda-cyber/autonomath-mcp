@@ -150,6 +150,41 @@
   Content-Type: text/markdown; charset=utf-8
   Cache-Control: public, max-age=3600
 
+# Wave 17 AX — companion-Markdown surface (GitHub-style `{url}.md`).
+# Every public SEO HTML page (cases / laws / enforcement) ships a sibling
+# `.md` file that contains the same canonical narrative as Markdown with
+# YAML-ish frontmatter (canonical / lang / est_tokens / source_url / fetched_at).
+# These are the LLM citation crawl surface — many 2026 answer engines refuse
+# JS-heavy HTML and ingest only `{url}.md` when present. Cloudflare Pages must
+# serve them as `text/markdown` so the crawler does not fall back to
+# `application/octet-stream`. UTF-8 charset is required for JA text.
+# Long edge cache because the .md companion is deterministically regenerated
+# in bulk; downstream LLMs benefit from a stable corpus snapshot.
+/cases/*.md
+  Content-Type: text/markdown; charset=utf-8
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  X-Robots-Tag: index, follow
+
+/laws/*.md
+  Content-Type: text/markdown; charset=utf-8
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  X-Robots-Tag: index, follow
+
+/enforcement/*.md
+  Content-Type: text/markdown; charset=utf-8
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  X-Robots-Tag: index, follow
+
+# openapi-discovery — hierarchy declaration for the 3 OpenAPI tiers
+# (full 220 path superset, agent-safe 34, gpt30 slim 30). LLM agents
+# query this before walking individual openapi.*.json profiles so they
+# can pick the smallest tier that covers their needed operations.
+/.well-known/openapi-discovery.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=300, s-maxage=600
+  CDN-Cache-Control: public, max-age=600
+  Access-Control-Allow-Origin: *
+
 # Status page — live health probe, must always re-evaluate.
 # /status/index.html embeds vanilla JS that polls /v1/am/health/deep +
 # PyPI every 30s. If browsers cache the HTML, users see stale "all green"

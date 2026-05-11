@@ -113,6 +113,13 @@ def _mint_request_id() -> str:
 #: ``f"{DOC_URL}#{code}"`` to point at its specific section.
 DOC_URL = "https://jpcite.com/docs/error_handling"
 
+#: Canonical docs_url base (Wave 18 AX Recovery contract). Each error
+#: response carries ``error.docs_url = f"{DOCS_URL_BASE}#{code}"`` so
+#: agent-side consumers can branch on ``error.code`` and then jump
+#: straight to the per-code documentation anchor at
+#: ``https://jpcite.com/docs/errors.html``.
+DOCS_URL_BASE = "https://jpcite.com/docs/errors.html"
+
 #: Closed-enum mapping of error codes to default user copy + severity.
 #: The ``user_message`` field is shown verbatim to end users / agent
 #: callers when the call site does not override it.  Keep ≤200 chars
@@ -419,6 +426,12 @@ def make_error(
         "request_id": request_id or _mint_request_id(),
         "severity": spec.get("severity", "hard"),
         "documentation": f"{DOC_URL}#{code}",
+        # docs_url alias (Wave 18 AX Recovery contract): customer agents
+        # branch on ``error.docs_url`` per the canonical envelope spec at
+        # https://jpcite.com/docs/errors.html — kept alongside the legacy
+        # ``documentation`` field so both old and new SDK readers find a
+        # usable href. Both point at the same per-code anchor.
+        "docs_url": f"{DOCS_URL_BASE}#{code}",
     }
 
     if primary_lang == "en" and text_en:
@@ -426,11 +439,18 @@ def make_error(
         err["user_message"] = text_en
         err["user_message_en"] = text_en
         err["user_message_ja"] = text_ja
+        # Canonical ``message`` alias (Wave 18 AX Recovery contract): agents
+        # parse ``error.code`` + ``error.message`` + ``error.docs_url`` per
+        # the AX 4-pillar typed-error envelope spec. Kept alongside the
+        # bilingual ``user_message`` pair so legacy clients still resolve.
+        err["message"] = text_en
     else:
         # Japanese-primary path (default + every legacy caller).
         err["user_message"] = text_ja
         if text_en is not None:
             err["user_message_en"] = text_en
+        # Canonical ``message`` alias — see English-primary branch above.
+        err["message"] = text_ja
         # NOTE: we deliberately do NOT add `user_message_ja` on the
         # ja-primary path — pre-R8 wire shape did not carry it, and
         # adding it unconditionally would balloon every error body for
@@ -710,6 +730,7 @@ COMMON_ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
 
 __all__ = [
     "DOC_URL",
+    "DOCS_URL_BASE",
     "ERROR_CODES",
     "make_error",
     "safe_request_id",

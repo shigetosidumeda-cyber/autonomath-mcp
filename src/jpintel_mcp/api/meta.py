@@ -115,6 +115,142 @@ def healthz(conn: DbDep) -> dict[str, str]:
 
 
 # ---------------------------------------------------------------------------
+# /v1/meta/resources + /v1/meta/prompts — MCP surface discovery via REST.
+# ---------------------------------------------------------------------------
+#
+# Wave 18 AX Layer 3 addition. An agent visiting the REST surface can now
+# enumerate the MCP Resources + Prompts catalogue without speaking the MCP
+# protocol, mirroring what `mcp://jpcite/*` resources surface inside an
+# MCP client. Both endpoints are FREE / unmetered / unrate-limited because
+# they are pure manifest probes — same posture as `/healthz` and
+# `/v1/health/data`. Cached on first call.
+
+_RESOURCES_PROMPTS_CACHE: dict[str, Any] = {"resources": None, "prompts": None}
+
+
+def _load_mcp_resources() -> list[dict[str, Any]]:
+    """Aggregate registered MCP resources (jpcite + cohort + autonomath)."""
+    if _RESOURCES_PROMPTS_CACHE["resources"] is not None:
+        return _RESOURCES_PROMPTS_CACHE["resources"]  # type: ignore[return-value]
+    resources: list[dict[str, Any]] = []
+    try:
+        from jpintel_mcp.mcp.jpcite_resources import list_jpcite_resources
+
+        resources.extend(list_jpcite_resources())
+    except Exception:  # pragma: no cover - registry import optional
+        pass
+    try:
+        from jpintel_mcp.mcp.cohort_resources import list_cohort_resources
+
+        resources.extend(list_cohort_resources())
+    except Exception:  # pragma: no cover - registry import optional
+        pass
+    try:
+        from jpintel_mcp.mcp.autonomath_tools.resources import (
+            list_autonomath_resources,
+        )
+
+        resources.extend(list_autonomath_resources())
+    except Exception:  # pragma: no cover - registry import optional
+        pass
+    _RESOURCES_PROMPTS_CACHE["resources"] = resources
+    return resources
+
+
+def _load_mcp_prompts() -> list[dict[str, Any]]:
+    """Aggregate registered MCP prompts (jpcite + autonomath)."""
+    if _RESOURCES_PROMPTS_CACHE["prompts"] is not None:
+        return _RESOURCES_PROMPTS_CACHE["prompts"]  # type: ignore[return-value]
+    prompts: list[dict[str, Any]] = []
+    try:
+        from jpintel_mcp.mcp.jpcite_prompts import list_jpcite_prompts
+
+        prompts.extend(list_jpcite_prompts())
+    except Exception:  # pragma: no cover
+        pass
+    try:
+        from jpintel_mcp.mcp.autonomath_tools.prompts import list_autonomath_prompts
+
+        prompts.extend(list_autonomath_prompts())
+    except Exception:  # pragma: no cover
+        pass
+    _RESOURCES_PROMPTS_CACHE["prompts"] = prompts
+    return prompts
+
+
+@router.get(
+    "/v1/meta/resources",
+    summary="List MCP Resources catalogue (FREE, anon-allowed)",
+)
+def list_resources() -> JSONResponse:
+    """Return registered MCP Resources catalogue.
+
+    Wave 18 AX surface: lets an agent enumerate the resources catalogue
+    via REST without speaking the MCP protocol. Cached process-locally
+    after first call — the registry is computed once at import time.
+    Shape: ``{"count": N, "resources": [{uri, name, description, ...}]}``.
+    """
+    resources = _load_mcp_resources()
+    return JSONResponse(
+        content={
+            "count": len(resources),
+            "resources": resources,
+            "fetched_at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "source": "src/jpintel_mcp/mcp/{jpcite,cohort}_resources.py + autonomath_tools/resources.py",
+        }
+    )
+
+
+@router.get(
+    "/v1/meta/prompts",
+    summary="List MCP Prompts catalogue (FREE, anon-allowed)",
+)
+def list_prompts() -> JSONResponse:
+    """Return registered MCP Prompts catalogue.
+
+    Wave 18 AX surface: lets an agent enumerate the prompts catalogue
+    via REST without speaking the MCP protocol. Shape mirrors
+    ``/v1/meta/resources``.
+    """
+    prompts = _load_mcp_prompts()
+    return JSONResponse(
+        content={
+            "count": len(prompts),
+            "prompts": prompts,
+            "fetched_at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "source": "src/jpintel_mcp/mcp/jpcite_prompts.py + autonomath_tools/prompts.py",
+        }
+    )
+
+
+@router.get(
+    "/v1/meta/transports",
+    summary="Advertised MCP transport protocols (FREE, anon-allowed)",
+)
+def list_transports() -> JSONResponse:
+    """Return advertised MCP transport protocols.
+
+    Wave 18 AX surface anchored to ``mcp-server.json._meta.transports``.
+    Shape: ``{"transports": ["stdio", "sse", "streamable_http"], ...}``.
+    """
+    return JSONResponse(
+        content={
+            "transports": ["stdio", "sse", "streamable_http"],
+            "primary": "stdio",
+            "remote": {
+                "sse": "https://api.jpcite.com/mcp/sse (advertised — wire later)",
+                "streamable_http": (
+                    "https://api.jpcite.com/mcp (advertised; FastMCP "
+                    "streamable_http requires `mcp.run(transport=\"streamable-http\")` "
+                    "deploy variant, see docs/_internal/mcp_transport_plan.md)"
+                ),
+            },
+            "fetched_at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        }
+    )
+
+
+# ---------------------------------------------------------------------------
 # /v1/meta/corpus_snapshot — §17.D corpus snapshot id surface
 # ---------------------------------------------------------------------------
 #

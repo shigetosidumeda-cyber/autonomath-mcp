@@ -213,10 +213,25 @@ def check_captcha_on_api() -> AntiPatternResult:
                     f"live probe of {API_PROBE_URL}: response contains marker '{marker}'"
                 )
     rx = re.compile("|".join(captcha_markers), re.IGNORECASE)
+    # Wave 18 AX dual-path exemption: files that import the scope-based
+    # auth module + invoke ``classify_request_agent`` carry a token-only
+    # alternative for agent callers, so the CAPTCHA marker reflects only
+    # the browser-form branch (acceptable per ax_smart_guide §4). The
+    # combined marker is precise — comments or doc-strings mentioning
+    # Turnstile do not satisfy it.
+    token_alt_rx = re.compile(
+        r"from\s+jpintel_mcp\.api\.scopes\s+import[^\n]*classify_request_agent|"
+        r"classify_request_agent\s*\(",
+    )
     for fp in SRC_API.glob("**/*.py"):
         text = _read(fp)
-        if rx.search(text):
-            r.violations.append(f"{fp.relative_to(REPO_ROOT)}: CAPTCHA marker found in API source")
+        if not rx.search(text):
+            continue
+        # If the file *also* wires the agent-token alternative, treat the
+        # CAPTCHA marker as the browser-only branch and skip the flag.
+        if token_alt_rx.search(text):
+            continue
+        r.violations.append(f"{fp.relative_to(REPO_ROOT)}: CAPTCHA marker found in API source")
     return r
 
 
@@ -226,33 +241,54 @@ def check_captcha_on_api() -> AntiPatternResult:
 def check_vague_mcp_descriptions() -> AntiPatternResult:
     r = AntiPatternResult(
         "vague_mcp_descriptions",
-        "MCP tool `description` must be specific and >= 50 chars. Vague placeholders like 'データを取得' are AX-hostile.",
+        "MCP tool-level description (function docstring of @mcp.tool / @server.tool) must be specific and >= 50 chars; vague placeholders like 'データを取得' are AX-hostile. Parameter Field descriptions are out of scope.",
     )
-    desc_rx = re.compile(
-        r'description\s*=\s*(?:"|\')([^"\']{1,400})(?:"|\')'
+    # FastMCP convention in this codebase: the tool-level description is the
+    # *function docstring* directly following the @mcp.tool decorator. The
+    # `description=` keyword appears inside Pydantic Field(...) parameter
+    # declarations — those are parameter descriptions and out of scope for this
+    # anti-pattern.
+    tool_dec_rx = re.compile(
+        r"^@(?:mcp|server)\.tool\b[^\n]*\n(?:^@[^\n]*\n)*^(?:async\s+)?def\s+(\w+)\s*\([^)]*\)(?:\s*->\s*[^:]+)?\s*:\s*\n",
+        re.MULTILINE,
+    )
+    # Docstring after the def line.
+    docstring_rx = re.compile(
+        r'^\s+(?:"""|\'\'\')(.*?)(?:"""|\'\'\')',
+        re.DOTALL | re.MULTILINE,
     )
     for fp in SRC_MCP.glob("**/*.py"):
         text = _read(fp)
-        for m in desc_rx.finditer(text):
-            desc = m.group(1).strip()
-            # Skip non-MCP-tool descriptions (e.g. Pydantic field descriptions
-            # tend to be short by nature). Heuristic: descriptions inside an
-            # @mcp.tool / FastMCP context are bigger blocks. We restrict by
-            # context: only files under src/jpintel_mcp/mcp/ that mention @mcp.
-            if "@mcp" not in text:
-                continue
-            line_no = text[: m.start()].count("\n") + 1
-            if len(desc) < 50:
+        if "@mcp.tool" not in text and "@server.tool" not in text:
+            continue
+        for m in tool_dec_rx.finditer(text):
+            tool_name = m.group(1)
+            tail = text[m.end() : m.end() + 4096]
+            ds = docstring_rx.search(tail)
+            if not ds:
+                # No docstring under @mcp.tool — that's a hard violation.
+                line_no = text[: m.start()].count("\n") + 1
                 r.violations.append(
-                    f"{fp.relative_to(REPO_ROOT)}:{line_no}: short description "
-                    f"({len(desc)} chars): {desc[:80]!r}"
+                    f"{fp.relative_to(REPO_ROOT)}:{line_no}: tool '{tool_name}' has no docstring"
+                )
+                continue
+            desc = ds.group(1).strip()
+            # Take only the FIRST PARAGRAPH (most agent libraries display only
+            # the first line / paragraph of a multi-paragraph docstring as the
+            # tool description).
+            first_para = desc.split("\n\n", 1)[0].strip()
+            line_no = text[: m.start()].count("\n") + 1
+            if len(first_para) < 50:
+                r.violations.append(
+                    f"{fp.relative_to(REPO_ROOT)}:{line_no}: tool '{tool_name}' short "
+                    f"description ({len(first_para)} chars): {first_para[:80]!r}"
                 )
                 continue
             for phrase in VAGUE_DESC_PHRASES:
-                if phrase in desc and len(desc) < 120:
+                if phrase in first_para and len(first_para) < 120:
                     r.violations.append(
-                        f"{fp.relative_to(REPO_ROOT)}:{line_no}: vague phrase '{phrase}' "
-                        f"in short description: {desc[:80]!r}"
+                        f"{fp.relative_to(REPO_ROOT)}:{line_no}: tool '{tool_name}' vague phrase "
+                        f"'{phrase}' in short description: {first_para[:80]!r}"
                     )
                     break
     return r
@@ -412,8 +448,9 @@ def render_md(result: dict) -> str:
         lines.append(f"| {i} | {ap['name']} | {ap['violation_count']} | {status} |")
     lines.append("")
     for i, ap in enumerate(result["anti_patterns"], 1):
+        status_line = "PASS" if ap["passed"] else f"FAIL ({ap['violation_count']} violations)"
         lines += [
-            f"## {i}. {ap['name']} — {'PASS' if ap['passed'] else f'FAIL ({ap[\"violation_count\"]} violations)'}",
+            f"## {i}. {ap['name']} — {status_line}",
             "",
             f"_{ap['description']}_",
             "",
