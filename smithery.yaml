@@ -1,5 +1,9 @@
 # Smithery configuration file. Schema: https://smithery.ai/docs/build/project-config/smithery-yaml
 
+id: "@bookyou/jpcite"
+name: "jpcite"
+qualifiedName: "@bookyou/jpcite"
+
 startCommand:
   type: stdio
 

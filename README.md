@@ -14,6 +14,12 @@ mcp-name: io.github.shigetosidumeda-cyber/autonomath-mcp
 [![MCP 2025-06-18](https://img.shields.io/badge/MCP-2025--06--18-6E56CF.svg)](https://modelcontextprotocol.io/)
 [![Made in Japan](https://img.shields.io/badge/made%20in-%F0%9F%87%AF%F0%9F%87%B5-red.svg)](https://jpcite.com)
 
+[![smithery badge](https://smithery.ai/badge/@bookyou/jpcite)](https://smithery.ai/server/@bookyou/jpcite)
+[![Glama MCP](https://img.shields.io/badge/Glama-MCP%20Server-7C3AED.svg?logo=anthropic&logoColor=white)](https://glama.ai/mcp/servers/io.github.shigetosidumeda-cyber/autonomath-mcp)
+[![mcp.so](https://img.shields.io/badge/mcp.so-Listed-2563EB.svg)](https://mcp.so/server/jpcite/bookyou)
+[![mcphub.dev](https://img.shields.io/badge/mcphub-Listed-0EA5E9.svg)](https://mcphub.dev/servers/jpcite)
+[![awesome-mcp](https://img.shields.io/badge/awesome--mcp-pending-yellow.svg)](https://github.com/punkpeye/awesome-mcp-servers/pull/6192)
+
 **Launch state (2026-05-07 hardening)** — quality gates cleared, LIVE on Fly Tokyo:
 
 [![mypy strict](https://img.shields.io/badge/mypy%20strict-0%20errors-4c1.svg)](./CHANGELOG.md)
