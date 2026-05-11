@@ -197,19 +197,9 @@
 /fence.md /.well-known/fence.md 301
 /.well-known/facts_registry.json /facts_registry.json 200
 
-# v3.1 (2026-05-11 install-friction hotfix) — /connect/* SOT docs revival.
-# Cloudflare Pages's .html-stripping happens for top-level paths, but the
-# per-page connect docs were 404'ing for extensionless URLs after a
-# build-config drift. Pin the canonical path → .html rewrite explicitly so
-# /connect/claude-code, /connect/cursor, /connect/chatgpt, /connect/codex
-# resolve to the corresponding site/connect/*.html files with a 200 rewrite
-# (no client-visible redirect). Trailing-slash variants 301 to the
-# canonical slug to keep the URL shape singular.
-/connect/claude-code  /connect/claude-code.html  200
-/connect/cursor       /connect/cursor.html       200
-/connect/chatgpt      /connect/chatgpt.html      200
-/connect/codex        /connect/codex.html        200
-/connect/claude-code/ /connect/claude-code       301
-/connect/cursor/      /connect/cursor            301
-/connect/chatgpt/     /connect/chatgpt           301
-/connect/codex/       /connect/codex             301
+# v3.2 (2026-05-11 GEO guard fix) — /connect/* explicit 200 rewrite 削除。
+# 真因は GEO readiness guard の禁止 regex `^/[^\s]+\s+/[^\s]*\.html` (loop-prone
+# rule) に hit していたこと。CF Pages の pretty URL default (`.html` 自動 fallback)
+# で `/connect/claude-code` → `site/connect/claude-code.html` が serve される
+# ので explicit rewrite は不要。404 の真因は別 (mkdocs nav warning + CF secret 空)
+# で既に解消済 (commit 9e93ceef + secret set 2026-05-11T04:14)。
