@@ -27,3 +27,12 @@
 # Pure additive (CREATE TABLE IF NOT EXISTS + CREATE INDEX IF NOT EXISTS).
 # autonomath-target; boot-time safe; idempotent on every boot.
 248_program_source_municipality_v2.sql
+
+# 2026-05-12 Wave 43.2.5 — Dim E Verification trail (Ed25519 fact_signature).
+# am_fact_signature (fact_id PK + ed25519_sig BLOB(96) + corpus_snapshot_id +
+# signed_at) + 3 indexes + v_am_fact_signature_latest view. Per-fact tamper-
+# evident signature so GET /v1/facts/{fact_id}/verify can return 200 valid /
+# 409 tampered without re-walking the daily Merkle anchor chain.
+# Pure additive (CREATE TABLE/INDEX/VIEW IF NOT EXISTS); idempotent on every
+# boot. NO LLM, cryptography stdlib only.
+262_fact_signature_v2.sql

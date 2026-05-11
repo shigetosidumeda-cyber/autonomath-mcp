@@ -2673,6 +2673,13 @@ def create_app() -> FastAPI:
     # third-party verification cannot be paywalled. See
     # api/audit_proof.py module docstring.
     _include_experimental_router(app, "jpintel_mcp.api.audit_proof")
+    # Wave 43.2.5 Dim E Verification trail: per-fact Ed25519 verify +
+    # rule-based explanation paragraph (GET /v1/facts/{fact_id}/verify,
+    # GET /v1/facts/{fact_id}/why). Mounted via experimental include so
+    # migration 262 absence at import time degrades to import-skip
+    # instead of crashing the app. NO LLM, cryptography stdlib only.
+    # See api/fact_verify.py module docstring.
+    _include_experimental_router(app, "jpintel_mcp.api.fact_verify")
     # Autonomath health probe (10-check aggregate) — same exemption as
     # /healthz / /readyz. Mounted without AnonIpLimitDep so production
     # uptime monitors can poll without burning the 3/日 anonymous quota.
