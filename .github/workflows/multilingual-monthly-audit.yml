@@ -1,0 +1,180 @@
+name: multilingual-monthly-audit
+
+# Wave 41 Agent I — monthly comprehensive multilingual audit + dashboard regen.
+# Runs the v2 fill scripts (extended source discovery + manual review queue
+# export) and refreshes the public translation_review_queue.html dashboard.
+#
+# Separate from `multilingual-weekly.yml`:
+#   - weekly  = incremental fill, bounded max-laws/max-programs caps.
+#   - monthly = full crawl with JLT/ZH/KO hub harvest + review_queue.csv
+#               export so the operator can manually paste 1 次資料 URLs.
+#
+# NEVER calls LLM API (memory: feedback_no_operator_llm_api). Aggregator
+# URLs refused (memory: feedback_no_fake_data).
+#
+# Schedule: 03:00 UTC on the 5th of every month (= 12:00 JST), 1 day after
+# multilingual-weekly's monthly Sunday so weekly cron settles first.
+
+on:
+  schedule:
+    - cron: "0 3 5 * *"
+  workflow_dispatch:
+    inputs:
+      max_laws:
+        description: "Per-script law cap (default 1000 for monthly audit)"
+        required: false
+        default: "1000"
+      max_programs:
+        description: "fill_programs_en_bulk cap (default 2000)"
+        required: false
+        default: "2000"
+      dry_run:
+        description: "If true, run --dry-run --no-network everywhere"
+        required: false
+        default: "false"
+
+concurrency:
+  group: multilingual-monthly-audit
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  fill_laws_en_v2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Install Playwright (Wave 36 fallback)
+        run: |
+          python -m playwright install --with-deps chromium || true
+      - name: Run fill_laws_en_full_v2
+        env:
+          AUTONOMATH_DB_PATH: ${{ github.workspace }}/autonomath.db
+          INPUT_MAX_LAWS: ${{ github.event.inputs.max_laws }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+          JPCITE_PREFLIGHT_ALLOW_MISSING_DB: "1"
+        run: |
+          set -euo pipefail
+          MAX="${INPUT_MAX_LAWS:-1000}"
+          DRY_FLAG=""
+          if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then DRY_FLAG="--dry-run --no-network"; fi
+          if [ ! -f "${AUTONOMATH_DB_PATH}" ]; then DRY_FLAG="--dry-run --no-network"; fi
+          python scripts/cron/fill_laws_en_full_v2.py --max-laws "${MAX}" --resume ${DRY_FLAG}
+
+  fill_programs_en_bulk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Install Playwright (Wave 36 fallback)
+        run: |
+          python -m playwright install --with-deps chromium || true
+      - name: Run fill_programs_en_bulk
+        env:
+          JPINTEL_DB_PATH: ${{ github.workspace }}/data/jpintel.db
+          INPUT_MAX_PROGRAMS: ${{ github.event.inputs.max_programs }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+          JPCITE_PREFLIGHT_ALLOW_MISSING_DB: "1"
+        run: |
+          set -euo pipefail
+          MAX="${INPUT_MAX_PROGRAMS:-2000}"
+          DRY_FLAG=""
+          if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then DRY_FLAG="--dry-run --no-network"; fi
+          if [ ! -f "${JPINTEL_DB_PATH}" ]; then DRY_FLAG="--dry-run --no-network"; fi
+          python scripts/cron/fill_programs_en_bulk.py --max-programs "${MAX}" ${DRY_FLAG}
+
+  fill_laws_zh_v2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Install Playwright (Wave 36 fallback)
+        run: |
+          python -m playwright install --with-deps chromium || true
+      - name: Run fill_laws_zh_v2
+        env:
+          AUTONOMATH_DB_PATH: ${{ github.workspace }}/autonomath.db
+          INPUT_MAX_LAWS: ${{ github.event.inputs.max_laws }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+          JPCITE_PREFLIGHT_ALLOW_MISSING_DB: "1"
+        run: |
+          set -euo pipefail
+          MAX="${INPUT_MAX_LAWS:-1000}"
+          DRY_FLAG=""
+          if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then DRY_FLAG="--dry-run --no-network"; fi
+          if [ ! -f "${AUTONOMATH_DB_PATH}" ]; then DRY_FLAG="--dry-run --no-network"; fi
+          python scripts/cron/fill_laws_zh_v2.py --max-laws "${MAX}" ${DRY_FLAG}
+
+  fill_laws_ko_v2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Install Playwright (Wave 36 fallback)
+        run: |
+          python -m playwright install --with-deps chromium || true
+      - name: Run fill_laws_ko_v2
+        env:
+          AUTONOMATH_DB_PATH: ${{ github.workspace }}/autonomath.db
+          INPUT_MAX_LAWS: ${{ github.event.inputs.max_laws }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+          JPCITE_PREFLIGHT_ALLOW_MISSING_DB: "1"
+        run: |
+          set -euo pipefail
+          MAX="${INPUT_MAX_LAWS:-1000}"
+          DRY_FLAG=""
+          if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then DRY_FLAG="--dry-run --no-network"; fi
+          if [ ! -f "${AUTONOMATH_DB_PATH}" ]; then DRY_FLAG="--dry-run --no-network"; fi
+          python scripts/cron/fill_laws_ko_v2.py --max-laws "${MAX}" ${DRY_FLAG}
+
+  failure_alert:
+    needs: [fill_laws_en_v2, fill_programs_en_bulk, fill_laws_zh_v2, fill_laws_ko_v2]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `multilingual-monthly-audit failed ${new Date().toISOString()}`,
+              body: `Run: ${runUrl}\n\nLikely causes: JLT index schema drift, MOFA / METI / JETRO English/Chinese/Korean hub URL drift, Playwright install failure, DB volume not mounted on CI. Inspect each fill_laws_*_v2.py docstring before patching. NEVER add LLM API as fallback — Wave 41 Agent I keeps Wave 35's local-inference-only rule.`,
+              labels: ["ingest-failure", "automation", "axis5", "multilingual", "monthly-audit"],
+            });
