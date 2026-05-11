@@ -39,12 +39,30 @@ def _today_iso() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
 
-def _enumerate_md_urls(require_md_exists: bool) -> list[tuple[str, str]]:
-    """Return (category, md_url) tuples for every .html page in scope."""
+def _enumerate_md_urls(require_md_exists: bool, scan_md_only: bool = False) -> list[tuple[str, str]]:
+    """Return (category, md_url) tuples in scope.
+
+    Modes:
+      - default (scan_md_only=False): iterate every ``.html`` page and emit the
+        companion ``.md`` URL. Optionally restrict to entries whose ``.md`` sibling
+        already exists on disk via ``require_md_exists``.
+      - scan_md_only=True (Wave 22 correction): iterate every ``.md`` file directly,
+        ignoring ``.html`` presence. This reflects the **actual** companion-Markdown
+        inventory on disk (cases 2,286 + laws 2,200 + enforcement 300 = 4,786) rather
+        than the theoretical 10,264 derived from HTML pages.
+    """
     entries: list[tuple[str, str]] = []
     for cat, dir_name in CATEGORIES:
         cat_dir = SITE_DIR / dir_name
         if not cat_dir.is_dir():
+            continue
+        if scan_md_only:
+            for p in sorted(cat_dir.iterdir()):
+                if not p.is_file() or p.suffix != ".md" or p.name in {"index.md", "README.md"}:
+                    continue
+                slug = p.stem
+                md_url = f"{CANONICAL_BASE}/{dir_name}/{slug}.md"
+                entries.append((cat, md_url))
             continue
         for p in sorted(cat_dir.iterdir()):
             if not p.is_file() or p.suffix != ".html" or p.name == "index.html":
@@ -99,8 +117,17 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Print stats but do not write the sitemap.",
     )
+    p.add_argument(
+        "--scan-md-only",
+        action="store_true",
+        help=(
+            "Wave 22 correction: enumerate every .md file on disk directly "
+            "(reflects real companion-Markdown inventory ~4,786) instead of "
+            "deriving URLs from .html siblings."
+        ),
+    )
     args = p.parse_args(argv)
-    entries = _enumerate_md_urls(args.require_md_exists)
+    entries = _enumerate_md_urls(args.require_md_exists, scan_md_only=args.scan_md_only)
     if not entries:
         sys.stderr.write("[sitemap-companion-md] no .md URLs to emit\n")
         return 2

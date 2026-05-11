@@ -49,6 +49,18 @@ Usage
     python scripts/ops/cf_parity_verify.py
     python scripts/ops/cf_parity_verify.py --out custom/path/parity.json
     python scripts/ops/cf_parity_verify.py --hosts jpcite.com,www.jpcite.com
+
+Wave 22 — AI bot UA fanout mode
+-------------------------------
+    python scripts/ops/cf_parity_verify.py --ua-mode
+
+In ``--ua-mode`` the script fans out every (host × path) probe across
+the 17-entry ``AI_BOT_USER_AGENTS`` welcome list (GPTBot / ClaudeBot /
+PerplexityBot / etc.). 3 hosts × 10 paths × 17 UAs = 510 HTTP calls per
+run. Each UA must receive 200 (or the expected 3xx redirect) — any
+403/429/4xx indicates a Cloudflare Bot Fight Mode or custom WAF rule
+that is silently denying an AI agent. Snapshot is written to
+``site/status/cf_parity_ua.json`` by default.
 """
 
 from __future__ import annotations
@@ -126,22 +138,49 @@ PROBE_TIMEOUT = 10.0   # seconds
 # for cache variation but tight enough to catch stale slim responses.
 SIZE_TOLERANCE = 0.05
 
+# Wave 22: AI bot UA welcome list. When `--ua-mode` is set, every probe
+# fans out against this list (16 UAs × 3 hosts × N paths). Each UA must
+# return 200 (or expected redirect) on every host/path combo.
+AI_BOT_USER_AGENTS: list[tuple[str, str]] = [
+    ("GPTBot", "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; GPTBot/1.2; +https://openai.com/gptbot"),
+    ("ChatGPT-User", "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; ChatGPT-User/1.0; +https://openai.com/bot"),
+    ("ClaudeBot", "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; ClaudeBot/1.0; +https://www.anthropic.com/claude-bot"),
+    ("Claude-User", "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; Claude-User/1.0; +https://www.anthropic.com/claude-user"),
+    ("anthropic-ai", "anthropic-ai/1.0"),
+    ("Google-Extended", "Mozilla/5.0 (compatible; Google-Extended/1.0)"),
+    ("Googlebot", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"),
+    ("PerplexityBot", "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; PerplexityBot/1.0; +https://perplexity.ai/perplexitybot"),
+    ("Meta-ExternalAgent", "meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler)"),
+    ("Twitterbot", "Twitterbot/1.0"),
+    ("Amazonbot", "Mozilla/5.0 (compatible; Amazonbot/0.1; +https://developer.amazon.com/amazonbot)"),
+    ("MistralAI-User", "MistralAI-User/1.0"),
+    ("DeepSeekBot", "Mozilla/5.0 (compatible; DeepSeekBot/1.0; +https://www.deepseek.com)"),
+    ("Bytespider", "Mozilla/5.0 (Linux; Android 5.0) AppleWebKit/537.36 (KHTML, like Gecko); compatible; Bytespider; bytespider@bytedance.com"),
+    ("cohere-ai", "cohere-ai/1.0"),
+    ("Applebot-Extended", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko); Applebot-Extended/0.1"),
+    ("Bingbot", "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm"),
+]
+
 
 # ---------------------------------------------------------------------------
 # HTTP helper
 # ---------------------------------------------------------------------------
 
 
-def _http_head_or_get(url: str) -> tuple[int, int, str, str, str | None]:
+def _http_head_or_get(url: str, user_agent: str | None = None) -> tuple[int, int, str, str, str | None]:
     """One-shot HTTP GET. Returns (status, body_len, content_type, etag, error).
 
     We use GET rather than HEAD because Cloudflare's CDN sometimes
     serves HEAD differently from GET (different headers, sometimes
     different status codes when origin is misconfigured). GET is the
     real crawler signal.
+
+    Wave 22: ``user_agent`` overrides the default UA. Used by the AI-bot
+    UA-fanout mode so we can verify that an AI crawler's UA does not
+    trigger Cloudflare Bot Fight Mode / custom WAF rules.
     """
     headers = {
-        "User-Agent": "jpcite-cf-parity-verify/1.0",
+        "User-Agent": user_agent or "jpcite-cf-parity-verify/1.0",
         "Accept": "*/*",
     }
     req = urllib.request.Request(url, headers=headers)
@@ -268,6 +307,74 @@ def build_snapshot(hosts: list[str], paths: list[str]) -> dict[str, Any]:
     }
 
 
+def verify_path_across_uas(
+    path: str, hosts: list[str], user_agents: list[tuple[str, str]]
+) -> dict[str, Any]:
+    """Wave 22: Probe `path` on each host with each AI bot UA. Returns
+    {ua_label: {host: probe_result}} drift analysis.
+
+    Surface == ``hosts × user_agents`` total HTTP calls per path. Default
+    UA welcome list has 17 UAs; 3 hosts × 17 UAs × 10 paths = 510 calls.
+    """
+    per_ua: dict[str, Any] = {}
+    drift: list[str] = []
+    for ua_label, ua_string in user_agents:
+        per_host: dict[str, Any] = {}
+        for host in hosts:
+            url = _build_url(host, path)
+            t0 = time.monotonic()
+            status, blen, ct, etag, err = _http_head_or_get(url, user_agent=ua_string)
+            elapsed_ms = int((time.monotonic() - t0) * 1000)
+            per_host[host] = {
+                "url": url,
+                "user_agent": ua_label,
+                "http_status": status,
+                "body_len": blen,
+                "content_type": ct,
+                "etag": etag,
+                "latency_ms": elapsed_ms,
+                "error": err,
+            }
+            # AI bot must not be 403'd. Acceptable: 200 (welcome),
+            # 301/302/307/308 (redirect to canonical host), 304 (cached).
+            # Anything else (especially 403 / 429) is a bot-policy regression.
+            expected_behavior = EXPECTED_HOST_BEHAVIOR.get(path, {}).get(host, "accept")
+            if expected_behavior == "redirect":
+                if status not in (301, 302, 307, 308):
+                    drift.append(f"{ua_label}@{host}: expected 3xx redirect, got {status}")
+            elif expected_behavior == "accept":
+                if status not in (200, 304):
+                    drift.append(f"{ua_label}@{host}: expected 200/304, got {status}")
+            elif expected_behavior == "absent":
+                if status == 200:
+                    drift.append(f"{ua_label}@{host}: expected absent, got 200")
+        per_ua[ua_label] = per_host
+
+    return {
+        "path": path,
+        "per_ua": per_ua,
+        "drift": drift,
+        "status": STATUS_OK if not drift else STATUS_DEGRADED,
+    }
+
+
+def build_ua_snapshot(
+    hosts: list[str], paths: list[str], user_agents: list[tuple[str, str]]
+) -> dict[str, Any]:
+    """Wave 22: Top-level snapshot for AI-bot UA fanout mode."""
+    per_path = [verify_path_across_uas(p, hosts, user_agents) for p in paths]
+    return {
+        "snapshot_at": datetime.now(JST).isoformat(timespec="seconds"),
+        "mode": "ai_bot_ua_fanout",
+        "hosts": hosts,
+        "paths": paths,
+        "user_agents": [ua[0] for ua in user_agents],
+        "per_path": per_path,
+        "overall": overall_status(per_path),
+        "probe_count": len(hosts) * len(paths) * len(user_agents),
+    }
+
+
 # ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
@@ -297,6 +404,18 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--quiet", action="store_true",
         help="Suppress stdout summary.",
     )
+    p.add_argument(
+        "--ua-mode", action="store_true",
+        help=(
+            "Wave 22: AI-bot UA fanout mode. Probe every (host × path) "
+            "combination with each UA in the AI_BOT_USER_AGENTS list. "
+            "Output written to --ua-out (default site/status/cf_parity_ua.json)."
+        ),
+    )
+    p.add_argument(
+        "--ua-out", type=Path, default=Path("site/status/cf_parity_ua.json"),
+        help="Output path for --ua-mode snapshot.",
+    )
     return p.parse_args(argv)
 
 
@@ -307,6 +426,28 @@ def main(argv: list[str] | None = None) -> int:
     if not hosts or not paths:
         print("[cf_parity_verify] no hosts or paths to probe", file=sys.stderr)
         return 1
+
+    if args.ua_mode:
+        ua_snapshot = build_ua_snapshot(hosts, paths, AI_BOT_USER_AGENTS)
+        args.ua_out.parent.mkdir(parents=True, exist_ok=True)
+        args.ua_out.write_text(
+            json.dumps(ua_snapshot, indent=2 if args.pretty else None, ensure_ascii=False, sort_keys=False) + "\n",
+            encoding="utf-8",
+        )
+        if not args.quiet:
+            n_probes = ua_snapshot["probe_count"]
+            n_degraded = sum(1 for p in ua_snapshot["per_path"] if p["status"] != STATUS_OK)
+            print(
+                f"[cf_parity_verify] wrote {args.ua_out}: ua-mode "
+                f"overall={ua_snapshot['overall']}, probes={n_probes}, "
+                f"degraded_paths={n_degraded}"
+            )
+            if n_degraded:
+                for p in ua_snapshot["per_path"]:
+                    if p["status"] != STATUS_OK:
+                        print(f"  - {p['path']}: {'; '.join(p['drift'][:5])}"
+                              + (" ..." if len(p["drift"]) > 5 else ""))
+        return 0
 
     snapshot = build_snapshot(hosts, paths)
 

@@ -66,6 +66,16 @@ KNOWN_BASENAMES = (
     # as a sitemap shard so AI bots discover the registry without scraping
     # 24k+ per-entity HTML pages.
     "sitemap-facts.xml",
+    # Wave 17 AX: cases / laws / enforcement HTML surfaces (~5k pages combined).
+    "sitemap-cases.xml",
+    "sitemap-enforcement-cases.xml",
+    "sitemap-laws.xml",
+    "sitemap-laws-en.xml",
+    # Wave 22 correction (2026-05-11): companion-Markdown surface sitemap —
+    # 4,786 .md URLs (cases 2,286 + laws 2,200 + enforcement 300). Generated
+    # by scripts/generate_sitemap_companion_md.py --scan-md-only. Replaces the
+    # earlier 10,264 theoretical-count derivation (Wave 17 起案時の理論値).
+    "sitemap-companion-md.xml",
     "docs/sitemap.xml",
 )
 
