@@ -334,3 +334,99 @@ def device_status(user_code: str) -> dict[str, Any]:
         "scope": state.get("scope"),
         "expires_in": max(0, state["expires_at"] - _now()),
     }
+
+
+# ---- Wave 41 — polling response enhancements ---------------------------------
+#
+# RFC 8628 §3.5 defines four polling-error responses that the spec
+# REQUIRES servers to surface in normalised form. Wave 41 adds a
+# dedicated *poll-introspect* endpoint plus a structured polling-response
+# builder so client libraries and the audit script can verify all four
+# cases without minting a real device code first.
+
+
+_POLL_RESPONSE_FIXTURES: dict[str, dict[str, Any]] = {
+    "authorization_pending": {
+        "http_status": 400,
+        "body": {
+            "error": "authorization_pending",
+            "error_description": "Operator has not yet approved the request.",
+        },
+        "next_action": "wait_interval_then_repoll",
+    },
+    "slow_down": {
+        "http_status": 400,
+        "body": {
+            "error": "slow_down",
+            "error_description": "Polled before interval window.",
+            "interval": DEFAULT_INTERVAL * 2,
+        },
+        "next_action": "double_interval_then_repoll",
+    },
+    "expired_token": {
+        "http_status": 400,
+        "body": {"error": "expired_token", "error_description": "device_code expired"},
+        "next_action": "restart_device_flow",
+    },
+    "access_denied": {
+        "http_status": 400,
+        "body": {
+            "error": "access_denied",
+            "error_description": "Operator declined the device authorization.",
+        },
+        "next_action": "abort",
+    },
+    "success": {
+        "http_status": 200,
+        "body": {
+            "access_token": "<api-key>",
+            "token_type": "Bearer",
+            "scope": "default",
+            "expires_in": 0,
+        },
+        "next_action": "use_token",
+    },
+}
+
+
+@router.get("/poll_introspect")
+def device_poll_introspect(case: str | None = None) -> dict[str, Any]:
+    """Return canonical polling-response envelope shapes (Wave 41)."""
+    if case:
+        envelope = _POLL_RESPONSE_FIXTURES.get(case)
+        if envelope is None:
+            return {
+                "error": "unknown_case",
+                "valid_cases": sorted(_POLL_RESPONSE_FIXTURES.keys()),
+            }
+        return {"case": case, "envelope": envelope, "spec": "RFC 8628 §3.5"}
+    return {
+        "spec": "RFC 8628 §3.5",
+        "cases": _POLL_RESPONSE_FIXTURES,
+        "case_count": len(_POLL_RESPONSE_FIXTURES),
+        "verification_uri": VERIFICATION_URI,
+    }
+
+
+@router.get("/poll_response_spec")
+def device_poll_response_spec() -> dict[str, Any]:
+    """Minimal spec card describing the polling protocol (Wave 41)."""
+    return {
+        "spec": "RFC 8628 — OAuth 2.1 Device Authorization Grant",
+        "polling": {
+            "endpoint": "/v1/oauth/device/token",
+            "method": "POST",
+            "content_type": "application/x-www-form-urlencoded",
+            "required_fields": ["grant_type", "device_code"],
+            "grant_type": "urn:ietf:params:oauth:grant-type:device_code",
+            "default_interval_seconds": DEFAULT_INTERVAL,
+            "max_interval_seconds": 30,
+            "error_responses": list(_POLL_RESPONSE_FIXTURES.keys()),
+        },
+        "lifecycle": [
+            "POST /v1/oauth/device/code   — mint codes",
+            "Operator visits verification_uri and types user_code",
+            "POST /v1/oauth/device/token  — agent polls every interval seconds",
+            "Server returns success or authorization_pending|slow_down|expired_token|access_denied",
+        ],
+    }

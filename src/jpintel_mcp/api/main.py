@@ -166,6 +166,7 @@ from jpintel_mcp.api.testimonials import (
 )
 from jpintel_mcp.api.time_machine import router as time_machine_router
 from jpintel_mcp.api.transparency import router as transparency_router
+from jpintel_mcp.api.translation_status import router as translation_status_router  # Wave 41 Agent I
 from jpintel_mcp.api.trust import router as trust_router
 from jpintel_mcp.api.usage import router as usage_router
 from jpintel_mcp.api.verify import router as verify_router
@@ -1975,6 +1976,12 @@ def create_app() -> FastAPI:
     # returns them as a single agent-fetchable payload. Same public posture
     # as six_axis_status_router (no auth, no AnonIpLimitDep, 3-minute cache).
     app.include_router(status_aggregated_router)
+    # Wave 41 Agent I — multilingual coverage status (/v1/translation/status).
+    # Public transparency endpoint exposing en/zh/ko coverage stats across
+    # am_law / am_law_article / programs + manual review_queue pending counts.
+    # NO auth, NO AnonIpLimitDep — same posture as meta_freshness; agents
+    # need to verify data is multilingually fresh before citing it.
+    app.include_router(translation_status_router)
     # Wave 19 §A5 — MCP server-to-server federation discovery
     # (/v1/meta/federation). Public manifest of allied servers + workflow
     # handoff patterns. Static declaration, no auth, no quota — agents
