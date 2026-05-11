@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="theme-color" content="#ffffff">
+<title>6-axis Monitoring Dashboard — jpcite</title>
+<meta name="description" content="jpcite の 6 軸 (data 量 / data 質 / 鮮度 / 組み合わせ / 多言語 / output) 監視ダッシュボード。各軸の minimum gate 充足状況をリアルタイム表示します。">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://jpcite.com/status/six_axis_dashboard.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/status/six_axis_dashboard.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/status/six_axis_dashboard.html">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<style>
+  :root {
+    --accent: #1e3a8a;
+    --text: #111111;
+    --text-muted: #555555;
+    --border: #e5e5e5;
+    --bg: #ffffff;
+    --bg-alt: #f7f7f8;
+    --ok: #15803d;
+    --degraded: #b45309;
+    --breach: #b91c1c;
+    --unknown: #6b7280;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue",
+      "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI",
+      "Meiryo", sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+  .container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 32px 20px 64px;
+  }
+  header {
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+  h1 {
+    font-size: 28px;
+    margin: 0 0 8px 0;
+    color: var(--accent);
+  }
+  .meta-line {
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+  .summary-bar {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+    margin: 24px 0;
+  }
+  @media (max-width: 720px) {
+    .summary-bar { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 480px) {
+    .summary-bar { grid-template-columns: repeat(2, 1fr); }
+  }
+  .axis-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 12px;
+    background: var(--bg-alt);
+    text-align: center;
+  }
+  .axis-card.ok { border-left: 6px solid var(--ok); }
+  .axis-card.degraded { border-left: 6px solid var(--degraded); }
+  .axis-card.breach { border-left: 6px solid var(--breach); }
+  .axis-card.unknown { border-left: 6px solid var(--unknown); }
+  .axis-card .axis-id {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .axis-card .axis-label {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 4px 0 8px 0;
+  }
+  .axis-card .verdict {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 12px;
+    display: inline-block;
+  }
+  .verdict.ok { background: #dcfce7; color: var(--ok); }
+  .verdict.degraded { background: #fef3c7; color: var(--degraded); }
+  .verdict.breach { background: #fee2e2; color: var(--breach); }
+  .verdict.unknown { background: #e5e7eb; color: var(--unknown); }
+  section.axis-detail {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  section.axis-detail h2 {
+    margin: 0;
+    padding: 12px 16px;
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--border);
+    font-size: 18px;
+  }
+  table.sub-axis {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  table.sub-axis th,
+  table.sub-axis td {
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  table.sub-axis th {
+    background: #fafafa;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+  table.sub-axis td.status-ok { color: var(--ok); font-weight: 600; }
+  table.sub-axis td.status-fail { color: var(--breach); font-weight: 600; }
+  table.sub-axis td.status-warn { color: var(--degraded); font-weight: 600; }
+  table.sub-axis td.status-unknown { color: var(--unknown); }
+  .empty-state {
+    padding: 24px;
+    text-align: center;
+    color: var(--text-muted);
+  }
+  footer {
+    margin-top: 48px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+</style>
+<!-- JSON-LD: Schema.org Dataset so AI agents can index axis state. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "jpcite 6-axis production sanity status",
+  "description": "Per-axis health snapshot for jpcite's 6 design axes: data 量 / data 質 / 鮮度 / 組み合わせ / 多言語 / output.",
+  "url": "https://jpcite.com/status/six_axis_dashboard.html",
+  "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "creator": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "url": "https://jpcite.com/"
+  },
+  "isAccessibleForFree": true,
+  "distribution": [{
+    "@type": "DataDownload",
+    "encodingFormat": "application/json",
+    "contentUrl": "https://api.jpcite.com/v1/status/six_axis"
+  }],
+  "variableMeasured": [
+    {"@type": "PropertyValue", "name": "axis_1_data_volume",
+     "description": "Row counts for municipal / JPO / EDINET / court / industry / NTA corpora."},
+    {"@type": "PropertyValue", "name": "axis_2_data_quality",
+     "description": "Precompute table coverage (cohort_5d / risk_4d / supplier_chain / compat_promote / amount_verify / amendment_dated)."},
+    {"@type": "PropertyValue", "name": "axis_3_freshness",
+     "description": "7-day rolling ingest health for 5 daily ETL pipelines."},
+    {"@type": "PropertyValue", "name": "axis_4_combination",
+     "description": "Refresh state of 5 precompute outputs (portfolio / risk_score / forecast / alliance / graph_vec)."},
+    {"@type": "PropertyValue", "name": "axis_5_multilingual",
+     "description": "Coverage % per language (en / zh / ko, ja baseline)."},
+    {"@type": "PropertyValue", "name": "axis_6_output",
+     "description": "Success rate across PDF / Excel / freee / MF / Yayoi / Notion / Linear / Slack / Discord / Teams output channels."}
+  ]
+}
+</script>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>6-axis Monitoring Dashboard</h1>
+    <div class="meta-line">
+      <span id="overall-pill" class="verdict unknown">unknown</span>
+      <span id="generated-at">読み込み中…</span>
+    </div>
+  </header>
+
+  <div class="summary-bar" id="summary-bar" aria-live="polite">
+    <!-- Populated by /v1/status/six_axis JSON fetch. -->
+  </div>
+
+  <main id="axes-detail">
+    <div class="empty-state">読み込み中…</div>
+  </main>
+
+  <footer>
+    <p>
+      Data source:
+      <a href="https://api.jpcite.com/v1/status/six_axis">/v1/status/six_axis</a>
+      (also mirrored at
+      <a href="/status/six_axis_status.json">six_axis_status.json</a>).
+      The dashboard refreshes on page load only — for live streaming see
+      <a href="/status/">/status/</a>.
+    </p>
+    <p>
+      Daily SLA breach probe runs in
+      <code>.github/workflows/six-axis-sanity-daily.yml</code> at 06:30 UTC.
+      Source script: <code>scripts/ops/six_axis_sanity_check.py</code>.
+    </p>
+    <p>
+      © Bookyou株式会社 · jpcite ·
+      <a href="/privacy.html">プライバシー</a> ·
+      <a href="/tokushoho.html">特商法表記</a>
+    </p>
+  </footer>
+</div>
+
+<script>
+(function () {
+  const sources = [
+    "/v1/status/six_axis",
+    "/status/six_axis_status.json"
+  ];
+
+  async function fetchFirst() {
+    for (const url of sources) {
+      try {
+        const r = await fetch(url, { cache: "no-store" });
+        if (r.ok) {
+          const j = await r.json();
+          return { url, data: j };
+        }
+      } catch (_err) {
+        // fall through to next source
+      }
+    }
+    return null;
+  }
+
+  function el(tag, attrs, children) {
+    const node = document.createElement(tag);
+    if (attrs) {
+      for (const [k, v] of Object.entries(attrs)) {
+        if (k === "class") node.className = v;
+        else if (k === "text") node.textContent = v;
+        else node.setAttribute(k, v);
+      }
+    }
+    if (children) {
+      for (const c of children) node.appendChild(c);
+    }
+    return node;
+  }
+
+  function renderSummary(report) {
+    const bar = document.getElementById("summary-bar");
+    bar.innerHTML = "";
+    for (const axis of report.axes) {
+      const card = el("div", { class: "axis-card " + axis.verdict });
+      card.appendChild(el("div", { class: "axis-id", text: "Axis " + axis.axis_id }));
+      card.appendChild(el("div", { class: "axis-label", text: axis.label }));
+      card.appendChild(el("span", { class: "verdict " + axis.verdict, text: axis.verdict }));
+      bar.appendChild(card);
+    }
+  }
+
+  function renderAxes(report) {
+    const root = document.getElementById("axes-detail");
+    root.innerHTML = "";
+    for (const axis of report.axes) {
+      const section = el("section", { class: "axis-detail" });
+      section.appendChild(el("h2", {
+        text: "Axis " + axis.axis_id + " — " + axis.label
+              + " (" + axis.verdict + ")"
+      }));
+      const table = el("table", { class: "sub-axis" });
+      const thead = el("thead");
+      const headerRow = el("tr");
+      ["sub", "label", "status", "observed", "threshold", "detail"].forEach(h => {
+        headerRow.appendChild(el("th", { text: h }));
+      });
+      thead.appendChild(headerRow);
+      table.appendChild(thead);
+      const tbody = el("tbody");
+      for (const sub of axis.sub_results) {
+        const tr = el("tr");
+        tr.appendChild(el("td", { text: sub.sub_id }));
+        tr.appendChild(el("td", { text: sub.label }));
+        tr.appendChild(el("td", { class: "status-" + sub.status, text: sub.status }));
+        tr.appendChild(el("td", { text: sub.observed === null ? "—" : String(sub.observed) }));
+        tr.appendChild(el("td", { text: String(sub.threshold) }));
+        tr.appendChild(el("td", { text: sub.detail || "" }));
+        tbody.appendChild(tr);
+      }
+      table.appendChild(tbody);
+      section.appendChild(table);
+      root.appendChild(section);
+    }
+  }
+
+  function renderError(msg) {
+    const pill = document.getElementById("overall-pill");
+    pill.textContent = "unreachable";
+    pill.className = "verdict breach";
+    document.getElementById("generated-at").textContent = msg;
+    document.getElementById("axes-detail").innerHTML =
+      '<div class="empty-state">状態 JSON を取得できませんでした。<code>/v1/status/six_axis</code> がデプロイ済みか確認してください。</div>';
+  }
+
+  fetchFirst().then(res => {
+    if (!res) {
+      renderError("status JSON not reachable");
+      return;
+    }
+    const { data } = res;
+    const pill = document.getElementById("overall-pill");
+    pill.textContent = data.overall_verdict || "unknown";
+    pill.className = "verdict " + (data.overall_verdict || "unknown");
+    document.getElementById("generated-at").textContent =
+      "generated_at: " + (data.generated_at || "—");
+    renderSummary(data);
+    renderAxes(data);
+  }).catch(err => {
+    renderError("fetch error: " + err.message);
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+name: six-axis-sanity-daily
+
+# Wave 38 — daily 6-axis production sanity check.
+#
+# Runs `scripts/ops/six_axis_sanity_check.py` against the local repo
+# checkout. Because the 9.7 GB autonomath.db is NOT present on GHA runners
+# (per `feedback_no_quick_check_on_huge_sqlite`), the script is designed to
+# graceful-skip any sub-axis whose backing DB / sidecar is missing — those
+# show up as `unknown` rather than `fail`. The cron's job is to (a) verify
+# the audit *infrastructure* still runs end-to-end every day and (b) catch
+# regressions in the JSON shape or the OpenAPI cohort drift.
+#
+# Constraints:
+#   - Zero LLM API calls (operator-only offline; in-CI is forbidden anyway
+#     per `tests/test_no_llm_in_production.py`).
+#   - Free-tier runners only.
+#   - Sole side effect: status JSON + Markdown + (when breach detected) an
+#     SLA alert artifact uploaded for the operator. NO git push, NO secret
+#     read beyond GHA defaults.
+#   - Honest-null: `unknown` sub-axes do NOT trigger SLA breach. We only
+#     fire the Telegram bot when a sub-axis is *materialised* and *fails*.
+
+on:
+  schedule:
+    - cron: "30 6 * * *"  # 06:30 UTC daily == 15:30 JST
+  workflow_dispatch:
+    inputs:
+      probe_live:
+        description: "Live host for endpoint coverage probe (optional)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: six-axis-sanity-${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  sanity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      JPCITE_PREFLIGHT_ALLOW_MISSING_DB: "1"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.12"
+
+      - name: Install probe deps (stdlib-only fall-through)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pydantic
+
+      - name: Prepare output dirs
+        run: |
+          mkdir -p analytics
+          mkdir -p docs/audit
+          mkdir -p site/status
+
+      - name: Run 6-axis sanity check
+        id: sanity
+        run: |
+          set -euo pipefail
+          today=$(date -u '+%Y_%m_%d')
+          python scripts/ops/six_axis_sanity_check.py \
+            --out-json analytics/six_axis_status.json \
+            --out-md "docs/audit/six_axis_${today}.md" \
+            --emit-alert /tmp/sla_breach.txt
+          cp analytics/six_axis_status.json site/status/six_axis_status.json
+          # Verdict surfacing for downstream jobs
+          verdict=$(python -c "import json; print(json.load(open('analytics/six_axis_status.json'))['overall_verdict'])")
+          echo "overall_verdict=${verdict}" >> "$GITHUB_OUTPUT"
+
+      - name: Run endpoint coverage audit
+        run: |
+          set -euo pipefail
+          probe_arg=""
+          if [ -n "${{ github.event.inputs.probe_live }}" ]; then
+            probe_arg="--probe-live ${{ github.event.inputs.probe_live }}"
+          fi
+          python scripts/ops/audit_endpoint_coverage_v2.py \
+            --out-json analytics/endpoint_coverage_w38.json \
+            ${probe_arg}
+
+      - name: Upload status artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: six-axis-sanity-${{ github.run_id }}
+          path: |
+            analytics/six_axis_status.json
+            analytics/endpoint_coverage_w38.json
+            docs/audit/six_axis_*.md
+            site/status/six_axis_status.json
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Upload SLA breach alert (only on breach)
+        if: hashFiles('/tmp/sla_breach.txt') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: sla-breach-alert-${{ github.run_id }}
+          path: /tmp/sla_breach.txt
+          retention-days: 90
+
+      - name: Notify Telegram on breach
+        if: steps.sanity.outputs.overall_verdict == 'breach' && env.TELEGRAM_BOT_TOKEN != ''
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          set -euo pipefail
+          if [ -f /tmp/sla_breach.txt ] && [ -n "${TELEGRAM_BOT_TOKEN}" ]; then
+            curl -fsS --max-time 30 \
+              -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+              -d "chat_id=${TELEGRAM_CHAT_ID}" \
+              --data-urlencode "text@/tmp/sla_breach.txt" || true
+          fi
