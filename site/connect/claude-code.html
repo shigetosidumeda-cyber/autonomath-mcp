@@ -168,9 +168,9 @@
 
   <section>
     <h2>動作確認</h2>
-    <p>下記コマンドで 139 が返れば接続完了。</p>
-<pre><code aria-label="動作確認コマンド">claude mcp call jpcite list_tools 2&gt;&amp;1 | jq '.tools | length'</code></pre>
-    <p>期待値: <code>139</code> (default gates 有効時。<code>AUTONOMATH_36_KYOTEI_ENABLED=false</code> がデフォルトで、競艇 tools は含まれません)。</p>
+    <p>Claude Code セッション内で <code>/mcp</code> コマンドを実行 (または下記 CLI) で <code>jpcite</code> が緑 dot で表示され、tools 139 件が読まれていれば成功。</p>
+<pre><code aria-label="動作確認コマンド">claude mcp list   # jpcite が「Connected」表示</code></pre>
+    <p>期待値: <code>jpcite: uvx autonomath-mcp - ✓ Connected</code> (default gates 有効時 tools=139。<code>AUTONOMATH_36_KYOTEI_ENABLED=false</code> がデフォルトで、36協定 render tools は含まれません)。</p>
   </section>
 
   <section>

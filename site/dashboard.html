@@ -253,7 +253,7 @@
 
  <div id="dash-newkey-reveal" class="newkey-reveal" role="status" aria-live="polite" hidden
  style="display:none;">
- <p style="margin:0 0 10px;font-weight:700;font-size:14px;"><span aria-hidden="true">🔑 </span>これがあなたの APIキー です。今すぐコピーしてください — 次回以降は表示されません。</p>
+ <p style="margin:0 0 10px;font-weight:700;font-size:14px;"><span aria-hidden="true">🔑 </span>これがあなたの API キー です。今すぐコピーしてください — 次回以降は表示されません。</p>
  <code id="dash-newkey-value" class="newkey-value"></code>
  <button type="button" id="dash-newkey-copy" class="btn-ghost" style="margin-right:6px;">キーをコピー</button>
  <button type="button" id="dash-newkey-dismiss" class="btn-ghost">表示を閉じる</button>
@@ -265,7 +265,7 @@
  <span aria-hidden="true">⚡ </span>5 分で最初の API 呼び出し
  </h2>
  <p style="margin:0 0 14px;font-size:13px;color:var(--text-muted);line-height:1.6;">
- 下のいずれか 1 つを選んでコピペするだけ。あなたの APIキー (もしくは匿名 3 リクエスト/日) で即座に動きます。詳細手順は各 <a href="/integrations/">統合ガイド</a> を参照。
+ 下のいずれか 1 つを選んでコピペするだけ。あなたの API キー (もしくは匿名 3 リクエスト/日) で即座に動きます。詳細手順は各 <a href="/integrations/">統合ガイド</a> を参照。
  </p>
  <div role="tablist" aria-label="Quick start client" style="display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--border);margin:0 0 14px;">
  <button type="button" role="tab" id="qs-tab-curl" aria-selected="true" aria-controls="qs-panel-curl"
@@ -284,7 +284,7 @@
  <pre id="qs-curl-snippet" class="qs-code" aria-label="curl quick-start"><code>curl -H "X-API-Key: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>" \
  "https://api.jpcite.com/v1/programs/search?q=IT%E5%B0%8E%E5%85%A5&amp;limit=3"</code></pre>
  <button type="button" class="btn-ghost qs-copy" data-copy-target="qs-curl-snippet">コピー</button>
- <p class="qs-note">APIキー を省くと匿名 3 リクエスト/日 per IP (JST 翌日リセット) で動作。</p>
+ <p class="qs-note">API キー を省くと匿名 3 リクエスト/日 per IP (JST 翌日リセット) で動作。</p>
  </div>
 
  <div role="tabpanel" id="qs-panel-claude" aria-labelledby="qs-tab-claude" class="qs-panel" hidden>
@@ -330,7 +330,7 @@
  </div>
 
  <div role="tabpanel" id="qs-panel-chatgpt" aria-labelledby="qs-tab-chatgpt" class="qs-panel" hidden>
-<p class="qs-note" style="margin:0 0 8px;"><strong>1.</strong> ChatGPT (Plus/Team/大規模利用) → My GPTs → Create · <strong>2.</strong> Configure → Actions → Import OpenAPI · <strong>3.</strong> 下の URL を貼り付け · <strong>4.</strong> Authentication → APIキー → 下の値。</p>
+<p class="qs-note" style="margin:0 0 8px;"><strong>1.</strong> ChatGPT (Plus/Team/大規模利用) → My GPTs → Create · <strong>2.</strong> Configure → Actions → Import OpenAPI · <strong>3.</strong> 下の URL を貼り付け · <strong>4.</strong> Authentication → API キー → 下の値。</p>
 <pre id="qs-chatgpt-snippet" class="qs-code" aria-label="ChatGPT Custom GPT config"><code># OpenAPI URL
 https://api.jpcite.com/v1/openapi.agent.json
 
@@ -442,7 +442,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  </p>
  <nav class="dash-nav" aria-label="ダッシュボード">
  <a href="dashboard.html" class="active" aria-current="page">概要</a>
- <a href="#api-key-section" title="同一ページ内の APIキー ブロックへ">APIキー</a>
+ <a href="#api-key-section" title="同一ページ内の API キー ブロックへ">API キー</a>
  <a href="#billing-section" title="同一ページ内の請求ブロックへ">請求</a>
  <a href="#dash2-billing-history" title="請求書一覧 (Stripe 同期、CSV/JSON ダウンロード)">請求書</a>
  <button type="button" class="link-button">ログアウト</button>
@@ -497,7 +497,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  </div>
 
  <div class="keybox" id="api-key-section">
- <p class="label">あなたの APIキー</p>
+ <p class="label">あなたの API キー</p>
  <span class="key">am_&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</span>
  <p class="hash-prefix">ハッシュ前置: ————————</p>
  <button class="btn-danger" id="dash-rotate-btn" type="button">キーを再発行</button>
@@ -519,12 +519,12 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <section id="dash2-keybox" class="stat-card" style="margin:24px 0 16px;">
  <p class="stat-label">既存 API キーの利用詳細を表示 (キーを貼り付け・ワンショット閲覧)</p>
  <p class="stat-note" style="margin:0 0 12px;">
- 既に発行済みの jpcite APIキー (Stripe Checkout もしくは メール トライアル経由) を貼り付けると、 利用量・残予算・課金履歴を表示します。
+ 既に発行済みの jpcite API キー (Stripe Checkout もしくは メール トライアル経由) を貼り付けると、 利用量・残予算・課金履歴を表示します。
  ブラウザの localStorage に保存され、 /v1/me/dashboard へ Bearer ヘッダとして送信されます。
  まだ鍵をお持ちでない方は <a href="pricing.html#api-paid">Pricing</a> または <a href="trial.html">トライアル</a> から先に発行してください。
  </p>
  <form id="dash2-key-form" autocomplete="off" style="display:flex;gap:8px;flex-wrap:wrap;">
- <label for="dash2-key-input" class="visually-hidden">APIキー</label>
+ <label for="dash2-key-input" class="visually-hidden">API キー</label>
  <input id="dash2-key-input" type="password" inputmode="text"
  placeholder="am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
  style="flex:1;min-width:240px;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:16px;">
@@ -1083,7 +1083,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  </div>
  </form>
  <p class="stat-note" style="margin:10px 0 0;color:var(--text-muted);">
- 1 APIキー につき有効な Webhook 通知は 10 件まで。https のみ登録できます。プライベート IP / loopback は登録できません。
+ 1 API キー につき有効な Webhook 通知は 10 件まで。https のみ登録できます。プライベート IP / loopback は登録できません。
  登録後は「テスト」ボタンで API 経路 の死活確認を推奨。
  </p>
 

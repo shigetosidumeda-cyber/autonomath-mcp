@@ -45,10 +45,13 @@
         "docs/",
         "site/",
         "tests/",
+        "ops/",
+        "data/",
         "pyproject.toml",
         "uv.lock",
         "server.json",
-        "smithery.yaml"
+        "smithery.yaml",
+        "CHANGELOG.md"
       ],
       "forbidden_paths": [
         "tools/offline/_inbox/value_growth_dual/",

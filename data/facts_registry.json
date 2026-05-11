@@ -16,7 +16,7 @@
   },
   "facts": [
     {"key": "openapi_paths_agent", "value": 34, "unit": "paths", "as_of": "2026-05-11", "source": "site/openapi.agent.json:.paths|length", "category": "product", "publishable": true, "expires_at": "2026-07-10", "license": "CC-BY-4.0"},
-    {"key": "openapi_paths_public", "value": 218, "unit": "paths", "as_of": "2026-05-11", "source": "api.jpcite.com/openapi.json:.paths|length", "category": "product", "publishable": true, "expires_at": "2026-07-10", "license": "CC-BY-4.0"},
+    {"key": "openapi_paths_public", "value": 220, "unit": "paths", "as_of": "2026-05-11", "source": "docs/openapi/v1.json:.paths|length (canonical, see scripts/distribution_manifest.yml:openapi_path_count)", "category": "product", "publishable": true, "expires_at": "2026-07-10", "license": "CC-BY-4.0"},
     {"key": "mcp_tools", "value": 139, "unit": "tools", "as_of": "2026-05-11", "source": "site/.well-known/mcp.json:.tools|length", "category": "product", "publishable": true, "expires_at": "2026-07-10"},
     {"key": "price_per_req_jpy_ex_tax", "value": 3, "unit": "JPY", "source": "Stripe price_id", "category": "pricing", "publishable": true, "as_of": "2026-05-11"},
     {"key": "price_per_req_jpy_inc_tax", "value": 3.30, "unit": "JPY", "source": "derived", "category": "pricing", "publishable": true, "as_of": "2026-05-11"},

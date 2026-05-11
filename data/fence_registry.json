@@ -36,7 +36,7 @@
     {
       "id": "administrative_scrivener",
       "law": "行政書士法",
-      "article": "§1",
+      "article": "§19",
       "scope": "補助金/許認可の申請書作成・提出代行",
       "do_not": ["application drafting", "filing proxy"],
       "may_do": ["public call requirements structuring", "prerequisite chain"],

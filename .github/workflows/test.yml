@@ -47,6 +47,7 @@ env:
     scripts/regen_llms_full_en.py
     scripts/regen_qa_sitemap.py
   PYTEST_TARGETS: >-
+    tests/test_a11y_baseline.py
     tests/test_a1_law_prefix_reconciliation.py
     tests/test_a2_houjin_relation_promotion.py
     tests/test_a3_amendment_diff_etl.py
@@ -64,10 +65,13 @@ env:
     tests/test_active_v2_and_amendment_caveat.py
     tests/test_admin.py
     tests/test_adoption_program_join.py
+    tests/test_advisor_handoff.py
+    tests/test_advisors_security.py
     tests/test_advisory_lock.py
     tests/test_aggregate_production_gate_status.py
     tests/test_alerts.py
     tests/test_alias_expansion.py
+    tests/test_amendment_alerts.py
     tests/test_amount_gate.py
     tests/test_analytics_events.py
     tests/test_annotation_tools.py
@@ -90,6 +94,7 @@ env:
     tests/test_audit_seal_rotation.py
     tests/test_audit_seal_static_guard.py
     tests/test_audit_seal_wire.py
+    tests/test_auth_github.py
     tests/test_auth_quota.py
     tests/test_authority_level_alias.py
     tests/test_autonomath_billing.py
@@ -118,6 +123,7 @@ env:
     tests/test_bench_harness.py
     tests/test_bench_prefetch_probe.py
     tests/test_bench_queries.py
+    tests/test_benchmark_cohort_average.py
     tests/test_bg_task_queue.py
     tests/test_bids_billing.py
     tests/test_billing.py
@@ -132,7 +138,9 @@ env:
     tests/test_calculator.py
     tests/test_calendar.py
     tests/test_calendar_ics.py
+    tests/test_case_cohort_match.py
     tests/test_case_studies.py
+    tests/test_cf_analytics_export.py
     tests/test_chain_integrity.py
     tests/test_children_keys.py
     tests/test_ci_workflows.py
@@ -143,12 +151,14 @@ env:
     tests/test_cohort_resources.py
     tests/test_combined_compliance_extension.py
     tests/test_compact_envelope.py
+    tests/test_compatibility.py
     tests/test_composite_benchmark_guard.py
     tests/test_compute_dirty_fingerprint.py
     tests/test_consultant_monthly_pack.py
     tests/test_consultant_triggers.py
     tests/test_contribute_endpoint.py
     tests/test_contributor_trust.py
+    tests/test_corporate_form_endpoint.py
     tests/test_corporate_layer_tools.py
     tests/test_corpus_snapshot_coverage.py
     tests/test_corpus_snapshot_id_envelope.py
@@ -180,9 +190,12 @@ env:
     tests/test_data_quality_endpoint.py
     tests/test_delivery_idempotent.py
     tests/test_deps_async_write.py
+    tests/test_deps_first_billable.py
     tests/test_derived_data_layer_migrations.py
     tests/test_device_flow.py
     tests/test_did_you_mean.py
+    tests/test_dirty_fingerprint_consistency.py
+    tests/test_disaster.py
     tests/test_disclaimer_envelope.py
     tests/test_discover_related.py
     tests/test_dispatch_webhooks.py
@@ -192,6 +205,7 @@ env:
     tests/test_e3_generate_liveness_shards.py
     tests/test_e3_program_url_liveness_scan.py
     tests/test_e3_tier_bc_liveness_plan.py
+    tests/test_eligibility_check.py
     tests/test_email.py
     tests/test_email_scheduler.py
     tests/test_email_templates.py
@@ -220,16 +234,20 @@ env:
     tests/test_feedback.py
     tests/test_fetch_egov_law_fulltext_batch.py
     tests/test_field_filter.py
+    tests/test_fingerprint_sot_guard.py
     tests/test_fix_subsidy_rate_apply.py
     tests/test_fly_health_check.py
     tests/test_format_routes.py
+    tests/test_free_tier_quota_quantity.py
     tests/test_funding_stack_checker.py
+    tests/test_funding_stage.py
     tests/test_funnel_events.py
     tests/test_g5_staging_separation.py
     tests/test_gbiz_ingest_integrity.py
     tests/test_gbiz_ingest_workflow.py
     tests/test_gbiz_v2_m01_contract.py
     tests/test_generate_aliases.py
+    tests/test_generate_industry_hub_pages.py
     tests/test_get_law_article_lang.py
     tests/test_get_program_narrative_reading_level.py
     tests/test_github_action_smoke.py
@@ -246,6 +264,7 @@ env:
     tests/test_hf_publish_readiness_report.py
     tests/test_hf_safe_aggregate_exports.py
     tests/test_honesty_regression.py
+    tests/test_houjin_360.py
     tests/test_houjin_endpoint.py
     tests/test_http_fallback_error_envelope.py
     tests/test_i18n.py
@@ -294,6 +313,7 @@ env:
     tests/test_invoice_pii_attribution.py
     tests/test_invoice_registrants_404.py
     tests/test_invoice_registrants_billing.py
+    tests/test_invoice_risk.py
     tests/test_jcrb_public_leaderboard_guard.py
     tests/test_jcrb_questions_guard.py
     tests/test_kaikei_workpaper.py
@@ -303,6 +323,7 @@ env:
     tests/test_l4_cache_wire.py
     tests/test_landing_claims_in_trust_center.py
     tests/test_lane_policy_enforcer.py
+    tests/test_language_resolver.py
     tests/test_laws_billing.py
     tests/test_license_gate.py
     tests/test_license_gate_no_bypass.py
@@ -328,6 +349,7 @@ env:
     tests/test_mcp_manifest_deep_diff.py
     tests/test_mcp_resources.py
     tests/test_mcp_sanitizer.py
+    tests/test_mcp_server_coverage.py
     tests/test_mcp_tools.py
     tests/test_me.py
     tests/test_me_subscription_status.py
@@ -344,16 +366,20 @@ env:
     tests/test_offline_inbox_workflow.py
     tests/test_onboarding_emails.py
     tests/test_openapi_agent.py
+    tests/test_openapi_cache_headers.py
     tests/test_openapi_export.py
     tests/test_openapi_response_models.py
     tests/test_operator_ack_signoff.py
+    tests/test_ops_quick_stats_quantity.py
     tests/test_organic_outreach.py
     tests/test_output_formats.py
     tests/test_perf_smoke.py
     tests/test_pii_redactor_response.py
     tests/test_ping.py
+    tests/test_policy_upstream.py
     tests/test_populate_calendar.py
     tests/test_post_deploy_smoke.py
+    tests/test_post_manifest_tools_sample_args.py
     tests/test_practitioner_eval_disclosure.py
     tests/test_practitioner_eval_runner.py
     tests/test_practitioner_output_acceptance_queries.py
@@ -373,6 +399,7 @@ env:
     tests/test_program_rss_feeds.py
     tests/test_programs.py
     tests/test_programs_batch.py
+    tests/test_programs_full_context.py
     tests/test_prompt_injection_sanitizer.py
     tests/test_provenance_tools.py
     tests/test_pubcomment.py
@@ -391,6 +418,7 @@ env:
     tests/test_recurring_pdf_billing.py
     tests/test_redirect_zeimu_kaikei.py
     tests/test_refresh_amendment_diff_history.py
+    tests/test_regions_api.py
     tests/test_release_readiness.py
     tests/test_release_readiness_ci.py
     tests/test_repo_dirty_lane_report.py
@@ -415,15 +443,18 @@ env:
     tests/test_self_improve_cron_wire.py
     tests/test_self_improve_loops.py
     tests/test_sentry_filters.py
+    tests/test_sentry_init.py
     tests/test_sentry_logger_alignment.py
     tests/test_seo_brand_history.py
     tests/test_server_tools.py
     tests/test_shihoshoshi_tools.py
     tests/test_short_ascii_perf.py
+    tests/test_sitemap_gen.py
     tests/test_source_manifest.py
     tests/test_static_public_reachability.py
     tests/test_stats.py
     tests/test_stats_benchmark.py
+    tests/test_stats_funnel.py
     tests/test_strict_query.py
     tests/test_stripe_edge_cases.py
     tests/test_stripe_smoke_unit.py
@@ -432,11 +463,14 @@ env:
     tests/test_stripe_webhook_full_matrix.py
     tests/test_stripe_webhook_tolerance.py
     tests/test_subscribers.py
+    tests/test_succession_endpoint.py
     tests/test_sync_workflow_targets.py
+    tests/test_tax_chain.py
     tests/test_tax_rulesets_billing.py
     tests/test_test_acceptance_criteria.py
     tests/test_testimonials.py
     tests/test_time_machine.py
+    tests/test_timeline_trend.py
     tests/test_tkc_csv_import.py
     tests/test_token_compression.py
     tests/test_token_saved_metric.py
@@ -454,6 +488,7 @@ env:
     tests/test_verify_migration_targets.py
     tests/test_vocab_normalize.py
     tests/test_walk_pref_pdf_extraction.py
+    tests/test_warmup.py
     tests/test_wave16_hardening.py
     tests/test_wave22_graceful_empty.py
     tests/test_wave22_tools.py
@@ -465,6 +500,7 @@ env:
     tests/test_webhook_tolerance.py
     tests/test_weekly_digest.py
     tests/test_widget_billing.py
+    tests/test_www_redirect_worker.py
 
 jobs:
   pytest:

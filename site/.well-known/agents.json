@@ -13,7 +13,7 @@
   "fence_md": "https://jpcite.com/.well-known/fence.md",
   "policy_url": "https://jpcite.com/tos.html",
   "privacy_url": "https://jpcite.com/privacy.html",
-  "rate_limit": {"free_per_day_per_ip": 3, "paid_per_minute": 60},
+  "rate_limit": {"free_per_day_per_ip": 3, "paid_per_second": 10, "paid_burst": 20},
   "pricing": {"unit_price_jpy_ex_tax": 3, "currency": "JPY"},
   "contact_email": "info@bookyou.net",
   "support_sla_hours": 24,

@@ -3,6 +3,21 @@
 > 2026-05-11 作成 / Wave 1-4 AUTO 102 task 完了後の Wave 5 残作業。
 > 全項目 Claude AUTO で実装可、USER 操作は USER_RUNBOOK.md (24 task) に分離。
 
+## 優先順 (P0 → P3) + 完了条件 (Done = CI green)
+
+1. **P0 A** registry tuning — context-aware regex 化 / `scripts/check_publish_text.py` 63K → ≤50 violation / publish_text_guard PR gate 復活
+2. **P0 B** workflow targets sync — `.github/workflows/test.yml` + `release.yml` の PYTEST_TARGETS/RUFF_TARGETS 差分ゼロ / `Verify workflow targets` workflow green
+3. **P0 C** CodeQL pr-diff-range — `pr-diff-range.yml:7-16` の `restrictAlertsTo(undefined,...)` エラー解消 / CodeQL workflow green
+4. **P1 D** 新 7 workflow を PR gate 化 — A 完了が前提 / `continue-on-error: false` 化 / main PR で red 検出可
+5. **P1 F** migration 196-204 — 9 DDL idempotent / `entrypoint.sh §4` で `target_db: autonomath` pickup / boot log で applied=N skipped=M
+6. **P2 E** UI 実装 G13-G16 — artifact viewer + playground 3step + dashboard 9widget + status page / Playwright 5 surface walk green
+7. **P2 G** recipes 30 本 deep 化 — 各 1500-3000 字 + 実 snippet 動作確認 + cross-link 整合
+8. **P3 H** GEO 100 問 weekly bench — W4 平均 ≥ 1.2 で G18 acceptance gate
+9. **P3 I** acceptance_check.yml — 50/50 達成で `gh release create v1.0-GA` + announce trigger
+10. **P3 J** USER_RUNBOOK 24 task 実行支援 script — USER 操作の dry-run prepare
+
+> 各項目の **Done = CI green** が判定基準。Done 後 main merge → Fly redeploy で本番反映。
+
 ## A. registry tuning (publish_text_guard 63K → 50 violation)
 
 現状: scripts/check_publish_text.py 試走で 63,153 violation 検出。大半は legitimate 用語:

@@ -125,6 +125,7 @@ dev = [
     "huggingface_hub>=0.25,<1",     # HF dataset publish CLI; see docs/_internal/hf_publish_runbook.md
     # beautifulsoup4 lifted into main `dependencies` (production Fly cron uses it).
     "pandas>=2.2",                  # HF/e-Stat export safety tests/scripts
+    "rapidfuzz>=3.6,<4",            # tests/test_reconcile_adoption.py fuzzy matcher
 ]
 # Browser-driven end-to-end smoke suite. Separate extras group so the prod
 # container build (Dockerfile) never pulls in Playwright's ~200MB browser
