@@ -2,6 +2,11 @@ name: structured_data_v3
 on:
   workflow_dispatch: {}
 
+
+concurrency:
+  # Wave 43 noise reduction (2026-05-12): serialize same-ref runs.
+  group: structured-data-v3-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   validate:
     runs-on: ubuntu-latest

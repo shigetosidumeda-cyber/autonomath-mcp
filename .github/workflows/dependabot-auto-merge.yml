@@ -1,0 +1,75 @@
+name: dependabot-auto-merge
+
+# Wave 43 noise-throttle (feedback_github_notification_throttle.md axis 2):
+# Auto-enable squash-merge for every dependabot PR whose CI is green.
+# Each dependabot PR otherwise fires 4-6 separate emails to info@bookyou.net
+# (open + CI run + CI complete + push + merge), and we open up to 13
+# dependabot PRs per Monday (pip 5 + github-actions 5 + npm 3 — see
+# .github/dependabot.yml). That is ~65 emails per week from a single bot
+# unless we let GitHub auto-merge on green.
+#
+# Semantics:
+# - "Squash merge" preserves a single linear commit per upgrade.
+# - "--auto" only merges AFTER branch protection's required CI checks
+#   pass, so a failing test on a security update will block the merge
+#   exactly as it would for a human-authored PR. We are NOT bypassing
+#   review/CI; we are saying "if CI is green, the human gate is not
+#   adding signal for dependabot".
+# - Patch/minor upgrades only — we deliberately do not auto-merge major
+#   versions because dependabot.yml already excludes those for npm and
+#   we want to keep the human gate on pip/github-actions major bumps.
+#
+# Why we do this in addition to the 3 existing throttles:
+#   1. repo subscription ignored=true (Wave 43 set via gh api)
+#   2. workflow concurrency: cancel-in-progress (already on 113/140 wfs)
+#   3. Gmail filter B (docs/runbook/gmail_filter_github_noise.md)
+# The Gmail filter labels dependabot emails out of inbox, but they still
+# accumulate in the GitHub thread. Auto-merge means the threads themselves
+# close within minutes, so the email volume on bookyou.net inbox + the
+# notification count in GitHub web UI both shrink to zero rather than
+# just being hidden by a filter.
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+
+concurrency:
+  group: dependabot-auto-merge-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  enable-auto-merge:
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Fetch dependabot metadata
+        id: meta
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Approve patch / minor PR
+        # Only auto-approve patch + minor. Major upgrades wait for human
+        # review (e.g. anthropic-sdk major bumps that change the import
+        # surface, or starlette/fastapi majors that change middleware).
+        if: |
+          steps.meta.outputs.update-type == 'version-update:semver-patch' ||
+          steps.meta.outputs.update-type == 'version-update:semver-minor'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: gh pr review --approve "$PR_URL"
+
+      - name: Enable squash auto-merge
+        if: |
+          steps.meta.outputs.update-type == 'version-update:semver-patch' ||
+          steps.meta.outputs.update-type == 'version-update:semver-minor'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: gh pr merge --auto --squash "$PR_URL"

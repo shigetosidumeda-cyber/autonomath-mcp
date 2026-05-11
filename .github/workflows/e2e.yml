@@ -19,6 +19,7 @@ name: e2e
 on:
   pull_request:
     branches: [main]
+    types: [opened, synchronize, reopened]  # Wave 43 noise reduction (2026-05-12)
     paths:
       - "site/**"
       - "src/jpintel_mcp/api/**"

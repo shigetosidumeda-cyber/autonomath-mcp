@@ -17,6 +17,7 @@ name: eval
 on:
   pull_request:
     branches: ["**"]
+    types: [opened, synchronize, reopened]  # Wave 43 noise reduction (2026-05-12)
     paths:
       - "src/jpintel_mcp/**"
       - "tests/eval/**"

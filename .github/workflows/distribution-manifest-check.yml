@@ -1,10 +1,13 @@
 name: distribution-manifest-check
 
 on:
+  # Wave 43 noise reduction (2026-05-12): push narrowed to main, PR types
+  # restricted to opened/synchronize/reopened to drop close/label noise.
   push:
-    branches: ["**"]
+    branches: ["main"]
   pull_request:
     branches: ["**"]
+    types: [opened, synchronize, reopened]
 
 concurrency:
   group: distribution-manifest-${{ github.workflow }}-${{ github.ref }}

@@ -33,6 +33,7 @@ name: fingerprint-sot-guard
 on:
   pull_request:
     branches: [main]
+    types: [opened, synchronize, reopened]  # Wave 43 noise reduction (2026-05-12)
     paths:
       - "scripts/ops/repo_dirty_lane_report.py"
       - "scripts/ops/production_deploy_go_gate.py"

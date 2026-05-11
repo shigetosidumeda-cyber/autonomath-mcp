@@ -1,10 +1,14 @@
 name: test
 
 on:
+  # Wave 43 noise reduction (2026-05-12): push only on main; PR covers feat/*
+  # push events. Pull_request types pruned to opened/synchronize/reopened so
+  # close/label/review-request churn no longer triggers reruns.
   push:
-    branches: ["**"]
+    branches: ["main"]
   pull_request:
     branches: ["**"]
+    types: [opened, synchronize, reopened]
 
 concurrency:
   group: test-${{ github.workflow }}-${{ github.ref }}

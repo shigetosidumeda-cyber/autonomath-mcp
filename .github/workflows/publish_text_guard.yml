@@ -2,6 +2,11 @@ name: publish_text_guard
 on:
   workflow_dispatch: {}
 
+
+concurrency:
+  # Wave 43 noise reduction (2026-05-12): serialize same-ref runs.
+  group: publish-text-guard-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   guard:
     runs-on: ubuntu-latest

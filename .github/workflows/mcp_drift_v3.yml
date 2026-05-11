@@ -2,6 +2,11 @@ name: mcp_drift_v3
 on:
   workflow_dispatch: {}
 
+
+concurrency:
+  # Wave 43 noise reduction (2026-05-12): serialize same-ref runs.
+  group: mcp-drift-v3-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   drift:
     runs-on: ubuntu-latest
