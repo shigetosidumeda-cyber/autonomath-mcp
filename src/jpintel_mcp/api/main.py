@@ -55,6 +55,7 @@ from jpintel_mcp.api.benchmark import router as benchmark_router
 from jpintel_mcp.api.bids import router as bids_router
 from jpintel_mcp.api.billing import router as billing_router
 from jpintel_mcp.api.billing_breakdown import router as billing_breakdown_router
+from jpintel_mcp.api.billing_v2 import router as billing_v2_router
 from jpintel_mcp.api.bulk_evaluate import router as bulk_evaluate_router
 from jpintel_mcp.api.calendar import router as calendar_router
 from jpintel_mcp.api.case_cohort_match import router as case_cohort_match_router
@@ -70,6 +71,9 @@ from jpintel_mcp.api.corporate_form import router as corporate_form_router
 from jpintel_mcp.api.cost import router as cost_router
 from jpintel_mcp.api.courses import router as courses_router
 from jpintel_mcp.api.court_decisions import router as court_decisions_router
+from jpintel_mcp.api.court_decisions_v2 import (  # Wave 43.1.10
+    router as court_decisions_v2_router,
+)
 from jpintel_mcp.api.customer_webhooks import router as customer_webhooks_router
 from jpintel_mcp.api.dashboard import router as dashboard_router
 from jpintel_mcp.api.device_flow import router as device_router
@@ -79,6 +83,9 @@ from jpintel_mcp.api.eligibility_check import router as eligibility_check_router
 from jpintel_mcp.api.email_unsubscribe import router as email_unsubscribe_router
 from jpintel_mcp.api.email_webhook import router as email_webhook_router
 from jpintel_mcp.api.enforcement import router as enforcement_router
+from jpintel_mcp.api.enforcement_municipality import (  # Wave 43.1.9
+    router as enforcement_municipality_router,
+)
 from jpintel_mcp.api.evidence import router as evidence_router
 from jpintel_mcp.api.exclusions import router as exclusions_router
 from jpintel_mcp.api.export import router as export_router
@@ -103,6 +110,7 @@ from jpintel_mcp.api.invoice_risk import (
     router as invoice_risk_router,
 )
 from jpintel_mcp.api.laws import router as laws_router
+from jpintel_mcp.api.laws_jorei import router as laws_jorei_router  # Wave 43.1.5
 from jpintel_mcp.api.legal import router as legal_router
 from jpintel_mcp.api.loan_programs import router as loan_programs_router
 from jpintel_mcp.api.logging_config import setup_logging
@@ -145,6 +153,9 @@ from jpintel_mcp.api.middleware.origin_enforcement import _MUST_INCLUDE
 from jpintel_mcp.api.openapi_agent import build_agent_openapi_schema
 from jpintel_mcp.api.policy_upstream import router as policy_upstream_router
 from jpintel_mcp.api.prescreen import router as prescreen_router
+from jpintel_mcp.api.program_agriculture import (
+    router as program_agriculture_router,
+)  # Wave 43.1.4
 from jpintel_mcp.api.programs import router as programs_router
 from jpintel_mcp.api.programs_municipality_v2 import (
     router as programs_municipality_v2_router,
@@ -2111,6 +2122,9 @@ def create_app() -> FastAPI:
     # preview gate — both are first-class from launch. Anon-quota-gated
     # like programs/enforcement/etc. so the 3/day per-IP cap applies.
     app.include_router(laws_router, dependencies=[AnonIpLimitDep])
+    # Wave 43.1.5 — 都道府県条例 corpus (autonomath.db `am_law_jorei_pref`,
+    # migration 252). 47 都道府県 × ~100 ordinances, gov_public license.
+    app.include_router(laws_jorei_router, dependencies=[AnonIpLimitDep])
     app.include_router(court_decisions_router, dependencies=[AnonIpLimitDep])
     # 4-dataset expansion (2026-04-24): 入札 (bids) / 税制 ruleset /
     # 適格請求書発行事業者 (invoice registrants). First-class, anon-quota-gated
@@ -2439,6 +2453,12 @@ def create_app() -> FastAPI:
     # It is never billable and must not consume the public anonymous free
     # allowance when an unauthenticated caller gets a 401.
     app.include_router(billing_breakdown_router)
+    # Wave 43.4.9+10 — 3 payment rail aggregator (ACP + x402 + MPP).
+    # ACP = Anthropic Commerce Protocol (Stripe-backed agent-direct invoke).
+    # x402 = USDC HTTP 402 Payment Required (origin-side bridge).
+    # MPP = Managed Provider Plan (Wave 21 D4+D5+D6 brand stack, naming-only).
+    # NO anon-quota — discovery + acquire endpoints predate key issuance.
+    app.include_router(billing_v2_router)
     # P3.5 Stripe edge cases (refund_request intake live; dispute/tax-exempt/
     # currency/invoice-modification/Stripe-Tax-fallback are dispatched from
     # billing.webhook itself, only the refund_request REST endpoint mounts here).
