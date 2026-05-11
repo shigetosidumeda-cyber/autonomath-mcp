@@ -1,0 +1,119 @@
+name: axis2-precompute-daily
+
+# Wave 33 Axis 2a/2b/2c: daily pre-compute of am_cohort_5d (mig 231),
+# am_program_risk_4d (mig 232), and am_supplier_chain (mig 233).
+#
+# Schedule:
+#   `45 18 * * *` UTC == 03:45 JST daily.
+#   Lands 45 min after the daily ingest at 03:00 JST (ingest writes the
+#   upstream programs / amendment_diff / enforcement / invoice corpora
+#   the 3 precompute scripts read) and 15 min after the actionable Q/A
+#   precompute (03:30 JST) so the autonomath.db single-writer queue is
+#   not contended at the cohort job's start.
+#
+# 3 jobs run in parallel inside the matrix; each acquires its own
+# writable connection on autonomath.db and serializes inserts via
+# `INSERT OR REPLACE` on the unique tuple defined by its migration.
+#
+# Required GitHub repository secrets:
+#   FLY_API_TOKEN — Fly.io deploy token with ssh access to autonomath-api.
+#   SENTRY_DSN    — optional, routes cron failures to Sentry the same way
+#                   precompute-actionable-daily does.
+#
+# Constraints honoured (memory + CLAUDE.md):
+#   * No LLM SDK invocation — pure SQLite + Python stdlib.
+#   * No PRAGMA quick_check / integrity_check / VACUUM on the 9.7GB
+#     autonomath.db (see feedback_no_quick_check_on_huge_sqlite).
+#   * Read-mostly on autonomath.db; writes only to the 3 new precompute
+#     tables via INSERT OR REPLACE.
+
+on:
+  schedule:
+    - cron: "45 18 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run with --dry-run (no DB writes)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+      target:
+        description: "Restrict to one axis (blank = all 3)"
+        required: false
+        default: ""
+        type: choice
+        options:
+          - ""
+          - "cohort_5d"
+          - "program_risk_4d"
+          - "supplier_chain"
+
+concurrency:
+  group: axis2-precompute-daily
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  precompute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        axis:
+          - name: cohort_5d
+            script: precompute_cohort_5d.py
+            flags: "--budget 1000 --workers 4 --top-n 20"
+          - name: program_risk_4d
+            script: precompute_program_risk_4d.py
+            flags: "--budget 5000 --program-limit 1000"
+          - name: supplier_chain
+            script: precompute_supplier_chain.py
+            flags: "--anchor-limit 1000 --max-hops 3 --partners-per-anchor 100"
+    steps:
+      - name: Skip mismatched matrix axis (workflow_dispatch only)
+        if: ${{ inputs.target != '' && inputs.target != matrix.axis.name }}
+        run: |
+          echo "::notice::Skipping ${{ matrix.axis.name }} (target=${{ inputs.target }})."
+          echo "SKIP_AXIS=true" >> "$GITHUB_ENV"
+
+      - name: Install flyctl
+        if: ${{ env.SKIP_AXIS != 'true' }}
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Precompute ${{ matrix.axis.name }}
+        if: ${{ env.SKIP_AXIS != 'true' }}
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          FLAGS="${{ matrix.axis.flags }}"
+          if [ "${DRY_RUN}" = "true" ]; then FLAGS="${FLAGS} --dry-run"; fi
+          flyctl ssh console -a autonomath-api -C \
+            "/opt/venv/bin/python /app/scripts/cron/${{ matrix.axis.script }} ${FLAGS}"
+
+      - name: Sentry alert on cron failure
+        if: failure() && env.SKIP_AXIS != 'true'
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=axis2-precompute-daily/1.0" \
+            -d "{\"level\":\"error\",\"logger\":\"github.actions.axis2-precompute-daily\",\"platform\":\"other\",\"message\":\"axis2-precompute-daily ${{ matrix.axis.name }} failed. Run ${GITHUB_RUN_ID}.\",\"tags\":{\"workflow\":\"axis2-precompute-daily\",\"axis\":\"${{ matrix.axis.name }}\",\"run_id\":\"${GITHUB_RUN_ID}\"}}" \
+            || echo "::warning::Sentry alert POST failed; continuing."
