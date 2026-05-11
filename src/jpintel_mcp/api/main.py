@@ -115,6 +115,7 @@ from jpintel_mcp.api.me import router as me_router
 from jpintel_mcp.api.meta import router as meta_router
 from jpintel_mcp.api.meta_freshness import router as meta_freshness_router
 from jpintel_mcp.api.six_axis_status import router as six_axis_status_router  # Wave 38
+from jpintel_mcp.api.status_aggregated import router as status_aggregated_router  # Wave 41 Agent H
 from jpintel_mcp.api.graphql import router as graphql_router  # Wave 19 §F2
 from jpintel_mcp.api.oauth_device import router as oauth_device_router  # Wave 19 §A8
 from jpintel_mcp.mcp.federation import router as federation_router  # Wave 19 §A5
@@ -1967,6 +1968,12 @@ def create_app() -> FastAPI:
     # meta_freshness_router. Cache header is 3 minutes so polling agents
     # don't hammer the origin between cron firings.
     app.include_router(six_axis_status_router)
+    # Wave 41 Agent H — aggregated status surface (/v1/status/all + /v1/status/alerts).
+    # Reads the 5 specialty-dashboard JSON sidecars (RUM / audit / six-axis /
+    # freshness / cron-health) plus the hourly alert aggregator output and
+    # returns them as a single agent-fetchable payload. Same public posture
+    # as six_axis_status_router (no auth, no AnonIpLimitDep, 3-minute cache).
+    app.include_router(status_aggregated_router)
     # Wave 19 §A5 — MCP server-to-server federation discovery
     # (/v1/meta/federation). Public manifest of allied servers + workflow
     # handoff patterns. Static declaration, no auth, no quota — agents

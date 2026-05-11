@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Wave 41 Agent H — jpcite 監視 alert ATOM feed (seed).
+
+  Publishes operational alerts (SLA breach / cron failure / deploy issue /
+  endpoint 5xx) as ATOM entries so Feedly / Inoreader / native RSS readers
+  can subscribe. The aggregator cron (`scripts/cron/aggregate_status_alerts_hourly.py`)
+  rewrites this file every hour from `analytics/status_alerts_w41.jsonl`.
+
+  This seed file ships with 1 informational "feed initialized" entry so
+  feed readers discover the channel correctly even before the first cron
+  fires. New alert entries are prepended by the cron and the oldest
+  entries beyond the 50-entry cap are trimmed.
+-->
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>jpcite 監視 alert feed</title>
+  <subtitle>SLA breach / cron failure / deploy issue / endpoint 5xx を Real-time に publish (Wave 41 Agent H)</subtitle>
+  <link href="https://jpcite.com/status/feed.atom" rel="self" type="application/atom+xml"/>
+  <link href="https://jpcite.com/status/monitoring.html" rel="alternate" type="text/html"/>
+  <id>https://jpcite.com/status/feed.atom</id>
+  <updated>2026-05-12T00:00:00Z</updated>
+  <generator uri="https://jpcite.com/" version="w41">jpcite-status-aggregator</generator>
+  <icon>https://jpcite.com/assets/favicon-32.png</icon>
+  <logo>https://jpcite.com/assets/og.png</logo>
+  <rights>Bookyou株式会社 — operational transparency feed, CC0 metadata.</rights>
+  <author>
+    <name>jpcite</name>
+    <uri>https://jpcite.com/</uri>
+    <email>info@bookyou.net</email>
+  </author>
+
+  <entry>
+    <title>監視 alert feed initialized</title>
+    <id>tag:jpcite.com,2026-05-12:status-feed-init</id>
+    <updated>2026-05-12T00:00:00Z</updated>
+    <published>2026-05-12T00:00:00Z</published>
+    <link href="https://jpcite.com/status/monitoring.html" rel="alternate" type="text/html"/>
+    <category term="info" label="info"/>
+    <category term="lifecycle" label="lifecycle"/>
+    <author><name>jpcite</name></author>
+    <summary type="text">Wave 41 Agent H landing. Alerts will be published here as they fire from the hourly aggregator cron.</summary>
+    <content type="html"><![CDATA[
+      <p>This is the Wave 41 Agent H landing entry for the jpcite monitoring alert feed.</p>
+      <p>Real-time entries (SLA breach, cron failure, deploy issue, endpoint 5xx) will be
+      published by <code>scripts/cron/aggregate_status_alerts_hourly.py</code> as they fire.</p>
+      <ul>
+        <li>Aggregated JSON: <a href="https://api.jpcite.com/v1/status/all">/v1/status/all</a></li>
+        <li>Active alerts (JSON): <a href="https://api.jpcite.com/v1/status/alerts">/v1/status/alerts</a></li>
+        <li>Combined dashboard (HTML): <a href="https://jpcite.com/status/monitoring.html">/status/monitoring.html</a></li>
+      </ul>
+    ]]></content>
+  </entry>
+</feed>
