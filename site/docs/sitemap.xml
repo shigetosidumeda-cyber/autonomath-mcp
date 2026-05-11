@@ -5,6 +5,10 @@
          <lastmod>2026-05-11</lastmod>
     </url>
     <url>
+         <loc>https://jpcite.com/docs/agents/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
          <loc>https://jpcite.com/docs/alerts_guide/</loc>
          <lastmod>2026-05-11</lastmod>
     </url>
@@ -97,6 +101,10 @@
          <lastmod>2026-05-11</lastmod>
     </url>
     <url>
+         <loc>https://jpcite.com/docs/compliance/soc2_control_map/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
          <loc>https://jpcite.com/docs/compliance/terms_of_service/</loc>
          <lastmod>2026-05-11</lastmod>
     </url>
@@ -117,7 +125,179 @@
          <lastmod>2026-05-11</lastmod>
     </url>
     <url>
+         <loc>https://jpcite.com/docs/integrations/notion_sync/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/integrations/slack_digest/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/integrations/zapier_zap/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/learn/ai_layer_education_2026_05_11/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/marketplace/cursor_directory_pr/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/observability/chaos_runbook/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/observability/otel_setup/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/postmortem/2026-05-11_14h_outage_v2/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/postmortem/2026-05-11_integrity_check_outage/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/pricing/justification_2026_05_11/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/quickstart/dev_5min/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r01-tax-firm-monthly-review/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r02-pre-closing-subsidy-check/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r03-sme-ma-public-dd/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r04-shinkin-borrower-watch/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r05-gyosei-licensing-eligibility/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r06-sharoushi-grant-match/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r07-shindanshi-monthly-companion/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r08-benrishi-ip-grant-monitor/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r09-bpo-grant-triage-1000/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r10-cci-municipal-screen/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r11-ec-invoice-bulk-verify/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r12-audit-firm-kyc-sweep/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r13-shihoshoshi-registry-watch/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r14-public-bid-watch/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r15-grant-saas-internal-enrich/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r16-claude-code-30sec/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r17-chatgpt-custom-gpt/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r18-cursor-mcp-setup/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r19-codex-agents-sdk/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r20-continue-cline/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r21-langchain-llamaindex-rag/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r22-n8n-zapier-webhook/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r23-slack-bot/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r24-houjin-6source-join/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r25-adoption-bulk-export/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r26-enforcement-rss-slack/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r27-law-amendment-program-link/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r28-edinet-program-trigger/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r29-municipal-grant-monitor/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/recipes/r30-invoice-revoke-watch/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
          <loc>https://jpcite.com/docs/sdks/typescript/</loc>
+         <lastmod>2026-05-11</lastmod>
+    </url>
+    <url>
+         <loc>https://jpcite.com/docs/use_cases/by_industry_2026_05_11/</loc>
          <lastmod>2026-05-11</lastmod>
     </url>
 </urlset>

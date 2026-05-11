@@ -68,7 +68,7 @@ BPO 1000 案件 triage
 
 400 req × ¥3.30。事前リサーチ + 候補制度 + 排他確認を AI agent から自動。 
 
-詳細 ROI 倍率は [業種別 use case (税理士・会計士・行政書士・診断士・M&A・信金) ](/docs/use_cases/by_industry_2026_05_11.md)・課金根拠は [justification ](/docs/pricing/justification_2026_05_11.md)。 
+詳細 ROI 倍率は [業種別 use case (税理士・会計士・行政書士・診断士・M&A・信金) ](/docs/use_cases/by_industry_2026_05_11/)・課金根拠は [justification ](/docs/pricing/justification_2026_05_11/)。 
 
 ## jpcite vs web search — 構造比較 
 
