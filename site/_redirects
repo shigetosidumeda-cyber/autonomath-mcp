@@ -46,6 +46,19 @@
 /getting-started.html  /docs/getting-started/  301
 /getting-started       /docs/getting-started/  301
 
+# 2026-05-12 Wave 42: cohort-monetization docs were linked from site/index.html
+# + site/pricing.html with a literal `.md` suffix (mkdocs Material renders the
+# canonical URL as a trailing-slash directory, not a `.md` file path). The
+# pages-deploy-main.yml workflow also strips `*.md` from the CF Pages upload
+# (line 124, `--exclude '*.md'`), so the `.md` form returned a hard 404. Source
+# HTML links have been updated to the trailing-slash form; these redirects
+# keep any cached external citations (mail blasts, partner pages, Zenn/note
+# inbound) alive. Same pattern as /getting-started above.
+/docs/use_cases/by_industry_2026_05_11.md  /docs/use_cases/by_industry_2026_05_11/  301
+/docs/use_cases/by_industry_2026_05_11.html  /docs/use_cases/by_industry_2026_05_11/  301
+/docs/pricing/justification_2026_05_11.md  /docs/pricing/justification_2026_05_11/  301
+/docs/pricing/justification_2026_05_11.html  /docs/pricing/justification_2026_05_11/  301
+
 # Per-program SEO pages live at /programs/{slug}-{sha1-6}.html (NOT
 # /programs/UNI-xxx.html — UNI ids are unified_id only, the static
 # filenames are derived from primary_name via utils/slug.py). The API

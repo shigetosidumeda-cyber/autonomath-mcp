@@ -236,6 +236,12 @@ exclude_docs: |
   pricing/
   publication/
   use_cases/
+  # 2026-05-12 Wave 42: unexclude the two cohort-monetization docs linked from
+  # site/index.html + site/pricing.html. Default `pricing/` + `use_cases/`
+  # exclusion remains for operator-internal drafts in those folders, but
+  # these two are user-facing landing-page link targets and must build.
+  !pricing/justification_2026_05_11.md
+  !use_cases/by_industry_2026_05_11.md
   partner_referral_mechanism.md
   partnerships/
   real_estate_v5_plan.md
@@ -298,6 +304,8 @@ nav:
       - 料金: pricing.md
       - FAQ: faq.md
       - 正直な能力と限界: honest_capabilities.md
+      - 業種別 use case (税理士・会計士・行政書士・診断士・M&A・信金): use_cases/by_industry_2026_05_11.md
+      - 課金根拠 (¥3/req 妥当性): pricing/justification_2026_05_11.md
 
   - API:
       - REST: api-reference.md
