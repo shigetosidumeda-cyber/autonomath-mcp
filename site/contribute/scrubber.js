@@ -1,7 +1,7 @@
 // Contribution form client-side scrubber.
 // Vanilla JS, no framework, no build step. Loaded by site/contribute/index.html.
-// Mirrors src/jpintel_mcp/api/contribute.py server-side gates so genuine
-// users don't reach the network round-trip with reject-shape data.
+// Mirrors server-side contribution gates so genuine users don't reach
+// the network round-trip with reject-shape data.
 // Defenses are duplicated server-side (regex, banlist, program_id check).
 
 (function () {

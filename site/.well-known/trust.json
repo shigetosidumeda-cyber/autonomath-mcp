@@ -17,7 +17,7 @@
   },
   "product": {
     "name": "jpcite",
-    "previous_brands": ["AutonoMath", "jpintel-mcp", "zeimu-kaikei.ai"],
+    "previous_brands": ["AutonoMath", "zeimu-kaikei.ai"],
     "operator_brand": "Bookyou株式会社",
     "service_type": "B2B data API + MCP server (Japanese public-program corpus)",
     "pypi_distribution": "autonomath-mcp",
