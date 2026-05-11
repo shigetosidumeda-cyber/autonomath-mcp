@@ -1,5 +1,5 @@
 # jpcite — Full Docs (llms-full.txt)
-Brand identity: current primary brand is jpcite (formerly 税務会計AI / AutonoMath / zeimu-kaikei.ai / autonomath-mcp; 旧称).
+Brand: jpcite. (SEO citation bridge for 旧称: 税務会計AI / AutonoMath / zeimu-kaikei.ai / autonomath-mcp marker only, not active brands.)
 PyPI: autonomath-mcp (legacy name) / pip install jpcite (new alias)
 Evidence-first context layer for Japanese public-program data.
 Operator: Bookyou株式会社 (T8010001213708)
