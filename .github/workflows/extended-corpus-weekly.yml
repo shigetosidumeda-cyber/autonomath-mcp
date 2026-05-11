@@ -65,6 +65,17 @@ jobs:
       - name: Install flyctl
         uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
 
+      - name: Ensure Playwright chromium on Fly container (Wave 36 fallback)
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        continue-on-error: true
+        run: |
+          set -e
+          # Wave 36: ETL fetch_with_fallback uses Playwright on 4xx/5xx/timeout.
+          # Idempotent — playwright install is a no-op if chromium is current.
+          flyctl ssh console -a autonomath-api -C \
+            "/opt/venv/bin/playwright install chromium" 2>&1 | tail -5 || true
+
       - name: Run extended corpus ingest on Fly machine
         id: run
         env:

@@ -316,3 +316,155 @@ def _classify_extractor(text: str) -> str:
 def fetch_text(url: str, timeout_ms: int = 15_000) -> str:
     """Shorthand: returns just the text (or '' on failure)."""
     return render_page(url, timeout_ms=timeout_ms).text
+
+
+# ---------------------------------------------------------------------------
+# Wave 36 horizontal-wire entry: httpx-first / Playwright-fallback fetch.
+# Used by ETL+cron scripts to upgrade their inline `httpx.get()` /
+# `urllib.request.urlopen()` calls to a unified two-pass collector.
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class FetchResult:
+    """Return shape for `fetch_with_fallback()`.
+
+    `source` is one of: "httpx", "playwright", "aggregator_refused", "error".
+    `status` mirrors the underlying HTTP status (0 for transport errors).
+    `text` is the response body for httpx, DOM text for Playwright, "" on fail.
+    """
+
+    status: int
+    text: str
+    final_url: str
+    source: str
+    fetched_at: str
+    error: str | None = None
+
+
+_HTTPX_DEFAULT_TIMEOUT_S = 30.0
+
+
+def _httpx_get(
+    url: str, *, timeout_s: float, user_agent: str
+) -> tuple[int, str, str, str | None]:
+    """First-pass httpx fetch. Returns (status, text, final_url, error)."""
+    try:
+        import httpx  # type: ignore[import-untyped]
+    except ImportError as exc:
+        return (0, "", url, f"httpx_not_installed: {exc}")
+    try:
+        with httpx.Client(
+            timeout=timeout_s,
+            follow_redirects=True,
+            headers={
+                "User-Agent": user_agent,
+                "Accept-Language": "ja-JP,ja;q=0.9,en;q=0.5",
+            },
+        ) as client:
+            resp = client.get(url)
+            return (
+                resp.status_code,
+                resp.text or "",
+                str(resp.url),
+                None,
+            )
+    except Exception as exc:  # noqa: BLE001
+        return (0, "", url, f"{type(exc).__name__}: {exc}")
+
+
+async def fetch_with_fallback(
+    url: str,
+    *,
+    timeout_s: float = _HTTPX_DEFAULT_TIMEOUT_S,
+    user_agent: str = JPCITE_USER_AGENT,
+    screenshot_dir: Path | None = None,
+    min_body_bytes: int = 200,
+) -> FetchResult:
+    """Two-pass fetch: httpx first, Playwright fallback on 4xx/5xx/timeout.
+
+    Designed for the 11 ETL+cron scripts in Wave 36. Callers `await` this
+    in their existing async loops; if a script is synchronous, wrap with
+    `asyncio.run(fetch_with_fallback(...))` or use `fetch_with_fallback_sync()`.
+
+    Banned aggregator hostnames short-circuit to source="aggregator_refused"
+    without performing either fetch.
+    """
+    fetched_at = _now_iso()
+
+    if is_banned_url(url):
+        return FetchResult(
+            status=0,
+            text="",
+            final_url=url,
+            source="aggregator_refused",
+            fetched_at=fetched_at,
+            error="aggregator_refused",
+        )
+
+    loop = asyncio.get_running_loop()
+    status, text, final_url, err = await loop.run_in_executor(
+        None,
+        lambda: _httpx_get(url, timeout_s=timeout_s, user_agent=user_agent),
+    )
+
+    httpx_ok = (
+        200 <= status < 300
+        and len(text) >= min_body_bytes
+        and err is None
+    )
+    if httpx_ok:
+        return FetchResult(
+            status=status,
+            text=text,
+            final_url=final_url,
+            source="httpx",
+            fetched_at=fetched_at,
+            error=None,
+        )
+
+    pw_result = await _render_async(
+        url,
+        screenshot_dir=screenshot_dir,
+        timeout_ms=int(timeout_s * 1000),
+        max_retries=MAX_RETRIES,
+    )
+
+    if pw_result.text:
+        return FetchResult(
+            status=pw_result.status or status,
+            text=pw_result.text,
+            final_url=pw_result.final_url or final_url,
+            source="playwright",
+            fetched_at=pw_result.fetched_at,
+            error=None,
+        )
+
+    return FetchResult(
+        status=status,
+        text="",
+        final_url=final_url,
+        source="error",
+        fetched_at=fetched_at,
+        error=pw_result.error or err or "both_passes_failed",
+    )
+
+
+def fetch_with_fallback_sync(
+    url: str,
+    *,
+    timeout_s: float = _HTTPX_DEFAULT_TIMEOUT_S,
+    user_agent: str = JPCITE_USER_AGENT,
+    screenshot_dir: Path | None = None,
+    min_body_bytes: int = 200,
+) -> FetchResult:
+    """Synchronous wrapper for callers without an async context (urllib scripts)."""
+    return asyncio.run(
+        fetch_with_fallback(
+            url,
+            timeout_s=timeout_s,
+            user_agent=user_agent,
+            screenshot_dir=screenshot_dir,
+            min_body_bytes=min_body_bytes,
+        )
+    )

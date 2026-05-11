@@ -54,6 +54,8 @@ from urllib.parse import urlparse
 
 import httpx
 
+from scripts.etl._playwright_helper import fetch_with_fallback_sync  # Wave 36 wire
+
 logger = logging.getLogger("jpcite.cron.adoption_rss")
 
 # ---------------------------------------------------------------------------
@@ -259,10 +261,18 @@ def _fetch_feed(client: httpx.Client, label: str, url: str) -> list[dict[str, st
     try:
         resp = client.get(url, headers={"User-Agent": USER_AGENT})
     except httpx.HTTPError as exc:
-        logger.warning("rss fetch failed feed=%s err=%s", label, exc)
+        logger.warning("rss fetch failed feed=%s err=%s — trying Playwright fallback", label, exc)
+        # Wave 36: Playwright fallback on transport failure.
+        fb = fetch_with_fallback_sync(url)
+        if fb.source == "playwright" and fb.text:
+            return _parse_feed_body(fb.text)
         return []
     if resp.status_code != 200:
-        logger.warning("rss feed=%s HTTP %d", label, resp.status_code)
+        logger.warning("rss feed=%s HTTP %d — trying Playwright fallback", label, resp.status_code)
+        # Wave 36: Playwright fallback on 4xx/5xx.
+        fb = fetch_with_fallback_sync(url)
+        if fb.source == "playwright" and fb.text:
+            return _parse_feed_body(fb.text)
         return []
     body = resp.text
     return _parse_feed_body(body)

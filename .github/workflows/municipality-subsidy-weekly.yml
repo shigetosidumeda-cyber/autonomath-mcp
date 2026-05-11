@@ -62,6 +62,12 @@ jobs:
           pip install -e ".[dev]"
           pip install pdfplumber beautifulsoup4 lxml httpx
 
+      - name: Install Playwright chromium (Wave 36 fallback)
+        run: |
+          # Wave 36: ETL fetch_with_fallback uses Playwright on 4xx/5xx/timeout
+          # against authoritative .lg.jp municipal sites (JS-rendered detail pages).
+          python -m playwright install --with-deps chromium
+
       - name: Run DEEP-44 municipality subsidy weekly ingest
         env:
           JPINTEL_DB_PATH: ${{ github.workspace }}/data/jpintel.db
