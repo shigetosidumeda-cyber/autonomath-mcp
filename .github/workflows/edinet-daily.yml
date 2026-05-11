@@ -1,0 +1,115 @@
+name: edinet-daily
+
+# Wave 31 Axis 1c.
+#
+# Daily EDINET 全文 ingest cron.
+#
+# Schedule: 19:30 UTC = 04:30 JST.
+# EDINET 04:00 JST 公開後 30 分待機で fetch を打つ。
+# 100 件/run 上限、daily incremental。
+#
+# LLM call count: 0. Pure lxml + httpx + sqlite3.
+#
+# Required secrets:
+#   GITHUB_TOKEN       (auto, for failure issue creation)
+#   EDINET_API_KEY     (EDINET API v2 subscription key)
+#   R2_*               (optional, for full-body upload — script
+#                       gracefully degrades to excerpt-only when absent)
+
+on:
+  schedule:
+    - cron: "30 19 * * *"
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "Target submit date (YYYY-MM-DD). Defaults to yesterday JST."
+        required: false
+        default: ""
+      limit:
+        description: "Max filings per run (default 100)."
+        required: false
+        default: "100"
+      dry_run:
+        description: "If true, fetch+parse only, no DB writes."
+        required: false
+        default: "false"
+
+concurrency:
+  group: edinet-daily
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Apply migration 227 (idempotent)
+        env:
+          AUTONOMATH_DB_PATH: ${{ github.workspace }}/autonomath.db
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import sqlite3, pathlib
+          db = pathlib.Path("autonomath.db")
+          if not db.exists():
+              sqlite3.connect(str(db)).close()
+          sql = pathlib.Path("scripts/migrations/227_edinet_full.sql").read_text()
+          with sqlite3.connect(str(db)) as conn:
+              conn.executescript(sql)
+              conn.commit()
+          PY
+
+      - name: Run EDINET daily ingest
+        env:
+          AUTONOMATH_DB_PATH: ${{ github.workspace }}/autonomath.db
+          EDINET_API_KEY: ${{ secrets.EDINET_API_KEY }}
+          INPUT_DATE: ${{ github.event.inputs.date }}
+          INPUT_LIMIT: ${{ github.event.inputs.limit }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          LIMIT="${INPUT_LIMIT:-100}"
+          DATE_FLAG=""
+          if [ -n "${INPUT_DATE:-}" ]; then
+            DATE_FLAG="--date ${INPUT_DATE}"
+          fi
+          DRY_FLAG=""
+          if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then
+            DRY_FLAG="--dry-run"
+          fi
+          python scripts/cron/ingest_edinet_daily.py \
+            --limit "${LIMIT}" \
+            ${DATE_FLAG} \
+            ${DRY_FLAG}
+
+      - name: Open issue on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `edinet-daily failed ${new Date().toISOString()}`,
+              body: `Run: ${runUrl}\n\nLikely causes: EDINET API 5xx, subscription key expired, autonomath.db lock contention, R2 bucket auth. See scripts/cron/ingest_edinet_daily.py docstring.`,
+              labels: ["ingest-failure", "automation"],
+            });
