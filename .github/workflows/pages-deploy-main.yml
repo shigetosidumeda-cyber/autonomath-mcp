@@ -121,6 +121,9 @@ jobs:
             --exclude '*.map' \
             --include 'press/*.md' \
             --include 'security/policy.md' \
+            --include 'cases/*.md' \
+            --include 'laws/*.md' \
+            --include 'enforcement/*.md' \
             --exclude '*.md' \
             site/ dist/site/
           echo "artifact size:"
