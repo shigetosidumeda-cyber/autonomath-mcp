@@ -16,6 +16,7 @@ env:
     scripts/generate_city_pages.py
     scripts/generate_compare_pages.py
     scripts/generate_cross_hub_pages.py
+    scripts/generate_favicon.py
     scripts/generate_geo_citation_pages.py
     scripts/generate_geo_industry_pages.py
     scripts/generate_geo_program_pages.py
@@ -461,6 +462,7 @@ env:
     tests/test_stripe_usage_crons.py
     tests/test_stripe_webhook_dedup.py
     tests/test_stripe_webhook_full_matrix.py
+    tests/test_stripe_webhook_idempotency.py
     tests/test_stripe_webhook_tolerance.py
     tests/test_subscribers.py
     tests/test_succession_endpoint.py
