@@ -1,7 +1,7 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "jpcite-mcp-composition",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Japan public-program MCP — COMPOSITION layer subset (composition layer + audit/wave21-22 + recent tools). Adds compose_audit_workpaper, apply_eligibility_chain_am, match_due_diligence_questions, pack_construction/manufacturing/real_estate, graph_traverse, NTA saiketsu/tsutatsu corpus 4 tools, and 24 new current release tools. Pair with mcp-server.core.json only when using split subset manifests; for the current full 139-tool MCP distribution surface, use mcp-server.full.json.",
   "author": {
     "name": "Bookyou株式会社",
@@ -30,7 +30,7 @@
       "registryType": "pypi",
       "registryBaseUrl": "https://pypi.org",
       "identifier": "autonomath-mcp",
-      "version": "0.3.4",
+      "version": "0.3.5",
       "runtimeHint": "uvx",
       "transport": {
         "type": "stdio"
