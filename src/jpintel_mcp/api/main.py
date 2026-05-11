@@ -80,6 +80,7 @@ from jpintel_mcp.api.enforcement import router as enforcement_router
 from jpintel_mcp.api.evidence import router as evidence_router
 from jpintel_mcp.api.exclusions import router as exclusions_router
 from jpintel_mcp.api.export import router as export_router
+from jpintel_mcp.api.extended_corpus import router as extended_corpus_router
 from jpintel_mcp.api.feedback import router as feedback_router
 from jpintel_mcp.api.funding_stack import router as funding_stack_router
 from jpintel_mcp.api.funding_stage import router as funding_stage_router
@@ -103,6 +104,7 @@ from jpintel_mcp.api.ma_dd import (
 from jpintel_mcp.api.ma_dd import (
     watches_router as me_watches_router,
 )
+from jpintel_mcp.api.municipal import router as municipal_router
 from jpintel_mcp.api.me import router as me_router
 from jpintel_mcp.api.meta import router as meta_router
 from jpintel_mcp.api.meta_freshness import router as meta_freshness_router
@@ -2095,6 +2097,11 @@ def create_app() -> FastAPI:
     # the handler with 402; we still mount under ``AnonIpLimitDep`` so
     # the 3/day IP cap protects the surface before the handler runs.
     app.include_router(export_router, dependencies=[AnonIpLimitDep])
+    # /v1/court/decisions/extended + /v1/industry/guidelines +
+    # /v1/nta/tsutatsu/{id}/sections — Wave 32 extended corpus (Axis 1d+1e+1f).
+    # Primary-source citations only (courts.go.jp / NDL / 10 ministries /
+    # NTA tsutatsu). Anon-quota-gated like other discovery surfaces.
+    app.include_router(extended_corpus_router, dependencies=[AnonIpLimitDep])
     # /v1/evidence/packets/batch — paid-only bulk composer. It enforces
     # metered API key auth inside the handler and should not burn anonymous
     # quota before returning its auth/cap envelope.

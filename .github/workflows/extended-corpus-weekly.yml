@@ -1,0 +1,148 @@
+name: extended-corpus-weekly
+
+# Weekly incremental ingest of Wave 32 extended corpora into autonomath.db
+# on the Fly production machine. 3 source ETL scripts (Axis 1d+1e+1f):
+#
+#   * Axis 1d: scripts/etl/ingest_court_decisions_extended.py
+#              (裁判所 hanrei_jp + 国会図書館 OAI-PMH)
+#   * Axis 1e: scripts/etl/ingest_industry_guidelines.py
+#              (10 省庁 業種ガイドライン)
+#   * Axis 1f: scripts/etl/ingest_nta_tsutatsu_extended.py
+#              (国税庁 通達 section-level breakdown)
+#
+# Pace projection (2026-05-12 baseline):
+# * court_decisions_extended: 0 → 20,000+ target. 100/week cap → 200 weeks
+#   to saturation (4 years). Acceptable — saturates the rare-source tail.
+# * industry_guidelines: 0 → ~185 expected (37 JSIC × 5 ministries avg).
+#   Saturates in ~10 weeks.
+# * nta_tsutatsu_extended: 3,232 → 10,000+ section rows. 200/week cap →
+#   50 weeks to saturation.
+#
+# Runs ON Fly production via flyctl ssh so writes land on the canonical
+# 9.7 GB autonomath.db volume. Repo-local autonomath.db is a dev mirror.
+#
+# Required secrets: FLY_API_TOKEN
+# Optional: SLACK_WEBHOOK_INGEST (notify on driver failure)
+
+on:
+  schedule:
+    # 02:00 UTC Tuesday == 11:00 JST Tuesday. Ministry sites are quiet
+    # mid-morning JST (post-rush hour). Avoids overlap with the existing
+    # weekly windows (Sunday backups, Monday law-load).
+    - cron: "0 2 * * 2"
+  workflow_dispatch:
+    inputs:
+      axis:
+        description: "Which axis (all | 1d | 1e | 1f)"
+        required: false
+        default: "all"
+      max_records:
+        description: "Per-axis cap (default per-axis: 100)"
+        required: false
+        default: "100"
+      dry_run:
+        description: "Heartbeat + cursor read only, no fetches"
+        required: false
+        default: "false"
+
+concurrency:
+  group: extended-corpus-weekly
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    # 3 axes × 30 min budget + flyctl overhead + log copy = ~110 min cap.
+    timeout-minutes: 110
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run extended corpus ingest on Fly machine
+        id: run
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          INPUT_AXIS: ${{ github.event.inputs.axis }}
+          INPUT_MAX: ${{ github.event.inputs.max_records }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          AXIS="${INPUT_AXIS:-all}"
+          MAX="${INPUT_MAX:-100}"
+          DRY_FLAG=""
+          if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then
+            DRY_FLAG="--dry-run"
+          fi
+
+          # Axis 1d — court decisions extended
+          if [ "$AXIS" = "all" ] || [ "$AXIS" = "1d" ]; then
+            set +e
+            flyctl ssh console -a autonomath-api -C \
+              "env PYTHONPATH=/app \
+                /opt/venv/bin/python /app/scripts/etl/ingest_court_decisions_extended.py \
+                --db-path /data/autonomath.db \
+                --source all \
+                --max-records ${MAX} \
+                ${DRY_FLAG}" \
+              2>&1 | tee axis_1d.out
+            rc1=$?
+            set -e
+            echo "axis_1d_rc=$rc1" >> "$GITHUB_OUTPUT"
+            if [ "$rc1" -ne 0 ] && [ "$rc1" -ne 2 ]; then
+              echo "::warning::axis 1d exited $rc1 — continuing"
+            fi
+          fi
+
+          # Axis 1e — industry guidelines
+          if [ "$AXIS" = "all" ] || [ "$AXIS" = "1e" ]; then
+            set +e
+            flyctl ssh console -a autonomath-api -C \
+              "env PYTHONPATH=/app \
+                /opt/venv/bin/python /app/scripts/etl/ingest_industry_guidelines.py \
+                --db-path /data/autonomath.db \
+                --ministries all \
+                --max-per-ministry $((MAX / 10 + 1)) \
+                ${DRY_FLAG}" \
+              2>&1 | tee axis_1e.out
+            rc2=$?
+            set -e
+            echo "axis_1e_rc=$rc2" >> "$GITHUB_OUTPUT"
+            if [ "$rc2" -ne 0 ] && [ "$rc2" -ne 2 ]; then
+              echo "::warning::axis 1e exited $rc2 — continuing"
+            fi
+          fi
+
+          # Axis 1f — NTA tsutatsu extended
+          if [ "$AXIS" = "all" ] || [ "$AXIS" = "1f" ]; then
+            set +e
+            flyctl ssh console -a autonomath-api -C \
+              "env PYTHONPATH=/app \
+                /opt/venv/bin/python /app/scripts/etl/ingest_nta_tsutatsu_extended.py \
+                --db-path /data/autonomath.db \
+                --max-tsutatsu ${MAX} \
+                ${DRY_FLAG}" \
+              2>&1 | tee axis_1f.out
+            rc3=$?
+            set -e
+            echo "axis_1f_rc=$rc3" >> "$GITHUB_OUTPUT"
+            if [ "$rc3" -ne 0 ] && [ "$rc3" -ne 2 ]; then
+              echo "::warning::axis 1f exited $rc3 — continuing"
+            fi
+          fi
+
+      - name: Slack notify on driver failure
+        if: failure() && env.SLACK_WEBHOOK_INGEST != ''
+        env:
+          SLACK_WEBHOOK_INGEST: ${{ secrets.SLACK_WEBHOOK_INGEST }}
+        run: |
+          set -euo pipefail
+          curl -fsS -X POST -H 'content-type: application/json' \
+            --data "{\"text\":\":warning: extended-corpus-weekly failure — ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}" \
+            "$SLACK_WEBHOOK_INGEST" || true
