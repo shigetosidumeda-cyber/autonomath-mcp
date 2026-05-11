@@ -84,6 +84,9 @@ from jpintel_mcp.api.export import router as export_router
 from jpintel_mcp.api.extended_corpus import router as extended_corpus_router
 from jpintel_mcp.api.feedback import router as feedback_router
 from jpintel_mcp.api.precompute_axis4 import router as precompute_axis4_router  # Wave 34 Axis 4
+from jpintel_mcp.api.jpo import router as jpo_router  # Wave 31 Axis 1b
+from jpintel_mcp.api.edinet import router as edinet_router  # Wave 31 Axis 1c
+from jpintel_mcp.api.pdf_report import router as pdf_report_router  # Wave 35 Axis 6a
 from jpintel_mcp.api.funding_stack import router as funding_stack_router
 from jpintel_mcp.api.funding_stage import router as funding_stage_router
 from jpintel_mcp.api.funnel_events import router as funnel_events_router
@@ -2108,6 +2111,21 @@ def create_app() -> FastAPI:
     # Primary-source citations only (courts.go.jp / NDL / 10 ministries /
     # NTA tsutatsu). Anon-quota-gated like other discovery surfaces.
     app.include_router(extended_corpus_router, dependencies=[AnonIpLimitDep])
+    # /v1/municipal/subsidies + /v1/municipal/by_prefecture — Wave 31 Axis 1a
+    # 1,794-自治体 補助金 page diff rollup. Anon-quota-gated.
+    app.include_router(municipal_router, dependencies=[AnonIpLimitDep])
+    # /v1/cohort/5d/match + /v1/programs/{id}/risk + /v1/supplier/chain/{n} —
+    # Wave 33 Axis 2a/2b/2c precompute reads. Anon-quota-gated.
+    app.include_router(cohort_router, dependencies=[AnonIpLimitDep])
+    # /v1/jpo/patents + /v1/jpo/utility_models — Wave 31 Axis 1b
+    # 特許/実用新案 ingest (J-PlatPat daily diff). Anon-quota-gated.
+    app.include_router(jpo_router, dependencies=[AnonIpLimitDep])
+    # /v1/edinet/filings + /v1/edinet/filings/{code}/full — Wave 31 Axis 1c
+    # EDINET API v2 daily filings + XBRL body. Anon-quota-gated.
+    app.include_router(edinet_router, dependencies=[AnonIpLimitDep])
+    # /v1/pdf_report/generate — Wave 35 Axis 6a per-client monthly PDF report.
+    # Anon-quota-gated; metering inside handler.
+    app.include_router(pdf_report_router, dependencies=[AnonIpLimitDep])
     # /v1/evidence/packets/batch — paid-only bulk composer. It enforces
     # metered API key auth inside the handler and should not burn anonymous
     # quota before returning its auth/cap envelope.
