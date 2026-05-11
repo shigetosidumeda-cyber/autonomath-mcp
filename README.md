@@ -134,12 +134,19 @@ HTTP fallback で完全に動作するツール (top 10): `search_programs` / `g
 ## 30-second quickstart (REST)
 
 ```bash
-# Primary (X-API-Key header, used across our docs)
-curl "https://api.jpcite.com/v1/programs/search?q=設備投資&prefecture=東京都" \
+# Primary (X-API-Key header, used across our docs).
+# Use --data-urlencode for non-ASCII query params — passing 補助金 / 設備投資
+# raw in the URL breaks the HTTP request line on most curl builds and returns
+# a 400 bad_request envelope.
+curl -G "https://api.jpcite.com/v1/programs/search" \
+  --data-urlencode "q=設備投資" \
+  --data-urlencode "prefecture=東京都" \
   -H "X-API-Key: am_xxx"
 
 # Also supported: Bearer token
-curl "https://api.jpcite.com/v1/programs/search?q=設備投資&prefecture=東京都" \
+curl -G "https://api.jpcite.com/v1/programs/search" \
+  --data-urlencode "q=設備投資" \
+  --data-urlencode "prefecture=東京都" \
   -H "Authorization: Bearer am_xxx"
 ```
 

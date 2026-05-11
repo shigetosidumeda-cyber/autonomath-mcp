@@ -196,3 +196,20 @@
 /facts_registry.json /.well-known/facts_registry.json 301
 /fence.md /.well-known/fence.md 301
 /.well-known/facts_registry.json /facts_registry.json 200
+
+# v3.1 (2026-05-11 install-friction hotfix) — /connect/* SOT docs revival.
+# Cloudflare Pages's .html-stripping happens for top-level paths, but the
+# per-page connect docs were 404'ing for extensionless URLs after a
+# build-config drift. Pin the canonical path → .html rewrite explicitly so
+# /connect/claude-code, /connect/cursor, /connect/chatgpt, /connect/codex
+# resolve to the corresponding site/connect/*.html files with a 200 rewrite
+# (no client-visible redirect). Trailing-slash variants 301 to the
+# canonical slug to keep the URL shape singular.
+/connect/claude-code  /connect/claude-code.html  200
+/connect/cursor       /connect/cursor.html       200
+/connect/chatgpt      /connect/chatgpt.html      200
+/connect/codex        /connect/codex.html        200
+/connect/claude-code/ /connect/claude-code       301
+/connect/cursor/      /connect/cursor            301
+/connect/chatgpt/     /connect/chatgpt           301
+/connect/codex/       /connect/codex             301

@@ -281,7 +281,7 @@
  </div>
 
  <div role="tabpanel" id="qs-panel-curl" aria-labelledby="qs-tab-curl" class="qs-panel">
- <pre id="qs-curl-snippet" class="qs-code" aria-label="curl quick-start"><code>curl -H "X-API-Key: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>" \
+ <pre id="qs-curl-snippet" class="qs-code" aria-label="curl quick-start"><code>curl -H "X-API-Key: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>" \
  "https://api.jpcite.com/v1/programs/search?q=IT%E5%B0%8E%E5%85%A5&amp;limit=3"</code></pre>
  <button type="button" class="btn-ghost qs-copy" data-copy-target="qs-curl-snippet">コピー</button>
  <p class="qs-note">API キー を省くと匿名 3 リクエスト/日 per IP (JST 翌日リセット) で動作。</p>
@@ -293,7 +293,7 @@
  "mcpServers": {
  "jpcite": {
  "command": "autonomath-mcp",
- "env": {"JPCITE_API_KEY": "<span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>"}
+ "env": {"JPCITE_API_KEY": "<span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>"}
  }
  }
 }</code></pre>
@@ -307,7 +307,7 @@
  "name": "jpcite",
  "command": "uvx",
  "args": ["autonomath-mcp"],
- "env": {"JPCITE_API_KEY": "<span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>"}
+ "env": {"JPCITE_API_KEY": "<span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>"}
 }</code></pre>
  <button type="button" class="btn-ghost qs-copy" data-copy-target="qs-cursor-snippet">コピー</button>
  <p class="qs-note"><a href="/integrations/cursor.html">Cursor 統合ガイド (4 分)</a></p>
@@ -320,7 +320,7 @@
  "jpcite": {
  "command": "uvx",
  "args": ["autonomath-mcp"],
- "env": {"JPCITE_API_KEY": "<span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>"},
+ "env": {"JPCITE_API_KEY": "<span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>"},
  "autoApprove": ["search_programs", "get_program", "search_laws"]
  }
  }
@@ -337,7 +337,7 @@ https://api.jpcite.com/v1/openapi.agent.json
 # Authentication
 Type: API Key
 Header name: X-API-Key
-Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span></code></pre>
+Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span></code></pre>
  <button type="button" class="btn-ghost qs-copy" data-copy-target="qs-chatgpt-snippet">コピー</button>
  <p class="qs-note"><a href="/integrations/openai-custom-gpt.html">ChatGPT Custom GPT 統合ガイド (5 分)</a></p>
  </div>
@@ -358,8 +358,9 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <script>
         (function() {
           'use strict';
-          var QS_PLACEHOLDER = 'am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
-          var KEY_RE = /^am_[A-Za-z0-9]{16,}$/;
+          var QS_PLACEHOLDER = 'jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+          // 3 prefix 互換: 新規は jc_、既発行の sk_ / am_ も valid のまま許容
+          var KEY_RE = /^(jc_|sk_|am_)[A-Za-z0-9_-]{16,}$/;
 
           var tabs = document.querySelectorAll('.qs-tab');
           tabs.forEach(function (tab) {
@@ -433,13 +434,31 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
         })();
       </script>
 
- <h1>既存 API キーを管理</h1>
+ <h1>既存 user 向け — API キー / 利用状況 / 請求 ダッシュボード</h1>
  <p class="sub" style="margin:0 0 6px;">ログイン中: <code>—</code></p>
  <p class="sub" style="font-size:13px;color:var(--text-muted);margin:0 0 14px;line-height:1.6;">
- このページは <strong>既存 API キーの管理 (利用量 / 請求 / 再発行 / 解約)</strong> 専用です。
- まだ API キーをお持ちでない方は <a href="pricing.html#api-paid">Pricing で発行 (¥3.30/unit 従量)</a> または
- <a href="trial.html">メールでトライアル (14 日 / 200 req カード不要)</a> をご利用ください。
+ このページは <strong>既存 user 専用</strong> です — API キー list、利用量、Stripe billing portal link が下に並びます。
+ <strong>新規 user は <a href="/docs/getting-started/">/docs/getting-started/</a></strong> (5 分クイックスタート) か
+ <a href="pricing.html#api-paid">Pricing で API キー発行 (¥3.30/unit 完全従量)</a> へ。
  </p>
+
+ <section id="login-options" aria-labelledby="login-options-title" class="stat-card" style="margin:0 0 20px;padding:16px 18px;border:1px solid var(--border);background:var(--bg-alt,#fafaf9);">
+ <h2 id="login-options-title" style="font-size:14px;font-weight:700;margin:0 0 10px;letter-spacing:0.02em;">ログイン (W9-01 実装予定 — UI placeholder)</h2>
+ <p style="font-size:12px;color:var(--text-muted);margin:0 0 12px;line-height:1.6;">
+ magic-link (email) または GitHub OAuth でセッションを開始できます。既存 API キー貼り付け運用は下の <a href="#dash2-keybox">既存 API キーの利用詳細</a> をご利用ください。
+ </p>
+ <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+ <button type="button" id="login-magic-link" class="btn-ghost" disabled aria-describedby="login-placeholder-hint" style="padding:10px 16px;font-size:13px;font-weight:600;">
+ <span aria-hidden="true">✉ </span>magic-link でログイン
+ </button>
+ <button type="button" id="login-github-oauth" class="btn-ghost" disabled aria-describedby="login-placeholder-hint" style="padding:10px 16px;font-size:13px;font-weight:600;">
+ <span aria-hidden="true">⌥ </span>GitHub OAuth でログイン
+ </button>
+ <p id="login-placeholder-hint" style="font-size:12px;color:var(--text-muted);margin:0;flex:1 1 100%;line-height:1.5;">
+ W9-01 で実装予定。現状は API キー貼り付け運用が canonical です。
+ </p>
+ </div>
+ </section>
  <nav class="dash-nav" aria-label="ダッシュボード">
  <a href="dashboard.html" class="active" aria-current="page">概要</a>
  <a href="#api-key-section" title="同一ページ内の API キー ブロックへ">API キー</a>
@@ -526,7 +545,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <form id="dash2-key-form" autocomplete="off" style="display:flex;gap:8px;flex-wrap:wrap;">
  <label for="dash2-key-input" class="visually-hidden">API キー</label>
  <input id="dash2-key-input" type="password" inputmode="text"
- placeholder="am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+ placeholder="jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
  style="flex:1;min-width:240px;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:16px;">
  <button type="submit" class="btn btn-primary">ダッシュボードを表示</button>
  <button type="button" id="dash2-key-clear" class="btn-ghost">クリア</button>

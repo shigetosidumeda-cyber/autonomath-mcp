@@ -127,13 +127,13 @@
  <p><strong>The API key is returned once.</strong> Store it immediately; if lost, cancel the subscription via <code>/v1/billing/portal</code> and re-subscribe to issue a fresh key.</p>
 
  <h2>3. Authenticated request</h2>
- <pre class="code-block" aria-label="authenticated curl"><code>curl -H "X-API-Key: am_xxxxxxxxxxxxxxxx" \
+ <pre class="code-block" aria-label="authenticated curl"><code>curl -H "X-API-Key: jc_xxxxxxxxxxxxxxxx" \
  "https://api.jpcite.com/v1/programs/search?q=IT&amp;tier=S&amp;tier=A&amp;limit=5"</code></pre>
 
  <h2>4. Python (requests)</h2>
  <pre class="code-block" aria-label="python example"><code>import requests
 
-API_KEY = "am_xxxxxxxxxxxxxxxx"
+API_KEY = "jc_xxxxxxxxxxxxxxxx"
 BASE = "https://api.jpcite.com"
 
 r = requests.get(
@@ -145,7 +145,7 @@ r.raise_for_status
 print(r.json["total"], "results")</code></pre>
 
  <h2>5. Node.js (fetch)</h2>
- <pre class="code-block" aria-label="node example"><code>const API_KEY = "am_xxxxxxxxxxxxxxxx";
+ <pre class="code-block" aria-label="node example"><code>const API_KEY = "jc_xxxxxxxxxxxxxxxx";
 const BASE = "https://api.jpcite.com";
 
 const url = new URL(`${BASE}/v1/programs/search`);

@@ -297,12 +297,12 @@
  </aside>
 
  <section class="pricing-hero" style="padding:32px 0 8px;">
- <h1 style="font-size:clamp(36px,9vw,56px);line-height:1.1;margin:0 0 16px;letter-spacing:-0.02em;">¥3/unit — 通常 call は 1 unit</h1>
- <p style="font-size:20px;line-height:1.6;margin:0 0 24px;color:var(--text);max-width:720px;">
- 通常の 1 API/MCP 呼び出し = 1 billable unit = 税込 ¥3.30。匿名枠は 1 日 3 呼び出しまで無料、翌日 00:00 JST リセット。
+ <h1 style="font-size:clamp(36px,9vw,56px);line-height:1.1;margin:0 0 16px;letter-spacing:-0.02em;">¥3/req metered (税込 ¥3.30)</h1>
+ <p style="font-size:20px;line-height:1.6;margin:0 0 24px;color:var(--text);max-width:760px;">
+ Stripe 経由・completely_metered・月額 minimum なし・tier なし。匿名 3 req/日 per IP は登録不要で無料 (JST 翌日 00:00 リセット)。
  </p>
 	 <p style="font-size:15px;line-height:1.7;margin:-10px 0 24px;color:var(--text-muted);max-width:760px;">
-		 jpcite は Evidence prefetch layer です。 長い PDF・複数の官公庁ページ・検索結果を読む前に、 出典 URL・取得時刻・known gaps・互換 / 排他ルール付きの根拠を取得し、顧問先月次レビュー、会社フォルダ、申請戦略パック、公開情報DDパックに使える形で返します。 反復実行では、 月次上限、 実行単位の予算、 顧客別タグを併用できます。 LLM API は呼ばないため jpcite の API 単価は固定です。
+		 AI agent (Custom GPT / Claude MCP / Cursor / Codex / Anthropic API direct) が日本公的制度・法令・判例・税務・適格事業者を扱う前に呼ぶ Evidence prefetch layer。1 API/MCP 呼び出し = 1 billable unit。jpcite 側は LLM 推論を一切しないため、agent dev の自前 LLM token と完全独立で jpcite の単価は固定式です。反復実行では月次上限・X-Cost-Cap-JPY・X-Client-Tag を組み合わせ予算と顧客別原価を管理できます。
  </p>
 
  <div class="hero-calc" style="margin:0 0 28px;border:1px solid var(--border,#e5e7eb);border-radius:12px;overflow:hidden;max-width:560px;">
@@ -342,7 +342,94 @@
 
  </section>
 
- <section aria-labelledby="automation-pricing-title" style="margin-top:32px;">
+ <section aria-labelledby="cost-examples-title" style="margin-top:40px;">
+ <h2 id="cost-examples-title" class="section-title" style="font-size:22px;">cost examples — AI agent 経由 5 シナリオ</h2>
+ <p style="font-size:15px;line-height:1.7;margin:0 0 16px;color:var(--text-muted);max-width:820px;">
+ <code>.well-known/mcp.json</code> の <code>cost_examples</code> に対応する 5 シナリオ。AI agent (Claude / GPT / Cursor) 経由で jpcite を呼んだ際の典型 req 数 と税込課金。実行前見積もりは <code>POST /v1/cost/preview</code> で確認できます。
+ </p>
+ <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;max-width:1000px;">
+ <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:16px 18px;background:var(--bg,#fff);">
+ <p style="font-size:13px;font-weight:700;margin:0 0 6px;color:var(--text-muted);">会社フォルダ作成パック</p>
+ <p style="font-size:22px;font-weight:800;margin:0 0 4px;font-variant-numeric:tabular-nums;">¥59.40<small style="font-size:12px;font-weight:500;color:var(--text-muted);"> / 1 社</small></p>
+ <p style="font-size:13px;color:var(--text-muted);margin:0;line-height:1.55;">18 req × ¥3.30。法人番号 1 つで法人同定 + invoice + 採択 + 行政処分 + known_gaps を bundle。</p>
+ </div>
+ <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:16px 18px;background:var(--bg,#fff);">
+ <p style="font-size:13px;font-weight:700;margin:0 0 6px;color:var(--text-muted);">顧問先月次レビュー (100 社)</p>
+ <p style="font-size:22px;font-weight:800;margin:0 0 4px;font-variant-numeric:tabular-nums;">¥5,940<small style="font-size:12px;font-weight:500;color:var(--text-muted);"> / 月</small></p>
+ <p style="font-size:13px;color:var(--text-muted);margin:0;line-height:1.55;">1,800 req × ¥3.30。<code>X-Client-Tag</code> で顧問先別原価集計、税理士法 §52 fence 自動。</p>
+ </div>
+ <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:16px 18px;background:var(--bg,#fff);">
+ <p style="font-size:13px;font-weight:700;margin:0 0 6px;color:var(--text-muted);">BPO 1000 案件 triage</p>
+ <p style="font-size:22px;font-weight:800;margin:0 0 4px;font-variant-numeric:tabular-nums;">¥52,800<small style="font-size:12px;font-weight:500;color:var(--text-muted);"> / 月</small></p>
+ <p style="font-size:13px;color:var(--text-muted);margin:0;line-height:1.55;">16,000 req × ¥3.30。1 案件 ¥52.80 で公的 DD layer。 <code>Idempotency-Key</code> で再送安全。</p>
+ </div>
+ <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:16px 18px;background:var(--bg,#fff);">
+ <p style="font-size:13px;font-weight:700;margin:0 0 6px;color:var(--text-muted);">公開情報 DD (200 社)</p>
+ <p style="font-size:22px;font-weight:800;margin:0 0 4px;font-variant-numeric:tabular-nums;">¥31,020<small style="font-size:12px;font-weight:500;color:var(--text-muted);"> / 月</small></p>
+ <p style="font-size:13px;color:var(--text-muted);margin:0;line-height:1.55;">9,400 req × ¥3.30。M&amp;A advisor の DD deck assembly、弁護士法 §72 fence 同梱。</p>
+ </div>
+ <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:16px 18px;background:var(--bg,#fff);">
+ <p style="font-size:13px;font-weight:700;margin:0 0 6px;color:var(--text-muted);">相談前プレ診断 (50 件)</p>
+ <p style="font-size:22px;font-weight:800;margin:0 0 4px;font-variant-numeric:tabular-nums;">¥1,320<small style="font-size:12px;font-weight:500;color:var(--text-muted);"> / 月</small></p>
+ <p style="font-size:13px;color:var(--text-muted);margin:0;line-height:1.55;">400 req × ¥3.30。事前リサーチ + 候補制度 + 排他確認を AI agent から自動。</p>
+ </div>
+ </div>
+ <p style="margin:14px 0 0;font-size:12px;color:var(--text-muted);line-height:1.6;">
+ 詳細 ROI 倍率は <a href="/docs/use_cases/by_industry_2026_05_11.md">業種別 use case (税理士・会計士・行政書士・診断士・M&amp;A・信金)</a> ・課金根拠は <a href="/docs/pricing/justification_2026_05_11.md">justification</a>。
+ </p>
+ </section>
+
+ <section aria-labelledby="roi-vs-websearch-title" style="margin-top:40px;">
+ <h2 id="roi-vs-websearch-title" class="section-title" style="font-size:22px;">jpcite vs web search — 構造比較</h2>
+ <p style="font-size:15px;line-height:1.7;margin:0 0 16px;color:var(--text-muted);max-width:820px;">
+ AI agent から web search で公的制度を扱うと、aggregator 孫引き・fetched_at 不明・業法 fence なしで業務利用に耐えません。jpcite ¥3/req は出典固定 + 業法 fence + 監査対応の対価です。
+ </p>
+ <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;overflow:hidden;max-width:1000px;background:var(--bg,#fff);">
+ <table style="width:100%;border-collapse:collapse;font-size:14px;">
+ <thead>
+ <tr style="background:var(--bg-alt,#fafaf9);">
+ <th scope="col" style="text-align:left;padding:12px 14px;font-weight:600;border-bottom:1px solid var(--border,#e5e7eb);">軸</th>
+ <th scope="col" style="text-align:left;padding:12px 14px;font-weight:600;border-bottom:1px solid var(--border,#e5e7eb);">web search (Perplexity / Tavily / Exa / 一般 SERP)</th>
+ <th scope="col" style="text-align:left;padding:12px 14px;font-weight:600;border-bottom:1px solid var(--border,#e5e7eb);">jpcite (¥3/req)</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <th scope="row" style="text-align:left;padding:12px 14px;font-weight:600;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);">出典 URL</th>
+ <td style="padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);line-height:1.65;">aggregator (noukaweb / hojyokin-portal / biz.stayway) 経由が上位、孫引きで旧版要件ミラー</td>
+ <td style="padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);line-height:1.65;">省庁・自治体・公庫の一次 URL に直リンク。aggregator は <code>source_url</code> 登録 ban</td>
+ </tr>
+ <tr>
+ <th scope="row" style="text-align:left;padding:12px 14px;font-weight:600;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);">取得時刻</th>
+ <td style="padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);line-height:1.65;">HTML に fetched_at なし。サイト自己申告「最終更新」のみ</td>
+ <td style="padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);line-height:1.65;">全 response に <code>source_fetched_at</code>、優先出典の再取得中央値 約 7 日</td>
+ </tr>
+ <tr>
+ <th scope="row" style="text-align:left;padding:12px 14px;font-weight:600;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);">業法 fence</th>
+ <td style="padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);line-height:1.65;">なし — 個別税務助言 / 監査意見 / 申請書面 / 登記代理を平気で生成 → 業法抵触リスク</td>
+ <td style="padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);line-height:1.65;">8 業法 fence (税理士§52 / 弁護士§72 / 公認会計士§47条の2 / 司法書士§3 / 行政書士§1 / 社労士§27 / 中小企業診断士登録規則 / 弁理士§75) を envelope 自動付与</td>
+ </tr>
+ <tr>
+ <th scope="row" style="text-align:left;padding:12px 14px;font-weight:600;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);">排他 / 前提ルール</th>
+ <td style="padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);line-height:1.65;">LLM 推論で「同時利用できそう」を hallucinate</td>
+ <td style="padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);line-height:1.65;">181 ルール (排他 125 + 前提 17 + 絶対 15 + その他 24) を機械照合、AI 推論不要</td>
+ </tr>
+ <tr>
+ <th scope="row" style="text-align:left;padding:12px 14px;font-weight:600;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);">監査 / 顧問先説明</th>
+ <td style="padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);line-height:1.65;">URL のみ、content_hash / corpus_snapshot_id なし</td>
+ <td style="padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);line-height:1.65;"><code>content_hash</code> + <code>corpus_snapshot_id</code> + Merkle proof で再現可能性</td>
+ </tr>
+ <tr>
+ <th scope="row" style="text-align:left;padding:12px 14px;font-weight:600;vertical-align:top;">100 req コスト</th>
+ <td style="padding:12px 14px;vertical-align:top;line-height:1.65;">¥10-100 程度の LLM token 課金。安いが取りこぼし確率高、顧問契約解除 ¥36-120万/年 リスク</td>
+ <td style="padding:12px 14px;vertical-align:top;line-height:1.65;">¥330 (税込)。取りこぼし回避で 1,000-3,600 倍 ROI</td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ </section>
+
+ <section aria-labelledby="automation-pricing-title" style="margin-top:40px;">
 	 <h2 id="automation-pricing-title" class="section-title" style="font-size:22px;">成果物の反復運用では、先に上限を決める</h2>
 	 <p style="font-size:15px;line-height:1.7;margin:0 0 16px;color:var(--text-muted);max-width:820px;">
 	 AI agent / BPO / 士業システムで反復利用する場合は、 会社フォルダ、 顧問先レビュー、 申請戦略パック、 公開情報DDパックごとに、 実行前見積もり、 月次上限、 実行単位の予算、 顧客別タグを設定してください。 価格は通常 1 API/MCP 呼び出し = 1 billable unit = 税込 ¥3.30 です。

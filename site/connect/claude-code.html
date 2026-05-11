@@ -34,7 +34,7 @@
     {"@type": "HowToStep", "name": "uvx install", "text": "curl -LsSf https://astral.sh/uv/install.sh | sh"},
     {"@type": "HowToStep", "name": "jpcite を MCP server に登録", "text": "claude mcp add jpcite -- uvx autonomath-mcp"},
     {"@type": "HowToStep", "name": "接続確認", "text": "claude mcp list | grep jpcite"},
-    {"@type": "HowToStep", "name": "(任意) API key を設定", "text": "export JPCITE_API_KEY=sk_... (/pricing.html#api-paid で発行)"}
+    {"@type": "HowToStep", "name": "(任意) API key を設定", "text": "export JPCITE_API_KEY=jc_... (/pricing.html#api-paid で発行、新規は jc_ プレフィクス、旧 sk_/am_ も互換)"}
   ]
 }
 </script>
@@ -144,7 +144,7 @@
       <li><strong>uvx をインストール</strong>: <code>curl -LsSf https://astral.sh/uv/install.sh | sh</code> を実行し、シェルを再起動。</li>
       <li><strong>jpcite を MCP server に登録</strong>: <code>claude mcp add jpcite -- uvx autonomath-mcp</code> (PyPI 名は legacy 維持で <code>autonomath-mcp</code>、ブランドは jpcite)。</li>
       <li><strong>接続確認</strong>: <code>claude mcp list | grep jpcite</code> が緑表示なら成功。</li>
-      <li><strong>(任意) API key を設定</strong>: 3 req/日上限を外す場合は <code>export JPCITE_API_KEY=sk_...</code>。発行は <a href="/pricing.html#api-paid">/pricing.html#api-paid</a> から。</li>
+      <li><strong>(任意) API key を設定</strong>: 3 req/日上限を外す場合は <code>export JPCITE_API_KEY=jc_...</code>。発行は <a href="/pricing.html#api-paid">/pricing.html#api-paid</a> から (新規は <code>jc_</code> プレフィクス、既発行の <code>sk_</code> / <code>am_</code> も継続利用可)。</li>
       <li><strong>動作確認</strong>: 次節の verification コマンドで 139 tool が見えるか確認。</li>
     </ol>
   </section>
@@ -158,7 +158,7 @@
       "command": "uvx",
       "args": ["autonomath-mcp"],
       "env": {
-        "JPCITE_API_KEY": "sk_xxxxx"
+        "JPCITE_API_KEY": "jc_xxxxx"
       }
     }
   }
@@ -171,12 +171,17 @@
     <p>Claude Code セッション内で <code>/mcp</code> コマンドを実行 (または下記 CLI) で <code>jpcite</code> が緑 dot で表示され、tools 139 件が読まれていれば成功。</p>
 <pre><code aria-label="動作確認コマンド">claude mcp list   # jpcite が「Connected」表示</code></pre>
     <p>期待値: <code>jpcite: uvx autonomath-mcp - ✓ Connected</code> (default gates 有効時 tools=139。<code>AUTONOMATH_36_KYOTEI_ENABLED=false</code> がデフォルトで、36協定 render tools は含まれません)。</p>
+    <p>REST 直叩きで疎通確認する場合は <code>-G --data-urlencode</code> を必ず使うこと。日本語 query を URL に直接埋めると HTTP リクエスト行が壊れ、API は <code>{"error":{"code":"bad_request",...,"hint":"Use --data-urlencode for non-ASCII query params..."}}</code> を返します。</p>
+<pre><code aria-label="REST 動作確認 (curl)">curl -G "https://api.jpcite.com/v1/programs/search" \
+  --data-urlencode "q=補助金" \
+  --data-urlencode "prefecture=東京都" \
+  -H "X-API-Key: ${JPCITE_API_KEY:-}"</code></pre>
   </section>
 
   <section>
     <h2>FAQ</h2>
     <details><summary>anonymous と paid の違いは?</summary><p>anon は IP ベースで 3 req/日 (AnonIpLimit)、API key 無し。paid は ¥3/req metered で上限なし、<code>JPCITE_API_KEY</code> 経由でカウント。</p></details>
-    <details><summary>API key はどう発行する?</summary><p><a href="/pricing.html#api-paid">/pricing.html#api-paid</a> から Stripe Checkout (consent は <code>custom_text.submit.message</code> で表示) で発行。発行直後にダッシュボードで <code>sk_...</code> を表示。</p></details>
+    <details><summary>API key はどう発行する?</summary><p><a href="/pricing.html#api-paid">/pricing.html#api-paid</a> から Stripe Checkout (consent は <code>custom_text.submit.message</code> で表示) で発行。発行直後にダッシュボードで <code>jc_...</code> を表示 (新規は <code>jc_</code> プレフィクス、既発行の <code>sk_</code> / <code>am_</code> キーも互換で valid のまま)。</p></details>
     <details><summary>7 業法 fence とは?</summary><p>jpcite は税理士法§52・弁護士法§72 等の独占業務に抵触する個別助言を返しません。<a href="/legal-fence.html">/legal-fence.html</a> 参照。</p></details>
   </section>
 </main>
