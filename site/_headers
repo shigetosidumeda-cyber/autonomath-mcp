@@ -352,3 +352,28 @@
 /sitemap-llms.xml
   Content-Type: application/xml; charset=utf-8
   Cache-Control: public, max-age=3600
+
+# ------------------------------------------------------------------
+# Wave 24 (2026-05-12) — CDN cache strategy hot-path optimization.
+# ------------------------------------------------------------------
+# /v1/programs/* responses are proxied through functions/api_proxy.ts.
+# The upstream FastAPI emits its own cache-control on 200 results
+# (s-maxage=60), but Cloudflare Pages does not honor that without an
+# explicit edge directive when the response is routed through a Pages
+# Function. The headers here ensure /api/programs/* still hits the
+# CF edge cache for 60s, which is the practical max for an FTS search
+# surface (programs corpus is regenerated nightly; 60s cache eats >95%
+# of duplicate query bursts without serving truly-stale results).
+/api/programs/*
+  Cache-Control: public, max-age=60, s-maxage=60
+  CDN-Cache-Control: public, max-age=60
+  Vary: Accept, Authorization, X-API-Key
+
+# Sitemap XML — 86400s edge cache.
+# Sitemaps are regenerated on every deploy and never change between
+# deploys; a 1-day cache cuts crawler bandwidth without staleness.
+# Lifts the edge cache to 24h while keeping browser revalidation at 1h.
+/sitemap-*.xml
+  Content-Type: application/xml; charset=utf-8
+  Cache-Control: public, max-age=3600, s-maxage=86400
+  CDN-Cache-Control: public, max-age=86400

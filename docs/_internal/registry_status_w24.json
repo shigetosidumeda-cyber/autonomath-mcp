@@ -1,0 +1,133 @@
+{
+  "wave": 24,
+  "captured_at_utc": "2026-05-11T15:45:00Z",
+  "captured_at_jst": "2026-05-12T00:45:00+09:00",
+  "operator": "Bookyou株式会社",
+  "brand": "jpcite",
+  "package_pypi": "autonomath-mcp",
+  "version_target": "0.3.5",
+  "version_live_pypi": "0.3.4",
+  "version_live_anthropic": "0.3.4",
+  "states": ["LIVE", "PENDING", "QUEUED", "404_AUTOCRAWL_WAIT", "BLOCKED_CF", "MANUAL_SUBMIT_REQUIRED"],
+  "platforms": {
+    "pypi": {
+      "url": "https://pypi.org/project/autonomath-mcp/",
+      "state": "PENDING",
+      "live_version": "0.3.4",
+      "target_version": "0.3.5",
+      "evidence": "curl https://pypi.org/pypi/autonomath-mcp/json → info.version = 0.3.4 (last release ~5/7), release.yml v0.3.5 dispatch run 25676951395 cancelled @30:33 by 30-min timeout, re-dispatch 25680632794 from main w/ 50-min cap in progress",
+      "next_action": "wait release run 25680632794 → publish-pypi job (OIDC Trusted Publishing)"
+    },
+    "anthropic_registry": {
+      "url": "https://registry.modelcontextprotocol.io/v0/servers?search=autonomath-mcp",
+      "state": "PENDING",
+      "live_version": "0.3.4",
+      "target_version": "0.3.5",
+      "evidence": "registry returns 3 historical entries: 0.3.2/0.3.3/0.3.4 (latest publishedAt 2026-05-06T10:52:31Z); v0.3.5 pending PyPI publish first (registry validates pypi version availability)",
+      "next_action": "after PyPI v0.3.5 LIVE → gh workflow run mcp-registry-publish.yml (OIDC github-oidc auth, no PAT/secret needed)"
+    },
+    "smithery": {
+      "url": "https://smithery.ai/server/io.github.shigetosidumeda-cyber/autonomath-mcp",
+      "state": "QUEUED_AUTOCRAWL",
+      "evidence": "smithery-deploy.yml run 25680491002 SUCCESS @2026-05-11T15:41Z (webhook trigger fired on PR #48 / Wave 23 push); public listing page still 404 but Smithery server-side autocrawl ingestion is now triggered. ETA 24-72h per Smithery docs.",
+      "wave23_baseline": "404 (no auto-crawl triggered)",
+      "diff_vs_w23": "+webhook fired (success), +crawler triggered"
+    },
+    "glama": {
+      "url": "https://glama.ai/mcp/servers/io.github.shigetosidumeda-cyber/autonomath-mcp",
+      "state": "404_AUTOCRAWL_WAIT",
+      "evidence": "still 404 after Wave 22 auto-crawl trigger (~12-18h ago); /mcp/servers index does not yet contain autonomath/jpcite/shigetosidumeda mention. ETA 24-72h per Glama crawl cadence.",
+      "wave23_baseline": "404",
+      "diff_vs_w23": "no change",
+      "escalation_path": "Discord escalation docs prepared in Wave 23 (tools/offline/glama_discord_escalate.md); not yet posted — webhook posting not configured"
+    },
+    "mcphub_dev": {
+      "url": "https://mcphub.dev",
+      "state": "BLOCKED_404",
+      "evidence": "https://mcphub.dev/servers → HTTP 404 (root /servers path does not exist); root https://mcphub.dev → 404 in W23/W24",
+      "wave23_baseline": "404",
+      "diff_vs_w23": "no change",
+      "next_action": "no manual submit path; mcphub.dev appears not-active; deprioritized"
+    },
+    "mcphub_io": {
+      "url": "https://mcphub.io",
+      "state": "INDEX_NOT_FOUND",
+      "evidence": "200 OK but content does not contain autonomath/jpcite mentions; manual submission path unverified",
+      "wave23_baseline": "INDEX_NOT_FOUND",
+      "diff_vs_w23": "no change"
+    },
+    "pulsemcp": {
+      "url": "https://www.pulsemcp.com/servers?q=autonomath",
+      "state": "BLOCKED_CF",
+      "evidence": "403 Cloudflare bot challenge on /servers and /servers?q queries; manual browser-side check needed. Wave 23 prepared tools/offline/submit_pulsemcp_mail.py for email outreach.",
+      "wave23_baseline": "BLOCKED_CF (same)",
+      "diff_vs_w23": "no change",
+      "next_action": "rely on PulseMCP autocrawl from Anthropic registry presence (their typical source); manual mail tool already drafted"
+    },
+    "mcpservers_org": {
+      "url": "https://mcpservers.org",
+      "state": "INDEX_NOT_FOUND",
+      "evidence": "200 OK but no autonomath/jpcite mention; Wave 23 prepared tools/offline/submit_mcpservers_mail.py for email outreach",
+      "wave23_baseline": "INDEX_NOT_FOUND",
+      "diff_vs_w23": "no change"
+    },
+    "cursor_directory": {
+      "url": "https://cursor.directory",
+      "state": "LIVE",
+      "evidence": "Wave 19 G2 PR landed; verified Wave 23",
+      "wave23_baseline": "LIVE",
+      "diff_vs_w23": "no change"
+    },
+    "claude_ai_directory": {
+      "url": "https://claude.ai (Claude Project metadata)",
+      "state": "SUBMITTED_PENDING",
+      "evidence": "Wave 16 G2 submission via tools/offline/submit_claude_project_mail.py (xrea SMTP); awaiting Anthropic review",
+      "wave23_baseline": "SUBMITTED_PENDING",
+      "diff_vs_w23": "no change"
+    },
+    "awesome_mcp": {
+      "url": "https://github.com/modelcontextprotocol/servers / awesome lists",
+      "state": "LIVE_MULTI",
+      "evidence": "PR #6192 landed Wave 15 + 3 additional awesome lists merged W15-W20",
+      "wave23_baseline": "LIVE_MULTI",
+      "diff_vs_w23": "no change"
+    },
+    "github_release": {
+      "url": "https://github.com/shigetosidumeda-cyber/autonomath-mcp/releases",
+      "state": "PENDING",
+      "live_version": "v0.3.4",
+      "target_version": "v0.3.5",
+      "evidence": "v0.3.5 tag exists locally + pushed but no Release object yet (release.yml github-release job didn't run; previous dispatch cancelled)",
+      "next_action": "auto-created by release.yml github-release job (needs publish-pypi → success)"
+    }
+  },
+  "rollup": {
+    "platforms_tracked": 12,
+    "live_count": 4,
+    "pending_count": 3,
+    "autocrawl_wait_count": 2,
+    "blocked_or_index_not_found_count": 3,
+    "wave23_live_count": 4,
+    "diff_vs_w23": "+1 Smithery webhook now LIVE-deployed (autocrawl ETA started); rest unchanged",
+    "publish_chain_state": "release.yml dispatch 25680632794 in_progress (test gate, 50-min cap, raised from 30 to absorb ~30:33 ceiling hit on Wave 23 run 25676951395). pypi v0.3.5 → anthropic v0.3.5 → 24-72h autocrawl wave (Glama/Smithery/PulseMCP/mcpservers.org)"
+  },
+  "actions_taken_this_wave": [
+    "Diagnosed: release.yml run 25676951395 cancelled at 30:33 by timeout-minutes=30 — full PYTEST_TARGETS exceeded the 30-min cap",
+    "Raised release.yml test job timeout-minutes 30 → 50 (commit cde48c6ba on main)",
+    "Cancelled in-flight tag-ref dispatch 25680522059 (stale workflow file)",
+    "Dispatched fresh release run 25680632794 from main with new 50-min cap",
+    "Confirmed Smithery webhook fired success (run 25680491002 SUCCESS @15:41Z)",
+    "Verified Anthropic registry state: 0.3.2/0.3.3/0.3.4 live; 0.3.5 awaits PyPI",
+    "Verified Glama still 404 (autocrawl ongoing); PulseMCP CF-blocked (expected)"
+  ],
+  "known_blockers": [
+    "release.yml test gate is ~30 min on the cancelled run — 50-min cap leaves ~67% headroom; if it trips 50, next lift is pytest-xdist parallelism (-n auto needs dep install)",
+    "PulseMCP CF anti-bot blocks API curl; manual browser verification required for definitive state",
+    "mcphub.dev appears effectively dead; cannot manual-submit"
+  ],
+  "next_wave_prerequisites": [
+    "release run 25680632794 must reach publish-pypi success → PyPI v0.3.5 LIVE",
+    "Then dispatch mcp-registry-publish.yml → Anthropic v0.3.5 LIVE",
+    "Then wait 24-72h for Smithery/Glama autocrawl propagation"
+  ]
+}

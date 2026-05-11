@@ -112,6 +112,62 @@ cache_rules:
       browser_ttl:
         mode: respect_origin
 
+  - name: jpcite_api_programs_short_cache
+    ref: jpcite_api_programs_short_cache
+    zone: jpcite.com
+    phase: http_request_cache_settings
+    description: |
+      Wave 24 — cache /api/programs/* (Pages Function api_proxy.ts upstream)
+      for 60s at the edge to absorb FTS query bursts without serving stale
+      results past the next nightly corpus regeneration window.
+    expression: '(http.host eq "jpcite.com" and http.request.method eq "GET" and starts_with(http.request.uri.path, "/api/programs/"))'
+    action: set_cache_settings
+    enabled: true
+    action_parameters:
+      cache: true
+      edge_ttl:
+        mode: override_origin
+        default: 60
+      browser_ttl:
+        mode: respect_origin
+
+  - name: jpcite_llms_txt_cache
+    ref: jpcite_llms_txt_cache
+    zone: jpcite.com
+    phase: http_request_cache_settings
+    description: |
+      Wave 24 — long-cache the AEO landing surface (/llms.txt, /llms-full.txt)
+      at 3600s edge so AI bot crawl bursts (GPTBot / ClaudeBot / Perplexity)
+      do not re-hit origin. Regenerated nightly via scripts/regen_llms_full.py.
+    expression: '(http.host eq "jpcite.com" and http.request.method eq "GET" and (http.request.uri.path eq "/llms.txt" or http.request.uri.path eq "/llms-full.txt" or http.request.uri.path eq "/llms.en.txt" or http.request.uri.path eq "/llms-full.en.txt"))'
+    action: set_cache_settings
+    enabled: true
+    action_parameters:
+      cache: true
+      edge_ttl:
+        mode: override_origin
+        default: 3600
+      browser_ttl:
+        mode: respect_origin
+
+  - name: jpcite_sitemap_long_cache
+    ref: jpcite_sitemap_long_cache
+    zone: jpcite.com
+    phase: http_request_cache_settings
+    description: |
+      Wave 24 — 86400s edge cache for /sitemap-*.xml. Sitemaps regenerate
+      only on deploy; long cache cuts crawler bandwidth without staleness.
+    expression: '(http.host eq "jpcite.com" and http.request.method eq "GET" and starts_with(http.request.uri.path, "/sitemap-") and ends_with(http.request.uri.path, ".xml"))'
+    action: set_cache_settings
+    enabled: true
+    action_parameters:
+      cache: true
+      edge_ttl:
+        mode: override_origin
+        default: 86400
+      browser_ttl:
+        mode: respect_origin
+
 # --------------------------------------------------------------------
 # WAF Custom Rules (block / challenge based on request shape)
 # --------------------------------------------------------------------
@@ -215,6 +271,57 @@ custom_rules:
       (http.request.uri.path matches "^/v1/admin/")
       and (not ip.src in $autonomath_operator_ips)
     action: block
+
+  - name: jpcite_ai_bot_allowlist
+    ref: jpcite_ai_bot_allowlist
+    description: |
+      Wave 24 — AI answer-engine crawler allowlist. Bypass Bot Fight Mode
+      and managed WAF challenges for the 20 AI bot UAs that jpcite welcomes
+      (GPTBot / ClaudeBot / PerplexityBot / Google-Extended / etc.).
+
+      Without this rule, Cloudflare's Bot Fight Mode JS-challenges these
+      UAs, the crawlers fail the challenge (they do not run JS), and the
+      AEO funnel (LLM citation as organic acquisition substrate) collapses.
+
+      The companion script is scripts/ops/cf_waf_ai_bot_allowlist.py — it
+      can apply / re-apply this rule programmatically. The UA list MUST
+      stay in sync between this YAML, the Python script, and
+      functions/aeo_redirect.ts AI_BOT_UA_SUBSTRINGS.
+    expression: |
+      lower(http.user_agent) contains "gptbot" or
+      lower(http.user_agent) contains "chatgpt-user" or
+      lower(http.user_agent) contains "oai-searchbot" or
+      lower(http.user_agent) contains "claudebot" or
+      lower(http.user_agent) contains "claude-web" or
+      lower(http.user_agent) contains "anthropic-ai" or
+      lower(http.user_agent) contains "perplexitybot" or
+      lower(http.user_agent) contains "perplexity-user" or
+      lower(http.user_agent) contains "google-extended" or
+      lower(http.user_agent) contains "googleother" or
+      lower(http.user_agent) contains "bingbot-ai" or
+      lower(http.user_agent) contains "youbot" or
+      lower(http.user_agent) contains "amazonbot" or
+      lower(http.user_agent) contains "bytespider" or
+      lower(http.user_agent) contains "ccbot" or
+      lower(http.user_agent) contains "diffbot" or
+      lower(http.user_agent) contains "facebookbot" or
+      lower(http.user_agent) contains "applebot-extended" or
+      lower(http.user_agent) contains "cohere-ai" or
+      lower(http.user_agent) contains "mistral"
+    action: skip
+    action_parameters:
+      products:
+        - waf
+        - bic
+        - uaBlock
+        - zoneLockdown
+        - hot
+        - securityLevel
+      phases:
+        - http_ratelimit
+        - http_request_firewall_managed
+        - http_request_sbfm
+      ruleset: current
 
 # --------------------------------------------------------------------
 # Rate Limiting Rules (Cloudflare-side, per-zone)
