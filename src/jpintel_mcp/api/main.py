@@ -84,6 +84,7 @@ from jpintel_mcp.api.exclusions import router as exclusions_router
 from jpintel_mcp.api.export import router as export_router
 from jpintel_mcp.api.extended_corpus import router as extended_corpus_router
 from jpintel_mcp.api.feedback import router as feedback_router
+from jpintel_mcp.api.foundation import router as foundation_router  # Wave 43.1.3
 from jpintel_mcp.api.precompute_axis4 import router as precompute_axis4_router  # Wave 34 Axis 4
 from jpintel_mcp.api.jpo import router as jpo_router  # Wave 31 Axis 1b
 from jpintel_mcp.api.edinet import router as edinet_router  # Wave 31 Axis 1c
@@ -105,6 +106,7 @@ from jpintel_mcp.api.laws import router as laws_router
 from jpintel_mcp.api.legal import router as legal_router
 from jpintel_mcp.api.loan_programs import router as loan_programs_router
 from jpintel_mcp.api.logging_config import setup_logging
+from jpintel_mcp.api.programs_overseas_v2 import router as programs_overseas_v2_router
 from jpintel_mcp.api.ma_dd import (
     router as ma_dd_router,
 )
@@ -144,6 +146,9 @@ from jpintel_mcp.api.openapi_agent import build_agent_openapi_schema
 from jpintel_mcp.api.policy_upstream import router as policy_upstream_router
 from jpintel_mcp.api.prescreen import router as prescreen_router
 from jpintel_mcp.api.programs import router as programs_router
+from jpintel_mcp.api.programs_municipality_v2 import (
+    router as programs_municipality_v2_router,
+)  # Wave 43.1.1
 from jpintel_mcp.api.regions import router as regions_router
 from jpintel_mcp.api.response_sanitizer import ResponseSanitizerMiddleware
 from jpintel_mcp.api.saved_searches import router as saved_searches_router
@@ -2049,6 +2054,12 @@ def create_app() -> FastAPI:
     # NPO / 一般社団 / 学校 / 医療 / 個人事業主 etc. Pure SQLite + Python — NO LLM.
     # Inherits the same 3/日 anon-IP cap as programs_router.
     app.include_router(corporate_form_router, dependencies=[AnonIpLimitDep])
+    # Wave 43.1.1 — 市町村 v2 bridge. Registered BEFORE programs_router so the
+    # specific /v1/programs/by_municipality/{code} + /v1/programs/by_prefecture/{code}
+    # paths resolve before the generic /v1/programs/{unified_id} catcher.
+    app.include_router(
+        programs_municipality_v2_router, dependencies=[AnonIpLimitDep]
+    )
     app.include_router(programs_router, dependencies=[AnonIpLimitDep])
     # R8 (2026-05-07): am_compat_matrix 43,966 rows full-surface.
     # POST /v1/programs/portfolio_optimize + GET /v1/programs/{a}/compatibility/{b}.
@@ -2089,6 +2100,9 @@ def create_app() -> FastAPI:
     app.include_router(case_cohort_match_router, dependencies=[AnonIpLimitDep])
     app.include_router(benchmark_router, dependencies=[AnonIpLimitDep])
     app.include_router(loan_programs_router, dependencies=[AnonIpLimitDep])
+    # 2026-05-12 Wave 43.1.2: foreign FDI cohort — JETRO / METI / JBIC / NEXI
+    # overseas program surface, mounted at /v1/programs/overseas/*.
+    app.include_router(programs_overseas_v2_router, dependencies=[AnonIpLimitDep])
     # 2026-05-07 (R8): 災害復興 × 特例制度 surface — three endpoints under
     # /v1/disaster/* projecting the existing programs corpus through a
     # disaster-keyword + prefecture lens. No new schema; pure read.
@@ -2471,6 +2485,11 @@ def create_app() -> FastAPI:
     # 3 req/日 IP quota.
     app.include_router(dashboard_router)
     app.include_router(feedback_router)
+    # Wave 43.1.3 — 民間助成財団 grant program surface (公益財団 / 一般財団 /
+    # NPO / 業界団体). Sensitive (税理士法 §2 / 行政書士法 §1 / 弁護士法 §72) —
+    # each handler stamps `_disclaimer` envelope key. AnonIpLimitDep applied
+    # so the public 3 req/日 IP quota fences anonymous traffic.
+    app.include_router(foundation_router, dependencies=[AnonIpLimitDep])
     # DEEP-28 + DEEP-31 customer contribution. Anonymous-accepting (no
     # API key required); rate-limited per-IP 5 / 24h inside the handler
     # PLUS the AnonIpLimitDep daily 3 cap. Server-side scrubber rejects
