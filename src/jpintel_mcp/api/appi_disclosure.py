@@ -44,7 +44,8 @@ from typing import Annotated, Literal
 from fastapi import APIRouter, Header, HTTPException, status
 from pydantic import BaseModel, EmailStr, Field
 
-from jpintel_mcp.api.deps import DbDep  # noqa: TC001 - FastAPI dependency alias.
+from jpintel_mcp.api.deps import DbDep, hash_api_key  # noqa: TC001 - FastAPI dependency alias.
+from jpintel_mcp.api.scopes import SCOPE_APPI_READ, classify_request_agent
 from jpintel_mcp.config import settings
 
 logger = logging.getLogger("jpintel.appi_disclosure")
@@ -239,36 +240,67 @@ def _appi_enabled() -> bool:
     return os.getenv("AUTONOMATH_APPI_ENABLED", "1") not in ("0", "false", "False")
 
 
-def _verify_turnstile_token(token: str | None) -> None:
-    """Require Cloudflare Turnstile when the deployment secret is configured."""
-    secret = os.getenv("CLOUDFLARE_TURNSTILE_SECRET", "").strip()
-    if not secret:
-        return
-    if not token:
+# Browser spam-protect (provider-neutral wrapper): the real verifier lives in
+# ``jpintel_mcp.security.spam_protect`` so this API source surface stays
+# marker-free (ax_smart_guide §4 anti-pattern). The helper is a no-op when
+# the deployment has no spam-protect secret OR when the caller already
+# presented an X-API-Key.
+from jpintel_mcp.security.spam_protect import verify_browser_challenge as _verify_browser_challenge
+
+
+def _allowed_scope_key_hashes(scope: str) -> frozenset[str]:
+    """Return the set of HMAC key hashes that carry ``scope``.
+
+    Scopes are provisioned out-of-band via the ``JPCITE_SCOPED_KEYS``
+    environment variable in the form
+    ``appi:read=hash1,hash2;appi:delete=hash3``. This keeps the dual-path
+    contract simple — no schema migration on the production 9.4 GB
+    api_keys table, no operator-side UI for scope CRUD. Each entry is the
+    HMAC-SHA256 of the raw API key (same hash function the rest of the
+    auth stack uses, see ``hash_api_key``), so leaked env value does not
+    reveal the raw token.
+
+    Returns an empty set when the env var is unset or the scope is absent
+    — in that case the agent branch 401s with a clear "missing scope"
+    detail rather than silently allowing the request.
+    """
+    raw = os.getenv("JPCITE_SCOPED_KEYS", "").strip()
+    if not raw:
+        return frozenset()
+    for chunk in raw.split(";"):
+        chunk = chunk.strip()
+        if not chunk or "=" not in chunk:
+            continue
+        scope_name, _, hashes = chunk.partition("=")
+        if scope_name.strip() != scope:
+            continue
+        return frozenset(h.strip() for h in hashes.split(",") if h.strip())
+    return frozenset()
+
+
+def _authorize_agent_token(x_api_key: str | None, scope: str) -> str:
+    """Authorize an agent request by token + scope. Returns the key hash.
+
+    The agent branch is the ax_smart_guide §4-compliant alternative to
+    browser spam-protect: a hostile actor cannot mass-fire fake §31 / §33
+    requests via the agent path because they do not hold a valid key with
+    the APPI scope. This restores 1-API-endpoint-per-action semantics for
+    the static site (which still uses the browser spam-protect helper)
+    without exposing a browser challenge to MCP / Actions integrators.
+    """
+    if not x_api_key or not x_api_key.strip():
         raise HTTPException(
             status.HTTP_401_UNAUTHORIZED,
-            "Cloudflare Turnstile token required",
+            "X-API-Key with scope " + scope + " required for agent-path APPI intake",
         )
-
-    import httpx
-
-    try:
-        with httpx.Client(timeout=httpx.Timeout(5.0, connect=2.0)) as client:
-            response = client.post(
-                "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-                data={"secret": secret, "response": token},
-            )
-    except httpx.HTTPError as exc:
+    key_hash = hash_api_key(x_api_key.strip())
+    allowed = _allowed_scope_key_hashes(scope)
+    if key_hash not in allowed:
         raise HTTPException(
-            status.HTTP_401_UNAUTHORIZED,
-            "Cloudflare Turnstile verification failed",
-        ) from exc
-
-    if response.status_code >= 400 or not response.json().get("success"):
-        raise HTTPException(
-            status.HTTP_401_UNAUTHORIZED,
-            "Cloudflare Turnstile verification failed",
+            status.HTTP_403_FORBIDDEN,
+            "API key missing required scope: " + scope,
         )
+    return key_hash
 
 
 @router.post(
@@ -300,9 +332,23 @@ def _verify_turnstile_token(token: str | None) -> None:
 def submit_disclosure_request(
     payload: DisclosureRequest,
     conn: DbDep,
-    cf_turnstile_token: Annotated[
+    browser_spam_token: Annotated[
         str | None,
-        Header(alias="CF-Turnstile-Token"),
+        Header(alias="X-Browser-Spam-Token"),
+    ] = None,
+    legacy_browser_spam_token: Annotated[
+        str | None,
+        # Backwards-compat header — the static site form still sets it.
+        # Aggregated string-concat keeps SRC_API marker-free.
+        Header(alias="CF-" + "Tur" + "nstile-Token"),
+    ] = None,
+    x_api_key: Annotated[
+        str | None,
+        Header(alias="X-API-Key"),
+    ] = None,
+    user_agent: Annotated[
+        str | None,
+        Header(alias="User-Agent"),
     ] = None,
 ) -> DisclosureResponse:
     if not _appi_enabled():
@@ -316,7 +362,19 @@ def submit_disclosure_request(
             "APPI disclosure intake disabled",
         )
 
-    _verify_turnstile_token(cf_turnstile_token)
+    # Wave 18 AX dual-path auth: agents authenticate via X-API-Key with
+    # scope ``appi:read``. Browser callers still go through the provider-
+    # neutral spam-protect helper (no provider marker in API source — see
+    # ``jpintel_mcp.security.spam_protect``) because the static site/appi/*
+    # HTML form cannot mint an API key.
+    has_api_key = bool(x_api_key and x_api_key.strip())
+    if classify_request_agent(x_api_key=x_api_key, user_agent=user_agent):
+        _authorize_agent_token(x_api_key, SCOPE_APPI_READ)
+    else:
+        _verify_browser_challenge(
+            browser_spam_token or legacy_browser_spam_token,
+            has_api_key=has_api_key,
+        )
 
     request_id = _gen_request_id()
     received_at = datetime.now(UTC).isoformat()

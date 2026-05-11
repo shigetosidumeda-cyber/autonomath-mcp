@@ -713,6 +713,56 @@ def _render_metadata_panel(law: sqlite3.Row, lang: str) -> str:
     return f'<dl class="law-meta">{body}</dl>'
 
 
+def _render_cite_in_ai(law: sqlite3.Row, domain: str, slug: str, lang: str) -> str:
+    """AEO Wave 18: explicit Cite-this-in-AI block for AI agent citation.
+
+    Renders an HTML section with a copy-able Markdown citation block + the
+    canonical jpcite URL so AI agents see one obvious anchor for the fact.
+    """
+    law_name = law["canonical_name"] or ""
+    if lang == "ja":
+        page_path = f"/laws/{slug}"
+        canonical = f"https://{domain}{page_path}"
+        short = f"{domain}/laws/{slug}"
+        return (
+            '<section class="cite-this-section" aria-labelledby="cite-title">'
+            '<h2 id="cite-title">Cite this in AI / 引用</h2>'
+            '<p>AI 回答に本法令を引用させる時の canonical URL です。出典 (jpcite) の明記をお願いします。'
+            '一次資料は e-Gov 法令検索 (CC-BY 4.0)。</p>'
+            '<pre class="code-block cite-block"><code>'
+            f"&gt; {_h(law_name)} "
+            f"(出典: https://{_h(short)}、jpcite が e-Gov 一次資料を機械可読化)"
+            '</code></pre>'
+            '<p class="muted">'
+            f'<button type="button" class="copy-cite-btn" data-cite-url="{_h(canonical)}" '
+            f"onclick=\"navigator.clipboard&amp;&amp;navigator.clipboard.writeText('{_h(canonical)}')\">"
+            'URL をコピー</button> '
+            f'<a href="{_h(canonical)}">{_h(canonical)}</a>'
+            '</p>'
+            '</section>'
+        )
+    page_path = f"/en/laws/{slug}"
+    canonical = f"https://{domain}{page_path}"
+    short = f"{domain}/en/laws/{slug}"
+    return (
+        '<section class="cite-this-section" aria-labelledby="cite-title">'
+        '<h2 id="cite-title">Cite this in AI</h2>'
+        '<p>Canonical jpcite URL to use when an AI answer references this statute. '
+        'Please attribute jpcite. Primary source is e-Gov Houreikensaku (CC-BY 4.0).</p>'
+        '<pre class="code-block cite-block"><code>'
+        f"&gt; {_h(law_name)} "
+        f"(source: https://{_h(short)} — machine-readable layer over e-Gov by jpcite)"
+        '</code></pre>'
+        '<p class="muted">'
+        f'<button type="button" class="copy-cite-btn" data-cite-url="{_h(canonical)}" '
+        f"onclick=\"navigator.clipboard&amp;&amp;navigator.clipboard.writeText('{_h(canonical)}')\">"
+        'Copy URL</button> '
+        f'<a href="{_h(canonical)}">{_h(canonical)}</a>'
+        '</p>'
+        '</section>'
+    )
+
+
 def _render_egov_attribution(law: sqlite3.Row, lang: str) -> str:
     egov_url = law["egov_url"] or ""
     if lang == "ja":
@@ -802,6 +852,7 @@ def _render_page_ja(
     related_html = _render_related_programs(related_refs, program_meta, "ja")
     metadata_html = _render_metadata_panel(law, "ja")
     attribution_html = _render_egov_attribution(law, "ja")
+    cite_in_ai_html = _render_cite_in_ai(law, domain, slug, "ja")
     hreflang_en = (
         f'<link rel="alternate" hreflang="en" href="{canonical_en_url}">' if has_en else ""
     )
@@ -857,6 +908,7 @@ def _render_page_ja(
 </section>
 {related_html}
 {attribution_html}
+{cite_in_ai_html}
 <footer class="law-footer">
 <p class="law-generated"><time datetime="{generated_at}">{generated_at}</time> 時点で e-Gov 法令検索から取得した条文を表示しています。</p>
 <p class="law-license-marker">出典: e-Gov 法令検索 (デジタル庁) / CC-BY 4.0</p>
@@ -897,6 +949,7 @@ def _render_page_en(
     related_html = _render_related_programs(related_refs, program_meta, "en")
     metadata_html = _render_metadata_panel(law, "en")
     attribution_html = _render_egov_attribution(law, "en")
+    cite_in_ai_html = _render_cite_in_ai(law, domain, slug, "en")
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -950,6 +1003,7 @@ def _render_page_en(
 </section>
 {related_html}
 {attribution_html}
+{cite_in_ai_html}
 <footer class="law-footer">
 <p class="law-generated"><time datetime="{generated_at}">{generated_at}</time> snapshot from e-Gov Houreikensaku (Japan Digital Agency).</p>
 <p class="law-license-marker">Source: e-Gov Houreikensaku / CC-BY 4.0 (statute), japaneselawtranslation.go.jp / CC-BY 4.0 (English).</p>

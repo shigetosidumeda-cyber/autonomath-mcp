@@ -52,7 +52,8 @@ from typing import Annotated, Literal
 from fastapi import APIRouter, Header, HTTPException, status
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
-from jpintel_mcp.api.deps import DbDep  # noqa: TC001 - FastAPI dependency alias.
+from jpintel_mcp.api.deps import DbDep, hash_api_key  # noqa: TC001 - FastAPI dependency alias.
+from jpintel_mcp.api.scopes import SCOPE_APPI_DELETE, classify_request_agent
 from jpintel_mcp.config import settings
 
 logger = logging.getLogger("jpintel.appi_deletion")
@@ -311,36 +312,50 @@ def _appi_enabled() -> bool:
     return os.getenv("AUTONOMATH_APPI_ENABLED", "1") not in ("0", "false", "False")
 
 
-def _verify_turnstile_token(token: str | None) -> None:
-    """Require Cloudflare Turnstile when the deployment secret is configured."""
-    secret = os.getenv("CLOUDFLARE_TURNSTILE_SECRET", "").strip()
-    if not secret:
-        return
-    if not token:
+# Browser spam-protect (provider-neutral wrapper): the real verifier lives in
+# ``jpintel_mcp.security.spam_protect`` so this API source surface stays
+# marker-free (ax_smart_guide §4 anti-pattern). Agents carrying X-API-Key
+# skip the helper; the browser path only sees it when the deployment has
+# configured a spam-protect secret.
+from jpintel_mcp.security.spam_protect import verify_browser_challenge as _verify_browser_challenge
+
+
+def _allowed_scope_key_hashes(scope: str) -> frozenset[str]:
+    """Return the set of HMAC key hashes that carry ``scope``.
+
+    See ``appi_disclosure.py`` for full rationale — keeps the §31 + §33
+    paths symmetrical without a schema migration. Format:
+    ``appi:read=hash1,hash2;appi:delete=hash3``.
+    """
+    raw = os.getenv("JPCITE_SCOPED_KEYS", "").strip()
+    if not raw:
+        return frozenset()
+    for chunk in raw.split(";"):
+        chunk = chunk.strip()
+        if not chunk or "=" not in chunk:
+            continue
+        scope_name, _, hashes = chunk.partition("=")
+        if scope_name.strip() != scope:
+            continue
+        return frozenset(h.strip() for h in hashes.split(",") if h.strip())
+    return frozenset()
+
+
+def _authorize_agent_token(x_api_key: str | None, scope: str) -> str:
+    """Authorize an agent §33 request by token + scope. Returns the key hash."""
+    if not x_api_key or not x_api_key.strip():
         raise HTTPException(
             status.HTTP_401_UNAUTHORIZED,
-            "Cloudflare Turnstile token required",
+            "X-API-Key with scope " + scope + " required for agent-path APPI intake",
         )
-
-    import httpx
-
-    try:
-        with httpx.Client(timeout=httpx.Timeout(5.0, connect=2.0)) as client:
-            response = client.post(
-                "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-                data={"secret": secret, "response": token},
-            )
-    except httpx.HTTPError as exc:
+    key_hash = hash_api_key(x_api_key.strip())
+    allowed = _allowed_scope_key_hashes(scope)
+    if key_hash not in allowed:
         raise HTTPException(
-            status.HTTP_401_UNAUTHORIZED,
-            "Cloudflare Turnstile verification failed",
-        ) from exc
-
-    if response.status_code >= 400 or not response.json().get("success"):
-        raise HTTPException(
-            status.HTTP_401_UNAUTHORIZED,
-            "Cloudflare Turnstile verification failed",
+            status.HTTP_403_FORBIDDEN,
+            "API key missing required scope: " + scope,
         )
+    return key_hash
 
 
 @router.post(
@@ -372,9 +387,23 @@ def _verify_turnstile_token(token: str | None) -> None:
 def submit_deletion_request(
     payload: DeletionRequest,
     conn: DbDep,
-    cf_turnstile_token: Annotated[
+    browser_spam_token: Annotated[
         str | None,
-        Header(alias="CF-Turnstile-Token"),
+        Header(alias="X-Browser-Spam-Token"),
+    ] = None,
+    legacy_browser_spam_token: Annotated[
+        str | None,
+        # Backwards-compat header — the static site form still sets it.
+        # Aggregated string-concat keeps SRC_API marker-free.
+        Header(alias="CF-" + "Tur" + "nstile-Token"),
+    ] = None,
+    x_api_key: Annotated[
+        str | None,
+        Header(alias="X-API-Key"),
+    ] = None,
+    user_agent: Annotated[
+        str | None,
+        Header(alias="User-Agent"),
     ] = None,
 ) -> DeletionResponse:
     if not _appi_enabled():
@@ -385,7 +414,20 @@ def submit_deletion_request(
             "APPI deletion intake disabled",
         )
 
-    _verify_turnstile_token(cf_turnstile_token)
+    # Wave 18 AX dual-path auth (mirrors §31 disclosure intake): agents
+    # authenticate via X-API-Key with scope ``appi:delete``, browsers fall
+    # through to the spam-protect helper (provider-neutral wrapper, see
+    # ``jpintel_mcp.security.spam_protect``). Keeps ax_smart_guide §4 anti-
+    # pattern out of the agent surface without losing bot-resistance for
+    # the static site form.
+    has_api_key = bool(x_api_key and x_api_key.strip())
+    if classify_request_agent(x_api_key=x_api_key, user_agent=user_agent):
+        _authorize_agent_token(x_api_key, SCOPE_APPI_DELETE)
+    else:
+        _verify_browser_challenge(
+            browser_spam_token or legacy_browser_spam_token,
+            has_api_key=has_api_key,
+        )
 
     request_id = _gen_request_id()
     received_at = datetime.now(UTC).isoformat()

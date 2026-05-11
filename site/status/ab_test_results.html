@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>A/B Test Results - jpcite</title>
+<meta name="description" content="jpcite の A/B test infrastructure 結果。CF Pages Function ab_assign.ts による cookie bucket 割当 + Stripe webhook conversion trace。95% 信頼 two-proportion z-test 結果を集約。">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://jpcite.com/status/ab_test_results.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/status/ab_test_results.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/status/ab_test_results.html">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<script defer src="/assets/rum.js?v=20260511a"></script>
+
+<style>
+  :root {
+    --accent: #1e3a8a;
+    --text: #111111;
+    --text-muted: #555555;
+    --border: #e5e5e5;
+    --bg: #ffffff;
+    --bg-alt: #f7f7f8;
+    --ok: #15803d;
+    --warn: #b45309;
+    --down: #b91c1c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue",
+      "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 1000px; margin: 0 auto; padding: 40px 20px 60px; }
+  .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--text); font-weight: 700; text-decoration: none; font-size: 16px; }
+  .nav-back { color: var(--accent); font-size: 14px; text-decoration: none; }
+  .nav-back:hover { text-decoration: underline; }
+  h1 { font-size: 26px; letter-spacing: -0.01em; margin: 0 0 8px; font-weight: 800; }
+  .lead { color: var(--text-muted); margin: 0 0 24px; font-size: 14px; }
+  .updated { font-size: 12px; color: var(--text-muted); }
+  .section { border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; background: var(--bg); margin: 0 0 16px; }
+  .section h2 { font-size: 16px; font-weight: 700; margin: 0 0 12px; }
+  .section .sub { font-size: 12px; color: var(--text-muted); margin: -4px 0 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: left; }
+  th { font-weight: 600; color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+  tr:last-child td { border-bottom: none; }
+  .pill { display: inline-block; padding: 1px 8px; border-radius: 8px; font-size: 11px; font-weight: 600; }
+  .pill.ok { background: #e7f5ec; color: var(--ok); }
+  .pill.warn { background: #fef3c7; color: var(--warn); }
+  .pill.down { background: #fee2e2; color: var(--down); }
+  .empty { color: var(--text-muted); font-style: italic; text-align: center; padding: 24px 0; font-size: 13px; }
+  .lift.up { color: var(--ok); font-weight: 700; }
+  .lift.down { color: var(--down); font-weight: 700; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; background: var(--bg-alt); padding: 2px 5px; border-radius: 3px; }
+  details { margin-top: 12px; }
+  details summary { cursor: pointer; font-size: 13px; color: var(--accent); }
+  details > pre { background: var(--bg-alt); padding: 12px; border-radius: 6px; font-size: 11px; overflow-x: auto; line-height: 1.45; }
+  footer { text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 36px; padding-top: 22px; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="top-bar">
+    <a href="/" class="brand">jpcite</a>
+    <a href="/status/" class="nav-back">&larr; status index</a>
+  </div>
+
+  <h1>A/B Test Results</h1>
+  <p class="lead">
+    CF Pages Function <code>/ab/assign</code> による cookie bucket 割当 +
+    Stripe webhook の <code>POST /ab/conversion</code> trace で集約した
+    95% 信頼 two-proportion z-test の結果です。
+    cookie <code>jpcite_ab_bucket</code> は 30 日永続。
+    underpowered (n &lt; 30) は黄色表示で慎重に扱ってください。
+  </p>
+  <p class="updated">Last regen: <span id="lastUpdated">(loading)</span></p>
+
+  <section class="section">
+    <h2>Active tests</h2>
+    <p class="sub">各 test の (バケット A vs B) conversion rate と p-value。winner=&quot;none&quot; は 95% 信頼で差がない、または underpowered。</p>
+    <table>
+      <thead>
+        <tr>
+          <th>test_id</th>
+          <th>event</th>
+          <th>n_a / n_b</th>
+          <th>rate_a / rate_b</th>
+          <th>lift</th>
+          <th>p-value</th>
+          <th>winner</th>
+        </tr>
+      </thead>
+      <tbody id="resultsTable">
+        <tr><td colspan="7" class="empty">(loading…)</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section">
+    <h2>Operator how-to</h2>
+    <p class="sub">新しい A/B テストを追加する手順 (solo + zero-touch ops)</p>
+    <ol style="font-size: 13px; line-height: 1.8;">
+      <li><code>functions/ab_assign.ts</code> の <code>KNOWN_TESTS</code> に test_id を追加 (例: <code>"hero_v2"</code>)。</li>
+      <li>landing ページ側で <code>fetch('/ab/assign?test=hero_v2')</code> し、返却 bucket で variant を出し分け。</li>
+      <li>Stripe webhook で <code>POST /ab/conversion</code> に <code>{ test_id, event, value }</code> を送る (cookie は自動)。</li>
+      <li><code>scripts/ops/ab_test_results.py</code> を cron で毎日実行 (本ページが自動更新)。</li>
+      <li>95% 信頼で winner が出たら旧 variant をリポジトリから削除し、新 variant 一本化。</li>
+    </ol>
+  </section>
+
+  <section class="section">
+    <h2>Data source</h2>
+    <p class="sub">エージェントは JSON を直接 fetch してください。</p>
+    <table>
+      <tbody>
+        <tr><td>aggregated results</td><td><code>/status/ab_test_results.json</code></td></tr>
+        <tr><td>warehouse (raw events)</td><td><code>analytics/ab_conversions/*.jsonl</code> (operator-only)</td></tr>
+        <tr><td>CF Pages Function</td><td><code>/ab/assign</code> · <code>/ab/conversion</code></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <footer>
+    <p>jpcite by Bookyou株式会社 (T8010001213708) · <a href="/about" style="color:var(--accent);text-decoration:none;">About</a></p>
+  </footer>
+</div>
+
+<script id="ld-summary" type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "jpcite A/B test results (95% confidence z-test)",
+  "description": "Conversion-rate two-proportion z-test results for active A/B tests on jpcite. Updated daily. Cookie-based bucket assignment via CF Pages Function ab_assign.ts; Stripe webhook drives conversion events.",
+  "url": "https://jpcite.com/status/ab_test_results.html",
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "taxID": "T8010001213708",
+    "url": "https://jpcite.com"
+  },
+  "distribution": [
+    {"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": "https://jpcite.com/status/ab_test_results.json"}
+  ],
+  "keywords": ["ab test", "conversion rate", "two-proportion z-test", "jpcite", "experimentation"]
+}
+</script>
+
+<script>
+(function () {
+  "use strict";
+  function pct(v) {
+    if (v == null) return "—";
+    return (v * 100).toFixed(2) + "%";
+  }
+  function num(v) {
+    if (v == null) return "—";
+    return typeof v === "number" ? v.toLocaleString("ja-JP") : v;
+  }
+  function pValue(v) {
+    if (v == null) return "—";
+    if (v < 0.0001) return "<0.0001";
+    return v.toFixed(4);
+  }
+  function winnerPill(w, sig) {
+    if (sig === "underpowered") return '<span class="pill warn">underpowered</span>';
+    if (w === "a") return '<span class="pill ok">a wins</span>';
+    if (w === "b") return '<span class="pill ok">b wins</span>';
+    return '<span class="pill down">no significant winner</span>';
+  }
+  function liftCell(r) {
+    if (r.rate_a == null || r.rate_b == null) return "—";
+    var lift = r.rate_lift_pct;
+    if (lift == null) return "—";
+    var cls = lift > 0 ? "lift up" : (lift < 0 ? "lift down" : "");
+    return '<span class="' + cls + '">' + (lift > 0 ? "+" : "") + lift.toFixed(2) + ' pp</span>';
+  }
+
+  function render(data) {
+    var tbody = document.getElementById("resultsTable");
+    if (!tbody) return;
+    var tests = data.tests || {};
+    var rows = [];
+    Object.keys(tests).sort().forEach(function (tid) {
+      var events = (tests[tid] && tests[tid].events) || {};
+      Object.keys(events).sort().forEach(function (e) {
+        var r = events[e];
+        rows.push(
+          "<tr><td><code>" + tid + "</code></td>"
+          + "<td>" + e + "</td>"
+          + "<td>" + num(r.n_a) + " / " + num(r.n_b) + "</td>"
+          + "<td>" + pct(r.rate_a) + " / " + pct(r.rate_b) + "</td>"
+          + "<td>" + liftCell(r) + "</td>"
+          + "<td>" + pValue(r.p_value) + "</td>"
+          + "<td>" + winnerPill(r.winner, r.significant_95pct) + "</td></tr>"
+        );
+      });
+    });
+    if (rows.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" class="empty">(no active tests yet — first conversion pending)</td></tr>';
+    } else {
+      tbody.innerHTML = rows.join("");
+    }
+  }
+
+  function bootstrap() {
+    fetch("/status/ab_test_results.json", { credentials: "omit" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (!data) return;
+        var el = document.getElementById("lastUpdated");
+        if (el) el.textContent = data.generated_at || "—";
+        render(data);
+      })
+      .catch(function () { /* tolerate */ });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", bootstrap);
+  } else {
+    bootstrap();
+  }
+})();
+</script>
+</body>
+</html>

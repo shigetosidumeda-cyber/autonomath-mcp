@@ -62,6 +62,10 @@ KNOWN_BASENAMES = (
     "sitemap-qa.xml",
     "sitemap-enforcement.xml",
     "sitemap-cities.xml",
+    # Wave 18 B6: GEO substrate (facts_registry JSON light + full) surfaced
+    # as a sitemap shard so AI bots discover the registry without scraping
+    # 24k+ per-entity HTML pages.
+    "sitemap-facts.xml",
     "docs/sitemap.xml",
 )
 

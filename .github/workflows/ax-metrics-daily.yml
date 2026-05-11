@@ -1,0 +1,61 @@
+name: ax-metrics-daily
+
+# Daily AX (Agent Experience) rollup for the public dashboard at
+# https://jpcite.com/status/ax_dashboard.html.
+#
+# Aggregates the 6 quantitative AX metrics (agent-traffic ratio, MCP
+# tool calls, task success rate, auth success rate, llms.txt/.md
+# request volume, agent-attributed conversion) from
+# `analytics/cf_daily.jsonl` + `analytics/cf_ai_audit_{date}.jsonl` and
+# writes the 7-day rolling series to `site/status/ax_metrics.json`.
+#
+# Runs AFTER cf-ai-audit-daily (18:30 UTC) so the per-bot per-day
+# JSONL is on disk before the aggregator runs.
+
+on:
+  schedule:
+    # 18:45 UTC == 03:45 JST. 15 min after cf-ai-audit-daily.
+    - cron: "45 18 * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: ax-metrics-daily
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  aggregate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Dry-run AX aggregator (sanity probe)
+        run: python scripts/cron/ax_metrics_aggregator.py --dry-run > /tmp/ax_metrics_preview.json
+      - name: Show preview head
+        run: head -40 /tmp/ax_metrics_preview.json
+
+      - name: Run AX aggregator
+        run: python scripts/cron/ax_metrics_aggregator.py
+
+      - name: Commit + push ax_metrics.json delta
+        run: |
+          set -euo pipefail
+          git config user.name "autonomath-analytics-bot"
+          git config user.email "info@bookyou.net"
+          git add site/status/ax_metrics.json
+          if git diff --cached --quiet; then
+            echo "No ax_metrics delta to commit."
+            exit 0
+          fi
+          DATE=$(date -u +"%Y-%m-%d")
+          git commit -m "chore(analytics): AX dashboard rollup ${DATE}"
+          git push origin HEAD:main

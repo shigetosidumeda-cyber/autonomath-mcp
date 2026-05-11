@@ -1,8 +1,9 @@
 ---
 title: CORS Setup Runbook — JPINTEL_CORS_ORIGINS
-updated: 2026-05-07
+updated: 2026-05-11
 operator_only: true
 category: secret
+audit_pillar: ax_access
 ---
 
 # CORS Setup Runbook — `JPINTEL_CORS_ORIGINS`
@@ -12,7 +13,9 @@ category: secret
 > allowlist lives on Fly and must be updated separately.
 >
 > **Owner**: 梅田茂利 / info@bookyou.net
-> **Last reviewed**: 2026-04-29 (jpcite.com launch)
+> **Last reviewed**: 2026-05-11 (Wave 18 AX Access pillar hardening)
+> **Audit hook**: AX 4-pillar (Access cell, `cors_allowlist` check) +
+> Agent Journey 6-step (Step 3 Authentication, header verification).
 
 ## What this gates
 
@@ -47,13 +50,36 @@ https://www.jpcite.com
 https://api.jpcite.com
 https://autonomath.ai
 https://www.autonomath.ai
+https://zeimu-kaikei.ai
+https://www.zeimu-kaikei.ai
+```
+
+The two `zeimu-kaikei.ai` entries are kept in the allowlist because the
+domain still resolves and 301-redirects to `jpcite.com` for SEO citation
+authority migration (6-month transition window; see
+`docs/_internal/seo_geo_strategy.md`). Once analytics confirms the bridge
+traffic has aged to ≤ 1 req/週, both entries can be removed.
+
+### Allowlist verification grep
+
+The Access pillar of the Wave 18 AX audit greps for the CORS allowlist
+contract here in the runbook AND for `cors_origins` wiring in
+`src/jpintel_mcp/api/main.py`. Both must be present for the
+`cors_allowlist` check to pass:
+
+```bash
+grep -c "https://jpcite.com\|https://api.jpcite.com" docs/runbook/cors_setup.md
+# expect ≥ 4
+
+grep -n "cors_origins\|JPINTEL_CORS_ORIGINS" src/jpintel_mcp/api/main.py
+# expect at least one hit
 ```
 
 ## Apply
 
 ```bash
 flyctl secrets set \
-  JPINTEL_CORS_ORIGINS="https://jpcite.com,https://www.jpcite.com,https://api.jpcite.com,https://autonomath.ai,https://www.autonomath.ai" \
+  JPINTEL_CORS_ORIGINS="https://jpcite.com,https://www.jpcite.com,https://api.jpcite.com,https://autonomath.ai,https://www.autonomath.ai,https://zeimu-kaikei.ai,https://www.zeimu-kaikei.ai" \
   -a autonomath-api
 ```
 
@@ -85,6 +111,17 @@ curl -i \
   -X OPTIONS https://api.jpcite.com/v1/programs/prescreen \
   -H "Origin: https://jpcite.com" \
   -H "Access-Control-Request-Method: POST"
+
+# Rate-limit headers verify: every authenticated GET on /v1/programs/search
+# must carry X-RateLimit-Limit, X-RateLimit-Remaining, and X-RateLimit-Reset.
+# The Retry-After header is set on 429 responses only.
+curl -i "https://api.jpcite.com/v1/programs/search?q=test&limit=1" \
+  -H "X-API-Key: jc_TEST_KEY" \
+  | grep -iE "x-ratelimit|retry-after"
+# expected (200 path):
+#   X-RateLimit-Limit: 600
+#   X-RateLimit-Remaining: <integer>
+#   X-RateLimit-Reset: <unix-epoch-seconds>
 ```
 
 ## Failure mode (what we just fixed)
