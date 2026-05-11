@@ -1,0 +1,85 @@
+name: status-aggregator-hourly
+
+# Wave 41 Agent H — hourly monitoring alert aggregator.
+#
+# Runs `scripts/cron/aggregate_status_alerts_hourly.py` once an hour to
+# combine the 5 specialty-dashboard JSON sidecars (RUM / 9-axis audit /
+# data-freshness / 6-axis sanity / cron health) into:
+#
+#   - analytics/status_alerts_w41.jsonl  (append-only)
+#   - site/status/status_alerts_w41.json (snapshot for /v1/status/alerts)
+#   - site/status/feed.atom              (ATOM feed for Feedly/Inoreader)
+#
+# When the max severity is `critical` AND `TG_BOT_TOKEN` + `TG_CHAT_ID`
+# secrets are configured, the aggregator posts to Telegram. Otherwise the
+# Telegram step is a no-op (`telegram=skip`) — exit 0 either way.
+#
+# Constraints (Wave 41):
+#   - Zero LLM API calls (operator-only offline; in-CI is forbidden per
+#     `tests/test_no_llm_in_production.py`).
+#   - Free-tier runners only.
+#   - Read-only access to the repo + write access for the snapshot diff
+#     (committed back via the same flow the other "auto probe" cron uses).
+#   - honest-null: missing input snapshots produce `unknown` severity, NOT
+#     `critical` — a daily probe that hasn't run yet does not page anyone.
+
+on:
+  schedule:
+    - cron: "5 * * * *"   # every hour at :05 (5-min offset from daily 06:30 so they don't collide)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: status-aggregator-hourly
+  cancel-in-progress: false
+
+jobs:
+  aggregate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      TG_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TG_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.12"
+
+      - name: Run hourly aggregator (stdlib-only)
+        id: aggregate
+        run: |
+          set -euo pipefail
+          mkdir -p analytics site/status
+          python scripts/cron/aggregate_status_alerts_hourly.py | tee /tmp/aggregator_stdout.json
+
+      - name: Upload alert snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: status-alerts-w41-${{ github.run_id }}
+          path: |
+            analytics/status_alerts_w41.jsonl
+            site/status/status_alerts_w41.json
+            site/status/feed.atom
+            /tmp/aggregator_stdout.json
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Commit snapshot diff (best-effort)
+        if: github.event_name == 'schedule'
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain site/status/status_alerts_w41.json site/status/feed.atom 2>/dev/null || true)" ]; then
+            echo "no-snapshot-diff"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add site/status/status_alerts_w41.json site/status/feed.atom analytics/status_alerts_w41.jsonl || true
+          git commit -m "status(w41): hourly aggregator snapshot $(date -u '+%Y-%m-%dT%H:%M:%SZ')" || exit 0
+          git push origin HEAD:main || echo "push-skip"

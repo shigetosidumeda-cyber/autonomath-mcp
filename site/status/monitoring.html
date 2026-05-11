@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<!-- Wave 41 Agent H — Integrated monitoring dashboard. Consolidates the 5
+     specialty dashboards (RUM / Audit 9-axis / Data Freshness / 6-axis sanity
+     / AX 4 pillars) into a single agent-and-human-readable index. Pure
+     semantic HTML + CSS, no JS. RUM beacon script tag retained so this page
+     also contributes Web Vitals samples to the rolling aggregate. -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Monitoring (統合ダッシュボード) — jpcite</title>
+<meta name="description" content="jpcite の 5 個別ダッシュボード (RUM / 9 軸監査 / データ鮮度 / 6 軸 sanity / AX 4 柱) を 1 ページに集約。エージェント機械可読 (JSON-LD DataCatalog)・ヒト可読 (HTML)・JavaScript 非依存。">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://jpcite.com/status/monitoring.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/status/monitoring.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/status/monitoring.html">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<script defer src="/assets/rum.js?v=20260512a"></script>
+
+<!-- RSS / ATOM discovery — Wave 41 alert feed surfaces SLA breach + cron
+     failure + deploy issue + endpoint 5xx events for Feedly / Inoreader
+     subscribers. Browsers and feed readers will pick this up automatically. -->
+<link rel="alternate" type="application/atom+xml" title="jpcite — 監視 alert feed (Wave 41)" href="/status/feed.atom">
+<link rel="alternate" type="application/rss+xml" title="jpcite — お知らせ" href="/rss.xml">
+
+<style>
+  :root {
+    --accent: #1e3a8a;
+    --accent-2: #6d28d9;
+    --text: #111111;
+    --text-muted: #555555;
+    --border: #e5e5e5;
+    --bg: #ffffff;
+    --bg-alt: #f7f7f8;
+    --ok: #15803d;
+    --warn: #b45309;
+    --down: #b91c1c;
+    --unknown: #6b7280;
+    --grid: #d4d4d8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue",
+      "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI",
+      "Meiryo", sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 48px 20px 64px;
+  }
+  h1 {
+    font-size: 28px;
+    margin: 0 0 8px;
+    color: var(--accent);
+  }
+  h2 {
+    font-size: 20px;
+    margin: 40px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  h3 {
+    font-size: 17px;
+    margin: 20px 0 8px;
+  }
+  p { margin: 8px 0 12px; color: var(--text); }
+  .lede { color: var(--text-muted); font-size: 15px; }
+  nav.toc {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 18px;
+    margin: 16px 0 32px;
+  }
+  nav.toc ol { margin: 0; padding-left: 22px; }
+  nav.toc li { margin: 4px 0; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin: 20px 0 32px;
+  }
+  .card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    background: var(--bg);
+    transition: border-color 120ms ease, transform 120ms ease;
+  }
+  .card:hover { border-color: var(--accent); }
+  .card h3 { margin-top: 0; }
+  .card .metric {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 8px 0 4px;
+  }
+  .card .label {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .card a { color: var(--accent); text-decoration: none; }
+  .card a:hover { text-decoration: underline; }
+  .status-pill {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #ffffff;
+    vertical-align: middle;
+  }
+  .status-pill.ok { background: var(--ok); }
+  .status-pill.warn { background: var(--warn); }
+  .status-pill.down { background: var(--down); }
+  .status-pill.unknown { background: var(--unknown); }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 24px;
+    font-size: 14px;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: var(--bg-alt); font-weight: 600; }
+  iframe.embed {
+    width: 100%;
+    height: 480px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin: 16px 0;
+    background: var(--bg-alt);
+  }
+  details.embed-wrap {
+    margin: 12px 0 24px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0;
+  }
+  details.embed-wrap > summary {
+    cursor: pointer;
+    padding: 10px 14px;
+    background: var(--bg-alt);
+    border-radius: 6px;
+    font-weight: 600;
+    list-style: none;
+  }
+  details.embed-wrap[open] > summary {
+    border-bottom: 1px solid var(--border);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  details.embed-wrap > summary::after {
+    content: " ▶";
+    color: var(--text-muted);
+    font-size: 12px;
+  }
+  details.embed-wrap[open] > summary::after { content: " ▼"; }
+  footer {
+    margin-top: 56px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+  footer a { color: var(--accent-2); }
+  code {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1px 5px;
+    font-size: 13px;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+</style>
+
+<!-- Schema.org DataCatalog — makes the 5 dashboards discoverable as a
+     coherent dataset collection for AI agents that crawl status pages. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "DataCatalog",
+  "name": "jpcite Monitoring Dashboards",
+  "description": "Five operational dashboards covering real-user metrics, audit axes, data freshness, six-axis production sanity, and AX (Agent Experience) four pillars.",
+  "url": "https://jpcite.com/status/monitoring.html",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "url": "https://jpcite.com/"
+  },
+  "dataset": [
+    {
+      "@type": "Dataset",
+      "name": "Real User Monitoring (RUM)",
+      "description": "Core Web Vitals (LCP / INP / CLS / TTFB / FCP) — 7-day rolling p75 trend.",
+      "url": "https://jpcite.com/status/rum.html",
+      "distribution": [
+        {"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": "https://jpcite.com/status/rum.json"}
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "name": "Audit 9-axis Dashboard",
+      "description": "Rolling 9-metric audit (SEO / GEO / HTML structure / a11y / Core Web Vitals / CF AI Audit / RUM / SLA / coverage).",
+      "url": "https://jpcite.com/status/audit_dashboard.html"
+    },
+    {
+      "@type": "Dataset",
+      "name": "Data Freshness Heatmap",
+      "description": "source_fetched_at rollup across primary datasets.",
+      "url": "https://jpcite.com/data-freshness"
+    },
+    {
+      "@type": "Dataset",
+      "name": "6-Axis Production Sanity",
+      "description": "Daily 6-axis sanity check (量 / 質 / 鮮度 / 組み合わせ / 多言語 / output).",
+      "url": "https://jpcite.com/status/six_axis_dashboard.html",
+      "distribution": [
+        {"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": "https://api.jpcite.com/v1/status/six_axis"}
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "name": "AX (Agent Experience) 4 Pillars",
+      "description": "Access / Context / Tools / Orchestration pillar scoring (48/48 target).",
+      "url": "https://jpcite.com/status/ax_dashboard.html"
+    }
+  ],
+  "additionalProperty": [
+    {"@type": "PropertyValue", "name": "alertFeed", "value": "https://jpcite.com/status/feed.atom"},
+    {"@type": "PropertyValue", "name": "aggregatedJSON", "value": "https://api.jpcite.com/v1/status/all"},
+    {"@type": "PropertyValue", "name": "activeAlertsJSON", "value": "https://api.jpcite.com/v1/status/alerts"}
+  ]
+}
+</script>
+</head>
+<body>
+<div class="container">
+
+<header>
+<p class="lede">Wave 41 Agent H — 統合監視ダッシュボード</p>
+<h1>Monitoring (統合ダッシュボード)</h1>
+<p class="lede">
+  jpcite では監視を 5 つの専門ダッシュボードに分けて運用しています。
+  本ページはそれらを 1 ページに集約し、エージェントが <a href="/v1/status/all">/v1/status/all</a>
+  で JSON を 1 fetch でも、人間がブラウザでも、同じ情報に到達できるようにした
+  「Agent + Human readable」統合面です。<strong>JavaScript 非依存・semantic HTML のみ</strong>。
+</p>
+</header>
+
+<nav class="toc" aria-label="目次">
+<ol>
+  <li><a href="#overview">概要 (5 ダッシュボード一覧)</a></li>
+  <li><a href="#metrics">5 metric 同時表示</a></li>
+  <li><a href="#rum">RUM (Real User Monitoring)</a></li>
+  <li><a href="#ax">AX 4 柱 score</a></li>
+  <li><a href="#anti">9 アンチパターン違反</a></li>
+  <li><a href="#freshness">6 軸データ鮮度</a></li>
+  <li><a href="#cron">19 cron 健全性</a></li>
+  <li><a href="#alerts">監視 alert feed (ATOM)</a></li>
+  <li><a href="#api">REST endpoint</a></li>
+</ol>
+</nav>
+
+<section id="overview">
+<h2>1. 概要 — 5 個別ダッシュボード一覧</h2>
+<p>
+  個別ダッシュボードは引き続き SOT として運用継続します。下記はそれぞれへの導線です。
+</p>
+<div class="grid">
+  <article class="card">
+    <span class="label">Wave 16 RUM</span>
+    <h3><a href="/status/rum.html">RUM Dashboard</a></h3>
+    <p>Core Web Vitals (LCP/INP/CLS/TTFB/FCP) 7 日 p75 trend</p>
+    <p class="metric">7 days rolling</p>
+  </article>
+  <article class="card">
+    <span class="label">Wave 20 Audit</span>
+    <h3><a href="/status/audit_dashboard.html">9-Axis Audit</a></h3>
+    <p>SEO / GEO / HTML / a11y / CWV / CF AI / RUM / SLA / coverage</p>
+    <p class="metric">9 axes</p>
+  </article>
+  <article class="card">
+    <span class="label">Wave 37 Freshness</span>
+    <h3><a href="/data-freshness">Data Freshness</a></h3>
+    <p>source_fetched_at rollup heatmap</p>
+    <p class="metric">primary datasets</p>
+  </article>
+  <article class="card">
+    <span class="label">Wave 38 Six-axis</span>
+    <h3><a href="/status/six_axis_dashboard.html">6-Axis Sanity</a></h3>
+    <p>量 / 質 / 鮮度 / 組合せ / 多言語 / output</p>
+    <p class="metric">6 axes</p>
+  </article>
+  <article class="card">
+    <span class="label">Wave 16 AX</span>
+    <h3><a href="/status/ax_dashboard.html">AX 4 Pillars</a></h3>
+    <p>Access / Context / Tools / Orchestration (48 target)</p>
+    <p class="metric">48 / 48</p>
+  </article>
+  <article class="card" style="border-color: var(--accent-2);">
+    <span class="label">Wave 41 NEW</span>
+    <h3>This page</h3>
+    <p>5 dashboard 統合 index + ATOM alert feed + REST aggregator</p>
+    <p class="metric">1 fetch</p>
+  </article>
+</div>
+</section>
+
+<section id="metrics">
+<h2>2. 5 metric 同時表示</h2>
+<p>
+  各 axis の最新スコアを 1 表で。詳細は個別 dashboard / REST endpoint を参照してください。
+  数値は 1 時間周期の cron (<code>aggregate_status_alerts_hourly.py</code>) で更新されます。
+</p>
+<table>
+<thead>
+<tr><th>Axis</th><th>Metric</th><th>Target</th><th>SLA</th><th>Source</th></tr>
+</thead>
+<tbody>
+<tr id="rum">
+  <td>RUM</td>
+  <td>LCP / INP / CLS p75</td>
+  <td>LCP&lt;2500ms / INP&lt;200ms / CLS&lt;0.1</td>
+  <td>7-day rolling</td>
+  <td><a href="/status/rum.json">rum.json</a></td>
+</tr>
+<tr id="ax">
+  <td>AX 4 pillars</td>
+  <td>score / 48</td>
+  <td>48 / 48</td>
+  <td>weekly self-audit</td>
+  <td><a href="/status/ax_dashboard.html">ax_dashboard.html</a></td>
+</tr>
+<tr id="anti">
+  <td>9 anti-patterns</td>
+  <td>violation_count</td>
+  <td>0</td>
+  <td>daily</td>
+  <td><a href="/status/audit_dashboard.html">audit_dashboard.html</a></td>
+</tr>
+<tr id="freshness">
+  <td>6 axis freshness</td>
+  <td>last_run + sla_status</td>
+  <td>per-axis SLA met</td>
+  <td>daily 06:30 UTC</td>
+  <td><a href="/v1/status/six_axis">/v1/status/six_axis</a></td>
+</tr>
+<tr id="cron">
+  <td>19 cron health</td>
+  <td>success_rate_24h</td>
+  <td>&gt;= 0.95</td>
+  <td>24h rolling</td>
+  <td><a href="/v1/status/all">/v1/status/all</a></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2>3. Embedded dashboards (lazy)</h2>
+<p>
+  各 dashboard を inline で確認したい場合は下記アコーディオンを展開してください。
+  <code>iframe</code> は <strong>クリックされた時のみ</strong> ロードされ、ページ初期表示の
+  Core Web Vitals に影響しません。
+</p>
+
+<details class="embed-wrap">
+<summary>RUM Dashboard (Wave 16)</summary>
+<iframe class="embed" src="/status/rum.html" title="RUM Dashboard" loading="lazy"></iframe>
+</details>
+
+<details class="embed-wrap">
+<summary>9-Axis Audit Dashboard (Wave 20)</summary>
+<iframe class="embed" src="/status/audit_dashboard.html" title="Audit Dashboard" loading="lazy"></iframe>
+</details>
+
+<details class="embed-wrap">
+<summary>Data Freshness Heatmap (Wave 37)</summary>
+<iframe class="embed" src="/data-freshness" title="Data Freshness" loading="lazy"></iframe>
+</details>
+
+<details class="embed-wrap">
+<summary>6-Axis Sanity (Wave 38)</summary>
+<iframe class="embed" src="/status/six_axis_dashboard.html" title="6 Axis Sanity" loading="lazy"></iframe>
+</details>
+
+<details class="embed-wrap">
+<summary>AX 4 Pillars (Wave 16)</summary>
+<iframe class="embed" src="/status/ax_dashboard.html" title="AX 4 Pillars" loading="lazy"></iframe>
+</details>
+</section>
+
+<section id="alerts">
+<h2>4. 監視 alert feed (ATOM)</h2>
+<p>
+  SLA breach / cron failure / deploy issue / endpoint 5xx などを ATOM feed で publish します。
+  Feedly / Inoreader / RSS reader 等で subscribe してください。
+  Critical alert は Telegram bot (<code>TG_BOT_TOKEN</code> 設定済の場合) にも通知されます。
+</p>
+<ul>
+  <li><a href="/status/feed.atom">/status/feed.atom</a> — 監視 alert ATOM feed</li>
+  <li><a href="/v1/status/alerts">/v1/status/alerts</a> — 現在 active な alert (JSON)</li>
+</ul>
+</section>
+
+<section id="api">
+<h2>5. REST endpoint (1 fetch)</h2>
+<p>
+  Agent から 1 fetch で 5 dashboard 分のデータを取得したい場合は以下を使ってください。
+</p>
+<table>
+<thead><tr><th>Method</th><th>Path</th><th>用途</th></tr></thead>
+<tbody>
+<tr><td>GET</td><td><a href="/v1/status/all"><code>/v1/status/all</code></a></td><td>5 dashboard 集約 JSON</td></tr>
+<tr><td>GET</td><td><a href="/v1/status/alerts"><code>/v1/status/alerts</code></a></td><td>active alert list</td></tr>
+<tr><td>GET</td><td><a href="/v1/status/six_axis"><code>/v1/status/six_axis</code></a></td><td>6 軸 sanity 詳細 (Wave 38)</td></tr>
+</tbody>
+</table>
+</section>
+
+<footer>
+<p>
+  Wave 41 Agent H landing — 2026-05-12.
+  個別 dashboard は keep、本ページが集約 index。<br>
+  運営: <a href="https://jpcite.com/">Bookyou株式会社</a> ・
+  問い合わせ: <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+</p>
+</footer>
+
+</div>
+</body>
+</html>
