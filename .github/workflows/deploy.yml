@@ -134,6 +134,27 @@ jobs:
       - name: Hydrate jpintel seed DB for Docker build
         if: steps.fly-token.outputs.available == 'true'
         timeout-minutes: 60
+        # Wave 20 (2026-05-11): sftp transient resilience.
+        # ----------------------------------------------------
+        # `flyctl ssh sftp get` is the primary path — it gives us the freshest
+        # online .backup snapshot of /data/jpintel.db with zero R2 latency. But
+        # the Fly SSH tunnel is fragile for 200+ MB transfers (run
+        # 25669988722 caught `copy file: connection lost (197885952 bytes
+        # written)` 95% through). We now retry sftp up to 3× with a fresh
+        # remote .backup snapshot each attempt, then fall back to the R2
+        # mirror written by `scripts/cron/r2_upload_jpintel.sh` (daily 04:00
+        # JST via `r2-upload-jpintel-daily.yml`) at the canonical key
+        # `s3://$R2_BUCKET/autonomath-api/jpintel.db.gz`. If that canonical
+        # key is missing we degrade to the timestamped nightly-backup keys
+        # under the same prefix. The CI seed only feeds the Docker build —
+        # /data/jpintel.db on the running machine remains the authoritative
+        # runtime copy.
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: |
           set -euo pipefail
           mkdir -p data
@@ -160,9 +181,85 @@ jobs:
               flyctl ssh console -a autonomath-api -q -C "rm -f ${remote_seed}" || true
             }
             trap cleanup_remote_seed EXIT
-            flyctl ssh console -a autonomath-api -q -C \
-              "bash -lc 'set -euo pipefail; rm -f ${remote_seed}; sqlite3 /data/jpintel.db \".backup ${remote_seed}\"; sqlite3 ${remote_seed} \"PRAGMA quick_check; SELECT COUNT(*) FROM programs;\"'"
-            flyctl ssh sftp get -a autonomath-api -q "${remote_seed}" data/jpintel.db
+
+            # Strategy A — 3× sftp retry. Each attempt re-issues a fresh online
+            # .backup so we never resume from a possibly-corrupt partial file.
+            sftp_ok=0
+            for attempt in 1 2 3; do
+              echo "::group::sftp attempt ${attempt}/3 (fresh online .backup)"
+              rm -f data/jpintel.db
+              if flyctl ssh console -a autonomath-api -q -C \
+                  "bash -lc 'set -euo pipefail; rm -f ${remote_seed}; sqlite3 /data/jpintel.db \".backup ${remote_seed}\"; sqlite3 ${remote_seed} \"PRAGMA quick_check; SELECT COUNT(*) FROM programs;\"'" \
+                && flyctl ssh sftp get -a autonomath-api -q "${remote_seed}" data/jpintel.db ; then
+                sftp_bytes="$(wc -c < data/jpintel.db | tr -d ' ' 2>/dev/null || echo 0)"
+                if [ "$sftp_bytes" -ge 100000000 ]; then
+                  echo "sftp attempt ${attempt} succeeded (${sftp_bytes} bytes)"
+                  sftp_ok=1
+                  echo "::endgroup::"
+                  break
+                fi
+                echo "sftp attempt ${attempt} produced too-small file (${sftp_bytes} bytes)"
+              else
+                echo "sftp attempt ${attempt} failed (likely transient SSH tunnel loss)"
+              fi
+              echo "::endgroup::"
+              sleep 15
+            done
+
+            # Strategy B — R2 fallback. Pull the canonical
+            # `autonomath-api/jpintel.db.gz` key first (refreshed every 04:00
+            # JST by `r2-upload-jpintel-daily.yml`); fall back to the latest
+            # timestamped `autonomath-api/jpintel-YYYYMMDD-HHMMSS.db.gz` key
+            # if the canonical one is missing. sha-verify the gzip artifact,
+            # then gunzip into place. PRAGMA quick_check below gates the
+            # decompressed result.
+            if [ "$sftp_ok" != "1" ]; then
+              if [ -z "${AWS_ACCESS_KEY_ID:-}" ] \
+                 || [ -z "${AWS_SECRET_ACCESS_KEY:-}" ] \
+                 || [ -z "${R2_ENDPOINT:-}" ] \
+                 || [ -z "${R2_BUCKET:-}" ]; then
+                echo "::error::sftp failed 3× and R2 fallback secrets are missing — cannot hydrate seed DB."
+                exit 1
+              fi
+              echo "::group::R2 fallback — sftp failed 3×, pulling latest mirror"
+              rm -f data/jpintel.db /tmp/jpintel.db.gz /tmp/jpintel.db.gz.sha256
+              R2_KEY=""
+              if aws s3api head-object --bucket "$R2_BUCKET" --key "autonomath-api/jpintel.db.gz" --endpoint-url "$R2_ENDPOINT" >/dev/null 2>&1; then
+                R2_KEY="autonomath-api/jpintel.db.gz"
+                echo "using canonical key: ${R2_KEY}"
+              else
+                echo "canonical key not yet uploaded — falling back to latest timestamped nightly-backup key"
+                R2_KEY=$(aws s3api list-objects-v2 \
+                  --bucket "$R2_BUCKET" \
+                  --prefix "autonomath-api/jpintel-" \
+                  --endpoint-url "$R2_ENDPOINT" \
+                  --query 'Contents[].Key' \
+                  --output text 2>/dev/null \
+                  | tr '\t' '\n' \
+                  | grep -E '\.db\.gz$' \
+                  | sort -r \
+                  | head -1 \
+                  || true)
+              fi
+              if [ -z "${R2_KEY:-}" ]; then
+                echo "::error::No jpintel-*.db.gz objects under s3://$R2_BUCKET/autonomath-api/ — R2 fallback empty."
+                exit 1
+              fi
+              aws s3 cp "s3://$R2_BUCKET/${R2_KEY}" /tmp/jpintel.db.gz --endpoint-url "$R2_ENDPOINT"
+              if aws s3 cp "s3://$R2_BUCKET/${R2_KEY}.sha256" /tmp/jpintel.db.gz.sha256 --endpoint-url "$R2_ENDPOINT" 2>/dev/null; then
+                # Sidecars from backup_jpintel.py and r2_upload_jpintel.sh
+                # both store `<sha>  <basename>`; rename the local file to
+                # match before `shasum -c`.
+                cp /tmp/jpintel.db.gz "/tmp/$(awk '{print $2}' /tmp/jpintel.db.gz.sha256)"
+                ( cd /tmp && shasum -a 256 -c jpintel.db.gz.sha256 )
+                echo "R2 artifact sha256 verified"
+              else
+                echo "::warning::no .sha256 sidecar — relying on PRAGMA quick_check below"
+              fi
+              gunzip -c /tmp/jpintel.db.gz > data/jpintel.db
+              echo "R2 fallback hydrated $(wc -c < data/jpintel.db | tr -d ' ') bytes from ${R2_KEY}"
+              echo "::endgroup::"
+            fi
             cleanup_remote_seed
             trap - EXIT
           fi
