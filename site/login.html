@@ -250,6 +250,36 @@
           <span>Google で続ける</span>
         </a>
 
+        <!-- Wave 20 C3: OAuth 2.1 Device Flow (RFC 8628) — the 4th auth method.
+             For headless / agent / CLI / mobile flows that can't open a browser
+             dialog. The button posts to /v1/device/authorize, surfaces the
+             8-digit user_code, and opens https://jpcite.com/device in a new
+             tab where the user enters it. Backend wired via api/device_flow.py. -->
+        <button type="button" id="oauth-device" class="oauth-btn" aria-describedby="oauth-device-hint">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" width="20" height="20">
+            <path fill="currentColor" d="M4 4h16v12H4V4zm0 14h16v2H4v-2zm6-12v8h4V6h-4z"/>
+          </svg>
+          <span>デバイス / CLI / agent で続ける</span>
+        </button>
+        <p id="oauth-device-hint" class="pg-hint" style="font-size:11.5px;margin:4px 0 0;color:var(--text-muted);">
+          ブラウザ非対応のクライアント (claude CLI / Cursor / 自社 SDK) は OAuth 2.1 Device Flow (RFC 8628) を利用できます。
+        </p>
+
+        <div id="device-flow-card" hidden
+             style="margin:14px 0 0;padding:14px 16px;border:1px dashed var(--accent);border-radius:8px;background:var(--bg-alt);">
+          <p style="margin:0 0 8px;font-size:14px;font-weight:700;">8 桁コードを Device に入力</p>
+          <p style="margin:0 0 10px;font-size:13px;color:var(--text-muted);">
+            次のページで以下のコードを入力してください: <a href="https://jpcite.com/device" target="_blank" rel="noopener">https://jpcite.com/device →</a>
+          </p>
+          <code id="device-user-code"
+                style="display:block;text-align:center;font-size:24px;letter-spacing:0.4em;padding:14px;background:var(--bg);border:1px solid var(--border);border-radius:6px;font-family:Menlo,Consolas,monospace;">
+            ----------
+          </code>
+          <p style="margin:10px 0 0;font-size:12px;color:var(--text-muted);">
+            有効期限: <span id="device-expires-in">--</span> 秒 / poll 中
+          </p>
+        </div>
+
         <div class="divider" aria-hidden="true">または</div>
 
         <form id="magic-form" class="magic-form" novalidate>
@@ -404,6 +434,127 @@
   // OAuth ボタン: ?return_to= を保持して dashboard へ戻れるようにする。
   // 現状の auth_github / auth_google.callback は ?return_to を読まないので
   // 純粋に default redirect = dashboard.html へ遷移する。
+
+  /* -------------------------------------------------------------------
+     Wave 20 C3 — OAuth 2.1 Device Flow (RFC 8628) wiring.
+
+     Flow:
+       1. User clicks "デバイス / CLI / agent で続ける".
+       2. We POST /v1/device/authorize → server returns
+          {device_code, user_code, verification_uri, expires_in, interval}.
+       3. We display user_code (XXXX-XXXX) and open verification_uri.
+       4. We poll /v1/oauth/token with grant_type=urn:ietf:params:oauth:
+          grant-type:device_code every `interval` seconds until we get
+          {access_token, token_type, expires_in} OR `expires_in` runs out.
+       5. On success: set session cookie via /v1/me/login_with_token then
+          redirect to /dashboard.html.
+
+     Per RFC 8628 §3.5, slow_down responses must extend polling interval
+     by 5s; access_denied / expired_token end the loop.
+     ------------------------------------------------------------------- */
+  var deviceBtn  = document.getElementById('oauth-device');
+  var deviceCard = document.getElementById('device-flow-card');
+  var deviceCode = document.getElementById('device-user-code');
+  var deviceExp  = document.getElementById('device-expires-in');
+  if (deviceBtn && deviceCard && deviceCode && deviceExp) {
+    var devicePollTimer = null;
+    var deviceExpTimer = null;
+    var deviceExpiresAt = 0;
+
+    deviceBtn.addEventListener('click', async function () {
+      deviceBtn.disabled = true;
+      setStatus('デバイスコードを取得中...');
+      try {
+        var resp = await fetch(API_BASE + '/v1/device/authorize', {
+          method: 'POST',
+          credentials: 'include',
+          headers: jsonHeaders(),
+          /* client_id can be anonymous for the public CLI flow */
+          body: JSON.stringify({ client_id: 'jpcite-web-login' }),
+        });
+        if (!resp.ok) {
+          throw new Error('device_authorize failed: HTTP ' + resp.status);
+        }
+        var body = await resp.json();
+        if (!body.user_code || !body.device_code) {
+          throw new Error('device_authorize response missing required fields');
+        }
+        deviceCode.textContent = body.user_code;
+        deviceCard.hidden = false;
+        deviceExpiresAt = Date.now() + (body.expires_in || 600) * 1000;
+
+        /* Open verification URI in new tab (best-effort, browser may block). */
+        try {
+          window.open(body.verification_uri_complete || body.verification_uri || '/device', '_blank', 'noopener');
+        } catch (_) { /* user can click the link in the card instead */ }
+
+        /* Tick the expiry countdown every 1s. */
+        if (deviceExpTimer) clearInterval(deviceExpTimer);
+        deviceExpTimer = setInterval(function () {
+          var remaining = Math.max(0, Math.floor((deviceExpiresAt - Date.now()) / 1000));
+          deviceExp.textContent = String(remaining);
+          if (remaining <= 0) {
+            clearInterval(deviceExpTimer);
+            if (devicePollTimer) clearInterval(devicePollTimer);
+            setStatus('デバイスコードが期限切れになりました。再取得してください。', 'error');
+            deviceBtn.disabled = false;
+          }
+        }, 1000);
+
+        /* Poll for token. interval=5 (RFC 8628 default) unless server says otherwise. */
+        var intervalSec = body.interval || 5;
+        if (devicePollTimer) clearInterval(devicePollTimer);
+        devicePollTimer = setInterval(async function () {
+          if (Date.now() > deviceExpiresAt) return;
+          try {
+            var tokResp = await fetch(API_BASE + '/v1/oauth/token', {
+              method: 'POST',
+              credentials: 'include',
+              headers: jsonHeaders(),
+              body: JSON.stringify({
+                grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
+                device_code: body.device_code,
+                client_id: 'jpcite-web-login',
+              }),
+            });
+            if (tokResp.status === 200) {
+              clearInterval(devicePollTimer);
+              clearInterval(deviceExpTimer);
+              var tok = await tokResp.json();
+              setStatus('認証成功。ダッシュボードへ移動します...', 'ok');
+              /* The server set the session cookie as a side effect of token
+                 issuance (jpcite contract: device flow sets Set-Cookie too). */
+              window.location.href = '/dashboard.html';
+            } else if (tokResp.status === 400 || tokResp.status === 401) {
+              var err = await tokResp.json().catch(function () { return {}; });
+              if (err.error === 'authorization_pending') {
+                /* Expected — keep polling. */
+              } else if (err.error === 'slow_down') {
+                /* RFC 8628 §3.5: extend interval by 5s. */
+                intervalSec += 5;
+                clearInterval(devicePollTimer);
+                devicePollTimer = setInterval(arguments.callee, intervalSec * 1000);
+              } else if (err.error === 'access_denied') {
+                clearInterval(devicePollTimer);
+                setStatus('認証が拒否されました。', 'error');
+                deviceBtn.disabled = false;
+              } else if (err.error === 'expired_token') {
+                clearInterval(devicePollTimer);
+                clearInterval(deviceExpTimer);
+                setStatus('デバイスコードが期限切れになりました。再取得してください。', 'error');
+                deviceBtn.disabled = false;
+              }
+            }
+          } catch (pollErr) {
+            /* Transient network error — keep polling, the next tick will retry. */
+          }
+        }, intervalSec * 1000);
+      } catch (err) {
+        setStatus('デバイスフロー起動失敗: ' + err.message, 'error');
+        deviceBtn.disabled = false;
+      }
+    });
+  }
 })();
 </script>
 

@@ -633,6 +633,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Write shields.io-style SVG badge to this path.",
     )
     p.add_argument(
+        "--ax-dashboard-out", type=Path, default=None,
+        help=(
+            "Wave 20 C2: write derived AX-dashboard JSON to this path "
+            "(default: site/status/status_components.json). The derived "
+            "shape is the 5-component live view consumed by "
+            "site/status/ax_dashboard.html via fetch()."
+        ),
+    )
+    p.add_argument(
         "--stdout", action="store_true",
         help="Also write JSON snapshot to stdout (default unless --quiet).",
     )
@@ -649,6 +658,61 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help=f"Site origin URL (default: env JPCITE_SITE_BASE or {DEFAULT_SITE_BASE}).",
     )
     return p.parse_args(argv)
+
+
+def derive_ax_dashboard_snapshot(snapshot: dict[str, Any]) -> dict[str, Any]:
+    """Wave 20 C2: Derived 5-component live snapshot for ax_dashboard.html.
+
+    The base snapshot (`status.json`) is the operator forensic record —
+    rich detail per component. ax_dashboard.html only needs the user-
+    visible 5 light-bulbs + last_check timestamp. Slim derivation
+    decouples the dashboard UI from the probe internals.
+
+    Schema (stable contract for the dashboard fetch()):
+
+        {
+          "snapshot_at": "<JST ISO 8601>",
+          "components": [
+            {"id": "api",             "status": "ok|degraded|down",
+             "last_check": "<JST>",   "latency_ms": int,
+             "label": "API"},
+            ... 5 entries total ...
+          ],
+          "overall": "ok|degraded|down"
+        }
+
+    Where `label` is the human-friendly name surfaced in the dashboard
+    pill chip. Localized to JP (sub-second decision: dashboards land
+    on a JP audience; the en mirror does its own localization on the
+    client side).
+    """
+    base_components = snapshot.get("components", {}) or {}
+    snapshot_at = snapshot.get("snapshot_at", "")
+
+    labels = {
+        "api":             "API",
+        "mcp":             "MCP",
+        "billing":         "Billing (Stripe)",
+        "data-freshness":  "データ鮮度",
+        "dashboard":       "ダッシュボード",
+    }
+
+    derived: list[dict[str, Any]] = []
+    for cid in COMPONENT_IDS:
+        cdata = base_components.get(cid, {}) or {}
+        derived.append({
+            "id": cid,
+            "label": labels.get(cid, cid),
+            "status": cdata.get("status", STATUS_DOWN),
+            "last_check": snapshot_at,
+            "latency_ms": int(cdata.get("latency_ms", 0) or 0),
+        })
+
+    return {
+        "snapshot_at": snapshot_at,
+        "components": derived,
+        "overall": snapshot.get("overall", STATUS_DOWN),
+    }
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -683,6 +747,20 @@ def main(argv: list[str] | None = None) -> int:
         badge_path = args.badge_out
         badge_path.parent.mkdir(parents=True, exist_ok=True)
         badge_path.write_text(render_badge_svg(snapshot["overall"]), encoding="utf-8")
+
+    # Wave 20 C2: emit the AX-dashboard slim derivation. Defaults to
+    # site/status/status_components.json so the dashboard fetch() target
+    # is stable. The base status.json continues to carry the operator-
+    # forensic full detail.
+    ax_path = args.ax_dashboard_out or Path(
+        os.environ.get("STATUS_AX_DASHBOARD_OUT", "site/status/status_components.json")
+    )
+    ax_path.parent.mkdir(parents=True, exist_ok=True)
+    derived = derive_ax_dashboard_snapshot(snapshot)
+    ax_path.write_text(
+        json.dumps(derived, indent=2, ensure_ascii=False, sort_keys=False) + "\n",
+        encoding="utf-8",
+    )
 
     if not args.quiet:
         # stdout payload: pretty when --pretty, else compact one-liner for

@@ -1,0 +1,41 @@
+{
+  "snapshot_at": "2026-05-11T22:42:03+09:00",
+  "components": [
+    {
+      "id": "api",
+      "label": "API",
+      "status": "down",
+      "last_check": "2026-05-11T22:42:03+09:00",
+      "latency_ms": 0
+    },
+    {
+      "id": "mcp",
+      "label": "MCP",
+      "status": "down",
+      "last_check": "2026-05-11T22:42:03+09:00",
+      "latency_ms": 0
+    },
+    {
+      "id": "billing",
+      "label": "Billing (Stripe)",
+      "status": "ok",
+      "last_check": "2026-05-11T22:42:03+09:00",
+      "latency_ms": 0
+    },
+    {
+      "id": "data-freshness",
+      "label": "データ鮮度",
+      "status": "down",
+      "last_check": "2026-05-11T22:42:03+09:00",
+      "latency_ms": 1149
+    },
+    {
+      "id": "dashboard",
+      "label": "ダッシュボード",
+      "status": "degraded",
+      "last_check": "2026-05-11T22:42:03+09:00",
+      "latency_ms": 433
+    }
+  ],
+  "overall": "down"
+}
