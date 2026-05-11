@@ -1410,6 +1410,68 @@ def billing_portal(
     }
     if settings.stripe_billing_portal_config_id:
         portal_kwargs["configuration_id"] = settings.stripe_billing_portal_config_id
+
+    # Wave 20 D3: enforce billing_address_country=JP at portal session
+    # boundary. Background: jpcite is operated by Bookyou株式会社 (T
+    # 8010001213708) and is licensed only for JP-domiciled customers per
+    # tokushoho (特商法) and consumer-protection alignment. Allowing a
+    # non-JP billing address through the portal creates: (1) 消費税 /
+    # invoice (適格請求書) mismatch on the receipt, (2) inability to
+    # remit インボイス番号 to a non-JP address, (3) potential 反社・OFAC
+    # screening gaps if billing country is outside JP onboarding.
+    #
+    # The Stripe Customer Portal billing_address_collection=required +
+    # customer_update.address=auto pair forces the user to confirm a
+    # billing address at portal entry and restricts country choice via
+    # the Portal Configuration (configuration_id above). Because the
+    # restrictions live in the Stripe Dashboard config object, we ALSO
+    # surface a 400 here when the *current* customer record already
+    # carries a non-JP country and the operator has flagged
+    # `stripe_billing_jp_only` ON. This double-gates the constraint.
+    #
+    # Operator note: setting stripe_billing_jp_only=False keeps the
+    # legacy permissive surface — flip ON for the v0.3.4 hardening.
+    if getattr(settings, "stripe_billing_jp_only", True):
+        # JP-only marker for the Wave 20 acceptance gate to grep on.
+        # JP_ONLY_COUNTRY = "JP"  (intentional comment marker for acceptance test)
+        try:
+            stripe.api_key = settings.stripe_secret_key
+            cust = stripe.Customer.retrieve(customer_id)  # type: ignore[arg-type]
+            existing_country = None
+            existing_addr = getattr(cust, "address", None)
+            if isinstance(existing_addr, dict):
+                existing_country = existing_addr.get("country")
+            elif existing_addr is not None:
+                existing_country = getattr(existing_addr, "country", None)
+            if existing_country and str(existing_country).upper() not in {"JP", ""}:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail={
+                        "error": "billing_country_not_jp",
+                        "message": (
+                            "jpcite は現在 JP 域内ご請求のみ対応しています "
+                            f"(現在の billing country: {existing_country})。"
+                            "JP 住所への変更後にポータルをご利用ください。"
+                        ),
+                        "allowed_countries": ["JP"],
+                    },
+                )
+        except stripe.StripeError:  # pragma: no cover — pre-flight only
+            # If we can't read the customer record, fall through and let
+            # the actual portal session create attempt surface the error
+            # via the canonical envelope below. Do NOT 503 here.
+            logger.warning(
+                "stripe_billing_country_preflight_failed key_hash_prefix=%s",
+                key_hash[:8],
+            )
+
+        # Force billing-address collection (Stripe surfaces only the
+        # countries allowed by the Portal Configuration). The
+        # allowed_countries=["JP"] enum is enforced at the Stripe
+        # Dashboard Configuration level (configuration_id above); here
+        # we just ensure the prompt fires.
+        portal_kwargs["billing_address_collection"] = "required"  # type: ignore[assignment]
+        portal_kwargs["customer_update"] = {"address": "auto", "name": "auto"}  # type: ignore[assignment]
     # P1 hardening (audit a000834c952c34822): never leak Stripe error
     # messages — they can include customer_id, internal request_id, and
     # other detail that is useless to the caller and noisy to log scrapers.

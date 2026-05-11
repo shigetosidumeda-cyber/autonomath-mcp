@@ -259,6 +259,17 @@ class Settings(BaseSettings):
     stripe_billing_portal_config_id: str = Field(
         default="", alias="STRIPE_BILLING_PORTAL_CONFIG_ID"
     )
+    # Wave 20 D3: JP-only billing-address enforcement on the Stripe
+    # Customer Portal. Default True (jpcite v0.3.4 hardening) — flip to
+    # False only when the operator has explicitly cleared a non-JP
+    # billing path (e.g. enterprise foreign customer KYC complete).
+    # Forces the portal session to (a) prompt for billing address and
+    # (b) restrict country to JP. Coupled with the configuration_id
+    # Portal Configuration on the Stripe Dashboard side
+    # (allowed_countries=["JP"]).
+    stripe_billing_jp_only: bool = Field(
+        default=True, alias="STRIPE_BILLING_JP_ONLY",
+    )
 
     api_key_salt: str = Field(default="dev-salt", alias="API_KEY_SALT")
     # HMAC secret for the audit_seal envelope (税理士事務所 bundle, 2026-04-29).
