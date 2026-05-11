@@ -1181,6 +1181,367 @@
  <p id="pg-curl-help" class="pg-hint" style="margin:10px 0 0;">クリップボードにコピーされたら 5 秒間ボタンに「コピー済み」と表示されます。</p>
  </section>
 
+ <!-- =====================================================================
+       Wave 20 B8: 3-step Quick Wizard v2
+       =====================================================================
+       The existing `.ev3-wizard` is a focused Evidence-Packet flow with
+       3 progressive SSE steps and 法人番号 / intent multi-select. New
+       users who want a *minimal* try-flow (API key / anonymous → query
+       + tool → result + curl/python/SDK example) do not need the full
+       Evidence path.
+
+       v2 wizard collapses to 3 simple steps:
+         1) Anonymous vs API key — choose auth mode.
+         2) Tool + query — pick from 6 main tools (search_programs,
+            search_cases, search_loans, search_laws, search_tax_rules,
+            check_enforcement) and type one query string.
+         3) Result table + side-by-side curl / python / SDK example —
+            the user copies any of the three and walks away.
+
+       Connection model: SSE via `/v1/search/stream?q=...&tool=...`,
+       with an Authorization header when API key is set. The same
+       backing endpoint serves all 6 tools — the `tool=` param selects
+       the surface internally. No JS framework. Vanilla DOM.
+       ===================================================================== -->
+ <section id="v2-wizard" class="pg-card" aria-labelledby="v2-wizard-title" style="margin:32px 0 0;border:1px solid var(--border);border-radius:12px;padding:24px;background:var(--bg);">
+  <header style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px;flex-wrap:wrap;">
+   <h2 id="v2-wizard-title" style="margin:0;font-size:20px;font-weight:800;">
+    クイック wizard — 3 step で SSE 体験
+   </h2>
+   <span style="font-size:12px;color:var(--text-muted);padding:4px 8px;border:1px solid var(--border);border-radius:8px;">
+    v2 / 200 LOC max / 0 framework
+   </span>
+  </header>
+  <p class="pg-hint" style="margin:0 0 16px;">
+   Step 1 で <strong>API キーまたは匿名</strong> を選び、Step 2 で <strong>tool + query</strong> を指定、
+   Step 3 で <strong>結果 + curl / Python / SDK スニペット</strong> を出力します。
+   anonymous = <span data-fact="anonymous_quota_per_day">3</span> req/日、API キー = ¥3/req 従量。
+  </p>
+
+  <!-- Step 1: auth mode -->
+  <div id="v2-step-1" class="v2-step" data-state="active"
+       style="border:1px solid var(--border);border-radius:8px;padding:16px;margin:0 0 12px;">
+   <h3 style="margin:0 0 8px;font-size:15px;font-weight:700;">step 1 / 認証モード</h3>
+   <div role="radiogroup" aria-label="認証モード" style="display:flex;gap:14px;flex-wrap:wrap;">
+    <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;">
+     <input type="radio" name="v2-auth" value="anon" id="v2-auth-anon" checked>
+     <span><strong>匿名</strong> — 3 req/日 (JST 00:00 リセット)</span>
+    </label>
+    <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;">
+     <input type="radio" name="v2-auth" value="key" id="v2-auth-key">
+     <span><strong>API キー</strong> — 無制限 ¥3/req 従量</span>
+    </label>
+   </div>
+   <div id="v2-key-input-wrap" hidden style="margin:10px 0 0;">
+    <label for="v2-api-key" style="font-size:13px;color:var(--text-muted);">
+     API キー
+     <input type="password" id="v2-api-key" autocomplete="off" spellcheck="false"
+            placeholder="am_..." style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;margin-top:4px;">
+    </label>
+    <p class="pg-hint" style="margin:6px 0 0;">
+     キー未所持の方は <a href="/dashboard">ダッシュボード</a> から 1 分で発行できます。
+    </p>
+   </div>
+   <button type="button" id="v2-step-1-next" class="pg-btn pg-btn-primary" style="margin:12px 0 0;">
+    step 2 へ →
+   </button>
+  </div>
+
+  <!-- Step 2: tool + query -->
+  <div id="v2-step-2" class="v2-step" data-state="locked"
+       style="border:1px solid var(--border);border-radius:8px;padding:16px;margin:0 0 12px;opacity:0.55;">
+   <h3 style="margin:0 0 8px;font-size:15px;font-weight:700;">step 2 / tool + query</h3>
+   <label for="v2-tool" style="display:block;font-size:13px;color:var(--text-muted);margin:0 0 4px;">
+    対象 tool
+   </label>
+   <select id="v2-tool" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;margin:0 0 10px;" disabled>
+    <option value="search_programs">search_programs — 制度検索 (補助金/融資/税制/認定 11,601 件)</option>
+    <option value="search_cases">search_cases — 採択事例 (2,286 件)</option>
+    <option value="search_loans">search_loans — 融資 (108 件、担保/個人保証 3軸)</option>
+    <option value="search_laws">search_laws — 法令 (9,484 catalog / 6,493 全文)</option>
+    <option value="search_tax_rules">search_tax_rules — 税制 ruleset (50 件)</option>
+    <option value="check_enforcement">check_enforcement — 行政処分 (1,185 件)</option>
+   </select>
+
+   <label for="v2-query" style="display:block;font-size:13px;color:var(--text-muted);margin:0 0 4px;">
+    query (キーワード, スペース区切り、全角OK)
+   </label>
+   <input type="text" id="v2-query" placeholder="例: IT導入 補助金 東京都"
+          autocomplete="off" spellcheck="false"
+          style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;margin:0 0 10px;" disabled>
+
+   <button type="button" id="v2-run" class="pg-btn pg-btn-primary" disabled>
+    SSE で実行
+   </button>
+   <span id="v2-status" aria-live="polite" style="margin-left:10px;font-size:13px;color:var(--text-muted);"></span>
+  </div>
+
+  <!-- Step 3: result + snippets -->
+  <div id="v2-step-3" class="v2-step" data-state="locked"
+       style="border:1px solid var(--border);border-radius:8px;padding:16px;margin:0 0 12px;opacity:0.55;">
+   <h3 style="margin:0 0 8px;font-size:15px;font-weight:700;">step 3 / 結果 + コード例</h3>
+
+   <div id="v2-result-table-wrap" style="margin:0 0 12px;overflow-x:auto;">
+    <table id="v2-result-table" style="width:100%;border-collapse:collapse;font-size:13px;">
+     <thead><tr style="background:var(--bg-alt);">
+      <th style="padding:6px 8px;text-align:left;border-bottom:1px solid var(--border);">#</th>
+      <th style="padding:6px 8px;text-align:left;border-bottom:1px solid var(--border);">title</th>
+      <th style="padding:6px 8px;text-align:left;border-bottom:1px solid var(--border);">source</th>
+     </tr></thead>
+     <tbody id="v2-result-tbody">
+      <tr><td colspan="3" style="padding:12px;color:var(--text-muted);text-align:center;">step 2 を実行すると結果がここに表示されます</td></tr>
+     </tbody>
+    </table>
+   </div>
+
+   <div class="v2-tabs" role="tablist" aria-label="コード例" style="display:flex;gap:6px;margin:14px 0 0;border-bottom:1px solid var(--border);">
+    <button role="tab" type="button" data-snippet="curl" id="v2-tab-curl" aria-selected="true"
+            style="padding:8px 14px;border:none;background:transparent;cursor:pointer;font-weight:600;font-size:13px;border-bottom:2px solid var(--accent);">curl</button>
+    <button role="tab" type="button" data-snippet="python" id="v2-tab-python" aria-selected="false"
+            style="padding:8px 14px;border:none;background:transparent;cursor:pointer;font-weight:600;font-size:13px;border-bottom:2px solid transparent;">Python</button>
+    <button role="tab" type="button" data-snippet="sdk" id="v2-tab-sdk" aria-selected="false"
+            style="padding:8px 14px;border:none;background:transparent;cursor:pointer;font-weight:600;font-size:13px;border-bottom:2px solid transparent;">SDK (TS)</button>
+   </div>
+
+   <pre id="v2-snippet" style="margin:10px 0 0;padding:12px 14px;background:var(--bg-alt);border:1px solid var(--border);border-radius:6px;font-size:12.5px;line-height:1.55;overflow-x:auto;white-space:pre;"># step 2 を実行するとここにコード例が表示されます
+</pre>
+   <button type="button" id="v2-copy" class="pg-btn pg-btn-secondary" style="margin:10px 0 0;">
+    スニペットをコピー
+   </button>
+   <span id="v2-copy-status" aria-live="polite" style="margin-left:10px;font-size:13px;color:var(--text-muted);"></span>
+  </div>
+ </section>
+
+ <script>
+ /* ----------------------------------------------------------------------
+    Wave 20 B8: v2 wizard controller. Vanilla JS, no framework.
+    ---------------------------------------------------------------------- */
+ (function () {
+   'use strict';
+   var API_BASE = (window.JPCITE_API_BASE || 'https://api.jpcite.com').replace(/\/$/, '');
+
+   var step1 = document.getElementById('v2-step-1');
+   var step2 = document.getElementById('v2-step-2');
+   var step3 = document.getElementById('v2-step-3');
+   if (!step1 || !step2 || !step3) return;
+
+   var authAnon = document.getElementById('v2-auth-anon');
+   var authKey  = document.getElementById('v2-auth-key');
+   var keyInput = document.getElementById('v2-api-key');
+   var keyWrap  = document.getElementById('v2-key-input-wrap');
+   var nextBtn  = document.getElementById('v2-step-1-next');
+
+   var toolSel  = document.getElementById('v2-tool');
+   var queryEl  = document.getElementById('v2-query');
+   var runBtn   = document.getElementById('v2-run');
+   var statusEl = document.getElementById('v2-status');
+
+   var tbody    = document.getElementById('v2-result-tbody');
+   var snippetEl = document.getElementById('v2-snippet');
+   var copyBtn  = document.getElementById('v2-copy');
+   var copyStat = document.getElementById('v2-copy-status');
+
+   var tabCurl   = document.getElementById('v2-tab-curl');
+   var tabPython = document.getElementById('v2-tab-python');
+   var tabSdk    = document.getElementById('v2-tab-sdk');
+
+   var snippetKind = 'curl';     // current code-example kind
+   var lastQuery = null;          // last (tool, query) executed
+   var lastTool = null;
+
+   /* Step 1 → enable key input on radio toggle. */
+   authAnon.addEventListener('change', function () { keyWrap.hidden = true; });
+   authKey.addEventListener('change',  function () { keyWrap.hidden = false; keyInput.focus(); });
+
+   nextBtn.addEventListener('click', function () {
+     /* unlock step 2 */
+     step2.style.opacity = '1';
+     step2.dataset.state = 'active';
+     toolSel.disabled = false;
+     queryEl.disabled = false;
+     runBtn.disabled  = false;
+     queryEl.focus();
+   });
+
+   /* Step 2 → SSE run.
+      We POST to /v1/search/stream?tool=...&q=... with EventSource.
+      Since EventSource only supports GET, the API consumes query params. */
+   runBtn.addEventListener('click', function () {
+     var q = (queryEl.value || '').trim();
+     if (!q) { statusEl.textContent = 'query が空です'; return; }
+     lastQuery = q;
+     lastTool  = toolSel.value;
+     statusEl.textContent = '接続中…';
+     runBtn.disabled = true;
+
+     var url = API_BASE + '/v1/search/stream'
+         + '?tool=' + encodeURIComponent(lastTool)
+         + '&q='    + encodeURIComponent(q);
+
+     var es;
+     try {
+       /* EventSource cannot set Authorization header in browser. The
+          /v1/search/stream endpoint accepts `?api_key=` as a fallback
+          for SSE, OR a session cookie set via login. For wizard simplicity
+          we pass api_key over the wire iff user explicitly chose key mode. */
+       if (authKey.checked && keyInput.value) {
+         url += '&api_key=' + encodeURIComponent(keyInput.value);
+       }
+       es = new EventSource(url);
+     } catch (err) {
+       statusEl.textContent = 'EventSource 起動失敗: ' + err.message;
+       runBtn.disabled = false;
+       return;
+     }
+
+     /* result rows arrive as message events, each carrying a single
+        row JSON. The server emits a final `event: done` to signal
+        completion. */
+     var rows = [];
+     es.addEventListener('message', function (ev) {
+       try {
+         var payload = JSON.parse(ev.data);
+         if (Array.isArray(payload.rows)) {
+           rows = rows.concat(payload.rows);
+         } else if (payload.row) {
+           rows.push(payload.row);
+         }
+         renderRows(rows);
+       } catch (err) { /* skip malformed chunk */ }
+     });
+     es.addEventListener('done', function () {
+       statusEl.textContent = '完了 (' + rows.length + ' 件)';
+       es.close();
+       runBtn.disabled = false;
+       unlockStep3();
+     });
+     es.addEventListener('error', function () {
+       statusEl.textContent = 'SSE error (接続切断)';
+       try { es.close(); } catch (_) {}
+       runBtn.disabled = false;
+       /* Even on partial error, unlock step 3 with whatever rows we got
+          plus the code-example panel — the most important thing for
+          the user is the runnable snippet. */
+       unlockStep3();
+     });
+   });
+
+   function renderRows(rows) {
+     tbody.innerHTML = '';
+     if (!rows.length) {
+       var tr = document.createElement('tr');
+       tr.innerHTML = '<td colspan="3" style="padding:12px;color:var(--text-muted);text-align:center;">結果なし</td>';
+       tbody.appendChild(tr);
+       return;
+     }
+     rows.slice(0, 20).forEach(function (r, i) {
+       var tr = document.createElement('tr');
+       tr.innerHTML =
+         '<td style="padding:6px 8px;border-bottom:1px solid var(--border);">' + (i + 1) + '</td>' +
+         '<td style="padding:6px 8px;border-bottom:1px solid var(--border);">' + escapeHtml(r.title || r.name || r.id || '(no title)') + '</td>' +
+         '<td style="padding:6px 8px;border-bottom:1px solid var(--border);"><a href="' + escapeAttr(r.source_url || '#') + '" target="_blank" rel="noopener">source →</a></td>';
+       tbody.appendChild(tr);
+     });
+   }
+
+   function unlockStep3() {
+     step3.style.opacity = '1';
+     step3.dataset.state = 'active';
+     renderSnippet();
+   }
+
+   function renderSnippet() {
+     if (!lastTool || lastQuery === null) {
+       snippetEl.textContent = '# step 2 を実行するとここにコード例が表示されます\n';
+       return;
+     }
+     if (snippetKind === 'curl') snippetEl.textContent = curlSnippet(lastTool, lastQuery);
+     else if (snippetKind === 'python') snippetEl.textContent = pythonSnippet(lastTool, lastQuery);
+     else snippetEl.textContent = sdkSnippet(lastTool, lastQuery);
+   }
+
+   function curlSnippet(tool, q) {
+     var hdr = authKey.checked && keyInput.value
+       ? '\\\n  -H "Authorization: Bearer ' + maskKey(keyInput.value) + '"'
+       : '';
+     return 'curl -N "' + API_BASE + '/v1/search/stream'
+       + '?tool=' + encodeURIComponent(tool)
+       + '&q=' + encodeURIComponent(q) + '" ' + hdr;
+   }
+
+   function pythonSnippet(tool, q) {
+     var keyLine = authKey.checked && keyInput.value
+       ? '\nHEADERS = {"Authorization": "Bearer ' + maskKey(keyInput.value) + '"}'
+       : '\nHEADERS = {}';
+     return [
+       'import httpx',
+       keyLine,
+       '',
+       'with httpx.stream("GET",',
+       '    "' + API_BASE + '/v1/search/stream",',
+       '    params={"tool": "' + tool + '", "q": "' + q + '"},',
+       '    headers=HEADERS, timeout=30.0) as r:',
+       '    for line in r.iter_lines():',
+       '        if line.startswith("data: "):',
+       '            print(line[6:])',
+     ].join('\n');
+   }
+
+   function sdkSnippet(tool, q) {
+     return [
+       'import { JpciteClient } from "@jpcite/sdk";',
+       '',
+       'const client = new JpciteClient({',
+       '  apiKey: ' + (authKey.checked && keyInput.value ? '"' + maskKey(keyInput.value) + '"' : 'undefined') + ',  // undefined = anonymous',
+       '});',
+       '',
+       'for await (const row of client.searchStream({ tool: "' + tool + '", q: "' + q + '" })) {',
+       '  console.log(row.title, row.source_url);',
+       '}',
+     ].join('\n');
+   }
+
+   function maskKey(k) {
+     /* Show first 4 + last 2 of the key so the copied snippet works on
+        a hand-edit but does not paste the full key into a screenshot. */
+     if (!k || k.length < 10) return 'am_xxx';
+     return k.substring(0, 4) + '...' + k.substring(k.length - 2);
+   }
+
+   /* Tab switch (curl / python / sdk) */
+   [tabCurl, tabPython, tabSdk].forEach(function (btn) {
+     btn.addEventListener('click', function () {
+       snippetKind = btn.dataset.snippet;
+       [tabCurl, tabPython, tabSdk].forEach(function (b) {
+         b.setAttribute('aria-selected', String(b === btn));
+         b.style.borderBottom = (b === btn) ? '2px solid var(--accent)' : '2px solid transparent';
+       });
+       renderSnippet();
+     });
+   });
+
+   copyBtn.addEventListener('click', function () {
+     var txt = snippetEl.textContent || '';
+     if (!txt) return;
+     try {
+       navigator.clipboard.writeText(txt).then(function () {
+         copyStat.textContent = 'コピーしました';
+         setTimeout(function () { copyStat.textContent = ''; }, 3000);
+       });
+     } catch (err) {
+       copyStat.textContent = 'コピー失敗: ' + err.message;
+     }
+   });
+
+   function escapeHtml(s) {
+     return String(s == null ? '' : s)
+       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+   }
+   function escapeAttr(s) { return escapeHtml(s); }
+ })();
+ </script>
+
  <p class="legal-note" style="font-size:13px;color:var(--text-muted);margin:24px 0;border-top:1px solid var(--border);padding-top:16px;">
 本サービスは情報検索です。 個別具体的な税務・法律判断は資格を有する専門家にご相談ください。
 </p>
