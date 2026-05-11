@@ -1,0 +1,56 @@
+From: info@bookyou.net
+To: contact@mcpservers.org
+Reply-To: info@bookyou.net
+Subject: [mcp server submission] jpcite =?utf-8?b?4oCU?= Japanese
+ public-program evidence
+Date: Mon, 11 May 2026 18:10:40 +0000
+X-Mailer: jpcite-offline/submit_mcpservers_mail
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+Subject: [mcp server submission] jpcite =E2=80=94 Japanese public-program evi=
+dence
+
+Hello mcpservers.org team,
+
+I'd like jpcite added to the catalog. Short description and metadata below.
+
+Server Name:        jpcite
+Short Description:  Japanese public-program evidence MCP =E2=80=94 subsidies,=
+ loans,
+                    tax, law, invoice & corporate data. 139 tools. First-
+                    party source citations (URL + source_fetched_at +
+                    =E4=BA=92=E6=8F=9B/=E6=8E=92=E4=BB=96 rules) for every ro=
+w.
+Link (GitHub):      https://github.com/shigetosidumeda-cyber/autonomath-mcp
+Link (Homepage):    https://jpcite.com
+Category:           Government / Legal / Finance / Data / Compliance
+Contact Email:      info@bookyou.net
+
+Additional metadata:
+- PyPI:        autonomath-mcp v0.3.4
+- Anthropic Official MCP Registry: LIVE
+  https://registry.modelcontextprotocol.io/v0/servers?search=3Dautonomath
+- Smithery:    @bookyou/jpcite
+- Transport:   stdio + Streamable HTTP (MCP 2025-06-18 protocol)
+- License:     MIT
+
+Honest scope: 11,601 searchable programs + 9,484 e-Gov laws + 13,801 =E9=81=
+=A9=E6=A0=BC
+=E4=BA=8B=E6=A5=AD=E8=80=85 + 166K corporate entities + 1,185 =E8=A1=8C=E6=94=
+=BF=E5=87=A6=E5=88=86 + 2,065 court decisions.
+Maintained by Bookyou=E6=A0=AA=E5=BC=8F=E4=BC=9A=E7=A4=BE (=E9=81=A9=E6=A0=BC=
+=E8=AB=8B=E6=B1=82=E6=9B=B8=E7=99=BA=E8=A1=8C=E4=BA=8B=E6=A5=AD=E8=80=85=E7=
+=95=AA=E5=8F=B7 T8010001213708).
+
+Pricing: anonymous tier 3 req/day per IP (free, no signup); metered tier
+=C2=A53/billable unit (=E7=A8=8E=E8=BE=BC =C2=A53.30) =E2=80=94 fits the publ=
+ic catalog "Free" badge with
+a paid path for heavy users.
+
+Please confirm receipt and ETA for listing. Happy to provide additional
+evidence packets on request.
+
+=E2=80=94 Shigetoumi Umeda / Bookyou=E6=A0=AA=E5=BC=8F=E4=BC=9A=E7=A4=BE
+  info@bookyou.net
