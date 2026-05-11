@@ -1,0 +1,366 @@
+{
+  "_meta": {
+    "doc": "jpcite MCP registry presence snapshot",
+    "wave": "W28",
+    "as_of_utc": "2026-05-12T18:11:00Z",
+    "as_of_jst": "2026-05-13T03:11:00+09:00",
+    "previous_snapshot": "analytics/registry_status_w23.json",
+    "generator": "Wave 28 AI registry deeper attack (Smithery+Glama 24-72h elapsed verify + mcpservers.org mail SENT + mcphub.io/.dev probe + alternative platform discovery)",
+    "schema_version": 1,
+    "next_refresh_cron": "weekly Mon 09:00 JST via scripts/cron/ai_registry_status_refresh.py (planned)",
+    "states": ["LIVE", "pending", "not_submitted", "dead", "form_only", "redirect_to_unrelated", "autocrawl_wait"],
+    "package": {
+      "pypi": "autonomath-mcp",
+      "latest_pypi_version": "0.3.4",
+      "pending_pypi_version": "0.3.5",
+      "github_repo": "https://github.com/shigetosidumeda-cyber/autonomath-mcp",
+      "homepage": "https://jpcite.com",
+      "tool_count_default_gates": 139,
+      "tool_count_runtime": 146,
+      "tool_count_manifest": 139
+    }
+  },
+  "platforms": [
+    {
+      "id": "anthropic_official_registry",
+      "name": "Official MCP Registry (Anthropic / modelcontextprotocol.io)",
+      "state": "LIVE",
+      "url": "https://registry.modelcontextprotocol.io/v0/servers?search=autonomath",
+      "server_name": "io.github.shigetosidumeda-cyber/autonomath-mcp",
+      "versions_listed": ["0.3.2", "0.3.3", "0.3.4"],
+      "latest_version_listed": "0.3.4",
+      "isLatest_flag": true,
+      "tools_advertised": 120,
+      "publish_method": "mcp-publisher publish (github auth via OIDC, see .github/workflows/mcp-registry-publish.yml)",
+      "verified_at_w28_utc": "2026-05-12T18:11:00Z",
+      "next_action": "publish v0.3.5 once PyPI 0.3.5 artifact lands (registry validates PyPI 404 -> 400). PR #55 / release.yml in retry monitor.",
+      "evidence_url": "https://registry.modelcontextprotocol.io/v0/servers?search=autonomath"
+    },
+    {
+      "id": "pypi",
+      "name": "PyPI autonomath-mcp",
+      "state": "LIVE",
+      "url": "https://pypi.org/project/autonomath-mcp/",
+      "latest_version": "0.3.4",
+      "all_releases": ["0.3.0", "0.3.1", "0.3.2", "0.3.3", "0.3.4"],
+      "pending": "0.3.5 (release.yml retry on PR #55 / Wave 27)",
+      "verified_at_w28_utc": "2026-05-12T18:11:00Z"
+    },
+    {
+      "id": "smithery_ai",
+      "name": "Smithery (smithery.ai)",
+      "state": "autocrawl_wait",
+      "url": "https://smithery.ai/server/@bookyou/jpcite",
+      "http_status_w28": "429 (rate-limited via WebFetch) / 308 redirect to /servers/@bookyou/jpcite via curl",
+      "alt_url_probe_w28": "https://api.smithery.ai/servers/@bookyou/jpcite -> 404 {\"error\":\"Server not found\"}",
+      "elapsed_since_webhook_h": "~26 (Wave 23 fired smithery-deploy.yml 2026-05-11 ~16:00 UTC)",
+      "yaml_id_set": "@bookyou/jpcite",
+      "webhook_automation": ".github/workflows/smithery-deploy.yml (Wave 23, fired SUCCESS)",
+      "next_action": "wait until 72h elapsed (2026-05-14 ~16:00 UTC). If still 404, re-fire workflow + Discord escalate.",
+      "submission_doc": "docs/_internal/mcp_registry_submissions/smithery_submission.md"
+    },
+    {
+      "id": "glama_ai",
+      "name": "Glama (glama.ai)",
+      "state": "autocrawl_wait",
+      "url": "https://glama.ai/mcp/servers/io.github.shigetosidumeda-cyber/autonomath-mcp",
+      "http_status_w28": "404",
+      "api_probe_w28": "https://glama.ai/api/mcp/v1/servers?q=jpcite|autonomath -> 0 matches (returns generic 10-server page, search param ignored)",
+      "elapsed_since_initial_trigger_h": "~144 (24-72h auto-crawl ETA fully exhausted)",
+      "exceeded_auto_crawl_eta": true,
+      "discord_invite": "https://discord.gg/C3eCXhYWtJ",
+      "escalation_doc": "docs/_internal/mcp_registry_submissions/glama_discord_escalation.md",
+      "next_action": "Discord webhook URL not publicly exposed. Operator paste-verbatim via docs/_internal/mcp_registry_submissions/glama_discord_escalation.md. Alternative: comment update on awesome-mcp PR #6192 (Wave 28).",
+      "pr_6192_state": "OPEN MERGEABLE (4 comments, last 2026-05-11 14:41 UTC); glama-bot blocking on Glama listing."
+    },
+    {
+      "id": "pulsemcp",
+      "name": "PulseMCP (pulsemcp.com)",
+      "state": "pending",
+      "url": "https://www.pulsemcp.com/servers/jpcite",
+      "http_status_w28": "404 (WebFetch) / 403 CF-block on direct curl",
+      "submission_method": "auto-ingest from Anthropic Official Registry (daily) + weekly process",
+      "expected_eta": "2026-05-13 earliest / 2026-05-20 latest (7-14d post v0.3.4 publish 2026-05-06)",
+      "elapsed_since_anthropic_publish_h": "~163",
+      "next_action": "wait until 2026-05-20 elapses. Mailer ready: tools/offline/submit_pulsemcp_mail.py.",
+      "submission_doc": "docs/_internal/mcp_registry_submissions/pulsemcp_submission.md"
+    },
+    {
+      "id": "mcphub_dev",
+      "name": "mcphub.dev",
+      "state": "form_only_broken_repo",
+      "url": "https://mcphub.dev/server/jpcite",
+      "http_status_w28": "404 on /server/jpcite; 200 on / and /submit",
+      "submit_form_note": "Form mentions 'Direct form submissions are coming soon' and points to GitHub repo aswbmw/mcp-hub for PR submission. BUT https://github.com/aswbmw/mcp-hub returns 404 (repo deleted/private).",
+      "submission_blocker": "PR fallback path broken (target repo 404). No alternative submission channel visible.",
+      "next_action": "drop from active tracking until aswbmw/mcp-hub re-emerges or alternative submission channel published."
+    },
+    {
+      "id": "mcphub_io",
+      "name": "mcphub.io",
+      "state": "spa_no_submit",
+      "url": "https://mcphub.io",
+      "http_status_w28": "200 (Vercel-hosted Next.js SPA)",
+      "title": "MCP Hub - MCP Server Search & Discover & Collection Website",
+      "probe_result": "Pure client-side rendered SPA (BAILOUT_TO_CLIENT_SIDE_RENDERING). No server-side submit form or API endpoint visible. Browse + search only.",
+      "next_action": "no submit channel available. Drop unless a future revision adds a submission API."
+    },
+    {
+      "id": "mcphub_dev_separate_brand_check",
+      "name": "mcphub.dev vs mcphub.io brand separation",
+      "state": "separate_platforms",
+      "verdict": "mcphub.io = MCP Hub (Vercel SPA, browse-only, no submit API). mcphub.dev = MCP Hub directory (CF-hosted Next.js, submit-form-only with broken GitHub PR fallback). Different operators, both unsubmittable as of W28.",
+      "next_action": "track both as dead-end submission paths until either ships a working endpoint."
+    },
+    {
+      "id": "mcp_so",
+      "name": "mcp.so",
+      "state": "pending",
+      "url": "https://mcp.so/server/jpcite/bookyou",
+      "http_status_w28": "200 (page-template placeholder)",
+      "submission_method": "https://mcp.so/submit (free form; paid $39 expedite — NOT used per zero-touch organic-only policy)",
+      "next_action": "re-poll in 7d (2026-05-19). If still placeholder, submit via free form via operator-paste."
+    },
+    {
+      "id": "awesome_mcp_punkpeye",
+      "name": "punkpeye/awesome-mcp-servers PR #6192",
+      "state": "pending",
+      "url": "https://github.com/punkpeye/awesome-mcp-servers/pull/6192",
+      "pr_state": "OPEN",
+      "pr_mergeable_state": "MERGEABLE",
+      "reviewer_blocker": "glama-bot requires Glama listing live before merge (badge URL must resolve)",
+      "comments_count_at_w28": 4,
+      "last_comment_utc": "2026-05-11T14:41:55Z",
+      "next_action": "Wave 28: gated on Glama listing. Plan Wave 29 follow-up comment if Glama still 404 by 2026-05-15."
+    },
+    {
+      "id": "mcpservers_org",
+      "name": "mcpservers.org (community catalog)",
+      "state": "pending_mail_sent",
+      "url": "https://mcpservers.org/servers/jpcite",
+      "http_status_w28": "404 (not yet indexed)",
+      "submission_method": "email contact@mcpservers.org via xrea SMTP (CF email-protection decoded Wave 23)",
+      "mail_sent_at_utc": "2026-05-12T18:10:41Z",
+      "mail_archive_path": "tools/offline/_inbox/20260511T181041Z_mcpservers_submission.eml",
+      "mail_archive_meta": "tools/offline/_inbox/20260511T181041Z_mcpservers_submission.meta.json",
+      "mail_subject": "[mcp server submission] jpcite — Japanese public-program evidence",
+      "mail_body_bytes": 1512,
+      "expected_eta": "7-14d from email send (2026-05-19 earliest / 2026-05-26 latest)",
+      "next_action": "wait. If no listing by 2026-05-26, resend mail or escalate via GitHub issue on backing repo.",
+      "submission_doc": "docs/_internal/mcp_registry_submissions/mcpservers_org_submission.md"
+    },
+    {
+      "id": "cursor_directory",
+      "name": "cursor.directory MCP store",
+      "state": "LIVE",
+      "url": "https://cursor.directory/mcp",
+      "note": "Wave 23 confirmed LIVE via Wave 16 submission flow (.mcp.json + cursor.directory submit URL).",
+      "next_action": "no action; passive."
+    },
+    {
+      "id": "claude_ai_external_plugins",
+      "name": "Claude.ai external plugins (Anthropic)",
+      "state": "LIVE",
+      "url": "https://claude.ai",
+      "note": "Wave 23 confirmed LIVE via Wave 16 submission flow (submit_claude_project_mail.py + draft).",
+      "next_action": "no action; passive."
+    },
+    {
+      "id": "mcp_run_turbomcp",
+      "name": "mcp.run -> turbomcp.ai",
+      "state": "redirect_to_unrelated",
+      "url": "https://mcp.run",
+      "redirect_target": "https://turbomcp.ai/",
+      "http_status_w28": "301 Moved Permanently",
+      "verdict": "domain repurposed to enterprise self-hosted gateway. Sales-led. Not a public catalog.",
+      "next_action": "drop from active tracking."
+    },
+    {
+      "id": "modelcontextprotocol_servers_readme",
+      "name": "modelcontextprotocol/servers README resources section",
+      "state": "not_submitted",
+      "url": "https://github.com/modelcontextprotocol/servers",
+      "policy": "README only links to community awesome-lists; direct PR to add server is rejected — register at registry.modelcontextprotocol.io instead",
+      "next_action": "no action; covered by Anthropic Official Registry (LIVE)."
+    },
+    {
+      "id": "mcpregistry_io",
+      "name": "mcpregistry.io",
+      "state": "dead",
+      "url": "https://mcpregistry.io",
+      "http_status": "timeout (28s+ x 3 attempts, Wave 20 + Wave 22 + W23)",
+      "verdict": "domain non-responsive; drop from active tracking.",
+      "next_action": "drop."
+    },
+    {
+      "id": "mcpregistry_org_alt_probe",
+      "name": "mcpregistry.org (W28 alt-domain probe)",
+      "state": "dead_endpoint",
+      "url": "https://mcpregistry.org",
+      "http_status_w28": "405 Method Not Allowed (no GET handler; possibly API-only with POST or webhook receiver)",
+      "verdict": "no public catalog / no documented submission path.",
+      "next_action": "drop."
+    },
+    {
+      "id": "mcpfinder_com",
+      "name": "mcpfinder.com (W28 new discovery)",
+      "state": "form_only_empty",
+      "url": "https://mcpfinder.com/",
+      "http_status_w28": "308 -> 200 (Next.js Vercel)",
+      "title": "Model Context Protocol Finder - Discover AI Development Tools",
+      "submit_path": "/submit (Google Sign-in gated form; no public API endpoint visible)",
+      "directory_state": "empty ('No Model Context Protocols found' visible W28)",
+      "next_action": "low priority. Empty catalog + Google-auth-gated submit = high friction for low signal. Re-poll Q3 2026."
+    },
+    {
+      "id": "mcp_explorer_com",
+      "name": "mcp-explorer.com (W28 new discovery)",
+      "state": "out_of_scope",
+      "url": "https://mcp-explorer.com/",
+      "title": "MCP Explorer: The Developer Tool for MCP Servers",
+      "verdict": "desktop application (macOS/Windows/Linux) for testing/debugging MCP servers, NOT a directory or catalog. Out of scope for registry submission.",
+      "next_action": "drop. Not a submission target."
+    },
+    {
+      "id": "smithery_dev_alt_domain",
+      "name": "smithery.dev (W28 alt-domain probe)",
+      "state": "alive_unrelated",
+      "url": "https://smithery.dev/",
+      "http_status_w28": "200",
+      "verdict": "alive domain. Not the canonical Smithery (which is smithery.ai). Treat as parked/unrelated until evidence shows otherwise.",
+      "next_action": "no action."
+    }
+  ],
+  "summary": {
+    "LIVE": 4,
+    "pending": 2,
+    "pending_mail_sent": 1,
+    "autocrawl_wait": 2,
+    "form_only_broken_repo": 1,
+    "spa_no_submit": 1,
+    "separate_platforms_marker": 1,
+    "form_only_empty": 1,
+    "out_of_scope": 1,
+    "redirect_to_unrelated": 1,
+    "dead": 1,
+    "dead_endpoint": 1,
+    "alive_unrelated": 1,
+    "not_submitted": 1,
+    "total_tracked": 19,
+    "delta_vs_w23": {
+      "newly_LIVE": [],
+      "state_changes": {
+        "smithery_ai": "pending -> autocrawl_wait (webhook fired SUCCESS Wave 23, 26h elapsed of 72h ETA)",
+        "glama_ai": "pending -> autocrawl_wait (144h elapsed, fully exhausted 24-72h ETA, Discord escalation requires operator paste)",
+        "mcpservers_org": "pending -> pending_mail_sent (W28 submit_mcpservers_mail.py --send executed 2026-05-12T18:10:41Z, archive recorded)",
+        "mcphub_dev": "form_only -> form_only_broken_repo (W28 verified aswbmw/mcp-hub repo 404 -> PR fallback path broken)",
+        "pypi": "implicit -> LIVE explicit (W28 added as tracked platform for v0.3.4 confirm + v0.3.5 pending)"
+      },
+      "newly_added_platforms": [
+        "pypi (LIVE explicit)",
+        "mcphub_io (spa_no_submit, separate from mcphub.dev)",
+        "mcphub_dev_separate_brand_check (separate_platforms marker)",
+        "mcpregistry_org_alt_probe (dead_endpoint - 405 no GET handler)",
+        "mcpfinder_com (form_only_empty - Google-auth gated, empty catalog)",
+        "mcp_explorer_com (out_of_scope - desktop app, not directory)",
+        "smithery_dev_alt_domain (alive_unrelated - not canonical Smithery)",
+        "cursor_directory (LIVE - explicit from Wave 16)",
+        "claude_ai_external_plugins (LIVE - explicit from Wave 16)"
+      ],
+      "actions_executed_w28": [
+        "mcpservers.org submission email SENT via xrea SMTP (info@bookyou.net -> contact@mcpservers.org, 1512 bytes, archive saved)",
+        "Smithery state verified: 26h elapsed of 72h ETA, still 404 (within window)",
+        "Glama state verified: 144h elapsed, ETA fully exhausted, Discord escalation requires operator paste",
+        "mcphub.dev verified: GitHub PR fallback target (aswbmw/mcp-hub) is 404 dead",
+        "mcphub.io discovered as separate SPA platform (no submit channel)",
+        "5 alternative platform probes: mcpregistry.org (dead-endpoint), mcpfinder.com (empty), mcp-explorer.com (out-of-scope), smithery.dev (unrelated), mcp-store.com / mcphub-explorer.com (dead-domain)",
+        "Anthropic registry verified v0.3.4 isLatest=True (no drift since W23)",
+        "PyPI verified v0.3.4 latest, 5 releases history (no v0.3.5 yet, blocked on PR #55 release.yml)"
+      ]
+    },
+    "platforms_with_automation": 2,
+    "automation_workflows": [
+      ".github/workflows/mcp-registry-publish.yml (Anthropic Official, OIDC)",
+      ".github/workflows/smithery-deploy.yml (Smithery scan trigger, Wave 23)"
+    ]
+  },
+  "wave28_deliverables": {
+    "mcpservers_org_mail_sent": {
+      "smtp_host": "s374.xrea.com:587 (STARTTLS)",
+      "from": "info@bookyou.net",
+      "to": "contact@mcpservers.org",
+      "subject": "[mcp server submission] jpcite — Japanese public-program evidence",
+      "body_bytes": 1512,
+      "sent_at_utc": "2026-05-12T18:10:41Z",
+      "archive_eml": "tools/offline/_inbox/20260511T181041Z_mcpservers_submission.eml",
+      "archive_meta": "tools/offline/_inbox/20260511T181041Z_mcpservers_submission.meta.json"
+    },
+    "smithery_verify": {
+      "result": "still 404 / autocrawl_wait window not yet exhausted (~26h of 72h)",
+      "next_decision_at_utc": "2026-05-14T16:00:00Z"
+    },
+    "glama_verify": {
+      "result": "still 404 / ETA fully exhausted (144h)",
+      "discord_escalation_status": "doc canonicalized W23; operator paste-verbatim required (Discord webhook URL not publicly exposed)",
+      "alternative_escalation": "comment on awesome-mcp PR #6192 if Glama still 404 by 2026-05-15"
+    },
+    "mcphub_probes": {
+      "mcphub_dev": "form-only with broken PR target (aswbmw/mcp-hub 404)",
+      "mcphub_io": "Vercel SPA, no server-side submit or API",
+      "verdict": "both unsubmittable W28"
+    },
+    "alternative_platform_discovery": {
+      "probed_domains": [
+        "mcphub-explorer.com (dead)",
+        "mcp-store.com (dead)",
+        "ai-tool-hub.com (200, Japanese AI tools, not MCP-specific)",
+        "mcp-directory.com (302 -> porkbun parking)",
+        "mcpfinder.com (200, empty + auth-gated)",
+        "mcp.run (301 -> turbomcp.ai, sales-led)",
+        "mcpdiscovery.com (dead)",
+        "cline.bot (200, MCP client not directory)",
+        "mcp-marketplace.com (405)",
+        "mcpcatalog.com (dead)",
+        "mcpregistry.org (405)",
+        "mcp.cline.bot (dead)",
+        "mcp.continue.dev (dead)",
+        "mcp-store.org (dead)",
+        "mcptools.dev (dead)",
+        "mcp-explorer.com (200, desktop app not directory)",
+        "smithery.dev (200, alive but not canonical Smithery)",
+        "mcp.zed.dev (dead)"
+      ],
+      "verdict": "no new submittable directory discovered. Coverage at 8-platform Wave 23 set + cursor + claude + pypi = 4 LIVE + tracked candidates."
+    },
+    "awesome_mcp_alternative_PRs_planned": {
+      "candidates_with_submission_path": [
+        {
+          "repo": "appcypher/awesome-mcp-servers (5,529 stars)",
+          "structure": "Section-categorized list with PR contributions",
+          "best_category": "Government / Data (likely 'Other' or 'Business Management')"
+        },
+        {
+          "repo": "wong2/awesome-mcp-servers (4,053 stars)",
+          "structure": "TBD probe in Wave 29"
+        },
+        {
+          "repo": "PipedreamHQ/awesome-mcp-servers (271 stars)",
+          "structure": "Pipedream MCP server links only; not third-party submissions",
+          "verdict": "out of scope (Pipedream-internal catalog only)"
+        }
+      ],
+      "decision": "Defer multi-PR submission to Wave 29 (gate on Glama listing landing first to avoid same glama-bot block pattern). PR #6192 is the canonical landing — once Glama LIVE, replicate the badge to other lists."
+    }
+  },
+  "ttl_actions": [
+    {"action": "verify Smithery listing live (72h ETA exhausted)", "due_utc": "2026-05-14T16:00:00Z"},
+    {"action": "re-check mcp.so for jpcite metadata", "due_utc": "2026-05-19T18:00:00Z"},
+    {"action": "re-check PulseMCP auto-ingest at /servers/jpcite (14d ETA)", "due_utc": "2026-05-20T18:00:00Z"},
+    {"action": "re-check mcpservers.org listing (mail sent 2026-05-12 18:10:41Z, 7-14d)", "due_utc": "2026-05-26T18:00:00Z"},
+    {"action": "dispatch Glama Discord escalation (operator paste-verbatim)", "due_utc": "2026-05-13T00:00:00Z"},
+    {"action": "re-poll Glama listing after Discord escalation", "due_utc": "2026-05-15T18:00:00Z"},
+    {"action": "unblock awesome-mcp PR #6192 once Glama LIVE", "due_utc": "2026-05-15T18:00:00Z"},
+    {"action": "Wave 29: submit to appcypher/awesome-mcp-servers + wong2/awesome-mcp-servers (gated on Glama LIVE)", "due_utc": "2026-05-19T18:00:00Z"},
+    {"action": "publish v0.3.5 to Anthropic registry once PyPI 0.3.5 lands (PR #55 / release.yml retry)", "due_utc": "2026-05-15T18:00:00Z"}
+  ]
+}
