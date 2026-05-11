@@ -1344,6 +1344,29 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
 本サービスは情報検索です。 個別具体的な税務・法律判断は資格を有する専門家にご相談ください (税理士法 §52 / 弁護士法 §72)。
 </p>
 
+<!-- v3 9-widget dashboard navigation + placeholder (Wave 8 で full hydrate) -->
+<nav aria-label="dashboard" style="margin:16px 0;padding:12px;background:#f7f8fa;border-radius:8px;font-size:14px">
+  <a href="#api-keys" aria-current="page">api-keys</a> |
+  <a href="#usage">usage</a> |
+  <a href="#billing">billing</a> |
+  <a href="#saved_search">saved_search</a> |
+  <a href="#watches">watches</a> |
+  <a href="#artifacts">artifacts</a> |
+  <a href="#client_tags">client_tags</a> |
+  <a href="#docs">docs</a> |
+  <a href="#status">status</a>
+</nav>
+
+<section id="api-keys"><h2>api-keys</h2><p>既存 API キー管理 (発行・削除・rotation 警告)。実装は Wave 8 で hydrate、現状は既存 HTML が機能。</p></section>
+<section id="usage"><h2>usage</h2><p>月次 billable_units / sparkline / top5 path / X-Client-Tag 別 ROI。Wave 8。</p></section>
+<section id="billing"><h2>billing</h2><p>Stripe subscription 状態 + invoice list (T8010001213708 自動 inject) + Portal mint。</p></section>
+<section id="saved_search"><h2>saved_search</h2><p>保存済み検索 list + watch 化 + CSV export。Wave 8。</p></section>
+<section id="watches"><h2>watches</h2><p>法人/制度/許認可/法令 monitor + RSS/webhook/email channel。Wave 8。</p></section>
+<section id="artifacts"><h2>artifacts</h2><p>過去 90 日 artifact 履歴 (pack_id / created_at / type / units)、各行 → <a href="/artifact.html">/artifact.html</a> 遷移。Wave 8。</p></section>
+<section id="client_tags"><h2>client_tags</h2><p>X-Client-Tag enum + 顧問先別 ROI / 顧客 hint (free-text)。Wave 8。</p></section>
+<section id="docs"><h2>docs</h2><details><summary>connect/* 4 経路 (Claude Code / Cursor / ChatGPT / Codex)</summary><ul><li><a href="/connect/claude-code">Claude Code</a></li><li><a href="/connect/cursor">Cursor</a></li><li><a href="/connect/chatgpt">ChatGPT Custom GPT</a></li><li><a href="/connect/codex">OpenAI Codex / Agents SDK</a></li></ul></details></section>
+<section id="status"><h2>status</h2><iframe src="/status/" title="jpcite status" loading="lazy" style="width:100%;height:300px;border:1px solid #e2e8f0;border-radius:8px"></iframe></section>
+
  </div>
  </section>
 </main>

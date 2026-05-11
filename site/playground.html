@@ -699,6 +699,53 @@
  <strong>3 回の無料ライブ検証:</strong> Evidence Packet を返すエンドポイント (<code>GET /v1/intelligence/precomputed/query</code>) を選択済みです。 デフォルトで <code>source_tokens_basis=pdf_pages</code> · <code>source_pdf_pages=30</code> · <code>input_token_price_jpy_per_1m=300</code> が入っているため、 送信すると <code>source_url</code> · <code>source_fetched_at</code> · <code>known_gaps</code> · <code>compression.input_context_reduction_rate</code> が返ります。 2 回目は <code>source_pdf_pages</code> を変えて差を確認、 3 回目は自社の質問に差し替えてください。
  </div>
 
+ <!-- v3 evidence3 wizard 3 step (minimal viable、Wave 8 で full) -->
+ <div id="evidence3-wizard" style="display:none;max-width:720px;margin:24px auto;padding:24px;border:1px solid #e2e8f0;border-radius:12px;background:#fff">
+  <div style="margin:0 0 16px">
+    <strong>3 回で 1 社分の業務パックが完成します</strong>
+    <progress id="ev3-progress" value="1" max="3" style="width:100%"></progress>
+  </div>
+  <div id="ev3-quota-badge" style="float:right;font-size:13px;color:#64748b;margin:0 0 12px">quota: ●●● 3/3 残</div>
+  <div id="ev3-step-1" class="ev3-step">
+    <h3>step 1: 法人を特定</h3>
+    <label>法人番号 (13桁): <input id="ev3-houjin" type="text" inputmode="numeric" pattern="\d{13}" maxlength="13" placeholder="1234567890123" style="width:200px;padding:8px"></label>
+    <p id="ev3-houjin-status" style="min-height:24px;font-size:13px"></p>
+    <button id="ev3-next-1" type="button" disabled>次へ →</button>
+  </div>
+  <div id="ev3-step-2" class="ev3-step" style="display:none">
+    <h3>step 2: 相談目的 + 業種 + 規模</h3>
+    <fieldset><legend>相談目的 (複数選択可)</legend>
+      <label><input type="checkbox" name="intent" value="capex_subsidy"> 設備投資/補助金</label>
+      <label><input type="checkbox" name="intent" value="succession"> 事業承継</label>
+      <label><input type="checkbox" name="intent" value="tax"> 税制</label>
+      <label><input type="checkbox" name="intent" value="financing"> 融資</label>
+      <label><input type="checkbox" name="intent" value="digital"> DX/IT</label>
+      <label><input type="checkbox" name="intent" value="hr"> 採用/労務</label>
+      <label><input type="checkbox" name="intent" value="energy"> 省エネ/GX</label>
+    </fieldset>
+    <label>業種 (JSIC 3桁): <select id="ev3-jsic">
+      <option value="">選択してください</option>
+      <option value="241">241 鉄鋼業</option>
+      <option value="245">245 金属プレス製品</option>
+      <option value="291">291 ボイラ・原動機製造</option>
+      <option value="471">471 各種商品小売</option>
+      <option value="811">811 公共サービス</option>
+      <option value="other">その他 (Wave 8 で 22 JSIC 完全実装)</option>
+    </select></label>
+    <button id="ev3-next-2" type="button">次へ →</button>
+  </div>
+  <div id="ev3-step-3" class="ev3-step" style="display:none">
+    <h3>step 3: 出力選択</h3>
+    <label><input type="radio" name="output" value="dd_checklist" checked> DD 質問票 (30-60 問)</label><br>
+    <label><input type="radio" name="output" value="watch_register"> 月次 watch 登録</label><br>
+    <label><input type="radio" name="output" value="program_deep"> 制度詳細 deep</label>
+    <button id="ev3-submit" type="button">artifact を生成 (free) →</button>
+  </div>
+  <div id="ev3-cta" style="margin:32px 0 0;padding:16px;background:#f7f8fa;border-radius:8px;font-size:13px;color:#64748b">
+    API key で 100 件流す: <a href="/pricing.html#api-paid">/pricing.html#api-paid</a> (¥3/req metered、Stripe Checkout 1 分)
+  </div>
+ </div>
+
  <div class="pg-quota" id="pg-quota" data-state="ok" aria-live="polite">
  <span>匿名クォータ</span>
  <span class="pg-quota-num"><span id="pg-quota-remaining">--</span> / <span data-fact="anonymous_quota_per_day">3</span></span>
@@ -2695,6 +2742,52 @@
         return ep.id === 'intelligence.precomputed.query';
       });
       if (idx >= 0 && els.flowHint) els.flowHint.hidden = false;
+      // v3 evidence3 wizard 3 step activate (minimal viable、Wave 8 で full)
+      var ev3Wizard = document.getElementById('evidence3-wizard');
+      if (ev3Wizard) {
+        ev3Wizard.style.display = 'block';
+        var ev3Step = parseInt(qs.get('s') || '1', 10);
+        if (isNaN(ev3Step) || ev3Step < 1 || ev3Step > 3) ev3Step = 1;
+        var ev3Steps = document.querySelectorAll('.ev3-step');
+        for (var ev3i = 0; ev3i < ev3Steps.length; ev3i++) {
+          ev3Steps[ev3i].style.display = (ev3i + 1) === ev3Step ? 'block' : 'none';
+        }
+        var ev3Progress = document.getElementById('ev3-progress');
+        if (ev3Progress) ev3Progress.value = ev3Step;
+        // step transitions (next button → ?s=s+1 で reload、API call は Wave 8 で SSE 化)
+        var ev3Next1 = document.getElementById('ev3-next-1');
+        var ev3Houjin = document.getElementById('ev3-houjin');
+        if (ev3Houjin && ev3Next1) {
+          ev3Houjin.addEventListener('input', function() {
+            ev3Next1.disabled = !/^\d{13}$/.test(ev3Houjin.value);
+          });
+          ev3Next1.addEventListener('click', function() {
+            var p = new URLSearchParams(location.search);
+            p.set('flow', 'evidence3');
+            p.set('s', '2');
+            p.set('hb', ev3Houjin.value);
+            location.search = p.toString();
+          });
+        }
+        var ev3Next2 = document.getElementById('ev3-next-2');
+        if (ev3Next2) {
+          ev3Next2.addEventListener('click', function() {
+            var p = new URLSearchParams(location.search);
+            p.set('flow', 'evidence3');
+            p.set('s', '3');
+            location.search = p.toString();
+          });
+        }
+        var ev3Submit = document.getElementById('ev3-submit');
+        if (ev3Submit) {
+          ev3Submit.addEventListener('click', function() {
+            // Wave 8 で POST /v1/artifacts/{type} → artifact.html?id=<pack_id> redirect
+            var sel = document.querySelector('input[name="output"]:checked');
+            var outType = sel ? sel.value : 'dd_checklist';
+            location.href = '/artifact.html?type=' + encodeURIComponent(outType);
+          });
+        }
+      }
     }
     if (idx >= 0) {
       currentEndpoint = ENDPOINTS[idx];

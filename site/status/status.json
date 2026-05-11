@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-05-11T00:00:00Z",
+  "overall_status": "operational",
+  "components": [
+    {"id":"api","status":"operational","note":"REST + MCP via api.jpcite.com"},
+    {"id":"mcp","status":"operational","tools_count":139},
+    {"id":"billing","status":"operational","note":"Stripe metered + webhook"},
+    {"id":"data-freshness","status":"operational","datasets":4},
+    {"id":"dashboard","status":"operational","note":"magic-link login"}
+  ],
+  "active_incidents": [],
+  "scheduled_maintenance": []
+}
