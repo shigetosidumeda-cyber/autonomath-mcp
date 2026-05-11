@@ -1,9 +1,9 @@
 {
-  "snapshot_at": "2026-05-11T18:59:36+09:00",
+  "snapshot_at": "2026-05-11T20:39:19+09:00",
   "components": {
     "api": {
       "status": "down",
-      "latency_ms": 10128,
+      "latency_ms": 10061,
       "http": 0,
       "healthz_http": 0,
       "deep_http": 0,
@@ -12,7 +12,7 @@
     },
     "mcp": {
       "status": "down",
-      "latency_ms": 10108,
+      "latency_ms": 10037,
       "http": 0,
       "tools_count": null,
       "recurring_workflows": null,
@@ -63,7 +63,7 @@
     },
     "dashboard": {
       "status": "degraded",
-      "latency_ms": 380,
+      "latency_ms": 238,
       "http": 200,
       "has_billing_anchor": true,
       "login_request_http": 0,
