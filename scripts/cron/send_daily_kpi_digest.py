@@ -370,7 +370,135 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
         default=None,
         help="Write the rendered text body to this path.",
     )
+    # Wave 26: customer-facing Slack digest fan-out. ``--target email``
+    # preserves the existing operator-mail behaviour; ``--target slack``
+    # additionally POSTs a Block Kit payload to ``--webhook-url`` (per
+    # docs/integrations/slack_digest.md). ``--target both`` runs both
+    # paths sequentially. Slack delivery is best-effort: a non-2xx does
+    # NOT change the script's exit code so the cron pipeline keeps
+    # email working when Slack rotates the webhook URL.
+    p.add_argument(
+        "--target",
+        choices=("email", "slack", "both"),
+        default=os.environ.get("DIGEST_TARGET", "email"),
+        help="Where to send the digest. email (default) / slack / both.",
+    )
+    p.add_argument(
+        "--webhook-url",
+        default=os.environ.get("DIGEST_SLACK_WEBHOOK_URL"),
+        help="Slack incoming webhook URL when --target includes slack.",
+    )
+    p.add_argument(
+        "--customer-key",
+        default=os.environ.get("DIGEST_CUSTOMER_KEY"),
+        help=(
+            "Customer key label echoed in the Slack payload (audit only,"
+            " not used for billing — that happens via dispatch_webhooks)."
+        ),
+    )
     return p.parse_args(argv)
+
+
+def _render_slack_blocks(
+    payload: dict[str, Any], customer_key: str | None
+) -> dict[str, Any]:
+    """Render the 3-section Block Kit payload documented in
+    ``docs/integrations/slack_digest.md`` (Wave 26).
+
+    Three sections are mandatory — empty ones still render with a
+    "変化なし" body so the agent / human reader can tell the section
+    was checked.
+    """
+    date_jst = payload.get("date_jst", "")
+    mrr = payload.get("mrr_yen", 0)
+    sentry = payload.get("sentry_row", "")
+    return {
+        "text": f"jpcite daily digest {date_jst}",
+        "blocks": [
+            {
+                "type": "header",
+                "text": {
+                    "type": "plain_text",
+                    "text": f"jpcite daily digest {date_jst}",
+                },
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": (
+                        "*補助金*\n"
+                        f"• MAU合計={payload.get('mau_total', 0)} 課金={payload.get('mau_paid', 0)} "
+                        f"trial24h={payload.get('trial_signups_24h', 0)}\n"
+                        f"• MRR={mrr:,}円 (W/W Δ={payload.get('mrr_wow_delta_yen', 0):+,}円)"
+                    ),
+                },
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": (
+                        "*インボイス*\n"
+                        f"• 未同期 metered={payload.get('unsynced_metered_events', 0)} "
+                        f"reconcile={payload.get('reconcile_drift_pct', 0):.4f}%\n"
+                        f"• past-due={payload.get('past_due_count', 0)} churn7d={payload.get('churn_7d', 0)}"
+                    ),
+                },
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": (
+                        "*法令*\n"
+                        f"• GEO citation rate={payload.get('geo_citation_rate_pct', 0):.1f}% / "
+                        f"probes={payload.get('geo_probes_total', 0)}\n"
+                        f"• Sentry: {sentry}"
+                    ),
+                },
+            },
+            {
+                "type": "context",
+                "elements": [
+                    {
+                        "type": "mrkdwn",
+                        "text": (
+                            "jpcite · §52 ご利用上の注意付き · "
+                            f"customer={customer_key or 'operator'}"
+                        ),
+                    }
+                ],
+            },
+        ],
+    }
+
+
+def _post_slack_block_kit(
+    webhook_url: str, payload: dict[str, Any]
+) -> tuple[int, str]:
+    """POST the Block Kit payload to a Slack incoming webhook.
+
+    Returns ``(status, body)``. Slack expects a 200 on success;
+    anything else is logged but does not change the cron exit code.
+    Uses urllib so the script keeps zero extra runtime deps.
+    """
+    import urllib.error
+    import urllib.request
+
+    try:
+        req = urllib.request.Request(
+            webhook_url,
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=10) as r:  # noqa: S310
+            return r.status, r.read().decode("utf-8", "replace")
+    except urllib.error.HTTPError as exc:
+        return exc.code, exc.read().decode("utf-8", "replace")[:200]
+    except (urllib.error.URLError, TimeoutError) as exc:
+        return 0, f"slack webhook unreachable: {exc!r}"
 
 
 def _mock_payload() -> dict[str, Any]:
@@ -424,14 +552,56 @@ def main(argv: list[str] | None = None) -> int:
         if args.out_txt:
             args.out_txt.write_text(text_body, encoding="utf-8")
 
+        # Wave 26 — Slack target rendering happens regardless of dry-run
+        # so previews work without configuring a webhook URL.
+        slack_blocks: dict[str, Any] | None = None
+        if args.target in ("slack", "both"):
+            slack_blocks = _render_slack_blocks(payload, args.customer_key)
+
         if args.dry_run:
             print(f"Subject: {subject}")
             print()
             print(text_body)
+            if slack_blocks is not None:
+                print()
+                print("--- slack block kit (dry-run) ---")
+                print(json.dumps(slack_blocks, ensure_ascii=False, indent=2))
             hb["metadata"] = {
                 "dry_run": True,
                 "severity": (payload or {}).get("severity"),
+                "target": args.target,
             }
+            return 0
+
+        # Slack fan-out runs first when requested so the operator email
+        # below still carries the canonical exit status.
+        slack_status: int | None = None
+        if slack_blocks is not None and args.webhook_url:
+            slack_status, slack_body = _post_slack_block_kit(
+                args.webhook_url, slack_blocks
+            )
+            if slack_status and 200 <= slack_status < 300:
+                print(f"[info] slack ok HTTP {slack_status}")
+            else:
+                print(
+                    f"[warn] slack non-2xx ({slack_status}): {slack_body}",
+                    file=sys.stderr,
+                )
+        elif slack_blocks is not None:
+            print(
+                "[warn] --target includes slack but --webhook-url is unset; skipping",
+                file=sys.stderr,
+            )
+
+        if args.target == "slack":
+            # Slack-only mode: do not call Postmark. Heartbeat with the
+            # Slack status so cron observability still records the run.
+            hb["metadata"] = {
+                "target": "slack",
+                "slack_status": slack_status,
+                "severity": (payload or {}).get("severity"),
+            }
+            hb["rows_processed"] = 1 if (slack_status or 0) // 100 == 2 else 0
             return 0
 
         status, body = send_email(subject, html_body, text_body, args.to)

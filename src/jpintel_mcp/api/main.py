@@ -79,6 +79,7 @@ from jpintel_mcp.api.email_webhook import router as email_webhook_router
 from jpintel_mcp.api.enforcement import router as enforcement_router
 from jpintel_mcp.api.evidence import router as evidence_router
 from jpintel_mcp.api.exclusions import router as exclusions_router
+from jpintel_mcp.api.export import router as export_router
 from jpintel_mcp.api.feedback import router as feedback_router
 from jpintel_mcp.api.funding_stack import router as funding_stack_router
 from jpintel_mcp.api.funding_stage import router as funding_stage_router
@@ -2089,6 +2090,11 @@ def create_app() -> FastAPI:
     # compat-matrix rule verdicts into one envelope. ¥3/req metered;
     # anonymous tier inherits the 3/day IP cap via AnonIpLimitDep.
     app.include_router(evidence_router, dependencies=[AnonIpLimitDep])
+    # /v1/export — Wave 26 bulk export (CSV / JSON / XLSX) over R2 signed
+    # URL. Anonymous tier rejected by ``require_metered_api_key`` inside
+    # the handler with 402; we still mount under ``AnonIpLimitDep`` so
+    # the 3/day IP cap protects the surface before the handler runs.
+    app.include_router(export_router, dependencies=[AnonIpLimitDep])
     # /v1/evidence/packets/batch — paid-only bulk composer. It enforces
     # metered API key auth inside the handler and should not burn anonymous
     # quota before returning its auth/cap envelope.
