@@ -38,3 +38,22 @@
 # Pure additive (CREATE TABLE/INDEX/VIEW + CREATE VIRTUAL TABLE FTS5 IF NOT
 # EXISTS). boot-time safe; idempotent on every boot.
 252_law_jorei_pref.sql
+
+# 2026-05-12 Wave 43.2.5 — Dim E Verification trail (Ed25519 fact_signature).
+# am_fact_signature (fact_id PK + ed25519_sig BLOB(96) + corpus_snapshot_id +
+# signed_at) + 3 indexes + v_am_fact_signature_latest view. Per-fact tamper-
+# evident signature so GET /v1/facts/{fact_id}/verify can return 200 valid /
+# 409 tampered without re-walking the daily Merkle anchor chain.
+# Pure additive (CREATE TABLE/INDEX/VIEW IF NOT EXISTS); idempotent on every
+# boot. NO LLM, cryptography stdlib only.
+262_fact_signature_v2.sql
+
+# 2026-05-12 Wave 43.2.1 — Dim A semantic 検索 e5-small 384d.
+# am_entities_vec_e5 (sqlite-vec virtual table, 384 dim, e5-small) +
+# am_entities_vec_reranker_score (cross-encoder MS-MARCO score cache,
+# CHECK [-10, 10]) + am_entities_vec_e5_embed_log + refresh_log. Pure
+# additive (CREATE TABLE/INDEX/VIRTUAL IF NOT EXISTS, CHECK on
+# embed_dim/mode/score). boot-time safe; idempotent on every boot.
+# vec0 virtual table may soft-fail when sqlite-vec extension is not
+# loaded on the boot worker — entrypoint.sh §4 tolerates the warning.
+260_vec_e5_small_384.sql
