@@ -1,0 +1,20 @@
+name: og-images
+on:
+  schedule: [{cron: '17 18 * * 0'}]
+  workflow_dispatch: {}
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install Pillow
+      - run: python3 scripts/generate_og_images.py
+      - run: ls -la site/og/ | head -20
+      - name: Commit if changed
+        run: |
+          git config user.email "info@bookyou.net"
+          git config user.name "jpcite-bot"
+          git add site/og/
+          git diff --cached --quiet || (git commit -m "og-images: auto-generated batch" && git push)

@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>Unsubscribe — jpcite law-revision alerts</title>
 <meta name="description" content="Unsubscribe from jpcite law-revision alerts. One-click cancellation; the linked Stripe subscription is also cancelled automatically for paid plans.">
@@ -68,6 +67,11 @@
 </style>
 
 <script defer src="../analytics.js?v=20260503a"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-jpcite-a11y="baseline">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
 </head>
 <body>
 
@@ -121,6 +125,67 @@
  <a href="getting-started.html">Getting started</a>
  <a href="pricing.html">Pricing</a>
  <a href="../tokushoho.html">Legal (JP)</a>
+ <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+ </nav>
+ <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
+ </div>
+</footer>
+
+<script>
+  (function () {
+    // Extract token from ?token=... (the email footer link shape), fallback to
+    // the path fragment for direct POST to /v1/compliance/unsubscribe/{token}.
+    function tokenFromQuery() {
+      var m = location.search.match(/[?&]token=([a-f0-9]{32})/i);
+      return m ? m[1] : "";
+    }
+
+    var btn = document.getElementById("unsub-btn");
+    var status = document.getElementById("unsub-status");
+    var title = document.getElementById("unsub-title");
+    var lead = document.getElementById("unsub-lead");
+    if (!btn) return;
+
+    var token = tokenFromQuery();
+    if (!token) {
+      status.className = "status err";
+      status.innerHTML = 'This link is invalid. Please use the link at the bottom of the email. If you cannot find it, contact <a href="mailto:info@bookyou.net">info@bookyou.net</a>.<br><a href="alerts.html">Back to alert settings</a>';
+      btn.disabled = true;
+      return;
+    }
+
+    btn.addEventListener("click", function () {
+      btn.disabled = true;
+      status.className = "status";
+      status.textContent = "Sending…";
+      var apiBase = window.JPCITE_API_BASE || "https://api.jpcite.com";
+      fetch(apiBase + "/v1/compliance/unsubscribe/" + encodeURIComponent(token), {
+        method: "POST",
+        headers: { "Accept": "text/html" }
+      }).then(function (r) {
+        if (r.ok) {
+          title.textContent = "You have been unsubscribed";
+          lead.textContent = "We will not send any further alerts to this email address.";
+          status.className = "status ok";
+          status.textContent = "Done.";
+        } else {
+          status.className = "status err";
+          status.textContent = "The request failed. Please try again later, or contact info@bookyou.net.";
+          btn.disabled = false;
+        }
+      }).catch(function () {
+        status.className = "status err";
+        status.textContent = "Network error. Please try again later.";
+        btn.disabled = false;
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>
+/tokushoho.html">Legal (JP)</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
  <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>

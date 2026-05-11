@@ -1,0 +1,28 @@
+app = "jpcite-pdf"
+primary_region = "nrt"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8080"
+  PDF_RENDER_TIMEOUT_SEC = "30"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0  # スケール 0 (cold start 許容、PDF は頻繁ではない)
+
+[[http_service.checks]]
+  interval = "30s"
+  timeout = "10s"
+  grace_period = "60s"
+  method = "GET"
+  path = "/healthz"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 512

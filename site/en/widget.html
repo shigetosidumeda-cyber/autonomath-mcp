@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <meta name="color-scheme" content="light dark">
 <title>Add a prescreen intake to your site — jpcite Widget</title>
@@ -269,6 +268,11 @@
     line-height: 1.5;
   }
 </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-jpcite-a11y="baseline">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
 </head>
 <body>
 
@@ -548,6 +552,77 @@
     var label = document.getElementById("signup-label").value.trim();
     var rawOrigins = document.getElementById("signup-origins").value;
     var origins = rawOrigins.split(/\r?\n/).map(function (s) { return s.trim(); }).filter(Boolean);
+
+    if (origins.length === 0) {
+      status.className = "status err";
+      status.textContent = "Specify at least one site URL.";
+      return;
+    }
+    var invalidOrigin = origins.find(function (origin) {
+      return !/^https:\/\/[^/]+$/.test(origin) && !/^https:\/\/\*\.[^/]+$/.test(origin);
+    });
+    if (invalidOrigin) {
+      status.className = "status err";
+      status.textContent = "Use a site URL like https://example.com or https://*.example.com.";
+      return;
+    }
+
+    status.textContent = "Sending…";
+    submit.disabled = true;
+
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { ctrl.abort(); }, 15000);
+
+    fetch(API_BASE + "/v1/widget/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: email,
+        plan: plan,
+        label: label || null,
+        origins: origins,
+        success_url: "https://jpcite.com/en/widget/success.html?session_id={CHECKOUT_SESSION_ID}",
+        cancel_url: "https://jpcite.com/en/widget.html?cancelled=1"
+      }),
+      signal: ctrl.signal
+    })
+    .then(function (r) { return r.json().then(function (b) { return { ok: r.ok, body: b }; }); })
+    .then(function (res) {
+      clearTimeout(timer);
+      if (!res.ok) {
+        var msg = (res.body && (res.body.detail || res.body.error)) || "An error occurred.";
+        status.className = "status err";
+        status.textContent = typeof msg === "string" ? msg : "An error occurred.";
+        submit.disabled = false;
+        return;
+      }
+      if (res.body && res.body.checkout_url) {
+        window.location = res.body.checkout_url;
+      } else {
+        status.className = "status err";
+        status.textContent = "Could not retrieve checkout URL.";
+        submit.disabled = false;
+      }
+    })
+    .catch(function (err) {
+      clearTimeout(timer);
+      status.className = "status err";
+      if (err && err.name === "AbortError") {
+        status.textContent = "Timed out — slow connection or unresponsive server. Please retry.";
+      } else {
+        status.textContent = "Network error. Please try again later.";
+      }
+      submit.disabled = false;
+    });
+  });
+})();
+</script>
+
+<script src="/assets/trust-strip.en.js" defer></script>
+
+</body>
+</html>
+lean);
 
     if (origins.length === 0) {
       status.className = "status err";

@@ -226,7 +226,10 @@ def _send_dunning_safe(
                 )
             except Exception:
                 next_retry_at = ""
-        portal_url = "https://jpcite.com/billing/portal"
+        portal_url = os.environ.get(
+            "STRIPE_PORTAL_RETURN_URL",
+            "https://jpcite.com/dashboard.html#billing",
+        )
         _get_email_client().send_dunning(
             to=to,
             attempt_count=attempt_count,

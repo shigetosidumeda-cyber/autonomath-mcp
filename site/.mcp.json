@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "jpcite": {
+      "command": "uvx",
+      "args": ["autonomath-mcp"],
+      "env": {
+        "JPCITE_API_KEY": "sk_paid_xxxxxxxxxxxx"
+      }
+    }
+  }
+}

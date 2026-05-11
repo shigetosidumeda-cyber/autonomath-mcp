@@ -2,7 +2,6 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>法人購買 (法務部) 向け 1-screen summary — jpcite</title>
 <meta name="description" content="法人購買・法務部 reviewer 用に「実在性 / 規約 / 個人情報 / セキュリティ / SLA / データ source / 法令フェンス」を 1 page に集約。 DPA 締結なし、Solo zero-touch、SOC2 alternative の自己宣言。">
@@ -140,6 +139,11 @@
 </style>
 
 <script defer src="/analytics.js?v=20260504a"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-jpcite-a11y="baseline">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
 </head>
 <body>
 
@@ -305,6 +309,46 @@
  <h2 id="not-offered">10. 個別交渉対象外 (Solo zero-touch 維持のため)</h2>
  <ul>
  <li><span class="pr-pill note">対象外</span> DPA (Data Processing Agreement) 個別締結 — privacy.html + 副処理者一覧 + trust/purchasing.html で吸収</li>
+ <li><span class="pr-pill note">対象外</span> MSA (Master Service Agreement) 個別交渉 — ToS 約款型のまま</li>
+ <li><span class="pr-pill note">対象外</span> Slack Connect / 専用 Teams channel / Zoom kickoff — info@bookyou.net email のみ</li>
+ <li><span class="pr-pill note">対象外</span> SOC2 Type II / ISO27001 / Pマーク 取得 — 代替: OpenSSF Best Practices Badge / OWASP ASVS L1 / CSA STAR CAIQ self-assessment + Cloudflare Trust Hub</li>
+ <li><span class="pr-pill note">対象外</span> 個別 SLA 上書き / credit 個別交渉 — tokushoho.md「重大不適合」条項 適用</li>
+ </ul>
+
+ <p class="pr-foot">本 page は法務部 reviewer の稟議準備時間を最小化するための 1-screen summary です。 各リンク先の一次資料 (利用規約 / プライバシー / 特商法 / Security Overview / SLA / 法令フェンス / データソース) が法的拘束力を持つ正本となります。 数値・記述に齟齬を発見した場合は <a href="mailto:info@bookyou.net">info@bookyou.net</a> までご連絡ください。 機械可読 manifest: <a href="/.well-known/trust.json">/.well-known/trust.json</a>。</p>
+
+ </div>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、根拠付き成果物に。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="/about.html">運営について</a>
+ <a href="/products.html">プロダクト</a>
+ <a href="/pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="/trust.html">信頼</a>
+ <a href="/trust/purchasing.html">法人購買</a>
+ <a href="/security/">Security</a>
+ <a href="/legal-fence.html">法令フェンス</a>
+ <a href="/data-licensing.html">データソース</a>
+ <a href="/tos.html">利用規約</a>
+ <a href="/privacy.html">プライバシー</a>
+ <a href="/tokushoho.html">特商法</a>
+ <a href="mailto:info@bookyou.net">お問い合わせ</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
+</footer>
+
+</body>
+</html>
+で吸収</li>
  <li><span class="pr-pill note">対象外</span> MSA (Master Service Agreement) 個別交渉 — ToS 約款型のまま</li>
  <li><span class="pr-pill note">対象外</span> Slack Connect / 専用 Teams channel / Zoom kickoff — info@bookyou.net email のみ</li>
  <li><span class="pr-pill note">対象外</span> SOC2 Type II / ISO27001 / Pマーク 取得 — 代替: OpenSSF Best Practices Badge / OWASP ASVS L1 / CSA STAR CAIQ self-assessment + Cloudflare Trust Hub</li>

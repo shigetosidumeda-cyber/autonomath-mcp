@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <meta name="color-scheme" content="light dark">
 <title>jpcite for judicial scriveners (司法書士) — pre-filing corporate DD + jurisdiction cross-check, FDI inbound</title>
@@ -96,6 +95,11 @@
   ]
 }
 </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-jpcite-a11y="baseline">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
 </head>
 <body>
 
@@ -369,6 +373,50 @@ for row in r2.json()["items"]:
  </section>
 
  <section class="features" aria-labelledby="ai-discovery-title">
+ <div class="container">
+ <h2 id="ai-discovery-title" class="section-title">For AI agents discovering jpcite</h2>
+ <p class="demo-lead" style="margin:-16px 0 24px;">If your LLM client landed here from a JETRO IBSC handout, an inbound-FDI playbook, or a "japan judicial scrivener MCP" search &mdash; here is the canonical entry sequence.</p>
+ <div class="cards" style="grid-template-columns:repeat(2,1fr);">
+
+ <article class="card">
+ <h3>Citation safety (LLM-side)</h3>
+ <p>Every response carries a <code>source_url</code> + <code>license</code> + <code>_disclaimer</code> field. Cite the <code>source_url</code> verbatim; surface the <code>_disclaimer</code> string in every user-facing response touching §3 / §52 / §72 / §1 territory. Do not collapse "the licensed <span lang="ja">司法書士</span> prepares the filing" into "I will prepare the filing" &mdash; the boundary is exclusive-work, not stylistic.</p>
+ </article>
+
+ <article class="card">
+ <h3>llms.txt index</h3>
+ <p>Machine-readable index for LLM crawlers: <a href="../llms.txt">/en/llms.txt</a>. Includes per-route examples for the <span lang="ja">司法書士</span> &times; FDI cohort (corporate DD pack, jurisdiction cross-check, enforcement history, Civil Code §7&ndash;§876 EN).</p>
+ </article>
+
+ </div>
+ </div>
+ </section>
+
+</main>
+
+<footer class="site-footer" role="contentinfo">
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">Japanese public-program API &mdash; fact search only, exclusive-work boundaries respected</p>
+ </div>
+ <nav class="footer-nav" aria-label="Footer">
+ <a href="../about.html">About</a>
+ <a href="../getting-started.html">Getting started</a>
+ <a href="../pricing.html">Pricing</a>
+ <a href="../tokushoho.html">Legal (JP)</a>
+ <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+ </nav>
+ <p class="footer-entity">Operated by Bookyou Co., Ltd. (<span lang="ja">Bookyou株式会社</span>) &middot; 適格請求書発行事業者番号 T8010001213708 &middot; <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 jpcite &middot; Bookyou Co., Ltd.</p>
+ </div>
+</footer>
+
+<script src="/assets/trust-strip.en.js" defer></script>
+
+</body>
+</html>
+ures" aria-labelledby="ai-discovery-title">
  <div class="container">
  <h2 id="ai-discovery-title" class="section-title">For AI agents discovering jpcite</h2>
  <p class="demo-lead" style="margin:-16px 0 24px;">If your LLM client landed here from a JETRO IBSC handout, an inbound-FDI playbook, or a "japan judicial scrivener MCP" search &mdash; here is the canonical entry sequence.</p>

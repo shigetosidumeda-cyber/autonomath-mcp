@@ -1,0 +1,40 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "@id": "https://jpcite.com/datasets/programs#dataset",
+  "name": "jpcite Japanese Public-Program Registry",
+  "alternateName": "jpcite-programs",
+  "description": "Curated registry of Japanese public programs (subsidies, grants, tax measures, financing facilities) with first-source citation, evidence rung, and validity window. Source-of-truth for the jpcite evidence API.",
+  "url": "https://jpcite.com/datasets/programs",
+  "license": "https://www.digital.go.jp/policies/open_data/government-data-license",
+  "creator": {"@id": "https://jpcite.com/#org"},
+  "publisher": {"@id": "https://jpcite.com/#org"},
+  "isAccessibleForFree": true,
+  "inLanguage": "ja",
+  "keywords": ["public program", "subsidy", "grant", "Japan", "first-source", "evidence", "PDL", "補助金", "助成金"],
+  "temporalCoverage": "2018-04-01/..",
+  "spatialCoverage": {
+    "@type": "Place",
+    "name": "Japan",
+    "geo": {"@type": "GeoShape", "addressCountry": "JP"}
+  },
+  "variableMeasured": [
+    {"@type": "PropertyValue", "name": "program_id"},
+    {"@type": "PropertyValue", "name": "program_name_ja"},
+    {"@type": "PropertyValue", "name": "first_source_url"},
+    {"@type": "PropertyValue", "name": "evidence_rung"},
+    {"@type": "PropertyValue", "name": "validity_window"}
+  ],
+  "distribution": [
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "application/json",
+      "contentUrl": "https://jpcite.com/datasets/programs/jpcite-programs.jsonl"
+    },
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "text/csv",
+      "contentUrl": "https://jpcite.com/datasets/programs/jpcite-programs.csv"
+    }
+  ]
+}

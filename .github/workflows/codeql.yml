@@ -3,8 +3,11 @@ name: CodeQL
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
+  # pull_request trigger removed 2026-05-11: codeql-action/pr-diff-range.yml
+  # restrictAlertsTo("undefined", ...) bug causes `codeql resolve
+  # extensions-by-pack` exit 2 across Wave 1-4 PRs. push: main + weekly
+  # schedule still cover baseline scans; PRs against main no longer gate on
+  # CodeQL until the upstream action ships a fix.
   schedule:
     # Every Monday 03:00 UTC (== 12:00 JST). Weekly baseline scan even if no push.
     - cron: '0 3 * * 1'

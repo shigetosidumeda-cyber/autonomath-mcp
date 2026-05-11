@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <meta name="color-scheme" content="light dark">
 <title>Dashboard — jpcite</title>
@@ -155,6 +154,11 @@
     background: #f0f9ff;
   }
 </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-jpcite-a11y="baseline">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
 </head>
 <body>
 
@@ -465,6 +469,73 @@
  <option value="critical">critical (program ended / eligibility)</option>
  <option value="important" selected>important (amount / scope)</option>
  <option value="info">info (cosmetic incl.)</option>
+ </select>
+ </div>
+ <div>
+ <label for="dash2-alerts-webhook" class="stat-note" style="margin:0 0 4px;display:block;">webhook_url (https only, optional)</label>
+ <input id="dash2-alerts-webhook" type="url"
+ placeholder="https://hooks.example.com/jpcite"
+ pattern="https://.*"
+ style="width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;min-height:44px;">
+ </div>
+ <div>
+ <label for="dash2-alerts-email" class="stat-note" style="margin:0 0 4px;display:block;">email (optional)</label>
+ <input id="dash2-alerts-email" type="email"
+ placeholder="ops@example.com"
+ style="width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;min-height:44px;">
+ </div>
+ <div>
+ <button type="submit" id="dash2-alerts-submit" class="btn btn-primary"
+ style="width:100%;padding:12px 14px;min-height:44px;">Add</button>
+ </div>
+ </form>
+ <p class="stat-note" style="margin:10px 0 0;color:var(--text-muted);">
+ At least one of webhook_url or email is required.
+ Private network IPs (10.*, 172.16-31.*, 192.168.*, 127.*, ::1) are rejected at registration.
+ </p>
+ </section>
+
+ <div class="actions-row">
+ <a href="getting-started.html">Docs</a>
+ <a href="mailto:info@bookyou.net">Contact support</a>
+ <a href="../tos.html">Terms</a>
+ <a href="privacy.html">Privacy</a>
+ </div>
+
+ </div>
+ </section>
+</main>
+
+<div class="container">
+</div>
+
+
+<footer class="site-footer" role="contentinfo">
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">Japanese public-program API</p>
+ </div>
+ <nav class="footer-nav" aria-label="Footer">
+ <a href="about.html">About</a>
+ <a href="getting-started.html">Getting started</a>
+ <a href="pricing.html">Pricing</a>
+ <a href="../tokushoho.html">Legal (JP)</a>
+ <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+ </nav>
+ <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
+ </div>
+</footer>
+
+<script src="/assets/feedback-widget.js" defer></script>
+<script src="../dashboard_init.js" defer></script>
+
+<script src="/assets/trust-strip.en.js" defer></script>
+
+</body>
+</html>
+option>
  </select>
  </div>
  <div>

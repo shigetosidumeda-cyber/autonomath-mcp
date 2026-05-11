@@ -1,0 +1,77 @@
+{
+  "schema_version": "1.0",
+  "snapshot_at": "2026-05-11T00:00:00Z",
+  "canonical_count": 7,
+  "fences": [
+    {
+      "id": "tax_accountant",
+      "law": "税理士法",
+      "article": "§52",
+      "scope": "税務代理/書類作成/相談",
+      "do_not": ["specific tax filing", "tax amount calculation", "tax saving advice"],
+      "may_do": ["public tax program eligibility (公的税制特例の eligibility)", "NTA circular / saiketsu citation"],
+      "disclaimer_ja": "本回答は税務助言ではありません。申告は税理士にご確認ください。",
+      "disclaimer_en": "This response is not tax advice. Please consult a licensed Tax Accountant (税理士)."
+    },
+    {
+      "id": "lawyer",
+      "law": "弁護士法",
+      "article": "§72",
+      "scope": "個別法律相談/契約書添削/紛争代理",
+      "do_not": ["individual legal consultation", "contract review", "litigation proxy"],
+      "may_do": ["law/precedent/disposition search with sources"],
+      "disclaimer_ja": "本回答は法的助言ではありません。個別判断は弁護士にご確認ください。",
+      "disclaimer_en": "This response is not legal advice."
+    },
+    {
+      "id": "judicial_scrivener",
+      "law": "司法書士法",
+      "article": "§73",
+      "scope": "登記申請書作成/代理",
+      "do_not": ["registration filing", "registration proxy"],
+      "may_do": ["registry retrieval guide", "public corporate info match"],
+      "disclaimer_ja": "登記申請の代理は行いません。",
+      "disclaimer_en": "Registration proxy is not provided."
+    },
+    {
+      "id": "administrative_scrivener",
+      "law": "行政書士法",
+      "article": "§19",
+      "scope": "補助金/許認可の申請書作成・提出代行",
+      "do_not": ["application drafting", "filing proxy"],
+      "may_do": ["public call requirements structuring", "prerequisite chain"],
+      "disclaimer_ja": "申請書面の作成代理は行いません。",
+      "disclaimer_en": "Application drafting proxy is not provided."
+    },
+    {
+      "id": "sharoushi",
+      "law": "社労士法",
+      "article": "§27",
+      "scope": "36協定書/就業規則作成/社会保険申請代行",
+      "do_not": ["work rules drafting", "SI filing proxy"],
+      "may_do": ["grant public condition match", "labor disposition search"],
+      "disclaimer_ja": "労務書面の代理作成は行いません。",
+      "disclaimer_en": "Labor document proxy is not provided."
+    },
+    {
+      "id": "sme_diagnostician",
+      "law": "中小企業診断士に関する法令",
+      "article": "登録規則",
+      "scope": "個別経営診断書発行/認定支援機関業務代行",
+      "do_not": ["individual diagnostic report"],
+      "may_do": ["industry cohort stats", "adoption stats"],
+      "disclaimer_ja": "経営診断書は発行しません。",
+      "disclaimer_en": "No individual management diagnostic report."
+    },
+    {
+      "id": "patent_attorney",
+      "law": "弁理士法",
+      "article": "§75",
+      "scope": "商標/特許の出願代理・鑑定",
+      "do_not": ["patent filing proxy", "trademark proxy"],
+      "may_do": ["public patent search with citation"],
+      "disclaimer_ja": "知財出願の代理は行いません。",
+      "disclaimer_en": "IP filing proxy is not provided."
+    }
+  ]
+}

@@ -2,7 +2,6 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>既存 API キーを管理 — jpcite ダッシュボード</title>
 <meta name="description" content="既存の jpcite API キーの管理画面。利用量・請求・キーの再発行・解約。新規 API キー発行は /pricing.html#api-paid から、トライアルは /trial.html から。">
@@ -131,6 +130,82 @@
     #dash2-key-input { min-width: 100%; }
   }
 </style>
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/_assets/logo.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
+          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
+          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
+          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
+          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-jpcite-a11y="baseline">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
 </head>
 <body>
 
@@ -178,7 +253,7 @@
 
  <div id="dash-newkey-reveal" class="newkey-reveal" role="status" aria-live="polite" hidden
  style="display:none;">
- <p style="margin:0 0 10px;font-weight:700;font-size:14px;"><span aria-hidden="true">🔑 </span>これがあなたの APIキー です。今すぐコピーしてください — 次回以降は表示されません。</p>
+ <p style="margin:0 0 10px;font-weight:700;font-size:14px;"><span aria-hidden="true">🔑 </span>これがあなたの API キー です。今すぐコピーしてください — 次回以降は表示されません。</p>
  <code id="dash-newkey-value" class="newkey-value"></code>
  <button type="button" id="dash-newkey-copy" class="btn-ghost" style="margin-right:6px;">キーをコピー</button>
  <button type="button" id="dash-newkey-dismiss" class="btn-ghost">表示を閉じる</button>
@@ -190,7 +265,7 @@
  <span aria-hidden="true">⚡ </span>5 分で最初の API 呼び出し
  </h2>
  <p style="margin:0 0 14px;font-size:13px;color:var(--text-muted);line-height:1.6;">
- 下のいずれか 1 つを選んでコピペするだけ。あなたの APIキー (もしくは匿名 3 リクエスト/日) で即座に動きます。詳細手順は各 <a href="/integrations/">統合ガイド</a> を参照。
+ 下のいずれか 1 つを選んでコピペするだけ。あなたの API キー (もしくは匿名 3 リクエスト/日) で即座に動きます。詳細手順は各 <a href="/integrations/">統合ガイド</a> を参照。
  </p>
  <div role="tablist" aria-label="Quick start client" style="display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--border);margin:0 0 14px;">
  <button type="button" role="tab" id="qs-tab-curl" aria-selected="true" aria-controls="qs-panel-curl"
@@ -209,7 +284,7 @@
  <pre id="qs-curl-snippet" class="qs-code" aria-label="curl quick-start"><code>curl -H "X-API-Key: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>" \
  "https://api.jpcite.com/v1/programs/search?q=IT%E5%B0%8E%E5%85%A5&amp;limit=3"</code></pre>
  <button type="button" class="btn-ghost qs-copy" data-copy-target="qs-curl-snippet">コピー</button>
- <p class="qs-note">APIキー を省くと匿名 3 リクエスト/日 per IP (JST 翌日リセット) で動作。</p>
+ <p class="qs-note">API キー を省くと匿名 3 リクエスト/日 per IP (JST 翌日リセット) で動作。</p>
  </div>
 
  <div role="tabpanel" id="qs-panel-claude" aria-labelledby="qs-tab-claude" class="qs-panel" hidden>
@@ -255,7 +330,7 @@
  </div>
 
  <div role="tabpanel" id="qs-panel-chatgpt" aria-labelledby="qs-tab-chatgpt" class="qs-panel" hidden>
-<p class="qs-note" style="margin:0 0 8px;"><strong>1.</strong> ChatGPT (Plus/Team/大規模利用) → My GPTs → Create · <strong>2.</strong> Configure → Actions → Import OpenAPI · <strong>3.</strong> 下の URL を貼り付け · <strong>4.</strong> Authentication → APIキー → 下の値。</p>
+<p class="qs-note" style="margin:0 0 8px;"><strong>1.</strong> ChatGPT (Plus/Team/大規模利用) → My GPTs → Create · <strong>2.</strong> Configure → Actions → Import OpenAPI · <strong>3.</strong> 下の URL を貼り付け · <strong>4.</strong> Authentication → API キー → 下の値。</p>
 <pre id="qs-chatgpt-snippet" class="qs-code" aria-label="ChatGPT Custom GPT config"><code># OpenAPI URL
 https://api.jpcite.com/v1/openapi.agent.json
 
@@ -367,7 +442,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  </p>
  <nav class="dash-nav" aria-label="ダッシュボード">
  <a href="dashboard.html" class="active" aria-current="page">概要</a>
- <a href="#api-key-section" title="同一ページ内の APIキー ブロックへ">APIキー</a>
+ <a href="#api-key-section" title="同一ページ内の API キー ブロックへ">API キー</a>
  <a href="#billing-section" title="同一ページ内の請求ブロックへ">請求</a>
  <a href="#dash2-billing-history" title="請求書一覧 (Stripe 同期、CSV/JSON ダウンロード)">請求書</a>
  <button type="button" class="link-button">ログアウト</button>
@@ -422,7 +497,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  </div>
 
  <div class="keybox" id="api-key-section">
- <p class="label">あなたの APIキー</p>
+ <p class="label">あなたの API キー</p>
  <span class="key">am_&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</span>
  <p class="hash-prefix">ハッシュ前置: ————————</p>
  <button class="btn-danger" id="dash-rotate-btn" type="button">キーを再発行</button>
@@ -444,12 +519,12 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <section id="dash2-keybox" class="stat-card" style="margin:24px 0 16px;">
  <p class="stat-label">既存 API キーの利用詳細を表示 (キーを貼り付け・ワンショット閲覧)</p>
  <p class="stat-note" style="margin:0 0 12px;">
- 既に発行済みの jpcite APIキー (Stripe Checkout もしくは メール トライアル経由) を貼り付けると、 利用量・残予算・課金履歴を表示します。
+ 既に発行済みの jpcite API キー (Stripe Checkout もしくは メール トライアル経由) を貼り付けると、 利用量・残予算・課金履歴を表示します。
  ブラウザの localStorage に保存され、 /v1/me/dashboard へ Bearer ヘッダとして送信されます。
  まだ鍵をお持ちでない方は <a href="pricing.html#api-paid">Pricing</a> または <a href="trial.html">トライアル</a> から先に発行してください。
  </p>
  <form id="dash2-key-form" autocomplete="off" style="display:flex;gap:8px;flex-wrap:wrap;">
- <label for="dash2-key-input" class="visually-hidden">APIキー</label>
+ <label for="dash2-key-input" class="visually-hidden">API キー</label>
  <input id="dash2-key-input" type="password" inputmode="text"
  placeholder="am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
  style="flex:1;min-width:240px;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:16px;">
@@ -1008,7 +1083,7 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  </div>
  </form>
  <p class="stat-note" style="margin:10px 0 0;color:var(--text-muted);">
- 1 APIキー につき有効な Webhook 通知は 10 件まで。https のみ登録できます。プライベート IP / loopback は登録できません。
+ 1 API キー につき有効な Webhook 通知は 10 件まで。https のみ登録できます。プライベート IP / loopback は登録できません。
  登録後は「テスト」ボタンで API 経路 の死活確認を推奨。
  </p>
 
@@ -1268,6 +1343,29 @@ Auth value: <span class="qs-key-slot">am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <p class="legal-note" style="font-size:13px;color:var(--text-muted);margin:24px 0;border-top:1px solid var(--border);padding-top:16px;">
 本サービスは情報検索です。 個別具体的な税務・法律判断は資格を有する専門家にご相談ください (税理士法 §52 / 弁護士法 §72)。
 </p>
+
+<!-- v3 9-widget dashboard navigation + placeholder (Wave 8 で full hydrate) -->
+<nav aria-label="dashboard" style="margin:16px 0;padding:12px;background:#f7f8fa;border-radius:8px;font-size:14px">
+  <a href="#api-keys" aria-current="page">api-keys</a> |
+  <a href="#usage">usage</a> |
+  <a href="#billing">billing</a> |
+  <a href="#saved_search">saved_search</a> |
+  <a href="#watches">watches</a> |
+  <a href="#artifacts">artifacts</a> |
+  <a href="#client_tags">client_tags</a> |
+  <a href="#docs">docs</a> |
+  <a href="#status">status</a>
+</nav>
+
+<section id="api-keys"><h2>api-keys</h2><p>既存 API キー管理 (発行・削除・rotation 警告)。実装は Wave 8 で hydrate、現状は既存 HTML が機能。</p></section>
+<section id="usage"><h2>usage</h2><p>月次 billable_units / sparkline / top5 path / X-Client-Tag 別 ROI。Wave 8。</p></section>
+<section id="billing"><h2>billing</h2><p>Stripe subscription 状態 + invoice list (T8010001213708 自動 inject) + Portal mint。</p></section>
+<section id="saved_search"><h2>saved_search</h2><p>保存済み検索 list + watch 化 + CSV export。Wave 8。</p></section>
+<section id="watches"><h2>watches</h2><p>法人/制度/許認可/法令 monitor + RSS/webhook/email channel。Wave 8。</p></section>
+<section id="artifacts"><h2>artifacts</h2><p>過去 90 日 artifact 履歴 (pack_id / created_at / type / units)、各行 → <a href="/artifact.html">/artifact.html</a> 遷移。Wave 8。</p></section>
+<section id="client_tags"><h2>client_tags</h2><p>X-Client-Tag enum + 顧問先別 ROI / 顧客 hint (free-text)。Wave 8。</p></section>
+<section id="docs"><h2>docs</h2><details><summary>connect/* 4 経路 (Claude Code / Cursor / ChatGPT / Codex)</summary><ul><li><a href="/connect/claude-code">Claude Code</a></li><li><a href="/connect/cursor">Cursor</a></li><li><a href="/connect/chatgpt">ChatGPT Custom GPT</a></li><li><a href="/connect/codex">OpenAI Codex / Agents SDK</a></li></ul></details></section>
+<section id="status"><h2>status</h2><iframe src="/status/" title="jpcite status" loading="lazy" style="width:100%;height:300px;border:1px solid #e2e8f0;border-radius:8px"></iframe></section>
 
  </div>
  </section>

@@ -261,7 +261,10 @@ def _sanitize_preserved_prefix(prefix: str) -> str:
         "PyPI: autonomath-mcp (legacy name) / pip install jpcite (new alias)",
         "PyPI package: autonomath-mcp (compatibility package name).",
     )
-    prefix = prefix.replace("法令本文索引 6,493 + 法令メタデータ 9,484", "本文対応法令レコード 6,493 + 法令検索対象 9,484")
+    prefix = prefix.replace(
+        "法令本文索引 6,493 + 法令メタデータ 9,484",
+        "本文対応法令レコード 6,493 + 法令検索対象 9,484",
+    )
     prefix = prefix.replace("1000 req/月", "1,000 billable units/月")
     prefix = prefix.replace("1 万 req/月", "1 万 billable units/月")
     prefix = prefix.replace("10 万 req/月", "10 万 billable units/月")

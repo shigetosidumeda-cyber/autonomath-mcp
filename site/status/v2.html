@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-jpcite-a11y="baseline">
+<title>jpcite Status</title>
+<meta name="description" content="jpcite Service Status: api / mcp / billing / data-freshness / dashboard 5 component の health。">
+<link rel="canonical" href="https://jpcite.com/status/">
+<link rel="alternate" type="application/json" href="/status/status.json">
+<link rel="alternate" type="application/rss+xml" href="/status/rss.xml">
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:960px;margin:0 auto;padding:20px;color:#0f172a}
+h1{font-size:28px;margin:0 0 16px}
+.hero{padding:16px;border-radius:8px;margin:0 0 24px;font-weight:600}
+.hero.operational{background:#d1fae5;color:#065f46}
+.hero.degraded{background:#fef3c7;color:#92400e}
+.hero.outage{background:#fee2e2;color:#991b1b}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:0 0 32px}
+.card{padding:14px;border:1px solid #e2e8f0;border-radius:8px;background:#fff}
+.card .name{font-weight:600;margin:0 0 6px}
+.card .status{font-size:14px}
+.card.green::before{content:"●";color:#16a34a;margin-right:6px}
+.card.yellow::before{content:"▲";color:#d97706;margin-right:6px}
+.card.red::before{content:"✕";color:#dc2626;margin-right:6px}
+footer{margin:48px 0 0;padding:24px 0 0;border-top:1px solid #e2e8f0;font-size:13px;color:#64748b}
+</style>
+</head>
+<body>
+<a href="#main" style="position:absolute;left:-9999px">本文へスキップ</a>
+<header role="banner"><h1>jpcite Status</h1></header>
+<main id="main" role="main">
+  <div class="hero operational" id="hero">全システム稼働中</div>
+  <div class="grid" id="components">
+    <div class="card green"><div class="name">api</div><div class="status">api.jpcite.com (REST + MCP) / p95 ~ms</div></div>
+    <div class="card green"><div class="name">mcp</div><div class="status">/.well-known/mcp.json / 139 tools</div></div>
+    <div class="card green"><div class="name">billing</div><div class="status">Stripe metered + webhook</div></div>
+    <div class="card green"><div class="name">data-freshness</div><div class="status">4 dataset window 内</div></div>
+    <div class="card green"><div class="name">dashboard</div><div class="status">magic-link login 完走率</div></div>
+  </div>
+</main>
+<footer role="contentinfo">
+  <p>Bookyou株式会社 (T8010001213708) — <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+  <p><a href="/status/status.json">status.json</a> | <a href="/status/rss.xml">RSS</a> | <a href="/sla.html">SLA</a> | <a href="https://jpcite.com/status/badge.svg" alt="status badge">embed badge</a></p>
+</footer>
+<script>
+fetch('/status/status.json').then(r=>r.json()).then(d=>{
+  const hero=document.getElementById('hero');
+  if(d.overall_status==='operational'){hero.className='hero operational';hero.textContent='全システム稼働中'}
+  else if(d.overall_status==='degraded'){hero.className='hero degraded';hero.textContent='軽微な低下'}
+  else if(d.overall_status==='outage'){hero.className='hero outage';hero.textContent='障害発生中'}
+  // components hydrate (省略、Wave 8 で詳細)
+}).catch(()=>{});
+</script>
+</body>
+</html>

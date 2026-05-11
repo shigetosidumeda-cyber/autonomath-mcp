@@ -1,0 +1,22 @@
+name: geo_eval
+on:
+  schedule:
+    - cron: '0 0 * * 1'
+  workflow_dispatch: {}
+jobs:
+  bench:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        surface: [chatgpt, claude, gemini, perplexity, cursor]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python3 tests/geo/bench_harness.py ${{ matrix.surface }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: geo-${{ matrix.surface }}
+          path: reports/

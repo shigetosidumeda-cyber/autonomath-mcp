@@ -1,0 +1,44 @@
+name: acceptance_check
+on:
+  schedule:
+    - cron: '0 18 * * 0'  # 週次 日曜 03:00 JST
+  workflow_dispatch:
+    inputs:
+      items:
+        description: 'A1,B3,... or all'
+        default: 'all'
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        category: [A, B, C, D, E, F, G, H, I, J]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci || npm install
+      - name: run category ${{ matrix.category }}
+        env:
+          JPCITE_API_KEY: ${{ secrets.JPCITE_ACCEPTANCE_KEY }}
+          GSC_TOKEN: ${{ secrets.GSC_TOKEN }}
+          BING_TOKEN: ${{ secrets.BING_TOKEN }}
+        run: node scripts/acceptance/run.js --category=${{ matrix.category }} --out=acceptance_${{ matrix.category }}.json
+        continue-on-error: true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: acceptance-${{ matrix.category }}
+          path: acceptance_${{ matrix.category }}.json
+  aggregate:
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: data/acceptance/
+      - run: node scripts/acceptance/aggregate.js data/acceptance/ > data/acceptance_status.json
+      - run: cat data/acceptance_status.json | jq '{passed:.summary.passed,total:.summary.total}'

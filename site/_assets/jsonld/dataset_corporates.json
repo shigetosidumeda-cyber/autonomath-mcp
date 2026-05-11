@@ -1,0 +1,40 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "@id": "https://jpcite.com/datasets/corporates#dataset",
+  "name": "jpcite Japanese Corporate-Number Registry Snapshot",
+  "alternateName": "jpcite-corporates",
+  "description": "Snapshot of the Japanese National Tax Agency Corporate Number system enriched with jpcite normalization (address split, kana, legacy mergers). Redistributable under PDL v1.0 with source attribution.",
+  "url": "https://jpcite.com/datasets/corporates",
+  "license": "https://www.digital.go.jp/policies/open_data/government-data-license",
+  "creator": {"@id": "https://jpcite.com/#org"},
+  "publisher": {"@id": "https://jpcite.com/#org"},
+  "isAccessibleForFree": true,
+  "inLanguage": "ja",
+  "keywords": ["corporate number", "houjin bangou", "Japan", "NTA", "PDL", "法人番号", "国税庁"],
+  "temporalCoverage": "2018-04-01/..",
+  "spatialCoverage": {
+    "@type": "Place",
+    "name": "Japan",
+    "geo": {"@type": "GeoShape", "addressCountry": "JP"}
+  },
+  "variableMeasured": [
+    {"@type": "PropertyValue", "name": "corporate_number"},
+    {"@type": "PropertyValue", "name": "name_ja"},
+    {"@type": "PropertyValue", "name": "address_normalized"},
+    {"@type": "PropertyValue", "name": "registration_date"},
+    {"@type": "PropertyValue", "name": "status"}
+  ],
+  "distribution": [
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "application/json",
+      "contentUrl": "https://jpcite.com/datasets/corporates/jpcite-corporates.jsonl"
+    },
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "application/x-sqlite3",
+      "contentUrl": "https://jpcite.com/datasets/corporates/jpcite-corporates.sqlite"
+    }
+  ]
+}

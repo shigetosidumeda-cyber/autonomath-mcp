@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>Transparency &mdash; jpcite</title>
 <meta name="description" content="Transparency &mdash; jpcite. Source URLs are returned machine-readable on every API response.">
@@ -43,6 +42,11 @@
 </style>
 
 <script defer src="../analytics.js?v=20260503a"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-jpcite-a11y="baseline">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
 </head>
 <body>
 
@@ -52,6 +56,63 @@
  <div class="container header-inner">
  <a class="brand" href="index.html" aria-label="jpcite home">
  <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+ </a>
+ <nav class="site-nav" aria-label="Primary navigation">
+ <a href="about.html">About</a>
+ <a href="getting-started.html">Docs</a>
+ <a href="pricing.html">Pricing</a>
+ <a href="audiences/">Audiences</a>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="../transparency.html" lang="ja" hreflang="ja">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="transparency.html" lang="en" hreflang="en" aria-current="page">EN</a>
+ </span>
+ </nav>
+ </div>
+</header>
+
+<main id="main" class="brief-page">
+ <div class="container">
+
+ <h1>Transparency</h1>
+ <p class="lead">jpcite keeps source evidence machine-readable so API results can be checked against primary materials.</p>
+
+ <div class="quick-panel">
+ <h2>Transparency signals</h2>
+ <ul>
+ <li>API records expose source URLs and citation fields where primary materials are available.</li>
+ <li>Use <a href="sources.html">Data sources</a>, <a href="data-freshness.html">Data freshness</a>, and <a href="audit-log.html">Audit log</a> together when reviewing provenance.</li>
+ <li>For the live Japanese transparency page, see <a href="https://jpcite.com/transparency.html" hreflang="ja">the Japanese page</a>. For English FDI context, see <a href="foreign-investor.html">jpcite for foreign-invested entities</a>.</li>
+ </ul>
+ </div>
+
+ </div>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">Japanese public-program API</p>
+ </div>
+ <nav class="footer-nav" aria-label="Footer">
+ <a href="about.html">About</a>
+ <a href="getting-started.html">Getting started</a>
+ <a href="pricing.html">Pricing</a>
+ <a href="sources.html">Data sources</a>
+ <a href="tokushoho.html">Legal (JP)</a>
+ <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+ </nav>
+ <p class="footer-entity">Operated by Bookyou Inc. &middot; <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
+ </div>
+</footer>
+
+<script src="/assets/trust-strip.en.js" defer></script>
+
+</body>
+</html>
+rand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
  </a>
  <nav class="site-nav" aria-label="Primary navigation">
  <a href="about.html">About</a>

@@ -1,3 +1,15 @@
-# CODEOWNERS for AutonoMath (autonomath-mcp)
-# Stub — replace @shigetoumeda with the actual GitHub handle once the repo is published.
-* @shigetoumeda
+# CODEOWNERS for autonomath-mcp (jpcite)
+# All paths default to operator (solo + zero-touch)
+
+* @shigetosidumeda-cyber
+
+# Critical paths require explicit review
+/.github/workflows/ @shigetosidumeda-cyber
+/scripts/migrations/ @shigetosidumeda-cyber
+/scripts/ops/ @shigetosidumeda-cyber
+/data/facts_registry.json @shigetosidumeda-cyber
+/data/fence_registry.json @shigetosidumeda-cyber
+/site/.well-known/ @shigetosidumeda-cyber
+/CHANGELOG.md @shigetosidumeda-cyber
+/CLAUDE.md @shigetosidumeda-cyber
+/SECURITY.md @shigetosidumeda-cyber

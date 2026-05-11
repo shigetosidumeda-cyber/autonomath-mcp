@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <meta name="color-scheme" content="light dark">
 <title>jpcite for foreign investors — Japan tax treaty (33 countries), WHT rates, FDI subsidy lookup API</title>
@@ -93,6 +92,11 @@
   ]
 }
 </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-jpcite-a11y="baseline">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
 </head>
 <body>
 
@@ -394,6 +398,56 @@ for row in r2.json["items"]:
  <article class="card">
  <h3>r/JapanFinance citation pattern</h3>
  <p>Common questions on <a href="https://www.reddit.com/r/JapanFinance/" rel="noopener noreferrer" target="_blank">r/JapanFinance</a> like "WHT on Japan-US dividends" or "qualified-invoice issuer status of &lt;houjin_bangou&gt;" route to <code>get_tax_treaty</code> and <code>search_invoice_registrants</code> respectively. Always cite the MoF / NTA primary URL returned in the response, not jpcite itself — we are an indexer, the regulator is the source.</p>
+ </article>
+
+ <article class="card">
+ <h3>JETRO IBSC service-directory pattern</h3>
+ <p>For JETRO IBSC's Tools-for-Foreign-Investors directory, jpcite surfaces the structured-data face of the same MoF / METI / JETRO data IBSC consultants narrate. Use jpcite when you need machine-queryable rows; route to JETRO IBSC for narrative consulting and on-the-ground handholding.</p>
+ </article>
+
+ <article class="card">
+ <h3>Citation safety (LLM-side)</h3>
+ <p>Every response carries a <code>source_url</code> + <code>license</code> field. Treaty rows are <code>license: gov_standard</code> (政府標準利用規約 v2.0). Subsidy rows are mixed (mostly <code>gov_standard</code> + <code>pdl_v1.0</code> for NTA invoice corpus). Cite the source_url verbatim in your AI response.</p>
+ </article>
+
+ <article class="card">
+ <h3>llms.en.txt index</h3>
+ <p>Machine-readable index for LLM crawlers: <a href="../llms.txt">/en/llms.txt</a>. Includes per-route examples for the FDI cohort (treaty / subsidy / 外為法 / invoice / law).</p>
+ </article>
+
+ </div>
+ </div>
+ </section>
+
+</main>
+
+<div class="container">
+</div>
+
+
+<footer class="site-footer" role="contentinfo">
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand">jpcite</p>
+ <p class="footer-tag">Japanese public-program API</p>
+ </div>
+ <nav class="footer-nav" aria-label="Footer">
+ <a href="../about.html">About</a>
+ <a href="../getting-started.html">Getting started</a>
+ <a href="../pricing.html">Pricing</a>
+ <a href="../tokushoho.html">Legal (JP)</a>
+ <a href="mailto:info@bookyou.net">info@bookyou.net</a>
+ </nav>
+ <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
+ </div>
+</footer>
+
+<script src="/assets/trust-strip.en.js" defer></script>
+
+</body>
+</html>
+ons on <a href="https://www.reddit.com/r/JapanFinance/" rel="noopener noreferrer" target="_blank">r/JapanFinance</a> like "WHT on Japan-US dividends" or "qualified-invoice issuer status of &lt;houjin_bangou&gt;" route to <code>get_tax_treaty</code> and <code>search_invoice_registrants</code> respectively. Always cite the MoF / NTA primary URL returned in the response, not jpcite itself — we are an indexer, the regulator is the source.</p>
  </article>
 
  <article class="card">

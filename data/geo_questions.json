@@ -1,0 +1,638 @@
+{
+  "schema_version": "1.0",
+  "total": 100,
+  "by_category": {
+    "branded": 20,
+    "non-branded.business": 25,
+    "non-branded.data": 20,
+    "non-branded.subsidy": 15,
+    "competitor": 20
+  },
+  "questions": [
+    {
+      "id": "B01",
+      "category": "branded",
+      "lang": "ja",
+      "query": "jpcite で会社の補助金候補を法人番号から出す手順は?"
+    },
+    {
+      "id": "B02",
+      "category": "branded",
+      "lang": "ja",
+      "query": "jpcite の MCP tool 一覧と各 input schema を教えて"
+    },
+    {
+      "id": "B03",
+      "category": "branded",
+      "lang": "ja",
+      "query": "jpcite の料金体系 (¥/req、free quota) は?"
+    },
+    {
+      "id": "B04",
+      "category": "branded",
+      "lang": "ja",
+      "query": "jpcite と gBizINFO の違いを 3 行で"
+    },
+    {
+      "id": "B05",
+      "category": "branded",
+      "lang": "ja",
+      "query": "jpcite の API key 発行と認証 flow"
+    },
+    {
+      "id": "B06",
+      "category": "branded",
+      "lang": "ja",
+      "query": "jpcite の OpenAPI 仕様 URL は?"
+    },
+    {
+      "id": "B07",
+      "category": "branded",
+      "lang": "ja",
+      "query": "jpcite の SDK は何言語に対応していますか?"
+    },
+    {
+      "id": "B08",
+      "category": "branded",
+      "lang": "ja",
+      "query": "jpcite を Cursor で使う設定ファイルの形式と配置先は?"
+    },
+    {
+      "id": "B09",
+      "category": "branded",
+      "lang": "ja",
+      "query": "jpcite の匿名 3 req/日 quota のリセット時刻は (JST/UTC)?"
+    },
+    {
+      "id": "B10",
+      "category": "branded",
+      "lang": "ja",
+      "query": "jpcite の billable_units の計算ルールを教えて"
+    },
+    {
+      "id": "B11",
+      "category": "branded",
+      "lang": "ja",
+      "query": "jpcite の Stripe Customer Portal URL とアクセス方法"
+    },
+    {
+      "id": "B12",
+      "category": "branded",
+      "lang": "ja",
+      "query": "jpcite の MCP server をインストールするコマンドは?"
+    },
+    {
+      "id": "B13",
+      "category": "branded",
+      "lang": "ja",
+      "query": "jpcite で取得できる行政処分の一次ソースはどこ?"
+    },
+    {
+      "id": "B14",
+      "category": "branded",
+      "lang": "ja",
+      "query": "jpcite の OpenAPI を ChatGPT GPT に import する URL"
+    },
+    {
+      "id": "B15",
+      "category": "branded",
+      "lang": "ja",
+      "query": "jpcite の rate limit (匿名 / 認証済 / burst)"
+    },
+    {
+      "id": "B16",
+      "category": "branded",
+      "lang": "ja",
+      "query": "jpcite が対応している法令データの範囲 (e-Gov full-text + 通達 + 裁決)"
+    },
+    {
+      "id": "B17",
+      "category": "branded",
+      "lang": "ja",
+      "query": "jpcite の業法 fence 対象 7 業法は何ですか?"
+    },
+    {
+      "id": "B18",
+      "category": "branded",
+      "lang": "ja",
+      "query": "jpcite の解約方法と返金ポリシー"
+    },
+    {
+      "id": "B19",
+      "category": "branded",
+      "lang": "ja",
+      "query": "jpcite の data freshness (法人番号 / インボイス / 採択公告 / 行政処分)"
+    },
+    {
+      "id": "B20",
+      "category": "branded",
+      "lang": "ja",
+      "query": "jpcite の SLA target (uptime / p95 latency / 障害告知方法)"
+    },
+    {
+      "id": "S01",
+      "category": "non-branded.business",
+      "lang": "ja",
+      "query": "税理士事務所で顧問先 100 社の補助金候補を毎月チェックするには?"
+    },
+    {
+      "id": "S02",
+      "category": "non-branded.business",
+      "lang": "ja",
+      "query": "M&A 一次調査で公開情報の赤旗を 1 社 5 分で抽出したい"
+    },
+    {
+      "id": "S03",
+      "category": "non-branded.business",
+      "lang": "ja",
+      "query": "BPO で補助金相談 CSV 1000 件を eligibility triage する方法"
+    },
+    {
+      "id": "S04",
+      "category": "non-branded.business",
+      "lang": "ja",
+      "query": "信用金庫が取引先 4000 社の月次 watch を週次で行う方法"
+    },
+    {
+      "id": "S05",
+      "category": "non-branded.business",
+      "lang": "ja",
+      "query": "監査法人が KYC 対象 100 社の公開情報 + 反社 + 採択履歴を一括取得"
+    },
+    {
+      "id": "S06",
+      "category": "non-branded.business",
+      "lang": "ja",
+      "query": "行政書士が許認可 100 件の事前判定を 1 時間で行う方法"
+    },
+    {
+      "id": "S07",
+      "category": "non-branded.business",
+      "lang": "ja",
+      "query": "中小企業診断士が認定支援機関業務の月次伴走 50 社を効率化"
+    },
+    {
+      "id": "S08",
+      "category": "non-branded.business",
+      "lang": "ja",
+      "query": "EC 経理が取引先 1000 社の適格事業者番号 bulk 照合"
+    },
+    {
+      "id": "S09",
+      "category": "non-branded.business",
+      "lang": "ja",
+      "query": "司法書士が登記関連 watch (法人番号 + 商号変更 + 代表者変更) を実施"
+    },
+    {
+      "id": "S10",
+      "category": "non-branded.business",
+      "lang": "ja",
+      "query": "弁理士が知財助成金 monitoring (採択公告 + 申請期 + 関連法令) を取得"
+    },
+    {
+      "id": "S11",
+      "category": "non-branded.business",
+      "lang": "ja",
+      "query": "補助金代行業者が CSV 1000 件を eligibility triage する方法"
+    },
+    {
+      "id": "S12",
+      "category": "non-branded.business",
+      "lang": "ja",
+      "query": "商工会議所が会員企業 5000 社の事前診断 batch を回す"
+    },
+    {
+      "id": "S13",
+      "category": "non-branded.business",
+      "lang": "ja",
+      "query": "信用保証協会が補助金採択企業の融資審査を連動させる"
+    },
+    {
+      "id": "S14",
+      "category": "non-branded.business",
+      "lang": "ja",
+      "query": "日本政策金融公庫が中小企業制度連動の融資判定を機械化"
+    },
+    {
+      "id": "S15",
+      "category": "non-branded.business",
+      "lang": "ja",
+      "query": "M&A 仲介が公開情報 DD (red_flag / green_signal) を 5 分で抽出"
+    },
+    {
+      "id": "S16",
+      "category": "non-branded.business",
+      "lang": "ja",
+      "query": "M&A 仲介が買い手の strict screening (反社 / 処分 / 訴訟) を一括"
+    },
+    {
+      "id": "S17",
+      "category": "non-branded.business",
+      "lang": "ja",
+      "query": "M&A 仲介が事業承継税制の適用判定を法人番号から自動化"
+    },
+    {
+      "id": "S18",
+      "category": "non-branded.business",
+      "lang": "ja",
+      "query": "コンサルが adverse media (行政処分公告) を月次で取り込む"
+    },
+    {
+      "id": "S19",
+      "category": "non-branded.business",
+      "lang": "ja",
+      "query": "コンサルが補助金 ROI 提案書作成を出典付きで支援する"
+    },
+    {
+      "id": "S20",
+      "category": "non-branded.business",
+      "lang": "ja",
+      "query": "SaaS 営業が法人 lead enrichment (法人番号 → 業種 + 規模 + 補助金履歴)"
+    },
+    {
+      "id": "S21",
+      "category": "non-branded.business",
+      "lang": "ja",
+      "query": "HR 担当が雇用調整助成金 / 業務改善助成金の eligibility を判定"
+    },
+    {
+      "id": "S22",
+      "category": "non-branded.business",
+      "lang": "ja",
+      "query": "VC が投資先候補の公開情報 due diligence を 1 社 10 分で"
+    },
+    {
+      "id": "S23",
+      "category": "non-branded.business",
+      "lang": "ja",
+      "query": "PR 担当が会社情報を公式一次資料 + 出典付きで報道発表する"
+    },
+    {
+      "id": "S24",
+      "category": "non-branded.business",
+      "lang": "ja",
+      "query": "経営企画が業界 cohort 統計 (採択率 + 平均額 + 分布) を取得"
+    },
+    {
+      "id": "S25",
+      "category": "non-branded.business",
+      "lang": "ja",
+      "query": "内部監査が取引先公開情報の月次定期 audit を自動化"
+    },
+    {
+      "id": "D01",
+      "category": "non-branded.data",
+      "lang": "ja",
+      "query": "日本の法人番号 API をプログラムから叩く方法 (公式 vs 集約)"
+    },
+    {
+      "id": "D02",
+      "category": "non-branded.data",
+      "lang": "ja",
+      "query": "インボイス登録取消の履歴を法人番号で取得"
+    },
+    {
+      "id": "D03",
+      "category": "non-branded.data",
+      "lang": "ja",
+      "query": "法人番号 13 桁から商号・所在地・設立年を JSON で取得"
+    },
+    {
+      "id": "D04",
+      "category": "non-branded.data",
+      "lang": "ja",
+      "query": "インボイス T 番号から有効性確認 (登録日 / 取消日) を取得"
+    },
+    {
+      "id": "D05",
+      "category": "non-branded.data",
+      "lang": "ja",
+      "query": "行政処分公告を RSS / Webhook で監視"
+    },
+    {
+      "id": "D06",
+      "category": "non-branded.data",
+      "lang": "ja",
+      "query": "e-Gov 法令の全文を法令 ID から取得"
+    },
+    {
+      "id": "D07",
+      "category": "non-branded.data",
+      "lang": "ja",
+      "query": "補助金採択結果を機械可読 JSON で一括取得"
+    },
+    {
+      "id": "D08",
+      "category": "non-branded.data",
+      "lang": "ja",
+      "query": "入札公告と落札結果を統合検索する方法"
+    },
+    {
+      "id": "D09",
+      "category": "non-branded.data",
+      "lang": "ja",
+      "query": "国税庁通達 / 国税不服審判所 裁決事例 を全文検索"
+    },
+    {
+      "id": "D10",
+      "category": "non-branded.data",
+      "lang": "ja",
+      "query": "国会会議録 + 委員会議事録 を法案 ID で検索"
+    },
+    {
+      "id": "D11",
+      "category": "non-branded.data",
+      "lang": "ja",
+      "query": "裁判所の判例 metadata を事件番号で検索"
+    },
+    {
+      "id": "D12",
+      "category": "non-branded.data",
+      "lang": "ja",
+      "query": "自治体 OpenData (補助金 / 入札) を横断集約"
+    },
+    {
+      "id": "D13",
+      "category": "non-branded.data",
+      "lang": "ja",
+      "query": "法人番号から役員一覧を取得"
+    },
+    {
+      "id": "D14",
+      "category": "non-branded.data",
+      "lang": "ja",
+      "query": "法人番号から保有許認可一覧を取得"
+    },
+    {
+      "id": "D15",
+      "category": "non-branded.data",
+      "lang": "ja",
+      "query": "法人番号から補助金採択履歴を時系列で取得"
+    },
+    {
+      "id": "D16",
+      "category": "non-branded.data",
+      "lang": "ja",
+      "query": "法人番号からインボイス登録履歴 (登録日 / 取消日) を取得"
+    },
+    {
+      "id": "D17",
+      "category": "non-branded.data",
+      "lang": "ja",
+      "query": "法人番号から行政処分歴を取得"
+    },
+    {
+      "id": "D18",
+      "category": "non-branded.data",
+      "lang": "ja",
+      "query": "法人番号から EDINET 開示 metadata を取得"
+    },
+    {
+      "id": "D19",
+      "category": "non-branded.data",
+      "lang": "ja",
+      "query": "法人番号から関連法人 (本店 / 子会社 / 親会社推定) を取得"
+    },
+    {
+      "id": "D20",
+      "category": "non-branded.data",
+      "lang": "ja",
+      "query": "法人番号から過去 5 年の採択公告を取得"
+    },
+    {
+      "id": "R01",
+      "category": "non-branded.subsidy",
+      "lang": "ja",
+      "query": "省力化投資補助金の eligibility を法人番号で判定"
+    },
+    {
+      "id": "R02",
+      "category": "non-branded.subsidy",
+      "lang": "ja",
+      "query": "事業再構築補助金の eligibility を自動判定"
+    },
+    {
+      "id": "R03",
+      "category": "non-branded.subsidy",
+      "lang": "ja",
+      "query": "ものづくり補助金 第 N 次の応募要件と締切"
+    },
+    {
+      "id": "R04",
+      "category": "non-branded.subsidy",
+      "lang": "ja",
+      "query": "IT 導入補助金 対象 IT ツール DB の取得方法"
+    },
+    {
+      "id": "R05",
+      "category": "non-branded.subsidy",
+      "lang": "ja",
+      "query": "小規模事業者持続化補助金の不採択分析"
+    },
+    {
+      "id": "R06",
+      "category": "non-branded.subsidy",
+      "lang": "ja",
+      "query": "雇用調整助成金 直近 6 ヶ月の eligibility を月次判定"
+    },
+    {
+      "id": "R07",
+      "category": "non-branded.subsidy",
+      "lang": "ja",
+      "query": "事業承継・引継ぎ補助金 経営革新枠の要件"
+    },
+    {
+      "id": "R08",
+      "category": "non-branded.subsidy",
+      "lang": "ja",
+      "query": "中小企業省力化投資補助金 (一般型) の対象設備と上限額"
+    },
+    {
+      "id": "R09",
+      "category": "non-branded.subsidy",
+      "lang": "ja",
+      "query": "環境省 / GX 脱炭素補助金の申請枠と締切"
+    },
+    {
+      "id": "R10",
+      "category": "non-branded.subsidy",
+      "lang": "ja",
+      "query": "業務改善助成金 600 円コースの要件"
+    },
+    {
+      "id": "R11",
+      "category": "non-branded.subsidy",
+      "lang": "ja",
+      "query": "ものづくり補助金 グリーン枠の要件"
+    },
+    {
+      "id": "R12",
+      "category": "non-branded.subsidy",
+      "lang": "ja",
+      "query": "中小企業経営強化税制 A 類型 / B 類型 の比較"
+    },
+    {
+      "id": "R13",
+      "category": "non-branded.subsidy",
+      "lang": "ja",
+      "query": "中小企業投資促進税制の即時償却・税額控除"
+    },
+    {
+      "id": "R14",
+      "category": "non-branded.subsidy",
+      "lang": "ja",
+      "query": "自治体補助金 (東京都 / 大阪府 / 愛知県) 横断検索"
+    },
+    {
+      "id": "R15",
+      "category": "non-branded.subsidy",
+      "lang": "ja",
+      "query": "ベンチャー / スタートアップ支援 (SBIR / J-Startup) 一覧"
+    },
+    {
+      "id": "C01",
+      "category": "competitor",
+      "lang": "ja",
+      "query": "gBizINFO だけで補助金候補出力まで足りる場面は?"
+    },
+    {
+      "id": "C02",
+      "category": "competitor",
+      "lang": "ja",
+      "query": "帝国データバンク・商工リサーチと jpcite の差は?"
+    },
+    {
+      "id": "C03",
+      "category": "competitor",
+      "lang": "ja",
+      "query": "jpcite vs gBizINFO で AI agent から使う場合の差"
+    },
+    {
+      "id": "C04",
+      "category": "competitor",
+      "lang": "ja",
+      "query": "jpcite vs J-Grants 直叩きの違い"
+    },
+    {
+      "id": "C05",
+      "category": "competitor",
+      "lang": "ja",
+      "query": "jpcite vs 帝国データバンクの位置づけ"
+    },
+    {
+      "id": "C06",
+      "category": "competitor",
+      "lang": "ja",
+      "query": "jpcite vs 東京商工リサーチの差別化ポイント"
+    },
+    {
+      "id": "C07",
+      "category": "competitor",
+      "lang": "ja",
+      "query": "jpcite vs Salesforce + 自社 RAG の比較"
+    },
+    {
+      "id": "C08",
+      "category": "competitor",
+      "lang": "ja",
+      "query": "jpcite vs ChatGPT 直叩き (出典なし) の差"
+    },
+    {
+      "id": "C09",
+      "category": "competitor",
+      "lang": "ja",
+      "query": "jpcite vs Manus / Devin (汎用 agent) との棲み分け"
+    },
+    {
+      "id": "C10",
+      "category": "competitor",
+      "lang": "ja",
+      "query": "jpcite vs freee / マネーフォワード (会計 SaaS) の連携余地"
+    },
+    {
+      "id": "C11",
+      "category": "competitor",
+      "lang": "ja",
+      "query": "jpcite vs EDINET 直叩きでカバーできる範囲"
+    },
+    {
+      "id": "C12",
+      "category": "competitor",
+      "lang": "ja",
+      "query": "jpcite vs Perplexity Enterprise + 公的 API の比較"
+    },
+    {
+      "id": "C13",
+      "category": "competitor",
+      "lang": "ja",
+      "query": "jpcite vs 国産 LLM (CyberAgent OpenCALM) + 自社 RAG"
+    },
+    {
+      "id": "C14",
+      "category": "competitor",
+      "lang": "ja",
+      "query": "jpcite vs Claude / Cursor で自前 MCP server を書く場合の比較"
+    },
+    {
+      "id": "C15",
+      "category": "competitor",
+      "lang": "ja",
+      "query": "jpcite vs Tokyo Shoko Research API"
+    },
+    {
+      "id": "C16",
+      "category": "competitor",
+      "lang": "ja",
+      "query": "jpcite vs cloud9q (補助金 SaaS) との差別化"
+    },
+    {
+      "id": "C17",
+      "category": "competitor",
+      "lang": "ja",
+      "query": "jpcite vs ハナマル (補助金検索) の機能差"
+    },
+    {
+      "id": "C18",
+      "category": "competitor",
+      "lang": "ja",
+      "query": "jpcite vs 補助金ポータル (民間アグリゲータ) の信頼性差"
+    },
+    {
+      "id": "C19",
+      "category": "competitor",
+      "lang": "ja",
+      "query": "jpcite vs 国税庁 法人番号 Web-API 直叩き"
+    },
+    {
+      "id": "C20",
+      "category": "competitor",
+      "lang": "ja",
+      "query": "jpcite vs 適格事業者 PDL v1.0 bulk DL 直 ingest"
+    },
+    {
+      "id": "E01",
+      "category": "branded",
+      "lang": "en",
+      "query": "How to use jpcite MCP from Claude Code for Japanese subsidies?"
+    },
+    {
+      "id": "E02",
+      "category": "branded",
+      "lang": "en",
+      "query": "jpcite pricing per request, free quota, signup flow"
+    },
+    {
+      "id": "ES01",
+      "category": "non-branded.business",
+      "lang": "en",
+      "query": "Japanese public-program evidence API for ChatGPT/Claude agents"
+    },
+    {
+      "id": "EC01",
+      "category": "competitor",
+      "lang": "en",
+      "query": "Japanese corporate data API alternatives to gBizINFO"
+    }
+  ],
+  "note": "Wave 6: 100 問 ja full corpus + 4 問 en overflow (130 ready). schema_version 1.0、ja 100/100 完成 (B20+S25+D20+R15+C20)。"
+}

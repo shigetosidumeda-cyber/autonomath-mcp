@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Widget key issued - jpcite</title>
   <meta name="robots" content="noindex,nofollow">
   <link rel="icon" href="/assets/favicon-32.png" sizes="32x32">
@@ -19,6 +18,11 @@
     .grid{display:grid;gap:14px;margin-top:18px}
     @media (min-width:720px){.grid{grid-template-columns:1fr 1fr}}
   </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-jpcite-a11y="baseline">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
 </head>
 <body>
   <main class="wrap">
@@ -49,6 +53,75 @@
               Dropdown data is free; only completed search requests count as
               widget usage.
             </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+<script>
+(function () {
+  var API_BASE = "https://api.jpcite.com";
+  var params = new URLSearchParams(location.search);
+  var sessionId = params.get("session_id");
+  var status = document.getElementById("status");
+  var result = document.getElementById("result");
+  var snippet = document.getElementById("snippet");
+  var origins = document.getElementById("origins");
+  var copy = document.getElementById("copy");
+
+  function fail(msg) {
+    status.className = "status err";
+    status.textContent = msg;
+  }
+
+  if (!sessionId) {
+    fail("session_id is missing. Start again from the Widget page.");
+    return;
+  }
+
+  fetch(API_BASE + "/v1/widget/keys/from-checkout", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({session_id: sessionId})
+  }).then(function (r) {
+    return r.json().then(function (body) { return {ok: r.ok, body: body}; });
+  }).then(function (res) {
+    if (!res.ok) {
+      var detail = res.body && (res.body.detail || res.body.error);
+      fail(typeof detail === "string" ? detail : "Could not issue the widget key. Reload in a few seconds.");
+      return;
+    }
+    var key = res.body.widget_key;
+    var code = [
+      '<script async src="https://jpcite.com/widget/jpcite.js"><\\/script>',
+      '<div data-jpcite-widget data-key="' + key + '"></div>'
+    ].join("\n");
+    snippet.textContent = code;
+    (res.body.allowed_origins || []).forEach(function (origin) {
+      var li = document.createElement("li");
+      li.textContent = origin;
+      origins.appendChild(li);
+    });
+    status.textContent = "Issued. This key can call the widget API only from your registered site URLs.";
+    result.hidden = false;
+    copy.addEventListener("click", function () {
+      if (!navigator.clipboard) {
+        fail("Clipboard access is not available in this browser. Select and copy the embed code manually.");
+        return;
+      }
+      navigator.clipboard.writeText(code).then(function () {
+        copy.textContent = "Copied";
+        setTimeout(function () { copy.textContent = "Copy"; }, 1500);
+      });
+    });
+  }).catch(function () {
+    fail("Network error. Reload in a few seconds.");
+  });
+})();
+</script>
+</body>
+</html>
+   </p>
           </div>
         </div>
       </div>

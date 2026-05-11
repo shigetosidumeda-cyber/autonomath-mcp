@@ -1,0 +1,17 @@
+{
+  "name": "jpcite — 日本公的制度 Evidence API",
+  "short_name": "jpcite",
+  "start_url": "/",
+  "scope": "/",
+  "display": "minimal-ui",
+  "background_color": "#ffffff",
+  "theme_color": "#0a4d8c",
+  "lang": "ja",
+  "dir": "ltr",
+  "categories": ["business", "productivity", "developer-tools"],
+  "icons": [
+    {"src": "/assets/brand/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "/assets/brand/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ],
+  "description": "日本の補助金/許認可/行政処分/適格事業者/法令を法人番号 1 つで横断照会する API/MCP。¥3/req 完全従量、無料 3 req/IP/日。"
+}
