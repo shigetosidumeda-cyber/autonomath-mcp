@@ -1764,6 +1764,13 @@ def create_app() -> FastAPI:
             # firing. Router authors that already shape `detail` as a
             # rich dict (e.g. `{"error":"...","code":"..."}`) still get
             # the merged envelope: extras pull through dict keys verbatim.
+            #
+            # 2026-05-11 install-friction hotfix: also attach a `hint` extra
+            # so an LLM agent that hits a 400 because of an UTF-8 raw query
+            # string can self-repair without reading our docs. The dominant
+            # cause of bare 400s in the wild is `curl "https://api.../search?q=補助金"`
+            # which breaks the HTTP request line on most curl builds — the
+            # fix is `curl -G --data-urlencode "q=補助金"` (or POST + JSON).
             code = "bad_request"
         elif status_code == 401:
             code = "auth_required"
@@ -1805,7 +1812,25 @@ def create_app() -> FastAPI:
         }:
             extras["detail"] = exc.detail
 
-        if status_code == 404:
+        if status_code == 400:
+            # AI agent self-repair hint: the #1 cause of 400 in the wild
+            # is non-ASCII query params passed raw on the request line
+            # (curl "...?q=補助金" → most curl builds emit invalid UTF-8
+            # in the HTTP request line). The fix is `-G --data-urlencode`
+            # for GET, or POST + JSON body. We also surface the canonical
+            # docs anchor so an agent has an unambiguous escalation path.
+            extras.setdefault(
+                "hint",
+                "Use --data-urlencode for non-ASCII query params "
+                "(e.g. curl -G '<url>' --data-urlencode 'q=補助金'), "
+                "or POST with a JSON body. See documentation anchor for the "
+                "full repair recipe.",
+            )
+            extras.setdefault(
+                "docs",
+                "https://jpcite.com/docs/error_handling#bad_request",
+            )
+        elif status_code == 404:
             # Suggest a couple of canonical entry points so an LLM caller
             # has somewhere to bounce off when it guesses a wrong path.
             extras.setdefault(

@@ -683,11 +683,10 @@
  <a href="/">ホーム</a> <span aria-hidden="true">›</span>
  <span aria-current="page">Playground</span>
  </nav>
- <h1>API プレイグラウンド</h1>
+ <h1>API プレイグラウンド — anonymous 3 req/日で動作確認</h1>
  <p class="pg-lead">
- ブラウザから直接 <code>https://api.jpcite.com/v1/*</code> を叩いて、
- レスポンス形状・<strong>専門業務ではないことの注意書き</strong>・出典 URL を確認できます。
- <strong>登録不要・API キー不要</strong>。 匿名 <span data-fact="anonymous_quota_per_day">3</span> req/日 (per IP) まで無料、 超過後は API キー発行で ¥<span data-fact="price_per_req_inc_tax">3.30</span>/課金単位 (税込) 完全従量。
+ <strong>anonymous 3 req/日 per IP で無料試行できます (登録不要・API キー不要・JST 翌日 00:00 リセット)。</strong>
+ ブラウザから直接 <code>https://api.jpcite.com/v1/*</code> を叩いて Evidence Packet の構造・<code>source_url</code> / <code>source_fetched_at</code> / <code>known_gaps</code> / 業法 fence envelope を確認できます。3 回後は <strong>API キー発行 (¥3.30/unit 完全従量)</strong> で続行。
  <a href="/docs/api-reference/">API リファレンス</a> · <a href="pricing.html">料金</a> · <a href="/dashboard">ダッシュボード</a>
  </p>
 
@@ -741,8 +740,10 @@
     <label><input type="radio" name="output" value="program_deep"> 制度詳細 deep</label>
     <button id="ev3-submit" type="button">artifact を生成 (free) →</button>
   </div>
-  <div id="ev3-cta" style="margin:32px 0 0;padding:16px;background:#f7f8fa;border-radius:8px;font-size:13px;color:#64748b">
-    API key で 100 件流す: <a href="/pricing.html#api-paid">/pricing.html#api-paid</a> (¥3 per billable unit (税込 ¥3.30) metered、Stripe Checkout 1 分)
+  <div id="ev3-cta" style="margin:32px 0 0;padding:18px 20px;background:var(--accent-soft,#f6fbff);border:1px solid var(--accent,#0066cc);border-radius:10px;font-size:14px;line-height:1.65;color:var(--text);">
+    <p style="margin:0 0 10px;font-weight:700;font-size:15px;">完了後 — API キーで継続実行へ</p>
+    <p style="margin:0 0 12px;color:var(--text-muted);">3 回の wizard で構造を確認したら、AI agent (Claude MCP / ChatGPT Custom GPT / Cursor / Codex) に bundle して 100 件・1,000 件と継続実行できます。完全従量 ¥3/req (税込 ¥3.30)、tier なし、月額固定なし、Stripe Checkout 1 分。</p>
+    <p style="margin:0;"><a class="pg-btn pg-btn-primary" href="/pricing.html#api-paid" data-cta-variant="evidence3-continue-with-key" style="display:inline-block;padding:10px 18px;font-weight:700;text-decoration:none;background:var(--accent,#0066cc);color:#fff;border-radius:6px;">API キーを発行して続ける →</a></p>
   </div>
  </div>
 

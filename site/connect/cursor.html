@@ -145,7 +145,7 @@
       <li><strong>uvx を準備</strong>: <code>curl -LsSf https://astral.sh/uv/install.sh | sh</code> でインストール (既存ユーザはスキップ)。</li>
       <li><strong>プロジェクト root に <code>.cursor/mcp.json</code> を配置</strong>: <code>mkdir -p .cursor && curl -o .cursor/mcp.json https://jpcite.com/.cursor/mcp.example.json</code></li>
       <li><strong>Cursor を再起動</strong>: <code>Settings → MCP</code> を開き、<code>jpcite</code> が緑 dot で出ているか確認。</li>
-      <li><strong>(任意) API key を埋め込み</strong>: <code>env.JPCITE_API_KEY</code> を <code>sk_...</code> に置換。anon free のままなら省略可。</li>
+      <li><strong>(任意) API key を埋め込み</strong>: <code>env.JPCITE_API_KEY</code> を <code>jc_...</code> に置換 (新規は <code>jc_</code> プレフィクス、既発行の <code>sk_</code> / <code>am_</code> も互換)。anon free のままなら省略可。</li>
     </ol>
   </section>
 
@@ -158,7 +158,7 @@
       "command": "uvx",
       "args": ["autonomath-mcp"],
       "env": {
-        "JPCITE_API_KEY": "sk_xxxxx"
+        "JPCITE_API_KEY": "jc_xxxxx"
       }
     }
   }
@@ -171,12 +171,17 @@
     <p>Cursor のチャットで以下を入力。jpcite が呼ばれ、source_url 付きの結果が返れば成功。</p>
 <pre><code aria-label="Cursor 動作確認">@jpcite search_programs q="ものづくり補助金" prefecture="東京都"</code></pre>
     <p>Settings → MCP → jpcite の右側に tools count: 139 が表示される (<code>AUTONOMATH_36_KYOTEI_ENABLED=false</code> がデフォルト)。</p>
+    <p>REST 直叩きで疎通確認する場合は <code>-G --data-urlencode</code> を必ず使うこと。日本語 query を URL に直接埋めると HTTP リクエスト行が壊れ、API は <code>{"error":{"code":"bad_request",...,"hint":"Use --data-urlencode for non-ASCII query params..."}}</code> を返します。</p>
+<pre><code aria-label="REST 動作確認 (curl)">curl -G "https://api.jpcite.com/v1/programs/search" \
+  --data-urlencode "q=ものづくり補助金" \
+  --data-urlencode "prefecture=東京都" \
+  -H "X-API-Key: ${JPCITE_API_KEY:-}"</code></pre>
   </section>
 
   <section>
     <h2>FAQ</h2>
     <details><summary>anonymous と paid の違いは?</summary><p>anon は IP ベースで 3 req/日 (AnonIpLimit)、API key 無し。paid は ¥3/req metered で上限なし、<code>JPCITE_API_KEY</code> 経由でカウント。</p></details>
-    <details><summary>API key はどう発行する?</summary><p><a href="/pricing.html#api-paid">/pricing.html#api-paid</a> から Stripe Checkout (consent は <code>custom_text.submit.message</code>) で発行。直後にダッシュボードで <code>sk_...</code> を表示。</p></details>
+    <details><summary>API key はどう発行する?</summary><p><a href="/pricing.html#api-paid">/pricing.html#api-paid</a> から Stripe Checkout (consent は <code>custom_text.submit.message</code>) で発行。直後にダッシュボードで <code>jc_...</code> を表示 (新規は <code>jc_</code> プレフィクス、既発行の <code>sk_</code> / <code>am_</code> も互換)。</p></details>
     <details><summary>7 業法 fence とは?</summary><p>jpcite は税理士法§52・弁護士法§72 等の独占業務に抵触する個別助言を返しません。<a href="/legal-fence.html">/legal-fence.html</a> 参照。</p></details>
   </section>
 </main>

@@ -16,7 +16,7 @@ if(!$('#dash-signin')){const card=document.createElement('div');card.id='dash-si
           <label for="dash-signin-key" class="visually-hidden">API key</label>
           <input id="dash-signin-key" name="api_key" type="password" inputmode="text" required
                  autocomplete="off"
-                 placeholder="am_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                 placeholder="jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
                  aria-describedby="dash-signin-help dash-signin-err"
                  style="flex:1;min-width:260px;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;" />
           <button type="submit" class="btn btn-primary" id="dash-signin-submit">Sign in</button>

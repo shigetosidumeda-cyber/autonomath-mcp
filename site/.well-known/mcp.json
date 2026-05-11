@@ -22,6 +22,8 @@
       "type": "apiKey",
       "header": "X-API-Key",
       "env": "JPCITE_API_KEY",
+      "key_prefix": "jc_",
+      "key_prefix_note": "Newly-issued keys carry the 'jc_' prefix. Legacy 'sk_' and 'am_' keys remain valid (backward-compatible, no rotation required).",
       "anonymous_limit": "3 requests/day per IP",
       "anonymous": {
         "limit": 3,

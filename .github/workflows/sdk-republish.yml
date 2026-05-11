@@ -1,0 +1,292 @@
+name: sdk-republish
+
+# =============================================================================
+# OPERATOR RUNBOOK — manual SDK republish (Option B: post-launch metadata refresh)
+# =============================================================================
+# Purpose:
+#   Refresh PyPI `autonomath` + npm `@autonomath/sdk` artifacts so the published
+#   metadata (description, homepage, repository, bugs URL) reflects the jpcite
+#   brand. The existing sdk-publish.yml is tag-driven and assumes a code/version
+#   bump; this workflow is a low-risk operator-only re-upload that:
+#
+#     * Does NOT bump version by default. Same-version upload is attempted via
+#       `twine upload --skip-existing` (PyPI) and `npm publish` with explicit
+#       check (npm). PyPI silently allows re-upload of new artifacts under the
+#       same version; npm rejects same-version replace unless the 24h unpublish
+#       window is open.
+#     * On npm same-version conflict, surfaces a clear bootstrap message asking
+#       the operator to bump `sdk/typescript/package.json:version` patch digit
+#       (e.g. 0.3.2 -> 0.3.3) with `"metadata-only republish"` in CHANGELOG and
+#       re-run the workflow. The Python side is unaffected because PyPI accepts
+#       same-version new sdists.
+#     * Skips tests by default (Option B is metadata-only — code is already
+#       battle-tested against production). Operator can toggle `run_tests: true`
+#       on the dispatch input if a verify pass is desired.
+#
+# Triggers:
+#   - workflow_dispatch ONLY (operator manual, no tag, no schedule). The
+#     existing sdk-publish.yml remains the canonical tag-driven path for real
+#     code releases.
+#
+# Auth resolution:
+#   - PyPI: PYPI_API_TOKEN (granular token, Upload scope on `autonomath`).
+#           OIDC trusted publishing is preferred long-term; for the rename
+#           republish we use the token path because trust may not yet be
+#           configured.
+#   - npm:  NPM_TOKEN (granular access token, Publish scope on @autonomath
+#           scope) — required because @autonomath/sdk has never been published
+#           (registry 404 at 2026-05-11 probe), so OIDC trusted publishing
+#           cannot bootstrap. Once the first publish lands, future runs may
+#           switch to OIDC per sdk-publish-agents.yml playbook.
+#
+# Operator one-liner (after secrets are in place):
+#   gh workflow run sdk-republish.yml -f target=both
+#
+# Per-side runs:
+#   gh workflow run sdk-republish.yml -f target=python
+#   gh workflow run sdk-republish.yml -f target=ts
+#
+# Force patch bump if same-version upload fails (npm only — PyPI is fine):
+#   1. Edit sdk/typescript/package.json :: bump version patch digit
+#   2. Edit sdk/typescript/CHANGELOG.md :: append "## [0.3.3] - 2026-05-11 — metadata-only republish (jpcite rename)"
+#   3. git commit -am "ts sdk: 0.3.3 metadata-only republish" && git push
+#   4. gh workflow run sdk-republish.yml -f target=ts
+# =============================================================================
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Which SDK to republish"
+        required: true
+        default: "both"
+        type: choice
+        options:
+          - python
+          - ts
+          - both
+      run_tests:
+        description: "Run the SDK test suite before upload (slower but safer)"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  id-token: write   # PyPI OIDC if/when trusted publishing is enabled
+                    # + npm provenance attestation
+
+concurrency:
+  # Two republish runs against the same registry will collide; serialize.
+  group: sdk-republish
+  cancel-in-progress: false
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Python — PyPI republish (Option B: same version, --skip-existing)
+  # ---------------------------------------------------------------------------
+  republish-python:
+    name: Republish autonomath to PyPI
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: |
+      github.event.inputs.target == 'python' ||
+      github.event.inputs.target == 'both'
+    environment: pypi
+    defaults:
+      run:
+        working-directory: sdk/python
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: sdk/python/pyproject.toml
+
+      - name: Show local version vs PyPI
+        # Cheap visibility: surfaces what we're about to upload vs what's live.
+        run: |
+          set -euo pipefail
+          LOCAL_VERSION="$(python -c 'import tomllib,pathlib; print(tomllib.loads(pathlib.Path("pyproject.toml").read_text())["project"]["version"])')"
+          echo "Local version: ${LOCAL_VERSION}"
+          PYPI_LATEST="$(curl -fsS https://pypi.org/pypi/autonomath/json | python -c 'import json,sys; print(json.load(sys.stdin)["info"]["version"])' || echo "<unpublished>")"
+          echo "PyPI latest:   ${PYPI_LATEST}"
+          if [ "${LOCAL_VERSION}" != "${PYPI_LATEST}" ]; then
+            echo "::notice::Local (${LOCAL_VERSION}) != PyPI (${PYPI_LATEST}) — this run uploads a new version, not a metadata republish. Confirm intentional."
+          else
+            echo "Same-version metadata republish path (Option B). --skip-existing will protect against duplicate-artifact rejection."
+          fi
+
+      - name: Install build toolchain
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine
+
+      - name: (Optional) Install SDK with dev extras and run tests
+        if: ${{ github.event.inputs.run_tests == 'true' }}
+        run: |
+          pip install -e ".[dev]"
+          pytest tests/ -v
+
+      - name: Build sdist + wheel
+        run: |
+          rm -rf dist
+          python -m build
+
+      - name: Twine check (metadata validation)
+        run: twine check dist/*
+
+      - name: Publish to PyPI (--skip-existing for same-version republish)
+        # --skip-existing: PyPI returns 400 on exact-file dup but treats new
+        # sdist/wheel hashes under the same version as a fresh upload. The
+        # flag prevents the "filename already exists" error if anything in
+        # dist/ collides with an existing artifact.
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+          TWINE_NON_INTERACTIVE: "1"
+        run: |
+          if [ -z "${TWINE_PASSWORD:-}" ]; then
+            echo "::error::PYPI_API_TOKEN secret is not set. Add it under repo settings -> secrets -> actions (scope=Upload, project=autonomath)."
+            exit 1
+          fi
+          twine upload --skip-existing dist/*
+
+      - name: Verify upload landed
+        run: |
+          set -euo pipefail
+          LOCAL_VERSION="$(python -c 'import tomllib,pathlib; print(tomllib.loads(pathlib.Path("pyproject.toml").read_text())["project"]["version"])')"
+          # PyPI fastly cache can lag ~30s.
+          for i in 1 2 3 4 5 6; do
+            UPLOAD_TIMES="$(curl -fsS "https://pypi.org/pypi/autonomath/${LOCAL_VERSION}/json" | python -c 'import json,sys; print(",".join(u["upload_time"] for u in json.load(sys.stdin)["urls"]))' || echo "")"
+            if [ -n "${UPLOAD_TIMES}" ]; then
+              echo "PyPI autonomath==${LOCAL_VERSION} upload_times: ${UPLOAD_TIMES}"
+              exit 0
+            fi
+            echo "Waiting for PyPI cache propagation (attempt ${i}/6)..."
+            sleep 10
+          done
+          echo "::warning::Could not verify PyPI propagation within 60s. Check https://pypi.org/project/autonomath/ manually."
+
+  # ---------------------------------------------------------------------------
+  # TypeScript — npm republish (first publish for @autonomath/sdk per 2026-05-11
+  # registry probe; future runs become metadata-only)
+  # ---------------------------------------------------------------------------
+  republish-ts:
+    name: Republish @autonomath/sdk to npm
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: |
+      github.event.inputs.target == 'ts' ||
+      github.event.inputs.target == 'both'
+    environment: npm
+    defaults:
+      run:
+        working-directory: sdk/typescript
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 1
+
+      - name: Set up Node
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+          cache: npm
+          cache-dependency-path: sdk/typescript/package-lock.json
+
+      - name: Show local version vs npm
+        # Detects the same-version-already-published trap up front.
+        run: |
+          set -euo pipefail
+          LOCAL_VERSION="$(node -e 'console.log(require("./package.json").version)')"
+          echo "Local version: ${LOCAL_VERSION}"
+          # `npm view ... version` exits non-zero on 404. Tolerate it.
+          NPM_LATEST="$(npm view @autonomath/sdk version 2>/dev/null || echo "<unpublished>")"
+          echo "npm latest:    ${NPM_LATEST}"
+
+          if [ "${NPM_LATEST}" = "<unpublished>" ]; then
+            echo "First publish path: @autonomath/sdk has never been published. NPM_TOKEN required (OIDC trusted publishing cannot bootstrap)."
+          elif [ "${LOCAL_VERSION}" = "${NPM_LATEST}" ]; then
+            echo "::error::Same-version republish to npm is BLOCKED unless the 24h unpublish window is open. Bump sdk/typescript/package.json::version patch digit (e.g. ${LOCAL_VERSION} -> next-patch), append a metadata-only entry to CHANGELOG.md, then re-run."
+            echo "See header comment of .github/workflows/sdk-republish.yml for the exact 4-step bump procedure."
+            exit 1
+          else
+            echo "Version bump detected (${NPM_LATEST} -> ${LOCAL_VERSION}). Standard publish path."
+          fi
+
+      - name: Verify NPM_TOKEN is present
+        run: |
+          if [ -z "${NPM_TOKEN:-}" ]; then
+            echo "::error::NPM_TOKEN secret is not set. Add a granular access token (Publish scope on @autonomath) under repo settings -> secrets -> actions."
+            exit 1
+          fi
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Install dependencies
+        # node_modules is committed in dev tree; CI starts clean.
+        run: npm ci || npm install --no-audit --no-fund
+
+      - name: (Optional) Typecheck + build verification
+        if: ${{ github.event.inputs.run_tests == 'true' }}
+        run: |
+          npm run typecheck
+          npm run build
+
+      - name: Build (always; required for dist/ artifact)
+        run: npm run build
+
+      - name: Verify tarball contents (dry-run)
+        run: npm pack --dry-run
+
+      - name: Publish to npm
+        # --access public is required for scoped packages.
+        # --provenance emits SLSA supply-chain attestation (id-token: write).
+        run: npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Verify upload landed
+        run: |
+          set -euo pipefail
+          LOCAL_VERSION="$(node -e 'console.log(require("./package.json").version)')"
+          for i in 1 2 3 4 5 6; do
+            REGISTRY_VERSION="$(npm view "@autonomath/sdk@${LOCAL_VERSION}" version 2>/dev/null || echo "")"
+            if [ -n "${REGISTRY_VERSION}" ]; then
+              echo "npm @autonomath/sdk@${LOCAL_VERSION} is live."
+              exit 0
+            fi
+            echo "Waiting for npm registry propagation (attempt ${i}/6)..."
+            sleep 10
+          done
+          echo "::warning::Could not verify npm propagation within 60s. Check https://www.npmjs.com/package/@autonomath/sdk manually."
+
+  # ---------------------------------------------------------------------------
+  # Summary — always runs so the job graph shows a single 'done' node
+  # ---------------------------------------------------------------------------
+  summary:
+    name: Republish summary
+    needs:
+      - republish-python
+      - republish-ts
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Print outcomes
+        run: |
+          echo "Python republish: ${{ needs.republish-python.result }}"
+          echo "TS republish:     ${{ needs.republish-ts.result }}"
+          echo ""
+          echo "Verify pages:"
+          echo "  https://pypi.org/project/autonomath/"
+          echo "  https://www.npmjs.com/package/@autonomath/sdk"

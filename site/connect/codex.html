@@ -127,6 +127,11 @@ t = HostedMCPTool(tool_config={'type':'mcp','server_label':'jpcite','server_url'
 a = Agent(name='probe', tools=[t]); \
 print(Runner.run_sync(a, input='ものづくり補助金 東京都').final_output)"</code></pre>
     <p>期待: 補助金名 + source_url を含む応答が返る。tools 一覧 (139) はサーバ側で <code>curl -s https://api.jpcite.com/mcp/tools | jq 'length'</code> で別途確認。</p>
+    <p>REST 直叩きで疎通確認する場合は <code>-G --data-urlencode</code> を必ず使うこと。日本語 query を URL に直接埋めると HTTP リクエスト行が壊れ、API は <code>{"error":{"code":"bad_request",...,"hint":"Use --data-urlencode for non-ASCII query params..."}}</code> を返します。</p>
+<pre><code aria-label="REST 動作確認 (curl)">curl -G "https://api.jpcite.com/v1/programs/search" \
+  --data-urlencode "q=ものづくり補助金" \
+  --data-urlencode "prefecture=東京都" \
+  -H "X-API-Key: ${JPCITE_API_KEY:-}"</code></pre>
   </section>
 
   <section>

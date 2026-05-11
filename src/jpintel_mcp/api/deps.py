@@ -117,12 +117,18 @@ def verify_api_key_bcrypt(raw_key: str, stored_bcrypt_hash: str) -> bool:
 def generate_api_key() -> tuple[str, str]:
     """Issue a new API key. Returns (raw_key, hmac_hash).
 
+    Prefix is ``jc_`` (jpcite) for newly-issued keys. Legacy ``sk_`` /
+    ``am_`` keys remain valid — ``hash_api_key`` is prefix-agnostic
+    (HMAC-SHA256 over the full raw string), so existing keys keep
+    matching their stored ``api_keys.key_hash`` row regardless of
+    prefix. Only newly-minted keys carry the unified ``jc_`` prefix.
+
     For new bcrypt dual-path callers, also call `hash_api_key_bcrypt(raw)`
     and store the result in `api_keys.key_hash_bcrypt`. The HMAC return
     here remains the PRIMARY KEY column so existing lookups continue to
     work in O(log n).
     """
-    raw = "am_" + secrets.token_urlsafe(32)
+    raw = "jc_" + secrets.token_urlsafe(32)
     return raw, hash_api_key(raw)
 
 
