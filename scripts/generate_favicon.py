@@ -2,6 +2,7 @@
 """favicon set + Apple touch icon + maskable PWA icon 生成 (minimal SVG → PNG multi-size)."""
 
 from __future__ import annotations
+
 import pathlib
 import sys
 
@@ -25,7 +26,7 @@ def make_icon(size: int, out: pathlib.Path, Image, ImageDraw, ImageFont) -> None
     try:
         font_size = int(size * 0.6)
         font = ImageFont.truetype("/System/Library/Fonts/Helvetica.ttc", font_size)
-    except (IOError, OSError):
+    except OSError:
         font = ImageFont.load_default()
     # Draw 'j' centered
     text = "j"

@@ -28,7 +28,7 @@ def _parse(ts: str) -> dt.datetime | None:
         try:
             d = dt.datetime.strptime(ts, fmt)
             if d.tzinfo is None:
-                d = d.replace(tzinfo=dt.timezone.utc)
+                d = d.replace(tzinfo=dt.UTC)
             return d
         except ValueError:
             continue

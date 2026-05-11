@@ -1,6 +1,7 @@
 """magic-link login request: email → 6 digit code → mail."""
 
 from __future__ import annotations
+
 import os
 import secrets
 import smtplib
@@ -8,9 +9,8 @@ import sqlite3
 import time
 from email.mime.text import MIMEText
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from pydantic import BaseModel, EmailStr
-
 
 router = APIRouter(prefix="/v1/me", tags=["me-auth"])
 

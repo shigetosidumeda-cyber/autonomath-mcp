@@ -1,6 +1,9 @@
 """Lightweight a11y baseline check (full axe-core CI は別 lane)."""
 
-import pathlib, re, pytest
+import pathlib
+import re
+
+import pytest
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"

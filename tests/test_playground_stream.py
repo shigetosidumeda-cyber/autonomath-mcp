@@ -1,6 +1,5 @@
 """Test playground SSE stream."""
 
-import asyncio
 
 import pytest
 from httpx import ASGITransport, AsyncClient

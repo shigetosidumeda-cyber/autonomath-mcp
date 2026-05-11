@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Inject viewport + manifest link + theme-color + apple-touch-icon into all site/*.html. LLM 呼出ゼロ。"""
 
-import pathlib, re
+import pathlib
+import re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 MARKER = 'data-jpcite-a11y="baseline"'

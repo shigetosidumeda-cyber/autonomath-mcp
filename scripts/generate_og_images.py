@@ -9,6 +9,7 @@ Output: site/og/{slug}.png
 """
 
 from __future__ import annotations
+
 import pathlib
 import re
 import sys
@@ -46,7 +47,7 @@ def make_og(
         title_font = ImageFont.truetype("/System/Library/Fonts/ヒラギノ角ゴシック W6.ttc", 48)
         desc_font = ImageFont.truetype("/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc", 24)
         brand_font = ImageFont.truetype("/System/Library/Fonts/ヒラギノ角ゴシック W6.ttc", 28)
-    except (IOError, OSError):
+    except OSError:
         title_font = ImageFont.load_default()
         desc_font = ImageFont.load_default()
         brand_font = ImageFont.load_default()

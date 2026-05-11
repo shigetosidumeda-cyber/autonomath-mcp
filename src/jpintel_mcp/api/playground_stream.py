@@ -1,13 +1,17 @@
 """Playground evidence3 SSE stream. LLM API 呼出ゼロ、pure SQLite + HTTP."""
 
 from __future__ import annotations
+
 import asyncio
 import json
 import time
-from typing import AsyncIterator
+from typing import TYPE_CHECKING
 
 from fastapi import APIRouter, Query
 from fastapi.responses import StreamingResponse
+
+if TYPE_CHECKING:
+    from collections.abc import AsyncIterator
 
 router = APIRouter(prefix="/v1/playground", tags=["playground"])
 
@@ -90,7 +94,7 @@ async def evidence3_events(
 
 
 def _sse(event: str, data: dict) -> bytes:
-    return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n".encode("utf-8")
+    return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n".encode()
 
 
 @router.get("/evidence3/stream")

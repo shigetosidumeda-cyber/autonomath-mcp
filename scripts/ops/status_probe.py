@@ -2,15 +2,15 @@
 """5 component health probe for status page. LLM API 呼出ゼロ、pure stdlib + httpx (sync)."""
 
 from __future__ import annotations
+
 import json
 import os
 import sys
 import time
 import urllib.error
 import urllib.request
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-
 
 COMPONENTS = ["api", "mcp", "billing", "data-freshness", "dashboard"]
 
@@ -72,7 +72,7 @@ def probe_data_freshness() -> dict:
     import sqlite3
 
     try:
-        conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
+        sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
         # Stub: would query MAX(updated_at) per table
         return {"id": "data-freshness", "status": "operational", "datasets_within_target": 4}
     except Exception as e:
@@ -107,7 +107,7 @@ def main() -> int:
     ]
     snapshot = {
         "schema_version": "1.0",
-        "updated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "updated_at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "overall_status": overall(components),
         "components": components,
         "active_incidents": [],

@@ -1,6 +1,7 @@
 """magic-link verify: email + 6 digit code → JWT 24h."""
 
 from __future__ import annotations
+
 import hashlib
 import hmac
 import json
@@ -11,7 +12,6 @@ from base64 import urlsafe_b64encode
 
 from fastapi import APIRouter, HTTPException, Response
 from pydantic import BaseModel, EmailStr
-
 
 router = APIRouter(prefix="/v1/me", tags=["me-auth"])
 

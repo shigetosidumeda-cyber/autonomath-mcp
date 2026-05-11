@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Inject common @graph JSON-LD into all site/*.html in <head>. LLM 呼出ゼロ。"""
 
-import pathlib, re, sys
+import pathlib
+import re
+import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 common = (ROOT / "site/_assets/jsonld/_common.json").read_text("utf-8").strip()

@@ -7,9 +7,13 @@ as a sibling module to avoid breaking imports. See audit X1 M1.
 """
 
 from __future__ import annotations
+
 import json
-import sqlite3
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import sqlite3
 
 
 def already_processed(conn: sqlite3.Connection, event_id: str) -> bool:
@@ -25,7 +29,7 @@ def record_received(
 ) -> None:
     conn.execute(
         "INSERT OR IGNORE INTO stripe_event_idempotency (event_id, event_type, stripe_customer_id, received_at) VALUES (?, ?, ?, ?)",
-        (event_id, event_type, customer_id, datetime.now(timezone.utc).isoformat()),
+        (event_id, event_type, customer_id, datetime.now(UTC).isoformat()),
     )
 
 
@@ -38,7 +42,7 @@ def mark_success(
     conn.execute(
         "UPDATE stripe_event_idempotency SET processing_outcome = 'success', processed_at = ?, api_key_id_minted = ?, metadata_json = ? WHERE event_id = ?",
         (
-            datetime.now(timezone.utc).isoformat(),
+            datetime.now(UTC).isoformat(),
             api_key_id,
             json.dumps(extra or {}, ensure_ascii=False),
             event_id,
@@ -52,5 +56,5 @@ def mark_failure(
     outcome = "permanent_failure" if permanent else "retry"
     conn.execute(
         "UPDATE stripe_event_idempotency SET processing_outcome = ?, processed_at = ?, error_message = ? WHERE event_id = ?",
-        (outcome, datetime.now(timezone.utc).isoformat(), error[:1000], event_id),
+        (outcome, datetime.now(UTC).isoformat(), error[:1000], event_id),
     )
