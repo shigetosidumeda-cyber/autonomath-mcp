@@ -131,24 +131,32 @@ jobs:
         if: steps.fly-token.outputs.available == 'true'
         uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
 
-      - name: Hydrate jpintel seed DB for Docker build
+      - name: Hydrate jpintel seed DB for Docker build (optional, bake-in fallback)
         if: steps.fly-token.outputs.available == 'true'
-        timeout-minutes: 60
-        # Wave 20 (2026-05-11): sftp transient resilience.
+        timeout-minutes: 20
+        # Wave 22 (2026-05-11): hydrate is now OPTIONAL.
         # ----------------------------------------------------
-        # `flyctl ssh sftp get` is the primary path — it gives us the freshest
-        # online .backup snapshot of /data/jpintel.db with zero R2 latency. But
-        # the Fly SSH tunnel is fragile for 200+ MB transfers (run
-        # 25669988722 caught `copy file: connection lost (197885952 bytes
-        # written)` 95% through). We now retry sftp up to 3× with a fresh
-        # remote .backup snapshot each attempt, then fall back to the R2
-        # mirror written by `scripts/cron/r2_upload_jpintel.sh` (daily 04:00
-        # JST via `r2-upload-jpintel-daily.yml`) at the canonical key
-        # `s3://$R2_BUCKET/autonomath-api/jpintel.db.gz`. If that canonical
-        # key is missing we degrade to the timestamped nightly-backup keys
-        # under the same prefix. The CI seed only feeds the Docker build —
-        # /data/jpintel.db on the running machine remains the authoritative
-        # runtime copy.
+        # The Dockerfile `seed-stager` stage bakes /seed/jpintel.db into the
+        # image at build time. Two paths can populate it:
+        #
+        #   1. THIS STEP — sftp the freshest live snapshot from the running
+        #      Fly machine into data/jpintel.db so the build context carries
+        #      a 352+ MB seed. Preferred when sftp is healthy.
+        #
+        #   2. BUILD-ARG `JPINTEL_DB_R2_URL` — the Dockerfile seed-stager
+        #      curls the canonical R2 mirror
+        #      (`autonomath-api/jpintel.db.gz`, refreshed 04:00 JST by
+        #      r2-upload-jpintel-daily.yml) when this step left only the
+        #      1.3 MB dev fixture in the build context.
+        #
+        # Wave 20 retried sftp 3× then R2-pulled from the GHA runner; Wave
+        # 22 lifts the R2 path into the Dockerfile so the remote Fly builder
+        # network (much more reliable than GHA runner-to-R2) does the
+        # download, and the 60min sftp tunnel hang during build can never
+        # block the deploy again. If sftp fails here we keep going.
+        #
+        # Wave 20 retry mechanics remain inside this step. Wave 22 only adds
+        # the "continue on failure" path + reduces timeout 60min → 20min.
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
@@ -213,13 +221,29 @@ jobs:
             # if the canonical one is missing. sha-verify the gzip artifact,
             # then gunzip into place. PRAGMA quick_check below gates the
             # decompressed result.
+            #
+            # Wave 22 (2026-05-11): if R2 secrets are also missing OR the R2
+            # pull fails, do NOT hard-fail. The Dockerfile seed-stager
+            # carries a second R2 download path on the Fly remote builder
+            # (build-arg JPINTEL_DB_R2_URL) — and even if neither GHA path
+            # nor build-arg fires, the build only fails if the resulting
+            # /seed/jpintel.db is below the size threshold. Letting the
+            # build proceed lets the remote builder take over the network
+            # responsibility.
             if [ "$sftp_ok" != "1" ]; then
               if [ -z "${AWS_ACCESS_KEY_ID:-}" ] \
                  || [ -z "${AWS_SECRET_ACCESS_KEY:-}" ] \
                  || [ -z "${R2_ENDPOINT:-}" ] \
                  || [ -z "${R2_BUCKET:-}" ]; then
-                echo "::error::sftp failed 3× and R2 fallback secrets are missing — cannot hydrate seed DB."
-                exit 1
+                echo "::warning::sftp failed 3× and R2 fallback secrets missing — proceeding with build-context seed (Dockerfile JPINTEL_DB_R2_URL build-arg will take over if set)."
+                rm -f data/jpintel.db
+                # Drop a 1-byte placeholder so COPY data/jpintel.db in the
+                # seed-stager stage still succeeds (size-gate will then fail
+                # over to JPINTEL_DB_R2_URL).
+                printf '\x00' > data/jpintel.db
+                cleanup_remote_seed
+                trap - EXIT
+                exit 0
               fi
               echo "::group::R2 fallback — sftp failed 3×, pulling latest mirror"
               rm -f data/jpintel.db /tmp/jpintel.db.gz /tmp/jpintel.db.gz.sha256
@@ -242,8 +266,11 @@ jobs:
                   || true)
               fi
               if [ -z "${R2_KEY:-}" ]; then
-                echo "::error::No jpintel-*.db.gz objects under s3://$R2_BUCKET/autonomath-api/ — R2 fallback empty."
-                exit 1
+                echo "::warning::No jpintel-*.db.gz objects under s3://$R2_BUCKET/autonomath-api/ — leaving placeholder so Dockerfile JPINTEL_DB_R2_URL can take over."
+                printf '\x00' > data/jpintel.db
+                cleanup_remote_seed
+                trap - EXIT
+                exit 0
               fi
               aws s3 cp "s3://$R2_BUCKET/${R2_KEY}" /tmp/jpintel.db.gz --endpoint-url "$R2_ENDPOINT"
               if aws s3 cp "s3://$R2_BUCKET/${R2_KEY}.sha256" /tmp/jpintel.db.gz.sha256 --endpoint-url "$R2_ENDPOINT" 2>/dev/null; then
@@ -266,8 +293,13 @@ jobs:
 
           bytes="$(wc -c < data/jpintel.db | tr -d ' ')"
           if [ "$bytes" -lt 100000000 ]; then
-            echo "data/jpintel.db is too small for a production seed: ${bytes} bytes" >&2
-            exit 1
+            # Wave 22 (2026-05-11): too-small data/jpintel.db is no longer a
+            # hard fail. The Dockerfile seed-stager will pick up the R2
+            # mirror via build-arg JPINTEL_DB_R2_URL. Leave a 1-byte
+            # placeholder so the COPY step does not error.
+            echo "::warning::data/jpintel.db is small (${bytes} bytes); Dockerfile JPINTEL_DB_R2_URL build-arg will hydrate at build time."
+            printf '\x00' > data/jpintel.db
+            exit 0
           fi
 
           python3 - <<'PY'
@@ -324,16 +356,48 @@ jobs:
       - name: Deploy (remote builder)
         if: steps.fly-token.outputs.available == 'true'
         timeout-minutes: 35
-        # DEPRECATED 2026-05-11 — `--depot=false` flag superseded by `--remote-only --strategy rolling`; retained as historical-state marker.
-        # index record: /Users/shigetoumeda/jpcite/docs/_internal/_archive/_index_2026_05_11.md (A10)
-        # `--depot=false` was removed upstream; passing it is a silent no-op and any branch logic on its effect is dead code.
-        #
         # --remote-only pushes the build to Fly's builder VM so local runner doesn't need docker.
         # -e SENTRY_RELEASE=... sets the env on the machine at deploy time;
         # complements the SENTRY_ENVIRONMENT already pinned in fly.toml.
+        #
+        # Wave 22 (2026-05-11) — JPINTEL_DB_R2_URL build-arg.
+        # ----------------------------------------------------
+        # Passes a pre-signed R2 URL into the Dockerfile `seed-stager`
+        # stage. The seed-stager curls this URL only when the build-context
+        # data/jpintel.db is sub-threshold (i.e. CI hydrate step failed or
+        # was skipped). The signed URL is generated fresh here so it cannot
+        # leak via image labels — Fly's remote builder consumes it then
+        # discards. Falls back to empty string if R2 secrets are missing;
+        # the seed-stager then errors loudly instead of silently baking a
+        # tiny fixture.
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: |
+          set -euo pipefail
+          jpintel_r2_url=""
+          if [ -n "${AWS_ACCESS_KEY_ID:-}" ] \
+             && [ -n "${AWS_SECRET_ACCESS_KEY:-}" ] \
+             && [ -n "${R2_ENDPOINT:-}" ] \
+             && [ -n "${R2_BUCKET:-}" ]; then
+            if aws s3api head-object --bucket "$R2_BUCKET" --key "autonomath-api/jpintel.db.gz" --endpoint-url "$R2_ENDPOINT" >/dev/null 2>&1; then
+              jpintel_r2_url=$(aws s3 presign "s3://$R2_BUCKET/autonomath-api/jpintel.db.gz" \
+                --endpoint-url "$R2_ENDPOINT" --expires-in 3600 || echo "")
+              if [ -n "${jpintel_r2_url:-}" ]; then
+                echo "::group::JPINTEL_DB_R2_URL build-arg"
+                echo "Generated 1h pre-signed URL for autonomath-api/jpintel.db.gz (length=${#jpintel_r2_url})"
+                echo "::endgroup::"
+              fi
+            else
+              echo "::warning::Canonical R2 key autonomath-api/jpintel.db.gz missing; build-arg JPINTEL_DB_R2_URL will be empty (seed-stager will rely on build-context seed)."
+            fi
+          fi
           flyctl deploy --remote-only \
             -e SENTRY_RELEASE=${{ steps.version.outputs.release }} \
+            --build-arg "JPINTEL_DB_R2_URL=${jpintel_r2_url}" \
             --label GH_SHA=${{ steps.deploy-sha.outputs.sha }} \
             --label org.opencontainers.image.revision=${{ steps.deploy-sha.outputs.sha }} \
             --image-label deployment-${{ steps.deploy-sha.outputs.short }}-${{ github.run_id }}

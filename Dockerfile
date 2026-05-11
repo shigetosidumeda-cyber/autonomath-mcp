@@ -10,21 +10,105 @@
 # ------------------------------------------------------------------
 # Design goals:
 #   * Multi-stage: builder isolates wheel cache + model download; runtime is slim.
-#   * Two DBs coexist on /data (Fly volume) — neither is baked:
-#       - /data/jpintel.db (188 MB, FTS5 trigram, core programs + invoice + laws)
-#       - /data/autonomath.db (7.36 GB, EAV + sqlite-vec, gated by AUTONOMATH_ENABLED)
-#     Entrypoint pulls autonomath.db snapshot from R2 on first boot
-#     (AUTONOMATH_DB_URL + AUTONOMATH_DB_SHA256 supplied by Fly secrets).
+#   * jpintel.db (~352 MB, FTS5 trigram) IS baked into /seed/jpintel.db at
+#     build time (Wave 22, 2026-05-11). Two paths populate the build context:
+#       1. data/jpintel.db hydrated by deploy.yml from `flyctl ssh sftp get`
+#          (preferred — freshest production snapshot).
+#       2. Build-arg `JPINTEL_DB_R2_URL` lets the remote builder pull the
+#          R2 canonical mirror (`autonomath-api/jpintel.db.gz`) when the CI
+#          hydrate path has not seeded the build context. Independent of
+#          GHA runner network and the 200+ MB sftp tunnel that collapses on
+#          large transfers. Build cache is keyed on the upstream object so
+#          subsequent rebuilds skip the download.
+#     Production runtime never re-fetches jpintel.db — entrypoint copies the
+#     baked seed into the /data Fly volume only when the volume copy is
+#     missing or sub-threshold (size-guarded). Removes the 60min sftp
+#     timeout pattern that took prod down 2026-05-11 12:00-13:30.
+#   * /data/autonomath.db (9.4 GB, EAV + sqlite-vec, gated by
+#     AUTONOMATH_ENABLED) stays on the Fly volume. Entrypoint §2 size-based
+#     gate trusts a production-sized volume copy; bootstraps from
+#     AUTONOMATH_DB_URL only on a truly empty volume (DR drill / new region).
 #   * Embedding model (~470 MB safetensors, multilingual-e5-small) IS baked.
 #     Cold-start determinism + no runtime HuggingFace dependency (outage /
 #     rate-limit risk).  HF_HUB_OFFLINE=1 locks runtime to the baked copy.
 #   * sqlite-vec native vec0.so extracted from the python package.
 #   * Layer order: system deps → python deps → model bake → app code,
 #     so code-only churn rebuilds only the last layer.
-#   * Final image size: ~775 MB (slim base ~90 MB + venv ~160 MB + model ~470 MB
-#     + vec0.so 100 KB + app code / scripts ~5 MB).
+#   * Final image size: ~1.1 GB (slim base ~90 MB + venv ~160 MB + model
+#     ~470 MB + jpintel seed ~352 MB + vec0.so 100 KB + app code ~5 MB).
 # ------------------------------------------------------------------
 
+# ------------------------------------------------------------------
+# Stage 0 — seed-stager: stages /seed/jpintel.db at build time.
+#
+# Strategy (Wave 22, 2026-05-11):
+#   1. Copy data/jpintel.db from build context. CI hydrate step
+#      (deploy.yml) sftp-pulls the freshest /data/jpintel.db snapshot
+#      from the live Fly machine. Local dev builds carry a 1.3 MB
+#      fixture which fails the size gate below.
+#   2. Size-gate: if the copied file is >= 100 MB we trust it as the
+#      production seed and finalize /seed/jpintel.db.
+#   3. R2 fallback: build-arg `JPINTEL_DB_R2_URL` (a curl-fetchable
+#      pre-signed URL or public-readable mirror) lets the remote
+#      builder pull `autonomath-api/jpintel.db.gz` directly. Verifies
+#      with `gunzip -t` + `sqlite3 PRAGMA quick_check`. Cache layer is
+#      keyed on the URL string so identical builds reuse the layer.
+#
+# This stage is intentionally tiny (curl + sqlite3 only) so the
+# 350 MB download invalidates only this seed layer, not the python
+# venv or model layers above.
+# ------------------------------------------------------------------
+FROM --platform=linux/amd64 debian:bookworm-slim AS seed-stager
+ARG JPINTEL_DB_R2_URL=""
+ARG JPINTEL_DB_MIN_BYTES=100000000
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        curl ca-certificates sqlite3 gzip \
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /seed
+
+# Copy any build-context jpintel.db. The deploy.yml hydrate step
+# overwrites the 1.3 MB dev fixture with a 352+ MB live snapshot
+# before `flyctl deploy`; local dev keeps the small fixture.
+COPY data/jpintel.db /seed/jpintel.db.candidate
+
+# Decide source: build-context if it meets the size threshold;
+# otherwise R2 fallback. Fail the build if neither is usable so we
+# never bake a tiny dev fixture into a production image.
+RUN set -eu; \
+    cand_size=$(stat -c%s /seed/jpintel.db.candidate 2>/dev/null || echo 0); \
+    echo "build-context jpintel.db.candidate = ${cand_size} bytes"; \
+    if [ "${cand_size}" -ge "${JPINTEL_DB_MIN_BYTES}" ]; then \
+        echo "using build-context seed (>= ${JPINTEL_DB_MIN_BYTES} bytes)"; \
+        mv /seed/jpintel.db.candidate /seed/jpintel.db; \
+    elif [ -n "${JPINTEL_DB_R2_URL}" ]; then \
+        echo "build-context seed below threshold (${cand_size} < ${JPINTEL_DB_MIN_BYTES}); pulling R2"; \
+        curl -fL --retry 5 --retry-delay 10 --retry-all-errors \
+             -o /tmp/jpintel.db.gz "${JPINTEL_DB_R2_URL}"; \
+        gunzip -t /tmp/jpintel.db.gz; \
+        gunzip -c /tmp/jpintel.db.gz > /seed/jpintel.db; \
+        rm -f /tmp/jpintel.db.gz /seed/jpintel.db.candidate; \
+        r2_size=$(stat -c%s /seed/jpintel.db); \
+        echo "R2 seed landed = ${r2_size} bytes"; \
+        if [ "${r2_size}" -lt "${JPINTEL_DB_MIN_BYTES}" ]; then \
+            echo "ERROR: R2-fetched seed below threshold (${r2_size})"; exit 1; \
+        fi; \
+    else \
+        echo "ERROR: build-context jpintel.db is ${cand_size} bytes and JPINTEL_DB_R2_URL is unset."; \
+        echo "Either run deploy.yml hydrate step before flyctl deploy, or pass --build-arg JPINTEL_DB_R2_URL=<presigned-or-public-url>."; \
+        exit 1; \
+    fi; \
+    quick=$(sqlite3 /seed/jpintel.db 'PRAGMA quick_check;' 2>&1 | head -1); \
+    if [ "${quick}" != "ok" ]; then \
+        echo "ERROR: seed quick_check failed: ${quick}"; exit 1; \
+    fi; \
+    programs=$(sqlite3 /seed/jpintel.db 'SELECT COUNT(*) FROM programs;' 2>/dev/null || echo 0); \
+    echo "seed quick_check=ok programs=${programs}"; \
+    if [ "${programs}" -lt 10000 ]; then \
+        echo "ERROR: seed programs count below 10000 floor (${programs})"; exit 1; \
+    fi
+
+# ------------------------------------------------------------------
 FROM --platform=linux/amd64 python:3.12-slim-bookworm AS builder
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -114,18 +198,24 @@ COPY scripts/ /app/scripts/
 COPY mcp-server.json /app/mcp-server.json
 
 # -- baked seed data (jpintel.db + unified_registry.json) --
-# /seed/jpintel.db (~330 MB) and /seed/unified_registry.json (~54 MB) are
-# baked into the image. entrypoint.sh copies them to /data/jpintel.db and
-# /opt/venv/lib/python3.12/site-packages/data/unified_registry.json on
-# first boot (or whenever DATA_SEED_VERSION changes vs the file in /data).
-# Keeps deploys = data refresh; no R2 round-trip for jpintel.db.
-COPY data/jpintel.db /seed/jpintel.db
+# /seed/jpintel.db (~352 MB) and /seed/unified_registry.json (~54 MB) are
+# baked into the image. jpintel.db is staged by the `seed-stager` stage
+# at the top of this Dockerfile, which size-gates the build-context copy
+# and falls back to the R2 mirror (build-arg JPINTEL_DB_R2_URL) when the
+# build context only has the 1.3 MB dev fixture. entrypoint.sh copies
+# both seeds onto the /data Fly volume on first boot or whenever
+# DATA_SEED_VERSION drifts. Production runtime never re-fetches
+# jpintel.db over sftp — the 60min sftp tunnel failure mode is gone.
+COPY --from=seed-stager /seed/jpintel.db /seed/jpintel.db
 COPY data/unified_registry.json /seed/unified_registry.json
 # Phase A static taxonomies + example profiles + 36協定 templates (~84KB tarred).
 # entrypoint.sh copies /seed/autonomath_static/ → /data/autonomath_static/ if MANIFEST.md missing.
 COPY data/autonomath_static/ /seed/autonomath_static/
 # Update this when the baked seed changes, so entrypoint.sh re-copies on next boot.
-ENV DATA_SEED_VERSION=2026-05-08-v1
+# Wave 22 bump (2026-05-11): seed-stager now bakes a production-sized jpintel.db
+# into /seed/, so the existing volume copy stays authoritative unless the
+# operator opts into JPINTEL_FORCE_SEED_OVERWRITE=1.
+ENV DATA_SEED_VERSION=2026-05-11-w22
 
 # -- entrypoint: created by separate agent. Performs (post 2026-05-11):
 #       1. /data/autonomath.db size-based gate. If volume DB is already at
