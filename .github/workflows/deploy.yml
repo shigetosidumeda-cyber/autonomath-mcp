@@ -193,12 +193,18 @@ jobs:
             # Strategy A — 3× sftp retry. Each attempt re-issues a fresh online
             # .backup so we never resume from a possibly-corrupt partial file.
             sftp_ok=0
+            # Wave 23 (2026-05-11) — wrap each sftp attempt in a 5-min timeout.
+            # The full step has a 20-min cap; without per-attempt timeout a
+            # single hung tunnel consumed all 20 min and the bake-in fallback
+            # never fired (deploy 25676000704 evidence). Per-attempt cap
+            # forces graceful drop into Strategy B (R2) and ultimately
+            # Strategy C (Dockerfile build-arg + baked seed).
             for attempt in 1 2 3; do
-              echo "::group::sftp attempt ${attempt}/3 (fresh online .backup)"
+              echo "::group::sftp attempt ${attempt}/3 (fresh online .backup, 5min cap)"
               rm -f data/jpintel.db
-              if flyctl ssh console -a autonomath-api -q -C \
+              if timeout 300 flyctl ssh console -a autonomath-api -q -C \
                   "bash -lc 'set -euo pipefail; rm -f ${remote_seed}; sqlite3 /data/jpintel.db \".backup ${remote_seed}\"; sqlite3 ${remote_seed} \"PRAGMA quick_check; SELECT COUNT(*) FROM programs;\"'" \
-                && flyctl ssh sftp get -a autonomath-api -q "${remote_seed}" data/jpintel.db ; then
+                && timeout 300 flyctl ssh sftp get -a autonomath-api -q "${remote_seed}" data/jpintel.db ; then
                 sftp_bytes="$(wc -c < data/jpintel.db | tr -d ' ' 2>/dev/null || echo 0)"
                 if [ "$sftp_bytes" -ge 100000000 ]; then
                   echo "sftp attempt ${attempt} succeeded (${sftp_bytes} bytes)"
