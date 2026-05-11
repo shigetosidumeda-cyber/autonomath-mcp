@@ -1,0 +1,93 @@
+name: enforcement-court-2x-weekly
+
+# Wave 43.1.9+10 weekly cron: 行政処分 市町村+都道府県 (1,815+) +
+# 裁判所判例 高裁/地裁/簡裁 拡張 (17,935+). 03:40 UTC 土曜.
+
+on:
+  schedule:
+    - cron: "40 3 * * 6"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "If true, synthesize fixture rows, no network."
+        required: false
+        default: "false"
+
+concurrency:
+  group: enforcement-court-2x-weekly
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  enforcement-municipality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - run: |
+          python -m playwright install --with-deps chromium || true
+      - name: Fill am_enforcement_municipality
+        env:
+          AUTONOMATH_DB_PATH: data/autonomath.db
+          ETL_DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euxo pipefail
+          ARGS=("--target" "1815" "--parallel" "16")
+          if [ "$ETL_DRY_RUN" = "true" ]; then
+            ARGS+=("--dry-run")
+          fi
+          python scripts/etl/fill_enforcement_municipality_2x.py "${ARGS[@]}" || rc=$?
+          exit ${rc:-0}
+
+  court-decisions-v2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - run: |
+          python -m playwright install --with-deps chromium || true
+      - name: Fill am_court_decisions_v2
+        env:
+          AUTONOMATH_DB_PATH: data/autonomath.db
+          ETL_DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euxo pipefail
+          ARGS=("--target" "17935" "--parallel" "16")
+          if [ "$ETL_DRY_RUN" = "true" ]; then
+            ARGS+=("--dry-run")
+          fi
+          python scripts/etl/fill_court_decisions_extended_2x.py "${ARGS[@]}" || rc=$?
+          exit ${rc:-0}
+
+  notify-on-fail:
+    needs: [enforcement-municipality, court-decisions-v2]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[enforcement-court-2x-weekly] failure ${context.runId}`,
+              body: `Run ${context.runId} failed.`,
+              labels: ['cron-failure', 'wave43']
+            });

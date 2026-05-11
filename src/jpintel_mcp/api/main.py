@@ -44,6 +44,9 @@ from jpintel_mcp.api.appi_disclosure import router as appi_disclosure_router
 from jpintel_mcp.api.audit import public_router as audit_public_router
 from jpintel_mcp.api.audit import router as audit_router
 from jpintel_mcp.api.audit_log import router as audit_log_router
+from jpintel_mcp.api.audit_workpaper_v2 import (  # Wave 43.2.4 Dim D
+    router as audit_workpaper_v2_router,
+)
 from jpintel_mcp.api.sitemap_audit import router as sitemap_audit_router  # Wave 41 Agent F
 from jpintel_mcp.api.autonomath import (
     health_router as autonomath_health_router,
@@ -55,6 +58,7 @@ from jpintel_mcp.api.benchmark import router as benchmark_router
 from jpintel_mcp.api.bids import router as bids_router
 from jpintel_mcp.api.billing import router as billing_router
 from jpintel_mcp.api.billing_breakdown import router as billing_breakdown_router
+from jpintel_mcp.api.billing_v2 import router as billing_v2_router
 from jpintel_mcp.api.bulk_evaluate import router as bulk_evaluate_router
 from jpintel_mcp.api.calendar import router as calendar_router
 from jpintel_mcp.api.case_cohort_match import router as case_cohort_match_router
@@ -70,6 +74,9 @@ from jpintel_mcp.api.corporate_form import router as corporate_form_router
 from jpintel_mcp.api.cost import router as cost_router
 from jpintel_mcp.api.courses import router as courses_router
 from jpintel_mcp.api.court_decisions import router as court_decisions_router
+from jpintel_mcp.api.court_decisions_v2 import (  # Wave 43.1.10
+    router as court_decisions_v2_router,
+)
 from jpintel_mcp.api.customer_webhooks import router as customer_webhooks_router
 from jpintel_mcp.api.dashboard import router as dashboard_router
 from jpintel_mcp.api.device_flow import router as device_router
@@ -79,11 +86,15 @@ from jpintel_mcp.api.eligibility_check import router as eligibility_check_router
 from jpintel_mcp.api.email_unsubscribe import router as email_unsubscribe_router
 from jpintel_mcp.api.email_webhook import router as email_webhook_router
 from jpintel_mcp.api.enforcement import router as enforcement_router
+from jpintel_mcp.api.enforcement_municipality import (  # Wave 43.1.9
+    router as enforcement_municipality_router,
+)
 from jpintel_mcp.api.evidence import router as evidence_router
 from jpintel_mcp.api.exclusions import router as exclusions_router
 from jpintel_mcp.api.export import router as export_router
 from jpintel_mcp.api.extended_corpus import router as extended_corpus_router
 from jpintel_mcp.api.feedback import router as feedback_router
+from jpintel_mcp.api.foundation import router as foundation_router  # Wave 43.1.3
 from jpintel_mcp.api.precompute_axis4 import router as precompute_axis4_router  # Wave 34 Axis 4
 from jpintel_mcp.api.jpo import router as jpo_router  # Wave 31 Axis 1b
 from jpintel_mcp.api.edinet import router as edinet_router  # Wave 31 Axis 1c
@@ -102,9 +113,11 @@ from jpintel_mcp.api.invoice_risk import (
     router as invoice_risk_router,
 )
 from jpintel_mcp.api.laws import router as laws_router
+from jpintel_mcp.api.laws_jorei import router as laws_jorei_router  # Wave 43.1.5
 from jpintel_mcp.api.legal import router as legal_router
 from jpintel_mcp.api.loan_programs import router as loan_programs_router
 from jpintel_mcp.api.logging_config import setup_logging
+from jpintel_mcp.api.programs_overseas_v2 import router as programs_overseas_v2_router
 from jpintel_mcp.api.ma_dd import (
     router as ma_dd_router,
 )
@@ -143,10 +156,17 @@ from jpintel_mcp.api.middleware.origin_enforcement import _MUST_INCLUDE
 from jpintel_mcp.api.openapi_agent import build_agent_openapi_schema
 from jpintel_mcp.api.policy_upstream import router as policy_upstream_router
 from jpintel_mcp.api.prescreen import router as prescreen_router
+from jpintel_mcp.api.program_agriculture import (
+    router as program_agriculture_router,
+)  # Wave 43.1.4
 from jpintel_mcp.api.programs import router as programs_router
+from jpintel_mcp.api.programs_municipality_v2 import (
+    router as programs_municipality_v2_router,
+)  # Wave 43.1.1
 from jpintel_mcp.api.regions import router as regions_router
 from jpintel_mcp.api.response_sanitizer import ResponseSanitizerMiddleware
 from jpintel_mcp.api.saved_searches import router as saved_searches_router
+from jpintel_mcp.api.semantic_search_v2 import router as semantic_search_v2_router  # Wave 43.2.1 Dim A
 from jpintel_mcp.api.signup import router as signup_router
 from jpintel_mcp.api.source_manifest import router as source_manifest_router
 from jpintel_mcp.api.stats import router as stats_router
@@ -2049,6 +2069,12 @@ def create_app() -> FastAPI:
     # NPO / 一般社団 / 学校 / 医療 / 個人事業主 etc. Pure SQLite + Python — NO LLM.
     # Inherits the same 3/日 anon-IP cap as programs_router.
     app.include_router(corporate_form_router, dependencies=[AnonIpLimitDep])
+    # Wave 43.1.1 — 市町村 v2 bridge. Registered BEFORE programs_router so the
+    # specific /v1/programs/by_municipality/{code} + /v1/programs/by_prefecture/{code}
+    # paths resolve before the generic /v1/programs/{unified_id} catcher.
+    app.include_router(
+        programs_municipality_v2_router, dependencies=[AnonIpLimitDep]
+    )
     app.include_router(programs_router, dependencies=[AnonIpLimitDep])
     # R8 (2026-05-07): am_compat_matrix 43,966 rows full-surface.
     # POST /v1/programs/portfolio_optimize + GET /v1/programs/{a}/compatibility/{b}.
@@ -2089,6 +2115,9 @@ def create_app() -> FastAPI:
     app.include_router(case_cohort_match_router, dependencies=[AnonIpLimitDep])
     app.include_router(benchmark_router, dependencies=[AnonIpLimitDep])
     app.include_router(loan_programs_router, dependencies=[AnonIpLimitDep])
+    # 2026-05-12 Wave 43.1.2: foreign FDI cohort — JETRO / METI / JBIC / NEXI
+    # overseas program surface, mounted at /v1/programs/overseas/*.
+    app.include_router(programs_overseas_v2_router, dependencies=[AnonIpLimitDep])
     # 2026-05-07 (R8): 災害復興 × 特例制度 surface — three endpoints under
     # /v1/disaster/* projecting the existing programs corpus through a
     # disaster-keyword + prefecture lens. No new schema; pure read.
@@ -2097,7 +2126,14 @@ def create_app() -> FastAPI:
     # preview gate — both are first-class from launch. Anon-quota-gated
     # like programs/enforcement/etc. so the 3/day per-IP cap applies.
     app.include_router(laws_router, dependencies=[AnonIpLimitDep])
+    # Wave 43.1.5 — 都道府県条例 corpus (autonomath.db `am_law_jorei_pref`,
+    # migration 252). 47 都道府県 × ~100 ordinances, gov_public license.
+    app.include_router(laws_jorei_router, dependencies=[AnonIpLimitDep])
     app.include_router(court_decisions_router, dependencies=[AnonIpLimitDep])
+    # Wave 43.1.10 — 裁判所判例 v2 拡張 (autonomath.db, mig 259, 17,935+).
+    app.include_router(court_decisions_v2_router, dependencies=[AnonIpLimitDep])
+    # Wave 43.1.9 — 行政処分 市町村 + 都道府県 (autonomath.db, mig 255, 1,815+).
+    app.include_router(enforcement_municipality_router, dependencies=[AnonIpLimitDep])
     # 4-dataset expansion (2026-04-24): 入札 (bids) / 税制 ruleset /
     # 適格請求書発行事業者 (invoice registrants). First-class, anon-quota-gated
     # like the other discovery surfaces.
@@ -2425,6 +2461,12 @@ def create_app() -> FastAPI:
     # It is never billable and must not consume the public anonymous free
     # allowance when an unauthenticated caller gets a 401.
     app.include_router(billing_breakdown_router)
+    # Wave 43.4.9+10 — 3 payment rail aggregator (ACP + x402 + MPP).
+    # ACP = Anthropic Commerce Protocol (Stripe-backed agent-direct invoke).
+    # x402 = USDC HTTP 402 Payment Required (origin-side bridge).
+    # MPP = Managed Provider Plan (Wave 21 D4+D5+D6 brand stack, naming-only).
+    # NO anon-quota — discovery + acquire endpoints predate key issuance.
+    app.include_router(billing_v2_router)
     # P3.5 Stripe edge cases (refund_request intake live; dispute/tax-exempt/
     # currency/invoice-modification/Stripe-Tax-fallback are dispatched from
     # billing.webhook itself, only the refund_request REST endpoint mounts here).
@@ -2471,6 +2513,11 @@ def create_app() -> FastAPI:
     # 3 req/日 IP quota.
     app.include_router(dashboard_router)
     app.include_router(feedback_router)
+    # Wave 43.1.3 — 民間助成財団 grant program surface (公益財団 / 一般財団 /
+    # NPO / 業界団体). Sensitive (税理士法 §2 / 行政書士法 §1 / 弁護士法 §72) —
+    # each handler stamps `_disclaimer` envelope key. AnonIpLimitDep applied
+    # so the public 3 req/日 IP quota fences anonymous traffic.
+    app.include_router(foundation_router, dependencies=[AnonIpLimitDep])
     # DEEP-28 + DEEP-31 customer contribution. Anonymous-accepting (no
     # API key required); rate-limited per-IP 5 / 24h inside the handler
     # PLUS the AnonIpLimitDep daily 3 cap. Server-side scrubber rejects
@@ -2529,6 +2576,10 @@ def create_app() -> FastAPI:
     # via report_usage_async so deliveries are ¥3/req metered. Subscribe
     # path itself is FREE (it is the customer's own row).
     app.include_router(saved_searches_router)
+    # Wave 43.2.1 Dim A — hybrid semantic search v2 (FTS5 + sqlite-vec 384d
+    # e5-small + cross-encoder reranker). POST /v1/search/semantic. 2 ¥3/req
+    # units (重い query). NO LLM API — sentence-transformers local CPU only.
+    app.include_router(semantic_search_v2_router, dependencies=[AnonIpLimitDep])
     # Migration 096 — client_profiles registry for 補助金コンサル fan-out.
     # Authenticated-only CRUD on the calling key's own 顧問先 metadata.
     # CRUD is FREE; the fan-out path (saved_searches × profile_ids) is
@@ -2654,6 +2705,21 @@ def create_app() -> FastAPI:
     # third-party verification cannot be paywalled. See
     # api/audit_proof.py module docstring.
     _include_experimental_router(app, "jpintel_mcp.api.audit_proof")
+    # Wave 43.2.4 Dim D: POST /v1/audit/workpaper — year-end audit
+    # workpaper substrate composition for 税理士/会計士. 1 req = 5 unit
+    # (¥15 / 税込 ¥16.50). Rolls up intel_houjin_full +
+    # apply_eligibility_chain_am + cross_check_jurisdiction +
+    # amendment_alert into 1 call. AnonIpLimitDep mounted so anonymous
+    # probes burn the 3/日 quota (paid keys bypass via require_key).
+    # §52 / §47条の2 / §72 / §1 fenced in _disclaimer envelope.
+    app.include_router(audit_workpaper_v2_router, dependencies=[AnonIpLimitDep])
+    # Wave 43.2.5 Dim E Verification trail: per-fact Ed25519 verify +
+    # rule-based explanation paragraph (GET /v1/facts/{fact_id}/verify,
+    # GET /v1/facts/{fact_id}/why). Mounted via experimental include so
+    # migration 262 absence at import time degrades to import-skip
+    # instead of crashing the app. NO LLM, cryptography stdlib only.
+    # See api/fact_verify.py module docstring.
+    _include_experimental_router(app, "jpintel_mcp.api.fact_verify")
     # Autonomath health probe (10-check aggregate) — same exemption as
     # /healthz / /readyz. Mounted without AnonIpLimitDep so production
     # uptime monitors can poll without burning the 3/日 anonymous quota.

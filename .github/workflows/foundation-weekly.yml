@@ -1,0 +1,36 @@
+name: foundation-weekly
+
+on:
+  schedule:
+    # Weekly Mondays 03:00 UTC (12:00 JST) — outside business hours.
+    - cron: "0 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  refresh-foundation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      JPCITE_PREFLIGHT_ALLOW_MISSING_DB: "1"
+      FOUNDATION_MAX_ROWS: "2000"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - name: Install deps (no heavy extras)
+        run: |
+          python -m pip install --upgrade pip
+          pip install certifi
+          pip install playwright || true
+          python -m playwright install chromium --with-deps || true
+
+      - name: Run refresh_foundation_weekly
+        run: python scripts/cron/refresh_foundation_weekly.py

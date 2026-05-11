@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<!-- CWV-HARDENED -->
+<meta charset="UTF-8">
+<meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light dark">
+<title>公認会計士事務所向け jpcite — 監査調書 scaffold + 研究開発税制 + 被監査会社 DD</title>
+<meta name="description" content="公認会計士事務所向け jpcite 活用ガイド。研究開発税制 措置法 lookup、IT 導入補助金 会計処理 dual check、被監査会社 DD question deck、行政処分歴 filter、監査調書 template scaffold。監査期あたり ¥60-120 (税別) で AI 単体比 delta ¥37 万。¥3/billable unit 完全従量、anonymous 3 req/日 free。">
+
+<meta property="og:title" content="公認会計士事務所向け jpcite">
+<meta property="og:description" content="研究開発税制 + IT 導入補助金 会計処理 + 被監査会社 DD + 監査調書 scaffold を Claude Desktop 経由で 1 query。AI 単体比 delta ¥37 万/監査期。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jpcite.com/audiences/cpa_firm">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="公認会計士事務所向け jpcite">
+<meta name="twitter:description" content="研究開発税制 + IT 導入補助金 会計処理 + 被監査会社 DD scaffold を 1 本化。">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
+
+<link rel="canonical" href="https://jpcite.com/audiences/cpa_firm">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/audiences/cpa_firm">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/audiences/cpa-firm">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/audiences/cpa_firm">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="preload" as="font" type="font/woff2" href="/static/fonts/noto-sans-jp-3e6b27914d.woff2" crossorigin>
+<link rel="stylesheet" href="/static/fonts/noto-sans-jp.css">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css?v=20260428a">
+
+<script defer src="../analytics.js?v=20260503a"></script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://jpcite.com/"},
+    {"@type": "ListItem", "position": 2, "name": "利用者層", "item": "https://jpcite.com/audiences/"},
+    {"@type": "ListItem", "position": 3, "name": "公認会計士事務所向け", "item": "https://jpcite.com/audiences/cpa_firm"}
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "serviceType": "公認会計士業務支援 API + 監査調書 scaffold + 被監査会社 DD",
+  "name": "jpcite for CPA Firms",
+  "description": "公認会計士事務所向け jpcite 活用。研究開発税制 措置法 lookup、IT 導入補助金 会計処理 dual check、被監査会社 DD question deck、行政処分歴 filter、監査調書 template scaffold。¥3/billable unit 完全従量。",
+  "provider": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "url": "https://jpcite.com/"
+  },
+  "audience": {
+    "@type": "Audience",
+    "audienceType": "公認会計士・監査法人・公認会計士事務所"
+  },
+  "areaServed": {
+    "@type": "Country",
+    "name": "日本"
+  },
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "API + MCP 従量",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "3",
+        "priceCurrency": "JPY",
+        "unitText": "billable unit",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": "1",
+          "unitText": "billable unit"
+        }
+      }
+    }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "監査期あたりの目安は?", "acceptedAnswer": {"@type": "Answer", "text": "1 監査先あたり 20-40 リクエスト = ¥60-¥120 (税別) が目安。AI 単体比 delta ¥37 万/期 (推定値)。"}},
+    {"@type": "Question", "name": "公認会計士法 §47条の2 との整合は?", "acceptedAnswer": {"@type": "Answer", "text": "jpcite は監査意見・税務代理を一切行いません。検索結果は会計士本人の判断材料、調書 scaffold は最終調書ではありません。"}},
+    {"@type": "Question", "name": "守秘義務との整合は?", "acceptedAnswer": {"@type": "Answer", "text": "検索クエリは学習データに使用しません。被監査会社名は法人番号で query するため対外送信は最小限です。"}}
+  ]
+}
+</script>
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/_assets/logo.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-jpcite-a11y="baseline">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+ <div class="container header-inner">
+ <a class="brand" href="../index.html" aria-label="jpcite ホーム">
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="../about.html">運営について</a>
+ <a href="../products.html">プロダクト</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="../pricing.html">料金</a>
+ <a href="../audiences/">利用者層</a>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/audiences/cpa_firm" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/audiences/cpa-firm" lang="en" hreflang="en">EN</a>
+ </span>
+ </nav>
+ </div>
+</header>
+
+<main id="main">
+
+ <section class="hero" aria-labelledby="hero-title">
+ <div class="container">
+ <nav class="breadcrumb" aria-label="パンくずリスト" style="margin:0 0 16px;font-size:14px;color:var(--text-muted);">
+ <a href="/">ホーム</a> <span aria-hidden="true">›</span>
+ <a href="/audiences/">利用者層</a> <span aria-hidden="true">›</span>
+ <span aria-current="page">公認会計士事務所向け</span>
+ </nav>
+ <h1 id="hero-title">公認会計士事務所向け</h1>
+ <p class="hero-sub">研究開発税制 措置法 lookup、IT 導入補助金 会計処理 dual check、被監査会社 DD question deck、行政処分歴 filter、監査調書 template scaffold を Claude Desktop 経由で 1 query。<strong>¥3/billable unit 完全従量、anonymous 3 req/日 free per IP</strong>。</p>
+ </div>
+ </section>
+
+ <section class="legal-fence" style="background:var(--bg-warning,#fff8e1);border-left:4px solid var(--accent,#d4a017);padding:20px 0;" aria-labelledby="fence-title">
+ <div class="container">
+ <h2 id="fence-title" class="visually-hidden">業法 fence</h2>
+ <p style="font-size:15px;line-height:1.8;margin:0;color:var(--text);"><strong>公認会計士法 §47条の2 fence (重要)</strong>: jpcite は<strong>監査意見の表明・税務代理を一切行いません</strong>。本サービスは事実検索 + scaffold (template draft) + 一次 URL 提供のみ、最終調書・監査意見書は会計士本人の専権事項です。</p>
+ </div>
+ </section>
+
+ <section class="features" aria-labelledby="roi-title">
+ <div class="container">
+ <h2 id="roi-title" style="margin-bottom:16px;">5 task × ROI 比較 (AI 単体 vs AI + jpcite)</h2>
+ <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: 数値は監査期あたり想定値 (1 監査先 / 中堅事務所 5 監査先想定 / 推定値)。 「AI 単体」は外部公的制度根拠なしの汎用 LLM 出力、 「AI + jpcite」は jpcite の MCP 1-call 検索を組合せた場合を指します。 個別事務所の業務量により変動するため、参考値として提示します。</p>
+ <div style="overflow-x:auto;">
+ <table style="width:100%;border-collapse:collapse;font-size:14px;">
+ <thead>
+ <tr style="background:var(--bg-subtle,#fafafa);border-bottom:2px solid var(--border);">
+ <th style="padding:12px;text-align:left;">task</th>
+ <th style="padding:12px;text-align:left;">AI 単体 (baseline)</th>
+ <th style="padding:12px;text-align:left;">AI + jpcite</th>
+ <th style="padding:12px;text-align:left;">delta</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr style="border-bottom:1px solid var(--border);">
+ <td style="padding:12px;"><strong>1. 研究開発税制 関連条文 lookup</strong> (措置法 42-4)</td>
+ <td style="padding:12px;">条文 hallucination リスク + 手動裏取り 1.5h × ¥10,000 = ¥15,000</td>
+ <td style="padding:12px;">1 req ¥3 + 一次 URL (e-Gov) + tax_rulesets v2 50 件 (措置法 42-4 backfill 済)</td>
+ <td style="padding:12px;">¥14,997/件</td>
+ </tr>
+ <tr style="border-bottom:1px solid var(--border);">
+ <td style="padding:12px;"><strong>2. IT 導入補助金 会計処理 dual check</strong></td>
+ <td style="padding:12px;">補助金収入 vs 圧縮記帳 vs 一括計上 判断 手動 2h × ¥10,000 = ¥20,000</td>
+ <td style="padding:12px;">1 req ¥3 + tax_rulesets (IT導入補助金 会計処理 backfill 済) + 通達 reference</td>
+ <td style="padding:12px;">¥19,997/件</td>
+ </tr>
+ <tr style="border-bottom:1px solid var(--border);">
+ <td style="padding:12px;"><strong>3. 被監査会社 DD question deck</strong></td>
+ <td style="padding:12px;">業種 × 規模 question 手動作成 4h × ¥10,000 = ¥40,000</td>
+ <td style="padding:12px;">1 req ¥3 (match_due_diligence_questions, 60 templates × 7 category)</td>
+ <td style="padding:12px;">¥39,997/件</td>
+ </tr>
+ <tr style="border-bottom:1px solid var(--border);">
+ <td style="padding:12px;"><strong>4. 行政処分歴 filter (取引先)</strong></td>
+ <td style="padding:12px;">官報手動検索 + 公開情報 8h × ¥10,000 = ¥80,000</td>
+ <td style="padding:12px;">1 req ¥3 (check_enforcement_am, 1,185 enforcement rows + houjin_bangou join)</td>
+ <td style="padding:12px;">¥79,997/件</td>
+ </tr>
+ <tr style="border-bottom:1px solid var(--border);">
+ <td style="padding:12px;"><strong>5. 監査調書 template scaffold</strong></td>
+ <td style="padding:12px;">template 雛形 + 業種別 question 4h × ¥10,000 = ¥40,000</td>
+ <td style="padding:12px;">2 req ¥6 (bundle_application_kit + match_due_diligence_questions)</td>
+ <td style="padding:12px;">¥39,994/件</td>
+ </tr>
+ <tr style="background:var(--bg-subtle,#fafafa);font-weight:600;">
+ <td style="padding:12px;">合計 (1 監査先あたり)</td>
+ <td style="padding:12px;">¥195,000</td>
+ <td style="padding:12px;">¥18 (6 req)</td>
+ <td style="padding:12px;">¥194,982</td>
+ </tr>
+ <tr style="background:var(--bg-subtle,#fafafa);font-weight:600;">
+ <td style="padding:12px;">合計 (中堅事務所 5 監査先 / 監査期)</td>
+ <td style="padding:12px;">¥975,000 (想定 ¥37.5 万 内枠)</td>
+ <td style="padding:12px;">¥60-¥120 (20-40 req)</td>
+ <td style="padding:12px;"><strong>delta ¥37 万 / 監査期</strong></td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ <p style="font-size:13px;color:var(--text-muted);margin-top:12px;">※ 「AI 単体 ¥37.5 万」は 1 監査先 ¥7.5 万 × 5 監査先の想定。実際の手動工数 (¥10,000/h) は事務所規模・経験年数により変動。jpcite 側 ¥60-¥120 は anonymous (¥0) + paid 20-40 req のレンジ。誇大広告意図なし、推定値として提示。</p>
+ </div>
+ </section>
+
+ <section class="install" style="background:var(--bg-subtle,#fafafa);padding:32px 0;" aria-labelledby="install-title">
+ <div class="container">
+ <h2 id="install-title">MCP install (Claude Desktop)</h2>
+ <p>Claude Desktop の <code>claude_desktop_config.json</code> に下記を追加してください。</p>
+ <pre style="background:var(--bg-code,#f5f5f5);padding:16px;border-radius:6px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;"><code>{
+  "mcpServers": {
+    "jpcite": {
+      "command": "uvx",
+      "args": ["autonomath-mcp"]
+    }
+  }
+}</code></pre>
+ <p style="font-size:14px;color:var(--text-muted);margin-top:16px;">paid usage を有効化する場合は <code>env</code> に API key を追加。anonymous 3 req/日 free per IP は API key なしで利用可 (JST 翌日 00:00 リセット)。</p>
+ </div>
+ </section>
+
+ <section class="cta-section" style="padding:32px 0;" aria-labelledby="cta-title">
+ <div class="container" style="text-align:center;">
+ <h2 id="cta-title">使い始める</h2>
+ <p>tier・seat・年間最低額なし。<strong>¥3/billable unit 完全従量</strong>のみ、anonymous 3 req/日 free per IP。</p>
+ <div class="cta-row" style="margin-top:24px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+ <a class="btn btn-primary" href="../pricing.html?src=audiences_cpa_firm">¥3/req で本格運用 <span aria-hidden="true">&rarr;</span></a>
+ <a class="btn btn-secondary" href="../playground.html?src=audiences_cpa_firm">匿名 3 req/日 で試す</a>
+ <a class="btn btn-secondary" href="/docs/">ドキュメント</a>
+ </div>
+ </div>
+ </section>
+
+ <p class="legal-note" style="font-size:13px;color:var(--text-muted);margin:24px auto;max-width:920px;padding:0 24px;">
+本サービスは情報検索です。監査意見の表明・税務代理は公認会計士法 §47条の2 / 税理士法 §52 で資格者の専権事項であり、jpcite は代行を一切行いません。個別具体的な判断は有資格者にご相談ください。
+</p>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand"><img src="/assets/brand/jpcite-mark.svg" alt="" width="20" height="20" loading="lazy" decoding="async" style="height:20px;width:20px;vertical-align:middle;margin-right:8px;display:inline-block;">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、根拠付き成果物に。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="../about.html">運営について</a>
+ <a href="../products.html">プロダクト</a>
+ <a href="../pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="../tos.html">利用規約</a>
+ <a href="../privacy.html">プライバシー</a>
+ <a href="../tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708) · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
+</footer>
+
+<script src="/assets/trust-strip.js" defer></script>
+
+</body>
+</html>

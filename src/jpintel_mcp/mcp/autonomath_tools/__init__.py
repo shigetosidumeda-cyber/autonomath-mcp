@@ -26,6 +26,7 @@ from jpintel_mcp.mcp.server import mcp as _mcp
 
 from . import (
     annotation_tools,  # noqa: F401  — V4 Phase 4: get_annotations (am_entity_annotation, migration 046)
+    audit_workpaper_v2,  # noqa: F401  — Wave 43.2.4 Dim D (2026-05-12): compose_audit_workpaper, 5-unit composition.
     autonomath_wrappers,  # noqa: F401  — decorator side-effect (5 wrappers; sib_tool intentionally skipped — am_sib_contract has 35 rows from Wave 19 backfill but tool not yet stabilized)
     benchmark_tools,  # noqa: F401  — R8 (2026-05-07): benchmark_cohort_average_am — 業種 × 規模 × 地域 cohort average + outlier (top 10%) over case_studies + jpi_adoption_records.
     citations_tools,  # noqa: F401  — 2026-04-30: verify_citations (api/citations.py companion). LR plan §28.2 verification path.
@@ -58,6 +59,7 @@ from . import (
     recommend_similar,  # noqa: F401  — 2026-05-05: 3 vector k-NN recommend tools (recommend_similar_program / _case / _court_decision) over am_entities_vec_S/C/J post 91% embedding backfill. AUTONOMATH_RECOMMEND_SIMILAR_ENABLED gate (default ON). 行政書士法 §1 / 弁護士法 §72 / 税理士法 §52 envelope on all 3.
     region_tools,  # noqa: F401  — R8 GEO REGION API (2026-05-07): 3 region hit-map tools (programs_by_region_am / region_coverage_am / search_regions_am) over am_region (1,966 rows: 1 nation + 47 prefectures + 20 designated cities + 171 wards + 1,727 municipalities) × jpintel.programs. AUTONOMATH_REGION_API_ENABLED gate (default ON). NO LLM, single ¥3/req billing event. REST companion at /v1/programs/by_region/{code} + /v1/regions/{code}/coverage + /v1/regions/search.
     rule_engine_tool,  # noqa: F401  — R9 unified rule_engine_check (am_unified_rule view, migration 064)
+    semantic_search_v2,  # noqa: F401  — Wave 43.2.1 (2026-05-12): Dim A hybrid semantic search MCP tool (semantic_search_am). FTS5 BM25 + sqlite-vec 384d e5-small + cross-encoder reranker over am_entities_vec_e5 (migration 260). AUTONOMATH_SEMANTIC_SEARCH_V2_ENABLED gate (default ON). 2 ¥3/req units (重い query). §52/§72/§1 envelope. REST companion at POST /v1/search/semantic. NO LLM (sentence-transformers local CPU only).
     shihoshoshi_tools,  # noqa: F401  — DEEP-30 (2026-05-07): 司法書士 cohort dedicated DD pack (shihoshoshi_dd_pack_am). Compounds wave22 cross_check_jurisdiction + corporate_layer get_houjin_360_am + check_enforcement_am into 1 ¥3/req call. AUTONOMATH_SHIHOSHOSHI_PACK_ENABLED gate (default ON). §3 fence (司法書士独占業務) + §52/§72/§1 disclaimer envelope. NO LLM.
     snapshot_tool,  # noqa: F401  — R8: query_at_snapshot (dataset versioning, migration 067)
     source_manifest_tools,  # noqa: F401  — 2026-04-30: get_source_manifest (api/source_manifest.py companion). Per-program provenance rollup.
