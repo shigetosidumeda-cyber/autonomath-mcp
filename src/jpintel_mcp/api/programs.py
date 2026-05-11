@@ -948,6 +948,58 @@ def _trim_to_fields(record: dict[str, Any], fields: FieldsLevel) -> dict[str, An
     return record  # default: unchanged
 
 
+def _attach_program_translation_meta(
+    conn: sqlite3.Connection, unified_id: str, lang: str
+) -> dict[str, Any]:
+    """Wave 35 Axis 5 — pull title_<lang> / summary_<lang> / eligibility_<lang>
+    from the programs row + translation_status column (migration 241).
+
+    Always returns a dict with `status`. When migration 241 has not been
+    applied yet (column missing), status drops to `unavailable`.
+    """
+    if lang not in ("en", "zh", "ko"):
+        return {"status": "invalid_lang"}
+    if lang == "en":
+        select_cols = (
+            "title_en, summary_en, eligibility_en, source_url_en, "
+            "translation_status, translation_fetched_at"
+        )
+    else:
+        return {
+            "status": "unavailable",
+            "lang": lang,
+            "reason": "column_not_yet_migrated",
+        }
+    try:
+        row = conn.execute(
+            f"SELECT {select_cols} FROM programs WHERE unified_id = ?",
+            (unified_id,),
+        ).fetchone()
+    except sqlite3.Error:
+        return {"status": "unavailable", "lang": lang, "reason": "schema_pending"}
+    if row is None:
+        return {"status": "unavailable", "lang": lang}
+    title = row["title_en"]
+    summary = row["summary_en"]
+    eligibility = row["eligibility_en"]
+    status = row["translation_status"] or "unavailable"
+    if not any([title, summary, eligibility]):
+        status = "unavailable"
+    return {
+        "status": status,
+        "lang": lang,
+        "title": title,
+        "summary": summary,
+        "eligibility": eligibility,
+        "source_url": row["source_url_en"],
+        "fetched_at": row["translation_fetched_at"],
+        "disclaimer": (
+            "Translation provided as a convenience; the Japanese-language "
+            "original is the only authoritative version."
+        ),
+    }
+
+
 def _row_to_program_detail(row: sqlite3.Row, fields: FieldsLevel) -> dict[str, Any]:
     """Build the /v1/programs/{unified_id} response dict for a single row.
 
@@ -2274,6 +2326,19 @@ def get_program(
             pattern=r"^(json|csv|xlsx|md|docx-application)$",
         ),
     ] = "json",
+    lang: Annotated[
+        str | None,
+        Query(
+            description=(
+                "Optional translation language for title_en / summary_en / "
+                "eligibility_en. One of: en | zh | ko. When supplied the "
+                "response adds `_meta.translation` (unavailable | partial | "
+                "full) + the requested fields. ja remains the only "
+                "authoritative version."
+            ),
+            pattern=r"^(en|zh|ko)$",
+        ),
+    ] = None,
 ) -> JSONResponse:
     _as_of_iso = _validate_as_of_date(as_of_date)
     # 404 path stays uncached — if a row gets ingested or un-quarantined
@@ -2340,12 +2405,20 @@ def get_program(
     if isinstance(body, dict) and fields != "minimal":
         attach_corpus_snapshot(body, conn)
 
+    # Wave 35 Axis 5 multilingual — only when caller passed ?lang=.
+    # title_en / summary_en / eligibility_en land in programs (mig 241).
+    if isinstance(body, dict) and lang in ("en", "zh", "ko"):
+        body["_meta"] = body.get("_meta", {})
+        body["_meta"]["translation"] = _attach_program_translation_meta(
+            conn, unified_id, lang
+        )
+
     def _record_success_usage() -> None:
         log_usage(
             conn,
             ctx,
             "programs.get",
-            params={"unified_id": unified_id},
+            params={"unified_id": unified_id, "lang": lang},
             response_body=body,
             strict_metering=True,
         )
