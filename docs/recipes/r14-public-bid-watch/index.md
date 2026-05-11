@@ -140,3 +140,29 @@ fs.writeFileSync("bid_digest.csv", csv.join("\n"));
 - 落札後の応札書類本文は情報公開請求の対象
 - 入札談合・官製談合の疑義検知は別 (公正取引委員会 / 独禁法 §3)
 - 景表法 §5 — 競合動向の社内資料化は事実列挙に留め、優良誤認につながる表現は避ける
+
+## canonical_source_walkthrough
+
+> 一次資料 / canonical source への walk-through。Wave 21 C6 で全 30 recipes に追加。
+
+### 使う tool
+- **MCP tool**: `search_bids`
+- **REST endpoint**: `/v1/bids/search`
+- **jpcite.com docs**: <https://jpcite.com/recipes/r14-public-bid-watch/>
+
+### expected output
+- JSON: bids[].title + 入札開始日 + 開札日 + 公告 URL
+- 全 response に `fetched_at` (UTC ISO 8601) + `source_url` (一次資料 URL) 必須
+- `_disclaimer` envelope (税理士法 §52 / 行政書士法 §1 / 司法書士法 §3 / 弁護士法 §72 等の業法 fence 該当時)
+
+### 失敗時 recovery
+- **404 Not Found**: bids 362 行のみ — keyword 緩和 or 期間延長
+- **429 Too Many Requests**: Client-Tag bidder-{id} fan-out
+- **5xx / timeout**: 60s wait
+
+### canonical source (一次資料)
+- 国税庁 適格事業者公表サイト: <https://www.invoice-kohyo.nta.go.jp/>
+- 中小企業庁 補助金一覧: <https://www.chusho.meti.go.jp/>
+- e-Gov 法令検索: <https://laws.e-gov.go.jp/>
+- 国立国会図書館 NDL: <https://www.ndl.go.jp/>
+- jpcite 一次資料 license 表: <https://jpcite.com/legal/licenses>

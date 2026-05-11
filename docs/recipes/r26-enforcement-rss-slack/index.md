@@ -126,3 +126,29 @@ for (const i of items.entries) {
 - 個人特定は名誉毀損リスクあり、社内利用推奨、外部配信時は事業者名のマスキング検討
 - 与信判断 / 取引中止 等の意思決定は社内ルール + 弁護士法 §72 (法的判断は弁護士)
 - 景表法 §5 — RSS タイトルは事実通知に留め、評価表現 (悪質 / 危険) は避ける
+
+## canonical_source_walkthrough
+
+> 一次資料 / canonical source への walk-through。Wave 21 C6 で全 30 recipes に追加。
+
+### 使う tool
+- **MCP tool**: `enforcement RSS + Slack`
+- **REST endpoint**: `/v1/enforcement.rss`
+- **jpcite.com docs**: <https://jpcite.com/recipes/r26-enforcement-rss-slack/>
+
+### expected output
+- RSS: enforcement_cases 1h 周期 + Slack webhook
+- 全 response に `fetched_at` (UTC ISO 8601) + `source_url` (一次資料 URL) 必須
+- `_disclaimer` envelope (税理士法 §52 / 行政書士法 §1 / 司法書士法 §3 / 弁護士法 §72 等の業法 fence 該当時)
+
+### 失敗時 recovery
+- **404 Not Found**: enforcement RSS feed 障害 — /healthz?check=rss で確認
+- **429 Too Many Requests**: RSS は anonymous OK、Slack 側 1 msg/sec
+- **5xx / timeout**: 60s wait
+
+### canonical source (一次資料)
+- 国税庁 適格事業者公表サイト: <https://www.invoice-kohyo.nta.go.jp/>
+- 中小企業庁 補助金一覧: <https://www.chusho.meti.go.jp/>
+- e-Gov 法令検索: <https://laws.e-gov.go.jp/>
+- 国立国会図書館 NDL: <https://www.ndl.go.jp/>
+- jpcite 一次資料 license 表: <https://jpcite.com/legal/licenses>

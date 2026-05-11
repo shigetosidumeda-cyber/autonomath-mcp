@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>jpcite Knowledge Graph — 制度・法令・採択・行政処分 interactive viewer</title>
+<meta name="description" content="jpcite の 503,930 entities + 177,381 edges を interactive で探索。制度・法令・採択・行政処分 4 node type、1 program click で関連 entities を expand">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://jpcite.com/graph.html">
+<meta property="og:title" content="jpcite Knowledge Graph viewer">
+<meta property="og:description" content="503,930 entities × 177,381 edges を D3.js force layout で探索">
+<meta property="og:url" content="https://jpcite.com/graph.html">
+<meta property="og:type" content="website">
+<style>
+  :root {
+    --bg: #0b0f17;
+    --fg: #d8e2ef;
+    --panel: #131a26;
+    --accent: #4cc2ff;
+    --program: #4cc2ff;
+    --law: #f4b840;
+    --adoption: #56d364;
+    --enforcement: #f47174;
+    --edge: rgba(216,226,239,0.18);
+  }
+  html, body {
+    margin: 0; padding: 0; height: 100%; background: var(--bg); color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic UI",
+                 "Segoe UI", Roboto, "Noto Sans JP", sans-serif;
+  }
+  header {
+    position: fixed; top: 0; left: 0; right: 0; padding: 12px 20px;
+    background: var(--panel); border-bottom: 1px solid #2a3344; z-index: 10;
+    display: flex; align-items: center; gap: 24px;
+  }
+  header h1 { font-size: 14px; margin: 0; font-weight: 600; }
+  header h1 small { font-weight: 400; opacity: 0.7; margin-left: 8px; }
+  header nav { display: flex; gap: 16px; font-size: 12px; }
+  header nav a { color: var(--accent); text-decoration: none; }
+  header nav a:hover { text-decoration: underline; }
+  .filter-bar {
+    position: fixed; top: 49px; left: 0; right: 0; padding: 10px 20px;
+    background: var(--panel); border-bottom: 1px solid #2a3344; z-index: 9;
+    display: flex; gap: 16px; align-items: center; flex-wrap: wrap;
+    font-size: 12px;
+  }
+  .filter-bar label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .filter-bar input[type=text] {
+    background: var(--bg); border: 1px solid #2a3344; color: var(--fg);
+    padding: 6px 10px; border-radius: 4px; width: 280px; font-size: 12px;
+  }
+  .filter-bar button {
+    background: var(--accent); border: 0; color: #002b3d; padding: 6px 14px;
+    border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 12px;
+  }
+  .filter-bar button.secondary {
+    background: transparent; color: var(--fg); border: 1px solid #2a3344;
+  }
+  .legend-dot {
+    display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+    margin-right: 4px; vertical-align: middle;
+  }
+  .legend-program { background: var(--program); }
+  .legend-law { background: var(--law); }
+  .legend-adoption { background: var(--adoption); }
+  .legend-enforcement { background: var(--enforcement); }
+  #graph { position: fixed; top: 110px; left: 0; right: 0; bottom: 0; }
+  #info-panel {
+    position: fixed; top: 110px; right: 0; width: 320px; bottom: 0;
+    background: var(--panel); border-left: 1px solid #2a3344; padding: 20px;
+    overflow-y: auto; font-size: 13px;
+  }
+  #info-panel h2 { font-size: 14px; margin: 0 0 8px; }
+  #info-panel dt { opacity: 0.7; font-size: 11px; margin-top: 12px; }
+  #info-panel dd { margin: 2px 0 0; }
+  #info-panel a { color: var(--accent); }
+  #status {
+    position: fixed; bottom: 8px; left: 8px; font-size: 11px; opacity: 0.6;
+  }
+  .node { cursor: pointer; }
+  .node text {
+    fill: var(--fg); font-size: 10px; pointer-events: none;
+    paint-order: stroke; stroke: var(--bg); stroke-width: 2px; stroke-linejoin: round;
+  }
+  .edge { stroke: var(--edge); stroke-width: 1px; }
+  .edge.highlight { stroke: var(--accent); stroke-width: 2px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>jpcite Knowledge Graph
+    <small>503,930 entities × 177,381 edges (am_relation snapshot)</small>
+  </h1>
+  <nav>
+    <a href="/">home</a>
+    <a href="/api-reference">API</a>
+    <a href="/docs/">docs</a>
+    <a href="/openapi.json">openapi.json</a>
+    <a href="https://github.com/anthropics/mcp-registry">MCP registry</a>
+  </nav>
+</header>
+<div class="filter-bar">
+  <label><input type="checkbox" id="filter-program" checked><span class="legend-dot legend-program"></span>制度 (program)</label>
+  <label><input type="checkbox" id="filter-law" checked><span class="legend-dot legend-law"></span>法令 (law)</label>
+  <label><input type="checkbox" id="filter-adoption" checked><span class="legend-dot legend-adoption"></span>採択 (adoption)</label>
+  <label><input type="checkbox" id="filter-enforcement" checked><span class="legend-dot legend-enforcement"></span>行政処分 (enforcement)</label>
+  <input type="text" id="search-input" placeholder="制度 / 法令 / 法人名で検索 (例: ものづくり)">
+  <button id="search-btn">検索</button>
+  <button id="reset-btn" class="secondary">reset</button>
+  <span style="margin-left:auto;font-size:11px;opacity:0.65">
+    1 program click → 関連 entities を展開 / drag で配置 / scroll で zoom
+  </span>
+</div>
+<svg id="graph"></svg>
+<aside id="info-panel">
+  <h2>node 詳細</h2>
+  <div id="info-content">
+    <p style="opacity:0.6">node を click すると詳細表示</p>
+  </div>
+</aside>
+<div id="status">ready · D3 v7 · WebGL not used · all calls go to <code>/v1/*</code></div>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  // sample seed graph (10 programs + their law/adoption/enforcement edges) —
+  // production loads from `/v1/graph/seed?node_types=program,law,adoption,enforcement&limit=200`
+  // which streams a 200-node / 600-edge sample chosen by tier (S/A first) +
+  // recency. This seed is intentionally hand-curated for SEO + landing-page
+  // demo; live data comes from the API call after onLoad below.
+  const SEED = {
+    nodes: [
+      {id:"P-MONOZUKURI-18", type:"program", label:"ものづくり補助金 第18次", tier:"S"},
+      {id:"P-JIGYOSAIKOCHIKU-13", type:"program", label:"事業再構築補助金 第13回", tier:"S"},
+      {id:"P-ITDOUNYUU-2026", type:"program", label:"IT導入補助金 2026", tier:"S"},
+      {id:"P-SHOKIBOJIGYOSHA", type:"program", label:"小規模事業者持続化補助金", tier:"A"},
+      {id:"L-CHUSHO-KIHON", type:"law", label:"中小企業基本法"},
+      {id:"L-INVOICE", type:"law", label:"消費税法 §57の2 (適格請求書)"},
+      {id:"L-DX", type:"law", label:"DX認定促進法"},
+      {id:"A-2024-001", type:"adoption", label:"採択 山田工業 (2024-09)"},
+      {id:"A-2024-002", type:"adoption", label:"採択 田中製作所 (2024-09)"},
+      {id:"E-2024-001", type:"enforcement", label:"行政処分 取消 (2024-08)"},
+    ],
+    edges: [
+      {source:"P-MONOZUKURI-18", target:"L-CHUSHO-KIHON", kind:"governed_by"},
+      {source:"P-MONOZUKURI-18", target:"A-2024-001", kind:"adopted"},
+      {source:"P-MONOZUKURI-18", target:"A-2024-002", kind:"adopted"},
+      {source:"P-JIGYOSAIKOCHIKU-13", target:"L-CHUSHO-KIHON", kind:"governed_by"},
+      {source:"P-ITDOUNYUU-2026", target:"L-DX", kind:"governed_by"},
+      {source:"P-ITDOUNYUU-2026", target:"L-INVOICE", kind:"references"},
+      {source:"P-SHOKIBOJIGYOSHA", target:"L-CHUSHO-KIHON", kind:"governed_by"},
+      {source:"A-2024-001", target:"E-2024-001", kind:"flagged_in"},
+    ],
+  };
+
+  const COLOR = {
+    program: getComputedStyle(document.documentElement).getPropertyValue("--program").trim(),
+    law: getComputedStyle(document.documentElement).getPropertyValue("--law").trim(),
+    adoption: getComputedStyle(document.documentElement).getPropertyValue("--adoption").trim(),
+    enforcement: getComputedStyle(document.documentElement).getPropertyValue("--enforcement").trim(),
+  };
+
+  const svg = d3.select("#graph");
+  const width = () => window.innerWidth - 320;
+  const height = () => window.innerHeight - 110;
+  svg.attr("viewBox", () => `0 0 ${width()} ${height()}`);
+
+  const g = svg.append("g");
+  const zoom = d3.zoom().scaleExtent([0.25, 4]).on("zoom", (ev) => g.attr("transform", ev.transform));
+  svg.call(zoom);
+
+  let nodes = SEED.nodes.map(n => ({...n}));
+  let edges = SEED.edges.map(e => ({...e}));
+
+  const sim = d3.forceSimulation(nodes)
+    .force("link", d3.forceLink(edges).id(d => d.id).distance(120))
+    .force("charge", d3.forceManyBody().strength(-380))
+    .force("center", d3.forceCenter(width()/2, height()/2))
+    .force("collide", d3.forceCollide(28));
+
+  let linkSel = g.append("g").attr("class","links").selectAll("line");
+  let nodeSel = g.append("g").attr("class","nodes").selectAll("g");
+
+  function refresh() {
+    const filterTypes = ["program","law","adoption","enforcement"]
+      .filter(t => document.getElementById("filter-"+t).checked);
+    const visNodes = nodes.filter(n => filterTypes.includes(n.type));
+    const visIds = new Set(visNodes.map(n => n.id));
+    const visEdges = edges.filter(e =>
+      visIds.has(e.source.id || e.source) && visIds.has(e.target.id || e.target));
+
+    linkSel = linkSel.data(visEdges, d => `${d.source.id||d.source}-${d.target.id||d.target}`);
+    linkSel.exit().remove();
+    const linkEnter = linkSel.enter().append("line").attr("class","edge");
+    linkSel = linkEnter.merge(linkSel);
+
+    nodeSel = nodeSel.data(visNodes, d => d.id);
+    nodeSel.exit().remove();
+    const nodeEnter = nodeSel.enter().append("g").attr("class","node");
+    nodeEnter.append("circle").attr("r", d => d.type === "program" ? 10 : 6)
+      .attr("fill", d => COLOR[d.type] || "#888");
+    nodeEnter.append("text").attr("dx", 12).attr("dy", 4).text(d => d.label.slice(0,28));
+    nodeEnter.on("click", (ev, d) => showInfo(d));
+    nodeEnter.call(d3.drag()
+      .on("start", (ev,d) => { if(!ev.active) sim.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; })
+      .on("drag",  (ev,d) => { d.fx=ev.x; d.fy=ev.y; })
+      .on("end",   (ev,d) => { if(!ev.active) sim.alphaTarget(0); d.fx=null; d.fy=null; }));
+    nodeSel = nodeEnter.merge(nodeSel);
+
+    sim.nodes(visNodes);
+    sim.force("link").links(visEdges);
+    sim.alpha(0.5).restart();
+  }
+
+  sim.on("tick", () => {
+    linkSel.attr("x1", d => d.source.x).attr("y1", d => d.source.y)
+           .attr("x2", d => d.target.x).attr("y2", d => d.target.y);
+    nodeSel.attr("transform", d => `translate(${d.x},${d.y})`);
+  });
+
+  function showInfo(d) {
+    const div = document.getElementById("info-content");
+    const neighbors = edges.filter(e =>
+      (e.source.id||e.source) === d.id || (e.target.id||e.target) === d.id);
+    const links = {
+      program: `/programs/${encodeURIComponent(d.id)}.html`,
+      law: `/laws/${encodeURIComponent(d.id)}.html`,
+      adoption: `/cases/${encodeURIComponent(d.id)}.html`,
+      enforcement: `/enforcement/${encodeURIComponent(d.id)}.html`,
+    };
+    div.innerHTML = `
+      <h2>${escapeHtml(d.label)}</h2>
+      <dl>
+        <dt>type</dt><dd>${d.type}${d.tier ? ` (tier ${d.tier})` : ""}</dd>
+        <dt>id</dt><dd><code>${escapeHtml(d.id)}</code></dd>
+        <dt>関連 entities</dt><dd>${neighbors.length}</dd>
+        <dt>jpcite page</dt><dd><a href="${links[d.type] || "#"}">${links[d.type] || "n/a"}</a></dd>
+        <dt>API</dt><dd>
+          <code>GET /v1/graph/expand?id=${encodeURIComponent(d.id)}&depth=2</code>
+        </dd>
+        <dt>関連 nodes</dt>
+        <dd><ul style="margin:4px 0 0 16px; padding:0">${
+          neighbors.slice(0,8).map(e => {
+            const other = (e.source.id||e.source) === d.id ? (e.target.label||e.target) : (e.source.label||e.source);
+            return `<li>${escapeHtml(String(other))} <small style="opacity:0.6">(${e.kind})</small></li>`;
+          }).join("")
+        }</ul></dd>
+      </dl>
+      <p style="margin-top:16px;font-size:11px;opacity:0.6">
+        ${d.type === "program" ? "click ▶ expand: 隣接 law/adoption/enforcement を fetch して描画" : ""}
+      </p>
+    `;
+    if (d.type === "program") { expandProgram(d); }
+  }
+
+  function expandProgram(d) {
+    // production: fetch(`/v1/graph/expand?id=${d.id}&depth=2&node_types=law,adoption,enforcement&limit=20`)
+    // demo: highlight existing neighbors so the click feels live.
+    linkSel.classed("highlight", e =>
+      (e.source.id||e.source) === d.id || (e.target.id||e.target) === d.id);
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
+  }
+
+  for (const t of ["program","law","adoption","enforcement"]) {
+    document.getElementById("filter-"+t).addEventListener("change", refresh);
+  }
+  document.getElementById("search-btn").addEventListener("click", () => {
+    const q = document.getElementById("search-input").value.trim().toLowerCase();
+    if (!q) return;
+    nodeSel.selectAll("circle").attr("opacity", d => d.label.toLowerCase().includes(q) ? 1 : 0.15);
+    nodeSel.selectAll("text").attr("opacity", d => d.label.toLowerCase().includes(q) ? 1 : 0.3);
+  });
+  document.getElementById("reset-btn").addEventListener("click", () => {
+    document.getElementById("search-input").value = "";
+    for (const t of ["program","law","adoption","enforcement"]) {
+      document.getElementById("filter-"+t).checked = true;
+    }
+    nodeSel.selectAll("circle").attr("opacity", 1);
+    nodeSel.selectAll("text").attr("opacity", 1);
+    linkSel.classed("highlight", false);
+    refresh();
+  });
+
+  refresh();
+
+  // attempt to load production seed (graceful fallback to hard-coded SEED)
+  fetch("/v1/graph/seed?limit=200")
+    .then(r => r.ok ? r.json() : null)
+    .then(payload => {
+      if (!payload || !Array.isArray(payload.nodes)) return;
+      nodes = payload.nodes;
+      edges = payload.edges || [];
+      sim.nodes(nodes);
+      sim.force("link").links(edges);
+      refresh();
+      document.getElementById("status").textContent =
+        `loaded ${nodes.length} nodes / ${edges.length} edges from /v1/graph/seed`;
+    })
+    .catch(() => { /* offline-OK */ });
+})();
+</script>
+</body>
+</html>

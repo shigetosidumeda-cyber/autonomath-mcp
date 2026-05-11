@@ -135,3 +135,29 @@ console.log(`採択 ${job.row_count} 件、URL: ${job.result_url}`);
 - 個別事業計画書本文は情報公開請求対象、本 recipe 対象外
 - 中小企業診断士 / 認定支援機関 ロールの業務範囲内で利用
 - 景表法 §5 — 統計分析結果は事実列挙、推測 / 評価表現は避ける
+
+## canonical_source_walkthrough
+
+> 一次資料 / canonical source への walk-through。Wave 21 C6 で全 30 recipes に追加。
+
+### 使う tool
+- **MCP tool**: `bulk_export adoption`
+- **REST endpoint**: `/v1/adoptions/bulk_export?format=csv`
+- **jpcite.com docs**: <https://jpcite.com/recipes/r25-adoption-bulk-export/>
+
+### expected output
+- CSV: 201,845 行、program_id + corp_name + adoption_date + amount
+- 全 response に `fetched_at` (UTC ISO 8601) + `source_url` (一次資料 URL) 必須
+- `_disclaimer` envelope (税理士法 §52 / 行政書士法 §1 / 司法書士法 §3 / 弁護士法 §72 等の業法 fence 該当時)
+
+### 失敗時 recovery
+- **404 Not Found**: format 不正 — csv/jsonl のみ
+- **429 Too Many Requests**: 1 export = 1 req、Idempotency-Key 必須
+- **5xx / timeout**: 60s wait、export は 9-12:00 JST 集中、外す
+
+### canonical source (一次資料)
+- 国税庁 適格事業者公表サイト: <https://www.invoice-kohyo.nta.go.jp/>
+- 中小企業庁 補助金一覧: <https://www.chusho.meti.go.jp/>
+- e-Gov 法令検索: <https://laws.e-gov.go.jp/>
+- 国立国会図書館 NDL: <https://www.ndl.go.jp/>
+- jpcite 一次資料 license 表: <https://jpcite.com/legal/licenses>

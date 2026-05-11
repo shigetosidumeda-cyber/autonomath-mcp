@@ -141,3 +141,29 @@ const kit = await jpcite.bundle_application_kit({
 - 税理士法 §52 — 税務代理は税理士、補助金会計処理は税理士連携
 - 弁護士法 §72 — 法的紛争予測は弁護士
 - 景表法 §5 — `fit_score` / `renewal_forecast` は推定値、保証ではない
+
+## canonical_source_walkthrough
+
+> 一次資料 / canonical source への walk-through。Wave 21 C6 で全 30 recipes に追加。
+
+### 使う tool
+- **MCP tool**: `smb_starter_pack + subsidy_roadmap_3yr`
+- **REST endpoint**: `/v1/discover/smb_starter + /v1/programs/roadmap`
+- **jpcite.com docs**: <https://jpcite.com/recipes/r07-shindanshi-monthly-companion/>
+
+### expected output
+- JSON: starter_programs[5] + roadmap.year_1/2/3 + total_addressable_amount_jpy
+- 全 response に `fetched_at` (UTC ISO 8601) + `source_url` (一次資料 URL) 必須
+- `_disclaimer` envelope (税理士法 §52 / 行政書士法 §1 / 司法書士法 §3 / 弁護士法 §72 等の業法 fence 該当時)
+
+### 失敗時 recovery
+- **404 Not Found**: 中小企業診断士領域外 keyword — 行政書士 / 税理士 fence へ案内
+- **429 Too Many Requests**: Client-Tag client-{id} fan-out
+- **5xx / timeout**: 60s wait
+
+### canonical source (一次資料)
+- 国税庁 適格事業者公表サイト: <https://www.invoice-kohyo.nta.go.jp/>
+- 中小企業庁 補助金一覧: <https://www.chusho.meti.go.jp/>
+- e-Gov 法令検索: <https://laws.e-gov.go.jp/>
+- 国立国会図書館 NDL: <https://www.ndl.go.jp/>
+- jpcite 一次資料 license 表: <https://jpcite.com/legal/licenses>

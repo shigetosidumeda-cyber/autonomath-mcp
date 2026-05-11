@@ -133,3 +133,29 @@ const top5 = programs.sort((a, b) => b.fit_score - a.fit_score).slice(0, 5);
 - 行政書士法 §1 — 申請書面作成は行政書士、本 recipe は scaffold + 一次 URL まで
 - 景表法 §5 — fit_score / max_amount_jpy は推定値、保証ではない旨を artifact PDF 末尾に注記
 - 消費者契約法 §4 — 顧問先への提案資料に組み込む場合、不確実性を明示
+
+## canonical_source_walkthrough
+
+> 一次資料 / canonical source への walk-through。Wave 21 C6 で全 30 recipes に追加。
+
+### 使う tool
+- **MCP tool**: `subsidy_combo_finder`
+- **REST endpoint**: `/v1/programs/combo`
+- **jpcite.com docs**: <https://jpcite.com/recipes/r02-pre-closing-subsidy-check/>
+
+### expected output
+- JSON: combos[].programs[].program_id + total_max_amount_jpy + conflict=null + tier=S/A
+- 全 response に `fetched_at` (UTC ISO 8601) + `source_url` (一次資料 URL) 必須
+- `_disclaimer` envelope (税理士法 §52 / 行政書士法 §1 / 司法書士法 §3 / 弁護士法 §72 等の業法 fence 該当時)
+
+### 失敗時 recovery
+- **404 Not Found**: client_profiles に該当 JSIC + 規模が無い — POST /v1/me/client_profiles で登録
+- **429 Too Many Requests**: X-Client-Tag 別で fan-out、parent/child API key で並列
+- **5xx / timeout**: 60s wait 再試行、api/billing 集中時は別時間帯へ
+
+### canonical source (一次資料)
+- 国税庁 適格事業者公表サイト: <https://www.invoice-kohyo.nta.go.jp/>
+- 中小企業庁 補助金一覧: <https://www.chusho.meti.go.jp/>
+- e-Gov 法令検索: <https://laws.e-gov.go.jp/>
+- 国立国会図書館 NDL: <https://www.ndl.go.jp/>
+- jpcite 一次資料 license 表: <https://jpcite.com/legal/licenses>

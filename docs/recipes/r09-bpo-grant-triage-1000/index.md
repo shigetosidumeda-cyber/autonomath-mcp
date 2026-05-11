@@ -147,3 +147,29 @@ const res = await jpcite.bulk_match_programs({
 - 個人情報保護法 — 法人番号は対象外、代表者氏名 / 担当者連絡先 等は別途同意 + 安全管理
 - 下請法 / 独禁法 — 親会社→傘下企業へのトリアージ結果押し付けは優越的地位の濫用に抵触し得る
 - 景表法 — 採択確率帯 (low/mid/high) は統計推定、保証ではない旨を artifact に明記
+
+## canonical_source_walkthrough
+
+> 一次資料 / canonical source への walk-through。Wave 21 C6 で全 30 recipes に追加。
+
+### 使う tool
+- **MCP tool**: `subsidy_combo_finder + bulk fan-out`
+- **REST endpoint**: `/v1/programs/combo (1000 客 bulk)`
+- **jpcite.com docs**: <https://jpcite.com/recipes/r09-bpo-grant-triage-1000/>
+
+### expected output
+- JSON × 1000: triage_score[A/B/C] + recommended_program_ids[3]
+- 全 response に `fetched_at` (UTC ISO 8601) + `source_url` (一次資料 URL) 必須
+- `_disclaimer` envelope (税理士法 §52 / 行政書士法 §1 / 司法書士法 §3 / 弁護士法 §72 等の業法 fence 該当時)
+
+### 失敗時 recovery
+- **404 Not Found**: client_profiles 未登録 — 事前 POST バッチで登録
+- **429 Too Many Requests**: parent/child API key 5 並列 (mig 086)
+- **5xx / timeout**: Cloudflare cache hit を狙う、12:00-15:00 JST 推奨
+
+### canonical source (一次資料)
+- 国税庁 適格事業者公表サイト: <https://www.invoice-kohyo.nta.go.jp/>
+- 中小企業庁 補助金一覧: <https://www.chusho.meti.go.jp/>
+- e-Gov 法令検索: <https://laws.e-gov.go.jp/>
+- 国立国会図書館 NDL: <https://www.ndl.go.jp/>
+- jpcite 一次資料 license 表: <https://jpcite.com/legal/licenses>

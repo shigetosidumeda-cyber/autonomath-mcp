@@ -139,3 +139,29 @@ console.log(`関連補助金: ${law.related_programs.length} 件`);
 - 税務判断は税理士領域、関連税制 / 通達紐付けは scaffold まで (税理士法 §52)
 - 改正附則の細部は専門家確認必須、本 recipe は条文 + 補助金紐付けまで
 - 景表法 §5 — `linkage` は機械的紐付け結果、保証ではない旨を レポート末尾に注記推奨
+
+## canonical_source_walkthrough
+
+> 一次資料 / canonical source への walk-through。Wave 21 C6 で全 30 recipes に追加。
+
+### 使う tool
+- **MCP tool**: `track_amendment_lineage_am + law→program join`
+- **REST endpoint**: `/v1/am/amendment/lineage`
+- **jpcite.com docs**: <https://jpcite.com/recipes/r27-law-amendment-program-link/>
+
+### expected output
+- JSON: amendment_id + affected_program_ids + diff + effective_from
+- 全 response に `fetched_at` (UTC ISO 8601) + `source_url` (一次資料 URL) 必須
+- `_disclaimer` envelope (税理士法 §52 / 行政書士法 §1 / 司法書士法 §3 / 弁護士法 §72 等の業法 fence 該当時)
+
+### 失敗時 recovery
+- **404 Not Found**: amendment_id が am_amendment_snapshot 未収録 — 14,596 行のみ
+- **429 Too Many Requests**: Client-Tag legal-{id} fan-out
+- **5xx / timeout**: 60s wait
+
+### canonical source (一次資料)
+- 国税庁 適格事業者公表サイト: <https://www.invoice-kohyo.nta.go.jp/>
+- 中小企業庁 補助金一覧: <https://www.chusho.meti.go.jp/>
+- e-Gov 法令検索: <https://laws.e-gov.go.jp/>
+- 国立国会図書館 NDL: <https://www.ndl.go.jp/>
+- jpcite 一次資料 license 表: <https://jpcite.com/legal/licenses>

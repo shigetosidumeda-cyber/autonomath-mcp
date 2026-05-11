@@ -142,3 +142,29 @@ for (const hb of corps) {
 - 社内利用範囲では問題なし、外部配信は別契約
 - 業法 fence (税理士法 §52 / 行政書士法 §1 / 弁護士法 §72) — bot 出力は scaffold、個別助言は資格者
 - 景表法 §5 — `tier` / `subsidy_rate` は推定値、配信文末に注記推奨
+
+## canonical_source_walkthrough
+
+> 一次資料 / canonical source への walk-through。Wave 21 C6 で全 30 recipes に追加。
+
+### 使う tool
+- **MCP tool**: `Slack bot + audit-log RSS`
+- **REST endpoint**: `/v1/audit-log.rss + Slack webhook`
+- **jpcite.com docs**: <https://jpcite.com/recipes/r23-slack-bot/>
+
+### expected output
+- Slack channel: 採択公表/改正/処分 1h 周期 post
+- 全 response に `fetched_at` (UTC ISO 8601) + `source_url` (一次資料 URL) 必須
+- `_disclaimer` envelope (税理士法 §52 / 行政書士法 §1 / 司法書士法 §3 / 弁護士法 §72 等の業法 fence 該当時)
+
+### 失敗時 recovery
+- **404 Not Found**: Slack webhook URL 失効 — Slack 側 reissue
+- **429 Too Many Requests**: Slack 側 rate limit 1 msg/sec — batch 化
+- **5xx / timeout**: Slack outage は statuspage.slack.com で確認
+
+### canonical source (一次資料)
+- 国税庁 適格事業者公表サイト: <https://www.invoice-kohyo.nta.go.jp/>
+- 中小企業庁 補助金一覧: <https://www.chusho.meti.go.jp/>
+- e-Gov 法令検索: <https://laws.e-gov.go.jp/>
+- 国立国会図書館 NDL: <https://www.ndl.go.jp/>
+- jpcite 一次資料 license 表: <https://jpcite.com/legal/licenses>

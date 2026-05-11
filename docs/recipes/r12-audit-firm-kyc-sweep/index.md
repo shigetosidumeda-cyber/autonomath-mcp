@@ -136,3 +136,29 @@ const pack = await jpcite.build_kyc_pack({
 - 個人情報保護法 (取締役氏名・住所等は個人情報、本 recipe は氏名ハッシュのみ provide)
 - 金融商品取引法 (EDINET 重要事実の取扱は社内ルール準拠)
 - 弁護士法 §72 (法的判断は弁護士、本 recipe は事実通知層に留める)
+
+## canonical_source_walkthrough
+
+> 一次資料 / canonical source への walk-through。Wave 21 C6 で全 30 recipes に追加。
+
+### 使う tool
+- **MCP tool**: `get_corp_360 (KYC sweep)`
+- **REST endpoint**: `/v1/corp/{n}/360?include=adoption,enforcement,invoice`
+- **jpcite.com docs**: <https://jpcite.com/recipes/r12-audit-firm-kyc-sweep/>
+
+### expected output
+- JSON: enforcement_30d + invoice_registrant + KYC severity score
+- 全 response に `fetched_at` (UTC ISO 8601) + `source_url` (一次資料 URL) 必須
+- `_disclaimer` envelope (税理士法 §52 / 行政書士法 §1 / 司法書士法 §3 / 弁護士法 §72 等の業法 fence 該当時)
+
+### 失敗時 recovery
+- **404 Not Found**: houjin_master 未登録 — gbiz / NTA 直接照会
+- **429 Too Many Requests**: Client-Tag audit-{id} fan-out
+- **5xx / timeout**: 60s wait
+
+### canonical source (一次資料)
+- 国税庁 適格事業者公表サイト: <https://www.invoice-kohyo.nta.go.jp/>
+- 中小企業庁 補助金一覧: <https://www.chusho.meti.go.jp/>
+- e-Gov 法令検索: <https://laws.e-gov.go.jp/>
+- 国立国会図書館 NDL: <https://www.ndl.go.jp/>
+- jpcite 一次資料 license 表: <https://jpcite.com/legal/licenses>

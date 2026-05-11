@@ -123,3 +123,29 @@ console.log(programs.slice(0, 5));
 - 行政書士法 §1 — 申請書面の作成のうち労働社会保険諸法令分は社労士、それ以外は行政書士
 - 弁護士法 §72 — 労働紛争 / あっせん代理は社労士特定社労士、本 recipe は scaffold まで
 - 景表法 §5 — `fit_score` は推定値、最終判断は社労士
+
+## canonical_source_walkthrough
+
+> 一次資料 / canonical source への walk-through。Wave 21 C6 で全 30 recipes に追加。
+
+### 使う tool
+- **MCP tool**: `search_programs (社労士 fence) + pack_real_estate(no)`
+- **REST endpoint**: `/v1/programs/search?categories=助成金,労務&jsic=*`
+- **jpcite.com docs**: <https://jpcite.com/recipes/r06-sharoushi-grant-match/>
+
+### expected output
+- JSON: programs[].tier=S/A + 適用業種 + 申請期限 + source_url
+- 全 response に `fetched_at` (UTC ISO 8601) + `source_url` (一次資料 URL) 必須
+- `_disclaimer` envelope (税理士法 §52 / 行政書士法 §1 / 司法書士法 §3 / 弁護士法 §72 等の業法 fence 該当時)
+
+### 失敗時 recovery
+- **404 Not Found**: JSIC コード mismatch — am_industry_jsic で正規化
+- **429 Too Many Requests**: X-Client-Tag client-{id} fan-out
+- **5xx / timeout**: 60s wait、別時間帯
+
+### canonical source (一次資料)
+- 国税庁 適格事業者公表サイト: <https://www.invoice-kohyo.nta.go.jp/>
+- 中小企業庁 補助金一覧: <https://www.chusho.meti.go.jp/>
+- e-Gov 法令検索: <https://laws.e-gov.go.jp/>
+- 国立国会図書館 NDL: <https://www.ndl.go.jp/>
+- jpcite 一次資料 license 表: <https://jpcite.com/legal/licenses>

@@ -139,3 +139,29 @@ const result = await jpcite.get_job_result(job.job_id);
 - 個別の補助金採択可能性の保証は禁止、本 recipe は統計的シグナル (fit_score) のみ提供
 - 個人情報保護法 — 法人番号は対象外、代表者氏名等を扱う場合は安全管理措置
 - 景表法 §5 — `fit_score` / `tier` は推定値、保証ではない旨を SaaS UI に明示
+
+## canonical_source_walkthrough
+
+> 一次資料 / canonical source への walk-through。Wave 21 C6 で全 30 recipes に追加。
+
+### 使う tool
+- **MCP tool**: `search_programs + enrich client DB`
+- **REST endpoint**: `/v1/programs/search + /v1/me/saved_searches`
+- **jpcite.com docs**: <https://jpcite.com/recipes/r15-grant-saas-internal-enrich/>
+
+### expected output
+- JSON: programs[].tier=S/A + saved_search.last_run + delta_30d
+- 全 response に `fetched_at` (UTC ISO 8601) + `source_url` (一次資料 URL) 必須
+- `_disclaimer` envelope (税理士法 §52 / 行政書士法 §1 / 司法書士法 §3 / 弁護士法 §72 等の業法 fence 該当時)
+
+### 失敗時 recovery
+- **404 Not Found**: saved_search 未登録 — POST /v1/me/saved_searches で登録
+- **429 Too Many Requests**: 親子 API key で並列
+- **5xx / timeout**: 60s wait
+
+### canonical source (一次資料)
+- 国税庁 適格事業者公表サイト: <https://www.invoice-kohyo.nta.go.jp/>
+- 中小企業庁 補助金一覧: <https://www.chusho.meti.go.jp/>
+- e-Gov 法令検索: <https://laws.e-gov.go.jp/>
+- 国立国会図書館 NDL: <https://www.ndl.go.jp/>
+- jpcite 一次資料 license 表: <https://jpcite.com/legal/licenses>

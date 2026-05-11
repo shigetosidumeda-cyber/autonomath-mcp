@@ -113,3 +113,29 @@ for (const m of d.matches) console.log(m.program_id, m.tier, m.source_url);
 - 業務利用は OpenAI 利用規約 (商用利用条項 + データ取扱) と併せて確認
 - Custom GPT の Instructions に「個別助言は行わない」旨を明記推奨
 - 景表法 §5 — `tier` / `subsidy_rate` は推定 / 公示値、Custom GPT 出力末尾に注記推奨
+
+## canonical_source_walkthrough
+
+> 一次資料 / canonical source への walk-through。Wave 21 C6 で全 30 recipes に追加。
+
+### 使う tool
+- **MCP tool**: `ChatGPT Custom GPT (jpcite-mcp)`
+- **REST endpoint**: `https://chat.openai.com/g/g-jpcite-mcp`
+- **jpcite.com docs**: <https://jpcite.com/recipes/r17-chatgpt-custom-gpt/>
+
+### expected output
+- Custom GPT Configure → Action: jpcite.com/openapi.agent.gpt30.json import
+- 全 response に `fetched_at` (UTC ISO 8601) + `source_url` (一次資料 URL) 必須
+- `_disclaimer` envelope (税理士法 §52 / 行政書士法 §1 / 司法書士法 §3 / 弁護士法 §72 等の業法 fence 該当時)
+
+### 失敗時 recovery
+- **404 Not Found**: openapi.agent.gpt30.json regen 失敗 — scripts/export_openapi.py --profile gpt30 再実行
+- **429 Too Many Requests**: ChatGPT 側 token limit — gpt30 slim profile 必須 (full は context overflow)
+- **5xx / timeout**: openai.com 障害 — status.openai.com で確認
+
+### canonical source (一次資料)
+- 国税庁 適格事業者公表サイト: <https://www.invoice-kohyo.nta.go.jp/>
+- 中小企業庁 補助金一覧: <https://www.chusho.meti.go.jp/>
+- e-Gov 法令検索: <https://laws.e-gov.go.jp/>
+- 国立国会図書館 NDL: <https://www.ndl.go.jp/>
+- jpcite 一次資料 license 表: <https://jpcite.com/legal/licenses>

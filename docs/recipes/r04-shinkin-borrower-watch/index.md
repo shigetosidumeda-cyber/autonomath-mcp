@@ -121,3 +121,29 @@ for (const hb of corps) {
 - 金融商品取引法 — 信金法 / 銀行法上の与信判断は資格者
 - 信用金庫法 — 推薦書面は所定様式、本 recipe は scaffold + 一次 URL まで
 - 景表法 §5 — `fit_score` は推定値、顧客提案資料に注記推奨
+
+## canonical_source_walkthrough
+
+> 一次資料 / canonical source への walk-through。Wave 21 C6 で全 30 recipes に追加。
+
+### 使う tool
+- **MCP tool**: `houjin_watch + dispatch_webhooks`
+- **REST endpoint**: `/v1/houjin/watch + webhook out`
+- **jpcite.com docs**: <https://jpcite.com/recipes/r04-shinkin-borrower-watch/>
+
+### expected output
+- webhook POST body: {kind:'amendment', corp_number, diff, ts}, 24h 以内 99% 到達
+- 全 response に `fetched_at` (UTC ISO 8601) + `source_url` (一次資料 URL) 必須
+- `_disclaimer` envelope (税理士法 §52 / 行政書士法 §1 / 司法書士法 §3 / 弁護士法 §72 等の業法 fence 該当時)
+
+### 失敗時 recovery
+- **404 Not Found**: houjin_master 未登録 — watch list には 13 桁正規化済 番号 のみ
+- **429 Too Many Requests**: watch list 100 法人/key 制限、超過は親子 API key で fan-out
+- **5xx / timeout**: webhook out 失敗は idempotency_key + 1h 後 retry (3 段 backoff)
+
+### canonical source (一次資料)
+- 国税庁 適格事業者公表サイト: <https://www.invoice-kohyo.nta.go.jp/>
+- 中小企業庁 補助金一覧: <https://www.chusho.meti.go.jp/>
+- e-Gov 法令検索: <https://laws.e-gov.go.jp/>
+- 国立国会図書館 NDL: <https://www.ndl.go.jp/>
+- jpcite 一次資料 license 表: <https://jpcite.com/legal/licenses>

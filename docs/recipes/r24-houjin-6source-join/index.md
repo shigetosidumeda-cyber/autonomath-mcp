@@ -135,3 +135,29 @@ fs.writeFileSync("houjin_join.json", JSON.stringify(snap, null, 2));
 - 公認会計士法 / 税理士法 §52 — 監査 / 税務判断は資格者
 - 個人情報保護法 — 代表者氏名 / 住所等は個人情報、`include_pii=false` で削除可
 - 景表法 §5 — 統計推定値含む、保証ではない旨を SaaS UI に明示
+
+## canonical_source_walkthrough
+
+> 一次資料 / canonical source への walk-through。Wave 21 C6 で全 30 recipes に追加。
+
+### 使う tool
+- **MCP tool**: `houjin 6source join (gBizINFO/NTA/EDINET/J-PlatPat/SDGs/G-Search)`
+- **REST endpoint**: `/v1/houjin/{n}/360_v2`
+- **jpcite.com docs**: <https://jpcite.com/recipes/r24-houjin-6source-join/>
+
+### expected output
+- JSON: 6 source の merge + source_id + last_verified_at + confidence
+- 全 response に `fetched_at` (UTC ISO 8601) + `source_url` (一次資料 URL) 必須
+- `_disclaimer` envelope (税理士法 §52 / 行政書士法 §1 / 司法書士法 §3 / 弁護士法 §72 等の業法 fence 該当時)
+
+### 失敗時 recovery
+- **404 Not Found**: 6 source のうち 1+ 未 ingest — partial response で source_coverage 確認
+- **429 Too Many Requests**: Client-Tag analyst-{id} fan-out
+- **5xx / timeout**: 60s wait、upstream 集中時間帯回避
+
+### canonical source (一次資料)
+- 国税庁 適格事業者公表サイト: <https://www.invoice-kohyo.nta.go.jp/>
+- 中小企業庁 補助金一覧: <https://www.chusho.meti.go.jp/>
+- e-Gov 法令検索: <https://laws.e-gov.go.jp/>
+- 国立国会図書館 NDL: <https://www.ndl.go.jp/>
+- jpcite 一次資料 license 表: <https://jpcite.com/legal/licenses>

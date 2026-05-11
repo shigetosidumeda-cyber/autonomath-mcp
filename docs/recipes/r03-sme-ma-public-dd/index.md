@@ -147,3 +147,29 @@ fs.writeFileSync(`dd_pack_${target}.json`, JSON.stringify({ target, dd, clawback
 - 公認会計士法 / 税理士法 §52 — 財務 DD / 税務 DD は資格者、本 recipe は公的データ提示まで
 - 中小企業等経営強化法 / M&A 支援機関登録制度 — 登録 M&A 支援機関の業務範囲内
 - 個人情報保護法 — 代表者氏名 / 住所等は artifact から削除可 (`include_pii=false`)
+
+## canonical_source_walkthrough
+
+> 一次資料 / canonical source への walk-through。Wave 21 C6 で全 30 recipes に追加。
+
+### 使う tool
+- **MCP tool**: `get_corp_360 + check_enforcement_am`
+- **REST endpoint**: `/v1/corp/{n}/360 + /v1/am/enforcement/check`
+- **jpcite.com docs**: <https://jpcite.com/recipes/r03-sme-ma-public-dd/>
+
+### expected output
+- JSON: enforcement_30d + invoice_registrant + 適格事業者 + adoption 履歴 + DD severity score
+- 全 response に `fetched_at` (UTC ISO 8601) + `source_url` (一次資料 URL) 必須
+- `_disclaimer` envelope (税理士法 §52 / 行政書士法 §1 / 司法書士法 §3 / 弁護士法 §72 等の業法 fence 該当時)
+
+### 失敗時 recovery
+- **404 Not Found**: 対象 法人番号 が houjin_master 未登録 — gbiz / NTA 直接照会
+- **429 Too Many Requests**: DD bulk は X-Client-Tag deal-id-{id} で fan-out 推奨
+- **5xx / timeout**: Stripe metered 集中時間帯回避 (09:00-12:00 JST)
+
+### canonical source (一次資料)
+- 国税庁 適格事業者公表サイト: <https://www.invoice-kohyo.nta.go.jp/>
+- 中小企業庁 補助金一覧: <https://www.chusho.meti.go.jp/>
+- e-Gov 法令検索: <https://laws.e-gov.go.jp/>
+- 国立国会図書館 NDL: <https://www.ndl.go.jp/>
+- jpcite 一次資料 license 表: <https://jpcite.com/legal/licenses>

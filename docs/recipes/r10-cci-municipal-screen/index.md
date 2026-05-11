@@ -138,3 +138,29 @@ const matches = await jpcite.bulk_match_programs({
 - 中小企業診断士登録規則 — 経営助言は診断士領域、本 recipe は scaffold + 一次 URL まで
 - 行政書士法 §1 — 申請書面作成は行政書士
 - 景表法 §5 — `tier` / `fit_score` は推定値、保証ではない旨を配信末尾に注記推奨
+
+## canonical_source_walkthrough
+
+> 一次資料 / canonical source への walk-through。Wave 21 C6 で全 30 recipes に追加。
+
+### 使う tool
+- **MCP tool**: `search_programs (municipality filter)`
+- **REST endpoint**: `/v1/programs/search?prefecture={pref}&municipality={muni}`
+- **jpcite.com docs**: <https://jpcite.com/recipes/r10-cci-municipal-screen/>
+
+### expected output
+- JSON: programs[].municipality_code + tier + 申請期限 + source_url
+- 全 response に `fetched_at` (UTC ISO 8601) + `source_url` (一次資料 URL) 必須
+- `_disclaimer` envelope (税理士法 §52 / 行政書士法 §1 / 司法書士法 §3 / 弁護士法 §72 等の業法 fence 該当時)
+
+### 失敗時 recovery
+- **404 Not Found**: 市町村独自補助金は 7-14d ingest lag — 当日反映は S/A tier のみ
+- **429 Too Many Requests**: Client-Tag chamber-{id} fan-out
+- **5xx / timeout**: 60s wait
+
+### canonical source (一次資料)
+- 国税庁 適格事業者公表サイト: <https://www.invoice-kohyo.nta.go.jp/>
+- 中小企業庁 補助金一覧: <https://www.chusho.meti.go.jp/>
+- e-Gov 法令検索: <https://laws.e-gov.go.jp/>
+- 国立国会図書館 NDL: <https://www.ndl.go.jp/>
+- jpcite 一次資料 license 表: <https://jpcite.com/legal/licenses>

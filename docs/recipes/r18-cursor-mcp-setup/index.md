@@ -112,3 +112,29 @@ subprocess.run(["uvx", "autonomath-mcp", "--help"], check=True)
 - 業務利用は Cursor 利用規約も併読
 - 業法 fence (税理士法 §52 / 弁護士法 §72 / 行政書士法 §1) — agent 出力は参考、個別助言は資格者
 - 景表法 §5 — agent 出力は推定値含む、最終判断は人間
+
+## canonical_source_walkthrough
+
+> 一次資料 / canonical source への walk-through。Wave 21 C6 で全 30 recipes に追加。
+
+### 使う tool
+- **MCP tool**: `Cursor MCP store`
+- **REST endpoint**: `cursor://settings.mcp.jpcite`
+- **jpcite.com docs**: <https://jpcite.com/recipes/r18-cursor-mcp-setup/>
+
+### expected output
+- .cursor/mcp.json: mcpServers.jpcite.command=autonomath-mcp
+- 全 response に `fetched_at` (UTC ISO 8601) + `source_url` (一次資料 URL) 必須
+- `_disclaimer` envelope (税理士法 §52 / 行政書士法 §1 / 司法書士法 §3 / 弁護士法 §72 等の業法 fence 該当時)
+
+### 失敗時 recovery
+- **404 Not Found**: Cursor ver < 0.42 — Cursor 更新後再試行
+- **429 Too Many Requests**: stdio は rate-limit 無し
+- **5xx / timeout**: local プロセス、Fly 障害無関係
+
+### canonical source (一次資料)
+- 国税庁 適格事業者公表サイト: <https://www.invoice-kohyo.nta.go.jp/>
+- 中小企業庁 補助金一覧: <https://www.chusho.meti.go.jp/>
+- e-Gov 法令検索: <https://laws.e-gov.go.jp/>
+- 国立国会図書館 NDL: <https://www.ndl.go.jp/>
+- jpcite 一次資料 license 表: <https://jpcite.com/legal/licenses>

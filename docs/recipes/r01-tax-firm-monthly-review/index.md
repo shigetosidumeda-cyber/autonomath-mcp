@@ -148,3 +148,29 @@ fs.writeFileSync("monthly_review.json", JSON.stringify(rows, null, 2));
 - 中小企業診断士登録規則 — 経営助言 / 補助金申請伴走は診断士領域
 - 行政書士法 §1 — 申請書面作成は行政書士、本 recipe は scaffold + 一次 URL まで
 - 景表法 §5 — `fit_score` / `max_amount_jpy` は推定値、保証ではない旨を末尾注記推奨
+
+## canonical_source_walkthrough
+
+> 一次資料 / canonical source への walk-through。Wave 21 C6 で全 30 recipes に追加。
+
+### 使う tool
+- **MCP tool**: `get_corp_360`
+- **REST endpoint**: `/v1/corp/{corp_number}/360`
+- **jpcite.com docs**: <https://jpcite.com/recipes/r01-tax-firm-monthly-review/>
+
+### expected output
+- JSON: invoice_registrant.registered=true + adoptions_30d=[] + subsidy_matches_top3.length<=3 + fetched_at + source_url
+- 全 response に `fetched_at` (UTC ISO 8601) + `source_url` (一次資料 URL) 必須
+- `_disclaimer` envelope (税理士法 §52 / 行政書士法 §1 / 司法書士法 §3 / 弁護士法 §72 等の業法 fence 該当時)
+
+### 失敗時 recovery
+- **404 Not Found**: 法人番号が国税庁 houjin-bangou.nta.go.jp に未登録 — 入力 13 桁を再確認
+- **429 Too Many Requests**: anonymous quota 3 req/日 を超過 — API key を発行 (https://jpcite.com/keys) or X-Forwarded-For 別 IP
+- **5xx / timeout**: Fly Tokyo region 一時障害 — 60s 待機後再試行、status.jpcite.com で確認
+
+### canonical source (一次資料)
+- 国税庁 適格事業者公表サイト: <https://www.invoice-kohyo.nta.go.jp/>
+- 中小企業庁 補助金一覧: <https://www.chusho.meti.go.jp/>
+- e-Gov 法令検索: <https://laws.e-gov.go.jp/>
+- 国立国会図書館 NDL: <https://www.ndl.go.jp/>
+- jpcite 一次資料 license 表: <https://jpcite.com/legal/licenses>

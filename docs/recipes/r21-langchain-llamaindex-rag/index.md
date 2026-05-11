@@ -126,3 +126,29 @@ const searchTool = new DynamicTool({
 - LLM ベンダー利用規約も併読 (OpenAI / Anthropic / Google / AWS / GROQ 等)
 - 業法 fence (税理士法 §52 / 弁護士法 §72 / 行政書士法 §1) — agent 出力は scaffold + 一次 URL まで
 - 景表法 §5 — agent 出力は推定値含む可能性、最終判断は人間
+
+## canonical_source_walkthrough
+
+> 一次資料 / canonical source への walk-through。Wave 21 C6 で全 30 recipes に追加。
+
+### 使う tool
+- **MCP tool**: `REST API + LangChain Tool wrap`
+- **REST endpoint**: `/v1/programs/search (RAG context)`
+- **jpcite.com docs**: <https://jpcite.com/recipes/r21-langchain-llamaindex-rag/>
+
+### expected output
+- LangChain Tool.run() → JSON dump → vector embed → query
+- 全 response に `fetched_at` (UTC ISO 8601) + `source_url` (一次資料 URL) 必須
+- `_disclaimer` envelope (税理士法 §52 / 行政書士法 §1 / 司法書士法 §3 / 弁護士法 §72 等の業法 fence 該当時)
+
+### 失敗時 recovery
+- **404 Not Found**: LangChain 0.3+ 必須、旧版は tool spec mismatch
+- **429 Too Many Requests**: API key 経由 ¥3/req、batch 化で cost 下げ
+- **5xx / timeout**: 60s wait
+
+### canonical source (一次資料)
+- 国税庁 適格事業者公表サイト: <https://www.invoice-kohyo.nta.go.jp/>
+- 中小企業庁 補助金一覧: <https://www.chusho.meti.go.jp/>
+- e-Gov 法令検索: <https://laws.e-gov.go.jp/>
+- 国立国会図書館 NDL: <https://www.ndl.go.jp/>
+- jpcite 一次資料 license 表: <https://jpcite.com/legal/licenses>

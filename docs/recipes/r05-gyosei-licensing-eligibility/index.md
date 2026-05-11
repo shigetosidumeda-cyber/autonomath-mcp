@@ -132,3 +132,29 @@ console.log(d.packet);
 - 弁護士法 §72 — 法的紛争予測は弁護士、本 recipe は事実列挙
 - 司法書士法 §3 — 登記関連は司法書士、本 recipe は登記簿補完情報まで
 - 景表法 §5 — `fit_score` / `prereq_met` は推定値、申請可否判定ではない
+
+## canonical_source_walkthrough
+
+> 一次資料 / canonical source への walk-through。Wave 21 C6 で全 30 recipes に追加。
+
+### 使う tool
+- **MCP tool**: `rule_engine_check + apply_eligibility_chain_am`
+- **REST endpoint**: `/v1/am/rule_check + /v1/am/eligibility_chain`
+- **jpcite.com docs**: <https://jpcite.com/recipes/r05-gyosei-licensing-eligibility/>
+
+### expected output
+- JSON: passed/failed predicates list + exclusion_rule_id + 法令条文 url
+- 全 response に `fetched_at` (UTC ISO 8601) + `source_url` (一次資料 URL) 必須
+- `_disclaimer` envelope (税理士法 §52 / 行政書士法 §1 / 司法書士法 §3 / 弁護士法 §72 等の業法 fence 該当時)
+
+### 失敗時 recovery
+- **404 Not Found**: exclusion_rules に該当 license type 無し — issue で報告
+- **429 Too Many Requests**: checklist bulk は X-Client-Tag client-{id} で fan-out
+- **5xx / timeout**: 60s wait、jpcite.com/status で復旧確認
+
+### canonical source (一次資料)
+- 国税庁 適格事業者公表サイト: <https://www.invoice-kohyo.nta.go.jp/>
+- 中小企業庁 補助金一覧: <https://www.chusho.meti.go.jp/>
+- e-Gov 法令検索: <https://laws.e-gov.go.jp/>
+- 国立国会図書館 NDL: <https://www.ndl.go.jp/>
+- jpcite 一次資料 license 表: <https://jpcite.com/legal/licenses>

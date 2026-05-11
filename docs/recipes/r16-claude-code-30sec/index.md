@@ -118,3 +118,29 @@ subprocess.run(["uvx", "autonomath-mcp", "--help"], check=True)
 - 業務利用は Anthropic 利用規約 (商用利用条項 + データ取扱) と併せて確認
 - 業法 fence (税理士法 §52 / 弁護士法 §72 / 行政書士法 §1) — agent 出力は scaffold + 一次 URL まで
 - 景表法 §5 — agent 出力は推定値含む可能性、最終判断は人間
+
+## canonical_source_walkthrough
+
+> 一次資料 / canonical source への walk-through。Wave 21 C6 で全 30 recipes に追加。
+
+### 使う tool
+- **MCP tool**: `MCP stdio (claude-code)`
+- **REST endpoint**: `stdio: autonomath-mcp`
+- **jpcite.com docs**: <https://jpcite.com/recipes/r16-claude-code-30sec/>
+
+### expected output
+- claude_desktop_config.json: mcpServers.jpcite.command=autonomath-mcp
+- 全 response に `fetched_at` (UTC ISO 8601) + `source_url` (一次資料 URL) 必須
+- `_disclaimer` envelope (税理士法 §52 / 行政書士法 §1 / 司法書士法 §3 / 弁護士法 §72 等の業法 fence 該当時)
+
+### 失敗時 recovery
+- **404 Not Found**: pip install autonomath-mcp 未実行 — pip install autonomath-mcp で復旧
+- **429 Too Many Requests**: stdio は rate-limit 無し、API key 経由のみ ¥3/req 課金
+- **5xx / timeout**: stdio は local プロセス、Fly 障害無関係
+
+### canonical source (一次資料)
+- 国税庁 適格事業者公表サイト: <https://www.invoice-kohyo.nta.go.jp/>
+- 中小企業庁 補助金一覧: <https://www.chusho.meti.go.jp/>
+- e-Gov 法令検索: <https://laws.e-gov.go.jp/>
+- 国立国会図書館 NDL: <https://www.ndl.go.jp/>
+- jpcite 一次資料 license 表: <https://jpcite.com/legal/licenses>

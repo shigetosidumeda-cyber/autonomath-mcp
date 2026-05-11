@@ -138,3 +138,29 @@ console.log(`${triggers.events.length} 件の trigger 検知`);
 - 公認会計士法 — 監査意見そのものは jpcite 不可、scaffold + 一次 URL のみ
 - 弁護士法 §72 — 法的判断は弁護士、本 recipe は事実通知層
 - 景表法 §5 — `fit_score` は推定値、保証ではない旨を IR 資料末尾に注記推奨
+
+## canonical_source_walkthrough
+
+> 一次資料 / canonical source への walk-through。Wave 21 C6 で全 30 recipes に追加。
+
+### 使う tool
+- **MCP tool**: `EDINET trigger + program match`
+- **REST endpoint**: `/v1/houjin/edinet_trigger`
+- **jpcite.com docs**: <https://jpcite.com/recipes/r28-edinet-program-trigger/>
+
+### expected output
+- JSON: edinet_filing + matched_program_ids + trigger_reason
+- 全 response に `fetched_at` (UTC ISO 8601) + `source_url` (一次資料 URL) 必須
+- `_disclaimer` envelope (税理士法 §52 / 行政書士法 §1 / 司法書士法 §3 / 弁護士法 §72 等の業法 fence 該当時)
+
+### 失敗時 recovery
+- **404 Not Found**: EDINET ingest lag 24h — 翌日再試行
+- **429 Too Many Requests**: Client-Tag analyst-{id}
+- **5xx / timeout**: 60s wait
+
+### canonical source (一次資料)
+- 国税庁 適格事業者公表サイト: <https://www.invoice-kohyo.nta.go.jp/>
+- 中小企業庁 補助金一覧: <https://www.chusho.meti.go.jp/>
+- e-Gov 法令検索: <https://laws.e-gov.go.jp/>
+- 国立国会図書館 NDL: <https://www.ndl.go.jp/>
+- jpcite 一次資料 license 表: <https://jpcite.com/legal/licenses>

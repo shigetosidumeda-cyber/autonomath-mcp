@@ -133,3 +133,29 @@ fs.writeFileSync("registry_supplement.json", JSON.stringify(snap, null, 2));
 - 弁護士法 §72 (法的紛争・契約条項解釈は弁護士領域、本 recipe は事実列挙のみ)
 - 犯罪収益移転防止法 §4 (本人確認の義務遂行) — 本 recipe は補完情報、最終的な本人確認は司法書士自身
 - 個人情報保護法 — 代表者氏名 / 住所等は個人情報、業務上必要な範囲での取得 + 安全管理が前提
+
+## canonical_source_walkthrough
+
+> 一次資料 / canonical source への walk-through。Wave 21 C6 で全 30 recipes に追加。
+
+### 使う tool
+- **MCP tool**: `houjin_watch + 司法書士 fence`
+- **REST endpoint**: `/v1/houjin/watch`
+- **jpcite.com docs**: <https://jpcite.com/recipes/r13-shihoshoshi-registry-watch/>
+
+### expected output
+- webhook POST: {kind:'registry_diff', corp_number, diff, ts}
+- 全 response に `fetched_at` (UTC ISO 8601) + `source_url` (一次資料 URL) 必須
+- `_disclaimer` envelope (税理士法 §52 / 行政書士法 §1 / 司法書士法 §3 / 弁護士法 §72 等の業法 fence 該当時)
+
+### 失敗時 recovery
+- **404 Not Found**: houjin_master 未登録 — 13 桁 正規化
+- **429 Too Many Requests**: watch list 100/key、親子 key で fan-out
+- **5xx / timeout**: webhook out 失敗 → idempotency_key + 1h retry
+
+### canonical source (一次資料)
+- 国税庁 適格事業者公表サイト: <https://www.invoice-kohyo.nta.go.jp/>
+- 中小企業庁 補助金一覧: <https://www.chusho.meti.go.jp/>
+- e-Gov 法令検索: <https://laws.e-gov.go.jp/>
+- 国立国会図書館 NDL: <https://www.ndl.go.jp/>
+- jpcite 一次資料 license 表: <https://jpcite.com/legal/licenses>

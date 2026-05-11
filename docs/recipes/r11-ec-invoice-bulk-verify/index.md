@@ -130,3 +130,29 @@ fs.writeFileSync("hold_payment.json", JSON.stringify(revoked, null, 2));
 - 経理処理 (買掛金修正 / 税区分修正) は事業者内部で実施可、外部公表は税理士確認推奨
 - 個人情報保護法 — 個人事業主の氏名 / 住所が含まれる場合、安全管理措置と利用目的明示
 - 景表法 §5 — 仕入先への抹消通知時は事実通知に留め、信用毀損につながる表現は避ける
+
+## canonical_source_walkthrough
+
+> 一次資料 / canonical source への walk-through。Wave 21 C6 で全 30 recipes に追加。
+
+### 使う tool
+- **MCP tool**: `check_invoice_status (bulk)`
+- **REST endpoint**: `/v1/invoice/bulk_verify`
+- **jpcite.com docs**: <https://jpcite.com/recipes/r11-ec-invoice-bulk-verify/>
+
+### expected output
+- JSON × 10000: invoice_number + registered + revoked_date(if any) + last_verified_at
+- 全 response に `fetched_at` (UTC ISO 8601) + `source_url` (一次資料 URL) 必須
+- `_disclaimer` envelope (税理士法 §52 / 行政書士法 §1 / 司法書士法 §3 / 弁護士法 §72 等の業法 fence 該当時)
+
+### 失敗時 recovery
+- **404 Not Found**: T + 13 桁 形式不一致 — pre-validation で除外
+- **429 Too Many Requests**: Idempotency-Key 必須、X-Client-Tag tenant-{id} fan-out
+- **5xx / timeout**: 60s wait、NTA upstream 障害時は invoice-kohyo.nta.go.jp で別系確認
+
+### canonical source (一次資料)
+- 国税庁 適格事業者公表サイト: <https://www.invoice-kohyo.nta.go.jp/>
+- 中小企業庁 補助金一覧: <https://www.chusho.meti.go.jp/>
+- e-Gov 法令検索: <https://laws.e-gov.go.jp/>
+- 国立国会図書館 NDL: <https://www.ndl.go.jp/>
+- jpcite 一次資料 license 表: <https://jpcite.com/legal/licenses>

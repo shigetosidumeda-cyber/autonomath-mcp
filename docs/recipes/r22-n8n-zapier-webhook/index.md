@@ -114,3 +114,29 @@ print(f"{len(new_programs)} 件の新規公示")
 - 利用者の業務範囲を超える助言を出力しない (Webhook → LLM 経由で生成する場合)
 - 業法 fence — 配信は scaffold + 一次 URL まで、個別判断は資格者
 - 景表法 §5 — `tier` / `subsidy_rate` は推定値、保証ではない旨を配信文末に注記推奨
+
+## canonical_source_walkthrough
+
+> 一次資料 / canonical source への walk-through。Wave 21 C6 で全 30 recipes に追加。
+
+### 使う tool
+- **MCP tool**: `n8n/Zapier HTTP node`
+- **REST endpoint**: `POST /v1/webhooks/configure`
+- **jpcite.com docs**: <https://jpcite.com/recipes/r22-n8n-zapier-webhook/>
+
+### expected output
+- webhook URL 登録 → n8n trigger node が JSON 受信
+- 全 response に `fetched_at` (UTC ISO 8601) + `source_url` (一次資料 URL) 必須
+- `_disclaimer` envelope (税理士法 §52 / 行政書士法 §1 / 司法書士法 §3 / 弁護士法 §72 等の業法 fence 該当時)
+
+### 失敗時 recovery
+- **404 Not Found**: webhook URL 未登録 — POST で再登録
+- **429 Too Many Requests**: webhook out idempotency_key 必須
+- **5xx / timeout**: n8n 側 retry 3 段、jpcite 側 1h backoff
+
+### canonical source (一次資料)
+- 国税庁 適格事業者公表サイト: <https://www.invoice-kohyo.nta.go.jp/>
+- 中小企業庁 補助金一覧: <https://www.chusho.meti.go.jp/>
+- e-Gov 法令検索: <https://laws.e-gov.go.jp/>
+- 国立国会図書館 NDL: <https://www.ndl.go.jp/>
+- jpcite 一次資料 license 表: <https://jpcite.com/legal/licenses>
