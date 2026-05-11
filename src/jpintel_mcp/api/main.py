@@ -163,6 +163,7 @@ from jpintel_mcp.api.programs_municipality_v2 import (
 from jpintel_mcp.api.regions import router as regions_router
 from jpintel_mcp.api.response_sanitizer import ResponseSanitizerMiddleware
 from jpintel_mcp.api.saved_searches import router as saved_searches_router
+from jpintel_mcp.api.semantic_search_v2 import router as semantic_search_v2_router  # Wave 43.2.1 Dim A
 from jpintel_mcp.api.signup import router as signup_router
 from jpintel_mcp.api.source_manifest import router as source_manifest_router
 from jpintel_mcp.api.stats import router as stats_router
@@ -2568,6 +2569,10 @@ def create_app() -> FastAPI:
     # via report_usage_async so deliveries are ¥3/req metered. Subscribe
     # path itself is FREE (it is the customer's own row).
     app.include_router(saved_searches_router)
+    # Wave 43.2.1 Dim A — hybrid semantic search v2 (FTS5 + sqlite-vec 384d
+    # e5-small + cross-encoder reranker). POST /v1/search/semantic. 2 ¥3/req
+    # units (重い query). NO LLM API — sentence-transformers local CPU only.
+    app.include_router(semantic_search_v2_router, dependencies=[AnonIpLimitDep])
     # Migration 096 — client_profiles registry for 補助金コンサル fan-out.
     # Authenticated-only CRUD on the calling key's own 顧問先 metadata.
     # CRUD is FREE; the fan-out path (saved_searches × profile_ids) is

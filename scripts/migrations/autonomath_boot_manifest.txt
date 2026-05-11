@@ -47,3 +47,13 @@
 # Pure additive (CREATE TABLE/INDEX/VIEW IF NOT EXISTS); idempotent on every
 # boot. NO LLM, cryptography stdlib only.
 262_fact_signature_v2.sql
+
+# 2026-05-12 Wave 43.2.1 — Dim A semantic 検索 e5-small 384d.
+# am_entities_vec_e5 (sqlite-vec virtual table, 384 dim, e5-small) +
+# am_entities_vec_reranker_score (cross-encoder MS-MARCO score cache,
+# CHECK [-10, 10]) + am_entities_vec_e5_embed_log + refresh_log. Pure
+# additive (CREATE TABLE/INDEX/VIRTUAL IF NOT EXISTS, CHECK on
+# embed_dim/mode/score). boot-time safe; idempotent on every boot.
+# vec0 virtual table may soft-fail when sqlite-vec extension is not
+# loaded on the boot worker — entrypoint.sh §4 tolerates the warning.
+260_vec_e5_small_384.sql
