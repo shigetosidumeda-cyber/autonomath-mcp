@@ -1,4 +1,4 @@
--- migration 248_program_source_municipality_v2 — ROLLBACK
+-- migration 248_program_source_municipality_v2 - ROLLBACK
 -- target_db: autonomath
 PRAGMA foreign_keys = ON;
 

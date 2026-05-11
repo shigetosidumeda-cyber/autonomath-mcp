@@ -38,3 +38,5 @@
 # Pure additive (CREATE TABLE/INDEX/VIEW + CREATE VIRTUAL TABLE FTS5 IF NOT
 # EXISTS). boot-time safe; idempotent on every boot.
 252_law_jorei_pref.sql
+255_enforcement_municipality.sql
+259_court_decisions_extended.sql
