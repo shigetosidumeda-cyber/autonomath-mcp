@@ -121,11 +121,16 @@ jobs:
             --exclude '*.map' \
             --include 'press/*.md' \
             --include 'security/policy.md' \
-            --include 'cases/*.md' \
-            --include 'laws/*.md' \
-            --include 'enforcement/*.md' \
             --exclude '*.md' \
             site/ dist/site/
+          # 2026-05-12 Wave 24: cases/laws/enforcement *.md NOT bundled in
+          # CF Pages publish because the wrangler pages-action chokes on the
+          # 9,178 extra files (ERR_UNHANDLED_REJECTION on uploads). The .md
+          # companion content is intentionally surfaced via /api proxy
+          # `functions/api_proxy.ts` (Fly app serves .md from baked corpus)
+          # rather than as static CF Pages assets. Follow-up: investigate
+          # wrangler v3 upload chunking + retry policy, or migrate the
+          # companion .md surface to R2 bucket with /r2_* worker route.
           echo "artifact size:"
           du -sh dist/site
           echo "file count:"
