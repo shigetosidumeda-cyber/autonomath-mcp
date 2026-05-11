@@ -225,6 +225,8 @@ class Settings(BaseSettings):
     # rendering origin (apex or www depending on canonical redirect).
     # Local dev callers must override JPINTEL_CORS_ORIGINS explicitly
     # (e.g. `JPINTEL_CORS_ORIGINS="http://localhost:3000,http://localhost:8080"`).
+    # DEPRECATED 2026-05-11 — legacy CORS allowlist without jpcite.com apex+www superseded by current default (apex + www + api + 旧 brand 301-source 維持); retained as historical-state marker.
+    # index record: /Users/shigetoumeda/jpcite/docs/_internal/_archive/_index_2026_05_11.md (A19)
     cors_origins: str = Field(
         default=(
             "https://jpcite.com,"

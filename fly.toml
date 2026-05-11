@@ -16,6 +16,9 @@ primary_region = "nrt"
   # SENTRY_DSN, STRIPE_*, API_KEY_SALT, JPINTEL_CORS_ORIGINS: set via `flyctl secrets set`
   # AUTONOMATH_DB_URL + AUTONOMATH_DB_SHA256 (optional R2 bootstrap): set via secrets
 
+# DEPRECATED 2026-05-11 — `release_command = "python scripts/migrate.py"` superseded by entrypoint.sh §4 (autonomath self-heal); retained as historical-state marker.
+# index record: /Users/shigetoumeda/jpcite/docs/_internal/_archive/_index_2026_05_11.md (A9)
+#
 # Run migrations on every deploy, before traffic shifts. Must be idempotent.
 # migrate.py reads JPINTEL_DB_PATH from env; it is safe on a fresh volume.
 # Disabled 2026-04-27: 74 migrations × 8.29GB autonomath.db hangs the

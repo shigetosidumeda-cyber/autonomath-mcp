@@ -1,3 +1,6 @@
+# DEPRECATED 2026-05-11 — superseded by .github/workflows/incremental-law-load.yml (unified cadence); retained as historical-state marker.
+# index record: /Users/shigetoumeda/jpcite/docs/_internal/_archive/_index_2026_05_11.md (A20)
+
 name: incremental-law-en-translation
 
 # Weekly incremental JLT (日本法令外国語訳) loader for am_law_article.body_en.

@@ -1,14 +1,77 @@
 {
-  "schema_version": "1.0",
-  "updated_at": "2026-05-11T00:00:00Z",
-  "overall_status": "operational",
-  "components": [
-    {"id":"api","status":"operational","note":"REST + MCP via api.jpcite.com"},
-    {"id":"mcp","status":"operational","tools_count":139},
-    {"id":"billing","status":"operational","note":"Stripe metered + webhook"},
-    {"id":"data-freshness","status":"operational","datasets":4},
-    {"id":"dashboard","status":"operational","note":"magic-link login"}
-  ],
-  "active_incidents": [],
-  "scheduled_maintenance": []
+  "snapshot_at": "2026-05-11T16:05:16+09:00",
+  "components": {
+    "api": {
+      "status": "ok",
+      "latency_ms": 1064,
+      "http": 200,
+      "healthz_http": 200,
+      "deep_http": 200,
+      "deep_json_valid": true,
+      "error": null
+    },
+    "mcp": {
+      "status": "degraded",
+      "latency_ms": 1160,
+      "http": 200,
+      "tools_count": 139,
+      "tools_expected": 139,
+      "recurring_workflows": 0,
+      "recurring_expected": 3,
+      "error": null
+    },
+    "billing": {
+      "status": "ok",
+      "latency_ms": 0,
+      "http": 0,
+      "failed_events_24h": 0,
+      "rate_5xx": 0.0,
+      "stub": true,
+      "error": "STRIPE_SECRET_KEY not configured"
+    },
+    "data-freshness": {
+      "status": "down",
+      "latency_ms": 870,
+      "http": 0,
+      "last_updated_at": "2026-05-05",
+      "max_age_days": 18,
+      "datasets": {
+        "programs": {
+          "status": "down",
+          "age_seconds": 1029010,
+          "sla_seconds": 86400,
+          "db_present": true
+        },
+        "am_amendment_diff": {
+          "status": "ok",
+          "age_seconds": 514038,
+          "sla_seconds": 604800,
+          "db_present": true
+        },
+        "invoice_registrants": {
+          "status": "ok",
+          "age_seconds": 1461134,
+          "sla_seconds": 2592000,
+          "db_present": true
+        },
+        "case_studies": {
+          "status": "ok",
+          "age_seconds": 1562698,
+          "sla_seconds": 2592000,
+          "db_present": true
+        }
+      },
+      "error": null
+    },
+    "dashboard": {
+      "status": "ok",
+      "latency_ms": 188,
+      "http": 200,
+      "has_billing_anchor": true,
+      "login_request_http": 404,
+      "magic_link_ok": true,
+      "error": null
+    }
+  },
+  "overall": "down"
 }

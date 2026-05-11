@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# ruff: noqa: N803,N806,SIM115,SIM117,BLE001,E501,F401,F841,PTH123,S301,S314,S603,UP017
 """check_openapi_drift: assert .paths length of OpenAPI specs vs facts_registry.
 
 LLM 呼出ゼロ。Targets:

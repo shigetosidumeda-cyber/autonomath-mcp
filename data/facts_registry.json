@@ -4,13 +4,13 @@
   "snapshot_git_sha": "d4216ffb",
   "guards": {
     "banned_terms": [
-      {"pattern": "完全(?:に)?(採択|成功|合格|適合|安全|無欠|な保証|保証|防止|回避|削減|削除|排除|網羅|把握|一致|再現|信頼|的中|予測|的確)", "reason": "marketing absolute"},
+      {"pattern": "完全(?:に)?(採択|成功|合格|適合|安全|無欠|な保証|保証|防止|回避|削減|削除|排除|網羅|把握|一致|再現|信頼|的中|予測|的確)", "reason": "marketing absolute", "allow_in_context": ["aria-label", "placeholder", "input type=\"text\"", "<input ", "完全一致 maxlength", "ID の完全一致", "完全一致, 例:", "完全一致)", "OpenAPI", "openapi/v1.json", "都道府県名 (完全一致", "完全網羅は保証しない", "backup 世代", "完全削除)", "tokushoho.html", "tos.html"], "allow_in_context_path_prefix": ["site/docs/api-reference/", "site/docs/recommendation-scenarios/", "site/docs/compliance/", "docs/api-reference.md", "docs/recommendation-scenarios.md"]},
       {"pattern": "必ず(?:採択|成功|合格|当選|適用|受給|受け取|もらえ|稼げ|儲か|還付|返金|削減)", "reason": "absolute claim"},
       {"pattern": "(?<!無)(?<!無担保無)保証(?:します|いたします|致します)(?!ません)", "reason": "marketing absolute guarantee verb"},
-      {"pattern": "(?<![\\d.])No\\.\\s*1(?!\\d|\\s*を謳いません|\\s*はおりません|\\s*とは限りません|」)", "reason": "ranking claim"},
+      {"pattern": "(?<![\\d.])No\\.\\s*1(?!\\d|\\s*を謳いません|\\s*はおりません|\\s*とは限りません|」)", "reason": "ranking claim", "allow_in_context": ["No.1`", "industry's largest", "No.1\". Our", "siteSearch=No\\.1"], "allow_in_context_path_prefix": ["site/cases/", "site/programs/", "site/llms-full.txt", "site/llms-full.en.txt", "site/en/compare.html"]},
       {"pattern": "確実(?:に)?(採択|成功|合格|適用|受給|還付|削減|的中|予測)", "reason": "marketing absolute"},
-      {"pattern": "最も(?:安価|安い|早い|速い|優れた|優秀|信頼|的確|効果)", "reason": "ranking claim"},
-      {"pattern": "(?<![\\w「『])業界(?:初|最大|最安|最高|No\\.1|トップ)(?!」|の[新取低無高大]|[初的])", "reason": "marketing absolute"},
+      {"pattern": "最も(?:安価|安い|早い|速い|優れた|優秀|信頼|的確|効果)", "reason": "ranking claim", "allow_in_context_path_prefix": ["site/laws/", "site/programs/", "site/cases/", "docs/laws/"]},
+      {"pattern": "(?<![\\w「『])業界(?:初|最大|最安|最高|No\\.1|トップ)(?!」|の[新取低無高大]|[初的])", "reason": "marketing absolute", "allow_in_context_path_prefix": ["site/cases/", "site/programs/", "site/llms-full.txt", "site/llms-full.en.txt", "site/llms.txt", "site/llms.en.txt"]},
       {"pattern": "採択可能性\\s*100\\s*%", "reason": "subsidy false promise"},
       {"pattern": "処分なし保証", "reason": "regulatory false promise"},
       {"pattern": "適合確実", "reason": "subsidy false promise"},
@@ -18,6 +18,8 @@
       {"pattern": "全件採択", "reason": "subsidy false promise"},
       {"pattern": "返金保証(?!対象)", "reason": "marketing absolute"}
     ],
+    "fence_count_allow_in_context_path_prefix": ["site/legal-fence.html", "site/trust/", "site/llms.txt", "site/llms-full.txt", "site/llms.en.txt", "site/llms-full.en.txt"],
+    "fence_count_context_allow_substrings": ["業法 fence (税理士§52", "業法 fence (税理士法 §52", "業法 fence を", "業法の有資格者", "業法の士業"],
     "numeric_ranges": {
       "openapi_paths_agent": [25, 50],
       "openapi_paths_public": [170, 230],

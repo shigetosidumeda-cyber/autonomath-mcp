@@ -151,6 +151,9 @@ Claude (Wave 1-4 AUTO) が repo 内 file 変更 102 task を完了後、user が
 - 操作: name=jpcite、description=日本公的制度 evidence API、Configure → Actions → Import from URL=`https://jpcite.com/openapi.agent.gpt30.json` (site/openapi.agent.gpt30.json で配信中) → Authentication=API Key、Auth Type=Custom、Header=`X-API-Key`
 - 確認: GPT Store 公開後の URL 取得 + Test 機能で 1 制度 lookup が動作
 
+<!-- DEPRECATED 2026-05-11 — USER-WEB-24 (Anthropic/Cursor/Cline 直接 submission) superseded by awesome-mcp + MCP registry (USER-WEB-13) organic path; retained as historical-state marker. -->
+<!-- index record: /Users/shigetoumeda/jpcite/docs/_internal/_archive/_index_2026_05_11.md (A11) -->
+
 ### USER-WEB-24: Anthropic / Cursor / Cline 直接 submission ※ organic 原則と要整合
 - 注意: CLAUDE.md「100% organic acquisition / 営業/cold outreach 禁止」原則と衝突するため、 本 task は実施前に再判断。 実施しない場合は launch gate からも除外
 - 代替案 (organic 範囲): Cursor / Cline は `awesome-mcp-servers` 経由で自動的に拾われる。 Anthropic は MCP registry (USER-WEB-13) 経由

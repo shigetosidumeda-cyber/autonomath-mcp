@@ -252,3 +252,13 @@ forbidden_token_exclude_paths:
   - analysis_value/
   - _archive/
   - site/llms.txt
+  # Pricing canonical surfaces — ¥3/req is the canonical user-facing
+  # price phrase here (税込 ¥3.30 expanded in body copy). The forbidden
+  # token list catches stale legacy strings (¥3/request, ¥3/リクエスト,
+  # JPY 3/req, 3 yen/req) that need to converge on the canonical
+  # "¥3/req" form; the 5 pricing surfaces below are by-design hits.
+  - site/pricing.html
+  - site/playground.html
+  - site/manifest.webmanifest
+  - site/ai-plugin.json
+  - docs/cookbook/cookbook_v3_2026_05_11.md
