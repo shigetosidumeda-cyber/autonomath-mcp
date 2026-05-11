@@ -27,3 +27,9 @@
 # Pure additive (CREATE TABLE IF NOT EXISTS + CREATE INDEX IF NOT EXISTS).
 # autonomath-target; boot-time safe; idempotent on every boot.
 248_program_source_municipality_v2.sql
+
+# 2026-05-12 Wave 43.1.5 — 47 都道府県条例 corpus (+4,700 laws target).
+# *.pref.{slug}.lg.jp 例規データベース; 著作権法 §13 gov_public.
+# Pure additive (CREATE TABLE/INDEX/VIEW + CREATE VIRTUAL TABLE FTS5 IF NOT
+# EXISTS). boot-time safe; idempotent on every boot.
+252_law_jorei_pref.sql

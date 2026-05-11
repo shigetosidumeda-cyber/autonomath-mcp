@@ -1,0 +1,92 @@
+name: jorei-pref-weekly
+
+# Wave 43.1.5 — 47 都道府県 × ~100 ordinances weekly ETL.
+# - target_db: autonomath
+# - 一次資料 only (*.pref.{slug}.lg.jp)
+# - aggregator URL refusal (memory feedback_no_fake_data)
+# - NO LLM API call (memory feedback_no_operator_llm_api)
+# Schedule: 02:00 UTC every Monday (= 11:00 JST Monday).
+
+on:
+  schedule:
+    - cron: "0 2 * * 1"
+  workflow_dispatch:
+    inputs:
+      pref_from:
+        description: "First prefecture code to crawl (01..47)"
+        required: false
+        default: "01"
+      pref_to:
+        description: "Last prefecture code (inclusive)"
+        required: false
+        default: "47"
+      limit_per_pref:
+        description: "Max ordinances harvested per prefecture"
+        required: false
+        default: "100"
+      pause_seconds:
+        description: "Sleep between sub-page fetches (politeness)"
+        required: false
+        default: "1.0"
+      dry_run:
+        description: "If true, run --dry-run only"
+        required: false
+        default: "false"
+
+concurrency:
+  group: jorei-pref-weekly
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  jorei_pref_crawl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Install Playwright (fallback for SPA TOCs)
+        run: |
+          python -m playwright install --with-deps chromium || true
+      - name: Run fill_laws_jorei_47pref_2x
+        env:
+          AUTONOMATH_DB_PATH: ${{ github.workspace }}/autonomath.db
+          INPUT_PREF_FROM: ${{ github.event.inputs.pref_from }}
+          INPUT_PREF_TO: ${{ github.event.inputs.pref_to }}
+          INPUT_LIMIT: ${{ github.event.inputs.limit_per_pref }}
+          INPUT_PAUSE: ${{ github.event.inputs.pause_seconds }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+          JPCITE_PREFLIGHT_ALLOW_MISSING_DB: "1"
+        run: |
+          set -euo pipefail
+          PREF_FROM="${INPUT_PREF_FROM:-01}"
+          PREF_TO="${INPUT_PREF_TO:-47}"
+          LIMIT="${INPUT_LIMIT:-100}"
+          PAUSE="${INPUT_PAUSE:-1.0}"
+          DRY_FLAG=""
+          if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then DRY_FLAG="--dry-run"; fi
+          if [ ! -f "${AUTONOMATH_DB_PATH}" ]; then DRY_FLAG="--dry-run"; fi
+          python scripts/etl/fill_laws_jorei_47pref_2x.py \
+            --pref-from "${PREF_FROM}" \
+            --pref-to "${PREF_TO}" \
+            --limit-per-pref "${LIMIT}" \
+            --pause-seconds "${PAUSE}" \
+            ${DRY_FLAG}
+      - name: Upload review queue CSV (if produced)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jorei-pref-review-${{ github.run_id }}
+          path: data/laws_jorei_pref_review_queue.csv
+          if-no-files-found: ignore
+          retention-days: 30
