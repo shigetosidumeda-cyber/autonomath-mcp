@@ -340,6 +340,7 @@ def device_status(user_code: str) -> dict[str, Any]:
 # RFC 8628 §3.5 polling-error responses + introspect endpoint for client SDK
 # fuzz tests and the AX 4-pillars audit ``device_flow_polling_live`` cell.
 
+
 _POLL_RESPONSE_FIXTURES: dict[str, dict[str, Any]] = {
     "authorization_pending": {
         "http_status": 400,
@@ -390,7 +391,10 @@ def device_poll_introspect(case: str | None = None) -> dict[str, Any]:
     if case:
         envelope = _POLL_RESPONSE_FIXTURES.get(case)
         if envelope is None:
-            return {"error": "unknown_case", "valid_cases": sorted(_POLL_RESPONSE_FIXTURES.keys())}
+            return {
+                "error": "unknown_case",
+                "valid_cases": sorted(_POLL_RESPONSE_FIXTURES.keys()),
+            }
         return {"case": case, "envelope": envelope, "spec": "RFC 8628 §3.5"}
     return {
         "spec": "RFC 8628 §3.5",
