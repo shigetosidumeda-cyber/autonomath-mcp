@@ -87,6 +87,7 @@ from jpintel_mcp.api.precompute_axis4 import router as precompute_axis4_router  
 from jpintel_mcp.api.jpo import router as jpo_router  # Wave 31 Axis 1b
 from jpintel_mcp.api.edinet import router as edinet_router  # Wave 31 Axis 1c
 from jpintel_mcp.api.pdf_report import router as pdf_report_router  # Wave 35 Axis 6a
+from jpintel_mcp.api.excel_template import router as excel_template_router  # Wave 35 Axis 6b
 from jpintel_mcp.api.funding_stack import router as funding_stack_router
 from jpintel_mcp.api.funding_stage import router as funding_stage_router
 from jpintel_mcp.api.funnel_events import router as funnel_events_router
@@ -2102,6 +2103,12 @@ def create_app() -> FastAPI:
     # the handler with 402; we still mount under ``AnonIpLimitDep`` so
     # the 3/day IP cap protects the surface before the handler runs.
     app.include_router(export_router, dependencies=[AnonIpLimitDep])
+    # Wave 35 Axis 6a/6b: PDF (reportlab) + Excel (openpyxl) per-customer
+    # output generators. Both require a paid metered key (enforced in the
+    # handler with 402) and per-key 60s rate floor; the AnonIpLimitDep
+    # wrapper keeps the 3/day IP cap upstream.
+    app.include_router(pdf_report_router, dependencies=[AnonIpLimitDep])
+    app.include_router(excel_template_router, dependencies=[AnonIpLimitDep])
     # Wave 34 Axis 4: 5 precomputed-table read endpoints (portfolio_optimize
     # / houjin risk / 30yr forecast / alliance opportunities / vec_search).
     # All read-only against autonomath.db; AnonIpLimitDep applies before handler.
