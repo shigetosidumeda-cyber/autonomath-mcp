@@ -421,6 +421,20 @@ def get_law(
     unified_id: str,
     conn: DbDep,
     ctx: ApiContextDep,
+    lang: Annotated[
+        str | None,
+        Query(
+            description=(
+                "Optional translation language. One of: en | zh | ko. "
+                "When supplied the response adds `_meta.translation` "
+                "(unavailable | partial | full) + body_<lang> from the "
+                "Wave 35 Axis 5 multilingual corpus. ja remains the only "
+                "legally authoritative version (CC-BY 4.0 e-Gov 日本法令外国語訳 "
+                "disclaimer for en; gov_public for zh/ko)."
+            ),
+            pattern=r"^(en|zh|ko)$",
+        ),
+    ] = None,
 ) -> JSONResponse:
     """Return a single law including summary, article_count, and lineage.
 
@@ -435,12 +449,60 @@ def get_law(
         conn,
         ctx,
         "laws.get",
-        params={"unified_id": unified_id},
+        params={"unified_id": unified_id, "lang": lang},
         strict_metering=True,
     )
     body = _row_to_law(row).model_dump(mode="json")
     attach_corpus_snapshot(body, conn)
+    if lang in ("en", "zh", "ko"):
+        body["_meta"] = body.get("_meta", {})
+        body["_meta"]["translation"] = _attach_translation_meta(unified_id, lang)
     return JSONResponse(content=body, headers=snapshot_headers(conn))
+
+
+def _attach_translation_meta(unified_id: str, lang: str) -> dict[str, Any]:
+    """Wave 35 Axis 5 — cross-DB look-up of body_<lang> from am_law.
+
+    Returns `status` + body_<lang> + source_url + license. When the
+    autonomath DB cannot be reached (separate sqlite file, may not be
+    mounted in test contexts), returns `unavailable`. 一次資料 only.
+    """
+    import sqlite3 as _sqlite3
+    try:
+        from jpintel_mcp.config import settings
+        am_path = str(settings.autonomath_db_path)
+    except Exception:  # noqa: BLE001
+        return {"status": "unavailable", "reason": "autonomath_db_unbound"}
+    try:
+        ac = _sqlite3.connect(f"file:{am_path}?mode=ro", uri=True, timeout=2.0)
+        ac.row_factory = _sqlite3.Row
+        col_body = f"body_{lang}"
+        col_url = f"body_{lang}_source_url"
+        col_lic = f"body_{lang}_license"
+        try:
+            row = ac.execute(
+                f"SELECT {col_body} AS body, {col_url} AS source_url, "
+                f"       {col_lic} AS license "
+                f"FROM am_law WHERE canonical_id = ?",
+                (unified_id,),
+            ).fetchone()
+        finally:
+            ac.close()
+    except _sqlite3.Error as exc:
+        return {"status": "unavailable", "reason": f"sqlite_error:{exc}"}
+    if row is None or row["body"] is None:
+        return {"status": "unavailable", "lang": lang}
+    return {
+        "status": "full",
+        "lang": lang,
+        "body": row["body"],
+        "source_url": row["source_url"],
+        "license": row["license"],
+        "disclaimer": (
+            "Translations are courtesy; the Japanese-language original is "
+            "the only legally authoritative version."
+        ),
+    }
 
 
 @router.get(

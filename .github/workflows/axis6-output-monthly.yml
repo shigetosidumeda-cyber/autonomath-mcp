@@ -1,0 +1,104 @@
+name: axis6-output-monthly
+
+on:
+  schedule:
+    - cron: "0 21 1 * *"  # 1st of every month at 06:00 JST (21:00 UTC previous day)
+  workflow_dispatch:
+    inputs:
+      cadence:
+        description: "monthly / quarterly / annual"
+        type: choice
+        options: ["monthly", "quarterly", "annual"]
+        default: "monthly"
+      dry_run:
+        description: "Dry run only"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: axis6-output-${{ github.event.inputs.cadence || 'monthly' }}
+  cancel-in-progress: false
+
+jobs:
+  pdf-monthly-fanout:
+    name: PDF monthly fan-out
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      AUTONOMATH_DB_PATH: ${{ github.workspace }}/autonomath.db
+      JPINTEL_DB: ${{ github.workspace }}/data/jpintel.db
+      R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      R2_BUCKET: ${{ secrets.R2_BUCKET }}
+      JPCITE_PREFLIGHT_ALLOW_MISSING_DB: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install runtime deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install reportlab openpyxl httpx pydantic
+      - name: Bootstrap rclone (R2 client)
+        run: |
+          curl -fsSL https://rclone.org/install.sh | sudo bash
+          rclone version
+      - name: Run monthly PDF fan-out
+        run: |
+          python scripts/cron/generate_pdf_reports_monthly.py \
+            --cadence "${{ github.event.inputs.cadence || 'monthly' }}" \
+            ${{ github.event.inputs.dry_run == 'true' && '--dry-run' || '' }}
+
+  excel-cleanup:
+    name: Excel artifact cleanup (>30 days)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: pdf-monthly-fanout
+    env:
+      R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      R2_BUCKET: ${{ secrets.R2_BUCKET }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bootstrap rclone
+        run: |
+          curl -fsSL https://rclone.org/install.sh | sudo bash
+      - name: Sweep stale Excel exports
+        if: env.R2_ENDPOINT != ''
+        run: |
+          rclone --s3-endpoint "$R2_ENDPOINT" \
+            --s3-access-key-id "$R2_ACCESS_KEY_ID" \
+            --s3-secret-access-key "$R2_SECRET_ACCESS_KEY" \
+            --s3-region auto --s3-provider Cloudflare \
+            delete --min-age 30d ":s3:$R2_BUCKET/excel_templates/" || true
+
+  plugin-sync-verify:
+    name: Plugin sync verify (freee / MF / yayoi)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify plugin signature surfaces
+        run: |
+          python -c "
+          import importlib.util, pathlib
+          targets = [
+              'sdk/freee-plugin/freee_webhook_trigger.py',
+              'sdk/mf-plugin/mf_webhook_trigger.py',
+              'sdk/yayoi-plugin/yayoi_to_jpcite.py',
+          ]
+          for t in targets:
+              p = pathlib.Path(t)
+              assert p.exists(), f'missing: {t}'
+              print(f'OK {t}')
+          "

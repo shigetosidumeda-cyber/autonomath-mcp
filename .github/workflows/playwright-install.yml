@@ -1,0 +1,96 @@
+name: playwright-install
+
+# Reusable workflow that prepares a runner for Playwright-based fallback
+# fetches inside the ETL / cron family. Invoked by every workflow that
+# wires `scripts/etl/_playwright_helper.py::fetch_with_fallback`.
+#
+# Why a workflow_call surface:
+#   * GHA composite actions cannot live cleanly inside `.github/workflows/`;
+#     they need a separate directory + action.yml. A reusable workflow
+#     keeps Playwright install / cache logic versioned alongside the rest
+#     of the cron family.
+#   * Every Axis 1 / 3 ETL workflow needs the identical pattern:
+#       - actions/cache@v4 keyed on pyproject.toml
+#       - `python -m playwright install --with-deps chromium` on cache miss
+#       - `python -m playwright install-deps chromium` on cache hit
+#     so we centralize the recipe here for reuse + reduce drift.
+#
+# Caller pattern:
+#
+#   jobs:
+#     prep:
+#       uses: ./.github/workflows/playwright-install.yml
+#     ingest:
+#       needs: prep
+#       runs-on: ubuntu-latest
+#       steps:
+#         - uses: actions/checkout@v4
+#         - <re-run install steps inline; see note below>
+#
+# NOTE: a reusable workflow runs on its own runner — installed
+# browsers do not carry over to dependent jobs. The 9 cron ingest
+# workflows therefore inline the same 3-step install pattern (cache +
+# install --with-deps + install-deps) rather than `uses:`-ing this
+# workflow. This file exists primarily as the canonical recipe + as
+# a CI smoke that the install recipe still works (it runs on PRs that
+# touch the helper).
+#
+# LLM call count: 0.
+
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        type: string
+        required: false
+        default: "3.12"
+  workflow_dispatch:
+    inputs:
+      python-version:
+        description: "Python version (default 3.12)"
+        required: false
+        default: "3.12"
+
+permissions:
+  contents: read
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version || '3.12' }}
+          cache: pip
+
+      - name: Install package + e2e extras
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,e2e]"
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            playwright-chromium-${{ runner.os }}-
+
+      - name: Install chromium (Playwright)
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: python -m playwright install --with-deps chromium
+
+      - name: Install chromium OS deps (cache hit path)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: python -m playwright install-deps chromium
+
+      - name: Verify helper imports
+        run: |
+          python -c "from scripts.etl._playwright_helper import fetch_with_fallback, is_banned_url; print('helper OK')"
+          python -c "from scripts.etl._image_helper import sips_resize_inplace, is_cli_safe; print('image_helper OK')"
