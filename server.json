@@ -1,7 +1,7 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.shigetosidumeda-cyber/autonomath-mcp",
-  "description": "Japan public-program MCP — subsidies, loans, tax, law, invoice, corp. 139 tools, ¥3/billable unit metered",
+  "description": "Japanese public-program MCP — subsidies, loans, tax, law, invoice. 139 tools, ¥3/req",
   "version": "0.3.4",
   "repository": {
     "url": "https://github.com/shigetosidumeda-cyber/autonomath-mcp",

@@ -537,6 +537,319 @@ def _sanitize_public_schema(node: Any) -> None:
             _sanitize_public_schema(item)
 
 
+# ----- gpt30 profile -----------------------------------------------------
+#
+# GPT Store Custom Actions cap operations at 30 per Action and only accept
+# OpenAPI 3.0.x (not 3.1.x) with a single `servers[]` entry. This profile
+# subsets the full v1 schema to a curated 30-path slice that covers the
+# evidence-prefetch + company-public-record flow advertised in
+# `site/openapi.agent.gpt30.json`, downgrades the schema header to 3.0.3,
+# rewrites null-typed schemas to the 3.0 nullable form, and rewrites
+# operationIds to camelCase where they were left as the FastAPI default.
+#
+# Keep this list aligned with the `x-jpcite-agent-call-order-policy` in
+# the published `site/openapi.agent.gpt30.json` — agents key off these
+# specific operations.
+GPT30_PATHS: tuple[str, ...] = (
+    # Curated 30-path slice covering the evidence-prefetch + company-public-
+    # record flow advertised in site/openapi.agent.gpt30.json. Keep aligned
+    # with `x-jpcite-agent-call-order-policy` in the published file.
+    "/v1/advisors/match",
+    "/v1/am/law_article",
+    "/v1/artifacts/company_folder_brief",
+    "/v1/artifacts/company_public_audit_pack",
+    "/v1/artifacts/company_public_baseline",
+    "/v1/bids/search",
+    "/v1/bids/{unified_id}",
+    "/v1/case-studies/search",
+    "/v1/citations/verify",
+    "/v1/cost/preview",
+    "/v1/court-decisions/search",
+    "/v1/court-decisions/{unified_id}",
+    "/v1/enforcement-cases/search",
+    "/v1/enforcement-cases/{case_id}",
+    "/v1/evidence/packets/query",
+    "/v1/evidence/packets/{subject_kind}/{subject_id}",
+    "/v1/funding_stack/check",
+    "/v1/houjin/{bangou}",
+    "/v1/intelligence/precomputed/query",
+    "/v1/invoice_registrants/search",
+    "/v1/invoice_registrants/{invoice_registration_number}",
+    "/v1/laws/search",
+    "/v1/laws/{unified_id}",
+    "/v1/laws/{unified_id}/related-programs",
+    "/v1/meta/freshness",
+    "/v1/programs/prescreen",
+    "/v1/programs/search",
+    "/v1/programs/{unified_id}",
+    "/v1/tax_rulesets/search",
+    "/v1/tax_rulesets/{unified_id}",
+)
+
+
+_GPT30_OPERATION_IDS: dict[tuple[str, str], str] = {
+    # (path, method-lowercase) -> stable camelCase operationId.
+    # The advisor-match id is kept as the published string because GPT
+    # Actions are already bound to it via the agent-call-order policy.
+    ("/v1/advisors/match", "get"): "match_advisors_v1_advisors_match_get",
+    ("/v1/am/law_article", "get"): "getLawArticle",
+    ("/v1/artifacts/company_folder_brief", "post"): "createCompanyFolderBrief",
+    ("/v1/artifacts/company_public_audit_pack", "post"): "createCompanyPublicAuditPack",
+    ("/v1/artifacts/company_public_baseline", "post"): "createCompanyPublicBaseline",
+    ("/v1/bids/search", "get"): "searchBids",
+    ("/v1/bids/{unified_id}", "get"): "getBid",
+    ("/v1/case-studies/search", "get"): "searchCaseStudies",
+    ("/v1/citations/verify", "post"): "verifyCitations",
+    ("/v1/cost/preview", "post"): "previewCost",
+    ("/v1/court-decisions/search", "get"): "searchCourtDecisions",
+    ("/v1/court-decisions/{unified_id}", "get"): "getCourtDecision",
+    ("/v1/enforcement-cases/search", "get"): "searchEnforcementCases",
+    ("/v1/enforcement-cases/{case_id}", "get"): "getEnforcementCase",
+    ("/v1/evidence/packets/query", "post"): "queryEvidencePacket",
+    ("/v1/evidence/packets/{subject_kind}/{subject_id}", "get"): "getEvidencePacket",
+    ("/v1/funding_stack/check", "post"): "checkFundingStack",
+    ("/v1/houjin/{bangou}", "get"): "getHoujin360",
+    ("/v1/intelligence/precomputed/query", "get"): "prefetchIntelligence",
+    ("/v1/intelligence/precomputed/query", "post"): "prefetchIntelligence",
+    ("/v1/invoice_registrants/search", "get"): "searchInvoiceRegistrants",
+    ("/v1/invoice_registrants/{invoice_registration_number}", "get"): "getInvoiceRegistrant",
+    ("/v1/laws/search", "get"): "searchLaws",
+    ("/v1/laws/{unified_id}", "get"): "getLaw",
+    ("/v1/laws/{unified_id}/related-programs", "get"): "getLawRelatedPrograms",
+    ("/v1/meta/freshness", "get"): "getMetaFreshness",
+    ("/v1/programs/prescreen", "post"): "prescreenPrograms",
+    ("/v1/programs/search", "get"): "searchPrograms",
+    ("/v1/programs/{unified_id}", "get"): "getProgram",
+    ("/v1/tax_rulesets/search", "get"): "searchTaxRulesets",
+    ("/v1/tax_rulesets/{unified_id}", "get"): "getTaxRuleset",
+}
+
+
+def _camelize_operation_id(value: str) -> str:
+    """FastAPI default operationId looks like ``foo_bar_v1_things_get``.
+
+    Strip the noisy ``_v1_..._{method}`` suffix when present and emit a clean
+    camelCase identifier for GPT Actions.
+    """
+    if not value:
+        return value
+    stem = re.sub(r"_v1_.*?_(get|post|put|patch|delete)$", "", value)
+    if not stem:
+        stem = value
+    parts = [part for part in re.split(r"[_\W]+", stem) if part]
+    if not parts:
+        return value
+    head, *tail = parts
+    return head[:1].lower() + head[1:] + "".join(p[:1].upper() + p[1:] for p in tail)
+
+
+def _downgrade_nullable(node: Any) -> None:
+    """Rewrite OpenAPI 3.1 ``type: ["string", "null"]`` and ``anyOf [{type:null}]``
+    forms into OpenAPI 3.0 ``nullable: true`` so GPT Actions accepts the spec.
+    """
+    if isinstance(node, dict):
+        # Pattern 1: type is a list including "null"
+        if isinstance(node.get("type"), list):
+            types = [t for t in node["type"] if t != "null"]
+            had_null = len(types) != len(node["type"])
+            if had_null:
+                if len(types) == 1:
+                    node["type"] = types[0]
+                elif not types:
+                    node.pop("type", None)
+                else:
+                    node["type"] = types
+                node["nullable"] = True
+        # Pattern 2: anyOf/oneOf containing {"type": "null"}
+        for combinator in ("anyOf", "oneOf"):
+            options = node.get(combinator)
+            if isinstance(options, list):
+                pruned = [
+                    opt for opt in options
+                    if not (isinstance(opt, dict) and opt.get("type") == "null")
+                ]
+                if len(pruned) != len(options):
+                    node["nullable"] = True
+                    if len(pruned) == 1:
+                        # Hoist single remainder up while preserving siblings.
+                        remainder = pruned[0]
+                        node.pop(combinator)
+                        if isinstance(remainder, dict):
+                            for k, v in remainder.items():
+                                node.setdefault(k, v)
+                    elif pruned:
+                        node[combinator] = pruned
+                    else:
+                        node.pop(combinator, None)
+        # Pattern 3: const must become single-item enum on 3.0
+        if "const" in node and "enum" not in node:
+            node["enum"] = [node.pop("const")]
+        # Pattern 4: examples (array) is 3.1; 3.0 uses example (singular).
+        if "examples" in node and "example" not in node:
+            ex = node.get("examples")
+            if isinstance(ex, list) and ex:
+                node["example"] = ex[0]
+            node.pop("examples", None)
+        for value in node.values():
+            _downgrade_nullable(value)
+    elif isinstance(node, list):
+        for item in node:
+            _downgrade_nullable(item)
+
+
+def _build_gpt30_subset(full_schema: dict[str, Any]) -> dict[str, Any]:
+    """Slim ``full_schema`` to the GPT30_PATHS set and downgrade to 3.0.3."""
+    paths_in = full_schema.get("paths", {}) or {}
+    slim_paths: dict[str, Any] = {}
+    referenced_components: set[str] = set()
+
+    for path in GPT30_PATHS:
+        operations = paths_in.get(path)
+        if not isinstance(operations, dict):
+            continue
+        cleaned: dict[str, Any] = {}
+        for method, op in operations.items():
+            if method.startswith("x-") or method == "parameters":
+                cleaned[method] = op
+                continue
+            if not isinstance(op, dict):
+                cleaned[method] = op
+                continue
+            op = dict(op)
+            # Override operationId to a stable camelCase value.
+            override = _GPT30_OPERATION_IDS.get((path, method.lower()))
+            if override:
+                op["operationId"] = override
+            else:
+                existing = op.get("operationId")
+                if isinstance(existing, str):
+                    op["operationId"] = _camelize_operation_id(existing)
+            cleaned[method] = op
+        if cleaned:
+            slim_paths[path] = cleaned
+
+    # Collect $ref targets within the slimmed paths so we can prune the
+    # components/schemas dict to only those referenced (keeps the file small
+    # enough that GPT Actions imports it without choking).
+    def _collect_refs(node: Any) -> None:
+        if isinstance(node, dict):
+            ref = node.get("$ref")
+            if isinstance(ref, str) and ref.startswith("#/components/schemas/"):
+                referenced_components.add(ref[len("#/components/schemas/"):])
+            for v in node.values():
+                _collect_refs(v)
+        elif isinstance(node, list):
+            for item in node:
+                _collect_refs(item)
+
+    _collect_refs(slim_paths)
+
+    all_components = (full_schema.get("components") or {}).get("schemas") or {}
+    # Closure: schemas reference each other; resolve until fixed-point.
+    queue = list(referenced_components)
+    while queue:
+        name = queue.pop()
+        component = all_components.get(name)
+        if not isinstance(component, dict):
+            continue
+
+        def _collect_inner(node: Any) -> None:
+            if isinstance(node, dict):
+                ref = node.get("$ref")
+                if isinstance(ref, str) and ref.startswith("#/components/schemas/"):
+                    child = ref[len("#/components/schemas/"):]
+                    if child not in referenced_components:
+                        referenced_components.add(child)
+                        queue.append(child)
+                for v in node.values():
+                    _collect_inner(v)
+            elif isinstance(node, list):
+                for item in node:
+                    _collect_inner(item)
+
+        _collect_inner(component)
+
+    slim_components_schemas = {
+        name: schema for name, schema in all_components.items()
+        if name in referenced_components
+    }
+
+    # Preserve security schemes (X-API-Key header) from the full spec.
+    security_schemes = (full_schema.get("components") or {}).get("securitySchemes") or {
+        "ApiKeyAuth": {"type": "apiKey", "in": "header", "name": "X-API-Key"},
+    }
+
+    slim_schema: dict[str, Any] = {
+        "openapi": "3.0.3",
+        "info": _gpt30_info_block(full_schema.get("info") or {}),
+        "servers": [{"url": "https://api.jpcite.com", "description": "Production"}],
+        "paths": slim_paths,
+        "components": {
+            "schemas": slim_components_schemas,
+            "securitySchemes": security_schemes,
+        },
+        "x-openai-isConsequential": False,
+        "x-jpcite-variant": "gpt30-slim",
+        "x-jpcite-source": "scripts/export_openapi.py --profile gpt30",
+    }
+
+    _downgrade_nullable(slim_schema)
+    return slim_schema
+
+
+def _merge_preserved_policy_blocks(slim: dict[str, Any], preserved: dict[str, Any]) -> None:
+    """Carry forward hand-curated narrative blocks from a previously-published
+    gpt30 file. We regenerate paths + components from the live FastAPI app, but
+    the ``x-jpcite-*`` policy blocks (which live under ``info`` per OAS 3.0
+    custom-extension rules) and the rich agent-facing ``info.description`` are
+    hand-written and must not be clobbered by regen.
+    """
+    if not isinstance(preserved, dict):
+        return
+    preserved_info = preserved.get("info")
+    if isinstance(preserved_info, dict):
+        # Preserve standard info fields (description, etc.) plus any x-*
+        # extensions found nested inside info.
+        for key, value in preserved_info.items():
+            if key in ("description", "version", "contact", "termsOfService", "license"):
+                if value is not None:
+                    slim["info"][key] = value
+            elif key.startswith("x-"):
+                slim["info"][key] = value
+    # Also carry forward any top-level x-* extensions for safety.
+    for key, value in preserved.items():
+        if key.startswith("x-jpcite-") and key not in slim:
+            slim[key] = value
+        elif key == "x-openai-isConsequential":
+            slim[key] = value
+
+
+def _gpt30_info_block(info: dict[str, Any]) -> dict[str, Any]:
+    """Build the info block for the GPT30 slim. Use a short, agent-safe
+    description and bump the patch version compared to whatever the full spec
+    advertises so consumers can tell the slim apart from a full export.
+    """
+    base_version = info.get("version") or "0.0.0"
+    return {
+        "title": "jpcite Agent Slim (GPT Actions 30 paths)",
+        "description": (
+            "Agent-safe OpenAPI subset for evidence prefetch before answer "
+            "generation. jpcite returns source-linked facts, source_url, "
+            "fetched timestamps, known gaps, and compatibility rules; it does "
+            "not call external LLM APIs and does not generate final "
+            "legal/tax advice."
+        ),
+        "version": base_version,
+        "contact": {
+            "name": "jpcite Support",
+            "url": "https://jpcite.com/tokushoho.html",
+        },
+        "termsOfService": "https://jpcite.com/tos.html",
+        "license": {"name": "Proprietary - see termsOfService"},
+    }
+# -------------------------------------------------------------------------
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -545,16 +858,31 @@ def main() -> int:
         help="Include preview/roadmap endpoints in the output (default: exclude).",
     )
     parser.add_argument(
+        "--profile",
+        choices=("full", "gpt30"),
+        default="full",
+        help=(
+            "Output profile. 'full' (default) writes the complete 3.1 schema. "
+            "'gpt30' writes a 30-path 3.0.3 slim for GPT Custom Actions."
+        ),
+    )
+    parser.add_argument(
         "--out",
         type=Path,
-        default=Path("docs/openapi/v1.json"),
-        help="Output path (default: docs/openapi/v1.json).",
+        default=None,
+        help=(
+            "Output path. Default depends on --profile: full writes "
+            "docs/openapi/v1.json; gpt30 writes site/openapi.agent.gpt30.json."
+        ),
     )
     parser.add_argument(
         "--site-out",
         type=Path,
-        default=Path("site/docs/openapi/v1.json"),
-        help="Static site mirror path (default: site/docs/openapi/v1.json).",
+        default=None,
+        help=(
+            "Static site mirror path. Only applied for --profile full; "
+            "default site/docs/openapi/v1.json."
+        ),
     )
     args = parser.parse_args()
 
@@ -563,14 +891,46 @@ def main() -> int:
     _normalize_component_schema_names(schema)
     _sanitize_public_schema(schema)
 
-    args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(
+    if args.profile == "gpt30":
+        slim = _build_gpt30_subset(schema)
+        out = args.out or Path("site/openapi.agent.gpt30.json")
+        # Preserve hand-curated narrative + x-jpcite-* policy blocks if the
+        # target file already exists.
+        if out.exists():
+            try:
+                preserved = json.loads(out.read_text(encoding="utf-8"))
+            except Exception as exc:  # noqa: BLE001 -- best-effort merge
+                print(f"  warn: could not parse existing {out} for merge: {exc}")
+            else:
+                _merge_preserved_policy_blocks(slim, preserved)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(
+            json.dumps(slim, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        missing = [p for p in GPT30_PATHS if p not in slim["paths"]]
+        print(
+            f"wrote {out} (gpt30-slim), "
+            f"{len(slim['paths'])} paths, openapi={slim['openapi']}"
+        )
+        if missing:
+            print(f"  warn: {len(missing)} requested path(s) absent from source schema:")
+            for p in missing:
+                print(f"    - {p}")
+        return 0
+
+    # --- full profile (default) ---
+    out = args.out or Path("docs/openapi/v1.json")
+    site_out = args.site_out or Path("site/docs/openapi/v1.json")
+
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(
         json.dumps(schema, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
-    if args.site_out:
-        args.site_out.parent.mkdir(parents=True, exist_ok=True)
-        args.site_out.write_text(
+    if site_out:
+        site_out.parent.mkdir(parents=True, exist_ok=True)
+        site_out.write_text(
             json.dumps(schema, indent=2, sort_keys=True) + "\n",
             encoding="utf-8",
         )
@@ -582,12 +942,12 @@ def main() -> int:
     ]
     mode = "with preview" if args.include_preview else "stable"
     print(
-        f"wrote {args.out} ({mode}), "
+        f"wrote {out} ({mode}), "
         f"{len(schema.get('paths', {}))} paths "
         f"({len(preview_paths)} preview)"
     )
-    if args.site_out:
-        print(f"wrote {args.site_out} ({mode})")
+    if site_out:
+        print(f"wrote {site_out} ({mode})")
     return 0
 
 

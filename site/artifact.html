@@ -1,34 +1,55 @@
 <!DOCTYPE html>
 <!--
-  Artifact viewer (主商品 = 会社フォルダ作成パック). G13 minimal.
-  URL ?id=<pack_id> から /v1/artifacts/<pack_id> を fetch して JSON を
-  section-by-section に render する client-side ページ。 SSR / Cloudflare
-  Pages Function 化は Wave 8 で行う。 fetch 失敗時は demo data を
-  fallback として描画し、 画面が空白にならないように。
+  Artifact list + lookup page.
+
+  URL: jpcite.com/artifact (alias of jpcite.com/artifacts via _redirects).
+
+  Responsibilities:
+    1. Show a known-pack list (static seed, refreshed manually) so visitors
+       have something concrete to click on without knowing a pack_id.
+    2. Provide an input field to look up an arbitrary pack_id and jump to
+       /artifacts/{pack_id} (the SSR Pages Function renders the 7 sections).
+    3. Render an inline 7-section preview shape (overview / programs / laws
+       / cases / enforcement / amendments / provenance) populated from a
+       demo payload so the layout is visible to crawlers even before any
+       JS executes.
+
+  Notes:
+    * Server-side render lives in functions/artifacts/[pack_id].ts. This
+      page only does the *list + lookup* + a static demo preview.
+    * pack_id pattern matches the Pages Function regex (3-128 chars,
+      [A-Za-z0-9_-]). Anything else triggers a client-side inline error.
+    * No client-side JS framework. Plain DOM. CSP-safe.
 -->
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>Artifact Viewer — jpcite</title>
-<meta name="description" content="jpcite 会社フォルダ作成パック artifact viewer。pack_id ベースで baseline / decision insights / copy-paste parts / work queue / source receipts / known gaps / followup を一画面に表示。">
+<title>Artifacts - jpcite</title>
+<meta name="description" content="jpcite artifact 一覧と pack_id ルックアップ。 overview / programs / laws / cases / enforcement / amendments / provenance の 7 section を SSR で表示します。">
 <meta name="robots" content="index, follow">
 
-<link rel="canonical" href="https://jpcite.com/artifact">
+<link rel="canonical" href="https://jpcite.com/artifacts">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 
+<meta property="og:title" content="Artifacts - jpcite">
+<meta property="og:description" content="jpcite artifact 一覧と pack_id ルックアップ。 7 section の構成 (overview / programs / laws / cases / enforcement / amendments / provenance) を一目で確認できます。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jpcite.com/artifacts">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
+
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "Article",
-  "headline": "jpcite Artifact Viewer",
-  "description": "会社フォルダ作成パック artifact (pack_id ベース) を baseline / insights / parts / queue / receipts / gaps / followup の 7 section で表示する client-side viewer。",
-  "author": {"@type": "Organization", "name": "Bookyou 株式会社"},
-  "publisher": {"@type": "Organization", "name": "jpcite", "url": "https://jpcite.com/"},
-  "mainEntityOfPage": "https://jpcite.com/artifact"
+  "@type": "CollectionPage",
+  "name": "jpcite Artifacts",
+  "description": "Artifact list and pack_id lookup for the 7-section artifact viewer (overview / programs / laws / cases / enforcement / amendments / provenance).",
+  "url": "https://jpcite.com/artifacts",
+  "author": {"@type": "Organization", "name": "Bookyou株式会社", "url": "https://jpcite.com"},
+  "publisher": {"@type": "Organization", "name": "jpcite", "url": "https://jpcite.com"}
 }
 </script>
 <script type="application/ld+json">
@@ -37,272 +58,234 @@
   "@type": "BreadcrumbList",
   "itemListElement": [
     {"@type": "ListItem", "position": 1, "name": "jpcite", "item": "https://jpcite.com/"},
-    {"@type": "ListItem", "position": 2, "name": "Artifact", "item": "https://jpcite.com/artifact"}
+    {"@type": "ListItem", "position": 2, "name": "Artifacts", "item": "https://jpcite.com/artifacts"}
   ]
 }
 </script>
 
 <style>
-  :root { --text:#111; --muted:#666; --border:#e5e5e5; --bg:#fafafa; --warn-bg:#fff7e6; --warn-bd:#f5b94a; --ok:#2a7a2a; --ng:#b13a3a; --tier-S:#7a4cb1; --tier-A:#2a7a2a; --tier-B:#1f6fb0; --tier-C:#888; --radius:8px; }
+  :root { --text:#111; --muted:#666; --border:#e5e5e5; --bg:#fafafa; --warn-bg:#fff7e6; --warn-bd:#f5b94a; --accent:#0a4d8c; --ok:#2a7a2a; --ng:#b13a3a; --radius:8px; }
   * { box-sizing:border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, "Noto Sans JP", "Hiragino Sans", sans-serif; color:var(--text); margin:0; line-height:1.6; background:#fff; }
   header.site { border-bottom:1px solid var(--border); padding:12px 24px; font-size:14px; }
   header.site a { color:var(--muted); text-decoration:none; }
   main { max-width:980px; margin:0 auto; padding:24px; }
-  h1 { font-size:22px; margin:0 0 4px; font-weight:700; }
-  h2 { font-size:16px; margin:24px 0 12px; padding:6px 0; border-bottom:2px solid var(--text); }
-  .meta { color:var(--muted); font-size:13px; margin-bottom:12px; }
-  .badge { display:inline-block; padding:2px 10px; border-radius:12px; font-size:12px; font-weight:600; color:#fff; margin-right:6px; }
-  .tier-S { background:var(--tier-S); } .tier-A { background:var(--tier-A); } .tier-B { background:var(--tier-B); } .tier-C { background:var(--tier-C); }
-  .warn { background:var(--warn-bg); border:1px solid var(--warn-bd); border-radius:var(--radius); padding:12px 16px; margin:12px 0; font-size:14px; }
-  section { background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:16px 20px; margin-bottom:16px; }
+  h1 { font-size:24px; margin:0 0 6px; font-weight:700; }
+  h2 { font-size:17px; margin:24px 0 12px; padding:6px 0; border-bottom:2px solid var(--text); }
+  h3 { font-size:14px; margin:0 0 6px; font-weight:600; }
+  .lead { color:var(--muted); margin:0 0 18px; font-size:14px; }
+  .lookup { background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:16px 20px; margin:0 0 24px; }
+  .lookup label { font-size:13px; font-weight:600; display:block; margin:0 0 4px; }
+  .lookup .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .lookup input[type=text] { flex:1; min-width:220px; padding:8px 10px; font-size:14px; border:1px solid var(--border); border-radius:var(--radius); font-family:inherit; }
+  .lookup button { padding:8px 16px; font-size:14px; background:var(--accent); color:#fff; border:none; border-radius:var(--radius); cursor:pointer; font-weight:600; }
+  .lookup button:hover { background:#08406e; }
+  .lookup .hint { font-size:12px; color:var(--muted); margin:6px 0 0; }
+  .lookup .err { display:none; color:var(--ng); font-size:13px; margin:8px 0 0; }
+  .lookup .err.show { display:block; }
+  .list { background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:16px 20px; margin:0 0 24px; }
+  .list ul { list-style:none; padding:0; margin:0; }
+  .list li { padding:8px 0; border-bottom:1px solid var(--border); font-size:13px; }
+  .list li:last-child { border-bottom:none; }
+  .list li a { color:var(--accent); font-weight:600; text-decoration:none; }
+  .list li a:hover { text-decoration:underline; }
+  .list li .meta { color:var(--muted); font-size:12px; margin-left:8px; }
+  section.artifact-section { background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:16px 20px; margin-bottom:16px; }
   table { width:100%; border-collapse:collapse; font-size:13px; }
   td, th { padding:6px 8px; border-bottom:1px solid var(--border); text-align:left; vertical-align:top; }
-  th { color:var(--muted); font-weight:500; width:30%; }
-  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px; }
-  .card { background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:12px; font-size:13px; }
-  .card h3 { font-size:14px; margin:0 0 6px; }
-  .gauge { height:6px; background:var(--border); border-radius:3px; overflow:hidden; margin:6px 0; }
-  .gauge-fill { height:100%; background:var(--ok); }
-  .tabs { display:flex; gap:4px; margin-bottom:8px; }
-  .tab { padding:6px 12px; background:#fff; border:1px solid var(--border); border-radius:var(--radius) var(--radius) 0 0; cursor:pointer; font-size:13px; }
-  .tab.active { background:var(--bg); border-bottom-color:var(--bg); font-weight:600; }
-  .pane { display:none; }
-  .pane.active { display:block; }
-  pre { background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:12px; font-size:12px; overflow-x:auto; font-family:"JetBrains Mono", ui-monospace, monospace; white-space:pre-wrap; }
-  .copy-btn, .action-btn { padding:6px 14px; font-size:13px; background:#fff; border:1px solid var(--border); border-radius:var(--radius); cursor:pointer; margin-right:6px; }
-  .copy-btn:hover, .action-btn:hover { background:var(--bg); }
-  ul.queue { list-style:none; padding:0; margin:0; font-size:13px; }
-  ul.queue li { padding:6px 0; border-bottom:1px solid var(--border); }
-  ul.queue input { margin-right:8px; }
-  .total { font-size:14px; font-weight:600; margin-top:8px; }
-  .receipts { font-family:"JetBrains Mono", monospace; font-size:12px; word-break:break-all; }
-  .actions { margin-top:20px; padding-top:16px; border-top:1px solid var(--border); }
+  th { color:var(--muted); font-weight:500; }
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:12px; }
+  .card { background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:12px 14px; font-size:13px; }
+  .card .row { color:var(--muted); font-size:12px; margin:2px 0; }
+  .card a.src { color:var(--accent); font-size:12px; }
+  .receipt { font-family:"JetBrains Mono", ui-monospace, monospace; font-size:11px; word-break:break-all; margin:4px 0; padding:4px 8px; background:#fff; border:1px solid var(--border); border-radius:4px; }
+  .preview-note { background:#eef; border-left:3px solid #88a; padding:8px 12px; font-size:12px; margin:0 0 12px; border-radius:4px; }
   footer.site { margin-top:32px; padding:16px 24px; border-top:1px solid var(--border); font-size:12px; color:var(--muted); }
-  .demo-note { background:#eef; border-left:3px solid #88a; padding:8px 12px; font-size:12px; margin-bottom:12px; }
+  footer.site a { color:var(--accent); }
 </style>
 </head>
 <body>
 
-<header class="site"><a href="/">jpcite</a> &rsaquo; <span>Artifact</span></header>
+<header class="site"><a href="/">jpcite</a> &rsaquo; <span>Artifacts</span></header>
 
 <main>
-  <div id="root" aria-live="polite"><p class="meta">読み込み中…</p></div>
+  <h1>Artifacts</h1>
+  <p class="lead">
+    pack_id を入力して <code>/artifacts/{pack_id}</code> の SSR ビューに移動するか、
+    既知の pack を一覧から開いてください。 各 artifact は
+    <strong>overview / programs / laws / cases / enforcement / amendments / provenance</strong>
+    の 7 section で構成されます。
+  </p>
 
-  <div class="actions">
-    <button class="action-btn" data-act="pdf">PDF</button>
-    <button class="action-btn" data-act="json">JSON</button>
-    <button class="action-btn" data-act="embed">embed</button>
-    <button class="action-btn" data-act="regen">再生成</button>
-    <button class="action-btn" data-act="watch">watch</button>
-  </div>
+  <!-- pack_id lookup form ------------------------------------------------ -->
+  <section class="lookup" aria-labelledby="lookup-heading">
+    <h2 id="lookup-heading" style="margin-top:0;border-bottom:none;font-size:15px;">pack_id ルックアップ</h2>
+    <label for="pack-id">artifact ID (pack_id)</label>
+    <div class="row">
+      <input type="text" id="pack-id" name="pack-id" placeholder="例: jpcite-pack-1737010567890-20260511-001" autocomplete="off" spellcheck="false" pattern="[A-Za-z0-9_-]{3,128}" maxlength="128">
+      <button type="button" id="view-btn">View artifact</button>
+    </div>
+    <p class="hint">3-128 文字 / [A-Za-z0-9_-]。 SSR で 7 section が即座に描画されます。</p>
+    <p class="err" id="lookup-err" role="alert"></p>
+  </section>
+
+  <!-- known pack list --------------------------------------------------- -->
+  <section class="list" aria-labelledby="list-heading">
+    <h2 id="list-heading" style="margin-top:0;border-bottom:none;font-size:15px;">既知の artifact (demo)</h2>
+    <ul>
+      <li><a href="/artifacts/demo-pack-0001">demo-pack-0001</a><span class="meta">— 会社フォルダ作成パック demo</span></li>
+      <li><a href="/artifacts/demo-pack-0002">demo-pack-0002</a><span class="meta">— 制度コホート demo (製造業)</span></li>
+      <li><a href="/artifacts/demo-pack-0003">demo-pack-0003</a><span class="meta">— 制度コホート demo (建設業)</span></li>
+      <li><a href="/artifacts/demo-pack-0004">demo-pack-0004</a><span class="meta">— 制度コホート demo (不動産業)</span></li>
+    </ul>
+  </section>
+
+  <h2>7 section プレビュー</h2>
+  <p class="preview-note">
+    以下は SSR レンダラ <code>functions/artifacts/[pack_id].ts</code> が
+    生成する 7 section の構成例です。 実データは pack_id ルックアップから
+    確認してください。
+  </p>
+
+  <!-- 1. overview ------------------------------------------------------- -->
+  <section class="artifact-section" id="section-overview">
+    <h2>1. overview</h2>
+    <table>
+      <tr><th>headline</th><td>jpcite artifact (preview)</td></tr>
+      <tr><th>tier</th><td>preview</td></tr>
+      <tr><th>created_at</th><td>2026-05-11T09:00:00+09:00</td></tr>
+      <tr><th>billable_units_consumed</th><td>0</td></tr>
+      <tr><th>snapshot_date</th><td>2026-05-11</td></tr>
+      <tr><th>cohort</th><td>preview-cohort</td></tr>
+      <tr><th>coverage_summary</th><td>1 program · 1 law · 1 case · 1 enforcement · 1 amendment · 2 receipts</td></tr>
+      <tr><th>description</th><td>このページは artifact list + 7 section プレビューです。実 artifact は pack_id ルックアップから。</td></tr>
+    </table>
+  </section>
+
+  <!-- 2. programs ------------------------------------------------------- -->
+  <section class="artifact-section" id="section-programs">
+    <h2>2. programs <span style="font-size:13px;color:#666;font-weight:400;">(1)</span></h2>
+    <div class="cards">
+      <div class="card">
+        <h3>IT導入補助金 2026 通常枠 (preview)</h3>
+        <div class="row">program_id: demo-prog-001</div>
+        <div class="row">tier: A · fit_pct: 78%</div>
+        <div class="row">amount: ¥4,500,000 · deadline: 2026-06-30</div>
+        <a class="src" href="https://www.it-hojo.jp/2026/" target="_blank" rel="noopener">一次資料 ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. laws ----------------------------------------------------------- -->
+  <section class="artifact-section" id="section-laws">
+    <h2>3. laws <span style="font-size:13px;color:#666;font-weight:400;">(1)</span></h2>
+    <div class="cards">
+      <div class="card">
+        <h3>中小企業等経営強化法 (preview) · 第10条</h3>
+        <div class="row">law_id: demo-law-001 · license: cc_by_4.0</div>
+        <div>経営力向上計画の認定を受けた事業者は、税制優遇措置の適用を受けることができる。</div>
+        <a class="src" href="https://elaws.e-gov.go.jp/document?lawid=411AC0000000060" target="_blank" rel="noopener">e-Gov ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. cases ---------------------------------------------------------- -->
+  <section class="artifact-section" id="section-cases">
+    <h2>4. cases <span style="font-size:13px;color:#666;font-weight:400;">(1)</span></h2>
+    <div class="cards">
+      <div class="card">
+        <h3>採択事例 - 製造業 設備投資 (preview)</h3>
+        <div class="row">case_id: demo-case-001 · 業種: 製造業</div>
+        <div class="row">採択年: 2025 · 金額: ¥12,000,000</div>
+        <a class="src" href="#" rel="noopener">一次資料 ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. enforcement ---------------------------------------------------- -->
+  <section class="artifact-section" id="section-enforcement">
+    <h2>5. enforcement <span style="font-size:13px;color:#666;font-weight:400;">(1)</span></h2>
+    <table>
+      <thead><tr><th>acted_at</th><th>authority</th><th>action_type</th><th>houjin</th><th>source</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>2025-12-15</td>
+          <td>公正取引委員会 (preview)</td>
+          <td>排除措置命令</td>
+          <td>デモ合同会社</td>
+          <td>—</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 6. amendments ----------------------------------------------------- -->
+  <section class="artifact-section" id="section-amendments">
+    <h2>6. amendments <span style="font-size:13px;color:#666;font-weight:400;">(1)</span></h2>
+    <div class="cards">
+      <div class="card">
+        <h3>IT導入補助金 2026 通常枠 採択要件 改定 (preview)</h3>
+        <div class="row">detected_at: 2026-04-01 · effective_from: 2026-05-01</div>
+        <div>売上要件が ¥10,000 → ¥30,000 に引き上げ。 (preview)</div>
+        <a class="src" href="#" rel="noopener">一次資料 ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. provenance ----------------------------------------------------- -->
+  <section class="artifact-section" id="section-provenance">
+    <h2>7. provenance <span style="font-size:13px;color:#666;font-weight:400;">(2)</span></h2>
+    <div class="receipt">https://www.it-hojo.jp/2026/ &middot; fetched_at=2026-05-11T08:55:12+09:00 &middot; hash=sha256:demo-aa00 &middot; license=gov_standard</div>
+    <div class="receipt">https://elaws.e-gov.go.jp/document?lawid=411AC0000000060 &middot; fetched_at=2026-05-11T08:55:12+09:00 &middot; hash=sha256:demo-bb11 &middot; license=cc_by_4.0</div>
+  </section>
 </main>
 
 <footer class="site">
-  発行: Bookyou 株式会社 (T8010001213708) &middot;
-  本 artifact は一次資料の取得時点情報を機械的に集約したもので、税理士法・弁護士法・行政書士法の業法に抵触する助言ではありません。最終判断は士業へ。
+  発行: <a href="/about" rel="noopener">Bookyou株式会社</a> (T8010001213708) &middot;
+  本 artifact viewer は一次資料の取得時点情報を機械的に集約するもので、税理士法・弁護士法・行政書士法の業法に抵触する助言ではありません。最終判断は士業へ。
 </footer>
 
 <script>
 (function () {
   "use strict";
-  var DEMO = {
-    pack_id: "demo-pack-0001",
-    created_at: "2026-05-11T09:00:00+09:00",
-    tier: "B",
-    billable_units_consumed: 42,
-    human_review_required: true,
-    company_public_baseline: {
-      name: "デモ合同会社",
-      corp_number: "9999999999999",
-      address: "東京都文京区小日向2-22-1",
-      established: "2024-06-01",
-      capital_jpy: 1000000,
-      directors: 1
-    },
-    decision_insights: [
-      {title: "IT導入補助金 2026 通常枠", fit_pct: 78, deadline: "2026-06-30", amount_jpy: 4500000, source_url: "https://www.it-hojo.jp/2026/"},
-      {title: "ものづくり補助金 第18次", fit_pct: 52, deadline: "2026-07-15", amount_jpy: 12500000, source_url: "https://portal.monodukuri-hojo.jp/"},
-      {title: "小規模事業者持続化補助金", fit_pct: 41, deadline: "2026-08-01", amount_jpy: 500000, source_url: "https://r3.jizokukahojokin.info/"}
-    ],
-    copy_paste_parts: {
-      proposal: "【提案書 雛形】\n貴社の事業内容に照らし、IT導入補助金 2026 通常枠 の申請を推奨します。…",
-      dd: "【デューデリ チェック】\n- 履歴事項全部証明書: 取得済 (2026-05-10)\n- 直近3期決算: 未取得\n- 役員構成: 1 名 (代表 1)…",
-      questionnaire: "【ヒアリング票】\nQ1. 直近12 ヶ月のEC月商レンジは?\nQ2. 既存の販促ツールは?…"
-    },
-    work_queue: [
-      {task: "履歴事項全部証明書 取得", units: 3, done: true},
-      {task: "直近3期 決算書 PDF 取得", units: 5, done: false},
-      {task: "代表者 個人保証 意向 確認", units: 2, done: false}
-    ],
-    source_receipts: [
-      {url: "https://www.houjin-bangou.nta.go.jp/", fetched_at: "2026-05-11T08:55:12+09:00", content_hash: "sha256:7c1a…f3"},
-      {url: "https://www.it-hojo.jp/2026/", fetched_at: "2026-05-11T08:56:04+09:00", content_hash: "sha256:9b8e…21"}
-    ],
-    known_gaps: [
-      "直近3期 決算書 が未取得。 financial fit_pct は暫定。",
-      "代表者 個人保証 / 第三者保証人 の意向 が空。 融資系 insight は要再評価。"
-    ],
-    recommended_followup: [
-      {action: "税理士へ決算書取得 escalate", trigger: "決算書 PDF 未取得 が 5 営業日 継続"},
-      {action: "行政書士へ補助金 申請 escalate", trigger: "fit_pct >= 70 かつ deadline <30 日"}
-    ]
-  };
+  var PACK_ID_RE = /^[A-Za-z0-9_-]{3,128}$/;
+  var input = document.getElementById("pack-id");
+  var btn = document.getElementById("view-btn");
+  var err = document.getElementById("lookup-err");
 
-  function $ (sel, root) { return (root || document).querySelector(sel); }
-  function el (tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
-  function esc (s) { var d = document.createElement("div"); d.textContent = s == null ? "" : String(s); return d.innerHTML; }
-  function yen (n) { if (n == null) return "—"; return "¥" + Number(n).toLocaleString("ja-JP"); }
-
-  function render (a, isDemo) {
-    var root = $("#root"); root.innerHTML = "";
-
-    if (isDemo) {
-      var note = el("div", "demo-note", "fetch 失敗のため demo data を表示しています (pack_id=" + esc(a.pack_id) + ")。");
-      root.appendChild(note);
+  function go() {
+    var v = (input.value || "").trim();
+    if (!v) {
+      err.textContent = "pack_id を入力してください。";
+      err.classList.add("show");
+      input.focus();
+      return;
     }
-
-    var hero = el("div");
-    var h1 = el("h1", null, "Artifact: " + a.pack_id);
-    hero.appendChild(h1);
-    var meta = el("p", "meta");
-    meta.innerHTML =
-      '<span class="badge tier-' + esc(a.tier) + '">tier ' + esc(a.tier) + "</span>" +
-      "created_at " + esc(a.created_at) + " &middot; " +
-      "billable_units " + esc(a.billable_units_consumed);
-    hero.appendChild(meta);
-    if (a.human_review_required) {
-      hero.appendChild(el("div", "warn", "⚠ human_review_required = true — 士業 確認が必要です。"));
+    if (!PACK_ID_RE.test(v)) {
+      err.textContent = "形式が不正です。 3-128 文字、 [A-Za-z0-9_-] のみ使用可。";
+      err.classList.add("show");
+      input.focus();
+      return;
     }
-    root.appendChild(hero);
-
-    // section: baseline
-    var s1 = el("section"); s1.id = "baseline"; s1.appendChild(el("h2", null, "1. company_public_baseline"));
-    var tbl = el("table"); var base = a.company_public_baseline || {};
-    Object.keys(base).forEach(function (k) {
-      var tr = el("tr");
-      tr.appendChild(el("th", null, k));
-      var td = el("td", null, k.indexOf("jpy") >= 0 ? yen(base[k]) : String(base[k]));
-      tr.appendChild(td);
-      tbl.appendChild(tr);
-    });
-    s1.appendChild(tbl); root.appendChild(s1);
-
-    // section: insights
-    var s2 = el("section"); s2.id = "insights"; s2.appendChild(el("h2", null, "2. decision_insights"));
-    var cards = el("div", "cards");
-    (a.decision_insights || []).forEach(function (it) {
-      var c = el("div", "card");
-      c.appendChild(el("h3", null, it.title));
-      var pct = Math.max(0, Math.min(100, Number(it.fit_pct) || 0));
-      var g = el("div", "gauge"); var gf = el("div", "gauge-fill"); gf.style.width = pct + "%"; g.appendChild(gf);
-      c.appendChild(el("div", null, "fit_pct: " + pct + "%"));
-      c.appendChild(g);
-      c.appendChild(el("div", null, "締切: " + esc(it.deadline)));
-      c.appendChild(el("div", null, "金額: " + yen(it.amount_jpy)));
-      var a2 = el("a"); a2.href = it.source_url; a2.target = "_blank"; a2.rel = "noopener"; a2.textContent = "一次資料 ↗"; c.appendChild(a2);
-      cards.appendChild(c);
-    });
-    s2.appendChild(cards); root.appendChild(s2);
-
-    // section: parts (tabs)
-    var s3 = el("section"); s3.id = "parts"; s3.appendChild(el("h2", null, "3. copy_paste_parts"));
-    var tabs = el("div", "tabs");
-    ["proposal", "dd", "questionnaire"].forEach(function (key, i) {
-      var t = el("button", "tab" + (i === 0 ? " active" : ""), key);
-      t.dataset.target = "pane-" + key;
-      t.addEventListener("click", function () {
-        s3.querySelectorAll(".tab").forEach(function (x) { x.classList.remove("active"); });
-        s3.querySelectorAll(".pane").forEach(function (x) { x.classList.remove("active"); });
-        t.classList.add("active");
-        $("#pane-" + key, s3).classList.add("active");
-      });
-      tabs.appendChild(t);
-    });
-    s3.appendChild(tabs);
-    var parts = a.copy_paste_parts || {};
-    ["proposal", "dd", "questionnaire"].forEach(function (key, i) {
-      var p = el("div", "pane" + (i === 0 ? " active" : "")); p.id = "pane-" + key;
-      var pre = el("pre", null, parts[key] || "(empty)");
-      var btn = el("button", "copy-btn", "コピー");
-      btn.addEventListener("click", function () {
-        if (navigator.clipboard) navigator.clipboard.writeText(parts[key] || "");
-        btn.textContent = "コピー済";
-        setTimeout(function () { btn.textContent = "コピー"; }, 1500);
-      });
-      p.appendChild(btn); p.appendChild(pre); s3.appendChild(p);
-    });
-    root.appendChild(s3);
-
-    // section: queue
-    var s4 = el("section"); s4.id = "queue"; s4.appendChild(el("h2", null, "4. work_queue"));
-    var ul = el("ul", "queue"); var totalUnits = 0;
-    (a.work_queue || []).forEach(function (q) {
-      var li = el("li");
-      var cb = el("input"); cb.type = "checkbox"; cb.checked = !!q.done; li.appendChild(cb);
-      li.appendChild(document.createTextNode(q.task + "  (units=" + q.units + ")"));
-      ul.appendChild(li);
-      totalUnits += Number(q.units) || 0;
-    });
-    s4.appendChild(ul);
-    s4.appendChild(el("div", "total", "合計 units: " + totalUnits));
-    root.appendChild(s4);
-
-    // section: receipts
-    var s5 = el("section"); s5.id = "receipts"; s5.appendChild(el("h2", null, "5. source_receipts"));
-    (a.source_receipts || []).forEach(function (r) {
-      var row = el("div", "receipts");
-      row.textContent = r.url + "  |  fetched_at=" + r.fetched_at + "  |  " + r.content_hash;
-      s5.appendChild(row);
-    });
-    root.appendChild(s5);
-
-    // section: gaps
-    var s6 = el("section"); s6.id = "gaps"; s6.style.background = "var(--warn-bg)"; s6.style.borderColor = "var(--warn-bd)";
-    s6.appendChild(el("h2", null, "6. known_gaps"));
-    var gul = el("ul");
-    (a.known_gaps || []).forEach(function (g) { gul.appendChild(el("li", null, g)); });
-    s6.appendChild(gul); root.appendChild(s6);
-
-    // section: followup
-    var s7 = el("section"); s7.id = "followup"; s7.appendChild(el("h2", null, "7. recommended_followup (士業 escalate)"));
-    (a.recommended_followup || []).forEach(function (f) {
-      var c = el("div", "card");
-      c.appendChild(el("h3", null, f.action));
-      c.appendChild(el("div", null, "trigger: " + f.trigger));
-      s7.appendChild(c);
-    });
-    root.appendChild(s7);
+    err.classList.remove("show");
+    err.textContent = "";
+    // SSR Pages Function に redirect。 encodeURIComponent でパスインジェクト防止。
+    window.location.href = "/artifacts/" + encodeURIComponent(v);
   }
 
-  function getPackId () {
-    var p = new URLSearchParams(window.location.search);
-    return p.get("id") || p.get("pack_id") || "demo-pack-0001";
-  }
-
-  function boot () {
-    var packId = getPackId();
-    DEMO.pack_id = packId;
-    var url = "/v1/artifacts/" + encodeURIComponent(packId);
-    fetch(url, {headers: {"accept": "application/json"}})
-      .then(function (r) { if (!r.ok) throw new Error("http " + r.status); return r.json(); })
-      .then(function (j) { render(j, false); })
-      .catch(function () { render(DEMO, true); });
-
-    document.querySelectorAll(".action-btn").forEach(function (b) {
-      b.addEventListener("click", function () {
-        var act = b.dataset.act, id = getPackId();
-        if (act === "pdf") window.open("/v1/artifacts/" + encodeURIComponent(id) + ".pdf", "_blank");
-        else if (act === "json") window.open("/v1/artifacts/" + encodeURIComponent(id), "_blank");
-        else if (act === "embed") { var s = '<iframe src="https://jpcite.com/artifact?id=' + id + '" width="100%" height="800"></iframe>'; if (navigator.clipboard) navigator.clipboard.writeText(s); alert("embed snippet をコピーしました。"); }
-        else if (act === "regen") { if (confirm("再生成すると billable_units を消費します。続行しますか?")) fetch("/v1/artifacts/" + encodeURIComponent(id) + "/regenerate", {method: "POST"}); }
-        else if (act === "watch") { fetch("/v1/artifacts/" + encodeURIComponent(id) + "/watch", {method: "POST"}); alert("watch 登録しました (更新時にメール通知)。"); }
-      });
-    });
-  }
-
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
-  else boot();
+  btn.addEventListener("click", go);
+  input.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      go();
+    }
+  });
+  input.addEventListener("input", function () {
+    if (err.classList.contains("show")) {
+      err.classList.remove("show");
+      err.textContent = "";
+    }
+  });
 })();
 </script>
 

@@ -15,6 +15,15 @@
 # Browser default favicon probe.
 /favicon.ico  /assets/favicon-32.png  301
 
+# /artifacts (plural, list page) - serves the canonical list + lookup UI.
+# Per-pack URLs /artifacts/{pack_id} are handled by the Cloudflare Pages
+# Function functions/artifacts/[pack_id].ts (SSR) and do NOT need a
+# redirect entry. The singular legacy /artifact also resolves to the
+# same list page so old inbound links keep working.
+/artifacts        /artifact.html  200
+/artifacts/       /artifact.html  200
+/artifact         /artifact.html  200
+
 # Admin surfaces are API-only and must not be exposed as static pages.
 /admin/*  /404  404
 

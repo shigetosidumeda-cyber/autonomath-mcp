@@ -2451,6 +2451,17 @@ def create_app() -> FastAPI:
     from jpintel_mcp.api.auth_github import router as auth_github_router
 
     app.include_router(auth_github_router, dependencies=[AnonIpLimitDep])
+    # Google OAuth sign-in surface — paired with auth_github above.
+    # Distinct from the existing /v1/integrations/google/* path which
+    # handles Google Sheets write integration (separate scope set +
+    # refresh-token persistence). This module is sign-in only:
+    # exchanges code for id_token, validates aud/iss, mints a
+    # jpcite-side JWT cookie, redirects to dashboard. Returns 503 when
+    # GOOGLE_OAUTH_CLIENT_ID / GOOGLE_OAUTH_CLIENT_SECRET are not set,
+    # same shape as the GitHub unconfigured branch.
+    from jpintel_mcp.api.auth_google import router as auth_google_router
+
+    app.include_router(auth_google_router, dependencies=[AnonIpLimitDep])
     # LINE Messaging API webhook receiver — second product surface for
     # 中小企業 cohort (CLAUDE.md cohort #6). Deterministic state machine,
     # NO LLM call, billing inherits the existing programs.search ¥3

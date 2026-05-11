@@ -442,23 +442,167 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <a href="pricing.html#api-paid">Pricing で API キー発行 (¥3.30/unit 完全従量)</a> へ。
  </p>
 
- <section id="login-options" aria-labelledby="login-options-title" class="stat-card" style="margin:0 0 20px;padding:16px 18px;border:1px solid var(--border);background:var(--bg-alt,#fafaf9);">
- <h2 id="login-options-title" style="font-size:14px;font-weight:700;margin:0 0 10px;letter-spacing:0.02em;">ログイン (W9-01 実装予定 — UI placeholder)</h2>
- <p style="font-size:12px;color:var(--text-muted);margin:0 0 12px;line-height:1.6;">
- magic-link (email) または GitHub OAuth でセッションを開始できます。既存 API キー貼り付け運用は下の <a href="#dash2-keybox">既存 API キーの利用詳細</a> をご利用ください。
+ <section id="login-options" aria-labelledby="login-options-title" class="stat-card" style="margin:0 0 20px;padding:18px 20px;border:1px solid var(--accent,#0066cc);background:var(--accent-soft,#f6fbff);">
+ <h2 id="login-options-title" style="font-size:16px;font-weight:700;margin:0 0 8px;letter-spacing:0.01em;">
+ <span aria-hidden="true">✉ </span>magic-link または GitHub OAuth でログイン
+ </h2>
+ <p style="font-size:13px;color:var(--text-muted);margin:0 0 14px;line-height:1.6;">
+ メールアドレス入力 → 6 桁コードをメールで受信 → ログイン完了 (JWT 24h Cookie)。
+ 既存 API キー貼り付け運用は下の <a href="#dash2-keybox">既存 API キーの利用詳細</a> もご利用いただけます。
+ 新規 user は <a href="/docs/getting-started/">/docs/getting-started/</a> から。
  </p>
- <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
- <button type="button" id="login-magic-link" class="btn-ghost" disabled aria-describedby="login-placeholder-hint" style="padding:10px 16px;font-size:13px;font-weight:600;">
- <span aria-hidden="true">✉ </span>magic-link でログイン
+ <div id="login-banner" role="status" aria-live="polite" hidden
+ style="display:none;margin:0 0 12px;padding:9px 12px;border-radius:6px;font-size:13px;border:1px solid var(--border);background:var(--bg);"></div>
+
+ <form id="login-magic-form" autocomplete="off" style="display:flex;gap:8px;flex-wrap:wrap;margin:0 0 10px;">
+ <label for="login-magic-email" class="visually-hidden">メールアドレス</label>
+ <input id="login-magic-email" type="email" required autocomplete="email"
+ placeholder="you@example.com"
+ style="flex:1 1 220px;min-width:200px;padding:10px 12px;border:1px solid var(--border);border-radius:6px;font-size:14px;background:var(--bg);color:var(--text);">
+ <button type="submit" id="login-magic-send" class="btn btn-primary" style="padding:10px 18px;font-size:13px;font-weight:600;">
+ ログインリンクを送信
  </button>
- <button type="button" id="login-github-oauth" class="btn-ghost" disabled aria-describedby="login-placeholder-hint" style="padding:10px 16px;font-size:13px;font-weight:600;">
- <span aria-hidden="true">⌥ </span>GitHub OAuth でログイン
+ </form>
+
+ <form id="login-verify-form" autocomplete="off" hidden
+ style="display:none;gap:8px;flex-wrap:wrap;margin:0 0 10px;align-items:center;">
+ <label for="login-verify-code" class="stat-note" style="margin:0;flex:1 1 100%;font-weight:600;">
+ メールに届いた 6 桁コードを入力 (15 分有効):
+ </label>
+ <input id="login-verify-code" type="text" required inputmode="numeric" pattern="[0-9]{6}"
+ maxlength="6" autocomplete="one-time-code"
+ placeholder="000000"
+ style="flex:0 0 140px;padding:10px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:18px;letter-spacing:0.2em;text-align:center;background:var(--bg);color:var(--text);">
+ <button type="submit" id="login-verify-submit" class="btn btn-primary" style="padding:10px 18px;font-size:13px;font-weight:600;">
+ コードを確認してログイン
  </button>
- <p id="login-placeholder-hint" style="font-size:12px;color:var(--text-muted);margin:0;flex:1 1 100%;line-height:1.5;">
- W9-01 で実装予定。現状は API キー貼り付け運用が canonical です。
- </p>
+ <button type="button" id="login-verify-resend" class="btn-ghost" style="padding:10px 14px;font-size:12px;">
+ 別のアドレスで再送
+ </button>
+ </form>
+
+ <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--border);padding-top:12px;margin-top:6px;">
+ <span class="stat-note" style="margin:0;font-size:12px;color:var(--text-muted);">または別方法でログイン:</span>
+ <a id="login-github-oauth" class="btn-ghost" href="https://api.jpcite.com/v1/auth/github/start" role="button"
+ style="padding:10px 16px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;">
+ <span aria-hidden="true">⌥</span> GitHub OAuth でログイン
+ </a>
  </div>
+ <p id="login-status" class="stat-note" style="margin:10px 0 0;color:var(--text-muted);font-size:12px;line-height:1.5;"></p>
  </section>
+
+ <script>
+ (function() {
+ 'use strict';
+ var API_BASE = (function() {
+ try {
+ var origin = window.location.origin || '';
+ if (origin.indexOf('jpcite.com') !== -1) return 'https://api.jpcite.com';
+ return origin;
+ } catch (_e) { return ''; }
+ })();
+ var magicForm = document.getElementById('login-magic-form');
+ var verifyForm = document.getElementById('login-verify-form');
+ var emailIn = document.getElementById('login-magic-email');
+ var codeIn = document.getElementById('login-verify-code');
+ var banner = document.getElementById('login-banner');
+ var statusEl = document.getElementById('login-status');
+ var resendBtn = document.getElementById('login-verify-resend');
+ var lastEmail = '';
+
+ function setBanner(msg, isError) {
+ if (!banner) return;
+ banner.textContent = msg || '';
+ banner.hidden = !msg;
+ banner.style.display = msg ? 'block' : 'none';
+ banner.style.color = isError ? 'var(--danger)' : 'var(--text)';
+ banner.style.background = isError ? '#fff5f5' : '#f4faf5';
+ banner.style.borderColor = isError ? 'var(--danger)' : 'var(--border)';
+ }
+ function show(el) { if (!el) return; el.hidden = false; el.style.display = 'flex'; }
+ function hide(el) { if (!el) return; el.hidden = true; el.style.display = 'none'; }
+
+ async function postJSON(path, body) {
+ var resp = await fetch(API_BASE + path, {
+ method: 'POST',
+ credentials: 'include',
+ headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+ body: JSON.stringify(body || {}),
+ });
+ var text = await resp.text();
+ var data = null;
+ try { data = text ? JSON.parse(text) : null; } catch (_e) { data = null; }
+ if (!resp.ok) {
+ var detail = (data && (data.detail || data.message)) || ('HTTP ' + resp.status);
+ if (typeof detail === 'object' && detail) detail = JSON.stringify(detail);
+ var err = new Error(detail);
+ err.status = resp.status;
+ throw err;
+ }
+ return data;
+ }
+
+ if (magicForm) {
+ magicForm.addEventListener('submit', async function (e) {
+ e.preventDefault();
+ var email = (emailIn && emailIn.value || '').trim().toLowerCase();
+ if (!email || email.indexOf('@') < 0) {
+ setBanner('有効なメールアドレスを入力してください。', true);
+ return;
+ }
+ lastEmail = email;
+ setBanner('送信中…', false);
+ try {
+ var data = await postJSON('/v1/me/login_request', { email: email });
+ if (data && data.reuse_existing_code) {
+ setBanner('既に有効なコードが送付済みです (残り ' + Math.round((data.expires_in_seconds || 0) / 60) + ' 分)。 受信箱の最新コードを入力してください。', false);
+ } else {
+ setBanner('6 桁コードを ' + email + ' 宛に送信しました。15 分以内にコード欄へ入力してください。', false);
+ }
+ show(verifyForm);
+ if (codeIn) codeIn.focus();
+ } catch (err) {
+ setBanner('送信に失敗しました: ' + (err && err.message ? err.message : ''), true);
+ }
+ });
+ }
+
+ if (verifyForm) {
+ verifyForm.addEventListener('submit', async function (e) {
+ e.preventDefault();
+ var code = (codeIn && codeIn.value || '').trim();
+ if (!/^\d{6}$/.test(code)) {
+ setBanner('6 桁の数字コードを入力してください。', true);
+ return;
+ }
+ if (!lastEmail) {
+ setBanner('まずメールアドレスを送信してください。', true);
+ return;
+ }
+ setBanner('コードを確認中…', false);
+ try {
+ var data = await postJSON('/v1/me/login_verify', { email: lastEmail, code: code });
+ if (data && data.ok) {
+ setBanner('ログインしました。 ダッシュボードを再読み込みします…', false);
+ if (statusEl) statusEl.textContent = 'JWT 24 時間有効 (Cookie: jpcite_session)。';
+ setTimeout(function () { window.location.reload(); }, 1200);
+ } else {
+ setBanner('ログインに失敗しました (応答に ok が含まれません)。', true);
+ }
+ } catch (err) {
+ setBanner('コードが不正、または期限切れです: ' + (err && err.message ? err.message : ''), true);
+ }
+ });
+ }
+ if (resendBtn) {
+ resendBtn.addEventListener('click', function () {
+ hide(verifyForm);
+ if (emailIn) { emailIn.value = ''; emailIn.focus(); }
+ setBanner('別のメールアドレスを入力してください。', false);
+ });
+ }
+ })();
+ </script>
  <nav class="dash-nav" aria-label="ダッシュボード">
  <a href="dashboard.html" class="active" aria-current="page">概要</a>
  <a href="#api-key-section" title="同一ページ内の API キー ブロックへ">API キー</a>
@@ -1363,28 +1507,585 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
 本サービスは情報検索です。 個別具体的な税務・法律判断は資格を有する専門家にご相談ください (税理士法 §52 / 弁護士法 §72)。
 </p>
 
-<!-- v3 9-widget dashboard navigation + placeholder (Wave 8 で full hydrate) -->
-<nav aria-label="dashboard" style="margin:16px 0;padding:12px;background:#f7f8fa;border-radius:8px;font-size:14px">
-  <a href="#api-keys" aria-current="page">api-keys</a> |
-  <a href="#usage">usage</a> |
-  <a href="#billing">billing</a> |
-  <a href="#saved_search">saved_search</a> |
-  <a href="#watches">watches</a> |
-  <a href="#artifacts">artifacts</a> |
-  <a href="#client_tags">client_tags</a> |
-  <a href="#docs">docs</a> |
-  <a href="#status">status</a>
-</nav>
+<!-- v3 9 widget tab dashboard (W1..W9) — Wave 8 hydrate -->
+<style>
+ .w9-wrap { margin: 32px 0 16px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--bg); }
+ .w9-tablist { display: flex; gap: 0; flex-wrap: wrap; border-bottom: 1px solid var(--border); background: var(--bg-alt,#fafaf9); padding: 0; }
+ .w9-tab { background: transparent; border: 0; border-bottom: 3px solid transparent; padding: 14px 18px; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; flex: 0 0 auto; }
+ .w9-tab[aria-selected="true"] { color: var(--accent,#0066cc); border-bottom-color: var(--accent,#0066cc); background: var(--bg); }
+ .w9-tab:hover { color: var(--text); }
+ .w9-panel { padding: 24px; }
+ .w9-panel[hidden] { display: none; }
+ .w9-panel h3 { font-size: 16px; font-weight: 700; margin: 0 0 8px; }
+ .w9-panel .w9-note { font-size: 12px; color: var(--text-muted); margin: 0 0 14px; line-height: 1.6; }
+ .w9-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+ .w9-table th, .w9-table td { padding: 8px 6px; text-align: left; border-bottom: 1px solid var(--border); }
+ .w9-key-pill { display: inline-block; padding: 2px 8px; font-size: 11px; font-weight: 600; border-radius: 999px; background: var(--bg-alt); border: 1px solid var(--border); margin-right: 6px; }
+ .w9-key-pill.jc { color: #0a4d8c; border-color: #0a4d8c; }
+ .w9-key-pill.sk { color: #6b3fa0; border-color: #6b3fa0; }
+ .w9-key-pill.am { color: #0a7a4d; border-color: #0a7a4d; }
+ @media (pointer: coarse) { .w9-tab { padding: 16px 14px; min-height: 44px; } }
+ @media (max-width: 640px) { .w9-tablist { flex-wrap: wrap; } .w9-tab { flex: 1 1 33%; padding: 12px 8px; font-size: 12px; } }
+</style>
 
-<section id="api-keys"><h2>api-keys</h2><p>既存 API キー管理 (発行・削除・rotation 警告)。実装は Wave 8 で hydrate、現状は既存 HTML が機能。</p></section>
-<section id="usage"><h2>usage</h2><p>月次 billable_units / sparkline / top5 path / X-Client-Tag 別 ROI。Wave 8。</p></section>
-<section id="billing"><h2>billing</h2><p>Stripe subscription 状態 + invoice list (T8010001213708 自動 inject) + Portal mint。</p></section>
-<section id="saved_search"><h2>saved_search</h2><p>保存済み検索 list + watch 化 + CSV export。Wave 8。</p></section>
-<section id="watches"><h2>watches</h2><p>法人/制度/許認可/法令 monitor + RSS/webhook/email channel。Wave 8。</p></section>
-<section id="artifacts"><h2>artifacts</h2><p>過去 90 日 artifact 履歴 (pack_id / created_at / type / units)、各行 → <a href="/artifact.html">/artifact.html</a> 遷移。Wave 8。</p></section>
-<section id="client_tags"><h2>client_tags</h2><p>X-Client-Tag enum + 顧問先別 ROI / 顧客 hint (free-text)。Wave 8。</p></section>
-<section id="docs"><h2>docs</h2><details><summary>connect/* 4 経路 (Claude Code / Cursor / ChatGPT / Codex)</summary><ul><li><a href="/connect/claude-code">Claude Code</a></li><li><a href="/connect/cursor">Cursor</a></li><li><a href="/connect/chatgpt">ChatGPT Custom GPT</a></li><li><a href="/connect/codex">OpenAI Codex / Agents SDK</a></li></ul></details></section>
-<section id="status"><h2>status</h2><iframe src="/status/" title="jpcite status" loading="lazy" style="width:100%;height:300px;border:1px solid #e2e8f0;border-radius:8px"></iframe></section>
+<section class="w9-wrap" aria-label="9 widget dashboard (api-keys / usage / billing / saved-searches / webhooks / oauth / audit-seal / parent-child / client-tag)">
+ <div role="tablist" aria-label="9 widget" class="w9-tablist">
+  <button type="button" role="tab" id="w9-tab-keys" class="w9-tab" aria-selected="true" aria-controls="w9-panel-keys" data-w9-target="keys">W1 api-key list</button>
+  <button type="button" role="tab" id="w9-tab-usage" class="w9-tab" aria-selected="false" aria-controls="w9-panel-usage" data-w9-target="usage">W2 usage quota</button>
+  <button type="button" role="tab" id="w9-tab-billing" class="w9-tab" aria-selected="false" aria-controls="w9-panel-billing" data-w9-target="billing">W3 billing portal</button>
+  <button type="button" role="tab" id="w9-tab-saved" class="w9-tab" aria-selected="false" aria-controls="w9-panel-saved" data-w9-target="saved">W4 saved searches</button>
+  <button type="button" role="tab" id="w9-tab-hooks" class="w9-tab" aria-selected="false" aria-controls="w9-panel-hooks" data-w9-target="hooks">W5 webhooks</button>
+  <button type="button" role="tab" id="w9-tab-oauth" class="w9-tab" aria-selected="false" aria-controls="w9-panel-oauth" data-w9-target="oauth">W6 OAuth</button>
+  <button type="button" role="tab" id="w9-tab-seal" class="w9-tab" aria-selected="false" aria-controls="w9-panel-seal" data-w9-target="seal">W7 audit-seal</button>
+  <button type="button" role="tab" id="w9-tab-child" class="w9-tab" aria-selected="false" aria-controls="w9-panel-child" data-w9-target="child">W8 parent/child key</button>
+  <button type="button" role="tab" id="w9-tab-tag" class="w9-tab" aria-selected="false" aria-controls="w9-panel-tag" data-w9-target="tag">W9 client-tag</button>
+ </div>
+
+ <!-- W1 api-key list -->
+ <div role="tabpanel" id="w9-panel-keys" aria-labelledby="w9-tab-keys" class="w9-panel">
+  <h3>W1 — API キー一覧 (jc_ / sk_ / am_ 3 prefix 受容)</h3>
+  <p class="w9-note">
+   <span class="w9-key-pill jc">jc_</span> 現行発行 (Stripe Checkout)
+   <span class="w9-key-pill sk">sk_</span> 過去発行 (互換)
+   <span class="w9-key-pill am">am_</span> AutonoMath 互換
+   いずれも HMAC-SHA256 hash で照合され、 GET /v1/me/api_keys で list 取得します。 新規キーは Stripe Checkout 経由のみ発行可能。
+  </p>
+  <table class="w9-table" id="w9-keys-table">
+   <thead><tr>
+    <th scope="col">prefix</th>
+    <th scope="col">key_id</th>
+    <th scope="col">created_at</th>
+    <th scope="col">last_used_at</th>
+    <th scope="col">status</th>
+    <th scope="col" style="text-align:right;">操作</th>
+   </tr></thead>
+   <tbody id="w9-keys-tbody"><tr><td colspan="6" style="color:var(--text-muted);padding:14px 6px;">読み込み中… (ログイン後に表示)</td></tr></tbody>
+  </table>
+  <p class="w9-note" style="margin-top:14px;">
+   新規発行は <a href="/pricing.html#api-paid">Pricing → Stripe Checkout</a> から、トライアルは <a href="/trial.html">/trial.html</a> から。 既存キー rotation は上の <a href="#api-key-section">「あなたの API キー」</a> ブロックで。
+  </p>
+ </div>
+
+ <!-- W2 usage quota -->
+ <div role="tabpanel" id="w9-panel-usage" aria-labelledby="w9-tab-usage" class="w9-panel" hidden>
+  <h3>W2 — 利用量 残量 (匿名 quota + paid quota)</h3>
+  <p class="w9-note">
+   匿名 = 3 リクエスト/日/IP (JST 翌日 00:00 リセット)。 paid = ¥3/課金単位 (税込 ¥3.30) の完全従量、上限 cap は任意設定。 月次 burn-rate は 30 日線形外挿。
+  </p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">
+   <div class="stat-card" style="margin:0;">
+    <p class="stat-label">匿名 quota (今日)</p>
+    <p class="stat-value" style="font-size:24px;"><span id="w9-anon-used">—</span><span class="unit"> / 3</span></p>
+    <p class="stat-note">JST 翌日 00:00 リセット</p>
+   </div>
+   <div class="stat-card" style="margin:0;">
+    <p class="stat-label">paid quota (今月)</p>
+    <p class="stat-value" style="font-size:24px;"><span id="w9-paid-used">—</span><span class="unit"> リクエスト</span></p>
+    <p class="stat-note">¥3 × 件数 / 月末 Stripe 締め</p>
+   </div>
+   <div class="stat-card" style="margin:0;">
+    <p class="stat-label">burn rate (月次外挿)</p>
+    <p class="stat-value" style="font-size:24px;">¥<span id="w9-burn-rate">—</span></p>
+    <p class="stat-note">30 日 average × 30 (税別)</p>
+   </div>
+  </div>
+  <p class="w9-note" style="margin-top:14px;">
+   詳細チャートと過去 30 日 sparkline は上の <a href="#quota-counter">月次使用量</a> + <a href="#dash2-summary">過去 30 日 利用量</a> ブロックを参照。
+  </p>
+ </div>
+
+ <!-- W3 billing portal -->
+ <div role="tabpanel" id="w9-panel-billing" aria-labelledby="w9-tab-billing" class="w9-panel" hidden>
+  <h3>W3 — Stripe Customer Portal (請求書 DL / カード変更 / 解約)</h3>
+  <p class="w9-note">
+   POST /v1/billing/portal で one-shot Stripe Customer Portal URL を mint します。 適格請求書 (T8010001213708) は portal から PDF DL 可能。 子 API キー (parent/child) からは portal を開けません。
+  </p>
+  <div id="w9-billing-banner" role="status" aria-live="polite" hidden
+   style="display:none;margin:0 0 12px;padding:9px 12px;border-radius:6px;font-size:13px;border:1px solid var(--border);background:var(--bg);"></div>
+  <button type="button" id="w9-billing-portal-btn" class="btn btn-primary" style="padding:12px 22px;font-size:14px;font-weight:600;">
+   <span aria-hidden="true">💳 </span>Stripe Customer Portal を開く &rarr;
+  </button>
+  <p class="w9-note" style="margin-top:14px;">
+   解約: Portal → サブスクリプションをキャンセル。 月末まで API 利用可能、当月利用分のみ ¥3/件 metered 請求が発生。 次月以降は停止。
+  </p>
+ </div>
+
+ <!-- W4 saved searches -->
+ <div role="tabpanel" id="w9-panel-saved" aria-labelledby="w9-tab-saved" class="w9-panel" hidden>
+  <h3>W4 — 保存条件 (cohort #5 補助金 consultant 向け)</h3>
+  <p class="w9-note">
+   POST /v1/me/saved_searches で 検索条件 (q / 都道府県 / 対象事業者 / 金額帯 / 顧問先 profile_ids) を保存。 毎日 06:00 JST に新着差分を自動スキャン → ダイジェストメールを成功配信 ¥3/通知 で送信。 顧問先別 fan-out は mig 097 saved_searches.profile_ids で対応。
+  </p>
+  <p>
+   <a href="#saved-searches" class="btn btn-primary" style="padding:10px 18px;font-size:13px;font-weight:600;">
+    保存条件 管理 →
+   </a>
+  </p>
+  <p class="w9-note" style="margin-top:14px;">
+   仕様詳細は <a href="/docs/saved_searches/">/docs/saved_searches/</a> + <a href="/docs/recurring_engagement/">/docs/recurring_engagement/</a>。
+  </p>
+ </div>
+
+ <!-- W5 webhooks -->
+ <div role="tabpanel" id="w9-panel-hooks" aria-labelledby="w9-tab-hooks" class="w9-panel" hidden>
+  <h3>W5 — Webhook 通知 (mig 088 houjin_watch + mig 099 recurring_engagement)</h3>
+  <p class="w9-note">
+   自社 HTTPS endpoint に program.created / program.amended / enforcement.added / tax_ruleset.amended / invoice_registrant.matched / houjin_watch.amended を SHA256 署名検証付きで POST します。 成功配信 ¥3/通知 metered。 5 連続失敗で自動無効化、再試行は非課金。
+  </p>
+  <p>
+   <a href="#dash2-webhooks" class="btn btn-primary" style="padding:10px 18px;font-size:13px;font-weight:600;">
+    Webhook 通知 管理 →
+   </a>
+  </p>
+  <p class="w9-note" style="margin-top:14px;">
+   仕様詳細は <a href="/docs/webhooks/">/docs/webhooks/</a>。 上の <a href="#dash2-alerts">法令改正アラート</a> も同じ ¥3 metered。
+  </p>
+ </div>
+
+ <!-- W6 OAuth -->
+ <div role="tabpanel" id="w9-panel-oauth" aria-labelledby="w9-tab-oauth" class="w9-panel" hidden>
+  <h3>W6 — OAuth ログイン 状態 (GitHub + Google)</h3>
+  <p class="w9-note">
+   GET /v1/auth/github/start で GitHub OAuth フロー開始 → callback で JWT cookie set。 Google OAuth は scope=openid email、 callback 同様に jpcite_session cookie に JWT 24h を発行。
+  </p>
+  <table class="w9-table" style="margin:0 0 14px;">
+   <thead><tr><th scope="col">プロバイダ</th><th scope="col">状態</th><th scope="col" style="text-align:right;">操作</th></tr></thead>
+   <tbody>
+    <tr>
+     <td><strong>GitHub</strong><br><span style="font-size:11px;color:var(--text-muted);">scope: user:email</span></td>
+     <td id="w9-oauth-github-status"><span style="color:var(--text-muted);">— (未連携)</span></td>
+     <td style="text-align:right;">
+      <a id="w9-oauth-github-btn" href="https://api.jpcite.com/v1/auth/github/start" class="btn btn-primary" style="padding:8px 14px;font-size:12px;">GitHub OAuth で連携</a>
+     </td>
+    </tr>
+    <tr>
+     <td><strong>Google</strong><br><span style="font-size:11px;color:var(--text-muted);">scope: openid email</span></td>
+     <td id="w9-oauth-google-status"><span style="color:var(--text-muted);">— (未連携)</span></td>
+     <td style="text-align:right;">
+      <a id="w9-oauth-google-btn" href="https://api.jpcite.com/v1/auth/google/start" class="btn btn-primary" style="padding:8px 14px;font-size:12px;">Google OAuth で連携</a>
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <p class="w9-note">
+   magic-link login は上の <a href="#login-options">ログインブロック</a> から。 JWT は 24 時間有効。
+  </p>
+ </div>
+
+ <!-- W7 audit-seal -->
+ <div role="tabpanel" id="w9-panel-seal" aria-labelledby="w9-tab-seal" class="w9-panel" hidden>
+  <h3>W7 — audit-seal (税理士 monthly audit-seal pack PDF + RSS)</h3>
+  <p class="w9-note">
+   毎月 1 日 03:00 JST に当月対象の差分 (法令改正 / 制度改正 / 行政処分 / 適格事業者 status 変化) を 1 PDF に纏めて発行。 監査記録の "snapshot 証跡" としてアーカイブ可能。 mig 089 audit_seal + scripts/cron/regenerate_audit_log_rss.py。
+  </p>
+  <table class="w9-table" style="margin:0 0 14px;">
+   <thead><tr><th scope="col">対象月</th><th scope="col">PDF</th><th scope="col">RSS</th><th scope="col">SHA256</th></tr></thead>
+   <tbody id="w9-seal-tbody"><tr><td colspan="4" style="color:var(--text-muted);padding:14px 6px;">読み込み中… (ログイン後に表示)</td></tr></tbody>
+  </table>
+  <p class="w9-note">
+   <a href="https://api.jpcite.com/v1/me/audit_seal/rss">RSS feed (購読 URL)</a> &mdash; 監査チームの feed reader へ追加。
+  </p>
+ </div>
+
+ <!-- W8 parent / child api-key -->
+ <div role="tabpanel" id="w9-panel-child" aria-labelledby="w9-tab-child" class="w9-panel" hidden>
+  <h3>W8 — API キー parent/child (mig 086 SaaS B2B fan-out)</h3>
+  <p class="w9-note">
+   親 API キー 1 本から、 顧問先別 (税理士 / コンサル / 取次店) の子 キーを発行。 子キー単位で usage を集計可能 (mig 085 X-Client-Tag と組み合わせ可)。 子キーから billing portal は開けない、 課金は親キー集約。
+  </p>
+  <table class="w9-table" id="w9-child-table" style="margin:0 0 14px;">
+   <thead><tr>
+    <th scope="col">子キー ID</th>
+    <th scope="col">紐付け顧問先 (label)</th>
+    <th scope="col">発行日</th>
+    <th scope="col">直近使用</th>
+    <th scope="col" style="text-align:right;">操作</th>
+   </tr></thead>
+   <tbody id="w9-child-tbody"><tr><td colspan="5" style="color:var(--text-muted);padding:14px 6px;">読み込み中… (ログイン後に表示)</td></tr></tbody>
+  </table>
+  <form id="w9-child-form" autocomplete="off" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+   <label for="w9-child-label" class="visually-hidden">顧問先 label</label>
+   <input id="w9-child-label" type="text" placeholder="顧問先 ラベル (例: 株式会社サンプル 顧問先A)" maxlength="64"
+    style="flex:1;min-width:220px;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;">
+   <button type="submit" class="btn btn-primary" style="padding:9px 16px;font-size:13px;">子キーを発行</button>
+  </form>
+  <p class="w9-note" style="margin-top:14px;">
+   仕様詳細は <a href="/docs/parent_child_keys/">/docs/parent_child_keys/</a>。
+  </p>
+ </div>
+
+ <!-- W9 client_tag -->
+ <div role="tabpanel" id="w9-panel-tag" aria-labelledby="w9-tab-tag" class="w9-panel" hidden>
+  <h3>W9 — usage_events client_tag (mig 085 X-Client-Tag 顧問先別)</h3>
+  <p class="w9-note">
+   request header に X-Client-Tag: kyobun_a 等を付けると、 usage_events に client_tag 列が記録され、 顧問先別 ROI / 月次 内訳を月末 Stripe 請求に CSV として同梱可能。 1 件 ¥3 metered の内訳が顧問先単位で見える。
+  </p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 14px;">
+   <label for="w9-tag-month" class="stat-note" style="margin:0;">対象月:</label>
+   <input id="w9-tag-month" type="month" style="padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;">
+   <button type="button" id="w9-tag-refresh" class="btn-ghost" style="padding:8px 14px;font-size:12px;">更新</button>
+   <a id="w9-tag-csv" href="https://api.jpcite.com/v1/billing/client_tag_breakdown?format=csv" class="btn-ghost" style="padding:8px 14px;font-size:12px;">CSV ダウンロード</a>
+  </div>
+  <table class="w9-table" id="w9-tag-table">
+   <thead><tr>
+    <th scope="col">client_tag</th>
+    <th scope="col">呼び出し件数</th>
+    <th scope="col" style="text-align:right;">¥ 金額 (税別)</th>
+    <th scope="col" style="text-align:right;">構成比</th>
+   </tr></thead>
+   <tbody id="w9-tag-tbody"><tr><td colspan="4" style="color:var(--text-muted);padding:14px 6px;">読み込み中… (ログイン後に表示)</td></tr></tbody>
+  </table>
+  <p class="w9-note" style="margin-top:14px;">
+   X-Client-Tag は ascii / [a-z0-9_\-]{1,32} のみ受容。 詳細は <a href="/docs/client_tag/">/docs/client_tag/</a>。
+  </p>
+ </div>
+</section>
+
+<script>
+(function () {
+ 'use strict';
+ var API_BASE = (function () {
+  try {
+   var origin = window.location.origin || '';
+   if (origin.indexOf('jpcite.com') !== -1) return 'https://api.jpcite.com';
+   return origin;
+  } catch (_e) { return ''; }
+ })();
+ var TAB_NAMES = ['keys', 'usage', 'billing', 'saved', 'hooks', 'oauth', 'seal', 'child', 'tag'];
+ var tabs = document.querySelectorAll('.w9-tab');
+
+ function activate(name) {
+  tabs.forEach(function (t) {
+   var active = t.getAttribute('data-w9-target') === name;
+   t.setAttribute('aria-selected', active ? 'true' : 'false');
+  });
+  TAB_NAMES.forEach(function (n) {
+   var panel = document.getElementById('w9-panel-' + n);
+   if (!panel) return;
+   if (n === name) panel.removeAttribute('hidden');
+   else panel.setAttribute('hidden', '');
+  });
+  try {
+   if (history && history.replaceState) {
+    history.replaceState(null, '', '#w9-' + name);
+   }
+  } catch (_e) {}
+ }
+ tabs.forEach(function (t) {
+  t.addEventListener('click', function () { activate(t.getAttribute('data-w9-target')); });
+ });
+ // initial: deep link e.g. #w9-billing
+ try {
+  var h = (window.location.hash || '').replace(/^#/, '');
+  if (h.indexOf('w9-') === 0) {
+   var target = h.slice(3);
+   if (TAB_NAMES.indexOf(target) >= 0) activate(target);
+  }
+ } catch (_e) {}
+
+ function readCookie(name) {
+  var raw = document.cookie || '';
+  var parts = raw.split(';');
+  for (var i = 0; i < parts.length; i++) {
+   var s = parts[i].trim();
+   if (!s) continue;
+   var eq = s.indexOf('=');
+   var k = eq < 0 ? s : s.slice(0, eq);
+   if (k === name) return eq < 0 ? '' : decodeURIComponent(s.slice(eq + 1));
+  }
+  return '';
+ }
+ function csrfHeaders() {
+  var t = readCookie('am_csrf');
+  return t ? { 'X-CSRF-Token': t } : {};
+ }
+ function getKey() {
+  try { return localStorage.getItem('am_api_key') || ''; } catch (_e) { return ''; }
+ }
+ async function callJSON(path, opts) {
+  opts = opts || {};
+  var headers = Object.assign(
+   { 'Accept': 'application/json' },
+   opts.body ? { 'Content-Type': 'application/json' } : {},
+   csrfHeaders(),
+   opts.headers || {}
+  );
+  var key = getKey();
+  if (key) headers['X-API-Key'] = key;
+  var resp = await fetch(API_BASE + path, {
+   method: opts.method || 'GET',
+   credentials: 'include',
+   headers: headers,
+   body: opts.body ? JSON.stringify(opts.body) : undefined,
+  });
+  var text = await resp.text();
+  var data = null;
+  try { data = text ? JSON.parse(text) : null; } catch (_e) { data = null; }
+  if (!resp.ok) {
+   var detail = (data && (data.detail || data.message)) || ('HTTP ' + resp.status);
+   if (typeof detail === 'object' && detail) detail = JSON.stringify(detail);
+   var err = new Error(detail);
+   err.status = resp.status;
+   throw err;
+  }
+  return data;
+ }
+ function esc(s) {
+  if (s === null || typeof s === 'undefined') return '';
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+ }
+ function fmtYen(n) {
+  if (n === null || typeof n === 'undefined') return '—';
+  try { return Number(n).toLocaleString('ja-JP'); } catch (_e) { return String(n); }
+ }
+ function fmtDate(s) {
+  if (!s) return '—';
+  return esc(String(s).slice(0, 16).replace('T', ' '));
+ }
+
+ // W1 api-key list
+ async function loadKeys() {
+  var tbody = document.getElementById('w9-keys-tbody');
+  if (!tbody) return;
+  try {
+   var rows = await callJSON('/v1/me/api_keys');
+   if (!Array.isArray(rows) || rows.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="color:var(--text-muted);padding:14px 6px;">登録された API キーはありません。 <a href="/pricing.html#api-paid">Pricing</a> から発行できます。</td></tr>';
+    return;
+   }
+   tbody.innerHTML = rows.map(function (r) {
+    var prefix = (r.key_prefix || '').slice(0, 3);
+    var pillClass = prefix === 'jc_' ? 'jc' : (prefix === 'sk_' ? 'sk' : (prefix === 'am_' ? 'am' : ''));
+    var status = r.revoked_at ? '<span style="color:var(--danger);">無効</span>' : '<span style="color:#0a7a4d;">有効</span>';
+    return '<tr>'
+     + '<td><span class="w9-key-pill ' + pillClass + '">' + esc(prefix) + '</span></td>'
+     + '<td style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;">' + esc(r.id || '') + '</td>'
+     + '<td>' + fmtDate(r.created_at) + '</td>'
+     + '<td>' + fmtDate(r.last_used_at) + '</td>'
+     + '<td>' + status + '</td>'
+     + '<td style="text-align:right;"><button type="button" class="btn-ghost w9-key-revoke" data-kid="' + esc(r.id) + '" style="padding:4px 10px;font-size:12px;">無効化</button></td>'
+     + '</tr>';
+   }).join('');
+  } catch (err) {
+   if (err && err.status === 401) {
+    tbody.innerHTML = '<tr><td colspan="6" style="color:var(--text-muted);padding:14px 6px;">ログインが必要です (上のログインブロックから magic-link または GitHub OAuth)。</td></tr>';
+    return;
+   }
+   tbody.innerHTML = '<tr><td colspan="6" style="color:var(--danger);padding:14px 6px;">読み込み失敗: ' + esc(err && err.message ? err.message : '') + '</td></tr>';
+  }
+ }
+
+ // W2 usage quota
+ async function loadUsage() {
+  try {
+   var anon = await callJSON('/v1/me/quota_status');
+   var paid = await callJSON('/v1/me/usage?period=30d');
+   if (anon) {
+    var aEl = document.getElementById('w9-anon-used');
+    if (aEl) aEl.textContent = (anon.anon_used != null ? anon.anon_used : (anon.used != null ? anon.used : '—'));
+   }
+   if (paid) {
+    var pEl = document.getElementById('w9-paid-used');
+    if (pEl) pEl.textContent = fmtYen(paid.requests_count != null ? paid.requests_count : paid.units);
+    var burn = (paid.requests_count != null ? paid.requests_count : (paid.units || 0)) * 3;
+    var bEl = document.getElementById('w9-burn-rate');
+    if (bEl) bEl.textContent = fmtYen(burn);
+   }
+  } catch (_e) {
+   // graceful: dashboard shows '—' if not auth'd
+  }
+ }
+
+ // W3 billing portal
+ var billingBtn = document.getElementById('w9-billing-portal-btn');
+ var billingBanner = document.getElementById('w9-billing-banner');
+ function setBillingBanner(msg, isError) {
+  if (!billingBanner) return;
+  billingBanner.textContent = msg || '';
+  billingBanner.hidden = !msg;
+  billingBanner.style.display = msg ? 'block' : 'none';
+  billingBanner.style.color = isError ? 'var(--danger)' : 'var(--text)';
+  billingBanner.style.background = isError ? '#fff5f5' : '#f4faf5';
+ }
+ if (billingBtn) {
+  billingBtn.addEventListener('click', async function () {
+   setBillingBanner('Stripe Customer Portal URL を発行中…', false);
+   try {
+    var data = await callJSON('/v1/billing/portal', {
+     method: 'POST',
+     body: { return_url: window.location.href },
+    });
+    var url = data && (data.url || data.portal_url);
+    if (url) {
+     setBillingBanner('Stripe Portal を開きます…', false);
+     window.location.href = url;
+    } else {
+     setBillingBanner('Portal URL を取得できませんでした。', true);
+    }
+   } catch (err) {
+    var msg = err && err.message ? err.message : 'unknown';
+    if (err && err.status === 401) {
+     setBillingBanner('API キー または ログインが必要です (上のログインブロック)。', true);
+    } else if (err && err.status === 404) {
+     setBillingBanner('Stripe 顧客がまだありません。 初回 ¥3 metered 請求の後に portal が開けるようになります。', true);
+    } else {
+     setBillingBanner('Portal 発行に失敗: ' + msg, true);
+    }
+   }
+  });
+ }
+
+ // W6 OAuth status probe
+ async function loadOAuthStatus() {
+  try {
+   var data = await callJSON('/v1/me/oauth_links');
+   if (!data) return;
+   var ghEl = document.getElementById('w9-oauth-github-status');
+   var ggEl = document.getElementById('w9-oauth-google-status');
+   if (ghEl && data.github) {
+    ghEl.innerHTML = '<span style="color:#0a7a4d;font-weight:600;">連携済</span><br><span style="font-size:11px;color:var(--text-muted);">' + esc(data.github.login || data.github.email || '') + '</span>';
+   }
+   if (ggEl && data.google) {
+    ggEl.innerHTML = '<span style="color:#0a7a4d;font-weight:600;">連携済</span><br><span style="font-size:11px;color:var(--text-muted);">' + esc(data.google.email || '') + '</span>';
+   }
+  } catch (_e) {}
+ }
+
+ // W7 audit-seal pack list
+ async function loadSeal() {
+  var tbody = document.getElementById('w9-seal-tbody');
+  if (!tbody) return;
+  try {
+   var rows = await callJSON('/v1/me/audit_seal');
+   if (!Array.isArray(rows) || rows.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" style="color:var(--text-muted);padding:14px 6px;">まだ audit-seal pack はありません。 毎月 1 日 03:00 JST に自動発行されます。</td></tr>';
+    return;
+   }
+   tbody.innerHTML = rows.map(function (r) {
+    return '<tr>'
+     + '<td>' + esc(r.period || r.month || '') + '</td>'
+     + '<td><a href="' + esc(r.pdf_url || '#') + '" target="_blank" rel="noopener">PDF</a></td>'
+     + '<td><a href="' + esc(r.rss_url || '#') + '" target="_blank" rel="noopener">RSS</a></td>'
+     + '<td style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;word-break:break-all;">' + esc((r.sha256 || '').slice(0, 32)) + '…</td>'
+     + '</tr>';
+   }).join('');
+  } catch (err) {
+   if (err && err.status === 401) {
+    tbody.innerHTML = '<tr><td colspan="4" style="color:var(--text-muted);padding:14px 6px;">ログインが必要です。</td></tr>';
+    return;
+   }
+   tbody.innerHTML = '<tr><td colspan="4" style="color:var(--danger);padding:14px 6px;">読み込み失敗: ' + esc(err && err.message ? err.message : '') + '</td></tr>';
+  }
+ }
+
+ // W8 parent/child api-key
+ async function loadChildKeys() {
+  var tbody = document.getElementById('w9-child-tbody');
+  if (!tbody) return;
+  try {
+   var rows = await callJSON('/v1/me/api_keys/children');
+   if (!Array.isArray(rows) || rows.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="color:var(--text-muted);padding:14px 6px;">まだ子キーはありません。 下のフォームから発行してください。</td></tr>';
+    return;
+   }
+   tbody.innerHTML = rows.map(function (r) {
+    return '<tr>'
+     + '<td style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;">' + esc(r.id || '') + '</td>'
+     + '<td>' + esc(r.label || r.client_tag || '') + '</td>'
+     + '<td>' + fmtDate(r.created_at) + '</td>'
+     + '<td>' + fmtDate(r.last_used_at) + '</td>'
+     + '<td style="text-align:right;"><button type="button" class="btn-danger w9-child-revoke" data-cid="' + esc(r.id) + '" style="padding:4px 10px;font-size:12px;">無効化</button></td>'
+     + '</tr>';
+   }).join('');
+  } catch (err) {
+   if (err && err.status === 401) {
+    tbody.innerHTML = '<tr><td colspan="5" style="color:var(--text-muted);padding:14px 6px;">ログインが必要です。</td></tr>';
+    return;
+   }
+   tbody.innerHTML = '<tr><td colspan="5" style="color:var(--danger);padding:14px 6px;">読み込み失敗: ' + esc(err && err.message ? err.message : '') + '</td></tr>';
+  }
+ }
+ var childForm = document.getElementById('w9-child-form');
+ if (childForm) {
+  childForm.addEventListener('submit', async function (e) {
+   e.preventDefault();
+   var label = (document.getElementById('w9-child-label') || {}).value || '';
+   label = label.trim();
+   if (!label) { alert('顧問先 label を入力してください。'); return; }
+   try {
+    var data = await callJSON('/v1/me/api_keys/children', { method: 'POST', body: { label: label } });
+    if (data && data.raw_key) {
+     alert('子キーを発行しました。 今すぐコピーしてください (再表示不可):\n\n' + data.raw_key);
+    }
+    await loadChildKeys();
+   } catch (err) {
+    alert('子キー発行に失敗: ' + (err && err.message ? err.message : ''));
+   }
+  });
+ }
+
+ // W9 client_tag breakdown
+ var tagMonth = document.getElementById('w9-tag-month');
+ var tagRefresh = document.getElementById('w9-tag-refresh');
+ var tagCsv = document.getElementById('w9-tag-csv');
+ (function initTagMonth() {
+  try {
+   var d = new Date();
+   var ym = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+   if (tagMonth) tagMonth.value = ym;
+  } catch (_e) {}
+ })();
+ async function loadTagBreakdown() {
+  var tbody = document.getElementById('w9-tag-tbody');
+  if (!tbody) return;
+  var ym = (tagMonth && tagMonth.value) ? tagMonth.value : '';
+  var qs = ym ? ('?month=' + encodeURIComponent(ym)) : '';
+  try {
+   var data = await callJSON('/v1/billing/client_tag_breakdown' + qs);
+   var rows = (data && Array.isArray(data.rows)) ? data.rows : (Array.isArray(data) ? data : []);
+   if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="4" style="color:var(--text-muted);padding:14px 6px;">対象月の client_tag 利用はありません。</td></tr>';
+    if (tagCsv) tagCsv.href = 'https://api.jpcite.com/v1/billing/client_tag_breakdown?format=csv' + (ym ? ('&month=' + encodeURIComponent(ym)) : '');
+    return;
+   }
+   var total = rows.reduce(function (a, r) { return a + (Number(r.yen) || 0); }, 0);
+   tbody.innerHTML = rows.map(function (r) {
+    var pct = total > 0 ? ((Number(r.yen) || 0) / total * 100).toFixed(1) : '—';
+    return '<tr>'
+     + '<td style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;">' + esc(r.client_tag || '') + '</td>'
+     + '<td>' + fmtYen(r.count) + '</td>'
+     + '<td style="text-align:right;">¥' + fmtYen(r.yen) + '</td>'
+     + '<td style="text-align:right;">' + pct + '%</td>'
+     + '</tr>';
+   }).join('');
+   if (tagCsv) tagCsv.href = 'https://api.jpcite.com/v1/billing/client_tag_breakdown?format=csv' + (ym ? ('&month=' + encodeURIComponent(ym)) : '');
+  } catch (err) {
+   if (err && err.status === 401) {
+    tbody.innerHTML = '<tr><td colspan="4" style="color:var(--text-muted);padding:14px 6px;">ログインが必要です。</td></tr>';
+    return;
+   }
+   tbody.innerHTML = '<tr><td colspan="4" style="color:var(--danger);padding:14px 6px;">読み込み失敗: ' + esc(err && err.message ? err.message : '') + '</td></tr>';
+  }
+ }
+ if (tagRefresh) tagRefresh.addEventListener('click', loadTagBreakdown);
+ if (tagMonth) tagMonth.addEventListener('change', loadTagBreakdown);
+
+ // boot
+ function boot() {
+  loadKeys();
+  loadUsage();
+  loadOAuthStatus();
+  loadSeal();
+  loadChildKeys();
+  loadTagBreakdown();
+ }
+ if (document.readyState === 'complete' || document.readyState === 'interactive') {
+  setTimeout(boot, 0);
+ } else {
+  document.addEventListener('DOMContentLoaded', boot);
+ }
+})();
+</script>
 
  </div>
  </section>

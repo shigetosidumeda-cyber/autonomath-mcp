@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "jpcite": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["autonomath-mcp"],
+      "env": {
+        "JPCITE_API_BASE": "https://api.jpcite.com"
+      },
+      "description": "jpcite — Japanese public-program evidence MCP (139 tools over subsidies, loans, tax, law, invoice, corp). Anonymous tier 3 req/day per IP free; paid metered ¥3/billable unit (税込 ¥3.30).",
+      "homepage": "https://jpcite.com",
+      "repository": "https://github.com/shigetosidumeda-cyber/autonomath-mcp",
+      "registry": "io.github.shigetosidumeda-cyber/autonomath-mcp",
+      "license": "MIT",
+      "categories": ["government", "legal", "finance", "data", "compliance"]
+    }
+  }
+}
