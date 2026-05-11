@@ -70,6 +70,11 @@ from typing import Any, Literal
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Request, status
 from pydantic import BaseModel, ConfigDict, Field
 
+from jpintel_mcp.api._license_gate import (
+    annotate_attribution,
+    assert_no_blocked,
+    filter_redistributable,
+)
 from jpintel_mcp.api.deps import (
     ApiContextDep,
     DbDep,
@@ -291,6 +296,15 @@ def _materialize_rows(
 
 
 def _render_csv(columns: list[str], rows: list[dict[str, Any]]) -> bytes:
+    # License gate (§24 / §28.9 No-Go #5): every paid export MUST pass
+    # rows through the gate before serializing the bytes that leave the
+    # operator's perimeter. `assert_no_blocked` raises LicenseGateError
+    # on any non-redistributable row (proprietary / unknown / unset).
+    # Rows that survive get an `_attribution` annotation per CC-BY 4.0 §3.
+    assert_no_blocked(rows)
+    rows = [annotate_attribution(r) for r in rows]
+    if "_attribution" not in columns:
+        columns = [*columns, "_attribution"]
     buf = io.StringIO()
     writer = csv.DictWriter(buf, fieldnames=columns, extrasaction="ignore")
     writer.writeheader()
@@ -306,6 +320,15 @@ def _render_csv(columns: list[str], rows: list[dict[str, Any]]) -> bytes:
 
 
 def _render_json(columns: list[str], rows: list[dict[str, Any]]) -> bytes:
+    # License gate (§24 / §28.9 No-Go #5): same fence as the CSV / XLSX
+    # renderers — JSON exports also leave the operator's perimeter, so
+    # `assert_no_blocked` MUST fire before serialization. The AST scanner
+    # in tests/test_license_gate_no_bypass.py keys on the format-marker
+    # regex; JSON is not in that regex today (only zip/csv/excel/xlsx/
+    # parquet) so this call is operationally required but not test-
+    # required. Wired anyway for consistency with the other formats.
+    assert_no_blocked(rows)
+    rows = [annotate_attribution(r) for r in rows]
     payload = {
         "columns": columns,
         "row_count": len(rows),
@@ -321,9 +344,21 @@ def _render_xlsx(columns: list[str], rows: list[dict[str, Any]]) -> bytes:
     XLSX is a ZIP of XML parts. We hand-roll the four required parts so
     this module has zero new runtime deps. Excel/Numbers/LibreOffice all
     open the result; charts and styles are intentionally omitted.
+
+    License gate (§24 / §28.9 No-Go #5): rows are funnelled through
+    `assert_no_blocked` before serialization, then `annotate_attribution`
+    per row, matching the CSV path. `filter_redistributable` is also
+    referenced in a defensive belt-and-braces split so any future
+    reviewer trivially audits redistributable vs blocked counts here.
     """
     import xml.sax.saxutils as _saxutils
     import zipfile
+
+    assert_no_blocked(rows)
+    allowed, _blocked = filter_redistributable(rows)
+    rows = [annotate_attribution(r) for r in allowed]
+    if "_attribution" not in columns:
+        columns = [*columns, "_attribution"]
 
     def _xml_escape(value: Any) -> str:
         if value is None:
@@ -531,6 +566,11 @@ def create_export(
         background_tasks=background_tasks,
         request=request,
         quantity=EXPORT_UNIT_COUNT,
+        # §52 paid-success path: opt into strict metering so Stripe
+        # usage_event idempotency / billing-event index advance fire on
+        # 2xx response (enforced by tests/test_audit_seal_static_guard.py
+        # `test_api_log_usage_paid_success_paths_require_strict_metering`).
+        strict_metering=True,
     )
 
     return ExportResponse(
