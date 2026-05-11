@@ -18,6 +18,11 @@ on:
         description: "Exact commit SHA to deploy"
         required: true
         type: string
+      skip_hydrate:
+        description: "Wave 24 escape hatch: skip the sftp/R2 hydrate step entirely (Dockerfile baked seed + JPINTEL_DB_R2_URL build-arg take over). Set to 'true' when sftp/SSH tunnel is unhealthy (e.g. old machine c3ac6f4 hung at integrity_check) and the hydrate step is consistently timing out at 20min."
+        required: false
+        type: boolean
+        default: false
 
 concurrency:
   # Serialize deploys: only one rollout at a time for the same branch.
@@ -131,8 +136,27 @@ jobs:
         if: steps.fly-token.outputs.available == 'true'
         uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
 
+      - name: SKIP_HYDRATE notice (Wave 24 escape hatch)
+        if: steps.fly-token.outputs.available == 'true' && github.event.inputs.skip_hydrate == 'true'
+        # Wave 24 (2026-05-12): explicit skip path so the deploy log carries
+        # an audit trail when the hydrate step is intentionally bypassed. The
+        # Dockerfile seed-stager will pull JPINTEL_DB_R2_URL on the remote
+        # builder (much more reliable than GHA-side sftp through the unhealthy
+        # old machine). Without this annotation the next operator has to
+        # reverse-engineer the `if:` condition from the job graph.
+        run: |
+          echo "::warning::Wave 24 SKIP_HYDRATE=true engaged. Hydrate step skipped."
+          echo "  ↳ Dockerfile seed-stager will fetch JPINTEL_DB_R2_URL on the remote builder."
+          echo "  ↳ Use this only when GHA-side sftp/SSH tunnel to autonomath-api is unhealthy."
+          echo "  ↳ Required: canonical R2 key autonomath-api/jpintel.db.gz must be uploaded."
+          mkdir -p data
+          # Leave a 1-byte placeholder so the Dockerfile COPY data/jpintel.db
+          # step still succeeds (size-gate then falls over to JPINTEL_DB_R2_URL).
+          printf '\x00' > data/jpintel.db
+          echo "placeholder data/jpintel.db = $(wc -c < data/jpintel.db | tr -d ' ') bytes"
+
       - name: Hydrate jpintel seed DB for Docker build (optional, bake-in fallback)
-        if: steps.fly-token.outputs.available == 'true'
+        if: steps.fly-token.outputs.available == 'true' && github.event.inputs.skip_hydrate != 'true'
         timeout-minutes: 20
         # Wave 22 (2026-05-11): hydrate is now OPTIONAL.
         # ----------------------------------------------------
