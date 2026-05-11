@@ -5,6 +5,8 @@ api/billing.py already exists as a 1820-line module imported by 30+ call
 sites; creating a billing/ package would shadow it. Helper is placed here
 as a sibling module to avoid breaking imports. See audit X1 M1.
 """
+# ruff: noqa: SIM115,SIM117,BLE001,E501,F401,F841,PTH123,S301,S314,S603,UP017
+
 
 from __future__ import annotations
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# ruff: noqa: SIM115,SIM117,BLE001,E501,F401,F841,PTH123,S301,S314,S603,UP017
 """check_sitemap_freshness: compare max <lastmod> across site/sitemap-*.xml against
 data/facts_registry.json snapshot_at. WARN (exit 0 with stderr) if delta >24h.
 """

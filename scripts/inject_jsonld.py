@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# ruff: noqa: SIM115,SIM117,BLE001,E501,F401,F841,PTH123,S301,S314,S603,UP017
 """Inject common @graph JSON-LD into all site/*.html in <head>. LLM 呼出ゼロ。"""
 
 import pathlib

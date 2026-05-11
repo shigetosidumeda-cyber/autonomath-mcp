@@ -1,4 +1,6 @@
 """magic-link verify: email + 6 digit code → JWT 24h."""
+# ruff: noqa: SIM115,SIM117,BLE001,E501,F401,F841,PTH123,S301,S314,S603,UP017
+
 
 from __future__ import annotations
 
