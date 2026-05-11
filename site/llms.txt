@@ -1,5 +1,4 @@
 # jpcite
-Brand identity: current primary brand is jpcite.
 Brand: jpcite. (SEO citation bridge for 旧称: 税務会計AI / AutonoMath / zeimu-kaikei.ai)
 
 ## What jpcite is
