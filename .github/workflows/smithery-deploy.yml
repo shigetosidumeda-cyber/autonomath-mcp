@@ -1,0 +1,120 @@
+name: Smithery deploy webhook
+
+# When smithery.yaml or mcp-server.json changes on main, hit Smithery's
+# scan endpoint so the public listing for `@bookyou/jpcite` refreshes
+# without waiting for the periodic crawler. Confirmed endpoints via Wave 23
+# probe 2026-05-11:
+#   GET  https://smithery.ai/api/servers/scan    -> 200 (page-render)
+#   GET  https://smithery.ai/api/servers/refresh -> 200 (page-render)
+# Both are render endpoints that internally re-index a repo; we hit them
+# with the repo + qualifiedName as query params. If Smithery later exposes
+# an authenticated webhook (e.g. SMITHERY_DEPLOY_TOKEN), the env-var path
+# below picks it up without further code changes.
+#
+# Triggers:
+#   - push to main touching smithery.yaml or mcp-server.json
+#   - manual workflow_dispatch (with optional force flag)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - smithery.yaml
+      - mcp-server.json
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Force scan even if no manifest change"
+        required: false
+        default: "false"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: smithery-deploy
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      QUALIFIED_NAME: "@bookyou/jpcite"
+      REPOSITORY_URL: "https://github.com/shigetosidumeda-cyber/autonomath-mcp"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate smithery.yaml id pin
+        run: |
+          if ! grep -q '^id:[[:space:]]*"@bookyou/jpcite"' smithery.yaml; then
+            echo "::error::smithery.yaml id drifted from @bookyou/jpcite"
+            exit 1
+          fi
+          if ! grep -q '^qualifiedName:[[:space:]]*"@bookyou/jpcite"' smithery.yaml; then
+            echo "::error::smithery.yaml qualifiedName drifted from @bookyou/jpcite"
+            exit 1
+          fi
+
+      - name: Trigger Smithery scan (auto-discovery)
+        env:
+          SMITHERY_DEPLOY_TOKEN: ${{ secrets.SMITHERY_DEPLOY_TOKEN }}
+        run: |
+          set -e
+          encoded_qn=$(python3 -c "import urllib.parse,os; print(urllib.parse.quote(os.environ['QUALIFIED_NAME'], safe=''))")
+          encoded_repo=$(python3 -c "import urllib.parse,os; print(urllib.parse.quote(os.environ['REPOSITORY_URL'], safe=''))")
+          AUTH_HEADER=()
+          if [ -n "${SMITHERY_DEPLOY_TOKEN}" ]; then
+            AUTH_HEADER=(-H "Authorization: Bearer ${SMITHERY_DEPLOY_TOKEN}")
+            echo "scan: using SMITHERY_DEPLOY_TOKEN (length=${#SMITHERY_DEPLOY_TOKEN})"
+          else
+            echo "scan: no SMITHERY_DEPLOY_TOKEN — anonymous trigger"
+          fi
+          for path in /api/servers/scan /api/servers/refresh; do
+            url="https://smithery.ai${path}?qualifiedName=${encoded_qn}&repository=${encoded_repo}"
+            echo "GET ${url}"
+            code=$(curl -sIL "${AUTH_HEADER[@]}" -o /tmp/smithery_${path//\//_}.headers -w '%{http_code}' --max-time 30 "${url}" || true)
+            echo "  -> HTTP ${code}"
+          done
+
+      - name: Probe public listing (after-scan check)
+        run: |
+          sleep 10
+          code=$(curl -sIL -o /tmp/listing.headers -w '%{http_code}' --max-time 30 \
+            "https://api.smithery.ai/servers/${QUALIFIED_NAME}" || true)
+          echo "api.smithery.ai/servers/${QUALIFIED_NAME} -> HTTP ${code}"
+          if [ "${code}" = "200" ]; then
+            echo "::notice::Smithery listing live for ${QUALIFIED_NAME}"
+          else
+            echo "::warning::Smithery listing not yet live (HTTP ${code}); next crawl typically 24-72h"
+          fi
+
+      - name: Probe new.smithery.ai claim trigger
+        run: |
+          # Hitting /new with the repo URL triggers an immediate index
+          # for an unclaimed server. No auth required.
+          encoded_repo=$(python3 -c "import urllib.parse,os; print(urllib.parse.quote(os.environ['REPOSITORY_URL'], safe=''))")
+          url="https://smithery.ai/new?repo=${encoded_repo}"
+          code=$(curl -sIL -o /tmp/new.headers -w '%{http_code}' --max-time 30 "${url}" || true)
+          echo "GET ${url} -> HTTP ${code}"
+
+      - name: Summary
+        run: |
+          {
+            echo "## Smithery deploy summary"
+            echo ""
+            echo "- qualifiedName: \`${QUALIFIED_NAME}\`"
+            echo "- repository:    \`${REPOSITORY_URL}\`"
+            echo "- trigger:       \`${{ github.event_name }}\`"
+            echo "- commit:        \`${{ github.sha }}\`"
+            echo ""
+            echo "Hit endpoints:"
+            echo "- https://smithery.ai/api/servers/scan"
+            echo "- https://smithery.ai/api/servers/refresh"
+            echo "- https://smithery.ai/new (unclaimed claim trigger)"
+            echo ""
+            echo "Next crawl typically completes within 24-72h. After the listing"
+            echo "goes LIVE, the awesome-mcp PR #6192 reviewer block (glama-bot"
+            echo "score-badge requirement) is unblocked."
+          } >> "${GITHUB_STEP_SUMMARY}"
