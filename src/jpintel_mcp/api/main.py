@@ -44,6 +44,7 @@ from jpintel_mcp.api.appi_disclosure import router as appi_disclosure_router
 from jpintel_mcp.api.audit import public_router as audit_public_router
 from jpintel_mcp.api.audit import router as audit_router
 from jpintel_mcp.api.audit_log import router as audit_log_router
+from jpintel_mcp.api.sitemap_audit import router as sitemap_audit_router  # Wave 41 Agent F
 from jpintel_mcp.api.autonomath import (
     health_router as autonomath_health_router,
 )
@@ -2590,6 +2591,9 @@ def create_app() -> FastAPI:
     # 3/日 per-IP quota applies. Paid keys (¥3/req) bypass the anon
     # ceiling and bill normally — same as other /v1/am/* endpoints.
     app.include_router(audit_log_router, dependencies=[AnonIpLimitDep])
+    # Wave 41 Agent F — sitemap-companion-md coverage audit
+    # (GET /v1/audit/sitemap). Public + unmetered + IP-quota gated.
+    app.include_router(sitemap_audit_router, dependencies=[AnonIpLimitDep])
     # Autonomath REST router exposes the 16 am_* tools at /v1/am/*.
     # Same anonymous IP rate-limit dep as other public endpoints.
     app.include_router(autonomath_router, dependencies=[AnonIpLimitDep])
