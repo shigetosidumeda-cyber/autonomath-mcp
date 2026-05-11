@@ -6035,7 +6035,7 @@
           "peak_day": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/UsageDay"
+                "$ref": "#/components/schemas/MeLegacyUsageDay"
               },
               {
                 "type": "null"
@@ -6044,7 +6044,7 @@
           },
           "series": {
             "items": {
-              "$ref": "#/components/schemas/UsageDay"
+              "$ref": "#/components/schemas/MeLegacyUsageDay"
             },
             "title": "Series",
             "type": "array"
@@ -11165,6 +11165,24 @@
         "title": "MatchResponse",
         "type": "object"
       },
+      "MeLegacyUsageDay": {
+        "properties": {
+          "calls": {
+            "title": "Calls",
+            "type": "integer"
+          },
+          "date": {
+            "title": "Date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "date",
+          "calls"
+        ],
+        "title": "UsageDay",
+        "type": "object"
+      },
       "MeResponse": {
         "properties": {
           "created_at": {
@@ -15664,24 +15682,6 @@
         "title": "UsageByClientTag",
         "type": "object"
       },
-      "UsageDay": {
-        "properties": {
-          "calls": {
-            "title": "Calls",
-            "type": "integer"
-          },
-          "date": {
-            "title": "Date",
-            "type": "string"
-          }
-        },
-        "required": [
-          "date",
-          "calls"
-        ],
-        "title": "UsageDay",
-        "type": "object"
-      },
       "UsageDayBucket": {
         "additionalProperties": true,
         "properties": {
@@ -16554,7 +16554,7 @@
     },
     "termsOfService": "https://jpcite.com/tos.html",
     "title": "jpcite",
-    "version": "0.3.4"
+    "version": "0.3.5"
   },
   "openapi": "3.1.0",
   "paths": {
@@ -34821,7 +34821,7 @@
                   "anyOf": [
                     {
                       "items": {
-                        "$ref": "#/components/schemas/UsageDay"
+                        "$ref": "#/components/schemas/MeLegacyUsageDay"
                       },
                       "type": "array"
                     },
