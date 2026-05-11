@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<!-- CWV-HARDENED -->
+<meta charset="UTF-8">
+<meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light dark">
+<title>M&amp;A アドバイザー向け jpcite — 法人 360° + DD deck + 事業承継</title>
+<meta name="description" content="M&amp;A アドバイザー向け jpcite 活用ガイド。法人 360° (houjin_360 3-axis scoring)、DD deck (60 question templates × 7 category)、補助金返還義務 chain、業法 fence 検証、事業承継 制度 mapping。ディールあたり ¥99-165 (税別) で AI 単体比 delta ¥64 万/案件。ROI 倍率 5,000+ (2x scale 後)。¥3/billable unit 完全従量、anonymous 3 req/日 free per IP。">
+
+<meta property="og:title" content="M&amp;A アドバイザー向け jpcite">
+<meta property="og:description" content="法人 360° + DD deck + 補助金返還義務 chain + 業法 fence + 事業承継 を Claude Desktop 経由で 1 query。AI 単体比 delta ¥64 万/案件 (推定値)。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jpcite.com/audiences/ma_advisor">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="M&amp;A アドバイザー向け jpcite">
+<meta name="twitter:description" content="法人 360° + DD deck + 補助金返還義務 + 事業承継 を 1 本化。">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
+
+<link rel="canonical" href="https://jpcite.com/audiences/ma_advisor">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/audiences/ma_advisor">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/audiences/ma-advisor">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/audiences/ma_advisor">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="preload" as="font" type="font/woff2" href="/static/fonts/noto-sans-jp-3e6b27914d.woff2" crossorigin>
+<link rel="stylesheet" href="/static/fonts/noto-sans-jp.css">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css?v=20260428a">
+
+<script defer src="../analytics.js?v=20260503a"></script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://jpcite.com/"},
+    {"@type": "ListItem", "position": 2, "name": "利用者層", "item": "https://jpcite.com/audiences/"},
+    {"@type": "ListItem", "position": 3, "name": "M&Aアドバイザー向け", "item": "https://jpcite.com/audiences/ma_advisor"}
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "serviceType": "M&Aアドバイザー業務支援 API + DD deck + 事業承継 制度 mapping",
+  "name": "jpcite for M&A Advisors",
+  "description": "M&Aアドバイザー向け jpcite 活用。法人 360° (houjin_360 3-axis scoring)、DD deck (60 question templates × 7 category)、補助金返還義務 chain、業法 fence 検証、事業承継 制度 mapping。¥3/billable unit 完全従量。",
+  "provider": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "url": "https://jpcite.com/"
+  },
+  "audience": {
+    "@type": "Audience",
+    "audienceType": "M&Aアドバイザー・M&A仲介・FA・PEファンド"
+  },
+  "areaServed": {
+    "@type": "Country",
+    "name": "日本"
+  },
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "API + MCP 従量",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "3",
+        "priceCurrency": "JPY",
+        "unitText": "billable unit",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": "1",
+          "unitText": "billable unit"
+        }
+      }
+    }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "ディール 1 案件あたりのコストは?", "acceptedAnswer": {"@type": "Answer", "text": "1 案件 33-55 req = ¥99-¥165 (税別) が目安。AI 単体比 delta ¥64 万/案件 (推定値)。"}},
+    {"@type": "Question", "name": "M&A 仲介業者登録制度との整合は?", "acceptedAnswer": {"@type": "Answer", "text": "中小企業庁の M&A 仲介業者登録制度・自主規制ルールに反する代行は一切行いません。事実検索と一次 URL 提供のみで、最終判断はアドバイザー本人の専権事項です。"}},
+    {"@type": "Question", "name": "対象会社の補助金返還義務リスクの確認は?", "acceptedAnswer": {"@type": "Answer", "text": "houjin_360 + check_enforcement_am + apply_eligibility_chain_am の組合せで、subsidy_exclude / grant_refund 事案や対象会社の処分歴を 1-call で surface できます。最終的な返還義務判断は弁護士・会計士・税理士にご確認ください。"}}
+  ]
+}
+</script>
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/_assets/logo.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-jpcite-a11y="baseline">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+ <div class="container header-inner">
+ <a class="brand" href="../index.html" aria-label="jpcite ホーム">
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="../about.html">運営について</a>
+ <a href="../products.html">プロダクト</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="../pricing.html">料金</a>
+ <a href="../audiences/">利用者層</a>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/audiences/ma_advisor" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/audiences/ma-advisor" lang="en" hreflang="en">EN</a>
+ </span>
+ </nav>
+ </div>
+</header>
+
+<main id="main">
+
+ <section class="hero" aria-labelledby="hero-title">
+ <div class="container">
+ <nav class="breadcrumb" aria-label="パンくずリスト" style="margin:0 0 16px;font-size:14px;color:var(--text-muted);">
+ <a href="/">ホーム</a> <span aria-hidden="true">›</span>
+ <a href="/audiences/">利用者層</a> <span aria-hidden="true">›</span>
+ <span aria-current="page">M&amp;Aアドバイザー向け</span>
+ </nav>
+ <h1 id="hero-title">M&amp;Aアドバイザー向け</h1>
+ <p class="hero-sub">法人 360° (3-axis scoring)、DD deck (60 question × 7 category)、補助金返還義務 chain、業法 fence 検証、事業承継 制度 mapping を Claude Desktop 経由で 1 query。<strong>¥3/billable unit 完全従量、anonymous 3 req/日 free per IP</strong>。</p>
+ </div>
+ </section>
+
+ <section class="legal-fence" style="background:var(--bg-warning,#fff8e1);border-left:4px solid var(--accent,#d4a017);padding:20px 0;" aria-labelledby="fence-title">
+ <div class="container">
+ <h2 id="fence-title" class="visually-hidden">業法 fence</h2>
+ <p style="font-size:15px;line-height:1.8;margin:0;color:var(--text);"><strong>M&amp;A 仲介業者登録制度 + 弁護士法 §72 fence (重要)</strong>: jpcite は<strong>M&amp;A仲介の代行・法律判断・税務代理を一切行いません</strong>。本サービスは事実検索 + DD scaffold + 一次 URL 提供のみ、最終 DD 判断・契約交渉・締結はアドバイザー本人および有資格者 (弁護士・会計士・税理士) の専権事項です。中小企業庁 M&amp;A仲介業者登録制度・自主規制ルールに反する代行は一切行いません。</p>
+ </div>
+ </section>
+
+ <section class="features" aria-labelledby="roi-title">
+ <div class="container">
+ <h2 id="roi-title" style="margin-bottom:16px;">5 task × ROI 比較 (AI 単体 vs AI + jpcite)</h2>
+ <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: 数値はディール 1 案件 (中小 M&amp;A / Mid-cap) の想定値 (推定値)。「AI 単体」は外部公的制度根拠なしの汎用 LLM 出力、「AI + jpcite」は jpcite の MCP 1-call 検索を組合せた場合を指します。個別案件の規模・複雑度により変動するため、参考値として提示します。</p>
+ <div style="overflow-x:auto;">
+ <table style="width:100%;border-collapse:collapse;font-size:14px;">
+ <thead>
+ <tr style="background:var(--bg-subtle,#fafafa);border-bottom:2px solid var(--border);">
+ <th style="padding:12px;text-align:left;">task</th>
+ <th style="padding:12px;text-align:left;">AI 単体 (baseline)</th>
+ <th style="padding:12px;text-align:left;">AI + jpcite</th>
+ <th style="padding:12px;text-align:left;">delta</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr style="border-bottom:1px solid var(--border);">
+ <td style="padding:12px;"><strong>1. 法人 360° (対象会社 surface)</strong></td>
+ <td style="padding:12px;">登記・処分歴・採択・適格事業者 手動横断 20h × ¥15,000 = ¥300,000</td>
+ <td style="padding:12px;">3 req ¥9 (houjin_360, 3-axis scoring: registry/enforcement/adoption)</td>
+ <td style="padding:12px;">¥299,991/案件</td>
+ </tr>
+ <tr style="border-bottom:1px solid var(--border);">
+ <td style="padding:12px;"><strong>2. DD deck 作成</strong></td>
+ <td style="padding:12px;">業種 × 規模 × 与信 question 手動 6h × ¥15,000 = ¥90,000</td>
+ <td style="padding:12px;">1 req ¥3 (match_due_diligence_questions, 60 templates × 7 category)</td>
+ <td style="padding:12px;">¥89,997/案件</td>
+ </tr>
+ <tr style="border-bottom:1px solid var(--border);">
+ <td style="padding:12px;"><strong>3. 補助金返還義務 chain</strong></td>
+ <td style="padding:12px;">subsidy_exclude / grant_refund 過去事案手動検索 6h × ¥15,000 = ¥90,000</td>
+ <td style="padding:12px;">3 req ¥9 (check_enforcement_am + apply_eligibility_chain_am + track_amendment_lineage_am)</td>
+ <td style="padding:12px;">¥89,991/案件</td>
+ </tr>
+ <tr style="border-bottom:1px solid var(--border);">
+ <td style="padding:12px;"><strong>4. 業法 fence 検証 (買収後業務範囲)</strong></td>
+ <td style="padding:12px;">許認可 + 業法 §72 / §52 / §47条の2 / 司法書士法 §3 fence 手動検証 6h × ¥15,000 = ¥90,000</td>
+ <td style="padding:12px;">2 req ¥6 (search_by_law + search_certifications)</td>
+ <td style="padding:12px;">¥89,994/案件</td>
+ </tr>
+ <tr style="border-bottom:1px solid var(--border);">
+ <td style="padding:12px;"><strong>5. 事業承継 制度 mapping</strong></td>
+ <td style="padding:12px;">事業承継税制 + M&amp;A 補助金 + 引継ぎ支援 手動マッピング 10h × ¥15,000 = ¥150,000</td>
+ <td style="padding:12px;">2 req ¥6 (succession + find_complementary_programs_am)</td>
+ <td style="padding:12px;">¥149,994/案件</td>
+ </tr>
+ <tr style="background:var(--bg-subtle,#fafafa);font-weight:600;">
+ <td style="padding:12px;">合計 (ディール 1 案件)</td>
+ <td style="padding:12px;">¥720,000 (48h × ¥15,000)</td>
+ <td style="padding:12px;">¥99-¥165/案件 (33-55 req)</td>
+ <td style="padding:12px;"><strong>delta ¥64 万/案件</strong></td>
+ </tr>
+ <tr style="background:var(--bg-subtle,#fafafa);font-weight:600;">
+ <td style="padding:12px;">ROI 倍率 (2x scale 後)</td>
+ <td style="padding:12px;">—</td>
+ <td style="padding:12px;">—</td>
+ <td style="padding:12px;"><strong>5,000+ 倍</strong> (¥720k ÷ ¥99-¥165 ≒ 4,360-7,272)</td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ <p style="font-size:13px;color:var(--text-muted);margin-top:12px;">※ 「AI 単体 ¥65 万」は 1 案件 48h × ¥15,000/h の手動工数累計 (中小〜Mid-cap M&amp;A の想定)。Mega-cap や クロスボーダー案件はより高額。jpcite 側 ¥99-¥165 は paid 33-55 req のレンジ。 「ROI 倍率 5,000+」は ¥720k ÷ ¥99-¥165 の名目比較で、2x scale (案件件数 2 倍想定) 後の amortization 込み。誇大広告意図なし、推定値として提示。最終 DD 判断・契約は有資格者にご相談ください。</p>
+ </div>
+ </section>
+
+ <section class="install" style="background:var(--bg-subtle,#fafafa);padding:32px 0;" aria-labelledby="install-title">
+ <div class="container">
+ <h2 id="install-title">MCP install (Claude Desktop)</h2>
+ <p>Claude Desktop の <code>claude_desktop_config.json</code> に下記を追加してください。</p>
+ <pre style="background:var(--bg-code,#f5f5f5);padding:16px;border-radius:6px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;"><code>{
+  "mcpServers": {
+    "jpcite": {
+      "command": "uvx",
+      "args": ["autonomath-mcp"]
+    }
+  }
+}</code></pre>
+ <p style="font-size:14px;color:var(--text-muted);margin-top:16px;">paid usage を有効化する場合は <code>env</code> に API key を追加。anonymous 3 req/日 free per IP は API key なしで利用可 (JST 翌日 00:00 リセット)。案件ごとの fan-out は <code>X-Client-Tag</code> header (案件 ID 連動) で属性付与可能。</p>
+ </div>
+ </section>
+
+ <section class="cta-section" style="padding:32px 0;" aria-labelledby="cta-title">
+ <div class="container" style="text-align:center;">
+ <h2 id="cta-title">使い始める</h2>
+ <p>tier・seat・年間最低額なし。<strong>¥3/billable unit 完全従量</strong>のみ、anonymous 3 req/日 free per IP。</p>
+ <div class="cta-row" style="margin-top:24px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+ <a class="btn btn-primary" href="../pricing.html?src=audiences_ma_advisor">¥3/req で本格運用 <span aria-hidden="true">&rarr;</span></a>
+ <a class="btn btn-secondary" href="../playground.html?src=audiences_ma_advisor">匿名 3 req/日 で試す</a>
+ <a class="btn btn-secondary" href="/docs/">ドキュメント</a>
+ </div>
+ </div>
+ </section>
+
+ <p class="legal-note" style="font-size:13px;color:var(--text-muted);margin:24px auto;max-width:920px;padding:0 24px;">
+本サービスは情報検索です。M&amp;A 仲介・法律判断・税務代理・監査意見は中小企業庁 M&amp;A仲介業者登録制度 / 弁護士法 §72 / 税理士法 §52 / 公認会計士法 §47条の2 で資格者の専権事項であり、jpcite は代行を一切行いません。個別具体的な判断は有資格者にご相談ください。
+</p>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand"><img src="/assets/brand/jpcite-mark.svg" alt="" width="20" height="20" loading="lazy" decoding="async" style="height:20px;width:20px;vertical-align:middle;margin-right:8px;display:inline-block;">jpcite</p>
+ <p class="footer-tag">日本の公的制度を、根拠付き成果物に。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター">
+ <a href="../about.html">運営について</a>
+ <a href="../products.html">プロダクト</a>
+ <a href="../pricing.html">料金</a>
+ <a href="/docs/">ドキュメント</a>
+ <a href="../tos.html">利用規約</a>
+ <a href="../privacy.html">プライバシー</a>
+ <a href="../tokushoho.html">特商法</a><a href="mailto:info@bookyou.net">お問い合わせ</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708) · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
+</footer>
+
+<script src="/assets/trust-strip.js" defer></script>
+
+</body>
+</html>
