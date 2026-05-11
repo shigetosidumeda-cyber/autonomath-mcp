@@ -43,7 +43,9 @@
   "@type": "Organization",
   "@id": "https://jpcite.com/#publisher",
   "name": "Bookyou株式会社",
-  "alternateName": ["jpcite"],
+  "alternateName": [
+    "jpcite"
+  ],
   "url": "https://jpcite.com/",
   "logo": "https://jpcite.com/assets/logo-v2.svg",
   "email": "info@bookyou.net",
@@ -61,8 +63,11 @@
   "contactPoint": {
     "@type": "ContactPoint",
     "email": "info@bookyou.net",
-    "contactType": "customer support",
-    "availableLanguage": ["ja", "en"]
+    "contactType": "technical support",
+    "availableLanguage": [
+      "ja",
+      "en"
+    ]
   },
   "sameAs": [
     "https://www.bookyou.net/"
@@ -195,12 +200,23 @@
       "contactPoint": {
         "@type": "ContactPoint",
         "email": "info@bookyou.net",
-        "contactType": "customer support",
-        "availableLanguage": ["ja", "en"]
+        "contactType": "technical support",
+        "availableLanguage": [
+          "ja",
+          "en"
+        ]
       },
       "identifier": [
-        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
-        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+        {
+          "@type": "PropertyValue",
+          "propertyID": "jp-corporate-number",
+          "value": "8010001213708"
+        },
+        {
+          "@type": "PropertyValue",
+          "propertyID": "jp-qualified-invoice-number",
+          "value": "T8010001213708"
+        }
       ]
     },
     {
@@ -209,7 +225,9 @@
       "name": "jpcite",
       "url": "https://jpcite.com",
       "inLanguage": "ja",
-      "publisher": {"@id": "https://jpcite.com/#org"},
+      "publisher": {
+        "@id": "https://jpcite.com/#org"
+      },
       "potentialAction": {
         "@type": "SearchAction",
         "target": "https://jpcite.com/search?q={query}",
@@ -220,20 +238,47 @@
       "@type": "Service",
       "@id": "https://jpcite.com/#service",
       "serviceType": "Japanese public-program evidence API",
-      "provider": {"@id": "https://jpcite.com/#org"},
-      "areaServed": {"@type": "Country", "name": "Japan"},
+      "provider": {
+        "@id": "https://jpcite.com/#org"
+      },
+      "areaServed": {
+        "@type": "Country",
+        "name": "Japan"
+      },
       "hasOfferCatalog": {
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+          {
+            "@type": "Offer",
+            "name": "Company Folder Pack",
+            "url": "https://jpcite.com/products/company-folder"
+          },
+          {
+            "@type": "Offer",
+            "name": "Monthly Review",
+            "url": "https://jpcite.com/products/monthly-review"
+          },
+          {
+            "@type": "Offer",
+            "name": "BPO Intake",
+            "url": "https://jpcite.com/products/bpo-intake"
+          },
+          {
+            "@type": "Offer",
+            "name": "Public-Info DD",
+            "url": "https://jpcite.com/products/public-dd"
+          },
+          {
+            "@type": "Offer",
+            "name": "Pre-Consult Triage",
+            "url": "https://jpcite.com/products/pre-consult"
+          }
         ]
       },
-      "offers": {"@id": "https://jpcite.com/#price"}
+      "offers": {
+        "@id": "https://jpcite.com/#price"
+      }
     },
     {
       "@type": "UnitPriceSpecification",
@@ -392,7 +437,9 @@
  </section>
 
  <section aria-labelledby="three-trial-checklist-title" style="margin-top:40px;">
- <h2 id="three-trial-checklist-title" class="section-title" style="font-size:22px;">無料 3 回で確認すること</h2>
+ <details>
+ <summary style="cursor:pointer;font-size:22px;font-weight:700;color:var(--text);padding:6px 0;">無料 3 回で確認すること (5 点チェックリスト)</summary>
+ <h2 id="three-trial-checklist-title" class="visually-hidden" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">無料 3 回で確認すること</h2>
  <p style="font-size:15px;line-height:1.7;margin:0 0 16px;color:var(--text-muted);max-width:780px;">
  匿名 3 リクエスト/日 (IP 単位、 JST 翌日 00:00 リセット) の代表的な検証フローで、 課金前に下の 5 点を確認できます。 source_url、 source_fetched_at、 known_gaps、 確認範囲を見て、 継続利用や MCP / OpenAPI への組み込みに進むか判断できます。
  </p>
@@ -435,6 +482,7 @@
  <a class="btn btn-primary" href="/playground.html?flow=evidence3" data-cta-variant="three-trial-checklist-cta">Playground で 3 回検証する →</a>
  <a class="btn btn-secondary" href="/docs/getting-started/" data-cta-variant="three-trial-checklist-getting-started">5 分クイックスタート →</a>
  </div>
+ </details>
  </section>
 
  <section aria-labelledby="value-title" style="margin-top:48px;">
@@ -465,7 +513,9 @@
  </section>
 
  <section aria-labelledby="break-even-title" style="margin-top:56px;">
- <h2 id="break-even-title" class="section-title">入力文脈 break-even calculator (参考値)</h2>
+ <details>
+ <summary style="cursor:pointer;font-size:22px;font-weight:700;color:var(--text);padding:6px 0;">入力文脈 break-even calculator (参考値) を展開</summary>
+ <h2 id="break-even-title" class="visually-hidden" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">入力文脈 break-even calculator (参考値)</h2>
  <p style="font-size:15px;line-height:1.7;margin:0 0 16px;color:var(--text-muted);max-width:780px;">
  ソース PDF / トークン量 と 外部 LLM の 入力 token 単価 (¥/1M) を入力すると、
  jpcite Evidence Packet で 削減見込みのある 入力 tokens、 jpcite 1 unit コスト、
@@ -593,6 +643,7 @@
      });
    })();
  </script>
+ </details>
  </section>
 
  <section style="margin-top:56px;">

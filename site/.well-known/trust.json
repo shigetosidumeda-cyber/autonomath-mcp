@@ -117,7 +117,9 @@
       {"law": "公認会計士法", "section": "47-2", "professional": "公認会計士", "scope_excluded": "監査証明業務", "directory": "https://jicpa.or.jp/"},
       {"law": "行政書士法", "section": "1", "professional": "行政書士", "scope_excluded": "申請書面作成・提出代行", "directory": "https://www.gyosei.or.jp/"},
       {"law": "司法書士法", "section": "3", "professional": "司法書士", "scope_excluded": "登記申請・登記書類作成", "directory": "https://www.shiho-shoshi.or.jp/"},
-      {"law": "社会保険労務士法", "section": "27", "professional": "社労士", "scope_excluded": "36協定生成 (gated off)・就業規則作成・助成金申請代行", "directory": "https://www.shakaihokenroumushi.jp/"}
+      {"law": "社会保険労務士法", "section": "27", "professional": "社労士", "scope_excluded": "36協定生成 (gated off)・就業規則作成・助成金申請代行", "directory": "https://www.shakaihokenroumushi.jp/"},
+      {"law": "弁理士法", "section": "75", "professional": "弁理士", "scope_excluded": "特許・商標出願書類作成・特許庁手続代理・鑑定", "directory": "https://www.jpaa.or.jp/"},
+      {"law": "中小企業診断士登録規則", "section": "登録規則", "professional": "中小企業診断士", "scope_excluded": "個別経営診断書発行・認定支援機関業務代行", "directory": "https://www.j-smeca.jp/"}
     ],
     "page": "https://jpcite.com/legal-fence",
     "disclaimer_in_response": true,

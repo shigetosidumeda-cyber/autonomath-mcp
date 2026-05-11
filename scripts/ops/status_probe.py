@@ -1,126 +1,235 @@
 #!/usr/bin/env python3
-# ruff: noqa: N803,N806,SIM115,SIM117,BLE001,E501,F401,F841,PTH123,S301,S314,S603,UP017
-"""5 component health probe for status page. LLM API 呼出ゼロ、pure stdlib + httpx (sync)."""
+# ruff: noqa: E501
+"""5 component status probe for jpcite. LLM API 呼出ゼロ、pure stdlib + requests (sync).
+
+Probes 5 production surfaces (api / mcp / billing / data-freshness / dashboard) and emits
+a JSON snapshot to stdout. Pipeable; --pretty for indent=2.
+
+Overall verdict:
+  - all 5 ok       → "ok"
+  - any "n/a"      → "degraded"
+  - any "down"     → "down"
+
+Constraints: requests + urllib + datetime + json only. timeout=10s/component, no retry.
+LLM API imports forbidden (memory: feedback_no_operator_llm_api).
+"""
 
 from __future__ import annotations
 
+import argparse
 import json
-import os
+import re
 import sys
 import time
 import urllib.error
 import urllib.request
-from datetime import UTC, datetime
-from pathlib import Path
+from datetime import datetime, timedelta, timezone
 
-COMPONENTS = ["api", "mcp", "billing", "data-freshness", "dashboard"]
+try:
+    import requests  # type: ignore[import-untyped]
+
+    HAVE_REQUESTS = True
+except ImportError:
+    HAVE_REQUESTS = False
+
+JST = timezone(timedelta(hours=9), name="JST")
+TIMEOUT_S = 10
+MCP_EXPECTED_EMAIL = "info@bookyou.net"
+MCP_TOOLS_COHORT = 139  # SOT: CLAUDE.md manifest hold-at-139
+DATE_RE = re.compile(r"(\d{4})-(\d{2})-(\d{2})")
+FRESH_DAYS = 7
+
+API_BASE = "https://api.jpcite.com"
+SITE_BASE = "https://jpcite.com"
+
+
+def _fetch(url: str) -> tuple[int | None, str | None, int | None]:
+    """Return (http_status, body_text, latency_ms). On network failure → (None, None, latency)."""
+    t0 = time.monotonic()
+    try:
+        if HAVE_REQUESTS:
+            resp = requests.get(url, timeout=TIMEOUT_S, allow_redirects=True)
+            latency_ms = int((time.monotonic() - t0) * 1000)
+            return resp.status_code, resp.text, latency_ms
+        req = urllib.request.Request(url, headers={"User-Agent": "jpcite-status-probe/1.0"})
+        with urllib.request.urlopen(req, timeout=TIMEOUT_S) as r:
+            body = r.read().decode("utf-8", errors="replace")
+            latency_ms = int((time.monotonic() - t0) * 1000)
+            return r.status, body, latency_ms
+    except urllib.error.HTTPError as e:
+        latency_ms = int((time.monotonic() - t0) * 1000)
+        try:
+            body = e.read().decode("utf-8", errors="replace")
+        except Exception:
+            body = None
+        return e.code, body, latency_ms
+    except Exception:
+        latency_ms = int((time.monotonic() - t0) * 1000)
+        return None, None, latency_ms
 
 
 def probe_api() -> dict:
-    """Probe api.jpcite.com /healthz + /v1/meta, calc p95 from 5 polls."""
-    base = os.environ.get("JPCITE_API_BASE", "https://api.jpcite.com")
-    latencies = []
-    health_ok = False
-    for _ in range(5):
-        try:
-            t0 = time.monotonic()
-            with urllib.request.urlopen(f"{base}/healthz", timeout=10) as r:
-                _ = r.read()
-                health_ok = r.status == 200
-            latencies.append(int((time.monotonic() - t0) * 1000))
-        except Exception:
-            latencies.append(9999)
-    latencies.sort()
-    p95 = latencies[min(int(0.95 * len(latencies)), len(latencies) - 1)]
-    status = "operational" if health_ok and p95 < 1500 else ("degraded" if health_ok else "outage")
-    return {"id": "api", "status": status, "latency_p95_ms": p95, "probe_count": len(latencies)}
+    """GET https://api.jpcite.com/healthz → 200 + JSON status="ok"."""
+    http, body, latency = _fetch(f"{API_BASE}/healthz")
+    if http != 200 or body is None:
+        return {"status": "down", "latency_ms": latency, "http": http}
+    try:
+        data = json.loads(body)
+        if data.get("status") == "ok":
+            return {"status": "ok", "latency_ms": latency, "http": 200}
+        return {"status": "down", "latency_ms": latency, "http": 200, "reason": "status!=ok"}
+    except (json.JSONDecodeError, ValueError):
+        return {"status": "down", "latency_ms": latency, "http": 200, "reason": "non_json"}
 
 
 def probe_mcp() -> dict:
-    """Probe mcp-server.json tool count."""
-    base = os.environ.get("JPCITE_API_BASE", "https://api.jpcite.com")
+    """GET https://jpcite.com/.well-known/mcp.json → 200 + .contact.email + tools cohort."""
+    http, body, latency = _fetch(f"{SITE_BASE}/.well-known/mcp.json")
+    if http != 200 or body is None:
+        return {"status": "down", "latency_ms": latency, "http": http}
     try:
-        with urllib.request.urlopen(f"{base}/mcp-server.json", timeout=10) as r:
-            data = json.loads(r.read())
-            count = len(data.get("tools", []))
-            status = "operational" if count >= 130 else "degraded"
-            return {"id": "mcp", "status": status, "tools_count": count}
-    except Exception as e:
-        return {"id": "mcp", "status": "outage", "error": str(e)[:200]}
+        data = json.loads(body)
+    except (json.JSONDecodeError, ValueError):
+        return {"status": "down", "latency_ms": latency, "http": 200, "reason": "non_json"}
+    contact_email = (data.get("contact") or {}).get("email")
+    if contact_email != MCP_EXPECTED_EMAIL:
+        return {
+            "status": "down",
+            "latency_ms": latency,
+            "http": 200,
+            "reason": f"contact.email={contact_email!r} expected={MCP_EXPECTED_EMAIL!r}",
+        }
+    tools = data.get("tools")
+    tools_count = len(tools) if isinstance(tools, list) else None
+    if tools_count != MCP_TOOLS_COHORT:
+        return {
+            "status": "down",
+            "latency_ms": latency,
+            "http": 200,
+            "reason": f"tools={tools_count} expected={MCP_TOOLS_COHORT}",
+            "tools_count": tools_count,
+        }
+    return {
+        "status": "ok",
+        "latency_ms": latency,
+        "http": 200,
+        "tools_count": tools_count,
+    }
 
 
 def probe_billing() -> dict:
-    """Probe Stripe events 24h 5xx rate (stub - real impl needs STRIPE_SECRET_KEY)."""
-    if not os.environ.get("STRIPE_SECRET_KEY"):
-        return {
-            "id": "billing",
-            "status": "operational",
-            "note": "stub (STRIPE_SECRET_KEY not set in probe env)",
-        }
-    # Real probe would call stripe.events.list and compute 5xx rate
-    return {"id": "billing", "status": "operational", "note": "real probe pending Wave 9"}
+    """GET https://api.jpcite.com/v1/billing/healthz → 200 (404 → n/a degraded)."""
+    http, _body, latency = _fetch(f"{API_BASE}/v1/billing/healthz")
+    if http == 200:
+        return {"status": "ok", "latency_ms": latency, "http": 200}
+    if http == 404:
+        return {"status": "n/a", "latency_ms": None, "http": 404}
+    return {"status": "down", "latency_ms": latency, "http": http}
 
 
 def probe_data_freshness() -> dict:
-    """Probe corpus updated_at lag for 4 datasets (stub)."""
-    db_path = os.environ.get("AUTONOMATH_DB_PATH", "data/autonomath.db")
-    if not Path(db_path).exists():
+    """GET https://jpcite.com/data-freshness → 200 + regex YYYY-MM-DD → 7 日以内 ok."""
+    http, body, latency = _fetch(f"{SITE_BASE}/data-freshness")
+    if http != 200 or body is None:
+        return {"status": "down", "latency_ms": latency, "http": http}
+    matches = DATE_RE.findall(body)
+    if not matches:
         return {
-            "id": "data-freshness",
-            "status": "operational",
-            "note": "stub (DB not present in probe env)",
+            "status": "down",
+            "latency_ms": latency,
+            "http": 200,
+            "reason": "no_date_found",
         }
-    import sqlite3
-
-    try:
-        sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
-        # Stub: would query MAX(updated_at) per table
-        return {"id": "data-freshness", "status": "operational", "datasets_within_target": 4}
-    except Exception as e:
-        return {"id": "data-freshness", "status": "degraded", "error": str(e)[:200]}
+    dates: list[datetime] = []
+    for y, m, d in matches:
+        try:
+            dates.append(datetime(int(y), int(m), int(d), tzinfo=JST))
+        except ValueError:
+            continue
+    if not dates:
+        return {
+            "status": "down",
+            "latency_ms": latency,
+            "http": 200,
+            "reason": "no_parseable_date",
+        }
+    last_updated = max(dates)
+    now = datetime.now(JST)
+    age_days = (now - last_updated).days
+    last_str = last_updated.strftime("%Y-%m-%d")
+    if age_days <= FRESH_DAYS:
+        return {
+            "status": "ok",
+            "latency_ms": latency,
+            "http": 200,
+            "last_updated": last_str,
+        }
+    return {
+        "status": "down",
+        "latency_ms": latency,
+        "http": 200,
+        "last_updated": last_str,
+        "reason": f"stale_{age_days}d",
+    }
 
 
 def probe_dashboard() -> dict:
-    """Probe dashboard HTML 200 (real impl: magic-link completion rate)."""
-    try:
-        with urllib.request.urlopen("https://jpcite.com/dashboard.html", timeout=10) as r:
-            return {"id": "dashboard", "status": "operational" if r.status == 200 else "degraded"}
-    except Exception as e:
-        return {"id": "dashboard", "status": "outage", "error": str(e)[:200]}
-
-
-def overall(components: list[dict]) -> str:
-    statuses = [c.get("status", "unknown") for c in components]
-    if "outage" in statuses:
-        return "outage"
-    if "degraded" in statuses:
-        return "degraded"
-    return "operational"
-
-
-def main() -> int:
-    components = [
-        probe_api(),
-        probe_mcp(),
-        probe_billing(),
-        probe_data_freshness(),
-        probe_dashboard(),
-    ]
-    snapshot = {
-        "schema_version": "1.0",
-        "updated_at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "overall_status": overall(components),
-        "components": components,
-        "active_incidents": [],
-        "scheduled_maintenance": [],
+    """GET https://jpcite.com/dashboard.html → 200 + id="billing" anchor."""
+    http, body, latency = _fetch(f"{SITE_BASE}/dashboard.html")
+    if http != 200 or body is None:
+        return {"status": "down", "latency_ms": latency, "http": http}
+    if 'id="billing"' in body or "id='billing'" in body:
+        return {"status": "ok", "latency_ms": latency, "http": 200}
+    return {
+        "status": "down",
+        "latency_ms": latency,
+        "http": 200,
+        "reason": "no_billing_anchor",
     }
-    out = Path(os.environ.get("STATUS_JSON_OUT", "site/status/status.json"))
-    out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(snapshot, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    print(
-        f"[status_probe] wrote {out}: overall={snapshot['overall_status']}, components={len(components)}"
+
+
+def compute_overall(components: dict[str, dict]) -> str:
+    """all ok → ok / 1+ n/a → degraded / 1+ down → down (down ranks worse than degraded)."""
+    statuses = [c.get("status") for c in components.values()]
+    if "down" in statuses:
+        return "down"
+    if "n/a" in statuses:
+        return "degraded"
+    return "ok"
+
+
+def build_snapshot() -> dict:
+    components = {
+        "api": probe_api(),
+        "mcp": probe_mcp(),
+        "billing": probe_billing(),
+        "data-freshness": probe_data_freshness(),
+        "dashboard": probe_dashboard(),
+    }
+    return {
+        "snapshot_at": datetime.now(JST).strftime("%Y-%m-%dT%H:%M:%S+09:00"),
+        "components": components,
+        "overall": compute_overall(components),
+    }
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="jpcite 5-component status probe (api/mcp/billing/data-freshness/dashboard)",
     )
-    return 0 if snapshot["overall_status"] == "operational" else 1
+    parser.add_argument(
+        "--pretty",
+        action="store_true",
+        help="indent JSON with 2-space indent (default: single-line, pipeable)",
+    )
+    args = parser.parse_args(argv)
+
+    snapshot = build_snapshot()
+    if args.pretty:
+        print(json.dumps(snapshot, indent=2, ensure_ascii=False))
+    else:
+        print(json.dumps(snapshot, ensure_ascii=False))
+    return 0 if snapshot["overall"] == "ok" else 1
 
 
 if __name__ == "__main__":

@@ -36,6 +36,7 @@ not import the per-format modules directly from a route file.
 
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING, Any, Literal
 
 from fastapi import HTTPException, status
@@ -49,6 +50,8 @@ from jpintel_mcp.api._license_gate import (
 
 if TYPE_CHECKING:
     from starlette.responses import Response
+
+logger = logging.getLogger("jpintel.api.format_dispatch")
 
 # ---------------------------------------------------------------------------
 # Public format flag (kept literal so handler `Query(...)` annotations type
@@ -252,9 +255,16 @@ def render(
     try:
         assert_no_blocked(rows)
     except LicenseGateError as exc:
+        # P0 redteam (audit): never leak internal license-gate detail
+        # (row IDs, source identifiers) via str(exc). Log full exception
+        # for ops, return canonical envelope to client.
+        logger.warning("format_dispatch license gate blocked: %s", exc, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail=str(exc),
+            detail={
+                "code": "FORMAT_DISPATCH_ERROR",
+                "message": "Requested rows contain license-restricted content and cannot be served in this format.",
+            },
         ) from exc
     rows = [annotate_attribution(row) for row in rows]
 

@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import datetime as _dt
 import json
+import logging
 import os
 import statistics
 from functools import lru_cache
@@ -40,6 +41,8 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, Query
 
 from jpintel_mcp.api._response_models import MetaFreshnessResponse
+
+logger = logging.getLogger("jpintel.api.meta_freshness")
 
 router = APIRouter(prefix="/v1/meta", tags=["meta", "transparency"])
 
@@ -240,7 +243,16 @@ async def meta_freshness(
     try:
         registry = _load_registry_cached()
     except FileNotFoundError as e:
-        raise HTTPException(status_code=503, detail=str(e)) from e
+        # P0 redteam (audit): never leak filesystem paths via str(e).
+        # Log full exception for ops, return canonical envelope to client.
+        logger.exception("meta_freshness registry load failed: %s", e)
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "code": "META_FRESHNESS_UNAVAILABLE",
+                "message": "Freshness metadata is temporarily unavailable. Please try again.",
+            },
+        ) from e
 
     enriched = _load_enriched_lookup()
     agg = aggregate_freshness(registry, enriched, tier_filter=tier)

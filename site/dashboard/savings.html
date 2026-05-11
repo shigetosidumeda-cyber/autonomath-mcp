@@ -12,11 +12,11 @@
       same data, used by site/dashboard.html already. Path is overridable
       via window.__JPCITE_USAGE_PATH for ops.)
 
-  Math (W28-4 sim 実測 anchor, Claude Opus 4.7, 6,000 q/月 baseline):
+  Math (シミュレーション実測 anchor, Claude Opus 4.7, 6,000 q/月 baseline):
 
     Token saving (raw, often net-negative on Opus 4.7):
       queries       = sum(calls)                   over 30 day window
-      usd_saved     = queries * 0.006285           // W28-4 anchor: $37.71 / 6,000
+      usd_saved     = queries * 0.006285           // シミュレーション anchor: $37.71 / 6,000
       jpy_saved     = usd_saved * 150              // FX
       jpy_cost      = queries * 3.30
       token_delta   = jpy_saved - jpy_cost
@@ -176,12 +176,23 @@
       "contactPoint": {
         "@type": "ContactPoint",
         "email": "info@bookyou.net",
-        "contactType": "customer support",
-        "availableLanguage": ["ja", "en"]
+        "contactType": "technical support",
+        "availableLanguage": [
+          "ja",
+          "en"
+        ]
       },
       "identifier": [
-        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
-        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+        {
+          "@type": "PropertyValue",
+          "propertyID": "jp-corporate-number",
+          "value": "8010001213708"
+        },
+        {
+          "@type": "PropertyValue",
+          "propertyID": "jp-qualified-invoice-number",
+          "value": "T8010001213708"
+        }
       ]
     },
     {
@@ -190,7 +201,9 @@
       "name": "jpcite",
       "url": "https://jpcite.com",
       "inLanguage": "ja",
-      "publisher": {"@id": "https://jpcite.com/#org"},
+      "publisher": {
+        "@id": "https://jpcite.com/#org"
+      },
       "potentialAction": {
         "@type": "SearchAction",
         "target": "https://jpcite.com/search?q={query}",
@@ -201,20 +214,47 @@
       "@type": "Service",
       "@id": "https://jpcite.com/#service",
       "serviceType": "Japanese public-program evidence API",
-      "provider": {"@id": "https://jpcite.com/#org"},
-      "areaServed": {"@type": "Country", "name": "Japan"},
+      "provider": {
+        "@id": "https://jpcite.com/#org"
+      },
+      "areaServed": {
+        "@type": "Country",
+        "name": "Japan"
+      },
       "hasOfferCatalog": {
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+          {
+            "@type": "Offer",
+            "name": "Company Folder Pack",
+            "url": "https://jpcite.com/products/company-folder"
+          },
+          {
+            "@type": "Offer",
+            "name": "Monthly Review",
+            "url": "https://jpcite.com/products/monthly-review"
+          },
+          {
+            "@type": "Offer",
+            "name": "BPO Intake",
+            "url": "https://jpcite.com/products/bpo-intake"
+          },
+          {
+            "@type": "Offer",
+            "name": "Public-Info DD",
+            "url": "https://jpcite.com/products/public-dd"
+          },
+          {
+            "@type": "Offer",
+            "name": "Pre-Consult Triage",
+            "url": "https://jpcite.com/products/pre-consult"
+          }
         ]
       },
-      "offers": {"@id": "https://jpcite.com/#price"}
+      "offers": {
+        "@id": "https://jpcite.com/#price"
+      }
     },
     {
       "@type": "UnitPriceSpecification",
@@ -247,7 +287,7 @@
    <h1 class="save-title" data-i18n="title">あなたの今月の節約 (時間 + token)</h1>
    <p class="save-sub" data-i18n="sub">jpcite の真の価値は <strong>verify 時間の解放</strong> と <strong>audit-grade citation</strong>。token math 単独では net loss でも、税理士単価換算の時間節約で大幅プラスに転じます。個別結果は使用パターンに依存します。</p>
 
-   <div class="disclosure" data-i18n="disclosure"><strong>個別結果は使用パターンに依存します。</strong> 下記は W28-4 sim 実測 (Claude Opus 4.7、6,000 query/月) を default 値として表示。実 API キー入力で実数に置換されます。</div>
+   <div class="disclosure" data-i18n="disclosure"><strong>個別結果は使用パターンに依存します。</strong> 下記はシミュレーション実測 (Claude Opus 4.7、6,000 query/月) を default 値として表示。実 API キー入力で実数に置換されます。</div>
 
    <div class="keybox">
     <label for="api-key-input" data-i18n="key_label">API キー (X-API-Key)</label>
@@ -322,8 +362,8 @@
    </div>
 
    <p class="formula" data-i18n="formula">
-    計算式 (W28-4 sim 実測 anchor、Claude Opus 4.7、6,000 query/月 baseline):<br>
-    USD 節約 = <code>$0.006285/query</code> (W28-4 実測、$37.71 / 6,000) / FX = <code>¥150/$</code> / jpcite = <code>¥3.30 × calls</code>。<br>
+    計算式 (シミュレーション実測 anchor、Claude Opus 4.7、6,000 query/月 baseline):<br>
+    USD 節約 = <code>$0.006285/query</code> (シミュレーション実測、$37.71 / 6,000) / FX = <code>¥150/$</code> / jpcite = <code>¥3.30 × calls</code>。<br>
     時間節約: <code>0.5 min/query × ¥8,000/h</code> (税理士単価) → 6,000 q/月 = 50h = ¥400,000。<br>
     <strong>honest disclosure:</strong> raw token math では 6,000 q/月で net <strong>-¥14,144 (-71%)</strong>。真の価値は audit-grade citation + verify 時間の解放です。
    </p>
@@ -359,7 +399,7 @@
       back: 'ダッシュボードに戻る',
       title: 'あなたの今月の節約 (時間 + token)',
       sub: 'jpcite の真の価値は <strong>verify 時間の解放</strong> と <strong>audit-grade citation</strong>。token math 単独では net loss でも、税理士単価換算の時間節約で大幅プラスに転じます。個別結果は使用パターンに依存します。',
-      disclosure: '<strong>個別結果は使用パターンに依存します。</strong> 下記は W28-4 sim 実測 (Claude Opus 4.7、6,000 query/月) を default 値として表示。実 API キー入力で実数に置換されます。',
+      disclosure: '<strong>個別結果は使用パターンに依存します。</strong> 下記はシミュレーション実測 (Claude Opus 4.7、6,000 query/月) を default 値として表示。実 API キー入力で実数に置換されます。',
       key_label: 'API キー (X-API-Key)',
       key_save: '保存して読み込み',
       key_clear: '削除',
@@ -382,7 +422,7 @@
       chart_desc: '各日の (時間節約 + token 節約) − (jpcite ¥3.30 × calls) の差分。time saving 込み。',
       legend_save: '節約 (saving)',
       legend_loss: '損失 (loss)',
-      formula: '計算式 (W28-4 sim 実測 anchor、Claude Opus 4.7、6,000 query/月 baseline): USD 節約 = $0.006285/query (W28-4 実測、$37.71 / 6,000) / FX = ¥150/$ / jpcite = ¥3.30 × calls。 時間節約: 0.5 min/query × ¥8,000/h (税理士単価) → 6,000 q/月 = 50h = ¥400,000。 honest disclosure: raw token math では 6,000 q/月で net -¥14,144 (-71%)。真の価値は audit-grade citation + verify 時間の解放です。',
+      formula: '計算式 (シミュレーション実測 anchor、Claude Opus 4.7、6,000 query/月 baseline): USD 節約 = $0.006285/query (シミュレーション実測、$37.71 / 6,000) / FX = ¥150/$ / jpcite = ¥3.30 × calls。 時間節約: 0.5 min/query × ¥8,000/h (税理士単価) → 6,000 q/月 = 50h = ¥400,000。 honest disclosure: raw token math では 6,000 q/月で net -¥14,144 (-71%)。真の価値は audit-grade citation + verify 時間の解放です。',
       footer_tag: '日本の制度 API',
       no_key: 'API キーを入力してください。',
       loading: '/v1/me/usage を取得中…',
@@ -399,7 +439,7 @@
       back: 'Back to dashboard',
       title: 'Your savings this month (time + tokens)',
       sub: 'jpcite\'s real value is <strong>verify-time freed</strong> and <strong>audit-grade citation</strong>. Token math alone may be net-negative, but tax-accountant-rate time savings flip it strongly positive. Individual results depend on usage patterns.',
-      disclosure: '<strong>Individual results depend on usage patterns.</strong> Defaults below reflect the W28-4 sim measurements (Claude Opus 4.7, 6,000 queries/month). Real numbers replace these once you enter your API key.',
+      disclosure: '<strong>Individual results depend on usage patterns.</strong> Defaults below reflect simulation measurements (Claude Opus 4.7, 6,000 queries/month). Real numbers replace these once you enter your API key.',
       key_label: 'API key (X-API-Key)',
       key_save: 'Save & load',
       key_clear: 'Clear',
@@ -422,7 +462,7 @@
       chart_desc: 'Per-day (time + token saving) − (jpcite ¥3.30 × calls). Time saving included.',
       legend_save: 'Saving',
       legend_loss: 'Loss',
-      formula: 'Formula (W28-4 sim anchor, Claude Opus 4.7, 6,000 queries/mo baseline): USD saved = $0.006285/query (W28-4 measured, $37.71 / 6,000) / FX = ¥150/$ / jpcite = ¥3.30 × calls. Time saving: 0.5 min/query × ¥8,000/h (tax-accountant rate) → 6,000 q/mo = 50h = ¥400,000. Honest disclosure: raw token math at 6,000 q/mo nets -¥14,144 (-71%). Real value is audit-grade citation + verify-time freed.',
+      formula: 'Formula (simulation anchor, Claude Opus 4.7, 6,000 queries/mo baseline): USD saved = $0.006285/query (simulation measured, $37.71 / 6,000) / FX = ¥150/$ / jpcite = ¥3.30 × calls. Time saving: 0.5 min/query × ¥8,000/h (tax-accountant rate) → 6,000 q/mo = 50h = ¥400,000. Honest disclosure: raw token math at 6,000 q/mo nets -¥14,144 (-71%). Real value is audit-grade citation + verify-time freed.',
       footer_tag: 'Public-program API for Japan',
       no_key: 'Please enter your API key.',
       loading: 'Fetching /v1/me/usage…',
@@ -556,20 +596,20 @@
   }
 
   // ----- savings math + render -----
-  // W28-4 sim 実測 anchor (Claude Opus 4.7, 6,000 q/月 baseline):
+  // シミュレーション実測 anchor (Claude Opus 4.7, 6,000 q/月 baseline):
   //   estimated_monthly_savings_usd  = $37.71  (=¥5,656 @ ¥150/$)
   //   jpcite_cost_jpy                = ¥19,800 (6,000 × ¥3.30)
   //   net (token only)               = -¥14,144 (-71%)
   // 旧 15k/3k + Sonnet $3/$15 default は optimistic で +322% を誤表示 → 実測に reframe。
-  // Tokens shown are illustrative (W28-4 token replacement profile); USD/JPY anchored to $37.71/6,000.
-  var TOKENS_IN  = window.__JPCITE_TOKENS_IN  || 4500;       // W28-4 measured (illustrative)
-  var TOKENS_OUT = window.__JPCITE_TOKENS_OUT || 800;        // W28-4 measured (illustrative)
+  // Tokens shown are illustrative (simulation token replacement profile); USD/JPY anchored to $37.71/6,000.
+  var TOKENS_IN  = window.__JPCITE_TOKENS_IN  || 4500;       // simulation measured (illustrative)
+  var TOKENS_OUT = window.__JPCITE_TOKENS_OUT || 800;        // simulation measured (illustrative)
   var USD_PER_CALL_SAVED = window.__JPCITE_USD_PER_CALL_SAVED || 0.006285;  // $37.71 / 6,000 → real LLM substitution savings
   var FX_JPY_PER_USD = window.__JPCITE_FX || 150;
   var JPY_PER_REQ = 3.30;                                    // jpcite tax-included
 
   // Time-saving constants (real value).
-  // W28-4 anchor: 50h / month / 6,000 q = 0.5 min/query of verify+cite+audit-trail freed.
+  // simulation anchor: 50h / month / 6,000 q = 0.5 min/query of verify+cite+audit-trail freed.
   // (Most queries are looked up in 1-2 sec, but the "skipped manual verification step"
   //  amortized over the workflow averages to 30 seconds saved per query.)
   var VERIFY_MIN_PER_CALL = window.__JPCITE_VERIFY_MIN || 0.5;    // 30 sec / query
@@ -730,7 +770,7 @@
   if (bootKey) {
     fetchUsage(bootKey);
   } else {
-    // Sample render: W28-4 sim baseline = 6,000 q/月 = 200 q/day avg.
+    // Sample render: simulation baseline = 6,000 q/月 = 200 q/day avg.
     // Deterministic per-date jitter so screenshot/regression tests stay stable.
     var sample = [];
     var today = new Date();
@@ -743,8 +783,8 @@
     lastRows = sample;
     render(sample);
     showStatus(lang === 'en'
-      ? 'Sample data shown (W28-4 baseline: ~6,000 queries/month, Claude Opus 4.7). Enter your API key above to load real usage.'
-      : 'サンプルデータ表示中 (W28-4 baseline: 約 6,000 query/月、Claude Opus 4.7)。実利用を読み込むには上で API キーを入力してください。', 'info');
+      ? 'Sample data shown (simulation baseline: ~6,000 queries/month, Claude Opus 4.7). Enter your API key above to load real usage.'
+      : 'サンプルデータ表示中 (シミュレーション baseline: 約 6,000 query/月、Claude Opus 4.7)。実利用を読み込むには上で API キーを入力してください。', 'info');
   }
 
   // expose for dev-console verify

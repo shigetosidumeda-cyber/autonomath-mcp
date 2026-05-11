@@ -23,9 +23,9 @@
       "openapi_paths_public": [170, 230],
       "mcp_tools": [130, 160]
     },
-    "fence_count_canonical": 7,
+    "fence_count_canonical": 8,
     "forbidden_modifiers": {
-      "fence_count": ["5", "5+1", "6", "8"]
+      "fence_count": ["5", "5+1", "6", "7"]
     }
   },
   "facts": [
@@ -41,7 +41,7 @@
     {"key": "sla_p99_latency_target_ms", "value": 3000, "unit": "ms", "source": "site/.well-known/trust.json", "category": "sla", "publishable": true, "as_of": "2026-05-11"},
     {"key": "backup_rpo_minutes", "value": 15, "unit": "min", "source": "fly volume snapshot", "category": "sla", "publishable": false},
     {"key": "backup_rto_hours", "value": 4, "unit": "hr", "source": "restore drill", "category": "sla", "publishable": true, "as_of": "2026-05-11"},
-    {"key": "fence_count", "value": 7, "unit": "counts", "source": "data/fence_registry.json", "category": "legal", "publishable": true, "as_of": "2026-05-11"},
+    {"key": "fence_count", "value": 8, "unit": "counts", "source": "data/fence_registry.json", "category": "legal", "publishable": true, "as_of": "2026-05-11"},
     {"key": "subprocessor_count", "value": 5, "unit": "counts", "source": "docs/legal/subprocessors.md", "category": "legal", "publishable": true, "as_of": "2026-05-11"},
     {"key": "corporate_number", "value": "8010001213708", "unit": "id", "source": "国税庁", "category": "company", "publishable": true, "as_of": "2026-05-11"},
     {"key": "jct_registration_number", "value": "T8010001213708", "unit": "id", "source": "国税庁", "category": "company", "publishable": true, "as_of": "2026-05-11"},

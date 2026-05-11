@@ -1138,11 +1138,15 @@ def _child_key_error_to_http(exc: ChildKeyError) -> HTTPException:
         http_status = status.HTTP_409_CONFLICT
     else:  # pragma: no cover — defensive fallback
         http_status = status.HTTP_400_BAD_REQUEST
+    # P0 redteam (audit): never leak SDK / internal exception messages
+    # via str(exc). Log full exception for ops, return canonical envelope.
+    logger.warning("child_key_error code=%s", code, exc_info=True)
     return HTTPException(
         status_code=http_status,
         detail={
+            "code": "AUTH_OPERATION_FAILED",
             "error": code,
-            "message": str(exc),
+            "message": "Child API key request could not be processed. See `error` field for the specific failure code.",
         },
     )
 

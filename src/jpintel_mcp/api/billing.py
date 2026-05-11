@@ -793,7 +793,21 @@ def purchase_credit_pack(
             amount_jpy=payload.amount_jpy,
         )
     except ValueError as exc:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, str(exc)) from exc
+        # P0 redteam (audit): never leak validation internals via str(exc).
+        # Log full exception for ops, return canonical envelope to client.
+        logger.warning(
+            "credit_pack_invoice_validation_failed customer=%s amount=%s",
+            payload.customer_id,
+            payload.amount_jpy,
+            exc_info=True,
+        )
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={
+                "code": "BILLING_PORTAL_UNAVAILABLE",
+                "message": "Credit pack request could not be processed. Please verify the request and try again.",
+            },
+        ) from exc
     except Exception as exc:
         _capture(exc)
         logger.warning(

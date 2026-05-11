@@ -428,7 +428,7 @@
     },
     {
       "name": "recommend_similar_program",
-      "description": "Vector k-NN over am_entities_vec_S (programs). Re-ranked by cosine + verification_count + density_score (W22-9). NOT an 採択 forecast — 行政書士法 §1 / 税理士法 §52 fence; the LLM must surface the disclaimer envelope."
+      "description": "Vector k-NN over am_entities_vec_S (programs). Re-ranked by cosine + verification_count + density_score. NOT an 採択 forecast — 行政書士法 §1 / 税理士法 §52 fence; the LLM must surface the disclaimer envelope."
     },
     {
       "name": "recommend_similar_case",

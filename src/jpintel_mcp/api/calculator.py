@@ -427,7 +427,13 @@ def get_savings(
         # 422 status code (UNPROCESSABLE_CONTENT in modern Starlette,
         # ENTITY in legacy aliases). We hard-code 422 to avoid the deprecated
         # alias warning.
+        # P0 redteam (audit): never leak internal SDK / arithmetic message
+        # via str(exc). Log full exception for ops, return canonical envelope.
+        logger.warning("calculator validation failed: %s", exc, exc_info=True)
         raise HTTPException(
             status_code=422,
-            detail=str(exc),
+            detail={
+                "code": "CALCULATION_ERROR",
+                "message": "Calculator input could not be processed. Verify the request parameters and try again.",
+            },
         ) from exc

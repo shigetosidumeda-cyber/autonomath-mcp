@@ -20,7 +20,7 @@
  *     onResult: function (program) { ... }
  *   });
  *
- * Operated by Bookyou Inc.. AGPL-compatible, no build step,
+ * Operated by Bookyou Inc. AGPL-compatible, no build step,
  * no external deps, vanilla JS. UMD wrap — works as <script> or CommonJS.
  * See site/widget/docs.html for the full integration guide.
  *
@@ -43,6 +43,22 @@
   }
 })(typeof self !== "undefined" ? self : this, function () {
   "use strict";
+
+  // -------------------------------------------------------------------------
+  // Deprecation notice — autonomath.js was the legacy distribution name for
+  // this SDK. The current canonical filename is /widget/jpcite.js and the
+  // canonical CSS prefix is .jpcite-widget-*. autonomath.js still works
+  // (it is functionally identical) but new install snippets should point at
+  // jpcite.js. This notice fires once per page load.
+  // -------------------------------------------------------------------------
+
+  if (typeof console !== "undefined" && typeof console.info === "function") {
+    try {
+      console.info(
+        "[jpcite] /widget/autonomath.js is deprecated, use /widget/jpcite.js"
+      );
+    } catch (e) { /* defensive: do not let logging break the widget */ }
+  }
 
   // -------------------------------------------------------------------------
   // Config

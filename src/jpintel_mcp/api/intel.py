@@ -306,19 +306,25 @@ def post_probability_radar(
     try:
         am_conn = connect_autonomath()
     except FileNotFoundError as exc:
+        # P0 redteam (audit): never leak filesystem paths via str(exc).
+        # Log full exception for ops, return canonical envelope to client.
+        logger.exception("intel autonomath_db connect failed (FileNotFoundError): %s", exc)
         raise HTTPException(
             status_code=503,
             detail={
-                "error": "autonomath_db_unavailable",
-                "message": str(exc),
+                "code": "INTEL_FETCH_FAILED",
+                "message": "Intel data source is temporarily unavailable. Please try again.",
             },
         ) from exc
     except sqlite3.Error as exc:
+        # P0 redteam (audit): never leak SDK / SQLite internal messages
+        # via str(exc). Log full exception for ops, return canonical envelope.
+        logger.exception("intel autonomath_db connect failed (sqlite3.Error): %s", exc)
         raise HTTPException(
             status_code=503,
             detail={
-                "error": "autonomath_db_unavailable",
-                "message": str(exc),
+                "code": "INTEL_FETCH_FAILED",
+                "message": "Intel data source is temporarily unavailable. Please try again.",
             },
         ) from exc
 

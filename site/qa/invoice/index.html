@@ -33,12 +33,23 @@
       "contactPoint": {
         "@type": "ContactPoint",
         "email": "info@bookyou.net",
-        "contactType": "customer support",
-        "availableLanguage": ["ja", "en"]
+        "contactType": "technical support",
+        "availableLanguage": [
+          "ja",
+          "en"
+        ]
       },
       "identifier": [
-        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
-        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+        {
+          "@type": "PropertyValue",
+          "propertyID": "jp-corporate-number",
+          "value": "8010001213708"
+        },
+        {
+          "@type": "PropertyValue",
+          "propertyID": "jp-qualified-invoice-number",
+          "value": "T8010001213708"
+        }
       ]
     },
     {
@@ -47,7 +58,9 @@
       "name": "jpcite",
       "url": "https://jpcite.com",
       "inLanguage": "ja",
-      "publisher": {"@id": "https://jpcite.com/#org"},
+      "publisher": {
+        "@id": "https://jpcite.com/#org"
+      },
       "potentialAction": {
         "@type": "SearchAction",
         "target": "https://jpcite.com/search?q={query}",
@@ -58,20 +71,47 @@
       "@type": "Service",
       "@id": "https://jpcite.com/#service",
       "serviceType": "Japanese public-program evidence API",
-      "provider": {"@id": "https://jpcite.com/#org"},
-      "areaServed": {"@type": "Country", "name": "Japan"},
+      "provider": {
+        "@id": "https://jpcite.com/#org"
+      },
+      "areaServed": {
+        "@type": "Country",
+        "name": "Japan"
+      },
       "hasOfferCatalog": {
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+          {
+            "@type": "Offer",
+            "name": "Company Folder Pack",
+            "url": "https://jpcite.com/products/company-folder"
+          },
+          {
+            "@type": "Offer",
+            "name": "Monthly Review",
+            "url": "https://jpcite.com/products/monthly-review"
+          },
+          {
+            "@type": "Offer",
+            "name": "BPO Intake",
+            "url": "https://jpcite.com/products/bpo-intake"
+          },
+          {
+            "@type": "Offer",
+            "name": "Public-Info DD",
+            "url": "https://jpcite.com/products/public-dd"
+          },
+          {
+            "@type": "Offer",
+            "name": "Pre-Consult Triage",
+            "url": "https://jpcite.com/products/pre-consult"
+          }
         ]
       },
-      "offers": {"@id": "https://jpcite.com/#price"}
+      "offers": {
+        "@id": "https://jpcite.com/#price"
+      }
     },
     {
       "@type": "UnitPriceSpecification",

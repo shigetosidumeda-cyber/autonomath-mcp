@@ -114,12 +114,23 @@
       "contactPoint": {
         "@type": "ContactPoint",
         "email": "info@bookyou.net",
-        "contactType": "customer support",
-        "availableLanguage": ["ja", "en"]
+        "contactType": "technical support",
+        "availableLanguage": [
+          "ja",
+          "en"
+        ]
       },
       "identifier": [
-        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
-        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+        {
+          "@type": "PropertyValue",
+          "propertyID": "jp-corporate-number",
+          "value": "8010001213708"
+        },
+        {
+          "@type": "PropertyValue",
+          "propertyID": "jp-qualified-invoice-number",
+          "value": "T8010001213708"
+        }
       ]
     },
     {
@@ -128,7 +139,9 @@
       "name": "jpcite",
       "url": "https://jpcite.com",
       "inLanguage": "ja",
-      "publisher": {"@id": "https://jpcite.com/#org"},
+      "publisher": {
+        "@id": "https://jpcite.com/#org"
+      },
       "potentialAction": {
         "@type": "SearchAction",
         "target": "https://jpcite.com/search?q={query}",
@@ -139,20 +152,47 @@
       "@type": "Service",
       "@id": "https://jpcite.com/#service",
       "serviceType": "Japanese public-program evidence API",
-      "provider": {"@id": "https://jpcite.com/#org"},
-      "areaServed": {"@type": "Country", "name": "Japan"},
+      "provider": {
+        "@id": "https://jpcite.com/#org"
+      },
+      "areaServed": {
+        "@type": "Country",
+        "name": "Japan"
+      },
       "hasOfferCatalog": {
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+          {
+            "@type": "Offer",
+            "name": "Company Folder Pack",
+            "url": "https://jpcite.com/products/company-folder"
+          },
+          {
+            "@type": "Offer",
+            "name": "Monthly Review",
+            "url": "https://jpcite.com/products/monthly-review"
+          },
+          {
+            "@type": "Offer",
+            "name": "BPO Intake",
+            "url": "https://jpcite.com/products/bpo-intake"
+          },
+          {
+            "@type": "Offer",
+            "name": "Public-Info DD",
+            "url": "https://jpcite.com/products/public-dd"
+          },
+          {
+            "@type": "Offer",
+            "name": "Pre-Consult Triage",
+            "url": "https://jpcite.com/products/pre-consult"
+          }
         ]
       },
-      "offers": {"@id": "https://jpcite.com/#price"}
+      "offers": {
+        "@id": "https://jpcite.com/#price"
+      }
     },
     {
       "@type": "UnitPriceSpecification",
@@ -241,7 +281,7 @@ check_enforcement_am({"houjin_bangou": "1234567890123"})</code></pre>
  <h3>2. 不動産登記前 cross_check_jurisdiction</h3>
  <p>本店 (法務局) vs 営業所 (NTA invoice) vs 不動産所在地 の 3 軸不一致検出、登記申請先確定手前の sanity check。</p>
  <p style="font-size:14px;color:var(--text-muted);"><strong>example query</strong>: 「法人 X の本店 vs 営業所 vs 不動産所在地 jurisdiction 確認」</p>
- <p style="font-size:14px;color:var(--text-muted);"><strong>推奨 tool</strong>: <code>cross_check_jurisdiction</code> (Wave 22)</p>
+ <p style="font-size:14px;color:var(--text-muted);"><strong>推奨 tool</strong>: <code>cross_check_jurisdiction</code></p>
  <pre style="background:var(--bg-code,#f5f5f5);padding:12px;border-radius:4px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;"><code>// MCP sample call (¥3)
 cross_check_jurisdiction({"houjin_bangou": "1234567890123"})</code></pre>
  </article>

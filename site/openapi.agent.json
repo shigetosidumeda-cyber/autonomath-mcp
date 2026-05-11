@@ -8641,7 +8641,7 @@
               "type": "string"
             },
             "type": "array",
-            "title": "Call Jpcite First For"
+            "title": "Call jpcite First For"
           },
           "use_web_search_after": {
             "items": {
@@ -8666,7 +8666,7 @@
                 "type": "null"
               }
             ],
-            "title": "No Llm Called By Jpcite"
+            "title": "No Llm Called By jpcite"
           },
           "pricing_note": {
             "anyOf": [
@@ -9199,7 +9199,7 @@
               "type": "object"
             },
             "type": "array",
-            "title": "Use Jpcite Next"
+            "title": "Use jpcite Next"
           },
           "use_web_search_for": {
             "items": {
@@ -11640,7 +11640,7 @@
           },
           "web_search_performed_by_jpcite": {
             "type": "boolean",
-            "title": "Web Search Performed By Jpcite",
+            "title": "Web Search Performed By jpcite",
             "description": "Always false. The composer is read-only against local persistent storage.",
             "default": false
           },
@@ -13491,7 +13491,7 @@
           },
           "jpcite_requests": {
             "type": "integer",
-            "title": "Jpcite Requests",
+            "title": "jpcite Requests",
             "default": 1
           },
           "billing_units": {

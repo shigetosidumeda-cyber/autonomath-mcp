@@ -7,6 +7,12 @@
  * small and stable.
  *
  * Rate limit: 10/day per IP hash (anonymous) or key_hash (authed).
+ *
+ * Brand history: CSS prefix `.am-fb-*` was the legacy autonomath-era name.
+ * Every rule below now carries BOTH `.jpcite-feedback-*` (new, primary) and
+ * `.am-fb-*` (legacy alias) on the same selector list, every DOM element
+ * carries BOTH class names, and the <style> tag is injected under BOTH ids
+ * so host overrides + DevTools probes for either name keep working.
  */
 (function () {
   "use strict";
@@ -16,62 +22,80 @@
     (window.JPCITE_API_BASE || "https://api.jpcite.com").replace(/\/+$/, "") +
     "/v1/feedback";
 
-  var STYLE_ID = "am-fb-style";
+  // Primary (new) and legacy (kept for 6-month deprecation) <style> ids.
+  var STYLE_ID_NEW = "jpcite-feedback-style";
+  var STYLE_ID = "am-fb-style"; // legacy alias kept on purpose
   var CSS = [
-    ".am-fb-fab{position:fixed;right:20px;bottom:20px;z-index:2147483000;",
+    ".jpcite-feedback-fab,.am-fb-fab{position:fixed;right:20px;bottom:20px;z-index:2147483000;",
     "background:#1f2937;color:#fff;border:0;border-radius:999px;padding:10px 16px;",
     "font:500 13px/1.4 'Noto Sans JP',system-ui,sans-serif;cursor:pointer;",
     "box-shadow:0 4px 14px rgba(0,0,0,.18)}",
-    ".am-fb-fab:hover{background:#111827}",
-    ".am-fb-fab:focus-visible{outline:2px solid #6366f1;outline-offset:2px}",
-    ".am-fb-backdrop{position:fixed;inset:0;background:rgba(17,24,39,.48);",
+    ".jpcite-feedback-fab:hover,.am-fb-fab:hover{background:#111827}",
+    ".jpcite-feedback-fab:focus-visible,.am-fb-fab:focus-visible{outline:2px solid #6366f1;outline-offset:2px}",
+    ".jpcite-feedback-backdrop,.am-fb-backdrop{position:fixed;inset:0;background:rgba(17,24,39,.48);",
     "z-index:2147483001;display:flex;align-items:center;justify-content:center;padding:16px}",
-    ".am-fb-dialog{background:#fff;color:#111827;border-radius:10px;max-width:460px;width:100%;",
+    ".jpcite-feedback-dialog,.am-fb-dialog{background:#fff;color:#111827;border-radius:10px;max-width:460px;width:100%;",
     "box-shadow:0 16px 48px rgba(0,0,0,.25);font:400 14px/1.5 'Noto Sans JP',system-ui,sans-serif}",
-    ".am-fb-hd{padding:16px 20px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between}",
-    ".am-fb-hd h2{margin:0;font-size:15px;font-weight:700}",
-    ".am-fb-x{background:transparent;border:0;font-size:20px;line-height:1;cursor:pointer;color:#6b7280;padding:4px 8px}",
-    ".am-fb-x:hover{color:#111827}",
-    ".am-fb-bd{padding:16px 20px;display:grid;gap:12px}",
-    ".am-fb-lbl{font-size:12px;font-weight:600;color:#374151;margin:0 0 4px}",
+    ".jpcite-feedback-hd,.am-fb-hd{padding:16px 20px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between}",
+    ".jpcite-feedback-hd h2,.am-fb-hd h2{margin:0;font-size:15px;font-weight:700}",
+    ".jpcite-feedback-x,.am-fb-x{background:transparent;border:0;font-size:20px;line-height:1;cursor:pointer;color:#6b7280;padding:4px 8px}",
+    ".jpcite-feedback-x:hover,.am-fb-x:hover{color:#111827}",
+    ".jpcite-feedback-bd,.am-fb-bd{padding:16px 20px;display:grid;gap:12px}",
+    ".jpcite-feedback-lbl,.am-fb-lbl{font-size:12px;font-weight:600;color:#374151;margin:0 0 4px}",
+    ".jpcite-feedback-bd select,.jpcite-feedback-bd input,.jpcite-feedback-bd textarea,",
     ".am-fb-bd select,.am-fb-bd input,.am-fb-bd textarea{",
     "width:100%;box-sizing:border-box;border:1px solid #d1d5db;border-radius:6px;",
     "padding:8px 10px;font:inherit;color:#111827;background:#fff}",
-    ".am-fb-bd textarea{min-height:120px;resize:vertical}",
+    ".jpcite-feedback-bd textarea,.am-fb-bd textarea{min-height:120px;resize:vertical}",
+    ".jpcite-feedback-bd select:focus,.jpcite-feedback-bd input:focus,.jpcite-feedback-bd textarea:focus,",
     ".am-fb-bd select:focus,.am-fb-bd input:focus,.am-fb-bd textarea:focus{",
     "outline:0;border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.18)}",
-    ".am-fb-count{font-size:11px;color:#6b7280;text-align:right;margin:2px 0 0}",
-    ".am-fb-ft{padding:12px 20px 16px;display:flex;justify-content:flex-end;gap:8px;border-top:1px solid #e5e7eb}",
-    ".am-fb-btn{border:0;border-radius:6px;padding:8px 14px;font:500 13px 'Noto Sans JP',system-ui,sans-serif;cursor:pointer}",
-    ".am-fb-btn[disabled]{opacity:.55;cursor:not-allowed}",
-    ".am-fb-btn-p{background:#4f46e5;color:#fff}",
-    ".am-fb-btn-p:hover:not([disabled]){background:#4338ca}",
-    ".am-fb-btn-s{background:#f3f4f6;color:#374151}",
-    ".am-fb-btn-s:hover{background:#e5e7eb}",
-    ".am-fb-msg{padding:10px 20px;font-size:13px;border-top:1px solid #e5e7eb}",
-    ".am-fb-err{color:#b91c1c;background:#fef2f2}",
-    ".am-fb-ok{color:#047857;background:#ecfdf5}",
-    ".am-fb-kbd{font-size:11px;color:#6b7280;margin:0;padding:0 20px 10px}",
+    ".jpcite-feedback-count,.am-fb-count{font-size:11px;color:#6b7280;text-align:right;margin:2px 0 0}",
+    ".jpcite-feedback-ft,.am-fb-ft{padding:12px 20px 16px;display:flex;justify-content:flex-end;gap:8px;border-top:1px solid #e5e7eb}",
+    ".jpcite-feedback-btn,.am-fb-btn{border:0;border-radius:6px;padding:8px 14px;font:500 13px 'Noto Sans JP',system-ui,sans-serif;cursor:pointer}",
+    ".jpcite-feedback-btn[disabled],.am-fb-btn[disabled]{opacity:.55;cursor:not-allowed}",
+    ".jpcite-feedback-btn-p,.am-fb-btn-p{background:#4f46e5;color:#fff}",
+    ".jpcite-feedback-btn-p:hover:not([disabled]),.am-fb-btn-p:hover:not([disabled]){background:#4338ca}",
+    ".jpcite-feedback-btn-s,.am-fb-btn-s{background:#f3f4f6;color:#374151}",
+    ".jpcite-feedback-btn-s:hover,.am-fb-btn-s:hover{background:#e5e7eb}",
+    ".jpcite-feedback-msg,.am-fb-msg{padding:10px 20px;font-size:13px;border-top:1px solid #e5e7eb}",
+    ".jpcite-feedback-err,.am-fb-err{color:#b91c1c;background:#fef2f2}",
+    ".jpcite-feedback-ok,.am-fb-ok{color:#047857;background:#ecfdf5}",
+    ".jpcite-feedback-kbd,.am-fb-kbd{font-size:11px;color:#6b7280;margin:0;padding:0 20px 10px}",
     "@media (prefers-color-scheme:dark){",
-    ".am-fb-dialog{background:#1f2937;color:#f3f4f6}",
-    ".am-fb-hd,.am-fb-ft,.am-fb-msg{border-color:#374151}",
-    ".am-fb-hd h2{color:#f3f4f6}",
-    ".am-fb-lbl{color:#d1d5db}",
+    ".jpcite-feedback-dialog,.am-fb-dialog{background:#1f2937;color:#f3f4f6}",
+    ".jpcite-feedback-hd,.jpcite-feedback-ft,.jpcite-feedback-msg,.am-fb-hd,.am-fb-ft,.am-fb-msg{border-color:#374151}",
+    ".jpcite-feedback-hd h2,.am-fb-hd h2{color:#f3f4f6}",
+    ".jpcite-feedback-lbl,.am-fb-lbl{color:#d1d5db}",
+    ".jpcite-feedback-bd select,.jpcite-feedback-bd input,.jpcite-feedback-bd textarea,",
     ".am-fb-bd select,.am-fb-bd input,.am-fb-bd textarea{background:#111827;color:#f3f4f6;border-color:#374151}",
-    ".am-fb-btn-s{background:#374151;color:#f3f4f6}",
-    ".am-fb-btn-s:hover{background:#4b5563}",
-    ".am-fb-count,.am-fb-kbd{color:#9ca3af}",
-    ".am-fb-err{background:#450a0a;color:#fecaca}",
-    ".am-fb-ok{background:#064e3b;color:#a7f3d0}",
+    ".jpcite-feedback-btn-s,.am-fb-btn-s{background:#374151;color:#f3f4f6}",
+    ".jpcite-feedback-btn-s:hover,.am-fb-btn-s:hover{background:#4b5563}",
+    ".jpcite-feedback-count,.jpcite-feedback-kbd,.am-fb-count,.am-fb-kbd{color:#9ca3af}",
+    ".jpcite-feedback-err,.am-fb-err{background:#450a0a;color:#fecaca}",
+    ".jpcite-feedback-ok,.am-fb-ok{background:#064e3b;color:#a7f3d0}",
     "}"
   ].join("");
 
   function injectCss() {
+    // Skip if either id already on the page — older builds may have used
+    // the legacy id, in which case our jpcite-feedback-* selectors are
+    // already there too (they share the same rules).
+    if (document.getElementById(STYLE_ID_NEW)) return;
     if (document.getElementById(STYLE_ID)) return;
-    var s = document.createElement("style");
-    s.id = STYLE_ID;
-    s.textContent = CSS;
-    document.head.appendChild(s);
+    var sNew = document.createElement("style");
+    sNew.id = STYLE_ID_NEW;
+    sNew.textContent = CSS;
+    document.head.appendChild(sNew);
+    // Legacy <style id="am-fb-style"> — empty placeholder so existing
+    // host probes for the legacy id keep returning a node, without
+    // duplicating the CSS payload.
+    if (!document.getElementById(STYLE_ID)) {
+      var sLegacy = document.createElement("style");
+      sLegacy.id = STYLE_ID;
+      sLegacy.setAttribute("data-jpcite-legacy-alias", "true");
+      document.head.appendChild(sLegacy);
+    }
   }
 
   function h(tag, attrs, children) {
@@ -111,7 +135,7 @@
         count.textContent = txt.value.length + " / 2000";
       }
     });
-    var count = h("p", { class: "am-fb-count", text: "0 / 2000" });
+    var count = h("p", { class: "jpcite-feedback-count am-fb-count", text: "0 / 2000" });
 
     var catOpts = CATEGORIES.map(function (c) {
       return h("option", { value: c[0], text: c[1] });
@@ -134,7 +158,7 @@
 
     var cancel = h("button", {
       type: "button",
-      class: "am-fb-btn am-fb-btn-s",
+      class: "jpcite-feedback-btn jpcite-feedback-btn-s am-fb-btn am-fb-btn-s",
       text: "キャンセル",
       onclick: function () {
         state.close();
@@ -142,23 +166,23 @@
     });
     var submit = h("button", {
       type: "submit",
-      class: "am-fb-btn am-fb-btn-p",
+      class: "jpcite-feedback-btn jpcite-feedback-btn-p am-fb-btn am-fb-btn-p",
       text: "送信"
     });
 
-    var body = h("div", { class: "am-fb-bd" }, [
+    var body = h("div", { class: "jpcite-feedback-bd am-fb-bd" }, [
       h("div", null, [
-        h("label", { class: "am-fb-lbl", for: "am-fb-cat", text: "カテゴリ" }),
+        h("label", { class: "jpcite-feedback-lbl am-fb-lbl", for: "am-fb-cat", text: "カテゴリ" }),
         cat
       ]),
       h("div", null, [
-        h("label", { class: "am-fb-lbl", for: "am-fb-text", text: "内容" }),
+        h("label", { class: "jpcite-feedback-lbl am-fb-lbl", for: "am-fb-text", text: "内容" }),
         txt,
         count
       ]),
       h("div", null, [
         h("label", {
-          class: "am-fb-lbl",
+          class: "jpcite-feedback-lbl am-fb-lbl",
           for: "am-fb-email",
           text: "メール (任意 — 返信が必要な場合のみ)"
         }),
@@ -169,7 +193,7 @@
     var form = h(
       "form",
       {
-        class: "am-fb-dialog",
+        class: "jpcite-feedback-dialog am-fb-dialog",
         role: "dialog",
         "aria-modal": "true",
         "aria-labelledby": "am-fb-title",
@@ -179,11 +203,11 @@
         }
       },
       [
-        h("div", { class: "am-fb-hd" }, [
+        h("div", { class: "jpcite-feedback-hd am-fb-hd" }, [
           h("h2", { id: "am-fb-title", text: "フィードバックを送信" }),
           h("button", {
             type: "button",
-            class: "am-fb-x",
+            class: "jpcite-feedback-x am-fb-x",
             "aria-label": "閉じる",
             text: "×",
             onclick: function () {
@@ -193,8 +217,8 @@
         ]),
         body,
         msgBox,
-        h("p", { class: "am-fb-kbd", text: "Ctrl+Enter で送信 / Esc で閉じる" }),
-        h("div", { class: "am-fb-ft" }, [cancel, submit])
+        h("p", { class: "jpcite-feedback-kbd am-fb-kbd", text: "Ctrl+Enter で送信 / Esc で閉じる" }),
+        h("div", { class: "jpcite-feedback-ft am-fb-ft" }, [cancel, submit])
       ]
     );
 
@@ -214,7 +238,7 @@
 
     var root = h("div", {
       id: "am-fb-root",
-      class: "am-fb-backdrop",
+      class: "jpcite-feedback-backdrop am-fb-backdrop",
       onclick: function (e) {
         if (e.target === root) close();
       }
@@ -321,7 +345,10 @@
 
   function showMsg(el, text, isErr) {
     el.textContent = text;
-    el.className = "am-fb-msg " + (isErr ? "am-fb-err" : "am-fb-ok");
+    var status = isErr ? "err" : "ok";
+    el.className =
+      "jpcite-feedback-msg jpcite-feedback-" + status +
+      " am-fb-msg am-fb-" + status;
     el.style.display = "block";
   }
 
@@ -342,7 +369,7 @@
       // Inline button (caller provided a slot).
       var inline = h("button", {
         type: "button",
-        class: "am-fb-fab",
+        class: "jpcite-feedback-fab am-fb-fab",
         style: "position:static;box-shadow:none",
         text: "フィードバック",
         onclick: onClick
@@ -354,7 +381,7 @@
       var fab = h("button", {
         id: "am-fb-fab",
         type: "button",
-        class: "am-fb-fab",
+        class: "jpcite-feedback-fab am-fb-fab",
         "aria-label": "フィードバックを送信",
         text: "フィードバック",
         onclick: onClick

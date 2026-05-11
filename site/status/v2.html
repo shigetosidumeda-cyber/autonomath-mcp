@@ -48,7 +48,7 @@ fetch('/status/status.json').then(r=>r.json()).then(d=>{
   if(d.overall_status==='operational'){hero.className='hero operational';hero.textContent='全システム稼働中'}
   else if(d.overall_status==='degraded'){hero.className='hero degraded';hero.textContent='軽微な低下'}
   else if(d.overall_status==='outage'){hero.className='hero outage';hero.textContent='障害発生中'}
-  // components hydrate (省略、Wave 8 で詳細)
+  // components hydrate (省略)
 }).catch(()=>{});
 </script>
 </body>

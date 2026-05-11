@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "snapshot_at": "2026-05-11T00:00:00Z",
-  "canonical_count": 7,
+  "canonical_count": 8,
   "fences": [
     {
       "id": "tax_accountant",
@@ -22,6 +22,16 @@
       "may_do": ["law/precedent/disposition search with sources"],
       "disclaimer_ja": "本回答は法的助言ではありません。個別判断は弁護士にご確認ください。",
       "disclaimer_en": "This response is not legal advice."
+    },
+    {
+      "id": "cpa",
+      "law": "公認会計士法",
+      "article": "§47の2",
+      "scope": "監査証明業務 (財務書類の監査又は証明)",
+      "do_not": ["audit opinion", "audit certification", "audit report issuance"],
+      "may_do": ["audit workpaper draft assembly", "DD question checklist", "industry pack saiketsu/tsutatsu citation"],
+      "disclaimer_ja": "監査証明業務は行いません。監査意見の表明は公認会計士・監査法人にご確認ください。",
+      "disclaimer_en": "Audit certification is not provided. Please consult a Certified Public Accountant (公認会計士)."
     },
     {
       "id": "judicial_scrivener",

@@ -587,12 +587,23 @@
       "contactPoint": {
         "@type": "ContactPoint",
         "email": "info@bookyou.net",
-        "contactType": "customer support",
-        "availableLanguage": ["ja", "en"]
+        "contactType": "technical support",
+        "availableLanguage": [
+          "ja",
+          "en"
+        ]
       },
       "identifier": [
-        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
-        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+        {
+          "@type": "PropertyValue",
+          "propertyID": "jp-corporate-number",
+          "value": "8010001213708"
+        },
+        {
+          "@type": "PropertyValue",
+          "propertyID": "jp-qualified-invoice-number",
+          "value": "T8010001213708"
+        }
       ]
     },
     {
@@ -601,7 +612,9 @@
       "name": "jpcite",
       "url": "https://jpcite.com",
       "inLanguage": "ja",
-      "publisher": {"@id": "https://jpcite.com/#org"},
+      "publisher": {
+        "@id": "https://jpcite.com/#org"
+      },
       "potentialAction": {
         "@type": "SearchAction",
         "target": "https://jpcite.com/search?q={query}",
@@ -612,20 +625,47 @@
       "@type": "Service",
       "@id": "https://jpcite.com/#service",
       "serviceType": "Japanese public-program evidence API",
-      "provider": {"@id": "https://jpcite.com/#org"},
-      "areaServed": {"@type": "Country", "name": "Japan"},
+      "provider": {
+        "@id": "https://jpcite.com/#org"
+      },
+      "areaServed": {
+        "@type": "Country",
+        "name": "Japan"
+      },
       "hasOfferCatalog": {
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+          {
+            "@type": "Offer",
+            "name": "Company Folder Pack",
+            "url": "https://jpcite.com/products/company-folder"
+          },
+          {
+            "@type": "Offer",
+            "name": "Monthly Review",
+            "url": "https://jpcite.com/products/monthly-review"
+          },
+          {
+            "@type": "Offer",
+            "name": "BPO Intake",
+            "url": "https://jpcite.com/products/bpo-intake"
+          },
+          {
+            "@type": "Offer",
+            "name": "Public-Info DD",
+            "url": "https://jpcite.com/products/public-dd"
+          },
+          {
+            "@type": "Offer",
+            "name": "Pre-Consult Triage",
+            "url": "https://jpcite.com/products/pre-consult"
+          }
         ]
       },
-      "offers": {"@id": "https://jpcite.com/#price"}
+      "offers": {
+        "@id": "https://jpcite.com/#price"
+      }
     },
     {
       "@type": "UnitPriceSpecification",
@@ -699,7 +739,7 @@
  <strong>3 回の無料ライブ検証:</strong> Evidence Packet を返すエンドポイント (<code>GET /v1/intelligence/precomputed/query</code>) を選択済みです。 デフォルトで <code>source_tokens_basis=pdf_pages</code> · <code>source_pdf_pages=30</code> · <code>input_token_price_jpy_per_1m=300</code> が入っているため、 送信すると <code>source_url</code> · <code>source_fetched_at</code> · <code>known_gaps</code> · <code>compression.input_context_reduction_rate</code> が返ります。 2 回目は <code>source_pdf_pages</code> を変えて差を確認、 3 回目は自社の質問に差し替えてください。
  </div>
 
- <!-- v3 evidence3 wizard 3 step (minimal viable、Wave 8 で full) -->
+ <!-- v3 evidence3 wizard 3 step (minimal viable) -->
  <div id="evidence3-wizard" style="display:none;max-width:720px;margin:24px auto;padding:24px;border:1px solid #e2e8f0;border-radius:12px;background:#fff">
   <div style="margin:0 0 16px">
     <strong>3 回で 1 社分の業務パックが完成します</strong>
@@ -730,7 +770,7 @@
       <option value="291">291 ボイラ・原動機製造</option>
       <option value="471">471 各種商品小売</option>
       <option value="811">811 公共サービス</option>
-      <option value="other">その他 (Wave 8 で 22 JSIC 完全実装)</option>
+      <option value="other">その他</option>
     </select></label>
     <button id="ev3-next-2" type="button">次へ →</button>
   </div>
@@ -2742,7 +2782,7 @@
         return ep.id === 'intelligence.precomputed.query';
       });
       if (idx >= 0 && els.flowHint) els.flowHint.hidden = false;
-      // v3 evidence3 wizard 3 step activate (minimal viable、Wave 8 で full)
+      // v3 evidence3 wizard 3 step activate (minimal viable)
       var ev3Wizard = document.getElementById('evidence3-wizard');
       if (ev3Wizard) {
         ev3Wizard.style.display = 'block';
@@ -2754,7 +2794,7 @@
         }
         var ev3Progress = document.getElementById('ev3-progress');
         if (ev3Progress) ev3Progress.value = ev3Step;
-        // step transitions (next button → ?s=s+1 で reload、API call は Wave 8 で SSE 化)
+        // step transitions (next button → ?s=s+1 で reload)
         var ev3Next1 = document.getElementById('ev3-next-1');
         var ev3Houjin = document.getElementById('ev3-houjin');
         if (ev3Houjin && ev3Next1) {
@@ -2781,7 +2821,7 @@
         var ev3Submit = document.getElementById('ev3-submit');
         if (ev3Submit) {
           ev3Submit.addEventListener('click', function() {
-            // Wave 8 で POST /v1/artifacts/{type} → artifact.html?id=<pack_id> redirect
+            // POST /v1/artifacts/{type} → artifact.html?id=<pack_id> redirect
             var sel = document.querySelector('input[name="output"]:checked');
             var outType = sel ? sel.value : 'dd_checklist';
             location.href = '/artifact.html?type=' + encodeURIComponent(outType);

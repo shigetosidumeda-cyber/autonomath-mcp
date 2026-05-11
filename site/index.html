@@ -84,7 +84,9 @@
   "@type": "Organization",
   "@id": "https://jpcite.com/#publisher",
   "name": "Bookyou株式会社",
-  "alternateName": ["jpcite", "税務会計AI", "AutonoMath", "zeimu-kaikei.ai"],
+  "alternateName": [
+    "jpcite"
+  ],
   "url": "https://jpcite.com/",
   "logo": "https://jpcite.com/assets/logo-v2.svg",
   "email": "info@bookyou.net",
@@ -102,12 +104,14 @@
   "contactPoint": {
     "@type": "ContactPoint",
     "email": "info@bookyou.net",
-    "contactType": "customer support",
-    "availableLanguage": ["ja", "en"]
+    "contactType": "technical support",
+    "availableLanguage": [
+      "ja",
+      "en"
+    ]
   },
   "sameAs": [
     "https://www.bookyou.net/",
-    "https://zeimu-kaikei.ai",
     "https://pypi.org/project/jpcite/",
     "https://pypi.org/project/autonomath-mcp/"
   ]
@@ -119,10 +123,16 @@
   "@context": "https://schema.org",
   "@type": "WebSite",
   "name": "jpcite",
-  "alternateName": ["jpcite", "税務会計AI", "AutonoMath", "zeimu-kaikei.ai"],
-  "sameAs": ["https://www.bookyou.net/", "https://zeimu-kaikei.ai"],
+  "alternateName": [
+    "jpcite"
+  ],
+  "sameAs": [
+    "https://www.bookyou.net/"
+  ],
   "url": "https://jpcite.com/",
-  "publisher": {"@id": "https://jpcite.com/#publisher"},
+  "publisher": {
+    "@id": "https://jpcite.com/#publisher"
+  },
   "potentialAction": {
     "@type": "SearchAction",
     "target": {
@@ -274,12 +284,23 @@
       "contactPoint": {
         "@type": "ContactPoint",
         "email": "info@bookyou.net",
-        "contactType": "customer support",
-        "availableLanguage": ["ja", "en"]
+        "contactType": "technical support",
+        "availableLanguage": [
+          "ja",
+          "en"
+        ]
       },
       "identifier": [
-        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
-        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+        {
+          "@type": "PropertyValue",
+          "propertyID": "jp-corporate-number",
+          "value": "8010001213708"
+        },
+        {
+          "@type": "PropertyValue",
+          "propertyID": "jp-qualified-invoice-number",
+          "value": "T8010001213708"
+        }
       ]
     },
     {
@@ -288,7 +309,9 @@
       "name": "jpcite",
       "url": "https://jpcite.com",
       "inLanguage": "ja",
-      "publisher": {"@id": "https://jpcite.com/#org"},
+      "publisher": {
+        "@id": "https://jpcite.com/#org"
+      },
       "potentialAction": {
         "@type": "SearchAction",
         "target": "https://jpcite.com/search?q={query}",
@@ -299,20 +322,47 @@
       "@type": "Service",
       "@id": "https://jpcite.com/#service",
       "serviceType": "Japanese public-program evidence API",
-      "provider": {"@id": "https://jpcite.com/#org"},
-      "areaServed": {"@type": "Country", "name": "Japan"},
+      "provider": {
+        "@id": "https://jpcite.com/#org"
+      },
+      "areaServed": {
+        "@type": "Country",
+        "name": "Japan"
+      },
       "hasOfferCatalog": {
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+          {
+            "@type": "Offer",
+            "name": "Company Folder Pack",
+            "url": "https://jpcite.com/products/company-folder"
+          },
+          {
+            "@type": "Offer",
+            "name": "Monthly Review",
+            "url": "https://jpcite.com/products/monthly-review"
+          },
+          {
+            "@type": "Offer",
+            "name": "BPO Intake",
+            "url": "https://jpcite.com/products/bpo-intake"
+          },
+          {
+            "@type": "Offer",
+            "name": "Public-Info DD",
+            "url": "https://jpcite.com/products/public-dd"
+          },
+          {
+            "@type": "Offer",
+            "name": "Pre-Consult Triage",
+            "url": "https://jpcite.com/products/pre-consult"
+          }
         ]
       },
-      "offers": {"@id": "https://jpcite.com/#price"}
+      "offers": {
+        "@id": "https://jpcite.com/#price"
+      }
     },
     {
       "@type": "UnitPriceSpecification",
@@ -368,29 +418,32 @@
 
  <section class="hero" aria-labelledby="hero-title">
  <div class="container">
-	 <h1 id="hero-title">日本の補助金・許認可・行政処分・適格事業者・法令を法人番号 1 つで横断照会。Claude / ChatGPT / Cursor から呼べる Evidence API/MCP。</h1>
-	 <p class="hero-sub">会社フォルダ作成パック (1 社 ¥59.40) / 顧問先月次レビュー (100 社月 ¥5,940) / BPO 1000 案件 triage (月 ¥52,800) / 公開情報 DD (200 社月 ¥31,020) / 相談前プレ診断 (50 件月 ¥1,320) を、一次資料 URL・取得時刻・既知の未確認点付きで返す REST + MCP API。匿名 3 リクエスト/日、登録不要ですぐ検証できます。</p>
-
- <p class="hero-example" style="margin:18px 0 14px;font-size:15px;line-height:1.7;color:var(--text-soft);">補助金 11,601 + 法令 9,484 + 税制 50 + 法人関連データ 167K + 行政処分 1,185 を REST + MCP から横断。 出典 URL + 取得時刻 + content_hash を機械が引用しやすい形で返し、 優先度の高い出典の再取得中央値は約 7 日。 Claude Desktop / Cursor / Cline は MCP、ChatGPT Custom GPT は OpenAPI Actions から呼び出して、 Evidence Packet・併用ルール・known gaps をまとめて取得できます。</p>
+	 <h1 id="hero-title">日本の公的制度を AI から source-link で引く</h1>
+	 <p class="hero-sub">補助金・法令・税制・行政処分を一次資料 URL + 取得時刻つきで返す REST + MCP API。 匿名 3 リクエスト/日 無料。</p>
 
  <div class="cta-row">
-	 <a class="btn btn-primary" href="/playground.html?flow=evidence3" data-cta-variant="hero-evidence3-primary">3 回で会社フォルダを作る (無料) →</a>
-	 <a href="/connect/claude-code.html" data-cta-variant="hero-connect-secondary" style="align-self:center;font-size:15px;color:var(--text);text-decoration:underline;text-underline-offset:3px;">AI agent dev: 1 行で接続 (Claude/Cursor/ChatGPT/Codex) →</a>
- <a href="/pricing.html" data-cta-variant="hero-pricing-tertiary" style="align-self:center;font-size:14px;color:var(--text-muted);text-decoration:underline;text-underline-offset:3px;">料金: ¥3 per billable unit (税込 ¥3.30、完全従量) →</a>
+	 <a class="btn btn-primary" href="/playground.html?flow=evidence3" data-cta-variant="hero-evidence3-primary">無料で 3 回試す →</a>
+	 <a class="btn btn-secondary" href="/pricing.html" data-cta-variant="hero-pricing-secondary">料金を見る</a>
  </div>
- <ul class="hero-products" style="margin:18px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:1fr;gap:6px;font-size:14px;line-height:1.7;">
+
+ <details class="hero-more" style="margin:18px 0 0;font-size:14px;color:var(--text-muted);">
+ <summary style="cursor:pointer;color:var(--text);font-weight:600;">成果物パック・データ規模・接続手段を見る</summary>
+ <ul class="hero-products" style="margin:14px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:1fr;gap:6px;font-size:14px;line-height:1.7;">
  <li><a href="/products/company-folder" style="font-weight:600;">会社フォルダ作成パック</a>: 1 社 ¥59.40 (18 req)</li>
  <li><a href="/products/monthly-review" style="font-weight:600;">顧問先月次レビュー</a>: 100 社月 ¥5,940 (25x ROI)</li>
  <li><a href="/products/bpo-intake" style="font-weight:600;">BPO 1000 案件 triage</a>: 月 ¥52,800 (58% コスト削減)</li>
  <li><a href="/products/public-dd" style="font-weight:600;">公開情報 DD</a>: 200 社月 ¥31,020 (90% コスト削減)</li>
  <li><a href="/products/pre-consult" style="font-weight:600;">相談前プレ診断</a>: 50 件月 ¥1,320</li>
  </ul>
+ <p class="hero-example" style="margin:14px 0 0;font-size:14px;line-height:1.7;color:var(--text-soft);">補助金 11,601 + 法令 9,484 + 税制 50 + 法人関連データ 167K + 行政処分 1,185 を REST + MCP から横断。 出典 URL + 取得時刻 + content_hash を機械が引用しやすい形で返し、 優先度の高い出典の再取得中央値は約 7 日。 Claude Desktop / Cursor / Cline は MCP、ChatGPT Custom GPT は OpenAPI Actions から呼び出して、 Evidence Packet・併用ルール・known gaps をまとめて取得できます。</p>
  <p class="hero-promise" style="margin:14px 0 0;font-size:13px;color:var(--text);line-height:1.7;">
  <span class="chip-success">匿名</span>curl で動作確認 (登録不要) ·
-	 <span class="chip-success">Playground</span>成果物プレビュー確認 ·
-	 <span class="chip-success">自動化</span>API/MCP は月次レビュー・DD・BPO一括処理の実行手段
+ <span class="chip-success">Playground</span>成果物プレビュー確認 ·
+ <span class="chip-success">自動化</span>API/MCP は月次レビュー・DD・BPO一括処理の実行手段
  </p>
-	 <p class="hero-note">匿名で <span data-fact="anonymous_quota_per_day" data-stat-key="anonymous_quota_per_day">3</span> API/MCP 呼び出し/日まで無料。通常の 1 API/MCP 呼び出し = 1 billable unit = 税込 ¥3.30。最低金額・契約期間なし、いつでも解約可能。</p>
+ <p class="hero-note" style="margin:14px 0 0;">匿名で <span data-fact="anonymous_quota_per_day" data-stat-key="anonymous_quota_per_day">3</span> API/MCP 呼び出し/日まで無料。通常の 1 API/MCP 呼び出し = 1 billable unit = 税込 ¥3.30。最低金額・契約期間なし、いつでも解約可能。</p>
+ <p style="margin:14px 0 0;font-size:13px;"><a href="/connect/claude-code.html" data-cta-variant="hero-connect-tertiary">AI agent dev: 1 行で接続 (Claude / Cursor / ChatGPT / Codex) →</a></p>
+ </details>
  <ul class="trust-strip-blocks" aria-label="出典の信頼指標">
  <li>出典は省庁・自治体・公庫などの一次資料を優先 (補助金まとめサイトは出典扱いしません)</li>
  <li>専門業務・申請代行ではないことを API レスポンスで明示</li>
