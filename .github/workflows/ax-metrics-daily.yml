@@ -14,8 +14,11 @@ name: ax-metrics-daily
 
 on:
   schedule:
-    # 18:45 UTC == 03:45 JST. 15 min after cf-ai-audit-daily.
-    - cron: "45 18 * * *"
+    # Wave 37 rebalance: 21:15 UTC == 06:15 JST.
+    # Was 18:45 UTC, collided with axis2-precompute-daily (also 18:45).
+    # Moved into Lane B's tail so axis2-precompute (20:45 UTC) finishes
+    # writing am_cohort_5d before this aggregator reads it.
+    - cron: "15 21 * * *"
   workflow_dispatch: {}
 
 concurrency:
