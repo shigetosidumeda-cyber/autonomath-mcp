@@ -1,0 +1,65 @@
+name: knowledge-graph-vec-embed
+
+on:
+  schedule:
+    - cron: "0 17 * * *"
+    - cron: "0 17 5 * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "full | incremental"
+        required: true
+        default: "incremental"
+      dry_run:
+        required: false
+        default: "false"
+      max_entities:
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: knowledge-graph-vec-embed-${{ github.event.inputs.mode || 'auto' }}
+  cancel-in-progress: false
+
+jobs:
+  embed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 480
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install sentence-transformers || echo "sentence-transformers skipped (hash fallback)"
+          pip install sqlite-vec || echo "sqlite-vec skipped (degraded)"
+      - id: mode
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "mode=${{ inputs.mode }}" >> "$GITHUB_OUTPUT"
+          else
+            DAY=$(date -u +%d)
+            if [ "$DAY" = "05" ]; then echo "mode=full" >> "$GITHUB_OUTPUT"; else echo "mode=incremental" >> "$GITHUB_OUTPUT"; fi
+          fi
+      - name: run
+        env:
+          AUTONOMATH_DB_PATH: ${{ github.workspace }}/autonomath.db
+          JPCITE_PREFLIGHT_ALLOW_MISSING_DB: "1"
+        run: |
+          DRY=""
+          if [ "${{ inputs.dry_run }}" = "true" ]; then DRY="--dry-run"; fi
+          MAX=""
+          if [ -n "${{ inputs.max_entities }}" ]; then MAX="--max-entities ${{ inputs.max_entities }}"; fi
+          MODE="${{ steps.mode.outputs.mode }}"
+          if [ ! -s "$AUTONOMATH_DB_PATH" ]; then
+            python scripts/cron/embed_knowledge_graph_vec.py --autonomath-db "$AUTONOMATH_DB_PATH" --mode "$MODE" --dry-run --max-entities 5
+            exit 0
+          fi
+          python scripts/cron/embed_knowledge_graph_vec.py --autonomath-db "$AUTONOMATH_DB_PATH" --mode "$MODE" $DRY $MAX

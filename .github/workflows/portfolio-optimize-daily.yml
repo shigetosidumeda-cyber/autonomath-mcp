@@ -1,0 +1,50 @@
+name: portfolio-optimize-daily
+
+on:
+  schedule:
+    - cron: "30 17 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "dry run only"
+        required: false
+        default: "false"
+      max_houjin:
+        description: "cap houjin cohort size"
+        required: false
+        default: "100000"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: portfolio-optimize-daily
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+      - name: run
+        env:
+          AUTONOMATH_DB_PATH: ${{ github.workspace }}/autonomath.db
+          JPCITE_PREFLIGHT_ALLOW_MISSING_DB: "1"
+        run: |
+          DRY=""
+          if [ "${{ inputs.dry_run }}" = "true" ]; then DRY="--dry-run"; fi
+          MAX="--max-houjin ${{ inputs.max_houjin || '100000' }}"
+          if [ ! -s "$AUTONOMATH_DB_PATH" ]; then
+            python scripts/cron/refresh_portfolio_optimize_daily.py --autonomath-db "$AUTONOMATH_DB_PATH" --dry-run --max-houjin 5
+            exit 0
+          fi
+          python scripts/cron/refresh_portfolio_optimize_daily.py --autonomath-db "$AUTONOMATH_DB_PATH" $DRY $MAX
