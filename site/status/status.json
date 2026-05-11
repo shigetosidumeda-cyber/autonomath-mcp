@@ -1,22 +1,22 @@
 {
-  "snapshot_at": "2026-05-12T05:20:10+09:00",
+  "snapshot_at": "2026-05-12T06:00:23+09:00",
   "components": {
     "api": {
       "status": "down",
-      "latency_ms": 10118,
+      "latency_ms": 5074,
       "http": 0,
       "healthz_http": 0,
       "deep_http": 0,
       "deep_json_valid": false,
-      "error": "TimeoutError: The read operation timed out"
+      "error": "URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)>"
     },
     "mcp": {
       "status": "down",
-      "latency_ms": 10032,
+      "latency_ms": 5126,
       "http": 0,
       "tools_count": null,
       "recurring_workflows": null,
-      "error": "TimeoutError: The read operation timed out"
+      "error": "URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)>"
     },
     "billing": {
       "status": "ok",
@@ -63,12 +63,12 @@
     },
     "dashboard": {
       "status": "degraded",
-      "latency_ms": 119,
+      "latency_ms": 263,
       "http": 200,
       "has_billing_anchor": true,
       "login_request_http": 0,
       "magic_link_ok": false,
-      "error": "TimeoutError: The read operation timed out"
+      "error": "URLError: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)>"
     }
   },
   "overall": "down"
