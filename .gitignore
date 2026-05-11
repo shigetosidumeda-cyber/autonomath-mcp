@@ -103,6 +103,9 @@ analytics/*
 !analytics/indexnow_snapshot.json
 !analytics/brand_community_dashboard.json
 !analytics/registry_status_w22.json
+!analytics/registry_status_w23.json
+!analytics/registry_status_w28.json
+!analytics/registry_status_w41.json
 # Wave 41 Agent E placeholder: 12 LLM citation bench snapshot. Full
 # 6,240-row JSONL stays out of git (3.9MB), only the 48-row placeholder
 # (4 rows × 12 surfaces) is versioned so the dashboard can render after a
