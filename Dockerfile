@@ -127,9 +127,16 @@ COPY data/autonomath_static/ /seed/autonomath_static/
 # Update this when the baked seed changes, so entrypoint.sh re-copies on next boot.
 ENV DATA_SEED_VERSION=2026-05-08-v1
 
-# -- entrypoint: created by separate agent. Performs:
-#       1. R2 download of autonomath.db -> /data/autonomath.db (if absent)
-#       2. SHA256 verification against AUTONOMATH_DB_SHA256
+# -- entrypoint: created by separate agent. Performs (post 2026-05-11):
+#       1. /data/autonomath.db size-based gate. If volume DB is already at
+#          production scale (>= 5 GB by default), it is trusted as-is and
+#          SHA256 + R2 are skipped. Cron ETL mutates autonomath.db in place,
+#          so a baked-image SHA256 drifts immediately; hashing it on every
+#          boot is a false signal that previously triggered 30+ min outages
+#          while a 9 GB DB looped on R2 re-download.
+#       2. If the DB is missing or sub-threshold, fall back to either the
+#          legacy SHA256 verification path (BOOT_ENFORCE_DB_SHA=1) or the
+#          R2 bootstrap (AUTONOMATH_DB_URL).
 #       3. schema_guard + migrate.py
 #       4. exec uvicorn (CMD)
 COPY entrypoint.sh /app/entrypoint.sh
@@ -144,6 +151,10 @@ ENV JPINTEL_DB_PATH=/data/jpintel.db \
     JPINTEL_LOG_FORMAT=json \
     JPINTEL_LOG_LEVEL=INFO
 # AUTONOMATH_DB_URL + AUTONOMATH_DB_SHA256 supplied at runtime via Fly secrets.
+# Note (2026-05-11): AUTONOMATH_DB_SHA256 is now OPTIONAL at boot. The default
+# §2 entrypoint gate accepts any production-sized volume DB (cron-mutated SHA
+# drift is expected); set BOOT_ENFORCE_DB_SHA=1 + AUTONOMATH_DB_SHA256 in DR
+# drills / snapshot-restore flows to re-enable the strict verification path.
 
 EXPOSE 8080
 

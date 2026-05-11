@@ -113,6 +113,12 @@ jobs:
         # absence as a `skipped:missing_db_in_ci` marker rather than a hard
         # `database:missing` issue. Production boot does not export this env-var,
         # so the production path is unchanged.
+        #
+        # 2026-05-11 note: AUTONOMATH_DB_SHA256 is still mirrored to Fly secrets
+        # (legacy DR path / health_drill.py probe), but entrypoint.sh §2 no
+        # longer hard-gates boot on it — the size-based gate (>= 5 GB) trusts
+        # the cron-mutated volume DB as-is. Set BOOT_ENFORCE_DB_SHA=1 on the
+        # Fly app to re-enable strict verification (DR snapshot restore only).
         env:
           JPCITE_PREFLIGHT_ALLOW_MISSING_DB: "1"
         run: python scripts/ops/pre_deploy_verify.py
