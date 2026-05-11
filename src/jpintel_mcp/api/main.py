@@ -61,6 +61,7 @@ from jpintel_mcp.api.case_studies import router as case_studies_router
 from jpintel_mcp.api.citation_badge import router as citation_badge_router
 from jpintel_mcp.api.citations import router as citations_router
 from jpintel_mcp.api.client_profiles import router as client_profiles_router
+from jpintel_mcp.api.cohort import router as cohort_router
 from jpintel_mcp.api.compliance import router as compliance_router
 from jpintel_mcp.api.confidence import router as confidence_router
 from jpintel_mcp.api.contribute import router as contribute_router

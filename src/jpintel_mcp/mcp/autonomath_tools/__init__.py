@@ -30,6 +30,7 @@ from . import (
     benchmark_tools,  # noqa: F401  — R8 (2026-05-07): benchmark_cohort_average_am — 業種 × 規模 × 地域 cohort average + outlier (top 10%) over case_studies + jpi_adoption_records.
     citations_tools,  # noqa: F401  — 2026-04-30: verify_citations (api/citations.py companion). LR plan §28.2 verification path.
     cohort_match_tools,  # noqa: F401  — R8 (2026-05-07): case_cohort_match_am — 同業 (JSIC) × 同規模 (employees + revenue) × 同地域 (prefecture) cohort matcher over case_studies + jpi_adoption_records. AUTONOMATH_COHORT_MATCH_ENABLED gate (default ON). NO LLM, single ¥3/req billing event. §52 / §47条の2 / §1 envelope. REST companion at POST /v1/cases/cohort_match.
+    cohort_risk_chain,  # noqa: F401  — Wave 33 Axis 2a/2b/2c (2026-05-12): 3 precompute MCP tools (match_cohort_5d_am / program_risk_score_am / supplier_chain_am) over am_cohort_5d (mig 231) + am_program_risk_4d (mig 232) + am_supplier_chain (mig 233). AUTONOMATH_COHORT_RISK_CHAIN_ENABLED gate (default ON). NO LLM. REST companion at POST /v1/cohort/5d/match + GET /v1/programs/{id}/risk + GET /v1/supplier/chain/{houjin}.
     compatibility_tools,  # noqa: F401  — R8 (2026-05-07): am_compat_matrix 43,966 row full surface. 2 tools (portfolio_optimize_am / program_compatibility_pair_am) over am_compat_matrix + am_funding_stack_empirical + am_program_eligibility_predicate + am_relation. AUTONOMATH_COMPATIBILITY_TOOLS_ENABLED gate (default ON). NO LLM, single ¥3/req billing event. §52/§1/§72 envelope. REST companion at POST /v1/programs/portfolio_optimize + GET /v1/programs/{a}/compatibility/{b}.
     composition_tools,  # noqa: F401  — Wave 21: 5 composition tools (apply_eligibility_chain_am / find_complementary_programs_am / simulate_application_am / track_amendment_lineage_am / program_active_periods_am, AUTONOMATH_COMPOSITION_ENABLED gate)
     corporate_form_tools,  # noqa: F401  — M02 (2026-05-07): 2 法人格 × 制度 matrix tools (programs_by_corporate_form_am / program_eligibility_by_form_am) over am_program_eligibility_predicate_json $.target_entity_types axis. AUTONOMATH_CORPORATE_FORM_ENABLED gate (default ON). NO LLM, single ¥3/req billing event. §52 / 行政書士法 §1 envelope.
@@ -71,6 +72,7 @@ from . import (
     tools,  # noqa: F401  — decorator side-effect (10 tools)
     validation_tools,  # noqa: F401  — V4 Phase 4: validate (am_validation_rule dispatcher, migration 047)
     wave22_tools,  # noqa: F401  — Wave 22: 5 composition tools (match_due_diligence_questions / prepare_kessan_briefing / forecast_program_renewal / cross_check_jurisdiction / bundle_application_kit, AUTONOMATH_WAVE22_ENABLED gate). Adds dd_question_templates DB (migration 104).
+    precompute_axis4,  # noqa: F401  — Wave 34 (2026-05-12): 5 precomputed-axis-4 tools (portfolio_optimize_precomputed_am / houjin_risk_score_am / program_forecast_30yr_am / alliance_opportunities_am / graph_vec_search_am) over migrations 235-239. Daily/monthly/weekly cron-refreshed; request path = pure SELECT (or vec0 k-NN). NO LLM, single ¥3/req billing event. §52/§1/§72 envelope on the 4 sensitive tools.
 )
 
 # MCP resources + prompts registration (Wave 17 — kept dormant until v8 wiring).
