@@ -20,7 +20,8 @@ exclude: |
     sdk/python/\.venv/.*|
     sdk/typescript/node_modules/.*|
     sdk/typescript/dist/.*|
-    docs/openapi/.*\.json
+    docs/openapi/.*\.json|
+    site/(cases|laws|enforcement)/.*\.md
   )$
 
 repos:

@@ -274,6 +274,37 @@
       "name": "fence",
       "description": "7 業法フェンス (税理士/弁護士/司法書士/行政書士/社労士/中小企業診断士/弁理士)。jpcite が踏み込まない領域。AI 出力に必ず差し込め",
       "mimeType": "text/markdown"
+    },
+    {
+      "uri": "mcp://jpcite/companion-md/cases/",
+      "name": "companion_md_cases",
+      "description": "2,286 採択事例の GitHub-style `{url}.md` companion surface。canonical /cases/{slug}.html 各ページの AI-friendly markdown 版 (frontmatter + JSON-LD citation block + 出典抜粋)。Content-Type=text/markdown; charset=utf-8。LLM citation crawler が JS-aware HTML parse なしで ingest 可能",
+      "mimeType": "text/markdown",
+      "https_url_prefix": "https://jpcite.com/cases/",
+      "https_url_suffix": ".md"
+    },
+    {
+      "uri": "mcp://jpcite/companion-md/laws/",
+      "name": "companion_md_laws",
+      "description": "6,493 法令本文の GitHub-style `{url}.md` companion surface。canonical /laws/{slug} 各ページの AI-friendly markdown 版 (frontmatter + JSON-LD citation block + 法令テキスト抜粋)。Content-Type=text/markdown; charset=utf-8",
+      "mimeType": "text/markdown",
+      "https_url_prefix": "https://jpcite.com/laws/",
+      "https_url_suffix": ".md"
+    },
+    {
+      "uri": "mcp://jpcite/companion-md/enforcement/",
+      "name": "companion_md_enforcement",
+      "description": "1,485 行政処分 (現状 disk 上) の GitHub-style `{url}.md` companion surface。canonical /enforcement/{slug} 各ページの AI-friendly markdown 版 (frontmatter + JSON-LD citation block + 処分内容抜粋)。Content-Type=text/markdown; charset=utf-8",
+      "mimeType": "text/markdown",
+      "https_url_prefix": "https://jpcite.com/enforcement/",
+      "https_url_suffix": ".md"
+    },
+    {
+      "uri": "https://jpcite.com/sitemap-companion-md.xml",
+      "name": "companion_md_sitemap",
+      "description": "全 10,264 companion .md の sitemap (cases 2,286 + laws 6,493 + enforcement 1,485)。AI agent は本 sitemap を index として、必要 entity の `.md` URL を直接 GET できる",
+      "mimeType": "application/xml",
+      "https_url": "https://jpcite.com/sitemap-companion-md.xml"
     }
   ]
 }
