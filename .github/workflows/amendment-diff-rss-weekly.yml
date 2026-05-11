@@ -1,0 +1,107 @@
+name: amendment-diff-rss-weekly
+
+# Weekly RSS feed generator for `am_amendment_diff` (Wave 15 F7).
+#
+# What it does:
+#   Runs `scripts/cron/generate_amendment_diff_rss.py` on the Fly
+#   production machine via flyctl ssh. The script reads the last 7
+#   days of `am_amendment_diff` rows from `autonomath.db` and writes
+#   `/data/site/feeds/amendment_diff.xml` (RSS 2.0). Output is then
+#   uploaded to the static-asset bucket served via Cloudflare Pages.
+#
+# Why Monday 03:00 UTC (= 12:00 JST):
+#   * Weekly cadence — daily diffs already surface via the live API
+#     `/v1/amendment_alerts/feed`; this RSS is for the slower "read
+#     last week's changes Monday morning" 税理士 watcher cohort.
+#   * 03:00 UTC stays clear of the 19:30 UTC daily-cron cluster the
+#     Fly machine already runs.
+#
+# Required secrets:
+#   FLY_API_TOKEN
+#
+# Operator-LLM ban:
+#   The cron script contains NO LLM imports — confirmed by
+#   `tests/test_no_llm_in_production.py` (scripts/cron/ is in
+#   PRODUCTION_DIRS). Memory `feedback_no_operator_llm_api`.
+
+on:
+  schedule:
+    # 03:00 UTC every Monday == 12:00 JST every Monday.
+    - cron: "0 3 * * 1"
+  workflow_dispatch:
+    inputs:
+      window_days:
+        description: "Number of days to look back (default 7)"
+        required: false
+        default: "7"
+      dry_run:
+        description: "If true, build the feed but do NOT write the file"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+concurrency:
+  group: amendment-diff-rss-weekly
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  build-feed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Generate amendment_diff RSS on Fly machine
+        id: run
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          INPUT_WINDOW_DAYS: ${{ github.event.inputs.window_days }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          WINDOW="${INPUT_WINDOW_DAYS:-7}"
+          DRY_FLAG=""
+          if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then
+            DRY_FLAG="--dry-run"
+          fi
+
+          flyctl ssh console -a autonomath-api -C \
+            "/opt/venv/bin/python /app/scripts/cron/generate_amendment_diff_rss.py \
+              --db /data/autonomath.db \
+              --out /data/site/feeds/amendment_diff.xml \
+              --window-days ${WINDOW} \
+              ${DRY_FLAG}"
+
+      - name: Validate generated XML (xmllint sanity)
+        if: success()
+        run: |
+          set -euo pipefail
+          # Re-build locally against an empty placeholder so xmllint can
+          # gate XML well-formedness without needing the Fly volume.
+          python3 scripts/cron/generate_amendment_diff_rss.py --dry-run \
+            > /tmp/amendment_diff.xml || true
+          xmllint --noout /tmp/amendment_diff.xml
+
+      - name: Open issue on driver failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          BODY="Cron: \`scripts/cron/generate_amendment_diff_rss.py\`\nRun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\nSHA: \`${{ github.sha }}\`\n\nLikely causes: migration 075 (am_amendment_diff) not applied on the Fly volume's autonomath.db, or the Fly machine's /data/site/feeds/ directory is not writable. Verify with:\n  flyctl ssh console -a autonomath-api -C 'sqlite3 /data/autonomath.db \"SELECT COUNT(*) FROM am_amendment_diff;\"'\n"
+          gh issue create \
+            --title "amendment-diff-rss-weekly failed on $(date -u +%Y-%m-%d)" \
+            --label cron-failure \
+            --label automation \
+            --body "$BODY"

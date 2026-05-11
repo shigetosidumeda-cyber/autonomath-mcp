@@ -1,0 +1,98 @@
+name: audit-regression-gate
+
+# Wave 15 H3 — PR-side regression gate. Runs the 5-axis audit against the
+# PR's tree and compares against tests/regression/audit_baseline.json. If
+# any axis loses more than 0.5 point vs baseline the gate fails (no
+# continue-on-error) so the PR cannot land. The job also leaves a sticky
+# PR comment with the per-axis delta table so the reviewer sees the
+# regression without opening logs.
+#
+# Constraints (CLAUDE.md):
+#   - Zero LLM API calls.
+#   - Read-only on the PR head; no commits, no push.
+#   - Free-tier runners only (ubuntu-latest).
+
+on:
+  pull_request:
+    paths:
+      - "site/**"
+      - "scripts/**"
+      - ".github/workflows/**"
+      - "tests/regression/audit_baseline.json"
+
+concurrency:
+  group: audit-regression-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.12"
+
+      - name: Install audit deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pyyaml
+
+      - name: Run 5-axis audit against PR tree
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/audit-pr
+          for axis in seo geo html per_record ai_bot; do
+            python scripts/ops/audit_runner_${axis}.py \
+              --out-md "/tmp/audit-pr/${axis}.md" \
+              --out-json "/tmp/audit-pr/${axis}.json"
+          done
+
+      - name: Compare against baseline (regression threshold 0.5)
+        id: compare
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, pathlib, sys
+          baseline = json.loads(pathlib.Path("tests/regression/audit_baseline.json").read_text())
+          axes = ["seo", "geo", "html", "per_record", "ai_bot"]
+          THRESH = 0.5
+          deltas = []
+          regressed = False
+          for axis in axes:
+              cur = json.loads(pathlib.Path(f"/tmp/audit-pr/{axis}.json").read_text())
+              cur_score = float(cur.get("score", 0.0))
+              base_score = float(baseline["axes"][axis]["score"])
+              delta = cur_score - base_score
+              deltas.append((axis, base_score, cur_score, delta))
+              if delta < -THRESH:
+                  regressed = True
+          out = pathlib.Path("/tmp/audit-pr/summary.md")
+          lines = ["## audit-regression-gate", "", "| axis | baseline | PR | delta |", "| --- | --- | --- | --- |"]
+          for a, b, c, d in deltas:
+              marker = " :red_circle:" if d < -THRESH else (" :white_check_mark:" if d >= 0 else " :warning:")
+              lines.append(f"| {a} | {b:.2f} | {c:.2f} | {d:+.2f}{marker} |")
+          lines.append("")
+          lines.append(f"Threshold: regression if any axis drops more than {THRESH} below baseline.")
+          out.write_text("\n".join(lines) + "\n")
+          print("\n".join(lines))
+          if regressed:
+              print("::error::audit score regression > 0.5 detected — see summary table.")
+              sys.exit(1)
+          PY
+
+      - name: Post sticky PR comment
+        if: always()
+        uses: marocchino/sticky-pull-request-comment@52423e01640425a022ef5fd42c6fb5f633a02728 # v2.9.1
+        with:
+          header: audit-regression-gate
+          recreate: true
+          path: /tmp/audit-pr/summary.md

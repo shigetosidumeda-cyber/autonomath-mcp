@@ -179,15 +179,31 @@
 /index.html
   Cache-Control: public, max-age=300, s-maxage=600
 
-# /playground.html — interactive REST API try-it surface. Ships a single
-# inline <script> block (~6 KB local OpenAPI mirror + fetch controller).
-# The shell rarely changes (param schema is the only churn), but visitors
-# return mid-evaluation and we want copy edits to reach them in minutes,
-# not hours. 5 min browser / 10 min edge mirrors /index.html policy
-# (similar interactive-shell pattern). Robots indexable — playground is
-# part of the funnel.
+# /playground.html — interactive REST API try-it surface. As of Wave 15 C8
+# (2026-05-11), the 2,376-line inline controller has been extracted to
+# /assets/playground.bundle.js (defer-loaded). The remaining inline scripts
+# are all type="application/ld+json" (structured data, not executable) +
+# type="text/x-jpcite-extracted-keep-for-audit" (browser-skipped audit
+# copies of the extracted blocks). Neither requires script-src 'unsafe-
+# inline'. We override the global CSP with a tightened script-src that
+# drops 'unsafe-inline' to deliver the XSS hardening promised by C8.
+# style-src keeps 'unsafe-inline' for page-scoped <style> blocks.
+# Cache: 5 min browser / 10 min edge mirrors /index.html policy.
 /playground.html
   Cache-Control: public, max-age=300, s-maxage=600
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://plausible.io https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.jpcite.com https://pypi.org https://plausible.io https://cloudflareinsights.com; frame-src 'none'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com https://billing.stripe.com
+
+# /dashboard.html — logged-in API key + usage + billing surface. As of
+# Wave 15 C7 (2026-05-11), all 5 inline <script> blocks (967 lines) have
+# been extracted to /assets/dashboard.bundle.js (defer-loaded). The
+# remaining inline scripts are JSON-LD structured data + keep-for-audit
+# placeholders, neither of which executes. Override the global CSP with
+# a tightened script-src that drops 'unsafe-inline'. The Cache-Control
+# is private/no-store because the dashboard renders per-user data.
+/dashboard.html
+  Cache-Control: private, no-store, max-age=0, must-revalidate
+  X-Robots-Tag: noindex, nofollow
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://plausible.io https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.jpcite.com https://pypi.org https://plausible.io https://cloudflareinsights.com; frame-src 'none'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com https://billing.stripe.com
 
 # Data freshness and transparency pages.
 /data-freshness.html

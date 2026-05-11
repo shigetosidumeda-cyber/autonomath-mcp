@@ -1,0 +1,84 @@
+{
+  "_meta": {
+    "version": 1,
+    "locked_at": "2026-05-11",
+    "locked_by": "Wave 14 baseline freeze",
+    "purpose": "Score floor for audit-regression-gate.yml. Any axis drop > 0.5 fails the PR.",
+    "axes": ["seo", "geo", "html", "per_record", "ai_bot"],
+    "threshold": 0.5
+  },
+  "axes": {
+    "seo": {
+      "score": 7.79,
+      "verdict": "yellow",
+      "source": "docs/audit/seo_health_audit_2026_05_11.md",
+      "sub_scores": {
+        "technical": 8.5,
+        "on_page": 7.0,
+        "schema_org": 7.5,
+        "og_twitter": 8.0,
+        "core_web_vitals": 6.5,
+        "html_semantic": 8.0,
+        "url_structure": 9.0
+      }
+    },
+    "geo": {
+      "score": 7.6,
+      "verdict": "yellow",
+      "source": "docs/audit/geo_health_audit_2026_05_11.md",
+      "sub_scores": {
+        "robots_ai_welcome": 8.0,
+        "llms_txt": 9.0,
+        "mcp_discovery": 10.0,
+        "agents_plugin_json": 6.0,
+        "openapi_layers": 10.0,
+        "sitemap_llms": 0.0,
+        "schema_dataset_service": 9.0,
+        "legacy_bridge_marker": 9.0
+      }
+    },
+    "html": {
+      "score": 8.39,
+      "verdict": "green",
+      "source": "docs/audit/html_semantic_a11y_audit_2026_05_11.md",
+      "sub_scores": {
+        "landmarks": 9.8,
+        "headings": 9.7,
+        "a11y_wcag22": 9.4,
+        "contrast_provisional": 7.0,
+        "viewport": 9.0,
+        "core_web_vitals": 6.5,
+        "perf": 6.5,
+        "seo": 9.5
+      }
+    },
+    "per_record": {
+      "score": 6.0,
+      "verdict": "yellow",
+      "source": "docs/audit/per_record_seo_quality_audit_2026_05_11.md",
+      "sub_scores": {
+        "cases_canonical_extensionless": 3.0,
+        "schema_jsonld": 7.0,
+        "internal_link_density": 5.0,
+        "sitemap_health": 6.0,
+        "per_page_meta": 9.0,
+        "cross_link_schema": 5.0,
+        "a11y_cwv": 8.0
+      },
+      "page_count": 9964
+    },
+    "ai_bot": {
+      "score": 6.5,
+      "verdict": "yellow",
+      "source": "docs/audit/ai_bot_visit_competitive_geo_2026_05_11.md",
+      "sub_scores": {
+        "robots_ai_allow": 9.0,
+        "bot_visit_observability": 3.0,
+        "competitive_geo_lead": 9.0,
+        "directory_submissions": 5.0,
+        "github_clone_proxy_signal": 7.0
+      },
+      "notes": "bot_visit_observability low because Cloudflare token is Pages:Read only; lift when Zone Analytics scope added."
+    }
+  }
+}

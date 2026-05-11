@@ -26,7 +26,28 @@
       "brand": "jpcite",
       "canonical_site": "https://jpcite.com",
       "tool_count": 139,
-      "resource_count": 28,
+      "resource_count": 42,
+      "prompt_count": 15,
+      "capabilities": {
+        "tools": true,
+        "resources": true,
+        "prompts": true,
+        "logging": false
+      },
+      "jpcite_namespace": {
+        "resources": [
+          "mcp://jpcite/facts_registry.json",
+          "mcp://jpcite/legal/fence.md",
+          "mcp://jpcite/glossary.json",
+          "mcp://jpcite/license_matrix.json",
+          "mcp://jpcite/sources_catalog.json"
+        ],
+        "prompts": [
+          "company_folder_intake",
+          "monthly_client_review",
+          "counterparty_dd"
+        ]
+      },
       "discoverability": {
         "llms_txt_ja": "https://jpcite.com/llms.txt",
         "llms_txt_en": "https://jpcite.com/llms.en.txt",

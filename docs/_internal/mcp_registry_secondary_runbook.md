@@ -271,6 +271,43 @@ These do **not** require runbook entries. Cursor (registry #5 above) **is** in s
 | 6 | mcpservers.org | Web form | Runbook only — operator manual | **NOT AUTO-SUBMITTED** |
 | 7 | Continue / Goose / Zed | n/a | n/a (B10 not eligible) | **SKIP** |
 
+## Wave 15 G6 update — 2026-05-11
+
+Re-verified registry state and added new submissions. Live listing snapshot:
+
+| Registry | Status (2026-05-11) | Listing URL or evidence |
+|----------|--------------------|--------------------------|
+| Official MCP Registry | **LIVE** | `io.github.shigetosidumeda-cyber/autonomath-mcp` v0.3.4 (`https://registry.modelcontextprotocol.io/v0/servers?search=autonomath`) |
+| PulseMCP | **LIVE (auto-ingested as "Autonomath")** | `https://www.pulsemcp.com/servers/autonomath` — API: `GET https://api.pulsemcp.com/v0beta/servers?query=autonomath` returns 1 hit |
+| Glama | **NOT INDEXED YET** (404 on slug — repo is public + Dockerfile + server.json, auto-crawl pending) | `https://glama.ai/mcp/servers/shigetosidumeda-cyber/autonomath-mcp` |
+| Smithery | **NOT INDEXED** (requires GitHub OAuth claim — user-action gated, no curl path) | `https://smithery.ai/server/...` |
+| mcp.so | **NOT INDEXED** (404 on slug). Issue filed to chatmcp/mcpso #2273 | `https://github.com/chatmcp/mcpso/issues/2273` |
+| mcphub.io | 404 (JS-rendered SPA, no public submission API). Auto-pull from `modelcontextprotocol` registry expected. | n/a |
+| aimcp.info | 404 (JS-rendered SPA, no public submission API; mentioned in `modelcontextprotocol/servers` README as auto-curator). | n/a |
+| `punkpeye/awesome-mcp-servers` | PR #6192 **OPEN, MERGEABLE**. Glama-bot requested Glama listing + score badge. Reply comment posted with auto-crawl readiness. | https://github.com/punkpeye/awesome-mcp-servers/pull/6192 |
+| `TensorBlock/awesome-mcp-servers` | PR #526 **OPEN** (added under 💰 Finance & Crypto) | https://github.com/TensorBlock/awesome-mcp-servers/pull/526 |
+| `YuzeHao2023/Awesome-MCP-Servers` | PR #232 **OPEN** (added under Research & Data 🧬) | https://github.com/YuzeHao2023/Awesome-MCP-Servers/pull/232 |
+| `ever-works/awesome-mcp-servers` | PR #105 **OPEN** (added under Business & Commerce + new `details/jpcite-autonomath-mcp.md`) | https://github.com/ever-works/awesome-mcp-servers/pull/105 |
+| `appcypher/awesome-mcp-servers` | **SKIPPED** — `has_pull_requests: false` (PR API 404, repo doesn't accept PRs). | n/a |
+| `wong2/awesome-mcp-servers` | **SKIPPED** — same reason (PR API 404). | n/a |
+| `hesreallyhim/awesome-claude-code` | **SKIPPED** — README is "Update in progress", TOC being rebuilt; not safe to PR right now. | n/a |
+| `e2b-dev/awesome-ai-agents` | **SKIPPED** — that list is for autonomous agents (AutoGPT-class), not data-source MCP servers. Poor categorical fit. | n/a |
+| `mahseema/awesome-ai-tools` | **SKIPPED** — list is consumer AI tools (chatbots / image gen / writing aids), not MCP infrastructure. | n/a |
+| `modelcontextprotocol/servers` README | **SKIPPED** — per task brief, that README's "Resources" section is for registries/lists/frameworks, not individual servers. | n/a |
+
+User-action-only paths (no curl auto path exists):
+
+- **Glama "Claim" + score badge add** — appears after auto-crawl indexes the public repo. We can post once the listing exists; no operator action required first, but maintainer ack on PR #6192 may need the badge URL to clear the bot check.
+- **Smithery GitHub OAuth claim** — `smithery.ai/auth/github` flow. Single click in browser, no automation path.
+- **mcp.so listing approval** — issue #2273 filed; chatmcp team approves manually in Supabase backend.
+
+**Submission count summary (Wave 15 G6 deltas):**
+
+- 3 new awesome-list PRs opened: TensorBlock #526 / YuzeHao2023 #232 / ever-works #105
+- 1 GitHub issue filed: chatmcp/mcpso #2273 (covers mcp.so listing)
+- 1 PR maintainer reply posted: punkpeye/awesome-mcp-servers #6192 (addressing Glama-bot)
+- 5 registry statuses verified: Official MCP / PulseMCP (live) / Glama (pending crawl) / Smithery (user-action gated) / mcp.so (issue filed)
+
 ---
 
 ## Daily check (post-launch verification)
@@ -298,3 +335,4 @@ The script (see `scripts/check_registry_listings.py`) curls each registry's list
 ## Changelog
 
 - 2026-04-25: F7 initial draft. PR #5371 raised (draft) for `punkpeye/awesome-mcp-servers`. 6 form-based / PR-based registries documented with URL + required fields + canonical paste-text + ToS link. Continue/Goose/Zed marked not-eligible per B10.
+- 2026-05-11 (Wave 15 G6): Verified `punkpeye/awesome-mcp-servers` PR #6192 OPEN & MERGEABLE (replaces stale draft #5371). Opened 3 new awesome-list PRs (TensorBlock #526, YuzeHao2023 #232, ever-works #105) and 1 mcp.so submission issue (chatmcp/mcpso #2273). Verified PulseMCP auto-ingested us as "Autonomath" via official-registry sync; Glama auto-crawl pending; Smithery requires GitHub OAuth claim (user-action only). Replied to Glama-bot comment on PR #6192 with auto-crawl readiness summary. Skipped appcypher / wong2 (no PRs accepted), hesreallyhim (in flux), e2b-dev / mahseema (poor categorical fit).
