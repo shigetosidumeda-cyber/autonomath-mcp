@@ -48,10 +48,12 @@ Usage
 from __future__ import annotations
 
 import argparse
+import glob
 import os
 import re
 import subprocess
 import sys
+import time
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -261,7 +263,14 @@ def _commit(message: str, *, dry_run: bool) -> bool:
     return True
 
 
-def _push_with_retry(*, dry_run: bool, attempts: int = 3) -> bool:
+def _push_with_retry(
+    *,
+    dry_run: bool,
+    attempts: int = 3,
+    set_upstream: bool = False,
+    branch: str | None = None,
+    backoff_base: float = 5.0,
+) -> bool:
     if dry_run:
         return True
     last_err = ""
@@ -271,8 +280,11 @@ def _push_with_retry(*, dry_run: bool, attempts: int = 3) -> bool:
         # occasionally trip large `site/` pushes on flaky links.
         if attempt >= 2:
             env["GIT_HTTP_VERSION"] = "HTTP/1.1"
+        cmd: list[str] = ["git", "push"]
+        if set_upstream and branch:
+            cmd.extend(["--set-upstream", "origin", branch])
         proc = subprocess.run(
-            ["git", "push"],
+            cmd,
             cwd=REPO_ROOT,
             text=True,
             capture_output=True,
@@ -282,7 +294,170 @@ def _push_with_retry(*, dry_run: bool, attempts: int = 3) -> bool:
             return True
         last_err = (proc.stdout or "") + (proc.stderr or "")
         sys.stderr.write(f"push attempt {attempt}/{attempts} failed: {last_err[-400:]}\n")
+        if attempt < attempts:
+            wait = backoff_base * (2 ** (attempt - 1))
+            sys.stderr.write(f"  sleeping {wait:.0f}s before retry\n")
+            time.sleep(wait)
     raise RuntimeError(f"git push failed after {attempts} attempts: {last_err[-400:]}")
+
+
+# ---------------------------------------------------------------------------
+# Wave 20 extension: --paths glob mode for in-memory micro-chunking.
+# ---------------------------------------------------------------------------
+
+def _wave20_ensure_branch(branch: str) -> None:
+    """Create + checkout branch idempotently (no-op if already on it)."""
+    cur = subprocess.run(
+        ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+        cwd=REPO_ROOT, text=True, capture_output=True,
+    )
+    cur_name = (cur.stdout or "").strip()
+    if cur_name == branch:
+        return
+    exists = subprocess.run(
+        ["git", "rev-parse", "--verify", branch],
+        cwd=REPO_ROOT, text=True, capture_output=True,
+    )
+    if exists.returncode == 0:
+        subprocess.run(["git", "checkout", branch], cwd=REPO_ROOT, check=True,
+                       text=True, capture_output=True)
+    else:
+        subprocess.run(["git", "checkout", "-b", branch], cwd=REPO_ROOT,
+                       check=True, text=True, capture_output=True)
+
+
+def _wave20_chunked_push(
+    paths_glob: str,
+    chunk_size: int,
+    branch: str,
+    *,
+    dry_run: bool,
+    sleep_between: float,
+    start_chunk: int = 0,
+    end_chunk: int | None = None,
+) -> int:
+    """In-memory micro-chunk loop for Wave 20 .md bulk push.
+
+    Resolves the glob relative to REPO_ROOT, filters to git-actionable paths
+    via ``git status --porcelain``, then iterates ``chunk_size`` paths per
+    commit + push with retry. The first push on a fresh branch uses
+    ``--set-upstream``; subsequent pushes are plain.
+    """
+    if Path(paths_glob).is_absolute():
+        matched = sorted(glob.glob(paths_glob, recursive=True))
+    else:
+        matched = sorted(glob.glob(str(REPO_ROOT / paths_glob), recursive=True))
+    if not matched:
+        sys.stderr.write(
+            f"no files matched glob: {paths_glob} (resolved against {REPO_ROOT})\n"
+        )
+        return 2
+
+    rels: list[str] = []
+    for p in matched:
+        ap = Path(p)
+        if not ap.is_file():
+            continue
+        try:
+            rels.append(str(ap.relative_to(REPO_ROOT)))
+        except ValueError:
+            continue
+    if not rels:
+        sys.stderr.write("no usable files after filtering\n")
+        return 2
+
+    # Filter to actionable paths via git status --porcelain in batches.
+    actionable: list[str] = []
+    seen: set[str] = set()
+    for ix in range(0, len(rels), 500):
+        batch = rels[ix:ix + 500]
+        proc = subprocess.run(
+            ["git", "status", "--porcelain", "--", *batch],
+            cwd=REPO_ROOT, text=True, capture_output=True,
+        )
+        if proc.returncode != 0:
+            sys.stderr.write(
+                f"git status probe failed at batch {ix}: {proc.stderr[:200]}\n"
+            )
+            continue
+        for line in proc.stdout.splitlines():
+            if len(line) < 4:
+                continue
+            path = line[3:].strip()
+            if path.startswith('"') and path.endswith('"'):
+                path = path[1:-1]
+            if path in seen:
+                continue
+            seen.add(path)
+            actionable.append(path)
+
+    rels_set = set(rels)
+    actionable = [p for p in actionable if p in rels_set]
+    total = len(actionable)
+    if total == 0:
+        print(f"wave20: no actionable paths from glob {paths_glob} (all clean)")
+        return 0
+
+    chunks = [actionable[i:i + chunk_size] for i in range(0, total, chunk_size)]
+    end = end_chunk if end_chunk is not None else len(chunks) - 1
+
+    print(
+        f"wave20 chunked push: glob={paths_glob} files={total} "
+        f"chunk_size={chunk_size} chunks={len(chunks)} branch={branch} "
+        f"range=[{start_chunk}, {end}] dry_run={dry_run} sleep={sleep_between}s"
+    )
+
+    if not dry_run:
+        _wave20_ensure_branch(branch)
+
+    is_first_push = True
+    pushed_ok = 0
+    for ix, chunk_paths in enumerate(chunks):
+        if ix < start_chunk or ix > end:
+            continue
+        prefix = f"[{ix + 1}/{len(chunks)}]"
+        msg = (
+            f"feat(wave20): companion .md chunk {ix + 1}/{len(chunks)} "
+            f"({len(chunk_paths)} files)"
+        )
+        if dry_run:
+            print(f"  {prefix} would add {len(chunk_paths)} paths -> commit '{msg}'")
+            continue
+        for batch_ix in range(0, len(chunk_paths), 500):
+            batch = chunk_paths[batch_ix:batch_ix + 500]
+            subprocess.run(["git", "add", "--", *batch], cwd=REPO_ROOT,
+                           check=True, text=True, capture_output=True)
+        commit_proc = subprocess.run(
+            ["git", "commit", "-m", msg],
+            cwd=REPO_ROOT, text=True, capture_output=True,
+        )
+        if commit_proc.returncode != 0:
+            out = (commit_proc.stdout + commit_proc.stderr).lower()
+            if "nothing to commit" in out or "no changes added" in out:
+                print(f"  {prefix} noop (nothing to commit) — skipping")
+                continue
+            sys.stderr.write(commit_proc.stdout + commit_proc.stderr)
+            raise RuntimeError(f"git commit failed: {msg}")
+        try:
+            _push_with_retry(
+                dry_run=False,
+                attempts=3,
+                set_upstream=is_first_push,
+                branch=branch,
+                backoff_base=sleep_between,
+            )
+        except RuntimeError as exc:
+            sys.stderr.write(
+                f"  {prefix} PUSH FAILED — branch left with local commit: {exc}\n"
+            )
+            return 1
+        is_first_push = False
+        pushed_ok += 1
+        print(f"  {prefix} pushed {len(chunk_paths)} files (cumulative ok={pushed_ok})")
+        if ix < end:
+            time.sleep(sleep_between)
+    print(f"wave20 done: {pushed_ok} chunks pushed to {branch}")
+    return 0
 
 
 def _process_chunk(chunk: Chunk, *, dry_run: bool) -> dict[str, int]:
@@ -339,7 +514,49 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Walk the plan without staging, committing, or pushing.",
     )
+    # Wave 20 extension: --paths glob mode for in-memory micro-chunking.
+    parser.add_argument(
+        "--paths",
+        type=str,
+        default=None,
+        help="Wave 20 mode: glob pattern of paths to chunk-push (relative to REPO_ROOT).",
+    )
+    parser.add_argument(
+        "--chunk-size",
+        type=int,
+        default=100,
+        help="Wave 20 mode: paths per chunk (default 100, ~4-5MB for laws .md).",
+    )
+    parser.add_argument(
+        "--branch",
+        type=str,
+        default=None,
+        help="Wave 20 mode: branch to create/checkout for chunked commits.",
+    )
+    parser.add_argument(
+        "--sleep-between",
+        type=float,
+        default=5.0,
+        help="Wave 20 mode: sleep seconds between chunk pushes (default 5s).",
+    )
     args = parser.parse_args(argv)
+
+    if args.paths:
+        if not args.branch:
+            sys.stderr.write("--paths mode requires --branch\n")
+            return 2
+        # When --paths is provided the default --end=50 is too restrictive
+        # for large globs; treat its presence as "use the upper bound auto".
+        end_override = args.end if args.end != 50 else None
+        return _wave20_chunked_push(
+            paths_glob=args.paths,
+            chunk_size=args.chunk_size,
+            branch=args.branch,
+            dry_run=args.dry_run,
+            sleep_between=args.sleep_between,
+            start_chunk=args.start,
+            end_chunk=end_override,
+        )
 
     chunk_dir: Path = args.chunk_dir
     if not chunk_dir.exists() or not chunk_dir.is_dir():
