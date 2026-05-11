@@ -102,6 +102,7 @@ analytics/*
 !analytics/indexnow_log.jsonl
 !analytics/indexnow_snapshot.json
 !analytics/brand_community_dashboard.json
+!analytics/registry_status_w22.json
 
 # Cloudflare Wrangler cache
 .wrangler/
