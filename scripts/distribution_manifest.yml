@@ -238,6 +238,13 @@ forbidden_token_exclude_paths:
   - HANDOFF_
   - scripts/registry_submissions/mcp_so_submission.md
   - site/_redirects
+  # 旧 brand (zeimu-kaikei.ai / 税務会計AI) は llms*.txt と index.html JSON-LD
+  # で SEO citation bridge marker として必須 (test_seo_brand_history.py LEGACY_TERMS 要件)
+  - site/llms.txt
+  - site/llms.en.txt
+  - site/llms-full.txt
+  - site/llms-full.en.txt
+  - site/index.html
   - site/programs/
   - site/llms-full
   - docs/_internal/
