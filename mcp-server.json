@@ -11,7 +11,29 @@
   "homepage": "https://jpcite.com",
   "repository": {
     "url": "https://github.com/shigetosidumeda-cyber/autonomath-mcp",
-    "source": "github"
+    "source": "github",
+    "branch": "main",
+    "id": "io.github.shigetosidumeda-cyber/autonomath-mcp"
+  },
+  "registry_metadata": {
+    "smithery": {
+      "id": "@bookyou/jpcite",
+      "qualifiedName": "@bookyou/jpcite",
+      "owner": "bookyou",
+      "claim_evidence": "repository owner=shigetosidumeda-cyber matches operator=Bookyou株式会社 (info@bookyou.net), see README badge + smithery.yaml id field"
+    },
+    "glama": {
+      "slug": "io.github.shigetosidumeda-cyber/autonomath-mcp",
+      "discovery_topics": ["mcp-server", "model-context-protocol", "claude-mcp", "glama"]
+    },
+    "mcphub": {
+      "submit_url": "https://mcphub.dev/submit",
+      "slug": "jpcite"
+    },
+    "mcpso": {
+      "slug": "jpcite/bookyou"
+    },
+    "awesome_mcp_pr": "https://github.com/modelcontextprotocol/servers/pull/6192"
   },
   "protocol": "mcp-2025-06-18",
   "transport": "stdio",
