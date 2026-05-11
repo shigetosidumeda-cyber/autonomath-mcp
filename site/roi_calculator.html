@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+<title>ROI calculator — jpcite</title>
+<meta name="description" content="6 業種 × 顧問先数で動的に jpcite 月次 ROI を計算。AI 単体 vs AI+jpcite の delta + 倍率を realtime 表示。サーバ呼び出しなし、LLM 推論なし、lookup table 内蔵。">
+
+<meta property="og:title" content="ROI calculator — jpcite">
+<meta property="og:description" content="6 業種 × 顧問先数で月次 ROI を realtime 計算。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jpcite.com/roi_calculator">
+<meta property="og:locale" content="ja_JP">
+
+<link rel="canonical" href="https://jpcite.com/roi_calculator">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles.css?v=20260512a">
+<link rel="manifest" href="/manifest.webmanifest">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "jpcite ROI Calculator",
+  "url": "https://jpcite.com/roi_calculator",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "browserRequirements": "Requires JavaScript",
+  "inLanguage": "ja",
+  "isAccessibleForFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY",
+    "description": "ROI calculator 利用は無料、jpcite API 利用は ¥3/billable unit 完全従量"
+  },
+  "description": "6 業種 (税理士 / 会計士 / 行政書士 / 中小企業診断士 / M&A advisor / 信用金庫) × 顧問先数 1-1,000 で動的に月次 ROI を計算する。AI 単体 baseline と AI+jpcite (¥3.30/req) の delta + 倍率を realtime 表示。lookup table 内蔵、サーバ呼び出しなし、LLM 推論なし。",
+  "creator": {
+    "@type": "Organization",
+    "name": "Bookyou株式会社",
+    "url": "https://jpcite.com/",
+    "identifier": [
+      {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"}
+    ]
+  },
+  "datePublished": "2026-05-12",
+  "potentialAction": {
+    "@type": "InteractAction",
+    "target": "https://jpcite.com/roi_calculator#calculate"
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://jpcite.com/"},
+    {"@type": "ListItem", "position": 2, "name": "ROI Calculator", "item": "https://jpcite.com/roi_calculator"}
+  ]
+}
+</script>
+
+<style>
+:root {
+  --c-bg: #ffffff;
+  --c-text: #1a1a1a;
+  --c-muted: #666;
+  --c-border: #e0e0e0;
+  --c-accent: #0a4d8c;
+  --c-success: #2d7d3a;
+  --c-warning: #d97706;
+  --c-card-bg: #f9fafb;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --c-bg: #0a0a0a;
+    --c-text: #f5f5f5;
+    --c-muted: #999;
+    --c-border: #333;
+    --c-accent: #4a9eff;
+    --c-success: #4ade80;
+    --c-warning: #fbbf24;
+    --c-card-bg: #1a1a1a;
+  }
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+  background: var(--c-bg);
+  color: var(--c-text);
+  margin: 0;
+  line-height: 1.6;
+}
+.container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 24px;
+}
+h1 {
+  font-size: 32px;
+  margin: 24px 0 8px;
+}
+.lede {
+  color: var(--c-muted);
+  margin: 0 0 32px;
+  font-size: 15px;
+}
+.calc-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 900px) {
+  .calc-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.input-card, .result-card {
+  background: var(--c-card-bg);
+  border: 1px solid var(--c-border);
+  border-radius: 8px;
+  padding: 24px;
+}
+.input-card h2, .result-card h2 {
+  font-size: 18px;
+  margin: 0 0 16px;
+}
+label {
+  display: block;
+  font-weight: 600;
+  margin: 16px 0 8px;
+  font-size: 14px;
+}
+select, input[type=number], input[type=range] {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 16px;
+  border: 1px solid var(--c-border);
+  border-radius: 6px;
+  background: var(--c-bg);
+  color: var(--c-text);
+  box-sizing: border-box;
+}
+input[type=range] {
+  padding: 8px 0;
+}
+.slider-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.slider-wrap input[type=range] {
+  flex: 1;
+}
+.slider-wrap input[type=number] {
+  width: 100px;
+  flex-shrink: 0;
+}
+.metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--c-border);
+}
+.metric:last-child {
+  border-bottom: none;
+}
+.metric-label {
+  font-size: 14px;
+  color: var(--c-muted);
+}
+.metric-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--c-text);
+}
+.metric-value.delta {
+  color: var(--c-success);
+}
+.metric-value.cost {
+  color: var(--c-warning);
+}
+.roi-headline {
+  background: linear-gradient(135deg, var(--c-accent) 0%, #1a6bb8 100%);
+  color: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  margin: 16px 0;
+  text-align: center;
+}
+.roi-headline .roi-number {
+  font-size: 56px;
+  font-weight: 800;
+  display: block;
+  line-height: 1;
+  margin: 8px 0;
+}
+.roi-headline .roi-suffix {
+  font-size: 18px;
+  opacity: 0.9;
+}
+.note {
+  font-size: 13px;
+  color: var(--c-muted);
+  margin: 16px 0;
+}
+.fence {
+  background: var(--c-card-bg);
+  border-left: 4px solid var(--c-warning);
+  padding: 12px 16px;
+  margin: 16px 0;
+  font-size: 13px;
+  color: var(--c-muted);
+}
+.task-detail {
+  margin-top: 32px;
+  background: var(--c-card-bg);
+  border: 1px solid var(--c-border);
+  border-radius: 8px;
+  padding: 20px;
+}
+.task-detail h3 {
+  font-size: 16px;
+  margin: 0 0 12px;
+}
+.task-detail table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.task-detail th, .task-detail td {
+  text-align: left;
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--c-border);
+}
+.task-detail th {
+  font-weight: 600;
+  color: var(--c-muted);
+  font-size: 12px;
+}
+.task-detail td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.skip-link {
+  position: absolute;
+  left: -9999px;
+}
+.skip-link:focus {
+  position: static;
+}
+.cta-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+.btn {
+  display: inline-block;
+  padding: 12px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+}
+.btn-primary {
+  background: var(--c-accent);
+  color: #fff;
+}
+.btn-secondary {
+  border: 1px solid var(--c-border);
+  color: var(--c-text);
+  background: var(--c-bg);
+}
+header.site-header {
+  border-bottom: 1px solid var(--c-border);
+  padding: 16px 0;
+}
+.brand {
+  font-weight: 700;
+  color: var(--c-text);
+  text-decoration: none;
+  font-size: 18px;
+}
+.breadcrumb {
+  font-size: 13px;
+  color: var(--c-muted);
+  margin: 8px 0 16px;
+}
+.breadcrumb a {
+  color: var(--c-muted);
+  text-decoration: none;
+}
+footer.site-footer {
+  border-top: 1px solid var(--c-border);
+  padding: 24px 0;
+  margin-top: 64px;
+  font-size: 13px;
+  color: var(--c-muted);
+}
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインへスキップ</a>
+
+<header class="site-header" role="banner">
+  <div class="container">
+    <a class="brand" href="/">jpcite</a>
+  </div>
+</header>
+
+<main id="main">
+  <div class="container">
+
+    <nav class="breadcrumb" aria-label="パンくず">
+      <a href="/">ホーム</a> &rsaquo;
+      <span aria-current="page">ROI calculator</span>
+    </nav>
+
+    <h1>ROI calculator</h1>
+    <p class="lede">業種と顧問先 (取引先) 数を入れると、AI 単体 baseline と AI+jpcite (¥3.30/req) の delta + 月次 ROI 倍率を realtime 表示します。 LLM 推論なし、サーバ呼び出しなし、lookup table 内蔵。</p>
+
+    <div class="calc-grid">
+
+      <section class="input-card" aria-labelledby="input-h2">
+        <h2 id="input-h2">入力</h2>
+
+        <label for="industry-select">業種を選択</label>
+        <select id="industry-select">
+          <option value="tax_advisor">税理士事務所</option>
+          <option value="accountant">会計士事務所 (監査繁忙期)</option>
+          <option value="admin_scrivener">行政書士</option>
+          <option value="diagnostician">中小企業診断士</option>
+          <option value="ma_advisor">M&amp;A advisor</option>
+          <option value="shinkin">信用金庫渉外</option>
+        </select>
+
+        <label for="count-slider"><span id="count-label">顧問先数</span></label>
+        <div class="slider-wrap">
+          <input type="range" id="count-slider" min="1" max="1000" value="100" step="1">
+          <input type="number" id="count-input" min="1" max="1000" value="100">
+        </div>
+
+        <p class="note">slider または直接入力 (1-1,000)。 業種で「単位」が変わります (顧問先 / 監査契約 / 月案件 / 月ディール / 取引先)。</p>
+
+        <div class="fence">
+          数字は <a href="/docs/use_cases/by_industry_v2_2026_05_12">by_industry_v2_2026_05_12.md</a> に準拠した推定値。 業務内容で増減します、絶対値保証ではありません。
+        </div>
+      </section>
+
+      <section class="result-card" aria-labelledby="result-h2">
+        <h2 id="result-h2">月次 ROI</h2>
+
+        <div class="roi-headline" id="calculate">
+          <div class="roi-suffix">月次 ROI 倍率</div>
+          <span class="roi-number" id="roi-multiple">35</span>
+          <div class="roi-suffix">倍</div>
+        </div>
+
+        <div class="metric">
+          <span class="metric-label">AI 単体 月コスト</span>
+          <span class="metric-value cost" id="ai-cost">¥350,000</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">AI+jpcite 月コスト</span>
+          <span class="metric-value" id="jpcite-cost">¥9,825</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">月額 delta (削減効果)</span>
+          <span class="metric-value delta" id="delta">¥340,175</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">うち API ¥3.30 × N req</span>
+          <span class="metric-value" id="api-cost">¥825</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">士業時間 (圧縮後)</span>
+          <span class="metric-value" id="time-cost">¥9,000</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">年間 削減効果</span>
+          <span class="metric-value delta" id="annual-delta">¥4,082,100</span>
+        </div>
+      </section>
+
+    </div>
+
+    <section class="task-detail" aria-labelledby="detail-h3">
+      <h3 id="detail-h3">5 task 内訳</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>task</th>
+            <th class="num">AI 単体 月時間</th>
+            <th class="num">幻覚率</th>
+            <th class="num">AI 単体 月コスト</th>
+            <th class="num">AI+jpcite req</th>
+            <th class="num">AI+jpcite 月コスト</th>
+            <th class="num">delta</th>
+          </tr>
+        </thead>
+        <tbody id="task-tbody">
+        </tbody>
+      </table>
+      <p class="note" id="industry-note">税理士事務所では時間単価 ¥6,000 で計算。 顧問先数に応じて線形 scale。</p>
+    </section>
+
+    <div class="cta-row">
+      <a class="btn btn-primary" href="/dashboard.html?src=roi_calculator">API キー発行 &rarr;</a>
+      <a class="btn btn-secondary" href="/docs/use_cases/by_industry_v2_2026_05_12">詳細 ROI 表 (v2 doc)</a>
+      <a class="btn btn-secondary" href="/pricing.html?src=roi_calculator">料金</a>
+    </div>
+
+    <div class="fence" style="margin-top: 32px;">
+      <strong>業法 fence</strong>: 本サービスは情報検索です。 個別具体的な税務・法律・与信判断は資格を有する専門家にご相談ください (税理士法 §52 / 弁護士法 §72 / 行政書士法 §1 / 司法書士法 §3 / 公認会計士法 §47条の2)。
+    </div>
+
+    <p class="note" style="margin-top: 24px;">
+      AI 単体 baseline は推定値、業務内容で増減します。 中央値 + sensitivity range を <a href="/docs/use_cases/by_industry_v2_2026_05_12">v2 doc</a> で開示。 jpcite は SQLite + 一次資料 URL のみで動作し、LLM 推論を持ちません (`tests/test_no_llm_in_production.py` で CI guard)。
+    </p>
+
+  </div>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container">
+    <p>運営: Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708) &middot; <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+    <p>&copy; 2026 Bookyou株式会社</p>
+  </div>
+</footer>
+
+<script>
+// lookup table — by_industry_v2_2026_05_12.md と同期
+// 各業種 5 task × { ai_time_h, hallucination_rate, ai_error_cost, ai_total_cost, jpcite_req, jpcite_total_cost, delta } per baseline (代表顧問先数)
+const LOOKUP = {
+  tax_advisor: {
+    label: "税理士事務所",
+    unit: "顧問先数",
+    baseline_count: 100,
+    hourly_rate: 6000,
+    tasks: [
+      { name: "1.1 法改正 check (措置法 §42 系)", ai_time: 12, hal: 25, ai_err: 30000, ai_total: 102000, req: 100, jp_total: 3330 },
+      { name: "1.2 補助金候補提案 (顧問先個別)", ai_time: 8, hal: 30, ai_err: 45000, ai_total: 93000, req: 50, jp_total: 1965 },
+      { name: "1.3 排他ルール確認 (併給不可)", ai_time: 4, hal: 35, ai_err: 30000, ai_total: 54000, req: 30, jp_total: 1299 },
+      { name: "1.4 業種別最適 (JSIC × 制度)", ai_time: 6, hal: 28, ai_err: 20000, ai_total: 56000, req: 40, jp_total: 1932 },
+      { name: "1.5 採択事例参考", ai_time: 5, hal: 20, ai_err: 15000, ai_total: 45000, req: 30, jp_total: 1299 }
+    ],
+    note: "税理士事務所では時間単価 ¥6,000 で計算。 顧問先数に応じて線形 scale (fan-out 効率で緩やかに ROI 上昇)。"
+  },
+  accountant: {
+    label: "会計士事務所 (監査繁忙期)",
+    unit: "監査契約数",
+    baseline_count: 10,
+    hourly_rate: 10000,
+    tasks: [
+      { name: "2.1 研究開発税制 (措置法 §42-4)", ai_time: 8, hal: 30, ai_err: 40000, ai_total: 120000, req: 30, jp_total: 4099 },
+      { name: "2.2 IT 導入会計処理 (実務指針 No.30)", ai_time: 6, hal: 35, ai_err: 35000, ai_total: 95000, req: 25, jp_total: 3083 },
+      { name: "2.3 DD question deck (30-60 問)", ai_time: 10, hal: 20, ai_err: 30000, ai_total: 130000, req: 60, jp_total: 5198 },
+      { name: "2.4 行政処分 filter", ai_time: 4, hal: 25, ai_err: 20000, ai_total: 60000, req: 20, jp_total: 2066 },
+      { name: "2.5 監査調書 template", ai_time: 7, hal: 18, ai_err: 20000, ai_total: 90000, req: 40, jp_total: 4132 }
+    ],
+    note: "会計士事務所 (監査繁忙期) では時間単価 ¥10,000 で計算。 繁忙期 1.5 ヶ月集中で平時 ÷3、年間平均は ROI 安定。"
+  },
+  admin_scrivener: {
+    label: "行政書士",
+    unit: "月案件数",
+    baseline_count: 25,
+    hourly_rate: 5000,
+    tasks: [
+      { name: "3.1 建設業前提条件", ai_time: 18, hal: 30, ai_err: 40000, ai_total: 130000, req: 75, jp_total: 5248 },
+      { name: "3.2 併給補助金 (許可 + 補助金)", ai_time: 12, hal: 35, ai_err: 45000, ai_total: 105000, req: 50, jp_total: 3665 },
+      { name: "3.3 jurisdiction 不一致", ai_time: 8, hal: 28, ai_err: 30000, ai_total: 70000, req: 30, jp_total: 2099 },
+      { name: "3.4 排他ルール", ai_time: 6, hal: 32, ai_err: 25000, ai_total: 55000, req: 25, jp_total: 1583 },
+      { name: "3.5 申請 checklist", ai_time: 10, hal: 18, ai_err: 15000, ai_total: 65000, req: 50, jp_total: 2665 }
+    ],
+    note: "行政書士では時間単価 ¥5,000 で計算。 月案件数に対して線形 scale、件あたり ¥610 のコストで報酬 ¥150,000 を取りこぼし無くする。"
+  },
+  diagnostician: {
+    label: "中小企業診断士",
+    unit: "顧問先数",
+    baseline_count: 50,
+    hourly_rate: 8000,
+    tasks: [
+      { name: "4.1 月次 saved search (顧問先)", ai_time: 15, hal: 35, ai_err: 60000, ai_total: 180000, req: 50, jp_total: 2565 },
+      { name: "4.2 eligibility chain", ai_time: 8, hal: 30, ai_err: 30000, ai_total: 94000, req: 40, jp_total: 3332 },
+      { name: "4.3 renewal forecast", ai_time: 5, hal: 40, ai_err: 40000, ai_total: 80000, req: 20, jp_total: 2466 },
+      { name: "4.4 補完制度", ai_time: 6, hal: 32, ai_err: 25000, ai_total: 73000, req: 30, jp_total: 2499 },
+      { name: "4.5 申請 kit assembly", ai_time: 8, hal: 22, ai_err: 20000, ai_total: 84000, req: 30, jp_total: 3299 }
+    ],
+    note: "中小企業診断士では時間単価 ¥8,000 で計算。 顧問先数で線形 scale、saved_searches.profile_ids fan-out が ¥/req 効率を最大化。"
+  },
+  ma_advisor: {
+    label: "M&A advisor",
+    unit: "月ディール数",
+    baseline_count: 3,
+    hourly_rate: 15000,
+    tasks: [
+      { name: "5.1 法人 360 (houjin 全軸)", ai_time: 18, hal: 28, ai_err: 80000, ai_total: 350000, req: 60, jp_total: 12198 },
+      { name: "5.2 DD deck (30-60 問)", ai_time: 24, hal: 25, ai_err: 100000, ai_total: 460000, req: 90, jp_total: 18297 },
+      { name: "5.3 補助金返還義務 check", ai_time: 12, hal: 32, ai_err: 120000, ai_total: 300000, req: 40, jp_total: 9132 },
+      { name: "5.4 業法 fence", ai_time: 10, hal: 30, ai_err: 150000, ai_total: 300000, req: 30, jp_total: 7599 },
+      { name: "5.5 事業承継 制度 matcher", ai_time: 8, hal: 35, ai_err: 80000, ai_total: 200000, req: 25, jp_total: 6083 }
+    ],
+    note: "M&A advisor では時間単価 ¥15,000 で計算。 ディール崩壊 1 件 ¥2,500 万のリスク shield は別軸 (本計算には含まれない)。"
+  },
+  shinkin: {
+    label: "信用金庫渉外",
+    unit: "取引先数",
+    baseline_count: 100,
+    hourly_rate: 4500,
+    tasks: [
+      { name: "6.1 月次 watch (取引先)", ai_time: 14, hal: 32, ai_err: 45000, ai_total: 108000, req: 100, jp_total: 1680 },
+      { name: "6.2 融資前 DD (3 軸保証)", ai_time: 8, hal: 25, ai_err: 35000, ai_total: 71000, req: 50, jp_total: 1515 },
+      { name: "6.3 補助金提案 (取引先別)", ai_time: 6, hal: 38, ai_err: 30000, ai_total: 57000, req: 40, jp_total: 1482 },
+      { name: "6.4 行政処分 filter", ai_time: 4, hal: 28, ai_err: 25000, ai_total: 43000, req: 30, jp_total: 999 },
+      { name: "6.5 認定計画 (経営革新 等)", ai_time: 5, hal: 30, ai_err: 20000, ai_total: 42500, req: 25, jp_total: 983 }
+    ],
+    note: "信用金庫渉外では時間単価 ¥4,500 で計算 (中央銀行員 35 才 中央値)。 時間単価が最低のため API ¥/req 効率が突出、最高 ROI 47 倍。"
+  }
+};
+
+function fmt(n) {
+  return "¥" + Math.round(n).toLocaleString("ja-JP");
+}
+function scaleToCount(industry, count) {
+  const ratio = count / industry.baseline_count;
+  let total_ai_cost = 0;
+  let total_jp_cost = 0;
+  let total_req = 0;
+  let total_jp_time_h = 0;
+  const scaled_tasks = industry.tasks.map(t => {
+    const ai_total = t.ai_total * ratio;
+    const jp_total = t.jp_total * ratio;
+    const req = t.req * ratio;
+    const jp_time_h = (jp_total - req * 3.30) / industry.hourly_rate;
+    total_ai_cost += ai_total;
+    total_jp_cost += jp_total;
+    total_req += req;
+    total_jp_time_h += jp_time_h;
+    return {
+      ...t,
+      ai_total_scaled: ai_total,
+      jp_total_scaled: jp_total,
+      req_scaled: req,
+      delta_scaled: ai_total - jp_total
+    };
+  });
+  return {
+    total_ai_cost,
+    total_jp_cost,
+    total_req,
+    total_jp_time_h,
+    api_cost: total_req * 3.30,
+    time_cost: total_jp_time_h * industry.hourly_rate,
+    delta: total_ai_cost - total_jp_cost,
+    roi: total_jp_cost > 0 ? (total_ai_cost - total_jp_cost) / total_jp_cost : 0,
+    scaled_tasks
+  };
+}
+
+function render() {
+  const industryKey = document.getElementById("industry-select").value;
+  const industry = LOOKUP[industryKey];
+  const count = parseInt(document.getElementById("count-input").value, 10) || industry.baseline_count;
+
+  document.getElementById("count-label").textContent = industry.unit;
+
+  const result = scaleToCount(industry, count);
+
+  document.getElementById("ai-cost").textContent = fmt(result.total_ai_cost);
+  document.getElementById("jpcite-cost").textContent = fmt(result.total_jp_cost);
+  document.getElementById("delta").textContent = fmt(result.delta);
+  document.getElementById("api-cost").textContent = fmt(result.api_cost);
+  document.getElementById("time-cost").textContent = fmt(result.time_cost);
+  document.getElementById("annual-delta").textContent = fmt(result.delta * 12);
+  document.getElementById("roi-multiple").textContent = Math.round(result.roi).toString();
+  document.getElementById("industry-note").textContent = industry.note;
+
+  const tbody = document.getElementById("task-tbody");
+  tbody.innerHTML = result.scaled_tasks.map(t =>
+    `<tr>
+      <td>${t.name}</td>
+      <td class="num">${(t.ai_time * count / industry.baseline_count).toFixed(1)}h</td>
+      <td class="num">${t.hal}%</td>
+      <td class="num">${fmt(t.ai_total_scaled)}</td>
+      <td class="num">${Math.round(t.req_scaled)}</td>
+      <td class="num">${fmt(t.jp_total_scaled)}</td>
+      <td class="num">${fmt(t.delta_scaled)}</td>
+    </tr>`
+  ).join("");
+}
+
+function syncSlider(fromSlider) {
+  const slider = document.getElementById("count-slider");
+  const input = document.getElementById("count-input");
+  if (fromSlider) {
+    input.value = slider.value;
+  } else {
+    const v = Math.min(1000, Math.max(1, parseInt(input.value, 10) || 1));
+    input.value = v;
+    slider.value = v;
+  }
+  render();
+}
+
+document.getElementById("industry-select").addEventListener("change", () => {
+  const industryKey = document.getElementById("industry-select").value;
+  const industry = LOOKUP[industryKey];
+  document.getElementById("count-slider").value = industry.baseline_count;
+  document.getElementById("count-input").value = industry.baseline_count;
+  render();
+});
+document.getElementById("count-slider").addEventListener("input", () => syncSlider(true));
+document.getElementById("count-input").addEventListener("input", () => syncSlider(false));
+
+// initial render
+render();
+</script>
+
+</body>
+</html>
