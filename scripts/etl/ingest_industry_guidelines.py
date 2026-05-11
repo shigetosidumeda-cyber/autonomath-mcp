@@ -56,6 +56,8 @@ from pathlib import Path
 from typing import Any
 from xml.etree import ElementTree as ET
 
+from scripts.etl._playwright_helper import fetch_with_fallback_sync  # Wave 36 wire
+
 try:
     import certifi
 
@@ -182,12 +184,19 @@ def fetch(url: str, timeout: int = DEFAULT_TIMEOUT) -> str:
     if is_banned_url(url):
         raise ValueError(f"banned source: {url}")
     req = urllib.request.Request(url, headers={"User-Agent": UA})
-    with urllib.request.urlopen(req, timeout=timeout, context=_SSL_CTX) as resp:
-        body = resp.read()
-        try:
-            return body.decode("utf-8")
-        except UnicodeDecodeError:
-            return body.decode("shift_jis", errors="replace")
+    try:
+        with urllib.request.urlopen(req, timeout=timeout, context=_SSL_CTX) as resp:
+            body = resp.read()
+            try:
+                return body.decode("utf-8")
+            except UnicodeDecodeError:
+                return body.decode("shift_jis", errors="replace")
+    except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError) as exc:
+        # Wave 36: Playwright fallback on urllib failure.
+        result = fetch_with_fallback_sync(url, timeout_s=float(timeout))
+        if result.source == "playwright" and result.text:
+            return result.text
+        raise exc
 
 
 _ISO_DATE_RE = re.compile(r"(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})")

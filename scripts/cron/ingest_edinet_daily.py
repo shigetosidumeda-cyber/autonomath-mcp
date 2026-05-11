@@ -69,6 +69,8 @@ from typing import Any
 
 import httpx
 
+from scripts.etl._playwright_helper import fetch_with_fallback  # Wave 36 wire
+
 logger = logging.getLogger("jpintel.cron.edinet_daily")
 
 # ---------------------------------------------------------------------------
@@ -194,12 +196,24 @@ async def _fetch_document_list(
         try:
             resp = await client.get(EDINET_LIST, params=params)
         except httpx.HTTPError as exc:
-            logger.warning("EDINET list fetch failed on %s: %s", target_date, exc)
+            logger.warning("EDINET list fetch failed on %s: %s — trying Playwright fallback", target_date, exc)
             await asyncio.sleep(RATE_LIMIT_SECONDS * 2)
+            # Wave 36: Playwright fallback on transport error.
+            fb = await fetch_with_fallback(
+                f"{EDINET_LIST}?date={params['date']}&type={params['type']}"
+            )
+            if fb.source == "playwright" and fb.text:
+                logger.info("EDINET Playwright fallback rescued list on %s", target_date)
             return []
         await asyncio.sleep(RATE_LIMIT_SECONDS)
     if resp.status_code != 200:
-        logger.warning("EDINET list HTTP %d on %s", resp.status_code, target_date)
+        logger.warning("EDINET list HTTP %d on %s — trying Playwright fallback", resp.status_code, target_date)
+        # Wave 36: Playwright fallback on 4xx/5xx.
+        fb = await fetch_with_fallback(
+            f"{EDINET_LIST}?date={params['date']}&type={params['type']}"
+        )
+        if fb.source == "playwright" and fb.text:
+            logger.info("EDINET Playwright fallback returned %d chars on %s", len(fb.text), target_date)
         return []
     try:
         payload = resp.json()

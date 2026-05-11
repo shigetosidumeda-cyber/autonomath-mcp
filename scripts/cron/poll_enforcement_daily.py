@@ -60,6 +60,8 @@ from urllib.parse import urlparse
 
 import httpx
 
+from scripts.etl._playwright_helper import fetch_with_fallback_sync  # Wave 36 wire
+
 logger = logging.getLogger("jpcite.cron.enforcement")
 
 # ---------------------------------------------------------------------------
@@ -305,10 +307,18 @@ def _fetch(client: httpx.Client, label: str, url: str) -> list[dict[str, str]]:
     try:
         resp = client.get(url, headers={"User-Agent": USER_AGENT})
     except httpx.HTTPError as exc:
-        logger.warning("press fetch failed ministry=%s err=%s", label, exc)
+        logger.warning("press fetch failed ministry=%s err=%s — trying Playwright fallback", label, exc)
+        # Wave 36: Playwright fallback on transport failure.
+        fb = fetch_with_fallback_sync(url)
+        if fb.source == "playwright" and fb.text:
+            return _parse_feed(fb.text)
         return []
     if resp.status_code != 200:
-        logger.warning("press feed=%s HTTP %d", label, resp.status_code)
+        logger.warning("press feed=%s HTTP %d — trying Playwright fallback", label, resp.status_code)
+        # Wave 36: Playwright fallback on 4xx/5xx.
+        fb = fetch_with_fallback_sync(url)
+        if fb.source == "playwright" and fb.text:
+            return _parse_feed(fb.text)
         return []
     return _parse_feed(resp.text)
 

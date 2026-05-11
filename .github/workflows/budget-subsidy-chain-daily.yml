@@ -51,6 +51,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
 
+      - name: Install Playwright chromium (Wave 36 fallback)
+        run: |
+          # Wave 36: ETL fetch_with_fallback uses Playwright on 4xx/5xx/timeout
+          # against authoritative .go.jp / .lg.jp sources.
+          python -m playwright install --with-deps chromium
+
       - name: Detect budget-to-subsidy chains
         env:
           AUTONOMATH_DB_PATH: ${{ github.workspace }}/autonomath.db

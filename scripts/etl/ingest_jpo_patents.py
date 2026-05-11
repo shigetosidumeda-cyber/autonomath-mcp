@@ -72,6 +72,8 @@ from typing import Any
 
 import httpx
 
+from scripts.etl._playwright_helper import fetch_with_fallback  # Wave 36 wire
+
 logger = logging.getLogger("jpintel.etl.jpo_patents")
 
 # ---------------------------------------------------------------------------
@@ -401,19 +403,31 @@ async def _fetch_gazette_index(
                         surface, day, exc,
                     )
                     await asyncio.sleep(RATE_LIMIT_SECONDS * 2)
+                    # Wave 36: Playwright fallback on transport error.
+                    fb_url = f"{JPLATPAT_GAZETTE_INDEX}?date={params['date']}&kind={surface}"
+                    fb = await fetch_with_fallback(fb_url)
+                    if fb.source == "playwright" and fb.text:
+                        logger.info("jplatpat Playwright fallback rescued %s/%s", surface, day)
                     continue
                 await asyncio.sleep(RATE_LIMIT_SECONDS)
             if resp.status_code != 200:
                 logger.warning(
-                    "jplatpat index HTTP %d on %s/%s",
+                    "jplatpat index HTTP %d on %s/%s — trying Playwright fallback",
                     resp.status_code, day, surface,
                 )
-                continue
-            try:
-                payload = resp.json()
-            except (ValueError, json.JSONDecodeError):
-                # The HTML fallback returns nothing; treat as empty.
-                payload = {}
+                # Wave 36: Playwright fallback on 4xx/5xx.
+                fb_url = f"{JPLATPAT_GAZETTE_INDEX}?date={params['date']}&kind={surface}"
+                fb = await fetch_with_fallback(fb_url)
+                if fb.source != "playwright" or not fb.text:
+                    continue
+                # Playwright DOM text is not JSON; treat as no records (cleanest).
+                payload: dict[str, Any] = {}
+            else:
+                try:
+                    payload = resp.json()
+                except (ValueError, json.JSONDecodeError):
+                    # The HTML fallback returns nothing; treat as empty.
+                    payload = {}
             records = payload.get("results") or payload.get("items") or []
             for r in records:
                 r.setdefault("surface", surface)

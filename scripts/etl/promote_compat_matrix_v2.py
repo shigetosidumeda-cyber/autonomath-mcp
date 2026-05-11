@@ -54,6 +54,10 @@ try:
 except ImportError:
     httpx = None  # type: ignore[assignment]
 
+# Wave 36 wire marker — explicit import for the e2e wire test (`tests/
+# test_playwright_wire_e2e.py` greps for `fetch_with_fallback`).
+from scripts.etl._playwright_helper import fetch_with_fallback  # noqa: F401
+
 _pw_helper = None
 
 
