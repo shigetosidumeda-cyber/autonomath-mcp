@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# ruff: noqa: N803,N806,SIM115,SIM117,BLE001,E501,F401,F841,PTH123,S301,S314,S603,UP017
 """favicon set + Apple touch icon + maskable PWA icon 生成 (minimal SVG → PNG multi-size)."""
 
 from __future__ import annotations
@@ -20,7 +19,13 @@ def _try_pillow():
 SIZES = [16, 32, 48, 64, 96, 128, 180, 192, 256, 384, 512]
 
 
-def make_icon(size: int, out: pathlib.Path, Image, ImageDraw, ImageFont) -> None:
+def make_icon(
+    size: int,
+    out: pathlib.Path,
+    Image,  # noqa: N803 — Pillow public-API class name (PIL.Image) is capitalized
+    ImageDraw,  # noqa: N803 — Pillow public-API class name (PIL.ImageDraw) is capitalized
+    ImageFont,  # noqa: N803 — Pillow public-API class name (PIL.ImageFont) is capitalized
+) -> None:
     """Simple jpcite mark: blue square with white 'j' character."""
     img = Image.new("RGBA", (size, size), color=(10, 77, 140, 255))
     draw = ImageDraw.Draw(img)
@@ -41,7 +46,10 @@ def make_icon(size: int, out: pathlib.Path, Image, ImageDraw, ImageFont) -> None
     img.save(out, "PNG", optimize=True)
 
 
-def make_favicon_ico(root: pathlib.Path, Image) -> None:
+def make_favicon_ico(
+    root: pathlib.Path,
+    Image,  # noqa: N803 — Pillow public-API class name (PIL.Image) is capitalized
+) -> None:
     """16x16 + 32x32 ICO file at site/favicon.ico."""
     out = root / "site" / "favicon.ico"
     if out.exists():
@@ -55,7 +63,7 @@ def make_favicon_ico(root: pathlib.Path, Image) -> None:
 
 
 def main() -> int:
-    Image, ImageDraw, ImageFont = _try_pillow()
+    Image, ImageDraw, ImageFont = _try_pillow()  # noqa: N806 — local rebind of Pillow public-API class names (PIL.Image/ImageDraw/ImageFont); lowercasing would obscure the upstream identifier
     if Image is None:
         print("[generate_favicon] Pillow not installed - skipping (pip install Pillow)")
         return 0

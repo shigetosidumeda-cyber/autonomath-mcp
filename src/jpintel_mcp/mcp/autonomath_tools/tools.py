@@ -3027,6 +3027,9 @@ def _reasoning_import() -> tuple[Any, Any]:
     return _match_mod, _qt_mod
 
 
+# DEPRECATED 2026-05-11 — `intent_of` + `reason_answer` superseded by reasoning package bundling (gate AUTONOMATH_REASONING_ENABLED 維持); retained as historical-state marker.
+# index record: /Users/shigetoumeda/jpcite/docs/_internal/_archive/_index_2026_05_11.md (A8)
+#
 # TODO(2026-04-29): intent_of is currently broken — _reasoning_import()
 # fails with ModuleNotFoundError because the `reasoning` package is not
 # present in the install (smoke test 2026-04-29 returns

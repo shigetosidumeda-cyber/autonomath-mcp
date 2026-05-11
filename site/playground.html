@@ -534,6 +534,204 @@
     .pg-conversion-actions { width: 100%; }
     .pg-export-row .pg-btn { width: auto; flex: 1 1 auto; min-width: 140px; }
   }
+
+  /* --- SSE evidence3 wizard (3-step, progressive render) ------------------
+     All `.ev3-` prefixed to avoid colliding with the legacy single-shot
+     playground UI above. Wizard is hidden by default and only revealed when
+     ?flow=evidence3 is set (see init() at the bottom of this file).
+     The bare anchors `ev3-step-1/2/3` from the legacy minimal viable wizard
+     are KEPT — we replace the inner block but preserve the wrapper id so
+     deep-links from /docs and /products that point at #ev3-step-X still
+     scroll to the right spot.
+  -------------------------------------------------------------------- */
+  .ev3-wizard {
+    display: none;
+    max-width: 880px;
+    margin: 24px auto;
+    padding: 24px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg);
+  }
+  .ev3-wizard.is-active { display: block; }
+  .ev3-head {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px; margin: 0 0 14px;
+  }
+  .ev3-head h2 { margin: 0; font-size: 16px; font-weight: 700; }
+  .ev3-anon-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 999px;
+    background: rgba(30,58,138,0.08); color: var(--accent);
+    font-size: 12px; font-weight: 600;
+    border: 1px solid var(--accent);
+  }
+  .ev3-anon-pill[data-state="over"] {
+    background: rgba(248,81,73,0.10); color: #b91c1c;
+    border-color: rgba(185,28,28,0.4);
+  }
+  .ev3-anon-pill[data-state="warn"] {
+    background: rgba(217,119,6,0.10); color: #b45309;
+    border-color: rgba(180,83,9,0.4);
+  }
+  .ev3-progress {
+    display: flex; gap: 6px; margin: 0 0 18px;
+  }
+  .ev3-progress-cell {
+    flex: 1 1 0; height: 6px; border-radius: 3px;
+    background: var(--bg-alt); border: 1px solid var(--border);
+  }
+  .ev3-progress-cell[data-state="active"] { background: var(--accent); border-color: var(--accent); }
+  .ev3-progress-cell[data-state="done"] { background: var(--accent); border-color: var(--accent); opacity: 0.55; }
+
+  .ev3-step {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    margin: 0 0 14px;
+    background: var(--bg);
+  }
+  .ev3-step[data-state="active"] { border-color: var(--accent); }
+  .ev3-step[data-state="locked"] { opacity: 0.55; }
+  .ev3-step-head {
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; gap: 12px;
+  }
+  .ev3-step-head h3 { margin: 0; font-size: 15px; font-weight: 700; }
+  .ev3-step-status {
+    font-size: 12px; color: var(--text-muted); font-weight: 500;
+  }
+  .ev3-step-status[data-state="streaming"] { color: var(--accent); }
+  .ev3-step-status[data-state="done"] { color: #047857; }
+  .ev3-step-status[data-state="error"] { color: #b91c1c; }
+  .ev3-step-body { margin: 12px 0 0; font-size: 13.5px; line-height: 1.65; }
+  .ev3-step-body[hidden] { display: none; }
+  .ev3-step-fields { display: grid; gap: 10px; margin: 0 0 12px; }
+  .ev3-step-fields label { display: block; font-weight: 600; font-size: 13px; color: var(--text); }
+  .ev3-step-fields input, .ev3-step-fields select {
+    margin-top: 4px; padding: 8px 10px; border: 1px solid var(--border);
+    border-radius: 6px; background: var(--bg); color: var(--text);
+    font-size: 14px; width: 100%; max-width: 320px;
+  }
+  .ev3-step-fields fieldset {
+    border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px;
+  }
+  .ev3-step-fields fieldset legend { font-size: 12px; font-weight: 600; padding: 0 6px; }
+  .ev3-step-fields fieldset label { display: inline-flex; align-items: center; gap: 4px; font-weight: 500; margin: 2px 8px 2px 0; }
+
+  .ev3-step-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+  .ev3-step-actions .pg-btn { min-height: 38px; padding: 8px 16px; font-size: 13.5px; }
+
+  .ev3-stream-log {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin: 8px 0 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--text);
+    max-height: 240px; overflow: auto;
+  }
+  .ev3-stream-log .ev3-log-line { padding: 2px 0; }
+  .ev3-stream-log .ev3-log-line[data-event="status"] { color: var(--text-muted); }
+  .ev3-stream-log .ev3-log-line[data-event="section"] { color: var(--text); }
+  .ev3-stream-log .ev3-log-line[data-event="done"] { color: #047857; font-weight: 600; }
+  .ev3-stream-log .ev3-log-line[data-event="error"] { color: #b91c1c; font-weight: 600; }
+  .ev3-stream-log .ev3-log-key { color: var(--accent); font-weight: 600; }
+
+  .ev3-section-grid {
+    display: grid; gap: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    margin: 10px 0 0;
+  }
+  .ev3-section-card {
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: 10px 12px; background: var(--bg);
+  }
+  .ev3-section-card-title {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.04em; color: var(--text-muted); margin: 0 0 4px;
+  }
+  .ev3-section-card-value {
+    font-size: 14px; font-weight: 600; color: var(--text);
+    word-break: break-all;
+  }
+
+  /* AI agent UA install panel */
+  .ev3-agent-panel {
+    margin: 18px 0 0;
+    padding: 16px 18px;
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    background: linear-gradient(0deg, rgba(30,58,138,0.04), rgba(30,58,138,0.01));
+  }
+  .ev3-agent-panel-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap; margin: 0 0 10px;
+  }
+  .ev3-agent-name { font-weight: 700; font-size: 14px; }
+  .ev3-agent-badge {
+    font-size: 11px; padding: 3px 8px; border-radius: 999px;
+    background: var(--accent); color: #fff; font-weight: 600;
+  }
+  .ev3-agent-snippet {
+    margin: 0; padding: 12px 14px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 6px; font-size: 12.5px; line-height: 1.55;
+    overflow-x: auto; white-space: pre;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+  .ev3-agent-hint { margin: 8px 0 0; font-size: 12.5px; color: var(--text-muted); }
+  .ev3-agent-switch {
+    display: inline-flex; gap: 6px; flex-wrap: wrap; margin: 8px 0 0;
+  }
+  .ev3-agent-switch button {
+    padding: 4px 10px; font-size: 12px; cursor: pointer;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--bg); color: var(--text);
+  }
+  .ev3-agent-switch button[aria-pressed="true"] {
+    background: var(--accent); color: #fff; border-color: var(--accent);
+  }
+
+  /* Final CTA accent box (visible after step 3 success) */
+  .ev3-final-cta {
+    margin: 22px 0 0;
+    padding: 20px 22px;
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    background: linear-gradient(0deg, rgba(30,58,138,0.10), rgba(30,58,138,0.03));
+    display: none;
+  }
+  .ev3-final-cta.is-visible { display: block; }
+  .ev3-final-cta h3 {
+    margin: 0 0 6px; font-size: 17px; font-weight: 800; color: var(--text);
+  }
+  .ev3-final-cta p { margin: 0 0 12px; font-size: 13.5px; line-height: 1.65; color: var(--text); }
+  .ev3-final-cta .ev3-final-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .ev3-final-cta .ev3-final-actions a {
+    display: inline-block; padding: 10px 18px; font-weight: 700; text-decoration: none;
+    border-radius: 6px; font-size: 14px;
+  }
+  .ev3-final-cta .ev3-final-actions .pg-btn-primary {
+    background: var(--accent); color: #fff; border: 1px solid var(--accent);
+  }
+  .ev3-final-cta .ev3-final-actions .pg-btn-secondary {
+    background: var(--bg); color: var(--text); border: 1px solid var(--border);
+  }
+
+  @media (max-width: 768px) {
+    .ev3-wizard { padding: 16px; }
+    .ev3-step { padding: 14px; }
+    .ev3-step-fields input, .ev3-step-fields select { max-width: 100%; }
+    .ev3-section-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (prefers-color-scheme: dark) {
+    .ev3-wizard, .ev3-step, .ev3-section-card { background: var(--bg-alt); }
+    .ev3-stream-log { background: var(--bg); }
+  }
 </style>
 
 <script type="application/ld+json">
@@ -698,53 +896,137 @@
  <strong>3 回の無料ライブ検証:</strong> Evidence Packet を返すエンドポイント (<code>GET /v1/intelligence/precomputed/query</code>) を選択済みです。 デフォルトで <code>source_tokens_basis=pdf_pages</code> · <code>source_pdf_pages=30</code> · <code>input_token_price_jpy_per_1m=300</code> が入っているため、 送信すると <code>source_url</code> · <code>source_fetched_at</code> · <code>known_gaps</code> · <code>compression.input_context_reduction_rate</code> が返ります。 2 回目は <code>source_pdf_pages</code> を変えて差を確認、 3 回目は自社の質問に差し替えてください。
  </div>
 
- <!-- v3 evidence3 wizard 3 step (minimal viable、Wave 8 で full) -->
- <div id="evidence3-wizard" style="display:none;max-width:720px;margin:24px auto;padding:24px;border:1px solid #e2e8f0;border-radius:12px;background:#fff">
-  <div style="margin:0 0 16px">
-    <strong>3 回で 1 社分の業務パックが完成します</strong>
-    <progress id="ev3-progress" value="1" max="3" style="width:100%"></progress>
+ <!-- v3 evidence3 wizard: 3-step SSE-progressive (step1 推奨制度検索 → step2 互換性検証 → step3 evidence pack 生成).
+      Top-fold で「登録不要・API キー不要・即 try」を強調、各 step は SSE で section が動的に増える。
+      右上 pill で X-Anon-Remaining (=quota_remaining) を realtime 表示。
+      AI agent UA (Claude.ai / ChatGPT / Cursor / Cline / 通常 browser) を navigator.userAgent で判定し、
+      install snippet を自動表示する。 -->
+ <div id="evidence3-wizard" class="ev3-wizard" hidden>
+  <div class="ev3-head">
+   <h2>3-step Evidence wizard — anonymous で即起動、API キー不要</h2>
+   <span id="ev3-anon-pill" class="ev3-anon-pill" data-state="ok" aria-live="polite" title="X-Anon-Quota-Remaining / quota_remaining 由来">
+    <span>匿名枠</span>
+    <strong><span id="ev3-anon-remain">--</span>/<span data-fact="anonymous_quota_per_day">3</span></strong>
+    <span>req/日</span>
+   </span>
   </div>
-  <div id="ev3-quota-badge" style="float:right;font-size:13px;color:#64748b;margin:0 0 12px">quota: ●●● 3/3 残</div>
-  <div id="ev3-step-1" class="ev3-step">
-    <h3>step 1: 法人を特定</h3>
-    <label>法人番号 (13桁): <input id="ev3-houjin" type="text" inputmode="numeric" pattern="\d{13}" maxlength="13" placeholder="1234567890123" style="width:200px;padding:8px"></label>
-    <p id="ev3-houjin-status" style="min-height:24px;font-size:13px"></p>
-    <button id="ev3-next-1" type="button" disabled>次へ →</button>
+  <p class="pg-hint" style="margin:0 0 14px;">SSE で <code>jpintel_mcp.api.playground_stream</code> に接続し、各 step は <code>section</code> chunk 単位で progressive にレンダリングされます。step 1 → step 2 → step 3 の順で button click で進行。</p>
+  <div class="ev3-progress" id="ev3-progress" role="progressbar" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1" aria-label="wizard 進捗">
+   <div class="ev3-progress-cell" data-step="1" data-state="active"></div>
+   <div class="ev3-progress-cell" data-step="2" data-state="pending"></div>
+   <div class="ev3-progress-cell" data-step="3" data-state="pending"></div>
   </div>
-  <div id="ev3-step-2" class="ev3-step" style="display:none">
-    <h3>step 2: 相談目的 + 業種 + 規模</h3>
-    <fieldset><legend>相談目的 (複数選択可)</legend>
-      <label><input type="checkbox" name="intent" value="capex_subsidy"> 設備投資/補助金</label>
-      <label><input type="checkbox" name="intent" value="succession"> 事業承継</label>
-      <label><input type="checkbox" name="intent" value="tax"> 税制</label>
-      <label><input type="checkbox" name="intent" value="financing"> 融資</label>
-      <label><input type="checkbox" name="intent" value="digital"> DX/IT</label>
-      <label><input type="checkbox" name="intent" value="hr"> 採用/労務</label>
-      <label><input type="checkbox" name="intent" value="energy"> 省エネ/GX</label>
-    </fieldset>
-    <label>業種 (JSIC 3桁): <select id="ev3-jsic">
-      <option value="">選択してください</option>
-      <option value="241">241 鉄鋼業</option>
-      <option value="245">245 金属プレス製品</option>
-      <option value="291">291 ボイラ・原動機製造</option>
-      <option value="471">471 各種商品小売</option>
-      <option value="811">811 公共サービス</option>
-      <option value="other">その他 (Wave 8 で 22 JSIC 完全実装)</option>
-    </select></label>
-    <button id="ev3-next-2" type="button">次へ →</button>
-  </div>
-  <div id="ev3-step-3" class="ev3-step" style="display:none">
-    <h3>step 3: 出力選択</h3>
-    <label><input type="radio" name="output" value="dd_checklist" checked> DD 質問票 (30-60 問)</label><br>
-    <label><input type="radio" name="output" value="watch_register"> 月次 watch 登録</label><br>
-    <label><input type="radio" name="output" value="program_deep"> 制度詳細 deep</label>
-    <button id="ev3-submit" type="button">artifact を生成 (free) →</button>
-  </div>
-  <div id="ev3-cta" style="margin:32px 0 0;padding:18px 20px;background:var(--accent-soft,#f6fbff);border:1px solid var(--accent,#0066cc);border-radius:10px;font-size:14px;line-height:1.65;color:var(--text);">
-    <p style="margin:0 0 10px;font-weight:700;font-size:15px;">完了後 — API キーで継続実行へ</p>
-    <p style="margin:0 0 12px;color:var(--text-muted);">3 回の wizard で構造を確認したら、AI agent (Claude MCP / ChatGPT Custom GPT / Cursor / Codex) に bundle して 100 件・1,000 件と継続実行できます。完全従量 ¥3/req (税込 ¥3.30)、tier なし、月額固定なし、Stripe Checkout 1 分。</p>
-    <p style="margin:0;"><a class="pg-btn pg-btn-primary" href="/pricing.html#api-paid" data-cta-variant="evidence3-continue-with-key" style="display:inline-block;padding:10px 18px;font-weight:700;text-decoration:none;background:var(--accent,#0066cc);color:#fff;border-radius:6px;">API キーを発行して続ける →</a></p>
-  </div>
+
+  <!-- Step 1: 推奨 program 検索 -->
+  <section id="ev3-step-1" class="ev3-step" data-state="active" aria-labelledby="ev3-step-1-title">
+   <div class="ev3-step-head">
+    <h3 id="ev3-step-1-title">step 1 / 推奨制度検索</h3>
+    <span class="ev3-step-status" id="ev3-step-1-status" data-state="ready">準備中</span>
+   </div>
+   <div class="ev3-step-body" id="ev3-step-1-body">
+    <p class="pg-hint" style="margin:0 0 10px;">法人番号 (13桁) と相談目的を入力 → <code>/v1/intelligence/precomputed/query</code> 相当の検索を SSE で実行し、推奨 program と citation を返します。</p>
+    <div class="ev3-step-fields">
+     <label>法人番号 (13桁)
+      <input id="ev3-houjin" type="text" inputmode="numeric" pattern="\d{13}" maxlength="13" placeholder="1234567890123" autocomplete="off" spellcheck="false">
+     </label>
+     <fieldset>
+      <legend>相談目的 (複数選択可)</legend>
+      <label><input type="checkbox" name="ev3-intent" value="capex_subsidy"> 設備投資/補助金</label>
+      <label><input type="checkbox" name="ev3-intent" value="succession"> 事業承継</label>
+      <label><input type="checkbox" name="ev3-intent" value="tax"> 税制</label>
+      <label><input type="checkbox" name="ev3-intent" value="financing"> 融資</label>
+      <label><input type="checkbox" name="ev3-intent" value="digital"> DX/IT</label>
+      <label><input type="checkbox" name="ev3-intent" value="hr"> 採用/労務</label>
+      <label><input type="checkbox" name="ev3-intent" value="energy"> 省エネ/GX</label>
+     </fieldset>
+     <label>業種 (JSIC 3桁)
+      <select id="ev3-jsic">
+       <option value="">選択してください</option>
+       <option value="241">241 鉄鋼業</option>
+       <option value="245">245 金属プレス製品</option>
+       <option value="291">291 ボイラ・原動機製造</option>
+       <option value="471">471 各種商品小売</option>
+       <option value="811">811 公共サービス</option>
+      </select>
+     </label>
+    </div>
+    <div class="ev3-section-grid" id="ev3-step-1-grid" hidden></div>
+    <div class="ev3-stream-log" id="ev3-step-1-log" hidden></div>
+    <div class="ev3-step-actions">
+     <button id="ev3-run-1" type="button" class="pg-btn pg-btn-primary" disabled>step 1 を実行 (SSE)</button>
+     <button id="ev3-next-1" type="button" class="pg-btn pg-btn-secondary" disabled>step 2 へ →</button>
+    </div>
+   </div>
+  </section>
+
+  <!-- Step 2: compatibility check -->
+  <section id="ev3-step-2" class="ev3-step" data-state="locked" aria-labelledby="ev3-step-2-title">
+   <div class="ev3-step-head">
+    <h3 id="ev3-step-2-title">step 2 / 併用・排他 互換性チェック</h3>
+    <span class="ev3-step-status" id="ev3-step-2-status" data-state="ready">step 1 完了後にロック解除</span>
+   </div>
+   <div class="ev3-step-body" id="ev3-step-2-body" hidden>
+    <p class="pg-hint" style="margin:0 0 10px;">step 1 で得た推奨制度を <code>/v1/compatibility/check</code> 相当に流し込み、排他・併用ルールと <code>copy_paste_parts</code> (申請文 200 字テンプレ) を SSE で受信します。</p>
+    <div class="ev3-section-grid" id="ev3-step-2-grid" hidden></div>
+    <div class="ev3-stream-log" id="ev3-step-2-log" hidden></div>
+    <div class="ev3-step-actions">
+     <button id="ev3-run-2" type="button" class="pg-btn pg-btn-primary" disabled>step 2 を実行 (SSE)</button>
+     <button id="ev3-next-2" type="button" class="pg-btn pg-btn-secondary" disabled>step 3 へ →</button>
+    </div>
+   </div>
+  </section>
+
+  <!-- Step 3: evidence pack 生成 -->
+  <section id="ev3-step-3" class="ev3-step" data-state="locked" aria-labelledby="ev3-step-3-title">
+   <div class="ev3-step-head">
+    <h3 id="ev3-step-3-title">step 3 / evidence pack 生成</h3>
+    <span class="ev3-step-status" id="ev3-step-3-status" data-state="ready">step 2 完了後にロック解除</span>
+   </div>
+   <div class="ev3-step-body" id="ev3-step-3-body" hidden>
+    <p class="pg-hint" style="margin:0 0 10px;"><code>/v1/evidence/packets/query</code> 相当の最終 pack 化。SSE で <code>work_queue</code> / <code>source_receipts</code> / <code>known_gaps</code> がインクリメンタルに到着、最後に <code>next</code> で artifact URL を返します。</p>
+    <div class="ev3-step-fields">
+     <fieldset>
+      <legend>出力タイプ</legend>
+      <label><input type="radio" name="ev3-output" value="dd_checklist" checked> DD 質問票 (30-60 問)</label>
+      <label><input type="radio" name="ev3-output" value="watch_register"> 月次 watch 登録</label>
+      <label><input type="radio" name="ev3-output" value="program_deep"> 制度詳細 deep</label>
+     </fieldset>
+    </div>
+    <div class="ev3-section-grid" id="ev3-step-3-grid" hidden></div>
+    <div class="ev3-stream-log" id="ev3-step-3-log" hidden></div>
+    <div class="ev3-step-actions">
+     <button id="ev3-run-3" type="button" class="pg-btn pg-btn-primary" disabled>step 3 を実行 (SSE)</button>
+     <a id="ev3-open-artifact" href="#" class="pg-btn pg-btn-secondary" hidden>artifact を開く →</a>
+    </div>
+   </div>
+  </section>
+
+  <!-- AI agent UA panel (navigator.userAgent で 5 種判定 → install snippet) -->
+  <aside id="ev3-agent-panel" class="ev3-agent-panel" aria-labelledby="ev3-agent-title">
+   <div class="ev3-agent-panel-head">
+    <span id="ev3-agent-title" class="ev3-agent-name">AI agent からの接続を検出: <span id="ev3-agent-display">通常 browser</span></span>
+    <span class="ev3-agent-badge" id="ev3-agent-badge">browser</span>
+   </div>
+   <pre class="ev3-agent-snippet" id="ev3-agent-snippet">claude mcp add jpcite -- uvx autonomath-mcp</pre>
+   <p class="ev3-agent-hint" id="ev3-agent-hint">Claude Desktop / Claude Code 等で 1 行追加すると 139 tools が即利用可能。anonymous の続きは API キーで継続できます。</p>
+   <div class="ev3-agent-switch" role="group" aria-label="他の agent を選ぶ">
+    <button type="button" data-agent="claude" aria-pressed="false">Claude</button>
+    <button type="button" data-agent="chatgpt" aria-pressed="false">ChatGPT</button>
+    <button type="button" data-agent="cursor" aria-pressed="false">Cursor</button>
+    <button type="button" data-agent="cline" aria-pressed="false">Cline</button>
+    <button type="button" data-agent="browser" aria-pressed="false">通常 browser</button>
+   </div>
+  </aside>
+
+  <!-- Final accent CTA (step 3 done で .is-visible 付与) -->
+  <aside id="ev3-final-cta" class="ev3-final-cta" aria-labelledby="ev3-final-title">
+   <h3 id="ev3-final-title">無制限利用に切替 — API キー発行 (Stripe 1 分)</h3>
+   <p>3-step で構造を確認した evidence pack を、100 社・1,000 社単位で連続実行できます。料金は ¥3/req 完全従量 (税込 ¥3.30)、tier なし、月額固定なし、いつでも止められます。</p>
+   <div class="ev3-final-actions">
+    <a class="pg-btn-primary" href="/dashboard" data-cta-variant="evidence3-dashboard">ダッシュボードで API キーを発行 →</a>
+    <a class="pg-btn-secondary" href="/pricing.html#api-paid" data-cta-variant="evidence3-pricing">料金ページを見る</a>
+   </div>
+  </aside>
  </div>
 
  <div class="pg-quota" id="pg-quota" data-state="ok" aria-live="polite">
@@ -2743,52 +3025,7 @@
         return ep.id === 'intelligence.precomputed.query';
       });
       if (idx >= 0 && els.flowHint) els.flowHint.hidden = false;
-      // v3 evidence3 wizard 3 step activate (minimal viable、Wave 8 で full)
-      var ev3Wizard = document.getElementById('evidence3-wizard');
-      if (ev3Wizard) {
-        ev3Wizard.style.display = 'block';
-        var ev3Step = parseInt(qs.get('s') || '1', 10);
-        if (isNaN(ev3Step) || ev3Step < 1 || ev3Step > 3) ev3Step = 1;
-        var ev3Steps = document.querySelectorAll('.ev3-step');
-        for (var ev3i = 0; ev3i < ev3Steps.length; ev3i++) {
-          ev3Steps[ev3i].style.display = (ev3i + 1) === ev3Step ? 'block' : 'none';
-        }
-        var ev3Progress = document.getElementById('ev3-progress');
-        if (ev3Progress) ev3Progress.value = ev3Step;
-        // step transitions (next button → ?s=s+1 で reload、API call は Wave 8 で SSE 化)
-        var ev3Next1 = document.getElementById('ev3-next-1');
-        var ev3Houjin = document.getElementById('ev3-houjin');
-        if (ev3Houjin && ev3Next1) {
-          ev3Houjin.addEventListener('input', function() {
-            ev3Next1.disabled = !/^\d{13}$/.test(ev3Houjin.value);
-          });
-          ev3Next1.addEventListener('click', function() {
-            var p = new URLSearchParams(location.search);
-            p.set('flow', 'evidence3');
-            p.set('s', '2');
-            p.set('hb', ev3Houjin.value);
-            location.search = p.toString();
-          });
-        }
-        var ev3Next2 = document.getElementById('ev3-next-2');
-        if (ev3Next2) {
-          ev3Next2.addEventListener('click', function() {
-            var p = new URLSearchParams(location.search);
-            p.set('flow', 'evidence3');
-            p.set('s', '3');
-            location.search = p.toString();
-          });
-        }
-        var ev3Submit = document.getElementById('ev3-submit');
-        if (ev3Submit) {
-          ev3Submit.addEventListener('click', function() {
-            // Wave 8 で POST /v1/artifacts/{type} → artifact.html?id=<pack_id> redirect
-            var sel = document.querySelector('input[name="output"]:checked');
-            var outType = sel ? sel.value : 'dd_checklist';
-            location.href = '/artifact.html?type=' + encodeURIComponent(outType);
-          });
-        }
-      }
+      initEvidence3Wizard(qs);
     }
     if (idx >= 0) {
       currentEndpoint = ENDPOINTS[idx];
@@ -2879,6 +3116,408 @@
     });
 
     updateUrlPreview();
+  }
+
+  // ----- 7. evidence3 wizard (SSE 3-step + AI agent UA snippets) -----------
+  // The wizard reuses the public anonymous quota (3 req/IP/day). Each step
+  // opens an EventSource at /v1/playground/evidence3/stream?step=N&... which
+  // dispatches SSE events { status | section | done | error } at ~200ms
+  // ticks (see src/jpintel_mcp/api/playground_stream.py). Section payloads
+  // are rendered into a per-step grid; the raw stream log stays visible for
+  // debugging.
+  //
+  // UA detection picks one of {claude, chatgpt, cursor, cline, browser}
+  // from navigator.userAgent. Each agent gets a tailored install snippet
+  // so the visitor sees the exact 1-line command for their environment.
+
+  const EV3_SSE_BASE = (function () {
+    // Match the anonymous API host (same origin policy + CORS allowlist).
+    // Allow override via <meta name="jpcite-api-base"> for local dev.
+    const meta = document.querySelector('meta[name="jpcite-api-base"]');
+    if (meta && meta.content) return meta.content.replace(/\/$/, '');
+    return 'https://api.jpcite.com';
+  })();
+
+  function detectAgentUA() {
+    // navigator.userAgent is the canonical surface. We additionally probe a
+    // small set of vendor hints because Anthropic / OpenAI custom clients
+    // sometimes set product names without the literal "Mozilla/" prefix.
+    const ua = (navigator.userAgent || '').toLowerCase();
+    if (/claude/.test(ua) || /anthropic/.test(ua)) return 'claude';
+    if (/chatgpt|openai|gptbot/.test(ua)) return 'chatgpt';
+    if (/cursor/.test(ua)) return 'cursor';
+    if (/cline|continue\.dev/.test(ua)) return 'cline';
+    return 'browser';
+  }
+
+  const EV3_AGENT_SNIPPETS = {
+    claude: {
+      display: 'Claude (Desktop / Code / claude.ai)',
+      badge: 'Claude',
+      snippet: 'claude mcp add jpcite -- uvx autonomath-mcp',
+      hint: 'Claude Desktop / Claude Code に 1 行追加すると 139 tools が即利用可能。続きは API キーで継続できます。',
+    },
+    chatgpt: {
+      display: 'ChatGPT (Custom GPT / Actions)',
+      badge: 'ChatGPT',
+      snippet: 'Action URL: https://api.jpcite.com/openapi.agent.gpt30.json\nAuth: Bearer am_xxxx (発行後)',
+      hint: 'ChatGPT の Custom GPT に Action として登録。anonymous でも 3 req/日 までは無認証で試せます。',
+    },
+    cursor: {
+      display: 'Cursor',
+      badge: 'Cursor',
+      snippet: '// ~/.cursor/mcp.json\n{\n  "mcpServers": {\n    "jpcite": {\n      "command": "uvx",\n      "args": ["autonomath-mcp"]\n    }\n  }\n}',
+      hint: '~/.cursor/mcp.json に jpcite サーバーを追加 → Cursor 再起動で 139 tools が候補に。',
+    },
+    cline: {
+      display: 'Cline (VS Code)',
+      badge: 'Cline',
+      snippet: '// Cline → MCP Servers → Add server\n// Command: uvx\n// Args: autonomath-mcp\n// Env: JPCITE_API_KEY=am_xxxx (任意)',
+      hint: 'VS Code の Cline 拡張から MCP Server を追加。anonymous は 3 req/日 までキー不要。',
+    },
+    browser: {
+      display: '通常 browser',
+      badge: 'browser',
+      snippet: '# 試行用 curl (anonymous 3 req/日)\ncurl -sS \'https://api.jpcite.com/v1/intelligence/precomputed/query?intent=capex_subsidy\' \\\n  -H \'Accept: application/json\'',
+      hint: 'AI agent からの接続は検出できませんでした。curl / Postman / HTTPie で同じ URL を即試せます。',
+    },
+  };
+
+  function applyAgentPanel(agent) {
+    const cfg = EV3_AGENT_SNIPPETS[agent] || EV3_AGENT_SNIPPETS.browser;
+    const display = document.getElementById('ev3-agent-display');
+    const badge = document.getElementById('ev3-agent-badge');
+    const snip = document.getElementById('ev3-agent-snippet');
+    const hint = document.getElementById('ev3-agent-hint');
+    if (display) display.textContent = cfg.display;
+    if (badge) badge.textContent = cfg.badge;
+    if (snip) snip.textContent = cfg.snippet;
+    if (hint) hint.textContent = cfg.hint;
+    const switchBtns = document.querySelectorAll('#ev3-agent-panel .ev3-agent-switch button');
+    for (let i = 0; i < switchBtns.length; i++) {
+      switchBtns[i].setAttribute('aria-pressed', switchBtns[i].dataset.agent === agent ? 'true' : 'false');
+    }
+  }
+
+  function ev3SetStepState(stepNum, state) {
+    const stepEl = document.getElementById('ev3-step-' + stepNum);
+    if (stepEl) stepEl.dataset.state = state;
+    const cell = document.querySelector('.ev3-progress-cell[data-step="' + stepNum + '"]');
+    if (cell) cell.dataset.state = state === 'locked' ? 'pending' : state === 'done' ? 'done' : 'active';
+    const progress = document.getElementById('ev3-progress');
+    if (progress && state === 'active') progress.setAttribute('aria-valuenow', String(stepNum));
+    // expand body for active|done, collapse for locked
+    const body = document.getElementById('ev3-step-' + stepNum + '-body');
+    if (body) {
+      body.hidden = (state === 'locked');
+    }
+  }
+
+  function ev3SetStepStatus(stepNum, label, state) {
+    const el = document.getElementById('ev3-step-' + stepNum + '-status');
+    if (!el) return;
+    el.textContent = label;
+    if (state) el.dataset.state = state;
+  }
+
+  function ev3AppendLog(stepNum, eventName, data) {
+    const log = document.getElementById('ev3-step-' + stepNum + '-log');
+    if (!log) return;
+    log.hidden = false;
+    const line = document.createElement('div');
+    line.className = 'ev3-log-line';
+    line.dataset.event = eventName;
+    // tiny inline pretty-print: section name first, then key fields
+    let head = eventName;
+    if (data && typeof data === 'object') {
+      if (data.name) head += ': ' + data.name;
+      else if (data.phase) head += ': ' + data.phase;
+      else if (data.step != null) head += ': step ' + data.step + ' done';
+    }
+    const span = document.createElement('span');
+    span.className = 'ev3-log-key';
+    span.textContent = head;
+    line.appendChild(span);
+    if (data) {
+      const json = document.createElement('span');
+      json.textContent = ' ' + JSON.stringify(data);
+      line.appendChild(json);
+    }
+    log.appendChild(line);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function ev3AppendSection(stepNum, sectionName, sectionData) {
+    const grid = document.getElementById('ev3-step-' + stepNum + '-grid');
+    if (!grid) return;
+    grid.hidden = false;
+    const card = document.createElement('div');
+    card.className = 'ev3-section-card';
+    card.dataset.section = sectionName;
+    const title = document.createElement('p');
+    title.className = 'ev3-section-card-title';
+    title.textContent = sectionName;
+    card.appendChild(title);
+    const value = document.createElement('p');
+    value.className = 'ev3-section-card-value';
+    // summarize: count / first key
+    let summary = '';
+    if (sectionData == null) {
+      summary = '(empty)';
+    } else if (Array.isArray(sectionData)) {
+      summary = sectionData.length + ' 件';
+    } else if (typeof sectionData === 'object') {
+      const keys = Object.keys(sectionData);
+      const k = keys[0];
+      if (k != null) {
+        summary = k + ' = ' + JSON.stringify(sectionData[k]);
+        if (keys.length > 1) summary += ' +' + (keys.length - 1);
+      } else {
+        summary = '(no keys)';
+      }
+    } else {
+      summary = String(sectionData);
+    }
+    value.textContent = summary;
+    card.appendChild(value);
+    grid.appendChild(card);
+  }
+
+  function ev3UpdateAnonPill(remaining) {
+    const pill = document.getElementById('ev3-anon-pill');
+    const span = document.getElementById('ev3-anon-remain');
+    if (!pill || !span) return;
+    if (remaining == null || isNaN(remaining)) {
+      span.textContent = '--';
+      return;
+    }
+    span.textContent = String(Math.max(0, remaining));
+    let state = 'ok';
+    if (remaining <= 0) state = 'over';
+    else if (remaining <= 1) state = 'warn';
+    pill.dataset.state = state;
+  }
+
+  // Try to pull quota_remaining from any non-stream JSON response we touch.
+  // The SSE stream does NOT carry HTTP response headers, but a follow-up
+  // probe call to GET /v1/me/quota or /healthz?probe=1 can fill the gap.
+  function ev3ProbeQuota() {
+    // Use a cheap public route. If CORS strips X-Anon-Quota-Remaining, we
+    // also accept a JSON body field named `quota_remaining`.
+    try {
+      fetch(EV3_SSE_BASE + '/v1/me/quota', { credentials: 'omit', headers: { Accept: 'application/json' } })
+        .then(function (r) {
+          const hdr = r.headers.get('x-anon-quota-remaining') || r.headers.get('X-Anon-Quota-Remaining') || r.headers.get('x-anon-remaining');
+          if (hdr != null) ev3UpdateAnonPill(parseInt(hdr, 10));
+          return r.json().catch(function () { return null; });
+        })
+        .then(function (j) {
+          if (j && typeof j.quota_remaining === 'number') ev3UpdateAnonPill(j.quota_remaining);
+        })
+        .catch(function () { /* offline / no route → keep '--' */ });
+    } catch (_e) {}
+  }
+
+  function ev3RunStep(stepNum, params) {
+    return new Promise(function (resolve, reject) {
+      const qs = new URLSearchParams();
+      qs.set('step', String(stepNum));
+      Object.keys(params || {}).forEach(function (k) {
+        if (params[k] != null && params[k] !== '') qs.set(k, String(params[k]));
+      });
+      const url = EV3_SSE_BASE + '/v1/playground/evidence3/stream?' + qs.toString();
+      let es;
+      try {
+        es = new EventSource(url);
+      } catch (e) {
+        reject(e);
+        return;
+      }
+      ev3SetStepStatus(stepNum, 'SSE 接続中…', 'streaming');
+      // EventSource maps named SSE events via addEventListener; the
+      // server-side playground_stream emits status / section / done / error.
+      es.addEventListener('status', function (ev) {
+        try {
+          const data = JSON.parse(ev.data);
+          ev3AppendLog(stepNum, 'status', data);
+          ev3SetStepStatus(stepNum, (data.phase || 'streaming') + ' …', 'streaming');
+        } catch (_e) {}
+      });
+      es.addEventListener('section', function (ev) {
+        try {
+          const data = JSON.parse(ev.data);
+          ev3AppendLog(stepNum, 'section', data);
+          ev3AppendSection(stepNum, data.name || 'section', data.data);
+        } catch (_e) {}
+      });
+      es.addEventListener('done', function (ev) {
+        try {
+          const data = JSON.parse(ev.data);
+          ev3AppendLog(stepNum, 'done', data);
+          ev3SetStepStatus(stepNum, 'done (' + (data.elapsed_ms || 0) + ' ms, ' + (data.billable_units || 1) + ' unit)', 'done');
+          if (data.next && stepNum === 3) {
+            const link = document.getElementById('ev3-open-artifact');
+            if (link) {
+              link.href = data.next;
+              link.hidden = false;
+            }
+          }
+          es.close();
+          // After each step, refresh the anon quota pill (in case the
+          // billable unit was deducted from the anonymous bucket).
+          ev3ProbeQuota();
+          resolve(data);
+        } catch (e) {
+          es.close();
+          reject(e);
+        }
+      });
+      es.addEventListener('error', function (ev) {
+        // EventSource fires `error` both for transport errors AND for our
+        // server-side `event: error` payloads. Try to JSON-parse the data.
+        try {
+          if (ev && ev.data) {
+            const data = JSON.parse(ev.data);
+            ev3AppendLog(stepNum, 'error', data);
+            ev3SetStepStatus(stepNum, 'error: ' + (data.message || 'unknown'), 'error');
+          } else {
+            ev3SetStepStatus(stepNum, 'SSE 切断 (transport error)', 'error');
+          }
+        } catch (_e) {
+          ev3SetStepStatus(stepNum, 'SSE 切断', 'error');
+        }
+        es.close();
+        reject(new Error('sse_error'));
+      });
+    });
+  }
+
+  function ev3CollectIntents() {
+    const boxes = document.querySelectorAll('input[name="ev3-intent"]:checked');
+    const out = [];
+    for (let i = 0; i < boxes.length; i++) out.push(boxes[i].value);
+    return out.join(',');
+  }
+
+  function initEvidence3Wizard(qs) {
+    const wizard = document.getElementById('evidence3-wizard');
+    if (!wizard) return;
+    wizard.hidden = false;
+    wizard.classList.add('is-active');
+
+    // 1. UA detection → install snippet panel.
+    applyAgentPanel(detectAgentUA());
+    const switchBtns = document.querySelectorAll('#ev3-agent-panel .ev3-agent-switch button');
+    for (let i = 0; i < switchBtns.length; i++) {
+      switchBtns[i].addEventListener('click', function () {
+        applyAgentPanel(this.dataset.agent || 'browser');
+      });
+    }
+
+    // 2. Initial anon-quota probe (X-Anon-Quota-Remaining / quota_remaining).
+    ev3ProbeQuota();
+
+    // 3. Pre-fill houjin_bangou if it came in via ?hb=...
+    const hb = qs && qs.get('hb');
+    if (hb && /^\d{13}$/.test(hb)) {
+      const inp = document.getElementById('ev3-houjin');
+      if (inp) inp.value = hb;
+    }
+
+    // 4. Step 1 wiring.
+    const houjinInput = document.getElementById('ev3-houjin');
+    const run1 = document.getElementById('ev3-run-1');
+    const next1 = document.getElementById('ev3-next-1');
+    function refreshRun1() {
+      if (run1) run1.disabled = !houjinInput || !/^\d{13}$/.test(houjinInput.value);
+    }
+    if (houjinInput) {
+      houjinInput.addEventListener('input', refreshRun1);
+      refreshRun1();
+    }
+    if (run1) {
+      run1.addEventListener('click', function () {
+        run1.disabled = true;
+        ev3SetStepStatus(1, 'streaming…', 'streaming');
+        ev3RunStep(1, {
+          houjin_bangou: houjinInput && houjinInput.value,
+          intent: ev3CollectIntents(),
+          jsic: (document.getElementById('ev3-jsic') || {}).value || '',
+        }).then(function () {
+          if (next1) next1.disabled = false;
+          try { if (typeof window.jpciteTrack === 'function') window.jpciteTrack('evidence3_step_done', { step: 1 }); } catch (_e) {}
+        }).catch(function () {
+          run1.disabled = false;
+        });
+      });
+    }
+    if (next1) {
+      next1.addEventListener('click', function () {
+        ev3SetStepState(1, 'done');
+        ev3SetStepState(2, 'active');
+        const run2 = document.getElementById('ev3-run-2');
+        if (run2) run2.disabled = false;
+        ev3SetStepStatus(2, '準備完了', 'ready');
+        const target = document.getElementById('ev3-step-2');
+        if (target && target.scrollIntoView) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+
+    // 5. Step 2 wiring.
+    const run2 = document.getElementById('ev3-run-2');
+    const next2 = document.getElementById('ev3-next-2');
+    if (run2) {
+      run2.addEventListener('click', function () {
+        run2.disabled = true;
+        ev3SetStepStatus(2, 'streaming…', 'streaming');
+        ev3RunStep(2, {
+          houjin_bangou: houjinInput && houjinInput.value,
+          intent: ev3CollectIntents(),
+        }).then(function () {
+          if (next2) next2.disabled = false;
+          try { if (typeof window.jpciteTrack === 'function') window.jpciteTrack('evidence3_step_done', { step: 2 }); } catch (_e) {}
+        }).catch(function () {
+          run2.disabled = false;
+        });
+      });
+    }
+    if (next2) {
+      next2.addEventListener('click', function () {
+        ev3SetStepState(2, 'done');
+        ev3SetStepState(3, 'active');
+        const run3 = document.getElementById('ev3-run-3');
+        if (run3) run3.disabled = false;
+        ev3SetStepStatus(3, '準備完了', 'ready');
+        const target = document.getElementById('ev3-step-3');
+        if (target && target.scrollIntoView) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+
+    // 6. Step 3 wiring.
+    const run3 = document.getElementById('ev3-run-3');
+    if (run3) {
+      run3.addEventListener('click', function () {
+        run3.disabled = true;
+        ev3SetStepStatus(3, 'streaming…', 'streaming');
+        const sel = document.querySelector('input[name="ev3-output"]:checked');
+        ev3RunStep(3, {
+          houjin_bangou: houjinInput && houjinInput.value,
+          intent: ev3CollectIntents(),
+        }).then(function () {
+          ev3SetStepState(3, 'done');
+          const final = document.getElementById('ev3-final-cta');
+          if (final) final.classList.add('is-visible');
+          try {
+            if (typeof window.jpciteTrack === 'function') {
+              window.jpciteTrack('evidence3_step_done', { step: 3 });
+              window.jpciteTrack('evidence3_complete', { output: sel ? sel.value : 'dd_checklist' });
+            }
+          } catch (_e) {}
+        }).catch(function () {
+          run3.disabled = false;
+        });
+      });
+    }
   }
 
   if (document.readyState === 'loading') {

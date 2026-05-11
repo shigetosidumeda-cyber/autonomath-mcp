@@ -37,9 +37,39 @@ MANIFEST_PATH = SCRIPTS_DIR / "distribution_manifest.yml"
 DRIFT_SCRIPT = SCRIPTS_DIR / "check_distribution_manifest_drift.py"
 PROBE_SCRIPT = SCRIPTS_DIR / "probe_runtime_distribution.py"
 
-EXPECTED_TOOL_COUNT_DEFAULT_GATES = 139
-EXPECTED_ROUTE_COUNT = 263
-EXPECTED_OPENAPI_PATH_COUNT = 220
+# Pinned expectation values are sourced dynamically from
+# `scripts/distribution_manifest.yml` so the test never drifts from the
+# canonical manifest. Hardcoding here was the 186→219→220 drift footgun.
+def _load_expected_counts() -> tuple[int, int, int]:
+    """Read tool/route/openapi path expectations from the manifest yaml.
+
+    Mirrors ``_load_manifest_dict`` (PyYAML-or-fallback) so tests work in
+    both `pip install -e .[dev]` and minimal CI environments.
+    """
+    text = MANIFEST_PATH.read_text(encoding="utf-8")
+    try:
+        import yaml  # type: ignore[import-not-found]
+
+        data = yaml.safe_load(text)
+    except ImportError:
+        sys.path.insert(0, str(SCRIPTS_DIR))
+        from check_distribution_manifest_drift import (
+            _flat_yaml_parse,  # type: ignore[import-not-found]
+        )
+
+        data = _flat_yaml_parse(text)
+    return (
+        int(data["tool_count_default_gates"]),
+        int(data["route_count"]),
+        int(data["openapi_path_count"]),
+    )
+
+
+(
+    EXPECTED_TOOL_COUNT_DEFAULT_GATES,
+    EXPECTED_ROUTE_COUNT,
+    EXPECTED_OPENAPI_PATH_COUNT,
+) = _load_expected_counts()
 
 EXPECTED_WAVE6_P0_CANDIDATES = {
     "server.json",

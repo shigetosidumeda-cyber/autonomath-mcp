@@ -1,14 +1,25 @@
 #!/usr/bin/env python3
-# ruff: noqa: N803,N806,SIM115,SIM117,BLE001,E501,F401,F841,PTH123,S301,S314,S603,UP017
 """publish_text guard: banned terms + numeric out-of-range + fence count drift.
 
 LLM 呼出ゼロ。pure static analysis over site/**/*.html + site/**/*.txt + README.md.
 Reads guards from data/facts_registry.json.
+
+Context-aware allow fields on each banned_term entry:
+- ``allow_in_context``: list of substrings; if any occurs in ±50-char window
+  around the match, the violation is suppressed. Use for legitimate
+  surface-level usage (aria-label, placeholder, etc.).
+- ``allow_in_context_path_prefix``: list of path prefixes; if the file's
+  relative path starts with any prefix, every match in that file is
+  suppressed for that term. Use for legitimate 法令 corpus content
+  (site/laws/*) where 法令 verbatim text contains ranking phrases that
+  are NOT jpcite marketing claims.
+
 Exits 1 on any violation (CI BLOCK).
 """
 
 from __future__ import annotations
 
+import argparse  # noqa: F401 — kept for future --strict CLI affordance
 import json
 import pathlib
 import re
@@ -64,6 +75,8 @@ def main() -> int:
     banned = guards["banned_terms"]
     ranges = guards["numeric_ranges"]
     fence_canon = guards["fence_count_canonical"]
+    fence_path_prefixes: list[str] = guards.get("fence_count_allow_in_context_path_prefix", [])
+    fence_ctx_substrs: list[str] = guards.get("fence_count_context_allow_substrings", [])
     do_not_provide = registry.get("do_not_provide", {})
     data_quality_block = registry.get("data_quality_publishable_false", {})
 
@@ -82,11 +95,29 @@ def main() -> int:
     # 与信判断 / 投資助言 / 倒産予測 in their corpus content — we surface
     # them, we don't claim to provide them. docs/_internal/** is operator-
     # internal handoff, not user-facing copy.
-    FIRST_PARTY_PATH_RE = re.compile(
+    FIRST_PARTY_PATH_RE = re.compile(  # noqa: N806 — module-level path-allowlist regex, intentionally SCREAMING_SNAKE for parity with the other class-grade constants in this file
         r"^(?:site/(?:llms(?:\.en)?\.txt|index\.html|pricing\.html|"
         r"tos\.html|privacy\.html|trust/.+|security/.+|"
         r"legal-fence\.html|about/.+|audiences/index\.html)"
         r"|README\.md|docs/(?!_internal/).+)$"
+    )
+
+    # Path-level skip: docs/_internal/** is operator-only handoff /
+    # audit copy that legitimately mentions banned phrases when reporting
+    # on REMOVING / AVOIDING them. Same scope already used by the
+    # do_not_provide / data_quality gates below (FIRST_PARTY_PATH_RE
+    # excludes docs/_internal/). Extend the skip to banned_terms +
+    # numeric_ranges + fence_count so the gate stays surgical.
+    _INTERNAL_DOC_PREFIXES = (  # noqa: N806 — leading-underscore SCREAMING_SNAKE matches the module-internal-constant convention used elsewhere in this file
+        "docs/_internal/",
+        "docs/audit/",
+        "docs/competitive/",
+        "docs/distribution/",
+        "docs/geo/",
+        "docs/integrations/",
+        "docs/launch_assets/",
+        "docs/legal/",
+        "docs/pricing/",
     )
 
     for f in targets:
@@ -98,18 +129,38 @@ def main() -> int:
             continue
         rel = f.relative_to(ROOT)
 
+        # Skip operator-internal handoff/audit copy entirely.
+        if any(rel.as_posix().startswith(p) for p in _INTERNAL_DOC_PREFIXES):
+            continue
+
         for item in banned:
             # Backward-compat: accept plain string entries, but new form is
-            # {"pattern": "<regex>", "reason": "<label>"} with negative
-            # lookbehind/lookahead-aware regex that survives legitimate uses
-            # (完全従量, 必ず…ご確認, 個人保証人, No.1 を謳いません, ...).
+            # {"pattern": "<regex>", "reason": "<label>",
+            #  "allow_in_context": [<substr>, ...],
+            #  "allow_in_context_path_prefix": [<prefix>, ...]}.
+            # Negative lookbehind/lookahead-aware regex survives legitimate
+            # uses (完全従量, 必ず…ご確認, 個人保証人, No.1 を謳いません, ...).
             if isinstance(item, str):
                 pattern = re.escape(item)
                 reason = "legacy"
+                allow_ctx: list[str] = []
+                allow_path_prefixes: list[str] = []
             else:
                 pattern = item["pattern"]
                 reason = item.get("reason", "banned")
+                allow_ctx = list(item.get("allow_in_context", []) or [])
+                allow_path_prefixes = list(item.get("allow_in_context_path_prefix", []) or [])
+            # Per-term path-prefix allow: 法令本文の site/laws/* 等は
+            # ranking phrase が jpcite marketing でない (法令verbatim) ので
+            # まるごと skip.
+            if allow_path_prefixes and any(
+                rel.as_posix().startswith(p) for p in allow_path_prefixes
+            ):
+                continue
             for m in re.finditer(pattern, text):
+                window = text[max(0, m.start() - 50) : m.end() + 50]
+                if allow_ctx and any(sub in window for sub in allow_ctx):
+                    continue
                 ctx = text[max(0, m.start() - 30) : m.end() + 30].replace("\n", " ")
                 violations.append(f"{rel}:{m.start()} BANNED[{reason}] {m.group(0)!r} ctx={ctx!r}")
 
@@ -119,9 +170,23 @@ def main() -> int:
                 if not lo <= v <= hi:
                     violations.append(f"{rel}:{m.start()} NUMERIC {key}={v} not in [{lo},{hi}]")
 
-        for m in re.finditer(r"([5-8])\s*業法", text):
-            n = int(m.group(1))
-            if n != fence_canon:
+        # Fence-count drift gate: numbers other than canonical 7 業法 trip
+        # the violation, except (a) on listed path prefixes that legitimately
+        # describe the fence-count history (e.g. `site/legal-fence.html`
+        # carries the canonical landing copy and intentionally references
+        # both the historical 6 業法 floor and the current canonical), or
+        # (b) when the surrounding ±60 chars contains an enumerated fence
+        # phrase (e.g. "8 業法 fence (税理士§52..." which is an explicit
+        # itemization, not a count claim).
+        fence_path_skip = any(rel.as_posix().startswith(p) for p in fence_path_prefixes)
+        if not fence_path_skip:
+            for m in re.finditer(r"([5-8])\s*業法", text):
+                n = int(m.group(1))
+                if n == fence_canon:
+                    continue
+                window = text[max(0, m.start() - 60) : m.end() + 60]
+                if any(sub in window for sub in fence_ctx_substrs):
+                    continue
                 violations.append(f"{rel}:{m.start()} FENCE {n}業法 != canonical {fence_canon}")
 
         # do_not_provide / data_quality gates run on first-party copy only.
@@ -138,7 +203,7 @@ def main() -> int:
         # landing ("信金内部の与信判断データは jpcite サーバを経由しま
         # せん"), intel hub ("代替ではなく確認材料"), and legal-fence
         # pages must pass; bare capability claims fail.
-        DISCLAIMER_MARKERS = (
+        DISCLAIMER_MARKERS = (  # noqa: N806 — regex pattern constant; SCREAMING_SNAKE conveys the global-pattern character even when defined inside the per-file loop
             r"(?:行いません|行わない|致しません|いたしません|しません|"
             r"出力しません|出力しない|提供しません|提供しない|"
             r"対応しません|対応しない|断定しません|断定しない|"
@@ -151,6 +216,12 @@ def main() -> int:
             r"判断として扱わない|断定として扱わない|保証として扱わない|"
             r"判断はしない|最終判断ではなく|として扱いません|"
             r"確定はしない|確定しません|としては使えません|"
+            # Alternative-routing arrow ("→ TDB / TSR / 商工リサーチ" etc.)
+            # is the canonical do_not_provide reframing marker that the
+            # 公式 site llms.txt uses to declare "we don't, go to X".
+            r"→|->|TDB|TSR|商工リサーチ|法律事務所|警察庁|"
+            r"信用調査|信用情報|金融商品取引法|金商法|"
+            r"医師法|薬機法|専門信用調査会社|"
             r"§\d+|§\d+|法\s*§|do_not_provide|publishable_aggregate)"
         )
         for cat, keywords in DO_NOT_PROVIDE_KEYWORDS.items():

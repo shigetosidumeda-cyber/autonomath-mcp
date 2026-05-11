@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# ruff: noqa: N803,N806,SIM115,SIM117,BLE001,E501,F401,F841,PTH123,S301,S314,S603,UP017
 """OG image 生成 (PNG 1200x630)、Pillow only、LLM 呼出ゼロ。
 
 Generates social card images for each site/*.html page based on:
@@ -40,7 +39,13 @@ def extract_meta(html_path: pathlib.Path) -> tuple[str, str]:
 
 
 def make_og(
-    slug: str, title: str, desc: str, out: pathlib.Path, Image, ImageDraw, ImageFont
+    slug: str,
+    title: str,
+    desc: str,
+    out: pathlib.Path,
+    Image,  # noqa: N803 — Pillow public-API class name (PIL.Image) is capitalized
+    ImageDraw,  # noqa: N803 — Pillow public-API class name (PIL.ImageDraw) is capitalized
+    ImageFont,  # noqa: N803 — Pillow public-API class name (PIL.ImageFont) is capitalized
 ) -> None:
     img = Image.new("RGB", (1200, 630), color=(255, 255, 255))
     draw = ImageDraw.Draw(img)
@@ -73,7 +78,7 @@ def make_og(
 
 
 def main() -> int:
-    Image, ImageDraw, ImageFont = _try_pillow()
+    Image, ImageDraw, ImageFont = _try_pillow()  # noqa: N806 — local rebind of Pillow public-API class names; lowercasing would obscure the upstream identifier
     if Image is None:
         print("[generate_og_images] Pillow not installed - skipping (pip install Pillow)")
         return 0

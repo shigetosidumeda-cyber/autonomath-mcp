@@ -1,7 +1,4 @@
 """Test playground SSE stream."""
-# ruff: noqa: N803,N806,SIM115,SIM117,BLE001,E501,F401,F841,PTH123,S301,S314,S603,UP017
-
-
 
 import pytest
 from httpx import ASGITransport, AsyncClient
@@ -20,21 +17,23 @@ def app():
 
 @pytest.mark.asyncio
 async def test_evidence3_stream_step1(app):
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as c:
-        async with c.stream(
+    async with (
+        AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as c,
+        c.stream(
             "GET", "/v1/playground/evidence3/stream?step=1&houjin_bangou=1010001000001"
-        ) as resp:
-            assert resp.status_code == 200
-            assert "text/event-stream" in resp.headers["content-type"]
-            events = []
-            async for line in resp.aiter_lines():
-                events.append(line)
-                if len(events) > 30:
-                    break
-            joined = "\n".join(events)
-            assert "event: status" in joined
-            assert "event: section" in joined
-            assert "event: done" in joined
+        ) as resp,
+    ):
+        assert resp.status_code == 200
+        assert "text/event-stream" in resp.headers["content-type"]
+        events = []
+        async for line in resp.aiter_lines():
+            events.append(line)
+            if len(events) > 30:
+                break
+        joined = "\n".join(events)
+        assert "event: status" in joined
+        assert "event: section" in joined
+        assert "event: done" in joined
 
 
 @pytest.mark.asyncio

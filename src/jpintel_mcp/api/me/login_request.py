@@ -1,6 +1,4 @@
 """magic-link login request: email → 6 digit code → mail."""
-# ruff: noqa: N803,N806,SIM115,SIM117,BLE001,E501,F401,F841,PTH123,S301,S314,S603,UP017
-
 
 from __future__ import annotations
 

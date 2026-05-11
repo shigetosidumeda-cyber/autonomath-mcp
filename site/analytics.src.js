@@ -1,3 +1,6 @@
+// DEPRECATED 2026-05-11 — superseded by /Users/shigetoumeda/jpcite/site/analytics.js (minified 配信版); retained as historical-state marker.
+// index record: /Users/shigetoumeda/jpcite/docs/_internal/_archive/_index_2026_05_11.md (A3)
+//
 // analytics.js — env-gated Plausible injector + funnel beacon helper.
 //
 // 1. Plausible injection (consent-free, no cookies).

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# ruff: noqa: N803,N806,SIM115,SIM117,BLE001,E501,F401,F841,PTH123,S301,S314,S603,UP017
 """check_fence_count: strict fence-count drift detector across site/** + docs/**.
 
 LLM 呼出ゼロ。Scans for `N業法` patterns where N ∈ {5,6,7,8} (and the literal

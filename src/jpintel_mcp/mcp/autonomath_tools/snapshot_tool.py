@@ -80,6 +80,9 @@ def _validate_iso_date(s: str) -> str:
     return _dt.date.fromisoformat(s).isoformat()
 
 
+# DEPRECATED 2026-05-11 — `query_at_snapshot` superseded by time_machine_tools.query_at_snapshot_v2 (DEEP-22, AUTONOMATH_SNAPSHOT_ENABLED default ON); retained as historical-state marker.
+# index record: /Users/shigetoumeda/jpcite/docs/_internal/_archive/_index_2026_05_11.md (A8)
+#
 # TODO(2026-04-29): query_at_snapshot is currently broken — migration 067
 # (referenced in this module's header docstring) was never written, so the
 # `valid_from` / `valid_until` columns this tool selects from `programs`

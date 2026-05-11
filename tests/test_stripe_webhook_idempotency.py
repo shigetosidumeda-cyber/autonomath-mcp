@@ -1,6 +1,4 @@
 """Stripe webhook idempotency test."""
-# ruff: noqa: N803,N806,SIM115,SIM117,BLE001,E501,F401,F841,PTH123,S301,S314,S603,UP017
-
 
 import sqlite3
 
@@ -13,7 +11,8 @@ from jpintel_mcp.api.billing_webhook_idempotency import (
 
 
 def _setup(conn: sqlite3.Connection) -> None:
-    conn.executescript(open("scripts/migrations/205_stripe_event_idempotency.sql").read())
+    with open("scripts/migrations/205_stripe_event_idempotency.sql") as fh:
+        conn.executescript(fh.read())
 
 
 def test_idempotency_lifecycle() -> None:

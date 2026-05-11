@@ -1,28 +1,61 @@
 """Test that no external LLM API imports leak into production code.
 
 Enforces the No-LLM invariant from the launch plan §19.3 and operator
-memory `feedback_autonomath_no_api_use`: AutonoMath bills ¥3/request and
-cannot absorb per-request LLM provider costs. Any `import anthropic`,
-`import openai`, `import google.generativeai`, or `import claude_agent_sdk`
-under `src/`, `scripts/`, or `tests/` is a regression that fails CI.
+memory `feedback_autonomath_no_api_use` + `feedback_no_operator_llm_api`:
+jpcite bills ¥3/request fully metered and cannot absorb per-request LLM
+provider costs. A single LLM call costs ¥0.5–¥5; one slipped import on
+the request path bankrupts the unit economics.
 
-Operator-only offline scripts that legitimately call LLM APIs live under
-`tools/offline/` (which is NOT scanned here). See `tools/offline/README.md`.
+Any `import anthropic`, `import openai`, `import google.generativeai`, or
+`import claude_agent_sdk` under `src/`, `scripts/`, or `tests/` is a
+regression that fails CI. Operator-only offline scripts that legitimately
+call LLM APIs live under `tools/offline/` (which is NOT scanned here).
+See `tools/offline/README.md`.
 
-Detection strategy:
-  * Imports: AST-based — only flags actual `import X` / `from X import ...`
-    statements. String literals containing the same phrase (e.g. existing
-    meta-tests in `tests/test_self_improve_loops.py` that check for the
-    forbidden strings inline) are NOT flagged.
-  * Env vars: regex on non-comment, non-docstring lines — flags actual
-    references to `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` / `GEMINI_API_KEY`
-    / `GOOGLE_API_KEY` while permitting comments that mention the names
-    in invariant-enforcement context (e.g. "NO ANTHROPIC_API_KEY").
-  * GitHub Actions workflows: regex over inline `python -c "..."` /
-    `python <<'PY' ... PY` heredoc blocks + `run:` shell-script bodies in
-    `.github/workflows/*.yml`. Flags forbidden imports / env-var refs that
-    would execute on the runner, while tolerating shell `grep`/`!grep`
-    invariant-enforcement lines (matched outside Python contexts).
+Five-axis detection strategy (all axes must stay green):
+
+  * **Axis 1 — Imports** (AST-based, `test_no_llm_imports_in_production`):
+    Only flags actual `import X` / `from X import ...` statements. String
+    literals containing the same phrase (e.g. existing meta-tests in
+    `tests/test_self_improve_loops.py` that check for the forbidden
+    strings inline) are NOT flagged.
+  * **Axis 2 — Env var refs** (regex on non-string AST spans,
+    `test_no_llm_imports_in_production`): Flags actual references to
+    `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` / `GEMINI_API_KEY` /
+    `GOOGLE_API_KEY` while permitting comments + docstrings that mention
+    the names in invariant-enforcement context (e.g. "NO
+    ANTHROPIC_API_KEY").
+  * **Axis 3 — Hardcoded provider secrets**
+    (`test_no_hardcoded_llm_secrets_in_production`): Regex over file
+    contents for `sk-ant-...`, `sk-<20+chars>`, and `AIzaSy...` literal
+    patterns. Real secrets live in `.env.local` (chmod 600, git-ignored)
+    and Fly secrets, never the repo. Meta-test files are excluded — they
+    intentionally name the patterns as the content of the rule they
+    enforce.
+  * **Axis 4 — `# noqa` allowlist boundary**
+    (`test_noqa_llm_marker_only_in_offline`): A `# noqa: F401  #
+    LLM_IMPORT_TOLERATED` (or any `# noqa.*LLM_IMPORT_TOLERATED`) marker
+    may appear only in files under `tools/offline/`. Same marker in
+    `src/` / `scripts/` / `tests/` is itself a violation, preventing the
+    pattern "add an import + add a noqa to silence the test".
+  * **Axis 5 — GitHub Actions workflow YAML inline-python**
+    (`test_no_llm_in_workflow_inline_python`): Regex extraction of
+    `python -c "..."` and `python <<'PY' ... PY` heredoc blocks in
+    `.github/workflows/*.yml`. Flags forbidden imports / env-var refs
+    that would execute on the runner, while tolerating shell
+    `grep`/`!grep` invariant-enforcement lines (matched outside Python
+    contexts).
+
+`tools/offline/` is excluded from axes 1, 2, 3 by path filter
+(operator-only offline tools may legitimately import LLM SDKs and read
+API keys per CLAUDE.md). Axis 4 enforces that `tools/offline/` is the
+**only** path that may carry the `LLM_IMPORT_TOLERATED` marker — so the
+exclusion cannot be smuggled into production code.
+
+Pre-commit / CI integration: pytest exits with rc=1 on assertion
+failure, which `pre-commit` / GHA `pytest -x` treat as fail-closed.
+Do **not** wrap the assertions in try/except — fail-closed is the
+contract.
 """
 
 from __future__ import annotations
@@ -62,12 +95,16 @@ WORKFLOW_DIR = ".github/workflows"
 # Files allowed to mention the forbidden tokens inline because they exist
 # precisely to enforce the invariant (meta-tests / negative-assertion code).
 # These files are still scanned for actual imports, but their string-literal
-# hits on env-var names are tolerated.
+# hits on env-var names + secret patterns are tolerated.
 META_TEST_ALLOWLIST = {
     "tests/test_no_llm_in_production.py",
     "tests/test_self_improve_loops.py",
     "tests/test_precompute_schemas.py",
 }
+
+# Marker that the `# noqa` axis recognizes as an explicit LLM-tolerated
+# import. Allowed only in files under `tools/offline/`.
+NOQA_LLM_MARKER = "LLM_IMPORT_TOLERATED"
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 
@@ -162,6 +199,7 @@ def _is_excluded(rel_posix: str) -> bool:
 
 
 def test_no_llm_imports_in_production() -> None:
+    """Axis 1 + Axis 2: actual imports + env-var refs on real code lines."""
     violations: list[str] = []
     for prod_dir in PRODUCTION_DIRS:
         base = REPO_ROOT / prod_dir
@@ -227,7 +265,125 @@ def test_offline_dir_is_not_imported_from_production() -> None:
     )
 
 
-# --- GitHub Actions workflow YAML scan ----------------------------------
+# --- Axis 3: hardcoded provider secrets ---------------------------------
+# Detects literal API keys checked into the repo. These patterns are the
+# documented prefix shapes for Anthropic / OpenAI / Google AI Studio
+# tokens. We intentionally do not try to match every provider — these
+# three cover the four FORBIDDEN_IMPORT_MODULES surface and catch the
+# common "I'll paste my key for testing and remove it later" footgun.
+#
+# Pattern notes:
+#   * `sk-ant-` — Anthropic API key prefix; followed by the random body.
+#   * `sk-[A-Za-z0-9]{20,}` — OpenAI legacy `sk-...` prefix and
+#     OpenAI-compatible providers. We require ≥20 trailing chars to
+#     avoid matching shell-style `sk-` prose in docstrings.
+#   * `AIzaSy[A-Za-z0-9_-]{30,}` — Google API key shape (Gemini /
+#     generativeai / Cloud APIs). The trailing length floor avoids
+#     matching prose like "AIzaSy is the Google prefix" in docstrings.
+
+_SECRET_PATTERNS = (
+    re.compile(r"sk-ant-[A-Za-z0-9_-]{20,}"),
+    re.compile(r"\bsk-[A-Za-z0-9]{20,}"),
+    re.compile(r"\bAIzaSy[A-Za-z0-9_-]{30,}"),
+)
+
+
+def _scan_secret_literals(py_file: pathlib.Path) -> list[str]:
+    """Return list of forbidden secret literal hits on any line."""
+    try:
+        src = py_file.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        return []
+    hits: list[str] = []
+    for lineno, line in enumerate(src.splitlines(), start=1):
+        for pat in _SECRET_PATTERNS:
+            m = pat.search(line)
+            if m:
+                # Show prefix only — never echo the suspected full secret
+                # back into the failure message (CI logs are not safe
+                # for secret payloads even when fake).
+                hits.append(f"line {lineno}: matches {pat.pattern!r} (prefix shown: {m.group(0)[:10]}...)")
+    return hits
+
+
+def test_no_hardcoded_llm_secrets_in_production() -> None:
+    """Axis 3: no `sk-ant-...`, `sk-...`, or `AIzaSy...` literals in the
+    repo under the production trees. Real secrets live in `.env.local`
+    (chmod 600, git-ignored) and Fly secrets only.
+    """
+    violations: list[str] = []
+    for prod_dir in PRODUCTION_DIRS:
+        base = REPO_ROOT / prod_dir
+        if not base.exists():
+            continue
+        for py_file in base.rglob("*.py"):
+            rel = py_file.relative_to(REPO_ROOT).as_posix()
+            if rel == "tests/test_no_llm_in_production.py":
+                continue
+            if _is_excluded(rel):
+                continue
+            # Meta-tests intentionally name the patterns; tolerate but
+            # still surface for review — actual hardcoded secrets would
+            # land in non-meta paths.
+            if rel in META_TEST_ALLOWLIST:
+                continue
+            for hit in _scan_secret_literals(py_file):
+                violations.append(f"{rel}: {hit}")
+
+    assert not violations, (
+        "Hardcoded LLM provider secret(s) found in repo:\n  - "
+        + "\n  - ".join(violations)
+        + "\n\nReal secrets live in .env.local (chmod 600, git-ignored) and"
+        " Fly secrets. Rotate the leaked credential immediately."
+    )
+
+
+# --- Axis 4: `# noqa LLM_IMPORT_TOLERATED` allowlist boundary -----------
+# The pattern "add an LLM import + add a noqa to silence the test" must
+# fail. The `LLM_IMPORT_TOLERATED` marker is allowed **only** in files
+# under `tools/offline/`. This test asserts that no file outside
+# `tools/offline/` carries the marker. Combined with axis 1 (which AST-
+# scans imports regardless of comments), this closes the noqa-escape hatch.
+
+_NOQA_LLM_RE = re.compile(r"#\s*noqa[^#\n]*\b" + re.escape(NOQA_LLM_MARKER) + r"\b", re.IGNORECASE)
+
+
+def test_noqa_llm_marker_only_in_offline() -> None:
+    """Axis 4: the `LLM_IMPORT_TOLERATED` noqa marker is allowed only
+    under `tools/offline/`. Same marker anywhere in `src/` / `scripts/`
+    / `tests/` is itself a violation (closes the noqa-escape hatch).
+    """
+    violations: list[str] = []
+    for prod_dir in PRODUCTION_DIRS:
+        base = REPO_ROOT / prod_dir
+        if not base.exists():
+            continue
+        for py_file in base.rglob("*.py"):
+            rel = py_file.relative_to(REPO_ROOT).as_posix()
+            # The test file documents the marker in its own docstring,
+            # which is fine because axis 1 still scans AST imports
+            # regardless of noqa. Skip self.
+            if rel == "tests/test_no_llm_in_production.py":
+                continue
+            if _is_excluded(rel):
+                continue
+            try:
+                src = py_file.read_text(encoding="utf-8")
+            except UnicodeDecodeError:
+                continue
+            for lineno, line in enumerate(src.splitlines(), start=1):
+                if _NOQA_LLM_RE.search(line):
+                    violations.append(f"{rel}: line {lineno}: {line.strip()}")
+
+    assert not violations, (
+        f"`{NOQA_LLM_MARKER}` noqa marker present outside tools/offline/:\n  - "
+        + "\n  - ".join(violations)
+        + "\n\nThe marker is allowed only in tools/offline/. Adding it elsewhere"
+        " would silence axis 1 of the LLM-isolation guard."
+    )
+
+
+# --- Axis 5: GitHub Actions workflow YAML scan --------------------------
 # We do NOT depend on PyYAML (test must run with stdlib only). Instead we
 # do conservative regex extraction of inline-Python regions:
 #   * `python -c "..."` / `python -c '...'` (single-line)
@@ -285,9 +441,9 @@ def _scan_workflow_python_regions(yaml_text: str) -> list[str]:
 
 
 def test_no_llm_in_workflow_inline_python() -> None:
-    """GitHub Actions runners execute `run:` shell bodies. Any inline
-    Python (heredoc or `-c`) that imports an LLM SDK or reads an LLM
-    API key is a regression — workflows ship to production CI/CD.
+    """Axis 5: GitHub Actions runners execute `run:` shell bodies. Any
+    inline Python (heredoc or `-c`) that imports an LLM SDK or reads an
+    LLM API key is a regression — workflows ship to production CI/CD.
     """
     base = REPO_ROOT / WORKFLOW_DIR
     if not base.exists():
