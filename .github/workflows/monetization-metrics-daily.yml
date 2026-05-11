@@ -1,0 +1,89 @@
+name: monetization-metrics-daily
+
+# Wave 42 — daily agent-economy KPI tracker.
+# Runs `scripts/cron/track_monetization_metrics_daily.py` at 19:00 UTC (04:00
+# JST), appends one JSONL row to `analytics/monetization_metrics_daily.jsonl`,
+# refreshes `site/status/monetization_dashboard.json`, then commits both
+# back to main so the agent-readable dashboard at
+# `/status/monetization_dashboard.html` reflects the latest snapshot.
+#
+# 12 KPIs tracked (8 agent-economy + 4 legacy):
+#   - ASR / ARC / Cost-to-Serve / Agent Retention / TTFP /
+#     Spending Variance / AI Mention Share / Justification Strength
+#   - MRR / ARR / Churn proxy / LTV/CAC proxy
+#
+# Reads `data/jpintel.db` only (~352 MB). NEVER touches autonomath.db
+# (9.7 GB) — memory `feedback_no_quick_check_on_huge_sqlite` applies.
+#
+# Memory contracts upheld:
+#   * `feedback_autonomath_no_api_use` — zero LLM API imports
+#   * `feedback_zero_touch_solo` — no human-in-the-loop required
+#   * `feedback_organic_only_no_ads` — no acquisition cost line items
+#   * `feedback_no_mvp_no_workhours` — full-spec rollout, no phasing
+
+on:
+  schedule:
+    # 19:00 UTC == 04:00 JST. One hour after analytics-cron at 18:00 UTC
+    # so the cf_analytics export (if scheduled separately) doesn't race
+    # with the metering aggregation.
+    - cron: "0 19 * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: monetization-metrics-daily
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  aggregate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify jpintel.db presence (read-only)
+        # If the DB blob is missing, the script falls back to zero
+        # metrics. We do not gate on its presence — graceful degradation.
+        run: |
+          if [ -f data/jpintel.db ]; then
+            ls -la data/jpintel.db
+            sqlite3 data/jpintel.db "SELECT COUNT(*) FROM usage_events;" || true
+          else
+            echo "data/jpintel.db missing — metrics will be zero"
+          fi
+
+      - name: Aggregate monetization KPIs
+        run: |
+          python3 scripts/cron/track_monetization_metrics_daily.py
+
+      - name: Show today's metrics
+        run: |
+          if [ -f site/status/monetization_dashboard.json ]; then
+            jq -r '.latest' site/status/monetization_dashboard.json
+          fi
+
+      - name: Commit + push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add analytics/monetization_metrics_daily.jsonl site/status/monetization_dashboard.json
+          if git diff --cached --quiet; then
+            echo "no metric delta to commit"
+            exit 0
+          fi
+          git commit -m "cron(monetization-metrics): daily KPI snapshot
+
+Wave 42 monetization-guide integration — daily aggregate of 12 KPIs
+(8 agent-economy + 4 legacy proxies). Memory:
+feedback_agent_new_kpis_8 + feedback_agent_anti_patterns_10."
+          git push origin HEAD:main
