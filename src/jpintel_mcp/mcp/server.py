@@ -9694,26 +9694,6 @@ if settings.autonomath_enabled:
         logger.warning("cohort_resources registration skipped: %r", _cohort_exc)
     # === END DEEP-34 cohort persona kit ====================================
 
-    # === Wave 15 A1+A2: jpcite-branded MCP resources + prompts ============
-    # Adds 5 resources under the `mcp://jpcite/` URI scheme (facts_registry
-    # / legal/fence.md / glossary / license_matrix / sources_catalog) and 3
-    # recurring agent workflow prompts (company_folder_intake /
-    # monthly_client_review / counterparty_dd). Pure dict + file IO, no
-    # LLM calls — CI guard `tests/test_no_llm_in_production.py` enforces.
-    try:
-        from jpintel_mcp.mcp.jpcite_resources import register_jpcite_resources
-
-        register_jpcite_resources(mcp)
-    except Exception as _jpr_exc:  # pragma: no cover — non-fatal at boot
-        logger.warning("jpcite_resources registration skipped: %r", _jpr_exc)
-    try:
-        from jpintel_mcp.mcp.jpcite_prompts import register_jpcite_prompts
-
-        register_jpcite_prompts(mcp)
-    except Exception as _jpp_exc:  # pragma: no cover — non-fatal at boot
-        logger.warning("jpcite_prompts registration skipped: %r", _jpp_exc)
-    # === END Wave 15 A1+A2 ================================================
-
     # Re-export the registered _am tool under its short name so callers
     # can `from jpintel_mcp.mcp.server import search_acceptance_stats`.
     # `prefecture` is accepted as an alias for the underlying `region`

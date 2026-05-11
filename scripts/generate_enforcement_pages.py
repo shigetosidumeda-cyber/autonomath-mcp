@@ -66,7 +66,6 @@ import sqlite3
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from urllib.parse import quote as urlquote
 
 logger = logging.getLogger("jpcite.generate_enforcement_pages")
 
@@ -290,56 +289,13 @@ def build_json_ld(row: dict, domain: str, slug: str, laws: list[dict], programs:
     if object_program:
         graph[0]["object"] = {"@type": "GovernmentService", "name": object_program}
 
-    # Per-record SearchAction + ReadAction. AI agents can pivot from this
-    # enforcement record to (1) generic enforcement search, (2) ministry-narrowed
-    # enforcement search, (3) ReadAction to retrieve the structured record.
-    enforce_actions: list[dict] = [
-        {
-            "@type": "SearchAction",
-            "target": {
-                "@type": "EntryPoint",
-                "urlTemplate": "https://api.jpcite.com/v1/enforcement/search?q={search_term_string}",
-            },
-            "query-input": "required name=search_term_string",
-        }
-    ]
-    if ministry:
-        enforce_actions.append(
-            {
-                "@type": "SearchAction",
-                "target": {
-                    "@type": "EntryPoint",
-                    "urlTemplate": (
-                        "https://api.jpcite.com/v1/enforcement/search"
-                        f"?ministry={urlquote(str(ministry))}&q={{search_term_string}}"
-                    ),
-                },
-                "query-input": "required name=search_term_string",
-                "name": f"{ministry} の他処分を検索",
-            }
-        )
-    enforce_actions.append(
-        {
-            "@type": "ReadAction",
-            "target": {
-                "@type": "EntryPoint",
-                "urlTemplate": (
-                    f"https://api.jpcite.com/v1/enforcement/{urlquote(str(slug))}"
-                ),
-            },
-            "name": "この行政処分の構造化レコードを取得",
-        }
-    )
     if row.get("amount_improper_grant_yen"):
-        enforce_actions.append(
-            {
-                "@type": "PayAction",
-                "name": "補助金返還",
-                "price": str(int(row["amount_improper_grant_yen"])),
-                "priceCurrency": "JPY",
-            }
-        )
-    graph[0]["potentialAction"] = enforce_actions
+        graph[0]["potentialAction"] = {
+            "@type": "PayAction",
+            "name": "補助金返還",
+            "price": str(int(row["amount_improper_grant_yen"])),
+            "priceCurrency": "JPY",
+        }
 
     if laws:
         graph.append(

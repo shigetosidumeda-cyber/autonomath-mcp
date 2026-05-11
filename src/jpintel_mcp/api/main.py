@@ -27,6 +27,7 @@ from structlog.contextvars import bind_contextvars, clear_contextvars
 
 from jpintel_mcp import __version__
 from jpintel_mcp.api._error_envelope import make_error, safe_request_id
+from jpintel_mcp.api.a2a import router as a2a_router
 from jpintel_mcp.api.accounting import router as accounting_router
 from jpintel_mcp.api.admin import router as admin_router
 from jpintel_mcp.api.admin_kpi import router as admin_kpi_router
@@ -80,7 +81,6 @@ from jpintel_mcp.api.evidence import router as evidence_router
 from jpintel_mcp.api.exclusions import router as exclusions_router
 from jpintel_mcp.api.feedback import router as feedback_router
 from jpintel_mcp.api.funding_stack import router as funding_stack_router
-from jpintel_mcp.api.graph import router as graph_router
 from jpintel_mcp.api.funding_stage import router as funding_stage_router
 from jpintel_mcp.api.funnel_events import router as funnel_events_router
 from jpintel_mcp.api.houjin import router as houjin_router
@@ -2029,12 +2029,6 @@ def create_app() -> FastAPI:
     # court_decisions) + autonomath.db (nta_tsutatsu_index / nta_saiketsu).
     # Sensitive: 税理士法 §52 / 弁護士法 §72 / 公認会計士法 §47条の2 disclaimer.
     app.include_router(tax_chain_router, dependencies=[AnonIpLimitDep])
-    # Wave 15 F1 (2026-05-11): 22-axis cross-link graph BFS — REST surface
-    # over `am_relation` + `am_entities` + `am_alias` (autonomath.db).
-    # Mirrors the existing graph_traverse MCP tool but exposes a 1-4 hop
-    # walk over HTTP. Pure SQLite recursive CTE, NO LLM. Anon-quota-gated
-    # like the other discovery surfaces.
-    app.include_router(graph_router, dependencies=[AnonIpLimitDep])
     app.include_router(invoice_registrants_router, dependencies=[AnonIpLimitDep])
     # R8 invoice risk lookup (2026-05-07): /v1/invoice_registrants/{tnum}/risk
     # + /v1/invoice_registrants/batch_risk + /v1/houjin/{bangou}/invoice_status.

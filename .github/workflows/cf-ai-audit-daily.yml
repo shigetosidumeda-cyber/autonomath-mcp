@@ -1,0 +1,71 @@
+name: cf-ai-audit-daily
+
+# Daily AI-bot visit dump from Cloudflare's httpRequestsAdaptiveGroups
+# surface. Captures per-bot-family (GPTBot / ClaudeBot / PerplexityBot /
+# Bytespider / Diffbot / cohere-ai / YouBot / MistralAI) request counts
+# for the previous UTC day and writes a per-day JSONL under
+# `analytics/cf_ai_audit_{date}.jsonl`.
+#
+# Companion to the Cloudflare "AI Audit" feature — the dashboard
+# surfaces the same data inside CF; this captures a versioned snapshot
+# so crawl-pattern shifts (e.g. a ClaudeBot ramp) are detectable
+# without relying on the CF UI.
+#
+# Required GitHub repository secrets (mirror with Fly secret per
+# `feedback_secret_store_separation`):
+#   CF_API_TOKEN  scope = "Account.Account Analytics:Read"
+#   CF_ZONE_ID    zone tag for jpcite.com
+
+on:
+  schedule:
+    # 18:30 UTC == 03:30 JST. Offset 30 min from analytics-cron to
+    # avoid GraphQL rate-limit contention with cf_analytics_export.py.
+    - cron: "30 18 * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: cf-ai-audit-daily
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install httpx
+        run: pip install "httpx>=0.28,<1.0"
+
+      - name: Run CF AI Audit dump
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
+        run: python scripts/cron/cf_ai_audit_dump.py
+
+      - name: Commit + push JSONL delta
+        run: |
+          set -euo pipefail
+          git config user.name "autonomath-analytics-bot"
+          git config user.email "info@bookyou.net"
+          # Force-add cf_ai_audit_*.jsonl under analytics/ — the
+          # directory is gitignored but specific JSONL filenames are
+          # negated. `-f` is belt+suspenders against .gitignore
+          # rewording.
+          git add -f analytics/cf_ai_audit_*.jsonl 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No AI-audit delta to commit."
+            exit 0
+          fi
+          DATE=$(date -u +"%Y-%m-%d")
+          git commit -m "chore(analytics): CF AI audit dump ${DATE}"
+          git push origin HEAD:main

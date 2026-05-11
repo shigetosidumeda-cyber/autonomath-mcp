@@ -1,0 +1,130 @@
+%PDF-1.4
+%忠告
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+5 0 obj
+<< /Length 1900 >>
+stream
+BT
+/F1 14 Tf
+72 740 Td
+(Data Processing Addendum -- jpcite / Bookyou K.K.) Tj
+0 -22 Td
+/F1 9 Tf
+(This Data Processing Addendum \(DPA\) supplements the jpcite Terms of) Tj
+0 -12 Td
+(Service \(https://jpcite.com/tos.html\) between:) Tj
+0 -18 Td
+(   Processor : Bookyou K.K. \(T8010001213708\), info@bookyou.net) Tj
+0 -12 Td
+(   Controller: {{COMPANY}} \(represented by {{USER_NAME}}\)) Tj
+0 -12 Td
+(   Effective : {{DATE}}) Tj
+0 -18 Td
+(1. Subject matter. Processor provides the jpcite REST + MCP API for) Tj
+0 -12 Td
+(Japanese public-program evidence retrieval. Controller may submit) Tj
+0 -12 Td
+(Personal Data \(as defined in APPI Article 2\) within API queries.) Tj
+0 -18 Td
+(2. Duration. Co-terminous with the underlying ToS. Either party may) Tj
+0 -12 Td
+(terminate with 30 days written notice to the email above.) Tj
+0 -18 Td
+(3. Nature and purpose. Real-time query response only. Processor stores) Tj
+0 -12 Td
+(usage_events \(timestamp, endpoint, status, billable units\) but does) Tj
+0 -12 Td
+(NOT persist query bodies beyond the request lifecycle.) Tj
+0 -18 Td
+(4. Types of data. Limited to identifiers supplied by Controller in) Tj
+0 -12 Td
+(query parameters. No special categories \(APPI Article 2-3 / GDPR) Tj
+0 -12 Td
+(Article 9\) are knowingly processed.) Tj
+0 -18 Td
+(5. Sub-processors. Stripe \(billing\), Cloudflare \(CDN + R2 backup\),) Tj
+0 -12 Td
+(Fly.io \(application hosting, Tokyo region\). Full list at) Tj
+0 -12 Td
+(https://jpcite.com/trust.html#sub-processors. Controller is notified) Tj
+0 -12 Td
+(of additions via /audit-log.rss with 30-day objection window.) Tj
+0 -18 Td
+(6. Security measures. TLS 1.2+ in transit; AES-256 at rest; metered) Tj
+0 -12 Td
+(audit log; daily R2 backup with SHA256 verification; quarterly) Tj
+0 -12 Td
+(restore drill. RPO 24h / RTO 4h. See https://jpcite.com/security/.) Tj
+0 -18 Td
+(7. Data subject rights. Controller is responsible for handling) Tj
+0 -12 Td
+(access / rectification / erasure requests from its data subjects.) Tj
+0 -12 Td
+(Processor provides API endpoints to assist \(DELETE /v1/me/usage\).) Tj
+0 -18 Td
+(8. Breach notification. Processor notifies Controller without undue) Tj
+0 -12 Td
+(delay \(target <72h\) at the contact email on record after becoming) Tj
+0 -12 Td
+(aware of a Personal Data breach.) Tj
+0 -18 Td
+(9. International transfers. All compute + storage in Japan \(Fly Tokyo\)) Tj
+0 -12 Td
+(or via Cloudflare R2 \(Tokyo metro\). No transfers outside Japan are) Tj
+0 -12 Td
+(required for normal operation.) Tj
+0 -18 Td
+(10. Return / deletion. On termination Controller may request export) Tj
+0 -12 Td
+(of its usage_events; Processor deletes within 30 days unless legal) Tj
+0 -12 Td
+(retention applies \(invoicing records: 7 years\).) Tj
+0 -18 Td
+(11. Audit. Controller may, at most once per 12 months and with) Tj
+0 -12 Td
+(reasonable notice, request audit reports. Processor publishes a) Tj
+0 -12 Td
+(quarterly transparency report at /transparency.html.) Tj
+0 -18 Td
+(12. Liability. Limited per ToS Section 9. This DPA does not enlarge) Tj
+0 -12 Td
+(Processor's aggregate liability beyond the ToS cap.) Tj
+0 -18 Td
+(13. Governing law. Tokyo District Court, exclusive jurisdiction.) Tj
+0 -18 Td
+(Signatures.) Tj
+0 -12 Td
+(  Processor: Bookyou K.K. _______________________ Date: ___________) Tj
+0 -12 Td
+(  Controller: {{COMPANY}} ______________________ Date: ___________) Tj
+0 -18 Td
+(Replace {{USER_NAME}} / {{COMPANY}} / {{DATE}} placeholders before) Tj
+0 -12 Td
+(signing. Self-service download from https://jpcite.com/sla.html#dpa.) Tj
+ET
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f
+0000000009 00000 n
+0000000059 00000 n
+0000000110 00000 n
+0000000219 00000 n
+0000000287 00000 n
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+2240
+%%EOF
