@@ -217,6 +217,18 @@ exclude_docs: |
   healthcare_v3_plan.md
   long_term_strategy.md
   organic_outreach_templates.md
+  announce/
+  audit/
+  bench/
+  competitive/
+  cookbook/
+  distribution/
+  for-agent-devs/
+  geo/
+  install/
+  pricing/
+  publication/
+  use_cases/
   partner_referral_mechanism.md
   partnerships/
   real_estate_v5_plan.md
