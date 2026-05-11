@@ -3,7 +3,21 @@
   "snapshot_at": "2026-05-11T00:00:00Z",
   "snapshot_git_sha": "d4216ffb",
   "guards": {
-    "banned_terms": ["完全", "必ず", "保証", "No.1", "業界初", "最強", "採択可能性100%", "処分なし保証", "適合確実", "全件採択", "返金保証"],
+    "banned_terms": [
+      {"pattern": "完全(?:に)?(採択|成功|合格|適合|安全|無欠|な保証|保証|防止|回避|削減|削除|排除|網羅|把握|一致|再現|信頼|的中|予測|的確)", "reason": "marketing absolute"},
+      {"pattern": "必ず(?:採択|成功|合格|当選|適用|受給|受け取|もらえ|稼げ|儲か|還付|返金|削減)", "reason": "absolute claim"},
+      {"pattern": "(?<!無)(?<!無担保無)保証(?:します|いたします|致します)(?!ません)", "reason": "marketing absolute guarantee verb"},
+      {"pattern": "(?<![\\d.])No\\.\\s*1(?!\\d|\\s*を謳いません|\\s*はおりません|\\s*とは限りません|」)", "reason": "ranking claim"},
+      {"pattern": "確実(?:に)?(採択|成功|合格|適用|受給|還付|削減|的中|予測)", "reason": "marketing absolute"},
+      {"pattern": "最も(?:安価|安い|早い|速い|優れた|優秀|信頼|的確|効果)", "reason": "ranking claim"},
+      {"pattern": "(?<![\\w「『])業界(?:初|最大|最安|最高|No\\.1|トップ)(?!」|の[新取低無高大]|[初的])", "reason": "marketing absolute"},
+      {"pattern": "採択可能性\\s*100\\s*%", "reason": "subsidy false promise"},
+      {"pattern": "処分なし保証", "reason": "regulatory false promise"},
+      {"pattern": "適合確実", "reason": "subsidy false promise"},
+      {"pattern": "100\\s*%\\s*適合", "reason": "subsidy false promise"},
+      {"pattern": "全件採択", "reason": "subsidy false promise"},
+      {"pattern": "返金保証(?!対象)", "reason": "marketing absolute"}
+    ],
     "numeric_ranges": {
       "openapi_paths_agent": [25, 50],
       "openapi_paths_public": [170, 230],

@@ -481,7 +481,7 @@
       "agent_output_guidance": "Present advisor matches as candidate reviewers for unresolved evidence gaps. Carry the source-linked evidence, caveats, and open questions into the handoff summary; disclose the ranking method; do not imply jpcite has completed professional review or made a referral."
     },
     "x-jpcite-variant": "gpt30-slim",
-    "x-jpcite-source": "subset of /openapi.agent.json",
+    "x-jpcite-source": "subset of /openapi.agent.json + intelligence/precomputed/query first-hop",
     "x-openai-isConsequential": false
   },
   "paths": {
@@ -2113,127 +2113,6 @@
           "tax_or_legal_disclaimer_not_required"
         ],
         "x-jpcite-agent-output-guidance": "Explain previewCost as a free preflight estimate for jpcite units and yen, not as execution of the planned calls. If the response includes a disclaimer, carry it into downstream cost or tax-sensitive summaries."
-      }
-    },
-    "/v1/usage": {
-      "get": {
-        "tags": [
-          "usage"
-        ],
-        "summary": "Get Usage",
-        "description": "Probe the caller's current quota state without consuming a slot.\n\nThis usage probe is free so anonymous callers can check remaining\nallowance without decrementing it.",
-        "operationId": "getUsageStatus",
-        "parameters": [
-          {
-            "name": "X-API-Key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Api-Key"
-            }
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Authorization"
-            }
-          },
-          {
-            "name": "X-Client-Tag",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "pattern": "^[A-Za-z0-9_-]{1,32}$",
-              "maxLength": 32
-            },
-            "description": "Optional paid-usage attribution tag for the end customer, company folder, or project. Stored on usage events when a valid API key is used."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UsageStatus"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "ApiKeyAuth": []
-          },
-          {}
-        ],
-        "x-jpcite-agent-safe": true,
-        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
-        "x-jpcite-billing": {
-          "billable": false,
-          "billing_units": 0,
-          "plain_ja": "このエンドポイントは料金確認・透明性確認用で、通常の課金対象外です。",
-          "plain_en": "This endpoint is for cost preview or transparency checks and is not normally metered."
-        },
-        "x-jpcite-agent-priority": 1,
-        "x-jpcite-route-purpose": "usage_quota_preflight",
-        "x-jpcite-recommended-when": [
-          "before_anonymous_or_paid_agent_runs_when_quota_is_unclear",
-          "before_retrying_after_429_or_explaining_remaining_free_daily_calls",
-          "when_the_user_asks_how_many_jpcite_calls_are_left"
-        ],
-        "x-jpcite-not-recommended-when": [
-          "the_agent_already_has_a_fresh_usage_response",
-          "the_user_needs_source_evidence_rather_than_quota_status"
-        ],
-        "x-jpcite-free-preflight": true,
-        "x-jpcite-does-not-consume-anonymous-quota": true,
-        "x-jpcite-must-preserve-fields": [
-          "tier",
-          "limit",
-          "remaining",
-          "used",
-          "reset_at",
-          "reset_timezone",
-          "upgrade_url",
-          "tokens_saved_estimated_total",
-          "tokens_saved_estimated_per_call"
-        ],
-        "x-jpcite-must-not-claim": [
-          "usage_probe_consumes_free_quota",
-          "paid_volume_is_unlimited_without_customer_caps",
-          "quota_reset_time_is_local_without_checking_reset_timezone"
-        ],
-        "x-jpcite-agent-output-guidance": "Use this as a free quota/status preflight. Preserve reset_at and reset_timezone exactly, and explain remaining calls before running a larger jpcite plan."
       }
     },
     "/v1/laws/search": {
@@ -7627,6 +7506,439 @@
           "very_recent_status_changes_outside_corpus"
         ],
         "x-jpcite-agent-output-guidance": "Present advisor matches as candidate reviewers for unresolved evidence gaps. Carry the source-linked evidence, caveats, and open questions into the handoff summary; disclose the ranking method; do not imply jpcite has completed professional review or made a referral."
+      }
+    },
+    "/v1/intelligence/precomputed/query": {
+      "get": {
+        "tags": [
+          "intelligence"
+        ],
+        "summary": "Precomputed Intelligence Bundle — query prefetch",
+        "description": "Returns a compact precomputed intelligence bundle for LLM context prefetch. Use when an agent needs short source-linked Japanese public-program evidence before answering, without live web search or a request-time LLM call. Optional compression fields compare caller-supplied input-context baselines.",
+        "operationId": "prefetchIntelligence",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500,
+              "description": "Free-text query to resolve against precomputed program summaries.",
+              "title": "Q"
+            },
+            "description": "Free-text query to resolve against precomputed program summaries."
+          },
+          {
+            "name": "prefecture",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional prefecture filter.",
+              "title": "Prefecture"
+            },
+            "description": "Optional prefecture filter."
+          },
+          {
+            "name": "tier",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional tier filter.",
+              "title": "Tier"
+            },
+            "description": "Optional tier filter."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "description": "Cap on records[] length. Hard cap = 500.",
+              "default": 10,
+              "title": "Limit"
+            },
+            "description": "Cap on records[] length. Hard cap = 500."
+          },
+          {
+            "name": "include_facts",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Include raw facts in addition to precomputed summaries. Default false keeps the bundle compact for LLM context.",
+              "default": false,
+              "title": "Include Facts"
+            },
+            "description": "Include raw facts in addition to precomputed summaries. Default false keeps the bundle compact for LLM context."
+          },
+          {
+            "name": "include_compression",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Include deterministic token-compression estimate.",
+              "default": true,
+              "title": "Include Compression"
+            },
+            "description": "Include deterministic token-compression estimate."
+          },
+          {
+            "name": "input_token_price_jpy_per_1m",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional caller input-token price in JPY per 1M tokens. Used only for input-context reference comparison.",
+              "title": "Input Token Price Jpy Per 1M"
+            },
+            "description": "Optional caller input-token price in JPY per 1M tokens. Used only for input-context reference comparison."
+          },
+          {
+            "name": "source_tokens_basis",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "unknown",
+                "pdf_pages",
+                "token_count"
+              ],
+              "type": "string",
+              "description": "Optional caller-supplied baseline for context comparison. `unknown` returns packet size only. `pdf_pages` uses source_pdf_pages * 700 tokens/page as an estimate. `token_count` uses source_token_count exactly as supplied. This is input-context estimation only, not a guarantee.",
+              "default": "unknown",
+              "title": "Source Tokens Basis"
+            },
+            "description": "Optional caller-supplied baseline for context comparison. `unknown` returns packet size only. `pdf_pages` uses source_pdf_pages * 700 tokens/page as an estimate. `token_count` uses source_token_count exactly as supplied. This is input-context estimation only, not a guarantee."
+          },
+          {
+            "name": "source_pdf_pages",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 1000,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "PDF page count the caller would otherwise paste/fetch into the LLM. Used only when source_tokens_basis=pdf_pages.",
+              "title": "Source Pdf Pages"
+            },
+            "description": "PDF page count the caller would otherwise paste/fetch into the LLM. Used only when source_tokens_basis=pdf_pages."
+          },
+          {
+            "name": "source_token_count",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 50000000,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Caller-measured token count for the source context the LLM would otherwise read. Used only when source_tokens_basis=token_count.",
+              "title": "Source Token Count"
+            },
+            "description": "Caller-measured token count for the source context the LLM would otherwise read. Used only when source_tokens_basis=token_count."
+          },
+          {
+            "name": "output_format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "const": "json",
+              "type": "string",
+              "description": "Only `json` is supported for JSON responses.",
+              "default": "json",
+              "title": "Output Format"
+            },
+            "description": "Only `json` is supported for JSON responses."
+          },
+          {
+            "name": "X-API-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Client-Tag",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,32}$",
+              "maxLength": 32
+            },
+            "description": "Optional paid-usage attribution tag for the end customer, company folder, or project. Stored on usage events when a valid API key is used."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrecomputedIntelligenceBundle"
+                },
+                "example": {
+                  "packet_id": "evp_example",
+                  "generated_at": "2026-05-02T12:00:00+09:00",
+                  "api_version": "v1",
+                  "corpus_snapshot_id": "snap_20260502",
+                  "query": {
+                    "user_intent": "Tokyo manufacturer subsidy evidence",
+                    "normalized_filters": {
+                      "prefecture": "Tokyo"
+                    }
+                  },
+                  "answer_not_included": true,
+                  "records": [
+                    {
+                      "entity_id": "program:example",
+                      "primary_name": "Example public program",
+                      "record_kind": "program",
+                      "source_url": "https://example.go.jp/program",
+                      "source_fetched_at": "2026-05-01T00:00:00+09:00",
+                      "source_checksum": "sha256:example",
+                      "license": "gov_standard_v2.0",
+                      "authority_name": "Example authority",
+                      "precomputed": {
+                        "basis": "am_program_summary",
+                        "summaries": {
+                          "200": "Short source-linked evidence summary."
+                        }
+                      }
+                    }
+                  ],
+                  "quality": {
+                    "freshness_bucket": "current",
+                    "coverage_score": 0.86,
+                    "known_gaps": [],
+                    "human_review_required": false
+                  },
+                  "verification": {
+                    "replay_endpoint": "/v1/programs/search?q=...",
+                    "freshness_endpoint": "/v1/meta/freshness"
+                  },
+                  "compression": {
+                    "packet_tokens_estimate": 566,
+                    "source_tokens_basis": "unknown",
+                    "estimate_method": "none",
+                    "estimate_disclaimer": "Compression estimates compare input context size only. Provider billing can differ because of output, reasoning, short-lived response reuse, search, and tool charges.",
+                    "estimate_scope": "input_context_only",
+                    "savings_claim": "estimate_not_guarantee",
+                    "provider_billing_not_guaranteed": true
+                  },
+                  "evidence_value": {
+                    "records_returned": 1,
+                    "source_linked_records": 1,
+                    "precomputed_records": 1,
+                    "pdf_fact_refs": 0,
+                    "known_gap_count": 0,
+                    "fact_provenance_coverage_pct_avg": 0.86,
+                    "web_search_performed_by_jpcite": false,
+                    "request_time_llm_call_performed": false
+                  },
+                  "decision_insights": {
+                    "schema_version": "v1",
+                    "generated_from": [
+                      "records",
+                      "quality",
+                      "verification",
+                      "evidence_value",
+                      "corpus_snapshot_id"
+                    ],
+                    "why_review": [
+                      {
+                        "signal": "source_traceability",
+                        "message_ja": "一次資料URLと取得時点を確認できます。",
+                        "source_fields": [
+                          "records.source_url",
+                          "records.source_fetched_at"
+                        ],
+                        "severity": "info"
+                      }
+                    ],
+                    "next_checks": [
+                      {
+                        "signal": "source_recheck",
+                        "message_ja": "最終判断前に一次資料を再確認してください。",
+                        "source_fields": [
+                          "records.source_url"
+                        ],
+                        "severity": "review"
+                      }
+                    ],
+                    "evidence_gaps": []
+                  },
+                  "bundle_kind": "precomputed_intelligence",
+                  "bundle_id": "pci_example",
+                  "answer_basis": "precomputed",
+                  "records_returned": 1,
+                  "precomputed_record_count": 1,
+                  "precomputed": {
+                    "available": true,
+                    "basis_tables": [
+                      "am_program_summary"
+                    ],
+                    "record_count": 1,
+                    "note": "Precomputed summaries are deterministic corpus artifacts. They are not generated by a request-time LLM."
+                  },
+                  "usage": {
+                    "intended_for": "llm_context_prefetch",
+                    "web_search_required": false,
+                    "jpcite_requests": 1,
+                    "billing_units": 1
+                  },
+                  "agent_recommendation": {
+                    "recommendation": "use_jpcite_prefetch",
+                    "recommend_to_user": true,
+                    "recommend_for_evidence": true,
+                    "evidence_decision": "supported_by_source_linked_records",
+                    "recommend_for_cost_savings": false,
+                    "cost_savings_decision": "needs_caller_baseline",
+                    "missing_for_cost_claim": [
+                      "source_tokens_basis",
+                      "source_pdf_pages_or_source_token_count",
+                      "input_token_price_jpy_per_1m"
+                    ],
+                    "route": "/v1/intelligence/precomputed/query",
+                    "reason_codes": [
+                      "precomputed_summary_available",
+                      "source_linked_records_returned",
+                      "no_request_time_llm",
+                      "no_live_web_search"
+                    ],
+                    "value_reasons": [
+                      "source_linked_records_returned",
+                      "precomputed_summary_available",
+                      "no_request_time_llm",
+                      "no_live_web_search"
+                    ],
+                    "message": "Use this bundle before sending long Japanese public-program sources to an LLM; it provides compact, source-linked context.",
+                    "context_savings": {
+                      "evaluated": false,
+                      "source_tokens_basis": "unknown",
+                      "provider_billing_not_guaranteed": true,
+                      "savings_claim": "estimate_not_guarantee"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {}
+        ],
+        "x-jpcite-agent-safe": true,
+        "x-jpcite-auth": "optional_x_api_key_for_paid_volume",
+        "x-jpcite-billing": {
+          "billable": true,
+          "billing_quantity_basis": "successful_call",
+          "billing_unit_type": "api_call",
+          "billing_units_formula": "1 unit per successful HTTP response",
+          "billing_units_per_successful_call": 1,
+          "free_quota_applies": true,
+          "unit_price_jpy_ex_tax": 3,
+          "unit_price_jpy_tax_included": 3.3,
+          "max_estimated_charge_jpy": "3.3 per successful call, tax included",
+          "plain_ja": "通常の有料利用では成功した1呼び出しあたり1 unit、税別3円・税込約3.30円です。失敗リクエストは課金対象外です。",
+          "plain_en": "In ordinary paid use, a successful call is 1 unit: JPY 3 ex-tax / about JPY 3.30 including tax. Failed requests are not billed."
+        },
+        "x-jpcite-safe-paid-execution": {
+          "preflight_sequence": [
+            "getUsageStatus",
+            "previewCost"
+          ],
+          "headers": {
+            "X-API-Key": "Use for repeated or paid volume.",
+            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
+            "Idempotency-Key": "Use on POST retries for the same paid operation.",
+            "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
+          },
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+        },
+        "x-jpcite-agent-priority": 1,
+        "x-jpcite-route-purpose": "compact_first_pass"
       }
     }
   },

@@ -39,10 +39,22 @@ def main() -> int:
             continue
         rel = f.relative_to(ROOT)
 
-        for term in banned:
-            for m in re.finditer(re.escape(term), text):
+        for item in banned:
+            # Backward-compat: accept plain string entries, but new form is
+            # {"pattern": "<regex>", "reason": "<label>"} with negative
+            # lookbehind/lookahead-aware regex that survives legitimate uses
+            # (完全従量, 必ず…ご確認, 個人保証人, No.1 を謳いません, ...).
+            if isinstance(item, str):
+                pattern = re.escape(item)
+                reason = "legacy"
+            else:
+                pattern = item["pattern"]
+                reason = item.get("reason", "banned")
+            for m in re.finditer(pattern, text):
                 ctx = text[max(0, m.start() - 30) : m.end() + 30].replace("\n", " ")
-                violations.append(f"{rel}:{m.start()} BANNED {term!r} ctx={ctx!r}")
+                violations.append(
+                    f"{rel}:{m.start()} BANNED[{reason}] {m.group(0)!r} ctx={ctx!r}"
+                )
 
         for key, (lo, hi) in ranges.items():
             for m in re.finditer(rf"{re.escape(key)}\D{{0,8}}(\d[\d,]+)", text):
