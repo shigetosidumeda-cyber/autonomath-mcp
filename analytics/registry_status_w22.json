@@ -1,0 +1,161 @@
+{
+  "_meta": {
+    "doc": "jpcite MCP registry presence snapshot",
+    "wave": "W22",
+    "as_of_utc": "2026-05-11T14:20:00Z",
+    "as_of_jst": "2026-05-11T23:20:00+09:00",
+    "generator": "Wave 22 AI registry attack",
+    "schema_version": 1,
+    "next_refresh_cron": "weekly Mon 09:00 JST via scripts/cron/ai_registry_status_refresh.py (planned)",
+    "states": ["LIVE", "pending", "not_submitted", "dead", "form_only"],
+    "package": {
+      "pypi": "autonomath-mcp",
+      "latest_pypi_version": "0.3.4",
+      "github_repo": "https://github.com/shigetosidumeda-cyber/autonomath-mcp",
+      "homepage": "https://jpcite.com",
+      "tool_count_default_gates": 139,
+      "tool_count_runtime": 146,
+      "tool_count_manifest": 139
+    }
+  },
+  "platforms": [
+    {
+      "id": "anthropic_official_registry",
+      "name": "Official MCP Registry (Anthropic / modelcontextprotocol.io)",
+      "state": "LIVE",
+      "url": "https://registry.modelcontextprotocol.io/v0/servers?search=autonomath",
+      "server_name": "io.github.shigetosidumeda-cyber/autonomath-mcp",
+      "versions_listed": ["0.3.2", "0.3.3", "0.3.4"],
+      "latest_version_listed": "0.3.4",
+      "latest_listed_at_utc": "2026-05-06T10:52:31.707051Z",
+      "is_latest_flag": true,
+      "tools_advertised": 120,
+      "publish_method": "mcp-publisher publish (github auth via gh token)",
+      "verified_at_w22_utc": "2026-05-11T14:18:00Z",
+      "next_publish_blocker": "v0.3.5 publish blocked on PyPI 0.3.5 artifact existence; registry validates PyPI 404 -> 400. Build+twine upload pending GHA release tag.",
+      "evidence_url": "https://registry.modelcontextprotocol.io/v0/servers?search=autonomath"
+    },
+    {
+      "id": "glama_ai",
+      "name": "Glama (glama.ai)",
+      "state": "pending",
+      "url": "https://glama.ai/mcp/servers/io.github.shigetosidumeda-cyber/autonomath-mcp",
+      "http_status": 404,
+      "api_probe": "https://glama.ai/api/mcp/v1/servers?q=jpcite -> 0 matches across pages",
+      "discovery_substrate_present": [
+        "GitHub topics: mcp-server / model-context-protocol / claude-mcp / smithery / glama / ai-agent-tools",
+        "server.json + smithery.yaml + mcp-server.json present at repo root",
+        "Dockerfile present",
+        "README badges + 5 registry references"
+      ],
+      "elapsed_since_initial_trigger_h": "~30",
+      "expected_eta": "24-72h auto-crawl window; if >72h, escalate via PR #6192 + Discord",
+      "manual_trigger_attempted": [
+        "POST https://glama.ai/api/mcp/v1/servers -> 404 (no public submit POST)",
+        "GitHub-Actions glama-bot comment on PR #6192 acknowledged submission requirement",
+        "Wave 22 follow-up comment posted requesting manual re-crawl trigger"
+      ],
+      "next_action": "wait 24h; if still 404 post-Wave-22, escalate via Glama Discord (glama.ai/discord)"
+    },
+    {
+      "id": "smithery_ai",
+      "name": "Smithery (smithery.ai)",
+      "state": "pending",
+      "url": "https://smithery.ai/server/@bookyou/jpcite",
+      "http_status": 403,
+      "alt_url_probe": "https://smithery.ai/server/@shigetosidumeda-cyber/autonomath-mcp -> 403",
+      "discover_api_probe": "https://api.smithery.ai/discover -> 404",
+      "yaml_id_set": "@bookyou/jpcite",
+      "discovery_substrate_present": [
+        "smithery.yaml ships id: @bookyou/jpcite + qualifiedName + 17 tags + metadata.version 0.3.4",
+        "mcp-server.json registry_metadata.smithery has owner/claim_evidence"
+      ],
+      "next_action": "smithery scan-repo runs on push events; verify smithery.yaml lint passes; if still 403 in 7d, contact via discord/twitter"
+    },
+    {
+      "id": "mcphub_dev",
+      "name": "mcphub.dev",
+      "state": "form_only",
+      "url": "https://mcphub.dev/submit/",
+      "http_status": 200,
+      "submission_method": "form (says: \"direct form submissions are coming soon\" — currently GitHub-PR fallback)",
+      "post_api_present": false,
+      "fields_required": ["server_name", "github_url", "description", "category", "language"],
+      "next_action": "open GitHub PR against mcphub directory repo (TODO: locate canonical repo) once form is live; meanwhile manifest already declares slug \"jpcite\""
+    },
+    {
+      "id": "mcp_so",
+      "name": "mcp.so",
+      "state": "pending",
+      "url": "https://mcp.so/server/jpcite/bookyou",
+      "http_status": 200,
+      "page_title": "- MCP Server",
+      "page_content_status": "page-template hit; no jpcite metadata visible in rendered HTML — likely SSR placeholder or queued state",
+      "submission_method": "https://mcp.so/submit (form, paid tier $39 expedites review)",
+      "next_action": "re-poll in 7d; if still placeholder, submit via free form"
+    },
+    {
+      "id": "awesome_mcp_punkpeye",
+      "name": "punkpeye/awesome-mcp-servers PR #6192",
+      "state": "pending",
+      "url": "https://github.com/punkpeye/awesome-mcp-servers/pull/6192",
+      "pr_state": "OPEN",
+      "pr_title": "Add jpcite (Japanese public-program evidence MCP) to Legal",
+      "reviewer_blocker": "glama-bot requires Glama listing live before merge (badge URL must resolve)",
+      "comments_count": 3,
+      "last_comment_utc": "2026-05-11T14:20:00Z",
+      "next_action": "block on Glama listing; re-comment with score badge URL once Glama is live"
+    },
+    {
+      "id": "pulsemcp",
+      "name": "PulseMCP (pulsemcp.com)",
+      "state": "pending",
+      "url": "https://www.pulsemcp.com/submit",
+      "http_status": 200,
+      "submission_method": "form + ingest from Official MCP Registry (daily ingest, weekly process)",
+      "expected_eta": "auto-mirrors Anthropic registry; should appear within 1-2 weeks of v0.3.4 publish (2026-05-06)",
+      "next_action": "verify presence at pulsemcp.com/servers/jpcite (or similar) on 2026-05-18"
+    },
+    {
+      "id": "mcpservers_org",
+      "name": "mcpservers.org (community awesome-list)",
+      "state": "not_submitted",
+      "url": "https://mcpservers.org/submit",
+      "http_status": 200,
+      "submission_method": "form (name + short_description + category + contact_email; $39 expedited tier optional)",
+      "next_action": "submit via free form on 2026-05-18 if Glama still pending (parallel-track surface)"
+    },
+    {
+      "id": "modelcontextprotocol_servers_readme",
+      "name": "modelcontextprotocol/servers README resources section",
+      "state": "not_submitted",
+      "url": "https://github.com/modelcontextprotocol/servers",
+      "policy": "README only links to community awesome-lists; direct PR to add server is rejected — register at registry.modelcontextprotocol.io instead",
+      "next_action": "no action; covered by Anthropic Official Registry (LIVE)"
+    },
+    {
+      "id": "mcpregistry_io",
+      "name": "mcpregistry.io",
+      "state": "dead",
+      "url": "https://mcpregistry.io",
+      "http_status": "timeout (28s+ x 2 attempts, Wave 20 + Wave 22)",
+      "verdict": "domain non-responsive; drop from active tracking"
+    }
+  ],
+  "summary": {
+    "LIVE": 1,
+    "pending": 5,
+    "not_submitted": 2,
+    "form_only": 1,
+    "dead": 1,
+    "total_tracked": 10
+  },
+  "ttl_actions": [
+    {"action": "re-check Glama listing", "due_utc": "2026-05-13T14:20:00Z"},
+    {"action": "re-check Smithery 403 -> 200", "due_utc": "2026-05-18T14:20:00Z"},
+    {"action": "re-check mcp.so for jpcite metadata", "due_utc": "2026-05-18T14:20:00Z"},
+    {"action": "re-check PulseMCP auto-ingest", "due_utc": "2026-05-18T14:20:00Z"},
+    {"action": "submit mcpservers.org form", "due_utc": "2026-05-18T14:20:00Z"},
+    {"action": "block on Glama LIVE then re-comment awesome-mcp PR #6192 with score badge", "due_utc": "2026-05-13T14:20:00Z"}
+  ]
+}
