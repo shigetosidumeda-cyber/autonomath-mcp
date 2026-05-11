@@ -34,9 +34,17 @@ jobs:
         uses: github/codeql-action/init@6825d5659bf007b85a0866e2d0f434aacf50de94 # v3.27.5
         with:
           languages: ${{ matrix.language }}
+          # Wave 20 B3: repo-local config for query-suite +
+          # paths-ignore. Flips to `security-and-quality` (≈+30%
+          # queries, -20% noise after filtering site/programs /
+          # tests / tools/offline).
+          config-file: ./.github/codeql/codeql-config.yml
 
       - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@6825d5659bf007b85a0866e2d0f434aacf50de94 # v3.27.5
+        with:
+          category: "/language:${{ matrix.language }}"
+          upload: true
 
       - name: Sentry alert on CodeQL failure
         if: failure()
