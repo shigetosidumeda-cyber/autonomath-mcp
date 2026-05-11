@@ -44,6 +44,9 @@ from jpintel_mcp.api.appi_disclosure import router as appi_disclosure_router
 from jpintel_mcp.api.audit import public_router as audit_public_router
 from jpintel_mcp.api.audit import router as audit_router
 from jpintel_mcp.api.audit_log import router as audit_log_router
+from jpintel_mcp.api.audit_workpaper_v2 import (  # Wave 43.2.4 Dim D
+    router as audit_workpaper_v2_router,
+)
 from jpintel_mcp.api.sitemap_audit import router as sitemap_audit_router  # Wave 41 Agent F
 from jpintel_mcp.api.autonomath import (
     health_router as autonomath_health_router,
@@ -2698,6 +2701,14 @@ def create_app() -> FastAPI:
     # third-party verification cannot be paywalled. See
     # api/audit_proof.py module docstring.
     _include_experimental_router(app, "jpintel_mcp.api.audit_proof")
+    # Wave 43.2.4 Dim D: POST /v1/audit/workpaper — year-end audit
+    # workpaper substrate composition for 税理士/会計士. 1 req = 5 unit
+    # (¥15 / 税込 ¥16.50). Rolls up intel_houjin_full +
+    # apply_eligibility_chain_am + cross_check_jurisdiction +
+    # amendment_alert into 1 call. AnonIpLimitDep mounted so anonymous
+    # probes burn the 3/日 quota (paid keys bypass via require_key).
+    # §52 / §47条の2 / §72 / §1 fenced in _disclaimer envelope.
+    app.include_router(audit_workpaper_v2_router, dependencies=[AnonIpLimitDep])
     # Wave 43.2.5 Dim E Verification trail: per-fact Ed25519 verify +
     # rule-based explanation paragraph (GET /v1/facts/{fact_id}/verify,
     # GET /v1/facts/{fact_id}/why). Mounted via experimental include so
