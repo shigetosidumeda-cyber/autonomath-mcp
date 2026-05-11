@@ -73,4 +73,12 @@
     <loc>https://jpcite.com/feed.rss</loc>
     <lastmod>2026-05-11</lastmod>
   </sitemap>
+  <sitemap>
+    <loc>https://jpcite.com/sitemap-structured.xml</loc>
+    <lastmod>2026-05-11</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://jpcite.com/llms-meta.json</loc>
+    <lastmod>2026-05-11</lastmod>
+  </sitemap>
 </sitemapindex>

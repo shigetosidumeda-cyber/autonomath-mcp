@@ -201,6 +201,22 @@
   ]
 }
 </script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "PayAction",
+  "name": "jpcite API キー従量チェックアウト",
+  "description": "従量 ¥3/billable unit (税込 ¥3.30) — Stripe Checkout 経由で API キー発行",
+  "target": {
+    "@type": "EntryPoint",
+    "urlTemplate": "https://jpcite.com/upgrade"
+  },
+  "price": "3",
+  "priceCurrency": "JPY",
+  "object": {"@id": "https://jpcite.com/#price"}
+}
+</script>
   <script type="application/ld+json" data-jpcite-jsonld="common">{
   "@context": "https://schema.org",
   "@graph": [
@@ -237,11 +253,18 @@
       "url": "https://jpcite.com",
       "inLanguage": "ja",
       "publisher": {"@id": "https://jpcite.com/#org"},
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://jpcite.com/search?q={query}",
-        "query-input": "required name=query"
-      }
+      "potentialAction": [
+        {
+          "@type": "SearchAction",
+          "target": {"@type": "EntryPoint", "urlTemplate": "https://api.jpcite.com/v1/programs/search?q={search_term_string}"},
+          "query-input": "required name=search_term_string"
+        },
+        {
+          "@type": "SearchAction",
+          "target": {"@type": "EntryPoint", "urlTemplate": "https://jpcite.com/search?q={search_term_string}"},
+          "query-input": "required name=search_term_string"
+        }
+      ]
     },
     {
       "@type": "Service",
@@ -707,6 +730,84 @@
      });
    })();
  </script>
+ </section>
+
+ <section aria-labelledby="credit-pack-title" style="margin-top:56px;">
+ <h2 id="credit-pack-title" class="section-title" style="font-size:22px;">クレジットパック — 匿名 3 req/日 超過時の選択肢</h2>
+ <p style="font-size:15px;line-height:1.7;margin:0 0 16px;color:var(--text-muted);max-width:820px;">
+ 匿名 3 req/IP/日 の無料枠を超えた時、 サブスクリプション (API キー) を作らずに買い切りで追加リクエストを購入できる ad-hoc クレジットパック。 単価は ¥3/req 据え置き、 パック内割引なし、 解約手続き不要。 階層プランではなく、 完全従量の補助路です。
+ </p>
+ <div class="value-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;max-width:920px;">
+ <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:16px 18px;background:var(--bg,#fff);">
+ <p style="font-size:13px;font-weight:700;margin:0 0 6px;color:var(--text-muted);">クレジットパック 100 req</p>
+ <p style="font-size:22px;font-weight:800;margin:0 0 4px;font-variant-numeric:tabular-nums;">¥300<small style="font-size:12px;font-weight:500;color:var(--text-muted);"> (税別)</small></p>
+ <p style="font-size:13px;color:var(--text-muted);margin:0;line-height:1.55;">100 req 分 / ¥3.00 per req 据え置き。 Stripe Checkout で 1 分入金。</p>
+ </div>
+ <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:16px 18px;background:var(--bg,#fff);">
+ <p style="font-size:13px;font-weight:700;margin:0 0 6px;color:var(--text-muted);">クレジットパック 500 req</p>
+ <p style="font-size:22px;font-weight:800;margin:0 0 4px;font-variant-numeric:tabular-nums;">¥1,500<small style="font-size:12px;font-weight:500;color:var(--text-muted);"> (税別)</small></p>
+ <p style="font-size:13px;color:var(--text-muted);margin:0;line-height:1.55;">500 req 分 / ¥3.00 per req 据え置き。 パック内割引なし、 階層なし。</p>
+ </div>
+ <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:16px 18px;background:var(--bg,#fff);">
+ <p style="font-size:13px;font-weight:700;margin:0 0 6px;color:var(--text-muted);">クレジットパック 1,000 req</p>
+ <p style="font-size:22px;font-weight:800;margin:0 0 4px;font-variant-numeric:tabular-nums;">¥3,000<small style="font-size:12px;font-weight:500;color:var(--text-muted);"> (税別)</small></p>
+ <p style="font-size:13px;color:var(--text-muted);margin:0;line-height:1.55;">1,000 req 分 / ¥3.00 per req 据え置き。 法人 / 個人どちらでも適格請求書発行。</p>
+ </div>
+ </div>
+ <p style="margin:14px 0 0;font-size:14px;color:var(--text);line-height:1.7;max-width:820px;">
+ <strong>取得方法:</strong> POST <code>/v1/billing/credit/anon/purchase</code> で Stripe Checkout URL を取得 → 入金後にクレジットコードが発行され、 X-Credit-Pack ヘッダで以降の req に充当。 サブスクリプション (¥3/req metered) と並行運用可能で、 既存 API キー保有者にも公開されています。
+ </p>
+ <p style="margin:8px 0 0;font-size:13px;color:var(--text-muted);line-height:1.7;max-width:820px;">
+ クレジットパックは買い切り。 期限なし、 返金なし (適格請求書 ¥X,XXX 1 本)。 残数は <code>GET /v1/billing/credit/balance</code> で確認できます。
+ </p>
+ </section>
+
+ <section aria-labelledby="volume-rebate-title" style="margin-top:40px;">
+ <h2 id="volume-rebate-title" class="section-title" style="font-size:22px;">ボリュームリベート — 月 1M req 超で自動適用</h2>
+ <p style="font-size:15px;line-height:1.7;margin:0 0 16px;color:var(--text-muted);max-width:820px;">
+ 単月で 1,000,000 billable units を超えた利用者には、 超過分について ¥0.50/req のリベートを <strong>遡及的に Stripe Credit Note で発行</strong> し、 翌月請求に自動充当します。 階層プラン ("最初の 1M は ¥3、 それ以降は ¥2.5" のような構造) ではありません。 全 req は一貫して ¥3 課金され、 リベートは別行で表示されます。
+ </p>
+ <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;overflow:hidden;max-width:920px;background:var(--bg,#fff);">
+ <table style="width:100%;border-collapse:collapse;font-size:14px;">
+ <thead>
+ <tr style="background:var(--bg-alt,#fafaf9);">
+ <th scope="col" style="text-align:left;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">月間 units</th>
+ <th scope="col" style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">通常請求 (税別)</th>
+ <th scope="col" style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">リベート (Credit Note)</th>
+ <th scope="col" style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">実効単価</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td style="padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">月 100,000 units</td>
+ <td style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);font-variant-numeric:tabular-nums;">¥300,000</td>
+ <td style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);font-variant-numeric:tabular-nums;">¥0</td>
+ <td style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);font-variant-numeric:tabular-nums;">¥3.00</td>
+ </tr>
+ <tr>
+ <td style="padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">月 1,000,000 units</td>
+ <td style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);font-variant-numeric:tabular-nums;">¥3,000,000</td>
+ <td style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);font-variant-numeric:tabular-nums;">¥0</td>
+ <td style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);font-variant-numeric:tabular-nums;">¥3.00</td>
+ </tr>
+ <tr>
+ <td style="padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">月 2,000,000 units</td>
+ <td style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);font-variant-numeric:tabular-nums;">¥6,000,000</td>
+ <td style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);font-variant-numeric:tabular-nums;">−¥500,000</td>
+ <td style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);font-variant-numeric:tabular-nums;">¥2.75</td>
+ </tr>
+ <tr>
+ <td style="padding:12px 14px;">月 5,000,000 units</td>
+ <td style="text-align:right;padding:12px 14px;font-variant-numeric:tabular-nums;">¥15,000,000</td>
+ <td style="text-align:right;padding:12px 14px;font-variant-numeric:tabular-nums;">−¥2,000,000</td>
+ <td style="text-align:right;padding:12px 14px;font-variant-numeric:tabular-nums;">¥2.60</td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ <p style="margin:14px 0 0;font-size:13px;color:var(--text-muted);line-height:1.7;max-width:820px;">
+ リベートは毎月 2 日 JST 03:00 (前月確定後) に <code>scripts/cron/volume_rebate.py</code> が自動発行。 申請不要、 連絡不要。 「階層プラン」 「年間最低利用量」 「上位プラン」 のような構造には移行しません — 単月超過時のみ発生する事後調整です。
+ </p>
  </section>
 
  <section style="margin-top:56px;">

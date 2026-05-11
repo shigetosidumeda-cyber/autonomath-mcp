@@ -65,6 +65,7 @@ import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote as urlquote
 
 _LOG = logging.getLogger("generate_law_pages")
 _JST = timezone(timedelta(hours=9))
@@ -454,14 +455,68 @@ def _build_jsonld(
             "@type": "AdministrativeArea",
             "name": "Japan",
         }
-    if related_count > 0:
-        legislation["potentialAction"] = {
-            "@type": "Action",
-            "name": "リンクされる公的支援制度を確認"
-            if lang == "ja"
-            else "View linked public-support programs",
-            "target": canonical + "#related-programs",
+    # Per-record SearchAction + ReadAction + related-program Action.
+    # SearchAction lets AI agents pivot from this law to (1) generic full-text
+    # law search, (2) programs that cite this law via its e-Gov law id.
+    e_gov_lawid = law["e_gov_lawid"] or ""
+    actions: list[dict[str, Any]] = [
+        {
+            "@type": "SearchAction",
+            "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": "https://api.jpcite.com/v1/laws/search?q={search_term_string}",
+            },
+            "query-input": "required name=search_term_string",
         }
+    ]
+    if e_gov_lawid:
+        actions.append(
+            {
+                "@type": "SearchAction",
+                "target": {
+                    "@type": "EntryPoint",
+                    "urlTemplate": (
+                        "https://api.jpcite.com/v1/programs/search"
+                        f"?law_id={urlquote(str(e_gov_lawid))}&q={{search_term_string}}"
+                    ),
+                },
+                "query-input": "required name=search_term_string",
+                "name": (
+                    "この法令を引用する公的制度を検索"
+                    if lang == "ja"
+                    else "Search public-support programs citing this law"
+                ),
+            }
+        )
+        actions.append(
+            {
+                "@type": "ReadAction",
+                "target": {
+                    "@type": "EntryPoint",
+                    "urlTemplate": (
+                        f"https://api.jpcite.com/v1/laws/{urlquote(str(e_gov_lawid))}"
+                    ),
+                },
+                "name": (
+                    "この法令の構造化レコードを取得"
+                    if lang == "ja"
+                    else "Retrieve the structured legislation record"
+                ),
+            }
+        )
+    if related_count > 0:
+        actions.append(
+            {
+                "@type": "Action",
+                "name": (
+                    "リンクされる公的支援制度を確認"
+                    if lang == "ja"
+                    else "View linked public-support programs"
+                ),
+                "target": canonical + "#related-programs",
+            }
+        )
+    legislation["potentialAction"] = actions
     # Drop empty optional keys so the JSON-LD stays compact.
     return {k: v for k, v in legislation.items() if v not in (None, "", [])}
 
@@ -763,7 +818,19 @@ _COMMON_JSONLD = (
     '"@id":"https://jpcite.com/#site",'
     '"name":"jpcite",'
     '"url":"https://jpcite.com",'
-    '"publisher":{"@id":"https://jpcite.com/#org"}'
+    '"publisher":{"@id":"https://jpcite.com/#org"},'
+    '"potentialAction":['
+    "{"
+    '"@type":"SearchAction",'
+    '"target":{"@type":"EntryPoint","urlTemplate":"https://api.jpcite.com/v1/laws/search?q={search_term_string}"},'
+    '"query-input":"required name=search_term_string"'
+    "},"
+    "{"
+    '"@type":"SearchAction",'
+    '"target":{"@type":"EntryPoint","urlTemplate":"https://api.jpcite.com/v1/programs/search?q={search_term_string}"},'
+    '"query-input":"required name=search_term_string"'
+    "}"
+    "]"
     "}"
     "]}"
     "</script>"
