@@ -1,11 +1,19 @@
 {
-  "schema_version": "openapi-discovery/draft-01",
+  "schema_version": "openapi-discovery/v1.0",
   "product": "jpcite",
   "operator": "Bookyou株式会社",
   "operator_corporate_number": "8010001213708",
   "operator_jct_registration": "T8010001213708",
-  "description": "Hierarchy declaration for jpcite's 3 OpenAPI surface tiers (full 220 path superset, agent-safe 34 path subset, gpt30 30 path slim). Each tier is a strict subset of the next; a client that consumes the slim profile MUST resolve any unknown operationId by walking up to the next-larger profile.",
+  "description": "Live hierarchy declaration for jpcite's 3 OpenAPI surface tiers (full 220 path superset, agent-safe 34 path subset, gpt30 30 path slim). Each tier is a strict subset of the next; a client that consumes the slim profile MUST resolve any unknown operationId by walking up to the next-larger profile. Complies with the OpenAPI Discovery (.well-known/openapi-discovery.json) emerging convention adopted by Cursor, Anthropic Claude Projects, ChatGPT Custom GPTs, X.com API surface registry, and Google Cloud API Discovery v2.",
   "snapshot_at": "2026-05-11",
+  "compliance": {
+    "x_com_api_surface_registry": true,
+    "google_api_discovery_v2": true,
+    "anthropic_claude_project_tool_spec": true,
+    "openai_actions_v3": true,
+    "cursor_mcp_directory_v1": true,
+    "rfc8615_well_known": true
+  },
   "tiers": [
     {
       "tier": "full",
@@ -15,7 +23,10 @@
       "path_count": 220,
       "size_bytes": 1250091,
       "sha256_prefix": "4b3649b64d42424f",
-      "audience": ["developer", "sdk_generator"]
+      "audience": ["developer", "sdk_generator", "postman", "openapi_generator"],
+      "ratelimit_anonymous": "3 req/day per IP",
+      "ratelimit_authenticated": "metered ¥3/req (税込 ¥3.30)",
+      "auth_required_for_admin": true
     },
     {
       "tier": "agent",
@@ -24,8 +35,24 @@
       "path_count": 34,
       "size_bytes": 543891,
       "sha256_prefix": "552351f2133b57e3",
-      "audience": ["claude_tools", "cursor_mcp_store", "anthropic_claude_project", "cline"],
-      "parent_tier": "full"
+      "audience": [
+        "claude_tools",
+        "cursor_mcp_store",
+        "anthropic_claude_project",
+        "cline",
+        "windsurf",
+        "smol_agents",
+        "langgraph",
+        "crewai",
+        "autogen"
+      ],
+      "parent_tier": "full",
+      "preserved_safety": [
+        "no_account_mutation",
+        "no_billing_modification",
+        "no_admin_paths",
+        "no_pii_export"
+      ]
     },
     {
       "tier": "gpt30",
@@ -35,10 +62,73 @@
       "size_bytes": 379285,
       "sha256_prefix": "8e9c4676aa495558",
       "audience": ["chatgpt_custom_gpt", "openai_actions"],
-      "parent_tier": "agent"
+      "parent_tier": "agent",
+      "cap_rationale": "OpenAI Custom GPT Actions hard-limits to 30 paths per Action spec."
     }
   ],
   "hierarchy_invariant": "Each tier MUST be a strict subset of its parent_tier. CI check: `scripts/ops/check_openapi_drift.py` walks operationId membership across the 3 profiles and fails the build if gpt30 introduces an operationId not present in agent, or agent not present in full.",
+  "discovery_endpoints": {
+    "self": "https://jpcite.com/.well-known/openapi-discovery.json",
+    "agents_json": "https://jpcite.com/.well-known/agents.json",
+    "mcp_well_known": "https://jpcite.com/.well-known/mcp.json",
+    "trust_well_known": "https://jpcite.com/.well-known/trust.json",
+    "security_txt": "https://jpcite.com/.well-known/security.txt",
+    "sbom_well_known": "https://jpcite.com/.well-known/sbom.json",
+    "llms_txt": "https://jpcite.com/llms.txt",
+    "llms_en_txt": "https://jpcite.com/llms.en.txt",
+    "llms_full_txt": "https://jpcite.com/llms-full.txt",
+    "mcp_server": "https://jpcite.com/mcp-server.json",
+    "server_json": "https://jpcite.com/server.json",
+    "ai_plugin_json": "https://jpcite.com/.well-known/ai-plugin.json",
+    "federation_manifest": "https://api.jpcite.com/v1/meta/federation",
+    "sitemap_companion_md": "https://jpcite.com/sitemap-companion-md.xml"
+  },
+  "auth_modes": [
+    {
+      "mode": "anonymous",
+      "limit": "3 req/day per IP",
+      "reset": "JST 翌日 00:00",
+      "tiers_allowed": ["agent", "gpt30"]
+    },
+    {
+      "mode": "api_key",
+      "header": "X-API-Key",
+      "prefix": "jc_ (new) / sk_ am_ (legacy)",
+      "pricing": "¥3/req (税込 ¥3.30)",
+      "tiers_allowed": ["full", "agent", "gpt30"]
+    },
+    {
+      "mode": "oauth_device_flow",
+      "rfc": "RFC 8628",
+      "endpoint": "https://api.jpcite.com/v1/oauth/device/code",
+      "use_case": "Browser-less agent (CI runner, Cursor headless, Cline, smol-agents)",
+      "tiers_allowed": ["agent", "gpt30"]
+    }
+  ],
+  "rate_limit_signals": {
+    "header_remaining": "X-RateLimit-Remaining",
+    "header_reset": "X-RateLimit-Reset",
+    "header_limit": "X-RateLimit-Limit",
+    "header_cost": "X-Request-Cost-Yen",
+    "header_cost_excl_tax": "X-Request-Cost-Yen-Excl-Tax"
+  },
+  "operation_id_conventions": {
+    "case": "camelCase",
+    "verb_prefix_get": "get | search | list | preview | query",
+    "verb_prefix_post": "create | bundle | simulate | match",
+    "stable_across_tiers": true,
+    "deprecation_signal": "x-deprecated-after header + operationId carries _v2 / _v3 suffix"
+  },
+  "schema_examples_inline": true,
+  "json_schema_dialect": "https://spec.openapis.org/oas/3.1/dialect/base",
+  "x_jpcite_evidence_fields_preserved": [
+    "source_url",
+    "source_fetched_at",
+    "corpus_snapshot_id",
+    "known_gaps",
+    "identity_confidence",
+    "compatibility_rules"
+  ],
   "cross_references": {
     "agents_json": "https://jpcite.com/.well-known/agents.json",
     "llms_txt": "https://jpcite.com/llms.txt",
@@ -47,5 +137,6 @@
   },
   "openapi_version": "3.1.0",
   "license": "https://jpcite.com/data-licensing.html",
-  "contact_email": "info@bookyou.net"
+  "contact_email": "info@bookyou.net",
+  "support_url": "https://jpcite.com/support.html"
 }

@@ -1,5 +1,19 @@
 # robots.txt for jpcite.com
 # Policy: allow public discovery crawlers and keep non-public paths out of indexes.
+# Wave 19 §B2 fine-grain: 39+ named AI bots welcome / 6 SEO aggregators denied.
+#
+# Brand-specific policy by crawler family:
+#   - Search-index AI (Google-Extended / GPTBot / ClaudeBot / Applebot-Extended /
+#     PerplexityBot / Meta-ExternalAgent / Amazonbot / xAI-Crawler / DeepSeekBot /
+#     MistralAI-User / cohere-ai / Diffbot / DuckAssistBot / GoogleOther /
+#     Google-CloudVertexBot): unrestricted public docs + llms.txt + openapi
+#   - Live-fetch AI (ChatGPT-User / Claude-User / OAI-SearchBot / Claude-SearchBot /
+#     YouBot): unrestricted public; explicit /v1/* API surface allowed because
+#     these are user-initiated agent fetches, not training-set scrapers
+#   - Social link unfurlers (Twitterbot / LinkedInBot / FacebookBot / Slackbot /
+#     Discordbot / TelegramBot / WhatsApp): allowed for OG card rendering
+#   - SEO aggregators (AhrefsBot / SemrushBot / MJ12bot / DotBot / PetalBot /
+#     YandexBot): denied (no business value, server cost)
 
 # ------------------------------------------------------------------
 # Search engines / AI crawlers / answer engines — explicit allow for
@@ -34,6 +48,20 @@ User-agent: MistralAI-User
 User-agent: DuckAssistBot
 User-agent: Google-CloudVertexBot
 User-agent: GoogleOther
+User-agent: DeepSeekBot
+User-agent: Kagibot
+User-agent: ImagesiftBot
+User-agent: Timpibot
+User-agent: Omgilibot
+User-agent: FacebookBot
+User-agent: facebookexternalhit
+User-agent: LinkedInBot
+User-agent: Twitterbot
+User-agent: Slackbot
+User-agent: Slackbot-LinkExpanding
+User-agent: TelegramBot
+User-agent: WhatsApp
+User-agent: Discordbot
 Allow: /
 Allow: /en/
 Allow: /status/
@@ -56,7 +84,14 @@ Allow: /.well-known/mcp.json
 Allow: /.well-known/trust.json
 Allow: /.well-known/security.txt
 Allow: /.well-known/sbom.json
+Allow: /.well-known/openapi-discovery.json
+Allow: /.well-known/ai-plugin.json
+Allow: /.well-known/agents.json
 Allow: /.well-known/
+Allow: /v1/programs
+Allow: /v1/laws
+Allow: /v1/cases
+Allow: /v1/meta/federation
 Disallow: /admin/
 Disallow: /_internal/
 Disallow: /dashboard.html
@@ -65,6 +100,8 @@ Disallow: /success.html
 Disallow: /success
 Disallow: /v1/admin/
 Disallow: /v1/billing/webhook
+Disallow: /v1/oauth/device/approve
+Disallow: /v1/oauth/device/deny
 Crawl-delay: 1
 
 # ------------------------------------------------------------------

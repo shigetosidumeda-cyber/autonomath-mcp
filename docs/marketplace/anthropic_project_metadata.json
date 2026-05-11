@@ -1,0 +1,150 @@
+{
+  "schema_version": "anthropic_project_marketplace/v1",
+  "submission_target": "https://www.anthropic.com/projects",
+  "submission_status": "draft_2026_05_11",
+  "operator": {
+    "company": "Bookyou株式会社",
+    "jct_registration": "T8010001213708",
+    "contact": "info@bookyou.net",
+    "country": "JP"
+  },
+  "project": {
+    "id": "jpcite",
+    "display_name": "jpcite — Japanese public-program evidence API",
+    "tagline_en": "Cite first-party Japanese government program data in Claude with source_url + fetched_at + known_gaps preserved.",
+    "tagline_ja": "クレームに先立って一次資料を引く。日本の補助金・税制・法令・判例・行政処分を、出典URL・取得日時・既知の欠落付きで Claude が引用できるエビデンスAPI。",
+    "category": "Research / Compliance / Finance",
+    "icon_url": "https://jpcite.com/assets/logo-512.png",
+    "icon_alt": "Blue 'JC' monogram on white, monospace, no decoration.",
+    "screenshots": [
+      {
+        "url": "https://jpcite.com/assets/screenshot_search.png",
+        "alt": "Claude desktop showing search_programs returning a 補助金 list with source_url + tier + 出典取得 date for each row.",
+        "caption_en": "search_programs returns first-party citations with provenance fields preserved.",
+        "caption_ja": "出典URL・取得日時・tier 付きで返るため、引用そのまま使える。"
+      },
+      {
+        "url": "https://jpcite.com/assets/screenshot_evidence_packet.png",
+        "alt": "Claude rendering an evidence packet with corpus_snapshot_id, known_gaps, identity_confidence fields.",
+        "caption_en": "get_evidence_packet preserves the audit fields agents need to defend citations.",
+        "caption_ja": "監査時に必要な corpus_snapshot_id / known_gaps / identity_confidence を維持。"
+      },
+      {
+        "url": "https://jpcite.com/assets/screenshot_houjin360.png",
+        "alt": "createCompanyPublicBaseline showing a 法人360 baseline with 法人番号 / 適格事業者 / 採択履歴 / 行政処分 in one envelope.",
+        "caption_en": "法人番号 一発で baseline + adoption history + enforcement record.",
+        "caption_ja": "法人番号で baseline+採択履歴+行政処分まで一発取得。"
+      }
+    ],
+    "example_prompts": [
+      {
+        "id": "smb_program_starter",
+        "title_en": "Find programs for a small construction firm in Saitama",
+        "title_ja": "埼玉県の中小建設業向け補助金を探す",
+        "prompt_en": "Use jpcite to find subsidy and tax-incentive programs eligible for a 法人 in Saitama, JSIC major D (建設), revenue ¥150M, employees 25. Cite source_url and source_fetched_at.",
+        "prompt_ja": "jpcite を使って、埼玉県の建設業 (JSIC大分類 D)、売上1.5億・従業員25名の法人が使える補助金・税制を探してください。各案件で source_url と source_fetched_at を必ず引用してください。"
+      },
+      {
+        "id": "tax_chain",
+        "title_en": "Full chain for 措置法42-4 (research tax credit)",
+        "title_ja": "措置法42-4 のフルチェーン",
+        "prompt_en": "Use jpcite tax_rule_full_chain to assemble the law / 通達 / 採択事例 chain for 措置法42-4 (試験研究費の特別控除). Output a JSON with each layer's source_url.",
+        "prompt_ja": "jpcite の tax_rule_full_chain で、措置法42-4 (試験研究費の特別控除) の 法令・通達・採択事例 を一連のチェーンとして組み立て、各層の source_url を含む JSON で出力してください。"
+      },
+      {
+        "id": "houjin_dd",
+        "title_en": "Due-diligence pack for a 法人番号",
+        "title_ja": "法人番号で DD パック生成",
+        "prompt_en": "Take 法人番号 8010001213708 (Bookyou株式会社). Use jpcite's createCompanyPublicBaseline + match_due_diligence_questions to generate a DD checklist (30+ items) tailored to its industry × adoption history.",
+        "prompt_ja": "法人番号 8010001213708 (Bookyou株式会社) について、jpcite の createCompanyPublicBaseline と match_due_diligence_questions を使って、業種×採択履歴に応じた DD チェックリスト (30件以上) を生成してください。"
+      },
+      {
+        "id": "law_amendment_watch",
+        "title_en": "Has 法人税法 §52 changed since 2024-04-01?",
+        "title_ja": "法人税法 §52 は 2024-04-01 以降に改正があったか",
+        "prompt_en": "Use jpcite track_amendment_lineage_am to check whether 法人税法 §52 has been amended since 2024-04-01. If yes, list each amendment with the snapshot id and source_url.",
+        "prompt_ja": "jpcite の track_amendment_lineage_am で、法人税法 §52 が 2024-04-01 以降に改正されているか確認してください。改正がある場合は、各改正の snapshot id と source_url を一覧で示してください。"
+      },
+      {
+        "id": "case_cohort_match",
+        "title_en": "Find similar 採択事例 for a target profile",
+        "title_ja": "ターゲット属性に近い採択事例を探す",
+        "prompt_en": "Use jpcite case_cohort_match to find ものづくり補助金 採択事例 for 製造業 (JSIC E), 従業員数 30-50, 関東. Show top 5 with adopted amount and source_url.",
+        "prompt_ja": "jpcite の case_cohort_match で、ものづくり補助金の採択事例のうち、製造業 (JSIC大分類 E)・従業員30-50・関東 に絞って類似事例を上位5件、採択金額と source_url 付きで示してください。"
+      }
+    ],
+    "supported_tools": [
+      "search_programs",
+      "get_evidence_packet",
+      "previewCost",
+      "createCompanyPublicBaseline",
+      "createCompanyFolderBrief",
+      "createCompanyPublicAuditPack",
+      "queryEvidencePacket",
+      "prescreenPrograms",
+      "match_due_diligence_questions",
+      "prepare_kessan_briefing",
+      "forecast_program_renewal",
+      "cross_check_jurisdiction",
+      "bundle_application_kit",
+      "apply_eligibility_chain_am",
+      "find_complementary_programs_am",
+      "simulate_application_am",
+      "track_amendment_lineage_am",
+      "program_active_periods_am",
+      "case_cohort_match",
+      "tax_rule_full_chain",
+      "policy_upstream",
+      "houjin_360",
+      "compatibility_matrix",
+      "succession_match",
+      "smb_starter_pack",
+      "subsidy_combo_finder",
+      "deadline_calendar",
+      "similar_cases",
+      "regulatory_prep_pack",
+      "subsidy_roadmap_3yr",
+      "pack_construction",
+      "pack_manufacturing",
+      "pack_real_estate"
+    ],
+    "mcp_install": {
+      "registry": "pypi",
+      "package": "autonomath-mcp",
+      "command": "uvx autonomath-mcp",
+      "registry_manifest": "https://jpcite.com/server.json",
+      "tool_manifest": "https://jpcite.com/mcp-server.json"
+    },
+    "openapi": {
+      "agent_safe": "https://jpcite.com/openapi.agent.json",
+      "full": "https://api.jpcite.com/v1/openapi.json",
+      "discovery": "https://jpcite.com/.well-known/openapi-discovery.json"
+    },
+    "auth": {
+      "anonymous": "3 req/day per IP, JST 翌日 00:00 リセット",
+      "api_key": "X-API-Key, prefix jc_ (new) / sk_ am_ (legacy)",
+      "pricing": "¥3/req 完全従量 (税込 ¥3.30)",
+      "oauth_device_flow": "https://api.jpcite.com/v1/oauth/device/code"
+    },
+    "data_freshness": {
+      "programs": "daily refresh + corpus_snapshot_id stamped on every row",
+      "laws": "monthly e-Gov sync; CC-BY 4.0",
+      "invoice_registrants": "monthly NTA bulk (PDL v1.0)",
+      "court_decisions": "weekly 裁判所HP sync"
+    },
+    "languages": ["ja", "en"],
+    "regions_supported": ["JP"],
+    "license": "https://jpcite.com/data-licensing.html",
+    "trust": "https://jpcite.com/.well-known/trust.json",
+    "support": {
+      "email": "info@bookyou.net",
+      "status_page": "https://jpcite.com/status/",
+      "docs": "https://jpcite.com/docs/agents.md"
+    }
+  },
+  "review_notes": {
+    "compliance": "100% organic acquisition; no paid ads. Solo operator. Zero-touch. Source provenance preserved on every record (source_url + source_fetched_at + corpus_snapshot_id). 法人番号 / 適格事業者 use NTA bulk under PDL v1.0; 法令 under e-Gov CC-BY.",
+    "safety": "All sensitive tools (§52 / §72 / §1 行政書士法) carry _disclaimer envelopes. No 申請書面 generation; only scaffold + 一次資料 URL.",
+    "no_llm_inside": "Production code never imports anthropic / openai / google.generativeai / claude_agent_sdk. Tools are pure SQL + Python; the LLM call is the customer's."
+  }
+}
