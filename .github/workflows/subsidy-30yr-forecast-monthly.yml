@@ -1,0 +1,49 @@
+name: subsidy-30yr-forecast-monthly
+
+on:
+  schedule:
+    - cron: "0 19 4 * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        required: false
+        default: "false"
+      max_programs:
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: subsidy-30yr-forecast-monthly
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+      - name: run
+        env:
+          AUTONOMATH_DB_PATH: ${{ github.workspace }}/autonomath.db
+          JPCITE_PREFLIGHT_ALLOW_MISSING_DB: "1"
+        run: |
+          DRY=""
+          if [ "${{ inputs.dry_run }}" = "true" ]; then DRY="--dry-run"; fi
+          MAX=""
+          if [ -n "${{ inputs.max_programs }}" ]; then MAX="--max-programs ${{ inputs.max_programs }}"; fi
+          if [ ! -s "$AUTONOMATH_DB_PATH" ]; then
+            python scripts/cron/forecast_30yr_subsidy_cycle.py --autonomath-db "$AUTONOMATH_DB_PATH" --dry-run --max-programs 5
+            exit 0
+          fi
+          python scripts/cron/forecast_30yr_subsidy_cycle.py --autonomath-db "$AUTONOMATH_DB_PATH" $DRY $MAX

@@ -83,6 +83,7 @@ from jpintel_mcp.api.exclusions import router as exclusions_router
 from jpintel_mcp.api.export import router as export_router
 from jpintel_mcp.api.extended_corpus import router as extended_corpus_router
 from jpintel_mcp.api.feedback import router as feedback_router
+from jpintel_mcp.api.precompute_axis4 import router as precompute_axis4_router  # Wave 34 Axis 4
 from jpintel_mcp.api.funding_stack import router as funding_stack_router
 from jpintel_mcp.api.funding_stage import router as funding_stage_router
 from jpintel_mcp.api.funnel_events import router as funnel_events_router
@@ -2098,6 +2099,10 @@ def create_app() -> FastAPI:
     # the handler with 402; we still mount under ``AnonIpLimitDep`` so
     # the 3/day IP cap protects the surface before the handler runs.
     app.include_router(export_router, dependencies=[AnonIpLimitDep])
+    # Wave 34 Axis 4: 5 precomputed-table read endpoints (portfolio_optimize
+    # / houjin risk / 30yr forecast / alliance opportunities / vec_search).
+    # All read-only against autonomath.db; AnonIpLimitDep applies before handler.
+    app.include_router(precompute_axis4_router, dependencies=[AnonIpLimitDep])
     # /v1/court/decisions/extended + /v1/industry/guidelines +
     # /v1/nta/tsutatsu/{id}/sections — Wave 32 extended corpus (Axis 1d+1e+1f).
     # Primary-source citations only (courts.go.jp / NDL / 10 ministries /
