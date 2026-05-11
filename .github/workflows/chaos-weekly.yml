@@ -28,6 +28,11 @@ on:
     - cron: '0 4 * * 6'      # Sat 04:00 UTC = Sat 13:00 JST
   workflow_dispatch:
 
+
+concurrency:
+  # Wave 43 noise reduction (2026-05-12): serialize same-ref runs.
+  group: chaos-weekly-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   chaos:
     runs-on: ubuntu-latest

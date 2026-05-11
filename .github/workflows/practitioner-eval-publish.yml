@@ -5,6 +5,11 @@ on:
     - cron: "30 18 * * 6"   # weekly Saturday 18:30 UTC = Sunday 03:30 JST
   workflow_dispatch: {}
 
+
+concurrency:
+  # Wave 43 noise reduction (2026-05-12): serialize same-ref runs.
+  group: practitioner-eval-publish-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 permissions:
   contents: write
 

@@ -7,8 +7,13 @@ name: lane-enforcer
 on:
   pull_request:
     branches: ["main"]
+    types: [opened, synchronize, reopened]  # Wave 43 noise reduction (2026-05-12)
   push:
     branches: ["main"]
+
+concurrency:
+  group: lane-enforcer-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read

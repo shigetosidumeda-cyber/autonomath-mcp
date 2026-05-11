@@ -2,6 +2,11 @@ name: og-images
 on:
   schedule: [{cron: '17 18 * * 0'}]
   workflow_dispatch: {}
+
+concurrency:
+  # Wave 43 noise reduction (2026-05-12): serialize same-ref runs.
+  group: og-images-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   generate:
     runs-on: ubuntu-latest

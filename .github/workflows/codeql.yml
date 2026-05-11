@@ -12,6 +12,11 @@ on:
     # Every Monday 03:00 UTC (== 12:00 JST). Weekly baseline scan even if no push.
     - cron: '0 3 * * 1'
 
+
+concurrency:
+  # Wave 43 noise reduction (2026-05-12): serialize same-ref runs.
+  group: codeql-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 permissions:
   actions: read
   contents: read

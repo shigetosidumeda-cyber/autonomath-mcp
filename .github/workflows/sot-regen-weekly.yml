@@ -17,6 +17,11 @@ on:
     - cron: '0 19 * * 0'   # Sun 19:00 UTC = Mon 04:00 JST
   workflow_dispatch:
 
+
+concurrency:
+  # Wave 43 noise reduction (2026-05-12): serialize same-ref runs.
+  group: sot-regen-weekly-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 permissions:
   contents: write
   pull-requests: write

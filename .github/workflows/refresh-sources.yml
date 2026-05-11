@@ -36,6 +36,11 @@ on:
         required: false
         default: 'false'
 
+
+concurrency:
+  # Wave 43 noise reduction (2026-05-12): serialize same-ref runs.
+  group: refresh-sources-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 permissions:
   contents: read
   issues: write   # for the tier-C dead-URL alert

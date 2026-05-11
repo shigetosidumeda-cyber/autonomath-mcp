@@ -16,6 +16,7 @@ name: acceptance-criteria-ci
 on:
   pull_request:
     branches: [main]
+    types: [opened, synchronize, reopened]  # Wave 43 noise reduction (2026-05-12)
     paths:
       - "db/**"
       - "api/**"

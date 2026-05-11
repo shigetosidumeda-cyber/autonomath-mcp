@@ -5,6 +5,11 @@ on:
     branches: ["main"]
   workflow_dispatch: {}
 
+
+concurrency:
+  # Wave 43 noise reduction (2026-05-12): serialize same-ref runs.
+  group: openapi-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 permissions:
   contents: write
   pull-requests: write

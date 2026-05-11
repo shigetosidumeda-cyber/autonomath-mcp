@@ -3,6 +3,11 @@ on:
   schedule:
     - cron: '0 0 * * 1'
   workflow_dispatch: {}
+
+concurrency:
+  # Wave 43 noise reduction (2026-05-12): serialize same-ref runs.
+  group: geo-eval-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   bench:
     runs-on: ubuntu-latest

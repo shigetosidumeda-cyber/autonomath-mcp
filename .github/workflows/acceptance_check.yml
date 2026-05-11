@@ -7,6 +7,11 @@ on:
       items:
         description: 'A1,B3,... or all'
         default: 'all'
+
+concurrency:
+  # Wave 43 noise reduction (2026-05-12): serialize same-ref runs.
+  group: acceptance-check-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   verify:
     runs-on: ubuntu-latest
