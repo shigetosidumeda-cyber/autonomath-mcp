@@ -8,6 +8,15 @@ See [`docs/versioning.md`](docs/versioning.md) for what counts as breaking.
 
 ## [Unreleased]
 
+## [0.3.5] — 2026-05-11 (Wave 23: PyPI republish + Anthropic MCP registry refresh)
+
+Manifest bump only. **No tool count change** (139 default-gate manifest), **no schema change**, **no public surface change**. Re-publishes to PyPI + refreshes the Anthropic MCP registry entry which had drifted from PyPI 0.3.4 LIVE while still reading 0.3.2.
+
+### Changed
+- `pyproject.toml`, `server.json`, `mcp-server.json`, `dxt/manifest.json`, `smithery.yaml`, `site/server.json`, `site/mcp-server.json` — version `0.3.4` → `0.3.5`
+- Triggers `release.yml` (PyPI OIDC trusted publishing) on `v0.3.5` tag push
+- Anthropic MCP registry refreshes via `mcp-registry-publish.yml` (GitHub OIDC) after PyPI propagates
+
 ### v3 wave 1-4 batch — 2026-05-11 (AI discovery / GEO / paywall / SOT seed / a11y baseline)
 
 PR #20 (`v3/wave-1-batch`) で 4 commit (`69592619` → `274cb976` → `66963947` → `a382239a`)、723 file 変更 + 59K insertions。AUTO 102 task (Wave 1=9 lane + Wave 2-4=11 lane) を 20+ 並列 subagent で実装。USER 24 task は `ops/USER_RUNBOOK.md` (CLI 9 + WEB 15)、後続作業は `ops/V3_WAVE5_BACKLOG.md` (10 項目)。
