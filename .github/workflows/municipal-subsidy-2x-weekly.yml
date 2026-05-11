@@ -1,22 +1,8 @@
 name: municipal-subsidy-2x-weekly
 
 # Wave 43.1.1: 市町村 1,700+ subsidy ETL v2 weekly run.
-#
-# Schedule: 03:30 UTC Saturday (Wave 37 cron schedule master pin). The
-# Wave 31 Axis 1a v1 cron runs Sunday 18:00 UTC against 67 自治体; this
-# v2 wave fans out to the full 1,700+ 市町村 cohort and writes into the
-# am_program_source_municipality_v2 bridge table on autonomath.db.
-#
-# Constraints
-# -----------
-#   * LLM call count: 0. Pure regex + httpx + bs4 + sqlite3 + Playwright fallback.
-#   * Aggregator banlist enforced inside the ETL script (CLAUDE.md
-#     データ衛生規約 — 1次資料 only).
-#   * 自治体 = 政府著作物 §13 著作権法 (再配信 OK).
-#
-# Chunked execution: matrix splits the seed list into 50 shards × ~36
-# municipalities each so failed shards retry independently. ~3h total
-# wall-time at concurrency 15.
+# Schedule: 03:30 UTC Saturday. Chunked 50 shards × ~36 muni each.
+# LLM call count: 0. Aggregator banlist enforced.
 
 on:
   schedule:
