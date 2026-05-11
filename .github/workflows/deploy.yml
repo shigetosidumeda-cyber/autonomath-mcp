@@ -127,7 +127,7 @@ jobs:
 
       - name: Hydrate jpintel seed DB for Docker build
         if: steps.fly-token.outputs.available == 'true'
-        timeout-minutes: 25
+        timeout-minutes: 60
         run: |
           set -euo pipefail
           mkdir -p data
