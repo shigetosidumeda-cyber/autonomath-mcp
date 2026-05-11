@@ -1,0 +1,70 @@
+---
+canonical: https://jpcite.com/cases/mirasapo_case_2026.html
+md_url: https://jpcite.com/cases/mirasapo_case_2026.md
+lang: ja
+category: cases
+slug: mirasapo_case_2026
+est_tokens: 408
+token_divisor: 4
+fetched_at: 2026-05-11T12:29:17+00:00
+brand: jpcite
+operator: Bookyou株式会社
+license: see https://jpcite.com/tos
+source_url: https://mirasapo-plus.go.jp/jirei-navi/case_studies/2026
+---
+
+# mirasapo_case_2026
+
+[本文へスキップ ](#main)
+
+[](/)
+
+# 2名の副業・兼業人材を活用し、金属加工をベースとした自社商品の売上拡大を目指す。 
+
+ミノル製作所株式会社 / 出典: [mirasapo-plus.go.jp ](https://mirasapo-plus.go.jp/jirei-navi/case_studies/2026)/ 出典取得: 2026-04-23T05:00:17Z 
+
+※採択事例は中小企業庁 jirei-navi の公表データを基に jpcite が機械可読化したものです。事例の最新情報は出典ページをご確認ください。 
+
+所在地 新潟県 業種 金属製品製造業 (JSIC E24) 公表日 2024-03-27 
+
+## 概要 
+
+副業・兼業人材それぞれのスキルを活かし、ウェブサイトやリーフレット等のデザインのブラッシュアップ及び効率的な営業手段の仕組みづくりを推進。今後は新商品開発・新店舗の立ち上げにも着手予定。事業の前進により、社員のモチベーション向上にも寄与。 
+
+## 成果・効果 
+
+- ## 既存商品の売上強化を行うための基盤作り 
+
+## 取り組みパターン 
+
+- 新商品・新サービス開発 
+- 販路開拓 
+- ブランディング 
+
+## 出典抜粋 
+副業・兼業人材それぞれのスキルを活かし、ウェブサイトやリーフレット等のデザインのブラッシュアップ及び効率的な営業手段の仕組みづくりを推進。今後は新商品開発・新店舗の立ち上げにも着手予定。事業の前進により、社員のモチベーション向上にも寄与。 / ## ①取組前 経営者の悩み、きっかけ等 ### 金属加工の請負での売上だけでなく、自社商品の売上を拡大したいという思いがあった。自社商品（フライパンや鍋）のECサイトを通じた販売強化と、数年前に企画したものの販売まで至っていない商品（アート系インテリア）の販路開拓に着手しようと考えていたが、社内でのノウハウやリソースが足りておらず、注力ができていない状況であった。 
+
+※上記は出典ページからの抜粋です。著作権は出典元に帰属します。 
+
+## 出典 
+
+本ページの内容は以下の一次出典に基づきます。最新の事例情報は出典ページから確認してください。 
+
+[mirasapo-plus.go.jp を開く ](https://mirasapo-plus.go.jp/jirei-navi/case_studies/2026)
+
+出典取得: 2026-04-23T05:00:17Z 
+
+## API で取得 
+
+本事例の機械可読データは REST / MCP の両方で取得できます。 
+curl -H "X-API-Key: YOUR_API_KEY" \ "https://api.jpcite.com/v1/cases/mirasapo_case_2026" 
+
+MCP クライアント (Claude Desktop / Cursor / Cline 等) では similar_cases(case_id="mirasapo_case_2026") で類似事例を取得できます。詳細は [API リファレンス ](/docs/api-reference)。 
+
+無料 3 リクエスト/日 (匿名 IP)。 [料金 ](/pricing.html)・ [API キー発行 ](/dashboard.html)
+
+本ページは自動生成された採択事例データのプレビューであり、法的助言・税務助言・申請代行を構成するものではありません。事例企業の現状や制度の最新内容は所管官公庁・自治体の一次情報を必ず確認してください。 
+
+© 2026 jpcite 
+
+本サイトは税理士法 §52 が規定する税務代理・税務書類作成・税務相談の提供を行いません。個別の税務判断は税理士・社労士・中小企業診断士等の有資格者にご相談ください。
