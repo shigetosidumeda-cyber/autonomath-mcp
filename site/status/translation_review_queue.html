@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="theme-color" content="#ffffff">
+<title>Translation Review Queue — jpcite</title>
+<meta name="description" content="jpcite 多言語 (en/zh/ko) coverage と manual review queue 状態。auto-translate なし、一次資料 only。operator が source URL を入れた行のみ promote する人手 review pipeline。">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://jpcite.com/status/translation_review_queue.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/status/translation_review_queue.html">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/status/translation_review_queue.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/status/translation_review_queue.html">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<style>
+  :root {
+    --accent: #1e3a8a;
+    --text: #111111;
+    --text-muted: #555555;
+    --border: #e5e5e5;
+    --bg: #ffffff;
+    --bg-alt: #f7f7f8;
+    --ok: #15803d;
+    --degraded: #b45309;
+    --breach: #b91c1c;
+    --unknown: #6b7280;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue",
+      "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI",
+      "Meiryo", sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+  .container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 32px 20px 64px;
+  }
+  header {
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+  h1 {
+    font-size: 28px;
+    margin: 0 0 8px 0;
+    color: var(--accent);
+  }
+  .meta-line {
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+  .lang-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .lang-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    background: var(--bg-alt);
+  }
+  .lang-card h2 {
+    font-size: 18px;
+    margin: 0 0 12px 0;
+    color: var(--accent);
+  }
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin: 6px 0;
+    font-size: 14px;
+  }
+  .stat-row .label {
+    color: var(--text-muted);
+  }
+  .stat-row .value {
+    font-weight: 600;
+  }
+  .coverage-bar {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 6px 0 12px 0;
+  }
+  .coverage-bar-fill {
+    height: 100%;
+    background: var(--ok);
+    transition: width 0.3s ease;
+  }
+  .coverage-bar-fill.low {
+    background: var(--degraded);
+  }
+  .coverage-bar-fill.zero {
+    background: var(--breach);
+  }
+  .queue-section {
+    margin: 32px 0;
+  }
+  .queue-section h2 {
+    font-size: 22px;
+    color: var(--accent);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+  }
+  .queue-explainer {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    font-size: 13px;
+  }
+  th, td {
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    background: var(--bg-alt);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  code {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    background: #f3f4f6;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 12px;
+  }
+  .footer-note {
+    margin-top: 32px;
+    color: var(--text-muted);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+  a {
+    color: var(--accent);
+  }
+  .disclaimer {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin: 16px 0;
+    font-size: 13px;
+    color: #7f1d1d;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>Translation Review Queue</h1>
+<div class="meta-line">
+4 言語 (ja-baseline / en / zh / ko) coverage と manual review queue 状態。
+Wave 41 Agent I 着地。
+<br>
+最終更新: <span id="generated-at">読み込み中…</span>
+</div>
+</header>
+
+<div class="disclaimer">
+<strong>運用方針:</strong> jpcite は <strong>auto-translate を一切しません</strong>。
+コーパスに乗る訳文は全て <em>一次資料</em> (e-Gov 日本法令外国語訳 CC-BY 4.0 / 各官庁 EN sub-path / JETRO zh-cn/zh-tw/kr 等) からの fetch のみです。
+取れなかった law / program は <code>data/*_review_queue.csv</code> に積まれ、operator が手動で 1 次資料 URL を貼り付けた行のみ next cron で promote されます。
+LLM API は呼びません (memory: <code>feedback_no_operator_llm_api</code>)。
+</div>
+
+<section>
+<h2 style="font-size:22px;color:var(--accent);border-bottom:1px solid var(--border);padding-bottom:8px;">
+Language coverage
+</h2>
+<div class="lang-grid" id="lang-grid">
+<!-- populated by JS -->
+</div>
+</section>
+
+<section class="queue-section">
+<h2>Manual review queue 入口</h2>
+<div class="queue-explainer">
+<strong>review queue 経路:</strong> 各 fill cron は primary EN/ZH/KO mirror を一通り叩いた後、
+取れなかった entry を CSV に追記します。
+operator は CSV の <code>operator_url</code> 列に 1 次資料 URL を埋め、
+次回 cron が CSV を読んで該当 row を fetch → DB へ書き込みます。
+何も書かない限り <strong>絶対に DB に load されない</strong> ので、
+誤訳・自動翻訳のリスクはゼロです。
+</div>
+<table>
+<thead>
+<tr>
+<th>Queue file</th>
+<th>Scope</th>
+<th>処理 cron</th>
+<th>備考</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data/programs_en_review_queue.csv</code></td>
+<td>programs (jpintel.db) で EN mirror が取れない row</td>
+<td><code>fill_programs_en_bulk.py</code></td>
+<td>operator が <code>operator_en_url</code> 列に 1 次資料 URL を入れる</td>
+</tr>
+<tr>
+<td><code>data/laws_zh_review_queue.csv</code></td>
+<td>am_law (autonomath.db) で ZH mirror が取れない row</td>
+<td><code>fill_laws_zh_v2.py</code></td>
+<td>外務省 / METI CN / JETRO zh-cn/zh-tw に当たって駄目だった law</td>
+</tr>
+<tr>
+<td><code>data/laws_ko_review_queue.csv</code></td>
+<td>am_law で KO mirror が取れない row</td>
+<td><code>fill_laws_ko_v2.py</code></td>
+<td>JETRO kr / MOFA 韓国 / JNTO kr に当たって駄目だった law</td>
+</tr>
+</tbody>
+</table>
+</section>
+
+<section class="queue-section">
+<h2>REST API</h2>
+<p>
+プログラム的に取得する場合は
+<code>GET /v1/translation/status?lang=en</code> /
+<code>?lang=zh</code> /
+<code>?lang=ko</code> /
+<code>?lang=all</code>
+を叩いてください。
+1 req = 1 unit (¥3) でメータリングされます。
+</p>
+<pre><code>$ curl https://api.jpcite.com/v1/translation/status?lang=en
+{
+  "languages": {
+    "en": {
+      "laws": {"total": 6493, "filled": ..., "coverage_pct": ...},
+      "articles": {"total": 353278, "filled": ..., "coverage_pct": ...},
+      "programs": {"total": 11601, "filled": ..., "coverage_pct": ...},
+      "review_queue_pending": ...,
+      "last_refreshed_at": "..."
+    }
+  },
+  "generated_at": "...",
+  "disclaimer": "..."
+}</code></pre>
+</section>
+
+<div class="footer-note">
+データソース: autonomath.db <code>am_law</code> + <code>am_law_article</code> + <code>am_law_translation_review_queue</code>,
+jpintel.db <code>programs</code>.
+クロール頻度: weekly (<code>.github/workflows/multilingual-weekly.yml</code>) + monthly audit (<code>multilingual-monthly-audit.yml</code>).
+著作権: 各 1 次資料の license を尊重 (e-Gov JLT は CC-BY 4.0, 官庁 EN サイトは政府著作物原則, JETRO public-domain).
+本ダッシュボードは <code>scripts/cron/generate_translation_dashboard.py</code> で再生成されます。
+</div>
+</div>
+
+<script>
+async function loadStatus() {
+  const grid = document.getElementById('lang-grid');
+  const genEl = document.getElementById('generated-at');
+  let data;
+  try {
+    const resp = await fetch('/v1/translation/status?lang=all', {
+      headers: {'Accept': 'application/json'},
+    });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    data = await resp.json();
+  } catch (err) {
+    grid.innerHTML = '<div class="lang-card"><h2>API unreachable</h2><div class="meta-line">' +
+      String(err) + '</div></div>';
+    genEl.textContent = 'fetch failed';
+    return;
+  }
+  genEl.textContent = data.generated_at || 'n/a';
+  const langs = data.languages || {};
+  const order = ['en', 'zh', 'ko'];
+  grid.innerHTML = '';
+  for (const lang of order) {
+    if (!langs[lang]) continue;
+    const v = langs[lang];
+    const lawsPct = (v.laws && v.laws.coverage_pct) || 0;
+    const articlesPct = (v.articles && v.articles.coverage_pct) || 0;
+    const programsPct = (v.programs && v.programs.coverage_pct) || 0;
+    const cls = (p) => p === 0 ? 'zero' : (p < 10 ? 'low' : '');
+    const card = document.createElement('div');
+    card.className = 'lang-card';
+    card.innerHTML = '<h2>' + lang.toUpperCase() + '</h2>' +
+      '<div class="stat-row"><span class="label">Laws (am_law)</span>' +
+      '<span class="value">' + (v.laws.filled || 0) + ' / ' + (v.laws.total || 0) +
+      ' (' + lawsPct + '%)</span></div>' +
+      '<div class="coverage-bar"><div class="coverage-bar-fill ' + cls(lawsPct) +
+      '" style="width: ' + Math.min(lawsPct, 100) + '%"></div></div>' +
+      '<div class="stat-row"><span class="label">Articles (am_law_article)</span>' +
+      '<span class="value">' + (v.articles.filled || 0) + ' / ' + (v.articles.total || 0) +
+      ' (' + articlesPct + '%)</span></div>' +
+      '<div class="coverage-bar"><div class="coverage-bar-fill ' + cls(articlesPct) +
+      '" style="width: ' + Math.min(articlesPct, 100) + '%"></div></div>' +
+      (lang === 'en' ?
+        '<div class="stat-row"><span class="label">Programs (jpintel)</span>' +
+        '<span class="value">' + (v.programs.filled || 0) + ' / ' + (v.programs.total || 0) +
+        ' (' + programsPct + '%)</span></div>' +
+        '<div class="coverage-bar"><div class="coverage-bar-fill ' + cls(programsPct) +
+        '" style="width: ' + Math.min(programsPct, 100) + '%"></div></div>' : '') +
+      '<div class="stat-row"><span class="label">Review queue pending</span>' +
+      '<span class="value">' + (v.review_queue_pending || 0) + '</span></div>' +
+      '<div class="stat-row"><span class="label">Last refreshed</span>' +
+      '<span class="value">' + (v.last_refreshed_at || 'n/a') + '</span></div>';
+    grid.appendChild(card);
+  }
+}
+loadStatus();
+setInterval(loadStatus, 5 * 60 * 1000);
+</script>
+</body>
+</html>
