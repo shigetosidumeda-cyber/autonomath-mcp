@@ -1,0 +1,145 @@
+name: axis2def-promote-weekly
+
+# Wave 35+ Axis 2d/2e/2f: weekly promote run for the 3 large quality-lift
+# ETLs. Each runs against the live autonomath.db via `flyctl ssh console`
+# so the 9.7GB DB never has to be downloaded to the GHA runner.
+#
+# Schedule:
+#   `0 18 * * 4` UTC == 03:00 JST Friday.
+#
+# 3 matrix jobs run in parallel. Chunking:
+#   * compat_matrix       : 50 chunks  ×    400 rows = 20,000 promotions cap
+#   * amount_condition    : 100 chunks ×  2,500 rows = 250,000 candidate scan
+#   * amendment_snapshot  : 30 chunks  ×    480 rows =  14,400 fill cap
+#
+# Required secrets:
+#   FLY_API_TOKEN — Fly.io deploy token with ssh access.
+#   SENTRY_DSN    — optional, routes cron failures to Sentry.
+#
+# Constraints (memory + CLAUDE.md):
+#   * No LLM SDK invocation.
+#   * No PRAGMA quick_check / integrity_check / VACUUM on 9.7GB DB.
+#   * Screenshot ≤1600px enforced inside _playwright_helper.py.
+#   * Aggregator URLs (noukaweb / hojyokin-portal / biz.stayway) refused.
+
+on:
+  schedule:
+    - cron: "0 18 * * 4"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run with --dry-run (no DB writes)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+      target:
+        description: "Restrict to one axis (blank = all 3)"
+        required: false
+        default: ""
+        type: choice
+        options:
+          - ""
+          - "compat_matrix"
+          - "amount_condition"
+          - "amendment_snapshot"
+      use_playwright:
+        description: "Enable Playwright fallback"
+        required: false
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+concurrency:
+  group: axis2def-promote-weekly
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        axis:
+          - name: compat_matrix
+            script: promote_compat_matrix_v2.py
+            chunks: 50
+            chunk_size: 400
+            target_flag: "--target-promotions"
+            extra_flags: "--max-fetch 200"
+          - name: amount_condition
+            script: verify_amount_conditions_v2.py
+            chunks: 100
+            chunk_size: 2500
+            target_flag: "--target-verified"
+            extra_flags: "--max-fetch 200 --body-verify"
+          - name: amendment_snapshot
+            script: datafill_amendment_snapshot_v2.py
+            chunks: 30
+            chunk_size: 480
+            target_flag: "--target-dated"
+            extra_flags: "--max-fetch 200 --body-fetch"
+    steps:
+      - name: Skip mismatched matrix axis (workflow_dispatch only)
+        if: ${{ inputs.target != '' && inputs.target != matrix.axis.name }}
+        run: |
+          echo "::notice::Skipping ${{ matrix.axis.name }} (target=${{ inputs.target }})."
+          echo "SKIP_AXIS=true" >> "$GITHUB_ENV"
+
+      - name: Install flyctl
+        if: ${{ env.SKIP_AXIS != 'true' }}
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Promote ${{ matrix.axis.name }}
+        if: ${{ env.SKIP_AXIS != 'true' }}
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          USE_PW: ${{ inputs.use_playwright || 'true' }}
+        run: |
+          set -euo pipefail
+          MODE="--apply"
+          if [ "${DRY_RUN}" = "true" ]; then MODE="--dry-run"; fi
+          PW_FLAG=""
+          if [ "${USE_PW}" = "true" ]; then PW_FLAG="--use-playwright"; fi
+          BASE_FLAGS="${MODE} ${PW_FLAG} ${{ matrix.axis.extra_flags }}"
+          TARGET_FLAG="${{ matrix.axis.target_flag }} ${{ matrix.axis.chunk_size }}"
+          CHUNKS="${{ matrix.axis.chunks }}"
+          echo "::group::${{ matrix.axis.name }} ${CHUNKS} chunks × ${{ matrix.axis.chunk_size }} rows"
+          for i in $(seq 1 "${CHUNKS}"); do
+            echo "::group::chunk ${i}/${CHUNKS}"
+            flyctl ssh console -a autonomath-api -C \
+              "/opt/venv/bin/python /app/scripts/etl/${{ matrix.axis.script }} ${BASE_FLAGS} ${TARGET_FLAG}" \
+              || echo "::warning::chunk ${i} non-zero exit, continuing"
+            echo "::endgroup::"
+            sleep 5
+          done
+          echo "::endgroup::"
+
+      - name: Sentry alert on cron failure
+        if: failure() && env.SKIP_AXIS != 'true'
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=axis2def-promote-weekly/1.0" \
+            -d "{\"level\":\"error\",\"logger\":\"github.actions.axis2def-promote-weekly\",\"platform\":\"other\",\"message\":\"axis2def-promote-weekly ${{ matrix.axis.name }} failed. Run ${GITHUB_RUN_ID}.\",\"tags\":{\"workflow\":\"axis2def-promote-weekly\",\"axis\":\"${{ matrix.axis.name }}\",\"run_id\":\"${GITHUB_RUN_ID}\"}}" \
+            || echo "::warning::Sentry alert POST failed; continuing."
