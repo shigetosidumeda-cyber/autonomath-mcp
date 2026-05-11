@@ -420,7 +420,11 @@ def check() -> list[str]:
                 if token in text:
                     failures.append(f"{rel} contains legacy token outside bridge:{token}")
 
-    llms_head = "\n".join(_read("site/llms.txt").splitlines()[:120])
+    # 2026-05-12 Wave 24: extended head window 120 → 200 lines so the pricing
+    # block (¥3.30 / 3 回) at lines ~143/146 falls inside the check. Wave 23
+    # citation guidance front-matter pushed the pricing section out of the
+    # first 120 lines.
+    llms_head = "\n".join(_read("site/llms.txt").splitlines()[:200])
     failures.extend(_failures_for_required(llms_head, LLMS_REQUIRED_TOKENS, "site/llms.txt head"))
 
     robots = _read("site/robots.txt")
