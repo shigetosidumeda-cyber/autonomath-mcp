@@ -1,0 +1,74 @@
+# status-probe-cron — 5 分間隔で site/status/* を再生成して commit + push.
+#
+# 旧 status_update.yml が status.json だけを更新するのに対し、 こちらは
+# status_probe.py の `--badge-out` も同時に焼いて site/status/badge.svg を
+# shields.io 互換 SVG として CF Pages から配信できる状態に保つ。
+# README の status バッジ + /status/ 静的フォールバック画像の両方が
+# 自動で最新化される。
+#
+# 設計メモ:
+#   * cron interval は GHA の最短 5 分 (1 分 cron は GHA で予約のみ、 実行は
+#     5-15 分にずれる)。 オーバーヘッド < 10 秒 / run、 月 ~8,640 run。
+#   * status_probe.py は exit 0 固定 (失敗状態は JSON に記録) なので
+#     job ステータスが赤になることはなく、 通知ノイズが発生しない。
+#   * git push は no-op fast-path: probe 結果が前回と同一なら commit 0 件で
+#     skip し、 履歴を埋めない。
+#   * STRIPE_SECRET_KEY は本 cron では設定しない (probe_billing は stub
+#     mode に縮退、 status.json に `stub: true` を書く)。 本番 5xx 検査は
+#     別 cron (billing-health-cron.yml) で実施し、 ここでは over-spec しない。
+#   * `concurrency` group で旧 status_update.yml と排他にし、 同時 push に
+#     よる non-fast-forward を予防する。
+
+name: status-probe-cron
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"   # 5 min interval (GHA 最短粒度)
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: status-probe
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: true
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run 5-component status probe (json + badge)
+        env:
+          JPCITE_API_BASE: https://api.jpcite.com
+          JPCITE_SITE_BASE: https://jpcite.com
+        run: |
+          python3 scripts/ops/status_probe.py \
+            --out site/status/status.json \
+            --badge-out site/status/badge.svg
+
+      - name: Commit + push if changed
+        run: |
+          git config user.email "info@bookyou.net"
+          git config user.name "jpcite-status-bot"
+          git add site/status/status.json site/status/badge.svg
+          if git diff --cached --quiet; then
+            echo "status: no diff, skipping commit"
+            exit 0
+          fi
+          git commit -m "status: auto probe $(date -u +%FT%TZ)"
+          # rebase against latest origin/main to avoid the rare race with
+          # status_update.yml (legacy) or human pushes during the 5-min tick.
+          git pull --rebase --autostash origin "${GITHUB_REF_NAME:-main}" || true
+          git push origin "HEAD:${GITHUB_REF_NAME:-main}"

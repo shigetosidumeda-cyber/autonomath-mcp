@@ -492,6 +492,60 @@
  </tbody>
  </table>
 
+ <h2>5-component スナップショット / 5-component snapshot</h2>
+ <p class="lead" style="margin-top:-4px;">
+ <code>scripts/ops/status_probe.py</code> が 5 分 cron で焼いた静的 JSON
+ (<a href="/status/status.json"><code>/status/status.json</code></a>) と
+ SVG バッジ (<a href="/status/badge.svg"><code>/status/badge.svg</code></a>) を表示します。
+ </p>
+ <table class="components" id="probe-components" aria-describedby="probe-meta">
+ <thead>
+ <tr>
+ <th>Component</th>
+ <th>状態 / Status</th>
+ <th>latency (ms)</th>
+ <th>詳細 / Detail</th>
+ </tr>
+ </thead>
+ <tbody id="probe-components-body">
+ <tr id="probe-row-api" data-key="api">
+ <td>api (healthz + deep)</td>
+ <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
+ <td class="detail">—</td>
+ <td class="detail">—</td>
+ </tr>
+ <tr id="probe-row-mcp" data-key="mcp">
+ <td>mcp (manifest + tools)</td>
+ <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
+ <td class="detail">—</td>
+ <td class="detail">—</td>
+ </tr>
+ <tr id="probe-row-billing" data-key="billing">
+ <td>billing (Stripe 24h)</td>
+ <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
+ <td class="detail">—</td>
+ <td class="detail">—</td>
+ </tr>
+ <tr id="probe-row-data-freshness" data-key="data-freshness">
+ <td>data-freshness (4 dataset)</td>
+ <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
+ <td class="detail">—</td>
+ <td class="detail">—</td>
+ </tr>
+ <tr id="probe-row-dashboard" data-key="dashboard">
+ <td>dashboard (#billing + magic-link)</td>
+ <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
+ <td class="detail">—</td>
+ <td class="detail">—</td>
+ </tr>
+ </tbody>
+ </table>
+ <p class="meta-row" id="probe-meta">
+ <span>cron snapshot: <code id="probe-snapshot-at">—</code></span>
+ <span>overall: <code id="probe-overall">—</code></span>
+ <span><img src="/status/badge.svg" alt="status badge" id="probe-badge" style="vertical-align:middle;height:20px;border-radius:3px;"></span>
+ </p>
+
  <p class="meta-row">
  <span>最終確認 / Last checked: <code id="last-checked">—</code></span>
  <span>API バージョン / API version: <code id="api-version">—</code></span>
@@ -570,6 +624,13 @@
 
   var API_HEALTH = "https://api.jpcite.com/v1/am/health/deep";
   var PYPI_PROJECT = "https://pypi.org/pypi/autonomath-mcp/json";
+  // status.json は status-probe-cron.yml (5 分 cron) が焼く 5-component の
+  // 静的スナップショット。 ブラウザを開いた瞬間に「最後の cron 結果」が
+  // 表示でき、 そこから live probe で再描画する 2 段構成にしている。
+  // 初期表示までの latency が API ヘルスチェック分縮むので、 ぱっと開いて
+  // ぱっと閉じるオペレーション (status を眺めるだけのユーザー) でも
+  // 正しい値が読める。
+  var STATUS_JSON = "/status/status.json";
   var REFRESH_MS = 30 * 1000;
 
   // Map a deep-health subcheck status string to our 3-state label.
@@ -779,10 +840,81 @@
     paintRow("row-mcp", "warn", "限定運用", "PyPI: " + msg.slice(0, 160));
   }
 
+  // --- 5-component cron snapshot wire ---------------------------------
+  //
+  // status_probe.py の出力 (site/status/status.json) を読み込み、 5 行の
+  // テーブルに描画する。 live probe (API_HEALTH) とは独立した経路で、
+  // cron が止まっても live 側が動いていれば overall は更新される。
+  function probeStatusJson() {
+    return fetch(STATUS_JSON + "?_=" + Date.now(), {
+      method: "GET",
+      mode: "same-origin",
+      credentials: "omit",
+      cache: "no-store",
+    }).then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    });
+  }
+
+  function applyStatusJson(snap) {
+    if (!snap || typeof snap !== "object" || !snap.components) {
+      return;
+    }
+    var rowMap = {
+      "api": "probe-row-api",
+      "mcp": "probe-row-mcp",
+      "billing": "probe-row-billing",
+      "data-freshness": "probe-row-data-freshness",
+      "dashboard": "probe-row-dashboard",
+    };
+    Object.keys(rowMap).forEach(function (k) {
+      var c = snap.components[k];
+      if (!c) return;
+      var tr = document.getElementById(rowMap[k]);
+      if (!tr) return;
+      var s = normStatus(c.status);
+      tr.classList.remove("ok", "warn", "down");
+      tr.classList.add(s);
+      var stCell = tr.querySelector(".status-cell .status-text");
+      if (stCell) stCell.textContent = labelOfShort(s);
+      var tds = tr.querySelectorAll("td.detail");
+      if (tds[0]) tds[0].textContent = (c.latency_ms != null) ? String(c.latency_ms) : "—";
+      if (tds[1]) {
+        var detail = [];
+        if (c.http) detail.push("http=" + c.http);
+        if (c.tools_count != null) detail.push("tools=" + c.tools_count + "/" + (c.tools_expected || "?"));
+        if (c.recurring_workflows != null) detail.push("workflows=" + c.recurring_workflows + "/" + (c.recurring_expected || "?"));
+        if (c.failed_events_24h != null) detail.push("failed_24h=" + c.failed_events_24h);
+        if (c.rate_5xx != null) detail.push("5xx=" + c.rate_5xx);
+        if (c.stub) detail.push("stub");
+        if (c.max_age_days != null) detail.push("max_age_d=" + c.max_age_days);
+        if (c.last_updated_at) detail.push("last_updated=" + c.last_updated_at);
+        if (c.has_billing_anchor != null) detail.push("billing_anchor=" + (c.has_billing_anchor ? "ok" : "miss"));
+        if (c.magic_link_ok != null) detail.push("magic_link=" + (c.magic_link_ok ? "ok" : "miss"));
+        if (c.error) detail.push("err=" + String(c.error).slice(0, 60));
+        tds[1].textContent = detail.length ? detail.join(" · ") : "—";
+      }
+    });
+    var sa = document.getElementById("probe-snapshot-at");
+    if (sa) sa.textContent = snap.snapshot_at || "—";
+    var ov = document.getElementById("probe-overall");
+    if (ov) ov.textContent = snap.overall || "—";
+    // bust the badge cache after each refresh so the SVG aligns with the JSON.
+    var badge = document.getElementById("probe-badge");
+    if (badge) badge.src = "/status/badge.svg?_=" + Date.now();
+  }
+
+  function applyStatusJsonError(_err) {
+    var sa = document.getElementById("probe-snapshot-at");
+    if (sa) sa.textContent = "(cron 不到達)";
+  }
+
   function refreshAll() {
     setPending();
     probeApi().then(applyApiResult).catch(applyApiError);
     probePypi().then(applyPypiResult).catch(applyPypiError);
+    probeStatusJson().then(applyStatusJson).catch(applyStatusJsonError);
   }
 
   // Site indicator: if this script runs at all, the site is reachable.
