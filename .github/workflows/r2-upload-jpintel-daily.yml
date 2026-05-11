@@ -1,0 +1,111 @@
+name: r2-upload-jpintel-daily
+
+# Daily 04:00 JST upload of /data/jpintel.db -> R2 canonical key
+# `autonomath-api/jpintel.db.gz` (Wave 20 hydrate fallback substrate).
+#
+# Why this exists
+# ---------------
+# `nightly-backup.yml` already mirrors jpintel.db to R2 every 03:17 JST, but
+# it does so via `flyctl ssh sftp get` from the GHA runner — the very SSH
+# tunnel that collapses on 200+ MB transfers (deploy run 25669988722). If
+# nightly-backup hits the same transient, the R2 mirror also stops
+# refreshing and the deploy.yml Wave 20 hydrate fallback gets stale.
+#
+# This workflow runs the upload from INSIDE the Fly machine via
+# `flyctl ssh console -C` + `scripts/cron/r2_upload_jpintel.sh`, which
+# uses `rclone` (already in the production image) for the R2 copy. No GHA
+# sftp involvement — the Fly outbound network path is decoupled from the
+# inbound SSH tunnel.
+#
+# Required secrets (already configured for nightly-backup.yml + deploy.yml):
+#   FLY_API_TOKEN, R2_ENDPOINT, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY,
+#   R2_BUCKET
+#
+# Output: s3://$R2_BUCKET/autonomath-api/jpintel.db.gz (+ .sha256 sidecar)
+
+on:
+  schedule:
+    # 19:00 UTC == 04:00 JST. Off-peak; well clear of the 18:17 UTC
+    # nightly-backup window so the two cron jobs do not contend for the
+    # same Fly SSH session.
+    - cron: "0 19 * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: r2-upload-jpintel-daily
+  cancel-in-progress: false
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Verify R2 secrets present (fail-closed)
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${R2_ENDPOINT:-}" ] \
+             || [ -z "${R2_BUCKET:-}" ] \
+             || [ -z "${R2_ACCESS_KEY_ID:-}" ] \
+             || [ -z "${R2_SECRET_ACCESS_KEY:-}" ]; then
+            echo "::error::R2 secrets missing — daily jpintel.db upload aborted."
+            exit 1
+          fi
+
+      - name: Run r2_upload_jpintel.sh on Fly machine
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          # The R2 secrets are exported as Fly app secrets (same set
+          # `r2_backup.sh` uses), so we do not need to plumb them through
+          # `ssh console -C` — the script reads them from the container's
+          # environment.
+          flyctl ssh console -a autonomath-api -C \
+            "/bin/bash /app/scripts/cron/r2_upload_jpintel.sh"
+
+      - name: Verify canonical R2 key exists and is fresh
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: |
+          set -euo pipefail
+          # head-object returns metadata; aws CLI exits non-zero if key
+          # missing. Then assert mtime is within the last 25 h (so a stale
+          # mirror trips the workflow loudly).
+          META=$(aws s3api head-object \
+            --bucket "$R2_BUCKET" \
+            --key "autonomath-api/jpintel.db.gz" \
+            --endpoint-url "$R2_ENDPOINT")
+          echo "$META"
+          LAST_MOD=$(echo "$META" | python3 -c "import json,sys; print(json.load(sys.stdin)['LastModified'])")
+          AGE_S=$(python3 -c "
+          import sys
+          from datetime import datetime, timezone
+          lm = '''$LAST_MOD'''.strip()
+          try:
+              dt = datetime.fromisoformat(lm.replace('Z','+00:00'))
+          except ValueError:
+              # boto returns RFC-1123 in some configs; fall back to email parser.
+              from email.utils import parsedate_to_datetime
+              dt = parsedate_to_datetime(lm)
+          age = (datetime.now(timezone.utc) - dt).total_seconds()
+          print(int(age))
+          ")
+          echo "canonical key age: ${AGE_S}s"
+          # 25 h = 90000 s window allows a normal daily run plus a missed
+          # cron grace period.
+          if [ "$AGE_S" -gt 90000 ]; then
+            echo "::error::canonical R2 key is stale (>25h) — upload failed or job did not actually refresh the key."
+            exit 1
+          fi
