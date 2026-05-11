@@ -40,3 +40,11 @@
 252_law_jorei_pref.sql
 255_enforcement_municipality.sql
 259_court_decisions_extended.sql
+
+# 2026-05-12 Wave 43.2.2 — Dim B legal_chain 5-layer 因果関係追跡.
+# am_legal_chain (anchor_program_id → 5 layers: budget / law / cabinet /
+# enforcement / case) + evidence_url 必須 (一次資料 only, aggregator banned)
+# + redistribute_ok-gated public view + run_log. Pure additive (CREATE
+# TABLE/INDEX/VIEW IF NOT EXISTS, CHECK constraints on layer/layer_name
+# pair + URL prefix). boot-time safe; idempotent on every boot.
+261_legal_chain_5layer.sql
