@@ -102,6 +102,7 @@ from jpintel_mcp.api.invoice_risk import (
     router as invoice_risk_router,
 )
 from jpintel_mcp.api.laws import router as laws_router
+from jpintel_mcp.api.laws_jorei import router as laws_jorei_router  # Wave 43.1.5
 from jpintel_mcp.api.legal import router as legal_router
 from jpintel_mcp.api.loan_programs import router as loan_programs_router
 from jpintel_mcp.api.logging_config import setup_logging
@@ -143,6 +144,9 @@ from jpintel_mcp.api.middleware.origin_enforcement import _MUST_INCLUDE
 from jpintel_mcp.api.openapi_agent import build_agent_openapi_schema
 from jpintel_mcp.api.policy_upstream import router as policy_upstream_router
 from jpintel_mcp.api.prescreen import router as prescreen_router
+from jpintel_mcp.api.program_agriculture import (
+    router as program_agriculture_router,
+)  # Wave 43.1.4
 from jpintel_mcp.api.programs import router as programs_router
 from jpintel_mcp.api.regions import router as regions_router
 from jpintel_mcp.api.response_sanitizer import ResponseSanitizerMiddleware
@@ -2097,6 +2101,9 @@ def create_app() -> FastAPI:
     # preview gate — both are first-class from launch. Anon-quota-gated
     # like programs/enforcement/etc. so the 3/day per-IP cap applies.
     app.include_router(laws_router, dependencies=[AnonIpLimitDep])
+    # Wave 43.1.5 — 都道府県条例 corpus (autonomath.db `am_law_jorei_pref`,
+    # migration 252). 47 都道府県 × ~100 ordinances, gov_public license.
+    app.include_router(laws_jorei_router, dependencies=[AnonIpLimitDep])
     app.include_router(court_decisions_router, dependencies=[AnonIpLimitDep])
     # 4-dataset expansion (2026-04-24): 入札 (bids) / 税制 ruleset /
     # 適格請求書発行事業者 (invoice registrants). First-class, anon-quota-gated
