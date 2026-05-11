@@ -1,0 +1,89 @@
+name: budget-subsidy-chain-daily
+
+# Axis 3d — 予算成立 → 補助金 announce chain detector.
+#
+# Schedule: 23:00 UTC == 08:00 JST.
+#
+# LLM call count: 0. Pure regex + httpx + sqlite3.
+
+on:
+  schedule:
+    - cron: "0 23 * * *"
+  workflow_dispatch:
+    inputs:
+      lag_days:
+        description: "Max lag between budget passage and subsidy announce (default 30)"
+        required: false
+        default: "30"
+      window_days:
+        description: "Days back to look for budget passings (default 60)"
+        required: false
+        default: "60"
+      dry_run:
+        description: "If true, fetch+parse only"
+        required: false
+        default: "false"
+
+concurrency:
+  group: budget-subsidy-chain-daily
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Detect budget-to-subsidy chains
+        env:
+          AUTONOMATH_DB_PATH: ${{ github.workspace }}/autonomath.db
+          INPUT_LAG_DAYS: ${{ github.event.inputs.lag_days }}
+          INPUT_WINDOW_DAYS: ${{ github.event.inputs.window_days }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+          JPCITE_PREFLIGHT_ALLOW_MISSING_DB: "1"
+        run: |
+          set -euo pipefail
+          LAG="${INPUT_LAG_DAYS:-30}"
+          WINDOW="${INPUT_WINDOW_DAYS:-60}"
+          DRY_FLAG=""
+          if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then
+            DRY_FLAG="--dry-run"
+          fi
+          if [ ! -f "${AUTONOMATH_DB_PATH}" ]; then
+            DRY_FLAG="--dry-run"
+          fi
+          python scripts/cron/detect_budget_to_subsidy_chain.py \
+            --lag-days "${LAG}" \
+            --window-days "${WINDOW}" \
+            ${DRY_FLAG}
+
+      - name: Open issue on driver failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `budget-subsidy-chain-daily failed ${new Date().toISOString()}`,
+              body: `Run: ${runUrl}\n\nLikely causes: shugiin/sangiin gian 5xx, DOM drift, both budget sources unavailable. See scripts/cron/detect_budget_to_subsidy_chain.py docstring.`,
+              labels: ["ingest-failure", "automation", "axis3"],
+            });
