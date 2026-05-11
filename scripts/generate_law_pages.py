@@ -462,34 +462,6 @@ def _build_jsonld(
             else "View linked public-support programs",
             "target": canonical + "#related-programs",
         }
-    # AEO Wave 18: explicit citation list so AI agents see both the primary
-    # e-Gov URL and the canonical jpcite layer URL when surfacing this law.
-    citation_list: list[dict[str, Any]] = []
-    if egov_url:
-        citation_list.append(
-            {
-                "@type": "CreativeWork",
-                "name": (
-                    "e-Gov 法令検索 (一次資料)"
-                    if lang == "ja"
-                    else "e-Gov Houreikensaku (primary source)"
-                ),
-                "url": egov_url,
-            }
-        )
-    citation_list.append(
-        {
-            "@type": "WebPage",
-            "name": (
-                "jpcite 機械可読化レイヤー"
-                if lang == "ja"
-                else "jpcite machine-readable layer"
-            ),
-            "url": canonical,
-        }
-    )
-    if citation_list:
-        legislation["citation"] = citation_list
     # Drop empty optional keys so the JSON-LD stays compact.
     return {k: v for k, v in legislation.items() if v not in (None, "", [])}
 
