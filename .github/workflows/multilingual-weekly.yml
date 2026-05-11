@@ -1,0 +1,220 @@
+name: multilingual-weekly
+
+# Wave 35 Axis 5 — weekly multilingual gap-fill ETL.
+#
+# Runs 4 fill scripts in parallel:
+#   - fill_laws_en_full.py   (autonomath.db)
+#   - fill_programs_en.py    (jpintel.db)
+#   - fill_laws_zh.py        (autonomath.db)
+#   - fill_laws_ko.py        (autonomath.db)
+#
+# Schedule: 04:00 UTC every Sunday (= 13:00 JST Sunday).
+# LLM call count: 0. Pure HTTP + sqlite + (optional, local) sentence-transformers.
+#
+# Memory-anchored constraints honored:
+#   - feedback_no_operator_llm_api: no Anthropic / OpenAI / Gemini call
+#   - feedback_collection_browser_first: HTTP fetch with Playwright fallback wire
+#   - feedback_no_fake_data: aggregator URLs (noukaweb / hojyokin-portal /
+#     biz.stayway) explicitly refused inside each fill script
+
+on:
+  schedule:
+    # 04:00 UTC every Sunday
+    - cron: "0 4 * * 0"
+  workflow_dispatch:
+    inputs:
+      max_laws:
+        description: "Per-script law cap (default 200; ETL throttling)"
+        required: false
+        default: "200"
+      max_programs:
+        description: "fill_programs_en cap (default 200)"
+        required: false
+        default: "200"
+      dry_run:
+        description: "If true, run --dry-run --no-network everywhere"
+        required: false
+        default: "false"
+      langs:
+        description: "Comma-separated subset: en,zh,ko (default all)"
+        required: false
+        default: "en,zh,ko"
+
+concurrency:
+  group: multilingual-weekly
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  fill_laws_en:
+    if: ${{ contains(github.event.inputs.langs || 'en,zh,ko', 'en') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run fill_laws_en_full
+        env:
+          AUTONOMATH_DB_PATH: ${{ github.workspace }}/autonomath.db
+          INPUT_MAX_LAWS: ${{ github.event.inputs.max_laws }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+          JPCITE_PREFLIGHT_ALLOW_MISSING_DB: "1"
+        run: |
+          set -euo pipefail
+          MAX="${INPUT_MAX_LAWS:-200}"
+          DRY_FLAG=""
+          if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then
+            DRY_FLAG="--dry-run --no-network"
+          fi
+          if [ ! -f "${AUTONOMATH_DB_PATH}" ]; then
+            DRY_FLAG="--dry-run --no-network"
+          fi
+          python scripts/cron/fill_laws_en_full.py \
+            --max-laws "${MAX}" --resume ${DRY_FLAG}
+
+  fill_programs_en:
+    if: ${{ contains(github.event.inputs.langs || 'en,zh,ko', 'en') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run fill_programs_en
+        env:
+          JPINTEL_DB_PATH: ${{ github.workspace }}/data/jpintel.db
+          INPUT_MAX_PROGRAMS: ${{ github.event.inputs.max_programs }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+          JPCITE_PREFLIGHT_ALLOW_MISSING_DB: "1"
+        run: |
+          set -euo pipefail
+          MAX="${INPUT_MAX_PROGRAMS:-200}"
+          DRY_FLAG=""
+          if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then
+            DRY_FLAG="--dry-run --no-network"
+          fi
+          if [ ! -f "${JPINTEL_DB_PATH}" ]; then
+            DRY_FLAG="--dry-run --no-network"
+          fi
+          python scripts/cron/fill_programs_en.py \
+            --max-programs "${MAX}" ${DRY_FLAG}
+
+  fill_laws_zh:
+    if: ${{ contains(github.event.inputs.langs || 'en,zh,ko', 'zh') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run fill_laws_zh
+        env:
+          AUTONOMATH_DB_PATH: ${{ github.workspace }}/autonomath.db
+          INPUT_MAX_LAWS: ${{ github.event.inputs.max_laws }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+          JPCITE_PREFLIGHT_ALLOW_MISSING_DB: "1"
+        run: |
+          set -euo pipefail
+          MAX="${INPUT_MAX_LAWS:-200}"
+          DRY_FLAG=""
+          if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then
+            DRY_FLAG="--dry-run --no-network"
+          fi
+          if [ ! -f "${AUTONOMATH_DB_PATH}" ]; then
+            DRY_FLAG="--dry-run --no-network"
+          fi
+          python scripts/cron/fill_laws_zh.py \
+            --max-laws "${MAX}" ${DRY_FLAG}
+
+  fill_laws_ko:
+    if: ${{ contains(github.event.inputs.langs || 'en,zh,ko', 'ko') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run fill_laws_ko
+        env:
+          AUTONOMATH_DB_PATH: ${{ github.workspace }}/autonomath.db
+          INPUT_MAX_LAWS: ${{ github.event.inputs.max_laws }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+          JPCITE_PREFLIGHT_ALLOW_MISSING_DB: "1"
+        run: |
+          set -euo pipefail
+          MAX="${INPUT_MAX_LAWS:-200}"
+          DRY_FLAG=""
+          if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then
+            DRY_FLAG="--dry-run --no-network"
+          fi
+          if [ ! -f "${AUTONOMATH_DB_PATH}" ]; then
+            DRY_FLAG="--dry-run --no-network"
+          fi
+          python scripts/cron/fill_laws_ko.py \
+            --max-laws "${MAX}" ${DRY_FLAG}
+
+  failure_alert:
+    needs: [fill_laws_en, fill_programs_en, fill_laws_zh, fill_laws_ko]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Open issue on multilingual ETL failure
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `multilingual-weekly failed ${new Date().toISOString()}`,
+              body: `Run: ${runUrl}\n\nLikely causes: ministry English page schema drift, JLT outage, DB volume not mounted on CI. See scripts/cron/fill_laws_*.py + fill_programs_en.py docstrings. NEVER add LLM API as fallback — Wave 35 Axis 5 is local-inference only.`,
+              labels: ["ingest-failure", "automation", "axis5", "multilingual"],
+            });
