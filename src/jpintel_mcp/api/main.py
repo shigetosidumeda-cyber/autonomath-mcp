@@ -2130,6 +2130,10 @@ def create_app() -> FastAPI:
     # migration 252). 47 都道府県 × ~100 ordinances, gov_public license.
     app.include_router(laws_jorei_router, dependencies=[AnonIpLimitDep])
     app.include_router(court_decisions_router, dependencies=[AnonIpLimitDep])
+    # Wave 43.1.10 — 裁判所判例 v2 拡張 (autonomath.db, mig 259, 17,935+).
+    app.include_router(court_decisions_v2_router, dependencies=[AnonIpLimitDep])
+    # Wave 43.1.9 — 行政処分 市町村 + 都道府県 (autonomath.db, mig 255, 1,815+).
+    app.include_router(enforcement_municipality_router, dependencies=[AnonIpLimitDep])
     # 4-dataset expansion (2026-04-24): 入札 (bids) / 税制 ruleset /
     # 適格請求書発行事業者 (invoice registrants). First-class, anon-quota-gated
     # like the other discovery surfaces.
