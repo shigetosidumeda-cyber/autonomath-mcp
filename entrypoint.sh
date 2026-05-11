@@ -427,7 +427,17 @@ if [ -f /app/scripts/schema_guard.py ]; then
     log "jpintel DB missing at $JPINTEL_DB — schema guard for jpintel skipped (migrate.py will create it)"
   fi
   if [ -s "$DB_PATH" ]; then
-    if [ -n "$DB_SHA256" ] && { sha_stamp_matches "$DB_PATH" "$DB_SHA256" || trusted_stamp_matches "$DB_PATH" "$DB_SHA256"; }; then
+    # 2026-05-11 Wave 18 root fix: integrity_check on 9.7GB autonomath.db hangs 30+ min,
+    # exceeding Fly health check grace. The autonomath.db is mutated in-place by cron ETL,
+    # so any baked-image stamp drifts. Production-sized DBs skip integrity_check; schema_guard
+    # below remains the structural correctness probe.
+    # Override with BOOT_ENFORCE_INTEGRITY_CHECK=1 for DR drills / restore-from-snapshot.
+    db_size_pre_check=$(file_size "$DB_PATH")
+    integrity_threshold="${AUTONOMATH_DB_MIN_PRODUCTION_BYTES:-5000000000}"
+    if [ "$db_size_pre_check" != "unknown" ] && [ "$db_size_pre_check" -ge "$integrity_threshold" ] 2>/dev/null && [ "${BOOT_ENFORCE_INTEGRITY_CHECK:-0}" != "1" ]; then
+      log "size-based integrity_check skip for $DB_PATH (size=$db_size_pre_check >= threshold=$integrity_threshold) — schema_guard remains structural probe (set BOOT_ENFORCE_INTEGRITY_CHECK=1 to override)"
+      integrity="ok"
+    elif [ -n "$DB_SHA256" ] && { sha_stamp_matches "$DB_PATH" "$DB_SHA256" || trusted_stamp_matches "$DB_PATH" "$DB_SHA256"; }; then
       log "trusted stamp match for $DB_PATH — skipping full integrity_check"
       integrity="ok"
     else
