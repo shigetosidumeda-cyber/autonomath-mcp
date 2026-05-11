@@ -1,0 +1,20 @@
+name: status_update
+on:
+  schedule: [{cron: '*/5 * * * *'}]  # 5 min cron (1 min は GHA で実用に重い)
+  workflow_dispatch: {}
+permissions: { contents: write }
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: python3 scripts/ops/status_probe.py
+      - name: Commit status.json if changed
+        run: |
+          git config user.email "info@bookyou.net"
+          git config user.name "jpcite-status-bot"
+          git add site/status/status.json
+          git diff --cached --quiet || (git commit -m "status: auto probe $(date -u +%FT%TZ)" && git push)

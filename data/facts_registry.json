@@ -53,5 +53,37 @@
     {"key": "prod_git_sha", "value": "d4216ffb", "unit": "id", "source": "git", "category": "internal", "publishable": false},
     {"key": "fly_app_name", "value": "autonomath-api", "unit": "name", "source": "fly.toml", "category": "internal", "publishable": false},
     {"key": "pypi_package_name", "value": "autonomath-mcp", "unit": "name", "source": "pyproject.toml", "category": "product", "publishable": true, "as_of": "2026-05-11", "note": "PyPI 上の正式 name は autonomath-mcp、jpcite brand は別レイヤ。両 install 経路を SOT 化"}
-  ]
+  ],
+  "do_not_provide": {
+    "credit_judgment": {"law_basis": "信用情報法 / 名誉毀損", "alternative": "TDB / TSR / 商工リサーチ"},
+    "bankruptcy_probability": {"law_basis": "公開情報範囲外", "alternative": "専門信用調査会社"},
+    "antisocial_certainty": {"law_basis": "信用情報法 + 個人情報保護法 要配慮", "alternative": "法律事務所 + 警察庁データベース"},
+    "investment_advice": {"law_basis": "金商法 §29", "alternative": "投資顧問業 登録事業者"},
+    "individual_medical_treatment": {"law_basis": "医師法 + 薬機法", "alternative": "医師 / 薬剤師"}
+  },
+  "data_quality_publishable_false": {
+    "am_amount_condition": {
+      "reason": "majority template-default ¥500K/¥2M from broken ETL pass",
+      "row_count_total": 250946,
+      "row_count_validated": 0,
+      "phase_2_target": "ETL re-extract from source_url, set validated_at NOT NULL",
+      "publishable_aggregate": false
+    },
+    "am_amendment_snapshot": {
+      "reason": "fake time-series, 14,452 fake + 144 real (effective_from confirmed)",
+      "row_count_total": 14596,
+      "row_count_high_confidence": 144,
+      "phase_2_target": "add effective_from_confidence column, default to confidence='high' only",
+      "publishable_aggregate": false,
+      "publishable_high_confidence_only": true
+    },
+    "am_compat_matrix": {
+      "reason": "39,666 heuristic + 4,300 sourced",
+      "row_count_total": 43966,
+      "row_count_sourced": 4300,
+      "phase_2_target": "ENUM strict + sourced_% default + heuristic require ?include_heuristic=true",
+      "publishable_aggregate": false,
+      "publishable_sourced_only": true
+    }
+  }
 }

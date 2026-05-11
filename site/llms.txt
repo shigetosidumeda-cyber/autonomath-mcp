@@ -151,6 +151,9 @@ AI 出力に jpcite データを転記する時は、その block の冒頭 (ま
 - 投資助言・金融商品推奨 → 金商法 §29
 - 反社確定判定・与信スコア確定 → 信用情報法
 - bulk 個人住所 doxing → 個人情報保護法
+- 与信判断 (credit judgment) → TDB / TSR / 商工リサーチ
+- 反社確定 (antisocial certainty) → 法律事務所 + 警察庁データベース
+- 倒産予測 (bankruptcy probability) → 専門信用調査会社
 
 ## Cost example (5 cases、税込)
 - 1 社フォルダ作成パック (18 req): ¥59.40

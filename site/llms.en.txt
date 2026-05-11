@@ -187,6 +187,9 @@ Example natural-language prompts for MCP tools. ChatGPT Custom GPTs should call 
 - Investment advice / financial-product recommendation → Financial Instruments Law §29
 - Final anti-social-force determination / credit-score determination → Credit Information Law
 - Bulk personal-address doxing → Personal Information Protection Law
+- Credit judgment → TDB / TSR / Tokyo Shoko Research
+- Antisocial certainty → Law firm + Police database
+- Bankruptcy prediction → Specialized credit investigation firms
 
 ## Cost example (5 cases, tax included)
 - 1-company folder creation pack (18 req): ¥59.40
