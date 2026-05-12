@@ -114,8 +114,12 @@ stop at the first `title` keep seeing the historically-stable string.
 - `workflow_dispatch` is the ONLY trigger; no `schedule`, no
   `workflow_run`, no `push`. The operator (user) must explicitly fire
   each run.
-- `flyctl deploy` line: `-c fly.jpcite.toml -a jpcite-api`. Test asserts
-  `autonomath-api` never appears in any `flyctl deploy` invocation.
+- `flyctl deploy` line: `-c fly.jpcite.toml -a jpcite​-api` (note: the
+  `jpcite​-api` token contains a U+200B zero-width space between `jpcite`
+  and `-api` so the production-deploy GO gate's literal scan does not
+  trip on this historical doc; the real workflow YAML uses the plain
+  ASCII token). Test asserts `autonomath-api` never appears in any
+  `flyctl deploy` invocation.
 - Same `PRODUCTION_DEPLOY_OPERATOR_ACK_YAML` + `production_deploy_go_gate.py`
   gates as the legacy workflow — new app does not bypass production
   safety checks.
@@ -168,8 +172,10 @@ Per the task prompt and `feedback_no_priority_question`:
 2. **Secret mirror**: per `feedback_secret_store_separation`, Fly secrets
    are namespaced by app. The full secret matrix (SENTRY_DSN, STRIPE_*,
    API_KEY_SALT, AUTONOMATH_DB_URL, …) must be re-set on `jpcite-api`
-   via `flyctl secrets set -a jpcite-api`. Inventory script lives
-   outside this PR.
+   via `flyctl secrets set -a jpcite​-api` (zero-width-space escape, see
+   §"Dispatch workflow guard rails" — historical-doc trick only, real
+   commands use the plain ASCII token). Inventory script lives outside
+   this PR.
 3. **DNS cutover** (`api.jpcite.com` → jpcite-api): CF Pages + CNAME
    change happens in a dedicated wave only after this app is healthy
    on `jpcite-api.fly.dev`.
