@@ -44,6 +44,8 @@ import os
 import sqlite3
 from typing import TYPE_CHECKING, Any
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
+
 if TYPE_CHECKING:
     from pathlib import Path
 
@@ -67,14 +69,14 @@ _PROGRAMS_FLOOR = 1
 def _api_base() -> str:
     raw = (
         os.environ.get("JPCITE_API_BASE")
-        or os.environ.get("AUTONOMATH_API_BASE")
+        or get_flag("JPCITE_API_BASE", "AUTONOMATH_API_BASE")
         or _DEFAULT_API_BASE
     )
     return raw.rstrip("/")
 
 
 def _api_key() -> str | None:
-    env_key = os.environ.get("JPCITE_API_KEY") or os.environ.get("AUTONOMATH_API_KEY")
+    env_key = get_flag("JPCITE_API_KEY", "AUTONOMATH_API_KEY")
     if env_key:
         return env_key
     # Device-flow auth stores the issued jpcite key in the OS keychain.
@@ -116,9 +118,8 @@ def _is_api_server_context() -> bool:
     fallback target, so honest path is to return data direct (or 503
     db_unavailable when DB missing).
     """
-    import os
 
-    return os.environ.get("JPINTEL_ENV", "").strip().lower() == "prod"
+    return (get_flag("JPCITE_ENV", "JPINTEL_ENV", "") or "").strip().lower() == "prod"
 
 
 def detect_fallback_mode(db_path: Path | None = None) -> bool:

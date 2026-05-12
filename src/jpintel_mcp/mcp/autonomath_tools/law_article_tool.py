@@ -17,15 +17,16 @@ Exposes two functions to AutonoMath customer LLMs:
 
 from __future__ import annotations
 
-import os
 import sqlite3
 from pathlib import Path
 from typing import Any, Literal
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
+
 from .error_envelope import make_error
 
 _REPO_ROOT = Path(__file__).resolve().parents[4]
-DB_PATH = os.environ.get("AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db"))
+DB_PATH = get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db"))
 Lang = Literal["ja", "en"]
 _EN_BODY_DISCLAIMER = (
     "Translations of Japanese laws on this page are courtesy translations. "

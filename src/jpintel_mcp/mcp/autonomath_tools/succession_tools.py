@@ -17,12 +17,12 @@ Cohort context: 後継者問題 / M&A consider する 中小企業. Pairs with
 from __future__ import annotations
 
 import logging
-import os
 import sqlite3
 from typing import Annotated, Any
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.api.succession import (
     _CLIFF_DATES,
     _DISCLAIMER,
@@ -45,12 +45,12 @@ from .error_envelope import make_error
 logger = logging.getLogger("jpintel.mcp.autonomath.succession")
 
 # Env gate matches sibling autonomath_tools modules. Default ON.
-_ENABLED = os.environ.get("AUTONOMATH_SUCCESSION_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_SUCCESSION_ENABLED", "AUTONOMATH_SUCCESSION_ENABLED", "1") == "1"
 
 
 def _open_jpintel_ro() -> sqlite3.Connection | dict[str, Any]:
     """Open jpintel.db read-only. Soft-fail to error envelope."""
-    db_path = os.environ.get("JPINTEL_DB_PATH", "data/jpintel.db")
+    db_path = get_flag("JPCITE_DB_PATH", "JPINTEL_DB_PATH", "data/jpintel.db")
     try:
         conn = sqlite3.connect(
             f"file:{db_path}?mode=ro",

@@ -52,13 +52,13 @@ from __future__ import annotations
 
 import datetime
 import logging
-import os
 import re
 import sqlite3
 from typing import Annotated, Any
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
 from .db import connect_autonomath
@@ -68,7 +68,7 @@ logger = logging.getLogger("jpintel.mcp.autonomath.lifecycle")
 
 # Env-gated registration. Default "1" (on) so launch ships with the tool;
 # flip to "0" for one-flag rollback if a regression surfaces.
-_ENABLED = os.environ.get("AUTONOMATH_LIFECYCLE_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_LIFECYCLE_ENABLED", "AUTONOMATH_LIFECYCLE_ENABLED", "1") == "1"
 
 # Disclaimer text appended to every response so downstream LLMs honest-
 # disclose. Per CLAUDE.md: "am_amendment_snapshot eligibility_hash never

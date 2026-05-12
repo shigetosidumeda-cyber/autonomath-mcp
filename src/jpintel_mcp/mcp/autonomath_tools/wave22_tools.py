@@ -57,12 +57,12 @@ import datetime
 import hashlib
 import json
 import logging
-import os
 import sqlite3
 from typing import Annotated, Any
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.config import settings
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
@@ -74,7 +74,7 @@ logger = logging.getLogger("jpintel.mcp.autonomath.wave22")
 
 # Env-gated registration (default on). Flip to "0" for one-flag rollback
 # if a regression surfaces post-launch.
-_ENABLED = os.environ.get("AUTONOMATH_WAVE22_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_WAVE22_ENABLED", "AUTONOMATH_WAVE22_ENABLED", "1") == "1"
 
 
 def make_error(*args: Any, **kwargs: Any) -> dict[str, Any]:

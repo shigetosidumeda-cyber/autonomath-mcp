@@ -43,12 +43,12 @@ from __future__ import annotations
 
 import datetime
 import logging
-import os
 import sqlite3
 from typing import Annotated, Any, Literal
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.config import settings
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
@@ -59,7 +59,7 @@ from .snapshot_helper import attach_corpus_snapshot
 logger = logging.getLogger("jpintel.mcp.autonomath.industry_packs")
 
 # Env-gated registration (default on). Flip to "0" to roll back without redeploy.
-_ENABLED = os.environ.get("AUTONOMATH_INDUSTRY_PACKS_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_INDUSTRY_PACKS_ENABLED", "AUTONOMATH_INDUSTRY_PACKS_ENABLED", "1") == "1"
 
 
 # ---------------------------------------------------------------------------
@@ -174,7 +174,7 @@ def _open_autonomath() -> sqlite3.Connection | dict[str, Any]:
 
 def _open_jpintel_ro() -> sqlite3.Connection | dict[str, Any]:
     """Open jpintel.db read-only via file URI."""
-    db_path = os.environ.get("JPINTEL_DB_PATH", "data/jpintel.db")
+    db_path = get_flag("JPCITE_DB_PATH", "JPINTEL_DB_PATH", "data/jpintel.db")
     try:
         conn = sqlite3.connect(
             f"file:{db_path}?mode=ro",

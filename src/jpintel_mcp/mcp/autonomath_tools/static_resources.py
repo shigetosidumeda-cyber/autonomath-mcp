@@ -3,15 +3,16 @@
 from __future__ import annotations
 
 import json
-import os
 from functools import lru_cache
 from pathlib import Path
+
+from jpintel_mcp._jpcite_env_bridge import get_flag
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 
 
 def _resolve_static_dir() -> Path:
-    configured = os.environ.get("AUTONOMATH_STATIC_DIR")
+    configured = get_flag("JPCITE_STATIC_DIR", "AUTONOMATH_STATIC_DIR")
     if configured:
         return Path(configured)
     volume_static = Path("/data/autonomath_static")

@@ -35,12 +35,12 @@ from __future__ import annotations
 
 import contextlib
 import logging
-import os
 import sqlite3
 from typing import Annotated, Any
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.config import settings
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
@@ -49,7 +49,7 @@ from .error_envelope import make_error
 logger = logging.getLogger("jpintel.mcp.autonomath.cross_reference")
 
 # Env gate. Default ON; flip to "0" for one-flag rollback without redeploy.
-_ENABLED = os.environ.get("AUTONOMATH_CROSS_REFERENCE_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_CROSS_REFERENCE_ENABLED", "AUTONOMATH_CROSS_REFERENCE_ENABLED", "1") == "1"
 
 
 # ---------------------------------------------------------------------------

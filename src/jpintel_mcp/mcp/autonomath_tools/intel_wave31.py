@@ -52,12 +52,12 @@ from __future__ import annotations
 
 import contextlib
 import logging
-import os
 import sqlite3
 from typing import Annotated, Any, Literal, cast
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.config import settings
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
@@ -68,7 +68,7 @@ logger = logging.getLogger("jpintel.mcp.autonomath.intel_wave31")
 
 # Env gate. Default ON so the 14 tools register on stdio boot; flip to "0"
 # for rollback without redeploy (FastMCP re-enumerates on next connect).
-_ENABLED = os.environ.get("AUTONOMATH_INTEL_COMPOSITE_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_INTEL_COMPOSITE_ENABLED", "AUTONOMATH_INTEL_COMPOSITE_ENABLED", "1") == "1"
 
 
 # ---------------------------------------------------------------------------

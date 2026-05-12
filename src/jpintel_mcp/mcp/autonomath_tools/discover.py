@@ -15,12 +15,12 @@ from __future__ import annotations
 
 import contextlib
 import logging
-import os
 import sqlite3
 from typing import Annotated, Any
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.config import settings
 from jpintel_mcp.mcp.autonomath_tools.error_envelope import make_error
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
@@ -29,7 +29,7 @@ logger = logging.getLogger("jpintel.mcp.am.discover")
 
 #: Env-gate. Default ON; flip "0" to disable without redeploy. Pairs with
 #: the global AUTONOMATH_ENABLED gate at the package boundary.
-_ENABLED = os.environ.get("AUTONOMATH_DISCOVER_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_DISCOVER_ENABLED", "AUTONOMATH_DISCOVER_ENABLED", "1") == "1"
 
 
 def _impl_discover_related(entity_id: str, k: int = 20) -> dict[str, Any]:

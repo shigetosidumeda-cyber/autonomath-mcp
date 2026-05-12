@@ -29,11 +29,11 @@ humans must catch (景表法 / 消費者契約法 fence).
 from __future__ import annotations
 
 import logging
-import os
 from typing import Annotated, Any
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.config import settings
 from jpintel_mcp.mcp.autonomath_tools.error_envelope import make_error
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
@@ -44,7 +44,7 @@ logger = logging.getLogger("jpintel.mcp.autonomath.funding_stack")
 # Env-gate matches the rest of autonomath_tools: default ON, flip "0" to
 # disable without redeploy. Pairs with the global AUTONOMATH_ENABLED gate
 # (checked at the package __init__ boundary).
-_ENABLED = os.environ.get("AUTONOMATH_FUNDING_STACK_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_FUNDING_STACK_ENABLED", "AUTONOMATH_FUNDING_STACK_ENABLED", "1") == "1"
 
 # Practical UX limit. C(5, 2) = 10 pairs aligns with the REST endpoint cap
 # (api/funding_stack.py::_MAX_PROGRAMS) so MCP and REST surfaces never

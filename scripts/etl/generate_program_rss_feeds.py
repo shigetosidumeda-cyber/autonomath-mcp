@@ -48,7 +48,6 @@ from __future__ import annotations
 
 import argparse
 import logging
-import os
 import re
 import sqlite3
 import sys
@@ -73,10 +72,11 @@ if str(REPO_ROOT) not in sys.path:
 if _SRC.is_dir() and str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
 
+from jpintel_mcp._jpcite_env_bridge import get_flag  # noqa: E402
 from scripts.static_bad_urls import load_static_bad_urls  # noqa: E402
 
 DEFAULT_JPINTEL_DB = REPO_ROOT / "data" / "jpintel.db"
-DEFAULT_AUTONOMATH_DB = Path(os.environ.get("AUTONOMATH_DB_PATH", str(REPO_ROOT / "autonomath.db")))
+DEFAULT_AUTONOMATH_DB = Path(get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(REPO_ROOT / "autonomath.db")))
 DEFAULT_OUT_DIR = REPO_ROOT / "site" / "rss"
 DEFAULT_DOMAIN = "jpcite.com"
 _STATIC_BAD_URLS = load_static_bad_urls()

@@ -27,7 +27,6 @@ import asyncio
 import hashlib
 import json
 import logging
-import os
 import re
 import sqlite3
 import sys
@@ -37,8 +36,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
-import httpx
-
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from scripts.etl._playwright_helper import fetch_with_fallback
 
 logger = logging.getLogger("jpcite.etl.fill_programs_municipality_2x")
@@ -71,7 +69,7 @@ DEFAULT_SEED_FALLBACK = _REPO_ROOT / "data" / "municipality_seed_urls.json"
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    p.add_argument("--db", default=os.environ.get("AUTONOMATH_DB_PATH", str(DEFAULT_DB_PATH)))
+    p.add_argument("--db", default=get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(DEFAULT_DB_PATH)))
     p.add_argument("--seed", default=None)
     p.add_argument("--limit", type=int, default=0)
     p.add_argument("--dry-run", action="store_true")
@@ -201,7 +199,7 @@ def extract_programs(body: str, source_url: str) -> list[dict[str, str]]:
 
 def derive_program_id(municipality_code: str, source_url: str, title: str) -> str:
     """Compute a stable, reproducible program_id."""
-    h = hashlib.sha256(f"{source_url}|{title}".encode("utf-8")).hexdigest()[:10]
+    h = hashlib.sha256(f"{source_url}|{title}".encode()).hexdigest()[:10]
     return f"muni:{municipality_code}:{h}"
 
 

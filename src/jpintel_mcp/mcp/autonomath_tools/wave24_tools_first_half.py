@@ -59,12 +59,12 @@ import datetime
 import hashlib
 import json
 import logging
-import os
 import sqlite3
 from typing import Annotated, Any, Literal
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.config import settings
 from jpintel_mcp.db.id_translator import normalize_program_id
 from jpintel_mcp.ingest.plain_japanese_dict import replace_plain_japanese
@@ -95,7 +95,7 @@ logger = logging.getLogger("jpintel.mcp.autonomath.wave24a")
 
 # Env-gated registration (default on). Flip to "0" for one-flag rollback
 # if a regression surfaces.
-_ENABLED = os.environ.get("AUTONOMATH_WAVE24_FIRST_HALF_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_WAVE24_FIRST_HALF_ENABLED", "AUTONOMATH_WAVE24_FIRST_HALF_ENABLED", "1") == "1"
 
 
 # ---------------------------------------------------------------------------

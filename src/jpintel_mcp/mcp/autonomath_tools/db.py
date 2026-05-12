@@ -43,6 +43,8 @@ import time
 from pathlib import Path
 from typing import Any, Literal
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
+
 logger = logging.getLogger("jpintel.mcp.new.db")
 
 # ---------------------------------------------------------------------------
@@ -128,7 +130,7 @@ def _open_ro(path: Path) -> sqlite3.Connection:
             # Image bakes vec0.so at /opt/vec0.so; env var set in Dockerfile:95.
             # vec0 module registration only — no DB writes. Graceful degrade:
             # load failure must not break MCP/REST autonomath tools.
-            _vec0 = os.environ.get("AUTONOMATH_VEC0_PATH")
+            _vec0 = get_flag("JPCITE_VEC0_PATH", "AUTONOMATH_VEC0_PATH")
             if _vec0 and Path(_vec0).exists():
                 try:
                     conn.enable_load_extension(True)
@@ -189,7 +191,7 @@ def connect_autonomath(
             f"(got {mode!r}). Write access must go through the ingest "
             f"pipeline in /tmp/autonomath_infra_2026-04-24/ingest/."
         )
-    path = Path(os.environ.get("AUTONOMATH_DB_PATH", str(AUTONOMATH_DB_PATH)))
+    path = Path(get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(AUTONOMATH_DB_PATH)))
     conn = getattr(_local, "autonomath", None)
     conn_path = getattr(_local, "autonomath_path", None)
     if conn is None or conn_path != path:
@@ -211,7 +213,7 @@ def connect_graph(
     """Return a read-only connection to ``graph.sqlite`` for the current thread."""
     if mode != "ro":
         raise ValueError(f"connect_graph: only mode='ro' supported in Wave 3 (got {mode!r}).")
-    path = Path(os.environ.get("AUTONOMATH_GRAPH_DB_PATH", str(GRAPH_DB_PATH)))
+    path = Path(get_flag("JPCITE_GRAPH_DB_PATH", "AUTONOMATH_GRAPH_DB_PATH", str(GRAPH_DB_PATH)))
     conn = getattr(_local, "graph", None)
     conn_path = getattr(_local, "graph_path", None)
     if conn is None or conn_path != path:

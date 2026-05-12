@@ -27,12 +27,12 @@ from __future__ import annotations
 
 import contextlib
 import logging
-import os
 import sqlite3
 from typing import Annotated, Any
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.config import settings
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
@@ -42,7 +42,7 @@ from .snapshot_helper import attach_corpus_snapshot
 logger = logging.getLogger("jpintel.mcp.autonomath.tax_chain")
 
 # Env gate. Default ON; flip to "0" to roll back without a redeploy.
-_ENABLED = os.environ.get("AUTONOMATH_TAX_CHAIN_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_TAX_CHAIN_ENABLED", "AUTONOMATH_TAX_CHAIN_ENABLED", "1") == "1"
 
 
 # ---------------------------------------------------------------------------

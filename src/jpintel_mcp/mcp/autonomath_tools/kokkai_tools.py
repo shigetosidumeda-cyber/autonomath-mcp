@@ -36,12 +36,12 @@ from __future__ import annotations
 
 import datetime
 import logging
-import os
 import sqlite3
 from typing import Annotated, Any
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.config import settings
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
@@ -52,7 +52,7 @@ from .snapshot_helper import attach_corpus_snapshot_with_conn
 logger = logging.getLogger("jpintel.mcp.autonomath.kokkai")
 
 # Env-gated registration (default ON). Flip to "0" for one-flag rollback.
-_ENABLED = os.environ.get("AUTONOMATH_KOKKAI_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_KOKKAI_ENABLED", "AUTONOMATH_KOKKAI_ENABLED", "1") == "1"
 
 
 # ---------------------------------------------------------------------------

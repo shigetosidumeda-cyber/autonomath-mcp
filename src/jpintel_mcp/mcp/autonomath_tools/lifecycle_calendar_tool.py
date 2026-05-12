@@ -56,12 +56,12 @@ from __future__ import annotations
 
 import datetime
 import logging
-import os
 import sqlite3
 from typing import Annotated, Any, Literal
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
 from .db import connect_autonomath
@@ -70,7 +70,7 @@ from .error_envelope import make_error
 logger = logging.getLogger("jpintel.mcp.autonomath.lifecycle_calendar")
 
 # Env-gated registration. Default is "1" (on); flip to "0" for rollback.
-_ENABLED = os.environ.get("AUTONOMATH_LIFECYCLE_CALENDAR_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_LIFECYCLE_CALENDAR_ENABLED", "AUTONOMATH_LIFECYCLE_CALENDAR_ENABLED", "1") == "1"
 
 # Window cap. 1 year max so p95 latency stays bounded — agents must
 # paginate by year for multi-year sweeps.

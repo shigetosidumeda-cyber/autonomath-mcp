@@ -35,7 +35,6 @@ import argparse
 import contextlib
 import json
 import logging
-import os
 import re
 import sqlite3
 import ssl
@@ -47,6 +46,8 @@ import urllib.request
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+
+from jpintel_mcp._jpcite_env_bridge import get_flag
 
 logger = logging.getLogger("jpcite.etl.ingest_appi_compliance")
 
@@ -108,7 +109,7 @@ def _configure_logging(verbose: bool = False) -> None:
 
 
 def _db_path() -> Path:
-    raw = os.environ.get("AUTONOMATH_DB_PATH")
+    raw = get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH")
     return Path(raw) if raw else DEFAULT_DB_PATH
 
 

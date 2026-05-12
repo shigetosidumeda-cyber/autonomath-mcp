@@ -25,12 +25,12 @@ from __future__ import annotations
 
 import contextlib
 import logging
-import os
 import sqlite3
 from typing import Annotated, Any
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.api.eligibility_check import (
     _DEFAULT_HISTORY_YEARS,
     _MAX_HISTORY_YEARS,
@@ -48,7 +48,7 @@ from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
 logger = logging.getLogger("jpintel.mcp.autonomath.eligibility_check")
 
-_ENABLED = os.environ.get("AUTONOMATH_ELIGIBILITY_CHECK_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_ELIGIBILITY_CHECK_ENABLED", "AUTONOMATH_ELIGIBILITY_CHECK_ENABLED", "1") == "1"
 
 _DISCLAIMER = (
     "Dynamic eligibility check is a deterministic join of public 行政処分 records "
@@ -59,7 +59,7 @@ _DISCLAIMER = (
 
 
 def _open_jpintel_ro() -> sqlite3.Connection | None:
-    path = os.environ.get("JPINTEL_DB_PATH", str(settings.db_path))
+    path = get_flag("JPCITE_DB_PATH", "JPINTEL_DB_PATH", str(settings.db_path))
     try:
         conn = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
     except sqlite3.OperationalError:

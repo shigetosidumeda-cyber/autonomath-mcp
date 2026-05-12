@@ -1,9 +1,17 @@
 #!/usr/bin/env python3
 """Wave 43.1.4: weekly aggregate over am_program_agriculture (mig 251). NO LLM."""
 from __future__ import annotations
-import argparse, contextlib, json, logging, os, sqlite3, sys
+
+import argparse
+import contextlib
+import json
+import logging
+import sqlite3
+import sys
 from datetime import UTC, date, datetime
 from pathlib import Path
+
+from jpintel_mcp._jpcite_env_bridge import get_flag
 
 logger = logging.getLogger("jpcite.cron.aggregate_program_agriculture_weekly")
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -28,7 +36,7 @@ def _configure_logging(verbose=False):
 
 
 def _db_path():
-    raw = os.environ.get("AUTONOMATH_DB_PATH")
+    raw = get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH")
     return Path(raw) if raw else DEFAULT_DB_PATH
 
 

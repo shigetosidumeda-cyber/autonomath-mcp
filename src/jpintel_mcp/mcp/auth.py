@@ -41,6 +41,8 @@ from typing import Any
 from urllib import error as urllib_error
 from urllib import request as urllib_request
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
+
 logger = logging.getLogger("jpintel.mcp.auth")
 
 # --------------------------------------------------------------------------- #
@@ -57,8 +59,7 @@ _DEFAULT_API_BASE = "https://api.jpcite.com"
 
 def _api_base() -> str:
     base = (
-        os.environ.get("JPCITE_API_BASE")
-        or os.environ.get("AUTONOMATH_API_BASE")
+        get_flag("JPCITE_API_BASE", "AUTONOMATH_API_BASE")
         or _DEFAULT_API_BASE
     )
     return base.rstrip("/")

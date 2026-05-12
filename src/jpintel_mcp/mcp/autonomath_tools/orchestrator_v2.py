@@ -45,11 +45,11 @@ Memory references
 from __future__ import annotations
 
 import logging
-import os
 from typing import Annotated, Any, Literal
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.config import settings
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
@@ -59,7 +59,7 @@ logger = logging.getLogger("jpintel.mcp.autonomath.orchestrator_v2")
 
 # Env-gated registration (default on). Flip to "0" for one-flag rollback
 # if a regression surfaces post-launch.
-_ENABLED = os.environ.get("AUTONOMATH_ORCHESTRATOR_V2_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_ORCHESTRATOR_V2_ENABLED", "AUTONOMATH_ORCHESTRATOR_V2_ENABLED", "1") == "1"
 
 # Mirror the REST router. Adding a new target requires touching BOTH the
 # REST routes (api/orchestrator_v2.py) and this list — keep them in sync.

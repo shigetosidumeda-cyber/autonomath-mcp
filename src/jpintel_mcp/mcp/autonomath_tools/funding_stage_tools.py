@@ -22,19 +22,19 @@ from __future__ import annotations
 
 import contextlib
 import logging
-import os
 import sqlite3
 from typing import Annotated, Any
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.mcp.autonomath_tools.error_envelope import make_error
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
 logger = logging.getLogger("jpintel.mcp.autonomath.funding_stage")
 
 # Env-gate: default ON, flip "0" to disable without a redeploy.
-_ENABLED = os.environ.get("AUTONOMATH_FUNDING_STAGE_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_FUNDING_STAGE_ENABLED", "AUTONOMATH_FUNDING_STAGE_ENABLED", "1") == "1"
 
 
 def _open_jpintel_ro() -> sqlite3.Connection | dict[str, Any]:
@@ -44,7 +44,7 @@ def _open_jpintel_ro() -> sqlite3.Connection | dict[str, Any]:
     boots with ``data/jpintel.db``. Soft-fail returns a make_error envelope
     when the file is missing — callers (REST + MCP) propagate as-is.
     """
-    db_path = os.environ.get("JPINTEL_DB_PATH", "data/jpintel.db")
+    db_path = get_flag("JPCITE_DB_PATH", "JPINTEL_DB_PATH", "data/jpintel.db")
     try:
         conn = sqlite3.connect(
             f"file:{db_path}?mode=ro",

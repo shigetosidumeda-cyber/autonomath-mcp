@@ -15,7 +15,6 @@ Returns: dict with
   - all_count: int
 """
 
-import os
 import re
 import sqlite3
 import unicodedata
@@ -23,10 +22,12 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
+
 from .error_envelope import make_error
 
 _REPO_ROOT = Path(__file__).resolve().parents[4]
-DB_PATH = os.environ.get("AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db"))
+DB_PATH = get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db"))
 
 _COVERAGE_SCOPE = (
     "1,185 公表済 行政処分 records (補助金不正受給 + 金商法 + 建築業法 等). "

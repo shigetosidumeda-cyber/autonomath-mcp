@@ -31,12 +31,12 @@ NO Anthropic API self-call — pure SQL / Python over autonomath.db.
 from __future__ import annotations
 
 import logging
-import os
 import sqlite3
 from typing import Annotated, Any
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.config import settings
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
@@ -51,7 +51,7 @@ from .wave22_tools import _cross_check_jurisdiction_impl
 logger = logging.getLogger("jpintel.mcp.autonomath.shihoshoshi")
 
 # Env-gated registration (default ON). Flip "0" for one-flag rollback.
-_ENABLED = os.environ.get("AUTONOMATH_SHIHOSHOSHI_PACK_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_SHIHOSHOSHI_PACK_ENABLED", "AUTONOMATH_SHIHOSHOSHI_PACK_ENABLED", "1") == "1"
 
 
 # ---------------------------------------------------------------------------
