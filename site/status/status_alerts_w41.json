@@ -1,5 +1,5 @@
 {
-  "snapshot_ts": "2026-05-12T17:12:52Z",
+  "snapshot_ts": "2026-05-12T19:54:38Z",
   "schema_version": 1,
   "max_severity": "critical",
   "alerts": [
@@ -7,36 +7,36 @@
       "axis": "rum",
       "level": "info",
       "summary": "no RUM samples in window",
-      "ts": "2026-05-12T17:12:52Z",
-      "id": "tag:jpcite.com,2026-05-12:rum-2026-05-12T17:12:52Z"
+      "ts": "2026-05-12T19:54:38Z",
+      "id": "tag:jpcite.com,2026-05-12:rum-2026-05-12T19:54:38Z"
     },
     {
       "axis": "audit",
       "level": "critical",
       "summary": "components DOWN: api, mcp",
-      "ts": "2026-05-12T17:12:52Z",
-      "id": "tag:jpcite.com,2026-05-12:audit-2026-05-12T17:12:52Z"
+      "ts": "2026-05-12T19:54:38Z",
+      "id": "tag:jpcite.com,2026-05-12:audit-2026-05-12T19:54:38Z"
     },
     {
       "axis": "six_axis",
       "level": "unknown",
       "summary": "six_axis_status.json not found",
-      "ts": "2026-05-12T17:12:52Z",
-      "id": "tag:jpcite.com,2026-05-12:six_axis-2026-05-12T17:12:52Z"
+      "ts": "2026-05-12T19:54:38Z",
+      "id": "tag:jpcite.com,2026-05-12:six_axis-2026-05-12T19:54:38Z"
     },
     {
       "axis": "freshness",
       "level": "unknown",
       "summary": "freshness rollup not found",
-      "ts": "2026-05-12T17:12:52Z",
-      "id": "tag:jpcite.com,2026-05-12:freshness-2026-05-12T17:12:52Z"
+      "ts": "2026-05-12T19:54:38Z",
+      "id": "tag:jpcite.com,2026-05-12:freshness-2026-05-12T19:54:38Z"
     },
     {
       "axis": "cron",
       "level": "unknown",
       "summary": "cron health snapshot not found",
-      "ts": "2026-05-12T17:12:52Z",
-      "id": "tag:jpcite.com,2026-05-12:cron-2026-05-12T17:12:52Z"
+      "ts": "2026-05-12T19:54:38Z",
+      "id": "tag:jpcite.com,2026-05-12:cron-2026-05-12T19:54:38Z"
     }
   ]
 }
