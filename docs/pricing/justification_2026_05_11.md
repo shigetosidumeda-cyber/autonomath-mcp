@@ -243,3 +243,29 @@
 - `data/facts_registry.json` — 公開数値 SOT (snapshot_at 2026-05-11、price_per_req_jpy_inc_tax=3.30)
 - `data/fence_registry.json` — 8 業法 fence canonical
 - `CLAUDE.md` — 8 cohort revenue model + データ衛生原則
+
+---
+
+## ADDENDUM Cost saving 新表現 (2026-05-12 user 指示反映)
+
+旧 ROI 倍率表現 (§A-4 約 1,000-3,600 倍、§D-1 9,000-30,000 倍、§D-2 1,700-5,000 倍、§D-3 640-1,900 倍、§D-4 6,400-32,000 倍、§D-5 数千倍以上、§G 600-30,000 倍) は historical reference として §A-G 本文に保持。本 ADDENDUM では **1 案件 (1 req) 単位の純 LLM token cost 直接差分** で再表現する。
+
+基準: 純 LLM (Claude Opus 4.7 入出力混合 ≈ 10K token in + 4K out @ $15/$75 per 1M token + 引用 reasoning 5x) ≈ **¥300/req**、jpcite 実料金 = **¥3/req fixed**。節約率は全業種一定で **99.00% off** (¥3 / ¥300 = 0.01)。本表は §A-G の ROI 倍率算定とは独立し、「同等出力を純 LLM token で出させた場合との単価差」のみを示す。quality / recall / latency / citation traceability / 8 業法 fence の構造的優位は §A-C 本文側で保持。
+
+### 業界別 realistic frequency × cost saving table
+
+| 業界 (§D 対応) | 代表 freq (req) | 純 LLM cost @¥300/req | jpcite @¥3/req | 節約 ¥ | 節約率 |
+|---|---|---|---|---|---|
+| 税理士 100 顧問先 月次 (§D-1) | 100 req/月 | ¥30,000 | ¥330 | **¥29,700** | 99.00% |
+| 行政書士 1 件 建設業 DD (§D-2) | 18 req/件 | ¥5,400 | ¥59 | **¥5,341** | 99.00% |
+| 中小企業診断士 1 件 経営診断 (§D-3) | 47 req/件 | ¥14,100 | ¥155 | **¥13,945** | 99.00% |
+| M&A advisor 1 件 DD (§D-4) | 47 req/件 | ¥14,100 | ¥155 | **¥13,945** | 99.00% |
+| 信用金庫 1 顧客 月次 watch (§D-5) | 12 req/月 | ¥3,600 | ¥40 | **¥3,560** | 99.00% |
+| 会計士 監査 1 社 1 期 (追加) | 30 req/期 | ¥9,000 | ¥99 | **¥8,901** | 99.00% |
+| 弁護士 法令 chain 1 query (追加) | 5 req/案件 | ¥1,500 | ¥17 | **¥1,483** | 99.00% |
+| 社労士 1 顧問先 月次 (追加) | 8 req/月 | ¥2,400 | ¥26 | **¥2,374** | 99.00% |
+| 司法書士 1 件 相続登記 (追加) | 6 req/件 | ¥1,800 | ¥20 | **¥1,780** | 99.00% |
+
+範囲: ¥1,483/案件 (弁護士 5 req) 〜 ¥29,700/月 (税理士 100 顧問先)、9 業界平均 ≈ ¥8,900。節約率 99.00% 一定。本表の節約は §A-3 の取りこぼし回避 ¥10-200 万 とは別軸 (token cost 差分のみ) であり、§A-G の 8 業法 fence / 一次出典固定 / 複数 DB 統合等の構造的優位は別途保持。
+
+**ADDENDUM Cost saving end** — Wave 46 tick5 cost saving SOT migration 2026-05-12
