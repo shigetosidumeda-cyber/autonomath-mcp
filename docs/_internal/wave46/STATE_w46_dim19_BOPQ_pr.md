@@ -164,5 +164,4 @@ Before push:
 
 ## PR
 
-PR# **TBD** — opened after lint/test + push complete. Update this
-field after gh CLI PR creation returns the number.
+PR# **#127** — https://github.com/shigetosidumeda-cyber/autonomath-mcp/pull/127
