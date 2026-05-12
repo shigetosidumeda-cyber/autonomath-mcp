@@ -237,6 +237,31 @@ def main(argv: list[str] | None = None) -> int:
         format="%(asctime)s %(levelname)s %(name)s %(message)s",
     )
     if not args.db.exists():
+        if args.dry_run:
+            # Wave 49 G3 cron hydrate fix: a dry-run plan must succeed even
+            # when the operator DB has not been hydrated yet. The script is
+            # read-only in this mode, so emit a placeholder payload and exit 0.
+            LOG.warning("DB not found (dry-run): %s", args.db)
+            print(
+                json.dumps(
+                    {
+                        "dim": "L",
+                        "wave": 47,
+                        "dry_run": True,
+                        "db_not_found_dry_run": True,
+                        "db": str(args.db),
+                        "purge_stats": {
+                            "expired_marked": 0,
+                            "context_deleted": 0,
+                            "step_log_orphan_deleted": 0,
+                            "step_log_aged_deleted": 0,
+                            "alive_remaining": 0,
+                        },
+                    },
+                    ensure_ascii=False,
+                )
+            )
+            return 0
         LOG.error("DB not found: %s", args.db)
         return 2
     payload = run(args.db, dry_run=args.dry_run)

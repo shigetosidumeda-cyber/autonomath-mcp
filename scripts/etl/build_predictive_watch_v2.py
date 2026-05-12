@@ -251,6 +251,28 @@ def main(argv: list[str] | None = None) -> int:
     )
     db_path = Path(args.db)
     if not db_path.exists():
+        if args.dry_run:
+            # Wave 49 G3 cron hydrate fix: a dry-run plan must succeed even
+            # when the operator DB has not been hydrated yet (CI runner,
+            # Fly cold start, etc.). The script is read-only in this mode,
+            # so emit a placeholder report and exit 0.
+            LOG.warning("DB not found (dry-run): %s", db_path)
+            print(
+                json.dumps(
+                    {
+                        "dim": "T",
+                        "wave": 47,
+                        "dry_run": True,
+                        "db_not_found_dry_run": True,
+                        "db": str(db_path),
+                        "queued": 0,
+                        "expired": 0,
+                        "by_type": {wt: 0 for wt in _WATCH_TYPES},
+                    },
+                    ensure_ascii=False,
+                )
+            )
+            return 0
         LOG.error("DB not found: %s", db_path)
         print(
             json.dumps(
