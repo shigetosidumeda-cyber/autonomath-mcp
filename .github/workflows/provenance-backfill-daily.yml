@@ -1,0 +1,126 @@
+name: provenance-backfill-daily
+
+# Wave 49 tick#3 — Dim O provenance backfill v2 prod cron.
+#
+# What it does:
+#   Runs `scripts/etl/provenance_backfill_6M_facts_v2.py` on the Fly
+#   production machine via flyctl ssh. The script walks
+#   `am_entity_facts` rows whose `am_fact_metadata` row is missing or
+#   has `source_doc IS NULL`, and idempotently UPSERTs the 4-axis
+#   explainability metadata (source_doc / extracted_at / verified_by /
+#   confidence band) into `am_fact_metadata` (migration 275) plus an
+#   append-only row into `am_fact_attestation_log`.
+#
+# Why 03:45 UTC daily (= 12:45 JST):
+#   * 30 min after `refresh-fact-signatures-weekly` (02:00 UTC Sun) and
+#     `anonymized-cohort-audit-daily` (03:15 UTC). Keeps the daily
+#     fact-layer cluster in a clean ladder.
+#   * Daily 1000-row batch x ~365 days converges the residual 6.12M-row
+#     am_entity_facts EAV store from migration 275 onward without ever
+#     re-touching am_fact_signature (memory:
+#     feedback_no_quick_check_on_huge_sqlite — 9.7 GB autonomath.db
+#     footgun, indexed cursor pagination only).
+#
+# Idempotent:
+#   The v2 ETL targets only `fact_id` rows where the metadata is
+#   missing OR `source_doc IS NULL`. Re-running on a converged corpus
+#   is a no-op.
+#
+# Required secrets:
+#   FLY_API_TOKEN
+#   (NO AUTONOMATH_FACT_SIGN_PRIVATE_KEY mirror needed on GHA — the
+#   private key lives on the Fly machine env, NOT as a GHA secret.
+#   When the key is absent the v2 script still backfills metadata with
+#   a 64-byte zero-pad placeholder sig that satisfies the migration 275
+#   length CHECK; real sign happens on the next weekly v1 walker tick.)
+#
+# Operator-LLM ban:
+#   The v2 ETL script contains NO LLM imports — pure stdlib
+#   (sqlite3 + cryptography Ed25519). Verified by
+#   `tests/test_no_llm_in_production.py` (scripts/etl/ is in
+#   PRODUCTION_DIRS). Memory: `feedback_no_operator_llm_api`.
+#
+# Dim O audit linkage:
+#   Closes the **cron MISSING** axis of the Wave 49 dim 19 dim O audit.
+#   ETL Python landed upstream as
+#   `scripts/etl/provenance_backfill_6M_facts_v2.py` but workflow
+#   wiring was missing — this PR (Wave 49 tick#3) lands that wiring.
+#   See `docs/research/wave49/STATE_w49_prov_backfill_workflow_pr.md`.
+
+on:
+  schedule:
+    # 03:45 UTC daily == 12:45 JST.
+    - cron: "45 3 * * *"
+  workflow_dispatch:
+    inputs:
+      max_rows:
+        description: "Cap rows backfilled in one run (default 1000)"
+        required: false
+        default: "1000"
+      chunk_size:
+        description: "Rows per commit batch (default 100)"
+        required: false
+        default: "100"
+      dry_run:
+        description: "If true, walk + plan but do NOT write am_fact_metadata"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+concurrency:
+  group: provenance-backfill-daily
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  provenance-backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Provenance backfill on Fly machine
+        id: run
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          INPUT_MAX_ROWS: ${{ github.event.inputs.max_rows }}
+          INPUT_CHUNK_SIZE: ${{ github.event.inputs.chunk_size }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          # Defaults match the daily-1000 cadence stated in the docstring.
+          MAX_ROWS="${INPUT_MAX_ROWS:-1000}"
+          CHUNK_SIZE="${INPUT_CHUNK_SIZE:-100}"
+          DRY_FLAG=""
+          if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then
+            DRY_FLAG="--dry-run"
+          fi
+
+          flyctl ssh console -a autonomath-api -C \
+            "/opt/venv/bin/python /app/scripts/etl/provenance_backfill_6M_facts_v2.py \
+              --max-rows ${MAX_ROWS} \
+              --chunk-size ${CHUNK_SIZE} \
+              ${DRY_FLAG}"
+
+      - name: Open issue on driver failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          BODY="ETL: \`scripts/etl/provenance_backfill_6M_facts_v2.py\`\nRun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\nSHA: \`${{ github.sha }}\`\n\nLikely causes:\n  * migration 275 (am_fact_metadata) not applied on the Fly volume's autonomath.db\n  * Fly machine /data/autonomath.db locked by a concurrent writer\n  * fly proxy ssh transient — re-run via workflow_dispatch with dry_run=true to confirm walk-only path\n\nVerify with:\n  flyctl ssh console -a autonomath-api -C 'sqlite3 /data/autonomath.db \"SELECT COUNT(*) FROM am_fact_metadata WHERE source_doc IS NULL;\"'\n  flyctl ssh console -a autonomath-api -C 'sqlite3 /data/autonomath.db \"SELECT COUNT(*) FROM am_entity_facts;\"'\n"
+          gh issue create \
+            --title "provenance-backfill-daily failed on $(date -u +%Y-%m-%d)" \
+            --label cron-failure \
+            --label automation \
+            --body "$BODY"
