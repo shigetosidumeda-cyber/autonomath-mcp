@@ -106,4 +106,7 @@ of this state doc once `gh pr create` returns.
 
 ## PR
 
-Will be opened with title `feat(wave46-dimF): fact_signature_v2 REST discovery surface (dim 19 sub-criterion)` against main.
+**PR #118** — https://github.com/shigetosidumeda-cyber/autonomath-mcp/pull/118
+Title: `feat(wave46-dimF): fact_signature_v2 REST discovery surface (dim 19 sub-criterion)`
+Branch: `feat/jpcite_2026_05_12_wave46_dim19_score_fix` → `main`
+Commit: `34ed48313`
