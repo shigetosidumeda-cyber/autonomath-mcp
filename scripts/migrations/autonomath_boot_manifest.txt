@@ -238,6 +238,7 @@
 279_copilot_scaffold.sql
 
 
+
 # Wave 47 Dim T — predictive service (pull -> push) storage overlay.
 # Adds am_predictive_watch_subscription (operator-internal subscription
 # table: subscriber_token_hash sha256 + watch_type enum
@@ -342,3 +343,17 @@
 # (CREATE TABLE/INDEX/VIEW IF NOT EXISTS); boot-time safe; idempotent
 # on every boot. Y3/req billing = one 2xx event row.
 286_realtime_signal.sql
+
+# 2026-05-12 Wave 47 — Dim A semantic_search legacy v1 storage layer.
+# am_semantic_search_v1_cache (write-rare top-K JSON result cache,
+# cache_id sha256 PK, embedding BLOB float32×384 = 1536 bytes,
+# top_k_results JSON array of {entity_id, score}, CHECK top_k 1-100
+# + embedding_dim > 0) + am_semantic_search_v1_log (append-only
+# search latency + hit log, search_id AUTOINCREMENT, cache_hit 0|1,
+# latency_ms >= 0). Pairs with scripts/etl/build_semantic_search_v1_cache.py
+# (top 100 canonical query prebuild — hash-fallback deterministic
+# embed, NO LLM API). DISJOINT from migration 260 (semantic_search v2
+# vec0/reranker): no name-space overlap, separate write paths. Pure
+# additive (CREATE TABLE/INDEX IF NOT EXISTS); boot-time safe;
+# idempotent on every boot. No LLM API ever invoked operator-side.
+284_semantic_search_v1.sql
