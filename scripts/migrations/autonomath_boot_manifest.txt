@@ -133,3 +133,13 @@
 # MATCH/vec_search capability). Idempotent on every boot; safe even if
 # am_* tables are absent (view body resolves at query time, not creation).
 269_create_jpcite_views.sql
+
+# 2026-05-12 Wave 46 dim 19 D-final — am_audit_workpaper snapshot cache.
+# am_audit_workpaper + v_audit_workpaper_cohort + run_log. Per-(houjin,
+# fiscal_year) cached envelope produced by the 5-source compose surface
+# (api/audit_workpaper_v2.py::_build_workpaper). Refreshed weekly by
+# scripts/etl/build_audit_workpaper_v2.py and surfaced via ¥3/req
+# cohort read endpoints. Pure additive (CREATE TABLE/INDEX/VIEW IF NOT
+# EXISTS, CHECK on fy range + counts ≥ 0, UNIQUE on (houjin_bangou,
+# fiscal_year)); boot-time safe; idempotent on every boot.
+270_audit_workpaper.sql

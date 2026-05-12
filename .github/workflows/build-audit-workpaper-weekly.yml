@@ -1,0 +1,116 @@
+name: build-audit-workpaper-weekly
+
+# Wave 46 dim 19 D-final — am_audit_workpaper snapshot cache builder.
+#
+# What it does:
+#   Runs `scripts/etl/build_audit_workpaper_v2.py` on the Fly production
+#   machine via flyctl ssh. The ETL walks active 法人 (≥1 採択 in the
+#   FY window) × {current FY, previous FY} and upserts the 5-source
+#   composed envelope into `am_audit_workpaper` (migration 270), so the
+#   lighter ¥3/req cohort read endpoint scans an O(1) cache rather than
+#   running the 5-fan-out live compose per row.
+#
+# Why Tuesday 04:00 UTC (= 13:00 JST):
+#   * Weekly cadence — the underlying 5 source tables (採択 / 行政処分 /
+#     適格事業者 / amendment_diff) refresh on cron windows that complete
+#     by Tuesday 03:00 UTC, so this cache rolls right after the source
+#     refresh wave.
+#   * 04:00 UTC stays clear of the 19:30 UTC daily-cron cluster the Fly
+#     machine already runs, and 03:00 UTC amendment_diff RSS slot.
+#
+# Required secrets:
+#   FLY_API_TOKEN
+#
+# Operator-LLM ban:
+#   The ETL script contains NO LLM imports — confirmed by
+#   `tests/test_no_llm_in_production.py` (scripts/etl/ is in
+#   PRODUCTION_DIRS). Memory `feedback_no_operator_llm_api`.
+
+on:
+  schedule:
+    # 04:00 UTC every Tuesday == 13:00 JST every Tuesday.
+    - cron: "0 4 * * 2"
+  workflow_dispatch:
+    inputs:
+      fiscal_year:
+        description: "Override FY (default = current + previous)"
+        required: false
+        default: ""
+      limit_houjin:
+        description: "Max 法人 to scan (default 20000)"
+        required: false
+        default: "20000"
+      dry_run:
+        description: "If true, compose but do NOT upsert"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+concurrency:
+  group: build-audit-workpaper-weekly
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  build-snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run am_audit_workpaper snapshot ETL on Fly machine
+        id: run
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          INPUT_FY: ${{ github.event.inputs.fiscal_year }}
+          INPUT_LIMIT: ${{ github.event.inputs.limit_houjin }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          FY_FLAG=""
+          if [ -n "${INPUT_FY:-}" ]; then
+            FY_FLAG="--fiscal-year ${INPUT_FY}"
+          fi
+          LIMIT="${INPUT_LIMIT:-20000}"
+          DRY_FLAG=""
+          if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then
+            DRY_FLAG="--dry-run"
+          fi
+
+          flyctl ssh console -a autonomath-api -C \
+            "/opt/venv/bin/python /app/scripts/etl/build_audit_workpaper_v2.py \
+              --db /data/autonomath.db \
+              --limit-houjin ${LIMIT} \
+              ${FY_FLAG} \
+              ${DRY_FLAG}"
+
+      - name: Surface failure as issue
+        if: failure()
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const title = 'build-audit-workpaper-weekly run failed';
+            const body = [
+              'The weekly `am_audit_workpaper` snapshot ETL failed.',
+              '',
+              `* run: ${context.runId}`,
+              `* attempt: ${context.runAttempt}`,
+              `* sha: ${context.sha}`,
+            ].join('\n');
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ['cron-failure', 'wave-46', 'dim-d'],
+            });
