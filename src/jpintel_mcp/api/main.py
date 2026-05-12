@@ -59,6 +59,7 @@ from jpintel_mcp.api.bids import router as bids_router
 from jpintel_mcp.api.billing import router as billing_router
 from jpintel_mcp.api.billing_breakdown import router as billing_breakdown_router
 from jpintel_mcp.api.billing_v2 import router as billing_v2_router
+from jpintel_mcp.api.credit_wallet import router as credit_wallet_router
 from jpintel_mcp.api.bulk_evaluate import router as bulk_evaluate_router
 from jpintel_mcp.api.x402_payment import (
     X402PaymentMiddleware,
@@ -2491,6 +2492,11 @@ def create_app() -> FastAPI:
     # in X402PaymentMiddleware above; this router exposes the helper
     # surface so agents and ops can introspect the live state.
     app.include_router(x402_payment_router)
+    # Wave 48 Dim U — Agent Credit Wallet REST router (PR #170 storage layer).
+    # 5 endpoints: balance/topup/transactions/alerts/charge. Internal-only
+    # charge gated by X-Internal-Token (METERING_INTERNAL_TOKEN env-var).
+    # No Stripe calls, no LLM calls — operator-internal accounting plumbing.
+    app.include_router(credit_wallet_router)
     # P3.5 Stripe edge cases (refund_request intake live; dispute/tax-exempt/
     # currency/invoice-modification/Stripe-Tax-fallback are dispatched from
     # billing.webhook itself, only the refund_request REST endpoint mounts here).
