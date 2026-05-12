@@ -2745,6 +2745,17 @@ def create_app() -> FastAPI:
     # translate, hand-curated JA/EN names. Experimental include so
     # migration 266 absence degrades to skip rather than crash startup.
     _include_experimental_router(app, "jpintel_mcp.api.foreign_fdi_v2")
+    # Wave 46 Dim K rule_tree_branching: POST /v1/rule_tree/evaluate.
+    # Deterministic decision-tree eval (AND/OR/XOR + LEAF predicates),
+    # 1 call replaces N rule_engine_check round-trips. NO LLM, NO DB
+    # required (eval kernel is pure Python). Experimental include for
+    # envelope parity even though no migration dependency exists.
+    _include_experimental_router(app, "jpintel_mcp.api.rule_tree_eval")
+    # Wave 46 Dim N anonymized_query: POST /v1/network/anonymized_outcomes.
+    # k=5 hard-cap network-effect cohort query with PII redact whitelist
+    # + audit log. NO LLM, single-DB. Experimental include so the
+    # am_anon_query_view substrate absence degrades to a 503 not crash.
+    _include_experimental_router(app, "jpintel_mcp.api.anonymized_query")
     # Autonomath health probe (10-check aggregate) — same exemption as
     # /healthz / /readyz. Mounted without AnonIpLimitDep so production
     # uptime monitors can poll without burning the 3/日 anonymous quota.
