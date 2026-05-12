@@ -6,7 +6,7 @@
 
 - kintone 導入企業: 約 30,000 社 (2025 Cybozu IR、社員 6 人以上中心)
 - ライセンス user 数想定: 約 187,500 (1 社平均 6.25 user)。20% AI 活用層を置いた場合の上限感は **37,500 user × 月平均 30,000 billable units × ¥3** で試算し、実売上予測ではなく市場規模の上限シナリオとして扱う。
-- 参考シナリオ: 到達率 5% (= 1,875 user) × 月平均 30,000 billable units × ¥3 = **¥18,750,000 / 月 = ¥225M / 年 ARR 上限**。公開時は実売上見込みではなく、利用頻度に依存する上限モデルとして説明する。
+- 参考シナリオ: 到達率 5% (= 1,875 user) × 月平均 30,000 billable units × ¥3 = **月 ¥18,750,000 = 年 ¥225M 規模の流通額上限 (historical "年 ARR 上限" 表現)**。公開時は実売上見込みではなく、利用頻度に依存する上限モデルとして説明する。per-user 節約額は [cost saving examples](../canonical/cost_saving_examples.md) 参照。
 - 受注経路: kintone Marketplace の self-serve 出品。営業 / 個別契約 NG
 
 ## 連携シナリオ

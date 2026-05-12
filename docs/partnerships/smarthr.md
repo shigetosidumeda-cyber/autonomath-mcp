@@ -5,7 +5,7 @@
 ## ターゲットと規模
 
 - SmartHR 顧客: 約 60,000 社 (2026 Q1)、累計 user 数 700 万人以上
-- 想定到達率: 1.5% (= 900 社) × 月平均 22,000 req × ¥3 = **¥6,000,000 / 月 = ¥72M / 年 ARR 上限** (10-30% realized = ¥7.2M-21.6M / 年)
+- 想定到達率: 1.5% (= 900 社) × 月平均 22,000 req × ¥3 = **月 ¥6,000,000 = 年 ¥72M 規模の流通額上限 (historical "年 ARR 上限" 表現)**、10-30% realized = ¥7.2M-21.6M / 年。per-顧客 節約額は [cost saving examples](../canonical/cost_saving_examples.md) 参照。
 - 対象 audience: 社労士 / 人事担当 / 経営者
 - 受注経路: SmartHR App Store (公式 marketplace) の self-serve embed
 
