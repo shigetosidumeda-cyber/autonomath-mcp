@@ -236,6 +236,40 @@
 # (CREATE TABLE/INDEX/VIEW IF NOT EXISTS); boot-time safe; idempotent
 # on every boot. No LLM API ever invoked operator-side.
 279_copilot_scaffold.sql
+
+# Wave 47 Dim T — predictive service (pull -> push) storage overlay.
+# Adds am_predictive_watch_subscription (operator-internal subscription
+# table: subscriber_token_hash sha256 + watch_type enum
+# (houjin/program/amendment) + watch_target opaque + threshold + 24h
+# notify_window_hours CHECK 1..168) and am_predictive_alert_log
+# (append-only per-fire audit, payload JSON, delivery_status pending|
+# delivered|failed|expired, CHECK delivered_at >= fired_at, dedup
+# partial UNIQUE on (watch_id, source_diff_id)) + v_predictive_watch_active
+# helper view. Pairs with scripts/etl/build_predictive_watch_v2.py
+# (daily 3-type scan unifying houjin/program/amendment with 24h TTL
+# purge) per feedback_predictive_service_design. LLM-0 by construction:
+# we only RANK + ROUTE existing am_amendment_diff rows; no Anthropic /
+# OpenAI SDK is ever imported. Billing is on successful delivery only
+# (¥3/req on Stripe usage_record). Pure additive (CREATE TABLE/INDEX/
+# VIEW IF NOT EXISTS); boot-time safe; idempotent on every boot.
+280_predictive_service.sql
+
+# 2026-05-12 Wave 47 — Dim U (Agent Credit Wallet) storage layer.
+# am_credit_wallet (wallet_id PK, owner_token_hash sha256 unique,
+# balance_yen, auto_topup_threshold, auto_topup_amount, monthly_budget_yen,
+# enabled) + am_credit_transaction_log (append-only ledger with
+# txn_type enum topup/charge/refund and sign-rule CHECK constraint:
+# topup/refund > 0, charge < 0) + am_credit_spending_alert (UNIQUE
+# (wallet_id, threshold_pct, billing_cycle); threshold_pct enum 50/80/100;
+# billing_cycle 'YYYY-MM') + v_credit_wallet_topup_due helper view.
+# Pairs with scripts/etl/process_credit_wallet_alerts.py (hourly cron
+# emitting per-(wallet, threshold, cycle) alert exactly once via
+# INSERT OR IGNORE). Pre-payment + auto-topup + 50/80/100 pct spending
+# alert per feedback_agent_credit_wallet_design. Pure additive
+# (CREATE TABLE/INDEX/VIEW IF NOT EXISTS); boot-time safe; idempotent
+# on every boot. No LLM API ever invoked operator-side.
+281_credit_wallet.sql
+
 # 2026-05-12 Wave 47 — Dim V (x402 protocol micropayment) storage layer.
 # am_x402_endpoint_config (config table, 1 row per x402-gated endpoint:
 # endpoint_path PK + required_amount_usdc + expires_after_seconds, with
