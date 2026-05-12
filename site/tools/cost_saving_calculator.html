@@ -229,6 +229,26 @@ function render() {
   document.getElementById(id).addEventListener("change", render);
 });
 render();
+
+// Wave 49 G1 funnel: emit step_complete when user interacts with the
+// calculator (any input change). Decouples completion semantics from the
+// RUM collector — collector listens for `jpcite:funnel:complete`.
+(function () {
+  var fired = false;
+  function once() {
+    if (fired) return;
+    fired = true;
+    try {
+      document.dispatchEvent(new CustomEvent("jpcite:funnel:complete"));
+    } catch (_e) { /* RUM must never throw on the page */ }
+  }
+  ["model","search","fx","jpcite","scale-case","scale-n"].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener("change", once, { once: true });
+  });
+})();
 </script>
+<!-- Wave 49 G1 funnel beacon: emits step=`calc_engaged` for /tools/cost_saving_calculator -->
+<script src="/assets/rum_funnel_collector.js" defer></script>
 </body>
 </html>
