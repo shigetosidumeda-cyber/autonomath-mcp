@@ -195,3 +195,4 @@ Sitemap: https://jpcite.com/sitemap-laws.xml
 Sitemap: https://jpcite.com/sitemap-laws-en.xml
 Sitemap: https://jpcite.com/sitemap-llms.xml
 Sitemap: https://jpcite.com/docs/sitemap.xml
+Sitemap: https://jpcite.com/sitemap-companion-md.xml
