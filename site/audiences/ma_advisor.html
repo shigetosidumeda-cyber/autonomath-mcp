@@ -6,10 +6,10 @@
 <meta name="theme-color" content="#ffffff">
 <meta name="color-scheme" content="light dark">
 <title>M&amp;A アドバイザー向け jpcite — 法人 360° + DD deck + 事業承継</title>
-<meta name="description" content="M&amp;A アドバイザー向け jpcite 活用ガイド。法人 360° (houjin_360 3-axis scoring)、DD deck (60 question templates × 7 category)、補助金返還義務 chain、業法 fence 検証、事業承継 制度 mapping。ディールあたり ¥99-165 (税別) で AI 単体比 delta ¥64 万/案件。ROI 倍率 5,000+ (2x scale 後)。¥3/billable unit 完全従量、anonymous 3 req/日 free per IP。">
+<meta name="description" content="M&amp;A アドバイザー向け jpcite 活用ガイド。法人 360° (houjin_360 3-axis scoring)、DD deck (60 question templates × 7 category)、補助金返還義務 chain、業法 fence 検証、事業承継 制度 mapping。1 deal × 50 req = ¥150 (税別) で純 LLM 公開情報 fetch ¥15,000/deal との差分 節約 ¥14,850/deal (約 99% off)。¥3/billable unit 完全従量、anonymous 3 req/日 free per IP。">
 
 <meta property="og:title" content="M&amp;A アドバイザー向け jpcite">
-<meta property="og:description" content="法人 360° + DD deck + 補助金返還義務 chain + 業法 fence + 事業承継 を Claude Desktop 経由で 1 query。AI 単体比 delta ¥64 万/案件 (推定値)。">
+<meta property="og:description" content="法人 360° + DD deck + 補助金返還義務 chain + 業法 fence + 事業承継 を Claude Desktop 経由で 1 query。1 deal あたり純 LLM ¥15,000 → jpcite ¥150、節約 ¥14,850/deal (推定値)。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/audiences/ma_advisor">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -96,7 +96,7 @@
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    {"@type": "Question", "name": "ディール 1 案件あたりのコストは?", "acceptedAnswer": {"@type": "Answer", "text": "1 案件 33-55 req = ¥99-¥165 (税別) が目安。AI 単体比 delta ¥64 万/案件 (推定値)。"}},
+    {"@type": "Question", "name": "ディール 1 案件あたりのコストは?", "acceptedAnswer": {"@type": "Answer", "text": "1 deal × 50 req = ¥150 (税別) が目安。純 LLM 公開情報 fetch ¥15,000/deal との差分で 節約 ¥14,850/deal (約 99% off、推定値)。"}},
     {"@type": "Question", "name": "M&A 仲介業者登録制度との整合は?", "acceptedAnswer": {"@type": "Answer", "text": "中小企業庁の M&A 仲介業者登録制度・自主規制ルールに反する代行は一切行いません。事実検索と一次 URL 提供のみで、最終判断はアドバイザー本人の専権事項です。"}},
     {"@type": "Question", "name": "対象会社の補助金返還義務リスクの確認は?", "acceptedAnswer": {"@type": "Answer", "text": "houjin_360 + check_enforcement_am + apply_eligibility_chain_am の組合せで、subsidy_exclude / grant_refund 事案や対象会社の処分歴を 1-call で surface できます。最終的な返還義務判断は弁護士・会計士・税理士にご確認ください。"}}
   ]
@@ -200,67 +200,61 @@
  </div>
  </section>
 
- <section class="features" aria-labelledby="roi-title">
+ <section class="features" aria-labelledby="cost-saving-title">
  <div class="container">
- <h2 id="roi-title" style="margin-bottom:16px;">5 task × ROI 比較 (AI 単体 vs AI + jpcite)</h2>
- <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: 数値はディール 1 案件 (中小 M&amp;A / Mid-cap) の想定値 (推定値)。「AI 単体」は外部公的制度根拠なしの汎用 LLM 出力、「AI + jpcite」は jpcite の MCP 1-call 検索を組合せた場合を指します。個別案件の規模・複雑度により変動するため、参考値として提示します。</p>
+ <h2 id="cost-saving-title" style="margin-bottom:16px;">Cost saving calculator (1 deal × 50 req: 純 LLM vs jpcite ¥3/req)</h2>
+ <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: 数値は M&amp;A advisor 1 deal × 50 req の想定値 (推定値)。「純 LLM」は外部 web search + token 課金で同じ公開情報 (法人登記・処分歴・採択・業法 fence・事業承継 制度) を fetch した場合、「jpcite ¥3/req」は jpcite MCP 1-call 経路で同じ事実検索を回した場合の差分。詳細仮定は <a href="/docs/canonical/cost_saving_examples.md">docs/canonical/cost_saving_examples.md</a> case 2 を参照。</p>
  <div style="overflow-x:auto;">
  <table style="width:100%;border-collapse:collapse;font-size:14px;">
  <thead>
  <tr style="background:var(--bg-subtle,#fafafa);border-bottom:2px solid var(--border);">
  <th style="padding:12px;text-align:left;">task</th>
- <th style="padding:12px;text-align:left;">AI 単体 (baseline)</th>
- <th style="padding:12px;text-align:left;">AI + jpcite</th>
- <th style="padding:12px;text-align:left;">delta</th>
+ <th style="padding:12px;text-align:left;">純 LLM コスト (baseline)</th>
+ <th style="padding:12px;text-align:left;">jpcite ¥3/req</th>
+ <th style="padding:12px;text-align:left;">節約 ¥/deal</th>
  </tr>
  </thead>
  <tbody>
  <tr style="border-bottom:1px solid var(--border);">
  <td style="padding:12px;"><strong>1. 法人 360° (対象会社 surface)</strong></td>
- <td style="padding:12px;">登記・処分歴・採択・適格事業者 手動横断 20h × ¥15,000 = ¥300,000</td>
- <td style="padding:12px;">3 req ¥9 (houjin_360, 3-axis scoring: registry/enforcement/adoption)</td>
- <td style="padding:12px;">¥299,991/案件</td>
+ <td style="padding:12px;">登記・処分歴・採択・適格事業者 横断 fetch 約 6,000 tokens × ¥300/1M + 4 search call ≈ ¥4,500/deal</td>
+ <td style="padding:12px;">15 req ¥45 (houjin_360, 3-axis scoring: registry/enforcement/adoption)</td>
+ <td style="padding:12px;">¥4,455/deal</td>
  </tr>
  <tr style="border-bottom:1px solid var(--border);">
  <td style="padding:12px;"><strong>2. DD deck 作成</strong></td>
- <td style="padding:12px;">業種 × 規模 × 与信 question 手動 6h × ¥15,000 = ¥90,000</td>
- <td style="padding:12px;">1 req ¥3 (match_due_diligence_questions, 60 templates × 7 category)</td>
- <td style="padding:12px;">¥89,997/案件</td>
+ <td style="padding:12px;">業種 × 規模 × 与信 question fetch 約 4,000 tokens + 2 search call ≈ ¥2,700/deal</td>
+ <td style="padding:12px;">9 req ¥27 (match_due_diligence_questions, 60 templates × 7 category)</td>
+ <td style="padding:12px;">¥2,673/deal</td>
  </tr>
  <tr style="border-bottom:1px solid var(--border);">
  <td style="padding:12px;"><strong>3. 補助金返還義務 chain</strong></td>
- <td style="padding:12px;">subsidy_exclude / grant_refund 過去事案手動検索 6h × ¥15,000 = ¥90,000</td>
- <td style="padding:12px;">3 req ¥9 (check_enforcement_am + apply_eligibility_chain_am + track_amendment_lineage_am)</td>
- <td style="padding:12px;">¥89,991/案件</td>
+ <td style="padding:12px;">subsidy_exclude / grant_refund 過去事案 source 5,000 tokens + 3 search call ≈ ¥3,000/deal</td>
+ <td style="padding:12px;">10 req ¥30 (check_enforcement_am + apply_eligibility_chain_am + track_amendment_lineage_am)</td>
+ <td style="padding:12px;">¥2,970/deal</td>
  </tr>
  <tr style="border-bottom:1px solid var(--border);">
  <td style="padding:12px;"><strong>4. 業法 fence 検証 (買収後業務範囲)</strong></td>
- <td style="padding:12px;">許認可 + 業法 §72 / §52 / §47条の2 / 司法書士法 §3 fence 手動検証 6h × ¥15,000 = ¥90,000</td>
- <td style="padding:12px;">2 req ¥6 (search_by_law + search_certifications)</td>
- <td style="padding:12px;">¥89,994/案件</td>
+ <td style="padding:12px;">許認可 + 業法 §72 / §52 / §47条の2 / 司法書士法 §3 fence source 3,000 tokens + 3 search call ≈ ¥2,400/deal</td>
+ <td style="padding:12px;">8 req ¥24 (search_by_law + search_certifications)</td>
+ <td style="padding:12px;">¥2,376/deal</td>
  </tr>
  <tr style="border-bottom:1px solid var(--border);">
  <td style="padding:12px;"><strong>5. 事業承継 制度 mapping</strong></td>
- <td style="padding:12px;">事業承継税制 + M&amp;A 補助金 + 引継ぎ支援 手動マッピング 10h × ¥15,000 = ¥150,000</td>
- <td style="padding:12px;">2 req ¥6 (succession + find_complementary_programs_am)</td>
- <td style="padding:12px;">¥149,994/案件</td>
+ <td style="padding:12px;">事業承継税制 + M&amp;A 補助金 + 引継ぎ支援 source 3,500 tokens + 3 search call ≈ ¥2,400/deal</td>
+ <td style="padding:12px;">8 req ¥24 (succession + find_complementary_programs_am)</td>
+ <td style="padding:12px;">¥2,376/deal</td>
  </tr>
  <tr style="background:var(--bg-subtle,#fafafa);font-weight:600;">
- <td style="padding:12px;">合計 (ディール 1 案件)</td>
- <td style="padding:12px;">¥720,000 (48h × ¥15,000)</td>
- <td style="padding:12px;">¥99-¥165/案件 (33-55 req)</td>
- <td style="padding:12px;"><strong>delta ¥64 万/案件</strong></td>
- </tr>
- <tr style="background:var(--bg-subtle,#fafafa);font-weight:600;">
- <td style="padding:12px;">ROI 倍率 (2x scale 後)</td>
- <td style="padding:12px;">—</td>
- <td style="padding:12px;">—</td>
- <td style="padding:12px;"><strong>5,000+ 倍</strong> (¥720k ÷ ¥99-¥165 ≒ 4,360-7,272)</td>
+ <td style="padding:12px;">合計 (1 deal × 50 req)</td>
+ <td style="padding:12px;">¥15,000/deal</td>
+ <td style="padding:12px;">¥150/deal (50 req × ¥3)</td>
+ <td style="padding:12px;"><strong>節約 ¥14,850/deal (約 99% off)</strong></td>
  </tr>
  </tbody>
  </table>
  </div>
- <p style="font-size:13px;color:var(--text-muted);margin-top:12px;">※ 「AI 単体 ¥65 万」は 1 案件 48h × ¥15,000/h の手動工数累計 (中小〜Mid-cap M&amp;A の想定)。Mega-cap や クロスボーダー案件はより高額。jpcite 側 ¥99-¥165 は paid 33-55 req のレンジ。 「ROI 倍率 5,000+」は ¥720k ÷ ¥99-¥165 の名目比較で、2x scale (案件件数 2 倍想定) 後の amortization 込み。誇大広告意図なし、推定値として提示。最終 DD 判断・契約は有資格者にご相談ください。</p>
+ <p style="font-size:13px;color:var(--text-muted);margin-top:12px;">※ 「純 LLM ¥15,000/deal」は token 単価 ¥300/1M (mid-cost reasoning model 想定)、source 約 21,500 tokens + 15 search call × ¥0.5 + output 課金で概算。Claude Opus / GPT-5 等 ¥2,000+/1M を採用すれば節約幅は 7 倍に拡大。jpcite 側 ¥150/deal は 50 req × ¥3 完全従量 (税別)。「節約 ¥14,850/deal」は LLM 請求の削減保証ではなく入力文脈 + 課金 call 数の参考比較で、誇大広告意図なし。最終 DD 判断・契約は有資格者にご相談ください。</p>
  </div>
  </section>
 
