@@ -115,7 +115,8 @@
       "site/llms.txt",
       "site/llms-full.txt",
       "site/llms.en.txt",
-      "site/llms-full.en.txt"
+      "site/llms-full.en.txt",
+      "site/connect/"
     ],
     "fence_count_context_allow_substrings": [
       "業法 fence (税理士§52",
@@ -138,13 +139,13 @@
         160
       ]
     },
-    "fence_count_canonical": 7,
+    "fence_count_canonical": 8,
     "forbidden_modifiers": {
       "fence_count": [
         "5",
         "5+1",
         "6",
-        "8"
+        "7"
       ]
     }
   },
