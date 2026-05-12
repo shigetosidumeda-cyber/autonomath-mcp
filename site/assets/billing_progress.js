@@ -195,7 +195,11 @@
     var step = STEPS[idx] || STEPS[0];
     var modal = document.createElement("div");
     modal.id = "jpcite-bp-modal";
-    modal.className = "jpcite-bp-modal";
+    // Wave 48 tick#4 fix: also expose canonical "idle hint" hooks so the UX
+    // audit's standard selectors (.hint-modal, #idle-hint, .lost-user-hint)
+    // match this element. Classes are additive; existing CSS still applies.
+    modal.className = "jpcite-bp-modal hint-modal lost-user-hint";
+    modal.setAttribute("data-idle-hint", "true");
     modal.setAttribute("role", "dialog");
     modal.setAttribute("aria-modal", "true");
     modal.setAttribute("aria-labelledby", "jpcite-bp-mtitle");
@@ -255,8 +259,14 @@
     if (!host) return null;
     host.innerHTML = buildStrip(idx);
 
-    // 迷子検知: any click/keypress/scroll resets the idle timer.
-    var resetEvents = ["click", "keydown", "scroll", "mousemove", "touchstart"];
+    // 迷子検知 (Wave 48 tick#4 fix): only intentional interactions reset the
+    // 30s idle timer. mousemove fires continuously while the cursor is over
+    // the viewport and used to prevent the modal from ever showing — that is
+    // the exact "modal DOM emit が不発" bug surfaced by the tick#4 UX audit.
+    // We keep click/keydown/scroll/touchstart (which signal real intent) and
+    // drop mousemove. See tests/test_idle_hint_modal_dom.py for the live
+    // Playwright verify that the modal#jpcite-bp-modal node now appears.
+    var resetEvents = ["click", "keydown", "scroll", "touchstart"];
     for (var i = 0; i < resetEvents.length; i++) {
       window.addEventListener(resetEvents[i], function () {
         if (idleModalShown) return;
