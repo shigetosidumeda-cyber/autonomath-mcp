@@ -12,6 +12,17 @@
   JetBrains Mono via Google Fonts, but we additionally pull Noto Serif JP
   (used by extra.css for headings) so the docs match the landing page
   typography exactly.
+
+  Wave 49 tick#2 (2026-05-12): inject the 2 SOT script tags (billing_progress
+  + rum_funnel_collector) into every docs page <head> so MkDocs-built sub-
+  pages match the static landing page contract (4/4 lost-zero elements).
+  Pre-tick state: tick#6 audit (STATE_w49_docs_mkdocs_override_pr.md) found
+  site/docs/api-reference/index.html and 75+ other sub-pages had 0/4
+  elements after the MkDocs build overwrites the hand-crafted CWV-HARDENED
+  index.html. This block lifts every mkdocs page to 4/4. Scripts use the
+  absolute `/assets/...` path so they resolve the same way the static
+  landing page does — no per-page rewrite needed. defer so head order
+  matches landing-page contract and CWV isn't hurt.
 -#}
 {% extends "base.html" %}
 
@@ -20,6 +31,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+  {#- Wave 49 tick#2: 迷子ゼロ 4 元素 - script tags. Visible div + breadcrumb
+      are injected by overrides/partials/content.html (already shipped in
+      PR #185 + this tick). Together the 2 partials raise mkdocs-built
+      sub-pages from 0/4 to 4/4. -#}
+  <script src="/assets/billing_progress.js" defer></script>
+  <script src="/assets/rum_funnel_collector.js" defer></script>
   {% if page and page.is_homepage %}
     {% include "partials/index_jsonld.html" %}
   {% endif %}
