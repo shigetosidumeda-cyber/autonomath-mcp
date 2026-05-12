@@ -144,3 +144,15 @@
 # kernel is NOT rewired by this migration — SQL sync is opt-in for an
 # operator-side daemon. boot-time safe; idempotent.
 272_session_context.sql
+
+# 2026-05-12 Wave 47 — Dim M (rule_tree v2 chain extension) storage layer.
+# am_rule_tree_chain (ordered tree-id pipelines with per-step carry_keys)
+# + am_rule_tree_version_history (append-only per-tree definition hash
+# audit trail) + v_rule_tree_version_history_latest helper view. Builds
+# strictly on top of mig 271 (Dim K): no schema edits to am_rule_trees,
+# tree_id references stored as plain TEXT so chain rows survive a tree
+# retirement. Pairs with scripts/etl/seed_rule_tree_chains.py (3 canonical
+# chains: subsidy→gyouhou / invest→adopt→DD / full KYC 5-step). Pure
+# additive (CREATE TABLE/INDEX/VIEW IF NOT EXISTS); boot-time safe;
+# idempotent.
+273_rule_tree_v2_chain.sql
