@@ -2723,6 +2723,14 @@ def create_app() -> FastAPI:
     # instead of crashing the app. NO LLM, cryptography stdlib only.
     # See api/fact_verify.py module docstring.
     _include_experimental_router(app, "jpintel_mcp.api.fact_verify")
+    # Wave 46 Dim F signature discovery: metadata-only surface that
+    # complements fact_verify.py without copying the 96-byte sig BLOB
+    # into the wire payload (list + per-id lookup of signed_at /
+    # key_id / corpus_snapshot_id / payload_sha256 / sig_byte_length).
+    # GET /v1/facts/signatures/latest, GET /v1/facts/{fact_id}/signature.
+    # Experimental include so migration 262 absence at import time
+    # degrades to skip rather than crash startup.
+    _include_experimental_router(app, "jpintel_mcp.api.fact_signature_v2")
     # Wave 43.2.9 Dim I cross-source agreement: per-fact 0..1
     # agreement_ratio + canonical_value + per-source value breakdown
     # (GET /v1/facts/{fact_id}/agreement). Reads autonomath
