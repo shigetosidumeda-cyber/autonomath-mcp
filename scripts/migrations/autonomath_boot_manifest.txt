@@ -64,6 +64,25 @@
 # additive; boot-time safe.
 264_personalization_score.sql
 
+# 2026-05-12 Wave 43.2.9 — Dim I cross-source agreement score
+# (am_fact_source_agreement + view v_fact_source_agreement + run_log).
+# Per-fact 0..1 agreement_ratio + per-source value breakdown materialized
+# hourly by scripts/cron/cross_source_agreement_check.py and surfaced at
+# GET /v1/facts/{fact_id}/agreement. Pure additive (CREATE TABLE/INDEX/
+# VIEW IF NOT EXISTS, CHECK on ratio bounds + sources_agree<=sources_total);
+# boot-time safe; idempotent on every boot.
+265_cross_source_agreement.sql
+
+# 2026-05-12 Wave 43.2.10 — Dim J Foreign FDI 80-country
+# (am_fdi_country + v_fdi_country_public + run_log). Hand-curated 80-row
+# seed (G7+G20+ASEAN+EU+EFTA+priority Africa/GCC/LATAM) + detail columns
+# (visa_keiei_kanri / min_capital_yen / restricted_sectors / promotion_
+# program / mofa_source_url / jetro_source_url) filled by
+# scripts/etl/fill_fdi_80country_2x.py and surfaced at GET /v1/foreign_
+# fdi/v2/*. Pure additive (CREATE TABLE/INDEX/VIEW + INSERT OR IGNORE
+# seed); boot-time safe; idempotent on every boot.
+266_fdi_country_80.sql
+
 # 2026-05-12 Wave 43.3.4 — AX Resilience cell 4 (DLQ + drain log).
 # am_dlq + dlq_drain_log + v_am_dlq_quarantine_summary. Quarantine surface
 # for bg_task_queue + webhook_deliveries units that exhausted in-line retry
