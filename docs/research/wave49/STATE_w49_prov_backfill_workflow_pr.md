@@ -2,7 +2,7 @@
 
 - **date**: 2026-05-12 (Wave 49, tick#3 — eternal loop 1-min cadence)
 - **branch**: `feat/jpcite_2026_05_12_wave49_provenance_backfill_workflow`
-- **PR**: (set after `gh pr create`; entered post-open)
+- **PR**: [#197](https://github.com/shigetosidumeda-cyber/autonomath-mcp/pull/197)
 - **base HEAD before**: `74ec7b8f2` (PR #194 mig 288 boot manifest hot-fix — last main commit)
 - **lane**: `/tmp/jpcite-w49-prov-cron.lane/` (atomic mkdir claim)
 - **worktree**: `/tmp/jpcite-w49-prov-cron/`
