@@ -1,0 +1,49 @@
+name: anonymized-cohort-audit-daily
+
+# Wave 49 G3 — AX Layer 5 cron #5 / Dim N anonymized_query.
+#
+# Nightly rebuild of am_aggregated_outcome_view (mig 274) under
+# strict k-anonymity floor (k>=5). PII strip: only the cohort
+# triple (industry_jsic_major / region_code / size_bucket) survives.
+# No houjin_bangou, no company_name, no contact info ever lands
+# in the view. The 1M-entity statistics layer is the long-term
+# moat (feedback_anonymized_query_pii_redact).
+#
+# Invokes: scripts/etl/aggregate_anonymized_outcomes.py (Wave 47).
+# Pure SQL aggregation + stdlib, LLM API 0
+# (feedback_no_operator_llm_api).
+
+on:
+  schedule:
+    # 03:15 UTC == 12:15 JST. After daily Lane A window.
+    - cron: "15 3 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "If true, report only (no view rebuild)"
+        required: false
+        default: "true"
+
+concurrency:
+  group: anonymized-cohort-audit-daily
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  aggregate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Dry-run report
+        run: python scripts/etl/aggregate_anonymized_outcomes.py --dry-run
+      - name: Run k>=5 cohort aggregation
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: python scripts/etl/aggregate_anonymized_outcomes.py

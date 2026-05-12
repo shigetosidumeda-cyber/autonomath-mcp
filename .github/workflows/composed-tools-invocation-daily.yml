@@ -1,0 +1,47 @@
+name: composed-tools-invocation-daily
+
+# Wave 49 G3 — AX Layer 5 cron #3 / Dim P composed_tools.
+#
+# Daily re-seed of the 4 canonical composed-tool definitions into
+# am_composed_tool_catalog (mig 276). Idempotent — re-running on an
+# already-seeded catalog is a no-op except for refreshing the
+# last_verified_at column. The composed tools wrap atomic-tool
+# chains into single metered calls (7 call -> 1 call cost saving).
+#
+# Invokes: scripts/etl/seed_composed_tools.py (Wave 47).
+# Pure stdlib + sqlite3, LLM API 0 (feedback_no_operator_llm_api).
+
+on:
+  schedule:
+    # 02:45 UTC == 11:45 JST. After session-context-daily (02:30).
+    - cron: "45 2 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "If true, plan only (no DB writes)"
+        required: false
+        default: "true"
+
+concurrency:
+  group: composed-tools-invocation-daily
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Dry-run plan
+        run: python scripts/etl/seed_composed_tools.py --dry-run
+      - name: Run composed-tools re-seed
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: python scripts/etl/seed_composed_tools.py
