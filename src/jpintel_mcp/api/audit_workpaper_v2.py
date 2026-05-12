@@ -339,3 +339,113 @@ def post_audit_workpaper(
             db_conn=conn,
         )
     return JSONResponse(content=body)
+
+
+# ---------------------------------------------------------------------------
+# Wave 46 dim 19 dim D sub-criterion: discovery surface (1 sub-axis lift)
+# ---------------------------------------------------------------------------
+#
+# The POST /v1/audit/workpaper handler above is the *invocation* surface — it
+# costs 5 units, requires a houjin lookup, and returns a fully composed
+# substrate. The dim 19 audit flagged that there is no metadata surface a
+# caller can probe to learn (a) which source tables the substrate joins,
+# (b) which columns ship for each section, (c) the fence statutes the
+# disclaimer cites, and (d) the billing unit, without paying for an
+# invocation. GET /v1/audit/workpaper/schema fills that gap.
+#
+# Constraints (mirrors the dim F precedent at fact_signature_v2):
+#   * Pure static dict — no SQLite open, no LLM call, no houjin lookup.
+#   * 0 billing units (discoverability, not a billed compose).
+#   * Same fence text & §52 / §47条の2 / §72 / 行政書士法 disclaimer.
+#   * Single response, no pagination / no cursor (static payload).
+
+
+_WORKPAPER_SCHEMA: dict[str, Any] = {
+    "endpoint": "/v1/audit/workpaper",
+    "method": "POST",
+    "billing_unit_invoke": 5,
+    "billing_unit_schema": 0,
+    "composition_kind": "multi_hop_year_end_audit",
+    "input_fields": [
+        {
+            "name": "client_houjin_bangou",
+            "type": "string",
+            "min_length": 13,
+            "max_length": 14,
+            "description": "13-digit 法人番号 (with or without 'T' prefix).",
+        },
+        {
+            "name": "fiscal_year",
+            "type": "integer",
+            "min": 2000,
+            "max": 2100,
+            "description": (
+                "FY start year (e.g. 2025 = FY2025 = 2025-04-01..2026-03-31)."
+            ),
+        },
+    ],
+    "source_tables": [
+        "jpi_houjin_master",
+        "jpi_adoption_records",
+        "am_enforcement_detail",
+        "jpi_invoice_registrants",
+        "am_amendment_diff",
+    ],
+    "output_sections": [
+        {"key": "houjin_meta", "kind": "object", "row_cap": 1},
+        {"key": "fy_adoptions", "kind": "array", "row_cap": 50},
+        {"key": "fy_enforcement", "kind": "array", "row_cap": 30},
+        {"key": "jurisdiction_breakdown", "kind": "object", "row_cap": 1},
+        {"key": "amendment_alerts", "kind": "array", "row_cap": 60},
+        {"key": "auditor_flags", "kind": "array", "row_cap": None},
+    ],
+    "fence_statutes": [
+        "税理士法 §52",
+        "公認会計士法 §47条の2",
+        "弁護士法 §72",
+        "行政書士法 §1",
+    ],
+    "non_negotiable": [
+        "NO LLM call inside the compose path",
+        "Output is a 公開情報 substrate, not an audit conclusion",
+        "資格を有する税理士・会計士 must own the 判断",
+    ],
+    "disclaimer": _DISCLAIMER,
+    "schema_version": "wave46-dim19-D-1",
+}
+
+
+@router.get(
+    "/workpaper/schema",
+    summary="Audit workpaper substrate schema (discovery, 0 units)",
+    description=(
+        "Discovery endpoint for the POST /v1/audit/workpaper composition. "
+        "Returns the input field contract, source-table list, output "
+        "section catalog, fence statutes, and disclaimer text **without** "
+        "an invocation — agents can probe this before paying the 5-unit "
+        "compose cost.\n\n"
+        "**Pricing:** 0 unit. Pure static metadata, no SQLite open. "
+        "**Sensitive:** Same §52 / §47条の2 / §72 / 行政書士法 §1 fence "
+        "as the compose endpoint."
+    ),
+    responses={
+        200: {"description": "Workpaper substrate schema envelope."},
+    },
+)
+def get_audit_workpaper_schema(
+    request: Request,
+    ctx: ApiContextDep,
+    conn: DbDep,
+) -> JSONResponse:
+    t0 = time.perf_counter()
+    # log_usage: 0 units — discovery surface, not a billed compose.
+    with contextlib.suppress(Exception):
+        log_usage(
+            request,
+            ctx,
+            endpoint_short="audit_workpaper_schema",
+            quantity=0,
+            elapsed_ms=int((time.perf_counter() - t0) * 1000),
+            db_conn=conn,
+        )
+    return JSONResponse(content=_WORKPAPER_SCHEMA)
