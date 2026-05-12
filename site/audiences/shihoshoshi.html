@@ -344,6 +344,35 @@ get_law_article_am({"law_id": "minpou", "article_range": "7-876"})</code></pre>
  <p class="legal-note" style="font-size:13px;color:var(--text-muted);margin:24px auto;max-width:920px;padding:0 24px;">
 本サービスは情報検索です。登記・供託・簡裁訴訟代理は司法書士法 §3 司法書士独占業務であり、jpcite は代行を一切行いません。税務代理 (税理士法 §52)・法律判断 (弁護士法 §72)・官公署提出書類作成 (行政書士法 §1) も同様、有資格者の業務範囲を侵しません。
 </p>
+
+ <section class="features" aria-labelledby="cost-title">
+ <div class="container">
+ <h2 id="cost-title" style="margin-bottom:16px;">1 件あたりの cost saving (純 LLM vs jpcite ¥3/req)</h2>
+ <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: 司法書士 / 商業登記 1 件 想定。 「純 LLM」は外部公的記録なしの汎用 LLM で hallucination 裏取り + houjin 360° 手動探索 + jurisdiction cross-check まで含めた工数 (士業時給 ¥10,000/h)。 詳細は <a href="../../docs/canonical/cost_saving_examples.md">canonical cost saving examples</a>。</p>
+ <div style="overflow-x:auto;">
+ <table style="width:100%;border-collapse:collapse;font-size:14px;">
+ <thead>
+ <tr style="background:var(--bg-subtle,#fafafa);border-bottom:2px solid var(--border);">
+ <th style="padding:12px;text-align:left;">case</th>
+ <th style="padding:12px;text-align:left;">純 LLM 工数 × 単価</th>
+ <th style="padding:12px;text-align:left;">jpcite req 数 × ¥3</th>
+ <th style="padding:12px;text-align:left;">cost saving</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr style="border-bottom:1px solid var(--border);">
+ <td style="padding:12px;"><strong>商業登記 1 件 prep</strong> (houjin 360° + jurisdiction cross-check)</td>
+ <td style="padding:12px;">3.0h × ¥10,000 = ¥30,000</td>
+ <td style="padding:12px;">2 req × ¥3 = ¥6</td>
+ <td style="padding:12px;"><strong>¥29,994/件</strong></td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ <p style="font-size:13px;color:var(--text-muted);margin-top:12px;">※ 推定値。 hallucination 裏取り + houjin 360° (法人実態 + 役員履歴) + 不動産登記 jurisdiction (47 都道府県) cross-check を含む。 jpcite は事実検索 + scaffold 提供のみで、登記・供託・簡裁訴訟代理 (司法書士法 §3) は資格者本人の専権事項。 誇大広告意図なし。</p>
+ </div>
+ </section>
+
 </main>
 
 <footer class="site-footer" role="contentinfo">

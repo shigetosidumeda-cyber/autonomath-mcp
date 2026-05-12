@@ -263,6 +263,35 @@
  <p class="legal-note" style="font-size:13px;color:var(--text-muted);margin:24px auto;max-width:920px;padding:0 24px;">
 本サービスは情報検索です。 個別具体的な税務・法律判断は資格を有する専門家にご相談ください (税理士法 §52 / 弁護士法 §72)。
 </p>
+
+ <section class="features" aria-labelledby="cost-title">
+ <div class="container">
+ <h2 id="cost-title" style="margin-bottom:16px;">顧問先 1 社あたりの cost saving (純 LLM vs jpcite ¥3/req)</h2>
+ <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: 税理士 / 顧問先 50 社 想定。 「純 LLM」は外部公的制度根拠なしの汎用 LLM で hallucination 裏取り + 措置法手動探索 + 通達引用整形まで含めた工数 (税理士時給 ¥10,000/h)。 詳細は <a href="../../docs/canonical/cost_saving_examples.md">canonical cost saving examples</a>。</p>
+ <div style="overflow-x:auto;">
+ <table style="width:100%;border-collapse:collapse;font-size:14px;">
+ <thead>
+ <tr style="background:var(--bg-subtle,#fafafa);border-bottom:2px solid var(--border);">
+ <th style="padding:12px;text-align:left;">case</th>
+ <th style="padding:12px;text-align:left;">純 LLM 工数 × 単価</th>
+ <th style="padding:12px;text-align:left;">jpcite req 数 × ¥3</th>
+ <th style="padding:12px;text-align:left;">cost saving</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr style="border-bottom:1px solid var(--border);">
+ <td style="padding:12px;"><strong>顧問先 1 社 措置法確認</strong> (賃上げ促進 / 中小投資促進 / DX 投資 / 電帳法 / インボイス)</td>
+ <td style="padding:12px;">1.0h × ¥10,000 = ¥10,000</td>
+ <td style="padding:12px;">2 req × ¥3 = ¥6</td>
+ <td style="padding:12px;"><strong>¥9,994/件</strong></td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ <p style="font-size:13px;color:var(--text-muted);margin-top:12px;">※ 推定値。 hallucination 裏取り + 措置法 / 税制特例検索 + 通達引用候補抽出を含む。 jpcite は事実検索 + scaffold 提供のみで、税務代理 / 税務相談 (税理士法 §52) は資格者本人の専権事項。 誇大広告意図なし。</p>
+ </div>
+ </section>
+
 </main>
 
 <footer class="site-footer" role="contentinfo">
