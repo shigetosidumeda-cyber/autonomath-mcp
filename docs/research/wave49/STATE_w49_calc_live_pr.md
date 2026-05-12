@@ -102,7 +102,7 @@ first-match-wins 順序を守る (新規 test `test_rsync_include_ordered_before
 | branch | `feat/jpcite_2026_05_12_wave49_calc_live_404_fix` |
 | base | `main` (fe47fdd49) |
 | 変更 file | 5 (site/tools/.html + site/tools/.md + 2 workflows + 1 test) |
-| PR# | (`gh pr create` 直後に追記) |
+| PR# | **#192** (https://github.com/shigetosidumeda-cyber/autonomath-mcp/pull/192) |
 | 期待 LIVE | https://jpcite.com/tools/cost_saving_calculator.html |
 | 期待 LIVE | https://jpcite.com/tools/cost_saving_examples.md |
 | 配信方式 | (1) site/tools/ hard copy + (2) rsync filter `--include 'tools/*.md'` 拡張 |
