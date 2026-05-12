@@ -34,9 +34,47 @@ CATEGORIES: tuple[tuple[str, str], ...] = (
     ("enforcement", "enforcement"),
 )
 
+# Wave 46 tick2#10: top-level + press/legal/security companion .md files that live
+# alongside the public site root (and a handful of nested public subdirs). These
+# are NOT 1:1 companions to a cases/laws/enforcement HTML page — they are first
+# class doc surfaces (about, pricing, transparency, press kit, subprocessors,
+# security policy, etc.). Internal-only repo files (README.md, assets/BRAND.md)
+# are intentionally excluded; they are not user-facing.
+ROOT_INCLUDE_GLOBS: tuple[str, ...] = (
+    "*.html.md",                # site/about.html.md, site/pricing.html.md, etc.
+    "press/*.md",               # site/press/*.md (about/contact/fact-sheet/founders/quotes/screenshots)
+    "legal/*.md",               # site/legal/subprocessors.md (+ future legal/*.md)
+    "security/*.md",            # site/security/policy.md
+)
+ROOT_EXCLUDE_NAMES: frozenset[str] = frozenset(
+    {"README.md", "BRAND.md", "index.md"}
+)
+
 
 def _today_iso() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+
+def _enumerate_root_page_urls() -> list[tuple[str, str]]:
+    """Return (category, md_url) for top-level + press/legal/security companions.
+
+    Wave 46 tick2#10: previously the script emitted only cases/laws/enforcement
+    companions (10,264 URLs) while ``find site -name '*.md'`` reported 10,282
+    files on disk. The 18-file delta was top-level `.html.md` companions plus
+    press/legal/security `*.md` surfaces. This helper enumerates them so the
+    sitemap reflects the full public companion-md surface.
+
+    README.md / BRAND.md (repo-internal) and index.md are excluded.
+    """
+    entries: list[tuple[str, str]] = []
+    for pattern in ROOT_INCLUDE_GLOBS:
+        for p in sorted(SITE_DIR.glob(pattern)):
+            if not p.is_file() or p.name in ROOT_EXCLUDE_NAMES:
+                continue
+            rel = p.relative_to(SITE_DIR).as_posix()
+            md_url = f"{CANONICAL_BASE}/{rel}"
+            entries.append(("root", md_url))
+    return entries
 
 
 def _enumerate_md_urls(require_md_exists: bool, scan_md_only: bool = False) -> list[tuple[str, str]]:
@@ -120,14 +158,42 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument(
         "--scan-md-only",
         action="store_true",
+        default=True,
         help=(
-            "Wave 22 correction: enumerate every .md file on disk directly "
-            "(reflects real companion-Markdown inventory ~4,786) instead of "
-            "deriving URLs from .html siblings."
+            "Wave 22 correction (Wave 46 default ON): enumerate every .md "
+            "file on disk directly so the sitemap matches the real on-disk "
+            "companion-Markdown inventory (~10,264 across cases/laws/"
+            "enforcement). Use --no-scan-md-only to fall back to the legacy "
+            "HTML-derived mode (which under-counts cases by ~1086)."
         ),
+    )
+    p.add_argument(
+        "--no-scan-md-only",
+        dest="scan_md_only",
+        action="store_false",
+        help="Disable Wave 22 .md-direct scan (legacy HTML-derived mode).",
+    )
+    p.add_argument(
+        "--include-root-pages",
+        action="store_true",
+        default=True,
+        help=(
+            "Wave 46 tick2#10: include top-level + press/legal/security "
+            ".md companions (about/pricing/transparency/press/legal/security). "
+            "Default True so the sitemap reflects the full disk companion-md "
+            "inventory. Pass --no-include-root-pages to disable."
+        ),
+    )
+    p.add_argument(
+        "--no-include-root-pages",
+        dest="include_root_pages",
+        action="store_false",
+        help="Disable Wave 46 root-page inclusion (legacy 3-category mode).",
     )
     args = p.parse_args(argv)
     entries = _enumerate_md_urls(args.require_md_exists, scan_md_only=args.scan_md_only)
+    if args.include_root_pages:
+        entries.extend(_enumerate_root_page_urls())
     if not entries:
         sys.stderr.write("[sitemap-companion-md] no .md URLs to emit\n")
         return 2
