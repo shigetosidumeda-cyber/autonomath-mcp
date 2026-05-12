@@ -140,7 +140,7 @@ def _canonical_payload(
 def _derive_source_doc(conn: sqlite3.Connection, fact_id: str) -> str | None:
     try:
         cur = conn.execute(
-            "SELECT source_id FROM am_entity_facts WHERE fact_id = ? LIMIT 1",
+            "SELECT source_id FROM am_entity_facts WHERE id = ? LIMIT 1",
             (fact_id,),
         )
         row = cur.fetchone()
@@ -160,7 +160,7 @@ def _derive_confidence(
 ) -> tuple[float | None, float | None]:
     try:
         cur = conn.execute(
-            "SELECT confidence FROM am_entity_facts WHERE fact_id = ? LIMIT 1",
+            "SELECT confidence FROM am_entity_facts WHERE id = ? LIMIT 1",
             (fact_id,),
         )
         row = cur.fetchone()
@@ -180,7 +180,7 @@ def _derive_confidence(
 def _derive_extracted_at(conn: sqlite3.Connection, fact_id: str) -> str:
     try:
         cur = conn.execute(
-            "SELECT created_at FROM am_entity_facts WHERE fact_id = ? LIMIT 1",
+            "SELECT created_at FROM am_entity_facts WHERE id = ? LIMIT 1",
             (fact_id,),
         )
         row = cur.fetchone()
@@ -292,14 +292,14 @@ def _walk(
     while True:
         if cursor is None:
             cur = conn.execute(
-                "SELECT fact_id FROM am_entity_facts "
-                "ORDER BY fact_id ASC LIMIT ?",
+                "SELECT id FROM am_entity_facts "
+                "ORDER BY id ASC LIMIT ?",
                 (chunk_size,),
             )
         else:
             cur = conn.execute(
-                "SELECT fact_id FROM am_entity_facts "
-                "WHERE fact_id > ? ORDER BY fact_id ASC LIMIT ?",
+                "SELECT id FROM am_entity_facts "
+                "WHERE id > ? ORDER BY id ASC LIMIT ?",
                 (cursor, chunk_size),
             )
         batch = cur.fetchall()
