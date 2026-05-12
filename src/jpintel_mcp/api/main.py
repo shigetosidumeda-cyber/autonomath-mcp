@@ -60,6 +60,10 @@ from jpintel_mcp.api.billing import router as billing_router
 from jpintel_mcp.api.billing_breakdown import router as billing_breakdown_router
 from jpintel_mcp.api.billing_v2 import router as billing_v2_router
 from jpintel_mcp.api.bulk_evaluate import router as bulk_evaluate_router
+from jpintel_mcp.api.x402_payment import (
+    X402PaymentMiddleware,
+    router as x402_payment_router,
+)
 from jpintel_mcp.api.calendar import router as calendar_router
 from jpintel_mcp.api.case_cohort_match import router as case_cohort_match_router
 from jpintel_mcp.api.case_studies import router as case_studies_router
@@ -1566,6 +1570,17 @@ def create_app() -> FastAPI:
     # CustomerCap so Starlette executes it before cap/router work; replayed
     # responses return directly and do not create usage_events rows.
     app.add_middleware(IdempotencyMiddleware)
+    # Wave 48 — x402 full payment chain (HTTP 402 → proof verify → 200).
+    # Gates 5 canonical endpoints listed in `am_x402_endpoint_config`
+    # (/v1/search, /v1/programs, /v1/cases, /v1/audit_workpaper,
+    # /v1/semantic_search). Pass-through for any path not in the registry,
+    # so non-x402 traffic incurs only a single sqlite SELECT and is
+    # unaffected. Added AFTER IdempotencyMiddleware (Starlette LIFO → runs
+    # BEFORE idempotency) so a 402 challenge response is never cached as
+    # an idempotent reply for a later valid proof. Added BEFORE
+    # RateLimitMiddleware so a 429'd request never wastes a fresh
+    # challenge nonce. See api/x402_payment.py.
+    app.add_middleware(X402PaymentMiddleware)
     # D9 burst throttle: 10 req/s per paid key, 1 req/s per anon IP. Sits
     # OUTSIDE the cap middleware (added later → wraps cap) so a 429 never
     # records a usage_events row. Whitelists /healthz, /readyz, Stripe
@@ -2470,6 +2485,12 @@ def create_app() -> FastAPI:
     # MPP = Managed Provider Plan (Wave 21 D4+D5+D6 brand stack, naming-only).
     # NO anon-quota — discovery + acquire endpoints predate key issuance.
     app.include_router(billing_v2_router)
+    # Wave 48 — x402 full payment chain diagnostic + audit endpoints
+    # (/v1/x402/payment/preview, /v1/x402/payment/quote,
+    # /v1/x402/payment/log/recent). The actual 402-or-200 gating happens
+    # in X402PaymentMiddleware above; this router exposes the helper
+    # surface so agents and ops can introspect the live state.
+    app.include_router(x402_payment_router)
     # P3.5 Stripe edge cases (refund_request intake live; dispute/tax-exempt/
     # currency/invoice-modification/Stripe-Tax-fallback are dispatched from
     # billing.webhook itself, only the refund_request REST endpoint mounts here).
