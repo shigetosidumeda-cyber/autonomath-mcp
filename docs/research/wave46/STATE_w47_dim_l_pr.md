@@ -2,7 +2,7 @@
 
 date: 2026-05-12
 branch: feat/jpcite_2026_05_12_wave47_dim_l_migration
-PR#: <TBD post-push>
+PR#: #155 (https://github.com/shigetosidumeda-cyber/autonomath-mcp/pull/155)
 
 ## Scope
 
