@@ -1,13 +1,16 @@
 // rum_funnel_collector.js — Wave 49 G1 organic funnel beacon.
 //
 // Sibling of `rum.js` (Wave 16 E1, Core Web Vitals). This collector
-// targets the 4-step organic funnel:
+// targets the 5-step organic funnel (Wave 49 tick#3 calc wire):
 //
-//   landing  → user lands on /index.html
-//   free     → user reads /onboarding.html (free 3 req/day intro)
-//   signup   → user reaches /pricing.html and clicks the topup CTA
-//   topup    → completed by Stripe webhook on the server side; this
-//              file only emits the *visit* and *click* upstream events.
+//   landing       → user lands on /index.html
+//   free          → user reads /onboarding.html (free 3 req/day intro)
+//   signup        → user reaches /pricing.html and clicks the topup CTA
+//   topup         → completed by Stripe webhook on the server side; this
+//                   file only emits the *visit* and *click* upstream events.
+//   calc_engaged  → user opens /tools/cost_saving_calculator and interacts
+//                   (cost-saving v2 reproducibility surface, organic-only
+//                    monetization moat — Wave 49 tick#3 G1 measurement).
 //
 // Why a separate beacon from rum.js?
 //   - rum.js measures Core Web Vitals (performance / page health).
@@ -54,6 +57,10 @@
     if (p.indexOf("/onboarding") === 0) return "free";
     if (p.indexOf("/pricing") === 0) return "signup";
     if (p.indexOf("/topup") === 0 || p.indexOf("/checkout") === 0) return "topup";
+    // Wave 49 tick#3: calculator engagement (cost-saving v2 surface).
+    // Anchored to the canonical tool path so future locales (/en/tools/…)
+    // can be added without disturbing the other 4 steps.
+    if (p.indexOf("/tools/cost_saving_calculator") === 0) return "calc_engaged";
     return "landing";
   }
 
