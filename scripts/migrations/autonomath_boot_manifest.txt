@@ -200,3 +200,15 @@
 # unchanged; one composed call = one billable unit). Pure additive
 # (CREATE TABLE/INDEX/VIEW IF NOT EXISTS); boot-time safe; idempotent.
 276_composable_tools.sql
+# 2026-05-12 Wave 47 — Dim Q (time_machine + counterfactual) storage layer.
+# am_monthly_snapshot_log ((as_of_date, table_name) UNIQUE, row_count +
+# sha256 fingerprint) + am_counterfactual_eval_log (append-only
+# as_of_date + query + counterfactual_input JSON 8 KiB cap + result_diff
+# JSON 8 KiB cap) + v_monthly_snapshot_latest helper view. Pairs with
+# scripts/etl/build_monthly_snapshot.py (deterministic monthly sha256
+# digest batch, 5y retention via --gc) and the existing time-machine
+# index migration wave24_180_time_machine_index.sql. Schema only — no
+# DML inserted by 277; the batch backfills 60 monthly windows on first
+# run. Pure additive (CREATE TABLE/INDEX/VIEW IF NOT EXISTS); boot-time
+# safe; idempotent.
+277_time_machine.sql
