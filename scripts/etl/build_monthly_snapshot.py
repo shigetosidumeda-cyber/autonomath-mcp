@@ -275,6 +275,27 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     if not args.db.exists():
+        if args.dry_run:
+            # Wave 49 G3 cron hydrate fix: a dry-run plan must succeed even
+            # when the operator DB has not been hydrated yet. The snapshotter
+            # is read-only in this mode, so emit a placeholder report and
+            # exit 0.
+            LOG.warning("db not found (dry-run): %s", args.db)
+            print(
+                json.dumps(
+                    {
+                        "dim": "Q",
+                        "wave": 47,
+                        "dry_run": True,
+                        "db_not_found_dry_run": True,
+                        "db": str(args.db),
+                        "as_of_date": args.as_of,
+                        "snapshots": [],
+                        "gc_removed": 0,
+                    }
+                )
+            )
+            return 0
         LOG.error("db %s does not exist", args.db)
         return 2
 
