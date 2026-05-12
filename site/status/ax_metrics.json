@@ -1,0 +1,107 @@
+{
+  "generated_at": "2026-05-12T22:21:54.499272+00:00",
+  "window_days": 7,
+  "days": [
+    {
+      "date": "2026-05-06",
+      "agent_ratio_pct": null,
+      "mcp_tool_calls": 0,
+      "task_success_pct": null,
+      "auth_success_pct": null,
+      "llms_txt_requests": 0,
+      "llms_relative_to_html": 0.0,
+      "agent_conversion_pct": null,
+      "agent_tokens": 0,
+      "raw_agent_requests": 0,
+      "raw_total_requests": 0
+    },
+    {
+      "date": "2026-05-07",
+      "agent_ratio_pct": null,
+      "mcp_tool_calls": 0,
+      "task_success_pct": null,
+      "auth_success_pct": null,
+      "llms_txt_requests": 0,
+      "llms_relative_to_html": 0.0,
+      "agent_conversion_pct": null,
+      "agent_tokens": 0,
+      "raw_agent_requests": 0,
+      "raw_total_requests": 0
+    },
+    {
+      "date": "2026-05-08",
+      "agent_ratio_pct": null,
+      "mcp_tool_calls": 0,
+      "task_success_pct": null,
+      "auth_success_pct": null,
+      "llms_txt_requests": 0,
+      "llms_relative_to_html": 0.0,
+      "agent_conversion_pct": null,
+      "agent_tokens": 0,
+      "raw_agent_requests": 0,
+      "raw_total_requests": 0
+    },
+    {
+      "date": "2026-05-09",
+      "agent_ratio_pct": null,
+      "mcp_tool_calls": 0,
+      "task_success_pct": null,
+      "auth_success_pct": null,
+      "llms_txt_requests": 0,
+      "llms_relative_to_html": 0.0,
+      "agent_conversion_pct": null,
+      "agent_tokens": 0,
+      "raw_agent_requests": 0,
+      "raw_total_requests": 0
+    },
+    {
+      "date": "2026-05-10",
+      "agent_ratio_pct": null,
+      "mcp_tool_calls": 0,
+      "task_success_pct": null,
+      "auth_success_pct": null,
+      "llms_txt_requests": 0,
+      "llms_relative_to_html": 0.0,
+      "agent_conversion_pct": null,
+      "agent_tokens": 0,
+      "raw_agent_requests": 0,
+      "raw_total_requests": 0
+    },
+    {
+      "date": "2026-05-11",
+      "agent_ratio_pct": null,
+      "mcp_tool_calls": 0,
+      "task_success_pct": null,
+      "auth_success_pct": null,
+      "llms_txt_requests": 0,
+      "llms_relative_to_html": 0.0,
+      "agent_conversion_pct": null,
+      "agent_tokens": 0,
+      "raw_agent_requests": 0,
+      "raw_total_requests": 0
+    },
+    {
+      "date": "2026-05-12",
+      "agent_ratio_pct": null,
+      "mcp_tool_calls": 0,
+      "task_success_pct": null,
+      "auth_success_pct": null,
+      "llms_txt_requests": 0,
+      "llms_relative_to_html": 0.0,
+      "agent_conversion_pct": null,
+      "agent_tokens": 0,
+      "raw_agent_requests": 0,
+      "raw_total_requests": 0
+    }
+  ],
+  "summary": {
+    "agent_ratio_p50": null,
+    "agent_ratio_p95": null,
+    "agent_ratio_p99": null,
+    "mcp_calls_weekly": 0,
+    "mcp_calls_monthly": 0,
+    "iserror_pct": null,
+    "llms_relative_to_html": 0.0,
+    "agent_tokens_issued": 0
+  }
+}
