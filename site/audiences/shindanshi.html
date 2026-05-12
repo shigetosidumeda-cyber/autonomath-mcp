@@ -6,10 +6,10 @@
 <meta name="theme-color" content="#ffffff">
 <meta name="color-scheme" content="light dark">
 <title>中小企業診断士向け jpcite — 月次 saved search + 補完制度 + 申請 kit</title>
-<meta name="description" content="中小企業診断士向け jpcite 活用ガイド。月次 saved search 50 顧問先 fan-out、eligibility chain 適格性連鎖、renewal forecast、補完制度 探索、申請 kit scaffold。月次あたり ¥210/月 (推定値) で AI 単体比 delta ¥40 万+。¥3/billable unit 完全従量、anonymous 3 req/日 free per IP。">
+<meta name="description" content="中小企業診断士向け jpcite 活用ガイド。月次 saved search 30 顧問先 fan-out、eligibility chain 適格性連鎖、renewal forecast、補完制度 探索、申請 kit scaffold。月次 30 顧問 × 10 req = 300 req で ¥900/月、純 LLM 公開情報 fetch ¥90,000/月 との差分 節約 ¥89,100/月 (約 99% off)。¥3/billable unit 完全従量、anonymous 3 req/日 free per IP。">
 
 <meta property="og:title" content="中小企業診断士向け jpcite">
-<meta property="og:description" content="月次 saved search 50 顧問先 + 補完制度 + 申請 kit scaffold を Claude Desktop 経由で 1 query。AI 単体比 delta ¥40 万+/月 (推定値)。">
+<meta property="og:description" content="月次 saved search 30 顧問先 + 補完制度 + 申請 kit scaffold を Claude Desktop 経由で 1 query。月次 300 req で純 LLM ¥90,000 → jpcite ¥900、節約 ¥89,100/月 (推定値)。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/audiences/shindanshi">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -96,7 +96,7 @@
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    {"@type": "Question", "name": "顧問先 50 社の月次 fan-out コストは?", "acceptedAnswer": {"@type": "Answer", "text": "50 社 × 月 1.4 req 平均 = 70 req/月 = ¥210/月 (税別) が目安。saved_searches.profile_ids で per-client fan-out 可能。"}},
+    {"@type": "Question", "name": "顧問先 30 社の月次 fan-out コストは?", "acceptedAnswer": {"@type": "Answer", "text": "30 顧問 × 10 req = 300 req/月 = ¥900/月 (税別) が目安。純 LLM 公開情報 fetch ¥90,000/月 との差分で 節約 ¥89,100/月 (約 99% off、推定値)。saved_searches.profile_ids で per-client fan-out 可能。"}},
     {"@type": "Question", "name": "中小企業診断士法との整合は?", "acceptedAnswer": {"@type": "Answer", "text": "中小企業診断士は国家資格ですが独占業務は持たないため、業法 fence は行政書士法 §1 (申請書面 generation 不可) と弁護士法 §72 (法律判断 不可) を遵守します。"}},
     {"@type": "Question", "name": "申請 kit はそのまま提出できますか?", "acceptedAnswer": {"@type": "Answer", "text": "いいえ。scaffold (cover letter draft + 必要書類 checklist + 一次 URL) のみで、最終申請書面は診断士本人の判断で作成してください (行政書士法 §1 fence)。"}}
   ]
@@ -200,61 +200,61 @@
  </div>
  </section>
 
- <section class="features" aria-labelledby="roi-title">
+ <section class="features" aria-labelledby="cost-saving-title">
  <div class="container">
- <h2 id="roi-title" style="margin-bottom:16px;">5 task × ROI 比較 (AI 単体 vs AI + jpcite)</h2>
- <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: 数値は中堅診断士 (50 顧問先) の月次想定値 (推定値)。「AI 単体」は外部公的制度根拠なしの汎用 LLM 出力、「AI + jpcite」は jpcite の MCP 1-call 検索を組合せた場合を指します。個別事務所の業務量・顧問先数により変動するため、参考値として提示します。</p>
+ <h2 id="cost-saving-title" style="margin-bottom:16px;">Cost saving calculator (月次 30 顧問 × 10 req: 純 LLM vs jpcite ¥3/req)</h2>
+ <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: 数値は中堅診断士 30 顧問 × 月 10 req の想定値 (推定値)。「純 LLM」は外部 web search + token 課金で同じ公開情報 (顧問先別 keyword search・eligibility chain・renewal forecast 素材・補完制度・申請 kit 素材) を fetch した場合、「jpcite ¥3/req」は jpcite MCP 1-call 経路で同じ事実検索を回した場合の差分。詳細仮定は <a href="/docs/canonical/cost_saving_examples.md">docs/canonical/cost_saving_examples.md</a> case 4 を参照。</p>
  <div style="overflow-x:auto;">
  <table style="width:100%;border-collapse:collapse;font-size:14px;">
  <thead>
  <tr style="background:var(--bg-subtle,#fafafa);border-bottom:2px solid var(--border);">
  <th style="padding:12px;text-align:left;">task</th>
- <th style="padding:12px;text-align:left;">AI 単体 (baseline)</th>
- <th style="padding:12px;text-align:left;">AI + jpcite</th>
- <th style="padding:12px;text-align:left;">delta</th>
+ <th style="padding:12px;text-align:left;">純 LLM コスト (baseline)</th>
+ <th style="padding:12px;text-align:left;">jpcite ¥3/req</th>
+ <th style="padding:12px;text-align:left;">節約 ¥/月</th>
  </tr>
  </thead>
  <tbody>
  <tr style="border-bottom:1px solid var(--border);">
- <td style="padding:12px;"><strong>1. 月次 saved search (50 顧問先)</strong></td>
- <td style="padding:12px;">顧問先別 keyword 手動検索 50 × 0.5h = 25h × ¥8,000 = ¥200,000</td>
- <td style="padding:12px;">cron 自動実行 70 req ¥210 (saved_searches.profile_ids fan-out)</td>
- <td style="padding:12px;">¥199,790/月</td>
+ <td style="padding:12px;"><strong>1. 月次 saved search (30 顧問先)</strong></td>
+ <td style="padding:12px;">顧問先別 keyword fetch source 4,000 tokens × 30 + 2 search × 30 ≈ ¥24,000/月</td>
+ <td style="padding:12px;">90 req ¥270 (saved_searches.profile_ids fan-out, cron 自動)</td>
+ <td style="padding:12px;">¥23,730/月</td>
  </tr>
  <tr style="border-bottom:1px solid var(--border);">
  <td style="padding:12px;"><strong>2. eligibility chain (適格性連鎖)</strong></td>
- <td style="padding:12px;">業種・規模・要件 × 制度 hallucination リスク + 手動裏取り 50 × 0.3h = 15h × ¥8,000 = ¥120,000</td>
- <td style="padding:12px;">50 req ¥150 (apply_eligibility_chain_am, Wave 21)</td>
- <td style="padding:12px;">¥119,850/月</td>
+ <td style="padding:12px;">業種・規模・要件 × 制度 source 3,500 tokens × 30 + 1 search × 30 ≈ ¥18,000/月</td>
+ <td style="padding:12px;">60 req ¥180 (apply_eligibility_chain_am, Wave 21)</td>
+ <td style="padding:12px;">¥17,820/月</td>
  </tr>
  <tr style="border-bottom:1px solid var(--border);">
  <td style="padding:12px;"><strong>3. renewal forecast (来期予測)</strong></td>
- <td style="padding:12px;">過去 5 年公募 cadence 手動集計 50 × 0.4h = 20h × ¥8,000 = ¥160,000</td>
- <td style="padding:12px;">50 req ¥150 (forecast_program_renewal, Wave 22, 4-signal weighted)</td>
- <td style="padding:12px;">¥159,850/月</td>
+ <td style="padding:12px;">過去 5 年公募 cadence source 5,000 tokens × 30 + 2 search × 30 ≈ ¥24,000/月</td>
+ <td style="padding:12px;">60 req ¥180 (forecast_program_renewal, Wave 22, 4-signal weighted)</td>
+ <td style="padding:12px;">¥23,820/月</td>
  </tr>
  <tr style="border-bottom:1px solid var(--border);">
  <td style="padding:12px;"><strong>4. 補完制度 探索</strong></td>
- <td style="padding:12px;">主補助金 × 上乗せ × 補完制度 手動マッピング 10 × 1.5h = 15h × ¥8,000 = ¥120,000</td>
- <td style="padding:12px;">10 req ¥30 (find_complementary_programs_am, Wave 21)</td>
- <td style="padding:12px;">¥119,970/月</td>
+ <td style="padding:12px;">主補助金 × 上乗せ × 補完制度 source 2,500 tokens × 30 + 1 search × 30 ≈ ¥12,000/月</td>
+ <td style="padding:12px;">45 req ¥135 (find_complementary_programs_am, Wave 21)</td>
+ <td style="padding:12px;">¥11,865/月</td>
  </tr>
  <tr style="border-bottom:1px solid var(--border);">
  <td style="padding:12px;"><strong>5. 申請 kit scaffold</strong></td>
- <td style="padding:12px;">cover letter + 必要書類 list + 採択例 手動作成 10 × 1.5h = 15h × ¥8,000 = ¥120,000</td>
- <td style="padding:12px;">10 req ¥30 (bundle_application_kit, Wave 22)</td>
- <td style="padding:12px;">¥119,970/月</td>
+ <td style="padding:12px;">cover letter + 必要書類 list + 採択例 source 3,000 tokens × 30 + 1 search × 30 ≈ ¥12,000/月</td>
+ <td style="padding:12px;">45 req ¥135 (bundle_application_kit, Wave 22)</td>
+ <td style="padding:12px;">¥11,865/月</td>
  </tr>
  <tr style="background:var(--bg-subtle,#fafafa);font-weight:600;">
- <td style="padding:12px;">合計 (月次)</td>
- <td style="padding:12px;">¥720,000 (86h × ¥8,000)</td>
- <td style="padding:12px;">¥210-¥570/月 (70-190 req)</td>
- <td style="padding:12px;"><strong>delta ¥40 万+/月</strong></td>
+ <td style="padding:12px;">合計 (月次 30 顧問 × 10 req)</td>
+ <td style="padding:12px;">¥90,000/月</td>
+ <td style="padding:12px;">¥900/月 (300 req × ¥3)</td>
+ <td style="padding:12px;"><strong>節約 ¥89,100/月 (約 99% off)</strong></td>
  </tr>
  </tbody>
  </table>
  </div>
- <p style="font-size:13px;color:var(--text-muted);margin-top:12px;">※ 「AI 単体 86h」は 50 顧問先 × 5 task の手動工数累計。実際の手動工数 (¥8,000/h) は経験年数・顧問先業種により変動。jpcite 側 ¥210-¥570 は paid 70-190 req のレンジ (anonymous は per-IP day cap で乗らない想定)。誇大広告意図なし、推定値として提示。</p>
+ <p style="font-size:13px;color:var(--text-muted);margin-top:12px;">※ 「純 LLM ¥90,000/月」は token 単価 ¥300/1M (mid-cost reasoning model 想定)、source 約 18,000 tokens × 30 顧問 + 7 search call × 30 顧問 × ¥0.5 + cache miss 増分で概算。Claude Opus / GPT-5 等 ¥2,000+/1M を採用すれば節約幅は 7 倍に拡大。jpcite 側 ¥900/月 は 300 req × ¥3 完全従量 (税別)。「節約 ¥89,100/月」は LLM 請求の削減保証ではなく入力文脈 + 課金 call 数の参考比較で、誇大広告意図なし。最終的な申請判断は有資格者にご相談ください。</p>
  </div>
  </section>
 
