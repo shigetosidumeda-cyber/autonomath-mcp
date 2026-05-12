@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<!-- CWV-HARDENED -->
+<meta charset="UTF-8">
+<meta name="theme-color" content="#ffffff">
+<title>はじめての jpcite — 4 step オンボーディング</title>
+<meta name="description" content="jpcite を最短で使い始める 4 step linear ガイド: (1) 匿名 3 req/日 無料で試す → (2) GitHub OAuth 1 click サインイン → (3) Credit Wallet / x402 / Stripe から 1 ルート選んで topup → (4) API/MCP を呼ぶ。階層プラン・最低利用期間・解約違約金なし。">
+
+<meta property="og:title" content="はじめての jpcite — 4 step オンボーディング">
+<meta property="og:description" content="¥0 から始めて従量課金まで 4 step。ステップごとに「次のアクション」と節約額の目安を提示。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jpcite.com/onboarding">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="はじめての jpcite — 4 step オンボーディング">
+<meta name="twitter:description" content="¥0 から始めて従量課金まで 4 step。">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
+
+<link rel="canonical" href="https://jpcite.com/onboarding">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/onboarding">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/onboarding">
+<link rel="preconnect" href="https://api.jpcite.com" crossorigin>
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preload" as="font" type="font/woff2" href="/static/fonts/noto-sans-jp-3e6b27914d.woff2" crossorigin>
+<link rel="stylesheet" href="/static/fonts/noto-sans-jp.css">
+<link rel="stylesheet" href="/styles.css?v=20260429a">
+
+<script defer src="/analytics.js?v=20260503a"></script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "jpcite を 4 step で使い始める",
+  "description": "匿名 3 req/日 無料 → GitHub OAuth サインイン → 3 ルートから topup → API/MCP 呼出。階層プラン・最低利用期間・解約違約金なし。",
+  "totalTime": "PT3M",
+  "estimatedCost": {"@type": "MonetaryAmount", "currency": "JPY", "value": "0"},
+  "step": [
+    {
+      "@type": "HowToStep",
+      "position": 1,
+      "name": "Step 1 — 匿名 3 req/日 無料で試す",
+      "text": "登録不要。playground.html を開いて 3 回まで実際の REST 応答を試せます。JST 翌日 00:00 に枠がリセットされます。",
+      "url": "https://jpcite.com/playground.html?flow=evidence3"
+    },
+    {
+      "@type": "HowToStep",
+      "position": 2,
+      "name": "Step 2 — GitHub OAuth または magic link で 1 click サインイン",
+      "text": "GitHub アカウント連携または email magic link で 1 click サインイン。Stripe アカウントは後段で必要なときだけ作成。",
+      "url": "https://jpcite.com/signin.html"
+    },
+    {
+      "@type": "HowToStep",
+      "position": 3,
+      "name": "Step 3 — 3 ルートから topup",
+      "text": "Credit Wallet (¥前払い + auto-topup)、x402 USDC、Stripe 自動課金の 3 ルートから 1 つ選択。auto-topup default ON で中断ゼロ。",
+      "url": "https://jpcite.com/wallet.html"
+    },
+    {
+      "@type": "HowToStep",
+      "position": 4,
+      "name": "Step 4 — API / MCP を呼ぶ",
+      "text": "ダッシュボードで API キーを発行、または MCP server URL を Claude Desktop / Cursor / Continue に登録。1 呼び出し = 税込 ¥3.30。",
+      "url": "https://jpcite.com/dashboard.html#keys"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "address": {"@type": "PostalAddress", "addressCountry": "JP"}
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://jpcite.com/onboarding#page",
+      "name": "はじめての jpcite — 4 step オンボーディング",
+      "url": "https://jpcite.com/onboarding",
+      "inLanguage": "ja",
+      "isPartOf": {"@type": "WebSite", "name": "jpcite", "url": "https://jpcite.com"}
+    }
+  ]
+}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+  .ob-wrap{max-width:920px;margin:0 auto;padding:24px 16px 60px}
+  .ob-hero{padding:24px 0 12px}
+  .ob-hero h1{font-size:clamp(28px,6vw,40px);line-height:1.15;margin:0 0 12px;letter-spacing:-.01em}
+  .ob-hero p{font-size:17px;line-height:1.7;margin:0 0 16px;color:var(--text)}
+  .ob-progress{display:flex;align-items:center;gap:8px;margin:20px 0 26px;font-size:13px;color:var(--text-muted,#6b7280)}
+  .ob-progress-bar{flex:1;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden}
+  .ob-progress-fill{height:100%;background:#4f46e5;width:0;transition:width .3s ease}
+  .ob-step{border:1px solid var(--border,#e5e7eb);border-radius:12px;padding:22px 24px;margin:0 0 18px;background:var(--bg,#fff)}
+  .ob-step h2{font-size:20px;margin:0 0 8px}
+  .ob-step-num{display:inline-block;background:#4f46e5;color:#fff;border-radius:999px;width:28px;height:28px;text-align:center;line-height:28px;font-size:14px;font-weight:700;margin-right:8px;vertical-align:middle}
+  .ob-step .ob-desc{font-size:15px;line-height:1.7;margin:0 0 14px;color:var(--text)}
+  .ob-step .ob-saving{background:#ecfdf5;border:1px solid #a7f3d0;border-radius:8px;padding:10px 14px;font-size:13px;color:#065f46;margin:0 0 14px}
+  .ob-step .ob-saving strong{color:#047857}
+  .ob-cta{display:inline-block;background:#4f46e5;color:#fff;text-decoration:none;border-radius:8px;padding:12px 22px;font-weight:600;font-size:15px;margin-right:8px}
+  .ob-cta:hover{background:#4338ca}
+  .ob-skip{display:inline-block;color:var(--text-muted,#6b7280);text-decoration:none;font-size:13px;padding:8px 12px}
+  .ob-skip:hover{color:var(--text,#111827);text-decoration:underline}
+  .ob-recap{margin:24px 0 0;background:#fafaf9;border-radius:10px;padding:14px 18px;font-size:13px;color:#374151;line-height:1.65}
+  .ob-recap strong{color:#0a4d8c}
+  .ob-faq{margin-top:32px;border-top:1px solid var(--border,#e5e7eb);padding-top:24px}
+  .ob-faq h2{font-size:18px;margin:0 0 12px}
+  .ob-faq details{border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:10px 14px;margin:0 0 8px;background:var(--bg,#fff)}
+  .ob-faq summary{cursor:pointer;font-weight:600;font-size:14px}
+  .ob-faq details p{margin:8px 0 4px;font-size:14px;line-height:1.65;color:#374151}
+  @media (prefers-color-scheme:dark){
+    .ob-step{background:#1f2937;border-color:#374151}
+    .ob-step .ob-saving{background:#064e3b;border-color:#10b981;color:#a7f3d0}
+    .ob-step .ob-saving strong{color:#a7f3d0}
+    .ob-recap{background:#1f2937;color:#d1d5db}
+    .ob-faq details{background:#1f2937;border-color:#374151}
+    .ob-faq details p{color:#d1d5db}
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="jpcite ホーム">
+      <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+    </a>
+    <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="about.html">運営について</a>
+      <a href="products.html">プロダクト</a>
+      <a href="/docs/">ドキュメント</a>
+      <a href="pricing.html">料金</a>
+      <a href="onboarding.html" aria-current="page">はじめての方</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <div class="ob-wrap">
+    <nav class="breadcrumb" aria-label="パンくずリスト" style="margin:0 0 12px;font-size:13px;color:var(--text-muted,#6b7280);">
+      <a href="/">ホーム</a> <span aria-hidden="true">›</span>
+      <a href="pricing.html">料金</a> <span aria-hidden="true">›</span>
+      <span aria-current="page">はじめての方</span>
+    </nav>
+
+    <div data-billing-progress></div>
+
+    <section class="ob-hero">
+      <h1>¥0 から始めて 4 step で API を呼ぶ</h1>
+      <p>
+        登録なしで匿名 3 req/日 試せます。気に入ったら 1 click サインイン → 3 ルートから topup → API/MCP を呼び出すだけ。月額固定なし、契約期間なし、解約手数料なし。
+      </p>
+      <div class="ob-progress" aria-label="進捗バー">
+        <span id="ob-progress-label">step 1 / 4</span>
+        <span class="ob-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="4" aria-valuenow="1">
+          <span class="ob-progress-fill" id="ob-progress-fill"></span>
+        </span>
+      </div>
+    </section>
+
+    <article class="ob-step" id="step-free" data-step-id="free" aria-labelledby="ob-step-1-h">
+      <h2 id="ob-step-1-h"><span class="ob-step-num">1</span>匿名 3 req/日を無料で試す</h2>
+      <p class="ob-desc">
+        登録不要。playground で実際の REST 応答を 3 回まで試せます。JST 翌日 00:00 に枠がリセットされ、自然なペースで使い続けられます。
+        <code>/v1/openapi.json</code> と <code>/healthz</code> はいつでも free quota の外で公開しています。
+      </p>
+      <p class="ob-saving">
+        <strong>節約額の目安:</strong> 1 案件取りこぼし回避で <strong>¥36-120万 / 年</strong> (顧問契約解除リスク回避、historical ROI 1,000-3,600 倍 表現)。
+      </p>
+      <a class="ob-cta" href="/playground.html?flow=evidence3" data-cta="step-1">3 req 無料で試す &rarr;</a>
+      <a class="ob-skip" href="#step-signup" data-skip="step-1">サインインから始める</a>
+    </article>
+
+    <article class="ob-step" id="step-signup" data-step-id="signup" aria-labelledby="ob-step-2-h">
+      <h2 id="ob-step-2-h"><span class="ob-step-num">2</span>GitHub OAuth または magic link で 1 click サインイン</h2>
+      <p class="ob-desc">
+        GitHub アカウント連携または email magic link を選べます。Stripe アカウント・カード入力は後段で必要なときだけ作成、ここでは <strong>無料枠の拡張</strong>と<strong>利用量ダッシュボード</strong>が解放されるだけです。
+      </p>
+      <p class="ob-saving">
+        <strong>迷子ゼロ要素:</strong> ダッシュボード上部に常に「次の step は X」と「残り req / topup 状況」を表示。30 秒操作なしで hint modal が出ます。
+      </p>
+      <a class="ob-cta" href="/signin.html" data-cta="step-2">サインインする &rarr;</a>
+      <a class="ob-skip" href="#step-topup" data-skip="step-2">先に topup ルートを比較</a>
+    </article>
+
+    <article class="ob-step" id="step-topup" data-step-id="topup" aria-labelledby="ob-step-3-h">
+      <h2 id="ob-step-3-h"><span class="ob-step-num">3</span>3 ルートから topup を選ぶ</h2>
+      <p class="ob-desc">
+        Credit Wallet (¥前払い + auto-topup default ON)、x402 USDC (API キー不要・2 秒決済)、Stripe 自動課金の 3 ルートを並列に用意。<strong>1 プロトコル絞り禁止</strong>で運用環境を選びません。
+      </p>
+      <ul style="margin:0 0 14px;padding-left:18px;font-size:14px;line-height:1.7;color:var(--text,#111827);">
+        <li><strong>Credit Wallet</strong>: ¥1,000 単位の前払い、auto-topup default ON、spending alert 50%/80%/100%</li>
+        <li><strong>x402 USDC</strong>: HTTP 402 challenge → USDC ($0.001 から)、API キー不要</li>
+        <li><strong>Stripe 自動課金</strong>: 月末締め・適格請求書自動発行 (T8010001213708)</li>
+      </ul>
+      <p class="ob-saving">
+        <strong>節約額の目安:</strong> auto-topup で <strong>0 分中断</strong>。x402 なら登録ステップを完全 skip して即課金可能。
+      </p>
+      <a class="ob-cta" href="/wallet.html" data-cta="step-3">topup する &rarr;</a>
+      <a class="ob-skip" href="#step-use" data-skip="step-3">先に API キーを見る</a>
+    </article>
+
+    <article class="ob-step" id="step-use" data-step-id="use" aria-labelledby="ob-step-4-h">
+      <h2 id="ob-step-4-h"><span class="ob-step-num">4</span>API / MCP を呼ぶ</h2>
+      <p class="ob-desc">
+        ダッシュボードで API キーを発行するか、MCP server URL を Claude Desktop / Cursor / Continue に登録するだけです。1 呼び出し = 税込 ¥3.30。
+        <code>X-Cost-Cap-JPY</code> で予算上限、<code>Idempotency-Key</code> で二重課金抑制、<code>X-Client-Tag</code> で顧客別原価集計。
+      </p>
+      <p class="ob-saving">
+        <strong>節約額の目安:</strong> 顧問先 100 社月次レビュー = <strong>¥5,940 / 月</strong> (1,800 req × ¥3.30、業法 fence 自動付与)。
+      </p>
+      <a class="ob-cta" href="/dashboard.html#keys" data-cta="step-4">API キーを発行 &rarr;</a>
+      <a class="ob-skip" href="/docs/getting-started/" data-skip="step-4">MCP 接続ガイドを読む</a>
+    </article>
+
+    <div class="ob-recap">
+      <strong>4 step を一行で:</strong>
+      <a href="/playground.html?flow=evidence3">1. 試す</a> &rarr;
+      <a href="/signin.html">2. サインイン</a> &rarr;
+      <a href="/wallet.html">3. topup</a> &rarr;
+      <a href="/dashboard.html#keys">4. API 呼出</a>。
+      迷ったら下部の feedback widget から info@bookyou.net へ 1 click 送信できます。
+    </div>
+
+    <section class="ob-faq" aria-labelledby="ob-faq-h">
+      <h2 id="ob-faq-h">よくある質問</h2>
+      <details>
+        <summary>登録なしでどこまで試せますか?</summary>
+        <p>同一 IP から 3 req/日まで実際の本番 API を呼べます。<code>/v1/openapi.json</code> と <code>/healthz</code> は free quota の外で常時公開。</p>
+      </details>
+      <details>
+        <summary>3 つの topup ルートのどれを選ぶべきですか?</summary>
+        <p>個人/小規模なら Credit Wallet、AI agent 間 micro-payment なら x402 USDC、月末締め請求書が必要なら Stripe 自動課金。どれを選んでも単価 ¥3/req は変わりません。</p>
+      </details>
+      <details>
+        <summary>解約は?</summary>
+        <p>ダッシュボードから Stripe Customer Portal で 1 click キャンセル。当月利用分のみ ¥3/req で精算、解約違約金・最低利用期間なし。</p>
+      </details>
+      <details>
+        <summary>料金が変動することはありますか?</summary>
+        <p>通常検索・詳細は固定 ¥3/billable unit。batch / export は事前見積もり (<code>POST /v1/cost/preview</code>) で units と金額を表示してから実行できます。</p>
+      </details>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container">
+    <nav class="footer-nav" aria-label="フッターナビゲーション">
+      <a href="about.html">運営について</a>
+      <a href="pricing.html">料金</a>
+      <a href="/docs/">ドキュメント</a>
+      <a href="trust.html">信頼</a>
+      <a href="tos.html">利用規約</a>
+      <a href="privacy.html">プライバシー</a>
+      <a href="tokushoho.html">特商法</a>
+      <a href="mailto:info@bookyou.net">お問い合わせ</a>
+    </nav>
+    <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+  </div>
+</footer>
+
+<script src="/assets/billing_progress.js" defer></script>
+<script src="/assets/feedback-widget.js" defer></script>
+<script defer>
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.jpciteFeedback) {
+    window.jpciteFeedback.mount('body', { position: 'bottom-right' });
+  }
+  // Linear progress fill driven by which step's anchor is in viewport.
+  var steps = document.querySelectorAll('.ob-step');
+  var fill = document.getElementById('ob-progress-fill');
+  var label = document.getElementById('ob-progress-label');
+  var bar = document.querySelector('.ob-progress-bar');
+  function refresh(){
+    var current = 1;
+    var mid = window.innerHeight / 2;
+    for (var i = 0; i < steps.length; i++){
+      var r = steps[i].getBoundingClientRect();
+      if (r.top < mid && r.bottom > 80) current = i + 1;
+    }
+    if (fill) fill.style.width = ((current / 4) * 100) + '%';
+    if (label) label.textContent = 'step ' + current + ' / 4';
+    if (bar) bar.setAttribute('aria-valuenow', String(current));
+  }
+  refresh();
+  window.addEventListener('scroll', refresh, { passive: true });
+  window.addEventListener('resize', refresh);
+});
+</script>
+
+</body>
+</html>
