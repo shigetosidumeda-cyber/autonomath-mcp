@@ -109,7 +109,7 @@ for (const hb of corps) {
 - 1 取引先 8 units × ¥3 = ¥24 / 取引先 / 月
 - 担当 100 取引先 = ¥2,400 / 月、税込 ¥2,640
 - 担当 200 取引先 = ¥4,800 / 月、税込 ¥5,280
-- ROI: 取引離脱 1 件回避 (融資残高 ¥5,000 万 × 利鞘 1% = ¥50 万/年) で API 費用は 55 倍、引当金 ¥500 万回避で 549 倍
+- 節約 (純 LLM vs jpcite ¥3/req): 担当 100 取引先 × 月 1 cycle で、純 LLM は約 ¥9,000/月 (1 cycle ¥90 = source 5,000 + tool 3 + repeat fetch) に対し jpcite は ¥2,400/月 (800 req × ¥3) → 節約 約 ¥6,600/月 / 取引先あたり ¥66 (cf. `docs/canonical/cost_saving_examples.md` case 3)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0

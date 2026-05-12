@@ -122,7 +122,7 @@ const pack = await jpcite.build_kyc_pack({
 - 月 30 件 (Big4 中堅事務所平均) = ¥2,880 / 月
 - 年次更新 200-500 社の bulk = 500 × ¥96 = ¥48,000 / 期初週
 - 比較: 帝国データバンク KYC レポート ¥3,000-5,000 / 件、jpcite + 反社 DB 併用で半額〜2/3 まで圧縮可
-- ROI: 受嘱不可案件 1 件発見 = 監査報酬 ¥5-50M の毀損リスク回避
+- 節約 (純 LLM vs jpcite ¥3/req): 月 30 件 KYC で、純 LLM は約 ¥9,600/月 (1 受嘱 cycle ¥320 = 反社 DB + 法人 6 source + source 8,000 + tool 5) に対し jpcite は ¥2,880/月 (960 req × ¥3) → 節約 約 ¥6,720/月 / 受嘱あたり ¥224 (cf. `docs/canonical/cost_saving_examples.md` case 2)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0 (出典明記必須)

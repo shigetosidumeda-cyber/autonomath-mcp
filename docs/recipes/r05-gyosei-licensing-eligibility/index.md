@@ -119,7 +119,7 @@ console.log(d.packet);
 - 1 案件 6 units × ¥3 = ¥18 / 案件
 - 月 25 案件 = ¥450 / 月、税込 ¥495
 - 月 50 案件 (大手事務所) = ¥900 / 月、税込 ¥990
-- ROI: 懲戒 1 回回避 (¥80 万) で 1,777 倍、紹介喪失 1 件回避 (¥50 万 LTV) で 1,111 倍
+- 節約 (純 LLM vs jpcite ¥3/req): 月 25 案件で、純 LLM は約 ¥1,500/月 (1 案件 cycle ¥60 = source 4,000 + tool 3) に対し jpcite は ¥450/月 (150 req × ¥3) → 節約 約 ¥1,050/月 / 案件あたり ¥42 (cf. `docs/canonical/cost_saving_examples.md` case 6 同系)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0

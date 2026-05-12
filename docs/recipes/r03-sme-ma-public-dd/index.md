@@ -135,7 +135,7 @@ fs.writeFileSync(`dd_pack_${target}.json`, JSON.stringify({ target, dd, clawback
 - 1 DD 28 units × ¥3 = ¥84 / DD
 - 月 10 案件 = ¥840 / 月、税込 ¥924
 - 月 30 案件 = ¥2,520 / 月、税込 ¥2,772
-- ROI: 弁護士 DD スコーピングで報酬 ¥300-500K の削減効果、ディール崩壊 1 件回避 ¥2,500 万 = 2,688 倍
+- 節約 (純 LLM vs jpcite ¥3/req): 月 10 案件 DD で、純 LLM は約 ¥3,600/月 (1 deck cycle ¥360 = source 8,000 + search 30 call) に対し jpcite は ¥840/月 (280 req × ¥3) → 節約 約 ¥2,760/月 / 1 deck あたり ¥276 (cf. `docs/canonical/cost_saving_examples.md` case 2)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0、出典明記必須

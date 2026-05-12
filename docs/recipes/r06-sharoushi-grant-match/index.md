@@ -110,7 +110,7 @@ console.log(programs.slice(0, 5));
 - 1 顧問先 10 units × ¥3 = ¥30 / 顧問先 / 月
 - 顧問先 100 社 = ¥3,000 / 月、税込 ¥3,300
 - 顧問先 300 社 (大手) = ¥9,000 / 月、税込 ¥9,900
-- ROI: 助成金 1 件採択 (¥80 万-¥150 万) で API 費用は完全回収、顧問契約解除回避効果は別
+- 節約 (純 LLM vs jpcite ¥3/req): 顧問先 100 社 × 月 1 cycle で、純 LLM は約 ¥10,000/月 (1 cycle ¥100 = source 6,000 + 助成金検索 5 call) に対し jpcite は ¥3,000/月 (1,000 req × ¥3) → 節約 約 ¥7,000/月 / 顧問先あたり ¥70 (cf. `docs/canonical/cost_saving_examples.md` case 1 / case 6 同系)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0

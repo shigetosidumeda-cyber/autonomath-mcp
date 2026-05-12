@@ -120,7 +120,7 @@ const top5 = programs.sort((a, b) => b.fit_score - a.fit_score).slice(0, 5);
 - 1 法人 1 回 = 12 units × ¥3 = ¥36 / 法人 / 決算期
 - 顧問先 100 社、3 月決算が 60 社想定 = 60 × ¥36 = ¥2,160 / 期
 - 月次レビュー (r01) と組み合わせて年 13 回稼働 = ¥3,600 / 法人 / 年
-- ROI: 1 件採択 (平均 ¥5M) で API 費用 ¥2,160 は完全回収、想定採択率 5% でも年 60 社 × 5% × ¥5M = ¥15M / ¥2,160 = 6,944 倍
+- 節約 (純 LLM vs jpcite ¥3/req): 決算前 60 社チェック 1 期で、純 LLM は約 ¥7,200/期 (1 社 cycle ¥120 = source 6,000 + tool 8 + repeat fetch) に対し jpcite は ¥2,160/期 (720 req × ¥3) → 節約 約 ¥5,040/期 / 1 社あたり ¥84 (cf. `docs/canonical/cost_saving_examples.md` case 1 / case 6 同系)
 
 ## 商業利用条件
 - 出力 artifact は PDL v1.0 + CC-BY-4.0 で再配布可、顧問先報告書への組込・印刷頒布 OK

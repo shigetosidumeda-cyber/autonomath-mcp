@@ -122,7 +122,7 @@ fs.writeFileSync("revoke_alert.json", JSON.stringify(revoked, null, 2));
 - 月 4 週 = ¥1,200 / 月、税込 ¥1,320
 - 仕入先 1,000 社 = ¥3,000 / 週 × 4 = ¥12,000 / 月、税込 ¥13,200
 - 期末年次総点検 (10,000 社) = ¥30,000 / 期末、税込 ¥33,000
-- ROI: 抹消未検知 1 件 (買掛 ¥10M) × 消費税控除否認 ¥1M / 1 件で API 費用は完全回収
+- 節約 (純 LLM vs jpcite ¥3/req): 仕入先 1,000 社 × 月 4 週 で、純 LLM は約 ¥40,000/月 (1 batch cycle ¥10,000 = 1,000 社 × NTA fetch + diff) に対し jpcite は ¥12,000/月 (4,000 req × ¥3) → 節約 約 ¥28,000/月 / 社あたり ¥28 (cf. `docs/canonical/cost_saving_examples.md` case 3 同系)
 
 ## 商業利用条件
 - PDL v1.0 (NTA 公開データ、出典明記必須) + CC-BY-4.0 (jpcite 編集物)

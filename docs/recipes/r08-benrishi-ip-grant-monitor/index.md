@@ -116,7 +116,7 @@ fs.writeFileSync("ip_monitor.json", JSON.stringify(rows, null, 2));
 - 1 顧問先 1 回 = 10 units × ¥3 = ¥30 / 顧問先 / 月
 - 顧問先 50 社 = ¥1,500 / 月、税込 ¥1,650 / 月
 - 顧問先 100 社 = ¥3,000 / 月、税込 ¥3,300 / 月
-- ROI: 出願補助 1 件採択 (上限 ¥3M、補助率 1/2 = 実額 ¥1.5M) で API 費用は完全回収
+- 節約 (純 LLM vs jpcite ¥3/req): 顧問先 50 社 × 月 1 cycle で、純 LLM は約 ¥5,000/月 (1 cycle ¥100 = source 5,000 + IP/助成金検索 5 call) に対し jpcite は ¥1,500/月 (500 req × ¥3) → 節約 約 ¥3,500/月 / 顧問先あたり ¥70 (cf. `docs/canonical/cost_saving_examples.md` case 6 同系)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0、出典明記必須

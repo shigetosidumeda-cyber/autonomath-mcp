@@ -127,7 +127,7 @@ fs.writeFileSync("bid_digest.csv", csv.join("\n"));
 - 1 朝 20 units × ¥3 = ¥60 / 日
 - 月 20 営業日 = ¥1,200 / 月、税込 ¥1,320
 - 年 240 営業日 = ¥14,400 / 年、税込 ¥15,840
-- ROI: 落札 1 件 (平均 ¥10M、粗利 30% で ¥3M 粗利) で API 費用は完全回収
+- 節約 (純 LLM vs jpcite ¥3/req): 月 20 営業日 × 朝 20 unit で、純 LLM は約 ¥4,000/月 (1 朝 cycle ¥200 = 入札 RSS 統合 + filter + tool 6) に対し jpcite は ¥1,200/月 (400 req × ¥3) → 節約 約 ¥2,800/月 / 営業日あたり ¥140 (cf. `docs/canonical/cost_saving_examples.md` case 3 同系)
 
 ## 商業利用条件
 - PDL v1.0 (政府調達情報、出典明記) + CC-BY-4.0 (jpcite 編集)

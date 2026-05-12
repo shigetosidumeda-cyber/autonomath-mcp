@@ -119,7 +119,7 @@ console.log(`新規 ${diff.added_programs.length} 件、削除 ${diff.removed_pr
 - 1 batch 47 units × ¥3 = ¥141 / 週
 - 月 4 週 = ¥564 / 月、税込 ¥620
 - 1,741 市町村全件 = 1 batch 1,741 units × ¥3 = ¥5,223 / 週、月 ¥20,892、税込 ¥22,981
-- ROI: 自治体独自補助金発見 1 件 (¥500K-¥3M) で API 費用は完全回収
+- 節約 (純 LLM vs jpcite ¥3/req): 47 自治体 × 月 4 週で、純 LLM は約 ¥1,880/月 (1 batch cycle ¥470 = 47 自治体 diff fetch + filter) に対し jpcite は ¥564/月 (188 req × ¥3) → 節約 約 ¥1,316/月 / 自治体あたり ¥28 (cf. `docs/canonical/cost_saving_examples.md` case 6 同系)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0

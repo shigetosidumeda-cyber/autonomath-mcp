@@ -126,7 +126,7 @@ const result = await jpcite.get_job_result(job.job_id);
 - 1 batch 5,000 units × ¥3 = ¥15,000 / 月、税込 ¥16,500
 - 顧客 50,000 社 月次 = ¥150,000 / 月、税込 ¥165,000
 - 年 ¥1,800,000、税込 ¥1,980,000
-- ROI: SaaS 顧客から ¥3,000-10,000 / 月 / 顧客 受領前提なら ¥150,000 enrich コストで 顧客 LTV 6-12 ヶ月分の上振れ効果
+- 節約 (純 LLM vs jpcite ¥3/req): SaaS 顧客 50,000 社 月次 enrich で、純 LLM は約 ¥500,000/月 (1 社 cycle ¥10 = 法人 6 source + 適格事業者 + 採択履歴) に対し jpcite は ¥150,000/月 (50,000 req × ¥3) → 節約 約 ¥350,000/月 / 顧客あたり ¥7 (cf. `docs/canonical/cost_saving_examples.md` case 3 / case 5 同系)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0

@@ -136,7 +136,7 @@ fs.writeFileSync("monthly_review.json", JSON.stringify(rows, null, 2));
 - 1 顧問先 18 units (`get_corp_360` 12 + matching 6) × ¥3 = ¥54 / 顧問先 / 月
 - 顧問先 100 社 = ¥5,400 / 月、税込 ¥5,940
 - 年 12 ヶ月 = ¥64,800 / 年、税込 ¥71,280
-- ROI: 顧問契約解除 1 件回避 (¥3-10万/月 × 12 = ¥36-120万/年) で API 費用は完全回収、67-222 倍
+- 節約 (純 LLM vs jpcite ¥3/req): 顧問先 100 社 × 月 1 cycle で、純 LLM は約 ¥18,000/月 (source 6,000 tokens + tool 4 call/cycle) に対し jpcite は ¥5,400/月 → 節約 約 ¥12,600/月 / 顧問先あたり ¥126 / 月 (cf. `docs/canonical/cost_saving_examples.md` case 1)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0、出典明記必須
