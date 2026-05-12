@@ -121,7 +121,7 @@ fs.writeFileSync("registry_supplement.json", JSON.stringify(snap, null, 2));
 - 1 案件 8 units × ¥3 = ¥24 / 案件
 - 月 50 案件 (中堅司法書士法人) = ¥1,200 / 月、税込 ¥1,320 / 月
 - 月 200 案件 (大手) = ¥4,800 / 月、税込 ¥5,280 / 月
-- ROI: 受任後の事故 (本人確認漏れ / 補助金返還義務見落とし) 1 件回避 = 司法書士法人の懲戒・損害賠償リスク回避 ¥数百万-¥数千万
+- 節約 (純 LLM vs jpcite ¥3/req): 月 50 案件で、純 LLM は約 ¥4,000/月 (1 案件 cycle ¥80 = registry + 適格事業者 + 補助金 + tool 4) に対し jpcite は ¥1,200/月 (400 req × ¥3) → 節約 約 ¥2,800/月 / 案件あたり ¥56 (cf. `docs/canonical/cost_saving_examples.md` case 6 同系)
 
 ## 商業利用条件
 - PDL v1.0 (NTA 法人番号 / 適格事業者) + CC-BY-4.0 (jpcite 編集物)

@@ -134,7 +134,7 @@ const res = await jpcite.bulk_match_programs({
 - 1 batch 1,000 units (法人 1 社 1 unit) × ¥3 = ¥3,000 / 委託
 - 月 5 委託 = ¥15,000 / 月 (税込 ¥16,500)
 - 月 20 委託 = ¥60,000 / 月 (税込 ¥66,000)
-- ROI: 委託元から ¥30-100 / 社 受領前提なら ¥30,000-100,000 / 委託で 10-33x 粗利
+- 節約 (純 LLM vs jpcite ¥3/req): 月 4 batch × 250 = 1,000 cycle で、純 LLM は約 ¥48,000/月 (cycle ¥48 = source 4,000 + tool 3) に対し jpcite は ¥12,000/月 (4,000 req × ¥3) → 節約 約 ¥36,000/月 / batch あたり ¥9,000 (cf. `docs/canonical/cost_saving_examples.md` case 5)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0、出典明記必須

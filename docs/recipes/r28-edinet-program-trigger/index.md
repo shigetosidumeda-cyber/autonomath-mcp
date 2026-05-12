@@ -125,7 +125,7 @@ console.log(`${triggers.events.length} 件の trigger 検知`);
 - 1 batch 12 units × ¥3 = ¥36 / 週
 - 月 4 週 = ¥144 / 月、税込 ¥158
 - 監視会社 100 社 = ¥1,200 / 月、税込 ¥1,320
-- ROI: M&A 機会発見 1 件 + 補助金活用で売上 5-10% 上振れ効果
+- 節約 (純 LLM vs jpcite ¥3/req): 監視会社 100 社 × 月 4 週 trigger で、純 LLM は約 ¥3,500/月 (1 batch cycle ¥875 = EDINET fetch + program link 推論) に対し jpcite は ¥1,200/月 (400 req × ¥3) → 節約 約 ¥2,300/月 / 監視会社あたり ¥23 (cf. `docs/canonical/cost_saving_examples.md` case 2 同系)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0

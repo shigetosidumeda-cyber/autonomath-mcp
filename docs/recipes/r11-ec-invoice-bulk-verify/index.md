@@ -118,7 +118,7 @@ fs.writeFileSync("hold_payment.json", JSON.stringify(revoked, null, 2));
 - 1 batch 500 units × ¥3 = ¥1,500 / 月、税込 ¥1,650
 - 年 12 batch = ¥18,000 / 年、税込 ¥19,800
 - 期末年次総点検 (10,000 社) = ¥30,000 / 期末、税込 ¥33,000
-- ROI: 抹消未検知 1 件 (買掛 ¥10M) × 消費税控除否認 ¥1M / 1 件で API 費用は完全回収
+- 節約 (純 LLM vs jpcite ¥3/req): 月 1 batch (500 取引先) で、純 LLM は約 ¥5,000/月 (1 取引先 cycle ¥10 = NTA 検索 2 call + 検証 reasoning) に対し jpcite は ¥1,500/月 (500 req × ¥3) → 節約 約 ¥3,500/月 / 取引先あたり ¥7 (cf. `docs/canonical/cost_saving_examples.md` case 3 同系)
 
 ## 商業利用条件
 - PDL v1.0 (NTA 公開データ、出典明記必須) + CC-BY-4.0 (jpcite 編集物)

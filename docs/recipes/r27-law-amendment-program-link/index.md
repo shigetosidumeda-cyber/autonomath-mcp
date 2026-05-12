@@ -126,7 +126,7 @@ console.log(`関連補助金: ${law.related_programs.length} 件`);
 - 1 件 5 units × ¥3 = ¥15
 - 法改正 10 件 / 月 = ¥150 / 月、税込 ¥165
 - 法改正 50 件 / 月 (大手シンクタンク level) = ¥750 / 月、税込 ¥825
-- ROI: 法改正見落とし 1 件回避 (顧問先報告漏れ / 解説資料修正コスト) で API 費用は完全回収
+- 節約 (純 LLM vs jpcite ¥3/req): 月 10 件法改正 link で、純 LLM は約 ¥500/月 (1 件 cycle ¥50 = 法令本文 + 補助金 + 通達 cross-ref + tool 6) に対し jpcite は ¥150/月 (50 req × ¥3) → 節約 約 ¥350/月 / 件あたり ¥35 (cf. `docs/canonical/cost_saving_examples.md` case 6 同系)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0

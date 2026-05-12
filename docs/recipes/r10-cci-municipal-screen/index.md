@@ -126,7 +126,7 @@ const matches = await jpcite.bulk_match_programs({
 - 1 sweep 40 units × ¥3 = ¥120 / 月 (1 市町村)
 - 5 市町村 × 月 = ¥600 / 月、税込 ¥660
 - 会員 1,000 社 マッチ = ¥3,000 / 月、税込 ¥3,300
-- ROI: 会員 LTV 維持 (年会費 ¥30K × 会員 1,000 = ¥30M 年間) で API 費用は完全回収
+- 節約 (純 LLM vs jpcite ¥3/req): 5 市町村 sweep + 会員 1,000 社 マッチ /月で、純 LLM は約 ¥10,000/月 (市町村 cycle ¥500 + 会員 cycle ¥7.5) に対し jpcite は ¥3,600/月 (1,200 req × ¥3) → 節約 約 ¥6,400/月 / 会員あたり ¥6.4 (cf. `docs/canonical/cost_saving_examples.md` case 3 / case 6 同系)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0

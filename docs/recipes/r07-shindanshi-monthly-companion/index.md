@@ -128,7 +128,7 @@ const kit = await jpcite.bundle_application_kit({
 - 1 顧問先 14 units (prescreen 5 + chain 3 + forecast 1 + kit 5) × ¥3 = ¥42 / 顧問先 / 月
 - 顧問先 50 社 = ¥2,100 / 月、税込 ¥2,310
 - 顧問先 80 社 (上位事務所) = ¥3,360 / 月、税込 ¥3,696
-- ROI: 補助金提案 1 件取りこぼし回避 (¥30-100 万報酬 + 顧問契約 (¥5-15 万/月) 解約 = ¥60-180 万/年) で 185-555 倍
+- 節約 (純 LLM vs jpcite ¥3/req): 顧問先 50 社 × 月 1 cycle で、純 LLM は約 ¥7,000/月 (1 cycle ¥140 = prescreen + chain + forecast の reasoning + tool 14) に対し jpcite は ¥2,100/月 (700 req × ¥3) → 節約 約 ¥4,900/月 / 顧問先あたり ¥98 (cf. `docs/canonical/cost_saving_examples.md` case 4)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0

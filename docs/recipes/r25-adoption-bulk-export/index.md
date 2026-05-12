@@ -122,7 +122,7 @@ console.log(`採択 ${job.row_count} 件、URL: ${job.result_url}`);
 - 1 batch 200 units × ¥3 = ¥600 / 月
 - 月 5 batch (program 別 / 業種別) = ¥3,000 / 月、税込 ¥3,300
 - 年 ¥36,000 / 年、税込 ¥39,600
-- ROI: 採択事例分析に基づく営業 / 提案精度向上で売上 5-10% 上振れ効果
+- 節約 (純 LLM vs jpcite ¥3/req): 月 5 batch × 200 cycle で、純 LLM は約 ¥10,000/月 (1 batch cycle ¥2,000 = bulk fetch 200 record + filter) に対し jpcite は ¥3,000/月 (1,000 req × ¥3) → 節約 約 ¥7,000/月 / batch あたり ¥1,400 (cf. `docs/canonical/cost_saving_examples.md` case 5 同系)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0、出典明記必須

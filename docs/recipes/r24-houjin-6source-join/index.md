@@ -122,7 +122,7 @@ fs.writeFileSync("houjin_join.json", JSON.stringify(snap, null, 2));
 - 1 法人 50 units × ¥3 = ¥150 / 法人
 - 月 100 法人 = ¥15,000 / 月、税込 ¥16,500
 - 月 1,000 法人 = ¥150,000 / 月、税込 ¥165,000
-- ROI: 6 source を別々に取ると 6 × ¥3 = ¥18 / 法人だが、join 済 envelope の利便性 (provenance + content_hash + sources URL リスト) で SaaS 開発工数を 50-80% 圧縮
+- 節約 (純 LLM vs jpcite ¥3/req): 月 100 法人 join で、純 LLM は約 ¥21,000/月 (1 法人 cycle ¥210 = 6 source × 35 = 6 別 fetch + reasoning) に対し jpcite は ¥15,000/月 (5,000 req × ¥3, join 済 envelope は 50 req/法人) → 節約 約 ¥6,000/月 / 法人あたり ¥60 (cf. `docs/canonical/cost_saving_examples.md` case 1 / case 2 同系、別途 SaaS 開発工数 50-80% 圧縮は ADDENDUM)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0、出典明記必須
