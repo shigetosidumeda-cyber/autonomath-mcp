@@ -253,3 +253,25 @@
 # (¥3/req on Stripe usage_record). Pure additive (CREATE TABLE/INDEX/
 # VIEW IF NOT EXISTS); boot-time safe; idempotent on every boot.
 280_predictive_service.sql
+
+# Wave 47 Dim H — personalization preference storage overlay.
+# Adds am_personalization_profile (customer-controlled preference
+# blob keyed by sha256(user_token); NO PII — only user_token_hash +
+# preference_json declared by the customer themselves, CHECK
+# length(hash)=64 + length(json) BETWEEN 2..16384) and
+# am_personalization_recommendation_log (append-only per-rec audit:
+# profile_id FK, recommendation_type enum (program/industry_pack/
+# saved_search/amendment), score 0..100, served_at) + helper view
+# v_personalization_recent_recs. Complements mig 264 (derived
+# am_personalization_score table from Wave 43.2.8) — 264 holds
+# scores, 287 holds upstream preference inputs + downstream audit.
+# Pairs with scripts/etl/build_personalization_recommendations.py
+# (nightly deterministic scoring: industry match + deadline proximity
+# + risk tolerance, no LLM). Privacy posture per
+# feedback_anonymized_query_pii_redact: zero PII columns at the
+# storage layer (no email/ip/houjin/name); raw API key never
+# touches the DB. LLM-0 by construction; no Anthropic / OpenAI SDK
+# is ever imported. Billing on delivery only (¥3/req on Stripe
+# usage_record). Pure additive (CREATE TABLE/INDEX/VIEW IF NOT
+# EXISTS); boot-time safe; idempotent on every boot.
+287_personalization.sql
