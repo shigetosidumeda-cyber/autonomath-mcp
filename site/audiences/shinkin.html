@@ -326,6 +326,34 @@ uvx autonomath-mcp --src=audience_shinkin</code></pre>
  </div>
  </section>
 
+ <section class="features" aria-labelledby="cost-title">
+ <div class="container">
+ <h2 id="cost-title" style="margin-bottom:16px;">取引先 1 社あたりの cost saving (純 LLM vs jpcite ¥3/req)</h2>
+ <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: 信用金庫 取引先担当 / 月 100 取引先 想定。 「純 LLM」は外部公的記録なしの汎用 LLM で hallucination 裏取り + 補助金 / マル経推薦 / 47 信用保証協会 連動を手動探索した工数 (信金担当時給 ¥6,000/h)。 詳細は <a href="../../docs/canonical/cost_saving_examples.md">canonical cost saving examples</a>。</p>
+ <div style="overflow-x:auto;">
+ <table style="width:100%;border-collapse:collapse;font-size:14px;">
+ <thead>
+ <tr style="background:var(--bg-subtle,#fafafa);border-bottom:2px solid var(--border);">
+ <th style="padding:12px;text-align:left;">case</th>
+ <th style="padding:12px;text-align:left;">純 LLM 工数 × 単価</th>
+ <th style="padding:12px;text-align:left;">jpcite req 数 × ¥3</th>
+ <th style="padding:12px;text-align:left;">cost saving</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr style="border-bottom:1px solid var(--border);">
+ <td style="padding:12px;"><strong>取引先 SMB 1 社 補助金 + マル経推薦 抽出</strong> (programs 11,601 + 融資 108 + 47 信用保証協会)</td>
+ <td style="padding:12px;">1.2h × ¥6,000 = ¥7,200</td>
+ <td style="padding:12px;">2 req × ¥3 = ¥6</td>
+ <td style="padding:12px;"><strong>¥7,194/件</strong></td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ <p style="font-size:13px;color:var(--text-muted);margin-top:12px;">※ 推定値。 hallucination 裏取り + 業種 × 都道府県 × 設備投資計画 から補助金候補抽出 + 認定支援機関ロールの経営革新計画案内を含む。 jpcite は事実検索 + Evidence Packet 提供のみで、与信判断は信金内部稟議プロセスの専権事項。 誇大広告意図なし。</p>
+ </div>
+ </section>
+
 </main>
 
 <footer class="site-footer" role="contentinfo">
