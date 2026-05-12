@@ -75,6 +75,7 @@ const ALLOWED_STEPS = new Set([
   "free",
   "signup",
   "topup",
+  "calc_engaged",
 ]);
 
 const ALLOWED_EVENTS = new Set([
