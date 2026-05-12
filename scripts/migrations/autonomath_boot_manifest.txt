@@ -19,6 +19,19 @@
 115_source_manifest_view.sql
 121_jpi_programs_subsidy_rate_text_column.sql
 
+# 2026-05-12 Wave 45 production recovery — schema_guard FAIL on live boot
+# (machine 815614a9973e08 nrt @ 2026-05-12T00:30:41Z) identified 3 additional
+# autonomath-required schema items not yet covered by the manifest above:
+#   * am_entity_facts.confirming_source_count (column, cross-source agreement)
+#   * am_uncertainty_view (view, per-fact Bayesian uncertainty)
+#   * programs_active_at_v2 (view, three-axis active/application window)
+# These 3 migrations are pure additive (ALTER ADD COLUMN + CREATE VIEW IF
+# NOT EXISTS); entrypoint.sh handles "duplicate column" idempotently. They
+# unblock the AM_REQUIRED_COLUMNS / AM_REQUIRED_VIEWS schema_guard checks.
+069_uncertainty_view.sql
+070_programs_active_at_v2.sql
+101_trust_infrastructure.sql
+
 # 2026-05-12 Wave 43.1.2 — foreign FDI cohort surface (JETRO / METI / JBIC / NEXI).
 # Pure additive (CREATE TABLE/INDEX/VIEW IF NOT EXISTS); idempotent on every boot.
 249_program_overseas_jetro.sql
@@ -98,3 +111,16 @@
 # resume idempotently. Pure additive (CREATE TABLE/INDEX/VIEW IF NOT EXISTS,
 # CHECK on status); boot-time safe; idempotent on every boot.
 268_state_checkpoint.sql
+
+# 2026-05-12 Wave 45 manifest backfill — 4 idempotent additions.
+# (251 MAFF 農水省 agri/fishery, 253 各省庁 通達 15 ministry, 254 業種ガイ
+# ドライン 17 issuer, 262 per-fact Ed25519 signature). Each uses CREATE
+# TABLE/INDEX/VIEW IF NOT EXISTS with a single DROP VIEW IF EXISTS for
+# idempotent view rebuild. NO vec0 virtual tables here (260 still
+# excluded — vec0 + CREATE VIRTUAL TABLE IF NOT EXISTS compatibility
+# warning in 260 header). boot-time safe; idempotent on every boot.
+# verified pure-additive 2026-05-12.
+251_program_agriculture.sql
+253_law_tsutatsu_all.sql
+254_law_guideline.sql
+262_fact_signature_v2.sql
