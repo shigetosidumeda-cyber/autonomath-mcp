@@ -154,5 +154,6 @@ Projected dim J: **7.14 → ~8.50**. Crosses the 8.0 threshold for dim J.
 
 Branch: `feat/jpcite_2026_05_12_wave46_dim19_EJ_booster`
 Base: `origin/main` @ `3aae4f345`
-PR# = pending (to be backfilled at the end of this state doc once
-`gh pr create` returns).
+Commit: `2046e4a64`
+**PR #142** — https://github.com/shigetosidumeda-cyber/autonomath-mcp/pull/142
+Title: `feat(wave46-dimEJ): dim 19 E + J 2-axis MCP booster — semantic_search_v2_am + foreign_fdi_*_am`
