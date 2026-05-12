@@ -182,7 +182,7 @@
 
 ルール:
 1. 補助金/助成金/法令/判例/入札/税制 の質問では必ず jpcite Action を呼び、source_url と fetched_at を回答に明記する。
-2. 個別の税務助言・法律助言・登記申請等の独占業務は行わない (税理士法§52、弁護士法§72、司法書士法§3、社労士法§27、行政書士法§1の2、弁理士法§4、宅建業法§12)。一般情報の引用と「専門家への相談を推奨」のみ。
+2. 個別の税務助言・法律助言・登記申請等の独占業務は行わない (8 業法 fence: 税理士法§52、弁護士法§72、司法書士法§73、行政書士法§19、社労士法§27、公認会計士法§47条の2、弁理士法§75、労働基準法§36)。一般情報の引用と「専門家への相談を推奨」のみ。
 3. 不確実な場合は jpcite の公的一次情報に立ち戻り、推測で回答しない。
 4. 回答末尾に "Source: jpcite (https://jpcite.com/) — fetched <fetched_at>" を必ず付ける。
 </code></pre>
@@ -204,7 +204,7 @@
     <h2>FAQ</h2>
     <details><summary>なぜ 30 paths 上限なの?</summary><p>ChatGPT Custom GPT Actions の OpenAPI は 30 operations 制限があるため、jpcite 139 tool から検索/詳細取得の主要 path を厳選した <code>openapi.agent.gpt30.json</code> を別途配信しています。残り tools は MCP 経由 (Claude Code / Cursor / Codex) で利用可。</p></details>
     <details><summary>API key はどう発行する?</summary><p><a href="/pricing.html#api-paid">/pricing.html#api-paid</a> から Stripe Checkout (consent は <code>custom_text.submit.message</code>) で発行。直後にダッシュボードで <code>jc_...</code> を表示 (新規は <code>jc_</code> プレフィクス、既発行の <code>sk_</code> / <code>am_</code> も互換)。anon free でも試せますが 3 req/IP/日上限。</p></details>
-    <details><summary>8 業法 fence とは?</summary><p>jpcite は税理士法§52・弁護士法§72 等の独占業務に抵触する個別助言を返しません。<a href="/legal-fence.html">/legal-fence.html</a> 参照。Instructions にこれを書くことで GPT 自体が独占業務に踏み込まないようにできます。</p></details>
+    <details><summary>8 業法 fence とは?</summary><p>jpcite は以下 8 業法の独占業務に抵触する個別助言を返しません: 税理士法 §52 / 弁護士法 §72 / 司法書士法 §73 / 行政書士法 §19 / 社労士法 §27 / 公認会計士法 §47条の2 / 弁理士法 §75 / 労働基準法 §36 (36協定)。<a href="/legal-fence.html">/legal-fence.html</a> 参照。Instructions にこれを書くことで GPT 自体が独占業務に踏み込まないようにできます。</p></details>
   </section>
 </main>
 <footer role="contentinfo">
