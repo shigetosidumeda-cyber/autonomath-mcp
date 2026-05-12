@@ -1,0 +1,36 @@
+name: jpcite-saved-searches-cron (alias of saved-searches-cron)
+
+# Wave 46 tick7#7 (2026-05-12) — jpcite-brand alias of
+# `saved-searches-cron.yml`.
+# Per `project_jpcite_internal_autonomath_rename` +
+# `feedback_destruction_free_organization`: dispatch-only trampoline, no
+# cron (parent retains SOT), no logic duplication.
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Git ref to run the parent workflow on (default: main)."
+        required: false
+        default: "main"
+
+concurrency:
+  group: jpcite-saved-searches-cron
+  cancel-in-progress: false
+
+jobs:
+  trampoline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+    steps:
+      - name: Re-invoke parent (saved-searches-cron)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          REF="${{ inputs.ref || 'main' }}"
+          echo "alias=jpcite-saved-searches-cron parent=saved-searches-cron ref=$REF"
+          gh workflow run saved-searches-cron.yml --ref "$REF" \
+            -R "${GITHUB_REPOSITORY}"
