@@ -15,7 +15,6 @@ from __future__ import annotations
 import json
 import logging
 import sqlite3
-from typing import Annotated, Any
 
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
@@ -110,8 +109,8 @@ def _fetch_program_rows(
 
 @router.get("/recommendations", response_model=RecommendationsResponse)
 async def get_recommendations(
-    api_ctx: Annotated[Any, ApiContextDep],
-    jp_conn: Annotated[sqlite3.Connection, DbDep],
+    api_ctx: ApiContextDep,
+    jp_conn: DbDep,
     client_id: int = Query(..., description="client_profiles.profile_id"),
     limit: int = Query(DEFAULT_LIMIT, ge=1, le=MAX_LIMIT),
 ) -> RecommendationsResponse:
