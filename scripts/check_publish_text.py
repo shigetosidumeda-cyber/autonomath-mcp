@@ -170,12 +170,13 @@ def main() -> int:
                 if not lo <= v <= hi:
                     violations.append(f"{rel}:{m.start()} NUMERIC {key}={v} not in [{lo},{hi}]")
 
-        # Fence-count drift gate: numbers other than canonical 7 業法 trip
+        # Fence-count drift gate: numbers other than the registry's
+        # canonical fence count (currently 8 業法 post Wave 46 tick5) trip
         # the violation, except (a) on listed path prefixes that legitimately
         # describe the fence-count history (e.g. `site/legal-fence.html`
         # carries the canonical landing copy and intentionally references
-        # both the historical 6 業法 floor and the current canonical), or
-        # (b) when the surrounding ±60 chars contains an enumerated fence
+        # the historical 5/6/7 業法 evolution alongside the current canonical),
+        # or (b) when the surrounding ±60 chars contains an enumerated fence
         # phrase (e.g. "8 業法 fence (税理士§52..." which is an explicit
         # itemization, not a count claim).
         fence_path_skip = any(rel.as_posix().startswith(p) for p in fence_path_prefixes)
