@@ -2756,6 +2756,12 @@ def create_app() -> FastAPI:
     # + audit log. NO LLM, single-DB. Experimental include so the
     # am_anon_query_view substrate absence degrades to a 503 not crash.
     _include_experimental_router(app, "jpintel_mcp.api.anonymized_query")
+    # Wave 46 Dim L session_context: POST /v1/session/{open,step,close}.
+    # In-process 24h-TTL state token surface so agent multi-turn loops
+    # can resume across calls. NO LLM, NO DB (pure dict + threading.Lock).
+    # Experimental include for envelope parity even though no migration
+    # dependency exists; on a fresh dev DB the surface still works.
+    _include_experimental_router(app, "jpintel_mcp.api.session_context")
     # Autonomath health probe (10-check aggregate) — same exemption as
     # /healthz / /readyz. Mounted without AnonIpLimitDep so production
     # uptime monitors can poll without burning the 3/日 anonymous quota.
