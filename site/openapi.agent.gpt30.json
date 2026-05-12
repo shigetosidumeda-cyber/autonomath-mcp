@@ -4685,7 +4685,7 @@
     },
     "termsOfService": "https://jpcite.com/tos.html",
     "title": "jpcite Agent Slim (GPT Actions 30 paths)",
-    "version": "0.3.4",
+    "version": "0.4.0",
     "x-jpcite-agent-call-order-policy": {
       "first_call_order": [
         {
@@ -8636,6 +8636,19 @@
             }
           },
           {
+            "description": "Optional translation language. One of: en | zh | ko. When supplied the response adds `_meta.translation` (unavailable | partial | full) + body_<lang> from the Current release Axis 5 multilingual corpus. ja remains the only legally authoritative version (CC-BY 4.0 e-Gov \u65e5\u672c\u6cd5\u4ee4\u5916\u56fd\u8a9e\u8a33 disclaimer for en; gov_public for zh/ko).",
+            "in": "query",
+            "name": "lang",
+            "required": false,
+            "schema": {
+              "description": "Optional translation language. One of: en | zh | ko. When supplied the response adds `_meta.translation` (unavailable | partial | full) + body_<lang> from the Current release Axis 5 multilingual corpus. ja remains the only legally authoritative version (CC-BY 4.0 e-Gov \u65e5\u672c\u6cd5\u4ee4\u5916\u56fd\u8a9e\u8a33 disclaimer for en; gov_public for zh/ko).",
+              "nullable": true,
+              "pattern": "^(en|zh|ko)$",
+              "title": "Lang",
+              "type": "string"
+            }
+          },
+          {
             "in": "header",
             "name": "X-API-Key",
             "required": false,
@@ -9552,6 +9565,19 @@
               "description": "Output format. Default `json` returns the ProgramDetail envelope unchanged. Other values dispatch to: csv / xlsx / md / docx-application. ICS and accounting CSVs (freee / mf / yayoi) are rejected here \u2014 ICS belongs to deadline-bearing list endpoints, and accounting CSVs are list-shaped. One billable unit regardless of format.",
               "pattern": "^(json|csv|xlsx|md|docx-application)$",
               "title": "Format",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional translation language for title_en / summary_en / eligibility_en. One of: en | zh | ko. When supplied the response adds `_meta.translation` (unavailable | partial | full) + the requested fields. ja remains the only authoritative version.",
+            "in": "query",
+            "name": "lang",
+            "required": false,
+            "schema": {
+              "description": "Optional translation language for title_en / summary_en / eligibility_en. One of: en | zh | ko. When supplied the response adds `_meta.translation` (unavailable | partial | full) + the requested fields. ja remains the only authoritative version.",
+              "nullable": true,
+              "pattern": "^(en|zh|ko)$",
+              "title": "Lang",
               "type": "string"
             }
           },
