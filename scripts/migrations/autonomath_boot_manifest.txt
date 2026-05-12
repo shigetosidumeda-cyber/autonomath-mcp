@@ -63,3 +63,19 @@
 # Refreshed nightly by scripts/cron/refresh_personalization_daily.py. Pure
 # additive; boot-time safe.
 264_personalization_score.sql
+
+# 2026-05-12 Wave 43.3.4 — AX Resilience cell 4 (DLQ + drain log).
+# am_dlq + dlq_drain_log + v_am_dlq_quarantine_summary. Quarantine surface
+# for bg_task_queue + webhook_deliveries units that exhausted in-line retry
+# budget. Replay loop runs hourly via scripts/cron/dlq_drain.py. Pure
+# additive (CREATE TABLE/INDEX/VIEW IF NOT EXISTS, CHECK on source_kind/
+# status); boot-time safe; idempotent on every boot.
+267_dlq.sql
+
+# 2026-05-12 Wave 43.3.6 — AX Resilience cell 6 (boundary state checkpoint).
+# am_state_checkpoint + v_state_checkpoint_latest. Per-(workflow_id, step)
+# resume substrate for long-running multi-step workflows (cohort fanout,
+# NTA bulk ingest, compose_audit_workpaper) so Fly machine swaps mid-stream
+# resume idempotently. Pure additive (CREATE TABLE/INDEX/VIEW IF NOT EXISTS,
+# CHECK on status); boot-time safe; idempotent on every boot.
+268_state_checkpoint.sql
