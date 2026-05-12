@@ -19,6 +19,16 @@ or renaming existing files unless there is a deliberate migration-runner plan.
   `entrypoint.sh`. Keep it empty unless a deploy packet explicitly approves an
   autonomath migration for boot-time self-heal. Do not rely on all-file
   discovery in production.
+- `jpcite_boot_manifest.txt` is a byte-identical alias of
+  `autonomath_boot_manifest.txt` introduced by Wave 46 task 46.F as part of the
+  destruction-free `autonomath -> jpcite` internal rename. `entrypoint.sh`
+  dual-reads both filenames (prefers the `jpcite_*` copy, falls back to the
+  `autonomath_*` copy) so a one-sided rollback never leaves boot without a
+  manifest.
+  - **Rule:** any manifest edit MUST be applied to BOTH files in the same
+    commit. The Wave 46 alias-drift cron (`scripts/cron/check_alias_drift.py`)
+    diffs the pair and alerts if they desync; `tests/test_w46f_manifest_alias.py`
+    is the unit-test gate.
 
 ## Read-Only Inventory
 

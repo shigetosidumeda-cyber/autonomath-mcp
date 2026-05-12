@@ -496,7 +496,26 @@ if [ -f /app/scripts/schema_guard.py ]; then
       am_mig_failed=0
       am_mig_degraded=0
       am_mig_mode="${AUTONOMATH_BOOT_MIGRATION_MODE:-manifest}"
-      am_mig_manifest="${AUTONOMATH_BOOT_MIGRATION_MANIFEST:-/app/scripts/migrations/autonomath_boot_manifest.txt}"
+      # Wave 46 46.F: jpcite_boot_manifest.txt aliases autonomath_boot_manifest.txt.
+      # Dual-read: prefer explicit env override, else prefer the jpcite-named copy,
+      # fall back to the legacy autonomath-named copy. Both files are tracked in
+      # git and MUST be kept byte-identical (see scripts/migrations/README.md).
+      if [ -n "${AUTONOMATH_BOOT_MIGRATION_MANIFEST:-}" ]; then
+        am_mig_manifest="$AUTONOMATH_BOOT_MIGRATION_MANIFEST"
+      else
+        am_mig_manifest=""
+        for am_mig_manifest_candidate in \
+          /app/scripts/migrations/jpcite_boot_manifest.txt \
+          /app/scripts/migrations/autonomath_boot_manifest.txt; do
+          if [ -f "$am_mig_manifest_candidate" ]; then
+            am_mig_manifest="$am_mig_manifest_candidate"
+            break
+          fi
+        done
+        # Keep the variable defined even if neither file is on disk so the
+        # existing "$am_mig_manifest missing" log path stays intact.
+        : "${am_mig_manifest:=/app/scripts/migrations/jpcite_boot_manifest.txt}"
+      fi
       am_mig_in_manifest() {
         local name="$1"
         [ -f "$am_mig_manifest" ] || return 1
