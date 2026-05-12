@@ -228,6 +228,7 @@
 # on every boot. No LLM API ever invoked operator-side.
 279_copilot_scaffold.sql
 
+
 # Wave 47 Dim T — predictive service (pull -> push) storage overlay.
 # Adds am_predictive_watch_subscription (operator-internal subscription
 # table: subscriber_token_hash sha256 + watch_type enum
@@ -316,3 +317,19 @@
 # idempotent on every boot. mig 262 is NEVER touched by mig 285 nor
 # by its rollback.
 285_fact_signature_v2.sql
+
+# 2026-05-12 Wave 47 — Dim G (realtime_signal subscriber + event_log)
+# Wave 47 booster layer. am_realtime_signal_subscriber (fan-out: a single
+# webhook destination subscribes to N signal_types via JSON-array column,
+# https-only webhook_url CHECK + JSON-valid CHECK on signal_types,
+# last_signal_at tracks last 2xx delivery) + am_realtime_signal_event_log
+# (append-only per-event delivery log: status_code / attempt_count++ /
+# delivered_at / error, JSON-valid CHECK on payload capped 8 KB). Helper
+# view v_realtime_signal_subscriber_enabled. Pairs with
+# scripts/etl/dispatch_realtime_signals.py (plain HTTP POST dispatcher,
+# NO LLM SDK). Co-exists additively with Wave 43 base layer (migration
+# 263 am_realtime_subscribers + am_realtime_dispatch_history); both
+# subscriber models share signal_type vocabulary. Pure additive
+# (CREATE TABLE/INDEX/VIEW IF NOT EXISTS); boot-time safe; idempotent
+# on every boot. Y3/req billing = one 2xx event row.
+286_realtime_signal.sql
