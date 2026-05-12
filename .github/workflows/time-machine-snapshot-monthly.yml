@@ -1,0 +1,47 @@
+name: time-machine-snapshot-monthly
+
+# Wave 49 G3 — AX Layer 5 cron #4 / Dim Q time_machine.
+#
+# Monthly batch that fingerprints the current snapshot of each
+# time-machine spine table (sha256 + row_count) into
+# am_monthly_snapshot_log (mig 277). Lets an operator prove that
+# the snapshot for a given as_of_date has not drifted. Retention
+# = 60 monthly rows (5 years rolling, --gc).
+#
+# Invokes: scripts/etl/build_monthly_snapshot.py (Wave 47).
+# Pure stdlib + sqlite3, LLM API 0 (feedback_no_operator_llm_api).
+
+on:
+  schedule:
+    # 1st of month, 03:00 UTC == 12:00 JST.
+    - cron: "0 3 1 * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "If true, plan only (no DB writes)"
+        required: false
+        default: "true"
+
+concurrency:
+  group: time-machine-snapshot-monthly
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Dry-run plan
+        run: python scripts/etl/build_monthly_snapshot.py --dry-run
+      - name: Run monthly snapshot fingerprint + 5y retention gc
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: python scripts/etl/build_monthly_snapshot.py --gc

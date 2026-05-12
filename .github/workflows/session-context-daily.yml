@@ -1,0 +1,46 @@
+name: session-context-daily
+
+# Wave 49 G3 — AX Layer 5 cron #2 / Dim L session_context.
+#
+# Daily TTL purge for the Dim L audit layer
+# (am_session_context + am_session_step_log). Marks expired rows,
+# deletes rows older than 7 days, drops orphaned step rows. The REST
+# surface /v1/session/{open,step,close} is untouched (in-process LRU).
+#
+# Invokes: scripts/etl/clean_session_context_expired.py (Wave 47).
+# Pure stdlib + sqlite3, LLM API 0 (feedback_no_operator_llm_api).
+
+on:
+  schedule:
+    # 02:30 UTC == 11:30 JST. After predictive-events-daily (02:15).
+    - cron: "30 2 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "If true, plan only (no DB writes)"
+        required: false
+        default: "true"
+
+concurrency:
+  group: session-context-daily
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  purge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Dry-run plan
+        run: python scripts/etl/clean_session_context_expired.py --dry-run
+      - name: Run TTL purge
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: python scripts/etl/clean_session_context_expired.py

@@ -1,0 +1,47 @@
+name: predictive-events-daily
+
+# Wave 49 G3 — AX Layer 5 cron #1 / Dim K predictive_service.
+#
+# Daily ETL pass that materialises the predictive notification queue
+# (am_predictive_alert_log) from am_amendment_diff via the three watch
+# types (houjin / program / amendment). 24h TTL purge included in the
+# same script.
+#
+# Invokes: scripts/etl/build_predictive_watch_v2.py (Wave 47 ETL,
+# already in main). Stdlib + sqlite3 only, LLM API 0
+# (feedback_no_operator_llm_api).
+
+on:
+  schedule:
+    # 02:15 UTC == 11:15 JST. Tail of Lane A daily window.
+    - cron: "15 2 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "If true, plan only (no DB writes)"
+        required: false
+        default: "true"
+
+concurrency:
+  group: predictive-events-daily
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Dry-run sanity probe
+        run: python scripts/etl/build_predictive_watch_v2.py --dry-run
+      - name: Run predictive watch ETL
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: python scripts/etl/build_predictive_watch_v2.py
