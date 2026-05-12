@@ -96,5 +96,17 @@ LOC of SQL DDL** as the task brief targeted.
 
 ## PR
 
-To be opened from this lane after final integrity grep. PR number
-will be appended below once `gh pr create` returns.
+- **PR**: #163 — https://github.com/shigetosidumeda-cyber/autonomath-mcp/pull/163
+- **branch**: `feat/jpcite_2026_05_12_wave47_dim_o_migration`
+- **base**: `main` @ `7f4ceb9f4`
+- **commit**: `38a309d2d` (single commit, no fixups)
+
+## Migration LOC summary
+
+- SQL DDL (pure body, comments stripped): ~50 LOC
+- SQL file w/ header comments: 193 LOC
+- ETL: 351 LOC
+- test: 487 LOC
+- **Total migration scope (mig + rollback + ETL + test): approximately 1,061 LOC**
+
+Pure migration body matches the ~50 LOC target in the task brief.
