@@ -34,7 +34,7 @@
     {"@type": "HowToStep", "name": "GPT Builder を起動", "text": "ChatGPT → Explore GPTs → Create"},
     {"@type": "HowToStep", "name": "Actions を import", "text": "Configure → Actions → Import from URL: https://jpcite.com/openapi.agent.gpt30.json"},
     {"@type": "HowToStep", "name": "認証を設定", "text": "Authentication → API Key (Bearer) → jc_... (新規は jc_ プレフィクス、旧 sk_/am_ も互換)"},
-    {"@type": "HowToStep", "name": "Instructions と Privacy URL を設定", "text": "Instructions に 7 業法 fence を貼付、Privacy policy URL = https://jpcite.com/privacy.html"},
+    {"@type": "HowToStep", "name": "Instructions と Privacy URL を設定", "text": "Instructions に 8 業法 fence を貼付、Privacy policy URL = https://jpcite.com/privacy.html"},
     {"@type": "HowToStep", "name": "公開 (Private/Link/Public)", "text": "Save → 公開範囲を選択"}
   ]
 }
@@ -204,7 +204,7 @@
     <h2>FAQ</h2>
     <details><summary>なぜ 30 paths 上限なの?</summary><p>ChatGPT Custom GPT Actions の OpenAPI は 30 operations 制限があるため、jpcite 139 tool から検索/詳細取得の主要 path を厳選した <code>openapi.agent.gpt30.json</code> を別途配信しています。残り tools は MCP 経由 (Claude Code / Cursor / Codex) で利用可。</p></details>
     <details><summary>API key はどう発行する?</summary><p><a href="/pricing.html#api-paid">/pricing.html#api-paid</a> から Stripe Checkout (consent は <code>custom_text.submit.message</code>) で発行。直後にダッシュボードで <code>jc_...</code> を表示 (新規は <code>jc_</code> プレフィクス、既発行の <code>sk_</code> / <code>am_</code> も互換)。anon free でも試せますが 3 req/IP/日上限。</p></details>
-    <details><summary>7 業法 fence とは?</summary><p>jpcite は税理士法§52・弁護士法§72 等の独占業務に抵触する個別助言を返しません。<a href="/legal-fence.html">/legal-fence.html</a> 参照。Instructions にこれを書くことで GPT 自体が独占業務に踏み込まないようにできます。</p></details>
+    <details><summary>8 業法 fence とは?</summary><p>jpcite は税理士法§52・弁護士法§72 等の独占業務に抵触する個別助言を返しません。<a href="/legal-fence.html">/legal-fence.html</a> 参照。Instructions にこれを書くことで GPT 自体が独占業務に踏み込まないようにできます。</p></details>
   </section>
 </main>
 <footer role="contentinfo">

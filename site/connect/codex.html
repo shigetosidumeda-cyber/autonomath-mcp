@@ -163,7 +163,7 @@ print(Runner.run_sync(a, input='ものづくり補助金 東京都').final_outpu
     <h2>FAQ</h2>
     <details><summary>REST 直叩き vs MCP どちらが良い?</summary><p>Agent ループに組み込むなら MCP (HostedMCPTool) を推奨。tools schema が自動で SDK 側に展開され、Agent の関数呼出と互換になります。スクリプト型処理なら REST 直叩き (<code>https://api.jpcite.com/v1/...</code>) でも構いません。</p></details>
     <details><summary>API key はどう発行する?</summary><p><a href="/pricing.html#api-paid">/pricing.html#api-paid</a> から Stripe Checkout (consent は <code>custom_text.submit.message</code> 経由) で発行。anon free は IP ベース 3 req/日上限、paid は ¥3/req metered で上限なし。</p></details>
-    <details><summary>7 業法 fence とは?</summary><p>jpcite は税理士法§52・弁護士法§72 等の独占業務に抵触する個別助言を返しません。<a href="/legal-fence.html">/legal-fence.html</a> 参照。Agent の instructions にも明記してください。</p></details>
+    <details><summary>8 業法 fence とは?</summary><p>jpcite は税理士法§52・弁護士法§72 等の独占業務に抵触する個別助言を返しません。<a href="/legal-fence.html">/legal-fence.html</a> 参照。Agent の instructions にも明記してください。</p></details>
   </section>
 </main>
 <footer role="contentinfo">

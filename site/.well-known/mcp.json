@@ -272,7 +272,7 @@
     {
       "uri": "mcp://jpcite/legal/fence.md",
       "name": "fence",
-      "description": "7 業法フェンス (税理士/弁護士/司法書士/行政書士/社労士/中小企業診断士/弁理士)。jpcite が踏み込まない領域。AI 出力に必ず差し込め",
+      "description": "8 業法フェンス (税理士/弁護士/会計士/司法書士/行政書士/社労士/弁理士/労基)。jpcite が踏み込まない領域。AI 出力に必ず差し込め",
       "mimeType": "text/markdown"
     },
     {

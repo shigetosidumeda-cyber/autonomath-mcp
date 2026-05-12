@@ -466,7 +466,7 @@ Two pages expose public trust data for users and AI agents. Both are public, no 
 - [法人購買 1-screen summary](https://jpcite.com/trust/purchasing) — 法務部 reviewer の稟議 review checklist (実在性 / 規約 / 個人情報 / セキュリティ / SLA / データ source / 法令フェンス / 下請法・電帳法・電契法 / AI 利用観点) を 1 page に集約。
 - [Security Overview (外部公開版)](https://jpcite.com/security/) — defense layers / 暗号化 / アクセス制御 / 副処理者 5 社 (Stripe / Fly / CF / Postmark / Sentry) / DR / dependency audit / SOC 2 alternative (OpenSSF Best Practices Badge / OWASP ASVS L1 / CSA STAR CAIQ self-assessment)。
 - [データソース・ライセンス開示](https://jpcite.com/data-licensing) — 16 dataset × license (CC BY 4.0 / PDL v1.0 / 政府標準利用規約 v2.0 / パブリックドメイン / 個別) × 商用配信可否 × 出典表示要件 × 更新頻度。
-- [法令フェンス](https://jpcite.com/legal-fence) — 触らない 7 業法 + 関連法 (税理士法 §52 / 弁護士法 §72 / 公認会計士法 §47-2 / 行政書士法 §1 / 司法書士法 §3 / 社会保険労務士法 §27 / 弁理士法 §75 + 金商法 §29 / 中小企業診断士 登録規則 等) の業務範囲・「やる/やらない」境界線・違反通報先・MCP tool ごとの sensitive マッピング。
+- [法令フェンス](https://jpcite.com/legal-fence) — 触らない 8 業法 + 関連法 (税理士法 §52 / 弁護士法 §72 / 公認会計士法 §47-2 / 行政書士法 §1 / 司法書士法 §3 / 社会保険労務士法 §27 / 弁理士法 §75 / 労働基準法 §36 + 金商法 §29 / 中小企業診断士 登録規則 等) の業務範囲・「やる/やらない」境界線・違反通報先・MCP tool ごとの sensitive マッピング。
 - [Trust manifest (machine-readable JSON)](https://jpcite.com/.well-known/trust.json) — operator (T8010001213708) / SLA / data provenance / legal fences / privacy / security / AI use を 1 fetch で取得できる machine-readable manifest (`schema_version: jpcite_trust_v1`)。
 
 ## Optional
