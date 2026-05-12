@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<!-- CWV-HARDENED -->
+<meta charset="UTF-8">
+<meta name="theme-color" content="#ffffff">
+<title>API ドキュメント — jpcite</title>
+<meta name="description" content="jpcite API / MCP ドキュメントのハブ。OpenAPI v0.4.0 (306 paths)、MCP server / tools / resources / prompts、SDK、Webhook、認証、x402、Credit Wallet など全リファレンスへの入口。¥3/req 完全従量、匿名 3 req/日 無料。">
+
+<meta property="og:title" content="API ドキュメント — jpcite">
+<meta property="og:description" content="OpenAPI v0.4.0 / MCP / SDK / Webhook / 認証 / x402 / Credit Wallet。全リファレンスへの入口。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jpcite.com/docs/">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="API ドキュメント — jpcite">
+<meta name="twitter:description" content="OpenAPI v0.4.0 + MCP + SDK + Webhook へのハブ。">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
+
+<link rel="canonical" href="https://jpcite.com/docs/">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/docs/">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/docs/">
+<link rel="preconnect" href="https://api.jpcite.com" crossorigin>
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preload" as="font" type="font/woff2" href="/static/fonts/noto-sans-jp-3e6b27914d.woff2" crossorigin>
+<link rel="stylesheet" href="/static/fonts/noto-sans-jp.css">
+<link rel="stylesheet" href="/styles.css?v=20260429a">
+
+<script defer src="/analytics.js?v=20260503a"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
+
+<header class="site-header" role="banner">
+ <div class="container header-inner">
+ <a class="brand" href="/" aria-label="jpcite ホーム">
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="/products.html">使い方</a>
+ <a href="/pricing.html">料金</a>
+ <a href="/audiences/">事例</a>
+ <a href="/docs/" aria-current="page">API ドキュメント</a>
+ <a href="/about.html">会社</a>
+ </nav>
+ </div>
+</header>
+
+<nav class="breadcrumb" aria-label="パンくずリスト" style="margin:0 auto;max-width:1200px;padding:8px 24px 0;font-size:14px;color:var(--text-muted);">
+ <a href="/">ホーム</a> <span aria-hidden="true">›</span>
+ <span aria-current="page">API ドキュメント</span>
+</nav>
+
+<main id="main">
+ <div class="container">
+
+ <div data-billing-progress data-cta-variant="docs-progress" style="margin:0 0 16px;"></div>
+
+ <h1 style="margin:8px 0 6px;font-size:28px;">API ドキュメント</h1>
+ <p style="margin:0 0 18px;color:var(--text-muted);font-size:15px;line-height:1.65;">jpcite は AI agent に日本の制度・法令・判例・補助金を <strong>一次資料 URL 付き</strong> で答えさせるための API / MCP server です。¥3/req 完全従量、匿名 3 req/日 無料、月額固定なし。</p>
+
+ <section aria-labelledby="ref-h" style="margin:0 0 24px;">
+ <h2 id="ref-h" style="font-size:18px;margin:0 0 10px;">主なリファレンス</h2>
+ <ul style="margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;">
+ <li style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 16px;">
+ <a href="/docs/openapi/v1.json" style="font-weight:700;text-decoration:none;">OpenAPI v0.4.0 (REST)</a>
+ <p style="margin:6px 0 0;font-size:13px;color:var(--text-muted);">306 paths。検索 / 詳細 / Webhook / Wallet / x402 を含む全 REST 仕様。</p>
+ </li>
+ <li style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 16px;">
+ <a href="/docs/openapi/agent.json" style="font-weight:700;text-decoration:none;">OpenAPI Agent (slim)</a>
+ <p style="margin:6px 0 0;font-size:13px;color:var(--text-muted);">GPT-3.0 / Custom GPT 向け slim 版。tool count を抑えた agent profile。</p>
+ </li>
+ <li style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 16px;">
+ <a href="/.well-known/mcp.json" style="font-weight:700;text-decoration:none;">MCP server.json</a>
+ <p style="margin:6px 0 0;font-size:13px;color:var(--text-muted);">MCP capabilities (tools / resources / prompts / sampling / transports)。</p>
+ </li>
+ <li style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 16px;">
+ <a href="/llms.txt" style="font-weight:700;text-decoration:none;">llms.txt / llms-full.txt</a>
+ <p style="margin:6px 0 0;font-size:13px;color:var(--text-muted);">LLM 向け要約。citation guidance + companion .md token budget。</p>
+ </li>
+ <li style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 16px;">
+ <a href="/onboarding.html" style="font-weight:700;text-decoration:none;">オンボーディング (4 step)</a>
+ <p style="margin:6px 0 0;font-size:13px;color:var(--text-muted);">匿名無料 → OAuth → topup → 呼出。階層プラン無し、最低利用期間無し。</p>
+ </li>
+ <li style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 16px;">
+ <a href="/pricing.html" style="font-weight:700;text-decoration:none;">料金</a>
+ <p style="margin:6px 0 0;font-size:13px;color:var(--text-muted);">¥3/billable unit (税込 ¥3.30)。Stripe / Wallet / x402 の 3 ルート。</p>
+ </li>
+ </ul>
+ </section>
+
+ <section aria-labelledby="quick-h" style="margin:0 0 24px;border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:16px 18px;">
+ <h2 id="quick-h" style="font-size:16px;margin:0 0 8px;">クイックスタート</h2>
+ <p style="margin:0 0 8px;font-size:14px;line-height:1.65;">匿名 3 req/日 無料枠で即試せます。</p>
+ <pre style="margin:0;padding:12px 14px;background:#f5f5f4;border-radius:8px;overflow-x:auto;font-size:13px;line-height:1.55;"><code>curl https://api.jpcite.com/v1/search?q=&#x8d77;&#x696d;&#x88dc;&#x52a9;&#x91d1;</code></pre>
+ </section>
+
+ </div>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+ <div class="container">
+ <nav class="footer-nav" aria-label="フッターナビゲーション">
+ <a href="/about.html">会社</a>
+ <a href="/security/">セキュリティ</a>
+ <a href="/legal/terms.html">利用規約</a>
+ <a href="/legal/privacy.html">プライバシー</a>
+ <a href="https://github.com/shigetosidumeda-cyber" aria-label="GitHub" rel="noopener">GitHub</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
+</footer>
+
+<script src="/assets/billing_progress.js" defer></script>
+<script src="/assets/feedback-widget.js" defer></script>
+<script src="/assets/rum_funnel_collector.js" defer></script>
+<script defer>
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.jpciteFeedback) {
+    window.jpciteFeedback.mount('body', { position: 'bottom-right' });
+  }
+});
+</script>
+</body>
+</html>
