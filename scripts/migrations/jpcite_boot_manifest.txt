@@ -246,6 +246,7 @@
 # (¥3/req on Stripe usage_record). Pure additive (CREATE TABLE/INDEX/
 # VIEW IF NOT EXISTS); boot-time safe; idempotent on every boot.
 280_predictive_service.sql
+
 # 2026-05-12 Wave 47 — Dim U (Agent Credit Wallet) storage layer.
 # am_credit_wallet (wallet_id PK, owner_token_hash sha256 unique,
 # balance_yen, auto_topup_threshold, auto_topup_amount, monthly_budget_yen,
@@ -348,3 +349,26 @@
 # additive (CREATE TABLE/INDEX IF NOT EXISTS); boot-time safe;
 # idempotent on every boot. No LLM API ever invoked operator-side.
 284_semantic_search_v1.sql
+
+# Wave 47 Dim W — AX Layer 3 (WebMCP + A2A + Observability) storage layer.
+# Adds am_webmcp_endpoint (registry of WebMCP transport endpoints —
+# (path, transport sse|streamable_http, capability_tag access|context|
+# tools|orchestration) with UNIQUE (path, transport) + path-must-be-
+# rooted CHECK), am_a2a_handshake_log (append-only agent-to-agent
+# handshake audit, source_agent + target_agent + capability_negotiated
+# + initiated_at + succeeded_at / failed_at exclusive CHECK + temporal
+# ordering CHECK), and am_observability_metric (append-only AX Layer 3
+# metric stream, metric_name + value + optional unit + recorded_at)
+# plus v_webmcp_endpoint_active and v_observability_recent helper
+# views. Pairs with scripts/etl/seed_ax_layer3.py (3 WebMCP endpoints
+# sse/sse-health/streamable_http + 2 A2A handshake template rows
+# claude/cursor + 8 observability metrics: 4 AX pillar surface counts +
+# 4 Layer-3-specific signals) per feedback_ax_4_pillars. LLM-0 by
+# construction: schema is config + audit metadata only; NO
+# summary_text / ai_explanation columns; the ETL imports zero LLM SDKs.
+# These tables are internal AX-layer bookkeeping; they do NOT bill.
+# WebMCP endpoint hits still bill ¥3/req via the existing usage_events
+# meter (registration here is config, not a billable event). Pure
+# additive (CREATE TABLE/INDEX/VIEW IF NOT EXISTS); boot-time safe;
+# idempotent on every boot.
+283_ax_layer3.sql
