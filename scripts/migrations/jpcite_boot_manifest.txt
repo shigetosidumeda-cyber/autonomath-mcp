@@ -179,3 +179,15 @@
 # the metadata tuple actually changes). NO LLM call; pure SQLite +
 # cryptography stdlib. boot-time safe; idempotent.
 275_explainable_fact.sql
+
+# 2026-05-12 Wave 47 — Dim P (composable_tools) storage layer.
+# am_composed_tool_catalog (tool_id PK, atomic_tool_chain JSON, version,
+# source_doc_id) + am_composed_tool_invocation_log (invocation_id, tool_id,
+# input_hash, output_hash, latency_ms) + v_composed_tools_latest helper
+# view. Pairs with scripts/etl/seed_composed_tools.py which seeds the 4
+# canonical composed tools (ultimate_due_diligence_kit /
+# construction_total_dd / welfare_total_dd / tourism_total_dd) — each
+# wraps a 4-7 atomic-tool chain into one metered call (¥3/req posture
+# unchanged; one composed call = one billable unit). Pure additive
+# (CREATE TABLE/INDEX/VIEW IF NOT EXISTS); boot-time safe; idempotent.
+276_composable_tools.sql
