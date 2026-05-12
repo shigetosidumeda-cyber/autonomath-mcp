@@ -2,7 +2,7 @@
 
 date: 2026-05-12
 branch: feat/jpcite_2026_05_12_wave47_dim_n_migration
-PR#: (pending — populate after `gh pr create` returns)
+PR#: #159 (https://github.com/shigetosidumeda-cyber/autonomath-mcp/pull/159)
 
 ## Scope
 
