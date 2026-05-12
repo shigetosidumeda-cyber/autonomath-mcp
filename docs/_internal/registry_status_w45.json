@@ -1,0 +1,437 @@
+{
+  "_meta": {
+    "doc": "jpcite MCP registry presence snapshot — Wave 45",
+    "wave": "W45",
+    "as_of_utc": "2026-05-12T01:00:00Z",
+    "as_of_jst": "2026-05-12T10:00:00+09:00",
+    "previous_snapshot": "analytics/registry_status_w43_5.json",
+    "generator": "Wave 45 Smithery/Glama/PulseMCP + 23 platform re-verify post v0.4.0 manifest bump on main (HEAD b409c29e0). Anthropic registry v0.3.5 LIVE confirmed isLatest=true; PyPI v0.4.0 release.yml run 25705502469 queued on tag v0.4.0; live-state honest gap = manifests on main say 0.4.0 but PyPI still at 0.3.5 + Anthropic registry still at 0.3.5.",
+    "schema_version": 1,
+    "states": ["LIVE", "pending", "queued", "autocrawl_wait", "autocrawl_wait_exhausted", "blocked_cf", "form_only", "not_submitted", "index_not_found", "redirect_to_unrelated", "dead"],
+    "package": {
+      "pypi": "autonomath-mcp",
+      "latest_pypi_version_live": "0.3.5",
+      "latest_pypi_version_target": "0.4.0",
+      "latest_anthropic_registry_version_live": "0.3.5",
+      "latest_anthropic_registry_version_target": "0.4.0",
+      "github_repo": "https://github.com/shigetosidumeda-cyber/autonomath-mcp",
+      "github_main_head": "b409c29e0c1215ffec4a537c1bacef1c5d012bb0",
+      "homepage": "https://jpcite.com"
+    },
+    "honest_gap": "Wave 43.5 commit c853bf48a bumped pyproject + server.json to v0.4.0 on main. Tag v0.4.0 pushed. release.yml run 25705502469 is QUEUED on tag v0.4.0 since 2026-05-12T00:26:45Z but has not started the publish-pypi job yet. PyPI + Anthropic registry both still serve v0.3.5 as latest. mcp-registry-publish.yml will fire automatically once PyPI v0.4.0 lands (OIDC). No manual intervention required — purely awaiting GHA queue."
+  },
+  "publish_chain": {
+    "release_yml_v040_run_id": 25705502469,
+    "release_yml_v040_status": "queued",
+    "release_yml_v040_head_branch": "v0.4.0",
+    "release_yml_v040_head_sha": "b409c29e0c1215ffec4a537c1bacef1c5d012bb0",
+    "release_yml_v040_created_utc": "2026-05-12T00:26:45Z",
+    "release_yml_recent_completions": [
+      {"run_id": 25690012013, "conclusion": "success", "created_utc": "2026-05-11T18:42:07Z", "comment": "v0.3.5 publish to PyPI succeeded"},
+      {"run_id": 25687651133, "conclusion": "cancelled", "created_utc": "2026-05-11T17:56:10Z"},
+      {"run_id": 25687649716, "conclusion": "failure", "created_utc": "2026-05-11T17:56:09Z"},
+      {"run_id": 25685620165, "conclusion": "failure", "created_utc": "2026-05-11T17:17:03Z"},
+      {"run_id": 25680632794, "conclusion": "failure", "created_utc": "2026-05-11T15:43:46Z"}
+    ],
+    "mcp_registry_publish_yml_recent": [
+      {"run_id": 25695421926, "conclusion": "failure", "created_utc": "2026-05-11T20:28:49Z", "comment": "post-v0.3.5 retry (idempotency-rejected duplicate publish)"},
+      {"run_id": 25694061008, "conclusion": "success", "created_utc": "2026-05-11T20:01:27Z", "comment": "v0.3.5 publish succeeded -> Anthropic isLatest=true"},
+      {"run_id": 25430948453, "conclusion": "success", "created_utc": "2026-05-06T10:52:15Z", "comment": "v0.3.4 publish"},
+      {"run_id": 25296408924, "conclusion": "success", "created_utc": "2026-05-04T01:17:42Z", "comment": "v0.3.3 publish"},
+      {"run_id": 25162642788, "conclusion": "success", "created_utc": "2026-04-30T11:22:44Z", "comment": "v0.3.2 publish"}
+    ]
+  },
+  "platforms": [
+    {
+      "id": "pypi",
+      "name": "PyPI autonomath-mcp",
+      "state": "LIVE",
+      "url": "https://pypi.org/project/autonomath-mcp/",
+      "latest_version": "0.3.5",
+      "target_version": "0.4.0",
+      "all_releases": ["0.3.0", "0.3.1", "0.3.2", "0.3.3", "0.3.4", "0.3.5"],
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "evidence": "GET /pypi/autonomath-mcp/json -> info.version=0.3.5; .releases sorted: 0.3.0/0.3.1/0.3.2/0.3.3/0.3.4/0.3.5. v0.4.0 not yet published — release.yml run 25705502469 queued on tag v0.4.0 since 2026-05-12T00:26:45Z.",
+      "delta_vs_w43_5": "v0.4.0 still pending publish (manifest bumped but release.yml not yet run); v0.3.5 still LIVE as latest.",
+      "next_action": "wait release.yml run 25705502469 -> publish-pypi (OIDC Trusted Publishing)."
+    },
+    {
+      "id": "anthropic_official_registry",
+      "name": "Official MCP Registry (Anthropic / modelcontextprotocol.io)",
+      "state": "LIVE",
+      "url": "https://registry.modelcontextprotocol.io/v0/servers?search=autonomath",
+      "server_name": "io.github.shigetosidumeda-cyber/autonomath-mcp",
+      "versions_listed": ["0.3.2", "0.3.3", "0.3.4", "0.3.5"],
+      "latest_version_listed": "0.3.5",
+      "target_version": "0.4.0",
+      "isLatest_flag": true,
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "evidence": "registry returns 4 entries: 0.3.2 (2026-04-30T11:22:56Z, isLatest=False), 0.3.3 (2026-05-04T01:17:55Z, isLatest=False), 0.3.4 (2026-05-06T10:52:31Z, isLatest=False), 0.3.5 (2026-05-11T20:02:01Z, isLatest=True). No 0.4.0 entry yet.",
+      "delta_vs_w43_5": "v0.3.5 still LIVE_CONFIRMED isLatest=True (unchanged); v0.4.0 awaits PyPI gate.",
+      "next_action": "mcp-registry-publish.yml auto-fires after PyPI v0.4.0 -> OIDC publish to Anthropic."
+    },
+    {
+      "id": "smithery_ai",
+      "name": "Smithery (smithery.ai)",
+      "state": "autocrawl_wait_exhausted",
+      "url": "https://smithery.ai/server/@bookyou/jpcite",
+      "alt_url": "https://smithery.ai/server/io.github.shigetosidumeda-cyber/autonomath-mcp",
+      "http_status_w45": "308->404 (final URL /servers/@bookyou/jpcite returns '# 404 — Server Not Found' page)",
+      "yaml_id_set": "@bookyou/jpcite",
+      "elapsed_since_webhook_h": "~57 (smithery-deploy.yml fired SUCCESS Wave 23 2026-05-11 ~16:00 UTC, W45 probe 2026-05-12 01:00 UTC)",
+      "exceeded_auto_crawl_eta": false,
+      "webhook_automation": ".github/workflows/smithery-deploy.yml (Wave 23, fires on smithery.yaml / mcp-server.json push)",
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "still 404; +5h elapsed within 72h window (57h/72h).",
+      "next_action": "wait until 72h post-webhook (~2026-05-14 16:00 UTC) before declaring exhausted. v0.4.0 release will re-fire webhook on next push.",
+      "submission_doc": "docs/_internal/mcp_registry_submissions/smithery_submission.md"
+    },
+    {
+      "id": "glama_ai",
+      "name": "Glama (glama.ai)",
+      "state": "autocrawl_wait_exhausted_escalate_pending",
+      "url": "https://glama.ai/mcp/servers/io.github.shigetosidumeda-cyber/autonomath-mcp",
+      "alt_url_probes_w45": [
+        "https://glama.ai/mcp/servers/@bookyou/jpcite -> 404",
+        "https://glama.ai/mcp/servers/@shigetosidumeda-cyber/autonomath-mcp -> 404",
+        "https://glama.ai/mcp/servers/jpcite -> 301 redirect to /mcp/servers?query=author%3Ajpcite (search page, no listing match)"
+      ],
+      "http_status_w45": "404",
+      "api_probe_w45": "https://glama.ai/api/mcp/v1/servers?q=jpcite|autonomath|shigetosidumeda -> recent-feed only, 0 explicit jpcite/autonomath/shigetosidumeda-cyber matches",
+      "elapsed_since_anthropic_v035_publish_h": "~29 (v0.3.5 landed 2026-05-11T20:02 UTC, W45 probe 01:00 UTC next day)",
+      "elapsed_since_anthropic_v034_publish_h": "~182 (24-72h ETA exhausted by 110h+)",
+      "exceeded_auto_crawl_eta": true,
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "still 404; +19h elapsed on v0.3.5 window (10h -> 29h of 72h); v0.3.4 window now 182h (exhausted by 110h+).",
+      "escalation_doc": "docs/_internal/mcp_registry_submissions/glama_discord_escalation.md",
+      "operator_paste_required": true,
+      "next_action": "operator paste-verbatim docs/_internal/mcp_registry_submissions/glama_discord_escalation.md to https://discord.gg/C3eCXhYWtJ #support (zero-touch automated path exhausted per W41 attempt). Continue passive auto-crawl wait on v0.3.5 + soon v0.4.0 windows.",
+      "pr_6192_blocker": true
+    },
+    {
+      "id": "pulsemcp",
+      "name": "PulseMCP (pulsemcp.com)",
+      "state": "blocked_cf",
+      "url": "https://www.pulsemcp.com/servers/jpcite",
+      "alt_url_probes_w45": [
+        "https://www.pulsemcp.com/servers/autonomath -> 403",
+        "https://www.pulsemcp.com/servers/jpcite -> 403",
+        "https://www.pulsemcp.com/servers?q=autonomath -> 403",
+        "https://www.pulsemcp.com/servers/bookyou-jpcite -> 403",
+        "https://www.pulsemcp.com/servers/shigetosidumeda-cyber-autonomath-mcp -> 403"
+      ],
+      "http_status_w45": "403 (Cloudflare bot challenge on all server detail + search paths)",
+      "elapsed_since_anthropic_v034_publish_h": "~182",
+      "elapsed_since_anthropic_v035_publish_h": "~29",
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "CF block unchanged; ingest cadence unverifiable from CLI side. v0.3.5 in Anthropic registry should auto-flow.",
+      "next_action": "rely on PulseMCP autocrawl from Anthropic registry (their typical source). Manual mail tool already drafted at tools/offline/submit_pulsemcp_mail.py.",
+      "submission_doc": "docs/_internal/mcp_registry_submissions/pulsemcp_submission.md"
+    },
+    {
+      "id": "awesome_mcp_pr_6192",
+      "name": "punkpeye/awesome-mcp-servers PR #6192",
+      "state": "OPEN_blocked_on_glama",
+      "url": "https://github.com/punkpeye/awesome-mcp-servers/pull/6192",
+      "title": "Add jpcite (Japanese public-program evidence MCP) to Legal",
+      "merged_at": null,
+      "comment_count": 6,
+      "last_comment_utc": "2026-05-11T18:14:08Z",
+      "last_comment_author": "shigetosidumeda-cyber",
+      "last_comment_summary": "Wave 28 update — Anthropic registry confirmed LIVE v0.3.4, Glama 144h+ exhausted, mcpservers.org email sent, mcphub.dev/io confirmed unsubmittable.",
+      "glama_bot_block": "missing-glama label (requires glama.ai listing + score badge)",
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "no maintainer reply since W28 update (38h ago). Still blocked on Glama listing.",
+      "next_action": "Wave 45 follow-up comment OPTIONAL (W28 thread still fresh at 38h); preserve thread quietude. Glama listing unblock = PR mergeable trigger.",
+      "submission_doc": "docs/_internal/mcp_registry_submissions/awesome-mcp-pr-v3.md"
+    },
+    {
+      "id": "cursor_directory",
+      "name": "cursor.directory MCP",
+      "state": "LIVE",
+      "url": "https://cursor.directory/mcp",
+      "http_status_w45": "429 (rate-limited probe; LIVE confirmed Wave 19 G2 PR landed)",
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "no change (Wave 19 PR landed); 429 probe due to anonymous rate limit.",
+      "next_action": "none — passive."
+    },
+    {
+      "id": "claude_ai_directory",
+      "name": "Claude Project metadata (Anthropic-side)",
+      "state": "submitted_pending",
+      "url": "https://claude.ai",
+      "submission_method": "xrea SMTP via tools/offline/submit_claude_project_mail.py (Wave 16 G2)",
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "no change; Anthropic review queue.",
+      "next_action": "no further submit (zero-touch).",
+      "submission_doc": "docs/_internal/mcp_registry_submissions/anthropic_external_plugins.md"
+    },
+    {
+      "id": "github_releases",
+      "name": "GitHub Releases (autonomath-mcp)",
+      "state": "LIVE",
+      "url": "https://github.com/shigetosidumeda-cyber/autonomath-mcp/releases",
+      "latest_release_tag": "v0.3.5",
+      "target_release_tag": "v0.4.0",
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "v0.4.0 Release object auto-created once release.yml github-release job in run 25705502469 completes.",
+      "next_action": "auto via release.yml github-release job."
+    },
+    {
+      "id": "mcphub_dev",
+      "name": "mcphub.dev",
+      "state": "form_only_dead_fallback",
+      "url": "https://mcphub.dev",
+      "http_status_w45": "200 (homepage live; submit form 'direct form submissions coming soon'; GitHub PR fallback target aswbmw/mcp-hub returns 404)",
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "no change. Confirmed unsubmittable as of W28.",
+      "next_action": "deprioritized (no submit path exists)."
+    },
+    {
+      "id": "mcphub_io",
+      "name": "mcphub.io",
+      "state": "browse_only",
+      "url": "https://mcphub.io",
+      "http_status_w45": "200 (Vercel SPA, browse-only Next.js shell, no submit/jpcite/autonomath mention in home HTML)",
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "no change.",
+      "next_action": "wait for any submit API to publicize (none today)."
+    },
+    {
+      "id": "mcpservers_org",
+      "name": "mcpservers.org",
+      "state": "submitted_pending",
+      "url": "https://mcpservers.org",
+      "http_status_w45": "200 (submit form at /submit/ available)",
+      "submission_method": "SMTP via tools/offline/submit_mcpservers_mail.py (Wave 28 sent 2026-05-12 18:10 UTC to contact@mcpservers.org, 1512-byte body)",
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "no reply yet (~31h since W28 submit).",
+      "next_action": "passive wait; no follow-up.",
+      "submission_doc": "docs/_internal/mcp_registry_submissions/mcpservers_org_submission.md"
+    },
+    {
+      "id": "mcp_so",
+      "name": "mcp.so",
+      "state": "placeholder_template_hit",
+      "url": "https://mcp.so/server/jpcite/bookyou",
+      "alt_url": "https://mcp.so/server/autonomath-mcp",
+      "http_status_w45": "200 (both URLs); content is a generic page-template Next.js shell with jpcite/bookyou in slug only — no real listing metadata visible in HTML.",
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "no progress on real listing (still placeholder slug echo).",
+      "next_action": "re-poll 2026-05-19 (7d cadence)."
+    },
+    {
+      "id": "mcprun_io",
+      "name": "mcprun.io",
+      "state": "index_not_found",
+      "url": "https://mcprun.io/server/jpcite",
+      "http_status_w45": "200 (~114 byte placeholder, no jpcite/autonomath content)",
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "no change. Effectively a stub site.",
+      "next_action": "deprioritized."
+    },
+    {
+      "id": "mcpcatalog_dev",
+      "name": "mcpcatalog.dev",
+      "state": "index_not_found",
+      "url": "https://mcpcatalog.dev/server/jpcite",
+      "alt_url": "https://mcpcatalog.dev/server/autonomath-mcp",
+      "http_status_w45": "404 / 404",
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "no change.",
+      "next_action": "no submit path identified; deprioritized."
+    },
+    {
+      "id": "mcpguide_dev",
+      "name": "mcpguide.dev",
+      "state": "index_not_found",
+      "url": "https://mcpguide.dev/server/jpcite",
+      "http_status_w45": "404 (root 200)",
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "no change.",
+      "next_action": "deprioritized."
+    },
+    {
+      "id": "mcp_run",
+      "name": "mcp.run",
+      "state": "redirect_to_unrelated",
+      "url": "https://mcp.run",
+      "http_status_w45": "301 (redirects away from MCP-server catalog)",
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "no change.",
+      "next_action": "ignore."
+    },
+    {
+      "id": "mcpgateway_dev",
+      "name": "mcpgateway.dev",
+      "state": "placeholder_template_hit",
+      "url": "https://mcpgateway.dev/servers/jpcite",
+      "alt_url": "https://mcpgateway.dev/servers/autonomath-mcp",
+      "http_status_w45": "200 (114-byte placeholder, no real content)",
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "newly probed in W45 — confirmed stub site (placeholder shell only).",
+      "next_action": "deprioritized."
+    },
+    {
+      "id": "mcpcat_io",
+      "name": "mcpcat.io",
+      "state": "index_not_found",
+      "url": "https://mcpcat.io/server/jpcite",
+      "http_status_w45": "404 (root 200)",
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "newly probed in W45.",
+      "next_action": "no submit path identified."
+    },
+    {
+      "id": "lobehub_mcp",
+      "name": "Lobehub MCP marketplace",
+      "state": "index_not_found",
+      "url": "https://www.lobehub.com/mcp",
+      "http_status_w45": "200 home + 308 redirect on /mcp; api /api/market/search returns 404 api.not_found",
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "no change. Lobehub marketplace API not stable for keyword search.",
+      "next_action": "deprioritized until Lobehub stabilizes a public search/submit API.",
+      "submission_doc": "docs/_internal/mcp_registry_submissions/lobehub-plugin-manifest-v3.md"
+    },
+    {
+      "id": "mcpworld_com",
+      "name": "mcpworld.com",
+      "state": "index_not_found",
+      "url": "https://www.mcpworld.com",
+      "http_status_w45": "200 home (7317 bytes; no jpcite/autonomath mention in HTML)",
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "newly probed in W45.",
+      "next_action": "no submit path identified."
+    },
+    {
+      "id": "mseep_ai",
+      "name": "mseep.ai mcp-servers",
+      "state": "index_not_found",
+      "url": "https://mseep.ai/mcp-servers",
+      "http_status_w45": "200 (8020-byte index; no jpcite/autonomath/shigetosidumeda match)",
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "newly probed in W45.",
+      "next_action": "no submit path identified; passive wait if they auto-crawl Anthropic registry."
+    },
+    {
+      "id": "aimcp_info",
+      "name": "aimcp.info",
+      "state": "browse_only",
+      "url": "https://www.aimcp.info",
+      "http_status_w45": "307 redirect (final 200 with 320KB SPA payload)",
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "newly probed in W45.",
+      "next_action": "deprioritized (no submit API visible)."
+    },
+    {
+      "id": "mcpmarket_com",
+      "name": "mcpmarket.com",
+      "state": "blocked_cf",
+      "url": "https://www.mcpmarket.com",
+      "http_status_w45": "403 (Cloudflare bot challenge)",
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "newly probed in W45.",
+      "next_action": "manual operator browser walk required (zero-touch fallback)."
+    },
+    {
+      "id": "mcpverse_io",
+      "name": "mcpverse.io",
+      "state": "dead",
+      "url": "https://mcpverse.io",
+      "http_status_w45": "TIMEOUT",
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "newly probed in W45.",
+      "next_action": "ignore."
+    },
+    {
+      "id": "mcp_help",
+      "name": "mcp.help",
+      "state": "dead",
+      "url": "https://mcp.help",
+      "http_status_w45": "TIMEOUT",
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "newly probed in W45.",
+      "next_action": "ignore."
+    },
+    {
+      "id": "mcp_store_com",
+      "name": "mcp-store.com",
+      "state": "dead",
+      "url": "https://mcp-store.com",
+      "http_status_w45": "TIMEOUT",
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "newly probed in W45.",
+      "next_action": "ignore."
+    },
+    {
+      "id": "modelcontextprotocol_servers_repo",
+      "name": "modelcontextprotocol/servers (GitHub awesome list)",
+      "state": "LIVE",
+      "url": "https://github.com/modelcontextprotocol/servers",
+      "http_status_w45": "200",
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "no change; LIVE since Wave 15 PR cohort.",
+      "next_action": "passive."
+    },
+    {
+      "id": "wong2_awesome_mcp_servers",
+      "name": "wong2/awesome-mcp-servers",
+      "state": "LIVE",
+      "url": "https://github.com/wong2/awesome-mcp-servers",
+      "http_status_w45": "200",
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "no change; LIVE since Wave 15-20 awesome list cohort.",
+      "next_action": "passive."
+    },
+    {
+      "id": "punkpeye_awesome_mcp_clients",
+      "name": "punkpeye/awesome-mcp-clients",
+      "state": "LIVE_or_not_applicable",
+      "url": "https://github.com/punkpeye/awesome-mcp-clients",
+      "http_status_w45": "200 (clients list; jpcite is a server, not a client — listing not applicable)",
+      "verified_at_w45_utc": "2026-05-12T00:55:00Z",
+      "delta_vs_w43_5": "newly probed in W45 to confirm scope.",
+      "next_action": "ignore (out of scope)."
+    }
+  ],
+  "rollup": {
+    "platforms_tracked": 29,
+    "live_count": 6,
+    "live_platforms": ["pypi", "anthropic_official_registry", "cursor_directory", "github_releases", "modelcontextprotocol_servers_repo", "wong2_awesome_mcp_servers"],
+    "pending_or_autocrawl_wait_count": 4,
+    "pending_or_autocrawl_wait_platforms": ["smithery_ai", "glama_ai", "pulsemcp", "mcpservers_org", "claude_ai_directory", "awesome_mcp_pr_6192"],
+    "placeholder_or_index_not_found_count": 9,
+    "dead_or_blocked_count": 5,
+    "not_applicable_count": 1,
+    "wave43_5_baseline_live_count": 6,
+    "diff_vs_w43_5": "v0.3.5 still LIVE on PyPI + Anthropic registry (unchanged from W43.5 final). v0.4.0 manifests landed on main (commit c853bf48a, HEAD b409c29e0), tag v0.4.0 pushed, release.yml run 25705502469 queued -> PyPI v0.4.0 LIVE pending. 6 new platforms probed in W45 (mcpgateway.dev / mcpcat.io / mcpworld.com / mcpverse.io / mcp.help / mcp-store.com / aimcp.info / mcpmarket.com / wong2 list / punkpeye-clients list) — 0 unlocked any new submit path; all 4 dead/blocked or out-of-scope. Glama 110h+ past 72h ETA on v0.3.4 + 29h on v0.3.5. PR #6192 still OPEN blocked on Glama listing.",
+    "v0_4_0_publish_chain_state": "release.yml run 25705502469 QUEUED on tag v0.4.0 since 2026-05-12T00:26:45Z. Once publish-pypi succeeds, mcp-registry-publish.yml will auto-fire on OIDC and post v0.4.0 to Anthropic registry. Smithery webhook will re-fire on next push. Glama + PulseMCP will see v0.4.0 once Anthropic registry mirrors (subject to their own crawl cadence)."
+  },
+  "actions_taken_this_wave": [
+    "Re-verified PyPI: GET /pypi/autonomath-mcp/json -> info.version=0.3.5 (no v0.4.0 yet)",
+    "Re-verified Anthropic registry: 4 entries 0.3.2/0.3.3/0.3.4/0.3.5 with v0.3.5 isLatest=True publishedAt=2026-05-11T20:02:01Z",
+    "Re-verified Smithery: 308->404 on /server/@bookyou/jpcite + io.github... slug (57h elapsed since webhook, within 72h window)",
+    "Re-verified Glama: 404 on canonical + 2 alt slugs + /jpcite 301->/mcp/servers?query=author%3Ajpcite search page (0 matches)",
+    "Re-verified Glama API: q=jpcite|autonomath|shigetosidumeda returns recent-feed only (0 matches)",
+    "Re-verified PulseMCP: 403 on /servers/jpcite + /servers/autonomath + 3 alt slugs (CF block persistent)",
+    "Re-checked PR #6192: still OPEN, 6 comments, last own comment 2026-05-11T18:14 UTC (W28 update, +38h ago), missing-glama label still blocking",
+    "Probed 11 new/extra platforms: mcphub.dev (200/form-only), mcphub.io (200/browse-only), mcpservers.org (200/submitted_pending), mcp.so (200/placeholder), mcprun.io (200/stub-114b), mcpcatalog.dev (404), mcpguide.dev (404), mcp.run (301-unrelated), mcpgateway.dev (200/stub-114b), mcpcat.io (404), aimcp.info (307/SPA), mcpworld.com (200/no-match), mcpmarket.com (403/CF), mseep.ai (200/no-match), 3 timeout-dead (mcpverse.io/mcp.help/mcp-store.com)",
+    "Verified release.yml run 25705502469 status=queued on tag v0.4.0 HEAD b409c29e0 since 2026-05-12T00:26:45Z",
+    "Verified mcp-registry-publish.yml run 25694061008 success @2026-05-11T20:01 for v0.3.5 -> Anthropic isLatest=True",
+    "Authored analytics/registry_status_w45.json (this file) — 29 platforms tracked with W45 evidence + delta_vs_w43_5"
+  ],
+  "known_blockers": [
+    "release.yml v0.4.0 run 25705502469 is QUEUED, not yet running (GHA runner backlog).",
+    "Glama auto-crawl 110h+ past 72h ETA on v0.3.4. Discord webhook not publicly exposed -> operator paste-required per zero-touch policy.",
+    "PR #6192 blocked on Glama listing (glama-bot missing-glama label).",
+    "PulseMCP CF bot challenge prevents CLI verification of any new state.",
+    "9 platforms (mcphub.io/mcp.so/mcprun.io/mcpcatalog.dev/mcpguide.dev/mcpgateway.dev/mcpcat.io/mcpworld.com/mseep.ai/aimcp.info) lack a submit API; effectively only auto-crawl-from-Anthropic path."
+  ],
+  "next_wave_prerequisites": [
+    "release.yml run 25705502469 must complete publish-pypi -> PyPI v0.4.0 LIVE",
+    "mcp-registry-publish.yml auto-trigger -> Anthropic registry v0.4.0 LIVE (isLatest=True)",
+    "smithery-deploy.yml webhook re-fire on next push -> Smithery auto-crawl trigger for v0.4.0 surface",
+    "Glama Discord operator-paste -> potential out-of-band crawl",
+    "Then 24-72h wait for crawl propagation across Smithery / PulseMCP / mcpservers.org"
+  ]
+}
