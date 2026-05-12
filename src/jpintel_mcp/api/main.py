@@ -156,9 +156,12 @@ from jpintel_mcp.api.middleware.origin_enforcement import _MUST_INCLUDE
 from jpintel_mcp.api.openapi_agent import build_agent_openapi_schema
 from jpintel_mcp.api.policy_upstream import router as policy_upstream_router
 from jpintel_mcp.api.prescreen import router as prescreen_router
-from jpintel_mcp.api.program_agriculture import (
-    router as program_agriculture_router,
-)  # Wave 43.1.4
+try:  # Wave 43.1.4 module deferred — guard so missing file does not block import
+    from jpintel_mcp.api.program_agriculture import (
+        router as program_agriculture_router,
+    )
+except ModuleNotFoundError:
+    program_agriculture_router = None  # type: ignore[assignment]
 from jpintel_mcp.api.programs import router as programs_router
 from jpintel_mcp.api.programs_municipality_v2 import (
     router as programs_municipality_v2_router,
