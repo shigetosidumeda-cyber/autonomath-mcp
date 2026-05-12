@@ -1,0 +1,126 @@
+# Autonomath boot migration allowlist.
+#
+# entrypoint.sh defaults to AUTONOMATH_BOOT_MIGRATION_MODE=manifest and only
+# considers filenames listed here for boot-time autonomath.db self-heal.
+#
+# Keep this empty unless a deploy packet explicitly approves a migration for
+# boot-time application. Prefer offline/manual migration review for new schema
+# changes, especially files with DROP/DELETE, vec0 virtual tables, or
+# -- boot_time: manual.
+
+# 2026-05-12 Wave 40 production recovery — schema_guard FAIL detected
+# required migrations missing from schema_migrations after Wave 22 baked-seed
+# rollover. These 5 are pure additive (CREATE IF NOT EXISTS / ALTER ADD COLUMN
+# / CREATE VIEW IF NOT EXISTS), boot-time safe, and required by the autonomath
+# schema_guard profile baseline. Approved for boot-time application.
+049_provenance_strengthen.sql
+075_am_amendment_diff.sql
+090_law_article_body_en.sql
+115_source_manifest_view.sql
+121_jpi_programs_subsidy_rate_text_column.sql
+
+# 2026-05-12 Wave 45 production recovery — schema_guard FAIL on live boot
+# (machine 815614a9973e08 nrt @ 2026-05-12T00:30:41Z) identified 3 additional
+# autonomath-required schema items not yet covered by the manifest above:
+#   * am_entity_facts.confirming_source_count (column, cross-source agreement)
+#   * am_uncertainty_view (view, per-fact Bayesian uncertainty)
+#   * programs_active_at_v2 (view, three-axis active/application window)
+# These 3 migrations are pure additive (ALTER ADD COLUMN + CREATE VIEW IF
+# NOT EXISTS); entrypoint.sh handles "duplicate column" idempotently. They
+# unblock the AM_REQUIRED_COLUMNS / AM_REQUIRED_VIEWS schema_guard checks.
+069_uncertainty_view.sql
+070_programs_active_at_v2.sql
+101_trust_infrastructure.sql
+
+# 2026-05-12 Wave 43.1.2 — foreign FDI cohort surface (JETRO / METI / JBIC / NEXI).
+# Pure additive (CREATE TABLE/INDEX/VIEW IF NOT EXISTS); idempotent on every boot.
+249_program_overseas_jetro.sql
+
+# 2026-05-12 Wave 43.1.1 — 市町村 1,700+ subsidy v2 bridge (+5,000 programs).
+# Pure additive (CREATE TABLE IF NOT EXISTS + CREATE INDEX IF NOT EXISTS).
+# autonomath-target; boot-time safe; idempotent on every boot.
+248_program_source_municipality_v2.sql
+
+# 2026-05-12 Wave 43.1.3 — 民間助成財団 2,000+ grant programs (+2,000 programs).
+# 公益財団 / 一般財団 / NPO / 業界団体 助成プログラム コーポラ.
+# Pure additive (CREATE TABLE/INDEX/VIEW IF NOT EXISTS). boot-time safe.
+250_program_private_foundation.sql
+
+# 2026-05-12 Wave 43.1.5 — 47 都道府県条例 corpus (+4,700 laws target).
+# *.pref.{slug}.lg.jp 例規データベース; 著作権法 §13 gov_public.
+# Pure additive (CREATE TABLE/INDEX/VIEW + CREATE VIRTUAL TABLE FTS5 IF NOT
+# EXISTS). boot-time safe; idempotent on every boot.
+252_law_jorei_pref.sql
+255_enforcement_municipality.sql
+259_court_decisions_extended.sql
+
+# 2026-05-12 Wave 43.2.2 — Dim B legal_chain 5-layer 因果関係追跡.
+# am_legal_chain (anchor_program_id → 5 layers: budget / law / cabinet /
+# enforcement / case) + evidence_url 必須 (一次資料 only, aggregator banned)
+# + redistribute_ok-gated public view + run_log. Pure additive (CREATE
+# TABLE/INDEX/VIEW IF NOT EXISTS, CHECK constraints on layer/layer_name
+# pair + URL prefix). boot-time safe; idempotent on every boot.
+261_legal_chain_5layer.sql
+
+# 2026-05-12 Wave 43.2.7 — Dim G real-time signal webhook subscribers
+# (am_realtime_subscribers + am_realtime_dispatch_history). Powers the
+# /v1/realtime/subscribe broad subscription surface joined against
+# am_amendment_diff / am_enforcement_municipality / programs / future
+# kokkai_bill ingest. Pure additive (CREATE TABLE/INDEX/VIEW IF NOT EXISTS,
+# CHECK on target_kind + status + https://); boot-time safe.
+263_realtime_signal_subscribers.sql
+
+# 2026-05-12 Wave 43.2.8 — Dim H personalization score
+# (am_personalization_score + am_personalization_refresh_log). Materialized
+# top-N program recommendations per (consultant api_key_hash × client_id).
+# Refreshed nightly by scripts/cron/refresh_personalization_daily.py. Pure
+# additive; boot-time safe.
+264_personalization_score.sql
+
+# 2026-05-12 Wave 43.2.9 — Dim I cross-source agreement score
+# (am_fact_source_agreement + view v_fact_source_agreement + run_log).
+# Per-fact 0..1 agreement_ratio + per-source value breakdown materialized
+# hourly by scripts/cron/cross_source_agreement_check.py and surfaced at
+# GET /v1/facts/{fact_id}/agreement. Pure additive (CREATE TABLE/INDEX/
+# VIEW IF NOT EXISTS, CHECK on ratio bounds + sources_agree<=sources_total);
+# boot-time safe; idempotent on every boot.
+265_cross_source_agreement.sql
+
+# 2026-05-12 Wave 43.2.10 — Dim J Foreign FDI 80-country
+# (am_fdi_country + v_fdi_country_public + run_log). Hand-curated 80-row
+# seed (G7+G20+ASEAN+EU+EFTA+priority Africa/GCC/LATAM) + detail columns
+# (visa_keiei_kanri / min_capital_yen / restricted_sectors / promotion_
+# program / mofa_source_url / jetro_source_url) filled by
+# scripts/etl/fill_fdi_80country_2x.py and surfaced at GET /v1/foreign_
+# fdi/v2/*. Pure additive (CREATE TABLE/INDEX/VIEW + INSERT OR IGNORE
+# seed); boot-time safe; idempotent on every boot.
+266_fdi_country_80.sql
+
+# 2026-05-12 Wave 43.3.4 — AX Resilience cell 4 (DLQ + drain log).
+# am_dlq + dlq_drain_log + v_am_dlq_quarantine_summary. Quarantine surface
+# for bg_task_queue + webhook_deliveries units that exhausted in-line retry
+# budget. Replay loop runs hourly via scripts/cron/dlq_drain.py. Pure
+# additive (CREATE TABLE/INDEX/VIEW IF NOT EXISTS, CHECK on source_kind/
+# status); boot-time safe; idempotent on every boot.
+267_dlq.sql
+
+# 2026-05-12 Wave 43.3.6 — AX Resilience cell 6 (boundary state checkpoint).
+# am_state_checkpoint + v_state_checkpoint_latest. Per-(workflow_id, step)
+# resume substrate for long-running multi-step workflows (cohort fanout,
+# NTA bulk ingest, compose_audit_workpaper) so Fly machine swaps mid-stream
+# resume idempotently. Pure additive (CREATE TABLE/INDEX/VIEW IF NOT EXISTS,
+# CHECK on status); boot-time safe; idempotent on every boot.
+268_state_checkpoint.sql
+
+# 2026-05-12 Wave 45 manifest backfill — 4 idempotent additions.
+# (251 MAFF 農水省 agri/fishery, 253 各省庁 通達 15 ministry, 254 業種ガイ
+# ドライン 17 issuer, 262 per-fact Ed25519 signature). Each uses CREATE
+# TABLE/INDEX/VIEW IF NOT EXISTS with a single DROP VIEW IF EXISTS for
+# idempotent view rebuild. NO vec0 virtual tables here (260 still
+# excluded — vec0 + CREATE VIRTUAL TABLE IF NOT EXISTS compatibility
+# warning in 260 header). boot-time safe; idempotent on every boot.
+# verified pure-additive 2026-05-12.
+251_program_agriculture.sql
+253_law_tsutatsu_all.sql
+254_law_guideline.sql
+262_fact_signature_v2.sql

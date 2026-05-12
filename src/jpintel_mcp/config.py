@@ -1,36 +1,68 @@
 from pathlib import Path
 
-from pydantic import Field
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# W46.D — env dual-read bridge import. Settings fields below can adopt
+# either ``AliasChoices(...)`` (Pydantic native, preferred for typed
+# fields) or ``get_flag(...)`` (procedural, useful for module-level
+# constants). Only one field (autonomath_db_path) is wired in this PR;
+# the remaining 111 envs are migrated in subsequent waves to keep the
+# blast radius small.
+from jpintel_mcp._jpcite_env_bridge import get_flag as _jpcite_get_flag  # noqa: F401
 
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
-    db_path: Path = Field(default=Path("./data/jpintel.db"), alias="JPINTEL_DB_PATH")
+    db_path: Path = Field(
+        default=Path("./data/jpintel.db"),
+        validation_alias=AliasChoices("JPCITE_DB_PATH", "JPINTEL_DB_PATH"),
+    )
     autonomath_path: Path = Field(
-        default=Path("/Users/shigetoumeda/Autonomath"), alias="JPINTEL_AUTONOMATH_PATH"
+        default=Path("/Users/shigetoumeda/Autonomath"),
+        validation_alias=AliasChoices("JPCITE_AUTONOMATH_PATH", "JPINTEL_AUTONOMATH_PATH"),
     )
     # autonomath.db (7.3 GB, 402,768 entities + 5.26M facts). Distinct from
     # autonomath_path above (legacy /Users/shigetoumeda/Autonomath project).
     # Dev: ./autonomath.db at repo root. Prod: /data/autonomath.db on Fly volume.
-    autonomath_db_path: Path = Field(default=Path("./autonomath.db"), alias="AUTONOMATH_DB_PATH")
+    # W46.D — first env that adopts the JPCITE_* canonical name via
+    # ``AliasChoices``. The legacy ``AUTONOMATH_DB_PATH`` is retained as
+    # a fallback so existing Fly secrets keep working until the bulk
+    # rename PR; new deployments should set ``JPCITE_AUTONOMATH_DB_PATH``.
+    autonomath_db_path: Path = Field(
+        default=Path("./autonomath.db"),
+        validation_alias=AliasChoices("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH"),
+    )
     # Feature flag gating the 16 am_* MCP tools. Flip False for rollback to
     # 31-tool mode (if autonomath.db becomes unavailable or misbehaves).
-    autonomath_enabled: bool = Field(default=True, alias="AUTONOMATH_ENABLED")
+    autonomath_enabled: bool = Field(
+        default=True,
+        validation_alias=AliasChoices("JPCITE_ENABLED", "AUTONOMATH_ENABLED"),
+    )
     # R9 unified rule_engine_check tool (consolidates 6 rule corpora across
     # 49,247 rows: jpi_exclusion_rules + am_compat_matrix + am_combo_calculator
     # + am_subsidy_rule + am_tax_rule + am_validation_rule). Reads from view
     # `am_unified_rule` (migration 064). Default True. Flip "0"/"false" to
     # disable in case of regression — the legacy `combined_compliance_check`
     # / `check_exclusions` tools remain registered for compatibility.
-    rule_engine_enabled: bool = Field(default=True, alias="AUTONOMATH_RULE_ENGINE_ENABLED")
+    rule_engine_enabled: bool = Field(
+        default=True,
+        validation_alias=AliasChoices(
+            "JPCITE_RULE_ENGINE_ENABLED", "AUTONOMATH_RULE_ENGINE_ENABLED"
+        ),
+    )
     # Feature flag gating the 6 healthcare_* MCP tool stubs (P6-D W4 prep).
     # Default False — keeps preview-only healthcare stubs out of the public
     # manifest. Operators flip to True to preview the contract surface ahead
     # of T+90d real-query land. See
     # docs/healthcare_v3_plan.md and src/jpintel_mcp/mcp/healthcare_tools/.
-    healthcare_enabled: bool = Field(default=False, alias="AUTONOMATH_HEALTHCARE_ENABLED")
+    healthcare_enabled: bool = Field(
+        default=False,
+        validation_alias=AliasChoices(
+            "JPCITE_HEALTHCARE_ENABLED", "AUTONOMATH_HEALTHCARE_ENABLED"
+        ),
+    )
     # Feature flag gating the 5 real_estate_* MCP tool stubs (P6-F W4 prep).
     # Default False — keeps preview-only real-estate stubs out of the public
     # manifest. Operators flip to True to preview the contract surface ahead
@@ -38,7 +70,12 @@ class Settings(BaseSettings):
     # 042 (real_estate_programs + zoning_overlays) is already applied so the
     # SQL implementation can land body-only at T+200d. See
     # docs/real_estate_v5_plan.md and src/jpintel_mcp/mcp/real_estate_tools/.
-    real_estate_enabled: bool = Field(default=False, alias="AUTONOMATH_REAL_ESTATE_ENABLED")
+    real_estate_enabled: bool = Field(
+        default=False,
+        validation_alias=AliasChoices(
+            "JPCITE_REAL_ESTATE_ENABLED", "AUTONOMATH_REAL_ESTATE_ENABLED"
+        ),
+    )
     # Feature flag gating the 36協定 (時間外労働協定届) template renderer pair
     # (`render_36_kyotei_am` + `get_36_kyotei_metadata_am`). 36協定 is a
     # 社労士 (labor & social security attorney) regulated obligation under
@@ -50,7 +87,9 @@ class Settings(BaseSettings):
     # docs/_internal/saburoku_kyotei_gate_decision_2026-04-25.md.
     saburoku_kyotei_enabled: bool = Field(
         default=False,
-        alias="AUTONOMATH_36_KYOTEI_ENABLED",
+        validation_alias=AliasChoices(
+            "JPCITE_36_KYOTEI_ENABLED", "AUTONOMATH_36_KYOTEI_ENABLED"
+        ),
         description="法務 review 完了後に true に設定。デフォルト disabled。",
     )
     # R8 dataset versioning — bitemporal `valid_from` / `valid_until`
@@ -62,7 +101,12 @@ class Settings(BaseSettings):
     # "false" via env to short-circuit the predicate in case of
     # regression. See analysis_wave18/_r8_dataset_versioning_2026-04-25.md
     # and docs/compliance/data_governance.md (法廷証拠 reproducibility).
-    r8_versioning_enabled: bool = Field(default=True, alias="AUTONOMATH_R8_VERSIONING_ENABLED")
+    r8_versioning_enabled: bool = Field(
+        default=True,
+        validation_alias=AliasChoices(
+            "JPCITE_R8_VERSIONING_ENABLED", "AUTONOMATH_R8_VERSIONING_ENABLED"
+        ),
+    )
     # Snapshot tool registration gate. Originally gated `query_at_snapshot`
     # which referenced never-landed migration 067 (jpintel-side `valid_from`
     # column). DEEP-22 (2026-05-07) replaces it: migration
@@ -73,7 +117,12 @@ class Settings(BaseSettings):
     # flipped True with DEEP-22 land. The legacy `snapshot_tool.query_at_snapshot`
     # (broken) stays gated by reading this same flag — flip to "0" via env
     # only if the legacy tool needs to be muted again.
-    autonomath_snapshot_enabled: bool = Field(default=True, alias="AUTONOMATH_SNAPSHOT_ENABLED")
+    autonomath_snapshot_enabled: bool = Field(
+        default=True,
+        validation_alias=AliasChoices(
+            "JPCITE_SNAPSHOT_ENABLED", "AUTONOMATH_SNAPSHOT_ENABLED"
+        ),
+    )
     # Reasoning subsystem gate (`intent_of` + `reason_answer`). Both tools
     # depend on a `reasoning` package (lazy-imported via _reasoning_import)
     # which is NOT present in the current install — every invocation returns
@@ -81,7 +130,12 @@ class Settings(BaseSettings):
     # broken pair stays out of `tools/list`. Flip to "1" / "true" once the
     # `reasoning` package is bundled into the install (or relocated to a
     # path on sys.path).
-    autonomath_reasoning_enabled: bool = Field(default=False, alias="AUTONOMATH_REASONING_ENABLED")
+    autonomath_reasoning_enabled: bool = Field(
+        default=False,
+        validation_alias=AliasChoices(
+            "JPCITE_REASONING_ENABLED", "AUTONOMATH_REASONING_ENABLED"
+        ),
+    )
     # Graph-walk tool gate (`related_programs`). 2026-04-29 rewritten to
     # read `am_relation` + `am_entities` directly from autonomath.db (same
     # store ``graph_traverse_tool.py`` already uses). The legacy
@@ -90,7 +144,10 @@ class Settings(BaseSettings):
     # one-flag rollback in case a regression surfaces. Distinct from
     # `graph_traverse` (which has its own AUTONOMATH_GRAPH_TRAVERSE_ENABLED
     # gate and walks v_am_relation_all multi-kind).
-    autonomath_graph_enabled: bool = Field(default=True, alias="AUTONOMATH_GRAPH_ENABLED")
+    autonomath_graph_enabled: bool = Field(
+        default=True,
+        validation_alias=AliasChoices("JPCITE_GRAPH_ENABLED", "AUTONOMATH_GRAPH_ENABLED"),
+    )
     # R5 prerequisite_chain — surfaces the multi-step certification / 計画
     # / agency-relation prerequisites that gate a target program. Reads
     # from `am_prerequisite_bundle` (795 rows / 135 programs / 1.6%
@@ -102,7 +159,11 @@ class Settings(BaseSettings):
     # via env to short-circuit if a regression surfaces. See
     # analysis_wave18/_r5_prerequisite_chain_2026-04-25.md.
     prerequisite_chain_enabled: bool = Field(
-        default=True, alias="AUTONOMATH_PREREQUISITE_CHAIN_ENABLED"
+        default=True,
+        validation_alias=AliasChoices(
+            "JPCITE_PREREQUISITE_CHAIN_ENABLED",
+            "AUTONOMATH_PREREQUISITE_CHAIN_ENABLED",
+        ),
     )
     # Migration 103: NTA primary-source corpus tools (find_saiketsu /
     # cite_tsutatsu / find_shitsugi / find_bunsho_kaitou) reading from
@@ -112,7 +173,12 @@ class Settings(BaseSettings):
     # v1.0 / ministry standard). Every result envelope carries a 税理士法
     # §52 _disclaimer declaring the output citation-only retrieval.
     # Default True; flip to "0" / "false" via env for one-flag rollback.
-    autonomath_nta_corpus_enabled: bool = Field(default=True, alias="AUTONOMATH_NTA_CORPUS_ENABLED")
+    autonomath_nta_corpus_enabled: bool = Field(
+        default=True,
+        validation_alias=AliasChoices(
+            "JPCITE_NTA_CORPUS_ENABLED", "AUTONOMATH_NTA_CORPUS_ENABLED"
+        ),
+    )
     # Wave 22 composition tools (5 MCP surfaces): match_due_diligence_questions /
     # prepare_kessan_briefing / forecast_program_renewal / cross_check_jurisdiction /
     # bundle_application_kit. Pure SQLite + Python, NO LLM, every response carries
@@ -121,14 +187,20 @@ class Settings(BaseSettings):
     # for a one-flag rollback (the tool module reads via os.environ.get for fast
     # short-circuit at import time — this Settings field mirrors the value for
     # discoverability / typed-access in code paths that already hold a Settings).
-    autonomath_wave22_enabled: bool = Field(default=True, alias="AUTONOMATH_WAVE22_ENABLED")
+    autonomath_wave22_enabled: bool = Field(
+        default=True,
+        validation_alias=AliasChoices("JPCITE_WAVE22_ENABLED", "AUTONOMATH_WAVE22_ENABLED"),
+    )
     # Wave 23 industry pack wrappers (3 MCP surfaces): pack_construction (JSIC D) /
     # pack_manufacturing (JSIC E) / pack_real_estate (JSIC K). Bundle programs +
     # nta_saiketsu citations + 通達 references in 1 req. NO LLM, single ¥3/req.
     # Sensitive (§52 / §47条の2): every response carries `_disclaimer` + `_next_calls`.
     # Default True. Same rollback semantics as wave22 above.
     autonomath_industry_packs_enabled: bool = Field(
-        default=True, alias="AUTONOMATH_INDUSTRY_PACKS_ENABLED"
+        default=True,
+        validation_alias=AliasChoices(
+            "JPCITE_INDUSTRY_PACKS_ENABLED", "AUTONOMATH_INDUSTRY_PACKS_ENABLED"
+        ),
     )
     # DEEP-30 司法書士 cohort dedicated DD pack (1 MCP surface):
     # `shihoshoshi_dd_pack_am`. Compounds Wave 22 cross_check_jurisdiction +
@@ -138,7 +210,10 @@ class Settings(BaseSettings):
     # carrying §3 (司法書士法) + §52 (税理士法) + §72 (弁護士法) + §1
     # (行政書士法) fence text. Default True. Same rollback semantics as wave22.
     autonomath_shihoshoshi_pack_enabled: bool = Field(
-        default=True, alias="AUTONOMATH_SHIHOSHOSHI_PACK_ENABLED"
+        default=True,
+        validation_alias=AliasChoices(
+            "JPCITE_SHIHOSHOSHI_PACK_ENABLED", "AUTONOMATH_SHIHOSHOSHI_PACK_ENABLED"
+        ),
     )
     # Prompt-injection guard layered on top of INV-22 (景表法) sanitizer.
     # Strips override directives ("ignore previous instructions",
@@ -148,7 +223,10 @@ class Settings(BaseSettings):
     # production (override goes to "0" / "false" via env). See
     # `src/jpintel_mcp/security/prompt_injection_sanitizer.py`.
     prompt_injection_guard_enabled: bool = Field(
-        default=True, alias="AUTONOMATH_PROMPT_INJECTION_GUARD"
+        default=True,
+        validation_alias=AliasChoices(
+            "JPCITE_PROMPT_INJECTION_GUARD", "AUTONOMATH_PROMPT_INJECTION_GUARD"
+        ),
     )
     # Hallucination_guard layer (Loop A surface-form detection) layered on
     # top of INV-22 + prompt-injection. Substring-scans every JSON str leaf
@@ -159,7 +237,11 @@ class Settings(BaseSettings):
     # Default True; flip to "0" / "false" via env for one-flag rollback.
     # See `src/jpintel_mcp/self_improve/loop_a_hallucination_guard.py`.
     hallucination_guard_enabled: bool = Field(
-        default=True, alias="AUTONOMATH_HALLUCINATION_GUARD_ENABLED"
+        default=True,
+        validation_alias=AliasChoices(
+            "JPCITE_HALLUCINATION_GUARD_ENABLED",
+            "AUTONOMATH_HALLUCINATION_GUARD_ENABLED",
+        ),
     )
     # PII response-body redactor (S7 critical fix). Layer 0 of the response
     # sanitizer cascade — runs BEFORE INV-22 / prompt-injection / loop_a so
@@ -169,7 +251,11 @@ class Settings(BaseSettings):
     # exposed. Default True; flip to "0" via env for one-flag rollback. See
     # `src/jpintel_mcp/security/pii_redact.py`.
     pii_redact_response_enabled: bool = Field(
-        default=True, alias="AUTONOMATH_PII_REDACT_RESPONSE_ENABLED"
+        default=True,
+        validation_alias=AliasChoices(
+            "JPCITE_PII_REDACT_RESPONSE_ENABLED",
+            "AUTONOMATH_PII_REDACT_RESPONSE_ENABLED",
+        ),
     )
     # O8 per-fact Bayesian uncertainty (additive `_uncertainty` envelope on
     # fact-returning responses + `/v1/stats/data_quality` rollup). Wired
@@ -179,7 +265,12 @@ class Settings(BaseSettings):
     # the per-fact join becomes a hot spot. See
     # `src/jpintel_mcp/api/uncertainty.py` and migration
     # `069_uncertainty_view.sql`.
-    uncertainty_enabled: bool = Field(default=True, alias="AUTONOMATH_UNCERTAINTY_ENABLED")
+    uncertainty_enabled: bool = Field(
+        default=True,
+        validation_alias=AliasChoices(
+            "JPCITE_UNCERTAINTY_ENABLED", "AUTONOMATH_UNCERTAINTY_ENABLED"
+        ),
+    )
     # S7 disclaimer envelope level (see envelope_wrapper.SENSITIVE_TOOLS).
     # Sensitive tools (dd_profile_am / regulatory_prep_pack /
     # combined_compliance_check / rule_engine_check / predict_subsidy_outcome /
@@ -190,7 +281,10 @@ class Settings(BaseSettings):
     #   "minimal"  — single short line for token-sensitive surfaces
     # Default "standard". Override via env to tighten or loosen at runtime.
     autonomath_disclaimer_level: str = Field(
-        default="standard", alias="AUTONOMATH_DISCLAIMER_LEVEL"
+        default="standard",
+        validation_alias=AliasChoices(
+            "JPCITE_DISCLAIMER_LEVEL", "AUTONOMATH_DISCLAIMER_LEVEL"
+        ),
     )
     # Personal information sub-flags (APPI § 31 / § 33 fence). Default 0=off:
     # `corp.representative` (代表者名) is gbiz info公開情報 source, so removing
@@ -201,18 +295,34 @@ class Settings(BaseSettings):
     # 公開情報 in gbiz → default 0=preserve. Personal email / 電話 stay redacted
     # (default behaviour; not gated — those are unambiguous APPI risk).
     pii_redact_representative: bool = Field(
-        default=False, alias="AUTONOMATH_PII_REDACT_REPRESENTATIVE"
+        default=False,
+        validation_alias=AliasChoices(
+            "JPCITE_PII_REDACT_REPRESENTATIVE",
+            "AUTONOMATH_PII_REDACT_REPRESENTATIVE",
+        ),
     )
-    pii_redact_postal_code: bool = Field(default=False, alias="AUTONOMATH_PII_REDACT_POSTAL_CODE")
+    pii_redact_postal_code: bool = Field(
+        default=False,
+        validation_alias=AliasChoices(
+            "JPCITE_PII_REDACT_POSTAL_CODE", "AUTONOMATH_PII_REDACT_POSTAL_CODE"
+        ),
+    )
     # 法人番号 (13桁) は 国税庁 法人番号公表サイト + gbiz PDL v1.0 で 公開情報。
     # gbiz / 法人番号 lookup を 1st-class surface に持つ check_enforcement_am /
     # search_corp 等は queried.houjin_bangou を verbatim echo する必要があり、
     # 過剰 mask は accuracy / DD UX を毀損する (`feedback_no_fake_data`)。
     # default=False で preserve、 True で T*************マスク (legacy 挙動)。
     pii_redact_houjin_bangou: bool = Field(
-        default=False, alias="AUTONOMATH_PII_REDACT_HOUJIN_BANGOU"
+        default=False,
+        validation_alias=AliasChoices(
+            "JPCITE_PII_REDACT_HOUJIN_BANGOU",
+            "AUTONOMATH_PII_REDACT_HOUJIN_BANGOU",
+        ),
     )
-    log_level: str = Field(default="INFO", alias="JPINTEL_LOG_LEVEL")
+    log_level: str = Field(
+        default="INFO",
+        validation_alias=AliasChoices("JPCITE_LOG_LEVEL", "JPINTEL_LOG_LEVEL"),
+    )
     # CORS_ORIGINS whitelist (Wave 16 P1). Comma-separated origins. The
     # OriginEnforcementMiddleware short-circuits any cross-origin request
     # whose `Origin` header is set and not on the list with 403 (covers
@@ -238,7 +348,7 @@ class Settings(BaseSettings):
             "https://autonomath.ai,"
             "https://www.autonomath.ai"
         ),
-        alias="JPINTEL_CORS_ORIGINS",
+        validation_alias=AliasChoices("JPCITE_CORS_ORIGINS", "JPINTEL_CORS_ORIGINS"),
     )
 
     stripe_secret_key: str = Field(default="", alias="STRIPE_SECRET_KEY")
@@ -312,14 +422,25 @@ class Settings(BaseSettings):
     sentry_profiles_sample_rate: float = Field(default=0.1, alias="SENTRY_PROFILES_SAMPLE_RATE")
     sentry_release: str = Field(default="", alias="SENTRY_RELEASE")
 
-    log_format: str = Field(default="json", alias="JPINTEL_LOG_FORMAT")
-    ingest_staleness_threshold_days: int = Field(default=30, alias="JPINTEL_INGEST_STALENESS_DAYS")
+    log_format: str = Field(
+        default="json",
+        validation_alias=AliasChoices("JPCITE_LOG_FORMAT", "JPINTEL_LOG_FORMAT"),
+    )
+    ingest_staleness_threshold_days: int = Field(
+        default=30,
+        validation_alias=AliasChoices(
+            "JPCITE_INGEST_STALENESS_DAYS", "JPINTEL_INGEST_STALENESS_DAYS"
+        ),
+    )
 
     # Environment label used by the email / Postmark plumbing to short-circuit
     # sends in CI / pytest. Distinct from `sentry_environment` on purpose:
     # Sentry can be off even in prod (no DSN configured), but email test-mode
     # must be explicit. Values: "dev" | "test" | "staging" | "prod".
-    env: str = Field(default="dev", alias="JPINTEL_ENV")
+    env: str = Field(
+        default="dev",
+        validation_alias=AliasChoices("JPCITE_ENV", "JPINTEL_ENV"),
+    )
 
     # --- Postmark (transactional email) -------------------------------------
     # Token unset OR env=="test" → the email layer no-ops and logs the
@@ -340,7 +461,12 @@ class Settings(BaseSettings):
     # unimplemented routes. Flip to True in an env where we want partners to
     # see the contract early — mounted routes return HTTP 501 with a roadmap
     # body, never real data. See `docs/preview_endpoints.md`.
-    enable_preview_endpoints: bool = Field(default=False, alias="JPINTEL_ENABLE_PREVIEW_ENDPOINTS")
+    enable_preview_endpoints: bool = Field(
+        default=False,
+        validation_alias=AliasChoices(
+            "JPCITE_ENABLE_PREVIEW_ENDPOINTS", "JPINTEL_ENABLE_PREVIEW_ENDPOINTS"
+        ),
+    )
 
     @property
     def autonomath_registry(self) -> Path:

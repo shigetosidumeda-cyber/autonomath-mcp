@@ -1,0 +1,140 @@
+# fly.jpcite.toml — new Fly app `jpcite-api`, structural parity overlay (Wave 46.B, 2026-05-12).
+#
+# Scope (per `project_jpcite_internal_autonomath_rename` /
+# `feedback_destruction_free_organization`):
+#   * Additive overlay only. `fly.toml` (app = "autonomath-api") is the SOT
+#     for the existing prod app and MUST NOT be edited or replaced.
+#   * This file defines a NEW Fly app `jpcite-api` whose structural shape
+#     (build / env / mounts / http_service / metrics / vm) matches the
+#     legacy file 1:1, so the only effective drift is the `app` line, the
+#     SIGINT kill_signal hint (graceful uvicorn shutdown), and a brand
+#     comment header.
+#   * Actual deploy is gated on user judgment (separate wave). The dispatch
+#     workflow `.github/workflows/deploy-jpcite-api.yml` is dispatch-only
+#     (no cron, no workflow_run trigger) so this file lands as design-only
+#     until the user approves rollover.
+#
+# Why a new app and not a rename of `autonomath-api`?
+#   * Fly app names are global and immutable in practice (no in-place
+#     rename API). `flyctl apps create jpcite-api` is the supported path.
+#   * Running both apps in parallel during cutover means the legacy
+#     `autonomath-api` keeps serving customer traffic while jpcite-api
+#     warms up its volume + cron + secret inventory. Zero downtime
+#     migration cost vs. a destructive single-app rename.
+#   * Per `feedback_destruction_free_organization`: never `rm/mv` the
+#     legacy app; superseded state gets a marker, not a delete.
+#
+# kill_signal note:
+#   Default Fly kill_signal is SIGTERM. uvicorn graceful-shutdown listens
+#   on SIGINT (so it drains active requests instead of hard-exiting),
+#   matching jpcite-api's CMD line (`uvicorn ... --workers 2`). The
+#   legacy fly.toml omits this and relies on the default; we set it
+#   explicitly here so the new app's drain semantics are unambiguous
+#   from day-1. Same internal_port (8080), same /healthz check, same
+#   60s grace_period (the autonomath.db boot trade-off captured in
+#   `feedback_no_quick_check_on_huge_sqlite` still applies).
+
+app = "jpcite-api"
+primary_region = "nrt"
+kill_signal = "SIGINT"
+kill_timeout = "30s"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  JPINTEL_ENV = "prod"
+  JPINTEL_LOG_LEVEL = "INFO"
+  JPINTEL_LOG_FORMAT = "json"
+  JPINTEL_DB_PATH = "/data/jpintel.db"
+  AUTONOMATH_DB_PATH = "/data/autonomath.db"
+  AUTONOMATH_ENABLED = "true"
+  AUTONOMATH_APPI_ENABLED = "0"
+  SENTRY_ENVIRONMENT = "production"
+  # SENTRY_DSN, STRIPE_*, API_KEY_SALT, JPINTEL_CORS_ORIGINS: set via `flyctl secrets set -a jpcite-api`
+  # AUTONOMATH_DB_URL + AUTONOMATH_DB_SHA256 (optional R2 bootstrap): set via secrets
+
+# DEPRECATED 2026-05-11 — `release_command = "python scripts/migrate.py"` superseded by entrypoint.sh §4 (autonomath self-heal); retained as historical-state marker.
+# index record: /Users/shigetoumeda/jpcite/docs/_internal/_archive/_index_2026_05_11.md (A9)
+#
+# Run migrations on every deploy, before traffic shifts. Must be idempotent.
+# migrate.py reads JPINTEL_DB_PATH from env; it is safe on a fresh volume.
+# Disabled 2026-04-27: 74 migrations × 8.29GB autonomath.db hangs the
+# release_command machine. Re-enabling is risky until migrate.py is split
+# by target_db marker (see TODO in entrypoint.sh §3).
+#
+# Substitute path (added 2026-04-29): jpintel.db migrations still run via
+# `migrate.py` in entrypoint.sh §3 (post-volume-mount, before schema_guard);
+# autonomath.db `target_db: autonomath` migrations auto-discover and self-heal
+# in entrypoint.sh §4. Already-recorded schema_migrations rows are skipped;
+# rollback companions and files marked `-- boot_time: manual` are excluded.
+# Any remaining autonomath migration failure aborts boot when
+# AUTONOMATH_ENABLED=true.
+[deploy]
+  # release_command = "python scripts/migrate.py"
+  strategy = "immediate"
+
+# Volume sizing (2026-04-29 audit, copied verbatim from fly.toml):
+#   - autonomath.db          ~9.3 GB live, +920 MB/month from NTA bulk ingest
+#   - jpintel.db             ~368 MB live, +incremental law full-text loads
+#   - WAL/SHM headroom       ~10% of DB size during writes
+#   - migration scratch      autonomath self-heal SQL during boot when needed
+# At 20 GB the volume saturates in ~11 months of NTA bulk growth alone.
+# 40 GB buys ~33 months of headroom and absorbs an unexpected corpus expansion
+# without an emergency `fly volumes extend` (which requires a machine restart).
+# Fly volumes can be grown but not shrunk; over-provisioning is the safe move.
+#
+# Volume `jpintel_data` here is a NEW Fly volume scoped to the `jpcite-api`
+# app (Fly volumes are namespaced by app). It does NOT collide with the
+# legacy `autonomath-api/jpintel_data` volume — different app, different
+# storage. Volume hydration for jpcite-api will pull from the same R2
+# canonical mirror (build-arg JPINTEL_DB_R2_URL) and the AUTONOMATH_DB_URL
+# secret on first boot; the legacy app's volume is never touched.
+[[mounts]]
+  source = "jpintel_data"
+  destination = "/data"
+  initial_size = "40gb"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  # suspend is fine because min_machines_running = 1 keeps the primary up.
+  auto_stop_machines = "suspend"
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 50
+    hard_limit = 100
+
+  # Fly silently caps grace_period at 60s (`flyctl config validate` warning).
+  # Liveness must not depend on the optional 9GB autonomath.db restore path.
+  # Deep autonomath health is checked by deploy smoke/monitoring; using it here
+  # can restart-loop a fresh volume before R2 bootstrap or stamp repair finishes.
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "10s"
+    grace_period = "60s"
+    method = "GET"
+    path = "/healthz"
+
+[metrics]
+  port = 9091
+  path = "/metrics"
+
+# VM sizing (2026-04-29 audit, copied verbatim from fly.toml):
+#   - 2 uvicorn workers × ~600-900 MB resident each (FastAPI + 9.3 GB SQLite
+#     mmap residency)
+#   - WeasyPrint quarterly PDF render spikes (~200-400 MB transient)
+#   - sqlite-vec + FTS5 trigram index page cache benefits from RAM headroom
+#   - Sentry instrumentation + structlog overhead (~50-100 MB)
+# Fly shared CPU has a 2 GB/cpu hard cap, so 2 shared cpus × 2 GB = 4096 MB max.
+# 8192 MB requires `cpu_kind = "performance"` (more expensive, ~2x cost).
+# Sticking with shared 4096 MB for launch; if PDF render or NTA bulk OOMs, escalate
+# to performance-2x (4 cpus / 8 GB ~$30/mo extra) rather than scaling out machines.
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 2
+  memory_mb = 4096

@@ -158,6 +158,21 @@ LABEL org.opencontainers.image.licenses="MIT"
 # TODO(org-claim): switch back to github.com/AutonoMath/autonomath-mcp once the AutonoMath GitHub org is claimed.
 LABEL org.opencontainers.image.source="https://github.com/shigetosidumeda-cyber/jpintel-mcp"
 
+# Wave 46.B namespace alias (2026-05-12) — jpcite brand identification, additive only.
+# Per `project_jpcite_internal_autonomath_rename` / `feedback_destruction_free_organization`:
+# the legacy OCI title ("AutonoMath API") above MUST stay so historical image
+# scanners + downstream registries (Glama/Smithery/PulseMCP) keep matching the
+# autonomath-api lineage. These additional labels are read by jpcite-side
+# tooling and by the fly.jpcite.toml app (`jpcite-api`) at provenance time.
+# `org.opencontainers.image.title` cannot be set twice in OCI, so the jpcite
+# title lives under the alt-title key (image.alt-title is a vendor extension
+# used by jpcite tooling; standard OCI title above remains authoritative).
+LABEL org.opencontainers.image.alt-title="jpcite-mcp"
+LABEL org.opencontainers.image.alt-vendor="Bookyou株式会社"
+LABEL com.bookyou.jpcite.brand="jpcite"
+LABEL com.bookyou.jpcite.app="jpcite-api"
+LABEL com.bookyou.jpcite.rename-wave="46.B"
+
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PATH="/opt/venv/bin:${PATH}" \

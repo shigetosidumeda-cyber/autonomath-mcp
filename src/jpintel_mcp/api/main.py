@@ -156,9 +156,12 @@ from jpintel_mcp.api.middleware.origin_enforcement import _MUST_INCLUDE
 from jpintel_mcp.api.openapi_agent import build_agent_openapi_schema
 from jpintel_mcp.api.policy_upstream import router as policy_upstream_router
 from jpintel_mcp.api.prescreen import router as prescreen_router
-from jpintel_mcp.api.program_agriculture import (
-    router as program_agriculture_router,
-)  # Wave 43.1.4
+try:  # Wave 43.1.4 module deferred — guard so missing file does not block import
+    from jpintel_mcp.api.program_agriculture import (
+        router as program_agriculture_router,
+    )
+except ModuleNotFoundError:
+    program_agriculture_router = None  # type: ignore[assignment]
 from jpintel_mcp.api.programs import router as programs_router
 from jpintel_mcp.api.programs_municipality_v2 import (
     router as programs_municipality_v2_router,
@@ -2720,6 +2723,28 @@ def create_app() -> FastAPI:
     # instead of crashing the app. NO LLM, cryptography stdlib only.
     # See api/fact_verify.py module docstring.
     _include_experimental_router(app, "jpintel_mcp.api.fact_verify")
+    # Wave 46 Dim F signature discovery: metadata-only surface that
+    # complements fact_verify.py without copying the 96-byte sig BLOB
+    # into the wire payload (list + per-id lookup of signed_at /
+    # key_id / corpus_snapshot_id / payload_sha256 / sig_byte_length).
+    # GET /v1/facts/signatures/latest, GET /v1/facts/{fact_id}/signature.
+    # Experimental include so migration 262 absence at import time
+    # degrades to skip rather than crash startup.
+    _include_experimental_router(app, "jpintel_mcp.api.fact_signature_v2")
+    # Wave 43.2.9 Dim I cross-source agreement: per-fact 0..1
+    # agreement_ratio + canonical_value + per-source value breakdown
+    # (GET /v1/facts/{fact_id}/agreement). Reads autonomath
+    # am_fact_source_agreement (migration 265). NO LLM, single-DB,
+    # 1 unit billing. Experimental include so migration 265 absence at
+    # import time degrades to skip rather than crash startup.
+    _include_experimental_router(app, "jpintel_mcp.api.cross_source_score_v2")
+    # Wave 43.2.10 Dim J Foreign FDI 80-country surface (GET
+    # /v1/foreign_fdi/v2/countries, GET /v1/foreign_fdi/v2/country/{iso}).
+    # Reads autonomath am_fdi_country (migration 266) via
+    # v_fdi_country_public (redistribute_ok = 1). NO LLM, NO auto-
+    # translate, hand-curated JA/EN names. Experimental include so
+    # migration 266 absence degrades to skip rather than crash startup.
+    _include_experimental_router(app, "jpintel_mcp.api.foreign_fdi_v2")
     # Autonomath health probe (10-check aggregate) — same exemption as
     # /healthz / /readyz. Mounted without AnonIpLimitDep so production
     # uptime monitors can poll without burning the 3/日 anonymous quota.

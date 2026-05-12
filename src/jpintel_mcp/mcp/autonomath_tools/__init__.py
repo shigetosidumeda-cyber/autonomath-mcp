@@ -40,6 +40,7 @@ from . import (
     discover,  # noqa: F401  — Multi-axis Discover Related (5 axes: via_law_ref / via_vector / via_co_adoption / via_density_neighbors / via_5hop). REST companion at GET /v1/discover/related/{entity_id}. AUTONOMATH_DISCOVER_ENABLED gate (default ON).
     eligibility_tools,  # noqa: F401  — R8 (2026-05-07): 2 dynamic eligibility check tools (dynamic_eligibility_check_am / program_eligibility_for_houjin_am) joining am_enforcement_detail × exclusion_rules. AUTONOMATH_ELIGIBILITY_CHECK_ENABLED gate (default ON). NO LLM.
     evidence_packet_tools,  # noqa: F401  — 2026-04-30: get_evidence_packet (api/evidence.py companion). LR plan §6 Evidence Packet composer.
+    fact_signature_mcp,  # noqa: F401  — Wave 46 dim 19 FPQO (2026-05-12): fact_signature_verify_am — MCP wrapper over fact_verify REST (Dim E/F). Ed25519 verify + rule-based 'why' in one call. AUTONOMATH_FACT_SIGNATURE_MCP_ENABLED gate (default ON). NO LLM, single ¥3/req billing event. §52/§47条の2/§72/§1 envelope. REST companions at GET /v1/facts/{fact_id}/verify + /why.
     funding_stack_tools,  # noqa: F401  — 2026-04-30: check_funding_stack_am (api/funding_stack.py companion). Pure rule engine.
     funding_stage_tools,  # noqa: F401  — 2026-05-07: match_programs_by_funding_stage_am (api/funding_stage.py companion). 5 stage (seed/early/growth/ipo/succession) keyword fence + age/capital/revenue band over jpintel.programs. AUTONOMATH_FUNDING_STAGE_ENABLED gate (default ON). NO LLM, single ¥3/req billing event.
     graph_traverse_tool,  # noqa: F401  — O7 Wave 18: graph_traverse (heterogeneous 1-3 hop KG walk over v_am_relation_all, AUTONOMATH_GRAPH_TRAVERSE_ENABLED gate)
@@ -98,6 +99,9 @@ if _experimental_mcp_enabled():
         "jpintel_mcp.mcp.autonomath_tools.intel_wave31",
         "jpintel_mcp.mcp.autonomath_tools.wave24_tools_first_half",
         "jpintel_mcp.mcp.autonomath_tools.wave24_tools_second_half",
+        # Wave 43.2.9 Dim I — cross-source agreement (per-fact 0..1 score).
+        # Reads autonomath.am_fact_source_agreement (migration 265). NO LLM.
+        "jpintel_mcp.mcp.autonomath_tools.cross_source_score_v2",
     ):
         import_module(_module_name)
 

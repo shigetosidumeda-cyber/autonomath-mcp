@@ -1,0 +1,77 @@
+# Wave 46 §G — lane-policy warn (non-blocking PR companion).
+# Pair of scripts/ops/lane_policy_enforcer.py (blocking, path-set) +
+# scripts/audit/check_lane_policy.py (warn, lane-collision via ledger).
+# LLM API calls = 0; uses python3 stdlib + git only. rc=0 always.
+
+name: lane-policy-warn
+
+on:
+  pull_request:
+    branches: ["main"]
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: lane-policy-warn-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  warn:
+    name: Lane policy warn (non-blocking)
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run lane-policy warn check
+        id: warn
+        shell: bash
+        env:
+          GITHUB_HEAD_REF: ${{ github.head_ref }}
+        run: |
+          set +e
+          python3 scripts/audit/check_lane_policy.py \
+            --branch "${GITHUB_HEAD_REF}" \
+            --ledger tools/offline/_inbox/value_growth_dual/AGENT_LEDGER.csv \
+            > warn_stdout.txt 2> warn_stderr.txt
+          rc=$?
+          echo "rc=${rc}" >> "$GITHUB_OUTPUT"
+          cat warn_stdout.txt
+          cat warn_stderr.txt >&2
+          # explicit non-blocking: always succeed
+          exit 0
+
+      - name: Comment on PR if collision detected
+        if: ${{ github.event_name == 'pull_request' }}
+        continue-on-error: true
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            if (!fs.existsSync('warn_stdout.txt')) {
+              core.info('warn check produced no output, skipping comment.');
+              return;
+            }
+            const body = fs.readFileSync('warn_stdout.txt', 'utf8');
+            if (!body.toLowerCase().includes('warn:')) {
+              core.info('no collision warning found, skipping comment.');
+              return;
+            }
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              issue_number: context.issue.number,
+              body: '## Wave 46 §G lane-policy warn (non-blocking)\n\n' + body,
+            });

@@ -25,6 +25,41 @@ if [ ! -d /data ]; then
   exit 1
 fi
 
+# 1.4. jpcite ⇄ autonomath compatibility symlink (Wave 46.C).
+# Brand rename strategy: jpcite.db is the canonical name going forward; old
+# AUTONOMATH_DB_PATH consumers still resolve through the same inode. Per
+# `project_jpcite_internal_autonomath_rename` and
+# `feedback_destruction_free_organization`: never delete or rename the
+# physical autonomath.db, only create the symlink when the new path is
+# absent. Per `feedback_no_quick_check_on_huge_sqlite`: zero PRAGMA /
+# integrity probe here — symlink ops are O(1) inode-only so boot stays well
+# under the 60s Fly grace window. Per `feedback_dual_cli_lane_atomic`:
+# additive overlay (`ln -sf` only when target missing) — safe against
+# concurrent boot.
+JPCITE_DB="${JPCITE_DB_PATH:-/data/jpcite.db}"
+AM_DB="${AUTONOMATH_DB_PATH:-/data/autonomath.db}"
+
+if [ -f "$AM_DB" ] && [ ! -e "$JPCITE_DB" ]; then
+  ln -sf "$AM_DB" "$JPCITE_DB"
+  log "[W46.C] symlink created: $JPCITE_DB -> $AM_DB"
+elif [ -f "$JPCITE_DB" ] && [ ! -e "$AM_DB" ]; then
+  # Inverse case (post-eventual-rename world): jpcite.db is the real file
+  # and autonomath.db is missing. Symlink the legacy path so old code paths
+  # remain transparent. Still no destructive op on either side.
+  ln -sf "$JPCITE_DB" "$AM_DB"
+  log "[W46.C] reverse symlink created: $AM_DB -> $JPCITE_DB"
+elif [ -e "$AM_DB" ] && [ -e "$JPCITE_DB" ]; then
+  # Both exist. If they resolve to the same inode (either is symlink to
+  # the other, or both are bind mounts of the same file), nothing to do.
+  # Otherwise split-brain — log a warning and continue; downstream §2
+  # bootstrap still operates on $DB_PATH (= AUTONOMATH_DB_PATH default).
+  am_inode=$(stat -L -c%i "$AM_DB" 2>/dev/null || stat -L -f%i "$AM_DB" 2>/dev/null || echo "?")
+  jc_inode=$(stat -L -c%i "$JPCITE_DB" 2>/dev/null || stat -L -f%i "$JPCITE_DB" 2>/dev/null || echo "?")
+  if [ "$am_inode" != "$jc_inode" ] || [ "$am_inode" = "?" ]; then
+    err "[W46.C] split-brain: $AM_DB (inode=$am_inode) and $JPCITE_DB (inode=$jc_inode) are distinct files — manual reconcile required; continuing with $AM_DB as canonical"
+  fi
+fi
+
 # Helper: compute SHA256 of a file (portable across Linux + macOS).
 # Forward-declared here so the seed validation block in §1.5 can hash the
 # staged seed file before the atomic rename. The same function is used by
@@ -496,7 +531,26 @@ if [ -f /app/scripts/schema_guard.py ]; then
       am_mig_failed=0
       am_mig_degraded=0
       am_mig_mode="${AUTONOMATH_BOOT_MIGRATION_MODE:-manifest}"
-      am_mig_manifest="${AUTONOMATH_BOOT_MIGRATION_MANIFEST:-/app/scripts/migrations/autonomath_boot_manifest.txt}"
+      # Wave 46 46.F: jpcite_boot_manifest.txt aliases autonomath_boot_manifest.txt.
+      # Dual-read: prefer explicit env override, else prefer the jpcite-named copy,
+      # fall back to the legacy autonomath-named copy. Both files are tracked in
+      # git and MUST be kept byte-identical (see scripts/migrations/README.md).
+      if [ -n "${AUTONOMATH_BOOT_MIGRATION_MANIFEST:-}" ]; then
+        am_mig_manifest="$AUTONOMATH_BOOT_MIGRATION_MANIFEST"
+      else
+        am_mig_manifest=""
+        for am_mig_manifest_candidate in \
+          /app/scripts/migrations/jpcite_boot_manifest.txt \
+          /app/scripts/migrations/autonomath_boot_manifest.txt; do
+          if [ -f "$am_mig_manifest_candidate" ]; then
+            am_mig_manifest="$am_mig_manifest_candidate"
+            break
+          fi
+        done
+        # Keep the variable defined even if neither file is on disk so the
+        # existing "$am_mig_manifest missing" log path stays intact.
+        : "${am_mig_manifest:=/app/scripts/migrations/jpcite_boot_manifest.txt}"
+      fi
       am_mig_in_manifest() {
         local name="$1"
         [ -f "$am_mig_manifest" ] || return 1
