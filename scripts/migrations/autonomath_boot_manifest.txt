@@ -236,3 +236,18 @@
 # (CREATE TABLE/INDEX/VIEW IF NOT EXISTS); boot-time safe; idempotent
 # on every boot. No LLM API ever invoked operator-side.
 279_copilot_scaffold.sql
+# 2026-05-12 Wave 47 — Dim V (x402 protocol micropayment) storage layer.
+# am_x402_endpoint_config (config table, 1 row per x402-gated endpoint:
+# endpoint_path PK + required_amount_usdc + expires_after_seconds, with
+# 0 < amount <= 100 sanity cap and 60s <= TTL <= 86400s CHECK) +
+# am_x402_payment_log (append-only on-chain audit: http_status_402_id
+# nonce + payer_address 0x..42 + txn_hash 0x..66, UNIQUE on txn_hash so
+# duplicate settlements cannot double-credit) + v_x402_endpoint_enabled
+# helper view. Pairs with scripts/etl/seed_x402_endpoints.py (5-endpoint
+# canonical seed: search / programs / cases / audit_workpaper /
+# semantic_search). Additive only: does NOT touch the inline-CREATE
+# x402_tx_bind table owned by src/jpintel_mcp/api/billing_v2.py. Pure
+# additive (CREATE TABLE/INDEX/VIEW IF NOT EXISTS); boot-time safe;
+# idempotent on every boot. No LLM API ever invoked operator-side
+# (per feedback_no_operator_llm_api + feedback_agent_x402_protocol).
+282_x402_payment.sql
