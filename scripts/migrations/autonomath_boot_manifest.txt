@@ -236,3 +236,20 @@
 # (CREATE TABLE/INDEX/VIEW IF NOT EXISTS); boot-time safe; idempotent
 # on every boot. No LLM API ever invoked operator-side.
 279_copilot_scaffold.sql
+
+# Wave 47 Dim T — predictive service (pull -> push) storage overlay.
+# Adds am_predictive_watch_subscription (operator-internal subscription
+# table: subscriber_token_hash sha256 + watch_type enum
+# (houjin/program/amendment) + watch_target opaque + threshold + 24h
+# notify_window_hours CHECK 1..168) and am_predictive_alert_log
+# (append-only per-fire audit, payload JSON, delivery_status pending|
+# delivered|failed|expired, CHECK delivered_at >= fired_at, dedup
+# partial UNIQUE on (watch_id, source_diff_id)) + v_predictive_watch_active
+# helper view. Pairs with scripts/etl/build_predictive_watch_v2.py
+# (daily 3-type scan unifying houjin/program/amendment with 24h TTL
+# purge) per feedback_predictive_service_design. LLM-0 by construction:
+# we only RANK + ROUTE existing am_amendment_diff rows; no Anthropic /
+# OpenAI SDK is ever imported. Billing is on successful delivery only
+# (¥3/req on Stripe usage_record). Pure additive (CREATE TABLE/INDEX/
+# VIEW IF NOT EXISTS); boot-time safe; idempotent on every boot.
+280_predictive_service.sql
