@@ -23,12 +23,12 @@ surfaces; §1 only on upcoming-rounds (pure schedule data).
 from __future__ import annotations
 
 import logging
-import os
 import sqlite3
 from typing import Annotated, Any
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.api.timeline_trend import (
     _build_cases_trend,
     _build_program_timeline,
@@ -42,12 +42,12 @@ from .snapshot_helper import attach_corpus_snapshot
 
 logger = logging.getLogger("jpintel.mcp.autonomath.timeline_trend")
 
-_ENABLED = os.environ.get("AUTONOMATH_TIMELINE_TREND_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_TIMELINE_TREND_ENABLED", "AUTONOMATH_TIMELINE_TREND_ENABLED", "1") == "1"
 
 
 def _open_jpintel_ro() -> sqlite3.Connection | dict[str, Any]:
     """Open jpintel.db read-only — soft-fail to error envelope."""
-    db_path = os.environ.get("JPINTEL_DB_PATH", "data/jpintel.db")
+    db_path = get_flag("JPCITE_DB_PATH", "JPINTEL_DB_PATH", "data/jpintel.db")
     try:
         conn = sqlite3.connect(
             f"file:{db_path}?mode=ro",

@@ -26,20 +26,20 @@ Constraints
 from __future__ import annotations
 
 import logging
-import os
 import sqlite3
 from pathlib import Path
 from typing import Annotated, Any
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
 from .error_envelope import make_error
 
 logger = logging.getLogger("jpintel.mcp.region_tools")
 
-_ENABLED = os.environ.get("AUTONOMATH_REGION_API_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_REGION_API_ENABLED", "AUTONOMATH_REGION_API_ENABLED", "1") == "1"
 
 # Mirrors api/regions.py — keep in sync.
 _NATIONAL_AUTHORITY = ("national", "国")
@@ -47,7 +47,7 @@ _LEVEL_ORDER = ("nation", "prefecture", "municipality")
 
 
 def _autonomath_db_path() -> Path:
-    raw = os.environ.get("AUTONOMATH_DB_PATH")
+    raw = get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH")
     if raw:
         return Path(raw)
     # autonomath_tools/region_tools.py → autonomath_tools/ → mcp/ →
@@ -56,7 +56,7 @@ def _autonomath_db_path() -> Path:
 
 
 def _jpintel_db_path() -> Path:
-    raw = os.environ.get("JPINTEL_DB_PATH")
+    raw = get_flag("JPCITE_DB_PATH", "JPINTEL_DB_PATH")
     if raw:
         return Path(raw)
     return Path(__file__).resolve().parents[5] / "data" / "jpintel.db"

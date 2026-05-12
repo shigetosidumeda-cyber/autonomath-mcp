@@ -26,13 +26,13 @@ from __future__ import annotations
 
 import datetime
 import logging
-import os
 import sqlite3
 from pathlib import Path
 from typing import Annotated, Any
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.config import settings
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
@@ -41,7 +41,7 @@ from .error_envelope import make_error
 logger = logging.getLogger("jpintel.mcp.autonomath.municipality")
 
 # Env-gated registration (default ON). Flip to "0" for one-flag rollback.
-_ENABLED = os.environ.get("AUTONOMATH_MUNICIPALITY_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_MUNICIPALITY_ENABLED", "AUTONOMATH_MUNICIPALITY_ENABLED", "1") == "1"
 
 
 # ---------------------------------------------------------------------------
@@ -51,7 +51,7 @@ _ENABLED = os.environ.get("AUTONOMATH_MUNICIPALITY_ENABLED", "1") == "1"
 
 def _jpintel_db_path() -> Path:
     """Return the jpintel.db path from env or settings (read-only opener)."""
-    raw = os.environ.get("JPINTEL_DB_PATH")
+    raw = get_flag("JPCITE_DB_PATH", "JPINTEL_DB_PATH")
     if raw:
         return Path(raw)
     # Fall back to repository default (data/jpintel.db).

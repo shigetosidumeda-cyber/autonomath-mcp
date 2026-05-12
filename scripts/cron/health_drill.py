@@ -49,7 +49,6 @@ import argparse
 import hashlib
 import json
 import logging
-import os
 import sqlite3
 import sys
 import time
@@ -58,6 +57,8 @@ import urllib.request
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+
+from jpintel_mcp._jpcite_env_bridge import get_flag
 
 # Allow running as a script without `pip install -e .`.
 _REPO = Path(__file__).resolve().parent.parent.parent
@@ -68,7 +69,7 @@ if _SRC.is_dir() and str(_SRC) not in sys.path:
 logger = logging.getLogger("autonomath.cron.health_drill")
 
 _DEFAULT_HEALTH_URL = "https://autonomath.fly.dev/healthz"
-_DEFAULT_DB_PATH = os.environ.get("AUTONOMATH_DB_PATH", "/data/autonomath.db")
+_DEFAULT_DB_PATH = get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", "/data/autonomath.db")
 
 
 # ---------------------------------------------------------------------------
@@ -127,8 +128,8 @@ def scenario_1_vm_probe(health_url: str, *, attempts: int = 3) -> dict[str, Any]
 
 def scenario_2_r2_precond() -> dict[str, Any]:
     """Verify env + R2 reachability; do NOT trigger restore."""
-    db_url = os.environ.get("AUTONOMATH_DB_URL", "")
-    db_sha = os.environ.get("AUTONOMATH_DB_SHA256", "")
+    db_url = get_flag("JPCITE_DB_URL", "AUTONOMATH_DB_URL", "")
+    db_sha = get_flag("JPCITE_DB_SHA256", "AUTONOMATH_DB_SHA256", "")
     if not db_url:
         return {
             "status": "fail",
@@ -191,7 +192,7 @@ def scenario_3_local_db(db_path: str) -> dict[str, Any]:
             "status": "fail",
             "note": f"local DB missing or empty at {db_path}",
         }
-    expected_sha = os.environ.get("AUTONOMATH_DB_SHA256", "")
+    expected_sha = get_flag("JPCITE_DB_SHA256", "AUTONOMATH_DB_SHA256", "")
     actual_sha = _sha256_of(p) or ""
     sha_ok: bool | None
     sha_ok = expected_sha.lower() == actual_sha.lower() if expected_sha and actual_sha else None

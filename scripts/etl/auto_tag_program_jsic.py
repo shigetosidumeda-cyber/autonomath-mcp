@@ -22,13 +22,14 @@ from __future__ import annotations
 import argparse
 import json
 import logging
-import os
 import sqlite3
 import sys
 from collections import Counter
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+
+from jpintel_mcp._jpcite_env_bridge import get_flag
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 JPINTEL_DB_DEFAULT = REPO_ROOT / "data" / "jpintel.db"
@@ -1753,13 +1754,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--jpintel-db",
         type=Path,
-        default=Path(os.environ.get("JPINTEL_DB_PATH", str(JPINTEL_DB_DEFAULT))),
+        default=Path(get_flag("JPCITE_DB_PATH", "JPINTEL_DB_PATH", str(JPINTEL_DB_DEFAULT))),
         help="Path to jpintel.db (target).",
     )
     parser.add_argument(
         "--autonomath-db",
         type=Path,
-        default=Path(os.environ.get("AUTONOMATH_DB_PATH", str(AUTONOMATH_DB_DEFAULT))),
+        default=Path(get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(AUTONOMATH_DB_DEFAULT))),
         help="Path to autonomath.db (source of am_industry_jsic).",
     )
     parser.add_argument(

@@ -46,7 +46,6 @@ from __future__ import annotations
 
 import argparse
 import logging
-import os
 import sqlite3
 import sys
 from datetime import datetime, timedelta
@@ -54,12 +53,13 @@ from datetime import datetime, timedelta
 try:
     from datetime import UTC  # Python 3.11+
 except ImportError:  # pragma: no cover — Python 3.9/3.10 fallback for local dry-runs
-    from datetime import timezone
 
-    UTC = timezone.utc  # type: ignore[misc, assignment]
+    UTC = UTC  # type: ignore[misc, assignment]
 from email.utils import format_datetime
 from pathlib import Path
 from xml.sax.saxutils import escape as xml_escape
+
+from jpintel_mcp._jpcite_env_bridge import get_flag
 
 logger = logging.getLogger("autonomath.cron.generate_amendment_diff_rss")
 
@@ -80,7 +80,7 @@ except Exception:  # noqa: BLE001
         yield {}
 
 
-_DEFAULT_DB = Path(os.environ.get("AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db")))
+_DEFAULT_DB = Path(get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db")))
 _DEFAULT_OUT = _REPO_ROOT / "site" / "feeds" / "amendment_diff.xml"
 _DOMAIN = "jpcite.com"
 _DEFAULT_WINDOW_DAYS = 7

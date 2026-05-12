@@ -35,12 +35,12 @@ from __future__ import annotations
 
 import contextlib
 import logging
-import os
 import sqlite3
 from typing import Annotated, Any
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.config import settings
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
@@ -49,7 +49,7 @@ from .error_envelope import make_error
 
 logger = logging.getLogger("jpintel.mcp.autonomath.audit_workpaper_v2")
 
-_ENABLED = os.environ.get("AUTONOMATH_AUDIT_WORKPAPER_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_AUDIT_WORKPAPER_ENABLED", "AUTONOMATH_AUDIT_WORKPAPER_ENABLED", "1") == "1"
 
 # Sensitive — 4-業法 fence, mirrors envelope_wrapper.SENSITIVE_TOOLS.
 _DISCLAIMER = (

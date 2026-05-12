@@ -32,7 +32,6 @@ from __future__ import annotations
 import argparse
 import json
 import logging
-import os
 import sys
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -48,6 +47,7 @@ _SRC = _REPO / "src"
 if _SRC.is_dir() and str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
 
+from jpintel_mcp._jpcite_env_bridge import get_flag  # noqa: E402
 from jpintel_mcp.config import settings  # noqa: E402
 from jpintel_mcp.db.session import connect  # noqa: E402
 from jpintel_mcp.observability import heartbeat, safe_capture_message  # noqa: E402
@@ -55,7 +55,7 @@ from jpintel_mcp.observability import heartbeat, safe_capture_message  # noqa: E
 logger = logging.getLogger("autonomath.cron.cost_alert")
 
 # Budget defaults (yen). Override via env or --budget.
-_DEFAULT_BUDGET_JPY = int(os.getenv("AUTONOMATH_BUDGET_JPY", "10000"))
+_DEFAULT_BUDGET_JPY = int(get_flag("JPCITE_BUDGET_JPY", "AUTONOMATH_BUDGET_JPY", "10000"))
 
 # Banned providers — see memory `feedback_autonomath_no_api_use`. If a
 # cost_ledger row tagged with one of these shows up we treat it as an

@@ -57,7 +57,6 @@ Cron wiring is intentionally out-of-scope here (handled by
 
 from __future__ import annotations
 
-import os
 import sqlite3
 from difflib import SequenceMatcher
 from functools import lru_cache
@@ -74,6 +73,7 @@ try:
 except Exception:  # pragma: no cover - pykakasi optional at import time
     pykakasi = None  # type: ignore[assignment]
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.security.pii_redact import redact_text
 
 if TYPE_CHECKING:
@@ -82,7 +82,7 @@ if TYPE_CHECKING:
 # Repo layout: src/jpintel_mcp/self_improve/loop_e_alias_expansion.py
 # climb four parents to reach the repo root.
 REPO_ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_DB_PATH = Path(os.environ.get("AUTONOMATH_DB_PATH", str(REPO_ROOT / "autonomath.db")))
+DEFAULT_DB_PATH = Path(get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(REPO_ROOT / "autonomath.db")))
 PROPOSALS_PATH = REPO_ROOT / "data" / "alias_proposed.yaml"
 
 # Similarity thresholds — sniper-claim posture: high precision, low recall.

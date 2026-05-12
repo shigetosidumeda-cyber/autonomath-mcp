@@ -61,6 +61,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 _SRC = REPO_ROOT / "src"
 if _SRC.is_dir() and str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
+from jpintel_mcp._jpcite_env_bridge import get_flag  # noqa: E402
 from jpintel_mcp.observability import heartbeat  # noqa: E402
 
 DEFAULT_SITE_DIR = REPO_ROOT / "site"
@@ -97,7 +98,7 @@ NS = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
 def _setup_logging() -> None:
     """Structured JSON-friendly stderr logging (matches other cron scripts)."""
     logging.basicConfig(
-        level=os.environ.get("JPINTEL_LOG_LEVEL", "INFO"),
+        level=get_flag("JPCITE_LOG_LEVEL", "JPINTEL_LOG_LEVEL", "INFO"),
         format="%(asctime)s %(levelname)s %(name)s %(message)s",
         stream=sys.stderr,
     )

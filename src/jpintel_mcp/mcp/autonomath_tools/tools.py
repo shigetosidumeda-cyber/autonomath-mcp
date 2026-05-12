@@ -36,7 +36,6 @@ from __future__ import annotations
 import functools
 import json
 import logging
-import os
 import re
 import sqlite3
 from collections.abc import Callable
@@ -150,6 +149,7 @@ def _fts_escape(q: str) -> str:
 # the kana-expansion table for the common 30-ish readings. This is the
 # same builder ``api/programs.py`` uses; importing keeps the two
 # surfaces in lockstep so a fix in one place benefits both REST + MCP.
+from jpintel_mcp._jpcite_env_bridge import get_flag  # noqa: E402
 from jpintel_mcp.api.programs import _build_fts_match  # noqa: E402
 
 
@@ -3353,7 +3353,7 @@ def reason_answer(
     # Machine-readable signal stays in missing_data / precompute_gaps arrays.
     # Rollback gate: AUTONOMATH_STRIP_MISSING_TOKENS="0" returns the raw
     # skeleton verbatim (default "1" applies the strip).
-    if os.environ.get("AUTONOMATH_STRIP_MISSING_TOKENS", "1") != "0":
+    if get_flag("JPCITE_STRIP_MISSING_TOKENS", "AUTONOMATH_STRIP_MISSING_TOKENS", "1") != "0":
         safe_skeleton = _re.sub(r"<<<missing:[a-z_0-9]+>>>", "(該当データなし)", raw_skeleton)
         safe_skeleton = _re.sub(r"<<<precompute gap: [^>]+>>>", "(集計準備中)", safe_skeleton)
     else:

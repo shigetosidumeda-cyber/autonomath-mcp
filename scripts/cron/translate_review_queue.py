@@ -16,18 +16,19 @@ import argparse
 import csv
 import json
 import logging
-import os
 import sqlite3
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
+
 _REPO = Path(__file__).resolve().parent.parent.parent
 LOG = logging.getLogger("translate_review_queue")
-DEFAULT_AUTONOMATH_DB = os.environ.get(
-    "AUTONOMATH_DB_PATH", str(_REPO / "autonomath.db"))
-DEFAULT_JPINTEL_DB = os.environ.get(
-    "JPINTEL_DB_PATH", str(_REPO / "data" / "jpintel.db"))
+DEFAULT_AUTONOMATH_DB = get_flag(
+    "JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(_REPO / "autonomath.db"))
+DEFAULT_JPINTEL_DB = get_flag(
+    "JPCITE_DB_PATH", "JPINTEL_DB_PATH", str(_REPO / "data" / "jpintel.db"))
 
 CSV_COLUMNS = (
     "source_db", "queue_id", "target_kind", "canonical_or_unified_id",

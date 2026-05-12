@@ -16,12 +16,12 @@ cap via the standard MCP gate.
 from __future__ import annotations
 
 import logging
-import os
 from pathlib import Path
 from typing import Annotated, Any
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.config import settings
 from jpintel_mcp.mcp.autonomath_tools.error_envelope import make_error
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
@@ -34,7 +34,7 @@ logger = logging.getLogger("jpintel.mcp.am.evidence_packet")
 
 #: Env-gate. Default ON; flip "0" to disable without redeploy. Pairs with
 #: the global AUTONOMATH_ENABLED gate at the package boundary.
-_ENABLED = os.environ.get("AUTONOMATH_EVIDENCE_PACKET_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_EVIDENCE_PACKET_ENABLED", "AUTONOMATH_EVIDENCE_PACKET_ENABLED", "1") == "1"
 
 
 # Module-level composer singleton. Built lazily on first call so import
@@ -45,8 +45,8 @@ _composer_paths: tuple[str, str] | None = None
 
 
 def _current_composer_paths() -> tuple[str, str]:
-    jpintel_db = Path(os.environ.get("JPINTEL_DB_PATH") or settings.db_path)
-    autonomath_db = Path(os.environ.get("AUTONOMATH_DB_PATH") or settings.autonomath_db_path)
+    jpintel_db = Path(get_flag("JPCITE_DB_PATH", "JPINTEL_DB_PATH") or settings.db_path)
+    autonomath_db = Path(get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH") or settings.autonomath_db_path)
     return (str(jpintel_db), str(autonomath_db))
 
 

@@ -36,7 +36,6 @@ from __future__ import annotations
 import datetime
 import json
 import logging
-import os
 import sqlite3
 import statistics
 from collections import defaultdict
@@ -44,6 +43,7 @@ from typing import Annotated, Any
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.config import settings
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
@@ -53,7 +53,7 @@ from .snapshot_helper import attach_corpus_snapshot
 
 logger = logging.getLogger("jpintel.mcp.autonomath.cohort_match")
 
-_ENABLED = os.environ.get("AUTONOMATH_COHORT_MATCH_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_COHORT_MATCH_ENABLED", "AUTONOMATH_COHORT_MATCH_ENABLED", "1") == "1"
 
 
 _DISCLAIMER_COHORT_MATCH = (
@@ -73,7 +73,7 @@ def _open_jpintel_ro() -> sqlite3.Connection | dict[str, Any]:
     boots with ``data/jpintel.db``. Soft-fail returns a make_error envelope
     when the file is missing — callers (REST + MCP) propagate as-is.
     """
-    db_path = os.environ.get("JPINTEL_DB_PATH", "data/jpintel.db")
+    db_path = get_flag("JPCITE_DB_PATH", "JPINTEL_DB_PATH", "data/jpintel.db")
     try:
         conn = sqlite3.connect(
             f"file:{db_path}?mode=ro",

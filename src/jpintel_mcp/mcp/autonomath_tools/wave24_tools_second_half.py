@@ -88,7 +88,6 @@ from __future__ import annotations
 import datetime
 import json
 import logging
-import os
 import re
 import sqlite3
 from collections import Counter
@@ -96,6 +95,7 @@ from typing import Annotated, Any
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.config import settings
 from jpintel_mcp.db.id_translator import normalize_program_id
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
@@ -124,7 +124,7 @@ def _finalize(body: dict[str, Any]) -> dict[str, Any]:
 logger = logging.getLogger("jpintel.mcp.autonomath.wave24_second_half")
 
 # Env-gated registration. Default ON; flip to "0" for one-flag rollback.
-_ENABLED = os.environ.get("AUTONOMATH_WAVE24_SECOND_HALF_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_WAVE24_SECOND_HALF_ENABLED", "AUTONOMATH_WAVE24_SECOND_HALF_ENABLED", "1") == "1"
 
 
 # ---------------------------------------------------------------------------

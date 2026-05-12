@@ -54,6 +54,8 @@ from datetime import UTC, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
+
 # Component identifiers (stable JSON keys; do not reorder lightly — the
 # status page template enumerates these in render order).
 COMPONENT_IDS = ["api", "mcp", "billing", "data-freshness", "dashboard"]
@@ -372,8 +374,8 @@ def probe_data_freshness() -> dict[str, Any]:
     """
     t0 = time.monotonic()
 
-    jpintel_db = Path(os.environ.get("JPINTEL_DB_PATH", "data/jpintel.db")).resolve()
-    autonomath_db = Path(os.environ.get("AUTONOMATH_DB_PATH", "autonomath.db")).resolve()
+    jpintel_db = Path(get_flag("JPCITE_DB_PATH", "JPINTEL_DB_PATH", "data/jpintel.db")).resolve()
+    autonomath_db = Path(get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", "autonomath.db")).resolve()
 
     measurements = [
         ("programs", jpintel_db, "SELECT MAX(updated_at) FROM programs", SLA_PROGRAMS),
@@ -737,7 +739,7 @@ def main(argv: list[str] | None = None) -> int:
     api_base = (
         args.base_url
         or os.environ.get("JPCITE_API_BASE")
-        or os.environ.get("JPINTEL_API_BASE")
+        or get_flag("JPCITE_API_BASE", "JPINTEL_API_BASE")
         or DEFAULT_API_BASE
     )
     site_base = args.site_url or os.environ.get("JPCITE_SITE_BASE") or DEFAULT_SITE_BASE

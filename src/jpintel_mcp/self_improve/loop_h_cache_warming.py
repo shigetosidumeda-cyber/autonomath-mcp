@@ -86,12 +86,12 @@ Cron wiring is intentionally out-of-scope here (handled by
 from __future__ import annotations
 
 import json
-import os
 import sqlite3
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.cache.l4 import (
     canonical_cache_key,
     canonical_params,
@@ -103,7 +103,7 @@ if TYPE_CHECKING:
 # Repo layout: src/jpintel_mcp/self_improve/loop_h_cache_warming.py
 # climb four parents to reach the repo root.
 REPO_ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_DB_PATH = Path(os.environ.get("JPINTEL_DB_PATH", str(REPO_ROOT / "data" / "jpintel.db")))
+DEFAULT_DB_PATH = Path(get_flag("JPCITE_DB_PATH", "JPINTEL_DB_PATH", str(REPO_ROOT / "data" / "jpintel.db")))
 REPORT_PATH = REPO_ROOT / "data" / "cache_warming_report.json"
 
 # Default: scan 7d of usage_events, take top 100 (endpoint, digest) pairs.

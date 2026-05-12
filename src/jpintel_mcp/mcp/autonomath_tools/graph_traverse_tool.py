@@ -32,13 +32,13 @@ launch state has it on).
 from __future__ import annotations
 
 import logging
-import os
 import sqlite3
 import time
 from typing import Annotated, Any
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
 from .db import connect_autonomath
@@ -47,7 +47,7 @@ from .error_envelope import make_error
 logger = logging.getLogger("jpintel.mcp.autonomath.graph_traverse")
 
 # Env-gated registration. Default is "1" (on); flip to "0" to roll back.
-_ENABLED = os.environ.get("AUTONOMATH_GRAPH_TRAVERSE_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_GRAPH_TRAVERSE_ENABLED", "AUTONOMATH_GRAPH_TRAVERSE_ENABLED", "1") == "1"
 
 # All 15 canonical relation_type values present in v_am_relation_all
 # (verified 2026-04-25 via SELECT DISTINCT relation_type). Used to

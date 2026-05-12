@@ -29,17 +29,17 @@ from __future__ import annotations
 
 import logging
 import math
-import os
 from typing import Annotated, Any
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.config import settings
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
 logger = logging.getLogger("jpintel.mcp.autonomath.semantic_search_v2")
 
-_ENABLED = os.environ.get("AUTONOMATH_SEMANTIC_SEARCH_V2_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_SEMANTIC_SEARCH_V2_ENABLED", "AUTONOMATH_SEMANTIC_SEARCH_V2_ENABLED", "1") == "1"
 
 _DISCLAIMER = (
     "本 response は am_entities corpus 503k+ rows に対する hybrid 検索結果 "

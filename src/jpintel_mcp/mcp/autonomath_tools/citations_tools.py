@@ -17,12 +17,12 @@ NO LLM API call. Pure stdlib + the local CitationVerifier.
 from __future__ import annotations
 
 import logging
-import os
 import time
 from typing import Annotated, Any
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.config import settings
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 from jpintel_mcp.services.citation_verifier import (
@@ -38,7 +38,7 @@ logger = logging.getLogger("jpintel.mcp.am.citations")
 
 # Env-gated registration. Default ON — the REST + MCP surfaces should
 # move in lockstep so customer SDK and customer LLM see the same tool.
-_ENABLED = os.environ.get("AUTONOMATH_CITATIONS_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_CITATIONS_ENABLED", "AUTONOMATH_CITATIONS_ENABLED", "1") == "1"
 
 # Same total wall-clock budget as the REST endpoint.
 _TOTAL_TIMEOUT_SEC = 30

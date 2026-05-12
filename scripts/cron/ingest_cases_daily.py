@@ -19,17 +19,17 @@ import concurrent.futures
 import hashlib
 import json
 import logging
-import os
 import re
 import sqlite3
 import sys
-import time
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
 import httpx
+
+from jpintel_mcp._jpcite_env_bridge import get_flag
 
 try:
     from scripts.etl._playwright_helper import fetch_with_fallback_sync
@@ -129,7 +129,7 @@ _DATE_RE = re.compile(r"(\d{4})[/\-年](\d{1,2})[/\-月](\d{1,2})")
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(description=(__doc__ or "").split("\n\n")[0])
-    p.add_argument("--db", default=os.environ.get("AUTONOMATH_DB_PATH", str(DEFAULT_DB_PATH)))
+    p.add_argument("--db", default=get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(DEFAULT_DB_PATH)))
     p.add_argument("--days", type=int, default=7)
     p.add_argument("--prefectures", default="all")
     p.add_argument("--max-workers", type=int, default=DEFAULT_MAX_WORKERS)

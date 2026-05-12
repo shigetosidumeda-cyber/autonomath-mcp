@@ -56,6 +56,7 @@ from typing import Annotated, Any
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.config import Settings
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
@@ -290,9 +291,8 @@ def query_at_snapshot(
 # behaviour after writing migration 067.
 # Late import (E402): legacy-gate read happens here, after the canonical
 # tool surface above; module-top imports remain grouped for the canonical surface.
-import os as _os  # noqa: E402
 
-_LEGACY_ENABLED = _os.environ.get("AUTONOMATH_LEGACY_SNAPSHOT_ENABLED", "0") in (
+_LEGACY_ENABLED = (get_flag("JPCITE_LEGACY_SNAPSHOT_ENABLED", "AUTONOMATH_LEGACY_SNAPSHOT_ENABLED", "0") or "") in (
     "1",
     "true",
     "True",

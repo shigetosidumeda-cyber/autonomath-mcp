@@ -31,13 +31,15 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
+
 _REPO = Path(__file__).resolve().parent.parent.parent
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO / "src"))
 
 LOG = logging.getLogger("build_e5_embeddings_v2")
 
-DEFAULT_DB = os.environ.get("AUTONOMATH_DB_PATH", str(_REPO / "autonomath.db"))
+DEFAULT_DB = get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(_REPO / "autonomath.db"))
 DEFAULT_CHUNK_SIZE = 5_000
 DEFAULT_BATCH_SIZE = 64
 DEFAULT_MODEL = "intfloat/multilingual-e5-small"

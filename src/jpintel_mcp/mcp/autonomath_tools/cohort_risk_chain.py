@@ -31,13 +31,13 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 import sqlite3
 from contextlib import suppress
 from typing import Annotated, Any
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.config import settings
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
@@ -46,7 +46,7 @@ from .error_envelope import make_error
 
 logger = logging.getLogger("jpintel.mcp.autonomath.cohort_risk_chain")
 
-_ENABLED = os.environ.get("AUTONOMATH_COHORT_RISK_CHAIN_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_COHORT_RISK_CHAIN_ENABLED", "AUTONOMATH_COHORT_RISK_CHAIN_ENABLED", "1") == "1"
 
 
 _DISCLAIMER = (

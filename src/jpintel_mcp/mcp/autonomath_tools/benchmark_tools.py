@@ -30,13 +30,13 @@ import contextlib
 import datetime
 import json
 import logging
-import os
 import sqlite3
 import statistics
 from typing import Annotated, Any
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.config import settings
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
@@ -46,7 +46,7 @@ from .snapshot_helper import attach_corpus_snapshot
 
 logger = logging.getLogger("jpintel.mcp.autonomath.benchmark")
 
-_ENABLED = os.environ.get("AUTONOMATH_BENCHMARK_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_BENCHMARK_ENABLED", "AUTONOMATH_BENCHMARK_ENABLED", "1") == "1"
 
 
 _DISCLAIMER_BENCHMARK = (
@@ -128,7 +128,7 @@ def _today_iso() -> str:
 
 def _open_jpintel_ro(db_path: str | None = None) -> sqlite3.Connection | dict[str, Any]:
     """Open jpintel.db read-only via file URI. Mirror cohort_match_tools."""
-    path = db_path or os.environ.get("JPINTEL_DB_PATH", "data/jpintel.db")
+    path = db_path or get_flag("JPCITE_DB_PATH", "JPINTEL_DB_PATH", "data/jpintel.db")
     try:
         conn = sqlite3.connect(
             f"file:{path}?mode=ro",

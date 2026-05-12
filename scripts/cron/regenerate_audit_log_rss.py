@@ -33,7 +33,6 @@ from __future__ import annotations
 import argparse
 import html as html_lib
 import logging
-import os
 import sqlite3
 import sys
 from datetime import UTC, datetime
@@ -46,9 +45,10 @@ _REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 _SRC = _REPO_ROOT / "src"
 if _SRC.is_dir() and str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
+from jpintel_mcp._jpcite_env_bridge import get_flag  # noqa: E402
 from jpintel_mcp.observability import heartbeat  # noqa: E402
 
-_DEFAULT_DB = Path(os.environ.get("AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db")))
+_DEFAULT_DB = Path(get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db")))
 _DEFAULT_OUT = _REPO_ROOT / "site" / "audit-log.rss.new"
 _DEFAULT_DOMAIN = "jpcite.com"
 _UTC = UTC

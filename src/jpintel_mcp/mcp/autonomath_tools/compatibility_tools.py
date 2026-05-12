@@ -24,7 +24,6 @@ added to ``SENSITIVE_TOOLS``.
 from __future__ import annotations
 
 import logging
-import os
 import sqlite3
 from itertools import combinations
 from typing import TYPE_CHECKING, Annotated, Any
@@ -34,6 +33,7 @@ from pydantic import Field
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.config import settings
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
@@ -43,7 +43,7 @@ from .snapshot_helper import attach_corpus_snapshot_with_conn
 
 logger = logging.getLogger("jpintel.mcp.autonomath.compatibility")
 
-_ENABLED = os.environ.get("AUTONOMATH_COMPATIBILITY_TOOLS_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_COMPATIBILITY_TOOLS_ENABLED", "AUTONOMATH_COMPATIBILITY_TOOLS_ENABLED", "1") == "1"
 
 _MAX_CANDIDATES = 30
 _RECOMMENDED_MIX_LIMIT = 3

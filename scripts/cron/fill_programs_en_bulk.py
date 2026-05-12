@@ -26,7 +26,6 @@ import csv
 import html
 import json
 import logging
-import os
 import re
 import sqlite3
 import sys
@@ -37,12 +36,14 @@ import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
+
 _REPO = Path(__file__).resolve().parent.parent.parent
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO / "src"))
 
 LOG = logging.getLogger("fill_programs_en_bulk")
-DEFAULT_DB = os.environ.get("JPINTEL_DB_PATH", str(_REPO / "data" / "jpintel.db"))
+DEFAULT_DB = get_flag("JPCITE_DB_PATH", "JPINTEL_DB_PATH", str(_REPO / "data" / "jpintel.db"))
 DEFAULT_REVIEW_CSV = str(_REPO / "data" / "programs_en_review_queue.csv")
 
 PRIMARY_DOMAINS = (

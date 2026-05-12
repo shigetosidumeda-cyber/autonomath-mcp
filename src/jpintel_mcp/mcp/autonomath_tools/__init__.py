@@ -19,9 +19,9 @@ NOT registered:
                               which reads am_entities directly.
 """
 
-import os
 from importlib import import_module
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.mcp.server import mcp as _mcp
 
 from . import (
@@ -53,6 +53,7 @@ from . import (
     municipality_tools,  # noqa: F401  — DEEP-44 (2026-05-07): 自治体 1,741 補助金 page diff (1st pass 67 自治体 = 47 都道府県 + 20 政令市). 1 tool (search_municipality_subsidies) over municipality_subsidy (jpintel.db, migration wave24_191). AUTONOMATH_MUNICIPALITY_ENABLED gate (default ON). NO LLM, single ¥3/req billing. 政府著作物 §13 license — source_attribution envelope per row, NO _disclaimer (pure 1次資料 listing).
     nta_corpus_tools,  # noqa: F401  — migration 103: 4 tools (find_saiketsu / cite_tsutatsu / find_shitsugi / find_bunsho_kaitou) over nta_saiketsu / nta_tsutatsu_index / nta_shitsugi / nta_bunsho_kaitou; AUTONOMATH_NTA_CORPUS_ENABLED gate (default ON), §52 envelope on every result.
     policy_upstream_tools,  # noqa: F401  — DEEP-46 (2026-05-07): 2 政策 上流 signal 統合 tools (policy_upstream_watch / policy_upstream_timeline) cross-axis rollup over kokkai_utterance + shingikai_minutes + pubcomment_announcement + am_amendment_diff + jpi_programs. AUTONOMATH_POLICY_UPSTREAM_ENABLED gate (default ON). NO LLM, single ¥3/req billing. §52/§47条の2/§72/§1 envelope mandatory.
+    precompute_axis4,  # noqa: F401  — Wave 34 (2026-05-12): 5 precomputed-axis-4 tools (portfolio_optimize_precomputed_am / houjin_risk_score_am / program_forecast_30yr_am / alliance_opportunities_am / graph_vec_search_am) over migrations 235-239. Daily/monthly/weekly cron-refreshed; request path = pure SELECT (or vec0 k-NN). NO LLM, single ¥3/req billing event. §52/§1/§72 envelope on the 4 sensitive tools.
     prerequisite_chain_tool,  # noqa: F401  — R5: prerequisite_chain (am_prerequisite_bundle, 1.6% coverage surfaced honestly, AUTONOMATH_PREREQUISITE_CHAIN_ENABLED gate)
     provenance_tools,  # noqa: F401  — V4 Phase 4: get_provenance + get_provenance_for_fact (am_source.license, migration 049)
     pubcomment_tools,  # noqa: F401  — DEEP-45 (2026-05-07): 1 e-Gov パブコメ surface tool (get_pubcomment_status) over pubcomment_announcement (migration wave24_192). AUTONOMATH_PUBCOMMENT_ENABLED gate (default ON). NO LLM, single ¥3/req billing. §52/§47条の2/§72/§1 envelope. Lead time 30-60 日.
@@ -74,7 +75,6 @@ from . import (
     tools,  # noqa: F401  — decorator side-effect (10 tools)
     validation_tools,  # noqa: F401  — V4 Phase 4: validate (am_validation_rule dispatcher, migration 047)
     wave22_tools,  # noqa: F401  — Wave 22: 5 composition tools (match_due_diligence_questions / prepare_kessan_briefing / forecast_program_renewal / cross_check_jurisdiction / bundle_application_kit, AUTONOMATH_WAVE22_ENABLED gate). Adds dd_question_templates DB (migration 104).
-    precompute_axis4,  # noqa: F401  — Wave 34 (2026-05-12): 5 precomputed-axis-4 tools (portfolio_optimize_precomputed_am / houjin_risk_score_am / program_forecast_30yr_am / alliance_opportunities_am / graph_vec_search_am) over migrations 235-239. Daily/monthly/weekly cron-refreshed; request path = pure SELECT (or vec0 k-NN). NO LLM, single ¥3/req billing event. §52/§1/§72 envelope on the 4 sensitive tools.
 )
 
 # MCP resources + prompts registration (Wave 17 — kept dormant until v8 wiring).
@@ -85,7 +85,7 @@ from .resources import register_resources as _register_resources
 
 
 def _experimental_mcp_enabled() -> bool:
-    return os.getenv("AUTONOMATH_EXPERIMENTAL_MCP_ENABLED", "0").strip().lower() in {
+    return (get_flag("JPCITE_EXPERIMENTAL_MCP_ENABLED", "AUTONOMATH_EXPERIMENTAL_MCP_ENABLED", "0") or "").strip().lower() in {
         "1",
         "true",
         "yes",

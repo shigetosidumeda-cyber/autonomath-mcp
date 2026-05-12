@@ -23,11 +23,11 @@ The 121st tool in the Wave 24 list (added 2026-05-05).
 from __future__ import annotations
 
 import logging
-import os
 from typing import Annotated, Any
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.config import settings
 from jpintel_mcp.mcp.autonomath_tools.error_envelope import make_error
 from jpintel_mcp.mcp.autonomath_tools.evidence_packet_tools import _get_composer
@@ -45,7 +45,7 @@ MAX_BATCH_LOOKUPS: int = 100
 
 #: Env-gate. Default ON; flip "0" to disable without redeploy. Pairs with
 #: the global AUTONOMATH_ENABLED gate at the package boundary.
-_ENABLED = os.environ.get("AUTONOMATH_EVIDENCE_BATCH_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_EVIDENCE_BATCH_ENABLED", "AUTONOMATH_EVIDENCE_BATCH_ENABLED", "1") == "1"
 
 
 def _impl_get_evidence_packet_batch(

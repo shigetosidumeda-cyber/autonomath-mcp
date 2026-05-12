@@ -48,13 +48,13 @@ from __future__ import annotations
 
 import contextlib
 import logging
-import os
 import sqlite3
 from pathlib import Path
 from typing import Annotated, Any
 
 from pydantic import Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.config import settings
 from jpintel_mcp.db.id_translator import normalize_program_id
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
@@ -65,7 +65,7 @@ from .snapshot_helper import attach_corpus_snapshot
 
 logger = logging.getLogger("jpintel.mcp.autonomath.recommend_similar")
 
-_ENABLED = os.environ.get("AUTONOMATH_RECOMMEND_SIMILAR_ENABLED", "1") == "1"
+_ENABLED = get_flag("JPCITE_RECOMMEND_SIMILAR_ENABLED", "AUTONOMATH_RECOMMEND_SIMILAR_ENABLED", "1") == "1"
 
 # ---------------------------------------------------------------------------
 # Disclaimer text (also auto-injected by envelope_wrapper.SENSITIVE_TOOLS).
