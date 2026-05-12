@@ -58,6 +58,7 @@ theme:
     - navigation.sections
     - navigation.top
     - navigation.indexes
+    - navigation.path  # Wave 48 tick#3: breadcrumb path on every docs page (迷子ゼロ fix)
     - toc.follow
     - search.suggest
     - search.highlight
