@@ -323,6 +323,14 @@
  <span id="from-banner-body"></span>
  </aside>
 
+ <div data-billing-progress data-cta-variant="pricing-progress"></div>
+
+ <section class="pricing-frictionless" aria-labelledby="pricing-frictionless-h" style="margin:0 0 22px;border:1px solid #a7f3d0;background:#ecfdf5;border-radius:12px;padding:18px 22px;">
+ <p id="pricing-frictionless-h" style="font-size:18px;font-weight:700;margin:0 0 6px;color:#065f46;">最初の 3 req は <span style="font-size:22px;color:#047857;">¥0 から始められます</span></p>
+ <p style="font-size:14px;line-height:1.7;margin:0 0 10px;color:#065f46;">登録なし・カード不要。匿名 3 req/日 per IP の無料枠で <a href="/playground.html?flow=evidence3" style="color:#047857;font-weight:600;">playground</a> から本番 API を直接試せます。気に入ったら <a href="/onboarding.html" style="color:#047857;font-weight:600;">4 step オンボーディング</a> で 1 click サインイン → topup → API 呼出と進めます。</p>
+ <p style="font-size:13px;color:#047857;margin:0;line-height:1.6;">→ 次のアクション: <a href="/onboarding.html" style="color:#047857;font-weight:700;">はじめての方ガイド (4 step)</a> · <a href="/playground.html?flow=evidence3" style="color:#047857;font-weight:700;">3 req 無料で試す</a></p>
+ </section>
+
  <section class="pricing-hero" style="padding:32px 0 8px;">
  <h1 style="font-size:clamp(36px,9vw,56px);line-height:1.1;margin:0 0 16px;letter-spacing:-0.02em;">¥3/req metered (税込 ¥3.30)</h1>
  <p style="font-size:20px;line-height:1.6;margin:0 0 24px;color:var(--text);max-width:760px;">
@@ -906,6 +914,7 @@
  </div>
 </footer>
 
+<script src="/assets/billing_progress.js" defer></script>
 <script src="/assets/feedback-widget.js" defer></script>
 <script defer>
 document.addEventListener('DOMContentLoaded', function() {
