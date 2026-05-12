@@ -8,7 +8,7 @@
 | Worktree | `/tmp/jpcite-w46-rename-46f` (detached → `feat/jpcite_2026_05_12_wave46_rename_46f_manifest_alias`) |
 | Base SHA | `bfcd2b600` (origin/main HEAD at start) |
 | Branch | `feat/jpcite_2026_05_12_wave46_rename_46f_manifest_alias` |
-| PR | (filled by `gh pr create`, see §6) |
+| PR | [#130](https://github.com/shigetosidumeda-cyber/autonomath-mcp/pull/130) |
 | Date (JST) | 2026-05-12 |
 | Constraint memory | `feedback_destruction_free_organization`, `feedback_dual_cli_lane_atomic`, `feedback_no_quick_check_on_huge_sqlite`, `feedback_no_operator_llm_api` |
 
@@ -138,7 +138,7 @@ Manifest updates MUST touch **both** files in the same commit. Enforcement:
 
 ## 8. PR
 
-PR URL: **(filled by `gh pr create` step below)**
+PR URL: https://github.com/shigetosidumeda-cyber/autonomath-mcp/pull/130 (#130)
 
 ```
 Title: feat(wave46/46.F): alias autonomath_boot_manifest -> jpcite_boot_manifest (dual-read)
