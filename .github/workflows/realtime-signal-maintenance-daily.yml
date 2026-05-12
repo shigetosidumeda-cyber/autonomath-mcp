@@ -1,0 +1,89 @@
+name: realtime-signal-maintenance-daily
+
+# Wave 46 dim G — daily maintenance pass for realtime_signal_v2 surface.
+#
+# Closes the `cron MISSING` finding from
+# `docs/audit/dim19_audit_2026-05-12.md` for dim G (4.50/10). Pairs with
+# `src/jpintel_mcp/api/realtime_signal_v2.py` + migration 263
+# (`am_realtime_subscribers` / `am_realtime_dispatch_history`).
+#
+# What the daily pass does (see scripts/cron/maintain_realtime_signal_subscribers.py):
+#   1. Auto-disable any active subscriber whose failure_count >= 5,
+#      mirroring the customer_webhooks dispatcher 5-strike rule.
+#   2. Prune dispatch history older than `retention_days` (default 90).
+#   3. Emit summary JSON line for observability.
+#
+# Distinct from `dispatch_webhooks.py` (the ¥3/req-billing fan-out for
+# customer_webhooks): THIS cron is housekeeping only — no outbound HTTP,
+# no Stripe usage_records.
+#
+# Required Fly machine secret:
+#   AUTONOMATH_DB_PATH  Path to /data/autonomath.db on the prod machine.
+
+on:
+  schedule:
+    # 21:15 UTC == 06:15 JST — after the news-pipeline + amendment-alert
+    # cascade so realtime_signal failure_count counters have settled.
+    - cron: "15 21 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run with --dry-run (log only, no UPDATE/DELETE)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+      retention_days:
+        description: "dispatch_history retention window (default 90)"
+        required: false
+        default: "90"
+        type: string
+
+concurrency:
+  group: realtime-signal-maintenance-daily
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  maintain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install minimal deps
+        run: |
+          python -m pip install --upgrade pip
+          # The cron is stdlib-only; no extras needed beyond sqlite3.
+          pip install --quiet ".[dev]" || true
+
+      - name: Setup flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Run maintenance pass on Fly machine
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          dry_run="${{ github.event.inputs.dry_run || 'false' }}"
+          retention="${{ github.event.inputs.retention_days || '90' }}"
+          args=""
+          if [ "$dry_run" = "true" ]; then args="--dry-run"; fi
+          flyctl ssh console -a autonomath-api -C \
+            "python scripts/cron/maintain_realtime_signal_subscribers.py \
+              --retention-days ${retention} ${args}"
+
+      - name: Heartbeat
+        if: always()
+        run: |
+          echo "realtime-signal-maintenance-daily completed at $(date -u +%FT%TZ)"

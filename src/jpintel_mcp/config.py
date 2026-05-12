@@ -3,6 +3,14 @@ from pathlib import Path
 from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+# W46.D — env dual-read bridge import. Settings fields below can adopt
+# either ``AliasChoices(...)`` (Pydantic native, preferred for typed
+# fields) or ``get_flag(...)`` (procedural, useful for module-level
+# constants). Only one field (autonomath_db_path) is wired in this PR;
+# the remaining 111 envs are migrated in subsequent waves to keep the
+# blast radius small.
+from jpintel_mcp._jpcite_env_bridge import get_flag as _jpcite_get_flag  # noqa: F401
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
@@ -18,9 +26,13 @@ class Settings(BaseSettings):
     # autonomath.db (7.3 GB, 402,768 entities + 5.26M facts). Distinct from
     # autonomath_path above (legacy /Users/shigetoumeda/Autonomath project).
     # Dev: ./autonomath.db at repo root. Prod: /data/autonomath.db on Fly volume.
+    # W46.D — first env that adopts the JPCITE_* canonical name via
+    # ``AliasChoices``. The legacy ``AUTONOMATH_DB_PATH`` is retained as
+    # a fallback so existing Fly secrets keep working until the bulk
+    # rename PR; new deployments should set ``JPCITE_AUTONOMATH_DB_PATH``.
     autonomath_db_path: Path = Field(
         default=Path("./autonomath.db"),
-        validation_alias=AliasChoices("JPCITE_DB_PATH_AM", "AUTONOMATH_DB_PATH"),
+        validation_alias=AliasChoices("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH"),
     )
     # Feature flag gating the 16 am_* MCP tools. Flip False for rollback to
     # 31-tool mode (if autonomath.db becomes unavailable or misbehaves).
