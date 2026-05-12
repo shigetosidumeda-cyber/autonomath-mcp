@@ -214,3 +214,16 @@
 # directly. Pure additive (CREATE TABLE/INDEX IF NOT EXISTS); NO LLM
 # call; boot-time safe; idempotent on every boot.
 278_federated_mcp.sql
+# 2026-05-12 Wave 47 — Dim S (embedded copilot scaffold) storage layer.
+# am_copilot_widget_config (config table, 1 row per host SaaS: freee /
+# moneyforward / notion / slack — host_saas + embed_url + mcp_proxy_url
+# + oauth_scope, https-only CHECK) + am_copilot_session_log (append-only
+# OAuth bridge audit, user_token_hash sha256 hex, raw token NEVER stored,
+# CHECK ended_at >= started_at) + v_copilot_widget_enabled helper view.
+# Pairs with scripts/etl/seed_copilot_widgets.py (4-widget canonical seed)
+# and src/jpintel_mcp/api/copilot_scaffold.py (LLM-0 by construction:
+# scaffold + MCP proxy + OAuth bridge ONLY per
+# feedback_copilot_scaffold_only_no_llm). Pure additive
+# (CREATE TABLE/INDEX/VIEW IF NOT EXISTS); boot-time safe; idempotent
+# on every boot. No LLM API ever invoked operator-side.
+279_copilot_scaffold.sql
