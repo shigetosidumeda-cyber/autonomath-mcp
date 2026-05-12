@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>jpcite cost saving calculator — 普通 AI vs jpcite MCP 定量比較</title>
+<meta name="description" content="Claude Sonnet 4.5 / GPT-5 公式 token 単価 + web search 課金 vs jpcite ¥3/req の side-by-side calculator。 Wave 48 v2 canonical 数字に完全一致。">
+<link rel="canonical" href="https://jpcite.com/tools/cost_saving_calculator.html">
+<style>
+  :root{--bg:#fff;--text:#0f172a;--muted:#475569;--border:#e2e8f0;--accent:#0ea5e9;--ok:#16a34a;--warn:#b45309}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Hiragino Kaku Gothic ProN","ヒラギノ角ゴ ProN W3","Yu Gothic Medium",sans-serif;margin:0;background:#f8fafc;color:var(--text);line-height:1.65}
+  main{max-width:1040px;margin:0 auto;padding:32px 20px 64px}
+  h1{font-size:24px;margin:0 0 8px}
+  h2{font-size:19px;margin:32px 0 12px;border-bottom:1px solid var(--border);padding-bottom:6px}
+  p,li{font-size:14.5px}
+  .muted{color:var(--muted)}
+  .card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin:14px 0}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;background:#fff}
+  th,td{padding:9px 11px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+  th{background:#f1f5f9;font-weight:600}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  .saving{color:var(--ok);font-weight:700}
+  .pure{color:var(--warn)}
+  label{display:block;font-size:13px;color:var(--muted);margin:8px 0 4px}
+  input,select{padding:6px 9px;border:1px solid var(--border);border-radius:6px;font-size:14px;width:100%;box-sizing:border-box}
+  .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin:8px 0 14px}
+  .total{font-size:18px;font-weight:700;margin:8px 0 0}
+  small.note{display:block;font-size:12px;color:var(--muted);margin-top:8px}
+  code{background:#f1f5f9;padding:1px 5px;border-radius:4px;font-size:12.5px}
+  a{color:var(--accent)}
+</style>
+</head>
+<body>
+<main>
+  <h1>jpcite cost saving calculator</h1>
+  <p class="muted">「普通に Claude/GPT を使う」場合の <strong>token + web search 課金</strong> と jpcite MCP ¥3/req の差を即時計算します。 数値ソースは Anthropic / OpenAI 2026-05-12 時点の公式 pricing。 canonical: <a href="/docs/canonical/cost_saving_examples/">/docs/canonical/cost_saving_examples</a> § C / § E。</p>
+
+  <section class="card">
+    <h2>1. 前提パラメータ</h2>
+    <div class="row">
+      <div>
+        <label for="model">LLM model</label>
+        <select id="model">
+          <option value="claude_sonnet_4_5" selected>Claude Sonnet 4.5 ($3 / $15 per MTok)</option>
+          <option value="claude_opus_4">Claude Opus 4 ($15 / $75)</option>
+          <option value="claude_haiku_4">Claude Haiku 4 ($0.80 / $4)</option>
+          <option value="gpt_5">GPT-5 ($1.25 / $10)</option>
+          <option value="gpt_4_1">GPT-4.1 ($2 / $8)</option>
+        </select>
+      </div>
+      <div>
+        <label for="search">web search vendor</label>
+        <select id="search">
+          <option value="anthropic" selected>Anthropic $10 / 1k</option>
+          <option value="openai_low">OpenAI low $10 / 1k</option>
+          <option value="openai_medium">OpenAI medium $25 / 1k</option>
+          <option value="openai_high">OpenAI high $30 / 1k</option>
+        </select>
+      </div>
+      <div>
+        <label for="fx">USD/JPY</label>
+        <input id="fx" type="number" value="150" min="100" max="250" step="1">
+      </div>
+      <div>
+        <label for="jpcite">jpcite price (¥/req, 税別)</label>
+        <input id="jpcite" type="number" value="3" min="1" max="10" step="1">
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>2. 6 use case side-by-side</h2>
+    <p class="muted">canonical doc § C と完全一致するよう、 use case ごとの token / search / jpcite req 数を固定。 上の前提を変えると全 use case の数字が連動。</p>
+    <div style="overflow-x:auto">
+    <table id="cases-tbl">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>use case</th>
+          <th class="num">input tok</th>
+          <th class="num">output tok</th>
+          <th class="num">searches</th>
+          <th class="num">jpcite req</th>
+          <th class="num">純 LLM 合計</th>
+          <th class="num">jpcite 合計</th>
+          <th class="num">節約額</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+      <tfoot>
+        <tr>
+          <th colspan="6" style="text-align:right">合計 (6 case 1 回ずつ)</th>
+          <th class="num pure" id="total-pure">—</th>
+          <th class="num" id="total-jpcite">—</th>
+          <th class="num saving" id="total-saving">—</th>
+        </tr>
+      </tfoot>
+    </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>3. 月次 / 年次 スケール (任意 use case を N 回)</h2>
+    <div class="row">
+      <div>
+        <label for="scale-case">対象 use case</label>
+        <select id="scale-case"></select>
+      </div>
+      <div>
+        <label for="scale-n">月次 case 数 N</label>
+        <input id="scale-n" type="number" value="100" min="1" max="100000" step="1">
+      </div>
+    </div>
+    <p class="total" id="scale-out">—</p>
+    <small class="note">本 calculator は API 料金差分のみ。 hallucination 起因の取りこぼし損失 / 顧問契約解除リスクは含まない (canonical § 14 page 表で別途試算)。 8 業法 fence の価値は金額化していない。</small>
+  </section>
+
+  <section class="card">
+    <h2>4. 出典 (一次参照)</h2>
+    <ul>
+      <li>Anthropic Pricing: <a href="https://www.anthropic.com/pricing">https://www.anthropic.com/pricing</a> (Messages API + web_search_20250305 tool)</li>
+      <li>OpenAI Pricing: <a href="https://openai.com/api/pricing/">https://openai.com/api/pricing/</a> + <a href="https://platform.openai.com/docs/pricing">platform.openai.com/docs/pricing</a> (Responses API built-in web search)</li>
+      <li>jpcite pricing: <a href="/pricing">/pricing</a> (¥3/req 税別、 anonymous 3 req/day per IP)</li>
+      <li>canonical doc (v2): <a href="/docs/canonical/cost_saving_examples/">cost_saving_examples</a></li>
+    </ul>
+  </section>
+</main>
+<script>
+// canonical USE_CASES — must match docs/canonical/cost_saving_examples.md § C
+const USE_CASES = [
+  { id: 1, name: "M&A DD (法人 1 社 許認可+採択+処分, multi-turn 検証込)",  in_tok: 120000, out_tok: 20000, search: 25, req: 4 },
+  { id: 2, name: "補助金 1 件 要件+一次 URL+排他抽出 (multi-program 比較)", in_tok:  80000, out_tok: 15000, search: 18, req: 2 },
+  { id: 3, name: "税理士: 1 顧問先 措置法該当 + 通達 cross-reference",     in_tok:  60000, out_tok: 12000, search: 15, req: 2 },
+  { id: 4, name: "行政書士: 許認可根拠条文+通達+様式 walk",                in_tok:  90000, out_tok: 15000, search: 20, req: 2 },
+  { id: 5, name: "信金: 1 取引先 マル経+補助金候補 + 排他 verify",          in_tok:  40000, out_tok:  8000, search: 10, req: 2 },
+  { id: 6, name: "dev: 試作 endpoint 検証 (programs/laws/cases 3-5 endpoint)", in_tok: 50000, out_tok: 10000, search: 12, req: 5 },
+];
+
+const MODELS = {
+  claude_sonnet_4_5: { in_per_mtok: 3.00,  out_per_mtok: 15.00 },
+  claude_opus_4:     { in_per_mtok: 15.00, out_per_mtok: 75.00 },
+  claude_haiku_4:    { in_per_mtok: 0.80,  out_per_mtok: 4.00  },
+  gpt_5:             { in_per_mtok: 1.25,  out_per_mtok: 10.00 },
+  gpt_4_1:           { in_per_mtok: 2.00,  out_per_mtok: 8.00  },
+};
+
+const SEARCH = {
+  anthropic:     10.00,
+  openai_low:    10.00,
+  openai_medium: 25.00,
+  openai_high:   30.00,
+};
+
+function getParams() {
+  return {
+    model:   document.getElementById("model").value,
+    search:  document.getElementById("search").value,
+    fx:      parseFloat(document.getElementById("fx").value) || 150,
+    jpcite:  parseFloat(document.getElementById("jpcite").value) || 3,
+  };
+}
+
+function pureLLMCostJpy(uc, p) {
+  const m = MODELS[p.model];
+  const s = SEARCH[p.search];
+  const inC  = uc.in_tok  * m.in_per_mtok  / 1_000_000 * p.fx;
+  const outC = uc.out_tok * m.out_per_mtok / 1_000_000 * p.fx;
+  const sC   = uc.search  * s              / 1_000     * p.fx;
+  return inC + outC + sC;
+}
+
+function jpciteCostJpy(uc, p) { return uc.req * p.jpcite; }
+
+function fmt(v) { return "¥" + v.toLocaleString("ja-JP", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+function render() {
+  const p = getParams();
+  const tbody = document.querySelector("#cases-tbl tbody");
+  tbody.innerHTML = "";
+  let sumPure = 0, sumJp = 0;
+  for (const uc of USE_CASES) {
+    const pure = pureLLMCostJpy(uc, p);
+    const jp   = jpciteCostJpy(uc, p);
+    const sv   = pure - jp;
+    sumPure += pure;
+    sumJp   += jp;
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${uc.id}</td>
+      <td>${uc.name}</td>
+      <td class="num">${uc.in_tok.toLocaleString()}</td>
+      <td class="num">${uc.out_tok.toLocaleString()}</td>
+      <td class="num">${uc.search}</td>
+      <td class="num">${uc.req}</td>
+      <td class="num pure">${fmt(pure)}</td>
+      <td class="num">${fmt(jp)}</td>
+      <td class="num saving">${fmt(sv)}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+  document.getElementById("total-pure").textContent    = fmt(sumPure);
+  document.getElementById("total-jpcite").textContent  = fmt(sumJp);
+  document.getElementById("total-saving").textContent  = fmt(sumPure - sumJp);
+
+  // Scale section
+  const scaleSel = document.getElementById("scale-case");
+  if (!scaleSel.options.length) {
+    USE_CASES.forEach((uc) => {
+      const o = document.createElement("option");
+      o.value = uc.id;
+      o.textContent = `#${uc.id} ${uc.name}`;
+      if (uc.id === 3) o.selected = true;  // default to 税理士措置法
+      scaleSel.appendChild(o);
+    });
+  }
+  const ucId = parseInt(scaleSel.value, 10);
+  const uc = USE_CASES.find((x) => x.id === ucId);
+  const n = parseInt(document.getElementById("scale-n").value, 10) || 0;
+  const pure1 = pureLLMCostJpy(uc, p);
+  const jp1   = jpciteCostJpy(uc, p);
+  const monthPure = pure1 * n, monthJp = jp1 * n, monthSv = monthPure - monthJp;
+  document.getElementById("scale-out").innerHTML =
+    `月 ${n} case 純 LLM = <span class="pure">${fmt(monthPure)}</span> / jpcite = ${fmt(monthJp)} / ` +
+    `<span class="saving">月節約 ${fmt(monthSv)}</span> / <span class="saving">年節約 ${fmt(monthSv * 12)}</span>`;
+}
+
+["model","search","fx","jpcite","scale-case","scale-n"].forEach((id) => {
+  document.getElementById(id).addEventListener("input", render);
+  document.getElementById(id).addEventListener("change", render);
+});
+render();
+</script>
+</body>
+</html>

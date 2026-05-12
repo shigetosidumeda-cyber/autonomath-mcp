@@ -121,6 +121,8 @@ jobs:
             --exclude '*.map' \
             --include 'press/*.md' \
             --include 'security/policy.md' \
+            --include 'tools/' \
+            --include 'tools/*.md' \
             --exclude '*.md' \
             site/ dist/site/
           # 2026-05-12 Wave 45: laws/enforcement/cases/*.md (10,282 files)
