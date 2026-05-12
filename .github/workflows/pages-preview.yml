@@ -147,6 +147,8 @@ jobs:
             --exclude '*.map' \
             --include 'press/*.md' \
             --include 'security/policy.md' \
+            --include 'tools/' \
+            --include 'tools/*.md' \
             --exclude '*.md' \
             site/ dist/site/
 
