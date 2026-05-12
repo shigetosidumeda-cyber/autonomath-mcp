@@ -253,3 +253,21 @@
 # (¥3/req on Stripe usage_record). Pure additive (CREATE TABLE/INDEX/
 # VIEW IF NOT EXISTS); boot-time safe; idempotent on every boot.
 280_predictive_service.sql
+# ---------------------------------------------------------------------
+# Wave 47 Phase 2 tick#6 — Dim F fact_signature storage extension
+# ---------------------------------------------------------------------
+# mig 285 layers am_fact_signature_v2_attestation (multi-attestation
+# per fact + signer_pubkey + corpus_snapshot triplet) and am_fact_
+# signature_v2_revocation_log (append-only revocation events with
+# reason_class enum: key_rotated / key_compromised / payload_amended
+# / operator_request / auditor_request / other) on TOP of mig 262
+# (am_fact_signature). mig 262 remains the latest-sig pointer; mig
+# 285 carries the FULL attestation history per
+# feedback_explainable_fact_design. Pairs with scripts/etl/build_
+# fact_signatures_v2.py (one-shot bridge ETL, Ed25519 verify on every
+# bridged row, refuses to insert on bad sig). LLM-0 by construction:
+# pure cryptography stdlib, no Anthropic / OpenAI SDK touch. Pure
+# additive (CREATE TABLE/INDEX/VIEW IF NOT EXISTS); boot-time safe;
+# idempotent on every boot. mig 262 is NEVER touched by mig 285 nor
+# by its rollback.
+285_fact_signature_v2.sql
