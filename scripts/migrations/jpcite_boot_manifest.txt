@@ -124,3 +124,12 @@
 253_law_tsutatsu_all.sql
 254_law_guideline.sql
 262_fact_signature_v2.sql
+
+# 2026-05-12 Wave 47 — Dim K (rule_tree_branching) storage layer.
+# am_rule_trees (catalogue, versioned tree definitions) + am_rule_tree_eval_log
+# (audit trail, input_hash + result_path) + v_rule_trees_latest helper view.
+# Pairs with PR #139's /v1/rule_tree/evaluate kernel (Dim K) and the 5
+# canonical trees seeded by scripts/etl/seed_rule_tree_definitions.py
+# (補助金適格性 / 業法 fence / 投資条件 / 採択 / DD). Pure additive
+# (CREATE TABLE/INDEX/VIEW IF NOT EXISTS); boot-time safe; idempotent.
+271_rule_tree.sql
