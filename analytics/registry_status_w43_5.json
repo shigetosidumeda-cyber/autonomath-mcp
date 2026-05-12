@@ -1,0 +1,45 @@
+{
+  "snapshot_id": "registry_status_w43_5",
+  "generated_at": "2026-05-12T00:00:00Z",
+  "wave": "43.5",
+  "intent": "Smithery / Glama / PulseMCP final claim verify after Wave 43 60-cell + 19-dim landings",
+  "registries": [
+    {
+      "platform": "Glama",
+      "search_url": "https://glama.ai/mcp/servers?q=jpcite",
+      "search_api": "https://glama.ai/api/mcp/v1/servers?q=jpcite",
+      "direct_url": "https://glama.ai/mcp/servers/@shigetosidumeda-cyber/autonomath-mcp",
+      "search_http": 200,
+      "direct_http": 404,
+      "indexed": false,
+      "note": "Glama search-API returns 200 with non-jpcite servers; direct namespaced URL 404. Auto-crawl ToS allows re-discovery 24-72h after v0.4.0 push lands. Manual submit form at https://glama.ai/mcp/servers requires GitHub OAuth + repo verify — operator action, do not auto-submit."
+    },
+    {
+      "platform": "Smithery",
+      "submitted_url": "https://smithery.ai/server/@bookyou/jpcite",
+      "direct_http": 404,
+      "indexed": false,
+      "note": "Smithery rebuilds from GitHub repo + smithery.yaml at the qualified name. Our smithery.yaml carries id=@bookyou/jpcite, version=0.4.0 (just bumped). Auto-crawl 24-72h. No API submit endpoint exists; CLI smithery publish requires login, operator-only."
+    },
+    {
+      "platform": "PulseMCP",
+      "submit_url": "https://www.pulsemcp.com/submit",
+      "deprecated_api": "https://api.pulsemcp.com/v0beta/servers (sunset 100% by Sep 2026)",
+      "current_api": "https://api.pulsemcp.com/api (v0.1)",
+      "direct_url": "https://www.pulsemcp.com/servers/bookyou-jpcite",
+      "direct_http": 403,
+      "indexed": false,
+      "note": "PulseMCP migrated from v0beta to v0.1 in Jan 2026. Submit form remains the canonical entry point — they crawl from GitHub repo metadata + mcp-server.json. No API submit endpoint."
+    }
+  ],
+  "summary": {
+    "indexed_count": 0,
+    "pending_auto_crawl": 3,
+    "operator_actions": [
+      "Push v0.4.0 manifests to main (this PR)",
+      "Tag v0.4.0 + push tag (triggers release.yml + PyPI republish)",
+      "Re-probe Smithery/Glama/PulseMCP 24-72h after PyPI propagates",
+      "If still 404 after 72h, manual operator submit (one-time per registry)"
+    ]
+  }
+}

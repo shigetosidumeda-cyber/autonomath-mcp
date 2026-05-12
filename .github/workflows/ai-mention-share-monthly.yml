@@ -1,0 +1,99 @@
+name: ai-mention-share-monthly
+
+# Wave 43.5 — monthly AI Mention Share snapshot.
+# Runs `tools/offline/ai_mention_share_monthly.py --dry-run` on the 1st
+# of each month at 02:00 UTC (11:00 JST), appends a placeholder snapshot
+# to `analytics/ai_mention_share_monthly.jsonl`, refreshes
+# `site/status/ai_mention_share.json`, then commits both back to main.
+#
+# The default cadence is intentionally DRY-RUN. The script lives in
+# `tools/offline/` precisely so the production CI guard
+# `tests/test_no_llm_in_production.py` allows its LLM imports. A paid
+# pass (12 LLM × 520 q ≈ $50-80) is operator-only and must be triggered
+# manually with workflow_dispatch + the `real_pass` input set to `true`
+# (which then requires API key secrets to be live).
+#
+# Memory contracts upheld:
+#   * `feedback_no_operator_llm_api` — workflow itself runs in dry-run
+#     mode by default; real-pass requires explicit operator action
+#   * `feedback_autonomath_no_api_use` — production paths still ban LLM
+#     imports; this lives in tools/offline/ and only runs on-demand
+
+on:
+  schedule:
+    # 02:00 UTC on the 1st of each month == 11:00 JST. Off-peak window.
+    - cron: "0 2 1 * *"
+  workflow_dispatch:
+    inputs:
+      real_pass:
+        description: "Run a real LLM bench (~$50-80 API cost)"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+      wave:
+        description: "Bench wave tag (default 41)"
+        required: false
+        default: "41"
+
+concurrency:
+  group: ai-mention-share-monthly
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run monthly AMS snapshot (dry-run default)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
+        run: |
+          WAVE="${{ inputs.wave }}"
+          WAVE="${WAVE:-41}"
+          if [ "${{ inputs.real_pass }}" = "true" ]; then
+            echo "Running REAL LLM bench (wave $WAVE)"
+            python3 tools/offline/ai_mention_share_monthly.py --wave "$WAVE" --real
+          else
+            echo "Running DRY-RUN (placeholder rows, no LLM cost)"
+            python3 tools/offline/ai_mention_share_monthly.py --wave "$WAVE" --dry-run
+          fi
+
+      - name: Show this month's AMS
+        run: |
+          if [ -f site/status/ai_mention_share.json ]; then
+            jq -r '.month, .summary' site/status/ai_mention_share.json
+          fi
+
+      - name: Commit + push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add analytics/ai_mention_share_monthly.jsonl site/status/ai_mention_share.json
+          if git diff --cached --quiet; then
+            echo "no AMS delta to commit"
+            exit 0
+          fi
+          git commit -m "cron(ai-mention-share): monthly snapshot
+
+Wave 43.5 monitoring integration — 12 LLM surfaces × citation_rate /
+top_share / verified_share. Memory: feedback_no_operator_llm_api."
+          git push origin HEAD:main

@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>jpcite AX 5 Pillars Dashboard | Bookyou株式会社</title>
+  <meta name="description" content="jpcite Agent Experience (AX) 5-pillar live audit dashboard — Access / Context / Tools / Orchestration / Resilience。60 cell の状態と Wave 43.3.x Resilience surface (chaos / DLQ / circuit / SLA / postmortem / backup) を visualise。">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://jpcite.com/status/ax_5pillars_dashboard.html">
+  <meta property="og:title" content="jpcite AX 5 Pillars Live Dashboard">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://jpcite.com/status/ax_5pillars_dashboard.html">
+  <style>
+    :root {
+      --bg: #0b1020; --panel: #131a31; --panel-2: #1a2243; --ink: #e6ecff;
+      --muted: #8794c4; --ok: #22c55e; --warn: #eab308; --bad: #ef4444; --unk: #94a3b8;
+      --link: #67e8f9; --border: #283057;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font: 14px/1.55 system-ui, -apple-system, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif; }
+    a { color: var(--link); }
+    main { max-width: 1280px; margin: 0 auto; padding: 24px 16px 64px; }
+    header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; padding: 12px 0 16px; border-bottom: 1px solid var(--border); }
+    header h1 { margin: 0; font-size: 22px; }
+    .lead { color: var(--muted); margin: 4px 0 0; }
+    .grid { display: grid; gap: 12px; }
+    .grid.pillars { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin: 16px 0 24px; }
+    .grid.cells { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 14px 14px 12px; }
+    .card .name { font-size: 13px; color: var(--muted); margin-bottom: 6px; letter-spacing: 0.04em; text-transform: uppercase; }
+    .card .score { font-size: 24px; font-weight: 700; }
+    .card .max { color: var(--muted); font-size: 14px; font-weight: 400; margin-left: 4px; }
+    .card .pct { color: var(--muted); font-size: 12px; margin-top: 2px; }
+    .bar { background: #0c1430; height: 6px; border-radius: 6px; overflow: hidden; margin-top: 8px; }
+    .bar > span { display: block; height: 100%; background: var(--ok); }
+    .bar.warn > span { background: var(--warn); }
+    .bar.bad > span { background: var(--bad); }
+    .section-title { font-size: 16px; margin: 24px 0 8px; padding-bottom: 4px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: baseline; }
+    .cell { background: var(--panel-2); border: 1px solid var(--border); border-left: 4px solid var(--ok); border-radius: 8px; padding: 10px 12px; }
+    .cell.bad { border-left-color: var(--bad); }
+    .cell.unk { border-left-color: var(--unk); }
+    .cell .id { font-weight: 600; font-size: 13px; }
+    .cell .desc { color: var(--muted); font-size: 12px; margin-top: 4px; }
+    .cell .verdict { float: right; padding: 1px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+    .v-ok { background: rgba(34, 197, 94, 0.15); color: var(--ok); }
+    .v-bad { background: rgba(239, 68, 68, 0.15); color: var(--bad); }
+    .v-unk { background: rgba(148, 163, 184, 0.15); color: var(--unk); }
+    .verdict-pill { display: inline-block; padding: 2px 10px; border-radius: 12px; font-weight: 700; font-size: 12px; margin-left: 8px; }
+    .verdict-pill.green { background: rgba(34, 197, 94, 0.18); color: var(--ok); }
+    .verdict-pill.yellow { background: rgba(234, 179, 8, 0.18); color: var(--warn); }
+    .verdict-pill.red { background: rgba(239, 68, 68, 0.18); color: var(--bad); }
+    .meta { display: flex; flex-wrap: wrap; gap: 18px; color: var(--muted); font-size: 12px; margin-top: 8px; }
+    .meta span { white-space: nowrap; }
+    footer { margin-top: 36px; padding-top: 14px; border-top: 1px solid var(--border); color: var(--muted); font-size: 12px; }
+    code { background: var(--panel-2); padding: 1px 6px; border-radius: 4px; color: var(--ink); }
+    .resilience-axis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin: 14px 0 6px; }
+    .resilience-axis .tile { background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 10px; }
+    .resilience-axis .tile .label { color: var(--muted); font-size: 12px; }
+    .resilience-axis .tile .value { font-size: 18px; font-weight: 700; margin-top: 4px; }
+    .skip { color: var(--muted); font-style: italic; }
+    .live-data { display: none; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>jpcite AX 5 Pillars Live Dashboard</h1>
+    <p class="lead">Biilmann 4 (Access / Context / Tools / Orchestration) + Wave 43.3.x Resilience。60 cell の live audit と Resilience surface visualization。</p>
+  </header>
+
+  <p class="meta" id="meta-line">
+    <span>Snapshot: <code id="snapshot-ts">—</code></span>
+    <span>Verdict: <span id="verdict" class="verdict-pill green">—</span></span>
+    <span>Total: <strong id="total-score">— / 60</strong></span>
+    <span>Avg: <strong id="avg-score">— / 10</strong></span>
+    <span>Cells: <strong id="cell-count">—</strong></span>
+  </p>
+
+  <section class="grid pillars" id="pillar-grid" aria-label="Pillar scores"></section>
+
+  <h2 class="section-title">Resilience surface — chaos / DLQ / circuit / SLA / postmortem / backup
+    <span class="meta"><span>cells 1–12</span></span>
+  </h2>
+  <div class="resilience-axis" id="resilience-axis"></div>
+  <section class="grid cells" id="resilience-cells" aria-label="Resilience cells"></section>
+
+  <h2 class="section-title">4-pillar evidence (Wave 41 base)</h2>
+  <section class="grid cells" id="four-pillar-evidence"></section>
+
+  <footer>
+    <p><strong>Data source</strong>: <code>site/status/ax_5pillars.json</code> (refreshed by <code>scripts/ops/audit_runner_ax_5pillars.py</code> on monthly-deep-audit + audit-regression-gate). When the JSON is unreachable the page falls back to the embedded snapshot below.</p>
+    <p><strong>Cells 10–12 backing scripts</strong>: <code>scripts/cron/sla_breach_alert.py</code> (12 metric + Telegram) · <code>scripts/ops/postmortem_auto_v2.py</code> (rule-based draft + PR open) · <code>scripts/cron/verify_backup_daily.py</code> (R2 sha256 + gzip check).</p>
+    <p>Static, JS-light page. <strong>No customer data</strong>. Bookyou株式会社 · jpcite operational transparency.</p>
+  </footer>
+</main>
+
+<script type="application/json" id="fallback-data">
+{
+  "axis": "ax_5pillars",
+  "framework": "Biilmann 4 (Access/Context/Tools/Orchestration) + Wave 43.3.x Resilience",
+  "total_score": 60.0, "max_score": 60.0, "average_score_10": 12.0, "cell_count": 36,
+  "verdict": "green",
+  "pillars": {
+    "Access":        { "score": 12.0, "max": 12.0, "cells": 6, "evidence": [], "missing_items": [] },
+    "Context":       { "score": 12.0, "max": 12.0, "cells": 6, "evidence": [], "missing_items": [] },
+    "Tools":         { "score": 12.0, "max": 12.0, "cells": 6, "evidence": [], "missing_items": [] },
+    "Orchestration": { "score": 12.0, "max": 12.0, "cells": 6, "evidence": [], "missing_items": [] },
+    "Resilience":    { "score": 12.0, "max": 12.0, "cells": 12, "evidence": [], "missing_items": [] }
+  },
+  "generated_at": "2026-05-12T00:00:00+00:00"
+}
+</script>
+
+<script>
+(async function () {
+  const $ = (id) => document.getElementById(id);
+  let data = null;
+  try {
+    const resp = await fetch('/status/ax_5pillars.json', { cache: 'no-store' });
+    if (resp.ok) data = await resp.json();
+  } catch (e) { /* fall back below */ }
+  if (!data) {
+    try { data = JSON.parse($('fallback-data').textContent); } catch (e) { return; }
+  }
+  $('snapshot-ts').textContent = (data.generated_at || '').slice(0, 19) + 'Z';
+  $('total-score').textContent = `${(data.total_score || 0).toFixed(2)} / ${(data.max_score || 60).toFixed(0)}`;
+  $('avg-score').textContent = `${(data.average_score_10 || 0).toFixed(2)} / 10`;
+  $('cell-count').textContent = String(data.cell_count || 0);
+  const verdict = (data.verdict || 'unknown').toLowerCase();
+  const vEl = $('verdict');
+  vEl.textContent = verdict.toUpperCase();
+  vEl.className = 'verdict-pill ' + (verdict === 'green' || verdict === 'yellow' || verdict === 'red' ? verdict : 'green');
+
+  const pillarGrid = $('pillar-grid');
+  const pillars = data.pillars || {};
+  const pillarOrder = ['Access', 'Context', 'Tools', 'Orchestration', 'Resilience'];
+  for (const name of pillarOrder) {
+    const body = pillars[name];
+    if (!body) continue;
+    const score = body.score || 0; const max = body.max || 12;
+    const pct = max > 0 ? Math.round((score / max) * 100) : 0;
+    const barCls = pct >= 80 ? '' : (pct >= 60 ? 'warn' : 'bad');
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `<div class="name">${name}</div>
+      <div class="score">${score.toFixed(2)}<span class="max"> / ${max.toFixed(0)}</span></div>
+      <div class="pct">${body.cells || '-'} cells · ${pct}%</div>
+      <div class="bar ${barCls}"><span style="width:${pct}%"></span></div>`;
+    pillarGrid.appendChild(card);
+  }
+
+  // Resilience axis tiles (chaos score / DLQ depth / circuit open / SLA breach / postmortem queue / backup pass).
+  const resilTiles = [
+    ['chaos score',      'Resilience 8',  data.pillars?.Resilience?.score?.toFixed(2)],
+    ['DLQ depth',        'Resilience 4',  'see analytics/dlq_depth.json'],
+    ['circuit state',    'Resilience 3',  'see analytics/circuit_state.json'],
+    ['SLA breach',       'Resilience 10', 'see status/sla_breach_w43_3_10.json'],
+    ['postmortem queue', 'Resilience 11', 'see analytics/postmortem_queue.json'],
+    ['backup pass',      'Resilience 12', 'see analytics/backup_verify_daily.json'],
+  ];
+  const axis = $('resilience-axis');
+  for (const [label, srcLabel, value] of resilTiles) {
+    const t = document.createElement('div');
+    t.className = 'tile';
+    t.innerHTML = `<div class="label">${label} · ${srcLabel}</div><div class="value">${value || '—'}</div>`;
+    axis.appendChild(t);
+  }
+
+  function renderCellList(target, items, evidenceMode) {
+    if (!items || !items.length) { target.innerHTML = '<p class="skip">no entries</p>'; return; }
+    for (const text of items) {
+      const ok = text.startsWith('[OK]') || evidenceMode === 'ok';
+      const cell = document.createElement('div');
+      cell.className = 'cell' + (ok ? '' : ' bad');
+      const m = text.match(/^\[(OK|MISS)\]\s+([^:]+):\s*(.*)$/);
+      const id = m ? m[2] : text;
+      const desc = m ? m[3] : '';
+      cell.innerHTML = `<span class="verdict ${ok ? 'v-ok' : 'v-bad'}">${ok ? 'OK' : 'MISS'}</span>
+        <div class="id">${id}</div><div class="desc">${desc}</div>`;
+      target.appendChild(cell);
+    }
+  }
+
+  const resilCells = $('resilience-cells');
+  const resil = pillars.Resilience || {};
+  renderCellList(resilCells, [...(resil.evidence || []), ...(resil.missing_items || [])]);
+
+  const fourEvidence = $('four-pillar-evidence');
+  for (const name of ['Access', 'Context', 'Tools', 'Orchestration']) {
+    const body = pillars[name];
+    if (!body) continue;
+    const section = document.createElement('div');
+    section.style.gridColumn = '1 / -1';
+    const h3 = document.createElement('h3');
+    h3.style.cssText = 'margin:14px 0 6px;font-size:14px;color:#8794c4';
+    h3.textContent = `${name} — ${(body.score || 0).toFixed(2)} / ${(body.max || 12).toFixed(0)}`;
+    section.appendChild(h3);
+    fourEvidence.appendChild(section);
+    renderCellList(fourEvidence, [...(body.evidence || []), ...(body.missing_items || [])]);
+  }
+})();
+</script>
+</body>
+</html>
