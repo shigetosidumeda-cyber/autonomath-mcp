@@ -1,0 +1,35 @@
+{#-
+  Wave 48 tick#3 — back-button + breadcrumb partial.
+
+  Reason: docs/ UX flow audit (2026-05-12, STATE_w48_ux_flow_audit.md) found
+  next=5 / breadcrumb=0 / back=0 → 3 要素揃い率 50%. Adding breadcrumb (via
+  Material's navigation.path feature in mkdocs.yml) + a top-of-content back
+  button raises docs/ pages to 3/3 (next + breadcrumb + back).
+
+  Scope: extends Material's partials/content.html. The back button uses
+  history.back() so it works regardless of referrer chain (search result →
+  page direct, or in-site nav). On the homepage (is_homepage) we skip both
+  breadcrumb hint and back button (they would be no-ops at the root).
+
+  Test: tests/test_docs_breadcrumb_back.py verifies the 3 elements:
+    1. mkdocs.yml lists `navigation.path` (Material native breadcrumb)
+    2. This partial exists and contains the back-btn anchor markup
+    3. The href uses javascript:history.back() (works without referrer)
+-#}
+{% if not page.is_homepage %}
+  <nav class="jpcite-doc-nav" aria-label="ページ内ナビ" style="margin:0 0 14px;display:flex;flex-wrap:wrap;align-items:center;gap:12px;font-size:14px;color:var(--md-default-fg-color--light, #666);">
+    <a class="back-btn"
+       href="javascript:history.back()"
+       role="button"
+       aria-label="前のページに戻る"
+       style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border:1px solid var(--md-default-fg-color--lightest, #ddd);border-radius:6px;text-decoration:none;color:inherit;">
+      <span aria-hidden="true">←</span><span>戻る</span>
+    </a>
+    <span aria-hidden="true" style="opacity:0.4;">·</span>
+    <a href="{{ '/' | url }}" style="text-decoration:none;color:inherit;">ホーム</a>
+    <span aria-hidden="true" style="opacity:0.4;">·</span>
+    <a href="{{ '/docs/' | url }}" style="text-decoration:none;color:inherit;">ドキュメント TOP</a>
+  </nav>
+{% endif %}
+{#- Render the page body (Material default behavior) -#}
+{{ page.content }}
