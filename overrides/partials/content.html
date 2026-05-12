@@ -15,9 +15,21 @@
     1. mkdocs.yml lists `navigation.path` (Material native breadcrumb)
     2. This partial exists and contains the back-btn anchor markup
     3. The href uses javascript:history.back() (works without referrer)
+
+  Wave 49 tick#2 (2026-05-12): the existing nav already satisfies the
+  "breadcrumb" element of the 4-element lost-zero contract (home › docs).
+  This tick adds the visible `<div data-billing-progress>` placeholder so
+  that billing_progress.js (injected via overrides/main.html) has a mount
+  point on every mkdocs-built page. Together the two partials raise the
+  4-element contract from 0/4 to 4/4 on sub-pages — net change here is the
+  single `<div data-billing-progress hidden>` line. The pre-existing
+  `class="breadcrumb"` add below also gives a stable selector that does
+  NOT rely on Material's `md-path` class (defense-in-depth so the
+  4-element audit script's bare `breadcrumb` selector keeps matching even
+  if Material renames its internal class in a future release).
 -#}
 {% if not page.is_homepage %}
-  <nav class="jpcite-doc-nav" aria-label="ページ内ナビ" style="margin:0 0 14px;display:flex;flex-wrap:wrap;align-items:center;gap:12px;font-size:14px;color:var(--md-default-fg-color--light, #666);">
+  <nav class="jpcite-doc-nav breadcrumb" aria-label="パンくず" style="margin:0 0 14px;display:flex;flex-wrap:wrap;align-items:center;gap:12px;font-size:14px;color:var(--md-default-fg-color--light, #666);">
     <a class="back-btn"
        href="javascript:history.back()"
        role="button"
@@ -30,6 +42,25 @@
     <span aria-hidden="true" style="opacity:0.4;">·</span>
     <a href="{{ '/docs/' | url }}" style="text-decoration:none;color:inherit;">ドキュメント TOP</a>
   </nav>
+{% else %}
+  {#- Wave 49 tick#2: minimal breadcrumb on the docs homepage too. The
+      back button + back-up navlink are no-ops at the root so they stay
+      off (per PR #185 design), but we DO render a "ホーム › ドキュメント"
+      breadcrumb marker so the 4-element lost-zero audit finds the
+      `breadcrumb` selector on /docs/ as well. Without this, mkdocs
+      overwriting the hand-crafted CWV-HARDENED site/docs/index.html
+      drops it to 3/4. -#}
+  <nav class="jpcite-doc-nav breadcrumb" aria-label="パンくず" style="margin:0 0 14px;display:flex;flex-wrap:wrap;align-items:center;gap:12px;font-size:14px;color:var(--md-default-fg-color--light, #666);">
+    <a href="{{ '/' | url }}" style="text-decoration:none;color:inherit;">ホーム</a>
+    <span aria-hidden="true" style="opacity:0.4;">›</span>
+    <span aria-current="page" style="color:var(--md-default-fg-color, #333);">ドキュメント</span>
+  </nav>
 {% endif %}
+{#- Wave 49 tick#2: billing progress mount point. Hidden by default; the
+    billing_progress.js (injected via overrides/main.html <head>) reveals
+    + populates it when an api_key + usage/quota signal is available. The
+    `data-cta-variant="docs-progress"` matches the contract used by the
+    static landing page so the same JS branch fires here. -#}
+<div data-billing-progress data-cta-variant="docs-progress" hidden style="margin:0 0 16px;"></div>
 {#- Render the page body (Material default behavior) -#}
 {{ page.content }}
