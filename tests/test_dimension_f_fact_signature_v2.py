@@ -221,5 +221,67 @@ def test_main_py_includes_fact_signature_v2() -> None:
     assert "_include_experimental_router(app," in src
 
 
+# ---------------------------------------------------------------------------
+# Cron wiring (Wave 46 dim 19 dim F round 2: cron MISSING axis close)
+# ---------------------------------------------------------------------------
+
+
+def test_refresh_fact_signatures_workflow_exists() -> None:
+    """The weekly cron workflow YAML must wire the upstream Python script.
+
+    The cron Python (`scripts/cron/refresh_fact_signatures_weekly.py`)
+    has lived upstream since Wave 43.2.5 but its workflow wiring was
+    missing — flagged as the "cron MISSING" axis of the 2026-05-12
+    dim 19 dim F audit. This test asserts the wiring landed.
+    """
+    workflow = (
+        REPO_ROOT
+        / ".github"
+        / "workflows"
+        / "refresh-fact-signatures-weekly.yml"
+    )
+    assert workflow.exists(), (
+        "Wave 46 dim 19 dim F round 2 must land the cron workflow"
+    )
+    src = workflow.read_text(encoding="utf-8")
+    # Schedule, script reference, and operator-LLM-ban context must all be present.
+    assert "schedule:" in src
+    assert "cron:" in src
+    assert "scripts/cron/refresh_fact_signatures_weekly.py" in src
+    # Sunday-02:00-UTC matches the cron Python docstring claim.
+    assert '"0 2 * * 0"' in src
+    # workflow_dispatch override for ops + concurrency guard.
+    assert "workflow_dispatch:" in src
+    assert "concurrency:" in src
+
+
+def test_refresh_fact_signatures_workflow_no_llm_secret() -> None:
+    """The cron workflow must NOT reference any LLM-vendor secret.
+
+    Per memory `feedback_no_operator_llm_api`: scripts/cron/ is
+    PRODUCTION_DIRS and may not import or be wired to call any LLM SDK
+    or LLM API key. The Ed25519 sign key lives in Fly machine env
+    (NOT as a GHA secret), so the workflow should only reference
+    `FLY_API_TOKEN` from `secrets.*`.
+    """
+    workflow = (
+        REPO_ROOT
+        / ".github"
+        / "workflows"
+        / "refresh-fact-signatures-weekly.yml"
+    )
+    src = workflow.read_text(encoding="utf-8")
+    banned_secret_substrings = (
+        "ANTHROPIC_API_KEY",
+        "OPENAI_API_KEY",
+        "GEMINI_API_KEY",
+        "GOOGLE_API_KEY",
+    )
+    for needle in banned_secret_substrings:
+        assert needle not in src, (
+            f"refresh-fact-signatures-weekly.yml must not reference {needle}"
+        )
+
+
 if __name__ == "__main__":  # pragma: no cover
     pytest.main([__file__, "-v"])
