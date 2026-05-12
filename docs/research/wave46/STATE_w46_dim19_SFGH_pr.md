@@ -99,4 +99,5 @@ test pattern; tests assert at module-import time + grep + helper.
 
 Title: `feat(wave46-dim19-SFGH): copilot_scaffold + fact_signature ETL v2 + realtime_signal subscriber test + personalization MCP`
 
-The PR number is appended once `gh pr create` returns the URL.
+**PR**: https://github.com/shigetosidumeda-cyber/autonomath-mcp/pull/150
+**Commit**: b1747f377
