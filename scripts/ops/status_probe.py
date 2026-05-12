@@ -375,7 +375,9 @@ def probe_data_freshness() -> dict[str, Any]:
     t0 = time.monotonic()
 
     jpintel_db = Path(get_flag("JPCITE_DB_PATH", "JPINTEL_DB_PATH", "data/jpintel.db")).resolve()
-    autonomath_db = Path(get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", "autonomath.db")).resolve()
+    autonomath_db = Path(
+        get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", "autonomath.db")
+    ).resolve()
 
     measurements = [
         ("programs", jpintel_db, "SELECT MAX(updated_at) FROM programs", SLA_PROGRAMS),
