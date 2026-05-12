@@ -2756,6 +2756,13 @@ def create_app() -> FastAPI:
     # + audit log. NO LLM, single-DB. Experimental include so the
     # am_anon_query_view substrate absence degrades to a 503 not crash.
     _include_experimental_router(app, "jpintel_mcp.api.anonymized_query")
+    # Wave 46 Dim S copilot_scaffold (2026-05-12 SFGH booster):
+    # GET /v1/copilot/scaffold/{partner} + /v1/copilot/scaffold/partners.
+    # Embedded copilot scaffold for partner SaaS (freee / MF / Notion /
+    # Slack) — widget HTML skeleton + MCP proxy URL + OAuth bridge URL.
+    # NO LLM call (customer SaaS brings its own LLM), NO DB. Experimental
+    # include for envelope parity even though no migration dependency.
+    _include_experimental_router(app, "jpintel_mcp.api.copilot_scaffold")
     # Autonomath health probe (10-check aggregate) — same exemption as
     # /healthz / /readyz. Mounted without AnonIpLimitDep so production
     # uptime monitors can poll without burning the 3/日 anonymous quota.
