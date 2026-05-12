@@ -26,6 +26,14 @@ def _write_safe_entrypoint(tmp_path: Path, *, schema_guard: Path | None = None) 
     app_scripts_dir = tmp_path / "app" / "scripts"
     script = tmp_path / "entrypoint.sh"
     text = ENTRYPOINT.read_text(encoding="utf-8")
+    # Wave 48 §4.x W48.x402: rewrite the seed_x402_endpoints.py path FIRST so
+    # the subsequent `/seed` replacement doesn't corrupt it (the substring
+    # `/seed` lives inside `/seed_x402_endpoints.py` and would be eaten by the
+    # generic seed-dir substitution if reordered).
+    text = text.replace(
+        "/app/scripts/etl/seed_x402_endpoints.py",
+        str(app_scripts_dir / "etl/seed_x402_endpoints.py"),
+    )
     text = text.replace("/data", str(data_dir))
     text = text.replace("/seed", str(seed_dir))
     text = text.replace("/app/scripts/migrate.py", str(app_scripts_dir / "migrate.py"))
