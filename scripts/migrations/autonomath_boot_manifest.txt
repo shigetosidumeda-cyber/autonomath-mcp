@@ -381,3 +381,18 @@
 # additive (CREATE TABLE/INDEX/VIEW IF NOT EXISTS); boot-time safe;
 # idempotent on every boot.
 283_ax_layer3.sql
+
+# 2026-05-12 Wave 49 tick#7 — Dim N Phase 1 k=10 strict parallel view.
+# Adds v_anon_cohort_outcomes_k10_strict on top of the existing
+# am_aggregated_outcome_view (mig 274 substrate, k=5 floor preserved).
+# Destruction-free by construction: the k=5 view v_anon_cohort_outcomes_
+# latest from mig 274 is NEVER dropped, altered, or relaxed; routers
+# opting into stricter privacy read the new k=10 view, legacy callers
+# continue to read the k=5 view unchanged. Pure additive (CREATE VIEW
+# IF NOT EXISTS only; no DROP/DELETE/ALTER on existing objects). NO LLM
+# SDK; pure SQLite. boot-time safe; idempotent on every boot. Without
+# this manifest entry, entrypoint.sh schema_guard ignores 288 even
+# though the SQL file is present (PR #189 merged into main as
+# e59486eb), preventing the strict view from being materialized in
+# prod — this hot-fix unblocks that path.
+288_dim_n_k10_strict.sql
