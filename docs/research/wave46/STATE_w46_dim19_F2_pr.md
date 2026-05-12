@@ -99,12 +99,17 @@ On failure:
 - Builds on PR #118 head, NOT main, so the round 1 changes are
   preserved in the diff base
 
-## Lint + test verdict
+## Lint + test verdict (2026-05-12)
 
-To be filled by the verify step at the bottom of this PR creation
-flow.
+- `ruff check tests/test_dimension_f_fact_signature_v2.py` -> **All checks passed!**
+- `pytest tests/test_dimension_f_fact_signature_v2.py -v` -> **9 passed in 1.02s** (7 -> 9, +2 new tests)
+- Regression: `pytest tests/test_dimension_e_fact_verify.py -v` -> **12 passed in 1.07s** (no regression on dim E sibling)
+- YAML well-formedness: `python3 -c "import yaml; yaml.safe_load(...)"` -> OK
 
 ## PR
 
-To be opened after lint + test verify. PR# will be backfilled here
-once `gh pr create` returns.
+**PR #128** — https://github.com/shigetosidumeda-cyber/autonomath-mcp/pull/128
+Title: `feat(wave46-dimF-r2): cron wiring for fact_signature_v2 (dim 19 axis +1)`
+Base: `feat/jpcite_2026_05_12_wave46_dim19_score_fix` (PR #118 head)
+Branch: `feat/jpcite_2026_05_12_wave46_dim19_F_round2`
+Commit: `21e39403c`
