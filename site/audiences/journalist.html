@@ -330,6 +330,34 @@
  </div>
  </section>
 
+ <section class="features" aria-labelledby="cost-title">
+ <div class="container">
+ <h2 id="cost-title" style="margin-bottom:16px;">1 取材先あたりの cost saving (純 LLM vs jpcite ¥3/req)</h2>
+ <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: 記者・調査会社 / 1 取材先 想定。 「純 LLM」は外部公的記録なしの汎用 LLM で hallucination 裏取り + 官報手動検索 + 採択履歴照合まで含めた工数 (調査会社時給 ¥8,000/h)。 詳細は <a href="../../docs/canonical/cost_saving_examples.md">canonical cost saving examples</a>。</p>
+ <div style="overflow-x:auto;">
+ <table style="width:100%;border-collapse:collapse;font-size:14px;">
+ <thead>
+ <tr style="background:var(--bg-subtle,#fafafa);border-bottom:2px solid var(--border);">
+ <th style="padding:12px;text-align:left;">case</th>
+ <th style="padding:12px;text-align:left;">純 LLM 工数 × 単価</th>
+ <th style="padding:12px;text-align:left;">jpcite req 数 × ¥3</th>
+ <th style="padding:12px;text-align:left;">cost saving</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr style="border-bottom:1px solid var(--border);">
+ <td style="padding:12px;"><strong>取材先 法人 1 件 裏取り</strong> (行政処分 1,185 + 採択履歴 + 適格事業者)</td>
+ <td style="padding:12px;">1.5h × ¥8,000 = ¥12,000</td>
+ <td style="padding:12px;">3 req × ¥3 = ¥9</td>
+ <td style="padding:12px;"><strong>¥11,991/件</strong></td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ <p style="font-size:13px;color:var(--text-muted);margin-top:12px;">※ 推定値。 hallucination 裏取り + 官報手動検索 + 採択履歴照合 + 適格事業者番号照会を含む。 jpcite は事実検索 + 一次資料 URL 提供のみで、取材判断・記事内容は記者本人の責任。 誇大広告意図なし。</p>
+ </div>
+ </section>
+
 </main>
 
 <footer class="site-footer" role="contentinfo">

@@ -234,6 +234,34 @@
  </div>
  </section>
 
+ <section class="features" aria-labelledby="cost-title">
+ <div class="container">
+ <h2 id="cost-title" style="margin-bottom:16px;">1 案件あたりの cost saving (純 LLM vs jpcite ¥3/req)</h2>
+ <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: 不動産業特化コンサル / 顧問 8 社 想定。 「純 LLM」は外部公的制度根拠なしの汎用 LLM で hallucination 裏取り + JSIC K 一次資料探索 + 通達引用整形まで含めた工数 (不動産業コンサル時給 ¥8,000/h)。 詳細は <a href="../../docs/canonical/cost_saving_examples.md">canonical cost saving examples</a>。</p>
+ <div style="overflow-x:auto;">
+ <table style="width:100%;border-collapse:collapse;font-size:14px;">
+ <thead>
+ <tr style="background:var(--bg-subtle,#fafafa);border-bottom:2px solid var(--border);">
+ <th style="padding:12px;text-align:left;">case</th>
+ <th style="padding:12px;text-align:left;">純 LLM 工数 × 単価</th>
+ <th style="padding:12px;text-align:left;">jpcite req 数 × ¥3</th>
+ <th style="padding:12px;text-align:left;">cost saving</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr style="border-bottom:1px solid var(--border);">
+ <td style="padding:12px;"><strong>賃貸事業 1 案件 補助金抽出 + 通達根拠</strong> (JSIC K 201 + 所基通 / 相基通)</td>
+ <td style="padding:12px;">3.5h × ¥8,000 = ¥28,000</td>
+ <td style="padding:12px;">2 req × ¥3 = ¥6</td>
+ <td style="padding:12px;"><strong>¥27,994/件</strong></td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ <p style="font-size:13px;color:var(--text-muted);margin-top:12px;">※ 推定値。 hallucination 裏取り + JSIC K 該当 program 横断 + 所基通 / 相基通 セクション ID 抽出を含む。 採択事例 11 件は薄い (honest 注記)。 jpcite は事実検索 + scaffold 提供のみ。 誇大広告意図なし。</p>
+ </div>
+ </section>
+
 </main>
 
 <footer class="site-footer" role="contentinfo">

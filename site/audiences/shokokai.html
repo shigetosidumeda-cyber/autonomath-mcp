@@ -330,6 +330,34 @@ uvx autonomath-mcp --src=audience_shokokai</code></pre>
  </div>
  </section>
 
+ <section class="features" aria-labelledby="cost-title">
+ <div class="container">
+ <h2 id="cost-title" style="margin-bottom:16px;">巡回先 1 件あたりの cost saving (純 LLM vs jpcite ¥3/req)</h2>
+ <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: 商工会 経営指導員 / 月 200 巡回先 想定。 「純 LLM」は外部公的記録なしの汎用 LLM で hallucination 裏取り + 持続化補助金様式4 + マル経推薦 + 共済 を手動探索した工数 (経営指導員時給 ¥5,000/h)。 詳細は <a href="../../docs/canonical/cost_saving_examples.md">canonical cost saving examples</a>。</p>
+ <div style="overflow-x:auto;">
+ <table style="width:100%;border-collapse:collapse;font-size:14px;">
+ <thead>
+ <tr style="background:var(--bg-subtle,#fafafa);border-bottom:2px solid var(--border);">
+ <th style="padding:12px;text-align:left;">case</th>
+ <th style="padding:12px;text-align:left;">純 LLM 工数 × 単価</th>
+ <th style="padding:12px;text-align:left;">jpcite req 数 × ¥3</th>
+ <th style="padding:12px;text-align:left;">cost saving</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr style="border-bottom:1px solid var(--border);">
+ <td style="padding:12px;"><strong>巡回先 SMB 1 社 持続化補助金案内</strong> (様式4 + マル経 + 共済 + エキスパートバンク)</td>
+ <td style="padding:12px;">0.8h × ¥5,000 = ¥4,000</td>
+ <td style="padding:12px;">2 req × ¥3 = ¥6</td>
+ <td style="padding:12px;"><strong>¥3,994/件</strong></td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ <p style="font-size:13px;color:var(--text-muted);margin-top:12px;">※ 推定値。 hallucination 裏取り + 持続化補助金 (商工会枠 / 商工会議所枠) + 経営指導員様式4 + マル経推薦 + 認定支援機関ロール案内を含む。 jpcite は事実検索 + Evidence Packet 提供のみ。 誇大広告意図なし。</p>
+ </div>
+ </section>
+
 </main>
 
 <footer class="site-footer" role="contentinfo">
