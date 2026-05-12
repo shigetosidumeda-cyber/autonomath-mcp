@@ -98,6 +98,9 @@ if _experimental_mcp_enabled():
         "jpintel_mcp.mcp.autonomath_tools.intel_wave31",
         "jpintel_mcp.mcp.autonomath_tools.wave24_tools_first_half",
         "jpintel_mcp.mcp.autonomath_tools.wave24_tools_second_half",
+        # Wave 43.2.9 Dim I — cross-source agreement (per-fact 0..1 score).
+        # Reads autonomath.am_fact_source_agreement (migration 265). NO LLM.
+        "jpintel_mcp.mcp.autonomath_tools.cross_source_score_v2",
     ):
         import_module(_module_name)
 
