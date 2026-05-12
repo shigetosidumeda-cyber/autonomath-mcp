@@ -124,3 +124,12 @@
 253_law_tsutatsu_all.sql
 254_law_guideline.sql
 262_fact_signature_v2.sql
+
+# 2026-05-12 Wave 46.B — jpcite brand alias view layer (jc_* over am_*).
+# 135 read-only CREATE VIEW IF NOT EXISTS jc_<name> AS SELECT * FROM
+# am_<name>. Non-destructive: am_* tables remain SOT, jc_* are query-time
+# aliases for gradual rename of operator/ETL/REST/MCP code. FTS5/vec0
+# virtual tables excluded (cannot wrap with a plain view without losing
+# MATCH/vec_search capability). Idempotent on every boot; safe even if
+# am_* tables are absent (view body resolves at query time, not creation).
+269_create_jpcite_views.sql
