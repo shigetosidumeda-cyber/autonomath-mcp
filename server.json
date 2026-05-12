@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.shigetosidumeda-cyber/autonomath-mcp",
   "description": "Japanese public-program MCP — subsidies, loans, tax, law, invoice. 139 tools, ¥3/req",
-  "version": "0.3.5",
+  "version": "0.4.0",
   "repository": {
     "url": "https://github.com/shigetosidumeda-cyber/autonomath-mcp",
     "source": "github"
@@ -13,7 +13,7 @@
       "registryType": "pypi",
       "registryBaseUrl": "https://pypi.org",
       "identifier": "autonomath-mcp",
-      "version": "0.3.5",
+      "version": "0.4.0",
       "transport": {
         "type": "stdio"
       }

@@ -8,6 +8,26 @@ See [`docs/versioning.md`](docs/versioning.md) for what counts as breaking.
 
 ## [Unreleased]
 
+## [0.4.0] — 2026-05-12 (Wave 43.5: Monitoring + AMS bench + Discoverability 横断常駐 cron)
+
+Minor bump reflecting the cumulative Wave 43 corpus expansion (60 cell + 19 dimension landings since 0.3.5) plus the Wave 43.5 monitoring substrate. **No tool count change** (manifest hold at 139 default-gate; runtime cohort continues to drift per CLAUDE.md §Wave hardening 2026-05-07). **No schema change** in this bump.
+
+### Added
+- `tools/offline/ai_mention_share_monthly.py` — operator-only monthly AMS snapshot (wraps Wave 41 `citation_bench_production`, 12 LLM × 520 q ≈ $50-80/pass, default dry-run with placeholder rows). Outputs `analytics/ai_mention_share_monthly.jsonl` (append-only) + `site/status/ai_mention_share.json` (sidecar).
+- `scripts/cron/track_funnel_6stage_daily.py` — 6-stage agent-funnel KPI tracker (Discoverability / Justifiability / Trustability / Accessibility / Payability / Retainability). Reads `data/jpintel.db` only (~352 MB) + `site/` discovery surface presence. Outputs `analytics/funnel_6stage_daily.jsonl` + `site/status/funnel_6stage.json`.
+- `.github/workflows/funnel-6stage-daily.yml` — 19:30 UTC (04:30 JST) daily cron, autocommit deltas.
+- `.github/workflows/ai-mention-share-monthly.yml` — 02:00 UTC on the 1st of each month, dry-run default; real-pass via `workflow_dispatch` with `real_pass=true` (operator-only, gated by ANTHROPIC/OPENAI/GEMINI/MISTRAL/DEEPSEEK/DASHSCOPE API key secrets).
+
+### Changed
+- `pyproject.toml`, `server.json`, `mcp-server.json`, `dxt/manifest.json`, `smithery.yaml`, `site/server.json`, `site/mcp-server.json`, `scripts/distribution_manifest.yml` — version `0.3.5` → `0.4.0`
+- Triggers `release.yml` (PyPI OIDC trusted publishing) on `v0.4.0` tag push
+- Anthropic MCP registry refreshes via `mcp-registry-publish.yml` (GitHub OIDC) after PyPI propagates
+
+### Memory contracts upheld
+- `feedback_autonomath_no_api_use` — production paths still ban LLM imports (CI guard `tests/test_no_llm_in_production.py` unchanged).
+- `feedback_no_operator_llm_api` — AMS monthly bench lives in `tools/offline/` precisely so the CI guard allows its lazy LLM SDK imports.
+- `feedback_no_quick_check_on_huge_sqlite` — funnel script reads `data/jpintel.db` only; never touches `autonomath.db`.
+
 ## [0.3.5] — 2026-05-11 (Wave 23: PyPI republish + Anthropic MCP registry refresh)
 
 Manifest bump only. **No tool count change** (139 default-gate manifest), **no schema change**, **no public surface change**. Re-publishes to PyPI + refreshes the Anthropic MCP registry entry which had drifted from PyPI 0.3.4 LIVE while still reading 0.3.2.
