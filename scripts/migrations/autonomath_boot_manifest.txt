@@ -165,3 +165,14 @@
 # additive (CREATE TABLE/INDEX/VIEW IF NOT EXISTS); boot-time safe;
 # idempotent.
 273_rule_tree_v2_chain.sql
+
+# 2026-05-12 Wave 47 — Dim N (anonymized_query / PII redact) storage layer.
+# am_anonymized_query_log (per-call audit trail, query_hash + audit_token
+# + k_anonymity_value + pii_stripped JSON) + am_aggregated_outcome_view
+# (materialized cohort outcomes, k>=5 floor enforced by CHECK + nightly
+# aggregator HAVING) + v_anon_cohort_outcomes_latest helper view. Pairs
+# with PR #139's POST /v1/network/anonymized_outcomes (Dim N) and the
+# nightly aggregator scripts/etl/aggregate_anonymized_outcomes.py. Pure
+# additive (CREATE TABLE/INDEX/VIEW IF NOT EXISTS); boot-time safe;
+# idempotent on every boot. k=5 hard cap mirrors REST K_ANONYMITY_MIN.
+274_anonymized_query.sql
