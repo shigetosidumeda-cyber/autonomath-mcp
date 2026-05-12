@@ -68,7 +68,7 @@ BPO 1000 案件 triage
 
 400 req × ¥3.30。事前リサーチ + 候補制度 + 排他確認を AI agent から自動。 
 
-詳細 ROI 倍率は [業種別 use case (税理士・会計士・行政書士・診断士・M&A・信金) ](/docs/use_cases/by_industry_2026_05_11/)・課金根拠は [justification ](/docs/pricing/justification_2026_05_11/)。 
+詳細 節約額 (旧 ROI 倍率と併記) は [業種別 use case (税理士・会計士・行政書士・診断士・M&A・信金) ](/docs/use_cases/by_industry_2026_05_11/)・課金根拠は [justification ](/docs/pricing/justification_2026_05_11/)・1 案件単位の純 LLM 差分は [cost saving examples ](/docs/canonical/cost_saving_examples/)。 
 
 ## jpcite vs web search — 構造比較 
 
@@ -86,7 +86,7 @@ AI agent から web search で公的制度を扱うと、aggregator 孫引き・
 
 監査 / 顧問先説明 URL のみ、content_hash / corpus_snapshot_id なし content_hash + corpus_snapshot_id + Merkle proof で再現可能性 
 
-100 req コスト ¥10-100 程度の LLM token 課金。安いが取りこぼし確率高、顧問契約解除 ¥36-120万/年 リスク ¥330 (税込)。取りこぼし回避で 1,000-3,600 倍 ROI 
+100 req コスト ¥10-100 程度の LLM token 課金。安いが取りこぼし確率高、顧問契約解除 ¥36-120万/年 リスク。jpcite 同等 req は ¥330 (税込) で、取りこぼし 1 件回避時の節約は ¥36-120万 (historical ROI 1,000-3,600 倍 表現)。 
 
 ## 成果物の反復運用では、先に上限を決める 
 
