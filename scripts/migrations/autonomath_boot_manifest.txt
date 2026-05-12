@@ -142,3 +142,14 @@
 # (補助金適格性 / 業法 fence / 投資条件 / 採択 / DD). Pure additive
 # (CREATE TABLE/INDEX/VIEW IF NOT EXISTS); boot-time safe; idempotent.
 271_rule_tree.sql
+
+# 2026-05-12 Wave 47 — Dim L (session_context_design) storage layer.
+# am_session_context (state_token PK, saved_context JSON, 24h TTL expires_at)
+# + am_session_step_log (append-only request_hash/response_hash audit) +
+# v_session_context_alive helper view. Pairs with PR #144's in-process LRU
+# REST surface (/v1/session/{open,step,close}) and the daily TTL purge in
+# scripts/etl/clean_session_context_expired.py (24h TTL + 7d forensic
+# window). Pure additive (CREATE TABLE/INDEX/VIEW IF NOT EXISTS); the REST
+# kernel is NOT rewired by this migration — SQL sync is opt-in for an
+# operator-side daemon. boot-time safe; idempotent.
+272_session_context.sql
