@@ -712,6 +712,32 @@ else
   log "schema_guard.py absent — skipping (dev build?)"
 fi
 
+# 4.x. W48.x402: x402 endpoint_config prod seed (idempotent).
+# Per `feedback_agent_x402_protocol` Dim V surface and Wave 47 migration 282:
+# `am_x402_endpoint_config` is created empty by the migration, but the prod
+# volume on Fly was never populated, so /v1/* x402-gated endpoints return 404
+# instead of 402 Payment Required. Idempotent seed: re-running is a no-op
+# (existing rows preserved unless --force, which we do NOT pass here).
+# - Skip the block entirely if the seeder is missing (dev build).
+# - Run only when autonomath.db exists (a fresh volume that hit §4's
+#   "autonomath DB absent" branch has no schema to seed against).
+# - Per `feedback_no_quick_check_on_huge_sqlite`: no PRAGMA quick_check
+#   here. The seeder is O(5 SELECTs + ≤5 INSERTs), well under Fly 60s grace.
+# - Best-effort: a seeder failure logs but does NOT exit. Schema is the
+#   structural correctness gate; x402 routing degrades gracefully (404 stays)
+#   until the operator inspects the log.
+if [ -x /app/scripts/etl/seed_x402_endpoints.py ] || [ -f /app/scripts/etl/seed_x402_endpoints.py ]; then
+  if [ -s "$DB_PATH" ]; then
+    log "[W48.x402] seeding am_x402_endpoint_config from /app/scripts/etl/seed_x402_endpoints.py"
+    python /app/scripts/etl/seed_x402_endpoints.py --db "$DB_PATH" 2>&1 | tail -10 || \
+      err "[W48.x402] x402 endpoint seed failed (non-fatal; /v1/* gated routes will keep returning 404 until reconciled)"
+  else
+    log "[W48.x402] autonomath DB absent — x402 endpoint seed skipped"
+  fi
+else
+  log "[W48.x402] seed_x402_endpoints.py absent — skipping x402 prod seed (dev build?)"
+fi
+
 # 5. Hand off to CMD.
 log "starting server: $*"
 exec "$@"
