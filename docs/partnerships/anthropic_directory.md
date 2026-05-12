@@ -5,7 +5,7 @@
 ## ターゲットと規模
 
 - Claude Desktop アクティブユーザー: 約 50,000 (2026 Q1 推定、日本市場含む)
-- 想定到達率: 5% (= 2,500 user) × 月平均 8,000 req × ¥3 = **¥6,000,000 / 月 = ¥72M / 年 ARR 上限** (10-30% realized = ¥7.2M-21.6M / 年)
+- 想定到達率: 5% (= 2,500 user) × 月平均 8,000 req × ¥3 = **月 ¥6,000,000 = 年 ¥72M 規模の流通額上限 (historical "年 ARR 上限" 表現)**、10-30% realized = ¥7.2M-21.6M / 年。per-user 節約額は [cost saving examples](../canonical/cost_saving_examples.md) 参照。
 - 受注経路: registry listing (self-serve install) のみ。営業 NG
 
 ## 連携シナリオ
