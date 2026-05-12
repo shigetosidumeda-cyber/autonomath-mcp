@@ -1,0 +1,87 @@
+name: Chaos 24/7 (hourly)
+
+# Wave 43.3.9 — AX Resilience cell 9. Extends the Wave 18 E3 weekly
+# chaos suite (chaos-weekly.yml) to a 24/7 hourly cadence so resilience
+# regressions surface within one hour, not one week.
+#
+# The job runs the 5-pillar resilience test (latency / bandwidth /
+# reset_peer / timeout / recovery), captures one structured JSONL row
+# per execution to ``analytics/chaos_24_7_{YYYY-MM-DD}.jsonl``, and
+# uploads the artifact so the status page + post-mortem reviewer can
+# replay history.
+#
+# NO LLM use. Stdlib + httpx + toxiproxy-python (test-only).
+on:
+  schedule:
+    # Hourly, on the 17th minute to spread load away from the
+    # top-of-hour cron stampede inside this repo.
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: chaos-24-7-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  chaos-24-7:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      toxiproxy:
+        image: ghcr.io/shopify/toxiproxy:2.9.0
+        ports:
+          - 8474:8474
+          - 18001:18001
+        options: >-
+          --health-cmd="wget -q --spider http://localhost:8474/version || exit 1"
+          --health-interval=5s
+          --health-timeout=2s
+          --health-retries=5
+    env:
+      TOXIPROXY_HOST: '127.0.0.1'
+      TOXIPROXY_PORT: '8474'
+      TOXIPROXY_API_LISTEN_PORT: '18001'
+      CHAOS_UPSTREAM: '127.0.0.1:8080'
+      JPINTEL_ENV: 'test'
+      JPCITE_PREFLIGHT_ALLOW_MISSING_DB: '1'
+      AUTONOMATH_DB_MIN_PRODUCTION_BYTES: '1024'
+      CHAOS_ARTIFACT_DIR: ${{ github.workspace }}/analytics
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: 'pyproject.toml'
+      - name: Install deps
+        run: |
+          pip install -e ".[dev]"
+          pip install toxiproxy-python
+      - name: Start API under test
+        run: |
+          .venv/bin/uvicorn jpintel_mcp.api.main:app --host 127.0.0.1 --port 8080 &
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:8080/healthz && break
+            sleep 1
+          done
+      - name: Run 5-pillar resilience score
+        run: |
+          mkdir -p "${CHAOS_ARTIFACT_DIR}"
+          pytest tests/chaos/test_resilience_5pillar.py -v \
+            --junit-xml=chaos-24-7-results.xml \
+            --tb=short
+      - name: Upload junit report
+        if: always()
+        uses: actions/upload-artifact@834a144ee995460fba8ed112a2fc961b36a5ec5a # v4.3.6
+        with:
+          name: chaos-24-7-junit-${{ github.run_id }}
+          path: chaos-24-7-results.xml
+          retention-days: 14
+      - name: Upload jsonl artifact
+        if: always()
+        uses: actions/upload-artifact@834a144ee995460fba8ed112a2fc961b36a5ec5a # v4.3.6
+        with:
+          name: chaos-24-7-jsonl-${{ github.run_id }}
+          path: analytics/chaos_24_7_*.jsonl
+          retention-days: 90
+          if-no-files-found: warn
