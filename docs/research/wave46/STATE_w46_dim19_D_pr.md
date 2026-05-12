@@ -136,9 +136,11 @@ Hard constraints satisfied:
 
 ## PR
 
-Will be opened with title `feat(wave46-dimD): audit_workpaper /schema
-discovery surface (dim 19 sub-criterion)` against main. PR# will be
-backfilled at the end of this state doc once `gh pr create` returns.
+Opened as **PR #126**:
+https://github.com/shigetosidumeda-cyber/autonomath-mcp/pull/126
+
+Title: `feat(wave46-dimD): audit_workpaper /schema discovery surface
+(dim 19 sub-criterion)`. Targets `main`.
 
 ## Lint + test verdict (2026-05-12 verify)
 
