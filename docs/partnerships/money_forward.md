@@ -5,7 +5,7 @@
 ## ターゲットと規模
 
 - MF Cloud 顧客: 約 200,000 社 (会計 / 給与 / 経費の合算、2026 Q1)
-- 想定到達率: 0.75% (= 1,500 社) × 月平均 33,000 req × ¥3 = **¥150,000,000 / 年 ARR 上限** (10-30% realized = ¥15M-45M / 年)
+- 想定到達率: 0.75% (= 1,500 社) × 月平均 33,000 req × ¥3 = **年 ¥150,000,000 規模の流通額上限 (historical "年 ARR 上限" 表現)**、10-30% realized = ¥15M-45M / 年。per-顧客 節約額は [cost saving examples](../canonical/cost_saving_examples.md) 参照。
 - 受注経路: MF Cloud Marketplace + ME パートナー API。営業電話 NG、self-serve のみ
 
 ## 連携シナリオ

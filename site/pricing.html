@@ -94,7 +94,7 @@
   "@context": "https://schema.org",
   "@type": "Dataset",
   "name": "jpcite Pricing & Metered Usage 公開データ",
-  "description": "jpcite の従量課金 (¥3/billable unit、税込 ¥3.30) と匿名 3 req/日 IP 制限の公開仕様データ。料金根拠、break-even 計算、純 LLM vs jpcite cost-saving シナリオ表を含む。",
+  "description": "jpcite の従量課金 (¥3/billable unit、税込 ¥3.30) と匿名 3 req/日 IP 制限の公開仕様データ。料金根拠、break-even 計算、節約額シナリオ表 (旧 ROI 倍率 historical reference 併記) を含む。",
   "url": "https://jpcite.com/pricing",
   "creator": {"@id": "https://jpcite.com/#publisher"},
   "provider": {"@id": "https://jpcite.com/#publisher"},
@@ -402,88 +402,12 @@
  </div>
  </div>
  <p style="margin:14px 0 0;font-size:12px;color:var(--text-muted);line-height:1.6;">
- 詳細 cost saving 内訳は <a href="/docs/canonical/cost_saving_examples/">純 LLM vs jpcite ¥3/req 節約比較 (6 use case)</a> ・業種別 use case は <a href="/docs/use_cases/by_industry_2026_05_11/">業種別 use case (税理士・会計士・行政書士・診断士・M&amp;A・信金)</a> ・課金根拠は <a href="/docs/pricing/justification_2026_05_11/">justification</a>。
+ 詳細 節約額 (旧 ROI 倍率 併記) は <a href="/docs/use_cases/by_industry_2026_05_11/">業種別 use case (税理士・会計士・行政書士・診断士・M&amp;A・信金)</a> ・課金根拠は <a href="/docs/pricing/justification_2026_05_11/">justification</a> ・1 案件単位の純 LLM 差分は <a href="/docs/canonical/cost_saving_examples/">cost saving examples</a>。
  </p>
  </section>
 
- <section aria-labelledby="cost-saving-calc-title" style="margin-top:40px;">
- <h2 id="cost-saving-calc-title" class="section-title" style="font-size:22px;">Cost saving calculator — 6 use case 月次節約</h2>
- <p style="font-size:15px;line-height:1.7;margin:0 0 16px;color:var(--text-muted);max-width:880px;">
- 純 LLM (web search + fetch) で同じ業務を回した場合と、jpcite ¥3/req で回した場合の月次コスト差。前提=純 LLM 入力単価 ¥300/1M token + tool call ¥0.5/件、jpcite は ¥3 × 実 req 数のみ。全 6 use case は <a href="/docs/canonical/cost_saving_examples/">canonical doc</a> 参照。
- </p>
- <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;overflow:hidden;max-width:1000px;background:var(--bg,#fff);">
- <table style="width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums;">
- <thead>
- <tr style="background:var(--bg-alt,#fafaf9);">
- <th scope="col" style="text-align:left;padding:12px 14px;font-weight:600;border-bottom:1px solid var(--border,#e5e7eb);">use case</th>
- <th scope="col" style="text-align:right;padding:12px 14px;font-weight:600;border-bottom:1px solid var(--border,#e5e7eb);">月 cycle</th>
- <th scope="col" style="text-align:right;padding:12px 14px;font-weight:600;border-bottom:1px solid var(--border,#e5e7eb);">純 LLM コスト/月</th>
- <th scope="col" style="text-align:right;padding:12px 14px;font-weight:600;border-bottom:1px solid var(--border,#e5e7eb);">jpcite ¥3/req コスト/月</th>
- <th scope="col" style="text-align:right;padding:12px 14px;font-weight:600;border-bottom:1px solid var(--border,#e5e7eb);">節約 ¥/月</th>
- </tr>
- </thead>
- <tbody>
- <tr>
- <th scope="row" style="text-align:left;padding:12px 14px;font-weight:500;border-bottom:1px solid var(--border,#e5e7eb);">税理士 顧問先月次レビュー (50 社)</th>
- <td style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">50</td>
- <td style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">¥18,000</td>
- <td style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">¥2,700</td>
- <td style="text-align:right;padding:12px 14px;font-weight:700;color:#166534;border-bottom:1px solid var(--border,#e5e7eb);">¥15,300</td>
- </tr>
- <tr>
- <th scope="row" style="text-align:left;padding:12px 14px;font-weight:500;border-bottom:1px solid var(--border,#e5e7eb);">M&amp;A advisor 公開情報 DD (月 10 deck)</th>
- <td style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">10</td>
- <td style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">¥24,000</td>
- <td style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">¥4,800</td>
- <td style="text-align:right;padding:12px 14px;font-weight:700;color:#166534;border-bottom:1px solid var(--border,#e5e7eb);">¥19,200</td>
- </tr>
- <tr>
- <th scope="row" style="text-align:left;padding:12px 14px;font-weight:500;border-bottom:1px solid var(--border,#e5e7eb);">信金 制度マッチ pre-screen (月 200 件)</th>
- <td style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">200</td>
- <td style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">¥16,000</td>
- <td style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">¥2,400</td>
- <td style="text-align:right;padding:12px 14px;font-weight:700;color:#166534;border-bottom:1px solid var(--border,#e5e7eb);">¥13,600</td>
- </tr>
- <tr>
- <th scope="row" style="text-align:left;padding:12px 14px;font-weight:500;border-bottom:1px solid var(--border,#e5e7eb);">中小企業診断士 申請戦略パック (月 30 案件)</th>
- <td style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">30</td>
- <td style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">¥10,800</td>
- <td style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">¥1,800</td>
- <td style="text-align:right;padding:12px 14px;font-weight:700;color:#166534;border-bottom:1px solid var(--border,#e5e7eb);">¥9,000</td>
- </tr>
- <tr>
- <th scope="row" style="text-align:left;padding:12px 14px;font-weight:500;border-bottom:1px solid var(--border,#e5e7eb);">BPO 1000 案件 triage (月 4 batch × 250)</th>
- <td style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">1000</td>
- <td style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">¥48,000</td>
- <td style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">¥9,000</td>
- <td style="text-align:right;padding:12px 14px;font-weight:700;color:#166534;border-bottom:1px solid var(--border,#e5e7eb);">¥39,000</td>
- </tr>
- <tr>
- <th scope="row" style="text-align:left;padding:12px 14px;font-weight:500;">行政書士 補助金前リサーチ (月 80 件)</th>
- <td style="text-align:right;padding:12px 14px;">80</td>
- <td style="text-align:right;padding:12px 14px;">¥9,600</td>
- <td style="text-align:right;padding:12px 14px;">¥1,440</td>
- <td style="text-align:right;padding:12px 14px;font-weight:700;color:#166534;">¥8,160</td>
- </tr>
- </tbody>
- <tfoot>
- <tr style="background:var(--bg-alt,#fafaf9);">
- <th scope="row" style="text-align:left;padding:12px 14px;font-weight:700;border-top:2px solid var(--border,#e5e7eb);">合計 (6 worker 並走時)</th>
- <td style="text-align:right;padding:12px 14px;font-weight:700;border-top:2px solid var(--border,#e5e7eb);">—</td>
- <td style="text-align:right;padding:12px 14px;font-weight:700;border-top:2px solid var(--border,#e5e7eb);">¥126,400</td>
- <td style="text-align:right;padding:12px 14px;font-weight:700;border-top:2px solid var(--border,#e5e7eb);">¥22,140</td>
- <td style="text-align:right;padding:12px 14px;font-weight:800;color:#166534;border-top:2px solid var(--border,#e5e7eb);">¥104,260</td>
- </tr>
- </tfoot>
- </table>
- </div>
- <p style="font-size:12px;color:var(--text-muted);margin:10px 0 0;line-height:1.6;max-width:880px;">
- 純 LLM 単価仮定: Anthropic / OpenAI 2026-05 時点 mid-cost 入力 ¥300/1M token (Claude Sonnet 4.7 ≒ ¥450/1M、GPT-5 入力 ≒ ¥300/1M)。出力 / cache / 為替 / provider 側 web search 課金は含みません。実行前に <code>/v1/cost/preview</code> で再算定できます。
- </p>
- </section>
-
- <section aria-labelledby="vs-websearch-title" style="margin-top:40px;">
- <h2 id="vs-websearch-title" class="section-title" style="font-size:22px;">jpcite vs web search — 構造比較</h2>
+ <section aria-labelledby="roi-vs-websearch-title" style="margin-top:40px;">
+ <h2 id="roi-vs-websearch-title" class="section-title" style="font-size:22px;">jpcite vs web search — 構造比較</h2>
  <p style="font-size:15px;line-height:1.7;margin:0 0 16px;color:var(--text-muted);max-width:820px;">
  AI agent から web search で公的制度を扱うと、aggregator 孫引き・fetched_at 不明・業法 fence なしで業務利用に耐えません。jpcite ¥3/req は出典固定 + 業法 fence + 監査対応の対価です。
  </p>
@@ -524,8 +448,8 @@
  </tr>
  <tr>
  <th scope="row" style="text-align:left;padding:12px 14px;font-weight:600;vertical-align:top;">100 req コスト</th>
- <td style="padding:12px 14px;vertical-align:top;line-height:1.65;">¥10-100 程度の LLM token 課金。取りこぼし・hallucinate で再走査の追加 token + cache miss 増分が発生</td>
- <td style="padding:12px 14px;vertical-align:top;line-height:1.65;">¥330 (税込)。<strong>節約 ¥1,300-46,000/月</strong> (use case 別)、内訳は <a href="/docs/canonical/cost_saving_examples/">cost_saving_examples</a></td>
+ <td style="padding:12px 14px;vertical-align:top;line-height:1.65;">¥10-100 程度の LLM token 課金。安いが取りこぼし確率高、顧問契約解除 ¥36-120万/年 リスク</td>
+ <td style="padding:12px 14px;vertical-align:top;line-height:1.65;">¥330 (税込)。取りこぼし 1 件回避で ¥36-120万 節約 (historical ROI 1,000-3,600 倍 表現)</td>
  </tr>
  </tbody>
  </table>

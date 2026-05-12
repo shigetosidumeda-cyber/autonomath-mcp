@@ -40,7 +40,7 @@ artifact の構成:
 
 すべての API response に `X-Jpcite-Disclaimer` header と `_disclaimer` field が付与され、「公開情報の機械整形であり、税務判断・経営助言の最終責任は資格専門家にあること」を明示する。SDK / MCP server は disclaimer chain を再配布事業者にも継承させる。
 
-## ROI 試算
+## 節約額試算 (旧称 ROI 試算)
 
 50 社を月次伴走する診断士事務所のケース。
 
