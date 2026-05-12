@@ -99,6 +99,7 @@ PASS test_connect_pages_state_8_gyohou_fence
 
 ## 8. PR
 
-(PR open 後に追記)
-
-PR#: see PR description / branch `feat/jpcite_2026_05_12_wave46_fence_site_drift`
+- **PR #143**: https://github.com/shigetosidumeda-cyber/autonomath-mcp/pull/143
+- branch: `feat/jpcite_2026_05_12_wave46_fence_site_drift`
+- commit: `99989a8fe` (1 commit; 10 files changed, +214 / -12)
+- base: `origin/main` @ `3ac9f6524`
