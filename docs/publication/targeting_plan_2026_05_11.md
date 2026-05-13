@@ -19,10 +19,10 @@ PUBLISH_ORDER_2026_05_11.md の audit を踏まえた使い回し可能性。
 | draft 元 ID | green/yellow | 主たる切口 | そのまま使える target | 改稿で広げられる target |
 |------------|--------------|------------|-----------------------|-------------------------|
 | zenn_jpcite_mcp.md | green | MCP architecture + 4 surface 接続 + Evidence Packet 設計 | Zenn / dev.to (翻訳) / Hacker News (英訳) | Qiita / Hashnode / Lobste.rs |
-| note_jpcite_mcp.md | green | 起業ストーリー + 5 商品 + 7 業法 fence | note / 中小企業診断士界 (改稿) | Product Hunt (英訳) / 弁護士ドットコム |
+| note_jpcite_mcp.md | green | 起業ストーリー + 5 商品 + 8 業法 fence | note / 中小企業診断士界 (改稿) | Product Hunt (英訳) / 弁護士ドットコム |
 | prtimes_jpcite_release.md | green | 公式リリース文体、6 源泉横断、5 商品料金例 | PRTIMES / @Press (転用) / 日経電子版 ニュースリリース | 信用金庫月報 (改稿) |
 | zeirishi_shimbun_jpcite.md | yellow (¥3/req patch) | 税理士事務所 ROI、§52 fence 3 層 | 税理士新聞 / 月刊 税理 (改稿) | TKC 月報 |
-| tkc_journal_jpcite.md | yellow (¥3/req patch) | 7 業法 disclaimer 階層 + TKC 連携 | TKC 月報 / 月刊 会計人コース (改稿) | 日本公認会計士協会 機関誌 |
+| tkc_journal_jpcite.md | yellow (¥3/req patch) | 8 業法 disclaimer 階層 + TKC 連携 | TKC 月報 / 月刊 会計人コース (改稿) | 日本公認会計士協会 機関誌 |
 | gyosei_kaiho_jpcite.md | yellow (¥3/req patch) | 行政書士法 §19 fence + 許認可 chain | 月刊行政書士 / 月刊登記情報 (改稿) | 弁護士ドットコム (許認可文脈) |
 | ma_online_jpcite.md | yellow (¥3/req patch) | 中小 M&A DD recipe r03 + 3 業法 fence | M&A Online / 月刊 M&A (改稿) | 日本 M&A センターパートナー誌 / 信用金庫月報 |
 | shindanshi_kaiho_jpcite.md | yellow (¥3/req patch) | 認定支援機関 月次伴走 + 中小企業支援法 + §52 | 中小企業診断士界 / 月刊企業診断 | 信用金庫月報 (公的伴走文脈) |
@@ -73,7 +73,7 @@ PUBLISH_ORDER_2026_05_11.md の audit を踏まえた使い回し可能性。
 
 | field | value |
 |-------|-------|
-| 載りやすい angle | "Japanese public-info RAG MCP server — 139 tools, 9.4 GB SQLite FTS5, 1-line `uvx` install for Claude Code / Cursor". 英語圏 AI dev 向けに 「Japan-specific RAG benchmark」「MCP design patterns」軸で出す。 |
+| 載りやすい angle | "Japanese public-info RAG MCP server — 151 tools, 9.4 GB SQLite FTS5, 1-line `uvx` install for Claude Code / Cursor". 英語圏 AI dev 向けに 「Japan-specific RAG benchmark」「MCP design patterns」軸で出す。 |
 | 既存 draft 流用度 | **改稿要** (zenn draft 全文英訳 + Japan-specific 文脈の説明追加 / 英語 reader 向けに「なぜ日本特化が necessary か」の framing を冒頭に挿入) |
 | publish 手順 | (1) dev.to signup (GitHub) → (2) "Create new post" → markdown editor → (3) tags `mcp` `ai` `rag` `python` `showdev` → (4) Publish |
 | review SLA | 即時公開 (community moderation あり、spam フラグ無ければ即) |
@@ -161,8 +161,8 @@ PUBLISH_ORDER_2026_05_11.md の audit を踏まえた使い回し可能性。
 
 | field | value |
 |-------|-------|
-| 載りやすい angle | 「AI が法律 / 行政情報を出力する時の業法 fence — 弁護士法 §72 を軸に 7 業法 disclaimer 階層」。法務 AI 界隈は §72 抵触リスクが共通関心軸、jpcite の「個別法律相談を一切しない設計」+ disclaimer chain 継承 ToS が刺さる。 |
-| 既存 draft 流用度 | **改稿要** (note_jpcite_mcp.md + tkc_journal_jpcite.md の業法 fence sections を抜粋し、弁護士法 §72 軸で再構成。tkc draft の 7 業法 disclaimer 階層 sections (L9-L17 業法列挙 + L36-41 disclaimer 階層) を主体に rewrite) |
+| 載りやすい angle | 「AI が法律 / 行政情報を出力する時の業法 fence — 弁護士法 §72 を軸に 8 業法 disclaimer 階層」。法務 AI 界隈は §72 抵触リスクが共通関心軸、jpcite の「個別法律相談を一切しない設計」+ disclaimer chain 継承 ToS が刺さる。 |
+| 既存 draft 流用度 | **改稿要** (note_jpcite_mcp.md + tkc_journal_jpcite.md の業法 fence sections を抜粋し、弁護士法 §72 軸で再構成。tkc draft の 8 業法 disclaimer 階層 sections (L9-L18 業法列挙 + L36-41 disclaimer 階層) を主体に rewrite) |
 | publish 手順 | (1) 弁護士ドットコム編集部 (editor@bengo4.com 系) に寄稿企画書送付 → (2) 編集 review → (3) 採用なら bengo4.com/topics 掲載 |
 | review SLA | 2-4 週 |
 | fee | none |
@@ -217,7 +217,7 @@ PUBLISH_ORDER_2026_05_11.md の audit を踏まえた使い回し可能性。
 
 | field | value |
 |-------|-------|
-| 載りやすい angle | "Show HN: jpcite — Japanese public-info MCP server (11k+ subsidies, 9k+ laws, 1-line `uvx` for Claude Code)". HN は (a) MCP / Claude Code 文脈 (b) "Show HN" (c) Japan-specific RAG 視点で front page 到達可能性あり。Evidence Packet design (`source_url + fetched_at + content_hash`) + 7 業法 fence は LLM hallucination + legal compliance 文脈で関心を引く。 |
+| 載りやすい angle | "Show HN: jpcite — Japanese public-info MCP server (11k+ subsidies, 9k+ laws, 1-line `uvx` for Claude Code)". HN は (a) MCP / Claude Code 文脈 (b) "Show HN" (c) Japan-specific RAG 視点で front page 到達可能性あり。Evidence Packet design (`source_url + fetched_at + content_hash`) + 8 業法 fence は LLM hallucination + legal compliance 文脈で関心を引く。 |
 | 既存 draft 流用度 | **改稿要** (zenn draft を英訳し、3-paragraph 短縮版を HN 本文に / submit link は `https://jpcite.com` に / コメント欄で長文 detail) |
 | publish 手順 | (1) news.ycombinator.com signup (account age ≥ 30d 必要、karma 不問) → (2) "submit" → title "Show HN: jpcite — ..." → URL = `https://jpcite.com` → (3) 投稿後 30 分間 first-page chance、コメント返信で karma 集約 |
 | review SLA | 即時公開 (community vote ベース、flag 多いと shadow ban) |
@@ -283,7 +283,7 @@ PUBLISH_ORDER_2026_05_11.md の audit を踏まえた使い回し可能性。
 
 - 同一 angle (例: ¥3/req ROI) を複数 publication に出さず、各 publication で **load-bearing な切口** を 1 つに絞る:
   - 税理士新聞 = ROI + §52
-  - TKC 月報 = 7 業法 disclaimer
+  - TKC 月報 = 8 業法 disclaimer
   - 行政書士界 = §19 + chain
   - M&A Online = DD recipe r03 + 3 業法
   - 中小企業診断士界 = 認定支援機関 + 中小企業支援法

@@ -7,8 +7,9 @@ Background — 2026-04-25 CORS audit (a0a7316a311c3ffd9):
 * P3: ``_RequestContextMiddleware`` echoed the inbound ``X-Request-ID``
   header verbatim. A malicious client could inject ``\\nLOG_INJECT`` etc.
   into our structured logs / response headers. We now validate the
-  inbound id against ``^[A-Za-z0-9-]{8,64}$`` and replace it with a
-  fresh ``secrets.token_hex(8)`` if the format does not match.
+  inbound id against ``^[A-Za-z0-9-]{8,64}$`` and replace it with the
+  same 26-char ULID shape used by the error envelope if the format does
+  not match.
 """
 
 from __future__ import annotations
@@ -22,7 +23,7 @@ if TYPE_CHECKING:
     from fastapi.testclient import TestClient
 
 
-_TOKEN_HEX_8_RE = re.compile(r"^[0-9a-f]{16}$")
+_ULID_RE = re.compile(r"^[0-9A-HJKMNP-TV-Z]{26}$")
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
@@ -124,15 +125,14 @@ def test_request_id_invalid_format_replaced(client: TestClient) -> None:
 
     A header carrying ``@``, newline, or log-injection payload should
     NEVER appear in the response — we synthesise a fresh
-    ``secrets.token_hex(8)`` id instead.
+    a fresh ULID instead.
     """
     bad = "bad@id\nLOG_INJECT"
     resp = client.get("/healthz", headers={"X-Request-ID": bad})
     out = resp.headers.get("x-request-id", "")
     assert out != bad, "malicious X-Request-ID echoed back into response"
     assert "\n" not in out and "@" not in out, f"unsanitised id leaked: {out!r}"
-    # Format = secrets.token_hex(8) → 16 lowercase hex chars.
-    assert _TOKEN_HEX_8_RE.fullmatch(out), f"replacement id is not token_hex(8): {out!r}"
+    assert _ULID_RE.fullmatch(out), f"replacement id is not a ULID: {out!r}"
 
 
 def test_request_id_valid_format_echoed(client: TestClient) -> None:
@@ -144,9 +144,7 @@ def test_request_id_valid_format_echoed(client: TestClient) -> None:
 
 def test_main_mounts_each_literal_router_once() -> None:
     """Static guard against duplicate `app.include_router(foo_router)` mounts."""
-    src = (_REPO_ROOT / "src" / "jpintel_mcp" / "api" / "main.py").read_text(
-        encoding="utf-8"
-    )
+    src = (_REPO_ROOT / "src" / "jpintel_mcp" / "api" / "main.py").read_text(encoding="utf-8")
     names = re.findall(r"app\.include_router\((\w+_router)\b", src)
     duplicates = {name: count for name, count in Counter(names).items() if count > 1}
     assert duplicates == {}

@@ -95,6 +95,7 @@ def test_watch_envelope_contract(tmp_path, monkeypatch) -> None:
     _seed_db(db_path)
 
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(db_path))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", str(db_path))
     monkeypatch.setenv("AUTONOMATH_POLICY_UPSTREAM_ENABLED", "1")
     from jpintel_mcp.mcp.autonomath_tools import db as _db_mod
 
@@ -142,6 +143,7 @@ def test_watch_input_validation(tmp_path, monkeypatch) -> None:
     db_path = tmp_path / "test_autonomath.db"
     _seed_db(db_path)
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(db_path))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", str(db_path))
     from jpintel_mcp.mcp.autonomath_tools import db as _db_mod
 
     _db_mod.close_all()
@@ -184,6 +186,7 @@ def test_timeline_envelope_contract(tmp_path, monkeypatch) -> None:
     db_path = tmp_path / "test_autonomath.db"
     _seed_db(db_path)
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(db_path))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", str(db_path))
     from jpintel_mcp.mcp.autonomath_tools import db as _db_mod
 
     _db_mod.close_all()
@@ -233,6 +236,7 @@ def test_timeline_input_validation(tmp_path, monkeypatch) -> None:
     db_path = tmp_path / "test_autonomath.db"
     _seed_db(db_path)
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(db_path))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", str(db_path))
     from jpintel_mcp.mcp.autonomath_tools import db as _db_mod
 
     _db_mod.close_all()
@@ -315,6 +319,7 @@ def test_rest_module_imports_clean(tmp_path, monkeypatch) -> None:
     # Point AUTONOMATH_DB_PATH at a non-existent file; import must still succeed,
     # only first call to the impl would surface a db_unavailable envelope.
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(tmp_path / "missing.db"))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", str(tmp_path / "missing.db"))
     import importlib
 
     import jpintel_mcp.api.policy_upstream as mod
@@ -331,6 +336,7 @@ def test_rest_module_imports_clean(tmp_path, monkeypatch) -> None:
 
 def test_db_unavailable_envelope(tmp_path, monkeypatch) -> None:
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(tmp_path / "no_such.db"))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", str(tmp_path / "no_such.db"))
     from jpintel_mcp.mcp.autonomath_tools import db as _db_mod
 
     _db_mod.close_all()

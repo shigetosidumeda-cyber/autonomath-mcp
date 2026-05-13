@@ -32,12 +32,42 @@ def _reset_stats_cache(seeded_db: Path):
     _reset_stats_cache()
     c = sqlite3.connect(seeded_db)
     try:
+        source_snapshot = c.execute("SELECT unified_id, source_fetched_at FROM programs").fetchall()
+        usage_columns = [row[1] for row in c.execute("PRAGMA table_info(usage_events)")]
+        usage_snapshot = (
+            usage_columns,
+            c.execute("SELECT * FROM usage_events").fetchall(),
+        )
         c.execute("DELETE FROM usage_events")
         c.commit()
     finally:
         c.close()
-    yield
-    _reset_stats_cache()
+    try:
+        yield
+    finally:
+        c = sqlite3.connect(seeded_db)
+        try:
+            c.execute("UPDATE programs SET source_fetched_at = NULL")
+            c.executemany(
+                "UPDATE programs SET source_fetched_at = ? WHERE unified_id = ?",
+                [
+                    (source_fetched_at, unified_id)
+                    for unified_id, source_fetched_at in source_snapshot
+                ],
+            )
+            columns, rows = usage_snapshot
+            c.execute("DELETE FROM usage_events")
+            if rows:
+                col_sql = ",".join(columns)
+                placeholders = ",".join("?" * len(columns))
+                c.executemany(
+                    f"INSERT INTO usage_events({col_sql}) VALUES ({placeholders})",
+                    rows,
+                )
+            c.commit()
+        finally:
+            c.close()
+        _reset_stats_cache()
 
 
 def _live_count(seeded_db: Path, table: str) -> int:
@@ -119,37 +149,23 @@ def test_coverage_returns_per_dataset_counts(client, seeded_db: Path):
     assert body["generated_at"].endswith("Z")
 
 
-def test_coverage_tolerates_missing_table(client, seeded_db: Path):
+def test_coverage_tolerates_missing_table(client, monkeypatch: pytest.MonkeyPatch):
     """If a table isn't on this volume, the count returns 0 — never 500."""
-    c = sqlite3.connect(seeded_db)
-    try:
-        # Drop one of the optional expansion tables to force the fallback path.
-        c.execute("DROP TABLE IF EXISTS bids")
-        c.commit()
-    finally:
-        c.close()
-    # Bust the cache so the second call recomputes.
-    from jpintel_mcp.api.stats import _reset_stats_cache
+    from jpintel_mcp.api import stats
 
-    _reset_stats_cache()
-    try:
-        r = client.get("/v1/stats/coverage")
-        assert r.status_code == 200, r.text
-        assert r.json()["bids"] == 0
-    finally:
-        # Recreate a minimal bids table so other tests still see it (the real
-        # schema migration recreates it idempotently in prod, but tests share
-        # one DB so we must restore it here).
-        c = sqlite3.connect(seeded_db)
-        try:
-            c.execute(
-                "CREATE TABLE IF NOT EXISTS bids ("
-                "unified_id TEXT PRIMARY KEY, fetched_at TEXT, updated_at TEXT)"
-            )
-            c.commit()
-        finally:
-            c.close()
-        _reset_stats_cache()
+    monkeypatch.setattr(
+        stats,
+        "_COVERAGE_TABLES",
+        [
+            ("__stats_missing_bids__", key) if key == "bids" else (table, key)
+            for table, key in stats._COVERAGE_TABLES
+        ],
+    )
+    stats._reset_stats_cache()
+
+    r = client.get("/v1/stats/coverage")
+    assert r.status_code == 200, r.text
+    assert r.json()["bids"] == 0
 
 
 # ---------------------------------------------------------------------------
@@ -200,38 +216,59 @@ def test_freshness_returns_min_max_per_source(client, seeded_db: Path):
     assert prog["avg_interval_days"] == 5.0
 
 
-def test_freshness_zero_rows_returns_nulls(client, seeded_db: Path):
-    # Wipe both case_studies + loan_programs so the assertion holds even
-    # when other tests in the session have inserted rows.
+def test_freshness_zero_rows_returns_nulls(
+    client,
+    seeded_db: Path,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    # Point the two freshness entries at empty scratch tables so the
+    # zero-row branch is tested without deleting shared seeded rows.
+    empty_case_studies = "__stats_empty_case_studies"
+    empty_loan_programs = "__stats_empty_loan_programs"
     c = sqlite3.connect(seeded_db)
     try:
-        try:
-            c.execute("DELETE FROM case_studies")
-            c.execute("DELETE FROM loan_programs")
-            c.commit()
-        except sqlite3.OperationalError:
-            # Tables may not exist on a minimal DB; that's fine — they
-            # collapse to count=0 in the freshness rollup either way.
-            pass
+        c.execute(f"CREATE TABLE IF NOT EXISTS {empty_case_studies} (fetched_at TEXT)")
+        c.execute(f"CREATE TABLE IF NOT EXISTS {empty_loan_programs} (fetched_at TEXT)")
+        c.execute(f"DELETE FROM {empty_case_studies}")
+        c.execute(f"DELETE FROM {empty_loan_programs}")
+        c.commit()
     finally:
         c.close()
+
+    from jpintel_mcp.api import stats
+
+    monkeypatch.setattr(
+        stats,
+        "_FRESHNESS_SOURCES",
+        [
+            (empty_case_studies, column, key)
+            if key == "case_studies"
+            else (empty_loan_programs, column, key)
+            if key == "loan_programs"
+            else (table, column, key)
+            for table, column, key in stats._FRESHNESS_SOURCES
+        ],
+    )
+    stats._reset_stats_cache()
+
     try:
-        from jpintel_mcp.api.stats import _reset_stats_cache
-
-        _reset_stats_cache()
-    except Exception:
-        pass
-
-    r = client.get("/v1/stats/freshness")
-    assert r.status_code == 200
-    body = r.json()
-    # case_studies / loan_programs have 0 rows on the test DB after the
-    # explicit wipe above.
-    cs = body["sources"]["case_studies"]
-    assert cs["count"] == 0
-    assert cs["min"] is None
-    assert cs["max"] is None
-    assert cs["avg_interval_days"] is None
+        r = client.get("/v1/stats/freshness")
+        assert r.status_code == 200
+        body = r.json()
+        cs = body["sources"]["case_studies"]
+        assert cs["count"] == 0
+        assert cs["min"] is None
+        assert cs["max"] is None
+        assert cs["avg_interval_days"] is None
+    finally:
+        c = sqlite3.connect(seeded_db)
+        try:
+            c.execute(f"DROP TABLE IF EXISTS {empty_case_studies}")
+            c.execute(f"DROP TABLE IF EXISTS {empty_loan_programs}")
+            c.commit()
+        finally:
+            c.close()
+        stats._reset_stats_cache()
 
 
 # ---------------------------------------------------------------------------

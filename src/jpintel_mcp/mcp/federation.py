@@ -24,9 +24,8 @@ The response declares:
     program-search → application-kit) we participate in
 
 NO LLM API call. Pure manifest assembly from local module state + a
-small handcurated allow-list. Production-safe under CLAUDE.md rule
-"never import anthropic/openai/google.generativeai/claude_agent_sdk in
-src/".
+small handcurated allow-list. Production-safe under the CLAUDE.md rule
+that src/ must not take direct dependencies on external LLM SDKs.
 
 Schema version: ``mcp-federation-discovery/v1``. Forward-compat: a
 client that doesn't recognise a future field MUST ignore it (RFC 8259
@@ -197,8 +196,8 @@ def build_federation_manifest() -> dict[str, Any]:
             "sampling": True,
             "resources": True,
             "prompts": True,
-            "tool_count_runtime": 146,
-            "tool_count_manifest": 139,
+            "tool_count_runtime": 151,
+            "tool_count_manifest": 151,
         },
         "jpcite_compatible_tools": tools,
         "allied_servers": ALLIED_SERVERS,

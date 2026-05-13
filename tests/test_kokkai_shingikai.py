@@ -226,6 +226,7 @@ def test_search_kokkai_utterance_tool_integration(tmp_path, monkeypatch) -> None
 
     # Point the MCP layer at our test DB BEFORE any imports of the tool module.
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(db_path))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", str(db_path))
     monkeypatch.setenv("AUTONOMATH_KOKKAI_ENABLED", "1")
     # Ensure DB module re-reads the env var by killing thread-local state.
     from jpintel_mcp.mcp.autonomath_tools import db as _db_mod

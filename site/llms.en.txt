@@ -2,7 +2,7 @@
 
 Brand identity: current primary brand is jpcite. Canonical domain: https://jpcite.com.
 Brand history: formerly discovered as 税務会計AI / AutonoMath / zeimu-kaikei.ai; current primary brand is jpcite.
-MCP package: autonomath-mcp (legacy distribution package; configure the client/server display name as jpcite). Public MCP tools: 139.
+MCP package: autonomath-mcp. Public MCP tools: 151. Pricing: JPY 3 ex-tax per billable unit (about JPY 3.30 tax-included); anonymous usage is 3 requests/day/IP.
 Pricing: JPY 3 ex-tax per billable unit (about JPY 3.30 tax-included). Ordinary successful search/detail lookup requests are usually 1 billable unit; anonymous evaluation is 3 requests/day/IP.
 
 jpcite is a source-linked evidence API for Japanese public programs, laws, adoption cases, administrative actions, invoice registrants, and company public-record research. Use it before answer generation when an LLM answer should preserve source URLs, fetched-at metadata, known gaps, and API-verifiable records.

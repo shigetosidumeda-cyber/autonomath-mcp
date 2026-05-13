@@ -39,7 +39,7 @@
 | **現在の対応度** | **green** |
 | **registry URL** | (a) `https://modelcontextprotocol.io/registry` (正式) (b) `https://mcp.so/` (community) (c) `https://mcpregistry.io/` (community) |
 | **必要 manifest** | `server.json` (root 直下、`$schema=https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json` に準拠、name=`io.github.shigetosidumeda-cyber/autonomath-mcp` v0.3.4 既に整備済) |
-| **AI agent crawl 用** | `https://jpcite.com/.well-known/mcp.json` (jpcite_ai_discovery_v1.0 schema、generated_at=2026-05-07、139 tools、auth/pricing/recurring_workflows/trust_surfaces 完備) |
+| **AI agent crawl 用** | `https://jpcite.com/.well-known/mcp.json` (jpcite_ai_discovery_v1.0 schema、generated_at=2026-05-07、151 tools、auth/pricing/recurring_workflows/trust_surfaces 完備) |
 | **必要 asset** | logo SVG (mark.svg) + 1024 png (推奨) + README screenshot |
 | **必要 metadata** | name / description / version / repository / packages[pypi=autonomath-mcp] / categories=[government,legal,finance,data,compliance] / license=MIT |
 | **必要 verification** | (a) GitHub OAuth login (`shigetosidumeda-cyber/autonomath-mcp` owner) (b) `.well-known/mcp.json` が `https://jpcite.com` で 200 を返すこと |
@@ -123,7 +123,7 @@
 | **review SLA** | Private = 即時、Public marketplace = Anthropic Partnerships team 招待制 (operator から `info@bookyou.net` 経由で `partnerships@anthropic.com` に inbound 申請可だが個別 SLA) |
 | **掲載後の更新方法** | Connector の URL 不変、`/mcp` endpoint 側で tools 追加すれば自動反映、Instructions は Project 編集画面から手動 |
 | **規約遵守** | Anthropic Usage Policies: 助言 禁止 (fence 既設置)、PII 取得 禁止 (anon 経路は IP のみ)、Enterprise Customer Agreement の DPA 要求は **operator が zero-touch 方針につき marketplace public は当面 private シェア中心** |
-| **失敗時の救済** | (a) `https://api.jpcite.com/mcp` への CORS 403 → `JPINTEL_CORS_ORIGINS` に `https://claude.ai` `https://*.claude.ai` 追加 (b) `X-API-Key` 認証失敗 → `jc_` prefix キーが Stripe Checkout 経由で発行されているか確認 (c) Public marketplace 招待が来ない → operator から partnerships@anthropic.com に簡潔な inbound (1 段落: Bookyou + jpcite + 139 tools + ¥3/req metered + 100% organic) |
+| **失敗時の救済** | (a) `https://api.jpcite.com/mcp` への CORS 403 → `JPINTEL_CORS_ORIGINS` に `https://claude.ai` `https://*.claude.ai` 追加 (b) `X-API-Key` 認証失敗 → `jc_` prefix キーが Stripe Checkout 経由で発行されているか確認 (c) Public marketplace 招待が来ない → operator から partnerships@anthropic.com に簡潔な inbound (1 段落: Bookyou + jpcite + 151 tools + ¥3/req metered + 100% organic) |
 | **即修正 top-3** | (1) operator Claude.ai Pro/Team アカウントで Project を 1 つ作って Connector を生で配線 → 動作 screenshot 撮影 (2) `JPINTEL_CORS_ORIGINS` Fly secret に `https://claude.ai` 追加 (3) `partnerships@anthropic.com` への short inbound メール起案 (本文 280字以内) |
 
 ---

@@ -225,6 +225,7 @@ def seeded_peer_db(
     conn.close()
 
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(db_path))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", str(db_path))
     from jpintel_mcp.config import settings
 
     monkeypatch.setattr(settings, "autonomath_db_path", db_path)

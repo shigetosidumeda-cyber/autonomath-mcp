@@ -756,7 +756,14 @@ def get_source_manifest(
         )
 
     try:
-        resolved = _resolve_program(am_conn, program_id)
+        try:
+            resolved = _resolve_program(am_conn, program_id)
+        except sqlite3.OperationalError as exc:
+            logger.warning("source_manifest schema unavailable: %s", exc)
+            raise HTTPException(
+                status.HTTP_503_SERVICE_UNAVAILABLE,
+                "source manifest schema unavailable",
+            ) from exc
         if resolved is None:
             log_usage(
                 conn,
@@ -778,7 +785,14 @@ def get_source_manifest(
                 },
             )
         canonical_id, base = resolved
-        body = _build_manifest(am_conn, canonical_id, base)
+        try:
+            body = _build_manifest(am_conn, canonical_id, base)
+        except sqlite3.OperationalError as exc:
+            logger.warning("source_manifest view unavailable: %s", exc)
+            raise HTTPException(
+                status.HTTP_503_SERVICE_UNAVAILABLE,
+                "source manifest schema unavailable",
+            ) from exc
     finally:
         am_conn.close()
 

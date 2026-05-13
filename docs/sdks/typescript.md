@@ -158,7 +158,7 @@ const open = programs.results
 
 ## MCP usage
 
-MCP server (139 tools, protocol 2025-06-18) を Claude Desktop から起動する例です。
+MCP server (151 tools, protocol 2025-06-18) を Claude Desktop から起動する例です。
 
 For Claude Desktop, drop into `claude_desktop_config.json`:
 
@@ -168,7 +168,7 @@ For Claude Desktop, drop into `claude_desktop_config.json`:
     "jpcite": {
       "command": "autonomath-mcp",
       "args": [],
-      "env": { "JPCITE_API_KEY": "am_..." }
+      "env": { "JPCITE_API_KEY": "jc_..." }
     }
   }
 }

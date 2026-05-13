@@ -233,7 +233,7 @@ def test_wegener_static_ux_audit_blockers_stay_fixed() -> None:
 
     for rel in ("site/pricing.html", "site/index.html", "site/data-freshness.html"):
         text = (REPO_ROOT / rel).read_text(encoding="utf-8", errors="ignore")
-        if 'overflow-x:auto;-webkit-overflow-scrolling:touch;' not in text:
+        if "overflow-x:auto;-webkit-overflow-scrolling:touch;" not in text:
             offenders.append(f"{rel}: missing mobile table overflow wrapper")
 
     assert offenders == [], "\n".join(offenders)
@@ -348,9 +348,7 @@ def test_ax_5pillars_does_not_overclaim_scoped_token_enforcement() -> None:
 
 def test_openapi_discovery_tiers_match_committed_public_specs() -> None:
     discovery = json.loads(
-        (REPO_ROOT / "site" / ".well-known" / "openapi-discovery.json").read_text(
-            encoding="utf-8"
-        )
+        (REPO_ROOT / "site" / ".well-known" / "openapi-discovery.json").read_text(encoding="utf-8")
     )
     spec_paths = {
         "full": REPO_ROOT / "site" / "docs" / "openapi" / "v1.json",
@@ -369,9 +367,7 @@ def test_openapi_discovery_tiers_match_committed_public_specs() -> None:
         tier = tiers[tier_name]
         assert tier["path_count"] == len(spec["paths"])
         assert tier["size_bytes"] == spec_path.stat().st_size
-        assert tier["sha256_prefix"] == hashlib.sha256(
-            spec_text.encode("utf-8")
-        ).hexdigest()[:16]
+        assert tier["sha256_prefix"] == hashlib.sha256(spec_text.encode("utf-8")).hexdigest()[:16]
 
 
 def test_llms_json_hashes_match_public_llms_text_files() -> None:
@@ -461,7 +457,9 @@ def test_common_docs_audience_page_keeps_mkdocs_search_runtime() -> None:
     assert 'data-md-component="search-query"' in body
     assert '"search": "../../assets/javascripts/workers/search' in body
     assert (REPO_ROOT / "site" / "docs" / "search" / "search_index.json").exists()
-    assert any((REPO_ROOT / "site" / "docs" / "assets" / "javascripts" / "workers").glob("search.*.min.js"))
+    assert any(
+        (REPO_ROOT / "site" / "docs" / "assets" / "javascripts" / "workers").glob("search.*.min.js")
+    )
 
 
 def test_404_search_form_routes_to_playground_search() -> None:
@@ -494,7 +492,7 @@ def test_widget_page_uses_static_demo_and_clear_owner_billing_copy() -> None:
     assert "ここではブラウザ用キー (<code>wgt_live_...</code>) や" in body
     assert "<code>/v1/widget/*</code> を使わず" in body
     assert not re.search(r"(?m)^\s*<div\s+data-jpcite-widget\b", body)
-    assert "サーバー/API 用の <code>am_...</code> key とは別物です" in body
+    assert "サーバー/API 用の <code>jc_...</code> key とは別物です" in body
     assert "課金はサイト訪問者ではなく" in body
     assert "公開API/Playgroundの匿名評価枠とは別" in body
     assert "path、query、末尾 slash は不要" in body
@@ -818,6 +816,22 @@ def test_artifact_discovery_urls_point_to_static_page() -> None:
     assert "https://jpcite.com/artifacts" not in head
 
 
+def test_roi_calculator_legacy_stub_targets_cost_saving_calculator() -> None:
+    body = (REPO_ROOT / "site" / "roi_calculator.html").read_text(encoding="utf-8")
+    head = body.split("</head>", 1)[0]
+    expected = "https://jpcite.com/tools/cost_saving_calculator"
+    expected_path = "/tools/cost_saving_calculator"
+
+    assert (REPO_ROOT / "site" / "tools" / "cost_saving_calculator.html").exists()
+    assert f'<meta http-equiv="refresh" content="0; url={expected_path}">' in head
+    assert '<meta name="robots" content="noindex, follow">' in head
+    assert f'<link rel="canonical" href="{expected}">' in head
+    assert f'<meta property="og:url" content="{expected}">' in head
+    assert f'<link rel="alternate" hreflang="ja" href="{expected}">' in head
+    assert f'<link rel="alternate" hreflang="x-default" href="{expected}">' in head
+    assert "https://jpcite.com/roi_calculator" not in head
+
+
 def test_robots_sitemap_block_aligns_with_sitemap_index() -> None:
     """robots.txt Sitemap entries and sitemap-index.xml children must agree.
 
@@ -958,7 +972,9 @@ def test_sitemap_shards_do_not_advertise_noindex_html_pages() -> None:
 
 
 def test_public_readiness_surfaces_do_not_expose_internal_or_topup_copy() -> None:
-    surfaces = PUBLIC_READINESS_SURFACES + [REPO_ROOT / "site" / "assets" / "rum_funnel_collector.js"]
+    surfaces = PUBLIC_READINESS_SURFACES + [
+        REPO_ROOT / "site" / "assets" / "rum_funnel_collector.js"
+    ]
     banned_patterns = [
         ("legacy codename", re.compile(r"autonomath|jpintel|zeimu-kaikei", re.IGNORECASE)),
         ("internal wave marker", re.compile(r"\bWave\s*\d+|\bW[0-9]+\b")),
@@ -969,7 +985,9 @@ def test_public_readiness_surfaces_do_not_expose_internal_or_topup_copy() -> Non
 
     for path in surfaces:
         rel = path.relative_to(REPO_ROOT).as_posix()
-        for lineno, line in enumerate(path.read_text(encoding="utf-8", errors="ignore").splitlines(), start=1):
+        for lineno, line in enumerate(
+            path.read_text(encoding="utf-8", errors="ignore").splitlines(), start=1
+        ):
             for label, pattern in banned_patterns:
                 if pattern.search(line):
                     offenders.append(f"{rel}:L{lineno}:{label}: {line.strip()[:180]}")

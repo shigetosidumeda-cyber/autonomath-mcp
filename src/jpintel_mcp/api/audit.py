@@ -1226,8 +1226,11 @@ def _render_pdf_weasyprint(
     """
     try:
         from weasyprint import HTML
-    except ImportError:
-        _log.info("workpaper_weasyprint_missing — falling back to PDF1.4 renderer")
+    except (ImportError, OSError) as exc:
+        _log.info(
+            "workpaper_weasyprint_unavailable — falling back to PDF1.4 renderer: %s",
+            exc,
+        )
         return False
     try:
         html_str = _workpaper_template_html(

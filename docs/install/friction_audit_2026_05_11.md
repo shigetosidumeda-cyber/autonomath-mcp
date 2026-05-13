@@ -36,7 +36,7 @@ Probe time: 2026-05-11 12:20 JST。本番 https://api.jpcite.com + https://jpcit
 | 2. step 数 | ✗ 5 step | uvx install → register (`claude mcp add ...`) → restart → verify → first prompt。Cursor は更に「Settings → MCP 緑 dot 待ち」が UI 介在 |
 | 3. error 経路 | △ | `claude mcp add` 失敗時に「uvx が PATH に無い」を CLI が指摘しない、user 自力で `which uvx` 必要 |
 | 4. 依存物 | ✗ | uv + Python 3.11+ + Claude Code CLI 最新 + ~150MB PyPI download (autonomath-mcp wheel 1.5MB だが依存 transitive で fastmcp/httpx/sqlalchemy 等) |
-| 5. first call 質 | ✓ | `search_programs` が source_url + fetched_at + tier 付きで返る。139 tools tool list の説得力高 |
+| 5. first call 質 | ✓ | `search_programs` が source_url + fetched_at + tier 付きで返る。151 tools tool list の説得力高 |
 | 6. discoverability after install | △ | `mcp.json` `resources` に `facts_registry` + `fence.md` 2 件のみ。`recurring_agent_workflows` JSON は存在するが MCP `resources` から exposeされていない (`mcp://jpcite/workflows.json` 未登録) |
 
 **pinch point**:
@@ -134,7 +134,7 @@ memory `feedback_autonomath_no_ui` により AI dev install path から **除外
 Before:
 ```bash
 curl "https://api.jpcite.com/v1/programs/search?q=設備投資&prefecture=東京都" \
-  -H "X-API-Key: am_xxx"
+  -H "X-API-Key: jc_xxx"
 ```
 
 After:
@@ -190,8 +190,8 @@ curl --get "https://api.jpcite.com/v1/programs/search" \
 - `ai-plugin.json:6,9` → `jc_...` (新規発行 prefix)
 - `connect/cursor.html:188,201` → `sk_...`
 - `connect/claude-code.html:187,201` → `sk_...`
-- `README.md:114` → `am_xxx`
-- `playground.html:815` → `am_...`
+- `README.md:114` → `jc_xxx`
+- `playground.html:815` → `jc_...`
 
 これは memory `reference_secrets_store` の secrets sync 漏れ。
 
@@ -200,8 +200,8 @@ curl --get "https://api.jpcite.com/v1/programs/search" \
 具体: 5 file に `replace_all`:
 - `connect/cursor.html`: `sk_xxxxx` → `jc_xxxxx`、説明文 `sk_...` → `jc_... (legacy sk_/am_ も valid)`
 - `connect/claude-code.html`: 同上
-- `README.md:114`: `am_xxx` → `jc_xxx`
-- `playground.html:815`: `am_...` → `jc_...`
+- `README.md:114`: `jc_xxx` → `jc_xxx`
+- `playground.html:815`: `jc_...` → `jc_...`
 
 ---
 

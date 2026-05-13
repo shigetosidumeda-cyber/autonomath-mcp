@@ -526,10 +526,25 @@ def _ensure_customer_webhooks_table(seeded_db: Path):
         c.execute("DELETE FROM webhook_deliveries")
         c.execute("DELETE FROM customer_webhooks")
         c.execute("DELETE FROM programs WHERE unified_id LIKE 'EP-%'")
+        updated_at_snapshot = c.execute("SELECT unified_id, updated_at FROM programs").fetchall()
         c.commit()
     finally:
         c.close()
-    yield
+    try:
+        yield
+    finally:
+        c = sqlite3.connect(seeded_db)
+        try:
+            c.executemany(
+                "UPDATE programs SET updated_at = ? WHERE unified_id = ?",
+                [(updated_at, unified_id) for unified_id, updated_at in updated_at_snapshot],
+            )
+            c.execute("DELETE FROM programs WHERE unified_id LIKE 'EP-%'")
+            c.execute("DELETE FROM webhook_deliveries")
+            c.execute("DELETE FROM customer_webhooks")
+            c.commit()
+        finally:
+            c.close()
 
 
 class _MockResponse:

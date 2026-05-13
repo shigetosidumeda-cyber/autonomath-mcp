@@ -4,11 +4,11 @@
 <!-- CWV-HARDENED -->
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
-<title>AI Agent 開発者向け jpcite — MCP / REST 139 tools</title>
-<meta name="description" content="AI agent developer 向け jpcite。日本の補助金/税/融資/法令を 139 MCP tools で。stdio transport、Claude Desktop / Cursor で即動作。匿名 3/日で評価 → ¥3/billable unit 従量。">
+<title>AI Agent 開発者向け jpcite — MCP / REST 151 tools</title>
+<meta name="description" content="AI agent developer 向け jpcite。日本の補助金/税/融資/法令を 151 MCP tools で。stdio transport、Claude Desktop / Cursor で即動作。匿名 3/日で評価 → ¥3/billable unit 従量。">
 
 <meta property="og:title" content="AI agent developer 向け jpcite">
-<meta property="og:description" content="MCP / REST 統合 + Claude Desktop 即動作 + 139 tools。">
+<meta property="og:description" content="MCP / REST 統合 + Claude Desktop 即動作 + 151 tools。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/audiences/dev">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -19,7 +19,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="AI agent developer 向け jpcite">
-<meta name="twitter:description" content="MCP server (139 tools) + REST API。Claude Desktop で即動作。">
+<meta name="twitter:description" content="MCP server (151 tools) + REST API。Claude Desktop で即動作。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/audiences/dev">
@@ -52,7 +52,7 @@
   "@type": "Service",
   "serviceType": "MCP / REST API for AI agent developers",
   "name": "jpcite for AI agent developers",
-  "description": "AI agent developer 向け jpcite。Japanese subsidy / tax / loan / law の evidence API + MCP server。139 tools、stdio transport、protocol 2025-06-18。Claude Desktop / Cursor / Cline は MCP、ChatGPT Custom GPT は OpenAPI Actions で利用。",
+  "description": "AI agent developer 向け jpcite。Japanese subsidy / tax / loan / law の evidence API + MCP server。151 tools、stdio transport、protocol 2025-06-18。Claude Desktop / Cursor / Cline は MCP、ChatGPT Custom GPT は OpenAPI Actions で利用。",
   "provider": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
@@ -224,7 +224,7 @@
  <pre class="code-block" style="margin:24px 0;font-size:13px;line-height:1.55;"><code>// claude_desktop_config.json
 { "mcpServers": { "jpcite": {
  "command": "uvx", "args": ["autonomath-mcp"],
- "env": { "JPCITE_API_KEY": "am_..." }
+ "env": { "JPCITE_API_KEY": "jc_..." }
 }}}</code></pre>
 
  <div class="cta-row">
@@ -237,16 +237,16 @@
 
  <section class="features" aria-labelledby="cost-title">
  <div class="container">
- <h2 id="cost-title" style="margin-bottom:16px;">試作 1 endpoint あたりの cost saving (純 LLM vs jpcite ¥3/billable unit)</h2>
- <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: AI 開発者 / Claude Desktop 個人 試作 想定。 「純 LLM」は外部 evidence 無しの汎用 LLM 出力で hallucination 検出 + 一次 URL 手動探索 + schema 整形まで含めた工数 (開発者時給 ¥10,000/h)。 詳細は <a href="/tools/cost_saving_examples.md">canonical cost saving examples</a>。</p>
+ <h2 id="cost-title" style="margin-bottom:16px;">試作 1 endpoint あたりの cost saving API fee delta reference (external model/search API fee vs jpcite ¥3/billable unit)</h2>
+ <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: AI 開発者 / Claude Desktop 個人 試作 想定。 外部 baseline は model token + web search API fee の明示前提です。実際の請求額は provider, cache, prompt, tool settings に依存します。詳細は <a href="/tools/cost_saving_examples.md">canonical API fee delta examples</a>。</p>
  <div style="overflow-x:auto;">
  <table style="width:100%;border-collapse:collapse;font-size:14px;">
  <thead>
  <tr style="background:var(--bg-subtle,#fafafa);border-bottom:2px solid var(--border);">
  <th style="padding:12px;text-align:left;">case</th>
- <th style="padding:12px;text-align:left;">純 LLM 工数 × 単価</th>
+ <th style="padding:12px;text-align:left;">external API fee baseline</th>
  <th style="padding:12px;text-align:left;">jpcite req 数 × ¥3</th>
- <th style="padding:12px;text-align:left;">cost saving</th>
+ <th style="padding:12px;text-align:left;">API fee delta</th>
  </tr>
  </thead>
  <tbody>

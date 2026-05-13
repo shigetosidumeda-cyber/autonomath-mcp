@@ -112,11 +112,13 @@ const top5 = programs.sort((a, b) => b.fit_score - a.fit_score).slice(0, 5);
 - `list_adoptions` (過去採択履歴の参照)
 
 ## 関連 recipe
-- [r01-tax-firm-monthly-review](../r01-tax-firm-monthly-review/) — 月次レビュー、決算月以外の標準フロー
-- [r07-shindanshi-monthly-companion](../r07-shindanshi-monthly-companion/) — 診断士伴走、申請支援への引き継ぎ
-- [r25-adoption-bulk-export](../r25-adoption-bulk-export/) — 採択 bulk export、類似事例の根拠資料
+- [r01-tax-firm-monthly-review](../r01-tax-firm-monthly-review/index.md) — 月次レビュー、決算月以外の標準フロー
+- [r07-shindanshi-monthly-companion](../r07-shindanshi-monthly-companion/index.md) — 診断士伴走、申請支援への引き継ぎ
+- [r25-adoption-bulk-export](../r25-adoption-bulk-export/index.md) — 採択 bulk export、類似事例の根拠資料
 
 ## billable_units 試算
+
+- API fee delta: API fee delta の前提と再現式は [docs/canonical/cost_saving_examples.md](../../canonical/cost_saving_examples.md) を参照。
 - 1 法人 1 回 = 12 units × ¥3 = ¥36 / 法人 / 決算期
 - 顧問先 100 社、3 月決算が 60 社想定 = 60 × ¥36 = ¥2,160 / 期
 - 月次レビュー (r01) と組み合わせて年 13 回稼働 = ¥3,600 / 法人 / 年

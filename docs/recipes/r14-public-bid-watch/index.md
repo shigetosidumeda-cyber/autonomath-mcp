@@ -119,14 +119,14 @@ fs.writeFileSync("bid_digest.csv", csv.join("\n"));
 - `bid_history` (競合企業の過去 3 年落札動向)
 
 ## 関連 recipe
-- [r03-sme-ma-public-dd](../r03-sme-ma-public-dd/) — M&A DD、対象会社の公共調達依存度の確認
-- [r25-adoption-bulk-export](../r25-adoption-bulk-export/) — 採択 bulk export、競合動向の四半期集計
+- [r03-sme-ma-public-dd](../r03-sme-ma-public-dd/index.md) — M&A DD、対象会社の公共調達依存度の確認
+- [r25-adoption-bulk-export](../r25-adoption-bulk-export/index.md) — 採択 bulk export、競合動向の四半期集計
 
 ## billable_units 試算
 - 1 朝 20 units × ¥3 = ¥60 / 日
 - 月 20 営業日 = ¥1,200 / 月、税込 ¥1,320
 - 年 240 営業日 = ¥14,400 / 年、税込 ¥15,840
-- 節約 (純 LLM vs jpcite 標準従量料金): 月 20 営業日 × 朝 20 unit で、純 LLM は約 ¥4,000/月 (1 朝 cycle ¥200 = 入札 RSS 統合 + filter + tool 6) に対し jpcite は ¥1,200/月 (400 req × ¥3) → 節約 約 ¥2,800/月 / 営業日あたり ¥140 (cf. `docs/canonical/cost_saving_examples.md` case 3 同系)
+- API fee delta: 月 20 営業日 × 朝 20 unit で、外部 model/search API fee は約 ¥4,000/月 (1 朝 cycle ¥200 = 入札 RSS 統合 + filter + tool 6) に対し jpcite は ¥1,200/月 (400 req × ¥3) → API fee delta 約 ¥2,800/月 / 営業日あたり ¥140 (cf. `docs/canonical/cost_saving_examples.md` case 3 同系)
 
 ## 商業利用条件
 - PDL v1.0 (政府調達情報、出典明記) + CC-BY-4.0 (jpcite 編集)

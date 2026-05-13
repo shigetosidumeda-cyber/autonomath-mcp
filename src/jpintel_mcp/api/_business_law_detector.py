@@ -17,8 +17,7 @@ regex compiled once.
 
 No-LLM invariant
 ----------------
-- ``import anthropic`` / ``openai`` / ``google.generativeai`` /
-  ``claude_agent_sdk`` are all forbidden in this module (CI guard
+- Direct LLM SDK dependencies are forbidden in this module (CI guard
   ``tests/test_no_llm_in_production.py``). Only ``re``, ``unicodedata``,
   ``json``, ``pathlib``, ``functools`` from stdlib + ``pykakasi`` for
   ひらがな bypass mitigation.

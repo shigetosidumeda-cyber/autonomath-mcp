@@ -32,8 +32,8 @@ PROGRESS_JS_PATH = REPO_ROOT / "site" / "assets" / "billing_progress.js"
 # 4-step linear flow: each entry is (step id, JA label fragment, primary href).
 EXPECTED_STEPS: list[tuple[str, str, str]] = [
     ("free", "無料で試す", "/playground.html"),
-    ("signup", "サインイン", "/signin.html"),
-    ("topup", "topup", "/wallet.html"),
+    ("signup", "サインイン", "/login.html"),
+    ("topup", "topup", "/dashboard.html#billing-section"),
     ("use", "API", "/dashboard.html"),
 ]
 
@@ -92,9 +92,7 @@ def test_onboarding_step_order_is_linear(onboarding_html: str) -> None:
         idx = onboarding_html.find(f'data-step-id="{step_id}"')
         assert idx >= 0, f"step '{step_id}' missing in HTML"
         positions.append(idx)
-    assert positions == sorted(positions), (
-        f"steps appear out of order: {positions}"
-    )
+    assert positions == sorted(positions), f"steps appear out of order: {positions}"
 
 
 def test_onboarding_has_progress_bar(onboarding_html: str) -> None:
@@ -112,17 +110,13 @@ def test_onboarding_has_payment_rails(onboarding_html: str) -> None:
 def test_onboarding_has_skip_optional(onboarding_html: str) -> None:
     """Each non-final step provides an in-flow skip link (sub-task 6)."""
     skip_markers = re.findall(r'data-skip="step-\d"', onboarding_html)
-    assert len(skip_markers) >= 3, (
-        f"expected >=3 skip links, found {len(skip_markers)}"
-    )
+    assert len(skip_markers) >= 3, f"expected >=3 skip links, found {len(skip_markers)}"
 
 
 def test_onboarding_has_cost_saving_reminders(onboarding_html: str) -> None:
     """Each step body must include a ob-saving block (cost saving reminder)."""
     occurrences = onboarding_html.count('class="ob-saving"')
-    assert occurrences >= 4, (
-        f"expected >=4 cost saving callouts, found {occurrences}"
-    )
+    assert occurrences >= 4, f"expected >=4 cost saving callouts, found {occurrences}"
 
 
 # ---------------------------------------------------------------------------
@@ -132,9 +126,13 @@ def test_onboarding_has_cost_saving_reminders(onboarding_html: str) -> None:
 
 def test_progress_js_defines_four_steps(progress_js: str) -> None:
     for step_id, _label, _href in EXPECTED_STEPS:
-        assert f'id: "{step_id}"' in progress_js, (
-            f"billing_progress.js missing step id: {step_id}"
-        )
+        assert f'id: "{step_id}"' in progress_js, f"billing_progress.js missing step id: {step_id}"
+
+
+def test_progress_js_preserves_billing_payment_step_aliases(progress_js: str) -> None:
+    assert "normalizeStepId" in progress_js
+    assert 'id === "billing" || id === "payment"' in progress_js
+    assert 'return "topup"' in progress_js
 
 
 def test_progress_js_has_idle_detection(progress_js: str) -> None:
@@ -158,9 +156,7 @@ def test_progress_js_has_no_external_deps(progress_js: str) -> None:
     ]
     lowered = progress_js.lower()
     for token in forbidden:
-        assert token not in lowered, (
-            f"billing_progress.js must not contain '{token}'"
-        )
+        assert token not in lowered, f"billing_progress.js must not contain '{token}'"
 
 
 # ---------------------------------------------------------------------------
@@ -255,15 +251,11 @@ FORBIDDEN_LEGACY_BRAND = ["税務会計AI", "zeimu-kaikei.ai", "AutonoMath"]
 def test_onboarding_no_legacy_brand_in_body(onboarding_html: str) -> None:
     # Strip JSON-LD blocks — historical bridge markers are allowed there but
     # not in user-visible body copy (feedback_legacy_brand_marker).
-    body_match = re.search(
-        r"<body\b[^>]*>(.*)</body>", onboarding_html, flags=re.DOTALL
-    )
+    body_match = re.search(r"<body\b[^>]*>(.*)</body>", onboarding_html, flags=re.DOTALL)
     assert body_match, "onboarding.html missing <body>"
     body = body_match.group(1)
     for token in FORBIDDEN_LEGACY_BRAND:
-        assert token not in body, (
-            f"feedback_legacy_brand_marker: '{token}' must not appear in body"
-        )
+        assert token not in body, f"feedback_legacy_brand_marker: '{token}' must not appear in body"
 
 
 # ---------------------------------------------------------------------------

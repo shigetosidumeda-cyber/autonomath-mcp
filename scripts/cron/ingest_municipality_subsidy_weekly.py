@@ -60,9 +60,14 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
-from scripts.etl._playwright_helper import fetch_with_fallback  # Wave 36 wire
-
 import httpx
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+# Wave 36 wire marker.
+from scripts.etl._playwright_helper import fetch_with_fallback  # noqa: E402
 
 logger = logging.getLogger("jpintel.cron.municipality_subsidy_weekly")
 
@@ -416,7 +421,9 @@ async def fetch_and_ingest(
             # JS-render program detail pages — Playwright recovers many of these).
             fb = await fetch_with_fallback(url)
             if fb.source == "playwright" and fb.text:
-                logger.info("municipality Playwright fallback rescued %s (%d chars)", url, len(fb.text))
+                logger.info(
+                    "municipality Playwright fallback rescued %s (%d chars)", url, len(fb.text)
+                )
             return "http_error", {}
 
     if resp.status_code in (404, 410):

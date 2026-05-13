@@ -60,7 +60,12 @@ from urllib.parse import urlparse
 
 import httpx
 
-from scripts.etl._playwright_helper import fetch_with_fallback_sync  # Wave 36 wire
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+# Wave 36 wire marker.
+from scripts.etl._playwright_helper import fetch_with_fallback_sync  # noqa: E402
 
 logger = logging.getLogger("jpcite.cron.enforcement")
 
@@ -92,7 +97,6 @@ MAX_ITEMS_PER_FEED = 200
 HTTPX_TIMEOUT = httpx.Timeout(30.0, connect=10.0)
 USER_AGENT = "jpcite-enforcement-poll/0.3.5 (+https://jpcite.com)"
 
-_REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_AUTONOMATH_DB = _REPO_ROOT / "autonomath.db"
 DEFAULT_JPINTEL_DB = _REPO_ROOT / "data" / "jpintel.db"
 
@@ -291,12 +295,14 @@ def _parse_feed(body: str) -> list[dict[str, str]]:
         link_m = _LINK_RE.search(block)
         desc_m = _DESC_RE.search(block)
         date_m = _PUBDATE_RE.search(block)
-        out.append({
-            "title": _strip_cdata(title_m.group(1)) if title_m else "",
-            "link": _strip_cdata(link_m.group(1)) if link_m else "",
-            "description": _strip_cdata(desc_m.group(1)) if desc_m else "",
-            "pub_date": _strip_cdata(date_m.group(1)) if date_m else "",
-        })
+        out.append(
+            {
+                "title": _strip_cdata(title_m.group(1)) if title_m else "",
+                "link": _strip_cdata(link_m.group(1)) if link_m else "",
+                "description": _strip_cdata(desc_m.group(1)) if desc_m else "",
+                "pub_date": _strip_cdata(date_m.group(1)) if date_m else "",
+            }
+        )
     return out
 
 
@@ -307,14 +313,18 @@ def _fetch(client: httpx.Client, label: str, url: str) -> list[dict[str, str]]:
     try:
         resp = client.get(url, headers={"User-Agent": USER_AGENT})
     except httpx.HTTPError as exc:
-        logger.warning("press fetch failed ministry=%s err=%s — trying Playwright fallback", label, exc)
+        logger.warning(
+            "press fetch failed ministry=%s err=%s — trying Playwright fallback", label, exc
+        )
         # Wave 36: Playwright fallback on transport failure.
         fb = fetch_with_fallback_sync(url)
         if fb.source == "playwright" and fb.text:
             return _parse_feed(fb.text)
         return []
     if resp.status_code != 200:
-        logger.warning("press feed=%s HTTP %d — trying Playwright fallback", label, resp.status_code)
+        logger.warning(
+            "press feed=%s HTTP %d — trying Playwright fallback", label, resp.status_code
+        )
         # Wave 36: Playwright fallback on 4xx/5xx.
         fb = fetch_with_fallback_sync(url)
         if fb.source == "playwright" and fb.text:

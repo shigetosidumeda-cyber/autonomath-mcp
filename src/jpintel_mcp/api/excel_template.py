@@ -106,9 +106,7 @@ def _rate_floor_check(key_hash: str) -> None:
     _excel_rate_state[key_hash] = now
 
 
-def _load_program_substrate(
-    conn: sqlite3.Connection, program_id: str
-) -> dict[str, Any]:
+def _load_program_substrate(conn: sqlite3.Connection, program_id: str) -> dict[str, Any]:
     """Pull the program row + adoption stats + application rounds."""
     out: dict[str, Any] = {
         "program": None,
@@ -122,9 +120,7 @@ def _load_program_substrate(
         (program_id,),
     ).fetchone()
     if row is None:
-        raise HTTPException(
-            status.HTTP_404_NOT_FOUND, f"program_id={program_id} not found"
-        )
+        raise HTTPException(status.HTTP_404_NOT_FOUND, f"program_id={program_id} not found")
     out["program"] = dict(row)
 
     for tbl in ("adoption_records", "case_studies"):
@@ -166,7 +162,7 @@ def _render_xlsx(
 ) -> tuple[bytes, int]:
     try:
         from openpyxl import Workbook  # type: ignore[import-untyped]
-        from openpyxl.styles import Alignment, Font, PatternFill  # type: ignore[import-untyped]
+        from openpyxl.styles import Font, PatternFill  # type: ignore[import-untyped]
     except ImportError as exc:  # pragma: no cover
         raise HTTPException(
             status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -181,8 +177,16 @@ def _render_xlsx(
     s1.title = "制度サマリ"
     s1.append(["項目", "内容"])
     p = substrate["program"]
-    for k in ("program_id", "title", "authority", "tier", "source_url",
-             "summary", "max_amount_yen", "source_fetched_at"):
+    for k in (
+        "program_id",
+        "title",
+        "authority",
+        "tier",
+        "source_url",
+        "summary",
+        "max_amount_yen",
+        "source_fetched_at",
+    ):
         if k in p:
             s1.append([k, str(p.get(k, ""))])
     for cell in s1[1]:
@@ -241,22 +245,26 @@ def _render_xlsx(
         rounds = substrate.get("application_rounds", [])
         if rounds:
             for r in rounds:
-                s4.append([
-                    str(r.get("round_id", "")),
-                    str(r.get("application_open_at", "")),
-                    str(r.get("application_close_at", "")),
-                    str(r.get("status", "")),
-                ])
+                s4.append(
+                    [
+                        str(r.get("round_id", "")),
+                        str(r.get("application_open_at", "")),
+                        str(r.get("application_close_at", "")),
+                        str(r.get("status", "")),
+                    ]
+                )
         else:
             today = datetime.now(UTC).date()
             for i in range(12):
                 month_start = (today.replace(day=1) + timedelta(days=32 * i)).replace(day=1)
-                s4.append([
-                    f"placeholder-{i+1}",
-                    month_start.isoformat(),
-                    (month_start + timedelta(days=27)).isoformat(),
-                    "予定未公開 — 制度ページを直接確認のこと",
-                ])
+                s4.append(
+                    [
+                        f"placeholder-{i + 1}",
+                        month_start.isoformat(),
+                        (month_start + timedelta(days=27)).isoformat(),
+                        "予定未公開 — 制度ページを直接確認のこと",
+                    ]
+                )
         for cell in s4[1]:
             cell.fill = header_fill
             cell.font = header_font
@@ -303,8 +311,10 @@ def _upload_to_r2(program_id: str, blob: bytes) -> tuple[str, str, str]:
             fh.write(blob)
         return key, f"/v1/excel/inline/{excel_id}", expires_at
     try:
-        from scripts.cron._r2_client import upload
         from pathlib import Path
+
+        from scripts.cron._r2_client import upload
+
         tmp = Path(f"/tmp/{excel_id}.xlsx")  # noqa: S108
         tmp.write_bytes(blob)
         upload(tmp, key)
@@ -328,7 +338,9 @@ def _upload_to_r2(program_id: str, blob: bytes) -> tuple[str, str, str]:
 # ---------------------------------------------------------------------------
 
 
-@router.post("/application_estimate", response_model=ExcelEstimateResponse, response_model_by_alias=True)
+@router.post(
+    "/application_estimate", response_model=ExcelEstimateResponse, response_model_by_alias=True
+)
 async def application_estimate(
     request: Request,
     program_id: str,
@@ -362,10 +374,13 @@ async def application_estimate(
         endpoint="excel.application_estimate",
         quantity=EXCEL_UNIT_COUNT,
         request_id=getattr(request.state, "request_id", None),
+        strict_metering=True,
     )
     logger.info(
         "excel.application_estimate program_id=%s sheets=%d bytes=%d",
-        program_id, sheet_count, len(blob),
+        program_id,
+        sheet_count,
+        len(blob),
     )
     return ExcelEstimateResponse(
         excel_id=excel_id,

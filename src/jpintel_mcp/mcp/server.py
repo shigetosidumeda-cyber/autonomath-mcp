@@ -1839,7 +1839,7 @@ def check_exclusions(
         ),
     ],
 ) -> dict[str, Any]:
-    """COMPLIANCE: 併給可否を機械的に判定する — 候補制度セットに対して 181 本の併給禁止 / 前提要件ルールを走らせ、違反するものだけ返す (given a candidate set of program IDs, run all 181 補助金 exclusion / prerequisite rules and return only the violations). This answers the core "can I combine A and B?" / "do I need certification X before applying for Y?" question in one call — LLM による PDF 脚注パースの hallucination を構造的に排除する。
+    """COMPLIANCE: 併給可否を機械的に判定する — 候補制度セットに対して 181 本の併給禁止 / 前提要件ルールを走らせ、違反するものだけ返す (given a candidate set of program IDs, run all 181 補助金 exclusion / prerequisite rules and return only the violations). This answers the core "can I combine A and B?" / "do I need certification X before applying for Y?" question in one call — source-linked rules reduce manual PDF footnote parsing misses.
 
     Typical queries:
       - "IT導入補助金と事業再構築補助金は併用できる?"

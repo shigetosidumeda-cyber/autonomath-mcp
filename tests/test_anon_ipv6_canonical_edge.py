@@ -13,31 +13,13 @@ trips both checks.
 from __future__ import annotations
 
 import json
-import shutil
-import subprocess
-import textwrap
-from pathlib import Path
 
-import pytest
-
+from tests.edge_ts_runner import run_edge_node
 from tests.test_anon_ipv6_canonical import CANONICAL_VECTORS
-
-REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 def _run_node(script: str) -> str:
-    if shutil.which("node") is None:
-        pytest.skip("node is required for edge IPv6 canonicaliser tests")
-    proc = subprocess.run(
-        ["node", "--input-type=module", "-e", textwrap.dedent(script)],
-        cwd=REPO_ROOT,
-        capture_output=True,
-        text=True,
-        timeout=20,
-        check=False,
-    )
-    assert proc.returncode == 0, proc.stderr + proc.stdout
-    return proc.stdout
+    return run_edge_node(script, timeout=20).stdout
 
 
 def test_edge_canonical_ipv6_slash_64_matches_origin() -> None:

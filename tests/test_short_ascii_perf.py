@@ -83,6 +83,7 @@ def _rotate_client_ip_per_call(client: TestClient) -> None:
         n = next(counter)
         ip = f"198.51.100.{(n % 250) + 1}"
         headers = dict(kwargs.pop("headers", {}) or {})
+        headers.setdefault("Fly-Client-IP", ip)
         headers.setdefault("X-Forwarded-For", ip)
         return original_get(url, headers=headers, **kwargs)
 

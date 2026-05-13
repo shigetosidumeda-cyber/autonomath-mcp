@@ -147,10 +147,14 @@ def filter_redistributable(
     allowed: list[dict[str, Any]] = []
     blocked: list[dict[str, Any]] = []
     for row in rows:
-        # `dict.get` returns None on missing key; None is not in the
-        # allow set so it falls through to `blocked`. This is exactly
-        # the safe-default behavior we want.
+        # Prefer an explicit row license. If route rows only carry a
+        # source_url, resolve it through the universal envelope's current
+        # license resolver so tests and callers can share one lookup policy.
         value = row.get(license_field)
+        if (not value or value in BLOCKED_LICENSES) and row.get("source_url"):
+            from jpintel_mcp.api import _universal_envelope
+
+            value = _universal_envelope.license_for_url(row.get("source_url"))
         if isinstance(value, str) and value in REDISTRIBUTABLE_LICENSES:
             allowed.append(row)
         else:
@@ -183,6 +187,10 @@ def assert_no_blocked(
     counts: dict[str, int] = {}
     for row in blocked:
         v = row.get(license_field)
+        if (not v or v in BLOCKED_LICENSES) and row.get("source_url"):
+            from jpintel_mcp.api import _universal_envelope
+
+            v = _universal_envelope.license_for_url(row.get("source_url"))
         key = v if isinstance(v, str) and v else "<missing>"
         counts[key] = counts.get(key, 0) + 1
 

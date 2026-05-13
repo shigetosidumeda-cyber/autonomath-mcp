@@ -50,10 +50,6 @@ __all__ = [
     "get_flag",
     "get_bool_flag",
     "get_int_flag",
-    "get_bool",
-    "get_int",
-    "get_list",
-    "DEFAULT_ALIAS_MAP",
 ]
 
 
@@ -71,16 +67,22 @@ DEFAULT_ALIAS_MAP: Final[dict[str, tuple[str, ...]]] = {
 }
 
 
-def _read(key: str) -> str | None:
-    """Return env value if set and non-empty, else None.
+_MISSING: Final = object()
+
+
+def _read(key: str, *, allow_empty: bool = False) -> str | None:
+    """Return env value if set, with optional empty-string preservation.
 
     We treat empty strings as unset so a stray ``export AUTONOMATH_X=`` in CI
     does not pin the legacy key when ``JPCITE_X`` is the real source of truth.
+    The original Wave 46.D keyword-default API treated an explicitly set empty
+    canonical value as meaningful, so ``allow_empty`` preserves that
+    destruction-free compatibility path for callers using that signature.
     """
     raw = os.environ.get(key)
     if raw is None:
         return None
-    if raw == "":
+    if raw == "" and not allow_empty:
         return None
     return raw
 
@@ -97,8 +99,8 @@ def _emit_deprecation(legacy: str, canonical: str, *, stacklevel: int) -> None:
 def get_flag(
     primary: str,
     legacy: str | None = None,
-    default: str | None = None,
     *extra_legacy: str,
+    default: object = _MISSING,
 ) -> str | None:
     """Look up an env flag, preferring canonical ``primary`` then legacy alias(es).
 
@@ -109,10 +111,12 @@ def get_flag(
     legacy:
         Primary legacy alias (``AUTONOMATH_*`` / ``JPINTEL_*``) — checked next.
         ``None`` means no legacy fallback (canonical-only lookup).
+    extra_legacy:
+        Either extra legacy aliases (Wave 46.D keyword-default signature) or,
+        when ``default=`` is not supplied, the first positional value is treated
+        as the Wave 47.A positional default.
     default:
         Returned when neither key is set (or both are empty strings).
-    extra_legacy:
-        Additional legacy aliases tried in order after the primary legacy.
 
     Returns
     -------
@@ -127,7 +131,18 @@ def get_flag(
     * If ``primary == legacy`` (a typo guard or transition complete), the
       function still works and behaves as a single ``os.environ.get`` call.
     """
-    value = _read(primary)
+    keyword_default = default is not _MISSING
+    if keyword_default:
+        fallback = default
+        aliases = extra_legacy
+    elif extra_legacy:
+        fallback = extra_legacy[0]
+        aliases = extra_legacy[1:]
+    else:
+        fallback = None
+        aliases = ()
+
+    value = _read(primary, allow_empty=keyword_default)
     if value is not None:
         return value
     if legacy is not None:
@@ -136,16 +151,22 @@ def get_flag(
             if legacy != primary:
                 _emit_deprecation(legacy, primary, stacklevel=2)
             return value
-    for alias in extra_legacy:
+    for alias in aliases:
         value = _read(alias)
         if value is not None:
             _emit_deprecation(alias, primary, stacklevel=2)
             return value
-    return default
+    if fallback is _MISSING:
+        return None
+    return fallback if fallback is None or isinstance(fallback, str) else str(fallback)
 
 
-_TRUTHY: Final = frozenset({"1", "true", "TRUE", "True", "yes", "YES", "on", "ON", "y", "Y", "t", "T"})
-_FALSY: Final = frozenset({"0", "false", "FALSE", "False", "no", "NO", "off", "OFF", "n", "N", "f", "F", ""})
+_TRUTHY: Final = frozenset(
+    {"1", "true", "TRUE", "True", "yes", "YES", "on", "ON", "y", "Y", "t", "T"}
+)
+_FALSY: Final = frozenset(
+    {"0", "false", "FALSE", "False", "no", "NO", "off", "OFF", "n", "N", "f", "F", ""}
+)
 
 
 def _truthy(raw: str) -> bool:
@@ -235,9 +256,9 @@ def get_list(
 ) -> list[str]:
     """CSV variant. Empty-string env yields an empty list (not default)."""
     if not legacy_names:
-        raw = get_flag(new_name, None, None)
+        raw = get_flag(new_name, None, default=None)
     else:
-        raw = get_flag(new_name, legacy_names[0], None, *legacy_names[1:])
+        raw = get_flag(new_name, legacy_names[0], *legacy_names[1:], default=None)
     if raw is None:
         return list(default or [])
     parts = [piece.strip() for piece in raw.split(separator)]

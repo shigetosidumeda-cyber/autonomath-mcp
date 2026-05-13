@@ -8,7 +8,6 @@ from fastapi import FastAPI, HTTPException
 from fastapi.testclient import TestClient
 
 from jpintel_mcp.api.deps import get_db, hash_api_key
-from jpintel_mcp.api.intel_competitor_landscape import router
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -30,8 +29,10 @@ def competitor_landscape_client(
     monkeypatch.setattr(autonomath_db, "AUTONOMATH_DB_PATH", missing_autonomath)
     autonomath_db.close_all()
 
+    import jpintel_mcp.api.intel_competitor_landscape as landscape_mod
+
     app = FastAPI()
-    app.include_router(router)
+    app.include_router(landscape_mod.router)
 
     def override_db():
         conn = sqlite3.connect(seeded_db, check_same_thread=False)

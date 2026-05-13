@@ -111,11 +111,13 @@ console.log(d.packet);
 - `pack_construction` (公開版 23、建設業 industry pack)
 
 ## 関連 recipe
-- [r06-sharoushi-grant-match](../r06-sharoushi-grant-match/) — 社労士助成金マッチ
-- [r07-shindanshi-monthly-companion](../r07-shindanshi-monthly-companion/) — 診断士月次伴走
-- [r13-shihoshoshi-registry-watch](../r13-shihoshoshi-registry-watch/) — 司法書士 registry watch
+- [r06-sharoushi-grant-match](../r06-sharoushi-grant-match/index.md) — 社労士助成金マッチ
+- [r07-shindanshi-monthly-companion](../r07-shindanshi-monthly-companion/index.md) — 診断士月次伴走
+- [r13-shihoshoshi-registry-watch](../r13-shihoshoshi-registry-watch/index.md) — 司法書士 registry watch
 
 ## billable_units 試算
+
+- API fee delta: API fee delta の前提と再現式は [docs/canonical/cost_saving_examples.md](../../canonical/cost_saving_examples.md) を参照。
 - 1 案件 6 units × ¥3 = ¥18 / 案件
 - 月 25 案件 = ¥450 / 月、税込 ¥495
 - 月 50 案件 (大手事務所) = ¥900 / 月、税込 ¥990

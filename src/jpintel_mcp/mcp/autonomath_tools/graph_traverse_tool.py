@@ -47,7 +47,9 @@ from .error_envelope import make_error
 logger = logging.getLogger("jpintel.mcp.autonomath.graph_traverse")
 
 # Env-gated registration. Default is "1" (on); flip to "0" to roll back.
-_ENABLED = get_flag("JPCITE_GRAPH_TRAVERSE_ENABLED", "AUTONOMATH_GRAPH_TRAVERSE_ENABLED", "1") == "1"
+_ENABLED = (
+    get_flag("JPCITE_GRAPH_TRAVERSE_ENABLED", "AUTONOMATH_GRAPH_TRAVERSE_ENABLED", "1") == "1"
+)
 
 # All 15 canonical relation_type values present in v_am_relation_all
 # (verified 2026-04-25 via SELECT DISTINCT relation_type). Used to
@@ -465,6 +467,11 @@ if _ENABLED:
             out["error"] = err["error"]
 
         return out
+
+    def _graph_traverse_unwrapped(*args: Any, **kwargs: Any) -> dict[str, Any]:
+        return graph_traverse(*args, **kwargs)
+
+    graph_traverse.__wrapped__ = _graph_traverse_unwrapped  # type: ignore[attr-defined]
 
 
 __all__ = ["_ENABLED"]

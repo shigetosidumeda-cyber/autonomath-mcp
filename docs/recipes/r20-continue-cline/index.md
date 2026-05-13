@@ -64,7 +64,7 @@ subprocess.run(["uvx", "autonomath-mcp", "--help"], check=True)
   "fetched_at": "2026-05-11T09:00:00Z",
   "source_url": "https://api.jpcite.com/mcp",
   "tools_loaded": ["search_programs", "get_corp_360", "check_invoice_status",
-                    "list_adoptions", "get_enforcement", "(...合計 139 tool)"],
+                    "list_adoptions", "get_enforcement", "(...合計 151 tool)"],
   "extension": "Continue 0.9.x or Cline 1.4.x",
   "sample_chat": [
     {
@@ -92,10 +92,10 @@ subprocess.run(["uvx", "autonomath-mcp", "--help"], check=True)
 - `get_program_detail` (補助金原文、要綱本文の即時参照)
 
 ## 関連 recipe
-- [r16-claude-code-30sec](../r16-claude-code-30sec/) — Claude Code 30 秒接続、CLI 派エンジニア向け
-- [r17-chatgpt-custom-gpt](../r17-chatgpt-custom-gpt/) — ChatGPT Custom GPT、ブラウザ chatbot 化
-- [r18-cursor-mcp-setup](../r18-cursor-mcp-setup/) — Cursor MCP 接続、Cursor IDE 派
-- [r19-codex-agents-sdk](../r19-codex-agents-sdk/) — Codex Agents SDK、Codex CLI 派
+- [r16-claude-code-30sec](../r16-claude-code-30sec/index.md) — Claude Code 30 秒接続、CLI 派エンジニア向け
+- [r17-chatgpt-custom-gpt](../r17-chatgpt-custom-gpt/index.md) — ChatGPT Custom GPT、ブラウザ chatbot 化
+- [r18-cursor-mcp-setup](../r18-cursor-mcp-setup/index.md) — Cursor MCP 接続、Cursor IDE 派
+- [r19-codex-agents-sdk](../r19-codex-agents-sdk/index.md) — Codex Agents SDK、Codex CLI 派
 
 ## billable_units 試算
 - 1 req 1 unit × ¥3 = ¥3

@@ -100,7 +100,7 @@ Googlebot / Googlebot-Image / Bingbot / DuckDuckBot / Google-Extended / GPTBot /
 - `contact.{email=info@bookyou.net, operator_legal_name=Bookyou株式会社, operator_corporate_number=8010001213708, operator_jct_registration=T8010001213708, operator_address, support_sla_hours=24}` ✓ matches T-number
 - `resources[2]` (facts_registry + legal/fence.md) ✓
 
-**Tool count**: `mcp-server.json` carries 139 tool entries — matches CLAUDE.md manifest hold-at-139 contract (runtime cohort = 146 is honest internal-state-only).
+**Tool count**: `mcp-server.json` carries 151 tool entries — matches CLAUDE.md manifest hold-at-139 contract (runtime cohort = 146 is honest internal-state-only).
 
 **Score**: 10/10. Reference implementation for the genre.
 

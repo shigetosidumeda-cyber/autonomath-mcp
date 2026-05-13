@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
 <title>はじめての jpcite — 4 step オンボーディング</title>
-<meta name="description" content="jpcite を最短で使い始める 4 step linear ガイド: (1) 匿名 3 req/日 無料で試す → (2) GitHub OAuth または magic link でサインイン → (3) Stripe 従量課金と上限設定を確認 → (4) API/MCP を呼ぶ。階層プラン・最低利用期間・解約違約金なし。">
+<meta name="description" content="jpcite を最短で使い始める 4 step linear ガイド: (1) 匿名 3 req/日 無料で試す → (2) GitHub OAuth または magic link でサインイン → (3) Credit Wallet topup と Stripe / x402 の支払い経路を確認 → (4) API/MCP を呼ぶ。階層プラン・最低利用期間・解約違約金なし。">
 
 <meta property="og:title" content="はじめての jpcite — 4 step オンボーディング">
 <meta property="og:description" content="¥0 から始めて従量課金まで 4 step。ステップごとに「次のアクション」と利用量の目安を提示。">
@@ -39,7 +39,7 @@
   "@context": "https://schema.org",
   "@type": "HowTo",
   "name": "jpcite を 4 step で使い始める",
-  "description": "匿名 3 req/日 無料 → GitHub OAuth または magic link サインイン → Stripe 従量課金と上限設定を確認 → API/MCP 呼出。階層プラン・最低利用期間・解約違約金なし。",
+	  "description": "匿名 3 req/日 無料 → GitHub OAuth または magic link サインイン → Credit Wallet topup と Stripe / x402 の支払い経路を確認 → API/MCP 呼出。階層プラン・最低利用期間・解約違約金なし。",
   "totalTime": "PT3M",
   "estimatedCost": {"@type": "MonetaryAmount", "currency": "JPY", "value": "0"},
   "step": [
@@ -55,14 +55,14 @@
       "position": 2,
       "name": "Step 2 — GitHub OAuth または magic link で 1 click サインイン",
       "text": "GitHub アカウント連携または email magic link で 1 click サインイン。Stripe アカウントは後段で必要なときだけ作成。",
-      "url": "https://jpcite.com/dashboard.html"
+      "url": "https://jpcite.com/login.html"
     },
     {
       "@type": "HowToStep",
       "position": 3,
-      "name": "Step 3 — 従量課金と上限設定を確認",
-      "text": "Stripe 従量課金、月次上限、request 単位の予算上限を確認します。",
-      "url": "https://jpcite.com/pricing.html"
+	      "name": "Step 3 — Credit Wallet topup と支払い経路を確認",
+	      "text": "Credit Wallet の前払い topup、Stripe 従量課金、x402 自動支払い、月次上限、request 単位の予算上限を確認します。",
+	      "url": "https://jpcite.com/dashboard.html#billing-section"
     },
     {
       "@type": "HowToStep",
@@ -193,24 +193,26 @@
       <p class="ob-saving">
         <strong>迷子ゼロ要素:</strong> ダッシュボード上部に常に「次の step は X」と「残り req / 課金設定」を表示。30 秒操作なしで hint modal が出ます。
       </p>
-      <a class="ob-cta" href="/dashboard.html" data-cta="step-2">サインインする &rarr;</a>
-      <a class="ob-skip" href="#step-billing" data-skip="step-2">先に課金設定を見る</a>
+      <a class="ob-cta" href="/login.html" data-cta="step-2">サインインする &rarr;</a>
+      <a class="ob-skip" href="#step-topup" data-skip="step-2">先に topup を見る</a>
     </article>
 
-    <article class="ob-step" id="step-billing" data-step-id="billing" aria-labelledby="ob-step-3-h">
-	      <h2 id="ob-step-3-h"><span class="ob-step-num">3</span>従量課金と上限設定を確認する</h2>
+    <article class="ob-step" id="step-topup" data-step-id="topup" aria-labelledby="ob-step-3-h">
+	      <h2 id="ob-step-3-h"><span class="ob-step-num">3</span>Credit Wallet topup と支払い経路を確認する</h2>
 	      <p class="ob-desc">
-		        標準は Stripe の従量課金です。月次上限、<code>X-Cost-Cap-JPY</code>、<code>Idempotency-Key</code> を使うと、広い batch や fan-out でも費用を実行前に止められます。
+		        Credit Wallet で小さく前払い topup できます。必要に応じて Stripe 従量課金と x402 自動支払いも選べます。月次上限、<code>X-Cost-Cap-JPY</code>、<code>Idempotency-Key</code> を使うと、広い batch や fan-out でも費用を実行前に止められます。
 	      </p>
 	      <ul style="margin:0 0 14px;padding-left:18px;font-size:14px;line-height:1.7;color:var(--text,#111827);">
+	        <li><strong>Credit Wallet</strong>: 前払い topup と spending alert で小さく開始</li>
 	        <li><strong>Stripe 従量課金</strong>: 月末締め・適格請求書自動発行 (T8010001213708)</li>
+	        <li><strong>x402</strong>: agent-to-agent 実行での自動支払い経路</li>
 	        <li><strong>月次上限</strong>: ダッシュボードで上限到達時に API を停止</li>
 	        <li><strong>request 上限</strong>: <code>X-Cost-Cap-JPY</code> で高額実行を直前に停止</li>
 	      </ul>
 	      <p class="ob-saving">
 	        <strong>確認ポイント:</strong> まず小さい request 数で試し、広い実行は事前見積もりと上限を入れてから動かしてください。
 	      </p>
-	      <a class="ob-cta" href="/pricing.html" data-cta="step-3">料金を確認する &rarr;</a>
+	      <a class="ob-cta" href="/dashboard.html#billing-section" data-cta="step-3">課金設定を確認する &rarr;</a>
       <a class="ob-skip" href="#step-use" data-skip="step-3">先に API キーを見る</a>
     </article>
 
@@ -230,8 +232,8 @@
     <div class="ob-recap">
       <strong>4 step を一行で:</strong>
       <a href="/playground.html?flow=evidence3">1. 試す</a> &rarr;
-      <a href="/dashboard.html">2. サインイン</a> &rarr;
-      <a href="/pricing.html">3. 課金設定</a> &rarr;
+      <a href="/login.html">2. サインイン</a> &rarr;
+      <a href="/dashboard.html#billing-section">3. Credit Wallet topup</a> &rarr;
       <a href="/dashboard.html#api-key-section">4. API 呼出</a>。
       迷ったら下部の feedback widget から info@bookyou.net へ 1 click 送信できます。
     </div>

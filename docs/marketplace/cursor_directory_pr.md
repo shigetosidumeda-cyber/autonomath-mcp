@@ -35,7 +35,7 @@
       "auth": "X-API-Key"
     }
   },
-  "tool_count": 139,
+  "tool_count": 151,
   "first_party_only": true,
   "no_llm_inside": true,
   "schema_version": "mcp/2025-06-18",
@@ -48,7 +48,7 @@
 ## PR title
 
 ```
-Add jpcite — Japanese public-program evidence API (139 MCP tools, first-party citation)
+Add jpcite — Japanese public-program evidence API (151 MCP tools, first-party citation)
 ```
 
 ## PR body (operator pastes this on GitHub)
@@ -58,7 +58,7 @@ Add jpcite — Japanese public-program evidence API (139 MCP tools, first-party 
 
 Adds **jpcite** — a Japanese public-program evidence API + MCP server — to cursor.directory.
 
-- **139 MCP tools** at default gates (146 runtime, 7 in source pending manifest bump)
+- **151 MCP tools** at default gates (151 runtime, 7 in source pending manifest bump)
 - **11,601 補助金・融資・税制・認定 programs** + 6,493 laws full-text + 2,065 court_decisions + 1,185 行政処分
 - **First-party citations only** — every row carries `source_url`, `source_fetched_at`, `corpus_snapshot_id`, `known_gaps`. Aggregators are banned from the source pool.
 - **No LLM inside.** Production code never imports anthropic / openai / google.generativeai / claude_agent_sdk. CI-enforced by `tests/test_no_llm_in_production.py`.
@@ -83,7 +83,7 @@ Cursor agents working on Japanese SMB / compliance / 補助金申請 / 税務 / 
 
 ## Verification
 
-- ✅ MCP manifest live at https://jpcite.com/mcp-server.json (139 tools)
+- ✅ MCP manifest live at https://jpcite.com/mcp-server.json (151 tools)
 - ✅ Registry manifest live at https://jpcite.com/server.json
 - ✅ OpenAPI agent profile at https://jpcite.com/openapi.agent.json (34 paths)
 - ✅ Streamable HTTP transport at https://api.jpcite.com/v1/mcp

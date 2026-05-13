@@ -9,7 +9,7 @@ jpcite のトライアル (キー末尾 {{key_last4}}) は {{expires_at}} に自
 有料プランの内訳:
 
 - ¥3/req 税別 (税込 ¥3.30) 完全従量、最低金額・契約なし
-- 139 MCP tools / REST API すべて利用可能 (トライアルと同じ)
+- 151 MCP tools / REST API すべて利用可能 (トライアルと同じ)
 - 追加で月次請求書 (適格請求書 / インボイス制度対応) を Stripe より自動発行
 - 解約はいつでも Stripe Customer Portal から (即時解約、違約金なし)
 

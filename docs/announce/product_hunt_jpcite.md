@@ -21,7 +21,7 @@ jpcite
 ```
 Evidence API for Japan's public programs — 11,601 subsidies, 9,484
 statutes, 1,185 enforcement records, 13,801 invoice registrants.
-182 OpenAPI paths + 139 MCP tools. ¥3/req metered. Built for AI
+182 OpenAPI paths + 151 MCP tools. ¥3/req metered. Built for AI
 agents (Claude/ChatGPT/Cursor) with source_url + content_hash
 on every payload.
 ```
@@ -53,7 +53,7 @@ matches this 法人?' returns a confident-sounding 2024 hallucination.
 jpcite is the evidence layer underneath. 11,601 programs + 9,484
 statutes + 2,065 court decisions + 1,185 enforcement records +
 13,801 invoice registrants, every row with source_url +
-fetched_at + content_hash. 182 OpenAPI paths and 139 MCP tools so
+fetched_at + content_hash. 182 OpenAPI paths and 151 MCP tools so
 agents can probe by 法人番号 / 業種 / 都道府県 / 制度 ID under one
 evidence-packet contract.
 
@@ -63,7 +63,7 @@ binary on Fly.io Tokyo, Stripe metered (¥3/req ≈ $0.02), 3 req/IP/day
 free, no monthly fee, 1-click cancel.
 
 Honest framing: this is regulated information. We do NOT generate
-individualized professional advice — 7 業法 fences (税理士法 §52,
+individualized professional advice — 8 業法 fences (税理士法 §52,
 弁護士法 §72, 金商法 §29, ...) gate the surface so the API stays
 on the 'evidence retrieval' side and the licensed professional
 stays on the 'advice' side. Every response carries an

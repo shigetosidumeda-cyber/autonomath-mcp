@@ -54,9 +54,13 @@ try:
 except ImportError:
     httpx = None  # type: ignore[assignment]
 
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 # Wave 36 wire marker — explicit import for the e2e wire test (`tests/
 # test_playwright_wire_e2e.py` greps for `fetch_with_fallback`).
-from scripts.etl._playwright_helper import fetch_with_fallback  # noqa: F401
+from scripts.etl._playwright_helper import fetch_with_fallback  # noqa: E402, F401
 
 _pw_helper = None
 
@@ -71,7 +75,7 @@ def _load_playwright_helper():
     return _pw_helper
 
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = _REPO_ROOT
 DEFAULT_DB = REPO_ROOT / "autonomath.db"
 SCREENSHOT_DIR = Path("/tmp/jpcite_compat_matrix_pw")
 
@@ -231,8 +235,7 @@ def main() -> int:
         verified_until: dict[str, str] = {}
         try:
             cur.execute(
-                "SELECT source_url, last_verified FROM am_source "
-                "WHERE last_verified IS NOT NULL"
+                "SELECT source_url, last_verified FROM am_source WHERE last_verified IS NOT NULL"
             )
             for src_url, last_v in cur.fetchall():
                 if src_url and last_v:

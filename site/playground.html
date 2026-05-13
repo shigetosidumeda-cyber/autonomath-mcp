@@ -82,7 +82,7 @@
     {"@type": "PropertyValue", "name": "wizard_steps", "value": 3},
     {"@type": "PropertyValue", "name": "anonymous_free_quota_per_day_per_ip", "value": 3},
     {"@type": "PropertyValue", "name": "endpoint_catalog_paths", "value": 219},
-    {"@type": "PropertyValue", "name": "mcp_tools", "value": 139}
+    {"@type": "PropertyValue", "name": "mcp_tools", "value": 151}
   ],
   "citation": "https://jpcite.com/sources"
 }
@@ -961,7 +961,7 @@
     <span>req/日</span>
    </span>
   </div>
-  <p class="pg-hint" style="margin:0 0 14px;">SSE で <code>jpintel_mcp.api.playground_stream</code> に接続し、各 step は <code>section</code> chunk 単位で progressive にレンダリングされます。step 1 → step 2 → step 3 の順で button click で進行。</p>
+  <p class="pg-hint" style="margin:0 0 14px;">SSE で jpcite playground stream に接続し、各 step は <code>section</code> chunk 単位で progressive にレンダリングされます。step 1 → step 2 → step 3 の順で button click で進行。</p>
   <div class="ev3-progress" id="ev3-progress" role="progressbar" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1" aria-label="wizard 進捗">
    <div class="ev3-progress-cell" data-step="1" data-state="active"></div>
    <div class="ev3-progress-cell" data-step="2" data-state="pending"></div>
@@ -1059,7 +1059,7 @@
     <span class="ev3-agent-badge" id="ev3-agent-badge">browser</span>
    </div>
    <pre class="ev3-agent-snippet" id="ev3-agent-snippet">claude mcp add jpcite -- uvx autonomath-mcp</pre>
-   <p class="ev3-agent-hint" id="ev3-agent-hint">Claude Desktop / Claude Code 等で 1 行追加すると 139 tools が即利用可能。anonymous の続きは API キーで継続できます。</p>
+   <p class="ev3-agent-hint" id="ev3-agent-hint">Claude Desktop / Claude Code 等で 1 行追加すると 151 tools が即利用可能。anonymous の続きは API キーで継続できます。</p>
    <div class="ev3-agent-switch" role="group" aria-label="他の agent を選ぶ">
     <button type="button" data-agent="claude" aria-pressed="false">Claude</button>
     <button type="button" data-agent="chatgpt" aria-pressed="false">ChatGPT</button>
@@ -1104,9 +1104,9 @@
 
  <div class="pg-field">
  <label for="pg-bearer">API キー (任意)
-            <span class="pg-hint">未入力なら匿名 (3 リクエスト/日)。 <code>am_...</code> をペーストすると ¥3.30/リクエスト で送信</span>
+            <span class="pg-hint">未入力なら匿名 (3 リクエスト/日)。 <code>jc_...</code> をペーストすると ¥3.30/リクエスト で送信</span>
  </label>
-            <input type="password" id="pg-bearer" autocomplete="off" spellcheck="false" placeholder="am_..." />
+            <input type="password" id="pg-bearer" autocomplete="off" spellcheck="false" placeholder="jc_..." />
  </div>
  </section>
 
@@ -1234,7 +1234,7 @@
     <label for="v2-api-key" style="font-size:13px;color:var(--text-muted);">
      API キー
      <input type="password" id="v2-api-key" autocomplete="off" spellcheck="false"
-            placeholder="am_..." style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;margin-top:4px;">
+            placeholder="jc_..." style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;margin-top:4px;">
     </label>
     <p class="pg-hint" style="margin:6px 0 0;">
      キー未所持の方は <a href="/dashboard">ダッシュボード</a> から 1 分で発行できます。
@@ -1502,7 +1502,7 @@
    function maskKey(k) {
      /* Show first 4 + last 2 of the key so the copied snippet works on
         a hand-edit but does not paste the full key into a screenshot. */
-     if (!k || k.length < 10) return 'am_xxx';
+     if (!k || k.length < 10) return 'jc_xxx';
      return k.substring(0, 4) + '...' + k.substring(k.length - 2);
    }
 

@@ -54,7 +54,12 @@ from urllib.parse import urlparse
 
 import httpx
 
-from scripts.etl._playwright_helper import fetch_with_fallback_sync  # Wave 36 wire
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+# Wave 36 wire marker.
+from scripts.etl._playwright_helper import fetch_with_fallback_sync  # noqa: E402
 
 logger = logging.getLogger("jpcite.cron.adoption_rss")
 
@@ -74,20 +79,21 @@ RSS_FEEDS: tuple[tuple[str, str], ...] = (
 )
 
 # Banned aggregator host substrings (CLAUDE.md 一次資料 rule).
-BANNED_HOSTS: frozenset[str] = frozenset({
-    "noukaweb",
-    "hojyokin-portal",
-    "biz.stayway",
-    "subsidy-portal",
-    "hojyokin-go",
-})
+BANNED_HOSTS: frozenset[str] = frozenset(
+    {
+        "noukaweb",
+        "hojyokin-portal",
+        "biz.stayway",
+        "subsidy-portal",
+        "hojyokin-go",
+    }
+)
 
 RATE_LIMIT_SECONDS = 1.0
 MAX_ITEMS_PER_FEED = 200
 HTTPX_TIMEOUT = httpx.Timeout(30.0, connect=10.0)
 USER_AGENT = "jpcite-adoption-rss-poll/0.3.5 (+https://jpcite.com)"
 
-_REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_DB_PATH = _REPO_ROOT / "autonomath.db"
 
 # ---------------------------------------------------------------------------
@@ -168,9 +174,7 @@ def _ensure_table(conn: sqlite3.Connection) -> None:
 _ITEM_RE = re.compile(r"<item[^>]*>(.*?)</item>", re.DOTALL | re.IGNORECASE)
 _ENTRY_RE = re.compile(r"<entry[^>]*>(.*?)</entry>", re.DOTALL | re.IGNORECASE)
 _TITLE_RE = re.compile(r"<title[^>]*>(.*?)</title>", re.DOTALL | re.IGNORECASE)
-_LINK_RE = re.compile(
-    r"<link[^>]*(?:href=\"([^\"]+)\"|>(.*?)</link>)", re.DOTALL | re.IGNORECASE
-)
+_LINK_RE = re.compile(r"<link[^>]*(?:href=\"([^\"]+)\"|>(.*?)</link>)", re.DOTALL | re.IGNORECASE)
 _DESC_RE = re.compile(
     r"<(?:description|summary)[^>]*>(.*?)</(?:description|summary)>",
     re.DOTALL | re.IGNORECASE,
@@ -200,12 +204,14 @@ def _parse_feed_body(body: str) -> list[dict[str, str]]:
         link = ""
         if link_m:
             link = (link_m.group(1) or link_m.group(2) or "").strip()
-        items.append({
-            "title": _strip_cdata(title_m.group(1)) if title_m else "",
-            "link": link,
-            "description": _strip_cdata(desc_m.group(1)) if desc_m else "",
-            "pub_date": _strip_cdata(date_m.group(1)) if date_m else "",
-        })
+        items.append(
+            {
+                "title": _strip_cdata(title_m.group(1)) if title_m else "",
+                "link": link,
+                "description": _strip_cdata(desc_m.group(1)) if desc_m else "",
+                "pub_date": _strip_cdata(date_m.group(1)) if date_m else "",
+            }
+        )
     return items
 
 

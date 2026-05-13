@@ -69,7 +69,12 @@ from typing import Any
 
 import httpx
 
-from scripts.etl._playwright_helper import fetch_with_fallback  # Wave 36 wire
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+# Wave 36 wire marker.
+from scripts.etl._playwright_helper import fetch_with_fallback  # noqa: E402
 
 logger = logging.getLogger("jpintel.cron.edinet_daily")
 
@@ -88,7 +93,6 @@ USER_AGENT = "jpcite-edinet-daily-ingest/0.3.5 (+https://jpcite.com)"
 DEFAULT_LIMIT = 100
 EXCERPT_CHAR_CAP = 5120  # mirror migration 227 CHECK
 
-_REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_DB_PATH = _REPO_ROOT / "autonomath.db"
 
 
@@ -196,7 +200,9 @@ async def _fetch_document_list(
         try:
             resp = await client.get(EDINET_LIST, params=params)
         except httpx.HTTPError as exc:
-            logger.warning("EDINET list fetch failed on %s: %s — trying Playwright fallback", target_date, exc)
+            logger.warning(
+                "EDINET list fetch failed on %s: %s — trying Playwright fallback", target_date, exc
+            )
             await asyncio.sleep(RATE_LIMIT_SECONDS * 2)
             # Wave 36: Playwright fallback on transport error.
             fb = await fetch_with_fallback(
@@ -207,13 +213,15 @@ async def _fetch_document_list(
             return []
         await asyncio.sleep(RATE_LIMIT_SECONDS)
     if resp.status_code != 200:
-        logger.warning("EDINET list HTTP %d on %s — trying Playwright fallback", resp.status_code, target_date)
-        # Wave 36: Playwright fallback on 4xx/5xx.
-        fb = await fetch_with_fallback(
-            f"{EDINET_LIST}?date={params['date']}&type={params['type']}"
+        logger.warning(
+            "EDINET list HTTP %d on %s — trying Playwright fallback", resp.status_code, target_date
         )
+        # Wave 36: Playwright fallback on 4xx/5xx.
+        fb = await fetch_with_fallback(f"{EDINET_LIST}?date={params['date']}&type={params['type']}")
         if fb.source == "playwright" and fb.text:
-            logger.info("EDINET Playwright fallback returned %d chars on %s", len(fb.text), target_date)
+            logger.info(
+                "EDINET Playwright fallback returned %d chars on %s", len(fb.text), target_date
+            )
         return []
     try:
         payload = resp.json()
@@ -289,7 +297,11 @@ def xbrl_zip_to_excerpt(zip_bytes: bytes) -> str:
         text = ""
         if etree is not None:
             try:
-                parser = etree.HTMLParser() if name.lower().endswith((".htm", ".html")) else etree.XMLParser(recover=True)
+                parser = (
+                    etree.HTMLParser()
+                    if name.lower().endswith((".htm", ".html"))
+                    else etree.XMLParser(recover=True)
+                )
                 root = etree.fromstring(raw, parser=parser)
                 if root is not None:
                     text = "".join(root.itertext())
@@ -371,7 +383,7 @@ def _normalize_edinet_code(raw: str | None) -> str | None:
 
 def _filing_id(doc_id: str, content_hash: str) -> str:
     """Deterministic PK for am_edinet_filings."""
-    return hashlib.sha1(f"{doc_id}:{content_hash}".encode("utf-8")).hexdigest()
+    return hashlib.sha1(f"{doc_id}:{content_hash}".encode()).hexdigest()
 
 
 def _content_hash(row_envelope: dict[str, Any]) -> str:
@@ -407,7 +419,9 @@ def parse_edinet_record(
     if not doc_type:
         doc_type = "unknown"
     security_code = _normalize_security_code(rec.get("secCode"))
-    filer_houjin_bangou = _normalize_houjin_bangou(rec.get("JCN") or rec.get("filerCorporateNumber"))
+    filer_houjin_bangou = _normalize_houjin_bangou(
+        rec.get("JCN") or rec.get("filerCorporateNumber")
+    )
 
     file_xbrl_url = (
         f"{EDINET_BASE}/api/v2/documents/{doc_id}?type=1"
@@ -502,12 +516,8 @@ async def _run(args: argparse.Namespace) -> int:
             headers=headers, timeout=HTTPX_TIMEOUT, follow_redirects=True
         ) as client:
             semaphore = asyncio.Semaphore(1)
-            records = await _fetch_document_list(
-                client, semaphore, target_date, args.api_key
-            )
-            logger.info(
-                "EDINET list returned %d records for %s", len(records), target_date
-            )
+            records = await _fetch_document_list(client, semaphore, target_date, args.api_key)
+            logger.info("EDINET list returned %d records for %s", len(records), target_date)
 
             inserted = 0
             skipped = 0
@@ -520,9 +530,7 @@ async def _run(args: argparse.Namespace) -> int:
 
                 zip_bytes: bytes | None = None
                 if raw.get("xbrlFlag") in (1, "1", True):
-                    zip_bytes = await _fetch_document_body(
-                        client, semaphore, doc_id, args.api_key
-                    )
+                    zip_bytes = await _fetch_document_body(client, semaphore, doc_id, args.api_key)
 
                 excerpt = xbrl_zip_to_excerpt(zip_bytes or b"")
                 r2_url = _maybe_upload_r2(zip_bytes or b"", doc_id, dry_run=args.dry_run)
@@ -544,7 +552,11 @@ async def _run(args: argparse.Namespace) -> int:
 
         logger.info(
             "summary date=%s inserted=%d skipped=%d rejected=%d dry_run=%s",
-            target_date, inserted, skipped, rejected, args.dry_run,
+            target_date,
+            inserted,
+            skipped,
+            rejected,
+            args.dry_run,
         )
         return 0
     except sqlite3.Error as exc:

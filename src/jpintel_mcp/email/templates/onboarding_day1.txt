@@ -7,7 +7,7 @@
 使うクライアントを1つ選んでください:
 
 A. Claude Desktop / Claude Code
-   MCP 対応 LLM クライアント。claude_desktop_config.json に追記するだけで 139 ツール
+   MCP 対応 LLM クライアント。claude_desktop_config.json に追記するだけで 151 ツール
    (programs.search / search_tax_incentives / check_invoice_registrant ほか) が
    自然言語から呼べます。
 
@@ -16,7 +16,7 @@ A. Claude Desktop / Claude Code
        "autonomath": {
          "command": "uvx",
          "args": ["autonomath-mcp"],
-         "env": { "JPCITE_API_KEY": "YOUR_KEY" }
+         "env": { "JPCITE_API_KEY": "jc_xxx" }
        }
      }
    }
@@ -34,7 +34,7 @@ C. Cline (VS Code)
 D. 直接 curl / SDK
    MCP を経由せず REST で叩く場合の最小例:
 
-   curl -H "X-API-Key: YOUR_KEY" \
+   curl -H "X-API-Key: jc_xxx" \
      "https://api.jpcite.com/v1/programs/search?prefecture=東京都&target_type=中小企業&limit=10"
 
 ---
@@ -42,7 +42,7 @@ D. 直接 curl / SDK
 よくある詰まりどころ:
 
 - 401 Unauthorized
-  ヘッダ名は X-API-Key です (Authorization: Bearer YOUR_KEY でも可)。
+  ヘッダ名は X-API-Key です (Authorization: Bearer jc_xxx でも可)。
   Api-Key や X-Api-Token は通りません。
 
 - 429 Too Many Requests

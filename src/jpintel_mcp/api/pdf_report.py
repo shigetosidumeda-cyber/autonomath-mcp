@@ -211,9 +211,7 @@ def _collect_client_context(
 
     if _has_table("programs"):
         try:
-            cutoff = (
-                datetime.now(UTC) - timedelta(days=30)
-            ).strftime("%Y-%m-%d")
+            cutoff = (datetime.now(UTC) - timedelta(days=30)).strftime("%Y-%m-%d")
             rows = cur.execute(
                 "SELECT program_id, title, authority, source_url "
                 "FROM programs WHERE source_fetched_at >= ? "
@@ -242,14 +240,26 @@ def _collect_client_context(
     # 公認会計士法 §47 / 宅地建物取引業法 §12). We never CALL these
     # statutes — the PDF only declares which fences the body respects.
     out["fence_summary"] = [
-        {"law": "税理士法 §52", "rule": "税務代理・税務書類作成・税務相談は税理士のみ。本書はガイドラインに留まる。"},
-        {"law": "行政書士法 §1", "rule": "申請書類の代理作成は行政書士業務。本書は雛形・参考に限定。"},
+        {
+            "law": "税理士法 §52",
+            "rule": "税務代理・税務書類作成・税務相談は税理士のみ。本書はガイドラインに留まる。",
+        },
+        {
+            "law": "行政書士法 §1",
+            "rule": "申請書類の代理作成は行政書士業務。本書は雛形・参考に限定。",
+        },
         {"law": "司法書士法 §3", "rule": "登記・供託の代理は司法書士業務。本書は周辺情報に限定。"},
         {"law": "弁護士法 §72", "rule": "法律事件の代理・鑑定は弁護士業務。本書は法令引用のみ。"},
-        {"law": "社労士法 §27", "rule": "労務代理は社会保険労務士業務。36協定等は社労士確認を要する。"},
+        {
+            "law": "社労士法 §27",
+            "rule": "労務代理は社会保険労務士業務。36協定等は社労士確認を要する。",
+        },
         {"law": "弁理士法 §75", "rule": "特許・商標等の代理は弁理士業務。本書は出典情報のみ。"},
         {"law": "公認会計士法 §47", "rule": "監査証明は公認会計士業務。本書は監査に代わらない。"},
-        {"law": "宅地建物取引業法 §12", "rule": "宅建業の媒介は免許制。本書は不動産制度の出典のみ。"},
+        {
+            "law": "宅地建物取引業法 §12",
+            "rule": "宅建業の媒介は免許制。本書は不動産制度の出典のみ。",
+        },
     ]
 
     return out
@@ -258,6 +268,7 @@ def _collect_client_context(
 def _render_pdf(client_id: str, ctx: dict[str, Any]) -> tuple[bytes, int]:
     """Render the PDF body with reportlab. Returns ``(bytes, page_count)``."""
     try:
+        from reportlab.lib import colors  # type: ignore[import-untyped]
         from reportlab.lib.pagesizes import A4  # type: ignore[import-untyped]
         from reportlab.lib.styles import getSampleStyleSheet  # type: ignore[import-untyped]
         from reportlab.lib.units import mm  # type: ignore[import-untyped]
@@ -268,7 +279,6 @@ def _render_pdf(client_id: str, ctx: dict[str, Any]) -> tuple[bytes, int]:
             Table,
             TableStyle,
         )
-        from reportlab.lib import colors  # type: ignore[import-untyped]
     except ImportError as exc:  # pragma: no cover
         raise HTTPException(
             status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -295,10 +305,12 @@ def _render_pdf(client_id: str, ctx: dict[str, Any]) -> tuple[bytes, int]:
     elements: list[Any] = []
 
     elements.append(Paragraph(f"jpcite monthly report — {client_id}", title))
-    elements.append(Paragraph(
-        f"生成日: {ctx['fetched_at']}  /  発行: Bookyou株式会社 (T8010001213708)",
-        body,
-    ))
+    elements.append(
+        Paragraph(
+            f"生成日: {ctx['fetched_at']}  /  発行: Bookyou株式会社 (T8010001213708)",
+            body,
+        )
+    )
     elements.append(Spacer(1, 8))
 
     elements.append(Paragraph("1. 法人 360 概要", h2))
@@ -308,39 +320,56 @@ def _render_pdf(client_id: str, ctx: dict[str, Any]) -> tuple[bytes, int]:
         for k, v in list(h360.items())[:12]:
             rows.append([str(k), str(v)[:60]])
         t = Table(rows, colWidths=[60 * mm, 110 * mm])
-        t.setStyle(TableStyle([
-            ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
-            ("GRID", (0, 0), (-1, -1), 0.3, colors.grey),
-            ("FONTSIZE", (0, 0), (-1, -1), 8.5),
-        ]))
+        t.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
+                    ("GRID", (0, 0), (-1, -1), 0.3, colors.grey),
+                    ("FONTSIZE", (0, 0), (-1, -1), 8.5),
+                ]
+            )
+        )
         elements.append(t)
     else:
-        elements.append(Paragraph(
-            "本顧問先の 360 サマリは未収集です。次回 ingest 後に再生成されます。",
-            body,
-        ))
+        elements.append(
+            Paragraph(
+                "本顧問先の 360 サマリは未収集です。次回 ingest 後に再生成されます。",
+                body,
+            )
+        )
     elements.append(Spacer(1, 8))
 
     elements.append(Paragraph("2. リスクスコア", h2))
     rs = ctx.get("risk_score")
     if rs:
         rows = [["指標", "値"]]
-        for k in ("financial_risk", "regulatory_risk", "operational_risk",
-                 "composite_score", "computed_at"):
+        for k in (
+            "financial_risk",
+            "regulatory_risk",
+            "operational_risk",
+            "composite_score",
+            "computed_at",
+        ):
             if k in rs:
                 rows.append([k, str(rs[k])])
         t = Table(rows, colWidths=[60 * mm, 110 * mm])
-        t.setStyle(TableStyle([
-            ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
-            ("GRID", (0, 0), (-1, -1), 0.3, colors.grey),
-            ("FONTSIZE", (0, 0), (-1, -1), 8.5),
-        ]))
+        t.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
+                    ("GRID", (0, 0), (-1, -1), 0.3, colors.grey),
+                    ("FONTSIZE", (0, 0), (-1, -1), 8.5),
+                ]
+            )
+        )
         elements.append(t)
     else:
-        elements.append(Paragraph(
-            "リスクスコアは未算出です。`refresh_houjin_risk_score_daily.py` 直後に反映されます。",
-            body,
-        ))
+        elements.append(
+            Paragraph(
+                "リスクスコアは未算出です。`refresh_houjin_risk_score_daily.py` 直後に反映されます。",
+                body,
+            )
+        )
     elements.append(Spacer(1, 8))
 
     elements.append(Paragraph("3. 直近 30 日 新規制度", h2))
@@ -348,17 +377,23 @@ def _render_pdf(client_id: str, ctx: dict[str, Any]) -> tuple[bytes, int]:
     if new_progs:
         rows = [["program_id", "title", "authority"]]
         for r in new_progs[:8]:
-            rows.append([
-                str(r.get("program_id", ""))[:24],
-                str(r.get("title", ""))[:48],
-                str(r.get("authority", ""))[:32],
-            ])
+            rows.append(
+                [
+                    str(r.get("program_id", ""))[:24],
+                    str(r.get("title", ""))[:48],
+                    str(r.get("authority", ""))[:32],
+                ]
+            )
         t = Table(rows, colWidths=[40 * mm, 90 * mm, 40 * mm])
-        t.setStyle(TableStyle([
-            ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
-            ("GRID", (0, 0), (-1, -1), 0.3, colors.grey),
-            ("FONTSIZE", (0, 0), (-1, -1), 8),
-        ]))
+        t.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
+                    ("GRID", (0, 0), (-1, -1), 0.3, colors.grey),
+                    ("FONTSIZE", (0, 0), (-1, -1), 8),
+                ]
+            )
+        )
         elements.append(t)
     else:
         elements.append(Paragraph("対象期間に新規制度はありません。", body))
@@ -369,24 +404,32 @@ def _render_pdf(client_id: str, ctx: dict[str, Any]) -> tuple[bytes, int]:
     if am:
         rows = [["amendment_id", "law_id", "effective_from", "summary"]]
         for r in am[:8]:
-            rows.append([
-                str(r.get("amendment_id", ""))[:24],
-                str(r.get("law_id", ""))[:24],
-                str(r.get("effective_from", ""))[:10],
-                str(r.get("summary", ""))[:60],
-            ])
+            rows.append(
+                [
+                    str(r.get("amendment_id", ""))[:24],
+                    str(r.get("law_id", ""))[:24],
+                    str(r.get("effective_from", ""))[:10],
+                    str(r.get("summary", ""))[:60],
+                ]
+            )
         t = Table(rows, colWidths=[35 * mm, 35 * mm, 30 * mm, 70 * mm])
-        t.setStyle(TableStyle([
-            ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
-            ("GRID", (0, 0), (-1, -1), 0.3, colors.grey),
-            ("FONTSIZE", (0, 0), (-1, -1), 8),
-        ]))
+        t.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
+                    ("GRID", (0, 0), (-1, -1), 0.3, colors.grey),
+                    ("FONTSIZE", (0, 0), (-1, -1), 8),
+                ]
+            )
+        )
         elements.append(t)
     else:
-        elements.append(Paragraph(
-            "確定済みの改正アラートはありません (effective_from 未確定の draft は載せていません)。",
-            body,
-        ))
+        elements.append(
+            Paragraph(
+                "確定済みの改正アラートはありません (effective_from 未確定の draft は載せていません)。",
+                body,
+            )
+        )
     elements.append(Spacer(1, 8))
 
     elements.append(Paragraph("5. 8 業法フェンス遵守宣言", h2))
@@ -395,11 +438,15 @@ def _render_pdf(client_id: str, ctx: dict[str, Any]) -> tuple[bytes, int]:
     for f in fences:
         rows.append([f.get("law", ""), f.get("rule", "")])
     t = Table(rows, colWidths=[40 * mm, 130 * mm])
-    t.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
-        ("GRID", (0, 0), (-1, -1), 0.3, colors.grey),
-        ("FONTSIZE", (0, 0), (-1, -1), 8),
-    ]))
+    t.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
+                ("GRID", (0, 0), (-1, -1), 0.3, colors.grey),
+                ("FONTSIZE", (0, 0), (-1, -1), 8),
+            ]
+        )
+    )
     elements.append(t)
     elements.append(Spacer(1, 8))
 
@@ -429,8 +476,10 @@ def _upload_to_r2(client_id: str, blob: bytes) -> tuple[str, str, str]:
         return key, f"/v1/pdf_report/inline/{pdf_id}", expires_at
 
     try:
-        from scripts.cron._r2_client import upload
         from pathlib import Path
+
+        from scripts.cron._r2_client import upload
+
         tmp = Path(f"/tmp/{pdf_id}.pdf")  # noqa: S108
         tmp.write_bytes(blob)
         upload(tmp, key)
@@ -488,6 +537,7 @@ async def generate_pdf_report(
         endpoint="pdf_report.generate",
         quantity=PDF_REPORT_UNIT_COUNT,
         request_id=getattr(request.state, "request_id", None),
+        strict_metering=True,
     )
     elapsed_ms = int((time.monotonic() - started) * 1000)
     logger.info(
@@ -603,9 +653,7 @@ async def get_subscription(
     finally:
         conn.close()
     if row is None:
-        raise HTTPException(
-            status.HTTP_404_NOT_FOUND, f"no subscription for client_id={client_id}"
-        )
+        raise HTTPException(status.HTTP_404_NOT_FOUND, f"no subscription for client_id={client_id}")
     return dict(row)
 
 

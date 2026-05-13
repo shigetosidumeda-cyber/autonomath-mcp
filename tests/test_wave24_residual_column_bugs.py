@@ -272,6 +272,7 @@ def seeded_db(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     finally:
         conn.close()
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(db_path))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", str(db_path))
     return db_path
 
 
@@ -463,6 +464,7 @@ def test_find_programs_by_jsic_survives_missing_excluded_column(
     finally:
         conn.close()
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(db_path))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", str(db_path))
 
     from jpintel_mcp.mcp.autonomath_tools.wave24_tools_second_half import (
         _find_programs_by_jsic_impl,

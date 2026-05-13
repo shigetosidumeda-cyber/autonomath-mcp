@@ -127,7 +127,7 @@ Package is named `autonomath-mcp` on PyPI but the source directory is `src/jpint
 ```
 src/jpintel_mcp/
   api/      FastAPI REST, mounted at /v1/*
-  mcp/      FastMCP stdio server (139 tools at default gates, protocol 2025-06-18; verify with len(await mcp.list_tools()) before bumping manifests)
+  mcp/      FastMCP stdio server (151 tools at default gates, protocol 2025-06-18; verify with len(await mcp.list_tools()) before bumping manifests)
   ingest/   Data ingestion + canonical tier scoring
   db/       SQLite migrations + query helpers
   billing/  Stripe metered billing integration

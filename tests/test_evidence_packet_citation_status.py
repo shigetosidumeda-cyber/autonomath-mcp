@@ -374,7 +374,9 @@ def _override_paths(
 ) -> Iterator[None]:
     """Point composer at fixture DBs, reset caches."""
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(fixture_db))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", str(fixture_db))
     monkeypatch.setenv("JPINTEL_DB_PATH", str(fixture_jpintel))
+    monkeypatch.setenv("JPCITE_DB_PATH", str(fixture_jpintel))
     from jpintel_mcp.config import settings
 
     monkeypatch.setattr(settings, "autonomath_db_path", fixture_db)

@@ -72,10 +72,26 @@ def _ensure_webhook_table(seeded_db: Path):
         # Children before parents: webhook_deliveries FK on customer_webhooks.
         c.execute("DELETE FROM webhook_deliveries")
         c.execute("DELETE FROM customer_webhooks")
+        c.execute("DELETE FROM programs WHERE unified_id LIKE 'P-IDEM-%'")
+        updated_at_snapshot = c.execute("SELECT unified_id, updated_at FROM programs").fetchall()
         c.commit()
     finally:
         c.close()
-    yield
+    try:
+        yield
+    finally:
+        c = sqlite3.connect(seeded_db)
+        try:
+            c.executemany(
+                "UPDATE programs SET updated_at = ? WHERE unified_id = ?",
+                [(updated_at, unified_id) for unified_id, updated_at in updated_at_snapshot],
+            )
+            c.execute("DELETE FROM programs WHERE unified_id LIKE 'P-IDEM-%'")
+            c.execute("DELETE FROM webhook_deliveries")
+            c.execute("DELETE FROM customer_webhooks")
+            c.commit()
+        finally:
+            c.close()
 
 
 # ---------------------------------------------------------------------------
@@ -316,11 +332,7 @@ def test_idempotency_key_is_not_part_of_hmac_signature(monkeypatch):
         body,
     )
 
-    header_signed_body = (
-        body
-        + b"\nidempotency-key:"
-        + key.encode()
-    )
+    header_signed_body = body + b"\nidempotency-key:" + key.encode()
     assert headers["X-Jpcite-Signature"] != _expected_body_signature(
         "whsec_signed_body",
         header_signed_body,
@@ -451,8 +463,7 @@ def test_different_event_ids_send_different_idempotency_keys(
         event_id = payload["data"]["unified_id"]
         key = _idempotency_header(headers)
         assert key is not None, (
-            "DEFECT: dispatcher does not emit Idempotency-Key — "
-            "see file docstring."
+            "DEFECT: dispatcher does not emit Idempotency-Key — see file docstring."
         )
         seen[event_id] = key
 

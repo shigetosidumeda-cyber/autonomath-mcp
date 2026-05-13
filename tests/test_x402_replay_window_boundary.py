@@ -22,8 +22,8 @@ boundary** as a contract:
     ``25 * 60 * 60 == 90000`` seconds. The ``put`` call after a success
     must pass that exact value to ``expirationTtl``.
 
-We exercise the edge handler via ``node --input-type=module`` so the
-actual TypeScript source under ``functions/x402_handler.ts`` runs (the
+We exercise the edge handler through the shared edge TypeScript runner so
+the actual TypeScript source under ``functions/x402_handler.ts`` runs (the
 same pattern used by ``test_x402_edge_verify_reorg_removed.py`` and
 ``test_x402_edge_verify_restoration.py``). The KV is a deterministic
 in-memory mock that lets us pre-seed a redeemed nonce, simulate eviction
@@ -34,12 +34,9 @@ No LLM SDK imports. No real RPC. No real Stripe.
 
 from __future__ import annotations
 
-import shutil
-import subprocess
-import textwrap
 from pathlib import Path
 
-import pytest
+from tests.edge_ts_runner import run_edge_node
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -50,17 +47,7 @@ EXPECTED_NONCE_TTL_SECONDS = 25 * 60 * 60  # 90000
 
 
 def _run_node(script: str) -> None:
-    if shutil.which("node") is None:
-        pytest.skip("node is required for x402 edge handler behavior tests")
-    proc = subprocess.run(
-        ["node", "--input-type=module", "-e", textwrap.dedent(script)],
-        cwd=REPO_ROOT,
-        capture_output=True,
-        text=True,
-        timeout=20,
-        check=False,
-    )
-    assert proc.returncode == 0, proc.stderr + proc.stdout
+    run_edge_node(script, timeout=20)
 
 
 EDGE_HELPERS = r"""
@@ -329,9 +316,7 @@ def test_x402_replay_window_boundary_ttl_constant_is_exact() -> None:
         "tx: put must use NONCE_TTL_SECONDS, not a hard-coded number"
     )
     # The read-site must use the matching `tx:` key prefix.
-    assert "`tx:${txHash}`" in src, (
-        "replay read must scan the tx:<hash> KV namespace"
-    )
+    assert "`tx:${txHash}`" in src, "replay read must scan the tx:<hash> KV namespace"
     # And the value must be exactly 90000 — verify by running the module
     # and pulling the captured TTL out of a successful put.
     _run_node(

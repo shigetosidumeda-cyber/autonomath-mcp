@@ -118,11 +118,13 @@ const matches = await jpcite.bulk_match_programs({
 - `municipal_diff` (差分取得、cron 用)
 
 ## 関連 recipe
-- [r04-shinkin-borrower-watch](../r04-shinkin-borrower-watch/) — 信金 watch、隣接領域
-- [r07-shindanshi-monthly-companion](../r07-shindanshi-monthly-companion/) — 診断士月次伴走、経営革新計画
-- [r29-municipal-grant-monitor](../r29-municipal-grant-monitor/) — 市町村独自補助金モニター
+- [r04-shinkin-borrower-watch](../r04-shinkin-borrower-watch/index.md) — 信金 watch、隣接領域
+- [r07-shindanshi-monthly-companion](../r07-shindanshi-monthly-companion/index.md) — 診断士月次伴走、経営革新計画
+- [r29-municipal-grant-monitor](../r29-municipal-grant-monitor/index.md) — 市町村独自補助金モニター
 
 ## billable_units 試算
+
+- API fee delta: API fee delta の前提と再現式は [docs/canonical/cost_saving_examples.md](../../canonical/cost_saving_examples.md) を参照。
 - 1 sweep 40 units × ¥3 = ¥120 / 月 (1 市町村)
 - 5 市町村 × 月 = ¥600 / 月、税込 ¥660
 - 会員 1,000 社 マッチ = ¥3,000 / 月、税込 ¥3,300

@@ -94,7 +94,8 @@ def _fetch_rows(
         cur = db.execute(
             "SELECT program_id, municipality_code, grant_type, prefecture_code, "
             "       source_url, source_fetched_at, last_verified "
-            "FROM am_program_source_municipality_v2 " + where
+            "FROM am_program_source_municipality_v2 "
+            + where
             + " ORDER BY last_verified DESC, program_id LIMIT ? OFFSET ?",
             [*params, limit, offset],
         )
@@ -137,7 +138,11 @@ async def list_programs_by_municipality(
         where += " AND grant_type = ?"
         params.append(grant_type)
     rows, total = _fetch_rows(
-        db, where=where, params=params, limit=limit, offset=offset,
+        db,
+        where=where,
+        params=params,
+        limit=limit,
+        offset=offset,
     )
     latency_ms = int((time.monotonic_ns() - started_ns) / 1_000_000)
     log_usage(
@@ -147,6 +152,7 @@ async def list_programs_by_municipality(
         quantity=1,
         latency_ms=latency_ms,
         result_count=len(rows),
+        strict_metering=True,
     )
     return JSONResponse(
         _wrap(
@@ -172,9 +178,7 @@ async def list_programs_by_municipality(
 async def list_programs_by_prefecture(
     ctx: ApiContextDep,
     db: DbDep,
-    prefecture_code: Annotated[
-        str, Path(description="2-digit JIS code (e.g. 13 for 東京都)")
-    ],
+    prefecture_code: Annotated[str, Path(description="2-digit JIS code (e.g. 13 for 東京都)")],
     grant_type: Annotated[
         GrantTypeLiteral | None,
         Query(description="補助金 / 助成金 / 融資 / その他"),
@@ -190,7 +194,11 @@ async def list_programs_by_prefecture(
         where += " AND grant_type = ?"
         params.append(grant_type)
     rows, total = _fetch_rows(
-        db, where=where, params=params, limit=limit, offset=offset,
+        db,
+        where=where,
+        params=params,
+        limit=limit,
+        offset=offset,
     )
     latency_ms = int((time.monotonic_ns() - started_ns) / 1_000_000)
     log_usage(
@@ -200,6 +208,7 @@ async def list_programs_by_prefecture(
         quantity=1,
         latency_ms=latency_ms,
         result_count=len(rows),
+        strict_metering=True,
     )
     return JSONResponse(
         _wrap(

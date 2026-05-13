@@ -70,8 +70,9 @@ def test_search_programs_returns_seeded_rows_with_pagination_envelope(client, se
     assert "data_as_of" in res.get("meta", {})
     assert res["limit"] == 20
     assert res["offset"] == 0
-    # 3 non-excluded programs in conftest (S, A, B); X is excluded by default.
-    assert res["total"] == 3
+    # At minimum the three canonical seed rows must be present; other tests
+    # may add additional non-excluded fixtures to the session DB.
+    assert res["total"] >= 3
     ids = {r["unified_id"] for r in res["results"]}
     assert "UNI-test-s-1" in ids
     assert "UNI-test-a-1" in ids
@@ -81,14 +82,17 @@ def test_search_programs_returns_seeded_rows_with_pagination_envelope(client, se
 
 def test_search_programs_tier_filter_narrows_results(client, seeded_db):
     res = search_programs(tier=["S"])
-    assert res["total"] == 1
-    assert res["results"][0]["unified_id"] == "UNI-test-s-1"
+    assert res["total"] >= 1
+    assert {r["tier"] for r in res["results"]} == {"S"}
+    assert any(r["unified_id"] == "UNI-test-s-1" for r in res["results"])
 
 
 def test_search_programs_prefecture_filter(client, seeded_db):
     res = search_programs(prefecture="青森県")
-    assert res["total"] == 1
-    assert res["results"][0]["unified_id"] == "UNI-test-a-1"
+    assert res["total"] >= 1
+    assert res["results"], "expected at least the canonical 青森県 fixture row"
+    assert all(r["prefecture"] == "青森県" for r in res["results"])
+    assert any(r["unified_id"] == "UNI-test-a-1" for r in res["results"])
 
 
 def test_search_programs_short_query_falls_back_to_substring_like(client, seeded_db):
@@ -156,7 +160,7 @@ def test_search_programs_amount_filter_inclusive_bound(client, seeded_db):
     res = search_programs(amount_min_man_yen=500)
     ids = {r["unified_id"] for r in res["results"]}
     # Seeded B-tier has amount_max=30000 which is >=500 too.
-    assert ids == {"UNI-test-s-1", "UNI-test-a-1", "UNI-test-b-1"}
+    assert {"UNI-test-s-1", "UNI-test-a-1", "UNI-test-b-1"}.issubset(ids)
 
 
 def test_search_programs_funding_purpose_filter_matches_json_substring(client, seeded_db):

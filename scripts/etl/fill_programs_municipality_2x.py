@@ -36,8 +36,12 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
-from jpintel_mcp._jpcite_env_bridge import get_flag
-from scripts.etl._playwright_helper import fetch_with_fallback
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+from jpintel_mcp._jpcite_env_bridge import get_flag  # noqa: E402
+from scripts.etl._playwright_helper import fetch_with_fallback  # noqa: E402
 
 logger = logging.getLogger("jpcite.etl.fill_programs_municipality_2x")
 
@@ -46,8 +50,14 @@ HTTPX_TIMEOUT_S = 30.0
 USER_AGENT = "jpcite-etl-municipality-2x/0.1 (+https://jpcite.com/cron-policy)"
 
 AGGREGATOR_BANLIST: tuple[str, ...] = (
-    "noukaweb", "hojyokin-portal", "biz.stayway", "stayway.jp",
-    "subsidies-japan", "jgrant-aggregator", "nikkei.com", "prtimes.jp",
+    "noukaweb",
+    "hojyokin-portal",
+    "biz.stayway",
+    "stayway.jp",
+    "subsidies-japan",
+    "jgrant-aggregator",
+    "nikkei.com",
+    "prtimes.jp",
     "wikipedia.org",
 )
 
@@ -55,8 +65,11 @@ ALLOWED_SUFFIXES: tuple[str, ...] = (".lg.jp", ".go.jp", "metro.tokyo")
 ALLOWED_NETLOC_PATTERNS: tuple[str, ...] = ("pref.", "city.", "town.", "village.")
 
 GRANT_TYPE_PATTERNS: tuple[tuple[str, str], ...] = (
-    ("補助金", "補助金"), ("助成金", "助成金"), ("融資", "融資"),
-    ("貸付", "融資"), ("利子補給", "融資"),
+    ("補助金", "補助金"),
+    ("助成金", "助成金"),
+    ("融資", "融資"),
+    ("貸付", "融資"),
+    ("利子補給", "融資"),
 )
 
 PROGRAM_KEYWORDS = ("補助", "助成", "融資", "貸付", "支援金", "給付金")
@@ -69,7 +82,10 @@ DEFAULT_SEED_FALLBACK = _REPO_ROOT / "data" / "municipality_seed_urls.json"
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    p.add_argument("--db", default=get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(DEFAULT_DB_PATH)))
+    p.add_argument(
+        "--db",
+        default=get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(DEFAULT_DB_PATH)),
+    )
     p.add_argument("--seed", default=None)
     p.add_argument("--limit", type=int, default=0)
     p.add_argument("--dry-run", action="store_true")
@@ -151,13 +167,15 @@ def load_seed(path: Path) -> list[dict[str, Any]]:
         if not is_allowed_municipality_url(url):
             logger.debug("seed row skipped (non-allowlisted netloc): %s", url)
             continue
-        out.append({
-            "pref": row.get("pref") or "",
-            "muni_code": code5,
-            "muni_name": row.get("muni_name") or "",
-            "muni_type": row.get("muni_type") or "regular",
-            "subsidy_url": url,
-        })
+        out.append(
+            {
+                "pref": row.get("pref") or "",
+                "muni_code": code5,
+                "muni_name": row.get("muni_name") or "",
+                "muni_type": row.get("muni_type") or "regular",
+                "subsidy_url": url,
+            }
+        )
     return out
 
 
@@ -228,8 +246,14 @@ def _ensure_schema(conn: sqlite3.Connection) -> None:
 
 
 def _upsert_bridge(
-    conn: sqlite3.Connection, *, program_id: str, municipality_code: str,
-    grant_type: str, prefecture_code: str, source_url: str, fetched_at: str,
+    conn: sqlite3.Connection,
+    *,
+    program_id: str,
+    municipality_code: str,
+    grant_type: str,
+    prefecture_code: str,
+    source_url: str,
+    fetched_at: str,
 ) -> str:
     cur = conn.execute(
         "SELECT id FROM am_program_source_municipality_v2 "
@@ -249,20 +273,31 @@ def _upsert_bridge(
         "  (program_id, municipality_code, grant_type, prefecture_code, "
         "   source_url, source_fetched_at, last_verified) "
         "VALUES (?, ?, ?, ?, ?, ?, ?)",
-        (program_id, municipality_code, grant_type, prefecture_code,
-         source_url, fetched_at, fetched_at),
+        (
+            program_id,
+            municipality_code,
+            grant_type,
+            prefecture_code,
+            source_url,
+            fetched_at,
+            fetched_at,
+        ),
     )
     return "inserted"
 
 
 async def _process_one(
-    seed_row: dict[str, Any], *, semaphore: asyncio.Semaphore,
+    seed_row: dict[str, Any],
+    *,
+    semaphore: asyncio.Semaphore,
 ) -> dict[str, Any]:
     url = seed_row["subsidy_url"]
     out: dict[str, Any] = {
         "muni_code": seed_row["muni_code"],
         "pref_code": _prefecture_code(seed_row["muni_code"]),
-        "subsidy_url": url, "candidates": [], "error": None,
+        "subsidy_url": url,
+        "candidates": [],
+        "error": None,
     }
     if is_aggregator_url(url):
         out["error"] = "aggregator_refused"
@@ -316,20 +351,30 @@ async def run_async(args: argparse.Namespace) -> int:
         url = res["subsidy_url"]
         for cand in res["candidates"]:
             pid = derive_program_id(muni, url, cand["title"])
-            program_rows.append({
-                "program_id": pid, "municipality_code": muni,
-                "grant_type": cand["grant_type"], "prefecture_code": pref,
-                "source_url": url,
-            })
+            program_rows.append(
+                {
+                    "program_id": pid,
+                    "municipality_code": muni,
+                    "grant_type": cand["grant_type"],
+                    "prefecture_code": pref,
+                    "source_url": url,
+                }
+            )
 
     if args.dry_run:
         logger.info("DRY RUN - %s bridge rows", len(program_rows))
-        print(json.dumps({
-            "dry_run": True,
-            "municipalities_seen": len(seed_rows),
-            "bridge_rows_candidate": len(program_rows),
-            "aggregator_refused": refused, "fetch_errors": errors,
-        }, ensure_ascii=False))
+        print(
+            json.dumps(
+                {
+                    "dry_run": True,
+                    "municipalities_seen": len(seed_rows),
+                    "bridge_rows_candidate": len(program_rows),
+                    "aggregator_refused": refused,
+                    "fetch_errors": errors,
+                },
+                ensure_ascii=False,
+            )
+        )
         return 0
 
     fetched_at = datetime.now(UTC).isoformat()
@@ -348,19 +393,36 @@ async def run_async(args: argparse.Namespace) -> int:
                 "  (started_at, finished_at, municipalities_seen, "
                 "   programs_inserted, programs_updated, aggregator_refused, "
                 "   fetch_errors, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                (started, fetched_at, len(seed_rows), inserted, updated,
-                 refused, errors, "wave43_1_1"),
+                (
+                    started,
+                    fetched_at,
+                    len(seed_rows),
+                    inserted,
+                    updated,
+                    refused,
+                    errors,
+                    "wave43_1_1",
+                ),
             )
     finally:
         conn.close()
 
-    logger.info("done: inserted=%s updated=%s refused=%s errors=%s",
-                inserted, updated, refused, errors)
-    print(json.dumps({
-        "dry_run": False, "municipalities_seen": len(seed_rows),
-        "bridge_rows_inserted": inserted, "bridge_rows_updated": updated,
-        "aggregator_refused": refused, "fetch_errors": errors,
-    }, ensure_ascii=False))
+    logger.info(
+        "done: inserted=%s updated=%s refused=%s errors=%s", inserted, updated, refused, errors
+    )
+    print(
+        json.dumps(
+            {
+                "dry_run": False,
+                "municipalities_seen": len(seed_rows),
+                "bridge_rows_inserted": inserted,
+                "bridge_rows_updated": updated,
+                "aggregator_refused": refused,
+                "fetch_errors": errors,
+            },
+            ensure_ascii=False,
+        )
+    )
     return 0
 
 

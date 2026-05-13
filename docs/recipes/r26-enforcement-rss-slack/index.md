@@ -105,9 +105,9 @@ for (const i of items.entries) {
 - `enforcement_bulk_match` (法人番号 list との突合、取引先一括スクリーニング)
 
 ## 関連 recipe
-- [r04-shinkin-borrower-watch](../r04-shinkin-borrower-watch/) — 信金 watch、取引先与信再評価
-- [r12-audit-firm-kyc-sweep](../r12-audit-firm-kyc-sweep/) — 監査法人 KYC、独立性チェック
-- [r23-slack-bot](../r23-slack-bot/) — Slack bot 配信、社内 channel fan-out
+- [r04-shinkin-borrower-watch](../r04-shinkin-borrower-watch/index.md) — 信金 watch、取引先与信再評価
+- [r12-audit-firm-kyc-sweep](../r12-audit-firm-kyc-sweep/index.md) — 監査法人 KYC、独立性チェック
+- [r23-slack-bot](../r23-slack-bot/index.md) — Slack bot 配信、社内 channel fan-out
 
 ## billable_units 試算
 - RSS は 1 fetch 1 unit × ¥3

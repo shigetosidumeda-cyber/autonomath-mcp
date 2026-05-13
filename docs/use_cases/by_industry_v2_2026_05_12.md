@@ -11,7 +11,7 @@ v2 では **「AI 単体 (Claude / GPT 等を jpcite なしで使った場合) v
 > **重要な前提**: 下表の「AI 単体 baseline」は典型的な実務時間 (TKC 戦略経営者通信・日行連標準額・JICPA 監査報酬指針・中小機構 J-Net21 ヒアリング)・LLM ベンチマーク (公的制度 QA 幻覚率) からの **推定値**。 業務内容・LLM model・prompt 構造で増減する。 「絶対にこの数字になる」と保証するものではない、上限/下限 range とその構造的根拠を示す。
 
 corpus snapshot (CLAUDE.md SOT 2026-05-07):
-programs 11,601 (S 114 / A 1,340 / B 4,186 / C 5,961) + 採択 2,286 + 融資 108 + 行政処分 1,185 + 法令 6,493 全文 + 9,484 catalog + 50 tax_rulesets + 通達 3,221 + 国税不服審判所 裁決 137 + 適格事業者 13,801 delta + 排他/前提ルール 181 + am_compat_matrix 43,966。MCP 139 tool 公開 (146 runtime)。
+programs 11,601 (S 114 / A 1,340 / B 4,186 / C 5,961) + 採択 2,286 + 融資 108 + 行政処分 1,185 + 法令 6,493 全文 + 9,484 catalog + 50 tax_rulesets + 通達 3,221 + 国税不服審判所 裁決 137 + 適格事業者 13,801 delta + 排他/前提ルール 181 + am_compat_matrix 43,966。MCP 151 tool 公開 (151 runtime)。
 
 ---
 
@@ -47,7 +47,7 @@ AI 単体 baseline = 士業本人が Claude / GPT / Gemini に直接質問して
 
 ### 「AI+jpcite」とは何か
 
-AI+jpcite = 同じ士業本人が Claude / Cursor / ChatGPT GPT を使うが、jpcite の MCP server (139 tool) を経由する。 jpcite tool は SQLite + 一次資料 URL のみで答えるため LLM 推論を一切経由しない、幻覚は構造的に発生し得ない。
+AI+jpcite = 同じ士業本人が Claude / Cursor / ChatGPT GPT を使うが、jpcite の MCP server (151 tool) を経由する。 jpcite tool は SQLite + 一次資料 URL + source_fetched_at + known_gaps を返し、jpcite runtime 自体は LLM 推論を行わない。最終回答の正確性は caller 側のプロンプト、利用モデル、専門家 review、DB freshness に依存する。
 
 - `search_tax_incentives` / `get_am_tax_rule`: tax_rulesets 50 件から該当行を JSON で返す、改正前後の混同なし
 - `apply_eligibility_chain_am`: 排他/前提ルール 181 を chain 評価、要件見落としなし
@@ -444,7 +444,7 @@ mcp.json `cost_examples` および pricing.html (¥3.30/req 完全従量) と本
 | **Cursor** | 会計士 / M&A advisor | `.cursor/mcp.json` に jpcite | 監査調書 / DD deck テンプレ生成と統合 |
 | **顧問先別 Slack bot** | 税理士 (fan-out) / 信金 (取引先別 alert) | jpcite webhook + `dispatch_webhooks.py` | 月次自動配信、X-Client-Tag で顧問先別 attribution |
 | **Codex / GPT** | 軽量 use case 全般 | OpenAPI 経由 (`docs/openapi/v1.json`) | Custom GPT で agent action 化、JSON-LD 連携 |
-| **Cline / Continue.dev** | 開発者向け検証 | MCP 互換 stdio | プロンプト変えながら 139 tool を素早く比較 |
+| **Cline / Continue.dev** | 開発者向け検証 | MCP 互換 stdio | プロンプト変えながら 151 tool を素早く比較 |
 
 ### Claude Desktop 設定例 (税理士)
 
@@ -516,9 +516,9 @@ DD deck テンプレを project root の `prompts/dd_deck.md` に置き、`match
 
 LLM 幻覚率 22-40% は公開された LLM bench (`tools/offline/aeo_citation_bench.py` 等) の典型値。 士業本人の verify 工数も TKC 戦略経営者通信ヒアリング (税理士業務時間)・日行連標準額 (行政書士)・JICPA 監査報酬指針 (会計士) からの推定。 過大に出る幻覚率はあるが、低めに出ることはない。
 
-### Q3. jpcite が幻覚率 0% は本当か?
+### Q3. jpcite は回答の誤りを完全に防げるのか?
 
-jpcite は SQLite (programs 11,601 / 採択 2,286 / 融資 108 / 行政処分 1,185 / 法令 6,493 etc.) + 一次資料 URL のみ。 LLM 推論を一切経由しない (`tests/test_no_llm_in_production.py` で CI guard)。 構造的に幻覚は発生し得ない。 ただし「DB row の元データが古い」リスクはあり、これは `source_fetched_at` 列で透明化、月次 ETL で refresh。
+jpcite は SQLite (programs 11,601 / 採択 2,286 / 融資 108 / 行政処分 1,185 / 法令 6,493 etc.) + 一次資料 URL を返し、LLM 推論を一切経由しない (`tests/test_no_llm_in_production.py` で CI guard)。これは根拠確認の手戻りを減らす設計だが、回答の無誤りを保証しない。DB row の元データが古い、対象制度が未収録、caller 側 LLM が引用を誤読する、といったリスクは残るため、`source_fetched_at` と一次資料で確認する。
 
 ### Q4. リスク shield (失敗回避) と月次 ROI、どちらが本物?
 

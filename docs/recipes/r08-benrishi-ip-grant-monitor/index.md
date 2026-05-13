@@ -108,11 +108,13 @@ fs.writeFileSync("ip_monitor.json", JSON.stringify(rows, null, 2));
 - `apply_eligibility_chain` (排他ルールチェック、公開版 21)
 
 ## 関連 recipe
-- [r01-tax-firm-monthly-review](../r01-tax-firm-monthly-review/) — 税理士月次、知財補助金 + 税制控除
-- [r07-shindanshi-monthly-companion](../r07-shindanshi-monthly-companion/) — 診断士月次伴走、事業計画 + 知財戦略
-- [r29-municipal-grant-monitor](../r29-municipal-grant-monitor/) — 市町村 IP 助成の差分配信
+- [r01-tax-firm-monthly-review](../r01-tax-firm-monthly-review/index.md) — 税理士月次、知財補助金 + 税制控除
+- [r07-shindanshi-monthly-companion](../r07-shindanshi-monthly-companion/index.md) — 診断士月次伴走、事業計画 + 知財戦略
+- [r29-municipal-grant-monitor](../r29-municipal-grant-monitor/index.md) — 市町村 IP 助成の差分配信
 
 ## billable_units 試算
+
+- API fee delta: API fee delta の前提と再現式は [docs/canonical/cost_saving_examples.md](../../canonical/cost_saving_examples.md) を参照。
 - 1 顧問先 1 回 = 10 units × ¥3 = ¥30 / 顧問先 / 月
 - 顧問先 50 社 = ¥1,500 / 月、税込 ¥1,650 / 月
 - 顧問先 100 社 = ¥3,000 / 月、税込 ¥3,300 / 月

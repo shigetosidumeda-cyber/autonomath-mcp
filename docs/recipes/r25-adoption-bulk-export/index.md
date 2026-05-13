@@ -114,15 +114,15 @@ console.log(`採択 ${job.row_count} 件、URL: ${job.result_url}`);
 - `get_program_detail` (program 原文)
 
 ## 関連 recipe
-- [r07-shindanshi-monthly-companion](../r07-shindanshi-monthly-companion/) — 診断士月次伴走、類似採択事例参照
-- [r09-bpo-grant-triage-1000](../r09-bpo-grant-triage-1000/) — BPO トリアージ、優先架電基準
-- [r24-houjin-6source-join](../r24-houjin-6source-join/) — 法人 6 source join
+- [r07-shindanshi-monthly-companion](../r07-shindanshi-monthly-companion/index.md) — 診断士月次伴走、類似採択事例参照
+- [r09-bpo-grant-triage-1000](../r09-bpo-grant-triage-1000/index.md) — BPO トリアージ、優先架電基準
+- [r24-houjin-6source-join](../r24-houjin-6source-join/index.md) — 法人 6 source join
 
 ## billable_units 試算
 - 1 batch 200 units × ¥3 = ¥600 / 月
 - 月 5 batch (program 別 / 業種別) = ¥3,000 / 月、税込 ¥3,300
 - 年 ¥36,000 / 年、税込 ¥39,600
-- 節約 (純 LLM vs jpcite 標準従量料金): 月 5 batch × 200 cycle で、純 LLM は約 ¥10,000/月 (1 batch cycle ¥2,000 = bulk fetch 200 record + filter) に対し jpcite は ¥3,000/月 (1,000 req × ¥3) → 節約 約 ¥7,000/月 / batch あたり ¥1,400 (cf. `docs/canonical/cost_saving_examples.md` case 5 同系)
+- API fee delta: 月 5 batch × 200 cycle で、外部 model/search API fee は約 ¥10,000/月 (1 batch cycle ¥2,000 = bulk fetch 200 record + filter) に対し jpcite は ¥3,000/月 (1,000 req × ¥3) → API fee delta 約 ¥7,000/月 / batch あたり ¥1,400 (cf. `docs/canonical/cost_saving_examples.md` case 5 同系)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0、出典明記必須

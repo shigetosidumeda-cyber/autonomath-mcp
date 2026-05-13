@@ -118,15 +118,15 @@ console.log(`関連補助金: ${law.related_programs.length} 件`);
 - `get_law_with_related` (法令 → 関連 4 source 一括取得、本 recipe の中核)
 
 ## 関連 recipe
-- [r22-n8n-zapier-webhook](../r22-n8n-zapier-webhook/) — n8n / Zapier、法改正速報 + 通知自動化
-- [r28-edinet-program-trigger](../r28-edinet-program-trigger/) — EDINET 連動、上場会社の改正対応 trigger
-- [r29-municipal-grant-monitor](../r29-municipal-grant-monitor/) — 市町村独自補助金、改正連動部分の差分
+- [r22-n8n-zapier-webhook](../r22-n8n-zapier-webhook/index.md) — n8n / Zapier、法改正速報 + 通知自動化
+- [r28-edinet-program-trigger](../r28-edinet-program-trigger/index.md) — EDINET 連動、上場会社の改正対応 trigger
+- [r29-municipal-grant-monitor](../r29-municipal-grant-monitor/index.md) — 市町村独自補助金、改正連動部分の差分
 
 ## billable_units 試算
 - 1 件 5 units × ¥3 = ¥15
 - 法改正 10 件 / 月 = ¥150 / 月、税込 ¥165
 - 法改正 50 件 / 月 (大手シンクタンク level) = ¥750 / 月、税込 ¥825
-- 節約 (純 LLM vs jpcite 標準従量料金): 月 10 件法改正 link で、純 LLM は約 ¥500/月 (1 件 cycle ¥50 = 法令本文 + 補助金 + 通達 cross-ref + tool 6) に対し jpcite は ¥150/月 (50 req × ¥3) → 節約 約 ¥350/月 / 件あたり ¥35 (cf. `docs/canonical/cost_saving_examples.md` case 6 同系)
+- API fee delta: 月 10 件法改正 link で、外部 model/search API fee は約 ¥500/月 (1 件 cycle ¥50 = 法令本文 + 補助金 + 通達 cross-ref + tool 6) に対し jpcite は ¥150/月 (50 req × ¥3) → API fee delta 約 ¥350/月 / 件あたり ¥35 (cf. `docs/canonical/cost_saving_examples.md` case 6 同系)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0

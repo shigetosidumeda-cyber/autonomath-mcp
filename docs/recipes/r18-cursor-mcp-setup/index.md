@@ -64,7 +64,7 @@ subprocess.run(["uvx", "autonomath-mcp", "--help"], check=True)
   "fetched_at": "2026-05-11T09:00:00Z",
   "source_url": "https://api.jpcite.com/mcp",
   "tools_loaded": ["search_programs", "get_corp_360", "list_adoptions", "check_invoice_status",
-                    "get_enforcement", "(...合計 139 tool、Settings > MCP で tools count を確認)"],
+                    "get_enforcement", "(...合計 151 tool、Settings > MCP で tools count を確認)"],
   "sample_chat": [
     {
       "user": "@jpcite search_programs q='ものづくり' prefecture='東京都' tier=['S','A'] limit=5",
@@ -90,10 +90,10 @@ subprocess.run(["uvx", "autonomath-mcp", "--help"], check=True)
 - `get_program_detail` (補助金原文、要綱本文の即時参照)
 
 ## 関連 recipe
-- [r16-claude-code-30sec](../r16-claude-code-30sec/) — Claude Code 30 秒接続、CLI 派のエンジニア向け
-- [r17-chatgpt-custom-gpt](../r17-chatgpt-custom-gpt/) — ChatGPT Custom GPT、ブラウザ chatbot 化
-- [r19-codex-agents-sdk](../r19-codex-agents-sdk/) — Codex Agents SDK、Codex CLI 派
-- [r20-continue-cline](../r20-continue-cline/) — Continue / Cline VSCode 拡張、VSCode 派
+- [r16-claude-code-30sec](../r16-claude-code-30sec/index.md) — Claude Code 30 秒接続、CLI 派のエンジニア向け
+- [r17-chatgpt-custom-gpt](../r17-chatgpt-custom-gpt/index.md) — ChatGPT Custom GPT、ブラウザ chatbot 化
+- [r19-codex-agents-sdk](../r19-codex-agents-sdk/index.md) — Codex Agents SDK、Codex CLI 派
+- [r20-continue-cline](../r20-continue-cline/index.md) — Continue / Cline VSCode 拡張、VSCode 派
 
 ## billable_units 試算
 - 1 req 1 unit × ¥3 = ¥3

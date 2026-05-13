@@ -220,7 +220,7 @@ limit=10'</code></pre>
 r = httpx.post(
  "https://api.jpcite.com/v1/exclusions/check",
  json={"program_ids": ["P001", "P342"]},
- headers={"X-API-Key": "am_..."}
+ headers={"X-API-Key": "jc_..."}
 )
 print(r.json["conflicts"])</code></pre>
  <p class="demo-note">181 exclusion rules (125 exclude + 17 prerequisite + 15 absolute + 24 other) flag conflicts.</p>
@@ -234,7 +234,7 @@ print(r.json["conflicts"])</code></pre>
  "jpcite": {
  "command": "uvx",
  "args": ["autonomath-mcp"],
- "env": {"JPCITE_API_KEY": "am_..."}
+ "env": {"JPCITE_API_KEY": "jc_..."}
  }
  }
 }</code></pre>

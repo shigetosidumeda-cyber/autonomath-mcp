@@ -6,10 +6,10 @@
 <meta name="theme-color" content="#ffffff">
 <meta name="color-scheme" content="light dark">
 <title>公認会計士事務所向け jpcite — 監査調書 scaffold + 研究開発税制 + 被監査会社 DD</title>
-<meta name="description" content="公認会計士事務所向け jpcite 活用ガイド。研究開発税制 措置法 lookup、IT 導入補助金 会計処理 dual check、被監査会社 DD question deck、行政処分歴 filter、監査調書 template scaffold。月次 100 社 × 5 req = 500 req で ¥1,500/月、純 LLM 公開情報 fetch ¥150,000/月 との差分 節約 ¥148,500/月 (約 99% off)。¥3/billable unit 完全従量、anonymous 3 req/日 free。">
+<meta name="description" content="公認会計士事務所向け jpcite 活用ガイド。研究開発税制 措置法 lookup、IT 導入補助金 会計処理 dual check、被監査会社 DD question deck、行政処分歴 filter、監査調書 template scaffold。月次 100 社 × 5 req = 500 req で ¥1,500/月、API fee delta 参考値 ¥148,500/月。¥3/billable unit 完全従量、anonymous 3 req/日 free。">
 
 <meta property="og:title" content="公認会計士事務所向け jpcite">
-<meta property="og:description" content="研究開発税制 + IT 導入補助金 会計処理 + 被監査会社 DD + 監査調書 scaffold を Claude Desktop 経由で 1 query。月次 500 req で純 LLM ¥150,000 → jpcite ¥1,500、節約 ¥148,500/月 (推定値)。">
+<meta property="og:description" content="研究開発税制 + IT 導入補助金 会計処理 + 被監査会社 DD + 監査調書 scaffold を Claude Desktop 経由で 1 query。月次 500 req で jpcite ¥1,500、API fee delta 参考値 ¥148,500/月。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/audiences/cpa_firm">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -93,7 +93,7 @@
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    {"@type": "Question", "name": "監査期あたりの目安は?", "acceptedAnswer": {"@type": "Answer", "text": "月次 100 社 × 5 req = 500 req/月 = ¥1,500/月 (税別) が目安。純 LLM 公開情報 fetch ¥150,000/月 との差分で 節約 ¥148,500/月 (約 99% off、推定値)。"}},
+    {"@type": "Question", "name": "監査期あたりの目安は?", "acceptedAnswer": {"@type": "Answer", "text": "月次 100 社 × 5 req = 500 req/月 = ¥1,500/月 (税別) が目安。API fee delta 参考値は ¥148,500/月です。"}},
     {"@type": "Question", "name": "公認会計士法 §47条の2 との整合は?", "acceptedAnswer": {"@type": "Answer", "text": "jpcite は監査意見・税務代理を一切行いません。検索結果は会計士本人の判断材料、調書 scaffold は最終調書ではありません。"}},
     {"@type": "Question", "name": "守秘義務との整合は?", "acceptedAnswer": {"@type": "Answer", "text": "検索クエリは学習データに使用しません。被監査会社名は法人番号で query するため対外送信は最小限です。"}}
   ]
@@ -199,46 +199,46 @@
 
  <section class="features" aria-labelledby="cost-saving-title">
  <div class="container">
- <h2 id="cost-saving-title" style="margin-bottom:16px;">Cost saving calculator (月次 100 社 × 5 req: 純 LLM vs jpcite ¥3/billable unit)</h2>
- <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: 数値は中堅事務所 100 社レビュー × 月 5 req の想定値 (推定値)。「純 LLM」は外部 web search + token 課金で同じ公開情報 (研究開発税制条文・IT 導入補助金 会計処理・DD question・行政処分歴・調書 scaffold 素材) を fetch した場合、「jpcite ¥3/billable unit」は jpcite MCP 1-call 経路で同じ事実検索を回した場合の差分。詳細仮定は <a href="//tools/cost_saving_examples.md">/tools/cost_saving_examples.md</a> case 1 を参照。</p>
+ <h2 id="cost-saving-title" style="margin-bottom:16px;">API fee delta reference (月次 100 社 × 5 req: jpcite ¥3/billable unit)</h2>
+ <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: 数値は中堅事務所 100 社レビュー × 月 5 req の想定値 (推定値)。外部 API fee baseline と「jpcite ¥3/billable unit」の差分だけを示します。売上・利益・業務成果・専門判断の価値は含みません。詳細仮定は <a href="/tools/cost_saving_examples.md">/tools/cost_saving_examples.md</a> case 1 を参照。</p>
  <div style="overflow-x:auto;">
  <table style="width:100%;border-collapse:collapse;font-size:14px;">
  <thead>
  <tr style="background:var(--bg-subtle,#fafafa);border-bottom:2px solid var(--border);">
  <th style="padding:12px;text-align:left;">task</th>
- <th style="padding:12px;text-align:left;">純 LLM コスト (baseline)</th>
+ <th style="padding:12px;text-align:left;">外部 API fee baseline</th>
  <th style="padding:12px;text-align:left;">jpcite ¥3/billable unit</th>
- <th style="padding:12px;text-align:left;">節約 ¥/月</th>
+ <th style="padding:12px;text-align:left;">API fee delta</th>
  </tr>
  </thead>
  <tbody>
  <tr style="border-bottom:1px solid var(--border);">
  <td style="padding:12px;"><strong>1. 研究開発税制 関連条文 lookup</strong> (措置法 42-4)</td>
- <td style="padding:12px;">条文 hallucination 裏取り source 3,000 tokens × ¥300/1M + 1 search × 100 社 ≈ ¥30,000/月</td>
+ <td style="padding:12px;">条文・一次 URL 確認の stated baseline 参考値 ≈ ¥30,000/月</td>
  <td style="padding:12px;">100 req ¥300 + 一次 URL (e-Gov) + tax_rulesets v2 50 件 (措置法 42-4 backfill 済)</td>
  <td style="padding:12px;">¥29,700/月</td>
  </tr>
  <tr style="border-bottom:1px solid var(--border);">
  <td style="padding:12px;"><strong>2. IT 導入補助金 会計処理 dual check</strong></td>
- <td style="padding:12px;">補助金収入 vs 圧縮記帳 vs 一括計上 判断 source 4,000 tokens + 2 search × 100 社 ≈ ¥40,000/月</td>
+ <td style="padding:12px;">補助金収入 vs 圧縮記帳 vs 一括計上の stated baseline 参考値 ≈ ¥40,000/月</td>
  <td style="padding:12px;">100 req ¥300 + tax_rulesets (IT 導入補助金 会計処理 backfill 済) + 通達 reference</td>
  <td style="padding:12px;">¥39,700/月</td>
  </tr>
  <tr style="border-bottom:1px solid var(--border);">
  <td style="padding:12px;"><strong>3. 被監査会社 DD question deck</strong></td>
- <td style="padding:12px;">業種 × 規模 question source 3,500 tokens + 2 search × 100 社 ≈ ¥35,000/月</td>
+ <td style="padding:12px;">業種 × 規模 question の stated baseline 参考値 ≈ ¥35,000/月</td>
  <td style="padding:12px;">100 req ¥300 (match_due_diligence_questions, 60 templates × 7 category)</td>
  <td style="padding:12px;">¥34,700/月</td>
  </tr>
  <tr style="border-bottom:1px solid var(--border);">
  <td style="padding:12px;"><strong>4. 行政処分歴 filter (取引先)</strong></td>
- <td style="padding:12px;">官報手動検索 + 公開情報 source 2,500 tokens + 2 search × 100 社 ≈ ¥30,000/月</td>
+ <td style="padding:12px;">官報・公開情報確認の stated baseline 参考値 ≈ ¥30,000/月</td>
  <td style="padding:12px;">100 req ¥300 (check_enforcement_am, 1,185 enforcement rows + houjin_bangou join)</td>
  <td style="padding:12px;">¥29,700/月</td>
  </tr>
  <tr style="border-bottom:1px solid var(--border);">
  <td style="padding:12px;"><strong>5. 監査調書 template scaffold</strong></td>
- <td style="padding:12px;">template 雛形 + 業種別 question source 1,500 tokens + 1 search × 100 社 ≈ ¥15,000/月</td>
+ <td style="padding:12px;">template 雛形 + 業種別 question の stated baseline 参考値 ≈ ¥15,000/月</td>
  <td style="padding:12px;">100 req ¥300 (bundle_application_kit + match_due_diligence_questions)</td>
  <td style="padding:12px;">¥14,700/月</td>
  </tr>
@@ -246,12 +246,12 @@
  <td style="padding:12px;">合計 (月次 100 社 × 5 req)</td>
  <td style="padding:12px;">¥150,000/月</td>
  <td style="padding:12px;">¥1,500/月 (500 req × ¥3)</td>
- <td style="padding:12px;"><strong>節約 ¥148,500/月 (約 99% off)</strong></td>
+ <td style="padding:12px;"><strong>API fee delta ¥148,500/月</strong></td>
  </tr>
  </tbody>
  </table>
  </div>
- <p style="font-size:13px;color:var(--text-muted);margin-top:12px;">※ 「純 LLM ¥150,000/月」は token 単価 ¥300/1M (mid-cost reasoning model 想定)、source 約 14,500 tokens × 100 社 + 8 search call × 100 社 × ¥0.5 + cache miss 増分で概算。Claude Opus / GPT-5 等 ¥2,000+/1M を採用すれば節約幅は 7 倍に拡大。jpcite 側 ¥1,500/月 は 500 req × ¥3 完全従量 (税別)。「節約 ¥148,500/月」は LLM 請求の削減保証ではなく入力文脈 + 課金 call 数の参考比較で、誇大広告意図なし。最終調書・監査意見は有資格者にご相談ください。</p>
+ <p style="font-size:13px;color:var(--text-muted);margin-top:12px;">※ 外部 API fee baseline ¥150,000/月は stated baseline の参考比較です。jpcite 側 ¥1,500/月 は 500 req × ¥3 完全従量 (税別)。API fee delta ¥148,500/月は請求額・業務成果・専門判断の価値を示すものではありません。最終調書・監査意見は有資格者にご相談ください。</p>
  </div>
  </section>
 

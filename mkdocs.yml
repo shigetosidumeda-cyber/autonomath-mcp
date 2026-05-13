@@ -341,6 +341,23 @@ nav:
           - 商工会議所 自治体スクリーニング: recipes/r10-cci-municipal-screen/index.md
           - EC 適格事業者一括確認: recipes/r11-ec-invoice-bulk-verify/index.md
           - 監査法人 KYCスイープ: recipes/r12-audit-firm-kyc-sweep/index.md
+          - 司法書士 登記ウォッチ: recipes/r13-shihoshoshi-registry-watch/index.md
+          - 公共調達 入札監視: recipes/r14-public-bid-watch/index.md
+          - Claude Code 最短セットアップ: recipes/r16-claude-code-30sec/index.md
+          - ChatGPT Custom GPT 連携: recipes/r17-chatgpt-custom-gpt/index.md
+          - Cursor MCP 連携: recipes/r18-cursor-mcp-setup/index.md
+          - Codex / Agents SDK 連携: recipes/r19-codex-agents-sdk/index.md
+          - Continue / Cline 連携: recipes/r20-continue-cline/index.md
+          - LangChain / LlamaIndex / RAG: recipes/r21-langchain-llamaindex-rag/index.md
+          - n8n / Zapier / Webhook: recipes/r22-n8n-zapier-webhook/index.md
+          - Slack bot 連携: recipes/r23-slack-bot/index.md
+          - 法人 6-source join: recipes/r24-houjin-6source-join/index.md
+          - 採択履歴 bulk export: recipes/r25-adoption-bulk-export/index.md
+          - 行政処分 RSS / Slack: recipes/r26-enforcement-rss-slack/index.md
+          - 法改正・制度リンク確認: recipes/r27-law-amendment-program-link/index.md
+          - EDINET trigger: recipes/r28-edinet-program-trigger/index.md
+          - 自治体補助金 monitor: recipes/r29-municipal-grant-monitor/index.md
+          - 適格事業者取消 watch: recipes/r30-invoice-revoke-watch/index.md
       - AI 推薦条件: recommendation-scenarios.md
       - ダッシュボード: dashboard_guide.md
       - アラート: alerts_guide.md

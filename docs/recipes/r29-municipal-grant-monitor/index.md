@@ -111,14 +111,14 @@ console.log(`新規 ${diff.added_programs.length} 件、削除 ${diff.removed_pr
 - `municipal_diff` (差分取得、cron 用)
 
 ## 関連 recipe
-- [r10-cci-municipal-screen](../r10-cci-municipal-screen/) — 商工会議所 市町村 sweep、会員企業との突合
-- [r22-n8n-zapier-webhook](../r22-n8n-zapier-webhook/) — n8n / Zapier、差分配信自動化
+- [r10-cci-municipal-screen](../r10-cci-municipal-screen/index.md) — 商工会議所 市町村 sweep、会員企業との突合
+- [r22-n8n-zapier-webhook](../r22-n8n-zapier-webhook/index.md) — n8n / Zapier、差分配信自動化
 
 ## billable_units 試算
 - 1 batch 47 units × ¥3 = ¥141 / 週
 - 月 4 週 = ¥564 / 月、税込 ¥620
 - 1,741 市町村全件 = 1 batch 1,741 units × ¥3 = ¥5,223 / 週、月 ¥20,892、税込 ¥22,981
-- 節約 (純 LLM vs jpcite 標準従量料金): 47 自治体 × 月 4 週で、純 LLM は約 ¥1,880/月 (1 batch cycle ¥470 = 47 自治体 diff fetch + filter) に対し jpcite は ¥564/月 (188 req × ¥3) → 節約 約 ¥1,316/月 / 自治体あたり ¥28 (cf. `docs/canonical/cost_saving_examples.md` case 6 同系)
+- API fee delta: 47 自治体 × 月 4 週で、外部 model/search API fee は約 ¥1,880/月 (1 batch cycle ¥470 = 47 自治体 diff fetch + filter) に対し jpcite は ¥564/月 (188 req × ¥3) → API fee delta 約 ¥1,316/月 / 自治体あたり ¥28 (cf. `docs/canonical/cost_saving_examples.md` case 6 同系)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0

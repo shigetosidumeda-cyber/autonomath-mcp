@@ -371,7 +371,14 @@ def test_email_inbound_unknown_key_is_silently_ignored(client):
 # ---------------------------------------------------------------------------
 
 
-def test_saved_search_results_xlsx_returns_workbook(client, integration_key):
+def test_saved_search_results_xlsx_returns_workbook(client, integration_key, monkeypatch):
+    from jpintel_mcp.api import _universal_envelope
+
+    monkeypatch.setattr(
+        _universal_envelope,
+        "license_for_url",
+        lambda _url: "gov_standard",
+    )
     r0 = client.post(
         "/v1/me/saved_searches",
         headers={"X-API-Key": integration_key},

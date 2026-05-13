@@ -236,6 +236,7 @@ def conflict_autonomath_db(
         conn.close()
 
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(db_path))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", str(db_path))
     from jpintel_mcp.config import settings
 
     monkeypatch.setattr(settings, "autonomath_db_path", db_path)
@@ -462,6 +463,7 @@ def test_conflict_graceful_degradation_when_tables_missing(
     conn.close()
 
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(bare_db))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", str(bare_db))
     from jpintel_mcp.config import settings
 
     monkeypatch.setattr(settings, "autonomath_db_path", bare_db)

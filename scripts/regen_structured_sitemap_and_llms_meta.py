@@ -42,8 +42,6 @@ STRUCTURED_ROOT_PAGES: list[tuple[str, str, float]] = [
     ("/about.html", "weekly", 0.9),
     ("/pricing.html", "weekly", 0.9),
     ("/facts.html", "weekly", 0.9),
-    ("/facts.en.html", "weekly", 0.9),
-    ("/dashboard.html", "daily", 0.7),
     ("/calculator.html", "monthly", 0.6),
     ("/calculator/", "monthly", 0.6),
     ("/benchmark/", "monthly", 0.6),
@@ -105,6 +103,10 @@ def _extract_urls_from_shard(path: Path) -> list[tuple[str, str, str, str]]:
 
 def _sha256_hex(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
+
+def _md5_hex(data: bytes) -> str:
+    return hashlib.md5(data, usedforsecurity=False).hexdigest()
 
 
 def _enumerate_anchors(text: str) -> tuple[list[dict], int, int]:
@@ -304,6 +306,32 @@ def build_llms_meta() -> tuple[dict, int]:
     return payload, total_section_anchors
 
 
+def sync_llms_well_known_hashes() -> None:
+    manifest_path = SITE / ".well-known" / "llms.json"
+    if not manifest_path.exists():
+        return
+
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    targets = {
+        "llms_txt": SITE / "llms.txt",
+        "llms_full_txt": SITE / "llms-full.txt",
+        "llms_en_txt": SITE / "llms.en.txt",
+        "llms_full_en_txt": SITE / "llms-full.en.txt",
+    }
+    content_hash = manifest.setdefault("content_hash", {})
+    content_hash["algorithm"] = "sha256"
+    content_hash_md5 = manifest.setdefault("content_hash_md5", {})
+    content_hash_md5["algorithm"] = "md5"
+    for key, path in targets.items():
+        raw = path.read_bytes()
+        content_hash[key] = _sha256_hex(raw)
+        content_hash_md5[key] = _md5_hex(raw)
+    manifest_path.write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+
 def main() -> int:
     sm_xml, url_count = build_structured_sitemap()
     (SITE / "sitemap-structured.xml").write_text(sm_xml, encoding="utf-8")
@@ -313,6 +341,7 @@ def main() -> int:
         json.dumps(meta, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
+    sync_llms_well_known_hashes()
 
     print(f"sitemap-structured.xml: {url_count} URLs", file=sys.stderr)
     print(

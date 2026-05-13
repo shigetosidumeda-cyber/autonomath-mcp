@@ -2003,24 +2003,24 @@
       display: 'Claude (Desktop / Code / claude.ai)',
       badge: 'Claude',
       snippet: 'claude mcp add jpcite -- uvx autonomath-mcp',
-      hint: 'Claude Desktop / Claude Code に 1 行追加すると 139 tools が即利用可能。続きは API キーで継続できます。',
+      hint: 'Claude Desktop / Claude Code に 1 行追加すると 151 tools が即利用可能。続きは API キーで継続できます。',
     },
     chatgpt: {
       display: 'ChatGPT (Custom GPT / Actions)',
       badge: 'ChatGPT',
-      snippet: 'Action URL: https://api.jpcite.com/openapi.agent.gpt30.json\nAuth: Bearer am_xxxx (発行後)',
+      snippet: 'Action URL: https://api.jpcite.com/openapi.agent.gpt30.json\nAuth: Bearer jc_xxxx (発行後)',
       hint: 'ChatGPT の Custom GPT に Action として登録。anonymous でも 3 req/日 までは無認証で試せます。',
     },
     cursor: {
       display: 'Cursor',
       badge: 'Cursor',
       snippet: '// ~/.cursor/mcp.json\n{\n  "mcpServers": {\n    "jpcite": {\n      "command": "uvx",\n      "args": ["autonomath-mcp"]\n    }\n  }\n}',
-      hint: '~/.cursor/mcp.json に jpcite サーバーを追加 → Cursor 再起動で 139 tools が候補に。',
+      hint: '~/.cursor/mcp.json に jpcite サーバーを追加 → Cursor 再起動で 151 tools が候補に。',
     },
     cline: {
       display: 'Cline (VS Code)',
       badge: 'Cline',
-      snippet: '// Cline → MCP Servers → Add server\n// Command: uvx\n// Args: autonomath-mcp\n// Env: JPCITE_API_KEY=am_xxxx (任意)',
+      snippet: '// Cline → MCP Servers → Add server\n// Command: uvx\n// Args: autonomath-mcp\n// Env: JPCITE_API_KEY=jc_xxxx (任意)',
       hint: 'VS Code の Cline 拡張から MCP Server を追加。anonymous は 3 req/日 までキー不要。',
     },
     browser: {

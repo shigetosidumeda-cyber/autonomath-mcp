@@ -31,7 +31,7 @@
 
 ```bash
 export JPCITE_API_BASE=https://api.jpcite.com
-export JPCITE_API_KEY=am_xxxx   # 任意; 未設定なら anonymous 3/日
+export JPCITE_API_KEY=jc_xxxx   # 任意; 未設定なら anonymous 3/日
 ```
 
 ## 1. 都道府県 + 業種で補助金検索
@@ -336,7 +336,7 @@ boolean 糖衣を提供。`max_interest_rate=0.015` で年利 1.5% 上限、
 
 ## See Also
 
-- [mcp-tools.md](./mcp-tools.md) — 全 139 ツールのスキーマ
+- [mcp-tools.md](./mcp-tools.md) — 全 151 ツールのスキーマ
 - [api-reference.md](./api-reference.md) — REST 全エンドポイント
 - [exclusions.md](./exclusions.md) — 排他ルールの kind / severity 分類
 - [prompt_cookbook.md](./prompt_cookbook.md) — agent flow のレシピ集

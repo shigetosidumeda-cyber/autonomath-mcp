@@ -234,7 +234,9 @@ def test_ingest_populates_lineage_fields(tmp_path: Path, monkeypatch) -> None:
     # Fresh isolated DB for this test.
     db_path = tmp_path / "ingest_target.db"
     monkeypatch.setenv("JPINTEL_DB_PATH", str(db_path))
+    monkeypatch.setenv("JPCITE_DB_PATH", str(db_path))
     monkeypatch.setenv("JPINTEL_AUTONOMATH_PATH", str(autonomath_root))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_PATH", str(autonomath_root))
 
     # Purge cached jpintel_mcp modules so Settings re-reads env.
     for mod in list(sys.modules):

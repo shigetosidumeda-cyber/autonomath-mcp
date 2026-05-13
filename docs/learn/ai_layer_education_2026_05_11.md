@@ -134,7 +134,7 @@ RFC 8615 の `.well-known` 慣習に則った場所。
 mcp サーバ install コマンド (`uvx autonomath-mcp`), auth (`X-API-Key`, `jc_` prefix),
 pricing (¥3/req 完全従量), 3 つの `recurring_agent_workflows` (company_folder_intake /
 monthly_client_review / counterparty_dd_and_audit_prep), `recommend_when` /
-`do_not_recommend_when`, `evidence_to_expert_handoff` (7 業法フェンス含む) を網羅。
+`do_not_recommend_when`, `evidence_to_expert_handoff` (8 業法フェンス含む) を網羅。
 
 #### B-2-3. `/.well-known/agents.json` (agents.json draft、複数の MCP/REST 配信先を集約)
 
@@ -156,7 +156,7 @@ schema_version, name_for_human, name_for_model, description_for_model, auth, api
 更に Claude Code / Cursor 等が「Custom GPT Action discovery を真似る」ので価値は残存。
 
 **jpcite 現状**: schema_version=v1, name_for_model=jpcite,
-description_for_model に「7 業法フェンス + 匿名 3 req/日 + jc_ プレフィックス + Stripe Checkout」
+description_for_model に「8 業法フェンス + 匿名 3 req/日 + jc_ プレフィックス + Stripe Checkout」
 を組み込み、api.url=https://jpcite.com/openapi.agent.gpt30.json を指す。
 
 ### B-3. MCP server (server.json + uvx 配信)
@@ -165,7 +165,7 @@ description_for_model に「7 業法フェンス + 匿名 3 req/日 + jc_ プレ
 
 - **Transport**: stdio / HTTP / SSE。jpcite は stdio (`uvx autonomath-mcp`) + HTTPS (`https://api.jpcite.com/mcp`)
 - **3 つの primary capability**:
-  - **Tools** — AI agent が呼べる関数 (jpcite は 139 tools)
+  - **Tools** — AI agent が呼べる関数 (jpcite は 151 tools)
   - **Resources** — AI agent が読み取れる文書/ファイル (jpcite は facts_registry + fence.md)
   - **Prompts** — Templated prompt workflow (jpcite は未配信)
 - **Client → Server 方向の 3 capability**:

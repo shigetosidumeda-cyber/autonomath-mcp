@@ -18,7 +18,7 @@
 
 ```bash
 curl -X POST https://api.jpcite.com/v1/me/alerts/subscribe \
-  -H "X-API-Key: am_..." \
+  -H "X-API-Key: jc_..." \
   -H "Content-Type: application/json" \
   -d '{
     "filter_type": "program_id",
@@ -41,14 +41,14 @@ curl -X POST https://api.jpcite.com/v1/me/alerts/subscribe \
 
 ```bash
 curl https://api.jpcite.com/v1/me/alerts/subscriptions \
-  -H "X-API-Key: am_..."
+  -H "X-API-Key: jc_..."
 ```
 
 ## 削除
 
 ```bash
 curl -X DELETE https://api.jpcite.com/v1/me/alerts/subscriptions/42 \
-  -H "X-API-Key: am_..."
+  -H "X-API-Key: jc_..."
 ```
 
 ## Webhook payload

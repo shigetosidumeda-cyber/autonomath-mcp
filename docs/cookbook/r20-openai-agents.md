@@ -1,6 +1,6 @@
 # R20 — OpenAI Agents SDK で jpcite を MCP サーバーとして使う
 
-OpenAI Agents SDK の `MCPServerStdio` 1-liner で jpcite の 139 ツールを agent から即座に使えるようにする。
+OpenAI Agents SDK の `MCPServerStdio` 1-liner で jpcite の 151 ツールを agent から即座に使えるようにする。
 
 - **Audience (cohort)**: All cohorts (OpenAI Agents で社内アプリを書く developer)
 - **Use case**: 自社 agent パイプラインに「日本の制度 fact tool」を 1 行で追加、ChatGPT より細粒度に制御
@@ -9,7 +9,7 @@ OpenAI Agents SDK の `MCPServerStdio` 1-liner で jpcite の 139 ツールを a
 
 ## TL;DR
 
-OpenAI Agents SDK は MCP サーバーを stdio 経由で標準サポート。`uvx autonomath-mcp` を `MCPServerStdio` で包むだけで jpcite の 139 ツールが Agent の tool surface に乗る。
+OpenAI Agents SDK は MCP サーバーを stdio 経由で標準サポート。`uvx autonomath-mcp` を `MCPServerStdio` で包むだけで jpcite の 151 ツールが Agent の tool surface に乗る。
 
 ## Sample (python)
 
@@ -66,7 +66,7 @@ asyncio.run(main())
 | OpenAI Agent + 自前 RAG | corpus 構築 工数 | 月数十万 |
 | OpenAI Agent + jpcite MCP | **¥3/call** + LLM 料金 | tier 厳密、`source_url` 一次のみ、`_disclaimer` 自動 |
 
-**SDK 1 行追加で 139 ツールを agent surface に乗せられる**。OpenAI 内部で `mcp_servers=[...]` がそのまま tool registration になるため、Agent が自動で適切なツールを選ぶ。
+**SDK 1 行追加で 151 ツールを agent surface に乗せられる**。OpenAI 内部で `mcp_servers=[...]` がそのまま tool registration になるため、Agent が自動で適切なツールを選ぶ。
 
 ## Caveat
 

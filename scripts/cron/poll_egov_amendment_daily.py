@@ -51,7 +51,12 @@ from urllib.parse import urlparse
 
 import httpx
 
-from scripts.etl._playwright_helper import fetch_with_fallback_sync  # Wave 36 wire
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+# Wave 36 wire marker.
+from scripts.etl._playwright_helper import fetch_with_fallback_sync  # noqa: E402
 
 logger = logging.getLogger("jpcite.cron.egov_amendment")
 
@@ -68,7 +73,6 @@ MAX_AMENDMENTS_PER_RUN = 500
 HTTPX_TIMEOUT = httpx.Timeout(30.0, connect=10.0)
 USER_AGENT = "jpcite-egov-amendment-poll/0.3.5 (+https://jpcite.com)"
 
-_REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_DB_PATH = _REPO_ROOT / "autonomath.db"
 
 
@@ -188,12 +192,14 @@ def _parse_amendments(body: str) -> list[dict[str, str]]:
         link_m = _LINK_RE.search(block)
         desc_m = _DESC_RE.search(block)
         date_m = _PUBDATE_RE.search(block)
-        items.append({
-            "title": _strip_cdata(title_m.group(1)) if title_m else "",
-            "link": _strip_cdata(link_m.group(1)) if link_m else "",
-            "description": _strip_cdata(desc_m.group(1)) if desc_m else "",
-            "pub_date": _strip_cdata(date_m.group(1)) if date_m else "",
-        })
+        items.append(
+            {
+                "title": _strip_cdata(title_m.group(1)) if title_m else "",
+                "link": _strip_cdata(link_m.group(1)) if link_m else "",
+                "description": _strip_cdata(desc_m.group(1)) if desc_m else "",
+                "pub_date": _strip_cdata(date_m.group(1)) if date_m else "",
+            }
+        )
     return items
 
 
@@ -241,9 +247,7 @@ def _fetch_rss(client: httpx.Client, url: str) -> str:
 # ---------------------------------------------------------------------------
 
 
-def _last_snapshot(
-    conn: sqlite3.Connection, entity_id: str
-) -> tuple[int, dict[str, str | None]]:
+def _last_snapshot(conn: sqlite3.Connection, entity_id: str) -> tuple[int, dict[str, str | None]]:
     row = conn.execute(
         """
         SELECT version_seq, raw_snapshot_json, content_hash, eligibility_hash
@@ -362,9 +366,7 @@ def run(db_path: Path, days: int, dry_run: bool) -> dict[str, int]:
             seq = prev_seq + 1
             new_snap = dict(it)
             new_snap["__hash__"] = content_hash
-            counters["snap_inserted"] += _insert_snapshot(
-                conn, entity_id, seq, it, content_hash
-            )
+            counters["snap_inserted"] += _insert_snapshot(conn, entity_id, seq, it, content_hash)
             counters["diff_inserted"] += _insert_diff_rows(
                 conn,
                 entity_id,

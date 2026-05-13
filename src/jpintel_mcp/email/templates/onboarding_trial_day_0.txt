@@ -9,27 +9,27 @@ jpcite のトライアルにご登録ありがとうございます。API キー
 - 有効期間: {{duration_days}} 日間 (失効: {{expires_at}})
 - リクエスト上限: {{request_cap}} 件
 - カード未登録 — 想定外の請求は発生しません
-- 139 MCP tools / REST API すべて利用可能
+- 151 MCP tools / REST API すべて利用可能
 
 ---
 
 最初の 3 リクエスト:
 
-YOUR_KEY を先ほど発行されたキーに置き換えてください。
+jc_xxx を先ほど発行されたキーに置き換えてください。
 
 1) 疎通確認 (/v1/ping)
 
-   curl -H "X-API-Key: YOUR_KEY" \
+   curl -H "X-API-Key: jc_xxx" \
      https://api.jpcite.com/v1/ping
 
 2) 補助金検索 (/v1/programs/search)
 
-   curl -H "X-API-Key: YOUR_KEY" \
+   curl -H "X-API-Key: jc_xxx" \
      "https://api.jpcite.com/v1/programs/search?prefecture=東京都&target_type=中小企業&limit=5"
 
 3) キーワード検索
 
-   curl -H "X-API-Key: YOUR_KEY" \
+   curl -H "X-API-Key: jc_xxx" \
      "https://api.jpcite.com/v1/programs/search?q=事業再構築&limit=5"
 
 ---

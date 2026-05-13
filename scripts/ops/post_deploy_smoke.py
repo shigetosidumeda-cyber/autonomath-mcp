@@ -3,7 +3,7 @@
 DEEP-61 — jpcite (v0.3.4) post-deploy smoke runbook.
 
 Five module gate (routes / mcp / disclaimer / stripe / health) covering the
-240 production route walk, the MCP tools/list 139+ verify, and the 17
+240 production route walk, the MCP tools/list 151+ verify, and the 17
 sensitive-tool `_disclaimer` envelope assertion. Designed to run from a
 Cloudflare Pages tunnel host or operator laptop within ~120 seconds.
 
@@ -170,7 +170,7 @@ def module_routes_500_zero(args: argparse.Namespace) -> ModuleResult:
 
 
 # ---------------------------------------------------------------------------
-# Module 2 — MCP tools/list ≥ 139
+# Module 2 — MCP tools/list ≥ 151
 # ---------------------------------------------------------------------------
 
 
@@ -533,7 +533,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--mcp-cmd", default=os.environ.get("JPCITE_SMOKE_MCP_CMD", "autonomath-mcp")
     )
     parser.add_argument("--mcp-timeout", type=float, default=30.0)
-    parser.add_argument("--mcp-min-tools", type=int, default=139)
+    parser.add_argument("--mcp-min-tools", type=int, default=151)
     parser.add_argument(
         "--skip-stripe", action="store_true", help="Skip the Stripe webhook module."
     )

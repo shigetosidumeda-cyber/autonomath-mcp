@@ -51,6 +51,7 @@ from typing import TYPE_CHECKING, Annotated, Any, Literal
 from fastapi import APIRouter, HTTPException, Query, Response, status
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
+from jpintel_mcp.api._license_gate import assert_no_blocked
 from jpintel_mcp.api.deps import (  # noqa: TC001 (runtime for FastAPI Depends resolution)
     ApiContextDep,
     DbDep,
@@ -750,6 +751,7 @@ def saved_search_results(
         "corpus_checksum": checksum,
     }
     export_rows = _attach_export_lineage(conn, {"results": rows})["results"]
+    assert_no_blocked(export_rows)
     resp = render(export_rows, format, meta)
     resp.headers["X-Corpus-Snapshot-Id"] = snapshot_id
     resp.headers["X-Corpus-Checksum"] = checksum
@@ -797,7 +799,6 @@ def saved_search_results_xlsx(
 
     from jpintel_mcp.api._corpus_snapshot import compute_corpus_snapshot
     from jpintel_mcp.api._format_dispatch import render
-    from jpintel_mcp.api._license_gate import assert_no_blocked
     from jpintel_mcp.api.programs import _attach_export_lineage
 
     rows, total = _run_saved_search_query(conn, query)

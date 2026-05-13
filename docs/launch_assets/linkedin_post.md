@@ -41,7 +41,7 @@ What's in it (2026-05-06 launch):
 
 Architecture choices that I think are interesting:
 
-- MCP-native: 139 tools, protocol 2025-06-18, stdio. One Manifest line
+- MCP-native: 151 tools, protocol 2025-06-18, stdio. One Manifest line
   plugs into Claude Desktop / Cursor / ChatGPT / Gemini. No SDK to
   maintain across clients.
 - SQLite 全文検索インデックス (3-gram) for Japanese compound-word search; ベクトル検索

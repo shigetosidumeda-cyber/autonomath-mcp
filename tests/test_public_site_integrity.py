@@ -169,7 +169,7 @@ def test_site_ai_discovery_tool_counts_advertise_runtime_total() -> None:
             payload["_meta"]["io.modelcontextprotocol.registry/publisher-provided"]["tool_count"]
             == 151
         )
-        assert "139 tools" in payload["description"]
+        assert "151 tools" in payload["description"]
         assert "150 tools" not in payload["description"]
 
     agents = json.loads((SITE / ".well-known" / "agents.json").read_text(encoding="utf-8"))

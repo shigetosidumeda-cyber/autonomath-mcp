@@ -27,12 +27,14 @@ LLM call count: 0. Pure SQLite + Pydantic. ¥3/req metered surface.
 from __future__ import annotations
 
 import logging
-import sqlite3
 from datetime import UTC, datetime, timedelta
-from typing import Annotated, Any
+from typing import TYPE_CHECKING, Annotated, Any
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Path, Query, status
 from pydantic import BaseModel, Field
+
+if TYPE_CHECKING:
+    import sqlite3
 
 from jpintel_mcp.api.deps import (  # noqa: TC001 — runtime resolution by FastAPI
     ApiContextDep,
@@ -269,10 +271,13 @@ def list_filings(
         offset=offset,
     )
     log_usage(
-        conn, ctx, ENDPOINT_LIST,
+        conn,
+        ctx,
+        ENDPOINT_LIST,
         status_code=200,
         result_count=len(items),
         background_tasks=bg,
+        strict_metering=True,
     )
     return EdinetListResponse(items=items, total=total, limit=limit, offset=offset)
 
@@ -331,7 +336,9 @@ def get_full_filing(
     ).fetchone()
     if row is None:
         log_usage(
-            conn, ctx, ENDPOINT_FULL,
+            conn,
+            ctx,
+            ENDPOINT_FULL,
             status_code=404,
             result_count=0,
             background_tasks=bg,
@@ -342,16 +349,20 @@ def get_full_filing(
         )
 
     expires_at = (
-        (datetime.now(UTC) + timedelta(seconds=SIGNED_URL_TTL_SECONDS))
-        .strftime("%Y-%m-%dT%H:%M:%SZ")
+        (datetime.now(UTC) + timedelta(seconds=SIGNED_URL_TTL_SECONDS)).strftime(
+            "%Y-%m-%dT%H:%M:%SZ"
+        )
         if row["full_text_r2_url"]
         else None
     )
     log_usage(
-        conn, ctx, ENDPOINT_FULL,
+        conn,
+        ctx,
+        ENDPOINT_FULL,
         status_code=200,
         result_count=1,
         background_tasks=bg,
+        strict_metering=True,
     )
     return EdinetFullResponse(
         edinet_code=row["edinet_code"],

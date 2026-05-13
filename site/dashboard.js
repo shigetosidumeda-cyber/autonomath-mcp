@@ -11,7 +11,7 @@ return body;}
 function buildScaffold(){const dashSection=document.querySelector('.dash .container');if(!dashSection)return;if(!$('#dash-status')){const bar=document.createElement('div');bar.id='dash-status';bar.style.cssText='margin:0 0 14px;min-height:0;';const anchor=$('.dash .sub')||$('.dash h1');if(anchor&&anchor.parentNode){anchor.parentNode.insertBefore(bar,anchor.nextSibling);}else{dashSection.prepend(bar);}}
 if(!$('#dash-signin')){const card=document.createElement('div');card.id='dash-signin';card.hidden=true;card.className='stat-card';card.style.cssText='margin:18px 0 24px;max-width:520px;';card.innerHTML=`
         <p class="stat-label" id="dash-signin-heading">サインイン (永続セッション・推奨)</p>
-        <p class="stat-note" id="dash-signin-help" style="margin:0 0 12px;">Stripe または無料トライアルで発行された API キー を貼り付けてください (<code>am_…</code>)。鍵はサーバ側で HMAC 署名 cookie (7 日) に変換され、ブラウザに平文保存されません。即席で 1 回だけ閲覧したい場合は下の <em>利用詳細 (APIキーを貼り付け)</em> セクション (Bearer ヘッダ送信) をどうぞ。</p>
+        <p class="stat-note" id="dash-signin-help" style="margin:0 0 12px;">Stripe または無料トライアルで発行された API キー を貼り付けてください (<code>jc_…</code>)。鍵はサーバ側で HMAC 署名 cookie (7 日) に変換され、ブラウザに平文保存されません。即席で 1 回だけ閲覧したい場合は下の <em>利用詳細 (APIキーを貼り付け)</em> セクション (Bearer ヘッダ送信) をどうぞ。</p>
         <form id="dash-signin-form" autocomplete="off" aria-labelledby="dash-signin-heading" aria-describedby="dash-signin-help" style="display:flex;gap:8px;flex-wrap:wrap;">
           <label for="dash-signin-key" class="visually-hidden">API key</label>
           <input id="dash-signin-key" name="api_key" type="password" inputmode="text" required

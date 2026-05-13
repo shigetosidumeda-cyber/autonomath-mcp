@@ -5,6 +5,7 @@ LLM 呼出ゼロ。Targets:
 - site/openapi.agent.json -> openapi_paths_agent range
 - site/openapi.agent.gpt30.json -> openapi_paths_agent range
 - docs/openapi/v1.json -> openapi_paths_public range
+- site/openapi/v1.json -> openapi_paths_public range
 
 The numeric ranges catch implausible schema changes. The regen comparisons
 catch stale-but-valid JSON that would otherwise pass syntax checks and publish
@@ -34,6 +35,7 @@ OPENAPI_DISCOVERY = ROOT / "site" / ".well-known" / "openapi-discovery.json"
 # `scripts/sync_mcp_public_manifests.BANNED_PUBLIC_LEAK_PATTERNS`.
 LEAK_SCAN_TARGETS = (
     "docs/openapi/v1.json",
+    "site/openapi/v1.json",
     "docs/openapi/agent.json",
     "site/openapi.agent.json",
     "site/openapi/agent.json",
@@ -89,6 +91,7 @@ CHECKS = [
     ("site/openapi.agent.json", "openapi_paths_agent"),
     ("site/openapi.agent.gpt30.json", "openapi_paths_agent"),
     ("docs/openapi/v1.json", "openapi_paths_public"),
+    ("site/openapi/v1.json", "openapi_paths_public"),
 ]
 
 DISCOVERY_TIERS = {
@@ -168,6 +171,7 @@ def _check_regenerated_exports(fails: list[str]) -> None:
         )
         _compare_file("docs/openapi/v1.json", full_docs, fails)
         _compare_file("site/docs/openapi/v1.json", full_site, fails)
+        _compare_file("site/openapi/v1.json", full_docs, fails)
 
         agent_docs = tmpdir / "docs-openapi-agent.json"
         agent_root = tmpdir / "site-openapi-agent.json"
@@ -286,9 +290,7 @@ def _check_openapi_discovery(fails: list[str]) -> None:
         fails.append(f"site/.well-known/openapi-discovery.json: parse error {e}")
         return
     tiers = {
-        tier.get("tier"): tier
-        for tier in discovery.get("tiers", [])
-        if isinstance(tier, dict)
+        tier.get("tier"): tier for tier in discovery.get("tiers", []) if isinstance(tier, dict)
     }
     for tier_name, rel in DISCOVERY_TIERS.items():
         path = ROOT / rel

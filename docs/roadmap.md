@@ -22,7 +22,7 @@ zero-touch / solo 運営のため、フィードバック窓口はメール (`in
   匿名 3 req/日 per IP のみ無料。pricing UI から階層的な表記を削除。
 - **freee 助成金AI 比較ページ追加** — `/compare/freee/` 含む 10 競合との honest
   comparison。13-15 軸の matrix + "when to choose us / them" を全 page に。
-- **MCP 139 tools 公開 (default gates 74)** —  + 35 autonomath
+- **MCP 151 tools 公開 (default gates 74)** —  + 35 autonomath
   (V1 + メタデータ tools + 静的データセット tools + lifecycle/abstract/prerequisite/graph/rule_engine + 合成 tools 5)。
   protocol 2025-06-18 準拠、broken 3 tools は env-flag gated off。
 - **OpenAPI 3.1 全 endpoint description 完成** — 111 paths すべてに summary +
@@ -67,7 +67,7 @@ zero-touch / solo 運営のため、フィードバック窓口はメール (`in
 
 - **多言語対応の深化** — 英語ページの用語、料金、導入説明をより自然にするか、
   日本語 API 利用者向けの深さを優先するか検討。
-- **MCP tool の deprecation 戦略** — 139 tools を 60 程度に絞る (重複統合)。
+- **MCP tool の deprecation 戦略** — 151 tools を 60 程度に絞る (重複統合)。
   external schema なので breaking change の影響が大きく、慎重に検討中。
 - **Webhook subscription 機構** — alerts は email、API は polling のみ。
   HTTP webhook の push delivery 需要があれば。

@@ -1,7 +1,10 @@
 import contextlib
 import os
+import subprocess
 import sys
 import tempfile
+import threading
+import warnings
 
 # --- must run before any jpintel_mcp import so Settings picks up test env ---
 _TMP_DIR = tempfile.mkdtemp(prefix="jpintel-test-")
@@ -25,6 +28,9 @@ os.environ["JPINTEL_DB_PATH"] = _DB_PATH
 os.environ["JPCITE_DB_PATH"] = _DB_PATH
 os.environ["API_KEY_SALT"] = "test-salt"
 os.environ["RATE_LIMIT_FREE_PER_DAY"] = "100"
+os.environ.setdefault("JPCITE_ENV", "test")
+os.environ.setdefault("JPINTEL_ENV", "test")
+os.environ.setdefault("JPCITE_X402_SCHEMA_FAIL_OPEN_DEV", "1")
 # D9 burst throttle (api/middleware/rate_limit.py) is per-second and shared
 # across every test on the 'testclient' IP; leaving it active would 429 the
 # 6th anon call in a chain. The dedicated test file (test_rate_limit.py)
@@ -86,6 +92,34 @@ from pathlib import Path  # noqa: E402
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
+_SENTRY_POPEN_ATTRS = ("__init__", "wait", "communicate")
+_ORIGINAL_POPEN_METHODS = {
+    attr_name: getattr(subprocess.Popen, attr_name) for attr_name in _SENTRY_POPEN_ATTRS
+}
+
+_ORIG_MONKEYPATCH_SETENV = pytest.MonkeyPatch.setenv
+_PATH_ENV_MIRRORS = {
+    "AUTONOMATH_DB_PATH": "JPCITE_AUTONOMATH_DB_PATH",
+    "JPCITE_AUTONOMATH_DB_PATH": "AUTONOMATH_DB_PATH",
+    "AUTONOMATH_GRAPH_DB_PATH": "JPCITE_AUTONOMATH_GRAPH_DB_PATH",
+    "JPCITE_AUTONOMATH_GRAPH_DB_PATH": "AUTONOMATH_GRAPH_DB_PATH",
+}
+
+
+def _setenv_with_jpcite_path_mirror(
+    self: pytest.MonkeyPatch,
+    name: str,
+    value: str,
+    prepend: str | None = None,
+) -> None:
+    _ORIG_MONKEYPATCH_SETENV(self, name, value, prepend=prepend)
+    mirror = _PATH_ENV_MIRRORS.get(name)
+    if mirror is not None:
+        _ORIG_MONKEYPATCH_SETENV(self, mirror, value, prepend=prepend)
+
+
+pytest.MonkeyPatch.setenv = _setenv_with_jpcite_path_mirror
+
 
 def _restore_autonomath_paths() -> None:
     os.environ["AUTONOMATH_DB_PATH"] = _AUTONOMATH_DB_PATH
@@ -109,6 +143,95 @@ def _restore_autonomath_paths() -> None:
             module.GRAPH_DB_PATH = Path(_AUTONOMATH_GRAPH_DB_PATH)
         except Exception:
             pass
+
+
+def _restore_sentry_subprocess_hooks() -> None:
+    """Undo Sentry's stdlib Popen wrappers without touching unrelated patches."""
+    for attr_name, original in _ORIGINAL_POPEN_METHODS.items():
+        current = getattr(subprocess.Popen, attr_name)
+        probe = current
+        while probe is not original:
+            wrapped = getattr(probe, "__wrapped__", None)
+            if wrapped is None or wrapped is probe:
+                break
+            probe = wrapped
+        if probe is original and current is not original:
+            setattr(subprocess.Popen, attr_name, original)
+
+
+def _close_sentry_client(client) -> None:
+    transport = getattr(client, "transport", None)
+    worker = getattr(transport, "_worker", None)
+    thread = getattr(worker, "_thread", None)
+    thread_was_alive = (
+        thread is not None and thread is not threading.current_thread() and thread.is_alive()
+    )
+
+    close = getattr(client, "close", None)
+    if close is not None:
+        with contextlib.suppress(Exception):
+            # sentry-sdk's HTTP transport starts a BackgroundWorker when
+            # close(timeout>0) flushes client reports. For idle test clients,
+            # use timeout=0 so cleanup does not create the thread it is trying
+            # to remove; if a worker already exists, give it time to drain.
+            close(timeout=1.0 if thread_was_alive else 0)
+
+    if thread_was_alive:
+        with contextlib.suppress(Exception):
+            thread.join(timeout=1.0)
+
+
+def _join_sentry_background_workers() -> None:
+    for thread in threading.enumerate():
+        if thread is threading.current_thread():
+            continue
+        if thread.name == "sentry-sdk.BackgroundWorker":
+            with contextlib.suppress(Exception):
+                thread.join(timeout=1.0)
+
+
+def _cleanup_sentry_state() -> None:
+    sentry_sdk = sys.modules.get("sentry_sdk")
+    if sentry_sdk is not None:
+        clients = []
+        with warnings.catch_warnings(), contextlib.suppress(Exception):
+            warnings.simplefilter("ignore")
+            hub = getattr(sentry_sdk, "Hub", None)
+            client = getattr(getattr(hub, "current", None), "client", None)
+            if client is not None:
+                clients.append(client)
+        with contextlib.suppress(Exception):
+            is_initialized = getattr(sentry_sdk, "is_initialized", lambda: False)
+            if is_initialized():
+                clients.append(sentry_sdk.get_client())
+
+        seen: set[int] = set()
+        for client in clients:
+            if id(client) in seen:
+                continue
+            seen.add(id(client))
+            _close_sentry_client(client)
+
+        for getter_name in ("get_current_scope", "get_isolation_scope", "get_global_scope"):
+            getter = getattr(sentry_sdk, getter_name, None)
+            if getter is None:
+                continue
+            with contextlib.suppress(Exception):
+                set_client = getattr(getter(), "set_client", None)
+                if set_client is not None:
+                    set_client(None)
+        with warnings.catch_warnings(), contextlib.suppress(Exception):
+            warnings.simplefilter("ignore")
+            sentry_sdk.Hub.current.bind_client(None)
+        _join_sentry_background_workers()
+
+    obs = sys.modules.get("jpintel_mcp.observability.sentry")
+    if obs is not None:
+        with contextlib.suppress(Exception):
+            obs._INIT_ATTEMPTED = False
+            obs._INIT_OK = False
+
+    _restore_sentry_subprocess_hooks()
 
 
 def _reset_autonomath_state() -> None:
@@ -236,6 +359,37 @@ def _reset_autonomath_state() -> None:
             continue
         with contextlib.suppress(Exception):
             clear()
+
+
+_TRANSIENT_PROGRAM_ID_PREFIXES: tuple[str, ...] = (
+    "STG-",
+    "UNI-bundle-",
+    "UNI-cit-pack-",
+    "UNI-conflict-",
+    "UNI-diff-prog-",
+    "UNI-match-",
+    "UNI-test-regctx-",
+    "UNI-tl-",
+)
+
+
+def _reset_seeded_program_pollution(db_path: Path) -> None:
+    """Remove synthetic program rows left by module-local fixtures."""
+    patterns = tuple(f"{prefix}%" for prefix in _TRANSIENT_PROGRAM_ID_PREFIXES)
+    where = " OR ".join("unified_id LIKE ?" for _ in patterns)
+    conn = sqlite3.connect(db_path)
+    try:
+        for table in ("programs_fts", "programs"):
+            with contextlib.suppress(sqlite3.OperationalError):
+                conn.execute(f"DELETE FROM {table} WHERE {where}", patterns)
+        with contextlib.suppress(sqlite3.OperationalError):
+            conn.execute(
+                "DELETE FROM l4_query_cache WHERE tool_name IN (?, ?)",
+                ("api.programs.search", "api.programs.get"),
+            )
+        conn.commit()
+    finally:
+        conn.close()
 
 
 def _sync_imported_settings_singleton(current_settings) -> None:
@@ -464,6 +618,7 @@ def _reset_anon_rate_limit(jpintel_seeded_db: Path):
     is short-window and per-process, so a single autouse reset per test
     keeps each test's bucket fresh.
     """
+    _cleanup_sentry_state()
     _restore_autonomath_paths()
     _reset_autonomath_state()
     # Some modules temporarily point settings.db_path / JPINTEL_DB_PATH at a
@@ -478,6 +633,9 @@ def _reset_anon_rate_limit(jpintel_seeded_db: Path):
         _sync_imported_settings_singleton(settings)
     except ImportError:
         pass
+
+    _reset_seeded_program_pollution(jpintel_seeded_db)
+    _reset_autonomath_state()
 
     c = sqlite3.connect(jpintel_seeded_db)
     try:
@@ -519,6 +677,8 @@ def _reset_anon_rate_limit(jpintel_seeded_db: Path):
     except ImportError:
         pass
     yield
+    _cleanup_sentry_state()
+    _reset_seeded_program_pollution(jpintel_seeded_db)
     _reset_autonomath_state()
     _restore_autonomath_paths()
     _reset_autonomath_state()

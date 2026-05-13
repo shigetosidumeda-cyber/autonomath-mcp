@@ -48,9 +48,13 @@ try:
 except ImportError:
     httpx = None  # type: ignore[assignment]
 
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 # Wave 36 wire marker — explicit import for the e2e wire test (`tests/
 # test_playwright_wire_e2e.py` greps for `fetch_with_fallback`).
-from scripts.etl._playwright_helper import fetch_with_fallback  # noqa: F401
+from scripts.etl._playwright_helper import fetch_with_fallback  # noqa: E402, F401
 
 _pw_helper = None
 
@@ -65,7 +69,7 @@ def _load_playwright_helper():
     return _pw_helper
 
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = _REPO_ROOT
 DEFAULT_DB = REPO_ROOT / "autonomath.db"
 SCREENSHOT_DIR = Path("/tmp/jpcite_amount_pw")
 
@@ -187,8 +191,7 @@ def main() -> int:
     p.add_argument("--include-ceiling-coincidence", action="store_true")
     p.add_argument("--use-playwright", action="store_true")
     p.add_argument("--max-fetch", type=int, default=200)
-    p.add_argument("--body-verify", action="store_true",
-                   help="enable B-path body regex (v2 new)")
+    p.add_argument("--body-verify", action="store_true", help="enable B-path body regex (v2 new)")
     p.add_argument("--target-verified", type=int, default=50_000)
     args = p.parse_args()
 
@@ -209,15 +212,12 @@ def main() -> int:
         cur = conn.cursor()
 
         cur.execute(
-            "SELECT template_default, COUNT(*) FROM am_amount_condition "
-            "GROUP BY template_default"
+            "SELECT template_default, COUNT(*) FROM am_amount_condition GROUP BY template_default"
         )
         base = Counter({row[0]: row[1] for row in cur.fetchall()})
         print(f"baseline template_default: {dict(base)}")
 
-        cur.execute(
-            "SELECT quality_tier, COUNT(*) FROM am_amount_condition GROUP BY quality_tier"
-        )
+        cur.execute("SELECT quality_tier, COUNT(*) FROM am_amount_condition GROUP BY quality_tier")
         base_tier = Counter({row[0]: row[1] for row in cur.fetchall()})
         print(f"baseline quality_tier   : {dict(base_tier)}")
 
@@ -338,8 +338,7 @@ def main() -> int:
 
         target_met = "YES" if total_verified >= 50_000 else "NO"
         print(
-            f"summary: candidates={len(rows)} verified={total_verified} "
-            f"target_50k_met={target_met}"
+            f"summary: candidates={len(rows)} verified={total_verified} target_50k_met={target_met}"
         )
         return 0
     finally:

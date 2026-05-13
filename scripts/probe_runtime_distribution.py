@@ -62,7 +62,7 @@ def _runtime_counts() -> tuple[int, int]:
     the FastAPI surface used by ``autonomath-api``.
     """
     # Production-equivalent manifest floor. The static v0.3.4 manifests hold
-    # at 139 tools while several post-manifest tools may be present at runtime,
+    # at 151 tools while several post-manifest tools may be present at runtime,
     # so the probe treats the manifest count as a floor rather than an exact
     # upper bound.
     os.environ.setdefault("AUTONOMATH_ENABLED", "1")

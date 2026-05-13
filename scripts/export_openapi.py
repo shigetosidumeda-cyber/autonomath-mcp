@@ -59,6 +59,12 @@ _COMPONENT_SCHEMA_NAMES = {
 
 # (regex, replacement). Order matters: longer/specific names first so they win
 # before generic `am_*` catch-alls fire on a substring.
+OPENAPI_API_KEY_EXAMPLE_RE = re.compile(
+    r"(?:X-API-Key\s*:\s*|Authorization\s*:\s*Bearer\s+|Bearer\s+|[?&]key=)"
+    r"jc_(?:\.{3}|(?:live|test)_[A-Za-z0-9._-]*)",
+    re.IGNORECASE,
+)
+
 OPENAPI_LEAK_PATTERN_REPLACEMENTS: tuple[tuple[re.Pattern[str], str], ...] = (
     # ---- am_x+ table names — replace with public-friendly corpus names ----
     (re.compile(r"\bam_compat_matrix\b"), "compatibility-matrix corpus"),
@@ -146,12 +152,20 @@ BANNED_OPENAPI_LEAK_PATTERNS: tuple[re.Pattern[str], ...] = (
 
 def _strip_openapi_leak_patterns(text: str) -> str:
     """Apply the A3-style denylist to a single string."""
-    out = text
+    protected_api_key_examples: list[str] = []
+
+    def _protect_api_key_example(match: re.Match[str]) -> str:
+        protected_api_key_examples.append(match.group(0))
+        return f"@@OPENAPI_API_KEY_EXAMPLE_{len(protected_api_key_examples) - 1}@@"
+
+    out = OPENAPI_API_KEY_EXAMPLE_RE.sub(_protect_api_key_example, text)
     for pattern, replacement in OPENAPI_LEAK_PATTERN_REPLACEMENTS:
         out = pattern.sub(replacement, out)
     # Collapse whitespace that the empty-string replacements left behind.
     out = re.sub(r"[ \t]{2,}", " ", out)
     out = re.sub(r" +([,.;:])", r"\1", out)
+    for index, value in enumerate(protected_api_key_examples):
+        out = out.replace(f"@@OPENAPI_API_KEY_EXAMPLE_{index}@@", value)
     return out
 
 
@@ -932,7 +946,8 @@ def _downgrade_nullable(node: Any) -> None:
             options = node.get(combinator)
             if isinstance(options, list):
                 pruned = [
-                    opt for opt in options
+                    opt
+                    for opt in options
                     if not (isinstance(opt, dict) and opt.get("type") == "null")
                 ]
                 if len(pruned) != len(options):
@@ -1002,7 +1017,7 @@ def _build_gpt30_subset(full_schema: dict[str, Any]) -> dict[str, Any]:
         if isinstance(node, dict):
             ref = node.get("$ref")
             if isinstance(ref, str) and ref.startswith("#/components/schemas/"):
-                referenced_components.add(ref[len("#/components/schemas/"):])
+                referenced_components.add(ref[len("#/components/schemas/") :])
             for v in node.values():
                 _collect_refs(v)
         elif isinstance(node, list):
@@ -1024,7 +1039,7 @@ def _build_gpt30_subset(full_schema: dict[str, Any]) -> dict[str, Any]:
             if isinstance(node, dict):
                 ref = node.get("$ref")
                 if isinstance(ref, str) and ref.startswith("#/components/schemas/"):
-                    child = ref[len("#/components/schemas/"):]
+                    child = ref[len("#/components/schemas/") :]
                     if child not in referenced_components:
                         referenced_components.add(child)
                         queue.append(child)
@@ -1037,8 +1052,7 @@ def _build_gpt30_subset(full_schema: dict[str, Any]) -> dict[str, Any]:
         _collect_inner(component)
 
     slim_components_schemas = {
-        name: schema for name, schema in all_components.items()
-        if name in referenced_components
+        name: schema for name, schema in all_components.items() if name in referenced_components
     }
 
     # Preserve security schemes (X-API-Key header) from the full spec.
@@ -1085,9 +1099,7 @@ def _merge_preserved_policy_blocks(slim: dict[str, Any], preserved: dict[str, An
                 slim["info"][key] = value
     # Also carry forward any top-level x-* extensions for safety.
     for key, value in preserved.items():
-        if key.startswith("x-jpcite-") and key not in slim:
-            slim[key] = value
-        elif key == "x-openai-isConsequential":
+        if (key.startswith("x-jpcite-") and key not in slim) or key == "x-openai-isConsequential":
             slim[key] = value
 
 
@@ -1110,6 +1122,8 @@ def _gpt30_info_block(info: dict[str, Any]) -> dict[str, Any]:
         "termsOfService": "https://jpcite.com/tos.html",
         "license": {"name": "Proprietary - see termsOfService"},
     }
+
+
 # -------------------------------------------------------------------------
 
 
@@ -1179,10 +1193,7 @@ def main() -> int:
         assert_no_openapi_leaks(payload, label=str(out))
         out.write_text(payload, encoding="utf-8")
         missing = [p for p in GPT30_PATHS if p not in slim["paths"]]
-        print(
-            f"wrote {out} (gpt30-slim), "
-            f"{len(slim['paths'])} paths, openapi={slim['openapi']}"
-        )
+        print(f"wrote {out} (gpt30-slim), {len(slim['paths'])} paths, openapi={slim['openapi']}")
         if missing:
             print(f"  warn: {len(missing)} requested path(s) absent from source schema:")
             for p in missing:
@@ -1191,6 +1202,7 @@ def main() -> int:
 
     # --- full profile (default) ---
     out = args.out or Path("docs/openapi/v1.json")
+    site_out_explicit = args.site_out is not None
     site_out = args.site_out or Path("site/docs/openapi/v1.json")
     site_openapi_mirror = Path("site/openapi/v1.json")
 
@@ -1201,7 +1213,7 @@ def main() -> int:
     if site_out:
         site_out.parent.mkdir(parents=True, exist_ok=True)
         site_out.write_text(payload, encoding="utf-8")
-        if site_out != site_openapi_mirror:
+        if not site_out_explicit and site_out != site_openapi_mirror:
             site_openapi_mirror.parent.mkdir(parents=True, exist_ok=True)
             site_openapi_mirror.write_text(payload, encoding="utf-8")
 
@@ -1212,9 +1224,7 @@ def main() -> int:
     ]
     mode = "with preview" if args.include_preview else "stable"
     print(
-        f"wrote {out} ({mode}), "
-        f"{len(schema.get('paths', {}))} paths "
-        f"({len(preview_paths)} preview)"
+        f"wrote {out} ({mode}), {len(schema.get('paths', {}))} paths ({len(preview_paths)} preview)"
     )
     if site_out:
         print(f"wrote {site_out} ({mode})")

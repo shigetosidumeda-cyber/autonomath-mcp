@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-jpcite-a11y="baseline">
 <title>ChatGPT Custom GPT に jpcite Action 統合 | jpcite</title>
-<meta name="description" content="openapi.agent.gpt30.json (30 paths) を Custom GPT Actions に import、Action 30 path 上限内で 139 tool の主要 subset を利用。anon free 3req/IP/日、paid ¥3/req metered。">
+<meta name="description" content="openapi.agent.gpt30.json (30 paths) を Custom GPT Actions に import、Action 30 path 上限内で 151 tool の主要 subset を利用。anon free 3req/IP/日、paid ¥3/req metered。">
 <link rel="canonical" href="https://jpcite.com/connect/chatgpt">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="alternate" hreflang="ja" href="https://jpcite.com/connect/chatgpt">
 <link rel="alternate" hreflang="x-default" href="https://jpcite.com/connect/chatgpt">
 <meta property="og:type" content="website">
 <meta property="og:title" content="ChatGPT Custom GPT に jpcite Action 統合 | jpcite">
-<meta property="og:description" content="openapi.agent.gpt30.json を Custom GPT Actions に import、139 tool の主要 subset を利用可。">
+<meta property="og:description" content="openapi.agent.gpt30.json を Custom GPT Actions に import、151 tool の主要 subset を利用可。">
 <meta property="og:url" content="https://jpcite.com/connect/chatgpt">
 <meta property="og:site_name" content="jpcite">
 <meta property="og:locale" content="ja_JP">
@@ -54,7 +54,7 @@
   "@context": "https://schema.org",
   "@type": "Dataset",
   "name": "jpcite ChatGPT Custom GPT Actions 接続データセット",
-  "description": "ChatGPT Custom GPT Actions の 30 paths 上限内で jpcite 主要 endpoint subset を呼ぶための OpenAPI 設定。API Key Bearer 認証で 139 MCP tools 相当を Actions 経由で利用可能。",
+  "description": "ChatGPT Custom GPT Actions の 30 paths 上限内で jpcite 主要 endpoint subset を呼ぶための OpenAPI 設定。API Key Bearer 認証で 151 MCP tools 相当を Actions 経由で利用可能。",
   "url": "https://jpcite.com/connect/chatgpt",
   "creator": {"@id": "https://jpcite.com/#publisher"},
   "provider": {"@id": "https://jpcite.com/#publisher"},
@@ -68,7 +68,7 @@
   ],
   "variableMeasured": [
     {"@type": "PropertyValue", "name": "gpt_action_paths_limit", "value": 30},
-    {"@type": "PropertyValue", "name": "mcp_tools_total", "value": 139},
+    {"@type": "PropertyValue", "name": "mcp_tools_total", "value": 151},
     {"@type": "PropertyValue", "name": "auth_scheme", "value": "Bearer API Key"}
   ],
   "citation": "https://jpcite.com/connect/chatgpt"
@@ -160,7 +160,7 @@
 <main id="main">
   <section class="hero">
     <h1>ChatGPT Custom GPT に jpcite Action 統合</h1>
-    <p>Action import URL = <code>https://jpcite.com/openapi.agent.gpt30.json</code>。Custom GPT Actions の 30 paths 上限内で、jpcite 139 tool の主要 subset を呼び出せます。</p>
+    <p>Action import URL = <code>https://jpcite.com/openapi.agent.gpt30.json</code>。Custom GPT Actions の 30 paths 上限内で、jpcite 151 tool の主要 subset を呼び出せます。</p>
   </section>
 
   <section>
@@ -201,7 +201,7 @@
 
   <section>
     <h2>FAQ</h2>
-    <details><summary>なぜ 30 paths 上限なの?</summary><p>ChatGPT Custom GPT Actions の OpenAPI は 30 operations 制限があるため、jpcite 139 tool から検索/詳細取得の主要 path を厳選した <code>openapi.agent.gpt30.json</code> を別途配信しています。残り tools は MCP 経由 (Claude Code / Cursor / Codex) で利用可。</p></details>
+    <details><summary>なぜ 30 paths 上限なの?</summary><p>ChatGPT Custom GPT Actions の OpenAPI は 30 operations 制限があるため、jpcite 151 tool から検索/詳細取得の主要 path を厳選した <code>openapi.agent.gpt30.json</code> を別途配信しています。残り tools は MCP 経由 (Claude Code / Cursor / Codex) で利用可。</p></details>
     <details><summary>API key はどう発行する?</summary><p><a href="/pricing.html#api-paid">/pricing.html#api-paid</a> から Stripe Checkout (consent は <code>custom_text.submit.message</code>) で発行。直後にダッシュボードで <code>jc_...</code> を表示 (新規は <code>jc_</code> プレフィクス、既発行の <code>sk_</code> / <code>am_</code> も互換)。anon free でも試せますが 3 req/IP/日上限。</p></details>
     <details><summary>8 業法 fence とは?</summary><p>jpcite は税理士法§52・弁護士法§72 等の独占業務に抵触する個別助言を返しません。<a href="/legal-fence.html">/legal-fence.html</a> 参照。Instructions にこれを書くことで GPT 自体が独占業務に踏み込まないようにできます。</p></details>
   </section>

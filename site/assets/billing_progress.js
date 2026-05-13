@@ -9,7 +9,7 @@
  * 4-step linear funnel (memory: feedback_keep_it_simple, feedback_zero_touch_solo):
  *   1. free      — Try 3 anonymous req/day (no signup)
  *   2. signup    — GitHub OAuth or magic link (1 click)
- *   3. billing   — Confirm metered billing and spending caps
+ *   3. topup     — Confirm Credit Wallet topup and payment rails
  *   4. use       — Call API/MCP, see usage in dashboard
  *
  * Idle detection: 30s of no interaction => modal hint with "next step is X" copy.
@@ -34,23 +34,23 @@
       label: "2. サインイン",
       desc: "GitHub OAuth または magic link (1 click)",
       cta: "サインインする",
-      href: "/dashboard.html",
+      href: "/login.html",
       nextHint: "サインインすると毎日リセットされる無料枠と利用量ダッシュボードが使えます。"
     },
     {
-      id: "billing",
-      label: "3. 課金設定",
-      desc: "Stripe 従量課金 + 月次上限",
-      cta: "料金を確認",
-      href: "/pricing.html",
-      nextHint: "広い実行は見積もりと X-Cost-Cap-JPY を設定してから動かしてください。"
+      id: "topup",
+      label: "3. topup",
+      desc: "Credit Wallet + Stripe + x402",
+      cta: "課金設定を確認",
+      href: "/dashboard.html#billing-section",
+      nextHint: "小さく topup してから、広い実行は見積もりと X-Cost-Cap-JPY を設定して動かしてください。"
     },
     {
       id: "use",
       label: "4. API を呼ぶ",
       desc: "REST + MCP、見積もりは無料",
       cta: "API キーを発行",
-      href: "/dashboard.html#keys",
+      href: "/dashboard.html#api-key-section",
       nextHint: "顧客別タグ X-Client-Tag で 1 案件 ¥単位の原価管理が可能です。"
     }
   ];
@@ -60,9 +60,14 @@
   var idleTimer = null;
   var idleModalShown = false;
 
+  function normalizeStepId(id) {
+    if (id === "billing" || id === "payment") return "topup";
+    return id;
+  }
+
   function getCurrentStep() {
     try {
-      var saved = window.localStorage.getItem(STORAGE_KEY);
+      var saved = normalizeStepId(window.localStorage.getItem(STORAGE_KEY));
       if (saved) {
         for (var i = 0; i < STEPS.length; i++) {
           if (STEPS[i].id === saved) return i;
@@ -70,9 +75,12 @@
       }
     } catch (e) {}
     var p = (location.pathname || "").toLowerCase();
+    var h = (location.hash || "").toLowerCase();
     if (p.indexOf("/playground") === 0) return 0;
-    if (p.indexOf("/signin") === 0 || p.indexOf("/signup") === 0) return 1;
-    if (p.indexOf("/pricing") === 0 || p.indexOf("/billing") === 0) return 2;
+    if (p.indexOf("/login") === 0 || p.indexOf("/signin") === 0 || p.indexOf("/signup") === 0) return 1;
+    if (p.indexOf("/dashboard") === 0 && h.indexOf("billing") >= 0) return 2;
+    if (p.indexOf("/wallet") === 0 || p.indexOf("/metered-billing") === 0 ||
+        p.indexOf("/checkout") === 0 || p.indexOf("/billing") === 0) return 2;
     if (p.indexOf("/dashboard") === 0) return 3;
     return 0;
   }
@@ -290,6 +298,7 @@
   window.jpciteBillingProgress = {
     mount: mount,
     setStep: function (id) {
+      id = normalizeStepId(id);
       for (var i = 0; i < STEPS.length; i++) {
         if (STEPS[i].id === id) { setStep(i); return i; }
       }

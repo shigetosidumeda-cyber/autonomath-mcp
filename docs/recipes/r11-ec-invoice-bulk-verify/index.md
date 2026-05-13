@@ -110,11 +110,13 @@ fs.writeFileSync("hold_payment.json", JSON.stringify(revoked, null, 2));
 - `get_corp_360` (法人 360 度ビュー、抹消 + 行政処分の組み合わせ検知)
 
 ## 関連 recipe
-- [r01-tax-firm-monthly-review](../r01-tax-firm-monthly-review/) — 税理士月次レビュー、顧問先別の抹消検知 + 税区分修正
-- [r12-audit-firm-kyc-sweep](../r12-audit-firm-kyc-sweep/) — 監査法人 KYC、独立性チェック + 適格事業者突合
-- [r30-invoice-revoke-watch](../r30-invoice-revoke-watch/) — 抹消 watch、週次 cron + 検知時 Slack alert
+- [r01-tax-firm-monthly-review](../r01-tax-firm-monthly-review/index.md) — 税理士月次レビュー、顧問先別の抹消検知 + 税区分修正
+- [r12-audit-firm-kyc-sweep](../r12-audit-firm-kyc-sweep/index.md) — 監査法人 KYC、独立性チェック + 適格事業者突合
+- [r30-invoice-revoke-watch](../r30-invoice-revoke-watch/index.md) — 抹消 watch、週次 cron + 検知時 Slack alert
 
 ## billable_units 試算
+
+- API fee delta: API fee delta の前提と再現式は [docs/canonical/cost_saving_examples.md](../../canonical/cost_saving_examples.md) を参照。
 - 1 batch 500 units × ¥3 = ¥1,500 / 月、税込 ¥1,650
 - 年 12 batch = ¥18,000 / 年、税込 ¥19,800
 - 期末年次総点検 (10,000 社) = ¥30,000 / 期末、税込 ¥33,000

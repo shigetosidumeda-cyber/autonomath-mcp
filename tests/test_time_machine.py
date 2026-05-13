@@ -216,9 +216,13 @@ def _wire_env_to_tmp_db(tmp_autonomath_db: Path, _reset_anon_rate_limit: None):
     ~20 lines of os.environ assignments + cache resets).
     """
     prev = os.environ.get("AUTONOMATH_DB_PATH")
+    prev_jpcite = os.environ.get("JPCITE_AUTONOMATH_DB_PATH")
     os.environ["AUTONOMATH_DB_PATH"] = str(tmp_autonomath_db)
+    os.environ["JPCITE_AUTONOMATH_DB_PATH"] = str(tmp_autonomath_db)
     os.environ["AUTONOMATH_SNAPSHOT_ENABLED"] = "1"
+    os.environ["JPCITE_SNAPSHOT_ENABLED"] = "1"
     os.environ["AUTONOMATH_ENABLED"] = "1"
+    os.environ["JPCITE_AUTONOMATH_ENABLED"] = "1"
     prev_settings_path = None
 
     # Override settings.autonomath_db_path on the live singleton so
@@ -256,6 +260,10 @@ def _wire_env_to_tmp_db(tmp_autonomath_db: Path, _reset_anon_rate_limit: None):
         os.environ.pop("AUTONOMATH_DB_PATH", None)
     else:
         os.environ["AUTONOMATH_DB_PATH"] = prev
+    if prev_jpcite is None:
+        os.environ.pop("JPCITE_AUTONOMATH_DB_PATH", None)
+    else:
+        os.environ["JPCITE_AUTONOMATH_DB_PATH"] = prev_jpcite
     if prev_settings_path is not None:
         try:
             from jpintel_mcp.config import settings as _live_settings

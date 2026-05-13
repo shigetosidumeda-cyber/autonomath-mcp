@@ -1,9 +1,9 @@
 """Wave 48 tick#1 — cost saving v2 quantify calculator sanity test.
 
 検証対象:
-  - docs/canonical/cost_saving_examples.md § C 6 use case の純 LLM / jpcite / saving 数字
+  - docs/canonical/cost_saving_examples.md § C 6 use case の external API fee / jpcite / API fee delta 数字
   - tools/cost_saving_calculator.html 内 JS の USE_CASES + MODELS + SEARCH 定数
-  - 計算式 (input_cost + output_cost + search_cost) = 純 LLM cost
+  - 計算式 (input_cost + output_cost + search_cost) = external API fee
   - jpcite ¥3/req fixed model = req × 3
 
 数字が doc / HTML / Python recalculation 三者で一致しないと fail。
@@ -54,17 +54,23 @@ def _jpcite_jpy(req: int) -> float:
 
 # --- Recalculation sanity ---
 
+
 @pytest.mark.parametrize("uc", USE_CASES, ids=lambda u: f"uc{u[0]}_{u[1]}")
 def test_use_case_recalculation_matches_expected(uc):
     _id, _name, in_tok, out_tok, search, req, expected_pure, expected_saving = uc
     pure = _pure_llm_jpy(in_tok, out_tok, search)
     jpc = _jpcite_jpy(req)
     saving = pure - jpc
-    assert abs(pure - expected_pure) < 0.01, f"uc{_id} pure mismatch: got {pure:.4f}, expected {expected_pure}"
-    assert abs(saving - expected_saving) < 0.01, f"uc{_id} saving mismatch: got {saving:.4f}, expected {expected_saving}"
+    assert abs(pure - expected_pure) < 0.01, (
+        f"uc{_id} pure mismatch: got {pure:.4f}, expected {expected_pure}"
+    )
+    assert abs(saving - expected_saving) < 0.01, (
+        f"uc{_id} saving mismatch: got {saving:.4f}, expected {expected_saving}"
+    )
 
 
 # --- Canonical doc presence checks ---
+
 
 def test_canonical_doc_has_v2_section():
     txt = CANONICAL_DOC.read_text(encoding="utf-8")
@@ -93,13 +99,18 @@ def test_canonical_doc_no_roi_arr_language():
     v2_start = txt.find("v2 — 「普通に AI を使う」")
     assert v2_start > 0, "v2 section anchor missing"
     v2_body = txt[v2_start:]
-    forbidden = ["ARR", "年商", "ROI 倍率"]  # ROI mention 自体は historical reference として認める方針
+    forbidden = [
+        "ARR",
+        "年商",
+        "ROI 倍率",
+    ]  # ROI mention 自体は historical reference として認める方針
     for bad in forbidden:
         # ARR は agent KPI 列の "agent KPI" 文脈と被るが、 v2 では使わない
         assert bad not in v2_body, f"forbidden expression '{bad}' present in v2 section"
 
 
 # --- HTML calculator integrity ---
+
 
 def test_calculator_html_exists_and_has_use_cases():
     txt = CALCULATOR_HTML.read_text(encoding="utf-8")

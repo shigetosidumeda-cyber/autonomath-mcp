@@ -90,6 +90,16 @@ def _seed_deadline_and_saved_search(seeded_db: Path, monkeypatch: pytest.MonkeyP
         # renderer sees a valid VEVENT-bearing row.
         c.execute(
             "UPDATE programs "
+            "SET source_url = COALESCE(source_url, ?), "
+            "    source_fetched_at = COALESCE(source_fetched_at, ?) "
+            "WHERE COALESCE(excluded, 0) = 0",
+            (
+                "https://www.meti.go.jp/policy/test-program.html",
+                "2026-05-07T00:00:00+00:00",
+            ),
+        )
+        c.execute(
+            "UPDATE programs "
             "SET application_window_json = ?, source_url = ?, source_fetched_at = ? "
             "WHERE unified_id = ?",
             (
@@ -273,7 +283,7 @@ def test_saved_search_results_ics(client, fmt_key):
     # if zero events come back the route either dropped the row or the
     # ICS renderer lost it.
     assert len(events) >= 1, "expected at least one VEVENT"
-    uid_re = re.compile(r"^[0-9a-f]{64}@autonomath\.ai$")
+    uid_re = re.compile(r"^[0-9a-f]{64}@jpcite\.com$")
     for ev in events:
         assert uid_re.match(str(ev.get("UID")))
 

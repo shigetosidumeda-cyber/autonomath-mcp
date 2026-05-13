@@ -612,7 +612,10 @@ def test_router_included_in_main() -> None:
 def test_x402_endpoint_seed_is_single_source() -> None:
     from scripts.etl import seed_x402_endpoints
 
-    assert seed_x402_endpoints._ENDPOINTS is x402_payment.X402_CANONICAL_ENDPOINT_SEEDS
+    assert seed_x402_endpoints._ENDPOINTS == x402_payment.X402_CANONICAL_ENDPOINT_SEEDS
+    assert "X402_CANONICAL_ENDPOINT_SEEDS" in (
+        REPO_ROOT / "scripts" / "etl" / "seed_x402_endpoints.py"
+    ).read_text(encoding="utf-8")
     assert (
         tuple(
             str(endpoint["endpoint_path"])
@@ -687,23 +690,15 @@ def test_no_legacy_brand_in_x402_payment() -> None:
 
 
 def test_expected_proof_is_deterministic() -> None:
-    a = x402_payment._expected_proof(
-        "nonce-abc-1234", PRIMARY_GATED_PATH, "0x" + "1" * 40, 0.001
-    )
-    b = x402_payment._expected_proof(
-        "nonce-abc-1234", PRIMARY_GATED_PATH, "0x" + "1" * 40, 0.001
-    )
+    a = x402_payment._expected_proof("nonce-abc-1234", PRIMARY_GATED_PATH, "0x" + "1" * 40, 0.001)
+    b = x402_payment._expected_proof("nonce-abc-1234", PRIMARY_GATED_PATH, "0x" + "1" * 40, 0.001)
     assert a == b
     assert len(a) == 64  # sha256 hex
 
 
 def test_expected_proof_differs_for_different_payer() -> None:
-    a = x402_payment._expected_proof(
-        "nonce-abc-1234", PRIMARY_GATED_PATH, "0x" + "1" * 40, 0.001
-    )
-    b = x402_payment._expected_proof(
-        "nonce-abc-1234", PRIMARY_GATED_PATH, "0x" + "2" * 40, 0.001
-    )
+    a = x402_payment._expected_proof("nonce-abc-1234", PRIMARY_GATED_PATH, "0x" + "1" * 40, 0.001)
+    b = x402_payment._expected_proof("nonce-abc-1234", PRIMARY_GATED_PATH, "0x" + "2" * 40, 0.001)
     assert a != b
 
 

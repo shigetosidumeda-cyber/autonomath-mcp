@@ -298,7 +298,7 @@ curl "https://api.jpcite.com/v1/programs/search?prefecture=北海道&q=持続化
 uvx autonomath-mcp --src=audience_shokokai</code></pre>
 
  <p style="font-size:14px;color:var(--text-muted);margin:8px 0 0;">
- 詳細な設定例は <a href="/integrations/claude-desktop.html">Claude Desktop integration guide</a> を参照。 stdio 経由で 139 tool が利用可能 (うち 39 が core program 検索、 50 が jpcite 拡張)。
+ 詳細な設定例は <a href="/integrations/claude-desktop.html">Claude Desktop integration guide</a> を参照。 stdio 経由で 151 tool が利用可能 (うち 39 が core program 検索、 50 が jpcite 拡張)。
  </p>
 
  <h2 class="section-title" style="margin-top:32px;">一次資料 (商工会 / 商工会議所 / 中央会)</h2>
@@ -330,16 +330,16 @@ uvx autonomath-mcp --src=audience_shokokai</code></pre>
 
  <section class="features" aria-labelledby="cost-title">
  <div class="container">
- <h2 id="cost-title" style="margin-bottom:16px;">巡回先 1 件あたりの cost saving (純 LLM vs jpcite ¥3/billable unit)</h2>
- <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: 商工会 経営指導員 / 月 200 巡回先 想定。 「純 LLM」は外部公的記録なしの汎用 LLM で hallucination 裏取り + 持続化補助金様式4 + マル経推薦 + 共済 を手動探索した工数 (経営指導員時給 ¥5,000/h)。 詳細は <a href="/tools/cost_saving_examples.md">canonical cost saving examples</a>。</p>
+ <h2 id="cost-title" style="margin-bottom:16px;">巡回先 1 件あたりの cost saving API fee delta reference (external model/search API fee vs jpcite ¥3/billable unit)</h2>
+ <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: 商工会 経営指導員 / 月 200 巡回先 想定。 外部 baseline は model token + web search API fee の明示前提です。実際の請求額は provider, cache, prompt, tool settings に依存します。詳細は <a href="/tools/cost_saving_examples.md">canonical API fee delta examples</a>。</p>
  <div style="overflow-x:auto;">
  <table style="width:100%;border-collapse:collapse;font-size:14px;">
  <thead>
  <tr style="background:var(--bg-subtle,#fafafa);border-bottom:2px solid var(--border);">
  <th style="padding:12px;text-align:left;">case</th>
- <th style="padding:12px;text-align:left;">純 LLM 工数 × 単価</th>
+ <th style="padding:12px;text-align:left;">external API fee baseline</th>
  <th style="padding:12px;text-align:left;">jpcite req 数 × ¥3</th>
- <th style="padding:12px;text-align:left;">cost saving</th>
+ <th style="padding:12px;text-align:left;">API fee delta</th>
  </tr>
  </thead>
  <tbody>

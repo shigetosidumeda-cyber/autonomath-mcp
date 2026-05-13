@@ -15,27 +15,27 @@
 <p>すでに {{usage_count}} 回お使いです。まだ触っていないものを 1 つ試してみてください。</p>
 {% endif %}
 {% if not has_used_key %}
-<p>下の curl は <code>YOUR_KEY</code> を発行済みの鍵に置き換えれば、そのまま叩けます。</p>
+<p>下の curl は <code>jc_xxx</code> を発行済みの鍵に置き換えれば、そのまま叩けます。</p>
 {% endif %}
 
 <h2 style="font-size:17px;margin-top:28px;">1. <code>search_programs</code> — 制度の入口</h2>
 <p style="color:#444;font-size:14px;margin:6px 0;">10,790 件の補助金 / 融資 / 税制 / 認定を、都道府県・対象業種・予算上限などで絞り込みます。何から始めるか迷ったらこれです。</p>
-<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -H "X-API-Key: YOUR_KEY" \
+<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -H "X-API-Key: jc_xxx" \
   "https://api.jpcite.com/v1/programs/search?prefecture=東京都&target_type=中小企業&amount_min=100&limit=10"</code></pre>
 
 <h2 style="font-size:17px;margin-top:28px;">2. <code>search_tax_incentives</code> — 税制措置の専用検索</h2>
 <p style="color:#444;font-size:14px;margin:6px 0;">国税庁・財務省 由来の税制措置 (賃上げ促進税制 / 中小企業経営強化税制 / 事業承継税制 ほか) を横断検索します。出力は税務助言ではなく公開ルール検索です(税理士法 §52)。</p>
-<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -H "X-API-Key: YOUR_KEY" \
+<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -H "X-API-Key: jc_xxx" \
   "https://api.jpcite.com/v1/am/tax_incentives?q=賃上げ&limit=5"</code></pre>
 
 <h2 style="font-size:17px;margin-top:28px;">3. <code>check_invoice_registrant</code> — 適格事業者番号の照合</h2>
 <p style="color:#444;font-size:14px;margin:6px 0;">法人番号 (T+13 桁) を渡すと、国税庁 適格請求書発行事業者公表サイト 由来の登録状況・氏名・本店所在地を返します。経費精算 / 仕訳の自動化に。</p>
-<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -H "X-API-Key: YOUR_KEY" \
+<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -H "X-API-Key: jc_xxx" \
   "https://api.jpcite.com/v1/invoice_registrants/T8010001213708"</code></pre>
 
 <h2 style="font-size:17px;margin-top:28px;">4. <code>dd_profile_am</code> — 取引先 360° プロファイル</h2>
 <p style="color:#444;font-size:14px;margin:6px 0;">法人番号 1 つから、補助金採択 / 行政処分 / 適格請求書発行登録 / 業歴を 1 リクエストでまとめて取得します。デューデリジェンスの 1 次スクリーニングに。</p>
-<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -X POST -H "X-API-Key: YOUR_KEY" -H "Content-Type: application/json" \
+<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -X POST -H "X-API-Key: jc_xxx" -H "Content-Type: application/json" \
   "https://api.jpcite.com/v1/am/dd_batch" \
   -d '{"houjin_bangou":["T8010001213708"]}'</code></pre>
 
@@ -45,9 +45,9 @@
 regulatory_prep_pack(unified_id="UNI-14e57fbf79")</code></pre>
 
 <h2 style="font-size:17px;margin-top:28px;">MCP クライアント経由</h2>
-<p>Claude / Cursor / Cline からは、上の 5 つも含めて 139 ツールがそのまま自然言語で呼べます。設定は <a href="https://jpcite.com/integrations/" style="color:#1e3a8a;">/integrations/</a> をご覧ください。</p>
+<p>Claude / Cursor / Cline からは、上の 5 つも含めて 151 ツールがそのまま自然言語で呼べます。設定は <a href="https://jpcite.com/integrations/" style="color:#1e3a8a;">/integrations/</a> をご覧ください。</p>
 
-<p style="margin-top:24px;">他にも使い方を集めた <a href="https://jpcite.com/examples/" style="color:#1e3a8a;">examples 集</a>(全 139 ツール一覧 + 用途別レシピ)があります。</p>
+<p style="margin-top:24px;">他にも使い方を集めた <a href="https://jpcite.com/examples/" style="color:#1e3a8a;">examples 集</a>(全 151 ツール一覧 + 用途別レシピ)があります。</p>
 
 <p>詰まったら、このメールにそのまま返信してください。人間が読みます。</p>
 

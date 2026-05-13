@@ -113,15 +113,15 @@ fs.writeFileSync("registry_supplement.json", JSON.stringify(snap, null, 2));
 - `get_amendment_log` (商号 / 住所 / 代表者 変更の縦覧)
 
 ## 関連 recipe
-- [r03-sme-ma-public-dd](../r03-sme-ma-public-dd/) — M&A DD、買収側の事前調査
-- [r12-audit-firm-kyc-sweep](../r12-audit-firm-kyc-sweep/) — 監査法人 KYC、独立性チェックの素材
-- [r24-houjin-6source-join](../r24-houjin-6source-join/) — 法人 6 source join、本 recipe の素材レイヤ
+- [r03-sme-ma-public-dd](../r03-sme-ma-public-dd/index.md) — M&A DD、買収側の事前調査
+- [r12-audit-firm-kyc-sweep](../r12-audit-firm-kyc-sweep/index.md) — 監査法人 KYC、独立性チェックの素材
+- [r24-houjin-6source-join](../r24-houjin-6source-join/index.md) — 法人 6 source join、本 recipe の素材レイヤ
 
 ## billable_units 試算
 - 1 案件 8 units × ¥3 = ¥24 / 案件
 - 月 50 案件 (中堅司法書士法人) = ¥1,200 / 月、税込 ¥1,320 / 月
 - 月 200 案件 (大手) = ¥4,800 / 月、税込 ¥5,280 / 月
-- 節約 (純 LLM vs jpcite 標準従量料金): 月 50 案件で、純 LLM は約 ¥4,000/月 (1 案件 cycle ¥80 = registry + 適格事業者 + 補助金 + tool 4) に対し jpcite は ¥1,200/月 (400 req × ¥3) → 節約 約 ¥2,800/月 / 案件あたり ¥56 (cf. `docs/canonical/cost_saving_examples.md` case 6 同系)
+- API fee delta: 月 50 案件で、外部 model/search API fee は約 ¥4,000/月 (1 案件 cycle ¥80 = registry + 適格事業者 + 補助金 + tool 4) に対し jpcite は ¥1,200/月 (400 req × ¥3) → API fee delta 約 ¥2,800/月 / 案件あたり ¥56 (cf. `docs/canonical/cost_saving_examples.md` case 6 同系)
 
 ## 商業利用条件
 - PDL v1.0 (NTA 法人番号 / 適格事業者) + CC-BY-4.0 (jpcite 編集物)

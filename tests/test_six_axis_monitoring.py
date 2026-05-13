@@ -36,6 +36,7 @@ SITE_STATUS = REPO_ROOT / "site" / "status"
 # 1. six_axis_sanity_check.py contract
 # ---------------------------------------------------------------------------
 
+
 def _import_sanity():
     sys.path.insert(0, str(SCRIPTS_OPS))
     try:
@@ -83,10 +84,14 @@ def test_sanity_emits_md_and_json(tmp_path):
     mod = _import_sanity()
     out_json = tmp_path / "status.json"
     out_md = tmp_path / "status.md"
-    rc = mod.main([
-        "--out-json", str(out_json),
-        "--out-md", str(out_md),
-    ])
+    rc = mod.main(
+        [
+            "--out-json",
+            str(out_json),
+            "--out-md",
+            str(out_md),
+        ]
+    )
     assert rc == 0
     data = json.loads(out_json.read_text())
     assert data["schema_version"] == 1
@@ -113,8 +118,11 @@ def test_sanity_breach_emits_alert(tmp_path, monkeypatch):
                 "verdict": "breach",
                 "sub_results": [
                     {
-                        "sub_id": "3a", "label": "amendment_diff",
-                        "status": "fail", "observed": 0, "threshold": 1,
+                        "sub_id": "3a",
+                        "label": "amendment_diff",
+                        "status": "fail",
+                        "observed": 0,
+                        "threshold": 1,
                         "detail": "observed=0 < 1",
                     },
                 ],
@@ -133,18 +141,19 @@ def test_sanity_breach_emits_alert(tmp_path, monkeypatch):
 # 2. dashboard HTML contract
 # ---------------------------------------------------------------------------
 
+
 def test_dashboard_html_present():
     f = SITE_STATUS / "six_axis_dashboard.html"
     assert f.exists(), "dashboard HTML missing"
     txt = f.read_text(encoding="utf-8")
     # Required scaffolding
-    assert '<title>6-axis Monitoring Dashboard' in txt
+    assert "<title>6-axis Monitoring Dashboard" in txt
     assert 'id="summary-bar"' in txt
     assert 'id="axes-detail"' in txt
     # Fetches the JSON status endpoint
     assert "/v1/status/six_axis" in txt
     # Canonical link points to jpcite.com (no legacy brand)
-    assert "jpcite.com/status/six_axis_dashboard.html" in txt
+    assert "jpcite.com/status/six_axis_dashboard" in txt
 
 
 def test_dashboard_jsonld_parses():
@@ -152,7 +161,8 @@ def test_dashboard_jsonld_parses():
     txt = f.read_text(encoding="utf-8")
     m = re.search(
         r'<script type="application/ld\+json">(.*?)</script>',
-        txt, re.DOTALL,
+        txt,
+        re.DOTALL,
     )
     assert m, "JSON-LD block missing"
     data = json.loads(m.group(1))
@@ -181,14 +191,17 @@ def test_dashboard_no_legacy_brand():
 # 3. REST endpoint contract
 # ---------------------------------------------------------------------------
 
+
 def _build_test_app(status_path: Path):
     from fastapi import FastAPI
+
     from jpintel_mcp.api.six_axis_status import router
 
     app = FastAPI()
     app.include_router(router)
     # Point the resolver at the test sidecar
     import os
+
     os.environ["SIX_AXIS_STATUS_PATH"] = str(status_path)
     return app
 
@@ -212,31 +225,42 @@ def test_rest_returns_full_when_sidecar_present(tmp_path):
     from fastapi.testclient import TestClient
 
     sidecar = tmp_path / "six.json"
-    sidecar.write_text(json.dumps({
-        "schema_version": 1,
-        "generated_at": "2026-05-12T06:30:00Z",
-        "overall_verdict": "ok",
-        "axes": [
+    sidecar.write_text(
+        json.dumps(
             {
-                "axis_id": "1", "label": "data 量", "verdict": "ok",
-                "sub_results": [
-                    {"sub_id": "1a", "label": "municipal_subsidies",
-                     "status": "ok", "observed": 150, "threshold": 100,
-                     "detail": "observed=150 >= 100"},
+                "schema_version": 1,
+                "generated_at": "2026-05-12T06:30:00Z",
+                "overall_verdict": "ok",
+                "axes": [
+                    {
+                        "axis_id": "1",
+                        "label": "data 量",
+                        "verdict": "ok",
+                        "sub_results": [
+                            {
+                                "sub_id": "1a",
+                                "label": "municipal_subsidies",
+                                "status": "ok",
+                                "observed": 150,
+                                "threshold": 100,
+                                "detail": "observed=150 >= 100",
+                            },
+                        ],
+                    },
+                    {"axis_id": "2", "label": "data 質", "verdict": "unknown", "sub_results": []},
+                    {"axis_id": "3", "label": "鮮度", "verdict": "unknown", "sub_results": []},
+                    {
+                        "axis_id": "4",
+                        "label": "組み合わせ",
+                        "verdict": "unknown",
+                        "sub_results": [],
+                    },
+                    {"axis_id": "5", "label": "多言語", "verdict": "unknown", "sub_results": []},
+                    {"axis_id": "6", "label": "output", "verdict": "unknown", "sub_results": []},
                 ],
-            },
-            {"axis_id": "2", "label": "data 質", "verdict": "unknown",
-             "sub_results": []},
-            {"axis_id": "3", "label": "鮮度", "verdict": "unknown",
-             "sub_results": []},
-            {"axis_id": "4", "label": "組み合わせ", "verdict": "unknown",
-             "sub_results": []},
-            {"axis_id": "5", "label": "多言語", "verdict": "unknown",
-             "sub_results": []},
-            {"axis_id": "6", "label": "output", "verdict": "unknown",
-             "sub_results": []},
-        ],
-    }))
+            }
+        )
+    )
     app = _build_test_app(sidecar)
     client = TestClient(app)
     r = client.get("/v1/status/six_axis")
@@ -254,19 +278,32 @@ def test_rest_sub_drill_in(tmp_path):
     from fastapi.testclient import TestClient
 
     sidecar = tmp_path / "six.json"
-    sidecar.write_text(json.dumps({
-        "schema_version": 1,
-        "generated_at": "2026-05-12T06:30:00Z",
-        "overall_verdict": "ok",
-        "axes": [{
-            "axis_id": "1", "label": "data 量", "verdict": "ok",
-            "sub_results": [{
-                "sub_id": "1a", "label": "municipal_subsidies",
-                "status": "ok", "observed": 150, "threshold": 100,
-                "detail": "observed=150 >= 100",
-            }],
-        }],
-    }))
+    sidecar.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "generated_at": "2026-05-12T06:30:00Z",
+                "overall_verdict": "ok",
+                "axes": [
+                    {
+                        "axis_id": "1",
+                        "label": "data 量",
+                        "verdict": "ok",
+                        "sub_results": [
+                            {
+                                "sub_id": "1a",
+                                "label": "municipal_subsidies",
+                                "status": "ok",
+                                "observed": 150,
+                                "threshold": 100,
+                                "detail": "observed=150 >= 100",
+                            }
+                        ],
+                    }
+                ],
+            }
+        )
+    )
     app = _build_test_app(sidecar)
     client = TestClient(app)
     r = client.get("/v1/status/six_axis/1/1a")
@@ -285,6 +322,7 @@ def test_rest_sub_drill_in(tmp_path):
 # 4. Endpoint coverage audit contract (small smoke)
 # ---------------------------------------------------------------------------
 
+
 def test_endpoint_coverage_audit_runs(tmp_path):
     sys.path.insert(0, str(SCRIPTS_OPS))
     try:
@@ -296,10 +334,14 @@ def test_endpoint_coverage_audit_runs(tmp_path):
     if not openapi.exists():
         pytest.skip("OpenAPI spec not built")
     out_json = tmp_path / "coverage.json"
-    rc = mod.main([
-        "--openapi", str(openapi),
-        "--out-json", str(out_json),
-    ])
+    rc = mod.main(
+        [
+            "--openapi",
+            str(openapi),
+            "--out-json",
+            str(out_json),
+        ]
+    )
     assert rc == 0
     data = json.loads(out_json.read_text())
     assert data["schema_version"] == 1

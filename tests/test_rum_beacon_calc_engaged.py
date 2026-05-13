@@ -4,7 +4,7 @@ Validates the server-side completion of the 5-stage organic funnel.
 Companion to:
 
   - `tests/test_calc_rum_wire.py` — client-side wire (calc page <script>
-    + collector inferStep() → "calc_engaged").
+    + collector inferStep() -> "calc_engaged").
   - `tests/test_cf_pages_rum_beacon.py` — generic structural verify of
     `functions/api/rum_beacon.ts` (4-step baseline).
 
@@ -102,8 +102,8 @@ def test_validator_still_rejects_unknown_steps() -> None:
     # into the 400 response. If a future refactor accidentally drops the
     # Set check (e.g. accepts any non-empty string), every test in this
     # file passes but the server stops gating. Pin the line shape.
-    assert "ALLOWED_STEPS.has(b.step)" in src, (
-        "isValidBeacon must still consult ALLOWED_STEPS.has(b.step) — "
+    assert "ALLOWED_STEPS.has(normalizeStep(b.step))" in src, (
+        "isValidBeacon must still consult ALLOWED_STEPS.has(normalizeStep(b.step)) — "
         "otherwise the 400 gate is bypassed and the R2 funnel jsonl can "
         "be polluted with arbitrary step names. This assertion preserves "
         "the load-bearing membership check after the calc_engaged addition."
@@ -128,3 +128,10 @@ def test_allowed_steps_has_exactly_5_entries() -> None:
         "update this assertion in the same PR so downstream aggregators "
         "are alerted to the new dimension."
     )
+
+
+def test_billing_payment_aliases_normalize_to_topup() -> None:
+    src = _read(RUM_FN)
+    assert 'billing: "topup"' in src
+    assert 'payment: "topup"' in src
+    assert "step: normalizeStep(body.step)" in src

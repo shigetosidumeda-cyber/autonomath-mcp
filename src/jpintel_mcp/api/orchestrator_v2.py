@@ -314,10 +314,11 @@ def _match_program(conn: sqlite3.Connection, key: str) -> dict[str, Any] | None:
         return None
     if row is None:
         return None
+    columns = set(row.keys())
     return {
-        "program_id": row["program_id"] if "program_id" in row.keys() else row[0],
-        "name": row["name"] if "name" in row.keys() else row[1],
-        "source_url": row["source_url"] if "source_url" in row.keys() else row[2],
+        "program_id": row["program_id"] if "program_id" in columns else row[0],
+        "name": row["name"] if "name" in columns else row[1],
+        "source_url": row["source_url"] if "source_url" in columns else row[2],
     }
 
 
@@ -354,9 +355,7 @@ def _http_post_json(url: str, headers: dict[str, str], body: dict[str, Any]) -> 
 # ---------------------------------------------------------------------------
 
 
-def _invoke_freee(
-    token: str, company_id: int, payload: dict[str, Any]
-) -> int:
+def _invoke_freee(token: str, company_id: int, payload: dict[str, Any]) -> int:
     """POST a single 仕訳 tag note via freee receipts API best-effort.
 
     We do NOT create journal entries automatically — that would be a
@@ -518,6 +517,7 @@ async def orchestrate_freee(
         background_tasks=background_tasks,
         request=request,
         quantity=ORCHESTRATE_UNIT_COUNT,
+        strict_metering=True,
     )
     return OrchestrateResponse(
         target="freee",
@@ -559,8 +559,7 @@ async def orchestrate_mf(
                 body.office_id,
                 {
                     "account_code": row.account_code,
-                    "description": row.description
-                    or f"jpcite match: {match['name']}",
+                    "description": row.description or f"jpcite match: {match['name']}",
                     "amount_yen": 0,
                 },
             )
@@ -584,6 +583,7 @@ async def orchestrate_mf(
         background_tasks=background_tasks,
         request=request,
         quantity=ORCHESTRATE_UNIT_COUNT,
+        strict_metering=True,
     )
     return OrchestrateResponse(
         target="mf",
@@ -652,6 +652,7 @@ async def orchestrate_notion(
         background_tasks=background_tasks,
         request=request,
         quantity=ORCHESTRATE_UNIT_COUNT,
+        strict_metering=True,
     )
     return OrchestrateResponse(
         target="notion",
@@ -709,6 +710,7 @@ async def orchestrate_slack(
         background_tasks=background_tasks,
         request=request,
         quantity=ORCHESTRATE_UNIT_COUNT,
+        strict_metering=True,
     )
     return OrchestrateResponse(
         target="slack",

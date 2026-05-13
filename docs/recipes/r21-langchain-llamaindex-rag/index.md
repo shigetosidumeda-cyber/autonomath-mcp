@@ -105,9 +105,9 @@ const searchTool = new DynamicTool({
 - `apply_eligibility_chain_am` (排他ルールチェック、公開版 21)
 
 ## 関連 recipe
-- [r17-chatgpt-custom-gpt](../r17-chatgpt-custom-gpt/) — ChatGPT Custom GPT、SDK 不使用パス
-- [r19-codex-agents-sdk](../r19-codex-agents-sdk/) — Codex Agents SDK、コード生成型 agent
-- [r22-n8n-zapier-webhook](../r22-n8n-zapier-webhook/) — n8n / Zapier、ノーコード接続
+- [r17-chatgpt-custom-gpt](../r17-chatgpt-custom-gpt/index.md) — ChatGPT Custom GPT、SDK 不使用パス
+- [r19-codex-agents-sdk](../r19-codex-agents-sdk/index.md) — Codex Agents SDK、コード生成型 agent
+- [r22-n8n-zapier-webhook](../r22-n8n-zapier-webhook/index.md) — n8n / Zapier、ノーコード接続
 
 ## billable_units 試算
 - 1 req 1 unit × ¥3 = ¥3

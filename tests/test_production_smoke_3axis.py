@@ -138,9 +138,9 @@ def _issue_paid_key(seeded_db: Path, customer: str = "cus_smoke3axis") -> str:
 
 
 def test_axis2_apikey_x_api_key_header_returns_200(client: TestClient, seeded_db: Path) -> None:
-    """X-API-Key: am_xxx is the canonical header form."""
+    """X-API-Key: jc_xxx is the canonical header form."""
     raw = _issue_paid_key(seeded_db)
-    assert raw.startswith("am_"), f"key prefix wrong: {raw[:8]}"
+    assert raw.startswith("jc_"), f"key prefix wrong: {raw[:8]}"
 
     r = client.get("/meta", headers={"X-API-Key": raw})
     assert r.status_code == 200, r.text
@@ -149,7 +149,7 @@ def test_axis2_apikey_x_api_key_header_returns_200(client: TestClient, seeded_db
 def test_axis2_apikey_bearer_authorization_header_returns_200(
     client: TestClient, seeded_db: Path
 ) -> None:
-    """Authorization: Bearer am_xxx is also accepted (deps.require_key)."""
+    """Authorization: Bearer jc_xxx is also accepted (deps.require_key)."""
     raw = _issue_paid_key(seeded_db, customer="cus_smoke_bearer")
 
     r = client.get("/meta", headers={"Authorization": f"Bearer {raw}"})

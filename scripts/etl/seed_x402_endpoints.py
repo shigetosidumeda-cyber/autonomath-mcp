@@ -47,6 +47,7 @@ JSON output (final stdout line)
 from __future__ import annotations
 
 import argparse
+import importlib
 import json
 import logging
 import sqlite3
@@ -57,15 +58,23 @@ _SRC = Path(__file__).resolve().parents[2] / "src"
 if str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
 
-from jpintel_mcp.api.x402_payment import X402_CANONICAL_ENDPOINT_SEEDS  # noqa: E402
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_DB_PATH = REPO_ROOT / "autonomath.db"
 LOG = logging.getLogger("seed_x402_endpoints")
 
 # Canonical endpoint seed lives with the middleware to prevent registry drift.
-_ENDPOINTS = X402_CANONICAL_ENDPOINT_SEEDS
 _RETIRED_ENDPOINTS = frozenset({"/v1/programs/search"})
+
+
+def _endpoints() -> tuple[dict[str, object], ...]:
+    current_x402_payment = importlib.import_module("jpintel_mcp.api.x402_payment")
+    return current_x402_payment.X402_CANONICAL_ENDPOINT_SEEDS
+
+
+def __getattr__(name: str) -> object:
+    if name == "_ENDPOINTS":
+        return _endpoints()
+    raise AttributeError(name)
 
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -184,7 +193,7 @@ def main(argv: list[str] | None = None) -> int:
     actions: list[dict[str, str]] = []
     conn = _connect(db_path)
     try:
-        for endpoint in _ENDPOINTS:
+        for endpoint in _endpoints():
             act = _upsert_endpoint(conn, endpoint, dry_run=ns.dry_run, force=ns.force)
             actions.append(
                 {

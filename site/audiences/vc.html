@@ -234,16 +234,16 @@
 
  <section class="features" aria-labelledby="cost-title">
  <div class="container">
- <h2 id="cost-title" style="margin-bottom:16px;">投資先 1 社 DD あたりの cost saving (純 LLM vs jpcite ¥3/billable unit)</h2>
- <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: VC / M&amp;A 専門家 / 1 投資先 DD 想定。 「純 LLM」は外部公的記録なしの汎用 LLM で hallucination 裏取り + 行政処分手動照会 + 採択履歴照合 + 適格事業者番号確認まで含めた工数 (専門家時給 ¥10,000/h)。 詳細は <a href="/tools/cost_saving_examples.md">canonical cost saving examples</a>。</p>
+ <h2 id="cost-title" style="margin-bottom:16px;">投資先 1 社 DD あたりの cost saving API fee delta reference (external model/search API fee vs jpcite ¥3/billable unit)</h2>
+ <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: VC / M&amp;A 専門家 / 1 投資先 DD 想定。 外部 baseline は model token + web search API fee の明示前提です。実際の請求額は provider, cache, prompt, tool settings に依存します。詳細は <a href="/tools/cost_saving_examples.md">canonical API fee delta examples</a>。</p>
  <div style="overflow-x:auto;">
  <table style="width:100%;border-collapse:collapse;font-size:14px;">
  <thead>
  <tr style="background:var(--bg-subtle,#fafafa);border-bottom:2px solid var(--border);">
  <th style="padding:12px;text-align:left;">case</th>
- <th style="padding:12px;text-align:left;">純 LLM 工数 × 単価</th>
+ <th style="padding:12px;text-align:left;">external API fee baseline</th>
  <th style="padding:12px;text-align:left;">jpcite req 数 × ¥3</th>
- <th style="padding:12px;text-align:left;">cost saving</th>
+ <th style="padding:12px;text-align:left;">API fee delta</th>
  </tr>
  </thead>
  <tbody>

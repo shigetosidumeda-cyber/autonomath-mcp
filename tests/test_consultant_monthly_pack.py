@@ -21,6 +21,7 @@ business model — the test contract covers:
 from __future__ import annotations
 
 import importlib.util
+import os
 import sqlite3
 import sys
 from pathlib import Path
@@ -29,6 +30,22 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SCRIPT_PATH = REPO_ROOT / "scripts" / "etl" / "generate_consultant_monthly_pack.py"
+
+
+def _ci_env() -> bool:
+    return os.getenv("CI", "").lower() in {"1", "true", "yes"} or bool(os.getenv("GITHUB_ACTIONS"))
+
+
+def _weasyprint_native_unavailable_locally() -> bool:
+    if _ci_env():
+        return False
+    try:
+        from weasyprint import HTML  # type: ignore[import-not-found]
+
+        HTML(string="<p>probe</p>").write_pdf()
+    except (ImportError, OSError):
+        return True
+    return False
 
 
 # ---------------------------------------------------------------------------
@@ -380,8 +397,8 @@ def test_html_only_rendering(
 
 
 @pytest.mark.skipif(
-    importlib.util.find_spec("weasyprint") is None,
-    reason="WeasyPrint not installed in this environment",
+    _weasyprint_native_unavailable_locally(),
+    reason="WeasyPrint native libraries unavailable outside CI",
 )
 def test_pdf_rendering_envelope(
     pack_module, fixture_dbs: tuple[Path, Path], client_csv: Path, tmp_path: Path

@@ -58,7 +58,12 @@ from pathlib import Path
 from typing import Any
 from xml.etree import ElementTree as ET
 
-from scripts.etl._playwright_helper import fetch_with_fallback_sync  # Wave 36 wire
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+# Wave 36 wire marker.
+from scripts.etl._playwright_helper import fetch_with_fallback_sync  # noqa: E402
 
 try:
     import certifi
@@ -67,7 +72,7 @@ try:
 except Exception:
     _SSL_CTX = ssl.create_default_context()
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = _REPO_ROOT
 DB_PATH = REPO_ROOT / "autonomath.db"
 
 COURTS_JP_BASE = "https://www.courts.go.jp/app/hanrei_jp"
@@ -103,7 +108,7 @@ def is_banned_url(url: str) -> bool:
 
 
 def compute_unified_id(case_number: str, court: str) -> str:
-    key = f"{case_number}|{court}".encode("utf-8")
+    key = f"{case_number}|{court}".encode()
     return "HAN-" + hashlib.sha256(key).hexdigest()[:10]
 
 
@@ -124,7 +129,10 @@ def classify_court_level(court: str | None) -> str:
 
 def classify_case_type(subject_area: str | None, case_name: str | None) -> str:
     blob = " ".join(s for s in (subject_area, case_name) if s) or ""
-    if any(k in blob for k in ("所得税", "法人税", "消費税", "相続税", "国税", "地方税", "租税", "課税")):
+    if any(
+        k in blob
+        for k in ("所得税", "法人税", "消費税", "相続税", "国税", "地方税", "租税", "課税")
+    ):
         return "tax"
     if any(k in blob for k in ("行政", "補助金", "認可", "許可", "処分取消")):
         return "admin"
@@ -216,10 +224,7 @@ def fetch_ndl_oai_sample(max_records: int) -> list[dict[str, Any]]:
     is mandatory + free. NDL allows API redistribution under attribution.
     """
     records: list[dict[str, Any]] = []
-    url = (
-        f"{NDL_OAI_BASE}?verb=ListRecords&metadataPrefix=oai_dc"
-        f"&set=iss-ndljp"
-    )
+    url = f"{NDL_OAI_BASE}?verb=ListRecords&metadataPrefix=oai_dc&set=iss-ndljp"
     try:
         body = fetch(url)
     except (urllib.error.URLError, ValueError, TimeoutError) as exc:
@@ -231,10 +236,8 @@ def fetch_ndl_oai_sample(max_records: int) -> list[dict[str, Any]]:
         print(f"[ndl_oai] XML parse failed: {exc}", file=sys.stderr)
         return records
     # OAI namespace
-    ns = {"oai": "http://www.openarchives.org/OAI/2.0/",
-          "dc": "http://purl.org/dc/elements/1.1/"}
-    count = 0
-    for rec in root.findall(".//oai:record", ns):
+    ns = {"oai": "http://www.openarchives.org/OAI/2.0/", "dc": "http://purl.org/dc/elements/1.1/"}
+    for count, rec in enumerate(root.findall(".//oai:record", ns)):
         if count >= max_records:
             break
         ident = rec.findtext(".//oai:identifier", default="", namespaces=ns)
@@ -257,7 +260,6 @@ def fetch_ndl_oai_sample(max_records: int) -> list[dict[str, Any]]:
                 "related_program_ids": [],
             }
         )
-        count += 1
     return records
 
 
@@ -313,7 +315,9 @@ def upsert_record(conn: sqlite3.Connection, rec: dict[str, Any], dry_run: bool =
 
 
 def run(args: argparse.Namespace) -> int:
-    print(f"[start] db={args.db_path} source={args.source} max={args.max_records} dry_run={args.dry_run}")
+    print(
+        f"[start] db={args.db_path} source={args.source} max={args.max_records} dry_run={args.dry_run}"
+    )
     if not args.dry_run and not args.db_path.exists():
         print(f"[error] db missing: {args.db_path}", file=sys.stderr)
         return 2
@@ -360,7 +364,9 @@ def main(argv: list[str] | None = None) -> int:
         default="all",
     )
     p.add_argument("--max-records", type=int, default=10)
-    p.add_argument("--case-type", choices=["tax", "admin", "corporate", "ip", "labor", None], default=None)
+    p.add_argument(
+        "--case-type", choices=["tax", "admin", "corporate", "ip", "labor", None], default=None
+    )
     p.add_argument("--dry-run", action="store_true")
     args = p.parse_args(argv)
     return run(args)

@@ -7,7 +7,7 @@
   "publisher_legal_entity": "Bookyou株式会社",
   "publisher_invoice_id": "T8010001213708",
   "canonical": "https://jpcite.com",
-  "generated_at": "2026-05-13T02:01:21Z",
+  "generated_at": "2026-05-13T07:37:27Z",
   "generator": "scripts/regen_structured_sitemap_and_llms_meta.py",
   "description": "Machine-readable index of the llms.txt cohort plus the 4 well-known discovery surfaces (sitemap-llms.xml, .well-known/mcp.json, agents.json, ai-plugin.json). AI agents can use this index to range-fetch a single section anchor without re-pulling the whole llms-full.txt body.",
   "license": "CC BY 4.0 (this index file). Underlying program/law data: see /licensing.html.",
@@ -17,10 +17,10 @@
     {
       "file": "/llms.txt",
       "lang": "ja",
-      "size_bytes": 4742,
-      "line_count": 87,
-      "content_hash_sha256": "5c820861b6bc8a4fa630b14b378c8f130d8bda8c7b28feb618bef87e6d7b730e",
-      "last_modified": "2026-05-13T01:58:06Z",
+      "size_bytes": 5136,
+      "line_count": 90,
+      "content_hash_sha256": "bdd06a167f040e1e89e9ee1064e942142f8cfb07d7c01ca01584be4eacbd3745",
+      "last_modified": "2026-05-13T07:16:36Z",
       "sections": 8,
       "anchors_total": 9,
       "section_anchors": [
@@ -35,56 +35,56 @@
           "level": 2,
           "text": "How to cite",
           "anchor": "how-to-cite",
-          "line": 10,
+          "line": 11,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "First calls for agents",
           "anchor": "first-calls-for-agents",
-          "line": 23,
+          "line": 24,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Public pages",
           "anchor": "public-pages",
-          "line": 31,
+          "line": 32,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Machine-readable discovery",
           "anchor": "machine-readable-discovery",
-          "line": 49,
+          "line": 50,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Use when",
           "anchor": "use-when",
-          "line": 70,
+          "line": 71,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Do not use as final judgment",
           "anchor": "do-not-use-as-final-judgment",
-          "line": 76,
+          "line": 77,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Pricing",
           "anchor": "pricing",
-          "line": 80,
+          "line": 83,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Languages",
           "anchor": "languages",
-          "line": 84,
+          "line": 87,
           "kind": "heading"
         }
       ]
@@ -92,10 +92,10 @@
     {
       "file": "/llms.en.txt",
       "lang": "en",
-      "size_bytes": 4768,
+      "size_bytes": 4795,
       "line_count": 87,
-      "content_hash_sha256": "304575e8eadb9a8dae18e2853d873800b6648e4d70da2384aa89e594515655f7",
-      "last_modified": "2026-05-13T01:58:06Z",
+      "content_hash_sha256": "c0044d4a5492e2e4505cef1bf611b2e50558a1065acbb10113b8d262d1954550",
+      "last_modified": "2026-05-13T07:16:36Z",
       "sections": 8,
       "anchors_total": 9,
       "section_anchors": [
@@ -170,7 +170,7 @@
       "size_bytes": 2244307,
       "line_count": 13136,
       "content_hash_sha256": "a886d6deec6a2afcebbcd14a04891e905ddf3a43c97699608ce9e51e9ef4aa68",
-      "last_modified": "2026-05-13T02:00:57Z",
+      "last_modified": "2026-05-13T07:08:43Z",
       "sections": 83,
       "anchors_total": 129,
       "section_anchors": [
@@ -1085,7 +1085,7 @@
       "size_bytes": 4395307,
       "line_count": 23288,
       "content_hash_sha256": "827d1ad0970d2d286743d8b18597ea8e824b410e07cffbd62fe847cc295e46e6",
-      "last_modified": "2026-05-13T02:00:57Z",
+      "last_modified": "2026-05-13T07:08:43Z",
       "sections": 10,
       "anchors_total": 11,
       "section_anchors": [

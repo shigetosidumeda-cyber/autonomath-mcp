@@ -101,11 +101,13 @@ for (const hb of corps) {
 - `check_invoice_status` (適格事業者状況)
 
 ## 関連 recipe
-- [r03-sme-ma-public-dd](../r03-sme-ma-public-dd/) — M&A DD、隣接領域
-- [r10-cci-municipal-screen](../r10-cci-municipal-screen/) — 商工会議所 市町村 sweep
-- [r26-enforcement-rss-slack](../r26-enforcement-rss-slack/) — 行政処分 RSS、リスク監視
+- [r03-sme-ma-public-dd](../r03-sme-ma-public-dd/index.md) — M&A DD、隣接領域
+- [r10-cci-municipal-screen](../r10-cci-municipal-screen/index.md) — 商工会議所 市町村 sweep
+- [r26-enforcement-rss-slack](../r26-enforcement-rss-slack/index.md) — 行政処分 RSS、リスク監視
 
 ## billable_units 試算
+
+- API fee delta: API fee delta の前提と再現式は [docs/canonical/cost_saving_examples.md](../../canonical/cost_saving_examples.md) を参照。
 - 1 取引先 8 units × ¥3 = ¥24 / 取引先 / 月
 - 担当 100 取引先 = ¥2,400 / 月、税込 ¥2,640
 - 担当 200 取引先 = ¥4,800 / 月、税込 ¥5,280

@@ -430,25 +430,20 @@ def _ensure_public_access_warn(result: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(evidence, list) or not isinstance(missing_items, list):
         return result
 
-    has_access_warn = any(
-        isinstance(item, str) and "route_access_check" in item and "[WARN]" in item
-        for item in [*evidence, *missing_items]
+    warn = (
+        "[WARN] route_access_check: route-level access checks are not yet "
+        "broadly verified across the public API surface"
     )
-    if has_access_warn and not any(
-        isinstance(item, str) and "[WARN] route_access_check" in item for item in evidence
-    ):
-        evidence.append(
-            "[WARN] route_access_check: route-level access checks are not yet "
-            "broadly verified across "
-            "the public API surface"
-        )
-    if has_access_warn and not any(
-        isinstance(item, str) and "route-level access checks" in item for item in missing_items
-    ):
-        missing_items.append(
-            "[MISS] route_access_check: route-level access checks are not yet "
-            "broadly verified across the public API surface"
-        )
+    miss = (
+        "[MISS] route_access_check: route-level access checks are not yet "
+        "broadly verified across the public API surface"
+    )
+    evidence[:] = [
+        item for item in evidence if not (isinstance(item, str) and "route_access_check" in item)
+    ]
+    evidence.insert(0, warn)
+    if not any(isinstance(item, str) and "route_access_check" in item for item in missing_items):
+        missing_items.append(miss)
     return result
 
 

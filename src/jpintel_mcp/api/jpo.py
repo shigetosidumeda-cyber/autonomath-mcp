@@ -28,11 +28,13 @@ from __future__ import annotations
 
 import json
 import logging
-import sqlite3
-from typing import Annotated, Any
+from typing import TYPE_CHECKING, Annotated, Any
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Path, Query, status
 from pydantic import BaseModel, Field
+
+if TYPE_CHECKING:
+    import sqlite3
 
 from jpintel_mcp.api.deps import (  # noqa: TC001 — runtime resolution by FastAPI
     ApiContextDep,
@@ -95,8 +97,9 @@ class JpoListResponse(BaseModel):
 
 def _row_to_record(row: sqlite3.Row) -> JpoRecord:
     """Convert a DB row to a JpoRecord, deserializing JSON columns."""
-    raw_applicants = row["applicants_json"] if "applicants_json" in row.keys() else "[]"
-    raw_ipc = row["ipc_codes_json"] if "ipc_codes_json" in row.keys() else "[]"
+    columns = set(row.keys())
+    raw_applicants = row["applicants_json"] if "applicants_json" in columns else "[]"
+    raw_ipc = row["ipc_codes_json"] if "ipc_codes_json" in columns else "[]"
     try:
         applicants = json.loads(raw_applicants or "[]")
     except (TypeError, ValueError):
@@ -116,7 +119,7 @@ def _row_to_record(row: sqlite3.Row) -> JpoRecord:
         registration_date=row["registration_date"],
         status=row["status"],
         source_url=row["source_url"],
-        body=row["body"] if "body" in row.keys() else "",
+        body=row["body"] if "body" in columns else "",
         applicants=applicants,
         ipc_codes=ipc_codes,
     )
@@ -137,9 +140,7 @@ def _list_table(
         where = "WHERE applicant_houjin_bangou = ?"
         params.append(houjin_bangou)
 
-    total_row = conn.execute(
-        f"SELECT COUNT(*) AS c FROM {table} {where}", params
-    ).fetchone()
+    total_row = conn.execute(f"SELECT COUNT(*) AS c FROM {table} {where}", params).fetchone()
     total = int(total_row["c"] if total_row else 0)
 
     rows = conn.execute(
@@ -212,10 +213,13 @@ def list_patents(
         offset=offset,
     )
     log_usage(
-        conn, ctx, ENDPOINT_PATENTS_LIST,
+        conn,
+        ctx,
+        ENDPOINT_PATENTS_LIST,
         status_code=200,
         result_count=len(items),
         background_tasks=bg,
+        strict_metering=True,
     )
     return JpoListResponse(items=items, total=total, limit=limit, offset=offset)
 
@@ -238,7 +242,9 @@ def get_patent(
     record = _get_table(conn, "am_jpo_patents", application_no)
     if record is None:
         log_usage(
-            conn, ctx, ENDPOINT_PATENTS_GET,
+            conn,
+            ctx,
+            ENDPOINT_PATENTS_GET,
             status_code=404,
             result_count=0,
             background_tasks=bg,
@@ -248,10 +254,13 @@ def get_patent(
             detail=f"patent not found: {application_no}",
         )
     log_usage(
-        conn, ctx, ENDPOINT_PATENTS_GET,
+        conn,
+        ctx,
+        ENDPOINT_PATENTS_GET,
         status_code=200,
         result_count=1,
         background_tasks=bg,
+        strict_metering=True,
     )
     return record
 
@@ -295,10 +304,13 @@ def list_utility_models(
         offset=offset,
     )
     log_usage(
-        conn, ctx, ENDPOINT_UM_LIST,
+        conn,
+        ctx,
+        ENDPOINT_UM_LIST,
         status_code=200,
         result_count=len(items),
         background_tasks=bg,
+        strict_metering=True,
     )
     return JpoListResponse(items=items, total=total, limit=limit, offset=offset)
 
@@ -321,7 +333,9 @@ def get_utility_model(
     record = _get_table(conn, "am_jpo_utility_models", application_no)
     if record is None:
         log_usage(
-            conn, ctx, ENDPOINT_UM_GET,
+            conn,
+            ctx,
+            ENDPOINT_UM_GET,
             status_code=404,
             result_count=0,
             background_tasks=bg,
@@ -331,9 +345,12 @@ def get_utility_model(
             detail=f"utility model not found: {application_no}",
         )
     log_usage(
-        conn, ctx, ENDPOINT_UM_GET,
+        conn,
+        ctx,
+        ENDPOINT_UM_GET,
         status_code=200,
         result_count=1,
         background_tasks=bg,
+        strict_metering=True,
     )
     return record

@@ -220,8 +220,7 @@ class ExportRequest(BaseModel):
 
     dataset: Literal["programs", "laws", "enforcement", "tax_rulesets"] = Field(
         ...,
-        description="Which dataset to export. Each maps to the existing"
-        " jpcite read API surface.",
+        description="Which dataset to export. Each maps to the existing jpcite read API surface.",
     )
     format: Literal["csv", "json", "xlsx"] = Field(
         "csv",
@@ -265,24 +264,17 @@ class ExportRequest(BaseModel):
         """
         if len(value) > EXPORT_MAX_FILTER_DICT_KEYS:
             raise ValueError(
-                f"filter exceeds maximum {EXPORT_MAX_FILTER_DICT_KEYS} keys "
-                f"(got {len(value)})"
+                f"filter exceeds maximum {EXPORT_MAX_FILTER_DICT_KEYS} keys (got {len(value)})"
             )
         for key, filter_value in value.items():
             if not isinstance(key, str) or len(key) > EXPORT_MAX_FILTER_KEY_LEN:
-                raise ValueError(
-                    f"filter key exceeds maximum {EXPORT_MAX_FILTER_KEY_LEN} chars"
-                )
+                raise ValueError(f"filter key exceeds maximum {EXPORT_MAX_FILTER_KEY_LEN} chars")
             if isinstance(filter_value, dict):
-                raise ValueError(
-                    f"filter.{key} must not be a nested dict (one level only)"
-                )
+                raise ValueError(f"filter.{key} must not be a nested dict (one level only)")
             if isinstance(filter_value, list):
                 for item in filter_value:
                     if isinstance(item, (list, dict)):
-                        raise ValueError(
-                            f"filter.{key} must not contain nested lists or dicts"
-                        )
+                        raise ValueError(f"filter.{key} must not contain nested lists or dicts")
         return value
 
     @field_validator("filter")
@@ -291,8 +283,7 @@ class ExportRequest(BaseModel):
         for key, filter_value in value.items():
             if isinstance(filter_value, list) and len(filter_value) > EXPORT_MAX_FILTER_LIST_ITEMS:
                 raise ValueError(
-                    f"filter.{key} list exceeds maximum "
-                    f"{EXPORT_MAX_FILTER_LIST_ITEMS} items"
+                    f"filter.{key} list exceeds maximum {EXPORT_MAX_FILTER_LIST_ITEMS} items"
                 )
         return value
 
@@ -300,10 +291,7 @@ class ExportRequest(BaseModel):
     @classmethod
     def _cap_columns_length(cls, value: list[str] | None) -> list[str] | None:
         if value is not None and len(value) > EXPORT_MAX_COLUMN_LIST_ITEMS:
-            raise ValueError(
-                f"columns list exceeds maximum "
-                f"{EXPORT_MAX_COLUMN_LIST_ITEMS} items"
-            )
+            raise ValueError(f"columns list exceeds maximum {EXPORT_MAX_COLUMN_LIST_ITEMS} items")
         return value
 
 
@@ -412,8 +400,7 @@ def _materialize_rows(
                 422,
                 detail={
                     "detail": (
-                        f"filter.{k} list exceeds maximum "
-                        f"{EXPORT_MAX_FILTER_LIST_ITEMS} items"
+                        f"filter.{k} list exceeds maximum {EXPORT_MAX_FILTER_LIST_ITEMS} items"
                     ),
                     "max_items": EXPORT_MAX_FILTER_LIST_ITEMS,
                 },
@@ -514,10 +501,7 @@ def _render_xlsx(columns: list[str], rows: list[dict[str, Any]]) -> bytes:
         raise HTTPException(
             422,
             detail={
-                "detail": (
-                    f"xlsx row budget exceeded: {len(rows):,} > "
-                    f"{EXPORT_MAX_XLSX_ROWS:,}"
-                ),
+                "detail": (f"xlsx row budget exceeded: {len(rows):,} > {EXPORT_MAX_XLSX_ROWS:,}"),
                 "max_rows": EXPORT_MAX_XLSX_ROWS,
                 "rows": len(rows),
                 "hint": "lower `limit` or use csv/json",
@@ -534,8 +518,7 @@ def _render_xlsx(columns: list[str], rows: list[dict[str, Any]]) -> bytes:
             422,
             detail={
                 "detail": (
-                    f"xlsx cell budget exceeded: {cell_count:,} > "
-                    f"{EXPORT_MAX_XLSX_CELLS:,}"
+                    f"xlsx cell budget exceeded: {cell_count:,} > {EXPORT_MAX_XLSX_CELLS:,}"
                 ),
                 "max_cells": EXPORT_MAX_XLSX_CELLS,
                 "rows": len(rows),
@@ -557,11 +540,12 @@ def _render_xlsx_inmemory(columns: list[str], rows: list[dict[str, Any]]) -> byt
     Numbers / LibreOffice all open the result; charts and styles are
     intentionally omitted.
 
-    Pre-conditions (enforced by the public ``_render_xlsx`` wrapper):
-      * ``assert_no_blocked(rows)`` has already fired.
+    Pre-conditions (also re-checked here for defense in depth):
+      * ``assert_no_blocked(rows)`` has already fired in the wrapper.
       * ``columns`` already includes ``_attribution`` if needed.
       * ``EXPORT_MAX_XLSX_CELLS`` guard has already fired.
     """
+    assert_no_blocked(rows)
     import xml.sax.saxutils as _saxutils
     import zipfile
 
@@ -580,8 +564,7 @@ def _render_xlsx_inmemory(columns: list[str], rows: list[dict[str, Any]]) -> byt
     for i, raw_row in enumerate(rows, start=2):
         row = annotate_attribution(raw_row)
         cells = "".join(
-            f'<c t="inlineStr"><is><t>{_xml_escape(row.get(c))}</t></is></c>'
-            for c in columns
+            f'<c t="inlineStr"><is><t>{_xml_escape(row.get(c))}</t></is></c>' for c in columns
         )
         sheet_data.write(f'<row r="{i}">{cells}</row>')
     sheet_xml = (
@@ -637,11 +620,12 @@ def _render_xlsx_streaming(columns: list[str], rows: list[dict[str, Any]]) -> by
     row-by-row to a zip stream — peak memory is one row's worth of
     string objects plus the zip deflate window, not the full sheet XML.
 
-    Pre-conditions (enforced by the public ``_render_xlsx`` wrapper):
-      * ``assert_no_blocked(rows)`` has already fired.
+    Pre-conditions (also re-checked here for defense in depth):
+      * ``assert_no_blocked(rows)`` has already fired in the wrapper.
       * ``columns`` already includes ``_attribution`` if needed.
       * ``EXPORT_MAX_XLSX_CELLS`` guard has already fired.
     """
+    assert_no_blocked(rows)
     # Local imports keep the small-export path (90% of calls) from
     # paying openpyxl's ~50 MB import cost up-front.
     from openpyxl import Workbook  # noqa: PLC0415
@@ -776,10 +760,6 @@ def create_export(
     require_metered_api_key(ctx, "data export")
     assert ctx.key_hash is not None  # narrowed by require_metered_api_key
 
-    cap_response = _projected_cap_response(conn, ctx, EXPORT_UNIT_COUNT)
-    if cap_response is not None:
-        return cap_response
-
     if body.format == "xlsx" and body.limit > EXPORT_MAX_XLSX_ROWS:
         raise HTTPException(
             422,
@@ -794,6 +774,10 @@ def create_export(
                 "limitation": EXPORT_XLSX_STREAMING_LIMITATION,
             },
         )
+
+    cap_response = _projected_cap_response(conn, ctx, EXPORT_UNIT_COUNT)
+    if cap_response is not None:
+        return cap_response
 
     _rate_floor_check(ctx.key_hash)
 

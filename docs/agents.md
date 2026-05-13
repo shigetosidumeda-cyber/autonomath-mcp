@@ -107,7 +107,7 @@ if __name__ == "__main__":
 }
 ```
 
-After restart, Claude Desktop sees 139 tools under the `jpcite` namespace.
+After restart, Claude Desktop sees 151 tools under the `jpcite` namespace.
 
 ## Sample 3 — OpenAI Chat Completions (function calling, REST)
 

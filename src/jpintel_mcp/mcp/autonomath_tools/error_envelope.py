@@ -92,6 +92,7 @@ __all__ = [
 
 ErrorCode = Literal[
     "missing_required_arg",
+    "invalid_argument",
     "invalid_enum",
     "invalid_date_format",
     "out_of_range",
@@ -124,6 +125,10 @@ ERROR_CODES: dict[str, dict[str, str]] = {
     "missing_required_arg": {
         "severity": "hard",
         "summary": "A required argument was empty, null, or whitespace-only.",
+    },
+    "invalid_argument": {
+        "severity": "hard",
+        "summary": "An argument was syntactically present but not accepted by this tool.",
     },
     "invalid_enum": {
         "severity": "hard",

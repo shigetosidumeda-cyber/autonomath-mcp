@@ -56,7 +56,7 @@ Claude のプロンプトで「東京都で募集中の設備投資補助金を 
 
 - `uvx: command not found` → `brew install uv` または公式の curl インストーラ (`curl -LsSf https://astral.sh/uv/install.sh | sh`)。
 - Claude Desktop の MCP アイコンに jpcite が出ない → 設定 JSON の syntax をチェック (`jq . "$CFG"` でエラーが出ないこと)。
-- 401 / 429 エラー → API key を発行 (`https://jpcite.com/pricing.html?src=cookbook_r16-claude-desktop-install`) し、`args` に `["autonomath-mcp"]` の代わりに `["autonomath-mcp", "--api-key", "am_..."]` などキー渡し方法は今後の release で追加予定 (現状は環境変数 `JPCITE_API_KEY`)。
+- 401 / 429 エラー → API key を発行 (`https://jpcite.com/pricing.html?src=cookbook_r16-claude-desktop-install`) し、`args` に `["autonomath-mcp"]` の代わりに `["autonomath-mcp", "--api-key", "jc_..."]` などキー渡し方法は今後の release で追加予定 (現状は環境変数 `JPCITE_API_KEY`)。
 
 ## 関連
 

@@ -67,6 +67,7 @@ EXTENSIONLESS_DIRS = {
     "trust",
     "contribute",
     "docs",
+    "tools",
     "integrations",
     "bench",
     "benchmark",

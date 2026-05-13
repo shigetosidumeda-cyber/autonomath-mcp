@@ -169,7 +169,7 @@
         <p>一番分かりやすい比較は、ユーザー自身がGPT/Claude側のUIやtokenizerで測った「元の入力トークン数」をそのまま渡す方法です。</p>
         <pre><code>curl -X POST https://api.jpcite.com/v1/evidence/packets/query \
   -H "Content-Type: application/json" \
-  -H "X-API-Key: am_..." \
+  -H "X-API-Key: jc_..." \
   -d '{
     "query_text": "省力化 補助金 中小企業",
     "limit": 5,
@@ -185,7 +185,7 @@
         <p>PDFページ数しか分からない場合は、ページ数を比較対象として明示できます。</p>
         <pre><code>curl -X POST https://api.jpcite.com/v1/evidence/packets/query \
   -H "Content-Type: application/json" \
-  -H "X-API-Key: am_..." \
+  -H "X-API-Key: jc_..." \
   -d '{
     "query_text": "省力化 補助金 中小企業",
     "limit": 5,

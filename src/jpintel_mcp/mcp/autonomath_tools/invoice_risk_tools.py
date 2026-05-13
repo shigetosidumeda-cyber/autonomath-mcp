@@ -15,7 +15,7 @@ Gating
 
 ``AUTONOMATH_INVOICE_RISK_ENABLED`` defaults to ``1`` (ON). Setting it to
 ``0`` removes the three tools from ``mcp.list_tools()`` so the launch
-manifest can hold at 139 until the next intentional bump.
+manifest can hold at 151 until the next intentional bump.
 
 Sensitivity
 -----------

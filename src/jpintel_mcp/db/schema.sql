@@ -215,6 +215,15 @@ CREATE INDEX IF NOT EXISTS idx_api_keys_parent_key_id
     ON api_keys(parent_key_id)
     WHERE parent_key_id IS NOT NULL;
 
+CREATE TABLE IF NOT EXISTS x402_tx_bind (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    tx_hash TEXT NOT NULL UNIQUE,
+    agent_id TEXT NOT NULL,
+    quote_id TEXT NOT NULL,
+    api_key_hash TEXT,
+    created_at TEXT DEFAULT (datetime('now'))
+);
+
 CREATE TABLE IF NOT EXISTS usage_events (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     key_hash TEXT NOT NULL,

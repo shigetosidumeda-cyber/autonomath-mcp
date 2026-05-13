@@ -57,6 +57,9 @@ def _seed_versioning(seeded_db: Path):
     """
     c = sqlite3.connect(seeded_db)
     try:
+        version_snapshot = c.execute(
+            "SELECT unified_id, valid_from, valid_until FROM programs"
+        ).fetchall()
         # Reset to a known state — earlier tests may have rewritten cols.
         c.execute("UPDATE programs SET valid_from = NULL, valid_until = NULL")
         # All rows live from 2026-01-01.
@@ -72,7 +75,22 @@ def _seed_versioning(seeded_db: Path):
         c.commit()
     finally:
         c.close()
-    yield
+    try:
+        yield
+    finally:
+        c = sqlite3.connect(seeded_db)
+        try:
+            c.execute("UPDATE programs SET valid_from = NULL, valid_until = NULL")
+            c.executemany(
+                "UPDATE programs SET valid_from = ?, valid_until = ? WHERE unified_id = ?",
+                [
+                    (valid_from, valid_until, unified_id)
+                    for unified_id, valid_from, valid_until in version_snapshot
+                ],
+            )
+            c.commit()
+        finally:
+            c.close()
 
 
 def test_past_date_query_returns_then_live_row(client: TestClient):

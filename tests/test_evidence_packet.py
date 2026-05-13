@@ -384,6 +384,7 @@ def _override_paths(
     reset their module-level singletons + cache.
     """
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(fixture_db))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", str(fixture_db))
     # Settings is read once at module load — re-bind autonomath_db_path.
     from jpintel_mcp.config import settings
 

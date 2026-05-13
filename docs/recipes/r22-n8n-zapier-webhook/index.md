@@ -93,9 +93,9 @@ print(f"{len(new_programs)} 件の新規公示")
 - `get_enforcement` (行政処分配信)
 
 ## 関連 recipe
-- [r23-slack-bot](../r23-slack-bot/) — Slack bot 配信、所内チャンネル fan-out
-- [r26-enforcement-rss-slack](../r26-enforcement-rss-slack/) — 行政処分 RSS、リスク監視
-- [r29-municipal-grant-monitor](../r29-municipal-grant-monitor/) — 市町村独自補助金モニター
+- [r23-slack-bot](../r23-slack-bot/index.md) — Slack bot 配信、所内チャンネル fan-out
+- [r26-enforcement-rss-slack](../r26-enforcement-rss-slack/index.md) — 行政処分 RSS、リスク監視
+- [r29-municipal-grant-monitor](../r29-municipal-grant-monitor/index.md) — 市町村独自補助金モニター
 
 ## billable_units 試算
 - 1 req 1 unit × ¥3 = ¥3

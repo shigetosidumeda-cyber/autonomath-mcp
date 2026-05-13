@@ -117,15 +117,15 @@ console.log(`${triggers.events.length} 件の trigger 検知`);
 - `edinet_trigger` (本 recipe 中核、適時開示 + 補助金マッチ)
 
 ## 関連 recipe
-- [r03-sme-ma-public-dd](../r03-sme-ma-public-dd/) — M&A DD、EDINET 重要事実の DD への組込
-- [r12-audit-firm-kyc-sweep](../r12-audit-firm-kyc-sweep/) — 監査法人 KYC、重要事実 axis
-- [r24-houjin-6source-join](../r24-houjin-6source-join/) — 法人 6 source join、EDINET 含む
+- [r03-sme-ma-public-dd](../r03-sme-ma-public-dd/index.md) — M&A DD、EDINET 重要事実の DD への組込
+- [r12-audit-firm-kyc-sweep](../r12-audit-firm-kyc-sweep/index.md) — 監査法人 KYC、重要事実 axis
+- [r24-houjin-6source-join](../r24-houjin-6source-join/index.md) — 法人 6 source join、EDINET 含む
 
 ## billable_units 試算
 - 1 batch 12 units × ¥3 = ¥36 / 週
 - 月 4 週 = ¥144 / 月、税込 ¥158
 - 監視会社 100 社 = ¥1,200 / 月、税込 ¥1,320
-- 節約 (純 LLM vs jpcite 標準従量料金): 監視会社 100 社 × 月 4 週 trigger で、純 LLM は約 ¥3,500/月 (1 batch cycle ¥875 = EDINET fetch + program link 推論) に対し jpcite は ¥1,200/月 (400 req × ¥3) → 節約 約 ¥2,300/月 / 監視会社あたり ¥23 (cf. `docs/canonical/cost_saving_examples.md` case 2 同系)
+- API fee delta: 監視会社 100 社 × 月 4 週 trigger で、外部 model/search API fee は約 ¥3,500/月 (1 batch cycle ¥875 = EDINET fetch + program link 推論) に対し jpcite は ¥1,200/月 (400 req × ¥3) → API fee delta 約 ¥2,300/月 / 監視会社あたり ¥23 (cf. `docs/canonical/cost_saving_examples.md` case 2 同系)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0

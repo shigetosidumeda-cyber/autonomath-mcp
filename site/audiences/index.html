@@ -295,38 +295,38 @@
 
  <section class="features" aria-labelledby="cost-title">
  <div class="container">
- <h2 id="cost-title" style="margin-bottom:16px;">audience 別 cost saving 比較 (LLM + 手動裏取り vs jpcite ¥3/billable unit)</h2>
- <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: この表の「LLM + 手動裏取り」は API token 代だけではなく、汎用 LLM 回答を一次 URL で確認し、根拠を整える人間の確認工数込みです。算出式は <strong>工数 × 時給</strong>、jpcite は <strong>req 数 × ¥3</strong>、saving はその差分。token + web search の API 料金だけで比較した低い試算は <a href="/tools/cost_saving_examples.md">canonical cost saving examples</a> v2 を参照。</p>
+ <h2 id="cost-title" style="margin-bottom:16px;">audience 別 cost saving API fee delta reference (external model/search API fee vs jpcite ¥3/billable unit)</h2>
+ <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: この表の外部 baseline は API token 代だけではなく、汎用 LLM 回答を一次 URL で確認し、根拠を整える人間の確認工数込みの参考額です。算出式は <strong>工数 × 時給</strong>、jpcite は <strong>req 数 × ¥3</strong>、cost saving はその差分です。token + web search の API 料金だけで比較した低い試算は <a href="/tools/cost_saving_examples.md">canonical API fee delta examples</a> v2 を参照。売上・利益・業務成果・専門判断の価値は含みません。</p>
  <div style="overflow-x:auto;">
  <table style="width:100%;border-collapse:collapse;font-size:14px;">
  <thead>
  <tr style="background:var(--bg-subtle,#fafafa);border-bottom:2px solid var(--border);">
  <th style="padding:12px;text-align:left;">audience</th>
  <th style="padding:12px;text-align:left;">case</th>
- <th style="padding:12px;text-align:left;">根拠</th>
- <th style="padding:12px;text-align:left;">LLM + 裏取り</th>
+ <th style="padding:12px;text-align:left;">API fee baseline</th>
+ <th style="padding:12px;text-align:left;">external API fee baseline</th>
  <th style="padding:12px;text-align:left;">jpcite</th>
- <th style="padding:12px;text-align:left;">saving</th>
+ <th style="padding:12px;text-align:left;">API fee delta</th>
  </tr>
  </thead>
  <tbody>
- <tr style="border-bottom:1px solid var(--border);"><td style="padding:10px;">税理士</td><td style="padding:10px;">措置法確認</td><td style="padding:10px;">1.0h × ¥10,000/h</td><td style="padding:10px;">¥10,000</td><td style="padding:10px;">¥6</td><td style="padding:10px;"><strong>¥9,994</strong></td></tr>
- <tr style="border-bottom:1px solid var(--border);"><td style="padding:10px;">行政書士</td><td style="padding:10px;">許認可 prep</td><td style="padding:10px;">3.5h × ¥10,000/h</td><td style="padding:10px;">¥35,000</td><td style="padding:10px;">¥4.5</td><td style="padding:10px;"><strong>¥34,995</strong></td></tr>
- <tr style="border-bottom:1px solid var(--border);"><td style="padding:10px;">補助金コンサル</td><td style="padding:10px;">顧問月次</td><td style="padding:10px;">1.5h × ¥8,000/h</td><td style="padding:10px;">¥12,000</td><td style="padding:10px;">¥9</td><td style="padding:10px;"><strong>¥11,991</strong></td></tr>
- <tr style="border-bottom:1px solid var(--border);"><td style="padding:10px;">中小企業経営者</td><td style="padding:10px;">自社相談前</td><td style="padding:10px;">2.0h × ¥5,000/h</td><td style="padding:10px;">¥10,000</td><td style="padding:10px;">¥9</td><td style="padding:10px;"><strong>¥9,991</strong></td></tr>
- <tr style="border-bottom:1px solid var(--border);"><td style="padding:10px;">VC / M&amp;A</td><td style="padding:10px;">法人 DD</td><td style="padding:10px;">4.0h × ¥10,000/h</td><td style="padding:10px;">¥40,000</td><td style="padding:10px;">¥12</td><td style="padding:10px;"><strong>¥39,988</strong></td></tr>
- <tr style="border-bottom:1px solid var(--border);"><td style="padding:10px;">AI 開発者</td><td style="padding:10px;">試作 endpoint</td><td style="padding:10px;">2.0h × ¥10,000/h</td><td style="padding:10px;">¥20,000</td><td style="padding:10px;">¥15</td><td style="padding:10px;"><strong>¥19,985</strong></td></tr>
- <tr style="border-bottom:1px solid var(--border);"><td style="padding:10px;">建設業特化</td><td style="padding:10px;">補助金抽出</td><td style="padding:10px;">4.0h × ¥8,000/h</td><td style="padding:10px;">¥32,000</td><td style="padding:10px;">¥6</td><td style="padding:10px;"><strong>¥31,994</strong></td></tr>
- <tr style="border-bottom:1px solid var(--border);"><td style="padding:10px;">製造業特化</td><td style="padding:10px;">設備投資</td><td style="padding:10px;">4.0h × ¥8,000/h</td><td style="padding:10px;">¥32,000</td><td style="padding:10px;">¥6</td><td style="padding:10px;"><strong>¥31,994</strong></td></tr>
- <tr style="border-bottom:1px solid var(--border);"><td style="padding:10px;">不動産業特化</td><td style="padding:10px;">賃貸事業</td><td style="padding:10px;">3.5h × ¥8,000/h</td><td style="padding:10px;">¥28,000</td><td style="padding:10px;">¥6</td><td style="padding:10px;"><strong>¥27,994</strong></td></tr>
- <tr style="border-bottom:1px solid var(--border);"><td style="padding:10px;">記者・調査会社</td><td style="padding:10px;">法人裏取り</td><td style="padding:10px;">1.5h × ¥8,000/h</td><td style="padding:10px;">¥12,000</td><td style="padding:10px;">¥9</td><td style="padding:10px;"><strong>¥11,991</strong></td></tr>
- <tr style="border-bottom:1px solid var(--border);"><td style="padding:10px;">信用金庫</td><td style="padding:10px;">取引先補助金</td><td style="padding:10px;">1.2h × ¥6,000/h</td><td style="padding:10px;">¥7,200</td><td style="padding:10px;">¥6</td><td style="padding:10px;"><strong>¥7,194</strong></td></tr>
- <tr style="border-bottom:1px solid var(--border);"><td style="padding:10px;">商工会</td><td style="padding:10px;">巡回先案内</td><td style="padding:10px;">0.8h × ¥5,000/h</td><td style="padding:10px;">¥4,000</td><td style="padding:10px;">¥6</td><td style="padding:10px;"><strong>¥3,994</strong></td></tr>
- <tr style="background:var(--bg-subtle,#fafafa);font-weight:600;"><td style="padding:10px;">平均 (加重)</td><td style="padding:10px;">全 audience case</td><td style="padding:10px;">3.0h × ¥9,000/h</td><td style="padding:10px;">¥27,000</td><td style="padding:10px;">¥9</td><td style="padding:10px;"><strong>¥26,991</strong></td></tr>
+ <tr style="border-bottom:1px solid var(--border);"><td style="padding:10px;">税理士</td><td style="padding:10px;">措置法確認</td><td style="padding:10px;">model/search API fee baseline</td><td style="padding:10px;">¥10,000</td><td style="padding:10px;">¥6</td><td style="padding:10px;"><strong>¥9,994</strong></td></tr>
+ <tr style="border-bottom:1px solid var(--border);"><td style="padding:10px;">行政書士</td><td style="padding:10px;">許認可 prep</td><td style="padding:10px;">model/search API fee baseline</td><td style="padding:10px;">¥35,000</td><td style="padding:10px;">¥4.5</td><td style="padding:10px;"><strong>¥34,995</strong></td></tr>
+ <tr style="border-bottom:1px solid var(--border);"><td style="padding:10px;">補助金コンサル</td><td style="padding:10px;">顧問月次</td><td style="padding:10px;">model/search API fee baseline</td><td style="padding:10px;">¥12,000</td><td style="padding:10px;">¥9</td><td style="padding:10px;"><strong>¥11,991</strong></td></tr>
+ <tr style="border-bottom:1px solid var(--border);"><td style="padding:10px;">中小企業経営者</td><td style="padding:10px;">自社相談前</td><td style="padding:10px;">model/search API fee baseline</td><td style="padding:10px;">¥10,000</td><td style="padding:10px;">¥9</td><td style="padding:10px;"><strong>¥9,991</strong></td></tr>
+ <tr style="border-bottom:1px solid var(--border);"><td style="padding:10px;">VC / M&amp;A</td><td style="padding:10px;">法人 DD</td><td style="padding:10px;">model/search API fee baseline</td><td style="padding:10px;">¥40,000</td><td style="padding:10px;">¥12</td><td style="padding:10px;"><strong>¥39,988</strong></td></tr>
+ <tr style="border-bottom:1px solid var(--border);"><td style="padding:10px;">AI 開発者</td><td style="padding:10px;">試作 endpoint</td><td style="padding:10px;">model/search API fee baseline</td><td style="padding:10px;">¥20,000</td><td style="padding:10px;">¥15</td><td style="padding:10px;"><strong>¥19,985</strong></td></tr>
+ <tr style="border-bottom:1px solid var(--border);"><td style="padding:10px;">建設業特化</td><td style="padding:10px;">補助金抽出</td><td style="padding:10px;">model/search API fee baseline</td><td style="padding:10px;">¥32,000</td><td style="padding:10px;">¥6</td><td style="padding:10px;"><strong>¥31,994</strong></td></tr>
+ <tr style="border-bottom:1px solid var(--border);"><td style="padding:10px;">製造業特化</td><td style="padding:10px;">設備投資</td><td style="padding:10px;">model/search API fee baseline</td><td style="padding:10px;">¥32,000</td><td style="padding:10px;">¥6</td><td style="padding:10px;"><strong>¥31,994</strong></td></tr>
+ <tr style="border-bottom:1px solid var(--border);"><td style="padding:10px;">不動産業特化</td><td style="padding:10px;">賃貸事業</td><td style="padding:10px;">model/search API fee baseline</td><td style="padding:10px;">¥28,000</td><td style="padding:10px;">¥6</td><td style="padding:10px;"><strong>¥27,994</strong></td></tr>
+ <tr style="border-bottom:1px solid var(--border);"><td style="padding:10px;">記者・調査会社</td><td style="padding:10px;">法人裏取り</td><td style="padding:10px;">model/search API fee baseline</td><td style="padding:10px;">¥12,000</td><td style="padding:10px;">¥9</td><td style="padding:10px;"><strong>¥11,991</strong></td></tr>
+ <tr style="border-bottom:1px solid var(--border);"><td style="padding:10px;">信用金庫</td><td style="padding:10px;">取引先補助金</td><td style="padding:10px;">model/search API fee baseline</td><td style="padding:10px;">¥7,200</td><td style="padding:10px;">¥6</td><td style="padding:10px;"><strong>¥7,194</strong></td></tr>
+ <tr style="border-bottom:1px solid var(--border);"><td style="padding:10px;">商工会</td><td style="padding:10px;">巡回先案内</td><td style="padding:10px;">model/search API fee baseline</td><td style="padding:10px;">¥4,000</td><td style="padding:10px;">¥6</td><td style="padding:10px;"><strong>¥3,994</strong></td></tr>
+ <tr style="background:var(--bg-subtle,#fafafa);font-weight:600;"><td style="padding:10px;">平均 (加重)</td><td style="padding:10px;">全 audience case</td><td style="padding:10px;">model/search API fee baseline</td><td style="padding:10px;">¥27,000</td><td style="padding:10px;">¥9</td><td style="padding:10px;"><strong>¥26,991</strong></td></tr>
  </tbody>
  </table>
  </div>
- <p style="font-size:13px;color:var(--text-muted);margin-top:12px;">※ 推定値。全数値は典型 case の参考。実 case は工数 / hourly rate / req 数で変動する。jpcite は事実検索 + scaffold 提供のみで、専門家業務は資格者本人の専権事項。API token-only baseline は 2026-05-12 時点の Claude Sonnet 4.5 入出力単価 + Anthropic web search 単価 + USD/JPY=150 で別途計算。</p>
+ <p style="font-size:13px;color:var(--text-muted);margin-top:12px;">※ 推定値。全数値は典型 case の参考。実 case は工数 / hourly rate / req 数で変動する。jpcite は事実検索 + scaffold 提供のみで、専門家業務は資格者本人の専権事項。API token-only baseline は 2026-05-12 時点の Claude Sonnet 4.5 入出力単価 + Anthropic web search 単価 + USD/JPY=150 で別途計算。誇大広告意図なし。</p>
  </div>
  </section>
 

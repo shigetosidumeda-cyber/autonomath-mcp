@@ -152,7 +152,7 @@ async def test_mcp_list_tools_returns_nonempty_list():
     """list_tools is the protocol entrypoint a real MCP client calls
     immediately after handshake. Must return >= 39 prod tools (jpintel.db)."""
     tools = await mcp.list_tools()
-    # Production manifest declares 139 at default gates; lower bound is the
+    # Production manifest declares 151 at default gates; lower bound is the
     # 39 jpintel.db prod tools that always register regardless of cohort flags.
     assert len(tools) >= 39, f"expected >= 39 tools, got {len(tools)}"
 

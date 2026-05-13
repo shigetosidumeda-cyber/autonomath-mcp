@@ -23,17 +23,38 @@ def admin_enabled(monkeypatch: pytest.MonkeyPatch) -> str:
     return ADMIN_KEY
 
 
+@pytest.fixture()
+def stats_funnel_db(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    from jpintel_mcp.config import settings
+    from jpintel_mcp.db.session import init_db
+
+    db_path = tmp_path / "stats_funnel.db"
+    init_db(db_path)
+    monkeypatch.setenv("JPINTEL_DB_PATH", str(db_path))
+    monkeypatch.setenv("JPCITE_DB_PATH", str(db_path))
+    monkeypatch.setattr(settings, "db_path", db_path, raising=False)
+    return db_path
+
+
+@pytest.fixture()
+def stats_funnel_client(stats_funnel_db: Path, admin_enabled: str):
+    from fastapi.testclient import TestClient
+
+    from jpintel_mcp.api.main import create_app
+
+    return TestClient(create_app())
+
+
 def test_stats_funnel_uses_billable_quantity_not_request_count(
-    client,
-    seeded_db: Path,
-    admin_enabled: str,
+    stats_funnel_client,
+    stats_funnel_db: Path,
 ) -> None:
     today = datetime.now(UTC).date()
     yesterday = today - timedelta(days=1)
     today_s = today.isoformat()
     yesterday_s = yesterday.isoformat()
 
-    conn = sqlite3.connect(seeded_db)
+    conn = sqlite3.connect(stats_funnel_db)
     try:
         conn.execute("DELETE FROM usage_events")
         conn.execute("DELETE FROM api_keys")
@@ -85,10 +106,10 @@ def test_stats_funnel_uses_billable_quantity_not_request_count(
     finally:
         conn.close()
 
-    response = client.get(
+    response = stats_funnel_client.get(
         "/v1/stats/funnel",
         params={"days": 2},
-        headers={"X-API-Key": admin_enabled},
+        headers={"X-API-Key": ADMIN_KEY},
     )
     assert response.status_code == 200, response.text
     body = response.json()

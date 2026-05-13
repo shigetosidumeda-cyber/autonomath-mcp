@@ -135,71 +135,88 @@ def _build_enriched_json() -> str:
     )
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture()
 def seeded_foreign_employer_program(seeded_db: Path) -> Path:
     """Insert UNI-16b8d86302 (the design-doc anchor row) into the
-    conftest-seeded tmp jpintel.db. Idempotent across the module."""
+    conftest-seeded tmp jpintel.db, then remove it after the test.
+
+    The shared seeded DB is session-scoped; leaving this extra searchable
+    row behind changes broad-shard pagination expectations.
+    """
+    inserted = False
     conn = sqlite3.connect(seeded_db)
     try:
         already = conn.execute(
             "SELECT 1 FROM programs WHERE unified_id = ?",
             (_SAMPLE_PROGRAM_ID,),
         ).fetchone()
-        if already:
-            return seeded_db
-        now = datetime.now(UTC).isoformat()
-        conn.execute(
-            """INSERT INTO programs(
-                unified_id, primary_name, aliases_json,
-                authority_level, authority_name, prefecture, municipality,
-                program_kind, official_url,
-                amount_max_man_yen, amount_min_man_yen, subsidy_rate,
-                trust_level, tier, coverage_score, gap_to_tier_s_json,
-                a_to_j_coverage_json,
-                excluded, exclusion_reason,
-                crop_categories_json, equipment_category,
-                target_types_json, funding_purpose_json,
-                amount_band, application_window_json,
-                enriched_json, source_mentions_json, updated_at,
-                source_url, source_fetched_at
-            ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
-            (
-                _SAMPLE_PROGRAM_ID,
-                _SAMPLE_NAME,
-                None,
-                "national",
-                "厚生労働省",
-                None,
-                None,
-                "助成金",
-                _SAMPLE_SOURCE_URL,
-                80.0,
-                20.0,
-                None,
-                None,
-                "A",
-                None,
-                None,
-                None,
-                0,
-                None,
-                None,
-                None,
-                json.dumps(["corporation"], ensure_ascii=False),
-                json.dumps(["labor", "training"], ensure_ascii=False),
-                "under_100",
-                None,
-                _build_enriched_json(),
-                None,
-                now,
-                _SAMPLE_SOURCE_URL,
-                now,
-            ),
-        )
-        conn.commit()
+        if already is None:
+            inserted = True
+            now = datetime.now(UTC).isoformat()
+            conn.execute(
+                """INSERT INTO programs(
+                    unified_id, primary_name, aliases_json,
+                    authority_level, authority_name, prefecture, municipality,
+                    program_kind, official_url,
+                    amount_max_man_yen, amount_min_man_yen, subsidy_rate,
+                    trust_level, tier, coverage_score, gap_to_tier_s_json,
+                    a_to_j_coverage_json,
+                    excluded, exclusion_reason,
+                    crop_categories_json, equipment_category,
+                    target_types_json, funding_purpose_json,
+                    amount_band, application_window_json,
+                    enriched_json, source_mentions_json, updated_at,
+                    source_url, source_fetched_at
+                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                (
+                    _SAMPLE_PROGRAM_ID,
+                    _SAMPLE_NAME,
+                    None,
+                    "national",
+                    "厚生労働省",
+                    None,
+                    None,
+                    "助成金",
+                    _SAMPLE_SOURCE_URL,
+                    80.0,
+                    20.0,
+                    None,
+                    None,
+                    "A",
+                    None,
+                    None,
+                    None,
+                    0,
+                    None,
+                    None,
+                    None,
+                    json.dumps(["corporation"], ensure_ascii=False),
+                    json.dumps(["labor", "training"], ensure_ascii=False),
+                    "under_100",
+                    None,
+                    _build_enriched_json(),
+                    None,
+                    now,
+                    _SAMPLE_SOURCE_URL,
+                    now,
+                ),
+            )
+            conn.commit()
     finally:
         conn.close()
-    return seeded_db
+    try:
+        yield seeded_db
+    finally:
+        if inserted:
+            cleanup = sqlite3.connect(seeded_db)
+            try:
+                cleanup.execute(
+                    "DELETE FROM programs WHERE unified_id = ?",
+                    (_SAMPLE_PROGRAM_ID,),
+                )
+                cleanup.commit()
+            finally:
+                cleanup.close()
 
 
 # ---------------------------------------------------------------------------

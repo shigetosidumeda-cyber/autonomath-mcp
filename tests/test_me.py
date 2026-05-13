@@ -295,7 +295,7 @@ def test_rotate_email_failure_does_not_break_rotation(
     r = client.post("/v1/me/rotate-key", headers=_csrf_headers(client))
     # Rotation MUST still succeed — the email is best-effort
     assert r.status_code == 200, r.text
-    assert r.json()["api_key"].startswith("am_")
+    assert r.json()["api_key"].startswith("jc_")
 
 
 def test_rotate_key_invalidates_old_and_new_key_works(client, paid_key, seeded_db: Path):
@@ -306,7 +306,7 @@ def test_rotate_key_invalidates_old_and_new_key_works(client, paid_key, seeded_d
     assert r.status_code == 200, r.text
     body = r.json()
     new_key = body["api_key"]
-    assert new_key.startswith("am_")
+    assert new_key.startswith("jc_")
     assert body["tier"] == "paid"
     assert new_key != paid_key
 

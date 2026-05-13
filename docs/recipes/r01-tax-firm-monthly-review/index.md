@@ -128,11 +128,13 @@ fs.writeFileSync("monthly_review.json", JSON.stringify(rows, null, 2));
 - `apply_eligibility_chain` (排他ルールチェック、公開版 21)
 
 ## 関連 recipe
-- [r02-pre-closing-subsidy-check](../r02-pre-closing-subsidy-check/) — 決算前最終チェック、月次の延長
-- [r07-shindanshi-monthly-companion](../r07-shindanshi-monthly-companion/) — 診断士月次伴走、提案 phase 引継ぎ
-- [r11-ec-invoice-bulk-verify](../r11-ec-invoice-bulk-verify/) — 適格事業者一括検証
+- [r02-pre-closing-subsidy-check](../r02-pre-closing-subsidy-check/index.md) — 決算前最終チェック、月次の延長
+- [r07-shindanshi-monthly-companion](../r07-shindanshi-monthly-companion/index.md) — 診断士月次伴走、提案 phase 引継ぎ
+- [r11-ec-invoice-bulk-verify](../r11-ec-invoice-bulk-verify/index.md) — 適格事業者一括検証
 
 ## billable_units 試算
+
+- API fee delta: API fee delta の前提と再現式は [docs/canonical/cost_saving_examples.md](../../canonical/cost_saving_examples.md) を参照。
 - 1 顧問先 18 units (`get_corp_360` 12 + matching 6) × ¥3 = ¥54 / 顧問先 / 月
 - 顧問先 100 社 = ¥5,400 / 月、税込 ¥5,940
 - 年 12 ヶ月 = ¥64,800 / 年、税込 ¥71,280

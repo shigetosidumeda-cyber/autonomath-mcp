@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "autonomath-mcp",
   "version": "0.4.0",
-  "description": "Japan public-program MCP — subsidies, loans, tax, law, invoice & corporate data. 11,601 searchable programs + 9,484 e-Gov law metadata records + 1,185 行政処分 + 2,065 判例 + 362 入札 + 13,801 適格事業者 + corporate/entity-fact graph coverage. ¥3/billable unit, 3 free/day per IP. Evidence Packet with source_url + source_fetched_at + known gaps + 互換/排他 rules. 139 tools.",
+  "description": "Japan public-program MCP — subsidies, loans, tax, law, invoice & corporate data. 11,601 searchable programs + 9,484 e-Gov law metadata records + 1,185 行政処分 + 2,065 判例 + 362 入札 + 13,801 適格事業者 + corporate/entity-fact graph coverage. ¥3/billable unit, 3 free/day per IP. Evidence Packet with source_url + source_fetched_at + known gaps + 互換/排他 rules. 151 tools.",
   "author": {
     "name": "Bookyou株式会社",
     "url": "https://jpcite.com"
@@ -56,7 +56,7 @@
     },
     {
       "name": "check_exclusions",
-      "description": "COMPLIANCE: 併給可否を機械的に判定する — 候補制度セットに対して 181 本の併給禁止 / 前提要件ルールを走らせ、違反するものだけ返す (given a candidate set of program IDs, run all 181 補助金 exclusion / prerequisite rules and return only the violations). This answers the core \"can I combine A and B?\" / \"do I need certification X before applying for Y?\" question in one call — LLM による PDF 脚注パースの hallucination を構造的に排除する。\n\nTypical queries:\n  - \"IT導入補助金と事業再構築補助金は併用できる?\"\n  - \"これら3つの補助金に同時申請できる?\"\n  - \"スーパーL資金を使う前に必要な認定は?\"\n\nEmpty `hits[]` means no registered rule fired. It does not prove that the\ncombination is allowed; important cases should still be checked against\nthe primary source and the relevant office.\n\nWHEN NOT:\n  - `list_exclusion_rules` instead if the user wants to browse rules generally without a specific candidate set.\n  - `search_programs` first if you don't yet have program_ids — this tool requires them as input.\n\nCHAIN:\n  ← `search_programs` / `batch_get_programs` to produce the program_ids.\n  → `get_program(unified_id=hit.program_a)` to explain a triggered rule in context.\n  → `search_case_studies(program_used=primary_name)` to check how recipients handled the restriction in practice (resolve primary_name via `get_program(unified_id=hit.program_a)` first).\n  DO NOT → `list_exclusion_rules` right after this call — each hit already embeds the rule row (rule_id / description / severity / source_url)."
+      "description": "COMPLIANCE: 併給可否を機械的に判定する — 候補制度セットに対して 181 本の併給禁止 / 前提要件ルールを走らせ、違反するものだけ返す (given a candidate set of program IDs, run all 181 補助金 exclusion / prerequisite rules and return only the violations). This answers the core \"can I combine A and B?\" / \"do I need certification X before applying for Y?\" question in one call — source-linked rules reduce manual PDF footnote parsing misses.\n\nTypical queries:\n  - \"IT導入補助金と事業再構築補助金は併用できる?\"\n  - \"これら3つの補助金に同時申請できる?\"\n  - \"スーパーL資金を使う前に必要な認定は?\"\n\nEmpty `hits[]` means no registered rule fired. It does not prove that the\ncombination is allowed; important cases should still be checked against\nthe primary source and the relevant office.\n\nWHEN NOT:\n  - `list_exclusion_rules` instead if the user wants to browse rules generally without a specific candidate set.\n  - `search_programs` first if you don't yet have program_ids — this tool requires them as input.\n\nCHAIN:\n  ← `search_programs` / `batch_get_programs` to produce the program_ids.\n  → `get_program(unified_id=hit.program_a)` to explain a triggered rule in context.\n  → `search_case_studies(program_used=primary_name)` to check how recipients handled the restriction in practice (resolve primary_name via `get_program(unified_id=hit.program_a)` first).\n  DO NOT → `list_exclusion_rules` right after this call — each hit already embeds the rule row (rule_id / description / severity / source_url)."
     },
     {
       "name": "get_meta",
@@ -184,7 +184,7 @@
     },
     {
       "name": "resolve_citation_chain",
-      "description": "[KAIKEI] tax_ruleset → 法令 article → 通達 → 質疑応答 → 文書回答 の citation chain を auto-resolve する。国税庁・法令・判例の公表情報をつなぎ、監査調書の索引に貼りやすい tree を返す。¥3 / call。§47条の2 + §52 sensitive — 税務助言ではなく出典確認用。"
+      "description": "[KAIKEI] tax_ruleset → 法令 article → 通達 → 質疑応答 → 文書回答 の citation chain を auto-resolve する。国税庁・法令・判例の公表情報をつなぎ、監査調書の索引に貼りやすい tree を返す。¥3/billable unit。§47条の2 + §52 sensitive — 税務助言ではなく出典確認用。"
     },
     {
       "name": "search_invoice_registrants",
@@ -280,7 +280,7 @@
     },
     {
       "name": "benchmark_cohort_average_am",
-      "description": "[BENCHMARK] 業種 (JSIC) × 規模 × 地域 平均採択額 / 採択件数 / hit数 (制度数) / outlier 法人 (top 10%) over source-derived dataset + source-derived dataset. Single ¥3/req. NO LLM. §52 / §47条の2 / §1 sensitive — directional benchmark, not 採択保証 / 経営助言."
+      "description": "[BENCHMARK] 業種 (JSIC) × 規模 × 地域 平均採択額 / 採択件数 / hit数 (制度数) / outlier 法人 (top 10%) over source-derived dataset + source-derived dataset. Single ¥3/billable unit. NO LLM. §52 / §47条の2 / §1 sensitive — directional benchmark, not 採択保証 / 経営助言."
     },
     {
       "name": "verify_citations",
@@ -288,19 +288,19 @@
     },
     {
       "name": "case_cohort_match_am",
-      "description": "[PEER-MATCH] 同業 (JSIC) × 同規模 (employees + revenue) × 同地域 (prefecture) peer-group matcher: pulls source-derived dataset (public corpus, 2,286) + source-derived dataset (public corpus, 201,845) + per-program rollup (appearance_count / avg_amount / peer_group_share). Single ¥3/req. NO LLM. §52 / §47条の2 / §1 sensitive — information retrieval, not 申請代理."
+      "description": "[PEER-MATCH] 同業 (JSIC) × 同規模 (employees + revenue) × 同地域 (prefecture) peer-group matcher: pulls source-derived dataset (public corpus, 2,286) + source-derived dataset (public corpus, 201,845) + per-program rollup (appearance_count / avg_amount / peer_group_share). Single ¥3/billable unit. NO LLM. §52 / §47条の2 / §1 sensitive — information retrieval, not 申請代理."
     },
     {
       "name": "match_cohort_5d_am",
-      "description": "[PEER-5D] いつ使うか: 法人 × 業種 × 規模 × 地域 × 制度の 5 軸で「私と同じカテゴリの企業が通った制度」を即座に返す。入力: jsic_major (A-T)、employee_band (4 段階)、prefecture_code (47 都道府県 + null)、limit (1-100)。出力: eligible_program_ids[]、peer_group_meta (last_refreshed_at, eligible_count)。エラー: missing jsic/band → invalid_enum、public corpus 不在 → db_unavailable。1 ¥3/req。NO LLM。§52 / §47条の2 / §1 sensitive。"
+      "description": "[PEER-5D] いつ使うか: 法人 × 業種 × 規模 × 地域 × 制度の 5 軸で「私と同じカテゴリの企業が通った制度」を即座に返す。入力: jsic_major (A-T)、employee_band (4 段階)、prefecture_code (47 都道府県 + null)、limit (1-100)。出力: eligible_program_ids[]、peer_group_meta (last_refreshed_at, eligible_count)。エラー: missing jsic/band → invalid_enum、public corpus 不在 → db_unavailable。1 ¥3/billable unit。NO LLM。§52 / §47条の2 / §1 sensitive。"
     },
     {
       "name": "program_risk_score_am",
-      "description": "[PROGRAM-REVIEW-4D] いつ使うか: 制度 × 業法 × 行政処分 × 取消理由の 4 軸 review score (0-100) を返す。weighted: 業法 0.5 / 行政処分 0.3 / 取消理由 0.2。入力: program_id (unified_id)。出力: top_review_signal + all_axes[]、weights、_disclaimer。エラー: program_id 未指定 → invalid_enum、precompute 不在 → axis_count=0 で返却 (200 OK)。1 ¥3/req。NO LLM。§52 / §47条の2 / §1 sensitive — 行政書士法 §1 / 税理士法 §52 の boundary を crossed 制度を識別する用途。"
+      "description": "[PROGRAM-REVIEW-4D] いつ使うか: 制度 × 業法 × 行政処分 × 取消理由の 4 軸 review score (0-100) を返す。weighted: 業法 0.5 / 行政処分 0.3 / 取消理由 0.2。入力: program_id (unified_id)。出力: top_review_signal + all_axes[]、weights、_disclaimer。エラー: program_id 未指定 → invalid_enum、precompute 不在 → axis_count=0 で返却 (200 OK)。1 ¥3/billable unit。NO LLM。§52 / §47条の2 / §1 sensitive — 行政書士法 §1 / 税理士法 §52 の boundary を crossed 制度を識別する用途。"
     },
     {
       "name": "supplier_chain_am",
-      "description": "[SUPPLIER-CHAIN] いつ使うか: anchor houjin を起点に bipartite chain (invoice_registrant_active/revoked, adoption_partner, enforcement_subject の 4 link_type) を最大 5 hop まで traverse。入力: houjin_bangou (13 桁) + max_hops (1-5)。出力: edges[]、by_link_type breakdown、edge_count。エラー: houjin_bangou が 13 桁でない → invalid_enum、precompute 不在 → edges=[] で返却 (200 OK)。2 ¥3/req (heavy)。NO LLM。§52 / §47条の2 / §1 sensitive — 取引先デューデリ用途、最終判断は士業へ。"
+      "description": "[SUPPLIER-CHAIN] いつ使うか: anchor houjin を起点に bipartite chain (invoice_registrant_active/revoked, adoption_partner, enforcement_subject の 4 link_type) を最大 5 hop まで traverse。入力: houjin_bangou (13 桁) + max_hops (1-5)。出力: edges[]、by_link_type breakdown、edge_count。エラー: houjin_bangou が 13 桁でない → invalid_enum、precompute 不在 → edges=[] で返却 (200 OK)。2 ¥3/billable unit (heavy)。NO LLM。§52 / §47条の2 / §1 sensitive — 取引先デューデリ用途、最終判断は士業へ。"
     },
     {
       "name": "portfolio_optimize_am",
@@ -332,11 +332,11 @@
     },
     {
       "name": "programs_by_corporate_form_am",
-      "description": "[CORPORATE-FORM-AM] 法人格 × 制度 適用 matcher。NO LLM, ¥3/req metered. `_disclaimer` 必須。\n\nWHAT: `source-derived dataset` の\n``$.target_entity_types`` 軸 (5,702 rows) を法人格 short code に\n正規化し、与えられた form (株式会社 / 合同会社 / NPO / 一般社団 /\n公益社団 / 学校 / 医療 / 個人事業主 等) に該当する program を\n返却。``industry_jsic`` を与えると ``$.industries_jsic`` で\nさらに絞り込み。\n\nWHEN:\n  - 「私の法人格 (合同会社) で使える制度を narrow したい」\n  - 「個人事業主 NG 制度を frame out したい」\n  - 「NPO 法人で建設業向け補助金を探したい (form=npo, industry_jsic=D)」\n\nWHEN NOT:\n  - 法人格 不明 / 検索 → search_programs (free-text)\n  - 都道府県 軸 → programs_by_region_am\n  - 個別 program の form 適用表 → program_eligibility_by_form_am\n\nRETURNS (envelope):\n  {\n    applied_filters: {form_code, form_label, form_entity_class,\n                      industry_jsic, limit},\n    programs: [\n      {unified_id, primary_name, tier, prefecture, program_kind,\n       amount_max_man_yen, source_url,\n       predicate_target_entity_types, predicate_industries_jsic,\n       predicate_prefectures, predicate_funding_purposes,\n       predicate_confidence, predicate_extraction_method},\n      ...\n    ],\n    count, total, results,  # all = same list (FastMCP convention)\n    _disclaimer,             # 税理士法 §52 / 行政書士法 §1 fence\n    _form_caveat,            # predicate-axis precision note\n    _next_calls: [...]       # composition hints\n  }"
+      "description": "[CORPORATE-FORM-AM] 法人格 × 制度 適用 matcher。NO LLM, ¥3/billable unit metered. `_disclaimer` 必須。\n\nWHAT: `source-derived dataset` の\n``$.target_entity_types`` 軸 (5,702 rows) を法人格 short code に\n正規化し、与えられた form (株式会社 / 合同会社 / NPO / 一般社団 /\n公益社団 / 学校 / 医療 / 個人事業主 等) に該当する program を\n返却。``industry_jsic`` を与えると ``$.industries_jsic`` で\nさらに絞り込み。\n\nWHEN:\n  - 「私の法人格 (合同会社) で使える制度を narrow したい」\n  - 「個人事業主 NG 制度を frame out したい」\n  - 「NPO 法人で建設業向け補助金を探したい (form=npo, industry_jsic=D)」\n\nWHEN NOT:\n  - 法人格 不明 / 検索 → search_programs (free-text)\n  - 都道府県 軸 → programs_by_region_am\n  - 個別 program の form 適用表 → program_eligibility_by_form_am\n\nRETURNS (envelope):\n  {\n    applied_filters: {form_code, form_label, form_entity_class,\n                      industry_jsic, limit},\n    programs: [\n      {unified_id, primary_name, tier, prefecture, program_kind,\n       amount_max_man_yen, source_url,\n       predicate_target_entity_types, predicate_industries_jsic,\n       predicate_prefectures, predicate_funding_purposes,\n       predicate_confidence, predicate_extraction_method},\n      ...\n    ],\n    count, total, results,  # all = same list (FastMCP convention)\n    _disclaimer,             # 税理士法 §52 / 行政書士法 §1 fence\n    _form_caveat,            # predicate-axis precision note\n    _next_calls: [...]       # composition hints\n  }"
     },
     {
       "name": "program_eligibility_by_form_am",
-      "description": "[CORPORATE-FORM-AM] 制度別 法人格 適用表 (15 axes)。NO LLM, ¥3/req metered. `_disclaimer` 必須。\n\nWHAT: 1 program について、株式会社 / 合同会社 / 合資会社 / 合名会社 /\nNPO / 一般社団 / 公益社団 / 一般財団 / 公益財団 / 学校 / 医療 /\n事業協同組合 / 個人事業主 / 個人 / 外国法人 の 15 法人格について\n``allowed`` / ``not_allowed`` を判定し、根拠 (predicate\ntarget_entity_types) を併記する。\n\nWHEN:\n  - 「IT導入補助金 を 合同会社 が申請できるか?」\n  - 「事業再構築補助金 の対象法人格を一覧で確認したい」\n  - 「個人事業主 NG 制度を 1 個別チェック」\n\nWHEN NOT:\n  - form 別の program list → programs_by_corporate_form_am\n  - 法人 360 view → get_houjin_360_am\n  - 制度本体の narrative → program_abstract_structured /\n    search_programs(unified_id=...)\n\nRETURNS (envelope):\n  {\n    unified_id,\n    program: {primary_name, tier, prefecture, program_kind,\n              amount_max_man_yen, subsidy_rate, source_url},\n    matrix: {\n      kabushiki:    {label, entity_class, verdict, reason},\n      goudou:       {...},\n      ...,\n      foreign:      {...}\n    },\n    predicate_target_entity_types: [...] | null,\n    predicate_confidence: float,\n    predicate_extraction_method: 'rule_based'|'llm_extracted'|'manual',\n    _disclaimer, _form_caveat, _next_calls\n  }"
+      "description": "[CORPORATE-FORM-AM] 制度別 法人格 適用表 (15 axes)。NO LLM, ¥3/billable unit metered. `_disclaimer` 必須。\n\nWHAT: 1 program について、株式会社 / 合同会社 / 合資会社 / 合名会社 /\nNPO / 一般社団 / 公益社団 / 一般財団 / 公益財団 / 学校 / 医療 /\n事業協同組合 / 個人事業主 / 個人 / 外国法人 の 15 法人格について\n``allowed`` / ``not_allowed`` を判定し、根拠 (predicate\ntarget_entity_types) を併記する。\n\nWHEN:\n  - 「IT導入補助金 を 合同会社 が申請できるか?」\n  - 「事業再構築補助金 の対象法人格を一覧で確認したい」\n  - 「個人事業主 NG 制度を 1 個別チェック」\n\nWHEN NOT:\n  - form 別の program list → programs_by_corporate_form_am\n  - 法人 360 view → get_houjin_360_am\n  - 制度本体の narrative → program_abstract_structured /\n    search_programs(unified_id=...)\n\nRETURNS (envelope):\n  {\n    unified_id,\n    program: {primary_name, tier, prefecture, program_kind,\n              amount_max_man_yen, subsidy_rate, source_url},\n    matrix: {\n      kabushiki:    {label, entity_class, verdict, reason},\n      goudou:       {...},\n      ...,\n      foreign:      {...}\n    },\n    predicate_target_entity_types: [...] | null,\n    predicate_confidence: float,\n    predicate_extraction_method: 'rule_based'|'llm_extracted'|'manual',\n    _disclaimer, _form_caveat, _next_calls\n  }"
     },
     {
       "name": "get_houjin_360_am",
@@ -352,15 +352,15 @@
     },
     {
       "name": "program_full_context",
-      "description": "[CROSS-REF R8] Bundle the full primary-source context of a 制度 in 1 call: program metadata + 法令根拠 + 改正履歴 + 関連判例 + 同業 採択事例 + 関連 行政処分 + 排他ルール. deterministic retrieval over public corpus + best-effort public corpus source-derived dataset. ¥3/req. §72/§52/§1/§27 fence."
+      "description": "[CROSS-REF R8] Bundle the full primary-source context of a 制度 in 1 call: program metadata + 法令根拠 + 改正履歴 + 関連判例 + 同業 採択事例 + 関連 行政処分 + 排他ルール. deterministic retrieval over public corpus + best-effort public corpus source-derived dataset. ¥3/billable unit. §72/§52/§1/§27 fence."
     },
     {
       "name": "law_related_programs_cross",
-      "description": "[CROSS-REF R8] Reverse program lookup for a 法令: walks supersession chain (both directions) and surfaces every program citing the law (or a predecessor) with a ref_kind histogram. deterministic retrieval over laws + source-derived dataset. ¥3/req. §72/§52/§1 fence."
+      "description": "[CROSS-REF R8] Reverse program lookup for a 法令: walks supersession chain (both directions) and surfaces every program citing the law (or a predecessor) with a ref_kind histogram. deterministic retrieval over laws + source-derived dataset. ¥3/billable unit. §72/§52/§1 fence."
     },
     {
       "name": "cases_by_industry_size_pref",
-      "description": "[CROSS-REF R8] 採択事例 narrowed by 業種 (JSIC) × 規模 (employees / capital) × 都道府県 in 1 call. deterministic retrieval over source-derived dataset. ¥3/req. NOT sensitive (1次資料の検索)."
+      "description": "[CROSS-REF R8] 採択事例 narrowed by 業種 (JSIC) × 規模 (employees / capital) × 都道府県 in 1 call. deterministic retrieval over source-derived dataset. ¥3/billable unit. NOT sensitive (1次資料の検索)."
     },
     {
       "name": "discover_related",
@@ -396,7 +396,7 @@
     },
     {
       "name": "match_programs_by_funding_stage_am",
-      "description": "[FUNDING-STAGE-AM] 資金調達ステージ別 (シード/アーリー/グロース/IPO/事業承継) program マッチャー。NO LLM, ¥3/req metered. `_disclaimer` 必須。\n\nWHAT: 5 stage (seed / early / growth / ipo / succession) の closed\nenum + keyword fence + age/capital/revenue indicative band で\n``programs`` を篩い、`amount_max_man_yen × likelihood` 順に\nsort。stage 判定は heuristic — 日本の制度は『stage X 専用』タグを\n持たないため、keyword fence 公開定義に依拠。\n\nWHEN:\n  - 「私 シード期 で 該当する補助金/融資/税制 list」\n  - 「グロース期 (5-10 年目) の中堅企業向け制度を年商レンジで絞りたい」\n  - 「事業承継 + M&A の補助金/税制を都道府県 X でフィルタ」\n\nWHEN NOT:\n  - JSIC 業種 × 採択事例マッチ → case_cohort_match_am\n  - 個別 program の探索 → search_programs / list_open_programs\n  - 制度併用可否 → check_funding_stack_am\n  - 法人別 360 view → get_houjin_360_am\n\nRETURNS (envelope):\n  {\n    input: {stage, annual_revenue_yen, employee_count,\n            incorporation_year, age_years, prefecture, limit},\n    stage_definition: {id, ja_label, description,\n                       age_min_years, age_max_years,\n                       capital_max_yen, revenue_band_yen,\n                       keywords_any, keywords_avoid},\n    matched_programs: [\n      {unified_id, primary_name, tier, program_kind,\n       amount_max_man_yen, source_url, prefecture,\n       likelihood, score, ...},\n      ...\n    ],\n    axes_applied: {stage_keyword_filter, prefecture, age_filter,\n                   revenue_filter, employee_filter},\n    summary: {total_matched, amount_max_man_yen_top},\n    total, limit, offset, results,\n    _disclaimer, _next_calls\n  }\n\nDATA QUALITY HONESTY: keyword fence は primary_name OR ladder のみ。\n本文/募集要項の text mining は行わない (FTS5 trigram の単漢字\nfalse-positive 回避のため)。stage の age/capital/revenue band は\nranking の重み付けには使うが、ハード除外には使わない (data sparsity\nを踏まえた honest design)。\n\nBILLING: 1 tool call = 1 ¥3 課金単位。"
+      "description": "[FUNDING-STAGE-AM] 資金調達ステージ別 (シード/アーリー/グロース/IPO/事業承継) program マッチャー。NO LLM, ¥3/billable unit metered. `_disclaimer` 必須。\n\nWHAT: 5 stage (seed / early / growth / ipo / succession) の closed\nenum + keyword fence + age/capital/revenue indicative band で\n``programs`` を篩い、`amount_max_man_yen × likelihood` 順に\nsort。stage 判定は heuristic — 日本の制度は『stage X 専用』タグを\n持たないため、keyword fence 公開定義に依拠。\n\nWHEN:\n  - 「私 シード期 で 該当する補助金/融資/税制 list」\n  - 「グロース期 (5-10 年目) の中堅企業向け制度を年商レンジで絞りたい」\n  - 「事業承継 + M&A の補助金/税制を都道府県 X でフィルタ」\n\nWHEN NOT:\n  - JSIC 業種 × 採択事例マッチ → case_cohort_match_am\n  - 個別 program の探索 → search_programs / list_open_programs\n  - 制度併用可否 → check_funding_stack_am\n  - 法人別 360 view → get_houjin_360_am\n\nRETURNS (envelope):\n  {\n    input: {stage, annual_revenue_yen, employee_count,\n            incorporation_year, age_years, prefecture, limit},\n    stage_definition: {id, ja_label, description,\n                       age_min_years, age_max_years,\n                       capital_max_yen, revenue_band_yen,\n                       keywords_any, keywords_avoid},\n    matched_programs: [\n      {unified_id, primary_name, tier, program_kind,\n       amount_max_man_yen, source_url, prefecture,\n       likelihood, score, ...},\n      ...\n    ],\n    axes_applied: {stage_keyword_filter, prefecture, age_filter,\n                   revenue_filter, employee_filter},\n    summary: {total_matched, amount_max_man_yen_top},\n    total, limit, offset, results,\n    _disclaimer, _next_calls\n  }\n\nDATA QUALITY HONESTY: keyword fence は primary_name OR ladder のみ。\n本文/募集要項の text mining は行わない (FTS5 trigram の単漢字\nfalse-positive 回避のため)。stage の age/capital/revenue band は\nranking の重み付けには使うが、ハード除外には使わない (data sparsity\nを踏まえた honest design)。\n\nBILLING: 1 tool call = 1 ¥3 課金単位。"
     },
     {
       "name": "graph_traverse",
@@ -408,15 +408,15 @@
     },
     {
       "name": "pack_construction",
-      "description": "[INDUSTRY-PACK] 建設業 (JSIC D) peer group pack: top 10 programs (建設・住宅・耐震・改修 fence) + up to 5 国税不服審判所 裁決事例 (法人税・消費税) + up to 3 通達 references (法基通・消基通). Single ¥3/req. NO LLM. §52/§47条の2 sensitive — information retrieval, not 税務助言. Compounds via _next_calls."
+      "description": "[INDUSTRY-PACK] 建設業 (JSIC D) peer group pack: top 10 programs (建設・住宅・耐震・改修 fence) + up to 5 国税不服審判所 裁決事例 (法人税・消費税) + up to 3 通達 references (法基通・消基通). Single ¥3/billable unit. NO LLM. §52/§47条の2 sensitive — information retrieval, not 税務助言. Compounds via _next_calls."
     },
     {
       "name": "pack_manufacturing",
-      "description": "[INDUSTRY-PACK] 製造業 (JSIC E) peer group pack: top 10 programs (ものづくり・設備投資・省エネ・GX・事業再構築 fence) + up to 5 国税不服審判所 裁決事例 (法人税・所得税) + up to 3 通達 references (法基通). Single ¥3/req. NO LLM. §52/§47条の2 sensitive — information retrieval, not 税務助言."
+      "description": "[INDUSTRY-PACK] 製造業 (JSIC E) peer group pack: top 10 programs (ものづくり・設備投資・省エネ・GX・事業再構築 fence) + up to 5 国税不服審判所 裁決事例 (法人税・所得税) + up to 3 通達 references (法基通). Single ¥3/billable unit. NO LLM. §52/§47条の2 sensitive — information retrieval, not 税務助言."
     },
     {
       "name": "pack_real_estate",
-      "description": "[INDUSTRY-PACK] 不動産業 (JSIC K) peer group pack: top 10 programs (不動産・空き家・住宅・賃貸 fence) + up to 5 国税不服審判所 裁決事例 (所得税・相続税・法人税) + up to 3 通達 references (所基通・相基通). Single ¥3/req. NO LLM. §52/§47条の2 sensitive — information retrieval, not 税務助言."
+      "description": "[INDUSTRY-PACK] 不動産業 (JSIC K) peer group pack: top 10 programs (不動産・空き家・住宅・賃貸 fence) + up to 5 国税不服審判所 裁決事例 (所得税・相続税・法人税) + up to 3 通達 references (所基通・相基通). Single ¥3/billable unit. NO LLM. §52/§47条の2 sensitive — information retrieval, not 税務助言."
     },
     {
       "name": "invoice_risk_lookup",
@@ -432,11 +432,11 @@
     },
     {
       "name": "search_kokkai_utterance",
-      "description": "[KOKKAI] public dataset 国会会議録 keyword + date filter. Returns top rows with 3-axis citation (source_url + retrieved_at + sha256). Sensitive (§52 / §47条の2 / §72 / §3) — disclaimer envelope mandatory. NO LLM, single ¥3/req billing."
+      "description": "[KOKKAI] public dataset 国会会議録 keyword + date filter. Returns top rows with 3-axis citation (source_url + retrieved_at + sha256). Sensitive (§52 / §47条の2 / §72 / §3) — disclaimer envelope mandatory. NO LLM, single ¥3/billable unit billing."
     },
     {
       "name": "search_shingikai_minutes",
-      "description": "[SHINGIKAI] public dataset 審議会 議事録 keyword filter. Returns top rows with 3-axis citation. Sensitive (§52 / §47条の2 / §72) — disclaimer envelope mandatory. NO LLM, single ¥3/req billing."
+      "description": "[SHINGIKAI] public dataset 審議会 議事録 keyword filter. Returns top rows with 3-axis citation. Sensitive (§52 / §47条の2 / §72) — disclaimer envelope mandatory. NO LLM, single ¥3/billable unit billing."
     },
     {
       "name": "unified_lifecycle_calendar",
@@ -452,7 +452,7 @@
     },
     {
       "name": "search_municipality_subsidies",
-      "description": "[MUNICIPALITY] public dataset 自治体 1,741 補助金 page diff source refresh 1次資料 listing. Returns rows with subsidy_url + retrieved_at + sha256 (3-axis citation) + per-row source_attribution (政府著作物 §13). NOT §52/§47条の2/§72/§3 sensitive (pure listing). NO LLM, single ¥3/req billing."
+      "description": "[MUNICIPALITY] public dataset 自治体 1,741 補助金 page diff source refresh 1次資料 listing. Returns rows with subsidy_url + retrieved_at + sha256 (3-axis citation) + per-row source_attribution (政府著作物 §13). NOT §52/§47条の2/§72/§3 sensitive (pure listing). NO LLM, single ¥3/billable unit billing."
     },
     {
       "name": "find_saiketsu",
@@ -472,11 +472,11 @@
     },
     {
       "name": "policy_upstream_watch",
-      "description": "[POLICY_UPSTREAM] public dataset cross-axis upstream signal rollup. Per keyword: kokkai count + shingikai count + ongoing-pubcomment count + most-recent evidence URL on each axis. Drives \"what should I be watching this week\" digests for any keyword set in 1 ¥3 call. NO LLM, single ¥3/req billing. §52/§47条の2/§72/§1 envelope mandatory."
+      "description": "[POLICY_UPSTREAM] public dataset cross-axis upstream signal rollup. Per keyword: kokkai count + shingikai count + ongoing-pubcomment count + most-recent evidence URL on each axis. Drives \"what should I be watching this week\" digests for any keyword set in 1 ¥3 call. NO LLM, single ¥3/billable unit billing. §52/§47条の2/§72/§1 envelope mandatory."
     },
     {
       "name": "policy_upstream_timeline",
-      "description": "[POLICY_UPSTREAM] public dataset single-topic timeline across 5 stages (kokkai → shingikai → pubcomment → law_amendment → program_launch). Each event carries 3-axis citation (source_url + retrieved_at + sha256) + lead_time_horizon_months. NO LLM, single ¥3/req billing. §52/§47条の2/§72/§1 envelope mandatory."
+      "description": "[POLICY_UPSTREAM] public dataset single-topic timeline across 5 stages (kokkai → shingikai → pubcomment → law_amendment → program_launch). Each event carries 3-axis citation (source_url + retrieved_at + sha256) + lead_time_horizon_months. NO LLM, single ¥3/billable unit billing. §52/§47条の2/§72/§1 envelope mandatory."
     },
     {
       "name": "portfolio_optimize_precomputed_am",
@@ -512,7 +512,7 @@
     },
     {
       "name": "get_pubcomment_status",
-      "description": "[PUBCOMMENT] public dataset e-Gov パブコメ 公示 follow. Returns 公示中 + 直近 90 日終了 案件 with 3-axis citation (full_text_url + retrieved_at + sha256) + peer_group_impact rollup. Lead time 30-60 日, sensitive (§52 / §47条の2 / §72 / §1) — disclaimer envelope mandatory. NO LLM, single ¥3/req billing."
+      "description": "[PUBCOMMENT] public dataset e-Gov パブコメ 公示 follow. Returns 公示中 + 直近 90 日終了 案件 with 3-axis citation (full_text_url + retrieved_at + sha256) + peer_group_impact rollup. Lead time 30-60 日, sensitive (§52 / §47条の2 / §72 / §1) — disclaimer envelope mandatory. NO LLM, single ¥3/billable unit billing."
     },
     {
       "name": "recommend_similar_program",
@@ -628,15 +628,15 @@
     },
     {
       "name": "program_timeline_am",
-      "description": "[TIMELINE] Per-program annual adoption rollup + next_round (closest open / upcoming source-derived dataset) + competition_proxy (adoption_per_round). Reads source-derived dataset (201,845) + source-derived dataset (1,256). Single ¥3/req. NO LLM. §52 / §47条の2 / §1 sensitive — information retrieval, not 申請代理 / 税務助言."
+      "description": "[TIMELINE] Per-program annual adoption rollup + next_round (closest open / upcoming source-derived dataset) + competition_proxy (adoption_per_round). Reads source-derived dataset (201,845) + source-derived dataset (1,256). Single ¥3/billable unit. NO LLM. §52 / §47条の2 / §1 sensitive — information retrieval, not 申請代理 / 税務助言."
     },
     {
       "name": "cases_timeline_trend_am",
-      "description": "[TIMELINE-TREND] 業種 (JSIC prefix) × 地域 (prefecture) × 時間 (year) trend over source-derived dataset: yearly adoption_count / distinct_houjin / distinct_program_count / total_amount_yen + trend_flag (least-squares slope). Single ¥3/req. NO LLM. §52 / §47条の2 / §1 sensitive."
+      "description": "[TIMELINE-TREND] 業種 (JSIC prefix) × 地域 (prefecture) × 時間 (year) trend over source-derived dataset: yearly adoption_count / distinct_houjin / distinct_program_count / total_amount_yen + trend_flag (least-squares slope). Single ¥3/billable unit. NO LLM. §52 / §47条の2 / §1 sensitive."
     },
     {
       "name": "upcoming_rounds_for_my_profile_am",
-      "description": "[UPCOMING-ROUNDS] Match every source-derived dataset closing in the next horizon_days against the calling key's client_profiles via JSIC × prefecture × target_types × last_active_program overlap. Authenticated only — anon receives empty match list. Single ¥3/req. NO LLM. 行政書士法 §1 sensitive — pure schedule data, not 申請代理."
+      "description": "[UPCOMING-ROUNDS] Match every source-derived dataset closing in the next horizon_days against the calling key's client_profiles via JSIC × prefecture × target_types × last_active_program overlap. Authenticated only — anon receives empty match list. Single ¥3/billable unit. NO LLM. 行政書士法 §1 sensitive — pure schedule data, not 申請代理."
     },
     {
       "name": "validate",

@@ -66,7 +66,7 @@ add(
     NAME_EN,
     URL,
     "MCP support",
-    "MCP サーバー (autonomath-mcp PyPI 互換) + 手動設定 / DXT bundle。139 tools。",
+    "MCP サーバー (autonomath-mcp PyPI 互換) + 手動設定 / DXT bundle。151 tools。",
     "公開情報なし。",
     "",
 )
@@ -211,7 +211,7 @@ add(
     "tsr-van2 等の法人向け情報サービスを提供 — Web/専用回線。API/MCP の公開仕様は公開情報なし。",
     "",
 )
-add(SLUG, NAME_JA, NAME_EN, URL, "MCP support", "MCP サーバー、139 tools。", "公開情報なし。", "")
+add(SLUG, NAME_JA, NAME_EN, URL, "MCP support", "MCP サーバー、151 tools。", "公開情報なし。", "")
 add(
     SLUG,
     NAME_JA,
@@ -341,7 +341,7 @@ add(
     NAME_EN,
     URL,
     "MCP support",
-    "139 tools (protocol 2025-06-18)。",
+    "151 tools (protocol 2025-06-18)。",
     "公開情報なし。",
     "",
 )
@@ -449,7 +449,7 @@ add(
     "検索 UI のみ。<strong>API 公開なし</strong> (2026-04 時点公開情報)。",
     "",
 )
-add(SLUG, NAME_JA, NAME_EN, URL, "MCP support", "139 tools。", "公開情報なし。", "")
+add(SLUG, NAME_JA, NAME_EN, URL, "MCP support", "151 tools。", "公開情報なし。", "")
 add(
     SLUG,
     NAME_JA,
@@ -563,7 +563,7 @@ add(
     "検索 UI のみ。<strong>API 公開なし</strong> (2026-04 時点公開情報)。",
     "",
 )
-add(SLUG, NAME_JA, NAME_EN, URL, "MCP support", "139 tools。", "公開情報なし。", "")
+add(SLUG, NAME_JA, NAME_EN, URL, "MCP support", "151 tools。", "公開情報なし。", "")
 add(
     SLUG,
     NAME_JA,
@@ -662,7 +662,7 @@ add(
     "会計・経費・人事 SaaS の API (顧客向け、公開仕様は限定的)。fintech aggregator として銀行 / カード / 決済の連携 API はあるが、制度 DB API は提供せず。",
     "スコープが異なる (fintech 連携 vs 制度 DB)。",
 )
-add(SLUG, NAME_JA, NAME_EN, URL, "MCP support", "139 tools。", "公開情報なし。", "")
+add(SLUG, NAME_JA, NAME_EN, URL, "MCP support", "151 tools。", "公開情報なし。", "")
 add(
     SLUG,
     NAME_JA,
@@ -794,7 +794,7 @@ add(
     "公開情報なし (freee アカウント連携前提、外部 API は提供せず)。",
     "",
 )
-add(SLUG, NAME_JA, NAME_EN, URL, "MCP support", "139 tools。", "公開情報なし。", "")
+add(SLUG, NAME_JA, NAME_EN, URL, "MCP support", "151 tools。", "公開情報なし。", "")
 add(
     SLUG,
     NAME_JA,
@@ -908,7 +908,7 @@ add(
     "有料 SaaS の Web UI。<strong>API/MCP の公開仕様は公開情報なし</strong> (2026-04 時点)。",
     "",
 )
-add(SLUG, NAME_JA, NAME_EN, URL, "MCP support", "139 tools。", "公開情報なし。", "")
+add(SLUG, NAME_JA, NAME_EN, URL, "MCP support", "151 tools。", "公開情報なし。", "")
 add(
     SLUG,
     NAME_JA,
@@ -1012,7 +1012,7 @@ add(
     "<strong>Web API + bulk download</strong> (公式 Web-API、月次 bulk CSV)。当社も内部で取込。",
     "",
 )
-add(SLUG, NAME_JA, NAME_EN, URL, "MCP support", "139 tools。", "公開情報なし。", "")
+add(SLUG, NAME_JA, NAME_EN, URL, "MCP support", "151 tools。", "公開情報なし。", "")
 add(
     SLUG,
     NAME_JA,
@@ -1140,7 +1140,7 @@ add(
     NAME_EN,
     URL,
     "MCP support",
-    "139 tools。",
+    "151 tools。",
     "自分で実装する場合は MCP サーバーも自作。",
     "",
 )

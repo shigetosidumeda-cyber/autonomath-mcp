@@ -114,14 +114,14 @@ fs.writeFileSync("houjin_join.json", JSON.stringify(snap, null, 2));
 - `get_bid_history` (公共入札落札)
 
 ## 関連 recipe
-- [r03-sme-ma-public-dd](../r03-sme-ma-public-dd/) — M&A DD、本 recipe の上流ユースケース
-- [r12-audit-firm-kyc-sweep](../r12-audit-firm-kyc-sweep/) — 監査法人 KYC
+- [r03-sme-ma-public-dd](../r03-sme-ma-public-dd/index.md) — M&A DD、本 recipe の上流ユースケース
+- [r12-audit-firm-kyc-sweep](../r12-audit-firm-kyc-sweep/index.md) — 監査法人 KYC
 
 ## billable_units 試算
 - 1 法人 50 units × ¥3 = ¥150 / 法人
 - 月 100 法人 = ¥15,000 / 月、税込 ¥16,500
 - 月 1,000 法人 = ¥150,000 / 月、税込 ¥165,000
-- 節約 (純 LLM vs jpcite 標準従量料金): 月 100 法人 join で、純 LLM は約 ¥21,000/月 (1 法人 cycle ¥210 = 6 source × 35 = 6 別 fetch + reasoning) に対し jpcite は ¥15,000/月 (5,000 req × ¥3, join 済 envelope は 50 req/法人) → 節約 約 ¥6,000/月 / 法人あたり ¥60 (cf. `docs/canonical/cost_saving_examples.md` case 1 / case 2 同系、別途 SaaS 開発工数 50-80% 圧縮は ADDENDUM)
+- API fee delta: 月 100 法人 join で、外部 model/search API fee は約 ¥21,000/月 (1 法人 cycle ¥210 = 6 source × 35 = 6 別 fetch + reasoning) に対し jpcite は ¥15,000/月 (5,000 req × ¥3, join 済 envelope は 50 req/法人) → API fee delta 約 ¥6,000/月 / 法人あたり ¥60 (cf. `docs/canonical/cost_saving_examples.md` case 1 / case 2 同系、API fee delta の対象外)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0、出典明記必須

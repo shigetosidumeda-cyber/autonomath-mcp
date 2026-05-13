@@ -138,7 +138,7 @@ def test_kill_switch_off_value_other_than_1_does_not_trigger(
         # /v1/meta is anon-quota protected (3/day). Use a distinct test IP for
         # each switch value so this kill-switch assertion does not exercise the
         # anonymous daily quota boundary on the 4th request.
-        r = client.get("/v1/meta", headers={"X-Forwarded-For": f"198.51.100.{idx}"})
+        r = client.get("/v1/meta", headers={"Fly-Client-IP": f"198.51.100.{idx}"})
         assert r.status_code == 200, f"value={val!r} unexpectedly killed"
 
 

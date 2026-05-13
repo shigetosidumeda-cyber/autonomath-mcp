@@ -284,12 +284,14 @@ def test_programs_active_v2_three_axis(
     # anything that caches the path. Then purge cached jpintel_mcp
     # imports so connect_autonomath() re-resolves.
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(fake_autonomath_db))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", str(fake_autonomath_db))
     # graph.sqlite isn't queried by this endpoint but the helper expects
     # it to exist for unrelated paths; create a placeholder.
     graph_path = fake_autonomath_db.parent / "graph.sqlite"
     if not graph_path.exists():
         sqlite3.connect(graph_path).close()
     monkeypatch.setenv("AUTONOMATH_GRAPH_DB_PATH", str(graph_path))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_GRAPH_DB_PATH", str(graph_path))
     monkeypatch.setenv("AUTONOMATH_ENABLED", "1")
 
     # Force module reload so `AUTONOMATH_DB_PATH` resolves to fixture.

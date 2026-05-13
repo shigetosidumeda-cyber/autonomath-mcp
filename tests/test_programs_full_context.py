@@ -30,7 +30,42 @@ import pytest
 from fastapi.testclient import TestClient
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
     from pathlib import Path
+
+_LAW_IDS = ("LAW-aaaaa01a0a", "LAW-bbbbb01b0a")
+_COURT_IDS = ("HAN-aaaaaaa1ab", "HAN-bbbbbbb2cd")
+_CASE_IDS = ("CS-pf-001", "CS-pf-002", "CS-pf-003")
+_ENFORCEMENT_IDS = ("ENF-pf-001", "ENF-pf-002")
+
+
+def _cleanup_cross_ref_rows(conn: sqlite3.Connection) -> None:
+    """Remove only the rows owned by this test module.
+
+    ``seeded_db`` is session-scoped, so these cross-reference rows otherwise
+    bleed into whichever tests share the worker after this file.
+    """
+    conn.execute(
+        f"DELETE FROM program_law_refs WHERE law_unified_id IN ({','.join('?' for _ in _LAW_IDS)})",
+        _LAW_IDS,
+    )
+    conn.execute(
+        f"DELETE FROM laws WHERE unified_id IN ({','.join('?' for _ in _LAW_IDS)})",
+        _LAW_IDS,
+    )
+    conn.execute(
+        f"DELETE FROM court_decisions WHERE unified_id IN ({','.join('?' for _ in _COURT_IDS)})",
+        _COURT_IDS,
+    )
+    conn.execute(
+        f"DELETE FROM case_studies WHERE case_id IN ({','.join('?' for _ in _CASE_IDS)})",
+        _CASE_IDS,
+    )
+    conn.execute(
+        "DELETE FROM enforcement_cases "
+        f"WHERE case_id IN ({','.join('?' for _ in _ENFORCEMENT_IDS)})",
+        _ENFORCEMENT_IDS,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -40,10 +75,12 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture()
-def seeded_cross_ref(seeded_db: Path) -> Path:
+def seeded_cross_ref(seeded_db: Path) -> Iterator[Path]:
     conn = sqlite3.connect(seeded_db)
     conn.row_factory = sqlite3.Row
     try:
+        _cleanup_cross_ref_rows(conn)
+
         # ---- laws ----
         conn.execute(
             "INSERT OR IGNORE INTO laws ("
@@ -381,7 +418,14 @@ def seeded_cross_ref(seeded_db: Path) -> Path:
         conn.commit()
     finally:
         conn.close()
-    return seeded_db
+    yield seeded_db
+
+    conn = sqlite3.connect(seeded_db)
+    try:
+        _cleanup_cross_ref_rows(conn)
+        conn.commit()
+    finally:
+        conn.close()
 
 
 @pytest.fixture()
@@ -422,7 +466,7 @@ def test_full_context_happy_path(cross_ref_client: TestClient) -> None:
     law_basis = body["law_basis"]
     assert isinstance(law_basis, dict)
     assert isinstance(law_basis["laws"], list)
-    assert len(law_basis["laws"]) == 2
+    assert len(law_basis["laws"]) >= 2
     law_titles = {row["law_title"] for row in law_basis["laws"]}
     assert "テスト補助金法" in law_titles
     assert "テスト補助金法 改正版" in law_titles
@@ -433,9 +477,11 @@ def test_full_context_happy_path(cross_ref_client: TestClient) -> None:
     # Court decisions: 1 in-scope + 1 unrelated; only the related one appears.
     court = body["court_decisions"]
     assert isinstance(court, list)
-    assert len(court) == 1
-    assert court[0]["unified_id"] == "HAN-aaaaaaa1ab"
-    assert "LAW-aaaaa01a0a" in court[0]["related_law_ids"]
+    court_ids = {row["unified_id"] for row in court}
+    assert "HAN-aaaaaaa1ab" in court_ids
+    assert "HAN-bbbbbbb2cd" not in court_ids
+    related = next(row for row in court if row["unified_id"] == "HAN-aaaaaaa1ab")
+    assert "LAW-aaaaa01a0a" in related["related_law_ids"]
 
     # Case studies: at least the program-name match (CS-pf-001).
     cases = body["case_studies"]
@@ -449,6 +495,7 @@ def test_full_context_happy_path(cross_ref_client: TestClient) -> None:
     assert isinstance(enforcement, list)
     case_ids = {c["case_id"] for c in enforcement}
     assert "ENF-pf-001" in case_ids
+    assert "ENF-pf-002" not in case_ids
 
     # Exclusion rules: program participates as A on UID rule (`excl-test-uid-mutex`).
     rules = body["exclusion_rules"]
@@ -591,8 +638,13 @@ def test_law_related_programs_ref_kind_filter(cross_ref_client: TestClient) -> N
     )
     assert r.status_code == 200, r.text
     body = r.json()
-    assert body["total"] == 1
-    assert body["results"][0]["ref_kind"] == "authority"
+    assert body["total"] >= 1
+    assert body["results"]
+    assert all(row["ref_kind"] == "authority" for row in body["results"])
+    assert any(
+        row["program_unified_id"] == "UNI-test-s-1" and row["law_unified_id"] == "LAW-aaaaa01a0a"
+        for row in body["results"]
+    )
 
 
 def test_law_related_programs_404(cross_ref_client: TestClient) -> None:

@@ -96,7 +96,7 @@ L0 Storage 4 項目 (integrity / FK 0 / 3 indexes / cache schema) が **全て P
 
 ### Tasks
 
-- [ ] `.venv/bin/autonomath-mcp` 起動 → `tools/list` で 139 tools 出力確認
+- [ ] `.venv/bin/autonomath-mcp` 起動 → `tools/list` で 151 tools 出力確認
 - [ ] `/v1/am/*` 16 endpoint の OpenAPI export を確認 (まだ main.py で mount されていない場合は launch ブロッカーに昇格)
 - [ ] envelope v2 (`token_estimate` + `confidence` + `source_attribution` + `cache_hint`) が全 tool に wired
 - [ ] 5 critical invariants Tier 1 (INV-04 / INV-21 / INV-22 / INV-23 / INV-25) active 確認
@@ -158,7 +158,7 @@ Compliance 5 項目が全て PASS、production smoke が green。残 7 日で `g
 - [ ] OpenAPI export `docs/openapi/v1.json` の paths が 221 (`jq '.paths | length' docs/openapi/v1.json`)
 - [ ] 5 surface (developer / 税理士 / SMB / VC / GovTech) positioning copy が `docs/blog/2026-05-5_audience_pitch.md` に揃っている
 - [ ] 12 distribution registry (smithery / glama / mcp.so / Anthropic / npm proxy / PyPI / GitHub / Cloudflare Pages / openapi.tools / mcp-registry / X / LinkedIn) submission 計画確認
-- [ ] `per_tool_precision.md` table が 139 tool 全て埋まっている
+- [ ] `per_tool_precision.md` table が 151 tool 全て埋まっている
 - [ ] `pricing.md` の月額 calculator が 50 / 1k / 10k req の月額表示
 - [ ] 数値 drift 0 (制度数 / tools 数 / FAQ 数値が `mcp-tools.md` / `pricing.md` / `index.md` / `press_kit.md` 全て一致)
 - [ ] `solo_ops_handoff.md` が `docs/_internal/` 配下 + 1Password 経由のリンク指示が埋まっている

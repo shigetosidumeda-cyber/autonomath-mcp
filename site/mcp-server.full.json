@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "autonomath-mcp",
   "version": "0.4.0",
-  "description": "Japan public-program MCP — subsidies, loans, tax, law, invoice & corporate data. 11,601 searchable programs + 9,484 e-Gov law metadata records + 1,185 行政処分 + 2,065 判例 + 362 入札 + 13,801 適格事業者 + corporate/entity-fact graph coverage. ¥3/billable unit, 3 free/day per IP. Evidence Packet with source_url + source_fetched_at + known gaps + 互換/排他 rules. 139 tools.",
+  "description": "Japan public-program MCP — subsidies, loans, tax, law, invoice & corporate data. 11,601 searchable programs + 9,484 e-Gov law metadata records + 1,185 行政処分 + 2,065 判例 + 362 入札 + 13,801 適格事業者 + corporate/entity-fact graph coverage. ¥3/billable unit, 3 free/day per IP. Evidence Packet with source_url + source_fetched_at + known gaps + 互換/排他 rules. 151 tools.",
   "author": {
     "name": "Bookyou株式会社",
     "url": "https://jpcite.com"
@@ -56,7 +56,7 @@
     },
     {
       "name": "check_exclusions",
-      "description": "COMPLIANCE: 併給可否を機械的に判定する — 候補制度セットに対して 181 本の併給禁止 / 前提要件ルールを走らせ、違反するものだけ返す (given a candidate set of program IDs, run all 181 補助金 exclusion / prerequisite rules and return only the violations). This answers the core \"can I combine A and B?\" / \"do I need certification X before applying for Y?\" question in one call — LLM による PDF 脚注パースの hallucination を構造的に排除する。\n\nTypical queries:\n  - \"IT導入補助金と事業再構築補助金は併用できる?\"\n  - \"これら3つの補助金に同時申請できる?\"\n  - \"スーパーL資金を使う前に必要な認定は?\"\n\nEmpty `hits[]` means no registered rule fired. It does not prove that the\ncombination is allowed; important cases should still be checked against\nthe primary source and the relevant office.\n\nWHEN NOT:\n  - `list_exclusion_rules` instead if the user wants to browse rules generally without a specific candidate set.\n  - `search_programs` first if you don't yet have program_ids — this tool requires them as input.\n\nCHAIN:\n  ← `search_programs` / `batch_get_programs` to produce the program_ids.\n  → `get_program(unified_id=hit.program_a)` to explain a triggered rule in context.\n  → `search_case_studies(program_used=primary_name)` to check how recipients handled the restriction in practice (resolve primary_name via `get_program(unified_id=hit.program_a)` first).\n  DO NOT → `list_exclusion_rules` right after this call — each hit already embeds the rule row (rule_id / description / severity / source_url)."
+      "description": "COMPLIANCE: 併給可否を機械的に判定する — 候補制度セットに対して 181 本の併給禁止 / 前提要件ルールを走らせ、違反するものだけ返す (given a candidate set of program IDs, run all 181 補助金 exclusion / prerequisite rules and return only the violations). This answers the core \"can I combine A and B?\" / \"do I need certification X before applying for Y?\" question in one call — source-linked rules reduce manual PDF footnote parsing misses.\n\nTypical queries:\n  - \"IT導入補助金と事業再構築補助金は併用できる?\"\n  - \"これら3つの補助金に同時申請できる?\"\n  - \"スーパーL資金を使う前に必要な認定は?\"\n\nEmpty `hits[]` means no registered rule fired. It does not prove that the\ncombination is allowed; important cases should still be checked against\nthe primary source and the relevant office.\n\nWHEN NOT:\n  - `list_exclusion_rules` instead if the user wants to browse rules generally without a specific candidate set.\n  - `search_programs` first if you don't yet have program_ids — this tool requires them as input.\n\nCHAIN:\n  ← `search_programs` / `batch_get_programs` to produce the program_ids.\n  → `get_program(unified_id=hit.program_a)` to explain a triggered rule in context.\n  → `search_case_studies(program_used=primary_name)` to check how recipients handled the restriction in practice (resolve primary_name via `get_program(unified_id=hit.program_a)` first).\n  DO NOT → `list_exclusion_rules` right after this call — each hit already embeds the rule row (rule_id / description / severity / source_url)."
     },
     {
       "name": "get_meta",
@@ -184,7 +184,7 @@
     },
     {
       "name": "resolve_citation_chain",
-      "description": "[KAIKEI] tax_ruleset → 法令 article → 通達 → 質疑応答 → 文書回答 の citation chain を auto-resolve する。国税庁・法令・判例の公表情報をつなぎ、監査調書の索引に貼りやすい tree を返す。¥3 / call。§47条の2 + §52 sensitive — 税務助言ではなく出典確認用。"
+      "description": "[KAIKEI] tax_ruleset → 法令 article → 通達 → 質疑応答 → 文書回答 の citation chain を auto-resolve する。国税庁・法令・判例の公表情報をつなぎ、監査調書の索引に貼りやすい tree を返す。¥3/billable unit。§47条の2 + §52 sensitive — 税務助言ではなく出典確認用。"
     },
     {
       "name": "search_invoice_registrants",

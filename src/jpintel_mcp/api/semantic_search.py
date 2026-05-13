@@ -8,9 +8,8 @@ THE CLIENT SUPPLIES THE EMBEDDING. jpcite does NOT call any LLM API
 provider from this handler. Two operator-side guarantees uphold this:
 
   * `tests/test_no_llm_in_production.py` (5-axis CI guard) AST-scans
-    this file for `import anthropic` / `import openai` /
-    `import google.generativeai` / `import claude_agent_sdk` and for
-    references to `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` /
+    this file for direct LLM SDK dependencies and for references to
+    `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` /
     `GEMINI_API_KEY` / `GOOGLE_API_KEY`. None of those appear here.
   * The batch embedding driver (`tools/offline/batch_embedding_refresh.py`)
     runs on the operator workstation with a local sentence-transformers
@@ -177,8 +176,7 @@ class SemanticSearchBody(BaseModel):
         ge=1,
         le=_MAX_TOP_K,
         description=(
-            f"Top-K rows to return. Clamped to [1, {_MAX_TOP_K}]. "
-            f"Default {_DEFAULT_TOP_K}."
+            f"Top-K rows to return. Clamped to [1, {_MAX_TOP_K}]. Default {_DEFAULT_TOP_K}."
         ),
     )
 
@@ -268,9 +266,7 @@ def _vec_table_has_rows(conn: sqlite3.Connection, table: str) -> bool:
     return one_row is not None
 
 
-def _set_sqlite_deadline(
-    conn: sqlite3.Connection, timeout_ms: int
-) -> None:
+def _set_sqlite_deadline(conn: sqlite3.Connection, timeout_ms: int) -> None:
     deadline = time.perf_counter() + (timeout_ms / 1000.0)
 
     def _progress() -> int:

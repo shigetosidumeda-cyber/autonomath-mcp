@@ -126,10 +126,12 @@ const res = await jpcite.bulk_match_programs({
 - `match_due_diligence_questions` (公開版 22、与信 DD 30-60 質問)
 
 ## 関連 recipe
-- [r24-houjin-6source-join](../r24-houjin-6source-join/) — 6 source join、素材 endpoint
-- [r25-adoption-bulk-export](../r25-adoption-bulk-export/) — 採択 bulk export、後段の集計
+- [r24-houjin-6source-join](../r24-houjin-6source-join/index.md) — 6 source join、素材 endpoint
+- [r25-adoption-bulk-export](../r25-adoption-bulk-export/index.md) — 採択 bulk export、後段の集計
 
 ## billable_units 試算
+
+- API fee delta: API fee delta の前提と再現式は [docs/canonical/cost_saving_examples.md](../../canonical/cost_saving_examples.md) を参照。
 - 1 batch 1,000 units (法人 1 社 1 unit) × ¥3 = ¥3,000 / 委託
 - 月 5 委託 = ¥15,000 / 月 (税込 ¥16,500)
 - 月 20 委託 = ¥60,000 / 月 (税込 ¥66,000)

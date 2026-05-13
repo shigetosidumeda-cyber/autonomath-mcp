@@ -1,14 +1,12 @@
-"""Wave 46 tick#3 recipes: ROI / 倍 / ARR / 射程 → cost saving framing parity.
+"""Recipe pricing-copy guards for API-fee-delta framing.
 
 Verifies that all 21 `docs/recipes/r*` recipes that previously carried
 "ROI 倍率 / ARR 射程" framing on their billable_units 試算 section have been
-migrated to the **節約 (純 LLM vs jpcite ¥3/req)** per-case framing that is
-consistent with `docs/canonical/cost_saving_examples.md` (Wave 46 tick#3
-canonical SOT).
+migrated to the **API fee delta** framing that is consistent with
+`docs/canonical/cost_saving_examples.md`.
 
 Anti-pattern guards:
-    * Each of the 21 target recipes contains exactly one
-      "節約 (純 LLM vs jpcite ¥3/req)" line.
+    * Each of the 21 target recipes contains exactly one "API fee delta:" line.
     * No raw "ROI:" prefix remains on any recipe billable_units list.
     * Each migrated line cross-references the canonical doc path.
     * Brand string is consistently "jpcite" (no legacy 税務会計AI /
@@ -55,9 +53,7 @@ TARGET_RECIPES: tuple[str, ...] = (
     "r30-invoice-revoke-watch",
 )
 
-COST_LINE_REGEX = re.compile(
-    r"^-\s*節約\s*\(純\s*LLM\s*vs\s*jpcite\s*¥3/req\)", re.MULTILINE
-)
+COST_LINE_REGEX = re.compile(r"^-\s*API fee delta:", re.MULTILINE)
 ROI_PREFIX_REGEX = re.compile(r"^-\s*ROI:\s", re.MULTILINE)
 LEGACY_BRAND_REGEX = re.compile(r"税務会計AI|AutonoMath|zeimu-kaikei\.ai")
 CANONICAL_REF_REGEX = re.compile(r"docs/canonical/cost_saving_examples\.md")
@@ -80,10 +76,7 @@ def canonical_text() -> str:
 def test_recipe_has_cost_saving_line(recipe: str) -> None:
     text = _read(recipe)
     hits = COST_LINE_REGEX.findall(text)
-    assert len(hits) == 1, (
-        f"{recipe}: expected exactly 1 '節約 (純 LLM vs jpcite ¥3/req)' line, "
-        f"found {len(hits)}"
-    )
+    assert len(hits) == 1, f"{recipe}: expected exactly 1 'API fee delta:' line, found {len(hits)}"
 
 
 @pytest.mark.parametrize("recipe", TARGET_RECIPES)
@@ -124,12 +117,11 @@ def test_recipe_structure_intact(recipe: str) -> None:
 
 
 def test_canonical_doc_exists(canonical_text: str) -> None:
-    assert "純 LLM vs jpcite" in canonical_text
-    assert "節約" in canonical_text
+    assert "API fee delta" in canonical_text
+    assert "business outcome" in canonical_text
+    assert "¥3/req" in canonical_text
 
 
 def test_all_21_target_recipes_present() -> None:
-    missing = [
-        name for name in TARGET_RECIPES if not (RECIPES_ROOT / name / "index.md").exists()
-    ]
+    missing = [name for name in TARGET_RECIPES if not (RECIPES_ROOT / name / "index.md").exists()]
     assert missing == [], f"missing recipes: {missing}"

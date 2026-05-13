@@ -297,7 +297,7 @@
  <article class="card">
  <h3>Python (commercial, ¥3/billable unit)</h3>
  <pre class="code-block"><code>import httpx
-H = {"X-API-Key": "am_..."}
+H = {"X-API-Key": "jc_..."}
 # 1. Search NTA-sourced tax rulesets
 r = httpx.get(
  "https://api.jpcite.com/v1/tax_rulesets/search",
@@ -324,11 +324,11 @@ for row in r2.json["items"]:
  "jpcite": {
  "command": "uvx",
  "args": ["autonomath-mcp"],
- "env": {"JPCITE_API_KEY": "am_..."}
+ "env": {"JPCITE_API_KEY": "jc_..."}
  }
  }
 }</code></pre>
- <p class="demo-note">All 139 tools are callable from Claude. <code>search_tax_incentives</code> et al.</p>
+ <p class="demo-note">All 151 tools are callable from Claude. <code>search_tax_incentives</code> et al.</p>
  </article>
 
  </div>

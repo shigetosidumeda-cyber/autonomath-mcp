@@ -16,7 +16,7 @@
        "autonomath": {
          "command": "uvx",
          "args": ["autonomath-mcp"],
-         "env": { "JPCITE_API_KEY": "YOUR_KEY" }
+         "env": { "JPCITE_API_KEY": "jc_xxx" }
        }
      }
    }
@@ -29,7 +29,7 @@
    1 リクエストにまとめるのが効きます。N 個の get_program を 1 回の POST にできて、
    課金も 1 回分です。
 
-   curl -X POST -H "X-API-Key: YOUR_KEY" -H "Content-Type: application/json" \
+   curl -X POST -H "X-API-Key: jc_xxx" -H "Content-Type: application/json" \
      "https://api.jpcite.com/v1/programs/batch" \
      -d '{"unified_ids":["UNI-14e57fbf79","UNI-40bc849d45","UNI-08d8284aae"]}'
 
@@ -42,7 +42,7 @@
    従量課金の不安は「気づいたら ¥10 万」に集中します。鍵単位の月次 ¥ ハード上限を
    1 行で設定できます (JST 月初 00:00 リセット)。例えば月 ¥3,000 まで:
 
-   curl -X POST -H "X-API-Key: YOUR_KEY" -H "Content-Type: application/json" \
+   curl -X POST -H "X-API-Key: jc_xxx" -H "Content-Type: application/json" \
      "https://api.jpcite.com/v1/me/cap" \
      -d '{"monthly_cap_yen": 3000}'
 

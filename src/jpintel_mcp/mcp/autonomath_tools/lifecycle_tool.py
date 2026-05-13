@@ -215,6 +215,28 @@ def _program_lifecycle_impl(
     eff_until_raw = amendment_row["effective_until"] if amendment_row else None
     eff_from = _parse_iso_date(eff_from_raw)
     eff_until = _parse_iso_date(eff_until_raw)
+    if amendment_row is not None and eff_from is None and eff_until is None:
+        grounded_row = conn.execute(
+            """
+            SELECT version_seq, observed_at, effective_from, effective_until,
+                   source_url, source_fetched_at
+              FROM am_amendment_snapshot
+             WHERE entity_id = ?
+               AND (
+                    effective_from LIKE '____-__-__'
+                 OR effective_until LIKE '____-__-__'
+               )
+             ORDER BY version_seq DESC
+             LIMIT 1
+            """,
+            (unified_id,),
+        ).fetchone()
+        if grounded_row is not None:
+            amendment_row = grounded_row
+            eff_from_raw = amendment_row["effective_from"]
+            eff_until_raw = amendment_row["effective_until"]
+            eff_from = _parse_iso_date(eff_from_raw)
+            eff_until = _parse_iso_date(eff_until_raw)
 
     # --- relation lineage --------------------------------------------------
     # Outgoing `replaces` = this entity HAS a target it replaces (in

@@ -102,10 +102,10 @@ subprocess.run(["uvx", "autonomath-mcp", "--help"], check=True)
 - `get_program_detail` (補助金原文)
 
 ## 関連 recipe
-- [r16-claude-code-30sec](../r16-claude-code-30sec/) — Claude Code CLI、Anthropic 公式
-- [r17-chatgpt-custom-gpt](../r17-chatgpt-custom-gpt/) — ChatGPT Custom GPT
-- [r18-cursor-mcp-setup](../r18-cursor-mcp-setup/) — Cursor IDE
-- [r20-continue-cline](../r20-continue-cline/) — Continue / Cline VSCode
+- [r16-claude-code-30sec](../r16-claude-code-30sec/index.md) — Claude Code CLI、Anthropic 公式
+- [r17-chatgpt-custom-gpt](../r17-chatgpt-custom-gpt/index.md) — ChatGPT Custom GPT
+- [r18-cursor-mcp-setup](../r18-cursor-mcp-setup/index.md) — Cursor IDE
+- [r20-continue-cline](../r20-continue-cline/index.md) — Continue / Cline VSCode
 
 ## billable_units 試算
 - 1 req 1 unit × ¥3 = ¥3

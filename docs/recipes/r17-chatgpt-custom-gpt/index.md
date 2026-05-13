@@ -91,10 +91,10 @@ for (const m of d.matches) console.log(m.program_id, m.tier, m.source_url);
 - `get_program_detail` (補助金原文取得、要綱本文の引用)
 
 ## 関連 recipe
-- [r16-claude-code-30sec](../r16-claude-code-30sec/) — Claude Code 30 秒接続、エンジニア向け即時セットアップ
-- [r18-cursor-mcp-setup](../r18-cursor-mcp-setup/) — Cursor MCP 接続、IDE 内利用
-- [r19-codex-agents-sdk](../r19-codex-agents-sdk/) — Codex Agents SDK、Codex CLI 接続
-- [r20-continue-cline](../r20-continue-cline/) — Continue / Cline VSCode 拡張
+- [r16-claude-code-30sec](../r16-claude-code-30sec/index.md) — Claude Code 30 秒接続、エンジニア向け即時セットアップ
+- [r18-cursor-mcp-setup](../r18-cursor-mcp-setup/index.md) — Cursor MCP 接続、IDE 内利用
+- [r19-codex-agents-sdk](../r19-codex-agents-sdk/index.md) — Codex Agents SDK、Codex CLI 接続
+- [r20-continue-cline](../r20-continue-cline/index.md) — Continue / Cline VSCode 拡張
 
 ## billable_units 試算
 - Action 呼出 1 回 = 1 unit × ¥3 = ¥3

@@ -47,7 +47,6 @@ from jpintel_mcp.api.audit_log import router as audit_log_router
 from jpintel_mcp.api.audit_workpaper_v2 import (  # Wave 43.2.4 Dim D
     router as audit_workpaper_v2_router,
 )
-from jpintel_mcp.api.sitemap_audit import router as sitemap_audit_router  # Wave 41 Agent F
 from jpintel_mcp.api.autonomath import (
     health_router as autonomath_health_router,
 )
@@ -59,12 +58,7 @@ from jpintel_mcp.api.bids import router as bids_router
 from jpintel_mcp.api.billing import router as billing_router
 from jpintel_mcp.api.billing_breakdown import router as billing_breakdown_router
 from jpintel_mcp.api.billing_v2 import router as billing_v2_router
-from jpintel_mcp.api.credit_wallet import router as credit_wallet_router
 from jpintel_mcp.api.bulk_evaluate import router as bulk_evaluate_router
-from jpintel_mcp.api.x402_payment import (
-    X402PaymentMiddleware,
-    router as x402_payment_router,
-)
 from jpintel_mcp.api.calendar import router as calendar_router
 from jpintel_mcp.api.case_cohort_match import router as case_cohort_match_router
 from jpintel_mcp.api.case_studies import router as case_studies_router
@@ -82,11 +76,13 @@ from jpintel_mcp.api.court_decisions import router as court_decisions_router
 from jpintel_mcp.api.court_decisions_v2 import (  # Wave 43.1.10
     router as court_decisions_v2_router,
 )
+from jpintel_mcp.api.credit_wallet import router as credit_wallet_router
 from jpintel_mcp.api.customer_webhooks import router as customer_webhooks_router
 from jpintel_mcp.api.dashboard import router as dashboard_router
 from jpintel_mcp.api.device_flow import router as device_router
 from jpintel_mcp.api.disaster import router as disaster_router
 from jpintel_mcp.api.discover import router as discover_router
+from jpintel_mcp.api.edinet import router as edinet_router  # Wave 31 Axis 1c
 from jpintel_mcp.api.eligibility_check import router as eligibility_check_router
 from jpintel_mcp.api.email_unsubscribe import router as email_unsubscribe_router
 from jpintel_mcp.api.email_webhook import router as email_webhook_router
@@ -95,19 +91,16 @@ from jpintel_mcp.api.enforcement_municipality import (  # Wave 43.1.9
     router as enforcement_municipality_router,
 )
 from jpintel_mcp.api.evidence import router as evidence_router
+from jpintel_mcp.api.excel_template import router as excel_template_router  # Wave 35 Axis 6b
 from jpintel_mcp.api.exclusions import router as exclusions_router
 from jpintel_mcp.api.export import router as export_router
 from jpintel_mcp.api.extended_corpus import router as extended_corpus_router
 from jpintel_mcp.api.feedback import router as feedback_router
 from jpintel_mcp.api.foundation import router as foundation_router  # Wave 43.1.3
-from jpintel_mcp.api.precompute_axis4 import router as precompute_axis4_router  # Wave 34 Axis 4
-from jpintel_mcp.api.jpo import router as jpo_router  # Wave 31 Axis 1b
-from jpintel_mcp.api.edinet import router as edinet_router  # Wave 31 Axis 1c
-from jpintel_mcp.api.pdf_report import router as pdf_report_router  # Wave 35 Axis 6a
-from jpintel_mcp.api.excel_template import router as excel_template_router  # Wave 35 Axis 6b
 from jpintel_mcp.api.funding_stack import router as funding_stack_router
 from jpintel_mcp.api.funding_stage import router as funding_stage_router
 from jpintel_mcp.api.funnel_events import router as funnel_events_router
+from jpintel_mcp.api.graphql import router as graphql_router  # Wave 19 §F2
 from jpintel_mcp.api.houjin import router as houjin_router
 from jpintel_mcp.api.intelligence import router as intelligence_router
 from jpintel_mcp.api.invoice_registrants import router as invoice_registrants_router
@@ -117,27 +110,21 @@ from jpintel_mcp.api.invoice_risk import (
 from jpintel_mcp.api.invoice_risk import (
     router as invoice_risk_router,
 )
+from jpintel_mcp.api.jpo import router as jpo_router  # Wave 31 Axis 1b
 from jpintel_mcp.api.laws import router as laws_router
 from jpintel_mcp.api.laws_jorei import router as laws_jorei_router  # Wave 43.1.5
 from jpintel_mcp.api.legal import router as legal_router
 from jpintel_mcp.api.loan_programs import router as loan_programs_router
 from jpintel_mcp.api.logging_config import setup_logging
-from jpintel_mcp.api.programs_overseas_v2 import router as programs_overseas_v2_router
 from jpintel_mcp.api.ma_dd import (
     router as ma_dd_router,
 )
 from jpintel_mcp.api.ma_dd import (
     watches_router as me_watches_router,
 )
-from jpintel_mcp.api.municipal import router as municipal_router
 from jpintel_mcp.api.me import router as me_router
 from jpintel_mcp.api.meta import router as meta_router
 from jpintel_mcp.api.meta_freshness import router as meta_freshness_router
-from jpintel_mcp.api.six_axis_status import router as six_axis_status_router  # Wave 38
-from jpintel_mcp.api.status_aggregated import router as status_aggregated_router  # Wave 41 Agent H
-from jpintel_mcp.api.graphql import router as graphql_router  # Wave 19 §F2
-from jpintel_mcp.api.oauth_device import router as oauth_device_router  # Wave 19 §A8
-from jpintel_mcp.mcp.federation import router as federation_router  # Wave 19 §A5
 from jpintel_mcp.api.middleware import (
     AnalyticsRecorderMiddleware,
     AnonQuotaHeaderMiddleware,
@@ -159,9 +146,26 @@ from jpintel_mcp.api.middleware import (
     StrictQueryMiddleware,
 )
 from jpintel_mcp.api.middleware.origin_enforcement import _MUST_INCLUDE
+from jpintel_mcp.api.municipal import router as municipal_router
+from jpintel_mcp.api.oauth_device import router as oauth_device_router  # Wave 19 §A8
 from jpintel_mcp.api.openapi_agent import build_agent_openapi_schema
+from jpintel_mcp.api.orchestrator_v2 import router as orchestrator_v2_router
+from jpintel_mcp.api.pdf_report import router as pdf_report_router  # Wave 35 Axis 6a
 from jpintel_mcp.api.policy_upstream import router as policy_upstream_router
+from jpintel_mcp.api.precompute_axis4 import router as precompute_axis4_router  # Wave 34 Axis 4
 from jpintel_mcp.api.prescreen import router as prescreen_router
+from jpintel_mcp.api.programs_overseas_v2 import router as programs_overseas_v2_router
+from jpintel_mcp.api.sitemap_audit import router as sitemap_audit_router  # Wave 41 Agent F
+from jpintel_mcp.api.six_axis_status import router as six_axis_status_router  # Wave 38
+from jpintel_mcp.api.status_aggregated import router as status_aggregated_router  # Wave 41 Agent H
+from jpintel_mcp.api.x402_payment import (
+    X402PaymentMiddleware,
+)
+from jpintel_mcp.api.x402_payment import (
+    router as x402_payment_router,
+)
+from jpintel_mcp.mcp.federation import router as federation_router  # Wave 19 §A5
+
 try:  # Wave 43.1.4 module deferred — guard so missing file does not block import
     from jpintel_mcp.api.program_agriculture import (
         router as program_agriculture_router,
@@ -175,7 +179,9 @@ from jpintel_mcp.api.programs_municipality_v2 import (
 from jpintel_mcp.api.regions import router as regions_router
 from jpintel_mcp.api.response_sanitizer import ResponseSanitizerMiddleware
 from jpintel_mcp.api.saved_searches import router as saved_searches_router
-from jpintel_mcp.api.semantic_search_v2 import router as semantic_search_v2_router  # Wave 43.2.1 Dim A
+from jpintel_mcp.api.semantic_search_v2 import (
+    router as semantic_search_v2_router,
+)  # Wave 43.2.1 Dim A
 from jpintel_mcp.api.signup import router as signup_router
 from jpintel_mcp.api.source_manifest import router as source_manifest_router
 from jpintel_mcp.api.stats import router as stats_router
@@ -194,8 +200,10 @@ from jpintel_mcp.api.testimonials import (
     public_router as testimonials_public_router,
 )
 from jpintel_mcp.api.time_machine import router as time_machine_router
+from jpintel_mcp.api.translation_status import (
+    router as translation_status_router,
+)  # Wave 41 Agent I
 from jpintel_mcp.api.transparency import router as transparency_router
-from jpintel_mcp.api.translation_status import router as translation_status_router  # Wave 41 Agent I
 from jpintel_mcp.api.trust import router as trust_router
 from jpintel_mcp.api.usage import router as usage_router
 from jpintel_mcp.api.verify import router as verify_router
@@ -539,11 +547,7 @@ def _assert_production_secrets() -> None:
         "false",
         "False",
     }
-    if (
-        appi_enabled
-        and require_browser_spam
-        and not os.getenv(_appi_spam_secret_name, "").strip()
-    ):
+    if appi_enabled and require_browser_spam and not os.getenv(_appi_spam_secret_name, "").strip():
         raise SystemExit(
             "[BOOT FAIL] APPI browser spam-protect secret "
             f"({_appi_spam_secret_name}) must be set in production when APPI "
@@ -596,11 +600,11 @@ def _assert_x402_mock_proof_disabled_in_production() -> None:
     if _mock_proof_enabled():
         raise SystemExit(
             "[BOOT FAIL] x402 mock-proof gate resolved to True while a "
-            "production env label is set (JPCITE_ENV=%s / JPINTEL_ENV=%s). "
+            f"production env label is set (JPCITE_ENV={jpcite_env or '<unset>'} / "
+            f"JPINTEL_ENV={jpintel_env or '<unset>'}). "
             "Production NEVER accepts mock proofs. Unset "
             "JPCITE_X402_MOCK_PROOF_ENABLED and ensure JPCITE_ENV / "
             "JPINTEL_ENV are both set to prod/production."
-            % (jpcite_env or "<unset>", jpintel_env or "<unset>")
         )
 
 
@@ -620,14 +624,10 @@ def _assert_fail_open_flags_disabled_in_production() -> None:
     ):
         if _env_truthy(flag):
             raise SystemExit(
-                "[BOOT FAIL] %s must not be truthy when a production env "
-                "label is set (JPCITE_ENV=%s / JPINTEL_ENV=%s / settings.env=%s)."
-                % (
-                    flag,
-                    jpcite_env or "<unset>",
-                    jpintel_env or "<unset>",
-                    settings_env or "<unset>",
-                )
+                f"[BOOT FAIL] {flag} must not be truthy when a production env "
+                f"label is set (JPCITE_ENV={jpcite_env or '<unset>'} / "
+                f"JPINTEL_ENV={jpintel_env or '<unset>'} / "
+                f"settings.env={settings_env or '<unset>'})."
             )
 
 
@@ -681,15 +681,9 @@ _REQUEST_ID_RE = re.compile(r"^[A-Za-z0-9-]{8,64}$")
 
 class _RequestContextMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next: Callable[..., Any]) -> Response:
-        # R8 audit-log deep audit (2026-05-07): unify the happy-path mint with
-        # the error-path mint. Pre-fix the happy path used `secrets.token_hex(8)`
-        # (16 hex chars) while `_error_envelope._mint_request_id()` produced a
-        # 26-char Crockford-base32 ULID — same regex window but different
-        # shapes, so log search by id-length filter would split the same
-        # request across two formats. Switch to the ULID mint so the response
-        # `x-request-id` header, the structured-log `request_id` contextvar,
-        # and the `error.request_id` envelope all share one shape (26-char
-        # ULID; lexicographically time-sortable for forensic windowing).
+        # Keep the happy-path mint aligned with the error envelope mint:
+        # 26-char Crockford-base32 ULID, lexicographically time-sortable for
+        # forensic windowing.
         from jpintel_mcp.api._error_envelope import _mint_request_id
 
         inbound = request.headers.get("x-request-id", "")
@@ -1199,6 +1193,12 @@ def _sanitize_openapi_public_text(text: str) -> str:
 # runtime dependency on the sibling top-level scripts/ folder. Drift between
 # this table and the export-side table is gated by
 # `tests/test_openapi_export.py` (which regenerates and compares byte-for-byte).
+_OPENAPI_API_KEY_EXAMPLE_RE_RUNTIME = re.compile(
+    r"(?:X-API-Key\s*:\s*|Authorization\s*:\s*Bearer\s+|Bearer\s+|[?&]key=)"
+    r"jc_(?:\.{3}|(?:live|test)_[A-Za-z0-9._-]*)",
+    re.IGNORECASE,
+)
+
 _OPENAPI_LEAK_REPLACEMENTS_RUNTIME: tuple[tuple[re.Pattern[str], str], ...] = (
     (re.compile(r"\bam_compat_matrix\b"), "compatibility-matrix corpus"),
     (re.compile(r"\bam_entity_facts\b"), "entity-fact corpus"),
@@ -1248,11 +1248,19 @@ _OPENAPI_LEAK_REPLACEMENTS_RUNTIME: tuple[tuple[re.Pattern[str], str], ...] = (
 
 
 def _strip_openapi_leak_patterns_runtime(text: str) -> str:
-    out = text
+    protected_api_key_examples: list[str] = []
+
+    def _protect_api_key_example(match: re.Match[str]) -> str:
+        protected_api_key_examples.append(match.group(0))
+        return f"@@OPENAPI_API_KEY_EXAMPLE_{len(protected_api_key_examples) - 1}@@"
+
+    out = _OPENAPI_API_KEY_EXAMPLE_RE_RUNTIME.sub(_protect_api_key_example, text)
     for pattern, replacement in _OPENAPI_LEAK_REPLACEMENTS_RUNTIME:
         out = pattern.sub(replacement, out)
     out = re.sub(r"[ \t]{2,}", " ", out)
     out = re.sub(r" +([,.;:])", r"\1", out)
+    for index, value in enumerate(protected_api_key_examples):
+        out = out.replace(f"@@OPENAPI_API_KEY_EXAMPLE_{index}@@", value)
     return out
 
 
@@ -1650,10 +1658,10 @@ def create_app() -> FastAPI:
             "```\n\n"
             "Authenticated (¥3/billable unit metered, 税込 ¥3.30, no tier SKUs, no "
             "monthly minimum commitment; normal search/detail calls are 1 unit, "
-            "batch/export endpoints document their fan-out formula) — pass `X-API-Key: am_...` issued via "
+            "batch/export endpoints document their fan-out formula) — pass `X-API-Key: jc_...` issued via "
             "Stripe Checkout:\n"
             "```bash\n"
-            "curl -H 'X-API-Key: am_live_...' "
+            "curl -H 'X-API-Key: jc_live_...' "
             "'https://api.jpcite.com/v1/programs/search?q=DX&prefecture=東京都&tier=S'\n"
             "```\n\n"
             "## Pagination + envelopes\n\n"
@@ -1667,7 +1675,7 @@ def create_app() -> FastAPI:
             "## About\n\n"
             "Canonical site: https://jpcite.com. "
             "MCP package: `pip install autonomath-mcp` (PyPI). "
-            "MCP exposes 139 tools in the standard configuration.\n\n"
+            "MCP exposes 151 tools in the standard configuration.\n\n"
             "---\n\n"
             "## 日本語要約 (JP summary)\n\n"
             "jpcite は **11,601 件の検索可能な補助金 / 融資 / 税制 / 認定** "
@@ -1692,7 +1700,7 @@ def create_app() -> FastAPI:
             "**料金体系:** 認証なし (匿名) は IP あたり 3 リクエスト / 日 (JST 翌日 "
             "00:00 リセット)、有料は ¥3 / リクエスト 完全従量 (税込 ¥3.30)。"
             "tier 課金・座席課金・年契約最低料金はありません。Stripe Checkout で "
-            "発行した `X-API-Key: am_...` を `X-API-Key` ヘッダー"
+            "発行した `X-API-Key: jc_...` を `X-API-Key` ヘッダー"
             "または `Authorization: Bearer ...` で送信してください。\n\n"
             "**公式サイト:** https://jpcite.com/."
         ),
@@ -2352,9 +2360,7 @@ def create_app() -> FastAPI:
     # Wave 43.1.1 — 市町村 v2 bridge. Registered BEFORE programs_router so the
     # specific /v1/programs/by_municipality/{code} + /v1/programs/by_prefecture/{code}
     # paths resolve before the generic /v1/programs/{unified_id} catcher.
-    app.include_router(
-        programs_municipality_v2_router, dependencies=[AnonIpLimitDep]
-    )
+    app.include_router(programs_municipality_v2_router, dependencies=[AnonIpLimitDep])
     app.include_router(programs_router, dependencies=[AnonIpLimitDep])
     # R8 (2026-05-07): am_compat_matrix 43,966 rows full-surface.
     # POST /v1/programs/portfolio_optimize + GET /v1/programs/{a}/compatibility/{b}.
@@ -2492,6 +2498,11 @@ def create_app() -> FastAPI:
     # Free/non-metered estimator: it has its own short per-IP throttle and
     # must not burn the anonymous 3/day discovery allowance.
     app.include_router(cost_router)
+    # /v1/orchestrate/{freee,mf,notion,slack} — paid-only SaaS handoff
+    # surface. Auth and metering are enforced inside each handler via
+    # require_metered_api_key/log_usage, so unauthenticated probes should
+    # return 401/402 without spending the anonymous discovery quota.
+    app.include_router(orchestrator_v2_router)
     # /v1/calculator/savings — public ROI estimator. Pure arithmetic,
     # no DB write and no metering; keep it outside AnonIpLimitDep so the
     # marketing calculator can call it repeatedly without burning API quota.
@@ -3425,8 +3436,7 @@ def create_app() -> FastAPI:
             {
                 "name": "stats",
                 "description": (
-                    "Public statistics surface — corpus counts, freshness, "
-                    "and tier breakdown."
+                    "Public statistics surface — corpus counts, freshness, and tier breakdown."
                 ),
             },
             {

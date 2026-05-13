@@ -120,11 +120,13 @@ const kit = await jpcite.bundle_application_kit({
 - `bundle_application_kit` (申請 kit assembly、公開版 22)
 
 ## 関連 recipe
-- [r01-tax-firm-monthly-review](../r01-tax-firm-monthly-review/) — 税理士月次、税制控除との連動
-- [r02-pre-closing-subsidy-check](../r02-pre-closing-subsidy-check/) — 決算前最終チェック
-- [r24-houjin-6source-join](../r24-houjin-6source-join/) — 法人 6 source join
+- [r01-tax-firm-monthly-review](../r01-tax-firm-monthly-review/index.md) — 税理士月次、税制控除との連動
+- [r02-pre-closing-subsidy-check](../r02-pre-closing-subsidy-check/index.md) — 決算前最終チェック
+- [r24-houjin-6source-join](../r24-houjin-6source-join/index.md) — 法人 6 source join
 
 ## billable_units 試算
+
+- API fee delta: API fee delta の前提と再現式は [docs/canonical/cost_saving_examples.md](../../canonical/cost_saving_examples.md) を参照。
 - 1 顧問先 14 units (prescreen 5 + chain 3 + forecast 1 + kit 5) × ¥3 = ¥42 / 顧問先 / 月
 - 顧問先 50 社 = ¥2,100 / 月、税込 ¥2,310
 - 顧問先 80 社 (上位事務所) = ¥3,360 / 月、税込 ¥3,696

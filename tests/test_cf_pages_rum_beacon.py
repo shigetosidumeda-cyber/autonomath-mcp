@@ -8,6 +8,7 @@ add a heavy dependency for one PR — so this test verifies the contract
 invariants that Wave 49 G1 acceptance depends on:
 
   - `ALLOWED_STEPS` includes the 4 funnel steps (landing/free/signup/topup).
+  - `billing` / `payment` remain aliases to `topup` for naming continuity.
   - `ALLOWED_EVENTS` includes view + cta_click + step_complete.
   - Bot-UA regex mirrors `site/assets/rum.js` (Wave 16 E1) — otherwise
     Wave 49 uniq counts would drift from the existing Web Vitals dataset.
@@ -60,6 +61,14 @@ def test_allowed_steps_match_wave49_g1_funnel() -> None:
         assert f'"{step}"' in body, f"step missing from ALLOWED_STEPS: {step}"
 
 
+def test_step_aliases_preserve_billing_payment_continuity() -> None:
+    src = _read(_FN)
+    assert "STEP_ALIASES" in src
+    assert 'billing: "topup"' in src
+    assert 'payment: "topup"' in src
+    assert "normalizeStep(body.step)" in src
+
+
 def test_allowed_events_cover_view_click_complete() -> None:
     src = _read(_FN)
     block = re.search(r"ALLOWED_EVENTS\s*=\s*new\s+Set\(\s*\[(.*?)\]", src, re.S)
@@ -98,7 +107,7 @@ def test_collector_targets_correct_beacon_path() -> None:
 def test_collector_handles_all_4_steps() -> None:
     src = _read(_COLLECTOR)
     # inferStep() must produce each of the 4 enum values.
-    for step in ("landing", "free", "signup", "topup"):
+    for step in ("landing", "free", "signup", "billing"):
         assert f'"{step}"' in src, f"step missing from inferStep: {step}"
 
 

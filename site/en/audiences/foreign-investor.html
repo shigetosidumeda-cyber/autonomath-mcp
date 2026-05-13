@@ -288,7 +288,7 @@ curl 'https://api.jpcite.com/v1/programs/search?q=対日直接投資&amp;limit=5
  <article class="card">
  <h3>Python (commercial, ¥3/billable unit)</h3>
  <pre class="code-block"><code>import httpx
-H = {"X-API-Key": "am_..."}
+H = {"X-API-Key": "jc_..."}
 
 # 1. WHT dividend rate Japan -> US parent
 r = httpx.get(
@@ -316,11 +316,11 @@ for row in r2.json["items"]:
  "jpcite": {
  "command": "uvx",
  "args": ["autonomath-mcp"],
- "env": {"JPCITE_API_KEY": "am_..."}
+ "env": {"JPCITE_API_KEY": "jc_..."}
  }
  }
 }</code></pre>
- <p class="demo-note">All 139 tools callable from Claude. Treaty + subsidy + law + invoice + enforcement, one server.</p>
+ <p class="demo-note">All 151 tools callable from Claude. Treaty + subsidy + law + invoice + enforcement, one server.</p>
  </article>
 
  </div>

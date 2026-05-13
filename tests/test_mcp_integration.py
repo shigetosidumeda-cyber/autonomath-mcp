@@ -54,6 +54,7 @@ class MCPClient:
         # the production default.
         env = os.environ.copy()
         env["JPINTEL_DB_PATH"] = str(DB_PATH)
+        env["JPCITE_DB_PATH"] = str(DB_PATH)
         # Suppress server banner INFO logs on stderr so pytest output
         # stays readable if a test ever hits a RuntimeError.
         env.setdefault("JPINTEL_LOG_LEVEL", "WARNING")

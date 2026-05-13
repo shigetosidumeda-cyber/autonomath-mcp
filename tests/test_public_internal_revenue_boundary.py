@@ -12,7 +12,6 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 PUBLIC_TEXT_SUFFIXES = {
@@ -54,7 +53,8 @@ OPERATOR_ONLY_RE = re.compile(
 SAFE_NEGATED_CLAIM_RE = re.compile(
     r"do\s+not\s+claim|must\s+not\s+claim|not\s+[^.。]{0,80}claim|"
     r"avoid\s+[^.。]{0,80}claim|internal[- ]only|operator[- ]only|"
-    r"外部公開しない|公開しない|主張しない|表現しない|使わない|禁止",
+    r"外部公開しない|公開しない|主張しない|表現しない|使わない|禁止|"
+    r"含みません|含まない|含めない|除外",
     re.IGNORECASE,
 )
 

@@ -454,6 +454,7 @@ def regctx_client(
     am_db_path = _build_autonomath_slice(tmp_path)
 
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(am_db_path))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", str(am_db_path))
     # Reset cached thread-local connection so the next request opens
     # the tmp DB.
     try:

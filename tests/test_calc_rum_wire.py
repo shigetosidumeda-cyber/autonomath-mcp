@@ -7,7 +7,7 @@ organic funnel from 4 → 5 stages by adding `calc_engaged`:
     `/assets/rum_funnel_collector.js` (defer) before `</body>`.
   - `site/assets/rum_funnel_collector.js` `inferStep()` maps the
     canonical calculator path → `calc_engaged`.
-  - The 4 pre-existing steps (landing / free / signup / topup) remain
+  - The 4 pre-existing collector steps (landing / free / signup / billing) remain
     intact — additive change, never destructive (see memory
     `feedback_destruction_free_organization`).
   - The calculator page dispatches `jpcite:funnel:complete` on first
@@ -56,7 +56,7 @@ def test_calculator_html_loads_rum_funnel_collector() -> None:
     tag_pos = pattern.search(html).start()
     assert tag_pos < body_close, (
         "rum_funnel_collector.js script tag must appear before </body>; "
-        "found at pos %d, </body> at pos %d." % (tag_pos, body_close)
+        f"found at pos {tag_pos}, </body> at pos {body_close}."
     )
     # The tag must use defer so it does not block the calculator's own
     # inline render() function (page-fast policy).
@@ -111,16 +111,19 @@ def test_rum_collector_preserves_4_pre_existing_steps() -> None:
     """Destruction-free: the 4 original funnel steps must remain.
 
     Memory `feedback_destruction_free_organization` forbids rm/mv-style
-    edits. The additive 5-stage wire must keep landing/free/signup/topup
+    edits. The additive 5-stage wire must keep landing/free/signup/billing
     intact — regression here would silently zero out 4 weeks of Wave 49
     G1 baseline data.
     """
     js = _read(RUM_JS)
-    for step in ("landing", "free", "signup", "topup"):
-        assert (
-            f'"{step}"' in js or f"'{step}'" in js
-        ), (
+    for step in ("landing", "free", "signup", "billing"):
+        assert f'"{step}"' in js or f"'{step}'" in js, (
             f"step '{step}' must remain in rum_funnel_collector.js — "
             "the calc_engaged extension is additive and must not "
             "remove or rename the pre-existing 4 stages."
         )
+    assert '"payment"' not in js and "'payment'" not in js, (
+        "rum_funnel_collector.js must not rename the historical billing "
+        "step to payment; the server normalizes billing/payment aliases "
+        "to canonical topup."
+    )

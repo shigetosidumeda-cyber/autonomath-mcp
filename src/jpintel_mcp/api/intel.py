@@ -272,10 +272,10 @@ def _build_evidence_packets(
 
 @router.post(
     "/probability_radar",
-    summary="Probability radar — 統計的推定 + ROI / program in one call",
+    summary="Probability radar — 統計的推定 + fee context / program in one call",
     description=(
         "Returns probability_estimate (NOT a forecast), same-industry adoption "
-        "rate, mean award amount, application effort estimate, and ROI for a "
+        "rate, mean award amount, application effort estimate, and fee context for a "
         "given (program_id, houjin_bangou) pair. NO LLM call, pure SQLite. "
         "Sensitive: §52 / §1 行政書士法 fence."
     ),

@@ -15,7 +15,6 @@ import pathlib
 import re
 import sqlite3
 import sys
-from typing import Any
 
 import pytest
 
@@ -26,12 +25,7 @@ MIG_266 = REPO_ROOT / "scripts" / "migrations" / "266_fdi_country_80.sql"
 SRC_CSS_REST = REPO_ROOT / "src" / "jpintel_mcp" / "api" / "cross_source_score_v2.py"
 SRC_FDI_REST = REPO_ROOT / "src" / "jpintel_mcp" / "api" / "foreign_fdi_v2.py"
 SRC_CSS_MCP = (
-    REPO_ROOT
-    / "src"
-    / "jpintel_mcp"
-    / "mcp"
-    / "autonomath_tools"
-    / "cross_source_score_v2.py"
+    REPO_ROOT / "src" / "jpintel_mcp" / "mcp" / "autonomath_tools" / "cross_source_score_v2.py"
 )
 ETL_FDI = REPO_ROOT / "scripts" / "etl" / "fill_fdi_80country_2x.py"
 
@@ -85,11 +79,22 @@ def _import_module(name: str, path: pathlib.Path):
 def test_mig_265_creates_agreement_table(tmp_path: pathlib.Path) -> None:
     conn = _build_am_fixture(tmp_path)
     cols = {r[1] for r in conn.execute("PRAGMA table_info(am_fact_source_agreement)").fetchall()}
-    assert {"fact_id", "agreement_ratio", "sources_total", "sources_agree", "canonical_value", "source_breakdown"}.issubset(cols)
+    assert {
+        "fact_id",
+        "agreement_ratio",
+        "sources_total",
+        "sources_agree",
+        "canonical_value",
+        "source_breakdown",
+    }.issubset(cols)
     # view + run-log
-    views = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='view'").fetchall()}
+    views = {
+        r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='view'").fetchall()
+    }
     assert "v_fact_source_agreement" in views
-    tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+    tables = {
+        r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
+    }
     assert "am_fact_source_agreement_run_log" in tables
     conn.close()
 
@@ -143,7 +148,14 @@ def test_mig_266_region_check(tmp_path: pathlib.Path) -> None:
     with pytest.raises(sqlite3.IntegrityError):
         conn.execute(
             "INSERT INTO am_fdi_country (country_iso, country_name_ja, country_name_en, region, source_url, source_fetched_at) VALUES (?, ?, ?, ?, ?, ?)",
-            ("ZZ", "テスト", "Test", "atlantis", "https://www.mofa.go.jp/region/test/", "2026-05-12"),
+            (
+                "ZZ",
+                "テスト",
+                "Test",
+                "atlantis",
+                "https://www.mofa.go.jp/region/test/",
+                "2026-05-12",
+            ),
         )
     conn.close()
 
@@ -168,15 +180,24 @@ def test_rest_css_v2_shape(tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPat
     am.execute(
         "INSERT INTO am_fact_source_agreement (fact_id, entity_id, field_name, agreement_ratio, sources_total, sources_agree, canonical_value, source_breakdown, egov_value, nta_value, meti_value) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
         (
-            42, "NTA-foo", "tax_rate_pct", 0.67, 3, 2, "10",
+            42,
+            "NTA-foo",
+            "tax_rate_pct",
+            0.67,
+            3,
+            2,
+            "10",
             json.dumps({"egov": 1, "nta": 1, "meti": 1}),
-            "10", "10", "10.5",
+            "10",
+            "10",
+            "10.5",
         ),
     )
     am.commit()
     am.close()
 
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(tmp_path / "autonomath.db"))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", str(tmp_path / "autonomath.db"))
     mod = _import_module("jpintel_mcp.api.cross_source_score_v2", SRC_CSS_REST)
 
     conn = mod._open_autonomath_ro()
@@ -196,6 +217,7 @@ def test_rest_css_v2_shape(tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPat
 def test_rest_css_v2_not_found(tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch) -> None:
     _build_am_fixture(tmp_path).close()
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(tmp_path / "autonomath.db"))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", str(tmp_path / "autonomath.db"))
     mod = _import_module("jpintel_mcp.api.cross_source_score_v2_b", SRC_CSS_REST)
     conn = mod._open_autonomath_ro()
     row = mod._fetch_agreement_row(conn, 999)
@@ -208,14 +230,18 @@ def test_rest_css_v2_not_found(tmp_path: pathlib.Path, monkeypatch: pytest.Monke
 # ---------------------------------------------------------------------------
 
 
-def test_mcp_css_score_impl_happy(
-    tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_mcp_css_score_impl_happy(tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch) -> None:
     am = _build_am_fixture(tmp_path)
     am.execute(
         "INSERT INTO am_fact_source_agreement (fact_id, entity_id, field_name, agreement_ratio, sources_total, sources_agree, canonical_value, source_breakdown) VALUES (?,?,?,?,?,?,?,?)",
         (
-            7, "NTA-bar", "rate", 1.0, 2, 2, "5",
+            7,
+            "NTA-bar",
+            "rate",
+            1.0,
+            2,
+            2,
+            "5",
             json.dumps({"egov": 1, "nta": 1}),
         ),
     )
@@ -223,15 +249,14 @@ def test_mcp_css_score_impl_happy(
     am.close()
 
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(tmp_path / "autonomath.db"))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", str(tmp_path / "autonomath.db"))
     # Lazy import of the impl helper to avoid triggering @mcp.tool registration
     # with a real server fixture in the unit test path.
     src = SRC_CSS_MCP.read_text(encoding="utf-8")
     # Ensure the public impl entrypoint exists by name.
     assert "_cross_source_score_am_impl" in src
 
-    mod = _import_module(
-        "jpintel_mcp.mcp.autonomath_tools.cross_source_score_v2", SRC_CSS_MCP
-    )
+    mod = _import_module("jpintel_mcp.mcp.autonomath_tools.cross_source_score_v2", SRC_CSS_MCP)
     out = mod._cross_source_score_am_impl(fact_id=7)
     assert out["fact_id"] == 7
     assert out["sources_total"] == 2
@@ -240,23 +265,18 @@ def test_mcp_css_score_impl_happy(
 
 
 def test_mcp_css_invalid_input() -> None:
-    mod = _import_module(
-        "jpintel_mcp.mcp.autonomath_tools.cross_source_score_v2_b", SRC_CSS_MCP
-    )
+    mod = _import_module("jpintel_mcp.mcp.autonomath_tools.cross_source_score_v2_b", SRC_CSS_MCP)
     out = mod._cross_source_score_am_impl(fact_id="not-a-number")
-    assert out.get("code") == "invalid_input"
+    assert out.get("error", {}).get("code") == "invalid_input"
 
 
-def test_mcp_css_not_found(
-    tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_mcp_css_not_found(tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch) -> None:
     _build_am_fixture(tmp_path).close()
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(tmp_path / "autonomath.db"))
-    mod = _import_module(
-        "jpintel_mcp.mcp.autonomath_tools.cross_source_score_v2_c", SRC_CSS_MCP
-    )
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", str(tmp_path / "autonomath.db"))
+    mod = _import_module("jpintel_mcp.mcp.autonomath_tools.cross_source_score_v2_c", SRC_CSS_MCP)
     out = mod._cross_source_score_am_impl(fact_id=12345)
-    assert out.get("code") == "not_found"
+    assert out.get("error", {}).get("code") == "not_found"
 
 
 # ---------------------------------------------------------------------------
@@ -264,11 +284,10 @@ def test_mcp_css_not_found(
 # ---------------------------------------------------------------------------
 
 
-def test_rest_fdi_list_filters(
-    tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_rest_fdi_list_filters(tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch) -> None:
     _build_am_fixture(tmp_path).close()
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(tmp_path / "autonomath.db"))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", str(tmp_path / "autonomath.db"))
     mod = _import_module("jpintel_mcp.api.foreign_fdi_v2", SRC_FDI_REST)
 
     sql, args = mod._build_list_query(
@@ -286,17 +305,14 @@ def test_rest_fdi_list_filters(
     assert {"DE", "FR"}.issubset(isos)
 
 
-def test_rest_fdi_detail_row_shape(
-    tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_rest_fdi_detail_row_shape(tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch) -> None:
     _build_am_fixture(tmp_path).close()
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(tmp_path / "autonomath.db"))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", str(tmp_path / "autonomath.db"))
     mod = _import_module("jpintel_mcp.api.foreign_fdi_v2_b", SRC_FDI_REST)
 
     conn = mod._open_autonomath_ro()
-    row = conn.execute(
-        "SELECT * FROM v_fdi_country_public WHERE country_iso = 'JP'"
-    ).fetchone()
+    row = conn.execute("SELECT * FROM v_fdi_country_public WHERE country_iso = 'JP'").fetchone()
     conn.close()
     assert row is not None
     shaped = mod._row_to_dict(row)
@@ -338,9 +354,9 @@ def test_etl_primary_only_gate() -> None:
 
 
 def test_boot_manifest_references_265_266() -> None:
-    manifest = (
-        REPO_ROOT / "scripts" / "migrations" / "autonomath_boot_manifest.txt"
-    ).read_text(encoding="utf-8")
+    manifest = (REPO_ROOT / "scripts" / "migrations" / "autonomath_boot_manifest.txt").read_text(
+        encoding="utf-8"
+    )
     assert "265_cross_source_agreement.sql" in manifest, (
         "265 migration must be in autonomath_boot_manifest.txt"
     )

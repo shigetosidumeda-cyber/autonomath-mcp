@@ -121,9 +121,9 @@ for (const hb of corps) {
 - `check_invoice_status` (適格事業者状況)
 
 ## 関連 recipe
-- [r22-n8n-zapier-webhook](../r22-n8n-zapier-webhook/) — n8n / Zapier、ノーコード接続
-- [r26-enforcement-rss-slack](../r26-enforcement-rss-slack/) — 行政処分 RSS 配信
-- [r28-edinet-program-trigger](../r28-edinet-program-trigger/) — EDINET 連動、有報連動 alert
+- [r22-n8n-zapier-webhook](../r22-n8n-zapier-webhook/index.md) — n8n / Zapier、ノーコード接続
+- [r26-enforcement-rss-slack](../r26-enforcement-rss-slack/index.md) — 行政処分 RSS 配信
+- [r28-edinet-program-trigger](../r28-edinet-program-trigger/index.md) — EDINET 連動、有報連動 alert
 
 ## billable_units 試算
 - 1 件 1 unit × ¥3 = ¥3

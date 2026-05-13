@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-import asyncio
 import json
+import os
 import re
+import subprocess
 import sys
+import textwrap
 from pathlib import Path
 
 import pytest
@@ -57,16 +59,33 @@ TASK_GREP_PATTERNS = (
 )
 
 
-async def _runtime_tool_names() -> list[str]:
-    from jpintel_mcp.mcp.server import mcp
-
-    tools = await mcp.list_tools()
-    return [tool.name for tool in tools]
-
-
 @pytest.fixture(scope="module")
 def runtime_tool_names() -> list[str]:
-    return asyncio.run(_runtime_tool_names())
+    env = os.environ.copy()
+    env["AUTONOMATH_36_KYOTEI_ENABLED"] = "0"
+    env["JPCITE_36_KYOTEI_ENABLED"] = "0"
+    code = textwrap.dedent(
+        """
+        import asyncio
+        import json
+        from jpintel_mcp.mcp.server import mcp
+
+        async def main():
+            tools = await mcp.list_tools()
+            print(json.dumps([tool.name for tool in tools]))
+
+        asyncio.run(main())
+        """
+    )
+    result = subprocess.run(
+        [sys.executable, "-c", code],
+        check=True,
+        cwd=REPO_ROOT,
+        env=env,
+        text=True,
+        capture_output=True,
+    )
+    return json.loads(result.stdout.splitlines()[-1])
 
 
 def _load(path: Path) -> dict:
@@ -157,9 +176,7 @@ def test_rendered_manifests_pass_task_a3_leak_grep() -> None:
                 continue
             idx = match.start()
             window = payload[max(0, idx - 60) : idx + 80].replace("\n", " ")
-            raise AssertionError(
-                f"{path}: leaks {pattern.pattern!r} near …{window}…"
-            )
+            raise AssertionError(f"{path}: leaks {pattern.pattern!r} near …{window}…")
 
 
 def test_sanitizer_strips_synthetic_leakage_shapes() -> None:

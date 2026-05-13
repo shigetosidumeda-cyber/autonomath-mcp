@@ -51,7 +51,7 @@ Wave 48 Phase 2 で Smithery + Glama の listing 申請 form 提出済 (24h mode
 Wave 49 では user manual click 後の listing 確認 + メタデータ完全性検証。
 
 実施:
-- Smithery listing URL 確認 + jpcite tool 139 個 表示確認
+- Smithery listing URL 確認 + jpcite tool 151 個 表示確認
 - Glama directory entry 確認 + MCP discoverability score 計測
 - listing page 内 description / pricing / OAuth flow / x402 endpoint の整合性 audit
 - listed 後 first agent invocation log を am_mcp_invocation_log で観測

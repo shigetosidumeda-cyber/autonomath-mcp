@@ -138,7 +138,7 @@ M&A 1 件あたりのデュー期間が短縮できる想定。
 }
 ```
 
-これだけで 139 ツールが即時アクティブ。`search_programs` `check_exclusions` `prescreen_programs` `subsidy_combo_finder` 等を Claude / Cursor / ChatGPT から自然言語で呼べます。
+これだけで 151 ツールが即時アクティブ。`search_programs` `check_exclusions` `prescreen_programs` `subsidy_combo_finder` 等を Claude / Cursor / ChatGPT から自然言語で呼べます。
 
 ### REST (Python SDK / TypeScript SDK)
 

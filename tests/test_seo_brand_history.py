@@ -1,21 +1,14 @@
-"""SEO brand-history audit (revised 2026-05-11 per Wave 14 seo_health_audit).
+"""SEO brand-history audit (revised 2026-05-13 per GEO bridge contract).
 
-Policy split between two surface tiers, per memory ``feedback_legacy_brand_marker``:
+Policy split between two public surface tiers:
 
 1. **llms.txt 系 (SEO citation bridge for AI crawlers)** — MUST carry the
    legacy brand names (税務会計AI / AutonoMath / zeimu-kaikei.ai) in the
    H1 head so LLMs that cached the prior brand can bridge to jpcite.
-2. **Visible HTML + Schema.org JSON-LD** — MUST NOT contain any legacy
-   brand string. Schema.org alternateName/sameAs leaks into Google
-   Knowledge Graph permanently; leaving 税務会計AI / AutonoMath /
-   zeimu-kaikei.ai in those fields freezes the legacy name in the KG and
-   undermines the rename to jpcite (Wave 14 seo_health_audit critical
-   leak finding, FIXED in audit).
-
-Originally (W14-8) the test enforced that index.html JSON-LD ALSO carried
-the legacy brand. That policy was reversed by ``feedback_legacy_brand_marker``
-because Schema.org markup is a permanent Knowledge Graph signal and the
-bridge purpose is better served by llms.txt only.
+2. **Visible HTML + Schema.org JSON-LD** — visible HTML MUST NOT contain any
+   legacy brand string. Schema.org JSON-LD may carry a tightly scoped legacy
+   bridge only on WebSite/Organization alternateName and the zeimu-kaikei.ai
+   sameAs URL, matching scripts/check_geo_readiness.py.
 """
 
 from __future__ import annotations
@@ -23,6 +16,7 @@ from __future__ import annotations
 import json
 import re
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -36,6 +30,9 @@ LLMS_FILES = [
 ]
 
 LEGACY_TERMS = ["税務会計AI", "AutonoMath", "zeimu-kaikei.ai"]
+LEGACY_BRIDGE_TYPES = {"WebSite", "Organization"}
+LEGACY_BRIDGE_SAME_AS = "https://zeimu-kaikei.ai"
+FORBIDDEN_LEGACY_SAME_AS = {"https://autonomath.ai"}
 
 
 @pytest.mark.parametrize("fname", LLMS_FILES)
@@ -53,9 +50,9 @@ def test_llms_file_mentions_legacy_brand(fname: str) -> None:
         assert term in head, f"{fname} head missing legacy term {term!r}:\n{head}"
 
 
-def _extract_jsonld_blocks(html: str) -> list[dict]:
+def _extract_jsonld_blocks(html: str) -> list[dict[str, Any]]:
     """Pull every <script type='application/ld+json'> JSON object out of html."""
-    blocks: list[dict] = []
+    blocks: list[dict[str, Any]] = []
     for match in re.finditer(
         r'<script[^>]+type="application/ld\+json"[^>]*>(.*?)</script>',
         html,
@@ -69,57 +66,130 @@ def _extract_jsonld_blocks(html: str) -> list[dict]:
     return blocks
 
 
-def _find_block(blocks: list[dict], type_name: str) -> dict:
-    for b in blocks:
-        if b.get("@type") == type_name:
+def _as_list(value: Any) -> list[Any]:
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return value
+    return [value]
+
+
+def _jsonld_type_names(block: dict[str, Any]) -> set[str]:
+    value = block.get("@type")
+    if isinstance(value, str):
+        return {value}
+    if isinstance(value, list):
+        return {str(item) for item in value}
+    return set()
+
+
+def _iter_jsonld_nodes(blocks: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    nodes: list[dict[str, Any]] = []
+    for block in blocks:
+        nodes.append(block)
+        graph = block.get("@graph")
+        if isinstance(graph, list):
+            nodes.extend(node for node in graph if isinstance(node, dict))
+    return nodes
+
+
+def _find_block(blocks: list[dict[str, Any]], type_name: str) -> dict[str, Any]:
+    for b in _iter_jsonld_nodes(blocks):
+        if type_name in _jsonld_type_names(b):
             return b
     raise AssertionError(f"No JSON-LD block with @type={type_name!r}")
 
 
-def test_index_html_jsonld_excludes_legacy_brand() -> None:
-    """index.html WebSite + Organization JSON-LD must NOT carry legacy brand.
+def _legacy_jsonld_occurrences(
+    value: Any, path: tuple[str, ...]
+) -> list[tuple[tuple[str, ...], str]]:
+    occurrences: list[tuple[tuple[str, ...], str]] = []
+    if isinstance(value, str):
+        for term in LEGACY_TERMS:
+            if term in value:
+                occurrences.append((path, term))
+    elif isinstance(value, list):
+        for index, item in enumerate(value):
+            occurrences.extend(_legacy_jsonld_occurrences(item, (*path, f"[{index}]")))
+    elif isinstance(value, dict):
+        for key, item in value.items():
+            occurrences.extend(_legacy_jsonld_occurrences(item, (*path, key)))
+    return occurrences
 
-    Schema.org markup permanently feeds Google Knowledge Graph; legacy brand
-    names there would freeze 税務会計AI/AutonoMath/zeimu-kaikei.ai as
-    alternateName forever. The SEO citation bridge purpose is served by
-    llms.txt 系 (above); Schema.org must be jpcite-only.
+
+def _is_allowed_legacy_jsonld_path(
+    type_names: set[str],
+    path: tuple[str, ...],
+    term: str,
+) -> bool:
+    if not type_names.intersection(LEGACY_BRIDGE_TYPES):
+        return False
+    if not path:
+        return False
+    if path[0] == "alternateName":
+        return True
+    return path[0] == "sameAs" and term == "zeimu-kaikei.ai"
+
+
+def test_index_html_jsonld_limits_legacy_brand_bridge() -> None:
+    """index.html may carry legacy brands only in the JSON-LD bridge.
+
+    The bridge is intentionally narrow: WebSite/Organization alternateName keeps
+    all prior names, and sameAs keeps only the zeimu-kaikei.ai URL. Other JSON-LD
+    fields and visible HTML remain jpcite-only.
     """
     html = (SITE_DIR / "index.html").read_text(encoding="utf-8")
+    html_without_jsonld = re.sub(
+        r'<script[^>]+type="application/ld\+json"[^>]*>.*?</script>',
+        "",
+        html,
+        flags=re.DOTALL,
+    )
+    for term in LEGACY_TERMS:
+        assert term not in html_without_jsonld, (
+            f"visible index.html must not contain legacy term {term!r}"
+        )
+    for url in FORBIDDEN_LEGACY_SAME_AS:
+        assert url not in html, f"index.html must not contain legacy URL {url!r}"
+
     blocks = _extract_jsonld_blocks(html)
     assert blocks, "no JSON-LD blocks parsed from index.html"
 
-    website = _find_block(blocks, "WebSite")
-    alt = website.get("alternateName") or []
-    if isinstance(alt, str):
-        alt = [alt]
-    assert "jpcite" in alt, "WebSite.alternateName must keep canonical 'jpcite'"
-    for term in LEGACY_TERMS:
-        assert term not in alt, (
-            f"WebSite.alternateName must NOT contain legacy term {term!r} "
-            f"(Schema.org → Knowledge Graph permanent residue): {alt}"
-        )
-
-    same_as = website.get("sameAs") or []
-    for legacy_url in ("https://zeimu-kaikei.ai", "https://autonomath.ai"):
-        assert legacy_url not in same_as, (
-            f"WebSite.sameAs must NOT contain legacy URL {legacy_url!r}: {same_as}"
-        )
-    for term in LEGACY_TERMS:
-        for s in same_as:
-            assert term not in s, (
-                f"WebSite.sameAs entry {s!r} contains legacy term {term!r}"
+    for node in _iter_jsonld_nodes(blocks):
+        type_names = _jsonld_type_names(node)
+        for path, term in _legacy_jsonld_occurrences(node, ()):
+            assert _is_allowed_legacy_jsonld_path(type_names, path, term), (
+                "legacy term outside the allowed WebSite/Organization JSON-LD "
+                f"bridge: types={sorted(type_names)} path={'.'.join(path)} term={term!r}"
             )
 
-    org = _find_block(blocks, "Organization")
-    org_alt = org.get("alternateName") or []
-    if isinstance(org_alt, str):
-        org_alt = [org_alt]
+    website = _find_block(blocks, "WebSite")
+    assert website.get("name") not in LEGACY_TERMS, "WebSite.name must stay canonical"
+    alt = _as_list(website.get("alternateName"))
+    assert "jpcite" in alt, "WebSite.alternateName must keep canonical 'jpcite'"
     for term in LEGACY_TERMS:
-        assert term not in org_alt, (
-            f"Organization.alternateName must NOT contain legacy term {term!r}: {org_alt}"
+        assert term in alt, f"WebSite.alternateName missing bridge term {term!r}: {alt}"
+
+    same_as = _as_list(website.get("sameAs"))
+    assert LEGACY_BRIDGE_SAME_AS in same_as, (
+        f"WebSite.sameAs missing bridge URL {LEGACY_BRIDGE_SAME_AS!r}: {same_as}"
+    )
+    assert FORBIDDEN_LEGACY_SAME_AS.isdisjoint(set(same_as)), (
+        f"WebSite.sameAs contains forbidden legacy URL: {same_as}"
+    )
+
+    org = _find_block(blocks, "Organization")
+    assert org.get("name") not in LEGACY_TERMS, "Organization.name must not use legacy brand"
+    org_alt = _as_list(org.get("alternateName"))
+    assert "jpcite" in org_alt, "Organization.alternateName must keep canonical 'jpcite'"
+    for term in LEGACY_TERMS:
+        assert term in org_alt, (
+            f"Organization.alternateName missing bridge term {term!r}: {org_alt}"
         )
-    org_same = org.get("sameAs") or []
-    for legacy_url in ("https://zeimu-kaikei.ai", "https://autonomath.ai"):
-        assert legacy_url not in org_same, (
-            f"Organization.sameAs must NOT contain legacy URL {legacy_url!r}: {org_same}"
-        )
+    org_same = _as_list(org.get("sameAs"))
+    assert LEGACY_BRIDGE_SAME_AS in org_same, (
+        f"Organization.sameAs missing bridge URL {LEGACY_BRIDGE_SAME_AS!r}: {org_same}"
+    )
+    assert FORBIDDEN_LEGACY_SAME_AS.isdisjoint(set(org_same)), (
+        f"Organization.sameAs contains forbidden legacy URL: {org_same}"
+    )

@@ -16,13 +16,13 @@
 <p style="color:#555;font-size:14px;">(この鍵はこのメール内でのみ表示されます。紛失した場合は Stripe ポータルから鍵をローテートしてください。)</p>
 
 <h2 style="font-size:17px;margin-top:28px;">最初の curl 例</h2>
-<p>動作確認の curl です。<code>YOUR_KEY</code> を上記の鍵に置き換えてそのまま実行できます。</p>
+<p>動作確認の curl です。<code>jc_xxx</code> を上記の鍵に置き換えてそのまま実行できます。</p>
 
-<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -H "X-API-Key: YOUR_KEY" \
+<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -H "X-API-Key: jc_xxx" \
   https://api.jpcite.com/v1/ping</code></pre>
 
 <p>制度検索の最小例(東京都の中小企業向け制度を5件):</p>
-<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -H "X-API-Key: YOUR_KEY" \
+<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -H "X-API-Key: jc_xxx" \
   "https://api.jpcite.com/v1/programs/search?prefecture=東京都&target_type=中小企業&limit=5"</code></pre>
 
 <h2 style="font-size:17px;margin-top:28px;">次に読むもの</h2>

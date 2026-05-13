@@ -128,7 +128,7 @@ Verify post-restart:
 
 ```bash
 curl -s -X POST https://api.jpcite.com/v1/integrations/google/start \
-  -H "X-API-Key: am_test_..." | jq .
+  -H "X-API-Key: jc_test_..." | jq .
 # Expect: {"authorize_url": "https://accounts.google.com/o/oauth2/v2/auth?...", "state": "..."}
 # Failure mode: HTTP 503 "Google Sheets integration not configured" → secrets not loaded yet.
 ```
@@ -231,7 +231,7 @@ state nonce + Fernet-encrypted refresh-token storage pattern.
 - [ ] `fly secrets list -a autonomath-api` shows `GOOGLE_OAUTH_CLIENT_ID`
       + `GOOGLE_OAUTH_CLIENT_SECRET` updated within last 30 min
 - [ ] `curl -X POST https://api.jpcite.com/v1/integrations/google/start
-      -H "X-API-Key: am_..."` returns 200 + valid `authorize_url`
+      -H "X-API-Key: jc_..."` returns 200 + valid `authorize_url`
 - [ ] Walking the `authorize_url` in a clean browser → consent →
       callback resolves to `/v1/integrations/google/callback?code=...`
       and the API stores a row in `integration_accounts`

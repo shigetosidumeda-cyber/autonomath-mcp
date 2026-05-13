@@ -14,13 +14,13 @@
 <h2 style="font-size:17px;margin-top:28px;">使うクライアントを1つ選んでください</h2>
 
 <h3 style="font-size:15px;margin-top:18px;">A. Claude Desktop / Claude Code</h3>
-<p style="color:#444;font-size:14px;margin:6px 0;">MCP 対応 LLM クライアント。<code>claude_desktop_config.json</code> に追記するだけで 139 ツール (programs.search / search_tax_incentives / check_invoice_registrant ほか) が自然言語から呼べます。</p>
+<p style="color:#444;font-size:14px;margin:6px 0;">MCP 対応 LLM クライアント。<code>claude_desktop_config.json</code> に追記するだけで 151 ツール (programs.search / search_tax_incentives / check_invoice_registrant ほか) が自然言語から呼べます。</p>
 <pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>{
   "mcpServers": {
     "autonomath": {
       "command": "uvx",
       "args": ["autonomath-mcp"],
-      "env": { "JPCITE_API_KEY": "YOUR_KEY" }
+      "env": { "JPCITE_API_KEY": "jc_xxx" }
     }
   }
 }</code></pre>
@@ -36,12 +36,12 @@
 
 <h3 style="font-size:15px;margin-top:18px;">D. 直接 curl / SDK</h3>
 <p style="color:#444;font-size:14px;margin:6px 0;">MCP を経由せず REST で叩く場合の最小例:</p>
-<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -H "X-API-Key: YOUR_KEY" \
+<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -H "X-API-Key: jc_xxx" \
   "https://api.jpcite.com/v1/programs/search?prefecture=東京都&target_type=中小企業&limit=10"</code></pre>
 
 <h2 style="font-size:17px;margin-top:32px;">よくある詰まりどころ</h2>
 <ul style="color:#444;">
-  <li><strong>401 Unauthorized</strong> — ヘッダ名は <code>X-API-Key</code> です(<code>Authorization: Bearer YOUR_KEY</code> でも受けます)。<code>Api-Key</code> や <code>X-Api-Token</code> は通りません。</li>
+  <li><strong>401 Unauthorized</strong> — ヘッダ名は <code>X-API-Key</code> です(<code>Authorization: Bearer jc_xxx</code> でも受けます)。<code>Api-Key</code> や <code>X-Api-Token</code> は通りません。</li>
   <li><strong>429 Too Many Requests</strong> — <code>Retry-After</code> ヘッダの秒数を待ってください。Paid キーは月次課金で上限なし、匿名は 3 req/日 (JST 翌日 00:00 リセット) です。</li>
   <li><strong>FTS の単一漢字ノイズ</strong> — <code>q=税額控除</code> は「税」だけ含む行も拾います。2文字以上の熟語は <code>q="税額控除"</code> のように引用符で囲ってください。</li>
   <li><strong>MCP が起動しない</strong> — <code>uvx autonomath-mcp</code> は初回 30 秒程度かかります。タイムアウトを 60s に伸ばしてください。</li>

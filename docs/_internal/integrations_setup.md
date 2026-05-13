@@ -65,7 +65,7 @@ Customer-side flow:
 4. (Optional) Set inbound spam filter to **strict**.
 
 Customer-side flow:
-1. Customer emails `query+am_xxx@parse.jpcite.com` with subject
+1. Customer emails `query+jc_xxx@parse.jpcite.com` with subject
    `find DX 補助金` (subject = query string).
 2. Postmark parses → POSTs JSON to our webhook.
 3. Server decodes plus-addressing → resolves api_key_hash → runs search →
@@ -76,7 +76,7 @@ Customer-side flow:
 ## 4) Excel — done, no operator setup required
 
 Two surfaces share the brand:
-- **WEBSERVICE template** (cell formula): `GET /v1/integrations/excel?key=am_...&q=...`
+- **WEBSERVICE template** (cell formula): `GET /v1/integrations/excel?key=jc_...&q=...`
   returns `text/plain` for a single cell.
 - **Saved-search XLSX download**: `GET /v1/me/saved_searches/{id}/results.xlsx`
   re-uses `api/formats/xlsx.py` for the full workbook.

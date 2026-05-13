@@ -26,6 +26,7 @@ def freshness_db(seeded_db: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatc
     long_ago = (dt.date.today() - dt.timedelta(days=365)).isoformat() + "T00:00:00+00:00"
     c = sqlite3.connect(seeded_db)
     try:
+        source_snapshot = c.execute("SELECT unified_id, source_fetched_at FROM programs").fetchall()
         c.execute(
             "UPDATE programs SET source_fetched_at = ? WHERE unified_id IN (?, ?)",
             (today, "UNI-test-s-1", "UNI-test-a-1"),
@@ -56,7 +57,23 @@ def freshness_db(seeded_db: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatc
     from jpintel_mcp.api import meta_freshness as mf
 
     mf._load_registry_cached.cache_clear()
-    return seeded_db
+    try:
+        yield seeded_db
+    finally:
+        c = sqlite3.connect(seeded_db)
+        try:
+            c.execute("UPDATE programs SET source_fetched_at = NULL")
+            c.executemany(
+                "UPDATE programs SET source_fetched_at = ? WHERE unified_id = ?",
+                [
+                    (source_fetched_at, unified_id)
+                    for unified_id, source_fetched_at in source_snapshot
+                ],
+            )
+            c.commit()
+        finally:
+            c.close()
+        mf._load_registry_cached.cache_clear()
 
 
 def test_load_enriched_lookup_uses_db(freshness_db: Path) -> None:

@@ -24,7 +24,6 @@ from __future__ import annotations
 import io
 import json
 import sqlite3
-import urllib.request
 from pathlib import Path
 from unittest.mock import patch
 
@@ -62,7 +61,7 @@ class _FakeResponse(io.BytesIO):
         super().__init__(body)
         self.status = status
 
-    def __enter__(self) -> "_FakeResponse":
+    def __enter__(self) -> _FakeResponse:
         return self
 
     def __exit__(self, *_a: object) -> None:
@@ -72,7 +71,7 @@ class _FakeResponse(io.BytesIO):
 def _fake_urlopen(status: int = 200):
     """Build a urlopen replacement that records each call and returns 2xx."""
 
-    captured: list[urllib.request.Request] = []
+    captured: list[object] = []
 
     def _impl(req, timeout=None):  # noqa: ARG001 — match real urlopen signature
         captured.append(req)
@@ -91,7 +90,7 @@ def test_orchestrate_freee_happy_path(client, paid_key):
     with patch("urllib.request.urlopen", impl):
         r = client.post(
             "/v1/orchestrate/freee",
-            params={"key": paid_key},
+            headers={"X-API-Key": paid_key},
             json={
                 "freee_token": "tok_freee_test_xxxxx",
                 "company_id": 1234,
@@ -113,7 +112,7 @@ def test_orchestrate_freee_rejects_anonymous(client):
     r = client.post(
         "/v1/orchestrate/freee",
         json={
-            "freee_token": "tok",
+            "freee_token": "tok_freee_test_xxxxx",
             "company_id": 1,
             "rows": [{"account_item": "x"}],
         },
@@ -132,7 +131,7 @@ def test_orchestrate_mf_happy_path(client, paid_key):
     with patch("urllib.request.urlopen", impl):
         r = client.post(
             "/v1/orchestrate/mf",
-            params={"key": paid_key},
+            headers={"X-API-Key": paid_key},
             json={
                 "mf_token": "tok_mf_test_xxxxx",
                 "office_id": "office_001",
@@ -150,7 +149,7 @@ def test_orchestrate_mf_too_many_rows_422(client, paid_key):
     rows = [{"account_code": f"code{i}"} for i in range(21)]  # cap is 20
     r = client.post(
         "/v1/orchestrate/mf",
-        params={"key": paid_key},
+        headers={"X-API-Key": paid_key},
         json={"mf_token": "tok", "office_id": "office_001", "rows": rows},
     )
     assert r.status_code == 422, r.text
@@ -166,7 +165,7 @@ def test_orchestrate_notion_happy_path(client, paid_key):
     with patch("urllib.request.urlopen", impl):
         r = client.post(
             "/v1/orchestrate/notion",
-            params={"key": paid_key},
+            headers={"X-API-Key": paid_key},
             json={
                 "notion_token": "secret_notion_test_xxxxx",
                 "database_id": "abcdef1234567890",
@@ -193,7 +192,7 @@ def test_orchestrate_slack_happy_path(client, paid_key):
     with patch("urllib.request.urlopen", impl):
         r = client.post(
             "/v1/orchestrate/slack",
-            params={"key": paid_key},
+            headers={"X-API-Key": paid_key},
             json={
                 "slack_webhook_url": "https://hooks.slack.com/services/T0/B0/Z0",
                 "kind": "amendment.alert",
@@ -219,7 +218,7 @@ def test_orchestrate_slack_happy_path(client, paid_key):
 def test_orchestrate_slack_invalid_webhook_url_422(client, paid_key):
     r = client.post(
         "/v1/orchestrate/slack",
-        params={"key": paid_key},
+        headers={"X-API-Key": paid_key},
         json={
             "slack_webhook_url": "https://example.com/not-a-slack-hook",
             "kind": "x",
@@ -328,19 +327,14 @@ def test_no_llm_sdk_imports_in_orchestrator_files():
     forbidden = ("anthropic", "openai", "google.generativeai", "claude_agent_sdk")
     targets = [
         _REPO_ROOT / "src" / "jpintel_mcp" / "api" / "orchestrator_v2.py",
-        _REPO_ROOT
-        / "src"
-        / "jpintel_mcp"
-        / "mcp"
-        / "autonomath_tools"
-        / "orchestrator_v2.py",
+        _REPO_ROOT / "src" / "jpintel_mcp" / "mcp" / "autonomath_tools" / "orchestrator_v2.py",
     ]
     for path in targets:
         text = path.read_text(encoding="utf-8")
         for needle in forbidden:
-            assert (
-                f"import {needle}" not in text
-            ), f"forbidden LLM import {needle!r} found in {path}"
-            assert (
-                f"from {needle}" not in text
-            ), f"forbidden LLM import from {needle!r} found in {path}"
+            assert f"import {needle}" not in text, (
+                f"forbidden LLM import {needle!r} found in {path}"
+            )
+            assert f"from {needle}" not in text, (
+                f"forbidden LLM import from {needle!r} found in {path}"
+            )

@@ -26,16 +26,18 @@ import time
 from pathlib import Path
 from typing import Annotated, Any
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
+from jpintel_mcp.api.audit import WorkpaperRequest, render_workpaper
 from jpintel_mcp.api.deps import ApiContextDep, DbDep, log_usage
 from jpintel_mcp.config import settings
 
 logger = logging.getLogger("jpintel.api.audit_workpaper_v2")
 
 router = APIRouter(prefix="/v1/audit", tags=["audit (税理士・会計士)"])
+_DEFAULT_BACKGROUND_TASKS = BackgroundTasks()
 
 _DISCLAIMER = (
     "本 audit/workpaper response は houjin_master / am_adopted_company_features /"
@@ -255,9 +257,7 @@ def _build_workpaper(
             f"FY内 当該採択先制度の改正イベント {len(amendment_alerts)} 件 — 適用要件再評価。"
         )
     if not adoptions:
-        flags.append(
-            "FY内 採択 0 件 — 補助金収益認識の対象なし (前 FY 継続性は別途確認)。"
-        )
+        flags.append("FY内 採択 0 件 — 補助金収益認識の対象なし (前 FY 継続性は別途確認)。")
 
     return {
         "client_houjin_bangou": houjin_id,
@@ -304,8 +304,22 @@ def post_audit_workpaper(
     request: Request,
     ctx: ApiContextDep,
     conn: DbDep,
-    payload: AuditWorkpaperRequest,
+    payload: AuditWorkpaperRequest | WorkpaperRequest,
+    background_tasks: BackgroundTasks = _DEFAULT_BACKGROUND_TASKS,
+    x_cost_cap_jpy: Annotated[str | None, Header(alias="X-Cost-Cap-JPY")] = None,
+    _idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key")] = None,
 ) -> JSONResponse:
+    if isinstance(payload, WorkpaperRequest):
+        return render_workpaper(
+            payload,
+            request,
+            conn,
+            ctx,
+            background_tasks,
+            x_cost_cap_jpy,
+            _idempotency_key,
+        )
+
     t0 = time.perf_counter()
     hb = _normalize_houjin(payload.client_houjin_bangou)
     if hb is None:
@@ -343,10 +357,7 @@ def post_audit_workpaper(
             detail={
                 "error": "houjin_not_found",
                 "field": "client_houjin_bangou",
-                "message": (
-                    f"No houjin_master row for {hb}. Verify via "
-                    "/v1/houjin/{bangou}."
-                ),
+                "message": (f"No houjin_master row for {hb}. Verify via /v1/houjin/{{bangou}}."),
             },
         )
 
@@ -403,9 +414,7 @@ _WORKPAPER_SCHEMA: dict[str, Any] = {
             "type": "integer",
             "min": 2000,
             "max": 2100,
-            "description": (
-                "FY start year (e.g. 2025 = FY2025 = 2025-04-01..2026-03-31)."
-            ),
+            "description": ("FY start year (e.g. 2025 = FY2025 = 2025-04-01..2026-03-31)."),
         },
     ],
     "source_tables": [

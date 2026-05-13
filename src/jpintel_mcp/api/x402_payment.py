@@ -122,11 +122,7 @@ def _has_valid_auth_shape(request: Request) -> bool:
     if not authorization:
         return False
     parts = authorization.split(None, 1)
-    return (
-        len(parts) == 2
-        and parts[0].lower() == "bearer"
-        and bool(parts[1].strip())
-    )
+    return len(parts) == 2 and parts[0].lower() == "bearer" and bool(parts[1].strip())
 
 
 class X402ConfigUnavailableError(RuntimeError):
@@ -141,7 +137,10 @@ def _autonomath_db_path() -> Path:
 
 
 def _connect() -> sqlite3.Connection:
-    conn = sqlite3.connect(str(_autonomath_db_path()))
+    path = _autonomath_db_path()
+    if not path.exists():
+        raise sqlite3.OperationalError(f"database file not found: {path}")
+    conn = sqlite3.connect(f"file:{path.as_posix()}?mode=rw", uri=True)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -152,6 +151,8 @@ def _missing_x402_schema(exc: sqlite3.OperationalError) -> bool:
         "no such table: v_x402_endpoint_enabled" in msg
         or "no such table: am_x402_endpoint_config" in msg
         or "no such table: am_x402_payment_log" in msg
+        or "database file not found:" in msg
+        or "unable to open database file" in msg
     )
 
 
@@ -292,6 +293,13 @@ def _fresh_challenge_nonce() -> str:
 def _load_endpoint_config(path: str) -> dict[str, Any] | None:
     """Return enabled endpoint config row or None if not x402-gated."""
     if _route_owns_payment_gate(path):
+        return None
+    if _is_canonical_paid_endpoint(path) and _schema_fail_open_allowed():
+        logger.warning(
+            "x402 dev/test fail-open enabled; payment middleware bypassing path=%s env=%s",
+            path,
+            _runtime_env(),
+        )
         return None
 
     try:

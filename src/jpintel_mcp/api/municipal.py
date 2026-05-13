@@ -80,7 +80,8 @@ async def list_municipal_subsidies(
             "SELECT pref, muni_code, muni_name, muni_type, subsidy_url, "
             "subsidy_name, eligibility_text, amount_text, deadline_text, "
             "retrieved_at, page_status "
-            "FROM municipality_subsidy" + where_clause
+            "FROM municipality_subsidy"
+            + where_clause
             + " ORDER BY pref, muni_name, subsidy_url LIMIT ? OFFSET ?",
             [*params, limit, offset],
         )
@@ -102,6 +103,7 @@ async def list_municipal_subsidies(
         quantity=1,
         latency_ms=latency_ms,
         result_count=len(items),
+        strict_metering=True,
     )
     return JSONResponse(
         _wrap(
@@ -144,5 +146,6 @@ async def by_prefecture(
         quantity=1,
         latency_ms=latency_ms,
         result_count=len(rollup),
+        strict_metering=True,
     )
     return JSONResponse(_wrap({"by_prefecture": rollup, "count": len(rollup)}))

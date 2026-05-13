@@ -20,7 +20,7 @@ ChatGPT の Custom GPT (GPT-Builder) の Actions に jpcite の **agent-safe Ope
    https://api.jpcite.com/v1/openapi.agent.json?src=cookbook_r18-chatgpt-custom-gpt
    ```
 
-3. Authentication: **API Key** を選び、Auth Type = Custom, Header name = `X-API-Key`, Value = `am_...` (jpcite ダッシュボードで発行)。
+3. Authentication: **API Key** を選び、Auth Type = Custom, Header name = `X-API-Key`, Value = `jc_...` (jpcite ダッシュボードで発行)。
 4. Privacy policy URL に `https://jpcite.com/compliance/privacy_policy/?src=cookbook_r18-chatgpt-custom-gpt` を入れる (Custom GPT 公開には必須)。
 5. System prompt 例:
 

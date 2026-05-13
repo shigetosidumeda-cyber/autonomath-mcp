@@ -41,6 +41,24 @@ def _reload_obs_sentry() -> Any:
     return importlib.reload(obs)
 
 
+def _use_sync_sentry_transport(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Keep Sentry init real while avoiding its background worker in pytest."""
+    import sentry_sdk
+    from sentry_sdk.transport import Transport
+
+    original_init = sentry_sdk.init
+
+    class _NoWorkerTransport(Transport):
+        def capture_envelope(self, envelope: Any) -> None:
+            return None
+
+    def _init_without_worker(*args: Any, **kwargs: Any) -> Any:
+        kwargs.setdefault("transport", _NoWorkerTransport)
+        return original_init(*args, **kwargs)
+
+    monkeypatch.setattr(sentry_sdk, "init", _init_without_worker)
+
+
 # ---------------------------------------------------------------------------
 # Two-gate semantics in observability.sentry._ensure_init
 # ---------------------------------------------------------------------------
@@ -89,6 +107,7 @@ def test_ensure_init_dummy_dsn_in_prod_initialises_gracefully(
     """
     monkeypatch.setenv("SENTRY_DSN", "https://invalid@sentry.io/1")
     monkeypatch.setenv("JPINTEL_ENV", "prod")
+    _use_sync_sentry_transport(monkeypatch)
     obs = _reload_obs_sentry()
     # First call performs init; subsequent calls short-circuit.
     assert obs.is_sentry_active() is True
@@ -117,18 +136,9 @@ def test_probe_sentry_active_returns_false_when_client_none(
 ) -> None:
     """No active client → probe returns False (the default in CI / dev)."""
     monkeypatch.delenv("SENTRY_DSN", raising=False)
-    # In a fresh test process the API lifespan never ran _init_sentry, so
-    # sentry_sdk.Hub.current.client is None.
-    import sentry_sdk
-
     from jpintel_mcp.api import _health_deep as hd
 
-    if sentry_sdk.Hub.current.client is not None:
-        # Defensive — another test polluted the global Hub. Push a fresh
-        # hub so this test stays deterministic.
-        with sentry_sdk.Hub(sentry_sdk.Client()):
-            pass
-    assert hd._probe_sentry_active() in {False, True}  # tolerate prior init
+    assert hd._probe_sentry_active() is False
 
 
 def test_probe_sentry_active_after_dummy_init(
@@ -140,6 +150,7 @@ def test_probe_sentry_active_after_dummy_init(
 
     import sentry_sdk
 
+    _use_sync_sentry_transport(monkeypatch)
     sentry_sdk.init(dsn="https://invalid@sentry.io/1", environment="production")
     try:
         from jpintel_mcp.api import _health_deep as hd

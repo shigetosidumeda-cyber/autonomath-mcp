@@ -3,9 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>jpcite cost saving calculator — 普通 AI vs jpcite MCP 定量比較</title>
-<meta name="description" content="Claude Sonnet 4.5 / GPT-5 公式 token 単価 + web search 課金 vs jpcite ¥3/req の side-by-side calculator。 Wave 48 v2 canonical 数字に完全一致。">
-<link rel="canonical" href="https://jpcite.com/tools/cost_saving_calculator.html">
+<title>jpcite API fee delta calculator — 普通 AI vs jpcite MCP 定量比較</title>
+<meta name="description" content="Claude Sonnet 4.5 + Anthropic web search の stated baseline と jpcite ¥3/req を比べる API fee delta calculator。売上・利益・業務成果は含みません。">
+<link rel="canonical" href="https://jpcite.com/tools/cost_saving_calculator">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/tools/cost_saving_calculator">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/tools/cost_saving_calculator">
 <style>
   :root{--bg:#fff;--text:#0f172a;--muted:#475569;--border:#e2e8f0;--accent:#0ea5e9;--ok:#16a34a;--warn:#b45309}
   body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Hiragino Kaku Gothic ProN","ヒラギノ角ゴ ProN W3","Yu Gothic Medium",sans-serif;margin:0;background:#f8fafc;color:var(--text);line-height:1.65}
@@ -19,7 +21,7 @@
   th,td{padding:9px 11px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
   th{background:#f1f5f9;font-weight:600}
   td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
-  .saving{color:var(--ok);font-weight:700}
+  .delta{color:var(--ok);font-weight:700}
   .pure{color:var(--warn)}
   label{display:block;font-size:13px;color:var(--muted);margin:8px 0 4px}
   input,select{padding:6px 9px;border:1px solid var(--border);border-radius:6px;font-size:14px;width:100%;box-sizing:border-box}
@@ -32,8 +34,8 @@
 </head>
 <body>
 <main>
-  <h1>jpcite cost saving calculator</h1>
-  <p class="muted">「普通に Claude/GPT を使う」場合の <strong>token + web search 課金</strong> と jpcite MCP ¥3/req の差を即時計算します。 数値ソースは Anthropic / OpenAI 2026-05-12 時点の公式 pricing。 詳細な前提は <a href="/tools/cost_saving_examples.md">cost saving examples</a> を参照。</p>
+  <h1>jpcite API fee delta calculator</h1>
+  <p class="muted">「普通に Claude/GPT を使う」場合の <strong>external API fee</strong> (token + Anthropic web search / OpenAI web search) と <strong>jpcite fee</strong> (¥3/req) の API 料金差額を即時計算します。既定 baseline は Claude Sonnet 4.5、Anthropic web search、USD/JPY=150、jpcite ¥3。数値は stated baseline の参考比較で、provider pricing は 2026-05-13 に公式 pricing page を再確認済みです。詳細な前提は <a href="/tools/cost_saving_examples.md">API fee delta examples</a> を参照。</p>
 
   <section class="card">
     <h2>1. 前提パラメータ</h2>
@@ -42,19 +44,18 @@
         <label for="model">LLM model</label>
         <select id="model">
           <option value="claude_sonnet_4_5" selected>Claude Sonnet 4.5 ($3 / $15 per MTok)</option>
-          <option value="claude_opus_4">Claude Opus 4 ($15 / $75)</option>
-          <option value="claude_haiku_4">Claude Haiku 4 ($0.80 / $4)</option>
-          <option value="gpt_5">GPT-5 ($1.25 / $10)</option>
-          <option value="gpt_4_1">GPT-4.1 ($2 / $8)</option>
+          <option value="claude_opus_4_5">Claude Opus 4.5 ($5 / $25)</option>
+          <option value="claude_opus_4_1">Claude Opus 4.1 ($15 / $75)</option>
+          <option value="gpt_5_5">GPT-5.5 ($5 / $30)</option>
+          <option value="gpt_5_4">GPT-5.4 ($2.50 / $15)</option>
         </select>
       </div>
       <div>
         <label for="search">web search vendor</label>
         <select id="search">
           <option value="anthropic" selected>Anthropic $10 / 1k</option>
-          <option value="openai_low">OpenAI low $10 / 1k</option>
-          <option value="openai_medium">OpenAI medium $25 / 1k</option>
-          <option value="openai_high">OpenAI high $30 / 1k</option>
+          <option value="openai_standard">OpenAI web search $10 / 1k</option>
+          <option value="openai_preview_non_reasoning">OpenAI web search preview $25 / 1k</option>
         </select>
       </div>
       <div>
@@ -70,7 +71,7 @@
 
   <section class="card">
     <h2>2. 6 use case side-by-side</h2>
-    <p class="muted">canonical doc § C と完全一致するよう、 use case ごとの token / search / jpcite req 数を固定。 上の前提を変えると全 use case の数字が連動。</p>
+    <p class="muted">canonical doc § C と同じ前提で再計算できるよう、 use case ごとの token / search / jpcite req 数を固定。 上の前提を変えると全 use case の数字が連動。</p>
     <div style="overflow-x:auto">
     <table id="cases-tbl">
       <thead>
@@ -81,9 +82,9 @@
           <th class="num">output tok</th>
           <th class="num">searches</th>
           <th class="num">jpcite req</th>
-          <th class="num">純 LLM 合計</th>
-          <th class="num">jpcite 合計</th>
-          <th class="num">節約額</th>
+          <th class="num">external API fee</th>
+          <th class="num">jpcite fee</th>
+          <th class="num">API fee delta</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -92,7 +93,7 @@
           <th colspan="6" style="text-align:right">合計 (6 case 1 回ずつ)</th>
           <th class="num pure" id="total-pure">—</th>
           <th class="num" id="total-jpcite">—</th>
-          <th class="num saving" id="total-saving">—</th>
+          <th class="num delta" id="total-delta">—</th>
         </tr>
       </tfoot>
     </table>
@@ -112,7 +113,7 @@
       </div>
     </div>
     <p class="total" id="scale-out">—</p>
-    <small class="note">本 calculator は API 料金差分のみ。 hallucination 起因の取りこぼし損失 / 顧問契約解除リスクは含まない (canonical § 14 page 表で別途試算)。 8 業法 fence の価値は金額化していない。</small>
+    <small class="note">本 calculator は API 料金差額のみ。労務削減、売上、利益、事業成果、専門判断の価値は含みません。8 業法 fence の価値は金額化していません。</small>
   </section>
 
   <section class="card">
@@ -138,17 +139,16 @@ const USE_CASES = [
 
 const MODELS = {
   claude_sonnet_4_5: { in_per_mtok: 3.00,  out_per_mtok: 15.00 },
-  claude_opus_4:     { in_per_mtok: 15.00, out_per_mtok: 75.00 },
-  claude_haiku_4:    { in_per_mtok: 0.80,  out_per_mtok: 4.00  },
-  gpt_5:             { in_per_mtok: 1.25,  out_per_mtok: 10.00 },
-  gpt_4_1:           { in_per_mtok: 2.00,  out_per_mtok: 8.00  },
+  claude_opus_4_5:   { in_per_mtok: 5.00,  out_per_mtok: 25.00 },
+  claude_opus_4_1:   { in_per_mtok: 15.00, out_per_mtok: 75.00 },
+  gpt_5_5:           { in_per_mtok: 5.00,  out_per_mtok: 30.00 },
+  gpt_5_4:           { in_per_mtok: 2.50,  out_per_mtok: 15.00 },
 };
 
 const SEARCH = {
   anthropic:     10.00,
-  openai_low:    10.00,
-  openai_medium: 25.00,
-  openai_high:   30.00,
+  openai_standard:              10.00,
+  openai_preview_non_reasoning: 25.00,
 };
 
 function getParams() {
@@ -194,13 +194,13 @@ function render() {
       <td class="num">${uc.req}</td>
       <td class="num pure">${fmt(pure)}</td>
       <td class="num">${fmt(jp)}</td>
-      <td class="num saving">${fmt(sv)}</td>
+      <td class="num delta">${fmt(sv)}</td>
     `;
     tbody.appendChild(tr);
   }
   document.getElementById("total-pure").textContent    = fmt(sumPure);
   document.getElementById("total-jpcite").textContent  = fmt(sumJp);
-  document.getElementById("total-saving").textContent  = fmt(sumPure - sumJp);
+  document.getElementById("total-delta").textContent  = fmt(sumPure - sumJp);
 
   // Scale section
   const scaleSel = document.getElementById("scale-case");
@@ -220,15 +220,32 @@ function render() {
   const jp1   = jpciteCostJpy(uc, p);
   const monthPure = pure1 * n, monthJp = jp1 * n, monthSv = monthPure - monthJp;
   document.getElementById("scale-out").innerHTML =
-    `月 ${n} case 純 LLM = <span class="pure">${fmt(monthPure)}</span> / jpcite = ${fmt(monthJp)} / ` +
-    `<span class="saving">月節約 ${fmt(monthSv)}</span> / <span class="saving">年節約 ${fmt(monthSv * 12)}</span>`;
+    `月 ${n} case external API fee = <span class="pure">${fmt(monthPure)}</span> / jpcite = ${fmt(monthJp)} / ` +
+    `<span class="delta">月次 API fee delta ${fmt(monthSv)}</span> / <span class="delta">年次 API fee delta ${fmt(monthSv * 12)}</span>`;
+}
+
+let funnelCompleteSent = false;
+function emitCalculatorEngaged() {
+  if (funnelCompleteSent) return;
+  funnelCompleteSent = true;
+  document.dispatchEvent(new CustomEvent("jpcite:funnel:complete", {
+    detail: { step: "calc_engaged" }
+  }));
 }
 
 ["model","search","fx","jpcite","scale-case","scale-n"].forEach((id) => {
-  document.getElementById(id).addEventListener("input", render);
-  document.getElementById(id).addEventListener("change", render);
+  const el = document.getElementById(id);
+  el.addEventListener("input", function () {
+    emitCalculatorEngaged();
+    render();
+  });
+  el.addEventListener("change", function () {
+    emitCalculatorEngaged();
+    render();
+  });
 });
 render();
 </script>
+<script src="/assets/rum_funnel_collector.js" defer></script>
 </body>
 </html>

@@ -59,9 +59,7 @@ class Settings(BaseSettings):
     # docs/healthcare_v3_plan.md and src/jpintel_mcp/mcp/healthcare_tools/.
     healthcare_enabled: bool = Field(
         default=False,
-        validation_alias=AliasChoices(
-            "JPCITE_HEALTHCARE_ENABLED", "AUTONOMATH_HEALTHCARE_ENABLED"
-        ),
+        validation_alias=AliasChoices("JPCITE_HEALTHCARE_ENABLED", "AUTONOMATH_HEALTHCARE_ENABLED"),
     )
     # Feature flag gating the 5 real_estate_* MCP tool stubs (P6-F W4 prep).
     # Default False — keeps preview-only real-estate stubs out of the public
@@ -87,9 +85,7 @@ class Settings(BaseSettings):
     # docs/_internal/saburoku_kyotei_gate_decision_2026-04-25.md.
     saburoku_kyotei_enabled: bool = Field(
         default=False,
-        validation_alias=AliasChoices(
-            "JPCITE_36_KYOTEI_ENABLED", "AUTONOMATH_36_KYOTEI_ENABLED"
-        ),
+        validation_alias=AliasChoices("JPCITE_36_KYOTEI_ENABLED", "AUTONOMATH_36_KYOTEI_ENABLED"),
         description="法務 review 完了後に true に設定。デフォルト disabled。",
     )
     # R8 dataset versioning — bitemporal `valid_from` / `valid_until`
@@ -119,9 +115,7 @@ class Settings(BaseSettings):
     # only if the legacy tool needs to be muted again.
     autonomath_snapshot_enabled: bool = Field(
         default=True,
-        validation_alias=AliasChoices(
-            "JPCITE_SNAPSHOT_ENABLED", "AUTONOMATH_SNAPSHOT_ENABLED"
-        ),
+        validation_alias=AliasChoices("JPCITE_SNAPSHOT_ENABLED", "AUTONOMATH_SNAPSHOT_ENABLED"),
     )
     # Reasoning subsystem gate (`intent_of` + `reason_answer`). Both tools
     # depend on a `reasoning` package (lazy-imported via _reasoning_import)
@@ -132,9 +126,7 @@ class Settings(BaseSettings):
     # path on sys.path).
     autonomath_reasoning_enabled: bool = Field(
         default=False,
-        validation_alias=AliasChoices(
-            "JPCITE_REASONING_ENABLED", "AUTONOMATH_REASONING_ENABLED"
-        ),
+        validation_alias=AliasChoices("JPCITE_REASONING_ENABLED", "AUTONOMATH_REASONING_ENABLED"),
     )
     # Graph-walk tool gate (`related_programs`). 2026-04-29 rewritten to
     # read `am_relation` + `am_entities` directly from autonomath.db (same
@@ -175,9 +167,7 @@ class Settings(BaseSettings):
     # Default True; flip to "0" / "false" via env for one-flag rollback.
     autonomath_nta_corpus_enabled: bool = Field(
         default=True,
-        validation_alias=AliasChoices(
-            "JPCITE_NTA_CORPUS_ENABLED", "AUTONOMATH_NTA_CORPUS_ENABLED"
-        ),
+        validation_alias=AliasChoices("JPCITE_NTA_CORPUS_ENABLED", "AUTONOMATH_NTA_CORPUS_ENABLED"),
     )
     # Wave 22 composition tools (5 MCP surfaces): match_due_diligence_questions /
     # prepare_kessan_briefing / forecast_program_renewal / cross_check_jurisdiction /
@@ -282,9 +272,7 @@ class Settings(BaseSettings):
     # Default "standard". Override via env to tighten or loosen at runtime.
     autonomath_disclaimer_level: str = Field(
         default="standard",
-        validation_alias=AliasChoices(
-            "JPCITE_DISCLAIMER_LEVEL", "AUTONOMATH_DISCLAIMER_LEVEL"
-        ),
+        validation_alias=AliasChoices("JPCITE_DISCLAIMER_LEVEL", "AUTONOMATH_DISCLAIMER_LEVEL"),
     )
     # Personal information sub-flags (APPI § 31 / § 33 fence). Default 0=off:
     # `corp.representative` (代表者名) is gbiz info公開情報 source, so removing
@@ -378,7 +366,8 @@ class Settings(BaseSettings):
     # Portal Configuration on the Stripe Dashboard side
     # (allowed_countries=["JP"]).
     stripe_billing_jp_only: bool = Field(
-        default=True, alias="STRIPE_BILLING_JP_ONLY",
+        default=True,
+        alias="STRIPE_BILLING_JP_ONLY",
     )
 
     api_key_salt: str = Field(default="dev-salt", alias="API_KEY_SALT")
@@ -397,6 +386,7 @@ class Settings(BaseSettings):
     # below. Kept daily because the dunning window is short (days, not weeks).
     rate_limit_free_per_day: int = Field(default=100, alias="RATE_LIMIT_FREE_PER_DAY")
 
+    # Anonymous quota limit: 3 req/day per IP, reset at JST 00:00.
     # Per-IP DAILY quota for anonymous (no X-API-Key) callers. Lives in
     # table `anon_rate_limit` (migration 007; `date` column stores
     # YYYY-MM-DD JST as the bucket key). Resets on JST 翌日 00:00.

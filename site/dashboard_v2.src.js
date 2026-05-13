@@ -9,7 +9,7 @@
 //                              /v1/me/billing_history, /v1/me/tool_recommendation
 //
 // Why two? An MCP user (Claude Desktop / Cursor / agent CLI) already holds
-// an `am_…` key but never sees the cookie-session page. They want a
+// an `jc_…` key but never sees the cookie-session page. They want a
 // self-serve URL they can paste their key into and inspect spend without
 // the redirect dance.
 //
@@ -672,7 +672,7 @@
         renderStorageWarning();
         // §4-E: dashboard_signin_success — Bearer-mode sign-in. We fire
         // the beacon BEFORE loadAll() so the event lands even if the
-        // first dashboard fetch fails (a key shaped like am_… but
+        // first dashboard fetch fails (a key shaped like jc_… but
         // unknown to the API still counts as a "tried to sign in" event).
         try {
           if (typeof window.jpciteTrack === 'function') {

@@ -12,7 +12,7 @@
 
 | ID | サービス | 種類 | 主要 API surface |
 |----|---------|------|------------------|
-| **jpcite** | jpcite | Evidence prefetch (日本公的制度 DB + MCP) | REST `/v1/evidence/packets/query` + MCP 139 tools |
+| **jpcite** | jpcite | Evidence prefetch (日本公的制度 DB + MCP) | REST `/v1/evidence/packets/query` + MCP 151 tools |
 | **chatgpt-ws** | ChatGPT web search (Browse) | LLM 統合 web search | ChatGPT UI / Responses API `web_search` tool |
 | **claude-ws** | Claude web search | LLM 統合 web search | Anthropic Messages API `web_search_20250305` tool |
 | **perplexity** | Perplexity Sonar / pplx-api | citation 付き AI 検索 | `/chat/completions` (`sonar` / `sonar-pro`) |
@@ -200,7 +200,7 @@ Q1 / Q3 は税制改正履歴を読まないと外す。Q2 は会計検査院 / 
 | 海外比較 / FDI / 英訳法令との対比 | **jpcite (`law_articles.body_en`)** + **ChatGPT WS / Claude WS** | jpcite が 英訳 corpus を持つが、比較対象の海外法は外で取る |
 | 汎用 web 検索 (公的制度ではないトピック) | **ChatGPT WS / Claude WS / Gemini AI Mode** | jpcite は使わない |
 | RAG infra として URL + snippet が欲しい (自前要約) | **Tavily / Exa** | snippet JSON が flat で扱いやすい |
-| AI agent ワークフローへの組込み (MCP / Custom GPT Actions / Cursor) | **jpcite (MCP 139 tools / OpenAPI Actions)** | first-class MCP server + agent-safe OpenAPI subset |
+| AI agent ワークフローへの組込み (MCP / Custom GPT Actions / Cursor) | **jpcite (MCP 151 tools / OpenAPI Actions)** | first-class MCP server + agent-safe OpenAPI subset |
 
 ### 6.2 cost 試算 (100 query / 1,000 query)
 

@@ -113,7 +113,7 @@ fs.writeFileSync(`dd_pack_${target}.json`, JSON.stringify({ target, dd, clawback
 ```
 
 ## known gaps
-- 市町村補助金の財産処分制限期間 (耐用年数依存 5-15 年)、市町村ごとに運用差あり、本 recipe は国 / 都道府県分のみ完全網羅
+- 市町村補助金の財産処分制限期間 (耐用年数依存 5-15 年)、市町村ごとに運用差あり、本 recipe は国 / 都道府県分を主にカバー
 - 5 年超の古い案件は一次資料リンクで約 8% link rot、sentinel 化済
 - 行政処分の都道府県分は 47 のうち独自 DB 提供 22 県、残り 25 県は四半期更新で 30-90 日 lag
 - 公共入札 指名停止は中央省庁 + 47 都道府県 + 20 政令市まで、中核市以下は逐次拡大中
@@ -127,11 +127,13 @@ fs.writeFileSync(`dd_pack_${target}.json`, JSON.stringify({ target, dd, clawback
 - `get_clawback_risk` (補助金財産処分制限の残余月数算定)
 
 ## 関連 recipe
-- [r12-audit-firm-kyc-sweep](../r12-audit-firm-kyc-sweep/) — 監査法人 KYC、隣接領域
-- [r13-shihoshoshi-registry-watch](../r13-shihoshoshi-registry-watch/) — 司法書士 registry watch
-- [r24-houjin-6source-join](../r24-houjin-6source-join/) — 法人 6 source join、素材レイヤ
+- [r12-audit-firm-kyc-sweep](../r12-audit-firm-kyc-sweep/index.md) — 監査法人 KYC、隣接領域
+- [r13-shihoshoshi-registry-watch](../r13-shihoshoshi-registry-watch/index.md) — 司法書士 registry watch
+- [r24-houjin-6source-join](../r24-houjin-6source-join/index.md) — 法人 6 source join、素材レイヤ
 
 ## billable_units 試算
+
+- API fee delta: API fee delta の前提と再現式は [docs/canonical/cost_saving_examples.md](../../canonical/cost_saving_examples.md) を参照。
 - 1 DD 28 units × ¥3 = ¥84 / DD
 - 月 10 案件 = ¥840 / 月、税込 ¥924
 - 月 30 案件 = ¥2,520 / 月、税込 ¥2,772

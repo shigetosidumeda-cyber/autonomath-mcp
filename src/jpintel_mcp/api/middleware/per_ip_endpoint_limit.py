@@ -213,7 +213,7 @@ def _plausible_api_key(value: str | None) -> str | None:
         return None
     # Do not validate here; auth dependencies do that later. This just
     # keeps anonymous traffic from opting into paid buckets with junk.
-    if not (key.startswith("am_") or key.startswith("jpcite_")):
+    if not (key.startswith("am_") or key.startswith("jpcite_") or key.startswith("jc_")):
         return None
     if len(key) < 12:
         return None

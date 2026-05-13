@@ -117,6 +117,8 @@ def main() -> int:
         "docs/integrations/",
         "docs/launch_assets/",
         "docs/legal/",
+        "docs/research/",
+        "docs/use_cases/",
         "docs/pricing/",
     )
 

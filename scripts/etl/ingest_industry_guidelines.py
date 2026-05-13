@@ -56,7 +56,12 @@ from pathlib import Path
 from typing import Any
 from xml.etree import ElementTree as ET
 
-from scripts.etl._playwright_helper import fetch_with_fallback_sync  # Wave 36 wire
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+# Wave 36 wire marker.
+from scripts.etl._playwright_helper import fetch_with_fallback_sync  # noqa: E402
 
 try:
     import certifi
@@ -65,7 +70,7 @@ try:
 except Exception:
     _SSL_CTX = ssl.create_default_context()
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = _REPO_ROOT
 DB_PATH = REPO_ROOT / "autonomath.db"
 
 # Ministry → RSS / sitemap discovery roots.
@@ -111,7 +116,7 @@ MINISTRY_FEEDS: dict[str, list[tuple[str, str]]] = {
 
 # Ministry → default JSIC major (heuristic) when title gives no other hint.
 MINISTRY_DEFAULT_JSIC: dict[str, tuple[str, str]] = {
-    "env": ("E", "製造業"),     # 環境関連 fab/manuf
+    "env": ("E", "製造業"),  # 環境関連 fab/manuf
     "maff": ("A", "農業,林業"),
     "mhlw": ("P", "医療,福祉"),
     "meti": ("E", "製造業"),
@@ -169,7 +174,7 @@ def is_banned_url(url: str) -> bool:
 
 
 def compute_guideline_id(ministry: str, title: str) -> str:
-    key = f"{ministry}|{title}".encode("utf-8")
+    key = f"{ministry}|{title}".encode()
     return "GL-" + hashlib.sha256(key).hexdigest()[:10]
 
 
@@ -259,10 +264,20 @@ def parse_rss(body: str, ministry: str, base_url: str, limit: int) -> list[dict[
             continue
         # Filter: only retain entries that look like guideline / 指針 / 通達 /
         # 通知 / 公表. RSS items mix news headlines (not relevant) too.
-        if not any(k in title for k in (
-            "ガイドライン", "指針", "通達", "通知", "告示", "公表",
-            "業種", "事業者", "事業",
-        )):
+        if not any(
+            k in title
+            for k in (
+                "ガイドライン",
+                "指針",
+                "通達",
+                "通知",
+                "告示",
+                "公表",
+                "業種",
+                "事業者",
+                "事業",
+            )
+        ):
             continue
         records.append(
             {
@@ -299,9 +314,17 @@ def parse_html_index(body: str, ministry: str, base_url: str, limit: int) -> lis
             href = urllib.parse.urljoin(base_url, href)
         if is_banned_url(href):
             continue
-        if not any(k in title for k in (
-            "ガイドライン", "指針", "通達", "通知", "告示", "公表",
-        )):
+        if not any(
+            k in title
+            for k in (
+                "ガイドライン",
+                "指針",
+                "通達",
+                "通知",
+                "告示",
+                "公表",
+            )
+        ):
             continue
         records.append(
             {
@@ -320,9 +343,7 @@ def parse_html_index(body: str, ministry: str, base_url: str, limit: int) -> lis
     return records
 
 
-def fetch_ministry_records(
-    ministry: str, max_per_ministry: int
-) -> list[dict[str, Any]]:
+def fetch_ministry_records(ministry: str, max_per_ministry: int) -> list[dict[str, Any]]:
     feeds = MINISTRY_FEEDS.get(ministry, [])
     out: list[dict[str, Any]] = []
     for kind, url in feeds:
@@ -391,7 +412,9 @@ def upsert(conn: sqlite3.Connection, rec: dict[str, Any], dry_run: bool = False)
 
 
 def run(args: argparse.Namespace) -> int:
-    print(f"[start] db={args.db_path} ministries={args.ministries} max={args.max_per_ministry} dry_run={args.dry_run}")
+    print(
+        f"[start] db={args.db_path} ministries={args.ministries} max={args.max_per_ministry} dry_run={args.dry_run}"
+    )
     if not args.dry_run and not args.db_path.exists():
         print(f"[error] db missing: {args.db_path}", file=sys.stderr)
         return 2

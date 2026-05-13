@@ -10,7 +10,7 @@
 
    ダッシュボードに載っている数字は、API でも取れます。日次の呼び出し数を 30 日分まとめて取得する例:
 
-   curl -H "X-API-Key: YOUR_KEY" \
+   curl -H "X-API-Key: jc_xxx" \
      "https://api.jpcite.com/v1/me/usage?days=30"
 
    返り値: [{"date":"2026-04-22","count":18}, ...]
@@ -26,7 +26,7 @@
    「この金額はどの公式文書の何ページに載っていたのか」を辿れるので、
    LLM の回答を監査にかけるユーザーには必須です。
 
-   curl -H "X-API-Key: YOUR_KEY" \
+   curl -H "X-API-Key: jc_xxx" \
      https://api.jpcite.com/v1/programs/UNI-14e57fbf79 \
      | jq '.source_mentions_json'
 
@@ -35,7 +35,7 @@
    2 つの unified_id を渡すと「同時受給可否」を返します。クライアントに
    「併用不可リスクの自動チェック」を提示できる、この API の核機能の一つです。
 
-   curl -H "X-API-Key: YOUR_KEY" \
+   curl -H "X-API-Key: jc_xxx" \
      "https://api.jpcite.com/v1/exclusions/check?a=UNI-xxxx&b=UNI-yyyy"
 
 ---

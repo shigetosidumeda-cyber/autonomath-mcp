@@ -71,7 +71,7 @@ source_fetched_at + 互換/排他 rules) for the entire Japanese public-program
 landscape: 補助金 / 融資 / 税制 / 認定.
 
 Quick facts:
-- Tools: 139 at default gates (verified `len(await mcp.list_tools())`)
+- Tools: 151 at default gates (verified `len(await mcp.list_tools())`)
 - Corpus: 11,601 searchable programs + 9,484 e-Gov laws + 13,801 適格事業者
   + 166K corporate entities + 1,185 行政処分 + 2,065 court decisions
 - Registry: io.github.shigetosidumeda-cyber/autonomath-mcp v0.3.4 LIVE at

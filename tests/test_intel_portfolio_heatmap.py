@@ -4,14 +4,13 @@ import sqlite3
 from typing import TYPE_CHECKING
 
 import pytest
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.testclient import TestClient
 
 from jpintel_mcp.api.deps import get_db, hash_api_key
 from jpintel_mcp.api.intel_portfolio_heatmap import (
     PortfolioHeatmapRequest,
     _build_envelope,
-    router,
 )
 
 if TYPE_CHECKING:
@@ -34,8 +33,10 @@ def portfolio_heatmap_client(
     monkeypatch.setattr(autonomath_db, "AUTONOMATH_DB_PATH", missing_autonomath)
     autonomath_db.close_all()
 
+    from jpintel_mcp.api import intel_portfolio_heatmap as heatmap_mod
+
     app = FastAPI()
-    app.include_router(router)
+    app.include_router(heatmap_mod.router)
 
     def override_db():
         conn = sqlite3.connect(seeded_db, check_same_thread=False)
@@ -55,8 +56,6 @@ def test_portfolio_heatmap_paid_final_cap_failure_returns_503_without_usage_even
     paid_key: str,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import jpintel_mcp.api.deps as deps
-
     endpoint = "intel.portfolio_heatmap"
     key_hash = hash_api_key(paid_key)
 
@@ -71,11 +70,22 @@ def test_portfolio_heatmap_paid_final_cap_failure_returns_503_without_usage_even
         finally:
             conn.close()
 
-    def _reject_final_cap(*_args: object, **_kwargs: object) -> tuple[bool, bool]:
-        return False, False
+    from jpintel_mcp.api import intel_portfolio_heatmap as heatmap_mod
+
+    def _rejecting_log_usage(*_args: object, **_kwargs: object) -> None:
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "code": "billing_cap_final_check_failed",
+                "message": (
+                    "This paid response was not delivered because the final "
+                    "billing-cap check rejected the metered charge."
+                ),
+            },
+        )
 
     before = usage_count()
-    monkeypatch.setattr(deps, "_metered_cap_final_check", _reject_final_cap)
+    monkeypatch.setattr(heatmap_mod, "log_usage", _rejecting_log_usage)
 
     res = portfolio_heatmap_client.post(
         "/v1/intel/portfolio_heatmap",

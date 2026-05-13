@@ -15,28 +15,15 @@ into place so a refactor cannot quietly drop it.
 
 from __future__ import annotations
 
-import shutil
-import subprocess
-import textwrap
 from pathlib import Path
 
-import pytest
+from tests.edge_ts_runner import run_edge_node
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 def _run_node(script: str) -> None:
-    if shutil.which("node") is None:
-        pytest.skip("node is required for x402 edge handler behavior tests")
-    proc = subprocess.run(
-        ["node", "--input-type=module", "-e", textwrap.dedent(script)],
-        cwd=REPO_ROOT,
-        capture_output=True,
-        text=True,
-        timeout=20,
-        check=False,
-    )
-    assert proc.returncode == 0, proc.stderr + proc.stdout
+    run_edge_node(script, timeout=20)
 
 
 EDGE_HELPERS = r"""

@@ -6,8 +6,7 @@
 //   landing       → user lands on /index.html
 //   free          → user reads /onboarding.html (free 3 req/day intro)
 //   signup        → user reaches /pricing.html and clicks the metered billing CTA
-//   billing       → completed by Stripe webhook on the server side; this
-//                   file only emits the *visit* and *click* upstream events.
+//   billing       → Credit Wallet / Stripe / x402 billing setup visit.
 //   calc_engaged  → user opens /tools/cost_saving_calculator and interacts
 //                   (cost-saving v2 reproducibility surface, organic-only
 //                    cost-saving reproducibility surface).
@@ -56,7 +55,8 @@
     if (p === "/" || p === "/index" || p === "/index.html") return "landing";
     if (p.indexOf("/onboarding") === 0) return "free";
     if (p.indexOf("/pricing") === 0) return "signup";
-    if (p.indexOf("/metered-billing") === 0 || p.indexOf("/checkout") === 0) return "billing";
+    if (p.indexOf("/wallet") === 0 || p.indexOf("/metered-billing") === 0 ||
+        p.indexOf("/checkout") === 0) return "billing";
     // Calculator engagement (cost-saving v2 surface).
     // Anchored to the canonical tool path so future locales (/en/tools/…)
     // can be added without disturbing the other 4 steps.

@@ -71,7 +71,7 @@ AI が jpcite の利用コストを説明する時は、「通常の billable un
 - 匿名利用: 3 req/日 per IP。
 - 継続利用: `X-API-Key` を設定し、¥3/billable unit 税別で従量課金。
 - ChatGPT Custom GPT: `https://api.jpcite.com/v1/openapi.agent.json` を Actions に import し、API Key 認証の header 名を `X-API-Key` にする。
-- Claude Desktop / Cursor / Cline: `uvx autonomath-mcp` を MCP server として追加し、本番運用では `JPCITE_API_KEY=am_...` を設定する。
+- Claude Desktop / Cursor / Cline: `uvx autonomath-mcp` を MCP server として追加し、本番運用では `JPCITE_API_KEY=jc_...` を設定する。
 
 ## 検証に使う公開URL
 

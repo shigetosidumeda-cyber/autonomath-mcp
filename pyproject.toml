@@ -1,7 +1,7 @@
 [project]
 name = "autonomath-mcp"
 version = "0.4.0"
-description = "REST + MCP search over Japanese institutional data: 11,601 searchable programs (14,472 total), e-Gov law metadata and article references (coverage varies by record), 2,065 court decisions, 50 tax rulesets, 13,801 invoice registrants, 2,286 adoptions, 1,185 enforcements, 108 loans, 362 bids. 139 MCP tools (protocol 2025-06-18). 3 yen/billable unit metered (3.30 tax-incl), anonymous 3/day per IP free."
+description = "REST + MCP search over Japanese institutional data: 11,601 searchable programs (14,472 total), e-Gov law metadata and article references (coverage varies by record), 2,065 court decisions, 50 tax rulesets, 13,801 invoice registrants, 2,286 adoptions, 1,185 enforcements, 108 loans, 362 bids. 151 MCP tools (protocol 2025-06-18). 3 yen/billable unit metered (3.30 tax-incl), anonymous 3/day per IP free."
 license = { text = "MIT" }
 authors = [
     { name = "Bookyou株式会社", email = "info@bookyou.net" },
@@ -166,6 +166,8 @@ site = [
 autonomath-api = "jpintel_mcp.api.main:run"
 autonomath-mcp = "jpintel_mcp.mcp.server:run"
 autonomath-ingest = "jpintel_mcp.ingest.canonical:run"
+jpcite-api = "jpintel_mcp.api.main:run"
+jpcite-ingest = "jpintel_mcp.ingest.canonical:run"
 # Legacy aliases for existing installs (will be removed at v1.0):
 jpintel-api = "jpintel_mcp.api.main:run"
 jpintel-ingest = "jpintel_mcp.ingest.canonical:run"

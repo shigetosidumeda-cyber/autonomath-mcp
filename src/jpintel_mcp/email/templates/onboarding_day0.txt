@@ -10,12 +10,12 @@ APIキーを発行しました。
 
 最初の curl 例:
 
-  curl -H "X-API-Key: YOUR_KEY" \
+  curl -H "X-API-Key: jc_xxx" \
     https://api.jpcite.com/v1/ping
 
 制度検索の最小例 (東京都の中小企業向け制度を5件):
 
-  curl -H "X-API-Key: YOUR_KEY" \
+  curl -H "X-API-Key: jc_xxx" \
     "https://api.jpcite.com/v1/programs/search?prefecture=東京都&target_type=中小企業&limit=5"
 
 ---

@@ -1,7 +1,7 @@
 {
   "server": {
     "name": "autonomath-mcp",
-    "display_name": "jpcite — 日本の制度 MCP (139 tools)",
+    "display_name": "jpcite — 日本の制度 MCP (151 tools)",
     "registry_id": "io.github.shigetosidumeda-cyber/autonomath-mcp",
     "version": "0.3.4",
     "repo_url": "https://github.com/shigetosidumeda-cyber/autonomath-mcp",
@@ -19,9 +19,9 @@
       "pip": "pip install autonomath-mcp && autonomath-mcp"
     },
     "support_email": "info@bookyou.net",
-    "description_short": "jpcite: 139-tool MCP over Japanese public-program evidence — 11,601 searchable programs, 2,286 case studies, 181 exclusion/prerequisite rules, 3-axis loan risk, and corporate/invoice lookups. ¥3/billable unit; 3/day free anonymous use.",
-    "description_long": "jpcite provides structured access to Japanese public-program evidence via 139 MCP tools (protocol 2025-06-18): 11,601 searchable programs (補助金/融資/税制/認定), 2,286 採択事例, 108 融資 programs with collateral/guarantor risk fields, 1,185 enforcement cases + 22,258 detail records, e-Gov law metadata, tax rulesets, invoice registrants, court decisions, bids, corporate 360 lookups, and prebuilt evidence packs. Public rows are designed for source-linked retrieval: source_url, fetched_at, content hashes where available, exclusion-rule checks, and cross-dataset joins such as trace_program_to_law / find_cases_by_law / combined_compliance_check. Use it as an evidence pre-fetch layer before answer generation: agents can fetch compact, source-linked JSON instead of assembling the same Japanese public-data joins by hand. Major public rows carry source_url + fetched_at; no aggregator sites are used as sources. Pricing is ¥3/billable unit tax-exclusive (税込目安 ¥3.30); anonymous use allows 3 requests/day per IP (JST reset).",
-    "tool_count": 139,
+    "description_short": "jpcite: 151-tool MCP over Japanese public-program evidence — 11,601 searchable programs, 2,286 case studies, 181 exclusion/prerequisite rules, 3-axis loan risk, and corporate/invoice lookups. ¥3/billable unit; 3/day free anonymous use.",
+    "description_long": "jpcite provides structured access to Japanese public-program evidence via 151 MCP tools (protocol 2025-06-18): 11,601 searchable programs (補助金/融資/税制/認定), 2,286 採択事例, 108 融資 programs with collateral/guarantor risk fields, 1,185 enforcement cases + 22,258 detail records, e-Gov law metadata, tax rulesets, invoice registrants, court decisions, bids, corporate 360 lookups, and prebuilt evidence packs. Public rows are designed for source-linked retrieval: source_url, fetched_at, content hashes where available, exclusion-rule checks, and cross-dataset joins such as trace_program_to_law / find_cases_by_law / combined_compliance_check. Use it as an evidence pre-fetch layer before answer generation: agents can fetch compact, source-linked JSON instead of assembling the same Japanese public-data joins by hand. Major public rows carry source_url + fetched_at; no aggregator sites are used as sources. Pricing is ¥3/billable unit tax-exclusive (税込目安 ¥3.30); anonymous use allows 3 requests/day per IP (JST reset).",
+    "tool_count": 151,
     "tools_base": [
       {"name": "search_programs", "summary": "Full-text + faceted search over 11,601 searchable Japanese public programs"},
       {"name": "get_program", "summary": "Full enriched program detail by unified_id (A–J dims, lineage)"},
@@ -203,7 +203,7 @@
       "method": "github-pr",
       "target_file": "README.md",
       "target_section": "Finance & Fintech",
-      "entry_draft": "- [jpcite](https://github.com/shigetosidumeda-cyber/autonomath-mcp) 🐍 ☁️ 🍎 🪟 🐧 — jpcite: 139-tool MCP over 11,601 searchable Japanese public programs, 2,286 case studies, 181 exclusion/prerequisite rules, 3-axis loan risk, laws/court/bids/tax/invoice/corporate lookups, and source-linked evidence packets. ¥3/billable unit; 3/day free. `uvx autonomath-mcp`",
+      "entry_draft": "- [jpcite](https://github.com/shigetosidumeda-cyber/autonomath-mcp) 🐍 ☁️ 🍎 🪟 🐧 — jpcite: 151-tool MCP over 11,601 searchable Japanese public programs, 2,286 case studies, 181 exclusion/prerequisite rules, 3-axis loan risk, laws/court/bids/tax/invoice/corporate lookups, and source-linked evidence packets. ¥3/billable unit; 3/day free. `uvx autonomath-mcp`",
       "review": "maintainer, days"
     },
     {

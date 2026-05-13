@@ -23,9 +23,8 @@ NO LLM API
 ----------
   * Pure delegation to ``_semantic_search_impl`` (operator-local
     sentence_transformers e5-small + cross-encoder).
-  * Zero `import anthropic` / `import openai` / `import google.generativeai`
-    / `import claude_agent_sdk`. Zero env-var refs to any LLM provider
-    credential (audit asserts the literal key-names are absent).
+  * Zero direct LLM SDK dependencies. Zero env-var refs to any LLM
+    provider credential (audit asserts the literal key-names are absent).
 
 §52 / §72 / §1 sensitive envelope (forwarded from the impl).
 """

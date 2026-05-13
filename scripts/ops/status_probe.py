@@ -7,7 +7,7 @@ Outputs:
 
 5 components:
   - api             GET /healthz + /v1/am/health/deep (latency_ms + JSON valid)
-  - mcp             GET /v1/mcp-server.json + tools 139 + recurring_agent_workflows verify
+  - mcp             GET /v1/mcp-server.json + tools 151 + recurring_agent_workflows verify
   - billing         Stripe events.list(invoice.payment_failed, 24h) → 5xx rate
   - data-freshness  4 dataset MAX age (programs / am_amendment_diff /
                     invoice_registrants / case_studies) vs SLA (24h/7d/30d/30d)
@@ -102,9 +102,9 @@ SLA_AMENDMENT_DIFF = 7 * 86_400  # 7d  — am_amendment_diff.detected_at (cron)
 SLA_INVOICE_REGS = 30 * 86_400  # 30d — invoice_registrants.fetched_at (monthly bulk)
 SLA_CASE_STUDIES = 30 * 86_400  # 30d — case_studies.fetched_at
 
-# Expected runtime cohort. 139 = current default-gate manifest figure
+# Expected runtime cohort. 151 = current default-gate manifest figure
 # (`mcp-server.json` tool_count). Probe degrades if drift > 5 either way.
-EXPECTED_TOOL_COUNT = 139
+EXPECTED_TOOL_COUNT = 151
 TOOL_COUNT_TOLERANCE = 5
 
 # Expected recurring agent workflows count (advertised in mcp-server.json
@@ -197,7 +197,7 @@ def probe_api(base: str) -> dict[str, Any]:
 
 
 def probe_mcp(base: str) -> dict[str, Any]:
-    """Probe `/v1/mcp-server.json` (manifest reachability + 139 tools).
+    """Probe `/v1/mcp-server.json` (manifest reachability + 151 tools).
 
     Also verifies the `recurring_agent_workflows` extension surface
     advertises ≥3 entries (digest / saved-search / quarterly). Drift in

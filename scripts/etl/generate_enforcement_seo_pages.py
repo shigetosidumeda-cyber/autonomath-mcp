@@ -804,9 +804,7 @@ def _render_sitemap(
     for r in detail_rows:
         lastmod = _format_iso(r.source_fetched_at) or today_iso
         parts.append("  <url>")
-        # Extensionless — CF Pages auto-strips .html and 308's legacy form;
-        # emitting extensionless avoids 1-hop redirect (R8 SEO drift, 2026-05-07).
-        parts.append(f"    <loc>https://{domain}/enforcement/{r.slug}</loc>")
+        parts.append(f"    <loc>https://{domain}/enforcement/{r.slug}.html</loc>")
         parts.append(f"    <lastmod>{lastmod}</lastmod>")
         parts.append("    <changefreq>monthly</changefreq>")
         parts.append("    <priority>0.5</priority>")

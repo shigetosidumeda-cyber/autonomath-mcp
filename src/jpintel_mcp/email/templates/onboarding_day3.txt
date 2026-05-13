@@ -6,7 +6,7 @@
 すでに {{usage_count}} 回お使いです。まだ触っていないものを 1 つ試してみてください。
 {% endif %}
 {% if not has_used_key %}
-下の curl は YOUR_KEY を発行済みの鍵に置き換えれば、そのまま叩けます。
+下の curl は jc_xxx を発行済みの鍵に置き換えれば、そのまま叩けます。
 {% endif %}
 
 ---
@@ -16,7 +16,7 @@
    10,790 件の補助金 / 融資 / 税制 / 認定を、都道府県・対象業種・予算上限などで絞り込みます。
    何から始めるか迷ったらこれです。
 
-   curl -H "X-API-Key: YOUR_KEY" \
+   curl -H "X-API-Key: jc_xxx" \
      "https://api.jpcite.com/v1/programs/search?prefecture=東京都&target_type=中小企業&amount_min=100&limit=10"
 
 2) search_tax_incentives — 税制措置の専用検索
@@ -24,7 +24,7 @@
    国税庁・財務省 由来の税制措置 (賃上げ促進税制 / 中小企業経営強化税制 / 事業承継税制 ほか) を
    横断検索します。出力は税務助言ではなく公開ルール検索です (税理士法 §52)。
 
-   curl -H "X-API-Key: YOUR_KEY" \
+   curl -H "X-API-Key: jc_xxx" \
      "https://api.jpcite.com/v1/am/tax_incentives?q=賃上げ&limit=5"
 
 3) check_invoice_registrant — 適格事業者番号の照合
@@ -32,7 +32,7 @@
    法人番号 (T+13 桁) を渡すと、国税庁 適格請求書発行事業者公表サイト 由来の
    登録状況・氏名・本店所在地を返します。経費精算 / 仕訳の自動化に。
 
-   curl -H "X-API-Key: YOUR_KEY" \
+   curl -H "X-API-Key: jc_xxx" \
      "https://api.jpcite.com/v1/invoice_registrants/T8010001213708"
 
 4) dd_profile_am — 取引先 360° プロファイル
@@ -40,7 +40,7 @@
    法人番号 1 つから、補助金採択 / 行政処分 / 適格請求書発行登録 / 業歴を
    1 リクエストでまとめて取得します。デューデリジェンスの 1 次スクリーニングに。
 
-   curl -X POST -H "X-API-Key: YOUR_KEY" -H "Content-Type: application/json" \
+   curl -X POST -H "X-API-Key: jc_xxx" -H "Content-Type: application/json" \
      "https://api.jpcite.com/v1/am/dd_batch" \
      -d '{"houjin_bangou":["T8010001213708"]}'
 
@@ -56,10 +56,10 @@
 
 MCP クライアント経由:
 
-Claude / Cursor / Cline からは、上の 5 つも含めて 139 ツールがそのまま自然言語で呼べます。
+Claude / Cursor / Cline からは、上の 5 つも含めて 151 ツールがそのまま自然言語で呼べます。
 設定: https://jpcite.com/integrations/
 
-他にも使い方を集めた examples 集 (全 139 ツール一覧 + 用途別レシピ):
+他にも使い方を集めた examples 集 (全 151 ツール一覧 + 用途別レシピ):
 https://jpcite.com/examples/
 
 詰まったら、このメールにそのまま返信してください。人間が読みます。

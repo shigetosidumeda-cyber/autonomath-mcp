@@ -7,7 +7,7 @@ canonical_url: https://jpcite.com
 
 ## TL;DR
 
-`uvx autonomath-mcp` is a one-line install MCP server that connects Claude Code / Cursor / ChatGPT Custom GPTs / OpenAI Agents SDK to a unified Japanese public-info corpus: **11,601+ subsidies**, **9,484+ law catalog stubs (e-Gov CC-BY-4.0)**, **1,185+ administrative-disposition cases**, **13,801+ invoice-eligible-issuer records (NTA PDL v1.0)**, **22,258+ enforcement details**, and **503,930+ corporate-entity rows** from gBizINFO. **139 MCP tools** at default gates. Every tool response carries an **Evidence Packet** (`source_url + fetched_at + content_hash`) so AI agents cannot fabricate provenance. Pricing is **fully metered ¥3 per request** (≈ USD 0.02) with **3 anonymous requests/IP/day free** — no API key needed to try it. Operator: **Bookyou Co., Ltd.** (qualified-invoice issuer T8010001213708).
+`uvx autonomath-mcp` is a one-line install MCP server that connects Claude Code / Cursor / ChatGPT Custom GPTs / OpenAI Agents SDK to a unified Japanese public-info corpus: **11,601+ subsidies**, **9,484+ law catalog stubs (e-Gov CC-BY-4.0)**, **1,185+ administrative-disposition cases**, **13,801+ invoice-eligible-issuer records (NTA PDL v1.0)**, **22,258+ enforcement details**, and **503,930+ corporate-entity rows** from gBizINFO. **151 MCP tools** at default gates. Every tool response carries an **Evidence Packet** (`source_url + fetched_at + content_hash`) so AI agents cannot fabricate provenance. Pricing is **fully metered ¥3 per request** (≈ USD 0.02) with **3 anonymous requests/IP/day free** — no API key needed to try it. Operator: **Bookyou Co., Ltd.** (qualified-invoice issuer T8010001213708).
 
 ## Why a Japan-specific RAG?
 
@@ -35,7 +35,7 @@ SQLite is chosen because the data shape is read-heavy / bulk-updated monthly / s
 claude mcp add jpcite -- uvx autonomath-mcp
 ```
 
-The 139 tools enumerate immediately in the tool picker. `/mcp` to verify connection, `/tools` to list, `/usage jpcite` to check this month's metered total.
+The 151 tools enumerate immediately in the tool picker. `/mcp` to verify connection, `/tools` to list, `/usage jpcite` to check this month's metered total.
 
 ### Cursor
 
@@ -54,7 +54,7 @@ In Custom GPT settings → `Add actions` → `Import from URL`:
 https://jpcite.com/openapi.agent.gpt30.json
 ```
 
-A 30-path slim subset (GPT Actions limit) covering the most-used corpora. Auth = `X-API-Key` header with a `jpcite_live_*` key.
+A 30-path slim subset (GPT Actions limit) covering the most-used corpora. Auth = `X-API-Key` header with a `jc_xxx` key.
 
 ### OpenAI Agents SDK / Codex
 
@@ -62,7 +62,7 @@ A 30-path slim subset (GPT Actions limit) covering the most-used corpora. Auth =
 from agents import Agent, hosted_mcp
 
 mcp = hosted_mcp(server_url="https://api.jpcite.com/mcp")
-agent = Agent(name="jp_subsidy", tools=mcp.list_tools())  # 139 tools immediately
+agent = Agent(name="jp_subsidy", tools=mcp.list_tools())  # 151 tools immediately
 ```
 
 `hosted_mcp` covers tool discovery / call / response. Auth via header injection.
@@ -105,7 +105,7 @@ The **Evidence Packet** isn't optional. Every MCP tool response carries:
     "fetched_at": "2026-05-08T03:14:21+09:00",
     "content_hash": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
   },
-  "meta": { "license": "gov_standard_v2", "tool_count_at_call_time": 139 }
+  "meta": { "license": "gov_standard_v2", "tool_count_at_call_time": 151 }
 }
 ```
 

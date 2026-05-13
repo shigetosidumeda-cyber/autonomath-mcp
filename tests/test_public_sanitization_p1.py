@@ -5,7 +5,10 @@ import json
 import re
 import sys
 from pathlib import Path
-from types import ModuleType
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from types import ModuleType
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -108,7 +111,9 @@ PUBLIC_CLAIM_PATTERNS: dict[str, tuple[re.Pattern[str], ...]] = {
     ),
     "guarantee_or_no_miss": (
         re.compile(r"\bno[- ]miss\b|\bnever\s+miss(?:es)?\b", re.IGNORECASE),
-        re.compile(r"取りこぼしゼロ|見逃しゼロ|漏れなく検知|全(?:件|変更).{0,16}(?:検出|検知|検出済み)"),
+        re.compile(
+            r"取りこぼしゼロ|見逃しゼロ|漏れなく検知|全(?:件|変更).{0,16}(?:検出|検知|検出済み)"
+        ),
         re.compile(
             r"(?:approval|accepted|eligibility|result|saving|savings|cost reduction)"
             r".{0,32}\bguarantee(?:d|s)?\b",
@@ -144,8 +149,12 @@ PUBLIC_CLAIM_PATTERNS: dict[str, tuple[re.Pattern[str], ...]] = {
             re.IGNORECASE,
         ),
         re.compile(r"必ず.{0,32}(?:節約|削減|下がる)|(?:節約|削減).{0,32}必ず"),
-        re.compile(r"(?:節約|削減|費用対効果|料金削減|token 削減|トークン削減).{0,48}(?:保証|断定|確約|必ず|固定保証)"),
-        re.compile(r"(?:保証|断定|確約|必ず|固定保証).{0,48}(?:節約|削減|費用対効果|料金削減|token 削減|トークン削減)"),
+        re.compile(
+            r"(?:節約|削減|費用対効果|料金削減|token 削減|トークン削減).{0,48}(?:保証|断定|確約|必ず|固定保証)"
+        ),
+        re.compile(
+            r"(?:保証|断定|確約|必ず|固定保証).{0,48}(?:節約|削減|費用対効果|料金削減|token 削減|トークン削減)"
+        ),
     ),
 }
 
@@ -198,7 +207,7 @@ def _install_raw_probe_stubs(status_probe: ModuleType, monkeypatch) -> None:
             "latency_ms": 42,
             "http": 200,
             "tools_count": 120,
-            "tools_expected": 139,
+            "tools_expected": 151,
             "recurring_workflows": 1,
             "recurring_expected": 3,
             "error": None,

@@ -107,7 +107,7 @@ curl -s -X POST "https://api.jpcite.com/v1/exclusions/check" \
 それ以上は API キーを付けてください。
 
 ```bash
-export AM_KEY="am_xxxxxxxxxxxxxxxx"
+export AM_KEY="jc_xxxxxxxxxxxxxxxx"
 
 curl -s "https://api.jpcite.com/v1/programs/search?q=クラウド&limit=5" \
   -H "X-API-Key: $AM_KEY" \

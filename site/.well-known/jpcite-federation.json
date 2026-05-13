@@ -1,0 +1,172 @@
+{
+  "schema_version": "mcp-federation-discovery/v1",
+  "server_id": "jpcite.mcp.bookyou",
+  "canonical_site": "https://jpcite.com",
+  "operator": "Bookyou\u682a\u5f0f\u4f1a\u793e",
+  "operator_corporate_number": "8010001213708",
+  "capabilities": {
+    "protocol": "mcp/2025-06-18",
+    "transport": [
+      "stdio",
+      "sse",
+      "streamable_http"
+    ],
+    "sampling": true,
+    "resources": true,
+    "prompts": true,
+    "tool_count_runtime": 151,
+    "tool_count_manifest": 151
+  },
+  "jpcite_compatible_tools": [
+    {
+      "tool_id": "search_programs",
+      "input_envelope": "ProgramSearchQuery/v3",
+      "output_envelope": "PaginatedProgramList/v3",
+      "idempotent": true,
+      "auth": "X-API-Key (optional; anon 3/day)",
+      "billable_per_call": true,
+      "disclaimer": null,
+      "schema_fingerprint": "79cc8937c9a421f0"
+    },
+    {
+      "tool_id": "createCompanyPublicBaseline",
+      "input_envelope": "HoujinBangouQuery/v2",
+      "output_envelope": "Houjin360Baseline/v2",
+      "idempotent": true,
+      "auth": "X-API-Key required",
+      "billable_per_call": true,
+      "disclaimer": "\u00a752",
+      "schema_fingerprint": "a29a5849241a2a1a"
+    },
+    {
+      "tool_id": "bundle_application_kit",
+      "input_envelope": "ApplicationKitQuery/v1",
+      "output_envelope": "ApplicationKitBundle/v1",
+      "idempotent": true,
+      "auth": "X-API-Key required",
+      "billable_per_call": true,
+      "disclaimer": "\u00a71 (\u884c\u653f\u66f8\u58eb\u6cd5)",
+      "schema_fingerprint": "ec20ebbc591b0603"
+    },
+    {
+      "tool_id": "match_due_diligence_questions",
+      "input_envelope": "DDMatchQuery/v1",
+      "output_envelope": "DDQuestionDeck/v1",
+      "idempotent": true,
+      "auth": "X-API-Key required",
+      "billable_per_call": true,
+      "disclaimer": "\u00a752/\u00a772",
+      "schema_fingerprint": "0cd5a7837773e663"
+    },
+    {
+      "tool_id": "get_evidence_packet",
+      "input_envelope": "EvidencePacketQuery/v2",
+      "output_envelope": "EvidencePacketEnvelope/v2",
+      "idempotent": true,
+      "auth": "X-API-Key required",
+      "billable_per_call": true,
+      "disclaimer": null,
+      "schema_fingerprint": "8e7ec57a778ccab6"
+    },
+    {
+      "tool_id": "previewCost",
+      "input_envelope": "CostPreviewQuery/v1",
+      "output_envelope": "CostPreviewEnvelope/v1",
+      "idempotent": true,
+      "auth": "none (free)",
+      "billable_per_call": false,
+      "disclaimer": null,
+      "schema_fingerprint": "772163ead54b3945"
+    }
+  ],
+  "allied_servers": [
+    {
+      "server_id": "weather.example.mcp",
+      "role": "input_preconditioner",
+      "trust": "advisory",
+      "notes": "Disaster-period \u707d\u5bb3\u5fa9\u8208 cohort gating. Output feeds program-search."
+    },
+    {
+      "server_id": "tax-rates.example.mcp",
+      "role": "output_enricher",
+      "trust": "advisory",
+      "notes": "Adds \u6cd5\u5b9a\u5b9f\u52b9\u7a0e\u7387 numeric to programs after our tool returns."
+    },
+    {
+      "server_id": "houjin-watch.example.mcp",
+      "role": "trigger_source",
+      "trust": "advisory",
+      "notes": "Subscribes to /v1/houjin_watch webhook; fans out to its own consumers."
+    }
+  ],
+  "handoff_patterns": [
+    {
+      "id": "disaster_recovery_program_match",
+      "description": "Disaster event \u2192 programs eligible for \u707d\u5bb3\u5fa9\u8208 special measures \u2192 application kit.",
+      "chain": [
+        {
+          "server": "weather.example.mcp",
+          "tool": "get_disaster_event"
+        },
+        {
+          "server": "jpcite.mcp.bookyou",
+          "tool": "search_programs",
+          "filter": "tag=disaster"
+        },
+        {
+          "server": "jpcite.mcp.bookyou",
+          "tool": "bundle_application_kit"
+        }
+      ],
+      "sensitive": true,
+      "disclaimer_required": "\u00a752"
+    },
+    {
+      "id": "houjin_baseline_dd",
+      "description": "\u6cd5\u4eba\u756a\u53f7 \u2192 \u5168\u9805\u76ee baseline \u2192 DD checklist \u2192 audit pack.",
+      "chain": [
+        {
+          "server": "jpcite.mcp.bookyou",
+          "tool": "createCompanyPublicBaseline"
+        },
+        {
+          "server": "jpcite.mcp.bookyou",
+          "tool": "match_due_diligence_questions"
+        },
+        {
+          "server": "jpcite.mcp.bookyou",
+          "tool": "createCompanyPublicAuditPack"
+        }
+      ],
+      "sensitive": true,
+      "disclaimer_required": "\u00a752/\u00a772"
+    },
+    {
+      "id": "amendment_alert_fanout",
+      "description": "Our amendment-alert webhook \u2192 partner-side downstream consumer chain.",
+      "chain": [
+        {
+          "server": "jpcite.mcp.bookyou",
+          "trigger": "webhook:amendment_alert"
+        },
+        {
+          "server": "houjin-watch.example.mcp",
+          "tool": "fanout_subscribers"
+        }
+      ],
+      "sensitive": false
+    }
+  ],
+  "interop_policy": {
+    "trust_default": "advisory",
+    "auto_discover": false,
+    "allowlist_only": true,
+    "operator_review_required": true
+  },
+  "cross_references": {
+    "mcp_manifest": "https://jpcite.com/mcp-server.json",
+    "server_json": "https://jpcite.com/server.json",
+    "openapi_discovery": "https://jpcite.com/.well-known/openapi-discovery.json",
+    "llms_txt": "https://jpcite.com/llms.txt"
+  }
+}

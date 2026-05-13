@@ -18,8 +18,7 @@ NO LLM API
     encodes the query — local CPU inference, weights cached on disk.
   * ``sentence_transformers.CrossEncoder(cross-encoder/ms-marco-MiniLM-L-6-v2)``
     reranks the top 50 — local CPU inference.
-  * Zero ``import anthropic`` / ``import openai`` / ``import google.generativeai``
-    / ``import claude_agent_sdk``. Zero env var refs to ANTHROPIC_API_KEY
+  * Zero direct LLM SDK dependencies. Zero env var refs to ANTHROPIC_API_KEY
     / OPENAI_API_KEY / GEMINI_API_KEY / GOOGLE_API_KEY.
 
 §52 / §72 / §1 sensitive envelope.
@@ -29,6 +28,7 @@ from __future__ import annotations
 
 import logging
 import math
+from contextlib import suppress
 from typing import Annotated, Any
 
 from pydantic import Field
@@ -39,7 +39,10 @@ from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
 logger = logging.getLogger("jpintel.mcp.autonomath.semantic_search_v2")
 
-_ENABLED = get_flag("JPCITE_SEMANTIC_SEARCH_V2_ENABLED", "AUTONOMATH_SEMANTIC_SEARCH_V2_ENABLED", "1") == "1"
+_ENABLED = (
+    get_flag("JPCITE_SEMANTIC_SEARCH_V2_ENABLED", "AUTONOMATH_SEMANTIC_SEARCH_V2_ENABLED", "1")
+    == "1"
+)
 
 _DISCLAIMER = (
     "本 response は am_entities corpus 503k+ rows に対する hybrid 検索結果 "
@@ -107,10 +110,8 @@ def _semantic_search_impl(
 
     final = top[:top_k]
 
-    try:
+    with suppress(Exception):
         am.close()
-    except Exception:  # noqa: BLE001
-        pass
 
     quantity = 2 if rerank else 1
     return {

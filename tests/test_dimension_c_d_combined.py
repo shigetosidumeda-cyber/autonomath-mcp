@@ -48,9 +48,9 @@ def test_v3_meta_head_picks_og_updated_time():
     from datafill_amendment_snapshot_v3 import parse_meta_head
 
     body = (
-        '<html><head>'
+        "<html><head>"
         '<meta property="og:updated_time" content="2026-07-15">'
-        '</head><body></body></html>'
+        "</head><body></body></html>"
     )
     # v3 delegates to v2.parse_iso whose regex is YYYY-MM only when a
     # date sits inside an ISO datetime; for a bare YYYY-MM-DD the day
@@ -96,9 +96,7 @@ def test_v3_bare_reiwa_full_wareki_takes_precedence_over_bare():
 def test_v3_slug_8digit_date():
     from datafill_amendment_snapshot_v3 import parse_slug_filename
 
-    assert parse_slug_filename(
-        "https://example.go.jp/notice_20260401.pdf"
-    ) == "2026-04-01"
+    assert parse_slug_filename("https://example.go.jp/notice_20260401.pdf") == "2026-04-01"
 
 
 def test_v3_slug_reiwa_form():
@@ -177,9 +175,7 @@ def test_dimd_resolve_fy_window():
 def test_dimd_invalid_input_returns_error_envelope():
     from jpintel_mcp.mcp.autonomath_tools.audit_workpaper_v2 import _compose_workpaper_impl
 
-    out = _compose_workpaper_impl(
-        client_houjin_bangou="not-13-digits", fiscal_year=2025
-    )
+    out = _compose_workpaper_impl(client_houjin_bangou="not-13-digits", fiscal_year=2025)
     assert "error" in out
     assert out["error"]["code"] == "invalid_input"
 
@@ -187,9 +183,7 @@ def test_dimd_invalid_input_returns_error_envelope():
 def test_dimd_fy_out_of_range():
     from jpintel_mcp.mcp.autonomath_tools.audit_workpaper_v2 import _compose_workpaper_impl
 
-    out = _compose_workpaper_impl(
-        client_houjin_bangou="8010001213708", fiscal_year=1900
-    )
+    out = _compose_workpaper_impl(client_houjin_bangou="8010001213708", fiscal_year=1900)
     assert "error" in out
     assert out["error"]["code"] == "out_of_range"
 
@@ -312,9 +306,11 @@ def test_dimd_happy_path_with_seeded_autonomath_db(tmp_path, monkeypatch):
     db_path = tmp_path / "autonomath_workpaper_test.db"
     _seed_autonomath_workpaper_db(db_path)
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(db_path))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", str(db_path))
 
     # Reset cached per-thread connection so the env var takes effect.
     from jpintel_mcp.mcp.autonomath_tools import db as _db_mod
+
     _db_mod.close_all()
 
     from jpintel_mcp.mcp.autonomath_tools.audit_workpaper_v2 import _compose_workpaper_impl
@@ -351,15 +347,16 @@ def test_dimd_flag_mismatch_fires_on_three_axis_jurisdiction_diff(tmp_path, monk
         ("8010001213708",),
     )
     conn.execute(
-        "UPDATE jpi_adoption_records SET prefecture = '神奈川県' "
-        "WHERE applicant_houjin_bangou = ?",
+        "UPDATE jpi_adoption_records SET prefecture = '神奈川県' WHERE applicant_houjin_bangou = ?",
         ("8010001213708",),
     )
     conn.commit()
     conn.close()
 
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(db_path))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", str(db_path))
     from jpintel_mcp.mcp.autonomath_tools import db as _db_mod
+
     _db_mod.close_all()
 
     from jpintel_mcp.mcp.autonomath_tools.audit_workpaper_v2 import _compose_workpaper_impl

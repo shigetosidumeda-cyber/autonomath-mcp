@@ -274,6 +274,6 @@ Per CLAUDE.md and memory:
   paths under `src/jpintel_mcp/` are internal-only.
 - Pricing copy in any caption must read **¥3/req fully metered**, **anonymous
   3 req/day**, **no tiers / no seats / no annual minimums**. Do not invent
-  "Pro plan" / "Enterprise" / "Free tier" framing.
+  paid-plan / sales-tier / free-allowance framing.
 - Source citations matter on screenshots. Every result visible in a shot must
   show a real `source_url` row — no aggregator placeholders, no demo data.

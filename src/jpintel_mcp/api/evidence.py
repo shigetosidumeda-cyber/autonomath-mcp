@@ -32,7 +32,6 @@ NO LLM imports. Pure SQLite + Python via the composer.
 from __future__ import annotations
 
 import logging
-import os
 import time
 from pathlib import Path
 from typing import Annotated, Any, Literal
@@ -42,6 +41,7 @@ from fastapi import Path as PathParam
 from fastapi.responses import JSONResponse, PlainTextResponse, Response
 from pydantic import BaseModel, Field
 
+from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.api._license_gate import (
     REDISTRIBUTABLE_LICENSES,
     annotate_attribution,
@@ -79,8 +79,10 @@ _composer_paths: tuple[str, str] | None = None
 
 
 def _current_composer_paths() -> tuple[str, str]:
-    jpintel_db = Path(os.environ.get("JPINTEL_DB_PATH") or settings.db_path)
-    autonomath_db = Path(os.environ.get("AUTONOMATH_DB_PATH") or settings.autonomath_db_path)
+    jpintel_db = Path(get_flag("JPCITE_DB_PATH", "JPINTEL_DB_PATH") or settings.db_path)
+    autonomath_db = Path(
+        get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH") or settings.autonomath_db_path
+    )
     return (str(jpintel_db), str(autonomath_db))
 
 

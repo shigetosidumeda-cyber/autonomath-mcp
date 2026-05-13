@@ -65,14 +65,21 @@ import os
 import re
 import sqlite3
 import sys
-from collections.abc import Iterable
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import httpx
 
-from scripts.etl._playwright_helper import fetch_with_fallback  # Wave 36 wire
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+# Wave 36 wire marker.
+from scripts.etl._playwright_helper import fetch_with_fallback  # noqa: E402
 
 logger = logging.getLogger("jpintel.etl.jpo_patents")
 
@@ -88,7 +95,6 @@ RATE_LIMIT_SECONDS = 1.0
 HTTPX_TIMEOUT = httpx.Timeout(30.0, connect=10.0)
 USER_AGENT = "jpcite-jpo-patents-ingest/0.3.5 (+https://jpcite.com)"
 
-_REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_DB_PATH = _REPO_ROOT / "autonomath.db"
 
 # Status enum mirrors migration 226 CHECK constraint.
@@ -105,9 +111,7 @@ STATUS_ENUM: frozenset[str] = frozenset(
 )
 
 # Application-number regex (公開: YYYY-NNNNNN, PCT: PCT/JPNN/NNNNNN).
-_APPLICATION_NO_RE = re.compile(
-    r"^(?:\d{4}-\d{6}|PCT/[A-Z]{2}\d{4}/\d{6})$"
-)
+_APPLICATION_NO_RE = re.compile(r"^(?:\d{4}-\d{6}|PCT/[A-Z]{2}\d{4}/\d{6})$")
 
 
 # ---------------------------------------------------------------------------
@@ -192,9 +196,7 @@ def _schema_required(conn: sqlite3.Connection, table: str) -> None:
         sys.exit(2)
 
 
-def _existing_hash(
-    conn: sqlite3.Connection, table: str, application_no: str
-) -> str | None:
+def _existing_hash(conn: sqlite3.Connection, table: str, application_no: str) -> str | None:
     """Return current content_hash for app_no on `table`, or None."""
     row = conn.execute(
         f"SELECT content_hash FROM {table} WHERE application_no = ?",
@@ -281,9 +283,7 @@ def parse_jplatpat_record(rec: dict[str, Any]) -> dict[str, Any] | None:
         }
     """
     app_no = _normalize_application_no(
-        rec.get("application_no")
-        or rec.get("applicationNumber")
-        or rec.get("出願番号")
+        rec.get("application_no") or rec.get("applicationNumber") or rec.get("出願番号")
     )
     if not app_no:
         return None
@@ -306,8 +306,8 @@ def parse_jplatpat_record(rec: dict[str, Any]) -> dict[str, Any] | None:
     if isinstance(applicants_raw, str):
         applicants_raw = [applicants_raw]
     applicants = [str(a).strip()[:512] for a in applicants_raw if a]
-    applicant_name = applicants[0][:512] if applicants else (
-        (rec.get("applicant_name") or "").strip()[:512]
+    applicant_name = (
+        applicants[0][:512] if applicants else ((rec.get("applicant_name") or "").strip()[:512])
     )
 
     applicant_houjin_bangou = _normalize_houjin_bangou(
@@ -320,9 +320,7 @@ def parse_jplatpat_record(rec: dict[str, Any]) -> dict[str, Any] | None:
     if isinstance(ipc_codes_raw, str):
         ipc_codes_raw = [ipc_codes_raw]
     ipc_codes = [str(c).strip() for c in ipc_codes_raw if c]
-    ipc_classification = (
-        rec.get("ipc_classification") or ", ".join(ipc_codes) or ""
-    )[:1024]
+    ipc_classification = (rec.get("ipc_classification") or ", ".join(ipc_codes) or "")[:1024]
 
     registration_no = (
         rec.get("registration_no") or rec.get("登録番号") or rec.get("registrationNumber") or None
@@ -330,9 +328,12 @@ def parse_jplatpat_record(rec: dict[str, Any]) -> dict[str, Any] | None:
     if isinstance(registration_no, str):
         registration_no = registration_no.strip() or None
 
-    registration_date = _normalize_date(
-        rec.get("registration_date") or rec.get("登録日") or rec.get("registrationDate")
-    ) or None
+    registration_date = (
+        _normalize_date(
+            rec.get("registration_date") or rec.get("登録日") or rec.get("registrationDate")
+        )
+        or None
+    )
 
     status = (rec.get("status") or "unknown").lower().strip()
     if status not in STATUS_ENUM:
@@ -400,7 +401,9 @@ async def _fetch_gazette_index(
                 except httpx.HTTPError as exc:
                     logger.warning(
                         "jplatpat gazette index fetch failed for %s on %s: %s",
-                        surface, day, exc,
+                        surface,
+                        day,
+                        exc,
                     )
                     await asyncio.sleep(RATE_LIMIT_SECONDS * 2)
                     # Wave 36: Playwright fallback on transport error.
@@ -413,7 +416,9 @@ async def _fetch_gazette_index(
             if resp.status_code != 200:
                 logger.warning(
                     "jplatpat index HTTP %d on %s/%s — trying Playwright fallback",
-                    resp.status_code, day, surface,
+                    resp.status_code,
+                    day,
+                    surface,
                 )
                 # Wave 36: Playwright fallback on 4xx/5xx.
                 fb_url = f"{JPLATPAT_GAZETTE_INDEX}?date={params['date']}&kind={surface}"
@@ -574,7 +579,8 @@ async def _run(args: argparse.Namespace) -> int:
             async with httpx.AsyncClient(headers=headers, timeout=HTTPX_TIMEOUT) as client:
                 semaphore = asyncio.Semaphore(1)
                 records = await _fetch_gazette_index(
-                    client, semaphore,
+                    client,
+                    semaphore,
                     days=args.days,
                     target=args.target,
                     limit=args.limit,
@@ -603,7 +609,10 @@ async def _run(args: argparse.Namespace) -> int:
 
         logger.info(
             "summary inserted=%d skipped=%d rejected=%d dry_run=%s",
-            inserted, skipped, rejected, args.dry_run,
+            inserted,
+            skipped,
+            rejected,
+            args.dry_run,
         )
         return 0
     except sqlite3.Error as exc:

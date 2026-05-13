@@ -18,7 +18,7 @@
     "autonomath": {
       "command": "uvx",
       "args": ["autonomath-mcp"],
-      "env": { "JPCITE_API_KEY": "YOUR_KEY" }
+      "env": { "JPCITE_API_KEY": "jc_xxx" }
     }
   }
 }</code></pre>
@@ -26,14 +26,14 @@
 
 <h2 style="font-size:17px;margin-top:28px;">2. <code>/programs/batch</code> で N 倍の節約</h2>
 <p>取引先の DD / 申請候補のスクリーニングなど、<strong>N 件まとめて取りに行くなら 1 リクエストにまとめる</strong>のが効きます。N 個の <code>get_program</code> を 1 回の POST にできて、課金も 1 回分です。</p>
-<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -X POST -H "X-API-Key: YOUR_KEY" -H "Content-Type: application/json" \
+<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -X POST -H "X-API-Key: jc_xxx" -H "Content-Type: application/json" \
   "https://api.jpcite.com/v1/programs/batch" \
   -d '{"unified_ids":["UNI-14e57fbf79","UNI-40bc849d45","UNI-08d8284aae"]}'</code></pre>
 <p style="color:#444;font-size:14px;">取引先の法人番号 N 件は <code>/v1/am/dd_batch</code> にまとめられます。50 件まで 1 リクエスト・¥3.30 で、補助金採択 / 行政処分 / 適格請求書発行登録を一括確認できます。</p>
 
 <h2 style="font-size:17px;margin-top:28px;">3. <code>monthly_cap_yen</code> で予算上限を縛る</h2>
 <p>従量課金の不安は <strong>「気づいたら ¥10 万」</strong>に集中します。鍵単位の月次 ¥ ハード上限を 1 行で設定できます(JST 月初 00:00 リセット)。例えば月 ¥3,000 まで:</p>
-<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -X POST -H "X-API-Key: YOUR_KEY" -H "Content-Type: application/json" \
+<pre style="background:#f5f5f5;padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;"><code>curl -X POST -H "X-API-Key: jc_xxx" -H "Content-Type: application/json" \
   "https://api.jpcite.com/v1/me/cap" \
   -d '{"monthly_cap_yen": 3000}'</code></pre>
 <p style="color:#444;font-size:14px;">上限到達後はそのキーが <code>402 Payment Required</code> を返します。本番アプリでも安心して使えるようになります。解除は <code>{"monthly_cap_yen": null}</code> です。</p>

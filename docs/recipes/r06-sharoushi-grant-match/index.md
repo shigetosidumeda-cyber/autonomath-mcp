@@ -102,11 +102,13 @@ console.log(programs.slice(0, 5));
 - `apply_eligibility_chain` (排他ルール、公開版 21)
 
 ## 関連 recipe
-- [r01-tax-firm-monthly-review](../r01-tax-firm-monthly-review/) — 税理士月次、給与所得控除との連動
-- [r05-gyosei-licensing-eligibility](../r05-gyosei-licensing-eligibility/) — 行政書士許可
-- [r07-shindanshi-monthly-companion](../r07-shindanshi-monthly-companion/) — 診断士月次伴走
+- [r01-tax-firm-monthly-review](../r01-tax-firm-monthly-review/index.md) — 税理士月次、給与所得控除との連動
+- [r05-gyosei-licensing-eligibility](../r05-gyosei-licensing-eligibility/index.md) — 行政書士許可
+- [r07-shindanshi-monthly-companion](../r07-shindanshi-monthly-companion/index.md) — 診断士月次伴走
 
 ## billable_units 試算
+
+- API fee delta: API fee delta の前提と再現式は [docs/canonical/cost_saving_examples.md](../../canonical/cost_saving_examples.md) を参照。
 - 1 顧問先 10 units × ¥3 = ¥30 / 顧問先 / 月
 - 顧問先 100 社 = ¥3,000 / 月、税込 ¥3,300
 - 顧問先 300 社 (大手) = ¥9,000 / 月、税込 ¥9,900

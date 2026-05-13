@@ -23,11 +23,11 @@ import sqlite3
 import time
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, get_args
 from unittest.mock import patch
 
 import pytest
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.testclient import TestClient
 
 from jpintel_mcp.api import billing_v2
@@ -75,43 +75,19 @@ def _edge_like_quote_id(
 def autonomath_db(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     """A throwaway sqlite file used as autonomath.db for the tests.
 
-    The api keys table from jpintel.db is also stubbed inside the same
-    file so `issue_key` calls in the bridge endpoints land somewhere.
+    The fixture uses the canonical jpintel schema so payment rail tests
+    do not drift from tables such as x402_tx_bind.
     """
     db_path = tmp_path / "autonomath_test.db"
-    conn = sqlite3.connect(str(db_path))
-    conn.execute(
-        """
-        CREATE TABLE api_keys (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            key_hash TEXT NOT NULL UNIQUE,
-            key_hash_bcrypt TEXT,
-            key_last4 TEXT,
-            tier TEXT NOT NULL,
-            customer_id TEXT,
-            stripe_subscription_id TEXT,
-            stripe_subscription_status TEXT,
-            parent_key_hash TEXT,
-            parent_key_id INTEGER,
-            monthly_cap_yen INTEGER,
-            trial_email TEXT,
-            trial_started_at TEXT,
-            trial_expires_at TEXT,
-            trial_requests_used INTEGER DEFAULT 0,
-            created_at TEXT DEFAULT (datetime('now')),
-            revoked_at TEXT
-        )
-        """
-    )
-    conn.commit()
-    conn.close()
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(db_path))
     monkeypatch.setenv("JPCITE_DB_PATH", str(db_path))
     monkeypatch.setenv("JPINTEL_DB_PATH", str(db_path))
     from jpintel_mcp.config import settings as _settings
+    from jpintel_mcp.db import session as db_session
 
-    _settings.autonomath_db_path = db_path
-    _settings.db_path = db_path
+    monkeypatch.setattr(_settings, "autonomath_db_path", db_path)
+    monkeypatch.setattr(_settings, "db_path", db_path)
+    db_session.init_db(db_path)
     return db_path
 
 
@@ -122,12 +98,61 @@ def client(autonomath_db: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient:
     monkeypatch.setenv("STRIPE_PRICE_PER_REQUEST", "price_stub")
     monkeypatch.delenv("JPCITE_X402_ORIGIN_SECRET", raising=False)
     # Reload settings so the new env values stick.
+    from jpintel_mcp.api import deps as deps_mod
     from jpintel_mcp.config import settings as _settings
+    from jpintel_mcp.db import session as db_session
 
-    _settings.stripe_secret_key = "sk_test_stub"
-    _settings.stripe_price_per_request = "price_stub"
+    monkeypatch.setattr(_settings, "stripe_secret_key", "sk_test_stub")
+    monkeypatch.setattr(_settings, "stripe_price_per_request", "price_stub")
+    for mod in (billing_v2, acp_integration, deps_mod, db_session):
+        monkeypatch.setattr(mod, "settings", _settings, raising=False)
+    monkeypatch.setattr(billing_v2, "connect_jpintel", db_session.connect)
+    monkeypatch.setattr(deps_mod, "connect", db_session.connect)
 
     app = FastAPI()
+
+    def _override_get_db():
+        conn = db_session.connect(autonomath_db)
+        try:
+            yield conn
+        finally:
+            conn.close()
+
+    async def _override_require_key(request: Request) -> deps_mod.ApiContext:
+        raw = request.headers.get("x-api-key")
+        if not raw:
+            authorization = request.headers.get("authorization")
+            if authorization:
+                parts = authorization.split(None, 1)
+                if len(parts) == 2 and parts[0].lower() == "bearer":
+                    raw = parts[1].strip()
+        if not raw:
+            return deps_mod.ApiContext(key_hash=None, tier="free", customer_id=None)
+
+        key_hash = deps_mod.hash_api_key(raw)
+        with db_session.connect(autonomath_db) as conn:
+            row = conn.execute(
+                "SELECT tier, customer_id, stripe_subscription_id, id, parent_key_id "
+                "FROM api_keys WHERE key_hash = ?",
+                (key_hash,),
+            ).fetchone()
+        if row is None:
+            raise HTTPException(status_code=401, detail="invalid api key")
+        return deps_mod.ApiContext(
+            key_hash=key_hash,
+            tier=row["tier"],
+            customer_id=row["customer_id"],
+            stripe_subscription_id=row["stripe_subscription_id"],
+            key_id=row["id"],
+            parent_key_id=row["parent_key_id"],
+        )
+
+    app.dependency_overrides[deps_mod.get_db] = _override_get_db
+    app.dependency_overrides[deps_mod.require_key] = _override_require_key
+    for meta in get_args(billing_v2.ApiContextDep):
+        dep = getattr(meta, "dependency", None)
+        if dep is not None:
+            app.dependency_overrides[dep] = _override_require_key
     app.include_router(billing_v2.router)
     return TestClient(app)
 
@@ -266,32 +291,13 @@ def test_acp_confirm_smoke(client: TestClient) -> None:
     token = chk.json()["agent_token"]
 
     with patch("stripe.checkout.Session.retrieve", return_value=fake_session_retrieve):
-        # Stub issue_key so we don't depend on a real jpintel.db schema +
-        # billing.keys side effects beyond the api_keys row insert.
-        def _fake_issue_key(
-            conn: sqlite3.Connection,
-            *,
-            customer_id: str,
-            tier: str,
-            stripe_subscription_id: str | None,
-        ) -> str:
-            raw = f"am_test_{customer_id}_{tier}"
-            h = hashlib.sha256(raw.encode()).hexdigest()
-            conn.execute(
-                "INSERT INTO api_keys (key_hash, key_last4, tier, customer_id, stripe_subscription_id) "
-                "VALUES (?, ?, ?, ?, ?)",
-                (h, raw[-4:], tier, customer_id, stripe_subscription_id),
-            )
-            return raw
-
-        with patch("jpintel_mcp.billing.acp_integration.issue_key", side_effect=_fake_issue_key):
-            confirm = client.post(
-                "/v1/billing/acp/confirm",
-                json={"agent_token": token, "session_id": "cs_test_acp_2"},
-            )
+        confirm = client.post(
+            "/v1/billing/acp/confirm",
+            json={"agent_token": token, "session_id": "cs_test_acp_2"},
+        )
     assert confirm.status_code == 200, confirm.text
     body = confirm.json()
-    assert body["api_key"].startswith("am_test_")
+    assert body["api_key"].startswith("jc_")
     assert body["customer_id"] == "cus_acp_test"
     assert body["subscription_id"] == "sub_acp_test"
     assert body["metering"]["unit_price_jpy"] == 3
@@ -620,10 +626,15 @@ def test_trial_quota_uses_row_cap(autonomath_db: Path) -> None:
         conn.execute(
             """
             INSERT INTO api_keys(
-                key_hash, tier, monthly_cap_yen, trial_expires_at, trial_requests_used
-            ) VALUES (?, 'trial', 3, ?, 0)
+                key_hash, tier, monthly_cap_yen, trial_expires_at,
+                trial_requests_used, created_at
+            ) VALUES (?, 'trial', 3, ?, 0, ?)
             """,
-            (key_hash, "2099-01-01T00:00:00+00:00"),
+            (
+                key_hash,
+                "2099-01-01T00:00:00+00:00",
+                datetime.now(UTC).isoformat(),
+            ),
         )
         ctx = ApiContext(key_hash=key_hash, tier="trial", customer_id=None)
         _enforce_quota(conn, ctx)

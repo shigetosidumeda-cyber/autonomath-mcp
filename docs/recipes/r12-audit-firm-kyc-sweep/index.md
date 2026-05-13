@@ -113,11 +113,13 @@ const pack = await jpcite.build_kyc_pack({
 - `search_edinet` (EDINET 開示書類検索、重要事実の取得)
 
 ## 関連 recipe
-- [r03-sme-ma-public-dd](../r03-sme-ma-public-dd/) — M&A DD、買収側の事前調査
-- [r04-shinkin-borrower-watch](../r04-shinkin-borrower-watch/) — 信金 watch、与信側の継続監査
-- [r24-houjin-6source-join](../r24-houjin-6source-join/) — 6 source join、KYC モデルの素材レイヤ
+- [r03-sme-ma-public-dd](../r03-sme-ma-public-dd/index.md) — M&A DD、買収側の事前調査
+- [r04-shinkin-borrower-watch](../r04-shinkin-borrower-watch/index.md) — 信金 watch、与信側の継続監査
+- [r24-houjin-6source-join](../r24-houjin-6source-join/index.md) — 6 source join、KYC モデルの素材レイヤ
 
 ## billable_units 試算
+
+- API fee delta: API fee delta の前提と再現式は [docs/canonical/cost_saving_examples.md](../../canonical/cost_saving_examples.md) を参照。
 - 1 法人 1 回 = 32 units × ¥3 = ¥96 / 受嘱
 - 月 30 件 (Big4 中堅事務所平均) = ¥2,880 / 月
 - 年次更新 200-500 社の bulk = 500 × ¥96 = ¥48,000 / 期初週

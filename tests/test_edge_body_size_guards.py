@@ -33,14 +33,12 @@ driven behavior tests (executes the actual handler against fabricated
     return 413 with ``payload_too_large`` / ``request_body_too_large``
     envelope and undersized bodies succeed.
 """
+
 from __future__ import annotations
 
-import shutil
-import subprocess
-import textwrap
 from pathlib import Path
 
-import pytest
+from tests.edge_ts_runner import run_edge_node
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -54,23 +52,11 @@ def _read(rel: str) -> str:
 def _assert_before(src: str, first: str, second: str) -> None:
     assert first in src, f"missing marker: {first}"
     assert second in src, f"missing marker: {second}"
-    assert src.index(first) < src.index(second), (
-        f"{first!r} must appear before {second!r}"
-    )
+    assert src.index(first) < src.index(second), f"{first!r} must appear before {second!r}"
 
 
 def _run_node(script: str) -> None:
-    if shutil.which("node") is None:
-        pytest.skip("node is required for edge body-size behavior tests")
-    proc = subprocess.run(
-        ["node", "--input-type=module", "-e", textwrap.dedent(script)],
-        cwd=REPO_ROOT,
-        capture_output=True,
-        text=True,
-        timeout=20,
-        check=False,
-    )
-    assert proc.returncode == 0, proc.stderr + proc.stdout
+    run_edge_node(script, timeout=20)
 
 
 # ---------------------------------------------------------------------------

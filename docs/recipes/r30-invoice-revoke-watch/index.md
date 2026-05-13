@@ -113,16 +113,16 @@ fs.writeFileSync("revoke_alert.json", JSON.stringify(revoked, null, 2));
 - `get_corp_360` (法人 360 度ビュー、抹消 + 行政処分 + 採択履歴の組み合わせ)
 
 ## 関連 recipe
-- [r11-ec-invoice-bulk-verify](../r11-ec-invoice-bulk-verify/) — EC 経理月次 verify、本 recipe の前段
-- [r12-audit-firm-kyc-sweep](../r12-audit-firm-kyc-sweep/) — 監査法人 KYC、独立性チェック
-- [r24-houjin-6source-join](../r24-houjin-6source-join/) — 法人 6 source join、抹消 + 行政処分の組み合わせ素材
+- [r11-ec-invoice-bulk-verify](../r11-ec-invoice-bulk-verify/index.md) — EC 経理月次 verify、本 recipe の前段
+- [r12-audit-firm-kyc-sweep](../r12-audit-firm-kyc-sweep/index.md) — 監査法人 KYC、独立性チェック
+- [r24-houjin-6source-join](../r24-houjin-6source-join/index.md) — 法人 6 source join、抹消 + 行政処分の組み合わせ素材
 
 ## billable_units 試算
 - 1 batch 100 units × ¥3 = ¥300 / 週
 - 月 4 週 = ¥1,200 / 月、税込 ¥1,320
 - 仕入先 1,000 社 = ¥3,000 / 週 × 4 = ¥12,000 / 月、税込 ¥13,200
 - 期末年次総点検 (10,000 社) = ¥30,000 / 期末、税込 ¥33,000
-- 節約 (純 LLM vs jpcite 標準従量料金): 仕入先 1,000 社 × 月 4 週 で、純 LLM は約 ¥40,000/月 (1 batch cycle ¥10,000 = 1,000 社 × NTA fetch + diff) に対し jpcite は ¥12,000/月 (4,000 req × ¥3) → 節約 約 ¥28,000/月 / 社あたり ¥28 (cf. `docs/canonical/cost_saving_examples.md` case 3 同系)
+- API fee delta: 仕入先 1,000 社 × 月 4 週 で、外部 model/search API fee は約 ¥40,000/月 (1 batch cycle ¥10,000 = 1,000 社 × NTA fetch + diff) に対し jpcite は ¥12,000/月 (4,000 req × ¥3) → API fee delta 約 ¥28,000/月 / 社あたり ¥28 (cf. `docs/canonical/cost_saving_examples.md` case 3 同系)
 
 ## 商業利用条件
 - PDL v1.0 (NTA 公開データ、出典明記必須) + CC-BY-4.0 (jpcite 編集物)

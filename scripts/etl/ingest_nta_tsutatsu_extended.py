@@ -44,7 +44,12 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from scripts.etl._playwright_helper import fetch_with_fallback_sync  # Wave 36 wire
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+# Wave 36 wire marker.
+from scripts.etl._playwright_helper import fetch_with_fallback_sync  # noqa: E402
 
 try:
     import certifi
@@ -53,7 +58,7 @@ try:
 except Exception:
     _SSL_CTX = ssl.create_default_context()
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = _REPO_ROOT
 DB_PATH = REPO_ROOT / "autonomath.db"
 
 NTA_TSUTATSU_BASE = "https://www.nta.go.jp/law/tsutatsu"
@@ -122,8 +127,8 @@ def fetch(url: str, timeout: int = DEFAULT_TIMEOUT) -> str:
 
 _SECTION_ANCHOR_RE = re.compile(
     r'<a\s+name="([^"]+)"[^>]*>.*?</a>'
-    r'\s*(?:<[^>]+>)*'
-    r'\s*([^<]+)',
+    r"\s*(?:<[^>]+>)*"
+    r"\s*([^<]+)",
     re.IGNORECASE | re.DOTALL,
 )
 _BODY_RE = re.compile(r"<[^>]+>")
@@ -137,9 +142,7 @@ def strip_html(s: str) -> str:
     return _BODY_RE.sub("", s).strip()
 
 
-def parse_tsutatsu_html(
-    parent_code: str, html: str, source_url: str
-) -> list[dict[str, Any]]:
+def parse_tsutatsu_html(parent_code: str, html: str, source_url: str) -> list[dict[str, Any]]:
     """Extract section list from a tsutatsu HTML page."""
     sections: list[dict[str, Any]] = []
     # Find all <a name="..."> anchors — each is a section start.
@@ -226,9 +229,7 @@ def fetch_index_codes(conn: sqlite3.Connection, limit: int) -> list[tuple[str, s
     return [(r[0], r[1]) for r in cur.fetchall()]
 
 
-def upsert_section(
-    conn: sqlite3.Connection, sec: dict[str, Any], dry_run: bool = False
-) -> bool:
+def upsert_section(conn: sqlite3.Connection, sec: dict[str, Any], dry_run: bool = False) -> bool:
     import json
 
     now = datetime.now(UTC).isoformat()

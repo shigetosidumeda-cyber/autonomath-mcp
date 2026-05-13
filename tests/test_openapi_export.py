@@ -26,6 +26,7 @@ def _load_export_openapi_module():
     spec.loader.exec_module(module)
     return module
 
+
 _COMPANY_ARTIFACT_PATHS = {
     "/v1/artifacts/company_public_baseline",
     "/v1/artifacts/company_folder_brief",
@@ -72,6 +73,31 @@ def test_openapi_export_matches_committed_spec(tmp_path: Path) -> None:
         REPO_ROOT / "docs" / "openapi" / "v1.json"
     ).read_text(encoding="utf-8")
     assert site_out.read_text(encoding="utf-8") == out.read_text(encoding="utf-8")
+
+
+def test_openapi_export_temp_site_out_does_not_mutate_root_mirror(tmp_path: Path) -> None:
+    out = tmp_path / "openapi.json"
+    site_out = tmp_path / "site-openapi.json"
+    mirror = REPO_ROOT / "site" / "openapi" / "v1.json"
+    before = (mirror.read_bytes(), mirror.stat().st_mtime_ns)
+
+    subprocess.run(
+        [
+            sys.executable,
+            "scripts/export_openapi.py",
+            "--out",
+            str(out),
+            "--site-out",
+            str(site_out),
+        ],
+        cwd=REPO_ROOT,
+        env=_stable_env(),
+        check=True,
+        text=True,
+        capture_output=True,
+    )
+
+    assert (mirror.read_bytes(), mirror.stat().st_mtime_ns) == before
 
 
 def test_served_openapi_json_matches_committed_stable_spec(monkeypatch) -> None:
@@ -257,7 +283,8 @@ _LEAK_SAMPLE_DESCRIPTION = (
     "cost_ledger for spend roll-up; uses idempotency_cache to dedupe retries. "
     "Joins am_amendment_diff, am_amendment_snapshot, am_law_article, "
     "am_loan_product, am_enforcement_detail, am_amount_condition, am_tax_treaty, "
-    "am_industry_jsic, am_application_round, am_entities, am_relation, am_source."
+    "am_industry_jsic, am_application_round, am_entities, am_relation, am_source, "
+    "and jc_internal_dataset."
 )
 
 
@@ -287,6 +314,7 @@ def test_sanitizer_strips_all_denylisted_table_names():
         "autonomath.db",
         "CLAUDE.md",
         "scripts/cron/",
+        "jc_internal_dataset",
     ):
         assert forbidden not in cleaned, f"leak pattern {forbidden!r} survived sanitizer"
     # Wave / migration markers are stripped (number disappears with the marker).
@@ -297,6 +325,26 @@ def test_sanitizer_strips_all_denylisted_table_names():
     assert "entity-fact corpus" in cleaned
     assert "corporate watch list" in cleaned
     assert "primary corpus database" in cleaned
+    assert "public dataset" in cleaned
+
+
+def test_sanitizer_preserves_jpcite_api_key_examples_only_in_auth_context():
+    from jpintel_mcp.api.main import _strip_openapi_leak_patterns_runtime
+
+    mod = _load_export_openapi_module()
+    text = (
+        "curl -H 'X-API-Key: jc_live_...' https://api.jpcite.com/v1/programs/search "
+        "and Authorization: Bearer jc_test_... are public examples. "
+        "Internal datasets jc_customer_shadow and jc_test_dataset must still be scrubbed."
+    )
+    cleaned = mod._strip_openapi_leak_patterns(text)
+
+    assert "X-API-Key: jc_live_..." in cleaned
+    assert "Authorization: Bearer jc_test_..." in cleaned
+    assert "jc_customer_shadow" not in cleaned
+    assert "jc_test_dataset" not in cleaned
+    assert cleaned.count("public dataset") == 2
+    assert _strip_openapi_leak_patterns_runtime(text) == cleaned
 
 
 def test_sanitizer_walks_full_openapi_schema_dict():
@@ -359,9 +407,7 @@ def test_sanitizer_walks_full_openapi_schema_dict():
                 f"{forbidden!r} survived description-level scrub: {cleaned_text!r}"
             )
     # 2) example payload MUST be preserved verbatim (runtime echoes it back).
-    response_example = (
-        op["responses"]["200"]["content"]["application/json"]["example"]
-    )
+    response_example = op["responses"]["200"]["content"]["application/json"]["example"]
     assert response_example["source"] == "am_compat_matrix"
     assert response_example["notes"] == [
         "Backed by autonomath.db",
@@ -444,9 +490,7 @@ def test_sanitizer_exempts_pydantic_default_preserving_runtime_literal():
     mod.sanitize_openapi_schema_leaks(schema)
     schema_obj = schema["components"]["schemas"]["EnforcementDetailSearchResponse"]
     # default literal preserved
-    assert (
-        schema_obj["properties"]["source_table"]["default"] == "am_enforcement_detail"
-    )
+    assert schema_obj["properties"]["source_table"]["default"] == "am_enforcement_detail"
     # description scrubbed
     assert "am_enforcement_detail" not in schema_obj["description"]
     assert "am_enforcement_detail" not in schema_obj["properties"]["source_table"]["description"]
@@ -494,10 +538,7 @@ def test_sanitizer_exempts_response_example_payload():
     # example payload preserved
     assert response_content["example"]["source"] == "am_compat_matrix"
     assert response_content["example"]["notes"] == ["row joined from am_compat_matrix"]
-    assert (
-        response_content["examples"]["happy_path"]["value"]["source"]
-        == "am_compat_matrix"
-    )
+    assert response_content["examples"]["happy_path"]["value"]["source"] == "am_compat_matrix"
     # description scrubbed
     assert "am_compat_matrix" not in op["description"]
     assert "am_compat_matrix" not in op["responses"]["200"]["description"]
@@ -516,9 +557,7 @@ def test_sanitizer_exempts_request_body_example():
                             "application/json": {
                                 "example": {"source": "am_compat_matrix"},
                                 "examples": {
-                                    "default_request": {
-                                        "value": {"source": "am_compat_matrix"}
-                                    }
+                                    "default_request": {"value": {"source": "am_compat_matrix"}}
                                 },
                             }
                         }
@@ -531,10 +570,7 @@ def test_sanitizer_exempts_request_body_example():
     op = schema["paths"]["/v1/example"]["post"]
     body_content = op["requestBody"]["content"]["application/json"]
     assert body_content["example"]["source"] == "am_compat_matrix"
-    assert (
-        body_content["examples"]["default_request"]["value"]["source"]
-        == "am_compat_matrix"
-    )
+    assert body_content["examples"]["default_request"]["value"]["source"] == "am_compat_matrix"
     # summary scrubbed
     assert "am_compat_matrix" not in op["summary"]
 
@@ -548,9 +584,7 @@ def test_sanitizer_exempts_operation_id():
             "/v1/example": {
                 "get": {
                     "operationId": "list_am_compat_matrix_rows_v1_example_get",
-                    "description": (
-                        "List rows of am_compat_matrix; description MUST be scrubbed."
-                    ),
+                    "description": ("List rows of am_compat_matrix; description MUST be scrubbed."),
                 }
             }
         }
@@ -576,9 +610,7 @@ def test_assert_no_openapi_leaks_allows_exempt_subtrees():
                         "200": {
                             "description": "Result page.",
                             "content": {
-                                "application/json": {
-                                    "example": {"source": "am_compat_matrix"}
-                                }
+                                "application/json": {"example": {"source": "am_compat_matrix"}}
                             },
                         }
                     },
@@ -650,9 +682,7 @@ def test_runtime_sanitizer_exempts_same_paths_as_export():
                         "200": {
                             "description": "ok",
                             "content": {
-                                "application/json": {
-                                    "example": {"source": "am_compat_matrix"}
-                                }
+                                "application/json": {"example": {"source": "am_compat_matrix"}}
                             },
                         }
                     },
@@ -667,5 +697,8 @@ def test_runtime_sanitizer_exempts_same_paths_as_export():
     assert "am_enforcement_detail" not in schema_obj["description"]
     op = schema["paths"]["/v1/example"]["get"]
     assert op["operationId"] == "list_am_compat_matrix_v1_example_get"
-    assert op["responses"]["200"]["content"]["application/json"]["example"]["source"] == "am_compat_matrix"
+    assert (
+        op["responses"]["200"]["content"]["application/json"]["example"]["source"]
+        == "am_compat_matrix"
+    )
     assert "am_compat_matrix" not in op["description"]

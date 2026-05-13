@@ -112,9 +112,12 @@ SECTION_52_FOOTER_SHORT = (
 BRAND_LINE = "jpcite"
 
 # Subject parser for Postmark inbound: extract API key from plus-addressing
-# (``query+am_xxx@jpcite.com``). Anchored, conservative — anything that
+# (``query+jc_xxx@jpcite.com``). Anchored, conservative — anything that
 # does not match is rejected.
-_PLUS_ADDR_RE = re.compile(r"^[^+@\s]+\+(am_[A-Za-z0-9_-]{16,80})@", re.IGNORECASE)
+_PLUS_ADDR_RE = re.compile(
+    r"^[^+@\s]+\+((?:jc|am|sk)_[A-Za-z0-9_-]{16,80})@",
+    re.IGNORECASE,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -136,7 +139,7 @@ def _resolve_key_to_ctx(db: sqlite3.Connection, raw_key: str | None) -> ApiConte
     if not raw_key:
         return ApiContext(key_hash=None, tier="free", customer_id=None)
     raw_key = raw_key.strip()
-    if not raw_key.startswith(("am_", "sk_")):
+    if not raw_key.startswith(("jc_", "am_", "sk_")):
         return ApiContext(key_hash=None, tier="free", customer_id=None)
     try:
         key_hash = hash_api_key(raw_key)
@@ -256,7 +259,7 @@ def _bill_one_call(
         "Slack POSTs ``application/x-www-form-urlencoded`` from a workspace "
         "slash command (e.g. ``/zeimukaikei DX 製造業``). The request "
         "carries `text=` (the user's query) and integration auth via "
-        "``?key=am_...`` (since Slack cannot inject custom headers per call). "
+        "``?key=jc_...`` (since Slack cannot inject custom headers per call). "
         "Response shape is Slack's standard `{response_type, text, blocks}` "
         "with §52 footer in the last block."
     ),
@@ -507,9 +510,9 @@ async def sheets_callback(
     "/email/inbound",
     summary="Postmark inbound email webhook",
     description=(
-        "Customers email `query+am_xxx@jpcite.com`. Postmark POSTs "
+        "Customers email `query+jc_xxx@jpcite.com`. Postmark POSTs "
         "the parsed email JSON to this endpoint. The plus-address tail "
-        "carries the API key (`am_xxx`); the subject carries the query "
+        "carries the API key (`jc_xxx`); the subject carries the query "
         "string. We reply via Postmark's outbound API with HTML + plain "
         "body and §52 footer. The `From:` address must be on the API "
         "key's whitelist (set once via `/v1/me/connectors/email`)."

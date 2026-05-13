@@ -18,7 +18,7 @@ Brand: **jpcite** (PyPI dist: `autonomath-mcp`, import: `jpintel_mcp`) — launc
 | Component | Path | Notes |
 |---|---|---|
 | REST API | [`src/jpintel_mcp/api/`](../src/jpintel_mcp/api/) | FastAPI, ~80 router files, mounted `/v1/*` (≈194-240 paths post Wave 21-23) |
-| MCP server | [`src/jpintel_mcp/mcp/`](../src/jpintel_mcp/mcp/) | FastMCP stdio, **139 tools** at default gates |
+| MCP server | [`src/jpintel_mcp/mcp/`](../src/jpintel_mcp/mcp/) | FastMCP stdio, **151 tools** at default gates |
 | DB layer | [`src/jpintel_mcp/db/`](../src/jpintel_mcp/db/) | `schema.sql`, `session.py`, `id_translator.py` |
 | Billing | [`src/jpintel_mcp/billing/`](../src/jpintel_mcp/billing/) | Stripe metered ¥3/billable unit |
 | Primary DB | [`autonomath.db`](../autonomath.db) (~11 GB) + [`jpintel.db`](../jpintel.db) (~1.6 MB live) | unified post mig 032; `data/jpintel.db` ~352 MB |
@@ -102,7 +102,7 @@ Run: `.venv/bin/python scripts/cron/precompute_refresh.py --only <name>` or `--a
 | Local MCP | `.venv/bin/autonomath-mcp` |
 | Tests | `.venv/bin/pytest` (unit+integ) / `.venv/bin/pytest tests/e2e/` |
 | Migration apply | `entrypoint.sh §4` (autonomath-target auto-discovered on boot, header `-- target_db: autonomath`); jpintel-target via `python scripts/migrate.py` |
-| MCP tool count probe | `len(await mcp.list_tools())` (must be 139 at default gates) |
+| MCP tool count probe | `len(await mcp.list_tools())` (must be 151 at default gates) |
 | Static pages regen | `.venv/bin/python scripts/generate_program_pages.py` |
 | Source liveness | `.venv/bin/python scripts/refresh_sources.py --tier S,A` |
 | OpenAPI export | `.venv/bin/python scripts/export_openapi.py --out docs/openapi/v1.json` |

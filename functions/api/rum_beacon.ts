@@ -86,6 +86,11 @@ const ALLOWED_STEPS = new Set([
   "calc_engaged",
 ]);
 
+const STEP_ALIASES: Record<string, string> = {
+  billing: "topup",
+  payment: "topup",
+};
+
 const ALLOWED_EVENTS = new Set([
   "view",
   "cta_click",
@@ -181,10 +186,14 @@ function isValidBeacon(b: RumFunnelBeacon): b is ValidRumFunnelBeacon {
   if (typeof b.session_id !== "string" || !b.session_id) return false;
   if (b.session_id.length > 64) return false;
   if (typeof b.page !== "string" || !b.page || b.page.length > 256) return false;
-  if (typeof b.step !== "string" || !ALLOWED_STEPS.has(b.step)) return false;
+  if (typeof b.step !== "string" || !ALLOWED_STEPS.has(normalizeStep(b.step))) return false;
   if (typeof b.event !== "string" || !ALLOWED_EVENTS.has(b.event)) return false;
   if (typeof b.ts !== "number" || !Number.isFinite(b.ts)) return false;
   return true;
+}
+
+function normalizeStep(step: string): string {
+  return STEP_ALIASES[step] || step;
 }
 
 export const onRequestOptions: PagesFunction<Env> = async (ctx) => {
@@ -254,7 +263,7 @@ async function persistBeacon(
     const record = {
       session_id: body.session_id,
       page: body.page,
-      step: body.step,
+      step: normalizeStep(body.step),
       event: body.event,
       ts: body.ts,
       ua_hash: await sha256Short(ua),

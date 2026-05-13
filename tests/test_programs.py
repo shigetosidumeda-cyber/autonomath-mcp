@@ -170,17 +170,19 @@ def test_search_cursor_roundtrip_matches_offset_path(client, paid_key):
     """R3 P0-3: paging via ``?cursor=`` returns the SAME row sequence as
     the legacy ``?offset=`` walk over the small seeded corpus.
 
-    The seeded DB has 3 searchable rows (S/A/B) once tier='X' is excluded.
+    The seeded DB has at least the 3 canonical searchable rows (S/A/B) once
+    tier='X' is excluded. Other tests may add non-excluded fixtures to the
+    session DB, so this walks until the offset path reaches the tail.
     We walk them with limit=1, comparing the offset path's results[0]
     against the cursor path's results[0] at each step. The cursor path
     must also surface ``next_cursor`` while rows remain and drop it
     (None) on the final page. Uses ``paid_key`` to dodge the 3/day anon
     quota — the walk takes ~6 round-trips."""
     headers = {"X-API-Key": paid_key}
-    # Offset baseline — read all 3 rows in order to establish the
+    # Offset baseline — read rows in order to establish the
     # expected sequence under the production ORDER BY.
     seen_offset: list[str] = []
-    for off in range(0, 5):
+    for off in range(0, 50):
         resp = client.get(
             "/v1/programs/search",
             params={"offset": off, "limit": 1},
@@ -202,7 +204,9 @@ def test_search_cursor_roundtrip_matches_offset_path(client, paid_key):
     assert resp.status_code == 200, (
         f"first cursor-walk request failed: {resp.status_code} {resp.text[:200]}"
     )
-    while resp.status_code == 200:
+    safety_budget = 50
+    while resp.status_code == 200 and safety_budget > 0:
+        safety_budget -= 1
         body = resp.json()
         results = body.get("results") or []
         if not results:
@@ -218,11 +222,9 @@ def test_search_cursor_roundtrip_matches_offset_path(client, paid_key):
         )
 
     assert seen_offset == seen_cursor, (
-        f"cursor path diverged from offset path: "
-        f"offset={seen_offset!r} cursor={seen_cursor!r}"
+        f"cursor path diverged from offset path: offset={seen_offset!r} cursor={seen_cursor!r}"
     )
-    # Sanity: the seeded corpus has 3 searchable rows.
-    assert len(seen_cursor) == 3
+    assert {"UNI-test-s-1", "UNI-test-a-1", "UNI-test-b-1"}.issubset(set(seen_cursor))
 
 
 def test_search_cursor_dedupe_preserved(client, paid_key):
@@ -273,9 +275,12 @@ def test_search_cursor_malformed_is_422(client):
 def test_search_cursor_short_page_drops_next_cursor(client):
     """When the final page returns < limit rows the server must NOT emit
     a ``next_cursor`` — otherwise clients keep walking forever and pay
-    ¥3 per empty page. ``limit=100`` against the 3-row seed corpus
-    forces the short-page branch on the very first call."""
-    body = client.get("/v1/programs/search", params={"limit": 100}).json()
+    ¥3 per empty page. Use a narrow prefecture filter so this stays a
+    short page even when other tests add rows to the session DB."""
+    body = client.get(
+        "/v1/programs/search",
+        params={"prefecture": "青森県", "limit": 100},
+    ).json()
     assert len(body["results"]) >= 1
     assert len(body["results"]) < 100
     assert body.get("next_cursor") is None, (

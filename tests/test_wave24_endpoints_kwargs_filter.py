@@ -28,6 +28,8 @@ import logging
 from typing import Any
 
 import pytest
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
 
 from jpintel_mcp.api import wave24_endpoints as w
 
@@ -283,14 +285,21 @@ def stub_resolver(
     return seen
 
 
+@pytest.fixture
+def wave24_client() -> TestClient:
+    app = FastAPI()
+    app.include_router(w.router)
+    return TestClient(app)
+
+
 def test_recommend_endpoint_drops_internal_kwargs(
-    client: Any,
+    wave24_client: TestClient,
     stub_resolver: dict[str, list[dict[str, Any]]],
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """POST /v1/am/recommend with `_internal_audit:True` must NOT propagate."""
     with caplog.at_level(logging.WARNING, logger="jpintel.api.wave24"):
-        resp = client.post(
+        resp = wave24_client.post(
             "/v1/am/recommend",
             json={
                 "houjin_bangou": "1234567890123",
@@ -320,10 +329,10 @@ def test_recommend_endpoint_drops_internal_kwargs(
 
 
 def test_enforcement_risk_endpoint_drops_internal_kwargs(
-    client: Any,
+    wave24_client: TestClient,
     stub_resolver: dict[str, list[dict[str, Any]]],
 ) -> None:
-    resp = client.post(
+    resp = wave24_client.post(
         "/v1/am/enforcement_risk",
         json={
             "houjin_bangou": "1234567890123",
@@ -340,10 +349,10 @@ def test_enforcement_risk_endpoint_drops_internal_kwargs(
 
 
 def test_match_capital_endpoint_drops_internal_kwargs(
-    client: Any,
+    wave24_client: TestClient,
     stub_resolver: dict[str, list[dict[str, Any]]],
 ) -> None:
-    resp = client.post(
+    resp = wave24_client.post(
         "/v1/am/match/capital",
         json={
             "capital_yen": 5_000_000,
@@ -362,10 +371,10 @@ def test_match_capital_endpoint_drops_internal_kwargs(
 
 
 def test_tax_change_impact_endpoint_drops_internal_kwargs(
-    client: Any,
+    wave24_client: TestClient,
     stub_resolver: dict[str, list[dict[str, Any]]],
 ) -> None:
-    resp = client.post(
+    resp = wave24_client.post(
         "/v1/am/houjin/1234567890123/tax_change_impact",
         json={
             "tax_ruleset_id": "TAX-1",

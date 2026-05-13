@@ -7,7 +7,7 @@ Evidence-first context layer for Japanese public-program data.
 Operator: Bookyou株式会社 (T8010001213708)
 
 
-> jpcite は、ChatGPT / Claude / Cursor が回答を書く前に呼ぶ Evidence Pre-fetch Layer です。回答を生成するのではなく、日本の公的制度・法令・法人情報から根拠項目、一次資料 URL、取得時刻、content_hash、provenance、併用ルールを構造化して返します。日本の制度データ、採択事例、融資、行政処分、法令本文・メタデータ、税ruleset、判例、入札、適格請求書事業者を横断検索する REST + MCP (139 tools, protocol 2025-06-18)。現在の公開料金・匿名枠は Pricing に掲載しています。トークン量やコストへの影響は、質問・モデル・プロンプト・キャッシュ状態・もともと投入する資料量に依存します。
+> jpcite は、ChatGPT / Claude / Cursor が回答を書く前に呼ぶ Evidence Pre-fetch Layer です。回答を生成するのではなく、日本の公的制度・法令・法人情報から根拠項目、一次資料 URL、取得時刻、content_hash、provenance、併用ルールを構造化して返します。日本の制度データ、採択事例、融資、行政処分、法令本文・メタデータ、税ruleset、判例、入札、適格請求書事業者を横断検索する REST + MCP (151 tools, protocol 2025-06-18)。現在の公開料金・匿名枠は Pricing に掲載しています。トークン量やコストへの影響は、質問・モデル・プロンプト・キャッシュ状態・もともと投入する資料量に依存します。
 > llms-full.txt is a concatenated plaintext dump of the canonical docs linked from llms.txt.
 > Canonical: https://jpcite.com
 > News / change-detection feed: https://jpcite.com/news/ (RSS: https://jpcite.com/rss.xml). Posts summarize detected changes to public programs with source URL and JST detection timestamp.
@@ -229,7 +229,7 @@ console.log(`${data.total} results`);
 ```
 
 - MCP server の実行コマンドは https://jpcite.com/docs/mcp-tools/ を参照
-- Claude Desktop を再起動すると 139 ツール が使える
+- Claude Desktop を再起動すると 151 ツール が使える
 
 詳細は [mcp-tools.md](./mcp-tools.md)。
 
@@ -959,7 +959,7 @@ Reference snapshot: MCP tools.
 
 # MCP Tools
 
-> **要約 (summary):** jpcite は MCP (Model Context Protocol) サーバーとして 139 ツールを公開します。Claude Desktop / Cursor / Cline などの stdio MCP クライアントで使えます。ChatGPT Custom GPT は OpenAPI Actions を使います。
+> **要約 (summary):** jpcite は MCP (Model Context Protocol) サーバーとして 151 ツールを公開します。Claude Desktop / Cursor / Cline などの stdio MCP クライアントで使えます。ChatGPT Custom GPT は OpenAPI Actions を使います。
 
 **Protocol:** MCP 2025-06-18 (FastMCP SDK, Python `mcp` package). Transport: stdio JSON-RPC.
 

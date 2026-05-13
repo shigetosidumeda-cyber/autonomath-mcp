@@ -29,7 +29,7 @@
   if Material renames its internal class in a future release).
 -#}
 {% if not page.is_homepage %}
-  <nav class="jpcite-doc-nav breadcrumb" aria-label="パンくず" style="margin:0 0 14px;display:flex;flex-wrap:wrap;align-items:center;gap:12px;font-size:14px;color:var(--md-default-fg-color--light, #666);">
+  <nav class="breadcrumb" data-nav="jpcite-doc-nav" aria-label="パンくず" style="margin:0 0 14px;display:flex;flex-wrap:wrap;align-items:center;gap:12px;font-size:14px;color:var(--md-default-fg-color--light, #666);">
     <a class="back-btn"
        href="javascript:history.back()"
        role="button"
@@ -50,7 +50,7 @@
       `breadcrumb` selector on /docs/ as well. Without this, mkdocs
       overwriting the hand-crafted CWV-HARDENED site/docs/index.html
       drops it to 3/4. -#}
-  <nav class="jpcite-doc-nav breadcrumb" aria-label="パンくず" style="margin:0 0 14px;display:flex;flex-wrap:wrap;align-items:center;gap:12px;font-size:14px;color:var(--md-default-fg-color--light, #666);">
+  <nav class="breadcrumb" data-nav="jpcite-doc-nav" aria-label="パンくず" style="margin:0 0 14px;display:flex;flex-wrap:wrap;align-items:center;gap:12px;font-size:14px;color:var(--md-default-fg-color--light, #666);">
     <a href="{{ '/' | url }}" style="text-decoration:none;color:inherit;">ホーム</a>
     <span aria-hidden="true" style="opacity:0.4;">›</span>
     <span aria-current="page" style="color:var(--md-default-fg-color, #333);">ドキュメント</span>

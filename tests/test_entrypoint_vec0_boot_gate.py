@@ -10,6 +10,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 ENTRYPOINT = REPO_ROOT / "entrypoint.sh"
 AUTONOMATH_BOOT_MANIFEST = REPO_ROOT / "scripts/migrations/autonomath_boot_manifest.txt"
+JPCITE_BOOT_MANIFEST = REPO_ROOT / "scripts/migrations/jpcite_boot_manifest.txt"
 _URL_RE = re.compile(r"\b[A-Za-z][A-Za-z0-9+.-]*://\S+")
 _PRODUCTION_RUNTIME_PATH_RE = re.compile(
     r"(?:^|[\s\"'=(:;,[<>|&]|:-)(?:/data|/seed|/app/scripts)(?=/|$|[\s\"'`;,)])"
@@ -34,6 +35,10 @@ def _write_safe_entrypoint(tmp_path: Path, *, schema_guard: Path | None = None) 
         "/app/scripts/etl/seed_x402_endpoints.py",
         str(app_scripts_dir / "etl/seed_x402_endpoints.py"),
     )
+    text = text.replace(
+        "/app/scripts/ops/warmup_semantic_reranker.py",
+        str(app_scripts_dir / "ops/warmup_semantic_reranker.py"),
+    )
     text = text.replace("/data", str(data_dir))
     text = text.replace("/seed", str(seed_dir))
     text = text.replace("/app/scripts/migrate.py", str(app_scripts_dir / "migrate.py"))
@@ -56,6 +61,7 @@ def _entrypoint_env(tmp_path: Path) -> dict[str, str]:
         "AUTONOMATH_BOOTSTRAP_MODE",
         "AUTONOMATH_ENABLED",
         "DATA_SEED_VERSION",
+        "JPCITE_DB_PATH",
         "JPINTEL_FORCE_SEED_OVERWRITE",
     ):
         env.pop(name, None)
@@ -162,14 +168,17 @@ def test_entrypoint_autonomath_boot_migrations_are_manifest_gated_by_default() -
     assert "AUTONOMATH_BOOT_MIGRATION_MODE=discover" in text
 
 
-def test_autonomath_boot_manifest_exists_and_is_empty_allowlist_by_default() -> None:
+def test_autonomath_boot_manifest_is_synced_with_jpcite_manifest() -> None:
     assert AUTONOMATH_BOOT_MANIFEST.exists()
+    assert JPCITE_BOOT_MANIFEST.exists()
+    assert _sha256(AUTONOMATH_BOOT_MANIFEST) == _sha256(JPCITE_BOOT_MANIFEST)
     entries = [
         line.strip()
         for line in AUTONOMATH_BOOT_MANIFEST.read_text(encoding="utf-8").splitlines()
         if line.strip() and not line.lstrip().startswith("#")
     ]
-    assert entries == []
+    assert entries
+    assert all("_rollback" not in entry for entry in entries)
 
 
 def test_entrypoint_backgrounds_only_missing_db_r2_bootstrap() -> None:

@@ -265,6 +265,7 @@ def seeded_db(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     finally:
         conn.close()
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(db_path))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", str(db_path))
     return db_path
 
 

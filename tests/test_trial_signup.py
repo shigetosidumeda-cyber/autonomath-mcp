@@ -206,7 +206,7 @@ def test_verify_issues_trial_key_and_redirects_to_landing(
     assert r.status_code == 302, r.text
     location = r.headers["location"]
     assert location.startswith("https://jpcite.com/trial.html?status=ok")
-    assert "#api_key=am_" in location
+    assert "#api_key=jc_" in location
     assert "expires_at=" in location
     assert "request_cap=200" in location
     assert "duration_days=14" in location
@@ -339,7 +339,7 @@ def test_trial_key_authenticates_for_api_calls(client, seeded_db, email_recorder
 
             raw_key = unquote(kv.split("=", 1)[1])
             break
-    assert raw_key and raw_key.startswith("am_")
+    assert raw_key and raw_key.startswith("jc_")
 
     # Trial key authenticates through require_key.
     r = client.get(

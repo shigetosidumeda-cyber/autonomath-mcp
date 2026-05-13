@@ -95,6 +95,7 @@ def snapshot_empty_db(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     finally:
         conn.close()
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(db_path))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", str(db_path))
     return db_path
 
 
@@ -109,6 +110,7 @@ def snapshot_seeded_db(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     finally:
         conn.close()
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(db_path))
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", str(db_path))
     return db_path
 
 
