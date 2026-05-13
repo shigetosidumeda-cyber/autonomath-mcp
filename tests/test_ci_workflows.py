@@ -178,6 +178,8 @@ def test_deploy_checks_live_fly_secret_names_before_fly_deploy() -> None:
 
     assert "flyctl secrets list -a autonomath-api" in gate
     assert "JPCITE_SESSION_SECRET" in gate
+    assert "JPINTEL_AUDIT_SEAL_KEYS" in gate
+    assert "one_of(AUDIT_SEAL_SECRET|JPINTEL_AUDIT_SEAL_KEYS)" in gate
     assert "values not read" in gate
     assert text.index("Verify live Fly secret names before deploy") < text.index(
         "flyctl deploy --remote-only"
@@ -193,6 +195,8 @@ def test_jpcite_api_deploy_checks_live_fly_secret_names_before_fly_deploy() -> N
 
     assert "flyctl secrets list -a jpcite-api" in gate
     assert "JPCITE_SESSION_SECRET" in gate
+    assert "JPINTEL_AUDIT_SEAL_KEYS" in gate
+    assert "one_of(AUDIT_SEAL_SECRET|JPINTEL_AUDIT_SEAL_KEYS)" in gate
     assert "values not read" in gate
     assert text.index("Verify live Fly secret names before deploy") < text.index(
         "flyctl deploy --remote-only"

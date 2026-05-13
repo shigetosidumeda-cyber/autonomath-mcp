@@ -143,7 +143,6 @@ jobs:
           required=(
             ADMIN_API_KEY
             API_KEY_SALT
-            AUDIT_SEAL_SECRET
             AUTONOMATH_API_HASH_PEPPER
             AUTONOMATH_DB_SHA256
             AUTONOMATH_DB_URL
@@ -173,11 +172,20 @@ jobs:
               missing+=("$name")
             fi
           done
+          audit_seal_present=0
+          for name in AUDIT_SEAL_SECRET JPINTEL_AUDIT_SEAL_KEYS; do
+            if grep -Fxq "$name" <<< "$fly_secret_names"; then
+              audit_seal_present=1
+            fi
+          done
+          if [ "$audit_seal_present" = "0" ]; then
+            missing+=("one_of(AUDIT_SEAL_SECRET|JPINTEL_AUDIT_SEAL_KEYS)")
+          fi
           if [ "${#missing[@]}" -gt 0 ]; then
             echo "::error::Missing required Fly secret names for autonomath-api: ${missing[*]}"
             exit 1
           fi
-          echo "Required Fly secret names present for autonomath-api (${#required[@]} checked; values not read)."
+          echo "Required Fly secret names present for autonomath-api (${#required[@]} required + audit-seal alternative checked; values not read)."
 
       - name: SKIP_HYDRATE notice (Wave 24 escape hatch)
         if: steps.fly-token.outputs.available == 'true' && github.event.inputs.skip_hydrate == 'true'

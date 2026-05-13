@@ -30,7 +30,6 @@ LEGACY_FLY_APP_ALIASES = (
 REQUIRED_PRODUCTION_SECRETS = (
     "ADMIN_API_KEY",
     "API_KEY_SALT",
-    "AUDIT_SEAL_SECRET",
     "AUTONOMATH_API_HASH_PEPPER",
     "AUTONOMATH_DB_SHA256",
     "AUTONOMATH_DB_URL",
@@ -50,6 +49,7 @@ REQUIRED_PRODUCTION_SECRETS = (
     "STRIPE_TAX_ENABLED",
     "STRIPE_WEBHOOK_SECRET",
 )
+ALTERNATIVE_PRODUCTION_SECRET_GROUPS = (("AUDIT_SEAL_SECRET", "JPINTEL_AUDIT_SEAL_KEYS"),)
 CONDITIONAL_PRODUCTION_SECRETS = {
     "CLOUDFLARE_TURNSTILE_SECRET": (
         "required when production APPI intake/deletion is enabled "
@@ -58,7 +58,6 @@ CONDITIONAL_PRODUCTION_SECRETS = {
     "GBIZINFO_API_TOKEN": "required on the Fly machine only when live gBiz ingest is enabled",
 }
 OPTIONAL_PRODUCTION_SECRETS = {
-    "JPINTEL_AUDIT_SEAL_KEYS": "optional rotation set; alternative to AUDIT_SEAL_SECRET",
     "TG_BOT_TOKEN": "optional GitHub/Fly notification secret; canonical Telegram token name",
     "TG_CHAT_ID": "optional GitHub/Fly notification target",
 }
@@ -195,6 +194,13 @@ def check_secret_registry(repo_root: Path) -> GateCheck:
     text = _read_text(registry)
     missing = [name for name in REQUIRED_PRODUCTION_SECRETS if name not in text]
     issues = [f"secret_name_missing_from_registry:{name}" for name in missing]
+    for group in ALTERNATIVE_PRODUCTION_SECRET_GROUPS:
+        group_label = "/".join(group)
+        issues.extend(
+            f"alternative_secret_name_missing_from_registry:{group_label}:{name}"
+            for name in group
+            if name not in text
+        )
     missing_conditional = [name for name in CONDITIONAL_PRODUCTION_SECRETS if name not in text]
     issues.extend(
         f"conditional_secret_name_missing_from_registry:{name}" for name in missing_conditional
@@ -209,6 +215,9 @@ def check_secret_registry(repo_root: Path) -> GateCheck:
         evidence={
             "registry": str(registry.relative_to(repo_root)),
             "required_secret_names": list(REQUIRED_PRODUCTION_SECRETS),
+            "alternative_secret_groups": [
+                list(group) for group in ALTERNATIVE_PRODUCTION_SECRET_GROUPS
+            ],
             "conditional_secret_names": CONDITIONAL_PRODUCTION_SECRETS,
             "optional_secret_names": OPTIONAL_PRODUCTION_SECRETS,
             "secret_values_read": False,
