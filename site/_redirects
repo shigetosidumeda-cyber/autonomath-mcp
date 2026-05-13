@@ -226,8 +226,6 @@
 # (target missing on disk) and the /facts_registry.json ↔ /.well-known/facts_registry.json
 # self-loop pair (both targets missing — only site/data/facts_registry.json exists,
 # which is intentionally namespaced and not surfaced under that public path).
-/search /search.html 200
-
 # v3.2 (2026-05-11) — /connect/* relies on Cloudflare Pages pretty URL fallback.
 # Explicit rewrites are intentionally omitted to avoid routing loops.
 

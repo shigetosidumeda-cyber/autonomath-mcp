@@ -99,8 +99,8 @@
       "path_count": 297,
       "ratelimit_anonymous": "3 req/day per IP",
       "ratelimit_authenticated": "metered ¥3/billable unit (税込 ¥3.30)",
-      "sha256_prefix": "f07d8af5cd47538f",
-      "size_bytes": 1513505,
+      "sha256_prefix": "950442cfe3139923",
+      "size_bytes": 1515274,
       "tier": "full",
       "url": "https://api.jpcite.com/v1/openapi.json"
     },

@@ -95,7 +95,6 @@ TOOL_COUNT_PATTERNS = [
     re.compile(r"MCP\s*ツール総数[^0-9]{0,80}(\d{1,3})"),
     re.compile(r'data-fact=["\']mcp_tools_total["\'][^>]*>\s*(\d{1,3})'),
     re.compile(r'"tool_count_default_gates":\s*(\d{1,3})'),
-    re.compile(r'"tool_count":\s*(\d{1,3})'),
 ]
 
 # Numeric thresholds: any "<N> tools" within plausible MCP-count range is

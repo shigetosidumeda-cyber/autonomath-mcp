@@ -17564,7 +17564,7 @@
         "type": "object"
       },
       "TopupRequest": {
-        "description": "Auto-topup configuration.\n\nAll amounts are in JPY (integer). ``immediate_amount`` is accepted only\nas legacy caller metadata and is never credited by this public API.\nSupport team-service settlement code owns balance increases after Stripe\npayment has cleared.",
+        "description": "Auto-topup configuration + optional immediate top-up.\n\nAll amounts are in JPY (integer). ``immediate_amount > 0`` records a\n``topup`` ledger record and increases balance. This API does NOT touch\nStripe, so callers must provide an idempotency key for immediate credits.",
         "properties": {
           "auto_topup_amount": {
             "default": 0,
@@ -17582,9 +17582,22 @@
             "title": "Auto Topup Threshold",
             "type": "integer"
           },
+          "idempotency_key": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional retry key; prefer the Idempotency-Key header.",
+            "title": "Idempotency Key"
+          },
           "immediate_amount": {
             "default": 0,
-            "description": "Legacy requested one-shot credit amount (\u00a5). Ignored by this public API; no balance is minted.",
+            "description": "Optional one-shot credit (\u00a5) to record now as a topup txn.",
             "maximum": 10000000.0,
             "minimum": 0.0,
             "title": "Immediate Amount",
@@ -17610,6 +17623,19 @@
             ],
             "description": "Optional ledger note.",
             "title": "Note"
+          },
+          "request_id": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional legacy retry key used when Idempotency-Key is absent.",
+            "title": "Request Id"
           }
         },
         "title": "TopupRequest",
@@ -47831,9 +47857,45 @@
     },
     "/v1/wallet/topup": {
       "post": {
-        "description": "Updates ``auto_topup_threshold`` + ``auto_topup_amount`` + ``monthly_budget_yen`` on the caller's wallet. ``immediate_amount`` is ignored for balance purposes: this public API never records ``topup`` ledger records or increases balance. **This API does NOT call Stripe.**",
+        "description": "Updates ``auto_topup_threshold`` + ``auto_topup_amount`` + ``monthly_budget_yen`` on the caller's wallet. If ``immediate_amount > 0`` is supplied with an idempotency key, records one ``topup`` ledger record + updates balance. **This API does NOT call Stripe.**",
         "operationId": "update_wallet_topup_v1_wallet_topup_post",
         "parameters": [
+          {
+            "description": "Required for immediate topup retries.",
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for immediate topup retries.",
+              "title": "Idempotency-Key"
+            }
+          },
+          {
+            "description": "Optional immediate topup retry key.",
+            "in": "header",
+            "name": "X-Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional immediate topup retry key.",
+              "title": "X-Idempotency-Key"
+            }
+          },
           {
             "in": "header",
             "name": "X-API-Key",
@@ -47977,7 +48039,7 @@
             "description": "Subsystem unavailable \u2014 `code` \u2208 {subsystem_unavailable, service_unavailable, cap_reached}."
           }
         },
-        "summary": "Update auto-topup config",
+        "summary": "Update auto-topup config + optional one-shot credit",
         "tags": [
           "wallet",
           "credit"

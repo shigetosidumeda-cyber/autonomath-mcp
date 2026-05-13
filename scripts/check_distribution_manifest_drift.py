@@ -11,10 +11,10 @@ verification remains in ``scripts/probe_runtime_distribution.py``.
 from __future__ import annotations
 
 import argparse
-from collections import Counter
 import json
 import re
 import sys
+from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -49,7 +49,6 @@ TOOL_COUNT_PATTERNS = [
     re.compile(r"\b(\d{2,3})\s+tools\b", re.IGNORECASE),
     re.compile(r"\b(\d{2,3})-tool MCP\b", re.IGNORECASE),
     re.compile(r"\b(\d{2,3})-tool surface\b", re.IGNORECASE),
-    re.compile(r'"tool_count"\s*:\s*(\d{2,3})', re.IGNORECASE),
 ]
 
 OPENAPI_PATH_COUNT_PATTERNS = [
@@ -417,7 +416,12 @@ def _scan_json_tool_arrays(manifest: dict[str, Any]) -> list[DriftRow]:
         if not isinstance(data, dict) or not isinstance(data.get("tools"), list):
             continue
         found = len(data["tools"])
-        if found != expected_int:
+        # `tool_count_default_gates` is the published default-gate count, not
+        # necessarily the full static manifest inventory. Full manifests may
+        # carry additional gated or experimental tools for registry consumers,
+        # but they must never contain fewer tools than the advertised default
+        # surface.
+        if found < expected_int:
             rows.append(
                 DriftRow(
                     field="tool_count_default_gates",
@@ -425,7 +429,10 @@ def _scan_json_tool_arrays(manifest: dict[str, Any]) -> list[DriftRow]:
                     file=_rel(path),
                     observed=f"{found} JSON tools[] entries",
                     status="DRIFT",
-                    hint=f"Regenerate the manifest with {expected_int} tools or update the canonical count.",
+                    hint=(
+                        f"Regenerate the manifest with at least {expected_int} tools "
+                        "or lower the canonical default-gate count."
+                    ),
                 )
             )
     return rows

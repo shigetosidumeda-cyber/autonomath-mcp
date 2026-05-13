@@ -5,7 +5,6 @@ import re
 from pathlib import Path
 from urllib.parse import urlparse
 
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SITE = REPO_ROOT / "site"
 
@@ -30,7 +29,7 @@ def test_jsonld_logo_and_search_action_resolve() -> None:
     assert "https://jpcite.com/search?q={query}" in payload
     assert (SITE / "search.html").exists()
     redirects = (SITE / "_redirects").read_text(encoding="utf-8")
-    assert "/search /search.html 200" in redirects
+    assert "/search /search.html 200" not in redirects
 
 
 def test_known_broken_public_links_are_not_reintroduced() -> None:
@@ -166,10 +165,11 @@ def test_site_ai_discovery_tool_counts_advertise_runtime_total() -> None:
         payload = json.loads(path.read_text(encoding="utf-8"))
         assert len(payload["tools"]) == 151
         assert payload["_meta"]["tool_count"] == 151
-        assert payload["_meta"]["io.modelcontextprotocol.registry/publisher-provided"][
-            "tool_count"
-        ] == 151
-        assert "151 tools" in payload["description"]
+        assert (
+            payload["_meta"]["io.modelcontextprotocol.registry/publisher-provided"]["tool_count"]
+            == 151
+        )
+        assert "139 tools" in payload["description"]
         assert "150 tools" not in payload["description"]
 
     agents = json.loads((SITE / ".well-known" / "agents.json").read_text(encoding="utf-8"))

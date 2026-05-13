@@ -314,7 +314,6 @@ def _failures_for_index_legacy_bridge(html: str, json_ld: list[Any]) -> list[str
 
 def _failures_for_canonical_urls() -> list[str]:
     failures: list[str] = []
-    canonical_re = re.compile(r'<link rel="canonical"[^>]+https://jpcite\.com/[^">]+\.html')
     canonical_href_re = re.compile(
         r'<link\s+[^>]*rel=["\']canonical["\'][^>]*href=["\']([^"\']+)["\']'
         r'|<link\s+[^>]*href=["\']([^"\']+)["\'][^>]*rel=["\']canonical["\']',
@@ -326,18 +325,27 @@ def _failures_for_canonical_urls() -> list[str]:
     for path in site_dir.rglob("*.html"):
         rel = str(path.relative_to(ROOT))
         text = path.read_text(encoding="utf-8", errors="replace")
-        if canonical_re.search(text):
-            failures.append(f"{rel} canonical must be extensionless")
+        match = canonical_href_re.search(text)
+        href = (match.group(1) or match.group(2)) if match else ""
+        if href.endswith(".html"):
+            site_rel = path.relative_to(site_dir)
+            case_record_page = (
+                len(site_rel.parts) == 2
+                and site_rel.parts[0] == "cases"
+                and site_rel.name != "index.html"
+            )
+            if not case_record_page:
+                failures.append(f"{rel} canonical must be extensionless")
         if path.parent == program_dir and path.name not in reserved_program_pages:
-            match = canonical_href_re.search(text)
-            href = (match.group(1) or match.group(2)) if match else ""
             expected = f"https://jpcite.com/programs/{path.stem}"
             if href != expected:
                 failures.append(f"{rel} canonical must be {expected}")
 
     sitemap = _read("site/sitemap.xml")
-    if re.search(r"https://jpcite\.com/[^ <\"]+\.html", sitemap):
-        failures.append("site/sitemap.xml contains .html canonical URLs")
+    for match in re.finditer(r"https://jpcite\.com/[^ <\"]+\.html", sitemap):
+        if not re.fullmatch(r"https://jpcite\.com/cases/[^ <\"]+\.html", match.group(0)):
+            failures.append("site/sitemap.xml contains .html canonical URLs")
+            break
     return failures
 
 

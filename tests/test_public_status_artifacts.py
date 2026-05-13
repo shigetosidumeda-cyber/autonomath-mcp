@@ -4,7 +4,6 @@ import json
 import re
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SITE_STATUS = REPO_ROOT / "site" / "status"
 HEADERS_FILE = REPO_ROOT / "site" / "_headers"
@@ -48,6 +47,7 @@ PUBLIC_LEAK_PATTERNS = (
     re.compile(r"\bmagic_link_ok\b"),
 )
 
+
 def test_status_html_json_references_exist() -> None:
     missing: list[str] = []
     for html in sorted(SITE_STATUS.glob("*.html")):
@@ -83,7 +83,7 @@ def test_status_html_canonicals_match_public_files() -> None:
         expected = (
             "https://jpcite.com/status/"
             if path.name == "index.html"
-            else f"https://jpcite.com/status/{path.name}"
+            else f"https://jpcite.com/status/{path.stem}"
         )
         assert match.group(1) == expected
 
