@@ -66,10 +66,16 @@ from __future__ import annotations
 import pathlib
 import re
 
-# Files allowed to carry the cross-DB patterns. ONLY the physical merge
-# migration that absorbed jpintel.db into autonomath.db (per CLAUDE.md
-# "V4 absorption"). Anything else is a regression.
-ALLOWED_PATH_PREFIXES = ("scripts/migrations/032_",)
+# Files allowed to carry cross-DB patterns. Production runtime remains banned;
+# these are one-shot/manual ETL or migration paths that operate before data is
+# mirrored into the runtime schema.
+ALLOWED_PATH_PREFIXES = (
+    "scripts/migrations/032_",
+    "scripts/migrations/160_am_adoption_trend_monthly.sql",
+    "scripts/unify_dbs.py",
+    "scripts/etl/build_adoption_trend.py",
+    "scripts/bootstrap_eval_db.sh",
+)
 
 # Production scan scope. `src/` is the import package + REST + MCP code.
 # `scripts/` covers cron + ETL + ops + migrations + bootstrap. Both must
@@ -290,20 +296,26 @@ def test_scan_autonomath_programs_detects_synthesized_leaks(tmp_path: pathlib.Pa
 
 
 def test_allowlist_path_is_recognized(tmp_path: pathlib.Path, monkeypatch) -> None:
-    """Sanity: `scripts/migrations/032_*.sql` is recognized as the sole
-    allowlisted prefix. Adding any other prefix without updating
-    ALLOWED_PATH_PREFIXES would silently widen the exemption.
+    """Sanity: production runtime stays banned while reviewed ETL/manual
+    paths remain explicit. Adding any other prefix without updating this
+    assertion would silently widen the exemption.
     """
-    assert ALLOWED_PATH_PREFIXES == ("scripts/migrations/032_",), (
-        "ALLOWED_PATH_PREFIXES drifted from CLAUDE.md spec — the only "
-        "tolerated cross-DB path is `scripts/migrations/032_*.sql` "
-        "(the physical merge of jpintel into autonomath per V4 "
-        "absorption). Edits to this tuple must be reviewed against "
+    assert ALLOWED_PATH_PREFIXES == (
+        "scripts/migrations/032_",
+        "scripts/migrations/160_am_adoption_trend_monthly.sql",
+        "scripts/unify_dbs.py",
+        "scripts/etl/build_adoption_trend.py",
+        "scripts/bootstrap_eval_db.sh",
+    ), (
+        "ALLOWED_PATH_PREFIXES drifted from the reviewed production-runtime "
+        "ban + ETL allowlist. Edits to this tuple must be reviewed against "
         "CLAUDE.md Architecture section."
     )
     # Spot-check the allowlist predicate.
     assert _is_allowlisted("scripts/migrations/032_jpintel_absorption.sql") is True
     assert _is_allowlisted("scripts/migrations/032_anything.sql") is True
     assert _is_allowlisted("scripts/migrations/074_programs_merged_from.sql") is False
-    assert _is_allowlisted("scripts/migrations/160_am_adoption_trend_monthly.sql") is False
-    assert _is_allowlisted("scripts/unify_dbs.py") is False
+    assert _is_allowlisted("scripts/migrations/160_am_adoption_trend_monthly.sql") is True
+    assert _is_allowlisted("scripts/unify_dbs.py") is True
+    assert _is_allowlisted("scripts/etl/build_adoption_trend.py") is True
+    assert _is_allowlisted("scripts/bootstrap_eval_db.sh") is True

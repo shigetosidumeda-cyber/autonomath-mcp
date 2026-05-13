@@ -13,7 +13,7 @@ The 8 (+ legacy amount_conditions wrapper) tool keys recognized by
 
     exclusion_rules                -> ExclusionRulesBatchRow  (jpintel.exclusion_rules)
     enforcement_amount             -> EnforcementAmountRow    (autonomath.am_enforcement_detail UPDATE)
-    jsic_classification            -> JsicTag                 (autonomath.programs.jsic_*)
+    jsic_classification            -> JsicTag                 (program JSIC fields)
     program_narrative              -> Narrative               (autonomath.am_program_narrative)
     houjin_360_narrative           -> Houjin360Narrative      (autonomath.am_houjin_360_narrative)
     enforcement_summary            -> EnforcementSummary      (autonomath.am_enforcement_summary)

@@ -60,6 +60,8 @@ def _enumerate_handlers() -> list[Path]:
     for path in FUNCTIONS_DIR.rglob("*.ts"):
         if not path.is_file():
             continue
+        if "node_modules" in path.parts:
+            continue
         if path.name.startswith("_"):
             continue
         results.append(path)

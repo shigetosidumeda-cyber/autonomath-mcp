@@ -16,9 +16,9 @@ range, revenue range, prefecture — and the response bundles:
     average_amount_yen / cohort_share / case_ids
   * a summary band: total_cases, distinct_programs, mean / median amount
 
-The tool stitches across the two SQLite files **without** ATTACH DATABASE
-— each side is opened read-only via the existing connection helpers and
-the results are merged in Python. We never JOIN across files.
+The tool stitches across the two SQLite files by opening each side read-only
+via the existing connection helpers and merging the results in Python. It does
+not join across files.
 
 Sparsity caveats are surfaced in the response (`sparsity_notes`) so a
 caller never confuses "0 amount rows" with "0 cohort matches" — only

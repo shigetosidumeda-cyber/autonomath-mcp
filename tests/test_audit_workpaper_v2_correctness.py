@@ -156,7 +156,9 @@ def test_mcp_compose_uses_current_autonomath_schema(
 ) -> None:
     conn = _seed_current_autonomath_schema(tmp_path / "autonomath.db")
     conn.close()
-    monkeypatch.setenv("AUTONOMATH_DB_PATH", str(tmp_path / "autonomath.db"))
+    db_path = str(tmp_path / "autonomath.db")
+    monkeypatch.setenv("AUTONOMATH_DB_PATH", db_path)
+    monkeypatch.setenv("JPCITE_AUTONOMATH_DB_PATH", db_path)
 
     from jpintel_mcp.mcp.autonomath_tools import db as _db_mod
     from jpintel_mcp.mcp.autonomath_tools.audit_workpaper_v2 import (
