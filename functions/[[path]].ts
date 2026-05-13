@@ -1,6 +1,6 @@
 /// <reference types="@cloudflare/workers-types" />
 /*
- * Catch-all .md proxy (Wave 45 — companion .md full propagation).
+ * Catch-all source-backed proxy (Wave 45/50).
  *
  * Problem
  * -------
@@ -14,21 +14,19 @@
  * (verified via direct wrangler upload 2026-05-12, error code returned
  * by Cloudflare API).
  *
- * Strategy adopted (3 alternatives evaluated, see report attached to PR)
- * ---------------------------------------------------------------------
- *   (A) Direct upload all 32,356 files: BLOCKED by Free-plan 20k limit.
- *   (B) Drop `programs/*.html` (10,813 files) so the rest fits: still 21,543
- *       — over the 20k limit by 1,543. Drops cross-link surface.
- *   (C) [adopted] Keep `pages-deploy-main.yml` rsync exclusion of *.md,
- *       and serve all `.md` requests via this Pages Function. The Function
- *       transparently fetches the file from raw.githubusercontent.com
- *       (the file IS in the git repo at site/<path>.md) and caches it at
- *       the Cloudflare edge for 24h. Zero file-count impact on Pages.
+ * Strategy adopted
+ * ----------------
+ * Keep the Pages artifact under Cloudflare's 20k-file deployment limit by
+ * excluding high-count source-backed files from rsync, then serve those URLs
+ * via this Pages Function. The Function transparently fetches the file from
+ * raw.githubusercontent.com (the file IS in the git repo under site/) and
+ * caches it at the Cloudflare edge for 24h. Zero file-count impact on Pages.
  *
  * Operational properties
  * ----------------------
- *   - Coverage: all 10,282 companion .md become 200 immediately on first
- *     edge fetch (warm cache thereafter).
+ *   - Coverage: all 10,282 companion .md plus canonical `/laws/<slug>` law
+ *     HTML routes become 200 immediately on first edge fetch (warm cache
+ *     thereafter).
  *   - Cache: 24h edge TTL via Cache API, plus immutable git ref so stale
  *     reads after a content update are bounded by 24h.
  *   - Failure mode: if raw.githubusercontent.com is unreachable (CF
@@ -44,12 +42,10 @@
  * ------------
  * This Function MUST run as a catch-all because CF Pages Functions
  * cannot register multiple specific .md routes statically. The handler
- * filters by suffix: any request whose pathname does NOT end in `.md`
- * is passed through to ASSETS (the static site). Requests that DO end
- * in `.md` are proxied unless the file is already part of the static
- * surface (e.g. `press/*.md`, `security/policy.md`, which the deploy
- * workflow includes by name) — those are also passed through to ASSETS
- * first, and only if ASSETS returns 404 do we proxy from GitHub raw.
+ * filters by allowlisted source-backed shape: `.md`, `/laws/<slug>`, and
+ * `/laws/<slug>.html`. Everything else is passed through to ASSETS (the
+ * static site). Allowlisted paths are also passed through to ASSETS first,
+ * and only if ASSETS returns 404 do we proxy from GitHub raw.
  *
  * This single-function design is necessary because /functions/[[path]].ts
  * intercepts ALL routes. Any new Pages Function added in this repo must
@@ -80,17 +76,72 @@ const EDGE_CACHE_SECONDS = 86400;
 // text/plain without a charset, which breaks Japanese rendering in some
 // LLM citation pipelines.
 const MD_CONTENT_TYPE = "text/markdown; charset=utf-8";
+const HTML_CONTENT_TYPE = "text/html; charset=utf-8";
+
+type RawProxyRoute = {
+  upstreamPath: string;
+  contentType: string;
+  sourceHeader: string;
+  unavailableMessage: string;
+};
+
+function sourceBackedLawHtmlPath(pathname: string): string | null {
+  const prefix = "/laws/";
+  if (!pathname.startsWith(prefix)) {
+    return null;
+  }
+  const filename = pathname.slice(prefix.length);
+  if (filename.length === 0 || filename.includes("/") || filename.startsWith(".")) {
+    return null;
+  }
+  if (filename.endsWith(".html")) {
+    return filename.length > ".html".length ? pathname : null;
+  }
+  if (filename.includes(".")) {
+    return null;
+  }
+  return `${pathname}.html`;
+}
+
+function rawProxyRoute(pathname: string): RawProxyRoute | null {
+  if (pathname.endsWith(".md")) {
+    return {
+      upstreamPath: pathname,
+      contentType: MD_CONTENT_TYPE,
+      sourceHeader: "x-jpcite-md-source",
+      unavailableMessage: "markdown_source_unavailable",
+    };
+  }
+  const lawHtmlPath = sourceBackedLawHtmlPath(pathname);
+  if (lawHtmlPath !== null) {
+    return {
+      upstreamPath: lawHtmlPath,
+      contentType: HTML_CONTENT_TYPE,
+      sourceHeader: "x-jpcite-html-source",
+      unavailableMessage: "html_source_unavailable",
+    };
+  }
+  return null;
+}
+
+function notFoundBody(pathname: string, contentType: string): string {
+  if (contentType === HTML_CONTENT_TYPE) {
+    return `<!doctype html><meta charset="utf-8"><title>404</title><h1>404</h1><p>${pathname} not found.</p>\n`;
+  }
+  return `# 404 — ${pathname}\nNot found.\n`;
+}
 
 export const onRequest: PagesFunction<Env> = async (context) => {
   const { request, env } = context;
   const url = new URL(request.url);
 
-  // Fast-path: anything that is not a GET/HEAD or does not end in `.md`
+  // Fast-path: anything that is not a GET/HEAD or is not source-backed
   // is delegated to the static Pages surface.
   if (request.method !== "GET" && request.method !== "HEAD") {
     return env.ASSETS.fetch(request);
   }
-  if (!url.pathname.endsWith(".md")) {
+  const route = rawProxyRoute(url.pathname);
+  if (route === null) {
     return env.ASSETS.fetch(request);
   }
   if (
@@ -99,15 +150,15 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     url.pathname.includes("/.git/") ||
     url.pathname.includes("..")
   ) {
-    return new Response("# 404\nNot found.\n", {
+    return new Response(notFoundBody(url.pathname, route.contentType), {
       status: 404,
-      headers: { "content-type": MD_CONTENT_TYPE },
+      headers: { "content-type": route.contentType },
     });
   }
 
-  // Pages static surface MAY include some .md files (press/*.md,
-  // security/policy.md per the deploy rsync include list). Try ASSETS
-  // first; only proxy on 404.
+  // Pages static surface MAY include some allowlisted files (press/*.md,
+  // security/policy.md per the deploy rsync include list). Try ASSETS first;
+  // only proxy on 404.
   const staticResp = await env.ASSETS.fetch(request);
   if (staticResp.status !== 404) {
     return staticResp;
@@ -123,9 +174,9 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     return cached;
   }
 
-  // Build the raw.githubusercontent.com URL. CF Pages always normalises
-  // the request to `/foo/bar.md`; we splice that onto the canonical base.
-  const upstream = `${GITHUB_RAW_BASE}${url.pathname}`;
+  // Build the raw.githubusercontent.com URL. We splice the allowlisted source
+  // path onto the canonical site/ base; extensionless law URLs map to .html.
+  const upstream = `${GITHUB_RAW_BASE}${route.upstreamPath}`;
   let upstreamResp: Response;
   try {
     upstreamResp = await fetch(upstream, {
@@ -146,7 +197,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     return new Response(
       JSON.stringify({
         error: "upstream_unreachable",
-        message: "markdown_source_unavailable",
+        message: route.unavailableMessage,
       }),
       {
         status: 502,
@@ -159,9 +210,9 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     // True 404 — neither the static surface nor the git tree has it.
     // Pass through GitHub's body but normalise content-type so the
     // client sees a clean error.
-    return new Response(`# 404 — ${url.pathname}\nNot found.\n`, {
+    return new Response(notFoundBody(url.pathname, route.contentType), {
       status: 404,
-      headers: { "content-type": MD_CONTENT_TYPE },
+      headers: { "content-type": route.contentType },
     });
   }
 
@@ -170,7 +221,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     return new Response(
       JSON.stringify({
         error: "upstream_error",
-        message: "markdown_source_unavailable",
+        message: route.unavailableMessage,
       }),
       {
         status: 502,
@@ -185,9 +236,9 @@ export const onRequest: PagesFunction<Env> = async (context) => {
   const resp = new Response(body, {
     status: 200,
     headers: {
-      "content-type": MD_CONTENT_TYPE,
+      "content-type": route.contentType,
       "cache-control": `public, max-age=${EDGE_CACHE_SECONDS}`,
-      "x-jpcite-md-source": "github-raw-proxy",
+      [route.sourceHeader]: "github-raw-proxy",
       // CORS so browser fetch() and LLM citation pipelines can pull
       // these as text/markdown without preflight grief.
       "access-control-allow-origin": "*",

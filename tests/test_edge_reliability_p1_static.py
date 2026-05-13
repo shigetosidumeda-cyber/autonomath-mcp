@@ -1,4 +1,5 @@
 """Static guard for edge reliability P1 Pages Function hardening."""
+
 from __future__ import annotations
 
 import json
@@ -96,6 +97,7 @@ def test_pages_routes_limit_function_invocations_to_dynamic_surfaces() -> None:
     assert "/x402/*" in include
     assert "/webhook/*" in include
     assert "/artifacts/*" in include
+    assert "/laws/*" in include
     assert "/*.md" in include
     assert routes["exclude"] == []
 
@@ -119,7 +121,7 @@ def test_pages_routes_document_api_v1_and_x402_handler_expectations() -> None:
     assert "/x402/*" in include
 
     x402_mount = _read("functions/x402/[[path]].ts")
-    assert '../x402_handler' in x402_mount
+    assert "../x402_handler" in x402_mount
 
     x402_src = _read("functions/x402_handler.ts")
     assert 'path === "/x402/quote" && method === "POST"' in x402_src
@@ -149,7 +151,7 @@ def test_edge_anon_limiter_does_not_trust_junk_auth_header_presence() -> None:
 def test_edge_anon_limiter_ipv4_bucket_matches_origin_exact_ip() -> None:
     src = _read("functions/anon_rate_limit_edge.ts")
     assert "Exact IPv4, /64 for IPv6" in src
-    assert 'return trimmed;' in src
+    assert "return trimmed;" in src
     assert '.slice(0, 3).join(".")' not in src
     assert "IPv4 → /24" not in src
 
@@ -184,9 +186,7 @@ def test_edge_anon_limiter_documents_kv_non_atomic_residual_p1() -> None:
     assert "Workers KV read-modify-write is NOT atomic" in src, (
         "edge doc must call out the KV RMW non-atomic property"
     )
-    assert "Durable Object" in src, (
-        "edge doc must surface the DO upgrade path as the right answer"
-    )
+    assert "Durable Object" in src, "edge doc must surface the DO upgrade path as the right answer"
     assert "Origin anon_limit.py remains" in src, (
         "edge doc must reaffirm origin authority on success grant"
     )
@@ -213,7 +213,7 @@ def test_edge_anon_limiter_keeps_origin_alignment_constants() -> None:
     assert "canonicalIpv6Slash64" in edge, (
         "edge must call canonicalIpv6Slash64 so the /64 text form matches origin"
     )
-    assert ".slice(0, 4).join(\":\")" not in edge, (
+    assert '.slice(0, 4).join(":")' not in edge, (
         "edge must NOT use the legacy naive split — it drifts on `::` inputs"
     )
 
@@ -277,7 +277,7 @@ def test_edge_rejects_missing_cf_connecting_ip_with_503() -> None:
     assert "503" in src
     assert "edge_ip_unavailable" in src
     # Old pass-through path on the "unknown" branch must be gone.
-    assert "if (ip === \"unknown\") return context.next();" not in src
+    assert 'if (ip === "unknown") return context.next();' not in src
     # New rejection must explicitly check for the absent header BEFORE
     # normalising — guards against silently buying empty-string IPs.
     assert 'context.request.headers.get("CF-Connecting-IP")' in src

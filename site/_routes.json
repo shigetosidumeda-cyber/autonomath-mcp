@@ -9,6 +9,7 @@
     "/artifacts/*",
     "/dpa_issue",
     "/ab_assign",
+    "/laws/*",
     "/*.md"
   ],
   "exclude": []

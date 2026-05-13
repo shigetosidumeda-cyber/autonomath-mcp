@@ -246,8 +246,10 @@ jobs:
             --include 'security/policy.md' \
             --include 'tools/' \
             --include 'tools/*.md' \
+            --exclude 'laws/*.html' \
             --exclude '*.md' \
             site/ dist/site/
+          # 2026-05-13 Wave 50: laws/*.html (6,494 files) and
           # 2026-05-12 Wave 45: laws/enforcement/cases/*.md (10,282 files)
           # are intentionally NOT bundled here, but ARE served end-to-end.
           # The full site/ tree is 32,356 files vs the Free-plan CF Pages
@@ -255,12 +257,13 @@ jobs:
           # `Pages only supports up to 20,000 files in a deployment for
           # your current plan`, run 2026-05-12). Wave 45 wires
           # `functions/[[path]].ts` (catch-all Pages Function) which
-          # intercepts every `*.md` GET that ASSETS returns 404 for,
+          # intercepts every source-backed GET that ASSETS returns 404 for,
           # fetches the file from raw.githubusercontent.com (the source
-          # IS in the git repo at site/<path>.md), and caches it at the
+          # IS in the git repo under site/), and caches it at the
           # CF edge for 24h. Net behaviour:
           #   - Pages deploy stays under the 20k file budget.
-          #   - All 10,282 `.md` URLs return 200 with edge cache.
+          #   - All companion `.md` and canonical `/laws/<slug>` URLs return
+          #     200 with edge cache.
           #   - Zero dependency on api.jpcite.com (Wave 44 Fly outage).
           # See functions/[[path]].ts header for the full ADR (3
           # strategies evaluated: direct upload / partial trim / Function
@@ -362,24 +365,22 @@ jobs:
           done
           echo "post-deploy smoke OK"
 
-      - name: Post-deploy smoke (Wave 45 .md catch-all Function)
+      - name: Post-deploy smoke (source-backed catch-all Function)
         if: steps.cf-secrets.outputs.available == 'true'
         run: |
           set -euo pipefail
-          # Wave 45 verification: functions/[[path]].ts must proxy any
-          # .md URL that ASSETS returns 404 for. Sample one canonical
-          # path from each of the three large cohorts (laws,
-          # enforcement, cases). All must return 200 or the deploy fails.
-          # Sampled URLs
-          # are stable canonical filenames present in the git tree as
-          # of the deploy commit.
+          # Verification: functions/[[path]].ts must proxy source-backed URLs
+          # that ASSETS returns 404 for. Sample the law HTML cohort excluded
+          # from the Pages artifact plus one .md path from each large cohort.
           Q="deploy_check=$(date +%s)"
           for url in \
+            "https://jpcite.com/laws/chusho-kihon?$Q" \
+            "https://jpcite.com/laws/chusho-kihon.html?$Q" \
             "https://jpcite.com/laws/chusho-kihon.md?$Q" \
             "https://jpcite.com/enforcement/act-10084.md?$Q" \
             "https://jpcite.com/cases/mirasapo_case_118.md?$Q"
           do
-            echo "md-smoke: $url"
+            echo "source-backed-smoke: $url"
             ok=false
             for attempt in 1 2 3 4 5 6; do
               # Accept 200 from either the proxy path or static path —
@@ -389,12 +390,12 @@ jobs:
                 ok=true
                 break
               fi
-              echo "md-smoke retry ${attempt}/6 for $url (status=$status)"
+              echo "source-backed-smoke retry ${attempt}/6 for $url (status=$status)"
               sleep $((attempt * 10))
             done
             if [ "$ok" != "true" ]; then
-              echo "::error::Wave 45 .md smoke failed for $url"
+              echo "::error::source-backed smoke failed for $url"
               exit 1
             fi
           done
-          echo "Wave 45 .md smoke OK"
+          echo "source-backed smoke OK"

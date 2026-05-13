@@ -209,6 +209,13 @@ def _generated_audience_matrix_paths() -> set[str]:
     }
 
 
+@lru_cache(maxsize=1)
+def _generated_prefecture_paths() -> set[str]:
+    from scripts._pref_slugs import PREFECTURES
+
+    return {"/prefectures/", *(f"/prefectures/{slug}/" for slug, _name in PREFECTURES)}
+
+
 def _workflow_python_command_position(text: str, script: str) -> int | None:
     match = re.search(
         rf"(?m)^\s+python3?\s+{re.escape(script)}(?:\s|$)",
@@ -226,6 +233,7 @@ def _workflow_rsync_position(text: str) -> int | None:
 def _pages_workflows_generate_source_backed_targets() -> bool:
     generators = (
         "scripts/generate_geo_industry_pages.py",
+        "scripts/generate_prefecture_pages.py",
         "scripts/regen_structured_sitemap_and_llms_meta.py",
     )
     for workflow in PAGES_WORKFLOWS:
@@ -243,10 +251,14 @@ def _pages_workflows_generate_source_backed_targets() -> bool:
 def _is_generated_static_target_backed_by_source(url_path: str) -> bool:
     if _has_docs_source(url_path):
         return True
+    if not _pages_workflows_generate_source_backed_targets():
+        return False
+    if url_path == "/sitemap-structured.xml":
+        return True
     normalized = url_path if url_path.endswith("/") else f"{url_path}/"
     return (
-        _pages_workflows_generate_source_backed_targets()
-        and normalized in _generated_audience_matrix_paths()
+        normalized in _generated_audience_matrix_paths()
+        or normalized in _generated_prefecture_paths()
     )
 
 
@@ -964,6 +976,14 @@ def test_robots_sitemap_block_aligns_with_sitemap_index() -> None:
         f"sitemap-index.xml lists sitemaps that are not advertised in robots.txt: "
         f"{sorted(in_index_only)}"
     )
+
+
+def test_generated_sitemap_targets_are_source_backed_before_pages_publish() -> None:
+    assert _pages_workflows_generate_source_backed_targets()
+    assert _is_generated_static_target_backed_by_source("/sitemap-structured.xml")
+    assert _is_generated_static_target_backed_by_source("/prefectures/")
+    assert _is_generated_static_target_backed_by_source("/prefectures/tokyo")
+    assert not _is_generated_static_target_backed_by_source("/prefectures/not-a-pref")
 
 
 def test_sitemap_shards_only_reference_existing_static_targets() -> None:

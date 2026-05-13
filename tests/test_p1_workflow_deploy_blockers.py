@@ -14,6 +14,8 @@ INGEST_DAILY = WORKFLOWS / "ingest-daily.yml"
 PAGES_DEPLOY_MAIN = WORKFLOWS / "pages-deploy-main.yml"
 PAGES_PREVIEW = WORKFLOWS / "pages-preview.yml"
 PAGES_REGENERATE = WORKFLOWS / "pages-regenerate.yml"
+PAGES_CATCH_ALL_FUNCTION = REPO_ROOT / "functions" / "[[path]].ts"
+PAGES_ROUTES = REPO_ROOT / "site" / "_routes.json"
 STATUS_PROBE_CRON = WORKFLOWS / "status-probe-cron.yml"
 EVOLUTION_DASHBOARD = WORKFLOWS / "evolution-dashboard-weekly.yml"
 PRODUCTION_GATE_DASHBOARD = WORKFLOWS / "production-gate-dashboard-daily.yml"
@@ -130,18 +132,39 @@ def test_status_probe_cron_can_import_src_package() -> None:
     assert "PYTHONPATH: src" in text or "pip install -e" in text
 
 
-def test_pages_md_route_smoke_is_hard_gate() -> None:
+def test_pages_source_backed_route_smoke_is_hard_gate() -> None:
     text = _text(PAGES_DEPLOY_MAIN)
-    step = text[text.index("Post-deploy smoke (Wave 45 .md catch-all Function)") :]
+    step = text[text.index("Post-deploy smoke (source-backed catch-all Function)") :]
 
+    assert "https://jpcite.com/laws/chusho-kihon?$Q" in step
+    assert "https://jpcite.com/laws/chusho-kihon.html?$Q" in step
     assert "https://jpcite.com/laws/chusho-kihon.md?$Q" in step
     assert "https://jpcite.com/enforcement/act-10084.md?$Q" in step
     assert "https://jpcite.com/cases/mirasapo_case_118.md?$Q" in step
-    assert "::error::Wave 45 .md smoke failed" in step
+    assert "::error::source-backed smoke failed" in step
     assert re.search(r'if \[ "\$ok" != "true" \]; then\n\s+echo "::error::', step)
     assert re.search(r'if \[ "\$ok" != "true" \]; then.*?\n\s+exit 1', step, re.DOTALL)
     assert "transient failures" not in step
-    assert "::warning::Wave 45 .md smoke failed" not in step
+    assert "::warning::source-backed smoke failed" not in step
+
+
+def test_pages_law_html_artifact_trim_is_backed_by_function_proxy() -> None:
+    for workflow in (PAGES_PREVIEW, PAGES_DEPLOY_MAIN, PAGES_REGENERATE):
+        text = _text(workflow)
+        assert "--exclude 'laws/*.html'" in text
+        assert text.index("--exclude 'laws/*.html'") < text.index("--exclude '*.md'")
+
+    function = _text(PAGES_CATCH_ALL_FUNCTION)
+    assert "function sourceBackedLawHtmlPath(pathname: string): string | null" in function
+    assert 'const prefix = "/laws/";' in function
+    assert "return `${pathname}.html`;" in function
+    assert 'const HTML_CONTENT_TYPE = "text/html; charset=utf-8";' in function
+    assert 'sourceHeader: "x-jpcite-html-source"' in function
+    assert '"content-type": MD_CONTENT_TYPE,' not in function
+
+    routes = _text(PAGES_ROUTES)
+    assert '"/laws/*"' in routes
+    assert '"/*"' not in routes
 
 
 def test_dashboard_pages_deploys_use_canonical_project_and_secrets() -> None:
