@@ -211,9 +211,6 @@ def test_manifest_parses_and_has_required_keys() -> None:
     assert int(data["tool_count_default_gates"]) == EXPECTED_TOOL_COUNT_DEFAULT_GATES
     assert int(data["route_count"]) == EXPECTED_ROUTE_COUNT
     assert int(data["openapi_path_count"]) == EXPECTED_OPENAPI_PATH_COUNT
-    assert int(data["tool_count_default_gates"]) == 151
-    assert int(data["route_count"]) == 354
-    assert int(data["openapi_path_count"]) == 297
 
     assert "site/mcp-server.json" in data["version_surface_paths"]
     assert "site/mcp-server.full.json" in data["version_surface_paths"]
