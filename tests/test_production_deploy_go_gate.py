@@ -111,6 +111,26 @@ def test_fly_app_command_context_detects_quoted_equals_legacy_alias(
     assert sum("legacy_fly_app_context" in issue for issue in check.issues) == 2
 
 
+def test_fly_app_command_context_allows_shadow_jpcite_api_workflow(
+    tmp_path: Path,
+) -> None:
+    mod = _load_module()
+    root = _minimal_repo(tmp_path)
+    workflow = root / ".github" / "workflows" / "deploy-jpcite-api.yml"
+    workflow.parent.mkdir(parents=True, exist_ok=True)
+    workflow.write_text(
+        "steps:\n  - run: flyctl secrets list -a jpcite-api\n",
+        encoding="utf-8",
+    )
+
+    check = mod.check_fly_app_command_contexts(root)
+
+    assert check.ok is True
+    assert (
+        ".github/workflows/deploy-jpcite-api.yml" in check.evidence["allowed_legacy_context_files"]
+    )
+
+
 def test_fly_app_command_context_detects_fly_toml_mismatch(tmp_path: Path) -> None:
     mod = _load_module()
     root = _minimal_repo(tmp_path)

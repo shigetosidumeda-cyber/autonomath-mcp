@@ -27,6 +27,13 @@ LEGACY_FLY_APP_ALIASES = (
     "AutonoMath",
     "jpintel-mcp",
 )
+ALLOWED_LEGACY_FLY_APP_CONTEXT_FILES = frozenset(
+    {
+        # Shadow-app deployment is intentionally separate from the production SOT
+        # (`deploy.yml` -> autonomath-api) until the explicit DNS cutover.
+        Path(".github/workflows/deploy-jpcite-api.yml"),
+    }
+)
 REQUIRED_PRODUCTION_SECRETS = (
     "ADMIN_API_KEY",
     "API_KEY_SALT",
@@ -170,10 +177,13 @@ def check_fly_app_command_contexts(repo_root: Path) -> GateCheck:
     elif fly_toml_app != CANONICAL_FLY_APP:
         issues.append(f"fly_toml_app_mismatch:expected={CANONICAL_FLY_APP}:actual={fly_toml_app}")
     for path in _iter_scan_files(repo_root):
+        rel_path = path.relative_to(repo_root)
+        if rel_path in ALLOWED_LEGACY_FLY_APP_CONTEXT_FILES:
+            continue
         text = _read_text(path)
         for lineno, line in enumerate(text.splitlines(), start=1):
             if any(pattern.search(line) for pattern in patterns):
-                hits.append(f"{path.relative_to(repo_root)}:{lineno}:{line.strip()[:180]}")
+                hits.append(f"{rel_path}:{lineno}:{line.strip()[:180]}")
     issues.extend(f"legacy_fly_app_context:{hit}" for hit in hits)
     return GateCheck(
         name="fly_app_command_contexts",
@@ -184,6 +194,9 @@ def check_fly_app_command_contexts(repo_root: Path) -> GateCheck:
             "canonical_fly_app": CANONICAL_FLY_APP,
             "fly_toml_app": fly_toml_app,
             "legacy_aliases": list(LEGACY_FLY_APP_ALIASES),
+            "allowed_legacy_context_files": [
+                str(path) for path in sorted(ALLOWED_LEGACY_FLY_APP_CONTEXT_FILES)
+            ],
             "scanned_files": len(_iter_scan_files(repo_root)),
         },
     )
