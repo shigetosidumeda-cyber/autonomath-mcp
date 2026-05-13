@@ -1,15 +1,15 @@
 {
-  "snapshot_at": "2026-05-12T10:25:15+09:00",
+  "snapshot_at": "2026-05-14T00:21:12+09:00",
   "components": {
     "api": {
-      "status": "down",
-      "latency_ms": 10073,
-      "error_category": "timeout"
+      "status": "ok",
+      "latency_ms": 660,
+      "error_category": null
     },
     "mcp": {
-      "status": "down",
-      "latency_ms": 10046,
-      "error_category": "timeout"
+      "status": "degraded",
+      "latency_ms": 1124,
+      "error_category": "external_dependency_unavailable"
     },
     "billing": {
       "status": "ok",
@@ -24,10 +24,10 @@
       "max_age_days": null
     },
     "dashboard": {
-      "status": "degraded",
-      "latency_ms": 282,
-      "error_category": "timeout"
+      "status": "ok",
+      "latency_ms": 250,
+      "error_category": null
     }
   },
-  "overall": "down"
+  "overall": "degraded"
 }
