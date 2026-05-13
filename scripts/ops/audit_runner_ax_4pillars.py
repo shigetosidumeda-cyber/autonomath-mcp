@@ -21,7 +21,7 @@ import pathlib
 import re
 import sys
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 SITE = REPO_ROOT / "site"
@@ -222,8 +222,7 @@ def access_pillar() -> Pillar:
     passed = caller_count >= REQUIRE_SCOPE_MIN_CALLERS
     if passed:
         evidence_msg = (
-            f"{caller_count} route file(s) import + Depends(require_scope(...)): "
-            f"{caller_paths[:6]}"
+            f"{caller_count} route file(s) import + Depends(require_scope(...)): {caller_paths[:6]}"
         )
         missing_msg = ""
     else:
@@ -832,8 +831,7 @@ def orchestration_pillar() -> Pillar:
     )
     a2a_text = _read(SRC_API / "a2a.py")
     has_transport_advertisement = (
-        '"mcp_stdio"' in a2a_text
-        and '"mcp_streamable_http"' in a2a_text
+        '"mcp_stdio"' in a2a_text and '"mcp_streamable_http"' in a2a_text
     ) or (
         "a2a_transport_advertisements" in a2a_text
         and "a2a_transport_advertisements" in transport_meta_text
@@ -950,7 +948,7 @@ def run_audit() -> dict:
             }
             for p in pillars
         },
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
     }
 
 
@@ -1033,7 +1031,7 @@ def _sanitize_public_artifact(node: object) -> object:
 
 
 def _ensure_public_access_warn(result: dict) -> dict:
-    access = ((result.get("pillars") or {}).get("Access") or {})
+    access = (result.get("pillars") or {}).get("Access") or {}
     if not isinstance(access, dict):
         return result
     evidence = access.setdefault("evidence", [])
@@ -1053,8 +1051,7 @@ def _ensure_public_access_warn(result: dict) -> dict:
             "broadly verified across the public API surface"
         )
     if has_access_warn and not any(
-        isinstance(item, str) and "route-level access checks" in item
-        for item in missing_items
+        isinstance(item, str) and "route-level access checks" in item for item in missing_items
     ):
         missing_items.append(
             "[MISS] route_access_check: route-level access checks are not yet "
@@ -1097,9 +1094,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.out_json:
             out_json = pathlib.Path(args.out_json)
             out_json.parent.mkdir(parents=True, exist_ok=True)
-            out_json.write_text(
-                json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8"
-            )
+            out_json.write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8")
 
         if args.out_site_json:
             out_site_json = pathlib.Path(args.out_site_json)

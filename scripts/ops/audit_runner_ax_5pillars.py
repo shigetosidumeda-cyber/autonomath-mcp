@@ -25,7 +25,7 @@ import re
 import sys
 from copy import deepcopy
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -332,7 +332,7 @@ def run_audit() -> dict[str, Any]:
                 "missing_items": resil.missing_items,
             },
         },
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
     }
 
 
@@ -422,7 +422,7 @@ def _sanitize_public_artifact(node: Any) -> Any:
 def _ensure_public_access_warn(result: dict[str, Any]) -> dict[str, Any]:
     """Keep the Access downgrade explicit without exposing internal scope names."""
 
-    access = ((result.get("pillars") or {}).get("Access") or {})
+    access = (result.get("pillars") or {}).get("Access") or {}
     if not isinstance(access, dict):
         return result
     evidence = access.setdefault("evidence", [])
@@ -443,8 +443,7 @@ def _ensure_public_access_warn(result: dict[str, Any]) -> dict[str, Any]:
             "the public API surface"
         )
     if has_access_warn and not any(
-        isinstance(item, str) and "route-level access checks" in item
-        for item in missing_items
+        isinstance(item, str) and "route-level access checks" in item for item in missing_items
     ):
         missing_items.append(
             "[MISS] route_access_check: route-level access checks are not yet "
