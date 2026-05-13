@@ -88,6 +88,7 @@ if fly auth whoami >/dev/null 2>&1; then
         "AUTONOMATH_DB_URL"
         "INVOICE_FOOTER_JA"
         "INVOICE_REGISTRATION_NUMBER"
+        "JPCITE_SESSION_SECRET"
         "JPINTEL_CORS_ORIGINS"
         "JPINTEL_ENV"
         "RATE_LIMIT_FREE_PER_DAY"

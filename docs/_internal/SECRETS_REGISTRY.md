@@ -41,6 +41,7 @@
 | 名前 | 必須条件 | 備考 |
 |---|---|---|
 | `API_KEY_SALT` | production では必須 | placeholder 不可、32 chars 以上。rotate は全 API key 再発行級。 |
+| `JPCITE_SESSION_SECRET` | production では必須 | HS256 session cookie signing secret。placeholder 不可、32 chars 以上。Google/GitHub login session forge 防止。 |
 | `AUDIT_SEAL_SECRET` または `JPINTEL_AUDIT_SEAL_KEYS` | production ではどちらか 1 つ必須 | `JPINTEL_AUDIT_SEAL_KEYS` が rotation list。`AUDIT_SEAL_SECRET` は legacy single-key fallback。 |
 | `STRIPE_SECRET_KEY` | production では必須 | live Stripe API secret。 |
 | `STRIPE_WEBHOOK_SECRET` | production では必須 | live webhook signing secret。 |
@@ -51,13 +52,14 @@
 
 ### Fly side (production)
 
-`fly secrets list -a autonomath-api` で **20 個 Deployed** 確認済 (2026-05-05 時点)。これは snapshot であり、現行 boot gate の判定は §0.1 を優先する:
+`fly secrets list -a autonomath-api` で **26 個 Deployed** 確認済 (2026-05-13 時点)。これは snapshot であり、現行 boot gate の判定は §0.1 を優先する:
 
 ```
 ADMIN_API_KEY, API_KEY_SALT,
 AUTONOMATH_API_HASH_PEPPER, AUTONOMATH_DB_SHA256, AUTONOMATH_DB_URL,
 AUDIT_SEAL_SECRET,
 INVOICE_FOOTER_JA, INVOICE_REGISTRATION_NUMBER,
+JPCITE_SESSION_SECRET,
 JPINTEL_CORS_ORIGINS, JPINTEL_ENV,
 RATE_LIMIT_FREE_PER_DAY,
 R2_ACCESS_KEY_ID, R2_BUCKET, R2_ENDPOINT, R2_SECRET_ACCESS_KEY,

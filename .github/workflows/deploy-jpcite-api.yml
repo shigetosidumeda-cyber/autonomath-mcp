@@ -158,6 +158,49 @@ jobs:
             echo "jpcite-api app present on Fly."
           fi
 
+      - name: Verify live Fly secret names before deploy
+        if: steps.fly-token.outputs.available == 'true'
+        run: |
+          set -euo pipefail
+          required=(
+            ADMIN_API_KEY
+            API_KEY_SALT
+            AUDIT_SEAL_SECRET
+            AUTONOMATH_API_HASH_PEPPER
+            AUTONOMATH_DB_SHA256
+            AUTONOMATH_DB_URL
+            INVOICE_FOOTER_JA
+            INVOICE_REGISTRATION_NUMBER
+            JPCITE_SESSION_SECRET
+            JPINTEL_CORS_ORIGINS
+            JPINTEL_ENV
+            RATE_LIMIT_FREE_PER_DAY
+            R2_ACCESS_KEY_ID
+            R2_BUCKET
+            R2_ENDPOINT
+            R2_SECRET_ACCESS_KEY
+            STRIPE_BILLING_PORTAL_CONFIG_ID
+            STRIPE_PRICE_PER_REQUEST
+            STRIPE_SECRET_KEY
+            STRIPE_TAX_ENABLED
+            STRIPE_WEBHOOK_SECRET
+          )
+          fly_secret_names="$(
+            flyctl secrets list -a jpcite-api \
+              | awk -F '│' 'NF >= 3 {gsub(/^[[:space:]]+|[[:space:]]+$/, "", $1); if ($1 != "NAME" && $1 != "") print $1}'
+          )"
+          missing=()
+          for name in "${required[@]}"; do
+            if ! grep -Fxq "$name" <<< "$fly_secret_names"; then
+              missing+=("$name")
+            fi
+          done
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "::error::Missing required Fly secret names for jpcite-api: ${missing[*]}"
+            exit 1
+          fi
+          echo "Required Fly secret names present for jpcite-api (${#required[@]} checked; values not read)."
+
       - name: Prepare seed placeholder (jpcite-api uses R2 build-arg only)
         if: steps.fly-token.outputs.available == 'true'
         # No sftp from autonomath-api: keep the legacy app's volume untouched.

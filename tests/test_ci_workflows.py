@@ -10,6 +10,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 TEST_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "test.yml"
 RELEASE_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "release.yml"
 DEPLOY_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "deploy.yml"
+DEPLOY_JPCITE_API_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "deploy-jpcite-api.yml"
 RELEASE_READINESS_SCRIPT = REPO_ROOT / "scripts" / "ops" / "release_readiness.py"
 
 REQUIRED_PYTEST_TARGETS = {
@@ -168,6 +169,33 @@ def test_deploy_runs_local_gates_before_fly_deploy() -> None:
     )
     assert text.index("python scripts/ops/production_deploy_go_gate.py --operator-ack") < (
         text.index("flyctl deploy --remote-only")
+    )
+
+
+def test_deploy_checks_live_fly_secret_names_before_fly_deploy() -> None:
+    text = DEPLOY_WORKFLOW.read_text(encoding="utf-8")
+    gate = _workflow_step_block(DEPLOY_WORKFLOW, "Verify live Fly secret names before deploy")
+
+    assert "flyctl secrets list -a autonomath-api" in gate
+    assert "JPCITE_SESSION_SECRET" in gate
+    assert "values not read" in gate
+    assert text.index("Verify live Fly secret names before deploy") < text.index(
+        "flyctl deploy --remote-only"
+    )
+
+
+def test_jpcite_api_deploy_checks_live_fly_secret_names_before_fly_deploy() -> None:
+    text = DEPLOY_JPCITE_API_WORKFLOW.read_text(encoding="utf-8")
+    gate = _workflow_step_block(
+        DEPLOY_JPCITE_API_WORKFLOW,
+        "Verify live Fly secret names before deploy",
+    )
+
+    assert "flyctl secrets list -a jpcite-api" in gate
+    assert "JPCITE_SESSION_SECRET" in gate
+    assert "values not read" in gate
+    assert text.index("Verify live Fly secret names before deploy") < text.index(
+        "flyctl deploy --remote-only"
     )
 
 
