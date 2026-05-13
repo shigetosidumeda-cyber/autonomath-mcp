@@ -52,6 +52,15 @@ def _bootstrap_db(db_path: str) -> None:
                 id         TEXT PRIMARY KEY,
                 source_url TEXT
             );
+            -- Canonical am_entity_facts PK column is `id` (NOT `fact_id`).
+            -- Prod schema uses INTEGER PRIMARY KEY AUTOINCREMENT (migration
+            -- 049 + test_evidence_packet). This stub uses TEXT to keep the
+            -- pre-existing "F-test-001"-style identifier seeding ergonomic;
+            -- the walker SELECTs `id` (column name) and passes the value
+            -- through verbatim regardless of declared type, so the ETL
+            -- code path under test is identical. The Wave 49 tick#2 fix
+            -- only changed the column NAME (`fact_id` → `id`); the
+            -- column TYPE is exercised in tests/test_provenance_etl_id_schema.py.
             CREATE TABLE IF NOT EXISTS am_entity_facts (
                 id         TEXT PRIMARY KEY,
                 source_url TEXT,
@@ -80,6 +89,11 @@ def _seed_one(
             "INSERT OR REPLACE INTO am_source(id, source_url) VALUES (?, ?)",
             (f"src_{fact_id}", source_url),
         )
+        # Stub PK column is `id` (matches canonical prod schema). The
+        # textual fact_id ("F-test-001" etc.) is stored in the INTEGER id
+        # via SQLite type affinity — PK still unique by content. The ETL
+        # walker SELECTs `id` and feeds the value forward into
+        # am_fact_metadata.fact_id (TEXT, mig 275) verbatim.
         conn.execute(
             """
             INSERT OR REPLACE INTO am_entity_facts
