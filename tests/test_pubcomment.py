@@ -284,3 +284,11 @@ def test_no_llm_imports_in_deep45_files() -> None:
         assert not hits, f"{t.name}: forbidden LLM imports {hits}"
     # Workflow yaml exists.
     assert _WORKFLOW.exists(), f"missing workflow: {_WORKFLOW}"
+
+
+def test_pubcomment_workflow_missing_db_dry_run_guard() -> None:
+    """Scheduled CI runners do not mount production autonomath.db."""
+    text = _WORKFLOW.read_text(encoding="utf-8")
+    assert 'if [ ! -s "${AUTONOMATH_DB_PATH}" ]; then' in text
+    assert "wave24_192_pubcomment_announcement.sql" in text
+    assert 'DRY_FLAG="--dry-run"' in text

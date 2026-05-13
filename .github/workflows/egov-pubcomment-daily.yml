@@ -69,6 +69,21 @@ jobs:
           if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then
             DRY_FLAG="--dry-run"
           fi
+          if [ ! -s "${AUTONOMATH_DB_PATH}" ]; then
+            echo "[egov-pubcomment-daily] autonomath.db missing; running parser dry-run against a temporary sqlite shell."
+            python - <<'PY'
+          import pathlib
+          import sqlite3
+
+          db = pathlib.Path("autonomath.db")
+          sqlite3.connect(str(db)).close()
+          sql = pathlib.Path("scripts/migrations/wave24_192_pubcomment_announcement.sql").read_text(encoding="utf-8")
+          with sqlite3.connect(str(db)) as conn:
+              conn.executescript(sql)
+              conn.commit()
+          PY
+            DRY_FLAG="--dry-run"
+          fi
           python scripts/cron/ingest_egov_pubcomment_daily.py \
             --days "${DAYS}" \
             ${DRY_FLAG}

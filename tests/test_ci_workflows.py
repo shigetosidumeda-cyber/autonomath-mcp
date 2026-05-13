@@ -118,6 +118,18 @@ def test_release_pytest_gate_runs_without_deselects() -> None:
         assert token not in block
 
 
+def test_test_workflow_pytest_targets_are_sharded() -> None:
+    text = TEST_WORKFLOW.read_text(encoding="utf-8")
+    pytest_block = _workflow_step_block(TEST_WORKFLOW, "Pytest with coverage")
+
+    assert "shard-index: [0, 1, 2, 3]" in text
+    assert "shard-count: [4]" in text
+    assert "Build pytest shard" in text
+    assert "pytest-shard-targets.txt" in text
+    assert 'pytest "${TARGETS[@]}" -q' in pytest_block
+    assert "pytest $PYTEST_TARGETS -q" not in pytest_block
+
+
 def test_release_runs_ruff_format_check() -> None:
     text = RELEASE_WORKFLOW.read_text(encoding="utf-8")
     assert "ruff format --check $RUFF_TARGETS" in text

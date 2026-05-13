@@ -713,6 +713,7 @@ env:
 
 jobs:
   pytest:
+    name: pytest (${{ matrix.python-version }} shard ${{ matrix.shard-index }}/${{ matrix.shard-count }})
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
@@ -720,6 +721,8 @@ jobs:
       matrix:
         # 3.13 first so it reports earliest; 3.11 is the floor declared in pyproject.toml.
         python-version: ["3.13", "3.12", "3.11"]
+        shard-index: [0, 1, 2, 3]
+        shard-count: [4]
 
     steps:
       - name: Checkout
@@ -739,18 +742,47 @@ jobs:
           pip install -e ".[dev,site]"
 
       - name: Ruff lint
+        if: matrix.python-version == '3.12' && matrix.shard-index == 0
         run: ruff check $RUFF_TARGETS
 
       - name: Ruff format check
+        if: matrix.python-version == '3.12' && matrix.shard-index == 0
         run: ruff format --check $RUFF_TARGETS
 
+      - name: Build pytest shard
+        env:
+          PYTEST_SHARD_INDEX: ${{ matrix.shard-index }}
+          PYTEST_SHARD_COUNT: ${{ matrix.shard-count }}
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+
+          targets = os.environ["PYTEST_TARGETS"].split()
+          shard_index = int(os.environ["PYTEST_SHARD_INDEX"])
+          shard_count = int(os.environ["PYTEST_SHARD_COUNT"])
+          shard = [
+              target
+              for index, target in enumerate(targets)
+              if index % shard_count == shard_index
+          ]
+          Path("pytest-shard-targets.txt").write_text("\n".join(shard) + "\n", encoding="utf-8")
+          print(
+              f"selected {len(shard)} of {len(targets)} pytest targets "
+              f"for shard {shard_index}/{shard_count}"
+          )
+          PY
+
       - name: Pytest with coverage
-        run: pytest $PYTEST_TARGETS -q
+        run: |
+          mapfile -t TARGETS < pytest-shard-targets.txt
+          pytest "${TARGETS[@]}" -q
 
       - name: pip-audit (supply chain)
         # Added 2026-04-25 per CI security gating audit (a92f5354dc4848432).
         # --strict fails the build on any unfixed CVE. Add `--ignore-vuln GHSA-...`
         # only when a specific advisory has been triaged as not-applicable.
+        if: matrix.python-version == '3.12' && matrix.shard-index == 0
         continue-on-error: true
         run: pip install pip-audit && pip-audit --strict
 
@@ -758,18 +790,18 @@ jobs:
         # Best-effort: treat new errors as red (CLAUDE.md quality gate).
         # Run only on Python 3.12 to keep matrix runtime down; mypy output
         # is Python-version-independent for this codebase.
-        if: matrix.python-version == '3.12'
+        if: matrix.python-version == '3.12' && matrix.shard-index == 0
         continue-on-error: true
         run: |
           pip install mypy types-requests pydantic>=2.9 pydantic-settings>=2.6 fastapi>=0.115
           mypy src/
 
       - name: Install docs dependencies
-        if: matrix.python-version == '3.12'
+        if: matrix.python-version == '3.12' && matrix.shard-index == 0
         run: pip install -r docs-requirements.txt
 
       - name: mkdocs build --strict
-        if: matrix.python-version == '3.12'
+        if: matrix.python-version == '3.12' && matrix.shard-index == 0
         run: mkdocs build --strict
 
       - name: Upload coverage to Codecov
@@ -778,6 +810,6 @@ jobs:
         continue-on-error: true
         with:
           files: ./coverage.xml
-          flags: py${{ matrix.python-version }}
+          flags: py${{ matrix.python-version }}-shard${{ matrix.shard-index }}
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
