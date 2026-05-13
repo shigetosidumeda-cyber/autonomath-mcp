@@ -17,6 +17,7 @@ PAGES_REGENERATE = WORKFLOWS / "pages-regenerate.yml"
 PAGES_CATCH_ALL_FUNCTION = REPO_ROOT / "functions" / "[[path]].ts"
 PAGES_ROUTES = REPO_ROOT / "site" / "_routes.json"
 STATUS_PROBE_CRON = WORKFLOWS / "status-probe-cron.yml"
+STATUS_UPDATE = WORKFLOWS / "status_update.yml"
 EVOLUTION_DASHBOARD = WORKFLOWS / "evolution-dashboard-weekly.yml"
 PRODUCTION_GATE_DASHBOARD = WORKFLOWS / "production-gate-dashboard-daily.yml"
 
@@ -128,8 +129,9 @@ def test_pages_workflows_serialize_and_avoid_preview_main_publish() -> None:
 
 
 def test_status_probe_cron_can_import_src_package() -> None:
-    text = _text(STATUS_PROBE_CRON)
-    assert "PYTHONPATH: src" in text or "pip install -e" in text
+    for workflow in (STATUS_PROBE_CRON, STATUS_UPDATE):
+        text = _text(workflow)
+        assert "PYTHONPATH: src" in text or "pip install -e" in text
 
 
 def test_pages_source_backed_route_smoke_is_hard_gate() -> None:
