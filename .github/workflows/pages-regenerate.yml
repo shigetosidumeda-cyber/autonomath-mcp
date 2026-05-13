@@ -53,7 +53,7 @@ on:
       - ".github/workflows/pages-regenerate.yml"
 
 concurrency:
-  group: pages-regenerate
+  group: cf-pages-autonomath-${{ github.ref }}
   cancel-in-progress: false
 
 permissions:
@@ -121,10 +121,31 @@ jobs:
           mkdir -p data
           # Online SQLite backup → /data/jpintel.live.db on the machine, then
           # sftp it down. We avoid copying the live WAL'd file directly.
-          flyctl ssh console -a autonomath-api -C \
-            "sqlite3 /data/jpintel.db \".backup /data/jpintel.live.db\""
-          flyctl ssh sftp get /data/jpintel.live.db -a autonomath-api
-          mv jpintel.live.db data/jpintel.db
+          remote_db="/data/jpintel.live.${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}.db"
+          local_db="$(basename "$remote_db")"
+          cleanup_remote_db() {
+            flyctl ssh console -a autonomath-api -C "rm -f ${remote_db}" || true
+          }
+          trap cleanup_remote_db EXIT
+          for attempt in 1 2 3 4 5; do
+            echo "::group::Fly jpintel.db backup attempt ${attempt}/5"
+            rm -f "$local_db" data/jpintel.db
+            if flyctl ssh console -a autonomath-api -C \
+                "bash -lc 'set -euo pipefail; rm -f ${remote_db}; sqlite3 -cmd \".timeout 300000\" /data/jpintel.db \".backup ${remote_db}\"; sqlite3 ${remote_db} \"PRAGMA quick_check; SELECT COUNT(*) FROM programs;\"'" \
+              && flyctl ssh sftp get "$remote_db" -a autonomath-api ; then
+              mv "$local_db" data/jpintel.db
+              echo "::endgroup::"
+              break
+            fi
+            echo "::endgroup::"
+            if [ "$attempt" -eq 5 ]; then
+              echo "::error::Unable to snapshot /data/jpintel.db after 5 attempts."
+              exit 1
+            fi
+            sleep_seconds=$((attempt * 30))
+            echo "::warning::jpintel.db snapshot attempt ${attempt} failed; retrying in ${sleep_seconds}s."
+            sleep "$sleep_seconds"
+          done
           ls -la data/jpintel.db
 
       - name: Regenerate generated public artifacts

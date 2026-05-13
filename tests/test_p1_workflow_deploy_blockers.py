@@ -12,6 +12,9 @@ STRIPE_BACKFILL = WORKFLOWS / "stripe-backfill-30min.yml"
 IDEMPOTENCY_SWEEP = WORKFLOWS / "idempotency-sweep-hourly.yml"
 INGEST_DAILY = WORKFLOWS / "ingest-daily.yml"
 PAGES_DEPLOY_MAIN = WORKFLOWS / "pages-deploy-main.yml"
+PAGES_PREVIEW = WORKFLOWS / "pages-preview.yml"
+PAGES_REGENERATE = WORKFLOWS / "pages-regenerate.yml"
+STATUS_PROBE_CRON = WORKFLOWS / "status-probe-cron.yml"
 EVOLUTION_DASHBOARD = WORKFLOWS / "evolution-dashboard-weekly.yml"
 PRODUCTION_GATE_DASHBOARD = WORKFLOWS / "production-gate-dashboard-daily.yml"
 
@@ -89,8 +92,7 @@ def test_owned_scheduled_workflows_do_not_share_utc_minute_hour() -> None:
                 for hour in _expand_cron_field(hour_field, lo=0, hi=23):
                     key = (minute, hour)
                     assert key not in seen, (
-                        f"{workflow.name} collides with {seen[key]} at UTC "
-                        f"{hour:02d}:{minute:02d}"
+                        f"{workflow.name} collides with {seen[key]} at UTC {hour:02d}:{minute:02d}"
                     )
                     seen[key] = workflow.name
 
@@ -102,6 +104,30 @@ def test_pages_deploy_fails_closed_when_cloudflare_secrets_missing() -> None:
     assert "::error::CF_API_TOKEN and CF_ACCOUNT_ID are required" in text
     assert "available=false" not in text
     assert "Skipping Cloudflare Pages deploy" not in text
+
+
+def test_pages_workflows_serialize_and_avoid_preview_main_publish() -> None:
+    preview = _text(PAGES_PREVIEW)
+    preview_push_block = re.search(
+        r"  push:\n(?P<body>.*?)(?=^  workflow_dispatch:|^concurrency:)",
+        preview,
+        re.MULTILINE | re.DOTALL,
+    )
+    assert preview_push_block is not None
+    assert "- main" not in preview_push_block.group("body")
+    assert "github.ref_name != 'main'" in preview
+
+    for workflow in (PAGES_PREVIEW, PAGES_DEPLOY_MAIN, PAGES_REGENERATE):
+        text = _text(workflow)
+        assert "group: cf-pages-autonomath-${{ github.ref }}" in text
+        assert ".timeout 300000" in text
+        assert "${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}.db" in text
+        assert "trap cleanup_remote_db EXIT" in text
+
+
+def test_status_probe_cron_can_import_src_package() -> None:
+    text = _text(STATUS_PROBE_CRON)
+    assert "PYTHONPATH: src" in text or "pip install -e" in text
 
 
 def test_pages_md_route_smoke_is_hard_gate() -> None:

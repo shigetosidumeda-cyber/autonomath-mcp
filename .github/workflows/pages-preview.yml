@@ -23,15 +23,14 @@
 #   Redirect-source domains: www.jpcite.com, zeimu-kaikei.ai,
 #                            www.zeimu-kaikei.ai
 #
-# Production publishes require Fly data access so gitignored generated artifacts
-# are rebuilt before the static mirror is synced.
+# Main-branch production publishes are handled by pages-deploy-main.yml.
+# This workflow stays available for release/* preview drills and manual runs.
 
 name: pages-preview
 
 on:
   push:
     branches:
-      - main
       - "release/*"
     paths:
       - "site/**"
@@ -45,8 +44,8 @@ on:
   workflow_dispatch: {}
 
 concurrency:
-  group: pages-${{ github.ref }}
-  cancel-in-progress: true
+  group: cf-pages-autonomath-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -94,10 +93,31 @@ jobs:
             exit 0
           fi
           mkdir -p data
-          flyctl ssh console -a autonomath-api -C \
-            "sqlite3 /data/jpintel.db \".backup /data/jpintel.pages.db\""
-          flyctl ssh sftp get /data/jpintel.pages.db -a autonomath-api
-          mv jpintel.pages.db data/jpintel.db
+          remote_db="/data/jpintel.pages.${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}.db"
+          local_db="$(basename "$remote_db")"
+          cleanup_remote_db() {
+            flyctl ssh console -a autonomath-api -C "rm -f ${remote_db}" || true
+          }
+          trap cleanup_remote_db EXIT
+          for attempt in 1 2 3 4 5; do
+            echo "::group::Fly jpintel.db backup attempt ${attempt}/5"
+            rm -f "$local_db" data/jpintel.db
+            if flyctl ssh console -a autonomath-api -C \
+                "bash -lc 'set -euo pipefail; rm -f ${remote_db}; sqlite3 -cmd \".timeout 300000\" /data/jpintel.db \".backup ${remote_db}\"; sqlite3 ${remote_db} \"PRAGMA quick_check; SELECT COUNT(*) FROM programs;\"'" \
+              && flyctl ssh sftp get "$remote_db" -a autonomath-api ; then
+              mv "$local_db" data/jpintel.db
+              echo "::endgroup::"
+              break
+            fi
+            echo "::endgroup::"
+            if [ "$attempt" -eq 5 ]; then
+              echo "::error::Unable to snapshot /data/jpintel.db after 5 attempts."
+              exit 1
+            fi
+            sleep_seconds=$((attempt * 30))
+            echo "::warning::jpintel.db snapshot attempt ${attempt} failed; retrying in ${sleep_seconds}s."
+            sleep "$sleep_seconds"
+          done
           echo "available=true" >> "$GITHUB_OUTPUT"
 
       - name: Build docs (MkDocs Material → site/docs/)
@@ -177,7 +197,7 @@ jobs:
           fi
 
       - name: Publish to Cloudflare Pages
-        if: steps.cf-secrets.outputs.available == 'true'
+        if: steps.cf-secrets.outputs.available == 'true' && github.ref_name != 'main'
         uses: cloudflare/pages-action@f0a1cd58cd66095dee69bfa18fa5efd1dde93bca # v1.5.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}

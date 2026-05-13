@@ -208,7 +208,7 @@ jobs:
             # `flyctl ssh sftp get` refuses to overwrite an existing local target,
             # so any small dev fixture must be removed before the fetch.
             rm -f data/jpintel.db
-            remote_seed="/tmp/jpintel-ci-seed.db"
+            remote_seed="/tmp/jpintel-ci-seed.${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}.db"
             cleanup_remote_seed() {
               flyctl ssh console -a autonomath-api -q -C "rm -f ${remote_seed}" || true
             }
@@ -227,7 +227,7 @@ jobs:
               echo "::group::sftp attempt ${attempt}/3 (fresh online .backup, 5min cap)"
               rm -f data/jpintel.db
               if timeout 300 flyctl ssh console -a autonomath-api -q -C \
-                  "bash -lc 'set -euo pipefail; rm -f ${remote_seed}; sqlite3 /data/jpintel.db \".backup ${remote_seed}\"; sqlite3 ${remote_seed} \"PRAGMA quick_check; SELECT COUNT(*) FROM programs;\"'" \
+                  "bash -lc 'set -euo pipefail; rm -f ${remote_seed}; sqlite3 -cmd \".timeout 300000\" /data/jpintel.db \".backup ${remote_seed}\"; sqlite3 ${remote_seed} \"PRAGMA quick_check; SELECT COUNT(*) FROM programs;\"'" \
                 && timeout 300 flyctl ssh sftp get -a autonomath-api -q "${remote_seed}" data/jpintel.db ; then
                 sftp_bytes="$(wc -c < data/jpintel.db | tr -d ' ' 2>/dev/null || echo 0)"
                 if [ "$sftp_bytes" -ge 100000000 ]; then

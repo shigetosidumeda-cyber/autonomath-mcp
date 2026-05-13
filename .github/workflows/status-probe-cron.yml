@@ -51,6 +51,7 @@ jobs:
 
       - name: Run 5-component status probe (json + badge)
         env:
+          PYTHONPATH: src
           JPCITE_API_BASE: https://api.jpcite.com
           JPCITE_SITE_BASE: https://jpcite.com
         run: |
